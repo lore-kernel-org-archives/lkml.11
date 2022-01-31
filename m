@@ -2,115 +2,205 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C0E3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:21:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87984C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:21:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359206AbiAaLVX (ORCPT
+        id S1359541AbiAaLVb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:21:23 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:43930 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358774AbiAaLKt (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:10:49 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8BE0961187;
-        Mon, 31 Jan 2022 11:10:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66B5DC340EE;
-        Mon, 31 Jan 2022 11:10:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627449;
-        bh=YHrvJnXa5X1wfQtF+Ogrm85EqxRyOSldBMesQslQ2Pw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d8C+PCkr2c/s2DhjFw7Ulpt4akd/8DbKXeoV76ETlUmQ0ZyFQHLRYyrprF3RBK4Yp
-         yLaQp+hX7cECIp3iajgWuLJLinP2VHWgBipBsJjifALo/CQCZqaWZk39HHW0CUxrbq
-         nYcxMiM+ePwoq1JxNKoJBq305iZ9fJ0KhBFNtuoE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+        Mon, 31 Jan 2022 06:21:31 -0500
+Received: from mga11.intel.com ([192.55.52.93]:14349 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1359194AbiAaLLD (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 06:11:03 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643627463; x=1675163463;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=U3v/Ejg1TqWehoSepyEfalh7OZ7aWlKrYEYrNmIK/cM=;
+  b=fDcU1++foXQsOnmeejwlsac5I4tOUNA/ZOTRedP5QKWPwj64TtUbaxZd
+   QVtpL3J4UgYi5NVaE64vgoEw+xYgxhDDps/H03z7ayJo1+Sh2K0iwUR/z
+   yH4v66NhWAI/WidXEDN8TQlJFfNm4zrYp2fExYhsscfLPoNWWTXw3zL7O
+   N8OQKllK0ZEsKmR9XlDklTxxQW2a754jS9VY6lNRACjGxTh+JFItbCq2h
+   WRjmCGJvwNck6rjlNTO8gAH8XyidIuXHoWLMlOhv1y9wH3pkLje8ZKu6x
+   W5Bj0oMWUU2D7efjIQzGmvBmWhb27IdMlpPLekor0L9vJMCdGGNO1AONC
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10243"; a="245033606"
+X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
+   d="scan'208";a="245033606"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 03:10:05 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
+   d="scan'208";a="675694572"
+Received: from kuha.fi.intel.com ([10.237.72.185])
+  by fmsmga001.fm.intel.com with SMTP; 31 Jan 2022 03:10:03 -0800
+Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Mon, 31 Jan 2022 13:10:02 +0200
+Date:   Mon, 31 Jan 2022 13:10:02 +0200
+From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To:     Sean Anderson <sean.anderson@seco.com>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Congyu Liu <liu3101@purdue.edu>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 087/171] net: fix information leakage in /proc/net/ptype
-Date:   Mon, 31 Jan 2022 11:55:52 +0100
-Message-Id: <20220131105232.971619785@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
-References: <20220131105229.959216821@linuxfoundation.org>
-User-Agent: quilt/0.66
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 3/3] usb: ulpi: Add debugfs support
+Message-ID: <YffDipQOBUvouz+4@kuha.fi.intel.com>
+References: <20220127190004.1446909-1-sean.anderson@seco.com>
+ <20220127190004.1446909-4-sean.anderson@seco.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220127190004.1446909-4-sean.anderson@seco.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Congyu Liu <liu3101@purdue.edu>
+On Thu, Jan 27, 2022 at 02:00:04PM -0500, Sean Anderson wrote:
+> This adds a debugfs file for ULPI devices which contains a dump of their
+> registers. This is useful for debugging basic connectivity problems. The
+> file is created in ulpi_register because many devices will never have a
+> driver bound (as they are managed in hardware by the USB controller
+> device).
+> 
+> The root directory of this subsystem is created before we register the
+> bus to ensure that devices can always create their directories.
+> 
+> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
 
-commit 47934e06b65637c88a762d9c98329ae6e3238888 upstream.
+Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
 
-In one net namespace, after creating a packet socket without binding
-it to a device, users in other net namespaces can observe the new
-`packet_type` added by this packet socket by reading `/proc/net/ptype`
-file. This is minor information leakage as packet socket is
-namespace aware.
+> ---
+> 
+> (no changes since v2)
+> 
+> Changes in v2:
+> - Always create debugfs files and ignore errors
+> - Look up dentries dynamically
+> 
+>  drivers/usb/common/ulpi.c | 71 ++++++++++++++++++++++++++++++++++++++-
+>  1 file changed, 70 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/usb/common/ulpi.c b/drivers/usb/common/ulpi.c
+> index dedcb749a02f..897e1a374f9e 100644
+> --- a/drivers/usb/common/ulpi.c
+> +++ b/drivers/usb/common/ulpi.c
+> @@ -13,6 +13,7 @@
+>  #include <linux/module.h>
+>  #include <linux/slab.h>
+>  #include <linux/acpi.h>
+> +#include <linux/debugfs.h>
+>  #include <linux/of.h>
+>  #include <linux/of_device.h>
+>  #include <linux/clk/clk-conf.h>
+> @@ -229,9 +230,64 @@ static int ulpi_read_id(struct ulpi *ulpi)
+>  	return 0;
+>  }
+>  
+> +static int ulpi_regs_read(struct seq_file *seq, void *data)
+> +{
+> +	struct ulpi *ulpi = seq->private;
+> +
+> +#define ulpi_print(name, reg) do { \
+> +	int ret = ulpi_read(ulpi, reg); \
+> +	if (ret < 0) \
+> +		return ret; \
+> +	seq_printf(seq, name " %.02x\n", ret); \
+> +} while (0)
+> +
+> +	ulpi_print("Vendor ID Low               ", ULPI_VENDOR_ID_LOW);
+> +	ulpi_print("Vendor ID High              ", ULPI_VENDOR_ID_HIGH);
+> +	ulpi_print("Product ID Low              ", ULPI_PRODUCT_ID_LOW);
+> +	ulpi_print("Product ID High             ", ULPI_PRODUCT_ID_HIGH);
+> +	ulpi_print("Function Control            ", ULPI_FUNC_CTRL);
+> +	ulpi_print("Interface Control           ", ULPI_IFC_CTRL);
+> +	ulpi_print("OTG Control                 ", ULPI_OTG_CTRL);
+> +	ulpi_print("USB Interrupt Enable Rising ", ULPI_USB_INT_EN_RISE);
+> +	ulpi_print("USB Interrupt Enable Falling", ULPI_USB_INT_EN_FALL);
+> +	ulpi_print("USB Interrupt Status        ", ULPI_USB_INT_STS);
+> +	ulpi_print("USB Interrupt Latch         ", ULPI_USB_INT_LATCH);
+> +	ulpi_print("Debug                       ", ULPI_DEBUG);
+> +	ulpi_print("Scratch Register            ", ULPI_SCRATCH);
+> +	ulpi_print("Carkit Control              ", ULPI_CARKIT_CTRL);
+> +	ulpi_print("Carkit Interrupt Delay      ", ULPI_CARKIT_INT_DELAY);
+> +	ulpi_print("Carkit Interrupt Enable     ", ULPI_CARKIT_INT_EN);
+> +	ulpi_print("Carkit Interrupt Status     ", ULPI_CARKIT_INT_STS);
+> +	ulpi_print("Carkit Interrupt Latch      ", ULPI_CARKIT_INT_LATCH);
+> +	ulpi_print("Carkit Pulse Control        ", ULPI_CARKIT_PLS_CTRL);
+> +	ulpi_print("Transmit Positive Width     ", ULPI_TX_POS_WIDTH);
+> +	ulpi_print("Transmit Negative Width     ", ULPI_TX_NEG_WIDTH);
+> +	ulpi_print("Receive Polarity Recovery   ", ULPI_POLARITY_RECOVERY);
+> +
+> +	return 0;
+> +}
+> +
+> +static int ulpi_regs_open(struct inode *inode, struct file *f)
+> +{
+> +	struct ulpi *ulpi = inode->i_private;
+> +
+> +	return single_open(f, ulpi_regs_read, ulpi);
+> +}
+> +
+> +static const struct file_operations ulpi_regs_ops = {
+> +	.owner = THIS_MODULE,
+> +	.open = ulpi_regs_open,
+> +	.release = single_release,
+> +	.read = seq_read,
+> +	.llseek = seq_lseek
+> +};
+> +
+> +#define ULPI_ROOT debugfs_lookup(KBUILD_MODNAME, NULL)
+> +
+>  static int ulpi_register(struct device *dev, struct ulpi *ulpi)
+>  {
+>  	int ret;
+> +	struct dentry *root;
+>  
+>  	ulpi->dev.parent = dev; /* needed early for ops */
+>  	ulpi->dev.bus = &ulpi_bus;
+> @@ -256,6 +312,9 @@ static int ulpi_register(struct device *dev, struct ulpi *ulpi)
+>  		return ret;
+>  	}
+>  
+> +	root = debugfs_create_dir(dev_name(dev), ULPI_ROOT);
+> +	debugfs_create_file("regs", 0444, root, ulpi, &ulpi_regs_ops);
+> +
+>  	dev_dbg(&ulpi->dev, "registered ULPI PHY: vendor %04x, product %04x\n",
+>  		ulpi->id.vendor, ulpi->id.product);
+>  
+> @@ -301,6 +360,8 @@ EXPORT_SYMBOL_GPL(ulpi_register_interface);
+>   */
+>  void ulpi_unregister_interface(struct ulpi *ulpi)
+>  {
+> +	debugfs_remove_recursive(debugfs_lookup(dev_name(&ulpi->dev),
+> +						ULPI_ROOT));
+>  	device_unregister(&ulpi->dev);
+>  }
+>  EXPORT_SYMBOL_GPL(ulpi_unregister_interface);
+> @@ -309,13 +370,21 @@ EXPORT_SYMBOL_GPL(ulpi_unregister_interface);
+>  
+>  static int __init ulpi_init(void)
+>  {
+> -	return bus_register(&ulpi_bus);
+> +	int ret;
+> +	struct dentry *root;
+> +
+> +	root = debugfs_create_dir(KBUILD_MODNAME, NULL);
+> +	ret = bus_register(&ulpi_bus);
+> +	if (ret)
+> +		debugfs_remove(root);
+> +	return ret;
+>  }
+>  subsys_initcall(ulpi_init);
+>  
+>  static void __exit ulpi_exit(void)
+>  {
+>  	bus_unregister(&ulpi_bus);
+> +	debugfs_remove_recursive(ULPI_ROOT);
+>  }
+>  module_exit(ulpi_exit);
+>  
+> -- 
+> 2.25.1
 
-Add a net pointer in `packet_type` to keep the net namespace of
-of corresponding packet socket. In `ptype_seq_show`, this net pointer
-must be checked when it is not NULL.
+thanks,
 
-Fixes: 2feb27dbe00c ("[NETNS]: Minor information leak via /proc/net/ptype file.")
-Signed-off-by: Congyu Liu <liu3101@purdue.edu>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- include/linux/netdevice.h |    1 +
- net/core/net-procfs.c     |    3 ++-
- net/packet/af_packet.c    |    2 ++
- 3 files changed, 5 insertions(+), 1 deletion(-)
-
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -2636,6 +2636,7 @@ struct packet_type {
- 					      struct net_device *);
- 	bool			(*id_match)(struct packet_type *ptype,
- 					    struct sock *sk);
-+	struct net		*af_packet_net;
- 	void			*af_packet_priv;
- 	struct list_head	list;
- };
---- a/net/core/net-procfs.c
-+++ b/net/core/net-procfs.c
-@@ -260,7 +260,8 @@ static int ptype_seq_show(struct seq_fil
- 
- 	if (v == SEQ_START_TOKEN)
- 		seq_puts(seq, "Type Device      Function\n");
--	else if (pt->dev == NULL || dev_net(pt->dev) == seq_file_net(seq)) {
-+	else if ((!pt->af_packet_net || net_eq(pt->af_packet_net, seq_file_net(seq))) &&
-+		 (!pt->dev || net_eq(dev_net(pt->dev), seq_file_net(seq)))) {
- 		if (pt->type == htons(ETH_P_ALL))
- 			seq_puts(seq, "ALL ");
- 		else
---- a/net/packet/af_packet.c
-+++ b/net/packet/af_packet.c
-@@ -1738,6 +1738,7 @@ static int fanout_add(struct sock *sk, s
- 		match->prot_hook.dev = po->prot_hook.dev;
- 		match->prot_hook.func = packet_rcv_fanout;
- 		match->prot_hook.af_packet_priv = match;
-+		match->prot_hook.af_packet_net = read_pnet(&match->net);
- 		match->prot_hook.id_match = match_fanout_group;
- 		match->max_num_members = args->max_num_members;
- 		list_add(&match->list, &fanout_list);
-@@ -3323,6 +3324,7 @@ static int packet_create(struct net *net
- 		po->prot_hook.func = packet_rcv_spkt;
- 
- 	po->prot_hook.af_packet_priv = sk;
-+	po->prot_hook.af_packet_net = sock_net(sk);
- 
- 	if (proto) {
- 		po->prot_hook.type = proto;
-
-
+-- 
+heikki
