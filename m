@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 395FAC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FF4FC4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378791AbiAaL3M (ORCPT
+        id S1378833AbiAaL3V (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:29:12 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:50168 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377523AbiAaLSX (ORCPT
+        Mon, 31 Jan 2022 06:29:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47586 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377884AbiAaLTO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:18:23 -0500
+        Mon, 31 Jan 2022 06:19:14 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ADD2C06135E;
+        Mon, 31 Jan 2022 03:11:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 446856114D;
-        Mon, 31 Jan 2022 11:18:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C843C340E8;
-        Mon, 31 Jan 2022 11:18:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DF58E60F96;
+        Mon, 31 Jan 2022 11:11:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA610C36AE2;
+        Mon, 31 Jan 2022 11:11:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627902;
-        bh=8bbaXZER4a2mhUTdrkD8ZgmE7ImLm7ZobG8EiC1hc94=;
+        s=korg; t=1643627507;
+        bh=rEqdq7v63HYoM1RUtMY3FTYSi4VVJnZarw6/dAiwbJE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RlJ0p4QVHqbmwRul9ZoZcEpVCFotwuPWocC5ESOAcQ/lzn2vx3XqQVzr4KBSzp8mL
-         fj0irXYdkiyGgfdrA9yVF9deYjRaRKoa/Uan1SmN72IG4wRYgvFAlyBqKeEvwrPsWM
-         EnUsz2pR/t4eVbly29TIrd6KAphq5T0wD7mNJJxY=
+        b=biLKh+mxPlcr9kkfT2gmwdXWXNiVUid9ptMKbDjyooN0VRErAJwdy9fAYnUjac8/5
+         EHyKVVVxilvoPX0LGIDVfjA4IfUEWfTxa5zpl0NQxpsIwSU+o6IEqsxd/4Y68B1j7q
+         Xs8fu0giwjfZvjsfhiCCR8nUHJAUOCMr+kAHKiTw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jeremy Kerr <jk@ozlabs.org>,
-        Matthew Garrett <mjg59@srcf.ucam.org>,
-        Aditya Garg <gargaditya08@live.com>,
-        Orlando Chamberlain <redecorating@protonmail.com>,
-        Ard Biesheuvel <ardb@kernel.org>
-Subject: [PATCH 5.16 028/200] efi: runtime: avoid EFIv2 runtime services on Apple x86 machines
-Date:   Mon, 31 Jan 2022 11:54:51 +0100
-Message-Id: <20220131105234.520022336@linuxfoundation.org>
+        stable@vger.kernel.org, Nicholas Piggin <npiggin@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 107/171] powerpc/64s: Mask SRR0 before checking against the masked NIP
+Date:   Mon, 31 Jan 2022 11:56:12 +0100
+Message-Id: <20220131105233.660265910@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
-References: <20220131105233.561926043@linuxfoundation.org>
+In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
+References: <20220131105229.959216821@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,62 +50,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ard Biesheuvel <ardb@kernel.org>
+From: Nicholas Piggin <npiggin@gmail.com>
 
-commit f5390cd0b43c2e54c7cf5506c7da4a37c5cef746 upstream.
+[ Upstream commit aee101d7b95a03078945681dd7f7ea5e4a1e7686 ]
 
-Aditya reports [0] that his recent MacbookPro crashes in the firmware
-when using the variable services at runtime. The culprit appears to be a
-call to QueryVariableInfo(), which we did not use to call on Apple x86
-machines in the past as they only upgraded from EFI v1.10 to EFI v2.40
-firmware fairly recently, and QueryVariableInfo() (along with
-UpdateCapsule() et al) was added in EFI v2.00.
+Commit 314f6c23dd8d ("powerpc/64s: Mask NIP before checking against
+SRR0") masked off the low 2 bits of the NIP value in the interrupt
+stack frame in case they are non-zero and mis-compare against a SRR0
+register value of a CPU which always reads back 0 from the 2 low bits
+which are reserved.
 
-The only runtime service introduced in EFI v2.00 that we actually use in
-Linux is QueryVariableInfo(), as the capsule based ones are optional,
-generally not used at runtime (all the LVFS/fwupd firmware update
-infrastructure uses helper EFI programs that invoke capsule update at
-boot time, not runtime), and not implemented by Apple machines in the
-first place. QueryVariableInfo() is used to 'safely' set variables,
-i.e., only when there is enough space. This prevents machines with buggy
-firmwares from corrupting their NVRAMs when they run out of space.
+This now causes the opposite problem that an implementation which does
+implement those bits in SRR0 will mis-compare against the masked NIP
+value in which they have been cleared. QEMU is one such implementation,
+and this is allowed by the architecture.
 
-Given that Apple machines have been using EFI v1.10 services only for
-the longest time (the EFI v2.0 spec was released in 2006, and Linux
-support for the newly introduced runtime services was added in 2011, but
-the MacbookPro12,1 released in 2015 still claims to be EFI v1.10 only),
-let's avoid the EFI v2.0 ones on all Apple x86 machines.
+This can be triggered by sigfuz by setting low bits of PT_NIP in the
+signal context.
 
-[0] https://lore.kernel.org/all/6D757C75-65B1-468B-842D-10410081A8E4@live.com/
+Fix this for now by masking the SRR0 bits as well. Cleaner is probably
+to sanitise these values before putting them in registers or stack, but
+this is the quick and backportable fix.
 
-Cc: <stable@vger.kernel.org>
-Cc: Jeremy Kerr <jk@ozlabs.org>
-Cc: Matthew Garrett <mjg59@srcf.ucam.org>
-Reported-by: Aditya Garg <gargaditya08@live.com>
-Tested-by: Orlando Chamberlain <redecorating@protonmail.com>
-Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
-Tested-by: Aditya Garg <gargaditya08@live.com>
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215277
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 314f6c23dd8d ("powerpc/64s: Mask NIP before checking against SRR0")
+Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220117134403.2995059-1-npiggin@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/firmware/efi/efi.c |    7 +++++++
- 1 file changed, 7 insertions(+)
+ arch/powerpc/kernel/interrupt_64.S | 2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/firmware/efi/efi.c
-+++ b/drivers/firmware/efi/efi.c
-@@ -722,6 +722,13 @@ void __init efi_systab_report_header(con
- 		systab_hdr->revision >> 16,
- 		systab_hdr->revision & 0xffff,
- 		vendor);
-+
-+	if (IS_ENABLED(CONFIG_X86_64) &&
-+	    systab_hdr->revision > EFI_1_10_SYSTEM_TABLE_REVISION &&
-+	    !strcmp(vendor, "Apple")) {
-+		pr_info("Apple Mac detected, using EFI v1.10 runtime services only\n");
-+		efi.runtime_version = EFI_1_10_SYSTEM_TABLE_REVISION;
-+	}
- }
- 
- static __initdata char memory_type_name[][13] = {
+diff --git a/arch/powerpc/kernel/interrupt_64.S b/arch/powerpc/kernel/interrupt_64.S
+index 4b1ff94e67eb4..4c6d1a8dcefed 100644
+--- a/arch/powerpc/kernel/interrupt_64.S
++++ b/arch/powerpc/kernel/interrupt_64.S
+@@ -30,6 +30,7 @@ COMPAT_SYS_CALL_TABLE:
+ 	.ifc \srr,srr
+ 	mfspr	r11,SPRN_SRR0
+ 	ld	r12,_NIP(r1)
++	clrrdi  r11,r11,2
+ 	clrrdi  r12,r12,2
+ 100:	tdne	r11,r12
+ 	EMIT_WARN_ENTRY 100b,__FILE__,__LINE__,(BUGFLAG_WARNING | BUGFLAG_ONCE)
+@@ -40,6 +41,7 @@ COMPAT_SYS_CALL_TABLE:
+ 	.else
+ 	mfspr	r11,SPRN_HSRR0
+ 	ld	r12,_NIP(r1)
++	clrrdi  r11,r11,2
+ 	clrrdi  r12,r12,2
+ 100:	tdne	r11,r12
+ 	EMIT_WARN_ENTRY 100b,__FILE__,__LINE__,(BUGFLAG_WARNING | BUGFLAG_ONCE)
+-- 
+2.34.1
+
 
 
