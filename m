@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F5B8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:20:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06E1AC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:20:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376698AbiAaLRj (ORCPT
+        id S1377210AbiAaLRu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:17:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44700 "EHLO
+        Mon, 31 Jan 2022 06:17:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377339AbiAaLJ4 (ORCPT
+        with ESMTP id S1377479AbiAaLKD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:09:56 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 067CEC0604E0;
-        Mon, 31 Jan 2022 03:07:30 -0800 (PST)
+        Mon, 31 Jan 2022 06:10:03 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DCD2C07979B;
+        Mon, 31 Jan 2022 03:07:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C7A4CB82A4C;
-        Mon, 31 Jan 2022 11:07:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3629BC340E8;
-        Mon, 31 Jan 2022 11:07:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3EAB36114D;
+        Mon, 31 Jan 2022 11:07:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25739C340E8;
+        Mon, 31 Jan 2022 11:07:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627247;
-        bh=XTiNRiSpdrowXkzNzt99tXFrwJBo1Cq2cpbupHezkeg=;
+        s=korg; t=1643627262;
+        bh=gurpRK8pRh//+KMIzS4LXQmB8sq083h/1t9ww78Celw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Jb4ub5SfZVn9BIubNNc+HdRxBbaLE1HuEF2pVTxaC+eYBWm5XP5uTjUEICxZW5F8K
-         tcIdEX7SqY0G/Jj0kg8AJEewiGzZJQO8ka53hOZ4/p7GfxkTvR3Kv0Sn8wK/ZZbmqx
-         vMuXqu49Au2kK1e1Iz3OLaOtPwx4cQ/qJZ6OJBms=
+        b=a69CZ1GklbPuT54r+Jhsn1Y6MTwC7ZtMRiBXvjYm9VznjVakCV8taKfbiuUKYd6wy
+         PpVn2F1btJz3wijjNORzh3zJP7w3N/Wj4sd8BtU2pbMz8VVKiKKDupA2RFDmhJnLv7
+         +VPYbMNteUdu6BgRqaCLRNm9Z1HsP6wHpMLzQoPU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaoke Wang <xkernel.wang@foxmail.com>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.15 021/171] tracing/histogram: Fix a potential memory leak for kstrdup()
-Date:   Mon, 31 Jan 2022 11:54:46 +0100
-Message-Id: <20220131105230.739166002@linuxfoundation.org>
+        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Subject: [PATCH 5.15 005/171] ARM: 9179/1: uaccess: avoid alignment faults in copy_[from|to]_kernel_nofault
+Date:   Mon, 31 Jan 2022 11:54:30 +0100
+Message-Id: <20220131105230.151611980@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
 References: <20220131105229.959216821@linuxfoundation.org>
@@ -49,37 +50,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+From: Ard Biesheuvel <ardb@kernel.org>
 
-commit e629e7b525a179e29d53463d992bdee759c950fb upstream.
+commit 15420269b02a63ed8c1841905d8b8b2403246004 upstream.
 
-kfree() is missing on an error path to free the memory allocated by
-kstrdup():
+The helpers that are used to implement copy_from_kernel_nofault() and
+copy_to_kernel_nofault() cast a void* to a pointer to a wider type,
+which may result in alignment faults on ARM if the compiler decides to
+use double-word or multiple-word load/store instructions.
 
-  p = param = kstrdup(data->params[i], GFP_KERNEL);
+Only configurations that define CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS=y
+are affected, given that commit 2423de2e6f4d ("ARM: 9115/1: mm/maccess:
+fix unaligned copy_{from,to}_kernel_nofault") ensures that dst and src
+are sufficiently aligned otherwise.
 
-So it is better to free it via kfree(p).
+So use the unaligned accessors for accessing dst and src in cases where
+they may be misaligned.
 
-Link: https://lkml.kernel.org/r/tencent_C52895FD37802832A3E5B272D05008866F0A@qq.com
-
-Cc: stable@vger.kernel.org
-Fixes: d380dcde9a07c ("tracing: Fix now invalid var_ref_vals assumption in trace action")
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Cc: <stable@vger.kernel.org> # depends on 2423de2e6f4d
+Fixes: 2df4c9a741a0 ("ARM: 9112/1: uaccess: add __{get,put}_kernel_nofault")
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/trace/trace_events_hist.c |    1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/include/asm/uaccess.h |   10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
---- a/kernel/trace/trace_events_hist.c
-+++ b/kernel/trace/trace_events_hist.c
-@@ -3581,6 +3581,7 @@ static int trace_action_create(struct hi
+--- a/arch/arm/include/asm/uaccess.h
++++ b/arch/arm/include/asm/uaccess.h
+@@ -11,6 +11,7 @@
+ #include <linux/string.h>
+ #include <asm/memory.h>
+ #include <asm/domain.h>
++#include <asm/unaligned.h>
+ #include <asm/unified.h>
+ #include <asm/compiler.h>
  
- 			var_ref_idx = find_var_ref_idx(hist_data, var_ref);
- 			if (WARN_ON(var_ref_idx < 0)) {
-+				kfree(p);
- 				ret = var_ref_idx;
- 				goto err;
- 			}
+@@ -497,7 +498,10 @@ do {									\
+ 	}								\
+ 	default: __err = __get_user_bad(); break;			\
+ 	}								\
+-	*(type *)(dst) = __val;						\
++	if (IS_ENABLED(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS))		\
++		put_unaligned(__val, (type *)(dst));			\
++	else								\
++		*(type *)(dst) = __val; /* aligned by caller */		\
+ 	if (__err)							\
+ 		goto err_label;						\
+ } while (0)
+@@ -507,7 +511,9 @@ do {									\
+ 	const type *__pk_ptr = (dst);					\
+ 	unsigned long __dst = (unsigned long)__pk_ptr;			\
+ 	int __err = 0;							\
+-	type __val = *(type *)src;					\
++	type __val = IS_ENABLED(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS)	\
++		     ? get_unaligned((type *)(src))			\
++		     : *(type *)(src);	/* aligned by caller */		\
+ 	switch (sizeof(type)) {						\
+ 	case 1: __put_user_asm_byte(__val, __dst, __err, ""); break;	\
+ 	case 2:	__put_user_asm_half(__val, __dst, __err, ""); break;	\
 
 
