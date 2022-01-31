@@ -2,188 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31524C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 07:17:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40287C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 07:18:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357894AbiAaHRD (ORCPT
+        id S1357895AbiAaHSM convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 02:17:03 -0500
-Received: from m43-7.mailgun.net ([69.72.43.7]:64269 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242021AbiAaHQ5 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 02:16:57 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1643613417; h=Message-Id: Date: Subject: Cc: To: From:
- Sender; bh=fAF4RUanAymGBY1R99T3dcm3q68uxZwCLqf/mQJa+u8=; b=Y4WtT5kO4ex0vjt5stHDgnOr1Td5TqraYc23pm0raTuS2yhik62qGrBwNJyBX1i/luNf+Wau
- oQGE3F+4rs/qSIZMkJIEKiAWzRNPNw3fJaamIvlZXdxhzZkeUKi5Y+8FqxIFviYLFa751K3K
- 2pA5uXNfsBBqg3/WI971kstlffY=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyI0MWYwYSIsICJsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n04.prod.us-east-1.postgun.com with SMTP id
- 61f78bfed9d8618172194a2f (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 31 Jan 2022 07:13:02
- GMT
-Sender: quic_vjitta=quicinc.com@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 275A8C4361A; Mon, 31 Jan 2022 07:13:02 +0000 (UTC)
-Received: from vjitta-linux.qualcomm.com (unknown [202.46.22.19])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: vjitta)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 06BBEC4360C;
-        Mon, 31 Jan 2022 07:12:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 06BBEC4360C
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=fail (p=none dis=none) header.from=quicinc.com
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=quicinc.com
-From:   Vijayanand Jitta <quic_vjitta@quicinc.com>
-To:     robin.murphy@arm.com, joro@8bytes.org, will@kernel.org,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Cc:     kernel-team@android.com, vjitta@codeaurora.org,
-        Vijayanand Jitta <quic_vjitta@quicinc.com>
-Subject: [REPOST PATCH v4] iommu: Fix potential use-after-free during probe
-Date:   Mon, 31 Jan 2022 12:42:35 +0530
-Message-Id: <1643613155-20215-1-git-send-email-quic_vjitta@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Mon, 31 Jan 2022 02:18:12 -0500
+Received: from mail-eopbgr120088.outbound.protection.outlook.com ([40.107.12.88]:9682
+        "EHLO FRA01-PR2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1357910AbiAaHSA (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 02:18:00 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gQdDAbkRbcQtUChbdtriUZfD15FnuH4Thx5jQwg6Md1PmaSzyqHhgvgzMRoJ7DhycYThMO8PBbw0ojh/3ug8LSt6CrdjzFPpbYhVMh6gmsrOS0Zg79pwSvZghnnrPl+wM9RbBIpfNHc46DpGegPtQdLt6j+6Es7F4ZuflvvMrFUV8wyLhVEOEBjo+R1TsHg1uT/eT2tHLvY7AYUnAtqUUyLtVa+bTEoJ+5UC2vWywMesqnC78yDw0tY8vvo5pz0npScbjKiFSavHOOxTf8ZfKyLQrX0hS4f2+j5Q7hsZSBcOTklBuOHD5eho1ORV6EBmRJ6TPqNByaGTCYWvetfCzA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=lJG3DgFv/NDxpD8CaNquM9Ea9I89hzj51sPkoqNM/IU=;
+ b=k0f6bdqDqWyOM8wFxur1KPXEFog0XelKIj12sDO2wudONAY4Nut++fcY9URVfQi3ZXZeEJwFZMxjqFxALfbQWQ9ODWH/OaHY3M23tqnPZhyrInG8s2LcOFHm5Gx1LHxWe+yedDqm7OqEZrpaXXaJnDV5kCsbdGwg3oxDmGW38PAWmewx4FJKfz9pKx6upBIWFm8lHxQMPUiC1Hgthiyi2ILhDuuBPiwp0tEpYPAuWqwci15v9jgxcMtWT8oqidEg2ex7vUHMBKJrP7/q382DQ/TpN2R5C8grjf4ipeHKImfIGGzBdDTTJ30EWWQd/63KzAdFw72ek1fM3ahrZD3Vvg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:31::15)
+ by MR1P264MB3220.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:3d::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.17; Mon, 31 Jan
+ 2022 07:17:57 +0000
+Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+ ([fe80::c9a2:1db0:5469:54e1]) by MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+ ([fe80::c9a2:1db0:5469:54e1%6]) with mapi id 15.20.4930.020; Mon, 31 Jan 2022
+ 07:17:57 +0000
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>
+CC:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>
+Subject: [PATCH] powerpc/603: Clear C bit when PTE is read only
+Thread-Topic: [PATCH] powerpc/603: Clear C bit when PTE is read only
+Thread-Index: AQHYFnKrmk31jqOgQkKbAto8DRD6Gg==
+Date:   Mon, 31 Jan 2022 07:17:57 +0000
+Message-ID: <bbb13848ff0100a76ee9ea95118058c30ae95f2c.1643613343.git.christophe.leroy@csgroup.eu>
+Accept-Language: fr-FR, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=csgroup.eu;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 9e3e7d6b-3064-4e12-cda0-08d9e489ce50
+x-ms-traffictypediagnostic: MR1P264MB3220:EE_
+x-microsoft-antispam-prvs: <MR1P264MB3220E170C602944731045CAAED259@MR1P264MB3220.FRAP264.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:212;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: oFnEzmvksO6MFFsGuHN4B23EpqRfJDt4DDN/6vYfShtG/sHUe77sQON4ATM41WGaUhCa7fGlnOufusB3YQ3GgLNQBraa86nMajA0+k5X48ujAFhYtfuXnSawOI3CSv2MBgUzvWrYMBXEuFW0se2iutSs0Me1RWI+vAOPy/nhX6UApkUVsuSenxTah0FBxKozrpfUbA1o0KsAV7C02NRsrqcnc8iKgSnOL5dXLdD3W2XizaGPvr6TTv/KuJ2ozt0HwPRgDk13sgkhfDu4Te91MW2Ms4NXfdM7HHycXxMB8+VZj1SfZIXwZp3JtGSVQ5dGs31dC4/6g+G/C3IU/R5kx346kbG5BfoK6Sz0bKIsb+sZIP+2dkA7Ia1DQ7ufaMqJNONFaYEaQw0z2wuwh3SuAlSeuiHAWSzWePVF47XqyG8kmS2K5nByHNgjbGOroghndVwh1KHu4Y4S6KZzGE7ScYdozEEF2VytNm2TW5slYEChtWP/pNvrWPvhK3Dp2YqVJ9XnSqwraWnqWlX6yUgFTUvENhyaAaSzgstJ6xUhvkJpjoUTE35YBKYAjf8ON8yanrVbh1ENoojbH6SeMa21Q+L4BlnyNd9tJgowkK4SifRQrMPPSX01kdB1Hh3m3GcnLoDawP8k2bXjw8UdaNzFUvLrcs+T4+PKXXf8ZCAL5qwnW4N++O0w4ya+GqwuRpi6B5mk9/9ZZFfiHMpYDo0dFg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(38070700005)(110136005)(54906003)(6486002)(316002)(122000001)(5660300002)(86362001)(44832011)(91956017)(38100700002)(2616005)(66946007)(76116006)(64756008)(66556008)(66476007)(66446008)(8936002)(8676002)(4326008)(2906002)(508600001)(186003)(26005)(36756003)(6506007)(71200400001)(6512007)(20210929001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?22+spF6mqYFOXx0tMmWF+D3avWicWxu+uhqKh9rmfZEaMBICWaWYrc08xH?=
+ =?iso-8859-1?Q?qH4igFzzlOQYhRDE++hcRRVVPf2OPZlN26gHK9FC6N4z6jJs/ipcd7DP2v?=
+ =?iso-8859-1?Q?o0oQFJbXgy81dgcy3MzhjTpeK3cBI1PqFELqNjl4GuULsbYk4kIWwV1oDc?=
+ =?iso-8859-1?Q?PhtGU2mAfYdE8htnb7tze5gnPZ0S5WbyA9Cx0mynKGraO4T1j9EKeZWxNR?=
+ =?iso-8859-1?Q?85BVdRK3l3bIPpe6sdS+VQit0s4PyVr1RPbHsAXwqUlfJLenYucvHKmsL5?=
+ =?iso-8859-1?Q?rXcux1Zfr4yQf5t5iC/16OVXdGFoCL8WpEVHbxvXuXfTn/irhG7AdvMsJr?=
+ =?iso-8859-1?Q?B63QDGpeLO3yyT8KPFwuppujEGpldCMffNQ16bNAqvQ9XyiVDv+HiGmKHC?=
+ =?iso-8859-1?Q?TQ0C8fGxtu6jBy0b5yHtHU6d26FYgETuPkJna4cc6DGKbcoIqDUE882bFD?=
+ =?iso-8859-1?Q?nF5DY9hbucoJ3zY4PIJr6j3IZKn319oA0/73PPZurw+jvGveCYexlHdA2r?=
+ =?iso-8859-1?Q?+ASuClx+ZD3UBH6OEbDwTVL9VXEOnvMjIY3D5nwrXl+1e/8kPjcv8xqCbf?=
+ =?iso-8859-1?Q?FV9KfHnhtxdXT8pM/fZeYNypS3adBypzH2b7kEqM3Q0+y6YJhC3PiPG96V?=
+ =?iso-8859-1?Q?D0VZj2zIzxfe3/goV7gPMJhnyrUCfKmNBpFP9LgyN7GKUJAIFMgRtVXzGZ?=
+ =?iso-8859-1?Q?4V/9hg7oWJuYy6YXVFFTfu9ie0+FDq9WWgaPsHfu9OEXOug+kmYfU88PAk?=
+ =?iso-8859-1?Q?KD9jP2dhnpwnip8rAumgFYHL4192Qj+X4k9Ile7oG/PKGy9ceGL3jtfMqF?=
+ =?iso-8859-1?Q?/Jms5ucH4wNzT2qDjnOBMTf2XCpzeYAf3XMHfnoJXIBjGu/kA5HqV9x7GJ?=
+ =?iso-8859-1?Q?vuirA1i3f7n3bE9DU86By9mQBpu52x9XN0fyFnxOisak6xVj17DUvfHhvA?=
+ =?iso-8859-1?Q?nA7srnMivGLTXDqE3ENL/Jj+Dl/ZWnxlzBrzK0bZBvPGA9DBNOvknfjRp7?=
+ =?iso-8859-1?Q?hfDlji7Rd3nlZSZ15bU8WGCCrDfiG3VjQe0Ne7nhpIVJmOrwHt8OkLdlip?=
+ =?iso-8859-1?Q?3WQo2i29t7WtlsbLTT/j+oMIfQ1hu6oso4RTNzYyzsGy96hZKTqXT/oE2a?=
+ =?iso-8859-1?Q?h+y51ekN5oaS40NMNe7ORXdTq3oTwSA8Tr7XrKcS9QtbgdwU/eZAAk0pPS?=
+ =?iso-8859-1?Q?Uu48uC1P44vXSyhdb8eitB+51SHaVFDpMq/mPUuxbz93DaLB9YJmLs2Yju?=
+ =?iso-8859-1?Q?y9NRzom0myYPabZ6W/1m00Jh/X60Se6BJA3C1rS4dB7sqku1kNa6y5X8pK?=
+ =?iso-8859-1?Q?CzSEZZl/8n81rTuqc4ngyB0wkELhqEryuzjzfi9X+xYsyGpbgu13LOrafO?=
+ =?iso-8859-1?Q?YnFOD2RepEU8Q4o5S4JkfiyRggPQabJ+6885Tg2jA/Sr1YqwmqjU/kwtAr?=
+ =?iso-8859-1?Q?WTodRWWhxMx/5xs/rhkJ5VB/O44QzKLEYCJswr8Cpze+8WM4hwVmMaPe8k?=
+ =?iso-8859-1?Q?+wVbDsE8rBOr7YBeUNry3wNjhiUifsgSjwXiqJG4grAaSdEqeLklDhfPZv?=
+ =?iso-8859-1?Q?aDiv82a54SIoOk/FDerqDCTNAnSl8e/SVrvco41rcYLiLGKpRc8woGR01u?=
+ =?iso-8859-1?Q?g9Cssmy3d1q5k0TsY7tyMyrJKe602BBzBjhb8yy+IXQ8IdSKOPInLid/Iw?=
+ =?iso-8859-1?Q?4VuSWd4PGeQjtjOF5EwIBy8ROU9sO+gIJsIdNGRdX0lTNfQ5o/7c2+RTr1?=
+ =?iso-8859-1?Q?H2d70RNcCqUoXppdS+Qo0+9fM=3D?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 8BIT
+MIME-Version: 1.0
+X-OriginatorOrg: csgroup.eu
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9e3e7d6b-3064-4e12-cda0-08d9e489ce50
+X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Jan 2022 07:17:57.2221
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 9914def7-b676-4fda-8815-5d49fb3b45c8
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 9MznOOP2C12ZocoGTwPxF7GtVHpexHTT7LJowerjlkFKtVsHASS64xQVCER0Gn50JfyZWmyj7ZxQyRWA2M/Km+BccRVJbtn1gb+a8OpRDYw=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MR1P264MB3220
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Kasan has reported the following use after free on dev->iommu.
-when a device probe fails and it is in process of freeing dev->iommu
-in dev_iommu_free function, a deferred_probe_work_func runs in parallel
-and tries to access dev->iommu->fwspec in of_iommu_configure path thus
-causing use after free.
+On book3s/32 MMU, PP bits don't offer kernel RO protection,
+kernel pages are always RW.
 
-BUG: KASAN: use-after-free in of_iommu_configure+0xb4/0x4a4
-Read of size 8 at addr ffffff87a2f1acb8 by task kworker/u16:2/153
+However, on the 603 a page fault is always generated when the
+C bit (change bit = dirty bit) is not set.
 
-Workqueue: events_unbound deferred_probe_work_func
-Call trace:
- dump_backtrace+0x0/0x33c
- show_stack+0x18/0x24
- dump_stack_lvl+0x16c/0x1e0
- print_address_description+0x84/0x39c
- __kasan_report+0x184/0x308
- kasan_report+0x50/0x78
- __asan_load8+0xc0/0xc4
- of_iommu_configure+0xb4/0x4a4
- of_dma_configure_id+0x2fc/0x4d4
- platform_dma_configure+0x40/0x5c
- really_probe+0x1b4/0xb74
- driver_probe_device+0x11c/0x228
- __device_attach_driver+0x14c/0x304
- bus_for_each_drv+0x124/0x1b0
- __device_attach+0x25c/0x334
- device_initial_probe+0x24/0x34
- bus_probe_device+0x78/0x134
- deferred_probe_work_func+0x130/0x1a8
- process_one_work+0x4c8/0x970
- worker_thread+0x5c8/0xaec
- kthread+0x1f8/0x220
- ret_from_fork+0x10/0x18
+Enforce kernel RO protection by clearing C bit in TLB miss
+handler when the page doesn't have _PAGE_RW flag.
 
-Allocated by task 1:
- ____kasan_kmalloc+0xd4/0x114
- __kasan_kmalloc+0x10/0x1c
- kmem_cache_alloc_trace+0xe4/0x3d4
- __iommu_probe_device+0x90/0x394
- probe_iommu_group+0x70/0x9c
- bus_for_each_dev+0x11c/0x19c
- bus_iommu_probe+0xb8/0x7d4
- bus_set_iommu+0xcc/0x13c
- arm_smmu_bus_init+0x44/0x130 [arm_smmu]
- arm_smmu_device_probe+0xb88/0xc54 [arm_smmu]
- platform_drv_probe+0xe4/0x13c
- really_probe+0x2c8/0xb74
- driver_probe_device+0x11c/0x228
- device_driver_attach+0xf0/0x16c
- __driver_attach+0x80/0x320
- bus_for_each_dev+0x11c/0x19c
- driver_attach+0x38/0x48
- bus_add_driver+0x1dc/0x3a4
- driver_register+0x18c/0x244
- __platform_driver_register+0x88/0x9c
- init_module+0x64/0xff4 [arm_smmu]
- do_one_initcall+0x17c/0x2f0
- do_init_module+0xe8/0x378
- load_module+0x3f80/0x4a40
- __se_sys_finit_module+0x1a0/0x1e4
- __arm64_sys_finit_module+0x44/0x58
- el0_svc_common+0x100/0x264
- do_el0_svc+0x38/0xa4
- el0_svc+0x20/0x30
- el0_sync_handler+0x68/0xac
- el0_sync+0x160/0x180
-
-Freed by task 1:
- kasan_set_track+0x4c/0x84
- kasan_set_free_info+0x28/0x4c
- ____kasan_slab_free+0x120/0x15c
- __kasan_slab_free+0x18/0x28
- slab_free_freelist_hook+0x204/0x2fc
- kfree+0xfc/0x3a4
- __iommu_probe_device+0x284/0x394
- probe_iommu_group+0x70/0x9c
- bus_for_each_dev+0x11c/0x19c
- bus_iommu_probe+0xb8/0x7d4
- bus_set_iommu+0xcc/0x13c
- arm_smmu_bus_init+0x44/0x130 [arm_smmu]
- arm_smmu_device_probe+0xb88/0xc54 [arm_smmu]
- platform_drv_probe+0xe4/0x13c
- really_probe+0x2c8/0xb74
- driver_probe_device+0x11c/0x228
- device_driver_attach+0xf0/0x16c
- __driver_attach+0x80/0x320
- bus_for_each_dev+0x11c/0x19c
- driver_attach+0x38/0x48
- bus_add_driver+0x1dc/0x3a4
- driver_register+0x18c/0x244
- __platform_driver_register+0x88/0x9c
- init_module+0x64/0xff4 [arm_smmu]
- do_one_initcall+0x17c/0x2f0
- do_init_module+0xe8/0x378
- load_module+0x3f80/0x4a40
- __se_sys_finit_module+0x1a0/0x1e4
- __arm64_sys_finit_module+0x44/0x58
- el0_svc_common+0x100/0x264
- do_el0_svc+0x38/0xa4
- el0_svc+0x20/0x30
- el0_sync_handler+0x68/0xac
- el0_sync+0x160/0x180
-
-Fix this by setting dev->iommu to NULL first and
-then freeing dev_iommu structure in dev_iommu_free
-function.
-
-Suggested-by: Robin Murphy <robin.murphy@arm.com>
-Signed-off-by: Vijayanand Jitta <quic_vjitta@quicinc.com>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 ---
- drivers/iommu/iommu.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ arch/powerpc/kernel/head_book3s_32.S | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index d410311..1d320ee 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -186,9 +186,14 @@ static struct dev_iommu *dev_iommu_get(struct device *dev)
- 
- static void dev_iommu_free(struct device *dev)
- {
--	iommu_fwspec_free(dev);
--	kfree(dev->iommu);
-+	struct dev_iommu *param = dev->iommu;
-+
- 	dev->iommu = NULL;
-+	if (param->fwspec) {
-+		fwnode_handle_put(param->fwspec->iommu_fwnode);
-+		kfree(param->fwspec);
-+	}
-+	kfree(param);
- }
- 
- static int __iommu_probe_device(struct device *dev, struct list_head *group_list)
+diff --git a/arch/powerpc/kernel/head_book3s_32.S b/arch/powerpc/kernel/head_book3s_32.S
+index 7f4f3a52b730..6c739beb938c 100644
+--- a/arch/powerpc/kernel/head_book3s_32.S
++++ b/arch/powerpc/kernel/head_book3s_32.S
+@@ -504,7 +504,9 @@ DataLoadTLBMiss:
+ 	/* Convert linux-style PTE to low word of PPC-style PTE */
+ 	rlwinm	r1,r0,32-9,30,30	/* _PAGE_RW -> PP msb */
+ 	rlwimi	r0,r0,32-1,30,30	/* _PAGE_USER -> PP msb */
++	rlwimi	r1,r0,32-3,24,24	/* _PAGE_RW -> _PAGE_DIRTY */
+ 	rlwimi	r0,r0,32-1,31,31	/* _PAGE_USER -> PP lsb */
++	xori	r1,r1,_PAGE_DIRTY	/* clear dirty when not rw */
+ 	ori	r1,r1,0xe04		/* clear out reserved bits */
+ 	andc	r1,r0,r1		/* PP = user? rw? 1: 3: 0 */
+ BEGIN_FTR_SECTION
 -- 
-2.7.4
-
+2.33.1
