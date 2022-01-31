@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92279C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 10:59:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 852DCC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 10:59:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358416AbiAaK7i (ORCPT
+        id S1358433AbiAaK7l (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 05:59:38 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:59852 "EHLO
+        Mon, 31 Jan 2022 05:59:41 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:59948 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243806AbiAaK6i (ORCPT
+        with ESMTP id S1348439AbiAaK6t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 05:58:38 -0500
+        Mon, 31 Jan 2022 05:58:49 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6DA7660B3A;
-        Mon, 31 Jan 2022 10:58:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CFC8C340E8;
-        Mon, 31 Jan 2022 10:58:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D2AE60A75;
+        Mon, 31 Jan 2022 10:58:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44F9AC340E8;
+        Mon, 31 Jan 2022 10:58:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643626716;
-        bh=p9gzYhntkEFFU0kZCVkx2X3WS7L38CrCbtyOn9AY4Z0=;
+        s=korg; t=1643626728;
+        bh=AzLDUvZKhjiXaHSVxJMEYJZbDTq15sluSU36IrxlWDQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0VYZk5nzENTdSbFkc451NuOb7/3bwSoOiTPhkF20IFljlh3mmVVQzyG1lAoQPgPPJ
-         sC3WubN2iH8k96NlMLM9c9CFd6suIrymcLhEFIu/uKgkTgrKBx6EQHkmWn1RlaYtCO
-         eGcK9z1ibWQNtpu4gTtRmQmA1mY/04HWSChSi8ss=
+        b=f/rJtIeD1Oa/9VgwhXeh2V+NcK3KCLNjClE2oFdxJDvh5gtU9bv5snb9WDmMqULrs
+         szMd1b6pPOs6hoWSF18mKW3DZL59HL/SvedysRWhyzTxHMKrqmR1G0iVqJg7Vq8pZp
+         7HkOsayJFzbiYZFS1rVL2PiL2LWrf1qYj3aAwgiw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, DocMAX <mail@vacharakis.de>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        =?UTF-8?q?Thomas=20Wei=C3=9Fschuh?= <linux@weissschuh.net>
-Subject: [PATCH 5.4 17/64] usb-storage: Add unusual-devs entry for VL817 USB-SATA bridge
-Date:   Mon, 31 Jan 2022 11:56:02 +0100
-Message-Id: <20220131105216.243192293@linuxfoundation.org>
+        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        syzbot+76629376e06e2c2ad626@syzkaller.appspotmail.com
+Subject: [PATCH 5.4 20/64] USB: core: Fix hang in usb_kill_urb by adding memory barriers
+Date:   Mon, 31 Jan 2022 11:56:05 +0100
+Message-Id: <20220131105216.343049836@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105215.644174521@linuxfoundation.org>
 References: <20220131105215.644174521@linuxfoundation.org>
@@ -49,54 +48,126 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Alan Stern <stern@rowland.harvard.edu>
 
-commit 5b67b315037250a61861119683e7fcb509deea25 upstream.
+commit 26fbe9772b8c459687930511444ce443011f86bf upstream.
 
-Two people have reported (and mentioned numerous other reports on the
-web) that VIA's VL817 USB-SATA bridge does not work with the uas
-driver.  Typical log messages are:
+The syzbot fuzzer has identified a bug in which processes hang waiting
+for usb_kill_urb() to return.  It turns out the issue is not unlinking
+the URB; that works just fine.  Rather, the problem arises when the
+wakeup notification that the URB has completed is not received.
 
-[ 3606.232149] sd 14:0:0:0: [sdg] tag#2 uas_zap_pending 0 uas-tag 1 inflight: CMD
-[ 3606.232154] sd 14:0:0:0: [sdg] tag#2 CDB: Write(16) 8a 00 00 00 00 00 18 0c c9 80 00 00 00 80 00 00
-[ 3606.306257] usb 4-4.4: reset SuperSpeed Plus Gen 2x1 USB device number 11 using xhci_hcd
-[ 3606.328584] scsi host14: uas_eh_device_reset_handler success
+The reason is memory-access ordering on SMP systems.  In outline form,
+usb_kill_urb() and __usb_hcd_giveback_urb() operating concurrently on
+different CPUs perform the following actions:
 
-Surprisingly, the devices do seem to work okay for some other people.
-The cause of the differing behaviors is not known.
+CPU 0					CPU 1
+----------------------------		---------------------------------
+usb_kill_urb():				__usb_hcd_giveback_urb():
+  ...					  ...
+  atomic_inc(&urb->reject);		  atomic_dec(&urb->use_count);
+  ...					  ...
+  wait_event(usb_kill_urb_queue,
+	atomic_read(&urb->use_count) == 0);
+					  if (atomic_read(&urb->reject))
+						wake_up(&usb_kill_urb_queue);
 
-In the hope of getting the devices to work for the most users, even at
-the possible cost of degraded performance for some, this patch adds an
-unusual_devs entry for the VL817 to block it from binding to the uas
-driver by default.  Users will be able to override this entry by means
-of a module parameter, if they want.
+Confining your attention to urb->reject and urb->use_count, you can
+see that the overall pattern of accesses on CPU 0 is:
+
+	write urb->reject, then read urb->use_count;
+
+whereas the overall pattern of accesses on CPU 1 is:
+
+	write urb->use_count, then read urb->reject.
+
+This pattern is referred to in memory-model circles as SB (for "Store
+Buffering"), and it is well known that without suitable enforcement of
+the desired order of accesses -- in the form of memory barriers -- it
+is entirely possible for one or both CPUs to execute their reads ahead
+of their writes.  The end result will be that sometimes CPU 0 sees the
+old un-decremented value of urb->use_count while CPU 1 sees the old
+un-incremented value of urb->reject.  Consequently CPU 0 ends up on
+the wait queue and never gets woken up, leading to the observed hang
+in usb_kill_urb().
+
+The same pattern of accesses occurs in usb_poison_urb() and the
+failure pathway of usb_hcd_submit_urb().
+
+The problem is fixed by adding suitable memory barriers.  To provide
+proper memory-access ordering in the SB pattern, a full barrier is
+required on both CPUs.  The atomic_inc() and atomic_dec() accesses
+themselves don't provide any memory ordering, but since they are
+present, we can use the optimized smp_mb__after_atomic() memory
+barrier in the various routines to obtain the desired effect.
+
+This patch adds the necessary memory barriers.
 
 CC: <stable@vger.kernel.org>
-Reported-by: DocMAX <mail@vacharakis.de>
-Reported-and-tested-by: Thomas Weißschuh <linux@weissschuh.net>
+Reported-and-tested-by: syzbot+76629376e06e2c2ad626@syzkaller.appspotmail.com
 Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
-Link: https://lore.kernel.org/r/Ye8IsK2sjlEv1rqU@rowland.harvard.edu
+Link: https://lore.kernel.org/r/Ye8K0QYee0Q0Nna2@rowland.harvard.edu
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/storage/unusual_devs.h |   10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/usb/core/hcd.c |   14 ++++++++++++++
+ drivers/usb/core/urb.c |   12 ++++++++++++
+ 2 files changed, 26 insertions(+)
 
---- a/drivers/usb/storage/unusual_devs.h
-+++ b/drivers/usb/storage/unusual_devs.h
-@@ -2301,6 +2301,16 @@ UNUSUAL_DEV(  0x2027, 0xa001, 0x0000, 0x
- 		USB_SC_DEVICE, USB_PR_DEVICE, usb_stor_euscsi_init,
- 		US_FL_SCM_MULT_TARG ),
- 
-+/*
-+ * Reported by DocMAX <mail@vacharakis.de>
-+ * and Thomas Weißschuh <linux@weissschuh.net>
-+ */
-+UNUSUAL_DEV( 0x2109, 0x0715, 0x9999, 0x9999,
-+		"VIA Labs, Inc.",
-+		"VL817 SATA Bridge",
-+		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
-+		US_FL_IGNORE_UAS),
+--- a/drivers/usb/core/hcd.c
++++ b/drivers/usb/core/hcd.c
+@@ -1567,6 +1567,13 @@ int usb_hcd_submit_urb (struct urb *urb,
+ 		urb->hcpriv = NULL;
+ 		INIT_LIST_HEAD(&urb->urb_list);
+ 		atomic_dec(&urb->use_count);
++		/*
++		 * Order the write of urb->use_count above before the read
++		 * of urb->reject below.  Pairs with the memory barriers in
++		 * usb_kill_urb() and usb_poison_urb().
++		 */
++		smp_mb__after_atomic();
 +
- UNUSUAL_DEV( 0x2116, 0x0320, 0x0001, 0x0001,
- 		"ST",
- 		"2A",
+ 		atomic_dec(&urb->dev->urbnum);
+ 		if (atomic_read(&urb->reject))
+ 			wake_up(&usb_kill_urb_queue);
+@@ -1662,6 +1669,13 @@ static void __usb_hcd_giveback_urb(struc
+ 
+ 	usb_anchor_resume_wakeups(anchor);
+ 	atomic_dec(&urb->use_count);
++	/*
++	 * Order the write of urb->use_count above before the read
++	 * of urb->reject below.  Pairs with the memory barriers in
++	 * usb_kill_urb() and usb_poison_urb().
++	 */
++	smp_mb__after_atomic();
++
+ 	if (unlikely(atomic_read(&urb->reject)))
+ 		wake_up(&usb_kill_urb_queue);
+ 	usb_put_urb(urb);
+--- a/drivers/usb/core/urb.c
++++ b/drivers/usb/core/urb.c
+@@ -691,6 +691,12 @@ void usb_kill_urb(struct urb *urb)
+ 	if (!(urb && urb->dev && urb->ep))
+ 		return;
+ 	atomic_inc(&urb->reject);
++	/*
++	 * Order the write of urb->reject above before the read
++	 * of urb->use_count below.  Pairs with the barriers in
++	 * __usb_hcd_giveback_urb() and usb_hcd_submit_urb().
++	 */
++	smp_mb__after_atomic();
+ 
+ 	usb_hcd_unlink_urb(urb, -ENOENT);
+ 	wait_event(usb_kill_urb_queue, atomic_read(&urb->use_count) == 0);
+@@ -732,6 +738,12 @@ void usb_poison_urb(struct urb *urb)
+ 	if (!urb)
+ 		return;
+ 	atomic_inc(&urb->reject);
++	/*
++	 * Order the write of urb->reject above before the read
++	 * of urb->use_count below.  Pairs with the barriers in
++	 * __usb_hcd_giveback_urb() and usb_hcd_submit_urb().
++	 */
++	smp_mb__after_atomic();
+ 
+ 	if (!urb->dev || !urb->ep)
+ 		return;
 
 
