@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0A8BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C9C1C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379014AbiAaL3n (ORCPT
+        id S1379149AbiAaL3v (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:29:43 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:52264 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378455AbiAaLUM (ORCPT
+        Mon, 31 Jan 2022 06:29:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46960 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1378567AbiAaLUV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:20:12 -0500
+        Mon, 31 Jan 2022 06:20:21 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7972CC0604E0;
+        Mon, 31 Jan 2022 03:13:06 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E69560B98;
-        Mon, 31 Jan 2022 11:20:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB208C340E8;
-        Mon, 31 Jan 2022 11:20:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 423EFB82A68;
+        Mon, 31 Jan 2022 11:13:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A03CC340EF;
+        Mon, 31 Jan 2022 11:13:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643628011;
-        bh=kbjFMXoRMtc4U9Oa+ibffCyvoiXCyLaA/lmIK/CuFx0=;
+        s=korg; t=1643627584;
+        bh=sma2kF7fZ2hrPJD51josc/hmml8bvTprpLz0JUxpocc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0FC9zEGhXUmaHnAFAX6uWFkZobR9OAe23VyB6re/zbCN0FIvaEW0ssgz2sLLffB+b
-         297YJT4xsPJ9FkzEf3LckfdXg7KUIDyBBtvHnKyK0AiReD5gYzCX2ojeGTRXhMp9yL
-         awA7sm9+aZ1CseC8ok35J30lFqFeT/TN39sQaPI0=
+        b=xV/uhD06eMmvU/ablT9+I5JI/vi4qnaOnhsmbQpWLhC9BhKuJbvwz9z0A7zCHXyqm
+         4Dg8D94JQolJB+257sUBbII3agy6+CLkzZ9ZAiC8FloJ27vf+DoziEs7njoanaNcb7
+         IXgcP6YoY/JR+4a30Gol61mplXjYAqkHRQCjVTR8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Mike Snitzer <snitzer@redhat.com>, Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.16 063/200] block: add bio_start_io_acct_time() to control start_time
-Date:   Mon, 31 Jan 2022 11:55:26 +0100
-Message-Id: <20220131105235.695349937@linuxfoundation.org>
+        stable@vger.kernel.org, Dylan Yudaken <dylany@fb.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 130/171] io_uring: fix bug in slow unregistering of nodes
+Date:   Mon, 31 Jan 2022 11:56:35 +0100
+Message-Id: <20220131105234.408836669@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
-References: <20220131105233.561926043@linuxfoundation.org>
+In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
+References: <20220131105229.959216821@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,93 +49,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Snitzer <snitzer@redhat.com>
+From: Dylan Yudaken <dylany@fb.com>
 
-commit e45c47d1f94e0cc7b6b079fdb4bcce2995e2adc4 upstream.
+[ Upstream commit b36a2050040b2d839bdc044007cdd57101d7f881 ]
 
-bio_start_io_acct_time() interface is like bio_start_io_acct() that
-allows start_time to be passed in. This gives drivers the ability to
-defer starting accounting until after IO is issued (but possibily not
-entirely due to bio splitting).
+In some cases io_rsrc_ref_quiesce will call io_rsrc_node_switch_start,
+and then immediately flush the delayed work queue &ctx->rsrc_put_work.
 
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Mike Snitzer <snitzer@redhat.com>
-Link: https://lore.kernel.org/r/20220128155841.39644-2-snitzer@redhat.com
+However the percpu_ref_put does not immediately destroy the node, it
+will be called asynchronously via RCU. That ends up with
+io_rsrc_node_ref_zero only being called after rsrc_put_work has been
+flushed, and so the process ends up sleeping for 1 second unnecessarily.
+
+This patch executes the put code immediately if we are busy
+quiescing.
+
+Fixes: 4a38aed2a0a7 ("io_uring: batch reap of dead file registrations")
+Signed-off-by: Dylan Yudaken <dylany@fb.com>
+Link: https://lore.kernel.org/r/20220121123856.3557884-1-dylany@fb.com
 Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/blk-core.c       |   25 +++++++++++++++++++------
- include/linux/blkdev.h |    1 +
- 2 files changed, 20 insertions(+), 6 deletions(-)
+ fs/io_uring.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
---- a/block/blk-core.c
-+++ b/block/blk-core.c
-@@ -1258,22 +1258,34 @@ void __blk_account_io_start(struct reque
- }
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index f713b91537f41..993913c585fbf 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -7718,10 +7718,15 @@ static void io_rsrc_node_ref_zero(struct percpu_ref *ref)
+ 	struct io_ring_ctx *ctx = node->rsrc_data->ctx;
+ 	unsigned long flags;
+ 	bool first_add = false;
++	unsigned long delay = HZ;
  
- static unsigned long __part_start_io_acct(struct block_device *part,
--					  unsigned int sectors, unsigned int op)
-+					  unsigned int sectors, unsigned int op,
-+					  unsigned long start_time)
- {
- 	const int sgrp = op_stat_group(op);
--	unsigned long now = READ_ONCE(jiffies);
+ 	spin_lock_irqsave(&ctx->rsrc_ref_lock, flags);
+ 	node->done = true;
  
- 	part_stat_lock();
--	update_io_ticks(part, now, false);
-+	update_io_ticks(part, start_time, false);
- 	part_stat_inc(part, ios[sgrp]);
- 	part_stat_add(part, sectors[sgrp], sectors);
- 	part_stat_local_inc(part, in_flight[op_is_write(op)]);
- 	part_stat_unlock();
- 
--	return now;
-+	return start_time;
- }
- 
- /**
-+ * bio_start_io_acct_time - start I/O accounting for bio based drivers
-+ * @bio:	bio to start account for
-+ * @start_time:	start time that should be passed back to bio_end_io_acct().
-+ */
-+void bio_start_io_acct_time(struct bio *bio, unsigned long start_time)
-+{
-+	__part_start_io_acct(bio->bi_bdev, bio_sectors(bio),
-+			     bio_op(bio), start_time);
-+}
-+EXPORT_SYMBOL_GPL(bio_start_io_acct_time);
++	/* if we are mid-quiesce then do not delay */
++	if (node->rsrc_data->quiesce)
++		delay = 0;
 +
-+/**
-  * bio_start_io_acct - start I/O accounting for bio based drivers
-  * @bio:	bio to start account for
-  *
-@@ -1281,14 +1293,15 @@ static unsigned long __part_start_io_acc
-  */
- unsigned long bio_start_io_acct(struct bio *bio)
- {
--	return __part_start_io_acct(bio->bi_bdev, bio_sectors(bio), bio_op(bio));
-+	return __part_start_io_acct(bio->bi_bdev, bio_sectors(bio),
-+				    bio_op(bio), jiffies);
+ 	while (!list_empty(&ctx->rsrc_ref_list)) {
+ 		node = list_first_entry(&ctx->rsrc_ref_list,
+ 					    struct io_rsrc_node, node);
+@@ -7734,7 +7739,7 @@ static void io_rsrc_node_ref_zero(struct percpu_ref *ref)
+ 	spin_unlock_irqrestore(&ctx->rsrc_ref_lock, flags);
+ 
+ 	if (first_add)
+-		mod_delayed_work(system_wq, &ctx->rsrc_put_work, HZ);
++		mod_delayed_work(system_wq, &ctx->rsrc_put_work, delay);
  }
- EXPORT_SYMBOL_GPL(bio_start_io_acct);
  
- unsigned long disk_start_io_acct(struct gendisk *disk, unsigned int sectors,
- 				 unsigned int op)
- {
--	return __part_start_io_acct(disk->part0, sectors, op);
-+	return __part_start_io_acct(disk->part0, sectors, op, jiffies);
- }
- EXPORT_SYMBOL(disk_start_io_acct);
- 
---- a/include/linux/blkdev.h
-+++ b/include/linux/blkdev.h
-@@ -1254,6 +1254,7 @@ unsigned long disk_start_io_acct(struct
- void disk_end_io_acct(struct gendisk *disk, unsigned int op,
- 		unsigned long start_time);
- 
-+void bio_start_io_acct_time(struct bio *bio, unsigned long start_time);
- unsigned long bio_start_io_acct(struct bio *bio);
- void bio_end_io_acct_remapped(struct bio *bio, unsigned long start_time,
- 		struct block_device *orig_bdev);
+ static struct io_rsrc_node *io_rsrc_node_alloc(struct io_ring_ctx *ctx)
+-- 
+2.34.1
+
 
 
