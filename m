@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79D74C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:05:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E27DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:05:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359453AbiAaLFg (ORCPT
+        id S1359480AbiAaLFk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:05:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43094 "EHLO
+        Mon, 31 Jan 2022 06:05:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358512AbiAaLDY (ORCPT
+        with ESMTP id S1358557AbiAaLDY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 31 Jan 2022 06:03:24 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13118C0619CC;
-        Mon, 31 Jan 2022 03:02:07 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 892A4C0619D0;
+        Mon, 31 Jan 2022 03:02:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C2193B82A66;
-        Mon, 31 Jan 2022 11:02:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA6C8C340E8;
-        Mon, 31 Jan 2022 11:02:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4436AB82A61;
+        Mon, 31 Jan 2022 11:02:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4278AC340E8;
+        Mon, 31 Jan 2022 11:02:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643626924;
-        bh=dxQw60n77OEynovuV/S7B/dmYWPvOU52gwf9v7TvMTM=;
+        s=korg; t=1643626930;
+        bh=hIkFO2I3lmGEmGDltcRJMnRhfcQ7QQuEO3j2VNgMPQg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SWZZj5qf/TowbMqnB3dF4LJRJXukaSM5fjExNRHbiY+ssv7xOSTiHN2koaoIF/rE4
-         IN62pM9l5ocyF+rzkss9lMhkE0XEqmxTJPYsUC/Q/wn2+wh0Gpr5mClHmAp1zXjpjP
-         QAB16dlqTfYgkbhLs7l3iz/sJ2mwqVkq7RDkOQBI=
+        b=YYvFV7HD06/c+kAaHtseodRTWMqNsGF1luZqNWW3w7dXJrdvL/XS7rLfND3Ijl4kU
+         NVH+M2AXhsIZ+8S9R7UtmPhgg3kYJ15n18eMLubKsmc1W6FA886LiYSSIF5pvjrrr+
+         W5YsHmIsxuXGr40xs+lN6/J2pN9vIvSGhqJ9HwdY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>
-Subject: [PATCH 5.10 019/100] perf/x86/intel/uncore: Fix CAS_COUNT_WRITE issue for ICX
-Date:   Mon, 31 Jan 2022 11:55:40 +0100
-Message-Id: <20220131105221.112453688@linuxfoundation.org>
+        stable@vger.kernel.org, Lucas Stach <l.stach@pengutronix.de>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>
+Subject: [PATCH 5.10 020/100] drm/etnaviv: relax submit size limits
+Date:   Mon, 31 Jan 2022 11:55:41 +0100
+Message-Id: <20220131105221.144240536@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
 References: <20220131105220.424085452@linuxfoundation.org>
@@ -52,59 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhengjun Xing <zhengjun.xing@linux.intel.com>
+From: Lucas Stach <l.stach@pengutronix.de>
 
-commit 96fd2e89fba1aaada6f4b1e5d25a9d9ecbe1943d upstream.
+commit e3d26528e083e612314d4dcd713f3d5a26143ddc upstream.
 
-The user recently report a perf issue in the ICX platform, when test by
-perf event “uncore_imc_x/cas_count_write”,the write bandwidth is always
-very small (only 0.38MB/s), it is caused by the wrong "umask" for the
-"cas_count_write" event. When double-checking, find "cas_count_read"
-also is wrong.
+While all userspace tried to limit commandstreams to 64K in size,
+a bug in the Mesa driver lead to command streams of up to 128K
+being submitted. Allow those to avoid breaking existing userspace.
 
-The public document for ICX uncore:
-
-3rd Gen Intel® Xeon® Processor Scalable Family, Codename Ice Lake,Uncore
-Performance Monitoring Reference Manual, Revision 1.00, May 2021
-
-On 2.4.7, it defines Unit Masks for CAS_COUNT:
-RD b00001111
-WR b00110000
-
-So corrected both "cas_count_read" and "cas_count_write" for ICX.
-
-Old settings:
- hswep_uncore_imc_events
-	INTEL_UNCORE_EVENT_DESC(cas_count_read,  "event=0x04,umask=0x03")
-	INTEL_UNCORE_EVENT_DESC(cas_count_write, "event=0x04,umask=0x0c")
-
-New settings:
- snr_uncore_imc_events
-	INTEL_UNCORE_EVENT_DESC(cas_count_read,  "event=0x04,umask=0x0f")
-	INTEL_UNCORE_EVENT_DESC(cas_count_write, "event=0x04,umask=0x30")
-
-Fixes: 2b3b76b5ec67 ("perf/x86/intel/uncore: Add Ice Lake server uncore support")
-Signed-off-by: Zhengjun Xing <zhengjun.xing@linux.intel.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Adrian Hunter <adrian.hunter@intel.com>
-Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
+Fixes: 6dfa2fab8ddd ("drm/etnaviv: limit submit sizes")
 Cc: stable@vger.kernel.org
-Link: https://lkml.kernel.org/r/20211223144826.841267-1-zhengjun.xing@linux.intel.com
+Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
+Reviewed-by: Christian Gmeiner <christian.gmeiner@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/events/intel/uncore_snbep.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/etnaviv/etnaviv_gem_submit.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/arch/x86/events/intel/uncore_snbep.c
-+++ b/arch/x86/events/intel/uncore_snbep.c
-@@ -5239,7 +5239,7 @@ static struct intel_uncore_type icx_unco
- 	.fixed_ctr_bits	= 48,
- 	.fixed_ctr	= SNR_IMC_MMIO_PMON_FIXED_CTR,
- 	.fixed_ctl	= SNR_IMC_MMIO_PMON_FIXED_CTL,
--	.event_descs	= hswep_uncore_imc_events,
-+	.event_descs	= snr_uncore_imc_events,
- 	.perf_ctr	= SNR_IMC_MMIO_PMON_CTR0,
- 	.event_ctl	= SNR_IMC_MMIO_PMON_CTL0,
- 	.event_mask	= SNBEP_PMON_RAW_EVENT_MASK,
+--- a/drivers/gpu/drm/etnaviv/etnaviv_gem_submit.c
++++ b/drivers/gpu/drm/etnaviv/etnaviv_gem_submit.c
+@@ -469,8 +469,8 @@ int etnaviv_ioctl_gem_submit(struct drm_
+ 		return -EINVAL;
+ 	}
+ 
+-	if (args->stream_size > SZ_64K || args->nr_relocs > SZ_64K ||
+-	    args->nr_bos > SZ_64K || args->nr_pmrs > 128) {
++	if (args->stream_size > SZ_128K || args->nr_relocs > SZ_128K ||
++	    args->nr_bos > SZ_128K || args->nr_pmrs > 128) {
+ 		DRM_ERROR("submit arguments out of size limits\n");
+ 		return -EINVAL;
+ 	}
 
 
