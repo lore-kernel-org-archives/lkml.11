@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22093C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:45:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82EBBC43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:46:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378885AbiAaLnQ (ORCPT
+        id S1378659AbiAaLnA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:43:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50076 "EHLO
+        Mon, 31 Jan 2022 06:43:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378982AbiAaL3k (ORCPT
+        with ESMTP id S1379502AbiAaLaX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:29:40 -0500
+        Mon, 31 Jan 2022 06:30:23 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 038F7C0613F0;
-        Mon, 31 Jan 2022 03:18:36 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA234C061381;
+        Mon, 31 Jan 2022 03:20:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 96830611DB;
-        Mon, 31 Jan 2022 11:18:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D71BC340E8;
-        Mon, 31 Jan 2022 11:18:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7542261234;
+        Mon, 31 Jan 2022 11:20:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49007C36AE2;
+        Mon, 31 Jan 2022 11:20:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627915;
-        bh=5tY0CAlJUzcoaiWnUY4WMVkJA9mAYKR3uGYW2xPE+5s=;
+        s=korg; t=1643628054;
+        bh=pprbZsg+C92F/5sdWdHZshcc/eOL9hMtUXknEI2V4gg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VHMlfKUKqKCdgKMHIK/lFyhD0mJuvhWcghTzz+Jf4mp2r56RmMSvuHy+BaQpQ7rZv
-         3M0G91Rm0WRY4y3/Z2VWXjiBbq65LJ5AV16oEr8Grtne8QdstRS1yTV3iPZSmAKFwY
-         Bals0+HLH40MtVsIcUm1PirTp0O75v6r4ZnUo+qo=
+        b=q1S8nLrs77MSJjZvQvIEA6qOt19djvGu7Tw7KA1ArnFQre97L5aScOkzN0WambJJJ
+         GCTW5wQ5e8eNlQeebwUCXvVnYebJbl++hjG9K8/gNDnMNp+Z0dmEKtIzdb11wuhHjd
+         yfL+fh2fLB4ZeuszA0lbzQBvucR84pRgO3KOeHf8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>
-Subject: [PATCH 5.16 066/200] serial: 8250: of: Fix mapped region size when using reg-offset property
-Date:   Mon, 31 Jan 2022 11:55:29 +0100
-Message-Id: <20220131105235.800044609@linuxfoundation.org>
+        stable@vger.kernel.org, Hangbin Liu <liuhangbin@gmail.com>,
+        Xin Long <lucien.xin@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 111/200] ping: fix the sk_bound_dev_if match in ping_lookup
+Date:   Mon, 31 Jan 2022 11:56:14 +0100
+Message-Id: <20220131105237.320122302@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -48,52 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hancock <robert.hancock@calian.com>
+From: Xin Long <lucien.xin@gmail.com>
 
-commit d06b1cf28297e27127d3da54753a3a01a2fa2f28 upstream.
+commit 2afc3b5a31f9edf3ef0f374f5d70610c79c93a42 upstream.
 
-8250_of supports a reg-offset property which is intended to handle
-cases where the device registers start at an offset inside the region
-of memory allocated to the device. The Xilinx 16550 UART, for which this
-support was initially added, requires this. However, the code did not
-adjust the overall size of the mapped region accordingly, causing the
-driver to request an area of memory past the end of the device's
-allocation. For example, if the UART was allocated an address of
-0xb0130000, size of 0x10000 and reg-offset of 0x1000 in the device
-tree, the region of memory reserved was b0131000-b0140fff, which caused
-the driver for the region starting at b0140000 to fail to probe.
+When 'ping' changes to use PING socket instead of RAW socket by:
 
-Fix this by subtracting reg-offset from the mapped region size.
+   # sysctl -w net.ipv4.ping_group_range="0 100"
 
-Fixes: b912b5e2cfb3 ([POWERPC] Xilinx: of_serial support for Xilinx uart 16550.)
-Cc: stable <stable@vger.kernel.org>
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Link: https://lore.kernel.org/r/20220112194214.881844-1-robert.hancock@calian.com
+the selftests 'router_broadcast.sh' will fail, as such command
+
+  # ip vrf exec vrf-h1 ping -I veth0 198.51.100.255 -b
+
+can't receive the response skb by the PING socket. It's caused by mismatch
+of sk_bound_dev_if and dif in ping_rcv() when looking up the PING socket,
+as dif is vrf-h1 if dif's master was set to vrf-h1.
+
+This patch is to fix this regression by also checking the sk_bound_dev_if
+against sdif so that the packets can stil be received even if the socket
+is not bound to the vrf device but to the real iif.
+
+Fixes: c319b4d76b9e ("net: ipv4: add IPPROTO_ICMP socket kind")
+Reported-by: Hangbin Liu <liuhangbin@gmail.com>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/8250/8250_of.c |   11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ net/ipv4/ping.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/tty/serial/8250/8250_of.c
-+++ b/drivers/tty/serial/8250/8250_of.c
-@@ -83,8 +83,17 @@ static int of_platform_serial_setup(stru
- 		port->mapsize = resource_size(&resource);
+--- a/net/ipv4/ping.c
++++ b/net/ipv4/ping.c
+@@ -220,7 +220,8 @@ static struct sock *ping_lookup(struct n
+ 			continue;
+ 		}
  
- 		/* Check for shifted address mapping */
--		if (of_property_read_u32(np, "reg-offset", &prop) == 0)
-+		if (of_property_read_u32(np, "reg-offset", &prop) == 0) {
-+			if (prop >= port->mapsize) {
-+				dev_warn(&ofdev->dev, "reg-offset %u exceeds region size %pa\n",
-+					 prop, &port->mapsize);
-+				ret = -EINVAL;
-+				goto err_unprepare;
-+			}
-+
- 			port->mapbase += prop;
-+			port->mapsize -= prop;
-+		}
+-		if (sk->sk_bound_dev_if && sk->sk_bound_dev_if != dif)
++		if (sk->sk_bound_dev_if && sk->sk_bound_dev_if != dif &&
++		    sk->sk_bound_dev_if != inet_sdif(skb))
+ 			continue;
  
- 		port->iotype = UPIO_MEM;
- 		if (of_property_read_u32(np, "reg-io-width", &prop) == 0) {
+ 		sock_hold(sk);
 
 
