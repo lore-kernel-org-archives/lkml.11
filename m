@@ -2,85 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C76B3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 22:21:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D3B9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 22:23:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233042AbiAaWVe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 17:21:34 -0500
-Received: from gate.crashing.org ([63.228.1.57]:40799 "EHLO gate.crashing.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232909AbiAaWVd (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 17:21:33 -0500
-Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 20VMDZ8D023795;
-        Mon, 31 Jan 2022 16:13:35 -0600
-Received: (from segher@localhost)
-        by gate.crashing.org (8.14.1/8.14.1/Submit) id 20VMDXsA023794;
-        Mon, 31 Jan 2022 16:13:33 -0600
-X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
-Date:   Mon, 31 Jan 2022 16:13:33 -0600
-From:   Segher Boessenkool <segher@kernel.crashing.org>
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     apinski@marvell.com, Josh Poimboeuf <jpoimboe@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
-        x86@kernel.org, llvm@lists.linux.dev, linux-sparse@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        linux-toolchains@vger.kernel.org
-Subject: Re: [PATCH] objtool: prefer memory clobber & %= to volatile & __COUNTER__
-Message-ID: <20220131221333.GR614@gate.crashing.org>
-References: <20220114010526.1776605-1-ndesaulniers@google.com> <YeQei0xNzMq7bFdg@zn.tnic> <20220118192256.jzk5dnceeusq7x7u@treble> <20220118230120.pivvson7qekfiqic@treble> <CAKwvOdmLzwz=02ypt0_1324_5-7i3Az7HizFaDMqZv__-D99uA@mail.gmail.com> <20220125233128.GT614@gate.crashing.org> <CAKwvOdnB=OfCc_31b=PMjxKewvb3CV2WDwhMWrigviWaHrGMhw@mail.gmail.com>
-Mime-Version: 1.0
+        id S233207AbiAaWXr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 31 Jan 2022 17:23:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33906 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229658AbiAaWXp (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 17:23:45 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 982CBC061714;
+        Mon, 31 Jan 2022 14:23:45 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2F613615C6;
+        Mon, 31 Jan 2022 22:23:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B9D5C340E8;
+        Mon, 31 Jan 2022 22:23:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643667824;
+        bh=0Y3rqgHlAMjH8w1RLY+36FufBDg9B2bU0SqT42dDkig=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=VJGnBnmU3SXGd+G8IsHvhCOl83XvQO75dgqmOmMAvwsNtgc7jUQIDgXypI4KMnd6O
+         Bm8HkYi16UX7+jZJu+BTLKhPD1I2BXJ5tvRSymVdDkzsYffNO+Rg9LNRsuS1YbM1bG
+         kgivmCN/59omZJUGTrFfb3YHyg4PpE4QXH8Pq91DaF7XgqbU69sv5u/CIvPX+orVIJ
+         EPuv0ZngdPeFm7gHFKwl4Xt3DkT+0m1g8rsYaSqJ7dsn0zdxNvPNEPIWrw33fJFm/s
+         fnAxKaPT4d+di9wmjOfNwKLI61t3b+6q76AIr+03hGGZv7IIiMazLbJy1RRaXb1xrW
+         RJpMQ65e/JnFA==
+Date:   Mon, 31 Jan 2022 16:23:42 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>
+Cc:     linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        Huacai Chen <chenhuacai@loongson.cn>
+Subject: Re: [PATCH v8 00/10] vgaarb: Rework default VGA device selection
+Message-ID: <20220131222342.GA517488@bhelgaas>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAKwvOdnB=OfCc_31b=PMjxKewvb3CV2WDwhMWrigviWaHrGMhw@mail.gmail.com>
-User-Agent: Mutt/1.4.2.3i
+In-Reply-To: <20220106000658.243509-1-helgaas@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 31, 2022 at 12:45:20PM -0800, Nick Desaulniers wrote:
-> On Tue, Jan 25, 2022 at 3:34 PM Segher Boessenkool
-> <segher@kernel.crashing.org> wrote:
-> >
-> > Hi!
-> >
-> > On Mon, Jan 24, 2022 at 03:26:36PM -0800, Nick Desaulniers wrote:
-> > > I'm more confident that we can remove the `volatile` keyword (I was
-> > > thinking about adding a new diagnostic to clang to warn that volatile
-> > > is redundate+implied for asm goto or inline asm that doesn't have
-> > > outputs) though that's not the problem here and will probably generate
-> > > some kernel wide cleanup before we could enable such a flag.
-> >
-> > Its main value is that it would discourage users from thinking volatile
-> > is magic.  Seriously worth some pain!
+[+to Maarten, Maxime, Thomas; beginning of thread:
+https://lore.kernel.org/r/20220106000658.243509-1-helgaas@kernel.org]
+
+On Wed, Jan 05, 2022 at 06:06:48PM -0600, Bjorn Helgaas wrote:
+> From: Bjorn Helgaas <bhelgaas@google.com>
 > 
-> https://reviews.llvm.org/D118297
-> PTAL
+> Current default VGA device selection fails in some cases because part of it
+> is done in the vga_arb_device_init() subsys_initcall, and some arches
+> enumerate PCI devices in pcibios_init(), which runs *after* that.
 
-""
-  Really the volatile asm-qualifier exists only to signal that an asm
-  statement should not be DCE'd (when it has outputs but they are unused),
-  CSE'd, or LICM'd. It is not a general compiler barrier.
+Where are we at with this series?  Is there anything I can do to move
+it forward?
 
-It means that the asm has a side effect (one unknown to the compiler),
-so it must be executed in the real machine just where it would be in the
-abstract machine.  It *can* be CSEd, it *can* be DCEd, it can even be
-optimised by LICM in certain cases: but it has to be executed as often
-(and in the same order etc.) in the resulting machine code as it would
-be if you single-stepped through the source code by hand.
+Bjorn
 
-Those are fine examples if you add "in most cases" (and that they are
-just examples, it's not an exhaustive list).
-
-Thanks,
-
-
-Segher
+> For example:
+> 
+>   - On BMC system, the AST2500 bridge [1a03:1150] does not implement
+>     PCI_BRIDGE_CTL_VGA.  This is perfectly legal but means the legacy VGA
+>     resources won't reach downstream devices unless they're included in the
+>     usual bridge windows.
+> 
+>   - vga_arb_select_default_device() will set a device below such a bridge
+>     as the default VGA device as long as it has PCI_COMMAND_IO and
+>     PCI_COMMAND_MEMORY enabled.
+> 
+>   - vga_arbiter_add_pci_device() is called for every VGA device, either at
+>     boot-time or at hot-add time, and it will also set the device as the
+>     default VGA device, but ONLY if all bridges leading to it implement
+>     PCI_BRIDGE_CTL_VGA.
+> 
+>   - This difference between vga_arb_select_default_device() and
+>     vga_arbiter_add_pci_device() means that a device below an AST2500 or
+>     similar bridge can only be set as the default if it is enumerated
+>     before vga_arb_device_init().
+> 
+>   - On ACPI-based systems, PCI devices are enumerated by acpi_init(), which
+>     runs before vga_arb_device_init().
+> 
+>   - On non-ACPI systems, like on MIPS system, they are enumerated by
+>     pcibios_init(), which typically runs *after* vga_arb_device_init().
+> 
+> This series consolidates all the default VGA device selection in
+> vga_arbiter_add_pci_device(), which is always called after enumerating a
+> PCI device.
+> 
+> Almost all the work here is Huacai's.  I restructured it a little bit and
+> added a few trivial patches on top.
+> 
+> I'd like to move vgaarb.c to drivers/pci eventually, but there's another
+> initcall ordering snag that needs to be resolved first, so this leaves 
+> it where it is.
+> 
+> Bjorn
+> 
+> Version history:
+> V0 original implementation as final quirk to set default device.
+> https://lore.kernel.org/r/20210514080025.1828197-6-chenhuacai@loongson.cn
+> 
+> V1 rework vgaarb to do all default device selection in
+> vga_arbiter_add_pci_device().
+> https://lore.kernel.org/r/20210705100503.1120643-1-chenhuacai@loongson.cn
+> 
+> V2 move arbiter to PCI subsystem, fix nits.
+> https://lore.kernel.org/r/20210722212920.347118-1-helgaas@kernel.org
+> 
+> V3 rewrite the commit log of the last patch (which is also summarized
+> by Bjorn).
+> https://lore.kernel.org/r/20210820100832.663931-1-chenhuacai@loongson.cn
+> 
+> V4 split the last patch to two steps.
+> https://lore.kernel.org/r/20210827083129.2781420-1-chenhuacai@loongson.cn
+> 
+> V5 split Patch-9 again and sort the patches.
+> https://lore.kernel.org/r/20210911093056.1555274-1-chenhuacai@loongson.cn
+> 
+> V6 split Patch-5 again and sort the patches again.
+> https://lore.kernel.org/r/20210916082941.3421838-1-chenhuacai@loongson.cn
+> 
+> V7 stop moving vgaarb to drivers/pci because of ordering issues with
+> misc_init().
+> https://lore.kernel.org/r/20211015061512.2941859-1-chenhuacai@loongson.cn
+> https://lore.kernel.org/r/CAAhV-H7FhAjM-Ha42Z1dLrE4PvC9frfyeU27KHWcyWKkMftEsA@mail.gmail.com
+> 
+> 
+> Bjorn Helgaas (8):
+>   vgaarb: Factor out vga_select_framebuffer_device()
+>   vgaarb: Factor out default VGA device selection
+>   vgaarb: Move framebuffer detection to ADD_DEVICE path
+>   vgaarb: Move non-legacy VGA detection to ADD_DEVICE path
+>   vgaarb: Move disabled VGA device detection to ADD_DEVICE path
+>   vgaarb: Remove empty vga_arb_device_card_gone()
+>   vgaarb: Use unsigned format string to print lock counts
+>   vgaarb: Replace full MIT license text with SPDX identifier
+> 
+> Huacai Chen (2):
+>   vgaarb: Move vga_arb_integrated_gpu() earlier in file
+>   vgaarb: Log bridge control messages when adding devices
+> 
+>  drivers/gpu/vga/vgaarb.c | 311 +++++++++++++++++++--------------------
+>  1 file changed, 154 insertions(+), 157 deletions(-)
+> 
+> -- 
+> 2.25.1
+> 
