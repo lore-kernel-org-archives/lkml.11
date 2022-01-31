@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9369C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:05:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74632C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:05:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358940AbiAaLFK (ORCPT
+        id S1359335AbiAaLFM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:05:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43094 "EHLO
+        Mon, 31 Jan 2022 06:05:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359074AbiAaLCx (ORCPT
+        with ESMTP id S1359062AbiAaLCx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 31 Jan 2022 06:02:53 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54106C061373;
-        Mon, 31 Jan 2022 03:01:08 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE126C061777;
+        Mon, 31 Jan 2022 03:01:06 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6448360B9C;
-        Mon, 31 Jan 2022 11:01:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F975C340E8;
-        Mon, 31 Jan 2022 11:01:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B8A6AB82A65;
+        Mon, 31 Jan 2022 11:01:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD9F4C340EE;
+        Mon, 31 Jan 2022 11:01:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643626867;
-        bh=tXZ+7dvf12dco54niTjCNvirBlrte9jCHP9j93/5Tro=;
+        s=korg; t=1643626864;
+        bh=4vgkwUN3HLgTHzDFntrtt0VQKHQcx+ZIF7bDA5iyJlw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vQGZpIQqP2pU4V8gGZ+cYied4tLTfwJZxqEJf5DaeAr6vfGtGvLSMQu1sy/V52WZN
-         vydq/jx1o1D5F93wP3QAKIp/CeoN1nP3UBF1AEIhlj8IG9F6l/4m2zWY5wAek5lN6D
-         G0Dx9t+ghnGPxr8H+akIF44vcq+FFG0RUdYkGteM=
+        b=wXvRjVICtI8jbv751SLuxm+wqSEpEJL+/SNs8rjew4jKXKkzRAGxKS6QquGobhmMQ
+         mwz/bwe4VKaHwkLs12Ura4DUMI+OTFvzkZu0dBTQM+cj36qz9WiW+2ZhTkDiC0/lr5
+         wuKDoQDCzkDdrLHLfiAuk6QV48TSmz8Rn2RjKjt8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@kernel.org>, Ray Che <xijiache@gmail.com>,
-        Willy Tarreau <w@1wt.eu>, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.4 38/64] ipv4: avoid using shared IP generator for connected sockets
-Date:   Mon, 31 Jan 2022 11:56:23 +0100
-Message-Id: <20220131105216.962973200@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+ac94ae5f68b84197f41c@syzkaller.appspotmail.com,
+        OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>,
+        Ming Lei <ming.lei@redhat.com>, Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.4 64/64] block: Fix wrong offset in bio_truncate()
+Date:   Mon, 31 Jan 2022 11:56:49 +0100
+Message-Id: <20220131105217.821837502@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105215.644174521@linuxfoundation.org>
 References: <20220131105215.644174521@linuxfoundation.org>
@@ -50,65 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
 
-commit 23f57406b82de51809d5812afd96f210f8b627f3 upstream.
+commit 3ee859e384d453d6ac68bfd5971f630d9fa46ad3 upstream.
 
-ip_select_ident_segs() has been very conservative about using
-the connected socket private generator only for packets with IP_DF
-set, claiming it was needed for some VJ compression implementations.
+bio_truncate() clears the buffer outside of last block of bdev, however
+current bio_truncate() is using the wrong offset of page. So it can
+return the uninitialized data.
 
-As mentioned in this referenced document, this can be abused.
-(Ref: Off-Path TCP Exploits of the Mixed IPID Assignment)
+This happened when both of truncated/corrupted FS and userspace (via
+bdev) are trying to read the last of bdev.
 
-Before switching to pure random IPID generation and possibly hurt
-some workloads, lets use the private inet socket generator.
-
-Not only this will remove one vulnerability, this will also
-improve performance of TCP flows using pmtudisc==IP_PMTUDISC_DONT
-
-Fixes: 73f156a6e8c1 ("inetpeer: get rid of ip_id_count")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Reported-by: Ray Che <xijiache@gmail.com>
-Cc: Willy Tarreau <w@1wt.eu>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reported-by: syzbot+ac94ae5f68b84197f41c@syzkaller.appspotmail.com
+Signed-off-by: OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
+Reviewed-by: Ming Lei <ming.lei@redhat.com>
+Link: https://lore.kernel.org/r/875yqt1c9g.fsf@mail.parknet.co.jp
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/ip.h |   21 ++++++++++-----------
- 1 file changed, 10 insertions(+), 11 deletions(-)
+ block/bio.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/include/net/ip.h
-+++ b/include/net/ip.h
-@@ -509,19 +509,18 @@ static inline void ip_select_ident_segs(
- {
- 	struct iphdr *iph = ip_hdr(skb);
- 
-+	/* We had many attacks based on IPID, use the private
-+	 * generator as much as we can.
-+	 */
-+	if (sk && inet_sk(sk)->inet_daddr) {
-+		iph->id = htons(inet_sk(sk)->inet_id);
-+		inet_sk(sk)->inet_id += segs;
-+		return;
-+	}
- 	if ((iph->frag_off & htons(IP_DF)) && !skb->ignore_df) {
--		/* This is only to work around buggy Windows95/2000
--		 * VJ compression implementations.  If the ID field
--		 * does not change, they drop every other packet in
--		 * a TCP stream using header compression.
--		 */
--		if (sk && inet_sk(sk)->inet_daddr) {
--			iph->id = htons(inet_sk(sk)->inet_id);
--			inet_sk(sk)->inet_id += segs;
--		} else {
--			iph->id = 0;
--		}
-+		iph->id = 0;
- 	} else {
-+		/* Unfortunately we need the big hammer to get a suitable IPID */
- 		__ip_select_ident(net, iph, segs);
- 	}
- }
+--- a/block/bio.c
++++ b/block/bio.c
+@@ -569,7 +569,8 @@ void bio_truncate(struct bio *bio, unsig
+ 				offset = new_size - done;
+ 			else
+ 				offset = 0;
+-			zero_user(bv.bv_page, offset, bv.bv_len - offset);
++			zero_user(bv.bv_page, bv.bv_offset + offset,
++				  bv.bv_len - offset);
+ 			truncated = true;
+ 		}
+ 		done += bv.bv_len;
 
 
