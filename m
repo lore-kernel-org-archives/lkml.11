@@ -2,78 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3086BC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 15:20:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E504EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 15:20:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378872AbiAaPT7 (ORCPT
+        id S1379373AbiAaPUE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 10:19:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48306 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359325AbiAaPT4 (ORCPT
+        Mon, 31 Jan 2022 10:20:04 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:43399 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1379163AbiAaPUB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 10:19:56 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F9BEC061714;
-        Mon, 31 Jan 2022 07:19:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=X5Q5MeJDTPKbLPeAN2MtOT5sSDrTeYy1qnQ5DDAxIaY=; b=tweIhqfFo7IPJLtRc+U6X4zRG/
-        yGm17K8r35WfAR1Z3Pp5jZxTwu9pS7l19D8MHHoo5lF5gnMczM/vo5M83IEWaQh8VV5t3juB2KeUi
-        FosS5h8/Iy9TMCHzNWSo1qVBt8JU+YzraXxCN5TExHIZ1HqlVL5IcM6O61ZztEHlFHrtqIbHmwcT9
-        wIR367tJqAZz5kaPc8FgVVfgeZhphtApIxBizRqkI+DK9dejx2UTl04bqKRd6F05qMYG8niBfwh0Q
-        RlDz4gojjsluqPiWShSfQRBoez5P6tZEIwL2XRyRrJN280TOC7AHKMqGn5gdCPBure6k7Mzj1qiDf
-        1AxoS7vQ==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nEYSg-00A1w0-Mx; Mon, 31 Jan 2022 15:19:22 +0000
-Date:   Mon, 31 Jan 2022 15:19:22 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Christian Brauner <brauner@kernel.org>
-Cc:     kernel test robot <oliver.sang@intel.com>,
-        Kees Cook <keescook@chromium.org>,
-        Ariadne Conill <ariadne@dereferenced.org>,
-        0day robot <lkp@intel.com>,
-        Michael Kerrisk <mtk.manpages@gmail.com>,
-        Rich Felker <dalias@libc.org>,
-        Eric Biederman <ebiederm@xmission.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        LKML <linux-kernel@vger.kernel.org>, lkp@lists.01.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-        stable@vger.kernel.org
-Subject: Re: [fs/exec]  80bd5afdd8: xfstests.generic.633.fail
-Message-ID: <Yff9+tIDAvYM5EO/@casper.infradead.org>
-References: <20220127000724.15106-1-ariadne@dereferenced.org>
- <20220131144352.GE16385@xsang-OptiPlex-9020>
- <20220131150819.iuqlz3rz6q7cheap@wittgenstein>
+        Mon, 31 Jan 2022 10:20:01 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643642401;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=51s/H7CPhdBcCYJZdO78Kl5hIb9+WtEbkmwC56ZgtGY=;
+        b=AWruhXTA1SJdWY99GFurEU+c71AwyQt2xSZvFhktRch7i/eyjFtYrsg5zKMmAr3owhEnae
+        ikmr4JiFuAUu1R1j+SIUbySuuTcAo2R8ykglH8I7GA9SPsTXCv97UrPs2ra3z6XWf4mFPP
+        i6bKGxCRZxVlJcaqYdrEQQlzc8MEceY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-368-IYhhTc-eNS2u5b808v0H8A-1; Mon, 31 Jan 2022 10:19:59 -0500
+X-MC-Unique: IYhhTc-eNS2u5b808v0H8A-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A75DF1091DA3;
+        Mon, 31 Jan 2022 15:19:56 +0000 (UTC)
+Received: from starship (unknown [10.40.192.15])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8477584D06;
+        Mon, 31 Jan 2022 15:19:53 +0000 (UTC)
+Message-ID: <864b41e42a88a92586b1c2361bebaf04446a98d5.camel@redhat.com>
+Subject: Re: [PATCH 01/22] KVM: x86: Drop unnecessary and confusing
+ KVM_X86_OP_NULL macro
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Like Xu <like.xu.linux@gmail.com>
+Date:   Mon, 31 Jan 2022 17:19:52 +0200
+In-Reply-To: <6979e482-1f07-4148-b9d7-d91cfa98c081@redhat.com>
+References: <20220128005208.4008533-1-seanjc@google.com>
+         <20220128005208.4008533-2-seanjc@google.com>
+         <152db376-b0f3-3102-233c-a0dbb4011d0c@redhat.com>
+         <YfQO+ADS1wnefoSr@google.com>
+         <6979e482-1f07-4148-b9d7-d91cfa98c081@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220131150819.iuqlz3rz6q7cheap@wittgenstein>
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 31, 2022 at 04:08:19PM +0100, Christian Brauner wrote:
-> On Mon, Jan 31, 2022 at 10:43:52PM +0800, kernel test robot wrote:
-> I can fix this rather simply in our upstream fstests with:
+On Mon, 2022-01-31 at 15:56 +0100, Paolo Bonzini wrote:
+> On 1/28/22 16:42, Sean Christopherson wrote:
+> > On Fri, Jan 28, 2022, Paolo Bonzini wrote:
+> > > On 1/28/22 01:51, Sean Christopherson wrote:
+> > > > Drop KVM_X86_OP_NULL, which is superfluous and confusing.  The macro is
+> > > > just a "pass-through" to KVM_X86_OP; it was added with the intent of
+> > > > actually using it in the future, but that obviously never happened.  The
+> > > > name is confusing because its intended use was to provide a way for
+> > > > vendor implementations to specify a NULL pointer, and even if it were
+> > > > used, wouldn't necessarily be synonymous with declaring a kvm_x86_op as
+> > > > DEFINE_STATIC_CALL_NULL.
+> > > > 
+> > > > Lastly, actually using KVM_X86_OP_NULL as intended isn't a maintanable
+> > > > approach, e.g. bleeds vendor details into common x86 code, and would
+> > > > either be prone to bit rot or would require modifying common x86 code
+> > > > when modifying a vendor implementation.
+> > > 
+> > > I have some patches that redefine KVM_X86_OP_NULL as "must be used with
+> > > static_call_cond".  That's a more interesting definition, as it can be used
+> > > to WARN if KVM_X86_OP is used with a NULL function pointer.
+> > 
+> > I'm skeptical that will actually work well and be maintainble.  E.g. sync_pir_to_ir()
+> > must be explicitly check for NULL in apic_has_interrupt_for_ppr(), forcing that path
+> > to do static_call_cond() will be odd.  Ditto for ops that are wired up to ioctl()s,
+> > e.g. the confidential VM stuff, and for ops that are guarded by other stuff, e.g. the
+> > hypervisor timer.
+> > 
+> > Actually, it won't just be odd, it will be impossible to disallow NULL a pointer
+> > for KVM_X86_OP and require static_call_cond() for KVM_X86_OP_NULL.  static_call_cond()
+> > forces the return to "void", so any path that returns a value needs to be manually
+> > guarded and can't use static_call_cond(), e.g.
 > 
-> static char *argv[] = {
-> 	"",
-> };
+> You're right and I should have looked up the series instead of going by 
+> memory.  What I did was mostly WARNing on KVM_X86_OP that sets NULL, as 
+> non-NULL ops are the common case.  I also added KVM_X86_OP_RET0 to 
+> remove some checks on kvm_x86_ops for ops that return a value.
 > 
-> I guess.
+> All in all I totally agree with patches 2-11 and will apply them (patch 
+> 2 to 5.17 even, as a prerequisite to fix the AVIC race).  Several of 
+> patches 13-21 are also mostly useful as it clarifies the code, and the 
+> others I guess are okay in the context of a coherent series though 
+> probably they would have been rejected as one-offs.  However, patches 12 
+> and 22 are unnecessary uses of the C preprocessor in my opinion.
 > 
-> But doesn't
-> 
-> static char *argv[] = {
-> 	NULL,
-> };
-> 
-> seem something that should work especially with execveat()?
 
-The problem is that the exec'ed program sees an argc of 0, which is the
-problem we're trying to work around in the kernel (instead of leaving
-it to ld.so to fix for suid programs).
+I will send my patches very very soon - I'll rebase on top of this,
+and review this patch series soon as well.
+
+Best regards,
+	Maxim Levitsky
+
+> Paolo
+> 
+
+
