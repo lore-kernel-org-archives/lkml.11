@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF385C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:20:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D776C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:20:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377169AbiAaLRr (ORCPT
+        id S1377285AbiAaLR5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:17:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44426 "EHLO
+        Mon, 31 Jan 2022 06:17:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377475AbiAaLKC (ORCPT
+        with ESMTP id S1377538AbiAaLKK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:10:02 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AAA6C06134A;
-        Mon, 31 Jan 2022 03:07:42 -0800 (PST)
+        Mon, 31 Jan 2022 06:10:10 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43114C061786;
+        Mon, 31 Jan 2022 03:07:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D9F4DB82A4D;
-        Mon, 31 Jan 2022 11:07:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EDEFC340E8;
-        Mon, 31 Jan 2022 11:07:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D8C2C60B98;
+        Mon, 31 Jan 2022 11:07:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A57D2C340E8;
+        Mon, 31 Jan 2022 11:07:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627259;
-        bh=WJH/WMRQmxbS06uo+5eXwHRkUhuULA/XPYmFL+01HdA=;
+        s=korg; t=1643627274;
+        bh=kvmeKDKq4ruE2gAqLGR7+eCTMNUXOvT8e/qFwT9YNBE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=txqvAmpENQ0hHp5moA11GlqB9xhU+hMVPtlPotAhVTWBdO5BDg5rA4v23xPwHfUEO
-         riRlTskPzjQ1PKd/F8zTAu1qfew0x4Uf3qMr8A4SSUuoEORdyKQ6tBiEe5KQGdGbzV
-         otTWj5bJeFJwvPS2h9HbxW5aqW1Rvvr0XQQpYGl4=
+        b=eqH5SeEmhb8ihvw+GFyYAAY3tekPC/9W622UHcjrs98GwdK8Hytpk3b/vVOdmIMvk
+         nizU33BNPMYzJeq6t1IQMqZXkOa782pSMqn6n7Ivec/ztRprrMEhA17f677E38fV49
+         DZnxWi1Ut567PvVvEAO1ltBVBZ33kgp7QB3n6CgY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 004/171] net: stmmac: skip only stmmac_ptp_register when resume from suspend
-Date:   Mon, 31 Jan 2022 11:54:29 +0100
-Message-Id: <20220131105230.116569901@linuxfoundation.org>
+        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>
+Subject: [PATCH 5.15 009/171] s390/hypfs: include z/VM guests with access control group set
+Date:   Mon, 31 Jan 2022 11:54:34 +0100
+Message-Id: <20220131105230.300338905@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
 References: <20220131105229.959216821@linuxfoundation.org>
@@ -50,75 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
+From: Vasily Gorbik <gor@linux.ibm.com>
 
-commit 0735e639f129dff455aeb91da291f5c578cc33db upstream.
+commit 663d34c8df98740f1e90241e78e456d00b3c6cad upstream.
 
-When resume from suspend, besides skipping PTP registration, it also
-skipping PTP HW initialization. This could cause PTP clock not able to
-operate properly when resume from suspend.
+Currently if z/VM guest is allowed to retrieve hypervisor performance
+data globally for all guests (privilege class B) the query is formed in a
+way to include all guests but the group name is left empty. This leads to
+that z/VM guests which have access control group set not being included
+in the results (even local vm).
 
-To fix this, only stmmac_ptp_register() is skipped when resume from
-suspend.
+Change the query group identifier from empty to "any" to retrieve
+information about all guests from any groups (or without a group set).
 
-Fixes: fe1319291150 ("stmmac: Don't init ptp again when resume from suspend/hibernation")
-Cc: <stable@vger.kernel.org> # 5.15.x
-Signed-off-by: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Cc: stable@vger.kernel.org
+Fixes: 31cb4bd31a48 ("[S390] Hypervisor filesystem (s390_hypfs) for z/VM")
+Reviewed-by: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
+Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c |   20 +++++++++-----------
- 1 file changed, 9 insertions(+), 11 deletions(-)
+ arch/s390/hypfs/hypfs_vm.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -924,8 +924,6 @@ static int stmmac_init_ptp(struct stmmac
- 	priv->hwts_tx_en = 0;
- 	priv->hwts_rx_en = 0;
+--- a/arch/s390/hypfs/hypfs_vm.c
++++ b/arch/s390/hypfs/hypfs_vm.c
+@@ -20,6 +20,7 @@
  
--	stmmac_ptp_register(priv);
--
- 	return 0;
- }
+ static char local_guest[] = "        ";
+ static char all_guests[] = "*       ";
++static char *all_groups = all_guests;
+ static char *guest_query;
  
-@@ -3240,7 +3238,7 @@ static int stmmac_fpe_start_wq(struct st
- /**
-  * stmmac_hw_setup - setup mac in a usable state.
-  *  @dev : pointer to the device structure.
-- *  @init_ptp: initialize PTP if set
-+ *  @ptp_register: register PTP if set
-  *  Description:
-  *  this is the main function to setup the HW in a usable state because the
-  *  dma engine is reset, the core registers are configured (e.g. AXI,
-@@ -3250,7 +3248,7 @@ static int stmmac_fpe_start_wq(struct st
-  *  0 on success and an appropriate (-)ve integer as defined in errno.h
-  *  file on failure.
-  */
--static int stmmac_hw_setup(struct net_device *dev, bool init_ptp)
-+static int stmmac_hw_setup(struct net_device *dev, bool ptp_register)
- {
- 	struct stmmac_priv *priv = netdev_priv(dev);
- 	u32 rx_cnt = priv->plat->rx_queues_to_use;
-@@ -3307,13 +3305,13 @@ static int stmmac_hw_setup(struct net_de
+ struct diag2fc_data {
+@@ -62,10 +63,11 @@ static int diag2fc(int size, char* query
  
- 	stmmac_mmc_setup(priv);
+ 	memcpy(parm_list.userid, query, NAME_LEN);
+ 	ASCEBC(parm_list.userid, NAME_LEN);
+-	parm_list.addr = (unsigned long) addr ;
++	memcpy(parm_list.aci_grp, all_groups, NAME_LEN);
++	ASCEBC(parm_list.aci_grp, NAME_LEN);
++	parm_list.addr = (unsigned long)addr;
+ 	parm_list.size = size;
+ 	parm_list.fmt = 0x02;
+-	memset(parm_list.aci_grp, 0x40, NAME_LEN);
+ 	rc = -1;
  
--	if (init_ptp) {
--		ret = stmmac_init_ptp(priv);
--		if (ret == -EOPNOTSUPP)
--			netdev_warn(priv->dev, "PTP not supported by HW\n");
--		else if (ret)
--			netdev_warn(priv->dev, "PTP init failed\n");
--	}
-+	ret = stmmac_init_ptp(priv);
-+	if (ret == -EOPNOTSUPP)
-+		netdev_warn(priv->dev, "PTP not supported by HW\n");
-+	else if (ret)
-+		netdev_warn(priv->dev, "PTP init failed\n");
-+	else if (ptp_register)
-+		stmmac_ptp_register(priv);
- 
- 	priv->eee_tw_timer = STMMAC_DEFAULT_TWT_LS;
- 
+ 	diag_stat_inc(DIAG_STAT_X2FC);
 
 
