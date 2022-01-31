@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A47CC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D34AC4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378169AbiAaLbG (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:31:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47306 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376261AbiAaLVg (ORCPT
+        id S245539AbiAaLbU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 31 Jan 2022 06:31:20 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:40600 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1376851AbiAaLWG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:21:36 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC715C0797B3;
-        Mon, 31 Jan 2022 03:14:17 -0800 (PST)
+        Mon, 31 Jan 2022 06:22:06 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EE806B82A77;
-        Mon, 31 Jan 2022 11:14:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C2FDC340E8;
-        Mon, 31 Jan 2022 11:14:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 81556B82A4C;
+        Mon, 31 Jan 2022 11:22:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5213C340E8;
+        Mon, 31 Jan 2022 11:22:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627654;
-        bh=9dVBKrbhU02MiuWvg/Ym6NPghHGBb13fV1UFCzSdg4I=;
+        s=korg; t=1643628124;
+        bh=7A4qnYHNOgw7UEy2wv9i8aSmgdn8cU6m8yfXH/2Kx2Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pWdKtEVD16/TvhwHANJlP50UgBPnrMgmihbzMYV5NvC98W5BCkOuho7+9h5+pW1DA
-         EJ8BB9/3ZlyR0usdURE8QrUA7rAde0x48WhPVvdfA4iYBwMJcbPTNxVWg25LGsPDhu
-         vvj8GgeIwTNAwYESkVQ9iB4vCOlXPq2KkuM4Y1GU=
+        b=H16Fmb6tD1tImFjq2pa02f1qHnF1kIJB0hdNwgStxQKbLhsvW2aCE+YiIyznu4iCY
+         PQ2tUAkBs6TNNoDpQ8Mec2LZNTWQF6/BVkLzfkg9cPbzwEXeE6zBujrwyo26+IFHkW
+         MDT+cnA9z+I1orybwbdvMxq/ZWYWduLLiVmq4q8g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Catherine Sullivan <csully@google.com>,
-        David Awogbemila <awogbemila@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 154/171] gve: Fix GFP flags when allocing pages
-Date:   Mon, 31 Jan 2022 11:56:59 +0100
-Message-Id: <20220131105235.229765300@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Sylwester Dziedziuch <sylwesterx.dziedziuch@intel.com>,
+        Mateusz Palczewski <mateusz.palczewski@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Kiran Bhandare <kiranx.bhandare@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Subject: [PATCH 5.16 098/200] i40e: Fix queues reservation for XDP
+Date:   Mon, 31 Jan 2022 11:56:01 +0100
+Message-Id: <20220131105236.898816236@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
-References: <20220131105229.959216821@linuxfoundation.org>
+In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
+References: <20220131105233.561926043@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,97 +49,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Catherine Sullivan <csully@google.com>
+From: Sylwester Dziedziuch <sylwesterx.dziedziuch@intel.com>
 
-[ Upstream commit a92f7a6feeb3884c69c1c7c1f13bccecb2228ad0 ]
+commit 92947844b8beee988c0ce17082b705c2f75f0742 upstream.
 
-Use GFP_ATOMIC when allocating pages out of the hotpath,
-continue to use GFP_KERNEL when allocating pages during setup.
+When XDP was configured on a system with large number of CPUs
+and X722 NIC there was a call trace with NULL pointer dereference.
 
-GFP_KERNEL will allow blocking which allows it to succeed
-more often in a low memory enviornment but in the hotpath we do
-not want to allow the allocation to block.
+i40e 0000:87:00.0: failed to get tracking for 256 queues for VSI 0 err -12
+i40e 0000:87:00.0: setup of MAIN VSI failed
 
-Fixes: f5cedc84a30d2 ("gve: Add transmit and receive support")
-Signed-off-by: Catherine Sullivan <csully@google.com>
-Signed-off-by: David Awogbemila <awogbemila@google.com>
-Link: https://lore.kernel.org/r/20220126003843.3584521-1-awogbemila@google.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+BUG: kernel NULL pointer dereference, address: 0000000000000000
+RIP: 0010:i40e_xdp+0xea/0x1b0 [i40e]
+Call Trace:
+? i40e_reconfig_rss_queues+0x130/0x130 [i40e]
+dev_xdp_install+0x61/0xe0
+dev_xdp_attach+0x18a/0x4c0
+dev_change_xdp_fd+0x1e6/0x220
+do_setlink+0x616/0x1030
+? ahci_port_stop+0x80/0x80
+? ata_qc_issue+0x107/0x1e0
+? lock_timer_base+0x61/0x80
+? __mod_timer+0x202/0x380
+rtnl_setlink+0xe5/0x170
+? bpf_lsm_binder_transaction+0x10/0x10
+? security_capable+0x36/0x50
+rtnetlink_rcv_msg+0x121/0x350
+? rtnl_calcit.isra.0+0x100/0x100
+netlink_rcv_skb+0x50/0xf0
+netlink_unicast+0x1d3/0x2a0
+netlink_sendmsg+0x22a/0x440
+sock_sendmsg+0x5e/0x60
+__sys_sendto+0xf0/0x160
+? __sys_getsockname+0x7e/0xc0
+? _copy_from_user+0x3c/0x80
+? __sys_setsockopt+0xc8/0x1a0
+__x64_sys_sendto+0x20/0x30
+do_syscall_64+0x33/0x40
+entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f83fa7a39e0
+
+This was caused by PF queue pile fragmentation due to
+flow director VSI queue being placed right after main VSI.
+Because of this main VSI was not able to resize its
+queue allocation for XDP resulting in no queues allocated
+for main VSI when XDP was turned on.
+
+Fix this by always allocating last queue in PF queue pile
+for a flow director VSI.
+
+Fixes: 41c445ff0f48 ("i40e: main driver core")
+Fixes: 74608d17fe29 ("i40e: add support for XDP_TX action")
+Signed-off-by: Sylwester Dziedziuch <sylwesterx.dziedziuch@intel.com>
+Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
+Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Tested-by: Kiran Bhandare <kiranx.bhandare@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/google/gve/gve.h        | 2 +-
- drivers/net/ethernet/google/gve/gve_main.c   | 6 +++---
- drivers/net/ethernet/google/gve/gve_rx.c     | 3 ++-
- drivers/net/ethernet/google/gve/gve_rx_dqo.c | 2 +-
- 4 files changed, 7 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/intel/i40e/i40e_main.c |   14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/drivers/net/ethernet/google/gve/gve.h b/drivers/net/ethernet/google/gve/gve.h
-index c1d4042671f9f..b1273dce4795b 100644
---- a/drivers/net/ethernet/google/gve/gve.h
-+++ b/drivers/net/ethernet/google/gve/gve.h
-@@ -815,7 +815,7 @@ static inline bool gve_is_gqi(struct gve_priv *priv)
- /* buffers */
- int gve_alloc_page(struct gve_priv *priv, struct device *dev,
- 		   struct page **page, dma_addr_t *dma,
--		   enum dma_data_direction);
-+		   enum dma_data_direction, gfp_t gfp_flags);
- void gve_free_page(struct device *dev, struct page *page, dma_addr_t dma,
- 		   enum dma_data_direction);
- /* tx handling */
-diff --git a/drivers/net/ethernet/google/gve/gve_main.c b/drivers/net/ethernet/google/gve/gve_main.c
-index 959352fceead7..68552848d3888 100644
---- a/drivers/net/ethernet/google/gve/gve_main.c
-+++ b/drivers/net/ethernet/google/gve/gve_main.c
-@@ -746,9 +746,9 @@ static void gve_free_rings(struct gve_priv *priv)
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -210,6 +210,20 @@ static int i40e_get_lump(struct i40e_pf
+ 		return -EINVAL;
+ 	}
  
- int gve_alloc_page(struct gve_priv *priv, struct device *dev,
- 		   struct page **page, dma_addr_t *dma,
--		   enum dma_data_direction dir)
-+		   enum dma_data_direction dir, gfp_t gfp_flags)
- {
--	*page = alloc_page(GFP_KERNEL);
-+	*page = alloc_page(gfp_flags);
- 	if (!*page) {
- 		priv->page_alloc_fail++;
- 		return -ENOMEM;
-@@ -792,7 +792,7 @@ static int gve_alloc_queue_page_list(struct gve_priv *priv, u32 id,
- 	for (i = 0; i < pages; i++) {
- 		err = gve_alloc_page(priv, &priv->pdev->dev, &qpl->pages[i],
- 				     &qpl->page_buses[i],
--				     gve_qpl_dma_dir(priv, id));
-+				     gve_qpl_dma_dir(priv, id), GFP_KERNEL);
- 		/* caller handles clean up */
- 		if (err)
- 			return -ENOMEM;
-diff --git a/drivers/net/ethernet/google/gve/gve_rx.c b/drivers/net/ethernet/google/gve/gve_rx.c
-index 16169f291ad9f..629d8ed08fc61 100644
---- a/drivers/net/ethernet/google/gve/gve_rx.c
-+++ b/drivers/net/ethernet/google/gve/gve_rx.c
-@@ -79,7 +79,8 @@ static int gve_rx_alloc_buffer(struct gve_priv *priv, struct device *dev,
- 	dma_addr_t dma;
- 	int err;
- 
--	err = gve_alloc_page(priv, dev, &page, &dma, DMA_FROM_DEVICE);
-+	err = gve_alloc_page(priv, dev, &page, &dma, DMA_FROM_DEVICE,
-+			     GFP_ATOMIC);
- 	if (err)
- 		return err;
- 
-diff --git a/drivers/net/ethernet/google/gve/gve_rx_dqo.c b/drivers/net/ethernet/google/gve/gve_rx_dqo.c
-index 8500621b2cd41..7b18b4fd9e548 100644
---- a/drivers/net/ethernet/google/gve/gve_rx_dqo.c
-+++ b/drivers/net/ethernet/google/gve/gve_rx_dqo.c
-@@ -157,7 +157,7 @@ static int gve_alloc_page_dqo(struct gve_priv *priv,
- 	int err;
- 
- 	err = gve_alloc_page(priv, &priv->pdev->dev, &buf_state->page_info.page,
--			     &buf_state->addr, DMA_FROM_DEVICE);
-+			     &buf_state->addr, DMA_FROM_DEVICE, GFP_KERNEL);
- 	if (err)
- 		return err;
- 
--- 
-2.34.1
-
++	/* Allocate last queue in the pile for FDIR VSI queue
++	 * so it doesn't fragment the qp_pile
++	 */
++	if (pile == pf->qp_pile && pf->vsi[id]->type == I40E_VSI_FDIR) {
++		if (pile->list[pile->num_entries - 1] & I40E_PILE_VALID_BIT) {
++			dev_err(&pf->pdev->dev,
++				"Cannot allocate queue %d for I40E_VSI_FDIR\n",
++				pile->num_entries - 1);
++			return -ENOMEM;
++		}
++		pile->list[pile->num_entries - 1] = id | I40E_PILE_VALID_BIT;
++		return pile->num_entries - 1;
++	}
++
+ 	i = 0;
+ 	while (i < pile->num_entries) {
+ 		/* skip already allocated entries */
 
 
