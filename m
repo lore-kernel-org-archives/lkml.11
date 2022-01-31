@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FF4FC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0993C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378833AbiAaL3V (ORCPT
+        id S1378880AbiAaL31 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:29:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47586 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377884AbiAaLTO (ORCPT
+        Mon, 31 Jan 2022 06:29:27 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:52206 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1378381AbiAaLUG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:19:14 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ADD2C06135E;
-        Mon, 31 Jan 2022 03:11:48 -0800 (PST)
+        Mon, 31 Jan 2022 06:20:06 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DF58E60F96;
-        Mon, 31 Jan 2022 11:11:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA610C36AE2;
-        Mon, 31 Jan 2022 11:11:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A9B5F6114C;
+        Mon, 31 Jan 2022 11:20:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7161BC340E8;
+        Mon, 31 Jan 2022 11:20:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627507;
-        bh=rEqdq7v63HYoM1RUtMY3FTYSi4VVJnZarw6/dAiwbJE=;
+        s=korg; t=1643628005;
+        bh=yo2HdgKuwvwA7p/MnrO/cT8+coYM6M44nJwMQhWhpX8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=biLKh+mxPlcr9kkfT2gmwdXWXNiVUid9ptMKbDjyooN0VRErAJwdy9fAYnUjac8/5
-         EHyKVVVxilvoPX0LGIDVfjA4IfUEWfTxa5zpl0NQxpsIwSU+o6IEqsxd/4Y68B1j7q
-         Xs8fu0giwjfZvjsfhiCCR8nUHJAUOCMr+kAHKiTw=
+        b=xPTEsvTl44KUnQsk+BA/dkU+RZtvVjJy1NgozRDYBMFlj7AlFLw5CzBzfvsT83XY0
+         jIP3a5xHNdVxaZ+i9JdHQe8IjSXoSvk4gJ7Y7UZKCiT0uRjNfMttjVThGZ0l5YNF+d
+         daaVkfwkzyLvITMgZlDi95v/x7EkxZymFz1szRCE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nicholas Piggin <npiggin@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 107/171] powerpc/64s: Mask SRR0 before checking against the masked NIP
-Date:   Mon, 31 Jan 2022 11:56:12 +0100
-Message-Id: <20220131105233.660265910@linuxfoundation.org>
+        stable@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
+        Evgenii Stepanov <eugenis@google.com>,
+        Catalin Marinas <catalin.marinas@arm.com>
+Subject: [PATCH 5.16 061/200] arm64: extable: fix load_unaligned_zeropad() reg indices
+Date:   Mon, 31 Jan 2022 11:55:24 +0100
+Message-Id: <20220131105235.627000123@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
-References: <20220131105229.959216821@linuxfoundation.org>
+In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
+References: <20220131105233.561926043@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,59 +47,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicholas Piggin <npiggin@gmail.com>
+From: Evgenii Stepanov <eugenis@google.com>
 
-[ Upstream commit aee101d7b95a03078945681dd7f7ea5e4a1e7686 ]
+commit 3758a6c74e08bdc15ccccd6872a6ad37d165239a upstream.
 
-Commit 314f6c23dd8d ("powerpc/64s: Mask NIP before checking against
-SRR0") masked off the low 2 bits of the NIP value in the interrupt
-stack frame in case they are non-zero and mis-compare against a SRR0
-register value of a CPU which always reads back 0 from the 2 low bits
-which are reserved.
+In ex_handler_load_unaligned_zeropad() we erroneously extract the data and
+addr register indices from ex->type rather than ex->data. As ex->type will
+contain EX_TYPE_LOAD_UNALIGNED_ZEROPAD (i.e. 4):
+ * We'll always treat X0 as the address register, since EX_DATA_REG_ADDR is
+   extracted from bits [9:5]. Thus, we may attempt to dereference an
+   arbitrary address as X0 may hold an arbitrary value.
+ * We'll always treat X4 as the data register, since EX_DATA_REG_DATA is
+   extracted from bits [4:0]. Thus we will corrupt X4 and cause arbitrary
+   behaviour within load_unaligned_zeropad() and its caller.
 
-This now causes the opposite problem that an implementation which does
-implement those bits in SRR0 will mis-compare against the masked NIP
-value in which they have been cleared. QEMU is one such implementation,
-and this is allowed by the architecture.
+Fix this by extracting both values from ex->data as originally intended.
 
-This can be triggered by sigfuz by setting low bits of PT_NIP in the
-signal context.
+On an MTE-enabled QEMU image we are hitting the following crash:
+ Unable to handle kernel NULL pointer dereference at virtual address 0000000000000000
+ Call trace:
+  fixup_exception+0xc4/0x108
+  __do_kernel_fault+0x3c/0x268
+  do_tag_check_fault+0x3c/0x104
+  do_mem_abort+0x44/0xf4
+  el1_abort+0x40/0x64
+  el1h_64_sync_handler+0x60/0xa0
+  el1h_64_sync+0x7c/0x80
+  link_path_walk+0x150/0x344
+  path_openat+0xa0/0x7dc
+  do_filp_open+0xb8/0x168
+  do_sys_openat2+0x88/0x17c
+  __arm64_sys_openat+0x74/0xa0
+  invoke_syscall+0x48/0x148
+  el0_svc_common+0xb8/0xf8
+  do_el0_svc+0x28/0x88
+  el0_svc+0x24/0x84
+  el0t_64_sync_handler+0x88/0xec
+  el0t_64_sync+0x1b4/0x1b8
+ Code: f8695a69 71007d1f 540000e0 927df12a (f940014a)
 
-Fix this for now by masking the SRR0 bits as well. Cleaner is probably
-to sanitise these values before putting them in registers or stack, but
-this is the quick and backportable fix.
-
-Fixes: 314f6c23dd8d ("powerpc/64s: Mask NIP before checking against SRR0")
-Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220117134403.2995059-1-npiggin@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 753b32368705 ("arm64: extable: add load_unaligned_zeropad() handler")
+Cc: <stable@vger.kernel.org> # 5.16.x
+Reviewed-by: Mark Rutland <mark.rutland@arm.com>
+Signed-off-by: Evgenii Stepanov <eugenis@google.com>
+Link: https://lore.kernel.org/r/20220125182217.2605202-1-eugenis@google.com
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/kernel/interrupt_64.S | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm64/mm/extable.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/powerpc/kernel/interrupt_64.S b/arch/powerpc/kernel/interrupt_64.S
-index 4b1ff94e67eb4..4c6d1a8dcefed 100644
---- a/arch/powerpc/kernel/interrupt_64.S
-+++ b/arch/powerpc/kernel/interrupt_64.S
-@@ -30,6 +30,7 @@ COMPAT_SYS_CALL_TABLE:
- 	.ifc \srr,srr
- 	mfspr	r11,SPRN_SRR0
- 	ld	r12,_NIP(r1)
-+	clrrdi  r11,r11,2
- 	clrrdi  r12,r12,2
- 100:	tdne	r11,r12
- 	EMIT_WARN_ENTRY 100b,__FILE__,__LINE__,(BUGFLAG_WARNING | BUGFLAG_ONCE)
-@@ -40,6 +41,7 @@ COMPAT_SYS_CALL_TABLE:
- 	.else
- 	mfspr	r11,SPRN_HSRR0
- 	ld	r12,_NIP(r1)
-+	clrrdi  r11,r11,2
- 	clrrdi  r12,r12,2
- 100:	tdne	r11,r12
- 	EMIT_WARN_ENTRY 100b,__FILE__,__LINE__,(BUGFLAG_WARNING | BUGFLAG_ONCE)
--- 
-2.34.1
-
+--- a/arch/arm64/mm/extable.c
++++ b/arch/arm64/mm/extable.c
+@@ -43,8 +43,8 @@ static bool
+ ex_handler_load_unaligned_zeropad(const struct exception_table_entry *ex,
+ 				  struct pt_regs *regs)
+ {
+-	int reg_data = FIELD_GET(EX_DATA_REG_DATA, ex->type);
+-	int reg_addr = FIELD_GET(EX_DATA_REG_ADDR, ex->type);
++	int reg_data = FIELD_GET(EX_DATA_REG_DATA, ex->data);
++	int reg_addr = FIELD_GET(EX_DATA_REG_ADDR, ex->data);
+ 	unsigned long data, addr, offset;
+ 
+ 	addr = pt_regs_read_reg(regs, reg_addr);
 
 
