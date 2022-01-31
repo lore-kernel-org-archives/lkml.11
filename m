@@ -2,126 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F68BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 21:52:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16039C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 21:58:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377210AbiAaVwt (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 16:52:49 -0500
-Received: from pop31.abv.bg ([194.153.145.221]:52612 "EHLO pop31.abv.bg"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1376500AbiAaVwo (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 16:52:44 -0500
-X-Greylist: delayed 514 seconds by postgrey-1.27 at vger.kernel.org; Mon, 31 Jan 2022 16:52:42 EST
-Received: from smtp.abv.bg (localhost [127.0.0.1])
-        by pop31.abv.bg (Postfix) with ESMTP id 698A3180AA91;
-        Mon, 31 Jan 2022 23:43:58 +0200 (EET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=abv.bg; s=smtp-out;
-        t=1643665438; bh=iWjdHNIDwdz1nE3eZyu9fh57i4nneBCZfkedFsbdT+w=;
-        h=Subject:From:In-Reply-To:Date:Cc:References:To:From;
-        b=R2VKrYYtGHF5MBJ0WVuFEY2D3T94n180PVbGEOfvGkBFfz1KZb7Bp5EKbjept1XSo
-         t+iP1ccWRlHWkZkWf8kmIHuzmJkzkt2i0DLZIaJ2/Rk6+U2lB6eGf/8rWv3HmeM7de
-         oSCn2EQAWStyRxZHge4JZBAd2hsll1GeL3F3eDo0=
-X-HELO: smtpclient.apple
-Authentication-Results: smtp.abv.bg; auth=pass (plain) smtp.auth=gvalkov@abv.bg
-Received: from 212-39-89-254.ip.btc-net.bg (HELO smtpclient.apple) (212.39.89.254)
- by smtp.abv.bg (qpsmtpd/0.96) with ESMTPSA (ECDHE-RSA-AES256-GCM-SHA384 encrypted); Mon, 31 Jan 2022 23:43:58 +0200
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.120.0.1.13\))
-Subject: Re: ipheth: fix EOVERFLOW in ipheth_rcvbulk_callback
-From:   Georgi Valkov <gvalkov@abv.bg>
-In-Reply-To: <6108f260-36bf-0059-ccb9-8189f4a2d0c1@siemens.com>
-Date:   Mon, 31 Jan 2022 23:43:52 +0200
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>, davem@davemloft.net,
-        mhabets@solarflare.com, luc.vanoostenryck@gmail.com,
-        snelson@pensando.io, mst@redhat.com, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        corsac@corsac.net, matti.vuorela@bitfactor.fi,
-        stable@vger.kernel.org
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <FF6FFC1F-0AE9-4253-B55E-755BB90C4DBA@abv.bg>
-References: <B60B8A4B-92A0-49B3-805D-809A2433B46C@abv.bg>
- <20210720122215.54abaf53@cakuba>
- <5D0CFF83-439B-4A10-A276-D2D17B037704@abv.bg> <YPa4ZelG2k8Z826E@kroah.com>
- <C6AA954F-8382-461D-835F-E5CA03363D84@abv.bg> <YPbHoScEo8ZJyox6@kroah.com>
- <AEC79E3B-FA7F-4A36-95CE-B6D0F3063DF8@abv.bg>
- <80a13e9b-e026-1238-39ed-32deb5ff17b0@siemens.com>
- <20220131092726.3864b19f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <6108f260-36bf-0059-ccb9-8189f4a2d0c1@siemens.com>
-To:     Jan Kiszka <jan.kiszka@siemens.com>
-X-Mailer: Apple Mail (2.3654.120.0.1.13)
+        id S229699AbiAaV5f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 31 Jan 2022 16:57:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55716 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229656AbiAaV4n (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 16:56:43 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BA88C06173D
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 13:56:41 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C4F8ECE16B0
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 21:56:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5412C340E8;
+        Mon, 31 Jan 2022 21:56:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643666197;
+        bh=fNjP8t8IBPKAyOf9ib85b9Df/Qt+zaNdYUrlhsIAJhM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=nUVHoSSHYRBm5Zgb54B9KrqXdnGD1sZY/re2bTMa2GWlVtLGbxrudZpHkx014b4vG
+         Gj8v7qj6BDdtYZOkop2QMBrjm8++vKhhgyvM7dxKqjfq31TC6TH/zx1LFmmrUUR7bJ
+         JeD+Nyncgii5Mu8n1mr62Hc4UXHitGajsFkkOWQN/Nk01guhV0YnZGyh/woczQBc8R
+         7BiclQxnt+87c/cVOMC1Ypp3HeAR4M8CpQhDwk11Oz5/KkEd2GgTbWYIhk/oz1f3AI
+         BZ0bgFswBLs7K9nwfBkSAxOxqmwgy/8NGAqAp8zFiN8bsQUJRNXd5v8BKo13NNlgDM
+         PphogOu5cSu+w==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 0298140466; Mon, 31 Jan 2022 18:56:33 -0300 (-03)
+Date:   Mon, 31 Jan 2022 18:56:33 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>
+Cc:     Jiri Olsa <jolsa@redhat.com>, Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Alexander Antonov <alexander.antonov@linux.intel.com>,
+        Alexei Budankov <abudankov@huawei.com>,
+        Riccardo Mancini <rickyman7@gmail.com>
+Subject: Re: [PATCH v13 10/16] perf record: Introduce compressor at mmap
+ buffer object
+Message-ID: <YfhbEd/QYIZzsgw2@kernel.org>
+References: <cover.1642440724.git.alexey.v.bayduraev@linux.intel.com>
+ <80edc286cf6543139a7d5a91217605123aa0b50d.1642440724.git.alexey.v.bayduraev@linux.intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <80edc286cf6543139a7d5a91217605123aa0b50d.1642440724.git.alexey.v.bayduraev@linux.intel.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Em Mon, Jan 17, 2022 at 09:34:30PM +0300, Alexey Bayduraev escreveu:
+> Introduce compressor object into mmap object so it could be used to
+> pack the data stream from the corresponding kernel data buffer.
+> Initialize and make use of the introduced per mmap compressor.
+> 
+> Acked-by: Andi Kleen <ak@linux.intel.com>
+> Acked-by: Namhyung Kim <namhyung@gmail.com>
+> Signed-off-by: Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>
+> ---
+>  tools/perf/builtin-record.c | 18 +++++++++++-------
+>  tools/perf/util/mmap.c      | 10 ++++++++++
+>  tools/perf/util/mmap.h      |  2 ++
+>  3 files changed, 23 insertions(+), 7 deletions(-)
+> 
+> diff --git a/tools/perf/builtin-record.c b/tools/perf/builtin-record.c
+> index 50981bbc98bb..7d0338b5a0e3 100644
+> --- a/tools/perf/builtin-record.c
+> +++ b/tools/perf/builtin-record.c
+> @@ -246,8 +246,8 @@ static int record__write(struct record *rec, struct mmap *map __maybe_unused,
+>  
+>  static int record__aio_enabled(struct record *rec);
+>  static int record__comp_enabled(struct record *rec);
+> -static size_t zstd_compress(struct perf_session *session, void *dst, size_t dst_size,
+> -			    void *src, size_t src_size);
+> +static size_t zstd_compress(struct perf_session *session, struct mmap *map,
+> +			    void *dst, size_t dst_size, void *src, size_t src_size);
+>  
+>  #ifdef HAVE_AIO_SUPPORT
+>  static int record__aio_write(struct aiocb *cblock, int trace_fd,
+> @@ -381,7 +381,7 @@ static int record__aio_pushfn(struct mmap *map, void *to, void *buf, size_t size
+>  	 */
+>  
+>  	if (record__comp_enabled(aio->rec)) {
+> -		size = zstd_compress(aio->rec->session, aio->data + aio->size,
+> +		size = zstd_compress(aio->rec->session, NULL, aio->data + aio->size,
+>  				     mmap__mmap_len(map) - aio->size,
+>  				     buf, size);
+>  	} else {
+> @@ -608,7 +608,7 @@ static int record__pushfn(struct mmap *map, void *to, void *bf, size_t size)
+>  	struct record *rec = to;
+>  
+>  	if (record__comp_enabled(rec)) {
+> -		size = zstd_compress(rec->session, map->data, mmap__mmap_len(map), bf, size);
+> +		size = zstd_compress(rec->session, map, map->data, mmap__mmap_len(map), bf, size);
+>  		bf   = map->data;
+>  	}
+>  
+> @@ -1394,13 +1394,17 @@ static size_t process_comp_header(void *record, size_t increment)
+>  	return size;
+>  }
+>  
+> -static size_t zstd_compress(struct perf_session *session, void *dst, size_t dst_size,
+> -			    void *src, size_t src_size)
+> +static size_t zstd_compress(struct perf_session *session, struct mmap *map,
+> +			    void *dst, size_t dst_size, void *src, size_t src_size)
+>  {
+>  	size_t compressed;
+>  	size_t max_record_size = PERF_SAMPLE_MAX_SIZE - sizeof(struct perf_record_compressed) - 1;
+> +	struct zstd_data *zstd_data = &session->zstd_data;
+>  
+> -	compressed = zstd_compress_stream_to_records(&session->zstd_data, dst, dst_size, src, src_size,
+> +	if (map && map->file)
+> +		zstd_data = &map->zstd_data;
+> +
+> +	compressed = zstd_compress_stream_to_records(zstd_data, dst, dst_size, src, src_size,
+>  						     max_record_size, process_comp_header);
+>  
+>  	session->bytes_transferred += src_size;
+> diff --git a/tools/perf/util/mmap.c b/tools/perf/util/mmap.c
+> index 12261ed8c15b..8bf97d9b8424 100644
+> --- a/tools/perf/util/mmap.c
+> +++ b/tools/perf/util/mmap.c
+> @@ -230,6 +230,10 @@ void mmap__munmap(struct mmap *map)
+>  {
+>  	bitmap_free(map->affinity_mask.bits);
+>  
+> +#ifndef PYTHON_PERF
+> +	zstd_fini(&map->zstd_data);
+> +#endif
+> +
 
+Exposing this build detail in the main source code seems ugly, casual
+readers will scratch their heads trying to figure this out, so either
+we should have this behind some macro that hides these deps on a header
+file or add a comment stating why this is needed.
+	
 
-> On 2022-01-31, at 7:35 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
->=20
-> On 31.01.22 18:27, Jakub Kicinski wrote:
->> On Mon, 31 Jan 2022 10:45:23 +0100 Jan Kiszka wrote:
->>> On 20.07.21 15:12, Georgi Valkov wrote:
->>>> Thank you, Greg!
->>>>=20
->>>> git send-email =
-drivers/net/0001-ipheth-fix-EOVERFLOW-in-ipheth_rcvbulk_callback.patch
->>>> ...
->>>> Result: OK
->>>>=20
->>>> I hope I got right. I added most of the e-mail addresses, and also =
-tried adding Message-Id.
->>>> I have not received the e-mail yet, so I cannot confirm if it =
-worked or not.
->>>>  =20
->>>=20
->>> What happened here afterwards?
->>>=20
->>> I just found out the hard way that this patch is still not in =
-mainline
->>> but really needed.
->> I have not seen the repost :(
->=20
-> Would it help if I do that on behalf of Georgi? Meanwhile, I can add a =
-tested-by to it, after almost a full working day with it applied.
+>  	perf_mmap__aio_munmap(map);
+>  	if (map->data != NULL) {
+>  		munmap(map->data, mmap__mmap_len(map));
+> @@ -292,6 +296,12 @@ int mmap__mmap(struct mmap *map, struct mmap_params *mp, int fd, struct perf_cpu
+>  	map->core.flush = mp->flush;
+>  
+>  	map->comp_level = mp->comp_level;
+> +#ifndef PYTHON_PERF
+> +	if (zstd_init(&map->zstd_data, map->comp_level)) {
+> +		pr_debug2("failed to init mmap commpressor, error %d\n", errno);
+> +		return -1;
+> +	}
+> +#endif
+>  
+>  	if (map->comp_level && !perf_mmap__aio_enabled(map)) {
+>  		map->data = mmap(NULL, mmap__mmap_len(map), PROT_READ|PROT_WRITE,
+> diff --git a/tools/perf/util/mmap.h b/tools/perf/util/mmap.h
+> index 62f38d7977bb..cd8b0777473b 100644
+> --- a/tools/perf/util/mmap.h
+> +++ b/tools/perf/util/mmap.h
+> @@ -15,6 +15,7 @@
+>  #endif
+>  #include "auxtrace.h"
+>  #include "event.h"
+> +#include "util/compress.h"
+>  
+>  struct aiocb;
+>  
+> @@ -46,6 +47,7 @@ struct mmap {
+>  	void		*data;
+>  	int		comp_level;
+>  	struct perf_data_file *file;
+> +	struct zstd_data      zstd_data;
+>  };
+>  
+>  struct mmap_params {
+> -- 
+> 2.19.0
 
-Yes, please do it! The faster it gets mainline, the more people will =
-benefit from the fix. As far as I recall, some months ago someone asked =
-me to submit the patch using git mail or something like that, which I =
-did for the first time. It command reported success, but I did not get =
-any replays since then from anyone. I intended to resubmit it the =
-following week, but got overwhelmed by tasks, and the time passed. =
-Meanwhile I still keep the patch in GitHub/httpstorm/openwrt, brach =
-gvalkov. No changes are required since the original e-mail, so it can be =
-submitted to mainline.
+-- 
 
-There is another issue with my iPhone 7 Plus, which is unrelated to this =
-patch:
-If an iPhone is tethered to a MacBook, the next time it gets connected =
-to an OpenWRT router the USB Ethernet interface appears, but there is no =
-communication. Hence I would assume this unrelated issue also has to be =
-fixed in another patch. I can confirm that in this state macOS and =
-Windows are able to use USB tethering, only OpenWRT is affected. So far =
-I found the following workarounds:
-* reboot the phone or run:
-* usbreset 002/002 && /etc/init.d/usbmuxd restart
-
-The same happens if the phone reboots due to extreme cold temperatures =
-while tethered. Finally there is also a bug or possible =
-hardware/baseband fault in my phone where every few days the modem =
-reboots: the LTE icon disappears for a few seconds, and tethering is =
-turned off. Either way, running the commands mentioned above re-enable =
-tethering and restore the communication instantly. It would be nice if a =
-watchdog is integrated in ipheth to trigger recovery automatically.
-
-Georgi Valkov
-
-
-> Jan
->=20
-> --=20
-> Siemens AG, Technology
-> Competence Center Embedded Linux
->=20
-
+- Arnaldo
