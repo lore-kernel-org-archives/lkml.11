@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B54F6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:37:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9D4BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:37:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358951AbiAaLhB (ORCPT
+        id S1378038AbiAaLhN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:37:01 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:42224 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350836AbiAaLYp (ORCPT
+        Mon, 31 Jan 2022 06:37:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47974 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350380AbiAaLYy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:24:45 -0500
+        Mon, 31 Jan 2022 06:24:54 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C3ABC08E90D;
+        Mon, 31 Jan 2022 03:15:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C2704B82A64;
-        Mon, 31 Jan 2022 11:24:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9B67C340E8;
-        Mon, 31 Jan 2022 11:24:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2DCAEB82A76;
+        Mon, 31 Jan 2022 11:15:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DD92C340E8;
+        Mon, 31 Jan 2022 11:15:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643628281;
-        bh=kqixgHuG+URH4/WIHqTyBQYlAt5GsN60kfi/ZYQmzI4=;
+        s=korg; t=1643627719;
+        bh=6KaW5Y5nA33xZyeLXiMYIERa4OTwAfNGh5VGj+IhCh8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hHUoGif49gUlXN36MVlBIIJDNFKFMhugZ+F3Ac2nP/IKQqX8b/gfnffKlHWuNZAXh
-         UihWTKgnzBvU9xoy9yORD0X8eOX3WGGizfWg7KIYDdtxbagI/vZZKkDFKDMYroJrXW
-         R6BQdn3ar7v/yJ4NjT5kzFTlIk64361tevfb6dkw=
+        b=U2hU0I6uLWLpaqXRk0tfG0DwbjAmUm+ldsR1rW1L2fd18gb0Q4ZTsdWG5MSiIVRqs
+         7qQpAtTzt3qNQOAlk0Dn2aFhyapNLiyyTlDpC9vKC1m2n+s1L1dcl6uNY1bEPyp1Vo
+         3OPY5wUoLStyutdK/BXwy99f+6LqGUaQfyof6AGE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Dmitry Osipenko <digetx@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 183/200] ipv4: raw: lock the socket in raw_bind()
-Date:   Mon, 31 Jan 2022 11:57:26 +0100
-Message-Id: <20220131105239.705948913@linuxfoundation.org>
+Subject: [PATCH 5.15 132/171] hwmon: (lm90) Re-enable interrupts after alert clears
+Date:   Mon, 31 Jan 2022 11:56:37 +0100
+Message-Id: <20220131105234.476637088@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
-References: <20220131105233.561926043@linuxfoundation.org>
+In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
+References: <20220131105229.959216821@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,76 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Guenter Roeck <linux@roeck-us.net>
 
-[ Upstream commit 153a0d187e767c68733b8e9f46218eb1f41ab902 ]
+[ Upstream commit bc341a1a98827925082e95db174734fc8bd68af6 ]
 
-For some reason, raw_bind() forgot to lock the socket.
+If alert handling is broken, interrupts are disabled after an alert and
+re-enabled after the alert clears. However, if there is an interrupt
+handler, this does not apply if alerts were originally disabled and enabled
+when the driver was loaded. In that case, interrupts will stay disabled
+after an alert was handled though the alert handler even after the alert
+condition clears. Address the situation by always re-enabling interrupts
+after the alert condition clears if there is an interrupt handler.
 
-BUG: KCSAN: data-race in __ip4_datagram_connect / raw_bind
-
-write to 0xffff8881170d4308 of 4 bytes by task 5466 on cpu 0:
- raw_bind+0x1b0/0x250 net/ipv4/raw.c:739
- inet_bind+0x56/0xa0 net/ipv4/af_inet.c:443
- __sys_bind+0x14b/0x1b0 net/socket.c:1697
- __do_sys_bind net/socket.c:1708 [inline]
- __se_sys_bind net/socket.c:1706 [inline]
- __x64_sys_bind+0x3d/0x50 net/socket.c:1706
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-read to 0xffff8881170d4308 of 4 bytes by task 5468 on cpu 1:
- __ip4_datagram_connect+0xb7/0x7b0 net/ipv4/datagram.c:39
- ip4_datagram_connect+0x2a/0x40 net/ipv4/datagram.c:89
- inet_dgram_connect+0x107/0x190 net/ipv4/af_inet.c:576
- __sys_connect_file net/socket.c:1900 [inline]
- __sys_connect+0x197/0x1b0 net/socket.c:1917
- __do_sys_connect net/socket.c:1927 [inline]
- __se_sys_connect net/socket.c:1924 [inline]
- __x64_sys_connect+0x3d/0x50 net/socket.c:1924
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-value changed: 0x00000000 -> 0x0003007f
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 1 PID: 5468 Comm: syz-executor.5 Not tainted 5.17.0-rc1-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 2abdc357c55d9 ("hwmon: (lm90) Unmask hardware interrupt")
+Cc: Dmitry Osipenko <digetx@gmail.com>
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/raw.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/hwmon/lm90.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/ipv4/raw.c b/net/ipv4/raw.c
-index bb446e60cf580..b8689052079cd 100644
---- a/net/ipv4/raw.c
-+++ b/net/ipv4/raw.c
-@@ -721,6 +721,7 @@ static int raw_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len)
- 	int ret = -EINVAL;
- 	int chk_addr_ret;
- 
-+	lock_sock(sk);
- 	if (sk->sk_state != TCP_CLOSE || addr_len < sizeof(struct sockaddr_in))
- 		goto out;
- 
-@@ -740,7 +741,9 @@ static int raw_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len)
- 		inet->inet_saddr = 0;  /* Use device */
- 	sk_dst_reset(sk);
- 	ret = 0;
--out:	return ret;
-+out:
-+	release_sock(sk);
-+	return ret;
- }
- 
- /*
+diff --git a/drivers/hwmon/lm90.c b/drivers/hwmon/lm90.c
+index cc5e48fe304b1..e4ecf3440d7cf 100644
+--- a/drivers/hwmon/lm90.c
++++ b/drivers/hwmon/lm90.c
+@@ -848,7 +848,7 @@ static int lm90_update_device(struct device *dev)
+ 		 * Re-enable ALERT# output if it was originally enabled and
+ 		 * relevant alarms are all clear
+ 		 */
+-		if (!(data->config_orig & 0x80) &&
++		if ((client->irq || !(data->config_orig & 0x80)) &&
+ 		    !(data->alarms & data->alert_alarms)) {
+ 			if (data->config & 0x80) {
+ 				dev_dbg(&client->dev, "Re-enabling ALERT#\n");
 -- 
 2.34.1
 
