@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24BFBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:50:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97106C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:50:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378261AbiAaLu0 (ORCPT
+        id S1350886AbiAaLuf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:50:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52598 "EHLO
+        Mon, 31 Jan 2022 06:50:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240459AbiAaLkW (ORCPT
+        with ESMTP id S1350277AbiAaLk0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:40:22 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4189DC034613;
-        Mon, 31 Jan 2022 03:25:50 -0800 (PST)
+        Mon, 31 Jan 2022 06:40:26 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCC18C061753;
+        Mon, 31 Jan 2022 03:25:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 04C15B82A74;
-        Mon, 31 Jan 2022 11:25:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26C99C340E8;
-        Mon, 31 Jan 2022 11:25:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 79B09612E1;
+        Mon, 31 Jan 2022 11:25:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 598F3C340E8;
+        Mon, 31 Jan 2022 11:25:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643628347;
-        bh=GCvIH/oJjBW/EhQKy4afOvfc/4c+zPQYSjPhbyL4AIs=;
+        s=korg; t=1643628350;
+        bh=9Paiirp5TS2e1cBE9aZOefDP4gRIXS1WodwPA4U4pHE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D6tyqyspCP1MeC9vBPFsSyY/C0k9nLoseY+zuRiruAHvqzR0F+eFVuDWEgoTUqQng
-         D4Gs8x7Qi1PByLpLpFNrB34LzhCzvIydP0sKBwoybLTyRS3cQKZBiaCxP1pHmOIvct
-         LI5Np1pXgvl5YOBfbSDcDX2QEx7zInGDCsCOl2+Y=
+        b=ipZylJFfYoYJmbDj5dvk8sA4ITdTAbsWI4JPrxS5i60jACJ810L8L9XElp64vnwFz
+         CuT6ZMSl0fTlfxGxSU8sQqbCuHlMa4muD3eEhwaQDYA/OHacD1Dwl2L2fmZF3zRm1s
+         IzVKkAKJVdJBrZOMlcyd4uwkyYelZKzKZacdPMp8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        stable@vger.kernel.org, Danylo Piliaiev <dpiliaiev@igalia.com>,
+        Rob Clark <robdclark@chromium.org>,
         Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 170/200] drm/msm/dpu: invalid parameter check in dpu_setup_dspp_pcc
-Date:   Mon, 31 Jan 2022 11:57:13 +0100
-Message-Id: <20220131105239.275458113@linuxfoundation.org>
+Subject: [PATCH 5.16 171/200] drm/msm/a6xx: Add missing suspend_count increment
+Date:   Mon, 31 Jan 2022 11:57:14 +0100
+Message-Id: <20220131105239.305395468@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -51,49 +51,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: José Expósito <jose.exposito89@gmail.com>
+From: Rob Clark <robdclark@chromium.org>
 
-[ Upstream commit 170b22234d5495f5e0844246e23f004639ee89ba ]
+[ Upstream commit 860a7b2a87b7c743154824d0597b6c3eb3b53154 ]
 
-The function performs a check on the "ctx" input parameter, however, it
-is used before the check.
-
-Initialize the "base" variable after the sanity check to avoid a
-possible NULL pointer dereference.
-
-Fixes: 4259ff7ae509e ("drm/msm/dpu: add support for pcc color block in dpu driver")
-Addresses-Coverity-ID: 1493866 ("Null pointer dereference")
-Signed-off-by: José Expósito <jose.exposito89@gmail.com>
-Link: https://lore.kernel.org/r/20220109192431.135949-1-jose.exposito89@gmail.com
+Reported-by: Danylo Piliaiev <dpiliaiev@igalia.com>
+Fixes: 3ab1c5cc3939 ("drm/msm: Add param for userspace to query suspend count")
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Link: https://lore.kernel.org/r/20220113163215.215367-1-robdclark@gmail.com
 Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dspp.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dspp.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dspp.c
-index a98e964c3b6fa..355894a3b48c3 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dspp.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dspp.c
-@@ -26,9 +26,16 @@ static void dpu_setup_dspp_pcc(struct dpu_hw_dspp *ctx,
- 		struct dpu_hw_pcc_cfg *cfg)
- {
+diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+index 78aad5216a613..a305ff7e8c6fb 100644
+--- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
++++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+@@ -1557,6 +1557,8 @@ static int a6xx_pm_suspend(struct msm_gpu *gpu)
+ 		for (i = 0; i < gpu->nr_rings; i++)
+ 			a6xx_gpu->shadow[i] = 0;
  
--	u32 base = ctx->cap->sblk->pcc.base;
-+	u32 base;
++	gpu->suspend_count++;
++
+ 	return 0;
+ }
  
--	if (!ctx || !base) {
-+	if (!ctx) {
-+		DRM_ERROR("invalid ctx %pK\n", ctx);
-+		return;
-+	}
-+
-+	base = ctx->cap->sblk->pcc.base;
-+
-+	if (!base) {
- 		DRM_ERROR("invalid ctx %pK pcc base 0x%x\n", ctx, base);
- 		return;
- 	}
 -- 
 2.34.1
 
