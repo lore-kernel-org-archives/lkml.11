@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 119D4C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22240C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378290AbiAaL2R (ORCPT
+        id S1378306AbiAaL2V (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:28:17 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:38490 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378270AbiAaLTz (ORCPT
+        Mon, 31 Jan 2022 06:28:21 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:49820 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1376775AbiAaLQY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:19:55 -0500
+        Mon, 31 Jan 2022 06:16:24 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3A066B82A5C;
-        Mon, 31 Jan 2022 11:19:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4227AC340E8;
-        Mon, 31 Jan 2022 11:19:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A9B21611D6;
+        Mon, 31 Jan 2022 11:16:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83DB9C340E8;
+        Mon, 31 Jan 2022 11:16:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627992;
-        bh=IaqLZl+CdXYL64x6EZzxtDxk/aOj4h8gnttrGM8rZnM=;
+        s=korg; t=1643627783;
+        bh=xpyLcomK8xH4GvgyWZ/0+QziSchBb1NMFls8dDiycGM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ly49jgZKwtqnlozoATkQN7uM1bB0k023+3EJpLEpsYoERnWTMQOhygGI5EkQd+8UT
-         Wd/tCWRbj++dC2b4Fhr6JkvyUSfW9HwPkbZK9YXGclO+ZnN2XK+R1anPiSWsQRiEYP
-         x6IAbuYiCqoNmNvUQ1cz/CABtUINPUqXzZ5rU0kY=
+        b=qO0/Kvl4mMMZPZrKGFHSJDYslb/DTH1BweGHNF+ceIQku3xMQGY4eq6LVAsoEFLzU
+         H6RT//iDAJvA3z4LbqZgdUVleBUcurytSpuZYbBEVCqCc0izRhZI0K1pKP/1K/sZ8W
+         XdXpC2zhPIQcCcLgyznWGEuUMWeZr85yvRGtsb8g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>
-Subject: [PATCH 5.16 089/200] sched/membarrier: Fix membarrier-rseq fence command missing from query bitmask
-Date:   Mon, 31 Jan 2022 11:55:52 +0100
-Message-Id: <20220131105236.604221272@linuxfoundation.org>
+        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
+        Filipe Manana <fdmanana@suse.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.16 006/200] btrfs: fix deadlock when reserving space during defrag
+Date:   Mon, 31 Jan 2022 11:54:29 +0100
+Message-Id: <20220131105233.776255625@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -47,65 +47,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+From: Filipe Manana <fdmanana@suse.com>
 
-commit 809232619f5b15e31fb3563985e705454f32621f upstream.
+commit 0cb5950f3f3b51a4e8657d106f897f2b913e0586 upstream.
 
-The membarrier command MEMBARRIER_CMD_QUERY allows querying the
-available membarrier commands. When the membarrier-rseq fence commands
-were added, a new MEMBARRIER_CMD_PRIVATE_EXPEDITED_RSEQ_BITMASK was
-introduced with the intent to expose them with the MEMBARRIER_CMD_QUERY
-command, the but it was never added to MEMBARRIER_CMD_BITMASK.
+When defragging we can end up collecting a range for defrag that has
+already pages under delalloc (dirty), as long as the respective extent
+map for their range is not mapped to a hole, a prealloc extent or
+the extent map is from an old generation.
 
-The membarrier-rseq fence commands are therefore not wired up with the
-query command.
+Most of the time that is harmless from a functional perspective at
+least, however it can result in a deadlock:
 
-Rename MEMBARRIER_CMD_PRIVATE_EXPEDITED_RSEQ_BITMASK to
-MEMBARRIER_PRIVATE_EXPEDITED_RSEQ_BITMASK (the bitmask is not a command
-per-se), and change the erroneous
-MEMBARRIER_CMD_REGISTER_PRIVATE_EXPEDITED_RSEQ_BITMASK (which does not
-actually exist) to MEMBARRIER_CMD_REGISTER_PRIVATE_EXPEDITED_RSEQ.
+1) At defrag_collect_targets() we find an extent map that meets all
+   requirements but there's delalloc for the range it covers, and we add
+   its range to list of ranges to defrag;
 
-Wire up MEMBARRIER_PRIVATE_EXPEDITED_RSEQ_BITMASK in
-MEMBARRIER_CMD_BITMASK. Fixing this allows discovering availability of
-the membarrier-rseq fence feature.
+2) The defrag_collect_targets() function is called at defrag_one_range(),
+   after it locked a range that overlaps the range of the extent map;
 
-Fixes: 2a36ab717e8f ("rseq/membarrier: Add MEMBARRIER_CMD_PRIVATE_EXPEDITED_RSEQ")
-Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Cc: <stable@vger.kernel.org> # 5.10+
-Link: https://lkml.kernel.org/r/20220117203010.30129-1-mathieu.desnoyers@efficios.com
+3) At defrag_one_range(), while the range is still locked, we call
+   defrag_one_locked_target() for the range associated to the extent
+   map we collected at step 1);
+
+4) Then finally at defrag_one_locked_target() we do a call to
+   btrfs_delalloc_reserve_space(), which will reserve data and metadata
+   space. If the space reservations can not be satisfied right away, the
+   flusher might be kicked in and start flushing delalloc and wait for
+   the respective ordered extents to complete. If this happens we will
+   deadlock, because both flushing delalloc and finishing an ordered
+   extent, requires locking the range in the inode's io tree, which was
+   already locked at defrag_collect_targets().
+
+So fix this by skipping extent maps for which there's already delalloc.
+
+Fixes: eb793cf857828d ("btrfs: defrag: introduce helper to collect target file extents")
+CC: stable@vger.kernel.org # 5.16
+Reviewed-by: Qu Wenruo <wqu@suse.com>
+Signed-off-by: Filipe Manana <fdmanana@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/sched/membarrier.c |    9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ fs/btrfs/ioctl.c |   31 ++++++++++++++++++++++++++++++-
+ 1 file changed, 30 insertions(+), 1 deletion(-)
 
---- a/kernel/sched/membarrier.c
-+++ b/kernel/sched/membarrier.c
-@@ -147,11 +147,11 @@
- #endif
+--- a/fs/btrfs/ioctl.c
++++ b/fs/btrfs/ioctl.c
+@@ -1188,6 +1188,35 @@ static int defrag_collect_targets(struct
+ 			goto next;
  
- #ifdef CONFIG_RSEQ
--#define MEMBARRIER_CMD_PRIVATE_EXPEDITED_RSEQ_BITMASK		\
-+#define MEMBARRIER_PRIVATE_EXPEDITED_RSEQ_BITMASK		\
- 	(MEMBARRIER_CMD_PRIVATE_EXPEDITED_RSEQ			\
--	| MEMBARRIER_CMD_REGISTER_PRIVATE_EXPEDITED_RSEQ_BITMASK)
-+	| MEMBARRIER_CMD_REGISTER_PRIVATE_EXPEDITED_RSEQ)
- #else
--#define MEMBARRIER_CMD_PRIVATE_EXPEDITED_RSEQ_BITMASK	0
-+#define MEMBARRIER_PRIVATE_EXPEDITED_RSEQ_BITMASK	0
- #endif
+ 		/*
++		 * Our start offset might be in the middle of an existing extent
++		 * map, so take that into account.
++		 */
++		range_len = em->len - (cur - em->start);
++		/*
++		 * If this range of the extent map is already flagged for delalloc,
++		 * skip it, because:
++		 *
++		 * 1) We could deadlock later, when trying to reserve space for
++		 *    delalloc, because in case we can't immediately reserve space
++		 *    the flusher can start delalloc and wait for the respective
++		 *    ordered extents to complete. The deadlock would happen
++		 *    because we do the space reservation while holding the range
++		 *    locked, and starting writeback, or finishing an ordered
++		 *    extent, requires locking the range;
++		 *
++		 * 2) If there's delalloc there, it means there's dirty pages for
++		 *    which writeback has not started yet (we clean the delalloc
++		 *    flag when starting writeback and after creating an ordered
++		 *    extent). If we mark pages in an adjacent range for defrag,
++		 *    then we will have a larger contiguous range for delalloc,
++		 *    very likely resulting in a larger extent after writeback is
++		 *    triggered (except in a case of free space fragmentation).
++		 */
++		if (test_range_bit(&inode->io_tree, cur, cur + range_len - 1,
++				   EXTENT_DELALLOC, 0, NULL))
++			goto next;
++
++		/*
+ 		 * For do_compress case, we want to compress all valid file
+ 		 * extents, thus no @extent_thresh or mergeable check.
+ 		 */
+@@ -1195,7 +1224,7 @@ static int defrag_collect_targets(struct
+ 			goto add;
  
- #define MEMBARRIER_CMD_BITMASK						\
-@@ -159,7 +159,8 @@
- 	| MEMBARRIER_CMD_REGISTER_GLOBAL_EXPEDITED			\
- 	| MEMBARRIER_CMD_PRIVATE_EXPEDITED				\
- 	| MEMBARRIER_CMD_REGISTER_PRIVATE_EXPEDITED			\
--	| MEMBARRIER_PRIVATE_EXPEDITED_SYNC_CORE_BITMASK)
-+	| MEMBARRIER_PRIVATE_EXPEDITED_SYNC_CORE_BITMASK		\
-+	| MEMBARRIER_PRIVATE_EXPEDITED_RSEQ_BITMASK)
+ 		/* Skip too large extent */
+-		if (em->len >= extent_thresh)
++		if (range_len >= extent_thresh)
+ 			goto next;
  
- static void ipi_mb(void *info)
- {
+ 		next_mergeable = defrag_check_next_extent(&inode->vfs_inode, em,
 
 
