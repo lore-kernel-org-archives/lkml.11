@@ -2,47 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D387C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:16:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B86F8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:16:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376771AbiAaLQX (ORCPT
+        id S1376802AbiAaLQZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:16:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44628 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376987AbiAaLJ0 (ORCPT
+        Mon, 31 Jan 2022 06:16:25 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:57342 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1376998AbiAaLJ2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:09:26 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DC02C061777;
-        Mon, 31 Jan 2022 03:06:09 -0800 (PST)
+        Mon, 31 Jan 2022 06:09:28 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BE9D2B82A74;
-        Mon, 31 Jan 2022 11:06:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBAE1C340E8;
-        Mon, 31 Jan 2022 11:06:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0D684B82A5C;
+        Mon, 31 Jan 2022 11:09:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CBBFC340E8;
+        Mon, 31 Jan 2022 11:09:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627166;
-        bh=rzVO/2az8f+goj1WhpUhD/OCjQLJr0nUHjFRc4YWh50=;
+        s=korg; t=1643627365;
+        bh=/O5ULg9U3NkwqzR/0Avq3jo3LXQjoxTI7QzSubb6GLA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2Bph26F41TfSnzYw23FKKA4VPFRAUUSlGoQERZPo6WMB3QNr0yBKc0/AGy2VRR8nJ
-         eimDSrKjOmz8UxGQ3PjCH+QQr/XQFcTDACE0lsPVXZgeLAVVWexoA6tAFn+7a2dOz4
-         1BqHXx/5zXWQK6gdvDyDOFUo9EEsztun0BnyegOY=
+        b=eHrhR3fHNGMoj7G0eoygTV05am1ICLUyi2inqy22A1IhPZ7Q3WQeU0sMhXWNhP2e+
+         Ido67G6h8yxp6n+JzPXlYAtkcaJpDJ5EXOzcd3YM1fP+mzcigaR+d1ub3hVJXgpiew
+         nD5EhXEHesZGDqmwxSvaNE1YhZ3g22oPWmI0xTvw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 095/100] ipv4: remove sparse error in ip_neigh_gw4()
-Date:   Mon, 31 Jan 2022 11:56:56 +0100
-Message-Id: <20220131105223.645251314@linuxfoundation.org>
+        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>
+Subject: [PATCH 5.15 059/171] usb: dwc3: xilinx: Fix error handling when getting USB3 PHY
+Date:   Mon, 31 Jan 2022 11:55:24 +0100
+Message-Id: <20220131105232.020652201@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
-References: <20220131105220.424085452@linuxfoundation.org>
+In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
+References: <20220131105229.959216821@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,39 +45,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Robert Hancock <robert.hancock@calian.com>
 
-[ Upstream commit 3c42b2019863b327caa233072c50739d4144dd16 ]
+commit 2cc9b1c93b1c4caa2d971856c0780fb5f7d04692 upstream.
 
-./include/net/route.h:373:48: warning: incorrect type in argument 2 (different base types)
-./include/net/route.h:373:48:    expected unsigned int [usertype] key
-./include/net/route.h:373:48:    got restricted __be32 [usertype] daddr
+The code that looked up the USB3 PHY was ignoring all errors other than
+EPROBE_DEFER in an attempt to handle the PHY not being present. Fix and
+simplify the code by using devm_phy_optional_get and dev_err_probe so
+that a missing PHY is not treated as an error and unexpected errors
+are handled properly.
 
-Fixes: 5c9f7c1dfc2e ("ipv4: Add helpers for neigh lookup for nexthop")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Link: https://lore.kernel.org/r/20220127013404.1279313-1-eric.dumazet@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 84770f028fab ("usb: dwc3: Add driver for Xilinx platforms")
+Cc: stable <stable@vger.kernel.org>
+Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+Link: https://lore.kernel.org/r/20220126000253.1586760-3-robert.hancock@calian.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/route.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/dwc3/dwc3-xilinx.c |   10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/include/net/route.h b/include/net/route.h
-index ff021cab657e5..a07c277cd33e8 100644
---- a/include/net/route.h
-+++ b/include/net/route.h
-@@ -369,7 +369,7 @@ static inline struct neighbour *ip_neigh_gw4(struct net_device *dev,
- {
- 	struct neighbour *neigh;
+--- a/drivers/usb/dwc3/dwc3-xilinx.c
++++ b/drivers/usb/dwc3/dwc3-xilinx.c
+@@ -102,12 +102,12 @@ static int dwc3_xlnx_init_zynqmp(struct
+ 	int			ret;
+ 	u32			reg;
  
--	neigh = __ipv4_neigh_lookup_noref(dev, daddr);
-+	neigh = __ipv4_neigh_lookup_noref(dev, (__force u32)daddr);
- 	if (unlikely(!neigh))
- 		neigh = __neigh_create(&arp_tbl, &daddr, dev, false);
+-	usb3_phy = devm_phy_get(dev, "usb3-phy");
+-	if (PTR_ERR(usb3_phy) == -EPROBE_DEFER) {
+-		ret = -EPROBE_DEFER;
++	usb3_phy = devm_phy_optional_get(dev, "usb3-phy");
++	if (IS_ERR(usb3_phy)) {
++		ret = PTR_ERR(usb3_phy);
++		dev_err_probe(dev, ret,
++			      "failed to get USB3 PHY\n");
+ 		goto err;
+-	} else if (IS_ERR(usb3_phy)) {
+-		usb3_phy = NULL;
+ 	}
  
--- 
-2.34.1
-
+ 	/*
 
 
