@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 240E0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 12:27:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F0EBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 12:28:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377595AbiAaM1i (ORCPT
+        id S1377870AbiAaM1o (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 07:27:38 -0500
-Received: from mo4-p03-ob.smtp.rzone.de ([85.215.255.101]:41947 "EHLO
-        mo4-p03-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349455AbiAaM1b (ORCPT
+        Mon, 31 Jan 2022 07:27:44 -0500
+Received: from mo4-p04-ob.smtp.rzone.de ([85.215.255.122]:34225 "EHLO
+        mo4-p04-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377151AbiAaM1d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 07:27:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1643632021;
+        Mon, 31 Jan 2022 07:27:33 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1643632023;
     s=strato-dkim-0002; d=goldelico.com;
     h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
     From:Subject:Sender;
-    bh=B3kXcUujn92+Cw+dFrreuK9w5bZcqCiJJPt70WZNMFM=;
-    b=c4fn0Il0VzXJLbXKYHsy0hzObh39AgT4cQjW7pw1+izwgDKNrJ6bl+KNWH+9ZiysWU
-    14488VQg/iNaFySZ3FGjFnqJSeUIKe8xAnC/gPw5YtIc3SLHguU3pbUnF4/dCVw0bvHN
-    4ogZ2mw7fy/jP+jAx0rISQvpM0j6hm4l0wet5zNjd5oAeMyHw0k2+q9Jq0rfs2XV6heu
-    5S1MZvlCYGq4/UWPvIixrIaRyMAufJXAKGpGnOoIBjicBqOZqpgqjqZ65s17EYW6W1Ux
-    Erw7YD3/osd6HdgcGWBXdbMrutuK2UxgMgL/Ar56StK/ZdNCFAqEYKG523bfQSw8Lj/I
-    yb2g==
+    bh=Qc45+SOWiHQsSwqJWHKd4NUWcMBcTy0RmkvrlEWuGrE=;
+    b=YE8HqG56/6mJ9y18ecX3+QUZyl3GTRfWYnRJeiy1z5i8aoA6eSLoqGqezqSR+GrjXl
+    /QJTE+oXejAhIL0u0qOy3Vn0AoEpAcQ/3aMTE3TpJV3cAfli6jrkUNtd3omhYaYD6C+U
+    tkNM5+R6gYQTXCDMLL7SXhsAoSjpA9NFR4VxHocO2PsHQsUxZCoW/+/cE0v9cVz1thSt
+    f1qZIMyKivlg6m11vGII388jNO7/WDhA6QkbAyHggWIrqz+0XtKI7FGSPfkSicL8Dcyg
+    GqJ3x1y40X096o84irq0gZE03AM/JKsP4+uA5JreUQNL4G/N1cKXOI05ci32udY/drlc
+    A1iw==
 Authentication-Results: strato.com;
     dkim=none
 X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o12DNOsPj0lByOdcK1L0"
 X-RZG-CLASS-ID: mo00
 Received: from iMac.fritz.box
     by smtp.strato.de (RZmta 47.38.0 DYNA|AUTH)
-    with ESMTPSA id j5fc80y0VCR0u8l
+    with ESMTPSA id j5fc80y0VCR2u8o
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
         (Client did not present a certificate);
-    Mon, 31 Jan 2022 13:27:00 +0100 (CET)
+    Mon, 31 Jan 2022 13:27:02 +0100 (CET)
 From:   "H. Nikolaus Schaller" <hns@goldelico.com>
 To:     Paul Cercueil <paul@crapouillou.net>,
         Rob Herring <robh+dt@kernel.org>,
@@ -62,10 +62,10 @@ To:     Paul Cercueil <paul@crapouillou.net>,
 Cc:     devicetree@vger.kernel.org, linux-mips@vger.kernel.org,
         linux-kernel@vger.kernel.org, letux-kernel@openphoenux.org,
         Jonas Karlman <jonas@kwiboo.se>,
-        dri-devel@lists.freedesktop.org, Rob Herring <robh@kernel.org>
-Subject: [PATCH v12 3/9] dt-bindings: display: Add ingenic,jz4780-dw-hdmi DT Schema
-Date:   Mon, 31 Jan 2022 13:26:49 +0100
-Message-Id: <2386420a975e0a6c17393828af776991f3d17c01.1643632014.git.hns@goldelico.com>
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH v12 6/9] dw-hdmi/ingenic-dw-hdmi: repair interworking with hdmi-connector
+Date:   Mon, 31 Jan 2022 13:26:52 +0100
+Message-Id: <d0633be0eb6b96a43aa8e3dd6af3241437a8111d.1643632014.git.hns@goldelico.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <cover.1643632014.git.hns@goldelico.com>
 References: <cover.1643632014.git.hns@goldelico.com>
@@ -75,109 +75,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sam Ravnborg <sam@ravnborg.org>
+Commit 7cd70656d1285b ("drm/bridge: display-connector: implement bus fmts callbacks")
 
-Add DT bindings for the hdmi driver for the Ingenic JZ4780 SoC.
-Based on .txt binding from Zubair Lutfullah Kakakhel
+introduced a new mechanism to negotiate bus formats between hdmi connector
+and the synopsys hdmi driver inside the jz4780.
 
-Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
+By this, the dw-hdmi is no longer the only bridge and sets up a list
+of formats in dw_hdmi_bridge_atomic_get_output_bus_fmts().
+
+This includes MEDIA_BUS_FMT_UYVY8_1X16 which is chosen for the jz4780 but only
+produces a black screen.
+
+This fix is based on the observation that max_bpc = 0 when running this
+function while info->bpc = 8. Since the formats checks before this always test
+for max_bpc >= info->pbc indirectly my assumption is that we must check it
+here as well.
+
+Adding the proposed patch makes the CI20/jz4780 panel work again in
+MEDIA_BUS_FMT_RGB888_1X24 mode.
+
+Fixes: 7cd70656d1285b ("drm/bridge: display-connector: implement bus fmts callbacks")
 Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
-Cc: Rob Herring <robh@kernel.org>
-Cc: devicetree@vger.kernel.org
 ---
- .../display/bridge/ingenic,jz4780-hdmi.yaml   | 83 +++++++++++++++++++
- 1 file changed, 83 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/display/bridge/ingenic,jz4780-hdmi.yaml
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/display/bridge/ingenic,jz4780-hdmi.yaml b/Documentation/devicetree/bindings/display/bridge/ingenic,jz4780-hdmi.yaml
-new file mode 100644
-index 0000000000000..5a2767308c0ab
---- /dev/null
-+++ b/Documentation/devicetree/bindings/display/bridge/ingenic,jz4780-hdmi.yaml
-@@ -0,0 +1,83 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/display/bridge/ingenic,jz4780-hdmi.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Bindings for Ingenic JZ4780 HDMI Transmitter
-+
-+maintainers:
-+  - H. Nikolaus Schaller <hns@goldelico.com>
-+
-+description: |
-+  The HDMI Transmitter in the Ingenic JZ4780 is a Synopsys DesignWare HDMI 1.4
-+  TX controller IP with accompanying PHY IP.
-+
-+allOf:
-+  - $ref: synopsys,dw-hdmi.yaml#
-+
-+properties:
-+  compatible:
-+    const: ingenic,jz4780-dw-hdmi
-+
-+  reg-io-width:
-+    const: 4
-+
-+  clocks:
-+    maxItems: 2
-+
-+  ports:
-+    $ref: /schemas/graph.yaml#/properties/ports
-+
-+    properties:
-+      port@0:
-+        $ref: /schemas/graph.yaml#/properties/port
-+        description: Input from LCD controller output.
-+
-+      port@1:
-+        $ref: /schemas/graph.yaml#/properties/port
-+        description: Link to the HDMI connector.
-+
-+required:
-+  - compatible
-+  - clocks
-+  - clock-names
-+  - ports
-+  - reg-io-width
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/ingenic,jz4780-cgu.h>
-+
-+    hdmi: hdmi@10180000 {
-+        compatible = "ingenic,jz4780-dw-hdmi";
-+        reg = <0x10180000 0x8000>;
-+        reg-io-width = <4>;
-+        ddc-i2c-bus = <&i2c4>;
-+        interrupt-parent = <&intc>;
-+        interrupts = <3>;
-+        clocks = <&cgu JZ4780_CLK_AHB0>, <&cgu JZ4780_CLK_HDMI>;
-+        clock-names = "iahb", "isfr";
-+        hdmi-5v-supply = <&hdmi_power>;
-+
-+        ports {
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+            hdmi_in: port@0 {
-+                reg = <0>;
-+                dw_hdmi_in: endpoint {
-+                    remote-endpoint = <&jz4780_lcd_out>;
-+                };
-+            };
-+            hdmi_out: port@1 {
-+                reg = <1>;
-+                dw_hdmi_out: endpoint {
-+                    remote-endpoint = <&hdmi_con>;
-+                };
-+            };
-+        };
-+    };
-+
-+...
+diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+index 52e7cd2e020d3..34703a15ee4ff 100644
+--- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
++++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+@@ -2620,10 +2620,10 @@ static u32 *dw_hdmi_bridge_atomic_get_output_bus_fmts(struct drm_bridge *bridge,
+ 		output_fmts[i++] = MEDIA_BUS_FMT_RGB101010_1X30;
+ 	}
+ 
+-	if (info->color_formats & DRM_COLOR_FORMAT_YCRCB422)
++	if (max_bpc >= info->bpc && info->color_formats & DRM_COLOR_FORMAT_YCRCB422)
+ 		output_fmts[i++] = MEDIA_BUS_FMT_UYVY8_1X16;
+ 
+-	if (info->color_formats & DRM_COLOR_FORMAT_YCRCB444)
++	if (max_bpc >= info->bpc && info->color_formats & DRM_COLOR_FORMAT_YCRCB444)
+ 		output_fmts[i++] = MEDIA_BUS_FMT_YUV8_1X24;
+ 
+ 	/* Default 8bit RGB fallback */
 -- 
 2.33.0
 
