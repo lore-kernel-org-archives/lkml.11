@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 716F4C47080
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:40:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DD9FC4167B
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:40:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377696AbiAaLkE (ORCPT
+        id S1347973AbiAaLkU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:40:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49812 "EHLO
+        Mon, 31 Jan 2022 06:40:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379412AbiAaLaR (ORCPT
+        with ESMTP id S1379552AbiAaLaY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:30:17 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 764EAC0617B0;
-        Mon, 31 Jan 2022 03:20:21 -0800 (PST)
+        Mon, 31 Jan 2022 06:30:24 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78AD7C061394;
+        Mon, 31 Jan 2022 03:21:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 166FD611DB;
-        Mon, 31 Jan 2022 11:20:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EB95C340EF;
-        Mon, 31 Jan 2022 11:20:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 39AA0B82A60;
+        Mon, 31 Jan 2022 11:20:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A2F9C340E8;
+        Mon, 31 Jan 2022 11:20:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643628020;
-        bh=gPfYO25pBQ890bf6IYPhQq4gJPP7maXQ4xUx5LxBVQE=;
+        s=korg; t=1643628058;
+        bh=V85WzOgCwLckSgV8LMDwMMvpDSkvj/dQx6sx28b70qM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b1AH2Kvy6bZr6WV7KobalnxRzyBNi4/XRXYupAI3ask6QJW6gG8ryUdTG5ys6Gh7m
-         HktvbCNU3qOHce9SzgwZ9fQx2wqWLDnYDFUJ0LC51BT00o7Z+xTqeW1Wts7bMkMNd2
-         XaTzkRHwMW/j1W/sv2qaUHQt3GIckbfxzw1SGpAI=
+        b=ZUTNs1kTySZRJp2IxqWVOiaaLIdFnb93jhCthy8jDqw5EHoIhXHrWJp/qoLvEuVxd
+         tX9LGieYBrXcv0v8ggDK7Qm8MRHg6uvgqg0Yh/BYzuoeJSGXI29cz0OiM1C1XGya6H
+         2I2+tiAVxn6LrR3BlfVdOP83tWpwwtW5xEwOzOFA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaoyao Li <xiaoyao.li@intel.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.16 056/200] KVM: x86: Keep MSR_IA32_XSS unchanged for INIT
-Date:   Mon, 31 Jan 2022 11:55:19 +0100
-Message-Id: <20220131105235.468652901@linuxfoundation.org>
+        stable@vger.kernel.org, Maxime Bizon <mbizon@freebox.fr>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.16 094/200] powerpc/32s: Fix kasan_init_region() for KASAN
+Date:   Mon, 31 Jan 2022 11:55:57 +0100
+Message-Id: <20220131105236.774410172@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -50,42 +50,195 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoyao Li <xiaoyao.li@intel.com>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-commit be4f3b3f82271c3193ce200a996dc70682c8e622 upstream.
+commit d37823c3528e5e0705fc7746bcbc2afffb619259 upstream.
 
-It has been corrected from SDM version 075 that MSR_IA32_XSS is reset to
-zero on Power up and Reset but keeps unchanged on INIT.
+It has been reported some configuration where the kernel doesn't
+boot with KASAN enabled.
 
-Fixes: a554d207dc46 ("KVM: X86: Processor States following Reset or INIT")
+This is due to wrong BAT allocation for the KASAN area:
+
+	---[ Data Block Address Translation ]---
+	0: 0xc0000000-0xcfffffff 0x00000000       256M Kernel rw      m
+	1: 0xd0000000-0xdfffffff 0x10000000       256M Kernel rw      m
+	2: 0xe0000000-0xefffffff 0x20000000       256M Kernel rw      m
+	3: 0xf8000000-0xf9ffffff 0x2a000000        32M Kernel rw      m
+	4: 0xfa000000-0xfdffffff 0x2c000000        64M Kernel rw      m
+
+A BAT must have both virtual and physical addresses alignment matching
+the size of the BAT. This is not the case for BAT 4 above.
+
+Fix kasan_init_region() by using block_size() function that is in
+book3s32/mmu.c. To be able to reuse it here, make it non static and
+change its name to bat_block_size() in order to avoid name conflict
+with block_size() defined in <linux/blkdev.h>
+
+Also reuse find_free_bat() to avoid an error message from setbat()
+when no BAT is available.
+
+And allocate memory outside of linear memory mapping to avoid
+wasting that precious space.
+
+With this change we get correct alignment for BATs and KASAN shadow
+memory is allocated outside the linear memory space.
+
+	---[ Data Block Address Translation ]---
+	0: 0xc0000000-0xcfffffff 0x00000000       256M Kernel rw
+	1: 0xd0000000-0xdfffffff 0x10000000       256M Kernel rw
+	2: 0xe0000000-0xefffffff 0x20000000       256M Kernel rw
+	3: 0xf8000000-0xfbffffff 0x7c000000        64M Kernel rw
+	4: 0xfc000000-0xfdffffff 0x7a000000        32M Kernel rw
+
+Fixes: 7974c4732642 ("powerpc/32s: Implement dedicated kasan_init_region()")
 Cc: stable@vger.kernel.org
-Signed-off-by: Xiaoyao Li <xiaoyao.li@intel.com>
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220126172226.2298529-2-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Reported-by: Maxime Bizon <mbizon@freebox.fr>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Tested-by: Maxime Bizon <mbizon@freebox.fr>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/7a50ef902494d1325227d47d33dada01e52e5518.1641818726.git.christophe.leroy@csgroup.eu
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/x86.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ arch/powerpc/include/asm/book3s/32/mmu-hash.h |    2 
+ arch/powerpc/mm/book3s32/mmu.c                |   10 ++--
+ arch/powerpc/mm/kasan/book3s_32.c             |   57 +++++++++++++-------------
+ 3 files changed, 37 insertions(+), 32 deletions(-)
 
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -11065,6 +11065,7 @@ void kvm_vcpu_reset(struct kvm_vcpu *vcp
- 		vcpu->arch.msr_misc_features_enables = 0;
+--- a/arch/powerpc/include/asm/book3s/32/mmu-hash.h
++++ b/arch/powerpc/include/asm/book3s/32/mmu-hash.h
+@@ -143,6 +143,8 @@ static __always_inline void update_user_
+ 	update_user_segment(15, val);
+ }
  
- 		vcpu->arch.xcr0 = XFEATURE_MASK_FP;
-+		vcpu->arch.ia32_xss = 0;
++int __init find_free_bat(void);
++unsigned int bat_block_size(unsigned long base, unsigned long top);
+ #endif /* !__ASSEMBLY__ */
+ 
+ /* We happily ignore the smaller BATs on 601, we don't actually use
+--- a/arch/powerpc/mm/book3s32/mmu.c
++++ b/arch/powerpc/mm/book3s32/mmu.c
+@@ -76,7 +76,7 @@ unsigned long p_block_mapped(phys_addr_t
+ 	return 0;
+ }
+ 
+-static int find_free_bat(void)
++int __init find_free_bat(void)
+ {
+ 	int b;
+ 	int n = mmu_has_feature(MMU_FTR_USE_HIGH_BATS) ? 8 : 4;
+@@ -100,7 +100,7 @@ static int find_free_bat(void)
+  * - block size has to be a power of two. This is calculated by finding the
+  *   highest bit set to 1.
+  */
+-static unsigned int block_size(unsigned long base, unsigned long top)
++unsigned int bat_block_size(unsigned long base, unsigned long top)
+ {
+ 	unsigned int max_size = SZ_256M;
+ 	unsigned int base_shift = (ffs(base) - 1) & 31;
+@@ -145,7 +145,7 @@ static unsigned long __init __mmu_mapin_
+ 	int idx;
+ 
+ 	while ((idx = find_free_bat()) != -1 && base != top) {
+-		unsigned int size = block_size(base, top);
++		unsigned int size = bat_block_size(base, top);
+ 
+ 		if (size < 128 << 10)
+ 			break;
+@@ -201,12 +201,12 @@ void mmu_mark_initmem_nx(void)
+ 	unsigned long size;
+ 
+ 	for (i = 0; i < nb - 1 && base < top;) {
+-		size = block_size(base, top);
++		size = bat_block_size(base, top);
+ 		setibat(i++, PAGE_OFFSET + base, base, size, PAGE_KERNEL_TEXT);
+ 		base += size;
  	}
+ 	if (base < top) {
+-		size = block_size(base, top);
++		size = bat_block_size(base, top);
+ 		if ((top - base) > size) {
+ 			size <<= 1;
+ 			if (strict_kernel_rwx_enabled() && base + size > border)
+--- a/arch/powerpc/mm/kasan/book3s_32.c
++++ b/arch/powerpc/mm/kasan/book3s_32.c
+@@ -10,48 +10,51 @@ int __init kasan_init_region(void *start
+ {
+ 	unsigned long k_start = (unsigned long)kasan_mem_to_shadow(start);
+ 	unsigned long k_end = (unsigned long)kasan_mem_to_shadow(start + size);
+-	unsigned long k_cur = k_start;
+-	int k_size = k_end - k_start;
+-	int k_size_base = 1 << (ffs(k_size) - 1);
++	unsigned long k_nobat = k_start;
++	unsigned long k_cur;
++	phys_addr_t phys;
+ 	int ret;
+-	void *block;
  
- 	/* All GPRs except RDX (handled below) are zeroed on RESET/INIT. */
-@@ -11081,8 +11082,6 @@ void kvm_vcpu_reset(struct kvm_vcpu *vcp
- 	cpuid_0x1 = kvm_find_cpuid_entry(vcpu, 1, 0);
- 	kvm_rdx_write(vcpu, cpuid_0x1 ? cpuid_0x1->eax : 0x600);
+-	block = memblock_alloc(k_size, k_size_base);
++	while (k_nobat < k_end) {
++		unsigned int k_size = bat_block_size(k_nobat, k_end);
++		int idx = find_free_bat();
++
++		if (idx == -1)
++			break;
++		if (k_size < SZ_128K)
++			break;
++		phys = memblock_phys_alloc_range(k_size, k_size, 0,
++						 MEMBLOCK_ALLOC_ANYWHERE);
++		if (!phys)
++			break;
  
--	vcpu->arch.ia32_xss = 0;
+-	if (block && k_size_base >= SZ_128K && k_start == ALIGN(k_start, k_size_base)) {
+-		int shift = ffs(k_size - k_size_base);
+-		int k_size_more = shift ? 1 << (shift - 1) : 0;
 -
- 	static_call(kvm_x86_vcpu_reset)(vcpu, init_event);
+-		setbat(-1, k_start, __pa(block), k_size_base, PAGE_KERNEL);
+-		if (k_size_more >= SZ_128K)
+-			setbat(-1, k_start + k_size_base, __pa(block) + k_size_base,
+-			       k_size_more, PAGE_KERNEL);
+-		if (v_block_mapped(k_start))
+-			k_cur = k_start + k_size_base;
+-		if (v_block_mapped(k_start + k_size_base))
+-			k_cur = k_start + k_size_base + k_size_more;
+-
+-		update_bats();
++		setbat(idx, k_nobat, phys, k_size, PAGE_KERNEL);
++		k_nobat += k_size;
+ 	}
++	if (k_nobat != k_start)
++		update_bats();
  
- 	kvm_set_rflags(vcpu, X86_EFLAGS_FIXED);
+-	if (!block)
+-		block = memblock_alloc(k_size, PAGE_SIZE);
+-	if (!block)
+-		return -ENOMEM;
++	if (k_nobat < k_end) {
++		phys = memblock_phys_alloc_range(k_end - k_nobat, PAGE_SIZE, 0,
++						 MEMBLOCK_ALLOC_ANYWHERE);
++		if (!phys)
++			return -ENOMEM;
++	}
+ 
+ 	ret = kasan_init_shadow_page_tables(k_start, k_end);
+ 	if (ret)
+ 		return ret;
+ 
+-	kasan_update_early_region(k_start, k_cur, __pte(0));
++	kasan_update_early_region(k_start, k_nobat, __pte(0));
+ 
+-	for (; k_cur < k_end; k_cur += PAGE_SIZE) {
++	for (k_cur = k_nobat; k_cur < k_end; k_cur += PAGE_SIZE) {
+ 		pmd_t *pmd = pmd_off_k(k_cur);
+-		void *va = block + k_cur - k_start;
+-		pte_t pte = pfn_pte(PHYS_PFN(__pa(va)), PAGE_KERNEL);
++		pte_t pte = pfn_pte(PHYS_PFN(phys + k_cur - k_nobat), PAGE_KERNEL);
+ 
+ 		__set_pte_at(&init_mm, k_cur, pte_offset_kernel(pmd, k_cur), pte, 0);
+ 	}
+ 	flush_tlb_kernel_range(k_start, k_end);
++	memset(kasan_mem_to_shadow(start), 0, k_end - k_start);
++
+ 	return 0;
+ }
 
 
