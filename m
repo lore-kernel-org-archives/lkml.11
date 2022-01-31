@@ -2,39 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA52DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:22:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A282EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:22:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376914AbiAaLWJ (ORCPT
+        id S1376984AbiAaLWQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:22:09 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:59080 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359569AbiAaLLm (ORCPT
+        Mon, 31 Jan 2022 06:22:16 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:45474 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359688AbiAaLL5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:11:42 -0500
+        Mon, 31 Jan 2022 06:11:57 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 641ECB82A5F;
-        Mon, 31 Jan 2022 11:11:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EA93C340E8;
-        Mon, 31 Jan 2022 11:11:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E72B6610B1;
+        Mon, 31 Jan 2022 11:11:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C11A2C340EF;
+        Mon, 31 Jan 2022 11:11:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627498;
-        bh=11M3BoWFcewEbn/oOM35JqKT1zegc+4pfQbZMuzN8ro=;
+        s=korg; t=1643627516;
+        bh=sUC1HgVOnkKu10wxMxJshj6DYaGKxn0UwTEkmc22aXY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o2C524LBzgIK/QjJt9WKNaOSKL9R4+grlDDMqPgjkeG72bYI58qFELph1XCztpUPt
-         PhvrZaa3ccBANCKFtCzadhoPRlSS6ttf4MtKlEALnQLmyVNjxpu/sJpQU9slDL3Hnr
-         GHohzOUHKnNCZhpR64XBEySH+BSf1+j+OulnlDwU=
+        b=NnUq/wPumdZ7O+rHRUhENZmETlSEj0RSm9XNQloQE4N1WJgHNo2B0jzUG/CV9+T6y
+         OsRncpMStH6KbwLvkdsxYf2FET+R5ODmHMZ+tWDdEykUBFhSsRmsXCsirbk6prnS3W
+         TL/j/vWPKW/MufGaW9NpUd5vf0czjqenp+m2+zeM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
-        syzbot+76629376e06e2c2ad626@syzkaller.appspotmail.com
-Subject: [PATCH 5.15 060/171] USB: core: Fix hang in usb_kill_urb by adding memory barriers
-Date:   Mon, 31 Jan 2022 11:55:25 +0100
-Message-Id: <20220131105232.051176390@linuxfoundation.org>
+        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 110/171] net: phy: broadcom: hook up soft_reset for BCM54616S
+Date:   Mon, 31 Jan 2022 11:56:15 +0100
+Message-Id: <20220131105233.757871162@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
 References: <20220131105229.959216821@linuxfoundation.org>
@@ -46,128 +48,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alan Stern <stern@rowland.harvard.edu>
+From: Robert Hancock <robert.hancock@calian.com>
 
-commit 26fbe9772b8c459687930511444ce443011f86bf upstream.
+[ Upstream commit d15c7e875d44367005370e6a82e8f3a382a04f9b ]
 
-The syzbot fuzzer has identified a bug in which processes hang waiting
-for usb_kill_urb() to return.  It turns out the issue is not unlinking
-the URB; that works just fine.  Rather, the problem arises when the
-wakeup notification that the URB has completed is not received.
+A problem was encountered with the Bel-Fuse 1GBT-SFP05 SFP module (which
+is a 1 Gbps copper module operating in SGMII mode with an internal
+BCM54616S PHY device) using the Xilinx AXI Ethernet MAC core, where the
+module would work properly on the initial insertion or boot of the
+device, but after the device was rebooted, the link would either only
+come up at 100 Mbps speeds or go up and down erratically.
 
-The reason is memory-access ordering on SMP systems.  In outline form,
-usb_kill_urb() and __usb_hcd_giveback_urb() operating concurrently on
-different CPUs perform the following actions:
+I found no meaningful changes in the PHY configuration registers between
+the working and non-working boots, but the status registers seemed to
+have a lot of error indications set on the SERDES side of the device on
+the non-working boot. I suspect the problem is that whatever happens on
+the SGMII link when the device is rebooted and the FPGA logic gets
+reloaded ends up putting the module's onboard PHY into a bad state.
 
-CPU 0					CPU 1
-----------------------------		---------------------------------
-usb_kill_urb():				__usb_hcd_giveback_urb():
-  ...					  ...
-  atomic_inc(&urb->reject);		  atomic_dec(&urb->use_count);
-  ...					  ...
-  wait_event(usb_kill_urb_queue,
-	atomic_read(&urb->use_count) == 0);
-					  if (atomic_read(&urb->reject))
-						wake_up(&usb_kill_urb_queue);
+Since commit 6e2d85ec0559 ("net: phy: Stop with excessive soft reset")
+the genphy_soft_reset call is not made automatically by the PHY core
+unless the callback is explicitly specified in the driver structure. For
+most of these Broadcom devices, there is probably a hardware reset that
+gets asserted to reset the PHY during boot, however for SFP modules
+(where the BCM54616S is commonly found) no such reset line exists, so if
+the board keeps the SFP cage powered up across a reboot, it will end up
+with no reset occurring during reboots.
 
-Confining your attention to urb->reject and urb->use_count, you can
-see that the overall pattern of accesses on CPU 0 is:
+Hook up the genphy_soft_reset callback for BCM54616S to ensure that a
+PHY reset is performed before the device is initialized. This appears to
+fix the issue with erratic operation after a reboot with this SFP
+module.
 
-	write urb->reject, then read urb->use_count;
-
-whereas the overall pattern of accesses on CPU 1 is:
-
-	write urb->use_count, then read urb->reject.
-
-This pattern is referred to in memory-model circles as SB (for "Store
-Buffering"), and it is well known that without suitable enforcement of
-the desired order of accesses -- in the form of memory barriers -- it
-is entirely possible for one or both CPUs to execute their reads ahead
-of their writes.  The end result will be that sometimes CPU 0 sees the
-old un-decremented value of urb->use_count while CPU 1 sees the old
-un-incremented value of urb->reject.  Consequently CPU 0 ends up on
-the wait queue and never gets woken up, leading to the observed hang
-in usb_kill_urb().
-
-The same pattern of accesses occurs in usb_poison_urb() and the
-failure pathway of usb_hcd_submit_urb().
-
-The problem is fixed by adding suitable memory barriers.  To provide
-proper memory-access ordering in the SB pattern, a full barrier is
-required on both CPUs.  The atomic_inc() and atomic_dec() accesses
-themselves don't provide any memory ordering, but since they are
-present, we can use the optimized smp_mb__after_atomic() memory
-barrier in the various routines to obtain the desired effect.
-
-This patch adds the necessary memory barriers.
-
-CC: <stable@vger.kernel.org>
-Reported-and-tested-by: syzbot+76629376e06e2c2ad626@syzkaller.appspotmail.com
-Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
-Link: https://lore.kernel.org/r/Ye8K0QYee0Q0Nna2@rowland.harvard.edu
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 6e2d85ec0559 ("net: phy: Stop with excessive soft reset")
+Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/core/hcd.c |   14 ++++++++++++++
- drivers/usb/core/urb.c |   12 ++++++++++++
- 2 files changed, 26 insertions(+)
+ drivers/net/phy/broadcom.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/usb/core/hcd.c
-+++ b/drivers/usb/core/hcd.c
-@@ -1563,6 +1563,13 @@ int usb_hcd_submit_urb (struct urb *urb,
- 		urb->hcpriv = NULL;
- 		INIT_LIST_HEAD(&urb->urb_list);
- 		atomic_dec(&urb->use_count);
-+		/*
-+		 * Order the write of urb->use_count above before the read
-+		 * of urb->reject below.  Pairs with the memory barriers in
-+		 * usb_kill_urb() and usb_poison_urb().
-+		 */
-+		smp_mb__after_atomic();
-+
- 		atomic_dec(&urb->dev->urbnum);
- 		if (atomic_read(&urb->reject))
- 			wake_up(&usb_kill_urb_queue);
-@@ -1665,6 +1672,13 @@ static void __usb_hcd_giveback_urb(struc
- 
- 	usb_anchor_resume_wakeups(anchor);
- 	atomic_dec(&urb->use_count);
-+	/*
-+	 * Order the write of urb->use_count above before the read
-+	 * of urb->reject below.  Pairs with the memory barriers in
-+	 * usb_kill_urb() and usb_poison_urb().
-+	 */
-+	smp_mb__after_atomic();
-+
- 	if (unlikely(atomic_read(&urb->reject)))
- 		wake_up(&usb_kill_urb_queue);
- 	usb_put_urb(urb);
---- a/drivers/usb/core/urb.c
-+++ b/drivers/usb/core/urb.c
-@@ -715,6 +715,12 @@ void usb_kill_urb(struct urb *urb)
- 	if (!(urb && urb->dev && urb->ep))
- 		return;
- 	atomic_inc(&urb->reject);
-+	/*
-+	 * Order the write of urb->reject above before the read
-+	 * of urb->use_count below.  Pairs with the barriers in
-+	 * __usb_hcd_giveback_urb() and usb_hcd_submit_urb().
-+	 */
-+	smp_mb__after_atomic();
- 
- 	usb_hcd_unlink_urb(urb, -ENOENT);
- 	wait_event(usb_kill_urb_queue, atomic_read(&urb->use_count) == 0);
-@@ -756,6 +762,12 @@ void usb_poison_urb(struct urb *urb)
- 	if (!urb)
- 		return;
- 	atomic_inc(&urb->reject);
-+	/*
-+	 * Order the write of urb->reject above before the read
-+	 * of urb->use_count below.  Pairs with the barriers in
-+	 * __usb_hcd_giveback_urb() and usb_hcd_submit_urb().
-+	 */
-+	smp_mb__after_atomic();
- 
- 	if (!urb->dev || !urb->ep)
- 		return;
+diff --git a/drivers/net/phy/broadcom.c b/drivers/net/phy/broadcom.c
+index 83aea5c5cd03c..db26ff8ce7dbb 100644
+--- a/drivers/net/phy/broadcom.c
++++ b/drivers/net/phy/broadcom.c
+@@ -768,6 +768,7 @@ static struct phy_driver broadcom_drivers[] = {
+ 	.phy_id_mask	= 0xfffffff0,
+ 	.name		= "Broadcom BCM54616S",
+ 	/* PHY_GBIT_FEATURES */
++	.soft_reset     = genphy_soft_reset,
+ 	.config_init	= bcm54xx_config_init,
+ 	.config_aneg	= bcm54616s_config_aneg,
+ 	.config_intr	= bcm_phy_config_intr,
+-- 
+2.34.1
+
 
 
