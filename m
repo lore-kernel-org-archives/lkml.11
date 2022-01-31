@@ -2,194 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C251C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 12:17:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E108C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 12:17:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376276AbiAaMRc (ORCPT
+        id S1376533AbiAaMRd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 07:17:32 -0500
-Received: from smtp-out1.suse.de ([195.135.220.28]:47706 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376583AbiAaMRX (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 07:17:23 -0500
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id D563A212CB;
-        Mon, 31 Jan 2022 12:17:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1643631442; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=wlgmVKDLoRDbXBxlr0Qq/CN3SOuVki91W5nT54POkl0=;
-        b=LUyNpNPjoJN40DI7nAn9YpG9p72l5wIRS1/JQqy4ktp4IechOVFBDXTGwQ7dKs7W7M9+cg
-        hSxXBcwEJtOYs8yKcYncLVhXMbc2ttX9s8XmSVmLf9nf9qm3hiuLGNEJUiKX77SuQhU98t
-        MiLN/+/mEVrKnW8MXO+LRLHdzs8waZg=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1643631442;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=wlgmVKDLoRDbXBxlr0Qq/CN3SOuVki91W5nT54POkl0=;
-        b=TIPXxSKPDc8TgleFMmphT35633T+u3VxzWrBjMp5Q1iRC0ytUOZ4UH3oV8ryV1n+rtGzH8
-        cOyW7y2wwcTteDCQ==
-Received: from suse.de (unknown [10.163.43.106])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id CA911A3B87;
-        Mon, 31 Jan 2022 12:17:21 +0000 (UTC)
-Date:   Mon, 31 Jan 2022 12:17:20 +0000
-From:   Mel Gorman <mgorman@suse.de>
-To:     Bharata B Rao <bharata@amd.com>
-Cc:     linux-kernel@vger.kernel.org, mingo@redhat.com,
-        peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
-        dishaa.talreja@amd.com, Wei Huang <wei.huang2@amd.com>
-Subject: Re: [RFC PATCH v0 2/3] sched/numa: Add cumulative history of
- per-process fault stats
-Message-ID: <20220131121720.GY3301@suse.de>
-References: <20220128052851.17162-1-bharata@amd.com>
- <20220128052851.17162-3-bharata@amd.com>
+        Mon, 31 Jan 2022 07:17:33 -0500
+Received: from mga04.intel.com ([192.55.52.120]:7664 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1376611AbiAaMRZ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 07:17:25 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643631445; x=1675167445;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=dwqBDqOQlSjSJFkHUy4/qSrW94wE6B2ASgNdy8pW+64=;
+  b=RZd99I5QKuh+G8xOzbVZj8HCGfMbZ5iIOaOScWjlQgqVgHFq3s1OFEQj
+   0k/aq5i5wjQcnaBVq1m60hxc/HmHeB/RjcPt4b7+2S/nQCVsD3iKOxUDV
+   +trbutWJHbn+BLvqjlINDNXWxgf2YMtQrlaJfaM17CJNSeE1mJQJ14voA
+   QVKF8DMJ6cuJ1PcpLx5A/y2fqh8TxSVlLSGKWT38QW6tfK5BkSK4k6Ngj
+   eCw7OHLutJyL9koGhvlBgP/h508YvbmdGxBgzvxR5LulBtDbYYofH3pew
+   3e+pboqWQlQ5Idp4jVyEfNb6c03xpYw7ouIu0iETuETya7/ubefzPyWkM
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10243"; a="246282363"
+X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
+   d="scan'208";a="246282363"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 04:17:25 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
+   d="scan'208";a="619366968"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 31 Jan 2022 04:17:23 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nEVcZ-000RtH-AG; Mon, 31 Jan 2022 12:17:23 +0000
+Date:   Mon, 31 Jan 2022 20:17:09 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Amit Cohen <amcohen@nvidia.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [jpirko-mlxsw:ubridge 24/39]
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c:687:1: warning: the frame
+ size of 1056 bytes is larger than 1024 bytes
+Message-ID: <202201312057.VGGmaz9I-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220128052851.17162-3-bharata@amd.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 10:58:50AM +0530, Bharata B Rao wrote:
-> From: Disha Talreja <dishaa.talreja@amd.com>
-> 
-> The cumulative history of local/remote (lr) and private/shared (ps)
-> will be used for calculating adaptive scan period.
-> 
+tree:   https://github.com/jpirko/linux_mlxsw ubridge
+head:   c28f9c08c88cef81d174cecf88f8e426f3bc3aeb
+commit: c136514a00f9392d94f357b2cedbf5e04c910c44 [24/39] mlxsw: spectrum_fid: Configure layer 3 egress VID classification
+config: arc-allmodconfig (https://download.01.org/0day-ci/archive/20220131/202201312057.VGGmaz9I-lkp@intel.com/config)
+compiler: arceb-elf-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/jpirko/linux_mlxsw/commit/c136514a00f9392d94f357b2cedbf5e04c910c44
+        git remote add jpirko-mlxsw https://github.com/jpirko/linux_mlxsw
+        git fetch --no-tags jpirko-mlxsw ubridge
+        git checkout c136514a00f9392d94f357b2cedbf5e04c910c44
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash drivers/net/ethernet/mellanox/mlxsw/
 
-How it used to calculate adaptive scan period?
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-As it is likely used in a later patch, note here that the per-thread
-stats are simply accumulated in the address space for now.
+All warnings (new ones prefixed by >>):
 
-> Co-developed-by: Wei Huang <wei.huang2@amd.com>
-> Signed-off-by: Wei Huang <wei.huang2@amd.com>
-> Signed-off-by: Disha Talreja <dishaa.talreja@amd.com>
-> Signed-off-by: Bharata B Rao <bharata@amd.com>
-> ---
->  include/linux/mm_types.h |  2 ++
->  kernel/sched/fair.c      | 49 +++++++++++++++++++++++++++++++++++++++-
->  2 files changed, 50 insertions(+), 1 deletion(-)
-> 
-> diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
-> index 4f978c09d3db..2c6f119b947f 100644
-> --- a/include/linux/mm_types.h
-> +++ b/include/linux/mm_types.h
-> @@ -614,6 +614,8 @@ struct mm_struct {
->  		/* Process-based Adaptive NUMA */
->  		atomic_long_t faults_locality[2];
->  		atomic_long_t faults_shared[2];
-> +		unsigned long faults_locality_history[2];
-> +		unsigned long faults_shared_history[2];
->  
->  		spinlock_t pan_numa_lock;
->  		unsigned int numa_scan_period;
-> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-> index 1d6404b2d42e..4911b3841d00 100644
-> --- a/kernel/sched/fair.c
-> +++ b/kernel/sched/fair.c
-> @@ -2102,14 +2102,56 @@ static void numa_group_count_active_nodes(struct numa_group *numa_group)
->  /**********************************************/
->  /*  Process-based Adaptive NUMA (PAN) Design  */
->  /**********************************************/
-> +/*
-> + * Update the cumulative history of local/remote and private/shared
-> + * statistics. If the numbers are too small worthy of updating,
-> + * return FALSE, otherwise return TRUE.
-> + */
-> +static bool pan_update_history(struct task_struct *p)
-> +{
-> +	unsigned long local, remote, shared, private;
-> +	long diff;
-> +	int i;
-> +
-> +	remote = atomic_long_read(&p->mm->faults_locality[0]);
-> +	local = atomic_long_read(&p->mm->faults_locality[1]);
-> +	shared = atomic_long_read(&p->mm->faults_shared[0]);
-> +	private = atomic_long_read(&p->mm->faults_shared[1]);
-> +
-> +	/* skip if the activities in this window are too small */
-> +	if (local + remote < 100)
-> +		return false;
-> +
-
-Why 100?
-
-> +	/* decay over the time window by 1/4 */
-> +	diff = local - (long)(p->mm->faults_locality_history[1] / 4);
-> +	p->mm->faults_locality_history[1] += diff;
-> +	diff = remote - (long)(p->mm->faults_locality_history[0] / 4);
-> +	p->mm->faults_locality_history[0] += diff;
-> +
-> +	/* decay over the time window by 1/2 */
-> +	diff = shared - (long)(p->mm->faults_shared_history[0] / 2);
-> +	p->mm->faults_shared_history[0] += diff;
-> +	diff = private - (long)(p->mm->faults_shared_history[1] / 2);
-> +	p->mm->faults_shared_history[1] += diff;
-> +
-
-Why are the decay windows different?
+   drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c: In function 'mlxsw_sp_fid_erif_eport_to_vid_map_one.isra':
+>> drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c:687:1: warning: the frame size of 1056 bytes is larger than 1024 bytes [-Wframe-larger-than=]
+     687 | }
+         | ^
+   drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c: In function 'mlxsw_sp_fid_erif_eport_to_vid_map':
+   drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c:510:1: warning: the frame size of 1056 bytes is larger than 1024 bytes [-Wframe-larger-than=]
+     510 | }
+         | ^
 
 
-> +	/* clear the statistics for the next window */
-> +	for (i = 0; i < 2; i++) {
-> +		atomic_long_set(&(p->mm->faults_locality[i]), 0);
-> +		atomic_long_set(&(p->mm->faults_shared[i]), 0);
-> +	}
-> +
-> +	return true;
-> +}
-> +
->  /*
->   * Updates mm->numa_scan_period under mm->pan_numa_lock.
-> - *
->   * Returns p->numa_scan_period now but updated to return
->   * p->mm->numa_scan_period in a later patch.
->   */
+vim +687 drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c
 
-Spurious whitespace change.
+   672	
+   673	static int
+   674	mlxsw_sp_fid_erif_eport_to_vid_map_one(const struct mlxsw_sp_fid *fid,
+   675					       u16 rif_index, u16 local_port, u16 vid,
+   676					       bool valid)
+   677	{
+   678		u8 port_page = local_port / (MLXSW_REG_REIV_REC_MAX_COUNT - 1);
+   679		u8 rec_num = local_port % MLXSW_REG_REIV_REC_MAX_COUNT;
+   680		struct mlxsw_sp *mlxsw_sp = fid->fid_family->mlxsw_sp;
+   681		char reiv_pl[MLXSW_REG_REIV_LEN];
+   682	
+   683		mlxsw_reg_reiv_pack(reiv_pl, port_page, rif_index);
+   684		mlxsw_reg_reiv_rec_update_set(reiv_pl, rec_num, true);
+   685		mlxsw_reg_reiv_rec_evid_set(reiv_pl, rec_num, valid ? vid : 0);
+   686		return mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(reiv), reiv_pl);
+ > 687	}
+   688	
 
->  static unsigned long pan_get_scan_period(struct task_struct *p)
->  {
-> +	pan_update_history(p);
-> +
->  	return p->numa_scan_period;
->  }
->  
-
-Ok, so the spinlock is protecting the RMW of the PAN history. It still
-may be a concern that task_numa_work gets aborted if the spinlock cannot
-be acquired.
-
-> @@ -2836,10 +2878,15 @@ static void task_numa_work(struct callback_head *work)
->  static void pan_init_numa(struct task_struct *p)
->  {
->  	struct mm_struct *mm = p->mm;
-> +	int i;
->  
->  	spin_lock_init(&mm->pan_numa_lock);
->  	mm->numa_scan_period = sysctl_numa_balancing_scan_delay;
->  
-> +	for (i = 0; i < 2; i++) {
-> +		mm->faults_locality_history[i] = 0;
-> +		mm->faults_shared_history[i] = 0;
-> +	}
->  }
->  
->  void init_numa_balancing(unsigned long clone_flags, struct task_struct *p)
-> -- 
-> 2.25.1
-> 
-
--- 
-Mel Gorman
-SUSE Labs
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
