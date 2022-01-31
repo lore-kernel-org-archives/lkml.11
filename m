@@ -2,84 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFF31C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 18:51:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7AB6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 18:52:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358172AbiAaSvO (ORCPT
+        id S1358273AbiAaSw5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 13:51:14 -0500
-Received: from mail-yb1-f178.google.com ([209.85.219.178]:34641 "EHLO
-        mail-yb1-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234707AbiAaSvN (ORCPT
+        Mon, 31 Jan 2022 13:52:57 -0500
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:35798 "EHLO
+        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358413AbiAaSwu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 13:51:13 -0500
-Received: by mail-yb1-f178.google.com with SMTP id v186so43553909ybg.1;
-        Mon, 31 Jan 2022 10:51:12 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=C9elPeCurEKfBJHZDKjGhZVFvClsJXI5gGke2sVJMJc=;
-        b=uxNs+NZyl3Xf268BX4cn2LvezomWAVlBWSrrlHOxs+cSZ9wxZEj7VjASBItnknAhGA
-         TXXsGjTUra+qVJhSkYgYgCHxpUWVa672KGGTfMLgKuRPlIsWzcMJZH0k5y410P1KyTSr
-         0+K30Jt6zHOwsrsubvq0YMKW2xKl40Wg+4rJ3/pUL5ODjd6R75YB4z5n+jybPC9ieMMz
-         I7Sa+4dso7yofQgVZZ6gGMwk3P4hMv1MdvOkxWZyT/3nwgHCaxZEOrXfvW6kySnEnFc3
-         T9UmS9cNHvMtVBUjzZdJC6ObujfEKthvZYY3m4mxhrKRmLnytHxCkMll0MtfeRT8j+uY
-         8teg==
-X-Gm-Message-State: AOAM532MYDx3J7lyyITLttJ1FIZRBXbj67yTAXkzQiJnZWhYJHRtzX9U
-        18b8oCWW4a9ntizLSAl+9NkGzP1qWrZs0ssfRowS5G6E/wI=
-X-Google-Smtp-Source: ABdhPJxJ8wSGW1W6Abc0F3zUPNSQyR+J6M9pEZwLaKO0V7/UUGGjFWaidDtzjEOhSnmVTS0yKoO/9pPaZBkCFTVbIsM=
-X-Received: by 2002:a25:c102:: with SMTP id r2mr34056787ybf.330.1643655072465;
- Mon, 31 Jan 2022 10:51:12 -0800 (PST)
+        Mon, 31 Jan 2022 13:52:50 -0500
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: bbeckett)
+        with ESMTPSA id BB7781F436A1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1643655169;
+        bh=wakhSFcVMZevZPcycdryY+hpEED54NWm/zeUvW6H0hU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=kOPSbgjguKnZ8iFzvII5pfkX6yo/SJn8fiiFR1z7wNky9y3wcuLj4JOjvPuc0XH4W
+         0XYhZxdYK7t/iZnV3fXhtiUB73nNWNmcce9frXA+KT3koQpGjfrEu/FxAL+/vVx4O8
+         QMz4XIsalDBQ1ajo49uKIowBFNQ1t9OqYGI0wX6lDSiqVfDVrECTIvhQseX4c69Cbl
+         nt5+TKGotF0OjKVxktFdTNzpekR0HUkOcrHQVax4u3pGkiMdohCbzN7+t/jqptCAWU
+         H2I0Op521/0VvRygmKtQHxKekaP2pfiH33iH0Zqbb2XQADZyocVpuJLv0zOZDUBNWA
+         bBgnjOpQvfHow==
+From:   Robert Beckett <bob.beckett@collabora.com>
+To:     Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     Ramalingam C <ramalingam.c@intel.com>,
+        Matthew Auld <matthew.auld@intel.com>,
+        Robert Beckett <bob.beckett@collabora.com>,
+        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
+        <thomas.hellstrom@linux.intel.com>,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v6 1/5] drm/i915: add needs_compact_pt flag
+Date:   Mon, 31 Jan 2022 18:52:27 +0000
+Message-Id: <20220131185231.725346-2-bob.beckett@collabora.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220131185231.725346-1-bob.beckett@collabora.com>
+References: <20220131185231.725346-1-bob.beckett@collabora.com>
 MIME-Version: 1.0
-References: <20220131133337.1556355-1-trix@redhat.com>
-In-Reply-To: <20220131133337.1556355-1-trix@redhat.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Mon, 31 Jan 2022 19:51:00 +0100
-Message-ID: <CAJZ5v0g5Xxd9kBPUdsC6D4fVHfZafKiGgkTONo2mpqvfgoFDgw@mail.gmail.com>
-Subject: Re: [PATCH] ACPICA: cleanup double word in comment
-To:     Tom Rix <trix@redhat.com>
-Cc:     Robert Moore <robert.moore@intel.com>,
-        Rafael Wysocki <rafael.j.wysocki@intel.com>,
-        Len Brown <lenb@kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        "open list:ACPI COMPONENT ARCHITECTURE (ACPICA)" <devel@acpica.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 31, 2022 at 2:33 PM <trix@redhat.com> wrote:
->
-> From: Tom Rix <trix@redhat.com>
->
-> Remove the second 'know'.
->
-> Signed-off-by: Tom Rix <trix@redhat.com>
+From: Ramalingam C <ramalingam.c@intel.com>
 
-This is ACPICA material, so it needs to be submitted to the upstream
-project via https://github.com/acpica/acpica/
+Add a new platform flag, needs_compact_pt, to mark the requirement of
+compact pt layout support for the ppGTT when using 64K GTT pages.
 
-Also, it would be good to combine all of the analogous changes in one patch.
+With this flag has_64k_pages will only indicate requirement of 64K
+GTT page sizes or larger for device local memory access.
 
-> ---
->  drivers/acpi/acpica/exfldio.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/acpi/acpica/exfldio.c b/drivers/acpi/acpica/exfldio.c
-> index bdc7a30d1217c..b92605df3872c 100644
-> --- a/drivers/acpi/acpica/exfldio.c
-> +++ b/drivers/acpi/acpica/exfldio.c
-> @@ -104,7 +104,7 @@ acpi_ex_setup_region(union acpi_operand_object *obj_desc,
->  #ifdef ACPI_UNDER_DEVELOPMENT
->         /*
->          * If the Field access is any_acc, we can now compute the optimal
-> -        * access (because we know know the length of the parent region)
-> +        * access (because we know the length of the parent region)
->          */
->         if (!(obj_desc->common.flags & AOPOBJ_DATA_VALID)) {
->                 if (ACPI_FAILURE(status)) {
-> --
-> 2.26.3
->
+v6:
+	* minor doc formatting
+
+Suggested-by: Matthew Auld <matthew.auld@intel.com>
+Signed-off-by: Ramalingam C <ramalingam.c@intel.com>
+Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
+Reviewed-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+---
+ drivers/gpu/drm/i915/i915_drv.h          | 11 ++++++++---
+ drivers/gpu/drm/i915/i915_pci.c          |  2 ++
+ drivers/gpu/drm/i915/intel_device_info.h |  1 +
+ 3 files changed, 11 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/gpu/drm/i915/i915_drv.h b/drivers/gpu/drm/i915/i915_drv.h
+index 00e7594b59c9..4afdfa5fd3b3 100644
+--- a/drivers/gpu/drm/i915/i915_drv.h
++++ b/drivers/gpu/drm/i915/i915_drv.h
+@@ -1512,12 +1512,17 @@ IS_SUBPLATFORM(const struct drm_i915_private *i915,
+ 
+ /*
+  * Set this flag, when platform requires 64K GTT page sizes or larger for
+- * device local memory access. Also this flag implies that we require or
+- * at least support the compact PT layout for the ppGTT when using the 64K
+- * GTT pages.
++ * device local memory access.
+  */
+ #define HAS_64K_PAGES(dev_priv) (INTEL_INFO(dev_priv)->has_64k_pages)
+ 
++/*
++ * Set this flag when platform doesn't allow both 64k pages and 4k pages in
++ * the same PT. this flag means we need to support compact PT layout for the
++ * ppGTT when using the 64K GTT pages.
++ */
++#define NEEDS_COMPACT_PT(dev_priv) (INTEL_INFO(dev_priv)->needs_compact_pt)
++
+ #define HAS_IPC(dev_priv)		 (INTEL_INFO(dev_priv)->display.has_ipc)
+ 
+ #define HAS_REGION(i915, i) (INTEL_INFO(i915)->memory_regions & (i))
+diff --git a/drivers/gpu/drm/i915/i915_pci.c b/drivers/gpu/drm/i915/i915_pci.c
+index 2df2db0a5d70..ce6ae6a3cbdf 100644
+--- a/drivers/gpu/drm/i915/i915_pci.c
++++ b/drivers/gpu/drm/i915/i915_pci.c
+@@ -1028,6 +1028,7 @@ static const struct intel_device_info xehpsdv_info = {
+ 	PLATFORM(INTEL_XEHPSDV),
+ 	.display = { },
+ 	.has_64k_pages = 1,
++	.needs_compact_pt = 1,
+ 	.platform_engine_mask =
+ 		BIT(RCS0) | BIT(BCS0) |
+ 		BIT(VECS0) | BIT(VECS1) | BIT(VECS2) | BIT(VECS3) |
+@@ -1046,6 +1047,7 @@ static const struct intel_device_info dg2_info = {
+ 	PLATFORM(INTEL_DG2),
+ 	.has_guc_deprivilege = 1,
+ 	.has_64k_pages = 1,
++	.needs_compact_pt = 1,
+ 	.platform_engine_mask =
+ 		BIT(RCS0) | BIT(BCS0) |
+ 		BIT(VECS0) | BIT(VECS1) |
+diff --git a/drivers/gpu/drm/i915/intel_device_info.h b/drivers/gpu/drm/i915/intel_device_info.h
+index abf1e103c558..d8da40d01dca 100644
+--- a/drivers/gpu/drm/i915/intel_device_info.h
++++ b/drivers/gpu/drm/i915/intel_device_info.h
+@@ -130,6 +130,7 @@ enum intel_ppgtt_type {
+ 	/* Keep has_* in alphabetical order */ \
+ 	func(has_64bit_reloc); \
+ 	func(has_64k_pages); \
++	func(needs_compact_pt); \
+ 	func(gpu_reset_clobbers_display); \
+ 	func(has_reset_engine); \
+ 	func(has_global_mocs); \
+-- 
+2.25.1
+
