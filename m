@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA90CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:41:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C64CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:41:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377699AbiAaLlc (ORCPT
+        id S1378014AbiAaLlm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:41:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48354 "EHLO
+        Mon, 31 Jan 2022 06:41:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350709AbiAaL0k (ORCPT
+        with ESMTP id S1377592AbiAaL1B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:26:40 -0500
+        Mon, 31 Jan 2022 06:27:01 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 109E1C08EC20;
-        Mon, 31 Jan 2022 03:16:05 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2296EC03327E;
+        Mon, 31 Jan 2022 03:16:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A5C5B6114F;
-        Mon, 31 Jan 2022 11:16:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8216CC340E8;
-        Mon, 31 Jan 2022 11:16:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B5E54611DB;
+        Mon, 31 Jan 2022 11:16:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF441C340EE;
+        Mon, 31 Jan 2022 11:16:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627764;
-        bh=kvmeKDKq4ruE2gAqLGR7+eCTMNUXOvT8e/qFwT9YNBE=;
+        s=korg; t=1643627792;
+        bh=Ii7bXh798F+1fkbQs8ohe5qE2OvgUqgwk72WPGEicF8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h9RICFgQorkNNOhXYGoAzvlbGk3mHhHx1enUQNRXSJxqjmCVHTdniMWyXudbU+vp/
-         YP4s49qxoTS6jOJxZeHfJWtoW1fQKSdYT0QjSQQTVTOrl167ghgNMnzxE+Tja7OPQL
-         8gzcM+qE3Q/2ADKePgYt6APAU8vkyJ+rV1HOTo6A=
+        b=evc/tphnmuIlq5A5xA/XnsP8Rcq7dUpTEfw5CUVwe3w2MKXLTBwGdJalZiE6olhRa
+         nkdTU3dU1WWUaOpgwReTJ+L7ljyyWgfPh9Q8pMl6hcwAZ4rE688ac3Oq4AHqMKvRhP
+         +WqBph+wQE8LJZ4uXfRKqWwSkHGqW/6pV2lEVBVw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>
-Subject: [PATCH 5.16 018/200] s390/hypfs: include z/VM guests with access control group set
-Date:   Mon, 31 Jan 2022 11:54:41 +0100
-Message-Id: <20220131105234.175450072@linuxfoundation.org>
+        stable@vger.kernel.org, Matt Kline <matt@bitbashing.io>,
+        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
+        Michael Anochin <anochin@photo-meter.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 5.16 009/200] can: m_can: m_can_fifo_{read,write}: dont read or write from/to FIFO if length is 0
+Date:   Mon, 31 Jan 2022 11:54:32 +0100
+Message-Id: <20220131105233.868161646@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -50,51 +51,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vasily Gorbik <gor@linux.ibm.com>
+From: Marc Kleine-Budde <mkl@pengutronix.de>
 
-commit 663d34c8df98740f1e90241e78e456d00b3c6cad upstream.
+commit db72589c49fd260bfc99c7160c079675bc7417af upstream.
 
-Currently if z/VM guest is allowed to retrieve hypervisor performance
-data globally for all guests (privilege class B) the query is formed in a
-way to include all guests but the group name is left empty. This leads to
-that z/VM guests which have access control group set not being included
-in the results (even local vm).
+In order to optimize FIFO access, especially on m_can cores attached
+to slow busses like SPI, in patch
 
-Change the query group identifier from empty to "any" to retrieve
-information about all guests from any groups (or without a group set).
+| e39381770ec9 ("can: m_can: Disable IRQs on FIFO bus errors")
 
+bulk read/write support has been added to the m_can_fifo_{read,write}
+functions.
+
+That change leads to the tcan driver to call
+regmap_bulk_{read,write}() with a length of 0 (for CAN frames with 0
+data length). regmap treats this as an error:
+
+| tcan4x5x spi1.0 tcan4x5x0: FIFO write returned -22
+
+This patch fixes the problem by not calling the
+cdev->ops->{read,write)_fifo() in case of a 0 length read/write.
+
+Fixes: e39381770ec9 ("can: m_can: Disable IRQs on FIFO bus errors")
+Link: https://lore.kernel.org/all/20220114155751.2651888-1-mkl@pengutronix.de
 Cc: stable@vger.kernel.org
-Fixes: 31cb4bd31a48 ("[S390] Hypervisor filesystem (s390_hypfs) for z/VM")
-Reviewed-by: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
-Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
+Cc: Matt Kline <matt@bitbashing.io>
+Cc: Chandrasekar Ramakrishnan <rcsekar@samsung.com>
+Reported-by: Michael Anochin <anochin@photo-meter.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/s390/hypfs/hypfs_vm.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/net/can/m_can/m_can.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/arch/s390/hypfs/hypfs_vm.c
-+++ b/arch/s390/hypfs/hypfs_vm.c
-@@ -20,6 +20,7 @@
+--- a/drivers/net/can/m_can/m_can.c
++++ b/drivers/net/can/m_can/m_can.c
+@@ -336,6 +336,9 @@ m_can_fifo_read(struct m_can_classdev *c
+ 	u32 addr_offset = cdev->mcfg[MRAM_RXF0].off + fgi * RXF0_ELEMENT_SIZE +
+ 		offset;
  
- static char local_guest[] = "        ";
- static char all_guests[] = "*       ";
-+static char *all_groups = all_guests;
- static char *guest_query;
++	if (val_count == 0)
++		return 0;
++
+ 	return cdev->ops->read_fifo(cdev, addr_offset, val, val_count);
+ }
  
- struct diag2fc_data {
-@@ -62,10 +63,11 @@ static int diag2fc(int size, char* query
+@@ -346,6 +349,9 @@ m_can_fifo_write(struct m_can_classdev *
+ 	u32 addr_offset = cdev->mcfg[MRAM_TXB].off + fpi * TXB_ELEMENT_SIZE +
+ 		offset;
  
- 	memcpy(parm_list.userid, query, NAME_LEN);
- 	ASCEBC(parm_list.userid, NAME_LEN);
--	parm_list.addr = (unsigned long) addr ;
-+	memcpy(parm_list.aci_grp, all_groups, NAME_LEN);
-+	ASCEBC(parm_list.aci_grp, NAME_LEN);
-+	parm_list.addr = (unsigned long)addr;
- 	parm_list.size = size;
- 	parm_list.fmt = 0x02;
--	memset(parm_list.aci_grp, 0x40, NAME_LEN);
- 	rc = -1;
++	if (val_count == 0)
++		return 0;
++
+ 	return cdev->ops->write_fifo(cdev, addr_offset, val, val_count);
+ }
  
- 	diag_stat_inc(DIAG_STAT_X2FC);
 
 
