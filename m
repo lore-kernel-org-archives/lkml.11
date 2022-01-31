@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ACDEC35271
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:13:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA9C5C35268
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:13:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377038AbiAaLNi (ORCPT
+        id S1376818AbiAaLNU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:13:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44846 "EHLO
+        Mon, 31 Jan 2022 06:13:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377388AbiAaLJ7 (ORCPT
+        with ESMTP id S1377243AbiAaLJu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:09:59 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EB38C0604EE;
-        Mon, 31 Jan 2022 03:07:34 -0800 (PST)
+        Mon, 31 Jan 2022 06:09:50 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0493FC0613A2;
+        Mon, 31 Jan 2022 03:06:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E6F660E76;
-        Mon, 31 Jan 2022 11:07:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10AECC340EE;
-        Mon, 31 Jan 2022 11:07:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B8284B82A5C;
+        Mon, 31 Jan 2022 11:06:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 034D4C340EE;
+        Mon, 31 Jan 2022 11:06:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627253;
-        bh=TEQ4QtW897KUpyACEqK/a2F+QVmtupwqDs42RMlB7oc=;
+        s=korg; t=1643627202;
+        bh=Bw3JlHcsA59KK7BZytbzclqcj9Dlm72ho+5EOc7ejeo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1LjTjTWJ2WKsaJDBD9aHrTwuTAJ5hplR8xBao1yrLrN4PtKEwXLHqUPo1yXLSOC7O
-         am7i/z8Ps2YGV6o1qlcGzuPzu57PhdMrEQvpS12nP52x8tWXPXsUljt9Nmziy0BmCs
-         e1ja2nwmFVuo4K+b0awPNkGH+TtHkNsXk37SGfCc=
+        b=v2S3I6uyYBNZK0LZYJ9zCPMhA+Adp7vsF0e3DmUQ3F7OxNB+vxSFJ/mjAKTvzYjsY
+         J7EpU9iDUJJlPmY2Kz3BDred7pNWOVqx5BIoFzskva1cTXjc3TcfQ6yMBmidSzS0pr
+         KWim36KzvLW67kt7E6JB1HVLvU3BtsJ9hSbExu78=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jeff Layton <jlayton@kernel.org>,
-        Ilya Dryomov <idryomov@gmail.com>
-Subject: [PATCH 5.15 023/171] ceph: properly put ceph_string reference after async create attempt
-Date:   Mon, 31 Jan 2022 11:54:48 +0100
-Message-Id: <20220131105230.806451264@linuxfoundation.org>
+        stable@vger.kernel.org, Mihai Carabas <mihai.carabas@oracle.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 077/100] efi/libstub: arm64: Fix image check alignment at entry
+Date:   Mon, 31 Jan 2022 11:56:38 +0100
+Message-Id: <20220131105223.021387714@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
-References: <20220131105229.959216821@linuxfoundation.org>
+In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
+References: <20220131105220.424085452@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,35 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeff Layton <jlayton@kernel.org>
+From: Mihai Carabas <mihai.carabas@oracle.com>
 
-commit 932a9b5870d38b87ba0a9923c804b1af7d3605b9 upstream.
+[ Upstream commit e9b7c3a4263bdcfd31bc3d03d48ce0ded7a94635 ]
 
-The reference acquired by try_prep_async_create is currently leaked.
-Ensure we put it.
+The kernel is aligned at SEGMENT_SIZE and this is the size populated in the PE
+headers:
 
-Cc: stable@vger.kernel.org
-Fixes: 9a8d03ca2e2c ("ceph: attempt to do async create when possible")
-Signed-off-by: Jeff Layton <jlayton@kernel.org>
-Reviewed-by: Ilya Dryomov <idryomov@gmail.com>
-Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+arch/arm64/kernel/efi-header.S: .long   SEGMENT_ALIGN // SectionAlignment
+
+EFI_KIMG_ALIGN is defined as: (SEGMENT_ALIGN > THREAD_ALIGN ? SEGMENT_ALIGN :
+THREAD_ALIGN)
+
+So it depends on THREAD_ALIGN. On newer builds this message started to appear
+even though the loader is taking into account the PE header (which is stating
+SEGMENT_ALIGN).
+
+Fixes: c32ac11da3f8 ("efi/libstub: arm64: Double check image alignment at entry")
+Signed-off-by: Mihai Carabas <mihai.carabas@oracle.com>
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ceph/file.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/firmware/efi/libstub/arm64-stub.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/fs/ceph/file.c
-+++ b/fs/ceph/file.c
-@@ -744,8 +744,10 @@ retry:
- 				restore_deleg_ino(dir, req->r_deleg_ino);
- 				ceph_mdsc_put_request(req);
- 				try_async = false;
-+				ceph_put_string(rcu_dereference_raw(lo.pool_ns));
- 				goto retry;
- 			}
-+			ceph_put_string(rcu_dereference_raw(lo.pool_ns));
- 			goto out_req;
- 		}
- 	}
+diff --git a/drivers/firmware/efi/libstub/arm64-stub.c b/drivers/firmware/efi/libstub/arm64-stub.c
+index c1b57dfb12776..415a971e76947 100644
+--- a/drivers/firmware/efi/libstub/arm64-stub.c
++++ b/drivers/firmware/efi/libstub/arm64-stub.c
+@@ -119,9 +119,9 @@ efi_status_t handle_kernel_image(unsigned long *image_addr,
+ 	if (image->image_base != _text)
+ 		efi_err("FIRMWARE BUG: efi_loaded_image_t::image_base has bogus value\n");
+ 
+-	if (!IS_ALIGNED((u64)_text, EFI_KIMG_ALIGN))
+-		efi_err("FIRMWARE BUG: kernel image not aligned on %ldk boundary\n",
+-			EFI_KIMG_ALIGN >> 10);
++	if (!IS_ALIGNED((u64)_text, SEGMENT_ALIGN))
++		efi_err("FIRMWARE BUG: kernel image not aligned on %dk boundary\n",
++			SEGMENT_ALIGN >> 10);
+ 
+ 	kernel_size = _edata - _text;
+ 	kernel_memsize = kernel_size + (_end - _edata);
+-- 
+2.34.1
+
 
 
