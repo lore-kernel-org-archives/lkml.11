@@ -2,39 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CF92C4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ACDEC35271
 	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:13:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376927AbiAaLN3 (ORCPT
+        id S1377038AbiAaLNi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:13:29 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:42912 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377357AbiAaLJ5 (ORCPT
+        Mon, 31 Jan 2022 06:13:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44846 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377388AbiAaLJ7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:09:57 -0500
+        Mon, 31 Jan 2022 06:09:59 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EB38C0604EE;
+        Mon, 31 Jan 2022 03:07:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6889060E76;
-        Mon, 31 Jan 2022 11:09:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FF0FC340E8;
-        Mon, 31 Jan 2022 11:09:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E6F660E76;
+        Mon, 31 Jan 2022 11:07:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10AECC340EE;
+        Mon, 31 Jan 2022 11:07:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627396;
-        bh=Xg9f6CFllZYrzcO1n0gxcgeybqgoqA71gctmrnJvsx0=;
+        s=korg; t=1643627253;
+        bh=TEQ4QtW897KUpyACEqK/a2F+QVmtupwqDs42RMlB7oc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nyf7ZE1gMIWJgxubvO6ZHNRJtUvx+3/tZNIsQTeLkr+fw9c0ZSOoZKdYWw91eAIZ7
-         jX5j3nxfHW6E4lHxYkt8UppWISA2p75Vg1yLaATdJueDf3dV0E+hEe3Hk2PCa09Rwx
-         OxLw5O9EiE0q97GjTzWN+aSyhFnkmy2U+7IEMCNc=
+        b=1LjTjTWJ2WKsaJDBD9aHrTwuTAJ5hplR8xBao1yrLrN4PtKEwXLHqUPo1yXLSOC7O
+         am7i/z8Ps2YGV6o1qlcGzuPzu57PhdMrEQvpS12nP52x8tWXPXsUljt9Nmziy0BmCs
+         e1ja2nwmFVuo4K+b0awPNkGH+TtHkNsXk37SGfCc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ailin Xu <ailin.xu@intel.com>,
-        Tony Luck <tony.luck@intel.com>, Borislav Petkov <bp@suse.de>
-Subject: [PATCH 5.15 071/171] x86/cpu: Add Xeon Icelake-D to list of CPUs that support PPIN
-Date:   Mon, 31 Jan 2022 11:55:36 +0100
-Message-Id: <20220131105232.439940276@linuxfoundation.org>
+        stable@vger.kernel.org, Jeff Layton <jlayton@kernel.org>,
+        Ilya Dryomov <idryomov@gmail.com>
+Subject: [PATCH 5.15 023/171] ceph: properly put ceph_string reference after async create attempt
+Date:   Mon, 31 Jan 2022 11:54:48 +0100
+Message-Id: <20220131105230.806451264@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
 References: <20220131105229.959216821@linuxfoundation.org>
@@ -46,33 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tony Luck <tony.luck@intel.com>
+From: Jeff Layton <jlayton@kernel.org>
 
-commit e464121f2d40eabc7d11823fb26db807ce945df4 upstream.
+commit 932a9b5870d38b87ba0a9923c804b1af7d3605b9 upstream.
 
-Missed adding the Icelake-D CPU to the list. It uses the same MSRs
-to control and read the inventory number as all the other models.
+The reference acquired by try_prep_async_create is currently leaked.
+Ensure we put it.
 
-Fixes: dc6b025de95b ("x86/mce: Add Xeon Icelake to list of CPUs that support PPIN")
-Reported-by: Ailin Xu <ailin.xu@intel.com>
-Signed-off-by: Tony Luck <tony.luck@intel.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220121174743.1875294-2-tony.luck@intel.com
+Cc: stable@vger.kernel.org
+Fixes: 9a8d03ca2e2c ("ceph: attempt to do async create when possible")
+Signed-off-by: Jeff Layton <jlayton@kernel.org>
+Reviewed-by: Ilya Dryomov <idryomov@gmail.com>
+Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/cpu/mce/intel.c |    1 +
- 1 file changed, 1 insertion(+)
+ fs/ceph/file.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/arch/x86/kernel/cpu/mce/intel.c
-+++ b/arch/x86/kernel/cpu/mce/intel.c
-@@ -486,6 +486,7 @@ static void intel_ppin_init(struct cpuin
- 	case INTEL_FAM6_BROADWELL_X:
- 	case INTEL_FAM6_SKYLAKE_X:
- 	case INTEL_FAM6_ICELAKE_X:
-+	case INTEL_FAM6_ICELAKE_D:
- 	case INTEL_FAM6_SAPPHIRERAPIDS_X:
- 	case INTEL_FAM6_XEON_PHI_KNL:
- 	case INTEL_FAM6_XEON_PHI_KNM:
+--- a/fs/ceph/file.c
++++ b/fs/ceph/file.c
+@@ -744,8 +744,10 @@ retry:
+ 				restore_deleg_ino(dir, req->r_deleg_ino);
+ 				ceph_mdsc_put_request(req);
+ 				try_async = false;
++				ceph_put_string(rcu_dereference_raw(lo.pool_ns));
+ 				goto retry;
+ 			}
++			ceph_put_string(rcu_dereference_raw(lo.pool_ns));
+ 			goto out_req;
+ 		}
+ 	}
 
 
