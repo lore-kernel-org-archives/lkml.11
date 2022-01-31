@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 419C9C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F1B5C43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:10:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359768AbiAaLHx (ORCPT
+        id S1376305AbiAaLIK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:07:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43300 "EHLO
+        Mon, 31 Jan 2022 06:08:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359102AbiAaLEW (ORCPT
+        with ESMTP id S1359118AbiAaLEh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:04:22 -0500
+        Mon, 31 Jan 2022 06:04:37 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B917C06177B;
-        Mon, 31 Jan 2022 03:03:43 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B41EC0613A4;
+        Mon, 31 Jan 2022 03:03:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EBB33B82A31;
-        Mon, 31 Jan 2022 11:03:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 133D0C340E8;
-        Mon, 31 Jan 2022 11:03:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ECC0AB82A69;
+        Mon, 31 Jan 2022 11:03:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0809AC340E8;
+        Mon, 31 Jan 2022 11:03:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627020;
-        bh=GVA7Ng45PZAYfYgqxoXRx2UGssnU9LrYy6Y6QmtM/x8=;
+        s=korg; t=1643627035;
+        bh=7E9ERDVZttx1BEkbi9cB6zU2U3oaHnyBYoXJvVBibGo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R7yfnwFjfMUB9TlvIol4dkFaYpAy+VW96xU9ck2jSJNUVf82lSE1OTflaY4DnAxDw
-         TcG/yBi6GPp8fR3jH2yKoBWCpCFbEA0Co1JebG5kVM6uAwlrYhHSZNrFjPJDlk23fT
-         hbELPFKWVkUXiLN/V+0kCyvm0JA6G0brn7V1krbM=
+        b=iPNCP81vSuCz/XLEFU5+4FtLI3B9Qtl6NTO/RthxvP9HovuogNZ/Lv6Hb4hP5KtEg
+         Rxursf1dPB2FjT9X87pUP/QX7T1pytUjlAszfUm1VMIaF6YtJPflj16DKTr8Eo0iyN
+         qFNfK40YGVjnt77sXbuU60Bpt2IhneY7861TD5MI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guangwu Zhang <guazhang@redhat.com>,
-        Maurizio Lombardi <mlombard@redhat.com>,
-        John Meneghini <jmeneghi@redhat.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.10 050/100] scsi: bnx2fc: Flush destroy_work queue before calling bnx2fc_interface_put()
-Date:   Mon, 31 Jan 2022 11:56:11 +0100
-Message-Id: <20220131105222.122696253@linuxfoundation.org>
+        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH 5.10 054/100] hwmon: (lm90) Mark alert as broken for MAX6646/6647/6649
+Date:   Mon, 31 Jan 2022 11:56:15 +0100
+Message-Id: <20220131105222.254828909@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
 References: <20220131105220.424085452@linuxfoundation.org>
@@ -51,146 +48,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Meneghini <jmeneghi@redhat.com>
+From: Guenter Roeck <linux@roeck-us.net>
 
-commit 847f9ea4c5186fdb7b84297e3eeed9e340e83fce upstream.
+commit f614629f9c1080dcc844a8430e3fb4c37ebbf05d upstream.
 
-The bnx2fc_destroy() functions are removing the interface before calling
-destroy_work. This results multiple WARNings from sysfs_remove_group() as
-the controller rport device attributes are removed too early.
+Experiments with MAX6646 and MAX6648 show that the alert function of those
+chips is broken, similar to other chips supported by the lm90 driver.
+Mark it accordingly.
 
-Replace the fcoe_port's destroy_work queue. It's not needed.
-
-The problem is easily reproducible with the following steps.
-
-Example:
-
-  $ dmesg -w &
-  $ systemctl enable --now fcoe
-  $ fipvlan -s -c ens2f1
-  $ fcoeadm -d ens2f1.802
-  [  583.464488] host2: libfc: Link down on port (7500a1)
-  [  583.472651] bnx2fc: 7500a1 - rport not created Yet!!
-  [  583.490468] ------------[ cut here ]------------
-  [  583.538725] sysfs group 'power' not found for kobject 'rport-2:0-0'
-  [  583.568814] WARNING: CPU: 3 PID: 192 at fs/sysfs/group.c:279 sysfs_remove_group+0x6f/0x80
-  [  583.607130] Modules linked in: dm_service_time 8021q garp mrp stp llc bnx2fc cnic uio rpcsec_gss_krb5 auth_rpcgss nfsv4 ...
-  [  583.942994] CPU: 3 PID: 192 Comm: kworker/3:2 Kdump: loaded Not tainted 5.14.0-39.el9.x86_64 #1
-  [  583.984105] Hardware name: HP ProLiant DL120 G7, BIOS J01 07/01/2013
-  [  584.016535] Workqueue: fc_wq_2 fc_rport_final_delete [scsi_transport_fc]
-  [  584.050691] RIP: 0010:sysfs_remove_group+0x6f/0x80
-  [  584.074725] Code: ff 5b 48 89 ef 5d 41 5c e9 ee c0 ff ff 48 89 ef e8 f6 b8 ff ff eb d1 49 8b 14 24 48 8b 33 48 c7 c7 ...
-  [  584.162586] RSP: 0018:ffffb567c15afdc0 EFLAGS: 00010282
-  [  584.188225] RAX: 0000000000000000 RBX: ffffffff8eec4220 RCX: 0000000000000000
-  [  584.221053] RDX: ffff8c1586ce84c0 RSI: ffff8c1586cd7cc0 RDI: ffff8c1586cd7cc0
-  [  584.255089] RBP: 0000000000000000 R08: 0000000000000000 R09: ffffb567c15afc00
-  [  584.287954] R10: ffffb567c15afbf8 R11: ffffffff8fbe7f28 R12: ffff8c1486326400
-  [  584.322356] R13: ffff8c1486326480 R14: ffff8c1483a4a000 R15: 0000000000000004
-  [  584.355379] FS:  0000000000000000(0000) GS:ffff8c1586cc0000(0000) knlGS:0000000000000000
-  [  584.394419] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-  [  584.421123] CR2: 00007fe95a6f7840 CR3: 0000000107674002 CR4: 00000000000606e0
-  [  584.454888] Call Trace:
-  [  584.466108]  device_del+0xb2/0x3e0
-  [  584.481701]  device_unregister+0x13/0x60
-  [  584.501306]  bsg_unregister_queue+0x5b/0x80
-  [  584.522029]  bsg_remove_queue+0x1c/0x40
-  [  584.541884]  fc_rport_final_delete+0xf3/0x1d0 [scsi_transport_fc]
-  [  584.573823]  process_one_work+0x1e3/0x3b0
-  [  584.592396]  worker_thread+0x50/0x3b0
-  [  584.609256]  ? rescuer_thread+0x370/0x370
-  [  584.628877]  kthread+0x149/0x170
-  [  584.643673]  ? set_kthread_struct+0x40/0x40
-  [  584.662909]  ret_from_fork+0x22/0x30
-  [  584.680002] ---[ end trace 53575ecefa942ece ]---
-
-Link: https://lore.kernel.org/r/20220115040044.1013475-1-jmeneghi@redhat.com
-Fixes: 0cbf32e1681d ("[SCSI] bnx2fc: Avoid calling bnx2fc_if_destroy with unnecessary locks")
-Tested-by: Guangwu Zhang <guazhang@redhat.com>
-Co-developed-by: Maurizio Lombardi <mlombard@redhat.com>
-Signed-off-by: Maurizio Lombardi <mlombard@redhat.com>
-Signed-off-by: John Meneghini <jmeneghi@redhat.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: 4667bcb8d8fc ("hwmon: (lm90) Introduce chip parameter structure")
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/bnx2fc/bnx2fc_fcoe.c |   20 +++++---------------
- 1 file changed, 5 insertions(+), 15 deletions(-)
+ drivers/hwmon/lm90.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/scsi/bnx2fc/bnx2fc_fcoe.c
-+++ b/drivers/scsi/bnx2fc/bnx2fc_fcoe.c
-@@ -80,7 +80,7 @@ static int bnx2fc_bind_pcidev(struct bnx
- static void bnx2fc_unbind_pcidev(struct bnx2fc_hba *hba);
- static struct fc_lport *bnx2fc_if_create(struct bnx2fc_interface *interface,
- 				  struct device *parent, int npiv);
--static void bnx2fc_destroy_work(struct work_struct *work);
-+static void bnx2fc_port_destroy(struct fcoe_port *port);
- 
- static struct bnx2fc_hba *bnx2fc_hba_lookup(struct net_device *phys_dev);
- static struct bnx2fc_interface *bnx2fc_interface_lookup(struct net_device
-@@ -905,9 +905,6 @@ static void bnx2fc_indicate_netevent(voi
- 				__bnx2fc_destroy(interface);
- 		}
- 		mutex_unlock(&bnx2fc_dev_lock);
--
--		/* Ensure ALL destroy work has been completed before return */
--		flush_workqueue(bnx2fc_wq);
- 		return;
- 
- 	default:
-@@ -1213,8 +1210,8 @@ static int bnx2fc_vport_destroy(struct f
- 	mutex_unlock(&n_port->lp_mutex);
- 	bnx2fc_free_vport(interface->hba, port->lport);
- 	bnx2fc_port_shutdown(port->lport);
-+	bnx2fc_port_destroy(port);
- 	bnx2fc_interface_put(interface);
--	queue_work(bnx2fc_wq, &port->destroy_work);
- 	return 0;
- }
- 
-@@ -1523,7 +1520,6 @@ static struct fc_lport *bnx2fc_if_create
- 	port->lport = lport;
- 	port->priv = interface;
- 	port->get_netdev = bnx2fc_netdev;
--	INIT_WORK(&port->destroy_work, bnx2fc_destroy_work);
- 
- 	/* Configure fcoe_port */
- 	rc = bnx2fc_lport_config(lport);
-@@ -1651,8 +1647,8 @@ static void __bnx2fc_destroy(struct bnx2
- 	bnx2fc_interface_cleanup(interface);
- 	bnx2fc_stop(interface);
- 	list_del(&interface->list);
-+	bnx2fc_port_destroy(port);
- 	bnx2fc_interface_put(interface);
--	queue_work(bnx2fc_wq, &port->destroy_work);
- }
- 
- /**
-@@ -1692,15 +1688,12 @@ netdev_err:
- 	return rc;
- }
- 
--static void bnx2fc_destroy_work(struct work_struct *work)
-+static void bnx2fc_port_destroy(struct fcoe_port *port)
- {
--	struct fcoe_port *port;
- 	struct fc_lport *lport;
- 
--	port = container_of(work, struct fcoe_port, destroy_work);
- 	lport = port->lport;
--
--	BNX2FC_HBA_DBG(lport, "Entered bnx2fc_destroy_work\n");
-+	BNX2FC_HBA_DBG(lport, "Entered %s, destroying lport %p\n", __func__, lport);
- 
- 	bnx2fc_if_destroy(lport);
- }
-@@ -2554,9 +2547,6 @@ static void bnx2fc_ulp_exit(struct cnic_
- 			__bnx2fc_destroy(interface);
- 	mutex_unlock(&bnx2fc_dev_lock);
- 
--	/* Ensure ALL destroy work has been completed before return */
--	flush_workqueue(bnx2fc_wq);
--
- 	bnx2fc_ulp_stop(hba);
- 	/* unregister cnic device */
- 	if (test_and_clear_bit(BNX2FC_CNIC_REGISTERED, &hba->reg_with_cnic))
+--- a/drivers/hwmon/lm90.c
++++ b/drivers/hwmon/lm90.c
+@@ -394,7 +394,7 @@ static const struct lm90_params lm90_par
+ 		.max_convrate = 9,
+ 	},
+ 	[max6646] = {
+-		.flags = LM90_HAVE_CRIT,
++		.flags = LM90_HAVE_CRIT | LM90_HAVE_BROKEN_ALERT,
+ 		.alert_alarms = 0x7c,
+ 		.max_convrate = 6,
+ 		.reg_local_ext = MAX6657_REG_R_LOCAL_TEMPL,
 
 
