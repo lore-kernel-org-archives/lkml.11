@@ -2,140 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2B86C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 22:46:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71A85C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 22:48:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234732AbiAaWqY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 17:46:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38930 "EHLO
+        id S234887AbiAaWsz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 31 Jan 2022 17:48:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234138AbiAaWqW (ORCPT
+        with ESMTP id S229890AbiAaWsx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 17:46:22 -0500
-Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6861C06173B
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 14:46:21 -0800 (PST)
-Received: by mail-oi1-x232.google.com with SMTP id 4so5278435oil.11
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 14:46:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=cPSwipAItewrlwlaB1WgBWvG61rxGLcFg9j2CvLpcl4=;
-        b=fNI2v12SSGf4SjaosIMf61vcXiPBZ8h/JfxIBp1Nn485Jw2QvpBpcFoaqi+JulyJUD
-         xqNZPZpWi8A4WaMqNR+Qi8Ak2zpAPe4ZOU5PDIsKBFFjOfAVI8rtVZ7UQ74eDj+QEJKq
-         up9My2u5uR/Jiiu5J4Bj3VR3vQOFHgfyKGQJPwg3fQ6M5sQoB0VLo9TsLrJZvV8h5iJW
-         8WIJezdrcvyxBDM3vWCqtFTK62WTcrDApbO2rICGZJWZHq/7QwHsLT5HxC7oZMZiBfDn
-         QRLY1Z4ZDsLTxg6ZteQnj/5PQ2ji9skJeI8cZ34jk/at7dlGyTMdng88pBmK/p43vSPL
-         Kukg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=cPSwipAItewrlwlaB1WgBWvG61rxGLcFg9j2CvLpcl4=;
-        b=Q9UwdP62uqJASSgyXrrh4APel/u7QgW9doM4/Ch3ULGcuwpZCvXf7lVNCirr0Ys+Q3
-         HIzh48WKSfQcw/8Q98XUwEcN/PUri2liNvXUDLR6Ycbi37+mhUYFXVWNxnK5r57aJ+K5
-         RebEgBcalHi3yp1ttFHR8/OGyOgD2NOVQ3nqyaxq7dK6CrVVnhleypbIfva2fPMDlBlD
-         lWWBD7HUE8rNGcbYnjRehunRfE1wa74WkPRA6xIYCfiDNgtkhtbOeOnMHDjyl31dMO3C
-         V/2QMJFmq1XP68HgwD3nMcpZHIlConjvRkHIS9PJn/YcA4HTZXUVjFgWi4Vq5A7xG54y
-         pvlA==
-X-Gm-Message-State: AOAM532mPBVgADIGHfFtGfMYsJOWRhcb84UUUWHn9oydP+6UnhdQdvuD
-        sE+//3qERc7vCGW6AzgJutYbNQ==
-X-Google-Smtp-Source: ABdhPJy37enwPYoI7CBQqfeyVSBy1AhPAF9NzuycunkO9qrLp8a1s4gU/voxLeGJODYg6F8qmwegSw==
-X-Received: by 2002:a05:6808:1208:: with SMTP id a8mr19819135oil.223.1643669181198;
-        Mon, 31 Jan 2022 14:46:21 -0800 (PST)
-Received: from builder.lan ([2600:1700:a0:3dc8:3697:f6ff:fe85:aac9])
-        by smtp.gmail.com with ESMTPSA id w20sm13203286otu.12.2022.01.31.14.46.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Jan 2022 14:46:20 -0800 (PST)
-Date:   Mon, 31 Jan 2022 16:46:18 -0600
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Andy Gross <agross@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 03/17] ARM: dts: qcom: add missing rpm regulators and
- cells for ipq8064
-Message-ID: <Yfhmum8BnB1JIALP@builder.lan>
-References: <20220118012051.21691-1-ansuelsmth@gmail.com>
- <20220118012051.21691-4-ansuelsmth@gmail.com>
+        Mon, 31 Jan 2022 17:48:53 -0500
+X-Greylist: delayed 485 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 31 Jan 2022 14:48:53 PST
+Received: from mail.maslowski.xyz (maslowski.xyz [IPv6:2001:19f0:5:5b98:5400:3ff:fe59:951d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A7D4C061714;
+        Mon, 31 Jan 2022 14:48:53 -0800 (PST)
+Received: from [127.0.0.1] (public-gprs393678.centertel.pl [37.47.169.15])
+        by mail.maslowski.xyz (Postfix) with ESMTPSA id 5337580D85;
+        Mon, 31 Jan 2022 22:40:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=maslowski.xyz;
+        s=mail; t=1643668846;
+        bh=TVxdwUFTFyZUGl5grFYYrubbq4iOCQK2FORp//gZCWQ=;
+        h=Date:From:To:CC:Subject:In-Reply-To:From;
+        b=ZHN9iu0VBNRr4GAmTWjz1PzN+9N5/KhB2v75W9esIAXrtOE3mLJf9LcSyjbd9W402
+         j9TufTpzHeFhr1C5JWNIwuwhGvp7FCiDQ1NJMA4Ojqh2OvIzfpF2ZGhAuX/SuRzgGc
+         BuaUrvUABoxKRvIDZrlfl+vDiPdPLixB1j7PK2JCQ0NUV0TU0zCUijnLLsPNNE7cO6
+         joiQE+SnKdJwHDxzyo5tZI0+/ggte9qpOL2uWAfps04OBo3hjuBw6nY9OMi4ExKpnl
+         0J4d49RUVHTpq0JmYo1m6yzAlqxbSw1rvuurnBo5FTrPESszvzFlX4IxF2lpvlxp/e
+         aB0TwWroU9nqA==
+Date:   Mon, 31 Jan 2022 23:33:49 +0100
+From:   =?UTF-8?Q?Piotr_Mas=C5=82owski?= <piotr@maslowski.xyz>
+To:     marcan@marcan.st
+CC:     SHA-cyfmac-dev-list@infineon.com, alyssa@rosenzweig.io,
+        andy.shevchenko@gmail.com, arend.vanspriel@broadcom.com,
+        aspriel@gmail.com, brcm80211-dev-list.pdl@broadcom.com,
+        davem@davemloft.net, devicetree@vger.kernel.org, digetx@gmail.com,
+        franky.lin@broadcom.com, hante.meuleman@broadcom.com,
+        hdegoede@redhat.com, kettenis@openbsd.org, kuba@kernel.org,
+        kvalo@codeaurora.org, lenb@kernel.org, linus.walleij@linaro.org,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linville@tuxdriver.com,
+        netdev@vger.kernel.org, pieter-paul.giesberts@broadcom.com,
+        rafael@kernel.org, robh+dt@kernel.org,
+        sandals@crustytoothpaste.net, sven@svenpeter.dev,
+        wright.feng@infineon.com, zajec5@gmail.com
+Subject: =?US-ASCII?Q?Re=3A_=5BPATCH_v4_7/9=5D_brcmfmac=3A_of=3A_Use_devm?= =?US-ASCII?Q?=5Fkstrdup_for_board=5Ftype_=26_check_for_errors?=
+User-Agent: K-9 Mail for Android
+In-Reply-To: <20220131160713.245637-8-marcan@marcan.st>
+Message-ID: <5E81748D-C6A8-4904-9A03-F61512AF22E5@maslowski.xyz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220118012051.21691-4-ansuelsmth@gmail.com>
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 17 Jan 19:20 CST 2022, Ansuel Smith wrote:
+On Mon, Jan 31, 2022 at 5:07 PM Hector Martin <marcan@marcan=2Est> wrote:
+>
+>This was missing a NULL check, and we can collapse the strlen/alloc/copy
+>into a devm_kstrdup()=2E
 
-> Add cells definition for rpm node and add missing regulators for the 4
-> regulator present on ipq8064. There regulators are controlled by rpm and
-> to correctly works gsbi4_i2c require to be NEVER disabled or rpm will
-> reject any regulator change request.
-> 
+=2E=2E=2E
+=20
+> 		/* get rid of '/' in the compatible string to be able to find the FW *=
+/
+> 		len =3D strlen(tmp) + 1;
+>-		board_type =3D devm_kzalloc(dev, len, >GFP_KERNEL);
+>-		strscpy(board_type, tmp, len);
+>+		board_type =3D devm_kstrdup(dev, tmp, GFP_KERNEL);
 
-Is the SMB208 mandatory on all ipq8064 designs, or should this be pushed
-out to the device dts?
+Also `len` can be dropped, since it is now unused=2E
 
-Regards,
-Bjorn
-
-> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> ---
->  arch/arm/boot/dts/qcom-ipq8064.dtsi | 35 +++++++++++++++++++++++++++++
->  1 file changed, 35 insertions(+)
-> 
-> diff --git a/arch/arm/boot/dts/qcom-ipq8064.dtsi b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-> index 094125605bea..824cf13dd037 100644
-> --- a/arch/arm/boot/dts/qcom-ipq8064.dtsi
-> +++ b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-> @@ -829,10 +829,45 @@ rpm: rpm@108000 {
->  			clocks = <&gcc RPM_MSG_RAM_H_CLK>;
->  			clock-names = "ram";
->  
-> +			#address-cells = <1>;
-> +			#size-cells = <0>;
-> +
->  			rpmcc: clock-controller {
->  				compatible = "qcom,rpmcc-ipq806x", "qcom,rpmcc";
->  				#clock-cells = <1>;
->  			};
-> +
-> +			regulators {
-> +				compatible = "qcom,rpm-smb208-regulators";
-> +
-> +				smb208_s1a: s1a {
-> +					regulator-min-microvolt = <1050000>;
-> +					regulator-max-microvolt = <1150000>;
-> +
-> +					qcom,switch-mode-frequency = <1200000>;
-> +				};
-> +
-> +				smb208_s1b: s1b {
-> +					regulator-min-microvolt = <1050000>;
-> +					regulator-max-microvolt = <1150000>;
-> +
-> +					qcom,switch-mode-frequency = <1200000>;
-> +				};
-> +
-> +				smb208_s2a: s2a {
-> +					regulator-min-microvolt = < 800000>;
-> +					regulator-max-microvolt = <1250000>;
-> +
-> +					qcom,switch-mode-frequency = <1200000>;
-> +				};
-> +
-> +				smb208_s2b: s2b {
-> +					regulator-min-microvolt = < 800000>;
-> +					regulator-max-microvolt = <1250000>;
-> +
-> +					qcom,switch-mode-frequency = <1200000>;
-> +				};
-> +			};
->  		};
->  
->  		tcsr: syscon@1a400000 {
-> -- 
-> 2.33.1
-> 
+--
+Best regards,
+Piotr Mas=C5=82owski
