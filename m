@@ -2,106 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63DC9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:50:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B847C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:50:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359203AbiAaLui (ORCPT
+        id S1350469AbiAaLun (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:50:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52156 "EHLO
+        Mon, 31 Jan 2022 06:50:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350922AbiAaLk2 (ORCPT
+        with ESMTP id S1358889AbiAaLkb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:40:28 -0500
-Received: from smtp-8fa9.mail.infomaniak.ch (smtp-8fa9.mail.infomaniak.ch [IPv6:2001:1600:3:17::8fa9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DF20C034636
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 03:25:54 -0800 (PST)
-Received: from smtp-3-0000.mail.infomaniak.ch (unknown [10.4.36.107])
-        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4JnQjX476KzMqHf0;
-        Mon, 31 Jan 2022 12:25:52 +0100 (CET)
-Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
-        by smtp-3-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4JnQjT5rHWzljTg9;
-        Mon, 31 Jan 2022 12:25:49 +0100 (CET)
-Message-ID: <e4707df2-ecc2-0471-87fc-c54e774fe315@digikod.net>
-Date:   Mon, 31 Jan 2022 12:33:51 +0100
+        Mon, 31 Jan 2022 06:40:31 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98A08C02B759;
+        Mon, 31 Jan 2022 03:26:01 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2361C61207;
+        Mon, 31 Jan 2022 11:26:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D95F2C340E8;
+        Mon, 31 Jan 2022 11:25:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643628360;
+        bh=ndc/QEHzXBjo0Z3px9sIrvoNwv0d3Hm942zQU65+mHE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=lfBrcNoYuf1z0zPSBkeDfOooWdXU7JPfJrTbASliLz/QPMTmlPuf8vUW4JxpE9OFT
+         lRq80WjBSU1JEqiablz4O4Msz+bo9D7ZnxfH7gRXSPwg657hiv65NJd7HuqxhQYSVt
+         vCS/U6F76nhoeeuYW4bT7UdhuyMvrforxJM1Rv3A=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Yufeng Mo <moyufeng@huawei.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 174/200] net: hns3: handle empty unknown interrupt for VF
+Date:   Mon, 31 Jan 2022 11:57:17 +0100
+Message-Id: <20220131105239.401839850@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
+References: <20220131105233.561926043@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: 
-Content-Language: en-US
-To:     Jarkko Sakkinen <jarkko@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Eric Snowberg <eric.snowberg@oracle.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        James Morris <jmorris@namei.org>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        "Serge E . Hallyn" <serge@hallyn.com>,
-        Tyler Hicks <tyhicks@linux.microsoft.com>,
-        keyrings@vger.kernel.org, linux-crypto@vger.kernel.org,
-        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        Andreas Rammhold <andreas@rammhold.de>,
-        David Howells <dhowells@redhat.com>,
-        David Woodhouse <dwmw2@infradead.org>
-References: <20210712170313.884724-1-mic@digikod.net>
- <7e8d27da-b5d4-e42c-af01-5c03a7f36a6b@digikod.net> <YcGVZitNa23PCSFV@iki.fi>
- <5030a9ff-a1d1-a9bd-902a-77c3d1d87446@digikod.net> <Ydc/E3S2vmtDOnpw@iki.fi>
- <YddADJJNLDlQAYRW@iki.fi> <86c5010e-a926-023a-8915-d6605cfc4f0a@digikod.net>
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-Subject: Re: [PATCH v8 0/5] Enable root to update the blacklist keyring
-In-Reply-To: <86c5010e-a926-023a-8915-d6605cfc4f0a@digikod.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Yufeng Mo <moyufeng@huawei.com>
 
-On 07/01/2022 13:14, Mickaël Salaün wrote:
-> 
-> On 06/01/2022 20:16, Jarkko Sakkinen wrote:
->> On Thu, Jan 06, 2022 at 09:12:22PM +0200, Jarkko Sakkinen wrote:
->>> On Tue, Jan 04, 2022 at 04:56:36PM +0100, Mickaël Salaün wrote:
->>>>
->>>> On 21/12/2021 09:50, Jarkko Sakkinen wrote:
->>>>> On Mon, Dec 13, 2021 at 04:30:29PM +0100, Mickaël Salaün wrote:
->>>>>> Hi Jarkko,
->>>>>>
->>>>>> Since everyone seems OK with this and had plenty of time to 
->>>>>> complain, could
->>>>>> you please take this patch series in your tree? It still applies on
->>>>>> v5.16-rc5 and it is really important to us. Please let me know if 
->>>>>> you need
->>>>>> something more.
->>>>>>
->>>>>> Regards,
->>>>>>    Mickaël
->>>>>
->>>>> I'm off-work up until end of the year, i.e. I will address only 
->>>>> important
->>>>> bug fixes and v5.16 up until that.
->>>>>
->>>>> If any of the patches is yet missing my ack, feel free to
->>>>>
->>>>> Acked-by: Jarkko Sakkinen <jarkko@kernel.org>
->>>>
->>>> Thanks Jarkko. Can you please take it into your tree?
->>>
->>> I can yes, as I need to anyway do a revised PR for v5.17, as one commit
->>> in my first trial had a truncated fixes tag.
->>
->> Please check:
->>
->> git://git.kernel.org/pub/scm/linux/kernel/git/jarkko/linux-tpmdd.git
->>
->> /Jarkko
-> 
-> Great, thanks!
+[ Upstream commit 2f61353cd2f789a4229b6f5c1c24a40a613357bb ]
 
-Hi Jarkko,
+Since some interrupt states may be cleared by hardware, the driver
+may receive an empty interrupt. Currently, the VF driver directly
+disables the vector0 interrupt in this case. As a result, the VF
+is unavailable. Therefore, the vector0 interrupt should be enabled
+in this case.
 
-I noticed your commits 
-https://git.kernel.org/pub/scm/linux/kernel/git/jarkko/linux-tpmdd.git/commit/?id=3ec9c3a0531ac868422be3b12fc17310ed8c07dc 
-are no more referenced in your tree. Is there an issue?
+Fixes: b90fcc5bd904 ("net: hns3: add reset handling for VF when doing Core/Global/IMP reset")
+Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-Regards,
-  Mickaël
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
+index 41afaeea881bc..70491e07b0ff6 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
+@@ -2496,8 +2496,7 @@ static irqreturn_t hclgevf_misc_irq_handle(int irq, void *data)
+ 		break;
+ 	}
+ 
+-	if (event_cause != HCLGEVF_VECTOR0_EVENT_OTHER)
+-		hclgevf_enable_vector(&hdev->misc_vector, true);
++	hclgevf_enable_vector(&hdev->misc_vector, true);
+ 
+ 	return IRQ_HANDLED;
+ }
+-- 
+2.34.1
+
+
+
