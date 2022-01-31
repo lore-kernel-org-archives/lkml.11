@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2A91C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:46:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDAAFC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:46:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378834AbiAaLnO (ORCPT
+        id S1379502AbiAaLpw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:43:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49596 "EHLO
+        Mon, 31 Jan 2022 06:45:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379031AbiAaL3n (ORCPT
+        with ESMTP id S1377026AbiAaLcw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:29:43 -0500
+        Mon, 31 Jan 2022 06:32:52 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E45A5C0613F5;
-        Mon, 31 Jan 2022 03:18:49 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E685CC0604D1;
+        Mon, 31 Jan 2022 03:21:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A246AB82A60;
-        Mon, 31 Jan 2022 11:18:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBE84C340E8;
-        Mon, 31 Jan 2022 11:18:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8B001B82A76;
+        Mon, 31 Jan 2022 11:21:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6A79C340EE;
+        Mon, 31 Jan 2022 11:21:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627927;
-        bh=CF/4MY7FKckAGskhdW8kSRtZt/dF4cnf9veiaqT7nkQ=;
+        s=korg; t=1643628114;
+        bh=rEqdq7v63HYoM1RUtMY3FTYSi4VVJnZarw6/dAiwbJE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nUnCK8051hZGY/uRPUUIzEZoHccs9oG+sAEayo4pfmeDccFTMOKeGDK0O1TuHYtx8
-         VeRlZI6E2Ko7t/IBKh7LKzCKa+4QZOpxYOMBX4MNgWuCAAPwG3RGibpKyMjhNYODG5
-         yrGCtp7ybIFH/A4oIhDDsMX4m5b6Qz98w3zGombM=
+        b=YnIlHT57CwZKxSPltqI1jMg7iZM5dWJ2M7fXF2bUAV2ItnCSgu3NdnR7OWiQXpJcJ
+         wE0h+clllxtcf2Id9iJAAI+jEc7Ir5cV/Tt/2lQzlcsnCEOs0h4HKibndY3ZV8KImD
+         du1izsQLtMbRfCFAWo/s0Yvv6svQUIdRCgTXcswE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        "Maciej W. Rozycki" <macro@embecosm.com>
-Subject: [PATCH 5.16 070/200] tty: Partially revert the removal of the Cyclades public API
-Date:   Mon, 31 Jan 2022 11:55:33 +0100
-Message-Id: <20220131105235.942332788@linuxfoundation.org>
+        stable@vger.kernel.org, Nicholas Piggin <npiggin@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 128/200] powerpc/64s: Mask SRR0 before checking against the masked NIP
+Date:   Mon, 31 Jan 2022 11:56:31 +0100
+Message-Id: <20220131105237.865731453@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -49,77 +50,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej W. Rozycki <macro@embecosm.com>
+From: Nicholas Piggin <npiggin@gmail.com>
 
-commit f23653fe64479d96910bfda2b700b1af17c991ac upstream.
+[ Upstream commit aee101d7b95a03078945681dd7f7ea5e4a1e7686 ]
 
-Fix a user API regression introduced with commit f76edd8f7ce0 ("tty:
-cyclades, remove this orphan"), which removed a part of the API and
-caused compilation errors for user programs using said part, such as
-GCC 9 in its libsanitizer component[1]:
+Commit 314f6c23dd8d ("powerpc/64s: Mask NIP before checking against
+SRR0") masked off the low 2 bits of the NIP value in the interrupt
+stack frame in case they are non-zero and mis-compare against a SRR0
+register value of a CPU which always reads back 0 from the 2 low bits
+which are reserved.
 
-.../libsanitizer/sanitizer_common/sanitizer_platform_limits_posix.cc:160:10: fatal error: linux/cyclades.h: No such file or directory
-  160 | #include <linux/cyclades.h>
-      |          ^~~~~~~~~~~~~~~~~~
-compilation terminated.
-make[4]: *** [Makefile:664: sanitizer_platform_limits_posix.lo] Error 1
+This now causes the opposite problem that an implementation which does
+implement those bits in SRR0 will mis-compare against the masked NIP
+value in which they have been cleared. QEMU is one such implementation,
+and this is allowed by the architecture.
 
-As the absolute minimum required bring `struct cyclades_monitor' and
-ioctl numbers back then so as to make the library build again.  Add a
-preprocessor warning as to the obsolescence of the features provided.
+This can be triggered by sigfuz by setting low bits of PT_NIP in the
+signal context.
 
+Fix this for now by masking the SRR0 bits as well. Cleaner is probably
+to sanitise these values before putting them in registers or stack, but
+this is the quick and backportable fix.
 
-[1] GCC PR sanitizer/100379, "cyclades.h is removed from linux kernel
-    header files", <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=100379>
-
-Fixes: f76edd8f7ce0 ("tty: cyclades, remove this orphan")
-Cc: stable@vger.kernel.org # v5.13+
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Maciej W. Rozycki <macro@embecosm.com>
-Link: https://lore.kernel.org/r/alpine.DEB.2.20.2201260733430.11348@tpp.orcam.me.uk
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 314f6c23dd8d ("powerpc/64s: Mask NIP before checking against SRR0")
+Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220117134403.2995059-1-npiggin@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/uapi/linux/cyclades.h |   35 +++++++++++++++++++++++++++++++++++
- 1 file changed, 35 insertions(+)
- create mode 100644 include/uapi/linux/cyclades.h
+ arch/powerpc/kernel/interrupt_64.S | 2 ++
+ 1 file changed, 2 insertions(+)
 
---- /dev/null
-+++ b/include/uapi/linux/cyclades.h
-@@ -0,0 +1,35 @@
-+/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-+
-+#ifndef _UAPI_LINUX_CYCLADES_H
-+#define _UAPI_LINUX_CYCLADES_H
-+
-+#warning "Support for features provided by this header has been removed"
-+#warning "Please consider updating your code"
-+
-+struct cyclades_monitor {
-+	unsigned long int_count;
-+	unsigned long char_count;
-+	unsigned long char_max;
-+	unsigned long char_last;
-+};
-+
-+#define CYGETMON		0x435901
-+#define CYGETTHRESH		0x435902
-+#define CYSETTHRESH		0x435903
-+#define CYGETDEFTHRESH		0x435904
-+#define CYSETDEFTHRESH		0x435905
-+#define CYGETTIMEOUT		0x435906
-+#define CYSETTIMEOUT		0x435907
-+#define CYGETDEFTIMEOUT		0x435908
-+#define CYSETDEFTIMEOUT		0x435909
-+#define CYSETRFLOW		0x43590a
-+#define CYGETRFLOW		0x43590b
-+#define CYSETRTSDTR_INV		0x43590c
-+#define CYGETRTSDTR_INV		0x43590d
-+#define CYZSETPOLLCYCLE		0x43590e
-+#define CYZGETPOLLCYCLE		0x43590f
-+#define CYGETCD1400VER		0x435910
-+#define CYSETWAIT		0x435912
-+#define CYGETWAIT		0x435913
-+
-+#endif /* _UAPI_LINUX_CYCLADES_H */
+diff --git a/arch/powerpc/kernel/interrupt_64.S b/arch/powerpc/kernel/interrupt_64.S
+index 4b1ff94e67eb4..4c6d1a8dcefed 100644
+--- a/arch/powerpc/kernel/interrupt_64.S
++++ b/arch/powerpc/kernel/interrupt_64.S
+@@ -30,6 +30,7 @@ COMPAT_SYS_CALL_TABLE:
+ 	.ifc \srr,srr
+ 	mfspr	r11,SPRN_SRR0
+ 	ld	r12,_NIP(r1)
++	clrrdi  r11,r11,2
+ 	clrrdi  r12,r12,2
+ 100:	tdne	r11,r12
+ 	EMIT_WARN_ENTRY 100b,__FILE__,__LINE__,(BUGFLAG_WARNING | BUGFLAG_ONCE)
+@@ -40,6 +41,7 @@ COMPAT_SYS_CALL_TABLE:
+ 	.else
+ 	mfspr	r11,SPRN_HSRR0
+ 	ld	r12,_NIP(r1)
++	clrrdi  r11,r11,2
+ 	clrrdi  r12,r12,2
+ 100:	tdne	r11,r12
+ 	EMIT_WARN_ENTRY 100b,__FILE__,__LINE__,(BUGFLAG_WARNING | BUGFLAG_ONCE)
+-- 
+2.34.1
+
 
 
