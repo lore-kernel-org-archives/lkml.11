@@ -2,41 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4ADEC47082
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63112C35275
 	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:40:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231236AbiAaLkR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:40:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49436 "EHLO
+        id S1379702AbiAaLjh (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 31 Jan 2022 06:39:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379574AbiAaLa0 (ORCPT
+        with ESMTP id S1379129AbiAaL3u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:30:26 -0500
+        Mon, 31 Jan 2022 06:29:50 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B551C0613A0;
-        Mon, 31 Jan 2022 03:21:05 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82C93C0617A8;
+        Mon, 31 Jan 2022 03:19:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DDB5161253;
-        Mon, 31 Jan 2022 11:21:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA4B2C340E8;
-        Mon, 31 Jan 2022 11:21:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2271261207;
+        Mon, 31 Jan 2022 11:19:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA7AAC340E8;
+        Mon, 31 Jan 2022 11:19:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643628064;
-        bh=cyrUHQ/bV6GZ/AT9V/xmKq9w0SJfnB1JiyEl7DchvfA=;
+        s=korg; t=1643627989;
+        bh=X0VcEdGakIz6rEue8sRTEPf3AQkU+2J1McCJq0WJgpk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CWNPPF58UwhGgVUpA7QM1nG4DVIbbNXvrsIvo6wPVp64jn1wow+6EQeW5pATn6V+E
-         k0eZ5S7z3JTKmrUsJBeATLQAdfC0o9GMPeSuFX76KlHtnCLA81RT2mOVBHwstiCj0J
-         hrveJS5HQS29eRVCus3NdnkKrzwB7Kjr1LU8K6v8=
+        b=Xjv4vIrzCU0ZX8wstx9FltdSXovwz0bPI+M5GBaE/pZ2aR53QAXUSScs0zwWvRPjc
+         2ScmFMpN495KNU+hxk2/kuHGs4GKh6QYyZpfmPpVnsP0AOEq1Pq/7NCqEaje4L3cnj
+         CSQc0okCDL4Pvl9qvRPsReg5IkQlPUR1iXjBmVis=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 113/200] hwmon: (lm90) Reduce maximum conversion rate for G781
-Date:   Mon, 31 Jan 2022 11:56:16 +0100
-Message-Id: <20220131105237.383611388@linuxfoundation.org>
+        stable@vger.kernel.org, Joseph Qi <joseph.qi@linux.alibaba.com>,
+        Gautham Ananthakrishna <gautham.ananthakrishna@oracle.com>,
+        Saeed Mirzamohammadi <saeed.mirzamohammadi@oracle.com>,
+        "Theodore Tso" <tytso@mit.edu>,
+        Andreas Dilger <adilger.kernel@dilger.ca>,
+        Changwei Ge <gechangwei@live.cn>, Gang He <ghe@suse.com>,
+        Joel Becker <jlbec@evilplan.org>,
+        Jun Piao <piaojun@huawei.com>,
+        Junxiao Bi <junxiao.bi@oracle.com>,
+        Mark Fasheh <mark@fasheh.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.16 088/200] ocfs2: fix a deadlock when commit trans
+Date:   Mon, 31 Jan 2022 11:55:51 +0100
+Message-Id: <20220131105236.572204917@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -48,39 +59,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guenter Roeck <linux@roeck-us.net>
+From: Joseph Qi <joseph.qi@linux.alibaba.com>
 
-[ Upstream commit a66c5ed539277b9f2363bbace0dba88b85b36c26 ]
+commit ddf4b773aa40790dfa936bd845c18e735a49c61c upstream.
 
-According to its datasheet, G781 supports a maximum conversion rate value
-of 8 (62.5 ms). However, chips labeled G781 and G780 were found to only
-support a maximum conversion rate value of 7 (125 ms). On the other side,
-chips labeled G781-1 and G784 were found to support a conversion rate value
-of 8. There is no known means to distinguish G780 from G781 or G784; all
-chips report the same manufacturer ID and chip revision.
-Setting the conversion rate register value to 8 on chips not supporting
-it causes unexpected behavior since the real conversion rate is set to 0
-(16 seconds) if a value of 8 is written into the conversion rate register.
-Limit the conversion rate register value to 7 for all G78x chips to avoid
-the problem.
+commit 6f1b228529ae introduces a regression which can deadlock as
+follows:
 
-Fixes: ae544f64cc7b ("hwmon: (lm90) Add support for GMT G781")
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+  Task1:                              Task2:
+  jbd2_journal_commit_transaction     ocfs2_test_bg_bit_allocatable
+  spin_lock(&jh->b_state_lock)        jbd_lock_bh_journal_head
+  __jbd2_journal_remove_checkpoint    spin_lock(&jh->b_state_lock)
+  jbd2_journal_put_journal_head
+  jbd_lock_bh_journal_head
+
+Task1 and Task2 lock bh->b_state and jh->b_state_lock in different
+order, which finally result in a deadlock.
+
+So use jbd2_journal_[grab|put]_journal_head instead in
+ocfs2_test_bg_bit_allocatable() to fix it.
+
+Link: https://lkml.kernel.org/r/20220121071205.100648-3-joseph.qi@linux.alibaba.com
+Fixes: 6f1b228529ae ("ocfs2: fix race between searching chunks and release journal_head from buffer_head")
+Signed-off-by: Joseph Qi <joseph.qi@linux.alibaba.com>
+Reported-by: Gautham Ananthakrishna <gautham.ananthakrishna@oracle.com>
+Tested-by: Gautham Ananthakrishna <gautham.ananthakrishna@oracle.com>
+Reported-by: Saeed Mirzamohammadi <saeed.mirzamohammadi@oracle.com>
+Cc: "Theodore Ts'o" <tytso@mit.edu>
+Cc: Andreas Dilger <adilger.kernel@dilger.ca>
+Cc: Changwei Ge <gechangwei@live.cn>
+Cc: Gang He <ghe@suse.com>
+Cc: Joel Becker <jlbec@evilplan.org>
+Cc: Jun Piao <piaojun@huawei.com>
+Cc: Junxiao Bi <junxiao.bi@oracle.com>
+Cc: Mark Fasheh <mark@fasheh.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hwmon/lm90.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/ocfs2/suballoc.c |   25 +++++++++++--------------
+ 1 file changed, 11 insertions(+), 14 deletions(-)
 
---- a/drivers/hwmon/lm90.c
-+++ b/drivers/hwmon/lm90.c
-@@ -373,7 +373,7 @@ static const struct lm90_params lm90_par
- 		.flags = LM90_HAVE_OFFSET | LM90_HAVE_REM_LIMIT_EXT
- 		  | LM90_HAVE_BROKEN_ALERT | LM90_HAVE_CRIT,
- 		.alert_alarms = 0x7c,
--		.max_convrate = 8,
-+		.max_convrate = 7,
- 	},
- 	[lm86] = {
- 		.flags = LM90_HAVE_OFFSET | LM90_HAVE_REM_LIMIT_EXT
+--- a/fs/ocfs2/suballoc.c
++++ b/fs/ocfs2/suballoc.c
+@@ -1251,26 +1251,23 @@ static int ocfs2_test_bg_bit_allocatable
+ {
+ 	struct ocfs2_group_desc *bg = (struct ocfs2_group_desc *) bg_bh->b_data;
+ 	struct journal_head *jh;
+-	int ret = 1;
++	int ret;
+ 
+ 	if (ocfs2_test_bit(nr, (unsigned long *)bg->bg_bitmap))
+ 		return 0;
+ 
+-	if (!buffer_jbd(bg_bh))
++	jh = jbd2_journal_grab_journal_head(bg_bh);
++	if (!jh)
+ 		return 1;
+ 
+-	jbd_lock_bh_journal_head(bg_bh);
+-	if (buffer_jbd(bg_bh)) {
+-		jh = bh2jh(bg_bh);
+-		spin_lock(&jh->b_state_lock);
+-		bg = (struct ocfs2_group_desc *) jh->b_committed_data;
+-		if (bg)
+-			ret = !ocfs2_test_bit(nr, (unsigned long *)bg->bg_bitmap);
+-		else
+-			ret = 1;
+-		spin_unlock(&jh->b_state_lock);
+-	}
+-	jbd_unlock_bh_journal_head(bg_bh);
++	spin_lock(&jh->b_state_lock);
++	bg = (struct ocfs2_group_desc *) jh->b_committed_data;
++	if (bg)
++		ret = !ocfs2_test_bit(nr, (unsigned long *)bg->bg_bitmap);
++	else
++		ret = 1;
++	spin_unlock(&jh->b_state_lock);
++	jbd2_journal_put_journal_head(jh);
+ 
+ 	return ret;
+ }
 
 
