@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CD04C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6AF4C4167D
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378469AbiAaL2k (ORCPT
+        id S1378433AbiAaL2g (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:28:40 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:50086 "EHLO
+        Mon, 31 Jan 2022 06:28:36 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:48110 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359270AbiAaLQp (ORCPT
+        with ESMTP id S1359155AbiAaLQm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:16:45 -0500
+        Mon, 31 Jan 2022 06:16:42 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 18B606125A;
-        Mon, 31 Jan 2022 11:16:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F3D5C340E8;
-        Mon, 31 Jan 2022 11:16:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3EC4661234;
+        Mon, 31 Jan 2022 11:16:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F24BAC340EE;
+        Mon, 31 Jan 2022 11:16:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627804;
-        bh=9fgBVNgq6RGY40Q792fEXaIfV/J7zbIly9q8ulp5gc8=;
+        s=korg; t=1643627801;
+        bh=sinWUBPcepgMXWlm0Ar/8nKT1gvDMz9hj/gu+P1tCg8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pxjazB84qZqLvDB2bDRPmLNaA205aUjijXFCeDo5QzuAZ/sRGsWWGIEilWlNeSo7y
-         DE/h/JvwhRgKdn3SSlQKqKZkcwCuw1OIvTIBYQmfKmx6Eo+/KW/sG/jZTEemuMfxkU
-         N4CyEkdUs+AiOmYDwmeNxjkPLvA3gx8NXsu/S+MQ=
+        b=TXBYlisIaLYn+HlNQOqj4YmhtPOl3LqK96vdpYiCBo79aiGQjtWKSBROxc8xNg5sd
+         ixZWFatNNphtLDmV3JxCRWWnhsDOJhrZ/6kJUNW0aM03Z4gWWi1b7rIBJI4ybj4+2W
+         xlZzgYQ6zVo4YGsGR2sQPDuMztOOYMfoT25m5cj8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yordan Karadzhov <ykaradzhov@vmware.com>,
-        Tom Zanussi <zanussi@kernel.org>,
+        stable@vger.kernel.org, Xiaoke Wang <xkernel.wang@foxmail.com>,
         "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.16 031/200] tracing: Propagate is_signed to expression
-Date:   Mon, 31 Jan 2022 11:54:54 +0100
-Message-Id: <20220131105234.619001978@linuxfoundation.org>
+Subject: [PATCH 5.16 030/200] tracing/histogram: Fix a potential memory leak for kstrdup()
+Date:   Mon, 31 Jan 2022 11:54:53 +0100
+Message-Id: <20220131105234.583723810@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -47,48 +46,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Zanussi <zanussi@kernel.org>
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-commit 097f1eefedeab528cecbd35586dfe293853ffb17 upstream.
+commit e629e7b525a179e29d53463d992bdee759c950fb upstream.
 
-During expression parsing, a new expression field is created which
-should inherit the properties of the operands, such as size and
-is_signed.
+kfree() is missing on an error path to free the memory allocated by
+kstrdup():
 
-is_signed propagation was missing, causing spurious errors with signed
-operands.  Add it in parse_expr() and parse_unary() to fix the problem.
+  p = param = kstrdup(data->params[i], GFP_KERNEL);
 
-Link: https://lkml.kernel.org/r/f4dac08742fd7a0920bf80a73c6c44042f5eaa40.1643319703.git.zanussi@kernel.org
+So it is better to free it via kfree(p).
+
+Link: https://lkml.kernel.org/r/tencent_C52895FD37802832A3E5B272D05008866F0A@qq.com
 
 Cc: stable@vger.kernel.org
-Fixes: 100719dcef447 ("tracing: Add simple expression support to hist triggers")
-Reported-by: Yordan Karadzhov <ykaradzhov@vmware.com>
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215513
-Signed-off-by: Tom Zanussi <zanussi@kernel.org>
+Fixes: d380dcde9a07c ("tracing: Fix now invalid var_ref_vals assumption in trace action")
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
 Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/trace/trace_events_hist.c |    3 +++
- 1 file changed, 3 insertions(+)
+ kernel/trace/trace_events_hist.c |    1 +
+ 1 file changed, 1 insertion(+)
 
 --- a/kernel/trace/trace_events_hist.c
 +++ b/kernel/trace/trace_events_hist.c
-@@ -2487,6 +2487,8 @@ static struct hist_field *parse_unary(st
- 		(HIST_FIELD_FL_TIMESTAMP | HIST_FIELD_FL_TIMESTAMP_USECS);
- 	expr->fn = hist_field_unary_minus;
- 	expr->operands[0] = operand1;
-+	expr->size = operand1->size;
-+	expr->is_signed = operand1->is_signed;
- 	expr->operator = FIELD_OP_UNARY_MINUS;
- 	expr->name = expr_str(expr, 0);
- 	expr->type = kstrdup_const(operand1->type, GFP_KERNEL);
-@@ -2703,6 +2705,7 @@ static struct hist_field *parse_expr(str
+@@ -3919,6 +3919,7 @@ static int trace_action_create(struct hi
  
- 		/* The operand sizes should be the same, so just pick one */
- 		expr->size = operand1->size;
-+		expr->is_signed = operand1->is_signed;
- 
- 		expr->operator = field_op;
- 		expr->type = kstrdup_const(operand1->type, GFP_KERNEL);
+ 			var_ref_idx = find_var_ref_idx(hist_data, var_ref);
+ 			if (WARN_ON(var_ref_idx < 0)) {
++				kfree(p);
+ 				ret = var_ref_idx;
+ 				goto err;
+ 			}
 
 
