@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AD80C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:35:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28619C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:35:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377713AbiAaLd2 (ORCPT
+        id S1377775AbiAaLdc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:33:28 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:39204 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377575AbiAaLXJ (ORCPT
+        Mon, 31 Jan 2022 06:33:32 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:56054 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377602AbiAaLXL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:23:09 -0500
+        Mon, 31 Jan 2022 06:23:11 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0AA2CB82A65;
-        Mon, 31 Jan 2022 11:23:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4929EC340E8;
-        Mon, 31 Jan 2022 11:23:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 97C8E60ED0;
+        Mon, 31 Jan 2022 11:23:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91BC5C340E8;
+        Mon, 31 Jan 2022 11:23:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643628186;
-        bh=tx0AFZR/+x5PM+4Z/GTo32lYuvY+PqI/XgpAT+t3vSw=;
+        s=korg; t=1643628190;
+        bh=ZOL6rUN3wT1gBttG/d1EVyzJDAYDIoRciQx+cPr5nZE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G35uvL6t9lApuOMLm6pXdDGk/MbZSI55KGfEZUjR8f1s0KN1O0GcDnAuBWGmhmOMn
-         ow2X4JQGM7AXTQll+L898FpTYekRLKexDSo7fNFFSzLp6fEIF8/neHYwzmsFFnT/+s
-         5TsCfAKtK6awej5csBbnAbgPWDm828RZor4B4NBA=
+        b=szAaO1r31LGCd//5g4PfT1CCAUN9c1wrX7bNXdawJDMFBIQnuQlRt/wrCkxjdt0nt
+         KFiEsErAUykWAmyz1cMV29VYmT2OqCpmHLWr7S4244KA14O9BDE5O9R0WFog/5Y3lC
+         HmPeov43AM8oD26JN6PeVa7lMGNWdQ6UQUkWjYFU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mihai Carabas <mihai.carabas@oracle.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 152/200] efi/libstub: arm64: Fix image check alignment at entry
-Date:   Mon, 31 Jan 2022 11:56:55 +0100
-Message-Id: <20220131105238.668679418@linuxfoundation.org>
+        stable@vger.kernel.org, Dylan Yudaken <dylany@fb.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 153/200] io_uring: fix bug in slow unregistering of nodes
+Date:   Mon, 31 Jan 2022 11:56:56 +0100
+Message-Id: <20220131105238.710162802@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -47,47 +46,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mihai Carabas <mihai.carabas@oracle.com>
+From: Dylan Yudaken <dylany@fb.com>
 
-[ Upstream commit e9b7c3a4263bdcfd31bc3d03d48ce0ded7a94635 ]
+[ Upstream commit b36a2050040b2d839bdc044007cdd57101d7f881 ]
 
-The kernel is aligned at SEGMENT_SIZE and this is the size populated in the PE
-headers:
+In some cases io_rsrc_ref_quiesce will call io_rsrc_node_switch_start,
+and then immediately flush the delayed work queue &ctx->rsrc_put_work.
 
-arch/arm64/kernel/efi-header.S: .long   SEGMENT_ALIGN // SectionAlignment
+However the percpu_ref_put does not immediately destroy the node, it
+will be called asynchronously via RCU. That ends up with
+io_rsrc_node_ref_zero only being called after rsrc_put_work has been
+flushed, and so the process ends up sleeping for 1 second unnecessarily.
 
-EFI_KIMG_ALIGN is defined as: (SEGMENT_ALIGN > THREAD_ALIGN ? SEGMENT_ALIGN :
-THREAD_ALIGN)
+This patch executes the put code immediately if we are busy
+quiescing.
 
-So it depends on THREAD_ALIGN. On newer builds this message started to appear
-even though the loader is taking into account the PE header (which is stating
-SEGMENT_ALIGN).
-
-Fixes: c32ac11da3f8 ("efi/libstub: arm64: Double check image alignment at entry")
-Signed-off-by: Mihai Carabas <mihai.carabas@oracle.com>
-Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Fixes: 4a38aed2a0a7 ("io_uring: batch reap of dead file registrations")
+Signed-off-by: Dylan Yudaken <dylany@fb.com>
+Link: https://lore.kernel.org/r/20220121123856.3557884-1-dylany@fb.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/firmware/efi/libstub/arm64-stub.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ fs/io_uring.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/firmware/efi/libstub/arm64-stub.c b/drivers/firmware/efi/libstub/arm64-stub.c
-index 2363fee9211c9..9cc556013d085 100644
---- a/drivers/firmware/efi/libstub/arm64-stub.c
-+++ b/drivers/firmware/efi/libstub/arm64-stub.c
-@@ -119,9 +119,9 @@ efi_status_t handle_kernel_image(unsigned long *image_addr,
- 	if (image->image_base != _text)
- 		efi_err("FIRMWARE BUG: efi_loaded_image_t::image_base has bogus value\n");
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index 15f303180d70c..698db7fb62e06 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -7761,10 +7761,15 @@ static __cold void io_rsrc_node_ref_zero(struct percpu_ref *ref)
+ 	struct io_ring_ctx *ctx = node->rsrc_data->ctx;
+ 	unsigned long flags;
+ 	bool first_add = false;
++	unsigned long delay = HZ;
  
--	if (!IS_ALIGNED((u64)_text, EFI_KIMG_ALIGN))
--		efi_err("FIRMWARE BUG: kernel image not aligned on %ldk boundary\n",
--			EFI_KIMG_ALIGN >> 10);
-+	if (!IS_ALIGNED((u64)_text, SEGMENT_ALIGN))
-+		efi_err("FIRMWARE BUG: kernel image not aligned on %dk boundary\n",
-+			SEGMENT_ALIGN >> 10);
+ 	spin_lock_irqsave(&ctx->rsrc_ref_lock, flags);
+ 	node->done = true;
  
- 	kernel_size = _edata - _text;
- 	kernel_memsize = kernel_size + (_end - _edata);
++	/* if we are mid-quiesce then do not delay */
++	if (node->rsrc_data->quiesce)
++		delay = 0;
++
+ 	while (!list_empty(&ctx->rsrc_ref_list)) {
+ 		node = list_first_entry(&ctx->rsrc_ref_list,
+ 					    struct io_rsrc_node, node);
+@@ -7777,7 +7782,7 @@ static __cold void io_rsrc_node_ref_zero(struct percpu_ref *ref)
+ 	spin_unlock_irqrestore(&ctx->rsrc_ref_lock, flags);
+ 
+ 	if (first_add)
+-		mod_delayed_work(system_wq, &ctx->rsrc_put_work, HZ);
++		mod_delayed_work(system_wq, &ctx->rsrc_put_work, delay);
+ }
+ 
+ static struct io_rsrc_node *io_rsrc_node_alloc(struct io_ring_ctx *ctx)
 -- 
 2.34.1
 
