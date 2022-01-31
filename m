@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D7A5C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DCB9C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:20:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377593AbiAaLSa (ORCPT
+        id S1377622AbiAaLSe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:18:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45478 "EHLO
+        Mon, 31 Jan 2022 06:18:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377635AbiAaLKS (ORCPT
+        with ESMTP id S1377729AbiAaLKY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:10:18 -0500
+        Mon, 31 Jan 2022 06:10:24 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2674C06175C;
-        Mon, 31 Jan 2022 03:10:17 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34302C06175E;
+        Mon, 31 Jan 2022 03:10:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 72247B82A4E;
-        Mon, 31 Jan 2022 11:10:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3C10C340E8;
-        Mon, 31 Jan 2022 11:10:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E401FB82A4D;
+        Mon, 31 Jan 2022 11:10:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 145A2C340E8;
+        Mon, 31 Jan 2022 11:10:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627415;
-        bh=7A4qnYHNOgw7UEy2wv9i8aSmgdn8cU6m8yfXH/2Kx2Y=;
+        s=korg; t=1643627421;
+        bh=2gdeo+OV1A8WaT8/Z+ea+QryuYCvNzv0FYUi8zwOxts=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mXUc5Pl2nNSCkcp8T/KkLV1r7A3HQR6X3EqOZmH6Fp2XSKjl/beuI/6BSCpfLN/vP
-         d9CCVJI70qmSXuFE5DMGjQKHFOoduLsTn4RVou+nMzNefI6s9uduA5bhfof3ymDoab
-         UnH4C6zicnfTwSip/uLbGnDfDjVN1TrCOpI3raBA=
+        b=PgA7itYow5GFx6UXTcSV0j57H9k2WjQ+kdItPMeUyAku7wEnSEHSDOrjMxcP159G0
+         9Xn7hpSzr9eqNfgWAJvHAW9WCI50bHe+aHAEmRjskzb23OL4vJZC3d8FUb6P6x8OSo
+         W6KHQYCx2AsOOZNPPjN8htxCTZwDX7adnL+kBMR8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sylwester Dziedziuch <sylwesterx.dziedziuch@intel.com>,
-        Mateusz Palczewski <mateusz.palczewski@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Kiran Bhandare <kiranx.bhandare@intel.com>,
+        stable@vger.kernel.org, Joe Damato <jdamato@fastly.com>,
+        kernel test robot <lkp@intel.com>,
+        Gurucharan G <gurucharanx.g@intel.com>,
         Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.15 077/171] i40e: Fix queues reservation for XDP
-Date:   Mon, 31 Jan 2022 11:55:42 +0100
-Message-Id: <20220131105232.641240839@linuxfoundation.org>
+Subject: [PATCH 5.15 079/171] i40e: fix unsigned stat widths
+Date:   Mon, 31 Jan 2022 11:55:44 +0100
+Message-Id: <20220131105232.709269325@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
 References: <20220131105229.959216821@linuxfoundation.org>
@@ -53,89 +51,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sylwester Dziedziuch <sylwesterx.dziedziuch@intel.com>
+From: Joe Damato <jdamato@fastly.com>
 
-commit 92947844b8beee988c0ce17082b705c2f75f0742 upstream.
+commit 3b8428b84539c78fdc8006c17ebd25afd4722d51 upstream.
 
-When XDP was configured on a system with large number of CPUs
-and X722 NIC there was a call trace with NULL pointer dereference.
+Change i40e_update_vsi_stats and struct i40e_vsi to use u64 fields to match
+the width of the stats counters in struct i40e_rx_queue_stats.
 
-i40e 0000:87:00.0: failed to get tracking for 256 queues for VSI 0 err -12
-i40e 0000:87:00.0: setup of MAIN VSI failed
-
-BUG: kernel NULL pointer dereference, address: 0000000000000000
-RIP: 0010:i40e_xdp+0xea/0x1b0 [i40e]
-Call Trace:
-? i40e_reconfig_rss_queues+0x130/0x130 [i40e]
-dev_xdp_install+0x61/0xe0
-dev_xdp_attach+0x18a/0x4c0
-dev_change_xdp_fd+0x1e6/0x220
-do_setlink+0x616/0x1030
-? ahci_port_stop+0x80/0x80
-? ata_qc_issue+0x107/0x1e0
-? lock_timer_base+0x61/0x80
-? __mod_timer+0x202/0x380
-rtnl_setlink+0xe5/0x170
-? bpf_lsm_binder_transaction+0x10/0x10
-? security_capable+0x36/0x50
-rtnetlink_rcv_msg+0x121/0x350
-? rtnl_calcit.isra.0+0x100/0x100
-netlink_rcv_skb+0x50/0xf0
-netlink_unicast+0x1d3/0x2a0
-netlink_sendmsg+0x22a/0x440
-sock_sendmsg+0x5e/0x60
-__sys_sendto+0xf0/0x160
-? __sys_getsockname+0x7e/0xc0
-? _copy_from_user+0x3c/0x80
-? __sys_setsockopt+0xc8/0x1a0
-__x64_sys_sendto+0x20/0x30
-do_syscall_64+0x33/0x40
-entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7f83fa7a39e0
-
-This was caused by PF queue pile fragmentation due to
-flow director VSI queue being placed right after main VSI.
-Because of this main VSI was not able to resize its
-queue allocation for XDP resulting in no queues allocated
-for main VSI when XDP was turned on.
-
-Fix this by always allocating last queue in PF queue pile
-for a flow director VSI.
+Update debugfs code to use the correct format specifier for u64.
 
 Fixes: 41c445ff0f48 ("i40e: main driver core")
-Fixes: 74608d17fe29 ("i40e: add support for XDP_TX action")
-Signed-off-by: Sylwester Dziedziuch <sylwesterx.dziedziuch@intel.com>
-Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
-Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Tested-by: Kiran Bhandare <kiranx.bhandare@intel.com>
+Signed-off-by: Joe Damato <jdamato@fastly.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Tested-by: Gurucharan G <gurucharanx.g@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/i40e/i40e_main.c |   14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/net/ethernet/intel/i40e/i40e.h         |    8 ++++----
+ drivers/net/ethernet/intel/i40e/i40e_debugfs.c |    2 +-
+ drivers/net/ethernet/intel/i40e/i40e_main.c    |    4 ++--
+ 3 files changed, 7 insertions(+), 7 deletions(-)
 
+--- a/drivers/net/ethernet/intel/i40e/i40e.h
++++ b/drivers/net/ethernet/intel/i40e/i40e.h
+@@ -847,12 +847,12 @@ struct i40e_vsi {
+ 	struct rtnl_link_stats64 net_stats_offsets;
+ 	struct i40e_eth_stats eth_stats;
+ 	struct i40e_eth_stats eth_stats_offsets;
+-	u32 tx_restart;
+-	u32 tx_busy;
++	u64 tx_restart;
++	u64 tx_busy;
+ 	u64 tx_linearize;
+ 	u64 tx_force_wb;
+-	u32 rx_buf_failed;
+-	u32 rx_page_failed;
++	u64 rx_buf_failed;
++	u64 rx_page_failed;
+ 
+ 	/* These are containers of ring pointers, allocated at run-time */
+ 	struct i40e_ring **rx_rings;
+--- a/drivers/net/ethernet/intel/i40e/i40e_debugfs.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_debugfs.c
+@@ -240,7 +240,7 @@ static void i40e_dbg_dump_vsi_seid(struc
+ 		 (unsigned long int)vsi->net_stats_offsets.rx_compressed,
+ 		 (unsigned long int)vsi->net_stats_offsets.tx_compressed);
+ 	dev_info(&pf->pdev->dev,
+-		 "    tx_restart = %d, tx_busy = %d, rx_buf_failed = %d, rx_page_failed = %d\n",
++		 "    tx_restart = %llu, tx_busy = %llu, rx_buf_failed = %llu, rx_page_failed = %llu\n",
+ 		 vsi->tx_restart, vsi->tx_busy,
+ 		 vsi->rx_buf_failed, vsi->rx_page_failed);
+ 	rcu_read_lock();
 --- a/drivers/net/ethernet/intel/i40e/i40e_main.c
 +++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -210,6 +210,20 @@ static int i40e_get_lump(struct i40e_pf
- 		return -EINVAL;
- 	}
- 
-+	/* Allocate last queue in the pile for FDIR VSI queue
-+	 * so it doesn't fragment the qp_pile
-+	 */
-+	if (pile == pf->qp_pile && pf->vsi[id]->type == I40E_VSI_FDIR) {
-+		if (pile->list[pile->num_entries - 1] & I40E_PILE_VALID_BIT) {
-+			dev_err(&pf->pdev->dev,
-+				"Cannot allocate queue %d for I40E_VSI_FDIR\n",
-+				pile->num_entries - 1);
-+			return -ENOMEM;
-+		}
-+		pile->list[pile->num_entries - 1] = id | I40E_PILE_VALID_BIT;
-+		return pile->num_entries - 1;
-+	}
-+
- 	i = 0;
- 	while (i < pile->num_entries) {
- 		/* skip already allocated entries */
+@@ -778,9 +778,9 @@ static void i40e_update_vsi_stats(struct
+ 	struct rtnl_link_stats64 *ns;   /* netdev stats */
+ 	struct i40e_eth_stats *oes;
+ 	struct i40e_eth_stats *es;     /* device's eth stats */
+-	u32 tx_restart, tx_busy;
++	u64 tx_restart, tx_busy;
+ 	struct i40e_ring *p;
+-	u32 rx_page, rx_buf;
++	u64 rx_page, rx_buf;
+ 	u64 bytes, packets;
+ 	unsigned int start;
+ 	u64 tx_linearize;
 
 
