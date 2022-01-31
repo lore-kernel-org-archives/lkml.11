@@ -2,115 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB454C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 14:39:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB3AAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 14:41:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239007AbiAaOjr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 09:39:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39068 "EHLO
+        id S239046AbiAaOlP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 31 Jan 2022 09:41:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238836AbiAaOjo (ORCPT
+        with ESMTP id S236916AbiAaOlJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 09:39:44 -0500
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D316C061714
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 06:39:44 -0800 (PST)
-Received: by mail-lf1-x132.google.com with SMTP id u14so27228469lfo.11
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 06:39:44 -0800 (PST)
+        Mon, 31 Jan 2022 09:41:09 -0500
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F8ACC061714
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 06:41:09 -0800 (PST)
+Received: by mail-lf1-x135.google.com with SMTP id o12so27232628lfg.12
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 06:41:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qzKdvDWI9cfPi4ztVSGxYkBmrqKhHHJF23hXiByBnDU=;
-        b=E/PA4Gz5Ivfh437Err49tSH/yazlUur3pqzJa27lvXl1M9+J/QDuV3toSkQnz+Jskl
-         Jd3/qtkEZ6jzbb+VwEUuMWc6w6mgJ9kOKUaW6MtMoyYQeE07t9k8q3nxVYv8RzA558nC
-         u+msb7MptubGrtAq5/Zihy+IQdWygGTUH7iXrzpRX8bk93/6B/2zkIjJ8lVTDf0miCb4
-         ZblPe8ZooX7mhVKQqxQrTlbL/bg9xKVQMwUZylSNiTBpaBeZaHUAZaaHUXKO3od/9N+X
-         pWUeHFzhIsN6j5WdhGMWxy+0xcY/VWV9f54siehUeyLQeJLHuorLjvUDmg+kQ/iespaq
-         EDEw==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YTDMLLL9wbIhmayIu01fXxrx4uBIFemwXrq+zvvqr2U=;
+        b=ax77L6WROLWBWjZyRjxBD2S90Qc8JR3gPPDnwsNDKYZ+XqnWYWNi/0wjub1MGKDivX
+         1bcy/RAJkOlPsVkePVfs2xcYgVbn37CV+l/4Sr9u6R93NWDzayPgrywZeHz/RLhk0iZF
+         EJgsZHqUVOYRGhRza9L0JKFLil4bQ/rQ8jtED+aczIeVHo6X7QJdaFRrAeRsmAiMlFpQ
+         vZP8A2W2aQGDHFQRoyeM/ldCDBUT+8gVtm9P7VtzGNDYq0xaoqemLbkIdGFAn2hx3H7R
+         Vn04XnxKK1NM37KD/ZJi/XEUd8y9wy4qVYQSUl7ndtkrJRN9zLTizkU8KPeONzYFfiCp
+         3gYA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qzKdvDWI9cfPi4ztVSGxYkBmrqKhHHJF23hXiByBnDU=;
-        b=nGxBUBT0APVoTQKkctWlh8grEmUn+xypL+Pkgc7re/PY3DChEclNV7o1BU1SQMGNYN
-         wgjGLjKobWt1swhbCuq+4ZsUUVMKZ5fRNgjJMNF1q5IDVPcG7F+9xMMlehymh/yDtA3O
-         LjFEmMrfka5i9fgLvEENRm3Iu1DfJ7hmAZsnXyoV9yyEdNMxs0GLOcjQ99D4FcaM7z7D
-         oKCh3bNI1G7PXfBhVqcRy6yBC+tYfbi+RqskbXeZ43kgpFvMfKWCWLrF6IF+YS8Fe2sd
-         PGZzqXNR7F8wYFHkfhA0QsIb0Y7DhBsfxHeFoASF19scFZp9xtbiyFnEuxEdN70X0BrB
-         VGyg==
-X-Gm-Message-State: AOAM532zfwdeJNciKYTDC8PFZ3Mbl09UcIewdJlALCVVcODssWkaZ2Yr
-        DcrL6MFwDWY/DlAewAsU2m1WvUvmtdDiS4VhfqQD0w==
-X-Google-Smtp-Source: ABdhPJzr4AKuGZb0oc8Yf7NlZTAeVKsk1H3sQ+ng+YzTmdG0pZdvebsY68Y4jem072HHkTrkeurPblMrSmZ1lgc5BZE=
-X-Received: by 2002:a05:6512:3b9a:: with SMTP id g26mr14254558lfv.71.1643639982851;
- Mon, 31 Jan 2022 06:39:42 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YTDMLLL9wbIhmayIu01fXxrx4uBIFemwXrq+zvvqr2U=;
+        b=yUXj2wAPth8KcftmSgETG1tVhMHUuZc3nmoy9uR7CwiiJnP4x6xuZLMzDJ4C+vV0l+
+         Hof7TiSHLnghXW1yFT5HhlrMB8OvPzlkF4BIT5jUtOXisl5UQIAIPYwUkrnstCS0x/wz
+         xXB9xlPdJYREzOuu2IDqTB2pcNRZYOECufExniJa1wfL8fVslvCsvfl562MLZiGB+9HX
+         lZECL4c4W59Pi3FixCqzjWqIR7V3NMmVKau2UQYx4aIWwHoYfNqTUIdQZQBpxeu0Q2Ql
+         y2OOF3t+N99lXD08kCu56dbcx9ln9LmXmIAFGdVUV+EIsOvzzANVOKFCj8TKSCnb1v+J
+         x5UA==
+X-Gm-Message-State: AOAM531LYa+rohx54f91KN5WHjVYtpWnclbv4MezA42OGzr6QzDYjSmi
+        zzc5HY02fTwcuBTti1xCsTg=
+X-Google-Smtp-Source: ABdhPJzUixN6LMjgbInq2cdJPPTgt/c+gGvYkyRxjepVyzNznLE0T9ElCf8vFjsYVk3sdhGkpTc/Xw==
+X-Received: by 2002:a05:6512:2144:: with SMTP id s4mr13972034lfr.504.1643640067474;
+        Mon, 31 Jan 2022 06:41:07 -0800 (PST)
+Received: from pc638.lan ([155.137.26.201])
+        by smtp.gmail.com with ESMTPSA id y32sm3670582lfa.15.2022.01.31.06.41.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 31 Jan 2022 06:41:06 -0800 (PST)
+From:   "Uladzislau Rezki (Sony)" <urezki@gmail.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Uladzislau Rezki <urezki@gmail.com>,
+        Oleksiy Avramchenko <oleksiy.avramchenko@sonymobile.com>
+Subject: [PATCH v3 1/1] mm/vmalloc: Move draining areas out of caller context
+Date:   Mon, 31 Jan 2022 15:40:58 +0100
+Message-Id: <20220131144058.35608-1-urezki@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <20220127071638.4057899-1-gregkh@linuxfoundation.org>
-In-Reply-To: <20220127071638.4057899-1-gregkh@linuxfoundation.org>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Mon, 31 Jan 2022 15:39:06 +0100
-Message-ID: <CAPDyKFqt0aeLL1K3wRR1HF4Lf6t6UU94PmMxXys5Wc6fYjDBdA@mail.gmail.com>
-Subject: Re: [PATCH v2] moxart: fix potential use-after-free on remove path
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        Xin Xiong <xiongx18@fudan.edu.cn>,
-        Xin Tan <tanxin.ctf@gmail.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Yang Li <yang.lee@linux.alibaba.com>,
-        linux-mmc@vger.kernel.org, stable <stable@vger.kernel.org>,
-        whitehat002 <hackyzh002@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 27 Jan 2022 at 08:16, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> It was reported that the mmc host structure could be accessed after it
-> was freed in moxart_remove(), so fix this by saving the base register of
-> the device and using it instead of the pointer dereference.
->
-> Cc: Ulf Hansson <ulf.hansson@linaro.org>
-> Cc: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-> Cc: Xin Xiong <xiongx18@fudan.edu.cn>
-> Cc: Xin Tan <tanxin.ctf@gmail.com>
-> Cc: Tony Lindgren <tony@atomide.com>
-> Cc: Yang Li <yang.lee@linux.alibaba.com>
-> Cc: linux-mmc@vger.kernel.org
-> Cc: stable <stable@vger.kernel.org>
-> Reported-by: whitehat002 <hackyzh002@gmail.com>
-> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+A caller initiates the drain procces from its context once the
+drain threshold is reached or passed. There are at least two
+drawbacks of doing so:
 
-Applied for fixes, thanks!
+a) a caller can be a high-prio or RT task. In that case it can
+   stuck in doing the actual drain of all lazily freed areas.
+   This is not optimal because such tasks usually are latency
+   sensitive where the control should be returned back as soon
+   as possible in order to drive such workloads in time. See
+   96e2db456135 ("mm/vmalloc: rework the drain logic")
 
-Kind regards
-Uffe
+b) It is not safe to call vfree() during holding a spinlock due
+   to the vmap_purge_lock mutex. The was a report about this from
+   Zeal Robot <zealci@zte.com.cn> here:
+   https://lore.kernel.org/all/20211222081026.484058-1-chi.minghao@zte.com.cn
 
-> ---
-> v2: changed to only move mmc_free_host() call as per Ulf's request
->
->  drivers/mmc/host/moxart-mmc.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/mmc/host/moxart-mmc.c b/drivers/mmc/host/moxart-mmc.c
-> index 16d1c7a43d33..b6eb75f4bbfc 100644
-> --- a/drivers/mmc/host/moxart-mmc.c
-> +++ b/drivers/mmc/host/moxart-mmc.c
-> @@ -705,12 +705,12 @@ static int moxart_remove(struct platform_device *pdev)
->         if (!IS_ERR_OR_NULL(host->dma_chan_rx))
->                 dma_release_channel(host->dma_chan_rx);
->         mmc_remove_host(mmc);
-> -       mmc_free_host(mmc);
->
->         writel(0, host->base + REG_INTERRUPT_MASK);
->         writel(0, host->base + REG_POWER_CONTROL);
->         writel(readl(host->base + REG_CLOCK_CONTROL) | CLK_OFF,
->                host->base + REG_CLOCK_CONTROL);
-> +       mmc_free_host(mmc);
->
->         return 0;
->  }
-> --
-> 2.35.0
->
+Moving the drain to the separate work context addresses those
+issues.
+
+v1->v2:
+   - Added prefix "_work" to the drain worker function.
+v2->v3:
+   - Remove the drain_vmap_work_in_progress. Extra queuing
+     is expectable under heavy load but it can be disregarded
+     because a work will bail out if nothing to be done.
+
+Signed-off-by: Uladzislau Rezki (Sony) <urezki@gmail.com>
+---
+ mm/vmalloc.c | 30 +++++++++++++++++-------------
+ 1 file changed, 17 insertions(+), 13 deletions(-)
+
+diff --git a/mm/vmalloc.c b/mm/vmalloc.c
+index bdc7222f87d4..5d721542bed7 100644
+--- a/mm/vmalloc.c
++++ b/mm/vmalloc.c
+@@ -793,6 +793,8 @@ RB_DECLARE_CALLBACKS_MAX(static, free_vmap_area_rb_augment_cb,
+ static void purge_vmap_area_lazy(void);
+ static BLOCKING_NOTIFIER_HEAD(vmap_notify_list);
+ static unsigned long lazy_max_pages(void);
++static void drain_vmap_area_work(struct work_struct *work);
++static DECLARE_WORK(drain_vmap_work, drain_vmap_area_work);
+ 
+ static atomic_long_t nr_vmalloc_pages;
+ 
+@@ -1719,18 +1721,6 @@ static bool __purge_vmap_area_lazy(unsigned long start, unsigned long end)
+ 	return true;
+ }
+ 
+-/*
+- * Kick off a purge of the outstanding lazy areas. Don't bother if somebody
+- * is already purging.
+- */
+-static void try_purge_vmap_area_lazy(void)
+-{
+-	if (mutex_trylock(&vmap_purge_lock)) {
+-		__purge_vmap_area_lazy(ULONG_MAX, 0);
+-		mutex_unlock(&vmap_purge_lock);
+-	}
+-}
+-
+ /*
+  * Kick off a purge of the outstanding lazy areas.
+  */
+@@ -1742,6 +1732,20 @@ static void purge_vmap_area_lazy(void)
+ 	mutex_unlock(&vmap_purge_lock);
+ }
+ 
++static void drain_vmap_area_work(struct work_struct *work)
++{
++	unsigned long nr_lazy;
++
++	do {
++		mutex_lock(&vmap_purge_lock);
++		__purge_vmap_area_lazy(ULONG_MAX, 0);
++		mutex_unlock(&vmap_purge_lock);
++
++		/* Recheck if further work is required. */
++		nr_lazy = atomic_long_read(&vmap_lazy_nr);
++	} while (nr_lazy > lazy_max_pages());
++}
++
+ /*
+  * Free a vmap area, caller ensuring that the area has been unmapped
+  * and flush_cache_vunmap had been called for the correct range
+@@ -1768,7 +1772,7 @@ static void free_vmap_area_noflush(struct vmap_area *va)
+ 
+ 	/* After this point, we may free va at any time */
+ 	if (unlikely(nr_lazy > lazy_max_pages()))
+-		try_purge_vmap_area_lazy();
++		schedule_work(&drain_vmap_work);
+ }
+ 
+ /*
+-- 
+2.30.2
+
