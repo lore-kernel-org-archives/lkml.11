@@ -2,159 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0CC9C4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 15:14:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89346C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 15:14:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349447AbiAaPOp (ORCPT
+        id S1379409AbiAaPOs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 10:14:45 -0500
-Received: from mga03.intel.com ([134.134.136.65]:14352 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1377474AbiAaPOf (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 10:14:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643642075; x=1675178075;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=JTIHagqELHJ2NnIvhXpAYqT0MDsrE5mJxtdev6kwq/4=;
-  b=ZUFpPh99ITdkf+5UEkVUcyS4yHTwDtFMg+uBT00EH8cZ0bVZKZ/JF5la
-   NAtWcZ2RoIRgod71wg4ZjWnY9C4yskBHjQKW5M/NLe5PQvAkHXi/15HJn
-   aEbj8Hv5Lf6AGcqSwgxNDMEXJtTSCjC2GRElJ596rzJve2scmZqF0892E
-   g1RiePdvXeScrHaTw5QABsyLThrVFXvBClgWjtGn0WB9Z2hAx1Nu+4sSV
-   WmALCadjyC/Wx9vq6MC6I/jhEHqj0jT25aYJuINbu+v4/kaEbij4Bhsor
-   g92TbIaVFYk+JX1Gn2eHK7vYNPU39HbvYrMfpOhTtxEwBVhibEACueQKL
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10243"; a="247432632"
-X-IronPort-AV: E=Sophos;i="5.88,331,1635231600"; 
-   d="scan'208";a="247432632"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 07:14:08 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,331,1635231600"; 
-   d="scan'208";a="534199168"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga007.fm.intel.com with ESMTP; 31 Jan 2022 07:14:02 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id F267741C; Mon, 31 Jan 2022 17:14:15 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Wolfram Sang <wsa@kernel.org>, Jean Delvare <jdelvare@suse.de>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Tan Jui Nee <jui.nee.tan@intel.com>,
-        Kate Hsuan <hpa@redhat.com>,
-        Jonathan Yong <jonathan.yong@intel.com>,
-        linux-kernel@vger.kernel.org, linux-edac@vger.kernel.org,
-        linux-i2c@vger.kernel.org, linux-gpio@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org
-Cc:     Borislav Petkov <bp@alien8.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        James Morse <james.morse@arm.com>,
-        Robert Richter <rric@kernel.org>,
-        Jean Delvare <jdelvare@suse.com>,
-        Peter Tyser <ptyser@xes-inc.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        Mark Gross <markgross@kernel.org>,
-        Henning Schild <henning.schild@siemens.com>
-Subject: [PATCH v4 4/8] mfd: lpc_ich: Switch to generic p2sb_bar()
-Date:   Mon, 31 Jan 2022 17:13:42 +0200
-Message-Id: <20220131151346.45792-5-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220131151346.45792-1-andriy.shevchenko@linux.intel.com>
-References: <20220131151346.45792-1-andriy.shevchenko@linux.intel.com>
+        Mon, 31 Jan 2022 10:14:48 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:29813 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1377073AbiAaPOZ (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 10:14:25 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643642065;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7ChuemeG/jS317xBBF70oFf4WwBZNenz/LAHILjMr9M=;
+        b=ZC480syZYNIXX1Q5pzvL/xeyK30D22uzQfzZ533vM9/ViXS7CQv/CDqPVec5NuwiKWtJuc
+        wpnxfieLqkvVysftwUne3+oC7tOOstbwII90yoEv6Me1AeIaO0w1pED6mSdb7IkHDCEjid
+        nQFhL2mlKJhpT2i2wZHwZQrMONCGf9o=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-210-12WqAvEZP8mzhmuwdmMDXw-1; Mon, 31 Jan 2022 10:14:23 -0500
+X-MC-Unique: 12WqAvEZP8mzhmuwdmMDXw-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 164CE1091DC3;
+        Mon, 31 Jan 2022 15:14:22 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.26])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6B69C84D0D;
+        Mon, 31 Jan 2022 15:14:09 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH 5/5] cachefiles: Remove the now-unused mark-inode-in-use
+ tracepoints
+From:   David Howells <dhowells@redhat.com>
+To:     Amir Goldstein <amir73il@gmail.com>
+Cc:     linux-cachefs@redhat.com, dhowells@redhat.com,
+        Christoph Hellwig <hch@infradead.org>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        Jeff Layton <jlayton@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        torvalds@linux-foundation.org, linux-unionfs@vger.kernel.org,
+        linux-cachefs@redhat.com, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Mon, 31 Jan 2022 15:14:08 +0000
+Message-ID: <164364204859.1476539.8259104934674309990.stgit@warthog.procyon.org.uk>
+In-Reply-To: <164364196407.1476539.8450117784231043601.stgit@warthog.procyon.org.uk>
+References: <164364196407.1476539.8450117784231043601.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/1.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of open coding p2sb_bar() functionality we are going to
-use generic library. There is one more user en route.
+The cachefiles tracepoints that relate to marking an inode in-use with the
+S_KERNEL_FILE inode flag are now unused, superseded by general tracepoints.
 
-This is more than just a clean-up. It also fixes a potential issue
-seen when SPI BAR is 64-bit. The current code works if and only if
-the PCI BAR of the hidden device is inside 4G address space. In case
-when firmware decides to go above 4G, we will get a wrong address.
-
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Acked-by: Hans de Goede <hdegoede@redhat.com>
-Acked-by: Linus Walleij <linus.walleij@linaro.org>
-Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: linux-cachefs@redhat.com
 ---
- drivers/mfd/Kconfig   |  1 +
- drivers/mfd/lpc_ich.c | 20 ++++++--------------
- 2 files changed, 7 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
-index ba0b3eb131f1..544a3425c054 100644
---- a/drivers/mfd/Kconfig
-+++ b/drivers/mfd/Kconfig
-@@ -572,6 +572,7 @@ config LPC_ICH
- 	tristate "Intel ICH LPC"
- 	depends on PCI
- 	select MFD_CORE
-+	select P2SB if X86
- 	help
- 	  The LPC bridge function of the Intel ICH provides support for
- 	  many functional units. This driver provides needed support for
-diff --git a/drivers/mfd/lpc_ich.c b/drivers/mfd/lpc_ich.c
-index 13d8c64318e6..95dca5434917 100644
---- a/drivers/mfd/lpc_ich.c
-+++ b/drivers/mfd/lpc_ich.c
-@@ -45,6 +45,7 @@
- #include <linux/mfd/core.h>
- #include <linux/mfd/lpc_ich.h>
- #include <linux/platform_data/itco_wdt.h>
-+#include <linux/platform_data/x86/p2sb.h>
+ include/trace/events/cachefiles.h |   63 -------------------------------------
+ 1 file changed, 63 deletions(-)
+
+diff --git a/include/trace/events/cachefiles.h b/include/trace/events/cachefiles.h
+index c6f5aa74db89..1c56f9889f69 100644
+--- a/include/trace/events/cachefiles.h
++++ b/include/trace/events/cachefiles.h
+@@ -552,69 +552,6 @@ TRACE_EVENT(cachefiles_trunc,
+ 		      __entry->to)
+ 	    );
  
- #define ACPIBASE		0x40
- #define ACPIBASE_GPE_OFF	0x28
-@@ -69,8 +70,6 @@
- #define BCR			0xdc
- #define BCR_WPD			BIT(0)
- 
--#define SPIBASE_APL_SZ		4096
+-TRACE_EVENT(cachefiles_mark_active,
+-	    TP_PROTO(struct cachefiles_object *obj,
+-		     struct inode *inode),
 -
- #define GPIOBASE_ICH0		0x58
- #define GPIOCTRL_ICH0		0x5C
- #define GPIOBASE_ICH6		0x48
-@@ -1127,26 +1126,19 @@ static int lpc_ich_init_spi(struct pci_dev *dev)
- 		break;
- 
- 	case INTEL_SPI_BXT: {
--		unsigned int p2sb = PCI_DEVFN(13, 0);
- 		unsigned int spi = PCI_DEVFN(13, 2);
--		struct pci_bus *bus = dev->bus;
-+		int ret;
- 
- 		/*
- 		 * The P2SB is hidden by BIOS and we need to unhide it in
- 		 * order to read BAR of the SPI flash device. Once that is
- 		 * done we hide it again.
- 		 */
--		pci_bus_write_config_byte(bus, p2sb, 0xe1, 0x0);
--		pci_bus_read_config_dword(bus, spi, PCI_BASE_ADDRESS_0,
--					  &spi_base);
--		if (spi_base != ~0) {
--			res->start = spi_base & 0xfffffff0;
--			res->end = res->start + SPIBASE_APL_SZ - 1;
+-	    TP_ARGS(obj, inode),
 -
--			lpc_ich_test_spi_write(dev, spi, info);
--		}
-+		ret = p2sb_bar(dev->bus, spi, res);
-+		if (ret)
-+			return ret;
- 
--		pci_bus_write_config_byte(bus, p2sb, 0xe1, 0x1);
-+		lpc_ich_test_spi_write(dev, spi, info);
- 		break;
- 	}
- 
--- 
-2.34.1
+-	    /* Note that obj may be NULL */
+-	    TP_STRUCT__entry(
+-		    __field(unsigned int,		obj		)
+-		    __field(ino_t,			inode		)
+-			     ),
+-
+-	    TP_fast_assign(
+-		    __entry->obj	= obj ? obj->debug_id : 0;
+-		    __entry->inode	= inode->i_ino;
+-			   ),
+-
+-	    TP_printk("o=%08x B=%lx",
+-		      __entry->obj, __entry->inode)
+-	    );
+-
+-TRACE_EVENT(cachefiles_mark_failed,
+-	    TP_PROTO(struct cachefiles_object *obj,
+-		     struct inode *inode),
+-
+-	    TP_ARGS(obj, inode),
+-
+-	    /* Note that obj may be NULL */
+-	    TP_STRUCT__entry(
+-		    __field(unsigned int,		obj		)
+-		    __field(ino_t,			inode		)
+-			     ),
+-
+-	    TP_fast_assign(
+-		    __entry->obj	= obj ? obj->debug_id : 0;
+-		    __entry->inode	= inode->i_ino;
+-			   ),
+-
+-	    TP_printk("o=%08x B=%lx",
+-		      __entry->obj, __entry->inode)
+-	    );
+-
+-TRACE_EVENT(cachefiles_mark_inactive,
+-	    TP_PROTO(struct cachefiles_object *obj,
+-		     struct inode *inode),
+-
+-	    TP_ARGS(obj, inode),
+-
+-	    /* Note that obj may be NULL */
+-	    TP_STRUCT__entry(
+-		    __field(unsigned int,		obj		)
+-		    __field(ino_t,			inode		)
+-			     ),
+-
+-	    TP_fast_assign(
+-		    __entry->obj	= obj ? obj->debug_id : 0;
+-		    __entry->inode	= inode->i_ino;
+-			   ),
+-
+-	    TP_printk("o=%08x B=%lx",
+-		      __entry->obj, __entry->inode)
+-	    );
+-
+ TRACE_EVENT(cachefiles_vfs_error,
+ 	    TP_PROTO(struct cachefiles_object *obj, struct inode *backer,
+ 		     int error, enum cachefiles_error_trace where),
+
 
