@@ -2,80 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AD58C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 22:21:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C76B3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 22:21:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232875AbiAaWVR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 17:21:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33332 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232213AbiAaWVQ (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 17:21:16 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EADAC061714
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 14:21:16 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 190A8B82CBE
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 22:21:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F4CCC340E8;
-        Mon, 31 Jan 2022 22:21:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643667673;
-        bh=8qMR6brikdgeVt/6tuePPh0LX5UMZ/856Zhi1gbN+ls=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=sG+RHJaU+chKiMncxD6MaAr4hhWObMKDUcCgkTdTyZpihVAgdWML4X6DeP8yMoDMY
-         /pk4B89xl6cpZGPF5/ysuxRKaGyej3MKFUKxtaYPJmIY5dyXGuST729yeAUPfQAolq
-         dVwDR9eqEy0Ya9Nux3Bmkn37O2X//CHTWZgtjqI8pxs3oKepDVIES26ZiXYZ+vBXW6
-         r395tSBUphpE5uA5JmbkVPG5ERFSHbTD506mW6fzOBL7qM96geGFE0KqlI7qYZwYa6
-         kqwYeojs2vlYVPbUAmNg1UbV3Sd2I2LYCrv9j72hPRz1Vn9Ws3DiPqyvldpkxykojH
-         2WaOjcEzMUQEg==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id C0A2040466; Mon, 31 Jan 2022 19:21:11 -0300 (-03)
-Date:   Mon, 31 Jan 2022 19:21:11 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>
-Cc:     Jiri Olsa <jolsa@redhat.com>, Namhyung Kim <namhyung@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        id S233042AbiAaWVe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 31 Jan 2022 17:21:34 -0500
+Received: from gate.crashing.org ([63.228.1.57]:40799 "EHLO gate.crashing.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232909AbiAaWVd (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 17:21:33 -0500
+Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
+        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 20VMDZ8D023795;
+        Mon, 31 Jan 2022 16:13:35 -0600
+Received: (from segher@localhost)
+        by gate.crashing.org (8.14.1/8.14.1/Submit) id 20VMDXsA023794;
+        Mon, 31 Jan 2022 16:13:33 -0600
+X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
+Date:   Mon, 31 Jan 2022 16:13:33 -0600
+From:   Segher Boessenkool <segher@kernel.crashing.org>
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     apinski@marvell.com, Josh Poimboeuf <jpoimboe@redhat.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
         Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Alexander Antonov <alexander.antonov@linux.intel.com>,
-        Alexei Budankov <abudankov@huawei.com>,
-        Riccardo Mancini <rickyman7@gmail.com>
-Subject: Re: [PATCH v13 03/16] perf record: Introduce thread specific data
- array
-Message-ID: <Yfhg1zH9rQ3lBP9N@kernel.org>
-References: <cover.1642440724.git.alexey.v.bayduraev@linux.intel.com>
- <fc9f74af6f822d9c0fa0e145c3564a760dbe3d4b.1642440724.git.alexey.v.bayduraev@linux.intel.com>
- <YfhXG5yEHhrGDjvl@kernel.org>
-MIME-Version: 1.0
+        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
+        x86@kernel.org, llvm@lists.linux.dev, linux-sparse@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        linux-toolchains@vger.kernel.org
+Subject: Re: [PATCH] objtool: prefer memory clobber & %= to volatile & __COUNTER__
+Message-ID: <20220131221333.GR614@gate.crashing.org>
+References: <20220114010526.1776605-1-ndesaulniers@google.com> <YeQei0xNzMq7bFdg@zn.tnic> <20220118192256.jzk5dnceeusq7x7u@treble> <20220118230120.pivvson7qekfiqic@treble> <CAKwvOdmLzwz=02ypt0_1324_5-7i3Az7HizFaDMqZv__-D99uA@mail.gmail.com> <20220125233128.GT614@gate.crashing.org> <CAKwvOdnB=OfCc_31b=PMjxKewvb3CV2WDwhMWrigviWaHrGMhw@mail.gmail.com>
+Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YfhXG5yEHhrGDjvl@kernel.org>
-X-Url:  http://acmel.wordpress.com
+In-Reply-To: <CAKwvOdnB=OfCc_31b=PMjxKewvb3CV2WDwhMWrigviWaHrGMhw@mail.gmail.com>
+User-Agent: Mutt/1.4.2.3i
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Mon, Jan 31, 2022 at 06:39:39PM -0300, Arnaldo Carvalho de Melo escreveu:
-> Some changes to reduce patch size, I have them in my local tree, will
-> publish later.
+On Mon, Jan 31, 2022 at 12:45:20PM -0800, Nick Desaulniers wrote:
+> On Tue, Jan 25, 2022 at 3:34 PM Segher Boessenkool
+> <segher@kernel.crashing.org> wrote:
+> >
+> > Hi!
+> >
+> > On Mon, Jan 24, 2022 at 03:26:36PM -0800, Nick Desaulniers wrote:
+> > > I'm more confident that we can remove the `volatile` keyword (I was
+> > > thinking about adding a new diagnostic to clang to warn that volatile
+> > > is redundate+implied for asm goto or inline asm that doesn't have
+> > > outputs) though that's not the problem here and will probably generate
+> > > some kernel wide cleanup before we could enable such a flag.
+> >
+> > Its main value is that it would discourage users from thinking volatile
+> > is magic.  Seriously worth some pain!
+> 
+> https://reviews.llvm.org/D118297
+> PTAL
 
-Its in perf/threaded at:
+""
+  Really the volatile asm-qualifier exists only to signal that an asm
+  statement should not be DCE'd (when it has outputs but they are unused),
+  CSE'd, or LICM'd. It is not a general compiler barrier.
 
-git://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git
+It means that the asm has a side effect (one unknown to the compiler),
+so it must be executed in the real machine just where it would be in the
+abstract machine.  It *can* be CSEd, it *can* be DCEd, it can even be
+optimised by LICM in certain cases: but it has to be executed as often
+(and in the same order etc.) in the resulting machine code as it would
+be if you single-stepped through the source code by hand.
 
-Will continue tomorrow, testing it and checking the speedups on my
-5950x, I think the things I found so far can be fixed in follow up
-patches, to make progress and have this merged sooner.
+Those are fine examples if you add "in most cases" (and that they are
+just examples, it's not an exhaustive list).
 
-I'll try and add committer notes with the test for some 'perf bench'
-workload without/with parallel recording, something I missed in your
-patch descriptions.
+Thanks,
 
-- Arnaldo
+
+Segher
