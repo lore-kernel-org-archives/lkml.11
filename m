@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACAD1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:50:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24BFBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:50:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348242AbiAaLuS (ORCPT
+        id S1378261AbiAaLu0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:50:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50086 "EHLO
+        Mon, 31 Jan 2022 06:50:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377942AbiAaLdq (ORCPT
+        with ESMTP id S240459AbiAaLkW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:33:46 -0500
+        Mon, 31 Jan 2022 06:40:22 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5CACC0604D9;
-        Mon, 31 Jan 2022 03:21:59 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4189DC034613;
+        Mon, 31 Jan 2022 03:25:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8FCCFB82A4C;
-        Mon, 31 Jan 2022 11:21:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1C8CC340EE;
-        Mon, 31 Jan 2022 11:21:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 04C15B82A74;
+        Mon, 31 Jan 2022 11:25:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26C99C340E8;
+        Mon, 31 Jan 2022 11:25:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643628117;
-        bh=GQCI7RBVW0ex3uiYAQNe3UR52tlP5on/Kt1jiANIWBE=;
+        s=korg; t=1643628347;
+        bh=GCvIH/oJjBW/EhQKy4afOvfc/4c+zPQYSjPhbyL4AIs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t3NKCdFFX57IegzIxvE6xBV05SsP6XSbC/aHU+FpTX8aoDUKzqLdjFbvbA5mMOv0r
-         5qohd2lnlph+t9rGviJJU7HDwI+pd9dJ66txHvrMo53TpcthpGnzVmGY7XgIIvtP1h
-         gKKzQpklZu8PDcqLB5P/auhsaCyttLeH1ChDcStI=
+        b=D6tyqyspCP1MeC9vBPFsSyY/C0k9nLoseY+zuRiruAHvqzR0F+eFVuDWEgoTUqQng
+         D4Gs8x7Qi1PByLpLpFNrB34LzhCzvIydP0sKBwoybLTyRS3cQKZBiaCxP1pHmOIvct
+         LI5Np1pXgvl5YOBfbSDcDX2QEx7zInGDCsCOl2+Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
-        Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
-        Gurucharan G <gurucharanx.g@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.16 096/200] i40e: Increase delay to 1 s after global EMP reset
-Date:   Mon, 31 Jan 2022 11:55:59 +0100
-Message-Id: <20220131105236.836578839@linuxfoundation.org>
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 170/200] drm/msm/dpu: invalid parameter check in dpu_setup_dspp_pcc
+Date:   Mon, 31 Jan 2022 11:57:13 +0100
+Message-Id: <20220131105239.275458113@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -52,47 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
+From: José Expósito <jose.exposito89@gmail.com>
 
-commit 9b13bd53134c9ddd544a790125199fdbdb505e67 upstream.
+[ Upstream commit 170b22234d5495f5e0844246e23f004639ee89ba ]
 
-Recently simplified i40e_rebuild causes that FW sometimes
-is not ready after NVM update, the ping does not return.
+The function performs a check on the "ctx" input parameter, however, it
+is used before the check.
 
-Increase the delay in case of EMP reset.
-Old delay of 300 ms was introduced for specific cards for 710 series.
-Now it works for all the cards and delay was increased.
+Initialize the "base" variable after the sanity check to avoid a
+possible NULL pointer dereference.
 
-Fixes: 1fa51a650e1d ("i40e: Add delay after EMP reset for firmware to recover")
-Signed-off-by: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
-Signed-off-by: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
-Tested-by: Gurucharan G <gurucharanx.g@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 4259ff7ae509e ("drm/msm/dpu: add support for pcc color block in dpu driver")
+Addresses-Coverity-ID: 1493866 ("Null pointer dereference")
+Signed-off-by: José Expósito <jose.exposito89@gmail.com>
+Link: https://lore.kernel.org/r/20220109192431.135949-1-jose.exposito89@gmail.com
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/i40e/i40e_main.c |   12 +++---------
- 1 file changed, 3 insertions(+), 9 deletions(-)
+ drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dspp.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -10574,15 +10574,9 @@ static void i40e_rebuild(struct i40e_pf
- 	}
- 	i40e_get_oem_version(&pf->hw);
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dspp.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dspp.c
+index a98e964c3b6fa..355894a3b48c3 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dspp.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dspp.c
+@@ -26,9 +26,16 @@ static void dpu_setup_dspp_pcc(struct dpu_hw_dspp *ctx,
+ 		struct dpu_hw_pcc_cfg *cfg)
+ {
  
--	if (test_bit(__I40E_EMP_RESET_INTR_RECEIVED, pf->state) &&
--	    ((hw->aq.fw_maj_ver == 4 && hw->aq.fw_min_ver <= 33) ||
--	     hw->aq.fw_maj_ver < 4) && hw->mac.type == I40E_MAC_XL710) {
--		/* The following delay is necessary for 4.33 firmware and older
--		 * to recover after EMP reset. 200 ms should suffice but we
--		 * put here 300 ms to be sure that FW is ready to operate
--		 * after reset.
--		 */
--		mdelay(300);
-+	if (test_and_clear_bit(__I40E_EMP_RESET_INTR_RECEIVED, pf->state)) {
-+		/* The following delay is necessary for firmware update. */
-+		mdelay(1000);
- 	}
+-	u32 base = ctx->cap->sblk->pcc.base;
++	u32 base;
  
- 	/* re-verify the eeprom if we just had an EMP reset */
+-	if (!ctx || !base) {
++	if (!ctx) {
++		DRM_ERROR("invalid ctx %pK\n", ctx);
++		return;
++	}
++
++	base = ctx->cap->sblk->pcc.base;
++
++	if (!base) {
+ 		DRM_ERROR("invalid ctx %pK pcc base 0x%x\n", ctx, base);
+ 		return;
+ 	}
+-- 
+2.34.1
+
 
 
