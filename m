@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63870C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:02:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE7EAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:02:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358559AbiAaLCC (ORCPT
+        id S1358715AbiAaLCR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:02:02 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:33372 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358543AbiAaLAq (ORCPT
+        Mon, 31 Jan 2022 06:02:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42816 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358448AbiAaLBA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:00:46 -0500
+        Mon, 31 Jan 2022 06:01:00 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CCA2C0617A3;
+        Mon, 31 Jan 2022 02:59:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AF73D60B2E;
-        Mon, 31 Jan 2022 11:00:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75F3EC340EF;
-        Mon, 31 Jan 2022 11:00:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B050D60B28;
+        Mon, 31 Jan 2022 10:59:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9528EC340E8;
+        Mon, 31 Jan 2022 10:59:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643626846;
-        bh=UX7bfLZZjswaacQhiYiq56Uuh1Jos6QIbBnp3bN5WmQ=;
+        s=korg; t=1643626787;
+        bh=pF66JUufhVkGFO/oRzhbn0auR3ADePKpbz05UIfv6Nw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XZFXv5B1EEgsavwjI/ucDADPBp6dkj8H+dKA61aGAlF73/gcAub7GhqQrABjqMbjZ
-         VmKCAUuUS6fG5KKV5zUysbze21ZQycGq121K/CQY/w7SwljuV1dyC0jRJqRRtKO3nP
-         1qr9rrGmLkFA/PTQhXRf1MeF3u6v7HW9mGdae3m0=
+        b=PQvocjqAp0aSMXxKfueBwlhfhtd3APxqZkXpguW2GMtISYFSCthG0LFerQw5nCTf4
+         WKUgJv3cYw8eSW9FutmzfgNutcANsBIJd3lqgRIAHAaHApUCcTVlHxqgXlYVAJSaWs
+         kZxO96vOrTBlf19WHKDwwp/pLfOFEsS4A2na/5HI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yufeng Mo <moyufeng@huawei.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 58/64] net: hns3: handle empty unknown interrupt for VF
-Date:   Mon, 31 Jan 2022 11:56:43 +0100
-Message-Id: <20220131105217.631535565@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaoke Wang <xkernel.wang@foxmail.com>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Subject: [PATCH 5.4 07/64] tracing/histogram: Fix a potential memory leak for kstrdup()
+Date:   Mon, 31 Jan 2022 11:55:52 +0100
+Message-Id: <20220131105215.899357792@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105215.644174521@linuxfoundation.org>
 References: <20220131105215.644174521@linuxfoundation.org>
@@ -48,41 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yufeng Mo <moyufeng@huawei.com>
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-[ Upstream commit 2f61353cd2f789a4229b6f5c1c24a40a613357bb ]
+commit e629e7b525a179e29d53463d992bdee759c950fb upstream.
 
-Since some interrupt states may be cleared by hardware, the driver
-may receive an empty interrupt. Currently, the VF driver directly
-disables the vector0 interrupt in this case. As a result, the VF
-is unavailable. Therefore, the vector0 interrupt should be enabled
-in this case.
+kfree() is missing on an error path to free the memory allocated by
+kstrdup():
 
-Fixes: b90fcc5bd904 ("net: hns3: add reset handling for VF when doing Core/Global/IMP reset")
-Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+  p = param = kstrdup(data->params[i], GFP_KERNEL);
+
+So it is better to free it via kfree(p).
+
+Link: https://lkml.kernel.org/r/tencent_C52895FD37802832A3E5B272D05008866F0A@qq.com
+
+Cc: stable@vger.kernel.org
+Fixes: d380dcde9a07c ("tracing: Fix now invalid var_ref_vals assumption in trace action")
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ kernel/trace/trace_events_hist.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-index ce6a4e1965e1d..403c1b9cf6ab8 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-@@ -1970,8 +1970,7 @@ static irqreturn_t hclgevf_misc_irq_handle(int irq, void *data)
- 		break;
- 	}
+--- a/kernel/trace/trace_events_hist.c
++++ b/kernel/trace/trace_events_hist.c
+@@ -4398,6 +4398,7 @@ static int trace_action_create(struct hi
  
--	if (event_cause != HCLGEVF_VECTOR0_EVENT_OTHER)
--		hclgevf_enable_vector(&hdev->misc_vector, true);
-+	hclgevf_enable_vector(&hdev->misc_vector, true);
- 
- 	return IRQ_HANDLED;
- }
--- 
-2.34.1
-
+ 			var_ref_idx = find_var_ref_idx(hist_data, var_ref);
+ 			if (WARN_ON(var_ref_idx < 0)) {
++				kfree(p);
+ 				ret = var_ref_idx;
+ 				goto err;
+ 			}
 
 
