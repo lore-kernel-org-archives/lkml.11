@@ -2,107 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5483BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 13:56:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25998C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 13:57:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379234AbiAaN44 (ORCPT
+        id S1379231AbiAaN5J (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 08:56:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57654 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348874AbiAaN4w (ORCPT
+        Mon, 31 Jan 2022 08:57:09 -0500
+Received: from mout.kundenserver.de ([217.72.192.74]:40031 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1379285AbiAaN5I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 08:56:52 -0500
-Received: from the.earth.li (the.earth.li [IPv6:2a00:1098:86:4d:c0ff:ee:15:900d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42A0DC061714;
-        Mon, 31 Jan 2022 05:56:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=earth.li;
-        s=the; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:
-        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=rh3zzrjG4eJ4zkltSxTz4v948/fJYDk5vDVefUcxqXg=; b=ABwLh8yiWuo+TYuERG9ne33ID5
-        ksC/jxl5wpEwaODztO3KksEZC3vQl86EWJsshXS8ALGQ5K5eTCZGAu5XABSJsmcgVNHGLDOi2XRYZ
-        mUDpO/GCDAScx33uZACIK3OItyizI+1NwvlyxrE8cpaJKp9hZdbvsRTs+77kQCgI2q4oRz7ibk/zg
-        9enGMBBytBUgoSmso6Pudw750dktfu8IZg0SNm+SsfQJLvGBCggI+e6YBqVjJ66dXUflF3pUiLc2d
-        8+JirNc+0vkuSCP4GVen3AQWkKWCtUOnet1ZiIB9oA/MmK0LofxmilfOXGEqC9ANRhJlqkOEicZkq
-        +1Mr3nDg==;
-Received: from noodles by the.earth.li with local (Exim 4.94.2)
-        (envelope-from <noodles@earth.li>)
-        id 1nEXAf-00B0KI-AV; Mon, 31 Jan 2022 13:56:41 +0000
-Date:   Mon, 31 Jan 2022 13:56:41 +0000
-From:   Jonathan McDowell <noodles@earth.li>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Luo Jie <luoj@codeaurora.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Robert Marko <robimarko@gmail.com>
-Subject: [PATCH net v2] net: phy: Fix qca8081 with speeds lower than 2.5Gb/s
-Message-ID: <YffqmcR4iC3xKaRm@earth.li>
-References: <YfZnmMteVry/A1XR@earth.li>
+        Mon, 31 Jan 2022 08:57:08 -0500
+Received: from mail-wm1-f51.google.com ([209.85.128.51]) by
+ mrelayeu.kundenserver.de (mreue109 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1MDyoU-1n4bXq2UeC-009wI0 for <linux-kernel@vger.kernel.org>; Mon, 31 Jan
+ 2022 14:57:06 +0100
+Received: by mail-wm1-f51.google.com with SMTP id o30-20020a05600c511e00b0034f4c3186f4so13710971wms.3
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 05:57:06 -0800 (PST)
+X-Gm-Message-State: AOAM5318Zr4x5GNULyEdE+1J5djzpR5+UEwh0hJhj7Y+YFEFpjiLeBf5
+        I5I0E/9MWrwODmP9bnTtnVuNpZIUyatNti/Jl0g=
+X-Google-Smtp-Source: ABdhPJyCdfYqPFNmYBHdVNyIMNd7iA0YCInVn3QxpZaorB/N7/GMT0WnkA19JE/0Eu40a4rdlyjUc+dSWxOMpZgcSE8=
+X-Received: by 2002:a05:600c:2309:: with SMTP id 9mr27424396wmo.82.1643635850350;
+ Mon, 31 Jan 2022 05:30:50 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YfZnmMteVry/A1XR@earth.li>
+References: <cover.1643206612.git.karolinadrobnik@gmail.com>
+ <2d9aa000afe81b45157617664134b871207c2067.1643206612.git.karolinadrobnik@gmail.com>
+ <YfKngOPLeI3rQOn3@casper.infradead.org> <48499a57afb3d27df26b39aa4255b4ba583c1148.camel@gmail.com>
+ <Yfa4WMeauvmgkQ9H@kernel.org> <YfbQlMyohx31FhSW@casper.infradead.org>
+In-Reply-To: <YfbQlMyohx31FhSW@casper.infradead.org>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Mon, 31 Jan 2022 14:30:32 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a1UcY7Lkm0U5igQCq2K5kpqpjVi-sW3R=JzpciS-+c-gQ@mail.gmail.com>
+Message-ID: <CAK8P3a1UcY7Lkm0U5igQCq2K5kpqpjVi-sW3R=JzpciS-+c-gQ@mail.gmail.com>
+Subject: Re: [PATCH 07/16] tools/include: Add io.h stub
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Mike Rapoport <rppt@kernel.org>,
+        Karolina Drobnik <karolinadrobnik@gmail.com>,
+        Linux-MM <linux-mm@kvack.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Rapoport <mike.rapoport@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Ingo Molnar <mingo@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:p4g4Uuj37k2Pg7pPD2WvF2mZ3eU1zXvVCn5vkAZXuUOzek4mMS/
+ PrpNNUtKKLiU2IyNBgA+HcfSuUoqFvkDXqqOECVpXyNwTc8pgaRQwi1d6MdNNy4FqslBtlm
+ xzhQcItxsS9Uzfij+ff11NMUXVJGBp71UpCezoilRJo0AJoA7g9IreNvpB60tqxoKY6dLi7
+ 3h0AQCDfC6Qsl06gSllNQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:g5TV19tzgPc=:AEiN7qlEsNcXmA4H1No0n5
+ 1dpBpePlWwWC+Q2g0mCOjRwaUQUv3nxsd3Ltk+zo9chhtd640uA+qjOln4HT2DkFY/6se5mAI
+ 6bJH3Swy5zlr0HWAsqa90GQ1x5VxyQZLI7w98Vdk6kRy4dINReFErVVAEHTVZvvSy0FJG3jbH
+ HFx3fgLPSJ/b1YXrUYy1qQNLouSe4oykjinznuqwSv6gVrdogR4adI9Rv+CC737mKN085V5td
+ 5yJoSOy0BaTVzXqGQ5aQdceVm2J1s5nS3U3v5MLJYfXitYAV39nadVhZKz5T3nNBui/aMuQCv
+ YlMcrtlF+bqANLfCkXgPEOBO1jsucUJjxLerF/yryB9QjG+burVhZJb5Ss97tHUCLD9vnoON0
+ KcjA32PETIyLjsEoS2yjVGtKmbXlRNGFnuk8l8zoHGuYzf998eeSBI7Va0ZkCu81WIut6gMgG
+ 65MxD5ZbZTHPSTZAp9xLxqANqKSalp/A4gJ1G5EJEyuZssxW8ayn2UihTgXozNHZooABXD9JG
+ snVCY12nvxywFbfoGnmUaRNHFk0h3AT50gRAR4hQO0gfMlvL52Z1hql87l93lCEO/gXrdoWf2
+ 4o/kqgZo8zEXl3V02c26iXoUS09M5U+5RtNGHXjU/vF31xVxmEhEEs3+JcrYaLwcLZvPlC/mS
+ f3AJFeTIIF0q5QHtefYeF7jENv9as4sGujlz9iWFpMPK73V+R4RDTUCCXmVEVMu12mbIqsueR
+ fQ6ol/O5To1nbFAbKjnEK8ezyPnO596WSUnUFBlvxUh1KiFUd1kSvfNC7AWFCWxrxILltFp+V
+ f9U2fTNi0glkBCdCott0kLvFTSgn1TKWGOOKrQ0arChGzkrqSY=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A typo in qca808x_read_status means we try to set SMII mode on the port
-rather than SGMII when the link speed is not 2.5Gb/s. This results in no
-traffic due to the mismatch in configuration between the phy and the
-mac.
+On Sun, Jan 30, 2022 at 6:53 PM Matthew Wilcox <willy@infradead.org> wrote:
 
-v2:
- Only change interface mode when the link is up
+> Thanks for doing the sweep, Mike.
+>
+> I think I found a deeper problem which is masked due to our maze of
+> header files:
+>
+> include/asm-generic/io.h:#ifndef virt_to_phys
+> include/asm-generic/io.h:#define virt_to_phys virt_to_phys
+>
+> so there's an assumption that <asm/io.h> defines virt_to_phys().
+> You can see that in a number of architectures, eg:
+>
+> arch/alpha/include/asm/io.h:static inline unsigned long virt_to_phys(volatile void *address)
+> arch/ia64/include/asm/io.h:#define virt_to_phys virt_to_phys
+> arch/mips/include/asm/io.h:#define virt_to_phys virt_to_phys
+> arch/nios2/include/asm/io.h:#define virt_to_phys(vaddr) \
+> arch/parisc/include/asm/io.h:#define virt_to_phys(a) ((unsigned long)__pa(a))
+> arch/powerpc/include/asm/io.h:#define virt_to_phys virt_to_phys
+> arch/sh/include/asm/io.h:#define virt_to_phys(address)  ((unsigned long)(address))
+> arch/x86/include/asm/io.h:#define virt_to_phys virt_to_phys
+>
+> That's clearly not the right place to define it.  Two architectures
+> put it in asm/memory.h:
+>
+> arch/arm/include/asm/memory.h:#define virt_to_phys virt_to_phys
+> arch/arm64/include/asm/memory.h:#define virt_to_phys virt_to_phys
+>
+> then:
+>
+> arch/m68k/include/asm/virtconvert.h:#define virt_to_phys virt_to_phys
+> arch/sparc/include/asm/page_32.h:#define virt_to_phys           __pa
+> arch/sparc/include/asm/page_64.h:#define virt_to_phys __pa
+>
+> This needs to be properly sorted out, but I don't want to tell Karolina
+> that's now her job as a prerequisite for merging this patchset; that
+> would be unfair.
+>
+> Cc'ing Arnd.  This is the kind of awful mess that he loves fixing ;-)
 
-Fixes: 79c7bc0521545 ("net: phy: add qca8081 read_status")
-Cc: stable@vger.kernel.org
-Signed-off-by: Jonathan McDowell <noodles@earth.li>
----
- drivers/net/phy/at803x.c | 26 +++++++++++++-------------
- 1 file changed, 13 insertions(+), 13 deletions(-)
+Adding Ingo as well. I'm in the middle of getting his fast-headers tree
+to work well on a couple of other architectures, and the memory.h/page.h/io.h
+mess is one of the  tricky bits in there, both in his series and in my
+follow-ups.
 
-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-index 5b6c0d120e09..29aa811af430 100644
---- a/drivers/net/phy/at803x.c
-+++ b/drivers/net/phy/at803x.c
-@@ -1688,19 +1688,19 @@ static int qca808x_read_status(struct phy_device *phydev)
- 	if (ret < 0)
- 		return ret;
- 
--	if (phydev->link && phydev->speed == SPEED_2500)
--		phydev->interface = PHY_INTERFACE_MODE_2500BASEX;
--	else
--		phydev->interface = PHY_INTERFACE_MODE_SMII;
--
--	/* generate seed as a lower random value to make PHY linked as SLAVE easily,
--	 * except for master/slave configuration fault detected.
--	 * the reason for not putting this code into the function link_change_notify is
--	 * the corner case where the link partner is also the qca8081 PHY and the seed
--	 * value is configured as the same value, the link can't be up and no link change
--	 * occurs.
--	 */
--	if (!phydev->link) {
-+	if (phydev->link) {
-+		if (phydev->speed == SPEED_2500)
-+			phydev->interface = PHY_INTERFACE_MODE_2500BASEX;
-+		else
-+			phydev->interface = PHY_INTERFACE_MODE_SGMII;
-+	} else {
-+		/* generate seed as a lower random value to make PHY linked as SLAVE easily,
-+		 * except for master/slave configuration fault detected.
-+		 * the reason for not putting this code into the function link_change_notify is
-+		 * the corner case where the link partner is also the qca8081 PHY and the seed
-+		 * value is configured as the same value, the link can't be up and no link change
-+		 * occurs.
-+		 */
- 		if (phydev->master_slave_state == MASTER_SLAVE_STATE_ERR) {
- 			qca808x_phy_ms_seed_enable(phydev, false);
- 		} else {
--- 
-2.30.2
+What makes this bit even worse is that the architectures also not just
+inconsistent about where they put __va/__pa and
+virt_to_phys/phys_to_virt, they are also inconsistent about which of the
+two pairs is based on the other, so any way you touch it means you
+will break something, and changing it now will likely require a tricky
+rebase of Ingo's patches.
 
+Ingo, do you happen to have patches already that could be isolated
+from your series to address this? Maybe we can add the
+linux/mm_page_address.h header first and require that each
+architecture puts these macros into asm/page_address.h.
+We need to isolate these anyway, because the page addresses
+are used in a lot of places that don't need to include any of the
+remaining headers (page.h, mm.h, memory.h, io.h) that pull in
+hundreds more.
+
+          Arnd
