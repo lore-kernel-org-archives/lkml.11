@@ -2,42 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D093BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:42:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 099C8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:45:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378431AbiAaLmh (ORCPT
+        id S1378501AbiAaLmn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:42:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49904 "EHLO
+        Mon, 31 Jan 2022 06:42:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378674AbiAaL24 (ORCPT
+        with ESMTP id S1379127AbiAaL3u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:28:56 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80CB9C0613E6;
-        Mon, 31 Jan 2022 03:17:42 -0800 (PST)
+        Mon, 31 Jan 2022 06:29:50 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 361E4C0617A9;
+        Mon, 31 Jan 2022 03:19:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2138061170;
-        Mon, 31 Jan 2022 11:17:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5C07C340E8;
-        Mon, 31 Jan 2022 11:17:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EACF1B82A65;
+        Mon, 31 Jan 2022 11:19:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EF5AC340E8;
+        Mon, 31 Jan 2022 11:19:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627861;
-        bh=k70UCGaKdelyUX4hLZO2WfvpGsnNzGI95PXnQiEeiXU=;
+        s=korg; t=1643627995;
+        bh=OSuO5PnMFjxxILHxYCzqxQ8mNf+RJzHno0hjReRUrB4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EW2mhGLHNTSZ3wVMGR9aYxExye7r/wLCNp/5uc6zsfPG8gp5Hx/GeC6zlyUjgXqv+
-         QIZt3CUQwLLvNLRlFz9bKggaw5Uie/P6A71CIYynJ3siacc+KNInufCuovTFQHtWZ6
-         CEzvu4RZrMZpylxGW/vKub6lR7lfVkmOAbY1cikU=
+        b=O6Fin3bQ2YpYkH2QkMqg23GPiyl7Gi/nMoD2zNDUew/TFj+pCbMgBvvjWo3bQMItb
+         TT5NxxWkEye/YzJ6bPUht+EiTSLfAc6DUe+pcSPQshAQ0LFvpEnx1Mh5Fox83fzHjC
+         j0Ni+oRITgziXnpIFEKtNLR0jWnh5XG+e40f0NcA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wanpeng Li <wanpengli@tencent.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.16 048/200] KVM: LAPIC: Also cancel preemption timer during SET_LAPIC
-Date:   Mon, 31 Jan 2022 11:55:11 +0100
-Message-Id: <20220131105235.177585417@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Huacai Chen <chenhuacai@kernel.org>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>
+Subject: [PATCH 5.16 090/200] PCI/sysfs: Find shadow ROM before static attribute initialization
+Date:   Mon, 31 Jan 2022 11:55:53 +0100
+Message-Id: <20220131105236.635467164@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -49,53 +58,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wanpeng Li <wanpengli@tencent.com>
+From: Bjorn Helgaas <bhelgaas@google.com>
 
-commit 35fe7cfbab2e81f1afb23fc4212210b1de6d9633 upstream.
+commit 66d28b21fe6b3da8d1e9f0a7ba38bc61b6c547e1 upstream.
 
-The below warning is splatting during guest reboot.
+Ville reported that the sysfs "rom" file for VGA devices disappeared after
+527139d738d7 ("PCI/sysfs: Convert "rom" to static attribute").
 
-  ------------[ cut here ]------------
-  WARNING: CPU: 0 PID: 1931 at arch/x86/kvm/x86.c:10322 kvm_arch_vcpu_ioctl_run+0x874/0x880 [kvm]
-  CPU: 0 PID: 1931 Comm: qemu-system-x86 Tainted: G          I       5.17.0-rc1+ #5
-  RIP: 0010:kvm_arch_vcpu_ioctl_run+0x874/0x880 [kvm]
-  Call Trace:
-   <TASK>
-   kvm_vcpu_ioctl+0x279/0x710 [kvm]
-   __x64_sys_ioctl+0x83/0xb0
-   do_syscall_64+0x3b/0xc0
-   entry_SYSCALL_64_after_hwframe+0x44/0xae
-  RIP: 0033:0x7fd39797350b
+Prior to 527139d738d7, FINAL fixups, including pci_fixup_video() where we
+find shadow ROMs, were run before pci_create_sysfs_dev_files() created the
+sysfs "rom" file.
 
-This can be triggered by not exposing tsc-deadline mode and doing a reboot in
-the guest. The lapic_shutdown() function which is called in sys_reboot path
-will not disarm the flying timer, it just masks LVTT. lapic_shutdown() clears
-APIC state w/ LVT_MASKED and timer-mode bit is 0, this can trigger timer-mode
-switch between tsc-deadline and oneshot/periodic, which can result in preemption
-timer be cancelled in apic_update_lvtt(). However, We can't depend on this when
-not exposing tsc-deadline mode and oneshot/periodic modes emulated by preemption
-timer. Qemu will synchronise states around reset, let's cancel preemption timer
-under KVM_SET_LAPIC.
+After 527139d738d7, "rom" is a static attribute and is created before FINAL
+fixups are run, so we didn't create "rom" files for shadow ROMs:
 
-Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
-Message-Id: <1643102220-35667-1-git-send-email-wanpengli@tencent.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+  acpi_pci_root_add
+    ...
+      pci_scan_single_device
+        pci_device_add
+          pci_fixup_video                    # <-- new HEADER fixup
+          device_add
+            ...
+              if (grp->is_visible())
+                pci_dev_rom_attr_is_visible  # after 527139d738d7
+    pci_bus_add_devices
+      pci_bus_add_device
+        pci_fixup_device(pci_fixup_final)
+          pci_fixup_video                    # <-- previous FINAL fixup
+        pci_create_sysfs_dev_files
+          if (pci_resource_len(pdev, PCI_ROM_RESOURCE))
+            sysfs_create_bin_file("rom")     # before 527139d738d7
+
+Change pci_fixup_video() to be a HEADER fixup so it runs before sysfs
+static attributes are initialized.
+
+Rename the Loongson pci_fixup_radeon() to pci_fixup_video() and make its
+dmesg logging identical to the others since it is doing the same job.
+
+Link: https://lore.kernel.org/r/YbxqIyrkv3GhZVxx@intel.com
+Fixes: 527139d738d7 ("PCI/sysfs: Convert "rom" to static attribute")
+Link: https://lore.kernel.org/r/20220126154001.16895-1-helgaas@kernel.org
+Reported-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Tested-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Cc: stable@vger.kernel.org			# v5.13+
+Cc: Huacai Chen <chenhuacai@kernel.org>
+Cc: Jiaxun Yang <jiaxun.yang@flygoat.com>
+Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: Krzysztof Wilczyński <kw@linux.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/lapic.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/ia64/pci/fixup.c              |    4 ++--
+ arch/mips/loongson64/vbios_quirk.c |    9 ++++-----
+ arch/x86/pci/fixup.c               |    4 ++--
+ 3 files changed, 8 insertions(+), 9 deletions(-)
 
---- a/arch/x86/kvm/lapic.c
-+++ b/arch/x86/kvm/lapic.c
-@@ -2623,7 +2623,7 @@ int kvm_apic_set_state(struct kvm_vcpu *
- 	kvm_apic_set_version(vcpu);
+--- a/arch/ia64/pci/fixup.c
++++ b/arch/ia64/pci/fixup.c
+@@ -76,5 +76,5 @@ static void pci_fixup_video(struct pci_d
+ 		}
+ 	}
+ }
+-DECLARE_PCI_FIXUP_CLASS_FINAL(PCI_ANY_ID, PCI_ANY_ID,
+-				PCI_CLASS_DISPLAY_VGA, 8, pci_fixup_video);
++DECLARE_PCI_FIXUP_CLASS_HEADER(PCI_ANY_ID, PCI_ANY_ID,
++			       PCI_CLASS_DISPLAY_VGA, 8, pci_fixup_video);
+--- a/arch/mips/loongson64/vbios_quirk.c
++++ b/arch/mips/loongson64/vbios_quirk.c
+@@ -3,7 +3,7 @@
+ #include <linux/pci.h>
+ #include <loongson.h>
  
- 	apic_update_ppr(apic);
--	hrtimer_cancel(&apic->lapic_timer.timer);
-+	cancel_apic_timer(apic);
- 	apic->lapic_timer.expired_tscdeadline = 0;
- 	apic_update_lvtt(apic);
- 	apic_manage_nmi_watchdog(apic, kvm_lapic_get_reg(apic, APIC_LVT0));
+-static void pci_fixup_radeon(struct pci_dev *pdev)
++static void pci_fixup_video(struct pci_dev *pdev)
+ {
+ 	struct resource *res = &pdev->resource[PCI_ROM_RESOURCE];
+ 
+@@ -22,8 +22,7 @@ static void pci_fixup_radeon(struct pci_
+ 	res->flags = IORESOURCE_MEM | IORESOURCE_ROM_SHADOW |
+ 		     IORESOURCE_PCI_FIXED;
+ 
+-	dev_info(&pdev->dev, "BAR %d: assigned %pR for Radeon ROM\n",
+-		 PCI_ROM_RESOURCE, res);
++	dev_info(&pdev->dev, "Video device with shadowed ROM at %pR\n", res);
+ }
+-DECLARE_PCI_FIXUP_CLASS_FINAL(PCI_VENDOR_ID_ATI, 0x9615,
+-				PCI_CLASS_DISPLAY_VGA, 8, pci_fixup_radeon);
++DECLARE_PCI_FIXUP_CLASS_HEADER(PCI_VENDOR_ID_ATI, 0x9615,
++			       PCI_CLASS_DISPLAY_VGA, 8, pci_fixup_video);
+--- a/arch/x86/pci/fixup.c
++++ b/arch/x86/pci/fixup.c
+@@ -353,8 +353,8 @@ static void pci_fixup_video(struct pci_d
+ 		}
+ 	}
+ }
+-DECLARE_PCI_FIXUP_CLASS_FINAL(PCI_ANY_ID, PCI_ANY_ID,
+-				PCI_CLASS_DISPLAY_VGA, 8, pci_fixup_video);
++DECLARE_PCI_FIXUP_CLASS_HEADER(PCI_ANY_ID, PCI_ANY_ID,
++			       PCI_CLASS_DISPLAY_VGA, 8, pci_fixup_video);
+ 
+ 
+ static const struct dmi_system_id msi_k8t_dmi_table[] = {
 
 
