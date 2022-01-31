@@ -2,145 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5084CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 16:33:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A127C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 16:33:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380496AbiAaQdn (ORCPT
+        id S1377917AbiAaQdo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 11:33:43 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:60944 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350168AbiAaQdd (ORCPT
+        Mon, 31 Jan 2022 11:33:44 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:31180 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1380505AbiAaQdd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 31 Jan 2022 11:33:33 -0500
-Date:   Mon, 31 Jan 2022 17:33:29 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1643646810;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643646812;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=exI5XAnOP3c+SKAPaEnrOM53ifT6P3/UqF4RqlLtsHo=;
-        b=wTex/RCYMinlzrUx+wSeZycFxINruiKY/4y5iOU9OdDqWGF8TeN81vnVSOk5phEQmRN9PU
-        fxA0HTlOuJkErfz+avG2m0phmvDPXXfKu/sSbuA9b6G6oMeJ+/LitLlf5eb8a6SpzkgAob
-        AG12WRMoxNb1EN/zJRoUofOkJwdAcpCH3+7iHLncnV1AtH8pWwkcyxNARBi6xuLoaPBVIH
-        TVQgmdtZTtgnFz1OegMiO44yAYIbcexNd5seP2m822FsVCmLEijeCybtFXh2fFIyAh7stC
-        IeF2YQMQjdeXAk/Yg10l7JhgMTbiDwDsTNYy4O8Zi2NREM38FHYPMOSAtmG0sw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1643646810;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=exI5XAnOP3c+SKAPaEnrOM53ifT6P3/UqF4RqlLtsHo=;
-        b=CK+gvrtfNmEvHZbcwj3ALRQ6KD6Ty1hnPIDMZgjzNBjnhB5/EpF5Dh/duY7/dDEz0EN4Fa
-        Q4d/WiylN4bubQDg==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>, Theodore Ts'o <tytso@mit.edu>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Subject: Re: [PATCH 5/5] random: Defer processing of randomness on PREEMPT_RT.
-Message-ID: <YfgPWatDzkn2ozhm@linutronix.de>
-References: <20211207121737.2347312-1-bigeasy@linutronix.de>
- <20211207121737.2347312-6-bigeasy@linutronix.de>
- <CAHmME9q2Yid56ZZ9sBQWjEWEK2B06g3H9KYRwWqExXRoCdbPdA@mail.gmail.com>
- <20211207201037.h46573oa5nfj33xq@linutronix.de>
- <CAHmME9pzdXyD0oRYyCoVUSqqsA9h03-oR7kcNhJuPEcEMTJYgw@mail.gmail.com>
- <Yd8Ujw4t8DKYuhZK@linutronix.de>
- <CAHmME9oXSx4JS0ZJeZTb7VC3gXoackuH389V9FDknHf_-rDJyA@mail.gmail.com>
+        bh=Su3tfNSxu4pFBMhTHkCtGXz4Z8gTxkcEWqCn/7T98FU=;
+        b=dMvGC1I5h1TXkYcm1RmcWZZ6noazWEijkcX6cVAkByv+48QidotNs2CB3Y7gc3niL1O9xx
+        +6GBikav5K39T56EUscVAtt5ABo4Fdjintul8Zhm5cMSX7lMn3T5p91naN0nwpbxjAHvsx
+        AiZfRVk7ad7LxfgjTCzBEGJtsFmP7yI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-387-eOdulcGEM12hLHtsU6FxKQ-1; Mon, 31 Jan 2022 11:33:31 -0500
+X-MC-Unique: eOdulcGEM12hLHtsU6FxKQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A897F1018722;
+        Mon, 31 Jan 2022 16:33:27 +0000 (UTC)
+Received: from t480s.redhat.com (unknown [10.39.193.115])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7EF43798CD;
+        Mon, 31 Jan 2022 16:33:21 +0000 (UTC)
+From:   David Hildenbrand <david@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Yang Shi <shy828301@gmail.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
+        Roman Gushchin <guro@fb.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        Donald Dutile <ddutile@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
+        Liang Zhang <zhangliang5@huawei.com>, linux-mm@kvack.org,
+        David Hildenbrand <david@redhat.com>
+Subject: [PATCH v3 8/9] mm/huge_memory: remove stale page_trans_huge_mapcount()
+Date:   Mon, 31 Jan 2022 17:29:38 +0100
+Message-Id: <20220131162940.210846-9-david@redhat.com>
+In-Reply-To: <20220131162940.210846-1-david@redhat.com>
+References: <20220131162940.210846-1-david@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <CAHmME9oXSx4JS0ZJeZTb7VC3gXoackuH389V9FDknHf_-rDJyA@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-01-30 23:55:09 [+0100], Jason A. Donenfeld wrote:
-> Hey Sebastian,
-Hi,
+All users are gone, let's remove it.
 
-> I spent the weekend thinking about this some more. I'm actually
-> warming up a bit to the general approach of the original solution
-> here, though still have questions. To summarize my understanding of
-> where we are:
->=20
-> Alternative solution we've been discussing:
-> - Replace spinlock_t with raw spinlocks.
-> - Ratelimit userspace-triggered latency inducing ioctls with
-> ratelimit() and an additional mutex of sorts.
-> - Result: pretty much the same structure we have now, but with some
-> added protection for PREEMPT_RT.
->=20
-> Your original solution:
-> - Absorb into the fast pool during the actual IRQ, but never dump it
-> into the main pool (nor fast load into the crng directly if
-> crng_init=3D=3D0) from the hard irq.
-> - Instead, have irq_thread() check to see if the calling CPU's fast
-> pool is >=3D 64, and if so, dump it into the main pool (or fast load
-> into the crng directly if crng_init=3D=3D0).
->=20
-> I have two questions about the implications of your original solution:
->=20
-> 1) How often does irq_thread() run? With what we have now, we dump the
+Signed-off-by: David Hildenbrand <david@redhat.com>
+---
+ include/linux/mm.h |  5 -----
+ mm/huge_memory.c   | 48 ----------------------------------------------
+ 2 files changed, 53 deletions(-)
 
-Mostly every interrupt gets threaded. After the primary handler (the
-in hard irq) was invoked, the threaded handler gets woken up. The
-threaded handler runs before the primary can run again.
-Not every interrupt gets threaded. For instance interrupts that are not
-threaded are marked as TIMER, PER_CPU, ONESHOT and NO_THREAD.
-So on a system with 4 CPUs you can move all peripheral interrupts to
-CPU0 leaving CPU1-3 with TIMER interrupts only. In that case, there
-would be no irq_thread() invocations on CPU1-3.
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 213cc569b192..a12291cfe5dd 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -820,16 +820,11 @@ static inline int page_mapcount(struct page *page)
+ 
+ #ifdef CONFIG_TRANSPARENT_HUGEPAGE
+ int total_mapcount(struct page *page);
+-int page_trans_huge_mapcount(struct page *page);
+ #else
+ static inline int total_mapcount(struct page *page)
+ {
+ 	return page_mapcount(page);
+ }
+-static inline int page_trans_huge_mapcount(struct page *page)
+-{
+-	return page_mapcount(page);
+-}
+ #endif
+ 
+ static inline struct page *virt_to_head_page(const void *x)
+diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+index f34ebc5cb827..a6dc5af1a763 100644
+--- a/mm/huge_memory.c
++++ b/mm/huge_memory.c
+@@ -2523,54 +2523,6 @@ int total_mapcount(struct page *page)
+ 	return ret;
+ }
+ 
+-/*
+- * This calculates accurately how many mappings a transparent hugepage
+- * has (unlike page_mapcount() which isn't fully accurate). This full
+- * accuracy is primarily needed to know if copy-on-write faults can
+- * reuse the page and change the mapping to read-write instead of
+- * copying them. At the same time this returns the total_mapcount too.
+- *
+- * The function returns the highest mapcount any one of the subpages
+- * has. If the return value is one, even if different processes are
+- * mapping different subpages of the transparent hugepage, they can
+- * all reuse it, because each process is reusing a different subpage.
+- *
+- * The total_mapcount is instead counting all virtual mappings of the
+- * subpages. If the total_mapcount is equal to "one", it tells the
+- * caller all mappings belong to the same "mm" and in turn the
+- * anon_vma of the transparent hugepage can become the vma->anon_vma
+- * local one as no other process may be mapping any of the subpages.
+- *
+- * It would be more accurate to replace page_mapcount() with
+- * page_trans_huge_mapcount(), however we only use
+- * page_trans_huge_mapcount() in the copy-on-write faults where we
+- * need full accuracy to avoid breaking page pinning, because
+- * page_trans_huge_mapcount() is slower than page_mapcount().
+- */
+-int page_trans_huge_mapcount(struct page *page)
+-{
+-	int i, ret;
+-
+-	/* hugetlbfs shouldn't call it */
+-	VM_BUG_ON_PAGE(PageHuge(page), page);
+-
+-	if (likely(!PageTransCompound(page)))
+-		return atomic_read(&page->_mapcount) + 1;
+-
+-	page = compound_head(page);
+-
+-	ret = 0;
+-	for (i = 0; i < thp_nr_pages(page); i++) {
+-		int mapcount = atomic_read(&page[i]._mapcount) + 1;
+-		ret = max(ret, mapcount);
+-	}
+-
+-	if (PageDoubleMap(page))
+-		ret -= 1;
+-
+-	return ret + compound_mapcount(page);
+-}
+-
+ /* Racy check whether the huge page can be split */
+ bool can_split_huge_page(struct page *page, int *pextra_pins)
+ {
+-- 
+2.34.1
 
-> fast pool into the main pool at exactly 64 events. With what you're
-> proposing, we're now in >=3D 64 territory. How do we conceptualize how
-> far beyond 64 it's likely to grow before irq_thread() does something?
-
-in theory on a busy RT system (on the previously mentioned one) you
-could process all HW interrupts (on CPU0) and wake interrupt threads but
-the threads are blocked by a user task (the user land task has a higher
-priority than the interrupt thread). In that time further HW interrupts
-can trigger on CPU0 for the non-threaded interrupts like the timer
-interrupt.
-
-> Is it easy to make guarantees like, "at most, probably around 17"? Or
-> is it potentially unbounded? Growing beyond isn't actually necessarily
-> a bad thing, but it could potentially *slow* the collection of
-> entropy. That probably matters more in the crng_init=3D=3D0 mode, where
-> we're just desperate to get whatever we can as fast as we can. But
-> depending on how large that is, it could matter for the main case too.
-> Having some handle on the latency added here would be helpful for
-> thinking about this.
-
-I have a bigger system which has only network and SATA and here:
-PREEMPT, unpatched
-[   10.545739] random: crng init done
-[   10.549548] random: 7 urandom warning(s) missed due to ratelimiting
-
-PREEMPT_RT, patched
-[   11.884035] random: crng init done
-[   11.884037] random: 7 urandom warning(s) missed due to ratelimiting
-
-just from two boots, no real testing. I wouldn't even mention this as a
-problem during boot-up.
-
-> 2) If we went with this solution, I think I'd prefer to actually do it
-> unconditionally, for PREEMPT_RT=3Dy and PREEMPT_RT=3Dn. It's easier to
-> track how this thing works if the state machine always works in one
-> way instead of two. It also makes thinking about performance margins
-> for the various components easier if there's only one way used. Do you
-> see any downsides in doing this unconditionally?
-
-On !PREEMPT_RT you need to specify `threadirq` on the kernel command
-line to enable threaded interrupts which are otherwise force-enabled on
-PREEMPT_RT. To compensate for that, we would need something as backup.
-Say a time or so=E2=80=A6
-
-> Regards,
-> Jason
-
-Sebastian
