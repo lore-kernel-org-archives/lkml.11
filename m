@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C55DC35270
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47BE8C35272
 	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:13:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376964AbiAaLNa (ORCPT
+        id S1376540AbiAaLM4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:13:30 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:57578 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377266AbiAaLJw (ORCPT
+        Mon, 31 Jan 2022 06:12:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44722 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377072AbiAaLJg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:09:52 -0500
+        Mon, 31 Jan 2022 06:09:36 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C291C0613E7;
+        Mon, 31 Jan 2022 03:06:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B1FA0B82A4D;
-        Mon, 31 Jan 2022 11:09:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01F38C340E8;
-        Mon, 31 Jan 2022 11:09:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0F195B82A65;
+        Mon, 31 Jan 2022 11:06:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F6F8C340E8;
+        Mon, 31 Jan 2022 11:06:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627390;
-        bh=SdIECVcmzvG7Ae7fwzWMZkHzLtG0FTcE/FlWXeR9vOI=;
+        s=korg; t=1643627178;
+        bh=bZ6ukf/XeQnZfTLzn0CS/fdzDUU9lgLzWoBo03yH37s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vPKog7Ch50SW8vbqW/vQ7X5aQNTCatQ37MR/VSGJ/8jsfhLdkZKyutacpdzY8Bng9
-         B05Dr4w93C1bzCEXDSdYDN15qOamE+GTKo267s/LkXMPTqaclcn3AlpXzaYeNtGNPi
-         Cr9FE961t/2fYB7AN8uQyijTq36VoLLEIXoXyp3Y=
+        b=FiSNH/rlUtEazYOQnE971InUJ1M2Rz2/nwZKFtV7eLtoODRjm9xuzQFUnkxnZE6Qj
+         mQzq4p7IbP6qH245N3yy7TXdj7nmkPaCRpwqavD+4llJRJEK6YnW25q2Mg9/2QoSmG
+         /YqhP8rSbyg/xKJemZ0VLHNxzEjLeGj9z7txrJl0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Xu Yang <xu.yang_2@nxp.com>
-Subject: [PATCH 5.15 061/171] usb: typec: tcpci: dont touch CC line if its Vconn source
-Date:   Mon, 31 Jan 2022 11:55:26 +0100
-Message-Id: <20220131105232.089036475@linuxfoundation.org>
+        stable@vger.kernel.org, "Dmitry V. Levin" <ldv@altlinux.org>,
+        Masahiro Yamada <masahiroy@kernel.org>
+Subject: [PATCH 5.10 098/100] usr/include/Makefile: add linux/nfc.h to the compile-test coverage
+Date:   Mon, 31 Jan 2022 11:56:59 +0100
+Message-Id: <20220131105223.745422665@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
-References: <20220131105229.959216821@linuxfoundation.org>
+In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
+References: <20220131105220.424085452@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,88 +49,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xu Yang <xu.yang_2@nxp.com>
+From: Dmitry V. Levin <ldv@altlinux.org>
 
-commit 5638b0dfb6921f69943c705383ff40fb64b987f2 upstream.
+commit 10756dc5b02bff370ddd351d7744bc99ada659c2 upstream.
 
-With the AMS and Collision Avoidance, tcpm often needs to change the CC's
-termination. When one CC line is sourcing Vconn, if we still change its
-termination, the voltage of the another CC line is likely to be fluctuant
-and unstable.
+As linux/nfc.h userspace compilation was finally fixed by commits
+79b69a83705e ("nfc: uapi: use kernel size_t to fix user-space builds")
+and 7175f02c4e5f ("uapi: fix linux/nfc.h userspace compilation errors"),
+there is no need to keep the compile-test exception for it in
+usr/include/Makefile.
 
-Therefore, we should verify whether a CC line is sourcing Vconn before
-changing its termination and only change the termination that is not
-a Vconn line. This can be done by reading the Vconn Present bit of
-POWER_ STATUS register. To determine the polarity, we can read the
-Plug Orientation bit of TCPC_CONTROL register. Since Vconn can only be
-sourced if Plug Orientation is set.
-
-Fixes: 0908c5aca31e ("usb: typec: tcpm: AMS and Collision Avoidance")
-cc: <stable@vger.kernel.org>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-Acked-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Signed-off-by: Xu Yang <xu.yang_2@nxp.com>
-Link: https://lore.kernel.org/r/20220113092943.752372-1-xu.yang_2@nxp.com
+Signed-off-by: Dmitry V. Levin <ldv@altlinux.org>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/typec/tcpm/tcpci.c |   26 ++++++++++++++++++++++++++
- drivers/usb/typec/tcpm/tcpci.h |    1 +
- 2 files changed, 27 insertions(+)
+ usr/include/Makefile |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/drivers/usb/typec/tcpm/tcpci.c
-+++ b/drivers/usb/typec/tcpm/tcpci.c
-@@ -75,9 +75,25 @@ static int tcpci_write16(struct tcpci *t
- static int tcpci_set_cc(struct tcpc_dev *tcpc, enum typec_cc_status cc)
- {
- 	struct tcpci *tcpci = tcpc_to_tcpci(tcpc);
-+	bool vconn_pres;
-+	enum typec_cc_polarity polarity = TYPEC_POLARITY_CC1;
- 	unsigned int reg;
- 	int ret;
- 
-+	ret = regmap_read(tcpci->regmap, TCPC_POWER_STATUS, &reg);
-+	if (ret < 0)
-+		return ret;
-+
-+	vconn_pres = !!(reg & TCPC_POWER_STATUS_VCONN_PRES);
-+	if (vconn_pres) {
-+		ret = regmap_read(tcpci->regmap, TCPC_TCPC_CTRL, &reg);
-+		if (ret < 0)
-+			return ret;
-+
-+		if (reg & TCPC_TCPC_CTRL_ORIENTATION)
-+			polarity = TYPEC_POLARITY_CC2;
-+	}
-+
- 	switch (cc) {
- 	case TYPEC_CC_RA:
- 		reg = (TCPC_ROLE_CTRL_CC_RA << TCPC_ROLE_CTRL_CC1_SHIFT) |
-@@ -112,6 +128,16 @@ static int tcpci_set_cc(struct tcpc_dev
- 		break;
- 	}
- 
-+	if (vconn_pres) {
-+		if (polarity == TYPEC_POLARITY_CC2) {
-+			reg &= ~(TCPC_ROLE_CTRL_CC1_MASK << TCPC_ROLE_CTRL_CC1_SHIFT);
-+			reg |= (TCPC_ROLE_CTRL_CC_OPEN << TCPC_ROLE_CTRL_CC1_SHIFT);
-+		} else {
-+			reg &= ~(TCPC_ROLE_CTRL_CC2_MASK << TCPC_ROLE_CTRL_CC2_SHIFT);
-+			reg |= (TCPC_ROLE_CTRL_CC_OPEN << TCPC_ROLE_CTRL_CC2_SHIFT);
-+		}
-+	}
-+
- 	ret = regmap_write(tcpci->regmap, TCPC_ROLE_CTRL, reg);
- 	if (ret < 0)
- 		return ret;
---- a/drivers/usb/typec/tcpm/tcpci.h
-+++ b/drivers/usb/typec/tcpm/tcpci.h
-@@ -98,6 +98,7 @@
- #define TCPC_POWER_STATUS_SOURCING_VBUS	BIT(4)
- #define TCPC_POWER_STATUS_VBUS_DET	BIT(3)
- #define TCPC_POWER_STATUS_VBUS_PRES	BIT(2)
-+#define TCPC_POWER_STATUS_VCONN_PRES	BIT(1)
- #define TCPC_POWER_STATUS_SINKING_VBUS	BIT(0)
- 
- #define TCPC_FAULT_STATUS		0x1f
+--- a/usr/include/Makefile
++++ b/usr/include/Makefile
+@@ -34,7 +34,6 @@ no-header-test += linux/hdlc/ioctl.h
+ no-header-test += linux/ivtv.h
+ no-header-test += linux/kexec.h
+ no-header-test += linux/matroxfb.h
+-no-header-test += linux/nfc.h
+ no-header-test += linux/omap3isp.h
+ no-header-test += linux/omapfb.h
+ no-header-test += linux/patchkey.h
 
 
