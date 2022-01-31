@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4310C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:10:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADB0DC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:11:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239834AbiAaLKx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:10:53 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:53886 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235281AbiAaLGD (ORCPT
+        id S1359093AbiAaLK6 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 31 Jan 2022 06:10:58 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:40980 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348507AbiAaLGb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:06:03 -0500
+        Mon, 31 Jan 2022 06:06:31 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9AA2FB82A5D;
-        Mon, 31 Jan 2022 11:06:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B782BC340E8;
-        Mon, 31 Jan 2022 11:05:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5BBC26104B;
+        Mon, 31 Jan 2022 11:06:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AB5AC36AE3;
+        Mon, 31 Jan 2022 11:06:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627160;
-        bh=8QpPn/EcYTTWSowcI/ZY+gOqZOAzFOy0LCORVktrvLE=;
+        s=korg; t=1643627190;
+        bh=i/qDGYIStvA+YTvPwrw5QtUqxP1K+kAf+KVBEzQxREI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f4GQWfyzoN+ZFT3ywCh2pxZgwhDXPJBZWxrVY7qrD0CF8eDEVml8b/hlnMEL7D5xI
-         AouwoWKllYPLYX8Sg3mFnfZh06VRnjriVJ4jYaSA67DK6TyGZx1/TiiX6hRKL1mhAG
-         0I5yL0Tsvvtf2LA9WlSBTZL5COJ94WiblGNX+Who=
+        b=1BosN7zXh58OxuN54z9NnVW7AbWtak0/3Hlz5E4dK1D+RdlGpNwFTH90ZqARKazJG
+         qiVwZUKx+/X1dctg3LCtcq/eU5ILSxrSbILOrN/MMybZIiWnY8t93ezi/NIbfmrMHO
+         BqdIEJLKVHmdRV6Rn0DPv7qMMKcfNAHymZOfcTNM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
+        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 093/100] ipv4: raw: lock the socket in raw_bind()
-Date:   Mon, 31 Jan 2022 11:56:54 +0100
-Message-Id: <20220131105223.580898656@linuxfoundation.org>
+Subject: [PATCH 5.10 073/100] net: phy: broadcom: hook up soft_reset for BCM54616S
+Date:   Mon, 31 Jan 2022 11:56:34 +0100
+Message-Id: <20220131105222.877560759@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
 References: <20220131105220.424085452@linuxfoundation.org>
@@ -47,76 +48,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Robert Hancock <robert.hancock@calian.com>
 
-[ Upstream commit 153a0d187e767c68733b8e9f46218eb1f41ab902 ]
+[ Upstream commit d15c7e875d44367005370e6a82e8f3a382a04f9b ]
 
-For some reason, raw_bind() forgot to lock the socket.
+A problem was encountered with the Bel-Fuse 1GBT-SFP05 SFP module (which
+is a 1 Gbps copper module operating in SGMII mode with an internal
+BCM54616S PHY device) using the Xilinx AXI Ethernet MAC core, where the
+module would work properly on the initial insertion or boot of the
+device, but after the device was rebooted, the link would either only
+come up at 100 Mbps speeds or go up and down erratically.
 
-BUG: KCSAN: data-race in __ip4_datagram_connect / raw_bind
+I found no meaningful changes in the PHY configuration registers between
+the working and non-working boots, but the status registers seemed to
+have a lot of error indications set on the SERDES side of the device on
+the non-working boot. I suspect the problem is that whatever happens on
+the SGMII link when the device is rebooted and the FPGA logic gets
+reloaded ends up putting the module's onboard PHY into a bad state.
 
-write to 0xffff8881170d4308 of 4 bytes by task 5466 on cpu 0:
- raw_bind+0x1b0/0x250 net/ipv4/raw.c:739
- inet_bind+0x56/0xa0 net/ipv4/af_inet.c:443
- __sys_bind+0x14b/0x1b0 net/socket.c:1697
- __do_sys_bind net/socket.c:1708 [inline]
- __se_sys_bind net/socket.c:1706 [inline]
- __x64_sys_bind+0x3d/0x50 net/socket.c:1706
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+Since commit 6e2d85ec0559 ("net: phy: Stop with excessive soft reset")
+the genphy_soft_reset call is not made automatically by the PHY core
+unless the callback is explicitly specified in the driver structure. For
+most of these Broadcom devices, there is probably a hardware reset that
+gets asserted to reset the PHY during boot, however for SFP modules
+(where the BCM54616S is commonly found) no such reset line exists, so if
+the board keeps the SFP cage powered up across a reboot, it will end up
+with no reset occurring during reboots.
 
-read to 0xffff8881170d4308 of 4 bytes by task 5468 on cpu 1:
- __ip4_datagram_connect+0xb7/0x7b0 net/ipv4/datagram.c:39
- ip4_datagram_connect+0x2a/0x40 net/ipv4/datagram.c:89
- inet_dgram_connect+0x107/0x190 net/ipv4/af_inet.c:576
- __sys_connect_file net/socket.c:1900 [inline]
- __sys_connect+0x197/0x1b0 net/socket.c:1917
- __do_sys_connect net/socket.c:1927 [inline]
- __se_sys_connect net/socket.c:1924 [inline]
- __x64_sys_connect+0x3d/0x50 net/socket.c:1924
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+Hook up the genphy_soft_reset callback for BCM54616S to ensure that a
+PHY reset is performed before the device is initialized. This appears to
+fix the issue with erratic operation after a reboot with this SFP
+module.
 
-value changed: 0x00000000 -> 0x0003007f
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 1 PID: 5468 Comm: syz-executor.5 Not tainted 5.17.0-rc1-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
+Fixes: 6e2d85ec0559 ("net: phy: Stop with excessive soft reset")
+Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/raw.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/phy/broadcom.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/ipv4/raw.c b/net/ipv4/raw.c
-index 7d26e0f8bdaeb..5d95f80314f95 100644
---- a/net/ipv4/raw.c
-+++ b/net/ipv4/raw.c
-@@ -721,6 +721,7 @@ static int raw_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len)
- 	int ret = -EINVAL;
- 	int chk_addr_ret;
- 
-+	lock_sock(sk);
- 	if (sk->sk_state != TCP_CLOSE || addr_len < sizeof(struct sockaddr_in))
- 		goto out;
- 
-@@ -740,7 +741,9 @@ static int raw_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len)
- 		inet->inet_saddr = 0;  /* Use device */
- 	sk_dst_reset(sk);
- 	ret = 0;
--out:	return ret;
-+out:
-+	release_sock(sk);
-+	return ret;
- }
- 
- /*
+diff --git a/drivers/net/phy/broadcom.c b/drivers/net/phy/broadcom.c
+index dbed15dc0fe77..644861366d544 100644
+--- a/drivers/net/phy/broadcom.c
++++ b/drivers/net/phy/broadcom.c
+@@ -789,6 +789,7 @@ static struct phy_driver broadcom_drivers[] = {
+ 	.phy_id_mask	= 0xfffffff0,
+ 	.name		= "Broadcom BCM54616S",
+ 	/* PHY_GBIT_FEATURES */
++	.soft_reset     = genphy_soft_reset,
+ 	.config_init	= bcm54xx_config_init,
+ 	.config_aneg	= bcm54616s_config_aneg,
+ 	.ack_interrupt	= bcm_phy_ack_intr,
 -- 
 2.34.1
 
