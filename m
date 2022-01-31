@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF40CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:04:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21A69C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:04:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358473AbiAaLEU (ORCPT
+        id S1359117AbiAaLEX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:04:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43144 "EHLO
+        Mon, 31 Jan 2022 06:04:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359156AbiAaLDC (ORCPT
+        with ESMTP id S1359152AbiAaLDB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:03:02 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04FDDC0612FD;
-        Mon, 31 Jan 2022 03:01:37 -0800 (PST)
+        Mon, 31 Jan 2022 06:03:01 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 678B2C0612FC;
+        Mon, 31 Jan 2022 03:01:35 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 98FEF60B2C;
-        Mon, 31 Jan 2022 11:01:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FADBC340E8;
-        Mon, 31 Jan 2022 11:01:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2CCDEB82A5E;
+        Mon, 31 Jan 2022 11:01:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45954C340E8;
+        Mon, 31 Jan 2022 11:01:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643626896;
-        bh=fYSbzGiZZ+SKixvbaWp+OzSqY+xqh5FdmGkaZVvd178=;
+        s=korg; t=1643626892;
+        bh=xLeK2P+nBHoZ3TW+XG9S74ef1zCqYwfGpC4fgjP9Lmk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q2oVb/WGuQyNRrpG059oS46NIbogxCZCTXOhsthS7QRhKP6d1Db1UPHUvpMpt6/5S
-         fUoPT3t/bzpPqZv5ZFGPalJy+SBbDP9M5WpXJiIQEETU/5C/X0B2EfXrVILJctpBmX
-         UkGt0YyjwqVAQhhaKTPe6YN2mqdvvQT1SQ9OOTS0=
+        b=dqKRx4nO43K4aK3IFjsgJrMgpI0lrXCeYXhYdZ3o1knDclabwHJGeyDEAbHOY0xu7
+         uHp/5t3QfkMqspEQXmY9KQ+IOzD5r1f3+bxLvfQ/f9eEFKJP59JByodE/WCXvUTYMI
+         6oV74FuaRmK1Nr1KohwEDcejPddfqRdl8lhDB8AA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, butt3rflyh4ck <butterflyhuangxx@gmail.com>,
-        Christoph Hellwig <hch@lst.de>, Jan Kara <jack@suse.cz>
-Subject: [PATCH 5.10 010/100] udf: Fix NULL ptr deref when converting from inline format
-Date:   Mon, 31 Jan 2022 11:55:31 +0100
-Message-Id: <20220131105220.804921515@linuxfoundation.org>
+        stable@vger.kernel.org, Brian Gix <brian.gix@intel.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        syphyr <syphyr@gmail.com>
+Subject: [PATCH 5.10 001/100] Bluetooth: refactor malicious adv data check
+Date:   Mon, 31 Jan 2022 11:55:22 +0100
+Message-Id: <20220131105220.474074744@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
 References: <20220131105220.424085452@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -49,64 +52,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Brian Gix <brian.gix@intel.com>
 
-commit 7fc3b7c2981bbd1047916ade327beccb90994eee upstream.
+commit 899663be5e75dc0174dc8bda0b5e6826edf0b29a upstream.
 
-udf_expand_file_adinicb() calls directly ->writepage to write data
-expanded into a page. This however misses to setup inode for writeback
-properly and so we can crash on inode->i_wb dereference when submitting
-page for IO like:
+Check for out-of-bound read was being performed at the end of while
+num_reports loop, and would fill journal with false positives. Added
+check to beginning of loop processing so that it doesn't get checked
+after ptr has been advanced.
 
-  BUG: kernel NULL pointer dereference, address: 0000000000000158
-  #PF: supervisor read access in kernel mode
-...
-  <TASK>
-  __folio_start_writeback+0x2ac/0x350
-  __block_write_full_page+0x37d/0x490
-  udf_expand_file_adinicb+0x255/0x400 [udf]
-  udf_file_write_iter+0xbe/0x1b0 [udf]
-  new_sync_write+0x125/0x1c0
-  vfs_write+0x28e/0x400
-
-Fix the problem by marking the page dirty and going through the standard
-writeback path to write the page. Strictly speaking we would not even
-have to write the page but we want to catch e.g. ENOSPC errors early.
-
-Reported-by: butt3rflyh4ck <butterflyhuangxx@gmail.com>
-CC: stable@vger.kernel.org
-Fixes: 52ebea749aae ("writeback: make backing_dev_info host cgroup-specific bdi_writebacks")
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Jan Kara <jack@suse.cz>
+Signed-off-by: Brian Gix <brian.gix@intel.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Cc: syphyr <syphyr@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/udf/inode.c |    8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ net/bluetooth/hci_event.c |   10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
---- a/fs/udf/inode.c
-+++ b/fs/udf/inode.c
-@@ -257,10 +257,6 @@ int udf_expand_file_adinicb(struct inode
- 	char *kaddr;
- 	struct udf_inode_info *iinfo = UDF_I(inode);
- 	int err;
--	struct writeback_control udf_wbc = {
--		.sync_mode = WB_SYNC_NONE,
--		.nr_to_write = 1,
--	};
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -5661,6 +5661,11 @@ static void hci_le_adv_report_evt(struct
+ 		struct hci_ev_le_advertising_info *ev = ptr;
+ 		s8 rssi;
  
- 	WARN_ON_ONCE(!inode_is_locked(inode));
- 	if (!iinfo->i_lenAlloc) {
-@@ -304,8 +300,10 @@ int udf_expand_file_adinicb(struct inode
- 		iinfo->i_alloc_type = ICBTAG_FLAG_AD_LONG;
- 	/* from now on we have normal address_space methods */
- 	inode->i_data.a_ops = &udf_aops;
-+	set_page_dirty(page);
-+	unlock_page(page);
- 	up_write(&iinfo->i_data_sem);
--	err = inode->i_data.a_ops->writepage(page, &udf_wbc);
-+	err = filemap_fdatawrite(inode->i_mapping);
- 	if (err) {
- 		/* Restore everything back so that we don't lose data... */
- 		lock_page(page);
++		if (ptr > (void *)skb_tail_pointer(skb) - sizeof(*ev)) {
++			bt_dev_err(hdev, "Malicious advertising data.");
++			break;
++		}
++
+ 		if (ev->length <= HCI_MAX_AD_LENGTH &&
+ 		    ev->data + ev->length <= skb_tail_pointer(skb)) {
+ 			rssi = ev->data[ev->length];
+@@ -5672,11 +5677,6 @@ static void hci_le_adv_report_evt(struct
+ 		}
+ 
+ 		ptr += sizeof(*ev) + ev->length + 1;
+-
+-		if (ptr > (void *) skb_tail_pointer(skb) - sizeof(*ev)) {
+-			bt_dev_err(hdev, "Malicious advertising data. Stopping processing");
+-			break;
+-		}
+ 	}
+ 
+ 	hci_dev_unlock(hdev);
 
 
