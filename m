@@ -2,55 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38286C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:25:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95950C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:25:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359675AbiAaLZT (ORCPT
+        id S1359870AbiAaLZ1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:25:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46074 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349721AbiAaLQo (ORCPT
+        Mon, 31 Jan 2022 06:25:27 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:35386 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358824AbiAaLQM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:16:44 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 877C0C0613F7;
-        Mon, 31 Jan 2022 03:11:28 -0800 (PST)
+        Mon, 31 Jan 2022 06:16:12 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 50E35B82A61;
-        Mon, 31 Jan 2022 11:11:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92EC0C340E8;
-        Mon, 31 Jan 2022 11:11:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 78A42B82A60;
+        Mon, 31 Jan 2022 11:16:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A04A8C340F6;
+        Mon, 31 Jan 2022 11:16:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627486;
-        bh=JhNyRXEnciQM5KD9GQGTUIzpN68e3QP+BIvXRa1scdU=;
+        s=korg; t=1643627770;
+        bh=fyW3VQY1hsrMVTxcCkB3SrRtd1fxSMkjIxRB1Iq4xes=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jwUxm9owMBPx3WbWipqncC9XysHutlQIXkyMiLFPxMAuEzLKaMejTCL/XiqNxGQ1z
-         5YkKOatEsQ7vcD9Z6+hpIIpGLi2lo/AgFBpyRsgyKBrcpw9XOY/LcRWqV2+nU8YCs4
-         Vjq/63JyswANaB1kAlnEG3MfgNKzcCn5e3fqSRHQ=
+        b=V72NRstsH69VAiJQ88hro2v914q0rVedUiyg5Lv6HZlHsJnLQawLF5em0B4wwfKf3
+         LD8E9BZ4LSLLt5YEo5TuqFRCnEPSAKvWtpHXvAR4GN+aeS68QXs3yZ+dCO81VKiXx9
+         52Q1+UXXoQ8WigSVdgbGpefIwWPOZAU0JX3U2XwQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joseph Qi <joseph.qi@linux.alibaba.com>,
-        Mark Fasheh <mark@fasheh.com>,
-        Joel Becker <jlbec@evilplan.org>,
-        Junxiao Bi <junxiao.bi@oracle.com>,
-        Changwei Ge <gechangwei@live.cn>, Gang He <ghe@suse.com>,
-        Jun Piao <piaojun@huawei.com>,
-        Andreas Dilger <adilger.kernel@dilger.ca>,
-        Gautham Ananthakrishna <gautham.ananthakrishna@oracle.com>,
-        Saeed Mirzamohammadi <saeed.mirzamohammadi@oracle.com>,
-        "Theodore Tso" <tytso@mit.edu>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.15 066/171] jbd2: export jbd2_journal_[grab|put]_journal_head
-Date:   Mon, 31 Jan 2022 11:55:31 +0100
-Message-Id: <20220131105232.273781500@linuxfoundation.org>
+        stable@vger.kernel.org, Anthony Ruhier <aruhier@mailbox.org>,
+        Qu Wenruo <wqu@suse.com>, Filipe Manana <fdmanana@suse.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.16 002/200] btrfs: fix too long loop when defragging a 1 byte file
+Date:   Mon, 31 Jan 2022 11:54:25 +0100
+Message-Id: <20220131105233.642599121@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
-References: <20220131105229.959216821@linuxfoundation.org>
+In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
+References: <20220131105233.561926043@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -59,59 +47,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joseph Qi <joseph.qi@linux.alibaba.com>
+From: Filipe Manana <fdmanana@suse.com>
 
-commit 4cd1103d8c66b2cdb7e64385c274edb0ac5e8887 upstream.
+commit 6b34cd8e175bfbf4f3f01b6d19eae18245e1a8cc upstream.
 
-Patch series "ocfs2: fix a deadlock case".
+When attempting to defrag a file with a single byte, we can end up in a
+too long loop, which is nearly infinite because at btrfs_defrag_file()
+we end up with the variable last_byte assigned with a value of
+18446744073709551615 (which is (u64)-1). The problem comes from the fact
+we end up doing:
 
-This fixes a deadlock case in ocfs2.  We firstly export jbd2 symbols
-jbd2_journal_[grab|put]_journal_head as preparation and later use them
-in ocfs2 insread of jbd_[lock|unlock]_bh_journal_head to fix the
-deadlock.
+    last_byte = round_up(last_byte, fs_info->sectorsize) - 1;
 
-This patch (of 2):
+So if last_byte was assigned 0, which is i_size - 1, we underflow and
+end up with the value 18446744073709551615.
 
-This exports symbols jbd2_journal_[grab|put]_journal_head, which will be
-used outside modules, e.g.  ocfs2.
+This is trivial to reproduce and the following script triggers it:
 
-Link: https://lkml.kernel.org/r/20220121071205.100648-2-joseph.qi@linux.alibaba.com
-Signed-off-by: Joseph Qi <joseph.qi@linux.alibaba.com>
-Cc: Mark Fasheh <mark@fasheh.com>
-Cc: Joel Becker <jlbec@evilplan.org>
-Cc: Junxiao Bi <junxiao.bi@oracle.com>
-Cc: Changwei Ge <gechangwei@live.cn>
-Cc: Gang He <ghe@suse.com>
-Cc: Jun Piao <piaojun@huawei.com>
-Cc: Andreas Dilger <adilger.kernel@dilger.ca>
-Cc: Gautham Ananthakrishna <gautham.ananthakrishna@oracle.com>
-Cc: Saeed Mirzamohammadi <saeed.mirzamohammadi@oracle.com>
-Cc: "Theodore Ts'o" <tytso@mit.edu>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+  $ cat test.sh
+  #!/bin/bash
+
+  DEV=/dev/sdj
+  MNT=/mnt/sdj
+
+  mkfs.btrfs -f $DEV
+  mount $DEV $MNT
+
+  echo -n "X" > $MNT/foobar
+
+  btrfs filesystem defragment $MNT/foobar
+
+  umount $MNT
+
+So fix this by not decrementing last_byte by 1 before doing the sector
+size round up. Also, to make it easier to follow, make the round up right
+after computing last_byte.
+
+Reported-by: Anthony Ruhier <aruhier@mailbox.org>
+Fixes: 7b508037d4cac3 ("btrfs: defrag: use defrag_one_cluster() to implement btrfs_defrag_file()")
+Link: https://lore.kernel.org/linux-btrfs/0a269612-e43f-da22-c5bc-b34b1b56ebe8@mailbox.org/
+CC: stable@vger.kernel.org # 5.16
+Reviewed-by: Qu Wenruo <wqu@suse.com>
+Signed-off-by: Filipe Manana <fdmanana@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/jbd2/journal.c |    2 ++
- 1 file changed, 2 insertions(+)
+ fs/btrfs/ioctl.c |   12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
---- a/fs/jbd2/journal.c
-+++ b/fs/jbd2/journal.c
-@@ -2970,6 +2970,7 @@ struct journal_head *jbd2_journal_grab_j
- 	jbd_unlock_bh_journal_head(bh);
- 	return jh;
- }
-+EXPORT_SYMBOL(jbd2_journal_grab_journal_head);
+--- a/fs/btrfs/ioctl.c
++++ b/fs/btrfs/ioctl.c
+@@ -1492,12 +1492,16 @@ int btrfs_defrag_file(struct inode *inod
  
- static void __journal_remove_journal_head(struct buffer_head *bh)
- {
-@@ -3022,6 +3023,7 @@ void jbd2_journal_put_journal_head(struc
- 		jbd_unlock_bh_journal_head(bh);
+ 	if (range->start + range->len > range->start) {
+ 		/* Got a specific range */
+-		last_byte = min(isize, range->start + range->len) - 1;
++		last_byte = min(isize, range->start + range->len);
+ 	} else {
+ 		/* Defrag until file end */
+-		last_byte = isize - 1;
++		last_byte = isize;
  	}
- }
-+EXPORT_SYMBOL(jbd2_journal_put_journal_head);
  
- /*
-  * Initialize jbd inode head
++	/* Align the range */
++	cur = round_down(range->start, fs_info->sectorsize);
++	last_byte = round_up(last_byte, fs_info->sectorsize) - 1;
++
+ 	/*
+ 	 * If we were not given a ra, allocate a readahead context. As
+ 	 * readahead is just an optimization, defrag will work without it so
+@@ -1510,10 +1514,6 @@ int btrfs_defrag_file(struct inode *inod
+ 			file_ra_state_init(ra, inode->i_mapping);
+ 	}
+ 
+-	/* Align the range */
+-	cur = round_down(range->start, fs_info->sectorsize);
+-	last_byte = round_up(last_byte, fs_info->sectorsize) - 1;
+-
+ 	while (cur < last_byte) {
+ 		u64 cluster_end;
+ 
 
 
