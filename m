@@ -2,121 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83BBFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:46:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B66E8C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:46:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378749AbiAaLnI (ORCPT
+        id S1378928AbiAaLnV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:43:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50092 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379032AbiAaL3o (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:29:44 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E852BC061783;
-        Mon, 31 Jan 2022 03:19:00 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 87F6C61257;
-        Mon, 31 Jan 2022 11:19:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69760C340E8;
-        Mon, 31 Jan 2022 11:18:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627940;
-        bh=YP3uc33jwRUfDk9XScnitxmKQ9R/hWEnLuZ4nu+AswA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XNXNhDwspRyqwa/hhixWOECiczQnsPh0TNsIso/nH6zdCgayojasnmmSRLzsfUrkW
-         u6IHoElt+DbGQtqk4prVn3GZI6gOZJdvktIdAWkzyKMrdSQ6m9U4EN7UNm8SEyoUO4
-         ftY+2rD9YzJ/3W+rugmokQgfBgYfph64jDwR+w8E=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Chen <peter.chen@kernel.org>,
-        Frank Li <Frank.Li@nxp.com>, Abel Vesa <abel.vesa@nxp.com>
-Subject: [PATCH 5.16 074/200] usb: xhci-plat: fix crash when suspend if remote wake enable
-Date:   Mon, 31 Jan 2022 11:55:37 +0100
-Message-Id: <20220131105236.075903042@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
-References: <20220131105233.561926043@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 31 Jan 2022 06:43:21 -0500
+Received: from mga05.intel.com ([192.55.52.43]:12238 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1379732AbiAaLaj (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 06:30:39 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643628639; x=1675164639;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=IrCfoF7eVv9DU6g4PgHgEV5cLq0Eof4NwIuHTMoZg8E=;
+  b=dYUK0g8hidnaRro/VYR1kcNEvPpOtfYedQMtUIUXT/kSOxPuSixeQ+JH
+   3pawBbmGx9snj+aq7xvPMJIUgy45aQaPzGOa24Fdd8dp2+v5/O9YCQlSy
+   Gk1cXXXJR+703azR6a/Rco1OirRU2/hnaW/1O6qnfu5/hfWQRAzWhTDnI
+   NFeN4wc/ip6Vu4qFGcAlbpaycTj18UWgwIOiIbrLSFyls/u9m8jMR7s1K
+   OwUwKcBr7yRYopHzLhVMkbh5dJ1hxYJYC1OD7EA80pvsR19bWGKPuVsgc
+   aOplCg+lPJ3iEf7csgzxzeFPQk6+mLaeFKhvUoCj0XbNv+uuvcwRIWTxJ
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10243"; a="333798871"
+X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
+   d="scan'208";a="333798871"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 03:23:50 -0800
+X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
+   d="scan'208";a="479042021"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 03:23:46 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nEUle-00GqYd-Oi;
+        Mon, 31 Jan 2022 13:22:42 +0200
+Date:   Mon, 31 Jan 2022 13:22:42 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Cc:     David Rientjes <rientjes@google.com>,
+        Waiman Long <longman@redhat.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Vladimir Davydov <vdavydov.dev@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
+        linux-mm@kvack.org, Ira Weiny <ira.weiny@intel.com>,
+        Rafael Aquini <aquini@redhat.com>
+Subject: Re: [PATCH v2 1/3] lib/vsprintf: Avoid redundant work with 0 size
+Message-ID: <YffGgozjI4W2Vamp@smile.fi.intel.com>
+References: <20220129205315.478628-1-longman@redhat.com>
+ <20220129205315.478628-2-longman@redhat.com>
+ <d99b3c4b-7b6e-529-6e4b-b91b65c92d81@google.com>
+ <Yfe5Bb3U6Uil7Y6g@smile.fi.intel.com>
+ <Yfe6SfG4CqzWSaMM@smile.fi.intel.com>
+ <Yfe7Q5cx+MoaOev/@smile.fi.intel.com>
+ <d44824d4-2dd1-a8ab-d3ee-ac67b749ca6f@rasmusvillemoes.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d44824d4-2dd1-a8ab-d3ee-ac67b749ca6f@rasmusvillemoes.dk>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Frank Li <Frank.Li@nxp.com>
+On Mon, Jan 31, 2022 at 12:02:29PM +0100, Rasmus Villemoes wrote:
+> On 31/01/2022 11.34, Andy Shevchenko wrote:
+> > On Mon, Jan 31, 2022 at 12:30:33PM +0200, Andy Shevchenko wrote:
+> >> On Mon, Jan 31, 2022 at 12:25:09PM +0200, Andy Shevchenko wrote:
+> >>> On Sun, Jan 30, 2022 at 12:49:37PM -0800, David Rientjes wrote:
+> >>>> On Sat, 29 Jan 2022, Waiman Long wrote:
+> >>>>
+> >>>>> For *scnprintf(), vsnprintf() is always called even if the input size is
+> >>>>> 0. That is a waste of time, so just return 0 in this case.
+> >>>
+> >>> Why do you think it's not legit?
+> >>
+> >> I have to elaborate.
+> >>
+> >> For *nprintf() the size=0 is quite useful to have.
+> >> For *cnprintf() the size=0 makes less sense, but, if we read `man snprintf()`:
+> >>
+> >>   The  functions  snprintf() and vsnprintf() do not write more than size bytes
+> >>   (including the terminating null byte ('\0')). If the output was truncated due
+> >>   to this limit, then the return value is the  number of  characters (excluding
+> >>   the terminating null byte) which would have been written to the final string
+> >>   if enough space had been available. Thus, a return value of size or more
+> >>   means  that  the  output  was truncated.  (See also below under NOTES.)
+> >>
+> >>   If an output error is encountered, a negative value is returned.
+> >>
+> >> Note the last sentence there. You need to answer to it in the commit message
+> >> why your change is okay and it will show that you thought through all possible
+> >> scenarios.
+> > 
+> > Also it seems currently the kernel documentation is not aligned with the code
+> > 
+> >   "If @size is == 0 the function returns 0."
+> > 
+> > It should mention the (theoretical?) possibility of getting negative value,
+> > if vsnprintf() returns negative value.
+> > 
+> 
+> The kernel's vsnprintf _will never_ return a negative value. There is
+> way too much code which relies on that. It also has to work from any
+> context, so we'll never do any memory allocation or anything else that
+> could possibly force us to error out, and even if we encounter some
+> impossible situation, we do not return a negative value, but just stop
+> the output where we are.
 
-commit 9df478463d9feb90dae24f183383961cf123a0ec upstream.
+Yep, I see the code. My comments more or less are related to the (better)
+commit message which may include what you just said.
 
-Crashed at i.mx8qm platform when suspend if enable remote wakeup
+> So yes, micro-optimizing [v]scnprintf() is completely valid, but I've
+> never bothered to send the patch because the use case for scnprintf() is
+> primarily the
+> 
+>   ret += scnprintf(buf + ret, size - ret, ...);
+> 
+> pattern, with ret starting out at 0 and size being some non-zero number.
+> When given a non-zero size, scnprintf() is guaranteed to return
+> something _strictly less_ than that value; that invariant guarantees
+> that the size-ret expression never becomes 0. So if scnprintf() is
+> properly used, I can't think of any situation where size will be 0,
+> hence I see that patch as correct-but-mostly-pointless.
 
-Internal error: synchronous external abort: 96000210 [#1] PREEMPT SMP
-Modules linked in:
-CPU: 2 PID: 244 Comm: kworker/u12:6 Not tainted 5.15.5-dirty #12
-Hardware name: Freescale i.MX8QM MEK (DT)
-Workqueue: events_unbound async_run_entry_fn
-pstate: 600000c5 (nZCv daIF -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-pc : xhci_disable_hub_port_wake.isra.62+0x60/0xf8
-lr : xhci_disable_hub_port_wake.isra.62+0x34/0xf8
-sp : ffff80001394bbf0
-x29: ffff80001394bbf0 x28: 0000000000000000 x27: ffff00081193b578
-x26: ffff00081193b570 x25: 0000000000000000 x24: 0000000000000000
-x23: ffff00081193a29c x22: 0000000000020001 x21: 0000000000000001
-x20: 0000000000000000 x19: ffff800014e90490 x18: 0000000000000000
-x17: 0000000000000000 x16: 0000000000000000 x15: 0000000000000000
-x14: 0000000000000000 x13: 0000000000000002 x12: 0000000000000000
-x11: 0000000000000000 x10: 0000000000000960 x9 : ffff80001394baa0
-x8 : ffff0008145d1780 x7 : ffff0008f95b8e80 x6 : 000000001853b453
-x5 : 0000000000000496 x4 : 0000000000000000 x3 : ffff00081193a29c
-x2 : 0000000000000001 x1 : 0000000000000000 x0 : ffff000814591620
-Call trace:
- xhci_disable_hub_port_wake.isra.62+0x60/0xf8
- xhci_suspend+0x58/0x510
- xhci_plat_suspend+0x50/0x78
- platform_pm_suspend+0x2c/0x78
- dpm_run_callback.isra.25+0x50/0xe8
- __device_suspend+0x108/0x3c0
+Good remark and again commit message probably should elaborate this as
+well.
 
-The basic flow:
-	1. run time suspend call xhci_suspend, xhci parent devices gate the clock.
-        2. echo mem >/sys/power/state, system _device_suspend call xhci_suspend
-        3. xhci_suspend call xhci_disable_hub_port_wake, which access register,
-	   but clock already gated by run time suspend.
-
-This problem was hidden by power domain driver, which call run time resume before it.
-
-But the below commit remove it and make this issue happen.
-	commit c1df456d0f06e ("PM: domains: Don't runtime resume devices at genpd_prepare()")
-
-This patch call run time resume before suspend to make sure clock is on
-before access register.
-
-Reviewed-by: Peter Chen <peter.chen@kernel.org>
-Cc: stable <stable@vger.kernel.org>
-Signed-off-by: Frank Li <Frank.Li@nxp.com>
-Testeb-by: Abel Vesa <abel.vesa@nxp.com>
-Link: https://lore.kernel.org/r/20220110172738.31686-1-Frank.Li@nxp.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/usb/host/xhci-plat.c |    3 +++
- 1 file changed, 3 insertions(+)
-
---- a/drivers/usb/host/xhci-plat.c
-+++ b/drivers/usb/host/xhci-plat.c
-@@ -437,6 +437,9 @@ static int __maybe_unused xhci_plat_susp
- 	struct xhci_hcd	*xhci = hcd_to_xhci(hcd);
- 	int ret;
- 
-+	if (pm_runtime_suspended(dev))
-+		pm_runtime_resume(dev);
-+
- 	ret = xhci_priv_suspend_quirk(hcd);
- 	if (ret)
- 		return ret;
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
