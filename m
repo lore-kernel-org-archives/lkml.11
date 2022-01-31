@@ -2,183 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA909C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:26:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B94D8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:26:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348806AbiAaL0a (ORCPT
+        id S1359668AbiAaL0d (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:26:30 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:47934 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377200AbiAaLRt (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:17:49 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BB5386114C;
-        Mon, 31 Jan 2022 11:17:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54151C340E8;
-        Mon, 31 Jan 2022 11:17:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627868;
-        bh=+73rGfCBgLJesVwuPl33Zlp4csAarRXlaZuKTqeiMYk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RnidJSWRhO5WRE/AvGaK8zgOd+3bfOTFlSq0jxiMGFckYydsR2CHY6TNCW42tkOFA
-         oc/A8fK4WVl/h0ZrDD+Yvw0Q4qRM5GG55mjProDzAGcUHPHdFBnPfVAgCM0LP8hjUs
-         YkB/SDGXVcBjwA2sXXI8nrXxj1IyuGIutBVJyA1s=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.16 023/200] powerpc/bpf: Update ldimm64 instructions during extra pass
-Date:   Mon, 31 Jan 2022 11:54:46 +0100
-Message-Id: <20220131105234.344489321@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
-References: <20220131105233.561926043@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 31 Jan 2022 06:26:33 -0500
+Received: from mga18.intel.com ([134.134.136.126]:3561 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1377258AbiAaLR4 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 06:17:56 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643627876; x=1675163876;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=dmFtQZnXn+jCdVmYXidE6MNfkFywoIFKCcy975zz+ko=;
+  b=R8KZZZMEjuEUlmA1JRzzs937mbxu5zy2HnCq1vu6KISAA/649bJbFxGH
+   PDHZZzMSSbGdZRxEhLd8BvG4Y6/Zh+GSqohuoSscs6L/mT4s0pGbhRa9D
+   9nT/aM5yfR5X6i6+IuoTUB0Kn6mRfy+Zta7mwVwW5/nljyy5RDdpfGnuX
+   9pnk1UEV4D0Hev0H1+5q5wDOwOs3FUDpIRVG6Lt1jS8vqMCaIsscMpSoq
+   xrJaMNqyN0dM7DbBJWKnCuggyHJUli9OppBlrGNCb+TllpXd1IVZV0IIK
+   Z81iN50nie3EK1xCQmxjfLCczAHL4g+7oAdOfHIGHPoWAWw5w7xu/wRTp
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10243"; a="231011315"
+X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
+   d="scan'208";a="231011315"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 03:13:22 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
+   d="scan'208";a="675695757"
+Received: from kuha.fi.intel.com ([10.237.72.185])
+  by fmsmga001.fm.intel.com with SMTP; 31 Jan 2022 03:13:18 -0800
+Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Mon, 31 Jan 2022 13:13:18 +0200
+Date:   Mon, 31 Jan 2022 13:13:18 +0200
+From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To:     Prashant Malani <pmalani@chromium.org>
+Cc:     linux-kernel@vger.kernel.org, Alyssa Ross <hi@alyssa.is>,
+        Tzung-Bi Shih <tzungbi@google.com>,
+        Benson Leung <bleung@chromium.org>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Guenter Roeck <groeck@chromium.org>
+Subject: Re: [PATCH v2] platform/chrome: cros_ec_typec: Check for EC device
+Message-ID: <YffETvxepY2uU/qT@kuha.fi.intel.com>
+References: <20220126190219.3095419-1-pmalani@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220126190219.3095419-1-pmalani@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+On Wed, Jan 26, 2022 at 07:02:20PM +0000, Prashant Malani wrote:
+> The Type C ACPI device on older Chromebooks is not generated correctly
+> (since their EC firmware doesn't support the new commands required). In
+> such cases, the crafted ACPI device doesn't have an EC parent, and it is
+> therefore not useful (it shouldn't be generated in the first place since
+> the EC firmware doesn't support any of the Type C commands).
+> 
+> To handle devices which use these older firmware revisions, check for
+> the parent EC device handle, and fail the probe if it's not found.
+> 
+> Fixes: fdc6b21e2444 ("platform/chrome: Add Type C connector class driver")
+> Reported-by: Alyssa Ross <hi@alyssa.is>
+> Reviewed-by: Tzung-Bi Shih <tzungbi@google.com>
+> Signed-off-by: Prashant Malani <pmalani@chromium.org>
 
-commit f9320c49993ca3c0ec0f9a7026b313735306bb8b upstream.
+FWIW:
 
-These instructions are updated after the initial JIT, so redo codegen
-during the extra pass. Rename bpf_jit_fixup_subprog_calls() to clarify
-that this is more than just subprog calls.
+Acked-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
 
-Fixes: 69c087ba6225b5 ("bpf: Add bpf_for_each_map_elem() helper")
-Cc: stable@vger.kernel.org # v5.15
-Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
-Tested-by: Jiri Olsa <jolsa@redhat.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/7cc162af77ba918eb3ecd26ec9e7824bc44b1fae.1641468127.git.naveen.n.rao@linux.vnet.ibm.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/powerpc/net/bpf_jit_comp.c   |   29 +++++++++++++++++++++++------
- arch/powerpc/net/bpf_jit_comp32.c |    6 ++++++
- arch/powerpc/net/bpf_jit_comp64.c |    7 ++++++-
- 3 files changed, 35 insertions(+), 7 deletions(-)
+> ---
+> Hi Alyssa, could you kindly test this with your existing setup? Thanks!
+> 
+> Changes in v2:
+> - Added newlines as suggested by reviewers.
+> - Added Reviewed-by tag from Tzung-Bi.
+> 
+>  drivers/platform/chrome/cros_ec_typec.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/drivers/platform/chrome/cros_ec_typec.c b/drivers/platform/chrome/cros_ec_typec.c
+> index 5de0bfb0bc4d..952c1756f59e 100644
+> --- a/drivers/platform/chrome/cros_ec_typec.c
+> +++ b/drivers/platform/chrome/cros_ec_typec.c
+> @@ -1075,7 +1075,13 @@ static int cros_typec_probe(struct platform_device *pdev)
+>  		return -ENOMEM;
+>  
+>  	typec->dev = dev;
+> +
+>  	typec->ec = dev_get_drvdata(pdev->dev.parent);
+> +	if (!typec->ec) {
+> +		dev_err(dev, "couldn't find parent EC device\n");
+> +		return -ENODEV;
+> +	}
+> +
+>  	platform_set_drvdata(pdev, typec);
+>  
+>  	ret = cros_typec_get_cmd_version(typec);
+> -- 
+> 2.35.0.rc0.227.g00780c9af4-goog
 
---- a/arch/powerpc/net/bpf_jit_comp.c
-+++ b/arch/powerpc/net/bpf_jit_comp.c
-@@ -23,15 +23,15 @@ static void bpf_jit_fill_ill_insns(void
- 	memset32(area, BREAKPOINT_INSTRUCTION, size / 4);
- }
- 
--/* Fix the branch target addresses for subprog calls */
--static int bpf_jit_fixup_subprog_calls(struct bpf_prog *fp, u32 *image,
--				       struct codegen_context *ctx, u32 *addrs)
-+/* Fix updated addresses (for subprog calls, ldimm64, et al) during extra pass */
-+static int bpf_jit_fixup_addresses(struct bpf_prog *fp, u32 *image,
-+				   struct codegen_context *ctx, u32 *addrs)
- {
- 	const struct bpf_insn *insn = fp->insnsi;
- 	bool func_addr_fixed;
- 	u64 func_addr;
- 	u32 tmp_idx;
--	int i, ret;
-+	int i, j, ret;
- 
- 	for (i = 0; i < fp->len; i++) {
- 		/*
-@@ -66,6 +66,23 @@ static int bpf_jit_fixup_subprog_calls(s
- 			 * of the JITed sequence remains unchanged.
- 			 */
- 			ctx->idx = tmp_idx;
-+		} else if (insn[i].code == (BPF_LD | BPF_IMM | BPF_DW)) {
-+			tmp_idx = ctx->idx;
-+			ctx->idx = addrs[i] / 4;
-+#ifdef CONFIG_PPC32
-+			PPC_LI32(ctx->b2p[insn[i].dst_reg] - 1, (u32)insn[i + 1].imm);
-+			PPC_LI32(ctx->b2p[insn[i].dst_reg], (u32)insn[i].imm);
-+			for (j = ctx->idx - addrs[i] / 4; j < 4; j++)
-+				EMIT(PPC_RAW_NOP());
-+#else
-+			func_addr = ((u64)(u32)insn[i].imm) | (((u64)(u32)insn[i + 1].imm) << 32);
-+			PPC_LI64(b2p[insn[i].dst_reg], func_addr);
-+			/* overwrite rest with nops */
-+			for (j = ctx->idx - addrs[i] / 4; j < 5; j++)
-+				EMIT(PPC_RAW_NOP());
-+#endif
-+			ctx->idx = tmp_idx;
-+			i++;
- 		}
- 	}
- 
-@@ -193,13 +210,13 @@ skip_init_ctx:
- 		/*
- 		 * Do not touch the prologue and epilogue as they will remain
- 		 * unchanged. Only fix the branch target address for subprog
--		 * calls in the body.
-+		 * calls in the body, and ldimm64 instructions.
- 		 *
- 		 * This does not change the offsets and lengths of the subprog
- 		 * call instruction sequences and hence, the size of the JITed
- 		 * image as well.
- 		 */
--		bpf_jit_fixup_subprog_calls(fp, code_base, &cgctx, addrs);
-+		bpf_jit_fixup_addresses(fp, code_base, &cgctx, addrs);
- 
- 		/* There is no need to perform the usual passes. */
- 		goto skip_codegen_passes;
---- a/arch/powerpc/net/bpf_jit_comp32.c
-+++ b/arch/powerpc/net/bpf_jit_comp32.c
-@@ -292,6 +292,8 @@ int bpf_jit_build_body(struct bpf_prog *
- 		bool func_addr_fixed;
- 		u64 func_addr;
- 		u32 true_cond;
-+		u32 tmp_idx;
-+		int j;
- 
- 		/*
- 		 * addrs[] maps a BPF bytecode address into a real offset from
-@@ -839,8 +841,12 @@ int bpf_jit_build_body(struct bpf_prog *
- 		 * 16 byte instruction that uses two 'struct bpf_insn'
- 		 */
- 		case BPF_LD | BPF_IMM | BPF_DW: /* dst = (u64) imm */
-+			tmp_idx = ctx->idx;
- 			PPC_LI32(dst_reg_h, (u32)insn[i + 1].imm);
- 			PPC_LI32(dst_reg, (u32)insn[i].imm);
-+			/* padding to allow full 4 instructions for later patching */
-+			for (j = ctx->idx - tmp_idx; j < 4; j++)
-+				EMIT(PPC_RAW_NOP());
- 			/* Adjust for two bpf instructions */
- 			addrs[++i] = ctx->idx * 4;
- 			break;
---- a/arch/powerpc/net/bpf_jit_comp64.c
-+++ b/arch/powerpc/net/bpf_jit_comp64.c
-@@ -318,6 +318,7 @@ int bpf_jit_build_body(struct bpf_prog *
- 		u64 imm64;
- 		u32 true_cond;
- 		u32 tmp_idx;
-+		int j;
- 
- 		/*
- 		 * addrs[] maps a BPF bytecode address into a real offset from
-@@ -806,9 +807,13 @@ emit_clear:
- 		case BPF_LD | BPF_IMM | BPF_DW: /* dst = (u64) imm */
- 			imm64 = ((u64)(u32) insn[i].imm) |
- 				    (((u64)(u32) insn[i+1].imm) << 32);
-+			tmp_idx = ctx->idx;
-+			PPC_LI64(dst_reg, imm64);
-+			/* padding to allow full 5 instructions for later patching */
-+			for (j = ctx->idx - tmp_idx; j < 5; j++)
-+				EMIT(PPC_RAW_NOP());
- 			/* Adjust for two bpf instructions */
- 			addrs[++i] = ctx->idx * 4;
--			PPC_LI64(dst_reg, imm64);
- 			break;
- 
- 		/*
-
-
+-- 
+heikki
