@@ -2,42 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD319C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:26:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F9F4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:26:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359667AbiAaL0E (ORCPT
+        id S1377281AbiAaL0L (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:26:04 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:37112 "EHLO
+        Mon, 31 Jan 2022 06:26:11 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:37162 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376399AbiAaLRV (ORCPT
+        with ESMTP id S1376407AbiAaLRY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:17:21 -0500
+        Mon, 31 Jan 2022 06:17:24 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B94E8B82A4C;
-        Mon, 31 Jan 2022 11:17:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D62B7C340E8;
-        Mon, 31 Jan 2022 11:17:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9DF24B82A64;
+        Mon, 31 Jan 2022 11:17:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6FD0C340E8;
+        Mon, 31 Jan 2022 11:17:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627839;
-        bh=+wr5H8fwHIn1wDZLmYPIqd6zjvcF/dsGTEGAYDT40hc=;
+        s=korg; t=1643627842;
+        bh=hIkFO2I3lmGEmGDltcRJMnRhfcQ7QQuEO3j2VNgMPQg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QQCXBjLFOotJ/yZ5S/BUiO+xc97HPAg4MxWx+COM7eEcpM+dnuK/KgY0nQlI7KOQE
-         WNIVZXsx9CbdoYkOQ8/KfBkJuEaGGB0pfZrLA/QG2ncQKB1wgMQs+S6I/yCJHbn5s5
-         SwwbpaD9cbR2nITdso8toS07witAAsXo/po51B0k=
+        b=qNJcTl0GlLje5UnFE0yH5OPABQpI3zFuCKfnWQbOxnJhG2iCy72mDhZM5LXgyw2Yq
+         3Xwt3z0albRl2+ZtFBmdsY1xSbI701koQ380KVGbW+uUFMyFL05DaQQlNFSxuxc6v2
+         1f1Q9vkvqrlBpCqmI9yrqqrwkxi9QcnNjzaWReuk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Damjan Marion (damarion)" <damarion@cisco.com>,
-        Chan Edison <edison_chan_gz@hotmail.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>
-Subject: [PATCH 5.16 041/200] perf/x86/intel: Add a quirk for the calculation of the number of counters on Alder Lake
-Date:   Mon, 31 Jan 2022 11:55:04 +0100
-Message-Id: <20220131105234.941863329@linuxfoundation.org>
+        stable@vger.kernel.org, Lucas Stach <l.stach@pengutronix.de>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>
+Subject: [PATCH 5.16 042/200] drm/etnaviv: relax submit size limits
+Date:   Mon, 31 Jan 2022 11:55:05 +0100
+Message-Id: <20220131105234.971770332@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -49,76 +46,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kan Liang <kan.liang@linux.intel.com>
+From: Lucas Stach <l.stach@pengutronix.de>
 
-commit 7fa981cad216e9f64f49e22112f610c0bfed91bc upstream.
+commit e3d26528e083e612314d4dcd713f3d5a26143ddc upstream.
 
-For some Alder Lake machine with all E-cores disabled in a BIOS, the
-below warning may be triggered.
+While all userspace tried to limit commandstreams to 64K in size,
+a bug in the Mesa driver lead to command streams of up to 128K
+being submitted. Allow those to avoid breaking existing userspace.
 
-[ 2.010766] hw perf events fixed 5 > max(4), clipping!
-
-Current perf code relies on the CPUID leaf 0xA and leaf 7.EDX[15] to
-calculate the number of the counters and follow the below assumption.
-
-For a hybrid configuration, the leaf 7.EDX[15] (X86_FEATURE_HYBRID_CPU)
-is set. The leaf 0xA only enumerate the common counters. Linux perf has
-to manually add the extra GP counters and fixed counters for P-cores.
-For a non-hybrid configuration, the X86_FEATURE_HYBRID_CPU should not
-be set. The leaf 0xA enumerates all counters.
-
-However, that's not the case when all E-cores are disabled in a BIOS.
-Although there are only P-cores in the system, the leaf 7.EDX[15]
-(X86_FEATURE_HYBRID_CPU) is still set. But the leaf 0xA is updated
-to enumerate all counters of P-cores. The inconsistency triggers the
-warning.
-
-Several software ways were considered to handle the inconsistency.
-- Drop the leaf 0xA and leaf 7.EDX[15] CPUID enumeration support.
-  Hardcode the number of counters. This solution may be a problem for
-  virtualization. A hypervisor cannot control the number of counters
-  in a Linux guest via changing the guest CPUID enumeration anymore.
-- Find another CPUID bit that is also updated with E-cores disabled.
-  There may be a problem in the virtualization environment too. Because
-  a hypervisor may disable the feature/CPUID bit.
-- The P-cores have a maximum of 8 GP counters and 4 fixed counters on
-  ADL. The maximum number can be used to detect the case.
-  This solution is implemented in this patch.
-
-Fixes: ee72a94ea4a6 ("perf/x86/intel: Fix fixed counter check warning for some Alder Lake")
-Reported-by: Damjan Marion (damarion) <damarion@cisco.com>
-Reported-by: Chan Edison <edison_chan_gz@hotmail.com>
-Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Tested-by: Damjan Marion (damarion) <damarion@cisco.com>
+Fixes: 6dfa2fab8ddd ("drm/etnaviv: limit submit sizes")
 Cc: stable@vger.kernel.org
-Link: https://lkml.kernel.org/r/1641925238-149288-1-git-send-email-kan.liang@linux.intel.com
+Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
+Reviewed-by: Christian Gmeiner <christian.gmeiner@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/events/intel/core.c |   13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ drivers/gpu/drm/etnaviv/etnaviv_gem_submit.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/arch/x86/events/intel/core.c
-+++ b/arch/x86/events/intel/core.c
-@@ -6242,6 +6242,19 @@ __init int intel_pmu_init(void)
- 			pmu->num_counters = x86_pmu.num_counters;
- 			pmu->num_counters_fixed = x86_pmu.num_counters_fixed;
- 		}
-+
-+		/*
-+		 * Quirk: For some Alder Lake machine, when all E-cores are disabled in
-+		 * a BIOS, the leaf 0xA will enumerate all counters of P-cores. However,
-+		 * the X86_FEATURE_HYBRID_CPU is still set. The above codes will
-+		 * mistakenly add extra counters for P-cores. Correct the number of
-+		 * counters here.
-+		 */
-+		if ((pmu->num_counters > 8) || (pmu->num_counters_fixed > 4)) {
-+			pmu->num_counters = x86_pmu.num_counters;
-+			pmu->num_counters_fixed = x86_pmu.num_counters_fixed;
-+		}
-+
- 		pmu->max_pebs_events = min_t(unsigned, MAX_PEBS_EVENTS, pmu->num_counters);
- 		pmu->unconstrained = (struct event_constraint)
- 					__EVENT_CONSTRAINT(0, (1ULL << pmu->num_counters) - 1,
+--- a/drivers/gpu/drm/etnaviv/etnaviv_gem_submit.c
++++ b/drivers/gpu/drm/etnaviv/etnaviv_gem_submit.c
+@@ -469,8 +469,8 @@ int etnaviv_ioctl_gem_submit(struct drm_
+ 		return -EINVAL;
+ 	}
+ 
+-	if (args->stream_size > SZ_64K || args->nr_relocs > SZ_64K ||
+-	    args->nr_bos > SZ_64K || args->nr_pmrs > 128) {
++	if (args->stream_size > SZ_128K || args->nr_relocs > SZ_128K ||
++	    args->nr_bos > SZ_128K || args->nr_pmrs > 128) {
+ 		DRM_ERROR("submit arguments out of size limits\n");
+ 		return -EINVAL;
+ 	}
 
 
