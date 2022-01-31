@@ -2,134 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1F70C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12B32C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378897AbiAaL3a (ORCPT
+        id S1378921AbiAaL3f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:29:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47144 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378388AbiAaLUF (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:20:05 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C17E7C0610EC;
-        Mon, 31 Jan 2022 03:12:21 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 632C360E76;
-        Mon, 31 Jan 2022 11:12:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 406BAC340E8;
-        Mon, 31 Jan 2022 11:12:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627540;
-        bh=fVlo420avUhmp+OSCpJHITks02oYo6ASqkbt0PYVoZo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Zxo6bCvG9JsYx/K2kI9SCH5+WEbnZrNNt89mOcF3+bJBgU9A6SvMxMcn7oJSpB8+y
-         PAb0Fb/M9M9HmiVdD/Kd6yJj7r/zSBhOEyYRvmGXSRJ7nDR83OWI2XPQeeSzSVoiMc
-         QJFcEd59xKOvbxRyVv7pc8A5VtO46vyzRcMW87dU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 117/171] mptcp: fix msk traversal in mptcp_nl_cmd_set_flags()
-Date:   Mon, 31 Jan 2022 11:56:22 +0100
-Message-Id: <20220131105234.003753473@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
-References: <20220131105229.959216821@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 31 Jan 2022 06:29:35 -0500
+Received: from foss.arm.com ([217.140.110.172]:47680 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1378380AbiAaLUG (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 06:20:06 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9BB62D6E;
+        Mon, 31 Jan 2022 03:20:04 -0800 (PST)
+Received: from FVFF7649Q05P (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E600C3F774;
+        Mon, 31 Jan 2022 03:20:02 -0800 (PST)
+Date:   Mon, 31 Jan 2022 11:19:57 +0000
+From:   Vincent Donnefort <vincent.donnefort@arm.com>
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Yuan ZhaoXiong <yuanzhaoxiong@baidu.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        linux-ia64@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] kernel/cpu.c: fix init_cpu_online
+Message-ID: <YffF3e+uUIDVO7hm@FVFF7649Q05P>
+References: <20220131014648.941629-1-yury.norov@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220131014648.941629-1-yury.norov@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Abeni <pabeni@redhat.com>
+Hi Yury,
 
-[ Upstream commit 8e9eacad7ec7a9cbf262649ebf1fa6e6f6cc7d82 ]
+On Sun, Jan 30, 2022 at 05:46:48PM -0800, Yury Norov wrote:
+> cpu_online_mask has an associate counter of online cpus, which must be
+> initialized in init_cpu_online().
+> 
+> Fixes: 0c09ab96fc82010 (cpu/hotplug: Cache number of online CPUs)
 
-The MPTCP endpoint list is under RCU protection, guarded by the
-pernet spinlock. mptcp_nl_cmd_set_flags() traverses the list
-without acquiring the spin-lock nor under the RCU critical section.
+Aren't the increments/decrements from set_cpu_online() enough?
 
-This change addresses the issue performing the lookup and the endpoint
-update under the pernet spinlock.
+I guess we could argue that this isn't a private function and the
+num_online_cpus should be updated here. But unless I missed something,
+init_cpu_online() is only called in ia64 arch, in the !SMP case. Is
+this the problem you're trying to tackle? If not, I'm not sure that warrants a
+"Fixes:" tag
 
-Fixes: 0f9f696a502e ("mptcp: add set_flags command in PM netlink")
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/mptcp/pm_netlink.c | 37 +++++++++++++++++++++++++++----------
- 1 file changed, 27 insertions(+), 10 deletions(-)
-
-diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
-index bba166ddacc78..7f11eb3e35137 100644
---- a/net/mptcp/pm_netlink.c
-+++ b/net/mptcp/pm_netlink.c
-@@ -469,6 +469,20 @@ __lookup_addr_by_id(struct pm_nl_pernet *pernet, unsigned int id)
- 	return NULL;
- }
- 
-+static struct mptcp_pm_addr_entry *
-+__lookup_addr(struct pm_nl_pernet *pernet, const struct mptcp_addr_info *info,
-+	      bool lookup_by_id)
-+{
-+	struct mptcp_pm_addr_entry *entry;
-+
-+	list_for_each_entry(entry, &pernet->local_addr_list, list) {
-+		if ((!lookup_by_id && addresses_equal(&entry->addr, info, true)) ||
-+		    (lookup_by_id && entry->addr.id == info->id))
-+			return entry;
-+	}
-+	return NULL;
-+}
-+
- static int
- lookup_id_by_addr(struct pm_nl_pernet *pernet, const struct mptcp_addr_info *addr)
- {
-@@ -1753,18 +1767,21 @@ static int mptcp_nl_cmd_set_flags(struct sk_buff *skb, struct genl_info *info)
- 			return -EOPNOTSUPP;
- 	}
- 
--	list_for_each_entry(entry, &pernet->local_addr_list, list) {
--		if ((!lookup_by_id && addresses_equal(&entry->addr, &addr.addr, true)) ||
--		    (lookup_by_id && entry->addr.id == addr.addr.id)) {
--			mptcp_nl_addr_backup(net, &entry->addr, bkup);
--
--			if (bkup)
--				entry->flags |= MPTCP_PM_ADDR_FLAG_BACKUP;
--			else
--				entry->flags &= ~MPTCP_PM_ADDR_FLAG_BACKUP;
--		}
-+	spin_lock_bh(&pernet->lock);
-+	entry = __lookup_addr(pernet, &addr.addr, lookup_by_id);
-+	if (!entry) {
-+		spin_unlock_bh(&pernet->lock);
-+		return -EINVAL;
- 	}
- 
-+	if (bkup)
-+		entry->flags |= MPTCP_PM_ADDR_FLAG_BACKUP;
-+	else
-+		entry->flags &= ~MPTCP_PM_ADDR_FLAG_BACKUP;
-+	addr = *entry;
-+	spin_unlock_bh(&pernet->lock);
-+
-+	mptcp_nl_addr_backup(net, &addr.addr, bkup);
- 	return 0;
- }
- 
--- 
-2.34.1
-
-
-
+> Signed-off-by: Yury Norov <yury.norov@gmail.com>
+> ---
+>  kernel/cpu.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/kernel/cpu.c b/kernel/cpu.c
+> index 407a2568f35e..cd7605204d4d 100644
+> --- a/kernel/cpu.c
+> +++ b/kernel/cpu.c
+> @@ -2616,6 +2616,7 @@ void init_cpu_possible(const struct cpumask *src)
+>  void init_cpu_online(const struct cpumask *src)
+>  {
+>  	cpumask_copy(&__cpu_online_mask, src);
+> +	atomic_set(&__num_online_cpus, cpumask_weight(cpu_online_mask));
+>  }
+>  
+>  void set_cpu_online(unsigned int cpu, bool online)
+> -- 
+> 2.30.2
+> 
