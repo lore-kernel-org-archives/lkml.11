@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0AA5C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0861C43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379078AbiAaL3r (ORCPT
+        id S1378848AbiAaL3X (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:29:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47830 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378555AbiAaLUV (ORCPT
+        Mon, 31 Jan 2022 06:29:23 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:35518 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1378080AbiAaLTm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:20:21 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFCC6C0604DB;
-        Mon, 31 Jan 2022 03:12:44 -0800 (PST)
+        Mon, 31 Jan 2022 06:19:42 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9D491B82A61;
-        Mon, 31 Jan 2022 11:12:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD653C340F1;
-        Mon, 31 Jan 2022 11:12:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B08DAB82A60;
+        Mon, 31 Jan 2022 11:19:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8124C340E8;
+        Mon, 31 Jan 2022 11:19:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627562;
-        bh=dq29fNhTgV2I6TGTwgwj+wZlld+lEadB7ixlwNOPwP4=;
+        s=korg; t=1643627980;
+        bh=I2vpxdTzHoTigqEtBiKo4GOPjxCVeueE+HHjONE84zs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Nlys6mfyfRfRC3ymmefYePSWijT/o5N+MEZuYMm036vjb6ia3mPYKnBcPcoZMtoaD
-         4ClHb0Ju5XtNIGw6CPIdOgUr3cDFO+0CWvP9JAomECTk/Un9He6KWeji5jDm8oHQpy
-         A9dptYBmeVpdb3TM90a1c4VUkBuxzlTlxZhapMa0=
+        b=I9WALWUYl3Jr4Npo5/WaLCDHOXBByirxWO5TccuvbqAnK0ixM/7p6f+CwNGXIlJkm
+         9TY+facm8PG+ovA0ci8PwDQXbRbls5yiw+dZqfisDPGyvkjmHhnrkcMkfq3ayHotg3
+         aE2D12NL5umF9c3zSb7rlEg4yAFx1hUaZ7AJK5i0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hariprasad Kelam <hkelam@marvell.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 124/171] octeontx2-af: verify CQ context updates
-Date:   Mon, 31 Jan 2022 11:56:29 +0100
-Message-Id: <20220131105234.225740469@linuxfoundation.org>
+        stable@vger.kernel.org, Nicholas Piggin <npiggin@gmail.com>,
+        Fabiano Rosas <farosas@linux.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.16 059/200] KVM: PPC: Book3S HV Nested: Fix nested HFSCR being clobbered with multiple vCPUs
+Date:   Mon, 31 Jan 2022 11:55:22 +0100
+Message-Id: <20220131105235.561395235@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
-References: <20220131105229.959216821@linuxfoundation.org>
+In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
+References: <20220131105233.561926043@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,148 +47,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hariprasad Kelam <hkelam@marvell.com>
+From: Nicholas Piggin <npiggin@gmail.com>
 
-[ Upstream commit 14e94f9445a9e91d460f5d4b519f8892c3fb14bb ]
+commit 22f7ff0dea9491e90b6fe808ed40c30bd791e5c2 upstream.
 
-As per HW errata AQ modification to CQ could be discarded on heavy
-traffic. This patch implements workaround for the same after each
-CQ write by AQ check whether the requested fields (except those
-which HW can update eg: avg_level) are properly updated or not.
+The L0 is storing HFSCR requested by the L1 for the L2 in struct
+kvm_nested_guest when the L1 requests a vCPU enter L2. kvm_nested_guest
+is not a per-vCPU structure. Hilarity ensues.
 
-If CQ context is not updated then perform AQ write again.
+Fix it by moving the nested hfscr into the vCPU structure together with
+the other per-vCPU nested fields.
 
-Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 8b210a880b35 ("KVM: PPC: Book3S HV Nested: Make nested HFSCR state accessible")
+Cc: stable@vger.kernel.org # v5.15+
+Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
+Reviewed-by: Fabiano Rosas <farosas@linux.ibm.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220122105530.3477250-1-npiggin@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- .../net/ethernet/marvell/octeontx2/af/mbox.h  |  2 +
- .../ethernet/marvell/octeontx2/af/rvu_nix.c   | 78 ++++++++++++++++++-
- 2 files changed, 79 insertions(+), 1 deletion(-)
+ arch/powerpc/include/asm/kvm_book3s_64.h |    1 -
+ arch/powerpc/include/asm/kvm_host.h      |    1 +
+ arch/powerpc/kvm/book3s_hv.c             |    3 +--
+ arch/powerpc/kvm/book3s_hv_nested.c      |    2 +-
+ 4 files changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-index 154877706a0e1..a8618259de943 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-@@ -698,6 +698,8 @@ enum nix_af_status {
- 	NIX_AF_ERR_INVALID_BANDPROF = -426,
- 	NIX_AF_ERR_IPOLICER_NOTSUPP = -427,
- 	NIX_AF_ERR_BANDPROF_INVAL_REQ  = -428,
-+	NIX_AF_ERR_CQ_CTX_WRITE_ERR  = -429,
-+	NIX_AF_ERR_AQ_CTX_RETRY_WRITE  = -430,
- };
+--- a/arch/powerpc/include/asm/kvm_book3s_64.h
++++ b/arch/powerpc/include/asm/kvm_book3s_64.h
+@@ -39,7 +39,6 @@ struct kvm_nested_guest {
+ 	pgd_t *shadow_pgtable;		/* our page table for this guest */
+ 	u64 l1_gr_to_hr;		/* L1's addr of part'n-scoped table */
+ 	u64 process_table;		/* process table entry for this guest */
+-	u64 hfscr;			/* HFSCR that the L1 requested for this nested guest */
+ 	long refcnt;			/* number of pointers to this struct */
+ 	struct mutex tlb_lock;		/* serialize page faults and tlbies */
+ 	struct kvm_nested_guest *next;
+--- a/arch/powerpc/include/asm/kvm_host.h
++++ b/arch/powerpc/include/asm/kvm_host.h
+@@ -814,6 +814,7 @@ struct kvm_vcpu_arch {
  
- /* For NIX RX vtag action  */
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-index 8ee324aabf2d6..9d4cc0ae61474 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-@@ -28,6 +28,7 @@ static int nix_verify_bandprof(struct nix_cn10k_aq_enq_req *req,
- static int nix_free_all_bandprof(struct rvu *rvu, u16 pcifunc);
- static void nix_clear_ratelimit_aggr(struct rvu *rvu, struct nix_hw *nix_hw,
- 				     u32 leaf_prof);
-+static const char *nix_get_ctx_name(int ctype);
+ 	/* For support of nested guests */
+ 	struct kvm_nested_guest *nested;
++	u64 nested_hfscr;	/* HFSCR that the L1 requested for the nested guest */
+ 	u32 nested_vcpu_id;
+ 	gpa_t nested_io_gpr;
+ #endif
+--- a/arch/powerpc/kvm/book3s_hv.c
++++ b/arch/powerpc/kvm/book3s_hv.c
+@@ -1731,7 +1731,6 @@ static int kvmppc_handle_exit_hv(struct
  
- enum mc_tbl_sz {
- 	MC_TBL_SZ_256,
-@@ -1061,10 +1062,68 @@ static int rvu_nix_blk_aq_enq_inst(struct rvu *rvu, struct nix_hw *nix_hw,
- 	return 0;
- }
- 
-+static int rvu_nix_verify_aq_ctx(struct rvu *rvu, struct nix_hw *nix_hw,
-+				 struct nix_aq_enq_req *req, u8 ctype)
-+{
-+	struct nix_cn10k_aq_enq_req aq_req;
-+	struct nix_cn10k_aq_enq_rsp aq_rsp;
-+	int rc, word;
-+
-+	if (req->ctype != NIX_AQ_CTYPE_CQ)
-+		return 0;
-+
-+	rc = nix_aq_context_read(rvu, nix_hw, &aq_req, &aq_rsp,
-+				 req->hdr.pcifunc, ctype, req->qidx);
-+	if (rc) {
-+		dev_err(rvu->dev,
-+			"%s: Failed to fetch %s%d context of PFFUNC 0x%x\n",
-+			__func__, nix_get_ctx_name(ctype), req->qidx,
-+			req->hdr.pcifunc);
-+		return rc;
-+	}
-+
-+	/* Make copy of original context & mask which are required
-+	 * for resubmission
-+	 */
-+	memcpy(&aq_req.cq_mask, &req->cq_mask, sizeof(struct nix_cq_ctx_s));
-+	memcpy(&aq_req.cq, &req->cq, sizeof(struct nix_cq_ctx_s));
-+
-+	/* exclude fields which HW can update */
-+	aq_req.cq_mask.cq_err       = 0;
-+	aq_req.cq_mask.wrptr        = 0;
-+	aq_req.cq_mask.tail         = 0;
-+	aq_req.cq_mask.head	    = 0;
-+	aq_req.cq_mask.avg_level    = 0;
-+	aq_req.cq_mask.update_time  = 0;
-+	aq_req.cq_mask.substream    = 0;
-+
-+	/* Context mask (cq_mask) holds mask value of fields which
-+	 * are changed in AQ WRITE operation.
-+	 * for example cq.drop = 0xa;
-+	 *	       cq_mask.drop = 0xff;
-+	 * Below logic performs '&' between cq and cq_mask so that non
-+	 * updated fields are masked out for request and response
-+	 * comparison
-+	 */
-+	for (word = 0; word < sizeof(struct nix_cq_ctx_s) / sizeof(u64);
-+	     word++) {
-+		*(u64 *)((u8 *)&aq_rsp.cq + word * 8) &=
-+			(*(u64 *)((u8 *)&aq_req.cq_mask + word * 8));
-+		*(u64 *)((u8 *)&aq_req.cq + word * 8) &=
-+			(*(u64 *)((u8 *)&aq_req.cq_mask + word * 8));
-+	}
-+
-+	if (memcmp(&aq_req.cq, &aq_rsp.cq, sizeof(struct nix_cq_ctx_s)))
-+		return NIX_AF_ERR_AQ_CTX_RETRY_WRITE;
-+
-+	return 0;
-+}
-+
- static int rvu_nix_aq_enq_inst(struct rvu *rvu, struct nix_aq_enq_req *req,
- 			       struct nix_aq_enq_rsp *rsp)
+ static int kvmppc_handle_nested_exit(struct kvm_vcpu *vcpu)
  {
- 	struct nix_hw *nix_hw;
-+	int err, retries = 5;
- 	int blkaddr;
+-	struct kvm_nested_guest *nested = vcpu->arch.nested;
+ 	int r;
+ 	int srcu_idx;
  
- 	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, req->hdr.pcifunc);
-@@ -1075,7 +1134,24 @@ static int rvu_nix_aq_enq_inst(struct rvu *rvu, struct nix_aq_enq_req *req,
- 	if (!nix_hw)
- 		return NIX_AF_ERR_INVALID_NIXBLK;
+@@ -1831,7 +1830,7 @@ static int kvmppc_handle_nested_exit(str
+ 		 * it into a HEAI.
+ 		 */
+ 		if (!(vcpu->arch.hfscr_permitted & (1UL << cause)) ||
+-					(nested->hfscr & (1UL << cause))) {
++				(vcpu->arch.nested_hfscr & (1UL << cause))) {
+ 			vcpu->arch.trap = BOOK3S_INTERRUPT_H_EMUL_ASSIST;
  
--	return rvu_nix_blk_aq_enq_inst(rvu, nix_hw, req, rsp);
-+retry:
-+	err = rvu_nix_blk_aq_enq_inst(rvu, nix_hw, req, rsp);
-+
-+	/* HW errata 'AQ Modification to CQ could be discarded on heavy traffic'
-+	 * As a work around perfrom CQ context read after each AQ write. If AQ
-+	 * read shows AQ write is not updated perform AQ write again.
-+	 */
-+	if (!err && req->op == NIX_AQ_INSTOP_WRITE) {
-+		err = rvu_nix_verify_aq_ctx(rvu, nix_hw, req, NIX_AQ_CTYPE_CQ);
-+		if (err == NIX_AF_ERR_AQ_CTX_RETRY_WRITE) {
-+			if (retries--)
-+				goto retry;
-+			else
-+				return NIX_AF_ERR_CQ_CTX_WRITE_ERR;
-+		}
-+	}
-+
-+	return err;
- }
+ 			/*
+--- a/arch/powerpc/kvm/book3s_hv_nested.c
++++ b/arch/powerpc/kvm/book3s_hv_nested.c
+@@ -362,7 +362,7 @@ long kvmhv_enter_nested_guest(struct kvm
+ 	/* set L1 state to L2 state */
+ 	vcpu->arch.nested = l2;
+ 	vcpu->arch.nested_vcpu_id = l2_hv.vcpu_token;
+-	l2->hfscr = l2_hv.hfscr;
++	vcpu->arch.nested_hfscr = l2_hv.hfscr;
+ 	vcpu->arch.regs = l2_regs;
  
- static const char *nix_get_ctx_name(int ctype)
--- 
-2.34.1
-
+ 	/* Guest must always run with ME enabled, HV disabled. */
 
 
