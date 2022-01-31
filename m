@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E33EBC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:25:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48AFCC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:25:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359299AbiAaLZH (ORCPT
+        id S1359429AbiAaLZL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:25:07 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:47934 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349652AbiAaLP6 (ORCPT
+        Mon, 31 Jan 2022 06:25:11 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:35628 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1376824AbiAaLQe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:15:58 -0500
+        Mon, 31 Jan 2022 06:16:34 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F56A6114C;
-        Mon, 31 Jan 2022 11:15:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DF7AC340E8;
-        Mon, 31 Jan 2022 11:15:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 71006B82A5F;
+        Mon, 31 Jan 2022 11:16:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9303FC340E8;
+        Mon, 31 Jan 2022 11:16:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627757;
-        bh=441R/jm3tYCTGZzotX4hO7aA2iBf47g9b1wx6mfIyA8=;
+        s=korg; t=1643627789;
+        bh=gmPK/npHsN/H2bxF8vKX300kzqc94NfnneRn0xilyw4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cbxbN2F3MO2ZlOk+5k8nLXILiwCEbxqKaOd2U4mNEW8OxWHyQCtJIVWsS1VlIc6XL
-         A4LJ/GUdm6qn5vvhI9XenIDyN9mi9i2LRozhcjss3NlM19kqyxmiBc1rxabG1bvggS
-         9Cz04GXD/uEE7X2Dyovp83D9GvIOTKc7riofM8W4=
+        b=NQiulh2kqrq4VMvBCrLz1fSFe7O7nMd5Qf91QdpOk933UEX4w04kFWh9+4Abd4WBu
+         fH3n/JeHcBuMxp4KTFaYRsJS2w/kJgI0xhGpe7aDh1OnZaMm3R8sr2nrbDtiFnsbiD
+         U/HgBr9fe88oZvBg0HaRAhDqHgKrf7eN3CX+3bmk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
-        Marc Zyngier <maz@kernel.org>
-Subject: [PATCH 5.16 016/200] KVM: arm64: vgic-v3: Restrict SEIS workaround to known broken systems
-Date:   Mon, 31 Jan 2022 11:54:39 +0100
-Message-Id: <20220131105234.109561547@linuxfoundation.org>
+        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.16 008/200] btrfs: update writeback index when starting defrag
+Date:   Mon, 31 Jan 2022 11:54:31 +0100
+Message-Id: <20220131105233.838548740@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -46,76 +46,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <maz@kernel.org>
+From: Filipe Manana <fdmanana@suse.com>
 
-commit d11a327ed95dbec756b99cbfef2a7fd85c9eeb09 upstream.
+commit 27cdfde181bcacd226c230b2fd831f6f5b8c215f upstream.
 
-Contrary to what df652bcf1136 ("KVM: arm64: vgic-v3: Work around GICv3
-locally generated SErrors") was asserting, there is at least one other
-system out there (Cavium ThunderX2) implementing SEIS, and not in
-an obviously broken way.
+When starting a defrag, we should update the writeback index of the
+inode's mapping in case it currently has a value beyond the start of the
+range we are defragging. This can help performance and often result in
+getting less extents after writeback - for e.g., if the current value
+of the writeback index sits somewhere in the middle of a range that
+gets dirty by the defrag, then after writeback we can get two smaller
+extents instead of a single, larger extent.
 
-So instead of imposing the M1 workaround on an innocent bystander,
-let's limit it to the two known broken Apple implementations.
+We used to have this before the refactoring in 5.16, but it was removed
+without any reason to do so. Originally it was added in kernel 3.1, by
+commit 2a0f7f5769992b ("Btrfs: fix recursive auto-defrag"), in order to
+fix a loop with autodefrag resulting in dirtying and writing pages over
+and over, but some testing on current code did not show that happening,
+at least with the test described in that commit.
 
-Fixes: df652bcf1136 ("KVM: arm64: vgic-v3: Work around GICv3 locally generated SErrors")
-Reported-by: Ard Biesheuvel <ardb@kernel.org>
-Tested-by: Ard Biesheuvel <ardb@kernel.org>
-Acked-by: Ard Biesheuvel <ardb@kernel.org>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220122103912.795026-1-maz@kernel.org
+So add back the behaviour, as at the very least it is a nice to have
+optimization.
+
+Fixes: 7b508037d4cac3 ("btrfs: defrag: use defrag_one_cluster() to implement btrfs_defrag_file()")
+CC: stable@vger.kernel.org # 5.16
+Signed-off-by: Filipe Manana <fdmanana@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/kvm/hyp/vgic-v3-sr.c |    3 +++
- arch/arm64/kvm/vgic/vgic-v3.c   |   17 +++++++++++++++--
- 2 files changed, 18 insertions(+), 2 deletions(-)
+ fs/btrfs/ioctl.c |    9 +++++++++
+ 1 file changed, 9 insertions(+)
 
---- a/arch/arm64/kvm/hyp/vgic-v3-sr.c
-+++ b/arch/arm64/kvm/hyp/vgic-v3-sr.c
-@@ -983,6 +983,9 @@ static void __vgic_v3_read_ctlr(struct k
- 	val = ((vtr >> 29) & 7) << ICC_CTLR_EL1_PRI_BITS_SHIFT;
- 	/* IDbits */
- 	val |= ((vtr >> 23) & 7) << ICC_CTLR_EL1_ID_BITS_SHIFT;
-+	/* SEIS */
-+	if (kvm_vgic_global_state.ich_vtr_el2 & ICH_VTR_SEIS_MASK)
-+		val |= BIT(ICC_CTLR_EL1_SEIS_SHIFT);
- 	/* A3V */
- 	val |= ((vtr >> 21) & 1) << ICC_CTLR_EL1_A3V_SHIFT;
- 	/* EOImode */
---- a/arch/arm64/kvm/vgic/vgic-v3.c
-+++ b/arch/arm64/kvm/vgic/vgic-v3.c
-@@ -609,6 +609,18 @@ static int __init early_gicv4_enable(cha
- }
- early_param("kvm-arm.vgic_v4_enable", early_gicv4_enable);
+--- a/fs/btrfs/ioctl.c
++++ b/fs/btrfs/ioctl.c
+@@ -1511,6 +1511,7 @@ int btrfs_defrag_file(struct inode *inod
+ 	int compress_type = BTRFS_COMPRESS_ZLIB;
+ 	int ret = 0;
+ 	u32 extent_thresh = range->extent_thresh;
++	pgoff_t start_index;
  
-+static const struct midr_range broken_seis[] = {
-+	MIDR_ALL_VERSIONS(MIDR_APPLE_M1_ICESTORM),
-+	MIDR_ALL_VERSIONS(MIDR_APPLE_M1_FIRESTORM),
-+	{},
-+};
-+
-+static bool vgic_v3_broken_seis(void)
-+{
-+	return ((kvm_vgic_global_state.ich_vtr_el2 & ICH_VTR_SEIS_MASK) &&
-+		is_midr_in_range_list(read_cpuid_id(), broken_seis));
-+}
-+
- /**
-  * vgic_v3_probe - probe for a VGICv3 compatible interrupt controller
-  * @info:	pointer to the GIC description
-@@ -676,9 +688,10 @@ int vgic_v3_probe(const struct gic_kvm_i
- 		group1_trap = true;
+ 	if (isize == 0)
+ 		return 0;
+@@ -1552,6 +1553,14 @@ int btrfs_defrag_file(struct inode *inod
+ 			file_ra_state_init(ra, inode->i_mapping);
  	}
  
--	if (kvm_vgic_global_state.ich_vtr_el2 & ICH_VTR_SEIS_MASK) {
--		kvm_info("GICv3 with locally generated SEI\n");
-+	if (vgic_v3_broken_seis()) {
-+		kvm_info("GICv3 with broken locally generated SEI\n");
- 
-+		kvm_vgic_global_state.ich_vtr_el2 &= ~ICH_VTR_SEIS_MASK;
- 		group0_trap = true;
- 		group1_trap = true;
- 		if (ich_vtr_el2 & ICH_VTR_TDS_MASK)
++	/*
++	 * Make writeback start from the beginning of the range, so that the
++	 * defrag range can be written sequentially.
++	 */
++	start_index = cur >> PAGE_SHIFT;
++	if (start_index < inode->i_mapping->writeback_index)
++		inode->i_mapping->writeback_index = start_index;
++
+ 	while (cur < last_byte) {
+ 		const unsigned long prev_sectors_defragged = sectors_defragged;
+ 		u64 cluster_end;
 
 
