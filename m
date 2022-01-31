@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D75CC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:25:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08DDBC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:25:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378462AbiAaLY1 (ORCPT
+        id S1376947AbiAaLZq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:24:27 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:48888 "EHLO
+        Mon, 31 Jan 2022 06:25:46 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:48140 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376447AbiAaLPW (ORCPT
+        with ESMTP id S1358648AbiAaLOn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:15:22 -0500
+        Mon, 31 Jan 2022 06:14:43 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 99969611DE;
-        Mon, 31 Jan 2022 11:15:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AB00C340E8;
-        Mon, 31 Jan 2022 11:15:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D8C3461170;
+        Mon, 31 Jan 2022 11:14:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC233C340E8;
+        Mon, 31 Jan 2022 11:14:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627722;
-        bh=RneQH2Th2LT+NVL5Ld6yWCekJbzwRyeGIcbV1Qo75Bo=;
+        s=korg; t=1643627682;
+        bh=rYGaHByqYJDUZ44c0fnl0gDVIASjO25cAfhwqHt8L6M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O9WSvF28E0ghJfUoxME9sVPF3joJvgrYUmkqoiYTbv0fbgU+eCB7wbCHlDZA+COQi
-         A9ySNLcLt1iWiXwG5icMb/mt3LFojEyTiQhkh0le7Bink5PA6bFLWIEXJ32GDxZjZy
-         /xDDEI+qjpULCuro/d3HGxIHKwZgHezpTjXOZ9jc=
+        b=KMqK607Lowi+btwr3Unmti4++uvGXNCVu9NK0uQ8dqZyTVWMtxMV+tkjUyyqY/ub5
+         33+bqF8uxagN1fPiq+cFRlqDPcWfebai6mPHOJr7usDs+v2fuN8gPCWKGNH97U5qSX
+         enUn5e4WtPEGlXO2pBq8gLboaZJd1IQCOvYHWHFM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Dmitry V. Levin" <ldv@altlinux.org>,
-        Masahiro Yamada <masahiroy@kernel.org>
-Subject: [PATCH 5.15 169/171] usr/include/Makefile: add linux/nfc.h to the compile-test coverage
-Date:   Mon, 31 Jan 2022 11:57:14 +0100
-Message-Id: <20220131105235.731202299@linuxfoundation.org>
+        stable@vger.kernel.org, Sander Vanheule <sander@svanheule.net>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 162/171] irqchip/realtek-rtl: Map control data to virq
+Date:   Mon, 31 Jan 2022 11:57:07 +0100
+Message-Id: <20220131105235.495433291@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
 References: <20220131105229.959216821@linuxfoundation.org>
@@ -46,32 +46,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry V. Levin <ldv@altlinux.org>
+From: Sander Vanheule <sander@svanheule.net>
 
-commit 10756dc5b02bff370ddd351d7744bc99ada659c2 upstream.
+commit 291e79c7e2eb6fdc016453597b78482e06199d0f upstream.
 
-As linux/nfc.h userspace compilation was finally fixed by commits
-79b69a83705e ("nfc: uapi: use kernel size_t to fix user-space builds")
-and 7175f02c4e5f ("uapi: fix linux/nfc.h userspace compilation errors"),
-there is no need to keep the compile-test exception for it in
-usr/include/Makefile.
+The driver assigned the irqchip and irq handler to the hardware irq,
+instead of the virq. This is incorrect, and only worked because these
+irq numbers happened to be the same on the devices used for testing the
+original driver.
 
-Signed-off-by: Dmitry V. Levin <ldv@altlinux.org>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Fixes: 9f3a0f34b84a ("irqchip: Add support for Realtek RTL838x/RTL839x interrupt controller")
+Signed-off-by: Sander Vanheule <sander@svanheule.net>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/4b4936606480265db47df152f00bc2ed46340599.1641739718.git.sander@svanheule.net
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- usr/include/Makefile |    1 -
- 1 file changed, 1 deletion(-)
+ drivers/irqchip/irq-realtek-rtl.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/usr/include/Makefile
-+++ b/usr/include/Makefile
-@@ -35,7 +35,6 @@ no-header-test += linux/hdlc/ioctl.h
- no-header-test += linux/ivtv.h
- no-header-test += linux/kexec.h
- no-header-test += linux/matroxfb.h
--no-header-test += linux/nfc.h
- no-header-test += linux/omap3isp.h
- no-header-test += linux/omapfb.h
- no-header-test += linux/patchkey.h
+--- a/drivers/irqchip/irq-realtek-rtl.c
++++ b/drivers/irqchip/irq-realtek-rtl.c
+@@ -62,7 +62,7 @@ static struct irq_chip realtek_ictl_irq
+ 
+ static int intc_map(struct irq_domain *d, unsigned int irq, irq_hw_number_t hw)
+ {
+-	irq_set_chip_and_handler(hw, &realtek_ictl_irq, handle_level_irq);
++	irq_set_chip_and_handler(irq, &realtek_ictl_irq, handle_level_irq);
+ 
+ 	return 0;
+ }
 
 
