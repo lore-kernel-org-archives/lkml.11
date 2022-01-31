@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7710C4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:24:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 058FDC4167D
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:24:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377659AbiAaLYN (ORCPT
+        id S1377672AbiAaLYP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:24:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45686 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359820AbiAaLPH (ORCPT
+        Mon, 31 Jan 2022 06:24:15 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:48722 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1376334AbiAaLPO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:15:07 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30B8BC061774;
-        Mon, 31 Jan 2022 03:11:18 -0800 (PST)
+        Mon, 31 Jan 2022 06:15:14 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C55D6610B1;
-        Mon, 31 Jan 2022 11:11:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EBACC340E8;
-        Mon, 31 Jan 2022 11:11:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9818961163;
+        Mon, 31 Jan 2022 11:15:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DAF6C340E8;
+        Mon, 31 Jan 2022 11:15:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627477;
-        bh=8pC7zi+x+Nwfp2vVMr81Kz8GvyFvgdehqb2HvP18y6Y=;
+        s=korg; t=1643627713;
+        bh=wL8nTd/sz25318tQXHOLFPuOZ8c1XAuCF4RH8JAfl98=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zTb0qxmJUxx0L3CcBlcgWHz6tLTBSOfAQNCIG2+PoOrMoxrUPOT7rI9fPY8C98qUN
-         D7N3cgyThCuGAHmiAIdr+8e7wHqrkFJC3pi643cceANcPTagoXF+1pphcAOZqHTuCm
-         X5EqemSCyS7rDwrewsZZHQuRTFam1G0uVGfOlFJ4=
+        b=OYNhS/3Gyq7ULwFqcxJRw50yt/RCSnRxhM4GUBDdt6bQZaY9Lz/KUr46CRnBlwynW
+         /OIdvywRTQ8i9q0hjrkuJs0AAKtGOiVqP2qq2+xmuyQABS+eU7RsSc1XFd2RHtRmPQ
+         KnEiFNvYqdFE14+6nXKKJYDxd3BWoBRCqOnNdRbY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jianguo Wu <wujianguo@chinatelecom.cn>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 095/171] net-procfs: show net devices bound packet types
-Date:   Mon, 31 Jan 2022 11:56:00 +0100
-Message-Id: <20220131105233.252404337@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
+        Dany Madden <drt@linux.ibm.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 140/171] ibmvnic: dont spin in tasklet
+Date:   Mon, 31 Jan 2022 11:56:45 +0100
+Message-Id: <20220131105234.741675005@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
 References: <20220131105229.959216821@linuxfoundation.org>
@@ -49,112 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jianguo Wu <wujianguo@chinatelecom.cn>
+From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
 
-commit 1d10f8a1f40b965d449e8f2d5ed7b96a7c138b77 upstream.
+[ Upstream commit 48079e7fdd0269d66b1d7d66ae88bd03162464ad ]
 
-After commit:7866a621043f ("dev: add per net_device packet type chains"),
-we can not get packet types that are bound to a specified net device by
-/proc/net/ptype, this patch fix the regression.
+ibmvnic_tasklet() continuously spins waiting for responses to all
+capability requests. It does this to avoid encountering an error
+during initialization of the vnic. However if there is a bug in the
+VIOS and we do not receive a response to one or more queries the
+tasklet ends up spinning continuously leading to hard lock ups.
 
-Run "tcpdump -i ens192 udp -nns0" Before and after apply this patch:
+If we fail to receive a message from the VIOS it is reasonable to
+timeout the login attempt rather than spin indefinitely in the tasklet.
 
-Before:
-  [root@localhost ~]# cat /proc/net/ptype
-  Type Device      Function
-  0800          ip_rcv
-  0806          arp_rcv
-  86dd          ipv6_rcv
-
-After:
-  [root@localhost ~]# cat /proc/net/ptype
-  Type Device      Function
-  ALL  ens192   tpacket_rcv
-  0800          ip_rcv
-  0806          arp_rcv
-  86dd          ipv6_rcv
-
-v1 -> v2:
-  - fix the regression rather than adding new /proc API as
-    suggested by Stephen Hemminger.
-
-Fixes: 7866a621043f ("dev: add per net_device packet type chains")
-Signed-off-by: Jianguo Wu <wujianguo@chinatelecom.cn>
+Fixes: 249168ad07cd ("ibmvnic: Make CRQ interrupt tasklet wait for all capabilities crqs")
+Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+Reviewed-by: Dany Madden <drt@linux.ibm.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/net-procfs.c |   35 ++++++++++++++++++++++++++++++++---
- 1 file changed, 32 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/ibm/ibmvnic.c | 6 ------
+ 1 file changed, 6 deletions(-)
 
---- a/net/core/net-procfs.c
-+++ b/net/core/net-procfs.c
-@@ -190,12 +190,23 @@ static const struct seq_operations softn
- 	.show  = softnet_seq_show,
- };
- 
--static void *ptype_get_idx(loff_t pos)
-+static void *ptype_get_idx(struct seq_file *seq, loff_t pos)
- {
-+	struct list_head *ptype_list = NULL;
- 	struct packet_type *pt = NULL;
-+	struct net_device *dev;
- 	loff_t i = 0;
- 	int t;
- 
-+	for_each_netdev_rcu(seq_file_net(seq), dev) {
-+		ptype_list = &dev->ptype_all;
-+		list_for_each_entry_rcu(pt, ptype_list, list) {
-+			if (i == pos)
-+				return pt;
-+			++i;
-+		}
-+	}
-+
- 	list_for_each_entry_rcu(pt, &ptype_all, list) {
- 		if (i == pos)
- 			return pt;
-@@ -216,22 +227,40 @@ static void *ptype_seq_start(struct seq_
- 	__acquires(RCU)
- {
- 	rcu_read_lock();
--	return *pos ? ptype_get_idx(*pos - 1) : SEQ_START_TOKEN;
-+	return *pos ? ptype_get_idx(seq, *pos - 1) : SEQ_START_TOKEN;
- }
- 
- static void *ptype_seq_next(struct seq_file *seq, void *v, loff_t *pos)
- {
-+	struct net_device *dev;
- 	struct packet_type *pt;
- 	struct list_head *nxt;
- 	int hash;
- 
- 	++*pos;
- 	if (v == SEQ_START_TOKEN)
--		return ptype_get_idx(0);
-+		return ptype_get_idx(seq, 0);
- 
- 	pt = v;
- 	nxt = pt->list.next;
-+	if (pt->dev) {
-+		if (nxt != &pt->dev->ptype_all)
-+			goto found;
-+
-+		dev = pt->dev;
-+		for_each_netdev_continue_rcu(seq_file_net(seq), dev) {
-+			if (!list_empty(&dev->ptype_all)) {
-+				nxt = dev->ptype_all.next;
-+				goto found;
-+			}
-+		}
-+
-+		nxt = ptype_all.next;
-+		goto ptype_all;
-+	}
-+
- 	if (pt->type == htons(ETH_P_ALL)) {
-+ptype_all:
- 		if (nxt != &ptype_all)
- 			goto found;
- 		hash = 0;
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index a3dd5c648fecd..5c7371dc83848 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -5317,12 +5317,6 @@ static void ibmvnic_tasklet(struct tasklet_struct *t)
+ 			ibmvnic_handle_crq(crq, adapter);
+ 			crq->generic.first = 0;
+ 		}
+-
+-		/* remain in tasklet until all
+-		 * capabilities responses are received
+-		 */
+-		if (!adapter->wait_capability)
+-			done = true;
+ 	}
+ 	/* if capabilities CRQ's were sent in this tasklet, the following
+ 	 * tasklet must wait until all responses are received
+-- 
+2.34.1
+
 
 
