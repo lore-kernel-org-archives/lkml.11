@@ -2,143 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53F31C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 16:33:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3979CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 16:34:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350217AbiAaQdq (ORCPT
+        id S1380509AbiAaQed (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 11:33:46 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:21761 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1380493AbiAaQdm (ORCPT
+        Mon, 31 Jan 2022 11:34:33 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:37580 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234087AbiAaQeb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 11:33:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643646821;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=yS2LXvHJpQ6J5JWRMEEhchS65pUuAfYv0luhTwYX+Ho=;
-        b=XnD85oe7daW6XOljNbzAK18e+Oz7ZKGRqmPkiiI1pMKRoYGQBFRPejPMkxYxP+jYEC6drP
-        3lj0LxpuFHTYUBFe9wZO1TFzliRJI2zEgSvlLtZw2InjT2NIsgm6wPxq0Q0P+k83zeIFaH
-        mtnMx2a0k75j/PSfvb+nnnIRrLMBXpo=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-652-ysRcGFu6Pn2U572AOTfgrQ-1; Mon, 31 Jan 2022 11:33:37 -0500
-X-MC-Unique: ysRcGFu6Pn2U572AOTfgrQ-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Mon, 31 Jan 2022 11:34:31 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 24C001091DA1;
-        Mon, 31 Jan 2022 16:33:34 +0000 (UTC)
-Received: from t480s.redhat.com (unknown [10.39.193.115])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2BB34798C6;
-        Mon, 31 Jan 2022 16:33:27 +0000 (UTC)
-From:   David Hildenbrand <david@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Yang Shi <shy828301@gmail.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
-        Roman Gushchin <guro@fb.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Donald Dutile <ddutile@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
-        Liang Zhang <zhangliang5@huawei.com>, linux-mm@kvack.org,
-        David Hildenbrand <david@redhat.com>
-Subject: [PATCH v3 9/9] mm/huge_memory: remove stale locking logic from __split_huge_pmd()
-Date:   Mon, 31 Jan 2022 17:29:39 +0100
-Message-Id: <20220131162940.210846-10-david@redhat.com>
-In-Reply-To: <20220131162940.210846-1-david@redhat.com>
-References: <20220131162940.210846-1-david@redhat.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4F6D4B82BA1;
+        Mon, 31 Jan 2022 16:34:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D037C340EE;
+        Mon, 31 Jan 2022 16:34:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643646869;
+        bh=iUPEf5V4PpA5R8OvwYP58mWshnJmeklBvgOMRATEx9o=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=wva8EIbvnpW8cJPrNOPi+vyyASSZjyTjskajx/dF10/n8F3bIGaVKIiaGLS/dIiVF
+         +NaVLElqlW7pXYo3Ml8/CRm6lErj2lAS3OtI+fZvRHOPpRpT3Wrsf5ZADohL28FVfC
+         avygLh9k4T1iLF5gEuyiIxxPiYLP4KEFI8RADcoo=
+Date:   Mon, 31 Jan 2022 17:34:26 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc:     Stephen Boyd <swboyd@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Rob Clark <robdclark@gmail.com>,
+        Russell King <rmk+kernel@arm.linux.org.uk>,
+        Saravana Kannan <saravanak@google.com>
+Subject: Re: [PATCH v6 02/35] component: Introduce the aggregate bus_type
+Message-ID: <YfgPkliOLorgXwVE@kroah.com>
+References: <20220127200141.1295328-1-swboyd@chromium.org>
+ <20220127200141.1295328-3-swboyd@chromium.org>
+ <YffoqgmeUdxZ56zB@kroah.com>
+ <CAKMK7uFYyQ9siB5ENHku+yVPWWM1H=TEn-NZofEKqpJnuEvMmw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKMK7uFYyQ9siB5ENHku+yVPWWM1H=TEn-NZofEKqpJnuEvMmw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Let's remove the stale logic that was required for reuse_swap_page().
+On Mon, Jan 31, 2022 at 04:15:09PM +0100, Daniel Vetter wrote:
+> On Mon, Jan 31, 2022 at 2:48 PM Greg Kroah-Hartman
+> <gregkh@linuxfoundation.org> wrote:
+> >
+> > On Thu, Jan 27, 2022 at 12:01:08PM -0800, Stephen Boyd wrote:
+> > > The component framework only provides 'bind' and 'unbind' callbacks to
+> > > tell the host driver that it is time to assemble the aggregate driver
+> > > now that all the components have probed. The component framework doesn't
+> > > attempt to resolve runtime PM or suspend/resume ordering, and explicitly
+> > > mentions this in the code. This lack of support leads to some pretty
+> > > gnarly usages of the 'prepare' and 'complete' power management hooks in
+> > > drivers that host the aggregate device, and it fully breaks down when
+> > > faced with ordering shutdown between the various components, the
+> > > aggregate driver, and the host driver that registers the whole thing.
+> > >
+> > > In a concrete example, the MSM display driver at drivers/gpu/drm/msm is
+> > > using 'prepare' and 'complete' to call the drm helpers
+> > > drm_mode_config_helper_suspend() and drm_mode_config_helper_resume()
+> > > respectively, so that it can move the aggregate driver suspend/resume
+> > > callbacks to be before and after the components that make up the drm
+> > > device call any suspend/resume hooks they have. This only works as long
+> > > as the component devices don't do anything in their own 'prepare' and
+> > > 'complete' callbacks. If they did, then the ordering would be incorrect
+> > > and we would be doing something in the component drivers before the
+> > > aggregate driver could do anything. Yuck!
+> > >
+> > > Similarly, when trying to add shutdown support to the MSM driver we run
+> > > across a problem where we're trying to shutdown the drm device via
+> > > drm_atomic_helper_shutdown(), but some of the devices in the encoder
+> > > chain have already been shutdown. This time, the component devices
+> > > aren't the problem (although they could be if they did anything in their
+> > > shutdown callbacks), but there's a DSI to eDP bridge in the encoder
+> > > chain that has already been shutdown before the driver hosting the
+> > > aggregate device runs shutdown. The ordering of driver probe is like
+> > > this:
+> > >
+> > >  1. msm_pdev_probe() (host driver)
+> > >  2. DSI bridge
+> > >  3. aggregate bind
+> > >
+> > > When it comes to shutdown we have this order:
+> > >
+> > >  1. DSI bridge
+> > >  2. msm_pdev_shutdown() (host driver)
+> > >
+> > > and so the bridge is already off, but we want to communicate to it to
+> > > turn things off on the display during msm_pdev_shutdown(). Double yuck!
+> > > Unfortunately, this time we can't split shutdown into multiple phases
+> > > and swap msm_pdev_shutdown() with the DSI bridge.
+> > >
+> > > Let's make the component_master_ops into an actual device driver that has
+> > > probe/remove/shutdown functions. The driver will only be bound to the
+> > > aggregate device once all component drivers have called component_add()
+> > > to indicate they're ready to assemble the aggregate driver. This allows
+> > > us to attach shutdown logic (and in the future runtime PM logic) to the
+> > > aggregate driver so that it runs the hooks in the correct order.
+> >
+> > I know I asked before, but I can not remember the answer.
+> >
+> > This really looks like it is turning into the aux bus code.  Why can't
+> > you just use that instead here for this type of thing?  You are creating
+> > another bus and drivers for that bus that are "fake" which is great, but
+> > that's what the aux bus code was supposed to help out with, so we
+> > wouldn't have to write more of these.
+> >
+> > So, if this really is different, can you document it here so I remember
+> > next time you resend this patch series?
+> 
+> aux takes a device and splits it into a lot of sub-devices, each with
+> their own driver.
+> 
+> This takes a pile of devices, and turns it into a single logical
+> device with a single driver.
+> 
+> So aux is 1:N, component is N:1.
+> 
+> And yes you asked this already, I typed this up already :-)
 
-Signed-off-by: David Hildenbrand <david@redhat.com>
----
- mm/huge_memory.c | 32 +-------------------------------
- 1 file changed, 1 insertion(+), 31 deletions(-)
+Ok, thanks.  But then why is a bus needed if there's a single driver?
+I guess a bus for that driver?  So one bus, one driver, and one device?
 
-diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-index a6dc5af1a763..cda88d8ac1bd 100644
---- a/mm/huge_memory.c
-+++ b/mm/huge_memory.c
-@@ -2152,8 +2152,6 @@ void __split_huge_pmd(struct vm_area_struct *vma, pmd_t *pmd,
- {
- 	spinlock_t *ptl;
- 	struct mmu_notifier_range range;
--	bool do_unlock_page = false;
--	pmd_t _pmd;
- 
- 	mmu_notifier_range_init(&range, MMU_NOTIFY_CLEAR, 0, vma, vma->vm_mm,
- 				address & HPAGE_PMD_MASK,
-@@ -2172,35 +2170,9 @@ void __split_huge_pmd(struct vm_area_struct *vma, pmd_t *pmd,
- 			goto out;
- 	}
- 
--repeat:
- 	if (pmd_trans_huge(*pmd)) {
--		if (!page) {
-+		if (!page)
- 			page = pmd_page(*pmd);
--			/*
--			 * An anonymous page must be locked, to ensure that a
--			 * concurrent reuse_swap_page() sees stable mapcount;
--			 * but reuse_swap_page() is not used on shmem or file,
--			 * and page lock must not be taken when zap_pmd_range()
--			 * calls __split_huge_pmd() while i_mmap_lock is held.
--			 */
--			if (PageAnon(page)) {
--				if (unlikely(!trylock_page(page))) {
--					get_page(page);
--					_pmd = *pmd;
--					spin_unlock(ptl);
--					lock_page(page);
--					spin_lock(ptl);
--					if (unlikely(!pmd_same(*pmd, _pmd))) {
--						unlock_page(page);
--						put_page(page);
--						page = NULL;
--						goto repeat;
--					}
--					put_page(page);
--				}
--				do_unlock_page = true;
--			}
--		}
- 		if (PageMlocked(page))
- 			clear_page_mlock(page);
- 	} else if (!(pmd_devmap(*pmd) || is_pmd_migration_entry(*pmd)))
-@@ -2208,8 +2180,6 @@ void __split_huge_pmd(struct vm_area_struct *vma, pmd_t *pmd,
- 	__split_huge_pmd_locked(vma, pmd, range.start, freeze);
- out:
- 	spin_unlock(ptl);
--	if (do_unlock_page)
--		unlock_page(page);
- 	/*
- 	 * No need to double call mmu_notifier->invalidate_range() callback.
- 	 * They are 3 cases to consider inside __split_huge_pmd_locked():
--- 
-2.34.1
+I think we need better documentation here...
 
+thanks,
+
+greg k-h
