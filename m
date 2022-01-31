@@ -2,143 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4838CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 15:33:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3481BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 15:33:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379738AbiAaPd2 (ORCPT
+        id S1379766AbiAaPdn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 10:33:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51384 "EHLO
+        Mon, 31 Jan 2022 10:33:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379665AbiAaPdP (ORCPT
+        with ESMTP id S1379680AbiAaPdS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 10:33:15 -0500
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62179C061714;
-        Mon, 31 Jan 2022 07:33:15 -0800 (PST)
-Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 03CE21447;
-        Mon, 31 Jan 2022 16:33:12 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1643643193;
-        bh=eMAheiDAIWDxrcMKCOAT+TMinkKp+mNuDD2YkGykmEA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=PBaZx92jmIQ7yqnZiQLYizdQiTlGCn6AdWkP7elcXV9pe4j8FFi5kNz8+n1pBi7vU
-         XLeOlunA+ixdDCKWBcEy7jaGXPvuRXBnFtOcdBOx2zkkgDsKwGRuPO7LH+b9z0EnTd
-         4Z5dMSOvUrQmHhP7JAcOU1e+ArXmA64MvoNyUFH0=
-Date:   Mon, 31 Jan 2022 17:32:50 +0200
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Daniel Vetter <daniel.vetter@ffwll.ch>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Rob Clark <robdclark@gmail.com>,
-        Russell King <rmk+kernel@arm.linux.org.uk>,
-        Saravana Kannan <saravanak@google.com>
-Subject: Re: [PATCH v6 02/35] component: Introduce the aggregate bus_type
-Message-ID: <YfgBIgqbCVSNGjfv@pendragon.ideasonboard.com>
-References: <20220127200141.1295328-1-swboyd@chromium.org>
- <20220127200141.1295328-3-swboyd@chromium.org>
- <YffoqgmeUdxZ56zB@kroah.com>
- <CAKMK7uFYyQ9siB5ENHku+yVPWWM1H=TEn-NZofEKqpJnuEvMmw@mail.gmail.com>
+        Mon, 31 Jan 2022 10:33:18 -0500
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 398C4C061714
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 07:33:18 -0800 (PST)
+Received: by mail-pg1-x534.google.com with SMTP id p125so12563926pga.2
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 07:33:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cX5XYAJngFJIkj2tMMe8Nc34iEVYgEFYIFuQOpTXb2w=;
+        b=SdxwxwtI9YLoBpUcmE8AxRvItfQWSWlS7uehIDO+jRhcow3zXSAEwYMsJN3NA8pMN7
+         wsH13NbmKEOaif7xODnuexv5fybV+7VZVoFwa2S7bPcAP2UE8rZj7XBbQW8LHTcKlT/R
+         oygb21l+VMBth2i7eWNRi2GvuHMFzSfMpxVmh6+XKo0NXpHDfX4UOTjHdQeZ0rcTnHBW
+         j0e76DYs/bWa2SjSS35FpghJtuhtD9pBDu8BVbE0Qb4cwBXxCXIsMcwxQHxMPLYzVV/D
+         pg3GNckAWEo8e6PLUue4kSm8dbyb0EG6Lktpkm+KL8ZbZ1pJ1ycIoRE/Xn6acRp3sove
+         CD1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cX5XYAJngFJIkj2tMMe8Nc34iEVYgEFYIFuQOpTXb2w=;
+        b=5Ttgkq5k1XbZ/TIposlN2fyHa3Q1CmAdeAwsgUfR/HPTmlFGjDXoOeto7yMZZJXiyZ
+         w047rOdzNzlG2Rv7mHC1gjIsPsDqHMzjcBpwXrtihw7/zR1m8aJ5QaPKPPzlT3Xyfus7
+         C6viVLs+njXCqOHUsjR7EQTipyzlpS7aQNdsdw4qlXjBhWGJZoZFl/CQ4V6/dSIYkp7U
+         bMrJMWBf8xBv9guYuPs5JyMZBExxcCYL1NFHMOCzCme4sjMSQ3U1/RRwklLyKTme5FSM
+         7I1TPjwZ0uZap2DtuGAd417Uwg0GEUuOCs1FAD6XQBWpX64V4BTE8OKNMKc/eAL/FHOb
+         2Dkg==
+X-Gm-Message-State: AOAM530XEWoekTUyZkFasuUV+bIqcLfJcAwsHOsCS0jhrKCsBSDKfGvj
+        SlwTEf74z1+WzgFSgR4fsquG+4SiTGWGOpGOAWW3Ng==
+X-Google-Smtp-Source: ABdhPJxytOnJHsFkSdPNeJwRZFPhd92LCJImZFTLm2lwIOzkJoAcPVNOGM8FcsNI3RhXmy4nIjkITgpXDJvA+80soQY=
+X-Received: by 2002:a63:610b:: with SMTP id v11mr17077460pgb.201.1643643197630;
+ Mon, 31 Jan 2022 07:33:17 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAKMK7uFYyQ9siB5ENHku+yVPWWM1H=TEn-NZofEKqpJnuEvMmw@mail.gmail.com>
+References: <Ye21tlZKRRe2vUzR@pendragon.ideasonboard.com> <1643008835-73961-1-git-send-email-lyz_cs@pku.edu.cn>
+ <YfHw8WwDpnRXO07G@pendragon.ideasonboard.com>
+In-Reply-To: <YfHw8WwDpnRXO07G@pendragon.ideasonboard.com>
+From:   Robert Foss <robert.foss@linaro.org>
+Date:   Mon, 31 Jan 2022 16:33:06 +0100
+Message-ID: <CAG3jFysi4aWGVOJ_Z2PinXyC1dfFWbP2nY-3Om-=PwZ6zbWWUA@mail.gmail.com>
+Subject: Re: [PATCH v2] drm/bridge: Add missing pm_runtime_put_sync
+To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc:     Yongzhi Liu <lyz_cs@pku.edu.cn>, a.hajda@samsung.com,
+        narmstrong@baylibre.com, jonas@kwiboo.se, jernej.skrabec@gmail.com,
+        airlied@linux.ie, daniel@ffwll.ch, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Daniel,
-
-On Mon, Jan 31, 2022 at 04:15:09PM +0100, Daniel Vetter wrote:
-> On Mon, Jan 31, 2022 at 2:48 PM Greg Kroah-Hartman wrote:
-> > On Thu, Jan 27, 2022 at 12:01:08PM -0800, Stephen Boyd wrote:
-> > > The component framework only provides 'bind' and 'unbind' callbacks to
-> > > tell the host driver that it is time to assemble the aggregate driver
-> > > now that all the components have probed. The component framework doesn't
-> > > attempt to resolve runtime PM or suspend/resume ordering, and explicitly
-> > > mentions this in the code. This lack of support leads to some pretty
-> > > gnarly usages of the 'prepare' and 'complete' power management hooks in
-> > > drivers that host the aggregate device, and it fully breaks down when
-> > > faced with ordering shutdown between the various components, the
-> > > aggregate driver, and the host driver that registers the whole thing.
-> > >
-> > > In a concrete example, the MSM display driver at drivers/gpu/drm/msm is
-> > > using 'prepare' and 'complete' to call the drm helpers
-> > > drm_mode_config_helper_suspend() and drm_mode_config_helper_resume()
-> > > respectively, so that it can move the aggregate driver suspend/resume
-> > > callbacks to be before and after the components that make up the drm
-> > > device call any suspend/resume hooks they have. This only works as long
-> > > as the component devices don't do anything in their own 'prepare' and
-> > > 'complete' callbacks. If they did, then the ordering would be incorrect
-> > > and we would be doing something in the component drivers before the
-> > > aggregate driver could do anything. Yuck!
-> > >
-> > > Similarly, when trying to add shutdown support to the MSM driver we run
-> > > across a problem where we're trying to shutdown the drm device via
-> > > drm_atomic_helper_shutdown(), but some of the devices in the encoder
-> > > chain have already been shutdown. This time, the component devices
-> > > aren't the problem (although they could be if they did anything in their
-> > > shutdown callbacks), but there's a DSI to eDP bridge in the encoder
-> > > chain that has already been shutdown before the driver hosting the
-> > > aggregate device runs shutdown. The ordering of driver probe is like
-> > > this:
-> > >
-> > >  1. msm_pdev_probe() (host driver)
-> > >  2. DSI bridge
-> > >  3. aggregate bind
-> > >
-> > > When it comes to shutdown we have this order:
-> > >
-> > >  1. DSI bridge
-> > >  2. msm_pdev_shutdown() (host driver)
-> > >
-> > > and so the bridge is already off, but we want to communicate to it to
-> > > turn things off on the display during msm_pdev_shutdown(). Double yuck!
-> > > Unfortunately, this time we can't split shutdown into multiple phases
-> > > and swap msm_pdev_shutdown() with the DSI bridge.
-> > >
-> > > Let's make the component_master_ops into an actual device driver that has
-> > > probe/remove/shutdown functions. The driver will only be bound to the
-> > > aggregate device once all component drivers have called component_add()
-> > > to indicate they're ready to assemble the aggregate driver. This allows
-> > > us to attach shutdown logic (and in the future runtime PM logic) to the
-> > > aggregate driver so that it runs the hooks in the correct order.
+On Thu, 27 Jan 2022 at 02:10, Laurent Pinchart
+<laurent.pinchart@ideasonboard.com> wrote:
+>
+> Hi Yongzhi,
+>
+> Thank you for the patch.
+>
+> On Sun, Jan 23, 2022 at 11:20:35PM -0800, Yongzhi Liu wrote:
+> > pm_runtime_get_sync() will increase the rumtime PM counter
+> > even when it returns an error. Thus a pairing decrement is needed
+> > to prevent refcount leak. Fix this by replacing this API with
+> > pm_runtime_resume_and_get(), which will not change the runtime
+> > PM counter on error. Besides, a matching decrement is needed
+> > on the error handling path to keep the counter balanced.
 > >
-> > I know I asked before, but I can not remember the answer.
+> > Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
+>
+> Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+>
+> > ---
+> >  drivers/gpu/drm/bridge/nwl-dsi.c | 18 ++++++++++++------
+> >  1 file changed, 12 insertions(+), 6 deletions(-)
 > >
-> > This really looks like it is turning into the aux bus code.  Why can't
-> > you just use that instead here for this type of thing?  You are creating
-> > another bus and drivers for that bus that are "fake" which is great, but
-> > that's what the aux bus code was supposed to help out with, so we
-> > wouldn't have to write more of these.
+> > diff --git a/drivers/gpu/drm/bridge/nwl-dsi.c b/drivers/gpu/drm/bridge/nwl-dsi.c
+> > index 9282e61..30aacd9 100644
+> > --- a/drivers/gpu/drm/bridge/nwl-dsi.c
+> > +++ b/drivers/gpu/drm/bridge/nwl-dsi.c
+> > @@ -862,18 +862,19 @@ nwl_dsi_bridge_mode_set(struct drm_bridge *bridge,
+> >       memcpy(&dsi->mode, adjusted_mode, sizeof(dsi->mode));
+> >       drm_mode_debug_printmodeline(adjusted_mode);
 > >
-> > So, if this really is different, can you document it here so I remember
-> > next time you resend this patch series?
-> 
-> aux takes a device and splits it into a lot of sub-devices, each with
-> their own driver.
-> 
-> This takes a pile of devices, and turns it into a single logical
-> device with a single driver.
-> 
-> So aux is 1:N, component is N:1.
-> 
-> And yes you asked this already, I typed this up already :-)
+> > -     pm_runtime_get_sync(dev);
+> > +     if (pm_runtime_resume_and_get(dev) < 0)
+> > +             return;
+> >
+> >       if (clk_prepare_enable(dsi->lcdif_clk) < 0)
+> > -             return;
+> > +             goto runtime_put;
+> >       if (clk_prepare_enable(dsi->core_clk) < 0)
+> > -             return;
+> > +             goto runtime_put;
+> >
+> >       /* Step 1 from DSI reset-out instructions */
+> >       ret = reset_control_deassert(dsi->rst_pclk);
+> >       if (ret < 0) {
+> >               DRM_DEV_ERROR(dev, "Failed to deassert PCLK: %d\n", ret);
+> > -             return;
+> > +             goto runtime_put;
+> >       }
+> >
+> >       /* Step 2 from DSI reset-out instructions */
+> > @@ -883,13 +884,18 @@ nwl_dsi_bridge_mode_set(struct drm_bridge *bridge,
+> >       ret = reset_control_deassert(dsi->rst_esc);
+> >       if (ret < 0) {
+> >               DRM_DEV_ERROR(dev, "Failed to deassert ESC: %d\n", ret);
+> > -             return;
+> > +             goto runtime_put;
+> >       }
+> >       ret = reset_control_deassert(dsi->rst_byte);
+> >       if (ret < 0) {
+> >               DRM_DEV_ERROR(dev, "Failed to deassert BYTE: %d\n", ret);
+> > -             return;
+> > +             goto runtime_put;
+> >       }
+> > +
+> > +     return;
+> > +
+> > +runtime_put:
+> > +     pm_runtime_put_sync(dev);
+> >  }
+> >
+> >  static void
 
-That's clear, but I'm still not sure why we need a bus for this :-) I'm
-not very enthousiastic about that. Some of our problems come from the
-fact we need to coordinate many devices, adding new ones hardly seem to
-be a solution to that. Granted, the components framework doesn't work
-nicely, and is in dire need of love (and documentation), or possibly
-better a complete replacement. I'll try to review the series this week
-and see if alternatives would be possible.
-
--- 
-Regards,
-
-Laurent Pinchart
+Applied to drm-misc-next.
