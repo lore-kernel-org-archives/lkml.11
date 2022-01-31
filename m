@@ -2,107 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F111BC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 18:43:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A640AC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 18:43:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356937AbiAaSnX (ORCPT
+        id S1356944AbiAaSn5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 13:43:23 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:59774 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350447AbiAaSnV (ORCPT
+        Mon, 31 Jan 2022 13:43:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39642 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244230AbiAaSnz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 13:43:21 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 31 Jan 2022 13:43:55 -0500
+X-Greylist: delayed 467 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 31 Jan 2022 10:43:55 PST
+Received: from mail.hahnjo.de (backus.hahnjo.de [IPv6:2a03:4000:2a:2c1::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3625C061714;
+        Mon, 31 Jan 2022 10:43:55 -0800 (PST)
+Received: from Jonas-Dell.home (unknown [IPv6:2a01:cb15:40c:c100:cf0a:528a:fee7:c993])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E128C6115C;
-        Mon, 31 Jan 2022 18:43:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1109C340E8;
-        Mon, 31 Jan 2022 18:43:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643654600;
-        bh=MlCVNXyMLH8N9zlEgC505sGgVhNwmsbLQHiBxPE+K58=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=IM19ayOIddG1TmaKYhEGPvyzdDS/gGRO9UoQES/v9E/djUqXQnoHmovXnNkwq+E2A
-         SAzWRVnV9+s8D2WaIhSak1rGr3hDcSJXijPTAGmX17QgXTdzot2WlNR3qs4mC9vDPc
-         OdHOzwN16WNYk3f1ZJTpWV1VyQ9VkieVJ49eYWHvUFP87xvXEQF56xxVz72r/aubyk
-         46vIfIe3et2S7mxrUOFaIqUnuWp8F8qolITZ5Mc8ACd5aYeZ2sgQ5wCxt7iyLPqTC5
-         bGEvhZ07U3Kj53WNWx/9u8HcAjqxU+vUr8LDftcXRn+kujXAETeSKpoSv3HNjwI2xU
-         fsbb0Rx5MWmrQ==
-Message-ID: <cc2a90295935c8841abf5d0538590eb5202a745c.camel@kernel.org>
-Subject: Re: [PATCH] cachefiles: Fix the volume coherency check
-From:   Jeff Layton <jlayton@kernel.org>
-To:     David Howells <dhowells@redhat.com>, smfrench@gmail.com
-Cc:     linux-cifs@vger.kernel.org, linux-cachefs@redhat.com,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Mon, 31 Jan 2022 13:43:18 -0500
-In-Reply-To: <164365156782.2040161.8222945480682704501.stgit@warthog.procyon.org.uk>
-References: <164365156782.2040161.8222945480682704501.stgit@warthog.procyon.org.uk>
-Content-Type: text/plain; charset="ISO-8859-15"
-User-Agent: Evolution 3.42.3 (3.42.3-1.fc35) 
+        by mail.hahnjo.de (Postfix) with ESMTPSA id E391D5870138;
+        Mon, 31 Jan 2022 19:36:03 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=hahnjo.de; s=default;
+        t=1643654164; bh=DnXhFAGWRC1c19WVXbcduyTvpHjO7t6osxp9bE7zzBM=;
+        h=From:To:Cc:Subject:Date;
+        b=pAchqnRzQbyD6A+ShzZNlceg6D8ZM/iB8q64fAIK31HXUD/l40ut7gDmY7lfgxAj3
+         oY4fw3oJa6pz98QgdyrxvUAaB2PBjtlaAZp4iIttE3Lv4QMGUa2/0GtDV65679hVef
+         iSGyoUFjlO385DSynUwrUhXJ/3ioDKPL662iH4CQSsLDgCBJ1YhY1GUOhmkzGs57M7
+         GLXUGWxFu+dX9FXBFydVuygrSIXq991ZhpS2XWUjaj+zWXpCV4y+ffWF8YdLCDsPcx
+         /UvLQxdLDyxnAUFJc9iV007eL++4NBBdHuBjb1k04I49XopB+f/ovXHE32cY0sMZT7
+         cjUA/jMnUwYyA==
+From:   Jonas Hahnfeld <hahnjo@hahnjo.de>
+To:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
+Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        Jonas Hahnfeld <hahnjo@hahnjo.de>,
+        Jukka Heikintalo <heikintalo.jukka@gmail.com>,
+        =?UTF-8?q?Pawe=C5=82=20Susicki?= <pawel.susicki@gmail.com>,
+        stable@vger.kernel.org
+Subject: [PATCH] ALSA: usb-audio: Correct quirk for VF0770
+Date:   Mon, 31 Jan 2022 19:35:16 +0100
+Message-Id: <20220131183516.61191-1-hahnjo@hahnjo.de>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-01-31 at 17:52 +0000, David Howells wrote:
-> Fix the cache volume coherency attribute check.  It was copied from the
-> file coherency check which uses as struct to lay out the xattr, and so
-> needs to add a bit on to find the coherency data - but the volume coherency
-> attribute only contains the coherency data, so we shouldn't be using the
-> layout struct for it.
-> 
-> This has passed unnoticed so far because it only affects cifs at the
-> moment, and cifs had its fscache component disabled.
-> 
-> This can now be checked by enabling CONFIG_CIFS_FSCACHE, enabling the
-> following tracepoint:
-> 
-> 	/sys/kernel/debug/tracing/events/cachefiles/cachefiles_vol_coherency/enable
-> 
-> and making a cifs mount.  Without this change, the trace shows a
-> cachefiles_vol_coherency line with "VOL BAD cmp" in it; with this change it
-> shows "VOL OK" instead.
-> 
-> Fixes: 32e150037dce ("fscache, cachefiles: Store the volume coherency data")
-> Signed-off-by: David Howells <dhowells@redhat.com>
-> cc: Jeff Layton <jlayton@kernel.org>
-> cc: Steve French <smfrench@gmail.com>
-> cc: linux-cifs@vger.kernel.org
-> cc: linux-cachefs@redhat.com
-> ---
-> 
->  fs/cachefiles/xattr.c |    4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/fs/cachefiles/xattr.c b/fs/cachefiles/xattr.c
-> index 83f41bd0c3a9..c6171e818a7c 100644
-> --- a/fs/cachefiles/xattr.c
-> +++ b/fs/cachefiles/xattr.c
-> @@ -218,10 +218,10 @@ bool cachefiles_set_volume_xattr(struct cachefiles_volume *volume)
->   */
->  int cachefiles_check_volume_xattr(struct cachefiles_volume *volume)
->  {
-> -	struct cachefiles_xattr *buf;
->  	struct dentry *dentry = volume->dentry;
->  	unsigned int len = volume->vcookie->coherency_len;
->  	const void *p = volume->vcookie->coherency;
-> +	void *buf;
->  	enum cachefiles_coherency_trace why;
->  	ssize_t xlen;
->  	int ret = -ESTALE;
-> @@ -245,7 +245,7 @@ int cachefiles_check_volume_xattr(struct cachefiles_volume *volume)
->  					"Failed to read xattr with error %zd", xlen);
->  		}
->  		why = cachefiles_coherency_vol_check_xattr;
-> -	} else if (memcmp(buf->data, p, len) != 0) {
-> +	} else if (memcmp(buf, p, len) != 0) {
->  		why = cachefiles_coherency_vol_check_cmp;
->  	} else {
->  		why = cachefiles_coherency_vol_check_ok;
-> 
-> 
+This device provides both audio and video. The original quirk added in
+commit 48827e1d6af5 ("ALSA: usb-audio: Add quirk for VF0770") used
+USB_DEVICE to match the vendor and product ID. Depending on module order,
+if snd-usb-audio was asked first, it would match the entire device and
+uvcvideo wouldn't get to see it. Change the matching to USB_AUDIO_DEVICE
+to restore uvcvideo matching in all cases.
 
-Reviewed-by: Jeff Layton <jlayton@kernel.org>
+Fixes: 48827e1d6af5 ("ALSA: usb-audio: Add quirk for VF0770")
+Reported-by: Jukka Heikintalo <heikintalo.jukka@gmail.com>
+Tested-by: Jukka Heikintalo <heikintalo.jukka@gmail.com>
+Reported-by: Paweł Susicki <pawel.susicki@gmail.com>
+Tested-by: Paweł Susicki <pawel.susicki@gmail.com>
+Cc: <stable@vger.kernel.org> # 5.4, 5.10, 5.14, 5.15
+Signed-off-by: Jonas Hahnfeld <hahnjo@hahnjo.de>
+---
+ sound/usb/quirks-table.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/sound/usb/quirks-table.h b/sound/usb/quirks-table.h
+index b1522e43173e..0ea39565e623 100644
+--- a/sound/usb/quirks-table.h
++++ b/sound/usb/quirks-table.h
+@@ -84,7 +84,7 @@
+  * combination.
+  */
+ {
+-	USB_DEVICE(0x041e, 0x4095),
++	USB_AUDIO_DEVICE(0x041e, 0x4095),
+ 	.driver_info = (unsigned long) &(const struct snd_usb_audio_quirk) {
+ 		.ifnum = QUIRK_ANY_INTERFACE,
+ 		.type = QUIRK_COMPOSITE,
+-- 
+2.35.1
+
