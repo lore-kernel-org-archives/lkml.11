@@ -2,42 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48AFCC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:25:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38286C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:25:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359429AbiAaLZL (ORCPT
+        id S1359675AbiAaLZT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:25:11 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:35628 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376824AbiAaLQe (ORCPT
+        Mon, 31 Jan 2022 06:25:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46074 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349721AbiAaLQo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:16:34 -0500
+        Mon, 31 Jan 2022 06:16:44 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 877C0C0613F7;
+        Mon, 31 Jan 2022 03:11:28 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 71006B82A5F;
-        Mon, 31 Jan 2022 11:16:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9303FC340E8;
-        Mon, 31 Jan 2022 11:16:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 50E35B82A61;
+        Mon, 31 Jan 2022 11:11:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92EC0C340E8;
+        Mon, 31 Jan 2022 11:11:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627789;
-        bh=gmPK/npHsN/H2bxF8vKX300kzqc94NfnneRn0xilyw4=;
+        s=korg; t=1643627486;
+        bh=JhNyRXEnciQM5KD9GQGTUIzpN68e3QP+BIvXRa1scdU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NQiulh2kqrq4VMvBCrLz1fSFe7O7nMd5Qf91QdpOk933UEX4w04kFWh9+4Abd4WBu
-         fH3n/JeHcBuMxp4KTFaYRsJS2w/kJgI0xhGpe7aDh1OnZaMm3R8sr2nrbDtiFnsbiD
-         U/HgBr9fe88oZvBg0HaRAhDqHgKrf7eN3CX+3bmk=
+        b=jwUxm9owMBPx3WbWipqncC9XysHutlQIXkyMiLFPxMAuEzLKaMejTCL/XiqNxGQ1z
+         5YkKOatEsQ7vcD9Z6+hpIIpGLi2lo/AgFBpyRsgyKBrcpw9XOY/LcRWqV2+nU8YCs4
+         Vjq/63JyswANaB1kAlnEG3MfgNKzcCn5e3fqSRHQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.16 008/200] btrfs: update writeback index when starting defrag
-Date:   Mon, 31 Jan 2022 11:54:31 +0100
-Message-Id: <20220131105233.838548740@linuxfoundation.org>
+        stable@vger.kernel.org, Joseph Qi <joseph.qi@linux.alibaba.com>,
+        Mark Fasheh <mark@fasheh.com>,
+        Joel Becker <jlbec@evilplan.org>,
+        Junxiao Bi <junxiao.bi@oracle.com>,
+        Changwei Ge <gechangwei@live.cn>, Gang He <ghe@suse.com>,
+        Jun Piao <piaojun@huawei.com>,
+        Andreas Dilger <adilger.kernel@dilger.ca>,
+        Gautham Ananthakrishna <gautham.ananthakrishna@oracle.com>,
+        Saeed Mirzamohammadi <saeed.mirzamohammadi@oracle.com>,
+        "Theodore Tso" <tytso@mit.edu>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.15 066/171] jbd2: export jbd2_journal_[grab|put]_journal_head
+Date:   Mon, 31 Jan 2022 11:55:31 +0100
+Message-Id: <20220131105232.273781500@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
-References: <20220131105233.561926043@linuxfoundation.org>
+In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
+References: <20220131105229.959216821@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,61 +59,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Filipe Manana <fdmanana@suse.com>
+From: Joseph Qi <joseph.qi@linux.alibaba.com>
 
-commit 27cdfde181bcacd226c230b2fd831f6f5b8c215f upstream.
+commit 4cd1103d8c66b2cdb7e64385c274edb0ac5e8887 upstream.
 
-When starting a defrag, we should update the writeback index of the
-inode's mapping in case it currently has a value beyond the start of the
-range we are defragging. This can help performance and often result in
-getting less extents after writeback - for e.g., if the current value
-of the writeback index sits somewhere in the middle of a range that
-gets dirty by the defrag, then after writeback we can get two smaller
-extents instead of a single, larger extent.
+Patch series "ocfs2: fix a deadlock case".
 
-We used to have this before the refactoring in 5.16, but it was removed
-without any reason to do so. Originally it was added in kernel 3.1, by
-commit 2a0f7f5769992b ("Btrfs: fix recursive auto-defrag"), in order to
-fix a loop with autodefrag resulting in dirtying and writing pages over
-and over, but some testing on current code did not show that happening,
-at least with the test described in that commit.
+This fixes a deadlock case in ocfs2.  We firstly export jbd2 symbols
+jbd2_journal_[grab|put]_journal_head as preparation and later use them
+in ocfs2 insread of jbd_[lock|unlock]_bh_journal_head to fix the
+deadlock.
 
-So add back the behaviour, as at the very least it is a nice to have
-optimization.
+This patch (of 2):
 
-Fixes: 7b508037d4cac3 ("btrfs: defrag: use defrag_one_cluster() to implement btrfs_defrag_file()")
-CC: stable@vger.kernel.org # 5.16
-Signed-off-by: Filipe Manana <fdmanana@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+This exports symbols jbd2_journal_[grab|put]_journal_head, which will be
+used outside modules, e.g.  ocfs2.
+
+Link: https://lkml.kernel.org/r/20220121071205.100648-2-joseph.qi@linux.alibaba.com
+Signed-off-by: Joseph Qi <joseph.qi@linux.alibaba.com>
+Cc: Mark Fasheh <mark@fasheh.com>
+Cc: Joel Becker <jlbec@evilplan.org>
+Cc: Junxiao Bi <junxiao.bi@oracle.com>
+Cc: Changwei Ge <gechangwei@live.cn>
+Cc: Gang He <ghe@suse.com>
+Cc: Jun Piao <piaojun@huawei.com>
+Cc: Andreas Dilger <adilger.kernel@dilger.ca>
+Cc: Gautham Ananthakrishna <gautham.ananthakrishna@oracle.com>
+Cc: Saeed Mirzamohammadi <saeed.mirzamohammadi@oracle.com>
+Cc: "Theodore Ts'o" <tytso@mit.edu>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/ioctl.c |    9 +++++++++
- 1 file changed, 9 insertions(+)
+ fs/jbd2/journal.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/fs/btrfs/ioctl.c
-+++ b/fs/btrfs/ioctl.c
-@@ -1511,6 +1511,7 @@ int btrfs_defrag_file(struct inode *inod
- 	int compress_type = BTRFS_COMPRESS_ZLIB;
- 	int ret = 0;
- 	u32 extent_thresh = range->extent_thresh;
-+	pgoff_t start_index;
+--- a/fs/jbd2/journal.c
++++ b/fs/jbd2/journal.c
+@@ -2970,6 +2970,7 @@ struct journal_head *jbd2_journal_grab_j
+ 	jbd_unlock_bh_journal_head(bh);
+ 	return jh;
+ }
++EXPORT_SYMBOL(jbd2_journal_grab_journal_head);
  
- 	if (isize == 0)
- 		return 0;
-@@ -1552,6 +1553,14 @@ int btrfs_defrag_file(struct inode *inod
- 			file_ra_state_init(ra, inode->i_mapping);
+ static void __journal_remove_journal_head(struct buffer_head *bh)
+ {
+@@ -3022,6 +3023,7 @@ void jbd2_journal_put_journal_head(struc
+ 		jbd_unlock_bh_journal_head(bh);
  	}
+ }
++EXPORT_SYMBOL(jbd2_journal_put_journal_head);
  
-+	/*
-+	 * Make writeback start from the beginning of the range, so that the
-+	 * defrag range can be written sequentially.
-+	 */
-+	start_index = cur >> PAGE_SHIFT;
-+	if (start_index < inode->i_mapping->writeback_index)
-+		inode->i_mapping->writeback_index = start_index;
-+
- 	while (cur < last_byte) {
- 		const unsigned long prev_sectors_defragged = sectors_defragged;
- 		u64 cluster_end;
+ /*
+  * Initialize jbd inode head
 
 
