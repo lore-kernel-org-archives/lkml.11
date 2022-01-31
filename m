@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0993C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0A8BC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378880AbiAaL31 (ORCPT
+        id S1379014AbiAaL3n (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:29:27 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:52206 "EHLO
+        Mon, 31 Jan 2022 06:29:43 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:52264 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378381AbiAaLUG (ORCPT
+        with ESMTP id S1378455AbiAaLUM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:20:06 -0500
+        Mon, 31 Jan 2022 06:20:12 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A9B5F6114C;
-        Mon, 31 Jan 2022 11:20:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7161BC340E8;
-        Mon, 31 Jan 2022 11:20:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E69560B98;
+        Mon, 31 Jan 2022 11:20:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB208C340E8;
+        Mon, 31 Jan 2022 11:20:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643628005;
-        bh=yo2HdgKuwvwA7p/MnrO/cT8+coYM6M44nJwMQhWhpX8=;
+        s=korg; t=1643628011;
+        bh=kbjFMXoRMtc4U9Oa+ibffCyvoiXCyLaA/lmIK/CuFx0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xPTEsvTl44KUnQsk+BA/dkU+RZtvVjJy1NgozRDYBMFlj7AlFLw5CzBzfvsT83XY0
-         jIP3a5xHNdVxaZ+i9JdHQe8IjSXoSvk4gJ7Y7UZKCiT0uRjNfMttjVThGZ0l5YNF+d
-         daaVkfwkzyLvITMgZlDi95v/x7EkxZymFz1szRCE=
+        b=0FC9zEGhXUmaHnAFAX6uWFkZobR9OAe23VyB6re/zbCN0FIvaEW0ssgz2sLLffB+b
+         297YJT4xsPJ9FkzEf3LckfdXg7KUIDyBBtvHnKyK0AiReD5gYzCX2ojeGTRXhMp9yL
+         awA7sm9+aZ1CseC8ok35J30lFqFeT/TN39sQaPI0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
-        Evgenii Stepanov <eugenis@google.com>,
-        Catalin Marinas <catalin.marinas@arm.com>
-Subject: [PATCH 5.16 061/200] arm64: extable: fix load_unaligned_zeropad() reg indices
-Date:   Mon, 31 Jan 2022 11:55:24 +0100
-Message-Id: <20220131105235.627000123@linuxfoundation.org>
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        Mike Snitzer <snitzer@redhat.com>, Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.16 063/200] block: add bio_start_io_acct_time() to control start_time
+Date:   Mon, 31 Jan 2022 11:55:26 +0100
+Message-Id: <20220131105235.695349937@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -47,68 +46,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Evgenii Stepanov <eugenis@google.com>
+From: Mike Snitzer <snitzer@redhat.com>
 
-commit 3758a6c74e08bdc15ccccd6872a6ad37d165239a upstream.
+commit e45c47d1f94e0cc7b6b079fdb4bcce2995e2adc4 upstream.
 
-In ex_handler_load_unaligned_zeropad() we erroneously extract the data and
-addr register indices from ex->type rather than ex->data. As ex->type will
-contain EX_TYPE_LOAD_UNALIGNED_ZEROPAD (i.e. 4):
- * We'll always treat X0 as the address register, since EX_DATA_REG_ADDR is
-   extracted from bits [9:5]. Thus, we may attempt to dereference an
-   arbitrary address as X0 may hold an arbitrary value.
- * We'll always treat X4 as the data register, since EX_DATA_REG_DATA is
-   extracted from bits [4:0]. Thus we will corrupt X4 and cause arbitrary
-   behaviour within load_unaligned_zeropad() and its caller.
+bio_start_io_acct_time() interface is like bio_start_io_acct() that
+allows start_time to be passed in. This gives drivers the ability to
+defer starting accounting until after IO is issued (but possibily not
+entirely due to bio splitting).
 
-Fix this by extracting both values from ex->data as originally intended.
-
-On an MTE-enabled QEMU image we are hitting the following crash:
- Unable to handle kernel NULL pointer dereference at virtual address 0000000000000000
- Call trace:
-  fixup_exception+0xc4/0x108
-  __do_kernel_fault+0x3c/0x268
-  do_tag_check_fault+0x3c/0x104
-  do_mem_abort+0x44/0xf4
-  el1_abort+0x40/0x64
-  el1h_64_sync_handler+0x60/0xa0
-  el1h_64_sync+0x7c/0x80
-  link_path_walk+0x150/0x344
-  path_openat+0xa0/0x7dc
-  do_filp_open+0xb8/0x168
-  do_sys_openat2+0x88/0x17c
-  __arm64_sys_openat+0x74/0xa0
-  invoke_syscall+0x48/0x148
-  el0_svc_common+0xb8/0xf8
-  do_el0_svc+0x28/0x88
-  el0_svc+0x24/0x84
-  el0t_64_sync_handler+0x88/0xec
-  el0t_64_sync+0x1b4/0x1b8
- Code: f8695a69 71007d1f 540000e0 927df12a (f940014a)
-
-Fixes: 753b32368705 ("arm64: extable: add load_unaligned_zeropad() handler")
-Cc: <stable@vger.kernel.org> # 5.16.x
-Reviewed-by: Mark Rutland <mark.rutland@arm.com>
-Signed-off-by: Evgenii Stepanov <eugenis@google.com>
-Link: https://lore.kernel.org/r/20220125182217.2605202-1-eugenis@google.com
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Mike Snitzer <snitzer@redhat.com>
+Link: https://lore.kernel.org/r/20220128155841.39644-2-snitzer@redhat.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/mm/extable.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ block/blk-core.c       |   25 +++++++++++++++++++------
+ include/linux/blkdev.h |    1 +
+ 2 files changed, 20 insertions(+), 6 deletions(-)
 
---- a/arch/arm64/mm/extable.c
-+++ b/arch/arm64/mm/extable.c
-@@ -43,8 +43,8 @@ static bool
- ex_handler_load_unaligned_zeropad(const struct exception_table_entry *ex,
- 				  struct pt_regs *regs)
- {
--	int reg_data = FIELD_GET(EX_DATA_REG_DATA, ex->type);
--	int reg_addr = FIELD_GET(EX_DATA_REG_ADDR, ex->type);
-+	int reg_data = FIELD_GET(EX_DATA_REG_DATA, ex->data);
-+	int reg_addr = FIELD_GET(EX_DATA_REG_ADDR, ex->data);
- 	unsigned long data, addr, offset;
+--- a/block/blk-core.c
++++ b/block/blk-core.c
+@@ -1258,22 +1258,34 @@ void __blk_account_io_start(struct reque
+ }
  
- 	addr = pt_regs_read_reg(regs, reg_addr);
+ static unsigned long __part_start_io_acct(struct block_device *part,
+-					  unsigned int sectors, unsigned int op)
++					  unsigned int sectors, unsigned int op,
++					  unsigned long start_time)
+ {
+ 	const int sgrp = op_stat_group(op);
+-	unsigned long now = READ_ONCE(jiffies);
+ 
+ 	part_stat_lock();
+-	update_io_ticks(part, now, false);
++	update_io_ticks(part, start_time, false);
+ 	part_stat_inc(part, ios[sgrp]);
+ 	part_stat_add(part, sectors[sgrp], sectors);
+ 	part_stat_local_inc(part, in_flight[op_is_write(op)]);
+ 	part_stat_unlock();
+ 
+-	return now;
++	return start_time;
+ }
+ 
+ /**
++ * bio_start_io_acct_time - start I/O accounting for bio based drivers
++ * @bio:	bio to start account for
++ * @start_time:	start time that should be passed back to bio_end_io_acct().
++ */
++void bio_start_io_acct_time(struct bio *bio, unsigned long start_time)
++{
++	__part_start_io_acct(bio->bi_bdev, bio_sectors(bio),
++			     bio_op(bio), start_time);
++}
++EXPORT_SYMBOL_GPL(bio_start_io_acct_time);
++
++/**
+  * bio_start_io_acct - start I/O accounting for bio based drivers
+  * @bio:	bio to start account for
+  *
+@@ -1281,14 +1293,15 @@ static unsigned long __part_start_io_acc
+  */
+ unsigned long bio_start_io_acct(struct bio *bio)
+ {
+-	return __part_start_io_acct(bio->bi_bdev, bio_sectors(bio), bio_op(bio));
++	return __part_start_io_acct(bio->bi_bdev, bio_sectors(bio),
++				    bio_op(bio), jiffies);
+ }
+ EXPORT_SYMBOL_GPL(bio_start_io_acct);
+ 
+ unsigned long disk_start_io_acct(struct gendisk *disk, unsigned int sectors,
+ 				 unsigned int op)
+ {
+-	return __part_start_io_acct(disk->part0, sectors, op);
++	return __part_start_io_acct(disk->part0, sectors, op, jiffies);
+ }
+ EXPORT_SYMBOL(disk_start_io_acct);
+ 
+--- a/include/linux/blkdev.h
++++ b/include/linux/blkdev.h
+@@ -1254,6 +1254,7 @@ unsigned long disk_start_io_acct(struct
+ void disk_end_io_acct(struct gendisk *disk, unsigned int op,
+ 		unsigned long start_time);
+ 
++void bio_start_io_acct_time(struct bio *bio, unsigned long start_time);
+ unsigned long bio_start_io_acct(struct bio *bio);
+ void bio_end_io_acct_remapped(struct bio *bio, unsigned long start_time,
+ 		struct block_device *orig_bdev);
 
 
