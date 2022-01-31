@@ -2,38 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AA29C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 752CCC4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379571AbiAaLa0 (ORCPT
+        id S1379497AbiAaLaX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:30:26 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:52602 "EHLO
+        Mon, 31 Jan 2022 06:30:23 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:52560 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349716AbiAaLUv (ORCPT
+        with ESMTP id S1378763AbiAaLUq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:20:51 -0500
+        Mon, 31 Jan 2022 06:20:46 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A9B661214;
-        Mon, 31 Jan 2022 11:20:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EED6FC340E8;
-        Mon, 31 Jan 2022 11:20:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0675A611DB;
+        Mon, 31 Jan 2022 11:20:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3CE4C340E8;
+        Mon, 31 Jan 2022 11:20:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643628048;
-        bh=7E9ERDVZttx1BEkbi9cB6zU2U3oaHnyBYoXJvVBibGo=;
+        s=korg; t=1643628045;
+        bh=IfmWyfy0RYi0nBygqtA6QQrBuFvTA8qN//7zwFwIzOI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KXVLUQiUcFDjpHvhDNkBgAdS6n8M7m+3OxfM0ULwn13XBhqElDApY+mL2egzXQy4G
-         Rdc9yAGtZ9gOh0vgwudub2IOP8W3uJ4m1IvYCTvWUm7eSjEs+tdjnxLYgjOo9B2EiH
-         kor1Eubqet/n0uwyPTRSiPeS0kE6jGZG+e0/9xVI=
+        b=lcpM2LoLgYdNF+Lg7PiW+QHJ5SMSCWSkodF2OrFosl7U/hX5OmJ7fTa3fobLBWYK1
+         aUf4hZs2fpXdILZKBnhw+PGB34iabXS/hVnAFmayFIvotFo6uozckaoOtmVT12N924
+         T/6cxqmfZ1RIWDsstfBUxKCvnIwhaX52RRZ57HuE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH 5.16 109/200] hwmon: (lm90) Mark alert as broken for MAX6646/6647/6649
-Date:   Mon, 31 Jan 2022 11:56:12 +0100
-Message-Id: <20220131105237.246457324@linuxfoundation.org>
+        stable@vger.kernel.org, Congyu Liu <liu3101@purdue.edu>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 108/200] net: fix information leakage in /proc/net/ptype
+Date:   Mon, 31 Jan 2022 11:56:11 +0100
+Message-Id: <20220131105237.215487960@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -45,31 +47,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guenter Roeck <linux@roeck-us.net>
+From: Congyu Liu <liu3101@purdue.edu>
 
-commit f614629f9c1080dcc844a8430e3fb4c37ebbf05d upstream.
+commit 47934e06b65637c88a762d9c98329ae6e3238888 upstream.
 
-Experiments with MAX6646 and MAX6648 show that the alert function of those
-chips is broken, similar to other chips supported by the lm90 driver.
-Mark it accordingly.
+In one net namespace, after creating a packet socket without binding
+it to a device, users in other net namespaces can observe the new
+`packet_type` added by this packet socket by reading `/proc/net/ptype`
+file. This is minor information leakage as packet socket is
+namespace aware.
 
-Fixes: 4667bcb8d8fc ("hwmon: (lm90) Introduce chip parameter structure")
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Add a net pointer in `packet_type` to keep the net namespace of
+of corresponding packet socket. In `ptype_seq_show`, this net pointer
+must be checked when it is not NULL.
+
+Fixes: 2feb27dbe00c ("[NETNS]: Minor information leak via /proc/net/ptype file.")
+Signed-off-by: Congyu Liu <liu3101@purdue.edu>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hwmon/lm90.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/netdevice.h |    1 +
+ net/core/net-procfs.c     |    3 ++-
+ net/packet/af_packet.c    |    2 ++
+ 3 files changed, 5 insertions(+), 1 deletion(-)
 
---- a/drivers/hwmon/lm90.c
-+++ b/drivers/hwmon/lm90.c
-@@ -394,7 +394,7 @@ static const struct lm90_params lm90_par
- 		.max_convrate = 9,
- 	},
- 	[max6646] = {
--		.flags = LM90_HAVE_CRIT,
-+		.flags = LM90_HAVE_CRIT | LM90_HAVE_BROKEN_ALERT,
- 		.alert_alarms = 0x7c,
- 		.max_convrate = 6,
- 		.reg_local_ext = MAX6657_REG_R_LOCAL_TEMPL,
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -2636,6 +2636,7 @@ struct packet_type {
+ 					      struct net_device *);
+ 	bool			(*id_match)(struct packet_type *ptype,
+ 					    struct sock *sk);
++	struct net		*af_packet_net;
+ 	void			*af_packet_priv;
+ 	struct list_head	list;
+ };
+--- a/net/core/net-procfs.c
++++ b/net/core/net-procfs.c
+@@ -260,7 +260,8 @@ static int ptype_seq_show(struct seq_fil
+ 
+ 	if (v == SEQ_START_TOKEN)
+ 		seq_puts(seq, "Type Device      Function\n");
+-	else if (pt->dev == NULL || dev_net(pt->dev) == seq_file_net(seq)) {
++	else if ((!pt->af_packet_net || net_eq(pt->af_packet_net, seq_file_net(seq))) &&
++		 (!pt->dev || net_eq(dev_net(pt->dev), seq_file_net(seq)))) {
+ 		if (pt->type == htons(ETH_P_ALL))
+ 			seq_puts(seq, "ALL ");
+ 		else
+--- a/net/packet/af_packet.c
++++ b/net/packet/af_packet.c
+@@ -1773,6 +1773,7 @@ static int fanout_add(struct sock *sk, s
+ 		match->prot_hook.dev = po->prot_hook.dev;
+ 		match->prot_hook.func = packet_rcv_fanout;
+ 		match->prot_hook.af_packet_priv = match;
++		match->prot_hook.af_packet_net = read_pnet(&match->net);
+ 		match->prot_hook.id_match = match_fanout_group;
+ 		match->max_num_members = args->max_num_members;
+ 		list_add(&match->list, &fanout_list);
+@@ -3358,6 +3359,7 @@ static int packet_create(struct net *net
+ 		po->prot_hook.func = packet_rcv_spkt;
+ 
+ 	po->prot_hook.af_packet_priv = sk;
++	po->prot_hook.af_packet_net = sock_net(sk);
+ 
+ 	if (proto) {
+ 		po->prot_hook.type = proto;
 
 
