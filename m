@@ -2,113 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97AE8C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DADC2C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:20:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377473AbiAaLST (ORCPT
+        id S1377570AbiAaLS2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:18:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44612 "EHLO
+        Mon, 31 Jan 2022 06:18:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377568AbiAaLKM (ORCPT
+        with ESMTP id S1377569AbiAaLKM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 31 Jan 2022 06:10:12 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C88F0C061401;
-        Mon, 31 Jan 2022 03:09:29 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 67E2760F96;
-        Mon, 31 Jan 2022 11:09:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C002C340E8;
-        Mon, 31 Jan 2022 11:09:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627368;
-        bh=RXJiMghcv4iaFoYHI7dB/1o8hostNGLl4333WgzAptc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l0mLmNW1mJ1PuP3GPcPHLWu85X493Ggex1Ba33azSfxYZPThizJKtWQlU02VsK3gq
-         s9hmV8BncrEDTY4vq+HaVwpI4c/f74Yijup6Yluq0JllvUivhhICQhsURNy7UZKQfe
-         H+SLezlmSIStpCRwLLNC50lIat/p5sQqXJFB+7ok=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Dmitry V. Levin" <ldv@altlinux.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.15 028/171] powerpc/audit: Fix syscall_get_arch()
-Date:   Mon, 31 Jan 2022 11:54:53 +0100
-Message-Id: <20220131105230.972888808@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
-References: <20220131105229.959216821@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43410C061757
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 03:09:30 -0800 (PST)
+Received: by mail-yb1-xb2e.google.com with SMTP id k17so39205707ybk.6
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 03:09:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=AlZH+tDYLmF3Zzrk3imgIWNOsXQVmniQWCFRf+PIgeM=;
+        b=jEFfnaCKWNR3SNY3xucQ07Pa9aApMh/R25SgjXNpurSnsC4mxVp4CpMsYdrBTWBkaD
+         wlmTYCCDBYlp+7UAVZ8qKZOy3obMT5TzjBU3wyShfZfXtMEZdBfHDRXRxYv0GUgbkLUY
+         h2o72aBH7Y60v0Txm0KFgrgHLpLiRvwOK0mIXeoosTikjjCP5b/8j49Ls3D+43WBmTCG
+         ghgea+oiGYiXYvn24Ojs4/1UJibWyrgr68IJgSDosb4Hk6LG7pZvonwZv2hn6DjolZ0P
+         /R/fWGp0LHR4R7xOzQlyYCVkydVOSHnNqy+LFOLU+tR8Fm+v8/zbI/rfxajvr/qBNAdP
+         N/tQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=AlZH+tDYLmF3Zzrk3imgIWNOsXQVmniQWCFRf+PIgeM=;
+        b=7G2O8z4accq7CJKi5f0vQkrNrMHAv18IYHyKUfCIX5st8CZf0tdHbAZdHaRbTIKOfR
+         u1zl58ln38bFSLLG3lz2+GiE6gDJK6ARSjpQsEWElceqqqvl0AbnwJdEh1l05IJQGn0P
+         A9hv/v6togBw3yumvA4z9TbqYfG27Eb1Zh67rTiZ01xhN7aNAzO2vY+8iZdnQanKZbso
+         6D+N57444/ZgUt7iE5Y9rzYAilnfp+012d4/mk3JxXch8UZ2oH2F3sgKcGrm0uFHIT4o
+         3Ul6vmhHNkmY0O+9LFCPoUWHl6keusQgcxLdixwldlrZlHoOJgvLWHz47sJu5+p7Zuul
+         oQNQ==
+X-Gm-Message-State: AOAM530xJSOiUz9qg3OKUhw+FB3r1HMtQP+X67ORJtiKTBmglO3pXXXZ
+        bApzLrfNGKuVqSK8sEtLTPh4pGuArYDoL/mCUx5DfA==
+X-Google-Smtp-Source: ABdhPJxwl5kAKtfrO02F1W5bcEFmhrWdTklWGteiWHcX9Rg5J/4UmKrYw6TZuMEvz4WSj/2Gk9hSILJrEgLFS68S+bA=
+X-Received: by 2002:a05:6902:124a:: with SMTP id t10mr26381408ybu.634.1643627369543;
+ Mon, 31 Jan 2022 03:09:29 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220131085201.307031-1-horatiu.vultur@microchip.com>
+In-Reply-To: <20220131085201.307031-1-horatiu.vultur@microchip.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Mon, 31 Jan 2022 12:09:17 +0100
+Message-ID: <CACRpkdZgzd7_h9qnKeq2c4ERPzeOk0YdkQho5=4GcvY_zSvWjA@mail.gmail.com>
+Subject: Re: [PATCH v2] pinctrl: microchip-sgpio: Fix support for regmap
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        lars.povlsen@microchip.com, Steen.Hegelund@microchip.com,
+        UNGLinuxDriver@microchip.com, colin.foster@in-advantage.com,
+        andy.shevchenko@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+On Mon, Jan 31, 2022 at 9:50 AM Horatiu Vultur
+<horatiu.vultur@microchip.com> wrote:
 
-commit 252745240ba0ae774d2f80c5e185ed59fbc4fb41 upstream.
+> Initially the driver accessed the registers using u32 __iomem but then
+> in the blamed commit it changed it to use regmap. The problem is that now
+> the offset of the registers is not calculated anymore at word offset but
+> at byte offset. Therefore make sure to multiply the offset with word size.
+>
+> Acked-by: Steen Hegelund <Steen.Hegelund@microchip.com>
+> Reviewed-by: Colin Foster <colin.foster@in-advantage.com>
+> Fixes: 2afbbab45c261a ("pinctrl: microchip-sgpio: update to support regmap")
+> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 
-Commit 770cec16cdc9 ("powerpc/audit: Simplify syscall_get_arch()")
-and commit 898a1ef06ad4 ("powerpc/audit: Avoid unneccessary #ifdef
-in syscall_get_arguments()")
-replaced test_tsk_thread_flag(task, TIF_32BIT)) by is_32bit_task().
+Patch applied for fixes.
 
-But is_32bit_task() applies on current task while be want the test
-done on task 'task'
+I didn't get last weeks fixes to Torvalds this weekend because linux-next
+wasn't being compiled, will send the lot with this on top this week.
 
-So add a new macro is_tsk_32bit_task() to check any task.
-
-Fixes: 770cec16cdc9 ("powerpc/audit: Simplify syscall_get_arch()")
-Fixes: 898a1ef06ad4 ("powerpc/audit: Avoid unneccessary #ifdef in syscall_get_arguments()")
-Cc: stable@vger.kernel.org
-Reported-by: Dmitry V. Levin <ldv@altlinux.org>
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/c55cddb8f65713bf5859ed675d75a50cb37d5995.1642159570.git.christophe.leroy@csgroup.eu
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/powerpc/include/asm/syscall.h     |    4 ++--
- arch/powerpc/include/asm/thread_info.h |    2 ++
- 2 files changed, 4 insertions(+), 2 deletions(-)
-
---- a/arch/powerpc/include/asm/syscall.h
-+++ b/arch/powerpc/include/asm/syscall.h
-@@ -90,7 +90,7 @@ static inline void syscall_get_arguments
- 	unsigned long val, mask = -1UL;
- 	unsigned int n = 6;
- 
--	if (is_32bit_task())
-+	if (is_tsk_32bit_task(task))
- 		mask = 0xffffffff;
- 
- 	while (n--) {
-@@ -115,7 +115,7 @@ static inline void syscall_set_arguments
- 
- static inline int syscall_get_arch(struct task_struct *task)
- {
--	if (is_32bit_task())
-+	if (is_tsk_32bit_task(task))
- 		return AUDIT_ARCH_PPC;
- 	else if (IS_ENABLED(CONFIG_CPU_LITTLE_ENDIAN))
- 		return AUDIT_ARCH_PPC64LE;
---- a/arch/powerpc/include/asm/thread_info.h
-+++ b/arch/powerpc/include/asm/thread_info.h
-@@ -165,8 +165,10 @@ static inline bool test_thread_local_fla
- 
- #ifdef CONFIG_COMPAT
- #define is_32bit_task()	(test_thread_flag(TIF_32BIT))
-+#define is_tsk_32bit_task(tsk)	(test_tsk_thread_flag(tsk, TIF_32BIT))
- #else
- #define is_32bit_task()	(IS_ENABLED(CONFIG_PPC32))
-+#define is_tsk_32bit_task(tsk)	(IS_ENABLED(CONFIG_PPC32))
- #endif
- 
- #if defined(CONFIG_PPC64)
-
-
+Yours,
+Linus Walleij
