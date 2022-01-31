@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DE9CC43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:48:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C569C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:48:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378425AbiAaLsa (ORCPT
+        id S1378530AbiAaLsi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:48:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51600 "EHLO
+        Mon, 31 Jan 2022 06:48:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359446AbiAaLgG (ORCPT
+        with ESMTP id S1377608AbiAaLgo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:36:06 -0500
+        Mon, 31 Jan 2022 06:36:44 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACCAAC0797AA;
-        Mon, 31 Jan 2022 03:24:15 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2AFBC08C5FE;
+        Mon, 31 Jan 2022 03:24:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6DD62B82A59;
-        Mon, 31 Jan 2022 11:24:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40E78C340E8;
-        Mon, 31 Jan 2022 11:24:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7A3C8B82A61;
+        Mon, 31 Jan 2022 11:24:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD802C36AE3;
+        Mon, 31 Jan 2022 11:24:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643628253;
-        bh=MBN22VmzfNkPcLqzGiCFTU1wm89FYeeBn5uoaTj78F8=;
+        s=korg; t=1643628297;
+        bh=rYGaHByqYJDUZ44c0fnl0gDVIASjO25cAfhwqHt8L6M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a7tCaOMy0dgYBt/n9OXIEQcfFMI+6dCK5WUs/FJwduZYisNEhE0kMg8CyM3L+Fv6f
-         8RyCZNOpZhJ0whEfcJpJKUMFOPESKEVaITe8qG+vJ7/RcPpHFepUQhNPVqePQQVKYF
-         cLyKTuOBIurwiNnNJS1tXmNvuqMLaRNodVAAuP3Q=
+        b=Mfn1d0Bgjde62UjGJXEl2GIrVyVONiiv8TpwIva7Z+OgwLkX/RJIF26+Q7P4B4QJ6
+         f5rd1ct8xhZd+40o0v4UJiYmNF812ByKyooy52Q3wTtjG6795CJLmJ5J6VDGfoNUXT
+         76eOXVwVvmVz/LWJyxC6n0Qb+1yIhwlI0N/4rT38=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Kelley <mikelley@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Helge Deller <deller@gmx.de>, Wei Liu <wei.liu@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 166/200] video: hyperv_fb: Fix validation of screen resolution
-Date:   Mon, 31 Jan 2022 11:57:09 +0100
-Message-Id: <20220131105239.137560916@linuxfoundation.org>
+        stable@vger.kernel.org, Sander Vanheule <sander@svanheule.net>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 187/200] irqchip/realtek-rtl: Map control data to virq
+Date:   Mon, 31 Jan 2022 11:57:30 +0100
+Message-Id: <20220131105239.828805478@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -51,99 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Kelley <mikelley@microsoft.com>
+From: Sander Vanheule <sander@svanheule.net>
 
-[ Upstream commit 9ff5549b1d1d3c3a9d71220d44bd246586160f1d ]
+commit 291e79c7e2eb6fdc016453597b78482e06199d0f upstream.
 
-In the WIN10 version of the Synthetic Video protocol with Hyper-V,
-Hyper-V reports a list of supported resolutions as part of the protocol
-negotiation. The driver calculates the maximum width and height from
-the list of resolutions, and uses those maximums to validate any screen
-resolution specified in the video= option on the kernel boot line.
+The driver assigned the irqchip and irq handler to the hardware irq,
+instead of the virq. This is incorrect, and only worked because these
+irq numbers happened to be the same on the devices used for testing the
+original driver.
 
-This method of validation is incorrect. For example, the list of
-supported resolutions could contain 1600x1200 and 1920x1080, both of
-which fit in an 8 Mbyte frame buffer.  But calculating the max width
-and height yields 1920 and 1200, and 1920x1200 resolution does not fit
-in an 8 Mbyte frame buffer.  Unfortunately, this resolution is accepted,
-causing a kernel fault when the driver accesses memory outside the
-frame buffer.
-
-Instead, validate the specified screen resolution by calculating
-its size, and comparing against the frame buffer size.  Delete the
-code for calculating the max width and height from the list of
-resolutions, since these max values have no use.  Also add the
-frame buffer size to the info message to aid in understanding why
-a resolution might be rejected.
-
-Fixes: 67e7cdb4829d ("video: hyperv: hyperv_fb: Obtain screen resolution from Hyper-V host")
-Signed-off-by: Michael Kelley <mikelley@microsoft.com>
-Reviewed-by: Haiyang Zhang <haiyangz@microsoft.com>
-Acked-by: Helge Deller <deller@gmx.de>
-Link: https://lore.kernel.org/r/1642360711-2335-1-git-send-email-mikelley@microsoft.com
-Signed-off-by: Wei Liu <wei.liu@kernel.org>
+Fixes: 9f3a0f34b84a ("irqchip: Add support for Realtek RTL838x/RTL839x interrupt controller")
+Signed-off-by: Sander Vanheule <sander@svanheule.net>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/4b4936606480265db47df152f00bc2ed46340599.1641739718.git.sander@svanheule.net
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/hyperv_fb.c | 16 +++-------------
- 1 file changed, 3 insertions(+), 13 deletions(-)
+ drivers/irqchip/irq-realtek-rtl.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c
-index 23999df527393..c8e0ea27caf1d 100644
---- a/drivers/video/fbdev/hyperv_fb.c
-+++ b/drivers/video/fbdev/hyperv_fb.c
-@@ -287,8 +287,6 @@ struct hvfb_par {
+--- a/drivers/irqchip/irq-realtek-rtl.c
++++ b/drivers/irqchip/irq-realtek-rtl.c
+@@ -62,7 +62,7 @@ static struct irq_chip realtek_ictl_irq
  
- static uint screen_width = HVFB_WIDTH;
- static uint screen_height = HVFB_HEIGHT;
--static uint screen_width_max = HVFB_WIDTH;
--static uint screen_height_max = HVFB_HEIGHT;
- static uint screen_depth;
- static uint screen_fb_size;
- static uint dio_fb_size; /* FB size for deferred IO */
-@@ -582,7 +580,6 @@ static int synthvid_get_supported_resolution(struct hv_device *hdev)
- 	int ret = 0;
- 	unsigned long t;
- 	u8 index;
--	int i;
+ static int intc_map(struct irq_domain *d, unsigned int irq, irq_hw_number_t hw)
+ {
+-	irq_set_chip_and_handler(hw, &realtek_ictl_irq, handle_level_irq);
++	irq_set_chip_and_handler(irq, &realtek_ictl_irq, handle_level_irq);
  
- 	memset(msg, 0, sizeof(struct synthvid_msg));
- 	msg->vid_hdr.type = SYNTHVID_RESOLUTION_REQUEST;
-@@ -613,13 +610,6 @@ static int synthvid_get_supported_resolution(struct hv_device *hdev)
- 		goto out;
- 	}
- 
--	for (i = 0; i < msg->resolution_resp.resolution_count; i++) {
--		screen_width_max = max_t(unsigned int, screen_width_max,
--		    msg->resolution_resp.supported_resolution[i].width);
--		screen_height_max = max_t(unsigned int, screen_height_max,
--		    msg->resolution_resp.supported_resolution[i].height);
--	}
--
- 	screen_width =
- 		msg->resolution_resp.supported_resolution[index].width;
- 	screen_height =
-@@ -941,7 +931,7 @@ static void hvfb_get_option(struct fb_info *info)
- 
- 	if (x < HVFB_WIDTH_MIN || y < HVFB_HEIGHT_MIN ||
- 	    (synthvid_ver_ge(par->synthvid_version, SYNTHVID_VERSION_WIN10) &&
--	    (x > screen_width_max || y > screen_height_max)) ||
-+	    (x * y * screen_depth / 8 > screen_fb_size)) ||
- 	    (par->synthvid_version == SYNTHVID_VERSION_WIN8 &&
- 	     x * y * screen_depth / 8 > SYNTHVID_FB_SIZE_WIN8) ||
- 	    (par->synthvid_version == SYNTHVID_VERSION_WIN7 &&
-@@ -1194,8 +1184,8 @@ static int hvfb_probe(struct hv_device *hdev,
- 	}
- 
- 	hvfb_get_option(info);
--	pr_info("Screen resolution: %dx%d, Color depth: %d\n",
--		screen_width, screen_height, screen_depth);
-+	pr_info("Screen resolution: %dx%d, Color depth: %d, Frame buffer size: %d\n",
-+		screen_width, screen_height, screen_depth, screen_fb_size);
- 
- 	ret = hvfb_getmem(hdev, info);
- 	if (ret) {
--- 
-2.34.1
-
+ 	return 0;
+ }
 
 
