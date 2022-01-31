@@ -2,87 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAC62C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:51:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1E4AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:51:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351681AbiAaLvW (ORCPT
+        id S1377282AbiAaLv0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:51:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51678 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235580AbiAaLkW (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:40:22 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06EA0C03540F;
-        Mon, 31 Jan 2022 03:25:44 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BB7DBB82A60;
-        Mon, 31 Jan 2022 11:25:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D65DDC340E8;
-        Mon, 31 Jan 2022 11:25:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643628341;
-        bh=6EjY/S8FSs3rNCSbFDkGCHtYXxGZQOyicmF3xyyN1jI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=syuZwH11MzTePLenjgXuKn6akp43KWcRNAgvv/N72MS+d+xqEl/DJZrNPoT8uIx1H
-         Rii+4ZOulyL0LEJEQan5MKvKmoEUSyjEiHtRnIiE56c2m88Fb4P2/Yo3hOgFgdC2kX
-         aKxu7nyQe9NOdUs5nadReVmow1Ws01aL5olhyMIs=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+ac94ae5f68b84197f41c@syzkaller.appspotmail.com,
-        OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>,
-        Ming Lei <ming.lei@redhat.com>, Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.16 200/200] block: Fix wrong offset in bio_truncate()
-Date:   Mon, 31 Jan 2022 11:57:43 +0100
-Message-Id: <20220131105240.252099209@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
-References: <20220131105233.561926043@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 31 Jan 2022 06:51:26 -0500
+Received: from mga02.intel.com ([134.134.136.20]:11337 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1377892AbiAaLdm (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 06:33:42 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643628823; x=1675164823;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=r2zU0vRwxWHr5Wrk87f5nIJZlDMOAovObT6GySVXQkE=;
+  b=L/TEpVI5BkG6uR/p3qgeKg8ejxmzYMwvpxVlyTS3CPlgcNskBJb9g5RM
+   CeyRTaqO+/uU2zGXlSDefVjVy8ZP6Sw77156n0TMeIwnA61APEkh+Qt3p
+   08Wac65qlPs7FytEIhvg5cyrGg55v+iRG5ThlrHoNhZDaG/SzUP1DBEJr
+   6c1IJYs/79eebt09fysZc9rApBqLjv/lhCFUO5uS/HHop9IZJd+w2flVn
+   t7zvPDDVOe/MUjfsGpi1Zk5AJGLkY8Ayo/kNQQcNMcRUJbpP+D495EELn
+   m79KuzoghM/2AErIOtAixfSNfqOhGRq/RBKqPlym+ru6wUrbH+9e4UCTX
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10243"; a="234832591"
+X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
+   d="scan'208";a="234832591"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 03:25:30 -0800
+X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
+   d="scan'208";a="629991075"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 03:25:28 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nEUnJ-00GqaD-2Z;
+        Mon, 31 Jan 2022 13:24:25 +0200
+Date:   Mon, 31 Jan 2022 13:24:24 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org
+Subject: Re: [PATCH] surface: surface3-wmi: Simplify resource management
+Message-ID: <YffG6JKmGCS1/h08@smile.fi.intel.com>
+References: <8b1a6d05036d5d9527241b2345482b369331ce5c.1643531799.git.christophe.jaillet@wanadoo.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8b1a6d05036d5d9527241b2345482b369331ce5c.1643531799.git.christophe.jaillet@wanadoo.fr>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
+On Sun, Jan 30, 2022 at 09:36:54AM +0100, Christophe JAILLET wrote:
+> 's3_wmi.input' is a managed resource, so there should be no need to free it
+> explicitly.
+> 
+> Moreover, 's3_wmi' is a global variable. 's3_wmi.input' should be NULL
+> when this error handling path is executed, because it has not been
+> assigned yet.
+> 
+> All this is puzzling. So simplify it and remove a few lines of code to have
+> it be more straightforward.
 
-commit 3ee859e384d453d6ac68bfd5971f630d9fa46ad3 upstream.
 
-bio_truncate() clears the buffer outside of last block of bdev, however
-current bio_truncate() is using the wrong offset of page. So it can
-return the uninitialized data.
+Seems correct cleanup / fix to me
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-This happened when both of truncated/corrupted FS and userspace (via
-bdev) are trying to read the last of bdev.
+> Fixes: 3dda3b3798f9 ("platform/x86: Add custom surface3 platform device for controlling LID")
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
+> Compile tested only
+> ---
+>  drivers/platform/surface/surface3-wmi.c | 5 +----
+>  1 file changed, 1 insertion(+), 4 deletions(-)
+> 
+> diff --git a/drivers/platform/surface/surface3-wmi.c b/drivers/platform/surface/surface3-wmi.c
+> index 09ac9cfc40d8..b9a4b2d81f4b 100644
+> --- a/drivers/platform/surface/surface3-wmi.c
+> +++ b/drivers/platform/surface/surface3-wmi.c
+> @@ -190,14 +190,11 @@ static int s3_wmi_create_and_register_input(struct platform_device *pdev)
+>  
+>  	error = input_register_device(input);
+>  	if (error)
+> -		goto out_err;
+> +		return error;
+>  
+>  	s3_wmi.input = input;
+>  
+>  	return 0;
+> - out_err:
+> -	input_free_device(s3_wmi.input);
+> -	return error;
+>  }
+>  
+>  static int __init s3_wmi_probe(struct platform_device *pdev)
+> -- 
+> 2.32.0
+> 
 
-Reported-by: syzbot+ac94ae5f68b84197f41c@syzkaller.appspotmail.com
-Signed-off-by: OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
-Reviewed-by: Ming Lei <ming.lei@redhat.com>
-Link: https://lore.kernel.org/r/875yqt1c9g.fsf@mail.parknet.co.jp
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- block/bio.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
---- a/block/bio.c
-+++ b/block/bio.c
-@@ -569,7 +569,8 @@ static void bio_truncate(struct bio *bio
- 				offset = new_size - done;
- 			else
- 				offset = 0;
--			zero_user(bv.bv_page, offset, bv.bv_len - offset);
-+			zero_user(bv.bv_page, bv.bv_offset + offset,
-+				  bv.bv_len - offset);
- 			truncated = true;
- 		}
- 		done += bv.bv_len;
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
