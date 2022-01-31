@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9A9AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:32:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4C5CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:32:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343720AbiAaLcH (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:32:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47360 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376640AbiAaLVy (ORCPT
+        id S233490AbiAaLcQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 31 Jan 2022 06:32:16 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:55130 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377002AbiAaLWU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:21:54 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 613C3C0401F9;
-        Mon, 31 Jan 2022 03:14:23 -0800 (PST)
+        Mon, 31 Jan 2022 06:22:20 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 22221B82A77;
-        Mon, 31 Jan 2022 11:14:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A3EBC36AE7;
-        Mon, 31 Jan 2022 11:14:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5972A61298;
+        Mon, 31 Jan 2022 11:22:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35676C340E8;
+        Mon, 31 Jan 2022 11:22:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627661;
-        bh=TM6ShBcuDBeRXjnrT7eROLG26xrXJ3qDuQdpyK5UxLk=;
+        s=korg; t=1643628139;
+        bh=tcdbW/8UqgiCGn1wuJRWV1j3SX/4Fj4DznIlan+YDvo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XNX9+gCO7hhP3kbZrGJRNnqZ6JnRWtilj1WKgOko8jhU0TBO+RdCaeBC7J2rEK8I/
-         lXNNL8sLVObuWoR8zT4qq56MqJ+iYp8/enDGvro3qXSIUUKIXIfdKAap02+Yob12t4
-         kLVyilf1e46St7EQQwfSmZ7H8wmLHrYeB4zB/OMs=
+        b=ITemSXb4Mw+AlxiC/pViOyB8Cqk/JjeROoQDoNbJ2P5fI1Xifg6qlFK1fzirTnqak
+         6IDLqq1KPyptEHAjLFVBTCOSiwJNRolGpfmBrQkgvJfDJ9wikwu5tj/Ll9cI70YRFo
+         VSXNiy/Rs4WsfdJWvdUfnT0oNu0UfCU0R8aoR7KE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Benjamin Poirier <bpoirier@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Rick Yiu <rickyiu@google.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Sachin Sant <sachinp@linux.ibm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 156/171] net: bridge: vlan: fix single net device option dumping
-Date:   Mon, 31 Jan 2022 11:57:01 +0100
-Message-Id: <20220131105235.298947896@linuxfoundation.org>
+Subject: [PATCH 5.16 130/200] sched/pelt: Relax the sync of util_sum with util_avg
+Date:   Mon, 31 Jan 2022 11:56:33 +0100
+Message-Id: <20220131105237.926644981@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
-References: <20220131105229.959216821@linuxfoundation.org>
+In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
+References: <20220131105233.561926043@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,40 +49,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nikolay Aleksandrov <nikolay@nvidia.com>
+From: Vincent Guittot <vincent.guittot@linaro.org>
 
-[ Upstream commit dcb2c5c6ca9b9177f04abaf76e5a983d177c9414 ]
+[ Upstream commit 98b0d890220d45418cfbc5157b3382e6da5a12ab ]
 
-When dumping vlan options for a single net device we send the same
-entries infinitely because user-space expects a 0 return at the end but
-we keep returning skb->len and restarting the dump on retry. Fix it by
-returning the value from br_vlan_dump_dev() if it completed or there was
-an error. The only case that must return skb->len is when the dump was
-incomplete and needs to continue (-EMSGSIZE).
+Rick reported performance regressions in bugzilla because of cpu frequency
+being lower than before:
+    https://bugzilla.kernel.org/show_bug.cgi?id=215045
 
-Reported-by: Benjamin Poirier <bpoirier@nvidia.com>
-Fixes: 8dcea187088b ("net: bridge: vlan: add rtm definitions and dump support")
-Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+He bisected the problem to:
+commit 1c35b07e6d39 ("sched/fair: Ensure _sum and _avg values stay consistent")
+
+This commit forces util_sum to be synced with the new util_avg after
+removing the contribution of a task and before the next periodic sync. By
+doing so util_sum is rounded to its lower bound and might lost up to
+LOAD_AVG_MAX-1 of accumulated contribution which has not yet been
+reflected in util_avg.
+
+Instead of always setting util_sum to the low bound of util_avg, which can
+significantly lower the utilization of root cfs_rq after propagating the
+change down into the hierarchy, we revert the change of util_sum and
+propagate the difference.
+
+In addition, we also check that cfs's util_sum always stays above the
+lower bound for a given util_avg as it has been observed that
+sched_entity's util_sum is sometimes above cfs one.
+
+Fixes: 1c35b07e6d39 ("sched/fair: Ensure _sum and _avg values stay consistent")
+Reported-by: Rick Yiu <rickyiu@google.com>
+Signed-off-by: Vincent Guittot <vincent.guittot@linaro.org>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Tested-by: Sachin Sant <sachinp@linux.ibm.com>
+Link: https://lkml.kernel.org/r/20220111134659.24961-2-vincent.guittot@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bridge/br_vlan.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ kernel/sched/fair.c | 16 +++++++++++++---
+ kernel/sched/pelt.h |  4 +++-
+ 2 files changed, 16 insertions(+), 4 deletions(-)
 
-diff --git a/net/bridge/br_vlan.c b/net/bridge/br_vlan.c
-index 19f65ab91a027..06f5caee495aa 100644
---- a/net/bridge/br_vlan.c
-+++ b/net/bridge/br_vlan.c
-@@ -2105,7 +2105,8 @@ static int br_vlan_rtm_dump(struct sk_buff *skb, struct netlink_callback *cb)
- 			goto out_err;
- 		}
- 		err = br_vlan_dump_dev(dev, skb, cb, dump_flags);
--		if (err && err != -EMSGSIZE)
-+		/* if the dump completed without an error we return 0 here */
-+		if (err != -EMSGSIZE)
- 			goto out_err;
- 	} else {
- 		for_each_netdev_rcu(net, dev) {
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index f2cf047b25e56..069e01772d922 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -3382,7 +3382,6 @@ void set_task_rq_fair(struct sched_entity *se,
+ 	se->avg.last_update_time = n_last_update_time;
+ }
+ 
+-
+ /*
+  * When on migration a sched_entity joins/leaves the PELT hierarchy, we need to
+  * propagate its contribution. The key to this propagation is the invariant
+@@ -3450,7 +3449,6 @@ void set_task_rq_fair(struct sched_entity *se,
+  * XXX: only do this for the part of runnable > running ?
+  *
+  */
+-
+ static inline void
+ update_tg_cfs_util(struct cfs_rq *cfs_rq, struct sched_entity *se, struct cfs_rq *gcfs_rq)
+ {
+@@ -3682,7 +3680,19 @@ update_cfs_rq_load_avg(u64 now, struct cfs_rq *cfs_rq)
+ 
+ 		r = removed_util;
+ 		sub_positive(&sa->util_avg, r);
+-		sa->util_sum = sa->util_avg * divider;
++		sub_positive(&sa->util_sum, r * divider);
++		/*
++		 * Because of rounding, se->util_sum might ends up being +1 more than
++		 * cfs->util_sum. Although this is not a problem by itself, detaching
++		 * a lot of tasks with the rounding problem between 2 updates of
++		 * util_avg (~1ms) can make cfs->util_sum becoming null whereas
++		 * cfs_util_avg is not.
++		 * Check that util_sum is still above its lower bound for the new
++		 * util_avg. Given that period_contrib might have moved since the last
++		 * sync, we are only sure that util_sum must be above or equal to
++		 *    util_avg * minimum possible divider
++		 */
++		sa->util_sum = max_t(u32, sa->util_sum, sa->util_avg * PELT_MIN_DIVIDER);
+ 
+ 		r = removed_runnable;
+ 		sub_positive(&sa->runnable_avg, r);
+diff --git a/kernel/sched/pelt.h b/kernel/sched/pelt.h
+index e06071bf3472c..c336f5f481bca 100644
+--- a/kernel/sched/pelt.h
++++ b/kernel/sched/pelt.h
+@@ -37,9 +37,11 @@ update_irq_load_avg(struct rq *rq, u64 running)
+ }
+ #endif
+ 
++#define PELT_MIN_DIVIDER	(LOAD_AVG_MAX - 1024)
++
+ static inline u32 get_pelt_divider(struct sched_avg *avg)
+ {
+-	return LOAD_AVG_MAX - 1024 + avg->period_contrib;
++	return PELT_MIN_DIVIDER + avg->period_contrib;
+ }
+ 
+ static inline void cfs_se_util_change(struct sched_avg *avg)
 -- 
 2.34.1
 
