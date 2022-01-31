@@ -2,39 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28619C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:35:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14731C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:35:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377775AbiAaLdc (ORCPT
+        id S1377811AbiAaLdf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:33:32 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:56054 "EHLO
+        Mon, 31 Jan 2022 06:33:35 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:56104 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377602AbiAaLXL (ORCPT
+        with ESMTP id S1377735AbiAaLXR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:23:11 -0500
+        Mon, 31 Jan 2022 06:23:17 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 97C8E60ED0;
-        Mon, 31 Jan 2022 11:23:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91BC5C340E8;
-        Mon, 31 Jan 2022 11:23:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E9A7F6125A;
+        Mon, 31 Jan 2022 11:23:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B40B7C340E8;
+        Mon, 31 Jan 2022 11:23:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643628190;
-        bh=ZOL6rUN3wT1gBttG/d1EVyzJDAYDIoRciQx+cPr5nZE=;
+        s=korg; t=1643628196;
+        bh=MdEWgjRKDfc9GzOB4w6Dt4/YiyXxToHdfVqILfT/0eE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=szAaO1r31LGCd//5g4PfT1CCAUN9c1wrX7bNXdawJDMFBIQnuQlRt/wrCkxjdt0nt
-         KFiEsErAUykWAmyz1cMV29VYmT2OqCpmHLWr7S4244KA14O9BDE5O9R0WFog/5Y3lC
-         HmPeov43AM8oD26JN6PeVa7lMGNWdQ6UQUkWjYFU=
+        b=wwPJujxxv6JJmqiGRYqriDRH9zK19nHjviaUIHNRKGLJt7OEeDETLvIga34ut11lM
+         GMxkvO3Mvdrg0Evk/BFYvx2xkhQeUWRXyb7CF1fVU8m1YHqb8xIJC4lxY1UxO1xX57
+         L4hiIRNxDpqiKqB4tTxCUiKTITYH4VJVF+evKN68=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dylan Yudaken <dylany@fb.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 153/200] io_uring: fix bug in slow unregistering of nodes
-Date:   Mon, 31 Jan 2022 11:56:56 +0100
-Message-Id: <20220131105238.710162802@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
+        "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>,
+        Yanming Liu <yanminglr@gmail.com>,
+        Wei Liu <wei.liu@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 155/200] Drivers: hv: balloon: account for vmbus packet header in max_pkt_size
+Date:   Mon, 31 Jan 2022 11:56:58 +0100
+Message-Id: <20220131105238.770439085@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -46,59 +49,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dylan Yudaken <dylany@fb.com>
+From: Yanming Liu <yanminglr@gmail.com>
 
-[ Upstream commit b36a2050040b2d839bdc044007cdd57101d7f881 ]
+[ Upstream commit 96d9d1fa5cd505078534113308ced0aa56d8da58 ]
 
-In some cases io_rsrc_ref_quiesce will call io_rsrc_node_switch_start,
-and then immediately flush the delayed work queue &ctx->rsrc_put_work.
+Commit adae1e931acd ("Drivers: hv: vmbus: Copy packets sent by Hyper-V
+out of the ring buffer") introduced a notion of maximum packet size in
+vmbus channel and used that size to initialize a buffer holding all
+incoming packet along with their vmbus packet header. hv_balloon uses
+the default maximum packet size VMBUS_DEFAULT_MAX_PKT_SIZE which matches
+its maximum message size, however vmbus_open expects this size to also
+include vmbus packet header. This leads to 4096 bytes
+dm_unballoon_request messages being truncated to 4080 bytes. When the
+driver tries to read next packet it starts from a wrong read_index,
+receives garbage and prints a lot of "Unhandled message: type:
+<garbage>" in dmesg.
 
-However the percpu_ref_put does not immediately destroy the node, it
-will be called asynchronously via RCU. That ends up with
-io_rsrc_node_ref_zero only being called after rsrc_put_work has been
-flushed, and so the process ends up sleeping for 1 second unnecessarily.
+Allocate the buffer with HV_HYP_PAGE_SIZE more bytes to make room for
+the header.
 
-This patch executes the put code immediately if we are busy
-quiescing.
-
-Fixes: 4a38aed2a0a7 ("io_uring: batch reap of dead file registrations")
-Signed-off-by: Dylan Yudaken <dylany@fb.com>
-Link: https://lore.kernel.org/r/20220121123856.3557884-1-dylany@fb.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: adae1e931acd ("Drivers: hv: vmbus: Copy packets sent by Hyper-V out of the ring buffer")
+Suggested-by: Michael Kelley (LINUX) <mikelley@microsoft.com>
+Suggested-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
+Signed-off-by: Yanming Liu <yanminglr@gmail.com>
+Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+Reviewed-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
+Link: https://lore.kernel.org/r/20220119202052.3006981-1-yanminglr@gmail.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/io_uring.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/hv/hv_balloon.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 15f303180d70c..698db7fb62e06 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -7761,10 +7761,15 @@ static __cold void io_rsrc_node_ref_zero(struct percpu_ref *ref)
- 	struct io_ring_ctx *ctx = node->rsrc_data->ctx;
- 	unsigned long flags;
- 	bool first_add = false;
-+	unsigned long delay = HZ;
+diff --git a/drivers/hv/hv_balloon.c b/drivers/hv/hv_balloon.c
+index ca873a3b98dbe..f2d05bff42453 100644
+--- a/drivers/hv/hv_balloon.c
++++ b/drivers/hv/hv_balloon.c
+@@ -1660,6 +1660,13 @@ static int balloon_connect_vsp(struct hv_device *dev)
+ 	unsigned long t;
+ 	int ret;
  
- 	spin_lock_irqsave(&ctx->rsrc_ref_lock, flags);
- 	node->done = true;
- 
-+	/* if we are mid-quiesce then do not delay */
-+	if (node->rsrc_data->quiesce)
-+		delay = 0;
++	/*
++	 * max_pkt_size should be large enough for one vmbus packet header plus
++	 * our receive buffer size. Hyper-V sends messages up to
++	 * HV_HYP_PAGE_SIZE bytes long on balloon channel.
++	 */
++	dev->channel->max_pkt_size = HV_HYP_PAGE_SIZE * 2;
 +
- 	while (!list_empty(&ctx->rsrc_ref_list)) {
- 		node = list_first_entry(&ctx->rsrc_ref_list,
- 					    struct io_rsrc_node, node);
-@@ -7777,7 +7782,7 @@ static __cold void io_rsrc_node_ref_zero(struct percpu_ref *ref)
- 	spin_unlock_irqrestore(&ctx->rsrc_ref_lock, flags);
- 
- 	if (first_add)
--		mod_delayed_work(system_wq, &ctx->rsrc_put_work, HZ);
-+		mod_delayed_work(system_wq, &ctx->rsrc_put_work, delay);
- }
- 
- static struct io_rsrc_node *io_rsrc_node_alloc(struct io_ring_ctx *ctx)
+ 	ret = vmbus_open(dev->channel, dm_ring_size, dm_ring_size, NULL, 0,
+ 			 balloon_onchannelcallback, dev);
+ 	if (ret)
 -- 
 2.34.1
 
