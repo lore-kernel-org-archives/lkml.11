@@ -2,147 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC4E9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 10:35:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1E7FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 10:35:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358256AbiAaKfX (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 05:35:23 -0500
-Received: from mga01.intel.com ([192.55.52.88]:16405 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1358198AbiAaKfW (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 05:35:22 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643625322; x=1675161322;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=5Ps3THcmasrGsnJuJcpK5UxxsYkVWGxZa/gZhdYbC9Y=;
-  b=D67WdBm1GLleSpYC9sKtHpKzh2yrkKrpgHmdQvC/Cgcvcil0rg5RJKuN
-   S9HzeMrnK2XPYnG7BJECAY1EGVLeqizcysBCEO09wrI6Dop5oDhUtonYe
-   Ghz2MCyEXBPVcodUeZI4IpBKXG+fGrwFsfQASFsUh9D9bNZy7fdNjemj7
-   Ybn/Nr8l8FqIUR6gu4nLaQ52K2H6NyPgU1XzWi/mHJ0ksOxyNZ8/QmlY4
-   kmJYbjcs1Qo+LuUl8g478tZ81sjXLxydzQKPXYr3o6CjY3cYJed1JMzie
-   +oCi47tPx9OVLUTQrQQqjZhnnL/Jdpl59MQcPSFM4SQCaSu+VQrDzrwfI
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10243"; a="271903968"
-X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
-   d="scan'208";a="271903968"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 02:35:21 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
-   d="scan'208";a="626328621"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by fmsmga002.fm.intel.com with ESMTP; 31 Jan 2022 02:35:19 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nEU1n-000Rmi-1M; Mon, 31 Jan 2022 10:35:19 +0000
-Date:   Mon, 31 Jan 2022 18:35:05 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Nguyen Dinh Phi <phind.uet@gmail.com>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     kbuild-all@lists.01.org, Nguyen Dinh Phi <phind.uet@gmail.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: vc04_services: make a couple of functions static
-Message-ID: <202201311820.inNbCM0H-lkp@intel.com>
-References: <20220131071006.1764343-1-phind.uet@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220131071006.1764343-1-phind.uet@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S239987AbiAaKfk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 31 Jan 2022 05:35:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37024 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358234AbiAaKeQ (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 05:34:16 -0500
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48019C06173B
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 02:34:16 -0800 (PST)
+Received: by mail-yb1-xb4a.google.com with SMTP id e130-20020a255088000000b006126feb051eso25994591ybb.18
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 02:34:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=gQiXNhpWeE3w8plSrWyGvN1lrZy07A1L66IKLC7CKbA=;
+        b=jBeNywyuEOrcXul646YOTEnDNkvf2B21oUP/1LvS6MfqUeLNbH4ecLDYPUWeYJBghY
+         z3i5ILdvdOG+3+CnkALg8SHprnIucGpcnCQgkDxUIoyEtUk08H/S4biUQfAdMcF4RcDi
+         rm6Tp4txIJN4G18FTdqFDJeQZMu2zGr5Kb72KOMCnErupl+0AsPpFtL/eUu+TekxggYV
+         8WHC9X3E3y8J3Sjg4TWSGzvFUP0F/8Gj/82MlWlodrZo4F++MQ8Y9k3vTM9BY5EPj0Aj
+         5dES73C/VqfnNoLUtMrRSADU3rAktKKtrGALulf1IYdQkDnW/POpci29EY4pLJrtmKCI
+         Ovpw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=gQiXNhpWeE3w8plSrWyGvN1lrZy07A1L66IKLC7CKbA=;
+        b=vJy45Fjox/xVjhxo/iHBP2AnvnE66U2Wo69lQUsO5xjfPf9p1O4xfGGY08cxmCpG7q
+         zEhjsgubipkduxYn/tkkuXPH0bfeNEMRtqlmWzbvRRx7brfy7T/wptmLFFlhP451eaf8
+         AaAk6RAvJ48UEX8o2gtY3UpNx2QZzhFcWn7G7AumYGudNPLhh0na0Bt0a+AFod0yl6Uy
+         lzwSxn2SLeeI2Idlz/YEVPyhDhwASPtsPrKj7wFRL59BvZswIczA8N1lLK8jelgJ77fw
+         reztXghBHstCbG2X7L3hEdsSB6ny8JAEmdfz/U9X5+sfqzXYgBCgteoLsnaKpAMHB0qp
+         R5LA==
+X-Gm-Message-State: AOAM53346AGNfNWFJauuyngCZxYvGErQnjh9bRae08MTVb7HY+O6o+dm
+        rVKwUDmtvdFt6Azjcm6CUQySov10Zw==
+X-Google-Smtp-Source: ABdhPJzRQW4bKXsoVEcga7CM6u0Cngds+b22neL6Ay7g8PWBHgbN0WFRt59W7RFofatRiHhJVZXVszx0sQ==
+X-Received: from elver.muc.corp.google.com ([2a00:79e0:15:13:76:dcf3:95f9:db8b])
+ (user=elver job=sendgmr) by 2002:a81:6fc5:: with SMTP id k188mr1653ywc.507.1643625254572;
+ Mon, 31 Jan 2022 02:34:14 -0800 (PST)
+Date:   Mon, 31 Jan 2022 11:34:05 +0100
+Message-Id: <20220131103407.1971678-1-elver@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.0.rc2.247.g8bbb082509-goog
+Subject: [PATCH 1/3] perf: Copy perf_event_attr::sig_data on modification
+From:   Marco Elver <elver@google.com>
+To:     elver@google.com, Peter Zijlstra <peterz@infradead.org>
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        linux-perf-users@vger.kernel.org, kasan-dev@googlegroups.com,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Nguyen,
+The intent has always been that perf_event_attr::sig_data should also be
+modifiable along with PERF_EVENT_IOC_MODIFY_ATTRIBUTES, because it is
+observable by user space if SIGTRAP on events is requested.
 
-Thank you for the patch! Perhaps something to improve:
+Currently only PERF_TYPE_BREAKPOINT is modifiable, and explicitly copies
+relevant breakpoint-related attributes in hw_breakpoint_copy_attr().
+This misses copying perf_event_attr::sig_data.
 
-[auto build test WARNING on staging/staging-testing]
+Since sig_data is not specific to PERF_TYPE_BREAKPOINT, introduce a
+helper to copy generic event-type-independent attributes on
+modification.
 
-url:    https://github.com/0day-ci/linux/commits/Nguyen-Dinh-Phi/staging-vc04_services-make-a-couple-of-functions-static/20220131-151209
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging.git 64b2d6ffff862c0e7278198b4229e42e1abb3bb1
-config: x86_64-buildonly-randconfig-r004-20220131 (https://download.01.org/0day-ci/archive/20220131/202201311820.inNbCM0H-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/0day-ci/linux/commit/1b64825a2b5b3312ae309c1714239df049b018ac
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Nguyen-Dinh-Phi/staging-vc04_services-make-a-couple-of-functions-static/20220131-151209
-        git checkout 1b64825a2b5b3312ae309c1714239df049b018ac
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/staging/vc04_services/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   In file included from include/linux/string.h:253,
-                    from include/linux/bitmap.h:11,
-                    from include/linux/cpumask.h:12,
-                    from arch/x86/include/asm/cpumask.h:5,
-                    from arch/x86/include/asm/msr.h:11,
-                    from arch/x86/include/asm/processor.h:22,
-                    from arch/x86/include/asm/timex.h:5,
-                    from include/linux/timex.h:65,
-                    from include/linux/time32.h:13,
-                    from include/linux/time.h:60,
-                    from include/linux/stat.h:19,
-                    from include/linux/module.h:13,
-                    from drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c:8:
-   In function 'memcpy',
-       inlined from 'free_pagelist' at drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c:434:4,
-       inlined from 'vchiq_complete_bulk' at drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c:650:3:
->> include/linux/fortify-string.h:41:29: warning: argument 2 null where non-null expected [-Wnonnull]
-      41 | #define __underlying_memcpy __builtin_memcpy
-         |                             ^
-   include/linux/fortify-string.h:225:9: note: in expansion of macro '__underlying_memcpy'
-     225 |  return __underlying_memcpy(p, q, size);
-         |         ^~~~~~~~~~~~~~~~~~~
-   drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c: In function 'vchiq_complete_bulk':
-   include/linux/fortify-string.h:41:29: note: in a call to built-in function '__builtin_memcpy'
-      41 | #define __underlying_memcpy __builtin_memcpy
-         |                             ^
-   include/linux/fortify-string.h:225:9: note: in expansion of macro '__underlying_memcpy'
-     225 |  return __underlying_memcpy(p, q, size);
-         |         ^~~~~~~~~~~~~~~~~~~
-
-
-vim +41 include/linux/fortify-string.h
-
-3009f891bb9f32 Kees Cook      2021-08-02  26  
-a28a6e860c6cf2 Francis Laniel 2021-02-25  27  #if defined(CONFIG_KASAN_GENERIC) || defined(CONFIG_KASAN_SW_TAGS)
-a28a6e860c6cf2 Francis Laniel 2021-02-25  28  extern void *__underlying_memchr(const void *p, int c, __kernel_size_t size) __RENAME(memchr);
-a28a6e860c6cf2 Francis Laniel 2021-02-25  29  extern int __underlying_memcmp(const void *p, const void *q, __kernel_size_t size) __RENAME(memcmp);
-a28a6e860c6cf2 Francis Laniel 2021-02-25  30  extern void *__underlying_memcpy(void *p, const void *q, __kernel_size_t size) __RENAME(memcpy);
-a28a6e860c6cf2 Francis Laniel 2021-02-25  31  extern void *__underlying_memmove(void *p, const void *q, __kernel_size_t size) __RENAME(memmove);
-a28a6e860c6cf2 Francis Laniel 2021-02-25  32  extern void *__underlying_memset(void *p, int c, __kernel_size_t size) __RENAME(memset);
-a28a6e860c6cf2 Francis Laniel 2021-02-25  33  extern char *__underlying_strcat(char *p, const char *q) __RENAME(strcat);
-a28a6e860c6cf2 Francis Laniel 2021-02-25  34  extern char *__underlying_strcpy(char *p, const char *q) __RENAME(strcpy);
-a28a6e860c6cf2 Francis Laniel 2021-02-25  35  extern __kernel_size_t __underlying_strlen(const char *p) __RENAME(strlen);
-a28a6e860c6cf2 Francis Laniel 2021-02-25  36  extern char *__underlying_strncat(char *p, const char *q, __kernel_size_t count) __RENAME(strncat);
-a28a6e860c6cf2 Francis Laniel 2021-02-25  37  extern char *__underlying_strncpy(char *p, const char *q, __kernel_size_t size) __RENAME(strncpy);
-a28a6e860c6cf2 Francis Laniel 2021-02-25  38  #else
-a28a6e860c6cf2 Francis Laniel 2021-02-25  39  #define __underlying_memchr	__builtin_memchr
-a28a6e860c6cf2 Francis Laniel 2021-02-25  40  #define __underlying_memcmp	__builtin_memcmp
-a28a6e860c6cf2 Francis Laniel 2021-02-25 @41  #define __underlying_memcpy	__builtin_memcpy
-a28a6e860c6cf2 Francis Laniel 2021-02-25  42  #define __underlying_memmove	__builtin_memmove
-a28a6e860c6cf2 Francis Laniel 2021-02-25  43  #define __underlying_memset	__builtin_memset
-a28a6e860c6cf2 Francis Laniel 2021-02-25  44  #define __underlying_strcat	__builtin_strcat
-a28a6e860c6cf2 Francis Laniel 2021-02-25  45  #define __underlying_strcpy	__builtin_strcpy
-a28a6e860c6cf2 Francis Laniel 2021-02-25  46  #define __underlying_strlen	__builtin_strlen
-a28a6e860c6cf2 Francis Laniel 2021-02-25  47  #define __underlying_strncat	__builtin_strncat
-a28a6e860c6cf2 Francis Laniel 2021-02-25  48  #define __underlying_strncpy	__builtin_strncpy
-a28a6e860c6cf2 Francis Laniel 2021-02-25  49  #endif
-a28a6e860c6cf2 Francis Laniel 2021-02-25  50  
-
+Fixes: 97ba62b27867 ("perf: Add support for SIGTRAP on perf events")
+Reported-by: Dmitry Vyukov <dvyukov@google.com>
+Signed-off-by: Marco Elver <elver@google.com>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ kernel/events/core.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+diff --git a/kernel/events/core.c b/kernel/events/core.c
+index fc18664f49b0..db0d85a85f1b 100644
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -3197,6 +3197,15 @@ static int perf_event_modify_breakpoint(struct perf_event *bp,
+ 	return err;
+ }
+ 
++/*
++ * Copy event-type-independent attributes that may be modified.
++ */
++static void perf_event_modify_copy_attr(struct perf_event_attr *to,
++					const struct perf_event_attr *from)
++{
++	to->sig_data = from->sig_data;
++}
++
+ static int perf_event_modify_attr(struct perf_event *event,
+ 				  struct perf_event_attr *attr)
+ {
+@@ -3219,10 +3228,17 @@ static int perf_event_modify_attr(struct perf_event *event,
+ 	WARN_ON_ONCE(event->ctx->parent_ctx);
+ 
+ 	mutex_lock(&event->child_mutex);
++	/*
++	 * Event-type-independent attributes must be copied before event-type
++	 * modification, which will validate that final attributes match the
++	 * source attributes after all relevant attributes have been copied.
++	 */
++	perf_event_modify_copy_attr(&event->attr, attr);
+ 	err = func(event, attr);
+ 	if (err)
+ 		goto out;
+ 	list_for_each_entry(child, &event->child_list, child_list) {
++		perf_event_modify_copy_attr(&child->attr, attr);
+ 		err = func(child, attr);
+ 		if (err)
+ 			goto out;
+-- 
+2.35.0.rc2.247.g8bbb082509-goog
+
