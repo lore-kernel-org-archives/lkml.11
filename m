@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D94D1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:48:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8D42C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:48:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376349AbiAaLsq (ORCPT
+        id S1345242AbiAaLss (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:48:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50808 "EHLO
+        Mon, 31 Jan 2022 06:48:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376907AbiAaLg2 (ORCPT
+        with ESMTP id S1376596AbiAaLg2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 31 Jan 2022 06:36:28 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75171C08C5C9;
-        Mon, 31 Jan 2022 03:24:53 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFADCC0797B0;
+        Mon, 31 Jan 2022 03:24:37 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 354D3B82A74;
-        Mon, 31 Jan 2022 11:24:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B571C340E8;
-        Mon, 31 Jan 2022 11:24:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6BC5CB82A77;
+        Mon, 31 Jan 2022 11:24:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F857C340F5;
+        Mon, 31 Jan 2022 11:24:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643628291;
-        bh=sUXsI0wCoxfiIXnMPPHNieoBFOOs7FzMLM8dcytT+ug=;
+        s=korg; t=1643628275;
+        bh=486/YWpePHGCHLpt5Y+7BH5O7NP+SlJMz/alJKWfGc8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cCPZUlcPRD7NrDund9bRmggqQCZj7ztFHsXBen7fNoRL4xtCjPCIDZBWGa50XCRej
-         8TgVKQpLKy0bOODNsqLC02x91WFvP2jTJzmzIA2vUMeggBMd+8YpW20/zBAwiOIX6+
-         W0sNntnMzmpxXFZmWAr8FSkepn4FZObJUx1aS9Dg=
+        b=vYzWxHi2pbMqZmSevBpz8lqmTnY+XJBu6PsrKl/TGr3ACyzPv9Ov7Eoo9KRmeHk0x
+         wr8juux39cseVJNGJnHhmmEc5qMvprIXV0o2h+VXn/NGiwVGriKwpwlcMRT4iiJEJ9
+         L+QFUTywVbYhuisJ698OiRFZKseDOKdiuhtUQqcM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Guillaume Nault <gnault@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 185/200] ipv4: remove sparse error in ip_neigh_gw4()
-Date:   Mon, 31 Jan 2022 11:57:28 +0100
-Message-Id: <20220131105239.768280658@linuxfoundation.org>
+Subject: [PATCH 5.16 181/200] Revert "ipv6: Honor all IPv6 PIO Valid Lifetime values"
+Date:   Mon, 31 Jan 2022 11:57:24 +0100
+Message-Id: <20220131105239.644576228@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -51,37 +50,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Guillaume Nault <gnault@redhat.com>
 
-[ Upstream commit 3c42b2019863b327caa233072c50739d4144dd16 ]
+[ Upstream commit 36268983e90316b37000a005642af42234dabb36 ]
 
-./include/net/route.h:373:48: warning: incorrect type in argument 2 (different base types)
-./include/net/route.h:373:48:    expected unsigned int [usertype] key
-./include/net/route.h:373:48:    got restricted __be32 [usertype] daddr
+This reverts commit b75326c201242de9495ff98e5d5cff41d7fc0d9d.
 
-Fixes: 5c9f7c1dfc2e ("ipv4: Add helpers for neigh lookup for nexthop")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Link: https://lore.kernel.org/r/20220127013404.1279313-1-eric.dumazet@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+This commit breaks Linux compatibility with USGv6 tests. The RFC this
+commit was based on is actually an expired draft: no published RFC
+currently allows the new behaviour it introduced.
+
+Without full IETF endorsement, the flash renumbering scenario this
+patch was supposed to enable is never going to work, as other IPv6
+equipements on the same LAN will keep the 2 hours limit.
+
+Fixes: b75326c20124 ("ipv6: Honor all IPv6 PIO Valid Lifetime values")
+Signed-off-by: Guillaume Nault <gnault@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/route.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/net/addrconf.h |  2 ++
+ net/ipv6/addrconf.c    | 27 ++++++++++++++++++++-------
+ 2 files changed, 22 insertions(+), 7 deletions(-)
 
-diff --git a/include/net/route.h b/include/net/route.h
-index 2e6c0e153e3a5..2551f3f03b37e 100644
---- a/include/net/route.h
-+++ b/include/net/route.h
-@@ -369,7 +369,7 @@ static inline struct neighbour *ip_neigh_gw4(struct net_device *dev,
+diff --git a/include/net/addrconf.h b/include/net/addrconf.h
+index 78ea3e332688f..e7ce719838b5e 100644
+--- a/include/net/addrconf.h
++++ b/include/net/addrconf.h
+@@ -6,6 +6,8 @@
+ #define RTR_SOLICITATION_INTERVAL	(4*HZ)
+ #define RTR_SOLICITATION_MAX_INTERVAL	(3600*HZ)	/* 1 hour */
+ 
++#define MIN_VALID_LIFETIME		(2*3600)	/* 2 hours */
++
+ #define TEMP_VALID_LIFETIME		(7*86400)
+ #define TEMP_PREFERRED_LIFETIME		(86400)
+ #define REGEN_MAX_RETRY			(3)
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index 3445f8017430f..87961f1d9959b 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -2589,7 +2589,7 @@ int addrconf_prefix_rcv_add_addr(struct net *net, struct net_device *dev,
+ 				 __u32 valid_lft, u32 prefered_lft)
  {
- 	struct neighbour *neigh;
+ 	struct inet6_ifaddr *ifp = ipv6_get_ifaddr(net, addr, dev, 1);
+-	int create = 0;
++	int create = 0, update_lft = 0;
  
--	neigh = __ipv4_neigh_lookup_noref(dev, daddr);
-+	neigh = __ipv4_neigh_lookup_noref(dev, (__force u32)daddr);
- 	if (unlikely(!neigh))
- 		neigh = __neigh_create(&arp_tbl, &daddr, dev, false);
+ 	if (!ifp && valid_lft) {
+ 		int max_addresses = in6_dev->cnf.max_addresses;
+@@ -2633,19 +2633,32 @@ int addrconf_prefix_rcv_add_addr(struct net *net, struct net_device *dev,
+ 		unsigned long now;
+ 		u32 stored_lft;
  
+-		/* Update lifetime (RFC4862 5.5.3 e)
+-		 * We deviate from RFC4862 by honoring all Valid Lifetimes to
+-		 * improve the reaction of SLAAC to renumbering events
+-		 * (draft-gont-6man-slaac-renum-06, Section 4.2)
+-		 */
++		/* update lifetime (RFC2462 5.5.3 e) */
+ 		spin_lock_bh(&ifp->lock);
+ 		now = jiffies;
+ 		if (ifp->valid_lft > (now - ifp->tstamp) / HZ)
+ 			stored_lft = ifp->valid_lft - (now - ifp->tstamp) / HZ;
+ 		else
+ 			stored_lft = 0;
+-
+ 		if (!create && stored_lft) {
++			const u32 minimum_lft = min_t(u32,
++				stored_lft, MIN_VALID_LIFETIME);
++			valid_lft = max(valid_lft, minimum_lft);
++
++			/* RFC4862 Section 5.5.3e:
++			 * "Note that the preferred lifetime of the
++			 *  corresponding address is always reset to
++			 *  the Preferred Lifetime in the received
++			 *  Prefix Information option, regardless of
++			 *  whether the valid lifetime is also reset or
++			 *  ignored."
++			 *
++			 * So we should always update prefered_lft here.
++			 */
++			update_lft = 1;
++		}
++
++		if (update_lft) {
+ 			ifp->valid_lft = valid_lft;
+ 			ifp->prefered_lft = prefered_lft;
+ 			ifp->tstamp = now;
 -- 
 2.34.1
 
