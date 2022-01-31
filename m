@@ -2,96 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 325BAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:49:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C0F5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:49:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377435AbiAaLta (ORCPT
+        id S1377712AbiAaLrn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:49:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52092 "EHLO
+        Mon, 31 Jan 2022 06:47:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378591AbiAaLiQ (ORCPT
+        with ESMTP id S1378563AbiAaLeZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:38:16 -0500
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 613C6C035464
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 03:25:05 -0800 (PST)
-Received: by mail-yb1-xb31.google.com with SMTP id v186so39467814ybg.1
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 03:25:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Q17FI0J/6Td6y/Zs5qVqHGExbrzgfzuZcJ5zgEigLzw=;
-        b=ZnElFUnbfP6teOsTKtvs901N1Hz69FpXEbf1997Iw2lKz2XlmF9HQNruVH6TT6RIyj
-         9tcfN29+lHToMPagXQsoz13RjMV0EtGJu+5Hc/WF6A2kbWK2rnmQwa5himp9CH2j8m6k
-         nkovIr3hnb1RdSoySrf7OOXS94Im6nFxfiOgDh76mO6CgIKjvbheqfaz5bNxRvjtYvhN
-         Y9BATgWz6+FgENI0EkRTN2/RuHp7wcQh+qfRmzbADJBSBDmqt0RUxuiiqeDw7KCOjol6
-         X92v1D8sJRejBj7latxYG7MmQZp8tl9vVTLB8WNL01Jf9yOHTkW4eLXjh0aE4BW+xexW
-         Z1iA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Q17FI0J/6Td6y/Zs5qVqHGExbrzgfzuZcJ5zgEigLzw=;
-        b=qrJYBI6LuTWQUH4bLi3z5owrnzNxEfEHCPEFR7ULHk2W+N55RV7HTCMF5H2HNc1iJ8
-         MRgRHnfkUxS2dFsJhRKem9dBnp9gCO6/+HebZVJ6MhByHV77B/p1319sJuYaJpV/UQJK
-         dWPBkDxXyUWmSLzsdmdg/26hrccVrIv/tiX6ZAfmTAHRgwRcKpVsi7cH9w68FBRLz5Kp
-         uh/xQnl8Zb7fv74r1FTlUJd95FzaKvQIJin/g4fG3cf/3pqG/pCrxJ6JOHs+L++55kxR
-         xqz4JfaLf94Atn4+3WCibSl3QqqxwFYsM/JrEgr3YXO9WwEinZqYf/SE2qBgRl1qx7Y4
-         yWBw==
-X-Gm-Message-State: AOAM533gQUBOjXKQ+lpNEUXMHkmnV9qFllAd9HPhUH0xGVvshlDtAn9Q
-        lvtKW975MM3ryu5RUmSpTzX7dCDC6xXlC5i4D6mv6w==
-X-Google-Smtp-Source: ABdhPJwp0dwnq3IdPpsxlsV0YJY6W/PB25vgHg+xrDLVleyc9L5AyaBJM0oHkJLfXeIzmiy9J7rAM7YsPwck8cwtBOk=
-X-Received: by 2002:a25:df56:: with SMTP id w83mr28275297ybg.110.1643628304646;
- Mon, 31 Jan 2022 03:25:04 -0800 (PST)
+        Mon, 31 Jan 2022 06:34:25 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CEEAC0698FD;
+        Mon, 31 Jan 2022 03:23:15 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5C36AB82A64;
+        Mon, 31 Jan 2022 11:23:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3559C340E8;
+        Mon, 31 Jan 2022 11:23:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643628193;
+        bh=cbobtbtWjowQxXmR99UJcmfS3g7Vir1jTIU17Q3iYDY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=gMH16if/1CwcMDt1ciIZ/r+AuMCxaAy3Zb6O0t974AXvzgQ40zyGeEu+DgCbYOsyO
+         weH/lPEWEOvwywi6l3G1iPEkj6ywHfZTTzvsNBhjzFfJRkTU9uPXmgba2GJ8Rb/iwL
+         OBvRfHiZ1iuXPsYgjGaqggb3PEWN6ZXTtT/0KXPM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 154/200] block: fix memory leak in disk_register_independent_access_ranges
+Date:   Mon, 31 Jan 2022 11:56:57 +0100
+Message-Id: <20220131105238.739717948@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
+References: <20220131105233.561926043@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220130073103.26792-1-rdunlap@infradead.org>
-In-Reply-To: <20220130073103.26792-1-rdunlap@infradead.org>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Mon, 31 Jan 2022 12:24:53 +0100
-Message-ID: <CACRpkdYsqXqfxDbovvKOED-wbBOC3Q0OQqN-20LtmLt4SD-Orw@mail.gmail.com>
-Subject: Re: [PATCH] gpio/consumer.h: don't use "/**" for non-kernel-doc comments
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     linux-kernel@vger.kernel.org, Bartosz Golaszewski <brgl@bgdev.pl>,
-        linux-gpio@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jan 30, 2022 at 8:31 AM Randy Dunlap <rdunlap@infradead.org> wrote:
+From: Miaoqian Lin <linmq006@gmail.com>
 
-> Use "/*" to begin non-kernel-doc comments instead of "/**",
-> which indicates the beginning of kernel-doc notation.
->
-> Quietens these kernel-doc warnings:
->
-> consumer.h:13: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
->  * Opaque descriptor for a GPIO. These are obtained using gpiod_get() and are
-> consumer.h:13: warning: missing initial short description on line:
->  * Opaque descriptor for a GPIO. These are obtained using gpiod_get() and are
-> consumer.h:22: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
->  * Opaque descriptor for a structure of GPIO array attributes.  This structure
-> consumer.h:22: warning: missing initial short description on line:
->  * Opaque descriptor for a structure of GPIO array attributes.  This structure
-> consumer.h:30: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
->  * Struct containing an array of descriptors that can be obtained using
-> consumer.h:30: warning: missing initial short description on line:
->  * Struct containing an array of descriptors that can be obtained using
-> consumer.h:46: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
->  * Optional flags that can be passed to one of gpiod_* to configure direction
-> consumer.h:46: warning: missing initial short description on line:
->  * Optional flags that can be passed to one of gpiod_* to configure direction
->
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Cc: Linus Walleij <linus.walleij@linaro.org>
-> Cc: Bartosz Golaszewski <brgl@bgdev.pl>
-> Cc: linux-gpio@vger.kernel.org
+[ Upstream commit 83114df32ae779df57e0af99a8ba6c3968b2ba3d ]
 
-In this case the ambition was to provide proper kerneldoc for sure.
+kobject_init_and_add() takes reference even when it fails.
+According to the doc of kobject_init_and_add()
 
-Is it possible to just fix the documentation?
+   If this function returns an error, kobject_put() must be called to
+   properly clean up the memory associated with the object.
 
-Yours,
-Linus Walleij
+Fix this issue by adding kobject_put().
+Callback function blk_ia_ranges_sysfs_release() in kobject_put()
+can handle the pointer "iars" properly.
+
+Fixes: a2247f19ee1c ("block: Add independent access ranges support")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Link: https://lore.kernel.org/r/20220120101025.22411-1-linmq006@gmail.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ block/blk-ia-ranges.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/block/blk-ia-ranges.c b/block/blk-ia-ranges.c
+index b925f3db3ab7a..18c68d8b9138e 100644
+--- a/block/blk-ia-ranges.c
++++ b/block/blk-ia-ranges.c
+@@ -144,7 +144,7 @@ int disk_register_independent_access_ranges(struct gendisk *disk,
+ 				   &q->kobj, "%s", "independent_access_ranges");
+ 	if (ret) {
+ 		q->ia_ranges = NULL;
+-		kfree(iars);
++		kobject_put(&iars->kobj);
+ 		return ret;
+ 	}
+ 
+-- 
+2.34.1
+
+
+
