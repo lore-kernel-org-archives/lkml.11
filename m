@@ -2,66 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E218C4707A
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 18:24:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89EBCC4167E
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 18:24:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350760AbiAaSYk (ORCPT
+        id S1350700AbiAaSYn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 13:24:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34968 "EHLO
+        Mon, 31 Jan 2022 13:24:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348956AbiAaSYd (ORCPT
+        with ESMTP id S1350379AbiAaSYg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 13:24:33 -0500
-Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6733EC06173E
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 10:24:33 -0800 (PST)
-Received: by mail-ot1-x32c.google.com with SMTP id l12-20020a0568302b0c00b005a4856ff4ceso5694167otv.13
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 10:24:33 -0800 (PST)
+        Mon, 31 Jan 2022 13:24:36 -0500
+Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9384DC061758
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 10:24:36 -0800 (PST)
+Received: by mail-ot1-x332.google.com with SMTP id i16-20020a056830011000b005a3cc8d20fbso7469824otp.9
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 10:24:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=/uEQDiPvyVpaW3bH2ylqgdN3GSKb6mGtIDulo2igF4A=;
-        b=Dj4Ze4AyS49RZQCHcV7EVYf3hJluedHM2cMEXbuCHBtf8CPRtUSONXankqPdPPbGg+
-         kVh8mrcPUn4v1+u6txNnRyQKAN70VohEMitBldwoJ6c/AoYAilMgI26DXnO9F55yAyL0
-         z4Z/avh/s/F9K1lXs4japf33mYiGxt5IZBCkaGh7KVhAk7NLXmXv6p0dL8nWqn0nqSbB
-         R88H4gOMjV1+cOEE+ALXTChil4s1IqG5xuUD2Q+E07Fnm3B/06TSCDkw/mziAjxejpTd
-         aE9CJ4dpPFq/aMty/FEd3kaRGWuAOAr3vqoS4UBh9MSjAuJ/sLmIc0nQnqS+IuMgl4aW
-         EfMw==
+        bh=jZrxVRyRyNFCJP75CoHEUtHl9XBbgxc1ckBeCy2/c3w=;
+        b=skmNCEYHXJ8+qJ1S05uwnU35BlAtl49BF/tVmc7e639/DplJ27YzThxfhhoGjhUdjX
+         kba3oZsqDD5YV7MhxYgx87aunsEV/CrtZnU7K0h82cHwU4pMTnjiIig0t5/CWunZ41EA
+         SpMILVNgYz1wkrjrMQ7DOcRNuQ64eNrDDyo7zrp7GbXoo5KpwAQIjEe44Nt3kpiKB9G5
+         awW9z0faQyhWZAq4z+uco17IxqmejoLhKwha3ACZPnW00whMmHmcMlJ3naPZXYJLMSsp
+         J4qyja62POYbVuPper9mvwUH0tVHHLL1funo1Y8AyT4H37WP5VK05klP+fRh+KbIIpGm
+         12xw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=/uEQDiPvyVpaW3bH2ylqgdN3GSKb6mGtIDulo2igF4A=;
-        b=ctB+dcW+vKWxOmZpdnyByB90Y9wJIzZuhIq7YR9FRbm2TFhTvBWw9oFXlyZwLZUDs+
-         nPIx9UiLAnFbcu3j7fJPIJcFHgE/88a6NLLfj+bxhBQlKCRQvv3ZSPnO8bDVzoOkaa6e
-         eNrDZFSAfWnlSPmWjvNpdfUACJvfVAN+vyiCEQUQdi8B/v3Xpdb+GVYIiMZ2d/BtLQMD
-         AbfvTyuGxD4wXatkXUvuPoG71MIaZSaLCVHIc1e8+2n3c1BA0Q2vKwgkNEA7lXSffIzI
-         TehdvSuc7HXPl9HQY1Yku+SxBVGsJNu6w5qMMozQuRqHgB1gil35bjdwzdH6eIRibc6h
-         kqNA==
-X-Gm-Message-State: AOAM531/4/NPSld1vfT7bWjZD/sh+dUyfGiZr2aqCA3bDRMKwpuP+0Ms
-        FOU0dJD5TXp4HP28bT2wvSUxLQ==
-X-Google-Smtp-Source: ABdhPJxYX/Skwea3U6mnS3RjwgXRsnB8XXUHMcSLu/8d72fFJvoUTX2f9Iov6ifpLhXWnw5fbHDUUQ==
-X-Received: by 2002:a9d:5388:: with SMTP id w8mr12079357otg.296.1643653472814;
-        Mon, 31 Jan 2022 10:24:32 -0800 (PST)
+        bh=jZrxVRyRyNFCJP75CoHEUtHl9XBbgxc1ckBeCy2/c3w=;
+        b=iUcentQINT9n773cOWtQOHfFLEpw3CTIkOC0ko/0Lk3bOpm7j2werGYcUqb+TbedUh
+         S0S5B8nVgsKkYu+1xDDkqcsmOssVo00T1Eda/LnGBMcWSdnKskiLigfrwxHVbsmfKdij
+         TNysM1L4UAFe2qpxDod+wH815WTBmIAen0oeBNeRZxhLKuSs5QNq1FVPPJ0OLFUgeSyf
+         IjZ4PcBxuSN4tWtXxLuNA/kSwFYJWiCJ/WFFXszpsR4WKob04RlneP8SkUqfVKuEXcUc
+         6TB834XsUVjRk6jMcp0cSwwSILXQeC24UOW88kx2BPZk3oK2YxuXaJi9pEhXLEgwavam
+         nPJw==
+X-Gm-Message-State: AOAM533jAvACpGDudfYlE0JtE+46zN85JTHXBUKhV2U6dCe5+lAATJ7e
+        mykKuyKZxhRztEUWvYHJo0iWaw==
+X-Google-Smtp-Source: ABdhPJz5eE5TyTfzLnb50gGVxVx0P18CltBdrHHEOnVoMKhBbFbmwvpHLQveFzKOIx6Nmy0NnlaISw==
+X-Received: by 2002:a9d:748d:: with SMTP id t13mr12213366otk.276.1643653475935;
+        Mon, 31 Jan 2022 10:24:35 -0800 (PST)
 Received: from builder.lan ([2600:1700:a0:3dc8:3697:f6ff:fe85:aac9])
-        by smtp.gmail.com with ESMTPSA id y19sm3273722oti.49.2022.01.31.10.24.31
+        by smtp.gmail.com with ESMTPSA id y19sm3273722oti.49.2022.01.31.10.24.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Jan 2022 10:24:32 -0800 (PST)
+        Mon, 31 Jan 2022 10:24:35 -0800 (PST)
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     linux-arm-msm@vger.kernel.org, Luca Weiss <luca@z3ntu.xyz>
-Cc:     phone-devel@vger.kernel.org, devicetree@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht,
-        Rob Herring <robh+dt@kernel.org>, linux-pm@vger.kernel.org,
-        Sebastian Reichel <sre@kernel.org>,
+To:     Rob Herring <robh+dt@kernel.org>,
+        Satya Priya <quic_c_skakit@quicinc.com>
+Cc:     mka@chromium.org, Mark Brown <broonie@kernel.org>,
+        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        David Collins <collinsd@codeaurora.org>, swboyd@chromium.org,
         linux-kernel@vger.kernel.org
-Subject: Re: (subset) [PATCH 1/7] dt-bindings: power: supply: pm8941-charger: add pm8226
-Date:   Mon, 31 Jan 2022 12:24:21 -0600
-Message-Id: <164365345128.3009281.14091610271244037976.b4-ty@linaro.org>
+Subject: Re: (subset) [PATCH 0/3] Add PMG1110(Seco Jr) PMIC support
+Date:   Mon, 31 Jan 2022 12:24:24 -0600
+Message-Id: <164365345128.3009281.16782097629100983959.b4-ty@linaro.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20211118210210.160895-1-luca@z3ntu.xyz>
-References: <20211118210210.160895-1-luca@z3ntu.xyz>
+In-Reply-To: <1637668167-31325-1-git-send-email-quic_c_skakit@quicinc.com>
+References: <1637668167-31325-1-git-send-email-quic_c_skakit@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -69,24 +70,21 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 18 Nov 2021 22:02:04 +0100, Luca Weiss wrote:
-> The charger in PM8226 (used in MSM8226) is similar to the charger in
-> PM8941.
+On Tue, 23 Nov 2021 17:19:24 +0530, Satya Priya wrote:
+> This series depends on below series which adds the base CRD dts
+> https://patchwork.kernel.org/project/linux-arm-msm/list/?series=584349
 > 
+> Satya Priya (3):
+>   dt-bindings: regulator: Add compatible for pmg1110
+>   regulator: qcom-rpmh: Add PMG1110 regulators
+>   arm64: dts: qcom: sc7280: Add pmg1110 regulators for sc7280-crd
 > 
+> [...]
 
 Applied, thanks!
 
-[3/7] ARM: dts: qcom: pm8226: add smbb charger node
-      commit: b64192272cb65b0fddb97dba7c4f244452954a85
-[4/7] ARM: dts: qcom: apq8026-lg-lenok: configure SMBB charger
-      commit: 0bbcddc5f0365937ed53ebf7daa98134a6ebce8d
-[5/7] dt-bindings: phy: qcom,usb-hs-phy: add MSM8226 compatible
-      commit: c04421c68fd40ee33df87eea69c1a447b7985d0d
-[6/7] ARM: dts: qcom: msm8226: add USB node
-      commit: 1a34117f2e145f158c339ad9d296c0c1c42bc504
-[7/7] ARM: dts: qcom: apq8026-lg-lenok: enable USB
-      commit: f8565bd5404fcd6f87ee1e2d585541fbb457612d
+[3/3] arm64: dts: qcom: sc7280: Add pmg1110 regulators for sc7280-crd
+      commit: 073a39a2a63abd46339a50eb07bd23958d99efbe
 
 Best regards,
 -- 
