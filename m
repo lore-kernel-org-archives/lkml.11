@@ -2,93 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F9C6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 09:03:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 460B2C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 09:07:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234486AbiAaJDD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 04:03:03 -0500
-Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:34058
-        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234270AbiAaJC7 (ORCPT
+        id S234562AbiAaJH5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 31 Jan 2022 04:07:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45694 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234397AbiAaJHs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 04:02:59 -0500
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com [209.85.128.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 0B2603F043
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 09:02:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1643619778;
-        bh=ppUyIZk21EsCgtGpUgqpX7jhTbWdZVwa2chlS2CUxiA=;
-        h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version:Content-Type;
-        b=j00SFBrf8UW70lRs3Qv0PqUQIbeIp+uEs/o5ILeNhFPwSKRZDD/qCOpR5YudqX900
-         B7D/i18OcG8wnWqXoNIDIOAE6jQHae3onit0u2b8m9xkwg5SWJ/eytMLxEq8FN9J0/
-         sH+xRZP4fGljwvUa5/TXiymnGpZCOM80iq66ZIjko40XsDciFPFUr2bV/Fj12VaHZ6
-         2NbBboxRHD7wh21WhQK3kUz4qcrrDcT0USqn1jHOgYJq+kkRfHoliiTWJNTOxhhsfn
-         6s2SqKBoQAYgjoTBn1ZkMv95Yn9b2j2a+mReQIUxv0AOHM7RTbpDN509cBBzfUaJUU
-         ITHunvxUecMtw==
-Received: by mail-wm1-f72.google.com with SMTP id q127-20020a1ca785000000b00352a4860babso1822239wme.0
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 01:02:58 -0800 (PST)
+        Mon, 31 Jan 2022 04:07:48 -0500
+Received: from mail-wm1-x349.google.com (mail-wm1-x349.google.com [IPv6:2a00:1450:4864:20::349])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D213C06173B
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 01:07:46 -0800 (PST)
+Received: by mail-wm1-x349.google.com with SMTP id v185-20020a1cacc2000000b0034906580813so10070220wme.1
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 01:07:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=Bko2bBOFt8SFav6I5TjYOIulrzQuEbXeq+2gLbCWAVI=;
+        b=sSmlJYozmYThA2O9gEj8NcX81sjnLIMmnNuddGd24vO0kHkAjWApKSsxMBRveAZdas
+         lMCb0Hg4j5DWgstoNW22bQKdU6vEZXbY4OHaacX1kjX1iDwHeNdtu25YCr0g9qZDVufe
+         wTvexoeRxifXBfzJcQDF9Y+EiulHdFhPHhoLIelkVEW88GJnF+fVq/fbHG8NZjic3fjb
+         wfG1Ns+bMU7vM9+zjgLUDwAH+nOVdIZ2LfP5u2t9teBkPIO+lGvyFMBqYQmeG8R5fgP1
+         r/ZbtcwgrFs/EhayiW39fNoe2rMfpxYsZRGkZ2FT2ivfDY0Tv2LaycUSO+/w6A2HnnYi
+         M26Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ppUyIZk21EsCgtGpUgqpX7jhTbWdZVwa2chlS2CUxiA=;
-        b=rr0hfEYDMSUFAGEiuCvoPZPmzZAKgmeWc6ntEWCuYxOQg771oO2WpS/IJuPAsSU6Ft
-         AWhrz1UJ9EpNaYklkNSWUJMdVmmuOeEHrzfy2g7F/qO/6k1cDjXS9Y+uA1q9xe/miPf0
-         x9OAbPMLor6yErdyxakT1m+lDJytdqTAeNy5ox4Jc02o48cEdWVOLDtVgnaOXpPbh9bP
-         D7IYF42xQv4MEjb7D/cs35Hl/sEoqHrddZAKRiiqtPC87UUUmdpxkTWHsEY19Asv2jtj
-         Eq4Ds/NYAM3uTwZVAccbTHexGp1ueud2FtMtJpXXvL0CP1uDpk+oGmjbOktWnu9uHUwi
-         QDrg==
-X-Gm-Message-State: AOAM533gey+Rv+lXYMOI0i0zaVo/NFo4LIw/u8fuetJnO6IIncyQKNSk
-        Z5Iy2Y0EVNY6rB8Di7Uv2vSIct4N91GlEOHeCIRl106eu0rOklLTc4C6XBJe8QB0XHc2ixXpaAy
-        hLOir6H3pqj6XxyCotybEpbHp6eVBhugs4jjkALwE5g==
-X-Received: by 2002:adf:f9ca:: with SMTP id w10mr16922950wrr.624.1643619777821;
-        Mon, 31 Jan 2022 01:02:57 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxIXwL3SArzS0IsRbkLooNyKwIGddVuNDzfmyMXBjK4sAwNO3wv+Nkhpfa309F808WUtqkcLQ==
-X-Received: by 2002:adf:f9ca:: with SMTP id w10mr16922933wrr.624.1643619777693;
-        Mon, 31 Jan 2022 01:02:57 -0800 (PST)
-Received: from localhost.localdomain (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id c8sm9219866wmq.34.2022.01.31.01.02.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Jan 2022 01:02:56 -0800 (PST)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        linux-samsung-soc@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-serial@vger.kernel.org, Lee Jones <lee.jones@linaro.org>
-Subject: Re: (subset) [PATCH 2/5] arm64: dts: exynos: drop unneeded syscon phandle in Exynos5433 LPASS
-Date:   Mon, 31 Jan 2022 10:02:54 +0100
-Message-Id: <164361966594.14585.5432470637577397205.b4-ty@canonical.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220129175332.298666-2-krzysztof.kozlowski@canonical.com>
-References: <20220129175332.298666-1-krzysztof.kozlowski@canonical.com> <20220129175332.298666-2-krzysztof.kozlowski@canonical.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=Bko2bBOFt8SFav6I5TjYOIulrzQuEbXeq+2gLbCWAVI=;
+        b=lLU+NlhKk6fJbGzT/dGOWDo5n0GzF51mQhXmADjMvtmsIs5wVNy7BOpgAvwjIOeBKF
+         z79z4Bjc3BqPbKt9zrCxD+8ZeiitbX3oBqSGiPo+YeT3dG1HNsWQ9QlQJoB+WAVTtaq8
+         aDvPyc5eXTjvoQmeRAcAjflQ0unl2Nuo9CYDbqg8CBtMs7XbzYJdrh7hiGnr7F8I7GNp
+         HlChAxwrdgSWkuwQypzhfnqufbqTjchjsdCrmgKmL6BPkefxaxaT2RSOoGJhB2eVBrzw
+         JNGt3Vacs1LgDcyLYT6L0KYKAXWs5T372jSkDdH4HqGdvIx7tzi0awNvilYEcEe3katl
+         usrg==
+X-Gm-Message-State: AOAM532D1O35T0JUGXh63TLiMiMjSaQEJ6V9aNcnbaWtPQqDYTHw+Qke
+        ZmwIvUbC6+3Y4t+dIvWWrdOFVWOK+g==
+X-Google-Smtp-Source: ABdhPJxrdHCArDGaHzsq5ML+QFS3K9GYi+DLIQHLfVABlfCy8j3KELH38OY+E7uZJ2JSgzwZoy2pCDp3IQ==
+X-Received: from elver.muc.corp.google.com ([2a00:79e0:15:13:9caa:cc34:599f:ecd4])
+ (user=elver job=sendgmr) by 2002:a05:600c:2741:: with SMTP id
+ 1mr17797025wmw.50.1643620064562; Mon, 31 Jan 2022 01:07:44 -0800 (PST)
+Date:   Mon, 31 Jan 2022 10:05:21 +0100
+In-Reply-To: <20220131090521.1947110-1-elver@google.com>
+Message-Id: <20220131090521.1947110-2-elver@google.com>
+Mime-Version: 1.0
+References: <20220131090521.1947110-1-elver@google.com>
+X-Mailer: git-send-email 2.35.0.rc2.247.g8bbb082509-goog
+Subject: [PATCH v2 2/2] stack: Constrain and fix stack offset randomization
+ with Clang builds
+From:   Marco Elver <elver@google.com>
+To:     elver@google.com, Thomas Gleixner <tglx@linutronix.de>,
+        Kees Cook <keescook@chromium.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Elena Reshetova <elena.reshetova@intel.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Alexander Potapenko <glider@google.com>, llvm@lists.linux.dev,
+        kasan-dev@googlegroups.com, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 29 Jan 2022 18:53:29 +0100, Krzysztof Kozlowski wrote:
-> Exynos5433 LPASS audio node does not use syscon phandle since commit
-> addebf1588ab ("mfd: exynos-lpass: Remove pad retention control").  It
-> was also dropped from bindings.
-> 
-> 
+All supported versions of Clang perform auto-init of __builtin_alloca()
+when stack auto-init is on (CONFIG_INIT_STACK_ALL_{ZERO,PATTERN}).
 
-Applied, thanks!
+add_random_kstack_offset() uses __builtin_alloca() to add a stack
+offset. This means, when CONFIG_INIT_STACK_ALL_{ZERO,PATTERN} is
+enabled, add_random_kstack_offset() will auto-init that unused portion
+of the stack used to add an offset.
 
-[2/5] arm64: dts: exynos: drop unneeded syscon phandle in Exynos5433 LPASS
-      commit: f1afd24c3f532defa77c2d6e069b82dc7d6a9129
+There are several problems with this:
 
-Best regards,
+	1. These offsets can be as large as 1023 bytes. Performing
+	   memset() on them isn't exactly cheap, and this is done on
+	   every syscall entry.
+
+	2. Architectures adding add_random_kstack_offset() to syscall
+	   entry implemented in C require them to be 'noinstr' (e.g. see
+	   x86 and s390). The potential problem here is that a call to
+	   memset may occur, which is not noinstr.
+
+A x86_64 defconfig kernel with Clang 11 and CONFIG_VMLINUX_VALIDATION shows:
+
+ | vmlinux.o: warning: objtool: do_syscall_64()+0x9d: call to memset() leaves .noinstr.text section
+ | vmlinux.o: warning: objtool: do_int80_syscall_32()+0xab: call to memset() leaves .noinstr.text section
+ | vmlinux.o: warning: objtool: __do_fast_syscall_32()+0xe2: call to memset() leaves .noinstr.text section
+ | vmlinux.o: warning: objtool: fixup_bad_iret()+0x2f: call to memset() leaves .noinstr.text section
+
+Clang 14 (unreleased) will introduce a way to skip alloca initialization
+via __builtin_alloca_uninitialized() (https://reviews.llvm.org/D115440).
+
+Constrain RANDOMIZE_KSTACK_OFFSET to only be enabled if no stack
+auto-init is enabled, the compiler is GCC, or Clang is version 14+. Use
+__builtin_alloca_uninitialized() if the compiler provides it, as is done
+by Clang 14.
+
+Link: https://lkml.kernel.org/r/YbHTKUjEejZCLyhX@elver.google.com
+Fixes: 39218ff4c625 ("stack: Optionally randomize kernel stack offset each syscall")
+Signed-off-by: Marco Elver <elver@google.com>
+Reviewed-by: Nathan Chancellor <nathan@kernel.org>
+---
+v2:
+* Update comment to point out which compilers initialize allocas.
+---
+ arch/Kconfig                     |  1 +
+ include/linux/randomize_kstack.h | 16 ++++++++++++++--
+ 2 files changed, 15 insertions(+), 2 deletions(-)
+
+diff --git a/arch/Kconfig b/arch/Kconfig
+index 2cde48d9b77c..c5b50bfe31c1 100644
+--- a/arch/Kconfig
++++ b/arch/Kconfig
+@@ -1163,6 +1163,7 @@ config RANDOMIZE_KSTACK_OFFSET
+ 	bool "Support for randomizing kernel stack offset on syscall entry" if EXPERT
+ 	default y
+ 	depends on HAVE_ARCH_RANDOMIZE_KSTACK_OFFSET
++	depends on INIT_STACK_NONE || !CC_IS_CLANG || CLANG_VERSION >= 140000
+ 	help
+ 	  The kernel stack offset can be randomized (after pt_regs) by
+ 	  roughly 5 bits of entropy, frustrating memory corruption
+diff --git a/include/linux/randomize_kstack.h b/include/linux/randomize_kstack.h
+index 91f1b990a3c3..1468caf001c0 100644
+--- a/include/linux/randomize_kstack.h
++++ b/include/linux/randomize_kstack.h
+@@ -17,8 +17,20 @@ DECLARE_PER_CPU(u32, kstack_offset);
+  * alignment. Also, since this use is being explicitly masked to a max of
+  * 10 bits, stack-clash style attacks are unlikely. For more details see
+  * "VLAs" in Documentation/process/deprecated.rst
++ *
++ * The normal __builtin_alloca() is initialized with INIT_STACK_ALL (currently
++ * only with Clang and not GCC). Initializing the unused area on each syscall
++ * entry is expensive, and generating an implicit call to memset() may also be
++ * problematic (such as in noinstr functions). Therefore, if the compiler
++ * supports it (which it should if it initializes allocas), always use the
++ * "uninitialized" variant of the builtin.
+  */
+-void *__builtin_alloca(size_t size);
++#if __has_builtin(__builtin_alloca_uninitialized)
++#define __kstack_alloca __builtin_alloca_uninitialized
++#else
++#define __kstack_alloca __builtin_alloca
++#endif
++
+ /*
+  * Use, at most, 10 bits of entropy. We explicitly cap this to keep the
+  * "VLA" from being unbounded (see above). 10 bits leaves enough room for
+@@ -37,7 +49,7 @@ void *__builtin_alloca(size_t size);
+ 	if (static_branch_maybe(CONFIG_RANDOMIZE_KSTACK_OFFSET_DEFAULT,	\
+ 				&randomize_kstack_offset)) {		\
+ 		u32 offset = raw_cpu_read(kstack_offset);		\
+-		u8 *ptr = __builtin_alloca(KSTACK_OFFSET_MAX(offset));	\
++		u8 *ptr = __kstack_alloca(KSTACK_OFFSET_MAX(offset));	\
+ 		/* Keep allocation even after "ptr" loses scope. */	\
+ 		asm volatile("" :: "r"(ptr) : "memory");		\
+ 	}								\
 -- 
-Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+2.35.0.rc2.247.g8bbb082509-goog
+
