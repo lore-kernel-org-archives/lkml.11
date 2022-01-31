@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E20F1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FC1FC4167B
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379932AbiAaLar (ORCPT
+        id S1359570AbiAaLbN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:30:47 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:39204 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359243AbiAaLVG (ORCPT
+        Mon, 31 Jan 2022 06:31:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48174 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1376598AbiAaLVu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:21:06 -0500
+        Mon, 31 Jan 2022 06:21:50 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD6FAC0797B8;
+        Mon, 31 Jan 2022 03:14:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 83716B82A65;
-        Mon, 31 Jan 2022 11:21:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94E09C340E8;
-        Mon, 31 Jan 2022 11:21:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8681E611D8;
+        Mon, 31 Jan 2022 11:14:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F3C4C340E8;
+        Mon, 31 Jan 2022 11:14:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643628061;
-        bh=IcZM6Y5BA+nG06mDGCAzua8aJeNr5MqdlLu67IuS6E0=;
+        s=korg; t=1643627658;
+        bh=zswzNO2HKzY+6xdUru5NZf7GVc9OVOevY31Jj/qwN88=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FR37TlbaocXM0gM+RfnYJw3eI3JJM1EaBGcWxwvuR6HbCc9YzX6Y7hsjp7nNygOc+
-         Oq8XFE5oHgWC0PKIg7r3jR2IPodvJkO30HdOxDiHN4Vf3gA9TXLw24mboQd46MhpzJ
-         fdBkDIXNFT4nrrgCQUyO9tuD2c/w5oVUbIRzh8Zs=
+        b=Sz9fR1IQjzxOxV77c2yPAnw0h4k4dDuhZRf+BuW4qkq/7rGQ86y3Ftnv/JxcaJNu9
+         OMK3kojJOB684HZtV36bu63PY6YwBwPX7VpKFgu6/FBpVkXCk4CNayRc/4inKZt3kx
+         lvkBJbmbKkB2He4YfBFv+2MdtdowWEvJ02twW7Vc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@kernel.org>, Ray Che <xijiache@gmail.com>,
-        Willy Tarreau <w@1wt.eu>, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.16 112/200] ipv4: avoid using shared IP generator for connected sockets
-Date:   Mon, 31 Jan 2022 11:56:15 +0100
-Message-Id: <20220131105237.351177146@linuxfoundation.org>
+        stable@vger.kernel.org, Guillaume Nault <gnault@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 155/171] Revert "ipv6: Honor all IPv6 PIO Valid Lifetime values"
+Date:   Mon, 31 Jan 2022 11:57:00 +0100
+Message-Id: <20220131105235.267308908@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
-References: <20220131105233.561926043@linuxfoundation.org>
+In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
+References: <20220131105229.959216821@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,65 +50,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Guillaume Nault <gnault@redhat.com>
 
-commit 23f57406b82de51809d5812afd96f210f8b627f3 upstream.
+[ Upstream commit 36268983e90316b37000a005642af42234dabb36 ]
 
-ip_select_ident_segs() has been very conservative about using
-the connected socket private generator only for packets with IP_DF
-set, claiming it was needed for some VJ compression implementations.
+This reverts commit b75326c201242de9495ff98e5d5cff41d7fc0d9d.
 
-As mentioned in this referenced document, this can be abused.
-(Ref: Off-Path TCP Exploits of the Mixed IPID Assignment)
+This commit breaks Linux compatibility with USGv6 tests. The RFC this
+commit was based on is actually an expired draft: no published RFC
+currently allows the new behaviour it introduced.
 
-Before switching to pure random IPID generation and possibly hurt
-some workloads, lets use the private inet socket generator.
+Without full IETF endorsement, the flash renumbering scenario this
+patch was supposed to enable is never going to work, as other IPv6
+equipements on the same LAN will keep the 2 hours limit.
 
-Not only this will remove one vulnerability, this will also
-improve performance of TCP flows using pmtudisc==IP_PMTUDISC_DONT
-
-Fixes: 73f156a6e8c1 ("inetpeer: get rid of ip_id_count")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Reported-by: Ray Che <xijiache@gmail.com>
-Cc: Willy Tarreau <w@1wt.eu>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: b75326c20124 ("ipv6: Honor all IPv6 PIO Valid Lifetime values")
+Signed-off-by: Guillaume Nault <gnault@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/ip.h |   21 ++++++++++-----------
- 1 file changed, 10 insertions(+), 11 deletions(-)
+ include/net/addrconf.h |  2 ++
+ net/ipv6/addrconf.c    | 27 ++++++++++++++++++++-------
+ 2 files changed, 22 insertions(+), 7 deletions(-)
 
---- a/include/net/ip.h
-+++ b/include/net/ip.h
-@@ -525,19 +525,18 @@ static inline void ip_select_ident_segs(
- {
- 	struct iphdr *iph = ip_hdr(skb);
+diff --git a/include/net/addrconf.h b/include/net/addrconf.h
+index 78ea3e332688f..e7ce719838b5e 100644
+--- a/include/net/addrconf.h
++++ b/include/net/addrconf.h
+@@ -6,6 +6,8 @@
+ #define RTR_SOLICITATION_INTERVAL	(4*HZ)
+ #define RTR_SOLICITATION_MAX_INTERVAL	(3600*HZ)	/* 1 hour */
  
-+	/* We had many attacks based on IPID, use the private
-+	 * generator as much as we can.
-+	 */
-+	if (sk && inet_sk(sk)->inet_daddr) {
-+		iph->id = htons(inet_sk(sk)->inet_id);
-+		inet_sk(sk)->inet_id += segs;
-+		return;
-+	}
- 	if ((iph->frag_off & htons(IP_DF)) && !skb->ignore_df) {
--		/* This is only to work around buggy Windows95/2000
--		 * VJ compression implementations.  If the ID field
--		 * does not change, they drop every other packet in
--		 * a TCP stream using header compression.
++#define MIN_VALID_LIFETIME		(2*3600)	/* 2 hours */
++
+ #define TEMP_VALID_LIFETIME		(7*86400)
+ #define TEMP_PREFERRED_LIFETIME		(86400)
+ #define REGEN_MAX_RETRY			(3)
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index 846037e73723f..bf13865426340 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -2587,7 +2587,7 @@ int addrconf_prefix_rcv_add_addr(struct net *net, struct net_device *dev,
+ 				 __u32 valid_lft, u32 prefered_lft)
+ {
+ 	struct inet6_ifaddr *ifp = ipv6_get_ifaddr(net, addr, dev, 1);
+-	int create = 0;
++	int create = 0, update_lft = 0;
+ 
+ 	if (!ifp && valid_lft) {
+ 		int max_addresses = in6_dev->cnf.max_addresses;
+@@ -2631,19 +2631,32 @@ int addrconf_prefix_rcv_add_addr(struct net *net, struct net_device *dev,
+ 		unsigned long now;
+ 		u32 stored_lft;
+ 
+-		/* Update lifetime (RFC4862 5.5.3 e)
+-		 * We deviate from RFC4862 by honoring all Valid Lifetimes to
+-		 * improve the reaction of SLAAC to renumbering events
+-		 * (draft-gont-6man-slaac-renum-06, Section 4.2)
 -		 */
--		if (sk && inet_sk(sk)->inet_daddr) {
--			iph->id = htons(inet_sk(sk)->inet_id);
--			inet_sk(sk)->inet_id += segs;
--		} else {
--			iph->id = 0;
--		}
-+		iph->id = 0;
- 	} else {
-+		/* Unfortunately we need the big hammer to get a suitable IPID */
- 		__ip_select_ident(net, iph, segs);
- 	}
- }
++		/* update lifetime (RFC2462 5.5.3 e) */
+ 		spin_lock_bh(&ifp->lock);
+ 		now = jiffies;
+ 		if (ifp->valid_lft > (now - ifp->tstamp) / HZ)
+ 			stored_lft = ifp->valid_lft - (now - ifp->tstamp) / HZ;
+ 		else
+ 			stored_lft = 0;
+-
+ 		if (!create && stored_lft) {
++			const u32 minimum_lft = min_t(u32,
++				stored_lft, MIN_VALID_LIFETIME);
++			valid_lft = max(valid_lft, minimum_lft);
++
++			/* RFC4862 Section 5.5.3e:
++			 * "Note that the preferred lifetime of the
++			 *  corresponding address is always reset to
++			 *  the Preferred Lifetime in the received
++			 *  Prefix Information option, regardless of
++			 *  whether the valid lifetime is also reset or
++			 *  ignored."
++			 *
++			 * So we should always update prefered_lft here.
++			 */
++			update_lft = 1;
++		}
++
++		if (update_lft) {
+ 			ifp->valid_lft = valid_lft;
+ 			ifp->prefered_lft = prefered_lft;
+ 			ifp->tstamp = now;
+-- 
+2.34.1
+
 
 
