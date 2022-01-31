@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC5BCC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 10:59:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A08A5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 10:59:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358368AbiAaK7V (ORCPT
+        id S1348401AbiAaK7c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 05:59:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42706 "EHLO
+        Mon, 31 Jan 2022 05:59:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244667AbiAaK6r (ORCPT
+        with ESMTP id S244327AbiAaK6p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 05:58:47 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC141C061741;
-        Mon, 31 Jan 2022 02:58:46 -0800 (PST)
+        Mon, 31 Jan 2022 05:58:45 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52EB3C061714;
+        Mon, 31 Jan 2022 02:58:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E56460AD6;
-        Mon, 31 Jan 2022 10:58:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BD49C340E8;
-        Mon, 31 Jan 2022 10:58:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 20CA7B82A5C;
+        Mon, 31 Jan 2022 10:58:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C50FC340E8;
+        Mon, 31 Jan 2022 10:58:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643626726;
-        bh=kvmeKDKq4ruE2gAqLGR7+eCTMNUXOvT8e/qFwT9YNBE=;
+        s=korg; t=1643626723;
+        bh=ENdP0HiCeo/ou9suAY2/M17r/tqT17x+t6XVJsAoOcM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ALnPbrkjpcpjzEm5aVTjxP78DNrDkT6AV5guUuXGqTBXHV1lTl1ftqFPzlemMH8fM
-         VWi1yIY5YUPbAP5CxhXeeiY9237LRvUMB71fYq8Ns7eF/KPwM9lFp6OmDIxSFITqI2
-         dTa08UXHIunXpQfjK4qgTdlBoHVdZ0TnyIv7vz4o=
+        b=RUoGT+4ivIP5/5zEhlkfVqxJ+YTgPozoT1fdEY17qq22PCo0YDdGrS7wawgtySzy7
+         OTAqz70Aw46BGrHMKM9F49asZxT6iqHf3LidZ2aXCG7pBtbaZhNoxQcBNO2ppNkE6u
+         Z0h8wACln/AduUshgLSXK0EK4tXwYQMv4OJPv2GI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>
-Subject: [PATCH 5.4 02/64] s390/hypfs: include z/VM guests with access control group set
-Date:   Mon, 31 Jan 2022 11:55:47 +0100
-Message-Id: <20220131105215.724794699@linuxfoundation.org>
+        Pavankumar Kondeti <quic_pkondeti@quicinc.com>
+Subject: [PATCH 5.4 19/64] usb: gadget: f_sourcesink: Fix isoc transfer for USB_SPEED_SUPER_PLUS
+Date:   Mon, 31 Jan 2022 11:56:04 +0100
+Message-Id: <20220131105216.312080252@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105215.644174521@linuxfoundation.org>
 References: <20220131105215.644174521@linuxfoundation.org>
@@ -50,51 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vasily Gorbik <gor@linux.ibm.com>
+From: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
 
-commit 663d34c8df98740f1e90241e78e456d00b3c6cad upstream.
+commit 904edf8aeb459697129be5fde847e2a502f41fd9 upstream.
 
-Currently if z/VM guest is allowed to retrieve hypervisor performance
-data globally for all guests (privilege class B) the query is formed in a
-way to include all guests but the group name is left empty. This leads to
-that z/VM guests which have access control group set not being included
-in the results (even local vm).
+Currently when gadget enumerates in super speed plus, the isoc
+endpoint request buffer size is not calculated correctly. Fix
+this by checking the gadget speed against USB_SPEED_SUPER_PLUS
+and update the request buffer size.
 
-Change the query group identifier from empty to "any" to retrieve
-information about all guests from any groups (or without a group set).
-
-Cc: stable@vger.kernel.org
-Fixes: 31cb4bd31a48 ("[S390] Hypervisor filesystem (s390_hypfs) for z/VM")
-Reviewed-by: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
-Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
+Fixes: 90c4d05780d4 ("usb: fix various gadgets null ptr deref on 10gbps cabling.")
+Cc: stable <stable@vger.kernel.org>
+Signed-off-by: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
+Link: https://lore.kernel.org/r/1642820602-20619-1-git-send-email-quic_pkondeti@quicinc.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/s390/hypfs/hypfs_vm.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/usb/gadget/function/f_sourcesink.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/arch/s390/hypfs/hypfs_vm.c
-+++ b/arch/s390/hypfs/hypfs_vm.c
-@@ -20,6 +20,7 @@
+--- a/drivers/usb/gadget/function/f_sourcesink.c
++++ b/drivers/usb/gadget/function/f_sourcesink.c
+@@ -583,6 +583,7 @@ static int source_sink_start_ep(struct f
  
- static char local_guest[] = "        ";
- static char all_guests[] = "*       ";
-+static char *all_groups = all_guests;
- static char *guest_query;
- 
- struct diag2fc_data {
-@@ -62,10 +63,11 @@ static int diag2fc(int size, char* query
- 
- 	memcpy(parm_list.userid, query, NAME_LEN);
- 	ASCEBC(parm_list.userid, NAME_LEN);
--	parm_list.addr = (unsigned long) addr ;
-+	memcpy(parm_list.aci_grp, all_groups, NAME_LEN);
-+	ASCEBC(parm_list.aci_grp, NAME_LEN);
-+	parm_list.addr = (unsigned long)addr;
- 	parm_list.size = size;
- 	parm_list.fmt = 0x02;
--	memset(parm_list.aci_grp, 0x40, NAME_LEN);
- 	rc = -1;
- 
- 	diag_stat_inc(DIAG_STAT_X2FC);
+ 	if (is_iso) {
+ 		switch (speed) {
++		case USB_SPEED_SUPER_PLUS:
+ 		case USB_SPEED_SUPER:
+ 			size = ss->isoc_maxpacket *
+ 					(ss->isoc_mult + 1) *
 
 
