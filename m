@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22D6EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:06:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35149C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:06:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359665AbiAaLG2 (ORCPT
+        id S1359679AbiAaLGb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:06:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43138 "EHLO
+        Mon, 31 Jan 2022 06:06:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348709AbiAaLDn (ORCPT
+        with ESMTP id S1358328AbiAaLDn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 31 Jan 2022 06:03:43 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AA5DC06173D;
-        Mon, 31 Jan 2022 03:03:02 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFF36C061758;
+        Mon, 31 Jan 2022 03:03:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A47A60AE3;
-        Mon, 31 Jan 2022 11:03:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE9ADC340E8;
-        Mon, 31 Jan 2022 11:03:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4FA5C60B28;
+        Mon, 31 Jan 2022 11:03:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 328EFC340E8;
+        Mon, 31 Jan 2022 11:03:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643626981;
-        bh=kvmeKDKq4ruE2gAqLGR7+eCTMNUXOvT8e/qFwT9YNBE=;
+        s=korg; t=1643626996;
+        bh=1Q6eTWeiWtR6LSvwQnJSzAWZZD9k4gQvDPMrLqZSTwg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LnJE4lAdPX4O+iMt/jVVme2MFOaDVNMU7nVaza3zlj3GrWPymu9nZ+YAawqmNcMEu
-         x4ovotd8qL4jvqCf6KSodVimdPHWs1k6EVc0qIYzVsCPmBcV7FKJ8RlSbrNXDJlw0+
-         EFVBCgShCEZEr/GscXEp7pNowe4Gb4y8FZvy195w=
+        b=cF0Dy9NKoOeyL7RpIm1GXTnScWt9s2hgD0qdoBejEeAV1+qaZH75FE16i+vq7y8EK
+         Zilk7Q+mLYzXF0BFig8f6VuT8XTsBceSWDEKxBxzYTzPpGqjs+e6mu3Kju1P4qWQof
+         zyT0EyEGqx8AptHr3vjXNRyt2p0w2uKxo8YfDC/0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>
-Subject: [PATCH 5.10 006/100] s390/hypfs: include z/VM guests with access control group set
-Date:   Mon, 31 Jan 2022 11:55:27 +0100
-Message-Id: <20220131105220.651044036@linuxfoundation.org>
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sing-Han Chen <singhanc@nvidia.com>,
+        Wayne Chang <waynec@nvidia.com>
+Subject: [PATCH 5.10 034/100] ucsi_ccg: Check DEV_INT bit only when starting CCG4
+Date:   Mon, 31 Jan 2022 11:55:55 +0100
+Message-Id: <20220131105221.599194183@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
 References: <20220131105220.424085452@linuxfoundation.org>
@@ -50,51 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vasily Gorbik <gor@linux.ibm.com>
+From: Sing-Han Chen <singhanc@nvidia.com>
 
-commit 663d34c8df98740f1e90241e78e456d00b3c6cad upstream.
+commit 825911492eb15bf8bb7fb94bc0c0421fe7a6327d upstream.
 
-Currently if z/VM guest is allowed to retrieve hypervisor performance
-data globally for all guests (privilege class B) the query is formed in a
-way to include all guests but the group name is left empty. This leads to
-that z/VM guests which have access control group set not being included
-in the results (even local vm).
+CCGx clears Bit 0:Device Interrupt in the INTR_REG
+if CCGx is reset successfully. However, there might
+be a chance that other bits in INTR_REG are not
+cleared due to internal data queued in PPM. This case
+misleads the driver that CCGx reset failed.
 
-Change the query group identifier from empty to "any" to retrieve
-information about all guests from any groups (or without a group set).
+The commit checks bit 0 in INTR_REG and ignores other
+bits. The ucsi driver would reset PPM later.
 
+Fixes: 247c554a14aa ("usb: typec: ucsi: add support for Cypress CCGx")
 Cc: stable@vger.kernel.org
-Fixes: 31cb4bd31a48 ("[S390] Hypervisor filesystem (s390_hypfs) for z/VM")
-Reviewed-by: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
-Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
+Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Signed-off-by: Sing-Han Chen <singhanc@nvidia.com>
+Signed-off-by: Wayne Chang <waynec@nvidia.com>
+Link: https://lore.kernel.org/r/20220112094143.628610-1-waynec@nvidia.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/s390/hypfs/hypfs_vm.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/usb/typec/ucsi/ucsi_ccg.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/s390/hypfs/hypfs_vm.c
-+++ b/arch/s390/hypfs/hypfs_vm.c
-@@ -20,6 +20,7 @@
+--- a/drivers/usb/typec/ucsi/ucsi_ccg.c
++++ b/drivers/usb/typec/ucsi/ucsi_ccg.c
+@@ -325,7 +325,7 @@ static int ucsi_ccg_init(struct ucsi_ccg
+ 		if (status < 0)
+ 			return status;
  
- static char local_guest[] = "        ";
- static char all_guests[] = "*       ";
-+static char *all_groups = all_guests;
- static char *guest_query;
+-		if (!data)
++		if (!(data & DEV_INT))
+ 			return 0;
  
- struct diag2fc_data {
-@@ -62,10 +63,11 @@ static int diag2fc(int size, char* query
- 
- 	memcpy(parm_list.userid, query, NAME_LEN);
- 	ASCEBC(parm_list.userid, NAME_LEN);
--	parm_list.addr = (unsigned long) addr ;
-+	memcpy(parm_list.aci_grp, all_groups, NAME_LEN);
-+	ASCEBC(parm_list.aci_grp, NAME_LEN);
-+	parm_list.addr = (unsigned long)addr;
- 	parm_list.size = size;
- 	parm_list.fmt = 0x02;
--	memset(parm_list.aci_grp, 0x40, NAME_LEN);
- 	rc = -1;
- 
- 	diag_stat_inc(DIAG_STAT_X2FC);
+ 		status = ccg_write(uc, CCGX_RAB_INTR_REG, &data, sizeof(data));
 
 
