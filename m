@@ -2,81 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27CE2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 16:03:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9878C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 16:04:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379979AbiAaQDh (ORCPT
+        id S1379991AbiAaQED (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 11:03:37 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:55936 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379977AbiAaQDd (ORCPT
+        Mon, 31 Jan 2022 11:04:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58502 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1379977AbiAaQEB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 11:03:33 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CB79A61463
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 16:03:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B388C340EC
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 16:03:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643645012;
-        bh=W+EhUhcqdUxgVfhu8IN7oh339ILnyfOGkAmVM9xL+Xw=;
-        h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=bzEaXdK57kelJQqetef5JpCfanRoaVV5HUbs6UUjithmeNh7e9XT5Gqy5Gw2yL7JL
-         RPZISOP60W5LFX64lw1u1LfWDHqgPUl/NWcWVXYXqex7WxBRuisXlLoHd5AyjUUFDk
-         hf0xF73Wnp0jsHNzatDLPyqdpljD+DrGwDEKblrYERHwozd3j8MiYy/NtBphNTgnVg
-         GSkR+WAStrkQ+BpzufqJ7OYQBW/BAcPxp7iVVNXd7XAfrmqZ2vsJTVnHACgJL+Notx
-         4+neB1DTajhq+E1WGKpjVRtuObp4VOD6B8LXTWxo+RVVSQWQZOLiG8HnjdDpbcz5tj
-         7RJAup36TXHUg==
-From:   Oded Gabbay <ogabbay@kernel.org>
-To:     linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] habanalabs: fix use-after-free bug
-Date:   Mon, 31 Jan 2022 18:03:27 +0200
-Message-Id: <20220131160327.3060127-2-ogabbay@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220131160327.3060127-1-ogabbay@kernel.org>
-References: <20220131160327.3060127-1-ogabbay@kernel.org>
+        Mon, 31 Jan 2022 11:04:01 -0500
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42680C061714
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 08:04:01 -0800 (PST)
+Received: by mail-pj1-x1034.google.com with SMTP id my12-20020a17090b4c8c00b001b528ba1cd7so14296171pjb.1
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 08:04:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EdwjQ9O81xo0HbY8DB+rb28P0Ow/SLHwRSfgB0iNvbE=;
+        b=0rSTva8PXDXQWYHFmrkLtPUojfACp2HQQZ4/HdJQPdOHCldzg6syLFpdKXlyOP4TT8
+         CL1Fv5aI6o7zy6BwTiJ/I1B7VUhNk7o+Xz/WTfJAjIetm8i/NY++xzrA3UoS75I3dJPX
+         Fyk8P+0Xha+ysuA/NwSsOFP8vknZVhqknjX3FWmsqeINPAOHlbIppp7QhgIob1vhHngg
+         TYRyVHB8vuyD3qBLywaIN5fO+erezHi1h+VeKSVpHZ6PMPPW1ednc7EMi33F92MUGPpb
+         HrzodO3s8n08aUkmZmavbBLvjlaS6qYMIfVH4TMktheP3+c5+rozge9oaApo0Ewzlrgc
+         xnFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EdwjQ9O81xo0HbY8DB+rb28P0Ow/SLHwRSfgB0iNvbE=;
+        b=2qb+idCloNy16nkFIAq21WL611rOurvJdVPyf/drGQk552iRwanCvfHP3fmOOOv8lw
+         QQrexvTBGJxxCovg3PsKdcgfeeOnlrZYPCvhqV3ULIo6GkGUexL/fxcNM+kxlG3vOLGS
+         zO/12GJNuWsRT8Mho8QvkaNKL3TybObZj2LhPFWsCkwn/c+LdIsSTvRc00V0IT2/Qrya
+         8FS+RirJeQJzvn+dVNNbTCFovIvdDbCMw734/so53yQC/mICVfMvdsDL9mnhNLcgxX37
+         5qOYESowIyJAIfX87ouSSmWUv29X2zUszdOfS3ecHorMcQSnkhNcoZdsRYSIADv+QKAE
+         k4yA==
+X-Gm-Message-State: AOAM531KyQAoU5nNA7XnOAicDL/spTcOliKsU2JK9z2v2FlEsC3QaQWq
+        qgv7vkEK+RzUjXrsTjgp8ni8uQ==
+X-Google-Smtp-Source: ABdhPJxDGehQY/CmoySOGWWQNCrEx3jNpJjCZJUOvECVzdgdrGLxC4NZpiXRakqJeEqwqaibui2+dQ==
+X-Received: by 2002:a17:902:d2cf:: with SMTP id n15mr20695824plc.33.1643645040656;
+        Mon, 31 Jan 2022 08:04:00 -0800 (PST)
+Received: from FVFYT0MHHV2J.tiktokcdn.com ([139.177.225.244])
+        by smtp.gmail.com with ESMTPSA id n42sm17940716pfv.29.2022.01.31.08.03.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 31 Jan 2022 08:04:00 -0800 (PST)
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     akpm@linux-foundation.org, zi.yan@cs.rutgers.edu,
+        kirill.shutemov@linux.intel.com, rientjes@google.com,
+        lars.persson@axis.com, mike.kravetz@oracle.com
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        duanxiongchun@bytedance.com, Muchun Song <songmuchun@bytedance.com>
+Subject: [PATCH v3 0/5] Fix some cache flush bugs
+Date:   Tue,  1 Feb 2022 00:02:49 +0800
+Message-Id: <20220131160254.43211-1-songmuchun@bytedance.com>
+X-Mailer: git-send-email 2.32.0 (Apple Git-132)
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When the code iterates over the free list of physical pages nodes, it
-deletes the physical page node which is used as the iterator.
+This series focus on fixing cache maintenance.
 
-Therefore, we need to use the safe version of the iteration to prevent
-use-after-free.
+v3:
+  - Collect Reviewed-by tag from Zi Yan.
+  - Fix hugetlb cache maintenance.
 
-Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
----
- drivers/misc/habanalabs/common/memory.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+v2:
+  - Collect Reviewed-by tag from Zi Yan.
+  - Using a for loop instead of the folio variant for backportability.
 
-diff --git a/drivers/misc/habanalabs/common/memory.c b/drivers/misc/habanalabs/common/memory.c
-index 4778f23d8098..348daac621ee 100644
---- a/drivers/misc/habanalabs/common/memory.c
-+++ b/drivers/misc/habanalabs/common/memory.c
-@@ -2860,7 +2860,7 @@ int hl_vm_ctx_init(struct hl_ctx *ctx)
-  */
- void hl_vm_ctx_fini(struct hl_ctx *ctx)
- {
--	struct hl_vm_phys_pg_pack *phys_pg_list;
-+	struct hl_vm_phys_pg_pack *phys_pg_list, *tmp_phys_node;
- 	struct hl_device *hdev = ctx->hdev;
- 	struct hl_vm_hash_node *hnode;
- 	struct hl_vm *vm = &hdev->vm;
-@@ -2913,7 +2913,7 @@ void hl_vm_ctx_fini(struct hl_ctx *ctx)
- 		}
- 	spin_unlock(&vm->idr_lock);
- 
--	list_for_each_entry(phys_pg_list, &free_list, node)
-+	list_for_each_entry_safe(phys_pg_list, tmp_phys_node, &free_list, node)
- 		free_phys_pg_pack(hdev, phys_pg_list);
- 
- 	va_range_fini(hdev, ctx->va_range[HL_VA_RANGE_TYPE_DRAM]);
+Muchun Song (5):
+  mm: thp: fix wrong cache flush in remove_migration_pmd()
+  mm: fix missing cache flush for all tail pages of compound page
+  mm: hugetlb: fix missing cache flush in copy_huge_page_from_user()
+  mm: hugetlb: fix missing cache flush in hugetlb_mcopy_atomic_pte()
+  mm: replace multiple dcache flush with flush_dcache_folio()
+
+ mm/huge_memory.c | 3 ++-
+ mm/hugetlb.c     | 1 +
+ mm/memory.c      | 2 ++
+ mm/migrate.c     | 3 +--
+ 4 files changed, 6 insertions(+), 3 deletions(-)
+
 -- 
-2.25.1
+2.11.0
 
