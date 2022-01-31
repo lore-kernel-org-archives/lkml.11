@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E170C4707E
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:24:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 727A6C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:24:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359221AbiAaLYk (ORCPT
+        id S1359393AbiAaLYp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:24:40 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:48316 "EHLO
+        Mon, 31 Jan 2022 06:24:45 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:44952 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359611AbiAaLOz (ORCPT
+        with ESMTP id S1376655AbiAaLPf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:14:55 -0500
+        Mon, 31 Jan 2022 06:15:35 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B24660ED0;
-        Mon, 31 Jan 2022 11:14:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2A13C340E8;
-        Mon, 31 Jan 2022 11:14:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EB53E6114D;
+        Mon, 31 Jan 2022 11:15:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF893C340E8;
+        Mon, 31 Jan 2022 11:15:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627694;
-        bh=UBEHWdnK0I2caz9S+JQIViCsogd5ROcJ4lKF/VGobX8=;
+        s=korg; t=1643627734;
+        bh=FJBeTkqY5MGSsNKt5EtpDSlp0fF3bNvBMeuG+XAhG0Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u/AgDqrH6rtjaEJRAg4O544+gP+rMRZPvsGoQrOzJLhwt4V3UsOLtcnQpBQELI9E5
-         /X4fhbksYVxm8d231ZGEp+NAwikDrQ4hbNyZ9JVLhRas8aCEMb8zUdS/7a1WCj3fNm
-         xjn3yJbinJoXa8wdziNJ3EsJtp+upF5DFMA/LjUc=
+        b=Ckire4kg9+7aeIPxLMmCVxN55idSRlUc533xYDNK3CQy73n0GVbpUuttk0zHyD4EK
+         syqYIks3yMikSCRN0xL6LlPa6D+LAyH84Ofvd7Fz5dPwMY10teml8acA2SdYMSHaUb
+         MTE/ruL0+KoG5nrZxNhfk5NGuUZwO9B9NRZLf8KY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Suren Baghdasaryan <surenb@google.com>,
-        kernel test robot <lkp@intel.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.15 166/171] psi: fix "no previous prototype" warnings when CONFIG_CGROUPS=n
-Date:   Mon, 31 Jan 2022 11:57:11 +0100
-Message-Id: <20220131105235.628811698@linuxfoundation.org>
+        stable@vger.kernel.org, Brian Gix <brian.gix@intel.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        syphyr <syphyr@gmail.com>
+Subject: [PATCH 5.16 001/200] Bluetooth: refactor malicious adv data check
+Date:   Mon, 31 Jan 2022 11:54:24 +0100
+Message-Id: <20220131105233.611853414@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
-References: <20220131105229.959216821@linuxfoundation.org>
+In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
+References: <20220131105233.561926043@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -49,63 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Suren Baghdasaryan <surenb@google.com>
+From: Brian Gix <brian.gix@intel.com>
 
-commit 51e50fbd3efc6064c30ed73a5e009018b36e290a upstream.
+commit 899663be5e75dc0174dc8bda0b5e6826edf0b29a upstream.
 
-When CONFIG_CGROUPS is disabled psi code generates the following
-warnings:
+Check for out-of-bound read was being performed at the end of while
+num_reports loop, and would fill journal with false positives. Added
+check to beginning of loop processing so that it doesn't get checked
+after ptr has been advanced.
 
-  kernel/sched/psi.c:1112:21: warning: no previous prototype for 'psi_trigger_create' [-Wmissing-prototypes]
-      1112 | struct psi_trigger *psi_trigger_create(struct psi_group *group,
-           |                     ^~~~~~~~~~~~~~~~~~
-  kernel/sched/psi.c:1182:6: warning: no previous prototype for 'psi_trigger_destroy' [-Wmissing-prototypes]
-      1182 | void psi_trigger_destroy(struct psi_trigger *t)
-           |      ^~~~~~~~~~~~~~~~~~~
-  kernel/sched/psi.c:1249:10: warning: no previous prototype for 'psi_trigger_poll' [-Wmissing-prototypes]
-      1249 | __poll_t psi_trigger_poll(void **trigger_ptr,
-           |          ^~~~~~~~~~~~~~~~
-
-Change the declarations of these functions in the header to provide the
-prototypes even when they are unused.
-
-Link: https://lkml.kernel.org/r/20220119223940.787748-2-surenb@google.com
-Fixes: 0e94682b73bf ("psi: introduce psi monitor")
-Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Acked-by: Johannes Weiner <hannes@cmpxchg.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Brian Gix <brian.gix@intel.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Cc: syphyr <syphyr@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/psi.h |   11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ net/bluetooth/hci_event.c |   10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
---- a/include/linux/psi.h
-+++ b/include/linux/psi.h
-@@ -24,18 +24,17 @@ void psi_memstall_enter(unsigned long *f
- void psi_memstall_leave(unsigned long *flags);
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -5822,6 +5822,11 @@ static void hci_le_adv_report_evt(struct
+ 		struct hci_ev_le_advertising_info *ev = ptr;
+ 		s8 rssi;
  
- int psi_show(struct seq_file *s, struct psi_group *group, enum psi_res res);
--
--#ifdef CONFIG_CGROUPS
--int psi_cgroup_alloc(struct cgroup *cgrp);
--void psi_cgroup_free(struct cgroup *cgrp);
--void cgroup_move_task(struct task_struct *p, struct css_set *to);
--
- struct psi_trigger *psi_trigger_create(struct psi_group *group,
- 			char *buf, size_t nbytes, enum psi_res res);
- void psi_trigger_destroy(struct psi_trigger *t);
- 
- __poll_t psi_trigger_poll(void **trigger_ptr, struct file *file,
- 			poll_table *wait);
++		if (ptr > (void *)skb_tail_pointer(skb) - sizeof(*ev)) {
++			bt_dev_err(hdev, "Malicious advertising data.");
++			break;
++		}
 +
-+#ifdef CONFIG_CGROUPS
-+int psi_cgroup_alloc(struct cgroup *cgrp);
-+void psi_cgroup_free(struct cgroup *cgrp);
-+void cgroup_move_task(struct task_struct *p, struct css_set *to);
- #endif
+ 		if (ev->length <= HCI_MAX_AD_LENGTH &&
+ 		    ev->data + ev->length <= skb_tail_pointer(skb)) {
+ 			rssi = ev->data[ev->length];
+@@ -5833,11 +5838,6 @@ static void hci_le_adv_report_evt(struct
+ 		}
  
- #else /* CONFIG_PSI */
+ 		ptr += sizeof(*ev) + ev->length + 1;
+-
+-		if (ptr > (void *) skb_tail_pointer(skb) - sizeof(*ev)) {
+-			bt_dev_err(hdev, "Malicious advertising data. Stopping processing");
+-			break;
+-		}
+ 	}
+ 
+ 	hci_dev_unlock(hdev);
 
 
