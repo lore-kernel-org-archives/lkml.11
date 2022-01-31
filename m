@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78F41C4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11BD9C4167E
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379401AbiAaLaR (ORCPT
+        id S1379642AbiAaLaf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:30:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47062 "EHLO
+        Mon, 31 Jan 2022 06:30:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378708AbiAaLUh (ORCPT
+        with ESMTP id S1378712AbiAaLUh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 31 Jan 2022 06:20:37 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 865CFC0698C1;
-        Mon, 31 Jan 2022 03:13:30 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47E01C06174A;
+        Mon, 31 Jan 2022 03:13:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5985AB82A60;
-        Mon, 31 Jan 2022 11:13:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96705C340E8;
-        Mon, 31 Jan 2022 11:13:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0EECDB82A66;
+        Mon, 31 Jan 2022 11:13:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16A86C340E8;
+        Mon, 31 Jan 2022 11:13:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627608;
-        bh=cV/tBrF8igkYghxgdAlvpCjcLp7koFtF1DiSCLSyycU=;
+        s=korg; t=1643627629;
+        bh=Xm+A8pdfqqSPnqxPI7lMbPUiBTga4FhdkPaKKgHvq4M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tjj4hg80fnbolETfJAV4rCtmdGeM5EYz2334gJTlKSuW07gOtz3X75xGCoOB7SBpt
-         76GkkAe0gzM61G/traiNSYWT9u3MO/+pzy/6E4Wpl9Ik+DG5MYpqVsNG06uZZZK9F2
-         XxZ/96rceypW/BOztfYuB8RwptG7CSpIAGSAbfQw=
+        b=mjuv8bc1Ar65jkTD9WMpgluyklzekCU0sNzT1Mu41glQ+1Dpn2OGbios9fAssCBLm
+         XAOO/WWnG0OF4RR0Fvfnus0mF0wwsyVhVtbQ5YLyo7vHNeOzOeOBJWcLUjfqqdxurB
+         qBwXu1/ibnZ6jOb9e/iL3NUzE464ifyME7t1LTxE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Xianting Tian <xianting.tian@linux.alibaba.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 096/171] drm/msm: Fix wrong size calculation
-Date:   Mon, 31 Jan 2022 11:56:01 +0100
-Message-Id: <20220131105233.285068117@linuxfoundation.org>
+Subject: [PATCH 5.15 147/171] yam: fix a memory leak in yam_siocdevprivate()
+Date:   Mon, 31 Jan 2022 11:56:52 +0100
+Message-Id: <20220131105234.989125463@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
 References: <20220131105229.959216821@linuxfoundation.org>
@@ -51,42 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xianting Tian <xianting.tian@linux.alibaba.com>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-commit 0a727b459ee39bd4c5ced19d6024258ac87b6b2e upstream.
+[ Upstream commit 29eb31542787e1019208a2e1047bb7c76c069536 ]
 
-For example, memory-region in .dts as below,
-	reg = <0x0 0x50000000 0x0 0x20000000>
+ym needs to be free when ym->cmd != SIOCYAMSMCS.
 
-We can get below values,
-struct resource r;
-r.start = 0x50000000;
-r.end	= 0x6fffffff;
-
-So the size should be:
-size = r.end - r.start + 1 = 0x20000000
-
-Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
-Fixes: 072f1f9168ed ("drm/msm: add support for "stolen" mem")
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Link: https://lore.kernel.org/r/20220112123334.749776-1-xianting.tian@linux.alibaba.com
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 0781168e23a2 ("yam: fix a missing-check bug")
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/msm_drv.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/hamradio/yam.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
---- a/drivers/gpu/drm/msm/msm_drv.c
-+++ b/drivers/gpu/drm/msm/msm_drv.c
-@@ -437,7 +437,7 @@ static int msm_init_vram(struct drm_devi
- 		of_node_put(node);
- 		if (ret)
- 			return ret;
--		size = r.end - r.start;
-+		size = r.end - r.start + 1;
- 		DRM_INFO("using VRAM carveout: %lx@%pa\n", size, &r.start);
- 
- 		/* if we have no IOMMU, then we need to use carveout allocator.
+diff --git a/drivers/net/hamradio/yam.c b/drivers/net/hamradio/yam.c
+index 6ddacbdb224ba..528d57a435394 100644
+--- a/drivers/net/hamradio/yam.c
++++ b/drivers/net/hamradio/yam.c
+@@ -950,9 +950,7 @@ static int yam_siocdevprivate(struct net_device *dev, struct ifreq *ifr, void __
+ 		ym = memdup_user(data, sizeof(struct yamdrv_ioctl_mcs));
+ 		if (IS_ERR(ym))
+ 			return PTR_ERR(ym);
+-		if (ym->cmd != SIOCYAMSMCS)
+-			return -EINVAL;
+-		if (ym->bitrate > YAM_MAXBITRATE) {
++		if (ym->cmd != SIOCYAMSMCS || ym->bitrate > YAM_MAXBITRATE) {
+ 			kfree(ym);
+ 			return -EINVAL;
+ 		}
+-- 
+2.34.1
+
 
 
