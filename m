@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31BCCC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:04:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B05DAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:04:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358753AbiAaLEi (ORCPT
+        id S1358793AbiAaLEq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:04:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42762 "EHLO
+        Mon, 31 Jan 2022 06:04:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358873AbiAaLB4 (ORCPT
+        with ESMTP id S1358449AbiAaLCW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:01:56 -0500
+        Mon, 31 Jan 2022 06:02:22 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E642C061757;
-        Mon, 31 Jan 2022 03:00:17 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B613C061769;
+        Mon, 31 Jan 2022 03:00:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 48FDFB82A69;
-        Mon, 31 Jan 2022 11:00:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68276C340E8;
-        Mon, 31 Jan 2022 11:00:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 08196B82A5F;
+        Mon, 31 Jan 2022 11:00:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6370EC340E8;
+        Mon, 31 Jan 2022 11:00:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643626815;
-        bh=zlA4dr6EEzG4yI4mNFgUJEXAqyTrvPkR0P4A7MTyLSU=;
+        s=korg; t=1643626833;
+        bh=pprbZsg+C92F/5sdWdHZshcc/eOL9hMtUXknEI2V4gg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nyYXYujc/EMLk4fP1ZABTcvYJ+JWg8IXS0arr1JfeWG6WVzaTz+6ovvrLpq8xgwKa
-         lxAkMSxUqdqTPugTblDl8vZKHjJmaMeU/BoLDczRtUYgZ+TzQlvh4fEbQHwqORU0Z3
-         29PQOa4LbSdStDpDXQuRqhRPwFCh5Yv7YklS97qw=
+        b=XotECHmPjk9O0L5lvD/cEr/tH6iE418LtXaPGdAdsxzokpA+NWo4zBpW8mq6E67x+
+         ycDuBTikh0v3hWZrAkEC0KPqh1Iz3KtX7IqUwuf7JDtRcB941wYT9qwWWaT2Xi4M1L
+         6/emaA0T9OCkwh4ZohjQz7WtFU4l+1D9F7dgIWmg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
+        stable@vger.kernel.org, Hangbin Liu <liuhangbin@gmail.com>,
+        Xin Long <lucien.xin@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 49/64] netfilter: conntrack: dont increment invalid counter on NF_REPEAT
-Date:   Mon, 31 Jan 2022 11:56:34 +0100
-Message-Id: <20220131105217.335272096@linuxfoundation.org>
+Subject: [PATCH 5.4 37/64] ping: fix the sk_bound_dev_if match in ping_lookup
+Date:   Mon, 31 Jan 2022 11:56:22 +0100
+Message-Id: <20220131105216.930543828@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105215.644174521@linuxfoundation.org>
 References: <20220131105215.644174521@linuxfoundation.org>
@@ -50,51 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Xin Long <lucien.xin@gmail.com>
 
-[ Upstream commit 830af2eba40327abec64325a5b08b1e85c37a2e0 ]
+commit 2afc3b5a31f9edf3ef0f374f5d70610c79c93a42 upstream.
 
-The packet isn't invalid, REPEAT means we're trying again after cleaning
-out a stale connection, e.g. via tcp tracker.
+When 'ping' changes to use PING socket instead of RAW socket by:
 
-This caused increases of invalid stat counter in a test case involving
-frequent connection reuse, even though no packet is actually invalid.
+   # sysctl -w net.ipv4.ping_group_range="0 100"
 
-Fixes: 56a62e2218f5 ("netfilter: conntrack: fix NF_REPEAT handling")
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+the selftests 'router_broadcast.sh' will fail, as such command
+
+  # ip vrf exec vrf-h1 ping -I veth0 198.51.100.255 -b
+
+can't receive the response skb by the PING socket. It's caused by mismatch
+of sk_bound_dev_if and dif in ping_rcv() when looking up the PING socket,
+as dif is vrf-h1 if dif's master was set to vrf-h1.
+
+This patch is to fix this regression by also checking the sk_bound_dev_if
+against sdif so that the packets can stil be received even if the socket
+is not bound to the vrf device but to the real iif.
+
+Fixes: c319b4d76b9e ("net: ipv4: add IPPROTO_ICMP socket kind")
+Reported-by: Hangbin Liu <liuhangbin@gmail.com>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_conntrack_core.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ net/ipv4/ping.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-index 4bcc36e4b2ef0..d9b6f2001d006 100644
---- a/net/netfilter/nf_conntrack_core.c
-+++ b/net/netfilter/nf_conntrack_core.c
-@@ -1709,15 +1709,17 @@ repeat:
- 		pr_debug("nf_conntrack_in: Can't track with proto module\n");
- 		nf_conntrack_put(&ct->ct_general);
- 		skb->_nfct = 0;
--		NF_CT_STAT_INC_ATOMIC(state->net, invalid);
--		if (ret == -NF_DROP)
--			NF_CT_STAT_INC_ATOMIC(state->net, drop);
- 		/* Special case: TCP tracker reports an attempt to reopen a
- 		 * closed/aborted connection. We have to go back and create a
- 		 * fresh conntrack.
- 		 */
- 		if (ret == -NF_REPEAT)
- 			goto repeat;
-+
-+		NF_CT_STAT_INC_ATOMIC(state->net, invalid);
-+		if (ret == -NF_DROP)
-+			NF_CT_STAT_INC_ATOMIC(state->net, drop);
-+
- 		ret = -ret;
- 		goto out;
- 	}
--- 
-2.34.1
-
+--- a/net/ipv4/ping.c
++++ b/net/ipv4/ping.c
+@@ -220,7 +220,8 @@ static struct sock *ping_lookup(struct n
+ 			continue;
+ 		}
+ 
+-		if (sk->sk_bound_dev_if && sk->sk_bound_dev_if != dif)
++		if (sk->sk_bound_dev_if && sk->sk_bound_dev_if != dif &&
++		    sk->sk_bound_dev_if != inet_sdif(skb))
+ 			continue;
+ 
+ 		sock_hold(sk);
 
 
