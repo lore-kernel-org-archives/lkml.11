@@ -2,152 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89346C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 15:14:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90722C4167D
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 15:14:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379409AbiAaPOs (ORCPT
+        id S1378215AbiAaPOw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 10:14:48 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:29813 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1377073AbiAaPOZ (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 10:14:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643642065;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7ChuemeG/jS317xBBF70oFf4WwBZNenz/LAHILjMr9M=;
-        b=ZC480syZYNIXX1Q5pzvL/xeyK30D22uzQfzZ533vM9/ViXS7CQv/CDqPVec5NuwiKWtJuc
-        wpnxfieLqkvVysftwUne3+oC7tOOstbwII90yoEv6Me1AeIaO0w1pED6mSdb7IkHDCEjid
-        nQFhL2mlKJhpT2i2wZHwZQrMONCGf9o=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-210-12WqAvEZP8mzhmuwdmMDXw-1; Mon, 31 Jan 2022 10:14:23 -0500
-X-MC-Unique: 12WqAvEZP8mzhmuwdmMDXw-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 164CE1091DC3;
-        Mon, 31 Jan 2022 15:14:22 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.26])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 6B69C84D0D;
-        Mon, 31 Jan 2022 15:14:09 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH 5/5] cachefiles: Remove the now-unused mark-inode-in-use
- tracepoints
-From:   David Howells <dhowells@redhat.com>
-To:     Amir Goldstein <amir73il@gmail.com>
-Cc:     linux-cachefs@redhat.com, dhowells@redhat.com,
-        Christoph Hellwig <hch@infradead.org>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        Jeff Layton <jlayton@kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        torvalds@linux-foundation.org, linux-unionfs@vger.kernel.org,
-        linux-cachefs@redhat.com, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Mon, 31 Jan 2022 15:14:08 +0000
-Message-ID: <164364204859.1476539.8259104934674309990.stgit@warthog.procyon.org.uk>
-In-Reply-To: <164364196407.1476539.8450117784231043601.stgit@warthog.procyon.org.uk>
-References: <164364196407.1476539.8450117784231043601.stgit@warthog.procyon.org.uk>
-User-Agent: StGit/1.4
+        Mon, 31 Jan 2022 10:14:52 -0500
+Received: from mga07.intel.com ([134.134.136.100]:19426 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1378011AbiAaPOS (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 10:14:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643642058; x=1675178058;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=vJUYQ/EJ/+uq9B5gt7mFGRv4EuD1lZY/DDkYVSbHwtk=;
+  b=H47sRiEDjDi9jnUHsRBWZPUI4q1PBKBLijYH8pQPUTelmoYapBRBBgwc
+   H3n2pDiZsBTYGzOzwmR70+HfB1Rnt1A2NlpoR/EWWqyH2lbLb9NHPqnHg
+   C2Qqww2DJxuZqpaBl+tbWSqWZh8U+HkiBh4+/3xnD7Qw+CKwBR0RqStpf
+   yUii2qn/jWQSZH+93FNDySd8ovQ5XXzPHfXxuH8Zfhok4MqwyJEr5aLGP
+   e+6MIzLXwun+bhxCPjL5xdOTEiiB/HAkevQrz//JzSocrbqwGIne1JeLD
+   m/kruB2CNOdNWbfiUKQuuI6duSfifETev3EL1NydK7mPV8i5yWSJoPDEJ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10243"; a="310787725"
+X-IronPort-AV: E=Sophos;i="5.88,331,1635231600"; 
+   d="scan'208";a="310787725"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 07:14:08 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,331,1635231600"; 
+   d="scan'208";a="626393642"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga002.fm.intel.com with ESMTP; 31 Jan 2022 07:14:01 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id D90843C5; Mon, 31 Jan 2022 17:14:15 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Wolfram Sang <wsa@kernel.org>, Jean Delvare <jdelvare@suse.de>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Tan Jui Nee <jui.nee.tan@intel.com>,
+        Kate Hsuan <hpa@redhat.com>,
+        Jonathan Yong <jonathan.yong@intel.com>,
+        linux-kernel@vger.kernel.org, linux-edac@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-gpio@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org
+Cc:     Borislav Petkov <bp@alien8.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>,
+        Jean Delvare <jdelvare@suse.com>,
+        Peter Tyser <ptyser@xes-inc.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Andy Shevchenko <andy@kernel.org>,
+        Mark Gross <markgross@kernel.org>,
+        Henning Schild <henning.schild@siemens.com>
+Subject: [PATCH v4 2/8] pinctrl: intel: Check against matching data instead of ACPI companion
+Date:   Mon, 31 Jan 2022 17:13:40 +0200
+Message-Id: <20220131151346.45792-3-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220131151346.45792-1-andriy.shevchenko@linux.intel.com>
+References: <20220131151346.45792-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The cachefiles tracepoints that relate to marking an inode in-use with the
-S_KERNEL_FILE inode flag are now unused, superseded by general tracepoints.
+In some cases we may get a platform device that has ACPI companion
+which is different to the pin control described in the ACPI tables.
+This is primarily happens when device is instantiated by board file.
 
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: linux-cachefs@redhat.com
+In order to allow this device being enumerated, refactor
+intel_pinctrl_get_soc_data() to check the matching data instead of
+ACPI companion.
+
+Reported-by: Henning Schild <henning.schild@siemens.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Acked-by: Hans de Goede <hdegoede@redhat.com>
+Acked-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
 ---
+ drivers/pinctrl/intel/pinctrl-intel.c | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
 
- include/trace/events/cachefiles.h |   63 -------------------------------------
- 1 file changed, 63 deletions(-)
-
-diff --git a/include/trace/events/cachefiles.h b/include/trace/events/cachefiles.h
-index c6f5aa74db89..1c56f9889f69 100644
---- a/include/trace/events/cachefiles.h
-+++ b/include/trace/events/cachefiles.h
-@@ -552,69 +552,6 @@ TRACE_EVENT(cachefiles_trunc,
- 		      __entry->to)
- 	    );
+diff --git a/drivers/pinctrl/intel/pinctrl-intel.c b/drivers/pinctrl/intel/pinctrl-intel.c
+index 826d494f3cc6..48f55991ae8c 100644
+--- a/drivers/pinctrl/intel/pinctrl-intel.c
++++ b/drivers/pinctrl/intel/pinctrl-intel.c
+@@ -1626,16 +1626,14 @@ EXPORT_SYMBOL_GPL(intel_pinctrl_probe_by_uid);
  
--TRACE_EVENT(cachefiles_mark_active,
--	    TP_PROTO(struct cachefiles_object *obj,
--		     struct inode *inode),
--
--	    TP_ARGS(obj, inode),
--
--	    /* Note that obj may be NULL */
--	    TP_STRUCT__entry(
--		    __field(unsigned int,		obj		)
--		    __field(ino_t,			inode		)
--			     ),
--
--	    TP_fast_assign(
--		    __entry->obj	= obj ? obj->debug_id : 0;
--		    __entry->inode	= inode->i_ino;
--			   ),
--
--	    TP_printk("o=%08x B=%lx",
--		      __entry->obj, __entry->inode)
--	    );
--
--TRACE_EVENT(cachefiles_mark_failed,
--	    TP_PROTO(struct cachefiles_object *obj,
--		     struct inode *inode),
--
--	    TP_ARGS(obj, inode),
--
--	    /* Note that obj may be NULL */
--	    TP_STRUCT__entry(
--		    __field(unsigned int,		obj		)
--		    __field(ino_t,			inode		)
--			     ),
--
--	    TP_fast_assign(
--		    __entry->obj	= obj ? obj->debug_id : 0;
--		    __entry->inode	= inode->i_ino;
--			   ),
--
--	    TP_printk("o=%08x B=%lx",
--		      __entry->obj, __entry->inode)
--	    );
--
--TRACE_EVENT(cachefiles_mark_inactive,
--	    TP_PROTO(struct cachefiles_object *obj,
--		     struct inode *inode),
--
--	    TP_ARGS(obj, inode),
--
--	    /* Note that obj may be NULL */
--	    TP_STRUCT__entry(
--		    __field(unsigned int,		obj		)
--		    __field(ino_t,			inode		)
--			     ),
--
--	    TP_fast_assign(
--		    __entry->obj	= obj ? obj->debug_id : 0;
--		    __entry->inode	= inode->i_ino;
--			   ),
--
--	    TP_printk("o=%08x B=%lx",
--		      __entry->obj, __entry->inode)
--	    );
--
- TRACE_EVENT(cachefiles_vfs_error,
- 	    TP_PROTO(struct cachefiles_object *obj, struct inode *backer,
- 		     int error, enum cachefiles_error_trace where),
-
+ const struct intel_pinctrl_soc_data *intel_pinctrl_get_soc_data(struct platform_device *pdev)
+ {
++	const struct intel_pinctrl_soc_data * const *table;
+ 	const struct intel_pinctrl_soc_data *data = NULL;
+-	const struct intel_pinctrl_soc_data **table;
+-	struct acpi_device *adev;
+-	unsigned int i;
+ 
+-	adev = ACPI_COMPANION(&pdev->dev);
+-	if (adev) {
+-		const void *match = device_get_match_data(&pdev->dev);
++	table = device_get_match_data(&pdev->dev);
++	if (table) {
++		struct acpi_device *adev = ACPI_COMPANION(&pdev->dev);
++		unsigned int i;
+ 
+-		table = (const struct intel_pinctrl_soc_data **)match;
+ 		for (i = 0; table[i]; i++) {
+ 			if (!strcmp(adev->pnp.unique_id, table[i]->uid)) {
+ 				data = table[i];
+@@ -1649,7 +1647,7 @@ const struct intel_pinctrl_soc_data *intel_pinctrl_get_soc_data(struct platform_
+ 		if (!id)
+ 			return ERR_PTR(-ENODEV);
+ 
+-		table = (const struct intel_pinctrl_soc_data **)id->driver_data;
++		table = (const struct intel_pinctrl_soc_data * const *)id->driver_data;
+ 		data = table[pdev->id];
+ 	}
+ 
+-- 
+2.34.1
 
