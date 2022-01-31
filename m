@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBAFAC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:11:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32064C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:11:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344870AbiAaLLu (ORCPT
+        id S1359664AbiAaLLz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:11:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44058 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359814AbiAaLH6 (ORCPT
+        Mon, 31 Jan 2022 06:11:55 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:54076 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1376275AbiAaLIG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:07:58 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7265C06175E;
-        Mon, 31 Jan 2022 03:05:00 -0800 (PST)
+        Mon, 31 Jan 2022 06:08:06 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8B4E3B82A6B;
-        Mon, 31 Jan 2022 11:05:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA6B3C340E8;
-        Mon, 31 Jan 2022 11:04:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CAE3EB82A4D;
+        Mon, 31 Jan 2022 11:08:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AEA3C340E8;
+        Mon, 31 Jan 2022 11:08:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627099;
-        bh=Wqg69i/kAkE8iQFF0uMwAU4zMNRtto1xKrShNqHzgBo=;
+        s=korg; t=1643627283;
+        bh=k70UCGaKdelyUX4hLZO2WfvpGsnNzGI95PXnQiEeiXU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B9ER44311phoooudJnqb55xQ5n4MXayNcd6j5QB91qDkM3wip08NFyD/QzE1TpOqA
-         krEaR6svqgM6P3vcUpRDMudeqZa0SHqBy881VkT4RaEMb5COMcjqdgtOkCnN6FV/iM
-         d/9dy3vt8Qm71ZqALZB4DeryKREn0MUet6NHDblQ=
+        b=FwthVCYnQi3B/4v7UcZV21m4/wx8jfuGtoMLJ0ByLWfBo5eVLYQhcsAAh3cAPkEZW
+         iaC5hlpnwYjJxMXqbbRG7cGwmHJ3JV8kvgqlRRNC2U5qrpja+jYbrT+WZbux3beDfV
+         +R8GnXadS6lI7lVkXCvMJJfA9df+Tkg2dLpwQDYU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Erhard Furtner <erhard_f@mailbox.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.10 041/100] powerpc/32: Fix boot failure with GCC latent entropy plugin
-Date:   Mon, 31 Jan 2022 11:56:02 +0100
-Message-Id: <20220131105221.820340276@linuxfoundation.org>
+        stable@vger.kernel.org, Wanpeng Li <wanpengli@tencent.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.15 034/171] KVM: LAPIC: Also cancel preemption timer during SET_LAPIC
+Date:   Mon, 31 Jan 2022 11:54:59 +0100
+Message-Id: <20220131105231.168825677@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
-References: <20220131105220.424085452@linuxfoundation.org>
+In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
+References: <20220131105229.959216821@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,54 +46,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+From: Wanpeng Li <wanpengli@tencent.com>
 
-commit bba496656a73fc1d1330b49c7f82843836e9feb1 upstream.
+commit 35fe7cfbab2e81f1afb23fc4212210b1de6d9633 upstream.
 
-Boot fails with GCC latent entropy plugin enabled.
+The below warning is splatting during guest reboot.
 
-This is due to early boot functions trying to access 'latent_entropy'
-global data while the kernel is not relocated at its final
-destination yet.
+  ------------[ cut here ]------------
+  WARNING: CPU: 0 PID: 1931 at arch/x86/kvm/x86.c:10322 kvm_arch_vcpu_ioctl_run+0x874/0x880 [kvm]
+  CPU: 0 PID: 1931 Comm: qemu-system-x86 Tainted: G          I       5.17.0-rc1+ #5
+  RIP: 0010:kvm_arch_vcpu_ioctl_run+0x874/0x880 [kvm]
+  Call Trace:
+   <TASK>
+   kvm_vcpu_ioctl+0x279/0x710 [kvm]
+   __x64_sys_ioctl+0x83/0xb0
+   do_syscall_64+0x3b/0xc0
+   entry_SYSCALL_64_after_hwframe+0x44/0xae
+  RIP: 0033:0x7fd39797350b
 
-As there is no way to tell GCC to use PTRRELOC() to access it,
-disable latent entropy plugin in early_32.o and feature-fixups.o and
-code-patching.o
+This can be triggered by not exposing tsc-deadline mode and doing a reboot in
+the guest. The lapic_shutdown() function which is called in sys_reboot path
+will not disarm the flying timer, it just masks LVTT. lapic_shutdown() clears
+APIC state w/ LVT_MASKED and timer-mode bit is 0, this can trigger timer-mode
+switch between tsc-deadline and oneshot/periodic, which can result in preemption
+timer be cancelled in apic_update_lvtt(). However, We can't depend on this when
+not exposing tsc-deadline mode and oneshot/periodic modes emulated by preemption
+timer. Qemu will synchronise states around reset, let's cancel preemption timer
+under KVM_SET_LAPIC.
 
-Fixes: 38addce8b600 ("gcc-plugins: Add latent_entropy plugin")
-Cc: stable@vger.kernel.org # v4.9+
-Reported-by: Erhard Furtner <erhard_f@mailbox.org>
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215217
-Link: https://lore.kernel.org/r/2bac55483b8daf5b1caa163a45fa5f9cdbe18be4.1640178426.git.christophe.leroy@csgroup.eu
+Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
+Message-Id: <1643102220-35667-1-git-send-email-wanpengli@tencent.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/kernel/Makefile |    1 +
- arch/powerpc/lib/Makefile    |    3 +++
- 2 files changed, 4 insertions(+)
+ arch/x86/kvm/lapic.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/powerpc/kernel/Makefile
-+++ b/arch/powerpc/kernel/Makefile
-@@ -11,6 +11,7 @@ CFLAGS_prom_init.o      += -fPIC
- CFLAGS_btext.o		+= -fPIC
- endif
+--- a/arch/x86/kvm/lapic.c
++++ b/arch/x86/kvm/lapic.c
+@@ -2623,7 +2623,7 @@ int kvm_apic_set_state(struct kvm_vcpu *
+ 	kvm_apic_set_version(vcpu);
  
-+CFLAGS_early_32.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
- CFLAGS_cputable.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
- CFLAGS_prom_init.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
- CFLAGS_btext.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
---- a/arch/powerpc/lib/Makefile
-+++ b/arch/powerpc/lib/Makefile
-@@ -19,6 +19,9 @@ CFLAGS_code-patching.o += -DDISABLE_BRAN
- CFLAGS_feature-fixups.o += -DDISABLE_BRANCH_PROFILING
- endif
- 
-+CFLAGS_code-patching.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
-+CFLAGS_feature-fixups.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
-+
- obj-y += alloc.o code-patching.o feature-fixups.o pmem.o inst.o test_code-patching.o
- 
- ifndef CONFIG_KASAN
+ 	apic_update_ppr(apic);
+-	hrtimer_cancel(&apic->lapic_timer.timer);
++	cancel_apic_timer(apic);
+ 	apic->lapic_timer.expired_tscdeadline = 0;
+ 	apic_update_lvtt(apic);
+ 	apic_manage_nmi_watchdog(apic, kvm_lapic_get_reg(apic, APIC_LVT0));
 
 
