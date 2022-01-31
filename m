@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA3CAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:46:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4EC2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:46:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376277AbiAaLqc (ORCPT
+        id S1376671AbiAaLqh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:46:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49152 "EHLO
+        Mon, 31 Jan 2022 06:46:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379787AbiAaLal (ORCPT
+        with ESMTP id S1349840AbiAaLYk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:30:41 -0500
+        Mon, 31 Jan 2022 06:24:40 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EDFCC06134A;
-        Mon, 31 Jan 2022 03:21:28 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 327E6C08E879;
+        Mon, 31 Jan 2022 03:15:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 00135B82A5D;
-        Mon, 31 Jan 2022 11:21:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 365B7C340E8;
-        Mon, 31 Jan 2022 11:21:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E6C77B82A72;
+        Mon, 31 Jan 2022 11:15:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 368E9C340EF;
+        Mon, 31 Jan 2022 11:15:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643628085;
-        bh=UfKq2GQHSIkuB4vaUkVCYOWOTluH1D8DYB+0KuYdy7Y=;
+        s=korg; t=1643627700;
+        bh=GjGO6KS8Wz7i9WHvfILtYVTbWhOHZcSOqBUaV99E+jw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Pwff8NbHSh+On/2NPWd3WeTgukBrw8cERLGiyI7h75XGhh98tHBZUhDZJrk9DqbkG
-         l5oibF6BS1ca6WrqDWizdzTJwrnLbFXIYp+oTOCXlLLpdutnbRdVfu35Ewk2syEPi5
-         1ZR4zJ05NVuNl4dqst+jG0bJrOg8qXt4Rjtc9cCE=
+        b=0RDcbeYt4H/Qmu0LD29PWChUX8oCq2hWHrW1DlPvYSguXncz9COOlccY3Tki7/CfR
+         E7XmywRZzxWBUo1k0HImarsTE38M9+09qPeNtAR6DqoZMT9xCYR55tDPVD4U1ytP/I
+         8phobTVc9Lz3Q25aQO+TiGdUFHXpwrrqbj+LDHu4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.16 120/200] ipv6: annotate accesses to fn->fn_sernum
-Date:   Mon, 31 Jan 2022 11:56:23 +0100
-Message-Id: <20220131105237.605653484@linuxfoundation.org>
+        stable@vger.kernel.org, Sachin Sant <sachinp@linux.ibm.com>,
+        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 136/171] powerpc/perf: Fix power_pmu_disable to call clear_pmi_irq_pending only if PMI is pending
+Date:   Mon, 31 Jan 2022 11:56:41 +0100
+Message-Id: <20220131105234.610987056@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
-References: <20220131105233.561926043@linuxfoundation.org>
+In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
+References: <20220131105229.959216821@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,188 +52,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
 
-commit aafc2e3285c2d7a79b7ee15221c19fbeca7b1509 upstream.
+[ Upstream commit fb6433b48a178d4672cb26632454ee0b21056eaa ]
 
-struct fib6_node's fn_sernum field can be
-read while other threads change it.
+Running selftest with CONFIG_PPC_IRQ_SOFT_MASK_DEBUG enabled in kernel
+triggered below warning:
 
-Add READ_ONCE()/WRITE_ONCE() annotations.
+[  172.851380] ------------[ cut here ]------------
+[  172.851391] WARNING: CPU: 8 PID: 2901 at arch/powerpc/include/asm/hw_irq.h:246 power_pmu_disable+0x270/0x280
+[  172.851402] Modules linked in: dm_mod bonding nft_ct nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 ip_set nf_tables rfkill nfnetlink sunrpc xfs libcrc32c pseries_rng xts vmx_crypto uio_pdrv_genirq uio sch_fq_codel ip_tables ext4 mbcache jbd2 sd_mod t10_pi sg ibmvscsi ibmveth scsi_transport_srp fuse
+[  172.851442] CPU: 8 PID: 2901 Comm: lost_exception_ Not tainted 5.16.0-rc5-03218-g798527287598 #2
+[  172.851451] NIP:  c00000000013d600 LR: c00000000013d5a4 CTR: c00000000013b180
+[  172.851458] REGS: c000000017687860 TRAP: 0700   Not tainted  (5.16.0-rc5-03218-g798527287598)
+[  172.851465] MSR:  8000000000029033 <SF,EE,ME,IR,DR,RI,LE>  CR: 48004884  XER: 20040000
+[  172.851482] CFAR: c00000000013d5b4 IRQMASK: 1
+[  172.851482] GPR00: c00000000013d5a4 c000000017687b00 c000000002a10600 0000000000000004
+[  172.851482] GPR04: 0000000082004000 c0000008ba08f0a8 0000000000000000 00000008b7ed0000
+[  172.851482] GPR08: 00000000446194f6 0000000000008000 c00000000013b118 c000000000d58e68
+[  172.851482] GPR12: c00000000013d390 c00000001ec54a80 0000000000000000 0000000000000000
+[  172.851482] GPR16: 0000000000000000 0000000000000000 c000000015d5c708 c0000000025396d0
+[  172.851482] GPR20: 0000000000000000 0000000000000000 c00000000a3bbf40 0000000000000003
+[  172.851482] GPR24: 0000000000000000 c0000008ba097400 c0000000161e0d00 c00000000a3bb600
+[  172.851482] GPR28: c000000015d5c700 0000000000000001 0000000082384090 c0000008ba0020d8
+[  172.851549] NIP [c00000000013d600] power_pmu_disable+0x270/0x280
+[  172.851557] LR [c00000000013d5a4] power_pmu_disable+0x214/0x280
+[  172.851565] Call Trace:
+[  172.851568] [c000000017687b00] [c00000000013d5a4] power_pmu_disable+0x214/0x280 (unreliable)
+[  172.851579] [c000000017687b40] [c0000000003403ac] perf_pmu_disable+0x4c/0x60
+[  172.851588] [c000000017687b60] [c0000000003445e4] __perf_event_task_sched_out+0x1d4/0x660
+[  172.851596] [c000000017687c50] [c000000000d1175c] __schedule+0xbcc/0x12a0
+[  172.851602] [c000000017687d60] [c000000000d11ea8] schedule+0x78/0x140
+[  172.851608] [c000000017687d90] [c0000000001a8080] sys_sched_yield+0x20/0x40
+[  172.851615] [c000000017687db0] [c0000000000334dc] system_call_exception+0x18c/0x380
+[  172.851622] [c000000017687e10] [c00000000000c74c] system_call_common+0xec/0x268
 
-Do not change existing smp barriers in fib6_get_cookie_safe()
-and __fib6_update_sernum_upto_root()
+The warning indicates that MSR_EE being set(interrupt enabled) when
+there was an overflown PMC detected. This could happen in
+power_pmu_disable since it runs under interrupt soft disable
+condition ( local_irq_save ) and not with interrupts hard disabled.
+commit 2c9ac51b850d ("powerpc/perf: Fix PMU callbacks to clear
+pending PMI before resetting an overflown PMC") intended to clear
+PMI pending bit in Paca when disabling the PMU. It could happen
+that PMC gets overflown while code is in power_pmu_disable
+callback function. Hence add a check to see if PMI pending bit
+is set in Paca before clearing it via clear_pmi_pending.
 
-syzbot reported:
-
-BUG: KCSAN: data-race in fib6_clean_node / inet6_csk_route_socket
-
-write to 0xffff88813df62e2c of 4 bytes by task 1920 on cpu 1:
- fib6_clean_node+0xc2/0x260 net/ipv6/ip6_fib.c:2178
- fib6_walk_continue+0x38e/0x430 net/ipv6/ip6_fib.c:2112
- fib6_walk net/ipv6/ip6_fib.c:2160 [inline]
- fib6_clean_tree net/ipv6/ip6_fib.c:2240 [inline]
- __fib6_clean_all+0x1a9/0x2e0 net/ipv6/ip6_fib.c:2256
- fib6_flush_trees+0x6c/0x80 net/ipv6/ip6_fib.c:2281
- rt_genid_bump_ipv6 include/net/net_namespace.h:488 [inline]
- addrconf_dad_completed+0x57f/0x870 net/ipv6/addrconf.c:4230
- addrconf_dad_work+0x908/0x1170
- process_one_work+0x3f6/0x960 kernel/workqueue.c:2307
- worker_thread+0x616/0xa70 kernel/workqueue.c:2454
- kthread+0x1bf/0x1e0 kernel/kthread.c:359
- ret_from_fork+0x1f/0x30
-
-read to 0xffff88813df62e2c of 4 bytes by task 15701 on cpu 0:
- fib6_get_cookie_safe include/net/ip6_fib.h:285 [inline]
- rt6_get_cookie include/net/ip6_fib.h:306 [inline]
- ip6_dst_store include/net/ip6_route.h:234 [inline]
- inet6_csk_route_socket+0x352/0x3c0 net/ipv6/inet6_connection_sock.c:109
- inet6_csk_xmit+0x91/0x1e0 net/ipv6/inet6_connection_sock.c:121
- __tcp_transmit_skb+0x1323/0x1840 net/ipv4/tcp_output.c:1402
- tcp_transmit_skb net/ipv4/tcp_output.c:1420 [inline]
- tcp_write_xmit+0x1450/0x4460 net/ipv4/tcp_output.c:2680
- __tcp_push_pending_frames+0x68/0x1c0 net/ipv4/tcp_output.c:2864
- tcp_push+0x2d9/0x2f0 net/ipv4/tcp.c:725
- mptcp_push_release net/mptcp/protocol.c:1491 [inline]
- __mptcp_push_pending+0x46c/0x490 net/mptcp/protocol.c:1578
- mptcp_sendmsg+0x9ec/0xa50 net/mptcp/protocol.c:1764
- inet6_sendmsg+0x5f/0x80 net/ipv6/af_inet6.c:643
- sock_sendmsg_nosec net/socket.c:705 [inline]
- sock_sendmsg net/socket.c:725 [inline]
- kernel_sendmsg+0x97/0xd0 net/socket.c:745
- sock_no_sendpage+0x84/0xb0 net/core/sock.c:3086
- inet_sendpage+0x9d/0xc0 net/ipv4/af_inet.c:834
- kernel_sendpage+0x187/0x200 net/socket.c:3492
- sock_sendpage+0x5a/0x70 net/socket.c:1007
- pipe_to_sendpage+0x128/0x160 fs/splice.c:364
- splice_from_pipe_feed fs/splice.c:418 [inline]
- __splice_from_pipe+0x207/0x500 fs/splice.c:562
- splice_from_pipe fs/splice.c:597 [inline]
- generic_splice_sendpage+0x94/0xd0 fs/splice.c:746
- do_splice_from fs/splice.c:767 [inline]
- direct_splice_actor+0x80/0xa0 fs/splice.c:936
- splice_direct_to_actor+0x345/0x650 fs/splice.c:891
- do_splice_direct+0x106/0x190 fs/splice.c:979
- do_sendfile+0x675/0xc40 fs/read_write.c:1245
- __do_sys_sendfile64 fs/read_write.c:1310 [inline]
- __se_sys_sendfile64 fs/read_write.c:1296 [inline]
- __x64_sys_sendfile64+0x102/0x140 fs/read_write.c:1296
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-value changed: 0x0000026f -> 0x00000271
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 0 PID: 15701 Comm: syz-executor.2 Not tainted 5.16.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-
-The Fixes tag I chose is probably arbitrary, I do not think
-we need to backport this patch to older kernels.
-
-Fixes: c5cff8561d2d ("ipv6: add rcu grace period before freeing fib6_node")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Link: https://lore.kernel.org/r/20220120174112.1126644-1-eric.dumazet@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 2c9ac51b850d ("powerpc/perf: Fix PMU callbacks to clear pending PMI before resetting an overflown PMC")
+Reported-by: Sachin Sant <sachinp@linux.ibm.com>
+Signed-off-by: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+Tested-by: Sachin Sant <sachinp@linux.ibm.com>
+Reviewed-by: Nicholas Piggin <npiggin@gmail.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220122033429.25395-1-atrajeev@linux.vnet.ibm.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/ip6_fib.h |    2 +-
- net/ipv6/ip6_fib.c    |   23 +++++++++++++----------
- net/ipv6/route.c      |    2 +-
- 3 files changed, 15 insertions(+), 12 deletions(-)
+ arch/powerpc/perf/core-book3s.c | 17 ++++++++++++++---
+ 1 file changed, 14 insertions(+), 3 deletions(-)
 
---- a/include/net/ip6_fib.h
-+++ b/include/net/ip6_fib.h
-@@ -281,7 +281,7 @@ static inline bool fib6_get_cookie_safe(
- 	fn = rcu_dereference(f6i->fib6_node);
+diff --git a/arch/powerpc/perf/core-book3s.c b/arch/powerpc/perf/core-book3s.c
+index bef6b1abce702..e78de70509472 100644
+--- a/arch/powerpc/perf/core-book3s.c
++++ b/arch/powerpc/perf/core-book3s.c
+@@ -1326,9 +1326,20 @@ static void power_pmu_disable(struct pmu *pmu)
+ 		 * Otherwise provide a warning if there is PMI pending, but
+ 		 * no counter is found overflown.
+ 		 */
+-		if (any_pmc_overflown(cpuhw))
+-			clear_pmi_irq_pending();
+-		else
++		if (any_pmc_overflown(cpuhw)) {
++			/*
++			 * Since power_pmu_disable runs under local_irq_save, it
++			 * could happen that code hits a PMC overflow without PMI
++			 * pending in paca. Hence only clear PMI pending if it was
++			 * set.
++			 *
++			 * If a PMI is pending, then MSR[EE] must be disabled (because
++			 * the masked PMI handler disabling EE). So it is safe to
++			 * call clear_pmi_irq_pending().
++			 */
++			if (pmi_irq_pending())
++				clear_pmi_irq_pending();
++		} else
+ 			WARN_ON(pmi_irq_pending());
  
- 	if (fn) {
--		*cookie = fn->fn_sernum;
-+		*cookie = READ_ONCE(fn->fn_sernum);
- 		/* pairs with smp_wmb() in __fib6_update_sernum_upto_root() */
- 		smp_rmb();
- 		status = true;
---- a/net/ipv6/ip6_fib.c
-+++ b/net/ipv6/ip6_fib.c
-@@ -111,7 +111,7 @@ void fib6_update_sernum(struct net *net,
- 	fn = rcu_dereference_protected(f6i->fib6_node,
- 			lockdep_is_held(&f6i->fib6_table->tb6_lock));
- 	if (fn)
--		fn->fn_sernum = fib6_new_sernum(net);
-+		WRITE_ONCE(fn->fn_sernum, fib6_new_sernum(net));
- }
- 
- /*
-@@ -589,12 +589,13 @@ static int fib6_dump_table(struct fib6_t
- 		spin_unlock_bh(&table->tb6_lock);
- 		if (res > 0) {
- 			cb->args[4] = 1;
--			cb->args[5] = w->root->fn_sernum;
-+			cb->args[5] = READ_ONCE(w->root->fn_sernum);
- 		}
- 	} else {
--		if (cb->args[5] != w->root->fn_sernum) {
-+		int sernum = READ_ONCE(w->root->fn_sernum);
-+		if (cb->args[5] != sernum) {
- 			/* Begin at the root if the tree changed */
--			cb->args[5] = w->root->fn_sernum;
-+			cb->args[5] = sernum;
- 			w->state = FWS_INIT;
- 			w->node = w->root;
- 			w->skip = w->count;
-@@ -1344,7 +1345,7 @@ static void __fib6_update_sernum_upto_ro
- 	/* paired with smp_rmb() in fib6_get_cookie_safe() */
- 	smp_wmb();
- 	while (fn) {
--		fn->fn_sernum = sernum;
-+		WRITE_ONCE(fn->fn_sernum, sernum);
- 		fn = rcu_dereference_protected(fn->parent,
- 				lockdep_is_held(&rt->fib6_table->tb6_lock));
- 	}
-@@ -2173,8 +2174,8 @@ static int fib6_clean_node(struct fib6_w
- 	};
- 
- 	if (c->sernum != FIB6_NO_SERNUM_CHANGE &&
--	    w->node->fn_sernum != c->sernum)
--		w->node->fn_sernum = c->sernum;
-+	    READ_ONCE(w->node->fn_sernum) != c->sernum)
-+		WRITE_ONCE(w->node->fn_sernum, c->sernum);
- 
- 	if (!c->func) {
- 		WARN_ON_ONCE(c->sernum == FIB6_NO_SERNUM_CHANGE);
-@@ -2542,7 +2543,7 @@ static void ipv6_route_seq_setup_walk(st
- 	iter->w.state = FWS_INIT;
- 	iter->w.node = iter->w.root;
- 	iter->w.args = iter;
--	iter->sernum = iter->w.root->fn_sernum;
-+	iter->sernum = READ_ONCE(iter->w.root->fn_sernum);
- 	INIT_LIST_HEAD(&iter->w.lh);
- 	fib6_walker_link(net, &iter->w);
- }
-@@ -2570,8 +2571,10 @@ static struct fib6_table *ipv6_route_seq
- 
- static void ipv6_route_check_sernum(struct ipv6_route_iter *iter)
- {
--	if (iter->sernum != iter->w.root->fn_sernum) {
--		iter->sernum = iter->w.root->fn_sernum;
-+	int sernum = READ_ONCE(iter->w.root->fn_sernum);
-+
-+	if (iter->sernum != sernum) {
-+		iter->sernum = sernum;
- 		iter->w.state = FWS_INIT;
- 		iter->w.node = iter->w.root;
- 		WARN_ON(iter->w.skip);
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -2802,7 +2802,7 @@ static void ip6_link_failure(struct sk_b
- 			if (from) {
- 				fn = rcu_dereference(from->fib6_node);
- 				if (fn && (rt->rt6i_flags & RTF_DEFAULT))
--					fn->fn_sernum = -1;
-+					WRITE_ONCE(fn->fn_sernum, -1);
- 			}
- 		}
- 		rcu_read_unlock();
+ 		val = mmcra = cpuhw->mmcr.mmcra;
+-- 
+2.34.1
+
 
 
