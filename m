@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8251EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:35:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25D56C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:35:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377890AbiAaLdm (ORCPT
+        id S1377915AbiAaLdo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:33:42 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:56172 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377819AbiAaLX0 (ORCPT
+        Mon, 31 Jan 2022 06:33:44 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:39350 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377748AbiAaLXW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:23:26 -0500
+        Mon, 31 Jan 2022 06:23:22 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 44A5161257;
-        Mon, 31 Jan 2022 11:23:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27224C340E8;
-        Mon, 31 Jan 2022 11:23:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9C4F9B82A5C;
+        Mon, 31 Jan 2022 11:23:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD255C340E8;
+        Mon, 31 Jan 2022 11:23:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643628205;
-        bh=02YNfxBTAXGk1kudiryNLknHRfDdaEviTnNWVcDeb3I=;
+        s=korg; t=1643628199;
+        bh=6KaW5Y5nA33xZyeLXiMYIERa4OTwAfNGh5VGj+IhCh8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gIcsMstJ2VHvd6mtRxJRnEpQ5v3htCjmaSreaE1lLSAsv0urXSppQAl6PQCmc5/b5
-         2H2W7g1tivP2IYpEuTK2V5At8kDkyrCvel3Kk8GaI8/HNiS7ZIzns/7clTUSovCIW6
-         Kio9zqnazAJ89PougbHh0eTB9svACzhlFQ/3lbrk=
+        b=iUHUKN8RZ3FRX2TykURsxIUSkmn+0tjEM+RgTNaV8blSy1gtLiAF+W1UmkSNoB6xc
+         kHHAIT8+7BG8alKe//J3iudfXehZ135KnHH2YksMv2/FvCDDrW7e7rUJHFZbRD1+Re
+         bcxvMyPq+mJOazQ5sDYan1SeGk7Ziy7YbyWcI2DE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Dmitry Osipenko <digetx@gmail.com>,
         Guenter Roeck <linux@roeck-us.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 158/200] hwmon: (lm90) Fix sysfs and udev notifications
-Date:   Mon, 31 Jan 2022 11:57:01 +0100
-Message-Id: <20220131105238.871005763@linuxfoundation.org>
+Subject: [PATCH 5.16 156/200] hwmon: (lm90) Re-enable interrupts after alert clears
+Date:   Mon, 31 Jan 2022 11:56:59 +0100
+Message-Id: <20220131105238.810582340@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -49,52 +49,37 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Guenter Roeck <linux@roeck-us.net>
 
-[ Upstream commit d379880d9adb9f1ada3f1266aa49ea2561328e08 ]
+[ Upstream commit bc341a1a98827925082e95db174734fc8bd68af6 ]
 
-sysfs and udev notifications need to be sent to the _alarm
-attributes, not to the value attributes.
+If alert handling is broken, interrupts are disabled after an alert and
+re-enabled after the alert clears. However, if there is an interrupt
+handler, this does not apply if alerts were originally disabled and enabled
+when the driver was loaded. In that case, interrupts will stay disabled
+after an alert was handled though the alert handler even after the alert
+condition clears. Address the situation by always re-enabling interrupts
+after the alert condition clears if there is an interrupt handler.
 
-Fixes: 94dbd23ed88c ("hwmon: (lm90) Use hwmon_notify_event()")
+Fixes: 2abdc357c55d9 ("hwmon: (lm90) Unmask hardware interrupt")
 Cc: Dmitry Osipenko <digetx@gmail.com>
 Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hwmon/lm90.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/hwmon/lm90.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/hwmon/lm90.c b/drivers/hwmon/lm90.c
-index ba01127c1deb1..1c9493c708132 100644
+index cc5e48fe304b1..e4ecf3440d7cf 100644
 --- a/drivers/hwmon/lm90.c
 +++ b/drivers/hwmon/lm90.c
-@@ -1808,22 +1808,22 @@ static bool lm90_is_tripped(struct i2c_client *client, u16 *status)
- 
- 	if (st & LM90_STATUS_LLOW)
- 		hwmon_notify_event(data->hwmon_dev, hwmon_temp,
--				   hwmon_temp_min, 0);
-+				   hwmon_temp_min_alarm, 0);
- 	if (st & LM90_STATUS_RLOW)
- 		hwmon_notify_event(data->hwmon_dev, hwmon_temp,
--				   hwmon_temp_min, 1);
-+				   hwmon_temp_min_alarm, 1);
- 	if (st2 & MAX6696_STATUS2_R2LOW)
- 		hwmon_notify_event(data->hwmon_dev, hwmon_temp,
--				   hwmon_temp_min, 2);
-+				   hwmon_temp_min_alarm, 2);
- 	if (st & LM90_STATUS_LHIGH)
- 		hwmon_notify_event(data->hwmon_dev, hwmon_temp,
--				   hwmon_temp_max, 0);
-+				   hwmon_temp_max_alarm, 0);
- 	if (st & LM90_STATUS_RHIGH)
- 		hwmon_notify_event(data->hwmon_dev, hwmon_temp,
--				   hwmon_temp_max, 1);
-+				   hwmon_temp_max_alarm, 1);
- 	if (st2 & MAX6696_STATUS2_R2HIGH)
- 		hwmon_notify_event(data->hwmon_dev, hwmon_temp,
--				   hwmon_temp_max, 2);
-+				   hwmon_temp_max_alarm, 2);
- 
- 	return true;
- }
+@@ -848,7 +848,7 @@ static int lm90_update_device(struct device *dev)
+ 		 * Re-enable ALERT# output if it was originally enabled and
+ 		 * relevant alarms are all clear
+ 		 */
+-		if (!(data->config_orig & 0x80) &&
++		if ((client->irq || !(data->config_orig & 0x80)) &&
+ 		    !(data->alarms & data->alert_alarms)) {
+ 			if (data->config & 0x80) {
+ 				dev_dbg(&client->dev, "Re-enabling ALERT#\n");
 -- 
 2.34.1
 
