@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2E4CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:00:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C109C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:00:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358513AbiAaLAA (ORCPT
+        id S1358413AbiAaLAH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:00:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42830 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358344AbiAaK7Q (ORCPT
+        Mon, 31 Jan 2022 06:00:07 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:60416 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358387AbiAaK70 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 05:59:16 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B24BC06174E;
-        Mon, 31 Jan 2022 02:59:02 -0800 (PST)
+        Mon, 31 Jan 2022 05:59:26 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9DA7760ABE;
-        Mon, 31 Jan 2022 10:59:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA0D8C340EF;
-        Mon, 31 Jan 2022 10:59:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0628260B2E;
+        Mon, 31 Jan 2022 10:59:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB18BC340E8;
+        Mon, 31 Jan 2022 10:59:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643626741;
-        bh=e2WQ35VBoBcBt40QoBPEn2xr4K/4V24VvJRY9NjJxNQ=;
+        s=korg; t=1643626765;
+        bh=lRIxAQRuIbiEZInmHSdCwwYZQESUK+uniNe1nS9nRSo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jHuIPhkLJZWoMK+mp/q41pUouxEsgTrE5AcBWm1Z+BcHDRJ52U2R8u0l03h3WHQGI
-         XpzG0qcWpSNOswuH21RDu75Tt1FP18CpG74DZQqAxqw6AzW2cgZYcMQuLtqRmJ/+ht
-         y1dFrzTLEauY1y7QsOJBq+aTxurtZ97QKXLjn2lU=
+        b=07oSr1jc0U+PVj2VUOXwuSn7YZpgMfZMCS/zdiOrKLO5ohuRHwRc00BwtZeUbWT2u
+         H9BxCWY+usfR3jO/MJ4UBbUAO8/o6yO72jdV5ERBa8WmbNLQmTz5ekWZo908yMseQy
+         pHdPs9ezNitS843ss647UTKX4Nznc7Pa+vy5+ChI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Erhard Furtner <erhard_f@mailbox.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.4 24/64] powerpc/32: Fix boot failure with GCC latent entropy plugin
-Date:   Mon, 31 Jan 2022 11:56:09 +0100
-Message-Id: <20220131105216.481851495@linuxfoundation.org>
+        stable@vger.kernel.org, Guangwu Zhang <guazhang@redhat.com>,
+        Maurizio Lombardi <mlombard@redhat.com>,
+        John Meneghini <jmeneghi@redhat.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.4 31/64] scsi: bnx2fc: Flush destroy_work queue before calling bnx2fc_interface_put()
+Date:   Mon, 31 Jan 2022 11:56:16 +0100
+Message-Id: <20220131105216.728297562@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105215.644174521@linuxfoundation.org>
 References: <20220131105215.644174521@linuxfoundation.org>
@@ -50,54 +48,146 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+From: John Meneghini <jmeneghi@redhat.com>
 
-commit bba496656a73fc1d1330b49c7f82843836e9feb1 upstream.
+commit 847f9ea4c5186fdb7b84297e3eeed9e340e83fce upstream.
 
-Boot fails with GCC latent entropy plugin enabled.
+The bnx2fc_destroy() functions are removing the interface before calling
+destroy_work. This results multiple WARNings from sysfs_remove_group() as
+the controller rport device attributes are removed too early.
 
-This is due to early boot functions trying to access 'latent_entropy'
-global data while the kernel is not relocated at its final
-destination yet.
+Replace the fcoe_port's destroy_work queue. It's not needed.
 
-As there is no way to tell GCC to use PTRRELOC() to access it,
-disable latent entropy plugin in early_32.o and feature-fixups.o and
-code-patching.o
+The problem is easily reproducible with the following steps.
 
-Fixes: 38addce8b600 ("gcc-plugins: Add latent_entropy plugin")
-Cc: stable@vger.kernel.org # v4.9+
-Reported-by: Erhard Furtner <erhard_f@mailbox.org>
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215217
-Link: https://lore.kernel.org/r/2bac55483b8daf5b1caa163a45fa5f9cdbe18be4.1640178426.git.christophe.leroy@csgroup.eu
+Example:
+
+  $ dmesg -w &
+  $ systemctl enable --now fcoe
+  $ fipvlan -s -c ens2f1
+  $ fcoeadm -d ens2f1.802
+  [  583.464488] host2: libfc: Link down on port (7500a1)
+  [  583.472651] bnx2fc: 7500a1 - rport not created Yet!!
+  [  583.490468] ------------[ cut here ]------------
+  [  583.538725] sysfs group 'power' not found for kobject 'rport-2:0-0'
+  [  583.568814] WARNING: CPU: 3 PID: 192 at fs/sysfs/group.c:279 sysfs_remove_group+0x6f/0x80
+  [  583.607130] Modules linked in: dm_service_time 8021q garp mrp stp llc bnx2fc cnic uio rpcsec_gss_krb5 auth_rpcgss nfsv4 ...
+  [  583.942994] CPU: 3 PID: 192 Comm: kworker/3:2 Kdump: loaded Not tainted 5.14.0-39.el9.x86_64 #1
+  [  583.984105] Hardware name: HP ProLiant DL120 G7, BIOS J01 07/01/2013
+  [  584.016535] Workqueue: fc_wq_2 fc_rport_final_delete [scsi_transport_fc]
+  [  584.050691] RIP: 0010:sysfs_remove_group+0x6f/0x80
+  [  584.074725] Code: ff 5b 48 89 ef 5d 41 5c e9 ee c0 ff ff 48 89 ef e8 f6 b8 ff ff eb d1 49 8b 14 24 48 8b 33 48 c7 c7 ...
+  [  584.162586] RSP: 0018:ffffb567c15afdc0 EFLAGS: 00010282
+  [  584.188225] RAX: 0000000000000000 RBX: ffffffff8eec4220 RCX: 0000000000000000
+  [  584.221053] RDX: ffff8c1586ce84c0 RSI: ffff8c1586cd7cc0 RDI: ffff8c1586cd7cc0
+  [  584.255089] RBP: 0000000000000000 R08: 0000000000000000 R09: ffffb567c15afc00
+  [  584.287954] R10: ffffb567c15afbf8 R11: ffffffff8fbe7f28 R12: ffff8c1486326400
+  [  584.322356] R13: ffff8c1486326480 R14: ffff8c1483a4a000 R15: 0000000000000004
+  [  584.355379] FS:  0000000000000000(0000) GS:ffff8c1586cc0000(0000) knlGS:0000000000000000
+  [  584.394419] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+  [  584.421123] CR2: 00007fe95a6f7840 CR3: 0000000107674002 CR4: 00000000000606e0
+  [  584.454888] Call Trace:
+  [  584.466108]  device_del+0xb2/0x3e0
+  [  584.481701]  device_unregister+0x13/0x60
+  [  584.501306]  bsg_unregister_queue+0x5b/0x80
+  [  584.522029]  bsg_remove_queue+0x1c/0x40
+  [  584.541884]  fc_rport_final_delete+0xf3/0x1d0 [scsi_transport_fc]
+  [  584.573823]  process_one_work+0x1e3/0x3b0
+  [  584.592396]  worker_thread+0x50/0x3b0
+  [  584.609256]  ? rescuer_thread+0x370/0x370
+  [  584.628877]  kthread+0x149/0x170
+  [  584.643673]  ? set_kthread_struct+0x40/0x40
+  [  584.662909]  ret_from_fork+0x22/0x30
+  [  584.680002] ---[ end trace 53575ecefa942ece ]---
+
+Link: https://lore.kernel.org/r/20220115040044.1013475-1-jmeneghi@redhat.com
+Fixes: 0cbf32e1681d ("[SCSI] bnx2fc: Avoid calling bnx2fc_if_destroy with unnecessary locks")
+Tested-by: Guangwu Zhang <guazhang@redhat.com>
+Co-developed-by: Maurizio Lombardi <mlombard@redhat.com>
+Signed-off-by: Maurizio Lombardi <mlombard@redhat.com>
+Signed-off-by: John Meneghini <jmeneghi@redhat.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/kernel/Makefile |    1 +
- arch/powerpc/lib/Makefile    |    3 +++
- 2 files changed, 4 insertions(+)
+ drivers/scsi/bnx2fc/bnx2fc_fcoe.c |   20 +++++---------------
+ 1 file changed, 5 insertions(+), 15 deletions(-)
 
---- a/arch/powerpc/kernel/Makefile
-+++ b/arch/powerpc/kernel/Makefile
-@@ -13,6 +13,7 @@ CFLAGS_prom_init.o      += -fPIC
- CFLAGS_btext.o		+= -fPIC
- endif
+--- a/drivers/scsi/bnx2fc/bnx2fc_fcoe.c
++++ b/drivers/scsi/bnx2fc/bnx2fc_fcoe.c
+@@ -80,7 +80,7 @@ static int bnx2fc_bind_pcidev(struct bnx
+ static void bnx2fc_unbind_pcidev(struct bnx2fc_hba *hba);
+ static struct fc_lport *bnx2fc_if_create(struct bnx2fc_interface *interface,
+ 				  struct device *parent, int npiv);
+-static void bnx2fc_destroy_work(struct work_struct *work);
++static void bnx2fc_port_destroy(struct fcoe_port *port);
  
-+CFLAGS_early_32.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
- CFLAGS_cputable.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
- CFLAGS_prom_init.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
- CFLAGS_btext.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
---- a/arch/powerpc/lib/Makefile
-+++ b/arch/powerpc/lib/Makefile
-@@ -16,6 +16,9 @@ CFLAGS_code-patching.o += -DDISABLE_BRAN
- CFLAGS_feature-fixups.o += -DDISABLE_BRANCH_PROFILING
- endif
+ static struct bnx2fc_hba *bnx2fc_hba_lookup(struct net_device *phys_dev);
+ static struct bnx2fc_interface *bnx2fc_interface_lookup(struct net_device
+@@ -902,9 +902,6 @@ static void bnx2fc_indicate_netevent(voi
+ 				__bnx2fc_destroy(interface);
+ 		}
+ 		mutex_unlock(&bnx2fc_dev_lock);
+-
+-		/* Ensure ALL destroy work has been completed before return */
+-		flush_workqueue(bnx2fc_wq);
+ 		return;
  
-+CFLAGS_code-patching.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
-+CFLAGS_feature-fixups.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
-+
- obj-y += alloc.o code-patching.o feature-fixups.o pmem.o
+ 	default:
+@@ -1211,8 +1208,8 @@ static int bnx2fc_vport_destroy(struct f
+ 	mutex_unlock(&n_port->lp_mutex);
+ 	bnx2fc_free_vport(interface->hba, port->lport);
+ 	bnx2fc_port_shutdown(port->lport);
++	bnx2fc_port_destroy(port);
+ 	bnx2fc_interface_put(interface);
+-	queue_work(bnx2fc_wq, &port->destroy_work);
+ 	return 0;
+ }
  
- ifndef CONFIG_KASAN
+@@ -1521,7 +1518,6 @@ static struct fc_lport *bnx2fc_if_create
+ 	port->lport = lport;
+ 	port->priv = interface;
+ 	port->get_netdev = bnx2fc_netdev;
+-	INIT_WORK(&port->destroy_work, bnx2fc_destroy_work);
+ 
+ 	/* Configure fcoe_port */
+ 	rc = bnx2fc_lport_config(lport);
+@@ -1649,8 +1645,8 @@ static void __bnx2fc_destroy(struct bnx2
+ 	bnx2fc_interface_cleanup(interface);
+ 	bnx2fc_stop(interface);
+ 	list_del(&interface->list);
++	bnx2fc_port_destroy(port);
+ 	bnx2fc_interface_put(interface);
+-	queue_work(bnx2fc_wq, &port->destroy_work);
+ }
+ 
+ /**
+@@ -1691,15 +1687,12 @@ netdev_err:
+ 	return rc;
+ }
+ 
+-static void bnx2fc_destroy_work(struct work_struct *work)
++static void bnx2fc_port_destroy(struct fcoe_port *port)
+ {
+-	struct fcoe_port *port;
+ 	struct fc_lport *lport;
+ 
+-	port = container_of(work, struct fcoe_port, destroy_work);
+ 	lport = port->lport;
+-
+-	BNX2FC_HBA_DBG(lport, "Entered bnx2fc_destroy_work\n");
++	BNX2FC_HBA_DBG(lport, "Entered %s, destroying lport %p\n", __func__, lport);
+ 
+ 	bnx2fc_if_destroy(lport);
+ }
+@@ -2553,9 +2546,6 @@ static void bnx2fc_ulp_exit(struct cnic_
+ 			__bnx2fc_destroy(interface);
+ 	mutex_unlock(&bnx2fc_dev_lock);
+ 
+-	/* Ensure ALL destroy work has been completed before return */
+-	flush_workqueue(bnx2fc_wq);
+-
+ 	bnx2fc_ulp_stop(hba);
+ 	/* unregister cnic device */
+ 	if (test_and_clear_bit(BNX2FC_CNIC_REGISTERED, &hba->reg_with_cnic))
 
 
