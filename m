@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47519C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ACE4C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:40:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379358AbiAaLi5 (ORCPT
+        id S1379455AbiAaLjG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:38:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49636 "EHLO
+        Mon, 31 Jan 2022 06:39:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377988AbiAaL1y (ORCPT
+        with ESMTP id S1378745AbiAaL3F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:27:54 -0500
+        Mon, 31 Jan 2022 06:29:05 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6138CC094265;
-        Mon, 31 Jan 2022 03:17:12 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC6FBC02C307;
+        Mon, 31 Jan 2022 03:17:53 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1FCD9B82A5D;
-        Mon, 31 Jan 2022 11:17:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56491C340EF;
-        Mon, 31 Jan 2022 11:17:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8C257B82A5C;
+        Mon, 31 Jan 2022 11:17:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2CB6C340E8;
+        Mon, 31 Jan 2022 11:17:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627829;
-        bh=3tSqRNYVVEdgFU/5z8VN14xz614uvr0H+s+4uqrS/JM=;
+        s=korg; t=1643627871;
+        bh=7v0B2UhaT3PmQ3YNTN9Yu4Y8TPqXyjR/8nRw4Wtp3mw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xB+uNL073H5EQO4xgL7RjvRg24Bhdb2klWM3HiXeLPLKjWk5aNAniFXl1Iz4IA1+4
-         lxikQtgiq+3JO0gRRA7B91buBaFzZeO8MbVK7ak/hTdIdsLgyvKBRx9GNkT7yyfMBA
-         T6n3iwGkmG4idAJ7FJmDC3+1Ihq2SF59Su18J8Bg=
+        b=0kJvfcSFkeNVpoU+OTLvDG7LYnsOBXru5G/wxGjAJ5BECrLd/Vp2jFS35fLmdypau
+         +WcdLZACTmwv+wj60VGY8HvnI3NviyQ3HcjJzlCun6TTnJnd+iP1NvaNdHd1E5HaXu
+         njv2TMYpTNtjhcVQKwHoTV+wvrFB/Ga+Ux/lCkcU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Dmitry V. Levin" <ldv@altlinux.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.16 039/200] powerpc/audit: Fix syscall_get_arch()
-Date:   Mon, 31 Jan 2022 11:55:02 +0100
-Message-Id: <20220131105234.870772429@linuxfoundation.org>
+        stable@vger.kernel.org, Tom Lendacky <thomas.lendacky@amd.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Liam Merwick <liam.merwick@oracle.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.16 050/200] KVM: SVM: Dont intercept #GP for SEV guests
+Date:   Mon, 31 Jan 2022 11:55:13 +0100
+Message-Id: <20220131105235.246818323@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -50,65 +52,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+From: Sean Christopherson <seanjc@google.com>
 
-commit 252745240ba0ae774d2f80c5e185ed59fbc4fb41 upstream.
+commit 0b0be065b7563ac708aaa9f69dd4941c80b3446d upstream.
 
-Commit 770cec16cdc9 ("powerpc/audit: Simplify syscall_get_arch()")
-and commit 898a1ef06ad4 ("powerpc/audit: Avoid unneccessary #ifdef
-in syscall_get_arguments()")
-replaced test_tsk_thread_flag(task, TIF_32BIT)) by is_32bit_task().
+Never intercept #GP for SEV guests as reading SEV guest private memory
+will return cyphertext, i.e. emulating on #GP can't work as intended.
 
-But is_32bit_task() applies on current task while be want the test
-done on task 'task'
-
-So add a new macro is_tsk_32bit_task() to check any task.
-
-Fixes: 770cec16cdc9 ("powerpc/audit: Simplify syscall_get_arch()")
-Fixes: 898a1ef06ad4 ("powerpc/audit: Avoid unneccessary #ifdef in syscall_get_arguments()")
 Cc: stable@vger.kernel.org
-Reported-by: Dmitry V. Levin <ldv@altlinux.org>
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/c55cddb8f65713bf5859ed675d75a50cb37d5995.1642159570.git.christophe.leroy@csgroup.eu
+Cc: Tom Lendacky <thomas.lendacky@amd.com>
+Cc: Brijesh Singh <brijesh.singh@amd.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Reviewed-by: Liam Merwick <liam.merwick@oracle.com>
+Message-Id: <20220120010719.711476-4-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/include/asm/syscall.h     |    4 ++--
- arch/powerpc/include/asm/thread_info.h |    2 ++
- 2 files changed, 4 insertions(+), 2 deletions(-)
+ arch/x86/kvm/svm/svm.c |   11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
---- a/arch/powerpc/include/asm/syscall.h
-+++ b/arch/powerpc/include/asm/syscall.h
-@@ -90,7 +90,7 @@ static inline void syscall_get_arguments
- 	unsigned long val, mask = -1UL;
- 	unsigned int n = 6;
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -312,7 +312,11 @@ int svm_set_efer(struct kvm_vcpu *vcpu,
+ 				return ret;
+ 			}
  
--	if (is_32bit_task())
-+	if (is_tsk_32bit_task(task))
- 		mask = 0xffffffff;
+-			if (svm_gp_erratum_intercept)
++			/*
++			 * Never intercept #GP for SEV guests, KVM can't
++			 * decrypt guest memory to workaround the erratum.
++			 */
++			if (svm_gp_erratum_intercept && !sev_guest(vcpu->kvm))
+ 				set_exception_intercept(svm, GP_VECTOR);
+ 		}
+ 	}
+@@ -1238,9 +1242,10 @@ static void init_vmcb(struct kvm_vcpu *v
+ 	 * Guest access to VMware backdoor ports could legitimately
+ 	 * trigger #GP because of TSS I/O permission bitmap.
+ 	 * We intercept those #GP and allow access to them anyway
+-	 * as VMware does.
++	 * as VMware does.  Don't intercept #GP for SEV guests as KVM can't
++	 * decrypt guest memory to decode the faulting instruction.
+ 	 */
+-	if (enable_vmware_backdoor)
++	if (enable_vmware_backdoor && !sev_guest(vcpu->kvm))
+ 		set_exception_intercept(svm, GP_VECTOR);
  
- 	while (n--) {
-@@ -105,7 +105,7 @@ static inline void syscall_get_arguments
- 
- static inline int syscall_get_arch(struct task_struct *task)
- {
--	if (is_32bit_task())
-+	if (is_tsk_32bit_task(task))
- 		return AUDIT_ARCH_PPC;
- 	else if (IS_ENABLED(CONFIG_CPU_LITTLE_ENDIAN))
- 		return AUDIT_ARCH_PPC64LE;
---- a/arch/powerpc/include/asm/thread_info.h
-+++ b/arch/powerpc/include/asm/thread_info.h
-@@ -168,8 +168,10 @@ static inline bool test_thread_local_fla
- 
- #ifdef CONFIG_COMPAT
- #define is_32bit_task()	(test_thread_flag(TIF_32BIT))
-+#define is_tsk_32bit_task(tsk)	(test_tsk_thread_flag(tsk, TIF_32BIT))
- #else
- #define is_32bit_task()	(IS_ENABLED(CONFIG_PPC32))
-+#define is_tsk_32bit_task(tsk)	(IS_ENABLED(CONFIG_PPC32))
- #endif
- 
- #if defined(CONFIG_PPC64)
+ 	svm_set_intercept(svm, INTERCEPT_INTR);
 
 
