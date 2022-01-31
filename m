@@ -2,92 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A72FC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:51:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEC1EC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:51:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376841AbiAaLvN (ORCPT
+        id S1376609AbiAaLvO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:51:13 -0500
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:53120 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380347AbiAaLpV (ORCPT
+        Mon, 31 Jan 2022 06:51:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52644 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1351297AbiAaLk2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:45:21 -0500
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 20VBjBt6033104;
-        Mon, 31 Jan 2022 05:45:11 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1643629511;
-        bh=0lGG21FbBmtcnqY5LOZGFiDh425t7aE/LEQNN+eDmA0=;
-        h=From:To:CC:Subject:Date;
-        b=v2G1sbiv4K9KpR69BQ4AreddokOiMb4Z8WZvd3gwPxr3D9Gz/34DQcJ2cEoRqEsFE
-         sQB/lOyfstfvdVQX/Q1gGfCwNTZmJfd2N8irxJHUlQqxnWdFzevr084hFHAi7N1KUS
-         5xKSWRjzKKyhtHj+LCbGZeMPzuC7gFK4Y5xc3X8A=
-Received: from DFLE102.ent.ti.com (dfle102.ent.ti.com [10.64.6.23])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 20VBjB7g065494
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 31 Jan 2022 05:45:11 -0600
-Received: from DFLE109.ent.ti.com (10.64.6.30) by DFLE102.ent.ti.com
- (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 31
- Jan 2022 05:45:11 -0600
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE109.ent.ti.com
- (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Mon, 31 Jan 2022 05:45:11 -0600
-Received: from pratyush-4F-325.dhcp.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 20VBj8FN008117;
-        Mon, 31 Jan 2022 05:45:09 -0600
-From:   Pratyush Yadav <p.yadav@ti.com>
-To:     Mark Brown <broonie@kernel.org>
-CC:     Pratyush Yadav <p.yadav@ti.com>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Michael Walle <michael@walle.cc>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Takahiro Kuwano <tkuw584924@gmail.com>,
-        <linux-spi@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH] spi: spi-mem: check if data buffers are on stack
-Date:   Mon, 31 Jan 2022 17:15:08 +0530
-Message-ID: <20220131114508.1028306-1-p.yadav@ti.com>
-X-Mailer: git-send-email 2.34.1
+        Mon, 31 Jan 2022 06:40:28 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 492C2C08E824;
+        Mon, 31 Jan 2022 03:25:58 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CC794612D5;
+        Mon, 31 Jan 2022 11:25:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94CA9C340E8;
+        Mon, 31 Jan 2022 11:25:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643628357;
+        bh=PkNlFSXkB/ip+PcF+kXge0gQV1xVzpWX/F3a461szwM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=s7DBj2zcQ18YALbjnx/yNjzv7j5dFk749JWUBfPBenK3oZdokdpPy3LH1IxAsxSNq
+         GBEVTTbDVATDLoI5cML6RuKkjunWwsy+bk5NDJGqAoZ/4ZT3YG/+saAJ9nMdEVmNin
+         GyM6sISyGlXxgd7ALWtWtL/hJAEaskuQd2Ror7gk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Colin Foster <colin.foster@in-advantage.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 173/200] net: cpsw: Properly initialise struct page_pool_params
+Date:   Mon, 31 Jan 2022 11:57:16 +0100
+Message-Id: <20220131105239.373187966@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
+References: <20220131105233.561926043@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The buffers passed in the data phase must be DMA-able. Programmers often
-don't realise this requirement and pass in buffers that reside on the
-stack. This can be hard to spot when reviewing code. Reject ops if their
-data buffer is on the stack to avoid this.
+From: Toke Høiland-Jørgensen <toke@redhat.com>
 
-Signed-off-by: Pratyush Yadav <p.yadav@ti.com>
+[ Upstream commit c63003e3d99761afb280add3b30de1cf30fa522b ]
+
+The cpsw driver didn't properly initialise the struct page_pool_params
+before calling page_pool_create(), which leads to crashes after the struct
+has been expanded with new parameters.
+
+The second Fixes tag below is where the buggy code was introduced, but
+because the code was moved around this patch will only apply on top of the
+commit in the first Fixes tag.
+
+Fixes: c5013ac1dd0e ("net: ethernet: ti: cpsw: move set of common functions in cpsw_priv")
+Fixes: 9ed4050c0d75 ("net: ethernet: ti: cpsw: add XDP support")
+Reported-by: Colin Foster <colin.foster@in-advantage.com>
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+Tested-by: Colin Foster <colin.foster@in-advantage.com>
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-mem.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/net/ethernet/ti/cpsw_priv.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/spi/spi-mem.c b/drivers/spi/spi-mem.c
-index 37f4443ce9a0..b3793a2979ee 100644
---- a/drivers/spi/spi-mem.c
-+++ b/drivers/spi/spi-mem.c
-@@ -207,6 +207,15 @@ static int spi_mem_check_op(const struct spi_mem_op *op)
- 	    !spi_mem_buswidth_is_valid(op->data.buswidth))
- 		return -EINVAL;
+diff --git a/drivers/net/ethernet/ti/cpsw_priv.c b/drivers/net/ethernet/ti/cpsw_priv.c
+index 6bb5ac51d23c3..f8e591d69d2cb 100644
+--- a/drivers/net/ethernet/ti/cpsw_priv.c
++++ b/drivers/net/ethernet/ti/cpsw_priv.c
+@@ -1144,7 +1144,7 @@ int cpsw_fill_rx_channels(struct cpsw_priv *priv)
+ static struct page_pool *cpsw_create_page_pool(struct cpsw_common *cpsw,
+ 					       int size)
+ {
+-	struct page_pool_params pp_params;
++	struct page_pool_params pp_params = {};
+ 	struct page_pool *pool;
  
-+	/* Buffers must be DMA-able. */
-+	if (op->data.dir == SPI_MEM_DATA_IN &&
-+	    object_is_on_stack(op->data.buf.in))
-+		return -EINVAL;
-+
-+	if (op->data.dir == SPI_MEM_DATA_OUT &&
-+	    object_is_on_stack(op->data.buf.out))
-+		return -EINVAL;
-+
- 	return 0;
- }
- 
+ 	pp_params.order = 0;
 -- 
 2.34.1
+
+
 
