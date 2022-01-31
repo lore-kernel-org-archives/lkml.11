@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19EA9C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:24:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBA21C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:24:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378117AbiAaLXl (ORCPT
+        id S1377472AbiAaLXB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:23:41 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:44952 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377003AbiAaLNc (ORCPT
+        Mon, 31 Jan 2022 06:23:01 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:33200 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1376817AbiAaLNV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:13:32 -0500
+        Mon, 31 Jan 2022 06:13:21 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D5DEC611D9;
-        Mon, 31 Jan 2022 11:13:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A14ECC340EF;
-        Mon, 31 Jan 2022 11:13:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3E973B82A61;
+        Mon, 31 Jan 2022 11:13:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 644A0C340E8;
+        Mon, 31 Jan 2022 11:13:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627611;
-        bh=42keL3IE7xfYYTuDFGFSXIoBuVeHfX3O1QQtmA7j5bI=;
+        s=korg; t=1643627599;
+        bh=VVFlRxXq3A5E85ti0MGg4WcaiubDLDuQRc9Mef1tSPM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hfJvpifGHR2vFnwCIxNhp7bE4eqV2nqzC+Dn3BvuCSXzckn9EFi0TvKvLC/g2rT8D
-         c7EaEWk60NGB54Hzm8OOTao4WK6Uoa1AqjMS9Q0yDo4DmFHzqf+7YAGRqcfUKhPPcY
-         0uD2MGgxcBLtZommN8hPGS3iNqqAValajBP+Cu+U=
+        b=lhynsmbYhmflOvhWvl+MML98YJRa89wg+jvnNoAzij97BHGCH2A3XlEyZA0ouWRsW
+         it7C/gpJy30lPTgzOp87iumgb1Pci4ti6Ir4Mqmy5U5LQT4UNysNfyGZuXVe7/8CFU
+         tW7QYxP7fwpRvLBfpyI4aznWP1mNXHMEIKAZ0aQk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josh Lehan <krellan@google.com>,
-        Guenter Roeck <linux@roeck-us.net>,
+        stable@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 133/171] hwmon: (lm90) Mark alert as broken for MAX6654
-Date:   Mon, 31 Jan 2022 11:56:38 +0100
-Message-Id: <20220131105234.506755641@linuxfoundation.org>
+Subject: [PATCH 5.15 103/171] SUNRPC: Use BIT() macro in rpc_show_xprt_state()
+Date:   Mon, 31 Jan 2022 11:56:08 +0100
+Message-Id: <20220131105233.538017557@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
 References: <20220131105229.959216821@linuxfoundation.org>
@@ -47,33 +47,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guenter Roeck <linux@roeck-us.net>
+From: Chuck Lever <chuck.lever@oracle.com>
 
-[ Upstream commit a53fff96f35763d132a36c620b183fdf11022d7a ]
+[ Upstream commit 76497b1adb89175eee85afc437f08a68247314b3 ]
 
-Experiments with MAX6654 show that its alert function is broken,
-similar to other chips supported by the lm90 driver. Mark it accordingly.
+Clean up: BIT() is preferred over open-coding the shift.
 
-Fixes: 229d495d8189 ("hwmon: (lm90) Add max6654 support to lm90 driver")
-Cc: Josh Lehan <krellan@google.com>
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hwmon/lm90.c | 1 +
- 1 file changed, 1 insertion(+)
+ include/trace/events/sunrpc.h | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/hwmon/lm90.c b/drivers/hwmon/lm90.c
-index e4ecf3440d7cf..280ae5f58187b 100644
---- a/drivers/hwmon/lm90.c
-+++ b/drivers/hwmon/lm90.c
-@@ -400,6 +400,7 @@ static const struct lm90_params lm90_params[] = {
- 		.reg_local_ext = MAX6657_REG_R_LOCAL_TEMPL,
- 	},
- 	[max6654] = {
-+		.flags = LM90_HAVE_BROKEN_ALERT,
- 		.alert_alarms = 0x7c,
- 		.max_convrate = 7,
- 		.reg_local_ext = MAX6657_REG_R_LOCAL_TEMPL,
+diff --git a/include/trace/events/sunrpc.h b/include/trace/events/sunrpc.h
+index 2d04eb96d4183..312507cb341f4 100644
+--- a/include/trace/events/sunrpc.h
++++ b/include/trace/events/sunrpc.h
+@@ -925,18 +925,18 @@ TRACE_EVENT(rpc_socket_nospace,
+ 
+ #define rpc_show_xprt_state(x)						\
+ 	__print_flags(x, "|",						\
+-		{ (1UL << XPRT_LOCKED),		"LOCKED"},		\
+-		{ (1UL << XPRT_CONNECTED),	"CONNECTED"},		\
+-		{ (1UL << XPRT_CONNECTING),	"CONNECTING"},		\
+-		{ (1UL << XPRT_CLOSE_WAIT),	"CLOSE_WAIT"},		\
+-		{ (1UL << XPRT_BOUND),		"BOUND"},		\
+-		{ (1UL << XPRT_BINDING),	"BINDING"},		\
+-		{ (1UL << XPRT_CLOSING),	"CLOSING"},		\
+-		{ (1UL << XPRT_OFFLINE),	"OFFLINE"},		\
+-		{ (1UL << XPRT_REMOVE),		"REMOVE"},		\
+-		{ (1UL << XPRT_CONGESTED),	"CONGESTED"},		\
+-		{ (1UL << XPRT_CWND_WAIT),	"CWND_WAIT"},		\
+-		{ (1UL << XPRT_WRITE_SPACE),	"WRITE_SPACE"})
++		{ BIT(XPRT_LOCKED),		"LOCKED" },		\
++		{ BIT(XPRT_CONNECTED),		"CONNECTED" },		\
++		{ BIT(XPRT_CONNECTING),		"CONNECTING" },		\
++		{ BIT(XPRT_CLOSE_WAIT),		"CLOSE_WAIT" },		\
++		{ BIT(XPRT_BOUND),		"BOUND" },		\
++		{ BIT(XPRT_BINDING),		"BINDING" },		\
++		{ BIT(XPRT_CLOSING),		"CLOSING" },		\
++		{ BIT(XPRT_OFFLINE),		"OFFLINE" },		\
++		{ BIT(XPRT_REMOVE),		"REMOVE" },		\
++		{ BIT(XPRT_CONGESTED),		"CONGESTED" },		\
++		{ BIT(XPRT_CWND_WAIT),		"CWND_WAIT" },		\
++		{ BIT(XPRT_WRITE_SPACE),	"WRITE_SPACE" })
+ 
+ DECLARE_EVENT_CLASS(rpc_xprt_lifetime_class,
+ 	TP_PROTO(
 -- 
 2.34.1
 
