@@ -2,99 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59713C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FA88C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:20:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377665AbiAaLSn (ORCPT
+        id S1377705AbiAaLSv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:18:43 -0500
-Received: from mga17.intel.com ([192.55.52.151]:43467 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1377760AbiAaLK0 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:10:26 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643627426; x=1675163426;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=MTbZzQ/DP2PxsKTY28GWtpAfua/z0STB6221mcyAUO8=;
-  b=D0xKtBN3yddUCw0tMOvBKW51d09x8R5KDZSnbC3YR+nogE0YtuaJZ01a
-   edS2LHp+3PYcX0TVW5k+5Nq4XEsCVkzB+toyzqWOT9wxLSHyINzf1IT91
-   KoLEIA46ELGTuy+psz0fhnptyn7Mq6Z3YfsIGivqsrVrY4bHMB0jr/4Yn
-   EobEzfZQJt7o5L4i97AZYAlfVYMtvkgPDjSgFM8G92mDvH5qzQreE3NXm
-   G8cUYOBbTdRs3S9D73pNgDNAD757gD7B0382FXf5R9BbMLI7+mvD7wNlD
-   wAT4tkLbCkDYf+IPQGmQqVbFOUqJlsjiCH0ibmhBRGdpSB1+140ClWTQf
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10243"; a="228101803"
-X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
-   d="scan'208";a="228101803"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 03:07:16 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
-   d="scan'208";a="675694134"
-Received: from kuha.fi.intel.com ([10.237.72.185])
-  by fmsmga001.fm.intel.com with SMTP; 31 Jan 2022 03:07:14 -0800
-Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Mon, 31 Jan 2022 13:07:13 +0200
-Date:   Mon, 31 Jan 2022 13:07:13 +0200
-From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
-To:     Sean Anderson <sean.anderson@seco.com>
+        Mon, 31 Jan 2022 06:18:51 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:57936 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377823AbiAaLKa (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 06:10:30 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2C65BB82A4E;
+        Mon, 31 Jan 2022 11:10:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4866AC340E8;
+        Mon, 31 Jan 2022 11:10:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643627428;
+        bh=spdpjo4qMbBRvJtQh7H28I1jbdknu9a8xKiGy/yHeJA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=HBkloCJ2TAOo5K6auD+V86zOHr9skp5Kdi2IBide/p2tGH+ZK6UxRMaQsJSZnq+yZ
+         Mf2zFJE3FMW/CCD9mjp6vDKQlinqLWrn4JHEOnFLtOa7T1VuZ3+sEqDACsQe53Wcl9
+         z3ndwf57THPJKeE9b0bwa6SOZBpKWRkvO+SQ9CT4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/3] usb: ulpi: Move of_node_put to ulpi_dev_release
-Message-ID: <YffC4a1GUVp4wk+g@kuha.fi.intel.com>
-References: <20220127190004.1446909-1-sean.anderson@seco.com>
- <20220127190004.1446909-2-sean.anderson@seco.com>
+        stable@vger.kernel.org, Linyu Yuan <quic_linyyuan@quicinc.com>
+Subject: [PATCH 5.15 080/171] usb: roles: fix include/linux/usb/role.h compile issue
+Date:   Mon, 31 Jan 2022 11:55:45 +0100
+Message-Id: <20220131105232.741088302@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
+References: <20220131105229.959216821@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220127190004.1446909-2-sean.anderson@seco.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 02:00:02PM -0500, Sean Anderson wrote:
-> Drivers are not unbound from the device when ulpi_unregister_interface
-> is called. Move of_node-freeing code to ulpi_dev_release which is called
-> only after all users are gone.
-> 
-> Fixes: ef6a7bcfb01c ("usb: ulpi: Support device discovery via DT")
-> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+From: Linyu Yuan <quic_linyyuan@quicinc.com>
 
-Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+commit 945c37ed564770c78dfe6b9f08bed57a1b4e60ef upstream.
 
-> ---
-> 
-> Changes in v3:
-> - Use separate patch for moving of_node_put from unregister to release
-> 
->  drivers/usb/common/ulpi.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/usb/common/ulpi.c b/drivers/usb/common/ulpi.c
-> index 4169cf40a03b..c90a1ab705a3 100644
-> --- a/drivers/usb/common/ulpi.c
-> +++ b/drivers/usb/common/ulpi.c
-> @@ -127,6 +127,7 @@ static const struct attribute_group *ulpi_dev_attr_groups[] = {
->  
->  static void ulpi_dev_release(struct device *dev)
->  {
-> +	of_node_put(dev->of_node);
->  	kfree(to_ulpi_dev(dev));
->  }
->  
-> @@ -296,7 +297,6 @@ EXPORT_SYMBOL_GPL(ulpi_register_interface);
->   */
->  void ulpi_unregister_interface(struct ulpi *ulpi)
->  {
-> -	of_node_put(ulpi->dev.of_node);
->  	device_unregister(&ulpi->dev);
->  }
->  EXPORT_SYMBOL_GPL(ulpi_unregister_interface);
-> -- 
-> 2.25.1
+when CONFIG_USB_ROLE_SWITCH is not defined,
+add usb_role_switch_find_by_fwnode() definition which return NULL.
 
-thanks,
+Fixes: c6919d5e0cd1 ("usb: roles: Add usb_role_switch_find_by_fwnode()")
+Signed-off-by: Linyu Yuan <quic_linyyuan@quicinc.com>
+Link: https://lore.kernel.org/r/1641818608-25039-1-git-send-email-quic_linyyuan@quicinc.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ include/linux/usb/role.h |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
--- 
-heikki
+--- a/include/linux/usb/role.h
++++ b/include/linux/usb/role.h
+@@ -92,6 +92,12 @@ fwnode_usb_role_switch_get(struct fwnode
+ static inline void usb_role_switch_put(struct usb_role_switch *sw) { }
+ 
+ static inline struct usb_role_switch *
++usb_role_switch_find_by_fwnode(const struct fwnode_handle *fwnode)
++{
++	return NULL;
++}
++
++static inline struct usb_role_switch *
+ usb_role_switch_register(struct device *parent,
+ 			 const struct usb_role_switch_desc *desc)
+ {
+
+
