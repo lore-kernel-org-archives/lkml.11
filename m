@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 294F1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:01:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2C43C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:01:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358773AbiAaLBZ (ORCPT
+        id S1348448AbiAaLBd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:01:25 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:48234 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358456AbiAaLAX (ORCPT
+        Mon, 31 Jan 2022 06:01:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43126 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358591AbiAaLAW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:00:23 -0500
+        Mon, 31 Jan 2022 06:00:22 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6A54C0613E5;
+        Mon, 31 Jan 2022 02:59:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 79B07B82A5E;
-        Mon, 31 Jan 2022 11:00:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92F22C340E8;
-        Mon, 31 Jan 2022 11:00:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 87D9060B28;
+        Mon, 31 Jan 2022 10:59:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5ED62C340F0;
+        Mon, 31 Jan 2022 10:59:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643626821;
-        bh=6bTuMqjIAe8M5U9uAeUKlMxp1hGna8u+ajA/AFCtbEM=;
+        s=korg; t=1643626777;
+        bh=etwDj2ZJLh6nqqlIe8jncPRFjBV+R7ONKL8aFnttvpg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ng0M60fYzLkcfwBoTwvKt7eAPkgmqx4UA8kzSoHEnsTUI7NK+GiC4d7TtPPUOHqbz
-         ngJm+ujIfEJsO4XfmRhZNsjM+y5QQfg1Uhyj7E6scs2GIDsBDO4TTLiVrua3iMHwKw
-         a9gSaZZpbyScDZ8bA2bNN44cIBtfn+tHQHlxz3ZY=
+        b=A/rjBsjhhrjtElqV1Mw1jXK8vs8tgJKOFKnLkMUMM9z+R6+rIGdbz0FR2n6sL8jgN
+         ixY9iH1M8ij3pBcNaxvDeYjpRDk8sk/rPgEK7WsFtQBQb1sEJtETJjW+PeZ6PiSKpW
+         TVvedb6A7ZpjrmjhO9Tbvun09OzP/Vg43n7wDIiw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 51/64] phylib: fix potential use-after-free
-Date:   Mon, 31 Jan 2022 11:56:36 +0100
-Message-Id: <20220131105217.406475015@linuxfoundation.org>
+        stable@vger.kernel.org, butt3rflyh4ck <butterflyhuangxx@gmail.com>,
+        Christoph Hellwig <hch@lst.de>, Jan Kara <jack@suse.cz>
+Subject: [PATCH 5.4 04/64] udf: Restore i_lenAlloc when inode expansion fails
+Date:   Mon, 31 Jan 2022 11:55:49 +0100
+Message-Id: <20220131105215.797442396@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105215.644174521@linuxfoundation.org>
 References: <20220131105215.644174521@linuxfoundation.org>
@@ -48,55 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Behún <kabel@kernel.org>
+From: Jan Kara <jack@suse.cz>
 
-[ Upstream commit cbda1b16687580d5beee38273f6241ae3725960c ]
+commit ea8569194b43f0f01f0a84c689388542c7254a1f upstream.
 
-Commit bafbdd527d56 ("phylib: Add device reset GPIO support") added call
-to phy_device_reset(phydev) after the put_device() call in phy_detach().
+When we fail to expand inode from inline format to a normal format, we
+restore inode to contain the original inline formatting but we forgot to
+set i_lenAlloc back. The mismatch between i_lenAlloc and i_size was then
+causing further problems such as warnings and lost data down the line.
 
-The comment before the put_device() call says that the phydev might go
-away with put_device().
-
-Fix potential use-after-free by calling phy_device_reset() before
-put_device().
-
-Fixes: bafbdd527d56 ("phylib: Add device reset GPIO support")
-Signed-off-by: Marek Behún <kabel@kernel.org>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Link: https://lore.kernel.org/r/20220119162748.32418-1-kabel@kernel.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reported-by: butt3rflyh4ck <butterflyhuangxx@gmail.com>
+CC: stable@vger.kernel.org
+Fixes: 7e49b6f2480c ("udf: Convert UDF to new truncate calling sequence")
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Jan Kara <jack@suse.cz>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/phy/phy_device.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ fs/udf/inode.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 35ade5d21de51..78b918dcd5472 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -1433,6 +1433,9 @@ void phy_detach(struct phy_device *phydev)
- 	    phy_driver_is_genphy_10g(phydev))
- 		device_release_driver(&phydev->mdio.dev);
- 
-+	/* Assert the reset signal */
-+	phy_device_reset(phydev, 1);
-+
- 	/*
- 	 * The phydev might go away on the put_device() below, so avoid
- 	 * a use-after-free bug by reading the underlying bus first.
-@@ -1444,9 +1447,6 @@ void phy_detach(struct phy_device *phydev)
- 		ndev_owner = dev->dev.parent->driver->owner;
- 	if (ndev_owner != bus->owner)
- 		module_put(bus->owner);
--
--	/* Assert the reset signal */
--	phy_device_reset(phydev, 1);
- }
- EXPORT_SYMBOL(phy_detach);
- 
--- 
-2.34.1
-
+--- a/fs/udf/inode.c
++++ b/fs/udf/inode.c
+@@ -318,6 +318,7 @@ int udf_expand_file_adinicb(struct inode
+ 		unlock_page(page);
+ 		iinfo->i_alloc_type = ICBTAG_FLAG_AD_IN_ICB;
+ 		inode->i_data.a_ops = &udf_adinicb_aops;
++		iinfo->i_lenAlloc = inode->i_size;
+ 		up_write(&iinfo->i_data_sem);
+ 	}
+ 	put_page(page);
 
 
