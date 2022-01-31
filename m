@@ -2,85 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69032C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 14:44:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6979DC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 14:45:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241713AbiAaOou (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 09:44:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40224 "EHLO
+        id S236914AbiAaOpQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 31 Jan 2022 09:45:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241268AbiAaOoq (ORCPT
+        with ESMTP id S242023AbiAaOpH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 09:44:46 -0500
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0531C061714
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 06:44:45 -0800 (PST)
-Received: by mail-wr1-x429.google.com with SMTP id f17so25903904wrx.1
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 06:44:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=fnJzOywNeH5zNZH+CkcZ4xrkTedgK+Dke7KHwtotdX8=;
-        b=KovT1eD6vSjqr7qthhYEtXFah0CSX1aVvguEr8BxCiKsxkZ0Mo5OhAbbc2kedBTwZ0
-         c23zYwN6LLTjUqN/qzl6OSwv805q4InExRuuqmOj7xTEm87HtUcLSwNI2IEJwg0NhxXT
-         +S4kOUEhwa+VXr4v8Ck0FwWm/vYwQ5VK7gEP8ui29+rGR7YQdyQWu7RvS1qybBAdUNwl
-         wFKqYkf0pADZf742aqddefOU7zTaOeRYl0e9c28OBMhQsY/mHehKPCqa2wxxVNd4x92A
-         iErWJEvib/3IAymY1UnM4nRMfDx8v4GzOjInnf4UCVv9qnZlCrVwDGTQjRjTqxFgQ95m
-         WFaQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=fnJzOywNeH5zNZH+CkcZ4xrkTedgK+Dke7KHwtotdX8=;
-        b=L7nsYhBVGvizbMwFFE+1TRXVOIlhVM2XbmrV5hkBJgo/HXYdi2hPT6J3tPCp7moG2t
-         0ykZXvaMf0pJe6diBhjoJhV7m1bVxNtrv6CueUKH544shvWcGXJdYsrsYEvrGS3styr/
-         TP6Up/FYMQDX4cmn+Dk2bK1rgoSgXrWtQ/2afhZ2ZX9gEVdAinvs5w/v1kr88VmgQmK9
-         Wjxbe1zlecbSLngxD/AYJxzLWK639UeyyTWS05Xwuz6vn7jwppb9Qm3LEgR3uO4pGDlH
-         780hPqfe21uc3nnFInX9NA2NHPC3XWnfQELISiA1FPui+sR7NVuE0TTAWDVIdwouZHAw
-         sbVQ==
-X-Gm-Message-State: AOAM532cgJDPCjDHoxF1l2YL3jP6qDoco9vqaw375Ov+Sxn4CKu0nQnL
-        o8IhBGipw7Zbq5O6/KwYEor512ix4Sc=
-X-Google-Smtp-Source: ABdhPJyNvoAVRURG+1qxDYgpLPdNiwKyFAfjAWiJKvaqGtfSp1Z7Jv/5ZUiOJcaJjnrb1H9g3M9Mfw==
-X-Received: by 2002:a5d:4d8b:: with SMTP id b11mr18578409wru.551.1643640284266;
-        Mon, 31 Jan 2022 06:44:44 -0800 (PST)
-Received: from [192.168.8.198] ([85.255.232.204])
-        by smtp.gmail.com with ESMTPSA id n10sm14881335wrf.96.2022.01.31.06.44.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 31 Jan 2022 06:44:43 -0800 (PST)
-Message-ID: <a0dd7976-8b5f-784a-1126-302fb7eaa840@gmail.com>
-Date:   Mon, 31 Jan 2022 14:42:51 +0000
+        Mon, 31 Jan 2022 09:45:07 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A669AC06173B
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 06:45:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=S37hV5LKYMZr1FwdKbRBbnns+EHid9XjyHNmHg+zn0s=; b=T67AodPbh6KjEXf58AyRu2Mb9k
+        Ja+cbgWubfMKArkw4GvrZ9bhtm5QFzrcusJg2M5hdW7/TnNDHDIFDLnXqo/zlv0o7+vNa0MEXbKbV
+        gn0Kbzbm3yfdMO4sXhjpVlYY2kNCCE0FBRaaTRQThzFifyvARd8MrOTtiG0e7wGpBRB9VG1F/kccB
+        0pmOEDERa1yMdETLCBl4+fBNvBd7wk/RLUXDpj46b4ppYCyVgv72Q2Vq38p6BURmRfm9/VGKQeXhQ
+        /LVSXR00CgQL++0RFinoAjEtt/cPws6pjPE0lDzE5BiqQsMTfmCNc32hjC4E/1QWLsgQ9Cnl2teoP
+        zNZWi0cw==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nEXvL-009z9U-6c; Mon, 31 Jan 2022 14:44:55 +0000
+Date:   Mon, 31 Jan 2022 14:44:55 +0000
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Michel Lespinasse <michel@lespinasse.org>
+Cc:     Linux-MM <linux-mm@kvack.org>, linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>, kernel-team@fb.com,
+        Laurent Dufour <ldufour@linux.ibm.com>,
+        Jerome Glisse <jglisse@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Michal Hocko <mhocko@suse.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Liam Howlett <liam.howlett@oracle.com>,
+        Rik van Riel <riel@surriel.com>,
+        Paul McKenney <paulmck@kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Minchan Kim <minchan@google.com>,
+        Joel Fernandes <joelaf@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Andy Lutomirski <luto@kernel.org>
+Subject: Re: [PATCH v2 12/35] mm: separate mmap locked assertion from find_vma
+Message-ID: <Yff152H3FFVdQBfy@casper.infradead.org>
+References: <20220128131006.67712-1-michel@lespinasse.org>
+ <20220128131006.67712-13-michel@lespinasse.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [LKP] [io_uring] 811b398582:
- WARNING:possible_recursive_locking_detected
-Content-Language: en-US
-To:     kernel test robot <oliver.sang@intel.com>,
-        Jens Axboe <axboe@kernel.dk>
-Cc:     lkp@lists.01.org, lkp@intel.com,
-        LKML <linux-kernel@vger.kernel.org>
-References: <20220131131122.GB16385@xsang-OptiPlex-9020>
-From:   Pavel Begunkov <asml.silence@gmail.com>
-In-Reply-To: <20220131131122.GB16385@xsang-OptiPlex-9020>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220128131006.67712-13-michel@lespinasse.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/31/22 13:11, kernel test robot wrote:
-> Greeting,
+On Fri, Jan 28, 2022 at 05:09:43AM -0800, Michel Lespinasse wrote:
+> This adds a new __find_vma() function, which implements find_vma minus
+> the mmap_assert_locked() assertion.
 > 
-> FYI, we noticed the following commit (built with clang-14):
-> 
-> commit: 811b3985828e422a3759cf07a848fa75c17c1db4 ("io_uring: support for user allocated memory for rings/sqes")
-> https://github.com/ammarfaizi2/linux-block axboe/linux-block/perf-wip
+> find_vma() is then implemented as an inline wrapper around __find_vma().
 
-Would be great if for io_uring related reports it also CCs
-
-io-uring@vger.kernel.org
-
--- 
-Pavel Begunkov
+You might like to take inspiration from the maple tree patches
+where we assert that either the RCU lock is held or the mmap_lock
+is held.
