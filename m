@@ -2,161 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44F15C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 10:24:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B494C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 10:24:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358151AbiAaKYE (ORCPT
+        id S1358173AbiAaKYM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 05:24:04 -0500
-Received: from smtpbg701.qq.com ([203.205.195.86]:46828 "EHLO
-        smtpproxy21.qq.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1358126AbiAaKX4 (ORCPT
+        Mon, 31 Jan 2022 05:24:12 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:58542 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358122AbiAaKX4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 31 Jan 2022 05:23:56 -0500
-X-QQ-mid: bizesmtp11t1643624627tmhf9c2q
-Received: from localhost.localdomain (unknown [180.105.58.61])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Mon, 31 Jan 2022 18:22:47 +0800 (CST)
-X-QQ-SSF: 01400000002000B0E000B00A0000000
-X-QQ-FEAT: YSwSv5UBo8jqRMsFPvrPuKGE1HHFTE5HH6gTbBe1i0Gh8eAUIPWPPhTYKcMqY
-        sFlA1wslD7Xu5go8t4ZC0LBMYLw2PBtAxWoYpFf8waY1logbhaZrinkuOu0LvOMUYwDA383
-        FuE4V9ikrDLJ7/w9J9hO2ZZpcGDNxMV2v0U7FPZNdvfRUlxN4T/Jm9duQ84hjNnonQYL45x
-        LGYnzc9ai/bhc4Vtv7sjseXdXbTrN6XRquSnbwa8yxb32VM73BfeEUZ2Tf6X9VW16KCsSeV
-        fDbX2SGJQGbqKGBVuapHW5Xd6B6Lc0UEIUNhwGyx2vTcryA29UhQS0fQ5uSOnL+IaI1NcE3
-        4NKUO1gcdhjSQGIdf1/dTk1cSLuIyBAfAlJOaWH
-X-QQ-GoodBg: 2
-From:   tangmeng <tangmeng@uniontech.com>
-To:     tglx@linutronix.de, mcgrof@kernel.org, keescook@chromium.org,
-        yzaikin@google.com, john.stultz@linaro.org, sboyd@kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        tangmeng <tangmeng@uniontech.com>
-Subject: [PATCH v5] kernel/time: move timer sysctls to its own file
-Date:   Mon, 31 Jan 2022 18:22:14 +0800
-Message-Id: <20220131102214.2284-1-tangmeng@uniontech.com>
-X-Mailer: git-send-email 2.20.1
+Date:   Mon, 31 Jan 2022 11:23:52 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1643624633;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=KP118xyiOlCfNk6Yd6qwpbFDC5oBogtckl9rVGfc3U4=;
+        b=1qqMupU1R69pNXQ/TeFSoXrMek18fQYm3CcWo22+BNV0gvpzOnj0/2zBU81yHvGmd3CzPI
+        Z0b5+It4pK6zgzj3Q5tQUzYR0puoqFdctdXjTXc9+QiMOISO6bUOoDEdz5YNYiYy9vMKob
+        ZY8i4ifLPQGJEewcDzITyVmvKtV4her+Tv1KXbIZE9v5YXL5iMZyblZ697BBQic/wzT3+O
+        XLlZZH0iJROtnuCTOEfahzwp3XQ4JoAGg+oaw2W53qzikqJjbV0GCzZkx/1nR6EKxbva73
+        nMAZ5WBgFM02EFqx8/M5NwfcEMPtYCsCRuRvaUDdf0GdSxiRuhzYMGAbJUJrUw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1643624633;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=KP118xyiOlCfNk6Yd6qwpbFDC5oBogtckl9rVGfc3U4=;
+        b=E/2C2AXQkKgwmIl3KTMx+DqHKQS7paMznJWUUCeCefUq64ONtb2twfK0tt02MTsp7fnzjz
+        ca7gtMjUE+FLQCCA==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Clark Williams <clark.williams@gmail.com>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.org>,
+        linux-rt-users@vger.kernel.org, williams@redhat.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH PREEMPT_RT 4.19 STABLE] rt:  PREEMPT_RT safety net for
+ backported patches
+Message-ID: <Yfe4uHYEC+syPy/J@linutronix.de>
+References: <20220130221944.7992CC340E4@smtp.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign6
-X-QQ-Bgrelay: 1
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220130221944.7992CC340E4@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-kernel/sysctl.c is a kitchen sink where everyone leaves their dirty
-dishes, this makes it very difficult to maintain.
+On 2022-01-30 15:46:27 [-0600], Clark Williams wrote:
+> While doing some 4.19-rt cleanup work, I stumbled across the fact that parts of
+> two backported patches were dependent on CONFIG_PREEMPT_RT, rather than
+> the CONFIG_PREEMPT_RT_FULL used in 4.19 and earlier RT series.  The commits
+> in the linux-stable-rt v4.19-rt branch are:
+> 
+> dad4c6a33bf4e mm: slub: Don't resize the location tracking cache on PREEMPT_RT
+> e626b6f873f2c net: Treat __napi_schedule_irqoff() as __napi_schedule() on PREEMPT_RT
+> 
+> Discussing this at the Stable RT maintainers meeting, Steven Rostedt suggested that
+> we automagically select CONFIG_PREEMPT_RT if CONFIG_PREEMPT_RT_FULL is on, giving
+> us a safety net for any subsequently backported patches. Here's my first cut at
+> that patch.
+> 
+> I suspect we'll need a similar patch for stable RT kernels < 4.19.
+> 
+> Suggested-by: Steven Rostedt <rostedt@goodmis.org>
+> Signed-off-by: Clark Williams <williams@redhat.com>
+Acked-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-To help with this maintenance let's start by moving sysctls to places
-where they actually belong.  The proc sysctl maintainers do not want to
-know what sysctl knobs you wish to add for your own piece of code, we
-just care about the core logic.
+> ---
+>  kernel/Kconfig.preempt | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/kernel/Kconfig.preempt b/kernel/Kconfig.preempt
+> index 306567f72a3e..951f58cbd652 100644
+> --- a/kernel/Kconfig.preempt
+> +++ b/kernel/Kconfig.preempt
+> @@ -6,6 +6,10 @@ config PREEMPT_RT_BASE
+>  	bool
+>  	select PREEMPT
+>  
+> +config PREEMPT_RT
+> +       bool
+> +       default false
 
-So move the timer_migration sysctls to its own file.
+default is false.
 
-Signed-off-by: tangmeng <tangmeng@uniontech.com>
----
- include/linux/timer.h |  4 ----
- kernel/sysctl.c       | 11 -----------
- kernel/time/timer.c   | 26 ++++++++++++++++++++++++--
- 3 files changed, 24 insertions(+), 17 deletions(-)
+> +
+>  config HAVE_PREEMPT_LAZY
+>  	bool
+>  
 
-diff --git a/include/linux/timer.h b/include/linux/timer.h
-index fda13c9d1256..793b6b7c5a3e 100644
---- a/include/linux/timer.h
-+++ b/include/linux/timer.h
-@@ -198,10 +198,6 @@ extern enum hrtimer_restart it_real_fn(struct hrtimer *);
- 
- #if defined(CONFIG_SMP) && defined(CONFIG_NO_HZ_COMMON)
- struct ctl_table;
--
--extern unsigned int sysctl_timer_migration;
--int timer_migration_handler(struct ctl_table *table, int write,
--			    void *buffer, size_t *lenp, loff_t *ppos);
- #endif
- 
- unsigned long __round_jiffies(unsigned long j, int cpu);
-diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index 5ae443b2882e..d6d133423e5d 100644
---- a/kernel/sysctl.c
-+++ b/kernel/sysctl.c
-@@ -2292,17 +2292,6 @@ static struct ctl_table kern_table[] = {
- 		.extra1		= SYSCTL_ZERO,
- 		.extra2		= SYSCTL_ONE,
- 	},
--#if defined(CONFIG_SMP) && defined(CONFIG_NO_HZ_COMMON)
--	{
--		.procname	= "timer_migration",
--		.data		= &sysctl_timer_migration,
--		.maxlen		= sizeof(unsigned int),
--		.mode		= 0644,
--		.proc_handler	= timer_migration_handler,
--		.extra1		= SYSCTL_ZERO,
--		.extra2		= SYSCTL_ONE,
--	},
--#endif
- #ifdef CONFIG_BPF_SYSCALL
- 	{
- 		.procname	= "unprivileged_bpf_disabled",
-diff --git a/kernel/time/timer.c b/kernel/time/timer.c
-index 85f1021ad459..2d3f4295614b 100644
---- a/kernel/time/timer.c
-+++ b/kernel/time/timer.c
-@@ -44,6 +44,7 @@
- #include <linux/slab.h>
- #include <linux/compat.h>
- #include <linux/random.h>
-+#include <linux/sysctl.h>
- 
- #include <linux/uaccess.h>
- #include <asm/unistd.h>
-@@ -223,7 +224,7 @@ static void timer_update_keys(struct work_struct *work);
- static DECLARE_WORK(timer_update_work, timer_update_keys);
- 
- #ifdef CONFIG_SMP
--unsigned int sysctl_timer_migration = 1;
-+static unsigned int sysctl_timer_migration = 1;
- 
- DEFINE_STATIC_KEY_FALSE(timers_migration_enabled);
- 
-@@ -251,7 +252,8 @@ void timers_update_nohz(void)
- 	schedule_work(&timer_update_work);
- }
- 
--int timer_migration_handler(struct ctl_table *table, int write,
-+#if defined(CONFIG_SMP) && defined(CONFIG_NO_HZ_COMMON)
-+static int timer_migration_handler(struct ctl_table *table, int write,
- 			    void *buffer, size_t *lenp, loff_t *ppos)
- {
- 	int ret;
-@@ -264,6 +266,26 @@ int timer_migration_handler(struct ctl_table *table, int write,
- 	return ret;
- }
- 
-+static struct ctl_table timer_sysctl[] = {
-+	{
-+		.procname       = "timer_migration",
-+		.data           = &sysctl_timer_migration,
-+		.maxlen         = sizeof(unsigned int),
-+		.mode           = 0644,
-+		.proc_handler   = timer_migration_handler,
-+		.extra1         = SYSCTL_ZERO,
-+		.extra2         = SYSCTL_ONE,
-+	},
-+	{}
-+};
-+
-+static int __init timer_sysctl_init(void)
-+{
-+	register_sysctl_init("kernel", timer_sysctl);
-+	return 0;
-+}
-+__initcall(timer_sysctl_init);
-+#endif
- static inline bool is_timers_nohz_active(void)
- {
- 	return static_branch_unlikely(&timers_nohz_active);
--- 
-2.20.1
-
-
-
+Sebastian
