@@ -2,51 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 099C8C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47772C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:45:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378501AbiAaLmn (ORCPT
+        id S1378532AbiAaLmr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:42:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50140 "EHLO
+        Mon, 31 Jan 2022 06:42:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379127AbiAaL3u (ORCPT
+        with ESMTP id S1379126AbiAaL3u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 31 Jan 2022 06:29:50 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 361E4C0617A9;
-        Mon, 31 Jan 2022 03:19:58 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E40BC0617A7;
+        Mon, 31 Jan 2022 03:19:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EACF1B82A65;
-        Mon, 31 Jan 2022 11:19:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EF5AC340E8;
-        Mon, 31 Jan 2022 11:19:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9B81BB82A4C;
+        Mon, 31 Jan 2022 11:19:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 071EDC340E8;
+        Mon, 31 Jan 2022 11:19:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627995;
-        bh=OSuO5PnMFjxxILHxYCzqxQ8mNf+RJzHno0hjReRUrB4=;
+        s=korg; t=1643627977;
+        bh=vrfJLZOsXoOxcB4WYhWeVzSBqJLqrUc+mX992UslaOY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O6Fin3bQ2YpYkH2QkMqg23GPiyl7Gi/nMoD2zNDUew/TFj+pCbMgBvvjWo3bQMItb
-         TT5NxxWkEye/YzJ6bPUht+EiTSLfAc6DUe+pcSPQshAQ0LFvpEnx1Mh5Fox83fzHjC
-         j0Ni+oRITgziXnpIFEKtNLR0jWnh5XG+e40f0NcA=
+        b=jSFud35tXziEMpSTcN5Cd/RwOVvC9Nl/yVtbatlZWQHncAqw+2x7A6OcOZe0QaJfO
+         ceNB43UIGckToMgymVMfCrb0BTv85iTavQJIU0dTIilgv/YY3PQviuqgK0E4Hya557
+         p56nIdxxZPLSdZGe2ziNOB/8DhSvYZnBBhOnHRfo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Huacai Chen <chenhuacai@kernel.org>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>
-Subject: [PATCH 5.16 090/200] PCI/sysfs: Find shadow ROM before static attribute initialization
-Date:   Mon, 31 Jan 2022 11:55:53 +0100
-Message-Id: <20220131105236.635467164@linuxfoundation.org>
+        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
+        Felix Fietkau <nbd@nbd.name>,
+        Felipe Contreras <felipe.contreras@gmail.com>
+Subject: [PATCH 5.16 085/200] mt76: connac: introduce MCU_CE_CMD macro
+Date:   Mon, 31 Jan 2022 11:55:48 +0100
+Message-Id: <20220131105236.474143147@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -58,110 +50,405 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bjorn Helgaas <bhelgaas@google.com>
+From: Lorenzo Bianconi <lorenzo@kernel.org>
 
-commit 66d28b21fe6b3da8d1e9f0a7ba38bc61b6c547e1 upstream.
+commit 680a2ead741ad9b479a53adf154ed5eee74d2b9a upstream.
 
-Ville reported that the sysfs "rom" file for VGA devices disappeared after
-527139d738d7 ("PCI/sysfs: Convert "rom" to static attribute").
+Similar to MCU_EXT_CMD, introduce MCU_CE_CMD for CE commands
 
-Prior to 527139d738d7, FINAL fixups, including pci_fixup_video() where we
-find shadow ROMs, were run before pci_create_sysfs_dev_files() created the
-sysfs "rom" file.
+Stable kernel notes:
 
-After 527139d738d7, "rom" is a static attribute and is created before FINAL
-fixups are run, so we didn't create "rom" files for shadow ROMs:
+Upstream commit 547224024579 (mt76: connac: introduce MCU_UNI_CMD macro,
+2021-12-09) introduced a bug by removing MCU_UNI_PREFIX, but not
+updating MCU_CMD_MASK accordingly, so when commands are compared in
+mt7921_mcu_parse_response() one has the extra bit __MCU_CMD_FIELD_UNI
+set and the comparison fails:
 
-  acpi_pci_root_add
-    ...
-      pci_scan_single_device
-        pci_device_add
-          pci_fixup_video                    # <-- new HEADER fixup
-          device_add
-            ...
-              if (grp->is_visible())
-                pci_dev_rom_attr_is_visible  # after 527139d738d7
-    pci_bus_add_devices
-      pci_bus_add_device
-        pci_fixup_device(pci_fixup_final)
-          pci_fixup_video                    # <-- previous FINAL fixup
-        pci_create_sysfs_dev_files
-          if (pci_resource_len(pdev, PCI_ROM_RESOURCE))
-            sysfs_create_bin_file("rom")     # before 527139d738d7
+  if (mcu_cmd != event->cid)
+  if (20001 != 1)
 
-Change pci_fixup_video() to be a HEADER fixup so it runs before sysfs
-static attributes are initialized.
+The fix was sneaked by in the next commit 680a2ead741a (mt76: connac:
+introduce MCU_CE_CMD macro, 2021-12-09):
 
-Rename the Loongson pci_fixup_radeon() to pci_fixup_video() and make its
-dmesg logging identical to the others since it is doing the same job.
+-       int mcu_cmd = cmd & MCU_CMD_MASK;
++       int mcu_cmd = FIELD_GET(__MCU_CMD_FIELD_ID, cmd);
 
-Link: https://lore.kernel.org/r/YbxqIyrkv3GhZVxx@intel.com
-Fixes: 527139d738d7 ("PCI/sysfs: Convert "rom" to static attribute")
-Link: https://lore.kernel.org/r/20220126154001.16895-1-helgaas@kernel.org
-Reported-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Tested-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Cc: stable@vger.kernel.org			# v5.13+
-Cc: Huacai Chen <chenhuacai@kernel.org>
-Cc: Jiaxun Yang <jiaxun.yang@flygoat.com>
-Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: Dave Hansen <dave.hansen@linux.intel.com>
-Cc: Krzysztof Wilczyński <kw@linux.com>
+But it was never merged into linux-stable.
+
+We need either both commits, or none.
+
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Signed-off-by: Felipe Contreras <felipe.contreras@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/ia64/pci/fixup.c              |    4 ++--
- arch/mips/loongson64/vbios_quirk.c |    9 ++++-----
- arch/x86/pci/fixup.c               |    4 ++--
- 3 files changed, 8 insertions(+), 9 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt7615/mcu.c      |   16 +++---
+ drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c |   47 ++++++++++--------
+ drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h |   48 +++++++++----------
+ drivers/net/wireless/mediatek/mt76/mt7921/mcu.c      |   24 ++++-----
+ drivers/net/wireless/mediatek/mt76/mt7921/testmode.c |    4 -
+ 5 files changed, 73 insertions(+), 66 deletions(-)
 
---- a/arch/ia64/pci/fixup.c
-+++ b/arch/ia64/pci/fixup.c
-@@ -76,5 +76,5 @@ static void pci_fixup_video(struct pci_d
- 		}
- 	}
- }
--DECLARE_PCI_FIXUP_CLASS_FINAL(PCI_ANY_ID, PCI_ANY_ID,
--				PCI_CLASS_DISPLAY_VGA, 8, pci_fixup_video);
-+DECLARE_PCI_FIXUP_CLASS_HEADER(PCI_ANY_ID, PCI_ANY_ID,
-+			       PCI_CLASS_DISPLAY_VGA, 8, pci_fixup_video);
---- a/arch/mips/loongson64/vbios_quirk.c
-+++ b/arch/mips/loongson64/vbios_quirk.c
-@@ -3,7 +3,7 @@
- #include <linux/pci.h>
- #include <loongson.h>
+--- a/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
+@@ -145,7 +145,7 @@ void mt7615_mcu_fill_msg(struct mt7615_d
+ 	mcu_txd->cid = mcu_cmd;
+ 	mcu_txd->ext_cid = FIELD_GET(__MCU_CMD_FIELD_EXT_ID, cmd);
  
--static void pci_fixup_radeon(struct pci_dev *pdev)
-+static void pci_fixup_video(struct pci_dev *pdev)
+-	if (mcu_txd->ext_cid || (cmd & MCU_CE_PREFIX)) {
++	if (mcu_txd->ext_cid || (cmd & __MCU_CMD_FIELD_CE)) {
+ 		if (cmd & __MCU_CMD_FIELD_QUERY)
+ 			mcu_txd->set_query = MCU_Q_QUERY;
+ 		else
+@@ -193,7 +193,7 @@ int mt7615_mcu_parse_response(struct mt7
+ 		skb_pull(skb, sizeof(*rxd));
+ 		event = (struct mt7615_mcu_uni_event *)skb->data;
+ 		ret = le32_to_cpu(event->status);
+-	} else if (cmd == MCU_CMD_REG_READ) {
++	} else if (cmd == MCU_CE_QUERY(REG_READ)) {
+ 		struct mt7615_mcu_reg_event *event;
+ 
+ 		skb_pull(skb, sizeof(*rxd));
+@@ -2737,13 +2737,13 @@ int mt7615_mcu_set_bss_pm(struct mt7615_
+ 	if (vif->type != NL80211_IFTYPE_STATION)
+ 		return 0;
+ 
+-	err = mt76_mcu_send_msg(&dev->mt76, MCU_CMD_SET_BSS_ABORT, &req_hdr,
+-				sizeof(req_hdr), false);
++	err = mt76_mcu_send_msg(&dev->mt76, MCU_CE_CMD(SET_BSS_ABORT),
++				&req_hdr, sizeof(req_hdr), false);
+ 	if (err < 0 || !enable)
+ 		return err;
+ 
+-	return mt76_mcu_send_msg(&dev->mt76, MCU_CMD_SET_BSS_CONNECTED, &req,
+-				 sizeof(req), false);
++	return mt76_mcu_send_msg(&dev->mt76, MCU_CE_CMD(SET_BSS_CONNECTED),
++				 &req, sizeof(req), false);
+ }
+ 
+ int mt7615_mcu_set_roc(struct mt7615_phy *phy, struct ieee80211_vif *vif,
+@@ -2762,6 +2762,6 @@ int mt7615_mcu_set_roc(struct mt7615_phy
+ 
+ 	phy->roc_grant = false;
+ 
+-	return mt76_mcu_send_msg(&dev->mt76, MCU_CMD_SET_ROC, &req,
+-				 sizeof(req), false);
++	return mt76_mcu_send_msg(&dev->mt76, MCU_CE_CMD(SET_ROC),
++				 &req, sizeof(req), false);
+ }
+--- a/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c
+@@ -160,7 +160,8 @@ int mt76_connac_mcu_set_channel_domain(s
+ 
+ 	memcpy(__skb_push(skb, sizeof(hdr)), &hdr, sizeof(hdr));
+ 
+-	return mt76_mcu_skb_send_msg(dev, skb, MCU_CMD_SET_CHAN_DOMAIN, false);
++	return mt76_mcu_skb_send_msg(dev, skb, MCU_CE_CMD(SET_CHAN_DOMAIN),
++				     false);
+ }
+ EXPORT_SYMBOL_GPL(mt76_connac_mcu_set_channel_domain);
+ 
+@@ -198,8 +199,8 @@ int mt76_connac_mcu_set_vif_ps(struct mt
+ 	if (vif->type != NL80211_IFTYPE_STATION)
+ 		return -EOPNOTSUPP;
+ 
+-	return mt76_mcu_send_msg(dev, MCU_CMD_SET_PS_PROFILE, &req,
+-				 sizeof(req), false);
++	return mt76_mcu_send_msg(dev, MCU_CE_CMD(SET_PS_PROFILE),
++				 &req, sizeof(req), false);
+ }
+ EXPORT_SYMBOL_GPL(mt76_connac_mcu_set_vif_ps);
+ 
+@@ -1523,7 +1524,8 @@ int mt76_connac_mcu_hw_scan(struct mt76_
+ 		req->scan_func |= SCAN_FUNC_RANDOM_MAC;
+ 	}
+ 
+-	err = mt76_mcu_skb_send_msg(mdev, skb, MCU_CMD_START_HW_SCAN, false);
++	err = mt76_mcu_skb_send_msg(mdev, skb, MCU_CE_CMD(START_HW_SCAN),
++				    false);
+ 	if (err < 0)
+ 		clear_bit(MT76_HW_SCANNING, &phy->state);
+ 
+@@ -1551,8 +1553,8 @@ int mt76_connac_mcu_cancel_hw_scan(struc
+ 		ieee80211_scan_completed(phy->hw, &info);
+ 	}
+ 
+-	return mt76_mcu_send_msg(phy->dev, MCU_CMD_CANCEL_HW_SCAN, &req,
+-				 sizeof(req), false);
++	return mt76_mcu_send_msg(phy->dev, MCU_CE_CMD(CANCEL_HW_SCAN),
++				 &req, sizeof(req), false);
+ }
+ EXPORT_SYMBOL_GPL(mt76_connac_mcu_cancel_hw_scan);
+ 
+@@ -1638,7 +1640,8 @@ int mt76_connac_mcu_sched_scan_req(struc
+ 		memcpy(skb_put(skb, sreq->ie_len), sreq->ie, sreq->ie_len);
+ 	}
+ 
+-	return mt76_mcu_skb_send_msg(mdev, skb, MCU_CMD_SCHED_SCAN_REQ, false);
++	return mt76_mcu_skb_send_msg(mdev, skb, MCU_CE_CMD(SCHED_SCAN_REQ),
++				     false);
+ }
+ EXPORT_SYMBOL_GPL(mt76_connac_mcu_sched_scan_req);
+ 
+@@ -1658,8 +1661,8 @@ int mt76_connac_mcu_sched_scan_enable(st
+ 	else
+ 		clear_bit(MT76_HW_SCHED_SCANNING, &phy->state);
+ 
+-	return mt76_mcu_send_msg(phy->dev, MCU_CMD_SCHED_SCAN_ENABLE, &req,
+-				 sizeof(req), false);
++	return mt76_mcu_send_msg(phy->dev, MCU_CE_CMD(SCHED_SCAN_ENABLE),
++				 &req, sizeof(req), false);
+ }
+ EXPORT_SYMBOL_GPL(mt76_connac_mcu_sched_scan_enable);
+ 
+@@ -1671,8 +1674,8 @@ int mt76_connac_mcu_chip_config(struct m
+ 
+ 	memcpy(req.data, "assert", 7);
+ 
+-	return mt76_mcu_send_msg(dev, MCU_CMD_CHIP_CONFIG, &req, sizeof(req),
+-				 false);
++	return mt76_mcu_send_msg(dev, MCU_CE_CMD(CHIP_CONFIG),
++				 &req, sizeof(req), false);
+ }
+ EXPORT_SYMBOL_GPL(mt76_connac_mcu_chip_config);
+ 
+@@ -1684,8 +1687,8 @@ int mt76_connac_mcu_set_deep_sleep(struc
+ 
+ 	snprintf(req.data, sizeof(req.data), "KeepFullPwr %d", !enable);
+ 
+-	return mt76_mcu_send_msg(dev, MCU_CMD_CHIP_CONFIG, &req, sizeof(req),
+-				 false);
++	return mt76_mcu_send_msg(dev, MCU_CE_CMD(CHIP_CONFIG),
++				 &req, sizeof(req), false);
+ }
+ EXPORT_SYMBOL_GPL(mt76_connac_mcu_set_deep_sleep);
+ 
+@@ -1787,8 +1790,8 @@ int mt76_connac_mcu_get_nic_capability(s
+ 	struct sk_buff *skb;
+ 	int ret, i;
+ 
+-	ret = mt76_mcu_send_and_get_msg(phy->dev, MCU_CMD_GET_NIC_CAPAB, NULL,
+-					0, true, &skb);
++	ret = mt76_mcu_send_and_get_msg(phy->dev, MCU_CE_CMD(GET_NIC_CAPAB),
++					NULL, 0, true, &skb);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -2071,7 +2074,8 @@ mt76_connac_mcu_rate_txpower_band(struct
+ 		memcpy(skb->data, &tx_power_tlv, sizeof(tx_power_tlv));
+ 
+ 		err = mt76_mcu_skb_send_msg(dev, skb,
+-					    MCU_CMD_SET_RATE_TX_POWER, false);
++					    MCU_CE_CMD(SET_RATE_TX_POWER),
++					    false);
+ 		if (err < 0)
+ 			return err;
+ 	}
+@@ -2163,8 +2167,8 @@ int mt76_connac_mcu_set_p2p_oppps(struct
+ 		.bss_idx = mvif->idx,
+ 	};
+ 
+-	return mt76_mcu_send_msg(phy->dev, MCU_CMD_SET_P2P_OPPPS, &req,
+-				 sizeof(req), false);
++	return mt76_mcu_send_msg(phy->dev, MCU_CE_CMD(SET_P2P_OPPPS),
++				 &req, sizeof(req), false);
+ }
+ EXPORT_SYMBOL_GPL(mt76_connac_mcu_set_p2p_oppps);
+ 
+@@ -2490,8 +2494,8 @@ u32 mt76_connac_mcu_reg_rr(struct mt76_d
+ 		.addr = cpu_to_le32(offset),
+ 	};
+ 
+-	return mt76_mcu_send_msg(dev, MCU_CMD_REG_READ, &req, sizeof(req),
+-				 true);
++	return mt76_mcu_send_msg(dev, MCU_CE_QUERY(REG_READ), &req,
++				 sizeof(req), true);
+ }
+ EXPORT_SYMBOL_GPL(mt76_connac_mcu_reg_rr);
+ 
+@@ -2505,7 +2509,8 @@ void mt76_connac_mcu_reg_wr(struct mt76_
+ 		.val = cpu_to_le32(val),
+ 	};
+ 
+-	mt76_mcu_send_msg(dev, MCU_CMD_REG_WRITE, &req, sizeof(req), false);
++	mt76_mcu_send_msg(dev, MCU_CE_CMD(REG_WRITE), &req,
++			  sizeof(req), false);
+ }
+ EXPORT_SYMBOL_GPL(mt76_connac_mcu_reg_wr);
+ 
+--- a/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h
++++ b/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h
+@@ -496,13 +496,11 @@ enum {
+ #define MCU_CMD_UNI_EXT_ACK			(MCU_CMD_ACK | MCU_CMD_UNI | \
+ 						 MCU_CMD_QUERY)
+ 
+-#define MCU_CE_PREFIX				BIT(29)
+-#define MCU_CMD_MASK				~(MCU_CE_PREFIX)
+-
+ #define __MCU_CMD_FIELD_ID			GENMASK(7, 0)
+ #define __MCU_CMD_FIELD_EXT_ID			GENMASK(15, 8)
+ #define __MCU_CMD_FIELD_QUERY			BIT(16)
+ #define __MCU_CMD_FIELD_UNI			BIT(17)
++#define __MCU_CMD_FIELD_CE			BIT(18)
+ 
+ #define MCU_CMD(_t)				FIELD_PREP(__MCU_CMD_FIELD_ID,		\
+ 							   MCU_CMD_##_t)
+@@ -513,6 +511,10 @@ enum {
+ #define MCU_UNI_CMD(_t)				(__MCU_CMD_FIELD_UNI |			\
+ 						 FIELD_PREP(__MCU_CMD_FIELD_ID,		\
+ 							    MCU_UNI_CMD_##_t))
++#define MCU_CE_CMD(_t)				(__MCU_CMD_FIELD_CE |			\
++						 FIELD_PREP(__MCU_CMD_FIELD_ID,		\
++							   MCU_CE_CMD_##_t))
++#define MCU_CE_QUERY(_t)			(MCU_CE_CMD(_t) | __MCU_CMD_FIELD_QUERY)
+ 
+ enum {
+ 	MCU_EXT_CMD_EFUSE_ACCESS = 0x01,
+@@ -589,26 +591,26 @@ enum {
+ 
+ /* offload mcu commands */
+ enum {
+-	MCU_CMD_TEST_CTRL = MCU_CE_PREFIX | 0x01,
+-	MCU_CMD_START_HW_SCAN = MCU_CE_PREFIX | 0x03,
+-	MCU_CMD_SET_PS_PROFILE = MCU_CE_PREFIX | 0x05,
+-	MCU_CMD_SET_CHAN_DOMAIN = MCU_CE_PREFIX | 0x0f,
+-	MCU_CMD_SET_BSS_CONNECTED = MCU_CE_PREFIX | 0x16,
+-	MCU_CMD_SET_BSS_ABORT = MCU_CE_PREFIX | 0x17,
+-	MCU_CMD_CANCEL_HW_SCAN = MCU_CE_PREFIX | 0x1b,
+-	MCU_CMD_SET_ROC = MCU_CE_PREFIX | 0x1d,
+-	MCU_CMD_SET_P2P_OPPPS = MCU_CE_PREFIX | 0x33,
+-	MCU_CMD_SET_RATE_TX_POWER = MCU_CE_PREFIX | 0x5d,
+-	MCU_CMD_SCHED_SCAN_ENABLE = MCU_CE_PREFIX | 0x61,
+-	MCU_CMD_SCHED_SCAN_REQ = MCU_CE_PREFIX | 0x62,
+-	MCU_CMD_GET_NIC_CAPAB = MCU_CE_PREFIX | 0x8a,
+-	MCU_CMD_SET_MU_EDCA_PARMS = MCU_CE_PREFIX | 0xb0,
+-	MCU_CMD_REG_WRITE = MCU_CE_PREFIX | 0xc0,
+-	MCU_CMD_REG_READ = MCU_CE_PREFIX | __MCU_CMD_FIELD_QUERY | 0xc0,
+-	MCU_CMD_CHIP_CONFIG = MCU_CE_PREFIX | 0xca,
+-	MCU_CMD_FWLOG_2_HOST = MCU_CE_PREFIX | 0xc5,
+-	MCU_CMD_GET_WTBL = MCU_CE_PREFIX | 0xcd,
+-	MCU_CMD_GET_TXPWR = MCU_CE_PREFIX | 0xd0,
++	MCU_CE_CMD_TEST_CTRL = 0x01,
++	MCU_CE_CMD_START_HW_SCAN = 0x03,
++	MCU_CE_CMD_SET_PS_PROFILE = 0x05,
++	MCU_CE_CMD_SET_CHAN_DOMAIN = 0x0f,
++	MCU_CE_CMD_SET_BSS_CONNECTED = 0x16,
++	MCU_CE_CMD_SET_BSS_ABORT = 0x17,
++	MCU_CE_CMD_CANCEL_HW_SCAN = 0x1b,
++	MCU_CE_CMD_SET_ROC = 0x1d,
++	MCU_CE_CMD_SET_P2P_OPPPS = 0x33,
++	MCU_CE_CMD_SET_RATE_TX_POWER = 0x5d,
++	MCU_CE_CMD_SCHED_SCAN_ENABLE = 0x61,
++	MCU_CE_CMD_SCHED_SCAN_REQ = 0x62,
++	MCU_CE_CMD_GET_NIC_CAPAB = 0x8a,
++	MCU_CE_CMD_SET_MU_EDCA_PARMS = 0xb0,
++	MCU_CE_CMD_REG_WRITE = 0xc0,
++	MCU_CE_CMD_REG_READ = 0xc0,
++	MCU_CE_CMD_CHIP_CONFIG = 0xca,
++	MCU_CE_CMD_FWLOG_2_HOST = 0xc5,
++	MCU_CE_CMD_GET_WTBL = 0xcd,
++	MCU_CE_CMD_GET_TXPWR = 0xd0,
+ };
+ 
+ enum {
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
+@@ -163,8 +163,8 @@ mt7921_mcu_parse_eeprom(struct mt76_dev
+ int mt7921_mcu_parse_response(struct mt76_dev *mdev, int cmd,
+ 			      struct sk_buff *skb, int seq)
  {
- 	struct resource *res = &pdev->resource[PCI_ROM_RESOURCE];
++	int mcu_cmd = FIELD_GET(__MCU_CMD_FIELD_ID, cmd);
+ 	struct mt7921_mcu_rxd *rxd;
+-	int mcu_cmd = cmd & MCU_CMD_MASK;
+ 	int ret = 0;
  
-@@ -22,8 +22,7 @@ static void pci_fixup_radeon(struct pci_
- 	res->flags = IORESOURCE_MEM | IORESOURCE_ROM_SHADOW |
- 		     IORESOURCE_PCI_FIXED;
+ 	if (!skb) {
+@@ -201,7 +201,7 @@ int mt7921_mcu_parse_response(struct mt7
+ 		/* skip invalid event */
+ 		if (mcu_cmd != event->cid)
+ 			ret = -EAGAIN;
+-	} else if (cmd == MCU_CMD_REG_READ) {
++	} else if (cmd == MCU_CE_QUERY(REG_READ)) {
+ 		struct mt7921_mcu_reg_event *event;
  
--	dev_info(&pdev->dev, "BAR %d: assigned %pR for Radeon ROM\n",
--		 PCI_ROM_RESOURCE, res);
-+	dev_info(&pdev->dev, "Video device with shadowed ROM at %pR\n", res);
+ 		skb_pull(skb, sizeof(*rxd));
+@@ -274,7 +274,7 @@ int mt7921_mcu_fill_message(struct mt76_
+ 	mcu_txd->s2d_index = MCU_S2D_H2N;
+ 	mcu_txd->ext_cid = FIELD_GET(__MCU_CMD_FIELD_EXT_ID, cmd);
+ 
+-	if (mcu_txd->ext_cid || (cmd & MCU_CE_PREFIX)) {
++	if (mcu_txd->ext_cid || (cmd & __MCU_CMD_FIELD_CE)) {
+ 		if (cmd & __MCU_CMD_FIELD_QUERY)
+ 			mcu_txd->set_query = MCU_Q_QUERY;
+ 		else
+@@ -883,8 +883,8 @@ int mt7921_mcu_fw_log_2_host(struct mt79
+ 		.ctrl_val = ctrl
+ 	};
+ 
+-	return mt76_mcu_send_msg(&dev->mt76, MCU_CMD_FWLOG_2_HOST, &data,
+-				 sizeof(data), false);
++	return mt76_mcu_send_msg(&dev->mt76, MCU_CE_CMD(FWLOG_2_HOST),
++				 &data, sizeof(data), false);
  }
--DECLARE_PCI_FIXUP_CLASS_FINAL(PCI_VENDOR_ID_ATI, 0x9615,
--				PCI_CLASS_DISPLAY_VGA, 8, pci_fixup_radeon);
-+DECLARE_PCI_FIXUP_CLASS_HEADER(PCI_VENDOR_ID_ATI, 0x9615,
-+			       PCI_CLASS_DISPLAY_VGA, 8, pci_fixup_video);
---- a/arch/x86/pci/fixup.c
-+++ b/arch/x86/pci/fixup.c
-@@ -353,8 +353,8 @@ static void pci_fixup_video(struct pci_d
- 		}
+ 
+ int mt7921_run_firmware(struct mt7921_dev *dev)
+@@ -1009,8 +1009,8 @@ int mt7921_mcu_set_tx(struct mt7921_dev
+ 		e->timer = q->mu_edca_timer;
  	}
+ 
+-	return mt76_mcu_send_msg(&dev->mt76, MCU_CMD_SET_MU_EDCA_PARMS, &req_mu,
+-				 sizeof(req_mu), false);
++	return mt76_mcu_send_msg(&dev->mt76, MCU_CE_CMD(SET_MU_EDCA_PARMS),
++				 &req_mu, sizeof(req_mu), false);
  }
--DECLARE_PCI_FIXUP_CLASS_FINAL(PCI_ANY_ID, PCI_ANY_ID,
--				PCI_CLASS_DISPLAY_VGA, 8, pci_fixup_video);
-+DECLARE_PCI_FIXUP_CLASS_HEADER(PCI_ANY_ID, PCI_ANY_ID,
-+			       PCI_CLASS_DISPLAY_VGA, 8, pci_fixup_video);
  
+ int mt7921_mcu_set_chan_info(struct mt7921_phy *phy, int cmd)
+@@ -1214,13 +1214,13 @@ mt7921_mcu_set_bss_pm(struct mt7921_dev
+ 	if (vif->type != NL80211_IFTYPE_STATION)
+ 		return 0;
  
- static const struct dmi_system_id msi_k8t_dmi_table[] = {
+-	err = mt76_mcu_send_msg(&dev->mt76, MCU_CMD_SET_BSS_ABORT, &req_hdr,
+-				sizeof(req_hdr), false);
++	err = mt76_mcu_send_msg(&dev->mt76, MCU_CE_CMD(SET_BSS_ABORT),
++				&req_hdr, sizeof(req_hdr), false);
+ 	if (err < 0 || !enable)
+ 		return err;
+ 
+-	return mt76_mcu_send_msg(&dev->mt76, MCU_CMD_SET_BSS_CONNECTED, &req,
+-				 sizeof(req), false);
++	return mt76_mcu_send_msg(&dev->mt76, MCU_CE_CMD(SET_BSS_CONNECTED),
++				 &req, sizeof(req), false);
+ }
+ 
+ int mt7921_mcu_sta_update(struct mt7921_dev *dev, struct ieee80211_sta *sta,
+@@ -1330,7 +1330,7 @@ int mt7921_get_txpwr_info(struct mt7921_
+ 	struct sk_buff *skb;
+ 	int ret;
+ 
+-	ret = mt76_mcu_send_and_get_msg(&dev->mt76, MCU_CMD_GET_TXPWR,
++	ret = mt76_mcu_send_and_get_msg(&dev->mt76, MCU_CE_CMD(GET_TXPWR),
+ 					&req, sizeof(req), true, &skb);
+ 	if (ret)
+ 		return ret;
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/testmode.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/testmode.c
+@@ -66,7 +66,7 @@ mt7921_tm_set(struct mt7921_dev *dev, st
+ 	if (!mt76_testmode_enabled(phy))
+ 		goto out;
+ 
+-	ret = mt76_mcu_send_msg(&dev->mt76, MCU_CMD_TEST_CTRL, &cmd,
++	ret = mt76_mcu_send_msg(&dev->mt76, MCU_CE_CMD(TEST_CTRL), &cmd,
+ 				sizeof(cmd), false);
+ 	if (ret)
+ 		goto out;
+@@ -95,7 +95,7 @@ mt7921_tm_query(struct mt7921_dev *dev,
+ 	struct sk_buff *skb;
+ 	int ret;
+ 
+-	ret = mt76_mcu_send_and_get_msg(&dev->mt76, MCU_CMD_TEST_CTRL,
++	ret = mt76_mcu_send_and_get_msg(&dev->mt76, MCU_CE_CMD(TEST_CTRL),
+ 					&cmd, sizeof(cmd), true, &skb);
+ 	if (ret)
+ 		goto out;
 
 
