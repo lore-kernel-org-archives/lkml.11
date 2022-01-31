@@ -2,140 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4589AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 18:28:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BFE9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 18:29:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356323AbiAaS2Y (ORCPT
+        id S1355608AbiAaS3M (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 13:28:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35978 "EHLO
+        Mon, 31 Jan 2022 13:29:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356567AbiAaS2H (ORCPT
+        with ESMTP id S1350968AbiAaS3K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 13:28:07 -0500
-Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FED8C061748
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 10:28:01 -0800 (PST)
-Received: by mail-oi1-x229.google.com with SMTP id y23so28274913oia.13
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 10:28:01 -0800 (PST)
+        Mon, 31 Jan 2022 13:29:10 -0500
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8466C06173D;
+        Mon, 31 Jan 2022 10:29:09 -0800 (PST)
+Received: by mail-lf1-x136.google.com with SMTP id y15so28620794lfa.9;
+        Mon, 31 Jan 2022 10:29:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Uv9kZcj+SYuMKmc2v8qVWQoeoD1xbOxuZhUO9LDOn7M=;
-        b=ae2tEWK0mabJWBmBgb5+OPbZ4b4jy14di2q6CL9US53w3IQdvYKiJqQL97T2G1wDVb
-         M50JwRAHj1f5EZbC/U8JiRH/KACoNyG/uqmAO3x6eKrJkOmt9gJi9U0ifS3seocUEW9r
-         hyaY3Xg6rvhtptwS5T0dGbJAKZaAMebQ/Qc53ybw5n+gqM9uxnLXV6hHOkYDR5yGHFS7
-         Z3ORY6td/UaqX8Ax1lYM1IDFFab8WZtPvgutSSoaqW4g7/FDPZPYTid+YrJa62DTXZUi
-         MhsD7QtoIZwz6MtZUjbgf5vaNl0O/132oNzAS1fkOSz9QfYHQC+Lv79GFuYie5OG218Q
-         wjZg==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=qOOYqQyirhJ4gHyrf0pQn6wWDcf9SoG9lpkJduxhv4k=;
+        b=cxtxBVJfaZ53YZqjv1zCKieiVOePdMVid12olZKkMqf4013+GlYyz+g479stJ3s1Iw
+         bPLdtG7kphKcEoXRJMThS1JkynntZ9CZ4v8Ub0N/c6NcpJk2UgbAmxZbIOde+MbPalS0
+         s68iETvNFwYmVSimrr5K33F5tK+25t9oWuLxARl690aL9rHQJzKQ3KbPxQDA6g38jE6w
+         fUPZNftw+S4S7HttOvfn6iSwdxPPi3Ddgh7nl/8S3+G/h95wnNVxfq1wbweC6ZoHRWo/
+         3qwEZOyoNXqsn9X1ixp5nCDFgdnA+oMZvtb2fYSXuoFrDMyeihtjl9wY2DzaEZVp+lUg
+         /Tow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=Uv9kZcj+SYuMKmc2v8qVWQoeoD1xbOxuZhUO9LDOn7M=;
-        b=Q0npmfwGNdV2hwGAoGdksHLd3qzFRP1i75A2w5Z1sNV+kvOqgSmSppwsNeCjMiXDgZ
-         1nMDwJrx32k7lfqsQDPFbZ7bxIVDiU7GPS9fuqFPPTpNzPaLtNb1hbCZLLET+oK2FrZT
-         a0M7i5uR9b74PwXtNd0vegGKrl55NtIm3wCfn17LJPdqTIwg81cIAmc9bnqug9QU7g5K
-         sT1I9QJ903u+fuO/UqM1QkLgu5YgRpeu7YZFFCLEnQYzhdOQgO+qZqm+0kZojHnF3rdp
-         9c2JAT3OSj+WHcJ8zdECu93LynmWSGfPtJyFt163A7AD6d58MIOFgBbATkkvpzFdZ7aV
-         Raug==
-X-Gm-Message-State: AOAM532f8ZpsGo33wSmNt/+bcuQl5woEf2drxInjeonLvHTCnwXqSeD9
-        PrSqGJBjFI3lA/TAAsEVi8Q=
-X-Google-Smtp-Source: ABdhPJw/C4So3Aq1Zja1WakK5TxhFMU6yk7ULAS3F55FaGH/rIbSkWXxwvjmSKICqrUp4l6kNQa84Q==
-X-Received: by 2002:aca:aa86:: with SMTP id t128mr13285285oie.169.1643653680913;
-        Mon, 31 Jan 2022 10:28:00 -0800 (PST)
-Received: from stitch.. (80.71.140.73.ipv4.parknet.dk. [80.71.140.73])
-        by smtp.gmail.com with ESMTPSA id a26sm16041676oiy.26.2022.01.31.10.27.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Jan 2022 10:28:00 -0800 (PST)
-Sender: Emil Renner Berthing <emil.renner.berthing@gmail.com>
-From:   Emil Renner Berthing <kernel@esmil.dk>
-To:     linux-riscv@lists.infradead.org
-Cc:     Emil Renner Berthing <kernel@esmil.dk>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jason Baron <jbaron@akamai.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Alexandre Ghiti <alex@ghiti.fr>,
-        Jisheng Zhang <jszhang@kernel.org>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 6/7] riscv: Use asm/insn.h to generate plt entries
-Date:   Mon, 31 Jan 2022 19:27:19 +0100
-Message-Id: <20220131182720.236065-7-kernel@esmil.dk>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131182720.236065-1-kernel@esmil.dk>
-References: <20220131182720.236065-1-kernel@esmil.dk>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=qOOYqQyirhJ4gHyrf0pQn6wWDcf9SoG9lpkJduxhv4k=;
+        b=3PEeW6cGR2fi8Yq9//jAIwgl3mcu62A1unZPUsf1rpJ2D9ILOtOssQgiEZ1YiWZP/Z
+         IRtWe0lqQtN081IfvsJ2XFMBSLzgQcJMCy8zHeeGdCFnD1vVEHXlr1sz8g3cPhB8R1Ei
+         c7vHq6/yti2RH/W3XQtRiT2vfL0R6G4xFPTPPwMpwrI0XJw0oiI3Tj0wA2wIBKg17Q1e
+         qp2GGnb5sib6lv5MsP9fzq8hq+IYTf7uVH2QZvM/W3CjF30HrElACYVNoGMNbezS+Jcm
+         CQsSHb0QkozHonlRnJ4TZxEpHRy6TOL18cZgsRWk7LUaqx4i4tGH55NmyMi70wY51ARt
+         bJLw==
+X-Gm-Message-State: AOAM533nGkBj/eWwf+fD4oufNZlZOF7S7g3yQFoB3hU7uNOAxuGicXhC
+        EUxbWSnYUXtQZuqXMBx1H/w=
+X-Google-Smtp-Source: ABdhPJzgBn4YsT0MM8VrBY4KBgqjRFnemm3wEAwyeGfcRcpHOiEjYkpLJGEL27XmR1wbhKFaWTkp9w==
+X-Received: by 2002:a05:6512:3f27:: with SMTP id y39mr17652645lfa.347.1643653748190;
+        Mon, 31 Jan 2022 10:29:08 -0800 (PST)
+Received: from [192.168.2.145] (109-252-138-136.dynamic.spd-mgts.ru. [109.252.138.136])
+        by smtp.googlemail.com with ESMTPSA id t27sm2435829ljk.138.2022.01.31.10.29.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 31 Jan 2022 10:29:07 -0800 (PST)
+Message-ID: <b33ceac4-506a-65c8-7c80-b1b0a67ce65e@gmail.com>
+Date:   Mon, 31 Jan 2022 21:29:06 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] PM: domains: Prevent power off for parent unless child is
+ in deepest state
+Content-Language: en-US
+To:     Ulf Hansson <ulf.hansson@linaro.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>, linux-pm@vger.kernel.org
+Cc:     Kevin Hilman <khilman@kernel.org>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Rajendra Nayak <rnayak@codeaurora.org>,
+        Dong Aisheng <aisheng.dong@nxp.com>,
+        linux-kernel@vger.kernel.org
+References: <20220131113743.52265-1-ulf.hansson@linaro.org>
+From:   Dmitry Osipenko <digetx@gmail.com>
+In-Reply-To: <20220131113743.52265-1-ulf.hansson@linaro.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This converts kernel/module-sections.c to use asm/insn.h to generate
-the instructions in the plt entries.
+31.01.2022 14:37, Ulf Hansson пишет:
+> A PM domain managed by genpd may support multiple idlestates. During
+> genpd_power_off() a genpd governor may be asked to select one of the
+> idlestates based upon the dev PM QoS constraints, for example.
+> 
+> However, there is a problem with the behaviour around this in genpd. More
+> precisely, a parent-domain is allowed to be powered off, no matter of what
+> idlestate that has been selected for the child-domain.
+> 
+> So far, we have not received any reports about errors, possibly because
+> there might not be platform with this hierarchical configuration, yet.
+> Nevertheless, it seems reasonable to change the behaviour into preventing
+> the parent-domain from being powered off, unless the deepest idlestate has
+> been selected for the child-domain, so let's do that.
+> 
+> Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+> ---
+>  drivers/base/power/domain.c | 18 ++++++++++++++++++
+>  1 file changed, 18 insertions(+)
+> 
+> diff --git a/drivers/base/power/domain.c b/drivers/base/power/domain.c
+> index 5db704f02e71..7f97c5cabdc2 100644
+> --- a/drivers/base/power/domain.c
+> +++ b/drivers/base/power/domain.c
+> @@ -636,6 +636,17 @@ static int genpd_power_off(struct generic_pm_domain *genpd, bool one_dev_on,
+>  			atomic_read(&genpd->sd_count) > 0)
+>  		return -EBUSY;
+>  
+> +	/*
+> +	 * The children must be in their deepest states to allow the parent to
+> +	 * be powered off. Note that, there's no need for additional locking, as
+> +	 * powering on a child, requires the parent's lock to be acquired first.
+> +	 */
+> +	list_for_each_entry(link, &genpd->parent_links, parent_node) {
+> +		struct generic_pm_domain *child = link->child;
+> +		if (child->state_idx < child->state_count - 1)
+> +			return -EBUSY;
+> +	}
+> +
+>  	list_for_each_entry(pdd, &genpd->dev_list, list_node) {
+>  		enum pm_qos_flags_status stat;
+>  
+> @@ -1073,6 +1084,13 @@ static void genpd_sync_power_off(struct generic_pm_domain *genpd, bool use_lock,
+>  	    || atomic_read(&genpd->sd_count) > 0)
+>  		return;
+>  
+> +	/* Check that the children are in their deepest state. */
+> +	list_for_each_entry(link, &genpd->parent_links, parent_node) {
+> +		struct generic_pm_domain *child = link->child;
+> +		if (child->state_idx < child->state_count - 1)
+> +			return;
+> +	}
+> +
+>  	/* Choose the deepest state when suspending */
+>  	genpd->state_idx = genpd->state_count - 1;
+>  	if (_genpd_power_off(genpd, false))
 
-Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
----
- arch/riscv/kernel/module-sections.c | 27 ++++-----------------------
- 1 file changed, 4 insertions(+), 23 deletions(-)
+Hello Ulf,
 
-diff --git a/arch/riscv/kernel/module-sections.c b/arch/riscv/kernel/module-sections.c
-index 39d4ac681c2a..cb73399c3603 100644
---- a/arch/riscv/kernel/module-sections.c
-+++ b/arch/riscv/kernel/module-sections.c
-@@ -9,6 +9,7 @@
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/moduleloader.h>
-+#include <asm/insn.h>
- 
- struct got_entry {
- 	unsigned long symbol_addr;	/* the real variable address */
-@@ -61,36 +62,16 @@ struct plt_entry {
- 	u32 insn_jr;		/* jr    t1                            */
- };
- 
--#define OPC_AUIPC  0x0017
--#define OPC_LD     0x3003
--#define OPC_JALR   0x0067
--#define REG_T0     0x5
--#define REG_T1     0x6
--
- static struct plt_entry emit_plt_entry(unsigned long val,
- 				       unsigned long plt,
- 				       unsigned long got_plt)
- {
--	/*
--	 * U-Type encoding:
--	 * +------------+----------+----------+
--	 * | imm[31:12] | rd[11:7] | opc[6:0] |
--	 * +------------+----------+----------+
--	 *
--	 * I-Type encoding:
--	 * +------------+------------+--------+----------+----------+
--	 * | imm[31:20] | rs1[19:15] | funct3 | rd[11:7] | opc[6:0] |
--	 * +------------+------------+--------+----------+----------+
--	 *
--	 */
- 	unsigned long offset = got_plt - plt;
--	u32 hi20 = (offset + 0x800) & 0xfffff000;
--	u32 lo12 = (offset - hi20);
- 
- 	return (struct plt_entry) {
--		OPC_AUIPC | (REG_T0 << 7) | hi20,
--		OPC_LD | (lo12 << 20) | (REG_T0 << 15) | (REG_T1 << 7),
--		OPC_JALR | (REG_T1 << 15)
-+		RISCV_INSN_AUIPC | RISCV_INSN_RD_T0 | riscv_insn_u_imm(offset + 0x800),
-+		RISCV_INSN_LD    | RISCV_INSN_RD_T1 | RISCV_INSN_RS1_T0 | riscv_insn_i_imm(offset),
-+		RISCV_INSN_JALR  | RISCV_INSN_RS1_T1,
- 	};
- }
- 
--- 
-2.35.1
-
+Is this needed by a concrete SoC? It needs to be clarified in the commit
+message, otherwise looks like this patch wasn't tested and it's unclear
+whether this change is really needed.
