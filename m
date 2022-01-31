@@ -2,114 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 577DEC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2140C41535
 	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379380AbiAaLaO (ORCPT
+        id S1379427AbiAaLaS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:30:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47044 "EHLO
+        Mon, 31 Jan 2022 06:30:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378697AbiAaLUg (ORCPT
+        with ESMTP id S1378705AbiAaLUh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:20:36 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FA63C0604E5;
-        Mon, 31 Jan 2022 03:13:17 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A1B0C6114F;
-        Mon, 31 Jan 2022 11:13:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8334DC340E8;
-        Mon, 31 Jan 2022 11:13:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627596;
-        bh=2XoMdHyhCWacHgDF8xxYDHMPmrEmzbHUGPWlSLAPgFY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ag9AICwFUjSz1txX8z4SzFK7cJ0bk+iISZRdfidyqkvgkVcKfwe3HfXU6dlNEff4G
-         59oh5OO9S/apxV7ZnhrFfLuqEjzJnkfpvBg9Gc3SUf4qflYABvrMyh14E9YpG9D3+N
-         TsvHMuFnsCBoswrvvBbpc7U0oeTICSC/jnSSo9KU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Quentin Perret <qperret@google.com>,
-        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 102/171] KVM: arm64: pkvm: Use the mm_ops indirection for cache maintenance
-Date:   Mon, 31 Jan 2022 11:56:07 +0100
-Message-Id: <20220131105233.502358533@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
-References: <20220131105229.959216821@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 31 Jan 2022 06:20:37 -0500
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E9BAC0604FF
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 03:13:30 -0800 (PST)
+Received: by mail-yb1-xb34.google.com with SMTP id v186so39370124ybg.1
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 03:13:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=U0Pw1BfqGZvVWUtyLjOHuhJwlMA1Use2yqcwgUkQnwE=;
+        b=F/ECo8ebBP3ogDbxQiY4hhui7DC5U/UMWgo9Zxz2mCrE3YKYlRwsn8i6WMbi1ujwL+
+         F6RWtT6HBlFzfySG6LZv1PSv0vwGis3HZwYSpSS9Hc29Ez3WcAtHPDp0M0EniYkeFuQP
+         vMA+VOZ1Ign8qZkpcj+5tqUlZrYNyhl+lbsyQ3EgkkMF+kIkkfA4B52aHxnb2frXX0a7
+         Hf5Jj2Ip5PmM4TVjHH23jDBAmknumfzIEPYA2ny7XV1pVboUBrBGG0Zl6M1/y8c1kbyM
+         NyLWqgGFxGTvLnD6/N2khaA9Rqn+cJcUH8dVK5IIzrye3eEHB5fbTpdShnNmFP/AZ8Ef
+         Xb5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=U0Pw1BfqGZvVWUtyLjOHuhJwlMA1Use2yqcwgUkQnwE=;
+        b=ZB/ULGJzj1c1JDC5/ZuSTh1bM9xRldl6TZ1z3bdAN6ceCQdrMeLKTr+tCfzlbeUaVc
+         C0TL4Ds/j0eZrxWCtck2vuxdL8BmSNjJW/tR8L5xutdnRPJ+8AiIWMTi8B6fIKiZbcCb
+         no3Rr2QT82yXfKuwicU23+NYJvZ7+XE5PyY2Vl2joeCMDe8Tt9ZO0vrOL75Y7fBEaMv6
+         Sggme1Ewds352vRvNnCpUGBILYRLMnfOXWpqcXpIh4wh10WiyNOzDd2DfzEVURqS6DHO
+         QCAvJVsqirw5jkdAHNIFOiJhvctg0xxyjk8F4o7Up3ckf/x6GW3VYXzEMRnusxYUS5fh
+         VT9w==
+X-Gm-Message-State: AOAM532J5Udlrhet/JsuzFTQa6F0rJOC2o8EpbE2jnwj5UGJNpgpnnaI
+        chcnlXPydCnBu/zSaEYBktGBtlrqy6EgSaQi7kfAUg==
+X-Google-Smtp-Source: ABdhPJwnjcbKcmXqxkDyE6M/D5slJFtoF8e/5OEa0RJfRa4THHqn7fj5ZGK9wLiBaPNsXouP0qEB6ly0WbzNmpDFVXY=
+X-Received: by 2002:a25:5143:: with SMTP id f64mr30614251ybb.520.1643627609604;
+ Mon, 31 Jan 2022 03:13:29 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220130145116.88406-1-nbd@nbd.name> <20220130145116.88406-13-nbd@nbd.name>
+In-Reply-To: <20220130145116.88406-13-nbd@nbd.name>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Mon, 31 Jan 2022 12:13:18 +0100
+Message-ID: <CACRpkdY38VWT_95jz25NTNtsqzkkVsSONNLswQ35JApT0HUXXQ@mail.gmail.com>
+Subject: Re: [PATCH v9 12/13] gpio: Add support for Airoha EN7523 GPIO controller
+To:     Felix Fietkau <nbd@nbd.name>, Bartosz Golaszewski <brgl@bgdev.pl>
+Cc:     soc@kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, john@phrozen.org,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <maz@kernel.org>
+On Sun, Jan 30, 2022 at 3:54 PM Felix Fietkau <nbd@nbd.name> wrote:
 
-[ Upstream commit 094d00f8ca58c5d29b25e23b4daaed1ff1f13b41 ]
+> From: John Crispin <john@phrozen.org>
+>
+> Airoha's GPIO controller on their ARM EN7523 SoCs consists of two banks of 32
+> GPIOs. Each instance in DT is for a single bank.
+>
+> Acked-by: Bartosz Golaszewski <brgl@bgdev.pl>
+> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+> Signed-off-by: John Crispin <john@phrozen.org>
+> Signed-off-by: Felix Fietkau <nbd@nbd.name>
 
-CMOs issued from EL2 cannot directly use the kernel helpers,
-as EL2 doesn't have a mapping of the guest pages. Oops.
+This one and patch 11 with the bindings does not seem to have any
+build dependencies on the rest of the patches at all.
 
-Instead, use the mm_ops indirection to use helpers that will
-perform a mapping at EL2 and allow the CMO to be effective.
+What about Bartosz just apply these two to the GPIO tree so we
+have less stuff to iterate?
 
-Fixes: 25aa28691bb9 ("KVM: arm64: Move guest CMOs to the fault handlers")
-Reviewed-by: Quentin Perret <qperret@google.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220114125038.1336965-1-maz@kernel.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/arm64/kvm/hyp/pgtable.c | 18 ++++++------------
- 1 file changed, 6 insertions(+), 12 deletions(-)
-
-diff --git a/arch/arm64/kvm/hyp/pgtable.c b/arch/arm64/kvm/hyp/pgtable.c
-index f8ceebe4982eb..4c77ff556f0ae 100644
---- a/arch/arm64/kvm/hyp/pgtable.c
-+++ b/arch/arm64/kvm/hyp/pgtable.c
-@@ -921,13 +921,9 @@ static int stage2_unmap_walker(u64 addr, u64 end, u32 level, kvm_pte_t *ptep,
- 	 */
- 	stage2_put_pte(ptep, mmu, addr, level, mm_ops);
- 
--	if (need_flush) {
--		kvm_pte_t *pte_follow = kvm_pte_follow(pte, mm_ops);
--
--		dcache_clean_inval_poc((unsigned long)pte_follow,
--				    (unsigned long)pte_follow +
--					    kvm_granule_size(level));
--	}
-+	if (need_flush && mm_ops->dcache_clean_inval_poc)
-+		mm_ops->dcache_clean_inval_poc(kvm_pte_follow(pte, mm_ops),
-+					       kvm_granule_size(level));
- 
- 	if (childp)
- 		mm_ops->put_page(childp);
-@@ -1089,15 +1085,13 @@ static int stage2_flush_walker(u64 addr, u64 end, u32 level, kvm_pte_t *ptep,
- 	struct kvm_pgtable *pgt = arg;
- 	struct kvm_pgtable_mm_ops *mm_ops = pgt->mm_ops;
- 	kvm_pte_t pte = *ptep;
--	kvm_pte_t *pte_follow;
- 
- 	if (!kvm_pte_valid(pte) || !stage2_pte_cacheable(pgt, pte))
- 		return 0;
- 
--	pte_follow = kvm_pte_follow(pte, mm_ops);
--	dcache_clean_inval_poc((unsigned long)pte_follow,
--			    (unsigned long)pte_follow +
--				    kvm_granule_size(level));
-+	if (mm_ops->dcache_clean_inval_poc)
-+		mm_ops->dcache_clean_inval_poc(kvm_pte_follow(pte, mm_ops),
-+					       kvm_granule_size(level));
- 	return 0;
- }
- 
--- 
-2.34.1
-
-
-
+Yours,
+Linus Walleij
