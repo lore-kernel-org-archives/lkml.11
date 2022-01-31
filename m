@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7CAAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:12:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E384C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:12:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376362AbiAaLMd (ORCPT
+        id S1376394AbiAaLMh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:12:33 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:56974 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376667AbiAaLIv (ORCPT
+        Mon, 31 Jan 2022 06:12:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44940 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1376816AbiAaLJJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:08:51 -0500
+        Mon, 31 Jan 2022 06:09:09 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F0D3C061A27;
+        Mon, 31 Jan 2022 03:05:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1455AB82A4E;
-        Mon, 31 Jan 2022 11:08:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62E17C340E8;
-        Mon, 31 Jan 2022 11:08:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 202B260FB5;
+        Mon, 31 Jan 2022 11:05:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03DB3C340EF;
+        Mon, 31 Jan 2022 11:05:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627328;
-        bh=Ptmp80Y5+Ak9glksGMpn04O9rsKaxAULBmUBfj8gucw=;
+        s=korg; t=1643627135;
+        bh=rPxomZGLw2T0AeFweigh+gNKt3+WX6XmgfGi+QBKnqY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z8FIQfnCqUgbi4QHAiSRIXEvZj/RwOLQ4+JOS3bOmsxQ7ZLejHVeqmQLO3+VnAcDN
-         4ghAjzjgZ8T1Ss6/+7N1So5ECx7doAgOg/gTjbgW4gLcrJkrfykQsNafSr9yIITOSO
-         mV+pPQYnr+DqIH0Tw7HNL6q3FpsW6WqVjNh384Hw=
+        b=kW1OVtmxFxyqkLQP6VVYZKwHTEcGd5II8dTE6mV6EJLuVhjIWEHRTsUCcLJu/0wN5
+         +vJtSo7E3ZX63QtoKj05Oq24nwASYc8IpnR1FIUau/KCO8nuCOvxcLUaerD0IzM3yG
+         LiTJaxrTFbAKUvOynWZ7CSVXpTZeoJmeUqI5RYFs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Erwan Le Ray <erwan.leray@foss.st.com>,
-        Valentin Caron <valentin.caron@foss.st.com>
-Subject: [PATCH 5.15 048/171] serial: stm32: fix software flow control transfer
-Date:   Mon, 31 Jan 2022 11:55:13 +0100
-Message-Id: <20220131105231.650554206@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 086/100] drm/msm/hdmi: Fix missing put_device() call in msm_hdmi_get_phy
+Date:   Mon, 31 Jan 2022 11:56:47 +0100
+Message-Id: <20220131105223.346360687@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
-References: <20220131105229.959216821@linuxfoundation.org>
+In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
+References: <20220131105220.424085452@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,34 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Valentin Caron <valentin.caron@foss.st.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 037b91ec7729524107982e36ec4b40f9b174f7a2 upstream.
+[ Upstream commit 774fe0cd838d1b1419d41ab4ea0613c80d4ecbd7 ]
 
-x_char is ignored by stm32_usart_start_tx() when xmit buffer is empty.
+The reference taken by 'of_find_device_by_node()' must be released when
+not needed anymore.
+Add the corresponding 'put_device()' in the error handling path.
 
-Fix start_tx condition to allow x_char to be sent.
-
-Fixes: 48a6092fb41f ("serial: stm32-usart: Add STM32 USART Driver")
-Cc: stable <stable@vger.kernel.org>
-Signed-off-by: Erwan Le Ray <erwan.leray@foss.st.com>
-Signed-off-by: Valentin Caron <valentin.caron@foss.st.com>
-Link: https://lore.kernel.org/r/20220111164441.6178-3-valentin.caron@foss.st.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: e00012b256d4 ("drm/msm/hdmi: Make HDMI core get its PHY")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Link: https://lore.kernel.org/r/20220107085026.23831-1-linmq006@gmail.com
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/stm32-usart.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/msm/hdmi/hdmi.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
---- a/drivers/tty/serial/stm32-usart.c
-+++ b/drivers/tty/serial/stm32-usart.c
-@@ -575,7 +575,7 @@ static void stm32_usart_start_tx(struct
- 	struct serial_rs485 *rs485conf = &port->rs485;
- 	struct circ_buf *xmit = &port->state->xmit;
+diff --git a/drivers/gpu/drm/msm/hdmi/hdmi.c b/drivers/gpu/drm/msm/hdmi/hdmi.c
+index 737453b6e5966..94f948ef279d1 100644
+--- a/drivers/gpu/drm/msm/hdmi/hdmi.c
++++ b/drivers/gpu/drm/msm/hdmi/hdmi.c
+@@ -97,10 +97,15 @@ static int msm_hdmi_get_phy(struct hdmi *hdmi)
  
--	if (uart_circ_empty(xmit))
-+	if (uart_circ_empty(xmit) && !port->x_char)
- 		return;
+ 	of_node_put(phy_node);
  
- 	if (rs485conf->flags & SER_RS485_ENABLED) {
+-	if (!phy_pdev || !hdmi->phy) {
++	if (!phy_pdev) {
+ 		DRM_DEV_ERROR(&pdev->dev, "phy driver is not ready\n");
+ 		return -EPROBE_DEFER;
+ 	}
++	if (!hdmi->phy) {
++		DRM_DEV_ERROR(&pdev->dev, "phy driver is not ready\n");
++		put_device(&phy_pdev->dev);
++		return -EPROBE_DEFER;
++	}
+ 
+ 	hdmi->phy_dev = get_device(&phy_pdev->dev);
+ 
+-- 
+2.34.1
+
 
 
