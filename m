@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F1B5C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:10:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B2B8C4167E
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:10:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376305AbiAaLIK (ORCPT
+        id S1376373AbiAaLIU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:08:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43366 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359118AbiAaLEh (ORCPT
+        Mon, 31 Jan 2022 06:08:20 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:39418 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359278AbiAaLEy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:04:37 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B41EC0613A4;
-        Mon, 31 Jan 2022 03:03:58 -0800 (PST)
+        Mon, 31 Jan 2022 06:04:54 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ECC0AB82A69;
-        Mon, 31 Jan 2022 11:03:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0809AC340E8;
-        Mon, 31 Jan 2022 11:03:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C413E60EFE;
+        Mon, 31 Jan 2022 11:04:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BDBEC36AE7;
+        Mon, 31 Jan 2022 11:04:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627035;
-        bh=7E9ERDVZttx1BEkbi9cB6zU2U3oaHnyBYoXJvVBibGo=;
+        s=korg; t=1643627093;
+        bh=bh57M7kPGJHMCFswNDB0rtNduQxQs1+ujCn7yAjpzDo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iPNCP81vSuCz/XLEFU5+4FtLI3B9Qtl6NTO/RthxvP9HovuogNZ/Lv6Hb4hP5KtEg
-         Rxursf1dPB2FjT9X87pUP/QX7T1pytUjlAszfUm1VMIaF6YtJPflj16DKTr8Eo0iyN
-         qFNfK40YGVjnt77sXbuU60Bpt2IhneY7861TD5MI=
+        b=i4bIEQcZxiU+WeYUkqEOFVCW+TeNaWC4IxvR0T6yGaZRZfEMWJJrpzXOo2ez+xpM6
+         T74tK1wElVGR2hCoJh8JqUOn6oBF3YQMnduAxXEbKIL6rMxtLGQjwXN70SpPcpiY5m
+         ClI5rw6hAJGPn6xpOzuhyCEO9bmONk1t5PmQcgyI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH 5.10 054/100] hwmon: (lm90) Mark alert as broken for MAX6646/6647/6649
-Date:   Mon, 31 Jan 2022 11:56:15 +0100
-Message-Id: <20220131105222.254828909@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.10 039/100] powerpc/32s: Allocate one 256k IBAT instead of two consecutives 128k IBATs
+Date:   Mon, 31 Jan 2022 11:56:00 +0100
+Message-Id: <20220131105221.758203839@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
 References: <20220131105220.424085452@linuxfoundation.org>
@@ -48,31 +47,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guenter Roeck <linux@roeck-us.net>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-commit f614629f9c1080dcc844a8430e3fb4c37ebbf05d upstream.
+commit 37eb7ca91b692e8e49e7dd50158349a6c8fb5b09 upstream.
 
-Experiments with MAX6646 and MAX6648 show that the alert function of those
-chips is broken, similar to other chips supported by the lm90 driver.
-Mark it accordingly.
+Today we have the following IBATs allocated:
 
-Fixes: 4667bcb8d8fc ("hwmon: (lm90) Introduce chip parameter structure")
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+	---[ Instruction Block Address Translation ]---
+	0: 0xc0000000-0xc03fffff 0x00000000         4M Kernel   x     m
+	1: 0xc0400000-0xc05fffff 0x00400000         2M Kernel   x     m
+	2: 0xc0600000-0xc06fffff 0x00600000         1M Kernel   x     m
+	3: 0xc0700000-0xc077ffff 0x00700000       512K Kernel   x     m
+	4: 0xc0780000-0xc079ffff 0x00780000       128K Kernel   x     m
+	5: 0xc07a0000-0xc07bffff 0x007a0000       128K Kernel   x     m
+	6:         -
+	7:         -
+
+The two 128K should be a single 256K instead.
+
+When _etext is not aligned to 128Kbytes, the system will allocate
+all necessary BATs to the lower 128Kbytes boundary, then allocate
+an additional 128Kbytes BAT for the remaining block.
+
+Instead, align the top to 128Kbytes so that the function directly
+allocates a 256Kbytes last block:
+
+	---[ Instruction Block Address Translation ]---
+	0: 0xc0000000-0xc03fffff 0x00000000         4M Kernel   x     m
+	1: 0xc0400000-0xc05fffff 0x00400000         2M Kernel   x     m
+	2: 0xc0600000-0xc06fffff 0x00600000         1M Kernel   x     m
+	3: 0xc0700000-0xc077ffff 0x00700000       512K Kernel   x     m
+	4: 0xc0780000-0xc07bffff 0x00780000       256K Kernel   x     m
+	5:         -
+	6:         -
+	7:         -
+
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/ab58b296832b0ec650e2203200e060adbcb2677d.1637930421.git.christophe.leroy@csgroup.eu
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hwmon/lm90.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/powerpc/mm/book3s32/mmu.c |    5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
---- a/drivers/hwmon/lm90.c
-+++ b/drivers/hwmon/lm90.c
-@@ -394,7 +394,7 @@ static const struct lm90_params lm90_par
- 		.max_convrate = 9,
- 	},
- 	[max6646] = {
--		.flags = LM90_HAVE_CRIT,
-+		.flags = LM90_HAVE_CRIT | LM90_HAVE_BROKEN_ALERT,
- 		.alert_alarms = 0x7c,
- 		.max_convrate = 6,
- 		.reg_local_ext = MAX6657_REG_R_LOCAL_TEMPL,
+--- a/arch/powerpc/mm/book3s32/mmu.c
++++ b/arch/powerpc/mm/book3s32/mmu.c
+@@ -201,18 +201,17 @@ void mmu_mark_initmem_nx(void)
+ 	int nb = mmu_has_feature(MMU_FTR_USE_HIGH_BATS) ? 8 : 4;
+ 	int i;
+ 	unsigned long base = (unsigned long)_stext - PAGE_OFFSET;
+-	unsigned long top = (unsigned long)_etext - PAGE_OFFSET;
++	unsigned long top = ALIGN((unsigned long)_etext - PAGE_OFFSET, SZ_128K);
+ 	unsigned long border = (unsigned long)__init_begin - PAGE_OFFSET;
+ 	unsigned long size;
+ 
+-	for (i = 0; i < nb - 1 && base < top && top - base > (128 << 10);) {
++	for (i = 0; i < nb - 1 && base < top;) {
+ 		size = block_size(base, top);
+ 		setibat(i++, PAGE_OFFSET + base, base, size, PAGE_KERNEL_TEXT);
+ 		base += size;
+ 	}
+ 	if (base < top) {
+ 		size = block_size(base, top);
+-		size = max(size, 128UL << 10);
+ 		if ((top - base) > size) {
+ 			size <<= 1;
+ 			if (strict_kernel_rwx_enabled() && base + size > border)
 
 
