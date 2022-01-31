@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D518CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:22:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B080BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:22:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377011AbiAaLWV (ORCPT
+        id S1377035AbiAaLWY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:22:21 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:45592 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359717AbiAaLMB (ORCPT
+        Mon, 31 Jan 2022 06:22:24 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:59942 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359858AbiAaLMR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:12:01 -0500
+        Mon, 31 Jan 2022 06:12:17 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EFF8061120;
-        Mon, 31 Jan 2022 11:11:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF5C1C340E8;
-        Mon, 31 Jan 2022 11:11:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EE33EB82A5D;
+        Mon, 31 Jan 2022 11:12:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F781C340EE;
+        Mon, 31 Jan 2022 11:12:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627519;
-        bh=RUXOglG/eM0aDadg+wbP1jBITM6bw4xQ1x3s9eMpf/s=;
+        s=korg; t=1643627534;
+        bh=ewX69j8ofpIkICtrjA96velRbMHtZQSv5JOQg+8Owmw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h4xjsSxN37ej1Mya2M4S/JvVJZuMNEEhTXyQTF8LfFA/mCg2TbFWaIzDE/T2Wl+SH
-         KJqdgghEe0mZq8Lsc1nphu+wigI7+VcimNehytptPBj4f5jhetSCH/kKldgCApUFUg
-         UFD4Qeli6Vt3frwqSGdIcronAP7zr2oO71vK0Qi8=
+        b=FyZlwo0TF+quGZzXVwQFjh15ticbXohhNzGm94WKGFrjnr4XcNTERaPLpU982Lc3U
+         b5lL9e4koOPucMxx+6YHa/UuACYT4sgC/jqU88wcIZw0NnzyfyYgbaeaLfE1XXOaNn
+         MLUl9MJ3hamppJqNHt3Bd8wLjlVSPZpSM2xDJVVw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 111/171] net: stmmac: dwmac-visconti: Fix bit definitions for ETHER_CLK_SEL
-Date:   Mon, 31 Jan 2022 11:56:16 +0100
-Message-Id: <20220131105233.788072043@linuxfoundation.org>
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Subject: [PATCH 5.15 098/171] drm/msm/dsi: invalid parameter check in msm_dsi_phy_enable
+Date:   Mon, 31 Jan 2022 11:56:03 +0100
+Message-Id: <20220131105233.355835390@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
 References: <20220131105229.959216821@linuxfoundation.org>
@@ -49,60 +47,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
+From: José Expósito <jose.exposito89@gmail.com>
 
-[ Upstream commit 1ba1a4a90fa416a6f389206416c5f488cf8b1543 ]
+commit 5e761a2287234bc402ba7ef07129f5103bcd775c upstream.
 
-just 0 should be used to represent cleared bits
+The function performs a check on the "phy" input parameter, however, it
+is used before the check.
 
-* ETHER_CLK_SEL_DIV_SEL_20
-* ETHER_CLK_SEL_TX_CLK_EXT_SEL_IN
-* ETHER_CLK_SEL_RX_CLK_EXT_SEL_IN
-* ETHER_CLK_SEL_TX_CLK_O_TX_I
-* ETHER_CLK_SEL_RMII_CLK_SEL_IN
+Initialize the "dev" variable after the sanity check to avoid a possible
+NULL pointer dereference.
 
-Fixes: b38dd98ff8d0 ("net: stmmac: Add Toshiba Visconti SoCs glue driver")
-Signed-off-by: Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
-Reviewed-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 5c8290284402b ("drm/msm/dsi: Split PHY drivers to separate files")
+Addresses-Coverity-ID: 1493860 ("Null pointer dereference")
+Signed-off-by: José Expósito <jose.exposito89@gmail.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Link: https://lore.kernel.org/r/20220116181844.7400-1-jose.exposito89@gmail.com
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/gpu/drm/msm/dsi/phy/dsi_phy.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c
-index fac788718c045..1c599a005aab6 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c
-@@ -22,21 +22,21 @@
- #define ETHER_CLK_SEL_RMII_CLK_EN BIT(2)
- #define ETHER_CLK_SEL_RMII_CLK_RST BIT(3)
- #define ETHER_CLK_SEL_DIV_SEL_2 BIT(4)
--#define ETHER_CLK_SEL_DIV_SEL_20 BIT(0)
-+#define ETHER_CLK_SEL_DIV_SEL_20 0
- #define ETHER_CLK_SEL_FREQ_SEL_125M	(BIT(9) | BIT(8))
- #define ETHER_CLK_SEL_FREQ_SEL_50M	BIT(9)
- #define ETHER_CLK_SEL_FREQ_SEL_25M	BIT(8)
- #define ETHER_CLK_SEL_FREQ_SEL_2P5M	0
--#define ETHER_CLK_SEL_TX_CLK_EXT_SEL_IN BIT(0)
-+#define ETHER_CLK_SEL_TX_CLK_EXT_SEL_IN 0
- #define ETHER_CLK_SEL_TX_CLK_EXT_SEL_TXC BIT(10)
- #define ETHER_CLK_SEL_TX_CLK_EXT_SEL_DIV BIT(11)
--#define ETHER_CLK_SEL_RX_CLK_EXT_SEL_IN  BIT(0)
-+#define ETHER_CLK_SEL_RX_CLK_EXT_SEL_IN  0
- #define ETHER_CLK_SEL_RX_CLK_EXT_SEL_RXC BIT(12)
- #define ETHER_CLK_SEL_RX_CLK_EXT_SEL_DIV BIT(13)
--#define ETHER_CLK_SEL_TX_CLK_O_TX_I	 BIT(0)
-+#define ETHER_CLK_SEL_TX_CLK_O_TX_I	 0
- #define ETHER_CLK_SEL_TX_CLK_O_RMII_I	 BIT(14)
- #define ETHER_CLK_SEL_TX_O_E_N_IN	 BIT(15)
--#define ETHER_CLK_SEL_RMII_CLK_SEL_IN	 BIT(0)
-+#define ETHER_CLK_SEL_RMII_CLK_SEL_IN	 0
- #define ETHER_CLK_SEL_RMII_CLK_SEL_RX_C	 BIT(16)
+--- a/drivers/gpu/drm/msm/dsi/phy/dsi_phy.c
++++ b/drivers/gpu/drm/msm/dsi/phy/dsi_phy.c
+@@ -806,12 +806,14 @@ int msm_dsi_phy_enable(struct msm_dsi_ph
+ 			struct msm_dsi_phy_clk_request *clk_req,
+ 			struct msm_dsi_phy_shared_timings *shared_timings)
+ {
+-	struct device *dev = &phy->pdev->dev;
++	struct device *dev;
+ 	int ret;
  
- #define ETHER_CLK_SEL_RX_TX_CLK_EN (ETHER_CLK_SEL_RX_CLK_EN | ETHER_CLK_SEL_TX_CLK_EN)
--- 
-2.34.1
-
+ 	if (!phy || !phy->cfg->ops.enable)
+ 		return -EINVAL;
+ 
++	dev = &phy->pdev->dev;
++
+ 	ret = dsi_phy_enable_resource(phy);
+ 	if (ret) {
+ 		DRM_DEV_ERROR(dev, "%s: resource enable failed, %d\n",
 
 
