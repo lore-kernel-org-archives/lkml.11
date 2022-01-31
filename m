@@ -2,90 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D14EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 17:25:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D072C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 17:25:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380983AbiAaRZ1 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 12:25:27 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:60034 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380909AbiAaRZJ (ORCPT
+        id S229665AbiAaRZk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 31 Jan 2022 12:25:40 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:53583 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1380922AbiAaRZM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 12:25:09 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 31 Jan 2022 12:25:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643649911;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=PaMPeaT7bqTywU/6EXOdBYInz5ZUKSgh51n5zqNu8us=;
+        b=aHAxZStWqkUrjPvqX9Txg0mP8o1eBsmhBW2JRC1t4oslin+hOdgyTWy1D8FleXk6Dbd266
+        4kVIx3hSwNWx5PYGbIoOzdEYImRiuZeOsnoATbb3+pHKuUM93OgquhCwwRHesLn1Q9s6ou
+        aUwp4c5amAuDRFrehZLoODKvrdDoODY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-558-WevAcsvfPmSx_CbH-QId1w-1; Mon, 31 Jan 2022 12:25:09 -0500
+X-MC-Unique: WevAcsvfPmSx_CbH-QId1w-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 36582B82B94;
-        Mon, 31 Jan 2022 17:25:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA4EDC340EE;
-        Mon, 31 Jan 2022 17:25:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643649906;
-        bh=OewE5JbYneEYqVbwKE8LUSsySUFFmPDwcDvIUETecjU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dhOdOdUGTTpMKPdSmzMnAxR7Eet2GJJ7ftucoDzI5Wr5kk+8Y7vfrUsHeCd71H60n
-         ILipdghogWpb4wwv9Kw6QdYY9z5tybooh7maJZct/9oAKeDoSEZ8V+ztqSr6O1a74r
-         LPD90pbNWwigWVerD1xYAL0WmhoR5DIb7nAgDEKAgMCnKW1crQLApmPzDOL3IfUjlT
-         UlVaxDux6/iatX05p8i9qsz8J/z9FDlyQbj+sBUwk/gWFPl+wqiefUGcqa0FPMrYtP
-         ot/GlyBWxh8NO2nBVj6gr3f6qnPAYt3ZJf8FK4QFLf34ZjXjV2LTTfpC5wV2GA/mRY
-         TePGb0SXKyxUQ==
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Stephen Boyd <sboyd@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        David Collins <quic_collinsd@quicinc.com>
-Cc:     linux-arm-msm@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        David Dai <daidavid1@codeaurora.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/3] dt-bindings: spmi: Add qcom,bus-id
-Date:   Mon, 31 Jan 2022 22:54:49 +0530
-Message-Id: <20220131172450.2528065-3-vkoul@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220131172450.2528065-1-vkoul@kernel.org>
-References: <20220131172450.2528065-1-vkoul@kernel.org>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3450793921;
+        Mon, 31 Jan 2022 17:25:07 +0000 (UTC)
+Received: from [10.22.16.244] (unknown [10.22.16.244])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id BD20F6E202;
+        Mon, 31 Jan 2022 17:25:05 +0000 (UTC)
+Message-ID: <9abc9cb8-8734-90b0-c495-8df89c7bb579@redhat.com>
+Date:   Mon, 31 Jan 2022 12:25:05 -0500
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH 1/3] mm, memcg: Don't put offlined memcg into local stock
+Content-Language: en-US
+To:     Roman Gushchin <guro@fb.com>
+Cc:     Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Vladimir Davydov <vdavydov.dev@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Vlastimil Babka <vbabka@suse.cz>, linux-kernel@vger.kernel.org,
+        cgroups@vger.kernel.org, linux-mm@kvack.org,
+        Shakeel Butt <shakeelb@google.com>,
+        Muchun Song <songmuchun@bytedance.com>
+References: <20211001190938.14050-1-longman@redhat.com>
+ <20211001190938.14050-2-longman@redhat.com>
+ <YVefHLo1+6lgw3aB@carbon.dhcp.thefacebook.com>
+ <f7026256-4086-6632-569e-5b13594cb3fc@redhat.com>
+ <YfgV2iiaVlR0hozD@carbon.dhcp.thefacebook.com>
+ <95ba1931-e9c9-45c3-b080-d28f2ad368a7@redhat.com>
+ <c950a93d-bb70-9a97-dabe-a1d58d755dad@redhat.com>
+ <YfgaIcSJhqEOnh65@carbon.dhcp.thefacebook.com>
+From:   Waiman Long <longman@redhat.com>
+In-Reply-To: <YfgaIcSJhqEOnh65@carbon.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PMIC arbiter version 7 and beyond we need to define if we are using
-primary or secondary bus, so add a new property of qcom,bus-id
+On 1/31/22 12:19, Roman Gushchin wrote:
+> On Mon, Jan 31, 2022 at 12:15:19PM -0500, Waiman Long wrote:
+>> On 1/31/22 12:09, Waiman Long wrote:
+>>> On 1/31/22 12:01, Roman Gushchin wrote:
+>>>> On Sun, Jan 30, 2022 at 10:55:56PM -0500, Waiman Long wrote:
+>>>>> On 10/1/21 19:51, Roman Gushchin wrote:
+>>>>>> On Fri, Oct 01, 2021 at 03:09:36PM -0400, Waiman Long wrote:
+>>>>>>> When freeing a page associated with an offlined memcg, refill_stock()
+>>>>>>> will put it into local stock delaying its demise until another memcg
+>>>>>>> comes in to take its place in the stock. To avoid that, we now check
+>>>>>>> for offlined memcg and go directly in this case to the slowpath for
+>>>>>>> the uncharge via the repurposed cancel_charge() function.
+>>>>>> Hi Waiman!
+>>>>>>
+>>>>>> I'm afraid it can make a cleanup of a dying cgroup slower: for every
+>>>>>> released page we'll potentially traverse the whole cgroup tree and
+>>>>>> decrease atomic page counters.
+>>>>>>
+>>>>>> I'm not sure I understand the benefits we get from this change which
+>>>>>> do justify the slowdown on the cleanup path.
+>>>>>>
+>>>>>> Thanks!
+>>>>> I was notified of a lockdep splat that this patch may help to prevent.
+>>>> Would you mind to test this patch:
+>>>> https://www.spinics.net/lists/cgroups/msg31244.html  ?
+>>>>
+>>>> It should address this dependency.
+>>> Thanks for the pointer. I believe that your patch should be able to
+>>> address this circular locking dependency.
+>>>
+>>> Feel free to add my
+>>>
+>>> Reviewed-by: Waiman Long <longman@redhat.com>
+>> BTW, have you posted it to lkml? If not, would you mind doing so?
+> Not yet.
+>
+> I was waiting for Alexander to confirm that it resolves the originally reported
+> issue. I just pinged him, will wait for tomorrow and post the patch in any case.
+>
+> Thanks!
 
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
----
- .../devicetree/bindings/spmi/qcom,spmi-pmic-arb.yaml     | 9 +++++++++
- 1 file changed, 9 insertions(+)
+I see. This is not a problem that is easily reproducible. You need to 
+hit the right timing for the lockdep splat to appear.
 
-diff --git a/Documentation/devicetree/bindings/spmi/qcom,spmi-pmic-arb.yaml b/Documentation/devicetree/bindings/spmi/qcom,spmi-pmic-arb.yaml
-index 0c094a03fb10..958ecc306fa9 100644
---- a/Documentation/devicetree/bindings/spmi/qcom,spmi-pmic-arb.yaml
-+++ b/Documentation/devicetree/bindings/spmi/qcom,spmi-pmic-arb.yaml
-@@ -67,6 +67,13 @@ properties:
-       PMIC Arb which provides channels to use for accesses. Valid values 0 to 5
-     $ref: /schemas/types.yaml#/definitions/uint32-array
- 
-+  qcom,bus-id:
-+    description: |
-+      SPMI bus instance. only applicable to PMIC arbiter version 7 and beyond.
-+      Supported values, 0 = primary bus, 1 = secondary bus
-+    $ref: /schemas/types.yaml#/definitions/uint32-array
-+
-+
- required:
-   - compatible
-   - reg
-@@ -106,6 +113,8 @@ examples:
-         qcom,ee = <0>;
-         qcom,channel = <0>;
- 
-+        qcom,bus-id = <0>;
-+
-         pmic@0 {
-           reg = <0 0>;
-           /* pmic properties */
--- 
-2.31.1
+Regards,
+Longman
 
