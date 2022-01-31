@@ -2,191 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21F07C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 04:04:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BAD6C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 04:06:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357590AbiAaEEi (ORCPT
+        id S1357574AbiAaEGb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 30 Jan 2022 23:04:38 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:38156 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357588AbiAaEE2 (ORCPT
+        Sun, 30 Jan 2022 23:06:31 -0500
+Received: from mail-io1-f72.google.com ([209.85.166.72]:43783 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1357515AbiAaEG0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 30 Jan 2022 23:04:28 -0500
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 435991F380;
-        Mon, 31 Jan 2022 04:04:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1643601867; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=eBfA0J1VAN4vDciFet8kyITCSUUXphOKJM0dbNgQDlg=;
-        b=Ofj5AEGA0fxxWQPfqW7x0jLel3xWl8XT6L5fetgIF/2zgvKWRovZIPYb4YSKIXDP+PGHPG
-        UngLYZnASIj/Qz5rz62dxrd5f4fbDfByyvJbDIDy3thpDGhQ2Itksmpg6Qvdypf2EbsmG9
-        EusHYq42IUHL7aS/3q9Jmgr8INeiYUI=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1643601867;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=eBfA0J1VAN4vDciFet8kyITCSUUXphOKJM0dbNgQDlg=;
-        b=ROmts99OvVVAZHj8yfkpJgXn9fzfmP7rcXgJgqzmaUVof4cKw4M5pOuMwuG61ib9oi3dvS
-        tRPQVeyFRV5zV5Aw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 2CA6A133A4;
-        Mon, 31 Jan 2022 04:04:22 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id /XIbN8Zf92GpCQAAMHmgww
-        (envelope-from <neilb@suse.de>); Mon, 31 Jan 2022 04:04:22 +0000
-Subject: [PATCH 3/3] ceph: remove reliance on bdi congestion
-From:   NeilBrown <neilb@suse.de>
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        Jeff Layton <jlayton@kernel.org>,
-        Ilya Dryomov <idryomov@gmail.com>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>
-Cc:     linux-mm@kvack.org, linux-nfs@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, ceph-devel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Mon, 31 Jan 2022 15:03:53 +1100
-Message-ID: <164360183350.4233.6414417882019645917.stgit@noble.brown>
-In-Reply-To: <164360127045.4233.2606812444285122570.stgit@noble.brown>
-References: <164360127045.4233.2606812444285122570.stgit@noble.brown>
-User-Agent: StGit/0.23
+        Sun, 30 Jan 2022 23:06:26 -0500
+Received: by mail-io1-f72.google.com with SMTP id a185-20020a6bcac2000000b00604c268546dso9030918iog.10
+        for <linux-kernel@vger.kernel.org>; Sun, 30 Jan 2022 20:06:26 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=g94eSPEms4siUdIAdsRyOE4Be2jkZcPOC6JzxK9ZLK8=;
+        b=00nKfjM/PBYsVTng7VY4I4K5TJSaYZouaNsm8ENEG1vdWQhwyoN7YorAW9R78oR4cv
+         uivLd6GBCq3ZhCZOJtqVJTlMx6zewecW9mN5+ToqKLHjJvIGr8PBh869d+JgxejBcHaf
+         OnBsFdq/ZppXdNclxVwIWUPatIiTwBByq/JeJsaHjLZmv+Mu7OWhNGteEjCuGvXRYnpk
+         cG9hVmKplDIPOsYst+rbEHLaqmwEDcDcCP/7Qwby0zeH8c2ZiQr1AIjTn6mE25467lpA
+         LsJzKoiRWKeED/aQG+q5VM8ObKjx50Dt1ozNAdQwWWvztf+mtRsNYqldTQ4uSiZrC8Sk
+         Z6XQ==
+X-Gm-Message-State: AOAM530tmpCDKFrCt3El1cFlVZ0xBU273CrZcURJw9RIQqHzKX2F+yPw
+        9aMJ+sAkRP8ZkvIjQgrJlSomQIytTd3DoVy3GlvjvKo4zYq2
+X-Google-Smtp-Source: ABdhPJxvB0QpL9iq7aqUHusv5YGj0nOjyxGkqWzz3tjPSN1ALfuPK1LnSE49Vc+mBj26HXvhNUNEQ6IhDqTSr/mTs9iS8sw/WAXx
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a05:6638:24d0:: with SMTP id y16mr8925319jat.170.1643601986334;
+ Sun, 30 Jan 2022 20:06:26 -0800 (PST)
+Date:   Sun, 30 Jan 2022 20:06:26 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000008c32e305d6d8e802@google.com>
+Subject: [syzbot] general protection fault in submit_bio_checks
+From:   syzbot <syzbot+2b3f18414c37b42dcc94@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, axboe@kernel.dk,
+        bpf@vger.kernel.org, daniel@iogearbox.net,
+        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The bdi congestion tracking in not widely used and will be removed.
+Hello,
 
-CEPHfs is one of a small number of filesystems that uses it, setting
-just the async (write) congestion flags at what it determines are
-appropriate times.
+syzbot found the following issue on:
 
-The only remaining effect of the async flag is to cause (some)
-WB_SYNC_NONE writes to be skipped.
+HEAD commit:    b605fdc54c2b Add linux-next specific files for 20220128
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=150084b8700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=da5090473475f3ca
+dashboard link: https://syzkaller.appspot.com/bug?extid=2b3f18414c37b42dcc94
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-So instead of setting the flag, set an internal flag and change:
- - .writepages to do nothing if WB_SYNC_NONE and the flag is set
- - .writepage to return AOP_WRITEPAGE_ACTIVATE if WB_SYNC_NONE
-    and the flag is set.
+Unfortunately, I don't have any reproducer for this issue yet.
 
-The writepages change causes a behavioural change in that pageout() can
-now return PAGE_ACTIVATE instead of PAGE_KEEP, so SetPageActive() will
-be called on the page which (I think) wil further delay the next attempt
-at writeout.  This might be a good thing.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+2b3f18414c37b42dcc94@syzkaller.appspotmail.com
 
-Signed-off-by: NeilBrown <neilb@suse.de>
+general protection fault, probably for non-canonical address 0xdffffc000000002f: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000178-0x000000000000017f]
+CPU: 1 PID: 3642 Comm: syz-executor.5 Not tainted 5.17.0-rc1-next-20220128-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:blk_throtl_bio block/blk-throttle.h:175 [inline]
+RIP: 0010:submit_bio_checks+0x7c0/0x1bf0 block/blk-core.c:765
+Code: 08 3c 03 0f 8e 4a 11 00 00 48 b8 00 00 00 00 00 fc ff df 44 8b 6d 10 41 83 e5 01 4a 8d bc 2b 7c 01 00 00 48 89 fa 48 c1 ea 03 <0f> b6 04 02 48 89 fa 83 e2 07 38 d0 7f 08 84 c0 0f 85 09 11 00 00
+RSP: 0018:ffffc900028cf680 EFLAGS: 00010203
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 000000000000002f RSI: ffffffff83d5f41e RDI: 000000000000017d
+RBP: ffff88801e8be500 R08: ffffffff8a241580 R09: 0000000000000000
+R10: ffffffff83d5f410 R11: 0000000000000000 R12: 0000000000000000
+R13: 0000000000000001 R14: 00000000fffffffe R15: ffff88801ad9a4cc
+FS:  0000555556299400(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fed92bd5ec9 CR3: 000000003b65d000 CR4: 00000000003526e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ __submit_bio+0xaf/0x360 block/blk-core.c:802
+ __submit_bio_noacct_mq block/blk-core.c:881 [inline]
+ submit_bio_noacct block/blk-core.c:907 [inline]
+ submit_bio_noacct+0x6c9/0x8a0 block/blk-core.c:896
+ submit_bio block/blk-core.c:968 [inline]
+ submit_bio+0x1ea/0x430 block/blk-core.c:926
+ write_dev_flush fs/btrfs/disk-io.c:4243 [inline]
+ barrier_all_devices fs/btrfs/disk-io.c:4293 [inline]
+ write_all_supers+0x3038/0x4440 fs/btrfs/disk-io.c:4388
+ btrfs_commit_transaction+0x1be3/0x3180 fs/btrfs/transaction.c:2362
+ btrfs_commit_super+0xc1/0x100 fs/btrfs/disk-io.c:4562
+ close_ctree+0x314/0xccc fs/btrfs/disk-io.c:4671
+ generic_shutdown_super+0x14c/0x400 fs/super.c:462
+ kill_anon_super+0x36/0x60 fs/super.c:1056
+ btrfs_kill_super+0x38/0x50 fs/btrfs/super.c:2365
+ deactivate_locked_super+0x94/0x160 fs/super.c:332
+ deactivate_super+0xad/0xd0 fs/super.c:363
+ cleanup_mnt+0x3a2/0x540 fs/namespace.c:1159
+ task_work_run+0xdd/0x1a0 kernel/task_work.c:164
+ tracehook_notify_resume include/linux/tracehook.h:188 [inline]
+ exit_to_user_mode_loop kernel/entry/common.c:175 [inline]
+ exit_to_user_mode_prepare+0x27e/0x290 kernel/entry/common.c:207
+ __syscall_exit_to_user_mode_work kernel/entry/common.c:289 [inline]
+ syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:300
+ do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7fe814b274c7
+Code: ff ff ff f7 d8 64 89 01 48 83 c8 ff c3 66 0f 1f 44 00 00 31 f6 e9 09 00 00 00 66 0f 1f 84 00 00 00 00 00 b8 a6 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffe14eb15c8 EFLAGS: 00000246 ORIG_RAX: 00000000000000a6
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 00007fe814b274c7
+RDX: 00007ffe14eb169b RSI: 000000000000000a RDI: 00007ffe14eb1690
+RBP: 00007ffe14eb1690 R08: 00000000ffffffff R09: 00007ffe14eb1460
+R10: 000055555629a8b3 R11: 0000000000000246 R12: 00007fe814b7f1ea
+R13: 00007ffe14eb2750 R14: 000055555629a810 R15: 00007ffe14eb2790
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:blk_throtl_bio block/blk-throttle.h:175 [inline]
+RIP: 0010:submit_bio_checks+0x7c0/0x1bf0 block/blk-core.c:765
+Code: 08 3c 03 0f 8e 4a 11 00 00 48 b8 00 00 00 00 00 fc ff df 44 8b 6d 10 41 83 e5 01 4a 8d bc 2b 7c 01 00 00 48 89 fa 48 c1 ea 03 <0f> b6 04 02 48 89 fa 83 e2 07 38 d0 7f 08 84 c0 0f 85 09 11 00 00
+RSP: 0018:ffffc900028cf680 EFLAGS: 00010203
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 000000000000002f RSI: ffffffff83d5f41e RDI: 000000000000017d
+RBP: ffff88801e8be500 R08: ffffffff8a241580 R09: 0000000000000000
+R10: ffffffff83d5f410 R11: 0000000000000000 R12: 0000000000000000
+R13: 0000000000000001 R14: 00000000fffffffe R15: ffff88801ad9a4cc
+FS:  0000555556299400(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007ffeece8b278 CR3: 000000003b65d000 CR4: 00000000003526f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+----------------
+Code disassembly (best guess):
+   0:	08 3c 03             	or     %bh,(%rbx,%rax,1)
+   3:	0f 8e 4a 11 00 00    	jle    0x1153
+   9:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
+  10:	fc ff df
+  13:	44 8b 6d 10          	mov    0x10(%rbp),%r13d
+  17:	41 83 e5 01          	and    $0x1,%r13d
+  1b:	4a 8d bc 2b 7c 01 00 	lea    0x17c(%rbx,%r13,1),%rdi
+  22:	00
+  23:	48 89 fa             	mov    %rdi,%rdx
+  26:	48 c1 ea 03          	shr    $0x3,%rdx
+* 2a:	0f b6 04 02          	movzbl (%rdx,%rax,1),%eax <-- trapping instruction
+  2e:	48 89 fa             	mov    %rdi,%rdx
+  31:	83 e2 07             	and    $0x7,%edx
+  34:	38 d0                	cmp    %dl,%al
+  36:	7f 08                	jg     0x40
+  38:	84 c0                	test   %al,%al
+  3a:	0f 85 09 11 00 00    	jne    0x1149
+
+
 ---
- fs/ceph/addr.c  |   22 +++++++++++++---------
- fs/ceph/super.c |    1 +
- fs/ceph/super.h |    1 +
- 3 files changed, 15 insertions(+), 9 deletions(-)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/fs/ceph/addr.c b/fs/ceph/addr.c
-index c98e5238a1b6..dc7af34640dd 100644
---- a/fs/ceph/addr.c
-+++ b/fs/ceph/addr.c
-@@ -563,7 +563,7 @@ static int writepage_nounlock(struct page *page, struct writeback_control *wbc)
- 
- 	if (atomic_long_inc_return(&fsc->writeback_count) >
- 	    CONGESTION_ON_THRESH(fsc->mount_options->congestion_kb))
--		set_bdi_congested(inode_to_bdi(inode), BLK_RW_ASYNC);
-+		fsc->write_congested = true;
- 
- 	req = ceph_osdc_new_request(osdc, &ci->i_layout, ceph_vino(inode), page_off, &len, 0, 1,
- 				    CEPH_OSD_OP_WRITE, CEPH_OSD_FLAG_WRITE, snapc,
-@@ -623,7 +623,7 @@ static int writepage_nounlock(struct page *page, struct writeback_control *wbc)
- 
- 	if (atomic_long_dec_return(&fsc->writeback_count) <
- 	    CONGESTION_OFF_THRESH(fsc->mount_options->congestion_kb))
--		clear_bdi_congested(inode_to_bdi(inode), BLK_RW_ASYNC);
-+		fsc->write_congested = false;
- 
- 	return err;
- }
-@@ -635,6 +635,10 @@ static int ceph_writepage(struct page *page, struct writeback_control *wbc)
- 	BUG_ON(!inode);
- 	ihold(inode);
- 
-+	if (wbc->sync_mode == WB_SYNC_NONE &&
-+	    ceph_inode_to_client(inode)->write_congested)
-+		return AOP_WRITEPAGE_ACTIVATE;
-+
- 	wait_on_page_fscache(page);
- 
- 	err = writepage_nounlock(page, wbc);
-@@ -707,8 +711,7 @@ static void writepages_finish(struct ceph_osd_request *req)
- 			if (atomic_long_dec_return(&fsc->writeback_count) <
- 			     CONGESTION_OFF_THRESH(
- 					fsc->mount_options->congestion_kb))
--				clear_bdi_congested(inode_to_bdi(inode),
--						    BLK_RW_ASYNC);
-+				fsc->write_congested = false;
- 
- 			ceph_put_snap_context(detach_page_private(page));
- 			end_page_writeback(page);
-@@ -760,6 +763,10 @@ static int ceph_writepages_start(struct address_space *mapping,
- 	bool done = false;
- 	bool caching = ceph_is_cache_enabled(inode);
- 
-+	if (wbc->sync_mode == WB_SYNC_NONE &&
-+	    fsc->write_congested)
-+		return 0;
-+
- 	dout("writepages_start %p (mode=%s)\n", inode,
- 	     wbc->sync_mode == WB_SYNC_NONE ? "NONE" :
- 	     (wbc->sync_mode == WB_SYNC_ALL ? "ALL" : "HOLD"));
-@@ -954,11 +961,8 @@ static int ceph_writepages_start(struct address_space *mapping,
- 
- 			if (atomic_long_inc_return(&fsc->writeback_count) >
- 			    CONGESTION_ON_THRESH(
--				    fsc->mount_options->congestion_kb)) {
--				set_bdi_congested(inode_to_bdi(inode),
--						  BLK_RW_ASYNC);
--			}
--
-+				    fsc->mount_options->congestion_kb))
-+				fsc->write_congested = true;
- 
- 			pages[locked_pages++] = page;
- 			pvec.pages[i] = NULL;
-diff --git a/fs/ceph/super.c b/fs/ceph/super.c
-index bf79f369aec6..4a3b77d049c7 100644
---- a/fs/ceph/super.c
-+++ b/fs/ceph/super.c
-@@ -802,6 +802,7 @@ static struct ceph_fs_client *create_fs_client(struct ceph_mount_options *fsopt,
- 	fsc->have_copy_from2 = true;
- 
- 	atomic_long_set(&fsc->writeback_count, 0);
-+	fsc->write_congested = false;
- 
- 	err = -ENOMEM;
- 	/*
-diff --git a/fs/ceph/super.h b/fs/ceph/super.h
-index 67f145e1ae7a..0bd97aea2319 100644
---- a/fs/ceph/super.h
-+++ b/fs/ceph/super.h
-@@ -121,6 +121,7 @@ struct ceph_fs_client {
- 	struct ceph_mds_client *mdsc;
- 
- 	atomic_long_t writeback_count;
-+	bool write_congested;
- 
- 	struct workqueue_struct *inode_wq;
- 	struct workqueue_struct *cap_wq;
-
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
