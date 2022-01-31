@@ -2,39 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8F13C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAD57C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377742AbiAaLbA (ORCPT
+        id S1377948AbiAaLbD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:31:00 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:53424 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359019AbiAaLVV (ORCPT
+        Mon, 31 Jan 2022 06:31:03 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:39350 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359570AbiAaLVT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:21:21 -0500
+        Mon, 31 Jan 2022 06:21:19 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 55B6461207;
-        Mon, 31 Jan 2022 11:21:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C7BDC340E8;
-        Mon, 31 Jan 2022 11:21:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D75B9B82A59;
+        Mon, 31 Jan 2022 11:21:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1029AC340E8;
+        Mon, 31 Jan 2022 11:21:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643628079;
-        bh=qqoB7EHQVor5f/OMG+syvKtFAeHTFIo6BetQX1TMjn0=;
+        s=korg; t=1643628076;
+        bh=ONqPtQyT+Qr9b9fvAQ6sWM6yt7g2eLytTn5yBWZogV4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jk0bd4I9gi8l+MhpU1XdnBxAEDeqO4N9YOKl4QHdxphzZx61K2X8RTxrfIQK54/Vl
-         Jyifobx5jbuqrZhcsqTG8sWm4WD1a0fL8K04SFK0rMJWeJe51MJQNni6FATzQk62xY
-         D13TsTSbtYohy5cI8/WZEoSrraix7D7afMDz5IY8=
+        b=SvtQuYVb+VxZS+ETnQc/MbXbRsOTIJPRJ+lm2Qr9A2B9jN9awSeWj1f2E+t7yaqMN
+         /o62C1Hi4lzz1EpqsF3QwbfKYx/kdAXpMlhxucyy/TVvmuRFHdxOJj58pOq5XikBC3
+         HKY08hkVe7i4+JYncWfuzRnEpHw25D1ngLjklVH4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Subject: [PATCH 5.16 118/200] drm/msm/dsi: Fix missing put_device() call in dsi_get_phy
-Date:   Mon, 31 Jan 2022 11:56:21 +0100
-Message-Id: <20220131105237.543570296@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Xianting Tian <xianting.tian@linux.alibaba.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 117/200] drm/msm: Fix wrong size calculation
+Date:   Mon, 31 Jan 2022 11:56:20 +0100
+Message-Id: <20220131105237.512081047@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -46,39 +48,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Xianting Tian <xianting.tian@linux.alibaba.com>
 
-commit c04c3148ca12227d92f91b355b4538cc333c9922 upstream.
+commit 0a727b459ee39bd4c5ced19d6024258ac87b6b2e upstream.
 
-If of_find_device_by_node() succeeds, dsi_get_phy() doesn't
-a corresponding put_device(). Thus add put_device() to fix the exception
-handling.
+For example, memory-region in .dts as below,
+	reg = <0x0 0x50000000 0x0 0x20000000>
 
-Fixes: ec31abf ("drm/msm/dsi: Separate PHY to another platform device")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+We can get below values,
+struct resource r;
+r.start = 0x50000000;
+r.end	= 0x6fffffff;
+
+So the size should be:
+size = r.end - r.start + 1 = 0x20000000
+
+Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
+Fixes: 072f1f9168ed ("drm/msm: add support for "stolen" mem")
 Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Link: https://lore.kernel.org/r/20211230070943.18116-1-linmq006@gmail.com
+Link: https://lore.kernel.org/r/20220112123334.749776-1-xianting.tian@linux.alibaba.com
 Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/dsi/dsi.c |    7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/msm/msm_drv.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/msm/dsi/dsi.c
-+++ b/drivers/gpu/drm/msm/dsi/dsi.c
-@@ -40,7 +40,12 @@ static int dsi_get_phy(struct msm_dsi *m
+--- a/drivers/gpu/drm/msm/msm_drv.c
++++ b/drivers/gpu/drm/msm/msm_drv.c
+@@ -466,7 +466,7 @@ static int msm_init_vram(struct drm_devi
+ 		of_node_put(node);
+ 		if (ret)
+ 			return ret;
+-		size = r.end - r.start;
++		size = r.end - r.start + 1;
+ 		DRM_INFO("using VRAM carveout: %lx@%pa\n", size, &r.start);
  
- 	of_node_put(phy_node);
- 
--	if (!phy_pdev || !msm_dsi->phy) {
-+	if (!phy_pdev) {
-+		DRM_DEV_ERROR(&pdev->dev, "%s: phy driver is not ready\n", __func__);
-+		return -EPROBE_DEFER;
-+	}
-+	if (!msm_dsi->phy) {
-+		put_device(&phy_pdev->dev);
- 		DRM_DEV_ERROR(&pdev->dev, "%s: phy driver is not ready\n", __func__);
- 		return -EPROBE_DEFER;
- 	}
+ 		/* if we have no IOMMU, then we need to use carveout allocator.
 
 
