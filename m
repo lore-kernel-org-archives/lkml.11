@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 292D8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:20:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D550C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:20:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377237AbiAaLRy (ORCPT
+        id S1377318AbiAaLSB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:17:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44526 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377541AbiAaLKL (ORCPT
+        Mon, 31 Jan 2022 06:18:01 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:57738 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377519AbiAaLKI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:10:11 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1278CC06174E;
-        Mon, 31 Jan 2022 03:08:15 -0800 (PST)
+        Mon, 31 Jan 2022 06:10:08 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D4562B82A5E;
-        Mon, 31 Jan 2022 11:08:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25DB0C340EF;
-        Mon, 31 Jan 2022 11:08:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2FBA4B82A4C;
+        Mon, 31 Jan 2022 11:10:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B7AFC340E8;
+        Mon, 31 Jan 2022 11:10:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627292;
-        bh=HRSLQn0z6LNxbCa6iskITmAgvh9vAe/2BIM6raJ4kg0=;
+        s=korg; t=1643627406;
+        bh=cwtwlYgAv/JlO2bKYsQ6eIWumQYgPraGE5TBaPhsXr8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gRm3yV6GQY9vw55IpA7NKuHGZk/XH50/MCFH83q3ICw5riBF/YOesoiVzFC68633B
-         niXgwc9A1yzzPxI+19M7/rfNQuUv/M+PZ2Oi8m+uuwwcJ7BtDDVtOoiGqipkjwgglw
-         YLBcmGDXPvgEugY8L6ENtyqfdblCbIPr3lyHCj5I=
+        b=LA9tCRqHIBAZgYB/CmRPLvaQATNKoq9g+S6tyagqSBSHoy/PjURNkSMRyhGi5KAx3
+         HKHkqspBG+JcZzMQTgqvetRDuvpvGcixIqOcuy5RCVIi3VykmmCifhMlzj4CSc++g2
+         PrqCurMaTpXlR9pnOqcPLa6utkswDEikaeocEUk4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Denis Valeev <lemniscattaden@gmail.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.15 037/171] KVM: x86: nSVM: skip eax alignment check for non-SVM instructions
-Date:   Mon, 31 Jan 2022 11:55:02 +0100
-Message-Id: <20220131105231.271283678@linuxfoundation.org>
+        stable@vger.kernel.org, Erhard Furtner <erhard_f@mailbox.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.15 074/171] powerpc/32: Fix boot failure with GCC latent entropy plugin
+Date:   Mon, 31 Jan 2022 11:55:39 +0100
+Message-Id: <20220131105232.538508950@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
 References: <20220131105229.959216821@linuxfoundation.org>
@@ -49,53 +47,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Denis Valeev <lemniscattaden@gmail.com>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-commit 47c28d436f409f5b009dc82bd82d4971088aa391 upstream.
+commit bba496656a73fc1d1330b49c7f82843836e9feb1 upstream.
 
-The bug occurs on #GP triggered by VMware backdoor when eax value is
-unaligned. eax alignment check should not be applied to non-SVM
-instructions because it leads to incorrect omission of the instructions
-emulation.
-Apply the alignment check only to SVM instructions to fix.
+Boot fails with GCC latent entropy plugin enabled.
 
-Fixes: d1cba6c92237 ("KVM: x86: nSVM: test eax for 4K alignment for GP errata workaround")
-Signed-off-by: Denis Valeev <lemniscattaden@gmail.com>
-Message-Id: <Yexlhaoe1Fscm59u@q>
-Cc: stable@vger.kernel.org
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+This is due to early boot functions trying to access 'latent_entropy'
+global data while the kernel is not relocated at its final
+destination yet.
+
+As there is no way to tell GCC to use PTRRELOC() to access it,
+disable latent entropy plugin in early_32.o and feature-fixups.o and
+code-patching.o
+
+Fixes: 38addce8b600 ("gcc-plugins: Add latent_entropy plugin")
+Cc: stable@vger.kernel.org # v4.9+
+Reported-by: Erhard Furtner <erhard_f@mailbox.org>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215217
+Link: https://lore.kernel.org/r/2bac55483b8daf5b1caa163a45fa5f9cdbe18be4.1640178426.git.christophe.leroy@csgroup.eu
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/svm/svm.c |   11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ arch/powerpc/kernel/Makefile |    1 +
+ arch/powerpc/lib/Makefile    |    3 +++
+ 2 files changed, 4 insertions(+)
 
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -2238,10 +2238,6 @@ static int gp_interception(struct kvm_vc
- 	if (error_code)
- 		goto reinject;
+--- a/arch/powerpc/kernel/Makefile
++++ b/arch/powerpc/kernel/Makefile
+@@ -11,6 +11,7 @@ CFLAGS_prom_init.o      += -fPIC
+ CFLAGS_btext.o		+= -fPIC
+ endif
  
--	/* All SVM instructions expect page aligned RAX */
--	if (svm->vmcb->save.rax & ~PAGE_MASK)
--		goto reinject;
--
- 	/* Decode the instruction for usage later */
- 	if (x86_decode_emulated_instruction(vcpu, 0, NULL, 0) != EMULATION_OK)
- 		goto reinject;
-@@ -2259,8 +2255,13 @@ static int gp_interception(struct kvm_vc
- 		if (!is_guest_mode(vcpu))
- 			return kvm_emulate_instruction(vcpu,
- 				EMULTYPE_VMWARE_GP | EMULTYPE_NO_DECODE);
--	} else
-+	} else {
-+		/* All SVM instructions expect page aligned RAX */
-+		if (svm->vmcb->save.rax & ~PAGE_MASK)
-+			goto reinject;
++CFLAGS_early_32.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
+ CFLAGS_cputable.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
+ CFLAGS_prom_init.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
+ CFLAGS_btext.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
+--- a/arch/powerpc/lib/Makefile
++++ b/arch/powerpc/lib/Makefile
+@@ -19,6 +19,9 @@ CFLAGS_code-patching.o += -DDISABLE_BRAN
+ CFLAGS_feature-fixups.o += -DDISABLE_BRANCH_PROFILING
+ endif
+ 
++CFLAGS_code-patching.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
++CFLAGS_feature-fixups.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
 +
- 		return emulate_svm_instr(vcpu, opcode);
-+	}
+ obj-y += alloc.o code-patching.o feature-fixups.o pmem.o test_code-patching.o
  
- reinject:
- 	kvm_queue_exception_e(vcpu, GP_VECTOR, error_code);
+ ifndef CONFIG_KASAN
 
 
