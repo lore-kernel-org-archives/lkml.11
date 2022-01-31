@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A89B4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:50:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1672C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:50:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344107AbiAaLus (ORCPT
+        id S1376507AbiAaLux (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:50:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52900 "EHLO
+        Mon, 31 Jan 2022 06:50:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377782AbiAaLlf (ORCPT
+        with ESMTP id S1347966AbiAaLkU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:41:35 -0500
+        Mon, 31 Jan 2022 06:40:20 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2D00C02B76A;
-        Mon, 31 Jan 2022 03:26:04 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D0ABC02B74F;
+        Mon, 31 Jan 2022 03:25:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 32666611E3;
-        Mon, 31 Jan 2022 11:26:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EF6DC36AF6;
-        Mon, 31 Jan 2022 11:26:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B2052612DE;
+        Mon, 31 Jan 2022 11:25:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73843C340E8;
+        Mon, 31 Jan 2022 11:25:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643628363;
-        bh=qNlQ7jXzaiw0lDO8EJIiMrBPH5Y0ncOONj/Rttap/vE=;
+        s=korg; t=1643628335;
+        bh=2xzL8Ftr/S5iP2Y9dkrb08xfKDdPckbKShVNwmsT17k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g2RCAoqxP+uy8b0z564FGgy1++7R+wbnn8WnGmfAWwmkfMhVvzTCBNTCV/hpcWXHH
-         ghDzRKrbL12xilU1ouc9HF3+c8ecnnJSkKWPl571Jh0p7qY+HgNTLZ0LRCJIUjnIS9
-         JOMxnpMD0wmZCKphfMNH1m5hQ3OO6QFDhUd6gb68=
+        b=fSyzHouFV+UG0fbYiCSmUH+Y28mSd/g4k68U1De/6U4yCButZVNNM1Z9QG2TizWbM
+         cmXcWuh/NYmjAlNdJZP2MpThZv4UoPJMWXtP9JYjyv45GNEBLRyuMosQG/gm/r2+aQ
+         y/BPzNzgu78XNTDl5vmveue+3Z6Jm5F9kAFBjBYc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wen Gu <guwen@linux.alibaba.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 165/200] net/smc: Transitional solution for clcsock race issue
-Date:   Mon, 31 Jan 2022 11:57:08 +0100
-Message-Id: <20220131105239.097172693@linuxfoundation.org>
+        stable@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.16 198/200] KVM: nVMX: Implement evmcs_field_offset() suitable for handle_vmread()
+Date:   Mon, 31 Jan 2022 11:57:41 +0100
+Message-Id: <20220131105240.190536836@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -51,201 +49,113 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wen Gu <guwen@linux.alibaba.com>
+From: Vitaly Kuznetsov <vkuznets@redhat.com>
 
-[ Upstream commit c0bf3d8a943b6f2e912b7c1de03e2ef28e76f760 ]
+commit 892a42c10ddb945d3a4dcf07dccdf9cb98b21548 upstream.
 
-We encountered a crash in smc_setsockopt() and it is caused by
-accessing smc->clcsock after clcsock was released.
+In preparation to allowing reads from Enlightened VMCS from
+handle_vmread(), implement evmcs_field_offset() to get the correct
+read offset. get_evmcs_offset(), which is being used by KVM-on-Hyper-V,
+is almost what's needed but a few things need to be adjusted. First,
+WARN_ON() is unacceptable for handle_vmread() as any field can (in
+theory) be supplied by the guest and not all fields are defined in
+eVMCS v1. Second, we need to handle 'holes' in eVMCS (missing fields).
+It also sounds like a good idea to WARN_ON() if such fields are ever
+accessed by KVM-on-Hyper-V.
 
- BUG: kernel NULL pointer dereference, address: 0000000000000020
- #PF: supervisor read access in kernel mode
- #PF: error_code(0x0000) - not-present page
- PGD 0 P4D 0
- Oops: 0000 [#1] PREEMPT SMP PTI
- CPU: 1 PID: 50309 Comm: nginx Kdump: loaded Tainted: G E     5.16.0-rc4+ #53
- RIP: 0010:smc_setsockopt+0x59/0x280 [smc]
- Call Trace:
-  <TASK>
-  __sys_setsockopt+0xfc/0x190
-  __x64_sys_setsockopt+0x20/0x30
-  do_syscall_64+0x34/0x90
-  entry_SYSCALL_64_after_hwframe+0x44/0xae
- RIP: 0033:0x7f16ba83918e
-  </TASK>
+Implement dedicated evmcs_field_offset() helper.
 
-This patch tries to fix it by holding clcsock_release_lock and
-checking whether clcsock has already been released before access.
+No functional change intended.
 
-In case that a crash of the same reason happens in smc_getsockopt()
-or smc_switch_to_fallback(), this patch also checkes smc->clcsock
-in them too. And the caller of smc_switch_to_fallback() will identify
-whether fallback succeeds according to the return value.
-
-Fixes: fd57770dd198 ("net/smc: wait for pending work before clcsock release_sock")
-Link: https://lore.kernel.org/lkml/5dd7ffd1-28e2-24cc-9442-1defec27375e@linux.ibm.com/T/
-Signed-off-by: Wen Gu <guwen@linux.alibaba.com>
-Acked-by: Karsten Graul <kgraul@linux.ibm.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Message-Id: <20220112170134.1904308-5-vkuznets@redhat.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/smc/af_smc.c | 63 +++++++++++++++++++++++++++++++++++++++---------
- 1 file changed, 51 insertions(+), 12 deletions(-)
+ arch/x86/kvm/vmx/evmcs.c |    3 +--
+ arch/x86/kvm/vmx/evmcs.h |   32 ++++++++++++++++++++++++--------
+ 2 files changed, 25 insertions(+), 10 deletions(-)
 
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index 211cd91b6c408..85e077a69c67d 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -566,12 +566,17 @@ static void smc_stat_fallback(struct smc_sock *smc)
- 	mutex_unlock(&net->smc.mutex_fback_rsn);
- }
+--- a/arch/x86/kvm/vmx/evmcs.c
++++ b/arch/x86/kvm/vmx/evmcs.c
+@@ -12,8 +12,6 @@
  
--static void smc_switch_to_fallback(struct smc_sock *smc, int reason_code)
-+static int smc_switch_to_fallback(struct smc_sock *smc, int reason_code)
+ DEFINE_STATIC_KEY_FALSE(enable_evmcs);
+ 
+-#if IS_ENABLED(CONFIG_HYPERV)
+-
+ #define EVMCS1_OFFSET(x) offsetof(struct hv_enlightened_vmcs, x)
+ #define EVMCS1_FIELD(number, name, clean_field)[ROL16(number, 6)] = \
+ 		{EVMCS1_OFFSET(name), clean_field}
+@@ -296,6 +294,7 @@ const struct evmcs_field vmcs_field_to_e
+ };
+ const unsigned int nr_evmcs_1_fields = ARRAY_SIZE(vmcs_field_to_evmcs_1);
+ 
++#if IS_ENABLED(CONFIG_HYPERV)
+ __init void evmcs_sanitize_exec_ctrls(struct vmcs_config *vmcs_conf)
  {
- 	wait_queue_head_t *smc_wait = sk_sleep(&smc->sk);
--	wait_queue_head_t *clc_wait = sk_sleep(smc->clcsock->sk);
-+	wait_queue_head_t *clc_wait;
- 	unsigned long flags;
+ 	vmcs_conf->pin_based_exec_ctrl &= ~EVMCS1_UNSUPPORTED_PINCTRL;
+--- a/arch/x86/kvm/vmx/evmcs.h
++++ b/arch/x86/kvm/vmx/evmcs.h
+@@ -63,8 +63,6 @@ DECLARE_STATIC_KEY_FALSE(enable_evmcs);
+ #define EVMCS1_UNSUPPORTED_VMENTRY_CTRL (VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL)
+ #define EVMCS1_UNSUPPORTED_VMFUNC (VMX_VMFUNC_EPTP_SWITCHING)
  
-+	mutex_lock(&smc->clcsock_release_lock);
-+	if (!smc->clcsock) {
-+		mutex_unlock(&smc->clcsock_release_lock);
-+		return -EBADF;
-+	}
- 	smc->use_fallback = true;
- 	smc->fallback_rsn = reason_code;
- 	smc_stat_fallback(smc);
-@@ -586,18 +591,30 @@ static void smc_switch_to_fallback(struct smc_sock *smc, int reason_code)
- 		 * smc socket->wq, which should be removed
- 		 * to clcsocket->wq during the fallback.
- 		 */
-+		clc_wait = sk_sleep(smc->clcsock->sk);
- 		spin_lock_irqsave(&smc_wait->lock, flags);
- 		spin_lock_nested(&clc_wait->lock, SINGLE_DEPTH_NESTING);
- 		list_splice_init(&smc_wait->head, &clc_wait->head);
- 		spin_unlock(&clc_wait->lock);
- 		spin_unlock_irqrestore(&smc_wait->lock, flags);
- 	}
-+	mutex_unlock(&smc->clcsock_release_lock);
-+	return 0;
- }
+-#if IS_ENABLED(CONFIG_HYPERV)
+-
+ struct evmcs_field {
+ 	u16 offset;
+ 	u16 clean_field;
+@@ -73,26 +71,44 @@ struct evmcs_field {
+ extern const struct evmcs_field vmcs_field_to_evmcs_1[];
+ extern const unsigned int nr_evmcs_1_fields;
  
- /* fall back during connect */
- static int smc_connect_fallback(struct smc_sock *smc, int reason_code)
+-static __always_inline int get_evmcs_offset(unsigned long field,
+-					    u16 *clean_field)
++static __always_inline int evmcs_field_offset(unsigned long field,
++					      u16 *clean_field)
  {
--	smc_switch_to_fallback(smc, reason_code);
-+	struct net *net = sock_net(&smc->sk);
-+	int rc = 0;
+ 	unsigned int index = ROL16(field, 6);
+ 	const struct evmcs_field *evmcs_field;
+ 
+-	if (unlikely(index >= nr_evmcs_1_fields)) {
+-		WARN_ONCE(1, "KVM: accessing unsupported EVMCS field %lx\n",
+-			  field);
++	if (unlikely(index >= nr_evmcs_1_fields))
+ 		return -ENOENT;
+-	}
+ 
+ 	evmcs_field = &vmcs_field_to_evmcs_1[index];
+ 
++	/*
++	 * Use offset=0 to detect holes in eVMCS. This offset belongs to
++	 * 'revision_id' but this field has no encoding and is supposed to
++	 * be accessed directly.
++	 */
++	if (unlikely(!evmcs_field->offset))
++		return -ENOENT;
 +
-+	rc = smc_switch_to_fallback(smc, reason_code);
-+	if (rc) { /* fallback fails */
-+		this_cpu_inc(net->smc.smc_stats->clnt_hshake_err_cnt);
-+		if (smc->sk.sk_state == SMC_INIT)
-+			sock_put(&smc->sk); /* passive closing */
-+		return rc;
-+	}
- 	smc_copy_sock_settings_to_clc(smc);
- 	smc->connect_nonblock = 0;
- 	if (smc->sk.sk_state == SMC_INIT)
-@@ -1514,11 +1531,12 @@ static void smc_listen_decline(struct smc_sock *new_smc, int reason_code,
- {
- 	/* RDMA setup failed, switch back to TCP */
- 	smc_conn_abort(new_smc, local_first);
--	if (reason_code < 0) { /* error, no fallback possible */
-+	if (reason_code < 0 ||
-+	    smc_switch_to_fallback(new_smc, reason_code)) {
-+		/* error, no fallback possible */
- 		smc_listen_out_err(new_smc);
- 		return;
- 	}
--	smc_switch_to_fallback(new_smc, reason_code);
- 	if (reason_code && reason_code != SMC_CLC_DECL_PEERDECL) {
- 		if (smc_clc_send_decline(new_smc, reason_code, version) < 0) {
- 			smc_listen_out_err(new_smc);
-@@ -1960,8 +1978,11 @@ static void smc_listen_work(struct work_struct *work)
+ 	if (clean_field)
+ 		*clean_field = evmcs_field->clean_field;
  
- 	/* check if peer is smc capable */
- 	if (!tcp_sk(newclcsock->sk)->syn_smc) {
--		smc_switch_to_fallback(new_smc, SMC_CLC_DECL_PEERNOSMC);
--		smc_listen_out_connected(new_smc);
-+		rc = smc_switch_to_fallback(new_smc, SMC_CLC_DECL_PEERNOSMC);
-+		if (rc)
-+			smc_listen_out_err(new_smc);
-+		else
-+			smc_listen_out_connected(new_smc);
- 		return;
- 	}
- 
-@@ -2250,7 +2271,9 @@ static int smc_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
- 
- 	if (msg->msg_flags & MSG_FASTOPEN) {
- 		if (sk->sk_state == SMC_INIT && !smc->connect_nonblock) {
--			smc_switch_to_fallback(smc, SMC_CLC_DECL_OPTUNSUPP);
-+			rc = smc_switch_to_fallback(smc, SMC_CLC_DECL_OPTUNSUPP);
-+			if (rc)
-+				goto out;
- 		} else {
- 			rc = -EINVAL;
- 			goto out;
-@@ -2443,6 +2466,11 @@ static int smc_setsockopt(struct socket *sock, int level, int optname,
- 	/* generic setsockopts reaching us here always apply to the
- 	 * CLC socket
- 	 */
-+	mutex_lock(&smc->clcsock_release_lock);
-+	if (!smc->clcsock) {
-+		mutex_unlock(&smc->clcsock_release_lock);
-+		return -EBADF;
-+	}
- 	if (unlikely(!smc->clcsock->ops->setsockopt))
- 		rc = -EOPNOTSUPP;
- 	else
-@@ -2452,6 +2480,7 @@ static int smc_setsockopt(struct socket *sock, int level, int optname,
- 		sk->sk_err = smc->clcsock->sk->sk_err;
- 		sk_error_report(sk);
- 	}
-+	mutex_unlock(&smc->clcsock_release_lock);
- 
- 	if (optlen < sizeof(int))
- 		return -EINVAL;
-@@ -2468,7 +2497,7 @@ static int smc_setsockopt(struct socket *sock, int level, int optname,
- 	case TCP_FASTOPEN_NO_COOKIE:
- 		/* option not supported by SMC */
- 		if (sk->sk_state == SMC_INIT && !smc->connect_nonblock) {
--			smc_switch_to_fallback(smc, SMC_CLC_DECL_OPTUNSUPP);
-+			rc = smc_switch_to_fallback(smc, SMC_CLC_DECL_OPTUNSUPP);
- 		} else {
- 			rc = -EINVAL;
- 		}
-@@ -2511,13 +2540,23 @@ static int smc_getsockopt(struct socket *sock, int level, int optname,
- 			  char __user *optval, int __user *optlen)
- {
- 	struct smc_sock *smc;
-+	int rc;
- 
- 	smc = smc_sk(sock->sk);
-+	mutex_lock(&smc->clcsock_release_lock);
-+	if (!smc->clcsock) {
-+		mutex_unlock(&smc->clcsock_release_lock);
-+		return -EBADF;
-+	}
- 	/* socket options apply to the CLC socket */
--	if (unlikely(!smc->clcsock->ops->getsockopt))
-+	if (unlikely(!smc->clcsock->ops->getsockopt)) {
-+		mutex_unlock(&smc->clcsock_release_lock);
- 		return -EOPNOTSUPP;
--	return smc->clcsock->ops->getsockopt(smc->clcsock, level, optname,
--					     optval, optlen);
-+	}
-+	rc = smc->clcsock->ops->getsockopt(smc->clcsock, level, optname,
-+					   optval, optlen);
-+	mutex_unlock(&smc->clcsock_release_lock);
-+	return rc;
+ 	return evmcs_field->offset;
  }
  
- static int smc_ioctl(struct socket *sock, unsigned int cmd,
--- 
-2.34.1
-
++#if IS_ENABLED(CONFIG_HYPERV)
++
++static __always_inline int get_evmcs_offset(unsigned long field,
++					    u16 *clean_field)
++{
++	int offset = evmcs_field_offset(field, clean_field);
++
++	WARN_ONCE(offset < 0, "KVM: accessing unsupported EVMCS field %lx\n",
++		  field);
++
++	return offset;
++}
++
+ static __always_inline void evmcs_write64(unsigned long field, u64 value)
+ {
+ 	u16 clean_field;
 
 
