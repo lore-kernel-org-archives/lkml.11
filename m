@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 022F3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:15:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11BE7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:15:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233979AbiAaLPh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:15:37 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:42478 "EHLO
+        id S1376536AbiAaLPm (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 31 Jan 2022 06:15:42 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:42528 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376428AbiAaLIZ (ORCPT
+        with ESMTP id S1376472AbiAaLIb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:08:25 -0500
+        Mon, 31 Jan 2022 06:08:31 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5FC1C61035;
-        Mon, 31 Jan 2022 11:08:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A991C340E8;
-        Mon, 31 Jan 2022 11:08:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C80260ED0;
+        Mon, 31 Jan 2022 11:08:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C09BC340E8;
+        Mon, 31 Jan 2022 11:08:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627304;
-        bh=cxlwAG8PN2icPtViFxmJzy/czjZCygMgoVfmP6Msmxw=;
+        s=korg; t=1643627310;
+        bh=wsjXSY83kKhGWgpVCYF+AoAjFAC151aK3PK4irW1rok=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gfIIwEhSz9aFy8liR2/h/eQBAcGqfTlostUPbDpM0cs9MbOlByFU1GM0HjG2GUKvn
-         DmrU47VO1FEzRyP8joGbG3A4DZCD7NTLULhPsz802qi4AmnzXDvREsHbvyqkA5jiM3
-         laZ/m6KbJEiWTsSk/2f3gNxXu9J1XXd84TPO9aTQ=
+        b=ZP+HQ3YOiZr5UUMRLcyP/K31hK+m4LbBIj3qpiw7as3PrqtuH6KJ0Rww38u2Aicot
+         jZx6HP58zFXS2p74yx7ie8V1NQejJSKIVn6e//L53zIk7Luj2GyH2MzTXyB97a3SXW
+         3tE2/tgPeM5vE5tBf3AQBQTwgRYSxa0LyE1k+YGI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Like Xu <likexu@tencent.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.15 041/171] KVM: x86: Sync the states size with the XCR0/IA32_XSS at, any time
-Date:   Mon, 31 Jan 2022 11:55:06 +0100
-Message-Id: <20220131105231.415485841@linuxfoundation.org>
+        stable@vger.kernel.org, Mike Snitzer <snitzer@redhat.com>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.15 043/171] dm: revert partial fix for redundant bio-based IO accounting
+Date:   Mon, 31 Jan 2022 11:55:08 +0100
+Message-Id: <20220131105231.485368692@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
 References: <20220131105229.959216821@linuxfoundation.org>
@@ -46,42 +46,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Like Xu <likexu@tencent.com>
+From: Mike Snitzer <snitzer@redhat.com>
 
-commit 05a9e065059e566f218f8778c4d17ee75db56c55 upstream.
+commit f524d9c95fab54783d0038f7a3e8c014d5b56857 upstream.
 
-XCR0 is reset to 1 by RESET but not INIT and IA32_XSS is zeroed by
-both RESET and INIT. The kvm_set_msr_common()'s handling of MSR_IA32_XSS
-also needs to update kvm_update_cpuid_runtime(). In the above cases, the
-size in bytes of the XSAVE area containing all states enabled by XCR0 or
-(XCRO | IA32_XSS) needs to be updated.
+Reverts a1e1cb72d9649 ("dm: fix redundant IO accounting for bios that
+need splitting") because it was too narrow in scope (only addressed
+redundant 'sectors[]' accounting and not ios, nsecs[], etc).
 
-For simplicity and consistency, existing helpers are used to write values
-and call kvm_update_cpuid_runtime(), and it's not exactly a fast path.
-
-Fixes: a554d207dc46 ("KVM: X86: Processor States following Reset or INIT")
 Cc: stable@vger.kernel.org
-Signed-off-by: Like Xu <likexu@tencent.com>
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220126172226.2298529-4-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Mike Snitzer <snitzer@redhat.com>
+Link: https://lore.kernel.org/r/20220128155841.39644-3-snitzer@redhat.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/x86.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/md/dm.c |   15 ---------------
+ 1 file changed, 15 deletions(-)
 
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -10990,8 +10990,8 @@ void kvm_vcpu_reset(struct kvm_vcpu *vcp
+--- a/drivers/md/dm.c
++++ b/drivers/md/dm.c
+@@ -1514,9 +1514,6 @@ static void init_clone_info(struct clone
+ 	ci->sector = bio->bi_iter.bi_sector;
+ }
  
- 		vcpu->arch.msr_misc_features_enables = 0;
+-#define __dm_part_stat_sub(part, field, subnd)	\
+-	(part_stat_get(part, field) -= (subnd))
+-
+ /*
+  * Entry point to split a bio into clones and submit them to the targets.
+  */
+@@ -1553,18 +1550,6 @@ static blk_qc_t __split_and_process_bio(
+ 						  GFP_NOIO, &md->queue->bio_split);
+ 			ci.io->orig_bio = b;
  
--		vcpu->arch.xcr0 = XFEATURE_MASK_FP;
--		vcpu->arch.ia32_xss = 0;
-+		__kvm_set_xcr(vcpu, 0, XFEATURE_MASK_FP);
-+		__kvm_set_msr(vcpu, MSR_IA32_XSS, 0, true);
- 	}
- 
- 	memset(vcpu->arch.regs, 0, sizeof(vcpu->arch.regs));
+-			/*
+-			 * Adjust IO stats for each split, otherwise upon queue
+-			 * reentry there will be redundant IO accounting.
+-			 * NOTE: this is a stop-gap fix, a proper fix involves
+-			 * significant refactoring of DM core's bio splitting
+-			 * (by eliminating DM's splitting and just using bio_split)
+-			 */
+-			part_stat_lock();
+-			__dm_part_stat_sub(dm_disk(md)->part0,
+-					   sectors[op_stat_group(bio_op(bio))], ci.sector_count);
+-			part_stat_unlock();
+-
+ 			bio_chain(b, bio);
+ 			trace_block_split(b, bio->bi_iter.bi_sector);
+ 			ret = submit_bio_noacct(bio);
 
 
