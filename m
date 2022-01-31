@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 868B1C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:20:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97AE8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:20:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377447AbiAaLSP (ORCPT
+        id S1377473AbiAaLST (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:18:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44626 "EHLO
+        Mon, 31 Jan 2022 06:18:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377575AbiAaLKM (ORCPT
+        with ESMTP id S1377568AbiAaLKM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 31 Jan 2022 06:10:12 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C5E6C061758;
-        Mon, 31 Jan 2022 03:09:36 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C88F0C061401;
+        Mon, 31 Jan 2022 03:09:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B1F3461035;
-        Mon, 31 Jan 2022 11:09:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92D89C340EE;
-        Mon, 31 Jan 2022 11:09:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 67E2760F96;
+        Mon, 31 Jan 2022 11:09:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C002C340E8;
+        Mon, 31 Jan 2022 11:09:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627375;
-        bh=0PjmHfOgWRzGow6i7AqImzcQU+i2us/OM0DxEqBdPKo=;
+        s=korg; t=1643627368;
+        bh=RXJiMghcv4iaFoYHI7dB/1o8hostNGLl4333WgzAptc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H1FR0AaB3iPWsRQp84aIWN+1JSCYq4UYy8YewOd4x46RN2rzwP6Jh1Ah1gyfiaNV/
-         LXvnR7qXQcKytzoRVmpSqK/Ap7SgCCVtDqraB+lttwfrRgMpeVHL56Q4Cp+A41vqKV
-         8/EUjbISmPsWtUCwpOHxjf1v1+FmLaqc/hqJPiBA=
+        b=l0mLmNW1mJ1PuP3GPcPHLWu85X493Ggex1Ba33azSfxYZPThizJKtWQlU02VsK3gq
+         s9hmV8BncrEDTY4vq+HaVwpI4c/f74Yijup6Yluq0JllvUivhhICQhsURNy7UZKQfe
+         H+SLezlmSIStpCRwLLNC50lIat/p5sQqXJFB+7ok=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Damjan Marion (damarion)" <damarion@cisco.com>,
-        Chan Edison <edison_chan_gz@hotmail.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>
-Subject: [PATCH 5.15 030/171] perf/x86/intel: Add a quirk for the calculation of the number of counters on Alder Lake
-Date:   Mon, 31 Jan 2022 11:54:55 +0100
-Message-Id: <20220131105231.039241149@linuxfoundation.org>
+        stable@vger.kernel.org, "Dmitry V. Levin" <ldv@altlinux.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.15 028/171] powerpc/audit: Fix syscall_get_arch()
+Date:   Mon, 31 Jan 2022 11:54:53 +0100
+Message-Id: <20220131105230.972888808@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
 References: <20220131105229.959216821@linuxfoundation.org>
@@ -52,76 +50,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kan Liang <kan.liang@linux.intel.com>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-commit 7fa981cad216e9f64f49e22112f610c0bfed91bc upstream.
+commit 252745240ba0ae774d2f80c5e185ed59fbc4fb41 upstream.
 
-For some Alder Lake machine with all E-cores disabled in a BIOS, the
-below warning may be triggered.
+Commit 770cec16cdc9 ("powerpc/audit: Simplify syscall_get_arch()")
+and commit 898a1ef06ad4 ("powerpc/audit: Avoid unneccessary #ifdef
+in syscall_get_arguments()")
+replaced test_tsk_thread_flag(task, TIF_32BIT)) by is_32bit_task().
 
-[ 2.010766] hw perf events fixed 5 > max(4), clipping!
+But is_32bit_task() applies on current task while be want the test
+done on task 'task'
 
-Current perf code relies on the CPUID leaf 0xA and leaf 7.EDX[15] to
-calculate the number of the counters and follow the below assumption.
+So add a new macro is_tsk_32bit_task() to check any task.
 
-For a hybrid configuration, the leaf 7.EDX[15] (X86_FEATURE_HYBRID_CPU)
-is set. The leaf 0xA only enumerate the common counters. Linux perf has
-to manually add the extra GP counters and fixed counters for P-cores.
-For a non-hybrid configuration, the X86_FEATURE_HYBRID_CPU should not
-be set. The leaf 0xA enumerates all counters.
-
-However, that's not the case when all E-cores are disabled in a BIOS.
-Although there are only P-cores in the system, the leaf 7.EDX[15]
-(X86_FEATURE_HYBRID_CPU) is still set. But the leaf 0xA is updated
-to enumerate all counters of P-cores. The inconsistency triggers the
-warning.
-
-Several software ways were considered to handle the inconsistency.
-- Drop the leaf 0xA and leaf 7.EDX[15] CPUID enumeration support.
-  Hardcode the number of counters. This solution may be a problem for
-  virtualization. A hypervisor cannot control the number of counters
-  in a Linux guest via changing the guest CPUID enumeration anymore.
-- Find another CPUID bit that is also updated with E-cores disabled.
-  There may be a problem in the virtualization environment too. Because
-  a hypervisor may disable the feature/CPUID bit.
-- The P-cores have a maximum of 8 GP counters and 4 fixed counters on
-  ADL. The maximum number can be used to detect the case.
-  This solution is implemented in this patch.
-
-Fixes: ee72a94ea4a6 ("perf/x86/intel: Fix fixed counter check warning for some Alder Lake")
-Reported-by: Damjan Marion (damarion) <damarion@cisco.com>
-Reported-by: Chan Edison <edison_chan_gz@hotmail.com>
-Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Tested-by: Damjan Marion (damarion) <damarion@cisco.com>
+Fixes: 770cec16cdc9 ("powerpc/audit: Simplify syscall_get_arch()")
+Fixes: 898a1ef06ad4 ("powerpc/audit: Avoid unneccessary #ifdef in syscall_get_arguments()")
 Cc: stable@vger.kernel.org
-Link: https://lkml.kernel.org/r/1641925238-149288-1-git-send-email-kan.liang@linux.intel.com
+Reported-by: Dmitry V. Levin <ldv@altlinux.org>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/c55cddb8f65713bf5859ed675d75a50cb37d5995.1642159570.git.christophe.leroy@csgroup.eu
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/events/intel/core.c |   13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ arch/powerpc/include/asm/syscall.h     |    4 ++--
+ arch/powerpc/include/asm/thread_info.h |    2 ++
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
---- a/arch/x86/events/intel/core.c
-+++ b/arch/x86/events/intel/core.c
-@@ -6187,6 +6187,19 @@ __init int intel_pmu_init(void)
- 			pmu->num_counters = x86_pmu.num_counters;
- 			pmu->num_counters_fixed = x86_pmu.num_counters_fixed;
- 		}
-+
-+		/*
-+		 * Quirk: For some Alder Lake machine, when all E-cores are disabled in
-+		 * a BIOS, the leaf 0xA will enumerate all counters of P-cores. However,
-+		 * the X86_FEATURE_HYBRID_CPU is still set. The above codes will
-+		 * mistakenly add extra counters for P-cores. Correct the number of
-+		 * counters here.
-+		 */
-+		if ((pmu->num_counters > 8) || (pmu->num_counters_fixed > 4)) {
-+			pmu->num_counters = x86_pmu.num_counters;
-+			pmu->num_counters_fixed = x86_pmu.num_counters_fixed;
-+		}
-+
- 		pmu->max_pebs_events = min_t(unsigned, MAX_PEBS_EVENTS, pmu->num_counters);
- 		pmu->unconstrained = (struct event_constraint)
- 					__EVENT_CONSTRAINT(0, (1ULL << pmu->num_counters) - 1,
+--- a/arch/powerpc/include/asm/syscall.h
++++ b/arch/powerpc/include/asm/syscall.h
+@@ -90,7 +90,7 @@ static inline void syscall_get_arguments
+ 	unsigned long val, mask = -1UL;
+ 	unsigned int n = 6;
+ 
+-	if (is_32bit_task())
++	if (is_tsk_32bit_task(task))
+ 		mask = 0xffffffff;
+ 
+ 	while (n--) {
+@@ -115,7 +115,7 @@ static inline void syscall_set_arguments
+ 
+ static inline int syscall_get_arch(struct task_struct *task)
+ {
+-	if (is_32bit_task())
++	if (is_tsk_32bit_task(task))
+ 		return AUDIT_ARCH_PPC;
+ 	else if (IS_ENABLED(CONFIG_CPU_LITTLE_ENDIAN))
+ 		return AUDIT_ARCH_PPC64LE;
+--- a/arch/powerpc/include/asm/thread_info.h
++++ b/arch/powerpc/include/asm/thread_info.h
+@@ -165,8 +165,10 @@ static inline bool test_thread_local_fla
+ 
+ #ifdef CONFIG_COMPAT
+ #define is_32bit_task()	(test_thread_flag(TIF_32BIT))
++#define is_tsk_32bit_task(tsk)	(test_tsk_thread_flag(tsk, TIF_32BIT))
+ #else
+ #define is_32bit_task()	(IS_ENABLED(CONFIG_PPC32))
++#define is_tsk_32bit_task(tsk)	(IS_ENABLED(CONFIG_PPC32))
+ #endif
+ 
+ #if defined(CONFIG_PPC64)
 
 
