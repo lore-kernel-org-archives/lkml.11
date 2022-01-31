@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B4E7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:00:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC5B7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:00:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348594AbiAaLAO (ORCPT
+        id S1348492AbiAaLAR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:00:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42870 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358374AbiAaK7Y (ORCPT
+        Mon, 31 Jan 2022 06:00:17 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:60464 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358392AbiAaK73 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 05:59:24 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78711C061756;
-        Mon, 31 Jan 2022 02:59:06 -0800 (PST)
+        Mon, 31 Jan 2022 05:59:29 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 45077B82A61;
-        Mon, 31 Jan 2022 10:59:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81C2FC340E8;
-        Mon, 31 Jan 2022 10:59:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F6A560A75;
+        Mon, 31 Jan 2022 10:59:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D745C340E8;
+        Mon, 31 Jan 2022 10:59:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643626744;
-        bh=rml6SmFqUX/9fx0HeGdsOnY9/GT3ir5zHsysGMI2h8o=;
+        s=korg; t=1643626768;
+        bh=hIfUf3yN1UNeN2vT8cU48/YWdF/Y5IljBCJYrJJAObw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QBizVBeaB25nPIsZyvyvvl1YKDNhH+TNzeaPdQxGoIu7jkDJ3wKoPMMaWbgIREMwA
-         ilspyWZezeLexWVhrx25wvOy0g0gijWO2eYvtU2ZbiOieUwxPFOEr0ir0t0L0BI+v5
-         5VZ17lAg/IW3ZAvcCcuFCX5QIG5Ijlbvwac/Ux14=
+        b=KW62loPjZ7aGyngYfcTL7pSMSaRyiwcrA+v/0Xg3oDaL44Avfec/j+ORItfvncVXI
+         7eW7HaHaKYmSknMMVKS+YedaMlH4Hm39D8XX0xGKpv6oB2ZsFA38UUT+eRp/b/PuMa
+         MZ0FUG51yY5EJqkLG4w6nVmyFpwbTLnY0f+8tf5c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
-        Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
-        Gurucharan G <gurucharanx.g@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.4 25/64] i40e: Increase delay to 1 s after global EMP reset
-Date:   Mon, 31 Jan 2022 11:56:10 +0100
-Message-Id: <20220131105216.513051719@linuxfoundation.org>
+        stable@vger.kernel.org, Maksym Yaremchuk <maksymy@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Amit Cohen <amcohen@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 32/64] ipv6_tunnel: Rate limit warning messages
+Date:   Mon, 31 Jan 2022 11:56:17 +0100
+Message-Id: <20220131105216.758612243@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105215.644174521@linuxfoundation.org>
 References: <20220131105215.644174521@linuxfoundation.org>
@@ -52,47 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
+From: Ido Schimmel <idosch@nvidia.com>
 
-commit 9b13bd53134c9ddd544a790125199fdbdb505e67 upstream.
+commit 6cee105e7f2ced596373951d9ea08dacc3883c68 upstream.
 
-Recently simplified i40e_rebuild causes that FW sometimes
-is not ready after NVM update, the ping does not return.
+The warning messages can be invoked from the data path for every packet
+transmitted through an ip6gre netdev, leading to high CPU utilization.
 
-Increase the delay in case of EMP reset.
-Old delay of 300 ms was introduced for specific cards for 710 series.
-Now it works for all the cards and delay was increased.
+Fix that by rate limiting the messages.
 
-Fixes: 1fa51a650e1d ("i40e: Add delay after EMP reset for firmware to recover")
-Signed-off-by: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
-Signed-off-by: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
-Tested-by: Gurucharan G <gurucharanx.g@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Fixes: 09c6bbf090ec ("[IPV6]: Do mandatory IPv6 tunnel endpoint checks in realtime")
+Reported-by: Maksym Yaremchuk <maksymy@nvidia.com>
+Tested-by: Maksym Yaremchuk <maksymy@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Reviewed-by: Amit Cohen <amcohen@nvidia.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/i40e/i40e_main.c |   12 +++---------
- 1 file changed, 3 insertions(+), 9 deletions(-)
+ net/ipv6/ip6_tunnel.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -10084,15 +10084,9 @@ static void i40e_rebuild(struct i40e_pf
- 	}
- 	i40e_get_oem_version(&pf->hw);
+--- a/net/ipv6/ip6_tunnel.c
++++ b/net/ipv6/ip6_tunnel.c
+@@ -1000,14 +1000,14 @@ int ip6_tnl_xmit_ctl(struct ip6_tnl *t,
  
--	if (test_bit(__I40E_EMP_RESET_INTR_RECEIVED, pf->state) &&
--	    ((hw->aq.fw_maj_ver == 4 && hw->aq.fw_min_ver <= 33) ||
--	     hw->aq.fw_maj_ver < 4) && hw->mac.type == I40E_MAC_XL710) {
--		/* The following delay is necessary for 4.33 firmware and older
--		 * to recover after EMP reset. 200 ms should suffice but we
--		 * put here 300 ms to be sure that FW is ready to operate
--		 * after reset.
--		 */
--		mdelay(300);
-+	if (test_and_clear_bit(__I40E_EMP_RESET_INTR_RECEIVED, pf->state)) {
-+		/* The following delay is necessary for firmware update. */
-+		mdelay(1000);
- 	}
- 
- 	/* re-verify the eeprom if we just had an EMP reset */
+ 		if (unlikely(!ipv6_chk_addr_and_flags(net, laddr, ldev, false,
+ 						      0, IFA_F_TENTATIVE)))
+-			pr_warn("%s xmit: Local address not yet configured!\n",
+-				p->name);
++			pr_warn_ratelimited("%s xmit: Local address not yet configured!\n",
++					    p->name);
+ 		else if (!(p->flags & IP6_TNL_F_ALLOW_LOCAL_REMOTE) &&
+ 			 !ipv6_addr_is_multicast(raddr) &&
+ 			 unlikely(ipv6_chk_addr_and_flags(net, raddr, ldev,
+ 							  true, 0, IFA_F_TENTATIVE)))
+-			pr_warn("%s xmit: Routing loop! Remote address found on this node!\n",
+-				p->name);
++			pr_warn_ratelimited("%s xmit: Routing loop! Remote address found on this node!\n",
++					    p->name);
+ 		else
+ 			ret = 1;
+ 		rcu_read_unlock();
 
 
