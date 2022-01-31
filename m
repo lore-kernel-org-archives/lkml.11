@@ -2,49 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21A69C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:04:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA877C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:04:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359117AbiAaLEX (ORCPT
+        id S1358635AbiAaLE1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:04:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43362 "EHLO
+        Mon, 31 Jan 2022 06:04:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359152AbiAaLDB (ORCPT
+        with ESMTP id S1359145AbiAaLDB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 31 Jan 2022 06:03:01 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 678B2C0612FC;
-        Mon, 31 Jan 2022 03:01:35 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF1B4C0612F4;
+        Mon, 31 Jan 2022 03:01:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2CCDEB82A5E;
-        Mon, 31 Jan 2022 11:01:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45954C340E8;
-        Mon, 31 Jan 2022 11:01:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F2D760B2C;
+        Mon, 31 Jan 2022 11:01:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 336D4C340E8;
+        Mon, 31 Jan 2022 11:01:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643626892;
-        bh=xLeK2P+nBHoZ3TW+XG9S74ef1zCqYwfGpC4fgjP9Lmk=;
+        s=korg; t=1643626889;
+        bh=7E9ERDVZttx1BEkbi9cB6zU2U3oaHnyBYoXJvVBibGo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dqKRx4nO43K4aK3IFjsgJrMgpI0lrXCeYXhYdZ3o1knDclabwHJGeyDEAbHOY0xu7
-         uHp/5t3QfkMqspEQXmY9KQ+IOzD5r1f3+bxLvfQ/f9eEFKJP59JByodE/WCXvUTYMI
-         6oV74FuaRmK1Nr1KohwEDcejPddfqRdl8lhDB8AA=
+        b=y3LjrInQv9UWJA3SJixuti5031CoKQddjkGKFWdPIuJ4k+z1Y0PjFM3QOIeTGGYNp
+         XHPVjQOyXICWPxovOwbZfh9QODwPrxoVjyClhMCMYYOBzW/6FT6ZdMKuHu/GDoQwG2
+         hUv3VcBBWvW6PJf4FIcGwyFSgrymqmncMeSxf8CM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brian Gix <brian.gix@intel.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        syphyr <syphyr@gmail.com>
-Subject: [PATCH 5.10 001/100] Bluetooth: refactor malicious adv data check
-Date:   Mon, 31 Jan 2022 11:55:22 +0100
-Message-Id: <20220131105220.474074744@linuxfoundation.org>
+        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH 5.4 35/64] hwmon: (lm90) Mark alert as broken for MAX6646/6647/6649
+Date:   Mon, 31 Jan 2022 11:56:20 +0100
+Message-Id: <20220131105216.868584958@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
-References: <20220131105220.424085452@linuxfoundation.org>
+In-Reply-To: <20220131105215.644174521@linuxfoundation.org>
+References: <20220131105215.644174521@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -52,48 +48,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brian Gix <brian.gix@intel.com>
+From: Guenter Roeck <linux@roeck-us.net>
 
-commit 899663be5e75dc0174dc8bda0b5e6826edf0b29a upstream.
+commit f614629f9c1080dcc844a8430e3fb4c37ebbf05d upstream.
 
-Check for out-of-bound read was being performed at the end of while
-num_reports loop, and would fill journal with false positives. Added
-check to beginning of loop processing so that it doesn't get checked
-after ptr has been advanced.
+Experiments with MAX6646 and MAX6648 show that the alert function of those
+chips is broken, similar to other chips supported by the lm90 driver.
+Mark it accordingly.
 
-Signed-off-by: Brian Gix <brian.gix@intel.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
-Cc: syphyr <syphyr@gmail.com>
+Fixes: 4667bcb8d8fc ("hwmon: (lm90) Introduce chip parameter structure")
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/bluetooth/hci_event.c |   10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/hwmon/lm90.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -5661,6 +5661,11 @@ static void hci_le_adv_report_evt(struct
- 		struct hci_ev_le_advertising_info *ev = ptr;
- 		s8 rssi;
- 
-+		if (ptr > (void *)skb_tail_pointer(skb) - sizeof(*ev)) {
-+			bt_dev_err(hdev, "Malicious advertising data.");
-+			break;
-+		}
-+
- 		if (ev->length <= HCI_MAX_AD_LENGTH &&
- 		    ev->data + ev->length <= skb_tail_pointer(skb)) {
- 			rssi = ev->data[ev->length];
-@@ -5672,11 +5677,6 @@ static void hci_le_adv_report_evt(struct
- 		}
- 
- 		ptr += sizeof(*ev) + ev->length + 1;
--
--		if (ptr > (void *) skb_tail_pointer(skb) - sizeof(*ev)) {
--			bt_dev_err(hdev, "Malicious advertising data. Stopping processing");
--			break;
--		}
- 	}
- 
- 	hci_dev_unlock(hdev);
+--- a/drivers/hwmon/lm90.c
++++ b/drivers/hwmon/lm90.c
+@@ -394,7 +394,7 @@ static const struct lm90_params lm90_par
+ 		.max_convrate = 9,
+ 	},
+ 	[max6646] = {
+-		.flags = LM90_HAVE_CRIT,
++		.flags = LM90_HAVE_CRIT | LM90_HAVE_BROKEN_ALERT,
+ 		.alert_alarms = 0x7c,
+ 		.max_convrate = 6,
+ 		.reg_local_ext = MAX6657_REG_R_LOCAL_TEMPL,
 
 
