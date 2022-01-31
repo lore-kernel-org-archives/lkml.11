@@ -2,215 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4257AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 18:48:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79CA5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 18:48:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350939AbiAaSsH (ORCPT
+        id S1357863AbiAaSs0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 13:48:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40378 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357946AbiAaSrx (ORCPT
+        Mon, 31 Jan 2022 13:48:26 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:55806 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1358298AbiAaSsT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 13:47:53 -0500
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1D2DC06173B;
-        Mon, 31 Jan 2022 10:47:37 -0800 (PST)
-Received: by mail-yb1-xb36.google.com with SMTP id j2so30170934ybu.0;
-        Mon, 31 Jan 2022 10:47:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=317J+b5PpSz9x/w2XV3+0c4wYcSD3IlZCWiQWA5Ipxk=;
-        b=eI8S6HU4hdhKI33oB2A77jQ5V2CxkG5J0sRSnPNQRR/LWUgBL44/AI5I8DKXpLtgAk
-         U3PwrJjmLcA//CNKNXw6eUCi7hsWc7xfM6ZvWHSVzdZaO6AonSqjVCxah1otkOsB1fiV
-         rc4oYNGl9hSbQmVH2LA72zjrYXbyTJmvzlodkB7nvGFsfK7ID1KN3R40xBYtv4Q30cVN
-         8jW0eKe7PAMFCwnGKwCzLODuvWtJ8VSf4lEsfr20OOCS2aXyETlK5OnePtwIAx62UmO0
-         MZzcycHt4kZ9O2mBjYD2cpDXOaARyCiN9A05TO0u8LqajMvO8LSm+nf4dhD7InRd7BwA
-         x0aA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=317J+b5PpSz9x/w2XV3+0c4wYcSD3IlZCWiQWA5Ipxk=;
-        b=Z1Q6BXvMOG6KBvKe8WtbimM6NI8cDxI17S0HQ2picZPOtLqa2UXh1RHaIrcH+RGv8a
-         mC/JCU6rpxnzE9deUiOrA8do6kApvOIxKTy/GH3O5Nr/nJYGWZRLakrv3LfmvcnfLgEk
-         Qr+H2pqXCfLGCi0bRmP08sowq7p/g7hI3glhtc41VC5Gd+M9tH0K/pplP485hmgpavj+
-         GnP8BhBD4HMIAyHTAqbLawPtOiVaC2f89ABiM5MbGYSyll3P+fxhtGLasRH/RPSKu88t
-         zFgBwd5icBliNuEeBORDpJsCj3eBeQqrCoLva95nzIwHn1IQ23Al6zeTx05TcLDSPetW
-         UPcg==
-X-Gm-Message-State: AOAM530NnspZBtJ+hKJylxPucL3/1LixGiLgkvq+CqdBntm/iTXytrPV
-        /LeDLvdnohrk6LB8feJzQJkqtnEBVhbXj9yxbQY=
-X-Google-Smtp-Source: ABdhPJwarLPQqvXwzoY39z9HgOmm8G1lObZ3heCf+jF3pngw5pMw8uAoV92YPAxkOQa+IkVbXlcm+32aAbpjxHzUAl4=
-X-Received: by 2002:a25:50cf:: with SMTP id e198mr31706710ybb.398.1643654857132;
- Mon, 31 Jan 2022 10:47:37 -0800 (PST)
+        Mon, 31 Jan 2022 13:48:19 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643654898;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=KfQFfvwTGn23fXKYlknOZjlgILY6kYRW26SfIwpEJJM=;
+        b=HKNyrpQa598Ejmi7D9BN6TnVcyRStku6wt7yQ1gZaqhWXPZHFKfCgwrrZenPiipysWdYo2
+        KLzIAmy25avmprcxQZ2KgIK4DcKYFWdDuPVKRmNBfY5qYvdZolXOfhFBDHrfJGbDU62BSU
+        peapwoxB8eblWWqhICPiXNi2uMpUUCg=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-354-y95AX1aoM06TnU-mvZxpgg-1; Mon, 31 Jan 2022 13:48:15 -0500
+X-MC-Unique: y95AX1aoM06TnU-mvZxpgg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 566D81966320;
+        Mon, 31 Jan 2022 18:48:13 +0000 (UTC)
+Received: from [10.22.16.244] (unknown [10.22.16.244])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A8C977A424;
+        Mon, 31 Jan 2022 18:48:11 +0000 (UTC)
+Message-ID: <c33b6435-1b27-32af-b14c-0f3a0318dcca@redhat.com>
+Date:   Mon, 31 Jan 2022 13:48:11 -0500
 MIME-Version: 1.0
-References: <20220113150846.1570738-1-rad@semihalf.ocm> <CABBYNZJn1ej18ERtgnF_wvbvBEm0N=cBRHHtr8bu+nfAotjg2Q@mail.gmail.com>
- <CAOs-w0+W_BHTdZkOnu-EPme2dpoO_6bQi_2LRH7Xw0Ge=i9TOA@mail.gmail.com> <CABBYNZLinzOxJWgHwVbeEWe2zkz_y4BrXVYX4e0op580YO1OeA@mail.gmail.com>
-In-Reply-To: <CABBYNZLinzOxJWgHwVbeEWe2zkz_y4BrXVYX4e0op580YO1OeA@mail.gmail.com>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Mon, 31 Jan 2022 10:47:26 -0800
-Message-ID: <CABBYNZL3ozczAK2mWXVd+x2NtZhaAbfnUFoA3ot1AQLNHSeL5w@mail.gmail.com>
-Subject: Re: [PATCH] Bluetooth: Fix skb allocation in mgmt_remote_name()
-To:     =?UTF-8?Q?Rados=C5=82aw_Biernacki?= <rad@semihalf.com>
-Cc:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
-        Archie Pusaka <apusaka@chromium.org>,
-        Miao-chen Chou <mcchou@chromium.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        upstream@semihalf.com, Angela Czubak <acz@semihalf.com>,
-        Marek Maslanka <mm@semihalf.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH v2 1/3] lib/vsprintf: Avoid redundant work with 0 size
+Content-Language: en-US
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        David Rientjes <rientjes@google.com>
+Cc:     Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Vladimir Davydov <vdavydov.dev@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
+        linux-mm@kvack.org, Ira Weiny <ira.weiny@intel.com>,
+        Rafael Aquini <aquini@redhat.com>
+References: <20220129205315.478628-1-longman@redhat.com>
+ <20220129205315.478628-2-longman@redhat.com>
+ <d99b3c4b-7b6e-529-6e4b-b91b65c92d81@google.com>
+ <Yfe5Bb3U6Uil7Y6g@smile.fi.intel.com> <Yfe6SfG4CqzWSaMM@smile.fi.intel.com>
+ <Yfe7Q5cx+MoaOev/@smile.fi.intel.com>
+From:   Waiman Long <longman@redhat.com>
+In-Reply-To: <Yfe7Q5cx+MoaOev/@smile.fi.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Rados=C5=82aw,
+On 1/31/22 05:34, Andy Shevchenko wrote:
+> On Mon, Jan 31, 2022 at 12:30:33PM +0200, Andy Shevchenko wrote:
+>> On Mon, Jan 31, 2022 at 12:25:09PM +0200, Andy Shevchenko wrote:
+>>> On Sun, Jan 30, 2022 at 12:49:37PM -0800, David Rientjes wrote:
+>>>> On Sat, 29 Jan 2022, Waiman Long wrote:
+>>>>
+>>>>> For *scnprintf(), vsnprintf() is always called even if the input size is
+>>>>> 0. That is a waste of time, so just return 0 in this case.
+>>> Why do you think it's not legit?
+>> I have to elaborate.
+>>
+>> For *nprintf() the size=0 is quite useful to have.
+>> For *cnprintf() the size=0 makes less sense, but, if we read `man snprintf()`:
+>>
+>>    The  functions  snprintf() and vsnprintf() do not write more than size bytes
+>>    (including the terminating null byte ('\0')). If the output was truncated due
+>>    to this limit, then the return value is the  number of  characters (excluding
+>>    the terminating null byte) which would have been written to the final string
+>>    if enough space had been available. Thus, a return value of size or more
+>>    means  that  the  output  was truncated.  (See also below under NOTES.)
+>>
+>>    If an output error is encountered, a negative value is returned.
+>>
+>> Note the last sentence there. You need to answer to it in the commit message
+>> why your change is okay and it will show that you thought through all possible
+>> scenarios.
+> Also it seems currently the kernel documentation is not aligned with the code
+>
+>    "If @size is == 0 the function returns 0."
+>
+> It should mention the (theoretical?) possibility of getting negative value,
+> if vsnprintf() returns negative value.
 
-On Thu, Jan 13, 2022 at 2:23 PM Luiz Augusto von Dentz
-<luiz.dentz@gmail.com> wrote:
->
-> Hi Rados=C5=82aw,
->
-> On Thu, Jan 13, 2022 at 2:07 PM Rados=C5=82aw Biernacki <rad@semihalf.com=
-> wrote:
-> >
-> > Hi Luiz,
-> >
-> > czw., 13 sty 2022 o 17:17 Luiz Augusto von Dentz
-> > <luiz.dentz@gmail.com> napisa=C5=82(a):
-> > >
-> > > Hi Radoslaw,
-> > >
-> > > On Thu, Jan 13, 2022 at 7:09 AM Radoslaw Biernacki <rad@semihalf.com>=
- wrote:
-> > > >
-> > > > From: Radoslaw Biernacki <rad@semihalf.com>
-> > > >
-> > > > This patch fixes skb allocation, as lack of space for ev might push=
- skb
-> > > > tail beyond its end.
-> > > > Also introduce eir_precalc_len() that can be used instead of magic
-> > > > numbers for similar eir operations on skb.
-> > > >
-> > > > Fixes: cf1bce1de7eeb ("Bluetooth: mgmt: Make use of mgmt_send_event=
-_skb in MGMT_EV_DEVICE_FOUND")
-> > > > Signed-off-by: Angela Czubak <acz@semihalf.com>
-> > > > Signed-off-by: Marek Maslanka <mm@semihalf.com>
-> > > > Signed-off-by: Radoslaw Biernacki <rad@semihalf.com>
-> > > > ---
-> > > >  net/bluetooth/eir.h  |  5 +++++
-> > > >  net/bluetooth/mgmt.c | 12 ++++--------
-> > > >  2 files changed, 9 insertions(+), 8 deletions(-)
-> > > >
-> > > > diff --git a/net/bluetooth/eir.h b/net/bluetooth/eir.h
-> > > > index 05e2e917fc25..e5876751f07e 100644
-> > > > --- a/net/bluetooth/eir.h
-> > > > +++ b/net/bluetooth/eir.h
-> > > > @@ -15,6 +15,11 @@ u8 eir_create_scan_rsp(struct hci_dev *hdev, u8 =
-instance, u8 *ptr);
-> > > >  u8 eir_append_local_name(struct hci_dev *hdev, u8 *eir, u8 ad_len)=
-;
-> > > >  u8 eir_append_appearance(struct hci_dev *hdev, u8 *ptr, u8 ad_len)=
-;
-> > > >
-> > > > +static inline u16 eir_precalc_len(u8 data_len)
-> > > > +{
-> > > > +       return sizeof(u8) * 2 + data_len;
-> > > > +}
-> > > > +
-> > > >  static inline u16 eir_append_data(u8 *eir, u16 eir_len, u8 type,
-> > > >                                   u8 *data, u8 data_len)
-> > > >  {
-> > > > diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-> > > > index 37087cf7dc5a..d517fd847730 100644
-> > > > --- a/net/bluetooth/mgmt.c
-> > > > +++ b/net/bluetooth/mgmt.c
-> > > > @@ -9680,13 +9680,11 @@ void mgmt_remote_name(struct hci_dev *hdev,=
- bdaddr_t *bdaddr, u8 link_type,
-> > > >  {
-> > > >         struct sk_buff *skb;
-> > > >         struct mgmt_ev_device_found *ev;
-> > > > -       u16 eir_len;
-> > > > -       u32 flags;
-> > > > +       u16 eir_len =3D 0;
-> > > > +       u32 flags =3D 0;
-> > > >
-> > > > -       if (name_len)
-> > > > -               skb =3D mgmt_alloc_skb(hdev, MGMT_EV_DEVICE_FOUND, =
-2 + name_len);
-> > > > -       else
-> > > > -               skb =3D mgmt_alloc_skb(hdev, MGMT_EV_DEVICE_FOUND, =
-0);
-> > > > +       skb =3D mgmt_alloc_skb(hdev, MGMT_EV_DEVICE_FOUND,
-> > > > +                            sizeof(*ev) + (name ? eir_precalc_len(=
-name_len) : 0));
-> > >
-> > > Looks like mgmt_device_connected also has a similar problem.
-> >
-> > Yes, I was planning to send a patch to this one though it will not be a=
-s slick.
-> > It would be nice to have a helper which will call skb_put() and add
-> > eir data at once.
-> > Basically skb operation in pair to, what eir_append_data() does with
-> > help of eir_len but without awkwardness when passing return value to
-> > skb_put() (as it returns offset not size).
->
-> Hmm, that might be a good idea indeed something like eir_append_skb,
-> if only we could grow the skb with skb_put directly that would
-> eliminate the problem with having to reserve enough space for the
-> worse case.
->
-> > I will send V2 with two patches. I hope they will align with your
-> > original goal of eliminating the necessity of intermediary buffers at
-> > some point in future.
+AFAICS, the kernel's vsnprintf() function will not return -1. So in that 
+sense it is not fully POSIX compliant. Since vscnprintf() function 
+always returns 0 when size is 0, there is no point in finding out 
+exactly how much bytes the buffer needs to hold the formatted text as 
+this information will not be returned back to the caller anyway. I will 
+update to indicate the vsnprintf() does not return -1.
 
-Are you still planning to send the v2?
+Thanks,
+Longmn
 
-> > >
-> > > >         ev =3D skb_put(skb, sizeof(*ev));
-> > > >         bacpy(&ev->addr.bdaddr, bdaddr);
-> > > > @@ -9696,10 +9694,8 @@ void mgmt_remote_name(struct hci_dev *hdev, =
-bdaddr_t *bdaddr, u8 link_type,
-> > > >         if (name) {
-> > > >                 eir_len =3D eir_append_data(ev->eir, 0, EIR_NAME_CO=
-MPLETE, name,
-> > > >                                           name_len);
-> > > > -               flags =3D 0;
-> > > >                 skb_put(skb, eir_len);
-> > > >         } else {
-> > > > -               eir_len =3D 0;
-> > > >                 flags =3D MGMT_DEV_FOUND_NAME_REQUEST_FAILED;
-> > > >         }
-> > >
-> > > These changes would leave flags and eir_len uninitialized.
-> >
-> > Both are initialized to 0 by this patch.
->
-> Sorry, I must be blind that I didn't see you had changed that to be
-> initialized in their declaration.
->
-> > >
-> > > > --
-> > > > 2.34.1.703.g22d0c6ccf7-goog
-> > > >
-> > >
-> > >
-> > > --
-> > > Luiz Augusto von Dentz
->
->
->
-> --
-> Luiz Augusto von Dentz
-
-
-
---=20
-Luiz Augusto von Dentz
