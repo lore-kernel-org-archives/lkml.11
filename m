@@ -2,104 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1632C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 14:14:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 187D9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 14:14:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379320AbiAaOOK (ORCPT
+        id S1379351AbiAaOOr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 09:14:10 -0500
-Received: from mga04.intel.com ([192.55.52.120]:15656 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1346623AbiAaOOH (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 09:14:07 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643638447; x=1675174447;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=u2/KL+QczLeO5HW7c5Ow6qXPV61IYgm4mFoJmsrc6Pk=;
-  b=Vr5oMS7JT33lYcvuyj5IVHJGCiwrNOSIpwCdaT7VtOWutQyKwm24hdl1
-   YFQlH13tn2o/g8HvDl3x9e1ylZeJRXibHS3XlaWuguiZw7cLAAaqKWtlw
-   aXmxQ8vy3o5GW7MXwZc6M55xEB6PQQ8MHgfKl78aq6WMBsg6iN3b/Abny
-   Zq9WtY66KqdfSwCp0syc8+t7z8Rmld4ZVC28Bm63LDL06vZ7ntjjHK4Zd
-   gme+kuRHfyXD5zLBkTCKi5hDtZ90OiO3F0TlCVktpGFW2UEi43dP0RYdo
-   DCWM3BYaVLMHY3DoCsSeSbZaV3bv62hesd5O0NKk/ffdqKVXZGfLqACyZ
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10243"; a="246300424"
-X-IronPort-AV: E=Sophos;i="5.88,331,1635231600"; 
-   d="scan'208";a="246300424"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 06:07:18 -0800
-X-IronPort-AV: E=Sophos;i="5.88,331,1635231600"; 
-   d="scan'208";a="522665965"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 06:07:14 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nEXJq-00GtM0-Jq;
-        Mon, 31 Jan 2022 16:06:10 +0200
-Date:   Mon, 31 Jan 2022 16:06:10 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Javier Martinez Canillas <javierm@redhat.com>
-Cc:     Andy Shevchenko <andy@kernel.org>, linux-fbdev@vger.kernel.org,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Helge Deller <deller@gmx.de>, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Carlis <zhangxuezhi1@yulong.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH v1 1/4] fbtft: Unorphan the driver
-Message-ID: <Yffs0nuG3ElH1bNE@smile.fi.intel.com>
-References: <YfFIpBb7lL4ukWjm@smile.fi.intel.com>
- <b8eb7111-43aa-cc8a-a1bc-f08e0f2987ed@redhat.com>
- <YfFV4EJosayH+e6C@smile.fi.intel.com>
- <YfFWPmG2D093gz4N@smile.fi.intel.com>
- <6e74d4cc-655a-e38e-0856-a59e4e6deb36@redhat.com>
- <c423a2f0-e7be-3884-3568-7629c7e9104e@redhat.com>
- <YffJujbpUGUqpIk/@smile.fi.intel.com>
- <5a3fffc8-b2d8-6ac3-809e-e8e71b66a8ea@redhat.com>
- <YffiwCiFnqF1X1pD@smile.fi.intel.com>
- <29ab99fb-d906-907b-e922-251ac72b25ef@redhat.com>
+        Mon, 31 Jan 2022 09:14:47 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:53060 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346623AbiAaOOo (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 09:14:44 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 48CD6B82985;
+        Mon, 31 Jan 2022 14:14:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28B83C340EF;
+        Mon, 31 Jan 2022 14:14:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643638482;
+        bh=Jwzdg3jhNqhksWvoAOfXZTDUHbCt7r7dWEMB/5+WEb4=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=khi1WY1hIz6HuXBPUO7Hxyfb9A/gfLwJK2wgyhKyjcCfD8XUlycpXp65+/+0EI+RK
+         efAAUC4dnl+YaY9OyycR6A/0OTvwCdNpCkDxwsfUljSenIFPzV3rXVE4iLlVlzhp6o
+         /JSHVo0/dbKxJm3sTrOavET6LELm9aQFTi+wTEVdr6HhF11y+U/AVs/enDlKPsxc3Y
+         nmcZG5/vgd+KDq7BAXpECM5gSVfULe2zNjd8nzOAzP08DItTQ1HCG58BCHbCS0fDtV
+         1P6KWikH0WguN4FoSaWV4nhOfth4rrfjnDyO4CkM8GWI/h4G2E9DeUjR813c/PfL3z
+         V/ZaQUtedEjaQ==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <29ab99fb-d906-907b-e922-251ac72b25ef@redhat.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] carl9170: fix missing bit-wise or operator for tx_params
+From:   Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <20220125004406.344422-1-colin.i.king@gmail.com>
+References: <20220125004406.344422-1-colin.i.king@gmail.com>
+To:     Colin Ian King <colin.i.king@gmail.com>
+Cc:     Christian Lamparter <chunkeey@googlemail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Stable@vger.kernel.org
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <164363847846.10147.1688492518810406694.kvalo@kernel.org>
+Date:   Mon, 31 Jan 2022 14:14:39 +0000 (UTC)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 31, 2022 at 02:55:21PM +0100, Javier Martinez Canillas wrote:
-> On 1/31/22 14:23, Andy Shevchenko wrote:
-> > On Mon, Jan 31, 2022 at 01:08:32PM +0100, Javier Martinez Canillas wrote:
+Colin Ian King <colin.i.king@gmail.com> wrote:
 
-...
-
-> > The tricky part is the PRP0001
-> > ACPI PNP ID that allows to reuse it on ACPI-based platforms.
+> Currently tx_params is being re-assigned with a new value and the
+> previous setting IEEE80211_HT_MCS_TX_RX_DIFF is being overwritten.
+> The assignment operator is incorrect, the original intent was to
+> bit-wise or the value in. Fix this by replacing the = operator
+> with |= instead.
 > 
-> Oh, I wasn't aware about PRP0001. I've read about it at:
+> Kudos to Christian Lamparter for suggesting the correct fix.
 > 
-> https://www.kernel.org/doc/Documentation/acpi/enumeration.txt
+> Fixes: fe8ee9ad80b2 ("carl9170: mac80211 glue and command interface")
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+> Cc: <Stable@vger.kernel.org>
+> Acked-by: Christian Lamparter <chunkeey@gmail.com>
+> Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
 
-Yep!
+Patch applied to ath-next branch of ath.git, thanks.
 
-The idea is that new drivers for discrete (and sometimes even on-SoC)
-components should be platform-agnostic (means no strict OF / ACPI
-dependencies), so anybody can prototype devices on either of the
-platforms.
-
-As a matter of fact IIO subsystem is leading in this by cleaning up
-most of the drivers towards that goal.
-
-OF/ACPI explicit dependency makes sense when we 100+% sure that
-IP in question won't ever appear on the other type of platform
-(which I believe is very rare nowadays for most of the components).
+02a95374b5ee carl9170: fix missing bit-wise or operator for tx_params
 
 -- 
-With Best Regards,
-Andy Shevchenko
+https://patchwork.kernel.org/project/linux-wireless/patch/20220125004406.344422-1-colin.i.king@gmail.com/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
