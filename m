@@ -2,125 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1E7FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 10:35:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 559B9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 10:35:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239987AbiAaKfk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 05:35:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37024 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358234AbiAaKeQ (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 05:34:16 -0500
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48019C06173B
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 02:34:16 -0800 (PST)
-Received: by mail-yb1-xb4a.google.com with SMTP id e130-20020a255088000000b006126feb051eso25994591ybb.18
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 02:34:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=gQiXNhpWeE3w8plSrWyGvN1lrZy07A1L66IKLC7CKbA=;
-        b=jBeNywyuEOrcXul646YOTEnDNkvf2B21oUP/1LvS6MfqUeLNbH4ecLDYPUWeYJBghY
-         z3i5ILdvdOG+3+CnkALg8SHprnIucGpcnCQgkDxUIoyEtUk08H/S4biUQfAdMcF4RcDi
-         rm6Tp4txIJN4G18FTdqFDJeQZMu2zGr5Kb72KOMCnErupl+0AsPpFtL/eUu+TekxggYV
-         8WHC9X3E3y8J3Sjg4TWSGzvFUP0F/8Gj/82MlWlodrZo4F++MQ8Y9k3vTM9BY5EPj0Aj
-         5dES73C/VqfnNoLUtMrRSADU3rAktKKtrGALulf1IYdQkDnW/POpci29EY4pLJrtmKCI
-         Ovpw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=gQiXNhpWeE3w8plSrWyGvN1lrZy07A1L66IKLC7CKbA=;
-        b=vJy45Fjox/xVjhxo/iHBP2AnvnE66U2Wo69lQUsO5xjfPf9p1O4xfGGY08cxmCpG7q
-         zEhjsgubipkduxYn/tkkuXPH0bfeNEMRtqlmWzbvRRx7brfy7T/wptmLFFlhP451eaf8
-         AaAk6RAvJ48UEX8o2gtY3UpNx2QZzhFcWn7G7AumYGudNPLhh0na0Bt0a+AFod0yl6Uy
-         lzwSxn2SLeeI2Idlz/YEVPyhDhwASPtsPrKj7wFRL59BvZswIczA8N1lLK8jelgJ77fw
-         reztXghBHstCbG2X7L3hEdsSB6ny8JAEmdfz/U9X5+sfqzXYgBCgteoLsnaKpAMHB0qp
-         R5LA==
-X-Gm-Message-State: AOAM53346AGNfNWFJauuyngCZxYvGErQnjh9bRae08MTVb7HY+O6o+dm
-        rVKwUDmtvdFt6Azjcm6CUQySov10Zw==
-X-Google-Smtp-Source: ABdhPJzRQW4bKXsoVEcga7CM6u0Cngds+b22neL6Ay7g8PWBHgbN0WFRt59W7RFofatRiHhJVZXVszx0sQ==
-X-Received: from elver.muc.corp.google.com ([2a00:79e0:15:13:76:dcf3:95f9:db8b])
- (user=elver job=sendgmr) by 2002:a81:6fc5:: with SMTP id k188mr1653ywc.507.1643625254572;
- Mon, 31 Jan 2022 02:34:14 -0800 (PST)
-Date:   Mon, 31 Jan 2022 11:34:05 +0100
-Message-Id: <20220131103407.1971678-1-elver@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.35.0.rc2.247.g8bbb082509-goog
-Subject: [PATCH 1/3] perf: Copy perf_event_attr::sig_data on modification
-From:   Marco Elver <elver@google.com>
-To:     elver@google.com, Peter Zijlstra <peterz@infradead.org>
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        linux-perf-users@vger.kernel.org, kasan-dev@googlegroups.com,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        id S1358235AbiAaKfx (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 31 Jan 2022 05:35:53 -0500
+Received: from mga07.intel.com ([134.134.136.100]:54756 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239989AbiAaKfw (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 05:35:52 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643625352; x=1675161352;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=YWtKq8OcN++bgZXQOD7vrGgwPikzV7AzgE9vpzi2/ms=;
+  b=aGJGWLkuz93qzF0+O4SpjoeqDtCRqmNGt2OylFOJ5Jg2mFBt66wpXvp1
+   uR+Q+YKK614Pm+W27Y4rnJn2tvX/lVRWt3KxTyUC6dfvhVcCeTdGWsId5
+   u3b102124K1ij9JBNMpffk/KZJhDAA+bTRmYdxiuxBi6h93hpsajE0al5
+   yZLc9/AWZ4vI5yAJblynCfDPQKpMb0GxgYFAnGBbij2GMEpbRrSq9NrEg
+   WVS198gDDp1qe+1A5PEAXG9RwP4IRzFCnaU6y5kLhYq9hhRzrq6hBbJ31
+   aJHWDPEQBWhu1WwfaLqXvy6rvOXCvsv/XgDz9OOR3NgI+vOsUKQDCH/oP
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10243"; a="310746496"
+X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
+   d="scan'208";a="310746496"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 02:35:51 -0800
+X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
+   d="scan'208";a="582605815"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 02:35:48 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nEU1E-00GpVR-3q;
+        Mon, 31 Jan 2022 12:34:44 +0200
+Date:   Mon, 31 Jan 2022 12:34:43 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     David Rientjes <rientjes@google.com>
+Cc:     Waiman Long <longman@redhat.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Vladimir Davydov <vdavydov.dev@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
+        linux-mm@kvack.org, Ira Weiny <ira.weiny@intel.com>,
+        Rafael Aquini <aquini@redhat.com>
+Subject: Re: [PATCH v2 1/3] lib/vsprintf: Avoid redundant work with 0 size
+Message-ID: <Yfe7Q5cx+MoaOev/@smile.fi.intel.com>
+References: <20220129205315.478628-1-longman@redhat.com>
+ <20220129205315.478628-2-longman@redhat.com>
+ <d99b3c4b-7b6e-529-6e4b-b91b65c92d81@google.com>
+ <Yfe5Bb3U6Uil7Y6g@smile.fi.intel.com>
+ <Yfe6SfG4CqzWSaMM@smile.fi.intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yfe6SfG4CqzWSaMM@smile.fi.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The intent has always been that perf_event_attr::sig_data should also be
-modifiable along with PERF_EVENT_IOC_MODIFY_ATTRIBUTES, because it is
-observable by user space if SIGTRAP on events is requested.
+On Mon, Jan 31, 2022 at 12:30:33PM +0200, Andy Shevchenko wrote:
+> On Mon, Jan 31, 2022 at 12:25:09PM +0200, Andy Shevchenko wrote:
+> > On Sun, Jan 30, 2022 at 12:49:37PM -0800, David Rientjes wrote:
+> > > On Sat, 29 Jan 2022, Waiman Long wrote:
+> > > 
+> > > > For *scnprintf(), vsnprintf() is always called even if the input size is
+> > > > 0. That is a waste of time, so just return 0 in this case.
+> > 
+> > Why do you think it's not legit?
+> 
+> I have to elaborate.
+> 
+> For *nprintf() the size=0 is quite useful to have.
+> For *cnprintf() the size=0 makes less sense, but, if we read `man snprintf()`:
+> 
+>   The  functions  snprintf() and vsnprintf() do not write more than size bytes
+>   (including the terminating null byte ('\0')). If the output was truncated due
+>   to this limit, then the return value is the  number of  characters (excluding
+>   the terminating null byte) which would have been written to the final string
+>   if enough space had been available. Thus, a return value of size or more
+>   means  that  the  output  was truncated.  (See also below under NOTES.)
+> 
+>   If an output error is encountered, a negative value is returned.
+> 
+> Note the last sentence there. You need to answer to it in the commit message
+> why your change is okay and it will show that you thought through all possible
+> scenarios.
 
-Currently only PERF_TYPE_BREAKPOINT is modifiable, and explicitly copies
-relevant breakpoint-related attributes in hw_breakpoint_copy_attr().
-This misses copying perf_event_attr::sig_data.
+Also it seems currently the kernel documentation is not aligned with the code
 
-Since sig_data is not specific to PERF_TYPE_BREAKPOINT, introduce a
-helper to copy generic event-type-independent attributes on
-modification.
+  "If @size is == 0 the function returns 0."
 
-Fixes: 97ba62b27867 ("perf: Add support for SIGTRAP on perf events")
-Reported-by: Dmitry Vyukov <dvyukov@google.com>
-Signed-off-by: Marco Elver <elver@google.com>
----
- kernel/events/core.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+It should mention the (theoretical?) possibility of getting negative value,
+if vsnprintf() returns negative value.
 
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index fc18664f49b0..db0d85a85f1b 100644
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -3197,6 +3197,15 @@ static int perf_event_modify_breakpoint(struct perf_event *bp,
- 	return err;
- }
- 
-+/*
-+ * Copy event-type-independent attributes that may be modified.
-+ */
-+static void perf_event_modify_copy_attr(struct perf_event_attr *to,
-+					const struct perf_event_attr *from)
-+{
-+	to->sig_data = from->sig_data;
-+}
-+
- static int perf_event_modify_attr(struct perf_event *event,
- 				  struct perf_event_attr *attr)
- {
-@@ -3219,10 +3228,17 @@ static int perf_event_modify_attr(struct perf_event *event,
- 	WARN_ON_ONCE(event->ctx->parent_ctx);
- 
- 	mutex_lock(&event->child_mutex);
-+	/*
-+	 * Event-type-independent attributes must be copied before event-type
-+	 * modification, which will validate that final attributes match the
-+	 * source attributes after all relevant attributes have been copied.
-+	 */
-+	perf_event_modify_copy_attr(&event->attr, attr);
- 	err = func(event, attr);
- 	if (err)
- 		goto out;
- 	list_for_each_entry(child, &event->child_list, child_list) {
-+		perf_event_modify_copy_attr(&child->attr, attr);
- 		err = func(child, attr);
- 		if (err)
- 			goto out;
 -- 
-2.35.0.rc2.247.g8bbb082509-goog
+With Best Regards,
+Andy Shevchenko
+
 
