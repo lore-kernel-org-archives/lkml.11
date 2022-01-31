@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F7CBC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 21:08:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF6FEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 21:08:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381198AbiAaVII (ORCPT
+        id S1351177AbiAaVI1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 16:08:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44016 "EHLO
+        Mon, 31 Jan 2022 16:08:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379642AbiAaVGu (ORCPT
+        with ESMTP id S1379939AbiAaVGv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 16:06:50 -0500
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3213C06175D
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 13:06:44 -0800 (PST)
-Received: by mail-wr1-x429.google.com with SMTP id m14so27680065wrg.12
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 13:06:44 -0800 (PST)
+        Mon, 31 Jan 2022 16:06:51 -0500
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AA76C061768
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 13:06:48 -0800 (PST)
+Received: by mail-wr1-x435.google.com with SMTP id m14so27680319wrg.12
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 13:06:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=ffwll.ch; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ktnbB1ojORyX7qViEKPREZJfUmPXv1LwX1hQ8oWjiis=;
-        b=cdsZgRoYD88FU7+3gh6EQWI/SqTtDKrJZlCWkb+J41Gzoleb6NhfahNF9ou5PBoXp3
-         UgdC/e3Vg3a93mPGk/8HyGNbb9IBbszmGJlf/DakHr8Qojd6/p70yisKMAs/P5Hbj3iz
-         NL6+D3vPRuPvSQ3OxtoyOPOdL3xKjZZZXlKZc=
+        bh=NgnSdd2AvfoeNcByN2bDHp+PhpIRGYatmO8U9PanFuc=;
+        b=S+8VBUNNneiGc1+bGPSnrLBcbuVFkgKSU1F9WHEKGEhoPtQNo9kYEWH32/VdEJ10IN
+         +9JFlSujzOM4Bw11VzRyD+o6Ay/zYtaJDCVsEreNhW23/UsII4y11JSGXkMSZ5oO87vf
+         awGxIE+pHd6B7RDP848NhmOIATd3HdslcGwVw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ktnbB1ojORyX7qViEKPREZJfUmPXv1LwX1hQ8oWjiis=;
-        b=LM60qsoGXKc/nnzIDoWfCoOwqyDOsjwWo/c47iKPGe8BNXEzutSvR3emi75OklumGe
-         PMLyDh2hnqGbDsuUSq2QnZ2wOGJnv/Ebx1GoMcCUEIGfiRdjPT7BdWabPumYHQ3CJmbP
-         raFQZJhM0XUTLbPBC2X2BR9fEmK6AGQgWEzOUOKpSKtY8qXpKSApcb/HqhupkrQA2x+H
-         kCfThMM286MJzDDJPtMKfl6IGqvwXrrFcCrPAVSAqF0/ZYzLv4ZojH2+ZxDsh3uT9XiV
-         VfEZpmIymcjAg2n4oXc2/8NyIs315r67e2QOrQa4U0IeUN6rAfXDjyGmfn8uJLl7srLC
-         hXxg==
-X-Gm-Message-State: AOAM532jG8qDLjor7JPklYosMgJvf8pOv3A0ksVxoEDjSmoLerpLOyFl
-        URcmrSn7uBUH58u+cGZL7g8kEA==
-X-Google-Smtp-Source: ABdhPJyt52ljZXEkTAhCLoV1KTfkV9714hjj7Pee2NOp7IUyUzjNGEEiV+/NRnESSYx4YNVGxnxa2Q==
-X-Received: by 2002:a5d:6686:: with SMTP id l6mr19103345wru.314.1643663203444;
-        Mon, 31 Jan 2022 13:06:43 -0800 (PST)
+        bh=NgnSdd2AvfoeNcByN2bDHp+PhpIRGYatmO8U9PanFuc=;
+        b=KfpmYCXKVEVAndJDWu269kM4yvq8fCERijkRz/7F5wtSGf211Mfhm+cwc/Ob69F0rf
+         kg1RvofCZdlWMQJxOXVgTL0hrtj8ohKnf5N17KLUPL25L3bA15nGwNMLbQOCeOd5yh7S
+         S/hXALEk4HqmGX7Yb3mOHZSJjsk5jpgLAqExmyrERTwIuNQbXaW/yaRVpemPbUEVqwxD
+         8subAJYzVv0a1HE/0WxJiaDgF6hNivUMfQHcjzDQW9Pr4U3Bgdw81WQ7YKaMNpCiH7CS
+         h48pC740qKsWSUo8f0qRCbXgFupw8Q5/nc7wt2CZlmm8Em/a1PZaw4YymCqN457R+t85
+         BU8Q==
+X-Gm-Message-State: AOAM530WUumfE/g1ElZBcWwM9RCokBaxblqNIZcxMIX63UT6sr5DoIu6
+        39EXahxkSFtp6N7Vwrd3bLFraA==
+X-Google-Smtp-Source: ABdhPJzMRGhgP+Wd468RY30pZW2pKS4gWFtsBggDBPv5aBnxBsUkCxh6leO3bSHMlVVRxYvL1JzDCg==
+X-Received: by 2002:a5d:4b4d:: with SMTP id w13mr19360147wrs.640.1643663206862;
+        Mon, 31 Jan 2022 13:06:46 -0800 (PST)
 Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
-        by smtp.gmail.com with ESMTPSA id b11sm314961wmq.46.2022.01.31.13.06.42
+        by smtp.gmail.com with ESMTPSA id b11sm314961wmq.46.2022.01.31.13.06.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Jan 2022 13:06:43 -0800 (PST)
+        Mon, 31 Jan 2022 13:06:46 -0800 (PST)
 From:   Daniel Vetter <daniel.vetter@ffwll.ch>
 To:     DRI Development <dri-devel@lists.freedesktop.org>
 Cc:     Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
@@ -53,14 +53,13 @@ Cc:     Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
         Daniel Vetter <daniel.vetter@ffwll.ch>,
         Daniel Vetter <daniel.vetter@intel.com>,
         Daniel Vetter <daniel@ffwll.ch>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Du Cheng <ducheng2@gmail.com>,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
         Thomas Zimmermann <tzimmermann@suse.de>,
-        Claudio Suarez <cssk@net-c.es>
-Subject: [PATCH 09/21] fbcon: Replace FBCON_FLAGS_INIT with a boolean
-Date:   Mon, 31 Jan 2022 22:05:40 +0100
-Message-Id: <20220131210552.482606-10-daniel.vetter@ffwll.ch>
+        Claudio Suarez <cssk@net-c.es>, Du Cheng <ducheng2@gmail.com>
+Subject: [PATCH 13/21] fbcon: move more common code into fb_open()
+Date:   Mon, 31 Jan 2022 22:05:44 +0100
+Message-Id: <20220131210552.482606-14-daniel.vetter@ffwll.ch>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220131210552.482606-1-daniel.vetter@ffwll.ch>
 References: <20220131210552.482606-1-daniel.vetter@ffwll.ch>
@@ -70,92 +69,152 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It's only one flag and slightly tidier code.
+No idea why con2fb_acquire_newinfo() initializes much less than
+fbcon_startup(), but so be it. From a quick look most of the
+un-initialized stuff should be fairly harmless, but who knows.
 
 Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
 Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Du Cheng <ducheng2@gmail.com>
+Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
 Cc: Thomas Zimmermann <tzimmermann@suse.de>
 Cc: Claudio Suarez <cssk@net-c.es>
+Cc: Du Cheng <ducheng2@gmail.com>
 ---
- drivers/video/fbdev/core/fbcon.c | 11 +++++------
- drivers/video/fbdev/core/fbcon.h |  4 +---
- 2 files changed, 6 insertions(+), 9 deletions(-)
+ drivers/video/fbdev/core/fbcon.c | 74 +++++++++++++-------------------
+ 1 file changed, 31 insertions(+), 43 deletions(-)
 
 diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
-index affb40658fee..fa30e1909164 100644
+index b83a5a77d8a8..5a3391ff038d 100644
 --- a/drivers/video/fbdev/core/fbcon.c
 +++ b/drivers/video/fbdev/core/fbcon.c
-@@ -773,7 +773,7 @@ static void con2fb_init_display(struct vc_data *vc, struct fb_info *info,
+@@ -680,8 +680,18 @@ static int fbcon_invalid_charcount(struct fb_info *info, unsigned charcount)
  
- 	ops->currcon = fg_console;
+ #endif /* CONFIG_MISC_TILEBLITTING */
  
--	if (info->fbops->fb_set_par && !(ops->flags & FBCON_FLAGS_INIT)) {
-+	if (info->fbops->fb_set_par && !ops->initialized) {
- 		ret = info->fbops->fb_set_par(info);
++static void fbcon_release(struct fb_info *info)
++{
++	if (info->fbops->fb_release)
++		info->fbops->fb_release(info, 0);
++
++	module_put(info->fbops->owner);
++}
++
+ static int fbcon_open(struct fb_info *info)
+ {
++	struct fbcon_ops *ops;
++
+ 	if (!try_module_get(info->fbops->owner))
+ 		return -ENODEV;
  
- 		if (ret)
-@@ -782,7 +782,7 @@ static void con2fb_init_display(struct vc_data *vc, struct fb_info *info,
- 				"error code %d\n", ret);
+@@ -691,19 +701,22 @@ static int fbcon_open(struct fb_info *info)
+ 		return -ENODEV;
  	}
  
--	ops->flags |= FBCON_FLAGS_INIT;
-+	ops->initialized = true;
- 	ops->graphics = 0;
- 	fbcon_set_disp(info, &info->var, unit);
+-	return 0;
+-}
++	ops = kzalloc(sizeof(struct fbcon_ops), GFP_KERNEL);
++	if (!ops) {
++		fbcon_release(info);
++		return -ENOMEM;
++	}
  
-@@ -1101,8 +1101,7 @@ static void fbcon_init(struct vc_data *vc, int init)
- 	 * We need to do it in fbcon_init() to prevent screen corruption.
- 	 */
- 	if (con_is_visible(vc) && vc->vc_mode == KD_TEXT) {
--		if (info->fbops->fb_set_par &&
--		    !(ops->flags & FBCON_FLAGS_INIT)) {
-+		if (info->fbops->fb_set_par && !ops->initialized) {
- 			ret = info->fbops->fb_set_par(info);
+-static void fbcon_release(struct fb_info *info)
+-{
+-	if (info->fbops->fb_release)
+-		info->fbops->fb_release(info, 0);
++	INIT_DELAYED_WORK(&ops->cursor_work, fb_flashcursor);
++	ops->info = info;
++	info->fbcon_par = ops;
++	ops->cur_blink_jiffies = HZ / 5;
  
- 			if (ret)
-@@ -1111,7 +1110,7 @@ static void fbcon_init(struct vc_data *vc, int init)
- 					"error code %d\n", ret);
- 		}
+-	module_put(info->fbops->owner);
++	return 0;
+ }
  
--		ops->flags |= FBCON_FLAGS_INIT;
-+		ops->initialized = true;
- 	}
+ static int con2fb_acquire_newinfo(struct vc_data *vc, struct fb_info *info,
+-				  int unit, int oldidx)
++				  int unit)
+ {
+ 	struct fbcon_ops *ops = NULL;
+ 	int err;
+@@ -712,27 +725,10 @@ static int con2fb_acquire_newinfo(struct vc_data *vc, struct fb_info *info,
+ 	if (err)
+ 		return err;
  
- 	ops->graphics = 0;
-@@ -1186,7 +1185,7 @@ static void fbcon_deinit(struct vc_data *vc)
- 	if (con_is_visible(vc))
- 		fbcon_del_cursor_work(info);
- 
--	ops->flags &= ~FBCON_FLAGS_INIT;
-+	ops->initialized = false;
- finished:
- 
- 	fbcon_free_font(p, free_font);
-diff --git a/drivers/video/fbdev/core/fbcon.h b/drivers/video/fbdev/core/fbcon.h
-index dce5ce41093e..b18d0cbf73b6 100644
---- a/drivers/video/fbdev/core/fbcon.h
-+++ b/drivers/video/fbdev/core/fbcon.h
-@@ -18,8 +18,6 @@
- 
- #include <asm/io.h>
- 
--#define FBCON_FLAGS_INIT         1
+-	if (!err) {
+-		ops = kzalloc(sizeof(struct fbcon_ops), GFP_KERNEL);
+-		if (!ops)
+-			err = -ENOMEM;
 -
-    /*
-     *    This is the interface between the low-level console driver and the
-     *    low-level frame buffer device
-@@ -77,7 +75,7 @@ struct fbcon_ops {
- 	int    blank_state;
- 	int    graphics;
- 	int    save_graphics; /* for debug enter/leave */
--	int    flags;
-+	bool   initialized;
- 	int    rotate;
- 	int    cur_rotate;
- 	char  *cursor_data;
+-		INIT_DELAYED_WORK(&ops->cursor_work, fb_flashcursor);
+-	}
+-
+-	if (!err) {
+-		ops->cur_blink_jiffies = HZ / 5;
+-		ops->info = info;
+-		info->fbcon_par = ops;
+-
+-		if (vc)
+-			set_blitting_type(vc, info);
+-	}
++	ops = info->fbcon_par;
+ 
+-	if (err) {
+-		con2fb_map[unit] = oldidx;
+-		fbcon_release(info);
+-	}
++	if (vc)
++		set_blitting_type(vc, info);
+ 
+ 	return err;
+ }
+@@ -840,9 +836,11 @@ static int set_con2fb_map(int unit, int newidx, int user)
+ 
+ 	found = search_fb_in_map(newidx);
+ 
+-	con2fb_map[unit] = newidx;
+-	if (!err && !found)
+-		err = con2fb_acquire_newinfo(vc, info, unit, oldidx);
++	if (!err && !found) {
++		err = con2fb_acquire_newinfo(vc, info, unit);
++		if (!err)
++			con2fb_map[unit] = newidx;
++	}
+ 
+ 	/*
+ 	 * If old fb is not mapped to any of the consoles,
+@@ -939,20 +937,10 @@ static const char *fbcon_startup(void)
+ 	if (fbcon_open(info))
+ 		return NULL;
+ 
+-	ops = kzalloc(sizeof(struct fbcon_ops), GFP_KERNEL);
+-	if (!ops) {
+-		fbcon_release(info);
+-		return NULL;
+-	}
+-
+-	INIT_DELAYED_WORK(&ops->cursor_work, fb_flashcursor);
+-
++	ops = info->fbcon_par;
+ 	ops->currcon = -1;
+ 	ops->graphics = 1;
+ 	ops->cur_rotate = -1;
+-	ops->cur_blink_jiffies = HZ / 5;
+-	ops->info = info;
+-	info->fbcon_par = ops;
+ 
+ 	p->con_rotate = initial_rotation;
+ 	if (p->con_rotate == -1)
+@@ -1022,7 +1010,7 @@ static void fbcon_init(struct vc_data *vc, int init)
+ 		return;
+ 
+ 	if (!info->fbcon_par)
+-		con2fb_acquire_newinfo(vc, info, vc->vc_num, -1);
++		con2fb_acquire_newinfo(vc, info, vc->vc_num);
+ 
+ 	/* If we are not the first console on this
+ 	   fb, copy the font from that console */
 -- 
 2.33.0
 
