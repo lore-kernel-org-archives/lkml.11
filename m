@@ -2,49 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37D53C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:07:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 626A7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:07:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358551AbiAaLHM (ORCPT
+        id S1358905AbiAaLHR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:07:12 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:38394 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358733AbiAaLDu (ORCPT
+        Mon, 31 Jan 2022 06:07:17 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:51878 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358846AbiAaLD4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:03:50 -0500
+        Mon, 31 Jan 2022 06:03:56 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E61B60F15;
-        Mon, 31 Jan 2022 11:03:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FB7FC340E8;
-        Mon, 31 Jan 2022 11:03:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A2B9EB82A31;
+        Mon, 31 Jan 2022 11:03:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2780AC340E8;
+        Mon, 31 Jan 2022 11:03:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627029;
-        bh=Ws3K9zlRqrXyHD/WFYrifz5ik5TGQzIrwTz7hDSe72A=;
+        s=korg; t=1643627032;
+        bh=kz2Lt6zhXS8sxBsfLdzg8w/oWhJ3AggNaq9bxEXj+Cw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TcC63E+Pr6DC4P6x8zjtDtvKpawZW5M/M6pODsOF8SJ3k2vS8421O3fsByT2+cM0y
-         nqzRwrvC/9876k4fYLivhu+YP25oh5QXsg7LN2zJtmzbhM0x4yXwzqeG7Cm6pwq5GZ
-         ycWuRxpklwkIVgrONtH90sTtLRS1CGr23ig1iqV0=
+        b=Vkyi+OQa5agEqtFxYK6408gzreHIzC2Xt4RcZO46+UDaG7ZaGibl4wFAP00dKVnNg
+         7hspbhmG/HLS7EzGkjjDs7QDj5Y+XtQ6XYQqBA54x33GtQmGhQvb/6X0RcfLSZqCID
+         WrEtXTZM7MCw2S1NEp0FjP2NmHctOZ8cIFJr5jtI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joseph Qi <joseph.qi@linux.alibaba.com>,
-        Mark Fasheh <mark@fasheh.com>,
-        Joel Becker <jlbec@evilplan.org>,
-        Junxiao Bi <junxiao.bi@oracle.com>,
-        Changwei Ge <gechangwei@live.cn>, Gang He <ghe@suse.com>,
-        Jun Piao <piaojun@huawei.com>,
-        Andreas Dilger <adilger.kernel@dilger.ca>,
-        Gautham Ananthakrishna <gautham.ananthakrishna@oracle.com>,
-        Saeed Mirzamohammadi <saeed.mirzamohammadi@oracle.com>,
-        "Theodore Tso" <tytso@mit.edu>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.10 035/100] jbd2: export jbd2_journal_[grab|put]_journal_head
-Date:   Mon, 31 Jan 2022 11:55:56 +0100
-Message-Id: <20220131105221.631074510@linuxfoundation.org>
+        stable@vger.kernel.org, Congyu Liu <liu3101@purdue.edu>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 053/100] net: fix information leakage in /proc/net/ptype
+Date:   Mon, 31 Jan 2022 11:56:14 +0100
+Message-Id: <20220131105222.221575774@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
 References: <20220131105220.424085452@linuxfoundation.org>
@@ -56,59 +47,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joseph Qi <joseph.qi@linux.alibaba.com>
+From: Congyu Liu <liu3101@purdue.edu>
 
-commit 4cd1103d8c66b2cdb7e64385c274edb0ac5e8887 upstream.
+commit 47934e06b65637c88a762d9c98329ae6e3238888 upstream.
 
-Patch series "ocfs2: fix a deadlock case".
+In one net namespace, after creating a packet socket without binding
+it to a device, users in other net namespaces can observe the new
+`packet_type` added by this packet socket by reading `/proc/net/ptype`
+file. This is minor information leakage as packet socket is
+namespace aware.
 
-This fixes a deadlock case in ocfs2.  We firstly export jbd2 symbols
-jbd2_journal_[grab|put]_journal_head as preparation and later use them
-in ocfs2 insread of jbd_[lock|unlock]_bh_journal_head to fix the
-deadlock.
+Add a net pointer in `packet_type` to keep the net namespace of
+of corresponding packet socket. In `ptype_seq_show`, this net pointer
+must be checked when it is not NULL.
 
-This patch (of 2):
-
-This exports symbols jbd2_journal_[grab|put]_journal_head, which will be
-used outside modules, e.g.  ocfs2.
-
-Link: https://lkml.kernel.org/r/20220121071205.100648-2-joseph.qi@linux.alibaba.com
-Signed-off-by: Joseph Qi <joseph.qi@linux.alibaba.com>
-Cc: Mark Fasheh <mark@fasheh.com>
-Cc: Joel Becker <jlbec@evilplan.org>
-Cc: Junxiao Bi <junxiao.bi@oracle.com>
-Cc: Changwei Ge <gechangwei@live.cn>
-Cc: Gang He <ghe@suse.com>
-Cc: Jun Piao <piaojun@huawei.com>
-Cc: Andreas Dilger <adilger.kernel@dilger.ca>
-Cc: Gautham Ananthakrishna <gautham.ananthakrishna@oracle.com>
-Cc: Saeed Mirzamohammadi <saeed.mirzamohammadi@oracle.com>
-Cc: "Theodore Ts'o" <tytso@mit.edu>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: 2feb27dbe00c ("[NETNS]: Minor information leak via /proc/net/ptype file.")
+Signed-off-by: Congyu Liu <liu3101@purdue.edu>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/jbd2/journal.c |    2 ++
- 1 file changed, 2 insertions(+)
+ include/linux/netdevice.h |    1 +
+ net/core/net-procfs.c     |    3 ++-
+ net/packet/af_packet.c    |    2 ++
+ 3 files changed, 5 insertions(+), 1 deletion(-)
 
---- a/fs/jbd2/journal.c
-+++ b/fs/jbd2/journal.c
-@@ -2795,6 +2795,7 @@ struct journal_head *jbd2_journal_grab_j
- 	jbd_unlock_bh_journal_head(bh);
- 	return jh;
- }
-+EXPORT_SYMBOL(jbd2_journal_grab_journal_head);
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -2543,6 +2543,7 @@ struct packet_type {
+ 					      struct net_device *);
+ 	bool			(*id_match)(struct packet_type *ptype,
+ 					    struct sock *sk);
++	struct net		*af_packet_net;
+ 	void			*af_packet_priv;
+ 	struct list_head	list;
+ };
+--- a/net/core/net-procfs.c
++++ b/net/core/net-procfs.c
+@@ -263,7 +263,8 @@ static int ptype_seq_show(struct seq_fil
  
- static void __journal_remove_journal_head(struct buffer_head *bh)
- {
-@@ -2847,6 +2848,7 @@ void jbd2_journal_put_journal_head(struc
- 		jbd_unlock_bh_journal_head(bh);
- 	}
- }
-+EXPORT_SYMBOL(jbd2_journal_put_journal_head);
+ 	if (v == SEQ_START_TOKEN)
+ 		seq_puts(seq, "Type Device      Function\n");
+-	else if (pt->dev == NULL || dev_net(pt->dev) == seq_file_net(seq)) {
++	else if ((!pt->af_packet_net || net_eq(pt->af_packet_net, seq_file_net(seq))) &&
++		 (!pt->dev || net_eq(dev_net(pt->dev), seq_file_net(seq)))) {
+ 		if (pt->type == htons(ETH_P_ALL))
+ 			seq_puts(seq, "ALL ");
+ 		else
+--- a/net/packet/af_packet.c
++++ b/net/packet/af_packet.c
+@@ -1735,6 +1735,7 @@ static int fanout_add(struct sock *sk, s
+ 		match->prot_hook.dev = po->prot_hook.dev;
+ 		match->prot_hook.func = packet_rcv_fanout;
+ 		match->prot_hook.af_packet_priv = match;
++		match->prot_hook.af_packet_net = read_pnet(&match->net);
+ 		match->prot_hook.id_match = match_fanout_group;
+ 		match->max_num_members = args->max_num_members;
+ 		list_add(&match->list, &fanout_list);
+@@ -3323,6 +3324,7 @@ static int packet_create(struct net *net
+ 		po->prot_hook.func = packet_rcv_spkt;
  
- /*
-  * Initialize jbd inode head
+ 	po->prot_hook.af_packet_priv = sk;
++	po->prot_hook.af_packet_net = sock_net(sk);
+ 
+ 	if (proto) {
+ 		po->prot_hook.type = proto;
 
 
