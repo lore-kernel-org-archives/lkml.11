@@ -2,140 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4947EC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59713C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:20:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377532AbiAaLSX (ORCPT
+        id S1377665AbiAaLSn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:18:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44616 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377559AbiAaLKM (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:10:12 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90CF9C061788;
-        Mon, 31 Jan 2022 03:08:37 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2FFBD60B28;
-        Mon, 31 Jan 2022 11:08:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C1B1C340E8;
-        Mon, 31 Jan 2022 11:08:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627316;
-        bh=Ezrjp41BQos58bLBn/gP88p9AnpGvwixoOcJrn2JmEI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tcM1cp7tKNHQsF+eSRT54nmtWd8BGJ8aKot7pv2xn5n8VDcn2Seq3SRv/IUv8dM42
-         FqaabrkhzsSeJVBKp5ygEsze4VyWVcudUTtOoGzFt6+tknTXRlfK6126zYhrk+B2Fz
-         LUphbRMfuPEo/sQOfBrRwftoaoxboN3sJcsystYA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+        Mon, 31 Jan 2022 06:18:43 -0500
+Received: from mga17.intel.com ([192.55.52.151]:43467 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1377760AbiAaLK0 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 06:10:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643627426; x=1675163426;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=MTbZzQ/DP2PxsKTY28GWtpAfua/z0STB6221mcyAUO8=;
+  b=D0xKtBN3yddUCw0tMOvBKW51d09x8R5KDZSnbC3YR+nogE0YtuaJZ01a
+   edS2LHp+3PYcX0TVW5k+5Nq4XEsCVkzB+toyzqWOT9wxLSHyINzf1IT91
+   KoLEIA46ELGTuy+psz0fhnptyn7Mq6Z3YfsIGivqsrVrY4bHMB0jr/4Yn
+   EobEzfZQJt7o5L4i97AZYAlfVYMtvkgPDjSgFM8G92mDvH5qzQreE3NXm
+   G8cUYOBbTdRs3S9D73pNgDNAD757gD7B0382FXf5R9BbMLI7+mvD7wNlD
+   wAT4tkLbCkDYf+IPQGmQqVbFOUqJlsjiCH0ibmhBRGdpSB1+140ClWTQf
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10243"; a="228101803"
+X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
+   d="scan'208";a="228101803"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 03:07:16 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
+   d="scan'208";a="675694134"
+Received: from kuha.fi.intel.com ([10.237.72.185])
+  by fmsmga001.fm.intel.com with SMTP; 31 Jan 2022 03:07:14 -0800
+Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Mon, 31 Jan 2022 13:07:13 +0200
+Date:   Mon, 31 Jan 2022 13:07:13 +0200
+From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To:     Sean Anderson <sean.anderson@seco.com>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Mike Snitzer <snitzer@redhat.com>, Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.15 044/171] block: add bio_start_io_acct_time() to control start_time
-Date:   Mon, 31 Jan 2022 11:55:09 +0100
-Message-Id: <20220131105231.515669552@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
-References: <20220131105229.959216821@linuxfoundation.org>
-User-Agent: quilt/0.66
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/3] usb: ulpi: Move of_node_put to ulpi_dev_release
+Message-ID: <YffC4a1GUVp4wk+g@kuha.fi.intel.com>
+References: <20220127190004.1446909-1-sean.anderson@seco.com>
+ <20220127190004.1446909-2-sean.anderson@seco.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220127190004.1446909-2-sean.anderson@seco.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Snitzer <snitzer@redhat.com>
+On Thu, Jan 27, 2022 at 02:00:02PM -0500, Sean Anderson wrote:
+> Drivers are not unbound from the device when ulpi_unregister_interface
+> is called. Move of_node-freeing code to ulpi_dev_release which is called
+> only after all users are gone.
+> 
+> Fixes: ef6a7bcfb01c ("usb: ulpi: Support device discovery via DT")
+> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
 
-commit e45c47d1f94e0cc7b6b079fdb4bcce2995e2adc4 upstream.
+Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
 
-bio_start_io_acct_time() interface is like bio_start_io_acct() that
-allows start_time to be passed in. This gives drivers the ability to
-defer starting accounting until after IO is issued (but possibily not
-entirely due to bio splitting).
+> ---
+> 
+> Changes in v3:
+> - Use separate patch for moving of_node_put from unregister to release
+> 
+>  drivers/usb/common/ulpi.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/usb/common/ulpi.c b/drivers/usb/common/ulpi.c
+> index 4169cf40a03b..c90a1ab705a3 100644
+> --- a/drivers/usb/common/ulpi.c
+> +++ b/drivers/usb/common/ulpi.c
+> @@ -127,6 +127,7 @@ static const struct attribute_group *ulpi_dev_attr_groups[] = {
+>  
+>  static void ulpi_dev_release(struct device *dev)
+>  {
+> +	of_node_put(dev->of_node);
+>  	kfree(to_ulpi_dev(dev));
+>  }
+>  
+> @@ -296,7 +297,6 @@ EXPORT_SYMBOL_GPL(ulpi_register_interface);
+>   */
+>  void ulpi_unregister_interface(struct ulpi *ulpi)
+>  {
+> -	of_node_put(ulpi->dev.of_node);
+>  	device_unregister(&ulpi->dev);
+>  }
+>  EXPORT_SYMBOL_GPL(ulpi_unregister_interface);
+> -- 
+> 2.25.1
 
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Mike Snitzer <snitzer@redhat.com>
-Link: https://lore.kernel.org/r/20220128155841.39644-2-snitzer@redhat.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- block/blk-core.c       |   25 +++++++++++++++++++------
- include/linux/blkdev.h |    1 +
- 2 files changed, 20 insertions(+), 6 deletions(-)
+thanks,
 
---- a/block/blk-core.c
-+++ b/block/blk-core.c
-@@ -1293,22 +1293,34 @@ void blk_account_io_start(struct request
- }
- 
- static unsigned long __part_start_io_acct(struct block_device *part,
--					  unsigned int sectors, unsigned int op)
-+					  unsigned int sectors, unsigned int op,
-+					  unsigned long start_time)
- {
- 	const int sgrp = op_stat_group(op);
--	unsigned long now = READ_ONCE(jiffies);
- 
- 	part_stat_lock();
--	update_io_ticks(part, now, false);
-+	update_io_ticks(part, start_time, false);
- 	part_stat_inc(part, ios[sgrp]);
- 	part_stat_add(part, sectors[sgrp], sectors);
- 	part_stat_local_inc(part, in_flight[op_is_write(op)]);
- 	part_stat_unlock();
- 
--	return now;
-+	return start_time;
- }
- 
- /**
-+ * bio_start_io_acct_time - start I/O accounting for bio based drivers
-+ * @bio:	bio to start account for
-+ * @start_time:	start time that should be passed back to bio_end_io_acct().
-+ */
-+void bio_start_io_acct_time(struct bio *bio, unsigned long start_time)
-+{
-+	__part_start_io_acct(bio->bi_bdev, bio_sectors(bio),
-+			     bio_op(bio), start_time);
-+}
-+EXPORT_SYMBOL_GPL(bio_start_io_acct_time);
-+
-+/**
-  * bio_start_io_acct - start I/O accounting for bio based drivers
-  * @bio:	bio to start account for
-  *
-@@ -1316,14 +1328,15 @@ static unsigned long __part_start_io_acc
-  */
- unsigned long bio_start_io_acct(struct bio *bio)
- {
--	return __part_start_io_acct(bio->bi_bdev, bio_sectors(bio), bio_op(bio));
-+	return __part_start_io_acct(bio->bi_bdev, bio_sectors(bio),
-+				    bio_op(bio), jiffies);
- }
- EXPORT_SYMBOL_GPL(bio_start_io_acct);
- 
- unsigned long disk_start_io_acct(struct gendisk *disk, unsigned int sectors,
- 				 unsigned int op)
- {
--	return __part_start_io_acct(disk->part0, sectors, op);
-+	return __part_start_io_acct(disk->part0, sectors, op, jiffies);
- }
- EXPORT_SYMBOL(disk_start_io_acct);
- 
---- a/include/linux/blkdev.h
-+++ b/include/linux/blkdev.h
-@@ -1947,6 +1947,7 @@ unsigned long disk_start_io_acct(struct
- void disk_end_io_acct(struct gendisk *disk, unsigned int op,
- 		unsigned long start_time);
- 
-+void bio_start_io_acct_time(struct bio *bio, unsigned long start_time);
- unsigned long bio_start_io_acct(struct bio *bio);
- void bio_end_io_acct_remapped(struct bio *bio, unsigned long start_time,
- 		struct block_device *orig_bdev);
-
-
+-- 
+heikki
