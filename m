@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C569C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:48:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D94D1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:48:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378530AbiAaLsi (ORCPT
+        id S1376349AbiAaLsq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:48:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51354 "EHLO
+        Mon, 31 Jan 2022 06:48:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377608AbiAaLgo (ORCPT
+        with ESMTP id S1376907AbiAaLg2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:36:44 -0500
+        Mon, 31 Jan 2022 06:36:28 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2AFBC08C5FE;
-        Mon, 31 Jan 2022 03:24:58 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75171C08C5C9;
+        Mon, 31 Jan 2022 03:24:53 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7A3C8B82A61;
-        Mon, 31 Jan 2022 11:24:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD802C36AE3;
-        Mon, 31 Jan 2022 11:24:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 354D3B82A74;
+        Mon, 31 Jan 2022 11:24:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B571C340E8;
+        Mon, 31 Jan 2022 11:24:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643628297;
-        bh=rYGaHByqYJDUZ44c0fnl0gDVIASjO25cAfhwqHt8L6M=;
+        s=korg; t=1643628291;
+        bh=sUXsI0wCoxfiIXnMPPHNieoBFOOs7FzMLM8dcytT+ug=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Mfn1d0Bgjde62UjGJXEl2GIrVyVONiiv8TpwIva7Z+OgwLkX/RJIF26+Q7P4B4QJ6
-         f5rd1ct8xhZd+40o0v4UJiYmNF812ByKyooy52Q3wTtjG6795CJLmJ5J6VDGfoNUXT
-         76eOXVwVvmVz/LWJyxC6n0Qb+1yIhwlI0N/4rT38=
+        b=cCPZUlcPRD7NrDund9bRmggqQCZj7ztFHsXBen7fNoRL4xtCjPCIDZBWGa50XCRej
+         8TgVKQpLKy0bOODNsqLC02x91WFvP2jTJzmzIA2vUMeggBMd+8YpW20/zBAwiOIX6+
+         W0sNntnMzmpxXFZmWAr8FSkepn4FZObJUx1aS9Dg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sander Vanheule <sander@svanheule.net>,
-        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 187/200] irqchip/realtek-rtl: Map control data to virq
-Date:   Mon, 31 Jan 2022 11:57:30 +0100
-Message-Id: <20220131105239.828805478@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 185/200] ipv4: remove sparse error in ip_neigh_gw4()
+Date:   Mon, 31 Jan 2022 11:57:28 +0100
+Message-Id: <20220131105239.768280658@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -49,35 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sander Vanheule <sander@svanheule.net>
+From: Eric Dumazet <edumazet@google.com>
 
-commit 291e79c7e2eb6fdc016453597b78482e06199d0f upstream.
+[ Upstream commit 3c42b2019863b327caa233072c50739d4144dd16 ]
 
-The driver assigned the irqchip and irq handler to the hardware irq,
-instead of the virq. This is incorrect, and only worked because these
-irq numbers happened to be the same on the devices used for testing the
-original driver.
+./include/net/route.h:373:48: warning: incorrect type in argument 2 (different base types)
+./include/net/route.h:373:48:    expected unsigned int [usertype] key
+./include/net/route.h:373:48:    got restricted __be32 [usertype] daddr
 
-Fixes: 9f3a0f34b84a ("irqchip: Add support for Realtek RTL838x/RTL839x interrupt controller")
-Signed-off-by: Sander Vanheule <sander@svanheule.net>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/4b4936606480265db47df152f00bc2ed46340599.1641739718.git.sander@svanheule.net
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 5c9f7c1dfc2e ("ipv4: Add helpers for neigh lookup for nexthop")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Link: https://lore.kernel.org/r/20220127013404.1279313-1-eric.dumazet@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/irqchip/irq-realtek-rtl.c |    2 +-
+ include/net/route.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/irqchip/irq-realtek-rtl.c
-+++ b/drivers/irqchip/irq-realtek-rtl.c
-@@ -62,7 +62,7 @@ static struct irq_chip realtek_ictl_irq
- 
- static int intc_map(struct irq_domain *d, unsigned int irq, irq_hw_number_t hw)
+diff --git a/include/net/route.h b/include/net/route.h
+index 2e6c0e153e3a5..2551f3f03b37e 100644
+--- a/include/net/route.h
++++ b/include/net/route.h
+@@ -369,7 +369,7 @@ static inline struct neighbour *ip_neigh_gw4(struct net_device *dev,
  {
--	irq_set_chip_and_handler(hw, &realtek_ictl_irq, handle_level_irq);
-+	irq_set_chip_and_handler(irq, &realtek_ictl_irq, handle_level_irq);
+ 	struct neighbour *neigh;
  
- 	return 0;
- }
+-	neigh = __ipv4_neigh_lookup_noref(dev, daddr);
++	neigh = __ipv4_neigh_lookup_noref(dev, (__force u32)daddr);
+ 	if (unlikely(!neigh))
+ 		neigh = __neigh_create(&arp_tbl, &daddr, dev, false);
+ 
+-- 
+2.34.1
+
 
 
