@@ -2,39 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49777C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:39:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ED55C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:39:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378497AbiAaLiH (ORCPT
+        id S1378531AbiAaLiL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:38:07 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:41252 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359035AbiAaLZC (ORCPT
+        Mon, 31 Jan 2022 06:38:11 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:58192 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1376797AbiAaLZk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:25:02 -0500
+        Mon, 31 Jan 2022 06:25:40 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 98061B82A7A;
-        Mon, 31 Jan 2022 11:25:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2292C36AEC;
-        Mon, 31 Jan 2022 11:24:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DFE8161267;
+        Mon, 31 Jan 2022 11:25:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A41E5C340E8;
+        Mon, 31 Jan 2022 11:25:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643628300;
-        bh=Exd2l5co6Rjj9v95rwrcLjP0ecH68GmgHFV3YrX0Lds=;
+        s=korg; t=1643628338;
+        bh=kOFAuv7a91kdGZ21ugNybajlFhs3wqROMtBixdqkmEU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=reUz2aS1kIMbq+d+hW9x+kBEc0KST5m6WJo+FYywpVoa67IdkkAIBrj5LAHBn3LQY
-         7W7pYVqLBOWz4A7wxGdTwwHIdVie5hUTIJOsBWfK0l1Az10Zcs10yiaPOSsZF0p1LC
-         y1Rz5r1TJUi6cVxFUOq7ej2lMhPd+e+AGQotaBcs=
+        b=JJadh7zxH0ag6D0Mq52zWDGPpuRJGOQ3bp0gw559rKEcn9pF8929OkBk7j71R0bRs
+         jWWWfh8c7Yj4y8LXeD61g2zny0Ls4Uhr22zFqUyLlEYwVchbu9B4LzmS+JaaADbUsS
+         DChEs0qph4/O1DYyO3YFsEVh/rIpujpyTxwxDd3g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sander Vanheule <sander@svanheule.net>,
-        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 188/200] irqchip/realtek-rtl: Fix off-by-one in routing
-Date:   Mon, 31 Jan 2022 11:57:31 +0100
-Message-Id: <20220131105239.859672584@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.16 199/200] KVM: nVMX: Allow VMREAD when Enlightened VMCS is in use
+Date:   Mon, 31 Jan 2022 11:57:42 +0100
+Message-Id: <20220131105240.221784029@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -46,60 +47,134 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sander Vanheule <sander@svanheule.net>
+From: Vitaly Kuznetsov <vkuznets@redhat.com>
 
-commit 91351b5dd0fd494eb2d85e1bb6aca77b067447e0 upstream.
+commit 6cbbaab60ff33f59355492c241318046befd9ffc upstream.
 
-There is an offset between routing values (1..6) and the connected MIPS
-CPU interrupts (2..7), but no distinction was made between these two
-values.
+Hyper-V TLFS explicitly forbids VMREAD and VMWRITE instructions when
+Enlightened VMCS interface is in use:
 
-This issue was previously hidden during testing, because an interrupt
-mapping was used where for each required interrupt another (unused)
-routing was configured, with an offset of +1.
+"Any VMREAD or VMWRITE instructions while an enlightened VMCS is
+active is unsupported and can result in unexpected behavior.""
 
-Offset the CPU IRQ numbers by -1 to retrieve the correct routing value.
+Windows 11 + WSL2 seems to ignore this, attempts to VMREAD VMCS field
+0x4404 ("VM-exit interruption information") are observed. Failing
+these attempts with nested_vmx_failInvalid() makes such guests
+unbootable.
 
-Fixes: 9f3a0f34b84a ("irqchip: Add support for Realtek RTL838x/RTL839x interrupt controller")
-Signed-off-by: Sander Vanheule <sander@svanheule.net>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/177b920aa8d8610615692d0e657e509f363c85ca.1641739718.git.sander@svanheule.net
+Microsoft confirms this is a Hyper-V bug and claims that it'll get fixed
+eventually but for the time being we need a workaround. (Temporary) allow
+VMREAD to get data from the currently loaded Enlightened VMCS.
+
+Note: VMWRITE instructions remain forbidden, it is not clear how to
+handle them properly and hopefully won't ever be needed.
+
+Reviewed-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Message-Id: <20220112170134.1904308-6-vkuznets@redhat.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/irqchip/irq-realtek-rtl.c |    8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ arch/x86/kvm/vmx/evmcs.h  |   12 ++++++++++
+ arch/x86/kvm/vmx/nested.c |   55 ++++++++++++++++++++++++++++++++--------------
+ 2 files changed, 51 insertions(+), 16 deletions(-)
 
---- a/drivers/irqchip/irq-realtek-rtl.c
-+++ b/drivers/irqchip/irq-realtek-rtl.c
-@@ -95,7 +95,8 @@ out:
-  * SoC interrupts are cascaded to MIPS CPU interrupts according to the
-  * interrupt-map in the device tree. Each SoC interrupt gets 4 bits for
-  * the CPU interrupt in an Interrupt Routing Register. Max 32 SoC interrupts
-- * thus go into 4 IRRs.
-+ * thus go into 4 IRRs. A routing value of '0' means the interrupt is left
-+ * disconnected. Routing values {1..15} connect to output lines {0..14}.
-  */
- static int __init map_interrupts(struct device_node *node, struct irq_domain *domain)
- {
-@@ -134,7 +135,7 @@ static int __init map_interrupts(struct
- 		of_node_put(cpu_ictl);
+--- a/arch/x86/kvm/vmx/evmcs.h
++++ b/arch/x86/kvm/vmx/evmcs.h
+@@ -96,6 +96,18 @@ static __always_inline int evmcs_field_o
+ 	return evmcs_field->offset;
+ }
  
- 		cpu_int = be32_to_cpup(imap + 2);
--		if (cpu_int > 7)
-+		if (cpu_int > 7 || cpu_int < 2)
- 			return -EINVAL;
++static inline u64 evmcs_read_any(struct hv_enlightened_vmcs *evmcs,
++				 unsigned long field, u16 offset)
++{
++	/*
++	 * vmcs12_read_any() doesn't care whether the supplied structure
++	 * is 'struct vmcs12' or 'struct hv_enlightened_vmcs' as it takes
++	 * the exact offset of the required field, use it for convenience
++	 * here.
++	 */
++	return vmcs12_read_any((void *)evmcs, field, offset);
++}
++
+ #if IS_ENABLED(CONFIG_HYPERV)
  
- 		if (!(mips_irqs_set & BIT(cpu_int))) {
-@@ -143,7 +144,8 @@ static int __init map_interrupts(struct
- 			mips_irqs_set |= BIT(cpu_int);
- 		}
+ static __always_inline int get_evmcs_offset(unsigned long field,
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -7,6 +7,7 @@
+ #include <asm/mmu_context.h>
  
--		regs[(soc_int * 4) / 32] |= cpu_int << (soc_int * 4) % 32;
-+		/* Use routing values (1..6) for CPU interrupts (2..7) */
-+		regs[(soc_int * 4) / 32] |= (cpu_int - 1) << (soc_int * 4) % 32;
- 		imap += 3;
- 	}
+ #include "cpuid.h"
++#include "evmcs.h"
+ #include "hyperv.h"
+ #include "mmu.h"
+ #include "nested.h"
+@@ -5074,27 +5075,49 @@ static int handle_vmread(struct kvm_vcpu
+ 	if (!nested_vmx_check_permission(vcpu))
+ 		return 1;
  
+-	/*
+-	 * In VMX non-root operation, when the VMCS-link pointer is INVALID_GPA,
+-	 * any VMREAD sets the ALU flags for VMfailInvalid.
+-	 */
+-	if (vmx->nested.current_vmptr == INVALID_GPA ||
+-	    (is_guest_mode(vcpu) &&
+-	     get_vmcs12(vcpu)->vmcs_link_pointer == INVALID_GPA))
+-		return nested_vmx_failInvalid(vcpu);
+-
+ 	/* Decode instruction info and find the field to read */
+ 	field = kvm_register_read(vcpu, (((instr_info) >> 28) & 0xf));
+ 
+-	offset = get_vmcs12_field_offset(field);
+-	if (offset < 0)
+-		return nested_vmx_fail(vcpu, VMXERR_UNSUPPORTED_VMCS_COMPONENT);
++	if (!evmptr_is_valid(vmx->nested.hv_evmcs_vmptr)) {
++		/*
++		 * In VMX non-root operation, when the VMCS-link pointer is INVALID_GPA,
++		 * any VMREAD sets the ALU flags for VMfailInvalid.
++		 */
++		if (vmx->nested.current_vmptr == INVALID_GPA ||
++		    (is_guest_mode(vcpu) &&
++		     get_vmcs12(vcpu)->vmcs_link_pointer == INVALID_GPA))
++			return nested_vmx_failInvalid(vcpu);
++
++		offset = get_vmcs12_field_offset(field);
++		if (offset < 0)
++			return nested_vmx_fail(vcpu, VMXERR_UNSUPPORTED_VMCS_COMPONENT);
++
++		if (!is_guest_mode(vcpu) && is_vmcs12_ext_field(field))
++			copy_vmcs02_to_vmcs12_rare(vcpu, vmcs12);
++
++		/* Read the field, zero-extended to a u64 value */
++		value = vmcs12_read_any(vmcs12, field, offset);
++	} else {
++		/*
++		 * Hyper-V TLFS (as of 6.0b) explicitly states, that while an
++		 * enlightened VMCS is active VMREAD/VMWRITE instructions are
++		 * unsupported. Unfortunately, certain versions of Windows 11
++		 * don't comply with this requirement which is not enforced in
++		 * genuine Hyper-V. Allow VMREAD from an enlightened VMCS as a
++		 * workaround, as misbehaving guests will panic on VM-Fail.
++		 * Note, enlightened VMCS is incompatible with shadow VMCS so
++		 * all VMREADs from L2 should go to L1.
++		 */
++		if (WARN_ON_ONCE(is_guest_mode(vcpu)))
++			return nested_vmx_failInvalid(vcpu);
+ 
+-	if (!is_guest_mode(vcpu) && is_vmcs12_ext_field(field))
+-		copy_vmcs02_to_vmcs12_rare(vcpu, vmcs12);
++		offset = evmcs_field_offset(field, NULL);
++		if (offset < 0)
++			return nested_vmx_fail(vcpu, VMXERR_UNSUPPORTED_VMCS_COMPONENT);
+ 
+-	/* Read the field, zero-extended to a u64 value */
+-	value = vmcs12_read_any(vmcs12, field, offset);
++		/* Read the field, zero-extended to a u64 value */
++		value = evmcs_read_any(vmx->nested.hv_evmcs, field, offset);
++	}
+ 
+ 	/*
+ 	 * Now copy part of this value to register or memory, as requested.
 
 
