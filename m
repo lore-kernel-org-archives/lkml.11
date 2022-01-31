@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACA78C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:35:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94445C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:35:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359530AbiAaLfv (ORCPT
+        id S1351010AbiAaLfs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:35:51 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:41794 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378339AbiAaLYC (ORCPT
+        Mon, 31 Jan 2022 06:35:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48194 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1378281AbiAaLXy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:24:02 -0500
+        Mon, 31 Jan 2022 06:23:54 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86E17C08E820;
+        Mon, 31 Jan 2022 03:14:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4A0BFB82A69;
-        Mon, 31 Jan 2022 11:24:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67685C340EE;
-        Mon, 31 Jan 2022 11:23:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2051660ED0;
+        Mon, 31 Jan 2022 11:14:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BD67C340E8;
+        Mon, 31 Jan 2022 11:14:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643628240;
-        bh=5KWzA4AfI8HVUxyFlZgUqfeJSf59g4119hh9HmUO5uQ=;
+        s=korg; t=1643627691;
+        bh=jxJjGJQnN9EiZZsKB1Qdr7b4KXmNmYe3+R3/dfYuTxs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=brulv/rzTDO/UvAvDVB1IyeBq/QYsjZ7ePh6NdU8ppJ36G48biRehA+qRu0CBN+gp
-         styOTxheshfHYyAH0BU+qXItnR5Cclt/AgyQ/oZ0JvKleBiOPY4ULBcWyA2KriRrHH
-         Ab7r7WT0cUZaYkRp7BIft414MMuk3aWXDBe182/Y=
+        b=LCcyOpXbeY7GynL0bBpKohbjTp2ZAE1uSjEyCEHwxNdCPYvxof6ypI01b9bnnMeGH
+         teiqY8/1kNtWKlVr528QGD8morGIc1eigDcQvNBfP1+1aIXNQSuATIR7yZnAwbXzME
+         Yf5xeTb1MK8Q+o4+jgiU1jpFNcre9xasZTyAo+5Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Davide Caratti <dcaratti@redhat.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Namhyung Kim <namhyung@kernel.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 136/200] mptcp: allow changing the "backup" bit by endpoint id
-Date:   Mon, 31 Jan 2022 11:56:39 +0100
-Message-Id: <20220131105238.136417203@linuxfoundation.org>
+Subject: [PATCH 5.15 165/171] perf/core: Fix cgroup event list management
+Date:   Mon, 31 Jan 2022 11:57:10 +0100
+Message-Id: <20220131105235.592097093@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
-References: <20220131105233.561926043@linuxfoundation.org>
+In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
+References: <20220131105229.959216821@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,61 +50,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Davide Caratti <dcaratti@redhat.com>
+From: Namhyung Kim <namhyung@kernel.org>
 
-[ Upstream commit 602837e8479d20d49559b4b97b79d34c0efe7ecb ]
+commit c5de60cd622a2607c043ba65e25a6e9998a369f9 upstream.
 
-a non-zero 'id' is sufficient to identify MPTCP endpoints: allow changing
-the value of 'backup' bit by simply specifying the endpoint id.
+The active cgroup events are managed in the per-cpu cgrp_cpuctx_list.
+This list is only accessed from current cpu and not protected by any
+locks.  But from the commit ef54c1a476ae ("perf: Rework
+perf_event_exit_event()"), it's possible to access (actually modify)
+the list from another cpu.
 
-Link: https://github.com/multipath-tcp/mptcp_net-next/issues/158
-Signed-off-by: Davide Caratti <dcaratti@redhat.com>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+In the perf_remove_from_context(), it can remove an event from the
+context without an IPI when the context is not active.  This is not
+safe with cgroup events which can have some active events in the
+context even if ctx->is_active is 0 at the moment.  The target cpu
+might be in the middle of list iteration at the same time.
+
+If the event is enabled when it's about to be closed, it might call
+perf_cgroup_event_disable() and list_del() with the cgrp_cpuctx_list
+on a different cpu.
+
+This resulted in a crash due to an invalid list pointer access during
+the cgroup list traversal on the cpu which the event belongs to.
+
+Let's fallback to IPI to access the cgrp_cpuctx_list from that cpu.
+Similarly, perf_install_in_context() should use IPI for the cgroup
+events too.
+
+Fixes: ef54c1a476ae ("perf: Rework perf_event_exit_event()")
+Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20220124195808.2252071-1-namhyung@kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mptcp/pm_netlink.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+ kernel/events/core.c |   11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
-index 65764c8171b37..d18b13e3e74c6 100644
---- a/net/mptcp/pm_netlink.c
-+++ b/net/mptcp/pm_netlink.c
-@@ -1711,22 +1711,28 @@ next:
- 
- static int mptcp_nl_cmd_set_flags(struct sk_buff *skb, struct genl_info *info)
- {
-+	struct mptcp_pm_addr_entry addr = { .addr = { .family = AF_UNSPEC }, }, *entry;
- 	struct nlattr *attr = info->attrs[MPTCP_PM_ATTR_ADDR];
- 	struct pm_nl_pernet *pernet = genl_info_pm_nl(info);
--	struct mptcp_pm_addr_entry addr, *entry;
- 	struct net *net = sock_net(skb->sk);
--	u8 bkup = 0;
-+	u8 bkup = 0, lookup_by_id = 0;
- 	int ret;
- 
--	ret = mptcp_pm_parse_addr(attr, info, true, &addr);
-+	ret = mptcp_pm_parse_addr(attr, info, false, &addr);
- 	if (ret < 0)
- 		return ret;
- 
- 	if (addr.flags & MPTCP_PM_ADDR_FLAG_BACKUP)
- 		bkup = 1;
-+	if (addr.addr.family == AF_UNSPEC) {
-+		lookup_by_id = 1;
-+		if (!addr.addr.id)
-+			return -EOPNOTSUPP;
-+	}
- 
- 	list_for_each_entry(entry, &pernet->local_addr_list, list) {
--		if (addresses_equal(&entry->addr, &addr.addr, true)) {
-+		if ((!lookup_by_id && addresses_equal(&entry->addr, &addr.addr, true)) ||
-+		    (lookup_by_id && entry->addr.id == addr.addr.id)) {
- 			mptcp_nl_addr_backup(net, &entry->addr, bkup);
- 
- 			if (bkup)
--- 
-2.34.1
-
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -2458,7 +2458,11 @@ static void perf_remove_from_context(str
+ 	 * event_function_call() user.
+ 	 */
+ 	raw_spin_lock_irq(&ctx->lock);
+-	if (!ctx->is_active) {
++	/*
++	 * Cgroup events are per-cpu events, and must IPI because of
++	 * cgrp_cpuctx_list.
++	 */
++	if (!ctx->is_active && !is_cgroup_event(event)) {
+ 		__perf_remove_from_context(event, __get_cpu_context(ctx),
+ 					   ctx, (void *)flags);
+ 		raw_spin_unlock_irq(&ctx->lock);
+@@ -2891,11 +2895,14 @@ perf_install_in_context(struct perf_even
+ 	 * perf_event_attr::disabled events will not run and can be initialized
+ 	 * without IPI. Except when this is the first event for the context, in
+ 	 * that case we need the magic of the IPI to set ctx->is_active.
++	 * Similarly, cgroup events for the context also needs the IPI to
++	 * manipulate the cgrp_cpuctx_list.
+ 	 *
+ 	 * The IOC_ENABLE that is sure to follow the creation of a disabled
+ 	 * event will issue the IPI and reprogram the hardware.
+ 	 */
+-	if (__perf_effective_state(event) == PERF_EVENT_STATE_OFF && ctx->nr_events) {
++	if (__perf_effective_state(event) == PERF_EVENT_STATE_OFF &&
++	    ctx->nr_events && !is_cgroup_event(event)) {
+ 		raw_spin_lock_irq(&ctx->lock);
+ 		if (ctx->task == TASK_TOMBSTONE) {
+ 			raw_spin_unlock_irq(&ctx->lock);
 
 
