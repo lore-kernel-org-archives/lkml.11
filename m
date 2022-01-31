@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 533A0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:36:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF58BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:36:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350686AbiAaLgs (ORCPT
+        id S1377819AbiAaLg6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:36:48 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:56732 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378421AbiAaLYY (ORCPT
+        Mon, 31 Jan 2022 06:36:58 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:42070 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377825AbiAaLYi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:24:24 -0500
+        Mon, 31 Jan 2022 06:24:38 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 387B96129E;
-        Mon, 31 Jan 2022 11:24:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1836BC340EE;
-        Mon, 31 Jan 2022 11:24:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3F02FB82A5F;
+        Mon, 31 Jan 2022 11:24:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FFFCC340EF;
+        Mon, 31 Jan 2022 11:24:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643628262;
-        bh=4OSZBtWLrvk3XZbaNpArCk8kQ9Usrw+AeQKGcKTYR1w=;
+        s=korg; t=1643628272;
+        bh=h5wXTcjiTMvA3SO2YOFReimdJuI467zY2G4HA4CEC70=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wDu/zhms90CZzt/vw39qmdR10zvZ5s1VqVaTu4rd2WmgIx/d1TJhXBJrmWzUkwUeH
-         XKAUkeCp8sg0O//yzW/2wuKlx4W+laGaGfv9haJ9nDGamC90Qq9ikgX0LkddZtNHVQ
-         016ecHrbuej2KOUm3bT80LKk7zofJiy15qbth1LA=
+        b=HtcbO/Wh8isutgDpFhYJHFyr0D4MIOaCR9F6T8aXhDYipWE8lzOS2ZKYz7z/WtVQz
+         AMusNGbsc8wdEUNUnxVib8K9JuBokf+dnT2w+jmDcE3K6C3EtzRbEmlPr+0EMY7vRW
+         DduOmp8VP9RrJuzmmyjW0Fh3TBR4SwK0YwW0Y3PA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dave Airlie <airlied@redhat.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
+        stable@vger.kernel.org, Catherine Sullivan <csully@google.com>,
+        David Awogbemila <awogbemila@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 177/200] Revert "drm/ast: Support 1600x900 with 108MHz PCLK"
-Date:   Mon, 31 Jan 2022 11:57:20 +0100
-Message-Id: <20220131105239.501421956@linuxfoundation.org>
+Subject: [PATCH 5.16 180/200] gve: Fix GFP flags when allocing pages
+Date:   Mon, 31 Jan 2022 11:57:23 +0100
+Message-Id: <20220131105239.607269908@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -47,36 +48,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Airlie <airlied@redhat.com>
+From: Catherine Sullivan <csully@google.com>
 
-[ Upstream commit 76cea3d95513fe40000d06a3719c4bb6b53275e2 ]
+[ Upstream commit a92f7a6feeb3884c69c1c7c1f13bccecb2228ad0 ]
 
-This reverts commit 9bb7b689274b67ecb3641e399e76f84adc627df1.
+Use GFP_ATOMIC when allocating pages out of the hotpath,
+continue to use GFP_KERNEL when allocating pages during setup.
 
-This caused a regression reported to Red Hat.
+GFP_KERNEL will allow blocking which allows it to succeed
+more often in a low memory enviornment but in the hotpath we do
+not want to allow the allocation to block.
 
-Fixes: 9bb7b689274b ("drm/ast: Support 1600x900 with 108MHz PCLK")
-Signed-off-by: Dave Airlie <airlied@redhat.com>
-Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220120040527.552068-1-airlied@gmail.com
+Fixes: f5cedc84a30d2 ("gve: Add transmit and receive support")
+Signed-off-by: Catherine Sullivan <csully@google.com>
+Signed-off-by: David Awogbemila <awogbemila@google.com>
+Link: https://lore.kernel.org/r/20220126003843.3584521-1-awogbemila@google.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/ast/ast_tables.h | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/net/ethernet/google/gve/gve.h        | 2 +-
+ drivers/net/ethernet/google/gve/gve_main.c   | 6 +++---
+ drivers/net/ethernet/google/gve/gve_rx.c     | 3 ++-
+ drivers/net/ethernet/google/gve/gve_rx_dqo.c | 2 +-
+ 4 files changed, 7 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/gpu/drm/ast/ast_tables.h b/drivers/gpu/drm/ast/ast_tables.h
-index d9eb353a4bf09..dbe1cc620f6e6 100644
---- a/drivers/gpu/drm/ast/ast_tables.h
-+++ b/drivers/gpu/drm/ast/ast_tables.h
-@@ -282,8 +282,6 @@ static const struct ast_vbios_enhtable res_1360x768[] = {
- };
+diff --git a/drivers/net/ethernet/google/gve/gve.h b/drivers/net/ethernet/google/gve/gve.h
+index b719f72281c44..3d469073fbc54 100644
+--- a/drivers/net/ethernet/google/gve/gve.h
++++ b/drivers/net/ethernet/google/gve/gve.h
+@@ -830,7 +830,7 @@ static inline bool gve_is_gqi(struct gve_priv *priv)
+ /* buffers */
+ int gve_alloc_page(struct gve_priv *priv, struct device *dev,
+ 		   struct page **page, dma_addr_t *dma,
+-		   enum dma_data_direction);
++		   enum dma_data_direction, gfp_t gfp_flags);
+ void gve_free_page(struct device *dev, struct page *page, dma_addr_t dma,
+ 		   enum dma_data_direction);
+ /* tx handling */
+diff --git a/drivers/net/ethernet/google/gve/gve_main.c b/drivers/net/ethernet/google/gve/gve_main.c
+index 59b66f679e46e..28e2d4d8ed7c6 100644
+--- a/drivers/net/ethernet/google/gve/gve_main.c
++++ b/drivers/net/ethernet/google/gve/gve_main.c
+@@ -752,9 +752,9 @@ static void gve_free_rings(struct gve_priv *priv)
  
- static const struct ast_vbios_enhtable res_1600x900[] = {
--	{1800, 1600, 24, 80, 1000,  900, 1, 3, VCLK108,		/* 60Hz */
--	 (SyncPP | Charx8Dot | LineCompareOff | WideScreenMode | NewModeInfo), 60, 3, 0x3A },
- 	{1760, 1600, 48, 32, 926, 900, 3, 5, VCLK97_75,		/* 60Hz CVT RB */
- 	 (SyncNP | Charx8Dot | LineCompareOff | WideScreenMode | NewModeInfo |
- 	  AST2500PreCatchCRT), 60, 1, 0x3A },
+ int gve_alloc_page(struct gve_priv *priv, struct device *dev,
+ 		   struct page **page, dma_addr_t *dma,
+-		   enum dma_data_direction dir)
++		   enum dma_data_direction dir, gfp_t gfp_flags)
+ {
+-	*page = alloc_page(GFP_KERNEL);
++	*page = alloc_page(gfp_flags);
+ 	if (!*page) {
+ 		priv->page_alloc_fail++;
+ 		return -ENOMEM;
+@@ -797,7 +797,7 @@ static int gve_alloc_queue_page_list(struct gve_priv *priv, u32 id,
+ 	for (i = 0; i < pages; i++) {
+ 		err = gve_alloc_page(priv, &priv->pdev->dev, &qpl->pages[i],
+ 				     &qpl->page_buses[i],
+-				     gve_qpl_dma_dir(priv, id));
++				     gve_qpl_dma_dir(priv, id), GFP_KERNEL);
+ 		/* caller handles clean up */
+ 		if (err)
+ 			return -ENOMEM;
+diff --git a/drivers/net/ethernet/google/gve/gve_rx.c b/drivers/net/ethernet/google/gve/gve_rx.c
+index 3d04b5aff331b..04a08904305a9 100644
+--- a/drivers/net/ethernet/google/gve/gve_rx.c
++++ b/drivers/net/ethernet/google/gve/gve_rx.c
+@@ -86,7 +86,8 @@ static int gve_rx_alloc_buffer(struct gve_priv *priv, struct device *dev,
+ 	dma_addr_t dma;
+ 	int err;
+ 
+-	err = gve_alloc_page(priv, dev, &page, &dma, DMA_FROM_DEVICE);
++	err = gve_alloc_page(priv, dev, &page, &dma, DMA_FROM_DEVICE,
++			     GFP_ATOMIC);
+ 	if (err)
+ 		return err;
+ 
+diff --git a/drivers/net/ethernet/google/gve/gve_rx_dqo.c b/drivers/net/ethernet/google/gve/gve_rx_dqo.c
+index beb8bb079023c..8c939628e2d85 100644
+--- a/drivers/net/ethernet/google/gve/gve_rx_dqo.c
++++ b/drivers/net/ethernet/google/gve/gve_rx_dqo.c
+@@ -157,7 +157,7 @@ static int gve_alloc_page_dqo(struct gve_priv *priv,
+ 	int err;
+ 
+ 	err = gve_alloc_page(priv, &priv->pdev->dev, &buf_state->page_info.page,
+-			     &buf_state->addr, DMA_FROM_DEVICE);
++			     &buf_state->addr, DMA_FROM_DEVICE, GFP_KERNEL);
+ 	if (err)
+ 		return err;
+ 
 -- 
 2.34.1
 
