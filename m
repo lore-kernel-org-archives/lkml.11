@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD811C35268
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14364C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378696AbiAaL26 (ORCPT
+        id S1378757AbiAaL3G (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:28:58 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:37264 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376565AbiAaLRb (ORCPT
+        Mon, 31 Jan 2022 06:29:06 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:51256 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377423AbiAaLSO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:17:31 -0500
+        Mon, 31 Jan 2022 06:18:14 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 260B0B82A68;
-        Mon, 31 Jan 2022 11:17:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F1C4C340E8;
-        Mon, 31 Jan 2022 11:17:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E46CF61207;
+        Mon, 31 Jan 2022 11:18:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD7D6C340E8;
+        Mon, 31 Jan 2022 11:18:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627848;
-        bh=yb1nodQINQS6Zb0tcPMW6RUzDoyt+MuWeOVVx3otRO4=;
+        s=korg; t=1643627893;
+        bh=73BdNz4Hg5qLRQTfuS4+6Pt09s5QMlox2v1WqQLxkag=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qUUWT/vnm0uCnYyFtmSWmmXZEkiSOnr16hpvaNiN9QKIFjabZF3K0YwRQ+Ua7EcMP
-         0AYcl2kJChUzYSz2j+TwHJFTcmz+3OxbLYm6IVnV7DHihhXUUSzmUyVuw3Kv+wwkoo
-         8RiYadO/poeazjbJXPkqW9QvdxzivtpFAPibGviU=
+        b=U9snrQ3erR0NIoiJEtMh/+FF+M6qduh6bGRFUPJ+yFx3KCiC9iPryvgOaN3RQ1mFc
+         85hD2MpKMGAusWfbB0U9tlgmMIR9+FG1wOSvndnoABAEy2EQgdwKscTNOtZ8P+Rm8L
+         NJEziLgtpeBgS2ujsSjee0JaaT7+X1Bs6jT17elM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.16 044/200] drm/amdgpu: filter out radeon secondary ids as well
-Date:   Mon, 31 Jan 2022 11:55:07 +0100
-Message-Id: <20220131105235.041585043@linuxfoundation.org>
+        stable@vger.kernel.org, Benjamin Block <bblock@linux.ibm.com>,
+        Steffen Maier <maier@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.16 025/200] scsi: zfcp: Fix failed recovery on gone remote port with non-NPIV FCP devices
+Date:   Mon, 31 Jan 2022 11:54:48 +0100
+Message-Id: <20220131105234.419618387@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -47,114 +47,111 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Deucher <alexander.deucher@amd.com>
+From: Steffen Maier <maier@linux.ibm.com>
 
-commit 9e5a14bce2402e84251a10269df0235cd7ce9234 upstream.
+commit 8c9db6679be4348b8aae108e11d4be2f83976e30 upstream.
 
-Older radeon boards (r2xx-r5xx) had secondary PCI functions
-which we solely there for supporting multi-head on OSs with
-special requirements.  Add them to the unsupported list
-as well so we don't attempt to bind to them.  The driver
-would fail to bind to them anyway, but this does so
-in a cleaner way that should not confuse the user.
+Suppose we have an environment with a number of non-NPIV FCP devices
+(virtual HBAs / FCP devices / zfcp "adapter"s) sharing the same physical
+FCP channel (HBA port) and its I_T nexus. Plus a number of storage target
+ports zoned to such shared channel. Now one target port logs out of the
+fabric causing an RSCN. Zfcp reacts with an ADISC ELS and subsequent port
+recovery depending on the ADISC result. This happens on all such FCP
+devices (in different Linux images) concurrently as they all receive a copy
+of this RSCN. In the following we look at one of those FCP devices.
 
-Cc: stable@vger.kernel.org
-Acked-by: Christian König <christian.koenig@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Requests other than FSF_QTCB_FCP_CMND can be slow until they get a
+response.
+
+Depending on which requests are affected by slow responses, there are
+different recovery outcomes. Here we want to fix failed recoveries on port
+or adapter level by avoiding recovery requests that can be slow.
+
+We need the cached N_Port_ID for the remote port "link" test with ADISC.
+Just before sending the ADISC, we now intentionally forget the old cached
+N_Port_ID. The idea is that on receiving an RSCN for a port, we have to
+assume that any cached information about this port is stale.  This forces a
+fresh new GID_PN [FC-GS] nameserver lookup on any subsequent recovery for
+the same port. Since we typically can still communicate with the nameserver
+efficiently, we now reach steady state quicker: Either the nameserver still
+does not know about the port so we stop recovery, or the nameserver already
+knows the port potentially with a new N_Port_ID and we can successfully and
+quickly perform open port recovery.  For the one case, where ADISC returns
+successfully, we re-initialize port->d_id because that case does not
+involve any port recovery.
+
+This also solves a problem if the storage WWPN quickly logs into the fabric
+again but with a different N_Port_ID. Such as on virtual WWPN takeover
+during target NPIV failover.
+[https://www.redbooks.ibm.com/abstracts/redp5477.html] In that case the
+RSCN from the storage FDISC was ignored by zfcp and we could not
+successfully recover the failover. On some later failback on the storage,
+we could have been lucky if the virtual WWPN got the same old N_Port_ID
+from the SAN switch as we still had cached.  Then the related RSCN
+triggered a successful port reopen recovery.  However, there is no
+guarantee to get the same N_Port_ID on NPIV FDISC.
+
+Even though NPIV-enabled FCP devices are not affected by this problem, this
+code change optimizes recovery time for gone remote ports as a side effect.
+The timely drop of cached N_Port_IDs prevents unnecessary slow open port
+attempts.
+
+While the problem might have been in code before v2.6.32 commit
+799b76d09aee ("[SCSI] zfcp: Decouple gid_pn requests from erp") this fix
+depends on the gid_pn_work introduced with that commit, so we mark it as
+culprit to satisfy fix dependencies.
+
+Note: Point-to-point remote port is already handled separately and gets its
+N_Port_ID from the cached peer_d_id. So resetting port->d_id in general
+does not affect PtP.
+
+Link: https://lore.kernel.org/r/20220118165803.3667947-1-maier@linux.ibm.com
+Fixes: 799b76d09aee ("[SCSI] zfcp: Decouple gid_pn requests from erp")
+Cc: <stable@vger.kernel.org> #2.6.32+
+Suggested-by: Benjamin Block <bblock@linux.ibm.com>
+Reviewed-by: Benjamin Block <bblock@linux.ibm.com>
+Signed-off-by: Steffen Maier <maier@linux.ibm.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c |   81 ++++++++++++++++++++++++++++++++
- 1 file changed, 81 insertions(+)
+ drivers/s390/scsi/zfcp_fc.c |   13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-@@ -1523,6 +1523,87 @@ static const u16 amdgpu_unsupported_pcii
- 	0x99A0,
- 	0x99A2,
- 	0x99A4,
-+	/* radeon secondary ids */
-+	0x3171,
-+	0x3e70,
-+	0x4164,
-+	0x4165,
-+	0x4166,
-+	0x4168,
-+	0x4170,
-+	0x4171,
-+	0x4172,
-+	0x4173,
-+	0x496e,
-+	0x4a69,
-+	0x4a6a,
-+	0x4a6b,
-+	0x4a70,
-+	0x4a74,
-+	0x4b69,
-+	0x4b6b,
-+	0x4b6c,
-+	0x4c6e,
-+	0x4e64,
-+	0x4e65,
-+	0x4e66,
-+	0x4e67,
-+	0x4e68,
-+	0x4e69,
-+	0x4e6a,
-+	0x4e71,
-+	0x4f73,
-+	0x5569,
-+	0x556b,
-+	0x556d,
-+	0x556f,
-+	0x5571,
-+	0x5854,
-+	0x5874,
-+	0x5940,
-+	0x5941,
-+	0x5b72,
-+	0x5b73,
-+	0x5b74,
-+	0x5b75,
-+	0x5d44,
-+	0x5d45,
-+	0x5d6d,
-+	0x5d6f,
-+	0x5d72,
-+	0x5d77,
-+	0x5e6b,
-+	0x5e6d,
-+	0x7120,
-+	0x7124,
-+	0x7129,
-+	0x712e,
-+	0x712f,
-+	0x7162,
-+	0x7163,
-+	0x7166,
-+	0x7167,
-+	0x7172,
-+	0x7173,
-+	0x71a0,
-+	0x71a1,
-+	0x71a3,
-+	0x71a7,
-+	0x71bb,
-+	0x71e0,
-+	0x71e1,
-+	0x71e2,
-+	0x71e6,
-+	0x71e7,
-+	0x71f2,
-+	0x7269,
-+	0x726b,
-+	0x726e,
-+	0x72a0,
-+	0x72a8,
-+	0x72b1,
-+	0x72b3,
-+	0x793f,
- };
+--- a/drivers/s390/scsi/zfcp_fc.c
++++ b/drivers/s390/scsi/zfcp_fc.c
+@@ -521,6 +521,8 @@ static void zfcp_fc_adisc_handler(void *
+ 		goto out;
+ 	}
  
- static const struct pci_device_id pciidlist[] = {
++	/* re-init to undo drop from zfcp_fc_adisc() */
++	port->d_id = ntoh24(adisc_resp->adisc_port_id);
+ 	/* port is good, unblock rport without going through erp */
+ 	zfcp_scsi_schedule_rport_register(port);
+  out:
+@@ -534,6 +536,7 @@ static int zfcp_fc_adisc(struct zfcp_por
+ 	struct zfcp_fc_req *fc_req;
+ 	struct zfcp_adapter *adapter = port->adapter;
+ 	struct Scsi_Host *shost = adapter->scsi_host;
++	u32 d_id;
+ 	int ret;
+ 
+ 	fc_req = kmem_cache_zalloc(zfcp_fc_req_cache, GFP_ATOMIC);
+@@ -558,7 +561,15 @@ static int zfcp_fc_adisc(struct zfcp_por
+ 	fc_req->u.adisc.req.adisc_cmd = ELS_ADISC;
+ 	hton24(fc_req->u.adisc.req.adisc_port_id, fc_host_port_id(shost));
+ 
+-	ret = zfcp_fsf_send_els(adapter, port->d_id, &fc_req->ct_els,
++	d_id = port->d_id; /* remember as destination for send els below */
++	/*
++	 * Force fresh GID_PN lookup on next port recovery.
++	 * Must happen after request setup and before sending request,
++	 * to prevent race with port->d_id re-init in zfcp_fc_adisc_handler().
++	 */
++	port->d_id = 0;
++
++	ret = zfcp_fsf_send_els(adapter, d_id, &fc_req->ct_els,
+ 				ZFCP_FC_CTELS_TMO);
+ 	if (ret)
+ 		kmem_cache_free(zfcp_fc_req_cache, fc_req);
 
 
