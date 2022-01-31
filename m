@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB24AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:16:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F0D8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:16:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359397AbiAaLQv (ORCPT
+        id S1376937AbiAaLQz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:16:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44372 "EHLO
+        Mon, 31 Jan 2022 06:16:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377169AbiAaLJp (ORCPT
+        with ESMTP id S1377159AbiAaLJp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 31 Jan 2022 06:09:45 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88691C0604CA;
-        Mon, 31 Jan 2022 03:06:28 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3B2EC0604C8;
+        Mon, 31 Jan 2022 03:06:26 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2794460FB5;
-        Mon, 31 Jan 2022 11:06:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA66BC340E8;
-        Mon, 31 Jan 2022 11:06:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B0B68B82A5C;
+        Mon, 31 Jan 2022 11:06:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F370DC340EF;
+        Mon, 31 Jan 2022 11:06:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627187;
-        bh=Nc46HbOlscxH1ZoeqPE08D0tvHM0jh6dbN/WgavK4V0=;
+        s=korg; t=1643627184;
+        bh=JJG8FPMAU2MXhrU12vj6pVtNxghJpIL8qz7OMrp+rNM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=18Qr1qrSSg2IJjB7PRReUVX8Q85srXRZWUZINWKYyT2n1ByOHOJstErZ5Z9aEIYy9
-         MLJiL+TZqXdjFDvzORVc3FBd/LjAzRx2YHtPEVARu8PaVD0ecG2EbPn7cWTBiU/9r+
-         2aM8sZm3vfXRtyabPrUaQd8UmaxVmrgC2BVJsr50=
+        b=mjsVgmoH7vgvJnyuW+q31Ta9StpGAWD83p2KwzZZie4FfneblOsBKYP2QKSJWNXpe
+         Oh7yXuXxlI1OVzdlqt4nJdu4nLKcHc3g5TAgc1y9FJnW8KX1i0k8DrvUGQ8BviCriN
+         xybWx9qJ6GMeo5KySxMvLOQ496OjlPgmL482DNNk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rick Yiu <rickyiu@google.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Sachin Sant <sachinp@linux.ibm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 072/100] sched/pelt: Relax the sync of util_sum with util_avg
-Date:   Mon, 31 Jan 2022 11:56:33 +0100
-Message-Id: <20220131105222.848675855@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+ac94ae5f68b84197f41c@syzkaller.appspotmail.com,
+        OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>,
+        Ming Lei <ming.lei@redhat.com>, Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.10 100/100] block: Fix wrong offset in bio_truncate()
+Date:   Mon, 31 Jan 2022 11:57:01 +0100
+Message-Id: <20220131105223.808036007@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
 References: <20220131105220.424085452@linuxfoundation.org>
@@ -53,105 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincent Guittot <vincent.guittot@linaro.org>
+From: OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
 
-[ Upstream commit 98b0d890220d45418cfbc5157b3382e6da5a12ab ]
+commit 3ee859e384d453d6ac68bfd5971f630d9fa46ad3 upstream.
 
-Rick reported performance regressions in bugzilla because of cpu frequency
-being lower than before:
-    https://bugzilla.kernel.org/show_bug.cgi?id=215045
+bio_truncate() clears the buffer outside of last block of bdev, however
+current bio_truncate() is using the wrong offset of page. So it can
+return the uninitialized data.
 
-He bisected the problem to:
-commit 1c35b07e6d39 ("sched/fair: Ensure _sum and _avg values stay consistent")
+This happened when both of truncated/corrupted FS and userspace (via
+bdev) are trying to read the last of bdev.
 
-This commit forces util_sum to be synced with the new util_avg after
-removing the contribution of a task and before the next periodic sync. By
-doing so util_sum is rounded to its lower bound and might lost up to
-LOAD_AVG_MAX-1 of accumulated contribution which has not yet been
-reflected in util_avg.
-
-Instead of always setting util_sum to the low bound of util_avg, which can
-significantly lower the utilization of root cfs_rq after propagating the
-change down into the hierarchy, we revert the change of util_sum and
-propagate the difference.
-
-In addition, we also check that cfs's util_sum always stays above the
-lower bound for a given util_avg as it has been observed that
-sched_entity's util_sum is sometimes above cfs one.
-
-Fixes: 1c35b07e6d39 ("sched/fair: Ensure _sum and _avg values stay consistent")
-Reported-by: Rick Yiu <rickyiu@google.com>
-Signed-off-by: Vincent Guittot <vincent.guittot@linaro.org>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
-Tested-by: Sachin Sant <sachinp@linux.ibm.com>
-Link: https://lkml.kernel.org/r/20220111134659.24961-2-vincent.guittot@linaro.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reported-by: syzbot+ac94ae5f68b84197f41c@syzkaller.appspotmail.com
+Signed-off-by: OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
+Reviewed-by: Ming Lei <ming.lei@redhat.com>
+Link: https://lore.kernel.org/r/875yqt1c9g.fsf@mail.parknet.co.jp
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/sched/fair.c | 16 +++++++++++++---
- kernel/sched/pelt.h |  4 +++-
- 2 files changed, 16 insertions(+), 4 deletions(-)
+ block/bio.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 8d2f238fdd2ac..acd9833b8ec22 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -3379,7 +3379,6 @@ void set_task_rq_fair(struct sched_entity *se,
- 	se->avg.last_update_time = n_last_update_time;
- }
- 
--
- /*
-  * When on migration a sched_entity joins/leaves the PELT hierarchy, we need to
-  * propagate its contribution. The key to this propagation is the invariant
-@@ -3447,7 +3446,6 @@ void set_task_rq_fair(struct sched_entity *se,
-  * XXX: only do this for the part of runnable > running ?
-  *
-  */
--
- static inline void
- update_tg_cfs_util(struct cfs_rq *cfs_rq, struct sched_entity *se, struct cfs_rq *gcfs_rq)
- {
-@@ -3676,7 +3674,19 @@ update_cfs_rq_load_avg(u64 now, struct cfs_rq *cfs_rq)
- 
- 		r = removed_util;
- 		sub_positive(&sa->util_avg, r);
--		sa->util_sum = sa->util_avg * divider;
-+		sub_positive(&sa->util_sum, r * divider);
-+		/*
-+		 * Because of rounding, se->util_sum might ends up being +1 more than
-+		 * cfs->util_sum. Although this is not a problem by itself, detaching
-+		 * a lot of tasks with the rounding problem between 2 updates of
-+		 * util_avg (~1ms) can make cfs->util_sum becoming null whereas
-+		 * cfs_util_avg is not.
-+		 * Check that util_sum is still above its lower bound for the new
-+		 * util_avg. Given that period_contrib might have moved since the last
-+		 * sync, we are only sure that util_sum must be above or equal to
-+		 *    util_avg * minimum possible divider
-+		 */
-+		sa->util_sum = max_t(u32, sa->util_sum, sa->util_avg * PELT_MIN_DIVIDER);
- 
- 		r = removed_runnable;
- 		sub_positive(&sa->runnable_avg, r);
-diff --git a/kernel/sched/pelt.h b/kernel/sched/pelt.h
-index 0b9aeebb9c325..45bf08e22207c 100644
---- a/kernel/sched/pelt.h
-+++ b/kernel/sched/pelt.h
-@@ -37,9 +37,11 @@ update_irq_load_avg(struct rq *rq, u64 running)
- }
- #endif
- 
-+#define PELT_MIN_DIVIDER	(LOAD_AVG_MAX - 1024)
-+
- static inline u32 get_pelt_divider(struct sched_avg *avg)
- {
--	return LOAD_AVG_MAX - 1024 + avg->period_contrib;
-+	return PELT_MIN_DIVIDER + avg->period_contrib;
- }
- 
- static inline void cfs_se_util_change(struct sched_avg *avg)
--- 
-2.34.1
-
+--- a/block/bio.c
++++ b/block/bio.c
+@@ -575,7 +575,8 @@ void bio_truncate(struct bio *bio, unsig
+ 				offset = new_size - done;
+ 			else
+ 				offset = 0;
+-			zero_user(bv.bv_page, offset, bv.bv_len - offset);
++			zero_user(bv.bv_page, bv.bv_offset + offset,
++				  bv.bv_len - offset);
+ 			truncated = true;
+ 		}
+ 		done += bv.bv_len;
 
 
