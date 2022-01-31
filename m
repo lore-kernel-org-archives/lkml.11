@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2AC8C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:00:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA17CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:00:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243891AbiAaLAV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:00:21 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:60570 "EHLO
+        id S1358470AbiAaLAY (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 31 Jan 2022 06:00:24 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:60614 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358417AbiAaK7i (ORCPT
+        with ESMTP id S1358431AbiAaK7m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 05:59:38 -0500
+        Mon, 31 Jan 2022 05:59:42 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8884760AF6;
-        Mon, 31 Jan 2022 10:59:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4481DC340E8;
-        Mon, 31 Jan 2022 10:59:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AD5CD60AD6;
+        Mon, 31 Jan 2022 10:59:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75241C340E8;
+        Mon, 31 Jan 2022 10:59:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643626774;
-        bh=3XIa/muwBTvvKBs3bdBiG2V3lDx1LVelKRjXVwnkQCc=;
+        s=korg; t=1643626781;
+        bh=Qaq1eYmEKuHp4EfSym8gVoXa+XNpJfoIhWl2rY8NBjo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZVv5WGyvNc5BcOkw49C29NtI/LS8t+EC9rX10+uNGRUAkMuatbAYIgGs/gV3iMiHw
-         JySnrZoqKtoXAIVx/YugQY9mQIEMjHe0sWOF1cTfww8i/XVNE+8kWh8LiNWbN+SoCg
-         kF12dM1YPD2YueoNZGjuqoDbvsE+9TxsQrNxySO8=
+        b=ewuUEe31jUv3ZCGW9hWO29zsHEovTu9rDKJOFPnUnw5x07WaOjrMhOQ6Xd7MFjHY5
+         Tki1kbTQKaChk7Fv3hubtZ4gG0Jsi/X+edN6UmmTFTbvV6u4as5K2BWISRtU8g4fnF
+         iAqgGOHwxFOWbL8E4nkggze7XduHtWeetVm1HHdc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Congyu Liu <liu3101@purdue.edu>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 34/64] net: fix information leakage in /proc/net/ptype
-Date:   Mon, 31 Jan 2022 11:56:19 +0100
-Message-Id: <20220131105216.838034920@linuxfoundation.org>
+        stable@vger.kernel.org, butt3rflyh4ck <butterflyhuangxx@gmail.com>,
+        Christoph Hellwig <hch@lst.de>, Jan Kara <jack@suse.cz>
+Subject: [PATCH 5.4 05/64] udf: Fix NULL ptr deref when converting from inline format
+Date:   Mon, 31 Jan 2022 11:55:50 +0100
+Message-Id: <20220131105215.830592752@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105215.644174521@linuxfoundation.org>
 References: <20220131105215.644174521@linuxfoundation.org>
@@ -46,70 +46,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Congyu Liu <liu3101@purdue.edu>
+From: Jan Kara <jack@suse.cz>
 
-commit 47934e06b65637c88a762d9c98329ae6e3238888 upstream.
+commit 7fc3b7c2981bbd1047916ade327beccb90994eee upstream.
 
-In one net namespace, after creating a packet socket without binding
-it to a device, users in other net namespaces can observe the new
-`packet_type` added by this packet socket by reading `/proc/net/ptype`
-file. This is minor information leakage as packet socket is
-namespace aware.
+udf_expand_file_adinicb() calls directly ->writepage to write data
+expanded into a page. This however misses to setup inode for writeback
+properly and so we can crash on inode->i_wb dereference when submitting
+page for IO like:
 
-Add a net pointer in `packet_type` to keep the net namespace of
-of corresponding packet socket. In `ptype_seq_show`, this net pointer
-must be checked when it is not NULL.
+  BUG: kernel NULL pointer dereference, address: 0000000000000158
+  #PF: supervisor read access in kernel mode
+...
+  <TASK>
+  __folio_start_writeback+0x2ac/0x350
+  __block_write_full_page+0x37d/0x490
+  udf_expand_file_adinicb+0x255/0x400 [udf]
+  udf_file_write_iter+0xbe/0x1b0 [udf]
+  new_sync_write+0x125/0x1c0
+  vfs_write+0x28e/0x400
 
-Fixes: 2feb27dbe00c ("[NETNS]: Minor information leak via /proc/net/ptype file.")
-Signed-off-by: Congyu Liu <liu3101@purdue.edu>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fix the problem by marking the page dirty and going through the standard
+writeback path to write the page. Strictly speaking we would not even
+have to write the page but we want to catch e.g. ENOSPC errors early.
+
+Reported-by: butt3rflyh4ck <butterflyhuangxx@gmail.com>
+CC: stable@vger.kernel.org
+Fixes: 52ebea749aae ("writeback: make backing_dev_info host cgroup-specific bdi_writebacks")
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Jan Kara <jack@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/netdevice.h |    1 +
- net/core/net-procfs.c     |    3 ++-
- net/packet/af_packet.c    |    2 ++
- 3 files changed, 5 insertions(+), 1 deletion(-)
+ fs/udf/inode.c |    8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -2397,6 +2397,7 @@ struct packet_type {
- 					      struct net_device *);
- 	bool			(*id_match)(struct packet_type *ptype,
- 					    struct sock *sk);
-+	struct net		*af_packet_net;
- 	void			*af_packet_priv;
- 	struct list_head	list;
- };
---- a/net/core/net-procfs.c
-+++ b/net/core/net-procfs.c
-@@ -252,7 +252,8 @@ static int ptype_seq_show(struct seq_fil
+--- a/fs/udf/inode.c
++++ b/fs/udf/inode.c
+@@ -258,10 +258,6 @@ int udf_expand_file_adinicb(struct inode
+ 	char *kaddr;
+ 	struct udf_inode_info *iinfo = UDF_I(inode);
+ 	int err;
+-	struct writeback_control udf_wbc = {
+-		.sync_mode = WB_SYNC_NONE,
+-		.nr_to_write = 1,
+-	};
  
- 	if (v == SEQ_START_TOKEN)
- 		seq_puts(seq, "Type Device      Function\n");
--	else if (pt->dev == NULL || dev_net(pt->dev) == seq_file_net(seq)) {
-+	else if ((!pt->af_packet_net || net_eq(pt->af_packet_net, seq_file_net(seq))) &&
-+		 (!pt->dev || net_eq(dev_net(pt->dev), seq_file_net(seq)))) {
- 		if (pt->type == htons(ETH_P_ALL))
- 			seq_puts(seq, "ALL ");
- 		else
---- a/net/packet/af_packet.c
-+++ b/net/packet/af_packet.c
-@@ -1715,6 +1715,7 @@ static int fanout_add(struct sock *sk, u
- 		match->prot_hook.dev = po->prot_hook.dev;
- 		match->prot_hook.func = packet_rcv_fanout;
- 		match->prot_hook.af_packet_priv = match;
-+		match->prot_hook.af_packet_net = read_pnet(&match->net);
- 		match->prot_hook.id_match = match_fanout_group;
- 		list_add(&match->list, &fanout_list);
- 	}
-@@ -3294,6 +3295,7 @@ static int packet_create(struct net *net
- 		po->prot_hook.func = packet_rcv_spkt;
- 
- 	po->prot_hook.af_packet_priv = sk;
-+	po->prot_hook.af_packet_net = sock_net(sk);
- 
- 	if (proto) {
- 		po->prot_hook.type = proto;
+ 	WARN_ON_ONCE(!inode_is_locked(inode));
+ 	if (!iinfo->i_lenAlloc) {
+@@ -305,8 +301,10 @@ int udf_expand_file_adinicb(struct inode
+ 		iinfo->i_alloc_type = ICBTAG_FLAG_AD_LONG;
+ 	/* from now on we have normal address_space methods */
+ 	inode->i_data.a_ops = &udf_aops;
++	set_page_dirty(page);
++	unlock_page(page);
+ 	up_write(&iinfo->i_data_sem);
+-	err = inode->i_data.a_ops->writepage(page, &udf_wbc);
++	err = filemap_fdatawrite(inode->i_mapping);
+ 	if (err) {
+ 		/* Restore everything back so that we don't lose data... */
+ 		lock_page(page);
 
 
