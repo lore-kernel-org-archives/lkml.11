@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDAAFC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:46:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B588C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:46:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379502AbiAaLpw (ORCPT
+        id S1380695AbiAaLp7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:45:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50820 "EHLO
+        Mon, 31 Jan 2022 06:45:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377026AbiAaLcw (ORCPT
+        with ESMTP id S1350765AbiAaLbs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:32:52 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E685CC0604D1;
-        Mon, 31 Jan 2022 03:21:55 -0800 (PST)
+        Mon, 31 Jan 2022 06:31:48 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89686C0619C4;
+        Mon, 31 Jan 2022 03:21:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8B001B82A76;
-        Mon, 31 Jan 2022 11:21:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6A79C340EE;
-        Mon, 31 Jan 2022 11:21:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 279DF61120;
+        Mon, 31 Jan 2022 11:21:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2D40C340E8;
+        Mon, 31 Jan 2022 11:21:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643628114;
-        bh=rEqdq7v63HYoM1RUtMY3FTYSi4VVJnZarw6/dAiwbJE=;
+        s=korg; t=1643628101;
+        bh=WmmmOwqTvv7mWAhmZL3Z+Dtmrc7D9pi6+R17v57TzT8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YnIlHT57CwZKxSPltqI1jMg7iZM5dWJ2M7fXF2bUAV2ItnCSgu3NdnR7OWiQXpJcJ
-         wE0h+clllxtcf2Id9iJAAI+jEc7Ir5cV/Tt/2lQzlcsnCEOs0h4HKibndY3ZV8KImD
-         du1izsQLtMbRfCFAWo/s0Yvv6svQUIdRCgTXcswE=
+        b=rDOB+UiACfncDuxy21yYCsU7km8LQNVE7oWo+ykfMpt3bcU/2kZPgzgXRvyGy52Lj
+         WH9nXh8BoT4ACWAK7vDK1kqW6H1J/iLgUyHXnjQMyFD7Os8TGwF/ERwHURzKveKStg
+         cjC6lBoXWB/8jKb7p/IpHfnUzv228OoZLsGgcGuw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nicholas Piggin <npiggin@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 128/200] powerpc/64s: Mask SRR0 before checking against the masked NIP
-Date:   Mon, 31 Jan 2022 11:56:31 +0100
-Message-Id: <20220131105237.865731453@linuxfoundation.org>
+Subject: [PATCH 5.16 124/200] SUNRPC: Dont dereference xprt->snd_task if its a cookie
+Date:   Mon, 31 Jan 2022 11:56:27 +0100
+Message-Id: <20220131105237.727631058@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -50,57 +50,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicholas Piggin <npiggin@gmail.com>
+From: Chuck Lever <chuck.lever@oracle.com>
 
-[ Upstream commit aee101d7b95a03078945681dd7f7ea5e4a1e7686 ]
+[ Upstream commit aed28b7a2d620cb5cd0c554cb889075c02e25e8e ]
 
-Commit 314f6c23dd8d ("powerpc/64s: Mask NIP before checking against
-SRR0") masked off the low 2 bits of the NIP value in the interrupt
-stack frame in case they are non-zero and mis-compare against a SRR0
-register value of a CPU which always reads back 0 from the 2 low bits
-which are reserved.
-
-This now causes the opposite problem that an implementation which does
-implement those bits in SRR0 will mis-compare against the masked NIP
-value in which they have been cleared. QEMU is one such implementation,
-and this is allowed by the architecture.
-
-This can be triggered by sigfuz by setting low bits of PT_NIP in the
-signal context.
-
-Fix this for now by masking the SRR0 bits as well. Cleaner is probably
-to sanitise these values before putting them in registers or stack, but
-this is the quick and backportable fix.
-
-Fixes: 314f6c23dd8d ("powerpc/64s: Mask NIP before checking against SRR0")
-Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220117134403.2995059-1-npiggin@gmail.com
+Fixes: e26d9972720e ("SUNRPC: Clean up scheduling of autoclose")
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/interrupt_64.S | 2 ++
- 1 file changed, 2 insertions(+)
+ include/trace/events/sunrpc.h | 18 +++++++++++++-----
+ 1 file changed, 13 insertions(+), 5 deletions(-)
 
-diff --git a/arch/powerpc/kernel/interrupt_64.S b/arch/powerpc/kernel/interrupt_64.S
-index 4b1ff94e67eb4..4c6d1a8dcefed 100644
---- a/arch/powerpc/kernel/interrupt_64.S
-+++ b/arch/powerpc/kernel/interrupt_64.S
-@@ -30,6 +30,7 @@ COMPAT_SYS_CALL_TABLE:
- 	.ifc \srr,srr
- 	mfspr	r11,SPRN_SRR0
- 	ld	r12,_NIP(r1)
-+	clrrdi  r11,r11,2
- 	clrrdi  r12,r12,2
- 100:	tdne	r11,r12
- 	EMIT_WARN_ENTRY 100b,__FILE__,__LINE__,(BUGFLAG_WARNING | BUGFLAG_ONCE)
-@@ -40,6 +41,7 @@ COMPAT_SYS_CALL_TABLE:
- 	.else
- 	mfspr	r11,SPRN_HSRR0
- 	ld	r12,_NIP(r1)
-+	clrrdi  r11,r11,2
- 	clrrdi  r12,r12,2
- 100:	tdne	r11,r12
- 	EMIT_WARN_ENTRY 100b,__FILE__,__LINE__,(BUGFLAG_WARNING | BUGFLAG_ONCE)
+diff --git a/include/trace/events/sunrpc.h b/include/trace/events/sunrpc.h
+index 7b5dcff84cf27..54eb1654d9ecc 100644
+--- a/include/trace/events/sunrpc.h
++++ b/include/trace/events/sunrpc.h
+@@ -953,7 +953,8 @@ TRACE_EVENT(rpc_socket_nospace,
+ 		{ BIT(XPRT_REMOVE),		"REMOVE" },		\
+ 		{ BIT(XPRT_CONGESTED),		"CONGESTED" },		\
+ 		{ BIT(XPRT_CWND_WAIT),		"CWND_WAIT" },		\
+-		{ BIT(XPRT_WRITE_SPACE),	"WRITE_SPACE" })
++		{ BIT(XPRT_WRITE_SPACE),	"WRITE_SPACE" },	\
++		{ BIT(XPRT_SND_IS_COOKIE),	"SND_IS_COOKIE" })
+ 
+ DECLARE_EVENT_CLASS(rpc_xprt_lifetime_class,
+ 	TP_PROTO(
+@@ -1150,8 +1151,11 @@ DECLARE_EVENT_CLASS(xprt_writelock_event,
+ 			__entry->task_id = -1;
+ 			__entry->client_id = -1;
+ 		}
+-		__entry->snd_task_id = xprt->snd_task ?
+-					xprt->snd_task->tk_pid : -1;
++		if (xprt->snd_task &&
++		    !test_bit(XPRT_SND_IS_COOKIE, &xprt->state))
++			__entry->snd_task_id = xprt->snd_task->tk_pid;
++		else
++			__entry->snd_task_id = -1;
+ 	),
+ 
+ 	TP_printk(SUNRPC_TRACE_TASK_SPECIFIER
+@@ -1196,8 +1200,12 @@ DECLARE_EVENT_CLASS(xprt_cong_event,
+ 			__entry->task_id = -1;
+ 			__entry->client_id = -1;
+ 		}
+-		__entry->snd_task_id = xprt->snd_task ?
+-					xprt->snd_task->tk_pid : -1;
++		if (xprt->snd_task &&
++		    !test_bit(XPRT_SND_IS_COOKIE, &xprt->state))
++			__entry->snd_task_id = xprt->snd_task->tk_pid;
++		else
++			__entry->snd_task_id = -1;
++
+ 		__entry->cong = xprt->cong;
+ 		__entry->cwnd = xprt->cwnd;
+ 		__entry->wait = test_bit(XPRT_CWND_WAIT, &xprt->state);
 -- 
 2.34.1
 
