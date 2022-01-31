@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C69EBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:12:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7CAAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:12:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376330AbiAaLM3 (ORCPT
+        id S1376362AbiAaLMd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:12:29 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:56888 "EHLO
+        Mon, 31 Jan 2022 06:12:33 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:56974 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376609AbiAaLIm (ORCPT
+        with ESMTP id S1376667AbiAaLIv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:08:42 -0500
+        Mon, 31 Jan 2022 06:08:51 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 059B5B82A68;
-        Mon, 31 Jan 2022 11:08:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 100A8C340EE;
-        Mon, 31 Jan 2022 11:08:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1455AB82A4E;
+        Mon, 31 Jan 2022 11:08:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62E17C340E8;
+        Mon, 31 Jan 2022 11:08:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627319;
-        bh=ecJFmKJDYdU3rLXxZJsdCvxkFYyBlEkQ5JXzF9zoskE=;
+        s=korg; t=1643627328;
+        bh=Ptmp80Y5+Ak9glksGMpn04O9rsKaxAULBmUBfj8gucw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2l9XV5ukkIUN1etd2n0jk1pEVN27+bEZ/sN6Uz/WZGSN5lsrsceF1xyzr5mwzuEM/
-         K6SINoPyvQq9xvxmU/kzzr7PzF0+laajb4f7uM5GSAVmDX0S/lisQSuSQ8TtOzsAK0
-         x2AFefuOI9D92LoknVVeMpFPrdMR2DdN+F14z0Io=
+        b=z8FIQfnCqUgbi4QHAiSRIXEvZj/RwOLQ4+JOS3bOmsxQ7ZLejHVeqmQLO3+VnAcDN
+         4ghAjzjgZ8T1Ss6/+7N1So5ECx7doAgOg/gTjbgW4gLcrJkrfykQsNafSr9yIITOSO
+         mV+pPQYnr+DqIH0Tw7HNL6q3FpsW6WqVjNh384Hw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bud Brown <bubrown@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Mike Snitzer <snitzer@redhat.com>, Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.15 045/171] dm: properly fix redundant bio-based IO accounting
-Date:   Mon, 31 Jan 2022 11:55:10 +0100
-Message-Id: <20220131105231.546721826@linuxfoundation.org>
+        stable@vger.kernel.org, Erwan Le Ray <erwan.leray@foss.st.com>,
+        Valentin Caron <valentin.caron@foss.st.com>
+Subject: [PATCH 5.15 048/171] serial: stm32: fix software flow control transfer
+Date:   Mon, 31 Jan 2022 11:55:13 +0100
+Message-Id: <20220131105231.650554206@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
 References: <20220131105229.959216821@linuxfoundation.org>
@@ -47,56 +46,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Snitzer <snitzer@redhat.com>
+From: Valentin Caron <valentin.caron@foss.st.com>
 
-commit b879f915bc48a18d4f4462729192435bb0f17052 upstream.
+commit 037b91ec7729524107982e36ec4b40f9b174f7a2 upstream.
 
-Record the start_time for a bio but defer the starting block core's IO
-accounting until after IO is submitted using bio_start_io_acct_time().
+x_char is ignored by stm32_usart_start_tx() when xmit buffer is empty.
 
-This approach avoids the need to mess around with any of the
-individual IO stats in response to a bio_split() that follows bio
-submission.
+Fix start_tx condition to allow x_char to be sent.
 
-Reported-by: Bud Brown <bubrown@redhat.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Cc: stable@vger.kernel.org
-Depends-on: e45c47d1f94e ("block: add bio_start_io_acct_time() to control start_time")
-Signed-off-by: Mike Snitzer <snitzer@redhat.com>
-Link: https://lore.kernel.org/r/20220128155841.39644-4-snitzer@redhat.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: 48a6092fb41f ("serial: stm32-usart: Add STM32 USART Driver")
+Cc: stable <stable@vger.kernel.org>
+Signed-off-by: Erwan Le Ray <erwan.leray@foss.st.com>
+Signed-off-by: Valentin Caron <valentin.caron@foss.st.com>
+Link: https://lore.kernel.org/r/20220111164441.6178-3-valentin.caron@foss.st.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/dm.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/tty/serial/stm32-usart.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/md/dm.c
-+++ b/drivers/md/dm.c
-@@ -489,7 +489,7 @@ static void start_io_acct(struct dm_io *
- 	struct mapped_device *md = io->md;
- 	struct bio *bio = io->orig_bio;
+--- a/drivers/tty/serial/stm32-usart.c
++++ b/drivers/tty/serial/stm32-usart.c
+@@ -575,7 +575,7 @@ static void stm32_usart_start_tx(struct
+ 	struct serial_rs485 *rs485conf = &port->rs485;
+ 	struct circ_buf *xmit = &port->state->xmit;
  
--	io->start_time = bio_start_io_acct(bio);
-+	bio_start_io_acct_time(bio, io->start_time);
- 	if (unlikely(dm_stats_used(&md->stats)))
- 		dm_stats_account_io(&md->stats, bio_data_dir(bio),
- 				    bio->bi_iter.bi_sector, bio_sectors(bio),
-@@ -535,7 +535,7 @@ static struct dm_io *alloc_io(struct map
- 	io->md = md;
- 	spin_lock_init(&io->endio_lock);
+-	if (uart_circ_empty(xmit))
++	if (uart_circ_empty(xmit) && !port->x_char)
+ 		return;
  
--	start_io_acct(io);
-+	io->start_time = jiffies;
- 
- 	return io;
- }
-@@ -1555,6 +1555,7 @@ static blk_qc_t __split_and_process_bio(
- 			ret = submit_bio_noacct(bio);
- 		}
- 	}
-+	start_io_acct(ci.io);
- 
- 	/* drop the extra reference count */
- 	dm_io_dec_pending(ci.io, errno_to_blk_status(error));
+ 	if (rs485conf->flags & SER_RS485_ENABLED) {
 
 
