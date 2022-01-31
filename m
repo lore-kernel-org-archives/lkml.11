@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66B1BC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2C38C43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378145AbiAaL2H (ORCPT
+        id S1378377AbiAaL2c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:28:07 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:38400 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378132AbiAaLTp (ORCPT
+        Mon, 31 Jan 2022 06:28:32 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:49728 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359110AbiAaLQR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:19:45 -0500
+        Mon, 31 Jan 2022 06:16:17 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BE704B82A4C;
-        Mon, 31 Jan 2022 11:19:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DB4FC340E8;
-        Mon, 31 Jan 2022 11:19:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 55A3E61219;
+        Mon, 31 Jan 2022 11:16:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13902C340E8;
+        Mon, 31 Jan 2022 11:16:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627983;
-        bh=pz05IZcGWACADVBvxdAq92ZPbMNlGCY/ENYXnBkp9pc=;
+        s=korg; t=1643627776;
+        bh=xh0gFh28Rx1Q6l/6NQeYJU83lOuzsBNddIkCO0QOZ0M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JaYGlTs6icTqL4du7ZZUwBNXoiHNffpxLtG2FyC3WLp2bFts/AnzfMgtYQm60BHgp
-         AxQdhWFBJ12Xpwzy64sTvfL6FRQ3u70a5T9wosQKugGZfGz5aORjMr+NYus2AteCUU
-         p8hbprcY5qChsu2f476P4bHIERvdY98WqBz7SZtE=
+        b=lib6zk6oTOWkyQxID/XZ2Y9ZkHeznnb6uBTgGCWh7kNFq7QS8VamPviNOrYI06Y/K
+         jeddOPc5echVA4LCFgrKTxlMd+RWBWfinvYWiWp5UThAAl0g3ddAhVWqJ25SzV5BX3
+         lFvyAv0TloCvFXOsZDUTVe5kTocmDHM8GYH5W1Ig=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Collingbourne <pcc@google.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.16 086/200] mm, kasan: use compare-exchange operation to set KASAN page tag
-Date:   Mon, 31 Jan 2022 11:55:49 +0100
-Message-Id: <20220131105236.503859012@linuxfoundation.org>
+        stable@vger.kernel.org, Anthony Ruhier <aruhier@mailbox.org>,
+        Filipe Manana <fdmanana@suse.com>, Qu Wenruo <wqu@suse.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.16 004/200] btrfs: defrag: fix wrong number of defragged sectors
+Date:   Mon, 31 Jan 2022 11:54:27 +0100
+Message-Id: <20220131105233.705806759@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -49,56 +47,99 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Collingbourne <pcc@google.com>
+From: Qu Wenruo <wqu@suse.com>
 
-commit 27fe73394a1c6d0b07fa4d95f1bca116d1cc66e9 upstream.
+commit 484167da77739a8d0e225008c48e697fd3f781ae upstream.
 
-It has been reported that the tag setting operation on newly-allocated
-pages can cause the page flags to be corrupted when performed
-concurrently with other flag updates as a result of the use of
-non-atomic operations.
+[BUG]
+There are users using autodefrag mount option reporting obvious increase
+in IO:
 
-Fix the problem by using a compare-exchange loop to update the tag.
+> If I compare the write average (in total, I don't have it per process)
+> when taking idle periods on the same machine:
+>     Linux 5.16:
+>         without autodefrag: ~ 10KiB/s
+>         with autodefrag: between 1 and 2MiB/s.
+>
+>     Linux 5.15:
+>         with autodefrag:~ 10KiB/s (around the same as without
+> autodefrag on 5.16)
 
-Link: https://lkml.kernel.org/r/20220120020148.1632253-1-pcc@google.com
-Link: https://linux-review.googlesource.com/id/I456b24a2b9067d93968d43b4bb3351c0cec63101
-Fixes: 2813b9c02962 ("kasan, mm, arm64: tag non slab memory allocated via pagealloc")
-Signed-off-by: Peter Collingbourne <pcc@google.com>
-Reviewed-by: Andrey Konovalov <andreyknvl@gmail.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+[CAUSE]
+When autodefrag mount option is enabled, btrfs_defrag_file() will be
+called with @max_sectors = BTRFS_DEFRAG_BATCH (1024) to limit how many
+sectors we can defrag in one try.
+
+And then use the number of sectors defragged to determine if we need to
+re-defrag.
+
+But commit b18c3ab2343d ("btrfs: defrag: introduce helper to defrag one
+cluster") uses wrong unit to increase @sectors_defragged, which should
+be in unit of sector, not byte.
+
+This means, if we have defragged any sector, then @sectors_defragged
+will be >= sectorsize (normally 4096), which is larger than
+BTRFS_DEFRAG_BATCH.
+
+This makes the @max_sectors check in defrag_one_cluster() to underflow,
+rendering the whole @max_sectors check useless.
+
+Thus causing way more IO for autodefrag mount options, as now there is
+no limit on how many sectors can really be defragged.
+
+[FIX]
+Fix the problems by:
+
+- Use sector as unit when increasing @sectors_defragged
+
+- Include @sectors_defragged > @max_sectors case to break the loop
+
+- Add extra comment on the return value of btrfs_defrag_file()
+
+Reported-by: Anthony Ruhier <aruhier@mailbox.org>
+Fixes: b18c3ab2343d ("btrfs: defrag: introduce helper to defrag one cluster")
+Link: https://lore.kernel.org/linux-btrfs/0a269612-e43f-da22-c5bc-b34b1b56ebe8@mailbox.org/
+CC: stable@vger.kernel.org # 5.16
+Reviewed-by: Filipe Manana <fdmanana@suse.com>
+Signed-off-by: Qu Wenruo <wqu@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/mm.h |   17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
+ fs/btrfs/ioctl.c |   10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -1524,11 +1524,18 @@ static inline u8 page_kasan_tag(const st
+--- a/fs/btrfs/ioctl.c
++++ b/fs/btrfs/ioctl.c
+@@ -1416,8 +1416,8 @@ static int defrag_one_cluster(struct btr
+ 	list_for_each_entry(entry, &target_list, list) {
+ 		u32 range_len = entry->len;
  
- static inline void page_kasan_tag_set(struct page *page, u8 tag)
- {
--	if (kasan_enabled()) {
--		tag ^= 0xff;
--		page->flags &= ~(KASAN_TAG_MASK << KASAN_TAG_PGSHIFT);
--		page->flags |= (tag & KASAN_TAG_MASK) << KASAN_TAG_PGSHIFT;
--	}
-+	unsigned long old_flags, flags;
-+
-+	if (!kasan_enabled())
-+		return;
-+
-+	tag ^= 0xff;
-+	old_flags = READ_ONCE(page->flags);
-+	do {
-+		flags = old_flags;
-+		flags &= ~(KASAN_TAG_MASK << KASAN_TAG_PGSHIFT);
-+		flags |= (tag & KASAN_TAG_MASK) << KASAN_TAG_PGSHIFT;
-+	} while (unlikely(!try_cmpxchg(&page->flags, &old_flags, flags)));
- }
+-		/* Reached the limit */
+-		if (max_sectors && max_sectors == *sectors_defragged)
++		/* Reached or beyond the limit */
++		if (max_sectors && *sectors_defragged >= max_sectors)
+ 			break;
  
- static inline void page_kasan_tag_reset(struct page *page)
+ 		if (max_sectors)
+@@ -1439,7 +1439,8 @@ static int defrag_one_cluster(struct btr
+ 				       extent_thresh, newer_than, do_compress);
+ 		if (ret < 0)
+ 			break;
+-		*sectors_defragged += range_len;
++		*sectors_defragged += range_len >>
++				      inode->root->fs_info->sectorsize_bits;
+ 	}
+ out:
+ 	list_for_each_entry_safe(entry, tmp, &target_list, list) {
+@@ -1458,6 +1459,9 @@ out:
+  * @newer_than:	   minimum transid to defrag
+  * @max_to_defrag: max number of sectors to be defragged, if 0, the whole inode
+  *		   will be defragged.
++ *
++ * Return <0 for error.
++ * Return >=0 for the number of sectors defragged.
+  */
+ int btrfs_defrag_file(struct inode *inode, struct file_ra_state *ra,
+ 		      struct btrfs_ioctl_defrag_range_args *range,
 
 
