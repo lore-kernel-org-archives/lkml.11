@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 865F2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:21:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC88CC43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:21:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359681AbiAaLVd (ORCPT
+        id S1359860AbiAaLVg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:21:33 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:44196 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359277AbiAaLLG (ORCPT
+        Mon, 31 Jan 2022 06:21:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45822 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358707AbiAaLLs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:11:06 -0500
+        Mon, 31 Jan 2022 06:11:48 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86CC4C06174A;
+        Mon, 31 Jan 2022 03:10:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 230A26114F;
-        Mon, 31 Jan 2022 11:11:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9BD9C340E8;
-        Mon, 31 Jan 2022 11:11:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4C50AB82A68;
+        Mon, 31 Jan 2022 11:10:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78387C340E8;
+        Mon, 31 Jan 2022 11:10:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627464;
-        bh=ak2TbqHHfxRrgnnu6BNypXoqPp30Fp0JIM6U9TzpcE0=;
+        s=korg; t=1643627452;
+        bh=7E9ERDVZttx1BEkbi9cB6zU2U3oaHnyBYoXJvVBibGo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BWa193Cz4OykUGLRfiyAGFZFaEKwo9T+KvD0/gdWn1Y4p3LwmeXFwrK5IfJiRJrCk
-         5XgMsZx0ES+HI5TeCltI86Fm+9se3b8+qwzgmjHQTRapl9W9GEDKbJuMUISsHuvTsQ
-         fS718/o0JjochXWjigueR/vOcSkVtP/gfUc/mY0w=
+        b=1zry8+B172uPlfiOhVy1P2PBjWVaMvjVRmu6p1B/ogpetdZfxDtD1wQ0NeCakp6L8
+         Eq+bdTmTNmVZrOVVwRvLC++4f216tuZ6zrpOskPRVOIwBSGLeGopwtpowijoEcK1Wf
+         R4FJD9UvZ/Uf/B/kr2i4fi/8UrwiZDi7AmhOmJHM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@kernel.org>, Ray Che <xijiache@gmail.com>,
-        Willy Tarreau <w@1wt.eu>, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 091/171] ipv4: avoid using shared IP generator for connected sockets
-Date:   Mon, 31 Jan 2022 11:55:56 +0100
-Message-Id: <20220131105233.112923393@linuxfoundation.org>
+        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH 5.15 088/171] hwmon: (lm90) Mark alert as broken for MAX6646/6647/6649
+Date:   Mon, 31 Jan 2022 11:55:53 +0100
+Message-Id: <20220131105233.006476006@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
 References: <20220131105229.959216821@linuxfoundation.org>
@@ -47,65 +48,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Guenter Roeck <linux@roeck-us.net>
 
-commit 23f57406b82de51809d5812afd96f210f8b627f3 upstream.
+commit f614629f9c1080dcc844a8430e3fb4c37ebbf05d upstream.
 
-ip_select_ident_segs() has been very conservative about using
-the connected socket private generator only for packets with IP_DF
-set, claiming it was needed for some VJ compression implementations.
+Experiments with MAX6646 and MAX6648 show that the alert function of those
+chips is broken, similar to other chips supported by the lm90 driver.
+Mark it accordingly.
 
-As mentioned in this referenced document, this can be abused.
-(Ref: Off-Path TCP Exploits of the Mixed IPID Assignment)
-
-Before switching to pure random IPID generation and possibly hurt
-some workloads, lets use the private inet socket generator.
-
-Not only this will remove one vulnerability, this will also
-improve performance of TCP flows using pmtudisc==IP_PMTUDISC_DONT
-
-Fixes: 73f156a6e8c1 ("inetpeer: get rid of ip_id_count")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Reported-by: Ray Che <xijiache@gmail.com>
-Cc: Willy Tarreau <w@1wt.eu>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 4667bcb8d8fc ("hwmon: (lm90) Introduce chip parameter structure")
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/ip.h |   21 ++++++++++-----------
- 1 file changed, 10 insertions(+), 11 deletions(-)
+ drivers/hwmon/lm90.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/include/net/ip.h
-+++ b/include/net/ip.h
-@@ -520,19 +520,18 @@ static inline void ip_select_ident_segs(
- {
- 	struct iphdr *iph = ip_hdr(skb);
- 
-+	/* We had many attacks based on IPID, use the private
-+	 * generator as much as we can.
-+	 */
-+	if (sk && inet_sk(sk)->inet_daddr) {
-+		iph->id = htons(inet_sk(sk)->inet_id);
-+		inet_sk(sk)->inet_id += segs;
-+		return;
-+	}
- 	if ((iph->frag_off & htons(IP_DF)) && !skb->ignore_df) {
--		/* This is only to work around buggy Windows95/2000
--		 * VJ compression implementations.  If the ID field
--		 * does not change, they drop every other packet in
--		 * a TCP stream using header compression.
--		 */
--		if (sk && inet_sk(sk)->inet_daddr) {
--			iph->id = htons(inet_sk(sk)->inet_id);
--			inet_sk(sk)->inet_id += segs;
--		} else {
--			iph->id = 0;
--		}
-+		iph->id = 0;
- 	} else {
-+		/* Unfortunately we need the big hammer to get a suitable IPID */
- 		__ip_select_ident(net, iph, segs);
- 	}
- }
+--- a/drivers/hwmon/lm90.c
++++ b/drivers/hwmon/lm90.c
+@@ -394,7 +394,7 @@ static const struct lm90_params lm90_par
+ 		.max_convrate = 9,
+ 	},
+ 	[max6646] = {
+-		.flags = LM90_HAVE_CRIT,
++		.flags = LM90_HAVE_CRIT | LM90_HAVE_BROKEN_ALERT,
+ 		.alert_alarms = 0x7c,
+ 		.max_convrate = 6,
+ 		.reg_local_ext = MAX6657_REG_R_LOCAL_TEMPL,
 
 
