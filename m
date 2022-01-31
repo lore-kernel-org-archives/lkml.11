@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E68FAC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:04:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6DD1C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:04:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358543AbiAaLE5 (ORCPT
+        id S1358713AbiAaLE6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:04:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42960 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359103AbiAaLC6 (ORCPT
+        Mon, 31 Jan 2022 06:04:58 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:51100 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359098AbiAaLC5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:02:58 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8439C0613E3;
-        Mon, 31 Jan 2022 03:01:15 -0800 (PST)
+        Mon, 31 Jan 2022 06:02:57 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4FCEEB82A57;
-        Mon, 31 Jan 2022 11:01:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C041C340EE;
-        Mon, 31 Jan 2022 11:01:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9BF39B82A57;
+        Mon, 31 Jan 2022 11:02:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0968C340EF;
+        Mon, 31 Jan 2022 11:02:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643626874;
-        bh=rpnftBRACWes5GtqEEFzPZ2+KGvGlU+bFKluK1c0RuM=;
+        s=korg; t=1643626975;
+        bh=7BpYgPwu1UsHm+ODdEAtD9Qh4ktMDhSuWtddKky/638=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WdeOiLlUbtcRGR1TJYkAyzlCZIghD5cdG1USbTygcxr+NLk8ptxP1WAG2yxvE4NEn
-         CytheCYirY821//AelZgWFO23aBEKn/QYVj+wpD0ZLVCdog1/OfYyjbEEW0Uf/l45h
-         sBbzpK4K8ilHaULhE8TvH81usAhtnlgNKfmeOc2w=
+        b=no9CZfXCBw2DV7/GXje1ss3geJTUUu9joFx17Fa2cE0pMjAB13EjhVeNmKrubRqfu
+         QxleRpZbojowtLjXhylR/NzK7mYpNG995JUf5nYwYEIcNlg92Xza8Zekxl0D8FUd7J
+         GQF6nG1pqRlDgPfoUFmISCyhTnleP4jRkqzFiMe8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lyu Tao <tao.lyu@epfl.ch>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>
-Subject: [PATCH 5.4 40/64] NFSv4: Handle case where the lookup of a directory fails
-Date:   Mon, 31 Jan 2022 11:56:25 +0100
-Message-Id: <20220131105217.032432494@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.10 004/100] net: stmmac: skip only stmmac_ptp_register when resume from suspend
+Date:   Mon, 31 Jan 2022 11:55:25 +0100
+Message-Id: <20220131105220.583649704@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105215.644174521@linuxfoundation.org>
-References: <20220131105215.644174521@linuxfoundation.org>
+In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
+References: <20220131105220.424085452@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,47 +47,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
 
-commit ac795161c93699d600db16c1a8cc23a65a1eceaf upstream.
+commit 0735e639f129dff455aeb91da291f5c578cc33db upstream.
 
-If the application sets the O_DIRECTORY flag, and tries to open a
-regular file, nfs_atomic_open() will punt to doing a regular lookup.
-If the server then returns a regular file, we will happily return a
-file descriptor with uninitialised open state.
+When resume from suspend, besides skipping PTP registration, it also
+skipping PTP HW initialization. This could cause PTP clock not able to
+operate properly when resume from suspend.
 
-The fix is to return the expected ENOTDIR error in these cases.
+To fix this, only stmmac_ptp_register() is skipped when resume from
+suspend.
 
-Reported-by: Lyu Tao <tao.lyu@epfl.ch>
-Fixes: 0dd2b474d0b6 ("nfs: implement i_op->atomic_open()")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Fixes: fe1319291150 ("stmmac: Don't init ptp again when resume from suspend/hibernation")
+Cc: <stable@vger.kernel.org> # 5.15.x
+Signed-off-by: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfs/dir.c |   13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c |   20 +++++++++-----------
+ 1 file changed, 9 insertions(+), 11 deletions(-)
 
---- a/fs/nfs/dir.c
-+++ b/fs/nfs/dir.c
-@@ -1638,6 +1638,19 @@ out:
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -816,8 +816,6 @@ static int stmmac_init_ptp(struct stmmac
+ 	priv->hwts_tx_en = 0;
+ 	priv->hwts_rx_en = 0;
  
- no_open:
- 	res = nfs_lookup(dir, dentry, lookup_flags);
-+	if (!res) {
-+		inode = d_inode(dentry);
-+		if ((lookup_flags & LOOKUP_DIRECTORY) && inode &&
-+		    !S_ISDIR(inode->i_mode))
-+			res = ERR_PTR(-ENOTDIR);
-+	} else if (!IS_ERR(res)) {
-+		inode = d_inode(res);
-+		if ((lookup_flags & LOOKUP_DIRECTORY) && inode &&
-+		    !S_ISDIR(inode->i_mode)) {
-+			dput(res);
-+			res = ERR_PTR(-ENOTDIR);
-+		}
-+	}
- 	if (switched) {
- 		d_lookup_done(dentry);
- 		if (!res)
+-	stmmac_ptp_register(priv);
+-
+ 	return 0;
+ }
+ 
+@@ -2691,7 +2689,7 @@ static void stmmac_safety_feat_configura
+ /**
+  * stmmac_hw_setup - setup mac in a usable state.
+  *  @dev : pointer to the device structure.
+- *  @init_ptp: initialize PTP if set
++ *  @ptp_register: register PTP if set
+  *  Description:
+  *  this is the main function to setup the HW in a usable state because the
+  *  dma engine is reset, the core registers are configured (e.g. AXI,
+@@ -2701,7 +2699,7 @@ static void stmmac_safety_feat_configura
+  *  0 on success and an appropriate (-)ve integer as defined in errno.h
+  *  file on failure.
+  */
+-static int stmmac_hw_setup(struct net_device *dev, bool init_ptp)
++static int stmmac_hw_setup(struct net_device *dev, bool ptp_register)
+ {
+ 	struct stmmac_priv *priv = netdev_priv(dev);
+ 	u32 rx_cnt = priv->plat->rx_queues_to_use;
+@@ -2757,13 +2755,13 @@ static int stmmac_hw_setup(struct net_de
+ 
+ 	stmmac_mmc_setup(priv);
+ 
+-	if (init_ptp) {
+-		ret = stmmac_init_ptp(priv);
+-		if (ret == -EOPNOTSUPP)
+-			netdev_warn(priv->dev, "PTP not supported by HW\n");
+-		else if (ret)
+-			netdev_warn(priv->dev, "PTP init failed\n");
+-	}
++	ret = stmmac_init_ptp(priv);
++	if (ret == -EOPNOTSUPP)
++		netdev_warn(priv->dev, "PTP not supported by HW\n");
++	else if (ret)
++		netdev_warn(priv->dev, "PTP init failed\n");
++	else if (ptp_register)
++		stmmac_ptp_register(priv);
+ 
+ 	priv->eee_tw_timer = STMMAC_DEFAULT_TWT_LS;
+ 
 
 
