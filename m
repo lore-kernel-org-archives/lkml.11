@@ -2,28 +2,28 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADC5EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 10:30:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10192C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 10:30:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358225AbiAaKa3 (ORCPT
+        id S1358273AbiAaKal (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 05:30:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35806 "EHLO
+        Mon, 31 Jan 2022 05:30:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358190AbiAaK32 (ORCPT
+        with ESMTP id S1358193AbiAaK3d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 05:29:28 -0500
+        Mon, 31 Jan 2022 05:29:33 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4978C061755
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 02:29:18 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1387BC061757
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 02:29:27 -0800 (PST)
 Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1nETvR-0008WF-Oj; Mon, 31 Jan 2022 11:28:45 +0100
+        id 1nETvR-0008WD-Oi; Mon, 31 Jan 2022 11:28:45 +0100
 Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1nETvO-008Cc0-Dc; Mon, 31 Jan 2022 11:28:42 +0100
+        id 1nETvO-008Cbi-BL; Mon, 31 Jan 2022 11:28:42 +0100
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Mark Rutland <mark.rutland@arm.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -33,19 +33,18 @@ To:     Mark Rutland <mark.rutland@arm.com>,
         Sam Ravnborg <sam@ravnborg.org>,
         David Airlie <airlied@linux.ie>,
         Daniel Vetter <daniel@ffwll.ch>
-Cc:     Robin van der Gracht <robin@protonic.nl>,
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
         devicetree@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         NXP Linux Team <linux-imx@nxp.com>,
         Pengutronix Kernel Team <kernel@pengutronix.de>,
         David Jander <david@protonic.nl>,
+        Robin van der Gracht <robin@protonic.nl>,
         dri-devel@lists.freedesktop.org
-Subject: [PATCH v2 2/5] ARM: dts: imx6dl-prtvt7: Add missing tvp5150 video decoder node
-Date:   Mon, 31 Jan 2022 11:28:38 +0100
-Message-Id: <20220131102841.1955032-3-o.rempel@pengutronix.de>
+Subject: [PATCH v2 0/5] ARM: dts: protonic maintenance patches
+Date:   Mon, 31 Jan 2022 11:28:36 +0100
+Message-Id: <20220131102841.1955032-1-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220131102841.1955032-1-o.rempel@pengutronix.de>
-References: <20220131102841.1955032-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
@@ -56,87 +55,27 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robin van der Gracht <robin@protonic.nl>
+changes v2:
+- add missing new lines
+- rename adc label to adc_ts
+- add thermal zones patch
 
-Signed-off-by: Robin van der Gracht <robin@protonic.nl>
----
- arch/arm/boot/dts/imx6dl-prtvt7.dts | 42 +++++++++++++++++++++++++++++
- 1 file changed, 42 insertions(+)
+Oleksij Rempel (4):
+  ARM: dts: imx6dl-prtvt7: Add display and panel nodes
+  ARM: dts: imx6qdl-vicut1: add CAN termination support
+  ARM: dts: imx6dl: plym2m, prtvt7, victgo: make use of new
+    resistive-adc-touch driver
+  ARM: dts: imx6dl: plym2m, prtvt7, victgo: add thermal zones and hwmon
 
-diff --git a/arch/arm/boot/dts/imx6dl-prtvt7.dts b/arch/arm/boot/dts/imx6dl-prtvt7.dts
-index be7c4cb339e7..baaa6ffc4df9 100644
---- a/arch/arm/boot/dts/imx6dl-prtvt7.dts
-+++ b/arch/arm/boot/dts/imx6dl-prtvt7.dts
-@@ -6,6 +6,7 @@
- /dts-v1/;
- #include "imx6dl.dtsi"
- #include "imx6qdl-prti6q.dtsi"
-+#include <dt-bindings/display/sdtv-standards.h>
- #include <dt-bindings/input/input.h>
- #include <dt-bindings/leds/common.h>
- #include <dt-bindings/sound/fsl-imx-audmux.h>
-@@ -171,6 +172,18 @@ panel_in: endpoint {
- 		};
- 	};
- 
-+	connector {
-+		compatible = "composite-video-connector";
-+		label = "Composite0";
-+		sdtv-standards = <SDTV_STD_PAL_B>;
-+
-+		port {
-+			comp0_out: endpoint {
-+				remote-endpoint = <&tvp5150_comp0_in>;
-+			};
-+		};
-+	};
-+
- 	reg_bl_12v0: regulator-bl-12v0 {
- 		compatible = "regulator-fixed";
- 		pinctrl-names = "default";
-@@ -295,6 +308,31 @@ sgtl5000: audio-codec@a {
- 		VDDIO-supply = <&reg_3v3>;
- 		VDDD-supply = <&reg_1v8>;
- 	};
-+
-+	video@5c {
-+		compatible = "ti,tvp5150";
-+		reg = <0x5c>;
-+
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		port@0 {
-+			reg = <0>;
-+
-+			tvp5150_comp0_in: endpoint {
-+				remote-endpoint = <&comp0_out>;
-+			};
-+		};
-+
-+		/* Output port 2 is video output pad */
-+		port@2 {
-+			reg = <2>;
-+
-+			tvp5151_to_ipu1_csi0_mux: endpoint {
-+				remote-endpoint = <&ipu1_csi0_mux_from_parallel_sensor>;
-+			};
-+		};
-+	};
- };
- 
- &i2c3 {
-@@ -322,6 +360,10 @@ &ipu1_di0_disp0 {
- 	remote-endpoint = <&display_in>;
- };
- 
-+&ipu1_csi0_mux_from_parallel_sensor {
-+	remote-endpoint = <&tvp5151_to_ipu1_csi0_mux>;
-+};
-+
- &pwm1 {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&pinctrl_pwm1>;
+Robin van der Gracht (1):
+  ARM: dts: imx6dl-prtvt7: Add missing tvp5150 video decoder node
+
+ arch/arm/boot/dts/imx6dl-plym2m.dts   | 131 +++++++++++++++--
+ arch/arm/boot/dts/imx6dl-prtvt7.dts   | 203 ++++++++++++++++++++++++--
+ arch/arm/boot/dts/imx6dl-victgo.dts   | 121 +++++++++++++--
+ arch/arm/boot/dts/imx6qdl-vicut1.dtsi |  12 +-
+ 4 files changed, 413 insertions(+), 54 deletions(-)
+
 -- 
 2.30.2
 
