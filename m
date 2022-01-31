@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 080A0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:35:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C305EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:35:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377467AbiAaLdI (ORCPT
+        id S1350534AbiAaLfC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:33:08 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:41222 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377442AbiAaLW4 (ORCPT
+        Mon, 31 Jan 2022 06:35:02 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:52422 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377120AbiAaLWd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:22:56 -0500
+        Mon, 31 Jan 2022 06:22:33 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4DDE6B82A76;
-        Mon, 31 Jan 2022 11:22:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7916DC340E8;
-        Mon, 31 Jan 2022 11:22:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E3D5461120;
+        Mon, 31 Jan 2022 11:22:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C690FC340E8;
+        Mon, 31 Jan 2022 11:22:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643628174;
-        bh=05u4659g45mJj8TYTwy6Hv2WqO2LL6t/KdgTntH3sjc=;
+        s=korg; t=1643628152;
+        bh=CrbS+RmJJJc3/CFi/FDjnWD6WFhLdoMFpbJ096EsT1E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RQEfE9GIDmobNcZ/7LTf2wQj07zDywsh6yMpQHq2s1IaYxihNGeomMxSMe7aUaZOO
-         93XD+sqbQA/D36xqW922A6dqTB4AfU1/wdS85p6z4dIdoufLQo6nnFofu8HFGaORAe
-         x/k86PKK1Ty8MB6B3tiZz5RyX5DmD3sfgWHjaRFI=
+        b=RAfkO4E1K9PMhaQmFpo0TVRPEbmJc8XzlM0RSAsu7nfDlZSN45cwhHwo1JwC31Z+1
+         ryTn6chJ89DNowFkGaQXubQlFi7b03GvgbO4Ld7rNLYpMSl0Kz5ZypqQh6jKPeNp6b
+         83r90+f3rGPNcpL2PfMGgVPjt25X0doBH6xpbHqo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        stable@vger.kernel.org, Subbaraya Sundeep <sbhatta@marvell.com>,
+        Naveen Mamindlapalli <naveenm@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 131/200] net: phy: broadcom: hook up soft_reset for BCM54616S
-Date:   Mon, 31 Jan 2022 11:56:34 +0100
-Message-Id: <20220131105237.957986263@linuxfoundation.org>
+Subject: [PATCH 5.16 142/200] octeontx2-af: Do not fixup all VF action entries
+Date:   Mon, 31 Jan 2022 11:56:45 +0100
+Message-Id: <20220131105238.335403475@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -48,59 +49,129 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hancock <robert.hancock@calian.com>
+From: Subbaraya Sundeep <sbhatta@marvell.com>
 
-[ Upstream commit d15c7e875d44367005370e6a82e8f3a382a04f9b ]
+[ Upstream commit d225c449ab2be25273a3674f476c6c0b57c50254 ]
 
-A problem was encountered with the Bel-Fuse 1GBT-SFP05 SFP module (which
-is a 1 Gbps copper module operating in SGMII mode with an internal
-BCM54616S PHY device) using the Xilinx AXI Ethernet MAC core, where the
-module would work properly on the initial insertion or boot of the
-device, but after the device was rebooted, the link would either only
-come up at 100 Mbps speeds or go up and down erratically.
+AF modifies all the rules destined for VF to use
+the action same as default RSS action. This fixup
+was needed because AF only installs default rules with
+RSS action. But the action in rules installed by a PF
+for its VFs should not be changed by this fixup.
+This is because action can be drop or direct to
+queue as specified by user(ntuple filters).
+This patch fixes that problem.
 
-I found no meaningful changes in the PHY configuration registers between
-the working and non-working boots, but the status registers seemed to
-have a lot of error indications set on the SERDES side of the device on
-the non-working boot. I suspect the problem is that whatever happens on
-the SGMII link when the device is rebooted and the FPGA logic gets
-reloaded ends up putting the module's onboard PHY into a bad state.
-
-Since commit 6e2d85ec0559 ("net: phy: Stop with excessive soft reset")
-the genphy_soft_reset call is not made automatically by the PHY core
-unless the callback is explicitly specified in the driver structure. For
-most of these Broadcom devices, there is probably a hardware reset that
-gets asserted to reset the PHY during boot, however for SFP modules
-(where the BCM54616S is commonly found) no such reset line exists, so if
-the board keeps the SFP cage powered up across a reboot, it will end up
-with no reset occurring during reboots.
-
-Hook up the genphy_soft_reset callback for BCM54616S to ensure that a
-PHY reset is performed before the device is initialized. This appears to
-fix the issue with erratic operation after a reboot with this SFP
-module.
-
-Fixes: 6e2d85ec0559 ("net: phy: Stop with excessive soft reset")
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Fixes: 967db3529eca ("octeontx2-af: add support for multicast/promisc packet")
+Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
+Signed-off-by: Naveen Mamindlapalli <naveenm@marvell.com>
+Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/broadcom.c | 1 +
- 1 file changed, 1 insertion(+)
+ .../ethernet/marvell/octeontx2/af/rvu_npc.c   | 22 ++++++++++++++++---
+ .../marvell/octeontx2/af/rvu_npc_fs.c         | 20 ++++++++++-------
+ 2 files changed, 31 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/phy/broadcom.c b/drivers/net/phy/broadcom.c
-index bb5104ae46104..3c683e0e40e9e 100644
---- a/drivers/net/phy/broadcom.c
-+++ b/drivers/net/phy/broadcom.c
-@@ -854,6 +854,7 @@ static struct phy_driver broadcom_drivers[] = {
- 	.phy_id_mask	= 0xfffffff0,
- 	.name		= "Broadcom BCM54616S",
- 	/* PHY_GBIT_FEATURES */
-+	.soft_reset     = genphy_soft_reset,
- 	.config_init	= bcm54xx_config_init,
- 	.config_aneg	= bcm54616s_config_aneg,
- 	.config_intr	= bcm_phy_config_intr,
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
+index c0005a1feee69..91f86d77cd41b 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
+@@ -402,6 +402,7 @@ static void npc_fixup_vf_rule(struct rvu *rvu, struct npc_mcam *mcam,
+ 			      int blkaddr, int index, struct mcam_entry *entry,
+ 			      bool *enable)
+ {
++	struct rvu_npc_mcam_rule *rule;
+ 	u16 owner, target_func;
+ 	struct rvu_pfvf *pfvf;
+ 	u64 rx_action;
+@@ -423,6 +424,12 @@ static void npc_fixup_vf_rule(struct rvu *rvu, struct npc_mcam *mcam,
+ 	      test_bit(NIXLF_INITIALIZED, &pfvf->flags)))
+ 		*enable = false;
+ 
++	/* fix up not needed for the rules added by user(ntuple filters) */
++	list_for_each_entry(rule, &mcam->mcam_rules, list) {
++		if (rule->entry == index)
++			return;
++	}
++
+ 	/* copy VF default entry action to the VF mcam entry */
+ 	rx_action = npc_get_default_entry_action(rvu, mcam, blkaddr,
+ 						 target_func);
+@@ -489,8 +496,8 @@ static void npc_config_mcam_entry(struct rvu *rvu, struct npc_mcam *mcam,
+ 	}
+ 
+ 	/* PF installing VF rule */
+-	if (intf == NIX_INTF_RX && actindex < mcam->bmap_entries)
+-		npc_fixup_vf_rule(rvu, mcam, blkaddr, index, entry, &enable);
++	if (is_npc_intf_rx(intf) && actindex < mcam->bmap_entries)
++		npc_fixup_vf_rule(rvu, mcam, blkaddr, actindex, entry, &enable);
+ 
+ 	/* Set 'action' */
+ 	rvu_write64(rvu, blkaddr,
+@@ -916,7 +923,8 @@ static void npc_update_vf_flow_entry(struct rvu *rvu, struct npc_mcam *mcam,
+ 				     int blkaddr, u16 pcifunc, u64 rx_action)
+ {
+ 	int actindex, index, bank, entry;
+-	bool enable;
++	struct rvu_npc_mcam_rule *rule;
++	bool enable, update;
+ 
+ 	if (!(pcifunc & RVU_PFVF_FUNC_MASK))
+ 		return;
+@@ -924,6 +932,14 @@ static void npc_update_vf_flow_entry(struct rvu *rvu, struct npc_mcam *mcam,
+ 	mutex_lock(&mcam->lock);
+ 	for (index = 0; index < mcam->bmap_entries; index++) {
+ 		if (mcam->entry2target_pffunc[index] == pcifunc) {
++			update = true;
++			/* update not needed for the rules added via ntuple filters */
++			list_for_each_entry(rule, &mcam->mcam_rules, list) {
++				if (rule->entry == index)
++					update = false;
++			}
++			if (!update)
++				continue;
+ 			bank = npc_get_bank(mcam, index);
+ 			actindex = index;
+ 			entry = index & (mcam->banksize - 1);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
+index ff2b21999f36f..19c53e591d0da 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
+@@ -1098,14 +1098,6 @@ find_rule:
+ 		write_req.cntr = rule->cntr;
+ 	}
+ 
+-	err = rvu_mbox_handler_npc_mcam_write_entry(rvu, &write_req,
+-						    &write_rsp);
+-	if (err) {
+-		rvu_mcam_remove_counter_from_rule(rvu, owner, rule);
+-		if (new)
+-			kfree(rule);
+-		return err;
+-	}
+ 	/* update rule */
+ 	memcpy(&rule->packet, &dummy.packet, sizeof(rule->packet));
+ 	memcpy(&rule->mask, &dummy.mask, sizeof(rule->mask));
+@@ -1132,6 +1124,18 @@ find_rule:
+ 	if (req->default_rule)
+ 		pfvf->def_ucast_rule = rule;
+ 
++	/* write to mcam entry registers */
++	err = rvu_mbox_handler_npc_mcam_write_entry(rvu, &write_req,
++						    &write_rsp);
++	if (err) {
++		rvu_mcam_remove_counter_from_rule(rvu, owner, rule);
++		if (new) {
++			list_del(&rule->list);
++			kfree(rule);
++		}
++		return err;
++	}
++
+ 	/* VF's MAC address is being changed via PF  */
+ 	if (pf_set_vfs_mac) {
+ 		ether_addr_copy(pfvf->default_mac, req->packet.dmac);
 -- 
 2.34.1
 
