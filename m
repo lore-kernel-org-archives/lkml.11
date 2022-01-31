@@ -2,84 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2140C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78F41C4167D
 	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379427AbiAaLaS (ORCPT
+        id S1379401AbiAaLaR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:30:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47896 "EHLO
+        Mon, 31 Jan 2022 06:30:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378705AbiAaLUh (ORCPT
+        with ESMTP id S1378708AbiAaLUh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 31 Jan 2022 06:20:37 -0500
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E9BAC0604FF
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 03:13:30 -0800 (PST)
-Received: by mail-yb1-xb34.google.com with SMTP id v186so39370124ybg.1
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 03:13:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=U0Pw1BfqGZvVWUtyLjOHuhJwlMA1Use2yqcwgUkQnwE=;
-        b=F/ECo8ebBP3ogDbxQiY4hhui7DC5U/UMWgo9Zxz2mCrE3YKYlRwsn8i6WMbi1ujwL+
-         F6RWtT6HBlFzfySG6LZv1PSv0vwGis3HZwYSpSS9Hc29Ez3WcAtHPDp0M0EniYkeFuQP
-         vMA+VOZ1Ign8qZkpcj+5tqUlZrYNyhl+lbsyQ3EgkkMF+kIkkfA4B52aHxnb2frXX0a7
-         Hf5Jj2Ip5PmM4TVjHH23jDBAmknumfzIEPYA2ny7XV1pVboUBrBGG0Zl6M1/y8c1kbyM
-         NyLWqgGFxGTvLnD6/N2khaA9Rqn+cJcUH8dVK5IIzrye3eEHB5fbTpdShnNmFP/AZ8Ef
-         Xb5w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=U0Pw1BfqGZvVWUtyLjOHuhJwlMA1Use2yqcwgUkQnwE=;
-        b=ZB/ULGJzj1c1JDC5/ZuSTh1bM9xRldl6TZ1z3bdAN6ceCQdrMeLKTr+tCfzlbeUaVc
-         C0TL4Ds/j0eZrxWCtck2vuxdL8BmSNjJW/tR8L5xutdnRPJ+8AiIWMTi8B6fIKiZbcCb
-         no3Rr2QT82yXfKuwicU23+NYJvZ7+XE5PyY2Vl2joeCMDe8Tt9ZO0vrOL75Y7fBEaMv6
-         Sggme1Ewds352vRvNnCpUGBILYRLMnfOXWpqcXpIh4wh10WiyNOzDd2DfzEVURqS6DHO
-         QCAvJVsqirw5jkdAHNIFOiJhvctg0xxyjk8F4o7Up3ckf/x6GW3VYXzEMRnusxYUS5fh
-         VT9w==
-X-Gm-Message-State: AOAM532J5Udlrhet/JsuzFTQa6F0rJOC2o8EpbE2jnwj5UGJNpgpnnaI
-        chcnlXPydCnBu/zSaEYBktGBtlrqy6EgSaQi7kfAUg==
-X-Google-Smtp-Source: ABdhPJwnjcbKcmXqxkDyE6M/D5slJFtoF8e/5OEa0RJfRa4THHqn7fj5ZGK9wLiBaPNsXouP0qEB6ly0WbzNmpDFVXY=
-X-Received: by 2002:a25:5143:: with SMTP id f64mr30614251ybb.520.1643627609604;
- Mon, 31 Jan 2022 03:13:29 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 865CFC0698C1;
+        Mon, 31 Jan 2022 03:13:30 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5985AB82A60;
+        Mon, 31 Jan 2022 11:13:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96705C340E8;
+        Mon, 31 Jan 2022 11:13:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643627608;
+        bh=cV/tBrF8igkYghxgdAlvpCjcLp7koFtF1DiSCLSyycU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=tjj4hg80fnbolETfJAV4rCtmdGeM5EYz2334gJTlKSuW07gOtz3X75xGCoOB7SBpt
+         76GkkAe0gzM61G/traiNSYWT9u3MO/+pzy/6E4Wpl9Ik+DG5MYpqVsNG06uZZZK9F2
+         XxZ/96rceypW/BOztfYuB8RwptG7CSpIAGSAbfQw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Xianting Tian <xianting.tian@linux.alibaba.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 096/171] drm/msm: Fix wrong size calculation
+Date:   Mon, 31 Jan 2022 11:56:01 +0100
+Message-Id: <20220131105233.285068117@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
+References: <20220131105229.959216821@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220130145116.88406-1-nbd@nbd.name> <20220130145116.88406-13-nbd@nbd.name>
-In-Reply-To: <20220130145116.88406-13-nbd@nbd.name>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Mon, 31 Jan 2022 12:13:18 +0100
-Message-ID: <CACRpkdY38VWT_95jz25NTNtsqzkkVsSONNLswQ35JApT0HUXXQ@mail.gmail.com>
-Subject: Re: [PATCH v9 12/13] gpio: Add support for Airoha EN7523 GPIO controller
-To:     Felix Fietkau <nbd@nbd.name>, Bartosz Golaszewski <brgl@bgdev.pl>
-Cc:     soc@kernel.org, linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, john@phrozen.org,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jan 30, 2022 at 3:54 PM Felix Fietkau <nbd@nbd.name> wrote:
+From: Xianting Tian <xianting.tian@linux.alibaba.com>
 
-> From: John Crispin <john@phrozen.org>
->
-> Airoha's GPIO controller on their ARM EN7523 SoCs consists of two banks of 32
-> GPIOs. Each instance in DT is for a single bank.
->
-> Acked-by: Bartosz Golaszewski <brgl@bgdev.pl>
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-> Signed-off-by: John Crispin <john@phrozen.org>
-> Signed-off-by: Felix Fietkau <nbd@nbd.name>
+commit 0a727b459ee39bd4c5ced19d6024258ac87b6b2e upstream.
 
-This one and patch 11 with the bindings does not seem to have any
-build dependencies on the rest of the patches at all.
+For example, memory-region in .dts as below,
+	reg = <0x0 0x50000000 0x0 0x20000000>
 
-What about Bartosz just apply these two to the GPIO tree so we
-have less stuff to iterate?
+We can get below values,
+struct resource r;
+r.start = 0x50000000;
+r.end	= 0x6fffffff;
 
-Yours,
-Linus Walleij
+So the size should be:
+size = r.end - r.start + 1 = 0x20000000
+
+Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
+Fixes: 072f1f9168ed ("drm/msm: add support for "stolen" mem")
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Link: https://lore.kernel.org/r/20220112123334.749776-1-xianting.tian@linux.alibaba.com
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/gpu/drm/msm/msm_drv.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/drivers/gpu/drm/msm/msm_drv.c
++++ b/drivers/gpu/drm/msm/msm_drv.c
+@@ -437,7 +437,7 @@ static int msm_init_vram(struct drm_devi
+ 		of_node_put(node);
+ 		if (ret)
+ 			return ret;
+-		size = r.end - r.start;
++		size = r.end - r.start + 1;
+ 		DRM_INFO("using VRAM carveout: %lx@%pa\n", size, &r.start);
+ 
+ 		/* if we have no IOMMU, then we need to use carveout allocator.
+
+
