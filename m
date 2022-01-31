@@ -2,80 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10192C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 10:30:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3774C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 10:31:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358273AbiAaKal (ORCPT
+        id S1358186AbiAaKbm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 05:30:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35900 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358193AbiAaK3d (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 05:29:33 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1387BC061757
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 02:29:27 -0800 (PST)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nETvR-0008WD-Oi; Mon, 31 Jan 2022 11:28:45 +0100
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nETvO-008Cbi-BL; Mon, 31 Jan 2022 11:28:42 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Mark Rutland <mark.rutland@arm.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        devicetree@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        David Jander <david@protonic.nl>,
-        Robin van der Gracht <robin@protonic.nl>,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH v2 0/5] ARM: dts: protonic maintenance patches
-Date:   Mon, 31 Jan 2022 11:28:36 +0100
-Message-Id: <20220131102841.1955032-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
+        Mon, 31 Jan 2022 05:31:42 -0500
+Received: from mga18.intel.com ([134.134.136.126]:1257 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1345599AbiAaKbl (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 05:31:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643625101; x=1675161101;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=eGahUJSlFzxGqkP2PYspVj5bNJbqX3IGWEq9Q9r47kU=;
+  b=Orca9j4LMBNhFM+ZiiDBWx4YuVIgkRGJ1a4hkXcl5gcSXfDbRn0RhXxB
+   Zhm5ALaUEwigljxv1wWbhlc8kAHWDQm1qc5rAO1DlNvsZURmMB/ur/k9+
+   g09apt+hA48/9e2erz3CxWDWFGA+6Bc3WyiG5/VxHQ/gnTu2XZmvhdcu+
+   AWH2T58NEpimvaZnIMligktFTMR0FJ/s1yaixDJ5I7mBCRLRMwU7mGfE1
+   YKhyQqkPYEhsn2XdnOi9PBrdWkkS+mcD9vNGgcZLSKcmz/VFkAPPByAUk
+   GrgsjYqfedaCf9w1LgmCNE7RdPDuf8k2EphNlQLhU1hTDa4jnE85qwUAT
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10243"; a="231006280"
+X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
+   d="scan'208";a="231006280"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 02:31:41 -0800
+X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
+   d="scan'208";a="564934983"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 02:31:37 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nETxB-00GpRd-HC;
+        Mon, 31 Jan 2022 12:30:33 +0200
+Date:   Mon, 31 Jan 2022 12:30:33 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     David Rientjes <rientjes@google.com>
+Cc:     Waiman Long <longman@redhat.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Vladimir Davydov <vdavydov.dev@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
+        linux-mm@kvack.org, Ira Weiny <ira.weiny@intel.com>,
+        Rafael Aquini <aquini@redhat.com>
+Subject: Re: [PATCH v2 1/3] lib/vsprintf: Avoid redundant work with 0 size
+Message-ID: <Yfe6SfG4CqzWSaMM@smile.fi.intel.com>
+References: <20220129205315.478628-1-longman@redhat.com>
+ <20220129205315.478628-2-longman@redhat.com>
+ <d99b3c4b-7b6e-529-6e4b-b91b65c92d81@google.com>
+ <Yfe5Bb3U6Uil7Y6g@smile.fi.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yfe5Bb3U6Uil7Y6g@smile.fi.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-changes v2:
-- add missing new lines
-- rename adc label to adc_ts
-- add thermal zones patch
+On Mon, Jan 31, 2022 at 12:25:09PM +0200, Andy Shevchenko wrote:
+> On Sun, Jan 30, 2022 at 12:49:37PM -0800, David Rientjes wrote:
+> > On Sat, 29 Jan 2022, Waiman Long wrote:
+> > 
+> > > For *scnprintf(), vsnprintf() is always called even if the input size is
+> > > 0. That is a waste of time, so just return 0 in this case.
+> 
+> Why do you think it's not legit?
 
-Oleksij Rempel (4):
-  ARM: dts: imx6dl-prtvt7: Add display and panel nodes
-  ARM: dts: imx6qdl-vicut1: add CAN termination support
-  ARM: dts: imx6dl: plym2m, prtvt7, victgo: make use of new
-    resistive-adc-touch driver
-  ARM: dts: imx6dl: plym2m, prtvt7, victgo: add thermal zones and hwmon
+I have to elaborate.
 
-Robin van der Gracht (1):
-  ARM: dts: imx6dl-prtvt7: Add missing tvp5150 video decoder node
+For *nprintf() the size=0 is quite useful to have.
+For *cnprintf() the size=0 makes less sense, but, if we read `man snprintf()`:
 
- arch/arm/boot/dts/imx6dl-plym2m.dts   | 131 +++++++++++++++--
- arch/arm/boot/dts/imx6dl-prtvt7.dts   | 203 ++++++++++++++++++++++++--
- arch/arm/boot/dts/imx6dl-victgo.dts   | 121 +++++++++++++--
- arch/arm/boot/dts/imx6qdl-vicut1.dtsi |  12 +-
- 4 files changed, 413 insertions(+), 54 deletions(-)
+  The  functions  snprintf() and vsnprintf() do not write more than size bytes
+  (including the terminating null byte ('\0')). If the output was truncated due
+  to this limit, then the return value is the  number of  characters (excluding
+  the terminating null byte) which would have been written to the final string
+  if enough space had been available. Thus, a return value of size or more
+  means  that  the  output  was truncated.  (See also below under NOTES.)
+
+  If an output error is encountered, a negative value is returned.
+
+Note the last sentence there. You need to answer to it in the commit message
+why your change is okay and it will show that you thought through all possible
+scenarios.
 
 -- 
-2.30.2
+With Best Regards,
+Andy Shevchenko
+
 
