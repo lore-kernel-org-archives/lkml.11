@@ -2,41 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC503C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:27:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2405C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:27:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351085AbiAaL1W (ORCPT
+        id S1359065AbiAaL1c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:27:22 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:51520 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377708AbiAaLSv (ORCPT
+        Mon, 31 Jan 2022 06:27:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47044 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377740AbiAaLSx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:18:51 -0500
+        Mon, 31 Jan 2022 06:18:53 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59728C06134C;
+        Mon, 31 Jan 2022 03:11:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2798161211;
-        Mon, 31 Jan 2022 11:18:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7BD0C340E8;
-        Mon, 31 Jan 2022 11:18:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EC53E6102A;
+        Mon, 31 Jan 2022 11:11:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C12DDC340E8;
+        Mon, 31 Jan 2022 11:11:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627930;
-        bh=l1Ga+Zv3tLzCDn2dJaBGjNH7XSZJP/IT0+6HE+P2RHQ=;
+        s=korg; t=1643627504;
+        bh=SgGumDnicN2QeEZGwfbrCV7bTVD6rS+dcb6bMzFZ8yo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w+gDgvNUxOlymne0SkA17uTIa4j9M2BKBTBkAm48lYH5TmviODL/b7ZZ/EIFSJl4L
-         4g9UAENDKIqdIJKYd98jk3uWEQvTPJDLiZG2+eA7zFlqPtvkCAr8siN99Bq4x/qGyA
-         xqqQZHyv5j4mSohbKwOPtk4v+j84yQC51A/LRL5Q=
+        b=hPLxrATX3SY904blhwbpDH8Xy6N2KWVsKGFgvgoujChtJTGEQZMJj0bp8l5iNN5ZC
+         oOXnXMZTG9j4OlOVkRaMkc9VYVBuGzpXJvyUmu2a1OEbyrwRvZxZLvHfluG1L4CfVv
+         +P2E3Adhfg7Qr3EOjSlZ8DHHxadfs57UqwNaFMtA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Cameron Williams <cang1@live.co.uk>
-Subject: [PATCH 5.16 071/200] tty: Add support for Brainboxes UC cards.
-Date:   Mon, 31 Jan 2022 11:55:34 +0100
-Message-Id: <20220131105235.977177580@linuxfoundation.org>
+        stable@vger.kernel.org, Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 106/171] netfilter: conntrack: dont increment invalid counter on NF_REPEAT
+Date:   Mon, 31 Jan 2022 11:56:11 +0100
+Message-Id: <20220131105233.631674405@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
-References: <20220131105233.561926043@linuxfoundation.org>
+In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
+References: <20220131105229.959216821@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -45,139 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Cameron Williams <cang1@live.co.uk>
+From: Florian Westphal <fw@strlen.de>
 
-commit 152d1afa834c84530828ee031cf07a00e0fc0b8c upstream.
+[ Upstream commit 830af2eba40327abec64325a5b08b1e85c37a2e0 ]
 
-This commit adds support for the some of the Brainboxes PCI range of
-cards, including the UC-101, UC-235/246, UC-257, UC-268, UC-275/279,
-UC-302, UC-310, UC-313, UC-320/324, UC-346, UC-357, UC-368
-and UC-420/431.
+The packet isn't invalid, REPEAT means we're trying again after cleaning
+out a stale connection, e.g. via tcp tracker.
 
-Signed-off-by: Cameron Williams <cang1@live.co.uk>
-Cc: stable <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/AM5PR0202MB2564688493F7DD9B9C610827C45E9@AM5PR0202MB2564.eurprd02.prod.outlook.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This caused increases of invalid stat counter in a test case involving
+frequent connection reuse, even though no packet is actually invalid.
+
+Fixes: 56a62e2218f5 ("netfilter: conntrack: fix NF_REPEAT handling")
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/8250/8250_pci.c |  100 ++++++++++++++++++++++++++++++++++++-
- 1 file changed, 98 insertions(+), 2 deletions(-)
+ net/netfilter/nf_conntrack_core.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -5174,8 +5174,30 @@ static const struct pci_device_id serial
- 	{	PCI_VENDOR_ID_INTASHIELD, PCI_DEVICE_ID_INTASHIELD_IS400,
- 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,    /* 135a.0dc0 */
- 		pbn_b2_4_115200 },
-+	/* Brainboxes Devices */
- 	/*
--	 * BrainBoxes UC-260
-+	* Brainboxes UC-101
-+	*/
-+	{       PCI_VENDOR_ID_INTASHIELD, 0x0BA1,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b2_2_115200 },
-+	/*
-+	 * Brainboxes UC-235/246
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x0AA1,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b2_1_115200 },
-+	/*
-+	 * Brainboxes UC-257
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x0861,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b2_2_115200 },
-+	/*
-+	 * Brainboxes UC-260/271/701/756
- 	 */
- 	{	PCI_VENDOR_ID_INTASHIELD, 0x0D21,
- 		PCI_ANY_ID, PCI_ANY_ID,
-@@ -5183,7 +5205,81 @@ static const struct pci_device_id serial
- 		pbn_b2_4_115200 },
- 	{	PCI_VENDOR_ID_INTASHIELD, 0x0E34,
- 		PCI_ANY_ID, PCI_ANY_ID,
--		 PCI_CLASS_COMMUNICATION_MULTISERIAL << 8, 0xffff00,
-+		PCI_CLASS_COMMUNICATION_MULTISERIAL << 8, 0xffff00,
-+		pbn_b2_4_115200 },
-+	/*
-+	 * Brainboxes UC-268
-+	 */
-+	{       PCI_VENDOR_ID_INTASHIELD, 0x0841,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b2_4_115200 },
-+	/*
-+	 * Brainboxes UC-275/279
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x0881,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b2_8_115200 },
-+	/*
-+	 * Brainboxes UC-302
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x08E1,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b2_2_115200 },
-+	/*
-+	 * Brainboxes UC-310
-+	 */
-+	{       PCI_VENDOR_ID_INTASHIELD, 0x08C1,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b2_2_115200 },
-+	/*
-+	 * Brainboxes UC-313
-+	 */
-+	{       PCI_VENDOR_ID_INTASHIELD, 0x08A3,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b2_2_115200 },
-+	/*
-+	 * Brainboxes UC-320/324
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x0A61,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b2_1_115200 },
-+	/*
-+	 * Brainboxes UC-346
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x0B02,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b2_4_115200 },
-+	/*
-+	 * Brainboxes UC-357
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x0A81,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b2_2_115200 },
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x0A83,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b2_2_115200 },
-+	/*
-+	 * Brainboxes UC-368
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x0C41,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b2_4_115200 },
-+	/*
-+	 * Brainboxes UC-420/431
-+	 */
-+	{       PCI_VENDOR_ID_INTASHIELD, 0x0921,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
- 		pbn_b2_4_115200 },
- 	/*
- 	 * Perle PCI-RAS cards
+diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
+index 4712a90a1820c..7f79974607643 100644
+--- a/net/netfilter/nf_conntrack_core.c
++++ b/net/netfilter/nf_conntrack_core.c
+@@ -1922,15 +1922,17 @@ repeat:
+ 		pr_debug("nf_conntrack_in: Can't track with proto module\n");
+ 		nf_conntrack_put(&ct->ct_general);
+ 		skb->_nfct = 0;
+-		NF_CT_STAT_INC_ATOMIC(state->net, invalid);
+-		if (ret == -NF_DROP)
+-			NF_CT_STAT_INC_ATOMIC(state->net, drop);
+ 		/* Special case: TCP tracker reports an attempt to reopen a
+ 		 * closed/aborted connection. We have to go back and create a
+ 		 * fresh conntrack.
+ 		 */
+ 		if (ret == -NF_REPEAT)
+ 			goto repeat;
++
++		NF_CT_STAT_INC_ATOMIC(state->net, invalid);
++		if (ret == -NF_DROP)
++			NF_CT_STAT_INC_ATOMIC(state->net, drop);
++
+ 		ret = -ret;
+ 		goto out;
+ 	}
+-- 
+2.34.1
+
 
 
