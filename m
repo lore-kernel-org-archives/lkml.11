@@ -2,171 +2,382 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0750BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 20:54:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2F9BC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 20:55:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344374AbiAaUy5 (ORCPT
+        id S1350712AbiAaUzx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 15:54:57 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:17962 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232590AbiAaUyw (ORCPT
+        Mon, 31 Jan 2022 15:55:53 -0500
+Received: from mail.efficios.com ([167.114.26.124]:38776 "EHLO
+        mail.efficios.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239450AbiAaUzt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 15:54:52 -0500
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20VJxPw8021467;
-        Mon, 31 Jan 2022 12:54:21 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=xyyEHXP2nW0NzwlhVNwOjjW4qZDXWl9phb79Ox+4rS0=;
- b=jT6c9H+1pdkY+OfRj0glhrPGxI1Vn/+ZDwzrB9MzPBiATPHNx6fC95Ejra1e5cRi3PoQ
- t3Qq+IKsuS7cdRafE5BAF+sYEMq8TmgkRxDNgD7XYjxYKC3a4T3pJZCVpeWU/EXkcGrg
- Hdr7hMrGVD9OPtnv/o9h+cYSRUoa8rGh9T4= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3dx6n2w84p-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 31 Jan 2022 12:54:21 -0800
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 31 Jan 2022 12:54:20 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Hextz6yFclYeUe5nAJ4mR2NesC15YEhWCkUmK3/ewjEFyKYGnWApdQ/FzYVUlCglRuZTk5GiAHmp3pUPfVS5BvD0lZ8YahVMSHbmpXTMCCn7GsmNFKtEk6kQozYQehAqyZdn3gYVwsXgzcdUOPO/MCne2bCGNIDhjRSdEg38w/+weVAQlcdT/MB6gbUPxIe6dhU8/iOhfVGoXDsOOuPnrcRlbyJVKgJPWue56sEnsa3pNuTVRC35FryRrrLl5HnhEzN5LPcvVJdGGkoRI7Fn/YwRD9QGzQHxT7kK/zwCGiHJKej1Aileyy37avQZW9i2+HkiMpqYiN1qI6xT3dgbbA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xyyEHXP2nW0NzwlhVNwOjjW4qZDXWl9phb79Ox+4rS0=;
- b=O7QNNQPyzSLf7y+a3cWVa6X+J405X3ZuwZBz7xx76CMXmyzHvf6XMOcqHaKjxnaBCmCifl8lzG9FaKf1+Ow1jUnW4cz8ElkUlfCVtIQpFgQyQs4r5kNIUj5EDS+yrkbdDAjIfBt+rmFX/1V9X2B116Vd2B8A+xOoQt5byrBYB5LrFruPi05h81eshH/ibVVI7G48GPOtz2xrdivRvGWACaJuLQS/i9hb0gvwC0TRN9/oMP6Uu31TB9CoLiKE68ky08yNMb37zHHAJMCHtUwyTolqg3TGGRAOOO8tfbKjHRhKAWF4XVO2qwXAmzJN5rA6oODvby7bT0/Q9uOkiQmn8w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-Received: from BYAPR15MB4136.namprd15.prod.outlook.com (2603:10b6:a03:96::24)
- by MWHPR15MB1294.namprd15.prod.outlook.com (2603:10b6:320:25::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.21; Mon, 31 Jan
- 2022 20:54:19 +0000
-Received: from BYAPR15MB4136.namprd15.prod.outlook.com
- ([fe80::d4ac:5796:5198:ecd2]) by BYAPR15MB4136.namprd15.prod.outlook.com
- ([fe80::d4ac:5796:5198:ecd2%3]) with mapi id 15.20.4930.021; Mon, 31 Jan 2022
- 20:54:19 +0000
-Date:   Mon, 31 Jan 2022 12:54:15 -0800
-From:   Roman Gushchin <guro@fb.com>
-To:     Waiman Long <longman@redhat.com>
-CC:     Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Vladimir Davydov <vdavydov.dev@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        <linux-kernel@vger.kernel.org>, <cgroups@vger.kernel.org>,
-        <linux-mm@kvack.org>, Ira Weiny <ira.weiny@intel.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Rafael Aquini <aquini@redhat.com>
-Subject: Re: [PATCH v3 4/4] mm/page_owner: Record task command name
-Message-ID: <YfhMd5LTzTHu9zMD@carbon.dhcp.thefacebook.com>
-References: <20220131192308.608837-1-longman@redhat.com>
- <20220131192308.608837-5-longman@redhat.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220131192308.608837-5-longman@redhat.com>
-X-ClientProxiedBy: MW3PR05CA0020.namprd05.prod.outlook.com
- (2603:10b6:303:2b::25) To BYAPR15MB4136.namprd15.prod.outlook.com
- (2603:10b6:a03:96::24)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1e2ab44b-066d-4877-0f36-08d9e4fbd9b6
-X-MS-TrafficTypeDiagnostic: MWHPR15MB1294:EE_
-X-Microsoft-Antispam-PRVS: <MWHPR15MB1294F38E56905AE548B3C5E0BE259@MWHPR15MB1294.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Bs0cJbwyEZ3IsF4F7y8M08HLRriwbzjUCWrWA4U72oAyMnm17g7+6FNOTl3FjtL3wkRnndqSfI1XE3rKnitr6aQ7iVA8D0piE4rLUvCyha3eZvZ6fUxYE9BqLnSsb3ZcWs9Ip+x8MNvhFUXncpNfGKMyLS7v3E3Cd47xdtFVUVUrodDLG6lmtyPZgfhezsZgS3yoiw3Xl4gchhNi5vHqemMx8zqs23Pdi4hLnmSFF7JGY0WflWlti1oK6Ovp7ZPjn3m6HAyQg3EOJKtyIE+t2Dq32eKxQwmv8LubXU1HyzJxwV2wX/hTPnb/1GZTJR7z/OpmrOObGhvIy1JNaqSzDIK1mf/2UEUxuipu681itRVPudGygA7yE4Bt/7E3yHZ/grDercqWx5L3fy1KO5t5phaYpCDjG3Peka0RWKrpGCJIIbMTxUQHSLn0DoxBtY4Kv8ywMlhhU74TUwEU8EZC5pagSnVLZ1Gdu1APqH23p0c0eANurU6pAs2yhZld+zipft1igRxsfOvuFxrHaHNqYIDP1+BIzK4kjg+WZMWNQ7F6zIFlkoa39D9gN820i5KHlw97vgQ5U3CArGjjw3G14hKqEsAxG79+PVNgjKmRU21pmseBti+asQ6FHFmP3ISnz+mRD+rC25auHhwKRrR8wQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4136.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(186003)(2906002)(38100700002)(6512007)(9686003)(52116002)(83380400001)(5660300002)(6916009)(66946007)(66556008)(66476007)(54906003)(7416002)(6486002)(4326008)(8676002)(6666004)(6506007)(86362001)(316002)(8936002)(508600001)(20210929001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?F4kI4+FzbYQkcSajJhwGqu0gI1SBXyYfiMSAfpVN/OMGDXeLz5F6LAd1prSi?=
- =?us-ascii?Q?tDAk/Z8bQGsUMLZTssC00A6+F+hPDfbet2oFaVB3AWo5I1MK+QBrXFRjD6o0?=
- =?us-ascii?Q?tWY/dsxDZTcz9xec7VY/z5Y9NYfkb0lD61TbNwbTmsLaM/+s6cGX0MN6ZK1h?=
- =?us-ascii?Q?KHmA8UiSwXgKubOQtmu7gxGeVLc0MbkpvyVyhIfreIjSOpuUYwloIbbA39FQ?=
- =?us-ascii?Q?xzemZrj+/b68WRVnwEWKJfYREnjT1SM8Q1Cc4uji2WVO4Bqi3Dr+5tSCPPrS?=
- =?us-ascii?Q?d0DAPG1uIqkcUTSy7pf+T7xss/IFxAhS99nt80wkaI/QUvKjzdSYjZwRGjAx?=
- =?us-ascii?Q?gh0HEOwpPjStorN6Dp6F4lJSge3chHlDqw9sQrbcCQykuc7bagQ8cOLoYowk?=
- =?us-ascii?Q?6P61XqaPCqw82d+QhbWUoYOJPO1zadLXqbBMv6zlTaghgOsW4uO0TBjk8zF3?=
- =?us-ascii?Q?xk/46uRzYnG47VLfD1Dmz/nZknKOOm23+PvpPcTTpOex/vxGAFPMYcfPfU3m?=
- =?us-ascii?Q?2/899gN2/NPht1/1gkxCZ9ruU2t0hrqop0mVhkpZ9BNttaltimiP5DM8HIVU?=
- =?us-ascii?Q?3t5mLbsi1ZkfY2cqX1LxyiGeKqZTuXHTQZ8Pio47Wg0Vkbj1Hlz4vxGieMYV?=
- =?us-ascii?Q?PrO7m7rKCRQ/bFPsTneDTT2jP4MbGXjX2WYlH8wLlX2cb53qepTsh29jKmJu?=
- =?us-ascii?Q?bpmJhEDHXIeCrqKcyL42CKBvTyAjqMPAaDdIe82wa/k2MRcUNY0bSmfGkDeo?=
- =?us-ascii?Q?PrN1lywsq6HDdjtZ2aAoSK5YDKJQMhVVAH1sIyROZ/Smk2lbEZ0s9MqWPjQD?=
- =?us-ascii?Q?qXbrtfjy73S+4WhuQMIGnHTkPaznSMxNIxjSFiCCZqutuhuVevQeuDhFtrEP?=
- =?us-ascii?Q?o5i4B3YLad122Lx1NRjENhg9cP9ZJVCJVSNBYmMEe9ZfZKl1TSsz7wiHZzxY?=
- =?us-ascii?Q?Fuhfw1+6ab86d/jcTKbjOjGAp5C+QiBb2uqxXgLBPpHJ6/icyzRFEf5YZ3FC?=
- =?us-ascii?Q?Ng4pqgNvbxFKp3P1RHUMkoeO6KlmzH4XkgrlFWaqNUmFfv6kMnVKH8ZbToEV?=
- =?us-ascii?Q?hXHV2F9uozrrqddJG1r4SyKnlYFxjR/ZY0Rs25Jhq6rT18pJsOGlUTvuey9O?=
- =?us-ascii?Q?163dW0MSjgHtH25+pgLOZS8qDzT2VXgWO0aL9q5082dCcY16CGH3eBgtPWlz?=
- =?us-ascii?Q?SoG0u1mWDMN1xEqT2XsPiMrKLoYT+jpqs5RkGIJmtTGpmYu8ihO0y7vrBaU2?=
- =?us-ascii?Q?7HztINtQMxcPCBo7KHBUNZF0VNgACd0DDT+5Ihw7lzR2UqzLOu9pv3d+d6Gf?=
- =?us-ascii?Q?PDFJ+zkQ/EaCH6RXFwYNKFgNuSDsBqz8j6mfWShARruWCfx8ehhQdjx2hmcH?=
- =?us-ascii?Q?+FmA8SnYp1gHLb1a3dBv7RT4XwOozl2p4NHfmZ28Cg13vRdYkWveEzTVdMFv?=
- =?us-ascii?Q?VF/TciRvswCXLMiEJi63mMTDh+r2j5OAZZE6tOkCKM9grKzBdQF0iNsDTg2E?=
- =?us-ascii?Q?dm+Uuevg2d3QXvZC7S6kF0VxWtah/OjDwFJERLjMCngjOKP2GTmG5wbOPsit?=
- =?us-ascii?Q?q6SSZckLHpXtMhWBMG8BNCDjsnS208ihafKtCqoZ?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1e2ab44b-066d-4877-0f36-08d9e4fbd9b6
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB4136.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Jan 2022 20:54:19.1397
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: H8ouCWjkJfrEPXJZDyS3Lg8P6R1y5yXLVXQP2wgyVuoh5SMPLtJI6RkPvs+/YzlO
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1294
-X-OriginatorOrg: fb.com
-X-Proofpoint-GUID: KD5fzkEGgenCQS62TyEdga0XkkX25X8Y
-X-Proofpoint-ORIG-GUID: KD5fzkEGgenCQS62TyEdga0XkkX25X8Y
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-31_07,2022-01-31_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 bulkscore=0
- adultscore=0 mlxlogscore=999 suspectscore=0 phishscore=0 malwarescore=0
- priorityscore=1501 impostorscore=0 spamscore=0 mlxscore=0 clxscore=1015
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2201310133
-X-FB-Internal: deliver
+        Mon, 31 Jan 2022 15:55:49 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id D5BDB2DEDA7;
+        Mon, 31 Jan 2022 15:55:48 -0500 (EST)
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id 1U_MHm3CTTsx; Mon, 31 Jan 2022 15:55:48 -0500 (EST)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id E12A62DED22;
+        Mon, 31 Jan 2022 15:55:47 -0500 (EST)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com E12A62DED22
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
+        s=default; t=1643662547;
+        bh=G77yNuMSKgOQeKloS+BdXG8VKCF0SxQ94r5eYUhsr80=;
+        h=From:To:Date:Message-Id;
+        b=HdblOsYtpO1rdDjRRIkqnsQV9tAEo2Gc4JmOf7dZG/Bj4i/HkkqS28wXgcgfxx7NL
+         n4mu1q4Qc40wlTDyrv9u2+DDlGaVS9SW7ojkYju4bBbvcMd6xsR/qjhceMGyUavLTF
+         dqRaQ2JpHb+HZ3HEon5BHrHpYRP/5HMzV0l8+y72Q1k9YNmxb7geL2zyHkAI0+4zLC
+         822UzevWz+wOOnMLr5YXKD0W4HdU2stFXzeEV367hZiZGtqmU5CHv0xJPy+905agJi
+         ZZrC/jWk+9+bId6r3Hw5X2jVX4lj7Ph5fpB8WVOtSsGynAdlU47Zq7JN25kuu/Iqgj
+         Ik0CmE+ojgdcg==
+X-Virus-Scanned: amavisd-new at efficios.com
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id FFcEGRNmT4NW; Mon, 31 Jan 2022 15:55:47 -0500 (EST)
+Received: from localhost.localdomain (192-222-180-24.qc.cable.ebox.net [192.222.180.24])
+        by mail.efficios.com (Postfix) with ESMTPSA id 683142DEDA6;
+        Mon, 31 Jan 2022 15:55:47 -0500 (EST)
+From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        "H . Peter Anvin" <hpa@zytor.com>, Paul Turner <pjt@google.com>,
+        linux-api@vger.kernel.org,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        Florian Weimer <fw@deneb.enyo.de>, David.Laight@ACULAB.COM,
+        carlos@redhat.com, Peter Oskolkov <posk@posk.io>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Subject: [RFC PATCH 1/2] rseq: extend struct rseq with numa node id
+Date:   Mon, 31 Jan 2022 15:55:30 -0500
+Message-Id: <20220131205531.17873-1-mathieu.desnoyers@efficios.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 31, 2022 at 02:23:08PM -0500, Waiman Long wrote:
-> The page_owner information currently includes the pid of the calling
-> task. That is useful as long as the task is still running. Otherwise,
-> the number is meaningless. To have more information about the allocating
-> tasks that had exited by the time the page_owner information is
-> retrieved, we need to store the command name of the task.
-> 
-> Add a new comm field into page_owner structure to store the command name
-> and display it when the page_owner information is retrieved. Only the
-> first 15 characters of the command name will be copied, but that should
-> be enough in most cases. Even for those commands with longer names,
-> it shouldn't be hard to guess what they are.
-> 
-> Signed-off-by: Waiman Long <longman@redhat.com>
-> ---
->  mm/page_owner.c | 16 ++++++++++++----
->  1 file changed, 12 insertions(+), 4 deletions(-)
-> 
-> diff --git a/mm/page_owner.c b/mm/page_owner.c
-> index a471c74c7fe0..8b2b381fd986 100644
-> --- a/mm/page_owner.c
-> +++ b/mm/page_owner.c
-> @@ -20,6 +20,7 @@
->   * to use off stack temporal storage
->   */
->  #define PAGE_OWNER_STACK_DEPTH (16)
-> +#define PAGE_OWNER_COMM_LEN	16
+Adding the NUMA node id to struct rseq is a straightforward thing to do,
+and a good way to figure out if anything in the user-space ecosystem
+prevents extending struct rseq.
 
-Not sure I understand why not simply use TASK_COMM_LEN ?
+This NUMA node id field allows memory allocators such as tcmalloc to
+take advantage of fast access to the current NUMA node id to perform
+NUMA-aware memory allocation.
+
+It is also useful for implementing NUMA-aware user-space mutexes.
+
+Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+---
+ include/linux/sched.h       |  4 ++
+ include/trace/events/rseq.h |  4 +-
+ include/uapi/linux/rseq.h   | 54 ++++++++++++++++++++--
+ kernel/ptrace.c             |  2 +-
+ kernel/rseq.c               | 91 +++++++++++++++++++++++++++----------
+ 5 files changed, 124 insertions(+), 31 deletions(-)
+
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index 508b91d57470..838c9e0b4cae 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -1291,6 +1291,7 @@ struct task_struct {
+ 
+ #ifdef CONFIG_RSEQ
+ 	struct rseq __user *rseq;
++	u32 rseq_len;
+ 	u32 rseq_sig;
+ 	/*
+ 	 * RmW on rseq_event_mask must be performed atomically
+@@ -2260,10 +2261,12 @@ static inline void rseq_fork(struct task_struct *t, unsigned long clone_flags)
+ {
+ 	if (clone_flags & CLONE_VM) {
+ 		t->rseq = NULL;
++		t->rseq_len = 0;
+ 		t->rseq_sig = 0;
+ 		t->rseq_event_mask = 0;
+ 	} else {
+ 		t->rseq = current->rseq;
++		t->rseq_len = current->rseq_len;
+ 		t->rseq_sig = current->rseq_sig;
+ 		t->rseq_event_mask = current->rseq_event_mask;
+ 	}
+@@ -2272,6 +2275,7 @@ static inline void rseq_fork(struct task_struct *t, unsigned long clone_flags)
+ static inline void rseq_execve(struct task_struct *t)
+ {
+ 	t->rseq = NULL;
++	t->rseq_len = 0;
+ 	t->rseq_sig = 0;
+ 	t->rseq_event_mask = 0;
+ }
+diff --git a/include/trace/events/rseq.h b/include/trace/events/rseq.h
+index a04a64bc1a00..6bd442697354 100644
+--- a/include/trace/events/rseq.h
++++ b/include/trace/events/rseq.h
+@@ -16,13 +16,15 @@ TRACE_EVENT(rseq_update,
+ 
+ 	TP_STRUCT__entry(
+ 		__field(s32, cpu_id)
++		__field(s32, node_id)
+ 	),
+ 
+ 	TP_fast_assign(
+ 		__entry->cpu_id = raw_smp_processor_id();
++		__entry->node_id = cpu_to_node(raw_smp_processor_id());
+ 	),
+ 
+-	TP_printk("cpu_id=%d", __entry->cpu_id)
++	TP_printk("cpu_id=%d node_id=%d", __entry->cpu_id, __entry->node_id)
+ );
+ 
+ TRACE_EVENT(rseq_ip_fixup,
+diff --git a/include/uapi/linux/rseq.h b/include/uapi/linux/rseq.h
+index 77ee207623a9..006373a15ebe 100644
+--- a/include/uapi/linux/rseq.h
++++ b/include/uapi/linux/rseq.h
+@@ -13,9 +13,9 @@
+ #include <linux/types.h>
+ #include <asm/byteorder.h>
+ 
+-enum rseq_cpu_id_state {
+-	RSEQ_CPU_ID_UNINITIALIZED		= -1,
+-	RSEQ_CPU_ID_REGISTRATION_FAILED		= -2,
++enum rseq_id_state {
++	RSEQ_ID_UNINITIALIZED			= -1,
++	RSEQ_ID_REGISTRATION_FAILED		= -2,
+ };
+ 
+ enum rseq_flags {
+@@ -78,7 +78,7 @@ struct rseq {
+ 	 * Read by user-space with single-copy atomicity semantics. This
+ 	 * field should only be read by the thread which registered this
+ 	 * data structure. Aligned on 32-bit. Values
+-	 * RSEQ_CPU_ID_UNINITIALIZED and RSEQ_CPU_ID_REGISTRATION_FAILED
++	 * RSEQ_ID_UNINITIALIZED and RSEQ_ID_REGISTRATION_FAILED
+ 	 * have a special semantic: the former means "rseq uninitialized",
+ 	 * and latter means "rseq initialization failed". This value is
+ 	 * meant to be read within rseq critical sections and compared
+@@ -130,6 +130,52 @@ struct rseq {
+ 	 *     this thread.
+ 	 */
+ 	__u32 flags;
++
++	__u32 padding1[3];
++
++	/*
++	 * This is the end of the original rseq ABI.
++	 * This is a valid end of rseq ABI for the purpose of rseq registration
++	 * rseq_len.
++	 * The original rseq ABI use "sizeof(struct rseq)" on registration,
++	 * thus requiring the padding above.
++	 */
++
++	/*
++	 * Restartable sequences node_id_start field. Updated by the
++	 * kernel. Read by user-space with single-copy atomicity
++	 * semantics. This field should only be read by the thread which
++	 * registered this data structure. Aligned on 32-bit. Always
++	 * contains a value in the range of possible NUMA node IDs, although the
++	 * value may not be the actual current NUMA node ID (e.g. if rseq is not
++	 * initialized). This NUMA node ID number value should always be compared
++	 * against the value of the node_id field before performing a rseq
++	 * commit or returning a value read from a data structure indexed using
++	 * the node_id_start value.
++	 */
++	__u32 node_id_start;
++
++	/*
++	 * Restartable sequences node_id field. Updated by the kernel.
++	 * Read by user-space with single-copy atomicity semantics. This
++	 * field should only be read by the thread which registered this
++	 * data structure. Aligned on 32-bit. Values
++	 * RSEQ_ID_UNINITIALIZED and RSEQ_ID_REGISTRATION_FAILED
++	 * have a special semantic: the former means "rseq uninitialized",
++	 * and latter means "rseq initialization failed". This value is
++	 * meant to be read within rseq critical sections and compared
++	 * with the node_id_start value previously read, before performing
++	 * the commit instruction, or read and compared with the
++	 * node_id_start value before returning a value loaded from a data
++	 * structure indexed using the node_id_start value.
++	 */
++	__u32 node_id;
++
++	/*
++	 * This is a valid end of rseq ABI for the purpose of rseq registration
++	 * rseq_len. Use the offset immediately after the node_id field as
++	 * rseq_len.
++	 */
+ } __attribute__((aligned(4 * sizeof(__u64))));
+ 
+ #endif /* _UAPI_LINUX_RSEQ_H */
+diff --git a/kernel/ptrace.c b/kernel/ptrace.c
+index eea265082e97..f5edde5b7805 100644
+--- a/kernel/ptrace.c
++++ b/kernel/ptrace.c
+@@ -800,7 +800,7 @@ static long ptrace_get_rseq_configuration(struct task_struct *task,
+ {
+ 	struct ptrace_rseq_configuration conf = {
+ 		.rseq_abi_pointer = (u64)(uintptr_t)task->rseq,
+-		.rseq_abi_size = sizeof(*task->rseq),
++		.rseq_abi_size = task->rseq_len,
+ 		.signature = task->rseq_sig,
+ 		.flags = 0,
+ 	};
+diff --git a/kernel/rseq.c b/kernel/rseq.c
+index 97ac20b4f738..2381a8a1b90d 100644
+--- a/kernel/rseq.c
++++ b/kernel/rseq.c
+@@ -81,15 +81,27 @@
+  *   F1. <failure>
+  */
+ 
+-static int rseq_update_cpu_id(struct task_struct *t)
++static int rseq_update_cpu_node_id(struct task_struct *t)
+ {
+-	u32 cpu_id = raw_smp_processor_id();
+ 	struct rseq __user *rseq = t->rseq;
++	u32 cpu_id = raw_smp_processor_id();
++	u32 node_id;
+ 
+-	if (!user_write_access_begin(rseq, sizeof(*rseq)))
++	if (!user_write_access_begin(rseq, t->rseq_len))
+ 		goto efault;
+-	unsafe_put_user(cpu_id, &rseq->cpu_id_start, efault_end);
+-	unsafe_put_user(cpu_id, &rseq->cpu_id, efault_end);
++	switch (t->rseq_len) {
++	case offsetofend(struct rseq, node_id):
++		node_id = cpu_to_node(cpu_id);
++		unsafe_put_user(node_id, &rseq->node_id_start, efault_end);
++		unsafe_put_user(node_id, &rseq->node_id, efault_end);
++		fallthrough;
++	case offsetofend(struct rseq, padding1):
++		unsafe_put_user(cpu_id, &rseq->cpu_id_start, efault_end);
++		unsafe_put_user(cpu_id, &rseq->cpu_id, efault_end);
++		break;
++	default:
++		goto efault_end;
++	}
+ 	user_write_access_end();
+ 	trace_rseq_update(t);
+ 	return 0;
+@@ -100,22 +112,42 @@ static int rseq_update_cpu_id(struct task_struct *t)
+ 	return -EFAULT;
+ }
+ 
+-static int rseq_reset_rseq_cpu_id(struct task_struct *t)
++static int rseq_reset_rseq_cpu_node_id(struct task_struct *t)
+ {
+-	u32 cpu_id_start = 0, cpu_id = RSEQ_CPU_ID_UNINITIALIZED;
++	u32 id_start = 0, id = RSEQ_ID_UNINITIALIZED;
+ 
+-	/*
+-	 * Reset cpu_id_start to its initial state (0).
+-	 */
+-	if (put_user(cpu_id_start, &t->rseq->cpu_id_start))
+-		return -EFAULT;
+-	/*
+-	 * Reset cpu_id to RSEQ_CPU_ID_UNINITIALIZED, so any user coming
+-	 * in after unregistration can figure out that rseq needs to be
+-	 * registered again.
+-	 */
+-	if (put_user(cpu_id, &t->rseq->cpu_id))
+-		return -EFAULT;
++	switch (t->rseq_len) {
++	case offsetofend(struct rseq, node_id):
++		/*
++		 * Reset node_id_start to its initial state (0).
++		 */
++		if (put_user(id_start, &t->rseq->node_id_start))
++			return -EFAULT;
++		/*
++		 * Reset node_id to RSEQ_ID_UNINITIALIZED, so any user coming in after
++		 * unregistration can figure out that rseq needs to be registered
++		 * again.
++		 */
++		if (put_user(id, &t->rseq->node_id))
++			return -EFAULT;
++		fallthrough;
++	case offsetofend(struct rseq, padding1):
++		/*
++		 * Reset cpu_id_start to its initial state (0).
++		 */
++		if (put_user(id_start, &t->rseq->cpu_id_start))
++			return -EFAULT;
++		/*
++		 * Reset cpu_id to RSEQ_ID_UNINITIALIZED, so any user coming in after
++		 * unregistration can figure out that rseq needs to be registered
++		 * again.
++		 */
++		if (put_user(id, &t->rseq->cpu_id))
++			return -EFAULT;
++		break;
++	default:
++		return -EINVAL;
++	}
+ 	return 0;
+ }
+ 
+@@ -293,7 +325,7 @@ void __rseq_handle_notify_resume(struct ksignal *ksig, struct pt_regs *regs)
+ 		if (unlikely(ret < 0))
+ 			goto error;
+ 	}
+-	if (unlikely(rseq_update_cpu_id(t)))
++	if (unlikely(rseq_update_cpu_node_id(t)))
+ 		goto error;
+ 	return;
+ 
+@@ -336,15 +368,16 @@ SYSCALL_DEFINE4(rseq, struct rseq __user *, rseq, u32, rseq_len,
+ 		/* Unregister rseq for current thread. */
+ 		if (current->rseq != rseq || !current->rseq)
+ 			return -EINVAL;
+-		if (rseq_len != sizeof(*rseq))
++		if (rseq_len != current->rseq_len)
+ 			return -EINVAL;
+ 		if (current->rseq_sig != sig)
+ 			return -EPERM;
+-		ret = rseq_reset_rseq_cpu_id(current);
++		ret = rseq_reset_rseq_cpu_node_id(current);
+ 		if (ret)
+ 			return ret;
+ 		current->rseq = NULL;
+ 		current->rseq_sig = 0;
++		current->rseq_len = 0;
+ 		return 0;
+ 	}
+ 
+@@ -357,7 +390,7 @@ SYSCALL_DEFINE4(rseq, struct rseq __user *, rseq, u32, rseq_len,
+ 		 * the provided address differs from the prior
+ 		 * one.
+ 		 */
+-		if (current->rseq != rseq || rseq_len != sizeof(*rseq))
++		if (current->rseq != rseq || rseq_len != current->rseq_len)
+ 			return -EINVAL;
+ 		if (current->rseq_sig != sig)
+ 			return -EPERM;
+@@ -369,12 +402,20 @@ SYSCALL_DEFINE4(rseq, struct rseq __user *, rseq, u32, rseq_len,
+ 	 * If there was no rseq previously registered,
+ 	 * ensure the provided rseq is properly aligned and valid.
+ 	 */
+-	if (!IS_ALIGNED((unsigned long)rseq, __alignof__(*rseq)) ||
+-	    rseq_len != sizeof(*rseq))
++	if (!IS_ALIGNED((unsigned long)rseq, __alignof__(*rseq)))
+ 		return -EINVAL;
++	switch (rseq_len) {
++	case offsetofend(struct rseq, node_id):
++		fallthrough;
++	case offsetofend(struct rseq, padding1):
++		break;
++	default:
++		return -EINVAL;
++	}
+ 	if (!access_ok(rseq, rseq_len))
+ 		return -EFAULT;
+ 	current->rseq = rseq;
++	current->rseq_len = rseq_len;
+ 	current->rseq_sig = sig;
+ 	/*
+ 	 * If rseq was previously inactive, and has just been
+-- 
+2.17.1
+
