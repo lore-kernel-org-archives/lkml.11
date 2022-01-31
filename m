@@ -2,49 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 427B7C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD0ADC4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:10:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359798AbiAaLH5 (ORCPT
+        id S1359852AbiAaLIB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:07:57 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:52344 "EHLO
+        Mon, 31 Jan 2022 06:08:01 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:52380 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359139AbiAaLE0 (ORCPT
+        with ESMTP id S1348720AbiAaLE3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:04:26 -0500
+        Mon, 31 Jan 2022 06:04:29 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0C64CB82A66;
-        Mon, 31 Jan 2022 11:04:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3DB6C340E8;
-        Mon, 31 Jan 2022 11:04:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 195CFB82A6A;
+        Mon, 31 Jan 2022 11:04:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FF9DC340E8;
+        Mon, 31 Jan 2022 11:04:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627063;
-        bh=vyg+4TvZoYeDggdG1JwpcL5LTHe6BlggCSP8GiUcu2Y=;
+        s=korg; t=1643627066;
+        bh=yvLfEvfM1S9QsM+cfwQvHnI2a+N1nMMw0orbNRBlg70=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yZ1iW3TZw1Xzic6TNXsGXRMMhQogk6YsekQyG9NOgAxbrj3G6mOkoAUAdITsWXVD4
-         Ia/4Ux/7Zv6SOJZV00Cia8v4CgGK8odAdSjsnMhh8IXpaqvE2fI6cv+wn67cpLQUQL
-         bkdyBy6QGSaStv4uaoArMQQZWvNPzTNQyGEh3d3E=
+        b=OalX7TuzZJS31C/q0j6S7L0y2RdnmoERvSVQ/ZcCONrD044hb/6JSMFxeyv0/9hSI
+         H98xKYv1RVAgDMwkkiWDWk4mKM9piNDYmYJaO8GDzHKl8Fq2Ne/Exy5b5FyUOud7n8
+         CGD7xe+GCnBzgonBZqFCuUxdEB5rsdcRNlb0xv70=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joseph Qi <joseph.qi@linux.alibaba.com>,
-        Gautham Ananthakrishna <gautham.ananthakrishna@oracle.com>,
-        Saeed Mirzamohammadi <saeed.mirzamohammadi@oracle.com>,
-        "Theodore Tso" <tytso@mit.edu>,
-        Andreas Dilger <adilger.kernel@dilger.ca>,
-        Changwei Ge <gechangwei@live.cn>, Gang He <ghe@suse.com>,
-        Joel Becker <jlbec@evilplan.org>,
-        Jun Piao <piaojun@huawei.com>,
-        Junxiao Bi <junxiao.bi@oracle.com>,
-        Mark Fasheh <mark@fasheh.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.10 036/100] ocfs2: fix a deadlock when commit trans
-Date:   Mon, 31 Jan 2022 11:55:57 +0100
-Message-Id: <20220131105221.661935365@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Subject: [PATCH 5.10 063/100] drm/msm/dsi: Fix missing put_device() call in dsi_get_phy
+Date:   Mon, 31 Jan 2022 11:56:24 +0100
+Message-Id: <20220131105222.554006644@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
 References: <20220131105220.424085452@linuxfoundation.org>
@@ -56,87 +46,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joseph Qi <joseph.qi@linux.alibaba.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit ddf4b773aa40790dfa936bd845c18e735a49c61c upstream.
+commit c04c3148ca12227d92f91b355b4538cc333c9922 upstream.
 
-commit 6f1b228529ae introduces a regression which can deadlock as
-follows:
+If of_find_device_by_node() succeeds, dsi_get_phy() doesn't
+a corresponding put_device(). Thus add put_device() to fix the exception
+handling.
 
-  Task1:                              Task2:
-  jbd2_journal_commit_transaction     ocfs2_test_bg_bit_allocatable
-  spin_lock(&jh->b_state_lock)        jbd_lock_bh_journal_head
-  __jbd2_journal_remove_checkpoint    spin_lock(&jh->b_state_lock)
-  jbd2_journal_put_journal_head
-  jbd_lock_bh_journal_head
-
-Task1 and Task2 lock bh->b_state and jh->b_state_lock in different
-order, which finally result in a deadlock.
-
-So use jbd2_journal_[grab|put]_journal_head instead in
-ocfs2_test_bg_bit_allocatable() to fix it.
-
-Link: https://lkml.kernel.org/r/20220121071205.100648-3-joseph.qi@linux.alibaba.com
-Fixes: 6f1b228529ae ("ocfs2: fix race between searching chunks and release journal_head from buffer_head")
-Signed-off-by: Joseph Qi <joseph.qi@linux.alibaba.com>
-Reported-by: Gautham Ananthakrishna <gautham.ananthakrishna@oracle.com>
-Tested-by: Gautham Ananthakrishna <gautham.ananthakrishna@oracle.com>
-Reported-by: Saeed Mirzamohammadi <saeed.mirzamohammadi@oracle.com>
-Cc: "Theodore Ts'o" <tytso@mit.edu>
-Cc: Andreas Dilger <adilger.kernel@dilger.ca>
-Cc: Changwei Ge <gechangwei@live.cn>
-Cc: Gang He <ghe@suse.com>
-Cc: Joel Becker <jlbec@evilplan.org>
-Cc: Jun Piao <piaojun@huawei.com>
-Cc: Junxiao Bi <junxiao.bi@oracle.com>
-Cc: Mark Fasheh <mark@fasheh.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: ec31abf ("drm/msm/dsi: Separate PHY to another platform device")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Link: https://lore.kernel.org/r/20211230070943.18116-1-linmq006@gmail.com
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ocfs2/suballoc.c |   25 +++++++++++--------------
- 1 file changed, 11 insertions(+), 14 deletions(-)
+ drivers/gpu/drm/msm/dsi/dsi.c |    7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
---- a/fs/ocfs2/suballoc.c
-+++ b/fs/ocfs2/suballoc.c
-@@ -1253,26 +1253,23 @@ static int ocfs2_test_bg_bit_allocatable
- {
- 	struct ocfs2_group_desc *bg = (struct ocfs2_group_desc *) bg_bh->b_data;
- 	struct journal_head *jh;
--	int ret = 1;
-+	int ret;
+--- a/drivers/gpu/drm/msm/dsi/dsi.c
++++ b/drivers/gpu/drm/msm/dsi/dsi.c
+@@ -33,7 +33,12 @@ static int dsi_get_phy(struct msm_dsi *m
  
- 	if (ocfs2_test_bit(nr, (unsigned long *)bg->bg_bitmap))
- 		return 0;
+ 	of_node_put(phy_node);
  
--	if (!buffer_jbd(bg_bh))
-+	jh = jbd2_journal_grab_journal_head(bg_bh);
-+	if (!jh)
- 		return 1;
- 
--	jbd_lock_bh_journal_head(bg_bh);
--	if (buffer_jbd(bg_bh)) {
--		jh = bh2jh(bg_bh);
--		spin_lock(&jh->b_state_lock);
--		bg = (struct ocfs2_group_desc *) jh->b_committed_data;
--		if (bg)
--			ret = !ocfs2_test_bit(nr, (unsigned long *)bg->bg_bitmap);
--		else
--			ret = 1;
--		spin_unlock(&jh->b_state_lock);
--	}
--	jbd_unlock_bh_journal_head(bg_bh);
-+	spin_lock(&jh->b_state_lock);
-+	bg = (struct ocfs2_group_desc *) jh->b_committed_data;
-+	if (bg)
-+		ret = !ocfs2_test_bit(nr, (unsigned long *)bg->bg_bitmap);
-+	else
-+		ret = 1;
-+	spin_unlock(&jh->b_state_lock);
-+	jbd2_journal_put_journal_head(jh);
- 
- 	return ret;
- }
+-	if (!phy_pdev || !msm_dsi->phy) {
++	if (!phy_pdev) {
++		DRM_DEV_ERROR(&pdev->dev, "%s: phy driver is not ready\n", __func__);
++		return -EPROBE_DEFER;
++	}
++	if (!msm_dsi->phy) {
++		put_device(&phy_pdev->dev);
+ 		DRM_DEV_ERROR(&pdev->dev, "%s: phy driver is not ready\n", __func__);
+ 		return -EPROBE_DEFER;
+ 	}
 
 
