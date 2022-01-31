@@ -2,41 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84865C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:16:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D387C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:16:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359085AbiAaLQQ (ORCPT
+        id S1376771AbiAaLQX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:16:16 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:42854 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376945AbiAaLJX (ORCPT
+        Mon, 31 Jan 2022 06:16:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44628 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1376987AbiAaLJ0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:09:23 -0500
+        Mon, 31 Jan 2022 06:09:26 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DC02C061777;
+        Mon, 31 Jan 2022 03:06:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 51BE860E76;
-        Mon, 31 Jan 2022 11:09:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A95DC340E8;
-        Mon, 31 Jan 2022 11:09:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BE9D2B82A74;
+        Mon, 31 Jan 2022 11:06:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBAE1C340E8;
+        Mon, 31 Jan 2022 11:06:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627362;
-        bh=lAg1e2oPaAdy0h+YKy48zIGdGuDhjdDaxDk/g/xpYQ4=;
+        s=korg; t=1643627166;
+        bh=rzVO/2az8f+goj1WhpUhD/OCjQLJr0nUHjFRc4YWh50=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xz/puXsFDxe0sVT6MkVbvMnova+LdH36U2opbMOXa/Brli1uh0pOcwCT/xd3mjIvo
-         XSEEH/RbEfOz9xk4Brty3Fv75JhrxU9KX8TBaTFTc3t2O5t4GQ+Ax6iXICbT+fnSoZ
-         LE3Eoo/MqUy6hN+lQKCRpydYp24zb/OUmGGXqS0I=
+        b=2Bph26F41TfSnzYw23FKKA4VPFRAUUSlGoQERZPo6WMB3QNr0yBKc0/AGy2VRR8nJ
+         eimDSrKjOmz8UxGQ3PjCH+QQr/XQFcTDACE0lsPVXZgeLAVVWexoA6tAFn+7a2dOz4
+         1BqHXx/5zXWQK6gdvDyDOFUo9EEsztun0BnyegOY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>
-Subject: [PATCH 5.15 058/171] usb: dwc3: xilinx: Skip resets and USB3 register settings for USB2.0 mode
-Date:   Mon, 31 Jan 2022 11:55:23 +0100
-Message-Id: <20220131105231.989823795@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 095/100] ipv4: remove sparse error in ip_neigh_gw4()
+Date:   Mon, 31 Jan 2022 11:56:56 +0100
+Message-Id: <20220131105223.645251314@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
-References: <20220131105229.959216821@linuxfoundation.org>
+In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
+References: <20220131105220.424085452@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -45,56 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hancock <robert.hancock@calian.com>
+From: Eric Dumazet <edumazet@google.com>
 
-commit 9678f3361afc27a3124cd2824aec0227739986fb upstream.
+[ Upstream commit 3c42b2019863b327caa233072c50739d4144dd16 ]
 
-It appears that the PIPE clock should not be selected when only USB 2.0
-is being used in the design and no USB 3.0 reference clock is used.
-Also, the core resets are not required if a USB3 PHY is not in use, and
-will break things if USB3 is actually used but the PHY entry is not
-listed in the device tree.
+./include/net/route.h:373:48: warning: incorrect type in argument 2 (different base types)
+./include/net/route.h:373:48:    expected unsigned int [usertype] key
+./include/net/route.h:373:48:    got restricted __be32 [usertype] daddr
 
-Skip core resets and register settings that are only required for
-USB3 mode when no USB3 PHY is specified in the device tree.
-
-Fixes: 84770f028fab ("usb: dwc3: Add driver for Xilinx platforms")
-Cc: stable <stable@vger.kernel.org>
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Link: https://lore.kernel.org/r/20220126000253.1586760-2-robert.hancock@calian.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 5c9f7c1dfc2e ("ipv4: Add helpers for neigh lookup for nexthop")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Link: https://lore.kernel.org/r/20220127013404.1279313-1-eric.dumazet@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/dwc3/dwc3-xilinx.c |   13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ include/net/route.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/usb/dwc3/dwc3-xilinx.c
-+++ b/drivers/usb/dwc3/dwc3-xilinx.c
-@@ -110,6 +110,18 @@ static int dwc3_xlnx_init_zynqmp(struct
- 		usb3_phy = NULL;
- 	}
+diff --git a/include/net/route.h b/include/net/route.h
+index ff021cab657e5..a07c277cd33e8 100644
+--- a/include/net/route.h
++++ b/include/net/route.h
+@@ -369,7 +369,7 @@ static inline struct neighbour *ip_neigh_gw4(struct net_device *dev,
+ {
+ 	struct neighbour *neigh;
  
-+	/*
-+	 * The following core resets are not required unless a USB3 PHY
-+	 * is used, and the subsequent register settings are not required
-+	 * unless a core reset is performed (they should be set properly
-+	 * by the first-stage boot loader, but may be reverted by a core
-+	 * reset). They may also break the configuration if USB3 is actually
-+	 * in use but the usb3-phy entry is missing from the device tree.
-+	 * Therefore, skip these operations in this case.
-+	 */
-+	if (!usb3_phy)
-+		goto skip_usb3_phy;
-+
- 	crst = devm_reset_control_get_exclusive(dev, "usb_crst");
- 	if (IS_ERR(crst)) {
- 		ret = PTR_ERR(crst);
-@@ -188,6 +200,7 @@ static int dwc3_xlnx_init_zynqmp(struct
- 		goto err;
- 	}
+-	neigh = __ipv4_neigh_lookup_noref(dev, daddr);
++	neigh = __ipv4_neigh_lookup_noref(dev, (__force u32)daddr);
+ 	if (unlikely(!neigh))
+ 		neigh = __neigh_create(&arp_tbl, &daddr, dev, false);
  
-+skip_usb3_phy:
- 	/*
- 	 * This routes the USB DMA traffic to go through FPD path instead
- 	 * of reaching DDR directly. This traffic routing is needed to
+-- 
+2.34.1
+
 
 
