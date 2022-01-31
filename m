@@ -2,92 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18268C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 15:19:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3086BC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 15:20:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377812AbiAaPTo (ORCPT
+        id S1378872AbiAaPT7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 10:19:44 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:58280 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358630AbiAaPTk (ORCPT
+        Mon, 31 Jan 2022 10:19:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48306 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359325AbiAaPT4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 10:19:40 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 964086136E
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 15:19:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99572C340E8;
-        Mon, 31 Jan 2022 15:19:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643642380;
-        bh=U81rLjtR8IWf25YlfkzFt9hF10+zIQLW61njAr/UKkQ=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=LcMKN1a7e9Uw3CSgeFnrAQbtA21WcvH0Nn8y0UfSFiYYR0GBigo5Y+dlss2oK4IIq
-         UU9gg2u0WFpYZibW9LuMHXsVWCet5yd1j7EaP9tC8FKwcq9C/l8kcrnQzsRLaDaIJv
-         FgYzxi7MfY72iNyor0lhbgHzB3LCaiPPU7ApzW2JSWF/07OHL/Ixtz8dDfnC4pAjXu
-         RVqGrhTeu8LZ8MO/rAMeertOSRMvfZpGAKL4VpkeUesX2W91Iv1mt+bLI0licqIL6D
-         hJFwAPFvseu/SsZJgNtHTPaoBpBM8Zxj72y9N9y8QjPg93jACT7WBhdTp5edMdyOVl
-         CLZ3S25dkawUg==
-From:   Mark Brown <broonie@kernel.org>
-To:     linux-kernel@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>
-Cc:     Liam Girdwood <lgirdwood@gmail.com>, Takashi Iwai <tiwai@suse.com>,
-        Alejandro Tafalla <atafalla@dnyon.com>,
-        alsa-devel@alsa-project.org, kernel test robot <lkp@intel.com>
-In-Reply-To: <20220129080259.19964-1-rdunlap@infradead.org>
-References: <20220129080259.19964-1-rdunlap@infradead.org>
-Subject: Re: [PATCH] ASoC: max98927: add missing header file
-Message-Id: <164364237834.3159101.12950435355735915006.b4-ty@kernel.org>
-Date:   Mon, 31 Jan 2022 15:19:38 +0000
+        Mon, 31 Jan 2022 10:19:56 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F9BEC061714;
+        Mon, 31 Jan 2022 07:19:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=X5Q5MeJDTPKbLPeAN2MtOT5sSDrTeYy1qnQ5DDAxIaY=; b=tweIhqfFo7IPJLtRc+U6X4zRG/
+        yGm17K8r35WfAR1Z3Pp5jZxTwu9pS7l19D8MHHoo5lF5gnMczM/vo5M83IEWaQh8VV5t3juB2KeUi
+        FosS5h8/Iy9TMCHzNWSo1qVBt8JU+YzraXxCN5TExHIZ1HqlVL5IcM6O61ZztEHlFHrtqIbHmwcT9
+        wIR367tJqAZz5kaPc8FgVVfgeZhphtApIxBizRqkI+DK9dejx2UTl04bqKRd6F05qMYG8niBfwh0Q
+        RlDz4gojjsluqPiWShSfQRBoez5P6tZEIwL2XRyRrJN280TOC7AHKMqGn5gdCPBure6k7Mzj1qiDf
+        1AxoS7vQ==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nEYSg-00A1w0-Mx; Mon, 31 Jan 2022 15:19:22 +0000
+Date:   Mon, 31 Jan 2022 15:19:22 +0000
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Christian Brauner <brauner@kernel.org>
+Cc:     kernel test robot <oliver.sang@intel.com>,
+        Kees Cook <keescook@chromium.org>,
+        Ariadne Conill <ariadne@dereferenced.org>,
+        0day robot <lkp@intel.com>,
+        Michael Kerrisk <mtk.manpages@gmail.com>,
+        Rich Felker <dalias@libc.org>,
+        Eric Biederman <ebiederm@xmission.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        LKML <linux-kernel@vger.kernel.org>, lkp@lists.01.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+        stable@vger.kernel.org
+Subject: Re: [fs/exec]  80bd5afdd8: xfstests.generic.633.fail
+Message-ID: <Yff9+tIDAvYM5EO/@casper.infradead.org>
+References: <20220127000724.15106-1-ariadne@dereferenced.org>
+ <20220131144352.GE16385@xsang-OptiPlex-9020>
+ <20220131150819.iuqlz3rz6q7cheap@wittgenstein>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220131150819.iuqlz3rz6q7cheap@wittgenstein>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 29 Jan 2022 00:02:59 -0800, Randy Dunlap wrote:
-> Add a header file that provides the missing function prototypes
-> and macro to fix these build errors (seen on arch/alpha/):
+On Mon, Jan 31, 2022 at 04:08:19PM +0100, Christian Brauner wrote:
+> On Mon, Jan 31, 2022 at 10:43:52PM +0800, kernel test robot wrote:
+> I can fix this rather simply in our upstream fstests with:
 > 
-> ../sound/soc/codecs/max98927.c: In function 'max98927_i2c_probe':
-> ../sound/soc/codecs/max98927.c:902:19: error: implicit declaration of function 'devm_gpiod_get_optional'; did you mean 'devm_regulator_get_optional'? [-Werror=implicit-function-declaration]
->   902 |                 = devm_gpiod_get_optional(&i2c->dev, "reset", GPIOD_OUT_HIGH);
->       |                   ^~~~~~~~~~~~~~~~~~~~~~~
-> ../sound/soc/codecs/max98927.c:902:63: error: 'GPIOD_OUT_HIGH' undeclared (first use in this function); did you mean 'GPIOF_INIT_HIGH'?
->   902 |                 = devm_gpiod_get_optional(&i2c->dev, "reset", GPIOD_OUT_HIGH);
->       |                                                               ^~~~~~~~~~~~~~
-> ../sound/soc/codecs/max98927.c:909:17: error: implicit declaration of function 'gpiod_set_value_cansleep'; did you mean 'gpio_set_value_cansleep'? [-Werror=implicit-function-declaration]
->   909 |                 gpiod_set_value_cansleep(max98927->reset_gpio, 0);
->       |                 ^~~~~~~~~~~~~~~~~~~~~~~~
+> static char *argv[] = {
+> 	"",
+> };
 > 
-> [...]
+> I guess.
+> 
+> But doesn't
+> 
+> static char *argv[] = {
+> 	NULL,
+> };
+> 
+> seem something that should work especially with execveat()?
 
-Applied to
-
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
-
-Thanks!
-
-[1/1] ASoC: max98927: add missing header file
-      commit: bb45f689fa62110c263c86070bfcb9ecbb6e1e23
-
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
+The problem is that the exec'ed program sees an argc of 0, which is the
+problem we're trying to work around in the kernel (instead of leaving
+it to ld.so to fix for suid programs).
