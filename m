@@ -2,42 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2EC0C41535
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:24:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F375C3525A
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:24:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378352AbiAaLYC (ORCPT
+        id S1378396AbiAaLYE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:24:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46500 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359257AbiAaLOp (ORCPT
+        Mon, 31 Jan 2022 06:24:04 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:48256 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359406AbiAaLOt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:14:45 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 688ACC06176C;
-        Mon, 31 Jan 2022 03:11:10 -0800 (PST)
+        Mon, 31 Jan 2022 06:14:49 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 26871B82A60;
-        Mon, 31 Jan 2022 11:11:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 407F1C340E8;
-        Mon, 31 Jan 2022 11:11:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 27BDA611C1;
+        Mon, 31 Jan 2022 11:14:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03D9DC340E8;
+        Mon, 31 Jan 2022 11:14:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627467;
-        bh=cyrUHQ/bV6GZ/AT9V/xmKq9w0SJfnB1JiyEl7DchvfA=;
+        s=korg; t=1643627688;
+        bh=DoZ1E/+8ix+OgIbNqPUNVDPpuSpcbXv83pH9UB60g/M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z58zNE/xjGc/PN06cjkts+c1kpTlZ/SBEvBUuGmtoVIOSJ5xjTv/5cWkxGwCyjDqm
-         3pa+9r+W01m1j3MtIDBIq43ah9CihHyZMd54WTRhp72aGkv5GK+o21mHCFgvBAoYdC
-         r26qFq1Yv9J1qALKLfemGmsRgFPyERURNtzPDYtc=
+        b=OHrt6u8hIacXkOzYDfU83Yv0g8uQBj3o+4Qv1fQ+0PD3gkV09T7L6eUGpfY103LHD
+         kB3Oid/wHoEBbuYbdGkdPiQn91jmBXznzD6FAfIdRF4ZIzfpT3I3LL7aAuHi5I0oAW
+         Gw+d8FoN/PdRhj7vFbqOo7obo1LncxLTQNTLoNA8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 092/171] hwmon: (lm90) Reduce maximum conversion rate for G781
-Date:   Mon, 31 Jan 2022 11:55:57 +0100
-Message-Id: <20220131105233.150430682@linuxfoundation.org>
+        stable@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 5.15 164/171] dt-bindings: can: tcan4x5x: fix mram-cfg RX FIFO config
+Date:   Mon, 31 Jan 2022 11:57:09 +0100
+Message-Id: <20220131105235.555394997@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
 References: <20220131105229.959216821@linuxfoundation.org>
@@ -49,39 +45,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guenter Roeck <linux@roeck-us.net>
+From: Marc Kleine-Budde <mkl@pengutronix.de>
 
-[ Upstream commit a66c5ed539277b9f2363bbace0dba88b85b36c26 ]
+commit 17a30422621c0e04cb6060d20d7edcefd7463347 upstream.
 
-According to its datasheet, G781 supports a maximum conversion rate value
-of 8 (62.5 ms). However, chips labeled G781 and G780 were found to only
-support a maximum conversion rate value of 7 (125 ms). On the other side,
-chips labeled G781-1 and G784 were found to support a conversion rate value
-of 8. There is no known means to distinguish G780 from G781 or G784; all
-chips report the same manufacturer ID and chip revision.
-Setting the conversion rate register value to 8 on chips not supporting
-it causes unexpected behavior since the real conversion rate is set to 0
-(16 seconds) if a value of 8 is written into the conversion rate register.
-Limit the conversion rate register value to 7 for all G78x chips to avoid
-the problem.
+This tcan4x5x only comes with 2K of MRAM, a RX FIFO with a dept of 32
+doesn't fit into the MRAM. Use a depth of 16 instead.
 
-Fixes: ae544f64cc7b ("hwmon: (lm90) Add support for GMT G781")
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 4edd396a1911 ("dt-bindings: can: tcan4x5x: Add DT bindings for TCAN4x5X driver")
+Link: https://lore.kernel.org/all/20220119062951.2939851-1-mkl@pengutronix.de
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hwmon/lm90.c |    2 +-
+ Documentation/devicetree/bindings/net/can/tcan4x5x.txt |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/hwmon/lm90.c
-+++ b/drivers/hwmon/lm90.c
-@@ -373,7 +373,7 @@ static const struct lm90_params lm90_par
- 		.flags = LM90_HAVE_OFFSET | LM90_HAVE_REM_LIMIT_EXT
- 		  | LM90_HAVE_BROKEN_ALERT | LM90_HAVE_CRIT,
- 		.alert_alarms = 0x7c,
--		.max_convrate = 8,
-+		.max_convrate = 7,
- 	},
- 	[lm86] = {
- 		.flags = LM90_HAVE_OFFSET | LM90_HAVE_REM_LIMIT_EXT
+--- a/Documentation/devicetree/bindings/net/can/tcan4x5x.txt
++++ b/Documentation/devicetree/bindings/net/can/tcan4x5x.txt
+@@ -31,7 +31,7 @@ tcan4x5x: tcan4x5x@0 {
+ 		#address-cells = <1>;
+ 		#size-cells = <1>;
+ 		spi-max-frequency = <10000000>;
+-		bosch,mram-cfg = <0x0 0 0 32 0 0 1 1>;
++		bosch,mram-cfg = <0x0 0 0 16 0 0 1 1>;
+ 		interrupt-parent = <&gpio1>;
+ 		interrupts = <14 IRQ_TYPE_LEVEL_LOW>;
+ 		device-state-gpios = <&gpio3 21 GPIO_ACTIVE_HIGH>;
 
 
