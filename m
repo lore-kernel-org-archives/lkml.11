@@ -2,78 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12B32C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB3FEC4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378921AbiAaL3f (ORCPT
+        id S1379113AbiAaL3s (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:29:35 -0500
-Received: from foss.arm.com ([217.140.110.172]:47680 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1378380AbiAaLUG (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:20:06 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9BB62D6E;
-        Mon, 31 Jan 2022 03:20:04 -0800 (PST)
-Received: from FVFF7649Q05P (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E600C3F774;
-        Mon, 31 Jan 2022 03:20:02 -0800 (PST)
-Date:   Mon, 31 Jan 2022 11:19:57 +0000
-From:   Vincent Donnefort <vincent.donnefort@arm.com>
-To:     Yury Norov <yury.norov@gmail.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Yuan ZhaoXiong <yuanzhaoxiong@baidu.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        linux-ia64@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] kernel/cpu.c: fix init_cpu_online
-Message-ID: <YffF3e+uUIDVO7hm@FVFF7649Q05P>
-References: <20220131014648.941629-1-yury.norov@gmail.com>
+        Mon, 31 Jan 2022 06:29:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47324 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1378547AbiAaLUV (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 06:20:21 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB5FCC0604D3;
+        Mon, 31 Jan 2022 03:12:38 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7A5E0B82A61;
+        Mon, 31 Jan 2022 11:12:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 978B3C340E8;
+        Mon, 31 Jan 2022 11:12:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643627556;
+        bh=fSaPjkaBX8uP1JANbpgChwr8VuMwKXYx2urdUv8ufbs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=UPHwvoXw0950FT4lIud/n9O80v7lfH3+cDFDp3qevCzpcNjlqeWuhFjdM6TszQj2X
+         2bhf927yxc3ID/NXjhNkmRjRDJfrJSVtu47yyMJ9Pq/HDDY/Z6ixS6kurTmUUfTlQF
+         TKy6zzFM3K1H+pz3p8NKnjKUHV/ON+q5HzrLM2bc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Geetha sowjanya <gakula@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 122/171] octeontx2-af: Retry until RVU block reset complete
+Date:   Mon, 31 Jan 2022 11:56:27 +0100
+Message-Id: <20220131105234.165213139@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
+References: <20220131105229.959216821@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220131014648.941629-1-yury.norov@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Yury,
+From: Geetha sowjanya <gakula@marvell.com>
 
-On Sun, Jan 30, 2022 at 05:46:48PM -0800, Yury Norov wrote:
-> cpu_online_mask has an associate counter of online cpus, which must be
-> initialized in init_cpu_online().
-> 
-> Fixes: 0c09ab96fc82010 (cpu/hotplug: Cache number of online CPUs)
+[ Upstream commit 03ffbc9914bd1130fba464f0a41c01372e5fc359 ]
 
-Aren't the increments/decrements from set_cpu_online() enough?
+Few RVU blocks like SSO require more time for reset on some
+silicons. Hence retrying the block reset until success.
 
-I guess we could argue that this isn't a private function and the
-num_online_cpus should be updated here. But unless I missed something,
-init_cpu_online() is only called in ia64 arch, in the !SMP case. Is
-this the problem you're trying to tackle? If not, I'm not sure that warrants a
-"Fixes:" tag
+Fixes: c0fa2cff8822c ("octeontx2-af: Handle return value in block reset")
+Signed-off-by: Geetha sowjanya <gakula@marvell.com>
+Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
+Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/marvell/octeontx2/af/rvu.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-> Signed-off-by: Yury Norov <yury.norov@gmail.com>
-> ---
->  kernel/cpu.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/kernel/cpu.c b/kernel/cpu.c
-> index 407a2568f35e..cd7605204d4d 100644
-> --- a/kernel/cpu.c
-> +++ b/kernel/cpu.c
-> @@ -2616,6 +2616,7 @@ void init_cpu_possible(const struct cpumask *src)
->  void init_cpu_online(const struct cpumask *src)
->  {
->  	cpumask_copy(&__cpu_online_mask, src);
-> +	atomic_set(&__num_online_cpus, cpumask_weight(cpu_online_mask));
->  }
->  
->  void set_cpu_online(unsigned int cpu, bool online)
-> -- 
-> 2.30.2
-> 
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
+index 90dc5343827f0..11ef46e72ddd9 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
+@@ -520,8 +520,11 @@ static void rvu_block_reset(struct rvu *rvu, int blkaddr, u64 rst_reg)
+ 
+ 	rvu_write64(rvu, blkaddr, rst_reg, BIT_ULL(0));
+ 	err = rvu_poll_reg(rvu, blkaddr, rst_reg, BIT_ULL(63), true);
+-	if (err)
+-		dev_err(rvu->dev, "HW block:%d reset failed\n", blkaddr);
++	if (err) {
++		dev_err(rvu->dev, "HW block:%d reset timeout retrying again\n", blkaddr);
++		while (rvu_poll_reg(rvu, blkaddr, rst_reg, BIT_ULL(63), true) == -EBUSY)
++			;
++	}
+ }
+ 
+ static void rvu_reset_all_blocks(struct rvu *rvu)
+-- 
+2.34.1
+
+
+
