@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0861C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C33A0C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378848AbiAaL3X (ORCPT
+        id S1379304AbiAaLaI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:29:23 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:35518 "EHLO
+        Mon, 31 Jan 2022 06:30:08 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:38800 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378080AbiAaLTm (ORCPT
+        with ESMTP id S1378643AbiAaLU3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:19:42 -0500
+        Mon, 31 Jan 2022 06:20:29 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B08DAB82A60;
-        Mon, 31 Jan 2022 11:19:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8124C340E8;
-        Mon, 31 Jan 2022 11:19:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CAD39B82A5F;
+        Mon, 31 Jan 2022 11:20:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DC4FC340E8;
+        Mon, 31 Jan 2022 11:20:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627980;
-        bh=I2vpxdTzHoTigqEtBiKo4GOPjxCVeueE+HHjONE84zs=;
+        s=korg; t=1643628026;
+        bh=H00JqvcwE+aJdMiKSVRw4C4MJbhqvDKHOMD9NAStzEU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I9WALWUYl3Jr4Npo5/WaLCDHOXBByirxWO5TccuvbqAnK0ixM/7p6f+CwNGXIlJkm
-         9TY+facm8PG+ovA0ci8PwDQXbRbls5yiw+dZqfisDPGyvkjmHhnrkcMkfq3ayHotg3
-         aE2D12NL5umF9c3zSb7rlEg4yAFx1hUaZ7AJK5i0=
+        b=ix49I0fSrsyGw+A7mdrIBWarRSpoBKaa4HebnA6zwYCLHPm5dHM2Oq3MwRcOy85Io
+         SesTpYW5aQWK493R1S1aRdE2bHHTQ23b5dFfbZ6ub1abrK04uOArh9sDJU6AaF3Jsa
+         Xiy3xXacFEdkZb4Kp+LFqEQ5loNRp/OoRDFTmLDA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nicholas Piggin <npiggin@gmail.com>,
-        Fabiano Rosas <farosas@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.16 059/200] KVM: PPC: Book3S HV Nested: Fix nested HFSCR being clobbered with multiple vCPUs
-Date:   Mon, 31 Jan 2022 11:55:22 +0100
-Message-Id: <20220131105235.561395235@linuxfoundation.org>
+        stable@vger.kernel.org, Sujit Kautkar <sujitka@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Stephen Boyd <swboyd@chromium.org>
+Subject: [PATCH 5.16 102/200] rpmsg: char: Fix race between the release of rpmsg_ctrldev and cdev
+Date:   Mon, 31 Jan 2022 11:56:05 +0100
+Message-Id: <20220131105237.020074925@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -47,80 +49,112 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicholas Piggin <npiggin@gmail.com>
+From: Sujit Kautkar <sujitka@chromium.org>
 
-commit 22f7ff0dea9491e90b6fe808ed40c30bd791e5c2 upstream.
+commit b7fb2dad571d1e21173c06cef0bced77b323990a upstream.
 
-The L0 is storing HFSCR requested by the L1 for the L2 in struct
-kvm_nested_guest when the L1 requests a vCPU enter L2. kvm_nested_guest
-is not a per-vCPU structure. Hilarity ensues.
+struct rpmsg_ctrldev contains a struct cdev. The current code frees
+the rpmsg_ctrldev struct in rpmsg_ctrldev_release_device(), but the
+cdev is a managed object, therefore its release is not predictable
+and the rpmsg_ctrldev could be freed before the cdev is entirely
+released, as in the backtrace below.
 
-Fix it by moving the nested hfscr into the vCPU structure together with
-the other per-vCPU nested fields.
+[   93.625603] ODEBUG: free active (active state 0) object type: timer_list hint: delayed_work_timer_fn+0x0/0x7c
+[   93.636115] WARNING: CPU: 0 PID: 12 at lib/debugobjects.c:488 debug_print_object+0x13c/0x1b0
+[   93.644799] Modules linked in: veth xt_cgroup xt_MASQUERADE rfcomm algif_hash algif_skcipher af_alg uinput ip6table_nat fuse uvcvideo videobuf2_vmalloc venus_enc venus_dec videobuf2_dma_contig hci_uart btandroid btqca snd_soc_rt5682_i2c bluetooth qcom_spmi_temp_alarm snd_soc_rt5682v
+[   93.715175] CPU: 0 PID: 12 Comm: kworker/0:1 Tainted: G    B             5.4.163-lockdep #26
+[   93.723855] Hardware name: Google Lazor (rev3 - 8) with LTE (DT)
+[   93.730055] Workqueue: events kobject_delayed_cleanup
+[   93.735271] pstate: 60c00009 (nZCv daif +PAN +UAO)
+[   93.740216] pc : debug_print_object+0x13c/0x1b0
+[   93.744890] lr : debug_print_object+0x13c/0x1b0
+[   93.749555] sp : ffffffacf5bc7940
+[   93.752978] x29: ffffffacf5bc7940 x28: dfffffd000000000
+[   93.758448] x27: ffffffacdb11a800 x26: dfffffd000000000
+[   93.763916] x25: ffffffd0734f856c x24: dfffffd000000000
+[   93.769389] x23: 0000000000000000 x22: ffffffd0733c35b0
+[   93.774860] x21: ffffffd0751994a0 x20: ffffffd075ec27c0
+[   93.780338] x19: ffffffd075199100 x18: 00000000000276e0
+[   93.785814] x17: 0000000000000000 x16: dfffffd000000000
+[   93.791291] x15: ffffffffffffffff x14: 6e6968207473696c
+[   93.796768] x13: 0000000000000000 x12: ffffffd075e2b000
+[   93.802244] x11: 0000000000000001 x10: 0000000000000000
+[   93.807723] x9 : d13400dff1921900 x8 : d13400dff1921900
+[   93.813200] x7 : 0000000000000000 x6 : 0000000000000000
+[   93.818676] x5 : 0000000000000080 x4 : 0000000000000000
+[   93.824152] x3 : ffffffd0732a0fa4 x2 : 0000000000000001
+[   93.829628] x1 : ffffffacf5bc7580 x0 : 0000000000000061
+[   93.835104] Call trace:
+[   93.837644]  debug_print_object+0x13c/0x1b0
+[   93.841963]  __debug_check_no_obj_freed+0x25c/0x3c0
+[   93.846987]  debug_check_no_obj_freed+0x18/0x20
+[   93.851669]  slab_free_freelist_hook+0xbc/0x1e4
+[   93.856346]  kfree+0xfc/0x2f4
+[   93.859416]  rpmsg_ctrldev_release_device+0x78/0xb8
+[   93.864445]  device_release+0x84/0x168
+[   93.868310]  kobject_cleanup+0x12c/0x298
+[   93.872356]  kobject_delayed_cleanup+0x10/0x18
+[   93.876948]  process_one_work+0x578/0x92c
+[   93.881086]  worker_thread+0x804/0xcf8
+[   93.884963]  kthread+0x2a8/0x314
+[   93.888303]  ret_from_fork+0x10/0x18
 
-Fixes: 8b210a880b35 ("KVM: PPC: Book3S HV Nested: Make nested HFSCR state accessible")
-Cc: stable@vger.kernel.org # v5.15+
-Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
-Reviewed-by: Fabiano Rosas <farosas@linux.ibm.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220122105530.3477250-1-npiggin@gmail.com
+The cdev_device_add/del() API was created to address this issue (see
+commit '233ed09d7fda ("chardev: add helper function to register char
+devs with a struct device")'), use it instead of cdev add/del().
+
+Fixes: c0cdc19f84a4 ("rpmsg: Driver for user space endpoint interface")
+Signed-off-by: Sujit Kautkar <sujitka@chromium.org>
+Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
+Reviewed-by: Mathieu Poirier <mathieu.poirier@linaro.org>
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220110104706.v6.1.Iaac908f3e3149a89190ce006ba166e2d3fd247a3@changeid
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/include/asm/kvm_book3s_64.h |    1 -
- arch/powerpc/include/asm/kvm_host.h      |    1 +
- arch/powerpc/kvm/book3s_hv.c             |    3 +--
- arch/powerpc/kvm/book3s_hv_nested.c      |    2 +-
- 4 files changed, 3 insertions(+), 4 deletions(-)
+ drivers/rpmsg/rpmsg_char.c |   11 ++---------
+ 1 file changed, 2 insertions(+), 9 deletions(-)
 
---- a/arch/powerpc/include/asm/kvm_book3s_64.h
-+++ b/arch/powerpc/include/asm/kvm_book3s_64.h
-@@ -39,7 +39,6 @@ struct kvm_nested_guest {
- 	pgd_t *shadow_pgtable;		/* our page table for this guest */
- 	u64 l1_gr_to_hr;		/* L1's addr of part'n-scoped table */
- 	u64 process_table;		/* process table entry for this guest */
--	u64 hfscr;			/* HFSCR that the L1 requested for this nested guest */
- 	long refcnt;			/* number of pointers to this struct */
- 	struct mutex tlb_lock;		/* serialize page faults and tlbies */
- 	struct kvm_nested_guest *next;
---- a/arch/powerpc/include/asm/kvm_host.h
-+++ b/arch/powerpc/include/asm/kvm_host.h
-@@ -814,6 +814,7 @@ struct kvm_vcpu_arch {
+--- a/drivers/rpmsg/rpmsg_char.c
++++ b/drivers/rpmsg/rpmsg_char.c
+@@ -459,7 +459,6 @@ static void rpmsg_ctrldev_release_device
  
- 	/* For support of nested guests */
- 	struct kvm_nested_guest *nested;
-+	u64 nested_hfscr;	/* HFSCR that the L1 requested for the nested guest */
- 	u32 nested_vcpu_id;
- 	gpa_t nested_io_gpr;
- #endif
---- a/arch/powerpc/kvm/book3s_hv.c
-+++ b/arch/powerpc/kvm/book3s_hv.c
-@@ -1731,7 +1731,6 @@ static int kvmppc_handle_exit_hv(struct
+ 	ida_simple_remove(&rpmsg_ctrl_ida, dev->id);
+ 	ida_simple_remove(&rpmsg_minor_ida, MINOR(dev->devt));
+-	cdev_del(&ctrldev->cdev);
+ 	kfree(ctrldev);
+ }
  
- static int kvmppc_handle_nested_exit(struct kvm_vcpu *vcpu)
- {
--	struct kvm_nested_guest *nested = vcpu->arch.nested;
- 	int r;
- 	int srcu_idx;
+@@ -494,19 +493,13 @@ static int rpmsg_chrdev_probe(struct rpm
+ 	dev->id = ret;
+ 	dev_set_name(&ctrldev->dev, "rpmsg_ctrl%d", ret);
  
-@@ -1831,7 +1830,7 @@ static int kvmppc_handle_nested_exit(str
- 		 * it into a HEAI.
- 		 */
- 		if (!(vcpu->arch.hfscr_permitted & (1UL << cause)) ||
--					(nested->hfscr & (1UL << cause))) {
-+				(vcpu->arch.nested_hfscr & (1UL << cause))) {
- 			vcpu->arch.trap = BOOK3S_INTERRUPT_H_EMUL_ASSIST;
+-	ret = cdev_add(&ctrldev->cdev, dev->devt, 1);
++	ret = cdev_device_add(&ctrldev->cdev, &ctrldev->dev);
+ 	if (ret)
+ 		goto free_ctrl_ida;
  
- 			/*
---- a/arch/powerpc/kvm/book3s_hv_nested.c
-+++ b/arch/powerpc/kvm/book3s_hv_nested.c
-@@ -362,7 +362,7 @@ long kvmhv_enter_nested_guest(struct kvm
- 	/* set L1 state to L2 state */
- 	vcpu->arch.nested = l2;
- 	vcpu->arch.nested_vcpu_id = l2_hv.vcpu_token;
--	l2->hfscr = l2_hv.hfscr;
-+	vcpu->arch.nested_hfscr = l2_hv.hfscr;
- 	vcpu->arch.regs = l2_regs;
+ 	/* We can now rely on the release function for cleanup */
+ 	dev->release = rpmsg_ctrldev_release_device;
  
- 	/* Guest must always run with ME enabled, HV disabled. */
+-	ret = device_add(dev);
+-	if (ret) {
+-		dev_err(&rpdev->dev, "device_add failed: %d\n", ret);
+-		put_device(dev);
+-	}
+-
+ 	dev_set_drvdata(&rpdev->dev, ctrldev);
+ 
+ 	return ret;
+@@ -532,7 +525,7 @@ static void rpmsg_chrdev_remove(struct r
+ 	if (ret)
+ 		dev_warn(&rpdev->dev, "failed to nuke endpoints: %d\n", ret);
+ 
+-	device_del(&ctrldev->dev);
++	cdev_device_del(&ctrldev->cdev, &ctrldev->dev);
+ 	put_device(&ctrldev->dev);
+ }
+ 
 
 
