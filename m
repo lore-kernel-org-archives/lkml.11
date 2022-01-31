@@ -2,276 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12C49C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 16:10:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 313F3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 16:11:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380237AbiAaQKN (ORCPT
+        id S1349592AbiAaQK7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 11:10:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59866 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380131AbiAaQJf (ORCPT
+        Mon, 31 Jan 2022 11:10:59 -0500
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:34408 "EHLO
+        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232033AbiAaQK5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 11:09:35 -0500
-Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9814C06175D;
-        Mon, 31 Jan 2022 08:08:39 -0800 (PST)
+        Mon, 31 Jan 2022 11:10:57 -0500
 Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: hector@marcansoft.com)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 922CF41982;
-        Mon, 31 Jan 2022 16:08:30 +0000 (UTC)
-From:   Hector Martin <marcan@marcan.st>
-To:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Dmitry Osipenko <digetx@gmail.com>
-Cc:     Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Mark Kettenis <kettenis@openbsd.org>,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>,
-        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        "brian m. carlson" <sandals@crustytoothpaste.net>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com,
-        Arend van Spriel <arend.vanspriel@broadcom.com>
-Subject: [PATCH v4 8/9] brcmfmac: fwil: Constify iovar name arguments
-Date:   Tue,  1 Feb 2022 01:07:12 +0900
-Message-Id: <20220131160713.245637-9-marcan@marcan.st>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220131160713.245637-1-marcan@marcan.st>
-References: <20220131160713.245637-1-marcan@marcan.st>
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 6C90F1F42963
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1643645456;
+        bh=CffkeDPQIGKCT7zt9bvQS9kahLagWK5zgsg2gxOqyoE=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=iMA15jgISWEGuW3lv7B7QDjXEtx4X4aZPCOlkNNkIl43zLQtSHnpfPwt+xq+yDeZ5
+         +TDbK5oNPhKQgGDuX8eZvPihSaw7EIgP3oWAi27KcXY7abCoG2QQZUpWaq/xoTxM7Q
+         X+f27m4EVb3oaW6R5Wcuqn05IMPaQZODbG9z3JpFQQ/BQgkuno3c1NdBk9pRE/fAxN
+         fgG5J5qbqr2nrA7sVRKIWDG5fmRc8keGyJxa+jiw0lO1e2wgb0cuos06/CEnL8SeTS
+         EFAWq+1B9ms3kfw+st1YPmCG4EefAONHtgXtcLyuLij5O4l7IPsPbef3ryxpR1pjYn
+         wu3wUYQbZoicw==
+Message-ID: <797cebd4-c367-e220-8ed3-6c1a69df4eb4@collabora.com>
+Date:   Mon, 31 Jan 2022 17:10:53 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v6 1/1] firmware: mediatek: add adsp ipc protocol
+ interface
+Content-Language: en-US
+To:     "allen-kh.cheng" <allen-kh.cheng@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Cc:     Kevin Hilman <khilman@baylibre.com>,
+        Linux-ALSA <alsa-devel@alsa-project.org>, tzungbi@google.com,
+        Chen-Yu Tsai <wenst@chromium.org>, cujomalainey@google.com,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Daniel Baluta <daniel.baluta@nxp.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        sound-open-firmware@alsa-project.org
+References: <20220128111832.22989-1-allen-kh.cheng@mediatek.com>
+ <20220128111832.22989-2-allen-kh.cheng@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220128111832.22989-2-allen-kh.cheng@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make all the iovar name arguments const char * instead of just char *.
+Il 28/01/22 12:18, allen-kh.cheng ha scritto:
+> From: Allen-KH Cheng <Allen-KH.Cheng@mediatek.com>
+> 
+> Some of mediatek processors contain
+> the Tensilica HiFix DSP for audio processing.
+> 
+> The communication between Host CPU and DSP firmware is
+> taking place using a shared memory area for message passing.
+> 
+> ADSP IPC protocol offers (send/recv) interfaces using
+> mediatek-mailbox APIs.
+> 
+> We use two mbox channels to implement a request-reply protocol.
+> 
+> Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+> Reviewed-by: Curtis Malainey <cujomalainey@chromium.org>
+> Reviewed-by: Tzung-Bi Shih <tzungbi@google.com>
+> Reviewed-by: YC Hung <yc.hung@mediatek.com>
+> Signed-off-by: Allen-KH Cheng <Allen-KH.Cheng@mediatek.com>
 
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Signed-off-by: Hector Martin <marcan@marcan.st>
----
- .../broadcom/brcm80211/brcmfmac/fwil.c        | 34 +++++++++----------
- .../broadcom/brcm80211/brcmfmac/fwil.h        | 28 +++++++--------
- 2 files changed, 31 insertions(+), 31 deletions(-)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil.c
-index d5578ca681bb..72fe8bce6eaf 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil.c
-@@ -192,7 +192,7 @@ brcmf_fil_cmd_int_get(struct brcmf_if *ifp, u32 cmd, u32 *data)
- }
- 
- static u32
--brcmf_create_iovar(char *name, const char *data, u32 datalen,
-+brcmf_create_iovar(const char *name, const char *data, u32 datalen,
- 		   char *buf, u32 buflen)
- {
- 	u32 len;
-@@ -213,7 +213,7 @@ brcmf_create_iovar(char *name, const char *data, u32 datalen,
- 
- 
- s32
--brcmf_fil_iovar_data_set(struct brcmf_if *ifp, char *name, const void *data,
-+brcmf_fil_iovar_data_set(struct brcmf_if *ifp, const char *name, const void *data,
- 			 u32 len)
- {
- 	struct brcmf_pub *drvr = ifp->drvr;
-@@ -241,7 +241,7 @@ brcmf_fil_iovar_data_set(struct brcmf_if *ifp, char *name, const void *data,
- }
- 
- s32
--brcmf_fil_iovar_data_get(struct brcmf_if *ifp, char *name, void *data,
-+brcmf_fil_iovar_data_get(struct brcmf_if *ifp, const char *name, void *data,
- 			 u32 len)
- {
- 	struct brcmf_pub *drvr = ifp->drvr;
-@@ -272,7 +272,7 @@ brcmf_fil_iovar_data_get(struct brcmf_if *ifp, char *name, void *data,
- }
- 
- s32
--brcmf_fil_iovar_int_set(struct brcmf_if *ifp, char *name, u32 data)
-+brcmf_fil_iovar_int_set(struct brcmf_if *ifp, const char *name, u32 data)
- {
- 	__le32 data_le = cpu_to_le32(data);
- 
-@@ -280,7 +280,7 @@ brcmf_fil_iovar_int_set(struct brcmf_if *ifp, char *name, u32 data)
- }
- 
- s32
--brcmf_fil_iovar_int_get(struct brcmf_if *ifp, char *name, u32 *data)
-+brcmf_fil_iovar_int_get(struct brcmf_if *ifp, const char *name, u32 *data)
- {
- 	__le32 data_le = cpu_to_le32(*data);
- 	s32 err;
-@@ -292,7 +292,7 @@ brcmf_fil_iovar_int_get(struct brcmf_if *ifp, char *name, u32 *data)
- }
- 
- static u32
--brcmf_create_bsscfg(s32 bsscfgidx, char *name, char *data, u32 datalen,
-+brcmf_create_bsscfg(s32 bsscfgidx, const char *name, char *data, u32 datalen,
- 		    char *buf, u32 buflen)
- {
- 	const s8 *prefix = "bsscfg:";
-@@ -337,7 +337,7 @@ brcmf_create_bsscfg(s32 bsscfgidx, char *name, char *data, u32 datalen,
- }
- 
- s32
--brcmf_fil_bsscfg_data_set(struct brcmf_if *ifp, char *name,
-+brcmf_fil_bsscfg_data_set(struct brcmf_if *ifp, const char *name,
- 			  void *data, u32 len)
- {
- 	struct brcmf_pub *drvr = ifp->drvr;
-@@ -366,7 +366,7 @@ brcmf_fil_bsscfg_data_set(struct brcmf_if *ifp, char *name,
- }
- 
- s32
--brcmf_fil_bsscfg_data_get(struct brcmf_if *ifp, char *name,
-+brcmf_fil_bsscfg_data_get(struct brcmf_if *ifp, const char *name,
- 			  void *data, u32 len)
- {
- 	struct brcmf_pub *drvr = ifp->drvr;
-@@ -396,7 +396,7 @@ brcmf_fil_bsscfg_data_get(struct brcmf_if *ifp, char *name,
- }
- 
- s32
--brcmf_fil_bsscfg_int_set(struct brcmf_if *ifp, char *name, u32 data)
-+brcmf_fil_bsscfg_int_set(struct brcmf_if *ifp, const char *name, u32 data)
- {
- 	__le32 data_le = cpu_to_le32(data);
- 
-@@ -405,7 +405,7 @@ brcmf_fil_bsscfg_int_set(struct brcmf_if *ifp, char *name, u32 data)
- }
- 
- s32
--brcmf_fil_bsscfg_int_get(struct brcmf_if *ifp, char *name, u32 *data)
-+brcmf_fil_bsscfg_int_get(struct brcmf_if *ifp, const char *name, u32 *data)
- {
- 	__le32 data_le = cpu_to_le32(*data);
- 	s32 err;
-@@ -417,7 +417,7 @@ brcmf_fil_bsscfg_int_get(struct brcmf_if *ifp, char *name, u32 *data)
- 	return err;
- }
- 
--static u32 brcmf_create_xtlv(char *name, u16 id, char *data, u32 len,
-+static u32 brcmf_create_xtlv(const char *name, u16 id, char *data, u32 len,
- 			     char *buf, u32 buflen)
- {
- 	u32 iolen;
-@@ -438,7 +438,7 @@ static u32 brcmf_create_xtlv(char *name, u16 id, char *data, u32 len,
- 	return iolen;
- }
- 
--s32 brcmf_fil_xtlv_data_set(struct brcmf_if *ifp, char *name, u16 id,
-+s32 brcmf_fil_xtlv_data_set(struct brcmf_if *ifp, const char *name, u16 id,
- 			    void *data, u32 len)
- {
- 	struct brcmf_pub *drvr = ifp->drvr;
-@@ -466,7 +466,7 @@ s32 brcmf_fil_xtlv_data_set(struct brcmf_if *ifp, char *name, u16 id,
- 	return err;
- }
- 
--s32 brcmf_fil_xtlv_data_get(struct brcmf_if *ifp, char *name, u16 id,
-+s32 brcmf_fil_xtlv_data_get(struct brcmf_if *ifp, const char *name, u16 id,
- 			    void *data, u32 len)
- {
- 	struct brcmf_pub *drvr = ifp->drvr;
-@@ -495,7 +495,7 @@ s32 brcmf_fil_xtlv_data_get(struct brcmf_if *ifp, char *name, u16 id,
- 	return err;
- }
- 
--s32 brcmf_fil_xtlv_int_set(struct brcmf_if *ifp, char *name, u16 id, u32 data)
-+s32 brcmf_fil_xtlv_int_set(struct brcmf_if *ifp, const char *name, u16 id, u32 data)
- {
- 	__le32 data_le = cpu_to_le32(data);
- 
-@@ -503,7 +503,7 @@ s32 brcmf_fil_xtlv_int_set(struct brcmf_if *ifp, char *name, u16 id, u32 data)
- 					 sizeof(data_le));
- }
- 
--s32 brcmf_fil_xtlv_int_get(struct brcmf_if *ifp, char *name, u16 id, u32 *data)
-+s32 brcmf_fil_xtlv_int_get(struct brcmf_if *ifp, const char *name, u16 id, u32 *data)
- {
- 	__le32 data_le = cpu_to_le32(*data);
- 	s32 err;
-@@ -514,12 +514,12 @@ s32 brcmf_fil_xtlv_int_get(struct brcmf_if *ifp, char *name, u16 id, u32 *data)
- 	return err;
- }
- 
--s32 brcmf_fil_xtlv_int8_get(struct brcmf_if *ifp, char *name, u16 id, u8 *data)
-+s32 brcmf_fil_xtlv_int8_get(struct brcmf_if *ifp, const char *name, u16 id, u8 *data)
- {
- 	return brcmf_fil_xtlv_data_get(ifp, name, id, data, sizeof(*data));
- }
- 
--s32 brcmf_fil_xtlv_int16_get(struct brcmf_if *ifp, char *name, u16 id, u16 *data)
-+s32 brcmf_fil_xtlv_int16_get(struct brcmf_if *ifp, const char *name, u16 id, u16 *data)
- {
- 	__le16 data_le = cpu_to_le16(*data);
- 	s32 err;
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil.h b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil.h
-index cb26f8c59c21..bc693157c4b1 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil.h
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil.h
-@@ -84,26 +84,26 @@ s32 brcmf_fil_cmd_data_get(struct brcmf_if *ifp, u32 cmd, void *data, u32 len);
- s32 brcmf_fil_cmd_int_set(struct brcmf_if *ifp, u32 cmd, u32 data);
- s32 brcmf_fil_cmd_int_get(struct brcmf_if *ifp, u32 cmd, u32 *data);
- 
--s32 brcmf_fil_iovar_data_set(struct brcmf_if *ifp, char *name, const void *data,
-+s32 brcmf_fil_iovar_data_set(struct brcmf_if *ifp, const char *name, const void *data,
- 			     u32 len);
--s32 brcmf_fil_iovar_data_get(struct brcmf_if *ifp, char *name, void *data,
-+s32 brcmf_fil_iovar_data_get(struct brcmf_if *ifp, const char *name, void *data,
- 			     u32 len);
--s32 brcmf_fil_iovar_int_set(struct brcmf_if *ifp, char *name, u32 data);
--s32 brcmf_fil_iovar_int_get(struct brcmf_if *ifp, char *name, u32 *data);
-+s32 brcmf_fil_iovar_int_set(struct brcmf_if *ifp, const char *name, u32 data);
-+s32 brcmf_fil_iovar_int_get(struct brcmf_if *ifp, const char *name, u32 *data);
- 
--s32 brcmf_fil_bsscfg_data_set(struct brcmf_if *ifp, char *name, void *data,
-+s32 brcmf_fil_bsscfg_data_set(struct brcmf_if *ifp, const char *name, void *data,
- 			      u32 len);
--s32 brcmf_fil_bsscfg_data_get(struct brcmf_if *ifp, char *name, void *data,
-+s32 brcmf_fil_bsscfg_data_get(struct brcmf_if *ifp, const char *name, void *data,
- 			      u32 len);
--s32 brcmf_fil_bsscfg_int_set(struct brcmf_if *ifp, char *name, u32 data);
--s32 brcmf_fil_bsscfg_int_get(struct brcmf_if *ifp, char *name, u32 *data);
--s32 brcmf_fil_xtlv_data_set(struct brcmf_if *ifp, char *name, u16 id,
-+s32 brcmf_fil_bsscfg_int_set(struct brcmf_if *ifp, const char *name, u32 data);
-+s32 brcmf_fil_bsscfg_int_get(struct brcmf_if *ifp, const char *name, u32 *data);
-+s32 brcmf_fil_xtlv_data_set(struct brcmf_if *ifp, const char *name, u16 id,
- 			    void *data, u32 len);
--s32 brcmf_fil_xtlv_data_get(struct brcmf_if *ifp, char *name, u16 id,
-+s32 brcmf_fil_xtlv_data_get(struct brcmf_if *ifp, const char *name, u16 id,
- 			    void *data, u32 len);
--s32 brcmf_fil_xtlv_int_set(struct brcmf_if *ifp, char *name, u16 id, u32 data);
--s32 brcmf_fil_xtlv_int_get(struct brcmf_if *ifp, char *name, u16 id, u32 *data);
--s32 brcmf_fil_xtlv_int8_get(struct brcmf_if *ifp, char *name, u16 id, u8 *data);
--s32 brcmf_fil_xtlv_int16_get(struct brcmf_if *ifp, char *name, u16 id, u16 *data);
-+s32 brcmf_fil_xtlv_int_set(struct brcmf_if *ifp, const char *name, u16 id, u32 data);
-+s32 brcmf_fil_xtlv_int_get(struct brcmf_if *ifp, const char *name, u16 id, u32 *data);
-+s32 brcmf_fil_xtlv_int8_get(struct brcmf_if *ifp, const char *name, u16 id, u8 *data);
-+s32 brcmf_fil_xtlv_int16_get(struct brcmf_if *ifp, const char *name, u16 id, u16 *data);
- 
- #endif /* _fwil_h_ */
--- 
-2.33.0
-
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
