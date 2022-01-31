@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27C83C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:32:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9A9AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:32:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359324AbiAaLb5 (ORCPT
+        id S1343720AbiAaLcH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:31:57 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:40698 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376952AbiAaLWM (ORCPT
+        Mon, 31 Jan 2022 06:32:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47360 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1376640AbiAaLVy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:22:12 -0500
+        Mon, 31 Jan 2022 06:21:54 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 613C3C0401F9;
+        Mon, 31 Jan 2022 03:14:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7FB9BB82A5F;
-        Mon, 31 Jan 2022 11:22:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C219EC340E8;
-        Mon, 31 Jan 2022 11:22:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 22221B82A77;
+        Mon, 31 Jan 2022 11:14:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A3EBC36AE7;
+        Mon, 31 Jan 2022 11:14:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643628130;
-        bh=2gdeo+OV1A8WaT8/Z+ea+QryuYCvNzv0FYUi8zwOxts=;
+        s=korg; t=1643627661;
+        bh=TM6ShBcuDBeRXjnrT7eROLG26xrXJ3qDuQdpyK5UxLk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Tin/96GozY5paVpt4czVaWHspabsfiIxOIqUOQ8Lq5Onwg1uAZyh0miqVOfu6SkGl
-         +nxz+ssw8UdkiRcaKkxVkjUFjDgqVdTuIUyjao60L1aitQbXFhv6ZlilWOB6kuGb4C
-         BmBWhh9qXxbaIZNc9OLevFvcrspH5LaRVfAzUhdg=
+        b=XNX9+gCO7hhP3kbZrGJRNnqZ6JnRWtilj1WKgOko8jhU0TBO+RdCaeBC7J2rEK8I/
+         lXNNL8sLVObuWoR8zT4qq56MqJ+iYp8/enDGvro3qXSIUUKIXIfdKAap02+Yob12t4
+         kLVyilf1e46St7EQQwfSmZ7H8wmLHrYeB4zB/OMs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joe Damato <jdamato@fastly.com>,
-        kernel test robot <lkp@intel.com>,
-        Gurucharan G <gurucharanx.g@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.16 100/200] i40e: fix unsigned stat widths
-Date:   Mon, 31 Jan 2022 11:56:03 +0100
-Message-Id: <20220131105236.958686352@linuxfoundation.org>
+        stable@vger.kernel.org, Benjamin Poirier <bpoirier@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 156/171] net: bridge: vlan: fix single net device option dumping
+Date:   Mon, 31 Jan 2022 11:57:01 +0100
+Message-Id: <20220131105235.298947896@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
-References: <20220131105233.561926043@linuxfoundation.org>
+In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
+References: <20220131105229.959216821@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,70 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joe Damato <jdamato@fastly.com>
+From: Nikolay Aleksandrov <nikolay@nvidia.com>
 
-commit 3b8428b84539c78fdc8006c17ebd25afd4722d51 upstream.
+[ Upstream commit dcb2c5c6ca9b9177f04abaf76e5a983d177c9414 ]
 
-Change i40e_update_vsi_stats and struct i40e_vsi to use u64 fields to match
-the width of the stats counters in struct i40e_rx_queue_stats.
+When dumping vlan options for a single net device we send the same
+entries infinitely because user-space expects a 0 return at the end but
+we keep returning skb->len and restarting the dump on retry. Fix it by
+returning the value from br_vlan_dump_dev() if it completed or there was
+an error. The only case that must return skb->len is when the dump was
+incomplete and needs to continue (-EMSGSIZE).
 
-Update debugfs code to use the correct format specifier for u64.
-
-Fixes: 41c445ff0f48 ("i40e: main driver core")
-Signed-off-by: Joe Damato <jdamato@fastly.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Tested-by: Gurucharan G <gurucharanx.g@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Benjamin Poirier <bpoirier@nvidia.com>
+Fixes: 8dcea187088b ("net: bridge: vlan: add rtm definitions and dump support")
+Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/i40e/i40e.h         |    8 ++++----
- drivers/net/ethernet/intel/i40e/i40e_debugfs.c |    2 +-
- drivers/net/ethernet/intel/i40e/i40e_main.c    |    4 ++--
- 3 files changed, 7 insertions(+), 7 deletions(-)
+ net/bridge/br_vlan.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/intel/i40e/i40e.h
-+++ b/drivers/net/ethernet/intel/i40e/i40e.h
-@@ -847,12 +847,12 @@ struct i40e_vsi {
- 	struct rtnl_link_stats64 net_stats_offsets;
- 	struct i40e_eth_stats eth_stats;
- 	struct i40e_eth_stats eth_stats_offsets;
--	u32 tx_restart;
--	u32 tx_busy;
-+	u64 tx_restart;
-+	u64 tx_busy;
- 	u64 tx_linearize;
- 	u64 tx_force_wb;
--	u32 rx_buf_failed;
--	u32 rx_page_failed;
-+	u64 rx_buf_failed;
-+	u64 rx_page_failed;
- 
- 	/* These are containers of ring pointers, allocated at run-time */
- 	struct i40e_ring **rx_rings;
---- a/drivers/net/ethernet/intel/i40e/i40e_debugfs.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_debugfs.c
-@@ -240,7 +240,7 @@ static void i40e_dbg_dump_vsi_seid(struc
- 		 (unsigned long int)vsi->net_stats_offsets.rx_compressed,
- 		 (unsigned long int)vsi->net_stats_offsets.tx_compressed);
- 	dev_info(&pf->pdev->dev,
--		 "    tx_restart = %d, tx_busy = %d, rx_buf_failed = %d, rx_page_failed = %d\n",
-+		 "    tx_restart = %llu, tx_busy = %llu, rx_buf_failed = %llu, rx_page_failed = %llu\n",
- 		 vsi->tx_restart, vsi->tx_busy,
- 		 vsi->rx_buf_failed, vsi->rx_page_failed);
- 	rcu_read_lock();
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -778,9 +778,9 @@ static void i40e_update_vsi_stats(struct
- 	struct rtnl_link_stats64 *ns;   /* netdev stats */
- 	struct i40e_eth_stats *oes;
- 	struct i40e_eth_stats *es;     /* device's eth stats */
--	u32 tx_restart, tx_busy;
-+	u64 tx_restart, tx_busy;
- 	struct i40e_ring *p;
--	u32 rx_page, rx_buf;
-+	u64 rx_page, rx_buf;
- 	u64 bytes, packets;
- 	unsigned int start;
- 	u64 tx_linearize;
+diff --git a/net/bridge/br_vlan.c b/net/bridge/br_vlan.c
+index 19f65ab91a027..06f5caee495aa 100644
+--- a/net/bridge/br_vlan.c
++++ b/net/bridge/br_vlan.c
+@@ -2105,7 +2105,8 @@ static int br_vlan_rtm_dump(struct sk_buff *skb, struct netlink_callback *cb)
+ 			goto out_err;
+ 		}
+ 		err = br_vlan_dump_dev(dev, skb, cb, dump_flags);
+-		if (err && err != -EMSGSIZE)
++		/* if the dump completed without an error we return 0 here */
++		if (err != -EMSGSIZE)
+ 			goto out_err;
+ 	} else {
+ 		for_each_netdev_rcu(net, dev) {
+-- 
+2.34.1
+
 
 
