@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6778C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78CCDC4167B
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378514AbiAaL2p (ORCPT
+        id S1378627AbiAaL2w (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:28:45 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:50168 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359336AbiAaLQv (ORCPT
+        Mon, 31 Jan 2022 06:28:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46504 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358957AbiAaLOq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:16:51 -0500
+        Mon, 31 Jan 2022 06:14:46 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 057EFC06176F;
+        Mon, 31 Jan 2022 03:11:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8772461267;
-        Mon, 31 Jan 2022 11:16:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63309C340F2;
-        Mon, 31 Jan 2022 11:16:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 99846611EA;
+        Mon, 31 Jan 2022 11:11:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EE26C340E8;
+        Mon, 31 Jan 2022 11:11:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627811;
-        bh=X2NLHHrc8/3gNl+DOPHGYjac8IB7EXpwxxT1Q3LKgYc=;
+        s=korg; t=1643627474;
+        bh=KNeIGLaJULb8ZWWcntvz+PmSfEYYRsngV4QDwM9bi20=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1+aVqLcVlCHqhZQmaN77HcUa+ICZi3rL8ltU+LnXUpvYs6o8vQgSgu9vkNMDvh69h
-         YKXjomCp7E/lqiYgTyjeZcJ5CPQBwZkWQzt0nQXdUZjnrptFeLvyDbIZj4FFR9rSbY
-         ddmlo532oc3qjretz9H0nZcBDjoK9kScCsfuxmpU=
+        b=npVEQvE1gqOZ5zbuXi/WE0+jEWXcGV7iZGj2ijxm6ibuOIwNUSKN3579DqeFw+B75
+         txbO3R8SIG9x1T6sDn0tW5VVwMCxx+bP4yldl88omZGhssQtlU0TVPCv4MGQzGxd9v
+         Uq3d95fkUgnXINqi/D6OL6xU1nzGDMCJOBdI/TpY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jeff Layton <jlayton@kernel.org>,
-        Ilya Dryomov <idryomov@gmail.com>
-Subject: [PATCH 5.16 033/200] ceph: properly put ceph_string reference after async create attempt
-Date:   Mon, 31 Jan 2022 11:54:56 +0100
-Message-Id: <20220131105234.680676359@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>
+Subject: [PATCH 5.15 094/171] NFSv4: nfs_atomic_open() can race when looking up a non-regular file
+Date:   Mon, 31 Jan 2022 11:55:59 +0100
+Message-Id: <20220131105233.221372623@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
-References: <20220131105233.561926043@linuxfoundation.org>
+In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
+References: <20220131105229.959216821@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,35 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeff Layton <jlayton@kernel.org>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-commit 932a9b5870d38b87ba0a9923c804b1af7d3605b9 upstream.
+commit 1751fc1db36f6f411709e143d5393f92d12137a9 upstream.
 
-The reference acquired by try_prep_async_create is currently leaked.
-Ensure we put it.
+If the file type changes back to being a regular file on the server
+between the failed OPEN and our LOOKUP, then we need to re-run the OPEN.
 
-Cc: stable@vger.kernel.org
-Fixes: 9a8d03ca2e2c ("ceph: attempt to do async create when possible")
-Signed-off-by: Jeff Layton <jlayton@kernel.org>
-Reviewed-by: Ilya Dryomov <idryomov@gmail.com>
-Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
+Fixes: 0dd2b474d0b6 ("nfs: implement i_op->atomic_open()")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ceph/file.c |    2 ++
- 1 file changed, 2 insertions(+)
+ fs/nfs/dir.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/fs/ceph/file.c
-+++ b/fs/ceph/file.c
-@@ -746,8 +746,10 @@ retry:
- 				restore_deleg_ino(dir, req->r_deleg_ino);
- 				ceph_mdsc_put_request(req);
- 				try_async = false;
-+				ceph_put_string(rcu_dereference_raw(lo.pool_ns));
- 				goto retry;
- 			}
-+			ceph_put_string(rcu_dereference_raw(lo.pool_ns));
- 			goto out_req;
+--- a/fs/nfs/dir.c
++++ b/fs/nfs/dir.c
+@@ -1987,12 +1987,17 @@ no_open:
+ 		if ((lookup_flags & LOOKUP_DIRECTORY) && inode &&
+ 		    !S_ISDIR(inode->i_mode))
+ 			res = ERR_PTR(-ENOTDIR);
++		else if (inode && S_ISREG(inode->i_mode))
++			res = ERR_PTR(-EOPENSTALE);
+ 	} else if (!IS_ERR(res)) {
+ 		inode = d_inode(res);
+ 		if ((lookup_flags & LOOKUP_DIRECTORY) && inode &&
+ 		    !S_ISDIR(inode->i_mode)) {
+ 			dput(res);
+ 			res = ERR_PTR(-ENOTDIR);
++		} else if (inode && S_ISREG(inode->i_mode)) {
++			dput(res);
++			res = ERR_PTR(-EOPENSTALE);
  		}
  	}
+ 	if (switched) {
 
 
