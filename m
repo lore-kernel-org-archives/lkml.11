@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 482D2C4707A
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:11:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA673C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:11:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359435AbiAaLLO (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:11:14 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:55616 "EHLO
+        id S232320AbiAaLLW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 31 Jan 2022 06:11:22 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:51960 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240439AbiAaLHJ (ORCPT
+        with ESMTP id S1349270AbiAaLHH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:07:09 -0500
+        Mon, 31 Jan 2022 06:07:07 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F1882B82A66;
-        Mon, 31 Jan 2022 11:07:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16AA0C340E8;
-        Mon, 31 Jan 2022 11:07:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EB196B82A4E;
+        Mon, 31 Jan 2022 11:07:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F369C340E8;
+        Mon, 31 Jan 2022 11:07:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627226;
-        bh=jchTgH/WeRcP+rGsiq9q+IUIigxZl5WhidZEAqQun5Y=;
+        s=korg; t=1643627223;
+        bh=+73rGfCBgLJesVwuPl33Zlp4csAarRXlaZuKTqeiMYk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KI50kzrCjUR1ohxGSP5iJCKbpymvkkx3Lg5VJ9+gk1WbNNFhrxquG1cKfSzn1//NS
-         Npnakcdh58piPiylOHYINyHo3w2rp0maDVfm5D/6JF4WcRw/Ol4KuSxPmoe1QUB/8A
-         OMNq/3IPRh6DCT+79jCrZzWGTWR682lYZDMus4a4=
+        b=EcC4RxoFfCXzHuP/Of46Zv5HeBFufBwBcOUPimUfbKmltcCXdv6N0u8BUzefakvPy
+         qYZXzCbT7LNyKhy+GHV8SoVrT7uGkxK3NBX6mhn3Sn4l8dk2MtDvDa39ZrttVyLZs4
+         bogLDD4ZL72SpBEBy2CLo3QNyw7Q201ENoJ3/Gzs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qian Cai <quic_qiancai@quicinc.com>,
-        Mathias Krause <minipli@grsecurity.net>,
-        Alexey Gladkov <legion@kernel.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Subject: [PATCH 5.15 015/171] ucount:  Make get_ucount a safe get_user replacement
-Date:   Mon, 31 Jan 2022 11:54:40 +0100
-Message-Id: <20220131105230.530679350@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.15 014/171] powerpc/bpf: Update ldimm64 instructions during extra pass
+Date:   Mon, 31 Jan 2022 11:54:39 +0100
+Message-Id: <20220131105230.491153369@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
 References: <20220131105229.959216821@linuxfoundation.org>
@@ -48,57 +47,137 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric W. Biederman <ebiederm@xmission.com>
+From: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
 
-commit f9d87929d451d3e649699d0f1d74f71f77ad38f5 upstream.
+commit f9320c49993ca3c0ec0f9a7026b313735306bb8b upstream.
 
-When the ucount code was refactored to create get_ucount it was missed
-that some of the contexts in which a rlimit is kept elevated can be
-the only reference to the user/ucount in the system.
+These instructions are updated after the initial JIT, so redo codegen
+during the extra pass. Rename bpf_jit_fixup_subprog_calls() to clarify
+that this is more than just subprog calls.
 
-Ordinary ucount references exist in places that also have a reference
-to the user namspace, but in POSIX message queues, the SysV shm code,
-and the SIGPENDING code there is no independent user namespace
-reference.
-
-Inspection of the the user_namespace show no instance of circular
-references between struct ucounts and the user_namespace.  So
-hold a reference from struct ucount to i's user_namespace to
-resolve this problem.
-
-Link: https://lore.kernel.org/lkml/YZV7Z+yXbsx9p3JN@fixkernel.com/
-Reported-by: Qian Cai <quic_qiancai@quicinc.com>
-Reported-by: Mathias Krause <minipli@grsecurity.net>
-Tested-by: Mathias Krause <minipli@grsecurity.net>
-Reviewed-by: Mathias Krause <minipli@grsecurity.net>
-Reviewed-by: Alexey Gladkov <legion@kernel.org>
-Fixes: d64696905554 ("Reimplement RLIMIT_SIGPENDING on top of ucounts")
-Fixes: 6e52a9f0532f ("Reimplement RLIMIT_MSGQUEUE on top of ucounts")
-Fixes: d7c9e99aee48 ("Reimplement RLIMIT_MEMLOCK on top of ucounts")
-Cc: stable@vger.kernel.org
-Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+Fixes: 69c087ba6225b5 ("bpf: Add bpf_for_each_map_elem() helper")
+Cc: stable@vger.kernel.org # v5.15
+Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+Tested-by: Jiri Olsa <jolsa@redhat.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/7cc162af77ba918eb3ecd26ec9e7824bc44b1fae.1641468127.git.naveen.n.rao@linux.vnet.ibm.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/ucount.c |    2 ++
- 1 file changed, 2 insertions(+)
+ arch/powerpc/net/bpf_jit_comp.c   |   29 +++++++++++++++++++++++------
+ arch/powerpc/net/bpf_jit_comp32.c |    6 ++++++
+ arch/powerpc/net/bpf_jit_comp64.c |    7 ++++++-
+ 3 files changed, 35 insertions(+), 7 deletions(-)
 
---- a/kernel/ucount.c
-+++ b/kernel/ucount.c
-@@ -184,6 +184,7 @@ struct ucounts *alloc_ucounts(struct use
- 			kfree(new);
- 		} else {
- 			hlist_add_head(&new->node, hashent);
-+			get_user_ns(new->ns);
- 			spin_unlock_irq(&ucounts_lock);
- 			return new;
- 		}
-@@ -204,6 +205,7 @@ void put_ucounts(struct ucounts *ucounts
- 	if (atomic_dec_and_lock_irqsave(&ucounts->count, &ucounts_lock, flags)) {
- 		hlist_del_init(&ucounts->node);
- 		spin_unlock_irqrestore(&ucounts_lock, flags);
-+		put_user_ns(ucounts->ns);
- 		kfree(ucounts);
- 	}
+--- a/arch/powerpc/net/bpf_jit_comp.c
++++ b/arch/powerpc/net/bpf_jit_comp.c
+@@ -23,15 +23,15 @@ static void bpf_jit_fill_ill_insns(void
+ 	memset32(area, BREAKPOINT_INSTRUCTION, size / 4);
  }
+ 
+-/* Fix the branch target addresses for subprog calls */
+-static int bpf_jit_fixup_subprog_calls(struct bpf_prog *fp, u32 *image,
+-				       struct codegen_context *ctx, u32 *addrs)
++/* Fix updated addresses (for subprog calls, ldimm64, et al) during extra pass */
++static int bpf_jit_fixup_addresses(struct bpf_prog *fp, u32 *image,
++				   struct codegen_context *ctx, u32 *addrs)
+ {
+ 	const struct bpf_insn *insn = fp->insnsi;
+ 	bool func_addr_fixed;
+ 	u64 func_addr;
+ 	u32 tmp_idx;
+-	int i, ret;
++	int i, j, ret;
+ 
+ 	for (i = 0; i < fp->len; i++) {
+ 		/*
+@@ -66,6 +66,23 @@ static int bpf_jit_fixup_subprog_calls(s
+ 			 * of the JITed sequence remains unchanged.
+ 			 */
+ 			ctx->idx = tmp_idx;
++		} else if (insn[i].code == (BPF_LD | BPF_IMM | BPF_DW)) {
++			tmp_idx = ctx->idx;
++			ctx->idx = addrs[i] / 4;
++#ifdef CONFIG_PPC32
++			PPC_LI32(ctx->b2p[insn[i].dst_reg] - 1, (u32)insn[i + 1].imm);
++			PPC_LI32(ctx->b2p[insn[i].dst_reg], (u32)insn[i].imm);
++			for (j = ctx->idx - addrs[i] / 4; j < 4; j++)
++				EMIT(PPC_RAW_NOP());
++#else
++			func_addr = ((u64)(u32)insn[i].imm) | (((u64)(u32)insn[i + 1].imm) << 32);
++			PPC_LI64(b2p[insn[i].dst_reg], func_addr);
++			/* overwrite rest with nops */
++			for (j = ctx->idx - addrs[i] / 4; j < 5; j++)
++				EMIT(PPC_RAW_NOP());
++#endif
++			ctx->idx = tmp_idx;
++			i++;
+ 		}
+ 	}
+ 
+@@ -193,13 +210,13 @@ skip_init_ctx:
+ 		/*
+ 		 * Do not touch the prologue and epilogue as they will remain
+ 		 * unchanged. Only fix the branch target address for subprog
+-		 * calls in the body.
++		 * calls in the body, and ldimm64 instructions.
+ 		 *
+ 		 * This does not change the offsets and lengths of the subprog
+ 		 * call instruction sequences and hence, the size of the JITed
+ 		 * image as well.
+ 		 */
+-		bpf_jit_fixup_subprog_calls(fp, code_base, &cgctx, addrs);
++		bpf_jit_fixup_addresses(fp, code_base, &cgctx, addrs);
+ 
+ 		/* There is no need to perform the usual passes. */
+ 		goto skip_codegen_passes;
+--- a/arch/powerpc/net/bpf_jit_comp32.c
++++ b/arch/powerpc/net/bpf_jit_comp32.c
+@@ -292,6 +292,8 @@ int bpf_jit_build_body(struct bpf_prog *
+ 		bool func_addr_fixed;
+ 		u64 func_addr;
+ 		u32 true_cond;
++		u32 tmp_idx;
++		int j;
+ 
+ 		/*
+ 		 * addrs[] maps a BPF bytecode address into a real offset from
+@@ -839,8 +841,12 @@ int bpf_jit_build_body(struct bpf_prog *
+ 		 * 16 byte instruction that uses two 'struct bpf_insn'
+ 		 */
+ 		case BPF_LD | BPF_IMM | BPF_DW: /* dst = (u64) imm */
++			tmp_idx = ctx->idx;
+ 			PPC_LI32(dst_reg_h, (u32)insn[i + 1].imm);
+ 			PPC_LI32(dst_reg, (u32)insn[i].imm);
++			/* padding to allow full 4 instructions for later patching */
++			for (j = ctx->idx - tmp_idx; j < 4; j++)
++				EMIT(PPC_RAW_NOP());
+ 			/* Adjust for two bpf instructions */
+ 			addrs[++i] = ctx->idx * 4;
+ 			break;
+--- a/arch/powerpc/net/bpf_jit_comp64.c
++++ b/arch/powerpc/net/bpf_jit_comp64.c
+@@ -318,6 +318,7 @@ int bpf_jit_build_body(struct bpf_prog *
+ 		u64 imm64;
+ 		u32 true_cond;
+ 		u32 tmp_idx;
++		int j;
+ 
+ 		/*
+ 		 * addrs[] maps a BPF bytecode address into a real offset from
+@@ -806,9 +807,13 @@ emit_clear:
+ 		case BPF_LD | BPF_IMM | BPF_DW: /* dst = (u64) imm */
+ 			imm64 = ((u64)(u32) insn[i].imm) |
+ 				    (((u64)(u32) insn[i+1].imm) << 32);
++			tmp_idx = ctx->idx;
++			PPC_LI64(dst_reg, imm64);
++			/* padding to allow full 5 instructions for later patching */
++			for (j = ctx->idx - tmp_idx; j < 5; j++)
++				EMIT(PPC_RAW_NOP());
+ 			/* Adjust for two bpf instructions */
+ 			addrs[++i] = ctx->idx * 4;
+-			PPC_LI64(dst_reg, imm64);
+ 			break;
+ 
+ 		/*
 
 
