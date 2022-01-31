@@ -2,49 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0204DC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83F78C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378192AbiAaL2J (ORCPT
+        id S1378600AbiAaL2u (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:28:09 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:37606 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378177AbiAaLTs (ORCPT
+        Mon, 31 Jan 2022 06:28:50 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:50462 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1376991AbiAaLRI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:19:48 -0500
+        Mon, 31 Jan 2022 06:17:08 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B9630B82A61;
-        Mon, 31 Jan 2022 11:19:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 044EEC340E8;
-        Mon, 31 Jan 2022 11:19:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 64C6A61120;
+        Mon, 31 Jan 2022 11:17:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4554AC340EE;
+        Mon, 31 Jan 2022 11:17:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627986;
-        bh=JhNyRXEnciQM5KD9GQGTUIzpN68e3QP+BIvXRa1scdU=;
+        s=korg; t=1643627826;
+        bh=kJ2yLHfvzrV+DKPHJJnprn/eCodUFlc/YFddcwIPV44=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mrvRgI2UJfvfFnyzns6GQOIDhaCBKR3H91PMaHaRwd78YmWR+leQQ0lDquOc9qr9P
-         wqGiaU68DMC0RsGPTl8ypDVMWB1/mAdPBu6naor2e6sMdhwqIvq9QHUsVrH8GGN85Q
-         AS1fGKN3/LYJmCcG43ispPTk/NkRinzHLT5c2SsI=
+        b=0lBqCYJ8h2pmwhfP1Ii+Ww3ZnP0QzG8SHJpkNJdB01f27lYmSo4xyimGbdDa2ctDS
+         F2lBYarh7I2BV7q5DfgMznMNjYHAkv5199k30T1Oz51FcDALtnUhYEP3+pb7z30N2w
+         ABjLtas1wh1UdUfJhgYKwYzrbhrwn/O42AyKeDT8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joseph Qi <joseph.qi@linux.alibaba.com>,
-        Mark Fasheh <mark@fasheh.com>,
-        Joel Becker <jlbec@evilplan.org>,
-        Junxiao Bi <junxiao.bi@oracle.com>,
-        Changwei Ge <gechangwei@live.cn>, Gang He <ghe@suse.com>,
-        Jun Piao <piaojun@huawei.com>,
-        Andreas Dilger <adilger.kernel@dilger.ca>,
-        Gautham Ananthakrishna <gautham.ananthakrishna@oracle.com>,
-        Saeed Mirzamohammadi <saeed.mirzamohammadi@oracle.com>,
-        "Theodore Tso" <tytso@mit.edu>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.16 087/200] jbd2: export jbd2_journal_[grab|put]_journal_head
-Date:   Mon, 31 Jan 2022 11:55:50 +0100
-Message-Id: <20220131105236.539401298@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+cdb5dd11c97cc532efad@syzkaller.appspotmail.com,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Suren Baghdasaryan <surenb@google.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Eric Biggers <ebiggers@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Eric Biggers <ebiggers@kernel.org>
+Subject: [PATCH 5.16 038/200] psi: Fix uaf issue when psi trigger is destroyed while being polled
+Date:   Mon, 31 Jan 2022 11:55:01 +0100
+Message-Id: <20220131105234.840296929@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -56,59 +52,240 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joseph Qi <joseph.qi@linux.alibaba.com>
+From: Suren Baghdasaryan <surenb@google.com>
 
-commit 4cd1103d8c66b2cdb7e64385c274edb0ac5e8887 upstream.
+commit a06247c6804f1a7c86a2e5398a4c1f1db1471848 upstream.
 
-Patch series "ocfs2: fix a deadlock case".
+With write operation on psi files replacing old trigger with a new one,
+the lifetime of its waitqueue is totally arbitrary. Overwriting an
+existing trigger causes its waitqueue to be freed and pending poll()
+will stumble on trigger->event_wait which was destroyed.
+Fix this by disallowing to redefine an existing psi trigger. If a write
+operation is used on a file descriptor with an already existing psi
+trigger, the operation will fail with EBUSY error.
+Also bypass a check for psi_disabled in the psi_trigger_destroy as the
+flag can be flipped after the trigger is created, leading to a memory
+leak.
 
-This fixes a deadlock case in ocfs2.  We firstly export jbd2 symbols
-jbd2_journal_[grab|put]_journal_head as preparation and later use them
-in ocfs2 insread of jbd_[lock|unlock]_bh_journal_head to fix the
-deadlock.
-
-This patch (of 2):
-
-This exports symbols jbd2_journal_[grab|put]_journal_head, which will be
-used outside modules, e.g.  ocfs2.
-
-Link: https://lkml.kernel.org/r/20220121071205.100648-2-joseph.qi@linux.alibaba.com
-Signed-off-by: Joseph Qi <joseph.qi@linux.alibaba.com>
-Cc: Mark Fasheh <mark@fasheh.com>
-Cc: Joel Becker <jlbec@evilplan.org>
-Cc: Junxiao Bi <junxiao.bi@oracle.com>
-Cc: Changwei Ge <gechangwei@live.cn>
-Cc: Gang He <ghe@suse.com>
-Cc: Jun Piao <piaojun@huawei.com>
-Cc: Andreas Dilger <adilger.kernel@dilger.ca>
-Cc: Gautham Ananthakrishna <gautham.ananthakrishna@oracle.com>
-Cc: Saeed Mirzamohammadi <saeed.mirzamohammadi@oracle.com>
-Cc: "Theodore Ts'o" <tytso@mit.edu>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: 0e94682b73bf ("psi: introduce psi monitor")
+Reported-by: syzbot+cdb5dd11c97cc532efad@syzkaller.appspotmail.com
+Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
+Analyzed-by: Eric Biggers <ebiggers@kernel.org>
+Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
+Acked-by: Johannes Weiner <hannes@cmpxchg.org>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220111232309.1786347-1-surenb@google.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/jbd2/journal.c |    2 ++
- 1 file changed, 2 insertions(+)
+ Documentation/accounting/psi.rst |    3 +
+ include/linux/psi.h              |    2 -
+ include/linux/psi_types.h        |    3 -
+ kernel/cgroup/cgroup.c           |   11 ++++--
+ kernel/sched/psi.c               |   66 +++++++++++++++++----------------------
+ 5 files changed, 40 insertions(+), 45 deletions(-)
 
---- a/fs/jbd2/journal.c
-+++ b/fs/jbd2/journal.c
-@@ -2970,6 +2970,7 @@ struct journal_head *jbd2_journal_grab_j
- 	jbd_unlock_bh_journal_head(bh);
- 	return jh;
- }
-+EXPORT_SYMBOL(jbd2_journal_grab_journal_head);
+--- a/Documentation/accounting/psi.rst
++++ b/Documentation/accounting/psi.rst
+@@ -92,7 +92,8 @@ Triggers can be set on more than one psi
+ for the same psi metric can be specified. However for each trigger a separate
+ file descriptor is required to be able to poll it separately from others,
+ therefore for each trigger a separate open() syscall should be made even
+-when opening the same psi interface file.
++when opening the same psi interface file. Write operations to a file descriptor
++with an already existing psi trigger will fail with EBUSY.
  
- static void __journal_remove_journal_head(struct buffer_head *bh)
- {
-@@ -3022,6 +3023,7 @@ void jbd2_journal_put_journal_head(struc
- 		jbd_unlock_bh_journal_head(bh);
+ Monitors activate only when system enters stall state for the monitored
+ psi metric and deactivates upon exit from the stall state. While system is
+--- a/include/linux/psi.h
++++ b/include/linux/psi.h
+@@ -32,7 +32,7 @@ void cgroup_move_task(struct task_struct
+ 
+ struct psi_trigger *psi_trigger_create(struct psi_group *group,
+ 			char *buf, size_t nbytes, enum psi_res res);
+-void psi_trigger_replace(void **trigger_ptr, struct psi_trigger *t);
++void psi_trigger_destroy(struct psi_trigger *t);
+ 
+ __poll_t psi_trigger_poll(void **trigger_ptr, struct file *file,
+ 			poll_table *wait);
+--- a/include/linux/psi_types.h
++++ b/include/linux/psi_types.h
+@@ -140,9 +140,6 @@ struct psi_trigger {
+ 	 * events to one per window
+ 	 */
+ 	u64 last_event_time;
+-
+-	/* Refcounting to prevent premature destruction */
+-	struct kref refcount;
+ };
+ 
+ struct psi_group {
+--- a/kernel/cgroup/cgroup.c
++++ b/kernel/cgroup/cgroup.c
+@@ -3642,6 +3642,12 @@ static ssize_t cgroup_pressure_write(str
+ 	cgroup_get(cgrp);
+ 	cgroup_kn_unlock(of->kn);
+ 
++	/* Allow only one trigger per file descriptor */
++	if (ctx->psi.trigger) {
++		cgroup_put(cgrp);
++		return -EBUSY;
++	}
++
+ 	psi = cgroup_ino(cgrp) == 1 ? &psi_system : &cgrp->psi;
+ 	new = psi_trigger_create(psi, buf, nbytes, res);
+ 	if (IS_ERR(new)) {
+@@ -3649,8 +3655,7 @@ static ssize_t cgroup_pressure_write(str
+ 		return PTR_ERR(new);
  	}
- }
-+EXPORT_SYMBOL(jbd2_journal_put_journal_head);
  
- /*
-  * Initialize jbd inode head
+-	psi_trigger_replace(&ctx->psi.trigger, new);
+-
++	smp_store_release(&ctx->psi.trigger, new);
+ 	cgroup_put(cgrp);
+ 
+ 	return nbytes;
+@@ -3689,7 +3694,7 @@ static void cgroup_pressure_release(stru
+ {
+ 	struct cgroup_file_ctx *ctx = of->priv;
+ 
+-	psi_trigger_replace(&ctx->psi.trigger, NULL);
++	psi_trigger_destroy(ctx->psi.trigger);
+ }
+ 
+ bool cgroup_psi_enabled(void)
+--- a/kernel/sched/psi.c
++++ b/kernel/sched/psi.c
+@@ -1162,7 +1162,6 @@ struct psi_trigger *psi_trigger_create(s
+ 	t->event = 0;
+ 	t->last_event_time = 0;
+ 	init_waitqueue_head(&t->event_wait);
+-	kref_init(&t->refcount);
+ 
+ 	mutex_lock(&group->trigger_lock);
+ 
+@@ -1191,15 +1190,19 @@ struct psi_trigger *psi_trigger_create(s
+ 	return t;
+ }
+ 
+-static void psi_trigger_destroy(struct kref *ref)
++void psi_trigger_destroy(struct psi_trigger *t)
+ {
+-	struct psi_trigger *t = container_of(ref, struct psi_trigger, refcount);
+-	struct psi_group *group = t->group;
++	struct psi_group *group;
+ 	struct task_struct *task_to_destroy = NULL;
+ 
+-	if (static_branch_likely(&psi_disabled))
++	/*
++	 * We do not check psi_disabled since it might have been disabled after
++	 * the trigger got created.
++	 */
++	if (!t)
+ 		return;
+ 
++	group = t->group;
+ 	/*
+ 	 * Wakeup waiters to stop polling. Can happen if cgroup is deleted
+ 	 * from under a polling process.
+@@ -1235,9 +1238,9 @@ static void psi_trigger_destroy(struct k
+ 	mutex_unlock(&group->trigger_lock);
+ 
+ 	/*
+-	 * Wait for both *trigger_ptr from psi_trigger_replace and
+-	 * poll_task RCUs to complete their read-side critical sections
+-	 * before destroying the trigger and optionally the poll_task
++	 * Wait for psi_schedule_poll_work RCU to complete its read-side
++	 * critical section before destroying the trigger and optionally the
++	 * poll_task.
+ 	 */
+ 	synchronize_rcu();
+ 	/*
+@@ -1254,18 +1257,6 @@ static void psi_trigger_destroy(struct k
+ 	kfree(t);
+ }
+ 
+-void psi_trigger_replace(void **trigger_ptr, struct psi_trigger *new)
+-{
+-	struct psi_trigger *old = *trigger_ptr;
+-
+-	if (static_branch_likely(&psi_disabled))
+-		return;
+-
+-	rcu_assign_pointer(*trigger_ptr, new);
+-	if (old)
+-		kref_put(&old->refcount, psi_trigger_destroy);
+-}
+-
+ __poll_t psi_trigger_poll(void **trigger_ptr,
+ 				struct file *file, poll_table *wait)
+ {
+@@ -1275,24 +1266,15 @@ __poll_t psi_trigger_poll(void **trigger
+ 	if (static_branch_likely(&psi_disabled))
+ 		return DEFAULT_POLLMASK | EPOLLERR | EPOLLPRI;
+ 
+-	rcu_read_lock();
+-
+-	t = rcu_dereference(*(void __rcu __force **)trigger_ptr);
+-	if (!t) {
+-		rcu_read_unlock();
++	t = smp_load_acquire(trigger_ptr);
++	if (!t)
+ 		return DEFAULT_POLLMASK | EPOLLERR | EPOLLPRI;
+-	}
+-	kref_get(&t->refcount);
+-
+-	rcu_read_unlock();
+ 
+ 	poll_wait(file, &t->event_wait, wait);
+ 
+ 	if (cmpxchg(&t->event, 1, 0) == 1)
+ 		ret |= EPOLLPRI;
+ 
+-	kref_put(&t->refcount, psi_trigger_destroy);
+-
+ 	return ret;
+ }
+ 
+@@ -1316,14 +1298,24 @@ static ssize_t psi_write(struct file *fi
+ 
+ 	buf[buf_size - 1] = '\0';
+ 
+-	new = psi_trigger_create(&psi_system, buf, nbytes, res);
+-	if (IS_ERR(new))
+-		return PTR_ERR(new);
+-
+ 	seq = file->private_data;
++
+ 	/* Take seq->lock to protect seq->private from concurrent writes */
+ 	mutex_lock(&seq->lock);
+-	psi_trigger_replace(&seq->private, new);
++
++	/* Allow only one trigger per file descriptor */
++	if (seq->private) {
++		mutex_unlock(&seq->lock);
++		return -EBUSY;
++	}
++
++	new = psi_trigger_create(&psi_system, buf, nbytes, res);
++	if (IS_ERR(new)) {
++		mutex_unlock(&seq->lock);
++		return PTR_ERR(new);
++	}
++
++	smp_store_release(&seq->private, new);
+ 	mutex_unlock(&seq->lock);
+ 
+ 	return nbytes;
+@@ -1358,7 +1350,7 @@ static int psi_fop_release(struct inode
+ {
+ 	struct seq_file *seq = file->private_data;
+ 
+-	psi_trigger_replace(&seq->private, NULL);
++	psi_trigger_destroy(seq->private);
+ 	return single_release(inode, file);
+ }
+ 
 
 
