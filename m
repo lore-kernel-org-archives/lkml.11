@@ -2,141 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B66E8C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:46:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B540C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:46:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378928AbiAaLnV (ORCPT
+        id S1378948AbiAaLnX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:43:21 -0500
-Received: from mga05.intel.com ([192.55.52.43]:12238 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1379732AbiAaLaj (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:30:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643628639; x=1675164639;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=IrCfoF7eVv9DU6g4PgHgEV5cLq0Eof4NwIuHTMoZg8E=;
-  b=dYUK0g8hidnaRro/VYR1kcNEvPpOtfYedQMtUIUXT/kSOxPuSixeQ+JH
-   3pawBbmGx9snj+aq7xvPMJIUgy45aQaPzGOa24Fdd8dp2+v5/O9YCQlSy
-   Gk1cXXXJR+703azR6a/Rco1OirRU2/hnaW/1O6qnfu5/hfWQRAzWhTDnI
-   NFeN4wc/ip6Vu4qFGcAlbpaycTj18UWgwIOiIbrLSFyls/u9m8jMR7s1K
-   OwUwKcBr7yRYopHzLhVMkbh5dJ1hxYJYC1OD7EA80pvsR19bWGKPuVsgc
-   aOplCg+lPJ3iEf7csgzxzeFPQk6+mLaeFKhvUoCj0XbNv+uuvcwRIWTxJ
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10243"; a="333798871"
-X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
-   d="scan'208";a="333798871"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 03:23:50 -0800
-X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
-   d="scan'208";a="479042021"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 03:23:46 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nEUle-00GqYd-Oi;
-        Mon, 31 Jan 2022 13:22:42 +0200
-Date:   Mon, 31 Jan 2022 13:22:42 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Cc:     David Rientjes <rientjes@google.com>,
-        Waiman Long <longman@redhat.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Vladimir Davydov <vdavydov.dev@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
-        linux-mm@kvack.org, Ira Weiny <ira.weiny@intel.com>,
-        Rafael Aquini <aquini@redhat.com>
-Subject: Re: [PATCH v2 1/3] lib/vsprintf: Avoid redundant work with 0 size
-Message-ID: <YffGgozjI4W2Vamp@smile.fi.intel.com>
-References: <20220129205315.478628-1-longman@redhat.com>
- <20220129205315.478628-2-longman@redhat.com>
- <d99b3c4b-7b6e-529-6e4b-b91b65c92d81@google.com>
- <Yfe5Bb3U6Uil7Y6g@smile.fi.intel.com>
- <Yfe6SfG4CqzWSaMM@smile.fi.intel.com>
- <Yfe7Q5cx+MoaOev/@smile.fi.intel.com>
- <d44824d4-2dd1-a8ab-d3ee-ac67b749ca6f@rasmusvillemoes.dk>
+        Mon, 31 Jan 2022 06:43:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49890 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1378652AbiAaL2y (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 06:28:54 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1590FC06177F;
+        Mon, 31 Jan 2022 03:17:36 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A7B5860E76;
+        Mon, 31 Jan 2022 11:17:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67E4DC36AE9;
+        Mon, 31 Jan 2022 11:17:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643627855;
+        bh=m+wYBcL87JmJfSf+hqGSIeT+s0MdI8nu9iVRXH/o+0Q=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=TdbotNzpfOWahYO6Wp7VJIAjSHcy3X1o61cn+Oza3LZ6NlF78bSMaj/Y/b1wKpmDT
+         pR/IEU011UFC+M/B8lvW/7NOd4pXmSc0RXsq5BvwiGUH7YTf73NH3ZXHVhSxoUCkSE
+         MMSy7EqDeUw9Q1AAGXbJoJclIswnO0bNQdYsPVog=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.16 046/200] drm/amd/display: Fix FP start/end for dcn30_internal_validate_bw.
+Date:   Mon, 31 Jan 2022 11:55:09 +0100
+Message-Id: <20220131105235.105650804@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
+References: <20220131105233.561926043@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d44824d4-2dd1-a8ab-d3ee-ac67b749ca6f@rasmusvillemoes.dk>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 31, 2022 at 12:02:29PM +0100, Rasmus Villemoes wrote:
-> On 31/01/2022 11.34, Andy Shevchenko wrote:
-> > On Mon, Jan 31, 2022 at 12:30:33PM +0200, Andy Shevchenko wrote:
-> >> On Mon, Jan 31, 2022 at 12:25:09PM +0200, Andy Shevchenko wrote:
-> >>> On Sun, Jan 30, 2022 at 12:49:37PM -0800, David Rientjes wrote:
-> >>>> On Sat, 29 Jan 2022, Waiman Long wrote:
-> >>>>
-> >>>>> For *scnprintf(), vsnprintf() is always called even if the input size is
-> >>>>> 0. That is a waste of time, so just return 0 in this case.
-> >>>
-> >>> Why do you think it's not legit?
-> >>
-> >> I have to elaborate.
-> >>
-> >> For *nprintf() the size=0 is quite useful to have.
-> >> For *cnprintf() the size=0 makes less sense, but, if we read `man snprintf()`:
-> >>
-> >>   The  functions  snprintf() and vsnprintf() do not write more than size bytes
-> >>   (including the terminating null byte ('\0')). If the output was truncated due
-> >>   to this limit, then the return value is the  number of  characters (excluding
-> >>   the terminating null byte) which would have been written to the final string
-> >>   if enough space had been available. Thus, a return value of size or more
-> >>   means  that  the  output  was truncated.  (See also below under NOTES.)
-> >>
-> >>   If an output error is encountered, a negative value is returned.
-> >>
-> >> Note the last sentence there. You need to answer to it in the commit message
-> >> why your change is okay and it will show that you thought through all possible
-> >> scenarios.
-> > 
-> > Also it seems currently the kernel documentation is not aligned with the code
-> > 
-> >   "If @size is == 0 the function returns 0."
-> > 
-> > It should mention the (theoretical?) possibility of getting negative value,
-> > if vsnprintf() returns negative value.
-> > 
-> 
-> The kernel's vsnprintf _will never_ return a negative value. There is
-> way too much code which relies on that. It also has to work from any
-> context, so we'll never do any memory allocation or anything else that
-> could possibly force us to error out, and even if we encounter some
-> impossible situation, we do not return a negative value, but just stop
-> the output where we are.
+From: Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>
 
-Yep, I see the code. My comments more or less are related to the (better)
-commit message which may include what you just said.
+commit 72a8d87b87270bff0c0b2fed4d59c48d0dd840d7 upstream.
 
-> So yes, micro-optimizing [v]scnprintf() is completely valid, but I've
-> never bothered to send the patch because the use case for scnprintf() is
-> primarily the
-> 
->   ret += scnprintf(buf + ret, size - ret, ...);
-> 
-> pattern, with ret starting out at 0 and size being some non-zero number.
-> When given a non-zero size, scnprintf() is guaranteed to return
-> something _strictly less_ than that value; that invariant guarantees
-> that the size-ret expression never becomes 0. So if scnprintf() is
-> properly used, I can't think of any situation where size will be 0,
-> hence I see that patch as correct-but-mostly-pointless.
+It calls populate_dml_pipes which uses doubles to initialize the
+scale_ratio_depth params. Mirrors the dcn20 logic.
 
-Good remark and again commit message probably should elaborate this as
-well.
+Cc: stable@vger.kernel.org
+Signed-off-by: Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/gpu/drm/amd/display/dc/dcn30/dcn30_resource.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
--- 
-With Best Regards,
-Andy Shevchenko
+--- a/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_resource.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_resource.c
+@@ -1880,7 +1880,6 @@ noinline bool dcn30_internal_validate_bw
+ 	dc->res_pool->funcs->update_soc_for_wm_a(dc, context);
+ 	pipe_cnt = dc->res_pool->funcs->populate_dml_pipes(dc, context, pipes, fast_validate);
+ 
+-	DC_FP_START();
+ 	if (!pipe_cnt) {
+ 		out = true;
+ 		goto validate_out;
+@@ -2106,7 +2105,6 @@ validate_fail:
+ 	out = false;
+ 
+ validate_out:
+-	DC_FP_END();
+ 	return out;
+ }
+ 
+@@ -2308,7 +2306,9 @@ bool dcn30_validate_bandwidth(struct dc
+ 
+ 	BW_VAL_TRACE_COUNT();
+ 
++	DC_FP_START();
+ 	out = dcn30_internal_validate_bw(dc, context, pipes, &pipe_cnt, &vlevel, fast_validate);
++	DC_FP_END();
+ 
+ 	if (pipe_cnt == 0)
+ 		goto validate_out;
 
 
