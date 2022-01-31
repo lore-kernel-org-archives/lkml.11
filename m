@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 653C5C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:35:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 293C7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:35:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377245AbiAaLdC (ORCPT
+        id S1377373AbiAaLdE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:33:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47974 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377420AbiAaLWx (ORCPT
+        Mon, 31 Jan 2022 06:33:04 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:41194 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377405AbiAaLWx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 31 Jan 2022 06:22:53 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 761D2C08C5FE;
-        Mon, 31 Jan 2022 03:14:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 405ABB82A60;
-        Mon, 31 Jan 2022 11:14:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BD2CC340E8;
-        Mon, 31 Jan 2022 11:14:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 28C34B82A6E;
+        Mon, 31 Jan 2022 11:22:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D67CC340E8;
+        Mon, 31 Jan 2022 11:22:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627670;
-        bh=sUXsI0wCoxfiIXnMPPHNieoBFOOs7FzMLM8dcytT+ug=;
+        s=korg; t=1643628171;
+        bh=kFhsWalfb2hPYfQzJG/SIiShKLowtkeWgVgB7E8wzsk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n1VcmXCw9mWFwdFNRXRvLCoRleel4MZ8TcLCtKmNByYYSLFyiBT2tzLSGwc/0tMEc
-         O/XTw1gBFPfiEycABxHIoagXhK6nVBXbjXMAcwn6s1TZV0xvf9OqArts8BmE9FCZIj
-         68ErOUn/dRkLSv5+/sY/WdDf2/VGJSyqzMNBKnDA=
+        b=de23Bj7E/MuqMwkvVlH3q3P4x4igeu2WdVSTYnSIcn/tc2SAhP4evj9zN8uJrlCrW
+         iItvJ8OB0HIqes+rMVWo7s6Mm728QKVwl/NvPw6Jxjd30ZXTvs3ykYVLjovx+yh2e6
+         BtMMyhjTN69RkvPkIIspVSdKD0E1Os8FVvEUyto4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Geetha sowjanya <gakula@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 159/171] ipv4: remove sparse error in ip_neigh_gw4()
-Date:   Mon, 31 Jan 2022 11:57:04 +0100
-Message-Id: <20220131105235.395266540@linuxfoundation.org>
+Subject: [PATCH 5.16 148/200] octeontx2-af: cn10k: Do not enable RPM loopback for LPC interfaces
+Date:   Mon, 31 Jan 2022 11:56:51 +0100
+Message-Id: <20220131105238.536784839@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
-References: <20220131105229.959216821@linuxfoundation.org>
+In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
+References: <20220131105233.561926043@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,36 +49,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Geetha sowjanya <gakula@marvell.com>
 
-[ Upstream commit 3c42b2019863b327caa233072c50739d4144dd16 ]
+[ Upstream commit df66b6ebc5dcf7253e35a640b9ec4add54195c25 ]
 
-./include/net/route.h:373:48: warning: incorrect type in argument 2 (different base types)
-./include/net/route.h:373:48:    expected unsigned int [usertype] key
-./include/net/route.h:373:48:    got restricted __be32 [usertype] daddr
+Internal looback is not supported to low rate LPCS interface like
+SGMII/QSGMII. Hence don't allow to enable for such interfaces.
 
-Fixes: 5c9f7c1dfc2e ("ipv4: Add helpers for neigh lookup for nexthop")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Link: https://lore.kernel.org/r/20220127013404.1279313-1-eric.dumazet@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 3ad3f8f93c81 ("octeontx2-af: cn10k: MAC internal loopback support")
+Signed-off-by: Geetha sowjanya <gakula@marvell.com>
+Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
+Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/route.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../net/ethernet/marvell/octeontx2/af/rpm.c   | 27 +++++++++----------
+ 1 file changed, 12 insertions(+), 15 deletions(-)
 
-diff --git a/include/net/route.h b/include/net/route.h
-index 2e6c0e153e3a5..2551f3f03b37e 100644
---- a/include/net/route.h
-+++ b/include/net/route.h
-@@ -369,7 +369,7 @@ static inline struct neighbour *ip_neigh_gw4(struct net_device *dev,
- {
- 	struct neighbour *neigh;
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
+index 4cbd91540f999..9ea2f6ac38ec1 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
+@@ -291,23 +291,20 @@ int rpm_lmac_internal_loopback(void *rpmd, int lmac_id, bool enable)
+ 	if (!rpm || lmac_id >= rpm->lmac_count)
+ 		return -ENODEV;
+ 	lmac_type = rpm->mac_ops->get_lmac_type(rpm, lmac_id);
+-	if (lmac_type == LMAC_MODE_100G_R) {
+-		cfg = rpm_read(rpm, lmac_id, RPMX_MTI_PCS100X_CONTROL1);
+-
+-		if (enable)
+-			cfg |= RPMX_MTI_PCS_LBK;
+-		else
+-			cfg &= ~RPMX_MTI_PCS_LBK;
+-		rpm_write(rpm, lmac_id, RPMX_MTI_PCS100X_CONTROL1, cfg);
+-	} else {
+-		cfg = rpm_read(rpm, lmac_id, RPMX_MTI_LPCSX_CONTROL1);
+-		if (enable)
+-			cfg |= RPMX_MTI_PCS_LBK;
+-		else
+-			cfg &= ~RPMX_MTI_PCS_LBK;
+-		rpm_write(rpm, lmac_id, RPMX_MTI_LPCSX_CONTROL1, cfg);
++
++	if (lmac_type == LMAC_MODE_QSGMII || lmac_type == LMAC_MODE_SGMII) {
++		dev_err(&rpm->pdev->dev, "loopback not supported for LPC mode\n");
++		return 0;
+ 	}
  
--	neigh = __ipv4_neigh_lookup_noref(dev, daddr);
-+	neigh = __ipv4_neigh_lookup_noref(dev, (__force u32)daddr);
- 	if (unlikely(!neigh))
- 		neigh = __neigh_create(&arp_tbl, &daddr, dev, false);
++	cfg = rpm_read(rpm, lmac_id, RPMX_MTI_PCS100X_CONTROL1);
++
++	if (enable)
++		cfg |= RPMX_MTI_PCS_LBK;
++	else
++		cfg &= ~RPMX_MTI_PCS_LBK;
++	rpm_write(rpm, lmac_id, RPMX_MTI_PCS100X_CONTROL1, cfg);
++
+ 	return 0;
+ }
  
 -- 
 2.34.1
