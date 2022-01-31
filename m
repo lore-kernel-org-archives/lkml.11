@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82893C4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:20:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42014C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:20:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378755AbiAaLUp (ORCPT
+        id S1377729AbiAaLUk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:20:45 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:58064 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348634AbiAaLKi (ORCPT
+        Mon, 31 Jan 2022 06:20:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45556 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358567AbiAaLKj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:10:38 -0500
+        Mon, 31 Jan 2022 06:10:39 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D695C061714;
+        Mon, 31 Jan 2022 03:10:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 80276B82A77;
-        Mon, 31 Jan 2022 11:10:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D2AAC340E8;
-        Mon, 31 Jan 2022 11:10:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3E706B82A5C;
+        Mon, 31 Jan 2022 11:10:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7970FC340EF;
+        Mon, 31 Jan 2022 11:10:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627434;
-        bh=yV44pFlQz0d1ocXTXs7phP0zBeDACRrZQKGXKRnv44w=;
+        s=korg; t=1643627437;
+        bh=tB7JCLFXx3Iwrv0oV3/fnaCWjJ379uUPqtNDv1Sgty0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FtDGHewC9FBK7yc6nxm7JFBemR817Nv10Tv/Fjffc7iA/PMtBwMTOdfLwo/gnBxjq
-         xs3uE/VKwdHxgylZ5mg6IDIZXLBPKRv0ekdaP8xije4pjYkf3cwdCHMnaiCHH6vHKu
-         Lgb3YVV55VDZMOQlno1Jge8hz7U4FPqO3IVcv0t8=
+        b=WNtvRJGxrSvjm/AnZEUhP0ksYdLmT6EhPxvxMH65Lppb67b9MZTvoJWmREvNrduue
+         hbXiFbHyxUVZT8S8NGbH/m8//HTUXh7BODJazYCfVeh9YTNfktSadKaNfP7kPHmLdR
+         q+GJaP7s5S6JneRflQZfgCA7SgJ3x0ndHo+XT2dE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Stephen Boyd <swboyd@chromium.org>
-Subject: [PATCH 5.15 082/171] rpmsg: char: Fix race between the release of rpmsg_eptdev and cdev
-Date:   Mon, 31 Jan 2022 11:55:47 +0100
-Message-Id: <20220131105232.803738436@linuxfoundation.org>
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        James Smart <jsmart2021@gmail.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.15 083/171] scsi: elx: efct: Dont use GFP_KERNEL under spin lock
+Date:   Mon, 31 Jan 2022 11:55:48 +0100
+Message-Id: <20220131105232.832270331@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
 References: <20220131105229.959216821@linuxfoundation.org>
@@ -49,71 +51,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthias Kaehlcke <mka@chromium.org>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-commit 7a534ae89e34e9b51acb5a63dd0f88308178b46a upstream.
+commit 61263b3a11a2594b4e898f166c31162236182b5c upstream.
 
-struct rpmsg_eptdev contains a struct cdev. The current code frees
-the rpmsg_eptdev struct in rpmsg_eptdev_destroy(), but the cdev is
-a managed object, therefore its release is not predictable and the
-rpmsg_eptdev could be freed before the cdev is entirely released.
+GFP_KERNEL/GFP_DMA can't be used under a spin lock. According the comment,
+els_ios_lock is used to protect els ios list so we can move down the spin
+lock to avoid using this flag under the lock.
 
-The cdev_device_add/del() API was created to address this issue
-(see commit '233ed09d7fda ("chardev: add helper function to register
-char devs with a struct device")'), use it instead of cdev add/del().
-
-Fixes: c0cdc19f84a4 ("rpmsg: Driver for user space endpoint interface")
-Suggested-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
-Reviewed-by: Mathieu Poirier <mathieu.poirier@linaro.org>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220110104706.v6.2.Idde68b05b88d4a2e6e54766c653f3a6d9e419ce6@changeid
+Link: https://lore.kernel.org/r/20220111012441.3232527-1-yangyingliang@huawei.com
+Fixes: 8f406ef72859 ("scsi: elx: libefc: Extended link Service I/O handling")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Reviewed-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/rpmsg/rpmsg_char.c |   11 ++---------
- 1 file changed, 2 insertions(+), 9 deletions(-)
+ drivers/scsi/elx/libefc/efc_els.c |    8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
---- a/drivers/rpmsg/rpmsg_char.c
-+++ b/drivers/rpmsg/rpmsg_char.c
-@@ -92,7 +92,7 @@ static int rpmsg_eptdev_destroy(struct d
- 	/* wake up any blocked readers */
- 	wake_up_interruptible(&eptdev->readq);
+--- a/drivers/scsi/elx/libefc/efc_els.c
++++ b/drivers/scsi/elx/libefc/efc_els.c
+@@ -46,18 +46,14 @@ efc_els_io_alloc_size(struct efc_node *n
  
--	device_del(&eptdev->dev);
-+	cdev_device_del(&eptdev->cdev, &eptdev->dev);
- 	put_device(&eptdev->dev);
+ 	efc = node->efc;
  
- 	return 0;
-@@ -335,7 +335,6 @@ static void rpmsg_eptdev_release_device(
+-	spin_lock_irqsave(&node->els_ios_lock, flags);
+-
+ 	if (!node->els_io_enabled) {
+ 		efc_log_err(efc, "els io alloc disabled\n");
+-		spin_unlock_irqrestore(&node->els_ios_lock, flags);
+ 		return NULL;
+ 	}
  
- 	ida_simple_remove(&rpmsg_ept_ida, dev->id);
- 	ida_simple_remove(&rpmsg_minor_ida, MINOR(eptdev->dev.devt));
--	cdev_del(&eptdev->cdev);
- 	kfree(eptdev);
+ 	els = mempool_alloc(efc->els_io_pool, GFP_ATOMIC);
+ 	if (!els) {
+ 		atomic_add_return(1, &efc->els_io_alloc_failed_count);
+-		spin_unlock_irqrestore(&node->els_ios_lock, flags);
+ 		return NULL;
+ 	}
+ 
+@@ -74,7 +70,6 @@ efc_els_io_alloc_size(struct efc_node *n
+ 					      &els->io.req.phys, GFP_DMA);
+ 	if (!els->io.req.virt) {
+ 		mempool_free(els, efc->els_io_pool);
+-		spin_unlock_irqrestore(&node->els_ios_lock, flags);
+ 		return NULL;
+ 	}
+ 
+@@ -94,10 +89,11 @@ efc_els_io_alloc_size(struct efc_node *n
+ 
+ 		/* add els structure to ELS IO list */
+ 		INIT_LIST_HEAD(&els->list_entry);
++		spin_lock_irqsave(&node->els_ios_lock, flags);
+ 		list_add_tail(&els->list_entry, &node->els_ios_list);
++		spin_unlock_irqrestore(&node->els_ios_lock, flags);
+ 	}
+ 
+-	spin_unlock_irqrestore(&node->els_ios_lock, flags);
+ 	return els;
  }
  
-@@ -380,19 +379,13 @@ static int rpmsg_eptdev_create(struct rp
- 	dev->id = ret;
- 	dev_set_name(dev, "rpmsg%d", ret);
- 
--	ret = cdev_add(&eptdev->cdev, dev->devt, 1);
-+	ret = cdev_device_add(&eptdev->cdev, &eptdev->dev);
- 	if (ret)
- 		goto free_ept_ida;
- 
- 	/* We can now rely on the release function for cleanup */
- 	dev->release = rpmsg_eptdev_release_device;
- 
--	ret = device_add(dev);
--	if (ret) {
--		dev_err(dev, "device_add failed: %d\n", ret);
--		put_device(dev);
--	}
--
- 	return ret;
- 
- free_ept_ida:
 
 
