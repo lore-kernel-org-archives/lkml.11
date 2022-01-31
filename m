@@ -2,86 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B2DFC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 16:33:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAF21C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 16:33:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380457AbiAaQdD (ORCPT
+        id S1380469AbiAaQdJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 11:33:03 -0500
-Received: from relay5-d.mail.gandi.net ([217.70.183.197]:50565 "EHLO
-        relay5-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379566AbiAaQc6 (ORCPT
+        Mon, 31 Jan 2022 11:33:09 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:21545 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1380456AbiAaQdE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 11:32:58 -0500
-Received: (Authenticated sender: foss@0leil.net)
-        by mail.gandi.net (Postfix) with ESMTPSA id 160CC1C0009;
-        Mon, 31 Jan 2022 16:32:52 +0000 (UTC)
-From:   quentin.schulz@theobroma-systems.com
-Cc:     mturquette@baylibre.com, sboyd@kernel.org, heiko@sntech.de,
-        andriy.shevchenko@linux.intel.com, linux-clk@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Quentin Schulz <quentin.schulz@theobroma-systems.com>,
-        stable@vger.kernel.org, Quentin Schulz <foss+kernel@0leil.net>
-Subject: [PATCH] clk: rockchip: re-add rational best approximation algorithm to the fractional divider
-Date:   Mon, 31 Jan 2022 17:32:24 +0100
-Message-Id: <20220131163224.708002-1-quentin.schulz@theobroma-systems.com>
-X-Mailer: git-send-email 2.34.1
+        Mon, 31 Jan 2022 11:33:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643646783;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Of3jZ+VHPXQ5Dt61jaIUicZu7ZwPC24uJWxR+ti2d3o=;
+        b=RPkBrZyow2wu/gvMX1Q5i5UJot6oJ401uo6IEPNLjejyHEAN28v150TX24avlLRKSCDmmv
+        23Ep6An6KxwoAMCGPUWo7MEq42OHe6JXa4YSyNMuGSMMdlr6FU8SMiZ90/RCY/ePIzME/m
+        2ACCTxzlSJI8cUq8FqcDlk+M6C2r2FI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-115-3cmnDHY0Oh2_v_JeAp2-Iw-1; Mon, 31 Jan 2022 11:32:59 -0500
+X-MC-Unique: 3cmnDHY0Oh2_v_JeAp2-Iw-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 42E0486A066;
+        Mon, 31 Jan 2022 16:32:56 +0000 (UTC)
+Received: from t480s.redhat.com (unknown [10.39.193.115])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 601CB798CD;
+        Mon, 31 Jan 2022 16:32:50 +0000 (UTC)
+From:   David Hildenbrand <david@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Yang Shi <shy828301@gmail.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
+        Roman Gushchin <guro@fb.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        Donald Dutile <ddutile@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
+        Liang Zhang <zhangliang5@huawei.com>, linux-mm@kvack.org,
+        David Hildenbrand <david@redhat.com>
+Subject: [PATCH v3 3/9] mm: slightly clarify KSM logic in do_swap_page()
+Date:   Mon, 31 Jan 2022 17:29:33 +0100
+Message-Id: <20220131162940.210846-4-david@redhat.com>
+In-Reply-To: <20220131162940.210846-1-david@redhat.com>
+References: <20220131162940.210846-1-david@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quentin Schulz <quentin.schulz@theobroma-systems.com>
+Let's make it clearer that KSM might only have to copy a page
+in case we have a page in the swapcache, not if we allocated a fresh
+page and bypassed the swapcache. While at it, add a comment why this is
+usually necessary and merge the two swapcache conditions.
 
-In commit 4e7cf74fa3b2 ("clk: fractional-divider: Export approximation
-algorithm to the CCF users"), the code handling the rational best
-approximation algorithm was replaced by a call to the core
-clk_fractional_divider_general_approximation function which did the same
-thing back then.
-
-However, in commit 82f53f9ee577 ("clk: fractional-divider: Introduce
-POWER_OF_TWO_PS flag"), this common code was made conditional on
-CLK_FRAC_DIVIDER_POWER_OF_TWO_PS flag which was not added back to the
-rockchip clock driver.
-
-This broke the ltk050h3146w-a2 MIPI DSI display present on a PX30-based
-downstream board.
-
-Let's add the flag to the fractional divider flags so that the original
-and intended behavior is brought back to the rockchip clock drivers.
-
-Fixes: 82f53f9ee577 ("clk: fractional-divider: Introduce POWER_OF_TWO_PS flag")
-Cc: stable@vger.kernel.org
-Cc: Quentin Schulz <foss+kernel@0leil.net>
-Signed-off-by: Quentin Schulz <quentin.schulz@theobroma-systems.com>
+Signed-off-by: David Hildenbrand <david@redhat.com>
 ---
- drivers/clk/rockchip/clk.c | 3 +++
- 1 file changed, 3 insertions(+)
+ mm/memory.c | 38 +++++++++++++++++++++++---------------
+ 1 file changed, 23 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/clk/rockchip/clk.c b/drivers/clk/rockchip/clk.c
-index b7be7e11b0df..bb8a844309bf 100644
---- a/drivers/clk/rockchip/clk.c
-+++ b/drivers/clk/rockchip/clk.c
-@@ -180,6 +180,7 @@ static void rockchip_fractional_approximation(struct clk_hw *hw,
- 		unsigned long rate, unsigned long *parent_rate,
- 		unsigned long *m, unsigned long *n)
- {
-+	struct clk_fractional_divider *fd = to_clk_fd(hw);
- 	unsigned long p_rate, p_parent_rate;
- 	struct clk_hw *p_parent;
- 
-@@ -190,6 +191,8 @@ static void rockchip_fractional_approximation(struct clk_hw *hw,
- 		*parent_rate = p_parent_rate;
+diff --git a/mm/memory.c b/mm/memory.c
+index 923165b4c27e..3c91294cca98 100644
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -3615,21 +3615,29 @@ vm_fault_t do_swap_page(struct vm_fault *vmf)
+ 		goto out_release;
  	}
  
-+	fd->flags |= CLK_FRAC_DIVIDER_POWER_OF_TWO_PS;
+-	/*
+-	 * Make sure try_to_free_swap or reuse_swap_page or swapoff did not
+-	 * release the swapcache from under us.  The page pin, and pte_same
+-	 * test below, are not enough to exclude that.  Even if it is still
+-	 * swapcache, we need to check that the page's swap has not changed.
+-	 */
+-	if (unlikely((!PageSwapCache(page) ||
+-			page_private(page) != entry.val)) && swapcache)
+-		goto out_page;
+-
+-	page = ksm_might_need_to_copy(page, vma, vmf->address);
+-	if (unlikely(!page)) {
+-		ret = VM_FAULT_OOM;
+-		page = swapcache;
+-		goto out_page;
++	if (swapcache) {
++		/*
++		 * Make sure try_to_free_swap or reuse_swap_page or swapoff did
++		 * not release the swapcache from under us.  The page pin, and
++		 * pte_same test below, are not enough to exclude that.  Even if
++		 * it is still swapcache, we need to check that the page's swap
++		 * has not changed.
++		 */
++		if (unlikely(!PageSwapCache(page) ||
++			     page_private(page) != entry.val))
++			goto out_page;
 +
- 	clk_fractional_divider_general_approximation(hw, rate, parent_rate, m, n);
- }
++		/*
++		 * KSM sometimes has to copy on read faults, for example, if
++		 * page->index of !PageKSM() pages would be nonlinear inside the
++		 * anon VMA -- PageKSM() is lost on actual swapout.
++		 */
++		page = ksm_might_need_to_copy(page, vma, vmf->address);
++		if (unlikely(!page)) {
++			ret = VM_FAULT_OOM;
++			page = swapcache;
++			goto out_page;
++		}
+ 	}
  
+ 	cgroup_throttle_swaprate(page, GFP_KERNEL);
 -- 
 2.34.1
 
