@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF5B0C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:21:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CD2FC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:22:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376715AbiAaLV4 (ORCPT
+        id S1376781AbiAaLWD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:21:56 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:45836 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359817AbiAaLMM (ORCPT
+        Mon, 31 Jan 2022 06:22:03 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:59590 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359803AbiAaLMM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 31 Jan 2022 06:12:12 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1979661170;
-        Mon, 31 Jan 2022 11:12:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAAACC340E8;
-        Mon, 31 Jan 2022 11:12:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A76B2B82A5C;
+        Mon, 31 Jan 2022 11:12:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F096EC340E8;
+        Mon, 31 Jan 2022 11:12:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627531;
-        bh=syVE4GZKFypRsf0nIIvCwfJnwSh7ZYn+wdukRofgwOM=;
+        s=korg; t=1643627528;
+        bh=BfJ2L7Vtc1aO4wCTdMsYjZ29AIZEuc3yehenzkt6iOY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bwnmynZtc7U7YulLOlSmQrHZP+oFvSzEGnXawOjoviuHqnsFRkRIPUzlpk1Me0UyX
-         JybQcV9fw1J5aLx8AMO2tE1Siwn1gnrOTFLk+/gi0LSKPqfqB2lVElO3JlvnDPOzZr
-         4yRhee+fyJLu8AKQNPuThtp3xQ19QY7kxB9cRHBM=
+        b=cowtIFvTy/zy3yb0+kg6V9kEhCQL85G2i24uwnhTT4GZq0QTHcojsUdlvKQ52dByQ
+         SVL2/ScTc3sRhwvn7QLI42/3cTBULaRy4IcI8xIfCofYTUOaVbgPB85LowRCol+oeO
+         EyyBQlK33ffH9a4pGexeTM61rAe+It8NURFK0dhU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Jean Sacren <sakiwit@gmail.com>,
+        stable@vger.kernel.org, Davide Caratti <dcaratti@redhat.com>,
         Mat Martineau <mathew.j.martineau@linux.intel.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 115/171] mptcp: clean up harmless false expressions
-Date:   Mon, 31 Jan 2022 11:56:20 +0100
-Message-Id: <20220131105233.934653316@linuxfoundation.org>
+Subject: [PATCH 5.15 114/171] mptcp: allow changing the "backup" bit by endpoint id
+Date:   Mon, 31 Jan 2022 11:56:19 +0100
+Message-Id: <20220131105233.894017606@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
 References: <20220131105229.959216821@linuxfoundation.org>
@@ -50,58 +48,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jean Sacren <sakiwit@gmail.com>
+From: Davide Caratti <dcaratti@redhat.com>
 
-[ Upstream commit 59060a47ca50bbdb1d863b73667a1065873ecc06 ]
+[ Upstream commit 602837e8479d20d49559b4b97b79d34c0efe7ecb ]
 
-entry->addr.id is u8 with a range from 0 to 255 and MAX_ADDR_ID is 255.
-We should drop both false expressions of (entry->addr.id > MAX_ADDR_ID).
+a non-zero 'id' is sufficient to identify MPTCP endpoints: allow changing
+the value of 'backup' bit by simply specifying the endpoint id.
 
-We should also remove the obsolete parentheses in the first if branch.
-
-Use U8_MAX for MAX_ADDR_ID and add a comment to show the link to
-mptcp_addr_info.id as suggested by Mr. Matthieu Baerts.
-
-Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-Signed-off-by: Jean Sacren <sakiwit@gmail.com>
+Link: https://github.com/multipath-tcp/mptcp_net-next/issues/158
+Signed-off-by: Davide Caratti <dcaratti@redhat.com>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mptcp/pm_netlink.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ net/mptcp/pm_netlink.c | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
 diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
-index 3be10bf22cf7c..15c89d4fea4d2 100644
+index d96860053816a..3be10bf22cf7c 100644
 --- a/net/mptcp/pm_netlink.c
 +++ b/net/mptcp/pm_netlink.c
-@@ -38,7 +38,8 @@ struct mptcp_pm_add_entry {
- 	u8			retrans_times;
- };
+@@ -1711,22 +1711,28 @@ next:
  
--#define MAX_ADDR_ID		255
-+/* max value of mptcp_addr_info.id */
-+#define MAX_ADDR_ID		U8_MAX
- #define BITMAP_SZ DIV_ROUND_UP(MAX_ADDR_ID + 1, BITS_PER_LONG)
+ static int mptcp_nl_cmd_set_flags(struct sk_buff *skb, struct genl_info *info)
+ {
++	struct mptcp_pm_addr_entry addr = { .addr = { .family = AF_UNSPEC }, }, *entry;
+ 	struct nlattr *attr = info->attrs[MPTCP_PM_ATTR_ADDR];
+ 	struct pm_nl_pernet *pernet = genl_info_pm_nl(info);
+-	struct mptcp_pm_addr_entry addr, *entry;
+ 	struct net *net = sock_net(skb->sk);
+-	u8 bkup = 0;
++	u8 bkup = 0, lookup_by_id = 0;
+ 	int ret;
  
- struct pm_nl_pernet {
-@@ -831,14 +832,13 @@ find_next:
- 		entry->addr.id = find_next_zero_bit(pernet->id_bitmap,
- 						    MAX_ADDR_ID + 1,
- 						    pernet->next_id);
--		if ((!entry->addr.id || entry->addr.id > MAX_ADDR_ID) &&
--		    pernet->next_id != 1) {
-+		if (!entry->addr.id && pernet->next_id != 1) {
- 			pernet->next_id = 1;
- 			goto find_next;
- 		}
- 	}
+-	ret = mptcp_pm_parse_addr(attr, info, true, &addr);
++	ret = mptcp_pm_parse_addr(attr, info, false, &addr);
+ 	if (ret < 0)
+ 		return ret;
  
--	if (!entry->addr.id || entry->addr.id > MAX_ADDR_ID)
-+	if (!entry->addr.id)
- 		goto out;
+ 	if (addr.flags & MPTCP_PM_ADDR_FLAG_BACKUP)
+ 		bkup = 1;
++	if (addr.addr.family == AF_UNSPEC) {
++		lookup_by_id = 1;
++		if (!addr.addr.id)
++			return -EOPNOTSUPP;
++	}
  
- 	__set_bit(entry->addr.id, pernet->id_bitmap);
+ 	list_for_each_entry(entry, &pernet->local_addr_list, list) {
+-		if (addresses_equal(&entry->addr, &addr.addr, true)) {
++		if ((!lookup_by_id && addresses_equal(&entry->addr, &addr.addr, true)) ||
++		    (lookup_by_id && entry->addr.id == addr.addr.id)) {
+ 			mptcp_nl_addr_backup(net, &entry->addr, bkup);
+ 
+ 			if (bkup)
 -- 
 2.34.1
 
