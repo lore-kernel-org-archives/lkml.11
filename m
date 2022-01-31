@@ -2,36 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC1FEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 03:25:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B9BBC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 03:38:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357503AbiAaDZW (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 30 Jan 2022 22:25:22 -0500
-Received: from foss.arm.com ([217.140.110.172]:53890 "EHLO foss.arm.com"
+        id S244292AbiAaDfu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 30 Jan 2022 22:35:50 -0500
+Received: from foss.arm.com ([217.140.110.172]:54302 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236781AbiAaDZT (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 30 Jan 2022 22:25:19 -0500
+        id S229885AbiAaDfs (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sun, 30 Jan 2022 22:35:48 -0500
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 92B49ED1;
-        Sun, 30 Jan 2022 19:25:18 -0800 (PST)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AA62BED1;
+        Sun, 30 Jan 2022 19:35:47 -0800 (PST)
 Received: from [10.163.44.9] (unknown [10.163.44.9])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 303A33F774;
-        Sun, 30 Jan 2022 19:25:15 -0800 (PST)
-Subject: Re: [RFC V1 02/31] mm/mmap: Clarify protection_map[] indices
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BC6B53F774;
+        Sun, 30 Jan 2022 19:35:45 -0800 (PST)
+Subject: Re: [RFC V1 00/31] mm/mmap: Drop protection_map[] and platform's
+ __SXXX/__PXXX requirements
 To:     Mike Rapoport <rppt@kernel.org>
 Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
         hch@infradead.org, akpm@linux-foundation.org
 References: <1643029028-12710-1-git-send-email-anshuman.khandual@arm.com>
- <1643029028-12710-3-git-send-email-anshuman.khandual@arm.com>
- <YfKSn6u3YsErB/Ky@kernel.org>
+ <YfKSXXTZOa9FYug8@kernel.org>
 From:   Anshuman Khandual <anshuman.khandual@arm.com>
-Message-ID: <904f9623-0f02-9530-1d66-017baa082349@arm.com>
-Date:   Mon, 31 Jan 2022 08:55:12 +0530
+Message-ID: <45a5562d-9eaa-b9ea-62e0-4518e5a09046@arm.com>
+Date:   Mon, 31 Jan 2022 09:05:43 +0530
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <YfKSn6u3YsErB/Ky@kernel.org>
+In-Reply-To: <YfKSXXTZOa9FYug8@kernel.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -41,64 +40,43 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 
 
-On 1/27/22 6:09 PM, Mike Rapoport wrote:
-> On Mon, Jan 24, 2022 at 06:26:39PM +0530, Anshuman Khandual wrote:
->> protection_map[] maps vm_flags access combinations into page protection
->> value as defined by the platform via __PXXX and __SXXX macros. The array
->> indices in protection_map[], represents vm_flags access combinations but
->> it's not very intuitive to derive. This makes it clear and explicit.
+On 1/27/22 6:08 PM, Mike Rapoport wrote:
+> Hi Anshuman,
 > 
-> The protection_map is going to be removed in one of the next patches, why
-> bother with this patch at all?
-This makes the transition from protection_map[] into __vm_get_page_prot()
-more intuitive, where protection_map[] gets dropped. This helps platforms
-(first ones subscribing ARCH_HAS_VM_GET_PAGE_PROT before this drop) create
-/formulate the required switch case elements in their vm_get_page_prot().
-
-The existing protection_map[] is not clear in demonstrating how exactly
-the vm_flags combination is mapped into page protection map. This helps
-clarify the underlying switch before we move on defining it on platforms.
-
+> On Mon, Jan 24, 2022 at 06:26:37PM +0530, Anshuman Khandual wrote:
+>> protection_map[] is an array based construct that translates given vm_flags
+>> combination. This array contains page protection map, which is populated by
+>> the platform via [__S000 .. __S111] and [__P000 .. __P111] exported macros.
+>> Primary usage for protection_map[] is for vm_get_page_prot(), which is used
+>> to determine page protection value for a given vm_flags. vm_get_page_prot()
+>> implementation, could again call platform overrides arch_vm_get_page_prot()
+>> and arch_filter_pgprot(). Some platforms override protection_map[] that was
+>> originally built with __SXXX/__PXXX with different runtime values.
+>>
+>> Currently there are multiple layers of abstraction i.e __SXXX/__PXXX macros
+>> , protection_map[], arch_vm_get_page_prot() and arch_filter_pgprot() built
+>> between the platform and generic MM, finally defining vm_get_page_prot().
+>>
+>> Hence this series proposes to drop all these abstraction levels and instead
+>> just move the responsibility of defining vm_get_page_prot() to the platform
+>> itself making it clean and simple.
+>>
+>> This first introduces ARCH_HAS_VM_GET_PAGE_PROT which enables the platforms
+>> to define custom vm_get_page_prot(). This starts converting platforms that
+>> either change protection_map[] or define the overrides arch_filter_pgprot()
+>> or arch_vm_get_page_prot() which enables for those constructs to be dropped
+>> off completely. This series then converts remaining platforms which enables
+>> for __SXXX/__PXXX constructs to be dropped off completely. Finally it drops
+>> the generic vm_get_page_prot() and then ARCH_HAS_VM_GET_PAGE_PROT as every
+>> platform now defines their own vm_get_page_prot().
+>
+> I generally like the idea, I just think the conversion can be more straight
+> forward. Rather than adding ARCH_HAS_VM_GET_PAGE_PROT and then dropping it,
+> why won't me make the generic vm_get_page_prot() __weak, then add per-arch
+> implementation and in the end drop the generic one?
 >  
->> Cc: Andrew Morton <akpm@linux-foundation.org>
->> Cc: linux-mm@kvack.org
->> Cc: linux-kernel@vger.kernel.org
->> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
->> ---
->>  mm/mmap.c | 18 ++++++++++++++++--
->>  1 file changed, 16 insertions(+), 2 deletions(-)
->>
->> diff --git a/mm/mmap.c b/mm/mmap.c
->> index 1e8fdb0b51ed..254d716220df 100644
->> --- a/mm/mmap.c
->> +++ b/mm/mmap.c
->> @@ -102,8 +102,22 @@ static void unmap_region(struct mm_struct *mm,
->>   *								x: (yes) yes
->>   */
->>  pgprot_t protection_map[16] __ro_after_init = {
->> -	__P000, __P001, __P010, __P011, __P100, __P101, __P110, __P111,
->> -	__S000, __S001, __S010, __S011, __S100, __S101, __S110, __S111
->> +	[VM_NONE]				= __P000,
->> +	[VM_READ]				= __P001,
->> +	[VM_WRITE]				= __P010,
->> +	[VM_READ|VM_WRITE]			= __P011,
->> +	[VM_EXEC]				= __P100,
->> +	[VM_EXEC|VM_READ]			= __P101,
->> +	[VM_EXEC|VM_WRITE]			= __P110,
->> +	[VM_EXEC|VM_READ|VM_WRITE]		= __P111,
->> +	[VM_SHARED]				= __S000,
->> +	[VM_SHARED|VM_READ]			= __S001,
->> +	[VM_SHARED|VM_WRITE]			= __S010,
->> +	[VM_SHARED|VM_READ|VM_WRITE]		= __S011,
->> +	[VM_SHARED|VM_EXEC]			= __S100,
->> +	[VM_SHARED|VM_READ|VM_EXEC]		= __S101,
->> +	[VM_SHARED|VM_WRITE|VM_EXEC]		= __S110,
->> +	[VM_SHARED|VM_READ|VM_WRITE|VM_EXEC]	= __S111
->>  };
->>  
->>  #ifndef CONFIG_ARCH_HAS_FILTER_PGPROT
->> -- 
->> 2.25.1
->>
->>
-> 
+
+Is not the ARCH_HAS_ config based switch over a relatively better method ?
+IIUC some existing platform overrides could have been implemented via __weak
+identifier, although ARCH_HAS_ method was preferred. But I might be missing
+something here.
