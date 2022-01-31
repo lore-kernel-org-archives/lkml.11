@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7082BC4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:24:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC510C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:24:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378197AbiAaLXt (ORCPT
+        id S1378174AbiAaLXr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:23:49 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:34120 "EHLO
+        Mon, 31 Jan 2022 06:23:47 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:34010 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359006AbiAaLOg (ORCPT
+        with ESMTP id S1349461AbiAaLO1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:14:36 -0500
+        Mon, 31 Jan 2022 06:14:27 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4FF69B82A64;
-        Mon, 31 Jan 2022 11:14:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81AEAC340E8;
-        Mon, 31 Jan 2022 11:14:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 312C5B82A66;
+        Mon, 31 Jan 2022 11:14:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57529C340E8;
+        Mon, 31 Jan 2022 11:14:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627673;
-        bh=99WXz5UJ2KQSkBJVIoXmnyEOcDHEt1YaAxIJSmIyad0=;
+        s=korg; t=1643627663;
+        bh=kqixgHuG+URH4/WIHqTyBQYlAt5GsN60kfi/ZYQmzI4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TNo0loOflPfeQboxWdjGOum4Levpvmg+HuqWU1Mo+j496+ew/rc4HICVeO7F3Il6b
-         HKEH12lqdb2FGOF/KUIXQ6x9mm1G7M0xt1URXBQ5gydFWtIgwFAUGHOet0nzv/JOSa
-         l05qJq+nLpn3TezsccDpEac8N3f7UROtJl8Gmv54=
+        b=ncBQ6L0V5E/IuH5CPGMkqf7//bAm8oF6IZ4Cx3RVRyNJC05jAZcoHz95qHmqrJRgv
+         WNwCg68F0hBjnlPfTnsyVmkVLX7Qx+bv+Rf+wdF0MLJIx0PljsHJzSzNEStxAbK1S6
+         eZ8Qx8Y41t7m9dlYzvfkOYjqDG79NwHJXVoEjd8U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tim Yi <tim.yi@pica8.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 160/171] net: bridge: vlan: fix memory leak in __allowed_ingress
-Date:   Mon, 31 Jan 2022 11:57:05 +0100
-Message-Id: <20220131105235.432187773@linuxfoundation.org>
+Subject: [PATCH 5.15 157/171] ipv4: raw: lock the socket in raw_bind()
+Date:   Mon, 31 Jan 2022 11:57:02 +0100
+Message-Id: <20220131105235.329762392@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
 References: <20220131105229.959216821@linuxfoundation.org>
@@ -48,45 +48,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tim Yi <tim.yi@pica8.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit fd20d9738395cf8e27d0a17eba34169699fccdff ]
+[ Upstream commit 153a0d187e767c68733b8e9f46218eb1f41ab902 ]
 
-When using per-vlan state, if vlan snooping and stats are disabled,
-untagged or priority-tagged ingress frame will go to check pvid state.
-If the port state is forwarding and the pvid state is not
-learning/forwarding, untagged or priority-tagged frame will be dropped
-but skb memory is not freed.
-Should free skb when __allowed_ingress returns false.
+For some reason, raw_bind() forgot to lock the socket.
 
-Fixes: a580c76d534c ("net: bridge: vlan: add per-vlan state")
-Signed-off-by: Tim Yi <tim.yi@pica8.com>
-Acked-by: Nikolay Aleksandrov <nikolay@nvidia.com>
-Link: https://lore.kernel.org/r/20220127074953.12632-1-tim.yi@pica8.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+BUG: KCSAN: data-race in __ip4_datagram_connect / raw_bind
+
+write to 0xffff8881170d4308 of 4 bytes by task 5466 on cpu 0:
+ raw_bind+0x1b0/0x250 net/ipv4/raw.c:739
+ inet_bind+0x56/0xa0 net/ipv4/af_inet.c:443
+ __sys_bind+0x14b/0x1b0 net/socket.c:1697
+ __do_sys_bind net/socket.c:1708 [inline]
+ __se_sys_bind net/socket.c:1706 [inline]
+ __x64_sys_bind+0x3d/0x50 net/socket.c:1706
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+read to 0xffff8881170d4308 of 4 bytes by task 5468 on cpu 1:
+ __ip4_datagram_connect+0xb7/0x7b0 net/ipv4/datagram.c:39
+ ip4_datagram_connect+0x2a/0x40 net/ipv4/datagram.c:89
+ inet_dgram_connect+0x107/0x190 net/ipv4/af_inet.c:576
+ __sys_connect_file net/socket.c:1900 [inline]
+ __sys_connect+0x197/0x1b0 net/socket.c:1917
+ __do_sys_connect net/socket.c:1927 [inline]
+ __se_sys_connect net/socket.c:1924 [inline]
+ __x64_sys_connect+0x3d/0x50 net/socket.c:1924
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+value changed: 0x00000000 -> 0x0003007f
+
+Reported by Kernel Concurrency Sanitizer on:
+CPU: 1 PID: 5468 Comm: syz-executor.5 Not tainted 5.17.0-rc1-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bridge/br_vlan.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ net/ipv4/raw.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/net/bridge/br_vlan.c b/net/bridge/br_vlan.c
-index 06f5caee495aa..10e63ea6a13e1 100644
---- a/net/bridge/br_vlan.c
-+++ b/net/bridge/br_vlan.c
-@@ -560,10 +560,10 @@ static bool __allowed_ingress(const struct net_bridge *br,
- 		    !br_opt_get(br, BROPT_VLAN_STATS_ENABLED)) {
- 			if (*state == BR_STATE_FORWARDING) {
- 				*state = br_vlan_get_pvid_state(vg);
--				return br_vlan_state_allowed(*state, true);
--			} else {
--				return true;
-+				if (!br_vlan_state_allowed(*state, true))
-+					goto drop;
- 			}
-+			return true;
- 		}
- 	}
- 	v = br_vlan_find(vg, *vid);
+diff --git a/net/ipv4/raw.c b/net/ipv4/raw.c
+index bb446e60cf580..b8689052079cd 100644
+--- a/net/ipv4/raw.c
++++ b/net/ipv4/raw.c
+@@ -721,6 +721,7 @@ static int raw_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len)
+ 	int ret = -EINVAL;
+ 	int chk_addr_ret;
+ 
++	lock_sock(sk);
+ 	if (sk->sk_state != TCP_CLOSE || addr_len < sizeof(struct sockaddr_in))
+ 		goto out;
+ 
+@@ -740,7 +741,9 @@ static int raw_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len)
+ 		inet->inet_saddr = 0;  /* Use device */
+ 	sk_dst_reset(sk);
+ 	ret = 0;
+-out:	return ret;
++out:
++	release_sock(sk);
++	return ret;
+ }
+ 
+ /*
 -- 
 2.34.1
 
