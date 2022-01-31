@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EC55C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:34:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F1A1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:34:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376391AbiAaLcm (ORCPT
+        id S1376906AbiAaLcu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:32:42 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:52560 "EHLO
+        Mon, 31 Jan 2022 06:32:50 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:55766 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377274AbiAaLWj (ORCPT
+        with ESMTP id S1377349AbiAaLWq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:22:39 -0500
+        Mon, 31 Jan 2022 06:22:46 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E67A611E3;
-        Mon, 31 Jan 2022 11:22:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DC18C340E8;
-        Mon, 31 Jan 2022 11:22:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 548C460B98;
+        Mon, 31 Jan 2022 11:22:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 186D7C340E8;
+        Mon, 31 Jan 2022 11:22:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643628158;
-        bh=WbNPvf9fPdTSG1gQ5NTJjcnoAUVPuHZ4gNLdjHQIV3I=;
+        s=korg; t=1643628164;
+        bh=snsD1HBDq0IUrhswABMiH7ZQhyb/2bTDJidnpoFqPzw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J2L6VchRBSoThSyJu34052tZ3mNw7XiBF7A6l80otxayT9uLQL9PwuCQsFi/7g4oR
-         Hdz9E5bC7nR4t97wibwJfGmLsMANF3ZOKhwkO3kmASt0798jObNAVgnIyMc26qhtC3
-         K5s1LfMCXm4Bsu5hVxpPqASTS6J2RAI/NFC2BJDE=
+        b=AQjHL1rc2c9gifPicgBFdly6H8ygfUfQS1kGfJcsP44oIQvDiKtyrw6ikWOpkdTN+
+         iHdG9y791BLBxw+VNTj5HW3EIJHZSasT8LQnYm32HlgGLjQZ5fJ6wZIrqzU4pqcz0c
+         kB+FPaNkWZmLirCohxhg8EkAPzyBoUOEuN1gCuBY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -35,9 +35,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sunil Goutham <sgoutham@marvell.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 144/200] octeontx2-af: Retry until RVU block reset complete
-Date:   Mon, 31 Jan 2022 11:56:47 +0100
-Message-Id: <20220131105238.401824516@linuxfoundation.org>
+Subject: [PATCH 5.16 146/200] octeontx2-pf: cn10k: Ensure valid pointers are freed to aura
+Date:   Mon, 31 Jan 2022 11:56:49 +0100
+Message-Id: <20220131105238.475690592@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -51,39 +51,50 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Geetha sowjanya <gakula@marvell.com>
 
-[ Upstream commit 03ffbc9914bd1130fba464f0a41c01372e5fc359 ]
+[ Upstream commit c5d731c54a17677939bd59ee8be4ed74d7485ba4 ]
 
-Few RVU blocks like SSO require more time for reset on some
-silicons. Hence retrying the block reset until success.
+While freeing SQB pointers to aura, driver first memcpy to
+target address and then triggers lmtst operation to free pointer
+to the aura. We need to ensure(by adding dmb barrier)that memcpy
+is finished before pointers are freed to the aura. This patch also
+adds the missing sq context structure entry in debugfs.
 
-Fixes: c0fa2cff8822c ("octeontx2-af: Handle return value in block reset")
+Fixes: ef6c8da71eaf ("octeontx2-pf: cn10K: Reserve LMTST lines per core")
 Signed-off-by: Geetha sowjanya <gakula@marvell.com>
 Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
 Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/marvell/octeontx2/af/rvu.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c  | 2 ++
+ drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h | 1 +
+ 2 files changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-index 3ca6b942ebe25..54e1b27a7dfec 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-@@ -520,8 +520,11 @@ static void rvu_block_reset(struct rvu *rvu, int blkaddr, u64 rst_reg)
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
+index a09a507369ac3..d1eddb769a419 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
+@@ -1224,6 +1224,8 @@ static void print_nix_cn10k_sq_ctx(struct seq_file *m,
+ 	seq_printf(m, "W3: head_offset\t\t\t%d\nW3: smenq_next_sqb_vld\t\t%d\n\n",
+ 		   sq_ctx->head_offset, sq_ctx->smenq_next_sqb_vld);
  
- 	rvu_write64(rvu, blkaddr, rst_reg, BIT_ULL(0));
- 	err = rvu_poll_reg(rvu, blkaddr, rst_reg, BIT_ULL(63), true);
--	if (err)
--		dev_err(rvu->dev, "HW block:%d reset failed\n", blkaddr);
-+	if (err) {
-+		dev_err(rvu->dev, "HW block:%d reset timeout retrying again\n", blkaddr);
-+		while (rvu_poll_reg(rvu, blkaddr, rst_reg, BIT_ULL(63), true) == -EBUSY)
-+			;
-+	}
- }
- 
- static void rvu_reset_all_blocks(struct rvu *rvu)
++	seq_printf(m, "W3: smq_next_sq_vld\t\t%d\nW3: smq_pend\t\t\t%d\n",
++		   sq_ctx->smq_next_sq_vld, sq_ctx->smq_pend);
+ 	seq_printf(m, "W4: next_sqb \t\t\t%llx\n\n", sq_ctx->next_sqb);
+ 	seq_printf(m, "W5: tail_sqb \t\t\t%llx\n\n", sq_ctx->tail_sqb);
+ 	seq_printf(m, "W6: smenq_sqb \t\t\t%llx\n\n", sq_ctx->smenq_sqb);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+index 61e52812983fa..14509fc64cce9 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+@@ -603,6 +603,7 @@ static inline void __cn10k_aura_freeptr(struct otx2_nic *pfvf, u64 aura,
+ 			size++;
+ 		tar_addr |=  ((size - 1) & 0x7) << 4;
+ 	}
++	dma_wmb();
+ 	memcpy((u64 *)lmt_info->lmt_addr, ptrs, sizeof(u64) * num_ptrs);
+ 	/* Perform LMTST flush */
+ 	cn10k_lmt_flush(val, tar_addr);
 -- 
 2.34.1
 
