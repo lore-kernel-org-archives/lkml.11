@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92265C4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:24:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CDC7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:24:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377769AbiAaLXX (ORCPT
+        id S1377845AbiAaLX2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:23:23 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:47454 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244565AbiAaLOG (ORCPT
+        Mon, 31 Jan 2022 06:23:28 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:33546 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1376839AbiAaLN6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:14:06 -0500
+        Mon, 31 Jan 2022 06:13:58 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B7622611F9;
-        Mon, 31 Jan 2022 11:14:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91198C340F2;
-        Mon, 31 Jan 2022 11:14:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ED75DB82A5C;
+        Mon, 31 Jan 2022 11:13:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4368CC340E8;
+        Mon, 31 Jan 2022 11:13:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627645;
-        bh=02YNfxBTAXGk1kudiryNLknHRfDdaEviTnNWVcDeb3I=;
+        s=korg; t=1643627635;
+        bh=ZMt/0SNb54xaCj6H7mFTS+lTkkM/nkKODBcHB3yfb78=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dsLIFUzCrwK2OdZCV40HwE1DTQ/z7UjQgWxasczNgqS/OWwrlss6LhHT1nDGS8oq1
-         rGeOMhiCyT8tBWD30FG1pTMz7DTRGxzUMqaRKx0o9K9TLvLi2KtMnl43QCfj2LTtyI
-         Bd83LmdwKTkg7pkW01cneO7CLkaL2O31nJqkgavk=
+        b=l8hkqcY6jMZus+OrEvs3fJbXREDSZ0+sfuYJvTpj7XRa6jc2mji9LIGW8fJtf0/bV
+         Dcxt8Nbtl1X7p16xFTJQ245TMNuDbjB5y5fM0ZctxBn2/gdL4+E/5s+uDiybX+Sio9
+         McE8ewhkCqXKRkpwVcuyzmpWS20351mauptmoxcI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dmitry Osipenko <digetx@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>,
+        stable@vger.kernel.org, Yufeng Mo <moyufeng@huawei.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 134/171] hwmon: (lm90) Fix sysfs and udev notifications
-Date:   Mon, 31 Jan 2022 11:56:39 +0100
-Message-Id: <20220131105234.539004074@linuxfoundation.org>
+Subject: [PATCH 5.15 149/171] net: hns3: handle empty unknown interrupt for VF
+Date:   Mon, 31 Jan 2022 11:56:54 +0100
+Message-Id: <20220131105235.059021273@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
 References: <20220131105229.959216821@linuxfoundation.org>
@@ -47,53 +48,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guenter Roeck <linux@roeck-us.net>
+From: Yufeng Mo <moyufeng@huawei.com>
 
-[ Upstream commit d379880d9adb9f1ada3f1266aa49ea2561328e08 ]
+[ Upstream commit 2f61353cd2f789a4229b6f5c1c24a40a613357bb ]
 
-sysfs and udev notifications need to be sent to the _alarm
-attributes, not to the value attributes.
+Since some interrupt states may be cleared by hardware, the driver
+may receive an empty interrupt. Currently, the VF driver directly
+disables the vector0 interrupt in this case. As a result, the VF
+is unavailable. Therefore, the vector0 interrupt should be enabled
+in this case.
 
-Fixes: 94dbd23ed88c ("hwmon: (lm90) Use hwmon_notify_event()")
-Cc: Dmitry Osipenko <digetx@gmail.com>
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Fixes: b90fcc5bd904 ("net: hns3: add reset handling for VF when doing Core/Global/IMP reset")
+Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hwmon/lm90.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/hwmon/lm90.c b/drivers/hwmon/lm90.c
-index ba01127c1deb1..1c9493c708132 100644
---- a/drivers/hwmon/lm90.c
-+++ b/drivers/hwmon/lm90.c
-@@ -1808,22 +1808,22 @@ static bool lm90_is_tripped(struct i2c_client *client, u16 *status)
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
+index fee7d9e79f8c3..417a08d600b83 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
+@@ -2496,8 +2496,7 @@ static irqreturn_t hclgevf_misc_irq_handle(int irq, void *data)
+ 		break;
+ 	}
  
- 	if (st & LM90_STATUS_LLOW)
- 		hwmon_notify_event(data->hwmon_dev, hwmon_temp,
--				   hwmon_temp_min, 0);
-+				   hwmon_temp_min_alarm, 0);
- 	if (st & LM90_STATUS_RLOW)
- 		hwmon_notify_event(data->hwmon_dev, hwmon_temp,
--				   hwmon_temp_min, 1);
-+				   hwmon_temp_min_alarm, 1);
- 	if (st2 & MAX6696_STATUS2_R2LOW)
- 		hwmon_notify_event(data->hwmon_dev, hwmon_temp,
--				   hwmon_temp_min, 2);
-+				   hwmon_temp_min_alarm, 2);
- 	if (st & LM90_STATUS_LHIGH)
- 		hwmon_notify_event(data->hwmon_dev, hwmon_temp,
--				   hwmon_temp_max, 0);
-+				   hwmon_temp_max_alarm, 0);
- 	if (st & LM90_STATUS_RHIGH)
- 		hwmon_notify_event(data->hwmon_dev, hwmon_temp,
--				   hwmon_temp_max, 1);
-+				   hwmon_temp_max_alarm, 1);
- 	if (st2 & MAX6696_STATUS2_R2HIGH)
- 		hwmon_notify_event(data->hwmon_dev, hwmon_temp,
--				   hwmon_temp_max, 2);
-+				   hwmon_temp_max_alarm, 2);
+-	if (event_cause != HCLGEVF_VECTOR0_EVENT_OTHER)
+-		hclgevf_enable_vector(&hdev->misc_vector, true);
++	hclgevf_enable_vector(&hdev->misc_vector, true);
  
- 	return true;
+ 	return IRQ_HANDLED;
  }
 -- 
 2.34.1
