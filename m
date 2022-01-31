@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C1ECC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:55:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE9A4C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:55:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378970AbiAaLwv (ORCPT
+        id S1380418AbiAaLzb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:52:51 -0500
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:10121 "EHLO
+        Mon, 31 Jan 2022 06:55:31 -0500
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:63242 "EHLO
         esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380687AbiAaLp6 (ORCPT
+        with ESMTP id S1376700AbiAaLqi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:45:58 -0500
+        Mon, 31 Jan 2022 06:46:38 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1643629558; x=1675165558;
+  t=1643629598; x=1675165598;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=L1ZdOLAp63V4mK0822g6z+RPsvXKy/oiu4gWC+apcYE=;
-  b=T7WQQNTSqVDZ+rcYOkiDojKBuvoN+rJ+wuvqpmhN5R5lzTsgajYtoB38
-   VLQ4gxQ3rKg8n5gWhMVWRuObVHkf1/216cQ1ABpf8RmMbC2Zlk+vE00Ln
-   5Ai962PZzT0qHC0KjJUjFvHTk8j571jm4vjU3jfYCq0hV7COLd+XRcss5
-   9enOSAoZCug863nU37ffGqEWhnuI6OMsThXAm4qQRkDHCig0apqDenteI
-   c08CC7nURq4ZisgPt9X+hkjYXaD8FhzwDmv0nExnpdXLYhPmusVU/ho5x
-   bBPY1ggtEJGy/Ybjg35zcFNVQYcU4dQYRywc1hwY/IuaftS3qT+NKFzvE
-   w==;
-IronPort-SDR: 9BwHxWjbaGwoNNhJc6vgGJnZmweYL1ZpuGThJFVbaes58S7jX6TfnmZQaY+q8CZAw5oAc2ZAZd
- tXVZvHMBVepavqLwgqJj5BCCcA7QNpWUtFIEfDiVHtplhoaXpFMc4M5VNqmivTpelW68iKlsXZ
- CkZmITySi9yPNoB2H+3u6qP8OArffQLoY4lr5QUjzo0804b4HWg27fTy6prLr40VwJQQdJG9wr
- UtbbaBueivzKvIgKY5E2gNBjyO1xFQ4J3/0qvMnn+rm3zGVKbZk+RORiqRVr/IrRd0anZtgCdQ
- 0JzYr12Z+9phx19uWcBecC7q
+  bh=+uRMhA1+KXMC9lDrbzc/2dceALsFfl6ymRO67+ImIZ8=;
+  b=F179MNUPZM2fsMy5wjNEUABHHyk8l1i7vZOkKZP4N2dv46T4fWPPGkZu
+   m07rVP01/Fge5zDNHM/xXev3pNGRX2fxSU+21/wgutxOd167eCq4lGG8c
+   MYVQaFJ9WF50K6gpK2yG3LXMYBdbsMexa9eLE9TSDOLzRT4AnO6n+//K7
+   7tW4Dq/8lT9Wjc+DksQ1k5QIl7ZO/hy+gGGE3gROsmeQZ1MP6F3X9Mgvr
+   Qvm3kHtggkj97RRF/HgSokb5K4LFoRqXajNLtD03chdBOhAmqb4Y+PPPB
+   cMdJmyEyRsmoILDMyQGCiJ/xMV4zo5oYAUtUOq2L8wl/jhUREFMPbg7UN
+   A==;
+IronPort-SDR: eajPSZH4pSMNBX4KdOiq8o1PyCBQHxIJ2eFvu6iAjHVHssM7If3nsVEHy5O4csYUG1ycv9gwsu
+ 3GjRxfWiQGnALyTTWJk2Kt1TKcVE9qKOxuC4UiDqeOelPKvogG53n01YMBIvBX5ZyXfCoB0jBi
+ d93t6wVH4MHczqlfJwi+Hxpk/6/XjjhJ9Z/vEuqMob0IbGRKrkhXqjiYmFmtGfjxUBvuzBWiDJ
+ vDN8nS8rTTkRY4+DMYVdRRqGRSMf0Elvg1AxO+XG0T9zqlGoas/D2641PfwOJGRrMbEs5sA1Ch
+ TJEJVYB8u1pm/qg/7CPC0k5U
 X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
-   d="scan'208";a="147115858"
+   d="scan'208";a="151966756"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 31 Jan 2022 04:45:54 -0700
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 31 Jan 2022 04:46:37 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 31 Jan 2022 04:45:53 -0700
+ 15.1.2375.17; Mon, 31 Jan 2022 04:46:36 -0700
 Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex04.mchp-main.com
  (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Mon, 31 Jan 2022 04:45:48 -0700
+ Transport; Mon, 31 Jan 2022 04:46:31 -0700
 From:   <conor.dooley@microchip.com>
 To:     <linus.walleij@linaro.org>, <brgl@bgdev.pl>, <robh+dt@kernel.org>,
         <jassisinghbrar@gmail.com>, <thierry.reding@gmail.com>,
@@ -57,9 +57,9 @@ CC:     <krzysztof.kozlowski@canonical.com>, <bin.meng@windriver.com>,
         <heiko@sntech.de>, <lewis.hanly@microchip.com>,
         <conor.dooley@microchip.com>, <daire.mcnamara@microchip.com>,
         <ivan.griffin@microchip.com>, <atishp@rivosinc.com>
-Subject: [PATCH v5 04/12] dt-bindings: rtc: add bindings for microchip mpfs rtc
-Date:   Mon, 31 Jan 2022 11:47:19 +0000
-Message-ID: <20220131114726.973690-5-conor.dooley@microchip.com>
+Subject: [PATCH v5 12/12] MAINTAINERS: update riscv/microchip entry
+Date:   Mon, 31 Jan 2022 11:47:27 +0000
+Message-ID: <20220131114726.973690-13-conor.dooley@microchip.com>
 X-Mailer: git-send-email 2.35.0
 In-Reply-To: <20220131114726.973690-1-conor.dooley@microchip.com>
 References: <20220131114726.973690-1-conor.dooley@microchip.com>
@@ -72,80 +72,30 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Conor Dooley <conor.dooley@microchip.com>
 
-Add device tree bindings for the real time clock on
-the Microchip PolarFire SoC.
+Update the RISC-V/Microchip entry by adding the microchip dts
+directory and myself as maintainer
 
-Signed-off-by: Daire McNamara <daire.mcnamara@microchip.com>
+Reviewed-by: Lewis Hanly <lewis.hanly@microchip.com>
 Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
 ---
- .../bindings/rtc/microchip,mfps-rtc.yaml      | 58 +++++++++++++++++++
- 1 file changed, 58 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/rtc/microchip,mfps-rtc.yaml
+ MAINTAINERS | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/rtc/microchip,mfps-rtc.yaml b/Documentation/devicetree/bindings/rtc/microchip,mfps-rtc.yaml
-new file mode 100644
-index 000000000000..f35cca4e8656
---- /dev/null
-+++ b/Documentation/devicetree/bindings/rtc/microchip,mfps-rtc.yaml
-@@ -0,0 +1,58 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/rtc/microchip,mfps-rtc.yaml#
-+
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Microchip PolarFire Soc (MPFS) RTC Device Tree Bindings
-+
-+allOf:
-+  - $ref: rtc.yaml#
-+
-+maintainers:
-+  - Daire McNamara <daire.mcnamara@microchip.com>
-+  - Lewis Hanly <lewis.hanly@microchip.com>
-+
-+properties:
-+  compatible:
-+    enum:
-+      - microchip,mpfs-rtc
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    description: |
-+      The RTC on the PolarFire SoC has a pair of interrupts. The first is the
-+      RTC_WAKEUP interrupt. The second, RTC_MATCH, is asserted when the
-+      content of the Alarm register is equal to that of the RTC's count.
-+    maxItems: 2
-+
-+  clocks:
-+    maxItems: 1
-+
-+  clock-names:
-+    items:
-+      - const: rtc
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clocks
-+  - clock-names
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/microchip,mpfs-clock.h>
-+    rtc@20124000 {
-+        compatible = "microchip,mpfs-rtc";
-+        reg = <0x20124000 0x1000>;
-+        clocks = <&clkcfg CLK_RTC>;
-+        clock-names = "rtc";
-+        interrupts = <80>, <81>;
-+    };
-+...
+diff --git a/MAINTAINERS b/MAINTAINERS
+index ea3e6c914384..779a550dc95b 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -16575,8 +16575,10 @@ K:	riscv
+ 
+ RISC-V/MICROCHIP POLARFIRE SOC SUPPORT
+ M:	Lewis Hanly <lewis.hanly@microchip.com>
++M:	Conor Dooley <conor.dooley@microchip.com>
+ L:	linux-riscv@lists.infradead.org
+ S:	Supported
++F:	arch/riscv/boot/dts/microchip/
+ F:	drivers/mailbox/mailbox-mpfs.c
+ F:	drivers/soc/microchip/
+ F:	include/soc/microchip/mpfs.h
 -- 
 2.35.0
 
