@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27ADFC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:11:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 487E2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:11:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345014AbiAaLLb (ORCPT
+        id S1359545AbiAaLLf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:11:31 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:56220 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359387AbiAaLHd (ORCPT
+        Mon, 31 Jan 2022 06:11:35 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:42128 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359440AbiAaLHu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:07:33 -0500
+        Mon, 31 Jan 2022 06:07:50 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DF6A3B82A4C;
-        Mon, 31 Jan 2022 11:07:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10ED9C340EF;
-        Mon, 31 Jan 2022 11:07:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 16F8360E76;
+        Mon, 31 Jan 2022 11:07:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F20A2C340E8;
+        Mon, 31 Jan 2022 11:07:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627250;
-        bh=7opjUJhub79r6zwtVoRoknIviCjszJdFquO2gnMKlAg=;
+        s=korg; t=1643627268;
+        bh=m3LZqmH1nbge2TQOPSDQjTtRd5XlahkS46mn4dWGeJM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nau2ywgQOUb3z5556rXgLpcvXPVUfRiNwb6vdMxL29UDT2stXt1Zw1Vp3NweOxX9X
-         utNjrvdBNxRQ/zdknAcqQoqL7HqtqQOetni4sieDRg64bz+6tWINNaegF1/abZ6x9g
-         /jIVQCPDieGGbiGiQaBJKKgRoyPmGG+yTawEg+CU=
+        b=iCf8XoLa5K9/hX0faMTs+fBFV0WMZ6OukOkQ208oWOxgoCSEGSjP3hECtlTahyGDV
+         M08wBC+bKW6IQJgP9LdhjVQrkTlolEBmeEadRibzZEEiJW7++F+T0AMDzx6RoJ2DJQ
+         0JnItHJZioYK/5NNO3IQ11LjD1FCL4EDXjXdeVPU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Zanussi <zanussi@kernel.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.15 022/171] tracing: Dont inc err_log entry count if entry allocation fails
-Date:   Mon, 31 Jan 2022 11:54:47 +0100
-Message-Id: <20220131105230.769670120@linuxfoundation.org>
+        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
+        Fuad Tabba <tabba@google.com>
+Subject: [PATCH 5.15 007/171] KVM: arm64: Use shadow SPSR_EL1 when injecting exceptions on !VHE
+Date:   Mon, 31 Jan 2022 11:54:32 +0100
+Message-Id: <20220131105230.223736832@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
 References: <20220131105229.959216821@linuxfoundation.org>
@@ -46,38 +46,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Zanussi <zanussi@kernel.org>
+From: Marc Zyngier <maz@kernel.org>
 
-commit 67ab5eb71b37b55f7c5522d080a1b42823351776 upstream.
+commit 278583055a237270fac70518275ba877bf9e4013 upstream.
 
-tr->n_err_log_entries should only be increased if entry allocation
-succeeds.
+Injecting an exception into a guest with non-VHE is risky business.
+Instead of writing in the shadow register for the switch code to
+restore it, we override the CPU register instead. Which gets
+overriden a few instructions later by said restore code.
 
-Doing it when it fails won't cause any problems other than wasting an
-entry, but should be fixed anyway.
+The result is that although the guest correctly gets the exception,
+it will return to the original context in some random state,
+depending on what was there the first place... Boo.
 
-Link: https://lkml.kernel.org/r/cad1ab28f75968db0f466925e7cba5970cec6c29.1643319703.git.zanussi@kernel.org
+Fix the issue by writing to the shadow register. The original code
+is absolutely fine on VHE, as the state is already loaded, and writing
+to the shadow register in that case would actually be a bug.
 
+Fixes: bb666c472ca2 ("KVM: arm64: Inject AArch64 exceptions from HYP")
 Cc: stable@vger.kernel.org
-Fixes: 2f754e771b1a6 ("tracing: Don't inc err_log entry count if entry allocation fails")
-Signed-off-by: Tom Zanussi <zanussi@kernel.org>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Reviewed-by: Fuad Tabba <tabba@google.com>
+Link: https://lore.kernel.org/r/20220121184207.423426-1-maz@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/trace/trace.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/arm64/kvm/hyp/exception.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/kernel/trace/trace.c
-+++ b/kernel/trace/trace.c
-@@ -7749,7 +7749,8 @@ static struct tracing_log_err *get_traci
- 		err = kzalloc(sizeof(*err), GFP_KERNEL);
- 		if (!err)
- 			err = ERR_PTR(-ENOMEM);
--		tr->n_err_log_entries++;
-+		else
-+			tr->n_err_log_entries++;
+--- a/arch/arm64/kvm/hyp/exception.c
++++ b/arch/arm64/kvm/hyp/exception.c
+@@ -38,7 +38,10 @@ static inline void __vcpu_write_sys_reg(
  
- 		return err;
- 	}
+ static void __vcpu_write_spsr(struct kvm_vcpu *vcpu, u64 val)
+ {
+-	write_sysreg_el1(val, SYS_SPSR);
++	if (has_vhe())
++		write_sysreg_el1(val, SYS_SPSR);
++	else
++		__vcpu_sys_reg(vcpu, SPSR_EL1) = val;
+ }
+ 
+ static void __vcpu_write_spsr_abt(struct kvm_vcpu *vcpu, u64 val)
 
 
