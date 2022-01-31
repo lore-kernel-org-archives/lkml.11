@@ -2,136 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBA6CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 12:28:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4A62C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 12:28:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378049AbiAaM2N (ORCPT
+        id S1377656AbiAaM22 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 07:28:13 -0500
-Received: from mo4-p04-ob.smtp.rzone.de ([85.215.255.120]:35567 "EHLO
-        mo4-p04-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377176AbiAaM1d (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 07:27:33 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1643632022;
-    s=strato-dkim-0002; d=goldelico.com;
-    h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
-    From:Subject:Sender;
-    bh=LBxmbz4TfETrZ47YuEqnDes+Hpmtix3LD7VI+Fg8uyQ=;
-    b=T4l6tmczthGnzYhoJNNv20D6yFNZs4UMZAAZchQLl+EclWN8cNPeMJxHXX8/mzBXIV
-    FFhhmta6JixL+4djByCGCSVYR6hppHjJ1ZJtxdXmFRf2S/AZLwLLpuRvGnkoaswiuugF
-    xfDUdzWMUiJ5xuh6+XIY/BtJzsNbA8btiGmbFHMeLgf599uRrgctTEL5vgOqcaCho5hX
-    lQd7Y0/0cwae8/PtJNQX4PDz8BXxmPYIcaKf1URaz5R7UZ5RfFUzKBSX4X7x+kNpjoW3
-    5eOv1/BRkl8xHiHlfe2S0mHATyVSnFF/EPdB7pn6F9Q4ccwmEkNrUmtmedn0SqmIExa7
-    ruSw==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o12DNOsPj0lByOdcK1L0"
-X-RZG-CLASS-ID: mo00
-Received: from iMac.fritz.box
-    by smtp.strato.de (RZmta 47.38.0 DYNA|AUTH)
-    with ESMTPSA id j5fc80y0VCR1u8n
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Mon, 31 Jan 2022 13:27:01 +0100 (CET)
-From:   "H. Nikolaus Schaller" <hns@goldelico.com>
-To:     Paul Cercueil <paul@crapouillou.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        "H. Nikolaus Schaller" <hns@goldelico.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Kees Cook <keescook@chromium.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Paul Boddie <paul@boddie.org.uk>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-Cc:     devicetree@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org, letux-kernel@openphoenux.org,
-        Jonas Karlman <jonas@kwiboo.se>,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH v12 5/9] drm/synopsys+ingenic: repair hot plug detection
-Date:   Mon, 31 Jan 2022 13:26:51 +0100
-Message-Id: <4b695fa750b1086bcafe1f23c7896270c2d02580.1643632014.git.hns@goldelico.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <cover.1643632014.git.hns@goldelico.com>
-References: <cover.1643632014.git.hns@goldelico.com>
+        Mon, 31 Jan 2022 07:28:28 -0500
+Received: from mga18.intel.com ([134.134.136.126]:3813 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1377681AbiAaM21 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 07:28:27 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643632107; x=1675168107;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=MUL9VYbwSh5fqKgw8W+VoS+LcD26PNUxxQzC6eIkV1k=;
+  b=IOVO5gR84XfTHp4UQdm+mhZRSsFjn/vCCuIxkS3PICTLtzyW3TT+WMK2
+   McR93/1Clpeq5m2ZrVF05Dfn0bhrGghDSeyxs2Pb2EJ2tb6pYgyeyfKAw
+   VK/ZFzCPwWzrZtIyK/26iVSzT2ibN/X6xAIweo+fvuWnbZmkUip6K3wBL
+   2PEe45zyksQtElkgoLdAwFFRM8ntUAALKlq+o030yCIgjZTqeQ3+D1iiz
+   REOay2nRnrxbiiAYJEoOT9IgmKVbiPnzkTv6DeUp7xkV3pOcJ+TPgPJlK
+   RweYn71cqDFsveMF45OnWfKU+Hf4dxvffHfAf9ehOQ208+ZGXCK2f/zbl
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10243"; a="231021110"
+X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
+   d="scan'208";a="231021110"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 04:28:27 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
+   d="scan'208";a="479058783"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 31 Jan 2022 04:28:24 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nEVnD-000Ru7-KY; Mon, 31 Jan 2022 12:28:23 +0000
+Date:   Mon, 31 Jan 2022 20:27:32 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Yizhuo Zhai <yzhai003@ucr.edu>
+Cc:     kbuild-all@lists.01.org, linux-fbdev@vger.kernel.org,
+        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Helge Deller <deller@gmx.de>, Zheyu Ma <zheyuma97@gmail.com>,
+        linux-kernel@vger.kernel.org, Matthew Wilcox <willy@infradead.org>,
+        Yizhuo Zhai <yzhai003@ucr.edu>, dri-devel@lists.freedesktop.org
+Subject: Re: [PATCH] fbdev: fbmem: Fix the implicit type casting
+Message-ID: <202201311943.VXU6K1gH-lkp@intel.com>
+References: <20220131065719.1552958-1-yzhai003@ucr.edu>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220131065719.1552958-1-yzhai003@ucr.edu>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-so that it calls drm_kms_helper_hotplug_event().
+Hi Yizhuo,
 
-We need to set .poll_enabled but that struct component
-can only be accessed in the core code. Hence we add a public
-setter function.
+Thank you for the patch! Yet something to improve:
 
-Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+[auto build test ERROR on linus/master]
+[also build test ERROR on v5.17-rc2 next-20220131]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/0day-ci/linux/commits/Yizhuo-Zhai/fbdev-fbmem-Fix-the-implicit-type-casting/20220131-150528
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 26291c54e111ff6ba87a164d85d4a4e134b7315c
+config: i386-randconfig-c001-20220131 (https://download.01.org/0day-ci/archive/20220131/202201311943.VXU6K1gH-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/0day-ci/linux/commit/b8f540468e70290c8278fc2611adc2f9b38f821f
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Yizhuo-Zhai/fbdev-fbmem-Fix-the-implicit-type-casting/20220131-150528
+        git checkout b8f540468e70290c8278fc2611adc2f9b38f821f
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+>> drivers/video/fbdev/core/fbmem.c:1067:1: error: conflicting types for 'fb_blank'
+    1067 | fb_blank(struct fb_info *info, unsigned long blank)
+         | ^~~~~~~~
+   In file included from drivers/video/fbdev/core/fbmem.c:34:
+   include/linux/fb.h:591:12: note: previous declaration of 'fb_blank' was here
+     591 | extern int fb_blank(struct fb_info *info, int blank);
+         |            ^~~~~~~~
+   In file included from include/linux/linkage.h:7,
+                    from arch/x86/include/asm/cache.h:5,
+                    from include/linux/cache.h:6,
+                    from include/linux/time.h:5,
+                    from include/linux/stat.h:19,
+                    from include/linux/module.h:13,
+                    from drivers/video/fbdev/core/fbmem.c:14:
+   drivers/video/fbdev/core/fbmem.c:1086:15: error: conflicting types for 'fb_blank'
+    1086 | EXPORT_SYMBOL(fb_blank);
+         |               ^~~~~~~~
+   include/linux/export.h:98:21: note: in definition of macro '___EXPORT_SYMBOL'
+      98 |  extern typeof(sym) sym;       \
+         |                     ^~~
+   include/linux/export.h:160:34: note: in expansion of macro '__EXPORT_SYMBOL'
+     160 | #define _EXPORT_SYMBOL(sym, sec) __EXPORT_SYMBOL(sym, sec, "")
+         |                                  ^~~~~~~~~~~~~~~
+   include/linux/export.h:163:29: note: in expansion of macro '_EXPORT_SYMBOL'
+     163 | #define EXPORT_SYMBOL(sym)  _EXPORT_SYMBOL(sym, "")
+         |                             ^~~~~~~~~~~~~~
+   drivers/video/fbdev/core/fbmem.c:1086:1: note: in expansion of macro 'EXPORT_SYMBOL'
+    1086 | EXPORT_SYMBOL(fb_blank);
+         | ^~~~~~~~~~~~~
+   In file included from drivers/video/fbdev/core/fbmem.c:34:
+   include/linux/fb.h:591:12: note: previous declaration of 'fb_blank' was here
+     591 | extern int fb_blank(struct fb_info *info, int blank);
+         |            ^~~~~~~~
+
+
+vim +/fb_blank +1067 drivers/video/fbdev/core/fbmem.c
+
+  1065	
+  1066	int
+> 1067	fb_blank(struct fb_info *info, unsigned long blank)
+  1068	{
+  1069		struct fb_event event;
+  1070		int ret = -EINVAL;
+  1071	
+  1072		if (blank > FB_BLANK_POWERDOWN)
+  1073			blank = FB_BLANK_POWERDOWN;
+  1074	
+  1075		event.info = info;
+  1076		event.data = &blank;
+  1077	
+  1078		if (info->fbops->fb_blank)
+  1079			ret = info->fbops->fb_blank(blank, info);
+  1080	
+  1081		if (!ret)
+  1082			fb_notifier_call_chain(FB_EVENT_BLANK, &event);
+  1083	
+  1084		return ret;
+  1085	}
+  1086	EXPORT_SYMBOL(fb_blank);
+  1087	
+
 ---
- drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 9 +++++++++
- drivers/gpu/drm/ingenic/ingenic-dw-hdmi.c | 2 ++
- include/drm/bridge/dw_hdmi.h              | 1 +
- 3 files changed, 12 insertions(+)
-
-diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-index 54d8fdad395f5..52e7cd2e020d3 100644
---- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-+++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-@@ -3216,6 +3216,15 @@ static int dw_hdmi_parse_dt(struct dw_hdmi *hdmi)
- 	return 0;
- }
- 
-+void dw_hdmi_enable_poll(struct dw_hdmi *hdmi, bool enable)
-+{
-+	if (hdmi->bridge.dev)
-+		hdmi->bridge.dev->mode_config.poll_enabled = enable;
-+	else
-+		dev_warn(hdmi->dev, "no hdmi->bridge.dev");
-+}
-+EXPORT_SYMBOL_GPL(dw_hdmi_enable_poll);
-+
- struct dw_hdmi *dw_hdmi_probe(struct platform_device *pdev,
- 			      const struct dw_hdmi_plat_data *plat_data)
- {
-diff --git a/drivers/gpu/drm/ingenic/ingenic-dw-hdmi.c b/drivers/gpu/drm/ingenic/ingenic-dw-hdmi.c
-index 34e986dd606cf..90547a28dc5c7 100644
---- a/drivers/gpu/drm/ingenic/ingenic-dw-hdmi.c
-+++ b/drivers/gpu/drm/ingenic/ingenic-dw-hdmi.c
-@@ -55,6 +55,8 @@ ingenic_dw_hdmi_mode_valid(struct dw_hdmi *hdmi, void *data,
- 	if (mode->clock > 216000)
- 		return MODE_CLOCK_HIGH;
- 
-+	dw_hdmi_enable_poll(hdmi, true);
-+
- 	return MODE_OK;
- }
- 
-diff --git a/include/drm/bridge/dw_hdmi.h b/include/drm/bridge/dw_hdmi.h
-index 2a1f85f9a8a3f..963960794b40e 100644
---- a/include/drm/bridge/dw_hdmi.h
-+++ b/include/drm/bridge/dw_hdmi.h
-@@ -196,5 +196,6 @@ enum drm_connector_status dw_hdmi_phy_read_hpd(struct dw_hdmi *hdmi,
- void dw_hdmi_phy_update_hpd(struct dw_hdmi *hdmi, void *data,
- 			    bool force, bool disabled, bool rxsense);
- void dw_hdmi_phy_setup_hpd(struct dw_hdmi *hdmi, void *data);
-+void dw_hdmi_enable_poll(struct dw_hdmi *hdmi, bool enable);
- 
- #endif /* __IMX_HDMI_H__ */
--- 
-2.33.0
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
