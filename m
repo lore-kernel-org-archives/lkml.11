@@ -2,39 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED155C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:04:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06686C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:04:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240153AbiAaLEN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:04:13 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:50688 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358981AbiAaLCi (ORCPT
+        id S1359030AbiAaLEQ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 31 Jan 2022 06:04:16 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:36724 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358992AbiAaLCn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:02:38 -0500
+        Mon, 31 Jan 2022 06:02:43 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8F64BB82A66;
-        Mon, 31 Jan 2022 11:02:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC42EC340EE;
-        Mon, 31 Jan 2022 11:02:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 29ACC60B2D;
+        Mon, 31 Jan 2022 11:02:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6DCFC340E8;
+        Mon, 31 Jan 2022 11:02:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643626956;
-        bh=p9gzYhntkEFFU0kZCVkx2X3WS7L38CrCbtyOn9AY4Z0=;
+        s=korg; t=1643626962;
+        bh=JUVBrBiQ+LbRUjdcdSOfk0Z0e9ZPxcAKalrhuiQXluk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=btusDWGH9m2g+conM9hL9mJ5ES/M1rwiP+r1kaEPNB9uhkQqz6B5xc6cT7LLyqNjT
-         0Yph1ME1jbZJ+ymaE6h8YiTf5I79XXdZY6tJwIfiWR13oFA7dmTfEFIg4hMZBDHpJq
-         FjfqZSc4b8ZxuEQnAuhZlZbZ8PKi80ElWRm7SazU=
+        b=0nd4H/qeCjmO2V9ymEgR+cVtl3XWNqWc8fwzh7+IT+K8kvCDSEWSmAEurZhDbe1dq
+         WqUrtho7Ixo+pda1q2wdE136lUZ54MGu72vugaqWfw8lzn4unQeJLNzDsEfSET5lLA
+         cyMNtU/maICuRBAAmOQmBGCdEQDOYnpltwIi+fxs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, DocMAX <mail@vacharakis.de>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        =?UTF-8?q?Thomas=20Wei=C3=9Fschuh?= <linux@weissschuh.net>
-Subject: [PATCH 5.10 028/100] usb-storage: Add unusual-devs entry for VL817 USB-SATA bridge
-Date:   Mon, 31 Jan 2022 11:55:49 +0100
-Message-Id: <20220131105221.403298633@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.10 003/100] net: sfp: ignore disabled SFP node
+Date:   Mon, 31 Jan 2022 11:55:24 +0100
+Message-Id: <20220131105220.543846905@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
 References: <20220131105220.424085452@linuxfoundation.org>
@@ -46,56 +47,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alan Stern <stern@rowland.harvard.edu>
+From: Marek Behún <kabel@kernel.org>
 
-commit 5b67b315037250a61861119683e7fcb509deea25 upstream.
+commit 2148927e6ed43a1667baf7c2ae3e0e05a44b51a0 upstream.
 
-Two people have reported (and mentioned numerous other reports on the
-web) that VIA's VL817 USB-SATA bridge does not work with the uas
-driver.  Typical log messages are:
+Commit ce0aa27ff3f6 ("sfp: add sfp-bus to bridge between network devices
+and sfp cages") added code which finds SFP bus DT node even if the node
+is disabled with status = "disabled". Because of this, when phylink is
+created, it ends with non-null .sfp_bus member, even though the SFP
+module is not probed (because the node is disabled).
 
-[ 3606.232149] sd 14:0:0:0: [sdg] tag#2 uas_zap_pending 0 uas-tag 1 inflight: CMD
-[ 3606.232154] sd 14:0:0:0: [sdg] tag#2 CDB: Write(16) 8a 00 00 00 00 00 18 0c c9 80 00 00 00 80 00 00
-[ 3606.306257] usb 4-4.4: reset SuperSpeed Plus Gen 2x1 USB device number 11 using xhci_hcd
-[ 3606.328584] scsi host14: uas_eh_device_reset_handler success
+We need to ignore disabled SFP bus node.
 
-Surprisingly, the devices do seem to work okay for some other people.
-The cause of the differing behaviors is not known.
-
-In the hope of getting the devices to work for the most users, even at
-the possible cost of degraded performance for some, this patch adds an
-unusual_devs entry for the VL817 to block it from binding to the uas
-driver by default.  Users will be able to override this entry by means
-of a module parameter, if they want.
-
-CC: <stable@vger.kernel.org>
-Reported-by: DocMAX <mail@vacharakis.de>
-Reported-and-tested-by: Thomas Weißschuh <linux@weissschuh.net>
-Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
-Link: https://lore.kernel.org/r/Ye8IsK2sjlEv1rqU@rowland.harvard.edu
+Fixes: ce0aa27ff3f6 ("sfp: add sfp-bus to bridge between network devices and sfp cages")
+Signed-off-by: Marek Behún <kabel@kernel.org>
+Cc: stable@vger.kernel.org # 2203cbf2c8b5 ("net: sfp: move fwnode parsing into sfp-bus layer")
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/storage/unusual_devs.h |   10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/net/phy/sfp-bus.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/drivers/usb/storage/unusual_devs.h
-+++ b/drivers/usb/storage/unusual_devs.h
-@@ -2301,6 +2301,16 @@ UNUSUAL_DEV(  0x2027, 0xa001, 0x0000, 0x
- 		USB_SC_DEVICE, USB_PR_DEVICE, usb_stor_euscsi_init,
- 		US_FL_SCM_MULT_TARG ),
+--- a/drivers/net/phy/sfp-bus.c
++++ b/drivers/net/phy/sfp-bus.c
+@@ -609,6 +609,11 @@ struct sfp_bus *sfp_bus_find_fwnode(stru
+ 	else if (ret < 0)
+ 		return ERR_PTR(ret);
  
-+/*
-+ * Reported by DocMAX <mail@vacharakis.de>
-+ * and Thomas Weißschuh <linux@weissschuh.net>
-+ */
-+UNUSUAL_DEV( 0x2109, 0x0715, 0x9999, 0x9999,
-+		"VIA Labs, Inc.",
-+		"VL817 SATA Bridge",
-+		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
-+		US_FL_IGNORE_UAS),
++	if (!fwnode_device_is_available(ref.fwnode)) {
++		fwnode_handle_put(ref.fwnode);
++		return NULL;
++	}
 +
- UNUSUAL_DEV( 0x2116, 0x0320, 0x0001, 0x0001,
- 		"ST",
- 		"2A",
+ 	bus = sfp_bus_get(ref.fwnode);
+ 	fwnode_handle_put(ref.fwnode);
+ 	if (!bus)
 
 
