@@ -2,42 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC5B7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:00:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2AC8C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:00:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348492AbiAaLAR (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:00:17 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:60464 "EHLO
+        id S243891AbiAaLAV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 31 Jan 2022 06:00:21 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:60570 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358392AbiAaK73 (ORCPT
+        with ESMTP id S1358417AbiAaK7i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 05:59:29 -0500
+        Mon, 31 Jan 2022 05:59:38 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F6A560A75;
-        Mon, 31 Jan 2022 10:59:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D745C340E8;
-        Mon, 31 Jan 2022 10:59:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8884760AF6;
+        Mon, 31 Jan 2022 10:59:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4481DC340E8;
+        Mon, 31 Jan 2022 10:59:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643626768;
-        bh=hIfUf3yN1UNeN2vT8cU48/YWdF/Y5IljBCJYrJJAObw=;
+        s=korg; t=1643626774;
+        bh=3XIa/muwBTvvKBs3bdBiG2V3lDx1LVelKRjXVwnkQCc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KW62loPjZ7aGyngYfcTL7pSMSaRyiwcrA+v/0Xg3oDaL44Avfec/j+ORItfvncVXI
-         7eW7HaHaKYmSknMMVKS+YedaMlH4Hm39D8XX0xGKpv6oB2ZsFA38UUT+eRp/b/PuMa
-         MZ0FUG51yY5EJqkLG4w6nVmyFpwbTLnY0f+8tf5c=
+        b=ZVv5WGyvNc5BcOkw49C29NtI/LS8t+EC9rX10+uNGRUAkMuatbAYIgGs/gV3iMiHw
+         JySnrZoqKtoXAIVx/YugQY9mQIEMjHe0sWOF1cTfww8i/XVNE+8kWh8LiNWbN+SoCg
+         kF12dM1YPD2YueoNZGjuqoDbvsE+9TxsQrNxySO8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maksym Yaremchuk <maksymy@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Amit Cohen <amcohen@nvidia.com>,
+        stable@vger.kernel.org, Congyu Liu <liu3101@purdue.edu>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 32/64] ipv6_tunnel: Rate limit warning messages
-Date:   Mon, 31 Jan 2022 11:56:17 +0100
-Message-Id: <20220131105216.758612243@linuxfoundation.org>
+Subject: [PATCH 5.4 34/64] net: fix information leakage in /proc/net/ptype
+Date:   Mon, 31 Jan 2022 11:56:19 +0100
+Message-Id: <20220131105216.838034920@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105215.644174521@linuxfoundation.org>
 References: <20220131105215.644174521@linuxfoundation.org>
@@ -49,47 +46,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
+From: Congyu Liu <liu3101@purdue.edu>
 
-commit 6cee105e7f2ced596373951d9ea08dacc3883c68 upstream.
+commit 47934e06b65637c88a762d9c98329ae6e3238888 upstream.
 
-The warning messages can be invoked from the data path for every packet
-transmitted through an ip6gre netdev, leading to high CPU utilization.
+In one net namespace, after creating a packet socket without binding
+it to a device, users in other net namespaces can observe the new
+`packet_type` added by this packet socket by reading `/proc/net/ptype`
+file. This is minor information leakage as packet socket is
+namespace aware.
 
-Fix that by rate limiting the messages.
+Add a net pointer in `packet_type` to keep the net namespace of
+of corresponding packet socket. In `ptype_seq_show`, this net pointer
+must be checked when it is not NULL.
 
-Fixes: 09c6bbf090ec ("[IPV6]: Do mandatory IPv6 tunnel endpoint checks in realtime")
-Reported-by: Maksym Yaremchuk <maksymy@nvidia.com>
-Tested-by: Maksym Yaremchuk <maksymy@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Reviewed-by: Amit Cohen <amcohen@nvidia.com>
+Fixes: 2feb27dbe00c ("[NETNS]: Minor information leak via /proc/net/ptype file.")
+Signed-off-by: Congyu Liu <liu3101@purdue.edu>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/ip6_tunnel.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ include/linux/netdevice.h |    1 +
+ net/core/net-procfs.c     |    3 ++-
+ net/packet/af_packet.c    |    2 ++
+ 3 files changed, 5 insertions(+), 1 deletion(-)
 
---- a/net/ipv6/ip6_tunnel.c
-+++ b/net/ipv6/ip6_tunnel.c
-@@ -1000,14 +1000,14 @@ int ip6_tnl_xmit_ctl(struct ip6_tnl *t,
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -2397,6 +2397,7 @@ struct packet_type {
+ 					      struct net_device *);
+ 	bool			(*id_match)(struct packet_type *ptype,
+ 					    struct sock *sk);
++	struct net		*af_packet_net;
+ 	void			*af_packet_priv;
+ 	struct list_head	list;
+ };
+--- a/net/core/net-procfs.c
++++ b/net/core/net-procfs.c
+@@ -252,7 +252,8 @@ static int ptype_seq_show(struct seq_fil
  
- 		if (unlikely(!ipv6_chk_addr_and_flags(net, laddr, ldev, false,
- 						      0, IFA_F_TENTATIVE)))
--			pr_warn("%s xmit: Local address not yet configured!\n",
--				p->name);
-+			pr_warn_ratelimited("%s xmit: Local address not yet configured!\n",
-+					    p->name);
- 		else if (!(p->flags & IP6_TNL_F_ALLOW_LOCAL_REMOTE) &&
- 			 !ipv6_addr_is_multicast(raddr) &&
- 			 unlikely(ipv6_chk_addr_and_flags(net, raddr, ldev,
- 							  true, 0, IFA_F_TENTATIVE)))
--			pr_warn("%s xmit: Routing loop! Remote address found on this node!\n",
--				p->name);
-+			pr_warn_ratelimited("%s xmit: Routing loop! Remote address found on this node!\n",
-+					    p->name);
+ 	if (v == SEQ_START_TOKEN)
+ 		seq_puts(seq, "Type Device      Function\n");
+-	else if (pt->dev == NULL || dev_net(pt->dev) == seq_file_net(seq)) {
++	else if ((!pt->af_packet_net || net_eq(pt->af_packet_net, seq_file_net(seq))) &&
++		 (!pt->dev || net_eq(dev_net(pt->dev), seq_file_net(seq)))) {
+ 		if (pt->type == htons(ETH_P_ALL))
+ 			seq_puts(seq, "ALL ");
  		else
- 			ret = 1;
- 		rcu_read_unlock();
+--- a/net/packet/af_packet.c
++++ b/net/packet/af_packet.c
+@@ -1715,6 +1715,7 @@ static int fanout_add(struct sock *sk, u
+ 		match->prot_hook.dev = po->prot_hook.dev;
+ 		match->prot_hook.func = packet_rcv_fanout;
+ 		match->prot_hook.af_packet_priv = match;
++		match->prot_hook.af_packet_net = read_pnet(&match->net);
+ 		match->prot_hook.id_match = match_fanout_group;
+ 		list_add(&match->list, &fanout_list);
+ 	}
+@@ -3294,6 +3295,7 @@ static int packet_create(struct net *net
+ 		po->prot_hook.func = packet_rcv_spkt;
+ 
+ 	po->prot_hook.af_packet_priv = sk;
++	po->prot_hook.af_packet_net = sock_net(sk);
+ 
+ 	if (proto) {
+ 		po->prot_hook.type = proto;
 
 
