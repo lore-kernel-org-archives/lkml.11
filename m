@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B4CFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:36:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B41DBC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:36:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350631AbiAaLgA (ORCPT
+        id S1359194AbiAaLgE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:36:00 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:56608 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240403AbiAaLYK (ORCPT
+        Mon, 31 Jan 2022 06:36:04 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:40600 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359006AbiAaLYI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:24:10 -0500
+        Mon, 31 Jan 2022 06:24:08 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5645D61234;
-        Mon, 31 Jan 2022 11:24:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9A17C340E8;
-        Mon, 31 Jan 2022 11:24:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6815EB82A4C;
+        Mon, 31 Jan 2022 11:24:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AAD2C340E8;
+        Mon, 31 Jan 2022 11:24:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643628249;
-        bh=JBSH780DoJhMhtM5PdmQov3bNzsvTA0yMTWMloiWu5k=;
+        s=korg; t=1643628246;
+        bh=FXt4k/xSxqKwg8t1rM6g5Vld0ub/veCDx4qgctNPSls=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DyaKDU+B1NEg5zXhNaxN9mjy8sOqDrXveZXCeC2K4loG/cfHobUGH8QABaLhSDA7S
-         H5Xx40JgyN3YCxJbgUx+BH3rUqZQzJbhlm8+sLyJATjzikHms//Rg5dCcB4BF90pAb
-         vocjCLdJvFCx1X++d3yGUI2mJ6Fi/5eynuWZKaBI=
+        b=jAML7GzfdUFeJkngSvhymXXmzwrXA55ZKkQRyo99Gnm8XRU69SvyW2DfIsTW0q8J+
+         URNABICi04Mj9BO17EQ+W1IVbFnxd8Ibly7x2IGXwmd9LgyUi+5BYzOnzL1XN2I31e
+         59denFOnxOmbRynhFMcjEHsQ/DvxNqWKRRrn9P08=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Song Liu <song@kernel.org>, Namhyung Kim <namhyung@kernel.org>,
+        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 129/200] perf: Fix perf_event_read_local() time
-Date:   Mon, 31 Jan 2022 11:56:32 +0100
-Message-Id: <20220131105237.895431338@linuxfoundation.org>
+Subject: [PATCH 5.16 138/200] mptcp: keep track of local endpoint still available for each msk
+Date:   Mon, 31 Jan 2022 11:56:41 +0100
+Message-Id: <20220131105238.198209212@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -48,573 +48,402 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Paolo Abeni <pabeni@redhat.com>
 
-[ Upstream commit 09f5e7dc7ad705289e1b1ec065439aa3c42951c4 ]
+[ Upstream commit 86e39e04482b0aadf3ee3ed5fcf2d63816559d36 ]
 
-Time readers that cannot take locks (due to NMI etc..) currently make
-use of perf_event::shadow_ctx_time, which, for that event gives:
+Include into the path manager status a bitmap tracking the list
+of local endpoints still available - not yet used - for the
+relevant mptcp socket.
 
-  time' = now + (time - timestamp)
+Keep such map updated at endpoint creation/deletion time, so
+that we can easily skip already used endpoint at local address
+selection time.
 
-or, alternatively arranged:
+The endpoint used by the initial subflow is lazyly accounted at
+subflow creation time: the usage bitmap is be up2date before
+endpoint selection and we avoid such unneeded task in some relevant
+scenarios - e.g. busy servers accepting incoming subflows but
+not creating any additional ones nor annuncing additional addresses.
 
-  time' = time + (now - timestamp)
+Overall this allows for fair local endpoints usage in case of
+subflow failure.
 
-IOW, the progression of time since the last time the shadow_ctx_time
-was updated.
+As a side effect, this patch also enforces that each endpoint
+is used at most once for each mptcp connection.
 
-There's problems with this:
-
- A) the shadow_ctx_time is per-event, even though the ctx_time it
-    reflects is obviously per context. The direct concequence of this
-    is that the context needs to iterate all events all the time to
-    keep the shadow_ctx_time in sync.
-
- B) even with the prior point, the context itself might not be active
-    meaning its time should not advance to begin with.
-
- C) shadow_ctx_time isn't consistently updated when ctx_time is
-
-There are 3 users of this stuff, that suffer differently from this:
-
- - calc_timer_values()
-   - perf_output_read()
-   - perf_event_update_userpage()	/* A */
-
- - perf_event_read_local()		/* A,B */
-
-In particular, perf_output_read() doesn't suffer at all, because it's
-sample driven and hence only relevant when the event is actually
-running.
-
-This same was supposed to be true for perf_event_update_userpage(),
-after all self-monitoring implies the context is active *HOWEVER*, as
-per commit f79256532682 ("perf/core: fix userpage->time_enabled of
-inactive events") this goes wrong when combined with counter
-overcommit, in that case those events that do not get scheduled when
-the context becomes active (task events typically) miss out on the
-EVENT_TIME update and ENABLED time is inflated (for a little while)
-with the time the context was inactive. Once the event gets rotated
-in, this gets corrected, leading to a non-monotonic timeflow.
-
-perf_event_read_local() made things even worse, it can request time at
-any point, suffering all the problems perf_event_update_userpage()
-does and more. Because while perf_event_update_userpage() is limited
-by the context being active, perf_event_read_local() users have no
-such constraint.
-
-Therefore, completely overhaul things and do away with
-perf_event::shadow_ctx_time. Instead have regular context time updates
-keep track of this offset directly and provide perf_event_time_now()
-to complement perf_event_time().
-
-perf_event_time_now() will, in adition to being context wide, also
-take into account if the context is active. For inactive context, it
-will not advance time.
-
-This latter property means the cgroup perf_cgroup_info context needs
-to grow addition state to track this.
-
-Additionally, since all this is strictly per-cpu, we can use barrier()
-to order context activity vs context time.
-
-Fixes: 7d9285e82db5 ("perf/bpf: Extend the perf_event_read_local() interface, a.k.a. "bpf: perf event change needed for subsequent bpf helpers"")
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Tested-by: Song Liu <song@kernel.org>
-Tested-by: Namhyung Kim <namhyung@kernel.org>
-Link: https://lkml.kernel.org/r/YcB06DasOBtU0b00@hirez.programming.kicks-ass.net
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/perf_event.h |  15 +--
- kernel/events/core.c       | 246 ++++++++++++++++++++++---------------
- 2 files changed, 149 insertions(+), 112 deletions(-)
+ net/mptcp/pm.c                                |   1 +
+ net/mptcp/pm_netlink.c                        | 125 +++++++++++-------
+ net/mptcp/protocol.c                          |   3 +-
+ net/mptcp/protocol.h                          |  12 +-
+ .../testing/selftests/net/mptcp/mptcp_join.sh |   5 +-
+ 5 files changed, 91 insertions(+), 55 deletions(-)
 
-diff --git a/include/linux/perf_event.h b/include/linux/perf_event.h
-index 318c489b735bc..d7f927f8c335d 100644
---- a/include/linux/perf_event.h
-+++ b/include/linux/perf_event.h
-@@ -681,18 +681,6 @@ struct perf_event {
- 	u64				total_time_running;
- 	u64				tstamp;
+diff --git a/net/mptcp/pm.c b/net/mptcp/pm.c
+index 6ab386ff32944..332ac6eda3ba4 100644
+--- a/net/mptcp/pm.c
++++ b/net/mptcp/pm.c
+@@ -370,6 +370,7 @@ void mptcp_pm_data_init(struct mptcp_sock *msk)
+ 	WRITE_ONCE(msk->pm.accept_subflow, false);
+ 	WRITE_ONCE(msk->pm.remote_deny_join_id0, false);
+ 	msk->pm.status = 0;
++	bitmap_fill(msk->pm.id_avail_bitmap, MPTCP_PM_MAX_ADDR_ID + 1);
  
--	/*
--	 * timestamp shadows the actual context timing but it can
--	 * be safely used in NMI interrupt context. It reflects the
--	 * context time as it was when the event was last scheduled in,
--	 * or when ctx_sched_in failed to schedule the event because we
--	 * run out of PMC.
--	 *
--	 * ctx_time already accounts for ctx->timestamp. Therefore to
--	 * compute ctx_time for a sample, simply add perf_clock().
--	 */
--	u64				shadow_ctx_time;
--
- 	struct perf_event_attr		attr;
- 	u16				header_size;
- 	u16				id_header_size;
-@@ -839,6 +827,7 @@ struct perf_event_context {
- 	 */
- 	u64				time;
- 	u64				timestamp;
-+	u64				timeoffset;
- 
- 	/*
- 	 * These fields let us detect when two contexts have both
-@@ -921,6 +910,8 @@ struct bpf_perf_event_data_kern {
- struct perf_cgroup_info {
- 	u64				time;
- 	u64				timestamp;
-+	u64				timeoffset;
-+	int				active;
+ 	spin_lock_init(&msk->pm.lock);
+ 	INIT_LIST_HEAD(&msk->pm.anno_list);
+diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
+index 27427aeeee0e5..ad3dc9c6c5310 100644
+--- a/net/mptcp/pm_netlink.c
++++ b/net/mptcp/pm_netlink.c
+@@ -38,10 +38,6 @@ struct mptcp_pm_add_entry {
+ 	u8			retrans_times;
  };
  
- struct perf_cgroup {
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index 63f0414666438..a0064dd706538 100644
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -674,6 +674,23 @@ perf_event_set_state(struct perf_event *event, enum perf_event_state state)
- 	WRITE_ONCE(event->state, state);
- }
- 
-+/*
-+ * UP store-release, load-acquire
-+ */
-+
-+#define __store_release(ptr, val)					\
-+do {									\
-+	barrier();							\
-+	WRITE_ONCE(*(ptr), (val));					\
-+} while (0)
-+
-+#define __load_acquire(ptr)						\
-+({									\
-+	__unqual_scalar_typeof(*(ptr)) ___p = READ_ONCE(*(ptr));	\
-+	barrier();							\
-+	___p;								\
-+})
-+
- #ifdef CONFIG_CGROUP_PERF
- 
- static inline bool
-@@ -719,34 +736,51 @@ static inline u64 perf_cgroup_event_time(struct perf_event *event)
- 	return t->time;
- }
- 
--static inline void __update_cgrp_time(struct perf_cgroup *cgrp)
-+static inline u64 perf_cgroup_event_time_now(struct perf_event *event, u64 now)
- {
--	struct perf_cgroup_info *info;
--	u64 now;
+-/* max value of mptcp_addr_info.id */
+-#define MAX_ADDR_ID		U8_MAX
+-#define BITMAP_SZ DIV_ROUND_UP(MAX_ADDR_ID + 1, BITS_PER_LONG)
 -
--	now = perf_clock();
-+	struct perf_cgroup_info *t;
+ struct pm_nl_pernet {
+ 	/* protects pernet updates */
+ 	spinlock_t		lock;
+@@ -53,14 +49,14 @@ struct pm_nl_pernet {
+ 	unsigned int		local_addr_max;
+ 	unsigned int		subflows_max;
+ 	unsigned int		next_id;
+-	unsigned long		id_bitmap[BITMAP_SZ];
++	DECLARE_BITMAP(id_bitmap, MPTCP_PM_MAX_ADDR_ID + 1);
+ };
  
--	info = this_cpu_ptr(cgrp->info);
-+	t = per_cpu_ptr(event->cgrp->info, event->cpu);
-+	if (!__load_acquire(&t->active))
-+		return t->time;
-+	now += READ_ONCE(t->timeoffset);
-+	return now;
-+}
+ #define MPTCP_PM_ADDR_MAX	8
+ #define ADD_ADDR_RETRANS_MAX	3
  
--	info->time += now - info->timestamp;
-+static inline void __update_cgrp_time(struct perf_cgroup_info *info, u64 now, bool adv)
-+{
-+	if (adv)
-+		info->time += now - info->timestamp;
- 	info->timestamp = now;
-+	/*
-+	 * see update_context_time()
-+	 */
-+	WRITE_ONCE(info->timeoffset, info->time - info->timestamp);
- }
- 
--static inline void update_cgrp_time_from_cpuctx(struct perf_cpu_context *cpuctx)
-+static inline void update_cgrp_time_from_cpuctx(struct perf_cpu_context *cpuctx, bool final)
+ static bool addresses_equal(const struct mptcp_addr_info *a,
+-			    struct mptcp_addr_info *b, bool use_port)
++			    const struct mptcp_addr_info *b, bool use_port)
  {
- 	struct perf_cgroup *cgrp = cpuctx->cgrp;
- 	struct cgroup_subsys_state *css;
-+	struct perf_cgroup_info *info;
+ 	bool addr_equals = false;
  
- 	if (cgrp) {
-+		u64 now = perf_clock();
+@@ -174,6 +170,9 @@ select_local_address(const struct pm_nl_pernet *pernet,
+ 		if (!(entry->flags & MPTCP_PM_ADDR_FLAG_SUBFLOW))
+ 			continue;
+ 
++		if (!test_bit(entry->addr.id, msk->pm.id_avail_bitmap))
++			continue;
 +
- 		for (css = &cgrp->css; css; css = css->parent) {
- 			cgrp = container_of(css, struct perf_cgroup, css);
--			__update_cgrp_time(cgrp);
-+			info = this_cpu_ptr(cgrp->info);
-+
-+			__update_cgrp_time(info, now, true);
-+			if (final)
-+				__store_release(&info->active, 0);
+ 		if (entry->addr.family != sk->sk_family) {
+ #if IS_ENABLED(CONFIG_MPTCP_IPV6)
+ 			if ((entry->addr.family == AF_INET &&
+@@ -184,23 +183,17 @@ select_local_address(const struct pm_nl_pernet *pernet,
+ 				continue;
  		}
+ 
+-		/* avoid any address already in use by subflows and
+-		 * pending join
+-		 */
+-		if (!lookup_subflow_by_saddr(&msk->conn_list, &entry->addr)) {
+-			ret = entry;
+-			break;
+-		}
++		ret = entry;
++		break;
  	}
- }
- 
- static inline void update_cgrp_time_from_event(struct perf_event *event)
- {
-+	struct perf_cgroup_info *info;
- 	struct perf_cgroup *cgrp;
- 
- 	/*
-@@ -760,8 +794,10 @@ static inline void update_cgrp_time_from_event(struct perf_event *event)
- 	/*
- 	 * Do not update time when cgroup is not active
- 	 */
--	if (cgroup_is_descendant(cgrp->css.cgroup, event->cgrp->css.cgroup))
--		__update_cgrp_time(event->cgrp);
-+	if (cgroup_is_descendant(cgrp->css.cgroup, event->cgrp->css.cgroup)) {
-+		info = this_cpu_ptr(event->cgrp->info);
-+		__update_cgrp_time(info, perf_clock(), true);
-+	}
- }
- 
- static inline void
-@@ -785,7 +821,8 @@ perf_cgroup_set_timestamp(struct task_struct *task,
- 	for (css = &cgrp->css; css; css = css->parent) {
- 		cgrp = container_of(css, struct perf_cgroup, css);
- 		info = this_cpu_ptr(cgrp->info);
--		info->timestamp = ctx->timestamp;
-+		__update_cgrp_time(info, ctx->timestamp, false);
-+		__store_release(&info->active, 1);
- 	}
- }
- 
-@@ -981,14 +1018,6 @@ out:
+ 	rcu_read_unlock();
  	return ret;
  }
  
--static inline void
--perf_cgroup_set_shadow_time(struct perf_event *event, u64 now)
--{
--	struct perf_cgroup_info *t;
--	t = per_cpu_ptr(event->cgrp->info, event->cpu);
--	event->shadow_ctx_time = now - t->timestamp;
--}
--
- static inline void
- perf_cgroup_event_enable(struct perf_event *event, struct perf_event_context *ctx)
+ static struct mptcp_pm_addr_entry *
+-select_signal_address(struct pm_nl_pernet *pernet, unsigned int pos)
++select_signal_address(struct pm_nl_pernet *pernet, struct mptcp_sock *msk)
  {
-@@ -1066,7 +1095,8 @@ static inline void update_cgrp_time_from_event(struct perf_event *event)
- {
- }
+ 	struct mptcp_pm_addr_entry *entry, *ret = NULL;
+-	int i = 0;
  
--static inline void update_cgrp_time_from_cpuctx(struct perf_cpu_context *cpuctx)
-+static inline void update_cgrp_time_from_cpuctx(struct perf_cpu_context *cpuctx,
-+						bool final)
- {
- }
- 
-@@ -1098,12 +1128,12 @@ perf_cgroup_switch(struct task_struct *task, struct task_struct *next)
- {
- }
- 
--static inline void
--perf_cgroup_set_shadow_time(struct perf_event *event, u64 now)
-+static inline u64 perf_cgroup_event_time(struct perf_event *event)
- {
-+	return 0;
- }
- 
--static inline u64 perf_cgroup_event_time(struct perf_event *event)
-+static inline u64 perf_cgroup_event_time_now(struct perf_event *event, u64 now)
- {
- 	return 0;
- }
-@@ -1525,22 +1555,59 @@ static void perf_unpin_context(struct perf_event_context *ctx)
- /*
-  * Update the record of the current time in a context.
-  */
--static void update_context_time(struct perf_event_context *ctx)
-+static void __update_context_time(struct perf_event_context *ctx, bool adv)
- {
- 	u64 now = perf_clock();
- 
--	ctx->time += now - ctx->timestamp;
-+	if (adv)
-+		ctx->time += now - ctx->timestamp;
- 	ctx->timestamp = now;
+ 	rcu_read_lock();
+ 	/* do not keep any additional per socket state, just signal
+@@ -209,12 +202,14 @@ select_signal_address(struct pm_nl_pernet *pernet, unsigned int pos)
+ 	 * can lead to additional addresses not being announced.
+ 	 */
+ 	list_for_each_entry_rcu(entry, &pernet->local_addr_list, list) {
++		if (!test_bit(entry->addr.id, msk->pm.id_avail_bitmap))
++			continue;
 +
-+	/*
-+	 * The above: time' = time + (now - timestamp), can be re-arranged
-+	 * into: time` = now + (time - timestamp), which gives a single value
-+	 * offset to compute future time without locks on.
-+	 *
-+	 * See perf_event_time_now(), which can be used from NMI context where
-+	 * it's (obviously) not possible to acquire ctx->lock in order to read
-+	 * both the above values in a consistent manner.
-+	 */
-+	WRITE_ONCE(ctx->timeoffset, ctx->time - ctx->timestamp);
+ 		if (!(entry->flags & MPTCP_PM_ADDR_FLAG_SIGNAL))
+ 			continue;
+-		if (i++ == pos) {
+-			ret = entry;
+-			break;
+-		}
++
++		ret = entry;
++		break;
+ 	}
+ 	rcu_read_unlock();
+ 	return ret;
+@@ -258,9 +253,11 @@ EXPORT_SYMBOL_GPL(mptcp_pm_get_local_addr_max);
+ 
+ static void check_work_pending(struct mptcp_sock *msk)
+ {
+-	if (msk->pm.add_addr_signaled == mptcp_pm_get_add_addr_signal_max(msk) &&
+-	    (msk->pm.local_addr_used == mptcp_pm_get_local_addr_max(msk) ||
+-	     msk->pm.subflows == mptcp_pm_get_subflows_max(msk)))
++	struct pm_nl_pernet *pernet = net_generic(sock_net((struct sock *)msk), pm_nl_pernet_id);
++
++	if (msk->pm.subflows == mptcp_pm_get_subflows_max(msk) ||
++	    (find_next_and_bit(pernet->id_bitmap, msk->pm.id_avail_bitmap,
++			       MPTCP_PM_MAX_ADDR_ID + 1, 0) == MPTCP_PM_MAX_ADDR_ID + 1))
+ 		WRITE_ONCE(msk->pm.work_pending, false);
+ }
+ 
+@@ -460,6 +457,35 @@ static unsigned int fill_remote_addresses_vec(struct mptcp_sock *msk, bool fullm
+ 	return i;
+ }
+ 
++static struct mptcp_pm_addr_entry *
++__lookup_addr_by_id(struct pm_nl_pernet *pernet, unsigned int id)
++{
++	struct mptcp_pm_addr_entry *entry;
++
++	list_for_each_entry(entry, &pernet->local_addr_list, list) {
++		if (entry->addr.id == id)
++			return entry;
++	}
++	return NULL;
 +}
 +
-+static void update_context_time(struct perf_event_context *ctx)
++static int
++lookup_id_by_addr(struct pm_nl_pernet *pernet, const struct mptcp_addr_info *addr)
 +{
-+	__update_context_time(ctx, true);
- }
- 
- static u64 perf_event_time(struct perf_event *event)
- {
- 	struct perf_event_context *ctx = event->ctx;
- 
-+	if (unlikely(!ctx))
-+		return 0;
++	struct mptcp_pm_addr_entry *entry;
++	int ret = -1;
 +
- 	if (is_cgroup_event(event))
- 		return perf_cgroup_event_time(event);
- 
--	return ctx ? ctx->time : 0;
-+	return ctx->time;
++	rcu_read_lock();
++	list_for_each_entry(entry, &pernet->local_addr_list, list) {
++		if (addresses_equal(&entry->addr, addr, entry->addr.port)) {
++			ret = entry->addr.id;
++			break;
++		}
++	}
++	rcu_read_unlock();
++	return ret;
 +}
 +
-+static u64 perf_event_time_now(struct perf_event *event, u64 now)
-+{
-+	struct perf_event_context *ctx = event->ctx;
+ static void mptcp_pm_create_subflow_or_signal_addr(struct mptcp_sock *msk)
+ {
+ 	struct sock *sk = (struct sock *)msk;
+@@ -475,6 +501,19 @@ static void mptcp_pm_create_subflow_or_signal_addr(struct mptcp_sock *msk)
+ 	local_addr_max = mptcp_pm_get_local_addr_max(msk);
+ 	subflows_max = mptcp_pm_get_subflows_max(msk);
+ 
++	/* do lazy endpoint usage accounting for the MPC subflows */
++	if (unlikely(!(msk->pm.status & BIT(MPTCP_PM_MPC_ENDPOINT_ACCOUNTED))) && msk->first) {
++		struct mptcp_addr_info local;
++		int mpc_id;
 +
-+	if (unlikely(!ctx))
-+		return 0;
++		local_address((struct sock_common *)msk->first, &local);
++		mpc_id = lookup_id_by_addr(pernet, &local);
++		if (mpc_id < 0)
++			__clear_bit(mpc_id, msk->pm.id_avail_bitmap);
 +
-+	if (is_cgroup_event(event))
-+		return perf_cgroup_event_time_now(event, now);
-+
-+	if (!(__load_acquire(&ctx->is_active) & EVENT_TIME))
-+		return ctx->time;
-+
-+	now += READ_ONCE(ctx->timeoffset);
-+	return now;
- }
- 
- static enum event_type_t get_event_type(struct perf_event *event)
-@@ -2346,7 +2413,7 @@ __perf_remove_from_context(struct perf_event *event,
- 
- 	if (ctx->is_active & EVENT_TIME) {
- 		update_context_time(ctx);
--		update_cgrp_time_from_cpuctx(cpuctx);
-+		update_cgrp_time_from_cpuctx(cpuctx, false);
- 	}
- 
- 	event_sched_out(event, cpuctx, ctx);
-@@ -2357,6 +2424,9 @@ __perf_remove_from_context(struct perf_event *event,
- 	list_del_event(event, ctx);
- 
- 	if (!ctx->nr_events && ctx->is_active) {
-+		if (ctx == &cpuctx->ctx)
-+			update_cgrp_time_from_cpuctx(cpuctx, true);
-+
- 		ctx->is_active = 0;
- 		ctx->rotate_necessary = 0;
- 		if (ctx->task) {
-@@ -2478,40 +2548,6 @@ void perf_event_disable_inatomic(struct perf_event *event)
- 	irq_work_queue(&event->pending);
- }
- 
--static void perf_set_shadow_time(struct perf_event *event,
--				 struct perf_event_context *ctx)
--{
--	/*
--	 * use the correct time source for the time snapshot
--	 *
--	 * We could get by without this by leveraging the
--	 * fact that to get to this function, the caller
--	 * has most likely already called update_context_time()
--	 * and update_cgrp_time_xx() and thus both timestamp
--	 * are identical (or very close). Given that tstamp is,
--	 * already adjusted for cgroup, we could say that:
--	 *    tstamp - ctx->timestamp
--	 * is equivalent to
--	 *    tstamp - cgrp->timestamp.
--	 *
--	 * Then, in perf_output_read(), the calculation would
--	 * work with no changes because:
--	 * - event is guaranteed scheduled in
--	 * - no scheduled out in between
--	 * - thus the timestamp would be the same
--	 *
--	 * But this is a bit hairy.
--	 *
--	 * So instead, we have an explicit cgroup call to remain
--	 * within the time source all along. We believe it
--	 * is cleaner and simpler to understand.
--	 */
--	if (is_cgroup_event(event))
--		perf_cgroup_set_shadow_time(event, event->tstamp);
--	else
--		event->shadow_ctx_time = event->tstamp - ctx->timestamp;
--}
--
- #define MAX_INTERRUPTS (~0ULL)
- 
- static void perf_log_throttle(struct perf_event *event, int enable);
-@@ -2552,8 +2588,6 @@ event_sched_in(struct perf_event *event,
- 
- 	perf_pmu_disable(event->pmu);
- 
--	perf_set_shadow_time(event, ctx);
--
- 	perf_log_itrace_start(event);
- 
- 	if (event->pmu->add(event, PERF_EF_START)) {
-@@ -3247,16 +3281,6 @@ static void ctx_sched_out(struct perf_event_context *ctx,
- 		return;
- 	}
- 
--	ctx->is_active &= ~event_type;
--	if (!(ctx->is_active & EVENT_ALL))
--		ctx->is_active = 0;
--
--	if (ctx->task) {
--		WARN_ON_ONCE(cpuctx->task_ctx != ctx);
--		if (!ctx->is_active)
--			cpuctx->task_ctx = NULL;
--	}
--
- 	/*
- 	 * Always update time if it was set; not only when it changes.
- 	 * Otherwise we can 'forget' to update time for any but the last
-@@ -3270,7 +3294,22 @@ static void ctx_sched_out(struct perf_event_context *ctx,
- 	if (is_active & EVENT_TIME) {
- 		/* update (and stop) ctx time */
- 		update_context_time(ctx);
--		update_cgrp_time_from_cpuctx(cpuctx);
-+		update_cgrp_time_from_cpuctx(cpuctx, ctx == &cpuctx->ctx);
-+		/*
-+		 * CPU-release for the below ->is_active store,
-+		 * see __load_acquire() in perf_event_time_now()
-+		 */
-+		barrier();
++		msk->pm.status |= BIT(MPTCP_PM_MPC_ENDPOINT_ACCOUNTED);
 +	}
 +
-+	ctx->is_active &= ~event_type;
-+	if (!(ctx->is_active & EVENT_ALL))
-+		ctx->is_active = 0;
-+
-+	if (ctx->task) {
-+		WARN_ON_ONCE(cpuctx->task_ctx != ctx);
-+		if (!ctx->is_active)
-+			cpuctx->task_ctx = NULL;
+ 	pr_debug("local %d:%d signal %d:%d subflows %d:%d\n",
+ 		 msk->pm.local_addr_used, local_addr_max,
+ 		 msk->pm.add_addr_signaled, add_addr_signal_max,
+@@ -482,21 +521,16 @@ static void mptcp_pm_create_subflow_or_signal_addr(struct mptcp_sock *msk)
+ 
+ 	/* check first for announce */
+ 	if (msk->pm.add_addr_signaled < add_addr_signal_max) {
+-		local = select_signal_address(pernet,
+-					      msk->pm.add_addr_signaled);
++		local = select_signal_address(pernet, msk);
+ 
+ 		if (local) {
+ 			if (mptcp_pm_alloc_anno_list(msk, local)) {
++				__clear_bit(local->addr.id, msk->pm.id_avail_bitmap);
+ 				msk->pm.add_addr_signaled++;
+ 				mptcp_pm_announce_addr(msk, &local->addr, false);
+ 				mptcp_pm_nl_addr_send_ack(msk);
+ 			}
+-		} else {
+-			/* pick failed, avoid fourther attempts later */
+-			msk->pm.local_addr_used = add_addr_signal_max;
+ 		}
+-
+-		check_work_pending(msk);
  	}
  
- 	is_active ^= ctx->is_active; /* changed bits */
-@@ -3707,13 +3746,19 @@ static noinline int visit_groups_merge(struct perf_cpu_context *cpuctx,
+ 	/* check if should create a new subflow */
+@@ -510,19 +544,16 @@ static void mptcp_pm_create_subflow_or_signal_addr(struct mptcp_sock *msk)
+ 			int i, nr;
+ 
+ 			msk->pm.local_addr_used++;
+-			check_work_pending(msk);
+ 			nr = fill_remote_addresses_vec(msk, fullmesh, addrs);
++			if (nr)
++				__clear_bit(local->addr.id, msk->pm.id_avail_bitmap);
+ 			spin_unlock_bh(&msk->pm.lock);
+ 			for (i = 0; i < nr; i++)
+ 				__mptcp_subflow_connect(sk, &local->addr, &addrs[i]);
+ 			spin_lock_bh(&msk->pm.lock);
+-			return;
+ 		}
+-
+-		/* lookup failed, avoid fourther attempts later */
+-		msk->pm.local_addr_used = local_addr_max;
+-		check_work_pending(msk);
+ 	}
++	check_work_pending(msk);
+ }
+ 
+ static void mptcp_pm_nl_fully_established(struct mptcp_sock *msk)
+@@ -736,6 +767,7 @@ static void mptcp_pm_nl_rm_addr_or_subflow(struct mptcp_sock *msk,
+ 			msk->pm.subflows--;
+ 			__MPTCP_INC_STATS(sock_net(sk), rm_type);
+ 		}
++		__set_bit(rm_list->ids[1], msk->pm.id_avail_bitmap);
+ 		if (!removed)
+ 			continue;
+ 
+@@ -765,6 +797,9 @@ void mptcp_pm_nl_work(struct mptcp_sock *msk)
+ 
+ 	msk_owned_by_me(msk);
+ 
++	if (!(pm->status & MPTCP_PM_WORK_MASK))
++		return;
++
+ 	spin_lock_bh(&msk->pm.lock);
+ 
+ 	pr_debug("msk=%p status=%x", msk, pm->status);
+@@ -810,7 +845,7 @@ static int mptcp_pm_nl_append_new_local_addr(struct pm_nl_pernet *pernet,
+ 	/* to keep the code simple, don't do IDR-like allocation for address ID,
+ 	 * just bail when we exceed limits
+ 	 */
+-	if (pernet->next_id == MAX_ADDR_ID)
++	if (pernet->next_id == MPTCP_PM_MAX_ADDR_ID)
+ 		pernet->next_id = 1;
+ 	if (pernet->addrs >= MPTCP_PM_ADDR_MAX)
+ 		goto out;
+@@ -830,7 +865,7 @@ static int mptcp_pm_nl_append_new_local_addr(struct pm_nl_pernet *pernet,
+ 	if (!entry->addr.id) {
+ find_next:
+ 		entry->addr.id = find_next_zero_bit(pernet->id_bitmap,
+-						    MAX_ADDR_ID + 1,
++						    MPTCP_PM_MAX_ADDR_ID + 1,
+ 						    pernet->next_id);
+ 		if (!entry->addr.id && pernet->next_id != 1) {
+ 			pernet->next_id = 1;
+@@ -1197,18 +1232,6 @@ static int mptcp_nl_cmd_add_addr(struct sk_buff *skb, struct genl_info *info)
  	return 0;
  }
  
-+/*
-+ * Because the userpage is strictly per-event (there is no concept of context,
-+ * so there cannot be a context indirection), every userpage must be updated
-+ * when context time starts :-(
-+ *
-+ * IOW, we must not miss EVENT_TIME edges.
-+ */
- static inline bool event_update_userpage(struct perf_event *event)
- {
- 	if (likely(!atomic_read(&event->mmap_count)))
- 		return false;
- 
- 	perf_event_update_time(event);
--	perf_set_shadow_time(event, event->ctx);
- 	perf_event_update_userpage(event);
- 
- 	return true;
-@@ -3797,13 +3842,23 @@ ctx_sched_in(struct perf_event_context *ctx,
- 	     struct task_struct *task)
- {
- 	int is_active = ctx->is_active;
--	u64 now;
- 
- 	lockdep_assert_held(&ctx->lock);
- 
- 	if (likely(!ctx->nr_events))
- 		return;
- 
-+	if (is_active ^ EVENT_TIME) {
-+		/* start ctx time */
-+		__update_context_time(ctx, false);
-+		perf_cgroup_set_timestamp(task, ctx);
-+		/*
-+		 * CPU-release for the below ->is_active store,
-+		 * see __load_acquire() in perf_event_time_now()
-+		 */
-+		barrier();
-+	}
-+
- 	ctx->is_active |= (event_type | EVENT_TIME);
- 	if (ctx->task) {
- 		if (!is_active)
-@@ -3814,13 +3869,6 @@ ctx_sched_in(struct perf_event_context *ctx,
- 
- 	is_active ^= ctx->is_active; /* changed bits */
- 
--	if (is_active & EVENT_TIME) {
--		/* start ctx time */
--		now = perf_clock();
--		ctx->timestamp = now;
--		perf_cgroup_set_timestamp(task, ctx);
--	}
--
- 	/*
- 	 * First go through the list and put on any pinned groups
- 	 * in order to give them the best chance of going on.
-@@ -4414,6 +4462,18 @@ static inline u64 perf_event_count(struct perf_event *event)
- 	return local64_read(&event->count) + atomic64_read(&event->child_count);
- }
- 
-+static void calc_timer_values(struct perf_event *event,
-+				u64 *now,
-+				u64 *enabled,
-+				u64 *running)
-+{
-+	u64 ctx_time;
-+
-+	*now = perf_clock();
-+	ctx_time = perf_event_time_now(event, *now);
-+	__perf_update_times(event, ctx_time, enabled, running);
-+}
-+
- /*
-  * NMI-safe method to read a local event, that is an event that
-  * is:
-@@ -4473,10 +4533,9 @@ int perf_event_read_local(struct perf_event *event, u64 *value,
- 
- 	*value = local64_read(&event->count);
- 	if (enabled || running) {
--		u64 now = event->shadow_ctx_time + perf_clock();
--		u64 __enabled, __running;
-+		u64 __enabled, __running, __now;;
- 
--		__perf_update_times(event, now, &__enabled, &__running);
-+		calc_timer_values(event, &__now, &__enabled, &__running);
- 		if (enabled)
- 			*enabled = __enabled;
- 		if (running)
-@@ -5798,18 +5857,6 @@ static int perf_event_index(struct perf_event *event)
- 	return event->pmu->event_idx(event);
- }
- 
--static void calc_timer_values(struct perf_event *event,
--				u64 *now,
--				u64 *enabled,
--				u64 *running)
+-static struct mptcp_pm_addr_entry *
+-__lookup_addr_by_id(struct pm_nl_pernet *pernet, unsigned int id)
 -{
--	u64 ctx_time;
+-	struct mptcp_pm_addr_entry *entry;
 -
--	*now = perf_clock();
--	ctx_time = event->shadow_ctx_time + *now;
--	__perf_update_times(event, ctx_time, enabled, running);
+-	list_for_each_entry(entry, &pernet->local_addr_list, list) {
+-		if (entry->addr.id == id)
+-			return entry;
+-	}
+-	return NULL;
 -}
 -
- static void perf_event_init_userpage(struct perf_event *event)
+ int mptcp_pm_get_flags_and_ifindex_by_id(struct net *net, unsigned int id,
+ 					 u8 *flags, int *ifindex)
  {
- 	struct perf_event_mmap_page *userpg;
-@@ -6349,7 +6396,6 @@ accounting:
- 		ring_buffer_attach(event, rb);
+@@ -1467,7 +1490,7 @@ static int mptcp_nl_cmd_flush_addrs(struct sk_buff *skb, struct genl_info *info)
+ 	list_splice_init(&pernet->local_addr_list, &free_list);
+ 	__reset_counters(pernet);
+ 	pernet->next_id = 1;
+-	bitmap_zero(pernet->id_bitmap, MAX_ADDR_ID + 1);
++	bitmap_zero(pernet->id_bitmap, MPTCP_PM_MAX_ADDR_ID + 1);
+ 	spin_unlock_bh(&pernet->lock);
+ 	mptcp_nl_remove_addrs_list(sock_net(skb->sk), &free_list);
+ 	synchronize_rcu();
+@@ -1577,7 +1600,7 @@ static int mptcp_nl_cmd_dump_addrs(struct sk_buff *msg,
+ 	pernet = net_generic(net, pm_nl_pernet_id);
  
- 		perf_event_update_time(event);
--		perf_set_shadow_time(event, event->ctx);
- 		perf_event_init_userpage(event);
- 		perf_event_update_userpage(event);
- 	} else {
+ 	spin_lock_bh(&pernet->lock);
+-	for (i = id; i < MAX_ADDR_ID + 1; i++) {
++	for (i = id; i < MPTCP_PM_MAX_ADDR_ID + 1; i++) {
+ 		if (test_bit(i, pernet->id_bitmap)) {
+ 			entry = __lookup_addr_by_id(pernet, i);
+ 			if (!entry)
+diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+index 0cd55e4c30fab..70a3cac85f7b8 100644
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -2416,8 +2416,7 @@ static void mptcp_worker(struct work_struct *work)
+ 
+ 	mptcp_check_fastclose(msk);
+ 
+-	if (msk->pm.status)
+-		mptcp_pm_nl_work(msk);
++	mptcp_pm_nl_work(msk);
+ 
+ 	if (test_and_clear_bit(MPTCP_WORK_EOF, &msk->flags))
+ 		mptcp_check_for_eof(msk);
+diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
+index d87cc040352e3..0387ad9fb43f7 100644
+--- a/net/mptcp/protocol.h
++++ b/net/mptcp/protocol.h
+@@ -174,16 +174,25 @@ enum mptcp_pm_status {
+ 	MPTCP_PM_ADD_ADDR_SEND_ACK,
+ 	MPTCP_PM_RM_ADDR_RECEIVED,
+ 	MPTCP_PM_ESTABLISHED,
+-	MPTCP_PM_ALREADY_ESTABLISHED,	/* persistent status, set after ESTABLISHED event */
+ 	MPTCP_PM_SUBFLOW_ESTABLISHED,
++	MPTCP_PM_ALREADY_ESTABLISHED,	/* persistent status, set after ESTABLISHED event */
++	MPTCP_PM_MPC_ENDPOINT_ACCOUNTED /* persistent status, set after MPC local address is
++					 * accounted int id_avail_bitmap
++					 */
+ };
+ 
++/* Status bits below MPTCP_PM_ALREADY_ESTABLISHED need pm worker actions */
++#define MPTCP_PM_WORK_MASK ((1 << MPTCP_PM_ALREADY_ESTABLISHED) - 1)
++
+ enum mptcp_addr_signal_status {
+ 	MPTCP_ADD_ADDR_SIGNAL,
+ 	MPTCP_ADD_ADDR_ECHO,
+ 	MPTCP_RM_ADDR_SIGNAL,
+ };
+ 
++/* max value of mptcp_addr_info.id */
++#define MPTCP_PM_MAX_ADDR_ID		U8_MAX
++
+ struct mptcp_pm_data {
+ 	struct mptcp_addr_info local;
+ 	struct mptcp_addr_info remote;
+@@ -202,6 +211,7 @@ struct mptcp_pm_data {
+ 	u8		local_addr_used;
+ 	u8		subflows;
+ 	u8		status;
++	DECLARE_BITMAP(id_avail_bitmap, MPTCP_PM_MAX_ADDR_ID + 1);
+ 	struct mptcp_rm_list rm_list_tx;
+ 	struct mptcp_rm_list rm_list_rx;
+ };
+diff --git a/tools/testing/selftests/net/mptcp/mptcp_join.sh b/tools/testing/selftests/net/mptcp/mptcp_join.sh
+index 7ef639a9d4a6f..bbafa4cf54538 100755
+--- a/tools/testing/selftests/net/mptcp/mptcp_join.sh
++++ b/tools/testing/selftests/net/mptcp/mptcp_join.sh
+@@ -1071,7 +1071,10 @@ signal_address_tests()
+ 	ip netns exec $ns2 ./pm_nl_ctl add 10.0.3.2 flags signal
+ 	ip netns exec $ns2 ./pm_nl_ctl add 10.0.4.2 flags signal
+ 	run_tests $ns1 $ns2 10.0.1.1
+-	chk_add_nr 4 4
++
++	# the server will not signal the address terminating
++	# the MPC subflow
++	chk_add_nr 3 3
+ }
+ 
+ link_failure_tests()
 -- 
 2.34.1
 
