@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95950C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:25:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 868D0C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:25:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359870AbiAaLZ1 (ORCPT
+        id S1376500AbiAaLZc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:25:27 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:35386 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358824AbiAaLQM (ORCPT
+        Mon, 31 Jan 2022 06:25:32 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:50266 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358963AbiAaLQ6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:16:12 -0500
+        Mon, 31 Jan 2022 06:16:58 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 78A42B82A60;
-        Mon, 31 Jan 2022 11:16:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A04A8C340F6;
-        Mon, 31 Jan 2022 11:16:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0513460ED0;
+        Mon, 31 Jan 2022 11:16:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5B7DC340E8;
+        Mon, 31 Jan 2022 11:16:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627770;
-        bh=fyW3VQY1hsrMVTxcCkB3SrRtd1fxSMkjIxRB1Iq4xes=;
+        s=korg; t=1643627817;
+        bh=/2J71IQHV04YtvG+x0KtFRFNMteVquUGnfAUT22H+Rw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V72NRstsH69VAiJQ88hro2v914q0rVedUiyg5Lv6HZlHsJnLQawLF5em0B4wwfKf3
-         LD8E9BZ4LSLLt5YEo5TuqFRCnEPSAKvWtpHXvAR4GN+aeS68QXs3yZ+dCO81VKiXx9
-         52Q1+UXXoQ8WigSVdgbGpefIwWPOZAU0JX3U2XwQ=
+        b=IAhFowMzLY3y1f0/i46Hr6nKCoYyTtmNwW+8TlYq0NelmBwsJ8sBdBvXepWm4y4k+
+         abuoHoS1eiOod3qjSVGt0TxmGZIhA4aBRMPeQaqXIzDB769OUHtoY7CQEj8KgDfPAP
+         GLRAXF+ZQC0lBAGPo8OahRzqsJa517CxO9pnx4Fc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Anthony Ruhier <aruhier@mailbox.org>,
-        Qu Wenruo <wqu@suse.com>, Filipe Manana <fdmanana@suse.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.16 002/200] btrfs: fix too long loop when defragging a 1 byte file
-Date:   Mon, 31 Jan 2022 11:54:25 +0100
-Message-Id: <20220131105233.642599121@linuxfoundation.org>
+        stable@vger.kernel.org, Ivan Delalande <colona@arista.com>,
+        Amir Goldstein <amir73il@gmail.com>, Jan Kara <jack@suse.cz>
+Subject: [PATCH 5.16 035/200] fsnotify: invalidate dcache before IN_DELETE event
+Date:   Mon, 31 Jan 2022 11:54:58 +0100
+Message-Id: <20220131105234.747022009@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -47,85 +46,174 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Filipe Manana <fdmanana@suse.com>
+From: Amir Goldstein <amir73il@gmail.com>
 
-commit 6b34cd8e175bfbf4f3f01b6d19eae18245e1a8cc upstream.
+commit a37d9a17f099072fe4d3a9048b0321978707a918 upstream.
 
-When attempting to defrag a file with a single byte, we can end up in a
-too long loop, which is nearly infinite because at btrfs_defrag_file()
-we end up with the variable last_byte assigned with a value of
-18446744073709551615 (which is (u64)-1). The problem comes from the fact
-we end up doing:
+Apparently, there are some applications that use IN_DELETE event as an
+invalidation mechanism and expect that if they try to open a file with
+the name reported with the delete event, that it should not contain the
+content of the deleted file.
 
-    last_byte = round_up(last_byte, fs_info->sectorsize) - 1;
+Commit 49246466a989 ("fsnotify: move fsnotify_nameremove() hook out of
+d_delete()") moved the fsnotify delete hook before d_delete() so fsnotify
+will have access to a positive dentry.
 
-So if last_byte was assigned 0, which is i_size - 1, we underflow and
-end up with the value 18446744073709551615.
+This allowed a race where opening the deleted file via cached dentry
+is now possible after receiving the IN_DELETE event.
 
-This is trivial to reproduce and the following script triggers it:
+To fix the regression, create a new hook fsnotify_delete() that takes
+the unlinked inode as an argument and use a helper d_delete_notify() to
+pin the inode, so we can pass it to fsnotify_delete() after d_delete().
 
-  $ cat test.sh
-  #!/bin/bash
+Backporting hint: this regression is from v5.3. Although patch will
+apply with only trivial conflicts to v5.4 and v5.10, it won't build,
+because fsnotify_delete() implementation is different in each of those
+versions (see fsnotify_link()).
 
-  DEV=/dev/sdj
-  MNT=/mnt/sdj
+A follow up patch will fix the fsnotify_unlink/rmdir() calls in pseudo
+filesystem that do not need to call d_delete().
 
-  mkfs.btrfs -f $DEV
-  mount $DEV $MNT
-
-  echo -n "X" > $MNT/foobar
-
-  btrfs filesystem defragment $MNT/foobar
-
-  umount $MNT
-
-So fix this by not decrementing last_byte by 1 before doing the sector
-size round up. Also, to make it easier to follow, make the round up right
-after computing last_byte.
-
-Reported-by: Anthony Ruhier <aruhier@mailbox.org>
-Fixes: 7b508037d4cac3 ("btrfs: defrag: use defrag_one_cluster() to implement btrfs_defrag_file()")
-Link: https://lore.kernel.org/linux-btrfs/0a269612-e43f-da22-c5bc-b34b1b56ebe8@mailbox.org/
-CC: stable@vger.kernel.org # 5.16
-Reviewed-by: Qu Wenruo <wqu@suse.com>
-Signed-off-by: Filipe Manana <fdmanana@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Link: https://lore.kernel.org/r/20220120215305.282577-1-amir73il@gmail.com
+Reported-by: Ivan Delalande <colona@arista.com>
+Link: https://lore.kernel.org/linux-fsdevel/YeNyzoDM5hP5LtGW@visor/
+Fixes: 49246466a989 ("fsnotify: move fsnotify_nameremove() hook out of d_delete()")
+Cc: stable@vger.kernel.org # v5.3+
+Signed-off-by: Amir Goldstein <amir73il@gmail.com>
+Signed-off-by: Jan Kara <jack@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/ioctl.c |   12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ fs/btrfs/ioctl.c         |    6 +----
+ fs/namei.c               |   10 ++++-----
+ include/linux/fsnotify.h |   49 +++++++++++++++++++++++++++++++++++++++++------
+ 3 files changed, 50 insertions(+), 15 deletions(-)
 
 --- a/fs/btrfs/ioctl.c
 +++ b/fs/btrfs/ioctl.c
-@@ -1492,12 +1492,16 @@ int btrfs_defrag_file(struct inode *inod
+@@ -3126,10 +3126,8 @@ static noinline int btrfs_ioctl_snap_des
+ 	btrfs_inode_lock(inode, 0);
+ 	err = btrfs_delete_subvolume(dir, dentry);
+ 	btrfs_inode_unlock(inode, 0);
+-	if (!err) {
+-		fsnotify_rmdir(dir, dentry);
+-		d_delete(dentry);
+-	}
++	if (!err)
++		d_delete_notify(dir, dentry);
  
- 	if (range->start + range->len > range->start) {
- 		/* Got a specific range */
--		last_byte = min(isize, range->start + range->len) - 1;
-+		last_byte = min(isize, range->start + range->len);
- 	} else {
- 		/* Defrag until file end */
--		last_byte = isize - 1;
-+		last_byte = isize;
+ out_dput:
+ 	dput(dentry);
+--- a/fs/namei.c
++++ b/fs/namei.c
+@@ -3973,13 +3973,12 @@ int vfs_rmdir(struct user_namespace *mnt
+ 	dentry->d_inode->i_flags |= S_DEAD;
+ 	dont_mount(dentry);
+ 	detach_mounts(dentry);
+-	fsnotify_rmdir(dir, dentry);
+ 
+ out:
+ 	inode_unlock(dentry->d_inode);
+ 	dput(dentry);
+ 	if (!error)
+-		d_delete(dentry);
++		d_delete_notify(dir, dentry);
+ 	return error;
+ }
+ EXPORT_SYMBOL(vfs_rmdir);
+@@ -4101,7 +4100,6 @@ int vfs_unlink(struct user_namespace *mn
+ 			if (!error) {
+ 				dont_mount(dentry);
+ 				detach_mounts(dentry);
+-				fsnotify_unlink(dir, dentry);
+ 			}
+ 		}
+ 	}
+@@ -4109,9 +4107,11 @@ out:
+ 	inode_unlock(target);
+ 
+ 	/* We don't d_delete() NFS sillyrenamed files--they still exist. */
+-	if (!error && !(dentry->d_flags & DCACHE_NFSFS_RENAMED)) {
++	if (!error && dentry->d_flags & DCACHE_NFSFS_RENAMED) {
++		fsnotify_unlink(dir, dentry);
++	} else if (!error) {
+ 		fsnotify_link_count(target);
+-		d_delete(dentry);
++		d_delete_notify(dir, dentry);
  	}
  
-+	/* Align the range */
-+	cur = round_down(range->start, fs_info->sectorsize);
-+	last_byte = round_up(last_byte, fs_info->sectorsize) - 1;
+ 	return error;
+--- a/include/linux/fsnotify.h
++++ b/include/linux/fsnotify.h
+@@ -222,16 +222,53 @@ static inline void fsnotify_link(struct
+ }
+ 
+ /*
++ * fsnotify_delete - @dentry was unlinked and unhashed
++ *
++ * Caller must make sure that dentry->d_name is stable.
++ *
++ * Note: unlike fsnotify_unlink(), we have to pass also the unlinked inode
++ * as this may be called after d_delete() and old_dentry may be negative.
++ */
++static inline void fsnotify_delete(struct inode *dir, struct inode *inode,
++				   struct dentry *dentry)
++{
++	__u32 mask = FS_DELETE;
 +
- 	/*
- 	 * If we were not given a ra, allocate a readahead context. As
- 	 * readahead is just an optimization, defrag will work without it so
-@@ -1510,10 +1514,6 @@ int btrfs_defrag_file(struct inode *inod
- 			file_ra_state_init(ra, inode->i_mapping);
- 	}
++	if (S_ISDIR(inode->i_mode))
++		mask |= FS_ISDIR;
++
++	fsnotify_name(mask, inode, FSNOTIFY_EVENT_INODE, dir, &dentry->d_name,
++		      0);
++}
++
++/**
++ * d_delete_notify - delete a dentry and call fsnotify_delete()
++ * @dentry: The dentry to delete
++ *
++ * This helper is used to guaranty that the unlinked inode cannot be found
++ * by lookup of this name after fsnotify_delete() event has been delivered.
++ */
++static inline void d_delete_notify(struct inode *dir, struct dentry *dentry)
++{
++	struct inode *inode = d_inode(dentry);
++
++	ihold(inode);
++	d_delete(dentry);
++	fsnotify_delete(dir, inode, dentry);
++	iput(inode);
++}
++
++/*
+  * fsnotify_unlink - 'name' was unlinked
+  *
+  * Caller must make sure that dentry->d_name is stable.
+  */
+ static inline void fsnotify_unlink(struct inode *dir, struct dentry *dentry)
+ {
+-	/* Expected to be called before d_delete() */
+-	WARN_ON_ONCE(d_is_negative(dentry));
++	if (WARN_ON_ONCE(d_is_negative(dentry)))
++		return;
  
--	/* Align the range */
--	cur = round_down(range->start, fs_info->sectorsize);
--	last_byte = round_up(last_byte, fs_info->sectorsize) - 1;
--
- 	while (cur < last_byte) {
- 		u64 cluster_end;
+-	fsnotify_dirent(dir, dentry, FS_DELETE);
++	fsnotify_delete(dir, d_inode(dentry), dentry);
+ }
  
+ /*
+@@ -255,10 +292,10 @@ static inline void fsnotify_mkdir(struct
+  */
+ static inline void fsnotify_rmdir(struct inode *dir, struct dentry *dentry)
+ {
+-	/* Expected to be called before d_delete() */
+-	WARN_ON_ONCE(d_is_negative(dentry));
++	if (WARN_ON_ONCE(d_is_negative(dentry)))
++		return;
+ 
+-	fsnotify_dirent(dir, dentry, FS_DELETE | FS_ISDIR);
++	fsnotify_delete(dir, d_inode(dentry), dentry);
+ }
+ 
+ /*
 
 
