@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF5DFC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:48:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EEBEC4167B
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:48:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378097AbiAaLsA (ORCPT
+        id S1378313AbiAaLsV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:48:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51354 "EHLO
+        Mon, 31 Jan 2022 06:48:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350844AbiAaLfD (ORCPT
+        with ESMTP id S1378475AbiAaLeT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:35:03 -0500
+        Mon, 31 Jan 2022 06:34:19 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62494C07979E;
-        Mon, 31 Jan 2022 03:23:48 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 795AAC02B8D5;
+        Mon, 31 Jan 2022 03:22:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0120F60B28;
-        Mon, 31 Jan 2022 11:23:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C2F0C340E8;
-        Mon, 31 Jan 2022 11:23:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1AD8361120;
+        Mon, 31 Jan 2022 11:22:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E65D7C340E8;
+        Mon, 31 Jan 2022 11:22:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643628227;
-        bh=83B0RS1DnVdZj+VKZkF1dGNsghRhMUMNT7KwBhdnqcI=;
+        s=korg; t=1643628133;
+        bh=spdpjo4qMbBRvJtQh7H28I1jbdknu9a8xKiGy/yHeJA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kPzaoEIJextPTvvAyE7vaWE/YHNabs4FCTXakkHP2+sBnkr+5w8nHFxyvoG3nyc1+
-         7RWm2clJxE8qVqMLbnicEFdNpPCEydLelAyYJBdGw4/sjAZ1WcEN+VborF9dr0W4RA
-         RYFJeNHHdn8agCfwOBNQ2NjtLc+5infvWDiTUALg=
+        b=SZ2zBE/+9cS948Yfrw/20IOdC+jOTTs2O1FHu3BkzK5v+mf+S1Dx8M/MiOTzR+FNZ
+         aqDvJSniJ56rQ/ekffFQi0wFA7x0aC70tIzp5yFcuIhVFgo2cNWOBRYo6FhjrAiEk3
+         626goWzujzExna3ruKJaJovd6+dIILZrELlVj7VQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
-        Dany Madden <drt@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 164/200] ibmvnic: dont spin in tasklet
-Date:   Mon, 31 Jan 2022 11:57:07 +0100
-Message-Id: <20220131105239.065797582@linuxfoundation.org>
+        stable@vger.kernel.org, Linyu Yuan <quic_linyyuan@quicinc.com>
+Subject: [PATCH 5.16 101/200] usb: roles: fix include/linux/usb/role.h compile issue
+Date:   Mon, 31 Jan 2022 11:56:04 +0100
+Message-Id: <20220131105236.990284031@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -52,47 +48,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+From: Linyu Yuan <quic_linyyuan@quicinc.com>
 
-[ Upstream commit 48079e7fdd0269d66b1d7d66ae88bd03162464ad ]
+commit 945c37ed564770c78dfe6b9f08bed57a1b4e60ef upstream.
 
-ibmvnic_tasklet() continuously spins waiting for responses to all
-capability requests. It does this to avoid encountering an error
-during initialization of the vnic. However if there is a bug in the
-VIOS and we do not receive a response to one or more queries the
-tasklet ends up spinning continuously leading to hard lock ups.
+when CONFIG_USB_ROLE_SWITCH is not defined,
+add usb_role_switch_find_by_fwnode() definition which return NULL.
 
-If we fail to receive a message from the VIOS it is reasonable to
-timeout the login attempt rather than spin indefinitely in the tasklet.
-
-Fixes: 249168ad07cd ("ibmvnic: Make CRQ interrupt tasklet wait for all capabilities crqs")
-Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-Reviewed-by: Dany Madden <drt@linux.ibm.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: c6919d5e0cd1 ("usb: roles: Add usb_role_switch_find_by_fwnode()")
+Signed-off-by: Linyu Yuan <quic_linyyuan@quicinc.com>
+Link: https://lore.kernel.org/r/1641818608-25039-1-git-send-email-quic_linyyuan@quicinc.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/ibm/ibmvnic.c | 6 ------
- 1 file changed, 6 deletions(-)
+ include/linux/usb/role.h |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index acd488310bbce..682a440151a87 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -5491,12 +5491,6 @@ static void ibmvnic_tasklet(struct tasklet_struct *t)
- 			ibmvnic_handle_crq(crq, adapter);
- 			crq->generic.first = 0;
- 		}
--
--		/* remain in tasklet until all
--		 * capabilities responses are received
--		 */
--		if (!adapter->wait_capability)
--			done = true;
- 	}
- 	/* if capabilities CRQ's were sent in this tasklet, the following
- 	 * tasklet must wait until all responses are received
--- 
-2.34.1
-
+--- a/include/linux/usb/role.h
++++ b/include/linux/usb/role.h
+@@ -92,6 +92,12 @@ fwnode_usb_role_switch_get(struct fwnode
+ static inline void usb_role_switch_put(struct usb_role_switch *sw) { }
+ 
+ static inline struct usb_role_switch *
++usb_role_switch_find_by_fwnode(const struct fwnode_handle *fwnode)
++{
++	return NULL;
++}
++
++static inline struct usb_role_switch *
+ usb_role_switch_register(struct device *parent,
+ 			 const struct usb_role_switch_desc *desc)
+ {
 
 
