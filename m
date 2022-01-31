@@ -2,140 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CED80C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 18:23:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC63BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 18:24:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350112AbiAaSWn (ORCPT
+        id S1348462AbiAaSYM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 13:22:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34450 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348123AbiAaSWe (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 13:22:34 -0500
-Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDD58C061714
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 10:22:33 -0800 (PST)
-Received: by mail-ot1-x333.google.com with SMTP id d18-20020a9d51d2000000b005a09728a8c2so13821144oth.3
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 10:22:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Uv9kZcj+SYuMKmc2v8qVWQoeoD1xbOxuZhUO9LDOn7M=;
-        b=iElq6TWfe6FNOYAB6SZde3+Kjyd36wOCujz4wGdkh8f0ib8i/VM4zSOvU5JoAwfW4o
-         zkN1JFwopjcF3PEtY4QhzcFUEYgWaOP0ysi3BUVTSK1l5XghFPpcIwCmaBVcGNYgWIEM
-         EKoMCN4Esh15vtBOBrM4RxsNzWNbnW3QG71jsAL0aMY4vMukdFYR8H+PrWlAYWiD8sdz
-         5fHGzfBqElGUsvpzUxdcmp4CrF0chVrPB5CeyJbGVNX0lx1bDQrY46Svkl7FnErsURbY
-         B8hmCZMlsGEYmuI2b8Tw2YROFPQvqjkTzcs6KqptFRoIKgsSxsw8m7xWtpHdFDcnuBDb
-         RzhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=Uv9kZcj+SYuMKmc2v8qVWQoeoD1xbOxuZhUO9LDOn7M=;
-        b=JDHEMLYcfhFlGYv6ygYtsK9c8cF2uHqD3NCbYKS9ce/Boqhyxs211qC4KcJ9SSuadH
-         BIbSYej1MPXd89XPIi5D/fkf5MyTx8U3opGM96OxcScMxRXDKuLtUjTFI0lT2boDpgf+
-         4VDCwZzIe5ryqh+p0ik8RJ+w9Y1KrVaK44ycUq+Moat3kPkeIcFvK8eCv2wf92xZOrj2
-         yl3crT3fsImjMsibx4LKtCDYQd8YUNMrCcoCJykNvyJ7yQuCDRul2qri3YxH/zJXHw7x
-         wzyMYx4lvbBCaFfyKZgzFOVr/6EyLFOOZpwoE/9MWzb0xmE4JV8y+Mf6r3Z1JBvDyKsu
-         LRyA==
-X-Gm-Message-State: AOAM530K/67mjF1UDzBPkVLnOETS4K6L4eqRXSs2PGw4OxQkH/rZgeO/
-        wp7fKFpyN5Y+19bKhXIhujE=
-X-Google-Smtp-Source: ABdhPJxqEnmembk8ZumxKkHqD6FTwsFFWHtaMX3BJpB/i4c3c3jD4OzuDZo4IZTHWs/KTnXiZk0oHg==
-X-Received: by 2002:a9d:12d7:: with SMTP id g81mr12118683otg.82.1643653353310;
-        Mon, 31 Jan 2022 10:22:33 -0800 (PST)
-Received: from stitch.. (80.71.140.73.ipv4.parknet.dk. [80.71.140.73])
-        by smtp.gmail.com with ESMTPSA id t4sm12986340oie.14.2022.01.31.10.22.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Jan 2022 10:22:33 -0800 (PST)
-Sender: Emil Renner Berthing <emil.renner.berthing@gmail.com>
-From:   Emil Renner Berthing <kernel@esmil.dk>
-To:     linux-riscv@lists.infradead.org
-Cc:     Emil Renner Berthing <kernel@esmil.dk>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jason Baron <jbaron@akamai.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Alexandre Ghiti <alex@ghiti.fr>,
-        Jisheng Zhang <jszhang@kernel.org>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v1 5/7] riscv: Use asm/insn.h to generate plt entries
-Date:   Mon, 31 Jan 2022 19:21:43 +0100
-Message-Id: <20220131182145.236005-6-kernel@esmil.dk>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131182145.236005-1-kernel@esmil.dk>
-References: <20220131182145.236005-1-kernel@esmil.dk>
+        Mon, 31 Jan 2022 13:24:12 -0500
+Received: from mga07.intel.com ([134.134.136.100]:37369 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232361AbiAaSYJ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 13:24:09 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643653449; x=1675189449;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=lQzhqiT47y+P20hA+SEuOwsKyR/X5oa3XuqnTl9IAME=;
+  b=RYvcL6jn8KFub9GXAPfdhNqPURVuE8o+GvRK12Y47EOUD3rYe0tVAgH9
+   XcllJAOfni6KXpDrAFnbHFBWT2tLYzrD1lS6drAcjzY7LSXNfrqto9wpC
+   GV7Sa50Z855WUqmnK7aikfE3TTJwRsoD+lSuT63UnjBiMzfITqPQDFxCX
+   tVM0GvoINRjiQILbWFTIwsX3+rKGE4Xn0wONL4fPP3PbxXHYGN6qH1HMl
+   nO5qQzviTqmpw0qSl7mVjImPfp/g5E/hTCn62IRXAtNgRWqsfxK3dosq8
+   sdt7LlD2V8+alqdNAfyDEhaifchk6WQJkuigu/JdEgw471yg70lPotO6r
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10244"; a="310831524"
+X-IronPort-AV: E=Sophos;i="5.88,331,1635231600"; 
+   d="scan'208";a="310831524"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 10:24:06 -0800
+X-IronPort-AV: E=Sophos;i="5.88,331,1635231600"; 
+   d="scan'208";a="630111551"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 10:24:01 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nEbKM-00GzDb-HB;
+        Mon, 31 Jan 2022 20:22:58 +0200
+Date:   Mon, 31 Jan 2022 20:22:58 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     quentin.schulz@theobroma-systems.com,
+        Chris Morgan <macromorgan@hotmail.com>,
+        Douglas Anderson <dianders@chromium.org>
+Cc:     mturquette@baylibre.com, sboyd@kernel.org, heiko@sntech.de,
+        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, Quentin Schulz <foss+kernel@0leil.net>
+Subject: Re: [PATCH] clk: rockchip: re-add rational best approximation
+ algorithm to the fractional divider
+Message-ID: <YfgpAu2fjxMZrzxe@smile.fi.intel.com>
+References: <20220131163224.708002-1-quentin.schulz@theobroma-systems.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220131163224.708002-1-quentin.schulz@theobroma-systems.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This converts kernel/module-sections.c to use asm/insn.h to generate
-the instructions in the plt entries.
+On Mon, Jan 31, 2022 at 05:32:24PM +0100, quentin.schulz@theobroma-systems.com wrote:
+> From: Quentin Schulz <quentin.schulz@theobroma-systems.com>
 
-Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
----
- arch/riscv/kernel/module-sections.c | 27 ++++-----------------------
- 1 file changed, 4 insertions(+), 23 deletions(-)
+Thanks for your report.
 
-diff --git a/arch/riscv/kernel/module-sections.c b/arch/riscv/kernel/module-sections.c
-index 39d4ac681c2a..cb73399c3603 100644
---- a/arch/riscv/kernel/module-sections.c
-+++ b/arch/riscv/kernel/module-sections.c
-@@ -9,6 +9,7 @@
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/moduleloader.h>
-+#include <asm/insn.h>
- 
- struct got_entry {
- 	unsigned long symbol_addr;	/* the real variable address */
-@@ -61,36 +62,16 @@ struct plt_entry {
- 	u32 insn_jr;		/* jr    t1                            */
- };
- 
--#define OPC_AUIPC  0x0017
--#define OPC_LD     0x3003
--#define OPC_JALR   0x0067
--#define REG_T0     0x5
--#define REG_T1     0x6
--
- static struct plt_entry emit_plt_entry(unsigned long val,
- 				       unsigned long plt,
- 				       unsigned long got_plt)
- {
--	/*
--	 * U-Type encoding:
--	 * +------------+----------+----------+
--	 * | imm[31:12] | rd[11:7] | opc[6:0] |
--	 * +------------+----------+----------+
--	 *
--	 * I-Type encoding:
--	 * +------------+------------+--------+----------+----------+
--	 * | imm[31:20] | rs1[19:15] | funct3 | rd[11:7] | opc[6:0] |
--	 * +------------+------------+--------+----------+----------+
--	 *
--	 */
- 	unsigned long offset = got_plt - plt;
--	u32 hi20 = (offset + 0x800) & 0xfffff000;
--	u32 lo12 = (offset - hi20);
- 
- 	return (struct plt_entry) {
--		OPC_AUIPC | (REG_T0 << 7) | hi20,
--		OPC_LD | (lo12 << 20) | (REG_T0 << 15) | (REG_T1 << 7),
--		OPC_JALR | (REG_T1 << 15)
-+		RISCV_INSN_AUIPC | RISCV_INSN_RD_T0 | riscv_insn_u_imm(offset + 0x800),
-+		RISCV_INSN_LD    | RISCV_INSN_RD_T1 | RISCV_INSN_RS1_T0 | riscv_insn_i_imm(offset),
-+		RISCV_INSN_JALR  | RISCV_INSN_RS1_T1,
- 	};
- }
- 
+> In commit 4e7cf74fa3b2 ("clk: fractional-divider: Export approximation
+> algorithm to the CCF users"), the code handling the rational best
+> approximation algorithm was replaced by a call to the core
+> clk_fractional_divider_general_approximation function which did the same
+> thing back then.
+> 
+> However, in commit 82f53f9ee577 ("clk: fractional-divider: Introduce
+> POWER_OF_TWO_PS flag"), this common code was made conditional on
+> CLK_FRAC_DIVIDER_POWER_OF_TWO_PS flag which was not added back to the
+> rockchip clock driver.
+> 
+> This broke the ltk050h3146w-a2 MIPI DSI display present on a PX30-based
+> downstream board.
+> 
+> Let's add the flag to the fractional divider flags so that the original
+> and intended behavior is brought back to the rockchip clock drivers.
+
+I believe this was the result of the discussion about 1000 in DRM code.
+
+I Cc'ed this to the people from 64ec4912c51a ("drm/rockchip: Update crtc
+fixup to account for fractional clk change").
+
+> Fixes: 82f53f9ee577 ("clk: fractional-divider: Introduce POWER_OF_TWO_PS flag")
+> Cc: stable@vger.kernel.org
+> Cc: Quentin Schulz <foss+kernel@0leil.net>
+> Signed-off-by: Quentin Schulz <quentin.schulz@theobroma-systems.com>
+> ---
+>  drivers/clk/rockchip/clk.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/clk/rockchip/clk.c b/drivers/clk/rockchip/clk.c
+> index b7be7e11b0df..bb8a844309bf 100644
+> --- a/drivers/clk/rockchip/clk.c
+> +++ b/drivers/clk/rockchip/clk.c
+> @@ -180,6 +180,7 @@ static void rockchip_fractional_approximation(struct clk_hw *hw,
+>  		unsigned long rate, unsigned long *parent_rate,
+>  		unsigned long *m, unsigned long *n)
+>  {
+> +	struct clk_fractional_divider *fd = to_clk_fd(hw);
+>  	unsigned long p_rate, p_parent_rate;
+>  	struct clk_hw *p_parent;
+>  
+> @@ -190,6 +191,8 @@ static void rockchip_fractional_approximation(struct clk_hw *hw,
+>  		*parent_rate = p_parent_rate;
+>  	}
+>  
+> +	fd->flags |= CLK_FRAC_DIVIDER_POWER_OF_TWO_PS;
+> +
+>  	clk_fractional_divider_general_approximation(hw, rate, parent_rate, m, n);
+>  }
+
 -- 
-2.35.1
+With Best Regards,
+Andy Shevchenko
+
 
