@@ -2,159 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63FEEC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 16:47:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14159C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 16:49:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380613AbiAaQry (ORCPT
+        id S1380617AbiAaQs6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 11:47:54 -0500
-Received: from relay10.mail.gandi.net ([217.70.178.230]:42233 "EHLO
-        relay10.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380600AbiAaQrx (ORCPT
+        Mon, 31 Jan 2022 11:48:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41074 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1380446AbiAaQsu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 11:47:53 -0500
-Received: (Authenticated sender: foss@0leil.net)
-        by mail.gandi.net (Postfix) with ESMTPSA id 30D2F240008;
-        Mon, 31 Jan 2022 16:47:41 +0000 (UTC)
-From:   quentin.schulz@theobroma-systems.com
-Cc:     thierry.reding@gmail.com, sam@ravnborg.org, airlied@linux.ie,
-        daniel@ffwll.ch, robh+dt@kernel.org,
-        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Klaus Goger <klaus.goger@theobroma-systems.com>,
-        Quentin Schulz <foss+kernel@0leil.net>,
-        Quentin Schulz <quentin.schulz@theobroma-systems.com>
-Subject: [PATCH 2/3] drm/panel: ltk050h3146w: add support for Leadtek LTK050H3148W-CTA6 variant
-Date:   Mon, 31 Jan 2022 17:47:22 +0100
-Message-Id: <20220131164723.714836-2-quentin.schulz@theobroma-systems.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220131164723.714836-1-quentin.schulz@theobroma-systems.com>
-References: <20220131164723.714836-1-quentin.schulz@theobroma-systems.com>
+        Mon, 31 Jan 2022 11:48:50 -0500
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACA33C06173B
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 08:48:50 -0800 (PST)
+Received: by mail-pf1-x429.google.com with SMTP id n32so13323442pfv.11
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 08:48:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=FEXr3o9AVVAks3RYUsTP9ea9gUTvinZzKepGOgcXzQM=;
+        b=CW7N8M304J+53WVf/BpkUCwdN1l2ThMJkFVGdx/RKeMHvjg2uK6Xjpx8dXRPP8rS/c
+         p4ubkcKXYA35I4zzDM9YCoMf6NADbiKz6/dDavZc6uWO9XesixO+I8FkD2MtAJp3wKnC
+         zAgONa5UCwXbeXugTRaPjstTepe5i36fjsF27t+L0vEpmx4EJkPSW6YwcoDE/ePoQqTY
+         9Qd9gl6MEHoe27rot4jLcrnELB7OSiVUYA07UwS0zLsssrFn6SCgyxsrVn1FtFg8Xn6z
+         CVhKEfEEaYyjegdOYG+cNF5a1BWunM6fb0Vk4SwAWEV2b5Sn8zcldFw1vwOYUtSV7YZF
+         Jf6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=FEXr3o9AVVAks3RYUsTP9ea9gUTvinZzKepGOgcXzQM=;
+        b=frUTGhbB/rbudBx80BdGkyLjoG/rbresYsLMs3BiUdEgnFmLYIEEB3xzLJWXCLgqpB
+         F27keqeD45FKGP7CbXlEE1GhOgp3beVJ2KCJ4WE689zI7lbwLY/FT1GFmttvm6w/GH4C
+         I02T4wwFRfPW7mMdatHEF2H+1vEKc+F4TdMcaV8lsE7HIzIM87K2nyZg2UH0CVuMVhHm
+         Fjpvg5914ydfq5jb37f3iZaplsk/uMTDbkat9AydMJaSQssEs6JcRu1M/N+kX+h1EtPS
+         b3CXspYcx6nFzWL/hinz61qVU/kLzQQf9aFhEbBnaM4aKHiTjJVqyaj5+VEeKH4GmAfH
+         YDVA==
+X-Gm-Message-State: AOAM530Ut/i5Oz9B2GdhR1mjTW+j6r4diRT7nf6oLKsfhVH0zg6fgfIK
+        6kPBykY/7L5oVk4hGlv9vCJAIw==
+X-Google-Smtp-Source: ABdhPJygTSsEQFeDUTdJLfXm3w9hO9zbkOUUbSfeLfaH891QI0/yWPvqUvyRT1YeP+wiW0q4JquI9g==
+X-Received: by 2002:a63:1c10:: with SMTP id c16mr17282685pgc.275.1643647729876;
+        Mon, 31 Jan 2022 08:48:49 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id k16sm20792277pgh.45.2022.01.31.08.48.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 31 Jan 2022 08:48:49 -0800 (PST)
+Date:   Mon, 31 Jan 2022 16:48:45 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Like Xu <like.xu.linux@gmail.com>
+Subject: Re: [PATCH 01/22] KVM: x86: Drop unnecessary and confusing
+ KVM_X86_OP_NULL macro
+Message-ID: <YfgS7VIp8fpGJvyD@google.com>
+References: <20220128005208.4008533-1-seanjc@google.com>
+ <20220128005208.4008533-2-seanjc@google.com>
+ <152db376-b0f3-3102-233c-a0dbb4011d0c@redhat.com>
+ <YfQO+ADS1wnefoSr@google.com>
+ <6979e482-1f07-4148-b9d7-d91cfa98c081@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6979e482-1f07-4148-b9d7-d91cfa98c081@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Klaus Goger <klaus.goger@theobroma-systems.com>
+On Mon, Jan 31, 2022, Paolo Bonzini wrote:
+> On 1/28/22 16:42, Sean Christopherson wrote:
+> All in all I totally agree with patches 2-11 and will apply them (patch 2 to
+> 5.17 even, as a prerequisite to fix the AVIC race).  Several of patches
+> 13-21 are also mostly useful as it clarifies the code, and the others I
+> guess are okay in the context of a coherent series though probably they
+> would have been rejected as one-offs.
 
-The LTK050H3148W-CTA6 is a 5.0" 720x1280 DSI display, whose driving
-controller is a Himax HX8394-F, slightly different from LTK050H3146W by
-its init sequence, mode details and mode flags.
+Yeah, the SEV changes in particular are a bit forced.  The only one I care deeply
+about is mem_enc_op() => mem_enc_ioctl().  If the macro shenanigans are rejected,
+I'd say drop patches 20 and 21, drop most of 19, and maybe give 18 (svm=>avic) the
+boot as well.  I'd prefer to keep patch 17 (TLB tweak) to clarify the scope of
+SVM's TLB flush.  Many of the changelogs would need to be tweaked as well, i.e. a
+v2 is in order.
 
-Cc: Quentin Schulz <foss+kernel@0leil.net>
-Signed-off-by: Klaus Goger <klaus.goger@theobroma-systems.com>
-Signed-off-by: Quentin Schulz <quentin.schulz@theobroma-systems.com>
----
- .../drm/panel/panel-leadtek-ltk050h3146w.c    | 87 +++++++++++++++++++
- 1 file changed, 87 insertions(+)
+> However, patches 12 and 22 are unnecessary uses of the C preprocessor in my
+> opinion.  
 
-diff --git a/drivers/gpu/drm/panel/panel-leadtek-ltk050h3146w.c b/drivers/gpu/drm/panel/panel-leadtek-ltk050h3146w.c
-index 67eb474e28c6..3be815c3be68 100644
---- a/drivers/gpu/drm/panel/panel-leadtek-ltk050h3146w.c
-+++ b/drivers/gpu/drm/panel/panel-leadtek-ltk050h3146w.c
-@@ -253,6 +253,89 @@ struct ltk050h3146w *panel_to_ltk050h3146w(struct drm_panel *panel)
- 			return ret;					\
- 	} while (0)
- 
-+static int ltk050h3148w_init_sequence(struct ltk050h3146w *ctx)
-+{
-+	struct mipi_dsi_device *dsi = to_mipi_dsi_device(ctx->dev);
-+	int ret;
-+
-+	/*
-+	 * Init sequence was supplied by the panel vendor without much
-+	 * documentation.
-+	 */
-+	dsi_dcs_write_seq(dsi, 0xb9, 0xff, 0x83, 0x94);
-+	dsi_dcs_write_seq(dsi, 0xb1, 0x50, 0x15, 0x75, 0x09, 0x32, 0x44, 0x71,
-+			  0x31, 0x55, 0x2f);
-+	dsi_dcs_write_seq(dsi, 0xba, 0x63, 0x03, 0x68, 0x6b, 0xb2, 0xc0);
-+	dsi_dcs_write_seq(dsi, 0xd2, 0x88);
-+	dsi_dcs_write_seq(dsi, 0xb2, 0x00, 0x80, 0x64, 0x10, 0x07);
-+	dsi_dcs_write_seq(dsi, 0xb4, 0x05, 0x70, 0x05, 0x70, 0x01, 0x70, 0x01,
-+			  0x0c, 0x86, 0x75, 0x00, 0x3f, 0x01, 0x74, 0x01, 0x74,
-+			  0x01, 0x74, 0x01, 0x0c, 0x86);
-+	dsi_dcs_write_seq(dsi, 0xd3, 0x00, 0x00, 0x07, 0x07, 0x40, 0x1e, 0x08,
-+			  0x00, 0x32, 0x10, 0x08, 0x00, 0x08, 0x54, 0x15, 0x10,
-+			  0x05, 0x04, 0x02, 0x12, 0x10, 0x05, 0x07, 0x33, 0x34,
-+			  0x0c, 0x0c, 0x37, 0x10, 0x07, 0x17, 0x11, 0x40);
-+	dsi_dcs_write_seq(dsi, 0xd5, 0x19, 0x19, 0x18, 0x18, 0x1b, 0x1b, 0x1a,
-+			  0x1a, 0x04, 0x05, 0x06, 0x07, 0x00, 0x01, 0x02, 0x03,
-+			  0x20, 0x21, 0x18, 0x18, 0x22, 0x23, 0x18, 0x18, 0x18,
-+			  0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18,
-+			  0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18,
-+			  0x18);
-+	 dsi_dcs_write_seq(dsi, 0xd6, 0x18, 0x18, 0x19, 0x19, 0x1b, 0x1b, 0x1a,
-+			   0x1a, 0x03, 0x02, 0x01, 0x00, 0x07, 0x06, 0x05, 0x04,
-+			   0x23, 0x22, 0x18, 0x18, 0x21, 0x20, 0x18, 0x18, 0x18,
-+			   0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18,
-+			   0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18,
-+			   0x18);
-+	dsi_dcs_write_seq(dsi, 0xe0, 0x00, 0x03, 0x09, 0x11, 0x11, 0x14, 0x18,
-+			  0x16, 0x2e, 0x3d, 0x4d, 0x4d, 0x58, 0x6c, 0x72, 0x78,
-+			  0x88, 0x8b, 0x86, 0xa4, 0xb2, 0x58, 0x55, 0x59, 0x5b,
-+			  0x5d, 0x60, 0x64, 0x7f, 0x00, 0x03, 0x09, 0x0f, 0x11,
-+			  0x14, 0x18, 0x16, 0x2e, 0x3d, 0x4d, 0x4d, 0x58, 0x6d,
-+			  0x73, 0x78, 0x88, 0x8b, 0x87, 0xa5, 0xb2, 0x58, 0x55,
-+			  0x58, 0x5b, 0x5d, 0x61, 0x65, 0x7f);
-+	dsi_dcs_write_seq(dsi, 0xcc, 0x0b);
-+	dsi_dcs_write_seq(dsi, 0xc0, 0x1f, 0x31);
-+	dsi_dcs_write_seq(dsi, 0xb6, 0xc4, 0xc4);
-+	dsi_dcs_write_seq(dsi, 0xbd, 0x01);
-+	dsi_dcs_write_seq(dsi, 0xb1, 0x00);
-+	dsi_dcs_write_seq(dsi, 0xbd, 0x00);
-+	dsi_dcs_write_seq(dsi, 0xc6, 0xef);
-+	dsi_dcs_write_seq(dsi, 0xd4, 0x02);
-+	dsi_dcs_write_seq(dsi, 0x11);
-+	dsi_dcs_write_seq(dsi, 0x29);
-+
-+	ret = mipi_dsi_dcs_set_tear_on(dsi, 1);
-+	if (ret < 0) {
-+		dev_err(ctx->dev, "failed to set tear on: %d\n", ret);
-+		return ret;
-+	}
-+
-+	msleep(60);
-+
-+	return 0;
-+}
-+
-+static const struct drm_display_mode ltk050h3148w_mode = {
-+	.hdisplay	= 720,
-+	.hsync_start	= 720 + 12,
-+	.hsync_end	= 720 + 12 + 6,
-+	.htotal		= 720 + 12 + 6 + 24,
-+	.vdisplay	= 1280,
-+	.vsync_start	= 1280 + 9,
-+	.vsync_end	= 1280 + 9 + 2,
-+	.vtotal		= 1280 + 9 + 2 + 16,
-+	.clock		= 59756,
-+	.width_mm	= 62,
-+	.height_mm	= 110,
-+};
-+
-+static const struct ltk050h3146w_desc ltk050h3148w_data = {
-+	.mode = &ltk050h3148w_mode,
-+	.init = ltk050h3148w_init_sequence,
-+	.mode_flags = MIPI_DSI_MODE_VIDEO_SYNC_PULSE,
-+};
-+
- static int ltk050h3146w_init_sequence(struct ltk050h3146w *ctx)
- {
- 	struct mipi_dsi_device *dsi = to_mipi_dsi_device(ctx->dev);
-@@ -657,6 +740,10 @@ static const struct of_device_id ltk050h3146w_of_match[] = {
- 		.compatible = "leadtek,ltk050h3146w-a2",
- 		.data = &ltk050h3146w_a2_data,
- 	},
-+	{
-+		.compatible = "leadtek,ltk050h3148w",
-+		.data = &ltk050h3148w_data,
-+	},
- 	{ /* sentinel */ }
- };
- MODULE_DEVICE_TABLE(of, ltk050h3146w_of_match);
--- 
-2.34.1
+And 14 :-)
 
+I don't have a super strong opinion.  I mostly worked on this because the idea
+had been discussed multiple times in the past.  And because I wanted an excuse to
+rename vmx_free_vcpu => vmx_vcpu_free, which for some reason I can never find :-)
+
+I was/am concerned that the macro approach will make it more difficult to find a
+vendor's implementation, though forcing a conforming name will mitigate that to
+some degree.
+
+The pros, in order of importance (IMO)
+
+  1. Mostly forces vendor implementation name to match hook name
+  2. Forces new hooks to get an entry in kvm-x86-ops.h
+  3. Provides a bit of documentation for specialized hooks (APICv, etc...)
+  4. Forces vendors to explicitly define something for non-conforming hooks
