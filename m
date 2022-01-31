@@ -2,98 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22080C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 10:02:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37BB8C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 10:07:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358038AbiAaKCd (ORCPT
+        id S1348360AbiAaKHI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 05:02:33 -0500
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:7716 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1357989AbiAaKCW (ORCPT
+        Mon, 31 Jan 2022 05:07:08 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:58180 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232024AbiAaKHH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 05:02:22 -0500
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20V4DiXY032215;
-        Mon, 31 Jan 2022 05:02:21 -0500
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3dx8jbrkjh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 31 Jan 2022 05:02:21 -0500
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 20VA2K1Q023790
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 31 Jan 2022 05:02:20 -0500
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Mon, 31 Jan 2022 05:02:19 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Mon, 31 Jan 2022 05:02:19 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Mon, 31 Jan 2022 05:02:19 -0500
-Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.119])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 20VA26eQ009375;
-        Mon, 31 Jan 2022 05:02:14 -0500
-From:   Antoniu Miclaus <antoniu.miclaus@analog.com>
-To:     <jic23@kernel.org>, <robh+dt@kernel.org>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH v5 4/4] MAINTAINERS: add maintainer for ADMV1014 driver
-Date:   Mon, 31 Jan 2022 12:01:02 +0200
-Message-ID: <20220131100102.15372-4-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.35.0
-In-Reply-To: <20220131100102.15372-1-antoniu.miclaus@analog.com>
-References: <20220131100102.15372-1-antoniu.miclaus@analog.com>
+        Mon, 31 Jan 2022 05:07:07 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 18F56212C3;
+        Mon, 31 Jan 2022 10:07:06 +0000 (UTC)
+Received: from adalid.arch.suse.de (adalid.arch.suse.de [10.161.8.13])
+        by relay2.suse.de (Postfix) with ESMTP id 08010A3B85;
+        Mon, 31 Jan 2022 10:07:06 +0000 (UTC)
+From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] MIPS: octeon: Fix missed PTR->PTR_WD conversion
+Date:   Mon, 31 Jan 2022 11:07:02 +0100
+Message-Id: <20220131100702.57096-1-tsbogend@alpha.franken.de>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: 7dhsPbKV4TB1WvY1goA1rhTCvvdv22HF
-X-Proofpoint-ORIG-GUID: 7dhsPbKV4TB1WvY1goA1rhTCvvdv22HF
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-31_02,2022-01-28_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
- lowpriorityscore=0 adultscore=0 malwarescore=0 impostorscore=0
- mlxlogscore=999 phishscore=0 mlxscore=0 priorityscore=1501 bulkscore=0
- spamscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2201310067
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add myself as maintainer for the ADMV1014 driver.
-
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Fixes: fa62f39dc7e2 ("MIPS: Fix build error due to PTR used in more places")
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 ---
-no changes in v5.
- MAINTAINERS | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ arch/mips/cavium-octeon/octeon-memcpy.S | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 170bbbeefc3f..b05148cfd4aa 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1119,6 +1119,14 @@ W:	http://ez.analog.com/community/linux-device-drivers
- F:	Documentation/devicetree/bindings/hwmon/adi,adm1177.yaml
- F:	drivers/hwmon/adm1177.c
+diff --git a/arch/mips/cavium-octeon/octeon-memcpy.S b/arch/mips/cavium-octeon/octeon-memcpy.S
+index 0a515cde1c18..25860fba6218 100644
+--- a/arch/mips/cavium-octeon/octeon-memcpy.S
++++ b/arch/mips/cavium-octeon/octeon-memcpy.S
+@@ -74,7 +74,7 @@
+ #define EXC(inst_reg,addr,handler)		\
+ 9:	inst_reg, addr;				\
+ 	.section __ex_table,"a";		\
+-	PTR	9b, handler;			\
++	PTR_WD	9b, handler;			\
+ 	.previous
  
-+ANALOG DEVICES INC ADMV1014 DRIVER
-+M:	Antoniu Miclaus <antoniu.miclaus@analog.com>
-+L:	linux-iio@vger.kernel.org
-+S:	Supported
-+W:	https://ez.analog.com/linux-software-drivers
-+F:	Documentation/devicetree/bindings/iio/frequency/adi,admv1014.yaml
-+F:	drivers/iio/frequency/admv1014.c
-+
- ANALOG DEVICES INC ADP5061 DRIVER
- M:	Michael Hennerich <Michael.Hennerich@analog.com>
- L:	linux-pm@vger.kernel.org
+ /*
 -- 
-2.35.0
+2.29.2
 
