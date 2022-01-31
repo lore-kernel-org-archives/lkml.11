@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06E1AC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:20:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 292D8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:20:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377210AbiAaLRu (ORCPT
+        id S1377237AbiAaLRy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:17:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44462 "EHLO
+        Mon, 31 Jan 2022 06:17:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377479AbiAaLKD (ORCPT
+        with ESMTP id S1377541AbiAaLKL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:10:03 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DCD2C07979B;
-        Mon, 31 Jan 2022 03:07:43 -0800 (PST)
+        Mon, 31 Jan 2022 06:10:11 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1278CC06174E;
+        Mon, 31 Jan 2022 03:08:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3EAB36114D;
-        Mon, 31 Jan 2022 11:07:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25739C340E8;
-        Mon, 31 Jan 2022 11:07:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D4562B82A5E;
+        Mon, 31 Jan 2022 11:08:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25DB0C340EF;
+        Mon, 31 Jan 2022 11:08:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627262;
-        bh=gurpRK8pRh//+KMIzS4LXQmB8sq083h/1t9ww78Celw=;
+        s=korg; t=1643627292;
+        bh=HRSLQn0z6LNxbCa6iskITmAgvh9vAe/2BIM6raJ4kg0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a69CZ1GklbPuT54r+Jhsn1Y6MTwC7ZtMRiBXvjYm9VznjVakCV8taKfbiuUKYd6wy
-         PpVn2F1btJz3wijjNORzh3zJP7w3N/Wj4sd8BtU2pbMz8VVKiKKDupA2RFDmhJnLv7
-         +VPYbMNteUdu6BgRqaCLRNm9Z1HsP6wHpMLzQoPU=
+        b=gRm3yV6GQY9vw55IpA7NKuHGZk/XH50/MCFH83q3ICw5riBF/YOesoiVzFC68633B
+         niXgwc9A1yzzPxI+19M7/rfNQuUv/M+PZ2Oi8m+uuwwcJ7BtDDVtOoiGqipkjwgglw
+         YLBcmGDXPvgEugY8L6ENtyqfdblCbIPr3lyHCj5I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Subject: [PATCH 5.15 005/171] ARM: 9179/1: uaccess: avoid alignment faults in copy_[from|to]_kernel_nofault
-Date:   Mon, 31 Jan 2022 11:54:30 +0100
-Message-Id: <20220131105230.151611980@linuxfoundation.org>
+        stable@vger.kernel.org, Denis Valeev <lemniscattaden@gmail.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.15 037/171] KVM: x86: nSVM: skip eax alignment check for non-SVM instructions
+Date:   Mon, 31 Jan 2022 11:55:02 +0100
+Message-Id: <20220131105231.271283678@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
 References: <20220131105229.959216821@linuxfoundation.org>
@@ -50,65 +49,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ard Biesheuvel <ardb@kernel.org>
+From: Denis Valeev <lemniscattaden@gmail.com>
 
-commit 15420269b02a63ed8c1841905d8b8b2403246004 upstream.
+commit 47c28d436f409f5b009dc82bd82d4971088aa391 upstream.
 
-The helpers that are used to implement copy_from_kernel_nofault() and
-copy_to_kernel_nofault() cast a void* to a pointer to a wider type,
-which may result in alignment faults on ARM if the compiler decides to
-use double-word or multiple-word load/store instructions.
+The bug occurs on #GP triggered by VMware backdoor when eax value is
+unaligned. eax alignment check should not be applied to non-SVM
+instructions because it leads to incorrect omission of the instructions
+emulation.
+Apply the alignment check only to SVM instructions to fix.
 
-Only configurations that define CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS=y
-are affected, given that commit 2423de2e6f4d ("ARM: 9115/1: mm/maccess:
-fix unaligned copy_{from,to}_kernel_nofault") ensures that dst and src
-are sufficiently aligned otherwise.
-
-So use the unaligned accessors for accessing dst and src in cases where
-they may be misaligned.
-
-Cc: <stable@vger.kernel.org> # depends on 2423de2e6f4d
-Fixes: 2df4c9a741a0 ("ARM: 9112/1: uaccess: add __{get,put}_kernel_nofault")
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Fixes: d1cba6c92237 ("KVM: x86: nSVM: test eax for 4K alignment for GP errata workaround")
+Signed-off-by: Denis Valeev <lemniscattaden@gmail.com>
+Message-Id: <Yexlhaoe1Fscm59u@q>
+Cc: stable@vger.kernel.org
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/include/asm/uaccess.h |   10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ arch/x86/kvm/svm/svm.c |   11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
---- a/arch/arm/include/asm/uaccess.h
-+++ b/arch/arm/include/asm/uaccess.h
-@@ -11,6 +11,7 @@
- #include <linux/string.h>
- #include <asm/memory.h>
- #include <asm/domain.h>
-+#include <asm/unaligned.h>
- #include <asm/unified.h>
- #include <asm/compiler.h>
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -2238,10 +2238,6 @@ static int gp_interception(struct kvm_vc
+ 	if (error_code)
+ 		goto reinject;
  
-@@ -497,7 +498,10 @@ do {									\
- 	}								\
- 	default: __err = __get_user_bad(); break;			\
- 	}								\
--	*(type *)(dst) = __val;						\
-+	if (IS_ENABLED(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS))		\
-+		put_unaligned(__val, (type *)(dst));			\
-+	else								\
-+		*(type *)(dst) = __val; /* aligned by caller */		\
- 	if (__err)							\
- 		goto err_label;						\
- } while (0)
-@@ -507,7 +511,9 @@ do {									\
- 	const type *__pk_ptr = (dst);					\
- 	unsigned long __dst = (unsigned long)__pk_ptr;			\
- 	int __err = 0;							\
--	type __val = *(type *)src;					\
-+	type __val = IS_ENABLED(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS)	\
-+		     ? get_unaligned((type *)(src))			\
-+		     : *(type *)(src);	/* aligned by caller */		\
- 	switch (sizeof(type)) {						\
- 	case 1: __put_user_asm_byte(__val, __dst, __err, ""); break;	\
- 	case 2:	__put_user_asm_half(__val, __dst, __err, ""); break;	\
+-	/* All SVM instructions expect page aligned RAX */
+-	if (svm->vmcb->save.rax & ~PAGE_MASK)
+-		goto reinject;
+-
+ 	/* Decode the instruction for usage later */
+ 	if (x86_decode_emulated_instruction(vcpu, 0, NULL, 0) != EMULATION_OK)
+ 		goto reinject;
+@@ -2259,8 +2255,13 @@ static int gp_interception(struct kvm_vc
+ 		if (!is_guest_mode(vcpu))
+ 			return kvm_emulate_instruction(vcpu,
+ 				EMULTYPE_VMWARE_GP | EMULTYPE_NO_DECODE);
+-	} else
++	} else {
++		/* All SVM instructions expect page aligned RAX */
++		if (svm->vmcb->save.rax & ~PAGE_MASK)
++			goto reinject;
++
+ 		return emulate_svm_instr(vcpu, opcode);
++	}
+ 
+ reinject:
+ 	kvm_queue_exception_e(vcpu, GP_VECTOR, error_code);
 
 
