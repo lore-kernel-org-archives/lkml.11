@@ -2,128 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C808C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 10:56:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBAC4C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 10:57:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239563AbiAaK4Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 05:56:24 -0500
-Received: from mga04.intel.com ([192.55.52.120]:2925 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239344AbiAaK4X (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 05:56:23 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643626583; x=1675162583;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=OuO1IfCUQIyBRQpisujqsE19OD9uCQ6nnnGF+2ZPWvc=;
-  b=kJLj/JFZoBuNapXXAhscC6qMeouzCIhRxSYYL29DDmO2Z6OQBp/F2cv7
-   iSt/o1MYFHGnNgyFf9MwmPdhyfYF9TxmHNrDu9ef0oNaV898VvqZLO35p
-   a9dGbXHbdtxfqMDhFBH1VLMHrAp0W8QX8+jwXbv7yB9lknqftjy9DVZYP
-   J72EOAyWk670Bj9855XUX/mffMHxkFwdsJcy+y4vqI1WMvSX9lxz2DC59
-   vsi7ZmiObGj7dYeDmOg4wOp5/ot5+PINVJj6ik5rs7kQ/NUJ2jTO6oSw2
-   kio41ovwfqt+yBpEgXM30PBYle0+9I8buL744aSz8sF4S4oBUliQR9KrX
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10243"; a="246271982"
-X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
-   d="scan'208";a="246271982"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 02:56:23 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
-   d="scan'208";a="675691815"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 31 Jan 2022 02:56:20 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nEUM7-000Rnz-MA; Mon, 31 Jan 2022 10:56:19 +0000
-Date:   Mon, 31 Jan 2022 18:55:39 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Yizhuo Zhai <yzhai003@ucr.edu>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-fbdev@vger.kernel.org, Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Helge Deller <deller@gmx.de>, Zheyu Ma <zheyuma97@gmail.com>,
-        linux-kernel@vger.kernel.org, Matthew Wilcox <willy@infradead.org>,
-        Yizhuo Zhai <yzhai003@ucr.edu>, dri-devel@lists.freedesktop.org
-Subject: Re: [PATCH] fbdev: fbmem: Fix the implicit type casting
-Message-ID: <202201311810.zlRDWfNU-lkp@intel.com>
-References: <20220131065719.1552958-1-yzhai003@ucr.edu>
+        id S239769AbiAaK5H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 31 Jan 2022 05:57:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42244 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239633AbiAaK5E (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 05:57:04 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA714C061714;
+        Mon, 31 Jan 2022 02:57:03 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 6EEF21F4312B
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1643626622;
+        bh=AhIlSPFIs8ak0I/I8Ku1qwLQESsLxE26HyIIypM3mfI=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=VtX2wMwZbmlVio86rbbyFReXPbkiIl33IMybSs+olR6XD2iuZtBgwcgoZGtzFZxut
+         SEPrxE9Y/T3VWOod7FCLJjutTvjmDiIzA3Nb1kYOXfIYdPWG65bUF8jwCdxZWGuC3+
+         r5S9a4nWHlmo4C1GF5+cj55SF0DSFdv++YxwL/eOIebuovdwygIlKG6muH9/h3UdKF
+         CVOZ7tpZiAkVRiQdmU6hPKolqXWg7uqua8QmEbLLGNxT1N9DqFnzWwAEqEMz4wBbyh
+         UzSG1O7T6kr1mZunW5yXiqHkXjij1CDgNJ3y9OtqSTIhMANM7pgftW1YTrOPv3fQrl
+         X52Pp5ab6/brw==
+Message-ID: <59582e31-66d7-ad07-dd64-4ebb223cf809@collabora.com>
+Date:   Mon, 31 Jan 2022 11:56:58 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220131065719.1552958-1-yzhai003@ucr.edu>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v22 7/7] soc: mediatek: SVS: add mt8192 SVS GPU driver
+Content-Language: en-US
+To:     Roger Lu <roger.lu@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Enric Balletbo Serra <eballetbo@gmail.com>,
+        Kevin Hilman <khilman@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Nicolas Boichat <drinkcat@google.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>
+Cc:     Fan Chen <fan.chen@mediatek.com>,
+        HenryC Chen <HenryC.Chen@mediatek.com>,
+        Xiaoqing Liu <Xiaoqing.Liu@mediatek.com>,
+        Charles Yang <Charles.Yang@mediatek.com>,
+        Angus Lin <Angus.Lin@mediatek.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Nishanth Menon <nm@ti.com>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        Guenter Roeck <linux@roeck-us.net>
+References: <20220127033956.24585-1-roger.lu@mediatek.com>
+ <20220127033956.24585-8-roger.lu@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220127033956.24585-8-roger.lu@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Yizhuo,
+Il 27/01/22 04:39, Roger Lu ha scritto:
+> mt8192 SVS GPU uses 2-line (high/low bank) HW architecture to provide
+> bank voltages. High bank helps update higher frequency's voltage
+> and low bank helps update lower frequency's voltage.
+> 
+> Signed-off-by: Roger Lu <roger.lu@mediatek.com>
 
-Thank you for the patch! Yet something to improve:
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-[auto build test ERROR on linus/master]
-[also build test ERROR on v5.17-rc2 next-20220131]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/0day-ci/linux/commits/Yizhuo-Zhai/fbdev-fbmem-Fix-the-implicit-type-casting/20220131-150528
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 26291c54e111ff6ba87a164d85d4a4e134b7315c
-config: x86_64-randconfig-a013-20220131 (https://download.01.org/0day-ci/archive/20220131/202201311810.zlRDWfNU-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 2cdbaca3943a4d6259119f185656328bd3805b68)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/b8f540468e70290c8278fc2611adc2f9b38f821f
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Yizhuo-Zhai/fbdev-fbmem-Fix-the-implicit-type-casting/20220131-150528
-        git checkout b8f540468e70290c8278fc2611adc2f9b38f821f
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> drivers/video/fbdev/core/fbmem.c:1067:1: error: conflicting types for 'fb_blank'
-   fb_blank(struct fb_info *info, unsigned long blank)
-   ^
-   include/linux/fb.h:591:12: note: previous declaration is here
-   extern int fb_blank(struct fb_info *info, int blank);
-              ^
-   1 error generated.
-
-
-vim +/fb_blank +1067 drivers/video/fbdev/core/fbmem.c
-
-  1065	
-  1066	int
-> 1067	fb_blank(struct fb_info *info, unsigned long blank)
-  1068	{
-  1069		struct fb_event event;
-  1070		int ret = -EINVAL;
-  1071	
-  1072		if (blank > FB_BLANK_POWERDOWN)
-  1073			blank = FB_BLANK_POWERDOWN;
-  1074	
-  1075		event.info = info;
-  1076		event.data = &blank;
-  1077	
-  1078		if (info->fbops->fb_blank)
-  1079			ret = info->fbops->fb_blank(blank, info);
-  1080	
-  1081		if (!ret)
-  1082			fb_notifier_call_chain(FB_EVENT_BLANK, &event);
-  1083	
-  1084		return ret;
-  1085	}
-  1086	EXPORT_SYMBOL(fb_blank);
-  1087	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
