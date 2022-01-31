@@ -2,111 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B253C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 16:04:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F947C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 16:04:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380021AbiAaQEV (ORCPT
+        id S1380041AbiAaQEY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 11:04:21 -0500
-Received: from out02.mta.xmission.com ([166.70.13.232]:42236 "EHLO
-        out02.mta.xmission.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380008AbiAaQEO (ORCPT
+        Mon, 31 Jan 2022 11:04:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58574 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1380022AbiAaQEQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 11:04:14 -0500
-Received: from in02.mta.xmission.com ([166.70.13.52]:59860)
-        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nEZA5-00HCAt-KS; Mon, 31 Jan 2022 09:04:13 -0700
-Received: from ip68-110-24-146.om.om.cox.net ([68.110.24.146]:48638 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nEZA3-007DnS-4X; Mon, 31 Jan 2022 09:04:13 -0700
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Denys Vlasenko <vda.linux@googlemail.com>,
-        Kees Cook <keescook@chromium.org>,
-        Jann Horn <jannh@google.com>, Vlastimil Babka <vbabka@suse.cz>,
-        "Liam R . Howlett" <Liam.Howlett@Oracle.com>
-References: <20220131153740.2396974-1-willy@infradead.org>
-Date:   Mon, 31 Jan 2022 10:03:31 -0600
-In-Reply-To: <20220131153740.2396974-1-willy@infradead.org> (Matthew Wilcox's
-        message of "Mon, 31 Jan 2022 15:37:40 +0000")
-Message-ID: <871r0nriy4.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Mon, 31 Jan 2022 11:04:16 -0500
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61AFAC06173D
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 08:04:16 -0800 (PST)
+Received: by mail-pj1-x1033.google.com with SMTP id b1-20020a17090a990100b001b14bd47532so14329326pjp.0
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 08:04:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=cll0HiNGaOM9yDWI60AkgZZ8Vcgf+tRA3oZc4UBL7nk=;
+        b=kqcwDry5uO65hxuBb6yCzUOH/a1vV6vXhHnghWYmZE0wFwKVg4sDSVN/IFdkti1vxa
+         gH7qY1qLoeC+cKiFHLrznIF/YZZj/5AhGagvceyAcyEcWWJMLsMqThARBDdu+bmGE+PX
+         x6nXbH2i4BHnV1zU3rPxoNPPkey5wfOwbpO2l++PZiNesvMkQiFad2sph+apeltel7aQ
+         Ls1SJTkFiJ4YqR9pdlN4r7l0tC31BgRrY8AyIlvoJPiUU/g7awJtPbivAom+ouD7h5rh
+         4fLe2DLqgbdp4M3crNsgRcakjECmczJ67k4TbCKpIhxWYZao52P3BXYCUZuUbN4s2YZS
+         rVFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=cll0HiNGaOM9yDWI60AkgZZ8Vcgf+tRA3oZc4UBL7nk=;
+        b=fezs+C/vgRqwUAku6nRDBAmYFsbng5TxQz5PuaWDPYO2JSswCN4498K5j1pSKy9ei8
+         SUkAE/ghsKMBL2UcnfcF6iF2CqbUYeSRK+R8K5L1RYdJjFSIqeC42QNPsFEFZK+gzYJG
+         DE1ra8Plt4qgIqWaE6/bvihjd5so8qBSUPz7DK3uDCEP+TQo395zFmOOP7BJrmsEO2Jx
+         8jMPL5PqTFohIoBJ2ld5KOhcKAqkAXg7rXpFv5WM3mG/f+H8TTC06CZP44wc2m4SrToc
+         pI713wBgmj3K5LktJt2LxFzCy5TL/4IebyOGYQLJYzIMydgTcBZ4kdfkHJuX7nEmRo0R
+         QQgw==
+X-Gm-Message-State: AOAM533+A4vnwfGGTPzXl9aGBvl9KoHXnPP4TeP0rn7XcfKfgV5AH9Pg
+        7/SIj3lCQPqxoTah5Cc4xhwtIw==
+X-Google-Smtp-Source: ABdhPJxZJ+tEgViLwu3F1PuG3ikPoO/2NiO4jJZJUhCFbhH2t+GN/XLwxc/o0L5yrU9nizfHfRLOTw==
+X-Received: by 2002:a17:902:e788:: with SMTP id cp8mr21004336plb.172.1643645055966;
+        Mon, 31 Jan 2022 08:04:15 -0800 (PST)
+Received: from FVFYT0MHHV2J.tiktokcdn.com ([139.177.225.244])
+        by smtp.gmail.com with ESMTPSA id n42sm17940716pfv.29.2022.01.31.08.04.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 31 Jan 2022 08:04:15 -0800 (PST)
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     akpm@linux-foundation.org, zi.yan@cs.rutgers.edu,
+        kirill.shutemov@linux.intel.com, rientjes@google.com,
+        lars.persson@axis.com, mike.kravetz@oracle.com
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        duanxiongchun@bytedance.com, Muchun Song <songmuchun@bytedance.com>
+Subject: [PATCH v3 3/5] mm: hugetlb: fix missing cache flush in copy_huge_page_from_user()
+Date:   Tue,  1 Feb 2022 00:02:52 +0800
+Message-Id: <20220131160254.43211-4-songmuchun@bytedance.com>
+X-Mailer: git-send-email 2.32.0 (Apple Git-132)
+In-Reply-To: <20220131160254.43211-1-songmuchun@bytedance.com>
+References: <20220131160254.43211-1-songmuchun@bytedance.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nEZA3-007DnS-4X;;;mid=<871r0nriy4.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.110.24.146;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX1+pHxZIM9Z0F/v54hDEFvV4FtGm43/Bzjs=
-X-SA-Exim-Connect-IP: 68.110.24.146
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH] binfmt_elf: Take the mmap lock when walking the VMA list
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-"Matthew Wilcox (Oracle)" <willy@infradead.org> writes:
+The userfaultfd calls copy_huge_page_from_user() which does not do
+any cache flushing for the target page.  Then the target page will
+be mapped to the user space with a different address (user address),
+which might have an alias issue with the kernel address used to copy
+the data from the user to.  Fix this issue by flushing dcache in
+copy_huge_page_from_user().
 
-> I'm not sure if the VMA list can change under us, but dump_vma_snapshot()
-> is very careful to take the mmap_lock in write mode.  We only need to
-> take it in read mode here as we do not care if the size of the stack
-> VMA changes underneath us.
->
-> If it can be changed underneath us, this is a potential use-after-free
-> for a multithreaded process which is dumping core.
+Fixes: fa4d75c1de13 ("userfaultfd: hugetlbfs: add copy_huge_page_from_user for hugetlb userfaultfd support")
+Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+---
+ mm/memory.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-The problem is not multi-threaded process so much as processes that
-share their mm.
+diff --git a/mm/memory.c b/mm/memory.c
+index e8ce066be5f2..eb027da68aa7 100644
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -5405,6 +5405,8 @@ long copy_huge_page_from_user(struct page *dst_page,
+ 		if (rc)
+ 			break;
+ 
++		flush_dcache_page(subpage);
++
+ 		cond_resched();
+ 	}
+ 	return ret_val;
+-- 
+2.11.0
 
-I think rather than take a lock we should be using the snapshot captured
-with dump_vma_snapshot.  Otherwise we have the very real chance that the
-two get out of sync.  Which would result in a non-sense core file.
-
-Probably that means that dump_vma_snapshot needs to call get_file on
-vma->vm_file store it in core_vma_metadata.
-
-Do you think you can fix it something like that?
-
-Eric
-
-
-> Fixes: 2aa362c49c31 ("coredump: extend core dump note section to contain file names of mapped files")
-> Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-> Reviewed-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
-> ---
->  fs/binfmt_elf.c | 3 +++
->  1 file changed, 3 insertions(+)
->
-> diff --git a/fs/binfmt_elf.c b/fs/binfmt_elf.c
-> index 605017eb9349..dc2318355762 100644
-> --- a/fs/binfmt_elf.c
-> +++ b/fs/binfmt_elf.c
-> @@ -1651,6 +1651,7 @@ static int fill_files_note(struct memelfnote *note)
->  	name_base = name_curpos = ((char *)data) + names_ofs;
->  	remaining = size - names_ofs;
->  	count = 0;
-> +	mmap_read_lock(mm);
->  	for (vma = mm->mmap; vma != NULL; vma = vma->vm_next) {
->  		struct file *file;
->  		const char *filename;
-> @@ -1661,6 +1662,7 @@ static int fill_files_note(struct memelfnote *note)
->  		filename = file_path(file, name_curpos, remaining);
->  		if (IS_ERR(filename)) {
->  			if (PTR_ERR(filename) == -ENAMETOOLONG) {
-> +				mmap_read_unlock(mm);
->  				kvfree(data);
->  				size = size * 5 / 4;
->  				goto alloc;
-> @@ -1680,6 +1682,7 @@ static int fill_files_note(struct memelfnote *note)
->  		*start_end_ofs++ = vma->vm_pgoff;
->  		count++;
->  	}
-> +	mmap_read_unlock(mm);
->  
->  	/* Now we know exact count of files, can store it */
->  	data[0] = count;
