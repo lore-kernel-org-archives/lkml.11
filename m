@@ -2,95 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF01BC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A266C43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379706AbiAaLah (ORCPT
+        id S1379615AbiAaLa2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:30:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47084 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378713AbiAaLUh (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:20:37 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53A84C061749;
-        Mon, 31 Jan 2022 03:13:41 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E783661163;
-        Mon, 31 Jan 2022 11:13:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC9EAC340E8;
-        Mon, 31 Jan 2022 11:13:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627620;
-        bh=rPxomZGLw2T0AeFweigh+gNKt3+WX6XmgfGi+QBKnqY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CvFYE6hwEQbFuzfsPiTgh33vxgoB0Fn2kza/5J1Kbl+s/2UzOwo9xPw0Jqrz2Bm6M
-         VlFSH9lzAH7pJf5aL8EXf/PKigFNSf+ysAUJXec8sdvApdUiDh/fwM0r6KBzuyiEO2
-         2lW+ttYY+fNePX2xP2D0Rs9AkzHp7B/c7gNvTqtw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 144/171] drm/msm/hdmi: Fix missing put_device() call in msm_hdmi_get_phy
-Date:   Mon, 31 Jan 2022 11:56:49 +0100
-Message-Id: <20220131105234.881065829@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
-References: <20220131105229.959216821@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 31 Jan 2022 06:30:28 -0500
+Received: from out0.migadu.com ([94.23.1.103]:53048 "EHLO out0.migadu.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239602AbiAaLUl (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 06:20:41 -0500
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=laumann.xyz; s=key1;
+        t=1643628038;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=JYDB1xSWY0WQHZmHLRS3w1xwDpScfvJzKuT7JY80/Ek=;
+        b=iKFJRGlz2zomgwYB1L4Jc7x3tKNUjkI+C833pHGQFd0XCzX51U5/XBC4VJHR4gyGgj1ybI
+        QMfbX/97K/4H3cIuvNuvhTRqGF7hcFKjkMHUXyQHwSGJhvDMPXKJrrLh7b3vVwF2IdgEWo
+        vz2F7hxj294AYe7RKzvr3MjRUyeidUa5pTw9UszFxC4+4cJGGqXWqHHz6ukMw5Sv3ye50g
+        NuVZ2K4f+E3HU+EZlqo4XZrJazCBFvZRCsTd8F8d0rRtwZ28basaJ+o/sPYWDJSV86gZlX
+        LUXED4jhOQqRIsNe93azT8ZZZep+lffupkYRSKcWvkjZmF+qogCug6t2FnHm0A==
+From:   Thomas Bracht Laumann Jespersen <t@laumann.xyz>
+To:     robh+dt@kernel.org, frowand.list@gmail.com
+Cc:     masahiroy@kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Thomas Bracht Laumann Jespersen <t@laumann.xyz>
+Subject: [PATCH] scripts/dtc: Call pkg-config POSIXly correct
+Date:   Mon, 31 Jan 2022 12:20:28 +0100
+Message-Id: <20220131112028.7907-1-t@laumann.xyz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: laumann.xyz
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+Running with POSIXLY_CORRECT=1 in the environment the scripts/dtc build
+fails, because pkg-config doesn't output anything when the flags come
+after the arguments.
 
-[ Upstream commit 774fe0cd838d1b1419d41ab4ea0613c80d4ecbd7 ]
-
-The reference taken by 'of_find_device_by_node()' must be released when
-not needed anymore.
-Add the corresponding 'put_device()' in the error handling path.
-
-Fixes: e00012b256d4 ("drm/msm/hdmi: Make HDMI core get its PHY")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Link: https://lore.kernel.org/r/20220107085026.23831-1-linmq006@gmail.com
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: f8d8b46cd20e ("scripts/dtc: use pkg-config to include <yaml.h> in non-standard path")
+Signed-off-by: Thomas Bracht Laumann Jespersen <t@laumann.xyz>
 ---
- drivers/gpu/drm/msm/hdmi/hdmi.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+I'm aware that the full kernel doesn't build with POSIXLY_CORRECT set, but I
+asked around and was told just to submit a patch.
 
-diff --git a/drivers/gpu/drm/msm/hdmi/hdmi.c b/drivers/gpu/drm/msm/hdmi/hdmi.c
-index 737453b6e5966..94f948ef279d1 100644
---- a/drivers/gpu/drm/msm/hdmi/hdmi.c
-+++ b/drivers/gpu/drm/msm/hdmi/hdmi.c
-@@ -97,10 +97,15 @@ static int msm_hdmi_get_phy(struct hdmi *hdmi)
+This is based on the v5.17-rc2 tag, not sure if that's the right tree to work
+from, I'll happily cherry-pick to another tree if desired.
+
+ scripts/dtc/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/scripts/dtc/Makefile b/scripts/dtc/Makefile
+index 95aaf7431bff..1cba78e1dce6 100644
+--- a/scripts/dtc/Makefile
++++ b/scripts/dtc/Makefile
+@@ -29,7 +29,7 @@ dtc-objs	+= yamltree.o
+ # To include <yaml.h> installed in a non-default path
+ HOSTCFLAGS_yamltree.o := $(shell pkg-config --cflags yaml-0.1)
+ # To link libyaml installed in a non-default path
+-HOSTLDLIBS_dtc	:= $(shell pkg-config yaml-0.1 --libs)
++HOSTLDLIBS_dtc	:= $(shell pkg-config --libs yaml-0.1)
+ endif
  
- 	of_node_put(phy_node);
- 
--	if (!phy_pdev || !hdmi->phy) {
-+	if (!phy_pdev) {
- 		DRM_DEV_ERROR(&pdev->dev, "phy driver is not ready\n");
- 		return -EPROBE_DEFER;
- 	}
-+	if (!hdmi->phy) {
-+		DRM_DEV_ERROR(&pdev->dev, "phy driver is not ready\n");
-+		put_device(&phy_pdev->dev);
-+		return -EPROBE_DEFER;
-+	}
- 
- 	hdmi->phy_dev = get_device(&phy_pdev->dev);
- 
+ # Generated files need one more search path to include headers in source tree
 -- 
 2.34.1
-
-
 
