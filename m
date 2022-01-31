@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEC1EC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:51:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAC62C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:51:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376609AbiAaLvO (ORCPT
+        id S1351681AbiAaLvW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:51:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52644 "EHLO
+        Mon, 31 Jan 2022 06:51:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351297AbiAaLk2 (ORCPT
+        with ESMTP id S235580AbiAaLkW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:40:28 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 492C2C08E824;
-        Mon, 31 Jan 2022 03:25:58 -0800 (PST)
+        Mon, 31 Jan 2022 06:40:22 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06EA0C03540F;
+        Mon, 31 Jan 2022 03:25:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CC794612D5;
-        Mon, 31 Jan 2022 11:25:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94CA9C340E8;
-        Mon, 31 Jan 2022 11:25:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BB7DBB82A60;
+        Mon, 31 Jan 2022 11:25:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D65DDC340E8;
+        Mon, 31 Jan 2022 11:25:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643628357;
-        bh=PkNlFSXkB/ip+PcF+kXge0gQV1xVzpWX/F3a461szwM=;
+        s=korg; t=1643628341;
+        bh=6EjY/S8FSs3rNCSbFDkGCHtYXxGZQOyicmF3xyyN1jI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s7DBj2zcQ18YALbjnx/yNjzv7j5dFk749JWUBfPBenK3oZdokdpPy3LH1IxAsxSNq
-         GBEVTTbDVATDLoI5cML6RuKkjunWwsy+bk5NDJGqAoZ/4ZT3YG/+saAJ9nMdEVmNin
-         GyM6sISyGlXxgd7ALWtWtL/hJAEaskuQd2Ror7gk=
+        b=syuZwH11MzTePLenjgXuKn6akp43KWcRNAgvv/N72MS+d+xqEl/DJZrNPoT8uIx1H
+         Rii+4ZOulyL0LEJEQan5MKvKmoEUSyjEiHtRnIiE56c2m88Fb4P2/Yo3hOgFgdC2kX
+         aKxu7nyQe9NOdUs5nadReVmow1Ws01aL5olhyMIs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Colin Foster <colin.foster@in-advantage.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 173/200] net: cpsw: Properly initialise struct page_pool_params
-Date:   Mon, 31 Jan 2022 11:57:16 +0100
-Message-Id: <20220131105239.373187966@linuxfoundation.org>
+        syzbot+ac94ae5f68b84197f41c@syzkaller.appspotmail.com,
+        OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>,
+        Ming Lei <ming.lei@redhat.com>, Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.16 200/200] block: Fix wrong offset in bio_truncate()
+Date:   Mon, 31 Jan 2022 11:57:43 +0100
+Message-Id: <20220131105240.252099209@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -53,45 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Toke Høiland-Jørgensen <toke@redhat.com>
+From: OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
 
-[ Upstream commit c63003e3d99761afb280add3b30de1cf30fa522b ]
+commit 3ee859e384d453d6ac68bfd5971f630d9fa46ad3 upstream.
 
-The cpsw driver didn't properly initialise the struct page_pool_params
-before calling page_pool_create(), which leads to crashes after the struct
-has been expanded with new parameters.
+bio_truncate() clears the buffer outside of last block of bdev, however
+current bio_truncate() is using the wrong offset of page. So it can
+return the uninitialized data.
 
-The second Fixes tag below is where the buggy code was introduced, but
-because the code was moved around this patch will only apply on top of the
-commit in the first Fixes tag.
+This happened when both of truncated/corrupted FS and userspace (via
+bdev) are trying to read the last of bdev.
 
-Fixes: c5013ac1dd0e ("net: ethernet: ti: cpsw: move set of common functions in cpsw_priv")
-Fixes: 9ed4050c0d75 ("net: ethernet: ti: cpsw: add XDP support")
-Reported-by: Colin Foster <colin.foster@in-advantage.com>
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
-Tested-by: Colin Foster <colin.foster@in-advantage.com>
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reported-by: syzbot+ac94ae5f68b84197f41c@syzkaller.appspotmail.com
+Signed-off-by: OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
+Reviewed-by: Ming Lei <ming.lei@redhat.com>
+Link: https://lore.kernel.org/r/875yqt1c9g.fsf@mail.parknet.co.jp
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/ti/cpsw_priv.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ block/bio.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/ti/cpsw_priv.c b/drivers/net/ethernet/ti/cpsw_priv.c
-index 6bb5ac51d23c3..f8e591d69d2cb 100644
---- a/drivers/net/ethernet/ti/cpsw_priv.c
-+++ b/drivers/net/ethernet/ti/cpsw_priv.c
-@@ -1144,7 +1144,7 @@ int cpsw_fill_rx_channels(struct cpsw_priv *priv)
- static struct page_pool *cpsw_create_page_pool(struct cpsw_common *cpsw,
- 					       int size)
- {
--	struct page_pool_params pp_params;
-+	struct page_pool_params pp_params = {};
- 	struct page_pool *pool;
- 
- 	pp_params.order = 0;
--- 
-2.34.1
-
+--- a/block/bio.c
++++ b/block/bio.c
+@@ -569,7 +569,8 @@ static void bio_truncate(struct bio *bio
+ 				offset = new_size - done;
+ 			else
+ 				offset = 0;
+-			zero_user(bv.bv_page, offset, bv.bv_len - offset);
++			zero_user(bv.bv_page, bv.bv_offset + offset,
++				  bv.bv_len - offset);
+ 			truncated = true;
+ 		}
+ 		done += bv.bv_len;
 
 
