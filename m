@@ -2,69 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F4C8C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 18:24:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABE9CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 18:24:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355375AbiAaSYs (ORCPT
+        id S1355695AbiAaSYw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 13:24:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35008 "EHLO
+        Mon, 31 Jan 2022 13:24:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349539AbiAaSYi (ORCPT
+        with ESMTP id S1350266AbiAaSYg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 13:24:38 -0500
-Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4990C061714
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 10:24:37 -0800 (PST)
-Received: by mail-ot1-x333.google.com with SMTP id o9-20020a9d7189000000b0059ee49b4f0fso13840407otj.2
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 10:24:37 -0800 (PST)
+        Mon, 31 Jan 2022 13:24:36 -0500
+Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DAE7C061756
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 10:24:35 -0800 (PST)
+Received: by mail-ot1-x335.google.com with SMTP id j38-20020a9d1926000000b0059fa6de6c71so13812815ota.10
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 10:24:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ASaMitgkrmjvWUALYvAmhPqFdUVqEq221GRVmLCMeTE=;
-        b=rqsuJkGoTMqn8mFbQYyZwrLCcvhJUqSnNfCp4U3fwGRFtz9JLNTLwsE1uydNzvyUSM
-         isdT9xZQYAtg4or5rWFfGYqxH3n6p103IT0NkgD26NordbifY0CYtyFcr17pTq+jAKkm
-         3F+tphZsX2ObGSnuXwjv870IQj0jpVBjfZQMEO+Eo/OrXqTmuoAYy1j6bJFKc3x1ksQz
-         sqPUqZOSJIbWMhNvzIW+EBtX7h/LVLVSW25oJvvWUdRO00niabFHoCsV9GkONfeAKr7x
-         Si6KxBjod6x7neUpuc3vi2Eo7WtnSoXOn0HiCrYM0JssDdzGY6MGE80iNlzi7T9XKbKd
-         ILhw==
+        bh=wrNvkMHk789Sum/6rlz8EO4zN91DpwhHIu5wA5WUWs4=;
+        b=wG/EJgkTI/K9tfMYOk1xoML8FHr572d091BctXSiNmGDt8ojl2j4dv1MogcOsJkwag
+         dKb2MQW4W5nGp1x0CUB62gmTBdFGY1NqP75amdaOCx1aFjuQJBypk9z0798JYLeLEIpi
+         Yt0CGdnkigK42DBhK5Sq7joVGAlA4RRJVVJukzDoLbhupbEMbc6QdokGtuPoKLy0FCDb
+         9qmvFU4m3o7oWU6AgEhRbIQZ8CJTUFq93xg6Z9wUAH8I9hW2plF3MiZ3LzUQCcOle+DO
+         MDRaYSN9kfLZSb5NobdroZcTfIfERuwOeFtyN0e1KOvvSHD8etPK8hB2f3MyLXH1KTm/
+         yoOA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ASaMitgkrmjvWUALYvAmhPqFdUVqEq221GRVmLCMeTE=;
-        b=5ROFb8ZUPuJPsZDcMHU0iWGVHcRb24y9t8+Dmd4HWIA3b1osVrG8DlrhNIuONiV4BG
-         JaCOAEJz5spCD91+wM1Vp4NojFHOglq6DZfNZPImEWi4iUfcpOzsdTFV6m6YRZW/qRhb
-         aGbJzxGuB2gBW8IfzexT8Ge/pGHfYXaCeVmdqJoZKP6C6f9F18UHaoC+T4DYLwC0iv1R
-         ImmNsx3PsVK0+GXc5fU1nZmElM0z96vZIrUhziXVTkXVu8weDf9H5oj/VQ+Zn5owrr9/
-         ioDEYM/6EYf+HmTjZGA5+UV5q2gYtvx/EVJdTACldfukXPmpoJ3D1Gb9CD9tia1L6OIK
-         hceA==
-X-Gm-Message-State: AOAM5332g5i3qft/KiWXwlOmmk4w6a4miZXBQeBgCSqHAZdTeJV9Sbhz
-        XaKzmjcdiQmMRoRRRgBfg7/GrA==
-X-Google-Smtp-Source: ABdhPJxgjyy80Q85q0aqiH2ROnY9l3ptaA8QRaWNJ6IMhnV4OxQaFvhJtYAM0/1o4A6hsHWQw7QnDg==
-X-Received: by 2002:a9d:3661:: with SMTP id w88mr12285764otb.245.1643653477318;
-        Mon, 31 Jan 2022 10:24:37 -0800 (PST)
+        bh=wrNvkMHk789Sum/6rlz8EO4zN91DpwhHIu5wA5WUWs4=;
+        b=ZyX/OIeutmzhP/iStNsxUC7xbggPstF6SUTh1HEVPJiK7SAdJF9/9gCsWPIfgqR5kM
+         s04fCIKtvElWgCXCLpDnP6purJJQF9ETUHq26izHgDAujFflIGacbay+MpgfS3hJIBsm
+         56pKlIVOLrxhGDhvfjEps30ibx/81k5PokLeHOcANKziBEQLqbRkGP4iJgvD2wL09txh
+         iChDEqMlWn90OvlCd4IbGlOW55Jkf1F/BNbwXFwR+4SnErRekK+K4nYC3NTsl5r/WS/9
+         7WhzlaG+hNXYJotwCrXRy6G3/ho8fhS3q3YNgakVw7cRnq2+TQ27nABSAtsH/8srBpvc
+         /0uQ==
+X-Gm-Message-State: AOAM532xU8ityPhd5xF7k4uVgopntlHoub8X8l/uMajVN2vZApTElOXK
+        tdXcOX6xXqC7s4v4HxCRPSmSmg==
+X-Google-Smtp-Source: ABdhPJzpBVGywdRbIFDes2yX9FEWbFNFl4TfxM+tKlK7iDXTRsYZQEUulwINsCzMHO5Wb4D9LV/vCg==
+X-Received: by 2002:a9d:17cc:: with SMTP id j70mr12111623otj.370.1643653474752;
+        Mon, 31 Jan 2022 10:24:34 -0800 (PST)
 Received: from builder.lan ([2600:1700:a0:3dc8:3697:f6ff:fe85:aac9])
-        by smtp.gmail.com with ESMTPSA id y19sm3273722oti.49.2022.01.31.10.24.36
+        by smtp.gmail.com with ESMTPSA id y19sm3273722oti.49.2022.01.31.10.24.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Jan 2022 10:24:36 -0800 (PST)
+        Mon, 31 Jan 2022 10:24:34 -0800 (PST)
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        agross@kernel.org, linux-kernel@vger.kernel.org,
-        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
-        robh+dt@kernel.org
-Cc:     robdclark@gmail.com, quic_khsieh@quicinc.com,
-        quic_kalyant@quicinc.com, quic_abhinavk@quicinc.com,
-        swboyd@chromium.org, Krishna Manikandan <quic_mkrishn@quicinc.com>,
-        seanpaul@chromium.org, dianders@chromium.org
-Subject: Re: [PATCH v4 1/4] arm64: dts: qcom: sc7280: add display dt nodes
-Date:   Mon, 31 Jan 2022 12:24:25 -0600
-Message-Id: <164365345128.3009281.4776568093879192722.b4-ty@linaro.org>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Sandeep Maheswaram <quic_c_sanm@quicinc.com>,
+        Andy Gross <agross@kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Doug Anderson <dianders@chromium.org>
+Cc:     devicetree@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, quic_ppratap@quicinc.com,
+        quic_pkondeti@quicinc.com, linux-kernel@vger.kernel.org
+Subject: Re: (subset) [PATCH v2] arm64: qcom: sc7280: Move USB2 controller nodes from common dtsi to SKU1
+Date:   Mon, 31 Jan 2022 12:24:23 -0600
+Message-Id: <164365345128.3009281.11046372803192749468.b4-ty@linaro.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <1637580369-876-1-git-send-email-quic_sbillaka@quicinc.com>
-References: <1637580369-876-1-git-send-email-quic_sbillaka@quicinc.com>
+In-Reply-To: <1638422248-24221-1-git-send-email-quic_c_sanm@quicinc.com>
+References: <1638422248-24221-1-git-send-email-quic_c_sanm@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -72,21 +72,17 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 22 Nov 2021 16:56:06 +0530, Sankeerth Billakanti wrote:
-> From: Krishna Manikandan <quic_mkrishn@quicinc.com>
-> 
-> Add mdss and mdp DT nodes for sc7280.
+On Thu, 2 Dec 2021 10:47:28 +0530, Sandeep Maheswaram wrote:
+> Move USB2 controller and phy nodes from common dtsi file as it is
+> required only for SKU1 board and change the mode to host mode as
+> it will be used in host mode for SKU1.
 > 
 > 
 
 Applied, thanks!
 
-[1/4] arm64: dts: qcom: sc7280: add display dt nodes
-      commit: fcb68dfda5cbd816d27ac50c287833848874f61c
-[2/4] arm64: dts: qcom: sc7280: Add DSI display nodes
-      commit: 43137272f0bc5e05e4c4c6f7bfce017bfb9e16b5
-[3/4] arm64: dts: qcom: sc7280: add edp display dt nodes
-      commit: 25940788d170251373d8975d359706350818fa0f
+[1/1] arm64: qcom: sc7280: Move USB2 controller nodes from common dtsi to SKU1
+      commit: 1b968998a3cbd346e7b01a5b41f4c88b979ae7d5
 
 Best regards,
 -- 
