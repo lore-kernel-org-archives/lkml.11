@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C0D2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:42:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9A29C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:42:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377371AbiAaLlx (ORCPT
+        id S1350760AbiAaLmD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:41:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48706 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377947AbiAaL1u (ORCPT
+        Mon, 31 Jan 2022 06:42:03 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:57166 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359363AbiAaLYt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:27:50 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1783DC094262;
-        Mon, 31 Jan 2022 03:17:03 -0800 (PST)
+        Mon, 31 Jan 2022 06:24:49 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D2A30B82A5D;
-        Mon, 31 Jan 2022 11:17:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09E64C340E8;
-        Mon, 31 Jan 2022 11:16:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 57E9860B28;
+        Mon, 31 Jan 2022 11:24:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32C00C340F0;
+        Mon, 31 Jan 2022 11:24:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627820;
-        bh=ntHB1EwPANzHF9BsgsFhEVLHwKVhjJU/F0L+D+K/BxE=;
+        s=korg; t=1643628284;
+        bh=0/4qqa1wTaF3Qode9fXp/Z88QTW8pXk94tsFhuIOyyI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Bh/IvTm7PBSuj11TpAOufOBqiGpprndJy5QJfR8Gg8k955A1fs7IFEKCdoGP8+rZM
-         FgpobTZ0jN9ZXPptzCdEXQm5DTFQag+W/3oSr/Mkw/BQog0l6/Ys4KzMPnkZ1yqjUJ
-         jigxRtCD3QUUUm7647uyW4fIOLz2t7qAtjPfNrK4=
+        b=RDMGXDMu78plCAjB9pCK3q6XqXrTsBupUQAzVKtJubsFHHLnm0TeKZ8R9kGxn6gvE
+         og3mo3Ziw1r0uWLCuZqVbTCAKvHauGdOQ5i7QaOD5c4GPQHYLzGe7Hupfrg08SiU3f
+         adAtdwBu8yI3GhZdhTZwGso8g0EQ3T410Druhgj0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ivan Delalande <colona@arista.com>,
-        Amir Goldstein <amir73il@gmail.com>, Jan Kara <jack@suse.cz>
-Subject: [PATCH 5.16 036/200] fsnotify: fix fsnotify hooks in pseudo filesystems
-Date:   Mon, 31 Jan 2022 11:54:59 +0100
-Message-Id: <20220131105234.778305751@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Ray Che <xijiache@gmail.com>, David Ahern <dsahern@kernel.org>,
+        Geoff Alexander <alexandg@cs.unm.edu>,
+        Willy Tarreau <w@1wt.eu>, Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 184/200] ipv4: tcp: send zero IPID in SYNACK messages
+Date:   Mon, 31 Jan 2022 11:57:27 +0100
+Message-Id: <20220131105239.738283675@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -49,124 +49,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amir Goldstein <amir73il@gmail.com>
+From: Eric Dumazet <edumazet@google.com>
 
-commit 29044dae2e746949ad4b9cbdbfb248994d1dcdb4 upstream.
+[ Upstream commit 970a5a3ea86da637471d3cd04d513a0755aba4bf ]
 
-Commit 49246466a989 ("fsnotify: move fsnotify_nameremove() hook out of
-d_delete()") moved the fsnotify delete hook before d_delete() so fsnotify
-will have access to a positive dentry.
+In commit 431280eebed9 ("ipv4: tcp: send zero IPID for RST and
+ACK sent in SYN-RECV and TIME-WAIT state") we took care of some
+ctl packets sent by TCP.
 
-This allowed a race where opening the deleted file via cached dentry
-is now possible after receiving the IN_DELETE event.
+It turns out we need to use a similar strategy for SYNACK packets.
 
-To fix the regression in pseudo filesystems, convert d_delete() calls
-to d_drop() (see commit 46c46f8df9aa ("devpts_pty_kill(): don't bother
-with d_delete()") and move the fsnotify hook after d_drop().
+By default, they carry IP_DF and IPID==0, but there are ways
+to ask them to use the hashed IP ident generator and thus
+be used to build off-path attacks.
+(Ref: Off-Path TCP Exploits of the Mixed IPID Assignment)
 
-Add a missing fsnotify_unlink() hook in nfsdfs that was found during
-the audit of fsnotify hooks in pseudo filesystems.
+One of this way is to force (before listener is started)
+echo 1 >/proc/sys/net/ipv4/ip_no_pmtu_disc
 
-Note that the fsnotify hooks in simple_recursive_removal() follow
-d_invalidate(), so they require no change.
+Another way is using forged ICMP ICMP_FRAG_NEEDED
+with a very small MTU (like 68) to force a false return from
+ip_dont_fragment()
 
-Link: https://lore.kernel.org/r/20220120215305.282577-2-amir73il@gmail.com
-Reported-by: Ivan Delalande <colona@arista.com>
-Link: https://lore.kernel.org/linux-fsdevel/YeNyzoDM5hP5LtGW@visor/
-Fixes: 49246466a989 ("fsnotify: move fsnotify_nameremove() hook out of d_delete()")
-Cc: stable@vger.kernel.org # v5.3+
-Signed-off-by: Amir Goldstein <amir73il@gmail.com>
-Signed-off-by: Jan Kara <jack@suse.cz>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+In this patch, ip_build_and_send_pkt() uses the following
+heuristics.
+
+1) Most SYNACK packets are smaller than IPV4_MIN_MTU and therefore
+can use IP_DF regardless of the listener or route pmtu setting.
+
+2) In case the SYNACK packet is bigger than IPV4_MIN_MTU,
+we use prandom_u32() generator instead of the IPv4 hashed ident one.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: Ray Che <xijiache@gmail.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Cc: Geoff Alexander <alexandg@cs.unm.edu>
+Cc: Willy Tarreau <w@1wt.eu>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/configfs/dir.c     |    6 +++---
- fs/devpts/inode.c     |    2 +-
- fs/nfsd/nfsctl.c      |    5 +++--
- net/sunrpc/rpc_pipe.c |    4 ++--
- 4 files changed, 9 insertions(+), 8 deletions(-)
+ net/ipv4/ip_output.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
---- a/fs/configfs/dir.c
-+++ b/fs/configfs/dir.c
-@@ -1780,8 +1780,8 @@ void configfs_unregister_group(struct co
- 	configfs_detach_group(&group->cg_item);
- 	d_inode(dentry)->i_flags |= S_DEAD;
- 	dont_mount(dentry);
-+	d_drop(dentry);
- 	fsnotify_rmdir(d_inode(parent), dentry);
--	d_delete(dentry);
- 	inode_unlock(d_inode(parent));
+diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+index ff38b46bd4b0f..a4d2eb691cbc1 100644
+--- a/net/ipv4/ip_output.c
++++ b/net/ipv4/ip_output.c
+@@ -162,12 +162,19 @@ int ip_build_and_send_pkt(struct sk_buff *skb, const struct sock *sk,
+ 	iph->daddr    = (opt && opt->opt.srr ? opt->opt.faddr : daddr);
+ 	iph->saddr    = saddr;
+ 	iph->protocol = sk->sk_protocol;
+-	if (ip_dont_fragment(sk, &rt->dst)) {
++	/* Do not bother generating IPID for small packets (eg SYNACK) */
++	if (skb->len <= IPV4_MIN_MTU || ip_dont_fragment(sk, &rt->dst)) {
+ 		iph->frag_off = htons(IP_DF);
+ 		iph->id = 0;
+ 	} else {
+ 		iph->frag_off = 0;
+-		__ip_select_ident(net, iph, 1);
++		/* TCP packets here are SYNACK with fat IPv4/TCP options.
++		 * Avoid using the hashed IP ident generator.
++		 */
++		if (sk->sk_protocol == IPPROTO_TCP)
++			iph->id = (__force __be16)prandom_u32();
++		else
++			__ip_select_ident(net, iph, 1);
+ 	}
  
- 	dput(dentry);
-@@ -1922,10 +1922,10 @@ void configfs_unregister_subsystem(struc
- 	configfs_detach_group(&group->cg_item);
- 	d_inode(dentry)->i_flags |= S_DEAD;
- 	dont_mount(dentry);
--	fsnotify_rmdir(d_inode(root), dentry);
- 	inode_unlock(d_inode(dentry));
- 
--	d_delete(dentry);
-+	d_drop(dentry);
-+	fsnotify_rmdir(d_inode(root), dentry);
- 
- 	inode_unlock(d_inode(root));
- 
---- a/fs/devpts/inode.c
-+++ b/fs/devpts/inode.c
-@@ -621,8 +621,8 @@ void devpts_pty_kill(struct dentry *dent
- 
- 	dentry->d_fsdata = NULL;
- 	drop_nlink(dentry->d_inode);
--	fsnotify_unlink(d_inode(dentry->d_parent), dentry);
- 	d_drop(dentry);
-+	fsnotify_unlink(d_inode(dentry->d_parent), dentry);
- 	dput(dentry);	/* d_alloc_name() in devpts_pty_new() */
- }
- 
---- a/fs/nfsd/nfsctl.c
-+++ b/fs/nfsd/nfsctl.c
-@@ -1249,7 +1249,8 @@ static void nfsdfs_remove_file(struct in
- 	clear_ncl(d_inode(dentry));
- 	dget(dentry);
- 	ret = simple_unlink(dir, dentry);
--	d_delete(dentry);
-+	d_drop(dentry);
-+	fsnotify_unlink(dir, dentry);
- 	dput(dentry);
- 	WARN_ON_ONCE(ret);
- }
-@@ -1340,8 +1341,8 @@ void nfsd_client_rmdir(struct dentry *de
- 	dget(dentry);
- 	ret = simple_rmdir(dir, dentry);
- 	WARN_ON_ONCE(ret);
-+	d_drop(dentry);
- 	fsnotify_rmdir(dir, dentry);
--	d_delete(dentry);
- 	dput(dentry);
- 	inode_unlock(dir);
- }
---- a/net/sunrpc/rpc_pipe.c
-+++ b/net/sunrpc/rpc_pipe.c
-@@ -600,9 +600,9 @@ static int __rpc_rmdir(struct inode *dir
- 
- 	dget(dentry);
- 	ret = simple_rmdir(dir, dentry);
-+	d_drop(dentry);
- 	if (!ret)
- 		fsnotify_rmdir(dir, dentry);
--	d_delete(dentry);
- 	dput(dentry);
- 	return ret;
- }
-@@ -613,9 +613,9 @@ static int __rpc_unlink(struct inode *di
- 
- 	dget(dentry);
- 	ret = simple_unlink(dir, dentry);
-+	d_drop(dentry);
- 	if (!ret)
- 		fsnotify_unlink(dir, dentry);
--	d_delete(dentry);
- 	dput(dentry);
- 	return ret;
- }
+ 	if (opt && opt->opt.optlen) {
+-- 
+2.34.1
+
 
 
