@@ -2,48 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0CEEC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:22:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA52DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:22:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376873AbiAaLWH (ORCPT
+        id S1376914AbiAaLWJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:22:07 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:44952 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359555AbiAaLLg (ORCPT
+        Mon, 31 Jan 2022 06:22:09 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:59080 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359569AbiAaLLm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:11:36 -0500
+        Mon, 31 Jan 2022 06:11:42 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BF2F26114C;
-        Mon, 31 Jan 2022 11:11:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A4AFC340E8;
-        Mon, 31 Jan 2022 11:11:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 641ECB82A5F;
+        Mon, 31 Jan 2022 11:11:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EA93C340E8;
+        Mon, 31 Jan 2022 11:11:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627495;
-        bh=OSuO5PnMFjxxILHxYCzqxQ8mNf+RJzHno0hjReRUrB4=;
+        s=korg; t=1643627498;
+        bh=11M3BoWFcewEbn/oOM35JqKT1zegc+4pfQbZMuzN8ro=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bFliTOjSW75wUQUP2uAt0aBcRobTOTnny0ywdZs5WhWqH8gRWIbM74q624pFNVJvx
-         U54cdhnlQMzgn6cfs8IvqPSfrA/93z13BBna2JmQ/oGaWaD7IuVWlAzfn3QQ+KZzKw
-         d1aE64LkUgYWL39tvy17mbqXiGpof99ni33vC7m4=
+        b=o2C524LBzgIK/QjJt9WKNaOSKL9R4+grlDDMqPgjkeG72bYI58qFELph1XCztpUPt
+         PhvrZaa3ccBANCKFtCzadhoPRlSS6ttf4MtKlEALnQLmyVNjxpu/sJpQU9slDL3Hnr
+         GHohzOUHKnNCZhpR64XBEySH+BSf1+j+OulnlDwU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Huacai Chen <chenhuacai@kernel.org>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>
-Subject: [PATCH 5.15 069/171] PCI/sysfs: Find shadow ROM before static attribute initialization
-Date:   Mon, 31 Jan 2022 11:55:34 +0100
-Message-Id: <20220131105232.377474042@linuxfoundation.org>
+        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        syzbot+76629376e06e2c2ad626@syzkaller.appspotmail.com
+Subject: [PATCH 5.15 060/171] USB: core: Fix hang in usb_kill_urb by adding memory barriers
+Date:   Mon, 31 Jan 2022 11:55:25 +0100
+Message-Id: <20220131105232.051176390@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
 References: <20220131105229.959216821@linuxfoundation.org>
@@ -55,110 +46,128 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bjorn Helgaas <bhelgaas@google.com>
+From: Alan Stern <stern@rowland.harvard.edu>
 
-commit 66d28b21fe6b3da8d1e9f0a7ba38bc61b6c547e1 upstream.
+commit 26fbe9772b8c459687930511444ce443011f86bf upstream.
 
-Ville reported that the sysfs "rom" file for VGA devices disappeared after
-527139d738d7 ("PCI/sysfs: Convert "rom" to static attribute").
+The syzbot fuzzer has identified a bug in which processes hang waiting
+for usb_kill_urb() to return.  It turns out the issue is not unlinking
+the URB; that works just fine.  Rather, the problem arises when the
+wakeup notification that the URB has completed is not received.
 
-Prior to 527139d738d7, FINAL fixups, including pci_fixup_video() where we
-find shadow ROMs, were run before pci_create_sysfs_dev_files() created the
-sysfs "rom" file.
+The reason is memory-access ordering on SMP systems.  In outline form,
+usb_kill_urb() and __usb_hcd_giveback_urb() operating concurrently on
+different CPUs perform the following actions:
 
-After 527139d738d7, "rom" is a static attribute and is created before FINAL
-fixups are run, so we didn't create "rom" files for shadow ROMs:
+CPU 0					CPU 1
+----------------------------		---------------------------------
+usb_kill_urb():				__usb_hcd_giveback_urb():
+  ...					  ...
+  atomic_inc(&urb->reject);		  atomic_dec(&urb->use_count);
+  ...					  ...
+  wait_event(usb_kill_urb_queue,
+	atomic_read(&urb->use_count) == 0);
+					  if (atomic_read(&urb->reject))
+						wake_up(&usb_kill_urb_queue);
 
-  acpi_pci_root_add
-    ...
-      pci_scan_single_device
-        pci_device_add
-          pci_fixup_video                    # <-- new HEADER fixup
-          device_add
-            ...
-              if (grp->is_visible())
-                pci_dev_rom_attr_is_visible  # after 527139d738d7
-    pci_bus_add_devices
-      pci_bus_add_device
-        pci_fixup_device(pci_fixup_final)
-          pci_fixup_video                    # <-- previous FINAL fixup
-        pci_create_sysfs_dev_files
-          if (pci_resource_len(pdev, PCI_ROM_RESOURCE))
-            sysfs_create_bin_file("rom")     # before 527139d738d7
+Confining your attention to urb->reject and urb->use_count, you can
+see that the overall pattern of accesses on CPU 0 is:
 
-Change pci_fixup_video() to be a HEADER fixup so it runs before sysfs
-static attributes are initialized.
+	write urb->reject, then read urb->use_count;
 
-Rename the Loongson pci_fixup_radeon() to pci_fixup_video() and make its
-dmesg logging identical to the others since it is doing the same job.
+whereas the overall pattern of accesses on CPU 1 is:
 
-Link: https://lore.kernel.org/r/YbxqIyrkv3GhZVxx@intel.com
-Fixes: 527139d738d7 ("PCI/sysfs: Convert "rom" to static attribute")
-Link: https://lore.kernel.org/r/20220126154001.16895-1-helgaas@kernel.org
-Reported-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Tested-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Cc: stable@vger.kernel.org			# v5.13+
-Cc: Huacai Chen <chenhuacai@kernel.org>
-Cc: Jiaxun Yang <jiaxun.yang@flygoat.com>
-Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: Dave Hansen <dave.hansen@linux.intel.com>
-Cc: Krzysztof Wilczyński <kw@linux.com>
+	write urb->use_count, then read urb->reject.
+
+This pattern is referred to in memory-model circles as SB (for "Store
+Buffering"), and it is well known that without suitable enforcement of
+the desired order of accesses -- in the form of memory barriers -- it
+is entirely possible for one or both CPUs to execute their reads ahead
+of their writes.  The end result will be that sometimes CPU 0 sees the
+old un-decremented value of urb->use_count while CPU 1 sees the old
+un-incremented value of urb->reject.  Consequently CPU 0 ends up on
+the wait queue and never gets woken up, leading to the observed hang
+in usb_kill_urb().
+
+The same pattern of accesses occurs in usb_poison_urb() and the
+failure pathway of usb_hcd_submit_urb().
+
+The problem is fixed by adding suitable memory barriers.  To provide
+proper memory-access ordering in the SB pattern, a full barrier is
+required on both CPUs.  The atomic_inc() and atomic_dec() accesses
+themselves don't provide any memory ordering, but since they are
+present, we can use the optimized smp_mb__after_atomic() memory
+barrier in the various routines to obtain the desired effect.
+
+This patch adds the necessary memory barriers.
+
+CC: <stable@vger.kernel.org>
+Reported-and-tested-by: syzbot+76629376e06e2c2ad626@syzkaller.appspotmail.com
+Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
+Link: https://lore.kernel.org/r/Ye8K0QYee0Q0Nna2@rowland.harvard.edu
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/ia64/pci/fixup.c              |    4 ++--
- arch/mips/loongson64/vbios_quirk.c |    9 ++++-----
- arch/x86/pci/fixup.c               |    4 ++--
- 3 files changed, 8 insertions(+), 9 deletions(-)
+ drivers/usb/core/hcd.c |   14 ++++++++++++++
+ drivers/usb/core/urb.c |   12 ++++++++++++
+ 2 files changed, 26 insertions(+)
 
---- a/arch/ia64/pci/fixup.c
-+++ b/arch/ia64/pci/fixup.c
-@@ -76,5 +76,5 @@ static void pci_fixup_video(struct pci_d
- 		}
- 	}
- }
--DECLARE_PCI_FIXUP_CLASS_FINAL(PCI_ANY_ID, PCI_ANY_ID,
--				PCI_CLASS_DISPLAY_VGA, 8, pci_fixup_video);
-+DECLARE_PCI_FIXUP_CLASS_HEADER(PCI_ANY_ID, PCI_ANY_ID,
-+			       PCI_CLASS_DISPLAY_VGA, 8, pci_fixup_video);
---- a/arch/mips/loongson64/vbios_quirk.c
-+++ b/arch/mips/loongson64/vbios_quirk.c
-@@ -3,7 +3,7 @@
- #include <linux/pci.h>
- #include <loongson.h>
+--- a/drivers/usb/core/hcd.c
++++ b/drivers/usb/core/hcd.c
+@@ -1563,6 +1563,13 @@ int usb_hcd_submit_urb (struct urb *urb,
+ 		urb->hcpriv = NULL;
+ 		INIT_LIST_HEAD(&urb->urb_list);
+ 		atomic_dec(&urb->use_count);
++		/*
++		 * Order the write of urb->use_count above before the read
++		 * of urb->reject below.  Pairs with the memory barriers in
++		 * usb_kill_urb() and usb_poison_urb().
++		 */
++		smp_mb__after_atomic();
++
+ 		atomic_dec(&urb->dev->urbnum);
+ 		if (atomic_read(&urb->reject))
+ 			wake_up(&usb_kill_urb_queue);
+@@ -1665,6 +1672,13 @@ static void __usb_hcd_giveback_urb(struc
  
--static void pci_fixup_radeon(struct pci_dev *pdev)
-+static void pci_fixup_video(struct pci_dev *pdev)
- {
- 	struct resource *res = &pdev->resource[PCI_ROM_RESOURCE];
+ 	usb_anchor_resume_wakeups(anchor);
+ 	atomic_dec(&urb->use_count);
++	/*
++	 * Order the write of urb->use_count above before the read
++	 * of urb->reject below.  Pairs with the memory barriers in
++	 * usb_kill_urb() and usb_poison_urb().
++	 */
++	smp_mb__after_atomic();
++
+ 	if (unlikely(atomic_read(&urb->reject)))
+ 		wake_up(&usb_kill_urb_queue);
+ 	usb_put_urb(urb);
+--- a/drivers/usb/core/urb.c
++++ b/drivers/usb/core/urb.c
+@@ -715,6 +715,12 @@ void usb_kill_urb(struct urb *urb)
+ 	if (!(urb && urb->dev && urb->ep))
+ 		return;
+ 	atomic_inc(&urb->reject);
++	/*
++	 * Order the write of urb->reject above before the read
++	 * of urb->use_count below.  Pairs with the barriers in
++	 * __usb_hcd_giveback_urb() and usb_hcd_submit_urb().
++	 */
++	smp_mb__after_atomic();
  
-@@ -22,8 +22,7 @@ static void pci_fixup_radeon(struct pci_
- 	res->flags = IORESOURCE_MEM | IORESOURCE_ROM_SHADOW |
- 		     IORESOURCE_PCI_FIXED;
+ 	usb_hcd_unlink_urb(urb, -ENOENT);
+ 	wait_event(usb_kill_urb_queue, atomic_read(&urb->use_count) == 0);
+@@ -756,6 +762,12 @@ void usb_poison_urb(struct urb *urb)
+ 	if (!urb)
+ 		return;
+ 	atomic_inc(&urb->reject);
++	/*
++	 * Order the write of urb->reject above before the read
++	 * of urb->use_count below.  Pairs with the barriers in
++	 * __usb_hcd_giveback_urb() and usb_hcd_submit_urb().
++	 */
++	smp_mb__after_atomic();
  
--	dev_info(&pdev->dev, "BAR %d: assigned %pR for Radeon ROM\n",
--		 PCI_ROM_RESOURCE, res);
-+	dev_info(&pdev->dev, "Video device with shadowed ROM at %pR\n", res);
- }
--DECLARE_PCI_FIXUP_CLASS_FINAL(PCI_VENDOR_ID_ATI, 0x9615,
--				PCI_CLASS_DISPLAY_VGA, 8, pci_fixup_radeon);
-+DECLARE_PCI_FIXUP_CLASS_HEADER(PCI_VENDOR_ID_ATI, 0x9615,
-+			       PCI_CLASS_DISPLAY_VGA, 8, pci_fixup_video);
---- a/arch/x86/pci/fixup.c
-+++ b/arch/x86/pci/fixup.c
-@@ -353,8 +353,8 @@ static void pci_fixup_video(struct pci_d
- 		}
- 	}
- }
--DECLARE_PCI_FIXUP_CLASS_FINAL(PCI_ANY_ID, PCI_ANY_ID,
--				PCI_CLASS_DISPLAY_VGA, 8, pci_fixup_video);
-+DECLARE_PCI_FIXUP_CLASS_HEADER(PCI_ANY_ID, PCI_ANY_ID,
-+			       PCI_CLASS_DISPLAY_VGA, 8, pci_fixup_video);
- 
- 
- static const struct dmi_system_id msi_k8t_dmi_table[] = {
+ 	if (!urb->dev || !urb->ep)
+ 		return;
 
 
