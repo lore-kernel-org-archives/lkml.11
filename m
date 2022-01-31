@@ -2,48 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F432C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65AB2C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379280AbiAaLaG (ORCPT
+        id S1379357AbiAaLaM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:30:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47832 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378557AbiAaLUV (ORCPT
+        Mon, 31 Jan 2022 06:30:12 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:52438 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1378691AbiAaLUg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:20:21 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 614F5C0604DC;
-        Mon, 31 Jan 2022 03:12:46 -0800 (PST)
+        Mon, 31 Jan 2022 06:20:36 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F3D2D60ED0;
-        Mon, 31 Jan 2022 11:12:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B95C5C340E8;
-        Mon, 31 Jan 2022 11:12:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 469666114D;
+        Mon, 31 Jan 2022 11:20:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50DB4C340E8;
+        Mon, 31 Jan 2022 11:20:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627565;
-        bh=vgJDTUSzjABtMbAOfAarotByZWoPzIx/6Lq1XFK1qBs=;
+        s=korg; t=1643628032;
+        bh=tB7JCLFXx3Iwrv0oV3/fnaCWjJ379uUPqtNDv1Sgty0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D6L+MRpPb1GGUyNcykMFUEUQFIHgsQ3bYMUa8m1OuB4LUlHxTjHRz1qkFtpubYBoR
-         pKeto2kHBPWCM6AB6h01SRL+38zf5KvGkvD1nPOmaQZexCNluQJySI0IK8nisTL+e6
-         c/AlVHQWNTD6iECQl/7jVxYfNv5af8gwgfh3m3rA=
+        b=mw40r12mByCcdt/Bcbc3W0fMQGxNbjPuyOh/WmBCZIET4LRiK73dBPSAJPhq5WuJ/
+         KhpshxWFs00s6ninkPOjVl+kQsfkHMYBJG59dsW5CFriWAydpGnUFksa7kGblRpX8z
+         DGufEVbo3vUa7XO8xQ5lc2yHdyV++m0dlsNs3Mjg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Geetha sowjanya <gakula@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 125/171] octeontx2-af: Increase link credit restore polling timeout
-Date:   Mon, 31 Jan 2022 11:56:30 +0100
-Message-Id: <20220131105234.255338097@linuxfoundation.org>
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        James Smart <jsmart2021@gmail.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.16 104/200] scsi: elx: efct: Dont use GFP_KERNEL under spin lock
+Date:   Mon, 31 Jan 2022 11:56:07 +0100
+Message-Id: <20220131105237.085540545@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
-References: <20220131105229.959216821@linuxfoundation.org>
+In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
+References: <20220131105233.561926043@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,55 +48,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Geetha sowjanya <gakula@marvell.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 1581d61b42d985cefe7b71eea67ab3bfcbf34d0f ]
+commit 61263b3a11a2594b4e898f166c31162236182b5c upstream.
 
-It's been observed that sometimes link credit restore takes
-a lot of time than the current timeout. This patch increases
-the default timeout value and return the proper error value
-on failure.
+GFP_KERNEL/GFP_DMA can't be used under a spin lock. According the comment,
+els_ios_lock is used to protect els ios list so we can move down the spin
+lock to avoid using this flag under the lock.
 
-Fixes: 1c74b89171c3 ("octeontx2-af: Wait for TX link idle for credits change")
-Signed-off-by: Geetha sowjanya <gakula@marvell.com>
-Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220111012441.3232527-1-yangyingliang@huawei.com
+Fixes: 8f406ef72859 ("scsi: elx: libefc: Extended link Service I/O handling")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Reviewed-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/marvell/octeontx2/af/mbox.h    | 1 +
- drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c | 4 ++--
- 2 files changed, 3 insertions(+), 2 deletions(-)
+ drivers/scsi/elx/libefc/efc_els.c |    8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-index a8618259de943..26ad71842b3b2 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-@@ -700,6 +700,7 @@ enum nix_af_status {
- 	NIX_AF_ERR_BANDPROF_INVAL_REQ  = -428,
- 	NIX_AF_ERR_CQ_CTX_WRITE_ERR  = -429,
- 	NIX_AF_ERR_AQ_CTX_RETRY_WRITE  = -430,
-+	NIX_AF_ERR_LINK_CREDITS  = -431,
- };
+--- a/drivers/scsi/elx/libefc/efc_els.c
++++ b/drivers/scsi/elx/libefc/efc_els.c
+@@ -46,18 +46,14 @@ efc_els_io_alloc_size(struct efc_node *n
  
- /* For NIX RX vtag action  */
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-index 9d4cc0ae61474..959266894cf15 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-@@ -3891,8 +3891,8 @@ nix_config_link_credits(struct rvu *rvu, int blkaddr, int link,
- 			    NIX_AF_TL1X_SW_XOFF(schq), BIT_ULL(0));
+ 	efc = node->efc;
+ 
+-	spin_lock_irqsave(&node->els_ios_lock, flags);
+-
+ 	if (!node->els_io_enabled) {
+ 		efc_log_err(efc, "els io alloc disabled\n");
+-		spin_unlock_irqrestore(&node->els_ios_lock, flags);
+ 		return NULL;
  	}
  
--	rc = -EBUSY;
--	poll_tmo = jiffies + usecs_to_jiffies(10000);
-+	rc = NIX_AF_ERR_LINK_CREDITS;
-+	poll_tmo = jiffies + usecs_to_jiffies(200000);
- 	/* Wait for credits to return */
- 	do {
- 		if (time_after(jiffies, poll_tmo))
--- 
-2.34.1
-
+ 	els = mempool_alloc(efc->els_io_pool, GFP_ATOMIC);
+ 	if (!els) {
+ 		atomic_add_return(1, &efc->els_io_alloc_failed_count);
+-		spin_unlock_irqrestore(&node->els_ios_lock, flags);
+ 		return NULL;
+ 	}
+ 
+@@ -74,7 +70,6 @@ efc_els_io_alloc_size(struct efc_node *n
+ 					      &els->io.req.phys, GFP_DMA);
+ 	if (!els->io.req.virt) {
+ 		mempool_free(els, efc->els_io_pool);
+-		spin_unlock_irqrestore(&node->els_ios_lock, flags);
+ 		return NULL;
+ 	}
+ 
+@@ -94,10 +89,11 @@ efc_els_io_alloc_size(struct efc_node *n
+ 
+ 		/* add els structure to ELS IO list */
+ 		INIT_LIST_HEAD(&els->list_entry);
++		spin_lock_irqsave(&node->els_ios_lock, flags);
+ 		list_add_tail(&els->list_entry, &node->els_ios_list);
++		spin_unlock_irqrestore(&node->els_ios_lock, flags);
+ 	}
+ 
+-	spin_unlock_irqrestore(&node->els_ios_lock, flags);
+ 	return els;
+ }
+ 
 
 
