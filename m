@@ -2,149 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A490C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 16:20:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87A8FC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 16:20:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380248AbiAaQUE (ORCPT
+        id S1380249AbiAaQUa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 11:20:04 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:60132 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1380243AbiAaQTu (ORCPT
+        Mon, 31 Jan 2022 11:20:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34286 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232764AbiAaQU1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 11:19:50 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643645988;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=7XAQrszQc36R3ke0TAxdHZ08nKa5sNGKhk1YO8Fovj8=;
-        b=IFFS7/Tl7usmJHDERSWl9Vae2UapkbnZffdG8fqSG97S419uja5PZUvbhO2h0aq8bChGhs
-        Y0EVyadYua+XF+qBPH214IHrKiJXX2YdTeUdsWZGSLKmsdRl4pDyjX5DMK6i98E+lM0yn2
-        QBAPAe/tCeTOiOWHj+Uo6yWZlIiZqQE=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-561-Ccu9IJISPn2Ja3Aa6EMUKg-1; Mon, 31 Jan 2022 11:19:47 -0500
-X-MC-Unique: Ccu9IJISPn2Ja3Aa6EMUKg-1
-Received: by mail-wr1-f71.google.com with SMTP id r2-20020adfa142000000b001e176ac1ec3so847816wrr.3
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 08:19:47 -0800 (PST)
+        Mon, 31 Jan 2022 11:20:27 -0500
+Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD4C6C061714;
+        Mon, 31 Jan 2022 08:20:25 -0800 (PST)
+Received: by mail-il1-x129.google.com with SMTP id y17so11861025ilm.1;
+        Mon, 31 Jan 2022 08:20:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=UbFm592rz0IKfu+VnJFNxz1Msppocc460xkpKheRmIo=;
+        b=Yxn7d+6bC1PpKoxj3bEfo/bKYHYGd/coL4bL/5DRdCZnqKeOEWBSLDWXaqTuyV6MaI
+         VAq8BE8FbR6wJAoRY2DoD1HTZtpChDHnMxdQdflAntYc3ameSzQ3a2UuJgtqqVNHX+iO
+         82SDHSTqJftpRpK0T1kmeFOGDJMlCXJ7XLIASs6AzAB2bWrGWc261DsD3rI9UOT8kj2N
+         9UpIWI+qEFaaU8v2BNdLbjiKderpfJW6irGth+NlniaP/v/J6mVqlWe9drCJmmxMoHkc
+         AzxlFuXr7ZCXp3ieVLYyrH4DN1e4/wHkDwGVv3X2Se8jxNELDEEX8LYIMQxauKhVQU8A
+         tn0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=7XAQrszQc36R3ke0TAxdHZ08nKa5sNGKhk1YO8Fovj8=;
-        b=3bn0KtWSwSvM84t3W0hAsadYjfs+K9F+dAXDbKOObe6FlGbkA8LDFJdJFF1MQ40Vvg
-         Wtk+4DTL5VsVrfkaCvifT3aQaGlXNCNrbv9pj2DTBtFhYyaUIv7QDWO6slH7MFHz0Ukf
-         AynYIYOl4cbH1SB20WOLMOXZOFCuCHz5bAEw8dCtYzHUgSRlHhLG7fkjfSYdDMoTGWFq
-         E895c1CWxmQc82xxXEljUPxpwB3kRZ7FetxUup7hDc9ZMAy92bNNJyQ86AtFkSsgcMol
-         pHk26/i/Vj9h2HCEDmVSV4SRahklBj/84wrPNEv+GaLaA+BxT+Q4CZKrBCWxApfs9Cik
-         YAaA==
-X-Gm-Message-State: AOAM530wjrqWhSjkyVzg9y2Ecnh0UUBDdO85mBUt3l6u4lxWHmG+IXTX
-        vVAWjmvoKqiar/pAQe6jfZ6Mu6DgfZeXjdrXRjsjcoP9tjwjMdARJDiorQDc8a7KI4WcXNMjWIS
-        H2hJ0bSgAb8qiKyq6VphaKEmt
-X-Received: by 2002:a5d:59a2:: with SMTP id p2mr17317634wrr.664.1643645986188;
-        Mon, 31 Jan 2022 08:19:46 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwjTqFOp4VER/3BLKVfseVZxxqwlCXqz39uMizZQGUFjVQiLnivMq8zfHMjAGzTIq/UZ02yGg==
-X-Received: by 2002:a5d:59a2:: with SMTP id p2mr17317622wrr.664.1643645985976;
-        Mon, 31 Jan 2022 08:19:45 -0800 (PST)
-Received: from fedora (nat-2.ign.cz. [91.219.240.2])
-        by smtp.gmail.com with ESMTPSA id y3sm14007593wry.109.2022.01.31.08.19.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Jan 2022 08:19:45 -0800 (PST)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Like Xu <like.xu.linux@gmail.com>
-Subject: Re: [PATCH 09/22] KVM: x86: Uninline and export hv_track_root_tdp()
-In-Reply-To: <20220128005208.4008533-10-seanjc@google.com>
-References: <20220128005208.4008533-1-seanjc@google.com>
- <20220128005208.4008533-10-seanjc@google.com>
-Date:   Mon, 31 Jan 2022 17:19:44 +0100
-Message-ID: <87ee4ng9nj.fsf@redhat.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UbFm592rz0IKfu+VnJFNxz1Msppocc460xkpKheRmIo=;
+        b=JXOFjMPQB6uKJlZh7stgmiIrNPCFEYfKBqI51QqWhxFiWxf9PGNtx2vMq6i/0I8Fbq
+         8Bea91JcqBAYb2a3IcKjpRax26MR/wdMv7A93xBs/YivETqlGoCBKGn0/g0fWj/G62op
+         avzrJR9BROlrAS6ihcGdAI7FF3CqU0YjYXHfzGcB0pTHJ5ieCg3s5lAD1iRo9BHgVa2n
+         FYUoxwPFYF1ZOR9lGxZk6FYAb5bOO0X61m92vCq51B0r5VKAhjxKGzz+hVe+jgcXM+rZ
+         4xrG/lUzGYj91IT0eEyiubq85eoOW0zXI+ofa2fKWwZuaeO+GnfcKfNUegue/q2f27KS
+         f3jA==
+X-Gm-Message-State: AOAM533sdkoV7FPhjEjSRpzxToCzZMX/YkCz/GWmClmAgSDEOuwQPIZB
+        vLSCC0TZy/Mwq7bBoBI6kxyuwCLy+m5u2M5dYUI=
+X-Google-Smtp-Source: ABdhPJyRorRaMlWkkgIN9K2SnqW/g5GLCJG6D2tuEyorWa6Y39EQqCnR0aSGdXlSeCoGJkW+S6ipBxaQeGvq99bLJmk=
+X-Received: by 2002:a05:6e02:1708:: with SMTP id u8mr5000825ill.319.1643646025247;
+ Mon, 31 Jan 2022 08:20:25 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <164364196407.1476539.8450117784231043601.stgit@warthog.procyon.org.uk>
+ <164364197646.1476539.3635698398603811895.stgit@warthog.procyon.org.uk>
+ <CAOQ4uxiorvXhhJbCsGo-B7aBX0BbSYp7wUHmYS1e1xxJ4dpF3w@mail.gmail.com> <1531209.1643643128@warthog.procyon.org.uk>
+In-Reply-To: <1531209.1643643128@warthog.procyon.org.uk>
+From:   Amir Goldstein <amir73il@gmail.com>
+Date:   Mon, 31 Jan 2022 18:20:14 +0200
+Message-ID: <CAOQ4uxhc6FW-io5mC=FN=vFawEAwjXZO7kCcGt5gzqq3ON1Y7w@mail.gmail.com>
+Subject: Re: [PATCH 1/5] vfs, overlayfs, cachefiles: Turn I_OVL_INUSE into
+ something generic
+To:     David Howells <dhowells@redhat.com>
+Cc:     Miklos Szeredi <miklos@szeredi.hu>,
+        overlayfs <linux-unionfs@vger.kernel.org>,
+        linux-cachefs@redhat.com, Christoph Hellwig <hch@infradead.org>,
+        Jeff Layton <jlayton@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sean Christopherson <seanjc@google.com> writes:
-
-> Uninline and export Hyper-V's hv_track_root_tdp(), which is (somewhat
-> indirectly) the last remaining reference to kvm_x86_ops from vendor
-> modules, i.e. will allow unexporting kvm_x86_ops.  Reloading the TDP PGD
-> isn't the fastest of paths, hv_track_root_tdp() isn't exactly tiny, and
-> disallowing vendor code from accessing kvm_x86_ops provides nice-to-have
-> encapsulation of common x86 code (and of Hyper-V code for that
-> matter).
-
-We can add a static branch for "kvm_x86_ops.tlb_remote_flush ==
-hv_remote_flush_tlb" condition and check it in vendor modules prior to
-calling into hv_track_root_tdp() but I seriously doubt it'll bring us
-noticable performance gain.
-
+On Mon, Jan 31, 2022 at 5:32 PM David Howells <dhowells@redhat.com> wrote:
 >
-> No functional change intended.
+> Amir Goldstein <amir73il@gmail.com> wrote:
 >
-> Signed-off-by: Sean Christopherson <seanjc@google.com>
-> ---
->  arch/x86/kvm/kvm_onhyperv.c | 14 ++++++++++++++
->  arch/x86/kvm/kvm_onhyperv.h | 14 +-------------
->  2 files changed, 15 insertions(+), 13 deletions(-)
+> > Please leave ovl_* as wrappers instead of changing super.c.
 >
-> diff --git a/arch/x86/kvm/kvm_onhyperv.c b/arch/x86/kvm/kvm_onhyperv.c
-> index b469f45e3fe4..ee4f696a0782 100644
-> --- a/arch/x86/kvm/kvm_onhyperv.c
-> +++ b/arch/x86/kvm/kvm_onhyperv.c
-> @@ -92,3 +92,17 @@ int hv_remote_flush_tlb(struct kvm *kvm)
->  	return hv_remote_flush_tlb_with_range(kvm, NULL);
->  }
->  EXPORT_SYMBOL_GPL(hv_remote_flush_tlb);
-> +
-> +void hv_track_root_tdp(struct kvm_vcpu *vcpu, hpa_t root_tdp)
-> +{
-> +	struct kvm_arch *kvm_arch = &vcpu->kvm->arch;
-> +
-> +	if (kvm_x86_ops.tlb_remote_flush == hv_remote_flush_tlb) {
-> +		spin_lock(&kvm_arch->hv_root_tdp_lock);
-> +		vcpu->arch.hv_root_tdp = root_tdp;
-> +		if (root_tdp != kvm_arch->hv_root_tdp)
-> +			kvm_arch->hv_root_tdp = INVALID_PAGE;
-> +		spin_unlock(&kvm_arch->hv_root_tdp_lock);
-> +	}
-> +}
-> +EXPORT_SYMBOL_GPL(hv_track_root_tdp);
-> diff --git a/arch/x86/kvm/kvm_onhyperv.h b/arch/x86/kvm/kvm_onhyperv.h
-> index 1c67abf2eba9..287e98ef9df3 100644
-> --- a/arch/x86/kvm/kvm_onhyperv.h
-> +++ b/arch/x86/kvm/kvm_onhyperv.h
-> @@ -10,19 +10,7 @@
->  int hv_remote_flush_tlb_with_range(struct kvm *kvm,
->  		struct kvm_tlb_range *range);
->  int hv_remote_flush_tlb(struct kvm *kvm);
-> -
-> -static inline void hv_track_root_tdp(struct kvm_vcpu *vcpu, hpa_t root_tdp)
-> -{
-> -	struct kvm_arch *kvm_arch = &vcpu->kvm->arch;
-> -
-> -	if (kvm_x86_ops.tlb_remote_flush == hv_remote_flush_tlb) {
-> -		spin_lock(&kvm_arch->hv_root_tdp_lock);
-> -		vcpu->arch.hv_root_tdp = root_tdp;
-> -		if (root_tdp != kvm_arch->hv_root_tdp)
-> -			kvm_arch->hv_root_tdp = INVALID_PAGE;
-> -		spin_unlock(&kvm_arch->hv_root_tdp_lock);
-> -	}
-> -}
-> +void hv_track_root_tdp(struct kvm_vcpu *vcpu, hpa_t root_tdp);
->  #else /* !CONFIG_HYPERV */
->  static inline void hv_track_root_tdp(struct kvm_vcpu *vcpu, hpa_t root_tdp)
->  {
+> Do you want them turning into inline functions?
+>
 
-Reviewed-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+inline would be fine.
 
--- 
-Vitaly
+But I just noticed something that may wreck this party.
 
+The assumption, when I proposed this merger, was that an inode for
+upper/work and is exclusively owned by ovl driver, so there should be no
+conflicts with other drivers setting inuse flag.
+
+However, in ovl_check_layer(), we walk back to root to verify that an ovl
+layer of a new instance is not a descendant of another ovl upper/work inuse.
+So the meaning of I_OVL_INUSE is somewhat stronger than an exclusive inode lock.
+It implies ownership on the entire subtree.
+
+I guess there is no conflict with cachefiles since ovl upper/work should not be
+intersecting with any cachefiles storage, but that complicates the
+semantics when
+it comes to a generic flag.
+
+OTOH, I am not sure if this check on ovl mount is so smart to begin with.
+This check was added (after the exclusive ownership meaning) to silence syzbot
+that kept mutating to weird overlapping ovl setups.
+I think that a better approach would be to fail a lookup in the upper layer
+that results with a d_mountpoint() - those are not expected inside the overlay
+upper layer AFAICT.
+
+Anyway, I can make those changes if Miklos agrees with them, but I don't
+want to complicate your work on this, so maybe for now, create the I_EXCL_INUSE
+generic flag without changing overlayfs and I can make the cleanup to get rid of
+I_OVL_INUSE later.
+
+Thanks,
+Amir.
