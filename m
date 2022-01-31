@@ -2,137 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36D36C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 19:23:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F72EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 19:23:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359579AbiAaTX2 (ORCPT
+        id S1358028AbiAaTXb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 14:23:28 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:26855 "EHLO
+        Mon, 31 Jan 2022 14:23:31 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:51788 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1359382AbiAaTX1 (ORCPT
+        by vger.kernel.org with ESMTP id S1359517AbiAaTX1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 31 Jan 2022 14:23:27 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643657006;
+        s=mimecast20190719; t=1643657007;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=I2d3efJ/j6K/4OXgLFwPh7lzFbfhPa/UEhDGGQxVReg=;
-        b=B9SSVPFd00w0kxMdkRoikASbaADrycncZXM5Bu99ilsqlAcr6qvhOY/qjsuH6j4rJtNhRb
-        7DT0g3ONbOUpRSN+x4CmWnu0wcW+qLEvfpdlrpudl/KzI7piymzX+X+Y2rrw6T1SK/hLcn
-        75edg3e1EwJKDTHE9yBz057LM1xQgEw=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=r2v/Wpxpyf53Gc+td9aFV8h4H9KkP9JhzJaU9W2Ncas=;
+        b=OYNnFYEX83tX1cAeisMpYbBJWia2nevTeS7bUAsqUdEPAR8lKUrHjS8mZRcHyJKlXFIErg
+        +xXCitGWsMemZRuGXxL0WqUH8eFjfmVrgKcclZFg6M+ZCsUMBSMeTKopue/U1S2/46ZRWZ
+        hQ/9SAiY5Fpfqn4+jCS7PwcaT8js034=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-611-vPV3DCPsP6KXvYDAG_kHyg-1; Mon, 31 Jan 2022 14:23:24 -0500
-X-MC-Unique: vPV3DCPsP6KXvYDAG_kHyg-1
-Received: by mail-wm1-f70.google.com with SMTP id z2-20020a05600c220200b0034d2eb95f27so36827wml.1
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 11:23:24 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=I2d3efJ/j6K/4OXgLFwPh7lzFbfhPa/UEhDGGQxVReg=;
-        b=8A4tyRa0Vl9RU5T5uCh6MaMuzTIR7MqgMOC1558mevxSQUa9VhbUSrBwqoKC2NlQSb
-         LxUV773YSNu01L0HV1H7k7OrgseKR7onRQ7bc0fYBZNd85H4Uw/qcY5V9jPk7wLPhMsl
-         D9XVWYhuwqHByLRvBRd/qegBqywnGMqUEVVKt0kgUPu8o0BkGlmRl9DqPAENgoKzDRcq
-         BgZLD7FIvKFXuDWpiv7Ik22LFQDQVhNs+XhMV/c31iEDcJBlp5yA5xwI96XT9/EfBxNL
-         T+f3fnv4Ea7yk8KtG+tAV1LtyL8NHh2tWaEs8BwLXMDG8mrPXvPDnjEbd/0BfTWwaAIm
-         wetg==
-X-Gm-Message-State: AOAM533u6mlIuR46PT/mLJolx2clXmMhC5V0IFGVPWKlyAQWDVdEzvBo
-        8pzIaAR6Zn2A6q5FhYayd4ryJPU20KXSuD0hNMlmNfEN4+xNAklNL80VcAtxH3JP/hckvV39Vuk
-        KgNU5OGJ1q/SL0mjddZzwS1ij
-X-Received: by 2002:a1c:f210:: with SMTP id s16mr19914704wmc.99.1643657003424;
-        Mon, 31 Jan 2022 11:23:23 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJw4YAsMahzu4M2yqMQCjOrz2F/+9X2UxqE8g/ewaMUTrvblT0lO2OjsUepkGdDK6wSrJPyoAg==
-X-Received: by 2002:a1c:f210:: with SMTP id s16mr19914690wmc.99.1643657003234;
-        Mon, 31 Jan 2022 11:23:23 -0800 (PST)
-Received: from krava (nat-pool-brq-u.redhat.com. [213.175.37.12])
-        by smtp.gmail.com with ESMTPSA id u7sm181957wmc.11.2022.01.31.11.23.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Jan 2022 11:23:22 -0800 (PST)
-Date:   Mon, 31 Jan 2022 20:23:21 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Namhyung Kim <namhyung@kernel.org>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Ian Rogers <irogers@google.com>
-Subject: Re: [PATCH 3/3] perf annotate: Try chroot filename for objdump
-Message-ID: <Yfg3KXNcyUPaRebE@krava>
-References: <20220128203950.3371061-1-namhyung@kernel.org>
- <20220128203950.3371061-4-namhyung@kernel.org>
+ us-mta-513-wGadArTENUapG0zdubBHnQ-1; Mon, 31 Jan 2022 14:23:23 -0500
+X-MC-Unique: wGadArTENUapG0zdubBHnQ-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2B6971083F67;
+        Mon, 31 Jan 2022 19:23:21 +0000 (UTC)
+Received: from llong.com (unknown [10.22.16.244])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id DFD2810013C1;
+        Mon, 31 Jan 2022 19:23:18 +0000 (UTC)
+From:   Waiman Long <longman@redhat.com>
+To:     Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Vladimir Davydov <vdavydov.dev@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Cc:     linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
+        linux-mm@kvack.org, Ira Weiny <ira.weiny@intel.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Roman Gushchin <guro@fb.com>,
+        Rafael Aquini <aquini@redhat.com>,
+        Waiman Long <longman@redhat.com>
+Subject: [PATCH v3 0/4] mm/page_owner: Extend page_owner to show memcg information
+Date:   Mon, 31 Jan 2022 14:23:04 -0500
+Message-Id: <20220131192308.608837-1-longman@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220128203950.3371061-4-namhyung@kernel.org>
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 12:39:50PM -0800, Namhyung Kim wrote:
-> Likewise, it should use a proper name in case the task runs under
-> chroot.  The child_process.err was needed to set to -1 to show error
-> messages properly in TUI.
-> 
-> Signed-off-by: Namhyung Kim <namhyung@kernel.org>
-> ---
->  tools/perf/util/annotate.c | 11 +++++++++++
->  1 file changed, 11 insertions(+)
-> 
-> diff --git a/tools/perf/util/annotate.c b/tools/perf/util/annotate.c
-> index 01900689dc00..e4c641b240df 100644
-> --- a/tools/perf/util/annotate.c
-> +++ b/tools/perf/util/annotate.c
-> @@ -33,6 +33,7 @@
->  #include "string2.h"
->  #include "util/event.h"
->  #include "arch/common.h"
-> +#include "namespaces.h"
->  #include <regex.h>
->  #include <pthread.h>
->  #include <linux/bitops.h>
-> @@ -1696,6 +1697,15 @@ static int dso__disassemble_filename(struct dso *dso, char *filename, size_t fil
->  		 * DSO is the same as when 'perf record' ran.
->  		 */
->  		__symbol__join_symfs(filename, filename_size, dso->long_name);
-> +
-> +		if (access(filename, R_OK) && errno == ENOENT && dso->nsinfo) {
-> +			char *new_name = filename_with_chroot(dso->nsinfo->pid,
-> +							      filename);
-> +			if (new_name) {
-> +				strlcpy(filename, new_name, filename_size);
-> +				free(new_name);
-> +			}
-> +		}
->  	}
->  
->  	free(build_id_path);
-> @@ -2036,6 +2046,7 @@ static int symbol__disassemble(struct symbol *sym, struct annotate_args *args)
->  	memset(&objdump_process, 0, sizeof(objdump_process));
->  	objdump_process.argv = objdump_argv;
->  	objdump_process.out = -1;
-> +	objdump_process.err = -1;
+ v3:
+  - Add unlikely() to patch 1 and clarify that -1 will not be returned.
+  - Use a helper function to print out memcg information in patch 3.
+  - Add a new patch 4 to store task command name in page_owner
+    structure.
 
-is this unrelated fix?
+ v2:
+  - Remove the SNPRINTF() macro as suggested by Ira and use scnprintf()
+    instead to remove some buffer overrun checks.
+  - Add a patch to optimize vscnprintf with a size parameter of 0.
 
-otherwise the whole patchset looks good to me
+While debugging the constant increase in percpu memory consumption on
+a system that spawned large number of containers, it was found that a
+lot of offlined mem_cgroup structures remained in place without being
+freed. Further investigation indicated that those mem_cgroup structures
+were pinned by some pages.
 
-I guess we'd need to add something like PERF_RECORD_CHROOT to
-handle and instrument sys_chroot to handle this completely?
+In order to find out what those pages are, the existing page_owner
+debugging tool is extended to show memory cgroup information and whether
+those memcgs are offlined or not. With the enhanced page_owner tool,
+the following is a typical page that pinned the mem_cgroup structure
+in my test case:
 
-Acked-by: Jiri Olsa <jolsa@kernel.org>
+Page allocated via order 0, mask 0x1100cca(GFP_HIGHUSER_MOVABLE), pid 162970 (podman), ts 1097761405537 ns, free_ts 1097760838089 ns
+PFN 1925700 type Movable Block 3761 type Movable Flags 0x17ffffc00c001c(uptodate|dirty|lru|reclaim|swapbacked|node=0|zone=2|lastcpupid=0x1fffff)
+ prep_new_page+0xac/0xe0
+ get_page_from_freelist+0x1327/0x14d0
+ __alloc_pages+0x191/0x340
+ alloc_pages_vma+0x84/0x250
+ shmem_alloc_page+0x3f/0x90
+ shmem_alloc_and_acct_page+0x76/0x1c0
+ shmem_getpage_gfp+0x281/0x940
+ shmem_write_begin+0x36/0xe0
+ generic_perform_write+0xed/0x1d0
+ __generic_file_write_iter+0xdc/0x1b0
+ generic_file_write_iter+0x5d/0xb0
+ new_sync_write+0x11f/0x1b0
+ vfs_write+0x1ba/0x2a0
+ ksys_write+0x59/0xd0
+ do_syscall_64+0x37/0x80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+Charged to offlined memcg libpod-conmon-15e4f9c758422306b73b2dd99f9d50a5ea53cbb16b4a13a2c2308a4253cc0ec8.
 
-thanks,
-jirka
+So the page was not freed because it was part of a shmem segment. That
+is useful information that can help users to diagnose similar problems.
 
->  	if (start_command(&objdump_process)) {
->  		pr_err("Failure starting to run %s\n", command);
->  		err = -1;
-> -- 
-> 2.35.0.rc2.247.g8bbb082509-goog
-> 
+Waiman Long (4):
+  lib/vsprintf: Avoid redundant work with 0 size
+  mm/page_owner: Use scnprintf() to avoid excessive buffer overrun check
+  mm/page_owner: Print memcg information
+  mm/page_owner: Record task command name
+
+ lib/vsprintf.c  |  8 +++---
+ mm/page_owner.c | 69 ++++++++++++++++++++++++++++++++++++++-----------
+ 2 files changed, 59 insertions(+), 18 deletions(-)
+
+-- 
+2.27.0
 
