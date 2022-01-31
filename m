@@ -2,46 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2405C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:27:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06259C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:27:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359065AbiAaL1c (ORCPT
+        id S1376267AbiAaL1f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:27:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47044 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377740AbiAaLSx (ORCPT
+        Mon, 31 Jan 2022 06:27:35 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:50544 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377802AbiAaLTE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:18:53 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59728C06134C;
-        Mon, 31 Jan 2022 03:11:45 -0800 (PST)
+        Mon, 31 Jan 2022 06:19:04 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EC53E6102A;
-        Mon, 31 Jan 2022 11:11:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C12DDC340E8;
-        Mon, 31 Jan 2022 11:11:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B4E661120;
+        Mon, 31 Jan 2022 11:19:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A515C340E8;
+        Mon, 31 Jan 2022 11:19:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627504;
-        bh=SgGumDnicN2QeEZGwfbrCV7bTVD6rS+dcb6bMzFZ8yo=;
+        s=korg; t=1643627943;
+        bh=41Bn7dpcwKdRVGJAeUT3KkBCidaikRKvL17gJkZ77QY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hPLxrATX3SY904blhwbpDH8Xy6N2KWVsKGFgvgoujChtJTGEQZMJj0bp8l5iNN5ZC
-         oOXnXMZTG9j4OlOVkRaMkc9VYVBuGzpXJvyUmu2a1OEbyrwRvZxZLvHfluG1L4CfVv
-         +P2E3Adhfg7Qr3EOjSlZ8DHHxadfs57UqwNaFMtA=
+        b=DrE+UvEzFioLZjxsERTdn9xxcM+hxuAjgXLqZNe2ptL16Ubza0IkDdrjKmtUaN6iJ
+         xQvwRKVeefdGwJtmf3/Yxi9XGSYMIVmfVDWOg0m3JZnLdLOpm90VdqNDcHaSejaHI2
+         8r8wo0h0jKKrJJZylRDOAp10so1z4S9yzTMnC88o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 106/171] netfilter: conntrack: dont increment invalid counter on NF_REPEAT
-Date:   Mon, 31 Jan 2022 11:56:11 +0100
-Message-Id: <20220131105233.631674405@linuxfoundation.org>
+        stable@vger.kernel.org, Jon Hunter <jonathanh@nvidia.com>
+Subject: [PATCH 5.16 075/200] usb: common: ulpi: Fix crash in ulpi_match()
+Date:   Mon, 31 Jan 2022 11:55:38 +0100
+Message-Id: <20220131105236.108873020@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
-References: <20220131105229.959216821@linuxfoundation.org>
+In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
+References: <20220131105233.561926043@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,51 +45,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Jon Hunter <jonathanh@nvidia.com>
 
-[ Upstream commit 830af2eba40327abec64325a5b08b1e85c37a2e0 ]
+commit 2e3dd4a6246945bf84ea6f478365d116e661554c upstream.
 
-The packet isn't invalid, REPEAT means we're trying again after cleaning
-out a stale connection, e.g. via tcp tracker.
+Commit 7495af930835 ("ARM: multi_v7_defconfig: Enable drivers for
+DragonBoard 410c") enables the CONFIG_PHY_QCOM_USB_HS for the ARM
+multi_v7_defconfig. Enabling this Kconfig is causing the kernel to crash
+on the Tegra20 Ventana platform in the ulpi_match() function.
 
-This caused increases of invalid stat counter in a test case involving
-frequent connection reuse, even though no packet is actually invalid.
+The Qualcomm USB HS PHY driver that is enabled by CONFIG_PHY_QCOM_USB_HS,
+registers a ulpi_driver but this driver does not provide an 'id_table',
+so when ulpi_match() is called on the Tegra20 Ventana platform, it
+crashes when attempting to deference the id_table pointer which is not
+valid. The Qualcomm USB HS PHY driver uses device-tree for matching the
+ULPI driver with the device and so fix this crash by using device-tree
+for matching if the id_table is not valid.
 
-Fixes: 56a62e2218f5 ("netfilter: conntrack: fix NF_REPEAT handling")
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: ef6a7bcfb01c ("usb: ulpi: Support device discovery via DT")
+Cc: stable <stable@vger.kernel.org>
+Signed-off-by: Jon Hunter <jonathanh@nvidia.com>
+Link: https://lore.kernel.org/r/20220117150039.44058-1-jonathanh@nvidia.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nf_conntrack_core.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/usb/common/ulpi.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-index 4712a90a1820c..7f79974607643 100644
---- a/net/netfilter/nf_conntrack_core.c
-+++ b/net/netfilter/nf_conntrack_core.c
-@@ -1922,15 +1922,17 @@ repeat:
- 		pr_debug("nf_conntrack_in: Can't track with proto module\n");
- 		nf_conntrack_put(&ct->ct_general);
- 		skb->_nfct = 0;
--		NF_CT_STAT_INC_ATOMIC(state->net, invalid);
--		if (ret == -NF_DROP)
--			NF_CT_STAT_INC_ATOMIC(state->net, drop);
- 		/* Special case: TCP tracker reports an attempt to reopen a
- 		 * closed/aborted connection. We have to go back and create a
- 		 * fresh conntrack.
- 		 */
- 		if (ret == -NF_REPEAT)
- 			goto repeat;
-+
-+		NF_CT_STAT_INC_ATOMIC(state->net, invalid);
-+		if (ret == -NF_DROP)
-+			NF_CT_STAT_INC_ATOMIC(state->net, drop);
-+
- 		ret = -ret;
- 		goto out;
- 	}
--- 
-2.34.1
-
+--- a/drivers/usb/common/ulpi.c
++++ b/drivers/usb/common/ulpi.c
+@@ -39,8 +39,11 @@ static int ulpi_match(struct device *dev
+ 	struct ulpi *ulpi = to_ulpi_dev(dev);
+ 	const struct ulpi_device_id *id;
+ 
+-	/* Some ULPI devices don't have a vendor id so rely on OF match */
+-	if (ulpi->id.vendor == 0)
++	/*
++	 * Some ULPI devices don't have a vendor id
++	 * or provide an id_table so rely on OF match.
++	 */
++	if (ulpi->id.vendor == 0 || !drv->id_table)
+ 		return of_driver_match_device(dev, driver);
+ 
+ 	for (id = drv->id_table; id->vendor; id++)
 
 
