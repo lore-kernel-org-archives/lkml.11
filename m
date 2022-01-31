@@ -2,39 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD0ADC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:10:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DE67C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:10:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359852AbiAaLIB (ORCPT
+        id S1376393AbiAaLIX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:08:01 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:52380 "EHLO
+        Mon, 31 Jan 2022 06:08:23 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:51960 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348720AbiAaLE3 (ORCPT
+        with ESMTP id S1359210AbiAaLFE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:04:29 -0500
+        Mon, 31 Jan 2022 06:05:04 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 195CFB82A6A;
-        Mon, 31 Jan 2022 11:04:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FF9DC340E8;
-        Mon, 31 Jan 2022 11:04:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6AE20B82A31;
+        Mon, 31 Jan 2022 11:05:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFD11C340E8;
+        Mon, 31 Jan 2022 11:05:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627066;
-        bh=yvLfEvfM1S9QsM+cfwQvHnI2a+N1nMMw0orbNRBlg70=;
+        s=korg; t=1643627102;
+        bh=qPmn2951N6S0rKBmkYyFf7WnPt8+8/bb8blm2+jhRxw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OalX7TuzZJS31C/q0j6S7L0y2RdnmoERvSVQ/ZcCONrD044hb/6JSMFxeyv0/9hSI
-         H98xKYv1RVAgDMwkkiWDWk4mKM9piNDYmYJaO8GDzHKl8Fq2Ne/Exy5b5FyUOud7n8
-         CGD7xe+GCnBzgonBZqFCuUxdEB5rsdcRNlb0xv70=
+        b=rq4JaleEY6Rh9AwcviYa7bBg8cSaBNCErPiHOnQkkhAPxCsEmJiKGIC7XxvyFur2w
+         LQDuMxJZRWqUFEjffM+Uxke8OYGwxijylBCRIczEqzJYJFdcs63ZB0Yc9R8Je6u9mO
+         9isNDtCiIANc9pt8G8vh3e8J89WSUgbqaiW/eLsA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Subject: [PATCH 5.10 063/100] drm/msm/dsi: Fix missing put_device() call in dsi_get_phy
-Date:   Mon, 31 Jan 2022 11:56:24 +0100
-Message-Id: <20220131105222.554006644@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
+        Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
+        Gurucharan G <gurucharanx.g@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Subject: [PATCH 5.10 042/100] i40e: Increase delay to 1 s after global EMP reset
+Date:   Mon, 31 Jan 2022 11:56:03 +0100
+Message-Id: <20220131105221.852233473@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
 References: <20220131105220.424085452@linuxfoundation.org>
@@ -46,39 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
 
-commit c04c3148ca12227d92f91b355b4538cc333c9922 upstream.
+commit 9b13bd53134c9ddd544a790125199fdbdb505e67 upstream.
 
-If of_find_device_by_node() succeeds, dsi_get_phy() doesn't
-a corresponding put_device(). Thus add put_device() to fix the exception
-handling.
+Recently simplified i40e_rebuild causes that FW sometimes
+is not ready after NVM update, the ping does not return.
 
-Fixes: ec31abf ("drm/msm/dsi: Separate PHY to another platform device")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Link: https://lore.kernel.org/r/20211230070943.18116-1-linmq006@gmail.com
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Increase the delay in case of EMP reset.
+Old delay of 300 ms was introduced for specific cards for 710 series.
+Now it works for all the cards and delay was increased.
+
+Fixes: 1fa51a650e1d ("i40e: Add delay after EMP reset for firmware to recover")
+Signed-off-by: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
+Signed-off-by: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
+Tested-by: Gurucharan G <gurucharanx.g@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/msm/dsi/dsi.c |    7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/i40e/i40e_main.c |   12 +++---------
+ 1 file changed, 3 insertions(+), 9 deletions(-)
 
---- a/drivers/gpu/drm/msm/dsi/dsi.c
-+++ b/drivers/gpu/drm/msm/dsi/dsi.c
-@@ -33,7 +33,12 @@ static int dsi_get_phy(struct msm_dsi *m
- 
- 	of_node_put(phy_node);
- 
--	if (!phy_pdev || !msm_dsi->phy) {
-+	if (!phy_pdev) {
-+		DRM_DEV_ERROR(&pdev->dev, "%s: phy driver is not ready\n", __func__);
-+		return -EPROBE_DEFER;
-+	}
-+	if (!msm_dsi->phy) {
-+		put_device(&phy_pdev->dev);
- 		DRM_DEV_ERROR(&pdev->dev, "%s: phy driver is not ready\n", __func__);
- 		return -EPROBE_DEFER;
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -10130,15 +10130,9 @@ static void i40e_rebuild(struct i40e_pf
  	}
+ 	i40e_get_oem_version(&pf->hw);
+ 
+-	if (test_bit(__I40E_EMP_RESET_INTR_RECEIVED, pf->state) &&
+-	    ((hw->aq.fw_maj_ver == 4 && hw->aq.fw_min_ver <= 33) ||
+-	     hw->aq.fw_maj_ver < 4) && hw->mac.type == I40E_MAC_XL710) {
+-		/* The following delay is necessary for 4.33 firmware and older
+-		 * to recover after EMP reset. 200 ms should suffice but we
+-		 * put here 300 ms to be sure that FW is ready to operate
+-		 * after reset.
+-		 */
+-		mdelay(300);
++	if (test_and_clear_bit(__I40E_EMP_RESET_INTR_RECEIVED, pf->state)) {
++		/* The following delay is necessary for firmware update. */
++		mdelay(1000);
+ 	}
+ 
+ 	/* re-verify the eeprom if we just had an EMP reset */
 
 
