@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DD9FC4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:40:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FC9EC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:40:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347973AbiAaLkU (ORCPT
+        id S1359789AbiAaLkj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:40:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49864 "EHLO
+        Mon, 31 Jan 2022 06:40:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379552AbiAaLaY (ORCPT
+        with ESMTP id S1379453AbiAaLaU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:30:24 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78AD7C061394;
-        Mon, 31 Jan 2022 03:21:00 -0800 (PST)
+        Mon, 31 Jan 2022 06:30:20 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2296EC0617BD;
+        Mon, 31 Jan 2022 03:20:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 39AA0B82A60;
-        Mon, 31 Jan 2022 11:20:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A2F9C340E8;
-        Mon, 31 Jan 2022 11:20:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B79CB611DB;
+        Mon, 31 Jan 2022 11:20:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81C8DC340E8;
+        Mon, 31 Jan 2022 11:20:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643628058;
-        bh=V85WzOgCwLckSgV8LMDwMMvpDSkvj/dQx6sx28b70qM=;
+        s=korg; t=1643628042;
+        bh=K8uS/L0iTWLq7FlRCD2DFohHBclcjVpDwfvTy1cfNPY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZUTNs1kTySZRJp2IxqWVOiaaLIdFnb93jhCthy8jDqw5EHoIhXHrWJp/qoLvEuVxd
-         tX9LGieYBrXcv0v8ggDK7Qm8MRHg6uvgqg0Yh/BYzuoeJSGXI29cz0OiM1C1XGya6H
-         2I2+tiAVxn6LrR3BlfVdOP83tWpwwtW5xEwOzOFA=
+        b=NczWrz4NDp3kZFMabt2fXC3Y7XkgwAjGM0eVwi1QPhOzREnaK45yANvasVTigYfuf
+         EkwxTk2+EEKJlQeXm/BGpXLQbGYh6sQbnyZOGEQrX41cWOQc6qzB31kYf+r2S6vDFT
+         NWXCmrMPo1IdPkmfA8bcBOtqNCcyIe8x4NZ67Kuk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxime Bizon <mbizon@freebox.fr>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.16 094/200] powerpc/32s: Fix kasan_init_region() for KASAN
-Date:   Mon, 31 Jan 2022 11:55:57 +0100
-Message-Id: <20220131105236.774410172@linuxfoundation.org>
+        stable@vger.kernel.org, huangshaobo <huangshaobo6@huawei.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Subject: [PATCH 5.16 107/200] ARM: 9170/1: fix panic when kasan and kprobe are enabled
+Date:   Mon, 31 Jan 2022 11:56:10 +0100
+Message-Id: <20220131105237.176823572@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -50,195 +50,114 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+From: sparkhuang <huangshaobo6@huawei.com>
 
-commit d37823c3528e5e0705fc7746bcbc2afffb619259 upstream.
+commit 8b59b0a53c840921b625378f137e88adfa87647e upstream.
 
-It has been reported some configuration where the kernel doesn't
-boot with KASAN enabled.
+arm32 uses software to simulate the instruction replaced
+by kprobe. some instructions may be simulated by constructing
+assembly functions. therefore, before executing instruction
+simulation, it is necessary to construct assembly function
+execution environment in C language through binding registers.
+after kasan is enabled, the register binding relationship will
+be destroyed, resulting in instruction simulation errors and
+causing kernel panic.
 
-This is due to wrong BAT allocation for the KASAN area:
+the kprobe emulate instruction function is distributed in three
+files: actions-common.c actions-arm.c actions-thumb.c, so disable
+KASAN when compiling these files.
 
-	---[ Data Block Address Translation ]---
-	0: 0xc0000000-0xcfffffff 0x00000000       256M Kernel rw      m
-	1: 0xd0000000-0xdfffffff 0x10000000       256M Kernel rw      m
-	2: 0xe0000000-0xefffffff 0x20000000       256M Kernel rw      m
-	3: 0xf8000000-0xf9ffffff 0x2a000000        32M Kernel rw      m
-	4: 0xfa000000-0xfdffffff 0x2c000000        64M Kernel rw      m
+for example, use kprobe insert on cap_capable+20 after kasan
+enabled, the cap_capable assembly code is as follows:
+<cap_capable>:
+e92d47f0	push	{r4, r5, r6, r7, r8, r9, sl, lr}
+e1a05000	mov	r5, r0
+e280006c	add	r0, r0, #108    ; 0x6c
+e1a04001	mov	r4, r1
+e1a06002	mov	r6, r2
+e59fa090	ldr	sl, [pc, #144]  ;
+ebfc7bf8	bl	c03aa4b4 <__asan_load4>
+e595706c	ldr	r7, [r5, #108]  ; 0x6c
+e2859014	add	r9, r5, #20
+......
+The emulate_ldr assembly code after enabling kasan is as follows:
+c06f1384 <emulate_ldr>:
+e92d47f0	push	{r4, r5, r6, r7, r8, r9, sl, lr}
+e282803c	add	r8, r2, #60     ; 0x3c
+e1a05000	mov	r5, r0
+e7e37855	ubfx	r7, r5, #16, #4
+e1a00008	mov	r0, r8
+e1a09001	mov	r9, r1
+e1a04002	mov	r4, r2
+ebf35462	bl	c03c6530 <__asan_load4>
+e357000f	cmp	r7, #15
+e7e36655	ubfx	r6, r5, #12, #4
+e205a00f	and	sl, r5, #15
+0a000001	beq	c06f13bc <emulate_ldr+0x38>
+e0840107	add	r0, r4, r7, lsl #2
+ebf3545c	bl	c03c6530 <__asan_load4>
+e084010a	add	r0, r4, sl, lsl #2
+ebf3545a	bl	c03c6530 <__asan_load4>
+e2890010	add	r0, r9, #16
+ebf35458	bl	c03c6530 <__asan_load4>
+e5990010	ldr	r0, [r9, #16]
+e12fff30	blx	r0
+e356000f	cm	r6, #15
+1a000014	bne	c06f1430 <emulate_ldr+0xac>
+e1a06000	mov	r6, r0
+e2840040	add	r0, r4, #64     ; 0x40
+......
 
-A BAT must have both virtual and physical addresses alignment matching
-the size of the BAT. This is not the case for BAT 4 above.
+when running in emulate_ldr to simulate the ldr instruction, panic
+occurred, and the log is as follows:
+Unable to handle kernel NULL pointer dereference at virtual address
+00000090
+pgd = ecb46400
+[00000090] *pgd=2e0fa003, *pmd=00000000
+Internal error: Oops: 206 [#1] SMP ARM
+PC is at cap_capable+0x14/0xb0
+LR is at emulate_ldr+0x50/0xc0
+psr: 600d0293 sp : ecd63af8  ip : 00000004  fp : c0a7c30c
+r10: 00000000  r9 : c30897f4  r8 : ecd63cd4
+r7 : 0000000f  r6 : 0000000a  r5 : e59fa090  r4 : ecd63c98
+r3 : c06ae294  r2 : 00000000  r1 : b7611300  r0 : bf4ec008
+Flags: nZCv  IRQs off  FIQs on  Mode SVC_32  ISA ARM  Segment user
+Control: 32c5387d  Table: 2d546400  DAC: 55555555
+Process bash (pid: 1643, stack limit = 0xecd60190)
+(cap_capable) from (kprobe_handler+0x218/0x340)
+(kprobe_handler) from (kprobe_trap_handler+0x24/0x48)
+(kprobe_trap_handler) from (do_undefinstr+0x13c/0x364)
+(do_undefinstr) from (__und_svc_finish+0x0/0x30)
+(__und_svc_finish) from (cap_capable+0x18/0xb0)
+(cap_capable) from (cap_vm_enough_memory+0x38/0x48)
+(cap_vm_enough_memory) from
+(security_vm_enough_memory_mm+0x48/0x6c)
+(security_vm_enough_memory_mm) from
+(copy_process.constprop.5+0x16b4/0x25c8)
+(copy_process.constprop.5) from (_do_fork+0xe8/0x55c)
+(_do_fork) from (SyS_clone+0x1c/0x24)
+(SyS_clone) from (__sys_trace_return+0x0/0x10)
+Code: 0050a0e1 6c0080e2 0140a0e1 0260a0e1 (f801f0e7)
 
-Fix kasan_init_region() by using block_size() function that is in
-book3s32/mmu.c. To be able to reuse it here, make it non static and
-change its name to bat_block_size() in order to avoid name conflict
-with block_size() defined in <linux/blkdev.h>
-
-Also reuse find_free_bat() to avoid an error message from setbat()
-when no BAT is available.
-
-And allocate memory outside of linear memory mapping to avoid
-wasting that precious space.
-
-With this change we get correct alignment for BATs and KASAN shadow
-memory is allocated outside the linear memory space.
-
-	---[ Data Block Address Translation ]---
-	0: 0xc0000000-0xcfffffff 0x00000000       256M Kernel rw
-	1: 0xd0000000-0xdfffffff 0x10000000       256M Kernel rw
-	2: 0xe0000000-0xefffffff 0x20000000       256M Kernel rw
-	3: 0xf8000000-0xfbffffff 0x7c000000        64M Kernel rw
-	4: 0xfc000000-0xfdffffff 0x7a000000        32M Kernel rw
-
-Fixes: 7974c4732642 ("powerpc/32s: Implement dedicated kasan_init_region()")
-Cc: stable@vger.kernel.org
-Reported-by: Maxime Bizon <mbizon@freebox.fr>
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Tested-by: Maxime Bizon <mbizon@freebox.fr>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/7a50ef902494d1325227d47d33dada01e52e5518.1641818726.git.christophe.leroy@csgroup.eu
+Fixes: 35aa1df43283 ("ARM kprobes: instruction single-stepping support")
+Fixes: 421015713b30 ("ARM: 9017/2: Enable KASan for ARM")
+Signed-off-by: huangshaobo <huangshaobo6@huawei.com>
+Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/include/asm/book3s/32/mmu-hash.h |    2 
- arch/powerpc/mm/book3s32/mmu.c                |   10 ++--
- arch/powerpc/mm/kasan/book3s_32.c             |   57 +++++++++++++-------------
- 3 files changed, 37 insertions(+), 32 deletions(-)
+ arch/arm/probes/kprobes/Makefile |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/arch/powerpc/include/asm/book3s/32/mmu-hash.h
-+++ b/arch/powerpc/include/asm/book3s/32/mmu-hash.h
-@@ -143,6 +143,8 @@ static __always_inline void update_user_
- 	update_user_segment(15, val);
- }
- 
-+int __init find_free_bat(void);
-+unsigned int bat_block_size(unsigned long base, unsigned long top);
- #endif /* !__ASSEMBLY__ */
- 
- /* We happily ignore the smaller BATs on 601, we don't actually use
---- a/arch/powerpc/mm/book3s32/mmu.c
-+++ b/arch/powerpc/mm/book3s32/mmu.c
-@@ -76,7 +76,7 @@ unsigned long p_block_mapped(phys_addr_t
- 	return 0;
- }
- 
--static int find_free_bat(void)
-+int __init find_free_bat(void)
- {
- 	int b;
- 	int n = mmu_has_feature(MMU_FTR_USE_HIGH_BATS) ? 8 : 4;
-@@ -100,7 +100,7 @@ static int find_free_bat(void)
-  * - block size has to be a power of two. This is calculated by finding the
-  *   highest bit set to 1.
-  */
--static unsigned int block_size(unsigned long base, unsigned long top)
-+unsigned int bat_block_size(unsigned long base, unsigned long top)
- {
- 	unsigned int max_size = SZ_256M;
- 	unsigned int base_shift = (ffs(base) - 1) & 31;
-@@ -145,7 +145,7 @@ static unsigned long __init __mmu_mapin_
- 	int idx;
- 
- 	while ((idx = find_free_bat()) != -1 && base != top) {
--		unsigned int size = block_size(base, top);
-+		unsigned int size = bat_block_size(base, top);
- 
- 		if (size < 128 << 10)
- 			break;
-@@ -201,12 +201,12 @@ void mmu_mark_initmem_nx(void)
- 	unsigned long size;
- 
- 	for (i = 0; i < nb - 1 && base < top;) {
--		size = block_size(base, top);
-+		size = bat_block_size(base, top);
- 		setibat(i++, PAGE_OFFSET + base, base, size, PAGE_KERNEL_TEXT);
- 		base += size;
- 	}
- 	if (base < top) {
--		size = block_size(base, top);
-+		size = bat_block_size(base, top);
- 		if ((top - base) > size) {
- 			size <<= 1;
- 			if (strict_kernel_rwx_enabled() && base + size > border)
---- a/arch/powerpc/mm/kasan/book3s_32.c
-+++ b/arch/powerpc/mm/kasan/book3s_32.c
-@@ -10,48 +10,51 @@ int __init kasan_init_region(void *start
- {
- 	unsigned long k_start = (unsigned long)kasan_mem_to_shadow(start);
- 	unsigned long k_end = (unsigned long)kasan_mem_to_shadow(start + size);
--	unsigned long k_cur = k_start;
--	int k_size = k_end - k_start;
--	int k_size_base = 1 << (ffs(k_size) - 1);
-+	unsigned long k_nobat = k_start;
-+	unsigned long k_cur;
-+	phys_addr_t phys;
- 	int ret;
--	void *block;
- 
--	block = memblock_alloc(k_size, k_size_base);
-+	while (k_nobat < k_end) {
-+		unsigned int k_size = bat_block_size(k_nobat, k_end);
-+		int idx = find_free_bat();
-+
-+		if (idx == -1)
-+			break;
-+		if (k_size < SZ_128K)
-+			break;
-+		phys = memblock_phys_alloc_range(k_size, k_size, 0,
-+						 MEMBLOCK_ALLOC_ANYWHERE);
-+		if (!phys)
-+			break;
- 
--	if (block && k_size_base >= SZ_128K && k_start == ALIGN(k_start, k_size_base)) {
--		int shift = ffs(k_size - k_size_base);
--		int k_size_more = shift ? 1 << (shift - 1) : 0;
--
--		setbat(-1, k_start, __pa(block), k_size_base, PAGE_KERNEL);
--		if (k_size_more >= SZ_128K)
--			setbat(-1, k_start + k_size_base, __pa(block) + k_size_base,
--			       k_size_more, PAGE_KERNEL);
--		if (v_block_mapped(k_start))
--			k_cur = k_start + k_size_base;
--		if (v_block_mapped(k_start + k_size_base))
--			k_cur = k_start + k_size_base + k_size_more;
--
--		update_bats();
-+		setbat(idx, k_nobat, phys, k_size, PAGE_KERNEL);
-+		k_nobat += k_size;
- 	}
-+	if (k_nobat != k_start)
-+		update_bats();
- 
--	if (!block)
--		block = memblock_alloc(k_size, PAGE_SIZE);
--	if (!block)
--		return -ENOMEM;
-+	if (k_nobat < k_end) {
-+		phys = memblock_phys_alloc_range(k_end - k_nobat, PAGE_SIZE, 0,
-+						 MEMBLOCK_ALLOC_ANYWHERE);
-+		if (!phys)
-+			return -ENOMEM;
-+	}
- 
- 	ret = kasan_init_shadow_page_tables(k_start, k_end);
- 	if (ret)
- 		return ret;
- 
--	kasan_update_early_region(k_start, k_cur, __pte(0));
-+	kasan_update_early_region(k_start, k_nobat, __pte(0));
- 
--	for (; k_cur < k_end; k_cur += PAGE_SIZE) {
-+	for (k_cur = k_nobat; k_cur < k_end; k_cur += PAGE_SIZE) {
- 		pmd_t *pmd = pmd_off_k(k_cur);
--		void *va = block + k_cur - k_start;
--		pte_t pte = pfn_pte(PHYS_PFN(__pa(va)), PAGE_KERNEL);
-+		pte_t pte = pfn_pte(PHYS_PFN(phys + k_cur - k_nobat), PAGE_KERNEL);
- 
- 		__set_pte_at(&init_mm, k_cur, pte_offset_kernel(pmd, k_cur), pte, 0);
- 	}
- 	flush_tlb_kernel_range(k_start, k_end);
-+	memset(kasan_mem_to_shadow(start), 0, k_end - k_start);
-+
- 	return 0;
- }
+--- a/arch/arm/probes/kprobes/Makefile
++++ b/arch/arm/probes/kprobes/Makefile
+@@ -1,4 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0
++KASAN_SANITIZE_actions-common.o := n
++KASAN_SANITIZE_actions-arm.o := n
++KASAN_SANITIZE_actions-thumb.o := n
+ obj-$(CONFIG_KPROBES)		+= core.o actions-common.o checkers-common.o
+ obj-$(CONFIG_ARM_KPROBES_TEST)	+= test-kprobes.o
+ test-kprobes-objs		:= test-core.o
 
 
