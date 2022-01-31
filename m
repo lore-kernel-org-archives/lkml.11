@@ -2,85 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A640AC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 18:43:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F009C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 18:45:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356944AbiAaSn5 (ORCPT
+        id S1357303AbiAaSpM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 13:43:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39642 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244230AbiAaSnz (ORCPT
+        Mon, 31 Jan 2022 13:45:12 -0500
+Received: from alexa-out.qualcomm.com ([129.46.98.28]:41657 "EHLO
+        alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355479AbiAaSpK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 13:43:55 -0500
-X-Greylist: delayed 467 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 31 Jan 2022 10:43:55 PST
-Received: from mail.hahnjo.de (backus.hahnjo.de [IPv6:2a03:4000:2a:2c1::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3625C061714;
-        Mon, 31 Jan 2022 10:43:55 -0800 (PST)
-Received: from Jonas-Dell.home (unknown [IPv6:2a01:cb15:40c:c100:cf0a:528a:fee7:c993])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.hahnjo.de (Postfix) with ESMTPSA id E391D5870138;
-        Mon, 31 Jan 2022 19:36:03 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=hahnjo.de; s=default;
-        t=1643654164; bh=DnXhFAGWRC1c19WVXbcduyTvpHjO7t6osxp9bE7zzBM=;
-        h=From:To:Cc:Subject:Date;
-        b=pAchqnRzQbyD6A+ShzZNlceg6D8ZM/iB8q64fAIK31HXUD/l40ut7gDmY7lfgxAj3
-         oY4fw3oJa6pz98QgdyrxvUAaB2PBjtlaAZp4iIttE3Lv4QMGUa2/0GtDV65679hVef
-         iSGyoUFjlO385DSynUwrUhXJ/3ioDKPL662iH4CQSsLDgCBJ1YhY1GUOhmkzGs57M7
-         GLXUGWxFu+dX9FXBFydVuygrSIXq991ZhpS2XWUjaj+zWXpCV4y+ffWF8YdLCDsPcx
-         /UvLQxdLDyxnAUFJc9iV007eL++4NBBdHuBjb1k04I49XopB+f/ovXHE32cY0sMZT7
-         cjUA/jMnUwYyA==
-From:   Jonas Hahnfeld <hahnjo@hahnjo.de>
-To:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
-Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
-        Jonas Hahnfeld <hahnjo@hahnjo.de>,
-        Jukka Heikintalo <heikintalo.jukka@gmail.com>,
-        =?UTF-8?q?Pawe=C5=82=20Susicki?= <pawel.susicki@gmail.com>,
-        stable@vger.kernel.org
-Subject: [PATCH] ALSA: usb-audio: Correct quirk for VF0770
-Date:   Mon, 31 Jan 2022 19:35:16 +0100
-Message-Id: <20220131183516.61191-1-hahnjo@hahnjo.de>
-X-Mailer: git-send-email 2.35.1
+        Mon, 31 Jan 2022 13:45:10 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1643654710; x=1675190710;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=j5y1snEaO6AOruLnHqQPXIrcC16jxOnZMbLx94IskSc=;
+  b=hP/tLzWr5RXVH6YirkAnzswK1nFl0JPnHLgiQqOLUEc92W79fdmlGRns
+   S6lf7vkEd264n/SLj76KaT3/2dXV4WkPMmeRBOndxHoo62FZo+l5l893k
+   qfqKLWL/R5OsaawK7/1k0qLKolyUAOolYdmvIzM6k5y1htj/Cejlo2iuD
+   Q=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 31 Jan 2022 10:45:10 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 10:45:10 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Mon, 31 Jan 2022 10:44:49 -0800
+Received: from [10.110.97.226] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Mon, 31 Jan
+ 2022 10:44:48 -0800
+Message-ID: <ee4a8076-4db3-ae77-b837-3b14c37a7e6a@quicinc.com>
+Date:   Mon, 31 Jan 2022 10:44:47 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 2/4] input: misc: pm8941-pwrkey: add support for PON
+ GEN3 base addresses
+Content-Language: en-US
+To:     Stephen Boyd <swboyd@chromium.org>, <dmitry.torokhov@gmail.com>
+CC:     <linux-input@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <collinsd@codeaurora.org>,
+        <bjorn.andersson@linaro.org>, <skakit@codeaurora.org>
+References: <20220127210024.25597-1-quic_amelende@quicinc.com>
+ <20220127210024.25597-3-quic_amelende@quicinc.com>
+ <CAE-0n50UzVw4wqpV1v-T3k2if+m6jv-Tx7+N2kD4O=J60zmuoA@mail.gmail.com>
+From:   Anjelique Melendez <quic_amelende@quicinc.com>
+In-Reply-To: <CAE-0n50UzVw4wqpV1v-T3k2if+m6jv-Tx7+N2kD4O=J60zmuoA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This device provides both audio and video. The original quirk added in
-commit 48827e1d6af5 ("ALSA: usb-audio: Add quirk for VF0770") used
-USB_DEVICE to match the vendor and product ID. Depending on module order,
-if snd-usb-audio was asked first, it would match the entire device and
-uvcvideo wouldn't get to see it. Change the matching to USB_AUDIO_DEVICE
-to restore uvcvideo matching in all cases.
 
-Fixes: 48827e1d6af5 ("ALSA: usb-audio: Add quirk for VF0770")
-Reported-by: Jukka Heikintalo <heikintalo.jukka@gmail.com>
-Tested-by: Jukka Heikintalo <heikintalo.jukka@gmail.com>
-Reported-by: Paweł Susicki <pawel.susicki@gmail.com>
-Tested-by: Paweł Susicki <pawel.susicki@gmail.com>
-Cc: <stable@vger.kernel.org> # 5.4, 5.10, 5.14, 5.15
-Signed-off-by: Jonas Hahnfeld <hahnjo@hahnjo.de>
----
- sound/usb/quirks-table.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/usb/quirks-table.h b/sound/usb/quirks-table.h
-index b1522e43173e..0ea39565e623 100644
---- a/sound/usb/quirks-table.h
-+++ b/sound/usb/quirks-table.h
-@@ -84,7 +84,7 @@
-  * combination.
-  */
- {
--	USB_DEVICE(0x041e, 0x4095),
-+	USB_AUDIO_DEVICE(0x041e, 0x4095),
- 	.driver_info = (unsigned long) &(const struct snd_usb_audio_quirk) {
- 		.ifnum = QUIRK_ANY_INTERFACE,
- 		.type = QUIRK_COMPOSITE,
--- 
-2.35.1
+On 1/27/2022 2:41 PM, Stephen Boyd wrote:
+> Quoting Anjelique Melendez (2022-01-27 13:00:25)
+>> diff --git a/drivers/input/misc/pm8941-pwrkey.c b/drivers/input/misc/pm8941-pwrkey.c
+>> index e0240db12d4f..7005aede4f81 100644
+>> --- a/drivers/input/misc/pm8941-pwrkey.c
+>> +++ b/drivers/input/misc/pm8941-pwrkey.c
+>> @@ -200,15 +207,21 @@ static int pm8941_pwrkey_probe(struct platform_device *pdev)
+>>                         dev_err(&pdev->dev, "failed to locate regmap\n");
+>>                         return -ENODEV;
+>>                 }
+>> +       }
+>>
+>> -               error = of_property_read_u32(parent->of_node,
+>> -                                            "reg", &pwrkey->baseaddr);
+>> -       } else {
+>> -               error = of_property_read_u32(pdev->dev.of_node, "reg",
+>> -                                            &pwrkey->baseaddr);
+>> +       addr = of_get_address(regmap_node, 0, NULL, NULL);
+>> +       if (!addr) {
+>> +               dev_err(&pdev->dev, "reg property missing\n");
+>> +               return -EINVAL;
+>> +       }
+>> +       pwrkey->baseaddr = be32_to_cpu(*addr);
+> Isn't this supposed to be be32_to_cpup(addr)?
+
+ah yes! Will update in v3!
+
+>
+>> +
+>> +       if (pwrkey->data->has_pon_pbs) {
+>> +               /* PON_PBS base address is optional */
+>> +               addr = of_get_address(regmap_node, 1, NULL, NULL);
+>> +               if (addr)
+>> +                       pwrkey->pon_pbs_baseaddr = be32_to_cpu(*addr);
+> Isn't this supposed to be be32_to_cpup(addr)?
+
+Ack
+
+>
+>>         }
+>> -       if (error)
+>> -               return error;
+>>
+>>         pwrkey->irq = platform_get_irq(pdev, 0);
+>>         if (pwrkey->irq < 0)
 
