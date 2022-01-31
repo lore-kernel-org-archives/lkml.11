@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2C43C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:01:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C00AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:01:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348448AbiAaLBd (ORCPT
+        id S1358791AbiAaLBg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:01:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43126 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358591AbiAaLAW (ORCPT
+        Mon, 31 Jan 2022 06:01:36 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:33094 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358610AbiAaLAZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:00:22 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6A54C0613E5;
-        Mon, 31 Jan 2022 02:59:38 -0800 (PST)
+        Mon, 31 Jan 2022 06:00:25 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 87D9060B28;
-        Mon, 31 Jan 2022 10:59:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5ED62C340F0;
-        Mon, 31 Jan 2022 10:59:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E1AF860BC0;
+        Mon, 31 Jan 2022 11:00:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDCD6C340E8;
+        Mon, 31 Jan 2022 11:00:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643626777;
-        bh=etwDj2ZJLh6nqqlIe8jncPRFjBV+R7ONKL8aFnttvpg=;
+        s=korg; t=1643626824;
+        bh=ZIeqG/4W3iMtANw1XSfN8K18a49BnpXQ6VvJzNGfFAw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A/rjBsjhhrjtElqV1Mw1jXK8vs8tgJKOFKnLkMUMM9z+R6+rIGdbz0FR2n6sL8jgN
-         ixY9iH1M8ij3pBcNaxvDeYjpRDk8sk/rPgEK7WsFtQBQb1sEJtETJjW+PeZ6PiSKpW
-         TVvedb6A7ZpjrmjhO9Tbvun09OzP/Vg43n7wDIiw=
+        b=ASoVHX3rMzBoYSfztU4k7pyIqAGJCxDf9rb49oXu5TSozp/K/zDing6f7WxbwIGqY
+         kdRhPLoTrXqVefsh+QBsCW63kuS4OugwX90TujRJl931+1uw2F9eV5QBoVtmStzr8X
+         n4jTktc3Ci1M17YFqOuH+dgaoX7biWxWB+n3L1MI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, butt3rflyh4ck <butterflyhuangxx@gmail.com>,
-        Christoph Hellwig <hch@lst.de>, Jan Kara <jack@suse.cz>
-Subject: [PATCH 5.4 04/64] udf: Restore i_lenAlloc when inode expansion fails
-Date:   Mon, 31 Jan 2022 11:55:49 +0100
-Message-Id: <20220131105215.797442396@linuxfoundation.org>
+        stable@vger.kernel.org, Marc Dionne <marc.dionne@auristor.com>,
+        David Howells <dhowells@redhat.com>,
+        linux-afs@lists.infradead.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 52/64] rxrpc: Adjust retransmission backoff
+Date:   Mon, 31 Jan 2022 11:56:37 +0100
+Message-Id: <20220131105217.437321340@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105215.644174521@linuxfoundation.org>
 References: <20220131105215.644174521@linuxfoundation.org>
@@ -49,34 +49,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: David Howells <dhowells@redhat.com>
 
-commit ea8569194b43f0f01f0a84c689388542c7254a1f upstream.
+[ Upstream commit 2c13c05c5ff4b9fc907b07f7311821910ebaaf8a ]
 
-When we fail to expand inode from inline format to a normal format, we
-restore inode to contain the original inline formatting but we forgot to
-set i_lenAlloc back. The mismatch between i_lenAlloc and i_size was then
-causing further problems such as warnings and lost data down the line.
+Improve retransmission backoff by only backing off when we retransmit data
+packets rather than when we set the lost ack timer.
 
-Reported-by: butt3rflyh4ck <butterflyhuangxx@gmail.com>
-CC: stable@vger.kernel.org
-Fixes: 7e49b6f2480c ("udf: Convert UDF to new truncate calling sequence")
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Jan Kara <jack@suse.cz>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To this end:
+
+ (1) In rxrpc_resend(), use rxrpc_get_rto_backoff() when setting the
+     retransmission timer and only tell it that we are retransmitting if we
+     actually have things to retransmit.
+
+     Note that it's possible for the retransmission algorithm to race with
+     the processing of a received ACK, so we may see no packets needing
+     retransmission.
+
+ (2) In rxrpc_send_data_packet(), don't bump the backoff when setting the
+     ack_lost_at timer, as it may then get bumped twice.
+
+With this, when looking at one particular packet, the retransmission
+intervals were seen to be 1.5ms, 2ms, 3ms, 5ms, 9ms, 17ms, 33ms, 71ms,
+136ms, 264ms, 544ms, 1.088s, 2.1s, 4.2s and 8.3s.
+
+Fixes: c410bf01933e ("rxrpc: Fix the excessive initial retransmission timeout")
+Suggested-by: Marc Dionne <marc.dionne@auristor.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+Reviewed-by: Marc Dionne <marc.dionne@auristor.com>
+Tested-by: Marc Dionne <marc.dionne@auristor.com>
+cc: linux-afs@lists.infradead.org
+Link: https://lore.kernel.org/r/164138117069.2023386.17446904856843997127.stgit@warthog.procyon.org.uk/
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/udf/inode.c |    1 +
- 1 file changed, 1 insertion(+)
+ net/rxrpc/call_event.c | 8 +++-----
+ net/rxrpc/output.c     | 2 +-
+ 2 files changed, 4 insertions(+), 6 deletions(-)
 
---- a/fs/udf/inode.c
-+++ b/fs/udf/inode.c
-@@ -318,6 +318,7 @@ int udf_expand_file_adinicb(struct inode
- 		unlock_page(page);
- 		iinfo->i_alloc_type = ICBTAG_FLAG_AD_IN_ICB;
- 		inode->i_data.a_ops = &udf_adinicb_aops;
-+		iinfo->i_lenAlloc = inode->i_size;
- 		up_write(&iinfo->i_data_sem);
+diff --git a/net/rxrpc/call_event.c b/net/rxrpc/call_event.c
+index 9ff85ee8337cd..80e15310f1b29 100644
+--- a/net/rxrpc/call_event.c
++++ b/net/rxrpc/call_event.c
+@@ -157,7 +157,7 @@ static void rxrpc_congestion_timeout(struct rxrpc_call *call)
+ static void rxrpc_resend(struct rxrpc_call *call, unsigned long now_j)
+ {
+ 	struct sk_buff *skb;
+-	unsigned long resend_at, rto_j;
++	unsigned long resend_at;
+ 	rxrpc_seq_t cursor, seq, top;
+ 	ktime_t now, max_age, oldest, ack_ts;
+ 	int ix;
+@@ -165,10 +165,8 @@ static void rxrpc_resend(struct rxrpc_call *call, unsigned long now_j)
+ 
+ 	_enter("{%d,%d}", call->tx_hard_ack, call->tx_top);
+ 
+-	rto_j = call->peer->rto_j;
+-
+ 	now = ktime_get_real();
+-	max_age = ktime_sub(now, jiffies_to_usecs(rto_j));
++	max_age = ktime_sub(now, jiffies_to_usecs(call->peer->rto_j));
+ 
+ 	spin_lock_bh(&call->lock);
+ 
+@@ -213,7 +211,7 @@ static void rxrpc_resend(struct rxrpc_call *call, unsigned long now_j)
  	}
- 	put_page(page);
+ 
+ 	resend_at = nsecs_to_jiffies(ktime_to_ns(ktime_sub(now, oldest)));
+-	resend_at += jiffies + rto_j;
++	resend_at += jiffies + rxrpc_get_rto_backoff(call->peer, retrans);
+ 	WRITE_ONCE(call->resend_at, resend_at);
+ 
+ 	if (unacked)
+diff --git a/net/rxrpc/output.c b/net/rxrpc/output.c
+index f8b632a5c6197..a4a6f8ee07201 100644
+--- a/net/rxrpc/output.c
++++ b/net/rxrpc/output.c
+@@ -426,7 +426,7 @@ done:
+ 			if (call->peer->rtt_count > 1) {
+ 				unsigned long nowj = jiffies, ack_lost_at;
+ 
+-				ack_lost_at = rxrpc_get_rto_backoff(call->peer, retrans);
++				ack_lost_at = rxrpc_get_rto_backoff(call->peer, false);
+ 				ack_lost_at += nowj;
+ 				WRITE_ONCE(call->ack_lost_at, ack_lost_at);
+ 				rxrpc_reduce_call_timer(call, ack_lost_at, nowj,
+-- 
+2.34.1
+
 
 
