@@ -2,38 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B8D4C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:04:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED155C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:04:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358989AbiAaLEK (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:04:10 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:50604 "EHLO
+        id S240153AbiAaLEN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 31 Jan 2022 06:04:13 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:50688 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358794AbiAaLCf (ORCPT
+        with ESMTP id S1358981AbiAaLCi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:02:35 -0500
+        Mon, 31 Jan 2022 06:02:38 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 65051B82A5E;
-        Mon, 31 Jan 2022 11:02:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA549C340E8;
-        Mon, 31 Jan 2022 11:02:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8F64BB82A66;
+        Mon, 31 Jan 2022 11:02:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC42EC340EE;
+        Mon, 31 Jan 2022 11:02:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643626953;
-        bh=mQi7DC2Yo64qtEoxmuPaLsxo1LFKVrA26LL9w8rrprQ=;
+        s=korg; t=1643626956;
+        bh=p9gzYhntkEFFU0kZCVkx2X3WS7L38CrCbtyOn9AY4Z0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PmKdRUuUaHG4wvzelbOEMZ3dWPK5e6f0rmIutVkkEIjtZOsZQJ7JLLjUmyzkvzoO7
-         RCzqzoaSoIVGN4IhKZm27lkxk6iJnSRMZsUC0sXR5PlU6PLPUdXRtTHj0t1N5fxg2w
-         MWfBeNrh7ybeupCeBjQIUBBPbyM3mfTrhrmcmwY8=
+        b=btusDWGH9m2g+conM9hL9mJ5ES/M1rwiP+r1kaEPNB9uhkQqz6B5xc6cT7LLyqNjT
+         0Yph1ME1jbZJ+ymaE6h8YiTf5I79XXdZY6tJwIfiWR13oFA7dmTfEFIg4hMZBDHpJq
+         FjfqZSc4b8ZxuEQnAuhZlZbZ8PKi80ElWRm7SazU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Cameron Williams <cang1@live.co.uk>
-Subject: [PATCH 5.10 027/100] tty: Add support for Brainboxes UC cards.
-Date:   Mon, 31 Jan 2022 11:55:48 +0100
-Message-Id: <20220131105221.373197521@linuxfoundation.org>
+        stable@vger.kernel.org, DocMAX <mail@vacharakis.de>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        =?UTF-8?q?Thomas=20Wei=C3=9Fschuh?= <linux@weissschuh.net>
+Subject: [PATCH 5.10 028/100] usb-storage: Add unusual-devs entry for VL817 USB-SATA bridge
+Date:   Mon, 31 Jan 2022 11:55:49 +0100
+Message-Id: <20220131105221.403298633@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
 References: <20220131105220.424085452@linuxfoundation.org>
@@ -45,139 +46,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Cameron Williams <cang1@live.co.uk>
+From: Alan Stern <stern@rowland.harvard.edu>
 
-commit 152d1afa834c84530828ee031cf07a00e0fc0b8c upstream.
+commit 5b67b315037250a61861119683e7fcb509deea25 upstream.
 
-This commit adds support for the some of the Brainboxes PCI range of
-cards, including the UC-101, UC-235/246, UC-257, UC-268, UC-275/279,
-UC-302, UC-310, UC-313, UC-320/324, UC-346, UC-357, UC-368
-and UC-420/431.
+Two people have reported (and mentioned numerous other reports on the
+web) that VIA's VL817 USB-SATA bridge does not work with the uas
+driver.  Typical log messages are:
 
-Signed-off-by: Cameron Williams <cang1@live.co.uk>
-Cc: stable <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/AM5PR0202MB2564688493F7DD9B9C610827C45E9@AM5PR0202MB2564.eurprd02.prod.outlook.com
+[ 3606.232149] sd 14:0:0:0: [sdg] tag#2 uas_zap_pending 0 uas-tag 1 inflight: CMD
+[ 3606.232154] sd 14:0:0:0: [sdg] tag#2 CDB: Write(16) 8a 00 00 00 00 00 18 0c c9 80 00 00 00 80 00 00
+[ 3606.306257] usb 4-4.4: reset SuperSpeed Plus Gen 2x1 USB device number 11 using xhci_hcd
+[ 3606.328584] scsi host14: uas_eh_device_reset_handler success
+
+Surprisingly, the devices do seem to work okay for some other people.
+The cause of the differing behaviors is not known.
+
+In the hope of getting the devices to work for the most users, even at
+the possible cost of degraded performance for some, this patch adds an
+unusual_devs entry for the VL817 to block it from binding to the uas
+driver by default.  Users will be able to override this entry by means
+of a module parameter, if they want.
+
+CC: <stable@vger.kernel.org>
+Reported-by: DocMAX <mail@vacharakis.de>
+Reported-and-tested-by: Thomas Weißschuh <linux@weissschuh.net>
+Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
+Link: https://lore.kernel.org/r/Ye8IsK2sjlEv1rqU@rowland.harvard.edu
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/8250/8250_pci.c |  100 ++++++++++++++++++++++++++++++++++++-
- 1 file changed, 98 insertions(+), 2 deletions(-)
+ drivers/usb/storage/unusual_devs.h |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -5171,8 +5171,30 @@ static const struct pci_device_id serial
- 	{	PCI_VENDOR_ID_INTASHIELD, PCI_DEVICE_ID_INTASHIELD_IS400,
- 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,    /* 135a.0dc0 */
- 		pbn_b2_4_115200 },
-+	/* Brainboxes Devices */
- 	/*
--	 * BrainBoxes UC-260
-+	* Brainboxes UC-101
-+	*/
-+	{       PCI_VENDOR_ID_INTASHIELD, 0x0BA1,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b2_2_115200 },
-+	/*
-+	 * Brainboxes UC-235/246
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x0AA1,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b2_1_115200 },
-+	/*
-+	 * Brainboxes UC-257
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x0861,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b2_2_115200 },
-+	/*
-+	 * Brainboxes UC-260/271/701/756
- 	 */
- 	{	PCI_VENDOR_ID_INTASHIELD, 0x0D21,
- 		PCI_ANY_ID, PCI_ANY_ID,
-@@ -5180,7 +5202,81 @@ static const struct pci_device_id serial
- 		pbn_b2_4_115200 },
- 	{	PCI_VENDOR_ID_INTASHIELD, 0x0E34,
- 		PCI_ANY_ID, PCI_ANY_ID,
--		 PCI_CLASS_COMMUNICATION_MULTISERIAL << 8, 0xffff00,
-+		PCI_CLASS_COMMUNICATION_MULTISERIAL << 8, 0xffff00,
-+		pbn_b2_4_115200 },
-+	/*
-+	 * Brainboxes UC-268
-+	 */
-+	{       PCI_VENDOR_ID_INTASHIELD, 0x0841,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b2_4_115200 },
-+	/*
-+	 * Brainboxes UC-275/279
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x0881,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b2_8_115200 },
-+	/*
-+	 * Brainboxes UC-302
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x08E1,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b2_2_115200 },
-+	/*
-+	 * Brainboxes UC-310
-+	 */
-+	{       PCI_VENDOR_ID_INTASHIELD, 0x08C1,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b2_2_115200 },
-+	/*
-+	 * Brainboxes UC-313
-+	 */
-+	{       PCI_VENDOR_ID_INTASHIELD, 0x08A3,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b2_2_115200 },
-+	/*
-+	 * Brainboxes UC-320/324
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x0A61,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b2_1_115200 },
-+	/*
-+	 * Brainboxes UC-346
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x0B02,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b2_4_115200 },
-+	/*
-+	 * Brainboxes UC-357
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x0A81,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b2_2_115200 },
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x0A83,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b2_2_115200 },
-+	/*
-+	 * Brainboxes UC-368
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x0C41,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b2_4_115200 },
-+	/*
-+	 * Brainboxes UC-420/431
-+	 */
-+	{       PCI_VENDOR_ID_INTASHIELD, 0x0921,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
- 		pbn_b2_4_115200 },
- 	/*
- 	 * Perle PCI-RAS cards
+--- a/drivers/usb/storage/unusual_devs.h
++++ b/drivers/usb/storage/unusual_devs.h
+@@ -2301,6 +2301,16 @@ UNUSUAL_DEV(  0x2027, 0xa001, 0x0000, 0x
+ 		USB_SC_DEVICE, USB_PR_DEVICE, usb_stor_euscsi_init,
+ 		US_FL_SCM_MULT_TARG ),
+ 
++/*
++ * Reported by DocMAX <mail@vacharakis.de>
++ * and Thomas Weißschuh <linux@weissschuh.net>
++ */
++UNUSUAL_DEV( 0x2109, 0x0715, 0x9999, 0x9999,
++		"VIA Labs, Inc.",
++		"VL817 SATA Bridge",
++		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
++		US_FL_IGNORE_UAS),
++
+ UNUSUAL_DEV( 0x2116, 0x0320, 0x0001, 0x0001,
+ 		"ST",
+ 		"2A",
 
 
