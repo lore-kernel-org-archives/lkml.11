@@ -2,112 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1E4AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:51:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0034C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:51:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377282AbiAaLv0 (ORCPT
+        id S1348029AbiAaLve (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:51:26 -0500
-Received: from mga02.intel.com ([134.134.136.20]:11337 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1377892AbiAaLdm (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:33:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643628823; x=1675164823;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=r2zU0vRwxWHr5Wrk87f5nIJZlDMOAovObT6GySVXQkE=;
-  b=L/TEpVI5BkG6uR/p3qgeKg8ejxmzYMwvpxVlyTS3CPlgcNskBJb9g5RM
-   CeyRTaqO+/uU2zGXlSDefVjVy8ZP6Sw77156n0TMeIwnA61APEkh+Qt3p
-   08Wac65qlPs7FytEIhvg5cyrGg55v+iRG5ThlrHoNhZDaG/SzUP1DBEJr
-   6c1IJYs/79eebt09fysZc9rApBqLjv/lhCFUO5uS/HHop9IZJd+w2flVn
-   t7zvPDDVOe/MUjfsGpi1Zk5AJGLkY8Ayo/kNQQcNMcRUJbpP+D495EELn
-   m79KuzoghM/2AErIOtAixfSNfqOhGRq/RBKqPlym+ru6wUrbH+9e4UCTX
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10243"; a="234832591"
-X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
-   d="scan'208";a="234832591"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 03:25:30 -0800
-X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; 
-   d="scan'208";a="629991075"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 03:25:28 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nEUnJ-00GqaD-2Z;
-        Mon, 31 Jan 2022 13:24:25 +0200
-Date:   Mon, 31 Jan 2022 13:24:24 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org
-Subject: Re: [PATCH] surface: surface3-wmi: Simplify resource management
-Message-ID: <YffG6JKmGCS1/h08@smile.fi.intel.com>
-References: <8b1a6d05036d5d9527241b2345482b369331ce5c.1643531799.git.christophe.jaillet@wanadoo.fr>
+        Mon, 31 Jan 2022 06:51:34 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:50229 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1378623AbiAaLmy (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 06:42:54 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643629373;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=tOXTBxgzYYVn2QXCw8QZ7CKKTkbQpmyv4faAp7utGos=;
+        b=eum+H/QbqYfhlRdjqS5ibpZtIdcmMuJvweyl3eOjrDinT+a+Y0RJI3G+egjTZ0C8RILoiN
+        t/Fxb1suqrlMrRfcLZ1eiHtMjR7owifmcJiutHiXFzYiRRGmrCqwfiNmONJVtGt5RpqsHv
+        V0EK4+aN8v0jt5E2Q0onng1+VWgVFaw=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-403-n2qmrTTxNcGemT-P4jGXng-1; Mon, 31 Jan 2022 06:42:51 -0500
+X-MC-Unique: n2qmrTTxNcGemT-P4jGXng-1
+Received: by mail-wm1-f70.google.com with SMTP id f7-20020a1cc907000000b0034b63f314ccso5696888wmb.6
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 03:42:51 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=tOXTBxgzYYVn2QXCw8QZ7CKKTkbQpmyv4faAp7utGos=;
+        b=X50Wu1RQK7+t+FfHxqjJqS7KQ4jIfmy2OCxEHiRZb6n45q5ewHGuTBIqEHHSG8mtUn
+         sP//xXOcwNW4tWbIWWT1SD6GNnohHHX9nw9BorZEbUG2Ywh0HEfly9Cac6vll+EPeWcz
+         EsSE+dwEicpy3onffiOgXcCtb0oRDQ1Qycdyyxtyr7Xc99Ob8NiLt6RknL5nMJPiXO7u
+         O7gDK5XXa5e9HF5a+eMA3rh0TAIBExaLNrQJkvHieiswOy+oefK5fkgFu8B2OIkiUZAl
+         LwmtCWJRxljXCx7hIeO2DXAnE80fL6Nv29EIeRaqBiA7PTOiwZFm51lVIM3M0WEUFRVN
+         06+A==
+X-Gm-Message-State: AOAM532x0PAuRTlgeD+zZezqnrR1bi0d66GEfVKxB0ubUJjtTCS8WvOj
+        0b4B7LjrNcluqf8Q164hcAzj1zHI9p074D29EsZNWHfFi5VdDJly9RkCT9sjdZxowTKFOFEo48n
+        6++reBQ1AiGVjmik4Gv6VbD8l
+X-Received: by 2002:a05:6000:42:: with SMTP id k2mr16978180wrx.79.1643629370769;
+        Mon, 31 Jan 2022 03:42:50 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwjql6TSVUvnRyPm35redu5/e4PWa1U/B9bmeapBfHVIbbP+l6wLhWfKJGgA94bnq+AKH3PpA==
+X-Received: by 2002:a05:6000:42:: with SMTP id k2mr16978162wrx.79.1643629370542;
+        Mon, 31 Jan 2022 03:42:50 -0800 (PST)
+Received: from ?IPV6:2003:cb:c709:b200:f007:5a26:32e7:8ef5? (p200300cbc709b200f0075a2632e78ef5.dip0.t-ipconnect.de. [2003:cb:c709:b200:f007:5a26:32e7:8ef5])
+        by smtp.gmail.com with ESMTPSA id k12sm11958920wrd.110.2022.01.31.03.42.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 31 Jan 2022 03:42:50 -0800 (PST)
+Message-ID: <10293d6c-c2d6-2277-0634-bdd237fc23de@redhat.com>
+Date:   Mon, 31 Jan 2022 12:42:49 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8b1a6d05036d5d9527241b2345482b369331ce5c.1643531799.git.christophe.jaillet@wanadoo.fr>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH v1 2/2] drivers/base/memory: determine and store zone for
+ single-zone memory blocks
+Content-Language: en-US
+To:     Oscar Salvador <osalvador@suse.de>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Michal Hocko <mhocko@suse.com>,
+        Rafael Parra <rparrazo@redhat.com>
+References: <20220128152620.168715-1-david@redhat.com>
+ <20220128152620.168715-3-david@redhat.com> <20220131112909.GB18027@linux>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <20220131112909.GB18027@linux>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jan 30, 2022 at 09:36:54AM +0100, Christophe JAILLET wrote:
-> 's3_wmi.input' is a managed resource, so there should be no need to free it
-> explicitly.
-> 
-> Moreover, 's3_wmi' is a global variable. 's3_wmi.input' should be NULL
-> when this error handling path is executed, because it has not been
-> assigned yet.
-> 
-> All this is puzzling. So simplify it and remove a few lines of code to have
-> it be more straightforward.
+[...] having accidentally skipped two comments.
 
 
-Seems correct cleanup / fix to me
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> 
+>> There are three scenarios to handle:
+> ...
+> ...
+> 
+>> @@ -225,6 +226,9 @@ static int memory_block_offline(struct memory_block *mem)
+>>  	unsigned long nr_vmemmap_pages = mem->nr_vmemmap_pages;
+>>  	int ret;
+>>  
+>> +	if (!mem->zone)
+>> +		return -EBUSY;
+> 
+> Should not we return -EINVAL? I mean, -EBUSY reads like this might be a
+> temporary error which might get fixed later on, but that isn't the case.
 
-> Fixes: 3dda3b3798f9 ("platform/x86: Add custom surface3 platform device for controlling LID")
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> ---
-> Compile tested only
-> ---
->  drivers/platform/surface/surface3-wmi.c | 5 +----
->  1 file changed, 1 insertion(+), 4 deletions(-)
+We should, and I could have sworn I fixed that up last-minute.
+
+>> +static struct zone *early_node_zone_for_memory_block(struct memory_block *mem,
+>> +						     int nid)
+>> +{
+>> +	const unsigned long start_pfn = section_nr_to_pfn(mem->start_section_nr);
+>> +	const unsigned long nr_pages = PAGES_PER_SECTION * sections_per_block;
+>> +	struct zone *zone, *matching_zone = NULL;
+>> +	pg_data_t *pgdat = NODE_DATA(nid);
 > 
-> diff --git a/drivers/platform/surface/surface3-wmi.c b/drivers/platform/surface/surface3-wmi.c
-> index 09ac9cfc40d8..b9a4b2d81f4b 100644
-> --- a/drivers/platform/surface/surface3-wmi.c
-> +++ b/drivers/platform/surface/surface3-wmi.c
-> @@ -190,14 +190,11 @@ static int s3_wmi_create_and_register_input(struct platform_device *pdev)
->  
->  	error = input_register_device(input);
->  	if (error)
-> -		goto out_err;
-> +		return error;
->  
->  	s3_wmi.input = input;
->  
->  	return 0;
-> - out_err:
-> -	input_free_device(s3_wmi.input);
-> -	return error;
->  }
->  
->  static int __init s3_wmi_probe(struct platform_device *pdev)
-> -- 
-> 2.32.0
+> I was about to complain because in init_memory_block() you call
+> early_node_zone_for_memory_block() with nid == NUMA_NODE_NODE, but then
+> I saw that NODE_DATA on !CONFIG_NUMA falls to contig_page_data.
+> So, I guess we cannot really reach this on CONFIG_NUMA machines with nid
+> being NUMA_NO_NODE, right? (do we want to add a check just in case?)
 > 
+>> +#ifdef CONFIG_NUMA
+>> +void memory_block_set_nid(struct memory_block *mem, int nid,
+>> +			  enum meminit_context context)
+> 
+> But we also set the zone? (Only for boot memory)
+
+Yes, it's derived from the node internally, though, and not supplied
+explicitly. Renaming it could be misleading IMHO.
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Thanks,
 
+David / dhildenb
 
