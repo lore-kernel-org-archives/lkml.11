@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BCB3C41535
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:35:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F93BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:35:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237449AbiAaLfJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:35:09 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:56280 "EHLO
+        id S1376623AbiAaLfR (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 31 Jan 2022 06:35:17 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:56242 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378073AbiAaLXj (ORCPT
+        with ESMTP id S1377970AbiAaLXg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:23:39 -0500
+        Mon, 31 Jan 2022 06:23:36 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C362B61207;
-        Mon, 31 Jan 2022 11:23:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95BA3C340E8;
-        Mon, 31 Jan 2022 11:23:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 91F3561267;
+        Mon, 31 Jan 2022 11:23:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DE6FC340E8;
+        Mon, 31 Jan 2022 11:23:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643628218;
-        bh=wOrCoH8cZQ5RYeR+TboB30xbv1JXHCedW2gBQ1rg2yk=;
+        s=korg; t=1643628215;
+        bh=GjGO6KS8Wz7i9WHvfILtYVTbWhOHZcSOqBUaV99E+jw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ij4a6dZ8ao4+TDG8XjGgKB012/4x2zTueVNTgZla/bG1+O0iM7y2YWMBCrPdwF/hN
-         GGsj65LrwDnggUKEgcax1aP/cZpw5a0+X6Z4o6kSRNCgZOgqXCjap+Q2lQYxoUOJMJ
-         phM3tQaXWoF9hoqYCrPTBFQREPalCyOoId5IyzV8=
+        b=THmomt2b3LcbF9pgPBcYr1Y7AxxwDKP7vckN8/Le7+xrKXiwtDxyXO5FnPV98PJsE
+         mFlQmdJuThUlXnz46wKV5y1y2hX4GuG1nSse4bEk9x6fFbWy8hG4l6O4x6hVmgdZ7A
+         CGRkyMBCrxyTNME9kNMijYN5KXoqQtTmp6GtAqew=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, caixf <ooppublic@163.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Sachin Sant <sachinp@linux.ibm.com>,
+        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 161/200] ipv4: fix ip option filtering for locally generated fragments
-Date:   Mon, 31 Jan 2022 11:57:04 +0100
-Message-Id: <20220131105238.972317214@linuxfoundation.org>
+Subject: [PATCH 5.16 160/200] powerpc/perf: Fix power_pmu_disable to call clear_pmi_irq_pending only if PMI is pending
+Date:   Mon, 31 Jan 2022 11:57:03 +0100
+Message-Id: <20220131105238.935259652@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
 References: <20220131105233.561926043@linuxfoundation.org>
@@ -47,109 +49,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
+From: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
 
-[ Upstream commit 27a8caa59babb96c5890569e131bc0eb6d45daee ]
+[ Upstream commit fb6433b48a178d4672cb26632454ee0b21056eaa ]
 
-During IP fragmentation we sanitize IP options. This means overwriting
-options which should not be copied with NOPs. Only the first fragment
-has the original, full options.
+Running selftest with CONFIG_PPC_IRQ_SOFT_MASK_DEBUG enabled in kernel
+triggered below warning:
 
-ip_fraglist_prepare() copies the IP header and options from previous
-fragment to the next one. Commit 19c3401a917b ("net: ipv4: place control
-buffer handling away from fragmentation iterators") moved sanitizing
-options before ip_fraglist_prepare() which means options are sanitized
-and then overwritten again with the old values.
+[  172.851380] ------------[ cut here ]------------
+[  172.851391] WARNING: CPU: 8 PID: 2901 at arch/powerpc/include/asm/hw_irq.h:246 power_pmu_disable+0x270/0x280
+[  172.851402] Modules linked in: dm_mod bonding nft_ct nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 ip_set nf_tables rfkill nfnetlink sunrpc xfs libcrc32c pseries_rng xts vmx_crypto uio_pdrv_genirq uio sch_fq_codel ip_tables ext4 mbcache jbd2 sd_mod t10_pi sg ibmvscsi ibmveth scsi_transport_srp fuse
+[  172.851442] CPU: 8 PID: 2901 Comm: lost_exception_ Not tainted 5.16.0-rc5-03218-g798527287598 #2
+[  172.851451] NIP:  c00000000013d600 LR: c00000000013d5a4 CTR: c00000000013b180
+[  172.851458] REGS: c000000017687860 TRAP: 0700   Not tainted  (5.16.0-rc5-03218-g798527287598)
+[  172.851465] MSR:  8000000000029033 <SF,EE,ME,IR,DR,RI,LE>  CR: 48004884  XER: 20040000
+[  172.851482] CFAR: c00000000013d5b4 IRQMASK: 1
+[  172.851482] GPR00: c00000000013d5a4 c000000017687b00 c000000002a10600 0000000000000004
+[  172.851482] GPR04: 0000000082004000 c0000008ba08f0a8 0000000000000000 00000008b7ed0000
+[  172.851482] GPR08: 00000000446194f6 0000000000008000 c00000000013b118 c000000000d58e68
+[  172.851482] GPR12: c00000000013d390 c00000001ec54a80 0000000000000000 0000000000000000
+[  172.851482] GPR16: 0000000000000000 0000000000000000 c000000015d5c708 c0000000025396d0
+[  172.851482] GPR20: 0000000000000000 0000000000000000 c00000000a3bbf40 0000000000000003
+[  172.851482] GPR24: 0000000000000000 c0000008ba097400 c0000000161e0d00 c00000000a3bb600
+[  172.851482] GPR28: c000000015d5c700 0000000000000001 0000000082384090 c0000008ba0020d8
+[  172.851549] NIP [c00000000013d600] power_pmu_disable+0x270/0x280
+[  172.851557] LR [c00000000013d5a4] power_pmu_disable+0x214/0x280
+[  172.851565] Call Trace:
+[  172.851568] [c000000017687b00] [c00000000013d5a4] power_pmu_disable+0x214/0x280 (unreliable)
+[  172.851579] [c000000017687b40] [c0000000003403ac] perf_pmu_disable+0x4c/0x60
+[  172.851588] [c000000017687b60] [c0000000003445e4] __perf_event_task_sched_out+0x1d4/0x660
+[  172.851596] [c000000017687c50] [c000000000d1175c] __schedule+0xbcc/0x12a0
+[  172.851602] [c000000017687d60] [c000000000d11ea8] schedule+0x78/0x140
+[  172.851608] [c000000017687d90] [c0000000001a8080] sys_sched_yield+0x20/0x40
+[  172.851615] [c000000017687db0] [c0000000000334dc] system_call_exception+0x18c/0x380
+[  172.851622] [c000000017687e10] [c00000000000c74c] system_call_common+0xec/0x268
 
-Fixing this is not enough, however, nor did the sanitization work
-prior to aforementioned commit.
+The warning indicates that MSR_EE being set(interrupt enabled) when
+there was an overflown PMC detected. This could happen in
+power_pmu_disable since it runs under interrupt soft disable
+condition ( local_irq_save ) and not with interrupts hard disabled.
+commit 2c9ac51b850d ("powerpc/perf: Fix PMU callbacks to clear
+pending PMI before resetting an overflown PMC") intended to clear
+PMI pending bit in Paca when disabling the PMU. It could happen
+that PMC gets overflown while code is in power_pmu_disable
+callback function. Hence add a check to see if PMI pending bit
+is set in Paca before clearing it via clear_pmi_pending.
 
-ip_options_fragment() (which does the sanitization) uses ipcb->opt.optlen
-for the length of the options. ipcb->opt of fragments is not populated
-(it's 0), only the head skb has the state properly built. So even when
-called at the right time ip_options_fragment() does nothing. This seems
-to date back all the way to v2.5.44 when the fast path for pre-fragmented
-skbs had been introduced. Prior to that ip_options_build() would have been
-called for every fragment (in fact ever since v2.5.44 the fragmentation
-handing in ip_options_build() has been dead code, I'll clean it up in
--next).
-
-In the original patch (see Link) caixf mentions fixing the handling
-for fragments other than the second one, but I'm not sure how _any_
-fragment could have had their options sanitized with the code
-as it stood.
-
-Tested with python (MTU on lo lowered to 1000 to force fragmentation):
-
-  import socket
-  s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-  s.setsockopt(socket.IPPROTO_IP, socket.IP_OPTIONS,
-               bytearray([7,4,5,192, 20|0x80,4,1,0]))
-  s.sendto(b'1'*2000, ('127.0.0.1', 1234))
-
-Before:
-
-IP (tos 0x0, ttl 64, id 1053, offset 0, flags [+], proto UDP (17), length 996, options (RR [bad length 4] [bad ptr 5] 192.148.4.1,,RA value 256))
-    localhost.36500 > localhost.search-agent: UDP, length 2000
-IP (tos 0x0, ttl 64, id 1053, offset 968, flags [+], proto UDP (17), length 996, options (RR [bad length 4] [bad ptr 5] 192.148.4.1,,RA value 256))
-    localhost > localhost: udp
-IP (tos 0x0, ttl 64, id 1053, offset 1936, flags [none], proto UDP (17), length 100, options (RR [bad length 4] [bad ptr 5] 192.148.4.1,,RA value 256))
-    localhost > localhost: udp
-
-After:
-
-IP (tos 0x0, ttl 96, id 42549, offset 0, flags [+], proto UDP (17), length 996, options (RR [bad length 4] [bad ptr 5] 192.148.4.1,,RA value 256))
-    localhost.51607 > localhost.search-agent: UDP, bad length 2000 > 960
-IP (tos 0x0, ttl 96, id 42549, offset 968, flags [+], proto UDP (17), length 996, options (NOP,NOP,NOP,NOP,RA value 256))
-    localhost > localhost: udp
-IP (tos 0x0, ttl 96, id 42549, offset 1936, flags [none], proto UDP (17), length 100, options (NOP,NOP,NOP,NOP,RA value 256))
-    localhost > localhost: udp
-
-RA (20 | 0x80) is now copied as expected, RR (7) is "NOPed out".
-
-Link: https://lore.kernel.org/netdev/20220107080559.122713-1-ooppublic@163.com/
-Fixes: 19c3401a917b ("net: ipv4: place control buffer handling away from fragmentation iterators")
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: caixf <ooppublic@163.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 2c9ac51b850d ("powerpc/perf: Fix PMU callbacks to clear pending PMI before resetting an overflown PMC")
+Reported-by: Sachin Sant <sachinp@linux.ibm.com>
+Signed-off-by: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+Tested-by: Sachin Sant <sachinp@linux.ibm.com>
+Reviewed-by: Nicholas Piggin <npiggin@gmail.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220122033429.25395-1-atrajeev@linux.vnet.ibm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/ip_output.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ arch/powerpc/perf/core-book3s.c | 17 ++++++++++++++---
+ 1 file changed, 14 insertions(+), 3 deletions(-)
 
-diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-index 9bca57ef8b838..ff38b46bd4b0f 100644
---- a/net/ipv4/ip_output.c
-+++ b/net/ipv4/ip_output.c
-@@ -826,15 +826,24 @@ int ip_do_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
- 		/* Everything is OK. Generate! */
- 		ip_fraglist_init(skb, iph, hlen, &iter);
+diff --git a/arch/powerpc/perf/core-book3s.c b/arch/powerpc/perf/core-book3s.c
+index bef6b1abce702..e78de70509472 100644
+--- a/arch/powerpc/perf/core-book3s.c
++++ b/arch/powerpc/perf/core-book3s.c
+@@ -1326,9 +1326,20 @@ static void power_pmu_disable(struct pmu *pmu)
+ 		 * Otherwise provide a warning if there is PMI pending, but
+ 		 * no counter is found overflown.
+ 		 */
+-		if (any_pmc_overflown(cpuhw))
+-			clear_pmi_irq_pending();
+-		else
++		if (any_pmc_overflown(cpuhw)) {
++			/*
++			 * Since power_pmu_disable runs under local_irq_save, it
++			 * could happen that code hits a PMC overflow without PMI
++			 * pending in paca. Hence only clear PMI pending if it was
++			 * set.
++			 *
++			 * If a PMI is pending, then MSR[EE] must be disabled (because
++			 * the masked PMI handler disabling EE). So it is safe to
++			 * call clear_pmi_irq_pending().
++			 */
++			if (pmi_irq_pending())
++				clear_pmi_irq_pending();
++		} else
+ 			WARN_ON(pmi_irq_pending());
  
--		if (iter.frag)
--			ip_options_fragment(iter.frag);
--
- 		for (;;) {
- 			/* Prepare header of the next frame,
- 			 * before previous one went down. */
- 			if (iter.frag) {
-+				bool first_frag = (iter.offset == 0);
-+
- 				IPCB(iter.frag)->flags = IPCB(skb)->flags;
- 				ip_fraglist_prepare(skb, &iter);
-+				if (first_frag && IPCB(skb)->opt.optlen) {
-+					/* ipcb->opt is not populated for frags
-+					 * coming from __ip_make_skb(),
-+					 * ip_options_fragment() needs optlen
-+					 */
-+					IPCB(iter.frag)->opt.optlen =
-+						IPCB(skb)->opt.optlen;
-+					ip_options_fragment(iter.frag);
-+					ip_send_check(iter.iph);
-+				}
- 			}
- 
- 			skb->tstamp = tstamp;
+ 		val = mmcra = cpuhw->mmcr.mmcra;
 -- 
 2.34.1
 
