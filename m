@@ -2,47 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F19DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:16:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70B01C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:16:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349703AbiAaLQH (ORCPT
+        id S1358725AbiAaLQL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:16:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44466 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376844AbiAaLJL (ORCPT
+        Mon, 31 Jan 2022 06:16:11 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:42812 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1376903AbiAaLJR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:09:11 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3249C0610EC;
-        Mon, 31 Jan 2022 03:05:40 -0800 (PST)
+        Mon, 31 Jan 2022 06:09:17 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C0701B82A71;
-        Mon, 31 Jan 2022 11:05:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0389BC340EF;
-        Mon, 31 Jan 2022 11:05:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 34B5061124;
+        Mon, 31 Jan 2022 11:09:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 077CDC340EF;
+        Mon, 31 Jan 2022 11:09:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627138;
-        bh=Ic9+VcG7lFp7Q3GuEkC8fKcySwrc/W83HucGFrLwprE=;
+        s=korg; t=1643627356;
+        bh=S80VFsfDMHRAWBlFU3f3ba+sIZ1ojgY8yoyvnC1ikHM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AkoOvEbGc3nRiU/0lxMFQtfFwsm875JSc092QgUM8LowuRxbnufnCyMoRiw9UyMTe
-         /4mOiHncQNzazR8PzAWqfNZkCBLmS/yRETNIYodr1lxuW7+CvvvL2qGQMFsHws9aAf
-         oIkeMg+ad03LXJ5PA1GVmo5KMuRkhKekx7LJ1s/c=
+        b=oKAszysUpw5QwfnK1DHaedP2yH+gJheq21nFAa9B9IemXQQZ8BSTWIyg2HGIFQN3t
+         osjWGk0kJ8Jy/3kr0pxxqjVbGdxQn9NtpVWUYP6xeIxsFw54mVa0uKybikQtG1XhYN
+         0YIgA8BOYqHt6js+upSiMnE/iwE2SQRrwTQu9j4c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 087/100] drm/msm/dpu: invalid parameter check in dpu_setup_dspp_pcc
-Date:   Mon, 31 Jan 2022 11:56:48 +0100
-Message-Id: <20220131105223.386734401@linuxfoundation.org>
+        Pavankumar Kondeti <quic_pkondeti@quicinc.com>
+Subject: [PATCH 5.15 056/171] usb: gadget: f_sourcesink: Fix isoc transfer for USB_SPEED_SUPER_PLUS
+Date:   Mon, 31 Jan 2022 11:55:21 +0100
+Message-Id: <20220131105231.924289567@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
-References: <20220131105220.424085452@linuxfoundation.org>
+In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
+References: <20220131105229.959216821@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,51 +46,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: José Expósito <jose.exposito89@gmail.com>
+From: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
 
-[ Upstream commit 170b22234d5495f5e0844246e23f004639ee89ba ]
+commit 904edf8aeb459697129be5fde847e2a502f41fd9 upstream.
 
-The function performs a check on the "ctx" input parameter, however, it
-is used before the check.
+Currently when gadget enumerates in super speed plus, the isoc
+endpoint request buffer size is not calculated correctly. Fix
+this by checking the gadget speed against USB_SPEED_SUPER_PLUS
+and update the request buffer size.
 
-Initialize the "base" variable after the sanity check to avoid a
-possible NULL pointer dereference.
-
-Fixes: 4259ff7ae509e ("drm/msm/dpu: add support for pcc color block in dpu driver")
-Addresses-Coverity-ID: 1493866 ("Null pointer dereference")
-Signed-off-by: José Expósito <jose.exposito89@gmail.com>
-Link: https://lore.kernel.org/r/20220109192431.135949-1-jose.exposito89@gmail.com
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 90c4d05780d4 ("usb: fix various gadgets null ptr deref on 10gbps cabling.")
+Cc: stable <stable@vger.kernel.org>
+Signed-off-by: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
+Link: https://lore.kernel.org/r/1642820602-20619-1-git-send-email-quic_pkondeti@quicinc.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dspp.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ drivers/usb/gadget/function/f_sourcesink.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dspp.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dspp.c
-index a7a24539921f3..a6efc11eba93f 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dspp.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dspp.c
-@@ -26,9 +26,16 @@ static void dpu_setup_dspp_pcc(struct dpu_hw_dspp *ctx,
- 		struct dpu_hw_pcc_cfg *cfg)
- {
+--- a/drivers/usb/gadget/function/f_sourcesink.c
++++ b/drivers/usb/gadget/function/f_sourcesink.c
+@@ -584,6 +584,7 @@ static int source_sink_start_ep(struct f
  
--	u32 base = ctx->cap->sblk->pcc.base;
-+	u32 base;
- 
--	if (!ctx || !base) {
-+	if (!ctx) {
-+		DRM_ERROR("invalid ctx %pK\n", ctx);
-+		return;
-+	}
-+
-+	base = ctx->cap->sblk->pcc.base;
-+
-+	if (!base) {
- 		DRM_ERROR("invalid ctx %pK pcc base 0x%x\n", ctx, base);
- 		return;
- 	}
--- 
-2.34.1
-
+ 	if (is_iso) {
+ 		switch (speed) {
++		case USB_SPEED_SUPER_PLUS:
+ 		case USB_SPEED_SUPER:
+ 			size = ss->isoc_maxpacket *
+ 					(ss->isoc_mult + 1) *
 
 
