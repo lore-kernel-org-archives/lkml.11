@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AE39C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1F70C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378953AbiAaL3i (ORCPT
+        id S1378897AbiAaL3a (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:29:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47176 "EHLO
+        Mon, 31 Jan 2022 06:29:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378402AbiAaLUI (ORCPT
+        with ESMTP id S1378388AbiAaLUF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:20:08 -0500
+        Mon, 31 Jan 2022 06:20:05 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F4F0C061BB9;
-        Mon, 31 Jan 2022 03:12:27 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C17E7C0610EC;
+        Mon, 31 Jan 2022 03:12:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 81BE160ED0;
-        Mon, 31 Jan 2022 11:12:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DA3AC340F1;
-        Mon, 31 Jan 2022 11:12:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 632C360E76;
+        Mon, 31 Jan 2022 11:12:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 406BAC340E8;
+        Mon, 31 Jan 2022 11:12:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627546;
-        bh=ZDIQl4UCiIE4FH1PPvz0fsGh3ZhHXhlaAKmajb3b1d4=;
+        s=korg; t=1643627540;
+        bh=fVlo420avUhmp+OSCpJHITks02oYo6ASqkbt0PYVoZo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wIhIxOZS1eRq6EbSgPlVhD0gu1jfWVhcB3xHsHdTsxBzmPwM5bJosD65ADQdfAtOt
-         fTugPnx5WbWhikN6vzPns1tKPZ6OEGQRtbRFfeXLqoCWI0dOFjcISWFCQIXgQWiirX
-         VF1sqR5MKcCeWKlLtRl976hNrSqoVJyzqal2TJ/w=
+        b=Zxo6bCvG9JsYx/K2kI9SCH5+WEbnZrNNt89mOcF3+bJBgU9A6SvMxMcn7oJSpB8+y
+         PAb0Fb/M9M9HmiVdD/Kd6yJj7r/zSBhOEyYRvmGXSRJ7nDR83OWI2XPQeeSzSVoiMc
+         QJFcEd59xKOvbxRyVv7pc8A5VtO46vyzRcMW87dU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
         Mat Martineau <mathew.j.martineau@linux.intel.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>,
-        Geliang Tang <geliang.tang@suse.com>
-Subject: [PATCH 5.15 119/171] selftests: mptcp: fix ipv6 routing setup
-Date:   Mon, 31 Jan 2022 11:56:24 +0100
-Message-Id: <20220131105234.068692157@linuxfoundation.org>
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 117/171] mptcp: fix msk traversal in mptcp_nl_cmd_set_flags()
+Date:   Mon, 31 Jan 2022 11:56:22 +0100
+Message-Id: <20220131105234.003753473@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
 References: <20220131105229.959216821@linuxfoundation.org>
@@ -54,56 +53,81 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Paolo Abeni <pabeni@redhat.com>
 
-[ Upstream commit 9846921dba4936d92f7608315b5d1e0a8ec3a538 ]
+[ Upstream commit 8e9eacad7ec7a9cbf262649ebf1fa6e6f6cc7d82 ]
 
-MPJ ipv6 selftests currently lack per link route to the server
-net. Additionally, ipv6 subflows endpoints are created without any
-interface specified. The end-result is that in ipv6 self-tests
-subflows are created all on the same link, leading to expected delays
-and sporadic self-tests failures.
+The MPTCP endpoint list is under RCU protection, guarded by the
+pernet spinlock. mptcp_nl_cmd_set_flags() traverses the list
+without acquiring the spin-lock nor under the RCU critical section.
 
-Fix the issue by adding the missing setup bits.
+This change addresses the issue performing the lookup and the endpoint
+update under the pernet spinlock.
 
-Fixes: 523514ed0a99 ("selftests: mptcp: add ADD_ADDR IPv6 test cases")
-Reported-and-tested-by: Geliang Tang <geliang.tang@suse.com>
+Fixes: 0f9f696a502e ("mptcp: add set_flags command in PM netlink")
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/net/mptcp/mptcp_join.sh | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ net/mptcp/pm_netlink.c | 37 +++++++++++++++++++++++++++----------
+ 1 file changed, 27 insertions(+), 10 deletions(-)
 
-diff --git a/tools/testing/selftests/net/mptcp/mptcp_join.sh b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-index 0c12602fa22e8..38777d1ef766f 100755
---- a/tools/testing/selftests/net/mptcp/mptcp_join.sh
-+++ b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-@@ -75,6 +75,7 @@ init()
- 
- 		# let $ns2 reach any $ns1 address from any interface
- 		ip -net "$ns2" route add default via 10.0.$i.1 dev ns2eth$i metric 10$i
-+		ip -net "$ns2" route add default via dead:beef:$i::1 dev ns2eth$i metric 10$i
- 	done
+diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
+index bba166ddacc78..7f11eb3e35137 100644
+--- a/net/mptcp/pm_netlink.c
++++ b/net/mptcp/pm_netlink.c
+@@ -469,6 +469,20 @@ __lookup_addr_by_id(struct pm_nl_pernet *pernet, unsigned int id)
+ 	return NULL;
  }
  
-@@ -1386,7 +1387,7 @@ ipv6_tests()
- 	reset
- 	ip netns exec $ns1 ./pm_nl_ctl limits 0 1
- 	ip netns exec $ns2 ./pm_nl_ctl limits 0 1
--	ip netns exec $ns2 ./pm_nl_ctl add dead:beef:3::2 flags subflow
-+	ip netns exec $ns2 ./pm_nl_ctl add dead:beef:3::2 dev ns2eth3 flags subflow
- 	run_tests $ns1 $ns2 dead:beef:1::1 0 0 0 slow
- 	chk_join_nr "single subflow IPv6" 1 1 1
++static struct mptcp_pm_addr_entry *
++__lookup_addr(struct pm_nl_pernet *pernet, const struct mptcp_addr_info *info,
++	      bool lookup_by_id)
++{
++	struct mptcp_pm_addr_entry *entry;
++
++	list_for_each_entry(entry, &pernet->local_addr_list, list) {
++		if ((!lookup_by_id && addresses_equal(&entry->addr, info, true)) ||
++		    (lookup_by_id && entry->addr.id == info->id))
++			return entry;
++	}
++	return NULL;
++}
++
+ static int
+ lookup_id_by_addr(struct pm_nl_pernet *pernet, const struct mptcp_addr_info *addr)
+ {
+@@ -1753,18 +1767,21 @@ static int mptcp_nl_cmd_set_flags(struct sk_buff *skb, struct genl_info *info)
+ 			return -EOPNOTSUPP;
+ 	}
  
-@@ -1421,7 +1422,7 @@ ipv6_tests()
- 	ip netns exec $ns1 ./pm_nl_ctl limits 0 2
- 	ip netns exec $ns1 ./pm_nl_ctl add dead:beef:2::1 flags signal
- 	ip netns exec $ns2 ./pm_nl_ctl limits 1 2
--	ip netns exec $ns2 ./pm_nl_ctl add dead:beef:3::2 flags subflow
-+	ip netns exec $ns2 ./pm_nl_ctl add dead:beef:3::2 dev ns2eth3 flags subflow
- 	run_tests $ns1 $ns2 dead:beef:1::1 0 -1 -1 slow
- 	chk_join_nr "remove subflow and signal IPv6" 2 2 2
- 	chk_add_nr 1 1
+-	list_for_each_entry(entry, &pernet->local_addr_list, list) {
+-		if ((!lookup_by_id && addresses_equal(&entry->addr, &addr.addr, true)) ||
+-		    (lookup_by_id && entry->addr.id == addr.addr.id)) {
+-			mptcp_nl_addr_backup(net, &entry->addr, bkup);
+-
+-			if (bkup)
+-				entry->flags |= MPTCP_PM_ADDR_FLAG_BACKUP;
+-			else
+-				entry->flags &= ~MPTCP_PM_ADDR_FLAG_BACKUP;
+-		}
++	spin_lock_bh(&pernet->lock);
++	entry = __lookup_addr(pernet, &addr.addr, lookup_by_id);
++	if (!entry) {
++		spin_unlock_bh(&pernet->lock);
++		return -EINVAL;
+ 	}
+ 
++	if (bkup)
++		entry->flags |= MPTCP_PM_ADDR_FLAG_BACKUP;
++	else
++		entry->flags &= ~MPTCP_PM_ADDR_FLAG_BACKUP;
++	addr = *entry;
++	spin_unlock_bh(&pernet->lock);
++
++	mptcp_nl_addr_backup(net, &addr.addr, bkup);
+ 	return 0;
+ }
+ 
 -- 
 2.34.1
 
