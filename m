@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F43FC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:05:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91FFFC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:05:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358853AbiAaLFC (ORCPT
+        id S1358893AbiAaLFF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:05:02 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:37340 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359210AbiAaLDL (ORCPT
+        Mon, 31 Jan 2022 06:05:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43292 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359078AbiAaLCx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:03:11 -0500
+        Mon, 31 Jan 2022 06:02:53 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BB44C06177E;
+        Mon, 31 Jan 2022 03:01:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 68FFE60ED2;
-        Mon, 31 Jan 2022 11:03:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C8C3C340E8;
-        Mon, 31 Jan 2022 11:03:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 470CEB82A61;
+        Mon, 31 Jan 2022 11:01:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BD24C340E8;
+        Mon, 31 Jan 2022 11:01:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643626990;
-        bh=Jz/VWJwJXNIuMiQxshtAuSrAvUEwDJp0BSUVu+W4eaE=;
+        s=korg; t=1643626871;
+        bh=cyrUHQ/bV6GZ/AT9V/xmKq9w0SJfnB1JiyEl7DchvfA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gc/KhZYAHkp6PSWSpELiRvZuAprJfAvskuS+6zsy1hZ33mlpjKI0cimmSN25RDzTr
-         850MZbNz2nZlnm64Gxc7H4RtCcdg6f5l7ya7vzG9NmoAgcKfVlkXqD0p/tVefCiwJ6
-         tJriIhH9U879rx9aqAI9E6K8WSvFfQydwj85O+vI=
+        b=Psk3tClGfUpy1N6sIQKGYILfn7TPhdspaplBXLuA2Qj/kZXQ/bgzMvR6JjQlrDjZq
+         xBGKBVcKbaJ4BoX2Mpk8Mxq/OIMjp2ZKiMqpMgHLQFfz6KtzJGLAAKxMMT7ulBJcZm
+         gKv1p+KkCE0TWO7y8KGawUroCbeoUXTWvw3RK+0s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, butt3rflyh4ck <butterflyhuangxx@gmail.com>,
-        Christoph Hellwig <hch@lst.de>, Jan Kara <jack@suse.cz>
-Subject: [PATCH 5.10 009/100] udf: Restore i_lenAlloc when inode expansion fails
-Date:   Mon, 31 Jan 2022 11:55:30 +0100
-Message-Id: <20220131105220.764168894@linuxfoundation.org>
+        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 39/64] hwmon: (lm90) Reduce maximum conversion rate for G781
+Date:   Mon, 31 Jan 2022 11:56:24 +0100
+Message-Id: <20220131105217.001644228@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
-References: <20220131105220.424085452@linuxfoundation.org>
+In-Reply-To: <20220131105215.644174521@linuxfoundation.org>
+References: <20220131105215.644174521@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,34 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Guenter Roeck <linux@roeck-us.net>
 
-commit ea8569194b43f0f01f0a84c689388542c7254a1f upstream.
+[ Upstream commit a66c5ed539277b9f2363bbace0dba88b85b36c26 ]
 
-When we fail to expand inode from inline format to a normal format, we
-restore inode to contain the original inline formatting but we forgot to
-set i_lenAlloc back. The mismatch between i_lenAlloc and i_size was then
-causing further problems such as warnings and lost data down the line.
+According to its datasheet, G781 supports a maximum conversion rate value
+of 8 (62.5 ms). However, chips labeled G781 and G780 were found to only
+support a maximum conversion rate value of 7 (125 ms). On the other side,
+chips labeled G781-1 and G784 were found to support a conversion rate value
+of 8. There is no known means to distinguish G780 from G781 or G784; all
+chips report the same manufacturer ID and chip revision.
+Setting the conversion rate register value to 8 on chips not supporting
+it causes unexpected behavior since the real conversion rate is set to 0
+(16 seconds) if a value of 8 is written into the conversion rate register.
+Limit the conversion rate register value to 7 for all G78x chips to avoid
+the problem.
 
-Reported-by: butt3rflyh4ck <butterflyhuangxx@gmail.com>
-CC: stable@vger.kernel.org
-Fixes: 7e49b6f2480c ("udf: Convert UDF to new truncate calling sequence")
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Jan Kara <jack@suse.cz>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: ae544f64cc7b ("hwmon: (lm90) Add support for GMT G781")
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/udf/inode.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/hwmon/lm90.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/udf/inode.c
-+++ b/fs/udf/inode.c
-@@ -316,6 +316,7 @@ int udf_expand_file_adinicb(struct inode
- 		unlock_page(page);
- 		iinfo->i_alloc_type = ICBTAG_FLAG_AD_IN_ICB;
- 		inode->i_data.a_ops = &udf_adinicb_aops;
-+		iinfo->i_lenAlloc = inode->i_size;
- 		up_write(&iinfo->i_data_sem);
- 	}
- 	put_page(page);
+--- a/drivers/hwmon/lm90.c
++++ b/drivers/hwmon/lm90.c
+@@ -373,7 +373,7 @@ static const struct lm90_params lm90_par
+ 		.flags = LM90_HAVE_OFFSET | LM90_HAVE_REM_LIMIT_EXT
+ 		  | LM90_HAVE_BROKEN_ALERT | LM90_HAVE_CRIT,
+ 		.alert_alarms = 0x7c,
+-		.max_convrate = 8,
++		.max_convrate = 7,
+ 	},
+ 	[lm86] = {
+ 		.flags = LM90_HAVE_OFFSET | LM90_HAVE_REM_LIMIT_EXT
 
 
