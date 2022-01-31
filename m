@@ -2,43 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C21B7C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AE39C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378863AbiAaL3Z (ORCPT
+        id S1378953AbiAaL3i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:29:25 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:35162 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378032AbiAaLTd (ORCPT
+        Mon, 31 Jan 2022 06:29:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47176 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1378402AbiAaLUI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:19:33 -0500
+        Mon, 31 Jan 2022 06:20:08 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F4F0C061BB9;
+        Mon, 31 Jan 2022 03:12:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A6FE7B82A64;
-        Mon, 31 Jan 2022 11:19:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC1FEC340E8;
-        Mon, 31 Jan 2022 11:19:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 81BE160ED0;
+        Mon, 31 Jan 2022 11:12:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DA3AC340F1;
+        Mon, 31 Jan 2022 11:12:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627971;
-        bh=wkmgY9tv0bWhmBo3+tNenMqi2h+T3VVLoWGvfFfuTjE=;
+        s=korg; t=1643627546;
+        bh=ZDIQl4UCiIE4FH1PPvz0fsGh3ZhHXhlaAKmajb3b1d4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ydonq7gDwlvTwCdsFgHNCujN67CAHf671GsMNzbIo7HLYrgMkI46MfcO5qw1bgbdo
-         yxbOLSv3vsqADHBNIiGwICfMcimbg7go6LnzLk9T78vuKG0s1Z1gYqolU7FtL7zqPp
-         rmIS9i0uCgtQEocONIhv2JXmG3gr4FLJEvZBkvpI=
+        b=wIhIxOZS1eRq6EbSgPlVhD0gu1jfWVhcB3xHsHdTsxBzmPwM5bJosD65ADQdfAtOt
+         fTugPnx5WbWhikN6vzPns1tKPZ6OEGQRtbRFfeXLqoCWI0dOFjcISWFCQIXgQWiirX
+         VF1sqR5MKcCeWKlLtRl976hNrSqoVJyzqal2TJ/w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Badhri Jagan Sridharan <badhri@google.com>
-Subject: [PATCH 5.16 083/200] usb: typec: tcpm: Do not disconnect when receiving VSAFE0V
-Date:   Mon, 31 Jan 2022 11:55:46 +0100
-Message-Id: <20220131105236.390309747@linuxfoundation.org>
+        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>,
+        Geliang Tang <geliang.tang@suse.com>
+Subject: [PATCH 5.15 119/171] selftests: mptcp: fix ipv6 routing setup
+Date:   Mon, 31 Jan 2022 11:56:24 +0100
+Message-Id: <20220131105234.068692157@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
-References: <20220131105233.561926043@linuxfoundation.org>
+In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
+References: <20220131105229.959216821@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,54 +52,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Badhri Jagan Sridharan <badhri@google.com>
+From: Paolo Abeni <pabeni@redhat.com>
 
-commit 746f96e7d6f7a276726860f696671766bfb24cf0 upstream.
+[ Upstream commit 9846921dba4936d92f7608315b5d1e0a8ec3a538 ]
 
-With some chargers, vbus might momentarily raise above VSAFE5V and fall
-back to 0V causing VSAFE0V to be triggered. This will
-will report a VBUS off event causing TCPM to transition to
-SNK_UNATTACHED state where it should be waiting in either SNK_ATTACH_WAIT
-or SNK_DEBOUNCED state. This patch makes TCPM avoid VSAFE0V events
-while in SNK_ATTACH_WAIT or SNK_DEBOUNCED state.
+MPJ ipv6 selftests currently lack per link route to the server
+net. Additionally, ipv6 subflows endpoints are created without any
+interface specified. The end-result is that in ipv6 self-tests
+subflows are created all on the same link, leading to expected delays
+and sporadic self-tests failures.
 
-Stub from the spec:
-    "4.5.2.2.4.2 Exiting from AttachWait.SNK State
-    A Sink shall transition to Unattached.SNK when the state of both
-    the CC1 and CC2 pins is SNK.Open for at least tPDDebounce.
-    A DRP shall transition to Unattached.SRC when the state of both
-    the CC1 and CC2 pins is SNK.Open for at least tPDDebounce."
+Fix the issue by adding the missing setup bits.
 
-[23.194131] CC1: 0 -> 0, CC2: 0 -> 5 [state SNK_UNATTACHED, polarity 0, connected]
-[23.201777] state change SNK_UNATTACHED -> SNK_ATTACH_WAIT [rev3 NONE_AMS]
-[23.209949] pending state change SNK_ATTACH_WAIT -> SNK_DEBOUNCED @ 170 ms [rev3 NONE_AMS]
-[23.300579] VBUS off
-[23.300668] state change SNK_ATTACH_WAIT -> SNK_UNATTACHED [rev3 NONE_AMS]
-[23.301014] VBUS VSAFE0V
-[23.301111] Start toggling
-
-Fixes: 28b43d3d746b8 ("usb: typec: tcpm: Introduce vsafe0v for vbus")
-Cc: stable@vger.kernel.org
-Acked-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Signed-off-by: Badhri Jagan Sridharan <badhri@google.com>
-Link: https://lore.kernel.org/r/20220122015520.332507-2-badhri@google.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 523514ed0a99 ("selftests: mptcp: add ADD_ADDR IPv6 test cases")
+Reported-and-tested-by: Geliang Tang <geliang.tang@suse.com>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/typec/tcpm/tcpm.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ tools/testing/selftests/net/mptcp/mptcp_join.sh | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/drivers/usb/typec/tcpm/tcpm.c
-+++ b/drivers/usb/typec/tcpm/tcpm.c
-@@ -5264,6 +5264,10 @@ static void _tcpm_pd_vbus_vsafe0v(struct
- 	case PR_SWAP_SNK_SRC_SOURCE_ON:
- 		/* Do nothing, vsafe0v is expected during transition */
- 		break;
-+	case SNK_ATTACH_WAIT:
-+	case SNK_DEBOUNCED:
-+		/*Do nothing, still waiting for VSAFE5V for connect */
-+		break;
- 	default:
- 		if (port->pwr_role == TYPEC_SINK && port->auto_vbus_discharge_enabled)
- 			tcpm_set_state(port, SNK_UNATTACHED, 0);
+diff --git a/tools/testing/selftests/net/mptcp/mptcp_join.sh b/tools/testing/selftests/net/mptcp/mptcp_join.sh
+index 0c12602fa22e8..38777d1ef766f 100755
+--- a/tools/testing/selftests/net/mptcp/mptcp_join.sh
++++ b/tools/testing/selftests/net/mptcp/mptcp_join.sh
+@@ -75,6 +75,7 @@ init()
+ 
+ 		# let $ns2 reach any $ns1 address from any interface
+ 		ip -net "$ns2" route add default via 10.0.$i.1 dev ns2eth$i metric 10$i
++		ip -net "$ns2" route add default via dead:beef:$i::1 dev ns2eth$i metric 10$i
+ 	done
+ }
+ 
+@@ -1386,7 +1387,7 @@ ipv6_tests()
+ 	reset
+ 	ip netns exec $ns1 ./pm_nl_ctl limits 0 1
+ 	ip netns exec $ns2 ./pm_nl_ctl limits 0 1
+-	ip netns exec $ns2 ./pm_nl_ctl add dead:beef:3::2 flags subflow
++	ip netns exec $ns2 ./pm_nl_ctl add dead:beef:3::2 dev ns2eth3 flags subflow
+ 	run_tests $ns1 $ns2 dead:beef:1::1 0 0 0 slow
+ 	chk_join_nr "single subflow IPv6" 1 1 1
+ 
+@@ -1421,7 +1422,7 @@ ipv6_tests()
+ 	ip netns exec $ns1 ./pm_nl_ctl limits 0 2
+ 	ip netns exec $ns1 ./pm_nl_ctl add dead:beef:2::1 flags signal
+ 	ip netns exec $ns2 ./pm_nl_ctl limits 1 2
+-	ip netns exec $ns2 ./pm_nl_ctl add dead:beef:3::2 flags subflow
++	ip netns exec $ns2 ./pm_nl_ctl add dead:beef:3::2 dev ns2eth3 flags subflow
+ 	run_tests $ns1 $ns2 dead:beef:1::1 0 -1 -1 slow
+ 	chk_join_nr "remove subflow and signal IPv6" 2 2 2
+ 	chk_add_nr 1 1
+-- 
+2.34.1
+
 
 
