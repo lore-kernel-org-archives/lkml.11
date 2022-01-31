@@ -2,182 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECFB3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 00:52:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69C51C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 01:01:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357241AbiAaAwF (ORCPT
+        id S1357270AbiAaBBd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 30 Jan 2022 19:52:05 -0500
-Received: from mga12.intel.com ([192.55.52.136]:21741 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230269AbiAaAwC (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 30 Jan 2022 19:52:02 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643590322; x=1675126322;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=LEbL7AwcMyFVN80lxroY/ruCOLS5Oay2M/N67w9nhh4=;
-  b=HdBKGDxpuk1wIVdAN53z+UQ2EUKyTDf04enQXD0yrlZ1tvlwU1KxBa0h
-   5YUVjHB9LksucpllQA39ISIftlnRohshfWpRXOvonOlky5XexLQGXVcx5
-   L7kaQBmnyhNEm+CPHpL/sSEjvIcx+zxT5NTQxf5Wg80d+g1EvWafV9ZdC
-   5ZcOS1XIu3z+akbwPyGQUPr16/IV9/zHNMdCerXDtUDUJ9FXqE5KnEMQ1
-   2PP2MUfFD0l5B0j6YSvKF6c9algSJbLlfwnRHq0EYsS40r7FTFq0Xhs7O
-   OoGcLuheaooyowDQ2v7hTbcL51ot5RTdZXZwJI4B4kpC9OSRDfmgG+QV6
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10243"; a="227356985"
-X-IronPort-AV: E=Sophos;i="5.88,329,1635231600"; 
-   d="scan'208";a="227356985"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2022 16:52:02 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,329,1635231600"; 
-   d="scan'208";a="522472652"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 30 Jan 2022 16:52:00 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nEKvH-000RBY-Nm; Mon, 31 Jan 2022 00:51:59 +0000
-Date:   Mon, 31 Jan 2022 08:51:27 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Subject: [linux-stable-rc:queue/4.9 9687/9999] wacom_sys.c:undefined
- reference to `usb_hid_driver'
-Message-ID: <202201310835.dNisxE9I-lkp@intel.com>
+        Sun, 30 Jan 2022 20:01:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52526 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230269AbiAaBB3 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Sun, 30 Jan 2022 20:01:29 -0500
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F7F7C061714;
+        Sun, 30 Jan 2022 17:01:29 -0800 (PST)
+Received: by mail-ej1-x62a.google.com with SMTP id s13so37591663ejy.3;
+        Sun, 30 Jan 2022 17:01:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Ym89J5ppYsLafTCgQLu95aNd6tvgqMgguKVHierPn/o=;
+        b=F1HXOcuPEx+vjvjYiS9jZnO+S87abpMto09OwPLdD61GB+TPrwM8pDPTRPvzQeQKIR
+         JHo/u6YABWDwYBawEZNAhW8HDOrtyHPKPLciTJK0YPI6qws5wCTFUNTNL8zRn7Dziu6T
+         dZl30ZGyOJMzdz/RQrAxFVs4wniY8ki9n6c1kkO6ZhLqf4dWEo+Wb0VM9ObMU/qk05f3
+         WmVQQRQpnM0ChT3GiDDOAXQNG5tMKR0HrBdFXpIEJCjKNhfnJNcpl10eNNdj8KObXrTt
+         RspTiy0BRKWZUnlF7zeESfIPz+08QnsyfWGWLftiiNM9QCn/jN7R1hZ1EnlLtmDkolav
+         QWvw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Ym89J5ppYsLafTCgQLu95aNd6tvgqMgguKVHierPn/o=;
+        b=NXoPD0euXXqKcTDlu20+9rKe7lnCjxmITNPDw/sw40pTh4VtsALYgevhJV0R1+Q3Z7
+         6uLdq8kyMosApb8i/K3elMZNNb8RdflK81Zf5V5fLnwvRXIcEAna+NuYqj+6Do7pxwMN
+         OEgTHcqPIooezmI1MO0ZjKu/ncDTMbyt6fJTYY0vtTgI1VsZLsK4rSgpk6mW0u/68/9C
+         G1c4ZlCxncgWkLnGlzQMB/XRDBRwlw7TTlQ0Ya3pTt6cgMh6LGRm70VgBHC/DWGYKbEg
+         xCBR5nXeYf0TyJ6f4RNQsyFnhwD8HLMS2HCBeM5vqisn5d1uGYbaRIIMnUkAgfJkPMSa
+         kD4g==
+X-Gm-Message-State: AOAM532l0XupfYyOSYwmqomwgI3JFUMt4/LfN+wnP91atAwzsyWw/+cf
+        SJcMYrk6S1uC4+I0twE6CaK3qzVboGa59Pgmz0A=
+X-Google-Smtp-Source: ABdhPJzG76M5wdheyjOk+cbnhKZ/LTUItQR589njdDqxoD/D453M6HFUTfNY6sLWTIL5D9Bq0qda/XJf19hUOWcX8/0=
+X-Received: by 2002:a17:907:8a05:: with SMTP id sc5mr14934095ejc.316.1643590887228;
+ Sun, 30 Jan 2022 17:01:27 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220128223603.2362621-1-aford173@gmail.com> <TYBPR01MB53418BE9FC9E11B901DF561DD8259@TYBPR01MB5341.jpnprd01.prod.outlook.com>
+In-Reply-To: <TYBPR01MB53418BE9FC9E11B901DF561DD8259@TYBPR01MB5341.jpnprd01.prod.outlook.com>
+From:   Adam Ford <aford173@gmail.com>
+Date:   Sun, 30 Jan 2022 19:01:16 -0600
+Message-ID: <CAHCN7xJ491qfvkZCY6iSSXFNXbFdKnN6RUhb5df2x3P8oeQ0qQ@mail.gmail.com>
+Subject: Re: [PATCH] usb: gadget: udc: renesas_usb3: Fix host to USB_ROLE_NONE transition
+To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc:     "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>,
+        "cstevens@beaconembedded.com" <cstevens@beaconembedded.com>,
+        "aford@beaconembedded.com" <aford@beaconembedded.com>,
+        Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Biju Das <biju.das@bp.renesas.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git queue/4.9
-head:   7ef5087ab3f5ed886dded42cff14ec6a40040a05
-commit: 1309eb2ef1001c4cc7e07b867ad9576d2cfeab47 [9687/9999] HID: wacom: fix problems when device is not a valid USB device
-config: ia64-randconfig-r035-20220131 (https://download.01.org/0day-ci/archive/20220131/202201310835.dNisxE9I-lkp@intel.com/config)
-compiler: ia64-linux-gcc (GCC) 7.5.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/commit/?id=1309eb2ef1001c4cc7e07b867ad9576d2cfeab47
-        git remote add linux-stable-rc https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-        git fetch --no-tags linux-stable-rc queue/4.9
-        git checkout 1309eb2ef1001c4cc7e07b867ad9576d2cfeab47
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-7.5.0 make.cross O=build_dir ARCH=ia64 SHELL=/bin/bash
+On Sun, Jan 30, 2022 at 6:23 PM Yoshihiro Shimoda
+<yoshihiro.shimoda.uh@renesas.com> wrote:
+>
+> Hi Adam-san,
+>
+> Thank you for the patch!
+>
+> > From: Adam Ford, Sent: Saturday, January 29, 2022 7:36 AM
+> >
+> > The support the external role switch a variety of situations were
+> > addressed, but the transition from USB_ROLE_HOST to USB_ROLE_NONE
+> > leaves the host up which can cause some error messages when
+> > switching from host to none, to gadget, to none, and then back
+> > to host again.
+>
+> I think so. An external role switch in this driver is possible to
+> enter the role to USB_ROLE_NONE. (Just a record for me: in other words,
+> the "internal" role switch didn't enter the role to USB_ROLE_NONE.)
+>
+> >  xhci-hcd ee000000.usb: Abort failed to stop command ring: -110
+> >  xhci-hcd ee000000.usb: xHCI host controller not responding, assume dead
+> >  xhci-hcd ee000000.usb: HC died; cleaning up
+> >  usb 4-1: device not accepting address 6, error -108
+> >  usb usb4-port1: couldn't allocate usb_device
+> >
+> > After this happens it will not act as a host again.
+> > Fix this by releasing the host mode when transitioning to USB_ROLE_NONE.
+> >
+> > Fixes: 0604160d8c0b ("usb: gadget: udc: renesas_usb3: Enhance role switch support")
+> > Signed-off-by: Adam Ford <aford173@gmail.com>
+> >
+> > diff --git a/drivers/usb/gadget/udc/renesas_usb3.c b/drivers/usb/gadget/udc/renesas_usb3.c
+> > index 57d417a7c3e0..601829a6b4ba 100644
+> > --- a/drivers/usb/gadget/udc/renesas_usb3.c
+> > +++ b/drivers/usb/gadget/udc/renesas_usb3.c
+> > @@ -2378,6 +2378,8 @@ static void handle_ext_role_switch_states(struct device *dev,
+> >       switch (role) {
+> >       case USB_ROLE_NONE:
+> >               usb3->connection_state = USB_ROLE_NONE;
+> > +             if (cur_role == USB_ROLE_HOST)
+> > +                     device_release_driver(host);
+>
+> The handle_ext_role_switch_states() with role = USB_ROLE_NONE seems
+> to be called multiple times. So, we have to avoid multiple calling of
+> device_release_driver() somehow.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+From what I can tell, it appears that device_release_driver ultimately
+calls __device_release_driver which checks for a NULL, and during the
+release sets it to NULL, so subsequent releases should just get
+ignored.  Maybe I am missing something.
 
-All errors (new ones prefixed by >>):
-
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `_raw_spin_unlock' at 0x5035b2 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `_raw_spin_unlock_irqrestore' at 0x503ce2 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `_raw_spin_unlock_irqrestore' at 0x503d82 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `_raw_spin_unlock_irqrestore' at 0x503e32 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `_raw_spin_unlock_irqrestore' at 0x503ec2 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `_raw_spin_unlock_irqrestore' at 0x503f62 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `_raw_spin_unlock_irqrestore' at 0x504462 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `mutex_unlock' at 0x5047c2 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `mutex_unlock' at 0x504802 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `_raw_spin_lock_irqsave' at 0x505aa2 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `_raw_spin_unlock_irqrestore' at 0x505b72 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `udelay' at 0x507712 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `udelay' at 0x507782 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `udelay' at 0x507842 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `.text.unlikely' at 0x508bb2 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `udelay' at 0x50a2a2 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `.text.unlikely' at 0x50c572 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `_raw_spin_lock_irqsave' at 0x50d832 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `_raw_spin_unlock_irqrestore' at 0x50d992 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `_raw_spin_unlock_irqrestore' at 0x50e552 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `_raw_spin_unlock_irqrestore' at 0x50e622 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `_raw_spin_unlock_irqrestore' at 0x50e692 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `__irq_domain_add' at 0x50ec12 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `udelay' at 0x510412 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `udelay' at 0x5109f2 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `udelay' at 0x5120b2 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `_raw_spin_unlock' at 0x51a1c2 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `mutex_unlock' at 0x522002 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `mutex_unlock' at 0x5233c2 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `mutex_unlock' at 0x523562 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `_raw_spin_unlock_irqrestore' at 0x525742 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `udelay' at 0x52bc52 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `_raw_spin_unlock_irqrestore' at 0x5333a2 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `udelay' at 0x5396b2 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `mutex_lock' at 0x542f32 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `mutex_lock' at 0x550c52 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `mutex_unlock' at 0x550fb2 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `mutex_unlock' at 0x553302 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `mutex_lock' at 0x553622 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `mutex_lock' at 0x553752 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `udelay' at 0x55bb82 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `udelay' at 0x55bcc2 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `_raw_spin_unlock' at 0x55fe72 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `_raw_spin_unlock' at 0x560132 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `ww_mutex_unlock' at 0x560152 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `udelay' at 0x564a82 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `udelay' at 0x564ad2 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `udelay' at 0x564bd2 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `mutex_lock' at 0x565362 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `udelay' at 0x56cba2 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `udelay' at 0x56fb92 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `udelay' at 0x577422 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `memcpy_fromio' at 0x57c522 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `memcpy_toio' at 0x57c5f2 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `memset_io' at 0x57c6a2 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `udelay' at 0x584ed2 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `ww_mutex_unlock' at 0x590922 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `__mutex_init' at 0x590ad2 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `mutex_destroy' at 0x590d52 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `memcpy_toio' at 0x591042 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `udelay' at 0x596192 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `mutex_lock' at 0x5981f2 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `mutex_lock' at 0x598f22 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `mutex_lock' at 0x5993d2 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `_raw_spin_unlock' at 0x59a692 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `_raw_spin_unlock' at 0x59a812 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `mutex_lock' at 0x59b542 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `vmalloc_to_page' at 0x5a0042 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `kfree' at 0x5a09a2 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `kfree' at 0x5a0d92 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `_raw_spin_unlock' at 0x5a1212 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `__wake_up' at 0x5a13e2 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `queue_delayed_work_on' at 0x5a1a52 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `_raw_spin_unlock' at 0x5a1a62 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `__wake_up' at 0x5a1ba2 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `init_wait_entry' at 0x5a1d62 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `finish_wait' at 0x5a1e82 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `__wake_up' at 0x5a1f82 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `__wake_up' at 0x5a1fe2 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `finish_wait' at 0x5a2042 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `__wake_up' at 0x5a21a2 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `__wake_up' at 0x5a2252 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `__wake_up' at 0x5a2322 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `finish_wait' at 0x5a2762 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `_raw_spin_lock' at 0x5a2982 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `_raw_spin_lock' at 0x5a2b52 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `__init_waitqueue_head' at 0x5a3152 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `kmem_cache_free' at 0x5a3682 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `kmem_cache_create' at 0x5a36f2 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `kmem_cache_alloc' at 0x5a4ba2 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `kfree' at 0x5a6242 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `kfree' at 0x5a7442 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `kfree' at 0x5a7492 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `kfree' at 0x5a7512 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `kfree' at 0x5a75d2 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `kfree' at 0x5a7762 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `kfree' at 0x5a78d2 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `kfree' at 0x5a9552 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   ia64-linux-ld: drivers/built-in.o: Can't relax br (PCREL21B) to `kfree' at 0x5a9562 in section `.text' with size 0x15b1f80 (> 0x1000000).
-   drivers/built-in.o: In function `wacom_probe':
->> wacom_sys.c:(.text+0x14b0171): undefined reference to `usb_hid_driver'
-   wacom_sys.c:(.text+0x14b01b0): undefined reference to `usb_hid_driver'
-   ia64-linux-ld: final link failed: Symbol needs debug section which does not exist
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+adam
+>
+> Best regards,
+> Yoshihiro Shimoda
+>
+> >               if (usb3->driver)
+> >                       usb3_disconnect(usb3);
+> >               usb3_vbus_out(usb3, false);
+> > --
+> > 2.32.0
+>
