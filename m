@@ -2,122 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62723C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:27:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC503C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:27:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376275AbiAaL1T (ORCPT
+        id S1351085AbiAaL1W (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:27:19 -0500
-Received: from frasgout.his.huawei.com ([185.176.79.56]:4559 "EHLO
-        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377699AbiAaLSv (ORCPT
+        Mon, 31 Jan 2022 06:27:22 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:51520 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377708AbiAaLSv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 31 Jan 2022 06:18:51 -0500
-Received: from fraeml705-chm.china.huawei.com (unknown [172.18.147.201])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JnQXm0rh8z67xg8;
-        Mon, 31 Jan 2022 19:18:16 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml705-chm.china.huawei.com (10.206.15.54) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.21; Mon, 31 Jan 2022 12:18:46 +0100
-Received: from localhost.localdomain (10.69.192.58) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 31 Jan 2022 11:18:44 +0000
-From:   John Garry <john.garry@huawei.com>
-To:     <jejb@linux.ibm.com>, <martin.petersen@oracle.com>
-CC:     <linux-scsi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linuxarm@huawei.com>, John Garry <john.garry@huawei.com>
-Subject: [PATCH] scsi: hisi_sas: Fix setting of hisi_sas_slot.is_internal
-Date:   Mon, 31 Jan 2022 19:13:27 +0800
-Message-ID: <1643627607-138785-1-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2798161211;
+        Mon, 31 Jan 2022 11:18:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7BD0C340E8;
+        Mon, 31 Jan 2022 11:18:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643627930;
+        bh=l1Ga+Zv3tLzCDn2dJaBGjNH7XSZJP/IT0+6HE+P2RHQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=w+gDgvNUxOlymne0SkA17uTIa4j9M2BKBTBkAm48lYH5TmviODL/b7ZZ/EIFSJl4L
+         4g9UAENDKIqdIJKYd98jk3uWEQvTPJDLiZG2+eA7zFlqPtvkCAr8siN99Bq4x/qGyA
+         xqqQZHyv5j4mSohbKwOPtk4v+j84yQC51A/LRL5Q=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Cameron Williams <cang1@live.co.uk>
+Subject: [PATCH 5.16 071/200] tty: Add support for Brainboxes UC cards.
+Date:   Mon, 31 Jan 2022 11:55:34 +0100
+Message-Id: <20220131105235.977177580@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
+References: <20220131105233.561926043@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The hisi_sas_slot.is_internal member is not set properly for ATA commands
-which the driver sends directly. A TMF struct pointer is normally used as
-a test to set this, but it is NULL for those commands. It's not ideal, but
-pass an empty TMF struct to set that member properly.
+From: Cameron Williams <cang1@live.co.uk>
 
-Fixes: dc313f6b125b ("scsi: hisi_sas: Factor out task prep and delivery code")
-Reported-by: Xiang Chen <chenxiang66@hisilicon.com>
-Signed-off-by: John Garry <john.garry@huawei.com>
+commit 152d1afa834c84530828ee031cf07a00e0fc0b8c upstream.
+
+This commit adds support for the some of the Brainboxes PCI range of
+cards, including the UC-101, UC-235/246, UC-257, UC-268, UC-275/279,
+UC-302, UC-310, UC-313, UC-320/324, UC-346, UC-357, UC-368
+and UC-420/431.
+
+Signed-off-by: Cameron Williams <cang1@live.co.uk>
+Cc: stable <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/AM5PR0202MB2564688493F7DD9B9C610827C45E9@AM5PR0202MB2564.eurprd02.prod.outlook.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
-Please consider this change for v5.17, thanks!
+ drivers/tty/serial/8250/8250_pci.c |  100 ++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 98 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/hisi_sas/hisi_sas_main.c b/drivers/scsi/hisi_sas/hisi_sas_main.c
-index 2f53a2ee024a..ebf5ec38891b 100644
---- a/drivers/scsi/hisi_sas/hisi_sas_main.c
-+++ b/drivers/scsi/hisi_sas/hisi_sas_main.c
-@@ -400,8 +400,7 @@ void hisi_sas_task_deliver(struct hisi_hba *hisi_hba,
- 			   struct hisi_sas_slot *slot,
- 			   struct hisi_sas_dq *dq,
- 			   struct hisi_sas_device *sas_dev,
--			   struct hisi_sas_internal_abort *abort,
--			   struct hisi_sas_tmf_task *tmf)
-+			   struct hisi_sas_internal_abort *abort)
- {
- 	struct hisi_sas_cmd_hdr *cmd_hdr_base;
- 	int dlvry_queue_slot, dlvry_queue;
-@@ -427,8 +426,6 @@ void hisi_sas_task_deliver(struct hisi_hba *hisi_hba,
- 	cmd_hdr_base = hisi_hba->cmd_hdr[dlvry_queue];
- 	slot->cmd_hdr = &cmd_hdr_base[dlvry_queue_slot];
- 
--	slot->tmf = tmf;
--	slot->is_internal = tmf;
- 	task->lldd_task = slot;
- 
- 	memset(slot->cmd_hdr, 0, sizeof(struct hisi_sas_cmd_hdr));
-@@ -587,7 +584,7 @@ static int hisi_sas_task_exec(struct sas_task *task, gfp_t gfp_flags,
- 	slot->is_internal = tmf;
- 
- 	/* protect task_prep and start_delivery sequence */
--	hisi_sas_task_deliver(hisi_hba, slot, dq, sas_dev, NULL, tmf);
-+	hisi_sas_task_deliver(hisi_hba, slot, dq, sas_dev, NULL);
- 
- 	return 0;
- 
-@@ -1380,12 +1377,13 @@ static int hisi_sas_softreset_ata_disk(struct domain_device *device)
- 	struct hisi_hba *hisi_hba = dev_to_hisi_hba(device);
- 	struct device *dev = hisi_hba->dev;
- 	int s = sizeof(struct host_to_dev_fis);
-+	struct hisi_sas_tmf_task tmf = {};
- 
- 	ata_for_each_link(link, ap, EDGE) {
- 		int pmp = sata_srst_pmp(link);
- 
- 		hisi_sas_fill_ata_reset_cmd(link->device, 1, pmp, fis);
--		rc = hisi_sas_exec_internal_tmf_task(device, fis, s, NULL);
-+		rc = hisi_sas_exec_internal_tmf_task(device, fis, s, &tmf);
- 		if (rc != TMF_RESP_FUNC_COMPLETE)
- 			break;
- 	}
-@@ -1396,7 +1394,7 @@ static int hisi_sas_softreset_ata_disk(struct domain_device *device)
- 
- 			hisi_sas_fill_ata_reset_cmd(link->device, 0, pmp, fis);
- 			rc = hisi_sas_exec_internal_tmf_task(device, fis,
--							     s, NULL);
-+							     s, &tmf);
- 			if (rc != TMF_RESP_FUNC_COMPLETE)
- 				dev_err(dev, "ata disk %016llx de-reset failed\n",
- 					SAS_ADDR(device->sas_addr));
-@@ -2067,7 +2065,7 @@ hisi_sas_internal_abort_task_exec(struct hisi_hba *hisi_hba, int device_id,
- 	slot->port = port;
- 	slot->is_internal = true;
- 
--	hisi_sas_task_deliver(hisi_hba, slot, dq, sas_dev, abort, NULL);
-+	hisi_sas_task_deliver(hisi_hba, slot, dq, sas_dev, abort);
- 
- 	return 0;
- 
--- 
-2.26.2
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -5174,8 +5174,30 @@ static const struct pci_device_id serial
+ 	{	PCI_VENDOR_ID_INTASHIELD, PCI_DEVICE_ID_INTASHIELD_IS400,
+ 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,    /* 135a.0dc0 */
+ 		pbn_b2_4_115200 },
++	/* Brainboxes Devices */
+ 	/*
+-	 * BrainBoxes UC-260
++	* Brainboxes UC-101
++	*/
++	{       PCI_VENDOR_ID_INTASHIELD, 0x0BA1,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_2_115200 },
++	/*
++	 * Brainboxes UC-235/246
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x0AA1,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_1_115200 },
++	/*
++	 * Brainboxes UC-257
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x0861,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_2_115200 },
++	/*
++	 * Brainboxes UC-260/271/701/756
+ 	 */
+ 	{	PCI_VENDOR_ID_INTASHIELD, 0x0D21,
+ 		PCI_ANY_ID, PCI_ANY_ID,
+@@ -5183,7 +5205,81 @@ static const struct pci_device_id serial
+ 		pbn_b2_4_115200 },
+ 	{	PCI_VENDOR_ID_INTASHIELD, 0x0E34,
+ 		PCI_ANY_ID, PCI_ANY_ID,
+-		 PCI_CLASS_COMMUNICATION_MULTISERIAL << 8, 0xffff00,
++		PCI_CLASS_COMMUNICATION_MULTISERIAL << 8, 0xffff00,
++		pbn_b2_4_115200 },
++	/*
++	 * Brainboxes UC-268
++	 */
++	{       PCI_VENDOR_ID_INTASHIELD, 0x0841,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_4_115200 },
++	/*
++	 * Brainboxes UC-275/279
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x0881,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_8_115200 },
++	/*
++	 * Brainboxes UC-302
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x08E1,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_2_115200 },
++	/*
++	 * Brainboxes UC-310
++	 */
++	{       PCI_VENDOR_ID_INTASHIELD, 0x08C1,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_2_115200 },
++	/*
++	 * Brainboxes UC-313
++	 */
++	{       PCI_VENDOR_ID_INTASHIELD, 0x08A3,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_2_115200 },
++	/*
++	 * Brainboxes UC-320/324
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x0A61,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_1_115200 },
++	/*
++	 * Brainboxes UC-346
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x0B02,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_4_115200 },
++	/*
++	 * Brainboxes UC-357
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x0A81,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_2_115200 },
++	{	PCI_VENDOR_ID_INTASHIELD, 0x0A83,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_2_115200 },
++	/*
++	 * Brainboxes UC-368
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x0C41,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_4_115200 },
++	/*
++	 * Brainboxes UC-420/431
++	 */
++	{       PCI_VENDOR_ID_INTASHIELD, 0x0921,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
+ 		pbn_b2_4_115200 },
+ 	/*
+ 	 * Perle PCI-RAS cards
+
 
