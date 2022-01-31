@@ -2,48 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB3FEC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA448C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 11:31:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379113AbiAaL3s (ORCPT
+        id S1379059AbiAaL3p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 06:29:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47324 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378547AbiAaLUV (ORCPT
+        Mon, 31 Jan 2022 06:29:45 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:52318 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1378525AbiAaLUS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 06:20:21 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB5FCC0604D3;
-        Mon, 31 Jan 2022 03:12:38 -0800 (PST)
+        Mon, 31 Jan 2022 06:20:18 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7A5E0B82A61;
-        Mon, 31 Jan 2022 11:12:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 978B3C340E8;
-        Mon, 31 Jan 2022 11:12:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1433561120;
+        Mon, 31 Jan 2022 11:20:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE823C340E8;
+        Mon, 31 Jan 2022 11:20:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643627556;
-        bh=fSaPjkaBX8uP1JANbpgChwr8VuMwKXYx2urdUv8ufbs=;
+        s=korg; t=1643628017;
+        bh=WIkSwz0/m7xluTgNQRpv2pohUX/lU1/FJ1P7c5Vh3ho=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UPHwvoXw0950FT4lIud/n9O80v7lfH3+cDFDp3qevCzpcNjlqeWuhFjdM6TszQj2X
-         2bhf927yxc3ID/NXjhNkmRjRDJfrJSVtu47yyMJ9Pq/HDDY/Z6ixS6kurTmUUfTlQF
-         TKy6zzFM3K1H+pz3p8NKnjKUHV/ON+q5HzrLM2bc=
+        b=oYUVWyLFj5GZFISih5dlRLCZ/IychKGRVV4Qm9PG80g4CIvs/vYAJ5E41Inl4AC5q
+         qVvFrYUdgwRg0qOZsgUYfggftPay4zJyyGr4o0MTvZDfilLKVv2UDR12Ms9lF2ulM2
+         kNaA8VfLoD8PZ/CBzFhZfaNV8aNRfiyhNPMHOnXE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Geetha sowjanya <gakula@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 122/171] octeontx2-af: Retry until RVU block reset complete
-Date:   Mon, 31 Jan 2022 11:56:27 +0100
-Message-Id: <20220131105234.165213139@linuxfoundation.org>
+        stable@vger.kernel.org, Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Jochen Mades <jochen@mades.net>, Lukas Wunner <lukas@wunner.de>
+Subject: [PATCH 5.16 065/200] serial: pl011: Fix incorrect rs485 RTS polarity on set_mctrl
+Date:   Mon, 31 Jan 2022 11:55:28 +0100
+Message-Id: <20220131105235.758323366@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
-References: <20220131105229.959216821@linuxfoundation.org>
+In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
+References: <20220131105233.561926043@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,43 +46,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Geetha sowjanya <gakula@marvell.com>
+From: Jochen Mades <jochen@mades.net>
 
-[ Upstream commit 03ffbc9914bd1130fba464f0a41c01372e5fc359 ]
+commit 62f676ff7898f6c1bd26ce014564773a3dc00601 upstream.
 
-Few RVU blocks like SSO require more time for reset on some
-silicons. Hence retrying the block reset until success.
+Commit 8d479237727c ("serial: amba-pl011: add RS485 support") sought to
+keep RTS deasserted on set_mctrl if rs485 is enabled.  However it did so
+only if deasserted RTS polarity is high.  Fix it in case it's low.
 
-Fixes: c0fa2cff8822c ("octeontx2-af: Handle return value in block reset")
-Signed-off-by: Geetha sowjanya <gakula@marvell.com>
-Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 8d479237727c ("serial: amba-pl011: add RS485 support")
+Cc: stable@vger.kernel.org # v5.15+
+Cc: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Signed-off-by: Jochen Mades <jochen@mades.net>
+[lukas: copyedit commit message, add stable designation]
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Link: https://lore.kernel.org/r/85fa3323ba8c307943969b7343e23f34c3e652ba.1642909284.git.lukas@wunner.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/marvell/octeontx2/af/rvu.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/tty/serial/amba-pl011.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-index 90dc5343827f0..11ef46e72ddd9 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-@@ -520,8 +520,11 @@ static void rvu_block_reset(struct rvu *rvu, int blkaddr, u64 rst_reg)
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -1615,8 +1615,12 @@ static void pl011_set_mctrl(struct uart_
+ 	    container_of(port, struct uart_amba_port, port);
+ 	unsigned int cr;
  
- 	rvu_write64(rvu, blkaddr, rst_reg, BIT_ULL(0));
- 	err = rvu_poll_reg(rvu, blkaddr, rst_reg, BIT_ULL(63), true);
--	if (err)
--		dev_err(rvu->dev, "HW block:%d reset failed\n", blkaddr);
-+	if (err) {
-+		dev_err(rvu->dev, "HW block:%d reset timeout retrying again\n", blkaddr);
-+		while (rvu_poll_reg(rvu, blkaddr, rst_reg, BIT_ULL(63), true) == -EBUSY)
-+			;
+-	if (port->rs485.flags & SER_RS485_ENABLED)
+-		mctrl &= ~TIOCM_RTS;
++	if (port->rs485.flags & SER_RS485_ENABLED) {
++		if (port->rs485.flags & SER_RS485_RTS_AFTER_SEND)
++			mctrl &= ~TIOCM_RTS;
++		else
++			mctrl |= TIOCM_RTS;
 +	}
- }
  
- static void rvu_reset_all_blocks(struct rvu *rvu)
--- 
-2.34.1
-
+ 	cr = pl011_read(uap, REG_CR);
+ 
 
 
