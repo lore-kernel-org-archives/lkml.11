@@ -2,114 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E9FAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 13:10:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E18BCC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 13:15:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238576AbiBANKT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 08:10:19 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:54966 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238636AbiBANJ4 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 08:09:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643720995;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=6m/oOMAeql9tfpB3KRE+NG5uI7PXHCqGYzT2XNpmPYw=;
-        b=OZt0C08KO4qWEolKrxOOy/D9qcCvOHdSI7S/w76XYBeZhLu2S7p4XIli1rbBqsOgMSjVPZ
-        fYNcgGpyoCCt5u2jQJeIyYpU1sUeppQnuPQ1R2yT0bAeVbfM7YpZqVpL7GPfogeFy0NXAQ
-        zdjZ9drrNTdLWgdqQA0CRQ+GwctXFnU=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-544-BHeNKujnNq6vC_kNUSxtZA-1; Tue, 01 Feb 2022 08:08:48 -0500
-X-MC-Unique: BHeNKujnNq6vC_kNUSxtZA-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BDAE91091DA0;
-        Tue,  1 Feb 2022 13:08:45 +0000 (UTC)
-Received: from shalem.redhat.com (unknown [10.39.194.196])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 595CB795B1;
-        Tue,  1 Feb 2022 13:08:42 +0000 (UTC)
-From:   Hans de Goede <hdegoede@redhat.com>
-To:     "Rafael J . Wysocki" <rafael@kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Mark Gross <markgross@kernel.org>,
-        Andy Shevchenko <andy@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Ard Biesheuvel <ardb@kernel.org>
-Cc:     Hans de Goede <hdegoede@redhat.com>, Len Brown <lenb@kernel.org>,
-        linux-acpi@vger.kernel.org, Yauhen Kharuzhy <jekhor@gmail.com>,
-        Tsuchiya Yuto <kitakar@gmail.com>,
-        Fabio Aiuto <fabioaiuto83@gmail.com>,
-        platform-driver-x86@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-efi@vger.kernel.org
-Subject: [PATCH v5 18/20] extcon: intel-cht-wc: Refactor cht_wc_extcon_get_charger()
-Date:   Tue,  1 Feb 2022 14:07:04 +0100
-Message-Id: <20220201130706.46685-19-hdegoede@redhat.com>
-In-Reply-To: <20220201130706.46685-1-hdegoede@redhat.com>
-References: <20220201130706.46685-1-hdegoede@redhat.com>
+        id S238325AbiBANPu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 08:15:50 -0500
+Received: from mga04.intel.com ([192.55.52.120]:13888 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235274AbiBANPt (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 1 Feb 2022 08:15:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643721349; x=1675257349;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=YIrB/RjwUQuB/lErIj+v5pUNuBA3zxVy4nUv15hlRCw=;
+  b=WwpV396CBUz1S6JyfJvAXMEGOxg2VunsQPW+xa3PdTq3xWRJDrM1Rs2v
+   9Pc0LSjRLYwuX1tE0W7+jJiNexkT+jG09aV7oHU0xJBrm1nj9ETgYB0ne
+   7r1XJ5YxoaU77xt+6d6Gcfbkw9JdV3/umpX10UFuizOwcsGMPrr6Fn3EE
+   2riXB1H7Xl2CZJVLe6hhvg9hEXOurew7WGAty0S+a4MmglKY2FTrtKT/z
+   M8/nuPt18opwsZeuLVFSayzbCUllXWoAAZoVuOzPmNpM1sf7cW+JGba4t
+   Ulidq31QegskfuQqEUABQ77EhMWXEDzUWAn7h5zAjsbwqPzbZL76kP6mc
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10244"; a="246519414"
+X-IronPort-AV: E=Sophos;i="5.88,333,1635231600"; 
+   d="scan'208";a="246519414"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2022 05:15:43 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,333,1635231600"; 
+   d="scan'208";a="630392461"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 01 Feb 2022 05:15:41 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nEt0W-000TIk-EP; Tue, 01 Feb 2022 13:15:40 +0000
+Date:   Tue, 1 Feb 2022 21:15:15 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Quentin Perret <qperret@google.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@gnuweeb.org>,
+        linux-kernel@vger.kernel.org,
+        Saravana Kannan <saravanak@google.com>
+Subject: [ammarfaizi2-block:google/android/kernel/common/android-4.19-stable
+ 201/9999] kernel/sched/stubs.c:8:5: warning: no previous prototype for
+ function 'sched_isolate_cpu'
+Message-ID: <202202012133.0supCHiV-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is a preparation patch for adding support for registering
-a power_supply class device.
+tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android-4.19-stable
+head:   b45c5eeda8dea785e3d411380b486a209768f6b2
+commit: eead51495c8760858c32d9ad0332ffc94397aa82 [201/9999] ANDROID: GKI: sched: stub sched_isolate symbols
+config: x86_64-randconfig-r026-20220131 (https://download.01.org/0day-ci/archive/20220201/202202012133.0supCHiV-lkp@intel.com/config)
+compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 6b1e844b69f15bb7dffaf9365cd2b355d2eb7579)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/eead51495c8760858c32d9ad0332ffc94397aa82
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android-4.19-stable
+        git checkout eead51495c8760858c32d9ad0332ffc94397aa82
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/nvmem/ kernel/sched/
 
-Setting usbsrc to "CHT_WC_USBSRC_TYPE_SDP << CHT_WC_USBSRC_TYPE_SHIFT"
-will make the following switch-case return EXTCON_CHG_USB_SDP
-just as before, so there is no functional change.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Acked-by: Chanwoo Choi <cw00.choi@samsung.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+All warnings (new ones prefixed by >>):
+
+>> kernel/sched/stubs.c:8:5: warning: no previous prototype for function 'sched_isolate_cpu' [-Wmissing-prototypes]
+   int sched_isolate_cpu(int cpu)
+       ^
+   kernel/sched/stubs.c:8:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   int sched_isolate_cpu(int cpu)
+   ^
+   static 
+>> kernel/sched/stubs.c:14:5: warning: no previous prototype for function 'sched_unisolate_cpu_unlocked' [-Wmissing-prototypes]
+   int sched_unisolate_cpu_unlocked(int cpu)
+       ^
+   kernel/sched/stubs.c:14:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   int sched_unisolate_cpu_unlocked(int cpu)
+   ^
+   static 
+>> kernel/sched/stubs.c:20:5: warning: no previous prototype for function 'sched_unisolate_cpu' [-Wmissing-prototypes]
+   int sched_unisolate_cpu(int cpu)
+       ^
+   kernel/sched/stubs.c:20:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   int sched_unisolate_cpu(int cpu)
+   ^
+   static 
+>> kernel/sched/stubs.c:26:5: warning: no previous prototype for function 'set_task_boost' [-Wmissing-prototypes]
+   int set_task_boost(int boost, u64 period)
+       ^
+   kernel/sched/stubs.c:26:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   int set_task_boost(int boost, u64 period)
+   ^
+   static 
+   4 warnings generated.
+
+
+vim +/sched_isolate_cpu +8 kernel/sched/stubs.c
+
+     7	
+   > 8	int sched_isolate_cpu(int cpu)
+     9	{
+    10		return -EINVAL;
+    11	}
+    12	EXPORT_SYMBOL_GPL(sched_isolate_cpu);
+    13	
+  > 14	int sched_unisolate_cpu_unlocked(int cpu)
+    15	{
+    16		return -EINVAL;
+    17	}
+    18	EXPORT_SYMBOL_GPL(sched_unisolate_cpu_unlocked);
+    19	
+  > 20	int sched_unisolate_cpu(int cpu)
+    21	{
+    22		return -EINVAL;
+    23	}
+    24	EXPORT_SYMBOL_GPL(sched_unisolate_cpu);
+    25	
+  > 26	int set_task_boost(int boost, u64 period)
+
 ---
-Changes in v5:
-- s/Save/safe/ in a comment (spelling fix)
-
-Changes in v3:
-- Reword the commit message
----
- drivers/extcon/extcon-intel-cht-wc.c | 15 ++++++++-------
- 1 file changed, 8 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/extcon/extcon-intel-cht-wc.c b/drivers/extcon/extcon-intel-cht-wc.c
-index 3fc5dd06849a..a828ca89ca7f 100644
---- a/drivers/extcon/extcon-intel-cht-wc.c
-+++ b/drivers/extcon/extcon-intel-cht-wc.c
-@@ -153,14 +153,15 @@ static int cht_wc_extcon_get_charger(struct cht_wc_extcon_data *ext,
- 	} while (time_before(jiffies, timeout));
- 
- 	if (status != CHT_WC_USBSRC_STS_SUCCESS) {
--		if (ignore_errors)
--			return EXTCON_CHG_USB_SDP; /* Save fallback */
-+		if (!ignore_errors) {
-+			if (status == CHT_WC_USBSRC_STS_FAIL)
-+				dev_warn(ext->dev, "Could not detect charger type\n");
-+			else
-+				dev_warn(ext->dev, "Timeout detecting charger type\n");
-+		}
- 
--		if (status == CHT_WC_USBSRC_STS_FAIL)
--			dev_warn(ext->dev, "Could not detect charger type\n");
--		else
--			dev_warn(ext->dev, "Timeout detecting charger type\n");
--		return EXTCON_CHG_USB_SDP; /* Save fallback */
-+		/* Safe fallback */
-+		usbsrc = CHT_WC_USBSRC_TYPE_SDP << CHT_WC_USBSRC_TYPE_SHIFT;
- 	}
- 
- 	usbsrc = (usbsrc & CHT_WC_USBSRC_TYPE_MASK) >> CHT_WC_USBSRC_TYPE_SHIFT;
--- 
-2.33.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
