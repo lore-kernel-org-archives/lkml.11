@@ -2,41 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44E2DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 12:03:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4599EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 12:03:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237639AbiBAMDq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 07:03:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47894 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237559AbiBAMDg (ORCPT
+        id S237658AbiBAMDs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 07:03:48 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:52742 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237543AbiBAMDf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 07:03:36 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A973C061714;
-        Tue,  1 Feb 2022 04:03:35 -0800 (PST)
+        Tue, 1 Feb 2022 07:03:35 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 59653B82D92;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 590C3B82D90;
         Tue,  1 Feb 2022 12:03:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E677C340F5;
-        Tue,  1 Feb 2022 12:03:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BC4CC340FC;
+        Tue,  1 Feb 2022 12:03:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643717014;
-        bh=wG45B5pIUdPxc66Mzl2k13RuNaVCBTKDrywJDg8MT6Q=;
+        s=k20201202; t=1643717013;
+        bh=ivwGxoRB89+AhyONe21DIuW5LDCQ0oy5QMR/jN8ut1M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n3xzXv7QVq1zZ7/T5aoskRgqetRcvLh4UcovCRS9OJoZa3qVKcTZZl+6bESHxkWoj
-         badMAjP4jOV0KGXRgpqLCirm2Fkj0lblGqs7X/bC7xuzedlCLY05qP7WrFJUzLOSU4
-         g9XCuBdzJXpkCzH0UAFEVxcX1xRU2XpYco49uRJl9kMHzU3eaS43QfVR+3m3WgRWiI
-         GnXO+VNyLiL/Sxj4PubfYN2dWnbyNVuse7FnehtTpRBQgmVRCPXhc/6b4R3poVBFZt
-         p3iaP7OUyAbPog7oK5+gVG2l49/4uLXFq+vyKB0LA7085mqQpr2Bt6ow7vRP96SC6Y
-         dNjOQis9jzbwg==
+        b=koIbWbowa86u/1r+2OMJQNwsohG4mHkjIFv7bejQVnYV3AST+uthS03wdMI1zL/3g
+         keo3JM5GtSkXjZRsN9htAnq49Zhm73ZTOGe0BOV3GdQDJkD77l+XAhlL26pqWrG+YY
+         XHKQNk0CUtx7vs45R8AP60t0nEuXz7LwMbOOH3/vlW0R53eJiWjH7Vb2Ouwvcg/cmO
+         hs/U5Om/63ajNH76ATJuCdejzCdus+ejzryevimpYaCsYH5et9kBPH5PbJGMPmxDjI
+         9j5YT3H5KbJeM1aWtC+xyWXf0CIZKYH5X9+xTYOVTeX6AOq39W6mk7ldT1o5ByVMXN
+         48GSl3qna0qCw==
 Received: from sofa.misterjones.org ([185.219.108.64] helo=why.lan)
         by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <maz@kernel.org>)
-        id 1nErsi-004d46-47; Tue, 01 Feb 2022 12:03:32 +0000
+        id 1nErsh-004d46-AA; Tue, 01 Feb 2022 12:03:31 +0000
 From:   Marc Zyngier <maz@kernel.org>
 To:     linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
@@ -54,9 +51,9 @@ Cc:     Linus Walleij <linus.walleij@linaro.org>,
         Tomer Maimon <tmaimon77@gmail.com>,
         Tali Perry <tali.perry1@gmail.com>,
         Emil Renner Berthing <kernel@esmil.dk>
-Subject: [PATCH 08/12] gpio: rcar: Move PM device over to irq domain
-Date:   Tue,  1 Feb 2022 12:03:06 +0000
-Message-Id: <20220201120310.878267-9-maz@kernel.org>
+Subject: [PATCH 06/12] gpio: mt7621: Kill parent_device usage
+Date:   Tue,  1 Feb 2022 12:03:04 +0000
+Message-Id: <20220201120310.878267-7-maz@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220201120310.878267-1-maz@kernel.org>
 References: <20220201120310.878267-1-maz@kernel.org>
@@ -70,33 +67,26 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move the reference to the device over to the irq domain.
+This gpio controller sets the parent_device field, but doesn't have
+any runtime PM functionality. Get rid of it.
 
 Signed-off-by: Marc Zyngier <maz@kernel.org>
 ---
- drivers/gpio/gpio-rcar.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpio/gpio-mt7621.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/gpio/gpio-rcar.c b/drivers/gpio/gpio-rcar.c
-index bd2e16d6e21c..3a76538f27fa 100644
---- a/drivers/gpio/gpio-rcar.c
-+++ b/drivers/gpio/gpio-rcar.c
-@@ -530,7 +530,6 @@ static int gpio_rcar_probe(struct platform_device *pdev)
+diff --git a/drivers/gpio/gpio-mt7621.c b/drivers/gpio/gpio-mt7621.c
+index ccaad1cb3c2e..d8a26e503ca5 100644
+--- a/drivers/gpio/gpio-mt7621.c
++++ b/drivers/gpio/gpio-mt7621.c
+@@ -239,7 +239,6 @@ mediatek_gpio_bank_probe(struct device *dev, int bank)
  
- 	irq_chip = &p->irq_chip;
- 	irq_chip->name = "gpio-rcar";
--	irq_chip->parent_device = dev;
- 	irq_chip->irq_mask = gpio_rcar_irq_disable;
- 	irq_chip->irq_unmask = gpio_rcar_irq_enable;
- 	irq_chip->irq_set_type = gpio_rcar_irq_set_type;
-@@ -552,6 +551,7 @@ static int gpio_rcar_probe(struct platform_device *pdev)
- 		goto err0;
- 	}
- 
-+	irq_domain_set_pm_device(gpio_chip->irq.domain, dev);
- 	ret = devm_request_irq(dev, p->irq_parent, gpio_rcar_irq_handler,
- 			       IRQF_SHARED, name, p);
- 	if (ret) {
+ 	rg->chip.offset = bank * MTK_BANK_WIDTH;
+ 	rg->irq_chip.name = dev_name(dev);
+-	rg->irq_chip.parent_device = dev;
+ 	rg->irq_chip.irq_unmask = mediatek_gpio_irq_unmask;
+ 	rg->irq_chip.irq_mask = mediatek_gpio_irq_mask;
+ 	rg->irq_chip.irq_mask_ack = mediatek_gpio_irq_mask;
 -- 
 2.30.2
 
