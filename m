@@ -2,90 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BA43C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 08:43:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EFB7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 08:43:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235620AbiBAInP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 03:43:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59198 "EHLO
+        id S235626AbiBAInQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 03:43:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235602AbiBAInM (ORCPT
+        with ESMTP id S234299AbiBAInN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 03:43:12 -0500
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CF59C06173E
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Feb 2022 00:43:12 -0800 (PST)
-Received: by mail-ej1-x630.google.com with SMTP id j2so51189563ejk.6
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Feb 2022 00:43:12 -0800 (PST)
+        Tue, 1 Feb 2022 03:43:13 -0500
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E3F6C061714
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Feb 2022 00:43:13 -0800 (PST)
+Received: by mail-ed1-x52e.google.com with SMTP id c24so32918793edy.4
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Feb 2022 00:43:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=AY4/TLKg4nBDSqO8QlLkXd5EAxzP2IB0RJLZxohCkH4=;
-        b=kSjzGRNv0u0sZNDxM+TD1KeebIt7Lp0PxxGaiYsh20s6vtV2lYZ2koFB3WIt5popdk
-         rFKHBOJqv6/PRFd9BUNK1RBR4TT5T6ebP4hmRfIiX0WBDM/X9D/kuyYAiH7dw6WLJ12B
-         eD5s2YO/Y5beEn4EAUnMLpBo37U70BGO4p9E2HbMEqDJGHUpJO1LoJDFdGucUmdC+cib
-         xJWmNLHJZtv721dJRmyD2s/D3SVJzbt13gIWiRsekSe+S6f+bSuTBbmKmySrxArNI1IW
-         41GAnWqS8WehcuyEZ/ejl0Y9BHlN74avMYeyD2DLRjJUJsGlOm9F5LMWuRT0+50cK9Eo
-         Z1wQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=08thSjsgd1AJJVXbNNLuNDEbPWt749B6BX7mkpr4V3o=;
+        b=kSKHoRyVchCr9vi0DKFilMcjnyIIfwONZLBn9uxTfv1ggMfpgtyvHl5LgNCmsrqLLm
+         U2G3IdDO2Sroe6/gbvyCjV8j8ZWttXZZ39avQ2ZpyY/V3Dvhv8CSjW9SNoIMfkY/0Nhf
+         ehwElTrXFdTVtZwOLvR+JvBsp/i5JMb2KKGuSo9I/VjGrVbnutrUUbKSEMP0pMi7DW5P
+         u204ZBFZdLOG/pyAD3Bcb5aKhXerl0a0sdAYcSLKaDa4XGVlV781LVt/+LwRLjRlNd5C
+         4IXLx9uiUikUgSh9FMPcgwmz3aentygoo1+oRldykPZ46K4ViSCBfeiPLZ/HPCbPDQTd
+         PeNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=AY4/TLKg4nBDSqO8QlLkXd5EAxzP2IB0RJLZxohCkH4=;
-        b=NptHwsiv1lg+8K+mmaAh7PucyxqXDjol+JVmRoiRwlkq9jIL+/7/YGmI2TzP3vvOe+
-         WOlugf/GH+BC4D2pznuUW4Q/6kEOumpjMCtgEj+pcyFqhifKMab3ZisTrO57dEcEm5Yi
-         O6LDBjnVTJe2b6jz4VA4EInk4b/pKCUO70tomYhY8iwjU5EB/rHEfwW/6gS5AFGOb9em
-         0P6EcQlNNAugxG+El56JdpvMJAbr9C9gUxdFvIrniWBn5xkf/bEYa5EGSpV5HQYuM2kG
-         QPcNKedzjMf8riZvUEReZAnSDYeS3P0jFmTrQtArF+SZcz+13KzWTmtwlKkFSV8e/lu6
-         82eg==
-X-Gm-Message-State: AOAM533YxRHV2Y86tYjAKdDDN6ibsTPmqIKWc4W35KmQydMMHrzKEcg3
-        g7lu7qXpU9w68e9l5t+2a30=
-X-Google-Smtp-Source: ABdhPJzfiokD/cOFOfWe7SOUqFFEvlK4NMX/cdmop+vDETdD1nMiM3A+AOWc0G+OhPLola7/yfYFqw==
-X-Received: by 2002:a17:907:2d0d:: with SMTP id gs13mr20169633ejc.161.1643704990757;
-        Tue, 01 Feb 2022 00:43:10 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=08thSjsgd1AJJVXbNNLuNDEbPWt749B6BX7mkpr4V3o=;
+        b=qkcvXEWxp81R9+5DdSjvSlSSWBkbb0zlKBFaqXf32wFaOdc9ct4U7wvDaHfW0vk4to
+         nNrqChb+bNlJ3XXybk1ItM1kiPDIWo+Ex3V4kWcJ/NeWVoh0b3NN8eXs/8BOxEZBpaKa
+         QecboS7KzN3ckdwVk6eeWrF6YXaWz0VDXUJw6+e39j2PBKTeF0VIooSItzooiNvO9DP5
+         D3Mqgw218kqkueh8GLWfJya2Rg6IHGisc/reoEMtQEo8ZxbRnZRdosfFGOFi7PoQHEXW
+         4rj+2KPvOFFNJXLW8sXmYKWS8ls4rAfDFaTDxZ/2fv04lSeFnLD5TmJWZrA8Dvy0aj4L
+         rIdQ==
+X-Gm-Message-State: AOAM530ji7R7V10I6oFyI//FfMnPnuNDz37Y8+RFmGT3M/fM+DUrovPX
+        9kUjVHgPhHFw+sdxPOKWXOGV35+4ogM=
+X-Google-Smtp-Source: ABdhPJw06DCVkCUqXomP7kIF/fgeasEVzVcSC+tzC6zr42aD2TnRVzeMXMx0vZwyDvIK18ko3l8xVA==
+X-Received: by 2002:a05:6402:34c7:: with SMTP id w7mr24203551edc.397.1643704992264;
+        Tue, 01 Feb 2022 00:43:12 -0800 (PST)
 Received: from localhost.localdomain (ip5f5abb5a.dynamic.kabel-deutschland.de. [95.90.187.90])
-        by smtp.gmail.com with ESMTPSA id c14sm19123431edy.66.2022.02.01.00.43.10
+        by smtp.gmail.com with ESMTPSA id c14sm19123431edy.66.2022.02.01.00.43.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Feb 2022 00:43:10 -0800 (PST)
+        Tue, 01 Feb 2022 00:43:11 -0800 (PST)
 From:   Michael Straube <straube.linux@gmail.com>
 To:     gregkh@linuxfoundation.org
 Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Michael Straube <straube.linux@gmail.com>
-Subject: [PATCH 0/9] staging: r8188eu: hal_data_8188e cleanups
-Date:   Tue,  1 Feb 2022 09:42:50 +0100
-Message-Id: <20220201084259.7497-1-straube.linux@gmail.com>
+Subject: [PATCH 2/9] staging: r8188eu: remove PGMaxGroup from struct hal_data_8188e
+Date:   Tue,  1 Feb 2022 09:42:52 +0100
+Message-Id: <20220201084259.7497-3-straube.linux@gmail.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220201084259.7497-1-straube.linux@gmail.com>
+References: <20220201084259.7497-1-straube.linux@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This set removes some variables from the hal_data_8188e structure.
+the variable PGMaxGroup in struct hal_data_8188e is set to 13 and
+never changed. We can use the already defined constant MAX_PG_GROUP,
+which is 13, and remove PGMaxGroup from struct hal_data_8188e.
 
-Tested on x86_64 with Inter-Tech DMG-02.
+Signed-off-by: Michael Straube <straube.linux@gmail.com>
+---
+ drivers/staging/r8188eu/hal/rtl8188e_rf6052.c  | 2 +-
+ drivers/staging/r8188eu/hal/usb_halinit.c      | 1 -
+ drivers/staging/r8188eu/include/rtl8188e_hal.h | 1 -
+ 3 files changed, 1 insertion(+), 3 deletions(-)
 
-Michael Straube (9):
-  staging: r8188eu: ExternalPA is read-only
-  staging: r8188eu: remove PGMaxGroup from struct hal_data_8188e
-  staging: r8188eu: remove ReceiveConfig from struct hal_data_8188e
-  staging: r8188eu: BasicRateSet is set but never used
-  staging: r8188eu: remove UsbTxAggDescNum from struct hal_data_8188e
-  staging: r8188eu: remove UsbTxAggMode from struct hal_data_8188e
-  staging: r8188eu: remove UsbRxAggMode from struct hal_data_8188e
-  staging: r8188eu: remove UsbRxAggBlock* from struct hal_data_8188e
-  staging: r8188eu: remove UsbRxAggPage* from struct hal_data_8188e
-
- drivers/staging/r8188eu/hal/rtl8188e_rf6052.c |  5 +-
- drivers/staging/r8188eu/hal/rtl8188eu_xmit.c  |  2 +-
- drivers/staging/r8188eu/hal/usb_halinit.c     | 86 ++++---------------
- drivers/staging/r8188eu/hal/usb_ops_linux.c   | 14 +--
- .../staging/r8188eu/include/rtl8188e_hal.h    | 26 +-----
- .../staging/r8188eu/include/rtl8188e_xmit.h   |  2 +
- 6 files changed, 26 insertions(+), 109 deletions(-)
-
+diff --git a/drivers/staging/r8188eu/hal/rtl8188e_rf6052.c b/drivers/staging/r8188eu/hal/rtl8188e_rf6052.c
+index 9b06a23df2ac..ea847ec39e13 100644
+--- a/drivers/staging/r8188eu/hal/rtl8188e_rf6052.c
++++ b/drivers/staging/r8188eu/hal/rtl8188e_rf6052.c
+@@ -200,7 +200,7 @@ static void get_rx_power_val_by_reg(struct adapter *Adapter, u8 Channel,
+ 			/*  increase power diff defined by Realtek for regulatory */
+ 			if (pHalData->pwrGroupCnt == 1)
+ 				chnlGroup = 0;
+-			if (pHalData->pwrGroupCnt >= pHalData->PGMaxGroup) {
++			if (pHalData->pwrGroupCnt >= MAX_PG_GROUP) {
+ 				if (Channel < 3)			/*  Channel 1-2 */
+ 					chnlGroup = 0;
+ 				else if (Channel < 6)		/*  Channel 3-5 */
+diff --git a/drivers/staging/r8188eu/hal/usb_halinit.c b/drivers/staging/r8188eu/hal/usb_halinit.c
+index 0fdade585d25..91b854c7b9a1 100644
+--- a/drivers/staging/r8188eu/hal/usb_halinit.c
++++ b/drivers/staging/r8188eu/hal/usb_halinit.c
+@@ -1738,7 +1738,6 @@ void rtl8188eu_init_default_value(struct adapter *adapt)
+ 	haldata->odmpriv.RFCalibrateInfo.bIQKInitialized = false;
+ 	haldata->odmpriv.RFCalibrateInfo.TM_Trigger = 0;/* for IQK */
+ 	haldata->pwrGroupCnt = 0;
+-	haldata->PGMaxGroup = 13;
+ 	haldata->odmpriv.RFCalibrateInfo.ThermalValue_HP_index = 0;
+ 	for (i = 0; i < HP_THERMAL_NUM; i++)
+ 		haldata->odmpriv.RFCalibrateInfo.ThermalValue_HP[i] = 0;
+diff --git a/drivers/staging/r8188eu/include/rtl8188e_hal.h b/drivers/staging/r8188eu/include/rtl8188e_hal.h
+index 2de7c0464411..661c447a0453 100644
+--- a/drivers/staging/r8188eu/include/rtl8188e_hal.h
++++ b/drivers/staging/r8188eu/include/rtl8188e_hal.h
+@@ -150,7 +150,6 @@ struct txpowerinfo24g {
+ 
+ struct hal_data_8188e {
+ 	struct HAL_VERSION	VersionID;
+-	u8	PGMaxGroup;
+ 	/* current WIFI_PHY values */
+ 	u32	ReceiveConfig;
+ 	enum ht_channel_width CurrentChannelBW;
 -- 
 2.34.1
 
