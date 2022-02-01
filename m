@@ -2,261 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB1A6C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 17:10:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B764C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 17:10:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240173AbiBARKl convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 12:10:41 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:13870 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229753AbiBARKe (ORCPT
+        id S240230AbiBARKm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 12:10:42 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:51518 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S240134AbiBARKl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 12:10:34 -0500
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 211GAPu0019100
-        for <linux-kernel@vger.kernel.org>; Tue, 1 Feb 2022 09:10:33 -0800
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3dxq3gdxwf-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Feb 2022 09:10:33 -0800
-Received: from twshared29821.14.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 1 Feb 2022 09:10:31 -0800
-Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
-        id 8CC292914E0A5; Tue,  1 Feb 2022 09:07:36 -0800 (PST)
-From:   Song Liu <song@kernel.org>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
-        <kernel-team@fb.com>, <peterz@infradead.org>, <x86@kernel.org>,
-        <iii@linux.ibm.com>, Song Liu <songliubraving@fb.com>
-Subject: [PATCH v8 bpf-next 9/9] bpf, x86_64: use bpf_jit_binary_pack_alloc
-Date:   Mon, 31 Jan 2022 22:28:03 -0800
-Message-ID: <20220201062803.2675204-10-song@kernel.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220201062803.2675204-1-song@kernel.org>
-References: <20220201062803.2675204-1-song@kernel.org>
+        Tue, 1 Feb 2022 12:10:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643735440;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=HEVNkKCbHNsoRZio7QbHHHdj6sVhTp1ERvduRi68G80=;
+        b=ZqnopwJ8zLyAB/3xdPV93IQD5bMiWDqpCiMiWa8tpQVwO5cFK/QUwn/bJZoYjL2Ll5CCmY
+        GRT+Y0/uV0GDt0PRzmJCN4+qYAkxG4tgECJdafCnsE1IVw2eFxL4bOHpGZ0q6put7Qm+ho
+        uGdgzcmMXgSzTAUwRErnBPBhR5FjOJ8=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-42-fPgP0uWuPkm36HzKHoEYlA-1; Tue, 01 Feb 2022 12:10:39 -0500
+X-MC-Unique: fPgP0uWuPkm36HzKHoEYlA-1
+Received: by mail-wr1-f70.google.com with SMTP id l22-20020adfa396000000b001d8e6467fe8so619503wrb.6
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Feb 2022 09:10:39 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=HEVNkKCbHNsoRZio7QbHHHdj6sVhTp1ERvduRi68G80=;
+        b=jXepsdVuzEuTbLzZwqT/VAROL6nBVGgnJp+MRQZ23k6fwMitLjmfRZqOrYDAgPknhv
+         9kS6svta+ymsUaB/L1CX3IzRveXkMMscRJW5gq90L65GTouzM5XDWVzKQx/h6vhYI/WB
+         tfFO+i4jBG1/rYT79TRzG+Zuai5EE6p4lWCfGnmviEJ/PFGaTw98ox9878AvcgwwYBEi
+         SrLtiZR5MdFU46qDb6ox0dlbsBdqC6nirB+HMyiODasN3woAZdZfefyRXPXh1RJ/tVHJ
+         El7nbHfzqPnPyYTaNRCQQct9b/XMNPj1nMeG9iaLAkJUppchBzAFHEMtISvrDYc8nC0x
+         zMjw==
+X-Gm-Message-State: AOAM530QLEYaep1TSJK3YFJ4Ybnk2ZY6I9dfk6m6lP5PhpGSvSMC4Yc6
+        qCtGT1rZHvTOIH7jD6I+b46x68J6M2Za3F8w2bX25WfFuRWLesbI4tr4/tmmR4TnB1zG2oHYSCz
+        N31uaMyBWlE1Cu7lw6zTd9+/G
+X-Received: by 2002:a5d:584a:: with SMTP id i10mr22335721wrf.305.1643735438634;
+        Tue, 01 Feb 2022 09:10:38 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxgD/z3iBdu65HEErOV/81d5kpd1JUezr2MJZPHfQ+M/3yuV5A/oGB8uKnV0q2JOEgF1YHjUg==
+X-Received: by 2002:a5d:584a:: with SMTP id i10mr22335673wrf.305.1643735438392;
+        Tue, 01 Feb 2022 09:10:38 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id q13sm15472852wrd.78.2022.02.01.09.10.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 01 Feb 2022 09:10:37 -0800 (PST)
+Message-ID: <c1371392-70ff-0a14-68cd-aa253998d271@redhat.com>
+Date:   Tue, 1 Feb 2022 18:10:35 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-GUID: DGWBMCm8Juvszff8B9UTRFS8w_eC7R9K
-X-Proofpoint-ORIG-GUID: DGWBMCm8Juvszff8B9UTRFS8w_eC7R9K
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-01_08,2022-02-01_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 phishscore=0
- clxscore=1015 spamscore=0 impostorscore=0 adultscore=0 bulkscore=0
- priorityscore=1501 lowpriorityscore=0 mlxlogscore=935 mlxscore=0
- suspectscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2201110000 definitions=main-2202010096
-X-FB-Internal: deliver
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3 0/5] kvm: fix latent guest entry/exit bugs
+Content-Language: en-US
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     linux-kernel@vger.kernel.org, aleksandar.qemu.devel@gmail.com,
+        alexandru.elisei@arm.com, anup@brainfault.org,
+        aou@eecs.berkeley.edu, atishp@atishpatra.org,
+        benh@kernel.crashing.org, borntraeger@linux.ibm.com, bp@alien8.de,
+        catalin.marinas@arm.com, chenhuacai@kernel.org,
+        dave.hansen@linux.intel.com, frederic@kernel.org,
+        hca@linux.ibm.com, james.morse@arm.com, jmattson@google.com,
+        joro@8bytes.org, maz@kernel.org, mingo@redhat.com,
+        mpe@ellerman.id.au, nsaenzju@redhat.com, palmer@dabbelt.com,
+        paulmck@kernel.org, paulus@samba.org, paul.walmsley@sifive.com,
+        seanjc@google.com, suzuki.poulose@arm.com, svens@linux.ibm.com,
+        tglx@linutronix.de, tsbogend@alpha.franken.de, vkuznets@redhat.com,
+        wanpengli@tencent.com, will@kernel.org
+References: <20220201132926.3301912-1-mark.rutland@arm.com>
+ <87aa8af0-c262-ad04-58f8-da6c7882e23c@redhat.com>
+ <YfleTYWIW1sBbMNn@FVFF77S0Q05N>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <YfleTYWIW1sBbMNn@FVFF77S0Q05N>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Song Liu <songliubraving@fb.com>
+On 2/1/22 17:22, Mark Rutland wrote:
+> On Tue, Feb 01, 2022 at 04:59:47PM +0100, Paolo Bonzini wrote:
+>> On 2/1/22 14:29, Mark Rutland wrote:
+>>> I've pushed the series (based on v5.17-rc2) to my kvm/entry-rework branch:
+>>>
+>>>     https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git/log/?h=kvm/entry-rework
+>>>     git://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git kvm/entry-rework
+>>
+>> Thanks!  I cherry-picked the basic, x86 and mips patches to kvm.git's master
+>> branch (I did not use your branch in order to leave arm64 and riscv to the
+>> respective maintainers).
+> 
+> Since everything's dependent upon that core patch, IIUC that's going to make it
+> a pain for them to queue things.
+> 
+> How are you expecting the arm64 and riscv maintainers to queue things? Queue
+> their own copies of that core patch?
 
-Use bpf_jit_binary_pack_alloc in x86_64 jit. The jit engine first writes
-the program to the rw buffer. When the jit is done, the program is copied
-to the final location with bpf_jit_binary_pack_finalize.
+The kvm.git master branch has a stable commit id, so the KVM/ARM and 
+KVM/RISCV maintainers can just base their pull request to me on it. 
+Alternatively, if they prefer it that way, I can get it quickly to Linus.
 
-Note that we need to do bpf_tail_call_direct_fixup after finalize.
-Therefore, the text_live = false logic in __bpf_arch_text_poke is no
-longer needed.
-
-Signed-off-by: Song Liu <songliubraving@fb.com>
----
- arch/x86/net/bpf_jit_comp.c | 58 ++++++++++++++++++++-----------------
- 1 file changed, 31 insertions(+), 27 deletions(-)
-
-diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-index c13d148f7396..643f38b91e30 100644
---- a/arch/x86/net/bpf_jit_comp.c
-+++ b/arch/x86/net/bpf_jit_comp.c
-@@ -330,8 +330,7 @@ static int emit_jump(u8 **pprog, void *func, void *ip)
- }
- 
- static int __bpf_arch_text_poke(void *ip, enum bpf_text_poke_type t,
--				void *old_addr, void *new_addr,
--				const bool text_live)
-+				void *old_addr, void *new_addr)
- {
- 	const u8 *nop_insn = x86_nops[5];
- 	u8 old_insn[X86_PATCH_SIZE];
-@@ -365,10 +364,7 @@ static int __bpf_arch_text_poke(void *ip, enum bpf_text_poke_type t,
- 		goto out;
- 	ret = 1;
- 	if (memcmp(ip, new_insn, X86_PATCH_SIZE)) {
--		if (text_live)
--			text_poke_bp(ip, new_insn, X86_PATCH_SIZE, NULL);
--		else
--			memcpy(ip, new_insn, X86_PATCH_SIZE);
-+		text_poke_bp(ip, new_insn, X86_PATCH_SIZE, NULL);
- 		ret = 0;
- 	}
- out:
-@@ -384,7 +380,7 @@ int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type t,
- 		/* BPF poking in modules is not supported */
- 		return -EINVAL;
- 
--	return __bpf_arch_text_poke(ip, t, old_addr, new_addr, true);
-+	return __bpf_arch_text_poke(ip, t, old_addr, new_addr);
- }
- 
- #define EMIT_LFENCE()	EMIT3(0x0F, 0xAE, 0xE8)
-@@ -558,24 +554,15 @@ static void bpf_tail_call_direct_fixup(struct bpf_prog *prog)
- 		mutex_lock(&array->aux->poke_mutex);
- 		target = array->ptrs[poke->tail_call.key];
- 		if (target) {
--			/* Plain memcpy is used when image is not live yet
--			 * and still not locked as read-only. Once poke
--			 * location is active (poke->tailcall_target_stable),
--			 * any parallel bpf_arch_text_poke() might occur
--			 * still on the read-write image until we finally
--			 * locked it as read-only. Both modifications on
--			 * the given image are under text_mutex to avoid
--			 * interference.
--			 */
- 			ret = __bpf_arch_text_poke(poke->tailcall_target,
- 						   BPF_MOD_JUMP, NULL,
- 						   (u8 *)target->bpf_func +
--						   poke->adj_off, false);
-+						   poke->adj_off);
- 			BUG_ON(ret < 0);
- 			ret = __bpf_arch_text_poke(poke->tailcall_bypass,
- 						   BPF_MOD_JUMP,
- 						   (u8 *)poke->tailcall_target +
--						   X86_PATCH_SIZE, NULL, false);
-+						   X86_PATCH_SIZE, NULL);
- 			BUG_ON(ret < 0);
- 		}
- 		WRITE_ONCE(poke->tailcall_target_stable, true);
-@@ -866,7 +853,7 @@ static void emit_nops(u8 **pprog, int len)
- 
- #define INSN_SZ_DIFF (((addrs[i] - addrs[i - 1]) - (prog - temp)))
- 
--static int do_jit(struct bpf_prog *bpf_prog, int *addrs, u8 *image,
-+static int do_jit(struct bpf_prog *bpf_prog, int *addrs, u8 *image, u8 *rw_image,
- 		  int oldproglen, struct jit_context *ctx, bool jmp_padding)
- {
- 	bool tail_call_reachable = bpf_prog->aux->tail_call_reachable;
-@@ -893,8 +880,8 @@ static int do_jit(struct bpf_prog *bpf_prog, int *addrs, u8 *image,
- 	push_callee_regs(&prog, callee_regs_used);
- 
- 	ilen = prog - temp;
--	if (image)
--		memcpy(image + proglen, temp, ilen);
-+	if (rw_image)
-+		memcpy(rw_image + proglen, temp, ilen);
- 	proglen += ilen;
- 	addrs[0] = proglen;
- 	prog = temp;
-@@ -1323,6 +1310,9 @@ st:			if (is_imm8(insn->off))
- 					pr_err("extable->insn doesn't fit into 32-bit\n");
- 					return -EFAULT;
- 				}
-+				/* switch ex to rw buffer for writes */
-+				ex = (void *)rw_image + ((void *)ex - (void *)image);
-+
- 				ex->insn = delta;
- 
- 				ex->data = EX_TYPE_BPF;
-@@ -1705,7 +1695,7 @@ st:			if (is_imm8(insn->off))
- 				pr_err("bpf_jit: fatal error\n");
- 				return -EFAULT;
- 			}
--			memcpy(image + proglen, temp, ilen);
-+			memcpy(rw_image + proglen, temp, ilen);
- 		}
- 		proglen += ilen;
- 		addrs[i] = proglen;
-@@ -2246,6 +2236,7 @@ int arch_prepare_bpf_dispatcher(void *image, s64 *funcs, int num_funcs)
- }
- 
- struct x64_jit_data {
-+	struct bpf_binary_header *rw_header;
- 	struct bpf_binary_header *header;
- 	int *addrs;
- 	u8 *image;
-@@ -2258,6 +2249,7 @@ struct x64_jit_data {
- 
- struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- {
-+	struct bpf_binary_header *rw_header = NULL;
- 	struct bpf_binary_header *header = NULL;
- 	struct bpf_prog *tmp, *orig_prog = prog;
- 	struct x64_jit_data *jit_data;
-@@ -2266,6 +2258,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- 	bool tmp_blinded = false;
- 	bool extra_pass = false;
- 	bool padding = false;
-+	u8 *rw_image = NULL;
- 	u8 *image = NULL;
- 	int *addrs;
- 	int pass;
-@@ -2301,6 +2294,8 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- 		oldproglen = jit_data->proglen;
- 		image = jit_data->image;
- 		header = jit_data->header;
-+		rw_header = jit_data->rw_header;
-+		rw_image = (void *)rw_header + ((void *)image - (void *)header);
- 		extra_pass = true;
- 		padding = true;
- 		goto skip_init_addrs;
-@@ -2331,12 +2326,12 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- 	for (pass = 0; pass < MAX_PASSES || image; pass++) {
- 		if (!padding && pass >= PADDING_PASSES)
- 			padding = true;
--		proglen = do_jit(prog, addrs, image, oldproglen, &ctx, padding);
-+		proglen = do_jit(prog, addrs, image, rw_image, oldproglen, &ctx, padding);
- 		if (proglen <= 0) {
- out_image:
- 			image = NULL;
- 			if (header)
--				bpf_jit_binary_free(header);
-+				bpf_jit_binary_pack_free(header, rw_header);
- 			prog = orig_prog;
- 			goto out_addrs;
- 		}
-@@ -2360,8 +2355,9 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- 				sizeof(struct exception_table_entry);
- 
- 			/* allocate module memory for x86 insns and extable */
--			header = bpf_jit_binary_alloc(roundup(proglen, align) + extable_size,
--						      &image, align, jit_fill_hole);
-+			header = bpf_jit_binary_pack_alloc(roundup(proglen, align) + extable_size,
-+							   &image, align, &rw_header, &rw_image,
-+							   jit_fill_hole);
- 			if (!header) {
- 				prog = orig_prog;
- 				goto out_addrs;
-@@ -2377,14 +2373,22 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- 
- 	if (image) {
- 		if (!prog->is_func || extra_pass) {
-+			/*
-+			 * bpf_jit_binary_pack_finalize fails in two scenarios:
-+			 *   1) header is not pointing to proper module memory;
-+			 *   2) the arch doesn't support bpf_arch_text_copy().
-+			 *
-+			 * Both cases are serious bugs that we should not continue.
-+			 */
-+			BUG_ON(bpf_jit_binary_pack_finalize(prog, header, rw_header));
- 			bpf_tail_call_direct_fixup(prog);
--			bpf_jit_binary_lock_ro(header);
- 		} else {
- 			jit_data->addrs = addrs;
- 			jit_data->ctx = ctx;
- 			jit_data->proglen = proglen;
- 			jit_data->image = image;
- 			jit_data->header = header;
-+			jit_data->rw_header = rw_header;
- 		}
- 		prog->bpf_func = (void *)image;
- 		prog->jited = 1;
--- 
-2.30.2
+Paolo
 
