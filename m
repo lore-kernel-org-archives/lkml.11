@@ -2,173 +2,322 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AAEEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 15:06:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCA48C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 15:06:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239820AbiBAPG0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 10:06:26 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:62026 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S239789AbiBAPGW (ORCPT
+        id S239823AbiBAPGc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 10:06:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33748 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239783AbiBAPGZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 10:06:22 -0500
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 211DIYYN015638;
-        Tue, 1 Feb 2022 15:05:21 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : reply-to : to : cc : date : in-reply-to : references : content-type
- : mime-version : content-transfer-encoding; s=pp1;
- bh=ToXTNfkMZFKaX0cR4GMzptBPMUOwrlwYms0kQCUHCRw=;
- b=WsAingg9xeS+2pWFI8eCa6N9KwIknymFrNib35nGQrZZGkokpZU5sRkpR2+THZ/qUq9B
- yXisj7SGzKP0IlrHkLDm03amKAPIo4nRMNxx6L00kVqFfXgVoq75ZYOlXFgESywshyRq
- OM3ctwRmNoS9SA6WvyBHMSRLsvhNUyZimZ8R5w7uTfhasZACl9vGbQhfBiae4Wjvxp/9
- SaizqSTl8jZS/EK98AMSTfe0WOKjmqY9HNaNCXX+cvR6fNqgjxo5l2N1VqjY/vCUcz66
- 5ApuNpgTbiI2fK4GYVYXmg/EBoOnJj/m4mTq+8Hq2K+/CgZb0/GY1+Z268LriHYp6NDg VA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3dy2rudv05-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 01 Feb 2022 15:05:20 +0000
-Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 211EuH4D014152;
-        Tue, 1 Feb 2022 15:05:20 GMT
-Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3dy2ruduy7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 01 Feb 2022 15:05:19 +0000
-Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
-        by ppma02wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 211F2NVs002911;
-        Tue, 1 Feb 2022 15:05:18 GMT
-Received: from b03cxnp08028.gho.boulder.ibm.com (b03cxnp08028.gho.boulder.ibm.com [9.17.130.20])
-        by ppma02wdc.us.ibm.com with ESMTP id 3dvw7atq34-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 01 Feb 2022 15:05:18 +0000
-Received: from b03ledav004.gho.boulder.ibm.com (b03ledav004.gho.boulder.ibm.com [9.17.130.235])
-        by b03cxnp08028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 211F5EBa35979592
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 1 Feb 2022 15:05:14 GMT
-Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3E73B78072;
-        Tue,  1 Feb 2022 15:05:14 +0000 (GMT)
-Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A3AEB78064;
-        Tue,  1 Feb 2022 15:05:09 +0000 (GMT)
-Received: from jarvis.int.hansenpartnership.com (unknown [9.211.75.243])
-        by b03ledav004.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Tue,  1 Feb 2022 15:05:09 +0000 (GMT)
-Message-ID: <936285f4de4520c1fa9e594ca5e912ea766c127b.camel@linux.ibm.com>
-Subject: Re: [PATCH v7 0/5] Allow guest access to EFI confidential computing
- secret area
-From:   James Bottomley <jejb@linux.ibm.com>
-Reply-To: jejb@linux.ibm.com
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Dov Murik <dovmurik@linux.ibm.com>, linux-efi@vger.kernel.org,
-        Borislav Petkov <bp@suse.de>,
-        Ashish Kalra <ashish.kalra@amd.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Andrew Scull <ascull@google.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        "Dr. David Alan Gilbert" <dgilbert@redhat.com>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Lenny Szubowicz <lszubowi@redhat.com>,
-        Peter Gonda <pgonda@google.com>,
-        Tobin Feldman-Fitzthum <tobin@linux.ibm.com>,
-        Jim Cadden <jcadden@ibm.com>,
-        Daniele Buono <dbuono@linux.vnet.ibm.com>,
-        linux-coco@lists.linux.dev, linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Nayna Jain <nayna@linux.ibm.com>,
-        dougmill@linux.vnet.ibm.com, gcwilson@linux.ibm.com,
-        gjoyce@ibm.com, linuxppc-dev@lists.ozlabs.org, mjg59@srcf.ucam.org,
-        mpe@ellerman.id.au, dja@axtens.net
-Date:   Tue, 01 Feb 2022 10:05:08 -0500
-In-Reply-To: <YflGkNwyI6LUSVVk@kroah.com>
-References: <20220201124413.1093099-1-dovmurik@linux.ibm.com>
-         <Yfk6vEuZFtgtA+G+@kroah.com>
-         <37779659ca96ac9c1f11bcc0ac0665895c795b54.camel@linux.ibm.com>
-         <YflGkNwyI6LUSVVk@kroah.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.34.4 
+        Tue, 1 Feb 2022 10:06:25 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FC9AC061714;
+        Tue,  1 Feb 2022 07:06:25 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A2BB661672;
+        Tue,  1 Feb 2022 15:06:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49A77C340EB;
+        Tue,  1 Feb 2022 15:06:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643727984;
+        bh=vVOYAfOfRsBaLKmx9ygXmNXla/T1wGlU5of5at4ZrRM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=UWnyfSBhWLZqMIg7UPbH74RfMY4Ron/cN6wwOPhvVBSFW8CXVCQ9GyAlHag9VgS9+
+         VKviK8eiZ+yXmHmnf3g3UKXk4SeHixnLC7Gpf3T7s+YS0usXzvrGOjIoaJf0Th8dXu
+         alNiqWFJ1JE0B3xS/iH4DN4XO5hOhcbaIlLJyqnui41rK6r1EdwjBwOGjw7YD+oV84
+         G6iHuDTi4baVGV4WYtthjFdmg+r7pppMQGPAzHrTSO3MB34bmIwRIhzUUgpoo7FZMT
+         4PYnYdXCnfXR0lg5n4TclJP+OJ0OoXJrZ2iNEyy98QJCS4r6Mf1vARmgqhNbLLUcB9
+         jdk+kWMI24dsQ==
+From:   guoren@kernel.org
+To:     guoren@kernel.org, palmer@dabbelt.com, arnd@arndb.de,
+        anup@brainfault.org, gregkh@linuxfoundation.org,
+        liush@allwinnertech.com, wefu@redhat.com, drew@beagleboard.org,
+        wangjunqiang@iscas.ac.cn, hch@lst.de
+Cc:     linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-csky@vger.kernel.org,
+        linux-s390@vger.kernel.org, sparclinux@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-parisc@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        x86@kernel.org
+Subject: [PATCH V5 03/21] compat: consolidate the compat_flock{,64} definition
+Date:   Tue,  1 Feb 2022 23:05:27 +0800
+Message-Id: <20220201150545.1512822-4-guoren@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220201150545.1512822-1-guoren@kernel.org>
+References: <20220201150545.1512822-1-guoren@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: leA7HPKo2e59KhfKu2eGeqoLY4mV-OCA
-X-Proofpoint-ORIG-GUID: jz9EWbU0-KhkJDOZM4bKd9foUK75RIZW
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-01_07,2022-02-01_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- lowpriorityscore=0 mlxscore=0 phishscore=0 suspectscore=0 clxscore=1015
- adultscore=0 impostorscore=0 mlxlogscore=926 spamscore=0 bulkscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202010085
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-02-01 at 15:41 +0100, Greg KH wrote:
-> On Tue, Feb 01, 2022 at 09:24:50AM -0500, James Bottomley wrote:
-> > [cc's added]
-> > On Tue, 2022-02-01 at 14:50 +0100, Greg KH wrote:
-[...]
-> > > You all need to work together to come up with a unified place for
-> > > this and stop making it platform-specific.
-> > 
-> > I'm not entirely sure of that.  If you look at the differences
-> > between EFI variables and the COCO proposal: the former has an
-> > update API which, in the case of signed variables, is rather
-> > complex and a UC16 content requirement.  The latter is binary data
-> > with read only/delete.  Plus each variable in EFI is described by a
-> > GUID, so having a directory of random guids, some of which behave
-> > like COCO secrets and some of which are EFI variables is going to
-> > be incredibly confusing (and also break all our current listing
-> > tools which seems somewhat undesirable).
-> > 
-> > So we could end up with 
-> > 
-> > <common path prefix>/efivar
-> > <common path prefix>/coco
-> 
-> The powerpc stuff is not efi.  But yes, that is messy here.  But why
-> doesn't the powerpc follow the coco standard?
+From: Christoph Hellwig <hch@lst.de>
 
-There is no coco standard for EFI variables.  There's only a UEFI
-variable standard which, I believe, power tries to follow in some
-measure since the variables are mostly used for its version of secure
-boot.  Certainly you're either a power or UEFI platform but not both,
-so they could live at the same location ... that's not true with the
-coco ones.  I added the cc's to see if there are other ideas, but I
-really think the use cases are too disjoint.
+Provide a single common definition for the compat_flock and
+compat_flock64 structures using the same tricks as for the native
+variants.  Another extra define is added for the packing required on
+x86.
 
-As Daniel has previously proposed, it might be possible to unify the
-power and UEFI implementations ... useful if we want them to respond to
-the same tooling, but we'll do that by giving them the same EFI
-semantics.  The semantics and source of the coco secrets will still be
-immutable and completely alien to whatever backend does the non
-volatile power/efi authenticated variables, so we'll still need two
-different backends and then it's just a question of arguing about path,
-which doesn't make sense as a blocker.
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Guo Ren <guoren@kernel.org>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+---
+ arch/arm64/include/asm/compat.h   | 16 ----------------
+ arch/mips/include/asm/compat.h    | 19 ++-----------------
+ arch/parisc/include/asm/compat.h  | 16 ----------------
+ arch/powerpc/include/asm/compat.h | 16 ----------------
+ arch/s390/include/asm/compat.h    | 16 ----------------
+ arch/sparc/include/asm/compat.h   | 18 +-----------------
+ arch/x86/include/asm/compat.h     | 20 +++-----------------
+ include/linux/compat.h            | 31 +++++++++++++++++++++++++++++++
+ 8 files changed, 37 insertions(+), 115 deletions(-)
 
-> > To achieve the separation, but I really don't see what this buys
-> > us.  Both filesystems would likely end up with different backends
-> > because of the semantic differences and we can easily start now in
-> > different places (effectively we've already done this for efi
-> > variables) and unify later if that is the chosen direction, so it
-> > doesn't look like a blocker.
-> > 
-> > > Until then, we can't take this.
-> > 
-> > I don't believe anyone was asking you to take it.
-> 
-> I was on the review list...
-
-You raised a doc/API concenrn.  I think you were on the review list to
-ensure it got addressed.
-
-James
-
-
+diff --git a/arch/arm64/include/asm/compat.h b/arch/arm64/include/asm/compat.h
+index 276328765408..e0faec1984a1 100644
+--- a/arch/arm64/include/asm/compat.h
++++ b/arch/arm64/include/asm/compat.h
+@@ -65,22 +65,6 @@ struct compat_stat {
+ 	compat_ulong_t	__unused4[2];
+ };
+ 
+-struct compat_flock {
+-	short		l_type;
+-	short		l_whence;
+-	compat_off_t	l_start;
+-	compat_off_t	l_len;
+-	compat_pid_t	l_pid;
+-};
+-
+-struct compat_flock64 {
+-	short		l_type;
+-	short		l_whence;
+-	compat_loff_t	l_start;
+-	compat_loff_t	l_len;
+-	compat_pid_t	l_pid;
+-};
+-
+ struct compat_statfs {
+ 	int		f_type;
+ 	int		f_bsize;
+diff --git a/arch/mips/include/asm/compat.h b/arch/mips/include/asm/compat.h
+index 6a350c1f70d7..6d6e5a451f4d 100644
+--- a/arch/mips/include/asm/compat.h
++++ b/arch/mips/include/asm/compat.h
+@@ -55,23 +55,8 @@ struct compat_stat {
+ 	s32		st_pad4[14];
+ };
+ 
+-struct compat_flock {
+-	short		l_type;
+-	short		l_whence;
+-	compat_off_t	l_start;
+-	compat_off_t	l_len;
+-	s32		l_sysid;
+-	compat_pid_t	l_pid;
+-	s32		pad[4];
+-};
+-
+-struct compat_flock64 {
+-	short		l_type;
+-	short		l_whence;
+-	compat_loff_t	l_start;
+-	compat_loff_t	l_len;
+-	compat_pid_t	l_pid;
+-};
++#define __ARCH_COMPAT_FLOCK_EXTRA_SYSID		s32 l_sysid;
++#define __ARCH_COMPAT_FLOCK_PAD			s32 pad[4];
+ 
+ struct compat_statfs {
+ 	int		f_type;
+diff --git a/arch/parisc/include/asm/compat.h b/arch/parisc/include/asm/compat.h
+index c04f5a637c39..a1e4534d8050 100644
+--- a/arch/parisc/include/asm/compat.h
++++ b/arch/parisc/include/asm/compat.h
+@@ -53,22 +53,6 @@ struct compat_stat {
+ 	u32			st_spare4[3];
+ };
+ 
+-struct compat_flock {
+-	short			l_type;
+-	short			l_whence;
+-	compat_off_t		l_start;
+-	compat_off_t		l_len;
+-	compat_pid_t		l_pid;
+-};
+-
+-struct compat_flock64 {
+-	short			l_type;
+-	short			l_whence;
+-	compat_loff_t		l_start;
+-	compat_loff_t		l_len;
+-	compat_pid_t		l_pid;
+-};
+-
+ struct compat_statfs {
+ 	s32		f_type;
+ 	s32		f_bsize;
+diff --git a/arch/powerpc/include/asm/compat.h b/arch/powerpc/include/asm/compat.h
+index 83d8f70779cb..5ef3c7c83c34 100644
+--- a/arch/powerpc/include/asm/compat.h
++++ b/arch/powerpc/include/asm/compat.h
+@@ -44,22 +44,6 @@ struct compat_stat {
+ 	u32		__unused4[2];
+ };
+ 
+-struct compat_flock {
+-	short		l_type;
+-	short		l_whence;
+-	compat_off_t	l_start;
+-	compat_off_t	l_len;
+-	compat_pid_t	l_pid;
+-};
+-
+-struct compat_flock64 {
+-	short		l_type;
+-	short		l_whence;
+-	compat_loff_t	l_start;
+-	compat_loff_t	l_len;
+-	compat_pid_t	l_pid;
+-};
+-
+ struct compat_statfs {
+ 	int		f_type;
+ 	int		f_bsize;
+diff --git a/arch/s390/include/asm/compat.h b/arch/s390/include/asm/compat.h
+index 0f14b3188b1b..07f04d37068b 100644
+--- a/arch/s390/include/asm/compat.h
++++ b/arch/s390/include/asm/compat.h
+@@ -102,22 +102,6 @@ struct compat_stat {
+ 	u32		__unused5;
+ };
+ 
+-struct compat_flock {
+-	short		l_type;
+-	short		l_whence;
+-	compat_off_t	l_start;
+-	compat_off_t	l_len;
+-	compat_pid_t	l_pid;
+-};
+-
+-struct compat_flock64 {
+-	short		l_type;
+-	short		l_whence;
+-	compat_loff_t	l_start;
+-	compat_loff_t	l_len;
+-	compat_pid_t	l_pid;
+-};
+-
+ struct compat_statfs {
+ 	u32		f_type;
+ 	u32		f_bsize;
+diff --git a/arch/sparc/include/asm/compat.h b/arch/sparc/include/asm/compat.h
+index 108078751bb5..d78fb44942e0 100644
+--- a/arch/sparc/include/asm/compat.h
++++ b/arch/sparc/include/asm/compat.h
+@@ -75,23 +75,7 @@ struct compat_stat64 {
+ 	unsigned int	__unused5;
+ };
+ 
+-struct compat_flock {
+-	short		l_type;
+-	short		l_whence;
+-	compat_off_t	l_start;
+-	compat_off_t	l_len;
+-	compat_pid_t	l_pid;
+-	short		__unused;
+-};
+-
+-struct compat_flock64 {
+-	short		l_type;
+-	short		l_whence;
+-	compat_loff_t	l_start;
+-	compat_loff_t	l_len;
+-	compat_pid_t	l_pid;
+-	short		__unused;
+-};
++#define __ARCH_COMPAT_FLOCK_PAD		short __unused;
+ 
+ struct compat_statfs {
+ 	int		f_type;
+diff --git a/arch/x86/include/asm/compat.h b/arch/x86/include/asm/compat.h
+index 8d19a212f4f2..de794d895866 100644
+--- a/arch/x86/include/asm/compat.h
++++ b/arch/x86/include/asm/compat.h
+@@ -50,25 +50,11 @@ struct compat_stat {
+ 	u32		__unused5;
+ };
+ 
+-struct compat_flock {
+-	short		l_type;
+-	short		l_whence;
+-	compat_off_t	l_start;
+-	compat_off_t	l_len;
+-	compat_pid_t	l_pid;
+-};
+-
+ /*
+- * IA32 uses 4 byte alignment for 64 bit quantities,
+- * so we need to pack this structure.
++ * IA32 uses 4 byte alignment for 64 bit quantities, so we need to pack the
++ * compat flock64 structure.
+  */
+-struct compat_flock64 {
+-	short		l_type;
+-	short		l_whence;
+-	compat_loff_t	l_start;
+-	compat_loff_t	l_len;
+-	compat_pid_t	l_pid;
+-} __attribute__((packed));
++#define __ARCH_NEED_COMPAT_FLOCK64_PACKED
+ 
+ struct compat_statfs {
+ 	int		f_type;
+diff --git a/include/linux/compat.h b/include/linux/compat.h
+index 1c758b0e0359..a0481fe6c5d5 100644
+--- a/include/linux/compat.h
++++ b/include/linux/compat.h
+@@ -258,6 +258,37 @@ struct compat_rlimit {
+ 	compat_ulong_t	rlim_max;
+ };
+ 
++#ifdef __ARCH_NEED_COMPAT_FLOCK64_PACKED
++#define __ARCH_COMPAT_FLOCK64_PACK	__attribute__((packed))
++#else
++#define __ARCH_COMPAT_FLOCK64_PACK
++#endif
++
++struct compat_flock {
++	short			l_type;
++	short			l_whence;
++	compat_off_t		l_start;
++	compat_off_t		l_len;
++#ifdef __ARCH_COMPAT_FLOCK_EXTRA_SYSID
++	__ARCH_COMPAT_FLOCK_EXTRA_SYSID
++#endif
++	compat_pid_t		l_pid;
++#ifdef __ARCH_COMPAT_FLOCK_PAD
++	__ARCH_COMPAT_FLOCK_PAD
++#endif
++};
++
++struct compat_flock64 {
++	short		l_type;
++	short		l_whence;
++	compat_loff_t	l_start;
++	compat_loff_t	l_len;
++	compat_pid_t	l_pid;
++#ifdef __ARCH_COMPAT_FLOCK64_PAD
++	__ARCH_COMPAT_FLOCK64_PAD
++#endif
++} __ARCH_COMPAT_FLOCK64_PACK;
++
+ struct compat_rusage {
+ 	struct old_timeval32 ru_utime;
+ 	struct old_timeval32 ru_stime;
+-- 
+2.25.1
 
