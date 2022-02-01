@@ -2,93 +2,259 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1DA6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 14:32:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E534C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 14:34:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239353AbiBAOcb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 09:32:31 -0500
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:22637 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239245AbiBAOc3 (ORCPT
+        id S239374AbiBAOec (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 09:34:32 -0500
+Received: from mail.efficios.com ([167.114.26.124]:42230 "EHLO
+        mail.efficios.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239320AbiBAOea (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 09:32:29 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1643725949; x=1675261949;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=cvx6rDpgo2S07AWukGYA/bvd35FN6fHtN9yNaCsXVc8=;
-  b=w1Guz+k/IM8XWLOL6Z1QsilDovJIXZrwxH3vAdWSkdKl+lrH0VWeZS8x
-   47wjs3NOgoWFtVlnEeMYTuSR4mZL45Bso7mtgpZ3VGbX2jIcQxGXpOPYT
-   pSQ5JG73cC9FwC97Vc+NXFbbReTiQDsmJDedjHHDjoZhGL2wcTY4M8+9F
-   dak1+KpeTfrzrQxrNVW4BqWvhu1LCYwRaRHaagMSQZQT+UJ8geeaGtlyF
-   Ddvny7zxXfaae7IxzynutVxj8Ut+aNFji/r1nMDYztBTGy3SakryByF58
-   W7Q0CEvki6hq1spPZD+GAE+XDkMAr7Y1YpT94NXsb3eV7px3uwORIOGwT
-   A==;
-IronPort-SDR: ssFcxKs/aaimKr6x/JkrDr27s2loVvXUIBxzJ23jxGWgIIDRR+wWus+W8sEMpOy9UMGhrqf4PH
- HbfxvALRKhmSDpWKKFG/KEAlWSIiGX78SimCUtAK9Zlq+FXVeOAgSGpM3kDUDLnPL9aTMi/Iht
- S5u8vh9GI1jr160eW1wngmqv4vjFwsGVlOW9nfmutOk6k/iMPWrXyXzB3q7a9CdFEIA8V/tg55
- qKZp6Op9MjNTNrZzuVKxJqaF2Imz05iItn289zCxBSsGFCVnikdKtUBvxIKspJvxj9VKMvUM7D
- OUncKledePvanQI/DloNdLA5
-X-IronPort-AV: E=Sophos;i="5.88,334,1635231600"; 
-   d="scan'208";a="152105173"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Feb 2022 07:32:28 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 1 Feb 2022 07:32:28 -0700
-Received: from den-dk-m31857.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Tue, 1 Feb 2022 07:32:26 -0700
-From:   Steen Hegelund <steen.hegelund@microchip.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        <UNGLinuxDriver@microchip.com>, <netdev@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        "Dan Carpenter" <dan.carpenter@oracle.com>
-CC:     Steen Hegelund <steen.hegelund@microchip.com>,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH net] net: sparx5: do not refer to skb after passing it on
-Date:   Tue, 1 Feb 2022 15:30:57 +0100
-Message-ID: <20220201143057.3533830-1-steen.hegelund@microchip.com>
-X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+        Tue, 1 Feb 2022 09:34:30 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id 6573A33D77F;
+        Tue,  1 Feb 2022 09:34:29 -0500 (EST)
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id uxRmZ0LHyCFp; Tue,  1 Feb 2022 09:34:28 -0500 (EST)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id B205D33D97A;
+        Tue,  1 Feb 2022 09:34:28 -0500 (EST)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com B205D33D97A
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
+        s=default; t=1643726068;
+        bh=u3tKAzzm5VKsz6x7OcMtZfI6oRYCneaiXPYEvO7Wx9k=;
+        h=From:To:Date:Message-Id;
+        b=KrOxRdIKORSEkIFiS8IkAViTv+Mh+TDllfunTzfiw9UNSnTtdFU7cvQzWnJrbIGQv
+         ZlPZq160x/O5GA6tqn1FquX1p/oR2pexakiCO9pMRXa39Ll/aME6v77oN7pKM5wKDf
+         zxgJeDrT4CZjfwdqo+6G4feOmfx0nq9uGkYOSTXh0woJlG+Cnv+PIw4F0RB8MEoPyw
+         wmElK68Bb1CgWGlSpnb7QrWdsuQXMpc5+IlzyQYQYhm3T+svSUVRyi18cRMl5nOmRL
+         WQQkP9jVuzQVeHnqMBcwLv4LmV4yZrYEdUM/pgeHesmj6AG1xW43o/JmUCfgcXJicH
+         QC9uLj/FnE9Wg==
+X-Virus-Scanned: amavisd-new at efficios.com
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id Zjufrg6Yr9g9; Tue,  1 Feb 2022 09:34:28 -0500 (EST)
+Received: from localhost.localdomain (192-222-180-24.qc.cable.ebox.net [192.222.180.24])
+        by mail.efficios.com (Postfix) with ESMTPSA id 6CC8733DE01;
+        Tue,  1 Feb 2022 09:34:28 -0500 (EST)
+From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        "H . Peter Anvin" <hpa@zytor.com>, Paul Turner <pjt@google.com>,
+        linux-api@vger.kernel.org,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        Florian Weimer <fw@deneb.enyo.de>, David.Laight@ACULAB.COM,
+        carlos@redhat.com, Peter Oskolkov <posk@posk.io>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Subject: [RFC PATCH v2 2/2] selftests/rseq: Implement rseq numa node id field selftest
+Date:   Tue,  1 Feb 2022 09:34:25 -0500
+Message-Id: <20220201143425.19907-2-mathieu.desnoyers@efficios.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220201143425.19907-1-mathieu.desnoyers@efficios.com>
+References: <20220201143425.19907-1-mathieu.desnoyers@efficios.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Do not try to use any SKB fields after the packet has been passed up in the
-receive stack.
+Test the NUMA node id extension rseq field. Compare it against the value
+returned by the getcpu(2) system call while pinned on a specific core.
 
-This error was reported as shown below:
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-
-Fixes: f3cad2611a77 (net: sparx5: add hostmode with phylink support)
-
-Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
+Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
 ---
- drivers/net/ethernet/microchip/sparx5/sparx5_packet.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/testing/selftests/rseq/basic_test.c |  5 ++++
+ tools/testing/selftests/rseq/rseq-abi.h   | 23 ++++++++++++++++
+ tools/testing/selftests/rseq/rseq.c       | 24 ++++++++++++++---
+ tools/testing/selftests/rseq/rseq.h       | 32 +++++++++++++++++++++++
+ 4 files changed, 81 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c b/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
-index dc7e5ea6ec15..ebdce4b35686 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
-@@ -145,8 +145,8 @@ static void sparx5_xtr_grp(struct sparx5 *sparx5, u8 grp, bool byte_swap)
- 	skb_put(skb, byte_cnt - ETH_FCS_LEN);
- 	eth_skb_pad(skb);
- 	skb->protocol = eth_type_trans(skb, netdev);
--	netif_rx(skb);
- 	netdev->stats.rx_bytes += skb->len;
-+	netif_rx(skb);
- 	netdev->stats.rx_packets++;
+diff --git a/tools/testing/selftests/rseq/basic_test.c b/tools/testing/selftests/rseq/basic_test.c
+index d8efbfb89193..a49b88cb20a3 100644
+--- a/tools/testing/selftests/rseq/basic_test.c
++++ b/tools/testing/selftests/rseq/basic_test.c
+@@ -22,6 +22,8 @@ void test_cpu_pointer(void)
+ 	CPU_ZERO(&test_affinity);
+ 	for (i = 0; i < CPU_SETSIZE; i++) {
+ 		if (CPU_ISSET(i, &affinity)) {
++			int node;
++
+ 			CPU_SET(i, &test_affinity);
+ 			sched_setaffinity(0, sizeof(test_affinity),
+ 					&test_affinity);
+@@ -29,6 +31,9 @@ void test_cpu_pointer(void)
+ 			assert(rseq_current_cpu() == i);
+ 			assert(rseq_current_cpu_raw() == i);
+ 			assert(rseq_cpu_start() == i);
++			node = rseq_fallback_current_node();
++			assert(rseq_current_node() == node);
++			assert(rseq_current_node_raw() == node);
+ 			CPU_CLR(i, &test_affinity);
+ 		}
+ 	}
+diff --git a/tools/testing/selftests/rseq/rseq-abi.h b/tools/testing/selftests/rseq/rseq-abi.h
+index a8c44d9af71f..850827e8d089 100644
+--- a/tools/testing/selftests/rseq/rseq-abi.h
++++ b/tools/testing/selftests/rseq/rseq-abi.h
+@@ -146,6 +146,29 @@ struct rseq_abi {
+ 	 *     this thread.
+ 	 */
+ 	__u32 flags;
++	__u32 padding1[3];
++
++	/*
++	 * This is the end of the original rseq ABI.
++	 * This is a valid end of rseq ABI for the purpose of rseq registration
++	 * rseq_len.
++	 * The original rseq ABI use "sizeof(struct rseq)" on registration,
++	 * thus requiring the padding above.
++	 */
++
++	/*
++	 * Restartable sequences node_id field. Updated by the kernel. Read by
++	 * user-space with single-copy atomicity semantics. This field should
++	 * only be read by the thread which registered this data structure.
++	 * Aligned on 32-bit. Contains the current NUMA node ID.
++	 */
++	__u32 node_id;
++
++	/*
++	 * This is a valid end of rseq ABI for the purpose of rseq registration
++	 * rseq_len. Use the offset immediately after the node_id field as
++	 * rseq_len.
++	 */
+ } __attribute__((aligned(4 * sizeof(__u64))));
+ 
+ #endif /* _RSEQ_ABI_H */
+diff --git a/tools/testing/selftests/rseq/rseq.c b/tools/testing/selftests/rseq/rseq.c
+index 07ba0d463a96..4b0e68051db8 100644
+--- a/tools/testing/selftests/rseq/rseq.c
++++ b/tools/testing/selftests/rseq/rseq.c
+@@ -58,6 +58,11 @@ static int sys_rseq(struct rseq_abi *rseq_abi, uint32_t rseq_len,
+ 	return syscall(__NR_rseq, rseq_abi, rseq_len, flags, sig);
  }
-
---
-2.35.1
+ 
++static int sys_getcpu(unsigned *cpu, unsigned *node)
++{
++	return syscall(__NR_getcpu, cpu, node, NULL);
++}
++
+ int rseq_available(void)
+ {
+ 	int rc;
+@@ -83,7 +88,7 @@ int rseq_register_current_thread(void)
+ 		/* Treat libc's ownership as a successful registration. */
+ 		return 0;
+ 	}
+-	rc = sys_rseq(&__rseq_abi, sizeof(struct rseq_abi), 0, RSEQ_SIG);
++	rc = sys_rseq(&__rseq_abi, rseq_offsetofend(struct rseq_abi, node_id), 0, RSEQ_SIG);
+ 	if (rc)
+ 		return -1;
+ 	assert(rseq_current_cpu_raw() >= 0);
+@@ -98,7 +103,7 @@ int rseq_unregister_current_thread(void)
+ 		/* Treat libc's ownership as a successful unregistration. */
+ 		return 0;
+ 	}
+-	rc = sys_rseq(&__rseq_abi, sizeof(struct rseq_abi), RSEQ_ABI_FLAG_UNREGISTER, RSEQ_SIG);
++	rc = sys_rseq(&__rseq_abi, rseq_offsetofend(struct rseq_abi, node_id), RSEQ_ABI_FLAG_UNREGISTER, RSEQ_SIG);
+ 	if (rc)
+ 		return -1;
+ 	return 0;
+@@ -121,7 +126,7 @@ void rseq_init(void)
+ 		return;
+ 	rseq_ownership = 1;
+ 	rseq_offset = (void *)&__rseq_abi - rseq_thread_pointer();
+-	rseq_size = sizeof(struct rseq_abi);
++	rseq_size = rseq_offsetofend(struct rseq_abi, node_id);
+ 	rseq_flags = 0;
+ }
+ 
+@@ -146,3 +151,16 @@ int32_t rseq_fallback_current_cpu(void)
+ 	}
+ 	return cpu;
+ }
++
++int32_t rseq_fallback_current_node(void)
++{
++	uint32_t cpu_id, node_id;
++	int ret;
++
++	ret = sys_getcpu(&cpu_id, &node_id);
++	if (ret) {
++		perror("sys_getcpu()");
++		return ret;
++	}
++	return (int32_t) node_id;
++}
+diff --git a/tools/testing/selftests/rseq/rseq.h b/tools/testing/selftests/rseq/rseq.h
+index 6bd0ac466b4a..9d5ec4d66d98 100644
+--- a/tools/testing/selftests/rseq/rseq.h
++++ b/tools/testing/selftests/rseq/rseq.h
+@@ -16,9 +16,19 @@
+ #include <errno.h>
+ #include <stdio.h>
+ #include <stdlib.h>
++#include <stddef.h>
+ #include "rseq-abi.h"
+ #include "compiler.h"
+ 
++#ifndef rseq_sizeof_field
++#define rseq_sizeof_field(TYPE, MEMBER) sizeof((((TYPE *)0)->MEMBER))
++#endif
++
++#ifndef rseq_offsetofend
++#define rseq_offsetofend(TYPE, MEMBER) \
++	(offsetof(TYPE, MEMBER)	+ rseq_sizeof_field(TYPE, MEMBER))
++#endif
++
+ /*
+  * Empty code injection macros, override when testing.
+  * It is important to consider that the ASM injection macros need to be
+@@ -115,6 +125,11 @@ int rseq_unregister_current_thread(void);
+  */
+ int32_t rseq_fallback_current_cpu(void);
+ 
++/*
++ * Restartable sequence fallback for reading the current node number.
++ */
++int32_t rseq_fallback_current_node(void);
++
+ /*
+  * Values returned can be either the current CPU number, -1 (rseq is
+  * uninitialized), or -2 (rseq initialization has failed).
+@@ -124,6 +139,15 @@ static inline int32_t rseq_current_cpu_raw(void)
+ 	return RSEQ_ACCESS_ONCE(rseq_get_abi()->cpu_id);
+ }
+ 
++/*
++ * Current NUMA node number.
++ */
++static inline uint32_t rseq_current_node_raw(void)
++{
++	assert((int) rseq_size >= rseq_offsetofend(struct rseq_abi, node_id));
++	return RSEQ_ACCESS_ONCE(rseq_get_abi()->node_id);
++}
++
+ /*
+  * Returns a possible CPU number, which is typically the current CPU.
+  * The returned CPU number can be used to prepare for an rseq critical
+@@ -150,6 +174,14 @@ static inline uint32_t rseq_current_cpu(void)
+ 	return cpu;
+ }
+ 
++static inline uint32_t rseq_current_node(void)
++{
++	if (rseq_likely((int) rseq_size >= rseq_offsetofend(struct rseq_abi, node_id)))
++		return rseq_current_node_raw();
++	else
++		return rseq_fallback_current_node();
++}
++
+ static inline void rseq_clear_rseq_cs(void)
+ {
+ 	RSEQ_WRITE_ONCE(rseq_get_abi()->rseq_cs.arch.ptr, 0);
+-- 
+2.17.1
 
