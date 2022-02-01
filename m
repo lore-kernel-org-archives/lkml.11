@@ -2,98 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF525C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 14:32:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1DA6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 14:32:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239334AbiBAOca (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 09:32:30 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:44680 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234833AbiBAOc2 (ORCPT
+        id S239353AbiBAOcb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 09:32:31 -0500
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:22637 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239245AbiBAOc3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 09:32:28 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1FE7BB82E40;
-        Tue,  1 Feb 2022 14:32:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 384B6C340EB;
-        Tue,  1 Feb 2022 14:32:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643725945;
-        bh=SzL6/uvmByac7kgNmmnjoJZkWV6BXp/MpjW3ybQpzdI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=AoE0UsWdeRY0arwk4DA4FD2UKfkeG5PwlGyJLj3RqWSw/3CiZnIq9Ni9yyHJTu0H+
-         N50Y3O4B/nUgVWpH3BgP4kiptq6J2lFUJkZHdo91Z1jHbRdepnQolYMoi41aVlkOoo
-         i+L9puv9/Xc9hpx/CFRIXDd2WQZYHpt24hAzoOaQ=
-Date:   Tue, 1 Feb 2022 15:32:23 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>
-Subject: Re: [PATCH 5.16 138/200] mptcp: keep track of local endpoint still
- available for each msk
-Message-ID: <YflEd6+5rdsfKojI@kroah.com>
-References: <20220131105233.561926043@linuxfoundation.org>
- <20220131105238.198209212@linuxfoundation.org>
- <26d216d1-355-e132-a868-529f15c9b660@linux.intel.com>
- <YflD6pbqi/EGPG3f@kroah.com>
+        Tue, 1 Feb 2022 09:32:29 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1643725949; x=1675261949;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=cvx6rDpgo2S07AWukGYA/bvd35FN6fHtN9yNaCsXVc8=;
+  b=w1Guz+k/IM8XWLOL6Z1QsilDovJIXZrwxH3vAdWSkdKl+lrH0VWeZS8x
+   47wjs3NOgoWFtVlnEeMYTuSR4mZL45Bso7mtgpZ3VGbX2jIcQxGXpOPYT
+   pSQ5JG73cC9FwC97Vc+NXFbbReTiQDsmJDedjHHDjoZhGL2wcTY4M8+9F
+   dak1+KpeTfrzrQxrNVW4BqWvhu1LCYwRaRHaagMSQZQT+UJ8geeaGtlyF
+   Ddvny7zxXfaae7IxzynutVxj8Ut+aNFji/r1nMDYztBTGy3SakryByF58
+   W7Q0CEvki6hq1spPZD+GAE+XDkMAr7Y1YpT94NXsb3eV7px3uwORIOGwT
+   A==;
+IronPort-SDR: ssFcxKs/aaimKr6x/JkrDr27s2loVvXUIBxzJ23jxGWgIIDRR+wWus+W8sEMpOy9UMGhrqf4PH
+ HbfxvALRKhmSDpWKKFG/KEAlWSIiGX78SimCUtAK9Zlq+FXVeOAgSGpM3kDUDLnPL9aTMi/Iht
+ S5u8vh9GI1jr160eW1wngmqv4vjFwsGVlOW9nfmutOk6k/iMPWrXyXzB3q7a9CdFEIA8V/tg55
+ qKZp6Op9MjNTNrZzuVKxJqaF2Imz05iItn289zCxBSsGFCVnikdKtUBvxIKspJvxj9VKMvUM7D
+ OUncKledePvanQI/DloNdLA5
+X-IronPort-AV: E=Sophos;i="5.88,334,1635231600"; 
+   d="scan'208";a="152105173"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Feb 2022 07:32:28 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 1 Feb 2022 07:32:28 -0700
+Received: from den-dk-m31857.microchip.com (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Tue, 1 Feb 2022 07:32:26 -0700
+From:   Steen Hegelund <steen.hegelund@microchip.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        <UNGLinuxDriver@microchip.com>, <netdev@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        "Dan Carpenter" <dan.carpenter@oracle.com>
+CC:     Steen Hegelund <steen.hegelund@microchip.com>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH net] net: sparx5: do not refer to skb after passing it on
+Date:   Tue, 1 Feb 2022 15:30:57 +0100
+Message-ID: <20220201143057.3533830-1-steen.hegelund@microchip.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YflD6pbqi/EGPG3f@kroah.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 01, 2022 at 03:30:02PM +0100, Greg Kroah-Hartman wrote:
-> On Mon, Jan 31, 2022 at 11:36:32AM -0800, Mat Martineau wrote:
-> > On Mon, 31 Jan 2022, Greg Kroah-Hartman wrote:
-> > 
-> > > From: Paolo Abeni <pabeni@redhat.com>
-> > > 
-> > > [ Upstream commit 86e39e04482b0aadf3ee3ed5fcf2d63816559d36 ]
-> > 
-> > Hi Greg -
-> > 
-> > Please drop this from the stable queue for both 5.16 and 5.15. It wasn't
-> > intended for backporting and we haven't checked for dependencies with other
-> > changes in this part of MPTCP subsystem.
-> > 
-> > In the mptcp tree we make sure to add Fixes: tags on every patch we think is
-> > eligible for the -stable tree. I know you're sifting through a lot of
-> > patches from subsystems that end up with important fixes arriving from the
-> > "-next" branches, and it seems like the scripts scooped up several MPTCP
-> > patches this time around that don't meet the -stable rules.
-> 
-> I think these were needed due to 8e9eacad7ec7 ("mptcp: fix msk traversal
-> in mptcp_nl_cmd_set_flags()") which you did tag with a "Fixes:" tag,
-> right?  Without these other commits, that one does not apply and it
-> looks like it should go into 5.15.y and 5.16.y.
-> 
-> Note, just putting a "Fixes:" tag does not guarantee if a commit will go
-> into a stable tree.  Please use the correct "Cc: stable@vger.kernel.org"
-> tag as the documentation asks for.
-> 
-> I'll go drop all of these mptcp patches, including 8e9eacad7ec7 ("mptcp:
-> fix msk traversal in mptcp_nl_cmd_set_flags()") for now.  If you want
-> them added back in, please let us know.
+Do not try to use any SKB fields after the packet has been passed up in the
+receive stack.
 
-To be specific, I have dropped the following commits from the queues
-now, which was more than just these three that you asked:
+This error was reported as shown below:
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-602837e8479d ("mptcp: allow changing the "backup" bit by endpoint id")
-59060a47ca50 ("mptcp: clean up harmless false expressions")
-86e39e04482b ("mptcp: keep track of local endpoint still available for each msk")
-8e9eacad7ec7 ("mptcp: fix msk traversal in mptcp_nl_cmd_set_flags()")
-a4c0214fbee9 ("mptcp: fix removing ids bitmap setting")
-9846921dba49 ("selftests: mptcp: fix ipv6 routing setup")
+Fixes: f3cad2611a77 (net: sparx5: add hostmode with phylink support)
 
-If you want them back, please let us know.
+Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
+---
+ drivers/net/ethernet/microchip/sparx5/sparx5_packet.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-thanks,
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c b/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
+index dc7e5ea6ec15..ebdce4b35686 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
+@@ -145,8 +145,8 @@ static void sparx5_xtr_grp(struct sparx5 *sparx5, u8 grp, bool byte_swap)
+ 	skb_put(skb, byte_cnt - ETH_FCS_LEN);
+ 	eth_skb_pad(skb);
+ 	skb->protocol = eth_type_trans(skb, netdev);
+-	netif_rx(skb);
+ 	netdev->stats.rx_bytes += skb->len;
++	netif_rx(skb);
+ 	netdev->stats.rx_packets++;
+ }
 
-greg k-h
+--
+2.35.1
+
