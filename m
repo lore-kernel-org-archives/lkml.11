@@ -2,141 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74DB7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 14:15:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F257C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 14:17:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239141AbiBAOPZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 09:15:25 -0500
-Received: from smtp-out1.suse.de ([195.135.220.28]:45268 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239129AbiBAOPZ (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 09:15:25 -0500
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 12C20210FB;
-        Tue,  1 Feb 2022 14:15:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1643724924; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=xV7svizP3OfMYOgwKWIVNwCgg62pzpKys1nXAAzkk0Y=;
-        b=Jamssw3SvWmrNtmIlOjQHTDIuWJ/zqmGM3tooV00B2rIrwgQekL6zxoljkSd7X9N6OSX86
-        WND1VLJ8x3yeu9GMpF/PCmya7jrvu7M3OZlzpV/gmSZ9IAHKe971tIpq4btffuXkEnp9zb
-        2qg4pKHE/Icl7gLCaRkUzpyMPjG2RhQ=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1643724924;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=xV7svizP3OfMYOgwKWIVNwCgg62pzpKys1nXAAzkk0Y=;
-        b=1M3uLSehUJl3TfRqs61sMbV9+jPcG8d4LfXaHM9EgWlvSrIIPQeO+/NdgC9F5miMEtvRbz
-        5Yuleo6c0o2LJFCA==
-Received: from suse.de (unknown [10.163.43.106])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 17173A3B89;
-        Tue,  1 Feb 2022 14:15:23 +0000 (UTC)
-Date:   Tue, 1 Feb 2022 14:15:20 +0000
-From:   Mel Gorman <mgorman@suse.de>
-To:     Bharata B Rao <bharata@amd.com>
-Cc:     linux-kernel@vger.kernel.org, mingo@redhat.com,
-        peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
-        dishaa.talreja@amd.com, Wei Huang <wei.huang2@amd.com>
-Subject: Re: [RFC PATCH v0 1/3] sched/numa: Process based autonuma scan
- period framework
-Message-ID: <20220201141520.GB3301@suse.de>
-References: <20220128052851.17162-1-bharata@amd.com>
- <20220128052851.17162-2-bharata@amd.com>
- <20220131121714.GX3301@suse.de>
- <9f95a85f-5396-b8bd-50cf-c4eeeac2a013@amd.com>
+        id S239142AbiBAORr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 09:17:47 -0500
+Received: from mga12.intel.com ([192.55.52.136]:63417 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239002AbiBAORq (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 1 Feb 2022 09:17:46 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643725066; x=1675261066;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=+GLfgRA4ZVTebpf7cqDVMOf0gvYeW+Um8SmJ4jWt1Zk=;
+  b=OeNXUIFa6h9YmtoT7kJD2X6yrGpPnqcnfHCUBUOVGmsRs7cJRXYPKrEH
+   alcx/QMErLBQTVkwvqyULeJdQfF+vUBO1F7oXh0rqdAOVcxUol+EQXTmf
+   2meXCB6ODII6eypYYxndfQRdoVdDMWb94RJEQNg3/4tQz92PyPZDyKK8H
+   1ew9LeADvh0UGPMd2G2CWQgNr23FWgMzr5o3+rBvIwc6sCHGf7OrTWjCh
+   XdikmH9Ax32Vswh7MUCUC48kpOTXBFYDdM46Yi9hLrtmA8hp72ThR2mmq
+   JQjga/oA0GCKO6no6JofES3D01ocCDypv5Ugd5RaqKb0+MLFsFvxMbZPm
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10244"; a="227670182"
+X-IronPort-AV: E=Sophos;i="5.88,334,1635231600"; 
+   d="scan'208";a="227670182"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2022 06:17:46 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,334,1635231600"; 
+   d="scan'208";a="479702820"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 01 Feb 2022 06:17:45 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nEtya-000TLs-Eb; Tue, 01 Feb 2022 14:17:44 +0000
+Date:   Tue, 1 Feb 2022 22:17:38 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [dvyukov:dvyukov-sigtrap-arm64 1/1]
+ arch/arm64/kernel/signal.c:566:39: error: 'sf' undeclared; did you mean
+ 's8'?
+Message-ID: <202202012216.ccEQmUmT-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <9f95a85f-5396-b8bd-50cf-c4eeeac2a013@amd.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 01, 2022 at 05:52:55PM +0530, Bharata B Rao wrote:
-> On 1/31/2022 5:47 PM, Mel Gorman wrote:
-> > On Fri, Jan 28, 2022 at 10:58:49AM +0530, Bharata B Rao wrote:
-> >> From: Disha Talreja <dishaa.talreja@amd.com>
-> >>
-> >> Add a new framework that calculates autonuma scan period
-> >> based on per-process NUMA fault stats.
-> >>
-> >> NUMA faults can be classified into different categories, such
-> >> as local vs. remote, or private vs. shared. It is also important
-> >> to understand such behavior from the perspective of a process.
-> >> The per-process fault stats added here will be used for
-> >> calculating the scan period in the adaptive NUMA algorithm.
-> >>
-> > 
-> > Be more specific no how the local vs remote, private vs shared states
-> > are reflections of per-task activity of the same.
-> 
-> Sure, will document the algorithm better. However the overall thinking
-> here is that the address-space scanning is a per-process activity and
-> hence the scan period value derived from the accumulated per-process
-> faults is more appropriate than calculating per-task (per-thread) scan
-> periods. Participating threads may have their local/shared and private/shared
-> behaviors, but when aggregated at the process level, it gives a better
-> input for eventual scan period variation. The understanding is that individual
-> thread fault rates will start altering the overall process metrics in
-> such a manner that we respond by changing the scan rate to do more aggressive
-> or less aggressive scanning.  
-> 
+tree:   https://github.com/dvyukov/linux dvyukov-sigtrap-arm64
+head:   dfd6903d9c6538e3ad792c1df6ffbcce2072b12b
+commit: dfd6903d9c6538e3ad792c1df6ffbcce2072b12b [1/1] arm64: try to fix arm64 watchpoints
+config: arm64-allyesconfig (https://download.01.org/0day-ci/archive/20220201/202202012216.ccEQmUmT-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/dvyukov/linux/commit/dfd6903d9c6538e3ad792c1df6ffbcce2072b12b
+        git remote add dvyukov https://github.com/dvyukov/linux
+        git fetch --no-tags dvyukov dvyukov-sigtrap-arm64
+        git checkout dfd6903d9c6538e3ad792c1df6ffbcce2072b12b
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/kernel/
 
-I don't have anything to add on your other responses as it would mostly
-be an acknowledgment of your response.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-However, the major concern I have is that address-space wide decisions
-on scan rates has no sensible means of adapting to thread-specific
-requirements. I completely agree that it will result in more stable scan
-rates, particularly the adjustments. It also side-steps a problem where
-new threads may start with a scan rate that is completely inappropriate.
+All error/warnings (new ones prefixed by >>):
 
-However, I worry that it would be limited overall because each thread
-potentially has unique behaviour which is not obvious in a workload like
-NAS where threads are all executing similar instructions on different
-data. For other applications, threads may operate on thread-local areas
-only (low scan rate), others could operate on shared only regresions (high
-scan rate until back off and interleave), threads can has phase behaviour
-(manager thread collecting data from worker threads) and threads can have
-different lifetimes and phase behaviour. Each thread would have a different
-optimal scan rate to decide if memory needs to be migrated to a local node
-or not. I don't see how address-space wide statistics could every be mapped
-back to threads to adapt scan rates based on thread-specific behaviour.
+   arch/arm64/kernel/signal.c: In function '__arm64_sys_rt_sigreturn':
+>> arch/arm64/kernel/signal.c:566:39: error: 'sf' undeclared (first use in this function); did you mean 's8'?
+     566 |         if (!__copy_from_user(&info, &sf->info, sizeof(info)) &&
+         |                                       ^~
+         |                                       s8
+   arch/arm64/kernel/signal.c:566:39: note: each undeclared identifier is reported only once for each function it appears in
+   arch/arm64/kernel/signal.c: At top level:
+   arch/arm64/kernel/signal.c:930:6: warning: no previous prototype for 'do_notify_resume' [-Wmissing-prototypes]
+     930 | void do_notify_resume(struct pt_regs *regs, unsigned long thread_flags)
+         |      ^~~~~~~~~~~~~~~~
+--
+>> arch/arm64/kernel/hw_breakpoint.c:754:6: warning: no previous prototype for 'hw_bp_single_step' [-Wmissing-prototypes]
+     754 | void hw_bp_single_step(struct pt_regs *regs)
+         |      ^~~~~~~~~~~~~~~~~
 
-Thread scanning on the other hand can be improved in multiple ways. If
-nothing else, they can do redundant scanning of regions that are
-not relveant to a task which gets increasingly problematic when VSZ
-increases. The obvious problems are
 
-1. Scan based on page table updates, not address ranges to mitigate
-   problems with THP vs base page updates
+vim +566 arch/arm64/kernel/signal.c
 
-2. Move scan delay to be a per-vma structure that is kmalloced if
-   necessary instead of being address space wide.
+   536	
+   537	SYSCALL_DEFINE0(rt_sigreturn)
+   538	{
+   539		struct pt_regs *regs = current_pt_regs();
+   540		struct rt_sigframe __user *frame;
+   541		struct siginfo info;
+   542	
+   543		/* Always make any pending restarted system calls return -EINTR */
+   544		current->restart_block.fn = do_no_restart_syscall;
+   545	
+   546		/*
+   547		 * Since we stacked the signal on a 128-bit boundary, then 'sp' should
+   548		 * be word aligned here.
+   549		 */
+   550		if (regs->sp & 15)
+   551			goto badframe;
+   552	
+   553		frame = (struct rt_sigframe __user *)regs->sp;
+   554	
+   555		if (!access_ok(frame, sizeof (*frame)))
+   556			goto badframe;
+   557	
+   558		if (restore_sigframe(regs, frame))
+   559			goto badframe;
+   560	
+   561		if (restore_altstack(&frame->uc.uc_stack))
+   562			goto badframe;
+   563	
+   564		// TODO: memorize the original return PC in setup_rt_frame
+   565		// and ensure we are returning to the same PC.
+ > 566		if (!__copy_from_user(&info, &sf->info, sizeof(info)) &&
+   567			info.si_signo == SIGTRAP && info.si_code == TRAP_PERF &&
+   568			info.si_perf_type == PERF_TYPE_BREAKPOINT)
+   569			hw_bp_single_step(regs);
+   570	
+   571		return regs->regs[0];
+   572	
+   573	badframe:
+   574		arm64_notify_segfault(regs->sp);
+   575		return 0;
+   576	}
+   577	
 
-3. Track what threads access a VMA. The suggestion was to use a unsigned
-   long pid_mask and use the lower bits to tag approximately what
-   threads access a VMA. Skip VMAs that did not trap a fault. This would
-   be approximate because of PID collisions but would reduce scanning
-   of areas the thread is not interested in
-
-4. Track active regions within VMAs. Very coarse tracking, use unsigned
-   long to trap what ranges are active
-
-In different ways, this would reduce the amount of scanning work threads
-do and focuses them on regions of relevance to reduce overhead overall
-without losing thread-specific details.
-
-Unfortunately, I have not had the time yet to prototype anything.
-
--- 
-Mel Gorman
-SUSE Labs
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
