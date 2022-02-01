@@ -2,160 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC2F2C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 11:13:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67B2DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 11:14:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237145AbiBALN1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 06:13:27 -0500
-Received: from mailout3.samsung.com ([203.254.224.33]:45222 "EHLO
-        mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235491AbiBALN0 (ORCPT
+        id S237175AbiBALOA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 06:14:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36872 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235491AbiBALN7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 06:13:26 -0500
-Received: from epcas5p3.samsung.com (unknown [182.195.41.41])
-        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220201111323epoutp03a816168c346af5c940b8a9a21bc2bebb~PpS2GkSqg1132111321epoutp030
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Feb 2022 11:13:23 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220201111323epoutp03a816168c346af5c940b8a9a21bc2bebb~PpS2GkSqg1132111321epoutp030
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1643714004;
-        bh=ChhcF1NoORvS1k+xf7ga/YjFUmM2ShmAbsLkCpu8fL4=;
-        h=Date:Subject:Reply-To:From:To:CC:In-Reply-To:References:From;
-        b=srhfqMY1mATVRdHSLvSvTUWaqJXhC5A6O93ECZpAhxz6cOGpYcg/D7A4zV9ERAIu6
-         Qub/V9vbSuUbBUQN9Ftqgg+6R4eoGD0hFb8Q5QwLJNMNQy2NZb9W30ObiUILjHCq/5
-         8ETnA9n18t4zbo5v1RsoU9juAs1s1FnwvQz2x6Iw=
-Received: from epsmges5p2new.samsung.com (unknown [182.195.42.74]) by
-        epcas5p3.samsung.com (KnoxPortal) with ESMTP id
-        20220201111322epcas5p3d59eb6cb20c16c227f96996f76eefde1~PpS0ymN7b0747107471epcas5p3T;
-        Tue,  1 Feb 2022 11:13:22 +0000 (GMT)
-X-AuditID: b6c32a4a-de5ff7000000b6e6-d8-61f915968964
-Received: from epcas5p1.samsung.com ( [182.195.41.39]) by
-        epsmges5p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        E6.F0.46822.69519F16; Tue,  1 Feb 2022 20:12:22 +0900 (KST)
-Date:   Tue, 01 Feb 2022 15:54:23 +0530
-Message-ID: <483084104.1497479.1643711063683@mail-kr5-2>
-Mime-Version: 1.0
-Subject: RE:(2) [PATCH 1/1] kallsyms: print module name in %ps/S case when
- KALLSYMS is disabled
-Reply-To: maninder1.s@samsung.com
-Sender: Maninder Singh <maninder1.s@samsung.com>
-From:   Maninder Singh <maninder1.s@samsung.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-CC:     "pmladek@suse.com" <pmladek@suse.com>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "senozhatsky@chromium.org" <senozhatsky@chromium.org>,
-        "linux@rasmusvillemoes.dk" <linux@rasmusvillemoes.dk>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "wangkefeng.wang@huawei.com" <wangkefeng.wang@huawei.com>,
-        "mbenes@suse.cz" <mbenes@suse.cz>,
-        "swboyd@chromium.org" <swboyd@chromium.org>,
-        "ojeda@kernel.org" <ojeda@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "will@kernel.org" <will@kernel.org>,
-        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
-        Vaneet Narang <v.narang@samsung.com>
-X-Priority: 3
-X-Content-Kind-Code: NORMAL
-In-Reply-To: <YfkBQNBEPrAJ9jKw@smile.fi.intel.com>
-X-Drm-Type: N,general
-X-Msg-Generator: Mail
-X-Msg-Type: PERSONAL
-X-Reply-Demand: N
-X-CMS-MailID: 20220201102423epcms5p7e0fec070047e3134bcb698511aa55761
-Content-Type: multipart/mixed;
-        boundary="----=_Part_1497478_934560393.1643711063682"
-X-Sendblock-Type: REQ_APPROVE
-CMS-TYPE: 105P
-X-Brightmail-Tracker: H4sIAAAAAAAAA02Se0xTZxjG951bS2fJacHtlToIVYeggLI5jtFdTJw5LiTTbIpxTHYCJ2CE
-        0rRcxM2EkU4mgsxxtSJ2SBRKQwGBNly6gcyBsFB1LgVlFAqazDBRdCiMMMpps/33+573ea/5
-        xLhcRwWIj6rSeY2KS1FSEqLtemhIeNnql9yWlmIFU2k2UUxhbjnGPL5SgJg77ZUU49JXUcxo
-        rQNj6i5dRcyS6znJ2L51YkxHUzXF/HJ/CmN6+i8i5uvZMcTo7m/7wJc1VZkQeyHnFsHqbCMi
-        Vtc7TbLNxtMU21exQLBV/ftZe/4x9myLEbHmlrsEO2joFbGzzYH7Vh2W7EzkU45m8prI976Q
-        JI+ey0XqooDjA0s38RzUAPnIRwz02/DIMUTkI4lYTncgKHPNkO4AQW+AjuEJys1SmgH75NAy
-        i5dZBotWP7fsR3PQV/4cd7OcDgZ7hQm5LX70Fphv3eiWKToCjO2dhJv96Who+L56pSJO55LQ
-        ajwpjCCFirwpQmAFWK62Ijf70FFQ1t+NC/pqGK6fFnn58Y1LSGB/+OaPXz0eGThfdnj0tVB/
-        rXBlLaDPIDD/1eV5VCAomCjzZESDucboqbob9H29ImG6g1DS/g8l6G9A6c0GTNB9oXBhEvNO
-        ba3y8gbQDTeS3g1mnzzxbMPCuYILSDhuA4KnN34WfYeC9P/dUf+/dgIHgWW6EndbcDoUzO2R
-        gvwmlBQ981jegZy8UkLgYCg5My4yIJERreHV2tQkXrtNHaXisyK0XKo2Q5UUkZCW2oxWPmfY
-        R1Y07pyJ6EGYGPWg9cvpE431dhRAqNJUvNJf2vXDHCeXJnLZJ3hNWrwmI4XX9iCFmFC+Lh1I
-        auTkdBKXzh/jeTWv8UYxsU9ADvaVpWYJxo6Qc4lQuxht+3LXaG/Wkc8OZKgkMQrJjk33ih0/
-        kavW0U4yMm3vg3e7T55tJhcv4yd8+qZDnMWNd9KZnbNrP33rofH9y0Wb9bJ1meW2kvnND0qt
-        tzcN1WafEm2cC4oOjH9U3cSfittlMPsalG3Be7NTR9IP6e3K0dNkzZo4NIFd/PHDBMWLqYTO
-        OmyfQy1Ptjhm4ibnR8rx2E+u/M23FOHXMv+UfR6bH2IMH/x9R6zllRfbZQtLW3fHqH/rct3u
-        /FhV6bd+PCZ8//Ww1x6ed7j6Xz18qw43xRY8ywgNVFm5Q922se1PoyazDMcHQ+L3tA0Quf55
-        dfforqa7oCS0ydzWMFyj5f4FrdjEVhcEAAA=
-X-CMS-RootMailID: 20220201040100epcas5p180ef094058fc9c76b4b94d9d673fc5fc
-References: <YfkBQNBEPrAJ9jKw@smile.fi.intel.com>
-        <20220201040044.1528568-1-maninder1.s@samsung.com>
-        <CGME20220201040100epcas5p180ef094058fc9c76b4b94d9d673fc5fc@epcms5p7>
+        Tue, 1 Feb 2022 06:13:59 -0500
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59005C061714;
+        Tue,  1 Feb 2022 03:13:59 -0800 (PST)
+Received: by mail-lf1-x12a.google.com with SMTP id k13so772469lfg.9;
+        Tue, 01 Feb 2022 03:13:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version;
+        bh=ZLYZfziVY8pFIn1AwlQRyIsot8ffWyZ6aY97MmqYPzA=;
+        b=A1mXrWYeowDBUt8KZk4/ZUX0bARtJRkY7vu0JsIKVdSqPM1XFiZkvJm6qaBKFEPWaR
+         IVmyKFdpCPfyl9D0Ym68nl0gprAyQqbew0ZJJPLeT2t9m9CoEIy07EW57kJ8zle8HJjc
+         PLil9LfZVFUVm9axV33gEKG1L2uZgzt/dk7TN2RU0y5/1rqPLTx39z0lBJmHDk+k+CGP
+         O5iDgGDnFldkqGxHOWfkNVYErACZv96QSjizeSD5w6MitJDNB5eNSM9uRQ4UE+ROfH5O
+         bWZq2kUrcRQsP+EFFhdeGRouSMLCl6iFGIdP5vO6fuqDVJXyosD9rNzkUf53ZoKfYgqC
+         YTyw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version;
+        bh=ZLYZfziVY8pFIn1AwlQRyIsot8ffWyZ6aY97MmqYPzA=;
+        b=wx2OGlYomXwyo38YghGE0WZYjjTM5NZ8K6P7PT/iyLrEhPby4AC+viAkKgaN6U8Kuu
+         VcPQq0LOIYBYiu8S90hpBvbdihmE8jdqm3U43JBlnzgwbxfOr3vTKAxsrH3VhrVurL1T
+         4KQFxmpVE+rcvINOoHgq3L20b8bvu8VwSBcT6qmTGSu3uEk0ZZpq4ILiJFxfsyfyFohq
+         o6ZBrtMElLxrafmzJlPE3getGS5T6gqNnIfiJRSziVWiYWMiui4aX2740LHrUcaiw7ad
+         z/NetrZ3yh8cB6B4aBN4vtKjyW8jtTcJ38vKDF176Ljt4apua4Ss2MyA+677Rij/v7Y2
+         kg5A==
+X-Gm-Message-State: AOAM530h7WEF75q+kKf8tKF/SRPZeYIqxU03ytG9oJmDGLajlFRKFrnw
+        LPO5b+zWXeIBvIMTlJjsDyk=
+X-Google-Smtp-Source: ABdhPJwHcLQnCeVCs6tFlKt2rjNiLnX1ifC0fhaynlqlF+0iVAOqMHmfof1sASzTBbfiBNi4WcUNXA==
+X-Received: by 2002:a05:6512:e86:: with SMTP id bi6mr19223352lfb.321.1643714037544;
+        Tue, 01 Feb 2022 03:13:57 -0800 (PST)
+Received: from eldfell ([194.136.85.206])
+        by smtp.gmail.com with ESMTPSA id f22sm4033821lfj.261.2022.02.01.03.13.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Feb 2022 03:13:57 -0800 (PST)
+Date:   Tue, 1 Feb 2022 13:13:54 +0200
+From:   Pekka Paalanen <ppaalanen@gmail.com>
+To:     Thomas Zimmermann <tzimmermann@suse.de>
+Cc:     Javier Martinez Canillas <javierm@redhat.com>,
+        linux-kernel@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        dri-devel@lists.freedesktop.org,
+        Noralf =?UTF-8?B?VHLDuG5uZXM=?= <noralf@tronnes.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH 2/4] drm/format-helper: Add
+ drm_fb_gray8_to_mono_reversed()
+Message-ID: <20220201131354.26ccae23@eldfell>
+In-Reply-To: <e52560f0-bd0c-b51b-af1b-bd4be2df8702@suse.de>
+References: <20220131201225.2324984-1-javierm@redhat.com>
+        <20220131201225.2324984-3-javierm@redhat.com>
+        <e52560f0-bd0c-b51b-af1b-bd4be2df8702@suse.de>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="Sig_/Wm1.Z9QEq88r=0UglNQ17h8";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-------=_Part_1497478_934560393.1643711063682
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="utf-8"
+--Sig_/Wm1.Z9QEq88r=0UglNQ17h8
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Hi,
+On Tue, 1 Feb 2022 10:59:43 +0100
+Thomas Zimmermann <tzimmermann@suse.de> wrote:
 
+> Hi
+>=20
+> Am 31.01.22 um 21:12 schrieb Javier Martinez Canillas:
+> > Add support to convert 8-bit grayscale to reversed monochrome for drive=
+rs
+> > that control monochromatic displays, that only have 1 bit per pixel dep=
+th.
+> >=20
+> > This helper function was based on repaper_gray8_to_mono_reversed() from
+> > the drivers/gpu/drm/tiny/repaper.c driver. =20
+>=20
+> You could convert repaper to the new helper.
+>=20
+> >=20
+> > Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+> > ---
+> >=20
+> >   drivers/gpu/drm/drm_format_helper.c | 35 +++++++++++++++++++++++++++++
+> >   include/drm/drm_format_helper.h     |  2 ++
+> >   2 files changed, 37 insertions(+)
+> >=20
+> > diff --git a/drivers/gpu/drm/drm_format_helper.c b/drivers/gpu/drm/drm_=
+format_helper.c
+> > index 0f28dd2bdd72..bf477c136082 100644
+> > --- a/drivers/gpu/drm/drm_format_helper.c
+> > +++ b/drivers/gpu/drm/drm_format_helper.c
+> > @@ -584,3 +584,38 @@ int drm_fb_blit_toio(void __iomem *dst, unsigned i=
+nt dst_pitch, uint32_t dst_for
+> >   	return -EINVAL;
+> >   }
+> >   EXPORT_SYMBOL(drm_fb_blit_toio);
+> > +
+> > +/**
+> > + * drm_fb_gray8_to_mono_reversed - Convert grayscale to reversed monoc=
+hrome
+> > + * @dst: reversed monochrome destination buffer
+> > + * @src: 8-bit grayscale source buffer
+> > + * @clip: Clip rectangle area to copy
+> > + *
+> > + * DRM doesn't have native monochrome or grayscale support.
+> > + * Such drivers can announce the commonly supported XR24 format to use=
+rspace
+> > + * and use drm_fb_xrgb8888_to_gray8() to convert to grayscale and then=
+ this
+> > + * helper function to convert to the native format.
+> > + */
+> > +void drm_fb_gray8_to_mono_reversed(void *dst, void *src, const struct =
+drm_rect *clip) =20
+>=20
+> IMHO it would be better to have a function that converts xrgb8888 to=20
+> mono and let it handle the intermediate step of gray8.
+>=20
+> > +{
+> > +	size_t width =3D drm_rect_width(clip);
+> > +	size_t height =3D drm_rect_width(clip);
+> > +
+> > +	u8 *mono =3D dst, *gray8 =3D src;
+> > +	unsigned int y, xb, i;
+> > +
+> > +	for (y =3D 0; y < height; y++)
+> > +		for (xb =3D 0; xb < width / 8; xb++) { =20
+>=20
+> The inner loop should probably go into a separate helper function. See=20
+> the drm_fb_*_line() helpers in this file
+>=20
+> At some point, we's want to have a single blit helper that takes source=20
+> and destination formats/buffers. It would then pick the correct per-line=
+=20
+> helper for the conversion. So yeah, we'd want something composable.
 
->> ..
->> 
->> [   19.276023] Call trace:
->> [   19.276277]  0xffff800000ec0000+0x28 [crash]
->> [   19.276567]  0xffff800000ec0000+0x58 [crash]
->> [   19.276727]  0xffff800000ec0000+0x74 [crash]
->> [   19.276866]  0xffff8000080127d0
->> [   19.276978]  0xffff80000812d95c
->> [   19.277085]  0xffff80000812f554
- 
->> Signed-off-by: Vaneet Narang <v.narang@samsung.com>
->> Signed-off-by: Maninder Singh <maninder1.s@samsung.com>
- 
-> Who is (are) the author(s)?
+Btw. VKMS is going to do blending, and it needs to support various
+formats, so the latest patches from Igor probably do something similar.
 
-Both are authors (Maninder and Vaneet).
-
-Sorry, forgot to use below signature.
-
-Co-developed-by: Vaneet Narang <v.narang@samsung.com>
-Signed-off-by: Vaneet Narang <v.narang@samsung.com>
-Signed-off-by: Maninder Singh <maninder1.s@samsung.com>
 
 Thanks,
-Maninder Singh
-------=_Part_1497478_934560393.1643711063682
-Content-Type: application/octet-stream
-Content-Disposition: attachment; filename="rcptInfo.txt"
-Content-Transfer-Encoding: base64
+pq
 
-DQogICA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT0NCiAgICAgIFN1YmplY3QgICAgOiBSZTogW1BBVENIIDEvMV0g
-a2FsbHN5bXM6IHByaW50IG1vZHVsZSBuYW1lIGluICVwcy9TIGNhc2Ugd2hlbiBLQUxMU1lNUyBp
-cyBkaXNhYmxlZA0KICAgICAgRnJvbSAgICAgICA6IG51bGwNCiAgICAgIFNlbnQgRGF0ZSAgOiAy
-MDIyLTAyLTAxIDE1OjE2ICBHTVQrNTozMA0KICAgPT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09DQogICAgICAgICAg
-ICAgICAgICBOYW1lICAgICAgICAgICAgICAgIFR5cGUgICAgICAgICAgSm9iIFRpdGxlICAgICAg
-ICAgICAgICAgICAgICAgICBEZXB0LiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBDb21w
-YW55ICAgICAgICAgICAgICAgIA0KICAgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09DQogICAgICBNYW5pbmRlciBT
-aW5naCAgICAgICAgICAgICAgICAgVE8gICAgICAgICBTdGFmZiBFbmdpbmVlciAgICAgICAgICAg
-ICBTeXN0ZW0gUy9XIEdyb3VwIC9TUkktRGVsaGkgICAgICAgICAgICAgICBTYW1zdW5nwqBFbGVj
-dHJvbmljc8KgDQogICAgICBwbWxhZGVrQHN1c2UuY29tICAgICAgICAgICAgICAgQ0MNCiAgICAg
-IHJvc3RlZHRAZ29vZG1pcy5vcmcgICAgICAgICAgICBDQw0KICAgICAgc2Vub3poYXRza3lAY2hy
-b21pdW0ub3JnICAgICAgIENDDQogICAgICBsaW51eEByYXNtdXN2aWxsZW1vZXMuZGsgICAgICAg
-Q0MNCiAgICAgIGFrcG1AbGludXgtZm91bmRhdGlvbi5vcmcgICAgICBDQw0KICAgICAgd2FuZ2tl
-ZmVuZy53YW5nQGh1YXdlaS5jb20gICAgIENDDQogICAgICBtYmVuZXNAc3VzZS5jeiAgICAgICAg
-ICAgICAgICAgQ0MNCiAgICAgIHN3Ym95ZEBjaHJvbWl1bS5vcmcgICAgICAgICAgICBDQw0KICAg
-ICAgb2plZGFAa2VybmVsLm9yZyAgICAgICAgICAgICAgIENDDQogICAgICBsaW51eC1rZXJuZWxA
-dmdlci5rZXJuZWwub3JnICAgQ0MNCiAgICAgIHdpbGxAa2VybmVsLm9yZyAgICAgICAgICAgICAg
-ICBDQw0KICAgICAgY2F0YWxpbi5tYXJpbmFzQGFybS5jb20gICAgICAgIENDDQogICAgICBWYW5l
-ZXQgTmFyYW5nICAgICAgICAgICAgICAgICAgQ0MgICAgICAgICBBc3NvY2lhdGUgQXJjaGl0ZWN0
-ICAgICAgICBTeXN0ZW0gUy9XIEdyb3VwIC9TUkktRGVsaGkgICAgICAgICAgICAgICBTYW1zdW5n
-IEVsZWN0cm9uaWNzDQogICA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0NCg==
 
-------=_Part_1497478_934560393.1643711063682--
+>=20
+> Best regards
+> Thomas
+>=20
+> > +			u8 byte =3D 0x00;
+> > +
+> > +			for (i =3D 0; i < 8; i++) {
+> > +				int x =3D xb * 8 + i;
+> > +
+> > +				byte >>=3D 1;
+> > +				if (gray8[y * width + x] >> 7)
+> > +					byte |=3D BIT(7);
+> > +			}
+> > +			*mono++ =3D byte;
+> > +		}
+> > +}
+> > +EXPORT_SYMBOL(drm_fb_gray8_to_mono_reversed);
+
+--Sig_/Wm1.Z9QEq88r=0UglNQ17h8
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEJQjwWQChkWOYOIONI1/ltBGqqqcFAmH5FfIACgkQI1/ltBGq
+qqfehw//fDufH9R+Ixm9EtaZ0PihGdoA1VzB7XlyX7BAcSMRdGn9/VkWbeIR6ocQ
+hgYInmKfKgYazvVaqTwSsTfa3Img4aOeEYhzSSokchH0OCsPPBH4uCH1+eL9nLEq
+nHD10TYg7T9nRmRvCRCAdIlkwUz/20tFCLANrB5stAVob1NkwVwlTekqAbo9tbIC
+EWe39C9DbztfLSjOvkdjKCgqmP4TXZDZRf7dJmrIpvSPBMRwopymWLszq0rgp/RK
+lI5uJHi0r6mdvaQ3sf2NRGjFOegng36bsKjUmrc8rQms8fIrnon+XIR3zHew9EhS
+u4pW29Y9CEV2P7EDqyl6RdODm0cm11N3X/YWjQO0IgJkN9/5/66a9GnQRDM+ea1H
+3ObrPOLRRtQtzN1vQC6+KPkBqv8LpbC+Gf/LGaZwV/UZ/cO6fMCYAHI5heOVj6bu
+qp9PZgX4lRGA0raMnAAQPy4Sh7uNZsqwvDF8eL8gs8dmktMgr15Fh97hfU0+lED9
+G+EAo+RThIRcaEUMl0AaLVzjjWnBT9NIrNyXNObgH2PGTcnTfBOTDnX4iwwwtqgH
+/JYZwuj/kxFDC/aSUlar/azuKC8XDHYqBPbrQgmvp5vDA3Iti1UoNf0uOt6Skty0
+wBuz9y+eFIT5VOrm00+rdUI6+7zWd9EYPgNFTPmoGnJMZSJkt34=
+=fmbL
+-----END PGP SIGNATURE-----
+
+--Sig_/Wm1.Z9QEq88r=0UglNQ17h8--
