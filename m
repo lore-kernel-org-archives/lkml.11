@@ -2,62 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DA9EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 16:59:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA086C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 17:00:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231396AbiBAQ7B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 11:59:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59754 "EHLO
+        id S230115AbiBARAa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 12:00:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231588AbiBAQ67 (ORCPT
+        with ESMTP id S229651AbiBARA2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 11:58:59 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ABFCC061714
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Feb 2022 08:58:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=DogyCkgr+GOg36Ln7NJEnUDmh+Ueuorh9WLAPxcwaUI=; b=S+MZ/cYDFEJ1tBVanSH8Y9DZy5
-        MlYqs88ax5FRo/YB8sa3sCFWzLf8HxkPV/xQmCJOz5KZPHzk8W0T6TlwEax/Zc9tRmPps7QzZU/I5
-        8tOtJIoNhEtIS4jt22VrH/sfzLnjj0lQGsqQjGsurdDWmDQSi8VLeQ5p2dwc7myA4OXP3Towrs+qh
-        skAzsmewiQBrxloa1v+5/3R4GnUNdpYmna9tIQnqt9OnTRHoR8bv+/4SXcaJ0xVhh5gWGhwLTUbVF
-        etq+69IuS2YBivu9a5KtlePiv8cyNd9aDmRsheCiPb9xJ3cWrPNSnbEr5E85RWtcYEPZAunJq9icI
-        vnnIoUaw==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nEwUS-00Cgin-IK; Tue, 01 Feb 2022 16:58:48 +0000
-Date:   Tue, 1 Feb 2022 16:58:48 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Sean Young <sean@mess.org>
-Cc:     Shuah Khan <skhan@linuxfoundation.org>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        kernel test robot <oliver.sang@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        lkp@lists.01.org, kbuild test robot <lkp@intel.com>
-Subject: Re: [PATCH] selftests/ir: fix build with ancient kernel headers
-Message-ID: <YflmyHrYg1xJlW0u@casper.infradead.org>
-References: <20220128075346.GG8421@xsang-OptiPlex-9020>
- <YfO39Q3mNHMQOkd4@gofer.mess.org>
- <CAADnVQJ3RCPUQ0k9nu2urrRK=U7SUetuPmY0_b17M_PD=j4fkw@mail.gmail.com>
- <e5b72f09-a208-a579-3e51-10935ccee1ff@linuxfoundation.org>
- <YfQqI2ryOYEDuvON@gofer.mess.org>
- <347bae9f-f775-4976-3d27-b0c725211d78@linuxfoundation.org>
- <YflldzHZPVK3OQRJ@gofer.mess.org>
+        Tue, 1 Feb 2022 12:00:28 -0500
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5700AC061714
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Feb 2022 09:00:28 -0800 (PST)
+Received: by mail-pg1-x52e.google.com with SMTP id g20so15819005pgn.10
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Feb 2022 09:00:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=hjKjHV9jnubwu+acQPJiuHlQvZVGX3FfOdn2hBSEEIg=;
+        b=wWsrHSI4TFapagsKin/t7I8V5DxVRf4KxL09EtZobtavB0WyT+/h9YbDxpsS9dfAh9
+         4pJlN+uE6qXk5OaPIZDhm4jIRBWsUfaNkB9NZQdlKF1vlhcB+PTq6yCBXBmHwDtvaPkS
+         eRFN1xO9UEvfOqH9kV5ONONZ1MXEdV3ModvL1Qbe8mvFzLupyytljN6Sc2rESRXQUJ8T
+         TKZ0GzBp4P8u6jidrGYUQHHweanphnXK06LQbRgRVT+aYFaHSNmO1sUHoITMZ9ELKxfj
+         BVPeUVn6GLo/Jh/2iYcMBi3sO+7UN8Da4C5Vaz8Jq2rLe4uP0gFi+6+K7M3elxj7imAZ
+         ga+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=hjKjHV9jnubwu+acQPJiuHlQvZVGX3FfOdn2hBSEEIg=;
+        b=tDGeqK+AEugJm/Tnt3A9iI4YyZzhGo+B3GrsHxt2NmlvIeTRLcNC0H6LuvzgSHlkKq
+         Nya92x1/KZUNPUMJbSes8uk3j04qvxeD4a7TwZz+2Xb6X8rMTynENXoz3o3nyI/HJJYS
+         K4UH3eKjkMVZiCeaPnC7JTwsOMCtlg2kN9EqwMimSYFp6eA0RoZRwQl5zTIKxw0L248x
+         wBBb0VPf0EX9Z5EtavJL2tgXbPSpwz3z4jStY1m4lpAUZxLCeGRM7RLszhDWUUBnuh6w
+         trCO5Dcqdzk/grQ6nfVCkHzgfSzMYjr0pzayxCb/zMdixkBNrPqedMOGxBMZxCBZsJjb
+         fczw==
+X-Gm-Message-State: AOAM530KtQeWlx2hbMN8AGMO3IeK3np3A0ftoIW8an7S0Qcu7pUpYEth
+        KtcbZhdn+kY4LaQ8v0J42IXMU2XSGnbLqQ==
+X-Google-Smtp-Source: ABdhPJzttNxVYjZaJe1dgUCltOYJ1fvIsjiIHcV6+nOXXp/1rIMiSoHkylDOKHr9pJy5EJUEGWs9Bg==
+X-Received: by 2002:a63:cf0b:: with SMTP id j11mr21178673pgg.5.1643734827655;
+        Tue, 01 Feb 2022 09:00:27 -0800 (PST)
+Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
+        by smtp.gmail.com with ESMTPSA id s14sm23347006pfk.174.2022.02.01.09.00.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Feb 2022 09:00:25 -0800 (PST)
+Date:   Tue, 1 Feb 2022 10:00:23 -0700
+From:   Mathieu Poirier <mathieu.poirier@linaro.org>
+To:     James Clark <james.clark@arm.com>
+Cc:     coresight@lists.linaro.org, mike.leach@linaro.org,
+        suzuki.poulose@arm.com, leo.yan@linaro.com,
+        Leo Yan <leo.yan@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/1] coresight: Fix TRCCONFIGR.QE sysfs interface
+Message-ID: <20220201170023.GA2490199@p14s>
+References: <20220120113047.2839622-1-james.clark@arm.com>
+ <20220120113047.2839622-2-james.clark@arm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YflldzHZPVK3OQRJ@gofer.mess.org>
+In-Reply-To: <20220120113047.2839622-2-james.clark@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 01, 2022 at 04:53:11PM +0000, Sean Young wrote:
-> +/* Support ancient lirc.h which does not have these values */
+On Thu, Jan 20, 2022 at 11:30:47AM +0000, James Clark wrote:
+> It's impossible to program a valid value for TRCCONFIGR.QE
+> when TRCIDR0.QSUPP==0b10. In that case the following is true:
+> 
+>   Q element support is implemented, and only supports Q elements without
+>   instruction counts. TRCCONFIGR.QE can only take the values 0b00 or 0b11.
+> 
+> Currently the low bit of QSUPP is checked to see if the low bit of QE can
+> be written to, but as you can see when QSUPP==0b10 the low bit is cleared
+> making it impossible to ever write the only valid value of 0b11 to QE.
+> 0b10 would be written instead, which is a reserved QE value even for all
+> values of QSUPP.
+> 
+> The fix is to allow writing the low bit of QE for any non zero value of
+> QSUPP.
+> 
+> This change also ensures that the low bit is always set, even when the
+> user attempts to only set the high bit.
+> 
+> Signed-off-by: James Clark <james.clark@arm.com>
+> Reviewed-by: Mike Leach <mike.leach@linaro.org>
+> ---
+>  drivers/hwtracing/coresight/coresight-etm4x-sysfs.c | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
+> index a0640fa5c55b..57e94424a8d6 100644
+> --- a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
+> +++ b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
+> @@ -367,8 +367,12 @@ static ssize_t mode_store(struct device *dev,
+>  	mode = ETM_MODE_QELEM(config->mode);
+>  	/* start by clearing QE bits */
+>  	config->cfg &= ~(BIT(13) | BIT(14));
+> -	/* if supported, Q elements with instruction counts are enabled */
+> -	if ((mode & BIT(0)) && (drvdata->q_support & BIT(0)))
+> +	/*
+> +	 * if supported, Q elements with instruction counts are enabled.
+> +	 * Always set the low bit for any requested mode. Valid combos are
+> +	 * 0b00, 0b01 and 0b11.
+> +	 */
+> +	if (mode && drvdata->q_support)
+>  		config->cfg |= BIT(13);
 
-Can we have a little more information here, such as "Can be removed once
-RHEL 8 is no longer a relevant testing platform"?  That will save people
-doing archaology to find out when it's safe to remove.
+Interesting brain gymnastic - applied.
 
+Thanks,
+Mathieu
+
+>  	/*
+>  	 * if supported, Q elements with and without instruction
+> -- 
+> 2.28.0
+> 
