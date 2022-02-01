@@ -2,237 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97120C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 19:05:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95AF5C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 19:06:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242280AbiBATFh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 14:05:37 -0500
-Received: from mga06.intel.com ([134.134.136.31]:48322 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234438AbiBATFf (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 14:05:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643742335; x=1675278335;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=nme2HohwG4cYQY68sjZJc5W1kNylfqbOIi5QZOKqZi4=;
-  b=jTqali7wIZx5ZCL56vE/rnkTLoUFnK8kau1MnOJUnpgEHJgdnIMEqiQS
-   I6ymebVMc73S8wHKKupOY+uowfHYhUiF2fH3/8F0wn0XatYO1gcCJSIuA
-   Qpe/Tns0mOVzMxDjZJN/6Xt+BZi5kwgDXGmgWVrjZetQIHmdAZKaFTUhm
-   rYZ8jesfgzB6+9go1kfcTyGxpYQ6s1ZpTduHK/v50ELiJg/fSITQRnbNV
-   oGs5GGpuno3qvEyXj3EmbZHsZyWX5yIKk7GY6/KLP9zlYkmsFQVn5YIWY
-   pI7fKpYbNckCA9afF1j96udpRuZ0EXtei2ioCtVM0QuQi/edN1Sgs8kZc
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10245"; a="308495751"
-X-IronPort-AV: E=Sophos;i="5.88,334,1635231600"; 
-   d="scan'208";a="308495751"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2022 11:05:34 -0800
-X-IronPort-AV: E=Sophos;i="5.88,334,1635231600"; 
-   d="scan'208";a="497449689"
-Received: from rashmigh-mobl.amr.corp.intel.com (HELO intel.com) ([10.252.132.8])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2022 11:05:34 -0800
-Date:   Tue, 1 Feb 2022 11:05:32 -0800
-From:   Ben Widawsky <ben.widawsky@intel.com>
-To:     ira.weiny@intel.com
-Cc:     Dan Williams <dan.j.williams@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Alison Schofield <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        linux-kernel@vger.kernel.org, linux-cxl@vger.kernel.org,
-        linux-pci@vger.kernel.org
-Subject: Re: [PATCH V6 10/10] cxl/cdat: Parse out DSMAS data from CDAT table
-Message-ID: <20220201190532.ynwr73ninobqx7bm@intel.com>
-References: <20220201071952.900068-1-ira.weiny@intel.com>
- <20220201071952.900068-11-ira.weiny@intel.com>
+        id S242286AbiBATG1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 14:06:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33872 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232024AbiBATG0 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 1 Feb 2022 14:06:26 -0500
+Received: from mail-ua1-x92b.google.com (mail-ua1-x92b.google.com [IPv6:2607:f8b0:4864:20::92b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30F18C061714
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Feb 2022 11:06:26 -0800 (PST)
+Received: by mail-ua1-x92b.google.com with SMTP id m90so14981583uam.2
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Feb 2022 11:06:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qUbQ0b8ZRd0AkjeyzEsyBCt3tnTOzbqx/Ys5mz3HL90=;
+        b=iy3UNgBrq5QIwft+G9BGA9Y0FZyDvqHq7QcVj2quS7jbiXUvsx8BZfCHJrbVaWNEZW
+         dOGUSjaJpOAn3f8bxEnzmYZAgTD0BtXi1VVyp9IkpdXdrx0qIBRB76CNUOxZ7Eunin36
+         q4umGQKhdKU0A/ygq1g4FUBc611k+BqG4skbOpIifPih6MijOW4e4NTfnKxqp/iLvcIi
+         18jgnsguAdT1nm9/C4XcvT/LJgnmE0rFyGA1IOvn99NQ4SvbGHzvyK4Uq2ysj0DlO7eA
+         AnXhEZ9/1c5cqw0Ek/jPeQo/UhEu1VLgQQsYso1ipCv9td44o7vDnRtddPLeRqgBDqW4
+         5vNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qUbQ0b8ZRd0AkjeyzEsyBCt3tnTOzbqx/Ys5mz3HL90=;
+        b=dnc/KlbOFsQZFYPs529+l7NTvAqgD//Rpyi3Y45SJjQ0AhnIUM4YAyZSDqz/1fIFke
+         iWITZiduQR7ewVZpP93QrGrz6YX7YiGtJ3tPhGMuJBWRBiVvxwxwDYeX7I7iEIWRkCFt
+         3SHvymJJOugwq463XGd7h0mdCeTtLLqA7MJV4loEHJkDI9xl1255pURwkCzJWq+PHbge
+         nEk1KYGZjBpEYavVK1HU2mr/PUvMbNBWlxsgPVILgknXIj7MtOYsqHLeqOxAq4zPu1WI
+         xq/us56946DVQ521LDhuvoKDGbxsU05qttcifwZyFVOkz4bQpUAdqfFGrh0FlEEKnWUN
+         kbvw==
+X-Gm-Message-State: AOAM533DUXRlQRz8Y6DJKeQShDM5e4zTunk1ISaoDlL+v0Xq4IQQkwcD
+        iWZkcVb1jDzLvw94wSZgkKyOuGnxAhDNK9xhI82eSq7oaJQ=
+X-Google-Smtp-Source: ABdhPJzOe1y3RAp2TcJlvoR6jIriXoQif+8Cx2+nvtnlFymktSZCJUs/LJjWSYP0MW73mpCRBbHbzLqHAnuwo9CI+gQ=
+X-Received: by 2002:ab0:2092:: with SMTP id r18mr10365251uak.66.1643742385158;
+ Tue, 01 Feb 2022 11:06:25 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220201071952.900068-11-ira.weiny@intel.com>
+References: <20220201033459.156944-1-mike.kravetz@oracle.com>
+In-Reply-To: <20220201033459.156944-1-mike.kravetz@oracle.com>
+From:   Mina Almasry <almasrymina@google.com>
+Date:   Tue, 1 Feb 2022 11:06:13 -0800
+Message-ID: <CAHS8izPpwNLWyebB7OxBMA4ufkS3SAwm9Qz63Yo2-t9wGF6_pg@mail.gmail.com>
+Subject: Re: [PATCH] selftests/vm: cleanup hugetlb file after mremap test
+To:     Mike Kravetz <mike.kravetz@oracle.com>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Yosry Ahmed <yosryahmed@google.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22-01-31 23:19:52, ira.weiny@intel.com wrote:
-> From: Ira Weiny <ira.weiny@intel.com>
-> 
-> CXL memory devices need the information in the Device Scoped Memory
-> Affinity Structure (DSMAS).  This information is contained within the
-> CDAT table buffer which is already read and cached.
-> 
-> Parse and cache DSMAS data from the CDAT table.  Store this data in
-> unmarshaled struct dsmas data structures for ease of use.
-> 
-> Signed-off-by: Ira Weiny <ira.weiny@intel.com>
-> 
+On Mon, Jan 31, 2022 at 7:35 PM Mike Kravetz <mike.kravetz@oracle.com> wrote:
+>
+> The hugepage-mremap test will create a file in a hugetlb filesystem.
+> In a default 'run_vmtests' run, the file will contain all the hugetlb
+> pages.  After the test, the file remains and there are no free hugetlb
+> pages for subsequent tests. This causes those hugetlb tests to fail.
+>
+> Change hugepage-mremap to take the name of the hugetlb file as an
+> argument.  Unlink the file within the test, and just to be sure remove
+> the file in the run_vmtests script.
+>
+> Signed-off-by: Mike Kravetz <mike.kravetz@oracle.com>
+
+Thanks Mike!
+
+Reviewed-by: Mina Almasry <almasrymina@google.com>
+
 > ---
-> Changes from V5
-> 	Fix up sparse warnings
-> 	Split out cdat_hdr_valid()
-> 	Update cdat_hdr_valid()
-> 		Remove revision and cs field parsing
-> 			There is no point in these
-> 		Add seq check and debug print.
-> 	From Jonathan
-> 		Add spaces around '+' and '/'
-> 		use devm_krealloc() for dmas_ary
-> 
-> Changes from V4
-> 	New patch
-> ---
->  drivers/cxl/cdat.h        | 21 ++++++++++++
->  drivers/cxl/core/memdev.c | 70 +++++++++++++++++++++++++++++++++++++++
->  2 files changed, 91 insertions(+)
-> 
-> diff --git a/drivers/cxl/cdat.h b/drivers/cxl/cdat.h
-> index a7725d26f2d2..f8c126190d18 100644
-> --- a/drivers/cxl/cdat.h
-> +++ b/drivers/cxl/cdat.h
-> @@ -83,17 +83,38 @@
->  #define CDAT_SSLBIS_ENTRY_PORT_Y(entry, i) (((entry)[4 + (i) * 2] & 0xffff0000) >> 16)
->  #define CDAT_SSLBIS_ENTRY_LAT_OR_BW(entry, i) ((entry)[4 + (i) * 2 + 1] & 0x0000ffff)
->  
-> +/**
-> + * struct cxl_dsmas - host unmarshaled version of DSMAS data
-> + *
-> + * As defined in the Coherent Device Attribute Table (CDAT) specification this
-> + * represents a single DSMAS entry in that table.
-> + *
-> + * @dpa_base: The lowest DPA address associated with this DSMAD
-> + * @dpa_length: Length in bytes of this DSMAD
-> + * @non_volatile: If set, the memory region represents Non-Volatile memory
-> + */
-> +struct cxl_dsmas {
-> +	u64 dpa_base;
-> +	u64 dpa_length;
-> +	/* Flags */
-> +	u8 non_volatile:1;
-> +};
-> +
->  /**
->   * struct cxl_cdat - CXL CDAT data
+>  tools/testing/selftests/vm/hugepage-mremap.c | 26 ++++++++++++++------
+>  tools/testing/selftests/vm/run_vmtests.sh    |  3 ++-
+>  2 files changed, 21 insertions(+), 8 deletions(-)
+>
+> diff --git a/tools/testing/selftests/vm/hugepage-mremap.c b/tools/testing/selftests/vm/hugepage-mremap.c
+> index 2a7c33631a29..1d689084a54b 100644
+> --- a/tools/testing/selftests/vm/hugepage-mremap.c
+> +++ b/tools/testing/selftests/vm/hugepage-mremap.c
+> @@ -3,9 +3,10 @@
+>   * hugepage-mremap:
 >   *
->   * @table: cache of CDAT table
->   * @length: length of cached CDAT table
->   * @seq: Last read Sequence number of the CDAT table
-> + * @dsmas_ary: Array of DSMAS entries as parsed from the CDAT table
-> + * @nr_dsmas: Number of entries in dsmas_ary
->   */
->  struct cxl_cdat {
->  	void *table;
->  	size_t length;
->  	u32 seq;
-> +	struct cxl_dsmas *dsmas_ary;
-> +	int nr_dsmas;
->  };
->  
->  #endif /* !__CXL_CDAT_H__ */
-> diff --git a/drivers/cxl/core/memdev.c b/drivers/cxl/core/memdev.c
-> index 11d721c56f08..32342a15e991 100644
-> --- a/drivers/cxl/core/memdev.c
-> +++ b/drivers/cxl/core/memdev.c
-> @@ -6,6 +6,7 @@
->  #include <linux/idr.h>
->  #include <linux/pci.h>
->  #include <cxlmem.h>
-> +#include "cdat.h"
->  #include "core.h"
->  
->  static DECLARE_RWSEM(cxl_memdev_rwsem);
-> @@ -386,6 +387,71 @@ static int read_cdat_data(struct cxl_memdev *cxlmd,
->  	return rc;
->  }
->  
-> +static int parse_dsmas(struct cxl_memdev *cxlmd)
-> +{
-> +	struct cxl_dsmas *dsmas_ary = NULL;
-> +	u32 *data = cxlmd->cdat.table;
-> +	int bytes_left = cxlmd->cdat.length;
-> +	int nr_dsmas = 0;
-> +
-> +	if (!data)
-> +		return -ENXIO;
-> +
-> +	/* Skip header */
-> +	data += CDAT_HEADER_LENGTH_DW;
-> +	bytes_left -= CDAT_HEADER_LENGTH_BYTES;
-> +
-> +	while (bytes_left > 0) {
-> +		u32 *cur_rec = data;
-> +		u8 type = FIELD_GET(CDAT_STRUCTURE_DW0_TYPE, cur_rec[0]);
-> +		u16 length = FIELD_GET(CDAT_STRUCTURE_DW0_LENGTH, cur_rec[0]);
-> +
-> +		if (type == CDAT_STRUCTURE_DW0_TYPE_DSMAS) {
-> +			struct cxl_dsmas *new_ary;
-> +			u8 flags;
-> +
-> +			new_ary = devm_krealloc(&cxlmd->dev, dsmas_ary,
-> +					   sizeof(*dsmas_ary) * (nr_dsmas + 1),
-> +					   GFP_KERNEL);
-> +			if (!new_ary) {
-> +				dev_err(&cxlmd->dev,
-> +					"Failed to allocate memory for DSMAS data\n");
-> +				return -ENOMEM;
-> +			}
-
-One thought here - it looks like there are at most 256 DSMAS entries. You could
-allocate the full 256 up front, and then realloc *down* to the actual number.
-
-> +			dsmas_ary = new_ary;
-> +
-> +			flags = FIELD_GET(CDAT_DSMAS_DW1_FLAGS, cur_rec[1]);
-> +
-> +			dsmas_ary[nr_dsmas].dpa_base = CDAT_DSMAS_DPA_OFFSET(cur_rec);
-> +			dsmas_ary[nr_dsmas].dpa_length = CDAT_DSMAS_DPA_LEN(cur_rec);
-> +			dsmas_ary[nr_dsmas].non_volatile = CDAT_DSMAS_NON_VOLATILE(flags);
-> +
-> +			dev_dbg(&cxlmd->dev, "DSMAS %d: %llx:%llx %s\n",
-> +				nr_dsmas,
-> +				dsmas_ary[nr_dsmas].dpa_base,
-> +				dsmas_ary[nr_dsmas].dpa_base +
-> +					dsmas_ary[nr_dsmas].dpa_length,
-> +				(dsmas_ary[nr_dsmas].non_volatile ?
-> +					"Persistent" : "Volatile")
-> +				);
-> +
-> +			nr_dsmas++;
-> +		}
-> +
-> +		data += (length / sizeof(u32));
-> +		bytes_left -= length;
-> +	}
-> +
-> +	if (nr_dsmas == 0)
-> +		return -ENXIO;
-
-Hmm is there documentation that suggests a DSMAS must be implemented? Could this
-just return 0? I'd put maybe dev_dbg here if it's unexpected but not a failure
-and return success.
-
-> +
-> +	dev_dbg(&cxlmd->dev, "Found %d DSMAS entries\n", nr_dsmas);
-> +	cxlmd->cdat.dsmas_ary = dsmas_ary;
-> +	cxlmd->cdat.nr_dsmas = nr_dsmas;
-> +
-> +	return 0;
-> +}
-> +
->  struct cxl_memdev *devm_cxl_add_memdev(struct cxl_dev_state *cxlds)
+>   * Example of remapping huge page memory in a user application using the
+> - * mremap system call.  Code assumes a hugetlbfs filesystem is mounted
+> - * at './huge'.  The amount of memory used by this test is decided by a command
+> - * line argument in MBs. If missing, the default amount is 10MB.
+> + * mremap system call.  The path to a file in a hugetlbfs filesystem must
+> + * be passed as the last argument to this test.  The amount of memory used
+> + * by this test in MBs can optionally be passed as an argument.  If no memory
+> + * amount is passed, the default amount is 10MB.
+>   *
+>   * To make sure the test triggers pmd sharing and goes through the 'unshare'
+>   * path in the mremap code use 1GB (1024) or more.
+> @@ -25,7 +26,6 @@
+>  #define DEFAULT_LENGTH_MB 10UL
+>  #define MB_TO_BYTES(x) (x * 1024 * 1024)
+>
+> -#define FILE_NAME "huge/hugepagefile"
+>  #define PROTECTION (PROT_READ | PROT_WRITE | PROT_EXEC)
+>  #define FLAGS (MAP_SHARED | MAP_ANONYMOUS)
+>
+> @@ -107,17 +107,26 @@ static void register_region_with_uffd(char *addr, size_t len)
+>
+>  int main(int argc, char *argv[])
 >  {
->  	struct cxl_memdev *cxlmd;
-> @@ -407,6 +473,10 @@ struct cxl_memdev *devm_cxl_add_memdev(struct cxl_dev_state *cxlds)
->  	if (rc)
->  		goto err;
->  
-> +	rc = parse_dsmas(cxlmd);
-> +	if (rc)
-> +		dev_warn(dev, "No DSMAS data found: %d\n", rc);
+> +       size_t length;
 > +
->  	/*
->  	 * Activate ioctl operations, no cxl_memdev_rwsem manipulation
->  	 * needed as this is ordered with cdev_add() publishing the device.
-> -- 
-> 2.31.1
-> 
+> +       if (argc != 2 && argc != 3) {
+> +               printf("Usage: %s [length_in_MB] <hugetlb_file>\n", argv[0]);
+> +               exit(1);
+> +       }
+> +
+>         /* Read memory length as the first arg if valid, otherwise fallback to
+> -        * the default length. Any additional args are ignored.
+> +        * the default length.
+>          */
+> -       size_t length = argc > 1 ? (size_t)atoi(argv[1]) : 0UL;
+> +       if (argc == 3)
+> +               length = argc > 2 ? (size_t)atoi(argv[1]) : 0UL;
+>
+>         length = length > 0 ? length : DEFAULT_LENGTH_MB;
+>         length = MB_TO_BYTES(length);
+>
+>         int ret = 0;
+>
+> -       int fd = open(FILE_NAME, O_CREAT | O_RDWR, 0755);
+> +       /* last arg is the hugetlb file name */
+> +       int fd = open(argv[argc-1], O_CREAT | O_RDWR, 0755);
+>
+>         if (fd < 0) {
+>                 perror("Open failed");
+> @@ -169,5 +178,8 @@ int main(int argc, char *argv[])
+>
+>         munmap(addr, length);
+>
+> +       close(fd);
+> +       unlink(argv[argc-1]);
+> +
+>         return ret;
+>  }
+> diff --git a/tools/testing/selftests/vm/run_vmtests.sh b/tools/testing/selftests/vm/run_vmtests.sh
+> index e09040a3dc08..e10d50e0b8e8 100755
+> --- a/tools/testing/selftests/vm/run_vmtests.sh
+> +++ b/tools/testing/selftests/vm/run_vmtests.sh
+> @@ -111,13 +111,14 @@ fi
+>  echo "-----------------------"
+>  echo "running hugepage-mremap"
+>  echo "-----------------------"
+> -./hugepage-mremap 256
+> +./hugepage-mremap $mnt/huge_mremap
+>  if [ $? -ne 0 ]; then
+>         echo "[FAIL]"
+>         exitcode=1
+>  else
+>         echo "[PASS]"
+>  fi
+> +rm -f $mnt/huge_mremap
+>
+>  echo "------------------------"
+>  echo "running hugepage-vmemmap"
+> --
+> 2.34.1
+>
