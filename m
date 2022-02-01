@@ -2,145 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E923CC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 05:56:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBC45C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 05:56:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343737AbiBEF4E (ORCPT
+        id S1344027AbiBEF4t (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 00:56:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34374 "EHLO
+        Sat, 5 Feb 2022 00:56:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243150AbiBEF4B (ORCPT
+        with ESMTP id S243150AbiBEF4m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 00:56:01 -0500
-X-Greylist: delayed 38072 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 04 Feb 2022 21:56:00 PST
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 633B2C061346
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 21:56:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644040560; x=1675576560;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=yQ7E7TdXEEU3uNvWo8FZUSDdiTe2O3C8a8Gvtg3fBhw=;
-  b=TL/W2rwhd5iXuYSke6cgJRRDvjo/8BGbZotOKXC/K74Qx1PX6pznymqF
-   fhZG17QOn3jCaRC2v27s0fHA4JhRtrLHEz8qAdwVtqAOpjBL3cmDvpLTB
-   03DupGRhUdDpzidsdt8HBqeOAdpi0hR3bJYrAO6JuZ+wjx4JgyhznlQip
-   ovl33naZXRXd6iaSPx6rSPZfMFWASjT3MVS4u+2vUKxFu9x/fXrPZy+Ku
-   ePsxMnWvYnvTTcI62Km8ZMHqYPmHhI4UHF5tR+uqC5OycgULddkpZtTWg
-   JW1p1eOsiZ9QYNSoCDYEz4a16qPSrfVvw77mR2dXsYJH8RisRxOdVi7yH
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10248"; a="229141521"
-X-IronPort-AV: E=Sophos;i="5.88,345,1635231600"; 
-   d="scan'208";a="229141521"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2022 21:56:00 -0800
-X-IronPort-AV: E=Sophos;i="5.88,345,1635231600"; 
-   d="scan'208";a="524543550"
-Received: from iweiny-desk2.sc.intel.com (HELO localhost) ([10.3.52.147])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2022 21:55:59 -0800
-Date:   Fri, 4 Feb 2022 21:55:59 -0800
-From:   Ira Weiny <ira.weiny@intel.com>
-To:     Dan Williams <dan.j.williams@intel.com>
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Rick Edgecombe <rick.p.edgecombe@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH V8 38/44] memremap_pages: Define
- pgmap_mk_{readwrite|noaccess}() calls
-Message-ID: <20220205055559.GF785175@iweiny-DESK2.sc.intel.com>
-References: <20220127175505.851391-1-ira.weiny@intel.com>
- <20220127175505.851391-39-ira.weiny@intel.com>
- <CAPcyv4iYOGD2XpmO3RH+wViuXx8EYrq-BK7vuKv6we+KR60YCg@mail.gmail.com>
- <20220205000953.GD785175@iweiny-DESK2.sc.intel.com>
- <CAPcyv4jmnUbywDcXOAL9DwKxGaUf9cw9iDYbDcz6_CHyYPtytw@mail.gmail.com>
- <CAPcyv4iLVh_BesJLcZb=Pktd-h5x6-xuos5Cj4TzuWYC=Q-vLg@mail.gmail.com>
- <CAPcyv4gUSDwvOysAMM59yVsERtYpA_kY6s4=xunkjc2eJ8Mi1w@mail.gmail.com>
+        Sat, 5 Feb 2022 00:56:42 -0500
+Received: from mx1.smtp.larsendata.com (mx1.smtp.larsendata.com [91.221.196.215])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5F93C061347
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 21:56:41 -0800 (PST)
+Received: from mail01.mxhotel.dk (mail01.mxhotel.dk [91.221.196.236])
+        by mx1.smtp.larsendata.com (Halon) with ESMTPS
+        id 4b8b6b7d-839f-11ec-b20b-0050568c148b;
+        Tue, 01 Feb 2022 20:41:13 +0000 (UTC)
+Received: from ravnborg.org (80-162-45-141-cable.dk.customer.tdc.net [80.162.45.141])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: sam@ravnborg.org)
+        by mail01.mxhotel.dk (Postfix) with ESMTPSA id AFE1A194B9E;
+        Tue,  1 Feb 2022 21:40:13 +0100 (CET)
+Date:   Tue, 1 Feb 2022 21:40:09 +0100
+X-Report-Abuse-To: abuse@mxhotel.dk
+From:   Sam Ravnborg <sam@ravnborg.org>
+To:     Javier Martinez Canillas <javierm@redhat.com>
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux PWM List <linux-pwm@vger.kernel.org>,
+        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Mark Brown <broonie@kernel.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Noralf =?iso-8859-1?Q?Tr=F8nnes?= <noralf@tronnes.org>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH 0/4] drm/tiny: Add driver for Solomon SSD1307 OLED
+ displays
+Message-ID: <YfmaqUBqCrgp0QdO@ravnborg.org>
+References: <20220131201225.2324984-1-javierm@redhat.com>
+ <YfhM97cVH3+lJKg0@ravnborg.org>
+ <Yfj/XGRRDNABsLPm@smile.fi.intel.com>
+ <f8d71acb-5c8b-ac4e-0c32-38eb66af04c3@redhat.com>
+ <CAMuHMdVP6ER119r2KAegjZes1a=KWZ47z6j=kgQ0oNx1oeUJ+w@mail.gmail.com>
+ <51f54519-bb8b-f108-1c1e-4fed101ca5ef@redhat.com>
+ <CAMuHMdVwUfv7pXhPazsgG6t=X=aVtDQkFUk_=mUuFH8Fscx8wg@mail.gmail.com>
+ <abf63995-a529-1e80-18c3-df473a3e7a9c@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAPcyv4gUSDwvOysAMM59yVsERtYpA_kY6s4=xunkjc2eJ8Mi1w@mail.gmail.com>
-User-Agent: Mutt/1.11.1 (2018-12-01)
+In-Reply-To: <abf63995-a529-1e80-18c3-df473a3e7a9c@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 04, 2022 at 04:27:38PM -0800, Dan Williams wrote:
-> On Fri, Feb 4, 2022 at 4:25 PM Dan Williams <dan.j.williams@intel.com> wrote:
-> >
-> > On Fri, Feb 4, 2022 at 4:19 PM Dan Williams <dan.j.williams@intel.com> wrote:
-> > >
-> > > On Fri, Feb 4, 2022 at 4:10 PM Ira Weiny <ira.weiny@intel.com> wrote:
-> > > >
-> > > > On Fri, Feb 04, 2022 at 10:35:59AM -0800, Dan Williams wrote:
-> > > > > On Thu, Jan 27, 2022 at 9:55 AM <ira.weiny@intel.com> wrote:
-> > > > > >
-> > > >
-> > > > [snip]
-> > > >
-> > > > I'll address the other comments later but wanted to address the idea below.
-> > > >
-> > > > > > diff --git a/include/linux/sched.h b/include/linux/sched.h
-> > > > > > index f5b2be39a78c..5020ed7e67b7 100644
-> > > > > > --- a/include/linux/sched.h
-> > > > > > +++ b/include/linux/sched.h
-> > > > > > @@ -1492,6 +1492,13 @@ struct task_struct {
-> > > > > >         struct callback_head            l1d_flush_kill;
-> > > > > >  #endif
-> > > > > >
-> > > > > > +#ifdef CONFIG_DEVMAP_ACCESS_PROTECTION
-> > > > > > +       /*
-> > > > > > +        * NOTE: pgmap_prot_count is modified within a single thread of
-> > > > > > +        * execution.  So it does not need to be atomic_t.
-> > > > > > +        */
-> > > > > > +       u32                             pgmap_prot_count;
-> > > > > > +#endif
-> > > > >
-> > > > > It's not at all clear why the task struct needs to be burdened with
-> > > > > this accounting. Given that a devmap instance is needed to manage page
-> > > > > protections, why not move the nested protection tracking to a percpu
-> > > > > variable relative to an @pgmap arg? Something like:
-> > > > >
-> > > > > void __pgmap_mk_readwrite(struct dev_pagemap *pgmap)
-> > > > > {
-> > > > >        migrate_disable();
-> > > > >        preempt_disable();
-> > > >
-> > > > Why burden threads like this?  kmap_local_page() is perfectly able to migrate
-> > > > or be preempted?
-> > > >
-> > > > I think this is way to restrictive.
-> > >
-> > > kmap_local_page() holds migrate_disable() over the entire mapping, so
-> > > we're only talking about preempt_disable(). I tend to think that
-> > > bloating task_struct for something that is rarely used "kmap on dax
-> > > pmem pages" is not the right tradeoff.
-> >
-> > Now, I can see an argument that promoting kmap_local_page() to
-> > preempt_disable() could cause problems, but I'd like help confirming
-> > that before committing to extending task_struct.
+Hi Javier,
+
+On Tue, Feb 01, 2022 at 04:03:30PM +0100, Javier Martinez Canillas wrote:
+> Hello Geert,
 > 
-> ...as I say that it occurs to me that the whole point of
-> kmap_local_page() is to be better than kmap_atomic() and this undoes
-> that. I'd at least like that documented as the reason that task_struct
-> needs to carry a new field.
+> On 2/1/22 15:14, Geert Uytterhoeven wrote:
+> > Hi Javier,
+> > 
+> > On Tue, Feb 1, 2022 at 2:09 PM Javier Martinez Canillas
+> > <javierm@redhat.com> wrote:
+> >> On 2/1/22 12:38, Geert Uytterhoeven wrote:
+> >>>> Since the current binding has a compatible "ssd1305fb-i2c", we could make the
+> >>>> new one "ssd1305drm-i2c" or better, just "ssd1305-i2c".
+> >>>
+> >>> DT describes hardware, not software policy.
+> >>> If the hardware is the same, the DT bindings should stay the same.
+Only if the bindings describe the HW in a correct way that is.
 
-I'll try and update the commit message but kmap_local_page() only disables
-migrate on a highmem system.  The devmap/PKS use case is specifically not
-supported on highmem systems.  Mainly because on highmem systems
-kmap_local_page() actually creates a new mapping which is not covered by PKS
-anyway.
+> >>>
+> >>
+> >> Yes I know that but the thing is that the current binding don't describe
+> >> the hardware correctly. For instance, don't use a backlight DT node as a
+> >> property of the panel and have this "fb" suffix in the compatible strings.
+> >>
+> >> Having said that, my opinion is that we should just keep with the existing
+> >> bindings and make compatible to that even if isn't completely correct.
+> >>
+> >> Since that will ease adoption of the new DRM driver and allow users to use
+> >> it without the need to update their DTBs.
+> > 
+> > To me it looks like the pwms property is not related to the backlight
+> > at all, and only needed for some variants?
+> >
+> 
+> I was reading the datasheets of the ssd1305, ssd1306 and ssd1307. Only the
+> first one mentions anything about a PWM and says:
+> 
+>   In phase 3, the OLED driver switches to use current source to drive the
+>   OLED pixels and this is the current drive stage. SSD1305 employs PWM
+>   (Pulse Width Modulation) method to control the brightness of area color
+>   A, B, C, D color individually. The longer the waveform in current drive
+>   stage is, the brighter is the pixel and vice versa.
+> 
+>   After finishing phase 3, the driver IC will go back to phase 1 to display
+>   the next row image data. This threestep cycle is run continuously to refresh
+>   image display on OLED panel. 
+> 
+> The way I understand this is that the PWM isn't used for the backlight
+> but instead to power the IC and allow to display the actual pixels ?
+> 
+> And this matches what Maxime mentioned in this patch:
+> 
+> https://linux-arm-kernel.infradead.narkive.com/5i44FnQ8/patch-1-2-video-ssd1307fb-add-support-for-ssd1306-oled-controller
+> 
+>   The Solomon SSD1306 OLED controller is very similar to the SSD1307,
+>   except for the fact that the power is given through an external PWM for
+>   the 1307, and while the 1306 can generate its own power without any PWM.
 
-So for the devmap/PKS use case kmap_local_page() is defined as:
+I took a look at the datasheets - and all ssd1305, ssd1306 and ssd1307
+are the same. They have timing constrains on the Vcc.
+The random schematic I found on the net showed me that a PWM was used to
+control the Vcc voltage - which again is used to control the brightness.
 
- static inline void *kmap_local_page(struct page *page)
- {
-+       pgmap_mk_readwrite(page);
-        return page_address(page);
- }
+All the above has nothing to do with backlight - I had this mixed up in
+my head.
 
-...for the linear mapping.  I'll try and update the commit message with this
-detail.
+So my current understanding:
+- solomon,ssd1307fb.yaml should NOT include a backlight node - because
+  the backlight is something included in the ssd130x device and not
+  something separate.
+- 1305, 1306, and 1307 (I did not check 1309) all requires a Vcc
+  supply that shall be turned on/off according to the datasheet.
+  This implies that we need a regulaator for Vcc - and the regulator
+  could be a pwm based regulator or something else - the HW do not care.
+- But I can see that several design connect Vcc to a fixed voltage,
+  so I am not too sure about this part.
 
-Ira
+I think the correct binding would have
+
+    ssd1307 => regulator => pwm
+
+So the ssd1307 binding references a regulator, and the regulator
+may use an pwm or may use something else.
+
+The current binding references a vbat supply - but the datasheet do not
+mention any vbat. It is most likely modelling the Vdd supply.
+
+Right now my take is to go the simple route:
+- Keep the binding as is and just use the pwm as already implemented
+- Likewise keep the backlight as is
+
+Last I recommend to drop the fbdev variant - if the drm driver has any
+regressions we can fix them. And I do not see any other way to move
+users over. Unless their setup breaks then they do not change.
+
+> 
+> > And the actual backlight code seems to be about internal contrast
+> > adjustment?
+> > 
+> > So if the pwms usage is OK, what other reasons are there to break
+> > DT compatibility? IMHO just the "fb" suffix is not a good reason.
+> >
+> 
+> Absolutely agreed with you on this. It seems we should just use the existing
+> binding and make the driver compatible with that. The only value is that the
+> drm_panel infrastructure could be used, but making it backward compatible is
+> more worthy IMO.
+Using drm_panel here would IMO just complicate things - it is not that
+we will see many different panels (I think).
+
+	Sam
