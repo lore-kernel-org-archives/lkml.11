@@ -2,105 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20450C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 17:47:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F287C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 17:48:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241706AbiBARr5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 12:47:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43080 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241747AbiBARru (ORCPT
+        id S241707AbiBARsG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 12:48:06 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:39442 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241711AbiBARsE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 12:47:50 -0500
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27A6FC061714
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Feb 2022 09:47:50 -0800 (PST)
-Received: by mail-wr1-x432.google.com with SMTP id u15so33549581wrt.3
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Feb 2022 09:47:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=7TPcuWXxFU6hWv6NeLAOie1udRWkhLJ1DWe5t2FsQ+M=;
-        b=NuDwlgu6ILp+04FQNgBAsUPzgY4AJ4bWp5fA+81vgbrR5oDX2XCAO6zFTyz1N6KBkU
-         1kdQkH85xpE2ggU6G7YOsyHHkTToqT8hEBjk5z4lr12RD7yj4VqBh0sdrZL5PnVifknW
-         4Yd8p3bHKpvTFcIiHl+wEjbshC1kHaYl4TwJhUINoU5P7+NT6/c0K3F2jcQT7LSNe9yy
-         FaXvEgb0ZLMnKx8Bk9pyEz77Z7+wYBdKtsrkqcuuKGXhgjKJySsryv8ltvb/6sadloTy
-         UzkbJtcaH9lrLMA/LhpmdFsKm7icqg8TsZuhhQDF0expi5wKdSPQ3x9ySEnfmKNh7Pkn
-         ccBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=7TPcuWXxFU6hWv6NeLAOie1udRWkhLJ1DWe5t2FsQ+M=;
-        b=WqixQdAHfM6MYvF9949/whJQHSiV4Upa5d+xI53F1NeTOpRhoV9rJAcSfnGVM3su8U
-         acs4MSpiqXULKnN4e79uOIWVoqCqohUBgClg2oghiJLeobQGF8cEayGRLKGPLLtXn7jq
-         V38g49/kJ/wTCZHl8rXnVBaxetkY0d+GflN7GTQTFy9NiI7VkEbCyQ0k12dS90OyRu7k
-         Br0HtvIP5RhYX1Wr/n2Jgqwr8+utl89yfuHCq/iKva/WTWcrDew21RoRoVLV5TphD4G+
-         4dhVwcTGyVauxz4m4YXbEKXI2bQfkfoNMpTsivG0ASbESMH2wCEe1ZnWiBMjpgogubdY
-         jrDA==
-X-Gm-Message-State: AOAM530M7et9sLwMR353TKw+EVOwutkHVtn9n/HcyAGnA5tgnTBp13d4
-        jiswmqr5AjaU2omjwyfsRX6vMw==
-X-Google-Smtp-Source: ABdhPJwDJNj1YVlHWPoJ293olzLjFEIQcMbpGy6i0JMKcmYgnDUgr1EqX8iuwkgOa1W/rpbnq/zJPg==
-X-Received: by 2002:a05:6000:1548:: with SMTP id 8mr21586066wry.504.1643737668657;
-        Tue, 01 Feb 2022 09:47:48 -0800 (PST)
-Received: from maple.lan (cpc141216-aztw34-2-0-cust174.18-1.cable.virginm.net. [80.7.220.175])
-        by smtp.gmail.com with ESMTPSA id r2sm3392332wmq.24.2022.02.01.09.47.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Feb 2022 09:47:48 -0800 (PST)
-From:   Daniel Thompson <daniel.thompson@linaro.org>
-To:     Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>
-Cc:     Daniel Thompson <daniel.thompson@linaro.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, linux-arm-msm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 2/2] drm/msm/hdmi: Remove spurious IRQF_ONESHOT flag
-Date:   Tue,  1 Feb 2022 17:47:33 +0000
-Message-Id: <20220201174734.196718-3-daniel.thompson@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220201174734.196718-1-daniel.thompson@linaro.org>
-References: <20220201174734.196718-1-daniel.thompson@linaro.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Tue, 1 Feb 2022 12:48:04 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B4E4461348
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Feb 2022 17:48:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B0F9C340EB;
+        Tue,  1 Feb 2022 17:48:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643737684;
+        bh=nk8f/RSRJKhKmKK0/NCNxsE6dgNrPNi9rG2tUzLAhys=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=FHC87mn5z2aKErqIwWdABGMgrUJTQ11Ez46+Pxjw+rGr/+Y6hBSocQ22TmhJWQIh8
+         g0t8Kdb9y4lEDy30oB4WeFSz22ZjpeOLxvjSBfrnRpxgvNLOo5IQyid8LFZFMCHUq6
+         j0aGFLjSh3SpBBpv7VzjE1/Qb+y9+LwX+xn4uOumdpK9iXy6dVg/r4TdZyKGz/fP4H
+         mKam9a3Ai84gbmWahp82u71xBooVdyglUyhB+Rg6yYQQTQjnwO4TThRm7keAKfA/Oa
+         pecou5h9qzIU87dV9g2CyUZxrjQbKB0nEKczio4f2nmZrMsX1Am2rzTOARLDcTa95E
+         NW+zL0Wx/79FA==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nExG6-004hw8-5S; Tue, 01 Feb 2022 17:48:02 +0000
+Date:   Tue, 01 Feb 2022 17:48:01 +0000
+Message-ID: <87czk65vhq.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Mark Rutland <mark.rutland@arm.com>, linux-kernel@vger.kernel.org,
+        aleksandar.qemu.devel@gmail.com, alexandru.elisei@arm.com,
+        anup@brainfault.org, aou@eecs.berkeley.edu, atishp@atishpatra.org,
+        benh@kernel.crashing.org, borntraeger@linux.ibm.com, bp@alien8.de,
+        catalin.marinas@arm.com, chenhuacai@kernel.org,
+        dave.hansen@linux.intel.com, frederic@kernel.org,
+        hca@linux.ibm.com, james.morse@arm.com, jmattson@google.com,
+        joro@8bytes.org, mingo@redhat.com, mpe@ellerman.id.au,
+        nsaenzju@redhat.com, palmer@dabbelt.com, paulmck@kernel.org,
+        paulus@samba.org, paul.walmsley@sifive.com, seanjc@google.com,
+        suzuki.poulose@arm.com, svens@linux.ibm.com, tglx@linutronix.de,
+        tsbogend@alpha.franken.de, vkuznets@redhat.com,
+        wanpengli@tencent.com, will@kernel.org
+Subject: Re: [PATCH v3 0/5] kvm: fix latent guest entry/exit bugs
+In-Reply-To: <c1371392-70ff-0a14-68cd-aa253998d271@redhat.com>
+References: <20220201132926.3301912-1-mark.rutland@arm.com>
+        <87aa8af0-c262-ad04-58f8-da6c7882e23c@redhat.com>
+        <YfleTYWIW1sBbMNn@FVFF77S0Q05N>
+        <c1371392-70ff-0a14-68cd-aa253998d271@redhat.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: pbonzini@redhat.com, mark.rutland@arm.com, linux-kernel@vger.kernel.org, aleksandar.qemu.devel@gmail.com, alexandru.elisei@arm.com, anup@brainfault.org, aou@eecs.berkeley.edu, atishp@atishpatra.org, benh@kernel.crashing.org, borntraeger@linux.ibm.com, bp@alien8.de, catalin.marinas@arm.com, chenhuacai@kernel.org, dave.hansen@linux.intel.com, frederic@kernel.org, hca@linux.ibm.com, james.morse@arm.com, jmattson@google.com, joro@8bytes.org, mingo@redhat.com, mpe@ellerman.id.au, nsaenzju@redhat.com, palmer@dabbelt.com, paulmck@kernel.org, paulus@samba.org, paul.walmsley@sifive.com, seanjc@google.com, suzuki.poulose@arm.com, svens@linux.ibm.com, tglx@linutronix.de, tsbogend@alpha.franken.de, vkuznets@redhat.com, wanpengli@tencent.com, will@kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting the header comments, IRQF_ONESHOT is "Used by threaded interrupts
-which need to keep the irq line disabled until the threaded handler has
-been run.". When applied to an interrupt that doesn't request a threaded
-irq then IRQF_ONESHOT has a lesser known (undocumented?) side effect,
-which it to disable the forced threading of irqs. For "normal" kernels
-if there is no thread_fn then IRQF_ONESHOT is a nop.
+On Tue, 01 Feb 2022 17:10:35 +0000,
+Paolo Bonzini <pbonzini@redhat.com> wrote:
+> 
+> On 2/1/22 17:22, Mark Rutland wrote:
+> > On Tue, Feb 01, 2022 at 04:59:47PM +0100, Paolo Bonzini wrote:
+> >> On 2/1/22 14:29, Mark Rutland wrote:
+> >>> I've pushed the series (based on v5.17-rc2) to my kvm/entry-rework branch:
+> >>> 
+> >>>     https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git/log/?h=kvm/entry-rework
+> >>>     git://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git kvm/entry-rework
+> >> 
+> >> Thanks!  I cherry-picked the basic, x86 and mips patches to kvm.git's master
+> >> branch (I did not use your branch in order to leave arm64 and riscv to the
+> >> respective maintainers).
+> > 
+> > Since everything's dependent upon that core patch, IIUC that's going to make it
+> > a pain for them to queue things.
+> > 
+> > How are you expecting the arm64 and riscv maintainers to queue things? Queue
+> > their own copies of that core patch?
+> 
+> The kvm.git master branch has a stable commit id, so the KVM/ARM and
+> KVM/RISCV maintainers can just base their pull request to me on
+> it. Alternatively, if they prefer it that way, I can get it quickly to
+> Linus.
 
-In this case disabling forced threading is not appropriate because the
-driver calls wake_up_all() (via msm_hdmi_i2c_irq) and also directly uses
-the regular spinlock API for locking (in msm_hdmi_hdcp_irq() ). Neither
-of these APIs can be called from no-thread interrupt handlers on
-PREEMPT_RT systems.
+In which case, please add the arm64 patch to the mix. I'm not rebasing
+my current queue.
 
-Fix this by removing IRQF_ONESHOT.
+	M.
 
-Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
----
- drivers/gpu/drm/msm/hdmi/hdmi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/gpu/drm/msm/hdmi/hdmi.c b/drivers/gpu/drm/msm/hdmi/hdmi.c
-index 719720709e9e7..e167817b42958 100644
---- a/drivers/gpu/drm/msm/hdmi/hdmi.c
-+++ b/drivers/gpu/drm/msm/hdmi/hdmi.c
-@@ -306,7 +306,7 @@ int msm_hdmi_modeset_init(struct hdmi *hdmi,
- 	}
- 
- 	ret = devm_request_irq(&pdev->dev, hdmi->irq,
--			msm_hdmi_irq, IRQF_TRIGGER_HIGH | IRQF_ONESHOT,
-+			msm_hdmi_irq, IRQF_TRIGGER_HIGH,
- 			"hdmi_isr", hdmi);
- 	if (ret < 0) {
- 		DRM_DEV_ERROR(dev->dev, "failed to request IRQ%u: %d\n",
 -- 
-2.34.1
-
+Without deviation from the norm, progress is not possible.
