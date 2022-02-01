@@ -2,129 +2,286 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01525C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 01:55:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A391C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 01:55:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232053AbiBABzK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 20:55:10 -0500
-Received: from mga12.intel.com ([192.55.52.136]:11932 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231608AbiBABzI (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 20:55:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643680508; x=1675216508;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=tP281LU5FVVTq81VC2aHBtQy8YHucSmLMeFGwR6GT1M=;
-  b=HfGlVH/fRmbq8wcUjK79k5myD6taPW0bcbq2isOVAGaugNIysLVT4+F2
-   HESkS+jwS2SlszwNqQSz6LADIYyqUzdS+HlqUSxIVexBgGqjHF4C7uBjW
-   F/zM6WW15W/vpjpSjX0Cb/6GRk2nnwKi/XZx5NvcDCD2CQk1Ol3O7Q94v
-   h8nvsbB2+d7hS+hS46/ooauN4f66rpvAPbZlmYw8cyKi5K6Aymqw/+lDg
-   WrMLH47+zewTfrwtqX/2EKixA2aU8Joj/+3p6w2t4/sjRrO36AS/Z8i/J
-   xgdCwK8J6MyOPg/eI8Vgy1xkCzf3tgNCXeU5xKjCHUKXjinhVbZafrgeI
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10244"; a="227577131"
-X-IronPort-AV: E=Sophos;i="5.88,332,1635231600"; 
-   d="scan'208";a="227577131"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 17:55:08 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,332,1635231600"; 
-   d="scan'208";a="582880223"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 31 Jan 2022 17:55:06 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nEiNt-000Sa7-CJ; Tue, 01 Feb 2022 01:55:05 +0000
-Date:   Tue, 1 Feb 2022 09:54:28 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Eric W. Biederman" <ebiederm@xmission.com>,
-        Jann Horn <jannh@google.com>
-Cc:     kbuild-all@lists.01.org, Matthew Wilcox <willy@infradead.org>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Denys Vlasenko <vda.linux@googlemail.com>,
-        Kees Cook <keescook@chromium.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        "Liam R . Howlett" <liam.howlett@oracle.com>
-Subject: Re: [PATCH 1/5] coredump: Move definition of struct coredump_params
- into coredump.h
-Message-ID: <202202010957.uywEsvch-lkp@intel.com>
-References: <875ypzoiae.fsf_-_@email.froward.int.ebiederm.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <875ypzoiae.fsf_-_@email.froward.int.ebiederm.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S232035AbiBABzY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 31 Jan 2022 20:55:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53738 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231608AbiBABzW (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 20:55:22 -0500
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43A77C061714
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 17:55:22 -0800 (PST)
+Received: by mail-pg1-x549.google.com with SMTP id 27-20020a63135b000000b0036285f54b6aso9526954pgt.19
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 17:55:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc
+         :content-transfer-encoding;
+        bh=h5QhweEvP4Vj26uM1uNSyMDoUmF599Hmz7h4EF2607c=;
+        b=Vfc1T5Lb3d9QZyphu+ylwyfeOb/m8kLCjd9fOh22SWhS+/pcKb24yfVBTw7h7DvT11
+         4Airk12sVKSuqvJl/YQnf/zNFlCTAv4sEDWdNM7Z4tceitnhuPEeIzTJavt9nFj9QLnR
+         QshsX/omsbF0+iwYL+HOpMsrq2Ovd/4MNn/N7UPpdVIKPMtZd/ekhHZ5UElsk8USG1sZ
+         4aHFaAnW8mZnGZ/LjPftV+aejhWacVKKN48SgHJncgnidrGz+dhODATyjeM8n4hoTXZ/
+         T4KSm95FfRAlJpa7p9OivjfIbEtNQGGBqoBdI2XY0sfIkIQ+vU01dG4ESbWAlzz3qbFw
+         5/3A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc
+         :content-transfer-encoding;
+        bh=h5QhweEvP4Vj26uM1uNSyMDoUmF599Hmz7h4EF2607c=;
+        b=5j4dskpkUbdlUhYA3rssTEMjCTqhiOltmE/NZoo1CwtSGofw8CpCbYhJTMXYZupxWI
+         Iq/hWBpRz9LcExYZyIkcC3ZRjgULWpa/ODhJnTsck5dR530Z7ZAGlf+DpA3GvSHyiDiA
+         oDe4D0saIucvzGMCIGzt1Kkr3N+RmRFHhq1fub35u53IFnDTRkA8pjDEiLDfgvJVmLbv
+         TadWjTy1QLjSmub24zINm8V+kl6GoLQ2vFXvqkelz9l+YJ2i3Qd3ExP/QHPkGuo5nxAs
+         CsEbUty5S2d1CBgn+aDPnYwKMDiX/sAgYe3NOqyTSXEzSJNn+k7ZV9qeNey3dtgOBwi4
+         DK/A==
+X-Gm-Message-State: AOAM530vaca2X518yHwbEBoKMKENnAbFGfy//2PrQHZM9o51TGswypBj
+        fJ/coBc8VwZnGe+l99nYYKBXsuEjSKEGwg==
+X-Google-Smtp-Source: ABdhPJyLax6EoCYK5Ffz4oP2m/COtFZPXgekNDlSNtV1B7/sdNlwMbcqFLOofN1DUzpQ/ReBsKkR/MyKxVYseQ==
+X-Received: from wonchungspecialist.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:1440])
+ (user=wonchung job=sendgmr) by 2002:a17:902:82c6:: with SMTP id
+ u6mr22880010plz.17.1643680521608; Mon, 31 Jan 2022 17:55:21 -0800 (PST)
+Date:   Tue,  1 Feb 2022 01:55:18 +0000
+Message-Id: <20220201015518.3118404-1-wonchung@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.0.rc2.247.g8bbb082509-goog
+Subject: [PATCH v4] ACPI: device_sysfs: Add sysfs support for _PLD
+From:   Won Chung <wonchung@google.com>
+To:     Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Benson Leung <bleung@chromium.org>,
+        Prashant Malani <pmalani@chromium.org>,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Won Chung <wonchung@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi "Eric,
+When ACPI table includes _PLD fields for a device, create a new
+directory (pld) in sysfs to share _PLD fields.
 
-Thank you for the patch! Yet something to improve:
-
-[auto build test ERROR on linus/master]
-[also build test ERROR on v5.17-rc2 next-20220131]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/0day-ci/linux/commits/Eric-W-Biederman/coredump-Move-definition-of-struct-coredump_params-into-coredump-h/20220201-034653
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 26291c54e111ff6ba87a164d85d4a4e134b7315c
-config: m68k-m5208evb_defconfig (https://download.01.org/0day-ci/archive/20220201/202202010957.uywEsvch-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/51661b08028418cf7e46f97d7e7dbee927cd61e0
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Eric-W-Biederman/coredump-Move-definition-of-struct-coredump_params-into-coredump-h/20220201-034653
-        git checkout 51661b08028418cf7e46f97d7e7dbee927cd61e0
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=m68k SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   In file included from include/linux/kernel.h:29,
-                    from fs/binfmt_flat.c:21:
-   fs/binfmt_flat.c: In function 'flat_core_dump':
->> fs/binfmt_flat.c:118:50: error: invalid use of undefined type 'struct coredump_params'
-     118 |                 current->comm, current->pid, cprm->siginfo->si_signo);
-         |                                                  ^~
-   include/linux/printk.h:418:33: note: in definition of macro 'printk_index_wrap'
-     418 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
-         |                                 ^~~~~~~~~~~
-   include/linux/printk.h:499:9: note: in expansion of macro 'printk'
-     499 |         printk(KERN_WARNING pr_fmt(fmt), ##__VA_ARGS__)
-         |         ^~~~~~
-   fs/binfmt_flat.c:117:9: note: in expansion of macro 'pr_warn'
-     117 |         pr_warn("Process %s:%d received signr %d and should have core dumped\n",
-         |         ^~~~~~~
-
-
-vim +118 fs/binfmt_flat.c
-
-^1da177e4c3f41 Linus Torvalds   2005-04-16  108  
-^1da177e4c3f41 Linus Torvalds   2005-04-16  109  /****************************************************************************/
-^1da177e4c3f41 Linus Torvalds   2005-04-16  110  /*
-^1da177e4c3f41 Linus Torvalds   2005-04-16  111   * Routine writes a core dump image in the current directory.
-^1da177e4c3f41 Linus Torvalds   2005-04-16  112   * Currently only a stub-function.
-^1da177e4c3f41 Linus Torvalds   2005-04-16  113   */
-^1da177e4c3f41 Linus Torvalds   2005-04-16  114  
-f6151dfea21496 Masami Hiramatsu 2009-12-17  115  static int flat_core_dump(struct coredump_params *cprm)
-^1da177e4c3f41 Linus Torvalds   2005-04-16  116  {
-4adbb6ac4b807e Nicolas Pitre    2016-07-24  117  	pr_warn("Process %s:%d received signr %d and should have core dumped\n",
-13c3f50c914e6a Nicolas Pitre    2016-07-24 @118  		current->comm, current->pid, cprm->siginfo->si_signo);
-13c3f50c914e6a Nicolas Pitre    2016-07-24  119  	return 1;
-^1da177e4c3f41 Linus Torvalds   2005-04-16  120  }
-^1da177e4c3f41 Linus Torvalds   2005-04-16  121  
-
+Signed-off-by: Won Chung <wonchung@google.com>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ Documentation/ABI/testing/sysfs-bus-acpi | 107 +++++++++++++++++++++++
+ drivers/acpi/device_sysfs.c              |  55 ++++++++++++
+ include/acpi/acpi_bus.h                  |   1 +
+ 3 files changed, 163 insertions(+)
+
+diff --git a/Documentation/ABI/testing/sysfs-bus-acpi b/Documentation/ABI/t=
+esting/sysfs-bus-acpi
+index 58abacf59b2a..b8b71c8f3cfd 100644
+--- a/Documentation/ABI/testing/sysfs-bus-acpi
++++ b/Documentation/ABI/testing/sysfs-bus-acpi
+@@ -96,3 +96,110 @@ Description:
+ 		hardware, if the _HRV control method is present.  It is mostly
+ 		useful for non-PCI devices because lspci can list the hardware
+ 		version for PCI devices.
++
++What:		/sys/bus/acpi/devices/.../pld/
++Date:		Feb, 2022
++Contact:	Won Chung <wonchung@google.com>
++Description:
++		This directory contains the output of the device object's _PLD
++		control method, if present. This information provides details
++		on physical location of a device.
++
++What:		/sys/bus/acpi/devices/.../pld/revision
++Date:		Feb, 2022
++Contact:	Won Chung <wonchung@google.com>
++Description:
++		The current revision is 0x2.
++
++What:           /sys/bus/acpi/devices/.../pld/group_token
++Date:           Feb, 2022
++Contact:        Won Chung <wonchung@google.com>
++Description:
++		Unique numerical value identifying a group.
++
++What:           /sys/bus/acpi/devices/.../pld/group_position
++Date:           Feb, 2022
++Contact:        Won Chung <wonchung@google.com>
++Description:
++		Identifies this device connection point=E2=80=99s position in the group.
++
++What:           /sys/bus/acpi/devices/.../pld/user_visible
++Date:           Feb, 2022
++Contact:        Won Chung <wonchung@google.com>
++Description:
++		Set if the device connection point can be seen by the user
++		without disassembly.
++
++What:           /sys/bus/acpi/devices/.../pld/dock
++Date:           Feb, 2022
++Contact:        Won Chung <wonchung@google.com>
++Description:
++		Set if the device connection point resides in a docking station
++		or port replicator.
++
++What:           /sys/bus/acpi/devices/.../pld/bay
++Date:           Feb, 2022
++Contact:        Won Chung <wonchung@google.com>
++Description:
++		Set if describing a device in a bay or if device connection
++		point is a bay.
++
++What:           /sys/bus/acpi/devices/.../pld/lid
++Date:           Feb, 2022
++Contact:        Won Chung <wonchung@google.com>
++Description:
++		Set if this device connection point resides on the lid of
++		laptop system.
++
++What:           /sys/bus/acpi/devices/.../pld/panel
++Date:           Feb, 2022
++Contact:        Won Chung <wonchung@google.com>
++Description:
++		Describes which panel surface of the system=E2=80=99s housing the
++		device connection point resides on:
++		0 - Top
++		1 - Bottom
++		2 - Left
++		3 - Right
++		4 - Front
++		5 - Back
++		6 - Unknown (Vertical Position and Horizontal Position will be
++		ignored)
++
++What:           /sys/bus/acpi/devices/.../pld/vertical_position
++Date:           Feb, 2022
++Contact:        Won Chung <wonchung@google.com>
++Description:
++		0 - Upper
++		1 - Center
++		2 - Lower
++
++What:           /sys/bus/acpi/devices/.../pld/horizontal_position
++Date:           Feb, 2022
++Contact:        Won Chung <wonchung@google.com>
++Description:
++		ACPI specification does not define horizontal position field.
++		Can be used as either
++		0 - Left
++		1 - Center
++		2 - Right
++		or
++		0 - Leftmost
++		and higher numbers going toward the right.
++
++What:           /sys/bus/acpi/devices/.../pld/shape
++Date:           Feb, 2022
++Contact:        Won Chung <wonchung@google.com>
++Description:
++		Describes the shape of the device connection point.
++		0 - Round
++		1 - Oval
++		2 - Square
++		3 - Vertical Rectangle
++		4 - Horizontal Rectangle
++		5 - Vertical Trapezoid
++		6 - Horizontal Trapezoid
++		7 - Unknown - Shape rendered as a Rectangle with dotted lines
++		8 - Chamfered
++		15:9 - Reserved
++
+diff --git a/drivers/acpi/device_sysfs.c b/drivers/acpi/device_sysfs.c
+index d5d6403ba07b..610be93635a0 100644
+--- a/drivers/acpi/device_sysfs.c
++++ b/drivers/acpi/device_sysfs.c
+@@ -509,6 +509,49 @@ static ssize_t status_show(struct device *dev, struct =
+device_attribute *attr,
+ }
+ static DEVICE_ATTR_RO(status);
+=20
++#define DEV_ATTR_PLD_PROP(prop) \
++	static ssize_t prop##_show(struct device *dev, struct device_attribute *a=
+ttr, \
++		char *buf) \
++{ \
++	struct acpi_device *acpi_dev =3D to_acpi_device(dev); \
++	if (acpi_dev->pld =3D=3D NULL) \
++		return -EIO; \
++	return sprintf(buf, "%u\n", acpi_dev->pld->prop); \
++}; \
++static DEVICE_ATTR_RO(prop)
++
++DEV_ATTR_PLD_PROP(revision);
++DEV_ATTR_PLD_PROP(group_token);
++DEV_ATTR_PLD_PROP(group_position);
++DEV_ATTR_PLD_PROP(user_visible);
++DEV_ATTR_PLD_PROP(dock);
++DEV_ATTR_PLD_PROP(bay);
++DEV_ATTR_PLD_PROP(lid);
++DEV_ATTR_PLD_PROP(panel);
++DEV_ATTR_PLD_PROP(vertical_position);
++DEV_ATTR_PLD_PROP(horizontal_position);
++DEV_ATTR_PLD_PROP(shape);
++
++static struct attribute *dev_attr_pld[] =3D {
++	&dev_attr_revision.attr,
++	&dev_attr_group_token.attr,
++	&dev_attr_group_position.attr,
++	&dev_attr_user_visible.attr,
++	&dev_attr_dock.attr,
++	&dev_attr_bay.attr,
++	&dev_attr_lid.attr,
++	&dev_attr_panel.attr,
++	&dev_attr_vertical_position.attr,
++	&dev_attr_horizontal_position.attr,
++	&dev_attr_shape.attr,
++	NULL,
++};
++
++static struct attribute_group dev_attr_pld_group =3D {
++	.name =3D "pld",
++	.attrs =3D dev_attr_pld,
++};
++
+ /**
+  * acpi_device_setup_files - Create sysfs attributes of an ACPI device.
+  * @dev: ACPI device object.
+@@ -595,6 +638,16 @@ int acpi_device_setup_files(struct acpi_device *dev)
+ 						    &dev_attr_real_power_state);
+ 	}
+=20
++	if (acpi_has_method(dev->handle, "_PLD")) {
++		status =3D acpi_get_physical_device_location(dev->handle,
++			&dev->pld);
++		if (ACPI_FAILURE(status))
++			goto end;
++		result =3D device_add_group(&dev->dev, &dev_attr_pld_group);
++		if (result)
++			goto end;
++	}
++
+ 	acpi_expose_nondev_subnodes(&dev->dev.kobj, &dev->data);
+=20
+ end:
+@@ -645,4 +698,6 @@ void acpi_device_remove_files(struct acpi_device *dev)
+ 		device_remove_file(&dev->dev, &dev_attr_status);
+ 	if (dev->handle)
+ 		device_remove_file(&dev->dev, &dev_attr_path);
++	if (acpi_has_method(dev->handle, "_PLD"))
++		device_remove_group(&dev->dev, &dev_attr_pld_group);
+ }
+diff --git a/include/acpi/acpi_bus.h b/include/acpi/acpi_bus.h
+index ca88c4706f2b..929e726a666b 100644
+--- a/include/acpi/acpi_bus.h
++++ b/include/acpi/acpi_bus.h
+@@ -381,6 +381,7 @@ struct acpi_device {
+ 	struct acpi_hotplug_context *hp;
+ 	struct acpi_driver *driver;
+ 	const struct acpi_gpio_mapping *driver_gpios;
++	struct acpi_pld_info *pld;
+ 	void *driver_data;
+ 	struct device dev;
+ 	unsigned int physical_node_count;
+--=20
+2.35.0.rc2.247.g8bbb082509-goog
+
