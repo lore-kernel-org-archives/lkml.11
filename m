@@ -2,58 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A523C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 06:34:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C8AAC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 06:35:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234355AbiBAGeh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 01:34:37 -0500
-Received: from mail.zju.edu.cn ([61.164.42.155]:5170 "EHLO zju.edu.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234377AbiBAGe3 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 01:34:29 -0500
-X-Greylist: delayed 467 seconds by postgrey-1.27 at vger.kernel.org; Tue, 01 Feb 2022 01:34:27 EST
-Received: by ajax-webmail-mail-app3 (Coremail) ; Tue, 1 Feb 2022 14:26:23
- +0800 (GMT+08:00)
-X-Originating-IP: [10.190.67.66]
-Date:   Tue, 1 Feb 2022 14:26:23 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   =?UTF-8?B?5ZGo5aSa5piO?= <22021233@zju.edu.cn>
-To:     "Dan Carpenter" <dan.carpenter@oracle.com>
-Cc:     linux-hams@vger.kernel.org, jreuter@yaina.de, ralf@linux-mips.org,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: Re: [PATCH 2/2] ax25: add refcount in ax25_dev to avoid UAF
- bugs
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
- Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
-In-Reply-To: <20220131173729.GN1951@kadam>
-References: <cover.1643343397.git.duoming@zju.edu.cn>
- <855641b37699b6ff501c4bae8370d26f59da9c81.1643343397.git.duoming@zju.edu.cn>
- <20220131173729.GN1951@kadam>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        id S234331AbiBAGfk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 01:35:40 -0500
+Received: from qproxy1-pub.mail.unifiedlayer.com ([173.254.64.10]:34710 "EHLO
+        qproxy1-pub.mail.unifiedlayer.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234248AbiBAGfi (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 1 Feb 2022 01:35:38 -0500
+Received: from gproxy2-pub.mail.unifiedlayer.com (unknown [69.89.18.3])
+        by qproxy1.mail.unifiedlayer.com (Postfix) with ESMTP id 1E16C8029AD4
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Feb 2022 06:35:37 +0000 (UTC)
+Received: from cmgw14.mail.unifiedlayer.com (unknown [10.0.90.129])
+        by progateway4.mail.pro1.eigbox.com (Postfix) with ESMTP id D635C10042A93
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Feb 2022 06:35:06 +0000 (UTC)
+Received: from box5620.bluehost.com ([162.241.219.59])
+        by cmsmtp with ESMTP
+        id Emksnp9l22s5dEmksnUby0; Tue, 01 Feb 2022 06:35:06 +0000
+X-Authority-Reason: nr=8
+X-Authority-Analysis: v=2.4 cv=BOh2EHcG c=1 sm=1 tr=0 ts=61f8d49a
+ a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
+ a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
+ a=DghFqjY3_ZEA:10:nop_rcvd_month_year
+ a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
+ a=HaFmDPmJAAAA:8 a=49j0FZ7RFL9ueZfULrUA:9 a=QEXdDO2ut3YA:10:nop_charset_2
+ a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
+        s=default; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=UupU1YHbf5NBbBAYFb3ldml5kuHdAQyQHnkHeLNQrCw=; b=AFO06xvShKOgBLNEaLOXtwMWFh
+        DgLwmprylKJBO3SP2B3AhRdI2CcKCmhxSrQdFxx2lVqwLINyx7mUA0N/RQJrfoxd4RIB2ASGY11/L
+        LKgnMz2JZfJ9uAm2FGVGRvGYi;
+Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:33724 helo=[10.0.1.23])
+        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <re@w6rz.net>)
+        id 1nEmks-001VXb-1h; Mon, 31 Jan 2022 23:35:06 -0700
+Message-ID: <70bb3dc0-c54b-d617-a5ed-5ff31e2ac126@w6rz.net>
+Date:   Mon, 31 Jan 2022 22:35:04 -0800
 MIME-Version: 1.0
-Message-ID: <70763230.8debd.17eb3f680eb.Coremail.22021233@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: cC_KCgCHODyP0vhhKmSDDA--.6799W
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgEIAVZdtYB1zAABsM
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VW7Jw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 5.16 000/200] 5.16.5-rc1 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com
+References: <20220131105233.561926043@linuxfoundation.org>
+From:   Ron Economos <re@w6rz.net>
+In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - box5620.bluehost.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - w6rz.net
+X-BWhitelist: no
+X-Source-IP: 73.162.232.9
+X-Source-L: No
+X-Exim-ID: 1nEmks-001VXb-1h
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.23]) [73.162.232.9]:33724
+X-Source-Auth: re@w6rz.net
+X-Email-Count: 12
+X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-VGhhbmsgeW91IHZlcnkgbXVjaCBmb3IgeW91ciB0aW1lIGFuZCBwb2ludGluZyBvdXQgcHJvYmxl
-bXMgaW4gbXkgcGF0Y2guCgpUaGUgZGVjcmVtZW50IG9mIGF4MjVfYmluZCgpIGlzIGluIGF4MjVf
-a2lsbF9ieV9kZXZpY2UoKS4gSWYgd2UgZG9uJ3QKY2FsbCBheDI1X2JpbmQoKSBiZWZvcmUgYXgy
-NV9raWxsX2J5X2RldmljZSgpLCB0aGUgYXgyNV9saXN0IHdpbGwgYmUKZW1wdHkgYW5kIGF4MjVf
-ZGV2X3B1dCgpIGluIGF4MjVfa2lsbF9ieV9kZXZpY2UoKSB3aWxsIG5vdCBleGVjdXRlLgoKPiBA
-QCAtOTEsNiArOTEsNyBAQCBzdGF0aWMgdm9pZCBheDI1X2tpbGxfYnlfZGV2aWNlKHN0cnVjdCBu
-ZXRfZGV2aWNlICpkZXYpCj4gIAkJCXNwaW5fdW5sb2NrX2JoKCZheDI1X2xpc3RfbG9jayk7Cj4g
-IAkJCWxvY2tfc29jayhzayk7Cj4gIAkJCXMtPmF4MjVfZGV2ID0gTlVMTDsKPiArCQkJYXgyNV9k
-ZXZfcHV0KGF4MjVfZGV2KTsKPiAgCQkJcmVsZWFzZV9zb2NrKHNrKTsKPiAgCQkJYXgyNV9kaXNj
-b25uZWN0KHMsIEVORVRVTlJFQUNIKTsKPiAgCQkJc3Bpbl9sb2NrX2JoKCZheDI1X2xpc3RfbG9j
-ayk7CgpJIHdpbGwgc2VuZCB0aGUgaW1wcm92ZWQgcGF0Y2ggYXMgc29vbiBhcyBwb3NzaWJsZS4K
-CgpCZXN0IHdpc2hlcywKRHVvbWluZyBaaG91Cg==
+On 1/31/22 02:54, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.16.5 release.
+> There are 200 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Wed, 02 Feb 2022 10:51:59 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.5-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
+
+Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
+
+Tested-by: Ron Economos <re@w6rz.net>
+
