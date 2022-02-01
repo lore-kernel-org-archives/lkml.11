@@ -2,92 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D54B4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 14:30:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 897A1C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 14:31:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239323AbiBAOaV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 09:30:21 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:36550 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239277AbiBAOaM (ORCPT
+        id S239320AbiBAObs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 09:31:48 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:27753 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230237AbiBAObq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 09:30:12 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6300161601;
-        Tue,  1 Feb 2022 14:30:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id BFD29C340ED;
-        Tue,  1 Feb 2022 14:30:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643725810;
-        bh=HqRSxpkZqoWU/dNr1mUkUpRcK8ShpkNiF0WwpKJc1Hc=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=fPadu+UgvDdEX++01hcjaQ5Bwmq7+lgU4cU7WMsjkvL7TnnKaKthWVYokG629cPLX
-         ERiDBuFPU9cbWKHpasjfDog4ablUeDkP42/FWjcEQKTfq/wsurisM45HptQd4ig65w
-         Zi857XSkyaRmkx2IzoO+4CUI+kbzjGtueyjqV6m37Wpwa92pwv7VIVLa1U6XPKFXkf
-         X0E0Ir2WiGrzHmNBK00zIpjUI3qbleV8a0GJaMgMNu/aILdyW0rbLEjhq3zuD6rUZR
-         vnrUCDRuBrROpL6YBzwl90ZIB4LHlJ5cOudO+7N+nFXBgcuzig6MRxhlj59gxR2HZ7
-         RQ/v1JbKMY2EA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AE834E6BAC6;
-        Tue,  1 Feb 2022 14:30:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Tue, 1 Feb 2022 09:31:46 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643725906;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=uMK8/jcOZdjpD/nh6+MuQsZsF0YOGLGqcOfutTCzX3o=;
+        b=XUoHWHkxOza6hcagNfrxxFmiLdjEancgSxz/9W3N4E7D/4DLeoHXgWAIPXbZ5YofYfvLH7
+        5keHE0ht3esak5Fc6kb+NpvIutZ/rCgz4ATvY2rOSSlJ+kZSb798R/dS/dol0uAcLsada4
+        4cwrFFRyN7rTwLRIv9mkKL1+xMlxBZc=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-623-RHVipqQINb20QaNy-t1vhA-1; Tue, 01 Feb 2022 09:31:45 -0500
+X-MC-Unique: RHVipqQINb20QaNy-t1vhA-1
+Received: by mail-ed1-f72.google.com with SMTP id i22-20020a50fd16000000b00405039f2c59so8782127eds.1
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Feb 2022 06:31:45 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=uMK8/jcOZdjpD/nh6+MuQsZsF0YOGLGqcOfutTCzX3o=;
+        b=Emq2foWzeFnnPk6go9akpQJZvoz6zLNNlU0fZwsYxGqKAqNF3Wa+RFBc0nUHYgXHlc
+         PBQwvP5myAXswuhg59Ekyy6TtvCb9Do6zVplVOSFZdeC4R23LVqSMroGw4n3rL8+Lt5/
+         WvZD3GpWuPOuFJNU+w4NplaToi4czRMfgjEbYpp0g+yhc7w47r7z1u3S3E8PpeAxX3Mc
+         dZZcDm8ZD+J+h2at3LwfzI8tyZHpKdXRnl1MLMpfTz3P/O0jJFDyzLsjcwpsZhc6yqyz
+         iOAjvR6EcI0yrpQbKhM/V1qR0t4VpytxkGc048eXIcd/J0A77NV4gESmBvdPW1Y5djUc
+         8avw==
+X-Gm-Message-State: AOAM531OnBaEhZr+Yao3J2mLa4KUB+2LjrImkQ6n4dUpIShr4G932xPE
+        1Qz0ztzhnG7/EFVLRVasbo3PgJCzrPEYf9A+uopO8yrPDVYDinzCUlNjd77ApPCUgJfsaQGyhLy
+        N/GIQFgDP15Oi+d/fl1Ql1PYmQBRYafj2rU5x/oBdexZrqZ9P2dgKxTUZDCR7yerS+hkJaGL6Pn
+        Ff
+X-Received: by 2002:a17:907:7b8d:: with SMTP id ne13mr6469281ejc.136.1643725904405;
+        Tue, 01 Feb 2022 06:31:44 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxaMlxQDg5uPVclG2SA1eg5ZnllWOcMasdnd7IS7AQ5IUKTYNl5m4fiRpbpgX/p7pKN5sDPOA==
+X-Received: by 2002:a17:907:7b8d:: with SMTP id ne13mr6469254ejc.136.1643725904126;
+        Tue, 01 Feb 2022 06:31:44 -0800 (PST)
+Received: from fedora (nat-2.ign.cz. [91.219.240.2])
+        by smtp.gmail.com with ESMTPSA id gh14sm14554716ejb.38.2022.02.01.06.31.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Feb 2022 06:31:43 -0800 (PST)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        Vineeth Pillai <viremana@linux.microsoft.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/5] KVM: SVM: nSVM: Implement Enlightened MSR-Bitmap
+ for Hyper-V-on-KVM and fix it for KVM-on-Hyper-V
+In-Reply-To: <35f06589-d300-c356-dc17-2c021ac97281@redhat.com>
+References: <20211220152139.418372-1-vkuznets@redhat.com>
+ <35f06589-d300-c356-dc17-2c021ac97281@redhat.com>
+Date:   Tue, 01 Feb 2022 15:31:42 +0100
+Message-ID: <87sft2bqup.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2 0/7] net: lan966x: Add PTP Hardward Clock support
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164372581071.3866.12987877077214392601.git-patchwork-notify@kernel.org>
-Date:   Tue, 01 Feb 2022 14:30:10 +0000
-References: <20220131100122.423164-1-horatiu.vultur@microchip.com>
-In-Reply-To: <20220131100122.423164-1-horatiu.vultur@microchip.com>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        robh+dt@kernel.org, UNGLinuxDriver@microchip.com,
-        linux@armlinux.org.uk, richardcochran@gmail.com,
-        f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        vladimir.oltean@nxp.com, andrew@lunn.ch
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+Paolo Bonzini <pbonzini@redhat.com> writes:
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+> On 12/20/21 16:21, Vitaly Kuznetsov wrote:
+>> Enlightened MSR-Bitmap feature implements a PV protocol for L0 and L1
+>> hypervisors to collaborate and skip unneeded updates to MSR-Bitmap.
+>> KVM implements the feature for KVM-on-Hyper-V but it seems there was
+>> a flaw in the implementation and the feature may not be fully functional.
+>> PATCHes 1-2 fix the problem. The rest of the series implements the same
+>> feature for Hyper-V-on-KVM.
+>> 
+>> Vitaly Kuznetsov (5):
+>>    KVM: SVM: Drop stale comment from
+>>      svm_hv_vmcb_dirty_nested_enlightenments()
+>>    KVM: SVM: hyper-v: Enable Enlightened MSR-Bitmap support for real
+>>    KVM: nSVM: Track whether changes in L0 require MSR bitmap for L2 to be
+>>      rebuilt
+>>    KVM: x86: Make kvm_hv_hypercall_enabled() static inline
+>>    KVM: nSVM: Implement Enlightened MSR-Bitmap feature
+>> 
+>>   arch/x86/kvm/hyperv.c           | 12 +--------
+>>   arch/x86/kvm/hyperv.h           |  6 ++++-
+>>   arch/x86/kvm/svm/nested.c       | 47 ++++++++++++++++++++++++++++-----
+>>   arch/x86/kvm/svm/svm.c          |  3 ++-
+>>   arch/x86/kvm/svm/svm.h          | 16 +++++++----
+>>   arch/x86/kvm/svm/svm_onhyperv.h | 12 +++------
+>>   6 files changed, 63 insertions(+), 33 deletions(-)
+>> 
+>
+> Queued 3-5 now, but it would be nice to have some testcases.
+>
 
-On Mon, 31 Jan 2022 11:01:15 +0100 you wrote:
-> Add support for PTP Hardware Clock (PHC) for lan966x. The switch supports
-> both PTP 1-step and 2-step modes.
-> 
-> v1->v2:
-> - fix commit messages
-> - reduce the scope of the lock ptp_lock inside the function
->   lan966x_ptp_hwtstamp_set
-> - the rx timestamping is always enabled for all packages
-> 
-> [...]
+Thanks, indeed, I'll try to draft something up, both for nVMX and nSVM.
 
-Here is the summary with links:
-  - [net-next,v2,1/7] dt-bindings: net: lan966x: Extend with the ptp interrupt
-    https://git.kernel.org/netdev/net-next/c/2f92512e1c52
-  - [net-next,v2,2/7] net: lan966x: Add registers that are use for ptp functionality
-    https://git.kernel.org/netdev/net-next/c/d700dff41d92
-  - [net-next,v2,3/7] net: lan966x: Add support for ptp clocks
-    https://git.kernel.org/netdev/net-next/c/d096459494a8
-  - [net-next,v2,4/7] net: lan966x: Implement SIOCSHWTSTAMP and SIOCGHWTSTAMP
-    https://git.kernel.org/netdev/net-next/c/735fec995b21
-  - [net-next,v2,5/7] net: lan966x: Update extraction/injection for timestamping
-    https://git.kernel.org/netdev/net-next/c/77eecf25bd9d
-  - [net-next,v2,6/7] net: lan966x: Add support for ptp interrupts
-    https://git.kernel.org/netdev/net-next/c/e85a96e48e33
-  - [net-next,v2,7/7] net: lan966x: Implement get_ts_info
-    https://git.kernel.org/netdev/net-next/c/966f2e1a4a34
-
-You are awesome, thank you!
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+Vitaly
 
