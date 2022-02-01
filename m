@@ -2,105 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97161C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 15:28:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D13D1C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 15:29:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240384AbiBAP2f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 10:28:35 -0500
-Received: from foss.arm.com ([217.140.110.172]:46980 "EHLO foss.arm.com"
+        id S240331AbiBAP3G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 10:29:06 -0500
+Received: from mga07.intel.com ([134.134.136.100]:35658 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240416AbiBAP2V (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 10:28:21 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DFB9711B3;
-        Tue,  1 Feb 2022 07:28:20 -0800 (PST)
-Received: from [192.168.178.6] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 498BB3F40C;
-        Tue,  1 Feb 2022 07:28:18 -0800 (PST)
-Subject: Re: [PATCH v2] sched/rt: Plug rt_mutex_setprio() vs push_rt_task()
- race
-To:     Valentin Schneider <valentin.schneider@arm.com>,
-        linux-kernel@vger.kernel.org, linux-rt-users@vger.kernel.org
-Cc:     John Keeping <john@metanate.com>, Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>
-References: <20220127154059.974729-1-valentin.schneider@arm.com>
-From:   Dietmar Eggemann <dietmar.eggemann@arm.com>
-Message-ID: <c12765d4-6b0e-fd1a-8152-a68e6e56cbb8@arm.com>
-Date:   Tue, 1 Feb 2022 16:28:10 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S240294AbiBAP3E (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 1 Feb 2022 10:29:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643729344; x=1675265344;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=O9qf2U0x7o4A/jcao6X2JJyNTrNpGEOOemrb2qph0vo=;
+  b=EAEad/C1F1Swty4pCWlEhLVN1zswxDh7jb/vzbp5yPYH0gSG0p2NqcRu
+   8u9yZscwimOdHeiZ41EB+fn2o7k5Coz8+5jbJbrWBP1hxZs4GJKfvGNEC
+   mh86TNQZO0sSkrhcFuufnfdnyR9X9tCU16+YcyYAWtPtlWo1HiOqrg7Pb
+   Nvu8Aw0KAv2oDhZBecuWcZzR4yXmmfyy7uj4WUeKqddVkhDZv5PXIdJVd
+   P14SIJi57LR/8iynm2Bc6YGRnJhdFsF4PwQ/YfCVCPIsrKc+6R6suBRkt
+   1SkKi19LTygCl4a5HGsbYbp8ylcr0F4G7YJLv7PGf6AjDCuVYe56AM+oK
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10244"; a="311022304"
+X-IronPort-AV: E=Sophos;i="5.88,334,1635231600"; 
+   d="scan'208";a="311022304"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2022 07:28:53 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,334,1635231600"; 
+   d="scan'208";a="698437069"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 01 Feb 2022 07:28:50 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nEv5O-000TPg-6S; Tue, 01 Feb 2022 15:28:50 +0000
+Date:   Tue, 1 Feb 2022 23:28:27 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@gnuweeb.org>,
+        linux-kernel@vger.kernel.org,
+        Will McVicker <willmcvicker@google.com>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [ammarfaizi2-block:google/android/kernel/common/android-4.19-stable
+ 343/9999] drivers/nvmem/core.c:347:5: warning: no previous prototype for
+ function 'nvmem_add_cells'
+Message-ID: <202202012338.LedWi6I7-lkp@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20220127154059.974729-1-valentin.schneider@arm.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 27/01/2022 16:40, Valentin Schneider wrote:
-> John reported that push_rt_task() can end up invoking
-> find_lowest_rq(rq->curr) when curr is not an RT task (in this case a CFS
-> one), which causes mayhem down convert_prio().
-> 
-> This can happen when current gets demoted to e.g. CFS when releasing an
-> rt_mutex, and the local CPU gets hit with an rto_push_work irqwork before
-> getting the chance to reschedule. Exactly who triggers this work isn't
-> entirely clear to me - switched_from_rt() only invokes rt_queue_pull_task()
-> if there are no RT tasks on the local RQ, which means the local CPU can't
-> be in the rto_mask.
-> 
-> My current suspected sequence is something along the lines of the below,
-> with the demoted task being current.
-> 
->   mark_wakeup_next_waiter()
->     rt_mutex_adjust_prio()
->       rt_mutex_setprio() // deboost originally-CFS task
-> 	check_class_changed()
-> 	  switched_from_rt() // Only rt_queue_pull_task() if !rq->rt.rt_nr_running
-> 	  switched_to_fair() // Sets need_resched
->       __balance_callbacks() // if pull_rt_task(), tell_cpu_to_push() can't select local CPU per the above
->       raw_spin_rq_unlock(rq)
-> 
->        // need_resched is set, so task_woken_rt() can't
->        // invoke push_rt_tasks(). Best I can come up with is
->        // local CPU has rt_nr_migratory >= 2 after the demotion, so stays
->        // in the rto_mask, and then:
-> 
->        <some other CPU running rto_push_irq_work_func() queues rto_push_work on this CPU>
-> 	 push_rt_task()
-> 	   // breakage follows here as rq->curr is CFS
-> 
-> Move an existing check to check rq->curr vs the next pushable task's
-> priority before getting anywhere near find_lowest_rq(). While at it, add an
-> explicit sched_class of rq->curr check prior to invoking
-> find_lowest_rq(rq->curr). Align the DL logic to also reschedule regardless
-> of next_task's migratability.
-> 
-> Link: http://lore.kernel.org/r/Yb3vXx3DcqVOi+EA@donbot
-> Fixes: a7c81556ec4d ("sched: Fix migrate_disable() vs rt/dl balancing")
-> Reported-by: John Keeping <john@metanate.com>
-> Signed-off-by: Valentin Schneider <valentin.schneider@arm.com>
-> Tested-by: John Keeping <john@metanate.com>
-> ---
-> v1 -> v2: Reworded comments, added DL part (Dietmar)
-> ---
+tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android-4.19-stable
+head:   b45c5eeda8dea785e3d411380b486a209768f6b2
+commit: e96a10625581a499e8a4218ef504f3f53918408b [343/9999] UPSTREAM: nvmem: add support for cell info
+config: x86_64-randconfig-r026-20220131 (https://download.01.org/0day-ci/archive/20220201/202202012338.LedWi6I7-lkp@intel.com/config)
+compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 6b1e844b69f15bb7dffaf9365cd2b355d2eb7579)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/e96a10625581a499e8a4218ef504f3f53918408b
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android-4.19-stable
+        git checkout e96a10625581a499e8a4218ef504f3f53918408b
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/nvmem/
 
-LGTM.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Rescheduling in case rq->curr has lower prio (including CFS tasks) than
-next_task and bailing out in case rq->curr is DL or stop-task prevents
-the bug from happening.
+All warnings (new ones prefixed by >>):
 
-The only small issue is the fact that, unlike in push_rt_task(), the DL
-logic only compares DL tasks (if (dl_task(rq->curr) ...), so you miss
-rescheduling when rq->curr is a lower priority non-DL task.
+>> drivers/nvmem/core.c:347:5: warning: no previous prototype for function 'nvmem_add_cells' [-Wmissing-prototypes]
+   int nvmem_add_cells(struct nvmem_device *nvmem,
+       ^
+   drivers/nvmem/core.c:347:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   int nvmem_add_cells(struct nvmem_device *nvmem,
+   ^
+   static 
+   1 warning generated.
 
-Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
 
-[...]
+vim +/nvmem_add_cells +347 drivers/nvmem/core.c
+
+eace75cfdcf7d9 Srinivas Kandagatla 2015-07-27  337  
+b3db17e4b864e4 Andrew Lunn         2018-05-11  338  /**
+b3db17e4b864e4 Andrew Lunn         2018-05-11  339   * nvmem_add_cells() - Add cell information to an nvmem device
+b3db17e4b864e4 Andrew Lunn         2018-05-11  340   *
+b3db17e4b864e4 Andrew Lunn         2018-05-11  341   * @nvmem: nvmem device to add cells to.
+b3db17e4b864e4 Andrew Lunn         2018-05-11  342   * @info: nvmem cell info to add to the device
+b3db17e4b864e4 Andrew Lunn         2018-05-11  343   * @ncells: number of cells in info
+b3db17e4b864e4 Andrew Lunn         2018-05-11  344   *
+b3db17e4b864e4 Andrew Lunn         2018-05-11  345   * Return: 0 or negative error code on failure.
+b3db17e4b864e4 Andrew Lunn         2018-05-11  346   */
+b3db17e4b864e4 Andrew Lunn         2018-05-11 @347  int nvmem_add_cells(struct nvmem_device *nvmem,
+b3db17e4b864e4 Andrew Lunn         2018-05-11  348  		    const struct nvmem_cell_info *info,
+b3db17e4b864e4 Andrew Lunn         2018-05-11  349  		    int ncells)
+eace75cfdcf7d9 Srinivas Kandagatla 2015-07-27  350  {
+eace75cfdcf7d9 Srinivas Kandagatla 2015-07-27  351  	struct nvmem_cell **cells;
+eace75cfdcf7d9 Srinivas Kandagatla 2015-07-27  352  	int i, rval;
+eace75cfdcf7d9 Srinivas Kandagatla 2015-07-27  353  
+b3db17e4b864e4 Andrew Lunn         2018-05-11  354  	cells = kcalloc(ncells, sizeof(*cells), GFP_KERNEL);
+eace75cfdcf7d9 Srinivas Kandagatla 2015-07-27  355  	if (!cells)
+eace75cfdcf7d9 Srinivas Kandagatla 2015-07-27  356  		return -ENOMEM;
+eace75cfdcf7d9 Srinivas Kandagatla 2015-07-27  357  
+b3db17e4b864e4 Andrew Lunn         2018-05-11  358  	for (i = 0; i < ncells; i++) {
+eace75cfdcf7d9 Srinivas Kandagatla 2015-07-27  359  		cells[i] = kzalloc(sizeof(**cells), GFP_KERNEL);
+eace75cfdcf7d9 Srinivas Kandagatla 2015-07-27  360  		if (!cells[i]) {
+eace75cfdcf7d9 Srinivas Kandagatla 2015-07-27  361  			rval = -ENOMEM;
+eace75cfdcf7d9 Srinivas Kandagatla 2015-07-27  362  			goto err;
+eace75cfdcf7d9 Srinivas Kandagatla 2015-07-27  363  		}
+eace75cfdcf7d9 Srinivas Kandagatla 2015-07-27  364  
+eace75cfdcf7d9 Srinivas Kandagatla 2015-07-27  365  		rval = nvmem_cell_info_to_nvmem_cell(nvmem, &info[i], cells[i]);
+287980e49ffc0f Arnd Bergmann       2016-05-27  366  		if (rval) {
+eace75cfdcf7d9 Srinivas Kandagatla 2015-07-27  367  			kfree(cells[i]);
+eace75cfdcf7d9 Srinivas Kandagatla 2015-07-27  368  			goto err;
+eace75cfdcf7d9 Srinivas Kandagatla 2015-07-27  369  		}
+eace75cfdcf7d9 Srinivas Kandagatla 2015-07-27  370  
+eace75cfdcf7d9 Srinivas Kandagatla 2015-07-27  371  		nvmem_cell_add(cells[i]);
+eace75cfdcf7d9 Srinivas Kandagatla 2015-07-27  372  	}
+eace75cfdcf7d9 Srinivas Kandagatla 2015-07-27  373  
+eace75cfdcf7d9 Srinivas Kandagatla 2015-07-27  374  	/* remove tmp array */
+eace75cfdcf7d9 Srinivas Kandagatla 2015-07-27  375  	kfree(cells);
+eace75cfdcf7d9 Srinivas Kandagatla 2015-07-27  376  
+eace75cfdcf7d9 Srinivas Kandagatla 2015-07-27  377  	return 0;
+eace75cfdcf7d9 Srinivas Kandagatla 2015-07-27  378  err:
+dfdf141429f089 Rasmus Villemoes    2016-02-08  379  	while (i--)
+eace75cfdcf7d9 Srinivas Kandagatla 2015-07-27  380  		nvmem_cell_drop(cells[i]);
+eace75cfdcf7d9 Srinivas Kandagatla 2015-07-27  381  
+dfdf141429f089 Rasmus Villemoes    2016-02-08  382  	kfree(cells);
+dfdf141429f089 Rasmus Villemoes    2016-02-08  383  
+eace75cfdcf7d9 Srinivas Kandagatla 2015-07-27  384  	return rval;
+eace75cfdcf7d9 Srinivas Kandagatla 2015-07-27  385  }
+b3db17e4b864e4 Andrew Lunn         2018-05-11  386  EXPORT_SYMBOL_GPL(nvmem_add_cells);
+eace75cfdcf7d9 Srinivas Kandagatla 2015-07-27  387  
+
+:::::: The code at line 347 was first introduced by commit
+:::::: b3db17e4b864e46ad150ebef69c0e0130a1c5fca drivers: nvmem: Export nvmem_add_cells()
+
+:::::: TO: Andrew Lunn <andrew@lunn.ch>
+:::::: CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
