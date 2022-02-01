@@ -2,316 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2D60C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 19:01:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAD5FC43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 19:02:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241978AbiBATBu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 14:01:50 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:41054 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238402AbiBATBk (ORCPT
+        id S239248AbiBATCB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 14:02:01 -0500
+Received: from mail-yb1-f176.google.com ([209.85.219.176]:45828 "EHLO
+        mail-yb1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238769AbiBATB6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 14:01:40 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 938D3B82F71;
-        Tue,  1 Feb 2022 19:01:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B8C5C340ED;
-        Tue,  1 Feb 2022 19:01:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643742098;
-        bh=X74BnOg4IqWFvwMGEZm0zB6g12VahyiocXPpi50JsKY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CRRqNDjjYZhgwQtE7XZ8/vIlNgBt61b7qpm9gneiXK9qdpGcBLMPfVDTOZ27iu10C
-         skPHcuhlFXf138w4PoPrdQpoieVNduSp8u/oogwSVSGqRTiEusEqA+ctk/n4rzvUH4
-         8if3/XAjqjmHzZt1Bb/LI+u3YCf6FKHMIDenJWG8FKlsLumZtYf/1hRi5AkqVXGYRu
-         T/OKzDUxMWFWu8xo+mTsU+zrU5cAqIB3VQf3T89lvViTFGJoCpqwnxSh6iEC1C26sW
-         ZwMm0Ss0Bz62DxQzS8yS4lJ/t4XZ6ykuESW7ERDtGCUUDC5E3BAfeWfWLQ/Q6B8/tp
-         1ZSqV4gIZ0+NQ==
-From:   Keith Busch <kbusch@kernel.org>
-To:     linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-block@vger.kernel.org
-Cc:     axboe@kernel.dk, hch@lst.de, martin.petersen@oracle.com,
-        colyli@suse.de, Keith Busch <kbusch@kernel.org>
-Subject: [PATCHv2 6/7] block: add pi for nvme enhanced integrity
-Date:   Tue,  1 Feb 2022 11:01:27 -0800
-Message-Id: <20220201190128.3075065-7-kbusch@kernel.org>
-X-Mailer: git-send-email 2.25.4
-In-Reply-To: <20220201190128.3075065-1-kbusch@kernel.org>
-References: <20220201190128.3075065-1-kbusch@kernel.org>
+        Tue, 1 Feb 2022 14:01:58 -0500
+Received: by mail-yb1-f176.google.com with SMTP id w81so31576023ybg.12;
+        Tue, 01 Feb 2022 11:01:57 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zetz1EMRrtQpNFO0fDTM+0U4I0bqCUCVVP0e+KHk8hI=;
+        b=Qb8dH8+aQjMFf4E1QX/QpWoiUGWgaZNOFPwHLfCh3lJAhoSk2OxN9+RT/XKBANQWVv
+         0rxKD3Pp1ilFdTRfHmLCBn7aq88A5BkT+qHdoJNkdDs407G/OooKaqSFddT8txjXpgxl
+         cOwo6z1T1BjgAFxJdqHDCf5M6QbeTPEyc9iwr6zJW6H5tdcvUiJ3iZP8OgtBEYSR0LiL
+         ELRzTagHbCOZKbsg+D76uy/J5apKuRaERvI6wt3n5cb/GqhJHZltbzhbbqEJPD2oNrvj
+         zAJ5W7rFg+cO/GZylroWDa8xeqja7BsP+eckeZ2f3vMxtuQI/yLKaLkBu7fpxv3TpyjK
+         3bDQ==
+X-Gm-Message-State: AOAM532NLd5s837fP8Bx61cBLBQiY1mkEyFy7sFKlIimvSNpSYXEGW7F
+        TprnAo2QHQZrChOcfbM47BHDr8pQ9ZTFBk+ElCI=
+X-Google-Smtp-Source: ABdhPJyaXQdSdAWuhV1rlFp79N6oWZd9upRROHfEAt6roN+Zhtqn2P5Znv6SN86pFRBbzM23rHXbjKXdGd56ucOffrU=
+X-Received: by 2002:a25:cc97:: with SMTP id l145mr357412ybf.272.1643742117289;
+ Tue, 01 Feb 2022 11:01:57 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <4374434.LvFx2qVVIh@kreacher> <Yfl/Sneg9/HPOjBe@smile.fi.intel.com>
+In-Reply-To: <Yfl/Sneg9/HPOjBe@smile.fi.intel.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Tue, 1 Feb 2022 20:01:46 +0100
+Message-ID: <CAJZ5v0jFBFKMcjYieYCL1LTvRPuM7b8_5nBx0_wnPtobzg==fw@mail.gmail.com>
+Subject: Re: [PATCH] i2c: ACPI: Replace acpi_bus_get_device()
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Wolfram Sang <wsa@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux ACPI <linux-acpi@vger.kernel.org>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        linux-i2c <linux-i2c@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The NVMe specification defines larger data integrity formats beyond the
-t10 tuple. Add support for the specification defined CRC64 formats,
-assuming the reference tag does not need to be split with the "storage
-tag".
+On Tue, Feb 1, 2022 at 7:44 PM Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
+>
+> On Tue, Feb 01, 2022 at 07:00:42PM +0100, Rafael J. Wysocki wrote:
+> > From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> >
+> > Replace acpi_bus_get_device() that is going to be dropped with
+> > acpi_fetch_acpi_dev().
+> >
+> > No intentional functional impact.
+>
+> ...
+>
+> > +     if (!adev || i2c_acpi_get_info(adev, &info, adapter, NULL))
+>
+> AFAICS the !adev check is redundant since acpi_device_enumerated() does it.
 
-Cc: "Martin K. Petersen" <martin.petersen@oracle.com>
-Signed-off-by: Keith Busch <kbusch@kernel.org>
----
- block/Kconfig          |   1 +
- block/t10-pi.c         | 194 +++++++++++++++++++++++++++++++++++++++++
- include/linux/t10-pi.h |  20 +++++
- 3 files changed, 215 insertions(+)
+No.
 
-diff --git a/block/Kconfig b/block/Kconfig
-index 205f8d01c695..e3ce9196ad07 100644
---- a/block/Kconfig
-+++ b/block/Kconfig
-@@ -75,6 +75,7 @@ config BLK_DEV_INTEGRITY_T10
- 	tristate
- 	depends on BLK_DEV_INTEGRITY
- 	select CRC_T10DIF
-+	select CRC64
- 
- config BLK_DEV_ZONED
- 	bool "Zoned block device support"
-diff --git a/block/t10-pi.c b/block/t10-pi.c
-index 758a76518854..7bfefe970bc5 100644
---- a/block/t10-pi.c
-+++ b/block/t10-pi.c
-@@ -7,8 +7,10 @@
- #include <linux/t10-pi.h>
- #include <linux/blk-integrity.h>
- #include <linux/crc-t10dif.h>
-+#include <linux/crc64.h>
- #include <linux/module.h>
- #include <net/checksum.h>
-+#include <asm/unaligned.h>
- 
- typedef __be16 (csum_fn) (void *, unsigned int);
- 
-@@ -278,4 +280,196 @@ const struct blk_integrity_profile t10_pi_type3_ip = {
- };
- EXPORT_SYMBOL(t10_pi_type3_ip);
- 
-+static __be64 nvme_pi_crc64(void *data, unsigned int len)
-+{
-+	return cpu_to_be64(crc64_rocksoft(~0ULL, data, len));
-+}
-+
-+static blk_status_t nvme_crc64_generate(struct blk_integrity_iter *iter,
-+					enum t10_dif_type type)
-+{
-+	unsigned int i;
-+
-+	for (i = 0 ; i < iter->data_size ; i += iter->interval) {
-+		struct nvme_crc64_pi_tuple *pi = iter->prot_buf;
-+
-+		pi->guard_tag = nvme_pi_crc64(iter->data_buf, iter->interval);
-+		pi->app_tag = 0;
-+
-+		if (type == T10_PI_TYPE1_PROTECTION)
-+			put_unaligned_be48(iter->seed, pi->ref_tag);
-+		else
-+			put_unaligned_be48(0ULL, pi->ref_tag);
-+
-+		iter->data_buf += iter->interval;
-+		iter->prot_buf += iter->tuple_size;
-+		iter->seed++;
-+	}
-+
-+	return BLK_STS_OK;
-+}
-+
-+static bool nvme_crc64_ref_escape(u8 *ref_tag)
-+{
-+	static u8 ref_escape[6] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
-+
-+	return memcmp(ref_tag, ref_escape, sizeof(ref_escape)) == 0;
-+}
-+
-+static blk_status_t nvme_crc64_verify(struct blk_integrity_iter *iter,
-+				      enum t10_dif_type type)
-+{
-+	unsigned int i;
-+
-+	for (i = 0; i < iter->data_size; i += iter->interval) {
-+		struct nvme_crc64_pi_tuple *pi = iter->prot_buf;
-+		u64 ref, seed;
-+		__be64 csum;
-+
-+		if (type == T10_PI_TYPE1_PROTECTION) {
-+			if (pi->app_tag == T10_PI_APP_ESCAPE)
-+				goto next;
-+
-+			ref = get_unaligned_be48(pi->ref_tag);
-+			seed = iter->seed & 0xffffffffffffull;
-+			if (ref != seed) {
-+				pr_err("%s: ref tag error at location %llu (rcvd %llu)\n",
-+					iter->disk_name, seed, ref);
-+				return BLK_STS_PROTECTION;
-+			}
-+		} else if (type == T10_PI_TYPE3_PROTECTION) {
-+			if (pi->app_tag == T10_PI_APP_ESCAPE &&
-+			    nvme_crc64_ref_escape(pi->ref_tag))
-+				goto next;
-+		}
-+
-+		csum = nvme_pi_crc64(iter->data_buf, iter->interval);
-+		if (pi->guard_tag != csum) {
-+			pr_err("%s: guard tag error at sector %llu " \
-+			       "(rcvd %016llx, want %016llx)\n",
-+				iter->disk_name, (unsigned long long)iter->seed,
-+				be64_to_cpu(pi->guard_tag), be64_to_cpu(csum));
-+			return BLK_STS_PROTECTION;
-+		}
-+
-+next:
-+		iter->data_buf += iter->interval;
-+		iter->prot_buf += iter->tuple_size;
-+		iter->seed++;
-+	}
-+
-+	return BLK_STS_OK;
-+}
-+
-+static blk_status_t nvme_pi_type1_verify_crc(struct blk_integrity_iter *iter)
-+{
-+	return nvme_crc64_verify(iter, T10_PI_TYPE1_PROTECTION);
-+}
-+
-+static blk_status_t nvme_pi_type1_generate_crc(struct blk_integrity_iter *iter)
-+{
-+	return nvme_crc64_generate(iter, T10_PI_TYPE1_PROTECTION);
-+}
-+
-+static void nvme_pi_type1_prepare(struct request *rq)
-+{
-+	const int tuple_sz = rq->q->integrity.tuple_size;
-+	u64 ref_tag = nvme_pi_extended_ref_tag(rq);
-+	struct bio *bio;
-+
-+	__rq_for_each_bio(bio, rq) {
-+		struct bio_integrity_payload *bip = bio_integrity(bio);
-+		u64 virt = bip_get_seed(bip) & 0xffffffffffffull;
-+		struct bio_vec iv;
-+		struct bvec_iter iter;
-+
-+		/* Already remapped? */
-+		if (bip->bip_flags & BIP_MAPPED_INTEGRITY)
-+			break;
-+
-+		bip_for_each_vec(iv, bip, iter) {
-+			unsigned int j;
-+			void *p;
-+
-+			p = bvec_kmap_local(&iv);
-+			for (j = 0; j < iv.bv_len; j += tuple_sz) {
-+				struct nvme_crc64_pi_tuple *pi = p;
-+				u64 ref = get_unaligned_be48(pi->ref_tag);
-+
-+				if (ref == virt)
-+					put_unaligned_be48(ref_tag, pi->ref_tag);
-+				virt++;
-+				ref_tag++;
-+				p += tuple_sz;
-+			}
-+			kunmap_local(p);
-+		}
-+
-+		bip->bip_flags |= BIP_MAPPED_INTEGRITY;
-+	}
-+}
-+
-+static void nvme_pi_type1_complete(struct request *rq, unsigned int nr_bytes)
-+{
-+	unsigned intervals = nr_bytes >> rq->q->integrity.interval_exp;
-+	const int tuple_sz = rq->q->integrity.tuple_size;
-+	u64 ref_tag = nvme_pi_extended_ref_tag(rq);
-+	struct bio *bio;
-+
-+	__rq_for_each_bio(bio, rq) {
-+		struct bio_integrity_payload *bip = bio_integrity(bio);
-+		u64 virt = bip_get_seed(bip) & 0xffffffffffffull;
-+		struct bio_vec iv;
-+		struct bvec_iter iter;
-+
-+		bip_for_each_vec(iv, bip, iter) {
-+			unsigned int j;
-+			void *p;
-+
-+			p = bvec_kmap_local(&iv);
-+			for (j = 0; j < iv.bv_len && intervals; j += tuple_sz) {
-+				struct nvme_crc64_pi_tuple *pi = p;
-+				u64 ref = get_unaligned_be48(pi->ref_tag);
-+
-+				if (ref == ref_tag)
-+					put_unaligned_be48(virt, pi->ref_tag);
-+				virt++;
-+				ref_tag++;
-+				intervals--;
-+				p += tuple_sz;
-+			}
-+			kunmap_local(p);
-+		}
-+	}
-+}
-+
-+static blk_status_t nvme_pi_type3_verify_crc(struct blk_integrity_iter *iter)
-+{
-+	return nvme_crc64_verify(iter, T10_PI_TYPE3_PROTECTION);
-+}
-+
-+static blk_status_t nvme_pi_type3_generate_crc(struct blk_integrity_iter *iter)
-+{
-+	return nvme_crc64_generate(iter, T10_PI_TYPE3_PROTECTION);
-+}
-+
-+const struct blk_integrity_profile nvme_pi_type1_crc64 = {
-+	.name			= "NVME-DIF-TYPE1-CRC64",
-+	.generate_fn		= nvme_pi_type1_generate_crc,
-+	.verify_fn		= nvme_pi_type1_verify_crc,
-+	.prepare_fn		= nvme_pi_type1_prepare,
-+	.complete_fn		= nvme_pi_type1_complete,
-+};
-+EXPORT_SYMBOL(nvme_pi_type1_crc64);
-+
-+const struct blk_integrity_profile nvme_pi_type3_crc64 = {
-+	.name			= "NVME-DIF-TYPE3-CRC64",
-+	.generate_fn		= nvme_pi_type3_generate_crc,
-+	.verify_fn		= nvme_pi_type3_verify_crc,
-+	.prepare_fn		= t10_pi_type3_prepare,
-+	.complete_fn		= t10_pi_type3_complete,
-+};
-+EXPORT_SYMBOL(nvme_pi_type3_crc64);
-+
-+MODULE_LICENSE("GPL");
- MODULE_LICENSE("GPL");
-diff --git a/include/linux/t10-pi.h b/include/linux/t10-pi.h
-index c635c2e014e3..fd3a9b99500a 100644
---- a/include/linux/t10-pi.h
-+++ b/include/linux/t10-pi.h
-@@ -53,4 +53,24 @@ extern const struct blk_integrity_profile t10_pi_type1_ip;
- extern const struct blk_integrity_profile t10_pi_type3_crc;
- extern const struct blk_integrity_profile t10_pi_type3_ip;
- 
-+struct nvme_crc64_pi_tuple {
-+	__be64 guard_tag;
-+	__be16 app_tag;
-+	__u8   ref_tag[6];
-+};
-+
-+static inline u64 nvme_pi_extended_ref_tag(struct request *rq)
-+{
-+	unsigned int shift = ilog2(queue_logical_block_size(rq->q));
-+
-+#ifdef CONFIG_BLK_DEV_INTEGRITY
-+	if (rq->q->integrity.interval_exp)
-+		shift = rq->q->integrity.interval_exp;
-+#endif
-+	return blk_rq_pos(rq) >> (shift - SECTOR_SHIFT) & 0xffffffffffffull;
-+}
-+
-+extern const struct blk_integrity_profile nvme_pi_type1_crc64;
-+extern const struct blk_integrity_profile nvme_pi_type3_crc64;
-+
- #endif
--- 
-2.25.4
+acpi_device_enumerated() returns false if adev is NULL, so without
+this extra check i2c_acpi_get_info() will end up passing NULL to
+i2c_acpi_do_lookup().
 
+> >               return AE_OK;
+>
+> ...
+>
+> > +     struct acpi_device *adev = acpi_fetch_acpi_dev(handle);
+> >
+> > -     if (i2c_acpi_do_lookup(adev, lookup))
+> > +     if (!adev || i2c_acpi_do_lookup(adev, lookup))
+> >               return AE_OK;
+>
+> Here we need it indeed.
+> Dunno, if acpi_dev_ready_for_enumeration() can gain the check itself.
+
+Well, acpi_bus_get_status() would need it too.
