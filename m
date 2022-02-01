@@ -2,143 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADB1AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 02:03:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30151C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 02:13:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232599AbiBACDs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 21:03:48 -0500
-Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:11086 "EHLO
-        mx0a-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232332AbiBACDm (ORCPT
+        id S232255AbiBACNh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 31 Jan 2022 21:13:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58018 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232077AbiBACNg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 21:03:42 -0500
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20VLZf40010052;
-        Tue, 1 Feb 2022 02:03:30 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=corp-2021-07-09;
- bh=drxk5oEYLxxWikk1+TDaKvNPOKmjAnMKtkAedlJW994=;
- b=nWHes1jezO/TqgqIB3oOJuYKmaRoo63iB8TY9kbnZsKP+n4RbXgvvqz7gaaVIwUdtdjU
- 1FLdjA7vAD1iSdnA+ADg1c57ex113jrBIdtqqreOue2XZh8bzyGK1E5sfMk5AvAwIMaA
- VCPRq6p3SxxhAP7G4SnKdDqUzzTQn2tJwJG0xUer2vYBIQeP5ke0YZ06Az0vcs12DlQr
- Ox8iTAcyA5SiEjd7CdU7xQtzpVSeLr5L1+B5LS2wG++Kvda3rFwO/5uXsNcP/CDmLxx/
- TXyBYV8P/Pje5bZhqQEJrmcmL7xjHgo55tVXfJ5wjRwsDtk1c5zyqjA9e2OwxtP1/iW4 mw== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3dxjac1fg6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 01 Feb 2022 02:03:29 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 2111tJqA078954;
-        Tue, 1 Feb 2022 02:03:28 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by userp3030.oracle.com with ESMTP id 3dvtpy6w70-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 01 Feb 2022 02:03:28 +0000
-Received: from userp3030.oracle.com (userp3030.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 21123EPf096319;
-        Tue, 1 Feb 2022 02:03:27 GMT
-Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
-        by userp3030.oracle.com with ESMTP id 3dvtpy6w3w-3;
-        Tue, 01 Feb 2022 02:03:27 +0000
-From:   "Martin K. Petersen" <martin.petersen@oracle.com>
-To:     jinpu.wang@cloud.ionos.com, Ajish.Koshy@microchip.com,
-        jejb@linux.ibm.com, damien.lemoal@opensource.wdc.com,
-        John Garry <john.garry@huawei.com>
-Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
-        chenxiang66@hisilicon.com, Viswas.G@microchip.com,
-        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/3] scsi: pm8001: Documentation and use-after-free fixes
-Date:   Mon, 31 Jan 2022 21:03:21 -0500
-Message-Id: <164368097302.23346.11566808732978746802.b4-ty@oracle.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <1643289172-165636-1-git-send-email-john.garry@huawei.com>
-References: <1643289172-165636-1-git-send-email-john.garry@huawei.com>
+        Mon, 31 Jan 2022 21:13:36 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EC68C061714
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 18:13:36 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id j2so30645018edj.8
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 18:13:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:reply-to:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=z5a1UA3AmbqOXaqFeyJhuFNz4swNgX216lj5ZDFGhKs=;
+        b=golD3uou61gyyuK2ClpPfQPeMByIwIfGy+a7BC6fFu9rrj/T68DWSrynlXOEWwUtX+
+         5dN3KFTradKVC9DShueDJciw/xAndf4MaR2jxNfJpz0RRaYkEmZyQLpB7va6Jls1ipEv
+         XVyggpJaVrEYUCoffC6KcQg2evhZdKFHt35YjbGvTpUwoo4sOHQKy7XHnOvp0bqmKKRE
+         xFokZaJXFcOQIDPvUJ2C/OGdlTSOC8JJoBm/0AA8mZJdLVEWMVrtgdJo1QwQzllKQ6oE
+         mU4K/0SPD/tn2xVKtPv24/3MtQ9s883pGnZll+50x6ZlN5bmtKkZRyf5VI/oXw564NCa
+         2qTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:reply-to
+         :references:mime-version:content-disposition:in-reply-to:user-agent;
+        bh=z5a1UA3AmbqOXaqFeyJhuFNz4swNgX216lj5ZDFGhKs=;
+        b=PU7CLQVceDy3yFNrzJ/I95fH9stUCLukBy74LUx/QFaqEg8i47JUyoycT42NtkKrc6
+         A9+yuCA1ZX+fP+b1TkrMONxD/vt80nkAThwHfAFfoJkNMF2Sot32slasBK6KgqG3Tu8+
+         gUoNmECWvmbEPSPaFEHI618wCpPbePDGXWsvtyxXmw3+wBqVKuHKoJ4EVCrZuCmha73e
+         wbBHZmUoXaPiPGupHMCn1OwnqwmGC+Wp1f2MGdi4FJJge6MMehtQ2SUOTb6AQ22w6Et5
+         lcCma/oYbX/BDtiBUMa6NVGT995XmY4N3p3v7zXVK8jjWJY3CkihY3LZAdd8e3n3r+G8
+         3TlQ==
+X-Gm-Message-State: AOAM5312221PjUpMlpP+0oTiFKKCcZy3GY0qNceYA9haX1ChZWrtn5fT
+        rtprduV+icPhDVS8Zyjfok8=
+X-Google-Smtp-Source: ABdhPJyBB5jGiaCXsb4tSAGZp9HZi3+G9kvqf9xVjsmhxEdAvhQWT2R8Xl4sPkuB05u88Wz4K8dPyw==
+X-Received: by 2002:a50:fd14:: with SMTP id i20mr23453496eds.122.1643681614916;
+        Mon, 31 Jan 2022 18:13:34 -0800 (PST)
+Received: from localhost ([185.92.221.13])
+        by smtp.gmail.com with ESMTPSA id w25sm18618783edv.68.2022.01.31.18.13.34
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 31 Jan 2022 18:13:34 -0800 (PST)
+Date:   Tue, 1 Feb 2022 02:13:33 +0000
+From:   Wei Yang <richard.weiyang@gmail.com>
+To:     Michal Hocko <mhocko@kernel.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        David Hildenbrand <david@redhat.com>,
+        Alexey Makhalov <amakhalov@vmware.com>,
+        Dennis Zhou <dennis@kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Oscar Salvador <osalvador@suse.de>, Tejun Heo <tj@kernel.org>,
+        Christoph Lameter <cl@linux.com>,
+        Nico Pache <npache@redhat.com>,
+        Wei Yang <richard.weiyang@gmail.com>,
+        Rafael Aquini <raquini@redhat.com>,
+        Michal Hocko <mhocko@suse.com>
+Subject: Re: [PATCH 1/6] mm, memory_hotplug: make arch_alloc_nodedata
+ independent on CONFIG_MEMORY_HOTPLUG
+Message-ID: <20220201021333.tyw5fxsvymqxudsp@master>
+Reply-To: Wei Yang <richard.weiyang@gmail.com>
+References: <20220127085305.20890-1-mhocko@kernel.org>
+ <20220127085305.20890-2-mhocko@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: 9SY32YKq6pSnEHoycecqu2y-WafPYh8i
-X-Proofpoint-ORIG-GUID: 9SY32YKq6pSnEHoycecqu2y-WafPYh8i
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220127085305.20890-2-mhocko@kernel.org>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 27 Jan 2022 21:12:49 +0800, John Garry wrote:
+On Thu, Jan 27, 2022 at 09:53:00AM +0100, Michal Hocko wrote:
+>From: Michal Hocko <mhocko@suse.com>
+>
+>This is a preparatory patch and it doesn't introduce any functional
+>change. It merely pulls out arch_alloc_nodedata (and co) outside of
+>CONFIG_MEMORY_HOTPLUG because the following patch will need to call this
+>from the generic MM code.
+>
+>Acked-by: Rafael Aquini <raquini@redhat.com>
+>Signed-off-by: Michal Hocko <mhocko@suse.com>
 
-> A few fixes:
-> - Remedy make W=1 warning for undescribed param
-> - 2x use-after-free fixes for these KASAN warnings:
-> 
-> TMF timeout:
-> 389.780822] ==================================================================
-> [  389.780828] BUG: KASAN: use-after-free in mpi_ssp_completion+0xb8/0xd20
-> [  389.780845] Read of size 8 at addr ffff0020ccb50268 by task swapper/6/0
-> [  389.780851]
-> [  389.780854] CPU: 6 PID: 0 Comm: swapper/6 Not tainted 5.17.0-rc1-11819-gb4fa2357aff7 #1077
-> [  389.780862] Hardware name: Huawei D06 /D06, BIOS Hisilicon D06 UEFI RC0 - V1.16.01 03/15/2019
-> [  389.780867] Call trace:
-> [  389.780870]  dump_backtrace.part.0+0x1d4/0x1e0
-> [  389.780880]  show_stack+0x1c/0x6c
-> [  389.780888]  dump_stack_lvl+0x68/0x84
-> [  389.780897]  print_address_description.constprop.0+0x74/0x2d8
-> [  389.780905]  kasan_report+0x1e4/0x250
-> [  389.780913]  __asan_load8+0x98/0xd4
-> [  389.780920]  mpi_ssp_completion+0xb8/0xd20
-> [  389.780927]  process_oq+0x7ec/0x3fec
-> [  389.780935]  pm80xx_chip_isr+0x74/0xe0
-> [  389.780942]  pm8001_tasklet+0x64/0x80
-> [  389.780948]  tasklet_action_common.constprop.0+0x1c4/0x1d0
-> [  389.780957]  tasklet_action+0x2c/0x40
-> [  389.780964]  __do_softirq+0x1b0/0x3f8
-> [  389.780969]  __irq_exit_rcu+0x160/0x180
-> [  389.780976]  irq_exit_rcu+0x14/0x20
-> [  389.780983]  el1_interrupt+0x38/0x80
-> [  389.780992]  el1h_64_irq_handler+0x1c/0x2c
-> [  389.780998]  el1h_64_irq+0x78/0x7c
-> [  389.781004]  arch_local_irq_enable+0xc/0x20
-> [  389.781012]  default_idle_call+0x30/0x6c
-> [  389.781020]  do_idle+0x2ec/0x370
-> [  389.781027]  cpu_startup_entry+0x2c/0x80
-> [  389.781034]  secondary_start_kernel+0x240/0x28c
-> [  389.781041]  __secondary_switched+0x94/0x98
-> [  389.781051]
-> [  389.781053] Allocated by task 629:
-> [  389.781057]  kasan_save_stack+0x30/0x60
-> [  389.781065]  __kasan_slab_alloc+0x70/0x94
-> [  389.781071]  kmem_cache_alloc+0x16c/0x2fc
-> [  389.781078]  sas_alloc_slow_task+0x38/0x250
-> [  389.781086]  pm8001_exec_internal_tmf_task.constprop.0+0xf0/0x430
-> [  389.781093]  pm8001_abort_task+0x59c/0x810
-> [  389.781100]  sas_scsi_recover_host+0xafc/0x1090
-> [  389.781108]  scsi_error_handler+0x138/0x5f0
-> [  389.781114]  kthread+0x18c/0x194
-> [  389.781123]  ret_from_fork+0x10/0x20
-> [  389.781129]
-> [  389.781131] Freed by task 629:
-> [  389.781134]  kasan_save_stack+0x30/0x60
-> [  389.781141]  kasan_set_track+0x30/0x44
-> [  389.781147]  kasan_set_free_info+0x2c/0x50
-> [  389.781155]  __kasan_slab_free+0xf0/0x140
-> [  389.781161]  slab_free_freelist_hook+0x70/0x1f0
-> [  389.781167]  kmem_cache_free+0xb4/0x2e0
-> [  389.781173]  sas_free_task+0x3c/0x50
-> [  389.781179]  pm8001_exec_internal_tmf_task.constprop.0+0x2b4/0x430
-> [  389.781186]  pm8001_abort_task+0x59c/0x810
-> [  389.781193]  sas_scsi_recover_host+0xafc/0x1090
-> [  389.781201]  scsi_error_handler+0x138/0x5f0
-> [  389.781207]  kthread+0x18c/0x194
-> [  389.781213]  ret_from_fork+0x10/0x20
-> 
-> [...]
-
-Applied to 5.17/scsi-fixes, thanks!
-
-[1/3] scsi: pm8001: Fix warning for undescribed param in process_one_iomb()
-      https://git.kernel.org/mkp/scsi/c/0aed75fd30da
-[2/3] scsi: pm8001: Fix use-after-free for aborted TMF sas_task
-      https://git.kernel.org/mkp/scsi/c/61f162aa4381
-[3/3] scsi: pm8001: Fix use-after-free for aborted SSP/STP sas_task
-      https://git.kernel.org/mkp/scsi/c/df7abcaa1246
-
+Reviewed-by: Wei Yang <richard.weiyang@gmail.com>
 -- 
-Martin K. Petersen	Oracle Linux Engineering
+Wei Yang
+Help you, Help me
