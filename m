@@ -2,117 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5FE5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 17:02:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90F73C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 17:03:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241339AbiBARC2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 12:02:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60622 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230115AbiBARCZ (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 12:02:25 -0500
-Received: from mail-oo1-xc31.google.com (mail-oo1-xc31.google.com [IPv6:2607:f8b0:4864:20::c31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA11AC061714
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Feb 2022 09:02:25 -0800 (PST)
-Received: by mail-oo1-xc31.google.com with SMTP id r15-20020a4ae5cf000000b002edba1d3349so4239573oov.3
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Feb 2022 09:02:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SmNulzN3mmZQBCDB7sQ8CSdfD8G2urW4bUypyx2Sf+U=;
-        b=d+5cIITflXarmSYidQYqGy/SPlpwJFPzUwzgnzx7YR24olDgujJq7qHiWnlN+fcRjp
-         RmfyDMRjnZa+nNfcr3P4npSe9RXP+06rXO/fW8PoG09XRA1YqP8nxpkt4MzDwjpsicV7
-         ZyFcVV7wa1gfKWy64DDrp7h3j9EB30ErvuCRY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SmNulzN3mmZQBCDB7sQ8CSdfD8G2urW4bUypyx2Sf+U=;
-        b=Ei0o0gbbUJNGEZ1fH3ZmVKrVJEZqHYsokxeBsuud9BcQutiQhY1yG6y15r7buAubAo
-         0tKlvR0F0bHJ+NlPpihRp+6gTUEvFuBcRJL3O4xG06+xR0aQzxSiKTIqhVxr0FQdFzEh
-         OSFFGkqdy9kDbSaXNxITYCT1xIa4Wvkw7yAp+bRuWXtz5eUfuM7UsCts+fi14N/g3mjX
-         LW768r8bN6hxm+7Xp6YT+EHUd35dMP24TxJ7E/SVwYr33uaVAtg010ZpGddxg4T9hPKC
-         RRyVxgeFlOorMviRojwXboZ3xVuPkgr2rimVk5gQ4K37t4F/icfPUtAZVPZRS4FZzgZx
-         MQ8Q==
-X-Gm-Message-State: AOAM532WxRpGwUr4fbYxXFNcQNPsQT9SysS+f7p0ehfgL7KVpuYqZLyA
-        ktJaesMyJ6NdbyGI0drkSUmhpXo8MSRVZmb5cO/q1w==
-X-Google-Smtp-Source: ABdhPJwWXljKvKuGvpSaNGrCDpGDZgSOOvLzRo52D5dqbZIgiKxNCAjoHk0BJnO9f2e73wAgllo3zYa4Ve3UnhJBSrA=
-X-Received: by 2002:a4a:8891:: with SMTP id j17mr13060858ooa.12.1643734945153;
- Tue, 01 Feb 2022 09:02:25 -0800 (PST)
+        id S241353AbiBARC7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 12:02:59 -0500
+Received: from mga04.intel.com ([192.55.52.120]:35498 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230115AbiBARC6 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 1 Feb 2022 12:02:58 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643734978; x=1675270978;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=3XO2RCLpUwqg2gMhv4lmheHfD3ysoJ5vEX8G/1igDeg=;
+  b=OiYNZFrOd8cX0Sf9yZt25h12cxqfeGC05f/7lioWGOuHUevrco2A2kQo
+   A5kN/kA1z4UFWuNGfkbBHJUIJnz+VtJE44Y4oW++XOC77bpapDS0Gfjqh
+   BraeIDkaayAinL4f++ss4gT+AKFX4yjup842Sn7JXk7cdmn15vdmSCVlS
+   gN5ck0vwOutQushUnBUxVptAHkt00HXuVXyeei0hkIxrOjxMT97Uo/4qi
+   SHcoSRMBHraB7dxWDForgnYqple8w7OT0pDMyTwPK3GfjJAz72Xsx6RX1
+   FJB59NhXqWCYxnHAwJlSZr2vZHHZMtOzqbW8/QVVP680VUxUknckvgLmc
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10245"; a="246569033"
+X-IronPort-AV: E=Sophos;i="5.88,334,1635231600"; 
+   d="scan'208";a="246569033"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2022 09:00:58 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,334,1635231600"; 
+   d="scan'208";a="537881840"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga008.jf.intel.com with ESMTP; 01 Feb 2022 09:00:55 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nEwWV-000TVn-1z; Tue, 01 Feb 2022 17:00:55 +0000
+Date:   Wed, 2 Feb 2022 01:00:00 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [dvyukov:dvyukov-sigtrap-arm64 1/1]
+ arch/arm64/kernel/signal.c:566:32: error: use of undeclared identifier 'sf'
+Message-ID: <202202020023.4C6dVeTR-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220125135406.1.I62322abf81dbc1a1b72392a093be0c767da9bf51@changeid>
- <e89dbc7b-b3ae-c334-b704-f5633725c29f@redhat.com> <CAD=FV=U8VGnRXv8MgofKzZF22_x0_X3M+AMfyPQ1u=yTXnFBQA@mail.gmail.com>
- <6fdcfbcf-0546-6b4f-b50f-cf2382ad746f@redhat.com> <CAD=FV=U3YHt=+cr8c39zMxFWMeo4Pr=R3BBPMKanpySPhsYh9w@mail.gmail.com>
-In-Reply-To: <CAD=FV=U3YHt=+cr8c39zMxFWMeo4Pr=R3BBPMKanpySPhsYh9w@mail.gmail.com>
-From:   Daniel Vetter <daniel@ffwll.ch>
-Date:   Tue, 1 Feb 2022 18:02:13 +0100
-Message-ID: <CAKMK7uEiUxPJ7F+F33YVdq6d9WxzxTKzoxTyiZnvceM2CHEkVw@mail.gmail.com>
-Subject: Re: [PATCH] drm/panel-edp: Allow querying the detected panel via sysfs
-To:     Doug Anderson <dianders@chromium.org>
-Cc:     Javier Martinez Canillas <javierm@redhat.com>,
-        David Airlie <airlied@linux.ie>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Robert Foss <robert.foss@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>, jjsu@chromium.org,
-        lschyi@chromium.org, Sam Ravnborg <sam@ravnborg.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 1, 2022 at 5:42 PM Doug Anderson <dianders@chromium.org> wrote:
->
-> Hi,
->
-> On Wed, Jan 26, 2022 at 12:25 AM Javier Martinez Canillas
-> <javierm@redhat.com> wrote:
-> >
-> > On 1/26/22 00:25, Doug Anderson wrote:
-> > > On Tue, Jan 25, 2022 at 2:55 PM Javier Martinez Canillas
-> > > <javierm@redhat.com> wrote:
-> >
-> > [snip]
-> >
-> > >> Should this new sysfs entry be documented in Documentation/ABI/ ?
-> > >
-> > > I'm not sure what the policy is here. I actually don't know that I'm
-> > > too worried about this being an ABI. For the purposes of our tests
-> > > then if something about this file changed (path changed or something
-> > > like that) it wouldn't be a huge deal. Presumably the test itself
-> > > would just "fail" in this case and that would clue us in that the ABI
-> > > changed and we could adapt to whatever new way was needed to discover
-> > > this.
-> > >
-> > > That being said, if the policy is that everything in sysfs is supposed
-> > > to be ABI then I can add documentation for this...
-> > >
-> >
-> > I also don't know the policy, hence the question. But in any case, I
-> > think that it could even be done as a follow-up if is needed.
->
-> Sounds good. Since it's been pretty silent and I had your review I
-> pushed this to drm-misc-next. If there are comments or someone has an
-> opinion documenting this as a stable ABI then please yell.
->
-> 363c4c3811db drm/panel-edp: Allow querying the detected panel via sysfs
+tree:   https://github.com/dvyukov/linux dvyukov-sigtrap-arm64
+head:   dfd6903d9c6538e3ad792c1df6ffbcce2072b12b
+commit: dfd6903d9c6538e3ad792c1df6ffbcce2072b12b [1/1] arm64: try to fix arm64 watchpoints
+config: arm64-randconfig-r001-20220130 (https://download.01.org/0day-ci/archive/20220202/202202020023.4C6dVeTR-lkp@intel.com/config)
+compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 6b1e844b69f15bb7dffaf9365cd2b355d2eb7579)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://github.com/dvyukov/linux/commit/dfd6903d9c6538e3ad792c1df6ffbcce2072b12b
+        git remote add dvyukov https://github.com/dvyukov/linux
+        git fetch --no-tags dvyukov dvyukov-sigtrap-arm64
+        git checkout dfd6903d9c6538e3ad792c1df6ffbcce2072b12b
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/kernel/
 
-Generally stuff for tests should be put into debugfs. We print
-everything there in various files.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-sysfs is uapi, and so come with the full baggage of you need open
-userspace (which for some sysfs stuff might just be a script), and
-explicitly not for tests (because that just opens the door to merge
-anything binary blobs might want and just slide it all in). So please
-retcon at least some plausible deniability here :-)
+All error/warnings (new ones prefixed by >>):
 
-But if it's really only for a test then maybe dumping this into a
-debugfs file (we do have connector directories already) would be much
-better. That doable?
--Daniel
--- 
-Daniel Vetter
-Software Engineer, Intel Corporation
-http://blog.ffwll.ch
+>> arch/arm64/kernel/signal.c:566:32: error: use of undeclared identifier 'sf'
+           if (!__copy_from_user(&info, &sf->info, sizeof(info)) &&
+                                         ^
+   arch/arm64/kernel/signal.c:930:6: warning: no previous prototype for function 'do_notify_resume' [-Wmissing-prototypes]
+   void do_notify_resume(struct pt_regs *regs, unsigned long thread_flags)
+        ^
+   arch/arm64/kernel/signal.c:930:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void do_notify_resume(struct pt_regs *regs, unsigned long thread_flags)
+   ^
+   static 
+   1 warning and 1 error generated.
+--
+>> arch/arm64/kernel/hw_breakpoint.c:754:6: warning: no previous prototype for function 'hw_bp_single_step' [-Wmissing-prototypes]
+   void hw_bp_single_step(struct pt_regs *regs)
+        ^
+   arch/arm64/kernel/hw_breakpoint.c:754:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void hw_bp_single_step(struct pt_regs *regs)
+   ^
+   static 
+   1 warning generated.
+
+
+vim +/sf +566 arch/arm64/kernel/signal.c
+
+   536	
+   537	SYSCALL_DEFINE0(rt_sigreturn)
+   538	{
+   539		struct pt_regs *regs = current_pt_regs();
+   540		struct rt_sigframe __user *frame;
+   541		struct siginfo info;
+   542	
+   543		/* Always make any pending restarted system calls return -EINTR */
+   544		current->restart_block.fn = do_no_restart_syscall;
+   545	
+   546		/*
+   547		 * Since we stacked the signal on a 128-bit boundary, then 'sp' should
+   548		 * be word aligned here.
+   549		 */
+   550		if (regs->sp & 15)
+   551			goto badframe;
+   552	
+   553		frame = (struct rt_sigframe __user *)regs->sp;
+   554	
+   555		if (!access_ok(frame, sizeof (*frame)))
+   556			goto badframe;
+   557	
+   558		if (restore_sigframe(regs, frame))
+   559			goto badframe;
+   560	
+   561		if (restore_altstack(&frame->uc.uc_stack))
+   562			goto badframe;
+   563	
+   564		// TODO: memorize the original return PC in setup_rt_frame
+   565		// and ensure we are returning to the same PC.
+ > 566		if (!__copy_from_user(&info, &sf->info, sizeof(info)) &&
+   567			info.si_signo == SIGTRAP && info.si_code == TRAP_PERF &&
+   568			info.si_perf_type == PERF_TYPE_BREAKPOINT)
+   569			hw_bp_single_step(regs);
+   570	
+   571		return regs->regs[0];
+   572	
+   573	badframe:
+   574		arm64_notify_segfault(regs->sp);
+   575		return 0;
+   576	}
+   577	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
