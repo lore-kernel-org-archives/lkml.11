@@ -2,121 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91B5BC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 18:19:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77FDBC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 18:20:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233343AbiBASTr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 13:19:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50038 "EHLO
+        id S229801AbiBASUY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 13:20:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241985AbiBASRi (ORCPT
+        with ESMTP id S232554AbiBASUW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 13:17:38 -0500
+        Tue, 1 Feb 2022 13:20:22 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 813F0C06173D;
-        Tue,  1 Feb 2022 10:17:38 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EC9DC061714;
+        Tue,  1 Feb 2022 10:20:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2148E6137A;
-        Tue,  1 Feb 2022 18:17:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06708C340ED;
-        Tue,  1 Feb 2022 18:17:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 153AB61027;
+        Tue,  1 Feb 2022 18:20:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B913C340EB;
+        Tue,  1 Feb 2022 18:20:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643739457;
-        bh=t9Ck8iqGOHjxiqss5FyHCpXT8tN11w3Y90LcRvdUpZw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gFG5Cu7t7J1dK8+ioL6wD+RGsYl/bhUJNTqO4JKzoN5DBKOF/REUXTSunBBmQeCUj
-         PgWb1toaAZ8G6Bl/zyQV+hdx+Br00ynbRswuP9DirkGDLIT9oz2YPb2X9yElyPXItw
-         Q7+ZJMHfTgknV7peAt8NCHACGYr11B+T4mjU36Rg=
+        s=korg; t=1643739621;
+        bh=em+vHnnyjV6c2ZNP0WfuUxJhyuxOcSLdUVobugDTGP8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ZI1a4lyPGenMadpoxoNGD+avqNAVXi4RhuCOgdJa2PXA52waCNwX4hCPQDt4mQzxK
+         rxwi9pfCrBIEr+TR77KVJiyfQUPXNdMd3eU0HiC1lkIv1K00ENJvTIp/t2u3IypAe5
+         FTDU81thcWYwx854ZGzxLjOIp4VozCilNS+gO58E=
+Date:   Tue, 1 Feb 2022 19:20:18 +0100
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Ray Che <xijiache@gmail.com>, David Ahern <dsahern@kernel.org>,
-        Geoff Alexander <alexandg@cs.unm.edu>,
-        Willy Tarreau <w@1wt.eu>, Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.4 21/25] ipv4: tcp: send zero IPID in SYNACK messages
-Date:   Tue,  1 Feb 2022 19:16:45 +0100
-Message-Id: <20220201180822.835171440@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220201180822.148370751@linuxfoundation.org>
-References: <20220201180822.148370751@linuxfoundation.org>
-User-Agent: quilt/0.66
+To:     Tejun Heo <tj@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Igor Pylypiv <ipylypiv@google.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        linux-modules@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Changyuan Lyu <changyuanl@google.com>
+Subject: Re: [PATCH] Revert "module, async: async_synchronize_full() on
+ module init iff async is used"
+Message-ID: <Yfl54vabXIbjpIGe@kroah.com>
+References: <20220127233953.2185045-1-ipylypiv@google.com>
+ <CAHk-=whM5sHbOboEnPSfBZPQrLB-KCtzE+JXFxFRNgT95i37bw@mail.gmail.com>
+ <Yfl4Othg/8VWpd3u@slm.duckdns.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yfl4Othg/8VWpd3u@slm.duckdns.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+On Tue, Feb 01, 2022 at 08:13:14AM -1000, Tejun Heo wrote:
+> Hello,
+> 
+> On Fri, Jan 28, 2022 at 09:39:12AM +0200, Linus Torvalds wrote:
+> > However, we've done this for *so* long that I wonder if there might be
+> > situations that have ended up depending on the lack of synchronization
+> > for pure performance reasons.
+> > 
+> > If *this* module loading process started the async work, then we'd
+> > wait for it, but what if there's other async work that was started by
+> > others? This revert would now make us wait for that async work too,
+> > and that might be a big deal slowing things down at boot time.
+> > 
+> > Looking at it, this is all under the 'module_mutex', so I guess we are
+> > already single-threaded at least wrt loading other modules, so the
+> > amount of unrelated async work going on is presumably fairly low and
+> > that isn't an issue.
+> 
+> Looks like we're multi-threaded while running the mod inits which launch the
+> async jobs and single-threaded while waiting for them to finish. Greg should
+> know a lot better than me but according to my hazy memory and cursory code
+> reading udev is multi-processed when loading modules, which makes it a lot
+> less likely that this will impact boot time in most cases.
 
-[ Upstream commit 970a5a3ea86da637471d3cd04d513a0755aba4bf ]
+I think userspace is multi-processed here, which should help with the
+reading of the modules from disk at boot while others are actually being
+loaded due to the kernel lock.
 
-In commit 431280eebed9 ("ipv4: tcp: send zero IPID for RST and
-ACK sent in SYN-RECV and TIME-WAIT state") we took care of some
-ctl packets sent by TCP.
+> > Anyway, I think this patch is the right thing to do, but just the fact
+> > that we've avoided that async wait for so long makes me a bit nervous
+> > about fallout from the revert.
+> > 
+> > Comments? Maybe this is a "just apply it, see if somebody screams" situation?
+> 
+> So, yeah, I think the risk is pretty low and even in the unlikely case that
+> someone is affected, the workaround is pretty straight-forward - not waiting
+> for the module loading to finish if appropriate.
 
-It turns out we need to use a similar strategy for SYNACK packets.
+I agree with Linus, let's see if anyone notices :)
 
-By default, they carry IP_DF and IPID==0, but there are ways
-to ask them to use the hashed IP ident generator and thus
-be used to build off-path attacks.
-(Ref: Off-Path TCP Exploits of the Mixed IPID Assignment)
+thanks,
 
-One of this way is to force (before listener is started)
-echo 1 >/proc/sys/net/ipv4/ip_no_pmtu_disc
-
-Another way is using forged ICMP ICMP_FRAG_NEEDED
-with a very small MTU (like 68) to force a false return from
-ip_dont_fragment()
-
-In this patch, ip_build_and_send_pkt() uses the following
-heuristics.
-
-1) Most SYNACK packets are smaller than IPV4_MIN_MTU and therefore
-can use IP_DF regardless of the listener or route pmtu setting.
-
-2) In case the SYNACK packet is bigger than IPV4_MIN_MTU,
-we use prandom_u32() generator instead of the IPv4 hashed ident one.
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: Ray Che <xijiache@gmail.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Cc: Geoff Alexander <alexandg@cs.unm.edu>
-Cc: Willy Tarreau <w@1wt.eu>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/ipv4/ip_output.c |   11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
-
---- a/net/ipv4/ip_output.c
-+++ b/net/ipv4/ip_output.c
-@@ -155,12 +155,19 @@ int ip_build_and_send_pkt(struct sk_buff
- 	iph->daddr    = (opt && opt->opt.srr ? opt->opt.faddr : daddr);
- 	iph->saddr    = saddr;
- 	iph->protocol = sk->sk_protocol;
--	if (ip_dont_fragment(sk, &rt->dst)) {
-+	/* Do not bother generating IPID for small packets (eg SYNACK) */
-+	if (skb->len <= IPV4_MIN_MTU || ip_dont_fragment(sk, &rt->dst)) {
- 		iph->frag_off = htons(IP_DF);
- 		iph->id = 0;
- 	} else {
- 		iph->frag_off = 0;
--		__ip_select_ident(net, iph, 1);
-+		/* TCP packets here are SYNACK with fat IPv4/TCP options.
-+		 * Avoid using the hashed IP ident generator.
-+		 */
-+		if (sk->sk_protocol == IPPROTO_TCP)
-+			iph->id = (__force __be16)prandom_u32();
-+		else
-+			__ip_select_ident(net, iph, 1);
- 	}
- 
- 	if (opt && opt->opt.optlen) {
-
-
+greg k-h
