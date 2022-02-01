@@ -2,67 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD2DAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 05:23:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E6A7C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 05:23:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234082AbiBAFXO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 00:23:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42256 "EHLO
+        id S234284AbiBAFXU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 00:23:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234317AbiBAFU6 (ORCPT
+        with ESMTP id S234332AbiBAFVA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 00:20:58 -0500
-Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AEF2C06177D
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 21:20:51 -0800 (PST)
-Received: by mail-ot1-x32e.google.com with SMTP id e21-20020a9d0195000000b005a3cd7c1e09so8466023ote.6
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 21:20:51 -0800 (PST)
+        Tue, 1 Feb 2022 00:21:00 -0500
+Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CBBCC0617B0
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 21:20:53 -0800 (PST)
+Received: by mail-oi1-x230.google.com with SMTP id m10so6179725oie.2
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 21:20:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=dAgRdlbtzfDJA3fxDZWwcXLHlGsqMKwkA2c7On9l7mY=;
-        b=EegnhEj9MYuo4VjqxEZMT4nrpVI8IQpnJd2TdoGSACTswGSco3YdYly9NgkXffOvaC
-         QOx0z4TmADBEDlzMD4ytBLRKU+RzILggcxQ+Kd6rjarmCy6QnJdkMgaS6f8nh/qB0I/a
-         gF4VS6QFDY3+wq7asipqFZ0ekGWCap3xd4TpMTEspnqM45rjFX8uGIxAI5iN9r7AtSNA
-         FhTwyjPER9+1w1ijtv5Sh/09S3TZzSFlLPhzx30qBoIKQL0bJYf2QKTtqO4JK6C8vpRK
-         4ETGeiLOhdV2+ITaRwPh3vH4ZBb73HzU4BcDxzWlppdRNJolwKvtIbHe1RGR2sYkBoH8
-         B5aw==
+        bh=8eJDK8k9PLNksLwTNgF92CJDyZen/m8QxzhQHEelcXE=;
+        b=GFOMq8d2CVyMLlstH8xW5YydCafbemE7NlZGGPOcShD6VWLjEcI/dnZBq/NB9TNatM
+         3LifrHzPJQgC48TyqnweQquAx3hey6etHYR+cOZkJR9SRdPIybZbR3yuFhlTYxIWCEXO
+         ZzLN3dtuxhceef1o+Pfuh0vlL1L+pVOaVp6JLRWLaT9SlKJmTySTTql/rQu/69GjXYwV
+         yxAvQ0ZbS4EDaBQhrRzGoER33FFClhuYLfyyMG1VN51u+XovauH9yNBnrfx0BXw6/4SU
+         PZIFui3OV5b/kZKHvosmnXmMAt2cHdK8Fr1tgEC6weOlgEKZpmD6oI2HEZV1EV33M4vy
+         +nzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=dAgRdlbtzfDJA3fxDZWwcXLHlGsqMKwkA2c7On9l7mY=;
-        b=gHpJrUjrEANJDTVrC4BYQqFu5KeoMBP3+ybTd/XYF1mWf8hF+6d49SGGUtxvq8bGIO
-         AiSGqo0cSl39YrzrNgFyna0yby+UWwCDJBvPJtBb+aDGTNrqRCHS9b6SNN9MQmliLdoD
-         AI8Ow3LbFIRH+l/eH3HZjmG8pngV6J/GzL5WjbAt3BsYOyb63jApgDRiLfp3rK8CeVZs
-         Feds/ybbY2XXfrpyegD44G+1KYAkgaRRuM/kkENBg20ut6oUeeXrZfABmJg/8Brmxprl
-         aEpdTBkSK6f58FQ+3B3j3VqzOZg+FqpXVSIJiHI4E/6ZlIYXMMMqRZa+fuCJD3N0IveY
-         V5aQ==
-X-Gm-Message-State: AOAM531D1n1J4HF2mtDigvK/qTwDyCiNBn2saeRu8Mqp1C9/j/oaJg6p
-        w2YhdGyrRLWiUBDtR7U/We+cvA==
-X-Google-Smtp-Source: ABdhPJw6kXuZp3tSgSWyM4P90f/w4AkE856R/zJMf+1nAa0zqoHaYjyHf2ujG9/TtZA/XxPgKq7tsw==
-X-Received: by 2002:a9d:7097:: with SMTP id l23mr13773313otj.190.1643692850692;
-        Mon, 31 Jan 2022 21:20:50 -0800 (PST)
+        bh=8eJDK8k9PLNksLwTNgF92CJDyZen/m8QxzhQHEelcXE=;
+        b=q4pIXrDOzeJ7Cg4L3ncKTvmBkoWsiLsiqKpaNG+JCAXCK9ywc0AaGQc7f5PM93c7UM
+         xA0RKcjPmdFZ8I75hctZtgTEpPy8oFdDaw01RBSjZFILc81UdGK//Fxvfc5TUkOfvujy
+         3K0I5XNAQOM2/JNmMeoU7U6fzBB3vC4XVUb7BA8ycMpNKRE98P6WZmYY0NwQGE+4oF70
+         9gimFiiFkwoaa/Z/eVf7GBVKOamo6qSJ68XlGGTUrZvAymLAbEpW+W/I3iyOehjNKBmM
+         HGPRu67Bt33ZhwxdSYX+iKAhPm2u5zuoyoh+yQ/KZlLEk+cpz4zMWSVMmf8XL/bt0/2X
+         cX+w==
+X-Gm-Message-State: AOAM5333UI1sKMdMQFjvGqapnQ4uH5a2F7qvTbSgKP4W8UoAvFPNnNEu
+        dDLDe9qE8NmfN03wdDVkc2RY4A==
+X-Google-Smtp-Source: ABdhPJwcWntPtAK7lvVeiFgffQtfCps0k+8Sz49Jrk8SUZwiZTu+lb9zhlJtFVDSpQdtPAeOMyaCTg==
+X-Received: by 2002:aca:59d5:: with SMTP id n204mr208977oib.291.1643692852470;
+        Mon, 31 Jan 2022 21:20:52 -0800 (PST)
 Received: from builder.lan ([2600:1700:a0:3dc8:3697:f6ff:fe85:aac9])
-        by smtp.gmail.com with ESMTPSA id u3sm8193107ooh.19.2022.01.31.21.20.49
+        by smtp.gmail.com with ESMTPSA id u3sm8193107ooh.19.2022.01.31.21.20.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Jan 2022 21:20:50 -0800 (PST)
+        Mon, 31 Jan 2022 21:20:52 -0800 (PST)
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Stephan Gerhold <stephan@gerhold.net>,
-        Mauro Carvalho <mchehab@kernel.org>,
-        devicetree@vger.kernel.org, Robert Foss <robert.foss@linaro.org>,
-        agross@kernel.org, Andrey Konovalov <andrey.konovalov@linaro.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@somainline.org>,
+To:     devicetree@vger.kernel.org, agross@kernel.org,
+        Robert Marko <robimarko@gmail.com>,
         linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        robh+dt@kernel.org, Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Subject: Re: [PATCH v4 0/2] Remove clock-lanes DT property from device trees
-Date:   Mon, 31 Jan 2022 23:20:00 -0600
-Message-Id: <164369277342.3095904.5682243255804634032.b4-ty@linaro.org>
+        robh+dt@kernel.org
+Subject: Re: (subset) [PATCH v2] arm64: dts: ipq8074: add SMEM support
+Date:   Mon, 31 Jan 2022 23:20:02 -0600
+Message-Id: <164369277344.3095904.15034660056285619770.b4-ty@linaro.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20211206154003.39892-1-robert.foss@linaro.org>
-References: <20211206154003.39892-1-robert.foss@linaro.org>
+In-Reply-To: <20220106212512.1970828-1-robimarko@gmail.com>
+References: <20220106212512.1970828-1-robimarko@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -70,22 +66,16 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 6 Dec 2021 16:40:01 +0100, Robert Foss wrote:
-> This series depends on the below series being merged.
-> https://lore.kernel.org/all/20211206151811.39271-1-robert.foss@linaro.org/
+On Thu, 6 Jan 2022 22:25:12 +0100, Robert Marko wrote:
+> IPQ8074 uses SMEM like other modern QCA SoC-s, so since its already
+> supported by the kernel add the required DT nodes.
 > 
-> Changes since v3:
->  - Bjorn: Added RBs for both patches
->  - Split series into two series for the ARM64 & Media trees
 > 
-> [...]
 
 Applied, thanks!
 
-[1/2] arm64: dts: qcom: apq8016-sbc: Remove clock-lanes property from &camss node
-      commit: 015bbdd314110ad20d440bec4d8483f73f4a8b58
-[2/2] arm64: dts: qcom: sdm845-db845c: Remove clock-lanes property from &camss node
-      commit: 6bf3c1895f5848977ab3912eb76fd996bc4d2768
+[1/1] arm64: dts: ipq8074: add SMEM support
+      commit: 42124b947e8eee401b778e9bdc5017d205ad8b71
 
 Best regards,
 -- 
