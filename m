@@ -2,117 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C93ABC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 01:04:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C4E0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 01:06:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231484AbiBABEJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 20:04:09 -0500
-Received: from mga02.intel.com ([134.134.136.20]:12886 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231382AbiBABEH (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 20:04:07 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643677447; x=1675213447;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=DXtKer8mna4UgD1qVP9Kb07cnZkz86WOAt0lED8SSyE=;
-  b=fzZJcQ/aLatjeiZMd8y2thLrmBPnr/snQLp4GFk/ggw7uywn9B92NCq7
-   mNJNn+/vp5FQqyFtmuCGwaX2FWMFdAKz1YSYKuYcZIFnEE+f43ULL5LeJ
-   cUWPUlPXXVB+cDh2FrmKw+kuKqi2I4CrzKwbwVTitlLLW3Bzw9YhaV2R7
-   oUmeN8/6M3BQGam6kVyqrHCpS4qB5JDFQ2KMjjTNxRJBawfqDbVXrrgVz
-   gSBCsMQwjy/6lePgQhFdZ6KEblTe1m62g4u4sO+zQhCvwPJLL1HMgpHhH
-   Oe4H2yMxW51k9LGo2WWBHgnyvYb2XxIUoiWh4wlT/JsM91JEaY0qdKi4+
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10244"; a="234989533"
-X-IronPort-AV: E=Sophos;i="5.88,332,1635231600"; 
-   d="scan'208";a="234989533"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 17:04:07 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,332,1635231600"; 
-   d="scan'208";a="599044194"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 31 Jan 2022 17:04:04 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nEhaW-000SXb-88; Tue, 01 Feb 2022 01:04:04 +0000
-Date:   Tue, 1 Feb 2022 09:03:14 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Taniya Das <tdas@codeaurora.org>, Rob Herring <robh+dt@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     kbuild-all@lists.01.org, Douglas Anderson <dianders@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Andy Gross <agross@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Taniya Das <tdas@codeaurora.org>
-Subject: Re: [PATCH v2] arm64: dts: qcom: sc7280: Add lpasscore & lpassaudio
- clock controllers
-Message-ID: <202202010945.Gqhv3bfz-lkp@intel.com>
-References: <20220131182629.9235-1-tdas@codeaurora.org>
+        id S231513AbiBABG5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 31 Jan 2022 20:06:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42604 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231390AbiBABGy (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 20:06:54 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C453AC061714;
+        Mon, 31 Jan 2022 17:06:54 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6425761269;
+        Tue,  1 Feb 2022 01:06:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2522C340E8;
+        Tue,  1 Feb 2022 01:06:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643677613;
+        bh=E43mWM2asqoVBWi92T3m8oMF+9mkvSoQNt6nGdzak+g=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=AsOzer6xb2lUriSmhK+MXyOqmK+pjcu/TaNAM/0OApnnZ+7B73a4coMrVa+akNSG7
+         co1DR+/0Rpq1fAoZkCscjpt8IwCb+sdWx58ChmPNNH04DlICOFyQyu+ipLowZXSXtk
+         96VgM9wMBhwp1icVLA5FnYW4byAp41jjAv9QHlyKfzOq7n1VfvqDY8Hczx5H5tE3FD
+         QVMedxR9lGpAoNCt316ggLXvYCpKNsoAvMck8ccex0hiXANIH+Erjt1SQ86CdztrO8
+         d3G2JIp2Htjkct2Dkp6D0hLT12O2Ci0eqMNsB81ULzpDeL/tFpqroCUUkP9oy1W5T8
+         KGWBH31k9xhTg==
+Date:   Mon, 31 Jan 2022 17:06:52 -0800
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     Mimi Zohar <zohar@linux.ibm.com>
+Cc:     linux-integrity@vger.kernel.org,
+        Stefan Berger <stefanb@linux.ibm.com>,
+        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 7/8] ima: support fs-verity file digest based version
+ 3 signatures
+Message-ID: <YfiHrMU5tOsg5DMi@sol.localdomain>
+References: <20220126000658.138345-1-zohar@linux.ibm.com>
+ <20220126000658.138345-8-zohar@linux.ibm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220131182629.9235-1-tdas@codeaurora.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220126000658.138345-8-zohar@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Taniya,
+On Tue, Jan 25, 2022 at 07:06:57PM -0500, Mimi Zohar wrote:
+> Instead of calculating a file hash and verifying the signature stored
+> in the security.ima xattr against the calculated file hash, verify
+> fs-verity's signature (version 3).
+> 
+> To differentiate between a regular file hash and an fs-verity file digest
+> based signature stored as security.ima xattr, define a new signature type
+> named IMA_VERITY_DIGSIG.
+> 
+> Update the 'ima-sig' template field to display the new fs-verity signature
+> type as well.
+> 
+> For example:
+>   appraise func=BPRM_CHECK digest_type=hash|verity
+> 
+> Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+> ---
+>  Documentation/ABI/testing/ima_policy      | 10 +++++
+>  Documentation/security/IMA-templates.rst  |  4 +-
+>  security/integrity/ima/ima_appraise.c     | 49 ++++++++++++++++++++++-
+>  security/integrity/ima/ima_template_lib.c |  3 +-
+>  security/integrity/integrity.h            |  5 ++-
+>  5 files changed, 65 insertions(+), 6 deletions(-)
 
-Thank you for the patch! Yet something to improve:
+All this IMA-specific stuff is confusing to me, so let me ask a question about
+what the end result actually is.  Let's say I want to use IMA to authenticate
+("appraise") a file.  I've signed its fs-verity digest with a key.  I put only
+that one key in the IMA keyring, and that key was only ever used to sign that
+one fs-verity digest.  Can an attacker (who controls the file's contents and IMA
+xattr) replace the file with one with a different contents and still pass the
+IMA check?  For example, could they replace the file's contents with the
+ima_file_id of the authentic file, and then downgrade the signature version to
+v2?  If they can do that, then the goal of authentication wasn't met.  It might
+be necessary to enforce that only one signature version is used at a time, to
+avoid this kind of ambiguity.
 
-[auto build test ERROR on robh/for-next]
-[also build test ERROR on v5.17-rc2 next-20220131]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/0day-ci/linux/commits/Taniya-Das/arm64-dts-qcom-sc7280-Add-lpasscore-lpassaudio-clock-controllers/20220201-022909
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
-config: arm64-randconfig-m031-20220131 (https://download.01.org/0day-ci/archive/20220201/202202010945.Gqhv3bfz-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/267104167c342dc01741424eaa26a44754a5c4e9
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Taniya-Das/arm64-dts-qcom-sc7280-Add-lpasscore-lpassaudio-clock-controllers/20220201-022909
-        git checkout 267104167c342dc01741424eaa26a44754a5c4e9
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm64 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   In file included from arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi:18,
-                    from arch/arm64/boot/dts/qcom/sc7280-herobrine.dts:8:
->> arch/arm64/boot/dts/qcom/sc7280.dtsi:11:10: fatal error: dt-bindings/clock/qcom,lpassaudiocc-sc7280.h: No such file or directory
-      11 | #include <dt-bindings/clock/qcom,lpassaudiocc-sc7280.h>
-         |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   compilation terminated.
-
-
-vim +11 arch/arm64/boot/dts/qcom/sc7280.dtsi
-
-  > 11	#include <dt-bindings/clock/qcom,lpassaudiocc-sc7280.h>
-    12	#include <dt-bindings/clock/qcom,lpasscorecc-sc7280.h>
-    13	#include <dt-bindings/clock/qcom,rpmh.h>
-    14	#include <dt-bindings/clock/qcom,videocc-sc7280.h>
-    15	#include <dt-bindings/interconnect/qcom,sc7280.h>
-    16	#include <dt-bindings/interrupt-controller/arm-gic.h>
-    17	#include <dt-bindings/mailbox/qcom-ipcc.h>
-    18	#include <dt-bindings/power/qcom-rpmpd.h>
-    19	#include <dt-bindings/reset/qcom,sdm845-aoss.h>
-    20	#include <dt-bindings/reset/qcom,sdm845-pdc.h>
-    21	#include <dt-bindings/soc/qcom,rpmh-rsc.h>
-    22	#include <dt-bindings/thermal/thermal.h>
-    23	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+- Eric
