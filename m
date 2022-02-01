@@ -2,167 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A59FC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 01:09:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D4A2C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 01:14:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231834AbiBABJK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 20:09:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43098 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231680AbiBABJC (ORCPT
+        id S231706AbiBABOj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 31 Jan 2022 20:14:39 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:43482 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231540AbiBABOi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 20:09:02 -0500
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C951C061714
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 17:09:02 -0800 (PST)
-Received: by mail-pg1-x549.google.com with SMTP id u133-20020a63798b000000b0034c0630b044so9490841pgc.3
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 17:09:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:in-reply-to:message-id:mime-version:references
-         :subject:from:to:cc;
-        bh=LcukT3aVWQNuFlO5tp4KbgwXT1VI3YuMTdLXdDHGgw4=;
-        b=L5WVkpDBAaqAGX7sBQ9aM3BYEJZZItsnHILJyVw9anPCW9GBY6gMrJI/qsNxUDKi/b
-         tVx/WXxQ8dpcYEP1PyI5F3A0LkrX7NlEchmWKjxbmmhItMO1VPhqL3SXKPc2GKJT7gHF
-         +MueL52xjMxeZDZ79vz8mCrvikzwKG6i6rncgx3/3NWKPEWXvRLJd3F8+AI8TD093WC3
-         fy1eBEB50+5Spbs0Z7cyviGeT2+7SixtFXWSLNt7/xq8TG68bsmbOSjVWmBBXVRLRpNF
-         uqsM9E1016Ul0cWQQ93GlHN5rp3UH5pyOer1I+J5viYD6/BjVDbSiG6usGovwNBRvfZJ
-         zkBg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
-         :mime-version:references:subject:from:to:cc;
-        bh=LcukT3aVWQNuFlO5tp4KbgwXT1VI3YuMTdLXdDHGgw4=;
-        b=OQAowKsOPBDpZLufF9+3dMoH5p6PyTDxCq1qzsR4pEqm9xz8++iNr7PJMj62cjm6u7
-         okhiyX7mdTv9Pq9GQthugvhNDocANaryE/G/XkPNWAdNFiDgL7bMUXaM4RjkhvHr+GXA
-         BGsGo3hEZ2l2ahC9LjLTU6uftOUZp4erThe23DRo593Epk6aRHd0NIVzuXXK5vm7M0eX
-         eq4aHVksOhrMnl73oBTNHTJwH5BrCJ7OhkZaG2supdmt6V7H8++hgFejfEwgOCKdr+Vo
-         3La+J+UOlm7TO/P5erFGrcuqMtd6b8RGtzD7Sv4hx27OU+x7pvjKJ2Zs2fXuz+q6QXQ+
-         yvZg==
-X-Gm-Message-State: AOAM531vGJ4dr2XQj8t5c5YJFs0pqvc2iJBXc0FcctUlDQ/7LBfoS6LQ
-        QeNfs0xm8XieczfE4ZaMTfBa/9TZlhA=
-X-Google-Smtp-Source: ABdhPJxukxPNZ3VcpmMc2eg8v3Edq+8quTgFxnPmvAUmlOB6In41l4WjFVxqrNN/Oh2K/QwpEJn1488nuA8=
-X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:90a:f198:: with SMTP id
- bv24mr25807269pjb.32.1643677741876; Mon, 31 Jan 2022 17:09:01 -0800 (PST)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Tue,  1 Feb 2022 01:08:37 +0000
-In-Reply-To: <20220201010838.1494405-1-seanjc@google.com>
-Message-Id: <20220201010838.1494405-5-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220201010838.1494405-1-seanjc@google.com>
-X-Mailer: git-send-email 2.35.0.rc2.247.g8bbb082509-goog
-Subject: [PATCH 4/5] KVM: x86: Use __try_cmpxchg_user() to emulate atomic accesses
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        llvm@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Mon, 31 Jan 2022 20:14:38 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A0E36B82CD0
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Feb 2022 01:14:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 919CAC340EC;
+        Tue,  1 Feb 2022 01:14:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1643678076;
+        bh=iDZ+K89IPcIeDF2+KSlI8ytWO8Ygxgu09Pw+Zwf1JDA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=oSO9eAErVKISl9lFXT7Y6DX6NTzAX76VfwBTdjHjefW0x52T8Suv9AAlzX3jlgArX
+         1AA4Gx0j4h3uXhg9NvAUYxU1SXFWURyt0fWQy2LA7SM3YCbK4DF5Z2zbjYL6kMFz+n
+         kb+85H0UUhtMzSraRMLKk6GGeVMHQ77zW89WOj94=
+Date:   Mon, 31 Jan 2022 17:14:34 -0800
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Michel Lespinasse <michel@lespinasse.org>
+Cc:     Linux-MM <linux-mm@kvack.org>, linux-kernel@vger.kernel.org,
+        kernel-team@fb.com, Laurent Dufour <ldufour@linux.ibm.com>,
+        Jerome Glisse <jglisse@google.com>,
         Peter Zijlstra <peterz@infradead.org>,
-        syzbot+6cde2282daa792c49ab8@syzkaller.appspotmail.com
-Content-Type: text/plain; charset="UTF-8"
+        Michal Hocko <mhocko@suse.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Matthew Wilcox <willy@infradead.org>,
+        Liam Howlett <liam.howlett@oracle.com>,
+        Rik van Riel <riel@surriel.com>,
+        Paul McKenney <paulmck@kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Minchan Kim <minchan@google.com>,
+        Joel Fernandes <joelaf@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: Re: [PATCH v2 00/35] Speculative page faults
+Message-Id: <20220131171434.89870a8f1ae294912e7ff19e@linux-foundation.org>
+In-Reply-To: <20220128131006.67712-1-michel@lespinasse.org>
+References: <20220128131006.67712-1-michel@lespinasse.org>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the recently introduce __try_cmpxchg_user() to emulate atomic guest
-accesses via the associated userspace address instead of mapping the
-backing pfn into kernel address space.  Using kvm_vcpu_map() is unsafe as
-it does not coordinate with KVM's mmu_notifier to ensure the hva=>pfn
-translation isn't changed/unmapped in the memremap() path, i.e. when
-there's no struct page and thus no elevated refcount.
+On Fri, 28 Jan 2022 05:09:31 -0800 Michel Lespinasse <michel@lespinasse.org> wrote:
 
-Fixes: 42e35f8072c3 ("KVM/X86: Use kvm_vcpu_map in emulator_cmpxchg_emulated")
-Cc: stable@vger.kernel.org
-Signed-off-by: Sean Christopherson <seanjc@google.com>
----
- arch/x86/kvm/x86.c | 35 ++++++++++++++---------------------
- 1 file changed, 14 insertions(+), 21 deletions(-)
+> Patchset summary:
+> 
+> Classical page fault processing takes the mmap read lock in order to
+> prevent races with mmap writers. In contrast, speculative fault
+> processing does not take the mmap read lock, and instead verifies,
+> when the results of the page fault are about to get committed and
+> become visible to other threads, that no mmap writers have been
+> running concurrently with the page fault. If the check fails,
+> speculative updates do not get committed and the fault is retried
+> in the usual, non-speculative way (with the mmap read lock held).
+> 
+> The concurrency check is implemented using a per-mm mmap sequence count.
+> The counter is incremented at the beginning and end of each mmap write
+> operation. If the counter is initially observed to have an even value,
+> and has the same value later on, the observer can deduce that no mmap
+> writers have been running concurrently with it between those two times.
+> This is similar to a seqlock, except that readers never spin on the
+> counter value (they would instead revert to taking the mmap read lock),
+> and writers are allowed to sleep. One benefit of this approach is that
+> it requires no writer side changes, just some hooks in the mmap write
+> lock APIs that writers already use.
+> 
+> The first step of a speculative page fault is to look up the vma and
+> read its contents (currently by making a copy of the vma, though in
+> principle it would be sufficient to only read the vma attributes that
+> are used in page faults). The mmap sequence count is used to verify
+> that there were no mmap writers concurrent to the lookup and copy steps.
+> Note that walking rbtrees while there may potentially be concurrent
+> writers is not an entirely new idea in linux, as latched rbtrees
+> are already doing this. This is safe as long as the lookup is
+> followed by a sequence check to verify that concurrency did not
+> actually occur (and abort the speculative fault if it did).
 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 74b53a16f38a..37064d565bbc 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -7155,15 +7155,8 @@ static int emulator_write_emulated(struct x86_emulate_ctxt *ctxt,
- 				   exception, &write_emultor);
- }
- 
--#define CMPXCHG_TYPE(t, ptr, old, new) \
--	(cmpxchg((t *)(ptr), *(t *)(old), *(t *)(new)) == *(t *)(old))
--
--#ifdef CONFIG_X86_64
--#  define CMPXCHG64(ptr, old, new) CMPXCHG_TYPE(u64, ptr, old, new)
--#else
--#  define CMPXCHG64(ptr, old, new) \
--	(cmpxchg64((u64 *)(ptr), *(u64 *)(old), *(u64 *)(new)) == *(u64 *)(old))
--#endif
-+#define emulator_try_cmpxchg_user(t, ptr, old, new) \
-+	(__try_cmpxchg_user((t *)(ptr), (t *)(old), *(t *)(new), efault ## t))
- 
- static int emulator_cmpxchg_emulated(struct x86_emulate_ctxt *ctxt,
- 				     unsigned long addr,
-@@ -7172,12 +7165,11 @@ static int emulator_cmpxchg_emulated(struct x86_emulate_ctxt *ctxt,
- 				     unsigned int bytes,
- 				     struct x86_exception *exception)
- {
--	struct kvm_host_map map;
- 	struct kvm_vcpu *vcpu = emul_to_vcpu(ctxt);
- 	u64 page_line_mask;
-+	unsigned long hva;
- 	gpa_t gpa;
--	char *kaddr;
--	bool exchanged;
-+	int r;
- 
- 	/* guests cmpxchg8b have to be emulated atomically */
- 	if (bytes > 8 || (bytes & (bytes - 1)))
-@@ -7201,31 +7193,32 @@ static int emulator_cmpxchg_emulated(struct x86_emulate_ctxt *ctxt,
- 	if (((gpa + bytes - 1) & page_line_mask) != (gpa & page_line_mask))
- 		goto emul_write;
- 
--	if (kvm_vcpu_map(vcpu, gpa_to_gfn(gpa), &map))
-+	hva = kvm_vcpu_gfn_to_hva(vcpu, gpa_to_gfn(gpa));
-+	if (kvm_is_error_hva(addr))
- 		goto emul_write;
- 
--	kaddr = map.hva + offset_in_page(gpa);
-+	hva += offset_in_page(gpa);
- 
- 	switch (bytes) {
- 	case 1:
--		exchanged = CMPXCHG_TYPE(u8, kaddr, old, new);
-+		r = emulator_try_cmpxchg_user(u8, hva, old, new);
- 		break;
- 	case 2:
--		exchanged = CMPXCHG_TYPE(u16, kaddr, old, new);
-+		r = emulator_try_cmpxchg_user(u16, hva, old, new);
- 		break;
- 	case 4:
--		exchanged = CMPXCHG_TYPE(u32, kaddr, old, new);
-+		r = emulator_try_cmpxchg_user(u32, hva, old, new);
- 		break;
- 	case 8:
--		exchanged = CMPXCHG64(kaddr, old, new);
-+		r = emulator_try_cmpxchg_user(u64, hva, old, new);
- 		break;
- 	default:
- 		BUG();
- 	}
- 
--	kvm_vcpu_unmap(vcpu, &map, true);
--
--	if (!exchanged)
-+	if (r < 0)
-+		goto emul_write;
-+	if (r)
- 		return X86EMUL_CMPXCHG_FAILED;
- 
- 	kvm_page_track_write(vcpu, gpa, new, bytes);
--- 
-2.35.0.rc2.247.g8bbb082509-goog
+I'm surprised that descending the rbtree locklessly doesn't flat-out
+oops the kernel.  How are we assured that every pointer which is
+encountered actually points at the right thing?  Against things
+which tear that tree down?
+
+> The next step is to walk down the existing page table tree to find the
+> current pte entry. This is done with interrupts disabled to avoid
+> races with munmap().
+
+Sebastian, could you please comment on this from the CONFIG_PREEMPT_RT
+point of view?
+
+> Again, not an entirely new idea, as this repeats
+> a pattern already present in fast GUP. Similar precautions are also
+> taken when taking the page table lock.
+> 
+> Breaking COW on an existing mapping may require firing MMU notifiers.
+> Some care is required to avoid racing with registering new notifiers.
+> This patchset adds a new per-cpu rwsem to handle this situation.
 
