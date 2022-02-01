@@ -2,67 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B62EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 20:46:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A78E3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 20:46:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242470AbiBAUqL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 15:46:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57018 "EHLO
+        id S241474AbiBAUqO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 15:46:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242436AbiBAUqI (ORCPT
+        with ESMTP id S242462AbiBAUqM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 15:46:08 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8EDBC061714;
-        Tue,  1 Feb 2022 12:46:08 -0800 (PST)
+        Tue, 1 Feb 2022 15:46:12 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75FDEC061714
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Feb 2022 12:46:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5984E6171A;
-        Tue,  1 Feb 2022 20:46:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C0FB6C340EC;
-        Tue,  1 Feb 2022 20:46:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 33B18B82F8D
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Feb 2022 20:46:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E934BC340EB;
+        Tue,  1 Feb 2022 20:46:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643748367;
-        bh=d694+S+zU8Ju8hGyDp0AnAAskyS+mgJFrkFrml9f3YQ=;
+        s=k20201202; t=1643748369;
+        bh=4c/bMZTPec+0OIHy3mnI5ofz/ZyfsZ3u/nYGscUiz6w=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=M6DFTye46tP+3Y4A7UW8+Tqe5308ssaL7weZp91A4ttk7Ah+nVo/p8kc4dfa3vI29
-         J9doBIfVpH3/+oPTdtQO1CP0n9C14z5NjbCPwSs0f9o0f6BY7IprCyRahTHKe4hicv
-         A4SG4hdLwn5F/Wqn3I0Q3qzbD0S3p454b7zqyL8j/D5bZA5RUKNhzPfiP9eqCS6zi6
-         Ql7N4i3VNqeS43IU00EDHyPYvD2OqU2T6QlJqIDxeEdbv1GHOpe5FTwzFPgtPVWjGr
-         o88u2ddX8P0tTCtHb5I4A0Hq43sKaa9Gscg/KNBFBQ3P7F8MY6YRnrkMahRT4WHnf0
-         jGtiXpsKQWuzA==
+        b=V4Fv6M/S7399BD/Ebk7RwL13F8IkY8IQyIsUFNsQ0QEDmFKLMQbQSCHcdziUXyGm9
+         8xt/2xH0vC59p4EOjLYbPG0elJHDzcIrDyNt0rQXrX5F0hgURRBMIWv0m1joIBepQ3
+         WN00dsCkCaxjyrNmiNh6V50f+i1kyIYQW2U+2YDnMXedi319GItoDG7tKDKP2r3LLy
+         mqkLmRRfIB1hyheM2C11caG1s5TjMWHW4E3PGxkZ9J9fXJtCXXCqOoUloIShJVIEuB
+         FGaOuNt/bNQQWENgX7ktwFQtyxaCut0gx1Y4DrapLJcSXjnvjK4FRQNQa3d1XGmQtV
+         pcb0uSODjvpuA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id ACCB6E5D07D;
-        Tue,  1 Feb 2022 20:46:07 +0000 (UTC)
-Subject: Re: [GIT PULL] platform-drivers-x86 for 5.17-2
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D6820E5D08C;
+        Tue,  1 Feb 2022 20:46:09 +0000 (UTC)
+Subject: Re: [GIT PULL] Audit fixes for v5.17 (#1)
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <37770642-bdab-bf37-c5c5-5c3edf9ad4a4@redhat.com>
-References: <37770642-bdab-bf37-c5c5-5c3edf9ad4a4@redhat.com>
-X-PR-Tracked-List-Id: <platform-driver-x86.vger.kernel.org>
-X-PR-Tracked-Message-Id: <37770642-bdab-bf37-c5c5-5c3edf9ad4a4@redhat.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git tags/platform-drivers-x86-v5.17-2
-X-PR-Tracked-Commit-Id: 836f35f79153ce09d813c83f341dba4481996966
+In-Reply-To: <CAHC9VhTL-4iPmW+eg3Q==tWBJf2Zc3nOzJVa6Ba0_R6k1sohKw@mail.gmail.com>
+References: <CAHC9VhTL-4iPmW+eg3Q==tWBJf2Zc3nOzJVa6Ba0_R6k1sohKw@mail.gmail.com>
+X-PR-Tracked-List-Id: Linux Audit Discussion <linux-audit.redhat.com>
+X-PR-Tracked-Message-Id: <CAHC9VhTL-4iPmW+eg3Q==tWBJf2Zc3nOzJVa6Ba0_R6k1sohKw@mail.gmail.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/pcmoore/audit.git tags/audit-pr-20220131
+X-PR-Tracked-Commit-Id: f26d04331360d42dbd6b58448bd98e4edbfbe1c5
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 83c2713a6754815c4f533097914a8d4fbe85dcf1
-Message-Id: <164374836770.6282.945237551428224373.pr-tracker-bot@kernel.org>
-Date:   Tue, 01 Feb 2022 20:46:07 +0000
-To:     Hans de Goede <hdegoede@redhat.com>
+X-PR-Merge-Commit-Id: 61fda95541cd0287540da45bb6dcbff2aeab1af9
+Message-Id: <164374836987.6282.2981774728840344865.pr-tracker-bot@kernel.org>
+Date:   Tue, 01 Feb 2022 20:46:09 +0000
+To:     Paul Moore <paul@paul-moore.com>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Mark Gross <mgross@linux.intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        platform-driver-x86@vger.kernel.org
+        linux-audit@redhat.com, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Tue, 1 Feb 2022 16:45:56 +0100:
+The pull request you sent on Mon, 31 Jan 2022 13:45:53 -0500:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git tags/platform-drivers-x86-v5.17-2
+> git://git.kernel.org/pub/scm/linux/kernel/git/pcmoore/audit.git tags/audit-pr-20220131
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/83c2713a6754815c4f533097914a8d4fbe85dcf1
+https://git.kernel.org/torvalds/c/61fda95541cd0287540da45bb6dcbff2aeab1af9
 
 Thank you!
 
