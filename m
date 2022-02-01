@@ -2,122 +2,278 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08CB7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 15:03:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C405C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 15:04:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239745AbiBAPDi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 10:03:38 -0500
-Received: from mout.gmx.net ([212.227.17.22]:43617 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239685AbiBAPDe (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 10:03:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1643727768;
-        bh=nvs4NamF8w3PSAtLVFdwadPiUvfzFg613upYNZ/yXSg=;
-        h=X-UI-Sender-Class:Date:To:Cc:References:From:Subject:In-Reply-To;
-        b=Ig2IPZ5zKlouxpflVVmYYGrUePr/LI8+qLrp7aZA4uucD+2hXbYwRZLq855afcj7/
-         1C1nsPz7s9e8i+8N7F1wnisBRN0mfKm2sAbMpx8DRuRWuiFg04oBnMytrkdwEQpEIQ
-         DQTyXsVmllotv/hXvaZbbuOUiJ+3eYZuhKq4mj3U=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.146.124]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MwQXN-1mP0sn1g4j-00sNis; Tue, 01
- Feb 2022 16:02:48 +0100
-Message-ID: <b1c1f68d-4620-2429-66bd-33d806d31457@gmx.de>
-Date:   Tue, 1 Feb 2022 16:02:40 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Content-Language: en-US
-To:     Yizhuo Zhai <yzhai003@ucr.edu>
-Cc:     Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Zhen Lei <thunder.leizhen@huawei.com>,
-        Zheyu Ma <zheyuma97@gmail.com>,
-        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        id S239685AbiBAPED (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 10:04:03 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:60532 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239671AbiBAPEB (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 1 Feb 2022 10:04:01 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CDF7E6166B;
+        Tue,  1 Feb 2022 15:04:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00B26C340EB;
+        Tue,  1 Feb 2022 15:03:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643727840;
+        bh=P3ELywhSVBmEVQdQn/ljrCLDXNS7QWSSiXRIpiKVzrM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=uvFQFCgibmuX/fIG2xX+NEXNJ7Z4dEdzdev+g4oesoxXQxV1yFBhA7CCWGRR8KeeI
+         3NgTATMUqfi2SzOfjhrKeSowI0wyQmke7BJxl5145xUB+Ml8WzzKch8UdLYjfqaIw+
+         NSlL//GVLCknNYoepVBHXq5imq3/gDU2ftf2xhlWAqgQT3gdFtqMSvhbhV49NJg/PJ
+         17MyfD3xZqKSeOwUV44Jb1EwrOGUFs39i8fPeuOeYweA+hyYx5KTTW/jg+bLYMhlHo
+         6v55/jsq1Bv6mkc+vzLSjzcq2NUHpnuNfYMnq2CMmE9kdNWx90aBcCR54awhr7p5l2
+         QYs6tFKaTT0Ew==
+From:   Arnd Bergmann <arnd@kernel.org>
+To:     Russell King <linux@armlinux.org.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alan Stern <stern@rowland.harvard.edu>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        linux-usb@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org
-References: <20220131065719.1552958-1-yzhai003@ucr.edu>
-From:   Helge Deller <deller@gmx.de>
-Subject: Re: [PATCH] fbdev: fbmem: Fix the implicit type casting
-In-Reply-To: <20220131065719.1552958-1-yzhai003@ucr.edu>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:8rcnp3IDWKRjEYPQV485Zi+kFbcxjfN0d1QI0X2MU7OVul75bod
- eQuXX8jdrKjMIB2fbFNnodmCyPeknr4i/kfQBcukaVrSA3NwBE0B1kXD4gZR7qZqfK6SHW+
- P5Z3tyGBWi0S9W4OBNjklGZGQ+uS0XMCezCx8oxze65ATS7BFRkOph2vBGq3QOogmBUJFqh
- HohuYWpL/6NFwDvUyuDtA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:8Rn0yXCvoSI=:wCSp2dm5E03DqfVW0te626
- y3QbpDpBUuTKWhC/2BhKHIV114JvdTj7FO7RgQjiIh0KVHFyDX7evBCCP7F7QZ1ym7TRzJ9Zd
- n0RjjMB5hei2NBwh1vXhjC7GF+gyG1PwKcEiNrYRjEgeDHRQ3HYYmyJK03F0F6HzWx7tmBnyL
- B6cNR7yC4WT0uB/OkuthjxwrEOL2HALsrdV74B6i4dvAfRLdet1ddKocbBqLpW0o6LQG1k3AD
- SQyeaSEztHEG2F9zKvC0uEaJjKPaiSTZuMyXeXiOIOW9jDiLM56Q2vKR0WnnRDH659abnY4o9
- nE+nlgTcCp78zrEd8D3r+tG1yBMKLhid/cVKvlQM4s+xZ9PIbZX0yAxyj6HVQYyGKtCaOmpu0
- Np4Jw35NnT7pfFo7vih+wmRc+D6K7Q2O0DxWgT60fwt1ia7v40fq40xZJXAO6XyWHPyCw9v2g
- Zb4rs/ro/DKlt4r/+Zk0470cy5Hj+wiuAXftlxMUp3E4naFS8ah1YPILH7JfRn3XI5/QXz3hn
- Uo6mWMn///bBb6RBSCUawnYKSuFTvUqztCr8NUuW0+vt0kO7OM/L9HpoGijp5Q14kpISNLVbr
- 4F8o9A5rGgdNMHHiLwZmxst6Ir+m9e7X6xyjdEUcbhe7fma3wWzba54WQwIbRk33qAHWeFFyK
- h++uWp0yaOiYo05cMbaoIUdpcKB41YSD5638kF6NQtSuYHu9wGHHRnsI36i1JzJ17XZ9tLDaJ
- wnxL2qRxBLK5bLLioFBPKq0l17iOm+T47NgBa9+RGUmRM6a6iUf+OoTcMRATCSnMkG1F2Swi6
- Qj9e+XDFcZi1I1Iew5pDjzvtJxsdKTIdUArCPaUpEJ3i8vIhRLoEU3YQDKVxPIbdzndhvxM95
- nQ/6MMGob1zcMXn7AOZ4Cfj5u5zbl6h0IIYogZeAs73GQeVem2p1FdITwZYy4085v2MfB4pjl
- yvF1AdneaI+JZcr9OjM31zQrRW9vIB77/i+g4VHydbDZewVNxBqXlAmw6mac2FmS0IgQ65bxc
- Y4CO9SIvE/gKzU627zJIG1jMzE7BxSwIfLv4kDuxuQ6tR7KfNZSn+3EBl6f1LBos4J2aWdf4M
- /gNvQFfC3+A13s=
+Subject: [RFC] ARM: sa1100/assabet: move dmabounce hack to ohci driver
+Date:   Tue,  1 Feb 2022 16:02:48 +0100
+Message-Id: <20220201150339.1028032-1-arnd@kernel.org>
+X-Mailer: git-send-email 2.29.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/31/22 07:57, Yizhuo Zhai wrote:
-> In function do_fb_ioctl(), the "arg" is the type of unsigned long,
+From: Arnd Bergmann <arnd@arndb.de>
 
-yes, because it comes from the ioctl framework...
+The sa1111 platform is one of the two remaining users of the old Arm
+specific "dmabounce" code, which is an earlier implementation of the
+generic swiotlb.
 
-> and in "case FBIOBLANK:" this argument is casted into an int before
-> passig to fb_blank().
+Linus Walleij submitted a patch that removes dmabounce support from
+the ixp4xx, and I had a look at the other user, which is the sa1111
+companion chip.
 
-which makes sense IMHO.
+Looking at how dmabounce is used, I could narrow it down to one driver
+one one machine:
 
-> In fb_blank(), the comparision if (blank > FB_BLANK_POWERDOWN) would
-> be bypass if the original "arg" is a large number, which is possible
-> because it comes from the user input.
+ - dmabounce is only initialized on assabet and pfs168, but not on
+   any other sa1100 or pxa platform using sa1111.
 
-The main problem I see with your patch is that you change the behaviour.
-Let's assume someone passes in -1UL.
-With your patch applied, this means the -1 (which is e.g. 0xffffffff on 32=
-bit)
-is converted to a positive integer and will be capped to FB_BLANK_POWERDOW=
-N.
-Since most blank functions just check and react on specific values, you ch=
-anged
-the behaviour that the screen now gets blanked at -1, while it wasn't befo=
-re.
+ - pfs168 is not supported in mainline Linux.
 
-One could now argue, that it's undefined behaviour if people
-pass in wrong values, but anyway, it's different now.
+ - only the OHCI and audio devices on sa1111 support DMA
 
-So, your patch isn't wrong. I'm just not sure if this is what we want...
+ - There is no audio driver for this hardware
 
-Helge
+In the OHCI code, I noticed that two other platforms already have
+a local bounce buffer support in the form of the "local_mem"
+allocator. Specifically, TMIO and SM501 use this on a few other ARM
+boards with 16KB or 128KB of local SRAM that can be accessed from the
+OHCI and from the CPU.
 
+While this is not the same problem as on sa1111, I could not find a
+reason why we can't re-use the existing implementation but replace the
+physical SRAM address mapping with a locally allocated DMA buffer.
 
-> Signed-off-by: Yizhuo Zhai <yzhai003@ucr.edu>
-> ---
->  drivers/video/fbdev/core/fbmem.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/video/fbdev/core/fbmem.c b/drivers/video/fbdev/core=
-/fbmem.c
-> index 0fa7ede94fa6..a5f71c191122 100644
-> --- a/drivers/video/fbdev/core/fbmem.c
-> +++ b/drivers/video/fbdev/core/fbmem.c
-> @@ -1064,7 +1064,7 @@ fb_set_var(struct fb_info *info, struct fb_var_scr=
-eeninfo *var)
->  EXPORT_SYMBOL(fb_set_var);
->
->  int
-> -fb_blank(struct fb_info *info, int blank)
-> +fb_blank(struct fb_info *info, unsigned long blank)
->  {
+There are two main downsides:
+
+ - rather than using a dynamically sized pool, this buffer needs
+   to be allocated at probe time using a fixed size. Without
+   having any idea of what it should be, I picked a size of
+   64KB, which is between what the other two OHCI front-ends use
+   in their SRAM. If anyone has a better idea what that size
+   is reasonable, this can be trivially changed.
+
+ - Previously, only USB transfers to the second memory bank
+   on Assabet needed to go through the bounce buffer, now all
+   of them do, which may impact runtime performance, depending
+   on what type of device is attached.
+
+On the upside, the local_mem support uses write-combining
+buffers, which should be a bit faster for transfers to the device
+compared to normal uncached coherent memory as used in dmabounce.
+
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Cc: Russell King <linux@armlinux.org.uk>
+Cc: Christoph Hellwig <hch@infradead.org>
+Cc: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+Cc: Alan Stern <stern@rowland.harvard.edu>
+Cc: linux-usb@vger.kernel.org
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+I don't have this hardware, so the patch is not tested at all.
+---
+ arch/arm/common/Kconfig        |  1 -
+ arch/arm/common/sa1111.c       | 64 ----------------------------------
+ drivers/usb/core/hcd.c         | 17 +++++++--
+ drivers/usb/host/ohci-sa1111.c | 16 +++++++++
+ 4 files changed, 30 insertions(+), 68 deletions(-)
+
+diff --git a/arch/arm/common/Kconfig b/arch/arm/common/Kconfig
+index c8e198631d41..286ea014c015 100644
+--- a/arch/arm/common/Kconfig
++++ b/arch/arm/common/Kconfig
+@@ -1,7 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0
+ config SA1111
+ 	bool
+-	select DMABOUNCE if !ARCH_PXA
+ 
+ config DMABOUNCE
+ 	bool
+diff --git a/arch/arm/common/sa1111.c b/arch/arm/common/sa1111.c
+index 7df003b149c6..a00915883f78 100644
+--- a/arch/arm/common/sa1111.c
++++ b/arch/arm/common/sa1111.c
+@@ -1391,70 +1391,9 @@ void sa1111_driver_unregister(struct sa1111_driver *driver)
+ }
+ EXPORT_SYMBOL(sa1111_driver_unregister);
+ 
+-#ifdef CONFIG_DMABOUNCE
+-/*
+- * According to the "Intel StrongARM SA-1111 Microprocessor Companion
+- * Chip Specification Update" (June 2000), erratum #7, there is a
+- * significant bug in the SA1111 SDRAM shared memory controller.  If
+- * an access to a region of memory above 1MB relative to the bank base,
+- * it is important that address bit 10 _NOT_ be asserted. Depending
+- * on the configuration of the RAM, bit 10 may correspond to one
+- * of several different (processor-relative) address bits.
+- *
+- * This routine only identifies whether or not a given DMA address
+- * is susceptible to the bug.
+- *
+- * This should only get called for sa1111_device types due to the
+- * way we configure our device dma_masks.
+- */
+-static int sa1111_needs_bounce(struct device *dev, dma_addr_t addr, size_t size)
+-{
+-	/*
+-	 * Section 4.6 of the "Intel StrongARM SA-1111 Development Module
+-	 * User's Guide" mentions that jumpers R51 and R52 control the
+-	 * target of SA-1111 DMA (either SDRAM bank 0 on Assabet, or
+-	 * SDRAM bank 1 on Neponset). The default configuration selects
+-	 * Assabet, so any address in bank 1 is necessarily invalid.
+-	 */
+-	return (machine_is_assabet() || machine_is_pfs168()) &&
+-		(addr >= 0xc8000000 || (addr + size) >= 0xc8000000);
+-}
+-
+-static int sa1111_notifier_call(struct notifier_block *n, unsigned long action,
+-	void *data)
+-{
+-	struct sa1111_dev *dev = to_sa1111_device(data);
+-
+-	switch (action) {
+-	case BUS_NOTIFY_ADD_DEVICE:
+-		if (dev->dev.dma_mask && dev->dma_mask < 0xffffffffUL) {
+-			int ret = dmabounce_register_dev(&dev->dev, 1024, 4096,
+-					sa1111_needs_bounce);
+-			if (ret)
+-				dev_err(&dev->dev, "failed to register with dmabounce: %d\n", ret);
+-		}
+-		break;
+-
+-	case BUS_NOTIFY_DEL_DEVICE:
+-		if (dev->dev.dma_mask && dev->dma_mask < 0xffffffffUL)
+-			dmabounce_unregister_dev(&dev->dev);
+-		break;
+-	}
+-	return NOTIFY_OK;
+-}
+-
+-static struct notifier_block sa1111_bus_notifier = {
+-	.notifier_call = sa1111_notifier_call,
+-};
+-#endif
+-
+ static int __init sa1111_init(void)
+ {
+ 	int ret = bus_register(&sa1111_bus_type);
+-#ifdef CONFIG_DMABOUNCE
+-	if (ret == 0)
+-		bus_register_notifier(&sa1111_bus_type, &sa1111_bus_notifier);
+-#endif
+ 	if (ret == 0)
+ 		platform_driver_register(&sa1111_device_driver);
+ 	return ret;
+@@ -1463,9 +1402,6 @@ static int __init sa1111_init(void)
+ static void __exit sa1111_exit(void)
+ {
+ 	platform_driver_unregister(&sa1111_device_driver);
+-#ifdef CONFIG_DMABOUNCE
+-	bus_unregister_notifier(&sa1111_bus_type, &sa1111_bus_notifier);
+-#endif
+ 	bus_unregister(&sa1111_bus_type);
+ }
+ 
+diff --git a/drivers/usb/core/hcd.c b/drivers/usb/core/hcd.c
+index 3c7c64ff3c0a..5f2fa46c7958 100644
+--- a/drivers/usb/core/hcd.c
++++ b/drivers/usb/core/hcd.c
+@@ -1260,7 +1260,8 @@ void usb_hcd_unlink_urb_from_ep(struct usb_hcd *hcd, struct urb *urb)
+ EXPORT_SYMBOL_GPL(usb_hcd_unlink_urb_from_ep);
+ 
+ /*
+- * Some usb host controllers can only perform dma using a small SRAM area.
++ * Some usb host controllers can only perform dma using a small SRAM area,
++ * or that have restrictions in addressable DRAM.
+  * The usb core itself is however optimized for host controllers that can dma
+  * using regular system memory - like pci devices doing bus mastering.
+  *
+@@ -3095,8 +3096,18 @@ int usb_hcd_setup_local_mem(struct usb_hcd *hcd, phys_addr_t phys_addr,
+ 	if (IS_ERR(hcd->localmem_pool))
+ 		return PTR_ERR(hcd->localmem_pool);
+ 
+-	local_mem = devm_memremap(hcd->self.sysdev, phys_addr,
+-				  size, MEMREMAP_WC);
++	/*
++	 * if a physical SRAM address was passed, map it, otherwise
++	 * allocate system memory as a buffer.
++	 */
++	if (phys_addr)
++		local_mem = devm_memremap(hcd->self.sysdev, phys_addr,
++					  size, MEMREMAP_WC);
++	else
++		local_mem = dmam_alloc_attrs(hcd->self.sysdev, size, &dma,
++					     GFP_KERNEL,
++					     DMA_ATTR_WRITE_COMBINE);
++
+ 	if (IS_ERR(local_mem))
+ 		return PTR_ERR(local_mem);
+ 
+diff --git a/drivers/usb/host/ohci-sa1111.c b/drivers/usb/host/ohci-sa1111.c
+index 137f66f6977f..488033f2e144 100644
+--- a/drivers/usb/host/ohci-sa1111.c
++++ b/drivers/usb/host/ohci-sa1111.c
+@@ -206,6 +206,22 @@ static int ohci_hcd_sa1111_probe(struct sa1111_dev *dev)
+ 		goto err1;
+ 	}
+ 
++	/*
++	 * Section 4.6 of the "Intel StrongARM SA-1111 Development Module
++	 * User's Guide" mentions that jumpers R51 and R52 control the
++	 * target of SA-1111 DMA (either SDRAM bank 0 on Assabet, or
++	 * SDRAM bank 1 on Neponset). The default configuration selects
++	 * Assabet, so any address in bank 1 is necessarily invalid.
++	 *
++	 * As a workaround, use a bounce buffer in addressable memory
++	 * as local_mem.
++	 */
++	if (machine_is_assabet()) {
++		ret = usb_hcd_setup_local_mem(hcd, 0, 0, SZ_64K);
++		if (ret)
++			goto out_err1;
++	}
++
+ 	if (!request_mem_region(hcd->rsrc_start, hcd->rsrc_len, hcd_name)) {
+ 		dev_dbg(&dev->dev, "request_mem_region failed\n");
+ 		ret = -EBUSY;
+-- 
+2.29.2
+
