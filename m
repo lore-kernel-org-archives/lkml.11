@@ -2,116 +2,260 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98432C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 17:09:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B6E2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 17:10:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238732AbiBARJw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 12:09:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34122 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230490AbiBARJv (ORCPT
+        id S240020AbiBARKd convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 12:10:33 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:24264 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229753AbiBARK3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 12:09:51 -0500
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD595C061714;
-        Tue,  1 Feb 2022 09:09:50 -0800 (PST)
-Received: by mail-pj1-x1033.google.com with SMTP id q63so17699735pja.1;
-        Tue, 01 Feb 2022 09:09:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=PUIgelpXEQevWyX1W8jBsBa/dCPezZfxgXScg7BVU5c=;
-        b=SW54mIhtH5QKZwMa5XF99tt04pvq6dTodAAzJOC/fyaSsk3YbovTPXlN9dJtQRy9RV
-         sZ5Dr2tD8bdIVEhWaqhIYeHFefl4pgIq29m2gZi8tpzDap4fJXTdR3kIIi9/v+aYemK7
-         NBsYzn2I5t8ouHEH4apgnJHW2iZ5yr/UbkcAhqdSVDWJW6R9FmeJJWj9nc4+BDqoqw7K
-         Tpk2sYjpqGYmk+u2ZqauQdVk0zErJXuHJDqCphJZJ+T9yXMODdkf4BGotlaiakIQxOy0
-         t25O1aVH9BsUDt+a2ggdR+VkgUv2zOMBHz7WI2miDkM4USIWtb8TTbHAVKfcAvaWPXwj
-         2fBQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=PUIgelpXEQevWyX1W8jBsBa/dCPezZfxgXScg7BVU5c=;
-        b=Vopuoq1bZ8J/AYquUtebk1M0niGaCf2BTC09RVNTpby6WFxn+h2IzsmkQ7eLnJ6bkN
-         niqX//bfUQEMlK/cIP2lN14NHB4e1DtJDXnGgm8S5Alrg4xiUEe+ewucWrXHrYctQUNh
-         nlDsl8hfYqPs4WHzxGzrp9eOL3yq2UhJUCEmARingKXNZEGz65oiCcMb1LAQRyjcfA8S
-         h7BmW9lf4l6Jl4SwFFinnrZECST9owAWLgGHL6vxEFloQEd5V2AVyMdedpDjCgeYpFPX
-         BmLrZvtJGhRnnzM0DWIyfJDQ2zlE5/Q/6Yy0nPFHdbp7gRJ4FHp1OJ5QobKjCimmaXkh
-         Ng0w==
-X-Gm-Message-State: AOAM532Y6eM/MNSmjnN0dFn1xqjVKmEClWER3GXFI8nPxWbGGVWsncgZ
-        cruexvC/pi4z6HZbi+ptgfs=
-X-Google-Smtp-Source: ABdhPJz5yB07Ix5o19k8F+dU8Px3ktIP0ST5YMwenoAWVaxtH3aTzk6TAg04YPusVJsGsVMBn8uNyQ==
-X-Received: by 2002:a17:902:e812:: with SMTP id u18mr26752712plg.12.1643735390153;
-        Tue, 01 Feb 2022 09:09:50 -0800 (PST)
-Received: from [192.168.254.17] ([50.39.160.154])
-        by smtp.gmail.com with ESMTPSA id h14sm23508476pfh.95.2022.02.01.09.09.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Feb 2022 09:09:49 -0800 (PST)
-Message-ID: <d065921b-784c-be0c-3ad2-f2ededb201ac@gmail.com>
-Date:   Tue, 1 Feb 2022 09:09:49 -0800
+        Tue, 1 Feb 2022 12:10:29 -0500
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 211GAVEo029611
+        for <linux-kernel@vger.kernel.org>; Tue, 1 Feb 2022 09:10:28 -0800
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3dy6n9s54e-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Feb 2022 09:10:28 -0800
+Received: from twshared9880.08.ash8.facebook.com (2620:10d:c085:208::11) by
+ mail.thefacebook.com (2620:10d:c085:11d::6) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 1 Feb 2022 09:10:27 -0800
+Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
+        id 3F3602914E08C; Tue,  1 Feb 2022 09:07:30 -0800 (PST)
+From:   Song Liu <song@kernel.org>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <kernel-team@fb.com>, <peterz@infradead.org>, <x86@kernel.org>,
+        <iii@linux.ibm.com>, Song Liu <songliubraving@fb.com>
+Subject: [PATCH v8 bpf-next 8/9] bpf: introduce bpf_jit_binary_pack_[alloc|finalize|free]
+Date:   Mon, 31 Jan 2022 22:28:02 -0800
+Message-ID: <20220201062803.2675204-9-song@kernel.org>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220201062803.2675204-1-song@kernel.org>
+References: <20220201062803.2675204-1-song@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 0/5] x86: uaccess CMPXCHG + KVM bug fixes
-Content-Language: en-US
-To:     Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        llvm@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        syzbot+6cde2282daa792c49ab8@syzkaller.appspotmail.com,
-        Tadeusz Struk <tadeusz.struk@linaro.org>
-References: <20220201010838.1494405-1-seanjc@google.com>
-From:   Tadeusz Struk <tstruk@gmail.com>
-In-Reply-To: <20220201010838.1494405-1-seanjc@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: qY7rbMkRe2pAkmsX5Kdo7PSqu1c36OfH
+X-Proofpoint-GUID: qY7rbMkRe2pAkmsX5Kdo7PSqu1c36OfH
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-01_08,2022-02-01_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 malwarescore=0
+ suspectscore=0 lowpriorityscore=0 impostorscore=0 priorityscore=1501
+ spamscore=0 bulkscore=0 mlxlogscore=999 mlxscore=0 adultscore=0
+ phishscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202010096
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/31/22 17:08, Sean Christopherson wrote:
-> Add uaccess macros for doing CMPXCHG on userspace addresses and use the
-> macros to fix KVM bugs by replacing flawed code that maps memory into the
-> kernel address space without proper mmu_notifier protection (or with
-> broken pfn calculations in one case).
-> 
-> Add yet another Kconfig for guarding asm_volatile_goto() to workaround a
-> clang-13 bug.  I've verified the test passes on gcc versions of arm64,
-> PPC, RISC-V, and s390x that also pass the CC_HAS_ASM_GOTO_OUTPUT test.
-> 
-> Patches 1-4 are tagged for stable@ as patches 3 and 4 (mostly 3) need a
-> backportable fix, and doing CMPXCHG on the userspace address is the
-> simplest fix from a KVM perspective.
-> 
-> Peter Zijlstra (1):
->    x86/uaccess: Implement macros for CMPXCHG on user addresses
-> 
-> Sean Christopherson (4):
->    Kconfig: Add option for asm goto w/ tied outputs to workaround
->      clang-13 bug
->    KVM: x86: Use __try_cmpxchg_user() to update guest PTE A/D bits
->    KVM: x86: Use __try_cmpxchg_user() to emulate atomic accesses
->    KVM: x86: Bail to userspace if emulation of atomic user access faults
-> 
->   arch/x86/include/asm/uaccess.h | 131 +++++++++++++++++++++++++++++++++
->   arch/x86/kvm/mmu/paging_tmpl.h |  45 +----------
->   arch/x86/kvm/x86.c             |  35 ++++-----
->   init/Kconfig                   |   4 +
->   4 files changed, 150 insertions(+), 65 deletions(-)
+From: Song Liu <songliubraving@fb.com>
 
-This also fixes the following syzbot issue:
-https://syzkaller.appspot.com/bug?id=6cb6102a0a7b0c52060753dd62d070a1d1e71347
+This is the jit binary allocator built on top of bpf_prog_pack.
 
-Tested-by: Tadeusz Struk <tadeusz.struk@linaro.org>
+bpf_prog_pack allocates RO memory, which cannot be used directly by the
+JIT engine. Therefore, a temporary rw buffer is allocated for the JIT
+engine. Once JIT is done, bpf_jit_binary_pack_finalize is used to copy
+the program to the RO memory.
 
---
-Thanks,
-Tadeusz
+bpf_jit_binary_pack_alloc reserves 16 bytes of extra space for illegal
+instructions, which is small than the 128 bytes space reserved by
+bpf_jit_binary_alloc. This change is necessary for bpf_jit_binary_hdr
+to find the correct header. Also, flag use_bpf_prog_pack is added to
+differentiate a program allocated by bpf_jit_binary_pack_alloc.
+
+Signed-off-by: Song Liu <songliubraving@fb.com>
+---
+ include/linux/bpf.h    |   1 +
+ include/linux/filter.h |  21 ++++----
+ kernel/bpf/core.c      | 108 ++++++++++++++++++++++++++++++++++++++++-
+ 3 files changed, 120 insertions(+), 10 deletions(-)
+
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index ea0d7fd4a410..2fc7e5c5ef41 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -953,6 +953,7 @@ struct bpf_prog_aux {
+ 	bool sleepable;
+ 	bool tail_call_reachable;
+ 	bool xdp_has_frags;
++	bool use_bpf_prog_pack;
+ 	struct hlist_node tramp_hlist;
+ 	/* BTF_KIND_FUNC_PROTO for valid attach_btf_id */
+ 	const struct btf_type *attach_func_proto;
+diff --git a/include/linux/filter.h b/include/linux/filter.h
+index 5855eb474c62..1cb1af917617 100644
+--- a/include/linux/filter.h
++++ b/include/linux/filter.h
+@@ -890,15 +890,6 @@ static inline void bpf_jit_binary_lock_ro(struct bpf_binary_header *hdr)
+ 	set_memory_x((unsigned long)hdr, hdr->size >> PAGE_SHIFT);
+ }
+ 
+-static inline struct bpf_binary_header *
+-bpf_jit_binary_hdr(const struct bpf_prog *fp)
+-{
+-	unsigned long real_start = (unsigned long)fp->bpf_func;
+-	unsigned long addr = real_start & PAGE_MASK;
+-
+-	return (void *)addr;
+-}
+-
+ int sk_filter_trim_cap(struct sock *sk, struct sk_buff *skb, unsigned int cap);
+ static inline int sk_filter(struct sock *sk, struct sk_buff *skb)
+ {
+@@ -1068,6 +1059,18 @@ void *bpf_jit_alloc_exec(unsigned long size);
+ void bpf_jit_free_exec(void *addr);
+ void bpf_jit_free(struct bpf_prog *fp);
+ 
++struct bpf_binary_header *
++bpf_jit_binary_pack_alloc(unsigned int proglen, u8 **ro_image,
++			  unsigned int alignment,
++			  struct bpf_binary_header **rw_hdr,
++			  u8 **rw_image,
++			  bpf_jit_fill_hole_t bpf_fill_ill_insns);
++int bpf_jit_binary_pack_finalize(struct bpf_prog *prog,
++				 struct bpf_binary_header *ro_header,
++				 struct bpf_binary_header *rw_header);
++void bpf_jit_binary_pack_free(struct bpf_binary_header *ro_header,
++			      struct bpf_binary_header *rw_header);
++
+ int bpf_jit_add_poke_descriptor(struct bpf_prog *prog,
+ 				struct bpf_jit_poke_descriptor *poke);
+ 
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index 7ae590897b73..306aa63fa58e 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -1031,6 +1031,109 @@ void bpf_jit_binary_free(struct bpf_binary_header *hdr)
+ 	bpf_jit_uncharge_modmem(size);
+ }
+ 
++/* Allocate jit binary from bpf_prog_pack allocator.
++ * Since the allocated memory is RO+X, the JIT engine cannot write directly
++ * to the memory. To solve this problem, a RW buffer is also allocated at
++ * as the same time. The JIT engine should calculate offsets based on the
++ * RO memory address, but write JITed program to the RW buffer. Once the
++ * JIT engine finishes, it calls bpf_jit_binary_pack_finalize, which copies
++ * the JITed program to the RO memory.
++ */
++struct bpf_binary_header *
++bpf_jit_binary_pack_alloc(unsigned int proglen, u8 **image_ptr,
++			  unsigned int alignment,
++			  struct bpf_binary_header **rw_header,
++			  u8 **rw_image,
++			  bpf_jit_fill_hole_t bpf_fill_ill_insns)
++{
++	struct bpf_binary_header *ro_header;
++	u32 size, hole, start;
++
++	WARN_ON_ONCE(!is_power_of_2(alignment) ||
++		     alignment > BPF_IMAGE_ALIGNMENT);
++
++	/* add 16 bytes for a random section of illegal instructions */
++	size = round_up(proglen + sizeof(*ro_header) + 16, BPF_PROG_CHUNK_SIZE);
++
++	if (bpf_jit_charge_modmem(size))
++		return NULL;
++	ro_header = bpf_prog_pack_alloc(size);
++	if (!ro_header) {
++		bpf_jit_uncharge_modmem(size);
++		return NULL;
++	}
++
++	*rw_header = kvmalloc(size, GFP_KERNEL);
++	if (!*rw_header) {
++		bpf_prog_pack_free(ro_header);
++		bpf_jit_uncharge_modmem(size);
++		return NULL;
++	}
++
++	/* Fill space with illegal/arch-dep instructions. */
++	bpf_fill_ill_insns(*rw_header, size);
++	(*rw_header)->size = size;
++
++	hole = min_t(unsigned int, size - (proglen + sizeof(*ro_header)),
++		     BPF_PROG_CHUNK_SIZE - sizeof(*ro_header));
++	start = (get_random_int() % hole) & ~(alignment - 1);
++
++	*image_ptr = &ro_header->image[start];
++	*rw_image = &(*rw_header)->image[start];
++
++	return ro_header;
++}
++
++/* Copy JITed text from rw_header to its final location, the ro_header. */
++int bpf_jit_binary_pack_finalize(struct bpf_prog *prog,
++				 struct bpf_binary_header *ro_header,
++				 struct bpf_binary_header *rw_header)
++{
++	void *ptr;
++
++	ptr = bpf_arch_text_copy(ro_header, rw_header, rw_header->size);
++
++	kvfree(rw_header);
++
++	if (IS_ERR(ptr)) {
++		bpf_prog_pack_free(ro_header);
++		return PTR_ERR(ptr);
++	}
++	prog->aux->use_bpf_prog_pack = true;
++	return 0;
++}
++
++/* bpf_jit_binary_pack_free is called in two different scenarios:
++ *   1) when the program is freed after;
++ *   2) when the JIT engine fails (before bpf_jit_binary_pack_finalize).
++ * For case 2), we need to free both the RO memory and the RW buffer.
++ * Also, ro_header->size in 2) is not properly set yet, so rw_header->size
++ * is used for uncharge.
++ */
++void bpf_jit_binary_pack_free(struct bpf_binary_header *ro_header,
++			      struct bpf_binary_header *rw_header)
++{
++	u32 size = rw_header ? rw_header->size : ro_header->size;
++
++	bpf_prog_pack_free(ro_header);
++	kvfree(rw_header);
++	bpf_jit_uncharge_modmem(size);
++}
++
++static inline struct bpf_binary_header *
++bpf_jit_binary_hdr(const struct bpf_prog *fp)
++{
++	unsigned long real_start = (unsigned long)fp->bpf_func;
++	unsigned long addr;
++
++	if (fp->aux->use_bpf_prog_pack)
++		addr = real_start & BPF_PROG_CHUNK_MASK;
++	else
++		addr = real_start & PAGE_MASK;
++
++	return (void *)addr;
++}
++
+ /* This symbol is only overridden by archs that have different
+  * requirements than the usual eBPF JITs, f.e. when they only
+  * implement cBPF JIT, do not set images read-only, etc.
+@@ -1040,7 +1143,10 @@ void __weak bpf_jit_free(struct bpf_prog *fp)
+ 	if (fp->jited) {
+ 		struct bpf_binary_header *hdr = bpf_jit_binary_hdr(fp);
+ 
+-		bpf_jit_binary_free(hdr);
++		if (fp->aux->use_bpf_prog_pack)
++			bpf_jit_binary_pack_free(hdr, NULL /* rw_buffer */);
++		else
++			bpf_jit_binary_free(hdr);
+ 
+ 		WARN_ON_ONCE(!bpf_prog_kallsyms_verify_off(fp));
+ 	}
+-- 
+2.30.2
+
