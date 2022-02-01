@@ -2,181 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EC14C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 18:53:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63BA4C43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 18:53:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242040AbiBASxR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 13:53:17 -0500
-Received: from netrider.rowland.org ([192.131.102.5]:42231 "HELO
-        netrider.rowland.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with SMTP id S229915AbiBASxP (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 13:53:15 -0500
-Received: (qmail 316284 invoked by uid 1000); 1 Feb 2022 13:53:14 -0500
-Date:   Tue, 1 Feb 2022 13:53:14 -0500
-From:   Alan Stern <stern@rowland.harvard.edu>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     Paul =?iso-8859-1?Q?Heidekr=FCger?= <paul.heidekrueger@in.tum.de>,
-        Andrea Parri <parri.andrea@gmail.com>,
-        Will Deacon <will@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        David Howells <dhowells@redhat.com>,
-        Jade Alglave <j.alglave@ucl.ac.uk>,
-        Luc Maranget <luc.maranget@inria.fr>,
-        Akira Yokosawa <akiyks@gmail.com>,
-        Daniel Lustig <dlustig@nvidia.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
-        Marco Elver <elver@google.com>,
-        Charalampos Mainas <charalampos.mainas@gmail.com>,
-        Pramod Bhatotia <pramod.bhatotia@in.tum.de>
-Subject: Re: [PATCH] tools/memory-model: Explain syntactic and semantic
- dependencies
-Message-ID: <YfmBmiD1SiQRti9t@rowland.harvard.edu>
-References: <20220125172819.3087760-1-paul.heidekrueger@in.tum.de>
- <YfBk265vVo4FL4MJ@rowland.harvard.edu>
- <YfJ7Rr9Kdk4u78lt@Pauls-MacBook-Pro.local>
- <YfLQmgsXp6pg0XIy@rowland.harvard.edu>
- <YfMFQ5IZiGBRw7SH@Pauls-MacBook-Pro.local>
- <YfMKlLInsK0Qr77f@rowland.harvard.edu>
- <20220201180239.GZ4285@paulmck-ThinkPad-P17-Gen-1>
+        id S242068AbiBASxb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 13:53:31 -0500
+Received: from mga05.intel.com ([192.55.52.43]:6832 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229881AbiBASxa (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 1 Feb 2022 13:53:30 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643741610; x=1675277610;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=L5s7qXF8ZnJhH7lDBIzCGnJ7UK6joH+p4ghvw+Jnw64=;
+  b=HqBfNQbi0e/9Ca/l1Jw4C4DUiLGfIdizzs+0EQl+Jx5MlYZI5g+6krGF
+   hXkhln3ApPBJMMjWFTnPLJVkCMxEKw5sDTDHXrdpSO14mlgV0NkgjWM1h
+   r2LeOoful8MjvMjCc92pO2cm3oKouW8Op4dFLT9PRuPE2d3OOh8y0Ffrt
+   p0EFhvDTRSriwQiH2Bqmho/0jwVOQK96IdZC/9Y3JJvOLYu5vtzINo3LC
+   vHBzIKCfOwXPES+zPU6O+tQqkNu7w7/35w7XgvIdoPRaYF2CcJKAI7jdI
+   L6uJMXA7I1jrqvj2xZrhHuAsQ9suWXSgvS6kI8H+6qpTdbA2SamNPUusz
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10245"; a="334119745"
+X-IronPort-AV: E=Sophos;i="5.88,334,1635231600"; 
+   d="scan'208";a="334119745"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2022 10:53:30 -0800
+X-IronPort-AV: E=Sophos;i="5.88,334,1635231600"; 
+   d="scan'208";a="534612213"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2022 10:53:25 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nEyGM-00HR0W-Bi;
+        Tue, 01 Feb 2022 20:52:22 +0200
+Date:   Tue, 1 Feb 2022 20:52:22 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Wolfram Sang <wsa@kernel.org>, Jean Delvare <jdelvare@suse.de>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Tan Jui Nee <jui.nee.tan@intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Kate Hsuan <hpa@redhat.com>,
+        Jonathan Yong <jonathan.yong@intel.com>,
+        linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-gpio@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org,
+        Jean Delvare <jdelvare@suse.com>,
+        Peter Tyser <ptyser@xes-inc.com>,
+        Andy Shevchenko <andy@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Mark Gross <markgross@kernel.org>,
+        Henning Schild <henning.schild@siemens.com>
+Subject: Re: [PATCH v3 3/8] platform/x86/intel: Add Primary to Sideband
+ (P2SB) bridge support
+Message-ID: <YfmBZvQ28y/Mh60J@smile.fi.intel.com>
+References: <YfQ2PGzOyiBfCppd@smile.fi.intel.com>
+ <20220201181401.GA292815@bhelgaas>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220201180239.GZ4285@paulmck-ThinkPad-P17-Gen-1>
+In-Reply-To: <20220201181401.GA292815@bhelgaas>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 01, 2022 at 10:02:39AM -0800, Paul E. McKenney wrote:
-> On Thu, Jan 27, 2022 at 04:11:48PM -0500, Alan Stern wrote:
-> > Paul Heidekrüger pointed out that the Linux Kernel Memory Model
-> > documentation doesn't mention the distinction between syntactic and
-> > semantic dependencies.  This is an important difference, because the
-> > compiler can easily break dependencies that are only syntactic, not
-> > semantic.
+On Tue, Feb 01, 2022 at 12:14:01PM -0600, Bjorn Helgaas wrote:
+> On Fri, Jan 28, 2022 at 08:30:20PM +0200, Andy Shevchenko wrote:
+> > On Fri, Jan 07, 2022 at 11:11:08AM -0600, Bjorn Helgaas wrote:
+> > > On Fri, Jan 07, 2022 at 04:56:42PM +0200, Andy Shevchenko wrote:
 > > 
-> > This patch adds a few paragraphs to the LKMM documentation explaining
-> > these issues and illustrating how they can matter.
+> > ...
 > > 
-> > Suggested-by: Paul Heidekrüger <paul.heidekrueger@in.tum.de>
-> > Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
+> > > > The unhide/hide back has been tested and we have already users
+> > > > in the kernel (they have other issues though with the PCI rescan
+> > > > lock, but it doesn't mean it wasn't ever tested).
+> > > 
+> > > Does the firmware team that hid this device sign off on the OS
+> > > unhiding and using it?  How do we know that BIOS is not using the
+> > > device?
 > > 
-> > ---
+> > BIOS might use the device via OperationRegion() in ACPI, but that
+> > means that _CRS needs to have that region available. It seems not
+> > the case.
 > > 
-> > 
-> > [as1970]
-> > 
-> > 
-> >  tools/memory-model/Documentation/explanation.txt |   47 +++++++++++++++++++++++
-> >  1 file changed, 47 insertions(+)
-> > 
-> > Index: usb-devel/tools/memory-model/Documentation/explanation.txt
-> > ===================================================================
-> > --- usb-devel.orig/tools/memory-model/Documentation/explanation.txt
-> > +++ usb-devel/tools/memory-model/Documentation/explanation.txt
-> > @@ -485,6 +485,53 @@ have R ->po X.  It wouldn't make sense f
-> >  somehow on a value that doesn't get loaded from shared memory until
-> >  later in the code!
-> >  
-> > +Here's a trick question: When is a dependency not a dependency?  Answer:
-> > +When it is purely syntactic rather than semantic.  We say a dependency
-> > +between two accesses is purely syntactic if the second access doesn't
-> > +actually depend on the result of the first.  Here is a trivial example:
-> > +
-> > +	r1 = READ_ONCE(x);
-> > +	WRITE_ONCE(y, r1 * 0);
-> > +
-> > +There appears to be a data dependency from the load of x to the store of
-> > +y, since the value to be stored is computed from the value that was
-> > +loaded.  But in fact, the value stored does not really depend on
-> > +anything since it will always be 0.  Thus the data dependency is only
-> > +syntactic (it appears to exist in the code) but not semantic (the second
-> > +access will always be the same, regardless of the value of the first
-> > +access).  Given code like this, a compiler could simply eliminate the
-> > +load from x, which would certainly destroy any dependency.
+> > And as far I as see in the internal documentation the hide / unhide
+> > approach is not forbidden for OS side.
 > 
-> Are you OK with that last sentence reading as follows?
+> Unhiding is device-specific behavior, so generic PCI enumeration
+> cannot use it.  We have to know there's a P2SB device at some address
+> before we can safely do a config write to it.  PCI enumeration would
+> learn there's a P2SB device at an address by reading a Vendor/Device
+> ID.
 > 
-> 	Given code like this, a compiler could simply discard the value
-> 	return by the load from x, which would certainly destroy any
-
-s/return/returned/
-
-> 	dependency.
+> > > My point is that the unhide is architecturally messed up.  The OS
+> > > runs on the platform as described by ACPI.  Devices that cannot be
+> > > enumerated are described in the ACPI namespace.
+> > 
+> > This device may or may not be _partially_ or _fully_ (due to being
+> > multifunctional) described in ACPI. I agree, that ideally the
+> > devices in question it has behind should be represented properly by
+> > firmware.  However, the firmwares in the wild for selected products
+> > / devices don't do that. We need to solve (work around) it in the
+> > software.
+> > 
+> > This is already done for a few devices. This series consolidates
+> > that and enables it for very known GPIO IPs.
 > 
-> My concern with the original is that it might mislead people into thinking
-> that compilers can omit volatile loads.
-
-Yes, good point.  Should we also tack on something like this?
-
-	(The compiler is not permitted to eliminate entirely the load 
-	generated for a READ_ONCE() -- that's one of the nice properties 
-	of READ_ONCE() -- but it is allowed to ignore the load's value.)
-
-> > +
-> > +(It's natural to object that no one in their right mind would write code
-> > +like the above.  However, macro expansions can easily give rise to this
-> > +sort of thing, in ways that generally are not apparent to the
-> > +programmer.)
-> > +
-> > +Another mechanism that can give rise to purely syntactic dependencies is
-> > +related to the notion of "undefined behavior".  Certain program behaviors
-> > +are called "undefined" in the C language specification, which means that
-> > +when they occur there are no guarantees at all about the outcome.
-> > +Consider the following example:
-> > +
-> > +	int a[1];
-> > +	int i;
-> > +
-> > +	r1 = READ_ONCE(i);
-> > +	r2 = READ_ONCE(a[r1]);
-> > +
-> > +Access beyond the end or before the beginning of an array is one kind of
-> > +undefined behavior.  Therefore the compiler doesn't have to worry about
-> > +what will happen if r1 is nonzero, and it can assume that r1 will always
-> > +be zero without actually loading anything from i.
+> Consolidating the code to unhide the device and size the BAR is fine.
 > 
-> And similarly here:
+> I would prefer the PCI core to be involved as little as possible
+> because we're violating some key assumptions and we could trip over
+> those later.  We're assuming the existence of P2SB based on the fact
+> that we found some *other* device, we're assuming firmware isn't using
+> P2SB (may be true now, but impossible to verify), we're assuming the
+> P2SB BAR contains a valid address that's not used elsewhere but also
+> won't be assigned to anything.
 > 
-> 	... and it can assume that r1 will always be zero regardless of
-> 	the value actually loaded from i.
-
-Right.
-
-> > +                                                   (If the assumption
-> > +turns out to be wrong, the resulting behavior will be undefined anyway
-> > +so the compiler doesn't care!)  Thus the load from i can be eliminated,
-> > +breaking the address dependency.
-
-This also should be changed:
-
-	Thus the value from the load can be discarded, breaking the 
-	address dependency.
-
-> > +
-> > +The LKMM is unaware that purely syntactic dependencies are different
-> > +from semantic dependencies and therefore mistakenly predicts that the
-> > +accesses in the two examples above will be ordered.  This is another
-> > +example of how the compiler can undermine the memory model.  Be warned.
-> > +
-> >  
-> >  THE READS-FROM RELATION: rf, rfi, and rfe
-> >  -----------------------------------------
+> > PCI core just provides a code that is very similar to what we need
+> > here. Are you specifically suggesting that we have to copy'n'paste
+> > that rather long function and maintain in parallel with PCI?
 > 
-> Looks great otherwise, and thank you all for your work on this!
+> I think we're talking about __pci_read_base(), which is currently an
+> internal PCI interface.  This series adds pci_bus_info/warn/etc(),
+
+The patch that adds those macros is good on its own, if you think so...
+I tried to submit it separately, but it was no response, so I don't know.
+
+> reworks __pci_read_base() to operate on a struct pci_bus *, exports
+> it, and uses it via #include <../../../pci/pci.h>.
+
+Yes, which allows at least to have the same code, doing same things to be
+in one copy in one place.
+
+> __pci_read_base() is fairly long, but you apparently don't need all
+> the functionality there because the core of the patch is this:
 > 
-> Alan, would you like me to pull this in making those two changes and
-> applying Akira's Reviewed-by, or would you prefer to send another version?
+>   -   pci_bus_read_config_dword(bus, spi, PCI_BASE_ADDRESS_0,
+>   -                             &spi_base);
+>   -   if (spi_base != ~0) {
+>   -           res->start = spi_base & 0xfffffff0;
+>   -           res->end = res->start + SPIBASE_APL_SZ - 1;
+>   -   }
+>   +   __pci_bus_read_base(bus, devfn, pci_bar_unknown, mem, PCI_BASE_ADDRESS_0, true)
 
-I'll send a new version.
+You probably took the least pleasant (to me) example, because it's buggy in a
+few ways:
 
-> For that matter, am I off base in my suggested changes.
+- it misses 64-bit handling code
+- it misses PCI rescan lock (in case PCI code decides to change addresses,
+  previously ones will be invalid, while other drivers may still use that
+  MMIO space
+- it doesn't check if (for a new version Hans suggested me to add this check as
+  it's done in one out of 3 cases)
 
-Not at all.  Thanks.
+It also useful to have some messages to be printed just in cases of errors
+or success in a standard (PCI core provided) way.
 
-Alan
+> I don't think it's worth all the __pci_read_base() changes to do that.
+> What if you made a library function that looks like this?
+> 
+>   int p2sb_bar(...)
+>   {
+>     pci_bus_write_config_byte(bus, devfn_p2sb, P2SBC_HIDE_BYTE, 0);
+>     pci_bus_read_config_dword(bus, devfn, PCI_BASE_ADDRESS_0, &orig);
+>     if (orig) {
+>       pci_bus_write_config_dword(bus, devfn, PCI_BASE_ADDRESS_0, ~0);
+>       pci_bus_read_config_dword(bus, devfn, PCI_BASE_ADDRESS_0, &val);
+>       pci_bus_write_config_dword(bus, devfn, PCI_BASE_ADDRESS_0, orig);
+>       res->start = orig;
+>       res->end = res->start + (~val + 1);
+>     }
+>     pci_bus_write_config_byte(bus, devfn, P2SBC_HIDE_BYTE, P2SBC_HIDE_BIT);
+>   }
+
+It seems simple, but with the above mentioned adjustments, it will become
+closer to the size of the original __pci_read_base().
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
