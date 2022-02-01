@@ -2,72 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 979F8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 00:44:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D3C9C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 00:47:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231234AbiBAAok (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 19:44:40 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:32996 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229520AbiBAAoj (ORCPT
+        id S231250AbiBAArD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 31 Jan 2022 19:47:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38142 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230183AbiBAArC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 19:44:39 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 00826B82CA2;
-        Tue,  1 Feb 2022 00:44:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 813BEC340E8;
-        Tue,  1 Feb 2022 00:44:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643676276;
-        bh=ju/X/GGaFTTEk2f18Uuh2WjARBDQWIrw62FMJwxvO54=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=bABGfsqZD/n58k6aXZV1OvrVOyRvUI23u8fEqdQwIRo43D6bRAs/NUSSlzDHPiIGk
-         rUkSllcxL95IgaOeolfnRwFWUp8N6s4NVk5SR52BzLVPjCNzHvJr75zZdLUDpRD43U
-         SNX8sIlhU1FhYQKBIHgZlVuBKmDuMK12Jl5hfUVF7YkGh0JUHKa7g3q0Z6tqzGxZu1
-         ASFJzRZS5GLH/ts9Yx2vLR9tLHvkYnWsla+SDA8JXr0NWWQc9DOFpredj93xp6S0Gt
-         AqZrRkK4h/coMKcSOuqItPy8wKMyGZ3LKGbAI4KJwew8gc4AvFYRJlDJUuOJSy2SsI
-         u0lM2QWih4GBg==
-Date:   Mon, 31 Jan 2022 16:44:35 -0800
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     Mimi Zohar <zohar@linux.ibm.com>
-Cc:     linux-integrity@vger.kernel.org,
-        Stefan Berger <stefanb@linux.ibm.com>,
-        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 3/8] fs-verity: define a function to return the
- integrity protected file digest
-Message-ID: <YfiCc9XXzbQz9rqy@sol.localdomain>
-References: <20220126000658.138345-1-zohar@linux.ibm.com>
- <20220126000658.138345-4-zohar@linux.ibm.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220126000658.138345-4-zohar@linux.ibm.com>
+        Mon, 31 Jan 2022 19:47:02 -0500
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5CD4C06173B;
+        Mon, 31 Jan 2022 16:47:01 -0800 (PST)
+Received: by mail-ed1-x52e.google.com with SMTP id r10so30751718edt.1;
+        Mon, 31 Jan 2022 16:47:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=GYfi12SpmN0g9NqCoQ6tYL22xFi8Uo1iR/vTcnK9fck=;
+        b=M8JyDPdDdfrEs1luJVidkqPn7+qgD4TNYcQAXFMm0RPY0nfJUSyFdHSYKBx3dzqcfJ
+         wjDKrCKhJEa/VH4upcSnRwzq43GqdetPEPK02terNMKeobZISvpFpg+OLMKkXJIiRohZ
+         RKqi01JwhYCy97rwRMiRDbzaxzb7rFt6NuXoaObwhZSU6MTauJT/320Lbr2K3otV2rLo
+         Nuw4NPg3mzoRAe6gyu1kt9BqCIoF+9Xk5c/wWEfuPFviHOP6UP8XDExpwUO22re57moT
+         9zqp6p8fUCanOl1R2fgrr3/wsQNlHOg0JwBcUVs2xoTaxLS7VIuHmzQwu7gj1gXlEdkW
+         cIVg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=GYfi12SpmN0g9NqCoQ6tYL22xFi8Uo1iR/vTcnK9fck=;
+        b=lWCj96RU7ErJ0JWpqWoH+W1KB5RLRs5sdHqADQNlR36KWqbc6UBvDajoiw+vrmJCud
+         mBAkG0vn0QAsh1zXNPqH5ZMk+cJ5jhIpGgt8UuiRHLSRGEqa75UZhsyHxpyem6FLoCTS
+         C6Rnzph0hWLEXTS0k4NkgJFzdb0DaHVkUxP0enj15l630QPqFfex7oF38c/QB9j+39l0
+         sshHPTKr9W3/48aTyrCvXwf4TDzKy7ezYrIAZ/e8sruTRU3kPTO+9TWMmL4MNwRpdgre
+         GyRMiR143vGH3p0nCmbjVOkHfWOPeoxY72gAEuPE4PJWyYcQrPa4iRsUpGH0GjAw0S2J
+         zyOA==
+X-Gm-Message-State: AOAM530I9sSfE5a5astSOYeBLa3LmbCdwg2wEcLPOLTNwRTnA8N7SEDU
+        vmUpr1UgmBfUqo9A6sjggmmQYTD6agY=
+X-Google-Smtp-Source: ABdhPJxlpF/0P8RQcRZyxNk3LwNbmTSQP+mAUSu26uEJPUvLBUp70MI2dhcbvJ2xJt+TjQ5nHnrtPw==
+X-Received: by 2002:a05:6402:228e:: with SMTP id cw14mr23041894edb.378.1643676420231;
+        Mon, 31 Jan 2022 16:47:00 -0800 (PST)
+Received: from localhost ([185.92.221.13])
+        by smtp.gmail.com with ESMTPSA id gv34sm13977377ejc.125.2022.01.31.16.46.59
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 31 Jan 2022 16:46:59 -0800 (PST)
+From:   Wei Yang <richard.weiyang@gmail.com>
+To:     hannes@cmpxchg.org, mhocko@kernel.org, vdavydov.dev@gmail.com,
+        akpm@linux-foundation.org, shakeelb@google.com, guro@fb.com,
+        willy@infradead.org, songmuchun@bytedance.com, shy828301@gmail.com,
+        surenb@google.com
+Cc:     linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
+        linux-mm@kvack.org, vbabka@suse.cz,
+        Wei Yang <richard.weiyang@gmail.com>
+Subject: [PATCH 2/2] mm/memcg: retrieve parent memcg from css.parent
+Date:   Tue,  1 Feb 2022 00:46:43 +0000
+Message-Id: <20220201004643.8391-2-richard.weiyang@gmail.com>
+X-Mailer: git-send-email 2.11.0
+In-Reply-To: <20220201004643.8391-1-richard.weiyang@gmail.com>
+References: <20220201004643.8391-1-richard.weiyang@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 07:06:53PM -0500, Mimi Zohar wrote:
-> +	hash_alg = vi->tree_params.hash_alg;
-> +	memset(digest, 0, FS_VERITY_MAX_DIGEST_SIZE);
-> +
-> +	/* convert hash algorithm to hash_algo_name */
-> +	i = match_string(hash_algo_name, HASH_ALGO__LAST, hash_alg->name);
-> +	if (i < 0)
-> +		return -EINVAL;
-> +	*alg = i;
+The parent we get from page_counter is correct, while this is two
+different hierarchy.
 
-The above comment is backwards.  This code is converting a hash algorithm name
-to an ID.  The comment is unclear, but it sounds like it's saying the opposite.
+Let's retrieve the parent memcg from css.parent just like parent_cs(),
+blkcg_parent(), etc.
 
-> +
-> +	memcpy(digest, vi->file_digest, hash_alg->digest_size);
+Signed-off-by: Wei Yang <richard.weiyang@gmail.com>
+Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+Acked-by: Michal Hocko <mhocko@suse.com>
+Reviewed-by: Roman Gushchin <guro@fb.com>
+Reviewed-by: Shakeel Butt <shakeelb@google.com>
+---
+ include/linux/memcontrol.h | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-Here there are two "sources of truth" for the digest size.  How about checking
-that they are the same:
+diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
+index 0c5c403f4be6..12bf443f7b14 100644
+--- a/include/linux/memcontrol.h
++++ b/include/linux/memcontrol.h
+@@ -886,9 +886,7 @@ static inline struct mem_cgroup *lruvec_memcg(struct lruvec *lruvec)
+  */
+ static inline struct mem_cgroup *parent_mem_cgroup(struct mem_cgroup *memcg)
+ {
+-	if (!memcg->memory.parent)
+-		return NULL;
+-	return mem_cgroup_from_counter(memcg->memory.parent, memory);
++	return mem_cgroup_from_css(memcg->css.parent);
+ }
+ 
+ static inline bool mem_cgroup_is_descendant(struct mem_cgroup *memcg,
+-- 
+2.33.1
 
-	if (WARN_ON_ONCE(hash_alg->digest_size != hash_digest_size[*alg]))
-		return -EINVAL;
-
-- Eric
