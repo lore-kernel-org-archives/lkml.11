@@ -2,109 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00A3DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 17:13:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8581C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 17:15:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240470AbiBARNL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 12:13:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34938 "EHLO
+        id S240525AbiBARPp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 12:15:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231913AbiBARNK (ORCPT
+        with ESMTP id S232010AbiBARPo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 12:13:10 -0500
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41868C061714
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Feb 2022 09:13:10 -0800 (PST)
-Received: by mail-pj1-x1035.google.com with SMTP id h20-20020a17090adb9400b001b518bf99ffso3758947pjv.1
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Feb 2022 09:13:10 -0800 (PST)
+        Tue, 1 Feb 2022 12:15:44 -0500
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83EBAC061714
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Feb 2022 09:15:44 -0800 (PST)
+Received: by mail-wr1-x431.google.com with SMTP id l25so33251248wrb.13
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Feb 2022 09:15:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=GOTW49dkatvM+333ev58XzmJGJGpPe+Z89sc7+xSJjo=;
-        b=wuvvP0gdVgZs1A/Wxt5ap2DV8ui/vAGBipNuDcKGDCYcwe6WAq6sPm3j0WCUfD9Lr0
-         caum9JUDupSfKFFJ+B7s1kloeUVTj8qj04Ow+T34j2MeTG9JOATCNW67W9c5mk2H5Rm/
-         8IWOmLnyI1OanJEtsko1eLc0Sv+iX5xstLj/NPhB3Kj1ac+IpoBtL9+60aCPgfyhuzrU
-         7F4xgaAChfOMtavqslzy8wfskfw8BCsf7FvCy5S1h6JimYZ3/Y47aRFe0dThCXKZ0wj2
-         4vdnoVu3/K1tAiQvFYZJeD56BqF1eibPvhpDsV+eX8+9vnzSKyPWLszpaLwSjmN61b4w
-         qCRA==
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=vuODL4R8sWx9OfFHsJcQsIGcRHDIKVpO9qvvFMatGKg=;
+        b=dzb0z2VsksG6lwrjCZriyd0Ja/8hxqDsV7pWCrRKJ2lzm4ZNcCH2zYBWXPu4oMNTXK
+         fWHT6ruiWLPHzc0UouY0EVebGMyse6bZDq0xiTCG4agdGIHkrvh1J3eSuEhS4ZMPOjNg
+         xmjbYlffWpMKw4SbOQVyVSlVwrfVvR7Ipd9AnSKKGs+pOqg72vFFDxq9hkcGErODDf30
+         fAHKvq5UkyqXRQ8NIXgWJk5AbQakp/ZftEWCxINS9FrTRRZ42DhYjpWUXD8sVathJFpI
+         veG8pZocDz42nVGM9OaE8kllg/CGALMaC/JBBo3+ppUR2TdVtg1zNd2GDkDsSYR7+owh
+         XzMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=GOTW49dkatvM+333ev58XzmJGJGpPe+Z89sc7+xSJjo=;
-        b=df7Tq8B+wZWUePEheaEuu9oMccgGiduXdCyBunhHhky1Y01Sx2/YhkU7x/9mDdn3Rt
-         Y9WU7bV36UCukiR590xhbJHXw6zPq54LMExju6FhTudEOeHWZ3utKBrG19UwGd8D8/+/
-         20SozTsyJ8QDzHMHmQ7oxMy26uRV2df2Th/kfQC+PtwamDHy4+oQl1AhE5QVp4TfTdp+
-         lOdKX5mQK33b95wCSe/Z1pbBSucOyRS2s0/4v9C/ZuTtGVBiF4KBxy+EOF6ZGJcyyZay
-         u0OAMZwlFRgVSunH4ObAZbxkHZpNAOQQjg00/gX1koC3RIXjd1ToPllOGpjVmkBPni7d
-         ijRw==
-X-Gm-Message-State: AOAM530nEhYf3htlSxHNwHTNfKIjAfPWNGJeP+l9FKy+7Co6rvZ9cvoe
-        6axx8SwtCCR3yVKn9J6SFQ27Jw==
-X-Google-Smtp-Source: ABdhPJzrR5tNGJO1MpLKd5EJaHkefJxDXaOyvaYpafZQ4Mnt1nlV2uCN7KUlpMtMkAcx7lU8+yXsWQ==
-X-Received: by 2002:a17:90b:4f4e:: with SMTP id pj14mr3422943pjb.220.1643735589737;
-        Tue, 01 Feb 2022 09:13:09 -0800 (PST)
-Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
-        by smtp.gmail.com with ESMTPSA id 38sm32163145pgm.37.2022.02.01.09.13.07
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=vuODL4R8sWx9OfFHsJcQsIGcRHDIKVpO9qvvFMatGKg=;
+        b=ZKByxn0ebJ1behUU7r3GpIBycN08QLsIUvWkwIy47rN1qHnunSYKfIY121wto8nmew
+         ggP937mNXAorU6FNNmFKgoq3ehwEQqLa7wNTtb8w7Yw6TrWeZFU5zoHa0Gqh2wEcSZfh
+         SyOlib0Fnv1pRJSktHUMsCK11leFRztV8oKzbis8VHWizb9gwLXsPvVLbpGZ9dpJx9x/
+         RTz8OSuzftvRMtNrpAhK1nPrH/IW+w0CgeBjiH8Y/CYESWnpe2SRKU/Aul8WYdLa312+
+         ZvVMrs2lEw1q0XO2Ct5+xKQX6ScO0/qWuDmEdcHgr4JbRHGz7LwUQ+0QJC+bdkPBKj2O
+         6N4Q==
+X-Gm-Message-State: AOAM5337Na5tG9UfDEkKIXQK+UZjUzXpu42BN3W2y044jpodN1Niz41j
+        C/DWBqziDtZIun0xb9XwiGK7og==
+X-Google-Smtp-Source: ABdhPJz0lwKeu7K9RB3IzmSFYBp7AIF6ASq5a+5Q0YeRnhGQt197OSVsxY4iOSxejWmBynjYYdGerA==
+X-Received: by 2002:a5d:6f0e:: with SMTP id ay14mr22305793wrb.60.1643735743021;
+        Tue, 01 Feb 2022 09:15:43 -0800 (PST)
+Received: from maple.lan (cpc141216-aztw34-2-0-cust174.18-1.cable.virginm.net. [80.7.220.175])
+        by smtp.gmail.com with ESMTPSA id d7sm20665428wri.117.2022.02.01.09.15.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Feb 2022 09:13:08 -0800 (PST)
-Date:   Tue, 1 Feb 2022 10:13:06 -0700
-From:   Mathieu Poirier <mathieu.poirier@linaro.org>
-To:     Miaoqian Lin <linmq006@gmail.com>
-Cc:     alexander.shishkin@linux.intel.com, coresight@lists.linaro.org,
-        leo.yan@linaro.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, mike.leach@linaro.org,
-        suzuki.poulose@arm.com
-Subject: Re: [PATCH v2] coresight: syscfg: Fix memleak on registration
- failure in cscfg_create_device
-Message-ID: <20220201171306.GB2490199@p14s>
-References: <20220120182822.GA1342128@p14s>
- <20220124124121.8888-1-linmq006@gmail.com>
+        Tue, 01 Feb 2022 09:15:42 -0800 (PST)
+Date:   Tue, 1 Feb 2022 17:15:40 +0000
+From:   Daniel Thompson <daniel.thompson@linaro.org>
+To:     Jia-Ju Bai <baijiaju1990@gmail.com>
+Cc:     mani@kernel.org, hemantk@codeaurora.org, bbhatt@codeaurora.org,
+        loic.poulain@linaro.org, jhugo@codeaurora.org,
+        linux-arm-msm@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [BUG] bus: mhi: possible deadlock in mhi_pm_disable_transition()
+ and mhi_async_power_up()
+Message-ID: <20220201171540.2udq3x6r2swctzau@maple.lan>
+References: <d3a94b53-0d77-dafe-ce45-f9ab23278616@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20220124124121.8888-1-linmq006@gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <d3a94b53-0d77-dafe-ce45-f9ab23278616@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 12:41:21PM +0000, Miaoqian Lin wrote:
-> device_register() calls device_initialize(),
-> according to doc of device_initialize:
+On Sat, Jan 29, 2022 at 10:56:30AM +0800, Jia-Ju Bai wrote:
+> Hello,
 > 
->     Use put_device() to give up your reference instead of freeing
->     * @dev directly once you have called this function.
+> My static analysis tool reports a possible deadlock in the mhi driver in
+> Linux 5.10:
 > 
-> To prevent potential memleak, use put_device() for error handling.
+> mhi_async_power_up()
+>   mutex_lock(&mhi_cntrl->pm_mutex); --> Line 933 (Lock A)
+>   wait_event_timeout(mhi_cntrl->state_event, ...) --> Line 985 (Wait X)
+>   mutex_unlock(&mhi_cntrl->pm_mutex); --> Line 1040 (Unlock A)
 > 
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-> ---
-> Changes in v2:
-> - simply call put_device() instead of cscfg_dev_release() in the error
-> path of cscfg_create_device.
-> ---
->  drivers/hwtracing/coresight/coresight-syscfg.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> mhi_pm_disable_transition()
+>   mutex_lock(&mhi_cntrl->pm_mutex); --> Line 463 (Lock A)
+>   wake_up_all(&mhi_cntrl->state_event); --> Line 474 (Wake X)
+>   mutex_unlock(&mhi_cntrl->pm_mutex); --> Line 524 (Unlock A)
+>   wake_up_all(&mhi_cntrl->state_event); --> Line 526 (Wake X)
 > 
-> diff --git a/drivers/hwtracing/coresight/coresight-syscfg.c b/drivers/hwtracing/coresight/coresight-syscfg.c
-> index 43054568430f..c30989e0675f 100644
-> --- a/drivers/hwtracing/coresight/coresight-syscfg.c
-> +++ b/drivers/hwtracing/coresight/coresight-syscfg.c
-> @@ -791,7 +791,7 @@ static int cscfg_create_device(void)
->  
->  	err = device_register(dev);
->  	if (err)
-> -		cscfg_dev_release(dev);
-> +		put_device(dev);
+> When mhi_async_power_up() is executed, "Wait X" is performed by holding
+> "Lock A". If mhi_pm_disable_transition() is concurrently executed at this
+> time, "Wake X" cannot be performed to wake up "Wait X" in
+> mhi_async_power_up(), because "Lock A" is already hold by
+> mhi_async_power_up(), causing a possible deadlock.
+> I find that "Wait X" is performed with a timeout, to relieve the possible
+> deadlock; but I think this timeout can cause inefficient execution.
+> 
+> I am not quite sure whether this possible problem is real and how to fix it
+> if it is real.
+> Any feedback would be appreciated, thanks :)
 
-Applied.
+Interesting find but I think it would be better to run your tool
+against more recent kernels to confirm any problem reports. In this
+case the code you mention looks like it was removed in v5.17-rc1
+(and should eventually make its way to the stable kernels too).
 
-Thanks,
-Mathieu
 
->  
->  create_dev_exit_unlock:
->  	mutex_unlock(&cscfg_mutex);
-> -- 
-> 2.17.1
-> 
+Daniel.
