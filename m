@@ -2,63 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6009EC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 05:20:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7842CC43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 05:20:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234051AbiBAFUi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 00:20:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42214 "EHLO
+        id S234108AbiBAFUk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 00:20:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233802AbiBAFUV (ORCPT
+        with ESMTP id S233834AbiBAFUW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 00:20:21 -0500
-Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0133CC06173D
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 21:20:21 -0800 (PST)
-Received: by mail-oi1-x22c.google.com with SMTP id t199so14578553oie.10
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 21:20:20 -0800 (PST)
+        Tue, 1 Feb 2022 00:20:22 -0500
+Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C55B6C061753
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 21:20:22 -0800 (PST)
+Received: by mail-oi1-x22e.google.com with SMTP id b186so25026028oif.1
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 21:20:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=7Yd/jjUo0sYx9N9NPlqioH4lstf0yPP1Zhx80yf30lc=;
-        b=gTvqBkdoz5OhCzdGPeazWqBNwpt5n5LI9g3SCwfngQtSnBHbd/HtIX8ykYPdp+Te1S
-         /8Z+y9HYaPrlDxw97c/DQ8aHRpIdFRrgpn5R7laD7ZVrDy3UAvC5h6DjDsvDP4Qy6A68
-         bQXEfZSy3mJbV4gmDTnSp6TNLk31UgkZxWraH/XkmL3G7xF/Ya31n7sS01lPK5SmcxGS
-         Uhng3SSTsamm7vrRlCvkkcSuXpU5uv5oJ9pCE235XBMGN6jL4va1MCXsu7sbxE1kOo8Q
-         kxdYrQFt6aqj4fqUdl/aI5BM8vJb2ZOQYbfd0Ihd89gKg4yjp1Ll8t585JF3OcfYWERa
-         Z6Ag==
+        bh=ri205RphCfNp0juSymL1QX892pkaC49+yUcb9yu8tO8=;
+        b=uBwDXMaQeUm1l7MLm7ERwBYG6tDk6McpCY6orTAc4FFtw2s4f8N1wApOgi/jZ0fSJ/
+         WBpCsIUqnIODLnpc8S0BSQFx3H8eLwnPQTzY+deVIj4EyS6tY8SRpiZ5ySbk17lJn/0y
+         +CwTRHnicBSuFC9jItH/HvLexu1hCUxDhy3/Mgoo9/1GLrdADEPgIBe/vCKl8VLISSnD
+         piRYcKiB4erV8lNQXVRBjQeIFtkGtaKwrZkllTb0EbgYdC0aoEvygOVpThwTOIJ2A50Z
+         OFWWX34WIpXcz9fgqxvCncHxK6xzVyaXSBHqFdIIqeg8BbQ4/lZYLnX7gX88f2W9ASRZ
+         kTVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=7Yd/jjUo0sYx9N9NPlqioH4lstf0yPP1Zhx80yf30lc=;
-        b=uS0nTJY9lM//GMYSVd+ZkT2VBsg5NVoSq5zkWYcLjamDdKg2aHN/0m5GnVb2TwdsRi
-         z5n0iv1/vh18LqxJyHUTQv35K6jbwBoxCFE7UYSD3kj5VIbKhMBOY6rBXHoh9dJrNA8j
-         nJCJi4csclO2ZWPGKuthlnBAE/PIU4FXgMNYnjwSuIs7BsY1H7TXJkTzZeus33s+bxTm
-         qeUh++Hs0pSVp56UbwXJeKpccbly48UMYl9DF2AkPZ0apryi5tMsSzUB3tvAjje6XR+m
-         /pYfA9DGPdaNVE5Dw3Em66G1Ui/ylCVCEBPp09R6fQjML0teu+ihMvka6YRDUuVhUqb9
-         R9Qw==
-X-Gm-Message-State: AOAM532IqSJEeugz+4EtkSuaHLDmachuzdU9PUukcU2Zs7KtnQ41YjLJ
-        spZTDa7+u2A3ewB75pCEj+ylIw==
-X-Google-Smtp-Source: ABdhPJyac5g1cQEoxHaHw2WCZTNpWRlY7tNs2WsMqEAaxV0ARNoej4grpEnIaK3BBXXcNulGs4RxDQ==
-X-Received: by 2002:aca:2408:: with SMTP id n8mr217457oic.170.1643692820389;
-        Mon, 31 Jan 2022 21:20:20 -0800 (PST)
+        bh=ri205RphCfNp0juSymL1QX892pkaC49+yUcb9yu8tO8=;
+        b=UWfT1Y4E+L9Ns2ve5q+Ck6Up8l7NGKeQZPa5d1kJvT4vyF1butxRnD7Ci28CtbHEzf
+         AF5ATBnFsoRDr7nPdj0zuaqH67f2Cx4/WdKseZtZQH/qaIZnE24PzJJl2Nx9O5QzwSkg
+         q15gu3JWeuRvvqJDfeTOm0HfnGdpY3m5jzQSHgVW5gLyVRw6sQj6pBxmMHxT329XRnPc
+         UPnUBInkd0AC4eKk7CqV6whf71rU3gUMFyhFEoI3IeVyQdCwzZ71kc9SP7n4IsiLcJxo
+         Dbu6UZXSfPDfnJZq2RDvPQ1xXczxwb3Piw81ABnjTRpobPIJlKb7tFs2Rbm0IdZZPTQC
+         Uoig==
+X-Gm-Message-State: AOAM532DfIz73osIxXkjJ/egGbOV/tzFJeIuYirnDq0IT5t5Z2UmNpSJ
+        3mlfDojNZsjA1QWi6q7neXKT+Q==
+X-Google-Smtp-Source: ABdhPJyKuX7hI6t2HLqprwc+VH80VNQBMK2gp0xm/EGzTFquo08Kr1Xt2Cb4IuVQtTFf11ThG5P3Nw==
+X-Received: by 2002:aca:5a06:: with SMTP id o6mr204995oib.315.1643692822239;
+        Mon, 31 Jan 2022 21:20:22 -0800 (PST)
 Received: from builder.lan ([2600:1700:a0:3dc8:3697:f6ff:fe85:aac9])
-        by smtp.gmail.com with ESMTPSA id u3sm8193107ooh.19.2022.01.31.21.20.19
+        by smtp.gmail.com with ESMTPSA id u3sm8193107ooh.19.2022.01.31.21.20.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Jan 2022 21:20:19 -0800 (PST)
+        Mon, 31 Jan 2022 21:20:21 -0800 (PST)
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
 To:     Rob Herring <robh+dt@kernel.org>, Andy Gross <agross@kernel.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
         David Heidelberg <david@ixit.cz>
-Cc:     devicetree@vger.kernel.org, ~okias/devicetree@lists.sr.ht,
+Cc:     devicetree@vger.kernel.org, Caleb Connolly <caleb@connolly.tech>,
         linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: (subset) [PATCH] arm64: dts: qcom: sdm845: add missing power-controller compatible
-Date:   Mon, 31 Jan 2022 23:19:30 -0600
-Message-Id: <164369277343.3095904.519482715668502827.b4-ty@linaro.org>
+Subject: Re: (subset) [PATCH] arm64: dts: qcom: update qcom,domain property
+Date:   Mon, 31 Jan 2022 23:19:32 -0600
+Message-Id: <164369277342.3095904.12703594732867881148.b4-ty@linaro.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20211220211443.106754-1-david@ixit.cz>
-References: <20211220211443.106754-1-david@ixit.cz>
+In-Reply-To: <20211214102451.29084-1-david@ixit.cz>
+References: <20211214102451.29084-1-david@ixit.cz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -66,20 +67,16 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 20 Dec 2021 22:14:43 +0100, David Heidelberg wrote:
-> dt-schema expect to have fallback compatible, which is now in-place.
-> 
-> Fixes warning generated by `make qcom/sdm845-oneplus-fajita.dtb`:
-> arch/arm64/boot/dts/qcom/sdm845-oneplus-fajita.dt.yaml: power-controller@c300000: compatible: ['qcom,sdm845-aoss-qmp'] is too short
->         From schema: Documentation/devicetree/bindings/soc/qcom/qcom,aoss-qmp.yaml
+On Tue, 14 Dec 2021 11:24:50 +0100, David Heidelberg wrote:
+> Since 'qcom,apr-domain' is deprecated in favor of 'qcom,domain',
+> update accordingly.
 > 
 > 
-> [...]
 
 Applied, thanks!
 
-[1/1] arm64: dts: qcom: sdm845: add missing power-controller compatible
-      commit: 3b87b01d747386e0429996266c063d7700d9813e
+[1/1] arm64: dts: qcom: update qcom,domain property
+      commit: 2f1145117946756da4cafe3821d8f0a5d441f5e3
 
 Best regards,
 -- 
