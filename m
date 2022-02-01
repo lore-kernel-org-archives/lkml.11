@@ -2,161 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF7FAC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 18:26:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58783C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 18:27:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237603AbiBAS03 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 13:26:29 -0500
-Received: from mga09.intel.com ([134.134.136.24]:60474 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236079AbiBAS01 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 13:26:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643739987; x=1675275987;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=dV2iXUGHBYz0+bDQ60uKmH98uz1po4B9Da1wpjks3iM=;
-  b=H9g6s8jMnEeSNpIPHpKlt/eANydYZakhT8/CLX2JmlGCcISU3y1etcef
-   l1cQhFUJxRFnX2pRsJJxRC+0irUq4A7Ucr874dy8LukX1QEdGmTaoGz6Z
-   WuhvomZHqJFJ+eN6pgsPNaHqSQjgEnDle36xs88j5DksSLrWpkC2flqDD
-   hzZQXl1Q3NEwAEw39RifCt5YHXgurJK1mdAT9HL9zekdpLNlGdki0wc7x
-   AjP8PqMgHkxKBjei747FAHydyUme4o4p02ts/aRRAmec9qFQJ41BUdYaG
-   veQuCV/Wa34OhvmuFaUZ2ldRitXZ5Q42K65jO0nB1mmwMBdcGtg2U6dw+
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10245"; a="247527586"
-X-IronPort-AV: E=Sophos;i="5.88,334,1635231600"; 
-   d="scan'208";a="247527586"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2022 10:26:12 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,334,1635231600"; 
-   d="scan'208";a="565681651"
-Received: from otc-lr-04.jf.intel.com ([10.54.39.41])
-  by orsmga001.jf.intel.com with ESMTP; 01 Feb 2022 10:26:12 -0800
-From:   kan.liang@linux.intel.com
-To:     peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     ak@linux.intel.com, Wei Wang <wei.w.wang@intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org
-Subject: [PATCH 2/3] KVM: x86: use the KVM side max supported fixed counter
-Date:   Tue,  1 Feb 2022 13:23:22 -0800
-Message-Id: <1643750603-100733-2-git-send-email-kan.liang@linux.intel.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1643750603-100733-1-git-send-email-kan.liang@linux.intel.com>
-References: <1643750603-100733-1-git-send-email-kan.liang@linux.intel.com>
+        id S234686AbiBAS13 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 13:27:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52602 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234755AbiBAS11 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 1 Feb 2022 13:27:27 -0500
+Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E08D2C06173B;
+        Tue,  1 Feb 2022 10:27:26 -0800 (PST)
+Received: by mail-qt1-x835.google.com with SMTP id k25so10203469qtp.4;
+        Tue, 01 Feb 2022 10:27:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=4fU16CwaNXSv04OsiOZ3YMb430l73X6vlu4kJVwG20k=;
+        b=KYJNmKkb4p91XXQbFqsjbRL25/Mko2MtELbhOCsWZPoJbAPJXXoBWGymf5u49D7bzD
+         opUZyhYoE+d1dYl9LyUf6N91v6sid6FJRpcSIxBzuS0zCu/0TRa11IAyTKSKodN+lKdy
+         5ooQJfxuXAk52C2060I+Bbmc+5K0y4+FHWoSuTqr4mTMl8p7oH+HF6wlaD54KMWnCmVE
+         jzHkloOW5SPIpxHurKn8cnzwLZIGX5/uOXzmGJk60qaTIZeQKHXaElGKpTMvTDh9ZbRK
+         3eHllDv/IoaaVAWtHNvyjX/OzMVJzUolXDIl1AGsnLfklHGbftnrekFmlKBmUtdJmQGK
+         VfGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=4fU16CwaNXSv04OsiOZ3YMb430l73X6vlu4kJVwG20k=;
+        b=S0CFwpDUeMnuNrxu0tnbFx87eEnWDW3UdFuIf3e79LsUUkaGNHabYmEuXPS2DW7j4C
+         lpIBCWjaWJAAJYL7L81Y7g4rNqTCdkniP+dyTf8o7rI08Jm1RI4+a4zL8o9gVafLWhLs
+         XiKI02RpDEgxXna19SZGJRPzfF2dwwJANRQ4OvrWPSxqcvUby37hjT/4E6QDsskbtSOL
+         OJGVjIfHptgNP3HaYeTvF2zLml+TjgzXtgqqQrtyHnhbxhlT8DyhZnypRHK1BoU4bw+I
+         ujQ6UTJyhQT9H8s6Z8FopxI5T4kc9AyJu2uYdMWr5zWY7IEhUV0k9X38Hee0+6Kn/Qey
+         f25A==
+X-Gm-Message-State: AOAM531DegDFliwww1eoRzoRoLN57M4Y8758+zTZBKTYLw5ab42jh6VR
+        VExy+FaqPP/4M0K0nZK6dU4=
+X-Google-Smtp-Source: ABdhPJw2N7U22+7/5sOSlB4KcU3zAXRTpYadOqzWHPeG7KXP4+sTogcCLvRoJthCH/Opo9aHr/BeHg==
+X-Received: by 2002:a05:622a:40e:: with SMTP id n14mr3047058qtx.189.1643740046137;
+        Tue, 01 Feb 2022 10:27:26 -0800 (PST)
+Received: from [192.168.1.49] (c-67-187-90-124.hsd1.tn.comcast.net. [67.187.90.124])
+        by smtp.gmail.com with ESMTPSA id ay12sm3492549qkb.127.2022.02.01.10.27.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 01 Feb 2022 10:27:25 -0800 (PST)
+Subject: Re: [PATCH 1/1] of: unittest: add program to process EXPECT messages
+From:   Frank Rowand <frowand.list@gmail.com>
+To:     Rob Herring <robh+dt@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220201181413.2719955-1-frowand.list@gmail.com>
+Message-ID: <3b1b29eb-5c8e-497a-1688-fa9df80dfd6e@gmail.com>
+Date:   Tue, 1 Feb 2022 12:27:24 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
+MIME-Version: 1.0
+In-Reply-To: <20220201181413.2719955-1-frowand.list@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wei Wang <wei.w.wang@intel.com>
+On 2/1/22 12:14 PM, frowand.list@gmail.com wrote:
+> From: Frank Rowand <frank.rowand@sony.com>
+> 
 
-KVM vPMU doesn't support to emulate all the fixed counters that the
-host PMU driver has supported, e.g. the fixed counter 3 used by
-Topdown metrics hasn't been supported by KVM so far.
+< snip >
 
-Rename MAX_FIXED_COUNTERS to KVM_PMC_MAX_FIXED to have a more
-straightforward naming convention as INTEL_PMC_MAX_FIXED used by the
-host PMU driver, and fix vPMU to use the KVM side KVM_PMC_MAX_FIXED
-for the virtual fixed counter emulation, instead of the host side
-INTEL_PMC_MAX_FIXED.
+> I will reply to this message with the usage message from
+> 'scripts/dtc/of_unittest_expect --help'.
 
-Signed-off-by: Wei Wang <wei.w.wang@intel.com>
-Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
-Cc: Paolo Bonzini <pbonzini@redhat.com>
-Cc: kvm@vger.kernel.org
----
- arch/x86/include/asm/kvm_host.h | 3 ++-
- arch/x86/kvm/cpuid.c            | 3 ++-
- arch/x86/kvm/pmu.h              | 2 --
- arch/x86/kvm/vmx/pmu_intel.c    | 4 ++--
- arch/x86/kvm/x86.c              | 2 +-
- 5 files changed, 7 insertions(+), 7 deletions(-)
+< snip >
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 1384517..2ce8456 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -498,6 +498,7 @@ struct kvm_pmc {
- 	bool intr;
- };
- 
-+#define KVM_PMC_MAX_FIXED	3
- struct kvm_pmu {
- 	unsigned nr_arch_gp_counters;
- 	unsigned nr_arch_fixed_counters;
-@@ -511,7 +512,7 @@ struct kvm_pmu {
- 	u64 reserved_bits;
- 	u8 version;
- 	struct kvm_pmc gp_counters[INTEL_PMC_MAX_GENERIC];
--	struct kvm_pmc fixed_counters[INTEL_PMC_MAX_FIXED];
-+	struct kvm_pmc fixed_counters[KVM_PMC_MAX_FIXED];
- 	struct irq_work irq_work;
- 	DECLARE_BITMAP(reprogram_pmi, X86_PMC_IDX_MAX);
- 	DECLARE_BITMAP(all_valid_pmc_idx, X86_PMC_IDX_MAX);
-diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
-index 3902c28..28205ce 100644
---- a/arch/x86/kvm/cpuid.c
-+++ b/arch/x86/kvm/cpuid.c
-@@ -856,7 +856,8 @@ static inline int __do_cpuid_func(struct kvm_cpuid_array *array, u32 function)
- 		eax.split.bit_width = cap.bit_width_gp;
- 		eax.split.mask_length = cap.events_mask_len;
- 
--		edx.split.num_counters_fixed = min(cap.num_counters_fixed, MAX_FIXED_COUNTERS);
-+		edx.split.num_counters_fixed =
-+			min(cap.num_counters_fixed, KVM_PMC_MAX_FIXED);
- 		edx.split.bit_width_fixed = cap.bit_width_fixed;
- 		if (cap.version)
- 			edx.split.anythread_deprecated = 1;
-diff --git a/arch/x86/kvm/pmu.h b/arch/x86/kvm/pmu.h
-index 7a7b8d5..9e66fba 100644
---- a/arch/x86/kvm/pmu.h
-+++ b/arch/x86/kvm/pmu.h
-@@ -15,8 +15,6 @@
- #define VMWARE_BACKDOOR_PMC_REAL_TIME		0x10001
- #define VMWARE_BACKDOOR_PMC_APPARENT_TIME	0x10002
- 
--#define MAX_FIXED_COUNTERS	3
--
- struct kvm_event_hw_type_mapping {
- 	u8 eventsel;
- 	u8 unit_mask;
-diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
-index 466d18f..9b26596 100644
---- a/arch/x86/kvm/vmx/pmu_intel.c
-+++ b/arch/x86/kvm/vmx/pmu_intel.c
-@@ -565,7 +565,7 @@ static void intel_pmu_init(struct kvm_vcpu *vcpu)
- 		pmu->gp_counters[i].current_config = 0;
- 	}
- 
--	for (i = 0; i < INTEL_PMC_MAX_FIXED; i++) {
-+	for (i = 0; i < KVM_PMC_MAX_FIXED; i++) {
- 		pmu->fixed_counters[i].type = KVM_PMC_FIXED;
- 		pmu->fixed_counters[i].vcpu = vcpu;
- 		pmu->fixed_counters[i].idx = i + INTEL_PMC_IDX_FIXED;
-@@ -591,7 +591,7 @@ static void intel_pmu_reset(struct kvm_vcpu *vcpu)
- 		pmc->counter = pmc->eventsel = 0;
- 	}
- 
--	for (i = 0; i < INTEL_PMC_MAX_FIXED; i++) {
-+	for (i = 0; i < KVM_PMC_MAX_FIXED; i++) {
- 		pmc = &pmu->fixed_counters[i];
- 
- 		pmc_stop_counter(pmc);
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 9e43d75..b541a13 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -6452,7 +6452,7 @@ static void kvm_init_msr_list(void)
- 	u32 dummy[2];
- 	unsigned i;
- 
--	BUILD_BUG_ON_MSG(INTEL_PMC_MAX_FIXED != 4,
-+	BUILD_BUG_ON_MSG(KVM_PMC_MAX_FIXED != 3,
- 			 "Please update the fixed PMCs in msrs_to_saved_all[]");
- 
- 	perf_get_x86_pmu_capability(&x86_pmu);
--- 
-2.7.4
+$ scripts/dtc/of_unittest_expect --help
 
+usage:
+
+  of_unittest_expect CONSOLE_LOG
+
+     -h                print program usage
+    --help             print program usage
+    --hide-expect      suppress output of EXPECTed lines
+    --line-num         report line number of CONSOLE_LOG
+    --no-expect-stats  do not report EXPECT statistics
+    --no-strip-ts      do not strip leading console timestamps
+    --verbose          do not suppress EXPECT begin and end lines
+    --version          print program version and exit
+
+
+  Process a console log for EXPECTed test related messages to either
+  highlight expected devicetree unittest related messages or suppress
+  the messages.  Leading console timestamps will be stripped.
+
+  Various unittests may trigger kernel messages from outside the
+  unittest code.  The unittest annotates that it expects the message
+  to occur with an 'EXPECT \ : text' (begin) before triggering the
+  message, and an 'EXPECT / : text' (end) after triggering the message.
+
+  If an expected message does not occur, that will be reported.
+
+  For each expected message, the 'EXPECT \ : text' (begin) and
+  'EXPECT / : text' (end), 'text' will contain the message text.
+
+  If 'EXPECT \' (begin) and 'EXPECT /' (end) lines do not contain
+  matching 'text', that will be reported.
+
+  If EXPECT lines are nested, 'EXPECT /' (end) lines must be in the
+  reverse order of the corresponding 'EXPECT \' (begin) lines.
+
+  'EXPECT \ : text' (begin) and 'EXPECT / : text' (end) lines can
+  contain special patterns in 'text':
+
+     <<int>> matches: [+-]*[0-9]+
+     <<hex>> matches: (0x)*[0-9a-f]+
+
+  'EXPECT \' (begin) and 'EXPECT /' (end) lines are suppressed.
+
+  A prefix is added to every line of output:
+
+    'ok ' Line matches an enclosing EXPECT begin/end pair
+
+    '** ' Line reports of_unittest_expect warning or error
+
+    '-> ' Line reports start or end of the unittests
+
+    '>> ' Line reports a unittest test FAIL
+
+    '   ' Lines that are not otherwise prefixed
+
+  Issues detected in CONSOLE_LOG are reported to STDOUT, not to STDERR.
+
+  Known Issues:
+
+    --line-num causes the CONSOLE_LOG line number to be printed in 4 columns.
+       If CONSOLE_LOG contains more than 9999 lines then more columns will be
+       used to report the line number for lines greater than 9999 (eg for
+       lines 10000 - 99999, 5 columns will be used).
