@@ -2,167 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45EE4C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 14:25:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B69D9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 14:26:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239246AbiBAOZb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 09:25:31 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:44298 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239240AbiBAOZ2 (ORCPT
+        id S239249AbiBAO0H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 09:26:07 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:23414 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239247AbiBAO0E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 09:25:28 -0500
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 211E3fIh002076;
-        Tue, 1 Feb 2022 14:25:03 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : reply-to : to : cc : date : in-reply-to : references : content-type
- : content-transfer-encoding : mime-version; s=pp1;
- bh=mreXuaP/jhEfQGa2pduCiURq5d9Q94KDVgGiwjc7zzo=;
- b=hAx6jmKcHJLBSUJ/gkK2q1brIyFMRnzYEFT8qfF+qLkoeJJAvn6Avt6HV+iNYuWvaxcu
- t4tZAzm1jb8/bqL3atjoWlvEsHyRJURGAM8w+/G8Tnij7giOKrARO0gkwnwz9i2qPxcn
- aZ/LeRxQUhmh784fC5jIHiDyjodEaRkPaGgwiR+kf+fQLoeieQuPl/K4HBhxkdcq1prP
- Lv5Dw/IWGsxRLp/I7FIBGWflGepYIbovnsYyHBvEGfep0pFd3YOLW7D3HTSdFy1AT+cS
- w25u0bEI9cBZ5sE/V15iNA1VcW/TtBCjmIoKH6nqufJYBkFfTfXuzTDbfOYVCdGVglIC kQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3dxn4hvgky-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 01 Feb 2022 14:25:02 +0000
-Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 211Dx1ur021079;
-        Tue, 1 Feb 2022 14:25:02 GMT
-Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3dxn4hvgk7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 01 Feb 2022 14:25:02 +0000
-Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
-        by ppma01dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 211EIajb010966;
-        Tue, 1 Feb 2022 14:25:00 GMT
-Received: from b03cxnp07029.gho.boulder.ibm.com (b03cxnp07029.gho.boulder.ibm.com [9.17.130.16])
-        by ppma01dal.us.ibm.com with ESMTP id 3dvw7bdw8x-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 01 Feb 2022 14:25:00 +0000
-Received: from b03ledav004.gho.boulder.ibm.com (b03ledav004.gho.boulder.ibm.com [9.17.130.235])
-        by b03cxnp07029.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 211EOuNg34734354
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 1 Feb 2022 14:24:56 GMT
-Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id AE6457808E;
-        Tue,  1 Feb 2022 14:24:56 +0000 (GMT)
-Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C3391780A0;
-        Tue,  1 Feb 2022 14:24:51 +0000 (GMT)
-Received: from jarvis.int.hansenpartnership.com (unknown [9.211.75.243])
-        by b03ledav004.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Tue,  1 Feb 2022 14:24:51 +0000 (GMT)
-Message-ID: <37779659ca96ac9c1f11bcc0ac0665895c795b54.camel@linux.ibm.com>
-Subject: Re: [PATCH v7 0/5] Allow guest access to EFI confidential computing
- secret area
-From:   James Bottomley <jejb@linux.ibm.com>
-Reply-To: jejb@linux.ibm.com
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        Dov Murik <dovmurik@linux.ibm.com>
-Cc:     linux-efi@vger.kernel.org, Borislav Petkov <bp@suse.de>,
-        Ashish Kalra <ashish.kalra@amd.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Andrew Scull <ascull@google.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        "Dr. David Alan Gilbert" <dgilbert@redhat.com>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Lenny Szubowicz <lszubowi@redhat.com>,
-        Peter Gonda <pgonda@google.com>,
-        Tobin Feldman-Fitzthum <tobin@linux.ibm.com>,
-        Jim Cadden <jcadden@ibm.com>,
-        Daniele Buono <dbuono@linux.vnet.ibm.com>,
-        linux-coco@lists.linux.dev, linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Nayna Jain <nayna@linux.ibm.com>,
-        dougmill@linux.vnet.ibm.com, gcwilson@linux.ibm.com,
-        gjoyce@ibm.com, gregkh@linuxfoundation.org,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        mjg59@srcf.ucam.org, mpe@ellerman.id.au, dja@axtens.net
-Date:   Tue, 01 Feb 2022 09:24:50 -0500
-In-Reply-To: <Yfk6vEuZFtgtA+G+@kroah.com>
-References: <20220201124413.1093099-1-dovmurik@linux.ibm.com>
-         <Yfk6vEuZFtgtA+G+@kroah.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.34.4 
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: KKTyI9pQI8Y36SJdNW1gn8e_DMUDwLR-
-X-Proofpoint-ORIG-GUID: S9dqeW5zLuNZ9BvqjN1WezAHnW6K66xY
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Tue, 1 Feb 2022 09:26:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643725563;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=rPLhPOdNSB7PJok3SKPVCTJi2bZZQJ/Ip1kdffjANMc=;
+        b=EKP/gOj3NfIl7W/ac0C9o0WrfBdlaFpBXd0xchRfPBXrUEEyjMIRqbd8aSdR3kJGV+qsDV
+        CzYgpSfGay4PaT8Ffr9mMcGUS5P+rBgAqBf2MUzIDt9xT1Uy+IkXlhaY8vzJZ5rvw7/XUw
+        pw56JAmU+xrtds52Mu6N4RgH+WvMvEQ=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-153-g4ijchYbNBehHYrgvyoV6g-1; Tue, 01 Feb 2022 09:26:02 -0500
+X-MC-Unique: g4ijchYbNBehHYrgvyoV6g-1
+Received: by mail-ed1-f69.google.com with SMTP id k5-20020a508ac5000000b00408dec8390aso8684349edk.13
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Feb 2022 06:26:02 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=rPLhPOdNSB7PJok3SKPVCTJi2bZZQJ/Ip1kdffjANMc=;
+        b=InCjJOg2/T/OvlTpKy/ubAYTzMefNysl/jz8RzotZXKJswNg39+2E1rPuq3G+yrjOT
+         e8551LO6ckB3zuRTcmtRJ4i9yHqExBhHN0SIVwWXty/bOaJrkw+J1IIap5Okh3uUgtJy
+         ev1NUCfUBSKPPt5nRokHr00fLP9uznj00BCXzg5KiQG3KY74ztRE+bBvYPDrH9MaMcWh
+         WJI3ahGwTkv+LFu4dXRmNoWB2/yasVHLgFIw5nhaogwikQGgPZnVlkcDsppjA/ycyuQF
+         loa/bCQpd6CJSIS8xFtCie67oZ2brx3I9V3OVNJCUPmFVy+7+kHpoMRPgu/QQ1bBbQLD
+         8usA==
+X-Gm-Message-State: AOAM532w/2BxVOF2fswgxlwn+mFEGFpAL+Lt/46nIOh2FoszOCe7pNi4
+        svwdMrdHj61dr3k2pWDLJhFSzreFOsDPr7+d52i3t5A6SlJ8CsOhNzrqAHAHO5nFSjafgBeTkdy
+        9BV5Ye/c1Ch10RijLkqyuhPDn
+X-Received: by 2002:aa7:d312:: with SMTP id p18mr24728916edq.49.1643725561650;
+        Tue, 01 Feb 2022 06:26:01 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyQcDKGpASKFAHDWC+uv1+s0squ1+FRZAslqH6LoVgn8BgVh44QX+sA2dPzucd6pM4miRcZ0g==
+X-Received: by 2002:aa7:d312:: with SMTP id p18mr24728900edq.49.1643725561429;
+        Tue, 01 Feb 2022 06:26:01 -0800 (PST)
+Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
+        by smtp.gmail.com with ESMTPSA id op20sm14709161ejb.68.2022.02.01.06.25.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 01 Feb 2022 06:25:58 -0800 (PST)
+Message-ID: <f8d94992-67a7-30c0-f59b-f4d2b448260e@redhat.com>
+Date:   Tue, 1 Feb 2022 15:25:57 +0100
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-01_06,2022-02-01_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- bulkscore=0 mlxscore=0 mlxlogscore=850 lowpriorityscore=0 suspectscore=0
- impostorscore=0 adultscore=0 phishscore=0 malwarescore=0 spamscore=0
- clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202010078
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH v6 0/9] Support Spi in i2c-multi-instantiate driver
+Content-Language: en-US
+To:     Stefan Binding <sbinding@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>, Mark Gross <markgross@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
+Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-acpi@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org, patches@opensource.cirrus.com
+References: <20220121172431.6876-1-sbinding@opensource.cirrus.com>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <20220121172431.6876-1-sbinding@opensource.cirrus.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[cc's added]
-On Tue, 2022-02-01 at 14:50 +0100, Greg KH wrote:
-> On Tue, Feb 01, 2022 at 12:44:08PM +0000, Dov Murik wrote:
-[...]
-> > # ls -la /sys/kernel/security/coco/efi_secret
-> > total 0
-> > drwxr-xr-x 2 root root 0 Jun 28 11:55 .
-> > drwxr-xr-x 3 root root 0 Jun 28 11:54 ..
-> > -r--r----- 1 root root 0 Jun 28 11:54 736870e5-84f0-4973-92ec-
-> > 06879ce3da0b
-> > -r--r----- 1 root root 0 Jun 28 11:54 83c83f7f-1356-4975-8b7e-
-> > d3a0b54312c6
-> > -r--r----- 1 root root 0 Jun 28 11:54 9553f55d-3da2-43ee-ab5d-
-> > ff17f78864d2
+Hi Stefan,
+
+On 1/21/22 18:24, Stefan Binding wrote:
+> Add support for SPI bus in the i2c-multi-instantiate driver as
+> upcoming laptops will need to multi instantiate SPI devices from
+> a single device node, which has multiple SpiSerialBus entries at
+> the ACPI table.
 > 
-> Please see my comments on the powerpc version of this type of thing:
-> 	
-> https://lore.kernel.org/r/20220122005637.28199-1-nayna@linux.ibm.com
+> With the new SPI support, i2c-multi-instantiate becomes
+> bus-multi-instantiate and is moved to the ACPI folder.
+> 
+> The intention is to support the SPI bus by re-using the current
+> I2C multi instantiate, instead of creating a new SPI multi
+> instantiate, to make it possible for peripherals that can be
+> controlled by I2C or SPI to have the same HID at the ACPI table.
+> 
+> The new driver (serial multi instantiate, smi) checks for the
+> hard-coded bus type and returns -ENODEV in case of zero devices
+> found for that bus. In the case of automatic bus detection, 
+> the driver will give preference to I2C.
+> 
+> The expectation is for a device node in the ACPI table to have
+> multiple I2cSerialBus only or multiple SpiSerialBus only, not
+> a mix of both; and for the case where there are both entries in
+> one device node, only the I2C ones would be probed.
+> 
+> This new serial multi instantiate will be used in CS35L41 HDA new
+> driver.
+> 
+> Changes since V5:
+>  - comment, commit message and Kconfig description fixes
+>  - minor fixes in serial-multi-instantiate
+>  - use lowercase for SSIDs in patch_realtek.c
 
-If you want a debate, actually cc'ing the people on the other thread
-would have been a good start ...
+Thank you for the new versions.
 
-For those added, this patch series is at:
+I gave a bunch of:
 
-https://lore.kernel.org/all/20220201124413.1093099-1-dovmurik@linux.ibm.com/
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
 
-> You all need to work together to come up with a unified place for
-> this and stop making it platform-specific.
+tags for v4, unless you make big changes, you are supposed to
+collect this tag and add it to newer versions of the
+patch-set (just above your own S-o-b).
 
-I'm not entirely sure of that.  If you look at the differences between
-EFI variables and the COCO proposal: the former has an update API
-which, in the case of signed variables, is rather complex and a UC16
-content requirement.  The latter is binary data with read only/delete. 
-Plus each variable in EFI is described by a GUID, so having a directory
-of random guids, some of which behave like COCO secrets and some of
-which are EFI variables is going to be incredibly confusing (and also
-break all our current listing tools which seems somewhat undesirable).
+I'll resend the Reviewed-by-s for this version, please
+collect them for the next version (I noticed there are
+still some small issues, sorry).
 
-So we could end up with 
+Regards,
 
-<common path prefix>/efivar
-<common path prefix>/coco
+Hans
 
-To achieve the separation, but I really don't see what this buys us. 
-Both filesystems would likely end up with different backends because of
-the semantic differences and we can easily start now in different
-places (effectively we've already done this for efi variables) and
-unify later if that is the chosen direction, so it doesn't look like a
-blocker.
 
-> Until then, we can't take this.
 
-I don't believe anyone was asking you to take it.
-
-James
-
+> 
+> Lucas Tanure (4):
+>   platform/x86: i2c-multi-instantiate: Rename it for a generic serial
+>     driver name
+>   platform/x86: serial-multi-instantiate: Reorganize I2C functions
+>   ALSA: hda/realtek: Add support for HP Laptops
+>   ACPI / scan: Create platform device for CS35L41
+> 
+> Stefan Binding (5):
+>   spi: Make spi_alloc_device and spi_add_device public again
+>   spi: Create helper API to lookup ACPI info for spi device
+>   spi: Support selection of the index of the ACPI Spi Resource before
+>     alloc
+>   spi: Add API to count spi acpi resources
+>   platform/x86: serial-multi-instantiate: Add SPI support
+> 
+>  MAINTAINERS                                   |   4 +-
+>  drivers/acpi/scan.c                           |  16 +-
+>  drivers/platform/x86/Kconfig                  |  12 +-
+>  drivers/platform/x86/Makefile                 |   2 +-
+>  drivers/platform/x86/i2c-multi-instantiate.c  | 174 ---------
+>  .../platform/x86/serial-multi-instantiate.c   | 349 ++++++++++++++++++
+>  drivers/spi/spi.c                             | 137 ++++++-
+>  include/linux/spi/spi.h                       |  20 +
+>  sound/pci/hda/patch_realtek.c                 |  43 ++-
+>  9 files changed, 551 insertions(+), 206 deletions(-)
+>  delete mode 100644 drivers/platform/x86/i2c-multi-instantiate.c
+>  create mode 100644 drivers/platform/x86/serial-multi-instantiate.c
+> 
 
