@@ -2,100 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4690FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 16:19:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B730C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 16:22:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241022AbiBAQTv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 11:19:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50962 "EHLO
+        id S241028AbiBAQWr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 11:22:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240919AbiBAQTu (ORCPT
+        with ESMTP id S240905AbiBAQWg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 11:19:50 -0500
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 634ABC06173B
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Feb 2022 08:19:50 -0800 (PST)
-Received: by mail-ej1-x62f.google.com with SMTP id j2so55125608ejk.6
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Feb 2022 08:19:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=H/EA0AhkWiFaOwwty7mH2hCCiTOvQntxOFT+Uv9r6mI=;
-        b=lmzPqOHdxn0hc7dFBLY3SQkUuN8/E5zgkhWuFYNNCZY80fRqKvZZiHLjCZFSELf5wt
-         fBfAaoq3b5L6sfZamRJ4r9as5w9m2yn2x5kjVQH91u5qzkU4B0X3l8pb4YSIgvY2YQoU
-         hLYOHsig6gFhE8uLZXKQjCQGUZdYl3Z4dWDXS94KelY+TVFaf6ZQT+FTU8h0b8OgyVSF
-         +vMc/E1jLaqNPkoLezOjgnDMC9VeuCZPuSrCLTTlT2tOaNLt4ZbNIDH7tRFJJF+KWag/
-         wG5J3E4/omZOqv7+krqB1k+rt7bzjHGeCvrcOEBpozUkZsDcRNHQwrGH26s3VqMOjExc
-         cGoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=H/EA0AhkWiFaOwwty7mH2hCCiTOvQntxOFT+Uv9r6mI=;
-        b=feFi/3GlsMyzy1xXS7XC1FK+P2UrxrrAJ4Jllg23grLXPmfd11PgoH87+aDTck6tiU
-         ajkoaK7Af5fZZTCJy+Zt7vZW1E0I+qTk0wjd+xlBMof1IrYLnyFAoIQK4tBgYUhp4/xp
-         M+uCUPvulfz+N5vMnZlNruuhGQZs4ASa785hk2tXGM0e/iA5tJNXhdQBUBjSqmPki0a6
-         RR2rmynqww99m635KOyVRcHv3SN9h18xS2ZWCM3/ewSKil3YqDwN8k7lar0nykBja7eo
-         p40ynt4TDje6yPjjz6n1Yeg/kBOQBebX+q1f5VbjbynESrBegaAxnB2TWDbZl9UXB+yh
-         qpsw==
-X-Gm-Message-State: AOAM533PeMG5SFcNZGkq176akLjn4a7c6uO3XvK22T6a6KFYyqaIh80x
-        dfHYc7sSWNxYmBJSZp3/PQEhSilF+5I0/JUD6iHk
-X-Google-Smtp-Source: ABdhPJyY2QWbw9iTiEYwXUoRKlv8CqDxjUmVAK+5MN19fpdlGU198KTmUcBPwAV5FDqPW4wyhtc7GkW+of0Vio0Kkrg=
-X-Received: by 2002:a17:906:2ed0:: with SMTP id s16mr21589608eji.327.1643732388897;
- Tue, 01 Feb 2022 08:19:48 -0800 (PST)
-MIME-Version: 1.0
-References: <20220120214948.3637895-1-smayhew@redhat.com> <20220120214948.3637895-2-smayhew@redhat.com>
- <CAFqZXNv7=ROfyzZGojy2DQvY0xp4Dd5oHW_0KG6BLiD7A8zeKQ@mail.gmail.com>
- <CAHC9VhQKVdbLNn=eOqebWaktDVeq5bjTjXea68MmcAhKoSa09w@mail.gmail.com>
- <CAFqZXNvny0zJmEMzFeMFuy0DzjAAaB5uqRpQoSMbZwVcUxTDAQ@mail.gmail.com>
- <CAHC9VhQE4JPhTjkKwV3ovRSuPceiHDrP3MDW4RPDcNtLkb7tAQ@mail.gmail.com> <CAFqZXNs7P+p0B-uZ2owMH1qa04unbq870tMqQ4Kwup7dXJ9z=g@mail.gmail.com>
-In-Reply-To: <CAFqZXNs7P+p0B-uZ2owMH1qa04unbq870tMqQ4Kwup7dXJ9z=g@mail.gmail.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Tue, 1 Feb 2022 11:19:37 -0500
-Message-ID: <CAHC9VhRAPb8PV08fYd-GOY+ZeKX6r+rmGw_Okrwwj6ESTVDYmA@mail.gmail.com>
-Subject: Re: [PATCH RFC v2 1/2] selinux: Fix selinux_sb_mnt_opts_compat()
-To:     Ondrej Mosnacek <omosnace@redhat.com>
-Cc:     Scott Mayhew <smayhew@redhat.com>,
-        SElinux list <selinux@vger.kernel.org>,
-        linux-nfs <linux-nfs@vger.kernel.org>,
-        Linux kernel mailing list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 1 Feb 2022 11:22:36 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30C01C061714
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Feb 2022 08:22:36 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ED13AB82ED8
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Feb 2022 16:22:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 971A5C340ED;
+        Tue,  1 Feb 2022 16:22:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643732553;
+        bh=RLXLJwgXlElngjkkBBo3AdNFQk/wGbjBwubLlqaO00g=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=BpJfVopQY0H4WZpvUIOrJ/Hgq4U3SwkXl96qKN7qKw8WvY1K/kBR44J6Z+2vljeaw
+         bwl4SUjCkUiPgrRIZ2yH195eHF59jrxWHYFUs1iBEaGDmQ5nVnNHX1YKYWNWEaHYfJ
+         YlUD2h76xu7apLKK0d0MWpga0YEbIHbZ42vtEoZ3nW0U8iSRL2BZ9A3ySbsmqL3v+X
+         rIv7yQ8NeG010sdwx+GcESZGMoH3O14XPhEr6Y+o11dBZho8A5wFqyM6IBRh45ggHN
+         QYMDkc/2TXIgDcyNzIAn4AH/QzA3UYYWMtWuYbO/LNSpx9O0a/3v2z3xKPqh8Vw1NG
+         RlWmf3Q20RG2Q==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nEvvL-004gpF-H2; Tue, 01 Feb 2022 16:22:31 +0000
+Date:   Tue, 01 Feb 2022 16:22:30 +0000
+Message-ID: <87ee4m5zg9.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Mark Rutland <mark.rutland@arm.com>, linux-kernel@vger.kernel.org,
+        aleksandar.qemu.devel@gmail.com, alexandru.elisei@arm.com,
+        anup@brainfault.org, aou@eecs.berkeley.edu, atishp@atishpatra.org,
+        benh@kernel.crashing.org, borntraeger@linux.ibm.com, bp@alien8.de,
+        catalin.marinas@arm.com, chenhuacai@kernel.org,
+        dave.hansen@linux.intel.com, frederic@kernel.org,
+        hca@linux.ibm.com, james.morse@arm.com, jmattson@google.com,
+        joro@8bytes.org, mingo@redhat.com, mpe@ellerman.id.au,
+        nsaenzju@redhat.com, palmer@dabbelt.com, paulmck@kernel.org,
+        paulus@samba.org, paul.walmsley@sifive.com, seanjc@google.com,
+        suzuki.poulose@arm.com, svens@linux.ibm.com, tglx@linutronix.de,
+        tsbogend@alpha.franken.de, vkuznets@redhat.com,
+        wanpengli@tencent.com, will@kernel.org
+Subject: Re: [PATCH v3 0/5] kvm: fix latent guest entry/exit bugs
+In-Reply-To: <87aa8af0-c262-ad04-58f8-da6c7882e23c@redhat.com>
+References: <20220201132926.3301912-1-mark.rutland@arm.com>
+        <87aa8af0-c262-ad04-58f8-da6c7882e23c@redhat.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: pbonzini@redhat.com, mark.rutland@arm.com, linux-kernel@vger.kernel.org, aleksandar.qemu.devel@gmail.com, alexandru.elisei@arm.com, anup@brainfault.org, aou@eecs.berkeley.edu, atishp@atishpatra.org, benh@kernel.crashing.org, borntraeger@linux.ibm.com, bp@alien8.de, catalin.marinas@arm.com, chenhuacai@kernel.org, dave.hansen@linux.intel.com, frederic@kernel.org, hca@linux.ibm.com, james.morse@arm.com, jmattson@google.com, joro@8bytes.org, mingo@redhat.com, mpe@ellerman.id.au, nsaenzju@redhat.com, palmer@dabbelt.com, paulmck@kernel.org, paulus@samba.org, paul.walmsley@sifive.com, seanjc@google.com, suzuki.poulose@arm.com, svens@linux.ibm.com, tglx@linutronix.de, tsbogend@alpha.franken.de, vkuznets@redhat.com, wanpengli@tencent.com, will@kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 1, 2022 at 9:38 AM Ondrej Mosnacek <omosnace@redhat.com> wrote:
-> On Mon, Jan 31, 2022 at 5:16 PM Paul Moore <paul@paul-moore.com> wrote:
-> > On Mon, Jan 31, 2022 at 7:46 AM Ondrej Mosnacek <omosnace@redhat.com> wrote:
-> > > On Fri, Jan 28, 2022 at 3:28 AM Paul Moore <paul@paul-moore.com> wrote:
-> > > > On Thu, Jan 27, 2022 at 4:54 AM Ondrej Mosnacek <omosnace@redhat.com> wrote:
-> > > > > I wonder if we could make this all much simpler by *always* doing the
-> > > > > label parsing in selinux_add_opt() and just returning an error when
-> > > > > !selinux_initialized(&selinux_state). Before the new mount API, mount
-> > > > > options were always passed directly to the mount(2) syscall, so it
-> > > > > wasn't possible to pass any SELinux mount options before the SELinux
-> > > > > policy was loaded. I don't see why we need to jump through hoops here
-> > > > > just to support this pseudo-feature of stashing an unparsed label into
-> > > > > an fs_context before policy is loaded... Userspace should never need
-> > > > > to do that.
-> > > >
-> > > > I could agree with that, although part of my mind is a little nervous
-> > > > about the "userspace should *never* ..." because that always seems to
-> > > > bite us.  Although I'm struggling to think of a case where userspace
-> > > > would need to set explicit SELinux mount options without having a
-> > > > policy loaded.
-> > >
-> > > I get that, but IMO this is enough of an odd "use case" that I
-> > > wouldn't worry too much ...
-> >
-> > I understand, but seeing as I'm the only one that defends these things
-> > with Linus and others lets do this:
->
-> It's not all black and white:
-> https://lore.kernel.org/lkml/Pine.LNX.4.64.0512291322560.3298@g5.osdl.org/
+On Tue, 01 Feb 2022 15:59:47 +0000,
+Paolo Bonzini <pbonzini@redhat.com> wrote:
+> 
+> On 2/1/22 14:29, Mark Rutland wrote:
+> > I've pushed the series (based on v5.17-rc2) to my kvm/entry-rework branch:
+> > 
+> >    https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git/log/?h=kvm/entry-rework
+> >    git://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git kvm/entry-rework
+> 
+> Thanks!  I cherry-picked the basic, x86 and mips patches to kvm.git's
+> master branch (I did not use your branch in order to leave arm64 and
+> riscv to the respective maintainers).
 
-I made my statement above not to ask your opinion, but rather to make a point.
+How do you want to play this one? I was expecting a stable base
+(containing only the initial patch) on top of a common tag (like
+-rc1).
+
+Or do you expect arm64 and riscv to have their own copy of patch #1?
+
+	M.
 
 -- 
-paul-moore.com
+Without deviation from the norm, progress is not possible.
