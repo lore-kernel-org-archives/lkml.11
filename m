@@ -2,382 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18023C43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 15:02:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A788EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 15:03:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239670AbiBAPC4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        id S239699AbiBAPC6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 10:02:58 -0500
+Received: from mail-bn1nam07on2050.outbound.protection.outlook.com ([40.107.212.50]:8608
+        "EHLO NAM02-BN1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S239679AbiBAPC4 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 1 Feb 2022 10:02:56 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:44331 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239648AbiBAPCp (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 10:02:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643727765;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=oZXW4ikWwqlgBCRGnwXxFczGKcuCYa2j1IpHwO1T0Pw=;
-        b=M+0wwcGElErVlbJduQ4LZhuo9/FY5vdijoEdWKyefkp2zM0+4NvBGFUGPjolg7bR01pmnL
-        2wjEZn3najrPuLSZIm+2T3psnF7yyPsmWghYLiyPnP2sYuXUr+IuWtdPAZ031iBgBVTQcm
-        pWuntAnlhIYjsUr3rVYVRI0C0a66WrI=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-652-Xw47Py86OdifK4N_jTtyKw-1; Tue, 01 Feb 2022 10:02:44 -0500
-X-MC-Unique: Xw47Py86OdifK4N_jTtyKw-1
-Received: by mail-ed1-f71.google.com with SMTP id ed6-20020a056402294600b004090fd8a936so8835357edb.23
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Feb 2022 07:02:43 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=oZXW4ikWwqlgBCRGnwXxFczGKcuCYa2j1IpHwO1T0Pw=;
-        b=GhdlpCJ4lhX7qEMh0rOSTYN00YBUkH388Za1AbfNnrO6YtIiYdU2GvoAX+EGL8QNp/
-         Wm5c8X1LXs8GLAzyaO/ovGxtnXWBIo1hmMqvqrggFnLxt7rYEBvnJIUdZ1ap/ft8I9PY
-         kgxoQzU8T+7kuU1QTS3LtmKJeCCrYRGJ5pS/ROJSHygtiNb2a1spjBMR97Fu15tfMau8
-         6LY+qC4XkGWNEgq2H0NinZXricHZLcz61Ok6IelviyyVcEvCCuPvk2Bq1rk1aofC7XP4
-         5HGedHve++xvzLho7eMcdiDQleiFM35NjSH9oIb2FEd5lKr4HQG6hxymGHSnhWWjDx5j
-         1YJg==
-X-Gm-Message-State: AOAM531m0TTPYsEiZwhAknP7lI/tFZxZFmmaecgaTTOg+sPD1uzXtxg2
-        /grS/sylJlhpEHrbBA+HFFXZZsMvy/oMp1zm22M7lgA8j/cZDp1p934ZtrpioNA9/PGNy2HdTwO
-        Q8fpecJ8dw0/zeEb/NwctR6/x
-X-Received: by 2002:a05:6402:16cf:: with SMTP id r15mr25756611edx.406.1643727762667;
-        Tue, 01 Feb 2022 07:02:42 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyvCpVCBTZrtA2YZxbuCtFtMF8gZFN+tTu4VLRzWngSgADBV/xCYwrHYjRoBuJPzr957Nv0tA==
-X-Received: by 2002:a05:6402:16cf:: with SMTP id r15mr25756583edx.406.1643727762415;
-        Tue, 01 Feb 2022 07:02:42 -0800 (PST)
-Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
-        by smtp.gmail.com with ESMTPSA id pg25sm14900182ejb.174.2022.02.01.07.02.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Feb 2022 07:02:41 -0800 (PST)
-Message-ID: <71094091-56ca-0f75-a9c7-fa1cabf2af22@redhat.com>
-Date:   Tue, 1 Feb 2022 16:02:40 +0100
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fJx5FZ2TyE5d3oXqyRaeCWhHKyS+JU/ADFpYLoUTnf50ZLZP8X7YIQdiQfzp8DlDukfF+TEURlvoYZzooVIzRRIf4N5zCn5ACsvak57FI82ss9dHEov8XSjiIm9rgoag2eWGREyPoD+4CqbKysIlyZ2rjJPdFZ6tTRUY/EKbBNKm6/DeB364gtDW/1+FCbHEDgS5FzqbRGJIgYSeuXjG5oIb8ysb20sxj4mtOIngS3QayuBqMQ2C+5HTOu35m+UPP//9Oy2b5s/6YJqLrFDXvWkSgkqkJfGi0Tzqpsq9P9QTfddrzB9F1ECcjKbfFbFd1QCqD9mhnzZLzRS+0DeOlA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Bwg4VMIN76rbTXHRgYGSTnmO1hOR/dBzbKAM9LGv5YQ=;
+ b=OmQyt/9+ocYN53jfl+sRxcLH9oUq8i0VZTsAsqanGJTqM4ibxRCgv9GC3KiPRxVpQwARQ43gTqcjB/tCtaG4pLem8Viuy7Q4l0t35zuTav36v3xbhwbPRKh3kEw0LTt5Ntn1fpb8F9+CDAjqwANAX0AcXBNxHEgJpK1TdPn2rp7V38iwQMRdkwqhb0UN/JWORorbvWjJnITeihogbjDqSR1HpQmwzf70SNlfEC/m0JuaeezTF1NO7/taYTXh0xH+K9nh3VkZhvbGyncInV0G05H8v+D6chPys+XTMWZT902oM+BnsZSnrRB/PzsWubxi5LOADs+i9w2KiNuKgzpeHw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Bwg4VMIN76rbTXHRgYGSTnmO1hOR/dBzbKAM9LGv5YQ=;
+ b=btmoEnzM4Xyf1cpNzqjZUQ/7GLH+L7q3yDdZfrc0I+r6tN1zvXxdtWADUQ1VgGL2W+NINhCnE28cBEbk4thxMxik/kEzX3EJChLKsOXn18cOjgb8EksSSwotsKyAFoI987A75a6eww40rUvUEuGFnMYn5hBNeoIIJGXwh4xHX9zikVY6PhEF18Ffpy5GGR+g5GxY81nVNrDTQ7GTwzU3A9RQc5zZQpeSnMHavLso+1bvXXN0YzetZeMozX1Cporn+K1Wt/MigrMsaKhX7ly2KY+rSxBe5WPo3C9jKBSpaTEURsSGUM4b39elJrMzhSQH0jXGJTqTYT/vGXYk3sPj9g==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by SN1PR12MB2512.namprd12.prod.outlook.com (2603:10b6:802:31::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.15; Tue, 1 Feb
+ 2022 15:02:54 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::e8f4:9793:da37:1bd3]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::e8f4:9793:da37:1bd3%4]) with mapi id 15.20.4930.022; Tue, 1 Feb 2022
+ 15:02:54 +0000
+Date:   Tue, 1 Feb 2022 11:02:52 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Colin Ian King <colin.i.king@gmail.com>
+Cc:     Yishai Hadas <yishaih@nvidia.com>, linux-rdma@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] RDMA/mlx4: remove redundant assignment to variable nreq
+Message-ID: <20220201150252.GA2434511@nvidia.com>
+References: <20220130225747.8114-1-colin.i.king@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220130225747.8114-1-colin.i.king@gmail.com>
+X-ClientProxiedBy: MN2PR19CA0025.namprd19.prod.outlook.com
+ (2603:10b6:208:178::38) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH v6 7/9] platform/x86: serial-multi-instantiate: Add SPI
- support
-Content-Language: en-US
-To:     Stefan Binding <sbinding@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>, Mark Gross <markgross@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
-Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-acpi@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org, patches@opensource.cirrus.com
-References: <20220121172431.6876-1-sbinding@opensource.cirrus.com>
- <20220121172431.6876-8-sbinding@opensource.cirrus.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <20220121172431.6876-8-sbinding@opensource.cirrus.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: cc4bd74b-60f2-4e84-fe7b-08d9e593ec62
+X-MS-TrafficTypeDiagnostic: SN1PR12MB2512:EE_
+X-Microsoft-Antispam-PRVS: <SN1PR12MB25123402B3E84C71D41A0F28C2269@SN1PR12MB2512.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2150;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: it6kWVUYgRUgxYsVUuAGgv6J1Il1sQX46QHrG9N6y9hpUS17ghnEAQfwcihWjD+5c6QZCviMsPLWGzwvxi/59WzLjNSR5lLrBy6GbCD/H8+CvYa6glDLUPQF1VRY8ZPeA/gfTIjY4fDG8/7xMv33uMyJ6Vo2cIBVDrxQCO/2mFJ+BvBs3s7WIBnN4E9OvprswlMn9YjEB8qzNmNLqGCMXLyRcCTCSiA6ifeUaEnXu4StSsjECSNmUZBMIGTYGXDfSKct0mzDgiK62fGSSY7mCCm10Xrb2Lj1wE6NQGT1TCGEaoo/k57jJrTF0i5j0d4/Yeu5rlqQoPkD9JDpePUbisXHm8m4Jw/fXe726wc/ekYVLTU4eaW1/28ciGBR7GvVXIRgGAcDSn0sfctPl3ddQDaYOzv56oesepRZ33LbwDA8oN2PQPSNzT9MkokdxEsRkJVHWMt5U3G9QIyA13UAJ2XHY70ShLsrrkclJ96ZlhGfbpfh3ouhE1re+th74ayCEd33hn6qDQofdtVIwOFu9dSeHNOhOQLsSIxZyjZ2GmFBWsii8z56EpiitKmFoRwDX3S+C3zpYhn0styAmJXjixdYzjWOS7etCGpmRJKNW2gxZITLOrUbxU+bUHaYCVTT3fTxMpWnIGkPaAfm9r9OJA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6916009)(1076003)(6506007)(6512007)(26005)(186003)(5660300002)(2616005)(316002)(33656002)(6486002)(508600001)(4744005)(36756003)(4326008)(86362001)(66556008)(8676002)(2906002)(8936002)(38100700002)(66476007)(83380400001)(66946007)(20210929001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?kbFOPfZUCeHNOVU6p/SNssbq898zJQRMLx8x6k5/GovHb9EIN/C/nG95Bkvn?=
+ =?us-ascii?Q?wRz0R5amTbNwxGYQ92X/Q5Nj3GvmpuLuk6+kzJfnasUDqXjWDtoHZBECea7K?=
+ =?us-ascii?Q?/mAQG1zqhCxh9NlvKCyQDNqQjlT2pmYXCY1AqB2oyspXIexmOZa8tOi6UAt6?=
+ =?us-ascii?Q?53Z4NtrghQK/YJrM1AoM+9yku6BKmHu5LaDeCvblrUnmqxjpMJdR9hELvYK9?=
+ =?us-ascii?Q?WnC7JNMn+KsfznnGEOqSD8Rl//UxmKQVdD7e02BFgFC+5+i/Hq4dVSDiR79W?=
+ =?us-ascii?Q?B1i0an5Nwd8W7b4w/W+ICRhIXkViT2sQJHqcD/ixRiofmeNP5nesbsZJUbfU?=
+ =?us-ascii?Q?4ZBhEoeBS1b1UlJXpSDaFyuyD7xC8eiUskLkX6Na6jGZCKLeUt+Yp1Txj5f1?=
+ =?us-ascii?Q?UyQ15gZiGUa5FKDQs+WCG991L+wx/f3SGH5+/UY8MX4S7PcY3tRIHZKxulfs?=
+ =?us-ascii?Q?DD+AkvgGuZmVIAsy3Ln/qv6v3goRRhN8j+zyuPpWqXJQwGQ+U75vCiBzNSPm?=
+ =?us-ascii?Q?8Ell6CCBjAsd/AXBgo00J8bex9pSB5yba38S5v2T4cN6ZYcDgvYpvPCEhtsG?=
+ =?us-ascii?Q?PzbwFlTh3jbOQCeoPQfOmlNQxKnD06r2sRiFaUEvOyAEa3TYeuTfjK/N2lkC?=
+ =?us-ascii?Q?LSnuInsJqtI1BPXio3ILI2zGqVfcqEFciduEASKzbYc08+feUAMrdwn//zbI?=
+ =?us-ascii?Q?XTmtrJnBixLQUBJ9hlxf+Y7S+833geqJ+MaW2/WU+WgZ/MD+ztYfqoR+2oJe?=
+ =?us-ascii?Q?97R86tHh86Vo33P6CK7AGI4ayk7pcPS1txVNnpLgCZaDQRElXrIQrC4r3bk6?=
+ =?us-ascii?Q?ZeHkmYVaFFoCN4+KGjAzImWMqRUsz5hEgpOPNtnKrDnmpQ6qKA9TCHlJJkvf?=
+ =?us-ascii?Q?JChpRdmUQ7zetMwhFiac98xSCvfFy0ZziqJMdzdT5Mmjm4JrNzv80y1wvNg3?=
+ =?us-ascii?Q?r7kuc5s7VojacYPoNL3RmkLT4y93CtB2uTZ4V4To+ToXKbCUEs5NIq8wG8th?=
+ =?us-ascii?Q?QWpY8RoJv+nkMCNOQ5fTr+eZ3Xtjm9J+ixL3k81azre18cVyGHMvbRFTQZa9?=
+ =?us-ascii?Q?eaEv5NPZUhaFSWPdGpTrrNyIouNJRCdgacQ9PTWGs8tU2mPsFMC7XPSo3ZCX?=
+ =?us-ascii?Q?kJwZMrQSsuywQbczyf3q6Yc+dJK9NZI1hgninQ9B+hz7Oxiw4Gh6ndOc5Rkx?=
+ =?us-ascii?Q?ShqJG7hDj/wol+w/hLgs1xZrFsc/W5chBWnk6TLYK0BbTNmvyuVz/1hs1i9K?=
+ =?us-ascii?Q?ZDvQTfj/jarZYAvGjpfqyAM+CHLexTt3xhdTxIyHBgBk3CFA9JqaPVclHlhp?=
+ =?us-ascii?Q?XrI5iX1eDcbD28WjDcCWHqL6tjXW1YmXXRxzye2sQAMWUlmxqT9U3KM/787v?=
+ =?us-ascii?Q?/rbRTe5yMORfg6gwSeGGxgnWSCoEWEdvYCc9UpSt1AHovAcYmgrrNsHZEzQy?=
+ =?us-ascii?Q?6Q6EDuIEnpqNhllak2NnvIIMhGEbfLgyCR68AJMCnSVtzPxfoFu2g92YQxoZ?=
+ =?us-ascii?Q?9QbQ7kn1Uz5w9cxUec2kkPsRNCsxD6Dat0eyiLpe7bd5knqteppJ9rtIFdiZ?=
+ =?us-ascii?Q?joZ61VlojUxf7IlFO94=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cc4bd74b-60f2-4e84-fe7b-08d9e593ec62
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Feb 2022 15:02:54.2405
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: kRYSQtLhzKv4ilqJ0wr5jcWqqih7tFyTk57nlsSeaD7YdVODWhNqUvuEv/6sNpo9
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN1PR12MB2512
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-On 1/21/22 18:24, Stefan Binding wrote:
-> Add support for spi bus in serial-multi-instantiate driver
+On Sun, Jan 30, 2022 at 10:57:47PM +0000, Colin Ian King wrote:
+> Variable nreq is being assigned a value that is never read. The
+> assignment is redundant and can be removed.
 > 
-> Some peripherals can have either a I2C or a SPI connection
-> to the host (but not both) but use the same HID for both
-> types. So it is not possible to use the HID to determine
-> whether it is I2C or SPI. The driver must check the node
-> to see if it contains I2cSerialBus or SpiSerialBus entries.
-> 
-> For backwards-compatibility with the existing nodes I2C is
-> checked first and if such entries are found ONLY I2C devices
-> are created. Since some existing nodes that were already
-> handled by this driver could also contain unrelated
-> SpiSerialBus nodes that were previously ignored, and this
-> preserves that behavior. If there is ever a need to handle
-> a node where both I2C and SPI devices must be instantiated
-> this can be added in future.
-> 
-> Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 > ---
->  drivers/platform/x86/Kconfig                  |   2 +-
->  .../platform/x86/serial-multi-instantiate.c   | 174 +++++++++++++++---
->  2 files changed, 151 insertions(+), 25 deletions(-)
-> 
-> diff --git a/drivers/platform/x86/Kconfig b/drivers/platform/x86/Kconfig
-> index 2e656909a866..8d1eec208854 100644
-> --- a/drivers/platform/x86/Kconfig
-> +++ b/drivers/platform/x86/Kconfig
-> @@ -992,7 +992,7 @@ config TOPSTAR_LAPTOP
->  
->  config SERIAL_MULTI_INSTANTIATE
->  	tristate "Serial bus multi instantiate pseudo device driver"
-> -	depends on I2C && ACPI
-> +	depends on I2C && SPI && ACPI
->  	help
->  	  Some ACPI-based systems list multiple devices in a single ACPI
->  	  firmware-node. This driver will instantiate separate clients
-> diff --git a/drivers/platform/x86/serial-multi-instantiate.c b/drivers/platform/x86/serial-multi-instantiate.c
-> index 4cd6d72a0741..3f05385ca2cf 100644
-> --- a/drivers/platform/x86/serial-multi-instantiate.c
-> +++ b/drivers/platform/x86/serial-multi-instantiate.c
-> @@ -14,6 +14,7 @@
->  #include <linux/module.h>
->  #include <linux/platform_device.h>
->  #include <linux/property.h>
-> +#include <linux/spi/spi.h>
->  #include <linux/types.h>
->  
->  #define IRQ_RESOURCE_TYPE	GENMASK(1, 0)
-> @@ -21,15 +22,28 @@
->  #define IRQ_RESOURCE_GPIO	1
->  #define IRQ_RESOURCE_APIC	2
->  
-> +enum smi_bus_type {
-> +	SMI_I2C,
-> +	SMI_SPI,
-> +	SMI_AUTO_DETECT,
-> +};
-> +
->  struct smi_instance {
->  	const char *type;
->  	unsigned int flags;
->  	int irq_idx;
->  };
->  
-> +struct smi_node {
-> +	enum smi_bus_type bus_type;
-> +	struct smi_instance instances[];
-> +};
-> +
->  struct smi {
->  	int i2c_num;
-> +	int spi_num;
->  	struct i2c_client **i2c_devs;
-> +	struct spi_device **spi_devs;
->  };
->  
->  static int smi_get_irq(struct platform_device *pdev, struct acpi_device *adev,
-> @@ -59,6 +73,95 @@ static void smi_devs_unregister(struct smi *smi)
->  {
->  	while (smi->i2c_num > 0)
->  		i2c_unregister_device(smi->i2c_devs[--smi->i2c_num]);
-> +
-> +	while (smi->spi_num > 0)
-> +		spi_unregister_device(smi->spi_devs[--smi->spi_num]);
-> +}
-> +
-> +/**
-> + * smi_spi_probe - Instantiate multiple SPI devices from inst array
-> + * @pdev:	Platform device
-> + * @adev:	ACPI device
-> + * @smi:	Internal struct for Serial multi instantiate driver
-> + * @inst_array:	Array of instances to probe
-> + *
-> + * Returns the number of SPI devices instantiate, Zero if none is found or a negative error code.
-> + */
-> +static int smi_spi_probe(struct platform_device *pdev, struct acpi_device *adev, struct smi *smi,
-> +			 const struct smi_instance *inst_array)
-> +{
-> +	struct device *dev = &pdev->dev;
-> +	struct spi_controller *ctlr;
-> +	struct spi_device *spi_dev;
-> +	char name[50];
-> +	int i, ret, count;
-> +
-> +	ret = acpi_spi_count_resources(adev);
-> +	if (ret < 0)
-> +		return ret;
-> +	else if (!ret)
-> +		return -ENODEV;
-> +
-> +	count = ret;
-> +
-> +	smi->spi_devs = devm_kcalloc(dev, count, sizeof(*smi->spi_devs), GFP_KERNEL);
-> +	if (!smi->spi_devs)
-> +		return -ENOMEM;
-> +
-> +	for (i = 0; i < count && inst_array[i].type; i++) {
-> +
-> +		spi_dev = acpi_spi_device_alloc(NULL, adev, i);
-> +		if (IS_ERR(spi_dev)) {
-> +			ret = PTR_ERR(spi_dev);
-> +			dev_err_probe(dev, ret, "failed to allocate SPI device %s from ACPI: %d\n",
-> +				      dev_name(&adev->dev), ret);
-> +			goto error;
-> +		}
-> +
-> +		ctlr = spi_dev->controller;
-> +
-> +		strscpy(spi_dev->modalias, inst_array[i].type, sizeof(spi_dev->modalias));
-> +
-> +		ret = smi_get_irq(pdev, adev, &inst_array[i]);
-> +		if (ret < 0) {
-> +			spi_dev_put(spi_dev);
-> +			goto error;
-> +		}
-> +		spi_dev->irq = ret;
-> +
-> +		snprintf(name, sizeof(name), "%s-%s-%s.%d", dev_name(&ctlr->dev), dev_name(dev),
-> +			 inst_array[i].type, i);
-> +		spi_dev->dev.init_name = name;
-> +
-> +		ret = spi_add_device(spi_dev);
-> +		if (ret) {
-> +			dev_err_probe(&ctlr->dev, ret,
-> +				      "failed to add SPI device %s from ACPI: %d\n",
-> +				      dev_name(&adev->dev), ret);
-> +			spi_dev_put(spi_dev);
-> +			goto error;
-> +		}
-> +
-> +		dev_dbg(dev, "SPI device %s using chip select %u", name, spi_dev->chip_select);
-> +
-> +		smi->spi_devs[i] = spi_dev;
-> +		smi->spi_num++;
-> +	}
-> +
-> +	if (smi->spi_num < count) {
-> +		dev_dbg(dev, "Error finding driver, idx %d\n", i);
-> +		ret = -ENODEV;
-> +		goto error;
-> +	}
-> +
-> +	dev_info(dev, "Instantiated %d SPI devices.\n", smi->spi_num);
-> +
-> +	return 0;
-> +error:
-> +	smi_devs_unregister(smi);
-> +
-> +	return ret;
-> +
->  }
->  
->  /**
-> @@ -126,8 +229,8 @@ static int smi_i2c_probe(struct platform_device *pdev, struct acpi_device *adev,
->  
->  static int smi_probe(struct platform_device *pdev)
->  {
-> -	const struct smi_instance *inst_array;
->  	struct device *dev = &pdev->dev;
-> +	const struct smi_node *node;
->  	struct acpi_device *adev;
->  	struct smi *smi;
->  
-> @@ -135,8 +238,8 @@ static int smi_probe(struct platform_device *pdev)
->  	if (!adev)
->  		return -ENODEV;
->  
-> -	inst_array = device_get_match_data(dev);
-> -	if (!inst_array) {
-> +	node = device_get_match_data(dev);
-> +	if (!node) {
->  		dev_dbg(dev, "Error ACPI match data is missing\n");
->  		return -ENODEV;
->  	}
-> @@ -147,7 +250,21 @@ static int smi_probe(struct platform_device *pdev)
->  
->  	platform_set_drvdata(pdev, smi);
->  
-> -	return smi_i2c_probe(pdev, adev, smi, inst_array);
-> +	switch (node->bus_type) {
-> +	case SMI_I2C:
-> +		return smi_i2c_probe(pdev, adev, smi, node->instances);
-> +	case SMI_SPI:
-> +		return smi_spi_probe(pdev, adev, smi, node->instances);
-> +	case SMI_AUTO_DETECT:
-> +		if (i2c_acpi_client_count(adev) > 0)
-> +			return smi_i2c_probe(pdev, adev, smi, node->instances);
-> +		else
-> +			return smi_spi_probe(pdev, adev, smi, node->instances);
-> +	default:
-> +		break;
+>  drivers/infiniband/hw/mlx4/srq.c | 1 -
+>  1 file changed, 1 deletion(-)
 
-Please replace this break with : "return -EINVAL" (since we really
-should never hit this default case).
+Applied to for-next, thanks
 
-With that fixed, please add my R-b to the next version:
-
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-
-Regards,
-
-Hans
-
-
-> +	}
-> +
-> +	return 0; /* never reached */
->  }
->  
->  static int smi_remove(struct platform_device *pdev)
-> @@ -159,27 +276,36 @@ static int smi_remove(struct platform_device *pdev)
->  	return 0;
->  }
->  
-> -static const struct smi_instance bsg1160_data[]  = {
-> -	{ "bmc150_accel", IRQ_RESOURCE_GPIO, 0 },
-> -	{ "bmc150_magn" },
-> -	{ "bmg160" },
-> -	{}
-> +static const struct smi_node bsg1160_data = {
-> +	.instances = {
-> +		{ "bmc150_accel", IRQ_RESOURCE_GPIO, 0 },
-> +		{ "bmc150_magn" },
-> +		{ "bmg160" },
-> +		{}
-> +	},
-> +	.bus_type = SMI_I2C,
->  };
->  
-> -static const struct smi_instance bsg2150_data[]  = {
-> -	{ "bmc150_accel", IRQ_RESOURCE_GPIO, 0 },
-> -	{ "bmc150_magn" },
-> -	/* The resources describe a 3th client, but it is not really there. */
-> -	{ "bsg2150_dummy_dev" },
-> -	{}
-> +static const struct smi_node bsg2150_data = {
-> +	.instances = {
-> +		{ "bmc150_accel", IRQ_RESOURCE_GPIO, 0 },
-> +		{ "bmc150_magn" },
-> +		/* The resources describe a 3th client, but it is not really there. */
-> +		{ "bsg2150_dummy_dev" },
-> +		{}
-> +	},
-> +	.bus_type = SMI_I2C,
->  };
->  
-> -static const struct smi_instance int3515_data[]  = {
-> -	{ "tps6598x", IRQ_RESOURCE_APIC, 0 },
-> -	{ "tps6598x", IRQ_RESOURCE_APIC, 1 },
-> -	{ "tps6598x", IRQ_RESOURCE_APIC, 2 },
-> -	{ "tps6598x", IRQ_RESOURCE_APIC, 3 },
-> -	{}
-> +static const struct smi_node int3515_data = {
-> +	.instances = {
-> +		{ "tps6598x", IRQ_RESOURCE_APIC, 0 },
-> +		{ "tps6598x", IRQ_RESOURCE_APIC, 1 },
-> +		{ "tps6598x", IRQ_RESOURCE_APIC, 2 },
-> +		{ "tps6598x", IRQ_RESOURCE_APIC, 3 },
-> +		{}
-> +	},
-> +	.bus_type = SMI_I2C,
->  };
->  
->  /*
-> @@ -187,9 +313,9 @@ static const struct smi_instance int3515_data[]  = {
->   * drivers/acpi/scan.c: acpi_device_enumeration_by_parent().
->   */
->  static const struct acpi_device_id smi_acpi_ids[] = {
-> -	{ "BSG1160", (unsigned long)bsg1160_data },
-> -	{ "BSG2150", (unsigned long)bsg2150_data },
-> -	{ "INT3515", (unsigned long)int3515_data },
-> +	{ "BSG1160", (unsigned long)&bsg1160_data },
-> +	{ "BSG2150", (unsigned long)&bsg2150_data },
-> +	{ "INT3515", (unsigned long)&int3515_data },
->  	{ }
->  };
->  MODULE_DEVICE_TABLE(acpi, smi_acpi_ids);
-> 
-
+Jason
