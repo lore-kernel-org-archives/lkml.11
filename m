@@ -2,99 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90E6FC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 02:20:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BE29C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 02:26:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232459AbiBACUu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 21:20:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59590 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231473AbiBACUu (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 21:20:50 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC2FDC061714
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 18:20:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=VaPv9in0Q0d5pY9Lnm4deq3TesKVG1iF4M3HxW9oxdw=; b=WYtch715pZRcNyhxCmmdPdqfVb
-        ZvvzOSmL6yGAJhSSWvAdGVvVB1OriraaS+j9USYyk+pMBM+YqSWlBoiBtyeG7WBNz4Z5Nw5lCtATu
-        QoZAjplgw10FePVkMNpbtvXDsPRt2KuJBeVx5dPhmaRF4Q//CcDaNdOzYoSbuPp+lNDcRahqY0zC5
-        NtPxbajxz6VZpkKhnhDnWIrsXMs+16AMG4Aq2IOPyB6n8smHjhS9qEoeHNV9ybp8QM0b4/FvjFoQE
-        cEWpvX8JQabphnnZ1rQU3z3xTgKsuSCiUcDOAz590YawBuzwJLiZ2ZkkBC4M4HZblty6nPWAy4CAx
-        gnVGx/2A==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nEimd-00BCwX-CU; Tue, 01 Feb 2022 02:20:39 +0000
-Date:   Tue, 1 Feb 2022 02:20:39 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Michel Lespinasse <michel@lespinasse.org>,
-        Linux-MM <linux-mm@kvack.org>, linux-kernel@vger.kernel.org,
-        kernel-team@fb.com, Laurent Dufour <ldufour@linux.ibm.com>,
-        Jerome Glisse <jglisse@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Michal Hocko <mhocko@suse.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Liam Howlett <liam.howlett@oracle.com>,
-        Rik van Riel <riel@surriel.com>,
-        Paul McKenney <paulmck@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Minchan Kim <minchan@google.com>,
-        Joel Fernandes <joelaf@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [PATCH v2 00/35] Speculative page faults
-Message-ID: <YfiY9zRm8BhSp7eA@casper.infradead.org>
-References: <20220128131006.67712-1-michel@lespinasse.org>
- <20220131171434.89870a8f1ae294912e7ff19e@linux-foundation.org>
+        id S232503AbiBAC0J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 31 Jan 2022 21:26:09 -0500
+Received: from mga06.intel.com ([134.134.136.31]:15103 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229816AbiBAC0I (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 21:26:08 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643682368; x=1675218368;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=YQ/6K8JVlDEps0ImdFVt/QCjowH7QDab+zSfJOVunHw=;
+  b=GdwZz1LonyR2SGE9R8AB7S9j+DINCGs35ysyYO/DB8dcfesOL3xoIrB7
+   wLXNRwFzcL0qzlyaHDH4H2CbUqJc95cO+8k6R9u+8HEsfDrPDgdfDsART
+   +Ek2F43E0lMDZyRtoJgOAtkOED4QANhNQZUr7tFRiAJfCCpjGKXWUwT5G
+   cnTBVbhj4/qXw/ffVP2Zz63VzgWL3jAImoG5MYdND/mFyAtSIGHg8Cc5w
+   sPhER7KiKeBl4ooqbXE5lL+x8dAA1IeCP5awHnxW5gm06HmzLuc3aZSba
+   ePuh2ivVTTuCfWbJkcMDyIawAoUn0SybKq9tUmjGTvkQlb3AV4ndhc2n+
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10244"; a="308339376"
+X-IronPort-AV: E=Sophos;i="5.88,332,1635231600"; 
+   d="scan'208";a="308339376"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 18:26:08 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,332,1635231600"; 
+   d="scan'208";a="482030413"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 31 Jan 2022 18:26:06 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nEiru-000ScC-6d; Tue, 01 Feb 2022 02:26:06 +0000
+Date:   Tue, 1 Feb 2022 10:25:16 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ingo Molnar <mingo@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [mingo-tip:master 1907/2384] include/linux/rcupdate.h:396:11: error:
+ dereferencing pointer to incomplete type 'struct bpf_prog'
+Message-ID: <202202011049.F4KJNSg3-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220131171434.89870a8f1ae294912e7ff19e@linux-foundation.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 31, 2022 at 05:14:34PM -0800, Andrew Morton wrote:
-> On Fri, 28 Jan 2022 05:09:31 -0800 Michel Lespinasse <michel@lespinasse.org> wrote:
-> > The first step of a speculative page fault is to look up the vma and
-> > read its contents (currently by making a copy of the vma, though in
-> > principle it would be sufficient to only read the vma attributes that
-> > are used in page faults). The mmap sequence count is used to verify
-> > that there were no mmap writers concurrent to the lookup and copy steps.
-> > Note that walking rbtrees while there may potentially be concurrent
-> > writers is not an entirely new idea in linux, as latched rbtrees
-> > are already doing this. This is safe as long as the lookup is
-> > followed by a sequence check to verify that concurrency did not
-> > actually occur (and abort the speculative fault if it did).
-> 
-> I'm surprised that descending the rbtree locklessly doesn't flat-out
-> oops the kernel.  How are we assured that every pointer which is
-> encountered actually points at the right thing?  Against things
-> which tear that tree down?
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git master
+head:   4c707c1c0de83967079b4e385012fa5b00e2cd11
+commit: 9148be2620e41284eaeab31d70b5baa9130ec96b [1907/2384] headers/deps: net: Optimize <net/sock.h>, remove <linux/filter.h> inclusion
+config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220201/202202011049.F4KJNSg3-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=9148be2620e41284eaeab31d70b5baa9130ec96b
+        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
+        git fetch --no-tags mingo-tip master
+        git checkout 9148be2620e41284eaeab31d70b5baa9130ec96b
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-It doesn't necessarily point at the _right_ thing.  You may get
-entirely the wrong node in the tree if you race with a modification,
-but, as Michel says, you check the seqcount before you even look at
-the VMA (and if the seqcount indicates a modification, you throw away
-the result and fall back to the locked version).  The rbtree always
-points to other rbtree nodes, so you aren't going to walk into some
-completely wrong data structure.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-> > The next step is to walk down the existing page table tree to find the
-> > current pte entry. This is done with interrupts disabled to avoid
-> > races with munmap().
-> 
-> Sebastian, could you please comment on this from the CONFIG_PREEMPT_RT
-> point of view?
+All errors (new ones prefixed by >>):
 
-I am not a fan of this approach.  For other reasons, I think we want to
-switch to RCU-freed page tables, and then we can walk the page tables
-with the RCU lock held.  Some architectures already RCU-free the page
-tables, so I think it's just a matter of converting the rest.
+   In file included from include/linux/percpu-refcount-api.h:59,
+                    from include/linux/percpu-refcount.h:6,
+                    from include/linux/mm_api.h:42,
+                    from include/linux/highmem-internal.h:5,
+                    from include/linux/highmem.h:12,
+                    from include/linux/bvec.h:10,
+                    from include/linux/skbuff_types.h:14,
+                    from include/linux/netdevice_types.h:24,
+                    from include/linux/netdevice.h:5,
+                    from include/linux/netdevice_api.h:24,
+                    from include/net/sch_generic_types.h:6,
+                    from include/net/sch_generic_api.h:6,
+                    from include/net/pkt_sched.h:5,
+                    from drivers/net/ethernet/mellanox/mlx4/en_netdev.c:34:
+   drivers/net/ethernet/mellanox/mlx4/en_netdev.c: In function 'mlx4_en_try_alloc_resources':
+>> include/linux/rcupdate.h:396:11: error: dereferencing pointer to incomplete type 'struct bpf_prog'
+     396 |  ((typeof(*p) __force __kernel *)(p)); \
+         |           ^
+   include/linux/rcupdate.h:585:2: note: in expansion of macro '__rcu_dereference_protected'
+     585 |  __rcu_dereference_protected((p), (c), __rcu)
+         |  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/net/ethernet/mellanox/mlx4/en_netdev.c:2325:13: note: in expansion of macro 'rcu_dereference_protected'
+    2325 |  xdp_prog = rcu_dereference_protected(
+         |             ^~~~~~~~~~~~~~~~~~~~~~~~~
+--
+   In file included from include/linux/skbuff_api.h:13,
+                    from drivers/net/ethernet/sfc/net_driver.h:13,
+                    from drivers/net/ethernet/sfc/efx_common.c:11:
+   drivers/net/ethernet/sfc/efx_common.c: In function 'efx_change_mtu':
+>> include/linux/rcupdate.h:396:11: error: dereferencing pointer to incomplete type 'struct bpf_prog'
+     396 |  ((typeof(*p) __force __kernel *)(p)); \
+         |           ^
+   include/linux/rcupdate.h:585:2: note: in expansion of macro '__rcu_dereference_protected'
+     585 |  __rcu_dereference_protected((p), (c), __rcu)
+         |  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/rtnetlink.h:81:2: note: in expansion of macro 'rcu_dereference_protected'
+      81 |  rcu_dereference_protected(p, lockdep_rtnl_is_held())
+         |  ^~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/net/ethernet/sfc/efx_common.c:312:6: note: in expansion of macro 'rtnl_dereference'
+     312 |  if (rtnl_dereference(efx->xdp_prog) &&
+         |      ^~~~~~~~~~~~~~~~
+
+
+vim +396 include/linux/rcupdate.h
+
+76c8eaafe4f061f Paul E. McKenney        2021-04-21  377  
+ca5ecddfa8fcbd9 Paul E. McKenney        2010-04-28  378  #define __rcu_access_pointer(p, space) \
+ca5ecddfa8fcbd9 Paul E. McKenney        2010-04-28  379  ({ \
+7d0ae8086b82831 Paul E. McKenney        2015-03-03  380  	typeof(*p) *_________p1 = (typeof(*p) *__force)READ_ONCE(p); \
+423a86a610cad12 Joel Fernandes (Google  2018-12-12  381) 	rcu_check_sparse(p, space); \
+ca5ecddfa8fcbd9 Paul E. McKenney        2010-04-28  382  	((typeof(*p) __force __kernel *)(_________p1)); \
+ca5ecddfa8fcbd9 Paul E. McKenney        2010-04-28  383  })
+ca5ecddfa8fcbd9 Paul E. McKenney        2010-04-28  384  #define __rcu_dereference_check(p, c, space) \
+ca5ecddfa8fcbd9 Paul E. McKenney        2010-04-28  385  ({ \
+ac59853c06993a4 Pranith Kumar           2014-11-13  386  	/* Dependency order vs. p above. */ \
+506458efaf153c1 Will Deacon             2017-10-24  387  	typeof(*p) *________p1 = (typeof(*p) *__force)READ_ONCE(p); \
+f78f5b90c4ffa55 Paul E. McKenney        2015-06-18  388  	RCU_LOCKDEP_WARN(!(c), "suspicious rcu_dereference_check() usage"); \
+423a86a610cad12 Joel Fernandes (Google  2018-12-12  389) 	rcu_check_sparse(p, space); \
+ac59853c06993a4 Pranith Kumar           2014-11-13  390  	((typeof(*p) __force __kernel *)(________p1)); \
+ca5ecddfa8fcbd9 Paul E. McKenney        2010-04-28  391  })
+ca5ecddfa8fcbd9 Paul E. McKenney        2010-04-28  392  #define __rcu_dereference_protected(p, c, space) \
+ca5ecddfa8fcbd9 Paul E. McKenney        2010-04-28  393  ({ \
+f78f5b90c4ffa55 Paul E. McKenney        2015-06-18  394  	RCU_LOCKDEP_WARN(!(c), "suspicious rcu_dereference_protected() usage"); \
+423a86a610cad12 Joel Fernandes (Google  2018-12-12  395) 	rcu_check_sparse(p, space); \
+ca5ecddfa8fcbd9 Paul E. McKenney        2010-04-28 @396  	((typeof(*p) __force __kernel *)(p)); \
+ca5ecddfa8fcbd9 Paul E. McKenney        2010-04-28  397  })
+995f1405610bd84 Paul E. McKenney        2016-07-01  398  #define rcu_dereference_raw(p) \
+995f1405610bd84 Paul E. McKenney        2016-07-01  399  ({ \
+995f1405610bd84 Paul E. McKenney        2016-07-01  400  	/* Dependency order vs. p above. */ \
+506458efaf153c1 Will Deacon             2017-10-24  401  	typeof(p) ________p1 = READ_ONCE(p); \
+995f1405610bd84 Paul E. McKenney        2016-07-01  402  	((typeof(*p) __force __kernel *)(________p1)); \
+995f1405610bd84 Paul E. McKenney        2016-07-01  403  })
+ca5ecddfa8fcbd9 Paul E. McKenney        2010-04-28  404  
+
+:::::: The code at line 396 was first introduced by commit
+:::::: ca5ecddfa8fcbd948c95530e7e817cee9fb43a3d rcu: define __rcu address space modifier for sparse
+
+:::::: TO: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+:::::: CC: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
