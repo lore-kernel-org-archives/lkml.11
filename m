@@ -2,1663 +2,1172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D286FC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 15:27:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51A91C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 15:27:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240272AbiBAP1j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 10:27:39 -0500
-Received: from mail-mw2nam10on2043.outbound.protection.outlook.com ([40.107.94.43]:8650
-        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S240255AbiBAP1h (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 10:27:37 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YFXS/tVmQffwWASNTuS+SFe8OkUD7PLXciPgA2/C26rFuEKC44jBZpReUyNCKUU5YNrF1RKxJcZJpdv6GfLudFMDnibMiYfbMtBJa3YDVFUwCdl4iaIhniYkZ3lmoPU0HFUy6pNWR+vmQP0KeDXVNQnm40HLg8t20xMU4MgyEm5QvMYQylm/DzfFV/iddgQEQwccmubn8cHSsxI3QuhuvQp6mdslNke8YM8aaUCViOFX/v3gwk3zyIWkklcXHZO3fF2Pvx9hyHMy+w1c2rNwevkQTsH44eS1M1hnIvk8iimauFYLTLfsof8Z0Za3Gapng44mlWIiFadifoW6i/gwvw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=bk0HJ+JUCItb2XpSkZyPOGVwEXRs+t+JrkttGH/X298=;
- b=PMHY2MnlbwRws2oWv4X4XaRnpLpFE1P+yP8la0x8K35s09W98fBC/HL14M6LP1q/i0vr61GKOajDLfTrZwsLFPdN9YfqHXHfkO4O/Dc+lcnHHFMPgKU9s9TbSY4whiI+25Qly06wsI5yhWOlDfNV/ESq4lMch+QADgzw1rCAHTNH1/8rnbNGNE01SIF4fbdoVzkEJWvfGL7ucc/vGVTgR9yyvAUQp+7TEuZ9jz7Kjs8lnj0zt8wLqg+M+Z6Sht3eBcTh8hStUQI45nEht8+BGwhCPp95b5zvM+X587++qDCVGmkKmUrxd9JbuLqZRvkpgmjp71vaGZ2ud3tR68o74Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.234) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bk0HJ+JUCItb2XpSkZyPOGVwEXRs+t+JrkttGH/X298=;
- b=SDJVYWbtDrAJOHxMmkfve5tHX1qtM+NXL542cAI1bkzTvVMG8FtxRbkUe/ADfCVH9WS92w8POeo00BDVIzD3eVntWJa56ZllBtxj/e14ni3fzcgv/CQlw0Bm4rKVfE0NfgPRkjC0yOX8S9Vy7cFMGtDeLwG4UIxRpcRD5o+ctySel0++hUrZ1V7cvTCVm9nq08QbUcQDbmDruk8aA1fOtXcEzbyG+gv5Sqc5Sy5vBpwKqoARMeaiojJQVtc97feLOath0gp0jw1PMqp5cgBaKW+ZdwMDIM7YVQIhfK/9qdj4QK12lefOIjT+Q0eGF3ZfXUbUlABTf36ROeWVZPOgmw==
-Received: from BN9P220CA0011.NAMP220.PROD.OUTLOOK.COM (2603:10b6:408:13e::16)
- by BN8PR12MB3298.namprd12.prod.outlook.com (2603:10b6:408:69::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.17; Tue, 1 Feb
- 2022 15:27:33 +0000
-Received: from BN8NAM11FT063.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:13e:cafe::7c) by BN9P220CA0011.outlook.office365.com
- (2603:10b6:408:13e::16) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.11 via Frontend
- Transport; Tue, 1 Feb 2022 15:27:33 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.234; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.234) by
- BN8NAM11FT063.mail.protection.outlook.com (10.13.177.110) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4930.15 via Frontend Transport; Tue, 1 Feb 2022 15:27:33 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by DRHQMAIL101.nvidia.com
- (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 1 Feb
- 2022 15:27:31 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Tue, 1 Feb 2022
- 07:27:30 -0800
-Received: from kyarlagadda-linux.nvidia.com (10.127.8.10) by mail.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server id 15.2.986.9 via Frontend
- Transport; Tue, 1 Feb 2022 07:27:26 -0800
-From:   Akhil R <akhilrajeev@nvidia.com>
-To:     <devicetree@vger.kernel.org>, <dmaengine@vger.kernel.org>,
-        <jonathanh@nvidia.com>, <kyarlagadda@nvidia.com>,
-        <ldewangan@nvidia.com>, <linux-kernel@vger.kernel.org>,
-        <linux-tegra@vger.kernel.org>, <p.zabel@pengutronix.de>,
-        <rgumasta@nvidia.com>, <robh+dt@kernel.org>,
-        <thierry.reding@gmail.com>, <vkoul@kernel.org>
-CC:     <akhilrajeev@nvidia.com>, Pavan Kunapuli <pkunapuli@nvidia.com>
-Subject: [PATCH v18 2/4] dmaengine: tegra: Add tegra gpcdma driver
-Date:   Tue, 1 Feb 2022 20:56:37 +0530
-Message-ID: <1643729199-19161-3-git-send-email-akhilrajeev@nvidia.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1643729199-19161-1-git-send-email-akhilrajeev@nvidia.com>
-References: <1643729199-19161-1-git-send-email-akhilrajeev@nvidia.com>
-X-NVConfidentiality: public
+        id S240288AbiBAP1y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 10:27:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38768 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240274AbiBAP1w (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 1 Feb 2022 10:27:52 -0500
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63C85C061714;
+        Tue,  1 Feb 2022 07:27:52 -0800 (PST)
+Received: by mail-lf1-x12c.google.com with SMTP id p27so34684972lfa.1;
+        Tue, 01 Feb 2022 07:27:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Q7Lxwi2xVYk0MpJ7eKaPrnETIvb1kTnWSKXsWRfHegU=;
+        b=A5BoZaQDg30SUthBke9nt/RgTlOSak7wrA9nEYeQIWOk8YC/wNL1KMnUtfRvEdEHSM
+         I74NDzitG2xfCdfTTpLm/yJyAx9ZkySOkqOM/1SjAKQMgzyFJEukTx2WsZVX8AQXdugx
+         rTxHfFjgZJTU2U0Jc1Fhafp1a9cRIxgy3Jqnz6CZ3SGlb6nOi+0iA8GI+i2To27/1YkG
+         wjxZL2MybMmQjfTLAkoV9GbPuIXGx2/VfTGBhTkrFmHwq8uZ2B9cOgD7a3fIfq3vVtMe
+         sBD76/DezPd0EaQupL4avM5Uw+V+lKcUZL8BnGQ4yDOvpRsG0ly0HbM6X4/n/KfKlOcB
+         qf1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Q7Lxwi2xVYk0MpJ7eKaPrnETIvb1kTnWSKXsWRfHegU=;
+        b=ERzEUj8U+/znrK9New9CAnCI151buNkypOudFsPv0mOrFaS34282tOxRNNfmdLF5PQ
+         8C0sSDuAtCrHi+02/zH9l+u64Yzi7dgMq8Kzunkv0aLpCn9e16xEwC1e87YFOleNrAxj
+         DHIvYmQZPbv4J9cHO38KAVPbIsfApxYTUYUz6K/3OcnqeZyCViyHeBovFrCL2cg5J2GH
+         12QkugQUM4F4Mnd6JHqvlBF2lS6YsYRPFgsAB8tAeBshVCdUMkVq/vzcBFa8hiv527VN
+         ssbAbz1Jc/eRv8KASB8JF6b3YvjJ3dviBqXZ1l431pWEkc913J8/KpAJfrwcDFiON+3e
+         MIOw==
+X-Gm-Message-State: AOAM530efBOGVLYwwHcbc956G/svTWxs6JXND50yF8hh6jE982TPTYtD
+        uUFPTjPRr35iUPp7xoGwCIxJ7Dg03xs1LL4KI0k=
+X-Google-Smtp-Source: ABdhPJx8BVAvl8RhcOkA5IOdQhTxJtmYKpd3iC0a4/q8IKR2akTk29NVrHq574PC81FOgLXZ0vMT8zJZvrSzuXsJq/A=
+X-Received: by 2002:a05:6512:16a2:: with SMTP id bu34mr19418930lfb.448.1643729270300;
+ Tue, 01 Feb 2022 07:27:50 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 54e53ba4-2d4a-4db1-82bb-08d9e5975e4f
-X-MS-TrafficTypeDiagnostic: BN8PR12MB3298:EE_
-X-Microsoft-Antispam-PRVS: <BN8PR12MB329844ACBB1774B9728A3DFEC0269@BN8PR12MB3298.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: kG3ICajtI1hvgUzZ12jtF9RfHezGyim47A8F4XrOo9hBaMj8kdYN5GY0pg21zgOnfaUL6sTbYyp7fH0wcLZTUjj6wJtccfivYMUw8eqGeE4CAvF8Qq20I1HzVArVnGmUVI0mUStuTxhDv89TA6YNuoasxBffzi1/rhhCTFmdNKHO+an0jakYDJF/BhG9RbxhJEZgUF02pPAcRrxjNEH6ZMG4eckqMZMWMdyMaBVSmXtJ6oCY95GwM+jRdJctgMDO14JrArTksRWPrjWOFE8eNrh3S8XkfBZmZhLC6mKK199WA11aDNNsoRr5avCzMS8dn62eIAY3Y594hqkQoUkg17PtqVFCQdfITTg94grFlPrDoWJ+PQn/0crOsO66AsY70SkdGj7FWydu7aDhnRsXo65jdypMWepI07y473UJTT0fnv1dj/kvyYlenYvOFPmp1Yp4QnREH+dyZCzLnWBSSi4bbyL69Lyb1DTBKs0qiNEwOCQ81NdecIb4dZ9URmm43NgTQk6sIPba/7RScZgMAs1V3EbGeU9j/GYpBdoMqzkRJBG8e0XJvyTQhRLn7zDEaLJrlSN6BItEDAOEBlUJOZXaatp/Gr0uq3ZjXyQgeSeSF21lcXJYLRItShukXnBt2RzxpbnmU8R5KG07/48ZwLP9Ltf707k+02FxOhfNyTedBrpW17SBY1+8/eKdNOhuiNgn7/wFs51uds26cr/IMcqkVl8XkQjRQyMUThyZrhMC84wuho8QHPdGnUDV7xkvbJ8Vd3UdACU+jzAE33lg0A==
-X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(508600001)(86362001)(356005)(316002)(81166007)(921005)(36860700001)(70586007)(70206006)(54906003)(4326008)(8936002)(36756003)(8676002)(26005)(2616005)(30864003)(2906002)(186003)(6666004)(7696005)(47076005)(426003)(336012)(40460700003)(110136005)(83380400001)(107886003)(82310400004)(5660300002)(83996005)(36900700001)(2101003)(579004)(20210929001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Feb 2022 15:27:33.3008
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 54e53ba4-2d4a-4db1-82bb-08d9e5975e4f
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT063.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3298
+References: <1642208191-7254-1-git-send-email-u0084500@gmail.com>
+ <1642208191-7254-3-git-send-email-u0084500@gmail.com> <YfezWtp2z9wvKmJQ@kuha.fi.intel.com>
+In-Reply-To: <YfezWtp2z9wvKmJQ@kuha.fi.intel.com>
+From:   ChiYuan Huang <u0084500@gmail.com>
+Date:   Tue, 1 Feb 2022 23:27:38 +0800
+Message-ID: <CADiBU3_vi5ZUbU4e_LG9sQ7jnkjMTwzU3QUBbZ2E4+K0FmAnLQ@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] usb: typec: rt1719: Add support for Richtek RT1719
+To:     Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux USB List <linux-usb@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        cy_huang <cy_huang@richtek.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adding GPC DMA controller driver for Tegra. The driver supports dma
-transfers between memory to memory, IO peripheral to memory and
-memory to IO peripheral.
+Hi
 
-Co-developed-by: Pavan Kunapuli <pkunapuli@nvidia.com>
-Signed-off-by: Pavan Kunapuli <pkunapuli@nvidia.com>
-Co-developed-by: Rajesh Gumasta <rgumasta@nvidia.com>
-Signed-off-by: Rajesh Gumasta <rgumasta@nvidia.com>
-Signed-off-by: Akhil R <akhilrajeev@nvidia.com>
-Reviewed-by: Jon Hunter <jonathanh@nvidia.com>
----
- drivers/dma/Kconfig            |   11 +
- drivers/dma/Makefile           |    1 +
- drivers/dma/tegra186-gpc-dma.c | 1502 ++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 1514 insertions(+)
- create mode 100644 drivers/dma/tegra186-gpc-dma.c
-
-diff --git a/drivers/dma/Kconfig b/drivers/dma/Kconfig
-index 6bcdb4e..dbe7664 100644
---- a/drivers/dma/Kconfig
-+++ b/drivers/dma/Kconfig
-@@ -629,6 +629,17 @@ config TXX9_DMAC
- 	  Support the TXx9 SoC internal DMA controller.  This can be
- 	  integrated in chips such as the Toshiba TX4927/38/39.
- 
-+config TEGRA186_GPC_DMA
-+	tristate "NVIDIA Tegra GPC DMA support"
-+	depends on ARCH_TEGRA || COMPILE_TEST
-+	select DMA_ENGINE
-+	help
-+	  Support for the NVIDIA Tegra General Purpose Central DMA controller.
-+	  The DMA controller has multiple DMA channels which can be configured
-+	  for different peripherals like UART, SPI, etc which are on APB bus.
-+	  This DMA controller transfers data from memory to peripheral FIFO
-+	  or vice versa. It also supports memory to memory data transfer.
-+
- config TEGRA20_APB_DMA
- 	tristate "NVIDIA Tegra20 APB DMA support"
- 	depends on ARCH_TEGRA || COMPILE_TEST
-diff --git a/drivers/dma/Makefile b/drivers/dma/Makefile
-index 616d926..2f1b87f 100644
---- a/drivers/dma/Makefile
-+++ b/drivers/dma/Makefile
-@@ -72,6 +72,7 @@ obj-$(CONFIG_STM32_MDMA) += stm32-mdma.o
- obj-$(CONFIG_SPRD_DMA) += sprd-dma.o
- obj-$(CONFIG_S3C24XX_DMAC) += s3c24xx-dma.o
- obj-$(CONFIG_TXX9_DMAC) += txx9dmac.o
-+obj-$(CONFIG_TEGRA186_GPC_DMA) += tegra186-gpc-dma.o
- obj-$(CONFIG_TEGRA20_APB_DMA) += tegra20-apb-dma.o
- obj-$(CONFIG_TEGRA210_ADMA) += tegra210-adma.o
- obj-$(CONFIG_TIMB_DMA) += timb_dma.o
-diff --git a/drivers/dma/tegra186-gpc-dma.c b/drivers/dma/tegra186-gpc-dma.c
-new file mode 100644
-index 0000000..bc923f0
---- /dev/null
-+++ b/drivers/dma/tegra186-gpc-dma.c
-@@ -0,0 +1,1502 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * DMA driver for NVIDIA Tegra GPC DMA controller.
-+ *
-+ * Copyright (c) 2014 - 2022, NVIDIA CORPORATION.  All rights reserved.
-+ */
-+
-+#include <linux/bitfield.h>
-+#include <linux/dmaengine.h>
-+#include <linux/dma-mapping.h>
-+#include <linux/interrupt.h>
-+#include <linux/iommu.h>
-+#include <linux/iopoll.h>
-+#include <linux/minmax.h>
-+#include <linux/module.h>
-+#include <linux/of_device.h>
-+#include <linux/of_dma.h>
-+#include <linux/platform_device.h>
-+#include <linux/reset.h>
-+#include <linux/slab.h>
-+#include <linux/version.h>
-+#include <dt-bindings/memory/tegra186-mc.h>
-+#include "virt-dma.h"
-+
-+/* CSR register */
-+#define TEGRA_GPCDMA_CHAN_CSR			0x00
-+#define TEGRA_GPCDMA_CSR_ENB			BIT(31)
-+#define TEGRA_GPCDMA_CSR_IE_EOC			BIT(30)
-+#define TEGRA_GPCDMA_CSR_ONCE			BIT(27)
-+
-+#define TEGRA_GPCDMA_CSR_FC_MODE		GENMASK(25, 24)
-+#define TEGRA_GPCDMA_CSR_FC_MODE_NO_MMIO	\
-+					FIELD_PREP(TEGRA_GPCDMA_CSR_FC_MODE, 0)
-+#define TEGRA_GPCDMA_CSR_FC_MODE_ONE_MMIO	\
-+					FIELD_PREP(TEGRA_GPCDMA_CSR_FC_MODE, 1)
-+#define TEGRA_GPCDMA_CSR_FC_MODE_TWO_MMIO	\
-+					FIELD_PREP(TEGRA_GPCDMA_CSR_FC_MODE, 2)
-+#define TEGRA_GPCDMA_CSR_FC_MODE_FOUR_MMIO	\
-+					FIELD_PREP(TEGRA_GPCDMA_CSR_FC_MODE, 3)
-+
-+#define TEGRA_GPCDMA_CSR_DMA			GENMASK(23, 21)
-+#define TEGRA_GPCDMA_CSR_DMA_IO2MEM_NO_FC	\
-+					FIELD_PREP(TEGRA_GPCDMA_CSR_DMA, 0)
-+#define TEGRA_GPCDMA_CSR_DMA_IO2MEM_FC		\
-+					FIELD_PREP(TEGRA_GPCDMA_CSR_DMA, 1)
-+#define TEGRA_GPCDMA_CSR_DMA_MEM2IO_NO_FC	\
-+					FIELD_PREP(TEGRA_GPCDMA_CSR_DMA, 2)
-+#define TEGRA_GPCDMA_CSR_DMA_MEM2IO_FC		\
-+					FIELD_PREP(TEGRA_GPCDMA_CSR_DMA, 3)
-+#define TEGRA_GPCDMA_CSR_DMA_MEM2MEM		\
-+					FIELD_PREP(TEGRA_GPCDMA_CSR_DMA, 4)
-+#define TEGRA_GPCDMA_CSR_DMA_FIXED_PAT		\
-+					FIELD_PREP(TEGRA_GPCDMA_CSR_DMA, 6)
-+
-+#define TEGRA_GPCDMA_CSR_REQ_SEL_MASK		GENMASK(20, 16)
-+#define TEGRA_GPCDMA_CSR_REQ_SEL_UNUSED		\
-+					FIELD_PREP(TEGRA_GPCDMA_CSR_REQ_SEL_MASK, 4)
-+#define TEGRA_GPCDMA_CSR_IRQ_MASK		BIT(15)
-+#define TEGRA_GPCDMA_CSR_WEIGHT			GENMASK(13, 10)
-+
-+/* STATUS register */
-+#define TEGRA_GPCDMA_CHAN_STATUS		0x004
-+#define TEGRA_GPCDMA_STATUS_BUSY		BIT(31)
-+#define TEGRA_GPCDMA_STATUS_ISE_EOC		BIT(30)
-+#define TEGRA_GPCDMA_STATUS_PING_PONG		BIT(28)
-+#define TEGRA_GPCDMA_STATUS_DMA_ACTIVITY	BIT(27)
-+#define TEGRA_GPCDMA_STATUS_CHANNEL_PAUSE	BIT(26)
-+#define TEGRA_GPCDMA_STATUS_CHANNEL_RX		BIT(25)
-+#define TEGRA_GPCDMA_STATUS_CHANNEL_TX		BIT(24)
-+#define TEGRA_GPCDMA_STATUS_IRQ_INTR_STA	BIT(23)
-+#define TEGRA_GPCDMA_STATUS_IRQ_STA		BIT(21)
-+#define TEGRA_GPCDMA_STATUS_IRQ_TRIG_STA	BIT(20)
-+
-+#define TEGRA_GPCDMA_CHAN_CSRE			0x008
-+#define TEGRA_GPCDMA_CHAN_CSRE_PAUSE		BIT(31)
-+
-+/* Source address */
-+#define TEGRA_GPCDMA_CHAN_SRC_PTR		0x00C
-+
-+/* Destination address */
-+#define TEGRA_GPCDMA_CHAN_DST_PTR		0x010
-+
-+/* High address pointer */
-+#define TEGRA_GPCDMA_CHAN_HIGH_ADDR_PTR		0x014
-+#define TEGRA_GPCDMA_HIGH_ADDR_SRC_PTR		GENMASK(7, 0)
-+#define TEGRA_GPCDMA_HIGH_ADDR_DST_PTR		GENMASK(23, 16)
-+
-+/* MC sequence register */
-+#define TEGRA_GPCDMA_CHAN_MCSEQ			0x18
-+#define TEGRA_GPCDMA_MCSEQ_DATA_SWAP		BIT(31)
-+#define TEGRA_GPCDMA_MCSEQ_REQ_COUNT		GENMASK(30, 25)
-+#define TEGRA_GPCDMA_MCSEQ_BURST		GENMASK(24, 23)
-+#define TEGRA_GPCDMA_MCSEQ_BURST_2		\
-+					FIELD_PREP(TEGRA_GPCDMA_MCSEQ_BURST, 0)
-+#define TEGRA_GPCDMA_MCSEQ_BURST_16		\
-+					FIELD_PREP(TEGRA_GPCDMA_MCSEQ_BURST, 3)
-+#define TEGRA_GPCDMA_MCSEQ_WRAP1		GENMASK(22, 20)
-+#define TEGRA_GPCDMA_MCSEQ_WRAP0		GENMASK(19, 17)
-+#define TEGRA_GPCDMA_MCSEQ_WRAP_NONE		0
-+
-+#define TEGRA_GPCDMA_MCSEQ_STREAM_ID1_MASK	GENMASK(13, 7)
-+#define TEGRA_GPCDMA_MCSEQ_STREAM_ID0_MASK	GENMASK(6, 0)
-+
-+/* MMIO sequence register */
-+#define TEGRA_GPCDMA_CHAN_MMIOSEQ			0x01c
-+#define TEGRA_GPCDMA_MMIOSEQ_DBL_BUF		BIT(31)
-+#define TEGRA_GPCDMA_MMIOSEQ_BUS_WIDTH		GENMASK(30, 28)
-+#define TEGRA_GPCDMA_MMIOSEQ_BUS_WIDTH_8	\
-+					FIELD_PREP(TEGRA_GPCDMA_MMIOSEQ_BUS_WIDTH, 0)
-+#define TEGRA_GPCDMA_MMIOSEQ_BUS_WIDTH_16	\
-+					FIELD_PREP(TEGRA_GPCDMA_MMIOSEQ_BUS_WIDTH, 1)
-+#define TEGRA_GPCDMA_MMIOSEQ_BUS_WIDTH_32	\
-+					FIELD_PREP(TEGRA_GPCDMA_MMIOSEQ_BUS_WIDTH, 2)
-+#define TEGRA_GPCDMA_MMIOSEQ_DATA_SWAP		BIT(27)
-+#define TEGRA_GPCDMA_MMIOSEQ_BURST_SHIFT	23
-+#define TEGRA_GPCDMA_MMIOSEQ_BURST_MIN		2U
-+#define TEGRA_GPCDMA_MMIOSEQ_BURST_MAX		32U
-+#define TEGRA_GPCDMA_MMIOSEQ_BURST(bs)	\
-+		(GENMASK((fls(bs) - 2), 0) << TEGRA_GPCDMA_MMIOSEQ_BURST_SHIFT)
-+#define TEGRA_GPCDMA_MMIOSEQ_MASTER_ID		GENMASK(22, 19)
-+#define TEGRA_GPCDMA_MMIOSEQ_WRAP_WORD		GENMASK(18, 16)
-+#define TEGRA_GPCDMA_MMIOSEQ_MMIO_PROT		GENMASK(8, 7)
-+
-+/* Channel WCOUNT */
-+#define TEGRA_GPCDMA_CHAN_WCOUNT		0x20
-+
-+/* Transfer count */
-+#define TEGRA_GPCDMA_CHAN_XFER_COUNT		0x24
-+
-+/* DMA byte count status */
-+#define TEGRA_GPCDMA_CHAN_DMA_BYTE_STATUS	0x28
-+
-+/* Error Status Register */
-+#define TEGRA_GPCDMA_CHAN_ERR_STATUS		0x30
-+#define TEGRA_GPCDMA_CHAN_ERR_TYPE_SHIFT	8
-+#define TEGRA_GPCDMA_CHAN_ERR_TYPE_MASK	0xF
-+#define TEGRA_GPCDMA_CHAN_ERR_TYPE(err)	(			\
-+		((err) >> TEGRA_GPCDMA_CHAN_ERR_TYPE_SHIFT) &	\
-+		TEGRA_GPCDMA_CHAN_ERR_TYPE_MASK)
-+#define TEGRA_DMA_BM_FIFO_FULL_ERR		0xF
-+#define TEGRA_DMA_PERIPH_FIFO_FULL_ERR		0xE
-+#define TEGRA_DMA_PERIPH_ID_ERR			0xD
-+#define TEGRA_DMA_STREAM_ID_ERR			0xC
-+#define TEGRA_DMA_MC_SLAVE_ERR			0xB
-+#define TEGRA_DMA_MMIO_SLAVE_ERR		0xA
-+
-+/* Fixed Pattern */
-+#define TEGRA_GPCDMA_CHAN_FIXED_PATTERN		0x34
-+
-+#define TEGRA_GPCDMA_CHAN_TZ			0x38
-+#define TEGRA_GPCDMA_CHAN_TZ_MMIO_PROT_1	BIT(0)
-+#define TEGRA_GPCDMA_CHAN_TZ_MC_PROT_1		BIT(1)
-+
-+#define TEGRA_GPCDMA_CHAN_SPARE			0x3c
-+#define TEGRA_GPCDMA_CHAN_SPARE_EN_LEGACY_FC	BIT(16)
-+
-+/*
-+ * If any burst is in flight and DMA paused then this is the time to complete
-+ * on-flight burst and update DMA status register.
-+ */
-+#define TEGRA_GPCDMA_BURST_COMPLETE_TIME	20
-+#define TEGRA_GPCDMA_BURST_COMPLETION_TIMEOUT	100
-+
-+/* Channel base address offset from GPCDMA base address */
-+#define TEGRA_GPCDMA_CHANNEL_BASE_ADD_OFFSET	0x20000
-+
-+struct tegra_dma;
-+
-+/*
-+ * tegra_dma_chip_data Tegra chip specific DMA data
-+ * @nr_channels: Number of channels available in the controller.
-+ * @channel_reg_size: Channel register size.
-+ * @max_dma_count: Maximum DMA transfer count supported by DMA controller.
-+ * @hw_support_pause: DMA HW engine support pause of the channel.
-+ */
-+struct tegra_dma_chip_data {
-+	unsigned int nr_channels;
-+	unsigned int channel_reg_size;
-+	unsigned int max_dma_count;
-+	bool hw_support_pause;
-+};
-+
-+/* DMA channel registers */
-+struct tegra_dma_channel_regs {
-+	unsigned long csr;
-+	unsigned long src_ptr;
-+	unsigned long dst_ptr;
-+	unsigned long high_addr_ptr;
-+	unsigned long mc_seq;
-+	unsigned long mmio_seq;
-+	unsigned long wcount;
-+	unsigned long fixed_pattern;
-+};
-+
-+/*
-+ * tegra_dma_sg_req: Dma request details to configure hardware. This
-+ * contains the details for one transfer to configure DMA hw.
-+ * The client's request for data transfer can be broken into multiple
-+ * sub-transfer as per requester details and hw support. This sub transfer
-+ * get added as an array in Tegra DMA desc which manages the transfer details.
-+ */
-+struct tegra_dma_sg_req {
-+	unsigned int len;
-+	struct tegra_dma_channel_regs ch_regs;
-+};
-+
-+/*
-+ * tegra_dma_desc: Tegra DMA descriptors which uses virt_dma_desc to
-+ * manage client request and keep track of transfer status, callbacks
-+ * and request counts etc.
-+ */
-+struct tegra_dma_desc {
-+	struct virt_dma_desc vd;
-+	unsigned int bytes_req;
-+	unsigned int bytes_xfer;
-+	unsigned int sg_idx;
-+	unsigned int sg_count;
-+	bool cyclic;
-+	struct tegra_dma_channel *tdc;
-+	struct tegra_dma_sg_req sg_req[];
-+};
-+
-+/*
-+ * tegra_dma_channel: Channel specific information
-+ */
-+struct tegra_dma_channel {
-+	struct virt_dma_chan vc;
-+	struct tegra_dma_desc *dma_desc;
-+	char name[30];
-+	bool config_init;
-+	int id;
-+	int irq;
-+	unsigned int stream_id;
-+	unsigned long chan_base_offset;
-+	struct tegra_dma *tdma;
-+	int slave_id;
-+	enum dma_transfer_direction sid_dir;
-+	struct dma_slave_config dma_sconfig;
-+};
-+
-+/*
-+ * tegra_dma: Tegra DMA specific information
-+ */
-+struct tegra_dma {
-+	struct dma_device dma_dev;
-+	struct device *dev;
-+	void __iomem *base_addr;
-+	const struct tegra_dma_chip_data *chip_data;
-+	struct reset_control *rst;
-+	unsigned long sid_m2d_reserved;
-+	unsigned long sid_d2m_reserved;
-+	struct tegra_dma_channel channels[];
-+};
-+
-+static inline void tdc_write(struct tegra_dma_channel *tdc,
-+			     u32 reg, u32 val)
-+{
-+	writel_relaxed(val, tdc->tdma->base_addr + tdc->chan_base_offset + reg);
-+}
-+
-+static inline u32 tdc_read(struct tegra_dma_channel *tdc, u32 reg)
-+{
-+	return readl_relaxed(tdc->tdma->base_addr + tdc->chan_base_offset + reg);
-+}
-+
-+static inline struct tegra_dma_channel *to_tegra_dma_chan(struct dma_chan *dc)
-+{
-+	return container_of(dc, struct tegra_dma_channel, vc.chan);
-+}
-+
-+static inline struct tegra_dma_desc *vd_to_tegra_dma_desc(struct virt_dma_desc *vd)
-+{
-+	return container_of(vd, struct tegra_dma_desc, vd);
-+}
-+
-+static inline struct device *tdc2dev(struct tegra_dma_channel *tdc)
-+{
-+	return tdc->vc.chan.device->dev;
-+}
-+
-+static void tegra_dma_dump_chan_regs(struct tegra_dma_channel *tdc)
-+{
-+	dev_dbg(tdc2dev(tdc), "DMA Channel %d name %s register dump:\n",
-+		tdc->id, tdc->name);
-+	dev_dbg(tdc2dev(tdc), "CSR %x STA %x CSRE %x SRC %x DST %x\n",
-+		tdc_read(tdc, TEGRA_GPCDMA_CHAN_CSR),
-+		tdc_read(tdc, TEGRA_GPCDMA_CHAN_STATUS),
-+		tdc_read(tdc, TEGRA_GPCDMA_CHAN_CSRE),
-+		tdc_read(tdc, TEGRA_GPCDMA_CHAN_SRC_PTR),
-+		tdc_read(tdc, TEGRA_GPCDMA_CHAN_DST_PTR)
-+	);
-+	dev_dbg(tdc2dev(tdc), "MCSEQ %x IOSEQ %x WCNT %x XFER %x BSTA %x\n",
-+		tdc_read(tdc, TEGRA_GPCDMA_CHAN_MCSEQ),
-+		tdc_read(tdc, TEGRA_GPCDMA_CHAN_MMIOSEQ),
-+		tdc_read(tdc, TEGRA_GPCDMA_CHAN_WCOUNT),
-+		tdc_read(tdc, TEGRA_GPCDMA_CHAN_XFER_COUNT),
-+		tdc_read(tdc, TEGRA_GPCDMA_CHAN_DMA_BYTE_STATUS)
-+	);
-+	dev_dbg(tdc2dev(tdc), "DMA ERR_STA %x\n",
-+		tdc_read(tdc, TEGRA_GPCDMA_CHAN_ERR_STATUS));
-+}
-+
-+static int tegra_dma_sid_reserve(struct tegra_dma_channel *tdc,
-+				 enum dma_transfer_direction direction)
-+{
-+	struct tegra_dma *tdma = tdc->tdma;
-+	unsigned int sid = tdc->slave_id;
-+
-+	if (!is_slave_direction(direction))
-+		return 0;
-+
-+	switch (direction) {
-+	case DMA_MEM_TO_DEV:
-+		if (test_and_set_bit(sid, &tdma->sid_m2d_reserved)) {
-+			dev_err(tdma->dev, "slave id already in use\n");
-+			return -EINVAL;
-+		}
-+		break;
-+	case DMA_DEV_TO_MEM:
-+		if (test_and_set_bit(sid, &tdma->sid_d2m_reserved)) {
-+			dev_err(tdma->dev, "slave id already in use\n");
-+			return -EINVAL;
-+		}
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	tdc->sid_dir = direction;
-+
-+	return 0;
-+}
-+
-+static void tegra_dma_sid_free(struct tegra_dma_channel *tdc)
-+{
-+	struct tegra_dma *tdma = tdc->tdma;
-+	unsigned int sid = tdc->slave_id;
-+
-+	switch (tdc->sid_dir) {
-+	case DMA_MEM_TO_DEV:
-+		clear_bit(sid,  &tdma->sid_m2d_reserved);
-+		break;
-+	case DMA_DEV_TO_MEM:
-+		clear_bit(sid,  &tdma->sid_d2m_reserved);
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	tdc->sid_dir = DMA_TRANS_NONE;
-+}
-+
-+static void tegra_dma_desc_free(struct virt_dma_desc *vd)
-+{
-+	kfree(container_of(vd, struct tegra_dma_desc, vd));
-+}
-+
-+static int tegra_dma_slave_config(struct dma_chan *dc,
-+				  struct dma_slave_config *sconfig)
-+{
-+	struct tegra_dma_channel *tdc = to_tegra_dma_chan(dc);
-+
-+	memcpy(&tdc->dma_sconfig, sconfig, sizeof(*sconfig));
-+	tdc->config_init = true;
-+
-+	return 0;
-+}
-+
-+static int tegra_dma_pause(struct tegra_dma_channel *tdc)
-+{
-+	int ret;
-+	u32 val;
-+
-+	val = tdc_read(tdc, TEGRA_GPCDMA_CHAN_CSRE);
-+	val |= TEGRA_GPCDMA_CHAN_CSRE_PAUSE;
-+	tdc_write(tdc, TEGRA_GPCDMA_CHAN_CSRE, val);
-+
-+	/* Wait until busy bit is de-asserted */
-+	ret = readl_relaxed_poll_timeout_atomic(tdc->tdma->base_addr +
-+			tdc->chan_base_offset + TEGRA_GPCDMA_CHAN_STATUS,
-+			val,
-+			!(val & TEGRA_GPCDMA_STATUS_BUSY),
-+			TEGRA_GPCDMA_BURST_COMPLETE_TIME,
-+			TEGRA_GPCDMA_BURST_COMPLETION_TIMEOUT);
-+
-+	return ret;
-+}
-+
-+static int tegra_dma_device_pause(struct dma_chan *dc)
-+{
-+	struct tegra_dma_channel *tdc = to_tegra_dma_chan(dc);
-+	unsigned long flags;
-+	int ret = 0;
-+
-+	if (!tdc->tdma->chip_data->hw_support_pause)
-+		return -ENOSYS;
-+
-+	spin_lock_irqsave(&tdc->vc.lock, flags);
-+	ret = tegra_dma_pause(tdc);
-+	if (ret)
-+		dev_err(tdc2dev(tdc), "DMA pause timed out\n");
-+
-+	spin_unlock_irqrestore(&tdc->vc.lock, flags);
-+
-+	return ret;
-+}
-+
-+static void tegra_dma_resume(struct tegra_dma_channel *tdc)
-+{
-+	u32 val;
-+
-+	val = tdc_read(tdc, TEGRA_GPCDMA_CHAN_CSRE);
-+	val &= ~TEGRA_GPCDMA_CHAN_CSRE_PAUSE;
-+	tdc_write(tdc, TEGRA_GPCDMA_CHAN_CSRE, val);
-+}
-+
-+static int tegra_dma_device_resume(struct dma_chan *dc)
-+{
-+	struct tegra_dma_channel *tdc = to_tegra_dma_chan(dc);
-+	unsigned long flags;
-+
-+	if (!tdc->tdma->chip_data->hw_support_pause)
-+		return -ENOSYS;
-+
-+	spin_lock_irqsave(&tdc->vc.lock, flags);
-+	tegra_dma_resume(tdc);
-+	spin_unlock_irqrestore(&tdc->vc.lock, flags);
-+
-+	return 0;
-+}
-+
-+static void tegra_dma_stop(struct tegra_dma_channel *tdc)
-+{
-+	u32 csr, status;
-+
-+	csr = tdc_read(tdc, TEGRA_GPCDMA_CHAN_CSR);
-+
-+	/* Disable interrupts */
-+	csr &= ~TEGRA_GPCDMA_CSR_IE_EOC;
-+
-+	/* Disable DMA */
-+	csr &= ~TEGRA_GPCDMA_CSR_ENB;
-+	tdc_write(tdc, TEGRA_GPCDMA_CHAN_CSR, csr);
-+
-+	/* Clear interrupt status if it is there */
-+	status = tdc_read(tdc, TEGRA_GPCDMA_CHAN_STATUS);
-+	if (status & TEGRA_GPCDMA_STATUS_ISE_EOC) {
-+		dev_dbg(tdc2dev(tdc), "%s():clearing interrupt\n", __func__);
-+		tdc_write(tdc, TEGRA_GPCDMA_CHAN_STATUS, status);
-+	}
-+}
-+
-+static void tegra_dma_configure_next_sg(struct tegra_dma_channel *tdc)
-+{
-+	struct tegra_dma_desc *dma_desc = tdc->dma_desc;
-+	struct tegra_dma_channel_regs *ch_regs;
-+	int err;
-+	u32 val;
-+
-+	/* Configure next transfer immediately after DMA is busy */
-+	err = readl_relaxed_poll_timeout_atomic(tdc->tdma->base_addr +
-+			tdc->chan_base_offset + TEGRA_GPCDMA_CHAN_STATUS,
-+			val,
-+			(val & TEGRA_GPCDMA_STATUS_BUSY), 0,
-+			TEGRA_GPCDMA_BURST_COMPLETION_TIMEOUT);
-+	if (err)
-+		return;
-+
-+	ch_regs = &dma_desc->sg_req[dma_desc->sg_idx].ch_regs;
-+
-+	tdc_write(tdc, TEGRA_GPCDMA_CHAN_WCOUNT, ch_regs->wcount);
-+	tdc_write(tdc, TEGRA_GPCDMA_CHAN_SRC_PTR, ch_regs->src_ptr);
-+	tdc_write(tdc, TEGRA_GPCDMA_CHAN_DST_PTR, ch_regs->dst_ptr);
-+	tdc_write(tdc, TEGRA_GPCDMA_CHAN_HIGH_ADDR_PTR, ch_regs->high_addr_ptr);
-+
-+	/* Start DMA */
-+	tdc_write(tdc, TEGRA_GPCDMA_CHAN_CSR,
-+		  ch_regs->csr | TEGRA_GPCDMA_CSR_ENB);
-+
-+	dma_desc->sg_idx++;
-+
-+	/* Reset the sg index for cyclic transfers */
-+	if (dma_desc->sg_idx == dma_desc->sg_count)
-+		dma_desc->sg_idx = 0;
-+}
-+
-+static void tegra_dma_start(struct tegra_dma_channel *tdc)
-+{
-+	struct tegra_dma_desc *dma_desc = tdc->dma_desc;
-+	struct tegra_dma_channel_regs *ch_regs;
-+	struct virt_dma_desc *vdesc;
-+
-+	if (!dma_desc) {
-+		vdesc = vchan_next_desc(&tdc->vc);
-+		if (!vdesc)
-+			return;
-+
-+		dma_desc = vd_to_tegra_dma_desc(vdesc);
-+		list_del(&vdesc->node);
-+		dma_desc->tdc = tdc;
-+		tdc->dma_desc = dma_desc;
-+
-+		tegra_dma_resume(tdc);
-+	}
-+
-+	ch_regs = &dma_desc->sg_req[dma_desc->sg_idx].ch_regs;
-+
-+	tdc_write(tdc, TEGRA_GPCDMA_CHAN_WCOUNT, ch_regs->wcount);
-+	tdc_write(tdc, TEGRA_GPCDMA_CHAN_CSR, 0);
-+	tdc_write(tdc, TEGRA_GPCDMA_CHAN_SRC_PTR, ch_regs->src_ptr);
-+	tdc_write(tdc, TEGRA_GPCDMA_CHAN_DST_PTR, ch_regs->dst_ptr);
-+	tdc_write(tdc, TEGRA_GPCDMA_CHAN_HIGH_ADDR_PTR, ch_regs->high_addr_ptr);
-+	tdc_write(tdc, TEGRA_GPCDMA_CHAN_FIXED_PATTERN, ch_regs->fixed_pattern);
-+	tdc_write(tdc, TEGRA_GPCDMA_CHAN_MMIOSEQ, ch_regs->mmio_seq);
-+	tdc_write(tdc, TEGRA_GPCDMA_CHAN_MCSEQ, ch_regs->mc_seq);
-+	tdc_write(tdc, TEGRA_GPCDMA_CHAN_CSR, ch_regs->csr);
-+
-+	/* Start DMA */
-+	tdc_write(tdc, TEGRA_GPCDMA_CHAN_CSR,
-+		  ch_regs->csr | TEGRA_GPCDMA_CSR_ENB);
-+
-+	dma_desc->sg_idx++;
-+}
-+
-+static void tegra_dma_xfer_complete(struct tegra_dma_channel *tdc)
-+{
-+	vchan_cookie_complete(&tdc->dma_desc->vd);
-+
-+	tegra_dma_sid_free(tdc);
-+	tdc->dma_desc = NULL;
-+}
-+
-+static void tegra_dma_chan_decode_error(struct tegra_dma_channel *tdc,
-+					unsigned int err_status)
-+{
-+	switch (TEGRA_GPCDMA_CHAN_ERR_TYPE(err_status)) {
-+	case TEGRA_DMA_BM_FIFO_FULL_ERR:
-+		dev_err(tdc->tdma->dev,
-+			"GPCDMA CH%d bm fifo full\n", tdc->id);
-+		break;
-+
-+	case TEGRA_DMA_PERIPH_FIFO_FULL_ERR:
-+		dev_err(tdc->tdma->dev,
-+			"GPCDMA CH%d peripheral fifo full\n", tdc->id);
-+		break;
-+
-+	case TEGRA_DMA_PERIPH_ID_ERR:
-+		dev_err(tdc->tdma->dev,
-+			"GPCDMA CH%d illegal peripheral id\n", tdc->id);
-+		break;
-+
-+	case TEGRA_DMA_STREAM_ID_ERR:
-+		dev_err(tdc->tdma->dev,
-+			"GPCDMA CH%d illegal stream id\n", tdc->id);
-+		break;
-+
-+	case TEGRA_DMA_MC_SLAVE_ERR:
-+		dev_err(tdc->tdma->dev,
-+			"GPCDMA CH%d mc slave error\n", tdc->id);
-+		break;
-+
-+	case TEGRA_DMA_MMIO_SLAVE_ERR:
-+		dev_err(tdc->tdma->dev,
-+			"GPCDMA CH%d mmio slave error\n", tdc->id);
-+		break;
-+
-+	default:
-+		dev_err(tdc->tdma->dev,
-+			"GPCDMA CH%d security violation %x\n", tdc->id,
-+			err_status);
-+	}
-+}
-+
-+static irqreturn_t tegra_dma_isr(int irq, void *dev_id)
-+{
-+	struct tegra_dma_channel *tdc = dev_id;
-+	struct tegra_dma_desc *dma_desc = tdc->dma_desc;
-+	struct tegra_dma_sg_req *sg_req;
-+	u32 status;
-+
-+	/* Check channel error status register */
-+	status = tdc_read(tdc, TEGRA_GPCDMA_CHAN_ERR_STATUS);
-+	if (status) {
-+		tegra_dma_chan_decode_error(tdc, status);
-+		tegra_dma_dump_chan_regs(tdc);
-+		tdc_write(tdc, TEGRA_GPCDMA_CHAN_ERR_STATUS, 0xFFFFFFFF);
-+	}
-+
-+	spin_lock(&tdc->vc.lock);
-+	status = tdc_read(tdc, TEGRA_GPCDMA_CHAN_STATUS);
-+	if (!(status & TEGRA_GPCDMA_STATUS_ISE_EOC))
-+		goto irq_done;
-+
-+	tdc_write(tdc, TEGRA_GPCDMA_CHAN_STATUS,
-+		  TEGRA_GPCDMA_STATUS_ISE_EOC);
-+
-+	if (!dma_desc)
-+		goto irq_done;
-+
-+	sg_req = dma_desc->sg_req;
-+	dma_desc->bytes_xfer += sg_req[dma_desc->sg_idx - 1].len;
-+
-+	if (dma_desc->sg_idx == dma_desc->sg_count) {
-+		tegra_dma_xfer_complete(tdc);
-+	} else if (dma_desc->cyclic) {
-+		vchan_cyclic_callback(&dma_desc->vd);
-+		tegra_dma_configure_next_sg(tdc);
-+	} else {
-+		tegra_dma_start(tdc);
-+	}
-+
-+irq_done:
-+	spin_unlock(&tdc->vc.lock);
-+	return IRQ_HANDLED;
-+}
-+
-+static void tegra_dma_issue_pending(struct dma_chan *dc)
-+{
-+	struct tegra_dma_channel *tdc = to_tegra_dma_chan(dc);
-+	unsigned long flags;
-+
-+	if (tdc->dma_desc)
-+		return;
-+
-+	spin_lock_irqsave(&tdc->vc.lock, flags);
-+	if (vchan_issue_pending(&tdc->vc))
-+		tegra_dma_start(tdc);
-+
-+	/*
-+	 * For cyclic dma transfers, program the second
-+	 * transfer parameters as soon as the first dma
-+	 * transfer is started inorder for the dma
-+	 * controller to trigger the second transfer
-+	 * with the correct parameters.
-+	 */
-+	if (tdc->dma_desc && tdc->dma_desc->cyclic)
-+		tegra_dma_configure_next_sg(tdc);
-+
-+	spin_unlock_irqrestore(&tdc->vc.lock, flags);
-+}
-+
-+static int tegra_dma_stop_client(struct tegra_dma_channel *tdc)
-+{
-+	int ret;
-+	unsigned long status;
-+	u32 csr = tdc_read(tdc, TEGRA_GPCDMA_CHAN_CSR);
-+
-+	/*
-+	 * Change the client associated with the DMA channel
-+	 * to stop DMA engine from starting any more bursts for
-+	 * the given client and wait for in flight bursts to complete
-+	 */
-+	csr &= ~(TEGRA_GPCDMA_CSR_REQ_SEL_MASK);
-+	csr |= TEGRA_GPCDMA_CSR_REQ_SEL_UNUSED;
-+	tdc_write(tdc, TEGRA_GPCDMA_CHAN_CSR, csr);
-+
-+	/* Wait for in flight data transfer to finish */
-+	udelay(TEGRA_GPCDMA_BURST_COMPLETE_TIME);
-+
-+	/* If TX/RX path is still active wait till it becomes
-+	 * inactive
-+	 */
-+
-+	ret = readl_relaxed_poll_timeout_atomic(tdc->tdma->base_addr +
-+				tdc->chan_base_offset +
-+				TEGRA_GPCDMA_CHAN_STATUS,
-+				status,
-+				!(status & (TEGRA_GPCDMA_STATUS_CHANNEL_TX |
-+				TEGRA_GPCDMA_STATUS_CHANNEL_RX)),
-+				5,
-+				TEGRA_GPCDMA_BURST_COMPLETION_TIMEOUT);
-+	if (ret) {
-+		dev_err(tdc2dev(tdc), "Timeout waiting for DMA burst completion!\n");
-+		tegra_dma_dump_chan_regs(tdc);
-+	}
-+
-+	return ret;
-+}
-+
-+static int tegra_dma_terminate_all(struct dma_chan *dc)
-+{
-+	struct tegra_dma_channel *tdc = to_tegra_dma_chan(dc);
-+	unsigned long flags;
-+	LIST_HEAD(head);
-+	int err;
-+
-+	spin_lock_irqsave(&tdc->vc.lock, flags);
-+
-+	if (tdc->dma_desc) {
-+		err = tdc->tdma->chip_data->hw_support_pause ?
-+		      tegra_dma_pause(tdc) :
-+		      tegra_dma_stop_client(tdc);
-+		if (err) {
-+			spin_unlock_irqrestore(&tdc->vc.lock, flags);
-+			return err;
-+		}
-+
-+		tegra_dma_stop(tdc);
-+		tdc->dma_desc = NULL;
-+	}
-+
-+	tegra_dma_sid_free(tdc);
-+	vchan_get_all_descriptors(&tdc->vc, &head);
-+	spin_unlock_irqrestore(&tdc->vc.lock, flags);
-+
-+	vchan_dma_desc_free_list(&tdc->vc, &head);
-+
-+	return 0;
-+}
-+
-+static int tegra_dma_get_residual(struct tegra_dma_channel *tdc)
-+{
-+	unsigned long wcount = 0, status;
-+	unsigned int bytes_xfer, residual;
-+	struct tegra_dma_desc *dma_desc = tdc->dma_desc;
-+	struct tegra_dma_sg_req *sg_req = dma_desc->sg_req;
-+
-+	wcount = tdc_read(tdc, TEGRA_GPCDMA_CHAN_XFER_COUNT);
-+
-+	/*
-+	 * Set wcount = 0 if EOC bit is set. The transfer would have
-+	 * already completed and the CHAN_XFER_COUNT could have updated
-+	 * for the next transfer, specifically in case of cyclic transfers.
-+	 */
-+	status = tdc_read(tdc, TEGRA_GPCDMA_CHAN_STATUS);
-+	if (status & TEGRA_GPCDMA_STATUS_ISE_EOC)
-+		wcount = 0;
-+
-+	bytes_xfer = dma_desc->bytes_xfer +
-+		     sg_req[dma_desc->sg_idx - 1].len - (wcount * 4);
-+
-+	residual = dma_desc->bytes_req - (bytes_xfer % dma_desc->bytes_req);
-+
-+	return residual;
-+}
-+
-+static enum dma_status tegra_dma_tx_status(struct dma_chan *dc,
-+					   dma_cookie_t cookie,
-+					   struct dma_tx_state *txstate)
-+{
-+	struct tegra_dma_channel *tdc = to_tegra_dma_chan(dc);
-+	struct tegra_dma_desc *dma_desc;
-+	struct virt_dma_desc *vd;
-+	unsigned int residual;
-+	unsigned long flags;
-+	enum dma_status ret;
-+
-+	ret = dma_cookie_status(dc, cookie, txstate);
-+	if (ret == DMA_COMPLETE)
-+		return ret;
-+
-+	spin_lock_irqsave(&tdc->vc.lock, flags);
-+	vd = vchan_find_desc(&tdc->vc, cookie);
-+	if (vd) {
-+		dma_desc = vd_to_tegra_dma_desc(vd);
-+		residual = dma_desc->bytes_req;
-+		dma_set_residue(txstate, residual);
-+	} else if (tdc->dma_desc && tdc->dma_desc->vd.tx.cookie == cookie) {
-+		residual =  tegra_dma_get_residual(tdc);
-+		dma_set_residue(txstate, residual);
-+	} else {
-+		dev_err(tdc2dev(tdc), "cookie %d is not found\n", cookie);
-+	}
-+	spin_unlock_irqrestore(&tdc->vc.lock, flags);
-+
-+	return ret;
-+}
-+
-+static inline int get_bus_width(struct tegra_dma_channel *tdc,
-+				enum dma_slave_buswidth slave_bw)
-+{
-+	switch (slave_bw) {
-+	case DMA_SLAVE_BUSWIDTH_1_BYTE:
-+		return TEGRA_GPCDMA_MMIOSEQ_BUS_WIDTH_8;
-+	case DMA_SLAVE_BUSWIDTH_2_BYTES:
-+		return TEGRA_GPCDMA_MMIOSEQ_BUS_WIDTH_16;
-+	case DMA_SLAVE_BUSWIDTH_4_BYTES:
-+		return TEGRA_GPCDMA_MMIOSEQ_BUS_WIDTH_32;
-+	default:
-+		dev_err(tdc2dev(tdc), "given slave bus width is not supported\n");
-+		return -EINVAL;
-+	}
-+}
-+
-+static unsigned int get_burst_size(struct tegra_dma_channel *tdc,
-+				   u32 burst_size, enum dma_slave_buswidth slave_bw,
-+				   int len)
-+{
-+	unsigned int burst_mmio_width, burst_byte;
-+
-+	/*
-+	 * burst_size from client is in terms of the bus_width.
-+	 * convert that into words.
-+	 * If burst_size is not specified from client, then use
-+	 * len to calculate the optimum burst size
-+	 */
-+	burst_byte = burst_size ? burst_size * slave_bw : len;
-+	burst_mmio_width = burst_byte / 4;
-+
-+	if (burst_mmio_width < TEGRA_GPCDMA_MMIOSEQ_BURST_MIN)
-+		return 0;
-+
-+	burst_mmio_width = min(burst_mmio_width, TEGRA_GPCDMA_MMIOSEQ_BURST_MAX);
-+
-+	return TEGRA_GPCDMA_MMIOSEQ_BURST(burst_mmio_width);
-+}
-+
-+static int get_transfer_param(struct tegra_dma_channel *tdc,
-+			      enum dma_transfer_direction direction,
-+			      unsigned long *apb_addr,
-+			      unsigned long *mmio_seq,
-+			      unsigned long *csr,
-+			      unsigned int *burst_size,
-+			      enum dma_slave_buswidth *slave_bw)
-+{
-+	switch (direction) {
-+	case DMA_MEM_TO_DEV:
-+		*apb_addr = tdc->dma_sconfig.dst_addr;
-+		*mmio_seq = get_bus_width(tdc, tdc->dma_sconfig.dst_addr_width);
-+		*burst_size = tdc->dma_sconfig.dst_maxburst;
-+		*slave_bw = tdc->dma_sconfig.dst_addr_width;
-+		*csr = TEGRA_GPCDMA_CSR_DMA_MEM2IO_FC;
-+		return 0;
-+	case DMA_DEV_TO_MEM:
-+		*apb_addr = tdc->dma_sconfig.src_addr;
-+		*mmio_seq = get_bus_width(tdc, tdc->dma_sconfig.src_addr_width);
-+		*burst_size = tdc->dma_sconfig.src_maxburst;
-+		*slave_bw = tdc->dma_sconfig.src_addr_width;
-+		*csr = TEGRA_GPCDMA_CSR_DMA_IO2MEM_FC;
-+		return 0;
-+	case DMA_MEM_TO_MEM:
-+		*burst_size = tdc->dma_sconfig.src_addr_width;
-+		*csr = TEGRA_GPCDMA_CSR_DMA_MEM2MEM;
-+		return 0;
-+	default:
-+		dev_err(tdc2dev(tdc), "DMA direction is not supported\n");
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static struct dma_async_tx_descriptor *
-+tegra_dma_prep_dma_memset(struct dma_chan *dc, dma_addr_t dest, int value,
-+			  size_t len, unsigned long flags)
-+{
-+	struct tegra_dma_channel *tdc = to_tegra_dma_chan(dc);
-+	unsigned int max_dma_count = tdc->tdma->chip_data->max_dma_count;
-+	struct tegra_dma_sg_req *sg_req;
-+	struct tegra_dma_desc *dma_desc;
-+	unsigned long csr, mc_seq;
-+
-+	if ((len & 3) || (dest & 3) || len > max_dma_count) {
-+		dev_err(tdc2dev(tdc),
-+			"DMA length/memory address is not supported\n");
-+		return NULL;
-+	}
-+
-+	/* Set dma mode to fixed pattern */
-+	csr = TEGRA_GPCDMA_CSR_DMA_FIXED_PAT;
-+	/* Enable once or continuous mode */
-+	csr |= TEGRA_GPCDMA_CSR_ONCE;
-+	/* Enable IRQ mask */
-+	csr |= TEGRA_GPCDMA_CSR_IRQ_MASK;
-+	/* Enable the dma interrupt */
-+	if (flags & DMA_PREP_INTERRUPT)
-+		csr |= TEGRA_GPCDMA_CSR_IE_EOC;
-+	/* Configure default priority weight for the channel */
-+	csr |= FIELD_PREP(TEGRA_GPCDMA_CSR_WEIGHT, 1);
-+
-+	mc_seq =  tdc_read(tdc, TEGRA_GPCDMA_CHAN_MCSEQ);
-+	/* retain stream-id and clean rest */
-+	mc_seq &= TEGRA_GPCDMA_MCSEQ_STREAM_ID0_MASK;
-+
-+	/* Set the address wrapping */
-+	mc_seq |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_WRAP0,
-+						TEGRA_GPCDMA_MCSEQ_WRAP_NONE);
-+	mc_seq |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_WRAP1,
-+						TEGRA_GPCDMA_MCSEQ_WRAP_NONE);
-+
-+	/* Program outstanding MC requests */
-+	mc_seq |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_REQ_COUNT, 1);
-+	/* Set burst size */
-+	mc_seq |= TEGRA_GPCDMA_MCSEQ_BURST_16;
-+
-+	dma_desc = kzalloc(struct_size(dma_desc, sg_req, 1), GFP_NOWAIT);
-+	if (!dma_desc)
-+		return NULL;
-+
-+	dma_desc->bytes_req = len;
-+	dma_desc->sg_count = 1;
-+	sg_req = dma_desc->sg_req;
-+
-+	sg_req[0].ch_regs.src_ptr = 0;
-+	sg_req[0].ch_regs.dst_ptr = dest;
-+	sg_req[0].ch_regs.high_addr_ptr =
-+			FIELD_PREP(TEGRA_GPCDMA_HIGH_ADDR_DST_PTR, (dest >> 32));
-+	sg_req[0].ch_regs.fixed_pattern = value;
-+	/* Word count reg takes value as (N +1) words */
-+	sg_req[0].ch_regs.wcount = ((len - 4) >> 2);
-+	sg_req[0].ch_regs.csr = csr;
-+	sg_req[0].ch_regs.mmio_seq = 0;
-+	sg_req[0].ch_regs.mc_seq = mc_seq;
-+	sg_req[0].len = len;
-+
-+	dma_desc->cyclic = false;
-+	return vchan_tx_prep(&tdc->vc, &dma_desc->vd, flags);
-+}
-+
-+static struct dma_async_tx_descriptor *
-+tegra_dma_prep_dma_memcpy(struct dma_chan *dc, dma_addr_t dest,
-+			  dma_addr_t src, size_t len, unsigned long flags)
-+{
-+	struct tegra_dma_channel *tdc = to_tegra_dma_chan(dc);
-+	unsigned int max_dma_count = tdc->tdma->chip_data->max_dma_count;
-+	struct tegra_dma_sg_req *sg_req;
-+	struct tegra_dma_desc *dma_desc;
-+	unsigned long csr, mc_seq;
-+
-+	if ((len & 3) || (src & 3) || (dest & 3) || len > max_dma_count) {
-+		dev_err(tdc2dev(tdc),
-+			"DMA length/memory address is not supported\n");
-+		return NULL;
-+	}
-+
-+	/* Set dma mode to memory to memory transfer */
-+	csr = TEGRA_GPCDMA_CSR_DMA_MEM2MEM;
-+	/* Enable once or continuous mode */
-+	csr |= TEGRA_GPCDMA_CSR_ONCE;
-+	/* Enable IRQ mask */
-+	csr |= TEGRA_GPCDMA_CSR_IRQ_MASK;
-+	/* Enable the dma interrupt */
-+	if (flags & DMA_PREP_INTERRUPT)
-+		csr |= TEGRA_GPCDMA_CSR_IE_EOC;
-+	/* Configure default priority weight for the channel */
-+	csr |= FIELD_PREP(TEGRA_GPCDMA_CSR_WEIGHT, 1);
-+
-+	mc_seq =  tdc_read(tdc, TEGRA_GPCDMA_CHAN_MCSEQ);
-+	/* retain stream-id and clean rest */
-+	mc_seq &= (TEGRA_GPCDMA_MCSEQ_STREAM_ID0_MASK) |
-+		  (TEGRA_GPCDMA_MCSEQ_STREAM_ID1_MASK);
-+
-+	/* Set the address wrapping */
-+	mc_seq |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_WRAP0,
-+			     TEGRA_GPCDMA_MCSEQ_WRAP_NONE);
-+	mc_seq |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_WRAP1,
-+			     TEGRA_GPCDMA_MCSEQ_WRAP_NONE);
-+
-+	/* Program outstanding MC requests */
-+	mc_seq |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_REQ_COUNT, 1);
-+	/* Set burst size */
-+	mc_seq |= TEGRA_GPCDMA_MCSEQ_BURST_16;
-+
-+	dma_desc = kzalloc(struct_size(dma_desc, sg_req, 1), GFP_NOWAIT);
-+	if (!dma_desc)
-+		return NULL;
-+
-+	dma_desc->bytes_req = len;
-+	dma_desc->sg_count = 1;
-+	sg_req = dma_desc->sg_req;
-+
-+	sg_req[0].ch_regs.src_ptr = src;
-+	sg_req[0].ch_regs.dst_ptr = dest;
-+	sg_req[0].ch_regs.high_addr_ptr =
-+		FIELD_PREP(TEGRA_GPCDMA_HIGH_ADDR_SRC_PTR, (src >> 32));
-+	sg_req[0].ch_regs.high_addr_ptr |=
-+		FIELD_PREP(TEGRA_GPCDMA_HIGH_ADDR_DST_PTR, (dest >> 32));
-+	/* Word count reg takes value as (N +1) words */
-+	sg_req[0].ch_regs.wcount = ((len - 4) >> 2);
-+	sg_req[0].ch_regs.csr = csr;
-+	sg_req[0].ch_regs.mmio_seq = 0;
-+	sg_req[0].ch_regs.mc_seq = mc_seq;
-+	sg_req[0].len = len;
-+
-+	dma_desc->cyclic = false;
-+	return vchan_tx_prep(&tdc->vc, &dma_desc->vd, flags);
-+}
-+
-+static struct dma_async_tx_descriptor *
-+tegra_dma_prep_slave_sg(struct dma_chan *dc, struct scatterlist *sgl,
-+			unsigned int sg_len, enum dma_transfer_direction direction,
-+			unsigned long flags, void *context)
-+{
-+	struct tegra_dma_channel *tdc = to_tegra_dma_chan(dc);
-+	unsigned int max_dma_count = tdc->tdma->chip_data->max_dma_count;
-+	unsigned long csr, mc_seq, apb_ptr = 0, mmio_seq = 0;
-+	enum dma_slave_buswidth slave_bw;
-+	struct tegra_dma_sg_req *sg_req;
-+	struct tegra_dma_desc *dma_desc;
-+	struct scatterlist *sg;
-+	u32 burst_size;
-+	unsigned int i;
-+	int ret;
-+
-+	if (!tdc->config_init) {
-+		dev_err(tdc2dev(tdc), "DMA channel is not configured\n");
-+		return NULL;
-+	}
-+	if (sg_len < 1) {
-+		dev_err(tdc2dev(tdc), "Invalid segment length %d\n", sg_len);
-+		return NULL;
-+	}
-+
-+	ret = tegra_dma_sid_reserve(tdc, direction);
-+	if (ret)
-+		return NULL;
-+
-+	ret = get_transfer_param(tdc, direction, &apb_ptr, &mmio_seq, &csr,
-+				 &burst_size, &slave_bw);
-+	if (ret < 0)
-+		return NULL;
-+
-+	/* Enable once or continuous mode */
-+	csr |= TEGRA_GPCDMA_CSR_ONCE;
-+	/* Program the slave id in requestor select */
-+	csr |= FIELD_PREP(TEGRA_GPCDMA_CSR_REQ_SEL_MASK, tdc->slave_id);
-+	/* Enable IRQ mask */
-+	csr |= TEGRA_GPCDMA_CSR_IRQ_MASK;
-+	/* Configure default priority weight for the channel*/
-+	csr |= FIELD_PREP(TEGRA_GPCDMA_CSR_WEIGHT, 1);
-+
-+	/* Enable the dma interrupt */
-+	if (flags & DMA_PREP_INTERRUPT)
-+		csr |= TEGRA_GPCDMA_CSR_IE_EOC;
-+
-+	mc_seq =  tdc_read(tdc, TEGRA_GPCDMA_CHAN_MCSEQ);
-+	/* retain stream-id and clean rest */
-+	mc_seq &= TEGRA_GPCDMA_MCSEQ_STREAM_ID0_MASK;
-+
-+	/* Set the address wrapping on both MC and MMIO side */
-+
-+	mc_seq |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_WRAP0,
-+			     TEGRA_GPCDMA_MCSEQ_WRAP_NONE);
-+	mc_seq |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_WRAP1,
-+			     TEGRA_GPCDMA_MCSEQ_WRAP_NONE);
-+	mmio_seq |= FIELD_PREP(TEGRA_GPCDMA_MMIOSEQ_WRAP_WORD, 1);
-+
-+	/* Program 2 MC outstanding requests by default. */
-+	mc_seq |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_REQ_COUNT, 1);
-+
-+	/* Setting MC burst size depending on MMIO burst size */
-+	if (burst_size == 64)
-+		mc_seq |= TEGRA_GPCDMA_MCSEQ_BURST_16;
-+	else
-+		mc_seq |= TEGRA_GPCDMA_MCSEQ_BURST_2;
-+
-+	dma_desc = kzalloc(struct_size(dma_desc, sg_req, 1), GFP_NOWAIT);
-+	if (!dma_desc)
-+		return NULL;
-+
-+	dma_desc->sg_count = sg_len;
-+	sg_req = dma_desc->sg_req;
-+
-+	/* Make transfer requests */
-+	for_each_sg(sgl, sg, sg_len, i) {
-+		u32 len;
-+		dma_addr_t mem;
-+
-+		mem = sg_dma_address(sg);
-+		len = sg_dma_len(sg);
-+
-+		if ((len & 3) || (mem & 3) || len > max_dma_count) {
-+			dev_err(tdc2dev(tdc),
-+				"DMA length/memory address is not supported\n");
-+			kfree(dma_desc);
-+			return NULL;
-+		}
-+
-+		mmio_seq |= get_burst_size(tdc, burst_size, slave_bw, len);
-+		dma_desc->bytes_req += len;
-+
-+		if (direction == DMA_MEM_TO_DEV) {
-+			sg_req[i].ch_regs.src_ptr = mem;
-+			sg_req[i].ch_regs.dst_ptr = apb_ptr;
-+			sg_req[i].ch_regs.high_addr_ptr =
-+				FIELD_PREP(TEGRA_GPCDMA_HIGH_ADDR_SRC_PTR, (mem >> 32));
-+		} else if (direction == DMA_DEV_TO_MEM) {
-+			sg_req[i].ch_regs.src_ptr = apb_ptr;
-+			sg_req[i].ch_regs.dst_ptr = mem;
-+			sg_req[i].ch_regs.high_addr_ptr =
-+				FIELD_PREP(TEGRA_GPCDMA_HIGH_ADDR_DST_PTR, (mem >> 32));
-+		}
-+
-+		/*
-+		 * Word count register takes input in words. Writing a value
-+		 * of N into word count register means a req of (N+1) words.
-+		 */
-+		sg_req[i].ch_regs.wcount = ((len - 4) >> 2);
-+		sg_req[i].ch_regs.csr = csr;
-+		sg_req[i].ch_regs.mmio_seq = mmio_seq;
-+		sg_req[i].ch_regs.mc_seq = mc_seq;
-+		sg_req[i].len = len;
-+	}
-+
-+	dma_desc->cyclic = false;
-+	return vchan_tx_prep(&tdc->vc, &dma_desc->vd, flags);
-+}
-+
-+static struct dma_async_tx_descriptor *
-+tegra_dma_prep_dma_cyclic(struct dma_chan *dc, dma_addr_t buf_addr, size_t buf_len,
-+			  size_t period_len, enum dma_transfer_direction direction,
-+			  unsigned long flags)
-+{
-+	struct tegra_dma_channel *tdc = to_tegra_dma_chan(dc);
-+	unsigned int max_dma_count = tdc->tdma->chip_data->max_dma_count;
-+	struct tegra_dma_desc *dma_desc;
-+	struct tegra_dma_sg_req *sg_req;
-+	unsigned long csr, mc_seq, apb_ptr = 0, mmio_seq = 0;
-+	unsigned int len, period_count, i;
-+	dma_addr_t mem = buf_addr;
-+	u32 burst_size;
-+	enum dma_slave_buswidth slave_bw;
-+	int ret;
-+
-+	if (!buf_len || !period_len) {
-+		dev_err(tdc2dev(tdc), "Invalid buffer/period len\n");
-+		return NULL;
-+	}
-+
-+	if (!tdc->config_init) {
-+		dev_err(tdc2dev(tdc), "DMA slave is not configured\n");
-+		return NULL;
-+	}
-+
-+	ret = tegra_dma_sid_reserve(tdc, direction);
-+	if (ret)
-+		return NULL;
-+
-+	/*
-+	 * We only support cycle transfer when buf_len is multiple of
-+	 * period_len.
-+	 */
-+	if (buf_len % period_len) {
-+		dev_err(tdc2dev(tdc), "buf_len is not multiple of period_len\n");
-+		return NULL;
-+	}
-+
-+	len = period_len;
-+	if ((len & 3) || (buf_addr & 3) || len > max_dma_count) {
-+		dev_err(tdc2dev(tdc), "Req len/mem address is not correct\n");
-+		return NULL;
-+	}
-+
-+	ret = get_transfer_param(tdc, direction, &apb_ptr, &mmio_seq, &csr,
-+				 &burst_size, &slave_bw);
-+	if (ret < 0)
-+		return NULL;
-+
-+	/* Enable once or continuous mode */
-+	csr &= ~TEGRA_GPCDMA_CSR_ONCE;
-+	/* Program the slave id in requestor select */
-+	csr |= FIELD_PREP(TEGRA_GPCDMA_CSR_REQ_SEL_MASK, tdc->slave_id);
-+	/* Enable IRQ mask */
-+	csr |= TEGRA_GPCDMA_CSR_IRQ_MASK;
-+	/* Configure default priority weight for the channel*/
-+	csr |= FIELD_PREP(TEGRA_GPCDMA_CSR_WEIGHT, 1);
-+
-+	/* Enable the dma interrupt */
-+	if (flags & DMA_PREP_INTERRUPT)
-+		csr |= TEGRA_GPCDMA_CSR_IE_EOC;
-+
-+	mmio_seq |= FIELD_PREP(TEGRA_GPCDMA_MMIOSEQ_WRAP_WORD, 1);
-+
-+	mc_seq =  tdc_read(tdc, TEGRA_GPCDMA_CHAN_MCSEQ);
-+	/* retain stream-id and clean rest */
-+	mc_seq &= TEGRA_GPCDMA_MCSEQ_STREAM_ID0_MASK;
-+
-+	/* Set the address wrapping on both MC and MMIO side */
-+	mc_seq |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_WRAP0,
-+			     TEGRA_GPCDMA_MCSEQ_WRAP_NONE);
-+	mc_seq |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_WRAP1,
-+			     TEGRA_GPCDMA_MCSEQ_WRAP_NONE);
-+
-+	/* Program 2 MC outstanding requests by default. */
-+	mc_seq |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_REQ_COUNT, 1);
-+	/* Setting MC burst size depending on MMIO burst size */
-+	if (burst_size == 64)
-+		mc_seq |= TEGRA_GPCDMA_MCSEQ_BURST_16;
-+	else
-+		mc_seq |= TEGRA_GPCDMA_MCSEQ_BURST_2;
-+
-+	period_count = buf_len / period_len;
-+	dma_desc = kzalloc(struct_size(dma_desc, sg_req, period_count),
-+			   GFP_NOWAIT);
-+	if (!dma_desc)
-+		return NULL;
-+
-+	dma_desc->bytes_req = buf_len;
-+	dma_desc->sg_count = period_count;
-+
-+	/* Split transfer equal to period size */
-+	for (i = 0; i < period_count; i++) {
-+		mmio_seq |= get_burst_size(tdc, burst_size, slave_bw, len);
-+		if (direction == DMA_MEM_TO_DEV) {
-+			sg_req[i].ch_regs.src_ptr = mem;
-+			sg_req[i].ch_regs.dst_ptr = apb_ptr;
-+			sg_req[i].ch_regs.high_addr_ptr =
-+				FIELD_PREP(TEGRA_GPCDMA_HIGH_ADDR_SRC_PTR, (mem >> 32));
-+		} else if (direction == DMA_DEV_TO_MEM) {
-+			sg_req[i].ch_regs.src_ptr = apb_ptr;
-+			sg_req[i].ch_regs.dst_ptr = mem;
-+			sg_req[i].ch_regs.high_addr_ptr =
-+				FIELD_PREP(TEGRA_GPCDMA_HIGH_ADDR_DST_PTR, (mem >> 32));
-+		}
-+		/*
-+		 * Word count register takes input in words. Writing a value
-+		 * of N into word count register means a req of (N+1) words.
-+		 */
-+		sg_req[i].ch_regs.wcount = ((len - 4) >> 2);
-+		sg_req[i].ch_regs.csr = csr;
-+		sg_req[i].ch_regs.mmio_seq = mmio_seq;
-+		sg_req[i].ch_regs.mc_seq = mc_seq;
-+		sg_req[i].len = len;
-+
-+		mem += len;
-+	}
-+
-+	dma_desc->cyclic = true;
-+
-+	return vchan_tx_prep(&tdc->vc, &dma_desc->vd, flags);
-+}
-+
-+static int tegra_dma_alloc_chan_resources(struct dma_chan *dc)
-+{
-+	struct tegra_dma_channel *tdc = to_tegra_dma_chan(dc);
-+	int ret;
-+
-+	ret = request_irq(tdc->irq, tegra_dma_isr, 0, tdc->name, tdc);
-+	if (ret) {
-+		dev_err(tdc2dev(tdc), "request_irq failed for %s\n", tdc->name);
-+		return ret;
-+	}
-+
-+	dma_cookie_init(&tdc->vc.chan);
-+	tdc->config_init = false;
-+	return 0;
-+}
-+
-+static void tegra_dma_chan_synchronize(struct dma_chan *dc)
-+{
-+	struct tegra_dma_channel *tdc = to_tegra_dma_chan(dc);
-+
-+	synchronize_irq(tdc->irq);
-+	vchan_synchronize(&tdc->vc);
-+}
-+
-+static void tegra_dma_free_chan_resources(struct dma_chan *dc)
-+{
-+	struct tegra_dma_channel *tdc = to_tegra_dma_chan(dc);
-+
-+	dev_dbg(tdc2dev(tdc), "Freeing channel %d\n", tdc->id);
-+
-+	tegra_dma_terminate_all(dc);
-+	synchronize_irq(tdc->irq);
-+
-+	tasklet_kill(&tdc->vc.task);
-+	tdc->config_init = false;
-+	tdc->slave_id = -1;
-+	tdc->sid_dir = DMA_TRANS_NONE;
-+	free_irq(tdc->irq, tdc);
-+
-+	vchan_free_chan_resources(&tdc->vc);
-+}
-+
-+static struct dma_chan *tegra_dma_of_xlate(struct of_phandle_args *dma_spec,
-+					   struct of_dma *ofdma)
-+{
-+	struct tegra_dma *tdma = ofdma->of_dma_data;
-+	struct tegra_dma_channel *tdc;
-+	struct dma_chan *chan;
-+
-+	chan = dma_get_any_slave_channel(&tdma->dma_dev);
-+	if (!chan)
-+		return NULL;
-+
-+	tdc = to_tegra_dma_chan(chan);
-+	tdc->slave_id = dma_spec->args[0];
-+
-+	return chan;
-+}
-+
-+static const struct tegra_dma_chip_data tegra186_dma_chip_data = {
-+	.nr_channels = 31,
-+	.channel_reg_size = SZ_64K,
-+	.max_dma_count = SZ_1G,
-+	.hw_support_pause = false,
-+};
-+
-+static const struct tegra_dma_chip_data tegra194_dma_chip_data = {
-+	.nr_channels = 31,
-+	.channel_reg_size = SZ_64K,
-+	.max_dma_count = SZ_1G,
-+	.hw_support_pause = true,
-+};
-+
-+static const struct of_device_id tegra_dma_of_match[] = {
-+	{
-+		.compatible = "nvidia,tegra186-gpcdma",
-+		.data = &tegra186_dma_chip_data,
-+	}, {
-+		.compatible = "nvidia,tegra194-gpcdma",
-+		.data = &tegra194_dma_chip_data,
-+	}, {
-+	},
-+};
-+MODULE_DEVICE_TABLE(of, tegra_dma_of_match);
-+
-+static int tegra_dma_program_sid(struct tegra_dma_channel *tdc,
-+				 int chan, int stream_id)
-+{
-+	unsigned int reg_val =  tdc_read(tdc, TEGRA_GPCDMA_CHAN_MCSEQ);
-+
-+	reg_val &= ~(TEGRA_GPCDMA_MCSEQ_STREAM_ID0_MASK);
-+	reg_val &= ~(TEGRA_GPCDMA_MCSEQ_STREAM_ID1_MASK);
-+
-+	reg_val |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_STREAM_ID0_MASK, stream_id);
-+	reg_val |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_STREAM_ID1_MASK, stream_id);
-+
-+	tdc_write(tdc, TEGRA_GPCDMA_CHAN_MCSEQ, reg_val);
-+	return 0;
-+}
-+
-+static int tegra_dma_probe(struct platform_device *pdev)
-+{
-+	const struct tegra_dma_chip_data *cdata = NULL;
-+	struct iommu_fwspec *iommu_spec;
-+	unsigned int stream_id, i;
-+	struct tegra_dma *tdma;
-+	struct resource	*res;
-+	int ret;
-+
-+	cdata = of_device_get_match_data(&pdev->dev);
-+
-+	tdma = devm_kzalloc(&pdev->dev, sizeof(*tdma) + cdata->nr_channels *
-+			sizeof(struct tegra_dma_channel), GFP_KERNEL);
-+	if (!tdma)
-+		return -ENOMEM;
-+
-+	tdma->dev = &pdev->dev;
-+	tdma->chip_data = cdata;
-+	platform_set_drvdata(pdev, tdma);
-+
-+	tdma->base_addr = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(tdma->base_addr))
-+		return PTR_ERR(tdma->base_addr);
-+
-+	tdma->rst = devm_reset_control_get_exclusive(&pdev->dev, "gpcdma");
-+	if (IS_ERR(tdma->rst)) {
-+		return dev_err_probe(&pdev->dev, PTR_ERR(tdma->rst),
-+			      "Missing controller reset\n");
-+	}
-+	reset_control_reset(tdma->rst);
-+
-+	tdma->dma_dev.dev = &pdev->dev;
-+
-+	iommu_spec = dev_iommu_fwspec_get(&pdev->dev);
-+	if (!iommu_spec) {
-+		dev_err(&pdev->dev, "Missing iommu stream-id\n");
-+		return -EINVAL;
-+	}
-+	stream_id = iommu_spec->ids[0] & 0xffff;
-+
-+	INIT_LIST_HEAD(&tdma->dma_dev.channels);
-+	for (i = 0; i < cdata->nr_channels; i++) {
-+		struct tegra_dma_channel *tdc = &tdma->channels[i];
-+
-+		tdc->chan_base_offset = TEGRA_GPCDMA_CHANNEL_BASE_ADD_OFFSET +
-+					i * cdata->channel_reg_size;
-+		res = platform_get_resource(pdev, IORESOURCE_IRQ, i);
-+		if (!res) {
-+			dev_err(&pdev->dev, "No irq resource for chan %d\n", i);
-+			return -EINVAL;
-+		}
-+		tdc->irq = res->start;
-+		snprintf(tdc->name, sizeof(tdc->name), "gpcdma.%d", i);
-+
-+		tdc->tdma = tdma;
-+		tdc->id = i;
-+		tdc->slave_id = -1;
-+
-+		vchan_init(&tdc->vc, &tdma->dma_dev);
-+		tdc->vc.desc_free = tegra_dma_desc_free;
-+
-+		/* program stream-id for this channel */
-+		tegra_dma_program_sid(tdc, i, stream_id);
-+		tdc->stream_id = stream_id;
-+	}
-+
-+	dma_cap_set(DMA_SLAVE, tdma->dma_dev.cap_mask);
-+	dma_cap_set(DMA_PRIVATE, tdma->dma_dev.cap_mask);
-+	dma_cap_set(DMA_MEMCPY, tdma->dma_dev.cap_mask);
-+	dma_cap_set(DMA_MEMSET, tdma->dma_dev.cap_mask);
-+	dma_cap_set(DMA_CYCLIC, tdma->dma_dev.cap_mask);
-+
-+	/*
-+	 * Only word aligned transfers are supported. Set the copy
-+	 * alignment shift.
-+	 */
-+	tdma->dma_dev.copy_align = 2;
-+	tdma->dma_dev.fill_align = 2;
-+	tdma->dma_dev.device_alloc_chan_resources =
-+					tegra_dma_alloc_chan_resources;
-+	tdma->dma_dev.device_free_chan_resources =
-+					tegra_dma_free_chan_resources;
-+	tdma->dma_dev.device_prep_slave_sg = tegra_dma_prep_slave_sg;
-+	tdma->dma_dev.device_prep_dma_memcpy = tegra_dma_prep_dma_memcpy;
-+	tdma->dma_dev.device_prep_dma_memset = tegra_dma_prep_dma_memset;
-+	tdma->dma_dev.device_prep_dma_cyclic = tegra_dma_prep_dma_cyclic;
-+	tdma->dma_dev.device_config = tegra_dma_slave_config;
-+	tdma->dma_dev.device_terminate_all = tegra_dma_terminate_all;
-+	tdma->dma_dev.device_tx_status = tegra_dma_tx_status;
-+	tdma->dma_dev.device_issue_pending = tegra_dma_issue_pending;
-+	tdma->dma_dev.device_pause = tegra_dma_device_pause;
-+	tdma->dma_dev.device_resume = tegra_dma_device_resume;
-+	tdma->dma_dev.device_synchronize = tegra_dma_chan_synchronize;
-+	tdma->dma_dev.residue_granularity = DMA_RESIDUE_GRANULARITY_BURST;
-+
-+	ret = dma_async_device_register(&tdma->dma_dev);
-+	if (ret < 0) {
-+		dev_err_probe(&pdev->dev, ret,
-+			      "GPC DMA driver registration failed\n");
-+		return ret;
-+	}
-+
-+	ret = of_dma_controller_register(pdev->dev.of_node,
-+					 tegra_dma_of_xlate, tdma);
-+	if (ret < 0) {
-+		dev_err_probe(&pdev->dev, ret,
-+			      "GPC DMA OF registration failed\n");
-+
-+		dma_async_device_unregister(&tdma->dma_dev);
-+		return ret;
-+	}
-+
-+	dev_info(&pdev->dev, "GPC DMA driver register %d channels\n",
-+		 cdata->nr_channels);
-+
-+	return 0;
-+}
-+
-+static int tegra_dma_remove(struct platform_device *pdev)
-+{
-+	struct tegra_dma *tdma = platform_get_drvdata(pdev);
-+
-+	of_dma_controller_free(pdev->dev.of_node);
-+	dma_async_device_unregister(&tdma->dma_dev);
-+
-+	return 0;
-+}
-+
-+static int __maybe_unused tegra_dma_pm_suspend(struct device *dev)
-+{
-+	struct tegra_dma *tdma = dev_get_drvdata(dev);
-+	unsigned int i;
-+
-+	for (i = 0; i < tdma->chip_data->nr_channels; i++) {
-+		struct tegra_dma_channel *tdc = &tdma->channels[i];
-+
-+		if (tdc->dma_desc) {
-+			dev_err(tdma->dev, "channel %u busy\n", i);
-+			return -EBUSY;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+static int __maybe_unused tegra_dma_pm_resume(struct device *dev)
-+{
-+	struct tegra_dma *tdma = dev_get_drvdata(dev);
-+	unsigned int i;
-+
-+	reset_control_reset(tdma->rst);
-+
-+	for (i = 0; i < tdma->chip_data->nr_channels; i++) {
-+		struct tegra_dma_channel *tdc = &tdma->channels[i];
-+
-+		tegra_dma_program_sid(tdc, i, tdc->stream_id);
-+	}
-+
-+	return 0;
-+}
-+
-+static const struct __maybe_unused dev_pm_ops tegra_dma_dev_pm_ops = {
-+	SET_SYSTEM_SLEEP_PM_OPS(tegra_dma_pm_suspend, tegra_dma_pm_resume)
-+};
-+
-+static struct platform_driver tegra_dmac_driver = {
-+	.driver = {
-+		.name	= "tegra-gpcdma",
-+		.pm	= &tegra_dma_dev_pm_ops,
-+		.of_match_table = tegra_dma_of_match,
-+	},
-+	.probe		= tegra_dma_probe,
-+	.remove		= tegra_dma_remove,
-+};
-+
-+module_platform_driver(tegra_dmac_driver);
-+
-+MODULE_DESCRIPTION("NVIDIA Tegra GPC DMA Controller driver");
-+MODULE_AUTHOR("Pavan Kunapuli <pkunapuli@nvidia.com>");
-+MODULE_AUTHOR("Rajesh Gumasta <rgumasta@nvidia.com>");
-+MODULE_LICENSE("GPL v2");
--- 
-2.7.4
-
+Heikki Krogerus <heikki.krogerus@linux.intel.com> =E6=96=BC 2022=E5=B9=B41=
+=E6=9C=8831=E6=97=A5 =E9=80=B1=E4=B8=80 =E4=B8=8B=E5=8D=886:01=E5=AF=AB=E9=
+=81=93=EF=BC=9A
+>
+> Hi,
+>
+> On Sat, Jan 15, 2022 at 08:56:31AM +0800, cy_huang wrote:
+> > From: ChiYuan Huang <cy_huang@richtek.com>
+> >
+> > Richtek RT1719 is a sink-only Type-C PD controller it complies with
+> > latest USB Type-C and PD standards. It integrates the physical layer of
+> > USB power delivery protocol to allow up to 100W of power.
+> >
+> > Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
+>
+> This looked OK to me, but one nitpick. Don't return ENOTSUPP, use
+> EOPNOTSUPP instead.
+>
+OK. I.ll use EOPNOTSUPP to replace all ENOTSUPPs.
+> I'm pretty sure that scripts/checkpatch.pl will also tell you to do
+> so, so please run that script and fix all the errors and warnings that
+> it finds while at it.
+>
+> thanks,
+>
+Yap, Thanks. I also find there's still one consistent space error need
+to be fixed.
+Ack in next.
+> > ---
+> >  drivers/usb/typec/Kconfig  |  12 +
+> >  drivers/usb/typec/Makefile |   1 +
+> >  drivers/usb/typec/rt1719.c | 976 +++++++++++++++++++++++++++++++++++++=
+++++++++
+> >  3 files changed, 989 insertions(+)
+> >  create mode 100644 drivers/usb/typec/rt1719.c
+> >
+> > diff --git a/drivers/usb/typec/Kconfig b/drivers/usb/typec/Kconfig
+> > index ab480f3..bc918ca 100644
+> > --- a/drivers/usb/typec/Kconfig
+> > +++ b/drivers/usb/typec/Kconfig
+> > @@ -52,6 +52,18 @@ source "drivers/usb/typec/ucsi/Kconfig"
+> >
+> >  source "drivers/usb/typec/tipd/Kconfig"
+> >
+> > +config TYPEC_RT1719
+> > +     tristate "Richtek RT1719 Sink Only Type-C controller driver"
+> > +     depends on USB_ROLE_SWITCH || !USB_ROLE_SWITCH
+> > +     depends on I2C
+> > +     select REGMAP_I2C
+> > +     help
+> > +       Say Y or M here if your system has Richtek RT1719 sink only
+> > +       Type-C port controller driver.
+> > +
+> > +       If you choose to build this driver as a dynamically linked modu=
+le, the
+> > +       module will be called rt1719.ko
+> > +
+> >  config TYPEC_HD3SS3220
+> >       tristate "TI HD3SS3220 Type-C DRP Port controller driver"
+> >       depends on I2C
+> > diff --git a/drivers/usb/typec/Makefile b/drivers/usb/typec/Makefile
+> > index 57870a2..441dd6c 100644
+> > --- a/drivers/usb/typec/Makefile
+> > +++ b/drivers/usb/typec/Makefile
+> > @@ -9,4 +9,5 @@ obj-$(CONFIG_TYPEC_TPS6598X)  +=3D tipd/
+> >  obj-$(CONFIG_TYPEC_HD3SS3220)        +=3D hd3ss3220.o
+> >  obj-$(CONFIG_TYPEC_QCOM_PMIC)        +=3D qcom-pmic-typec.o
+> >  obj-$(CONFIG_TYPEC_STUSB160X)        +=3D stusb160x.o
+> > +obj-$(CONFIG_TYPEC_RT1719)   +=3D rt1719.o
+> >  obj-$(CONFIG_TYPEC)          +=3D mux/
+> > diff --git a/drivers/usb/typec/rt1719.c b/drivers/usb/typec/rt1719.c
+> > new file mode 100644
+> > index 00000000..9da65ee
+> > --- /dev/null
+> > +++ b/drivers/usb/typec/rt1719.c
+> > @@ -0,0 +1,976 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +
+> > +#include <linux/bitfield.h>
+> > +#include <linux/completion.h>
+> > +#include <linux/i2c.h>
+> > +#include <linux/interrupt.h>
+> > +#include <linux/kernel.h>
+> > +#include <linux/module.h>
+> > +#include <linux/power_supply.h>
+> > +#include <linux/regmap.h>
+> > +#include <linux/usb/pd.h>
+> > +#include <linux/usb/role.h>
+> > +#include <linux/usb/typec.h>
+> > +
+> > +#define RT1719_REG_TXCTRL1   0x03
+> > +#define RT1719_REG_TXCTRL2   0x04
+> > +#define RT1719_REG_POLICYINFO        0x0E
+> > +#define RT1719_REG_SRCPDO1   0x11
+> > +#define RT1719_REG_MASKS     0x2D
+> > +#define RT1719_REG_EVENTS    0x33
+> > +#define RT1719_REG_STATS     0x37
+> > +#define RT1719_REG_PSELINFO  0x3C
+> > +#define RT1719_REG_USBSETINFO        0x3E
+> > +#define RT1719_REG_VENID     0x82
+> > +
+> > +#define RT1719_UNIQUE_PID    0x1719
+> > +#define RT1719_REQDRSWAP_MASK        BIT(7)
+> > +#define RT1719_EVALMODE_MASK BIT(4)
+> > +#define RT1719_REQSRCPDO_MASK        GENMASK(2, 0)
+> > +#define RT1719_TXSPDOREQ_MASK        BIT(7)
+> > +#define RT1719_INT_DRSW_ACCEPT       BIT(23)
+> > +#define RT1719_INT_RX_SRCCAP BIT(21)
+> > +#define RT1719_INT_VBUS_DCT  BIT(6)
+> > +#define RT1719_INT_VBUS_PRESENT      BIT(5)
+> > +#define RT1719_INT_PE_SNK_RDY        BIT(2)
+> > +#define RT1719_CC1_STAT              GENMASK(9, 8)
+> > +#define RT1719_CC2_STAT              GENMASK(11, 10)
+> > +#define RT1719_POLARITY_MASK BIT(23)
+> > +#define RT1719_DATAROLE_MASK BIT(22)
+> > +#define RT1719_PDSPECREV_MASK        GENMASK(21, 20)
+> > +#define RT1719_SPDOSEL_MASK  GENMASK(18, 16)
+> > +#define RT1719_SPDONUM_MASK  GENMASK(15, 13)
+> > +#define RT1719_ATTACH_VBUS   BIT(12)
+> > +#define RT1719_ATTACH_DBG    BIT(10)
+> > +#define RT1719_ATTACH_SNK    BIT(9)
+> > +#define RT1719_ATTACHDEV_MASK        (RT1719_ATTACH_VBUS | RT1719_ATTA=
+CH_DBG | \
+> > +                              RT1719_ATTACH_SNK)
+> > +#define RT1719_PE_EXP_CONTRACT       BIT(2)
+> > +#define RT1719_PSEL_SUPPORT  BIT(15)
+> > +#define RT1719_TBLSEL_MASK   BIT(6)
+> > +#define RT1719_LATPSEL_MASK  GENMASK(5, 0)
+> > +#define RT1719_USBINFO_MASK  GENMASK(1, 0)
+> > +#define RT1719_USB_DFPUFP    3
+> > +#define RT1719_MAX_SRCPDO    7
+> > +
+> > +enum {
+> > +     SNK_PWR_OPEN =3D 0,
+> > +     SNK_PWR_DEF,
+> > +     SNK_PWR_1P5A,
+> > +     SNK_PWR_3A
+> > +};
+> > +
+> > +enum {
+> > +     USBPD_SPECREV_1_0 =3D 0,
+> > +     USBPD_SPECREV_2_0,
+> > +     USBPD_SPECREV_3_0
+> > +};
+> > +
+> > +enum rt1719_snkcap {
+> > +     RT1719_SNKCAP_5V =3D 0,
+> > +     RT1719_SNKCAP_9V,
+> > +     RT1719_SNKCAP_12V,
+> > +     RT1719_SNKCAP_15V,
+> > +     RT1719_SNKCAP_20V,
+> > +     RT1719_MAX_SNKCAP
+> > +};
+> > +
+> > +struct rt1719_psel_cap {
+> > +     u8 lomask;
+> > +     u8 himask;
+> > +     u32 milliwatt;
+> > +     u32 milliamp;
+> > +};
+> > +
+> > +struct rt1719_data {
+> > +     struct device *dev;
+> > +     struct regmap *regmap;
+> > +     struct typec_port *port;
+> > +     struct usb_role_switch *role_sw;
+> > +     struct power_supply *psy;
+> > +     struct typec_partner *partner;
+> > +     struct power_supply_desc psy_desc;
+> > +     struct usb_pd_identity partner_ident;
+> > +     struct typec_partner_desc partner_desc;
+> > +     struct completion req_completion;
+> > +     enum power_supply_usb_type usb_type;
+> > +     bool attached;
+> > +     bool pd_capable;
+> > +     bool drswap_support;
+> > +     u32 voltage;
+> > +     u32 req_voltage;
+> > +     u32 max_current;
+> > +     u32 op_current;
+> > +     u32 spdos[RT1719_MAX_SRCPDO];
+> > +     u16 snkcaps[RT1719_MAX_SNKCAP];
+> > +     int spdo_num;
+> > +     int spdo_sel;
+> > +     u32 conn_info;
+> > +     u16 conn_stat;
+> > +};
+> > +
+> > +static const enum power_supply_usb_type rt1719_psy_usb_types[] =3D {
+> > +     POWER_SUPPLY_USB_TYPE_C,
+> > +     POWER_SUPPLY_USB_TYPE_PD,
+> > +     POWER_SUPPLY_USB_TYPE_PD_PPS
+> > +};
+> > +
+> > +static const enum power_supply_property rt1719_psy_properties[] =3D {
+> > +     POWER_SUPPLY_PROP_ONLINE,
+> > +     POWER_SUPPLY_PROP_USB_TYPE,
+> > +     POWER_SUPPLY_PROP_VOLTAGE_NOW,
+> > +     POWER_SUPPLY_PROP_CURRENT_MAX,
+> > +     POWER_SUPPLY_PROP_CURRENT_NOW
+> > +};
+> > +
+> > +static int rt1719_read16(struct rt1719_data *data, unsigned int reg, u=
+16 *val)
+> > +{
+> > +     __le16 regval;
+> > +     int ret;
+> > +
+> > +     ret =3D regmap_raw_read(data->regmap, reg, &regval, sizeof(regval=
+));
+> > +     if (ret)
+> > +             return ret;
+> > +
+> > +     *val =3D le16_to_cpu(regval);
+> > +     return 0;
+> > +}
+> > +
+> > +static int rt1719_read32(struct rt1719_data *data, unsigned int reg, u=
+32 *val)
+> > +{
+> > +     __le32 regval;
+> > +     int ret;
+> > +
+> > +     ret =3D regmap_raw_read(data->regmap, reg, &regval, sizeof(regval=
+));
+> > +     if (ret)
+> > +             return ret;
+> > +
+> > +     *val =3D le32_to_cpu(regval);
+> > +     return 0;
+> > +}
+> > +
+> > +static int rt1719_write32(struct rt1719_data *data, unsigned int reg, =
+u32 val)
+> > +{
+> > +     __le32 regval =3D cpu_to_le32(val);
+> > +
+> > +     return regmap_raw_write(data->regmap, reg, &regval, sizeof(regval=
+));
+> > +}
+> > +
+> > +static enum typec_pwr_opmode rt1719_get_pwr_opmode(u32 conn, u16 stat)
+> > +{
+> > +     u16 cc1, cc2, cc_stat;
+> > +
+> > +     cc1 =3D FIELD_GET(RT1719_CC1_STAT, stat);
+> > +     cc2 =3D FIELD_GET(RT1719_CC2_STAT, stat);
+> > +
+> > +     if (conn & RT1719_ATTACH_SNK) {
+> > +             if (conn & RT1719_POLARITY_MASK)
+> > +                     cc_stat =3D cc2;
+> > +             else
+> > +                     cc_stat =3D cc1;
+> > +
+> > +             switch (cc_stat) {
+> > +             case SNK_PWR_3A:
+> > +                     return TYPEC_PWR_MODE_3_0A;
+> > +             case SNK_PWR_1P5A:
+> > +                     return TYPEC_PWR_MODE_1_5A;
+> > +             }
+> > +     } else if (conn & RT1719_ATTACH_DBG) {
+> > +             if ((cc1 =3D=3D SNK_PWR_1P5A && cc2 =3D=3D SNK_PWR_DEF) |=
+|
+> > +                 (cc1 =3D=3D SNK_PWR_DEF && cc2 =3D=3D SNK_PWR_1P5A))
+> > +                     return TYPEC_PWR_MODE_1_5A;
+> > +             else if ((cc1 =3D=3D SNK_PWR_3A && cc2 =3D=3D SNK_PWR_DEF=
+) ||
+> > +                      (cc1 =3D=3D SNK_PWR_DEF && cc2 =3D=3D SNK_PWR_3A=
+))
+> > +                     return TYPEC_PWR_MODE_3_0A;
+> > +     }
+> > +
+> > +     return TYPEC_PWR_MODE_USB;
+> > +}
+> > +
+> > +static enum typec_data_role rt1719_get_data_role(u32 conn)
+> > +{
+> > +     if (conn & RT1719_DATAROLE_MASK)
+> > +             return TYPEC_HOST;
+> > +     return TYPEC_DEVICE;
+> > +}
+> > +
+> > +static void rt1719_set_data_role(struct rt1719_data *data,
+> > +                              enum typec_data_role data_role,
+> > +                              bool attached)
+> > +{
+> > +     enum usb_role usb_role =3D USB_ROLE_NONE;
+> > +
+> > +     if (attached) {
+> > +             if (data_role =3D=3D TYPEC_HOST)
+> > +                     usb_role =3D USB_ROLE_HOST;
+> > +             else
+> > +                     usb_role =3D USB_ROLE_DEVICE;
+> > +     }
+> > +
+> > +     usb_role_switch_set_role(data->role_sw, usb_role);
+> > +     typec_set_data_role(data->port, data_role);
+> > +}
+> > +
+> > +static void rt1719_update_data_role(struct rt1719_data *data)
+> > +{
+> > +     if (!data->attached)
+> > +             return;
+> > +
+> > +     rt1719_set_data_role(data, rt1719_get_data_role(data->conn_info),=
+ true);
+> > +}
+> > +
+> > +static void rt1719_register_partner(struct rt1719_data *data)
+> > +{
+> > +     u16 spec_rev =3D 0;
+> > +
+> > +     if (data->pd_capable) {
+> > +             u32 rev;
+> > +
+> > +             rev =3D FIELD_GET(RT1719_PDSPECREV_MASK, data->conn_info)=
+;
+> > +             switch (rev) {
+> > +             case USBPD_SPECREV_3_0:
+> > +                     spec_rev =3D 0x0300;
+> > +                     break;
+> > +             case USBPD_SPECREV_2_0:
+> > +                     spec_rev =3D 0x0200;
+> > +                     break;
+> > +             default:
+> > +                     spec_rev =3D 0x0100;
+> > +                     break;
+> > +             }
+> > +     }
+> > +
+> > +     /* Just to prevent multiple times attach */
+> > +     if (data->partner)
+> > +             typec_unregister_partner(data->partner);
+> > +
+> > +     memset(&data->partner_ident, 0, sizeof(data->partner_ident));
+> > +     data->partner_desc.usb_pd =3D data->pd_capable;
+> > +     data->partner_desc.pd_revision =3D spec_rev;
+> > +
+> > +     if (data->conn_info & RT1719_ATTACH_DBG)
+> > +             data->partner_desc.accessory =3D TYPEC_ACCESSORY_DEBUG;
+> > +     else
+> > +             data->partner_desc.accessory =3D TYPEC_ACCESSORY_NONE;
+> > +
+> > +     data->partner =3D typec_register_partner(data->port, &data->partn=
+er_desc);
+> > +}
+> > +
+> > +static void rt1719_attach(struct rt1719_data *data)
+> > +{
+> > +     enum typec_pwr_opmode pwr_opmode;
+> > +     enum typec_data_role data_role;
+> > +     u32 volt =3D 5000, curr =3D 500;
+> > +
+> > +     if (!(data->conn_info & RT1719_ATTACHDEV_MASK))
+> > +             return;
+> > +
+> > +     pwr_opmode =3D rt1719_get_pwr_opmode(data->conn_info, data->conn_=
+stat);
+> > +     data_role =3D rt1719_get_data_role(data->conn_info);
+> > +
+> > +     typec_set_pwr_opmode(data->port, pwr_opmode);
+> > +     rt1719_set_data_role(data, data_role, true);
+> > +
+> > +     if (data->conn_info & RT1719_ATTACH_SNK)
+> > +             rt1719_register_partner(data);
+> > +
+> > +     if (pwr_opmode =3D=3D TYPEC_PWR_MODE_3_0A)
+> > +             curr =3D 3000;
+> > +     else if (pwr_opmode =3D=3D TYPEC_PWR_MODE_1_5A)
+> > +             curr =3D 1500;
+> > +
+> > +     data->voltage =3D volt * 1000;
+> > +     data->max_current =3D data->op_current =3D curr * 1000;
+> > +     data->attached =3D true;
+> > +
+> > +     power_supply_changed(data->psy);
+> > +}
+> > +
+> > +static void rt1719_detach(struct rt1719_data *data)
+> > +{
+> > +     if (!data->attached || (data->conn_info & RT1719_ATTACHDEV_MASK))
+> > +             return;
+> > +
+> > +     typec_unregister_partner(data->partner);
+> > +     data->partner =3D NULL;
+> > +
+> > +     typec_set_pwr_opmode(data->port, TYPEC_PWR_MODE_USB);
+> > +     rt1719_set_data_role(data, TYPEC_DEVICE, false);
+> > +
+> > +     memset32(data->spdos, 0, RT1719_MAX_SRCPDO);
+> > +     data->spdo_num =3D 0;
+> > +     data->voltage =3D data->max_current =3D data->op_current =3D 0;
+> > +     data->attached =3D data->pd_capable =3D false;
+> > +
+> > +     data->usb_type =3D POWER_SUPPLY_USB_TYPE_C;
+> > +
+> > +     power_supply_changed(data->psy);
+> > +}
+> > +
+> > +static void rt1719_update_operating_status(struct rt1719_data *data)
+> > +{
+> > +     enum power_supply_usb_type usb_type =3D POWER_SUPPLY_USB_TYPE_PD;
+> > +     u32 voltage, max_current, op_current;
+> > +     int i, snk_sel;
+> > +
+> > +     for (i =3D 0; i < data->spdo_num; i++) {
+> > +             u32 pdo =3D data->spdos[i];
+> > +             enum pd_pdo_type type =3D pdo_type(pdo);
+> > +
+> > +             if (type =3D=3D PDO_TYPE_APDO) {
+> > +                     usb_type =3D POWER_SUPPLY_USB_TYPE_PD_PPS;
+> > +                     break;
+> > +             }
+> > +     }
+> > +
+> > +     data->spdo_sel =3D FIELD_GET(RT1719_SPDOSEL_MASK, data->conn_info=
+);
+> > +     if (data->spdo_sel <=3D 0)
+> > +             return;
+> > +
+> > +     data->usb_type =3D usb_type;
+> > +
+> > +     voltage =3D pdo_fixed_voltage(data->spdos[data->spdo_sel -1]);
+> > +     max_current =3D pdo_max_current(data->spdos[data->spdo_sel - 1]);
+> > +
+> > +     switch (voltage) {
+> > +     case 5000:
+> > +             snk_sel =3D RT1719_SNKCAP_5V;
+> > +             break;
+> > +     case 9000:
+> > +             snk_sel =3D RT1719_SNKCAP_9V;
+> > +             break;
+> > +     case 12000:
+> > +             snk_sel =3D RT1719_SNKCAP_12V;
+> > +             break;
+> > +     case 15000:
+> > +             snk_sel =3D RT1719_SNKCAP_15V;
+> > +             break;
+> > +     case 20000:
+> > +             snk_sel =3D RT1719_SNKCAP_20V;
+> > +             break;
+> > +     default:
+> > +             return;
+> > +     }
+> > +
+> > +     op_current =3D min(max_current, pdo_max_current(data->snkcaps[snk=
+_sel]));
+> > +
+> > +     /* covert mV/mA to uV/uA */
+> > +     data->voltage =3D voltage * 1000;
+> > +     data->max_current =3D max_current * 1000;
+> > +     data->op_current =3D op_current * 1000;
+> > +
+> > +     power_supply_changed(data->psy);
+> > +}
+> > +
+> > +static void rt1719_update_pwr_opmode(struct rt1719_data *data)
+> > +{
+> > +     if (!data->attached)
+> > +             return;
+> > +
+> > +     if (!data->pd_capable) {
+> > +             data->pd_capable =3D true;
+> > +
+> > +             typec_set_pwr_opmode(data->port, TYPEC_PWR_MODE_PD);
+> > +             rt1719_register_partner(data);
+> > +     }
+> > +
+> > +     rt1719_update_operating_status(data);
+> > +}
+> > +
+> > +static void rt1719_update_source_pdos(struct rt1719_data *data)
+> > +{
+> > +     int spdo_num =3D FIELD_GET(RT1719_SPDONUM_MASK, data->conn_info);
+> > +     __le32 src_pdos[RT1719_MAX_SRCPDO] =3D { };
+> > +     int i, ret;
+> > +
+> > +     if (!data->attached)
+> > +             return;
+> > +
+> > +     ret =3D regmap_raw_read(data->regmap, RT1719_REG_SRCPDO1, src_pdo=
+s,
+> > +                           sizeof(__le32) * spdo_num);
+> > +     if (ret)
+> > +             return;
+> > +
+> > +     data->spdo_num =3D spdo_num;
+> > +     for (i =3D 0; i < spdo_num; i++)
+> > +             data->spdos[i] =3D le32_to_cpu(src_pdos[i]);
+> > +}
+> > +
+> > +static int rt1719_dr_set(struct typec_port *port, enum typec_data_role=
+ role)
+> > +{
+> > +     struct rt1719_data *data =3D typec_get_drvdata(port);
+> > +     enum typec_data_role cur_role;
+> > +     int ret;
+> > +
+> > +     if (!data->attached || !data->pd_capable || !data->drswap_support=
+)
+> > +             return -EINVAL;
+> > +
+> > +     if (data->spdo_num > 0 && !(data->spdos[0] & PDO_FIXED_DATA_SWAP)=
+)
+> > +             return -EINVAL;
+> > +
+> > +     cur_role =3D rt1719_get_data_role(data->conn_info);
+> > +     if (cur_role =3D=3D role)
+> > +             return 0;
+> > +
+> > +     ret =3D regmap_update_bits(data->regmap, RT1719_REG_TXCTRL1,
+> > +                              RT1719_REQDRSWAP_MASK, RT1719_REQDRSWAP_=
+MASK);
+> > +     if (ret)
+> > +             return ret;
+> > +
+> > +     reinit_completion(&data->req_completion);
+> > +     ret =3D wait_for_completion_timeout(&data->req_completion,
+> > +                                       msecs_to_jiffies(400));
+> > +     if (ret =3D=3D 0)
+> > +             return -ETIMEDOUT;
+> > +
+> > +     cur_role =3D rt1719_get_data_role(data->conn_info);
+> > +     if (cur_role !=3D role)
+> > +             return -ENOTSUPP;
+> > +
+> > +     rt1719_set_data_role(data, role, true);
+> > +     return 0;
+> > +}
+> > +
+> > +static const struct typec_operations rt1719_port_ops =3D {
+> > +     .dr_set =3D rt1719_dr_set,
+> > +};
+> > +
+> > +static int rt1719_usbpd_request_voltage(struct rt1719_data *data)
+> > +{
+> > +     u32 src_voltage;
+> > +     int snk_sel, src_sel =3D -1;
+> > +     int i, ret;
+> > +
+> > +     if (!data->attached || !data->pd_capable || data->spdo_sel <=3D 0=
+)
+> > +             return -EINVAL;
+> > +
+> > +     src_voltage =3D pdo_fixed_voltage(data->spdos[data->spdo_sel - 1]=
+);
+> > +     if (src_voltage =3D=3D data->req_voltage)
+> > +             return 0;
+> > +
+> > +     switch (data->req_voltage) {
+> > +     case 5000:
+> > +             snk_sel =3D RT1719_SNKCAP_5V;
+> > +             break;
+> > +     case 9000:
+> > +             snk_sel =3D RT1719_SNKCAP_9V;
+> > +             break;
+> > +     case 12000:
+> > +             snk_sel =3D RT1719_SNKCAP_12V;
+> > +             break;
+> > +     case 15000:
+> > +             snk_sel =3D RT1719_SNKCAP_15V;
+> > +             break;
+> > +     case 20000:
+> > +             snk_sel =3D RT1719_SNKCAP_20V;
+> > +             break;
+> > +     default:
+> > +             return -EINVAL;
+> > +     }
+> > +
+> > +     if (!(data->snkcaps[snk_sel] & RT1719_PSEL_SUPPORT))
+> > +             return -EINVAL;
+> > +
+> > +     for (i =3D 0; i < data->spdo_num; i++) {
+> > +             enum pd_pdo_type type =3D pdo_type(data->spdos[i]);
+> > +
+> > +             if (type !=3D PDO_TYPE_FIXED)
+> > +                     continue;
+> > +
+> > +             src_voltage =3D pdo_fixed_voltage(data->spdos[i]);
+> > +             if (src_voltage =3D=3D data->req_voltage) {
+> > +                     src_sel =3D i;
+> > +                     break;
+> > +             }
+> > +     }
+> > +
+> > +     if (src_sel =3D=3D -1)
+> > +             return -ENOTSUPP;
+> > +
+> > +     ret =3D regmap_update_bits(data->regmap, RT1719_REG_TXCTRL1,
+> > +                              RT1719_EVALMODE_MASK | RT1719_REQSRCPDO_=
+MASK,
+> > +                              RT1719_EVALMODE_MASK | (src_sel + 1));
+> > +     ret |=3D regmap_update_bits(data->regmap, RT1719_REG_TXCTRL2,
+> > +                               RT1719_TXSPDOREQ_MASK, RT1719_TXSPDOREQ=
+_MASK);
+> > +     if (ret)
+> > +             return ret;
+> > +
+> > +     reinit_completion(&data->req_completion);
+> > +     ret =3D wait_for_completion_timeout(&data->req_completion,
+> > +                                       msecs_to_jiffies(400));
+> > +     if (!ret)
+> > +             return -ETIMEDOUT;
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +static int rt1719_psy_set_property(struct power_supply *psy,
+> > +                                enum power_supply_property psp,
+> > +                                const union power_supply_propval *val)
+> > +{
+> > +     struct rt1719_data *data =3D power_supply_get_drvdata(psy);
+> > +     int ret =3D -ENOTSUPP;
+> > +
+> > +     if (psp =3D=3D POWER_SUPPLY_PROP_VOLTAGE_NOW) {
+> > +             data->req_voltage =3D val->intval / 1000;
+> > +             ret =3D rt1719_usbpd_request_voltage(data);
+> > +     }
+> > +
+> > +     return ret;
+> > +}
+> > +
+> > +static int rt1719_psy_get_property(struct power_supply *psy,
+> > +                                enum power_supply_property psp,
+> > +                                union power_supply_propval *val)
+> > +{
+> > +     struct rt1719_data *data =3D power_supply_get_drvdata(psy);
+> > +     int ret =3D 0;
+> > +
+> > +     switch (psp) {
+> > +     case POWER_SUPPLY_PROP_ONLINE:
+> > +             val->intval =3D data->attached ? 1 : 0;
+> > +             break;
+> > +     case POWER_SUPPLY_PROP_USB_TYPE:
+> > +             val->intval =3D data->usb_type;
+> > +             break;
+> > +     case POWER_SUPPLY_PROP_VOLTAGE_NOW:
+> > +             val->intval =3D data->voltage;
+> > +             break;
+> > +     case POWER_SUPPLY_PROP_CURRENT_MAX:
+> > +             val->intval =3D data->max_current;
+> > +             break;
+> > +     case POWER_SUPPLY_PROP_CURRENT_NOW:
+> > +             val->intval =3D data->op_current;
+> > +             break;
+> > +     default:
+> > +             ret =3D -EINVAL;
+> > +             break;
+> > +     }
+> > +
+> > +     return ret;
+> > +}
+> > +
+> > +static int rt1719_psy_property_is_writeable(struct power_supply *psy,
+> > +                                         enum power_supply_property ps=
+p)
+> > +{
+> > +     if (psp =3D=3D POWER_SUPPLY_PROP_VOLTAGE_NOW)
+> > +             return 1;
+> > +     return 0;
+> > +}
+> > +
+> > +static int devm_rt1719_psy_register(struct rt1719_data *data)
+> > +{
+> > +     static const char *rt1719_psy_name_prefix =3D "rt1719-source-psy-=
+";
+> > +     const char *port_dev_name =3D dev_name(data->dev);
+> > +     struct power_supply_config psy_cfg =3D { };
+> > +     size_t psy_name_len =3D strlen(rt1719_psy_name_prefix) +
+> > +                                    strlen(port_dev_name) + 1;
+> > +     char *psy_name;
+> > +
+> > +     psy_cfg.fwnode =3D dev_fwnode(data->dev);
+> > +     psy_cfg.drv_data =3D data;
+> > +
+> > +     psy_name =3D devm_kzalloc(data->dev, psy_name_len, GFP_KERNEL);
+> > +     if (!psy_name)
+> > +             return -ENOMEM;
+> > +
+> > +     snprintf(psy_name, psy_name_len, "%s%s", rt1719_psy_name_prefix,
+> > +              port_dev_name);
+> > +     data->psy_desc.name =3D psy_name;
+> > +     data->psy_desc.type =3D POWER_SUPPLY_TYPE_USB;
+> > +     data->psy_desc.usb_types =3D rt1719_psy_usb_types;
+> > +     data->psy_desc.num_usb_types =3D ARRAY_SIZE(rt1719_psy_usb_types)=
+;
+> > +     data->psy_desc.properties =3D rt1719_psy_properties;
+> > +     data->psy_desc.num_properties =3D ARRAY_SIZE(rt1719_psy_propertie=
+s);
+> > +     data->psy_desc.get_property =3D rt1719_psy_get_property;
+> > +     data->psy_desc.set_property =3D rt1719_psy_set_property;
+> > +     data->psy_desc.property_is_writeable =3D rt1719_psy_property_is_w=
+riteable;
+> > +
+> > +     data->usb_type =3D POWER_SUPPLY_USB_TYPE_C;
+> > +
+> > +     data->psy =3D devm_power_supply_register(data->dev, &data->psy_de=
+sc,
+> > +                                            &psy_cfg);
+> > +
+> > +     return PTR_ERR_OR_ZERO(data->psy);
+> > +}
+> > +
+> > +static irqreturn_t rt1719_irq_handler(int irq, void *priv)
+> > +{
+> > +     struct rt1719_data *data =3D priv;
+> > +     u32 events, conn_info;
+> > +     u16 conn_stat;
+> > +     int ret;
+> > +
+> > +     ret =3D rt1719_read32(data, RT1719_REG_EVENTS, &events);
+> > +     ret |=3D rt1719_read32(data, RT1719_REG_POLICYINFO, &conn_info);
+> > +     ret |=3D rt1719_read16(data, RT1719_REG_STATS, &conn_stat);
+> > +     if (ret)
+> > +             return IRQ_NONE;
+> > +
+> > +     data->conn_info =3D conn_info;
+> > +     data->conn_stat =3D conn_stat;
+> > +
+> > +     events &=3D (RT1719_INT_DRSW_ACCEPT | RT1719_INT_RX_SRCCAP |
+> > +                RT1719_INT_VBUS_PRESENT | RT1719_INT_VBUS_DCT |
+> > +                RT1719_INT_PE_SNK_RDY);
+> > +
+> > +     if (events & RT1719_INT_DRSW_ACCEPT)
+> > +             rt1719_update_data_role(data);
+> > +
+> > +     if (events & RT1719_INT_VBUS_PRESENT)
+> > +             rt1719_attach(data);
+> > +
+> > +     if (events & RT1719_INT_VBUS_DCT)
+> > +             rt1719_detach(data);
+> > +
+> > +     if (events & RT1719_INT_RX_SRCCAP)
+> > +             rt1719_update_source_pdos(data);
+> > +
+> > +     if (events & RT1719_INT_PE_SNK_RDY) {
+> > +             complete(&data->req_completion);
+> > +             rt1719_update_pwr_opmode(data);
+> > +     }
+> > +
+> > +     /* Write 1 to clear already handled events */
+> > +     rt1719_write32(data, RT1719_REG_EVENTS, events);
+> > +
+> > +     return IRQ_HANDLED;
+> > +}
+> > +
+> > +static int rt1719_irq_init(struct rt1719_data *data)
+> > +{
+> > +     struct i2c_client *i2c =3D to_i2c_client(data->dev);
+> > +     u32 irq_enable;
+> > +     int ret;
+> > +
+> > +     irq_enable =3D RT1719_INT_DRSW_ACCEPT | RT1719_INT_RX_SRCCAP |
+> > +                  RT1719_INT_VBUS_DCT | RT1719_INT_VBUS_PRESENT |
+> > +                  RT1719_INT_PE_SNK_RDY;
+> > +
+> > +     ret =3D rt1719_write32(data, RT1719_REG_MASKS, irq_enable);
+> > +     if (ret) {
+> > +             dev_err(&i2c->dev, "Failed to config irq enable\n");
+> > +             return ret;
+> > +     }
+> > +
+> > +     return devm_request_threaded_irq(&i2c->dev, i2c->irq, NULL,
+> > +                                      rt1719_irq_handler, IRQF_ONESHOT=
+,
+> > +                                      dev_name(&i2c->dev), data);
+> > +}
+> > +
+> > +static int rt1719_init_attach_state(struct rt1719_data *data)
+> > +{
+> > +     u32 conn_info, irq_clear;
+> > +     u16 conn_stat;
+> > +     int ret;
+> > +
+> > +     irq_clear =3D RT1719_INT_DRSW_ACCEPT | RT1719_INT_RX_SRCCAP |
+> > +                 RT1719_INT_VBUS_DCT | RT1719_INT_VBUS_PRESENT |
+> > +                 RT1719_INT_PE_SNK_RDY;
+> > +
+> > +     ret =3D rt1719_read32(data, RT1719_REG_POLICYINFO, &conn_info);
+> > +     ret |=3D rt1719_read16(data, RT1719_REG_STATS, &conn_stat);
+> > +     ret |=3D rt1719_write32(data, RT1719_REG_EVENTS, irq_clear);
+> > +     if (ret)
+> > +             return ret;
+> > +
+> > +     data->conn_info =3D conn_info;
+> > +     data->conn_stat =3D conn_stat;
+> > +
+> > +     if (conn_info & RT1719_ATTACHDEV_MASK)
+> > +             rt1719_attach(data);
+> > +
+> > +     if (conn_info & RT1719_PE_EXP_CONTRACT) {
+> > +             rt1719_update_source_pdos(data);
+> > +             rt1719_update_pwr_opmode(data);
+> > +     }
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +#define RT1719_PSEL_CAPINFO(_lomask, _milliwatt, _himask, _milliamp) {=
+ \
+> > +     .lomask         =3D _lomask, \
+> > +     .milliwatt      =3D _milliwatt, \
+> > +     .himask         =3D _himask, \
+> > +     .milliamp       =3D _milliamp, \
+> > +}
+> > +
+> > +static const struct rt1719_psel_cap rt1719_psel_caps[] =3D {
+> > +     RT1719_PSEL_CAPINFO(0x18, 75000, 0x10, 5000),
+> > +     RT1719_PSEL_CAPINFO(0x18, 60000, 0x10, 4500),
+> > +     RT1719_PSEL_CAPINFO(0x18, 45000, 0x10, 4000),
+> > +     RT1719_PSEL_CAPINFO(0x18, 30000, 0x10, 3500),
+> > +     RT1719_PSEL_CAPINFO(0x18, 25000, 0x10, 3000),
+> > +     RT1719_PSEL_CAPINFO(0x18, 20000, 0x10, 2500),
+> > +     RT1719_PSEL_CAPINFO(0x18, 15000, 0x10, 2000),
+> > +     RT1719_PSEL_CAPINFO(0x18, 10000, 0x10, 1000),
+> > +     RT1719_PSEL_CAPINFO(0x1C, 60000, 0x1F, 5000),
+> > +     RT1719_PSEL_CAPINFO(0x1C, 45000, 0x1F, 4500),
+> > +     RT1719_PSEL_CAPINFO(0x1C, 30000, 0x1F, 4000),
+> > +     RT1719_PSEL_CAPINFO(0x1C, 24000, 0x1F, 3500),
+> > +     RT1719_PSEL_CAPINFO(0x1C, 15000, 0x1F, 3000),
+> > +     RT1719_PSEL_CAPINFO(0x1C, 10000, 0x1F, 2500),
+> > +     RT1719_PSEL_CAPINFO(0x0C, 60000, 0x1F, 2000),
+> > +     RT1719_PSEL_CAPINFO(0x0C, 45000, 0x1F, 1000),
+> > +     RT1719_PSEL_CAPINFO(0x0C, 36000, 0x08, 5000),
+> > +     RT1719_PSEL_CAPINFO(0x0C, 30000, 0x08, 4500),
+> > +     RT1719_PSEL_CAPINFO(0x0C, 24000, 0x08, 4000),
+> > +     RT1719_PSEL_CAPINFO(0x0C, 15000, 0x08, 3500),
+> > +     RT1719_PSEL_CAPINFO(0x0C, 10000, 0x08, 3000),
+> > +     RT1719_PSEL_CAPINFO(0x1E, 45000, 0x08, 2500),
+> > +     RT1719_PSEL_CAPINFO(0x1E, 36000, 0x08, 2000),
+> > +     RT1719_PSEL_CAPINFO(0x1E, 27000, 0x08, 1500),
+> > +     RT1719_PSEL_CAPINFO(0x1E, 20000, 0x08, 1000),
+> > +     RT1719_PSEL_CAPINFO(0x1E, 15000, 0x0F, 5000),
+> > +     RT1719_PSEL_CAPINFO(0x1E, 9000, 0x0F, 4500),
+> > +     RT1719_PSEL_CAPINFO(0x0E, 45000, 0x0F, 4000),
+> > +     RT1719_PSEL_CAPINFO(0x0E, 36000, 0x0F, 3500),
+> > +     RT1719_PSEL_CAPINFO(0x0E, 27000, 0x0F, 3000),
+> > +     RT1719_PSEL_CAPINFO(0x0E, 20000, 0x0F, 2500),
+> > +     RT1719_PSEL_CAPINFO(0x0E, 15000, 0x0F, 2000),
+> > +     RT1719_PSEL_CAPINFO(0x0E, 9000, 0x0F, 1500),
+> > +     RT1719_PSEL_CAPINFO(0x06, 45000, 0x0F, 1000),
+> > +     RT1719_PSEL_CAPINFO(0x06, 36000, 0x0F, 500),
+> > +     RT1719_PSEL_CAPINFO(0x06, 27000, 0x04, 5000),
+> > +     RT1719_PSEL_CAPINFO(0x06, 24000, 0x04, 4500),
+> > +     RT1719_PSEL_CAPINFO(0x06, 18000, 0x04, 4000),
+> > +     RT1719_PSEL_CAPINFO(0x06, 12000, 0x04, 3500),
+> > +     RT1719_PSEL_CAPINFO(0x06, 9000, 0x04, 3000),
+> > +     RT1719_PSEL_CAPINFO(0x1F, 25000, 0x04, 2500),
+> > +     RT1719_PSEL_CAPINFO(0x1F, 20000, 0x04, 2000),
+> > +     RT1719_PSEL_CAPINFO(0x1F, 15000, 0x04, 1500),
+> > +     RT1719_PSEL_CAPINFO(0x1F, 10000, 0x04, 1000),
+> > +     RT1719_PSEL_CAPINFO(0x1F, 7500, 0x07, 5000),
+> > +     RT1719_PSEL_CAPINFO(0x0F, 25000, 0x07, 4500),
+> > +     RT1719_PSEL_CAPINFO(0x0F, 20000, 0x07, 4000),
+> > +     RT1719_PSEL_CAPINFO(0x0F, 15000, 0x07, 3500),
+> > +     RT1719_PSEL_CAPINFO(0x0F, 10000, 0x07, 3000),
+> > +     RT1719_PSEL_CAPINFO(0x0F, 7500, 0x07, 2500),
+> > +     RT1719_PSEL_CAPINFO(0x07, 25000, 0x07, 2000),
+> > +     RT1719_PSEL_CAPINFO(0x07, 20000, 0x07, 1500),
+> > +     RT1719_PSEL_CAPINFO(0x07, 15000, 0x07, 1000),
+> > +     RT1719_PSEL_CAPINFO(0x07, 10000, 0x07, 500),
+> > +     RT1719_PSEL_CAPINFO(0x07, 7500, 0x03, 5000),
+> > +     RT1719_PSEL_CAPINFO(0x03, 25000, 0x03, 4500),
+> > +     RT1719_PSEL_CAPINFO(0x03, 20000, 0x03, 4000),
+> > +     RT1719_PSEL_CAPINFO(0x03, 15000, 0x03, 3500),
+> > +     RT1719_PSEL_CAPINFO(0x03, 10000, 0x03, 3000),
+> > +     RT1719_PSEL_CAPINFO(0x03, 7500, 0x03, 2500),
+> > +     RT1719_PSEL_CAPINFO(0x01, 15000, 0x03, 2000),
+> > +     RT1719_PSEL_CAPINFO(0x01, 10000, 0x03, 1500),
+> > +     RT1719_PSEL_CAPINFO(0x01, 7500, 0x03, 1000),
+> > +     RT1719_PSEL_CAPINFO(0x01, 2500, 0x03, 500)
+> > +};
+> > +
+> > +static u16 rt1719_gen_snkcap_by_current(const struct rt1719_psel_cap *=
+psel_cap,
+> > +                                     enum rt1719_snkcap capsel)
+> > +{
+> > +     u16 cap =3D RT1719_PSEL_SUPPORT;
+> > +
+> > +     if (!(psel_cap->himask & BIT(capsel)))
+> > +             return 0;
+> > +
+> > +     cap |=3D psel_cap->milliamp / 10;
+> > +     return cap;
+> > +}
+> > +
+> > +static u16 rt1719_gen_snkcap_by_watt(const struct rt1719_psel_cap *pse=
+l_cap,
+> > +                                  enum rt1719_snkcap capsel)
+> > +{
+> > +     u32 volt_div[RT1719_MAX_SNKCAP] =3D { 5, 9, 12, 15, 20 };
+> > +     u16 cap =3D RT1719_PSEL_SUPPORT;
+> > +
+> > +     if (!(psel_cap->lomask & BIT(capsel)))
+> > +             return 0;
+> > +
+> > +     cap |=3D min(psel_cap->milliwatt / volt_div[capsel], (u32)5000) /=
+ 10;
+> > +     return cap;
+> > +}
+> > +
+> > +static u16 rt1719_gen_snkcap(unsigned int pselinfo, enum rt1719_snkcap=
+ capsel)
+> > +{
+> > +     int psel =3D FIELD_GET(RT1719_LATPSEL_MASK, pselinfo);
+> > +     const struct rt1719_psel_cap *psel_cap;
+> > +     bool by_current =3D false;
+> > +
+> > +     if (pselinfo & RT1719_TBLSEL_MASK)
+> > +             by_current =3D true;
+> > +
+> > +     psel_cap =3D rt1719_psel_caps + psel;
+> > +     if (by_current)
+> > +             return rt1719_gen_snkcap_by_current(psel_cap, capsel);
+> > +
+> > +     return rt1719_gen_snkcap_by_watt(psel_cap, capsel);
+> > +}
+> > +
+> > +static int rt1719_get_caps(struct rt1719_data *data)
+> > +{
+> > +     unsigned int pselinfo, usbinfo;
+> > +     int i, ret;
+> > +
+> > +     ret =3D regmap_read(data->regmap, RT1719_REG_PSELINFO, &pselinfo)=
+;
+> > +     ret |=3D regmap_read(data->regmap, RT1719_REG_USBSETINFO, &usbinf=
+o);
+> > +     if (ret)
+> > +             return ret;
+> > +
+> > +     for (i =3D 0; i < RT1719_MAX_SNKCAP; i++)
+> > +             data->snkcaps[i] =3D rt1719_gen_snkcap(pselinfo, i);
+> > +
+> > +     usbinfo =3D FIELD_GET(RT1719_USBINFO_MASK, usbinfo);
+> > +     if (usbinfo =3D=3D RT1719_USB_DFPUFP)
+> > +             data->drswap_support =3D true;
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +static int rt1719_check_exist(struct rt1719_data *data)
+> > +{
+> > +     u16 pid;
+> > +     int ret;
+> > +
+> > +     ret =3D rt1719_read16(data, RT1719_REG_VENID, &pid);
+> > +     if (ret)
+> > +             return ret;
+> > +
+> > +     if (pid !=3D RT1719_UNIQUE_PID) {
+> > +             dev_err(data->dev, "Incorrect PID 0x%04x\n", pid);
+> > +             return -ENODEV;
+> > +     }
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +static const struct regmap_config rt1719_regmap_config =3D {
+> > +     .reg_bits =3D 8,
+> > +     .val_bits =3D 8,
+> > +     .max_register =3D 0xff,
+> > +};
+> > +
+> > +static int rt1719_probe(struct i2c_client *i2c)
+> > +{
+> > +     struct rt1719_data *data;
+> > +     struct fwnode_handle *fwnode;
+> > +     struct typec_capability typec_cap =3D { };
+> > +     int ret;
+> > +
+> > +     data =3D devm_kzalloc(&i2c->dev, sizeof(*data), GFP_KERNEL);
+> > +     if (!data)
+> > +             return -ENOMEM;
+> > +
+> > +     data->dev =3D &i2c->dev;
+> > +     init_completion(&data->req_completion);
+> > +
+> > +     data->regmap =3D devm_regmap_init_i2c(i2c, &rt1719_regmap_config)=
+;
+> > +     if (IS_ERR(data->regmap)) {
+> > +             ret =3D PTR_ERR(data->regmap);
+> > +             dev_err(&i2c->dev, "Failed to init regmap (%d)\n", ret);
+> > +             return ret;
+> > +     }
+> > +
+> > +     ret =3D rt1719_check_exist(data);
+> > +     if (ret)
+> > +             return ret;
+> > +
+> > +     ret =3D rt1719_get_caps(data);
+> > +     if (ret)
+> > +             return ret;
+> > +
+> > +     /*
+> > +      * This fwnode has a "compatible" property, but is never populate=
+d as a
+> > +      * struct device. Instead we simply parse it to read the properti=
+es.
+> > +      * This it breaks fw_devlink=3Don. To maintain backward compatibi=
+lity
+> > +      * with existing DT files, we work around this by deleting any
+> > +      * fwnode_links to/from this fwnode.
+> > +      */
+> > +     fwnode =3D device_get_named_child_node(&i2c->dev, "connector");
+> > +     if (!fwnode)
+> > +             return -ENODEV;
+> > +
+> > +     fw_devlink_purge_absent_suppliers(fwnode);
+> > +
+> > +     data->role_sw =3D fwnode_usb_role_switch_get(fwnode);
+> > +     if (IS_ERR(data->role_sw)) {
+> > +             ret =3D PTR_ERR(data->role_sw);
+> > +             dev_err(&i2c->dev, "Failed to get usb role switch (%d)\n"=
+, ret);
+> > +             goto err_fwnode_put;
+> > +     }
+> > +
+> > +     ret =3D devm_rt1719_psy_register(data);
+> > +     if (ret) {
+> > +             dev_err(&i2c->dev, "Failed to register psy (%d)\n", ret);
+> > +             goto err_role_put;
+> > +     }
+> > +
+> > +     typec_cap.revision =3D USB_TYPEC_REV_1_2;
+> > +     typec_cap.pd_revision =3D 0x300;  /* USB-PD spec release 3.0 */
+> > +     typec_cap.type =3D TYPEC_PORT_SNK;
+> > +     typec_cap.data =3D TYPEC_PORT_DRD;
+> > +     typec_cap.ops =3D &rt1719_port_ops;
+> > +     typec_cap.fwnode =3D fwnode;
+> > +     typec_cap.driver_data =3D data;
+> > +     typec_cap.accessory[0] =3D TYPEC_ACCESSORY_DEBUG;
+> > +
+> > +     data->partner_desc.identity =3D &data->partner_ident;
+> > +
+> > +     data->port =3D typec_register_port(&i2c->dev, &typec_cap);
+> > +     if (IS_ERR(data->port)) {
+> > +             ret =3D PTR_ERR(data->port);
+> > +             dev_err(&i2c->dev, "Failed to register typec port (%d)\n"=
+, ret);
+> > +             goto err_role_put;
+> > +     }
+> > +
+> > +     ret =3D rt1719_init_attach_state(data);
+> > +     if (ret) {
+> > +             dev_err(&i2c->dev, "Failed to init attach state (%d)\n", =
+ret);
+> > +             goto err_role_put;
+> > +     }
+> > +
+> > +     ret =3D rt1719_irq_init(data);
+> > +     if (ret) {
+> > +             dev_err(&i2c->dev, "Failed to init irq\n");
+> > +             goto err_role_put;
+> > +     }
+> > +
+> > +     fwnode_handle_put(fwnode);
+> > +
+> > +     i2c_set_clientdata(i2c, data);
+> > +
+> > +     return 0;
+> > +
+> > +err_role_put:
+> > +     usb_role_switch_put(data->role_sw);
+> > +err_fwnode_put:
+> > +     fwnode_handle_put(fwnode);
+> > +
+> > +     return ret;
+> > +}
+> > +
+> > +static int rt1719_remove(struct i2c_client *i2c)
+> > +{
+> > +     struct rt1719_data *data =3D i2c_get_clientdata(i2c);
+> > +
+> > +     typec_unregister_port(data->port);
+> > +     usb_role_switch_put(data->role_sw);
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +static const struct of_device_id __maybe_unused rt1719_device_table[] =
+=3D {
+> > +     { .compatible =3D "richtek,rt1719", },
+> > +     { }
+> > +};
+> > +MODULE_DEVICE_TABLE(of, rt1719_device_table);
+> > +
+> > +static struct i2c_driver rt1719_driver =3D {
+> > +     .driver =3D {
+> > +             .name =3D "rt1719",
+> > +             .of_match_table =3D rt1719_device_table,
+> > +     },
+> > +     .probe_new =3D rt1719_probe,
+> > +     .remove =3D rt1719_remove,
+> > +};
+> > +module_i2c_driver(rt1719_driver);
+> > +
+> > +MODULE_AUTHOR("ChiYuan Huang <cy_huang@richtek.com>");
+> > +MODULE_DESCRIPTION("Richtek RT1719 Sink Only USBPD Controller Driver")=
+;
+> > +MODULE_LICENSE("GPL v2");
+>
+> --
+> heikki
