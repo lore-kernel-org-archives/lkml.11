@@ -2,143 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58783C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 18:27:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50094C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 18:27:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234686AbiBAS13 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 13:27:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52602 "EHLO
+        id S231693AbiBAS1y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 13:27:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234755AbiBAS11 (ORCPT
+        with ESMTP id S240426AbiBAS1q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 13:27:27 -0500
-Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E08D2C06173B;
-        Tue,  1 Feb 2022 10:27:26 -0800 (PST)
-Received: by mail-qt1-x835.google.com with SMTP id k25so10203469qtp.4;
-        Tue, 01 Feb 2022 10:27:26 -0800 (PST)
+        Tue, 1 Feb 2022 13:27:46 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F520C06173B
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Feb 2022 10:27:46 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id y5-20020a17090aca8500b001b8127e3d3aso3432147pjt.3
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Feb 2022 10:27:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=4fU16CwaNXSv04OsiOZ3YMb430l73X6vlu4kJVwG20k=;
-        b=KYJNmKkb4p91XXQbFqsjbRL25/Mko2MtELbhOCsWZPoJbAPJXXoBWGymf5u49D7bzD
-         opUZyhYoE+d1dYl9LyUf6N91v6sid6FJRpcSIxBzuS0zCu/0TRa11IAyTKSKodN+lKdy
-         5ooQJfxuXAk52C2060I+Bbmc+5K0y4+FHWoSuTqr4mTMl8p7oH+HF6wlaD54KMWnCmVE
-         jzHkloOW5SPIpxHurKn8cnzwLZIGX5/uOXzmGJk60qaTIZeQKHXaElGKpTMvTDh9ZbRK
-         3eHllDv/IoaaVAWtHNvyjX/OzMVJzUolXDIl1AGsnLfklHGbftnrekFmlKBmUtdJmQGK
-         VfGQ==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=wRDb4Q0OUHfa9T1STBzKiRGQFZWKJ+ktX6ILipBqAeo=;
+        b=B+DjrpCWX4FC1Ss9nB0jjzOGDl9282WS9n7Iim+dyOX6hHO/+llXFmqB68yVgC7+5E
+         2S9RNmDY7hLT8z4PZOg24EGOjIqVzrpC2t6ftH4wOi+K/r9HLf+wOSQSkmtTedWtMqSQ
+         2z+n0UDfGtj4Uz5ZuZ5R7VrsU26fkcdJkxnCk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=4fU16CwaNXSv04OsiOZ3YMb430l73X6vlu4kJVwG20k=;
-        b=S0CFwpDUeMnuNrxu0tnbFx87eEnWDW3UdFuIf3e79LsUUkaGNHabYmEuXPS2DW7j4C
-         lpIBCWjaWJAAJYL7L81Y7g4rNqTCdkniP+dyTf8o7rI08Jm1RI4+a4zL8o9gVafLWhLs
-         XiKI02RpDEgxXna19SZGJRPzfF2dwwJANRQ4OvrWPSxqcvUby37hjT/4E6QDsskbtSOL
-         OJGVjIfHptgNP3HaYeTvF2zLml+TjgzXtgqqQrtyHnhbxhlT8DyhZnypRHK1BoU4bw+I
-         ujQ6UTJyhQT9H8s6Z8FopxI5T4kc9AyJu2uYdMWr5zWY7IEhUV0k9X38Hee0+6Kn/Qey
-         f25A==
-X-Gm-Message-State: AOAM531DegDFliwww1eoRzoRoLN57M4Y8758+zTZBKTYLw5ab42jh6VR
-        VExy+FaqPP/4M0K0nZK6dU4=
-X-Google-Smtp-Source: ABdhPJw2N7U22+7/5sOSlB4KcU3zAXRTpYadOqzWHPeG7KXP4+sTogcCLvRoJthCH/Opo9aHr/BeHg==
-X-Received: by 2002:a05:622a:40e:: with SMTP id n14mr3047058qtx.189.1643740046137;
-        Tue, 01 Feb 2022 10:27:26 -0800 (PST)
-Received: from [192.168.1.49] (c-67-187-90-124.hsd1.tn.comcast.net. [67.187.90.124])
-        by smtp.gmail.com with ESMTPSA id ay12sm3492549qkb.127.2022.02.01.10.27.25
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=wRDb4Q0OUHfa9T1STBzKiRGQFZWKJ+ktX6ILipBqAeo=;
+        b=nP6yQg2a8BVLwUDdHxoj0/9RDR/00rPjYnzNc032+oXAV7vKcDOcv0G7atRg7546Qu
+         qoionRJ9gt0i/P84Xyr2sZ61QlJH93XKtWigTXcZ3lrVBplrq9xJHviu9zQssrzjfH5x
+         I+jjqxm433JKUhGdaq6rFAF02AIZYubYj0PEvnl+zj87N29vj3xqyFtdp3cnrbTljQPp
+         u+3cuo6FkN3pWL7ljzaWG8F5sdJdlZQaXjTt/BL9HFu/OFXh2ILNLCfxhOzTAWtPy9dm
+         G8TRGTZHIUzBuwgwV5WdWjoe8ikTsOYT7NcC6Ewrlsjf2SdJ4VIthvHkIsi8BvxdU5TC
+         KPYA==
+X-Gm-Message-State: AOAM533BuPNtceFBr0XpS9/5sYqF6tvwsGt9fZSVDgJwGor9spDIOuqF
+        WztzP7wVALW98WTwsszudMO+Fg==
+X-Google-Smtp-Source: ABdhPJz+47C+L3fxapk3a6H6R/yrjV4l3PzmwM2S2tqvNdby4LqEnKQ2M3o4/9v2qbQhBafMcpspig==
+X-Received: by 2002:a17:90a:df0f:: with SMTP id gp15mr3759378pjb.175.1643740065517;
+        Tue, 01 Feb 2022 10:27:45 -0800 (PST)
+Received: from localhost ([2620:15c:202:201:b049:8520:ebbc:2a55])
+        by smtp.gmail.com with UTF8SMTPSA id s6sm31240205pgh.86.2022.02.01.10.27.44
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Feb 2022 10:27:25 -0800 (PST)
-Subject: Re: [PATCH 1/1] of: unittest: add program to process EXPECT messages
-From:   Frank Rowand <frowand.list@gmail.com>
-To:     Rob Herring <robh+dt@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220201181413.2719955-1-frowand.list@gmail.com>
-Message-ID: <3b1b29eb-5c8e-497a-1688-fa9df80dfd6e@gmail.com>
-Date:   Tue, 1 Feb 2022 12:27:24 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Tue, 01 Feb 2022 10:27:45 -0800 (PST)
+Date:   Tue, 1 Feb 2022 10:27:43 -0800
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Douglas Anderson <dianders@chromium.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Shaik Sajida Bhanu <sbhanu@codeaurora.org>,
+        swboyd@chromium.org, Andy Gross <agross@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 5/5] arm64: dts: qcom: sc7280-idp: No need for
+ "input-enable" on sw_ctrl
+Message-ID: <Yfl7nwX+aq9YORsg@google.com>
+References: <20220201001042.3724523-1-dianders@chromium.org>
+ <20220131161034.5.Ibaf8a803802beb089cc6266b37e6156cff3ddaec@changeid>
 MIME-Version: 1.0
-In-Reply-To: <20220201181413.2719955-1-frowand.list@gmail.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+In-Reply-To: <20220131161034.5.Ibaf8a803802beb089cc6266b37e6156cff3ddaec@changeid>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/1/22 12:14 PM, frowand.list@gmail.com wrote:
-> From: Frank Rowand <frank.rowand@sony.com>
+On Mon, Jan 31, 2022 at 04:10:42PM -0800, Douglas Anderson wrote:
+> Specifying "input-enable" on a MSM GPIO is a no-op for the most
+> part. The only thing it really does is to explicitly force the output
+> of a GPIO to be disabled right at the point of a pinctrl
+> transition. We don't need to do this and we don't typically specify
+> "input-enable" unless there's a good reason to. Remove it.
 > 
+> Signed-off-by: Douglas Anderson <dianders@chromium.org>
 
-< snip >
-
-> I will reply to this message with the usage message from
-> 'scripts/dtc/of_unittest_expect --help'.
-
-< snip >
-
-$ scripts/dtc/of_unittest_expect --help
-
-usage:
-
-  of_unittest_expect CONSOLE_LOG
-
-     -h                print program usage
-    --help             print program usage
-    --hide-expect      suppress output of EXPECTed lines
-    --line-num         report line number of CONSOLE_LOG
-    --no-expect-stats  do not report EXPECT statistics
-    --no-strip-ts      do not strip leading console timestamps
-    --verbose          do not suppress EXPECT begin and end lines
-    --version          print program version and exit
-
-
-  Process a console log for EXPECTed test related messages to either
-  highlight expected devicetree unittest related messages or suppress
-  the messages.  Leading console timestamps will be stripped.
-
-  Various unittests may trigger kernel messages from outside the
-  unittest code.  The unittest annotates that it expects the message
-  to occur with an 'EXPECT \ : text' (begin) before triggering the
-  message, and an 'EXPECT / : text' (end) after triggering the message.
-
-  If an expected message does not occur, that will be reported.
-
-  For each expected message, the 'EXPECT \ : text' (begin) and
-  'EXPECT / : text' (end), 'text' will contain the message text.
-
-  If 'EXPECT \' (begin) and 'EXPECT /' (end) lines do not contain
-  matching 'text', that will be reported.
-
-  If EXPECT lines are nested, 'EXPECT /' (end) lines must be in the
-  reverse order of the corresponding 'EXPECT \' (begin) lines.
-
-  'EXPECT \ : text' (begin) and 'EXPECT / : text' (end) lines can
-  contain special patterns in 'text':
-
-     <<int>> matches: [+-]*[0-9]+
-     <<hex>> matches: (0x)*[0-9a-f]+
-
-  'EXPECT \' (begin) and 'EXPECT /' (end) lines are suppressed.
-
-  A prefix is added to every line of output:
-
-    'ok ' Line matches an enclosing EXPECT begin/end pair
-
-    '** ' Line reports of_unittest_expect warning or error
-
-    '-> ' Line reports start or end of the unittests
-
-    '>> ' Line reports a unittest test FAIL
-
-    '   ' Lines that are not otherwise prefixed
-
-  Issues detected in CONSOLE_LOG are reported to STDOUT, not to STDERR.
-
-  Known Issues:
-
-    --line-num causes the CONSOLE_LOG line number to be printed in 4 columns.
-       If CONSOLE_LOG contains more than 9999 lines then more columns will be
-       used to report the line number for lines greater than 9999 (eg for
-       lines 10000 - 99999, 5 columns will be used).
+Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
