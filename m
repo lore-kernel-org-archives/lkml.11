@@ -2,63 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39694C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 05:21:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE5D5C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 05:21:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232383AbiBAFVV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 00:21:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42278 "EHLO
+        id S234603AbiBAFV0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 00:21:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233964AbiBAFUf (ORCPT
+        with ESMTP id S234068AbiBAFUi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 00:20:35 -0500
-Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 151D6C061770
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 21:20:31 -0800 (PST)
-Received: by mail-ot1-x335.google.com with SMTP id s6-20020a0568301e0600b0059ea5472c98so15127263otr.11
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 21:20:31 -0800 (PST)
+        Tue, 1 Feb 2022 00:20:38 -0500
+Received: from mail-oo1-xc2d.google.com (mail-oo1-xc2d.google.com [IPv6:2607:f8b0:4864:20::c2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D3E3C0613E6
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 21:20:35 -0800 (PST)
+Received: by mail-oo1-xc2d.google.com with SMTP id f11-20020a4abb0b000000b002e9abf6bcbcso3882703oop.0
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 21:20:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=VaYERgrCYJYZC2sGCpcTnhMQ2mYXiT84+ab+3nA9rpw=;
-        b=WsiBSLmgDX+LxQPMN05hU7a2gD03Bsotcx7FE5afyAKnw3C7leA4wgLlCOcmfrMle2
-         3/fOIi3raAC1hk9DvbYbynw9lh6qEJSyiRE6v7gvZUj6eBUAc435xIYj7+UhMxS1Ue7z
-         8R3uVqOx5I3H0cjlz+XoHyUeSmCwQ1RQ79qcqESQpXd/FuEoXA6xbYXuthV1VCj695O6
-         vY1k99euxZM+hGhcrstTV0k3qd2awyp8MdVrPMpXjCQk8GSeC+6RlxMavQX6Wv1e+/zj
-         MHTOWYmCb7kOBIM9MaJO8bGMmsUw6WhOKzb98ChLSuRX7rnrhzqzw0o9TLo13UmNMS9F
-         Q7BQ==
+        bh=q24W6CEQ1tNzky1Gmov73Psa8COhkR37xMurQcqHjZ4=;
+        b=EmsOV9SXQydD4yYtWOPflEg+MiW5iREIgiBGR6m3qIdlaOW/x330S4fPZsWQDunNHu
+         kiA+Rx+W6SJVRf8lK2xrW/SQiw322guG/nU+MCzOXIgB+Hk5ljE43emqdSdOtlhzn/qw
+         mS+1LTc3ZfxZOM347WOQ6Jhj75xThZp+TUVGQDpadlUlnokl5Erweu+NzoJAP/2YIOEN
+         RDYEin/qxeoRHy5LjksGYwTFc8VIVObCAc7Mi/MTvXcK2Bafv2wTy0sBq3RukJHexnaV
+         +ngRyv8rBV33tjoDMzroaSC0QR5M3YkIcs3TI7h5mawXxOP+wJRfBFU6GpJ/Qm0WPwfV
+         Jfyw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=VaYERgrCYJYZC2sGCpcTnhMQ2mYXiT84+ab+3nA9rpw=;
-        b=gEngHaMbRluXo7Ve7Bnu9daeMJmsYkxTto5CpSrv+yK2nzAY7ZYlZOzv/7+N/bXx8v
-         ciFLgZ8n7vCJ9iMiR2LaMCBPC+pbswflE1X14JC0aYUbYn3vTLkLZUJl6sP8s0gBi22X
-         ko0hBfzjAznASeoCB1LEd65of818Za0o0BUjlhA0ciV9Ctge/D+n8Sb1bEeS0be6T07c
-         JfQksmPOBTQFGbtIEpw6cn3sWPsjlPK7wnrFTcNf7TIaExaJrT8q1uN1O9TsVXsBNWzt
-         ZgeMwpnq5eBm5O9+4TiQZwlmA5uQS7RMK4lWQVA/Arl2Yullg8yWLflR4Esz/4Bkk4Jl
-         0uIQ==
-X-Gm-Message-State: AOAM531wqbZNhBQ/yHjOczFbtJQkbpd/hPotnvb0s9yeprsRjJvQQSCY
-        AmtypFTnOUILiEBtSN9NqkT8Hg==
-X-Google-Smtp-Source: ABdhPJwUaqMWRCcEhx4ti2ERXPU+9UOv400FlNwzFuWUXRUB4gpiqFkcOHBLzaRY4jcaocWbJPfuvg==
-X-Received: by 2002:a9d:4d08:: with SMTP id n8mr13118939otf.16.1643692830488;
-        Mon, 31 Jan 2022 21:20:30 -0800 (PST)
+        bh=q24W6CEQ1tNzky1Gmov73Psa8COhkR37xMurQcqHjZ4=;
+        b=uijebm8YHrDRitkHdFJe5sNPr2lbsKzRYk7tS8fvWJytCWa4z+p2KDi288gb41VGsQ
+         Zg2cdRvd9HVJLS0IvqXJXKjtCaIGb4J4YqRMBmKZ2SITMvFBkm02T3fvMkWLlOizXecj
+         o6p6bmKEgRgQY5rtq3OkouBWNWZ2ZVRtvIiOto8y0rWO98G+4ds0dEmd4uhVzXc7pcrr
+         fpJX0Xbe4s6LcmNYLp0qGqdKLtAtbg7l9AbN829CPu2J36bv0yzCGiqXZyEEjC6Ogs2n
+         xGbWpO0AbHDtLe7v1LLZldWKRVQ1Sx33Y2MEuKBkpeX6CFyXphJ6OCkI8jjNYiywbpPP
+         HJHw==
+X-Gm-Message-State: AOAM531CsntX5XLwk+/YGtrPASLVjvMKw3OgtXDug1l+T4OGVQolKB5K
+        /UndrU5MAK+VShwzdcdHw2ztdQ==
+X-Google-Smtp-Source: ABdhPJxaf56yCDcxNRwOv3Bj6Yq/vOW5NHRCMVgV8AQhrXUrT8hnPKTPeLYU/cc51HZPBUCMvCCl4A==
+X-Received: by 2002:a05:6820:16b:: with SMTP id k11mr11842194ood.7.1643692834899;
+        Mon, 31 Jan 2022 21:20:34 -0800 (PST)
 Received: from builder.lan ([2600:1700:a0:3dc8:3697:f6ff:fe85:aac9])
-        by smtp.gmail.com with ESMTPSA id u3sm8193107ooh.19.2022.01.31.21.20.29
+        by smtp.gmail.com with ESMTPSA id u3sm8193107ooh.19.2022.01.31.21.20.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Jan 2022 21:20:30 -0800 (PST)
+        Mon, 31 Jan 2022 21:20:34 -0800 (PST)
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
 To:     Rob Herring <robh+dt@kernel.org>, Andy Gross <agross@kernel.org>,
         David Heidelberg <david@ixit.cz>
 Cc:     devicetree@vger.kernel.org, ~okias/devicetree@lists.sr.ht,
         linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: (subset) [PATCH] ARM: dts: qcom: add KPSS GCC compatible to clock nodes
-Date:   Mon, 31 Jan 2022 23:19:38 -0600
-Message-Id: <164369277345.3095904.6223007740319980874.b4-ty@linaro.org>
+Subject: Re: (subset) [PATCH] ARM: dts: qcom: rename eth node to ethernet
+Date:   Mon, 31 Jan 2022 23:19:43 -0600
+Message-Id: <164369277344.3095904.10512751977671950567.b4-ty@linaro.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220108175509.62804-1-david@ixit.cz>
-References: <20220108175509.62804-1-david@ixit.cz>
+In-Reply-To: <20220108171535.55536-1-david@ixit.cz>
+References: <20220108171535.55536-1-david@ixit.cz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -66,15 +66,15 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 8 Jan 2022 18:55:09 +0100, David Heidelberg wrote:
-> Some of nodes missing additional compatible.
+On Sat, 8 Jan 2022 18:15:35 +0100, David Heidelberg wrote:
+> Comply with dt-schema requirements.
 > 
 > 
 
 Applied, thanks!
 
-[1/1] ARM: dts: qcom: add KPSS GCC compatible to clock nodes
-      commit: 9f4a052795cd8b4adbe3c5eb0fb92b6122dbdc95
+[1/1] ARM: dts: qcom: rename eth node to ethernet
+      commit: c9a186338f3f7dff48df3da0e900f4be0a7c11e6
 
 Best regards,
 -- 
