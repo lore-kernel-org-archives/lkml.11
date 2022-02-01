@@ -2,111 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 038A9C43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 17:41:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8752C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 17:42:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241608AbiBARl3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 12:41:29 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:35890 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230345AbiBARl2 (ORCPT
+        id S241614AbiBARm0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 12:42:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41778 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230345AbiBARmX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 12:41:28 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 44E5C6123B;
-        Tue,  1 Feb 2022 17:41:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF857C340EB;
-        Tue,  1 Feb 2022 17:41:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643737287;
-        bh=xqurn0aMLg9LPORst7+QOsFe67TLB0BWbKrD5lJaEUg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=XhHJogGxV9fLNWcbgdHNbs4+6IXOssN8O5a+LqiuEY6P07FpWmF/V00NmNuNAgUqO
-         kKdSLwkI8CmW+4H9dbwuJc+ABJUEQvo2E2N/uoDRkYkT3ZPJuyFbZu43Q3gd+OnsQw
-         fYB5RWS7G5erqCaqn5LNsGO0YnZun6GjONge/RFt/ej5tHy1NHmWd1yfxfTooCHPMQ
-         OxurKPbSFYwaXOqklMaETsz+0+Y70jMdTuHpjFJfqSEenTNQhmwiodDdNrv1FlQKH+
-         p+tQhFU0RQ6NVojA19GGX4+lq6bNYZvNCDlQ1qGcjiwQmqywzurGJ5DlSKTLTiV7w0
-         tKZYDzdCKiHyw==
-Date:   Tue, 1 Feb 2022 17:41:21 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Stefan Binding <sbinding@opensource.cirrus.com>
-Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-acpi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        patches@opensource.cirrus.com
-Subject: Re: [PATCH v6 0/9] Support Spi in i2c-multi-instantiate driver
-Message-ID: <YflwwWD85CmSzlgT@sirena.org.uk>
-References: <20220121172431.6876-1-sbinding@opensource.cirrus.com>
+        Tue, 1 Feb 2022 12:42:23 -0500
+Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5379C061714
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Feb 2022 09:42:22 -0800 (PST)
+Received: by mail-il1-x12a.google.com with SMTP id z4so14942316ilz.4
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Feb 2022 09:42:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=TbofYnmW7Q1DU8mxaNUiRYYGn47K1Mg8D9USFBKEYzg=;
+        b=HbQ4SZuXJIAGjjXdI2Nk0AsZIgGG6Y+wRTfAykFdXQ5TMwUavntyG5R7XTRD1kIS7e
+         cu2Iog9ZiVXuODYD0fP9FgdPM02q3gbdA0rrJWdVfvZZ3etGbvMnFRbiPPG1sNABMNHS
+         vm1U1lEry6EZeE2JYOrI/OGMph9AX4LWPu2Xo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=TbofYnmW7Q1DU8mxaNUiRYYGn47K1Mg8D9USFBKEYzg=;
+        b=XNrPFW2wK1zgR57GQ6WXIcaXd+kUH6gCZXOgsL5408pqoVhmFS5zhfkr/y2qsLoO12
+         24vuYzpL0ygBTAmKAcqYKVxwYRm2KZs3/6YvZd9b82hW5iMjgyd3PzuHuaQdj7isSmQW
+         Wb8pA6WtqLt+97kAtCO7H7hnWTHkEBMnyL4HRkdN9py7dAD8QpCooCyUtZipqfVWEc7t
+         2W6z+G/DIeyBk/1h95hg8ktzwePdhQUG0HgttpgHi3zhe1uSOtYjv3pe8O8ZAoKhgC1b
+         o50U6rDgKauCdQGiHEkUIVfCqeMVTxEcIko2LVLeyqwU86amDTNeDG51tqd34WOY6o+P
+         stSA==
+X-Gm-Message-State: AOAM530y41kU3C4TMnxIdBzU4GLxQD/nOk8ZE2P6pX3MsleiJAiYP+2R
+        PsN93PZp3McyG4CpLkqxovDEsw==
+X-Google-Smtp-Source: ABdhPJzODd6mgGSdglYLa9tBLMw//6GUqSUDsD+eyHfUN/CEQ5ToyT/kwInBKZfa0luSerNjA2r8OQ==
+X-Received: by 2002:a05:6e02:2184:: with SMTP id j4mr134502ila.304.1643737342067;
+        Tue, 01 Feb 2022 09:42:22 -0800 (PST)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id g19sm8710128ilk.30.2022.02.01.09.42.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 01 Feb 2022 09:42:21 -0800 (PST)
+Subject: Re: [PATCH] selftests/ir: fix build with ancient kernel headers
+To:     Sean Young <sean@mess.org>, Matthew Wilcox <willy@infradead.org>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        kernel test robot <oliver.sang@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        lkp@lists.01.org, kbuild test robot <lkp@intel.com>,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220128075346.GG8421@xsang-OptiPlex-9020>
+ <YfO39Q3mNHMQOkd4@gofer.mess.org>
+ <CAADnVQJ3RCPUQ0k9nu2urrRK=U7SUetuPmY0_b17M_PD=j4fkw@mail.gmail.com>
+ <e5b72f09-a208-a579-3e51-10935ccee1ff@linuxfoundation.org>
+ <YfQqI2ryOYEDuvON@gofer.mess.org>
+ <347bae9f-f775-4976-3d27-b0c725211d78@linuxfoundation.org>
+ <YflldzHZPVK3OQRJ@gofer.mess.org> <YflmyHrYg1xJlW0u@casper.infradead.org>
+ <YflpnYECZE2Kxh+V@gofer.mess.org>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <bb937121-64e4-ea34-e97b-a555ba283a5d@linuxfoundation.org>
+Date:   Tue, 1 Feb 2022 10:42:18 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="f9iEEYctSRFMQhBo"
-Content-Disposition: inline
-In-Reply-To: <20220121172431.6876-1-sbinding@opensource.cirrus.com>
-X-Cookie: All's well that ends.
+In-Reply-To: <YflpnYECZE2Kxh+V@gofer.mess.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 2/1/22 10:10 AM, Sean Young wrote:
+> On Tue, Feb 01, 2022 at 04:58:48PM +0000, Matthew Wilcox wrote:
+>> On Tue, Feb 01, 2022 at 04:53:11PM +0000, Sean Young wrote:
+>>> +/* Support ancient lirc.h which does not have these values */
+>>
+>> Can we have a little more information here, such as "Can be removed once
+>> RHEL 8 is no longer a relevant testing platform"?  That will save people
+>> doing archaology to find out when it's safe to remove.
+> 
+> That totally makes sense.
+> 
+> Having said that, I have no idea what platforms are being used for testing,
+> so I don't know if RHEL 8 is the only one that needs this. Is there anyone
+> who could shed some light on what platforms should be supported?
+> 
+> Thanks,
+> 
+> Sean
+> 
 
---f9iEEYctSRFMQhBo
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Sean,
 
-On Fri, Jan 21, 2022 at 05:24:22PM +0000, Stefan Binding wrote:
-> Add support for SPI bus in the i2c-multi-instantiate driver as
-> upcoming laptops will need to multi instantiate SPI devices from
-> a single device node, which has multiple SpiSerialBus entries at
-> the ACPI table.
+It isn't important on platforms that get tested. We really don't have much
+control over the platforms these tests get run.
 
-The following changes since commit e783362eb54cd99b2cac8b3a9aeac942e6f6ac07:
+Let's add a FIXME to remove and also add link to the kbuild thread where with
+the discussion.
 
-  Linux 5.17-rc1 (2022-01-23 10:12:53 +0200)
+I am assuming this has to go through bpf since it fixes the commit already
+in that tree:
 
-are available in the Git repository at:
+With the change Matthew requested,
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git tags/spi-acpi-helpers
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
 
-for you to fetch changes up to e612af7acef2459f1afd885f4107748995a05963:
+Or I can take this through my tree.
 
-  spi: Add API to count spi acpi resources (2022-02-01 17:38:48 +0000)
+thanks,
+-- SHuah
 
-----------------------------------------------------------------
-spi: ACPI helpers
-
-This patch series enhances the ACPI helpers to cope with multiple
-resources being available and exports them for use.
-
-----------------------------------------------------------------
-Stefan Binding (4):
-      spi: Make spi_alloc_device and spi_add_device public again
-      spi: Create helper API to lookup ACPI info for spi device
-      spi: Support selection of the index of the ACPI Spi Resource before alloc
-      spi: Add API to count spi acpi resources
-
- drivers/spi/spi.c       | 137 ++++++++++++++++++++++++++++++++++++++++++------
- include/linux/spi/spi.h |  20 +++++++
- 2 files changed, 141 insertions(+), 16 deletions(-)
-
---f9iEEYctSRFMQhBo
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmH5cMEACgkQJNaLcl1U
-h9Ck2gf9GYw5kRyywJi8CHAE4s6w7WHL0sKrCSwxkn0svqktdSthmB1eYeKBXKma
-PaNBJ6aN6PwmUTN7O3qaw03HbPbXX6m7/6B3nYLCm7DV2GcCK/eGhvVeOQfPeAvj
-Ydh1Xv7G6BYCPpAy4gYTQb8qZ4okCpe/bAhvqjFE44I04psrXSaByp502BJ32o7G
-DfAZa6Tp2OwOmdtveUBFyu7KciNDLre9taSfKd6yaCnWrAJIuwWxdmgFlSXUqAg2
-J4x2i0/tCvxCyDBa4XlGpAJ+56QCMIQLakeJruDF7lSA5qOe36MLDwJ8ONRMClNw
-5NmIEME3mIGVUtw43zzwdmAoBezAjQ==
-=zFNW
------END PGP SIGNATURE-----
-
---f9iEEYctSRFMQhBo--
