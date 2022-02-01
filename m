@@ -2,172 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5E63C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 12:17:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D39DC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 12:19:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236277AbiBAMRu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 07:17:50 -0500
-Received: from wout2-smtp.messagingengine.com ([64.147.123.25]:49847 "EHLO
-        wout2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237962AbiBAMRs (ORCPT
+        id S236285AbiBAMTw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 07:19:52 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:52172 "EHLO
+        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230011AbiBAMTu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 07:17:48 -0500
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.west.internal (Postfix) with ESMTP id 8F65D32021A3;
-        Tue,  1 Feb 2022 07:17:47 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Tue, 01 Feb 2022 07:17:48 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alyssa.is; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm2; bh=NwpNAO3jsQ2s8tfKumaXN6R+gbFuZ2OaHhV6Lb
-        yW8bo=; b=QoprNxq1BWVwwPL7y3cxQvPRF3S5rNa6+9yTAo/Ks4f+AslOlgTU5N
-        NEq33xioEvMUjTROWccysIodRzA2OF1BsqwGN3GC6b8IdnVpuZT3uD9I4EYqRy9+
-        4yrEJDPI5j51SUO75D+xtoc+EIbVkw4b8c+N6u2VqClmdfK4PTTd8p+vIIvuq00J
-        ADV0+MazXDa0EYpv3sn/p1s/ZffB8q+mubjuST2D5rZVweNeZpw42FK7Y+qsMScr
-        m/3Z/xZX18et2tsNtAlxa//cyo9wikxXYFTjaIF2ukhaf/x4kBbpg8KMnpZbynP1
-        R0HVrST3zaLZP4Tz/kWmQynbmepsLmZg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=NwpNAO3jsQ2s8tfKu
-        maXN6R+gbFuZ2OaHhV6LbyW8bo=; b=A6CyP1T5B1gZepWRttvl/KBBp8GUGfyTu
-        cCdtSW9d8vZ/7Db6i8essvdSk+1hwnOKvtGWbFevNXsDB1IuK2QmYKqhl2Ip2r/2
-        nfiAqxbZJQx2S/TDTkDuZsY8MlctZbNxLt2hwGejlyO1rEYcdJrroCdKuSoprn4f
-        vLm3EY7gTLuhxmg1kQ+liYxJre+SN8/Hak9v1bygpi1N//I36ni6G9PNyHV+b90A
-        MBo4ZTswu1HTqd2DvqWVxi3rSTO/03L9J2eRweuRpmzdpuyJsPjENXjyfSD9WDT9
-        OwSl28Yg5cXw917BM9Xo/j8qwGNy0rV6G4E5XsvuY7jM+xjtaSe/Q==
-X-ME-Sender: <xms:6iT5YcNlJV4nCTansnK-sVkP-TT4gsTeylLAif2wYQj0I9JBLWIPyQ>
-    <xme:6iT5YS-iE-Fx--laY3Pa0lfoMejA0m5R7BW0m2w437l8KhPY29B2W0HLDDrTV3fIV
-    GrZeXjw_LJ99Pqd6Q>
-X-ME-Received: <xmr:6iT5YTSgxrVX9h3f3mkoVigIbIvJSjx3yBh5VjmKwSIKXk3jlHskfbWOAyuQzvEYEEyhqV-VOd5eDZjMgquGXJieMBer6cIK>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrgeefgdefkecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesghdtreertddtjeenucfhrhhomheptehlhihsshgr
-    ucftohhsshcuoehhihesrghlhihsshgrrdhisheqnecuggftrfgrthhtvghrnhepgefgje
-    fhudehhfevgfduledtuedtleefgeeutdehtddtgfeffedtjeehveduvedtnecuvehluhhs
-    thgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepqhihlhhishhssegvvh
-    gvrdhqhihlihhsshdrnhgvth
-X-ME-Proxy: <xmx:6iT5YUtaVObbcat8mBnXc12hcwUGznlojG0jH4n9AYPk5YJFcJJC6g>
-    <xmx:6iT5YUeYcV7xkupfu2lxeKpPhICLq7vKPKHfwVawbzYxRWOiyhPVJA>
-    <xmx:6iT5YY08iLnyq27bpWJUNm_a-x1Ey1iEYTzT9z7Uf6Tp-MmMyEaXpw>
-    <xmx:6yT5YcTBExqz--oWaos4rcY6AZKU85zBOnQBCKWXJWHg8UerBuTcLw>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 1 Feb 2022 07:17:46 -0500 (EST)
-Received: by eve.qyliss.net (Postfix, from userid 1000)
-        id 6596E8090; Tue,  1 Feb 2022 12:17:45 +0000 (UTC)
-Date:   Tue, 1 Feb 2022 12:17:45 +0000
-From:   Alyssa Ross <hi@alyssa.is>
-To:     Prashant Malani <pmalani@chromium.org>
-Cc:     linux-kernel@vger.kernel.org, Tzung-Bi Shih <tzungbi@google.com>,
-        Benson Leung <bleung@chromium.org>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Guenter Roeck <groeck@chromium.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        chrome-platform@lists.linux.dev
-Subject: Re: [PATCH v2] platform/chrome: cros_ec_typec: Check for EC device
-Message-ID: <20220201121745.r4dbilp3fpqhjuty@eve>
-References: <20220126190219.3095419-1-pmalani@chromium.org>
- <20220126230411.nn2illij4wbpdm4q@eve>
- <YfHUXtJPU77wtCPb@chromium.org>
+        Tue, 1 Feb 2022 07:19:50 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 638D5CE184A;
+        Tue,  1 Feb 2022 12:19:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8302C340ED;
+        Tue,  1 Feb 2022 12:19:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643717985;
+        bh=+7A+L+w5D1pGgc4Wh+XA6cQlBW2FRlxn/MDMdKfdJp4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=K9lhHORpYGC7nlkKk05SPJydm6YLBNMTDXkfDmbKCcr8gfekTiWrQwUUoiub+gIYP
+         8AAPLw4osatBrveJdhWJskJamUGZ7RFgwELhI/3yLYf720+IP8Ya0FQnd11WYsw/wq
+         CpCs2+xhZDcNXA5JBbRHE5qCb1mzyA5Hy/MYDRlNbxXs0UWSnty7UYb0tXO+llVHxC
+         Kj5U72kTXhmVwmOE39qFuaMxHYiHss9CgMYDiDvrwpik8uT6zaGkS3KDk96Er2SogM
+         zobtEAGcCt6yjSvI1IpS/UKxdv2vx7OQjPL6obQrmwLJIrsvxSSz6uathXLKPxWwC3
+         3HhCTOoXhUAWQ==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.lan)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nErsj-004d46-0x; Tue, 01 Feb 2022 12:03:33 +0000
+From:   Marc Zyngier <maz@kernel.org>
+To:     linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        Kevin Hilman <khilman@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Avi Fishman <avifishman70@gmail.com>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Emil Renner Berthing <kernel@esmil.dk>
+Subject: [PATCH 10/12] pinctrl: npcm: Fix broken references to chip->parent_device
+Date:   Tue,  1 Feb 2022 12:03:08 +0000
+Message-Id: <20220201120310.878267-11-maz@kernel.org>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220201120310.878267-1-maz@kernel.org>
+References: <20220201120310.878267-1-maz@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="gounvrkiin7nkkhy"
-Content-Disposition: inline
-In-Reply-To: <YfHUXtJPU77wtCPb@chromium.org>
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linus.walleij@linaro.org, brgl@bgdev.pl, matthias.bgg@gmail.com, grygorii.strashko@ti.com, ssantosh@kernel.org, khilman@kernel.org, tglx@linutronix.de, shawnguo@kernel.org, s.hauer@pengutronix.de, avifishman70@gmail.com, tmaimon77@gmail.com, tali.perry1@gmail.com, kernel@esmil.dk
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The npcm driver has a bunch of references to the irq_chip parent_device
+field, but never sets it.
 
---gounvrkiin7nkkhy
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Fix it by fishing that reference from somewhere else, but it is
+obvious that these debug statements were never used. Also remove
+an unused field in a local data structure.
 
-Hi Prashant,
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+---
+ drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c | 25 +++++++++++------------
+ 1 file changed, 12 insertions(+), 13 deletions(-)
 
-On Wed, Jan 26, 2022 at 11:08:14PM +0000, Prashant Malani wrote:
-> Hi Alyssa,
->
-> On Jan 26 23:04, Alyssa Ross wrote:
-> > On Wed, Jan 26, 2022 at 07:02:20PM +0000, Prashant Malani wrote:
-> > > The Type C ACPI device on older Chromebooks is not generated correctly
-> > > (since their EC firmware doesn't support the new commands required). =
-In
-> > > such cases, the crafted ACPI device doesn't have an EC parent, and it=
- is
-> > > therefore not useful (it shouldn't be generated in the first place si=
-nce
-> > > the EC firmware doesn't support any of the Type C commands).
-> > >
-> > > To handle devices which use these older firmware revisions, check for
-> > > the parent EC device handle, and fail the probe if it's not found.
-> > >
-> > > Fixes: fdc6b21e2444 ("platform/chrome: Add Type C connector class dri=
-ver")
-> > > Reported-by: Alyssa Ross <hi@alyssa.is>
-> > > Reviewed-by: Tzung-Bi Shih <tzungbi@google.com>
-> > > Signed-off-by: Prashant Malani <pmalani@chromium.org>
-> > > ---
-> > > Hi Alyssa, could you kindly test this with your existing setup? Thank=
-s!
-> >
-> > Hi Prashant, I'm happy to test, but I'm on vacation until the end of the
-> > week so probably won't get a chance before Monday.
->
-> No worries, whenever you get the chance is fine.
->
-> >
-> > I'm guessing I should be testing with latest upstream coreboot (now that
-> > your fix there has been applied)?
->
-> You should use the coreboot with which you discovered the crash, so the
-> one which *doesn't* contain the fix.
+diff --git a/drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c b/drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c
+index 4d81908d6725..3995e5f7f115 100644
+--- a/drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c
++++ b/drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c
+@@ -78,7 +78,6 @@ struct npcm7xx_gpio {
+ 	struct gpio_chip	gc;
+ 	int			irqbase;
+ 	int			irq;
+-	void			*priv;
+ 	struct irq_chip		irq_chip;
+ 	u32			pinctrl_id;
+ 	int (*direction_input)(struct gpio_chip *chip, unsigned offset);
+@@ -226,7 +225,7 @@ static void npcmgpio_irq_handler(struct irq_desc *desc)
+ 	chained_irq_enter(chip, desc);
+ 	sts = ioread32(bank->base + NPCM7XX_GP_N_EVST);
+ 	en  = ioread32(bank->base + NPCM7XX_GP_N_EVEN);
+-	dev_dbg(chip->parent_device, "==> got irq sts %.8x %.8x\n", sts,
++	dev_dbg(bank->gc.parent, "==> got irq sts %.8x %.8x\n", sts,
+ 		en);
+ 
+ 	sts &= en;
+@@ -241,33 +240,33 @@ static int npcmgpio_set_irq_type(struct irq_data *d, unsigned int type)
+ 		gpiochip_get_data(irq_data_get_irq_chip_data(d));
+ 	unsigned int gpio = BIT(d->hwirq);
+ 
+-	dev_dbg(d->chip->parent_device, "setirqtype: %u.%u = %u\n", gpio,
++	dev_dbg(bank->gc.parent, "setirqtype: %u.%u = %u\n", gpio,
+ 		d->irq, type);
+ 	switch (type) {
+ 	case IRQ_TYPE_EDGE_RISING:
+-		dev_dbg(d->chip->parent_device, "edge.rising\n");
++		dev_dbg(bank->gc.parent, "edge.rising\n");
+ 		npcm_gpio_clr(&bank->gc, bank->base + NPCM7XX_GP_N_EVBE, gpio);
+ 		npcm_gpio_clr(&bank->gc, bank->base + NPCM7XX_GP_N_POL, gpio);
+ 		break;
+ 	case IRQ_TYPE_EDGE_FALLING:
+-		dev_dbg(d->chip->parent_device, "edge.falling\n");
++		dev_dbg(bank->gc.parent, "edge.falling\n");
+ 		npcm_gpio_clr(&bank->gc, bank->base + NPCM7XX_GP_N_EVBE, gpio);
+ 		npcm_gpio_set(&bank->gc, bank->base + NPCM7XX_GP_N_POL, gpio);
+ 		break;
+ 	case IRQ_TYPE_EDGE_BOTH:
+-		dev_dbg(d->chip->parent_device, "edge.both\n");
++		dev_dbg(bank->gc.parent, "edge.both\n");
+ 		npcm_gpio_set(&bank->gc, bank->base + NPCM7XX_GP_N_EVBE, gpio);
+ 		break;
+ 	case IRQ_TYPE_LEVEL_LOW:
+-		dev_dbg(d->chip->parent_device, "level.low\n");
++		dev_dbg(bank->gc.parent, "level.low\n");
+ 		npcm_gpio_set(&bank->gc, bank->base + NPCM7XX_GP_N_POL, gpio);
+ 		break;
+ 	case IRQ_TYPE_LEVEL_HIGH:
+-		dev_dbg(d->chip->parent_device, "level.high\n");
++		dev_dbg(bank->gc.parent, "level.high\n");
+ 		npcm_gpio_clr(&bank->gc, bank->base + NPCM7XX_GP_N_POL, gpio);
+ 		break;
+ 	default:
+-		dev_dbg(d->chip->parent_device, "invalid irq type\n");
++		dev_dbg(bank->gc.parent, "invalid irq type\n");
+ 		return -EINVAL;
+ 	}
+ 
+@@ -289,7 +288,7 @@ static void npcmgpio_irq_ack(struct irq_data *d)
+ 		gpiochip_get_data(irq_data_get_irq_chip_data(d));
+ 	unsigned int gpio = d->hwirq;
+ 
+-	dev_dbg(d->chip->parent_device, "irq_ack: %u.%u\n", gpio, d->irq);
++	dev_dbg(bank->gc.parent, "irq_ack: %u.%u\n", gpio, d->irq);
+ 	iowrite32(BIT(gpio), bank->base + NPCM7XX_GP_N_EVST);
+ }
+ 
+@@ -301,7 +300,7 @@ static void npcmgpio_irq_mask(struct irq_data *d)
+ 	unsigned int gpio = d->hwirq;
+ 
+ 	/* Clear events */
+-	dev_dbg(d->chip->parent_device, "irq_mask: %u.%u\n", gpio, d->irq);
++	dev_dbg(bank->gc.parent, "irq_mask: %u.%u\n", gpio, d->irq);
+ 	iowrite32(BIT(gpio), bank->base + NPCM7XX_GP_N_EVENC);
+ }
+ 
+@@ -313,7 +312,7 @@ static void npcmgpio_irq_unmask(struct irq_data *d)
+ 	unsigned int gpio = d->hwirq;
+ 
+ 	/* Enable events */
+-	dev_dbg(d->chip->parent_device, "irq_unmask: %u.%u\n", gpio, d->irq);
++	dev_dbg(bank->gc.parent, "irq_unmask: %u.%u\n", gpio, d->irq);
+ 	iowrite32(BIT(gpio), bank->base + NPCM7XX_GP_N_EVENS);
+ }
+ 
+@@ -323,7 +322,7 @@ static unsigned int npcmgpio_irq_startup(struct irq_data *d)
+ 	unsigned int gpio = d->hwirq;
+ 
+ 	/* active-high, input, clear interrupt, enable interrupt */
+-	dev_dbg(d->chip->parent_device, "startup: %u.%u\n", gpio, d->irq);
++	dev_dbg(gc_parent, "startup: %u.%u\n", gpio, d->irq);
+ 	npcmgpio_direction_input(gc, gpio);
+ 	npcmgpio_irq_ack(d);
+ 	npcmgpio_irq_unmask(d);
+-- 
+2.30.2
 
-I applied this patch to Linux 5.17-rc2 and tested with the
-coreboot_tiano-eve-mrchromebox-20210806.rom firmware.
-
-The Oops has been replaced with
-"cros-ec-typec: GOOG0014:00: couldn't find parent EC device".
-My laptop now reboots correctly =E2=80=94 the hang on reboot is gone.
-
-The cros_ec_typec driver ends up being loaded, but no devices are bound
-to it.  This differs from the behaviour with upstream coreboot
-(cabf9e33a7), where cros_ec_typec does not end up being loaded.
-
-Assuming all that's the intended behaviour:
-
-Reviewed-by: Alyssa Ross <hi@alyssa.is>
-Tested-by: Alyssa Ross <hi@alyssa.is>
-
-BTW: if you need anything else tested on an eve running upstream Linux
-and Coreboot in future, I'm happy to be CCed. :)
-
-> Thanks again!
->
-> -Prashant
-
---gounvrkiin7nkkhy
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEH9wgcxqlHM/ARR3h+dvtSFmyccAFAmH5JOIACgkQ+dvtSFmy
-ccBxVw//fEzb3zR8P3ov4Hhq21CxINWY7CYP/+iHTAMNIJaTQrU+1QgTnSXv2Lam
-5wGg4OFaqVKOffT738eub9MSxdeTfueAno4gHd3FmhAAAbU2wjj2dPaju+lZdH08
-teCmPmnGPyc5pkW+vctvjiafPuvr99sz5mkgZ51jywWGcoYBIjvtkiQVtDisMNoh
-aY80WujZRx7UIqw9cMjb3fcSEvLXL9yDQXYNmEULFI72uUiMFqf5DrzYW43hJCF6
-pNZwnTE1w8rvs0cGKqp1RsqjCyS4sjcPMbq3JAbQfqwrB040x7SQqB6fMjEonPns
-E93ycWrEqWzOPTkM0d9kHtU69OuiX82aY/1LvZsmRmFGx/T3lq9iXswjstodAg9A
-eZJCaLauSbUEApyOuJ+VlX+YfYBAtGMrZ7tPOYukMAkR6PSrLfqz2ntrL1K3rtcH
-QHcCLd7/LAhGNEzwFBw4Ob85UCD3eti8X3KTCmbrklIZNNTAqTsuDtX4HgEeuuqU
-X0AQAvJ13FFQFWflR+yrtl6m1fJk2sjGYflGJkjCT615fW3x3SyTVDdwPX3Nbs5N
-VUWDJjbYzjubONyYitSoyrBRzKCihTOaTp06Zu0q/ubb0N5z6d8UZ0gWAu+N6XRE
-yBjWy4BObHcioQzipFTAHsA5wVbmUdFLXWF7d32P2lBIgRnNRfg=
-=Cjxi
------END PGP SIGNATURE-----
-
---gounvrkiin7nkkhy--
