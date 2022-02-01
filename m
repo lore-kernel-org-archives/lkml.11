@@ -2,527 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF30EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 20:55:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9442DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 20:56:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242625AbiBAUz6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 15:55:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59444 "EHLO
+        id S232916AbiBAU42 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 15:56:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236881AbiBAUzw (ORCPT
+        with ESMTP id S229547AbiBAU4Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 15:55:52 -0500
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56031C06173D
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Feb 2022 12:55:52 -0800 (PST)
-Received: by mail-yb1-xb4a.google.com with SMTP id a125-20020a25ca83000000b00619442ade1cso26502963ybg.1
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Feb 2022 12:55:52 -0800 (PST)
+        Tue, 1 Feb 2022 15:56:25 -0500
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83386C06173B
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Feb 2022 12:56:25 -0800 (PST)
+Received: by mail-pg1-x532.google.com with SMTP id f8so16478187pgf.8
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Feb 2022 12:56:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=pL1E8fJxKw13cCsiOnlzxl+3OEwkHyaKnHI4u2VvDps=;
-        b=iLwxZIv5uqjajpGnCS3rmRzTL28QDNo1wzcLG4pKrQAIir+6+XS5Oth4WrIeoROhaC
-         K4x9s+1s0lVKIYmOYxqRr2YllIsLUD/Fd2Kr/4loQYX1M8KrWo+hswzpdIkl0MOVnLI5
-         qyyQptR7MsdpfC7LZCBs+JmxPf700zWwkxD6xiTZRkk8IcluJD7XR60iDT01WAl6DP+G
-         ygG2vSjX8X5sGmeHwzxsFlPFFeaxnrVNuesRujenB9aTqUvV2ILCLTW4bckP+y9yJhuw
-         HejzUN2pY4TY054MLd4OIijtaAGbHt0mdUDYd2hE2Iywrk/r50G5z4cfcIE5K7DBjaNO
-         +a2Q==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=/K6CrouqNGPSnRyT1f52nHMQEEea+SOxraNSciufZcQ=;
+        b=L9q2IpeiXJQDBJSV9DS3cKiVk1tVp+zkdvqw3ehFZvdheg7PcUbCDRZBPhIyk71rtV
+         LgksLrzm4pydIz/Fseu/imUdzljxVgvdkVfj82Sd3r8xv9COxCiJMoq2nxn6rzvnFHMd
+         wZkiY6iCrOzr5vI0m78Qg7BCkNUD5fLKTPIfj031sIfzRYhme9BtS5u2ayojPEdik5p8
+         txNvz8+inM0BOrE+lPfj1KMaB+GyyEPRiWeG8U/s3FvZwG/3HYBgr0cgx4oqFS2/NfmI
+         vQMD3QDSzXIxHEA/TP9jLwIYHFQaaDCKnZHqrqpRVaKpaNAcIUxDdvI5w2Mtwb+EmGDM
+         6ykA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=pL1E8fJxKw13cCsiOnlzxl+3OEwkHyaKnHI4u2VvDps=;
-        b=F5YXosHah9jMSSPd33Odkn2nV6RcvtIMnrE1mub3WM+zAGozoHMLjh28tOxhXOVYOm
-         ZnHUpzLw1gxXfCcb90Bl1O5MzCNSjVwA8yPvyLxzUyJcdeNfTJwpDPBLYGlp+qWu1k5G
-         L75+kwIMkOnZZATN1YvKGanfkXOY+L1at3+Cp49aQkcHkTl609nXX+K5tisUfKT1qreO
-         WmhSXTVNcvdRpQGt/cRAZMpJ4qVnvsEqJn2UT86NvyUXH5pblqOgoBQh1wNyigv//oKe
-         hWV5aDi5e+9P10U5bIKIFfDdIAy6UyhNr6hIfEIq8F+Ev/BVn3jwy6BCK0gWKo4CsOha
-         AxPQ==
-X-Gm-Message-State: AOAM532EYJ54vgI4UTrIgIrkm7rOCmXhNBuGlx5hB/WycVK3YN14FxJI
-        ykhhEaEGp28DTY14UhZet7QoBIRzcVk=
-X-Google-Smtp-Source: ABdhPJx2K4/2udytZZXqNqYSXlX+Tejacq3qe7zEpZvsjURu1Lo9LnFuORhx1dED7XoxakLOdMSUBRGlftA=
-X-Received: from haoluo.svl.corp.google.com ([2620:15c:2cd:202:1cdb:a263:2495:80fd])
- (user=haoluo job=sendgmr) by 2002:a25:c5cc:: with SMTP id v195mr41095321ybe.373.1643748951613;
- Tue, 01 Feb 2022 12:55:51 -0800 (PST)
-Date:   Tue,  1 Feb 2022 12:55:34 -0800
-In-Reply-To: <20220201205534.1962784-1-haoluo@google.com>
-Message-Id: <20220201205534.1962784-6-haoluo@google.com>
-Mime-Version: 1.0
-References: <20220201205534.1962784-1-haoluo@google.com>
-X-Mailer: git-send-email 2.35.0.rc2.247.g8bbb082509-goog
-Subject: [PATCH RFC bpf-next v2 5/5] selftests/bpf: test for pinning for
- cgroup_view link
-From:   Hao Luo <haoluo@google.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>, KP Singh <kpsingh@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Joe Burton <jevburton.kernel@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Hao Luo <haoluo@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/K6CrouqNGPSnRyT1f52nHMQEEea+SOxraNSciufZcQ=;
+        b=ICbMaVXVG59dg5NgLbewsHCaT7oMA4cuzJXnQ/Gwh5lkt03hv9+VV3ZShBKadWu3aE
+         L2RziDa1LBR1SPYKz91K4+6zyy3s6tRpo0M9IgVPpm5TCGfUFZR1uXILE9jV3uP0wLgX
+         1mYxHos1RyY7eNgaZGvrWg+XJAIOloZuQIGmt8C5skqMZ4p6y2wQ/OEn5ZHPRSpW/T1V
+         sgc4BXn2pnD2jw8CqjduoBj36Sx8Go7Xd/w3W21/st6jIjohxWPZgXT7Tx57jV6cOgEh
+         Vpo1bmw7U6dQT2iywhmiWHJYqwxZp5sobDgU82fpe7d5gNB1ToaWs/KSP15TE7fwB51X
+         JOMw==
+X-Gm-Message-State: AOAM532qTfrXmpVp9EvLOzflEq0VFso3mhRBSZSQQyG+sV9slx5ShHl9
+        O+UMNXArsWsEy1quG0+Wn8H3Zw==
+X-Google-Smtp-Source: ABdhPJxt4c+g37LTztBQFLWT1J7bKlvLTzRanguek+vZD5dt6E6xBhxeHWepA0+xUSAy5RHKLZPfYg==
+X-Received: by 2002:a63:ed10:: with SMTP id d16mr21961918pgi.17.1643748984764;
+        Tue, 01 Feb 2022 12:56:24 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id u19sm23445170pfi.150.2022.02.01.12.56.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Feb 2022 12:56:24 -0800 (PST)
+Date:   Tue, 1 Feb 2022 20:56:20 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        llvm@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        syzbot+6cde2282daa792c49ab8@syzkaller.appspotmail.com
+Subject: Re: [PATCH 1/5] Kconfig: Add option for asm goto w/ tied outputs to
+ workaround clang-13 bug
+Message-ID: <YfmedCAn8pK//I2R@google.com>
+References: <20220201010838.1494405-1-seanjc@google.com>
+ <20220201010838.1494405-2-seanjc@google.com>
+ <CAKwvOd=9nwR7z7wn50SU=mf5AywFLd95ZMH-EbYdHfbeHVvq1A@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKwvOd=9nwR7z7wn50SU=mf5AywFLd95ZMH-EbYdHfbeHVvq1A@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A selftest for demo/testing cgroup_view pinning, directory tagging and
-cat cgroup_view pinned objects. The added cgroup_view prog is a naive
-use case, which merely reads the cgroup's id.
+On Tue, Feb 01, 2022, Nick Desaulniers wrote:
+> On Mon, Jan 31, 2022 at 5:08 PM Sean Christopherson <seanjc@google.com> wrote:
+> >
+> > Add a config option to guard (future) usage of asm_volatile_goto() that
+> > includes "tied outputs", i.e. "+" constraints that specify both an input
+> > and output parameter.  clang-13 has a bug[1] that causes compilation of
+> > such inline asm to fail, and KVM wants to use a "+m" constraint to
+> > implement a uaccess form of CMPXCHG[2].  E.g. the test code fails with
+> >
+> >   <stdin>:1:29: error: invalid operand in inline asm: '.long (${1:l}) - .'
+> >   int foo(int *x) { asm goto (".long (%l[bar]) - .\n": "+m"(*x) ::: bar); return *x; bar: return 0; }
+> >                             ^
+> >   <stdin>:1:29: error: unknown token in expression
+> >   <inline asm>:1:9: note: instantiated into assembly here
+> >           .long () - .
+> >                  ^
+> >   2 errors generated.
+> >
+> > on clang-13, but passes on gcc (with appropriate asm goto support).  The
+> > bug is fixed in clang-14, but won't be backported to clang-13 as the
+> > changes are too invasive/risky.
+> 
+> LGTM.
+> Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+> 
+> If you're going to respin the series, consider adding a comment in the
+> source along the lines of:
+> ```
+> clang-14 and gcc-11 fixed this.
+> ```
+> or w/e. This helps us find (via grep) and remove cruft when the
+> minimum supported compiler versions are updated.
 
-This selftest introduces two metrics for measuring cgroup-level
-scheduling queuing delays:
+Will do, a new version is definitely needed.
 
- - queue_self: queueing delays caused by waiting behind self cgroup.
- - queue_other: queueing delays caused by waiting behind other cgroups.
+> Note: gcc-10 had a bug with the symbolic references to labels when
+> using tied constraints.
+> https://gcc.gnu.org/bugzilla/show_bug.cgi?id=98096
+> 
+> Both compilers had bugs here, and it may be worth mentioning that in
+> the commit message.
 
-The selftest collects task-level queuing delays and breaks them into
-queue_self delays and queue_other delays. This is done by hooking at
-handlers at context switch and wakeup. Only the max queue_self and
-queue_other delays are recorded. This breakdown is helpful in analyzing
-the cause of long scheduling delays. Large value in queue_self is an
-indication of contention that comes from within the cgroup. Large value
-in queue_other indicates contention between cgroups.
+Is this wording accurate?
 
-A new iter prog type cgroup_view is implemented "dump_cgropu_lat", which
-reads the recorded delays and dumps the stats through bpffs interfaces.
-Specifically, cgroup_view is initially pinned in an empty directory
-bpffs, which effectively turns the directory into a mirror of the cgroup
-hierarchy. When a new cgroup is created, we manually created a new
-directory in bpffs in correspondence. The new directory will contain
-a file prepopulated with the pinned cgroup_view object. Reading that
-file yields the queue stats of the corresponding cgroup.
-
-Signed-off-by: Hao Luo <haoluo@google.com>
----
- .../selftests/bpf/prog_tests/pinning_cgroup.c | 143 +++++++++++
- tools/testing/selftests/bpf/progs/bpf_iter.h  |   7 +
- .../bpf/progs/bpf_iter_cgroup_view.c          | 232 ++++++++++++++++++
- 3 files changed, 382 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/pinning_cgroup.c
- create mode 100644 tools/testing/selftests/bpf/progs/bpf_iter_cgroup_view.c
-
-diff --git a/tools/testing/selftests/bpf/prog_tests/pinning_cgroup.c b/tools/testing/selftests/bpf/prog_tests/pinning_cgroup.c
-new file mode 100644
-index 000000000000..ebef154e63c9
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/pinning_cgroup.c
-@@ -0,0 +1,143 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <fcntl.h>
-+#include <sys/types.h>
-+#include <sys/stat.h>
-+#include <test_progs.h>
-+#include <time.h>
-+#include <unistd.h>
-+#include "bpf_iter_cgroup_view.skel.h"
-+
-+static void spin_on_cpu(int seconds)
-+{
-+	time_t start, now;
-+
-+	start = time(NULL);
-+	do {
-+		now = time(NULL);
-+	} while (now - start < seconds);
-+}
-+
-+static void do_work(const char *cgroup)
-+{
-+	int i, cpu = 0, pid;
-+	char cmd[128];
-+
-+	/* make cgroup threaded */
-+	snprintf(cmd, 128, "echo threaded > %s/cgroup.type", cgroup);
-+	system(cmd);
-+
-+	/* try to enable cpu controller. this may fail if there cpu controller
-+	 * is not available in cgroup.controllers or there is a cgroup v1 already
-+	 * mounted in the system.
-+	 */
-+	snprintf(cmd, 128, "echo \"+cpu\" > %s/cgroup.subtree_control", cgroup);
-+	system(cmd);
-+
-+	/* launch two children, both running in child cgroup */
-+	for (i = 0; i < 2; ++i) {
-+		pid = fork();
-+		if (pid == 0) {
-+			/* attach to cgroup */
-+			snprintf(cmd, 128, "echo %d > %s/cgroup.procs", getpid(), cgroup);
-+			system(cmd);
-+
-+			/* pin process to target cpu */
-+			snprintf(cmd, 128, "taskset -pc %d %d", cpu, getpid());
-+			system(cmd);
-+
-+			spin_on_cpu(3); /* spin on cpu for 3 seconds */
-+			exit(0);
-+		}
-+	}
-+
-+	/* pin process to target cpu */
-+	snprintf(cmd, 128, "taskset -pc %d %d", cpu, getpid());
-+	system(cmd);
-+
-+	spin_on_cpu(3); /* spin on cpu for 3 seconds */
-+	wait(NULL);
-+}
-+
-+static void check_pinning(const char *rootpath)
-+{
-+	const char *child_cgroup = "/sys/fs/cgroup/child";
-+	struct bpf_iter_cgroup_view *skel;
-+	struct bpf_link *link;
-+	struct stat statbuf = {};
-+	FILE *file;
-+	unsigned long queue_self, queue_other;
-+	int cgroup_id, link_fd;
-+	char path[64];
-+	char buf[64];
-+
-+	skel = bpf_iter_cgroup_view__open_and_load();
-+	if (!ASSERT_OK_PTR(skel, "bpf_iter_cgroup_view__open_and_load"))
-+		return;
-+
-+	/* pin path at parent dir. */
-+	link = bpf_program__attach_iter(skel->progs.dump_cgroup_lat, NULL);
-+	link_fd = bpf_link__fd(link);
-+
-+	/* test initial pinning */
-+	snprintf(path, 64, "%s/obj", rootpath);
-+	ASSERT_OK(bpf_obj_pin(link_fd, path), "bpf_obj_pin");
-+	ASSERT_OK(stat(path, &statbuf), "pinned_object_exists");
-+
-+	/* test mkdir */
-+	mkdir(child_cgroup, 0755);
-+	snprintf(path, 64, "%s/child", rootpath);
-+	ASSERT_OK(mkdir(path, 0755), "mkdir");
-+
-+	/* test that new dir has been pre-populated with pinned objects */
-+	snprintf(path, 64, "%s/child/obj", rootpath);
-+	ASSERT_OK(stat(path, &statbuf), "populate");
-+
-+	bpf_iter_cgroup_view__attach(skel);
-+	do_work(child_cgroup);
-+	bpf_iter_cgroup_view__detach(skel);
-+
-+	/* test cat inherited objects */
-+	file = fopen(path, "r");
-+	if (ASSERT_OK_PTR(file, "open")) {
-+		ASSERT_OK_PTR(fgets(buf, sizeof(buf), file), "cat");
-+		ASSERT_EQ(sscanf(buf, "cgroup_id: %8d", &cgroup_id), 1, "output");
-+
-+		ASSERT_OK_PTR(fgets(buf, sizeof(buf), file), "cat");
-+		ASSERT_EQ(sscanf(buf, "queue_self: %8lu", &queue_self), 1, "output");
-+
-+		ASSERT_OK_PTR(fgets(buf, sizeof(buf), file), "cat");
-+		ASSERT_EQ(sscanf(buf, "queue_other: %8lu", &queue_other), 1, "output");
-+
-+		fclose(file);
-+	}
-+
-+	/* test rmdir */
-+	snprintf(path, 64, "%s/child", rootpath);
-+	ASSERT_OK(rmdir(path), "rmdir");
-+
-+	/* unpin object */
-+	snprintf(path, 64, "%s/obj", rootpath);
-+	ASSERT_OK(unlink(path), "unlink");
-+
-+	bpf_link__destroy(link);
-+	bpf_iter_cgroup_view__destroy(skel);
-+}
-+
-+void test_pinning_cgroup(void)
-+{
-+	char tmpl[] = "/sys/fs/bpf/pinning_test_XXXXXX";
-+	char *rootpath;
-+
-+	system("mount -t cgroup2 none /sys/fs/cgroup");
-+	system("mount -t bpf bpffs /sys/fs/bpf");
-+
-+	rootpath = mkdtemp(tmpl);
-+	chmod(rootpath, 0755);
-+
-+	/* check pinning map, prog and link in kernfs */
-+	if (test__start_subtest("pinning"))
-+		check_pinning(rootpath);
-+
-+	rmdir(rootpath);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/bpf_iter.h b/tools/testing/selftests/bpf/progs/bpf_iter.h
-index 8cfaeba1ddbf..506bb3efd9b4 100644
---- a/tools/testing/selftests/bpf/progs/bpf_iter.h
-+++ b/tools/testing/selftests/bpf/progs/bpf_iter.h
-@@ -16,6 +16,7 @@
- #define bpf_iter__bpf_map_elem bpf_iter__bpf_map_elem___not_used
- #define bpf_iter__bpf_sk_storage_map bpf_iter__bpf_sk_storage_map___not_used
- #define bpf_iter__sockmap bpf_iter__sockmap___not_used
-+#define bpf_iter__cgroup_view bpf_iter__cgroup_view___not_used
- #define btf_ptr btf_ptr___not_used
- #define BTF_F_COMPACT BTF_F_COMPACT___not_used
- #define BTF_F_NONAME BTF_F_NONAME___not_used
-@@ -37,6 +38,7 @@
- #undef bpf_iter__bpf_map_elem
- #undef bpf_iter__bpf_sk_storage_map
- #undef bpf_iter__sockmap
-+#undef bpf_iter__cgroup_view
- #undef btf_ptr
- #undef BTF_F_COMPACT
- #undef BTF_F_NONAME
-@@ -132,6 +134,11 @@ struct bpf_iter__sockmap {
- 	struct sock *sk;
- };
- 
-+struct bpf_iter__cgroup_view {
-+	struct bpf_iter_meta *meta;
-+	struct cgroup *cgroup;
-+} __attribute__((preserve_access_index));
-+
- struct btf_ptr {
- 	void *ptr;
- 	__u32 type_id;
-diff --git a/tools/testing/selftests/bpf/progs/bpf_iter_cgroup_view.c b/tools/testing/selftests/bpf/progs/bpf_iter_cgroup_view.c
-new file mode 100644
-index 000000000000..43404c21aee3
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/bpf_iter_cgroup_view.c
-@@ -0,0 +1,232 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2022 Google */
-+#include "bpf_iter.h"
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+#include <bpf/bpf_core_read.h>
-+
-+char _license[] SEC("license") = "GPL";
-+
-+#define TASK_RUNNING 0
-+#define BPF_F_CURRENT_CPU 0xffffffffULL
-+
-+extern void fair_sched_class __ksym;
-+extern bool CONFIG_FAIR_GROUP_SCHED __kconfig;
-+extern bool CONFIG_CGROUP_SCHED __kconfig;
-+
-+struct wait_lat {
-+	/* Queue_self stands for the latency a task experiences while waiting
-+	 * behind the tasks that are from the same cgroup.
-+	 *
-+	 * Queue_other stands for the latency a task experiences while waiting
-+	 * behind the tasks that are from other cgroups.
-+	 *
-+	 * For example, if there are three tasks: A, B and C. Suppose A and B
-+	 * are in the same cgroup and C is in another cgroup and we see A has
-+	 * a queueing latency X milliseconds. Let's say during the X milliseconds,
-+	 * B has run for Y milliseconds. We can break down X to two parts: time
-+	 * when B is on cpu, that is Y; the time when C is on cpu, that is X - Y.
-+	 *
-+	 * Queue_self is the former (Y) while queue_other is the latter (X - Y).
-+	 *
-+	 * large value in queue_self is an indication of contention within a
-+	 * cgroup; while large value in queue_other is an indication of
-+	 * contention from multiple cgroups.
-+	 */
-+	u64 queue_self;
-+	u64 queue_other;
-+};
-+
-+struct timestamp {
-+	/* timestamp when last queued */
-+	u64 tsp;
-+
-+	/* cgroup exec_clock when last queued */
-+	u64 exec_clock;
-+};
-+
-+/* Map to store per-cgroup wait latency */
-+struct {
-+	__uint(type, BPF_MAP_TYPE_HASH);
-+	__type(key, u64);
-+	__type(value, struct wait_lat);
-+	__uint(max_entries, 65532);
-+} cgroup_lat SEC(".maps");
-+
-+/* Map to store per-task queue timestamp */
-+struct {
-+	__uint(type, BPF_MAP_TYPE_TASK_STORAGE);
-+	__uint(map_flags, BPF_F_NO_PREALLOC);
-+	__type(key, int);
-+	__type(value, struct timestamp);
-+} start SEC(".maps");
-+
-+/* adapt from task_cfs_rq in kernel/sched/sched.h */
-+__always_inline
-+struct cfs_rq *task_cfs_rq(struct task_struct *t)
-+{
-+	if (!CONFIG_FAIR_GROUP_SCHED)
-+		return NULL;
-+
-+	return BPF_CORE_READ(&t->se, cfs_rq);
-+}
-+
-+/* record enqueue timestamp */
-+__always_inline
-+static int trace_enqueue(struct task_struct *t)
-+{
-+	u32 pid = t->pid;
-+	struct timestamp *ptr;
-+	struct cfs_rq *cfs_rq;
-+
-+	if (!pid)
-+		return 0;
-+
-+	/* only measure for CFS tasks */
-+	if (t->sched_class != &fair_sched_class)
-+		return 0;
-+
-+	ptr = bpf_task_storage_get(&start, t, 0,
-+				   BPF_LOCAL_STORAGE_GET_F_CREATE);
-+	if (!ptr)
-+		return 0;
-+
-+	/* CONFIG_FAIR_GROUP_SCHED may not be enabled */
-+	cfs_rq = task_cfs_rq(t);
-+	if (!cfs_rq)
-+		return 0;
-+
-+	ptr->tsp = bpf_ktime_get_ns();
-+	ptr->exec_clock = BPF_CORE_READ(cfs_rq, exec_clock);
-+	return 0;
-+}
-+
-+SEC("tp_btf/sched_wakeup")
-+int handle__sched_wakeup(u64 *ctx)
-+{
-+	/* TP_PROTO(struct task_struct *p) */
-+	struct task_struct *p = (void *)ctx[0];
-+
-+	return trace_enqueue(p);
-+}
-+
-+SEC("tp_btf/sched_wakeup_new")
-+int handle__sched_wakeup_new(u64 *ctx)
-+{
-+	/* TP_PROTO(struct task_struct *p) */
-+	struct task_struct *p = (void *)ctx[0];
-+
-+	return trace_enqueue(p);
-+}
-+
-+/* task_group() from kernel/sched/sched.h */
-+__always_inline
-+struct task_group *task_group(struct task_struct *p)
-+{
-+	if (!CONFIG_CGROUP_SCHED)
-+		return NULL;
-+
-+	return BPF_CORE_READ(p, sched_task_group);
-+}
-+
-+__always_inline
-+struct cgroup *task_cgroup(struct task_struct *p)
-+{
-+	struct task_group *tg;
-+
-+	tg = task_group(p);
-+	if (!tg)
-+		return NULL;
-+
-+	return BPF_CORE_READ(tg, css).cgroup;
-+}
-+
-+__always_inline
-+u64 max(u64 x, u64 y)
-+{
-+	return x > y ? x : y;
-+}
-+
-+SEC("tp_btf/sched_switch")
-+int handle__sched_switch(u64 *ctx)
-+{
-+	/* TP_PROTO(bool preempt, struct task_struct *prev,
-+	 *	    struct task_struct *next)
-+	 */
-+	struct task_struct *prev = (struct task_struct *)ctx[1];
-+	struct task_struct *next = (struct task_struct *)ctx[2];
-+	u64 delta, delta_self, delta_other, id;
-+	struct cfs_rq *cfs_rq;
-+	struct timestamp *tsp;
-+	struct wait_lat *lat;
-+	struct cgroup *cgroup;
-+
-+	/* ivcsw: treat like an enqueue event and store timestamp */
-+	if (prev->__state == TASK_RUNNING)
-+		trace_enqueue(prev);
-+
-+	/* only measure for CFS tasks */
-+	if (next->sched_class != &fair_sched_class)
-+		return 0;
-+
-+	/* fetch timestamp and calculate delta */
-+	tsp = bpf_task_storage_get(&start, next, 0, 0);
-+	if (!tsp)
-+		return 0;   /* missed enqueue */
-+
-+	/* CONFIG_FAIR_GROUP_SCHED may not be enabled */
-+	cfs_rq = task_cfs_rq(next);
-+	if (!cfs_rq)
-+		return 0;
-+
-+	/* cpu controller may not be enabled */
-+	cgroup = task_cgroup(next);
-+	if (!cgroup)
-+		return 0;
-+
-+	/* calculate self delay and other delay */
-+	delta = bpf_ktime_get_ns() - tsp->tsp;
-+	delta_self = BPF_CORE_READ(cfs_rq, exec_clock) - tsp->exec_clock;
-+	if (delta_self > delta)
-+		delta_self = delta;
-+	delta_other = delta - delta_self;
-+
-+	/* insert into cgroup_lat map */
-+	id = BPF_CORE_READ(cgroup, kn, id);
-+	lat = bpf_map_lookup_elem(&cgroup_lat, &id);
-+	if (!lat) {
-+		struct wait_lat w = {
-+			.queue_self = delta_self,
-+			.queue_other = delta_other,
-+		};
-+
-+		bpf_map_update_elem(&cgroup_lat, &id, &w, BPF_ANY);
-+	} else {
-+		lat->queue_self = max(delta_self, lat->queue_self);
-+		lat->queue_other = max(delta_other, lat->queue_other);
-+	}
-+
-+	bpf_task_storage_delete(&start, next);
-+	return 0;
-+}
-+
-+SEC("iter/cgroup_view")
-+int dump_cgroup_lat(struct bpf_iter__cgroup_view *ctx)
-+{
-+	struct seq_file *seq = ctx->meta->seq;
-+	struct cgroup *cgroup = ctx->cgroup;
-+	struct wait_lat *lat;
-+	u64 id;
-+
-+	BPF_SEQ_PRINTF(seq, "cgroup_id: %8lu\n", cgroup->kn->id);
-+	lat = bpf_map_lookup_elem(&cgroup_lat, &id);
-+	if (lat) {
-+		BPF_SEQ_PRINTF(seq, "queue_self: %8lu\n", lat->queue_self);
-+		BPF_SEQ_PRINTF(seq, "queue_other: %8lu\n", lat->queue_other);
-+	} else {
-+		/* print anyway for universal parsing logic in userspace. */
-+		BPF_SEQ_PRINTF(seq, "queue_self: %8d\n", 0);
-+		BPF_SEQ_PRINTF(seq, "queue_other: %8d\n", 0);
-+	}
-+	return 0;
-+}
--- 
-2.35.0.rc2.247.g8bbb082509-goog
-
+  gcc also had a similar bug[3], fixed in gcc-11, where gcc failed to
+  account for its behavior of assigning two numbers to tied outputs (one
+  for input, one for output) when evaluating symbolic references. 
