@@ -2,179 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BB2CC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 20:35:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B60EBC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 20:35:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235580AbiBAUfD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 15:35:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54256 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229702AbiBAUfC (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 15:35:02 -0500
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E52EC061714;
-        Tue,  1 Feb 2022 12:35:02 -0800 (PST)
-Received: by mail-ej1-x62c.google.com with SMTP id j2so57177384ejk.6;
-        Tue, 01 Feb 2022 12:35:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=rBAEWe0d14lBWb+Vsl5lHaaZyxn6U2i2/rJRhaGu09I=;
-        b=K8Pg/SnYwiqGGwMKYRi5PWI7KLAJ3jN1eZ5+vwsnh1UO4bWxNmB5imh7fFIpaUKfwq
-         ah4QJkBlyc59xahuWEaJjIj2sup3HeSXodD+LPjrt8Mrx+6PxY+7REFds+5mLu5NK+nx
-         1j5ZNTCgmW24YmAwBibZFbEg1k8wXbe669LEePnxMY1EZRYlneCymJzt7xe4zFyc+jgt
-         wbogeHzmaz9RdzjzIPRQibpyBJp0s5dNyoyTLD7xCOPMbcWG4a8FsUoMuWOKdWjiuQx4
-         LFhBDZywoxbQjJW1ov+yXNEb+mT00+v9wBJKdzE/15a3z1/oNXSANK4Xj9XgqvPKgi5v
-         vFhw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=rBAEWe0d14lBWb+Vsl5lHaaZyxn6U2i2/rJRhaGu09I=;
-        b=4plIUDScXmYxfpXqg/muWfIiZ2nQ3CDyOVVEItrEPU0GpFyCXhn60Oz1JtyctqHJ06
-         MBPxSEJYICQw2UK7NqSxwNpfAMOdv6ubTEQ/y1s9IsKW9ybQn5AD73x0Q+hViVogL2Zl
-         ELNBZFk7vFRjY5r3MrM7tIHQjcReGopbCL2N67l7EA8yNZ7qOMaJO4Ucqd9RuaqgpUDi
-         /6Cre5srierTboxyRtRLScbQJ1nJOzWT4n2QSEKa/67uL8VUDLVWYPwh8pry+b9VAUfo
-         BxoHDVtGjjtMUpwOckVK2U9gUoWNk9J+36BxgR0qZ90aw9A9BaGPnzpBslp3f88/z7vk
-         328w==
-X-Gm-Message-State: AOAM531yaZWEQXdm60IyZJgPJ61oL651lnY1SxI2IbikZmmoi3Yl2K92
-        nINxka5mBeURUgsa5sMsb3ALQgVJ8A1n8S6Wyws=
-X-Google-Smtp-Source: ABdhPJzuDSTKXphKmJDAwfCq0ryG/LXHHz5dzsibxHRC4MLM6QTN54Dse2l0wUBT2izRRfob3hXcOvXXhFZ5BdDu/IA=
-X-Received: by 2002:a17:906:7948:: with SMTP id l8mr22030548ejo.636.1643747700531;
- Tue, 01 Feb 2022 12:35:00 -0800 (PST)
+        id S239099AbiBAUfd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 15:35:33 -0500
+Received: from mail-mw2nam10on2056.outbound.protection.outlook.com ([40.107.94.56]:6048
+        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229702AbiBAUfa (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 1 Feb 2022 15:35:30 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gWT4pzn9r7IKr0xW0KpVtMcU/ypjB+LlyTSSaC2X/ZxLzXYSCnBWl4VIiSncZ+qZlwnmQzll5HeYegoFtezXOX2JcmIV9iE9BdG41HAMTWRMa2kjcLC4jcFDRRvDpYmO+iySqqLTH3z4cYalvSaOd2dLDWQMhAL8P+pjRbNwVeknxY9uGK043o/Up1S5nzmJrDMtpH63kaXwMiUH2z/fySF5ZGAJpSanPnOSx9CDHQEOQhsupw2n00hyMOtUQzHKHhCQtrRNVlSc8gy0sB4LvqRUEYcMXKXI7j2UmmtKQpi9fzm2H/++UOeUMjHct4g+uQmrjN1jZrfvXLmV173a6g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=v1cWBqOIXa7ardxwCFEaPnr5lv2sy+HvYwvTKBY+L3U=;
+ b=HzaiSwcDDOjai2WK7SAR62r4QFlThjvCX9fUt5HRHWrccBHSwX5d1cRx2iIME/zX4k0Y4WATFEukv3C7uV7yOpztPmlCnAZsKRS+eUdit4aB72+uOUxbHdJxAhrGbDNexMiSu2TKr7tGzNFdN89Gg1fWFVnunjnqZolZQja1t4WXetSl7O7XGPAyWfQn4iFvG1FuCylko8OeeLUbIsZkyQ4gJCQ3OWQo0kGBjwvKZxSjeC/2e8LlerdQk7SsTpINuYWkMaGqL+hgVAb/aa0kNyMy3Fq+WMuDcYj22Pd8UzPaMdgu+ojpITZEaO5ZALE1ycaVE/1UJoCw1SCHoOdh2A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=alien8.de smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=v1cWBqOIXa7ardxwCFEaPnr5lv2sy+HvYwvTKBY+L3U=;
+ b=ROo/lJbjEBL+j0pSK9ekysY4tG+2hPZ0xxX+7/Od4QAIxO+CSEmTDKR/ISOZRIsKE8HrrxshyCX80dJij4FAFZI8wVo8258mrde6yfHlZvwD3ofCCK5OqOzbcjF3ocd5g8mDnA6YSQXHGKGFeE1YTIrYqwytQEvpwgDXvjbOuog=
+Received: from MW4PR04CA0175.namprd04.prod.outlook.com (2603:10b6:303:85::30)
+ by DM5PR12MB1836.namprd12.prod.outlook.com (2603:10b6:3:114::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.20; Tue, 1 Feb
+ 2022 20:35:28 +0000
+Received: from CO1NAM11FT041.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:85:cafe::9a) by MW4PR04CA0175.outlook.office365.com
+ (2603:10b6:303:85::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.15 via Frontend
+ Transport; Tue, 1 Feb 2022 20:35:28 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1NAM11FT041.mail.protection.outlook.com (10.13.174.217) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.4951.12 via Frontend Transport; Tue, 1 Feb 2022 20:35:26 +0000
+Received: from localhost (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Tue, 1 Feb
+ 2022 14:35:25 -0600
+Date:   Tue, 1 Feb 2022 14:35:07 -0600
+From:   Michael Roth <michael.roth@amd.com>
+To:     Borislav Petkov <bp@alien8.de>
+CC:     Brijesh Singh <brijesh.singh@amd.com>, <x86@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>,
+        <linux-efi@vger.kernel.org>, <platform-driver-x86@vger.kernel.org>,
+        <linux-coco@lists.linux.dev>, <linux-mm@kvack.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        "Vitaly Kuznetsov" <vkuznets@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        "Andy Lutomirski" <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
+        "Peter Zijlstra" <peterz@infradead.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Dov Murik <dovmurik@linux.ibm.com>,
+        Tobin Feldman-Fitzthum <tobin@ibm.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Andi Kleen <ak@linux.intel.com>,
+        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
+        <brijesh.ksingh@gmail.com>, <tony.luck@intel.com>,
+        <marcorr@google.com>, <sathyanarayanan.kuppuswamy@linux.intel.com>
+Subject: Re: [PATCH v9 05/43] x86/compressed/64: Detect/setup SEV/SME
+ features earlier in boot
+Message-ID: <20220201203507.goibbaln6dxyoogv@amd.com>
+References: <20220128171804.569796-1-brijesh.singh@amd.com>
+ <20220128171804.569796-6-brijesh.singh@amd.com>
+ <Yfl3FaTGPxE7qMCq@zn.tnic>
 MIME-Version: 1.0
-References: <6a62a531227cd4f20d77d50cdde60c7a18b9f052.1643625325.git.geert+renesas@glider.be>
-In-Reply-To: <6a62a531227cd4f20d77d50cdde60c7a18b9f052.1643625325.git.geert+renesas@glider.be>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 1 Feb 2022 22:33:25 +0200
-Message-ID: <CAHp75Vd68gsU-NWTGv4Y7Mo4-Vq7DBePa_yVxpDq=DAN5GLEBA@mail.gmail.com>
-Subject: Re: [PATCH] gpio: aggregator: Fix calling into sleeping GPIO controllers
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        =?UTF-8?Q?Mikko_Salom=C3=A4ki?= <ms@datarespons.se>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <Yfl3FaTGPxE7qMCq@zn.tnic>
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1ce8c51c-11f0-492d-5319-08d9e5c26168
+X-MS-TrafficTypeDiagnostic: DM5PR12MB1836:EE_
+X-Microsoft-Antispam-PRVS: <DM5PR12MB183658D8FAC3A10AA6E93A5695269@DM5PR12MB1836.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: xMY8/u+KwN9O6JsVkbpMbU++NQqVAHPuUDLFJ9QFEQ7Z8UIxWF8+/FaZ343gYNrlLhNCal1+KV5UaI7es1sIFW9D0mEFZwUghuC6jUnTJFkIn0keXl723MfRavYAAB6n3bN1MfNik+vr3CRNqUExgo5pObjRiYHS70a4DiTPd4RPHTCpUjD7j68mxN2b6TbUAPyqUAKFOF1ZU6VXOlG95MNTfyFhUpbE3jT42Jyj9JYWXIczDG4KKdMoJtoSBw+LupWefuxoQkl9Z4tjFQbQvCg3b27kkWmfX6V3xHDa2OIkdlOXz9tmssPKda4XjRy6gDZlKUn0VAWLSUO9wph1DgMSOee1GUhMlbDZWKdM2/RjNS4Ya7hS3PDMSDvoY5LkMe/tUKX9QQl6QLE1UVmXDIl6OuZ/UmOwclkUPjAd+LvCzGOMIK1R1SE+dxX9/IGJord2N8Zkk+xtlTbCxqEPvT1jLZuLMk0kSVXGdUjBVqhZru2E63UMOCUCY/Uc2zgVaeZo/hIQisCEmr7GOCq5Fy7KBn6scpCUD0tKnA43ZR4AwSDvNIpx8BjO1MibGAzKIODAlQUwTz/stLv8Op4Phr2f2m+Qoob76G3U16IA6QDrLdznTELNRDUuVDWsfY36tfkxwidJYuoN9ZBrowhrLx4s98S6oW61GKucu+7VeyMm69lhn+FYdXKSJSO9AvE+4/p3Np9JtDL+GK0zQcsDO4xgao2S0UWIWs+PGfl2Yfg/nuU2ZeWlck8oRg6pPWuPuYzHQvEKzYvyHppKaWhhkXP4MIoEoGqIbwYS3blEw3M=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(70206006)(70586007)(508600001)(81166007)(8676002)(8936002)(6666004)(4326008)(316002)(36756003)(6916009)(40460700003)(54906003)(47076005)(966005)(356005)(82310400004)(336012)(186003)(2906002)(7416002)(7406005)(16526019)(26005)(2616005)(44832011)(36860700001)(5660300002)(86362001)(1076003)(45080400002)(426003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Feb 2022 20:35:26.8404
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1ce8c51c-11f0-492d-5319-08d9e5c26168
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT041.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1836
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 1, 2022 at 10:09 PM Geert Uytterhoeven
-<geert+renesas@glider.be> wrote:
->
-> If the parent GPIO controller is a sleeping controller (e.g. a GPIO
-> controller connected to I2C), getting or setting a GPIO triggers a
-> might_sleep() warning.  This happens because the GPIO Aggregator takes
-> the can_sleep flag into account only for its internal locking, not for
-> calling into the parent GPIO controller.
->
-> Fix this by using the gpiod_[gs]et*_cansleep() APIs when calling into a
-> sleeping GPIO controller.
+On Tue, Feb 01, 2022 at 07:08:21PM +0100, Borislav Petkov wrote:
+> On Fri, Jan 28, 2022 at 11:17:26AM -0600, Brijesh Singh wrote:
+> > diff --git a/arch/x86/boot/compressed/head_64.S b/arch/x86/boot/compressed/head_64.S
+> > index fd9441f40457..49064a9f96e2 100644
+> > --- a/arch/x86/boot/compressed/head_64.S
+> > +++ b/arch/x86/boot/compressed/head_64.S
+> > @@ -191,9 +191,8 @@ SYM_FUNC_START(startup_32)
+> >  	/*
+> >  	 * Mark SEV as active in sev_status so that startup32_check_sev_cbit()
+> >  	 * will do a check. The sev_status memory will be fully initialized
+> 
+> That "sev_status memory" formulation is just weird. Pls fix it while
+> you're touching that comment.
 
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-One nit-pick below, though.
+Will do.
 
-> Reported-by: Mikko Salom=C3=A4ki <ms@datarespons.se>
-> Fixes: 828546e24280f721 ("gpio: Add GPIO Aggregator")
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> ---
-> I considered splitting the .[gs]et{_multiple}() callbacks for the
-> sleeping vs. nonsleeping cases, but the code size increase (measured on
-> ARM) would be substantial:
->   +64 bytes for gpio_fwd_[gs]et_cansleep(),
->   +296 bytes for gpio_fwd_[gs]et_multiple_cansleep().
-> ---
->  drivers/gpio/gpio-aggregator.c | 18 ++++++++++++++----
->  1 file changed, 14 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/gpio/gpio-aggregator.c b/drivers/gpio/gpio-aggregato=
-r.c
-> index 869dc952cf45218b..0cb2664085cf8314 100644
-> --- a/drivers/gpio/gpio-aggregator.c
-> +++ b/drivers/gpio/gpio-aggregator.c
-> @@ -278,7 +278,8 @@ static int gpio_fwd_get(struct gpio_chip *chip, unsig=
-ned int offset)
->  {
->         struct gpiochip_fwd *fwd =3D gpiochip_get_data(chip);
->
-> -       return gpiod_get_value(fwd->descs[offset]);
+> 
+> > +static inline u64 rd_sev_status_msr(void)
+> > +{
+> > +	unsigned long low, high;
+> > +
+> > +	asm volatile("rdmsr" : "=a" (low), "=d" (high) :
+> > +			"c" (MSR_AMD64_SEV));
+> > +
+> > +	return ((high << 32) | low);
+> > +}
+> 
+> Don't you see sev_es_rd_ghcb_msr() in that same file above? Do a common
+> rdmsr() helper and call it where needed, pls, instead of duplicating
+> code.
 
-> +       return chip->can_sleep ? gpiod_get_value_cansleep(fwd->descs[offs=
-et])
-> +                              : gpiod_get_value(fwd->descs[offset]);
+Unfortunately rdmsr()/wrmsr()/__rdmsr()/__wrmsr() etc. definitions are all
+already getting pulled in via:
 
-This indentation kills the perfectionist in me :-)
-What about:
+  misc.h:
+    #include linux/elf.h
+      #include linux/thread_info.h
+        #include linux/cpufeature.h
+          #include linux/processor.h
+            #include linux/msr.h
 
-       return chip->can_sleep ?
-               gpiod_get_value_cansleep(fwd->descs[offset]) :
-gpiod_get_value(fwd->descs[offset]);
+Those definitions aren't usable in boot/compressed because of __ex_table
+and possibly some other dependency hellishness.
 
-?
+Would read_msr()/write_msr() be reasonable alternative names for these new
+helpers, or something else that better distinguishes them from the
+kernel proper definitions?
 
-Or as variant
+> 
+> misc.h looks like a good place.
 
-       struct gpio_desc *desc =3D fwd->descs[offset];
+It doesn't look like anything in boot/ pulls in boot/compressed/
+headers. It seems to be the other way around, with boot/compressed
+pulling in headers and whole C files from boot/.
 
-       return chip->can_sleep ? gpiod_get_value_cansleep(desc) :
-gpiod_get_value(desc);
+So perhaps these new definitions should be added to a small boot/msr.h
+header and pulled in from there?
 
-?
+> 
+> Extra bonus points will be given if you unify callers in
+> arch/x86/boot/cpucheck.c too but you don't have to - I can do that
+> ontop.
 
->  }
->
->  static int gpio_fwd_get_multiple(struct gpiochip_fwd *fwd, unsigned long=
- *mask,
-> @@ -293,7 +294,10 @@ static int gpio_fwd_get_multiple(struct gpiochip_fwd=
- *fwd, unsigned long *mask,
->         for_each_set_bit(i, mask, fwd->chip.ngpio)
->                 descs[j++] =3D fwd->descs[i];
->
-> -       error =3D gpiod_get_array_value(j, descs, NULL, values);
-> +       if (fwd->chip.can_sleep)
-> +               error =3D gpiod_get_array_value_cansleep(j, descs, NULL, =
-values);
-> +       else
-> +               error =3D gpiod_get_array_value(j, descs, NULL, values);
->         if (error)
->                 return error;
->
-> @@ -328,7 +332,10 @@ static void gpio_fwd_set(struct gpio_chip *chip, uns=
-igned int offset, int value)
->  {
->         struct gpiochip_fwd *fwd =3D gpiochip_get_data(chip);
->
-> -       gpiod_set_value(fwd->descs[offset], value);
-> +       if (chip->can_sleep)
-> +               gpiod_set_value_cansleep(fwd->descs[offset], value);
-> +       else
-> +               gpiod_set_value(fwd->descs[offset], value);
->  }
->
->  static void gpio_fwd_set_multiple(struct gpiochip_fwd *fwd, unsigned lon=
-g *mask,
-> @@ -343,7 +350,10 @@ static void gpio_fwd_set_multiple(struct gpiochip_fw=
-d *fwd, unsigned long *mask,
->                 descs[j++] =3D fwd->descs[i];
->         }
->
-> -       gpiod_set_array_value(j, descs, NULL, values);
-> +       if (fwd->chip.can_sleep)
-> +               gpiod_set_array_value_cansleep(j, descs, NULL, values);
-> +       else
-> +               gpiod_set_array_value(j, descs, NULL, values);
->  }
->
->  static void gpio_fwd_set_multiple_locked(struct gpio_chip *chip,
-> --
-> 2.25.1
->
+I have these new helpers defined with similar signatures to
+__rdmsr/__wrmsr:
 
+  /* rdmsr/wrmsr helpers */
+  static inline u64 read_msr(unsigned int msr)
+  {
+         u64 low, high;
+  
+         asm volatile("rdmsr" : "=a" (low), "=d" (high) : "c" (msr));
+  
+         return ((high << 32) | low);
+  }
+  
+  static inline void write_msr(unsigned int msr, u32 low, u32 high)
+  {
+         asm volatile("wrmsr" : : "c" (msr), "a"(low), "d" (high) : "memory");
+  }
 
---=20
-With Best Regards,
-Andy Shevchenko
+but cpucheck.c code flow really lends itself to having a read_msr()
+variant that loads into 2 separate high/low u32 values, like what
+native_rdmsr does:
+
+  #define native_rdmsr(msr, val1, val2)                   \
+  do {                                                    \
+          u64 __val = __rdmsr((msr));                     \
+          (void)((val1) = (u32)__val);                    \
+          (void)((val2) = (u32)(__val >> 32));            \
+  } while (0)
+
+Should we introduce something like this as well for cpucheck.c? Or
+re-write cpucheck.c to make use of the u64 versions? Or just set the
+cpucheck.c rework aside for now? (but still introduce the above helpers
+as boot/msr.h in preparation)?
+
+Thanks,
+
+Mike
+
+> 
+> Thx.
+> 
+> -- 
+> Regards/Gruss,
+>     Boris.
+> 
+> https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fpeople.kernel.org%2Ftglx%2Fnotes-about-netiquette&amp;data=04%7C01%7Cmichael.roth%40amd.com%7Cec7f8621a6934039cfff08d9e5addaca%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637793357136301050%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=FMoP5ZskuxwanWTe5DxMnIYNPBSi%2FhRrOExp9hIHaCo%3D&amp;reserved=0
