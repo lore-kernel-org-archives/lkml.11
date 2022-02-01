@@ -2,105 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 375B1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 01:33:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ACFAC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 01:35:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231881AbiBABdH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 20:33:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48862 "EHLO
+        id S231927AbiBABfB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 31 Jan 2022 20:35:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231829AbiBABdG (ORCPT
+        with ESMTP id S231888AbiBABfA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 20:33:06 -0500
-Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D3BDC061714
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 17:33:06 -0800 (PST)
-Received: by mail-qt1-x833.google.com with SMTP id s1so14364qtw.9
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 17:33:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=MoWm32zvhEyqRVmUpa5LXZEYybwAAQFRmq/wU8a+Gt4=;
-        b=EgGzc5rt8LRF5c2Eif2fVlYrh9HTecIoACGjTA6wXsMIE5Cq6qPShWc2VkeRIbLQLJ
-         NzdWdQo2IAl4ibTNTDpXspNbyJX8M4MXNhOrJdH7s1L6p52qZ4QQmdA9tPnPO84GtTBx
-         t7MPx8RQAxDA9goxsppgIVZ+UrbAWYJM/6BsuBOZkSZXcDSdMWpTIxG/j+/nhuMs3Lqj
-         3/1dB0rzc7uOB2csLmqRxJfM1rzyDgXH68UG9wViOR32SdzStDiwpIWGxdl9ILrg8+5K
-         qn0HtVvCShbOisPior89CQpUSaHiw49SefIEMrjQqmB2DRVai7BMhol9HGp4yJaVyAvZ
-         B1yQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=MoWm32zvhEyqRVmUpa5LXZEYybwAAQFRmq/wU8a+Gt4=;
-        b=6H7YPR+tj4ZrSyqoJ/7nEOeWTVx7hr2FtBqvNDvOe0qQFa/um9yYk4KshooTIsjFLd
-         mK3W1ikCFIL2Jv3DaszDliua9DhU7IoXg/rmO3b0tClHuwvaC25mrO5RojcUBzQJE41v
-         bGYRakCdsQjYBs0V47e61wI8xuwiw1oNuhFgCO36d6xb32u7OOUum+aOd9G+tB2iwneq
-         FPK0/craCDrD8Kz42gxNPNQeRxzyNVgPduLx2csJUev/uM121rUqPfb1uoWvq52ird+0
-         83QE1xKley/rKfjsNHAMBmN8s4zdVPHS35Ksot7tLIVhFB2Vuls6m40jqBhu7A3Q0c6N
-         NHcQ==
-X-Gm-Message-State: AOAM531KkH7kCpzRA4UIyE4QFcH6dIvY7j4uzaz2ws2TMh2DH/m4Qjvd
-        3+mUQysStLAmGimGas3bhPiFOGSWJM6hPOVk
-X-Google-Smtp-Source: ABdhPJx9XbvUrAI3Emn6dngj5AmQ9NNxFJ3HrnmEE5AIo9Ak4wHhNAJY3XZGyeDXTS4yuiTX27NoKw==
-X-Received: by 2002:a05:622a:1881:: with SMTP id v1mr17345340qtc.683.1643679185259;
-        Mon, 31 Jan 2022 17:33:05 -0800 (PST)
-Received: from WRT-WX9.. ([207.246.89.135])
-        by smtp.gmail.com with ESMTPSA id v73sm9272458qkb.51.2022.01.31.17.33.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Jan 2022 17:33:04 -0800 (PST)
-From:   Changbin Du <changbin.du@gmail.com>
-To:     Nick Desaulniers <ndesaulniers@google.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
-        llvm@lists.linux.dev, Changbin Du <changbin.du@gmail.com>
-Subject: [PATCH] kallsyms: ignore all local labels prefixed by '.L'
-Date:   Tue,  1 Feb 2022 09:32:57 +0800
-Message-Id: <20220201013257.17926-1-changbin.du@gmail.com>
-X-Mailer: git-send-email 2.32.0
+        Mon, 31 Jan 2022 20:35:00 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 755A5C061714;
+        Mon, 31 Jan 2022 17:35:00 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 396016127D;
+        Tue,  1 Feb 2022 01:34:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A967C36AE2;
+        Tue,  1 Feb 2022 01:34:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643679298;
+        bh=dp5GfBZlWK/76zAgmaghbi69RmaTVYKP8oGHHjSzkZ4=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=b0avxoBngR0FmyTguj/RtEqHknqkae7nkG2PrXaktcLoGHFtCJuGy61fsbTwQpdlU
+         64s+VbLb+iGAbHqmuUWadGrZSwG3vjDMLwXAQ591GnkTFkpZp+YY+vNVpTkLC2MXLI
+         ArydQmcQAybaHbwyWz5//R/3wGh1CfCaNxiAlMqn33asJx/pjuO4LhpFGbeY8EaV7D
+         8HHAuh8PV4zHwJLt6pP/9JEtt+8s+RUQ13/EvDpcz2L67qEAMtt6BPNE4gmJ5hso7+
+         sRdfDDp4SHD3XV8Q1ElpVgI0ohc8CLcHDQ3ZeKZoBc65JbGti6fxpCFUJHDayuHUAA
+         RKWOxvuVwgEKQ==
+Received: by mail-yb1-f174.google.com with SMTP id c19so17423815ybf.2;
+        Mon, 31 Jan 2022 17:34:58 -0800 (PST)
+X-Gm-Message-State: AOAM533QI8Ll7+AiCQIZqXRrKAmnTj0aXs2jemOr1rTQireZ2gija4/Q
+        pl5HP0Sc1uq4GBR6XvhqYQ8Jg5kI9925tU4qXeE=
+X-Google-Smtp-Source: ABdhPJxPhm2qvy5gh/yC1btwsle5xpf0Wt1yKVdXcinI8Y201wkaXJfl3Kozi0DqByBzNY8FOkGw7JcWk12iVTG4iZ0=
+X-Received: by 2002:a05:6902:1208:: with SMTP id s8mr35728901ybu.654.1643679297710;
+ Mon, 31 Jan 2022 17:34:57 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220128234517.3503701-1-song@kernel.org> <20220128234517.3503701-8-song@kernel.org>
+ <ab7e0a98-fced-23b3-6876-01ce711bd579@iogearbox.net>
+In-Reply-To: <ab7e0a98-fced-23b3-6876-01ce711bd579@iogearbox.net>
+From:   Song Liu <song@kernel.org>
+Date:   Mon, 31 Jan 2022 17:34:46 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW5Pfvn8GNfuuuEGzdyugGDLF_g-V3T7RihBrxoQLxNb5g@mail.gmail.com>
+Message-ID: <CAPhsuW5Pfvn8GNfuuuEGzdyugGDLF_g-V3T7RihBrxoQLxNb5g@mail.gmail.com>
+Subject: Re: [PATCH v7 bpf-next 7/9] bpf: introduce bpf_prog_pack allocator
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Kernel Team <kernel-team@fb.com>,
+        Peter Zijlstra <peterz@infradead.org>, X86 ML <x86@kernel.org>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Nicholas Piggin <npiggin@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The llvm compiler can generate lots of local labels ('.LBB', '.Ltmpxxx',
-'.L__unnamed_xx', etc.). These symbols usually are useless for debugging.
-And they might overlap with handwritten symbols.
+On Mon, Jan 31, 2022 at 4:06 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> On 1/29/22 12:45 AM, Song Liu wrote:
+> > Most BPF programs are small, but they consume a page each. For systems
+> > with busy traffic and many BPF programs, this could add significant
+> > pressure to instruction TLB.
+> >
+> > Introduce bpf_prog_pack allocator to pack multiple BPF programs in a huge
+> > page. The memory is then allocated in 64 byte chunks.
+> >
+> > Memory allocated by bpf_prog_pack allocator is RO protected after initial
+> > allocation. To write to it, the user (jit engine) need to use text poke
+> > API.
+>
+> Did you benchmark the program load times under this API, e.g. how much
+> overhead is expected for very large programs?
 
-Before this change, a dumpstack shows a local symbol for epc:
-[    0.040341][    T0] Hardware name: riscv-virtio,qemu (DT)
-[    0.040376][    T0] epc : .LBB6_14+0x22/0x6a
-[    0.040452][    T0]  ra : restore_all+0x12/0x6e
+For the two scale tests in test_verifier:
 
-The simple solution is that we can ignore all local labels prefixed by '.L'.
-For handwritten symbols which need to be preserved should drop the '.L'
-prefix.
+./test_verifier 965 966
+#965/p scale: scale test 1 OK
+#966/p scale: scale test 2 OK
 
-After this change, the C defined symbol is shown so we can locate the
-problematical code immediately:
-[    0.035795][    T0] Hardware name: riscv-virtio,qemu (DT)
-[    0.036332][    T0] epc : trace_hardirqs_on+0x54/0x13c
-[    0.036567][    T0]  ra : restore_all+0x12/0x6e
+The runtime is about 0.6 second before the set and 0.7 second after.
 
-Signed-off-by: Changbin Du <changbin.du@gmail.com>
----
- scripts/kallsyms.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Is this a good benchmark?
 
-diff --git a/scripts/kallsyms.c b/scripts/kallsyms.c
-index 54ad86d13784..8caabddf817c 100644
---- a/scripts/kallsyms.c
-+++ b/scripts/kallsyms.c
-@@ -108,7 +108,7 @@ static bool is_ignored_symbol(const char *name, char type)
- 	/* Symbol names that begin with the following are ignored.*/
- 	static const char * const ignored_prefixes[] = {
- 		"$",			/* local symbols for ARM, MIPS, etc. */
--		".LASANPC",		/* s390 kasan local symbols */
-+		".L",			/* local labels, .LBB,.Ltmpxxx,.L__unnamed_xx,.LASANPC, etc. */
- 		"__crc_",		/* modversions */
- 		"__efistub_",		/* arm64 EFI stub namespace */
- 		"__kvm_nvhe_",		/* arm64 non-VHE KVM namespace */
--- 
-2.32.0
+>
+> > Signed-off-by: Song Liu <song@kernel.org>
+> > ---
+> >   kernel/bpf/core.c | 127 ++++++++++++++++++++++++++++++++++++++++++++++
+> >   1 file changed, 127 insertions(+)
+> >
+[...]
+> > +     }
+> > +     mutex_lock(&pack_mutex);
+> > +     list_for_each_entry(pack, &pack_list, list) {
+> > +             pos = bitmap_find_next_zero_area(pack->bitmap, BPF_PROG_CHUNK_COUNT, 0,
+> > +                                              nbits, 0);
+> > +             if (pos < BPF_PROG_CHUNK_COUNT)
+> > +                     goto found_free_area;
+> > +     }
+> > +
+> > +     pack = alloc_new_pack();
+> > +     if (!pack)
+> > +             goto out;
+>
+> Will this effectively disable the JIT for all bpf_prog_pack_alloc requests <=
+> BPF_PROG_MAX_PACK_PROG_SIZE when vmap_allow_huge is false (e.g. boot param via
+> nohugevmalloc) ?
 
+This won't disable JIT. It will just allocate 512x 4k pages for a 2MB pack. We
+will mark the whole 2MB RO, same as a 2MB huge page. We still benefit
+from this as this avoids poking the linear mapping (1GB pages) to 4kB pages
+with set_memory_ro().
+
+Thanks,
+Song
