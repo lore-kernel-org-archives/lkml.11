@@ -2,131 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E2F8C43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 16:07:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBA51C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 16:08:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240848AbiBAQHi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 11:07:38 -0500
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:41060 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S234704AbiBAQHg (ORCPT
+        id S240852AbiBAQIg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 11:08:36 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41878 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234704AbiBAQId (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 11:07:36 -0500
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 211C8U55030249;
-        Tue, 1 Feb 2022 17:05:16 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=selector1;
- bh=+MgA2PGfKilYlKlF4j5XzOprcEc+NIN/71Kfe0zvpIk=;
- b=b6Y6VzMQrNAMwkOD6o1ix8cv/W+ff5kzGDEJ4f4Ubu+DfjAViPt+KYZCRjdQmmJi7a1t
- xPiV8Dg8sCZtFdXN6B9CYHIiAyTklzYeTPhRbg3iE2dDsjFumUMRerZ4XVAYQh5pWlA4
- RvlThCizF9+lAgeDqvjkVBsHL8g55aHU8bbqWmDtc3Vxa4oKp/j5v0+E6MJP5yBZA5bv
- uQBnk+6JgjaP9CQgdaCxNz5EQ6Hsw210Nu8hAwS5AtsQPtStLjthf2zP5A3m4LxLg3s5
- hM4OSqc4XbRORGDULQiVg6CRFOMC6L7HwE5LM+Ir9p7BDSCEyb6Z5Xo/g4CrjDG6yTYG mw== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3dxk0rx0w3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 01 Feb 2022 17:05:16 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 010A4100038;
-        Tue,  1 Feb 2022 17:05:14 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id EC3CA226FA9;
-        Tue,  1 Feb 2022 17:05:14 +0100 (CET)
-Received: from localhost (10.75.127.50) by SFHDAG2NODE2.st.com (10.75.127.5)
- with Microsoft SMTP Server (TLS) id 15.0.1497.26; Tue, 1 Feb 2022 17:05:14
- +0100
-From:   Amelie Delaunay <amelie.delaunay@foss.st.com>
-To:     Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Rob Herring <robh+dt@kernel.org>
-CC:     <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Amelie Delaunay <amelie.delaunay@foss.st.com>
-Subject: [PATCH 1/2] ARM: dts: stm32: add DMA1, DMA2 and DMAMUX1 on STM32MP13x SoC family
-Date:   Tue, 1 Feb 2022 17:05:05 +0100
-Message-ID: <20220201160506.348701-2-amelie.delaunay@foss.st.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220201160506.348701-1-amelie.delaunay@foss.st.com>
-References: <20220201160506.348701-1-amelie.delaunay@foss.st.com>
+        Tue, 1 Feb 2022 11:08:33 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 789726150D;
+        Tue,  1 Feb 2022 16:08:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCCFFC340EB;
+        Tue,  1 Feb 2022 16:08:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643731712;
+        bh=LYkQIZRdd7F2uIoAPFnJqBxGFTDPHifWmC0kphwydIk=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Mc44WwDdggfnOKb2YcVDXJjFUYp3qUUF3GymEtcwPk4DR2XktERGmIh5XV2Xu4ARi
+         /oPUn4Ebfzwl7/V2qnocj8ywsSpMjEWqG/C2uo5xtquj8kHp098+iujuFTNGcDZKUD
+         DxWzGpc8dCRdm2Rn89oo3vViy1DN5vNw8eyZTrQT2ssMCeEmFKbjew1We8Ny16jEvf
+         ryfA4LLaXxS2PYwmF9wc32w2fkJ9+Fsc1c5ab/N7V15l5Waz/WEd0qw0NfzZlRJroN
+         yMRsCoeduUd5AQ+wl0Lqg4YDReQdyNgUYuQ47mSc25XeQphfxQkD8AtP4Q6aofi/KA
+         eCuh+9rDUiC/A==
+Received: by mail-oi1-f182.google.com with SMTP id e81so34198418oia.6;
+        Tue, 01 Feb 2022 08:08:32 -0800 (PST)
+X-Gm-Message-State: AOAM533Y+GKlaqLRrxpgLTsPuEUJe8Lur0/Tbw8CP8zxug4Db56lIk3X
+        SstTk4tprjUvgQ0taLZN2d/YoKsji+Uet48JtCU=
+X-Google-Smtp-Source: ABdhPJwGwRRmdd4QCEB6IP8oQPo2IqFKHmeSL4cqMhkamDEclF2NS8VqdEVXFb+FteZjR4DIcDqjJbmNSCUC3lMBNLk=
+X-Received: by 2002:a05:6808:1a26:: with SMTP id bk38mr1636034oib.291.1643731712169;
+ Tue, 01 Feb 2022 08:08:32 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.50]
-X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-01_08,2022-02-01_01,2021-12-02_01
+References: <20220201150339.1028032-1-arnd@kernel.org> <YflSNQQvignxL4PA@rowland.harvard.edu>
+In-Reply-To: <YflSNQQvignxL4PA@rowland.harvard.edu>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Tue, 1 Feb 2022 17:08:15 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a1DghU4fm_6OA8=_SG_ODYsnrw0J_Z-kmC9ay1hH=Gqwg@mail.gmail.com>
+Message-ID: <CAK8P3a1DghU4fm_6OA8=_SG_ODYsnrw0J_Z-kmC9ay1hH=Gqwg@mail.gmail.com>
+Subject: Re: [RFC] ARM: sa1100/assabet: move dmabounce hack to ohci driver
+To:     Alan Stern <stern@rowland.harvard.edu>
+Cc:     Russell King <linux@armlinux.org.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        USB list <linux-usb@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DMA1 and DMA2 on STM32MP13x SoCs are the same than on STM32MP15x SoCs: they
-offer up to 8 channels and request lines are routed through DMAMUX1.
+On Tue, Feb 1, 2022 at 4:31 PM Alan Stern <stern@rowland.harvard.edu> wrote:
 
-Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
----
- arch/arm/boot/dts/stm32mp131.dtsi | 44 +++++++++++++++++++++++++++++++
- 1 file changed, 44 insertions(+)
+> > diff --git a/drivers/usb/core/hcd.c b/drivers/usb/core/hcd.c
+> > index 3c7c64ff3c0a..5f2fa46c7958 100644
+> > --- a/drivers/usb/core/hcd.c
+> > +++ b/drivers/usb/core/hcd.c
+> > @@ -1260,7 +1260,8 @@ void usb_hcd_unlink_urb_from_ep(struct usb_hcd *hcd, struct urb *urb)
+> >  EXPORT_SYMBOL_GPL(usb_hcd_unlink_urb_from_ep);
+> >
+> >  /*
+> > - * Some usb host controllers can only perform dma using a small SRAM area.
+> > + * Some usb host controllers can only perform dma using a small SRAM area,
+> > + * or that have restrictions in addressable DRAM.
+>
+> s/that //
+> s/in/on/
 
-diff --git a/arch/arm/boot/dts/stm32mp131.dtsi b/arch/arm/boot/dts/stm32mp131.dtsi
-index 86126dc0d898..e64fa10ac245 100644
---- a/arch/arm/boot/dts/stm32mp131.dtsi
-+++ b/arch/arm/boot/dts/stm32mp131.dtsi
-@@ -115,6 +115,50 @@ uart4: serial@40010000 {
- 			status = "disabled";
- 		};
- 
-+		dma1: dma-controller@48000000 {
-+			compatible = "st,stm32-dma";
-+			reg = <0x48000000 0x400>;
-+			interrupts = <GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 12 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 13 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 14 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 15 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 16 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 17 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 48 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&clk_pclk4>;
-+			#dma-cells = <4>;
-+			st,mem2mem;
-+			dma-requests = <8>;
-+		};
-+
-+		dma2: dma-controller@48001000 {
-+			compatible = "st,stm32-dma";
-+			reg = <0x48001000 0x400>;
-+			interrupts = <GIC_SPI 57 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 58 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 59 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 60 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 61 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 69 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 70 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 71 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&clk_pclk4>;
-+			#dma-cells = <4>;
-+			st,mem2mem;
-+			dma-requests = <8>;
-+		};
-+
-+		dmamux1: dma-router@48002000 {
-+			compatible = "st,stm32h7-dmamux";
-+			reg = <0x48002000 0x40>;
-+			clocks = <&clk_pclk4>;
-+			#dma-cells = <3>;
-+			dma-masters = <&dma1 &dma2>;
-+			dma-requests = <128>;
-+			dma-channels = <16>;
-+		};
-+
- 		syscfg: syscon@50020000 {
- 			compatible = "st,stm32mp157-syscfg", "syscon";
- 			reg = <0x50020000 0x400>;
--- 
-2.25.1
+Fixed now.
 
+> Otherwise the USB parts of this look okay to me.  I don't have suitable
+> hardware to test either.  (I wonder if anyone is still using this
+> platform...)
+
+I assumed Russell was still using the Assabet, but his last upstream
+commits for sa1100 are from 2016 (merged in 2019), so that may have
+changed in the meantime.
+
+> Acked-by: Alan Stern <stern@rowland.harvard.edu>
+
+Thanks!
+
+       Arnd
