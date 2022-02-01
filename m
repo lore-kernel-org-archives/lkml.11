@@ -2,206 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D900AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 22:24:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88763C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 22:25:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239860AbiBAWY0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 17:24:26 -0500
-Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:61708 "EHLO
-        mx0a-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239569AbiBAWYX (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 17:24:23 -0500
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 211KTNn4022156;
-        Tue, 1 Feb 2022 22:24:02 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=fWKPVah1x9Fr/p7eCEyNmlv14BH89OFYe9aWJA/LhGU=;
- b=Da23qiDyIs2HWSntze264PtJh7SKWU6SOVm6OLzDrfcZYynTGp0HHp/hNVOe7YYzMeYp
- EcA0vrSl2IrPvaKaHO63x8PMvP+/F0ZnjaUUJ26cQ+z7ptdo6/A+5xJJK5IymmoIa/QK
- Q1v9iF7WAdHoqT4Cd/ME3CWcUBBYaohvprwbLLhMsjdJSg5UdcRXTkyuEw3lFhbc5mub
- wO2e1Ay3UW40kdllXnmjomeH1/KRG+2xhm7Y8kZL7Qle2Y8cKyLY6Z0xUWWtwZ7pT2TV
- uwaAmC1Z5rCggj+3+ZZ+ue4GA2fi+hxeB+prWWNL7AD5TvHPVE9ZYp4nfxVgYFyWJRvI +w== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3dxnk2ktva-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 01 Feb 2022 22:24:02 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 211MHO2A107957;
-        Tue, 1 Feb 2022 22:24:00 GMT
-Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2170.outbound.protection.outlook.com [104.47.58.170])
-        by userp3030.oracle.com with ESMTP id 3dvtq194we-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 01 Feb 2022 22:24:00 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ix+0M9f4wzlEu+pVEr8ALyGg4Dnk/QBB85V1DE06m4m/Ty/oEmIvLJaCH1+PGXOAY+754lJkAK+WlhQ0KK3fvnZbZTw02Zia7DuMMabqgShzHyxj2obwNQjahxGopOrkdhCt48WVmFzmcNXS/it/Kpvr0C1LOsw6m00cXzOZh8uJrzCL/USrZpsdeEWO7z9Ub54LKYpB5qMlrjtz06ZY0Ix8tijc5dG++KrkjTzgnehWToZfKWWWJnq2C5dn29ywySFm3GGjfLIDzKhd8xuxu3aCaSnEXVROD1mOq8PC62u7iI2RH9stdx5PazgnYf02ugKp2Rg6Ll0YygEd9Ns0Xg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=fWKPVah1x9Fr/p7eCEyNmlv14BH89OFYe9aWJA/LhGU=;
- b=bNzhlSCt1ldnY1m8QJx+zo4kIJht2i4wShS4xOvo7qmbWkPoyM3tSwi51wWpo3lB6A1yj1iCpK98gjs7GV34bClcTleE5p5T7BMFg69UDsVAqyCt0vTbmUEdVL9sV1Sd1fHavvu5L4ohQX2GFLwkWqSdetWimRdERfnojzRlRYpksUWnTUFCqnG9+rDolrvmbMyiPA/jEP1wCbVPO2+ITdDjZ7/zkOD6FtgVR6xjVe4AzbOBsfWTiSkxbZJOKYQulUonPNH4WLylJtXG/m39udNdmsuo8eNJHR23s/P4Kbiop24B4dnhN8pPS7EY6H7K4ZCAqkAeTF4D7LDAecf42A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fWKPVah1x9Fr/p7eCEyNmlv14BH89OFYe9aWJA/LhGU=;
- b=LEnOYunZ95Vl0ToY5SbkbhptYLnCADSXOImBeiE/nE+qi0w2NvPQBDpjO+XV5fr1nHp9xwd5slFzDZsEu5vUuhnM1dvGcKaBSz7jv8vvNUzg1kryJNWmA69GHr9tgW7eSrq1KVc0424zu8Lxp7rxm+fUSs5JFJ9ZMIrvHe6qj5g=
-Received: from DM6PR10MB4201.namprd10.prod.outlook.com (2603:10b6:5:216::10)
- by CY4PR10MB1685.namprd10.prod.outlook.com (2603:10b6:910:9::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.17; Tue, 1 Feb
- 2022 22:23:57 +0000
-Received: from DM6PR10MB4201.namprd10.prod.outlook.com
- ([fe80::1057:d8d1:8372:c8b4]) by DM6PR10MB4201.namprd10.prod.outlook.com
- ([fe80::1057:d8d1:8372:c8b4%8]) with mapi id 15.20.4930.022; Tue, 1 Feb 2022
- 22:23:56 +0000
-Message-ID: <14df55c2-cab5-8ff0-5986-fd186c2f60d7@oracle.com>
-Date:   Tue, 1 Feb 2022 14:23:41 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3 4/5] mm: hugetlb: fix missing cache flush in
- hugetlb_mcopy_atomic_pte()
-Content-Language: en-US
-To:     Muchun Song <songmuchun@bytedance.com>, akpm@linux-foundation.org,
-        zi.yan@cs.rutgers.edu, kirill.shutemov@linux.intel.com,
-        rientjes@google.com, lars.persson@axis.com
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        duanxiongchun@bytedance.com, Matthew Wilcox <willy@infradead.org>
-References: <20220131160254.43211-1-songmuchun@bytedance.com>
- <20220131160254.43211-5-songmuchun@bytedance.com>
-From:   Mike Kravetz <mike.kravetz@oracle.com>
-In-Reply-To: <20220131160254.43211-5-songmuchun@bytedance.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MWHPR14CA0065.namprd14.prod.outlook.com
- (2603:10b6:300:81::27) To DM6PR10MB4201.namprd10.prod.outlook.com
- (2603:10b6:5:216::10)
+        id S240121AbiBAWZT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 17:25:19 -0500
+Received: from mga07.intel.com ([134.134.136.100]:11134 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229602AbiBAWZS (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 1 Feb 2022 17:25:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643754317; x=1675290317;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=X382LaJfBeerAaDLbSOIqUrZGF0P+G0JVbuMo2GQNzY=;
+  b=WwyH9Xm9kSjU3/yvs9brLDBrr/m/SE6OgX72cRJmPO38gO4IcLeGhVrD
+   cMxyRSBeC8NMTC5JkUB263/2sgcOtOc2HXdsOLpoXKl7sYYrrgpVSTgBX
+   2/m8siKQK/yOVYJZxIXwtx2awsvi7T4cvAjXewH/SPwFOfhGsGlqQnkQl
+   chadwl+v0QUgkWnsDwqqFXZ3yBVtp4eOuIz+pKtTvEARDJs8KWYOYYTbd
+   8omkeBV/nxLqvoxlt1XVOUH14Izjrp1AvFg6dAcOTbsN7UcW7vbGAjTX+
+   WkW1jM+cHcN+uQYk0mVp9EcWx+qxMM0XxLI/T3Sv24Z+3UUg9s8Hu9861
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10245"; a="311118768"
+X-IronPort-AV: E=Sophos;i="5.88,335,1635231600"; 
+   d="scan'208";a="311118768"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2022 14:25:17 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,335,1635231600"; 
+   d="scan'208";a="523231880"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga007.jf.intel.com with ESMTP; 01 Feb 2022 14:25:16 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nF1aN-000Tma-P6; Tue, 01 Feb 2022 22:25:15 +0000
+Date:   Wed, 2 Feb 2022 06:24:18 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Mordechay Goodstein <mordechay.goodstein@intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Luca Coelho <luciano.coelho@intel.com>
+Subject: [iwlwifi-next:pending 41/42] net/mac80211/vht.c:493:22: error:
+ 'struct ieee80211_sta' has no member named 'eht_cap'; did you mean 'ht_cap'?
+Message-ID: <202202020632.f5qedDLM-lkp@intel.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b2fad9a2-9d75-44ce-13b5-08d9e5d1824c
-X-MS-TrafficTypeDiagnostic: CY4PR10MB1685:EE_
-X-Microsoft-Antispam-PRVS: <CY4PR10MB1685C71DD734C3DFCA0CE8C9E2269@CY4PR10MB1685.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 3gURevgeR1lmvt0pcvAtlxuvPbe08sq3CVjCl9K+1lk8QY5SUZlc6S+K1D6rV9ICQlbnUhMbs/8Lg7DePdzvOyakgUlvkXySelBhBBIADnXo9fYJDi6PQizBdl5tSabT1A7tNKMpRq8JZjQrCyDAaAe5VsouvLb62i7F6dxP+H1lMD9X5/Ru0fre4P6VHMDToHbtK3UKWhWlhX2BxwmfKEk+NhixoGmvWp7SNQFkDuU98CYE+IGoAdaiShv47/2iQ0nGqqiXXamqx/C01QmrNduR/ib0pH1C6muZZfKt9atdeiTy9745rhOFBVNpTxCQr+rIbETcSmhXeaEcAkYqqnHNYq+L5H/TSeaD5buEzTxwRI5eAdv271V9KObLSlZic7sf61FVzlzJ2LPiXNYD35ag0FJ4/dqAhs/arfe5yfwNeA3b31FWG7AJOyfqHqnnrYePJ/KN3wGGupChEihqfSirtwWxf8nOeNIESD/l5o3KLRLBwbUIHGNP24jHozWPTWNTNKGCyXYGmRpHImfRtkeA54XuLvj5Pcf2pthawJYcG2BhEmdDXy32X60R6aZ48H07NYrqUPKuKl83T1XI0HLDBJwECmMkHWENLtpeVvidXsncfMlXbyOA8EbbrROrWwISgpXETSUiAp8BM+X+ILdw62JrDGrLWHacfzEPK0q7BG6ISTfwL/oEESKoFiNQYzIiZ0Xq6O0RDTv3f9LjU0yoYoZX/3Hv3cVGCA/nrXdrc2uuHdVjAuLQeFabr2y/xiUSfN9zkbeRKJOcEeFoTA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR10MB4201.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(6506007)(186003)(5660300002)(53546011)(26005)(52116002)(6666004)(44832011)(2906002)(7416002)(2616005)(6512007)(38350700002)(31696002)(86362001)(316002)(6486002)(38100700002)(508600001)(66476007)(66556008)(8676002)(4326008)(8936002)(36756003)(31686004)(66946007)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?TVM0TmV4cUExTTRRWFZLTVFTVUkwV1htQ0dGam9MQzljbXBqWDBZSC9sZ0dj?=
- =?utf-8?B?a0ZaN3RsSHByTWNHNEoyS3ROT0txWVIyeVY3M2JXeGQyQk5odnppdkYyanNp?=
- =?utf-8?B?MVcrY2ZFcll6MEk0Ni9MN0s2OUw0S3YvMmtQa29ZWVNkYm9UV3ZFdFJZZEQ2?=
- =?utf-8?B?dEM5enpmQlBnVUZvNm45dUd1bjl6Z1VFNDJYNGgrcndPTjloc2FzMDd0SnQ2?=
- =?utf-8?B?V3ppOS80Zlgrb3hJMzFUSmVoVEJtV29NNzh2TGloZSt5YTNYVGRsQ2tPWHdm?=
- =?utf-8?B?RW5aTjgxUEVqNy91ZmlkVThyck5xR3ZQMjB2ck9zQVBDTUZabU1MbU5hWk1m?=
- =?utf-8?B?dXQ2ckhCQW5VcU1xWlJvZkVXT1dOaEZhcmtRRklmenBTS3ZQdjBSSjJ5KzE4?=
- =?utf-8?B?Q1FQZEo3TUxhU1ZEYUg1aU5zbXFJNjFYY1dwUE1PS2RhU3Eva2t0VWFFa2xD?=
- =?utf-8?B?RjY3aG9nVEYzNmJxYUp3WGdKYnhoTjNWbkNTdTVmZDZ2bkw0TXhrbjJlOVFK?=
- =?utf-8?B?TjR1SmI3OHVHbFZDN1JEVjh4T3hPemlxd1RHNWZXOUhWdjE3ZE9YRTMxM2E3?=
- =?utf-8?B?M3JySFJPdktJTHhwaXY3bHM2aXFHUmVHWFZaSnFjK2JscVlIdER3UHc3eG8v?=
- =?utf-8?B?dkJ6TG5Pb251akVOSmFyc25oTy9TQ2FVbkNVSGlnMm13NTBGaG1IOTZlbzdM?=
- =?utf-8?B?OXlwV20veEJ1YXhYd1RkM2hjYTl4YTgvdkZpVlI5eDZKS2RNWVFKQjFhaDNC?=
- =?utf-8?B?a1p0NzhtR0lvOURRM1dINk9IaGlCMlRRWThsSVJ2azVmaWtkY0svUGxMSjN3?=
- =?utf-8?B?bXI4OWFvVW9CTFVwM21QaThoblhJRGlDR1NBWGFUeERpclFmUzJpV1B5T0ZC?=
- =?utf-8?B?cXNVRU5xRk5yRHRQRUlrOG5sRUJKVlpDRVNtU1pOeUZDdjlOVVh5cUlhdE1i?=
- =?utf-8?B?U0NpWXV0Z2lLREF0VTRWd2FjazR2QUlvTXMrM3o5Y0pJZFZERXJoTithSTdH?=
- =?utf-8?B?cHhMSWFtTUh5cDRneVM0bjY1ZGIrR2NSd3hEUmRIT0VOR3h0ckFtMG92TVJi?=
- =?utf-8?B?SWoxMmVDUms5SGhRVGl1TFFKZFVRU0RDVHU4cWxUcSszZEY2UDVEL3dBanh0?=
- =?utf-8?B?ZVlMa1pQeE1JZzBaaWFVRW1DN3pSS2sxVFhDZW9lblFvSThxcEUvTCtRZGpx?=
- =?utf-8?B?SnpZWmJreXljWlZNUHBSaDZ6MjkwSXRDRCtNNUozbHNuWkgySVNHRmNNbFdv?=
- =?utf-8?B?QjVuNDNVbG5xUW91QjlEeDRueXVSTzAyL0U3b0REUDQzdWRtK2J3WWUwSUlX?=
- =?utf-8?B?blJqTlY0eXNQZStoR3pIRi9KUWJ5MW5vb3NlMjVjN3JuVDgyWEpLWDBqUGxR?=
- =?utf-8?B?Y3Z4RFZKZGgzN0tQZVdwT2VoTEt5dVBVaFdkY1lJcVIxOFo5VlRQQm9KQnJC?=
- =?utf-8?B?UUZWaG9aanovYngrQkhhR0FpT2ZjMVdiUGlMdEJQS0FnRFlaaHNOdUQ4ajh2?=
- =?utf-8?B?VldqcHRqWStTZzUwMm16OTF0ODZKUWZiQ1RLVFdubEw5ZXRGcFJCUitkNGZz?=
- =?utf-8?B?UHR1ZUlGMHI3U3hLZ1VsbmpHV21qM1JJQncvdkxDNldkU1FvS3pYQVpUb2ov?=
- =?utf-8?B?YlhLOXk0THFVcTk2SmN0eVM5Z3BIcjYzejFHVXVSM1VYTXJvVGk4Ly91bVpp?=
- =?utf-8?B?bE5hVkk4SzFnNVFCeTVaT1Rkc2ZpMjZxWmhoNEZvQjltcnpzMG1XSWJDazNX?=
- =?utf-8?B?U1hYdENta0NIYUUxbWZISUVSTXZUcE1pcysrZVROdkdjT0hYdFNzU1hnY0tC?=
- =?utf-8?B?S3E4UFMvT0xCVGFGV0ZLU0wyZDllVFJ4aHdOT0R4bEhrNytRNHRySHhNUWMr?=
- =?utf-8?B?Tm9KWFBaYUFaSkFpUE5OS1dtZStoazBtQk5LWm9GbnlmdG1uMTVMZlpIeU40?=
- =?utf-8?B?SXl6U2d5Zm5RWkpmRzI4RG1vQjR1M0NSZGlpczFwUDJrcWx0NVhTaGpzb2R1?=
- =?utf-8?B?b010Z1ZDeDFzSkxJVHdRQmw0cU9wRmFUcUYzVGZJSjF3ejBuREFUeDUzdmI4?=
- =?utf-8?B?ZU1CbjZzcTluOUsyK3ZnaWpiSW16dnIzaDNKTDN2WjRwZFdqdi81THZZTUdn?=
- =?utf-8?B?Q2VkcXZyS1crZWE0WGpiMThPemNwdUZ1L2FiYm55QzBxVXVsVm42eXhueWlk?=
- =?utf-8?Q?k0yA5kXtJCzsxXaj2S9xujs=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b2fad9a2-9d75-44ce-13b5-08d9e5d1824c
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR10MB4201.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Feb 2022 22:23:56.9088
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: MqBlGEOWNqXsPBHHuNOoZOYq2onTV/IitcsnRvzlJ/vgnNcqvV1Ih593clnqrdydgx1Aq1F1GFZPDixspHCvKg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR10MB1685
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10245 signatures=673430
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 mlxlogscore=999
- adultscore=0 malwarescore=0 bulkscore=0 suspectscore=0 mlxscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202010123
-X-Proofpoint-GUID: zm5p0yBSEw7IV83k-80mBCdxTzQGDKao
-X-Proofpoint-ORIG-GUID: zm5p0yBSEw7IV83k-80mBCdxTzQGDKao
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Cc: Matthew
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/iwlwifi/iwlwifi-next.git pending
+head:   b15caa03d4e21e9e8dbc81f6ac09171a2871af1d
+commit: 741d1c0dbb94288b29ba79d187a2898f02d085af [41/42] mac80211: calculate max rx nss for EHT mode
+config: nds32-buildonly-randconfig-r002-20220201 (https://download.01.org/0day-ci/archive/20220202/202202020632.f5qedDLM-lkp@intel.com/config)
+compiler: nds32le-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/iwlwifi/iwlwifi-next.git/commit/?id=741d1c0dbb94288b29ba79d187a2898f02d085af
+        git remote add iwlwifi-next https://git.kernel.org/pub/scm/linux/kernel/git/iwlwifi/iwlwifi-next.git
+        git fetch --no-tags iwlwifi-next pending
+        git checkout 741d1c0dbb94288b29ba79d187a2898f02d085af
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=nds32 SHELL=/bin/bash net/mac80211/
 
-On 1/31/22 08:02, Muchun Song wrote:
-> folio_copy() will copy the data from one page to the target page, then
-> the target page will be mapped to the user space address, which might
-> have an alias issue with the kernel address used to copy the data from
-> the page to.  Fix this issue by flushing dcache but not use
-> flush_dcache_folio() since it is not backportable.
-> 
-> Fixes: 8cc5fcbb5be8 ("mm, hugetlb: fix racy resv_huge_pages underflow on UFFDIO_COPY")
-> Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-> ---
->  mm/hugetlb.c | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-> index a1baa198519a..f1f1ab31dc8a 100644
-> --- a/mm/hugetlb.c
-> +++ b/mm/hugetlb.c
-> @@ -5804,6 +5804,8 @@ int hugetlb_mcopy_atomic_pte(struct mm_struct *dst_mm,
->  			goto out;
->  		}
->  	} else {
-> +		int i, nr;
-> +
->  		if (vm_shared &&
->  		    hugetlbfs_pagecache_present(h, dst_vma, dst_addr)) {
->  			put_page(*pagep);
-> @@ -5819,6 +5821,9 @@ int hugetlb_mcopy_atomic_pte(struct mm_struct *dst_mm,
->  			goto out;
->  		}
->  		folio_copy(page_folio(page), page_folio(*pagep));
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-What if we changed that folio_copy() to?
+All errors (new ones prefixed by >>):
 
-		copy_user_huge_page(page, *pagep, dst_addr, dst_vma,
-			pages_per_huge_page(h));
+   net/mac80211/vht.c: In function 'ieee80211_sta_set_rx_nss':
+>> net/mac80211/vht.c:493:22: error: 'struct ieee80211_sta' has no member named 'eht_cap'; did you mean 'ht_cap'?
+     493 |         if (sta->sta.eht_cap.has_eht) {
+         |                      ^~~~~~~
+         |                      ht_cap
+   net/mac80211/vht.c:495:58: error: 'struct ieee80211_sta' has no member named 'eht_cap'; did you mean 'ht_cap'?
+     495 |                 const u8 *rx_nss_mcs = (void *)&sta->sta.eht_cap.eht_mcs_nss_supp;
+         |                                                          ^~~~~~~
+         |                                                          ht_cap
+>> net/mac80211/vht.c:498:40: error: invalid application of 'sizeof' to incomplete type 'struct ieee80211_eht_mcs_nss_supp'
+     498 |                 for (i = 0; i < sizeof(struct ieee80211_eht_mcs_nss_supp); i++)
+         |                                        ^~~~~~
+   In file included from include/linux/kernel.h:26,
+                    from include/linux/skbuff.h:13,
+                    from include/linux/if_ether.h:19,
+                    from include/linux/ieee80211.h:19,
+                    from net/mac80211/vht.c:10:
+>> net/mac80211/vht.c:501:56: error: 'IEEE80211_EHT_MCS_NSS_RX' undeclared (first use in this function); did you mean 'IEEE80211_HT_MCS_MASK_LEN'?
+     501 |                                                        IEEE80211_EHT_MCS_NSS_RX));
+         |                                                        ^~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/minmax.h:20:46: note: in definition of macro '__typecheck'
+      20 |         (!!(sizeof((typeof(x) *)1 == (typeof(y) *)1)))
+         |                                              ^
+   include/linux/minmax.h:36:31: note: in expansion of macro '__safe_cmp'
+      36 |         __builtin_choose_expr(__safe_cmp(x, y), \
+         |                               ^~~~~~~~~~
+   include/linux/minmax.h:112:33: note: in expansion of macro '__careful_cmp'
+     112 | #define max_t(type, x, y)       __careful_cmp((type)(x), (type)(y), >)
+         |                                 ^~~~~~~~~~~~~
+   net/mac80211/vht.c:499:38: note: in expansion of macro 'max_t'
+     499 |                         eht_rx_nss = max_t(u8, eht_rx_nss,
+         |                                      ^~~~~
+   net/mac80211/vht.c:501:56: note: each undeclared identifier is reported only once for each function it appears in
+     501 |                                                        IEEE80211_EHT_MCS_NSS_RX));
+         |                                                        ^~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/minmax.h:20:46: note: in definition of macro '__typecheck'
+      20 |         (!!(sizeof((typeof(x) *)1 == (typeof(y) *)1)))
+         |                                              ^
+   include/linux/minmax.h:36:31: note: in expansion of macro '__safe_cmp'
+      36 |         __builtin_choose_expr(__safe_cmp(x, y), \
+         |                               ^~~~~~~~~~
+   include/linux/minmax.h:112:33: note: in expansion of macro '__careful_cmp'
+     112 | #define max_t(type, x, y)       __careful_cmp((type)(x), (type)(y), >)
+         |                                 ^~~~~~~~~~~~~
+   net/mac80211/vht.c:499:38: note: in expansion of macro 'max_t'
+     499 |                         eht_rx_nss = max_t(u8, eht_rx_nss,
+         |                                      ^~~~~
+>> include/linux/minmax.h:36:9: error: first argument to '__builtin_choose_expr' not a constant
+      36 |         __builtin_choose_expr(__safe_cmp(x, y), \
+         |         ^~~~~~~~~~~~~~~~~~~~~
+   include/linux/minmax.h:112:33: note: in expansion of macro '__careful_cmp'
+     112 | #define max_t(type, x, y)       __careful_cmp((type)(x), (type)(y), >)
+         |                                 ^~~~~~~~~~~~~
+   net/mac80211/vht.c:499:38: note: in expansion of macro 'max_t'
+     499 |                         eht_rx_nss = max_t(u8, eht_rx_nss,
+         |                                      ^~~~~
 
-Seems like that would take care of the flush_dcache_page and it would be
-backportable.
 
-Of course, Matthew may hate the idea.  Not sure if there are any plans to
-convert copy_user_huge_page to use folio type as it has some special hinting
-logic.
--- 
-Mike Kravetz
+vim +493 net/mac80211/vht.c
 
-> +		nr = compound_nr(page);
-> +		for (i = 0; i < nr; i++)
-> +			flush_dcache_page(page + i);
->  		put_page(*pagep);
->  		*pagep = NULL;
->  	}
+   483	
+   484	void ieee80211_sta_set_rx_nss(struct sta_info *sta)
+   485	{
+   486		u8 ht_rx_nss = 0, vht_rx_nss = 0, he_rx_nss = 0, eht_rx_nss = 0, rx_nss;
+   487		bool support_160;
+   488	
+   489		/* if we received a notification already don't overwrite it */
+   490		if (sta->sta.rx_nss)
+   491			return;
+   492	
+ > 493		if (sta->sta.eht_cap.has_eht) {
+   494			int i;
+   495			const u8 *rx_nss_mcs = (void *)&sta->sta.eht_cap.eht_mcs_nss_supp;
+   496	
+   497			/* get the max nss for EHT over all possible bandwidths and mcs */
+ > 498			for (i = 0; i < sizeof(struct ieee80211_eht_mcs_nss_supp); i++)
+   499				eht_rx_nss = max_t(u8, eht_rx_nss,
+   500						   u8_get_bits(rx_nss_mcs[i],
+ > 501							       IEEE80211_EHT_MCS_NSS_RX));
+   502		}
+   503	
+   504		if (sta->sta.he_cap.has_he) {
+   505			int i;
+   506			u8 rx_mcs_80 = 0, rx_mcs_160 = 0;
+   507			const struct ieee80211_sta_he_cap *he_cap = &sta->sta.he_cap;
+   508			u16 mcs_160_map =
+   509				le16_to_cpu(he_cap->he_mcs_nss_supp.rx_mcs_160);
+   510			u16 mcs_80_map = le16_to_cpu(he_cap->he_mcs_nss_supp.rx_mcs_80);
+   511	
+   512			for (i = 7; i >= 0; i--) {
+   513				u8 mcs_160 = (mcs_160_map >> (2 * i)) & 3;
+   514	
+   515				if (mcs_160 != IEEE80211_VHT_MCS_NOT_SUPPORTED) {
+   516					rx_mcs_160 = i + 1;
+   517					break;
+   518				}
+   519			}
+   520			for (i = 7; i >= 0; i--) {
+   521				u8 mcs_80 = (mcs_80_map >> (2 * i)) & 3;
+   522	
+   523				if (mcs_80 != IEEE80211_VHT_MCS_NOT_SUPPORTED) {
+   524					rx_mcs_80 = i + 1;
+   525					break;
+   526				}
+   527			}
+   528	
+   529			support_160 = he_cap->he_cap_elem.phy_cap_info[0] &
+   530				      IEEE80211_HE_PHY_CAP0_CHANNEL_WIDTH_SET_160MHZ_IN_5G;
+   531	
+   532			if (support_160)
+   533				he_rx_nss = min(rx_mcs_80, rx_mcs_160);
+   534			else
+   535				he_rx_nss = rx_mcs_80;
+   536		}
+   537	
+   538		if (sta->sta.ht_cap.ht_supported) {
+   539			if (sta->sta.ht_cap.mcs.rx_mask[0])
+   540				ht_rx_nss++;
+   541			if (sta->sta.ht_cap.mcs.rx_mask[1])
+   542				ht_rx_nss++;
+   543			if (sta->sta.ht_cap.mcs.rx_mask[2])
+   544				ht_rx_nss++;
+   545			if (sta->sta.ht_cap.mcs.rx_mask[3])
+   546				ht_rx_nss++;
+   547			/* FIXME: consider rx_highest? */
+   548		}
+   549	
+   550		if (sta->sta.vht_cap.vht_supported) {
+   551			int i;
+   552			u16 rx_mcs_map;
+   553	
+   554			rx_mcs_map = le16_to_cpu(sta->sta.vht_cap.vht_mcs.rx_mcs_map);
+   555	
+   556			for (i = 7; i >= 0; i--) {
+   557				u8 mcs = (rx_mcs_map >> (2 * i)) & 3;
+   558	
+   559				if (mcs != IEEE80211_VHT_MCS_NOT_SUPPORTED) {
+   560					vht_rx_nss = i + 1;
+   561					break;
+   562				}
+   563			}
+   564			/* FIXME: consider rx_highest? */
+   565		}
+   566	
+   567		rx_nss = max(vht_rx_nss, ht_rx_nss);
+   568		rx_nss = max(he_rx_nss, rx_nss);
+   569		rx_nss = max(eht_rx_nss, rx_nss);
+   570		sta->sta.rx_nss = max_t(u8, 1, rx_nss);
+   571	}
+   572	
 
-
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
