@@ -2,60 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B418C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 22:29:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82B73C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 22:29:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238037AbiBAW30 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 17:29:26 -0500
-Received: from mail-4323.proton.ch ([185.70.43.23]:23399 "EHLO
-        mail-4323.proton.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237935AbiBAW3Y (ORCPT
+        id S241118AbiBAW33 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 17:29:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52728 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237935AbiBAW31 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 17:29:24 -0500
-Date:   Tue, 01 Feb 2022 22:29:18 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=emersion.fr;
-        s=protonmail2; t=1643754559;
-        bh=MGtp5mMwNn+8qDhigeSXS0uKyHzpDrXsYo+t1ISZnqg=;
-        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:In-Reply-To:
-         References:From:To:Cc;
-        b=l0iICYndrhAtRRrRBbQ7jYwKoH6YKKhnrBfLHSNjH7IjZ+TC8QiODbSZ1SxHk0Hvw
-         DFDsjKq29VC01r0LzwvdRfAORPmS4GVUgrt9waPKhUhtaqeNq03wWaJSsYJtBpwTla
-         XunPVeybo2QOVbgGgGxIwNNpyzNSH5vj0Ac7fVWWtU36ISv/e40HPrLX+XUr94R7F0
-         GvWUQmGrTNHucyTejYVfezQqaVmE/HW4L1VKbvx/87SiW3bVlRHkW+sXVNqcZvvEzr
-         pUEj9qjNZYW2o2UU+D+mQdqc2E2vZ8ujSj8FmXKPgnLD501TOFva9dO38vCbhP4fRu
-         PkJOcSAyPRMNg==
-To:     Sam Ravnborg <sam@ravnborg.org>
-From:   Simon Ser <contact@emersion.fr>
-Cc:     =?utf-8?Q?Noralf_Tr=C3=B8nnes?= <noralf@tronnes.org>,
-        linux-fbdev@vger.kernel.org, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Emil Velikov <emil.l.velikov@gmail.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Reply-To: Simon Ser <contact@emersion.fr>
-Subject: Re: [PATCH 1/4] drm: Add I2C connector type
-Message-ID: <0yOiGD-56rTdV--oDietLeMO46Z8iFNnCNVVRg3Yh9D13AghGCYm5aP67SoswHY7Ye3vc3UEKzgtI02-F6vJ4b5xGLlE5yg6n2HznaWzYvg=@emersion.fr>
-In-Reply-To: <YfmeztkVXwZzAwYe@ravnborg.org>
-References: <20220131201225.2324984-1-javierm@redhat.com> <20220131201225.2324984-2-javierm@redhat.com> <YfhMESTylI1NTKDg@ravnborg.org> <4d9a56a7-da25-b411-61cc-372c6fa9011d@tronnes.org> <YfmeztkVXwZzAwYe@ravnborg.org>
+        Tue, 1 Feb 2022 17:29:27 -0500
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68C8FC061714;
+        Tue,  1 Feb 2022 14:29:27 -0800 (PST)
+Received: by mail-pj1-x102b.google.com with SMTP id s2-20020a17090ad48200b001b501977b23so4862642pju.2;
+        Tue, 01 Feb 2022 14:29:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nfh9neXAUEzcShXHBoAZTFYIWM5MQnmj1xRT6suzivE=;
+        b=HQj0tnz3VHrnn5pC/MIU8NCa/Sb5qfbS7hvjpIgQv7lyFVsTieWCrbhrmGVViqJ0XC
+         38BlVG8MZDWXDEACzsTphnACxUe+Rs6B20tGzCtQtzjmPVRQjTKmtVBrc/QUNfIesyUa
+         SfvgWsv6s92KVd3DwwVVTh5v7n5Db4Iql8EYio6Bd4bubpNCJWqbZGWg2MGlmfeHTHth
+         30eLmFZuckUF2J8L0/JppFrbOz74B+lzTVVrsc6SglgamDmoXrx4xzetMM2ieI6qwpPK
+         lkQf1cKc5UGdQ8eFzt8tzYwA659hpyN7g/eOi/pOgpXu3yTLSseQK/pTGtG5UNYiVr1i
+         nQGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nfh9neXAUEzcShXHBoAZTFYIWM5MQnmj1xRT6suzivE=;
+        b=GJDIy+66pHl8Mfdg5DgNGBqAsHRTzaGWsMyhipgTqTJlfIV1yaRNqSHnAKawXnij+H
+         GwFMmS5/3vzSxFQEm4Q2S4KiyVJulWvWuzFZrlcCIVihfsa+FqoIO/tgoN1TwqlSk5/A
+         KOqsr2P2dJrPTR1Zwr2wFyIcOTnyvy7TlM4FCWcKjBgAl7dMzleke7S0jRLwpDujFt58
+         KPrnmAT9GtobAMoxLINYS6h1WP3jR3j/WM0wELzziqBO2Fv6YHKgJJBb+hPRVy1+j/hj
+         OUSqzmf/NXXfQTU/8Cc3jU5VZBs724v8RU5WJ2ISMC/Qm4aeZV0eaHVgzIBWjZzUTBEj
+         c60A==
+X-Gm-Message-State: AOAM531rDRaAs7WI6KgFmxdeLF+5eiqHC0NTdna/0omKve6XQVUYRiuC
+        zUQ1ecgj5CDmD6r+HrApfhY=
+X-Google-Smtp-Source: ABdhPJzb+5yQKUrK8g6dncCc1Be8kOufnjj7MEBAUO522MrakPqpJXzf2ELqGyrBi+x5NJpdYYQEcA==
+X-Received: by 2002:a17:90a:a503:: with SMTP id a3mr4786119pjq.88.1643754566986;
+        Tue, 01 Feb 2022 14:29:26 -0800 (PST)
+Received: from jeffreyji1.c.googlers.com.com (173.84.105.34.bc.googleusercontent.com. [34.105.84.173])
+        by smtp.gmail.com with ESMTPSA id ck21sm3576018pjb.51.2022.02.01.14.29.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Feb 2022 14:29:26 -0800 (PST)
+From:   Jeffrey Ji <jeffreyjilinux@gmail.com>
+X-Google-Original-From: Jeffrey Ji <jeffreyji@google.com>
+To:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     Brian Vazquez <brianvv@google.com>, linux-kernel@vger.kernel.org,
+        kuba@kernel.org, netdev@vger.kernel.org, jeffreyjilinux@gmail.com,
+        jeffreyji <jeffreyji@google.com>
+Subject: [PATCH v6 net-next] net-core: add InMacErrors counter
+Date:   Tue,  1 Feb 2022 22:28:45 +0000
+Message-Id: <20220201222845.3640041-1-jeffreyji@google.com>
+X-Mailer: git-send-email 2.35.0.rc2.247.g8bbb082509-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tuesday, February 1st, 2022 at 21:57, Sam Ravnborg <sam@ravnborg.org> wr=
-ote:
+From: jeffreyji <jeffreyji@google.com>
 
-> As I wrote in another part of this thread(s) - typing the patch is easy.
-> But I do not understand the userspace implications so I need someone
-> else to say go.
+Increment InMacErrors counter when packet dropped due to incorrect dest
+MAC addr.
 
-User-space shouldn't really use the connector for anything except making it
-easier for the user to understand where to plug the display cable. I think =
-a
-generic "panel" connector type makes sense.
+An example when this drop can occur is when manually crafting raw
+packets that will be consumed by a user space application via a tap
+device. For testing purposes local traffic was generated using trafgen
+for the client and netcat to start a server
+
+example output from nstat:
+\~# nstat -a | grep InMac
+Ip6InMacErrors                  0                  0.0
+IpExtInMacErrors                1                  0.0
+
+Tested: Created 2 netns, sent 1 packet using trafgen from 1 to the other
+with "{eth(daddr=$INCORRECT_MAC...}", verified that nstat showed the
+counter was incremented.
+
+changelog:
+v6: rebase onto net-next
+
+v5:
+Change from SKB_DROP_REASON_BAD_DEST_MAC to SKB_DROP_REASON_OTHERHOST
+
+v3-4:
+Remove Change-Id
+
+v2:
+Use skb_free_reason() for tracing
+Add real-life example in patch msg
+
+Signed-off-by: jeffreyji <jeffreyji@google.com>
+---
+ include/linux/skbuff.h    |  1 +
+ include/uapi/linux/snmp.h |  1 +
+ net/ipv4/ip_input.c       |  7 +++++--
+ net/ipv4/proc.c           |  1 +
+ net/ipv6/ip6_input.c      | 12 +++++++-----
+ net/ipv6/proc.c           |  1 +
+ 6 files changed, 16 insertions(+), 7 deletions(-)
+
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index a27bcc4f7e9a..1b1114f5c68e 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -320,6 +320,7 @@ enum skb_drop_reason {
+ 	SKB_DROP_REASON_TCP_CSUM,
+ 	SKB_DROP_REASON_SOCKET_FILTER,
+ 	SKB_DROP_REASON_UDP_CSUM,
++	SKB_DROP_REASON_OTHERHOST,
+ 	SKB_DROP_REASON_MAX,
+ };
+ 
+diff --git a/include/uapi/linux/snmp.h b/include/uapi/linux/snmp.h
+index 904909d020e2..ac2fac12dd7d 100644
+--- a/include/uapi/linux/snmp.h
++++ b/include/uapi/linux/snmp.h
+@@ -57,6 +57,7 @@ enum
+ 	IPSTATS_MIB_ECT0PKTS,			/* InECT0Pkts */
+ 	IPSTATS_MIB_CEPKTS,			/* InCEPkts */
+ 	IPSTATS_MIB_REASM_OVERLAPS,		/* ReasmOverlaps */
++	IPSTATS_MIB_INMACERRORS,		/* InMacErrors */
+ 	__IPSTATS_MIB_MAX
+ };
+ 
+diff --git a/net/ipv4/ip_input.c b/net/ipv4/ip_input.c
+index 3a025c011971..780892526166 100644
+--- a/net/ipv4/ip_input.c
++++ b/net/ipv4/ip_input.c
+@@ -441,8 +441,11 @@ static struct sk_buff *ip_rcv_core(struct sk_buff *skb, struct net *net)
+ 	/* When the interface is in promisc. mode, drop all the crap
+ 	 * that it receives, do not try to analyse it.
+ 	 */
+-	if (skb->pkt_type == PACKET_OTHERHOST)
+-		goto drop;
++	if (skb->pkt_type == PACKET_OTHERHOST) {
++		__IP_INC_STATS(net, IPSTATS_MIB_INMACERRORS);
++		kfree_skb_reason(skb, SKB_DROP_REASON_OTHERHOST);
++		return NULL;
++	}
+ 
+ 	__IP_UPD_PO_STATS(net, IPSTATS_MIB_IN, skb->len);
+ 
+diff --git a/net/ipv4/proc.c b/net/ipv4/proc.c
+index 28836071f0a6..2be4189197f3 100644
+--- a/net/ipv4/proc.c
++++ b/net/ipv4/proc.c
+@@ -117,6 +117,7 @@ static const struct snmp_mib snmp4_ipextstats_list[] = {
+ 	SNMP_MIB_ITEM("InECT0Pkts", IPSTATS_MIB_ECT0PKTS),
+ 	SNMP_MIB_ITEM("InCEPkts", IPSTATS_MIB_CEPKTS),
+ 	SNMP_MIB_ITEM("ReasmOverlaps", IPSTATS_MIB_REASM_OVERLAPS),
++	SNMP_MIB_ITEM("InMacErrors", IPSTATS_MIB_INMACERRORS),
+ 	SNMP_MIB_SENTINEL
+ };
+ 
+diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
+index 80256717868e..da18d9159647 100644
+--- a/net/ipv6/ip6_input.c
++++ b/net/ipv6/ip6_input.c
+@@ -149,15 +149,17 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
+ 	u32 pkt_len;
+ 	struct inet6_dev *idev;
+ 
+-	if (skb->pkt_type == PACKET_OTHERHOST) {
+-		kfree_skb(skb);
+-		return NULL;
+-	}
+-
+ 	rcu_read_lock();
+ 
+ 	idev = __in6_dev_get(skb->dev);
+ 
++	if (skb->pkt_type == PACKET_OTHERHOST) {
++		__IP6_INC_STATS(net, idev, IPSTATS_MIB_INMACERRORS);
++		rcu_read_unlock();
++		kfree_skb_reason(skb, SKB_DROP_REASON_OTHERHOST);
++		return NULL;
++	}
++
+ 	__IP6_UPD_PO_STATS(net, idev, IPSTATS_MIB_IN, skb->len);
+ 
+ 	if ((skb = skb_share_check(skb, GFP_ATOMIC)) == NULL ||
+diff --git a/net/ipv6/proc.c b/net/ipv6/proc.c
+index d6306aa46bb1..76e6119ba558 100644
+--- a/net/ipv6/proc.c
++++ b/net/ipv6/proc.c
+@@ -84,6 +84,7 @@ static const struct snmp_mib snmp6_ipstats_list[] = {
+ 	SNMP_MIB_ITEM("Ip6InECT1Pkts", IPSTATS_MIB_ECT1PKTS),
+ 	SNMP_MIB_ITEM("Ip6InECT0Pkts", IPSTATS_MIB_ECT0PKTS),
+ 	SNMP_MIB_ITEM("Ip6InCEPkts", IPSTATS_MIB_CEPKTS),
++	SNMP_MIB_ITEM("Ip6InMacErrors", IPSTATS_MIB_INMACERRORS),
+ 	SNMP_MIB_SENTINEL
+ };
+ 
+-- 
+2.35.0.rc2.247.g8bbb082509-goog
+
