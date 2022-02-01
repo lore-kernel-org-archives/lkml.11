@@ -2,84 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D656EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 00:18:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79E85C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 00:18:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230347AbiBAASw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 19:18:52 -0500
-Received: from thorn.bewilderbeest.net ([71.19.156.171]:54885 "EHLO
-        thorn.bewilderbeest.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230257AbiBAASs (ORCPT
+        id S230342AbiBAASz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 31 Jan 2022 19:18:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60036 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230290AbiBAASs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 31 Jan 2022 19:18:48 -0500
+Received: from thorn.bewilderbeest.net (thorn.bewilderbeest.net [IPv6:2605:2700:0:5::4713:9cab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 184D9C06173B;
+        Mon, 31 Jan 2022 16:18:48 -0800 (PST)
 Received: from hatter.bewilderbeest.net (174-21-190-118.tukw.qwest.net [174.21.190.118])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: zev)
-        by thorn.bewilderbeest.net (Postfix) with ESMTPSA id EA9C9A6A;
+        by thorn.bewilderbeest.net (Postfix) with ESMTPSA id 68340407;
         Mon, 31 Jan 2022 16:18:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bewilderbeest.net;
-        s=thorn; t=1643674727;
-        bh=GHTkxsASPABKmKkml1AsjQmWZbxD0ljM11iBp+9inDs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XerAaj0Rld0i0njCHB2mmNb+NdDJoITVLaTpFsJzm2/giAj+K077OduZ2AO0FOhu6
-         mN5pnLg732uoMUvFvy7p+ELJAnWGrOZdzT03Y/7oz0Vo6X/InFWmJFM/U+Gp7n9QAD
-         eJfrtghgP4wj/eXJ61130Onw23wIqpY6bNBUvy/4=
+        s=thorn; t=1643674726;
+        bh=vzPsNjZvndAyHxwYzpRfPbOzW25qWDh7MkzyvlonJCI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=giilTykb2ELfTcPfC8n/+sJ0g9/UFXKa/W5nrtxv0TvhP63lm8znl5kNWAcGdvfNb
+         qoxAzlFBuLgBsjc4UUzLMUH1V+QNdjxN9gvZ7MaHbF+fA7p1a6u/OD11gxEsUweeqe
+         rdrvQvXDTuiT8d/pc9TynkRPqKeFXTQtrois/LQU=
 From:   Zev Weiss <zev@bewilderbeest.net>
-To:     linux-i2c@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        devicetree@vger.kernel.org
+To:     linux-i2c@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+        Peter Rosin <peda@axentia.se>, Rob Herring <robh+dt@kernel.org>
 Cc:     Zev Weiss <zev@bewilderbeest.net>, openbmc@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
-        Peter Rosin <peda@axentia.se>
-Subject: [PATCH v2 2/2] dt-bindings: i2c: add nxp,pca9541 release-delay-us property
-Date:   Mon, 31 Jan 2022 16:18:10 -0800
-Message-Id: <20220201001810.19516-3-zev@bewilderbeest.net>
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: [PATCH v2 0/2] ic2: mux: pca9541: add delayed-release support
+Date:   Mon, 31 Jan 2022 16:18:08 -0800
+Message-Id: <20220201001810.19516-1-zev@bewilderbeest.net>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220201001810.19516-1-zev@bewilderbeest.net>
-References: <20220201001810.19516-1-zev@bewilderbeest.net>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This property can be used to reduce arbitration overhead on busy i2c
-busses by retaining ownership for a brief period in anticipation of
-another transaction in the near future.
+Hello,
 
-Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
----
- Documentation/devicetree/bindings/i2c/nxp,pca9541.txt | 9 +++++++++
- 1 file changed, 9 insertions(+)
+This series adds support for a new pca9541 device-tree property
+("release-delay-us"), which delays releasing ownership of the bus
+after a transaction for a configurable duration, anticipating that
+another transaction may follow shortly.  By avoiding a
+release/reacquisition between transactions, this can provide a
+substantial performance improvement for back-to-back operations -- on
+a Delta AHE-50DC (ASPEED AST1250) system running OpenBMC with dozens
+of LM25066 PMICs on PCA9541-arbitrated busses, a setting of 10000 (10
+ms) reduces the median latency the psusensor daemon's hwmon sysfs file
+reads from 2.28 ms to 0.99 ms (a 57% improvement).
 
-diff --git a/Documentation/devicetree/bindings/i2c/nxp,pca9541.txt b/Documentation/devicetree/bindings/i2c/nxp,pca9541.txt
-index 42bfc09c8918..9e8819593271 100644
---- a/Documentation/devicetree/bindings/i2c/nxp,pca9541.txt
-+++ b/Documentation/devicetree/bindings/i2c/nxp,pca9541.txt
-@@ -6,6 +6,14 @@ Required Properties:
- 
-   - reg: The I2C address of the device.
- 
-+Optional Properties:
-+
-+ - release-delay-us: the number of microseconds to delay before
-+   releasing the bus after a transaction.  If unspecified the default
-+   is zero (the bus is released immediately).  Non-zero values can
-+   reduce arbitration overhead for back-to-back transactions, at the
-+   cost of delaying the other master's access to the bus.
-+
-   The following required properties are defined externally:
- 
-   - I2C arbitration bus node. See i2c-arb.txt in this directory.
-@@ -16,6 +24,7 @@ Example:
- 	i2c-arbitrator@74 {
- 		compatible = "nxp,pca9541";
- 		reg = <0x74>;
-+		release-delay-us = <20000>;
- 
- 		i2c-arb {
- 			#address-cells = <1>;
+
+Thanks,
+Zev
+
+Changes since v1 [0]:
+ - removed spurious #include line from dt-bindings example
+
+[0] https://lore.kernel.org/linux-i2c/20220124213850.3766-1-zev@bewilderbeest.net/
+
+Zev Weiss (2):
+  i2c: mux: pca9541: add delayed-release support
+  dt-bindings: i2c: add nxp,pca9541 release-delay-us property
+
+ .../devicetree/bindings/i2c/nxp,pca9541.txt   |  9 +++
+ drivers/i2c/muxes/i2c-mux-pca9541.c           | 56 ++++++++++++++++---
+ 2 files changed, 56 insertions(+), 9 deletions(-)
+
 -- 
 2.34.1
 
