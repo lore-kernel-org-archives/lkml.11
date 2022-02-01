@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5FADC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 18:19:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53029C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 18:19:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232489AbiBASTj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 13:19:39 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:56792 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241925AbiBASRf (ORCPT
+        id S234457AbiBASTl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 13:19:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50030 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241983AbiBASRi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 13:17:35 -0500
+        Tue, 1 Feb 2022 13:17:38 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E20B1C061755;
+        Tue,  1 Feb 2022 10:17:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 414586143F;
-        Tue,  1 Feb 2022 18:17:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01B13C340EC;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 3D654CE1A6A;
         Tue,  1 Feb 2022 18:17:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01575C340EC;
+        Tue,  1 Feb 2022 18:17:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643739454;
-        bh=L4Dauhfdb9CiLwDR7dswGZb+lf0tlCU9FGPbs+EdugA=;
+        s=korg; t=1643739451;
+        bh=pctKCSfPZswxerM6YNpfjiCB1GbDsWv66B/WADE0Ca0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jNgfUiXIoKPS88IJ6TtOo8wf5f8fM2VMehc8shGFCMXtzhcd8hp85glzq0Fqj6K83
-         HwNdcna1smUj3OUBxSO+EnLPslfMpSkIDUefJ8sK1T8jGBN4YjLpbBtzg4LsbB3IvV
-         xaiwXXRfS03Q9bZWDBEHOR1+7O57Tmm+j+g18BOI=
+        b=cqAdeNOYp7Fp1YKfE5OsBdeNntN1LN6URqCzdJpB2JOeHRK1qX5g8vwfg4p6mYao6
+         WmqQPOFPWYibwylL/idrJxQg0mZE55wfv6DQtfma9E/DYEx7SDadOLfAbnPi7LB7SP
+         9SYjzt5WhZCPKiP2zzz4QvYfR0wDlWvcfnRE2O14=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.4 20/25] ipv4: raw: lock the socket in raw_bind()
-Date:   Tue,  1 Feb 2022 19:16:44 +0100
-Message-Id: <20220201180822.804384142@linuxfoundation.org>
+        stable@vger.kernel.org, Brian Gix <brian.gix@intel.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        syphyr <syphyr@gmail.com>
+Subject: [PATCH 4.4 02/25] Bluetooth: refactor malicious adv data check
+Date:   Tue,  1 Feb 2022 19:16:26 +0100
+Message-Id: <20220201180822.228840433@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220201180822.148370751@linuxfoundation.org>
 References: <20220201180822.148370751@linuxfoundation.org>
@@ -47,78 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Brian Gix <brian.gix@intel.com>
 
-[ Upstream commit 153a0d187e767c68733b8e9f46218eb1f41ab902 ]
+commit 899663be5e75dc0174dc8bda0b5e6826edf0b29a upstream.
 
-For some reason, raw_bind() forgot to lock the socket.
+Check for out-of-bound read was being performed at the end of while
+num_reports loop, and would fill journal with false positives. Added
+check to beginning of loop processing so that it doesn't get checked
+after ptr has been advanced.
 
-BUG: KCSAN: data-race in __ip4_datagram_connect / raw_bind
-
-write to 0xffff8881170d4308 of 4 bytes by task 5466 on cpu 0:
- raw_bind+0x1b0/0x250 net/ipv4/raw.c:739
- inet_bind+0x56/0xa0 net/ipv4/af_inet.c:443
- __sys_bind+0x14b/0x1b0 net/socket.c:1697
- __do_sys_bind net/socket.c:1708 [inline]
- __se_sys_bind net/socket.c:1706 [inline]
- __x64_sys_bind+0x3d/0x50 net/socket.c:1706
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-read to 0xffff8881170d4308 of 4 bytes by task 5468 on cpu 1:
- __ip4_datagram_connect+0xb7/0x7b0 net/ipv4/datagram.c:39
- ip4_datagram_connect+0x2a/0x40 net/ipv4/datagram.c:89
- inet_dgram_connect+0x107/0x190 net/ipv4/af_inet.c:576
- __sys_connect_file net/socket.c:1900 [inline]
- __sys_connect+0x197/0x1b0 net/socket.c:1917
- __do_sys_connect net/socket.c:1927 [inline]
- __se_sys_connect net/socket.c:1924 [inline]
- __x64_sys_connect+0x3d/0x50 net/socket.c:1924
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-value changed: 0x00000000 -> 0x0003007f
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 1 PID: 5468 Comm: syz-executor.5 Not tainted 5.17.0-rc1-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Brian Gix <brian.gix@intel.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Cc: syphyr <syphyr@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/raw.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ net/bluetooth/hci_event.c |   10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/net/ipv4/raw.c b/net/ipv4/raw.c
-index 24ce13a796654..65dbe1784d021 100644
---- a/net/ipv4/raw.c
-+++ b/net/ipv4/raw.c
-@@ -709,6 +709,7 @@ static int raw_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len)
- 	int ret = -EINVAL;
- 	int chk_addr_ret;
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -4940,6 +4940,11 @@ static void hci_le_adv_report_evt(struct
+ 		struct hci_ev_le_advertising_info *ev = ptr;
+ 		s8 rssi;
  
-+	lock_sock(sk);
- 	if (sk->sk_state != TCP_CLOSE || addr_len < sizeof(struct sockaddr_in))
- 		goto out;
- 	chk_addr_ret = inet_addr_type(sock_net(sk), addr->sin_addr.s_addr);
-@@ -721,7 +722,9 @@ static int raw_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len)
- 		inet->inet_saddr = 0;  /* Use device */
- 	sk_dst_reset(sk);
- 	ret = 0;
--out:	return ret;
-+out:
-+	release_sock(sk);
-+	return ret;
- }
++		if (ptr > (void *)skb_tail_pointer(skb) - sizeof(*ev)) {
++			bt_dev_err(hdev, "Malicious advertising data.");
++			break;
++		}
++
+ 		if (ev->length <= HCI_MAX_AD_LENGTH &&
+ 		    ev->data + ev->length <= skb_tail_pointer(skb)) {
+ 			rssi = ev->data[ev->length];
+@@ -4951,11 +4956,6 @@ static void hci_le_adv_report_evt(struct
+ 		}
  
- /*
--- 
-2.34.1
-
+ 		ptr += sizeof(*ev) + ev->length + 1;
+-
+-		if (ptr > (void *) skb_tail_pointer(skb) - sizeof(*ev)) {
+-			bt_dev_err(hdev, "Malicious advertising data. Stopping processing");
+-			break;
+-		}
+ 	}
+ 
+ 	hci_dev_unlock(hdev);
 
 
