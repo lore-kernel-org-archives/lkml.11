@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3C7CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 18:18:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CAE6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 18:18:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242154AbiBASSI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 13:18:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50090 "EHLO
+        id S238697AbiBASSL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 13:18:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241867AbiBASRv (ORCPT
+        with ESMTP id S241906AbiBASRy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 13:17:51 -0500
+        Tue, 1 Feb 2022 13:17:54 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAA28C06173D;
-        Tue,  1 Feb 2022 10:17:50 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5FB7C061401;
+        Tue,  1 Feb 2022 10:17:53 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C6526137A;
-        Tue,  1 Feb 2022 18:17:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40511C340EC;
-        Tue,  1 Feb 2022 18:17:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 76FD26143F;
+        Tue,  1 Feb 2022 18:17:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56183C340EC;
+        Tue,  1 Feb 2022 18:17:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643739469;
-        bh=dHutdZ5BY8QS8fL7Ycyd6sYxmBYm9nSHFZmiQkOj2N4=;
+        s=korg; t=1643739472;
+        bh=xDt/v0wjh/teTSvWU8FTJ+9zGVA5D8k7qvF/ziHbYYI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W6pHFSkAT0/jtu72KkkKmK2k2J1QnHVe2dLohK0pD09o0xdUwGYTQjvhLLDJKE5yZ
-         HFZZqMzHrfZX83CTau4Jy7lsOl8wFdLfxPg/SeZF50dJj2bB/1OPtGYYgcLj9NY9l1
-         DiiEsYJfLL/8sWjEgPrgWNkPXoiJNYoHbF22OLi4=
+        b=fKoUxrxSVwz2ipKAZ2oIYnpbqg2F4hHJXYLBPFFhut6csyj9oydyaa6bXBvS83GM8
+         k08KutVL7SzRSzqsiYIksPuXAdHa743STLFI0VX8CFK6aJ/AI5zx69dE3M+Q5Zu07l
+         vOY1gnbJRIbWHGn8C74v8WfNDMLtTaR+HFbnzZEU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        "stable@vger.kernel.org, Guillaume Bertholon" 
-        <guillaume.bertholon@ens.fr>,
-        Guillaume Bertholon <guillaume.bertholon@ens.fr>
-Subject: [PATCH 4.4 25/25] KVM: x86: Fix misplaced backport of "work around leak of uninitialized stack contents"
-Date:   Tue,  1 Feb 2022 19:16:49 +0100
-Message-Id: <20220201180822.970781574@linuxfoundation.org>
+        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>
+Subject: [PATCH 4.4 03/25] s390/hypfs: include z/VM guests with access control group set
+Date:   Tue,  1 Feb 2022 19:16:27 +0100
+Message-Id: <20220201180822.260634894@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220201180822.148370751@linuxfoundation.org>
 References: <20220201180822.148370751@linuxfoundation.org>
@@ -50,54 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guillaume Bertholon <guillaume.bertholon@ens.fr>
+From: Vasily Gorbik <gor@linux.ibm.com>
 
-The upstream commit 541ab2aeb282 ("KVM: x86: work around leak of
-uninitialized stack contents") resets `exception` in the function
-`kvm_write_guest_virt_system`.
-However, its backported version in stable (commit ba7f1c934f2e
-("KVM: x86: work around leak of uninitialized stack contents")) applied
-the change in `emulator_write_std` instead.
+commit 663d34c8df98740f1e90241e78e456d00b3c6cad upstream.
 
-This patch moves the memset instruction back to
-`kvm_write_guest_virt_system`.
+Currently if z/VM guest is allowed to retrieve hypervisor performance
+data globally for all guests (privilege class B) the query is formed in a
+way to include all guests but the group name is left empty. This leads to
+that z/VM guests which have access control group set not being included
+in the results (even local vm).
 
-Fixes: ba7f1c934f2e ("KVM: x86: work around leak of uninitialized stack contents")
-Signed-off-by: Guillaume Bertholon <guillaume.bertholon@ens.fr>
+Change the query group identifier from empty to "any" to retrieve
+information about all guests from any groups (or without a group set).
+
+Cc: stable@vger.kernel.org
+Fixes: 31cb4bd31a48 ("[S390] Hypervisor filesystem (s390_hypfs) for z/VM")
+Reviewed-by: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
+Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/x86.c |   14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ arch/s390/hypfs/hypfs_vm.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -4417,13 +4417,6 @@ static int emulator_write_std(struct x86
- 	if (!system && kvm_x86_ops->get_cpl(vcpu) == 3)
- 		access |= PFERR_USER_MASK;
+--- a/arch/s390/hypfs/hypfs_vm.c
++++ b/arch/s390/hypfs/hypfs_vm.c
+@@ -19,6 +19,7 @@
  
--	/*
--	 * FIXME: this should call handle_emulation_failure if X86EMUL_IO_NEEDED
--	 * is returned, but our callers are not ready for that and they blindly
--	 * call kvm_inject_page_fault.  Ensure that they at least do not leak
--	 * uninitialized kernel stack memory into cr2 and error code.
--	 */
--	memset(exception, 0, sizeof(*exception));
- 	return kvm_write_guest_virt_helper(addr, val, bytes, vcpu,
- 					   access, exception);
- }
-@@ -4431,6 +4424,13 @@ static int emulator_write_std(struct x86
- int kvm_write_guest_virt_system(struct kvm_vcpu *vcpu, gva_t addr, void *val,
- 				unsigned int bytes, struct x86_exception *exception)
- {
-+	/*
-+	 * FIXME: this should call handle_emulation_failure if X86EMUL_IO_NEEDED
-+	 * is returned, but our callers are not ready for that and they blindly
-+	 * call kvm_inject_page_fault.  Ensure that they at least do not leak
-+	 * uninitialized kernel stack memory into cr2 and error code.
-+	 */
-+	memset(exception, 0, sizeof(*exception));
- 	return kvm_write_guest_virt_helper(addr, val, bytes, vcpu,
- 					   PFERR_WRITE_MASK, exception);
- }
+ static char local_guest[] = "        ";
+ static char all_guests[] = "*       ";
++static char *all_groups = all_guests;
+ static char *guest_query;
+ 
+ struct diag2fc_data {
+@@ -61,10 +62,11 @@ static int diag2fc(int size, char* query
+ 
+ 	memcpy(parm_list.userid, query, NAME_LEN);
+ 	ASCEBC(parm_list.userid, NAME_LEN);
+-	parm_list.addr = (unsigned long) addr ;
++	memcpy(parm_list.aci_grp, all_groups, NAME_LEN);
++	ASCEBC(parm_list.aci_grp, NAME_LEN);
++	parm_list.addr = (unsigned long)addr;
+ 	parm_list.size = size;
+ 	parm_list.fmt = 0x02;
+-	memset(parm_list.aci_grp, 0x40, NAME_LEN);
+ 	rc = -1;
+ 
+ 	diag_stat_inc(DIAG_STAT_X2FC);
 
 
