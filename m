@@ -2,260 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 806DEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 17:29:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18CBDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 17:29:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241523AbiBAR3f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 12:29:35 -0500
-Received: from mx0a-001ae601.pphosted.com ([67.231.149.25]:14862 "EHLO
-        mx0b-001ae601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S230437AbiBAR3d (ORCPT
+        id S241530AbiBAR3u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 12:29:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38890 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241524AbiBAR3r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 12:29:33 -0500
-Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2117KbE7014216;
-        Tue, 1 Feb 2022 11:28:37 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- references : in-reply-to : subject : date : message-id : mime-version :
- content-type : content-transfer-encoding; s=PODMain02222019;
- bh=952efIhSlZ3TVuH9E0mXPjBSblS+dfL5mu3ba5cMD9c=;
- b=LypIW3UKHaSaflDClwAKMuOmrBFbWx7FwaA/mf7GRUVZQaCskkog4akMbniphWitpqPI
- JXzlHSW6oHCYzNLL5YtO0JiwwwP7LICytuq2vXb6qgVuZvye6rrZBIzry6GpM0EZ5ZAE
- hajDtpcNsBfKNviNCdFu7T0ApG7OjTI/gucRpo213HsKfh8CFsE2SadMWCVP3j2P7kpl
- G2/8VS0FQWPrTbwvtAA/FHykiVtvNcadVyVdLRbyku+tXahG8lr2YLbj0Sqn94ocG8yC
- 0BxOizyEh0bvYA3bUEohvDNYz1BoYLzuQsAxVVFz6F84JL0IAkOf0Nb3WQ1wkqQKiI2Y tw== 
-Received: from ediex02.ad.cirrus.com ([84.19.233.68])
-        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3dxksx1xau-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 01 Feb 2022 11:28:36 -0600
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
- (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Tue, 1 Feb
- 2022 17:28:34 +0000
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
- Transport; Tue, 1 Feb 2022 17:28:34 +0000
-Received: from LONN2DGDQ73 (unknown [198.90.238.134])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 980C3459;
-        Tue,  1 Feb 2022 17:28:34 +0000 (UTC)
-From:   Stefan Binding <sbinding@opensource.cirrus.com>
-To:     'Hans de Goede' <hdegoede@redhat.com>,
-        'Mark Brown' <broonie@kernel.org>,
-        "'Rafael J . Wysocki'" <rafael@kernel.org>,
-        'Len Brown' <lenb@kernel.org>,
-        'Mark Gross' <markgross@kernel.org>,
-        'Jaroslav Kysela' <perex@perex.cz>,
-        'Takashi Iwai' <tiwai@suse.com>
-CC:     <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>,
-        <linux-spi@vger.kernel.org>, <linux-acpi@vger.kernel.org>,
-        <platform-driver-x86@vger.kernel.org>,
-        <patches@opensource.cirrus.com>
-References: <20220121172431.6876-1-sbinding@opensource.cirrus.com> <20220121172431.6876-3-sbinding@opensource.cirrus.com> <36df02cc-d164-eb6a-4ce7-54d2ee916650@redhat.com>
-In-Reply-To: <36df02cc-d164-eb6a-4ce7-54d2ee916650@redhat.com>
-Subject: RE: [PATCH v6 2/9] spi: Create helper API to lookup ACPI info for spi device
-Date:   Tue, 1 Feb 2022 17:28:34 +0000
-Message-ID: <001101d81791$23f56090$6be021b0$@opensource.cirrus.com>
+        Tue, 1 Feb 2022 12:29:47 -0500
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADD14C061714
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Feb 2022 09:29:46 -0800 (PST)
+Received: by mail-wm1-x334.google.com with SMTP id o1-20020a1c4d01000000b0034d95625e1fso2546487wmh.4
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Feb 2022 09:29:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=1up9Iuvtlk/iyAkaowMrPN9aJld0zeiBLUkLL04DY6A=;
+        b=QWs0wLi0831HmP/LvqHWVwVANAT7rANQll4UtSe0l1qRMJfkYwUAlKC3MvzM9LY59m
+         jmirGQcKXR2hKtxGaZX6Az0HBlznNCAt81xhDClcfIpnqSk13VYqNycCy0XzFjBCU8y+
+         9+lem5hhoqyNL3tQXojrP7IHE2wBlqnqwYaFh9k63vA91VEWklbrE2Do21974PHp3HPL
+         r1uDWYNx165mRiOBob23AYLyRCknUOLHWb/R//K6lz4j+1aU/xNrgpfEx0Qs2nGmuKGl
+         yqRWPDr3oPvupXdGUcXBR1+8kd3f2tUAhIzklDg7pSJuKT6T45EHtBwQEq15U83al5Tf
+         5pwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=1up9Iuvtlk/iyAkaowMrPN9aJld0zeiBLUkLL04DY6A=;
+        b=1glulh9K1lsUwRM0Qrfj3D1KOqOj0B9HgXXKQ7VSPR+CxW61Cs4CZNEEoqztC9xKtg
+         t/riQV9yLcc7/QezcSl01QOddH/ieKjdlbvDMd2ItZ9xOzmBLaeUbKIi71/r2kiiT8Eo
+         iJKjH3UdVbsy7ZW6AqT2Ug1KmOOg1CN3uVxHmKSldjGpQ9e8FkWeFFYuJh4CQ/tygLgL
+         +VGcDFaq0x4Evfh5qlAX85Hmmgrf9NteL63Tmc8G8Xlb/EYRFq0KYXadxnbIrPVj98OD
+         jHKCCGtww0/7WuHV7QHzmbK0ilSPCeJwdZlkgO8DwtwNk3PrTsUYkRV3oEDME/slm6Ct
+         5IcA==
+X-Gm-Message-State: AOAM53334aq25RQDVAQmuH7lkBUyz9bXpt5fmCZ3WaZmQac/NxTrgKf6
+        0vrDyUjSiloCLq7CEwoqy4iVsA==
+X-Google-Smtp-Source: ABdhPJy5hC8TD6/VJePvsLep/Uc4MjPl96ghWdUNl7PHJFXrPu8m3WGr6PFKiyFJDLT/ez1xu4zycQ==
+X-Received: by 2002:a05:600c:5c1:: with SMTP id p1mr2710329wmd.31.1643736585242;
+        Tue, 01 Feb 2022 09:29:45 -0800 (PST)
+Received: from maple.lan (cpc141216-aztw34-2-0-cust174.18-1.cable.virginm.net. [80.7.220.175])
+        by smtp.gmail.com with ESMTPSA id l29sm3800651wms.1.2022.02.01.09.29.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Feb 2022 09:29:44 -0800 (PST)
+Date:   Tue, 1 Feb 2022 17:29:42 +0000
+From:   Daniel Thompson <daniel.thompson@linaro.org>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH v5 08/10] ARM: uaccess: add __{get,put}_kernel_nofault
+Message-ID: <20220201172942.nxop6cjr3xfa4237@maple.lan>
+References: <20210726141141.2839385-1-arnd@kernel.org>
+ <20210726141141.2839385-9-arnd@kernel.org>
+ <Yd8P37V/N9EkwmYq@wychelm>
+ <Yd8ZEbywqjXkAx9k@shell.armlinux.org.uk>
+ <20220113094754.6ei6ssiqbuw7tfj7@maple.lan>
+ <CAK8P3a0=OkFcKbL+utDPTPf+RskFNdR8Vt-3BEWkO9g_FqSj5w@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Mailer: Microsoft Outlook 16.0
-Content-Language: en-gb
-Thread-Index: AQI3MpywMNCpYcMrzvtt+VeZtzYOngLs94vFAiNmdv6rmDmlEA==
-X-Proofpoint-ORIG-GUID: fc1BznT_2vBEkCcSo3Mrt0p79QgZa1GM
-X-Proofpoint-GUID: fc1BznT_2vBEkCcSo3Mrt0p79QgZa1GM
-X-Proofpoint-Spam-Reason: safe
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAK8P3a0=OkFcKbL+utDPTPf+RskFNdR8Vt-3BEWkO9g_FqSj5w@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Thu, Jan 13, 2022 at 12:14:50PM +0100, Arnd Bergmann wrote:
+> On Thu, Jan 13, 2022 at 10:47 AM Daniel Thompson
+> <daniel.thompson@linaro.org> wrote:
+> > On Wed, Jan 12, 2022 at 06:08:17PM +0000, Russell King (Oracle) wrote:
+> >
+> > > The kernel attempted to access an address that is in the userspace
+> > > domain (NULL pointer) and took an exception.
+> > >
+> > > I suppose we should handle a domain fault more gracefully - what are
+> > > the required semantics if the kernel attempts a userspace access
+> > > using one of the _nofault() accessors?
+> >
+> > I think the best answer might well be that, if the arch provides
+> > implementations of hooks such as copy_from_kernel_nofault_allowed()
+> > then the kernel should never attempt a userspace access using the
+> > _nofault() accessors. That means they can do whatever they like!
+> >
+> > In other words something like the patch below looks like a promising
+> > approach.
+> 
+> Right, it seems this is the same as on x86.
 
-> -----Original Message-----
-> From: Hans de Goede <hdegoede@redhat.com>
-> Sent: 01 February 2022 14:28
-> To: Stefan Binding <sbinding@opensource.cirrus.com>; Mark Brown
-> <broonie@kernel.org>; Rafael J . Wysocki <rafael@kernel.org>; Len =
-Brown
-> <lenb@kernel.org>; Mark Gross <markgross@kernel.org>; Jaroslav Kysela
-> <perex@perex.cz>; Takashi Iwai <tiwai@suse.com>
-> Cc: alsa-devel@alsa-project.org; linux-kernel@vger.kernel.org; linux-
-> spi@vger.kernel.org; linux-acpi@vger.kernel.org; platform-driver-
-> x86@vger.kernel.org; patches@opensource.cirrus.com
-> Subject: Re: [PATCH v6 2/9] spi: Create helper API to lookup ACPI info =
-for spi
-> device
->=20
-> Hi,
->=20
-> On 1/21/22 18:24, Stefan Binding wrote:
-> > This can then be used to find a spi resource inside an
-> > ACPI node, and allocate a spi device.
-> >
-> > Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
-> > ---
-> >  drivers/spi/spi.c       | 46 =
-++++++++++++++++++++++++++++++++---------
-> >  include/linux/spi/spi.h |  6 ++++++
-> >  2 files changed, 42 insertions(+), 10 deletions(-)
-> >
-> > diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
-> > index 1eb84101c4ad..13f4701f0694 100644
-> > --- a/drivers/spi/spi.c
-> > +++ b/drivers/spi/spi.c
-> > @@ -2410,8 +2410,18 @@ static int acpi_spi_add_resource(struct
-> acpi_resource *ares, void *data)
-> >  	return 1;
-> >  }
-> >
-> > -static acpi_status acpi_register_spi_device(struct spi_controller =
-*ctlr,
-> > -					    struct acpi_device *adev)
-> > +/**
-> > + * acpi_spi_device_alloc - Allocate a spi device, and fill it in =
-with ACPI
-> information
-> > + * @ctlr: controller to which the spi device belongs
-> > + * @adev: ACPI Device for the spi device
-> > + *
-> > + * This should be used to allocate a new spi device from and ACPI =
-Node.
-> > + * The caller is responsible for calling spi_add_device to register =
-the spi
-> device.
-> > + *
-> > + * Return: a pointer to the new device, or ERR_PTR on error.
-> > + */
-> > +struct spi_device *acpi_spi_device_alloc(struct spi_controller =
-*ctlr,
-> > +					 struct acpi_device *adev)
-> >  {
-> >  	acpi_handle parent_handle =3D NULL;
-> >  	struct list_head resource_list;
-> > @@ -2419,10 +2429,6 @@ static acpi_status
-> acpi_register_spi_device(struct spi_controller *ctlr,
-> >  	struct spi_device *spi;
-> >  	int ret;
-> >
-> > -	if (acpi_bus_get_status(adev) || !adev->status.present ||
-> > -	    acpi_device_enumerated(adev))
-> > -		return AE_OK;
-> > -
-> >  	lookup.ctlr		=3D ctlr;
-> >  	lookup.irq		=3D -1;
-> >
-> > @@ -2433,7 +2439,7 @@ static acpi_status =
-acpi_register_spi_device(struct
-> spi_controller *ctlr,
-> >
-> >  	if (ret < 0)
-> >  		/* found SPI in _CRS but it points to another controller */
-> > -		return AE_OK;
-> > +		return ERR_PTR(-ENODEV);
-> >
-> >  	if (!lookup.max_speed_hz &&
-> >  	    ACPI_SUCCESS(acpi_get_parent(adev->handle, &parent_handle))
-> &&
-> > @@ -2443,16 +2449,15 @@ static acpi_status
-> acpi_register_spi_device(struct spi_controller *ctlr,
-> >  	}
-> >
-> >  	if (!lookup.max_speed_hz)
-> > -		return AE_OK;
-> > +		return ERR_PTR(-ENODEV);
-> >
-> >  	spi =3D spi_alloc_device(ctlr);
-> >  	if (!spi) {
-> >  		dev_err(&ctlr->dev, "failed to allocate SPI device for %s\n",
-> >  			dev_name(&adev->dev));
-> > -		return AE_NO_MEMORY;
-> > +		return ERR_PTR(-ENOMEM);
-> >  	}
-> >
-> > -
-> >  	ACPI_COMPANION_SET(&spi->dev, adev);
-> >  	spi->max_speed_hz	=3D lookup.max_speed_hz;
-> >  	spi->mode		|=3D lookup.mode;
-> > @@ -2460,6 +2465,27 @@ static acpi_status
-> acpi_register_spi_device(struct spi_controller *ctlr,
-> >  	spi->bits_per_word	=3D lookup.bits_per_word;
-> >  	spi->chip_select	=3D lookup.chip_select;
-> >
-> > +	return spi;
-> > +}
-> > +EXPORT_SYMBOL_GPL(acpi_spi_device_alloc);
-> > +
-> > +static acpi_status acpi_register_spi_device(struct spi_controller =
-*ctlr,
-> > +					    struct acpi_device *adev)
-> > +{
-> > +	struct spi_device *spi;
-> > +
-> > +	if (acpi_bus_get_status(adev) || !adev->status.present ||
-> > +	    acpi_device_enumerated(adev))
-> > +		return AE_OK;
-> > +
-> > +	spi =3D acpi_spi_device_alloc(ctlr, adev);
-> > +	if (IS_ERR(spi)) {
-> > +		if (PTR_ERR(spi) =3D=3D -ENOMEM)
-> > +			return AE_NO_MEMORY;
-> > +		else
-> > +			return AE_OK;
-> > +	}
-> > +
-> >  	acpi_set_modalias(adev, acpi_device_hid(adev), spi->modalias,
-> >  			  sizeof(spi->modalias));
-> >
-> > diff --git a/include/linux/spi/spi.h b/include/linux/spi/spi.h
-> > index 0346a3ff27fd..d159cef12f1a 100644
-> > --- a/include/linux/spi/spi.h
-> > +++ b/include/linux/spi/spi.h
-> > @@ -16,6 +16,7 @@
-> >  #include <linux/gpio/consumer.h>
-> >
-> >  #include <uapi/linux/spi/spi.h>
-> > +#include <linux/acpi.h>
-> >
-> >  struct dma_chan;
-> >  struct software_node;
-> > @@ -759,6 +760,11 @@ extern int devm_spi_register_controller(struct
-> device *dev,
-> >  					struct spi_controller *ctlr);
-> >  extern void spi_unregister_controller(struct spi_controller *ctlr);
-> >
-> > +#if IS_ENABLED(CONFIG_ACPI)
-> > +extern struct spi_device *acpi_spi_device_alloc(struct =
-spi_controller *ctlr,
-> > +						struct acpi_device *adev);
-> > +#endif
-> > +
->=20
-> There is no need to add a #ifdef about something which is just a
-> function prototype. Having this declared when CONFIG_ACPI is not set =
-is
-> harmless, please drop the #ifdef.
->=20
-> With that fixed, please add my R-b to the next version:
->=20
-> Reviewed-by: Hans de Goede <hdegoede@redhat.com>
->=20
-> Regards,
->=20
-> Hans
+Hmnn...
 
-I was just fixing this, however, I just noticed that a subset of this =
-chain - including
-this patch - just got applied. Do you want me to fix this in a separate =
-patch?
+Looking a bit deeper into copy_from_kernel_nofault() there is an odd
+asymmetry between copy_to_kernel_nofault(). Basically there is
+copy_from_kernel_nofault_allowed() but no corresponding
+copy_to_kernel_nofault_allowed() which means we cannot defend memory
+pokes using a helper function.
 
-Thanks,
-Stefan
+I checked the behaviour of copy_to_kernel_nofault() on arm, arm64, mips,
+powerpc, riscv, x86 kernels (which is pretty much everything where I
+know how to fire up qemu). All except arm gracefully handle an
+attempt to write to userspace (well, NULL actually) with
+copy_to_kernel_nofault() so I think there still a few more changes
+to fully fix this.
 
->=20
->=20
->=20
-> >  /*
-> >   * SPI resource management while processing a SPI message
-> >   */
-> >
+Looks like we would need a slightly more assertive change, either adding
+a copy_to_kernel_nofault_allowed() or modifying the arm dabt handlers to
+avoid faults on userspace access.
+
+Any views on which is better?
 
 
+Daniel.
+
+> 
+> > From f66a63b504ff582f261a506c54ceab8c0e77a98c Mon Sep 17 00:00:00 2001
+> > From: Daniel Thompson <daniel.thompson@linaro.org>
+> > Date: Thu, 13 Jan 2022 09:34:45 +0000
+> > Subject: [PATCH] arm: mm: Implement copy_from_kernel_nofault_allowed()
+> >
+> > Currently copy_from_kernel_nofault() can actually fault (due to software
+> > PAN) if we attempt userspace access. In any case, the documented
+> > behaviour for this function is to return -ERANGE if we attempt an access
+> > outside of kernel space.
+> >
+> > Implementing copy_from_kernel_nofault_allowed() solves both these
+> > problems.
+> >
+> > Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+> 
+> Reviewed-by: Arnd Bergmann <arnd@arndb.de>
