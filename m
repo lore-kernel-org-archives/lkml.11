@@ -2,106 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B0D0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 08:43:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6868C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 08:44:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234299AbiBAInm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 03:43:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59244 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235641AbiBAInS (ORCPT
+        id S235744AbiBAIoU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 03:44:20 -0500
+Received: from mail-vs1-f49.google.com ([209.85.217.49]:40806 "EHLO
+        mail-vs1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235792AbiBAIoE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 03:43:18 -0500
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E03CCC06173B
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Feb 2022 00:43:17 -0800 (PST)
-Received: by mail-ej1-x62a.google.com with SMTP id jx6so52176838ejb.0
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Feb 2022 00:43:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=B8zl36G7JlUGXj8aWslwhr97KzVAYYmIGHBWCkBFK+8=;
-        b=E941/X84IaEHoXKvH/LHgPKecFrjJ7ESo8JUDdvrWGzaWn6oAu+3K/5p0GvE0gGiaA
-         3Me4GAYQPEaGpeBxgxsZg9IM7+bwIpoE5Gb/kKAQaaUhdCaKiE78DnsMUStMhJtdBJdW
-         UGCyxg0shKxnAGVdViJmIRBcoW5GbD5adLOfMKiIar81a5CMLLD03BxH+rdynJOCZK55
-         fXaM804mHAaKj9/MG6I9zcEkk4cO8Oh4B2CjVRrjLA3wPt4In9qkMP0PbME8KJlgsHCr
-         4FBPaK06owjaNmPLE78Jk4URskCBMTW3gprCvIOupwuTCVgHURXLM7KYL1Qw2JJDmozX
-         2Ffg==
+        Tue, 1 Feb 2022 03:44:04 -0500
+Received: by mail-vs1-f49.google.com with SMTP id g23so15132528vsf.7;
+        Tue, 01 Feb 2022 00:44:03 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=B8zl36G7JlUGXj8aWslwhr97KzVAYYmIGHBWCkBFK+8=;
-        b=xjrBe3NTpfw729Q91mc18dUvkuBFKTEe38mouXcj9nkBalhtGEmNDL/UhPyjxcuEsE
-         G0fx4Vawnd1t/4Fdk9v9/vIAQ4KeomkDvoidBT1WPZwGSDnDkHsZhZsk9eWf5VwRMI5J
-         mHrF/flWudaZetQ7ZOQoh4lwrLQEMyLeAKIcCvrwauqB0EenU8OpQiXzB3DuuqobCp4f
-         IdwI8hbMmWf4nlCKIqdgVN0blAHvTVIjkE+DhjWertPs+7jf0S8xD72m2wu4sdO0pPaa
-         /xpAVQmaOCEKBWHijvg6YKDLKTvXOblie2TqKX4BdgF2V+KCzYb7LiyiUNY2GsQ9zZQf
-         /Ktg==
-X-Gm-Message-State: AOAM533q9zUuMMD6x9FqrKZltQydpTIeX334997+GUjMOXswKpy4lIct
-        oeo/P42CYJHwdrzilBBVT+c=
-X-Google-Smtp-Source: ABdhPJyhx1/GltpDK0pKlqouPy8wnEFLIJbK8JjoRBLmvQrIZKqPEfGQAM/d4LzsOKRg7mwJff4xfg==
-X-Received: by 2002:a17:907:3f0d:: with SMTP id hq13mr20219436ejc.358.1643704996548;
-        Tue, 01 Feb 2022 00:43:16 -0800 (PST)
-Received: from localhost.localdomain (ip5f5abb5a.dynamic.kabel-deutschland.de. [95.90.187.90])
-        by smtp.gmail.com with ESMTPSA id c14sm19123431edy.66.2022.02.01.00.43.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Feb 2022 00:43:16 -0800 (PST)
-From:   Michael Straube <straube.linux@gmail.com>
-To:     gregkh@linuxfoundation.org
-Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Michael Straube <straube.linux@gmail.com>
-Subject: [PATCH 8/9] staging: r8188eu: remove UsbRxAggBlock* from struct hal_data_8188e
-Date:   Tue,  1 Feb 2022 09:42:58 +0100
-Message-Id: <20220201084259.7497-9-straube.linux@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220201084259.7497-1-straube.linux@gmail.com>
-References: <20220201084259.7497-1-straube.linux@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=raT8Y/Y+3uKWPsdtZjNjvpSo+gn1Wm+Os229uVdckR0=;
+        b=7qkMOrBhM3geLvg4FRhArosAP6YdRd1YeKT3qFFsYC1kjlsLa6rFgUUt+Vqwou7YQb
+         CzwdMbhEcRMv9XVM+DC6O2tTuW970AU0HYb0yyOhkAaRglWJTWFxxeyr2waPLDg4knh7
+         9yQh2oU0MNIcYtAz5F2mksY2/91OHEAUaOMYVVk4/VcOc/i0gPPoTwXMvtAULU48UcFs
+         zH0PukTwE859SZSSEqBxVfEinNeh2c8opqyErVLMlVb0W9AoJjyS5iCxgC7enwIkx2vE
+         4vb2yYGQfgZ1vDLi7x93PIFKoHazk8P+AgpPZK0aO/bM1gyWH91kXmLkHCjwH5yzYspr
+         zo6Q==
+X-Gm-Message-State: AOAM530xUnZ4/RuJu3Il0qIPdVim8D5AKSL6eIXhKP/o/pqlHFwJvrhP
+        o7ZCD69ARq3qubyPjBAZStvjmSi9hocfSw==
+X-Google-Smtp-Source: ABdhPJxNV8EM4hWf7/DxTFP/+xk0PZwkvwJMEZlme2nAg38dwxCggIhiaok8d2c0oL0XWBNQokmtgw==
+X-Received: by 2002:a67:ec4c:: with SMTP id z12mr9987220vso.41.1643705043184;
+        Tue, 01 Feb 2022 00:44:03 -0800 (PST)
+Received: from mail-vk1-f173.google.com (mail-vk1-f173.google.com. [209.85.221.173])
+        by smtp.gmail.com with ESMTPSA id q69sm4570447vka.21.2022.02.01.00.44.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 01 Feb 2022 00:44:02 -0800 (PST)
+Received: by mail-vk1-f173.google.com with SMTP id v192so9960248vkv.4;
+        Tue, 01 Feb 2022 00:44:01 -0800 (PST)
+X-Received: by 2002:a1f:5d84:: with SMTP id r126mr9423475vkb.33.1643705041310;
+ Tue, 01 Feb 2022 00:44:01 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220131201225.2324984-1-javierm@redhat.com>
+In-Reply-To: <20220131201225.2324984-1-javierm@redhat.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 1 Feb 2022 09:43:49 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdXMayLLRavAJJujmPqT+Vd11dPfycqXie3w_pOkS8i9eA@mail.gmail.com>
+Message-ID: <CAMuHMdXMayLLRavAJJujmPqT+Vd11dPfycqXie3w_pOkS8i9eA@mail.gmail.com>
+Subject: Re: [PATCH 0/4] drm/tiny: Add driver for Solomon SSD1307 OLED displays
+To:     Javier Martinez Canillas <javierm@redhat.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        =?UTF-8?Q?Noralf_Tr=C3=B8nnes?= <noralf@tronnes.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Linux PWM List <linux-pwm@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-UsbRxAggBlockCount and UsbRxAggBlockTimeout in struct hal_data_8188e
-are set but not used. Remove them.
+Hi Javier,
 
-Signed-off-by: Michael Straube <straube.linux@gmail.com>
----
- drivers/staging/r8188eu/hal/usb_halinit.c      | 2 --
- drivers/staging/r8188eu/include/rtl8188e_hal.h | 4 ----
- 2 files changed, 6 deletions(-)
+On Mon, Jan 31, 2022 at 9:12 PM Javier Martinez Canillas
+<javierm@redhat.com> wrote:
+> This patch series adds a DRM driver for the Solomon OLED SSD1305, SSD1306,
+> SSD1307 and SSD1309 displays. It is a port of the ssd1307fb fbdev driver.
 
-diff --git a/drivers/staging/r8188eu/hal/usb_halinit.c b/drivers/staging/r8188eu/hal/usb_halinit.c
-index 24c11c666534..1d0d58204c68 100644
---- a/drivers/staging/r8188eu/hal/usb_halinit.c
-+++ b/drivers/staging/r8188eu/hal/usb_halinit.c
-@@ -53,8 +53,6 @@ void rtl8188eu_interface_configure(struct adapter *adapt)
- 	else
- 		haldata->UsbBulkOutSize = USB_FULL_SPEED_BULK_SIZE;/* 64 bytes */
- 
--	haldata->UsbRxAggBlockCount	= 8; /* unit : 512b */
--	haldata->UsbRxAggBlockTimeout	= 0x6;
- 	haldata->UsbRxAggPageCount	= 48; /* uint :128 b 0x0A;	10 = MAX_RX_DMA_BUFFER_SIZE/2/haldata->UsbBulkOutSize */
- 	haldata->UsbRxAggPageTimeout	= 0x4; /* 6, absolute time = 34ms/(2^6) */
- 
-diff --git a/drivers/staging/r8188eu/include/rtl8188e_hal.h b/drivers/staging/r8188eu/include/rtl8188e_hal.h
-index 98d909b6d217..94678dad37ce 100644
---- a/drivers/staging/r8188eu/include/rtl8188e_hal.h
-+++ b/drivers/staging/r8188eu/include/rtl8188e_hal.h
-@@ -206,10 +206,6 @@ struct hal_data_8188e {
- 
- 	u32	UsbBulkOutSize;
- 
--	u8	UsbRxAggBlockCount;	/*  USB Block count. Block size is
--					 * 512-byte in high speed and 64-byte
--					 * in full speed */
--	u8	UsbRxAggBlockTimeout;
- 	u8	UsbRxAggPageCount;	/*  8192C DMA page count */
- 	u8	UsbRxAggPageTimeout;
- };
--- 
-2.34.1
+Thanks for your series!
 
+I'll give it a try on an Adafruit FeatherWing 128x32 OLED, connected
+to an OrangeCrab ECP5 FPGA board running a 64 MHz VexRiscv RISC-V
+softcore.
+
+> Using the DRM fb emulation, all the tests from Geert Uytterhoeven's fbtest
+> (https://git.kernel.org/pub/scm/linux/kernel/git/geert/fbtest.git) passes:
+>
+>      ./fbtest -f /dev/fb1
+>     Using drawops cfb32 (32 bpp packed pixels)
+>     Available visuals:
+>       Monochrome
+>       Grayscale 256
+>       Truecolor 8:8:8:0
+
+Oh, fake 32-bpp truecolor ;-)
+
+Does it run modetest, too?
+
+I'm trying to get modetest working on my atari DRM driver.
+Comparing to the cirrus driver doesn't help much, as modetest doesn't
+seem to work with the cirrus driver (modified to not do hardware
+access, as I don't have cirrus hardware):
+
+    # modetest -M cirrus -s 31:1024x768-60Hz
+    setting mode 1024x768-60.00Hz on connectors 31, crtc 34
+    failed to set gamma: Function not implemented
+
+Does there exist another simple test program for showing something
+using the DRM API?
+
+Thanks!
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
