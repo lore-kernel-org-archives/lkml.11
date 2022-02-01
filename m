@@ -2,128 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 420AFC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 10:54:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4467AC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 10:55:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236968AbiBAKyG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 05:54:06 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:47128 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233111AbiBAKyF (ORCPT
+        id S236942AbiBAKzt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 05:55:49 -0500
+Received: from mx-lax3-1.ucr.edu ([169.235.156.35]:43294 "EHLO
+        mx-lax3-1.ucr.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236772AbiBAKzs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 05:54:05 -0500
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id D4F9A1F397;
-        Tue,  1 Feb 2022 10:54:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1643712843; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=YltHOwLKpuO0VC3+4HmnZ1Xi40C0+Rd6appeqUz4Pqw=;
-        b=KnPDIU68LSjnuG+3l0gU/QaHa/lBb7ETO3uVc1U6JBzrQj7PSPiEhew4hexC2uMM+z+HJu
-        q7el6RJgbYzblwGSh2MDgXoWim29tXPX3+93EbPm/j7HbkQHEIB1Oh4Yod2x71/qKbz7In
-        w1HbGSyc53w2Cbd8gWKg4evbUdSD0f4=
-Received: from suse.cz (unknown [10.100.201.86])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 95CE3A3B81;
-        Tue,  1 Feb 2022 10:54:03 +0000 (UTC)
-Date:   Tue, 1 Feb 2022 11:54:03 +0100
-From:   Michal Hocko <mhocko@suse.com>
-To:     Waiman Long <longman@redhat.com>
-Cc:     Johannes Weiner <hannes@cmpxchg.org>,
-        Vladimir Davydov <vdavydov.dev@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
-        linux-mm@kvack.org, Ira Weiny <ira.weiny@intel.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Roman Gushchin <guro@fb.com>, Rafael Aquini <aquini@redhat.com>
-Subject: Re: [PATCH v3 3/4] mm/page_owner: Print memcg information
-Message-ID: <YfkRS75D3xcqLT85@dhcp22.suse.cz>
-References: <20220131192308.608837-1-longman@redhat.com>
- <20220131192308.608837-4-longman@redhat.com>
+        Tue, 1 Feb 2022 05:55:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=ucr.edu; i=@ucr.edu; q=dns/txt; s=selector3;
+  t=1643712949; x=1675248949;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=N87/Yfcs/eolC23BLtRDzeHlHtMpAA1EhSMYLZCuSgg=;
+  b=nDTTu4bWvgvmBsduYz1nSL5BPYfscNpPOTTK0ug5q4CBj03DAww7VPi4
+   ocChzSA8hyzV+X/1ShBbzSMv8Z3oNQmyduqlWGMid9yCedFVuG9pXkFuD
+   A8JoUW/ujqmaZgHPj6qVJYymmnj7JTypBRt8xib6KuY5fRf3HGc97S+Qd
+   GxlyBl4QezZ4BXKGwv91skXZsZezn+L82F9zbEqD7NjWAs1kKSQ+eqXxn
+   xvbcPrdLR99Hhp8DVVsGFQ0gUwcZjRZ9YIap4PRJWmG4CF4oUKXCi4Kda
+   r3lznZIbeZQRwXQcDXfULKQEHb0bkLY5XexYNfYlqjgvlzTtymqwhquSt
+   A==;
+X-IronPort-AV: E=Sophos;i="5.88,333,1635231600"; 
+   d="scan'208";a="101508730"
+Received: from mail-pj1-f69.google.com ([209.85.216.69])
+  by smtp-lax3-1.ucr.edu with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 01 Feb 2022 02:55:47 -0800
+Received: by mail-pj1-f69.google.com with SMTP id x1-20020a17090ab00100b001b380b8ed35so1425710pjq.7
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Feb 2022 02:55:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ucr.edu; s=rmail;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=PQBU+rnQ5my6cghLd5mHteSqBsmjbcfDnGbLH9g2K+8=;
+        b=BwhVCD5gApUnEMgR2x6gnBOuitDGWagg6hwNd5yCWlvrOYE0V3sK17saP7f+Yc16+1
+         G3pRKrhlsqIilqa46HHPg5D6XG36N0Z3ALHPq+0c0RxMv7mmY4MZlPZ7W22rw1/XBYOD
+         Eu5zRLrWCD44RW63WrPWEyk1zTrRCt+dI8dzA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=PQBU+rnQ5my6cghLd5mHteSqBsmjbcfDnGbLH9g2K+8=;
+        b=owLRo/Xh50dQ+vjG8DILxgH++WRdB1yqs2QQyDK/RjRnzYx0hbEhbUjkFAoYWfyNts
+         iVc31JXQb+3SrxFs0zZew6np06hJfvXYfxRFeOCAK8lnaRxV1f0+ULRD+pooL4MqjihI
+         7eZT7IRA3Db4KJ/6EVfXgZBuQPYAHJXNKnLqSR96Zo26eQdwHYpYWkHh8ujP06i5Yq3d
+         BI5QXZthZiw/dzpXi0DgaYS9s3/mMcUQOHSYaLE3/EnXDQpCBHYCn0rJchN4X7CZdXGm
+         9Rl8OJPAhxk7x6/tPUsBAw09oKRmoo3n/hcBHeh/OYKYaVqPyqdMPluqBoW/KVYUMOOo
+         FKwA==
+X-Gm-Message-State: AOAM530h9XFB7rvVcoWvjzfZJMCYfn38s7LOjDnOav/X6AAWJ3nsInMX
+        baNvnkvaUCWRVcfjm1BRIIpj5RpTlxHksvMd3qa1lP7uxwzTUdZIfSRGydLn1bB8/vYB/ubddJK
+        QNc2LWHwqcVbvyQOWj16qzos0wA==
+X-Received: by 2002:a17:90a:e7d0:: with SMTP id kb16mr1639602pjb.128.1643712946650;
+        Tue, 01 Feb 2022 02:55:46 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwR+51ZW666OWygVPyo83ZYuqOoW9d83uUD1rNUB7qxA4cSjb97vUb10lngV7jgl6wSo1FrUg==
+X-Received: by 2002:a17:90a:e7d0:: with SMTP id kb16mr1639572pjb.128.1643712946369;
+        Tue, 01 Feb 2022 02:55:46 -0800 (PST)
+Received: from kq.cs.ucr.edu (kq.cs.ucr.edu. [169.235.27.223])
+        by smtp.googlemail.com with ESMTPSA id b6sm22349723pfl.126.2022.02.01.02.55.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Feb 2022 02:55:46 -0800 (PST)
+From:   Yizhuo Zhai <yzhai003@ucr.edu>
+Cc:     Yizhuo Zhai <yzhai003@ucr.edu>, Helge Deller <deller@gmx.de>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Matthew Wilcox <willy@infradead.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Zheyu Ma <zheyuma97@gmail.com>,
+        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3] fbdev: fbmem: Fix the implicit type casting
+Date:   Tue,  1 Feb 2022 02:56:07 -0800
+Message-Id: <20220201105610.2975873-1-yzhai003@ucr.edu>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <202202011802.cpmdbzHR-lkp@intel.com>
+References: <202202011802.cpmdbzHR-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220131192308.608837-4-longman@redhat.com>
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 31-01-22 14:23:07, Waiman Long wrote:
-> It was found that a number of offlined memcgs were not freed because
-> they were pinned by some charged pages that were present. Even "echo
-> 1 > /proc/sys/vm/drop_caches" wasn't able to free those pages. These
-> offlined but not freed memcgs tend to increase in number over time with
-> the side effect that percpu memory consumption as shown in /proc/meminfo
-> also increases over time.
-> 
-> In order to find out more information about those pages that pin
-> offlined memcgs, the page_owner feature is extended to print memory
-> cgroup information especially whether the cgroup is offlined or not.
-> 
-> Signed-off-by: Waiman Long <longman@redhat.com>
-> Acked-by: David Rientjes <rientjes@google.com>
-> ---
->  mm/page_owner.c | 39 +++++++++++++++++++++++++++++++++++++++
->  1 file changed, 39 insertions(+)
-> 
-> diff --git a/mm/page_owner.c b/mm/page_owner.c
-> index 28dac73e0542..a471c74c7fe0 100644
-> --- a/mm/page_owner.c
-> +++ b/mm/page_owner.c
-> @@ -10,6 +10,7 @@
->  #include <linux/migrate.h>
->  #include <linux/stackdepot.h>
->  #include <linux/seq_file.h>
-> +#include <linux/memcontrol.h>
->  #include <linux/sched/clock.h>
->  
->  #include "internal.h"
-> @@ -325,6 +326,42 @@ void pagetypeinfo_showmixedcount_print(struct seq_file *m,
->  	seq_putc(m, '\n');
->  }
->  
-> +#ifdef CONFIG_MEMCG
-> +/*
-> + * Looking for memcg information and print it out
-> + */
-> +static inline void print_page_owner_memcg(char *kbuf, size_t count, int *pret,
-> +					  struct page *page)
-> +{
-> +	unsigned long memcg_data = READ_ONCE(page->memcg_data);
-> +	struct mem_cgroup *memcg;
-> +	bool onlined;
-> +	char name[80];
-> +
-> +	if (!memcg_data)
-> +		return;
-> +
-> +	if (memcg_data & MEMCG_DATA_OBJCGS)
-> +		*pret += scnprintf(kbuf + *pret, count - *pret,
-> +				"Slab cache page\n");
-> +
-> +	memcg = page_memcg_check(page);
-> +	if (!memcg)
-> +		return;
-> +
-> +	onlined = (memcg->css.flags & CSS_ONLINE);
-> +	cgroup_name(memcg->css.cgroup, name, sizeof(name));
-> +	*pret += scnprintf(kbuf + *pret, count - *pret,
-> +			"Charged %sto %smemcg %s\n",
-> +			PageMemcgKmem(page) ? "(via objcg) " : "",
-> +			onlined ? "" : "offlined ",
-> +			name);
+In function do_fb_ioctl(), the "arg" is the type of unsigned long,
+and in "case FBIOBLANK:" this argument is casted into an int before
+passig to fb_blank(). In fb_blank(), the comparision
+if (blank > FB_BLANK_POWERDOWN) would be bypass if the original
+"arg" is a large number, which is possible because it comes from
+the user input. Fix this by adding the check before the function
+call.
 
-I have asked in the previous version already but what makes the memcg
-stable (why it cannot go away and be reallocated for something else)
-while you are trying to get its name?
+Signed-off-by: Yizhuo Zhai <yzhai003@ucr.edu>
+---
+ drivers/video/fbdev/core/fbmem.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/video/fbdev/core/fbmem.c b/drivers/video/fbdev/core/fbmem.c
+index 0fa7ede94fa6..991711bfd647 100644
+--- a/drivers/video/fbdev/core/fbmem.c
++++ b/drivers/video/fbdev/core/fbmem.c
+@@ -1162,6 +1162,8 @@ static long do_fb_ioctl(struct fb_info *info, unsigned int cmd,
+ 	case FBIOBLANK:
+ 		console_lock();
+ 		lock_fb_info(info);
++		if (arg > FB_BLANK_POWERDOWN)
++			arg = FB_BLANK_POWERDOWN;
+ 		ret = fb_blank(info, arg);
+ 		/* might again call into fb_blank */
+ 		fbcon_fb_blanked(info, arg);
 -- 
-Michal Hocko
-SUSE Labs
+2.25.1
+
