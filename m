@@ -2,81 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81A50C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 12:48:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30C3BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 12:56:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238205AbiBAMse (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 07:48:34 -0500
-Received: from maury.uberspace.de ([185.26.156.175]:60888 "EHLO
-        maury.uberspace.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229725AbiBAMsc (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 07:48:32 -0500
-X-Greylist: delayed 400 seconds by postgrey-1.27 at vger.kernel.org; Tue, 01 Feb 2022 07:48:31 EST
-Received: (qmail 12855 invoked by uid 990); 1 Feb 2022 12:41:50 -0000
-Authentication-Results: maury.uberspace.de;
-        auth=pass (plain)
-From:   Joern Koerner <joern.koerner@ijwo.de>
-To:     linux-bluetooth@vger.kernel.org
-Cc:     Joern Koerner <joern.koerner@ijwo.de>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] Bluetooth: btusb: Add support for Edup BT5.1 Class1 Adapter (RTL8761B)
-Date:   Tue,  1 Feb 2022 13:41:34 +0100
-Message-Id: <20220201124134.806135-1-joern.koerner@ijwo.de>
-X-Mailer: git-send-email 2.35.1
+        id S238240AbiBAM4M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 07:56:12 -0500
+Received: from mga06.intel.com ([134.134.136.31]:12032 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229725AbiBAM4I (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 1 Feb 2022 07:56:08 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643720168; x=1675256168;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=F/PNLCQjl3adnb0moLdl49HjekyThZribRW7PYNGG6M=;
+  b=jTxpjFJZfV21oD9kmWI/ClV026VsYsE7Az51CqH6SR/wCg26m646PNDn
+   wHsSjMYY9bvA11r/coZ3cTFZK+uAcT2xyiBWE6Tp0C9TlxdDI1JjNBTRA
+   H+5yQcpcQI/HypWHrzvkyruE7zLt4jB8zupadDq/JvrPiOST4jl8MkLlP
+   z8waRVuhzliiV5m2i1cRYS+tDR7hF/JWzc2zbUI79eCGBllW+OzxQmOHq
+   CIGjXyF7VNAUIbIRnsgh9IRtJAl/VPc4rTtZerIG61DPizir0QqNkNsCA
+   ePVrEQBvTA+XlNNC+0XV428esXigzUUF9Jqt1cageNSPd/0O555PtjuJ/
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10244"; a="308414872"
+X-IronPort-AV: E=Sophos;i="5.88,333,1635231600"; 
+   d="scan'208";a="308414872"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2022 04:55:43 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,333,1635231600"; 
+   d="scan'208";a="771097518"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 01 Feb 2022 04:55:40 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nEsh9-000THa-NR; Tue, 01 Feb 2022 12:55:39 +0000
+Date:   Tue, 1 Feb 2022 20:54:51 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     tangmeng <tangmeng@uniontech.com>, tglx@linutronix.de,
+        mcgrof@kernel.org, keescook@chromium.org, yzaikin@google.com,
+        john.stultz@linaro.org, sboyd@kernel.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        tangmeng <tangmeng@uniontech.com>
+Subject: Re: [PATCH v5] kernel/time: move timer sysctls to its own file
+Message-ID: <202202012006.823BFJHa-lkp@intel.com>
+References: <20220131102214.2284-1-tangmeng@uniontech.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Rspamd-Bar: ++
-X-Rspamd-Report: R_MISSING_CHARSET(0.5) MIME_GOOD(-0.1) MID_CONTAINS_FROM(1) SUSPICIOUS_RECIPS(1.5)
-X-Rspamd-Score: 2.9
-Received: from unknown (HELO unkown) (::1)
-        by maury.uberspace.de (Haraka/2.8.28) with ESMTPSA; Tue, 01 Feb 2022 13:41:50 +0100
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220131102214.2284-1-tangmeng@uniontech.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-$ cat /sys/kernel/debug/usb/devices. T:  Bus=02 Lev=02
- Prnt=02 Port=00 Cnt=01 Dev#=  7 Spd=12   MxCh= 0 D:  Ver= 1.10 Cls=e0(wlcon)
- Sub=01 Prot=01 MxPS=64 #Cfgs=  1 P:  Vendor=2550 ProdID=8761 Rev= 2.00 S: 
- Manufacturer=Realtek S:  Product=Bluetooth Radio S: 
- SerialNumber=00E04C239987 C:* #Ifs= 2 Cfg#= 1 Atr=e0 MxPwr=500mA I:* If#= 0
- Alt= 0 #EPs= 3 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb E:  Ad=81(I)
- Atr=03(Int.) MxPS=  16 Ivl=1ms E:  Ad=02(O) Atr=02(Bulk) MxPS=  64 Ivl=0ms E:
-  Ad=82(I) Atr=02(Bulk) MxPS=  64 Ivl=0ms I:* If#= 1 Alt= 0 #EPs= 2
- Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb E:  Ad=03(O) Atr=01(Isoc) MxPS=   0
- Ivl=1ms E:  Ad=83(I) Atr=01(Isoc) MxPS=   0 Ivl=1ms I:  If#= 1 Alt= 1 #EPs= 2
- Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb E:  Ad=03(O) Atr=01(Isoc) MxPS=   9
- Ivl=1ms E:  Ad=83(I) Atr=01(Isoc) MxPS=   9 Ivl=1ms I:  If#= 1 Alt= 2 #EPs= 2
- Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb E:  Ad=03(O) Atr=01(Isoc) MxPS=  17
- Ivl=1ms E:  Ad=83(I) Atr=01(Isoc) MxPS=  17 Ivl=1ms I:  If#= 1 Alt= 3 #EPs= 2
- Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb E:  Ad=03(O) Atr=01(Isoc) MxPS=  25
- Ivl=1ms E:  Ad=83(I) Atr=01(Isoc) MxPS=  25 Ivl=1ms I:  If#= 1 Alt= 4 #EPs= 2
- Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb E:  Ad=03(O) Atr=01(Isoc) MxPS=  33
- Ivl=1ms E:  Ad=83(I) Atr=01(Isoc) MxPS=  33 Ivl=1ms I:  If#= 1 Alt= 5 #EPs= 2
- Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb E:  Ad=03(O) Atr=01(Isoc) MxPS=  49
- Ivl=1ms E:  Ad=83(I) Atr=01(Isoc) MxPS=  49 Ivl=1ms
+Hi tangmeng,
 
-Signed-off-by: Joern Koerner <joern.koerner@ijwo.de>
+Thank you for the patch! Yet something to improve:
+
+[auto build test ERROR on tip/timers/core]
+[also build test ERROR on linus/master kees/for-next/pstore v5.17-rc2 next-20220131]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/0day-ci/linux/commits/tangmeng/kernel-time-move-timer-sysctls-to-its-own-file/20220131-182433
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git 35e13e9da9afbce13c1d36465504ece4e65f24fe
+config: s390-randconfig-r044-20220131 (https://download.01.org/0day-ci/archive/20220201/202202012006.823BFJHa-lkp@intel.com/config)
+compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 6b1e844b69f15bb7dffaf9365cd2b355d2eb7579)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install s390 cross compiling tool for clang build
+        # apt-get install binutils-s390x-linux-gnu
+        # https://github.com/0day-ci/linux/commit/c54967d83b26ebacf4a1b686c6b659150b73306c
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review tangmeng/kernel-time-move-timer-sysctls-to-its-own-file/20220131-182433
+        git checkout c54967d83b26ebacf4a1b686c6b659150b73306c
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash kernel/time/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   In file included from kernel/time/timer.c:37:
+   In file included from include/linux/tick.h:8:
+   In file included from include/linux/clockchips.h:14:
+   In file included from include/linux/clocksource.h:22:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:464:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __raw_readb(PCI_IOBASE + addr);
+                             ~~~~~~~~~~ ^
+   include/asm-generic/io.h:477:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/big_endian.h:36:59: note: expanded from macro '__le16_to_cpu'
+   #define __le16_to_cpu(x) __swab16((__force __u16)(__le16)(x))
+                                                             ^
+   include/uapi/linux/swab.h:102:54: note: expanded from macro '__swab16'
+   #define __swab16(x) (__u16)__builtin_bswap16((__u16)(x))
+                                                        ^
+   In file included from kernel/time/timer.c:37:
+   In file included from include/linux/tick.h:8:
+   In file included from include/linux/clockchips.h:14:
+   In file included from include/linux/clocksource.h:22:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:490:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/big_endian.h:34:59: note: expanded from macro '__le32_to_cpu'
+   #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
+                                                             ^
+   include/uapi/linux/swab.h:115:54: note: expanded from macro '__swab32'
+   #define __swab32(x) (__u32)__builtin_bswap32((__u32)(x))
+                                                        ^
+   In file included from kernel/time/timer.c:37:
+   In file included from include/linux/tick.h:8:
+   In file included from include/linux/clockchips.h:14:
+   In file included from include/linux/clocksource.h:22:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:501:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writeb(value, PCI_IOBASE + addr);
+                               ~~~~~~~~~~ ^
+   include/asm-generic/io.h:511:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:521:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:609:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsb(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:617:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsw(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:625:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsl(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:634:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesb(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:643:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesw(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:652:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesl(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+>> kernel/time/timer.c:284:2: error: implicit declaration of function 'register_sysctl_init' [-Werror,-Wimplicit-function-declaration]
+           register_sysctl_init("kernel", timer_sysctl);
+           ^
+   12 warnings and 1 error generated.
+
+
+vim +/register_sysctl_init +284 kernel/time/timer.c
+
+   281	
+   282	static int __init timer_sysctl_init(void)
+   283	{
+ > 284		register_sysctl_init("kernel", timer_sysctl);
+   285		return 0;
+   286	}
+   287	__initcall(timer_sysctl_init);
+   288	#endif
+   289	static inline bool is_timers_nohz_active(void)
+   290	{
+   291		return static_branch_unlikely(&timers_nohz_active);
+   292	}
+   293	#else
+   294	static inline bool is_timers_nohz_active(void) { return false; }
+   295	#endif /* NO_HZ_COMMON */
+   296	
+
 ---
- drivers/bluetooth/btusb.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
-index ea72afb7abea..ba467663b79a 100644
---- a/drivers/bluetooth/btusb.c
-+++ b/drivers/bluetooth/btusb.c
-@@ -477,6 +477,8 @@ static const struct usb_device_id blacklist_table[] = {
- 	/* Additional Realtek 8761B Bluetooth devices */
- 	{ USB_DEVICE(0x2357, 0x0604), .driver_info = BTUSB_REALTEK |
- 						     BTUSB_WIDEBAND_SPEECH },
-+	{ USB_DEVICE(0x2550, 0x8761), .driver_info = BTUSB_REALTEK |
-+						     BTUSB_WIDEBAND_SPEECH },
- 
- 	/* Additional Realtek 8761BU Bluetooth devices */
- 	{ USB_DEVICE(0x0b05, 0x190e), .driver_info = BTUSB_REALTEK |
--- 
-2.35.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
