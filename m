@@ -2,81 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2A50C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 14:13:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E046FC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 14:13:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239062AbiBAONC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 09:13:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49508 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235891AbiBAONB (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 09:13:01 -0500
-Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3BD9C061714
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Feb 2022 06:13:00 -0800 (PST)
-Received: by mail-ed1-x543.google.com with SMTP id p7so34512496edc.12
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Feb 2022 06:13:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=szeredi.hu; s=google;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=XyLAKYKv+36v1cINNVMgxYGEEzdg72jpxZMeKa5/b0s=;
-        b=m4QMQeazYsI+lIDAQho/G/Vmu17g+Ws1+rWmwV9GxXnD6Cdkjz2hJwz00ruQRU6cY0
-         6qV4Pjy9OeWupBONX1cBibejcobvXI3USWZov1EJr2X62vTbsL0np2ojN2ylrwc+uja4
-         SB661pV66hpB1PTsyDFWxIFDVilKpmZz1+sds=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=XyLAKYKv+36v1cINNVMgxYGEEzdg72jpxZMeKa5/b0s=;
-        b=xhlSYYScxdKN74+i/eGHAoMDzNeJot0NvgwnyQNT+ELPRbHX/4LOxTq2qshUm1VU6Y
-         VIlOkscGkuqmJGXdqd0P3HIFGE2NGQP1wiQj4oeLGWi1Qwb4Rwk4TT7veYXUfUWQ1rvE
-         VDzNlxIZv9F8N4hIVl5i4pU4l+VWA/lOrrzAHnDKduWhKsY/cnQI+tYprOvwa45vIIke
-         ySEv8xCyc2yOIEVtCRMg0tdHsdTOKT1r2125agJihu6n34/Uo9CMYeNsE2Xdo6YtXcNI
-         5SlJZZ8MNk/+sS+aImQJ6miZiyt9sHEbGEJ7wUFpxqZ6q7CAkuXObZ3eKDfjBxgW4Jfp
-         dvBA==
-X-Gm-Message-State: AOAM531tGz8ybIGJnBdWensfiVkn04o8Con6FfznoNRVdX9NftkxU4bg
-        G4hXbnN1txdlC47NCFmKchZ0Iw==
-X-Google-Smtp-Source: ABdhPJxs8fIY+5a2IIeuav3WjdrGS/bZJ4rtcK1Jjck7TOBkHDNvl4RDgUfkvyXuc0npEJngiWNpHw==
-X-Received: by 2002:a05:6402:1601:: with SMTP id f1mr25269020edv.165.1643724779166;
-        Tue, 01 Feb 2022 06:12:59 -0800 (PST)
-Received: from miu.piliscsaba.redhat.com (catv-178-48-189-3.catv.fixed.vodafone.hu. [178.48.189.3])
-        by smtp.gmail.com with ESMTPSA id s9sm19503596edj.48.2022.02.01.06.12.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Feb 2022 06:12:57 -0800 (PST)
-Date:   Tue, 1 Feb 2022 15:12:55 +0100
-From:   Miklos Szeredi <miklos@szeredi.hu>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-unionfs@vger.kernel.org
-Subject: [GIT PULL] overlayfs fixes for 5.17-rc3
-Message-ID: <Yfk/5lIpC2jC9P7F@miu.piliscsaba.redhat.com>
+        id S239101AbiBAONf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 09:13:35 -0500
+Received: from l2mail1.panix.com ([166.84.1.75]:52128 "EHLO l2mail1.panix.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239107AbiBAONd (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 1 Feb 2022 09:13:33 -0500
+X-Greylist: delayed 1121 seconds by postgrey-1.27 at vger.kernel.org; Tue, 01 Feb 2022 09:13:33 EST
+Received: from mailbackend.panix.com (mailbackend.panix.com [166.84.1.89])
+        by l2mail1.panix.com (Postfix) with ESMTPS id 4Jp5z00Th1zDR0;
+        Tue,  1 Feb 2022 08:54:52 -0500 (EST)
+Received: from xps-7390 (ip98-164-213-246.oc.oc.cox.net [98.164.213.246])
+        by mailbackend.panix.com (Postfix) with ESMTPSA id 4Jp5yw1XQqzmlV;
+        Tue,  1 Feb 2022 08:54:48 -0500 (EST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=panix.com; s=panix;
+        t=1643723690; bh=E6issl2zyMCOgqYdmjLT0TYwLzTN0iwu0A+iPAEXxVE=;
+        h=Date:From:Reply-To:To:cc:Subject:In-Reply-To:References;
+        b=ToZrUXNF6DquvMp8zWq/E7GtURIH7fSRVtU9z6LpWYPLTxKH2lAi4j8SKn9CJXhk1
+         VPB4hS+LSqWG+UpBK7TqTFZb3vFUj9QkzCW4z4f176gsQgLhutmhrKw/JzrHRXfDBB
+         ck63UTL50kq1Jgj0GijIW3cl8ermjvkAPF0WqCs8=
+Date:   Tue, 1 Feb 2022 05:54:47 -0800 (PST)
+From:   "Kenneth R. Crudup" <kenny@panix.com>
+Reply-To: "Kenneth R. Crudup" <kenny@panix.com>
+To:     Vidya Sagar <vidyas@nvidia.com>
+cc:     bhelgaas@google.com, lorenzo.pieralisi@arm.com,
+        hkallweit1@gmail.com, wangxiongfeng2@huawei.com,
+        mika.westerberg@linux.intel.com, kai.heng.feng@canonical.com,
+        chris.packham@alliedtelesis.co.nz, yangyicong@hisilicon.com,
+        treding@nvidia.com, jonathanh@nvidia.com, abhsahu@nvidia.com,
+        sagupta@nvidia.com, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kthota@nvidia.com,
+        mmaddireddy@nvidia.com, sagar.tv@gmail.com,
+        "Kenneth R. Crudup" <kenny@panix.com>
+Subject: Re: [PATCH V1] PCI/ASPM: Save/restore L1SS Capability for
+ suspend/resume
+In-Reply-To: <20220201123536.12962-1-vidyas@nvidia.com>
+Message-ID: <71496f4d-fdd0-d24e-97e3-8739332471f0@panix.com>
+References: <20220201123536.12962-1-vidyas@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
 
-Please pull from:
+On Tue, 1 Feb 2022, Vidya Sagar wrote:
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/mszeredi/vfs.git tags/ovl-fixes-5.17-rc3
+> So,
+> Could you please try this patch on top of linux-next and collect more info?
 
-Fix a regression introduced in v5.15, affecting copy up of files with
-'noatime' or 'sync' attributes to a tmpfs upper layer.
+Sure! Give me a day or so (traveling) and I'll report back.
 
-Thanks,
-Miklos
+	-Kenny
 
----
-Christoph Fritz (1):
-      ovl: fix NULL pointer dereference in copy up warning
-
-Miklos Szeredi (1):
-      ovl: don't fail copy up if no fileattr support on upper
-
----
- fs/overlayfs/copy_up.c | 16 +++++++++++++---
- 1 file changed, 13 insertions(+), 3 deletions(-)
+-- 
+Kenneth R. Crudup / Sr. SW Engineer, Scott County Consulting, Orange County CA
