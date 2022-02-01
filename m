@@ -2,86 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0660FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 12:22:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A665C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 12:23:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237956AbiBAMWU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 07:22:20 -0500
-Received: from foss.arm.com ([217.140.110.172]:36126 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229892AbiBAMWT (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 07:22:19 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0F814113E;
-        Tue,  1 Feb 2022 04:22:19 -0800 (PST)
-Received: from usa.arm.com (e103737-lin.cambridge.arm.com [10.1.197.49])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id CCDC53F73B;
-        Tue,  1 Feb 2022 04:22:17 -0800 (PST)
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Sudeep Holla <sudeep.holla@arm.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Mike Leach <mike.leach@linaro.org>,
-        Leo Yan <leo.yan@linaro.org>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        coresight@lists.linaro.org
-Subject: [PATCH] coresight: trbe: Move check for kernelspace unmapped at EL0 to probe
-Date:   Tue,  1 Feb 2022 12:22:12 +0000
-Message-Id: <20220201122212.3009461-1-sudeep.holla@arm.com>
-X-Mailer: git-send-email 2.25.1
+        id S237966AbiBAMXI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 07:23:08 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:52758 "EHLO
+        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229892AbiBAMXG (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 1 Feb 2022 07:23:06 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 98BABCE180E;
+        Tue,  1 Feb 2022 12:23:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1798FC340EE;
+        Tue,  1 Feb 2022 12:22:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643718180;
+        bh=Xn1NaOZeL2KYasB+5TrvzSGa5oNuP13JS2EpilRaenc=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=ci04/5wV3mVvdTf9b2/rpwEh/dfHzJ4kqorC89/systczkUhKJAvupkUkRg11tucw
+         p1RaA8E9kJ9ax1Rr/khzQQzP5eA4Ua1vX4EEcpqRKUHkTm9aX2UM8OCEXlgDGHHcGb
+         Yu6U+DUA2pqDecDQuONHZxt+PYSZTpNuS9NellT+HAWdDDiiB/+srbwiaIdZHQIBH+
+         QE9dAqGwPNNYGmaqtFHUhxkWXMhMxTEkjBXlw3A22ypLlxtlJg1NB75xBlHR0ujAal
+         sf2WH+SMq8EONEl6QdwgdxI/iJMBAHDpBx7iDGb2FCulMXWcxx2WD0GCuk7NO+Gx/v
+         rjnEyynO62WNQ==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Pkshih <pkshih@realtek.com>
+Cc:     "linux-wireless\@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "colin.i.king\@gmail.com" <colin.i.king@gmail.com>,
+        "davem\@davemloft.net" <davem@davemloft.net>,
+        "kuba\@kernel.org" <kuba@kernel.org>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kernel-janitors\@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
+        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] rtlwifi: remove redundant initialization of variable ul_encalgo
+References: <20220130223714.6999-1-colin.i.king@gmail.com>
+        <55f8c7f2c75b18cd628d02a25ed96fae676eace2.camel@realtek.com>
+Date:   Tue, 01 Feb 2022 14:22:57 +0200
+In-Reply-To: <55f8c7f2c75b18cd628d02a25ed96fae676eace2.camel@realtek.com>
+        (Pkshih's message of "Mon, 31 Jan 2022 02:53:40 +0000")
+Message-ID: <87pmo6dbdq.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently with the check present in the module initialisation, it shouts
-on all the systems irrespective of presence of coresight trace buffer
-extensions.
+Pkshih <pkshih@realtek.com> writes:
 
-Similar to Arm SPE perf driver, move the check for kernelspace unmapping
-when running at EL0 to the device probe instead of module initialisation.
+> On Sun, 2022-01-30 at 22:37 +0000, Colin Ian King wrote:
+>> Variable ul_encalgo is initialized with a value that is never read,
+>> it is being re-assigned a new value in every case in the following
+>> switch statement. The initialization is redundant and can be removed.
+>> 
+>> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+>
+> Acked-by: Ping-Ke Shih <pkshih@realtek.com>
+>
+>> ---
+>>  drivers/net/wireless/realtek/rtlwifi/cam.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>> 
+>> diff --git a/drivers/net/wireless/realtek/rtlwifi/cam.c
+>> b/drivers/net/wireless/realtek/rtlwifi/cam.c
+>> index 7a0355dc6bab..32970ea4b4e7 100644
+>> --- a/drivers/net/wireless/realtek/rtlwifi/cam.c
+>> +++ b/drivers/net/wireless/realtek/rtlwifi/cam.c
+>> @@ -208,7 +208,7 @@ void rtl_cam_empty_entry(struct ieee80211_hw *hw, u8 uc_index)
+>>  
+>>  	u32 ul_command;
+>>  	u32 ul_content;
+>> -	u32 ul_encalgo = rtlpriv->cfg->maps[SEC_CAM_AES];
+>> +	u32 ul_encalgo;
+>>  	u8 entry_i;
+>>  
+>>  	switch (rtlpriv->sec.pairwise_enc_algorithm) {
+>> -- 
+>
+> When I check this patch, I find there is no 'break' for default case.
+> Do we need one? like
+>
+> @@ -226,6 +226,7 @@ void rtl_cam_empty_entry(struct ieee80211_hw *hw, u8 uc_index)
+>                 break;
+>         default:
+>                 ul_encalgo = rtlpriv->cfg->maps[SEC_CAM_AES];
+> +               break;
+>         }
+>  
+>         for (entry_i = 0; entry_i < CAM_CONTENT_COUNT; entry_i++) {
 
-Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
-Cc: Suzuki K Poulose <suzuki.poulose@arm.com>
-Cc: Mike Leach <mike.leach@linaro.org>
-Cc: Leo Yan <leo.yan@linaro.org>
-Cc: Anshuman Khandual <anshuman.khandual@arm.com>
-Cc: coresight@lists.linaro.org
-Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
----
- drivers/hwtracing/coresight/coresight-trbe.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+Yeah, it would be good to have break for consistency. Can someone send a
+separate patch for that?
 
-diff --git a/drivers/hwtracing/coresight/coresight-trbe.c b/drivers/hwtracing/coresight/coresight-trbe.c
-index 276862c07e32..3fe2ce1ba5bf 100644
---- a/drivers/hwtracing/coresight/coresight-trbe.c
-+++ b/drivers/hwtracing/coresight/coresight-trbe.c
-@@ -1423,6 +1423,11 @@ static int arm_trbe_device_probe(struct platform_device *pdev)
- 	struct device *dev = &pdev->dev;
- 	int ret;
- 
-+	if (arm64_kernel_unmapped_at_el0()) {
-+		pr_err("TRBE wouldn't work if kernel gets unmapped at EL0\n");
-+		return -EOPNOTSUPP;
-+	}
-+
- 	drvdata = devm_kzalloc(dev, sizeof(*drvdata), GFP_KERNEL);
- 	if (!drvdata)
- 		return -ENOMEM;
-@@ -1484,11 +1489,6 @@ static int __init arm_trbe_init(void)
- {
- 	int ret;
- 
--	if (arm64_kernel_unmapped_at_el0()) {
--		pr_err("TRBE wouldn't work if kernel gets unmapped at EL0\n");
--		return -EOPNOTSUPP;
--	}
--
- 	ret = platform_driver_register(&arm_trbe_driver);
- 	if (!ret)
- 		return 0;
 -- 
-2.25.1
+https://patchwork.kernel.org/project/linux-wireless/list/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
