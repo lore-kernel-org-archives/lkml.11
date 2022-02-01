@@ -2,88 +2,208 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34904C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 19:23:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BA3EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 19:24:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242245AbiBATXz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 14:23:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37902 "EHLO
+        id S242331AbiBATYy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 14:24:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231995AbiBATXx (ORCPT
+        with ESMTP id S242278AbiBATYx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 14:23:53 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AAD0C061714;
-        Tue,  1 Feb 2022 11:23:53 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F35C3B82F75;
-        Tue,  1 Feb 2022 19:23:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3B1EC340EB;
-        Tue,  1 Feb 2022 19:23:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643743430;
-        bh=M3qrhQDIRqxRScO7LGC1gbR291jPdGWv35tPpFU2rdo=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=Vi/CLqPBGOIyB3svBAwiwk5US1d7ONryE0jzvt2QceYCMycKkPHuocMzzsO3xjmyT
-         GOQzEEct0lOq6QsJAgu4oBa1fTjuG3J83U3L0oHcYmREHhBJgV2CVmdg6uf+/w2g3B
-         lsZTD3eEqOavWXe7mtfqbzy9iDtwOz0xvxp5GEZAecKuW+uu6FL+VcHCmX2ES59i6O
-         RhAxJ7gqvNoGoD3nMNA0rd+bxBgo6t4xLaKrr4ULOgAncA4v/5Mn++q001+kMsRYEq
-         QeOrgKPqQuzl5F9tVDrxkLcDOt2De0YK0jPfh0bpCG0KV7d3BKi9LR8rOfne8D37WZ
-         JJFuZUE0P2vHg==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 80AF55C0326; Tue,  1 Feb 2022 11:23:50 -0800 (PST)
-Date:   Tue, 1 Feb 2022 11:23:50 -0800
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Cc:     jiangshanlai@gmail.com, josh@joshtriplett.org, rostedt@goodmis.org,
-        mathieu.desnoyers@efficios.com, rcu@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
-Subject: Re: [PATCH] srcu: make srcu_size_state_name static
-Message-ID: <20220201192350.GE4285@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20220129034502.73912-1-jiapeng.chong@linux.alibaba.com>
+        Tue, 1 Feb 2022 14:24:53 -0500
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28E55C061714;
+        Tue,  1 Feb 2022 11:24:53 -0800 (PST)
+Received: by mail-pf1-x435.google.com with SMTP id v74so16775655pfc.1;
+        Tue, 01 Feb 2022 11:24:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=WtH7J3WjmpcbZAmRlDiPtipYhiaSIsPLmtCwtZTQaEg=;
+        b=fISu+HkAuf2TIGFzCTkNccdPeeMZDiwM8MEL7h1vd3cz9tNXhx297rf37ArL2vRaNu
+         Dn0EDiHRycMoL8bX/iTXeoza8FQrwaDRyOgOx9d1a+9V0D5y1/MuNoMAYqfI6dDDvHnE
+         SZki9pHC8doyCKPuI4SeHAgsLpfDmW3ytPwmwdd8mduOnySDIYdolsD+mVMVD/djYoas
+         oD6i8ujIc6dU5ZpIu4ZvLp7M3j0I9eKBtAOqvVqmt16rYzmcoLL7nXheEsA7X+dvWoOy
+         4BrbNSFaxsNqBUgpmA70I81v8YEv1l+ywXjj4FrZcf6pZUI4wyOGaynFWokpm1e/zeSX
+         9nVQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=WtH7J3WjmpcbZAmRlDiPtipYhiaSIsPLmtCwtZTQaEg=;
+        b=ytMov5feBQmwETESaYbLAXmN1MxD1DMuH4GsYooMIOA3Nu8I+W9zUjqHgu82aLrLiG
+         DKDIA6AGAyqujTw+Aa9qfPiaPU15h6GaV4PI33fXzmFMxeqN90LqOxqAEq7DqhQ9CT3D
+         1eBZ5ew6a94+AHPkfhEcX9RcncN3qQHjin6tf2f6I3XWQwI9LTeriSzdheDjyxK368cm
+         LXESCH0BmI5jlpQwjg+JryNlALIj92qLRxWEg3LttH8BoA9Ha7dHy032Kl4dB+/eHhq8
+         mrxIAknDhfc8bhCQKBkh92mefsuO7F06zhWN30Gi4XkJPcLGB1kw6o3gQqkRg14gKWHP
+         WZBg==
+X-Gm-Message-State: AOAM531tFmF91fZpfZ40Cn2l3aWUMcc/1I5i7o5IcA3XhRSdvjZz/RDR
+        EtW/u9bV5AK0H+PqavTGIxM=
+X-Google-Smtp-Source: ABdhPJztbYfkU+KttE8wtn650VxT8mj072Kn+nowKQeuvZyet6ZgN7WG6P6mqBVmuYIMdgqBVnIfCw==
+X-Received: by 2002:a05:6a00:2cf:: with SMTP id b15mr12530341pft.0.1643743492539;
+        Tue, 01 Feb 2022 11:24:52 -0800 (PST)
+Received: from [10.230.2.88] ([192.19.161.250])
+        by smtp.gmail.com with ESMTPSA id mi18sm3531329pjb.35.2022.02.01.11.24.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 01 Feb 2022 11:24:51 -0800 (PST)
+Message-ID: <412a456d-7294-a124-8a01-f052915348b4@gmail.com>
+Date:   Tue, 1 Feb 2022 11:24:49 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220129034502.73912-1-jiapeng.chong@linux.alibaba.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] serial: 8250_bcm2835aux: Add ACPI support
+Content-Language: en-US
+To:     Adrien Thierry <athierry@redhat.com>, linux-serial@vger.kernel.org,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Jeremy Linton <jeremy.linton@arm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        bcm-kernel-feedback-list@broadcom.com
+References: <20220201185001.926338-1-athierry@redhat.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220201185001.926338-1-athierry@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jan 29, 2022 at 11:45:02AM +0800, Jiapeng Chong wrote:
-> This symbol is not used outside of srcutree.c, so marks it static.
-> 
-> Fixes the following sparse warning:
-> 
-> kernel/rcu/srcutree.c:1426:12: warning: symbol 'srcu_size_state_name'
-> was not declared. Should it be static?
-> 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 
-And I did queue and push this, good catch, thank you!
 
-							Thanx, Paul
-
+On 2/1/2022 10:50 AM, Adrien Thierry wrote:
+> Add ACPI support to 8250_bcm2835aux driver. This makes it possible to
+> use the miniuart on the Raspberry Pi with the tianocore/edk2 UEFI
+> firmware.
+> 
+> Signed-off-by: Adrien Thierry <athierry@redhat.com>
 > ---
->  kernel/rcu/srcutree.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>   drivers/tty/serial/8250/8250_bcm2835aux.c | 103 +++++++++++++++++-----
+>   1 file changed, 83 insertions(+), 20 deletions(-)
 > 
-> diff --git a/kernel/rcu/srcutree.c b/kernel/rcu/srcutree.c
-> index 4201815744d8..31dbd41332f6 100644
-> --- a/kernel/rcu/srcutree.c
-> +++ b/kernel/rcu/srcutree.c
-> @@ -1423,7 +1423,7 @@ void srcutorture_get_gp_data(enum rcutorture_type test_type,
->  }
->  EXPORT_SYMBOL_GPL(srcutorture_get_gp_data);
->  
-> -const char * const srcu_size_state_name[] =
-> +static const char * const srcu_size_state_name[] =
->  {
->  	"SRCU_SIZE_SMALL",
->  	"SRCU_SIZE_ALLOC",
-> -- 
-> 2.20.1.7.g153144c
-> 
+> diff --git a/drivers/tty/serial/8250/8250_bcm2835aux.c b/drivers/tty/serial/8250/8250_bcm2835aux.c
+> index fd95860cd..b904b321e 100644
+> --- a/drivers/tty/serial/8250/8250_bcm2835aux.c
+> +++ b/drivers/tty/serial/8250/8250_bcm2835aux.c
+> @@ -12,6 +12,7 @@
+>    * simultaneously to rs485.
+>    */
+>   
+> +#include <linux/acpi.h>
+>   #include <linux/clk.h>
+>   #include <linux/io.h>
+>   #include <linux/module.h>
+> @@ -44,6 +45,10 @@ struct bcm2835aux_data {
+>   	u32 cntl;
+>   };
+>   
+> +struct bcm2835_aux_serial_acpi_driver_data {
+> +	resource_size_t offset;
+> +};
+> +
+>   static void bcm2835aux_rs485_start_tx(struct uart_8250_port *up)
+>   {
+>   	if (!(up->port.rs485.flags & SER_RS485_RX_DURING_TX)) {
+> @@ -82,8 +87,12 @@ static int bcm2835aux_serial_probe(struct platform_device *pdev)
+>   {
+>   	struct uart_8250_port up = { };
+>   	struct bcm2835aux_data *data;
+> +	struct bcm2835_aux_serial_acpi_driver_data *acpi_data;
+>   	struct resource *res;
+>   	int ret;
+> +	resource_size_t mapbase;
+> +	resource_size_t mapsize;
+> +	unsigned int uartclk;
+>   
+>   	/* allocate the custom structure */
+>   	data = devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
+> @@ -108,10 +117,12 @@ static int bcm2835aux_serial_probe(struct platform_device *pdev)
+>   
+>   	platform_set_drvdata(pdev, data);
+>   
+> -	/* get the clock - this also enables the HW */
+> -	data->clk = devm_clk_get(&pdev->dev, NULL);
+> -	if (IS_ERR(data->clk))
+> -		return dev_err_probe(&pdev->dev, PTR_ERR(data->clk), "could not get clk\n");
+> +	if (dev_of_node(&pdev->dev)) {
+> +		/* get the clock - this also enables the HW */
+> +		data->clk = devm_clk_get(&pdev->dev, NULL);
+> +		if (IS_ERR(data->clk))
+> +			return dev_err_probe(&pdev->dev, PTR_ERR(data->clk), "could not get clk\n");
+> +	}
+
+This does not seem necessary, if the clk is NULL when probed via ACPI, 
+all of the clk_* APIs will deal with that gracefully. If you need not to 
+treat -ENOENT as a hard error here, consider switching to 
+devm_clk_get_optional(). Given that you look at the 'clock-frequency' 
+property, you can still have some generic code, something like:
+
+	if (IS_ERR(data->clk)) {
+		ret = device_property_read_u32(&pdev->dev, "clock-frequency", &uartclk);
+		if (ret)
+			return dev_err_probe(&pdev->dev, ret, "could not get clk\n");
+	}
+
+>   
+>   	/* get the interrupt */
+>   	ret = platform_get_irq(pdev, 0);
+> @@ -125,20 +136,59 @@ static int bcm2835aux_serial_probe(struct platform_device *pdev)
+>   		dev_err(&pdev->dev, "memory resource not found");
+>   		return -EINVAL;
+>   	}
+> -	up.port.mapbase = res->start;
+> -	up.port.mapsize = resource_size(res);
+> -
+> -	/* Check for a fixed line number */
+> -	ret = of_alias_get_id(pdev->dev.of_node, "serial");
+> -	if (ret >= 0)
+> -		up.port.line = ret;
+> -
+> -	/* enable the clock as a last step */
+> -	ret = clk_prepare_enable(data->clk);
+> -	if (ret) {
+> -		dev_err(&pdev->dev, "unable to enable uart clock - %d\n",
+> -			ret);
+> -		return ret;
+
+All of that path can be common, and you can just define an offset to 
+apply to the resource at the top after you fetched the memory resource. 
+The offset will be non-0 for ACPI and 0 for non-ACPI. That is, no need 
+for the intermediate variables and conditional paths whether this is 
+ACPI apply this offset, or not.
+
+> +
+> +	mapbase = res->start;
+> +	mapsize = resource_size(res);
+> +
+> +	if (has_acpi_companion(&pdev->dev)) {
+> +		const struct acpi_device_id *match;
+> +
+> +		match = acpi_match_device(pdev->dev.driver->acpi_match_table, &pdev->dev);
+> +		if (!match)
+> +			return -ENODEV;
+> +
+> +		acpi_data = (struct bcm2835_aux_serial_acpi_driver_data *)match->driver_data;
+> +
+> +		/* Some UEFI implementations (e.g. tianocore/edk2 for the Raspberry Pi)
+> +		 * describe the miniuart with a base address that encompasses the auxiliary
+> +		 * registers shared between the miniuart and spi.
+> +		 *
+> +		 * This is due to historical reasons, see discussion here :
+> +		 * https://edk2.groups.io/g/devel/topic/87501357#84349
+> +		 *
+> +		 * We need to add the offset between the miniuart and auxiliary
+> +		 * registers to get the real miniuart base address.
+
+And ACPI on the Pi4 is so widely deployed that fixing the miniuart 
+resources is not an option at all? This really really continues to 
+contribute to my impression that ACPI on the Pi4 is a fad more than a 
+real thing, sorry.
+-- 
+Florian
