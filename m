@@ -2,117 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61754C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 20:36:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2806C43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 20:38:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239716AbiBAUg4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 15:36:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54718 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229702AbiBAUgy (ORCPT
+        id S239494AbiBAUiJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 15:38:09 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:38754 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229702AbiBAUiI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 15:36:54 -0500
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ACC2C061714;
-        Tue,  1 Feb 2022 12:36:54 -0800 (PST)
-Received: by mail-yb1-xb2c.google.com with SMTP id m6so54537987ybc.9;
-        Tue, 01 Feb 2022 12:36:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rZxEgavNJow8Wx0FFzJL3BlfXa9k3Uaoz0LEpPT/Na8=;
-        b=W9m3HNwIynnZZuxdZJrhkpLAffoabuD+cuHhvdadf1SwtuL77onC69MyYQy796bar0
-         jU3Bv+9nxwMtNkVIr5bqLwFshq64m12LXIyrjgzeG3Zqa0QxnaUwHtOzYZkLmEpZNCzl
-         0or7HwUhawHHRvrYnUf2GQrqe95a/XHnh1sApPrUAUIhVlayB7YTGxKPhoTbDvoS7OAZ
-         M73YEVxYQ+KQlRZ2rUD5+vrSOfB4RUXDs9EMXi4poMoAPp3imExY+sNvD+jFlZLq62uq
-         HaFbcGZ16HbzopdgYglvZXj6w9KBmFH7Q26IyNkXQD18/47o4ms1p7tCFtxmcCuPv5VZ
-         z9GQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rZxEgavNJow8Wx0FFzJL3BlfXa9k3Uaoz0LEpPT/Na8=;
-        b=leT28kk34LRBLV0UyVvYw04CWKtOL2jnikPPE09DdJl36K/RHzZQO1dM4ZEBAnU2QZ
-         RyUJdYER7GAZE1RFv3Q4ztl1r+HKRdVm1Vyk57Yev23ZRWP6qSA0TQhgtKpX0eDWrf2I
-         eS+0Wpbw1a8Bh2a4Y/ju7Cg+FIWv8WW4mUnJrAXfgGwUvN6T/ZrE3DlvNy9nBXLRbTMC
-         FzwWrM9T18SaeMPnvknLKVen8cu4GMKsYARWU8qVYmga99GmZG6x2Rcl7o3B5GiuZf+P
-         BbG8Bm35/vxLNp42NdTN/F9Lqf4d9t3XApI2NKZtdxfdaHdA7R9hbLpXec2vVqn1waml
-         rM6g==
-X-Gm-Message-State: AOAM531lNqJBZJU2g6Hmdn8y9hxJIKMhrU9gdfTbdacRMCY5J7VSm9/o
-        N3VsY3ji0aHnptXyHn8MQg1YqX5RuIBqIcr/dq8=
-X-Google-Smtp-Source: ABdhPJwpJcz7TCycL5dQTokUujprw8bBkzQUm61YUsFx7YYCZYK3oX3Sr+XLfQO/W39IuT6ugFxe7azVa8JS0WET0LE=
-X-Received: by 2002:a05:6902:725:: with SMTP id l5mr38545588ybt.351.1643747813529;
- Tue, 01 Feb 2022 12:36:53 -0800 (PST)
+        Tue, 1 Feb 2022 15:38:08 -0500
+Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 211JwVPa018706;
+        Tue, 1 Feb 2022 20:37:52 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=sKn3Zrhn5pU+AWVwEV5L2PFABRfRh7gUr7jWXdzpLN4=;
+ b=PkU4zWG8b72gP4ac2M3k3r6r65aYy0AeY4dAwsy4Oc90ksF2sIdimaHh3Tv++UCdM4Wk
+ NCF8qI95RCmKakzpBVaI8M8mQ6ZKgDidltAwk57lEjfzexg6tTLTj8k3YEPOi253ybPg
+ cDiVCkG2KRtONTcYKf7sI5HL1QjxCsEzUC1bS9IcC/TuflYnghT6ub4zzjp6PVL2FNrR
+ n7jBoStaP/b8+Ur/GMnvVEPiASlgUwNEA9r1z7QBjT53lywI2sJ7YAsoIeh8Yu8B/0kX
+ 9Ym7iQMAMpMtAlvf++wmTLMlMhRZ5XDpX9XJeNEr0OHYLT+gz82wx5Pxo+Nk3jXaeiHu Pw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dybg90pgf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 01 Feb 2022 20:37:52 +0000
+Received: from m0098393.ppops.net (m0098393.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 211K1TVZ002963;
+        Tue, 1 Feb 2022 20:37:52 GMT
+Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dybg90pg1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 01 Feb 2022 20:37:51 +0000
+Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
+        by ppma01dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 211KWfmI027307;
+        Tue, 1 Feb 2022 20:37:50 GMT
+Received: from b01cxnp22033.gho.pok.ibm.com (b01cxnp22033.gho.pok.ibm.com [9.57.198.23])
+        by ppma01dal.us.ibm.com with ESMTP id 3dvw7bq19e-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 01 Feb 2022 20:37:50 +0000
+Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
+        by b01cxnp22033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 211Kbnsl32178664
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 1 Feb 2022 20:37:49 GMT
+Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7A7D8B206B;
+        Tue,  1 Feb 2022 20:37:49 +0000 (GMT)
+Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5AF24B2068;
+        Tue,  1 Feb 2022 20:37:49 +0000 (GMT)
+Received: from sbct-3.pok.ibm.com (unknown [9.47.158.153])
+        by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
+        Tue,  1 Feb 2022 20:37:49 +0000 (GMT)
+From:   Stefan Berger <stefanb@linux.ibm.com>
+To:     linux-integrity@vger.kernel.org
+Cc:     zohar@linux.ibm.com, serge@hallyn.com,
+        christian.brauner@ubuntu.com, containers@lists.linux.dev,
+        dmitry.kasatkin@gmail.com, ebiederm@xmission.com,
+        krzysztof.struczynski@huawei.com, roberto.sassu@huawei.com,
+        mpeters@redhat.com, lhinds@redhat.com, lsturman@redhat.com,
+        puiterwi@redhat.com, jejb@linux.ibm.com, jamjoom@us.ibm.com,
+        linux-kernel@vger.kernel.org, paul@paul-moore.com, rgb@redhat.com,
+        linux-security-module@vger.kernel.org, jmorris@namei.org,
+        Stefan Berger <stefanb@linux.ibm.com>
+Subject: [PATCH v10 03/27] ima: Return error code obtained from securityfs functions
+Date:   Tue,  1 Feb 2022 15:37:11 -0500
+Message-Id: <20220201203735.164593-4-stefanb@linux.ibm.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220201203735.164593-1-stefanb@linux.ibm.com>
+References: <20220201203735.164593-1-stefanb@linux.ibm.com>
 MIME-Version: 1.0
-References: <20220118075033.925388-1-chi.minghao@zte.com.cn> <91565226-5134-45FC-A68F-0E98854227AC@holtmann.org>
-In-Reply-To: <91565226-5134-45FC-A68F-0E98854227AC@holtmann.org>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Tue, 1 Feb 2022 12:36:43 -0800
-Message-ID: <CABBYNZJh4yx+VAhU+KpeTid+4Reojp2OfDRQYjKXsoPmnKeZLg@mail.gmail.com>
-Subject: Re: [PATCH] net/bluetooth: remove unneeded err variable
-To:     Marcel Holtmann <marcel@holtmann.org>
-Cc:     cgel.zte@gmail.com, Johan Hedberg <johan.hedberg@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: CgssiU8lR-FHeyyynfqn10q829_VQhKf
+X-Proofpoint-GUID: Vm-GJPkiK-37AWsA0K8L-dX9uFynf8xy
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-01_09,2022-02-01_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ lowpriorityscore=0 suspectscore=0 malwarescore=0 clxscore=1015
+ impostorscore=0 adultscore=0 phishscore=0 mlxlogscore=999 mlxscore=0
+ bulkscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202010114
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+If an error occurs when creating a securityfs file, return the exact
+error code to the caller.
 
-On Wed, Jan 19, 2022 at 11:34 AM Marcel Holtmann <marcel@holtmann.org> wrote:
->
-> Hi Minghao,
->
-> > Return value from mgmt_cmd_complete() directly instead
-> > of taking this in another redundant variable.
->
-> the Bluetooth subsystem uses Bluetooth: as subject prefix.
->
-> > Reported-by: Zeal Robot <zealci@zte.com.cn>
-> > Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
-> > Signed-off-by: CGEL ZTE <cgel.zte@gmail.com>
-> > ---
-> > net/bluetooth/mgmt.c | 5 +----
-> > 1 file changed, 1 insertion(+), 4 deletions(-)
-> >
-> > diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-> > index 37087cf7dc5a..d0804648da32 100644
-> > --- a/net/bluetooth/mgmt.c
-> > +++ b/net/bluetooth/mgmt.c
-> > @@ -8601,7 +8601,6 @@ static int get_adv_size_info(struct sock *sk, struct hci_dev *hdev,
-> >       struct mgmt_cp_get_adv_size_info *cp = data;
-> >       struct mgmt_rp_get_adv_size_info rp;
-> >       u32 flags, supported_flags;
-> > -     int err;
-> >
-> >       bt_dev_dbg(hdev, "sock %p", sk);
-> >
-> > @@ -8628,10 +8627,8 @@ static int get_adv_size_info(struct sock *sk, struct hci_dev *hdev,
-> >       rp.max_adv_data_len = tlv_data_max_len(hdev, flags, true);
-> >       rp.max_scan_rsp_len = tlv_data_max_len(hdev, flags, false);
-> >
-> > -     err = mgmt_cmd_complete(sk, hdev->id, MGMT_OP_GET_ADV_SIZE_INFO,
-> > +     return mgmt_cmd_complete(sk, hdev->id, MGMT_OP_GET_ADV_SIZE_INFO,
-> >                               MGMT_STATUS_SUCCESS, &rp, sizeof(rp));
-> > -
-> > -     return err;
-> > }
->
-> You also have a coding style error here in your indentation.
->
-> Regards
->
-> Marcel
+Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
+---
+ security/integrity/ima/ima_fs.c | 31 +++++++++++++++++++++++--------
+ 1 file changed, 23 insertions(+), 8 deletions(-)
 
-Applied, after fixing the coding style and commit message, thanks.
-
+diff --git a/security/integrity/ima/ima_fs.c b/security/integrity/ima/ima_fs.c
+index 3ad8f7734208..cd1683dad3bf 100644
+--- a/security/integrity/ima/ima_fs.c
++++ b/security/integrity/ima/ima_fs.c
+@@ -452,47 +452,61 @@ static const struct file_operations ima_measure_policy_ops = {
+ 
+ int __init ima_fs_init(void)
+ {
++	int ret;
++
+ 	ima_dir = securityfs_create_dir("ima", integrity_dir);
+ 	if (IS_ERR(ima_dir))
+-		return -1;
++		return PTR_ERR(ima_dir);
+ 
+ 	ima_symlink = securityfs_create_symlink("ima", NULL, "integrity/ima",
+ 						NULL);
+-	if (IS_ERR(ima_symlink))
++	if (IS_ERR(ima_symlink)) {
++		ret = PTR_ERR(ima_symlink);
+ 		goto out;
++	}
+ 
+ 	binary_runtime_measurements =
+ 	    securityfs_create_file("binary_runtime_measurements",
+ 				   S_IRUSR | S_IRGRP, ima_dir, NULL,
+ 				   &ima_measurements_ops);
+-	if (IS_ERR(binary_runtime_measurements))
++	if (IS_ERR(binary_runtime_measurements)) {
++		ret = PTR_ERR(binary_runtime_measurements);
+ 		goto out;
++	}
+ 
+ 	ascii_runtime_measurements =
+ 	    securityfs_create_file("ascii_runtime_measurements",
+ 				   S_IRUSR | S_IRGRP, ima_dir, NULL,
+ 				   &ima_ascii_measurements_ops);
+-	if (IS_ERR(ascii_runtime_measurements))
++	if (IS_ERR(ascii_runtime_measurements)) {
++		ret = PTR_ERR(ascii_runtime_measurements);
+ 		goto out;
++	}
+ 
+ 	runtime_measurements_count =
+ 	    securityfs_create_file("runtime_measurements_count",
+ 				   S_IRUSR | S_IRGRP, ima_dir, NULL,
+ 				   &ima_measurements_count_ops);
+-	if (IS_ERR(runtime_measurements_count))
++	if (IS_ERR(runtime_measurements_count)) {
++		ret = PTR_ERR(runtime_measurements_count);
+ 		goto out;
++	}
+ 
+ 	violations =
+ 	    securityfs_create_file("violations", S_IRUSR | S_IRGRP,
+ 				   ima_dir, NULL, &ima_htable_violations_ops);
+-	if (IS_ERR(violations))
++	if (IS_ERR(violations)) {
++		ret = PTR_ERR(violations);
+ 		goto out;
++	}
+ 
+ 	ima_policy = securityfs_create_file("policy", POLICY_FILE_FLAGS,
+ 					    ima_dir, NULL,
+ 					    &ima_measure_policy_ops);
+-	if (IS_ERR(ima_policy))
++	if (IS_ERR(ima_policy)) {
++		ret = PTR_ERR(ima_policy);
+ 		goto out;
++	}
+ 
+ 	return 0;
+ out:
+@@ -503,5 +517,6 @@ int __init ima_fs_init(void)
+ 	securityfs_remove(binary_runtime_measurements);
+ 	securityfs_remove(ima_symlink);
+ 	securityfs_remove(ima_dir);
+-	return -1;
++
++	return ret;
+ }
 -- 
-Luiz Augusto von Dentz
+2.31.1
+
