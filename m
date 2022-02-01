@@ -2,322 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7ADAC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 14:49:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30B9DC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 14:52:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239457AbiBAOtt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 09:49:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58012 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239444AbiBAOts (ORCPT
+        id S239470AbiBAOwv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 09:52:51 -0500
+Received: from mail-yb1-f181.google.com ([209.85.219.181]:44629 "EHLO
+        mail-yb1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236688AbiBAOwu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 09:49:48 -0500
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B59EC06173B
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Feb 2022 06:49:48 -0800 (PST)
-Received: by mail-wr1-x430.google.com with SMTP id v13so32451032wrv.10
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Feb 2022 06:49:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dXIFXBL1STx981dzFcr2zeZBlB5xjBaW3oXYG7W4lV4=;
-        b=Usdj4k+OPKhLvVQuCQFiJO3TvaUqsW+6Eo1neLhONt4XnvyAGX6L5JKYdxm8xSBso0
-         WO2Pb1p12eDQeaBysRQkRAuKisRgjr/HE8WV5NKfe/JFvzn+vGGRa7/3Xqv94bQnhECm
-         zbWucnNvnWf5yXFv5BtXyoW86PluW0T9MGJDVWaJokdwU6YbOI/mFuUQNWRqkNQkhZVB
-         /5W38H0rddEIN+KH4OHV+psgMrTOSI4BldAm+McIY69nWutChNQWajytiDSCYrDgB9Ig
-         xx3WNuWcpwhTPE2gGJlOibrOVSCa1EfDNL6L3iqBaj76kFOv4Nqqx4DTxdcOaw2Zx7CB
-         eDNg==
+        Tue, 1 Feb 2022 09:52:50 -0500
+Received: by mail-yb1-f181.google.com with SMTP id r65so51605829ybc.11;
+        Tue, 01 Feb 2022 06:52:50 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dXIFXBL1STx981dzFcr2zeZBlB5xjBaW3oXYG7W4lV4=;
-        b=rVJIVOTHNC6f/OgY29vc6BXip/RFDVgigdS1A2b3L3cHBsN010d7f3KgwKO/4/Jql/
-         9bdGU4udeoQUF980+P/UR5/+2aqrD1FR34LPy9JPY5oTdlEfbJ8Ye2Xgo4OKLwNir8Vf
-         V8fN2RLxLlkG3Bd7QuLKG+LeADgsTjlNK6DGqRhCe5HSND4zY2p41cNUUtId+iL+Csbh
-         cVuKfyZ5NVDDGq0ZACeRypC5vdrE+j8XQ6DWcoK/2OrlTWnouPVbNQAq1kvBZGnbjplL
-         hXex423ZytZwjxJdKV2badmMb4TDxrTo6y4wuuovqgZ46EyItUhZQu/tg1jbIwNTpLJu
-         3heA==
-X-Gm-Message-State: AOAM531D6NypZmAIghn11H2RxdWOQbzymATpHQ1DB52R84Y9n4VEMfGj
-        7q/yXxu7txIZ66RLQ/JJQonJrA==
-X-Google-Smtp-Source: ABdhPJzJA4+8MBti1hlQlF+emS68y5CThBzCx4VKX9dTZW/yLZYTNhzt/hAHEiUELzTH45lQ4rzSAA==
-X-Received: by 2002:a5d:410a:: with SMTP id l10mr21479286wrp.390.1643726987102;
-        Tue, 01 Feb 2022 06:49:47 -0800 (PST)
-Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.googlemail.com with ESMTPSA id l5sm2527023wmq.7.2022.02.01.06.49.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Feb 2022 06:49:46 -0800 (PST)
-From:   Corentin Labbe <clabbe@baylibre.com>
-To:     davem@davemloft.net, kuba@kernel.org, linus.walleij@linaro.org,
-        robh+dt@kernel.org, ulli.kroll@googlemail.com
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Corentin Labbe <clabbe@baylibre.com>
-Subject: [PATCH v2] dt-bindings: net: convert net/cortina,gemini-ethernet to yaml
-Date:   Tue,  1 Feb 2022 14:49:40 +0000
-Message-Id: <20220201144940.2488782-1-clabbe@baylibre.com>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yriV3jrREEgzkPR54dv4q5A+98LvC0ePS/Zx7NSyEBA=;
+        b=4Z4UcrrVlRSgtlY90JBin8w2ceUpKwnPmfgpq6dd5utdBDO2JKv4XG58fjk+6UYDmC
+         ewzcEYj7ap0rEECId92qrzkAROwPxEkyp8TG8qBAiwSOEQhqodgcyVika6k1p2qZ87oy
+         Z/SYaD1KJUBvyA6nxbbULPuM9hzDLsHWU14BcZjtCdUCptAcFm5D5ub0FvVp6zpbzOzy
+         O2iwuGvhPpdA9z5FwakwMmEDQfAzR6TtBB+dy3F9uo5pnIlNFWCiUN1aVBoABASh7k01
+         4GjCS4bIBO5yznRnPt5DUzaFgAqAGWBO9SxBCSIboLJUgjwKOs7uVUHhUk3zckzIaNNU
+         AFnw==
+X-Gm-Message-State: AOAM532yoWyrtHIR6YmX9qdt8L3PfRgVUy+clnu3VcnLNTKlIR52sLZA
+        +0uf5s4haR21L08euLKFTyqgvBnfk73LdahRhR6O1kI0
+X-Google-Smtp-Source: ABdhPJwaJImvyobUjfAmbGN6jDMtgtsvo6mZe7/B6yfYsZC0x9D8AMv6LnK9U7CnT98B2f8aS4FAxVzsxPw5ZySwc+U=
+X-Received: by 2002:a05:6902:1507:: with SMTP id q7mr38572163ybu.343.1643727169529;
+ Tue, 01 Feb 2022 06:52:49 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220121172431.6876-1-sbinding@opensource.cirrus.com>
+ <20220121172431.6876-2-sbinding@opensource.cirrus.com> <c821953a-6572-d60d-6a00-fccd541268c5@redhat.com>
+In-Reply-To: <c821953a-6572-d60d-6a00-fccd541268c5@redhat.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Tue, 1 Feb 2022 15:52:38 +0100
+Message-ID: <CAJZ5v0jGqUvZS113VewgsGm8cMJc2B=M5KyqmOHTPNy+R8KeEQ@mail.gmail.com>
+Subject: Re: [PATCH v6 1/9] spi: Make spi_alloc_device and spi_add_device
+ public again
+To:     Hans de Goede <hdegoede@redhat.com>
+Cc:     Stefan Binding <sbinding@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>, Mark Gross <markgross@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        "moderated list:SOUND - SOC LAYER / DYNAMIC AUDIO POWER MANAGEM..." 
+        <alsa-devel@alsa-project.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-spi <linux-spi@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Platform Driver <platform-driver-x86@vger.kernel.org>,
+        patches@opensource.cirrus.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Converts net/cortina,gemini-ethernet.txt to yaml
-This permits to detect some missing properties like interrupts
+On Tue, Feb 1, 2022 at 3:26 PM Hans de Goede <hdegoede@redhat.com> wrote:
+>
+> Hi,
+>
+> On 1/21/22 18:24, Stefan Binding wrote:
+> > This functions were previously made private since they
+> > were not used. However, these functions will be needed
+> > again.
+> >
+> > Partial revert of commit da21fde0fdb3
+> > ("spi: Make several public functions private to spi.c")
+> >
+> > Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
+>
+> Thanks, patch looks good to me:
+>
+> Reviewed-by: Hans de Goede <hdegoede@redhat.com>
 
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
----
-Change since v1:
-- fixed report done by Rob's bot
- .../bindings/net/cortina,gemini-ethernet.txt  |  92 ------------
- .../bindings/net/cortina,gemini-ethernet.yaml | 137 ++++++++++++++++++
- 2 files changed, 137 insertions(+), 92 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/net/cortina,gemini-ethernet.txt
- create mode 100644 Documentation/devicetree/bindings/net/cortina,gemini-ethernet.yaml
+The series also looks good to me from the ACPI side, so what tree
+should it go into?
 
-diff --git a/Documentation/devicetree/bindings/net/cortina,gemini-ethernet.txt b/Documentation/devicetree/bindings/net/cortina,gemini-ethernet.txt
-deleted file mode 100644
-index 6c559981d110..000000000000
---- a/Documentation/devicetree/bindings/net/cortina,gemini-ethernet.txt
-+++ /dev/null
-@@ -1,92 +0,0 @@
--Cortina Systems Gemini Ethernet Controller
--==========================================
--
--This ethernet controller is found in the Gemini SoC family:
--StorLink SL3512 and SL3516, also known as Cortina Systems
--CS3512 and CS3516.
--
--Required properties:
--- compatible: must be "cortina,gemini-ethernet"
--- reg: must contain the global registers and the V-bit and A-bit
--  memory areas, in total three register sets.
--- syscon: a phandle to the system controller
--- #address-cells: must be specified, must be <1>
--- #size-cells: must be specified, must be <1>
--- ranges: should be state like this giving a 1:1 address translation
--  for the subnodes
--
--The subnodes represents the two ethernet ports in this device.
--They are not independent of each other since they share resources
--in the parent node, and are thus children.
--
--Required subnodes:
--- port0: contains the resources for ethernet port 0
--- port1: contains the resources for ethernet port 1
--
--Required subnode properties:
--- compatible: must be "cortina,gemini-ethernet-port"
--- reg: must contain two register areas: the DMA/TOE memory and
--  the GMAC memory area of the port
--- interrupts: should contain the interrupt line of the port.
--  this is nominally a level interrupt active high.
--- resets: this must provide an SoC-integrated reset line for
--  the port.
--- clocks: this should contain a handle to the PCLK clock for
--  clocking the silicon in this port
--- clock-names: must be "PCLK"
--
--Optional subnode properties:
--- phy-mode: see ethernet.txt
--- phy-handle: see ethernet.txt
--
--Example:
--
--mdio-bus {
--	(...)
--	phy0: ethernet-phy@1 {
--		reg = <1>;
--		device_type = "ethernet-phy";
--	};
--	phy1: ethernet-phy@3 {
--		reg = <3>;
--		device_type = "ethernet-phy";
--	};
--};
--
--
--ethernet@60000000 {
--	compatible = "cortina,gemini-ethernet";
--	reg = <0x60000000 0x4000>, /* Global registers, queue */
--	      <0x60004000 0x2000>, /* V-bit */
--	      <0x60006000 0x2000>; /* A-bit */
--	syscon = <&syscon>;
--	#address-cells = <1>;
--	#size-cells = <1>;
--	ranges;
--
--	gmac0: ethernet-port@0 {
--		compatible = "cortina,gemini-ethernet-port";
--		reg = <0x60008000 0x2000>, /* Port 0 DMA/TOE */
--		      <0x6000a000 0x2000>; /* Port 0 GMAC */
--		interrupt-parent = <&intcon>;
--		interrupts = <1 IRQ_TYPE_LEVEL_HIGH>;
--		resets = <&syscon GEMINI_RESET_GMAC0>;
--		clocks = <&syscon GEMINI_CLK_GATE_GMAC0>;
--		clock-names = "PCLK";
--		phy-mode = "rgmii";
--		phy-handle = <&phy0>;
--	};
--
--	gmac1: ethernet-port@1 {
--		compatible = "cortina,gemini-ethernet-port";
--		reg = <0x6000c000 0x2000>, /* Port 1 DMA/TOE */
--		      <0x6000e000 0x2000>; /* Port 1 GMAC */
--		interrupt-parent = <&intcon>;
--		interrupts = <2 IRQ_TYPE_LEVEL_HIGH>;
--		resets = <&syscon GEMINI_RESET_GMAC1>;
--		clocks = <&syscon GEMINI_CLK_GATE_GMAC1>;
--		clock-names = "PCLK";
--		phy-mode = "rgmii";
--		phy-handle = <&phy1>;
--	};
--};
-diff --git a/Documentation/devicetree/bindings/net/cortina,gemini-ethernet.yaml b/Documentation/devicetree/bindings/net/cortina,gemini-ethernet.yaml
-new file mode 100644
-index 000000000000..cc01b9b5752a
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/cortina,gemini-ethernet.yaml
-@@ -0,0 +1,137 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/cortina,gemini-ethernet.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Cortina Systems Gemini Ethernet Controller
-+
-+maintainers:
-+  - Linus Walleij <linus.walleij@linaro.org>
-+
-+description: |
-+  This ethernet controller is found in the Gemini SoC family:
-+  StorLink SL3512 and SL3516, also known as Cortina Systems
-+  CS3512 and CS3516.
-+
-+properties:
-+  compatible:
-+    const: cortina,gemini-ethernet
-+
-+  reg:
-+    minItems: 3
-+    description: must contain the global registers and the V-bit and A-bit
-+      memory areas, in total three register sets.
-+
-+  "#address-cells":
-+    const: 1
-+
-+  "#size-cells":
-+    const: 1
-+
-+  ranges: true
-+
-+#The subnodes represents the two ethernet ports in this device.
-+#They are not independent of each other since they share resources
-+#in the parent node, and are thus children.
-+patternProperties:
-+  "^ethernet-port@[0-9]+$":
-+    type: object
-+    description: contains the resources for ethernet port
-+    allOf:
-+      - $ref: ethernet-controller.yaml#
-+    properties:
-+      compatible:
-+        const: cortina,gemini-ethernet-port
-+
-+      reg:
-+        items:
-+          - description: DMA/TOE memory
-+          - description: GMAC memory area of the port
-+
-+      interrupts:
-+        maxItems: 1
-+        description: should contain the interrupt line of the port.
-+                     this is nominally a level interrupt active high.
-+
-+      resets:
-+        maxItems: 1
-+        description: this must provide an SoC-integrated reset line for the port.
-+
-+      clocks:
-+        maxItems: 1
-+        description: this should contain a handle to the PCLK clock for
-+                     clocking the silicon in this port
-+
-+      clock-names:
-+        const: PCLK
-+
-+    required:
-+      - reg
-+      - compatible
-+      - interrupts
-+      - resets
-+      - clocks
-+      - clock-names
-+
-+required:
-+  - compatible
-+  - reg
-+  - ranges
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    #include <dt-bindings/clock/cortina,gemini-clock.h>
-+    #include <dt-bindings/reset/cortina,gemini-reset.h>
-+    mdio0: mdio {
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+      phy0: ethernet-phy@1 {
-+        reg = <1>;
-+        device_type = "ethernet-phy";
-+      };
-+      phy1: ethernet-phy@3 {
-+        reg = <3>;
-+        device_type = "ethernet-phy";
-+      };
-+    };
-+
-+
-+    ethernet@60000000 {
-+        compatible = "cortina,gemini-ethernet";
-+        reg = <0x60000000 0x4000>, /* Global registers, queue */
-+              <0x60004000 0x2000>, /* V-bit */
-+              <0x60006000 0x2000>; /* A-bit */
-+        #address-cells = <1>;
-+        #size-cells = <1>;
-+        ranges;
-+
-+        gmac0: ethernet-port@0 {
-+                compatible = "cortina,gemini-ethernet-port";
-+                reg = <0x60008000 0x2000>, /* Port 0 DMA/TOE */
-+                      <0x6000a000 0x2000>; /* Port 0 GMAC */
-+                interrupt-parent = <&intcon>;
-+                interrupts = <1 IRQ_TYPE_LEVEL_HIGH>;
-+                resets = <&syscon GEMINI_RESET_GMAC0>;
-+                clocks = <&syscon GEMINI_CLK_GATE_GMAC0>;
-+                clock-names = "PCLK";
-+                phy-mode = "rgmii";
-+                phy-handle = <&phy0>;
-+        };
-+
-+        gmac1: ethernet-port@1 {
-+                compatible = "cortina,gemini-ethernet-port";
-+                reg = <0x6000c000 0x2000>, /* Port 1 DMA/TOE */
-+                      <0x6000e000 0x2000>; /* Port 1 GMAC */
-+                interrupt-parent = <&intcon>;
-+                interrupts = <2 IRQ_TYPE_LEVEL_HIGH>;
-+                resets = <&syscon GEMINI_RESET_GMAC1>;
-+                clocks = <&syscon GEMINI_CLK_GATE_GMAC1>;
-+                clock-names = "PCLK";
-+                phy-mode = "rgmii";
-+                phy-handle = <&phy1>;
-+        };
-+    };
--- 
-2.34.1
-
+> > ---
+> >  drivers/spi/spi.c       |  6 ++++--
+> >  include/linux/spi/spi.h | 12 ++++++++++++
+> >  2 files changed, 16 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
+> > index 4599b121d744..1eb84101c4ad 100644
+> > --- a/drivers/spi/spi.c
+> > +++ b/drivers/spi/spi.c
+> > @@ -532,7 +532,7 @@ static DEFINE_MUTEX(board_lock);
+> >   *
+> >   * Return: a pointer to the new device, or NULL.
+> >   */
+> > -static struct spi_device *spi_alloc_device(struct spi_controller *ctlr)
+> > +struct spi_device *spi_alloc_device(struct spi_controller *ctlr)
+> >  {
+> >       struct spi_device       *spi;
+> >
+> > @@ -557,6 +557,7 @@ static struct spi_device *spi_alloc_device(struct spi_controller *ctlr)
+> >       device_initialize(&spi->dev);
+> >       return spi;
+> >  }
+> > +EXPORT_SYMBOL_GPL(spi_alloc_device);
+> >
+> >  static void spi_dev_set_name(struct spi_device *spi)
+> >  {
+> > @@ -652,7 +653,7 @@ static int __spi_add_device(struct spi_device *spi)
+> >   *
+> >   * Return: 0 on success; negative errno on failure
+> >   */
+> > -static int spi_add_device(struct spi_device *spi)
+> > +int spi_add_device(struct spi_device *spi)
+> >  {
+> >       struct spi_controller *ctlr = spi->controller;
+> >       struct device *dev = ctlr->dev.parent;
+> > @@ -673,6 +674,7 @@ static int spi_add_device(struct spi_device *spi)
+> >       mutex_unlock(&ctlr->add_lock);
+> >       return status;
+> >  }
+> > +EXPORT_SYMBOL_GPL(spi_add_device);
+> >
+> >  static int spi_add_device_locked(struct spi_device *spi)
+> >  {
+> > diff --git a/include/linux/spi/spi.h b/include/linux/spi/spi.h
+> > index 7ab3fed7b804..0346a3ff27fd 100644
+> > --- a/include/linux/spi/spi.h
+> > +++ b/include/linux/spi/spi.h
+> > @@ -1452,7 +1452,19 @@ spi_register_board_info(struct spi_board_info const *info, unsigned n)
+> >   * use spi_new_device() to describe each device.  You can also call
+> >   * spi_unregister_device() to start making that device vanish, but
+> >   * normally that would be handled by spi_unregister_controller().
+> > + *
+> > + * You can also use spi_alloc_device() and spi_add_device() to use a two
+> > + * stage registration sequence for each spi_device. This gives the caller
+> > + * some more control over the spi_device structure before it is registered,
+> > + * but requires that caller to initialize fields that would otherwise
+> > + * be defined using the board info.
+> >   */
+> > +extern struct spi_device *
+> > +spi_alloc_device(struct spi_controller *ctlr);
+> > +
+> > +extern int
+> > +spi_add_device(struct spi_device *spi);
+> > +
+> >  extern struct spi_device *
+> >  spi_new_device(struct spi_controller *, struct spi_board_info *);
+> >
+> >
+>
