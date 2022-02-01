@@ -2,76 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDB67C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 19:22:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34904C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 19:23:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242184AbiBATWQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 14:22:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37536 "EHLO
+        id S242245AbiBATXz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 14:23:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231995AbiBATWN (ORCPT
+        with ESMTP id S231995AbiBATXx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 14:22:13 -0500
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87674C061714
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Feb 2022 11:22:13 -0800 (PST)
-Received: by mail-ed1-x52e.google.com with SMTP id p7so36434408edc.12
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Feb 2022 11:22:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=tE/R9yvWA3Atyfb/JucqCUJU8G/DgubFOZDhk5Lo/ew=;
-        b=XId/LPiTasBZmFrfoW21pxoJPIg+5+IY4ExAd2xTeXcpnBZedpcqKEDIvB/hHwHc0I
-         WbSayqRMIlMgSbTwqIHUwMDXFCHiDwOZDP6ZtanGpRE63HQcOiOU53CK8pWHwGUOOk6g
-         rAbF/CKE/TzqH+hhEUF0iZR61axOWuOj/9EvE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tE/R9yvWA3Atyfb/JucqCUJU8G/DgubFOZDhk5Lo/ew=;
-        b=d5cERSvs4M2tREDRffCsj4I/xVmsTtWXEKFn0WGC4pkxaQVxzjDlFYFk7SlyFqvPO/
-         FDBv79EREEafGH1AsRmcajfaF4KommOt+aK+4t4mmyru6Kq7lqG74k07YiC+JiOKlU+N
-         VHubQV+SREjJA0xNgcRLdNsh9Xuclvir4ajIl0x3uw5Z/Wx2rzfb0G0H0VMSAe1j0+fR
-         jBje6Gv6iINsN7TqAg9f51B0jEWH3MJmVzKfEdYvOzagNLrNBa4+RALRZjHKt77OF2Wc
-         f0dCWOwdGwdF7tTktOaBRcovv46i0rRzrnWFZPKwaGVJIRBCOFdGCPBqXlZ/wERyCbkl
-         IMcg==
-X-Gm-Message-State: AOAM533UiYPZf1XSjMThO1LvyInOTfCIlndpDYwF89TLaaFVJoi26QWu
-        3gSNb/gapaMB+WzgNmcFIaWHpsxPhmKR/KCP
-X-Google-Smtp-Source: ABdhPJyXH1kRkU+S6n6pzleHX8aWxUlQqqrBIDZz1V4lFdvjGViMIX6Ls0GyiUVNdr98ZzYGnbqXDA==
-X-Received: by 2002:aa7:ca46:: with SMTP id j6mr26219161edt.198.1643743331860;
-        Tue, 01 Feb 2022 11:22:11 -0800 (PST)
-Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com. [209.85.221.50])
-        by smtp.gmail.com with ESMTPSA id g9sm14723809ejf.33.2022.02.01.11.22.11
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Feb 2022 11:22:11 -0800 (PST)
-Received: by mail-wr1-f50.google.com with SMTP id m14so33738161wrg.12
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Feb 2022 11:22:11 -0800 (PST)
-X-Received: by 2002:adf:d1c8:: with SMTP id b8mr472549wrd.442.1643743329676;
- Tue, 01 Feb 2022 11:22:09 -0800 (PST)
+        Tue, 1 Feb 2022 14:23:53 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AAD0C061714;
+        Tue,  1 Feb 2022 11:23:53 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F35C3B82F75;
+        Tue,  1 Feb 2022 19:23:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3B1EC340EB;
+        Tue,  1 Feb 2022 19:23:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643743430;
+        bh=M3qrhQDIRqxRScO7LGC1gbR291jPdGWv35tPpFU2rdo=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=Vi/CLqPBGOIyB3svBAwiwk5US1d7ONryE0jzvt2QceYCMycKkPHuocMzzsO3xjmyT
+         GOQzEEct0lOq6QsJAgu4oBa1fTjuG3J83U3L0oHcYmREHhBJgV2CVmdg6uf+/w2g3B
+         lsZTD3eEqOavWXe7mtfqbzy9iDtwOz0xvxp5GEZAecKuW+uu6FL+VcHCmX2ES59i6O
+         RhAxJ7gqvNoGoD3nMNA0rd+bxBgo6t4xLaKrr4ULOgAncA4v/5Mn++q001+kMsRYEq
+         QeOrgKPqQuzl5F9tVDrxkLcDOt2De0YK0jPfh0bpCG0KV7d3BKi9LR8rOfne8D37WZ
+         JJFuZUE0P2vHg==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 80AF55C0326; Tue,  1 Feb 2022 11:23:50 -0800 (PST)
+Date:   Tue, 1 Feb 2022 11:23:50 -0800
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Cc:     jiangshanlai@gmail.com, josh@joshtriplett.org, rostedt@goodmis.org,
+        mathieu.desnoyers@efficios.com, rcu@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
+Subject: Re: [PATCH] srcu: make srcu_size_state_name static
+Message-ID: <20220201192350.GE4285@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220129034502.73912-1-jiapeng.chong@linux.alibaba.com>
 MIME-Version: 1.0
-References: <20220131144854.2771101-1-brauner@kernel.org>
-In-Reply-To: <20220131144854.2771101-1-brauner@kernel.org>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Tue, 1 Feb 2022 11:21:53 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wjpA4T2-Z8Dg2HYP=3LSbT99kLjhJ1g1nPMObihrHpnjg@mail.gmail.com>
-Message-ID: <CAHk-=wjpA4T2-Z8Dg2HYP=3LSbT99kLjhJ1g1nPMObihrHpnjg@mail.gmail.com>
-Subject: Re: [PATCH] mailmap: update Christian Brauner's email address
-To:     Christian Brauner <brauner@kernel.org>
-Cc:     linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220129034502.73912-1-jiapeng.chong@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 31, 2022 at 6:49 AM Christian Brauner <brauner@kernel.org> wrote:
->
-> I need to update my mail addresses. A pull-request doesn't seem
-> warranted for this. Would you please apply this directly? It doesn't
-> contain any functional changes.
+On Sat, Jan 29, 2022 at 11:45:02AM +0800, Jiapeng Chong wrote:
+> This symbol is not used outside of srcutree.c, so marks it static.
+> 
+> Fixes the following sparse warning:
+> 
+> kernel/rcu/srcutree.c:1426:12: warning: symbol 'srcu_size_state_name'
+> was not declared. Should it be static?
+> 
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 
-Applied,
+And I did queue and push this, good catch, thank you!
 
-                Linus
+							Thanx, Paul
+
+> ---
+>  kernel/rcu/srcutree.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/kernel/rcu/srcutree.c b/kernel/rcu/srcutree.c
+> index 4201815744d8..31dbd41332f6 100644
+> --- a/kernel/rcu/srcutree.c
+> +++ b/kernel/rcu/srcutree.c
+> @@ -1423,7 +1423,7 @@ void srcutorture_get_gp_data(enum rcutorture_type test_type,
+>  }
+>  EXPORT_SYMBOL_GPL(srcutorture_get_gp_data);
+>  
+> -const char * const srcu_size_state_name[] =
+> +static const char * const srcu_size_state_name[] =
+>  {
+>  	"SRCU_SIZE_SMALL",
+>  	"SRCU_SIZE_ALLOC",
+> -- 
+> 2.20.1.7.g153144c
+> 
