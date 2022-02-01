@@ -2,251 +2,275 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33F7BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 12:39:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B55AC43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 12:45:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238168AbiBAMjm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 07:39:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56458 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237276AbiBAMjj (ORCPT
+        id S237765AbiBAMo7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 07:44:59 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:38480 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229966AbiBAMo4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 07:39:39 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBB4CC061714;
-        Tue,  1 Feb 2022 04:39:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=MIME-Version:Content-Type:References:
-        In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=2wuu84OfMsnYiU9Syzjgrj3Gz0Z64bFDrvDVh2iWb8k=; b=bpQdhsVPaPJWRpuKgiCe6N3WdF
-        JzFwD03KtNm5jqkZrSrDGrWYJRRsDW4ThJ6r/9z0tsqY2mPyUECcaVszVPwQMZnroqANTkQZo4FAl
-        7V+Q6UbSwevkKMno/vrU5N0L9pUnzbgpu9v9PMzLA8QWrH8QTczK8dMmu8ifG/RKRDUKplgGB4Xed
-        awe606c9el1h6vAzU7oDj4R9Xez/lJsqa9LT1j5jIOLJOsNrsins6FKBiWmj9TA7fSPCNd8WI9abZ
-        T91XCkPb2LopBftXeZBWcT94JM6OUuPnkcVrnw9wWVslIRm7XMtL/QHJeSpCpvZPlfhK9EjGS5r/Y
-        h3JI/hOA==;
-Received: from [2001:8b0:10b:1::3ae] (helo=u3832b3a9db3152.infradead.org)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nEsRQ-00C6du-5m; Tue, 01 Feb 2022 12:39:24 +0000
-Message-ID: <c83673d74bc161b8e5bfcc3049ccfecf5c9e96f5.camel@infradead.org>
-Subject: Re: [PATCH v3 6/9] x86/smpboot: Support parallel startup of
- secondary CPUs
-From:   David Woodhouse <dwmw2@infradead.org>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     Tom Lendacky <thomas.lendacky@amd.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Sean Christopherson <seanjc@google.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "rcu@vger.kernel.org" <rcu@vger.kernel.org>,
-        "mimoja@mimoja.de" <mimoja@mimoja.de>,
-        "hewenliang4@huawei.com" <hewenliang4@huawei.com>,
-        "hushiyuan@huawei.com" <hushiyuan@huawei.com>,
-        "luolongjun@huawei.com" <luolongjun@huawei.com>,
-        "hejingxian@huawei.com" <hejingxian@huawei.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Andrew Cooper <andrew.cooper3@citrix.com>
-Date:   Tue, 01 Feb 2022 12:39:17 +0000
-In-Reply-To: <YfkRyLV/auNzczfF@zn.tnic>
-References: <20211215145633.5238-1-dwmw2@infradead.org>
-         <20211215145633.5238-7-dwmw2@infradead.org>
-         <d10f529e-b1ee-6220-c6fc-80435f0061ee@amd.com>
-         <f25c6ad00689fee6ce3e294393c13f3dcdd5985f.camel@infradead.org>
-         <3d8e2d0d-1830-48fb-bc2d-995099f39ef0@amd.com>
-         <e742473935bf81be84adea6fa8061ce0846cc630.camel@infradead.org>
-         <330bedfee12022c1180d8752fb4abe908dac08d1.camel@infradead.org>
-         <YffrVMiO/NalRZjL@zn.tnic>
-         <3bc401a9f110a24a429316371c767507b493025a.camel@infradead.org>
-         <YfkRyLV/auNzczfF@zn.tnic>
-Content-Type: multipart/signed; micalg="sha-256"; protocol="application/pkcs7-signature";
-        boundary="=-TyjvgykTtx18eaGdQ9cZ"
-User-Agent: Evolution 3.36.5-0ubuntu1 
+        Tue, 1 Feb 2022 07:44:56 -0500
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 211CdUvY017127;
+        Tue, 1 Feb 2022 12:44:43 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : content-transfer-encoding : mime-version; s=pp1;
+ bh=UGY2abURcnpFtpm/upKHv5PzAHKnxDA3gsUO9xBlR1A=;
+ b=Ufx4S52u55nN1+/SFfMx5vv6W2+31Zai0pO60QYQqIcGmEA7ppnEyfkYVF4OpSBwV6QN
+ JcAKtSS0jXdWu1+tvfOmSwKkGPLcv51OgSyTld0MLBcPU4W0ZzDLFiqX7a9BjbT1baDV
+ EMEul3IEFMwBH72IQYX41YN/z6cZzF+CYvNqt7lVpwIz5irntDLXPESktqkzbwHN2NQo
+ VEaQ+eYbptSajEMHqA9tQBqEr1Viez9pj8Xng+lJCtwPuBSP9f3jrpzeAxE4AUEa8hLd
+ XO17RDsHN8W8e09t6ibH6gfqchYv04EL92NCbQEbIBXGyGbOqMm/bPLr+Gxql7mfy+ft Ew== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dxj34e0c6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 01 Feb 2022 12:44:43 +0000
+Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 211ChVMp008186;
+        Tue, 1 Feb 2022 12:44:42 GMT
+Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dxj34e0bn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 01 Feb 2022 12:44:42 +0000
+Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
+        by ppma04dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 211CchWj011833;
+        Tue, 1 Feb 2022 12:44:41 GMT
+Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
+        by ppma04dal.us.ibm.com with ESMTP id 3dvw7auc92-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 01 Feb 2022 12:44:41 +0000
+Received: from b03ledav005.gho.boulder.ibm.com (b03ledav005.gho.boulder.ibm.com [9.17.130.236])
+        by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 211CidPi28377498
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 1 Feb 2022 12:44:39 GMT
+Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 97457BE05B;
+        Tue,  1 Feb 2022 12:44:39 +0000 (GMT)
+Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C6962BE056;
+        Tue,  1 Feb 2022 12:44:37 +0000 (GMT)
+Received: from amdrome3.watson.ibm.com (unknown [9.2.130.16])
+        by b03ledav005.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Tue,  1 Feb 2022 12:44:37 +0000 (GMT)
+From:   Dov Murik <dovmurik@linux.ibm.com>
+To:     linux-efi@vger.kernel.org
+Cc:     Dov Murik <dovmurik@linux.ibm.com>, Borislav Petkov <bp@suse.de>,
+        Ashish Kalra <ashish.kalra@amd.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Andrew Scull <ascull@google.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        "Dr. David Alan Gilbert" <dgilbert@redhat.com>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Lenny Szubowicz <lszubowi@redhat.com>,
+        Peter Gonda <pgonda@google.com>,
+        James Bottomley <jejb@linux.ibm.com>,
+        Tobin Feldman-Fitzthum <tobin@linux.ibm.com>,
+        Jim Cadden <jcadden@ibm.com>,
+        Daniele Buono <dbuono@linux.vnet.ibm.com>,
+        linux-coco@lists.linux.dev, linux-security-module@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v7 0/5] Allow guest access to EFI confidential computing secret area
+Date:   Tue,  1 Feb 2022 12:44:08 +0000
+Message-Id: <20220201124413.1093099-1-dovmurik@linux.ibm.com>
+X-Mailer: git-send-email 2.25.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: eoXuoar1ulbAVKbBO-AH3UV6PdfF9mnQ
+X-Proofpoint-GUID: LgRHRopGbNsWBzHaokhDVnAP2rtfVJy1
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-01_03,2022-02-01_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ suspectscore=0 clxscore=1011 lowpriorityscore=0 phishscore=0
+ malwarescore=0 adultscore=0 mlxlogscore=999 bulkscore=0 impostorscore=0
+ spamscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202010068
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Confidential computing (coco) hardware such as AMD SEV (Secure Encrypted
+Virtualization) allows guest owners to inject secrets into the VMs
+memory without the host/hypervisor being able to read them.  In SEV,
+secret injection is performed early in the VM launch process, before the
+guest starts running.
 
---=-TyjvgykTtx18eaGdQ9cZ
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+OVMF already reserves designated area for secret injection (in its
+AmdSev package; see edk2 commit 01726b6d23d4 "OvmfPkg/AmdSev: Expose the
+Sev Secret area using a configuration table" [1]), but the secrets were
+not available in the guest kernel.
 
-On Tue, 2022-02-01 at 11:56 +0100, Borislav Petkov wrote:
-> On Tue, Feb 01, 2022 at 10:25:01AM +0000, David Woodhouse wrote:
-> > Thanks. It looks like that is only invoked after boot, with a write to
-> > /sys/devices/system/cpu/microcode/reload.
-> >=20
-> > My series is only parallelising the initial bringup at boot time, so it
-> > shouldn't make any difference.
->=20
-> No, I don't mean __reload_late() - I pointed you at that function to
-> show the dance we must do when updating microcode late.
->=20
-> The load_ucode_{ap,bsp}() routines are what is called when loading ucode
-> early.
->=20
-> So the question is, does the parallelizing change the order in which APs
-> are brought up and can it happen that a SMT sibling of a two-SMT core
-> executes *something* while the other SMT sibling is updating microcode.
->=20
-> If so, that would be bad.
+The patch series keeps the address of the EFI-provided memory for
+injected secrets, and exposes the secrets to userspace via securityfs
+using a new efi_secret kernel module.  The module is autoloaded (by the
+EFI driver) if the secret area is populated.
 
-Right. So as you surmise, I haven't broken that... yet. At least not in
-the patches I've posted :)
+The first patch in EFI keeps the address of the secret area as passed in
+the EFI configuration table.  The second patch is a quirk fix for older
+firmwares didn't mark the secrets page as EFI_RESERVED_TYPE.  The third
+patch introduces the new efi_secret module that exposes the content of
+the secret entries as securityfs files, and allows clearing out secrets
+with a file unlink interface.  The fourth patch auto-loads the
+efi_secret module during startup if the injected secrets area is
+populated.  The last patch documents the data flow of confidential
+computing secret injection.
 
-The call to ucode_cpu_init() is in cpu_init(), right after the call to
-wait_for_master_cpu(), which this AP's bit in cpu_initialized_mask and
-then waits for the BSP to set its bit in cpu_callout_mask.
+As a usage example, consider a guest performing computations on
+encrypted files.  The Guest Owner provides the decryption key (= secret)
+using the secret injection mechanism.  The guest application reads the
+secret from the efi_secret filesystem and proceeds to decrypt the files
+into memory and then performs the needed computations on the content.
 
-That's a full synchronization point with do_wait_cpu_initalized() on
-the BSP, which waits for the former and then sets the later.
+In this example, the host can't read the files from the disk image
+because they are encrypted.  Host can't read the decryption key because
+it is passed using the secret injection mechanism (= secure channel).
+Host can't read the decrypted content from memory because it's a
+confidential (memory-encrypted) guest.
 
-So... with the series I've posted, all APs end up waiting in
-wait_for_master_cpu() until the final serialized bringup.
+This has been tested with AMD SEV and SEV-ES guests, but the kernel side
+of handling the secret area has no SEV-specific dependencies, and
+therefore might be usable (perhaps with minor changes) for any
+confidential computing hardware that can publish the secret area via the
+standard EFI config table entry.
 
-In the top of my git tree, you can see a half-baked 'parallel part 2'
-commit which introduces a new x86/cpu:wait-init cpuhp state that would
-invoke do_wait_cpu_initialized() for each CPU in turn, which *would*
-release them all into load_ucode_bsp() at the same time and have
-precisely the problem you're describing.
+To enable this functionality, set CONFIG_EFI_SECRET=m when building the
+guest kernel.
 
-I'll commit a FIXME comment now so that it doesn't slip my mind.
+Here is a simple example for usage of the efi_secret module in a guest
+to which an EFI secret area with 4 secrets was injected during launch:
 
-Thanks.
+# ls -la /sys/kernel/security/coco/efi_secret
+total 0
+drwxr-xr-x 2 root root 0 Jun 28 11:54 .
+drwxr-xr-x 3 root root 0 Jun 28 11:54 ..
+-r--r----- 1 root root 0 Jun 28 11:54 736870e5-84f0-4973-92ec-06879ce3da0b
+-r--r----- 1 root root 0 Jun 28 11:54 83c83f7f-1356-4975-8b7e-d3a0b54312c6
+-r--r----- 1 root root 0 Jun 28 11:54 9553f55d-3da2-43ee-ab5d-ff17f78864d2
+-r--r----- 1 root root 0 Jun 28 11:54 e6f5a162-d67f-4750-a67c-5d065f2a9910
 
+# xxd /sys/kernel/security/coco/efi_secret/e6f5a162-d67f-4750-a67c-5d065f2a9910
+00000000: 7468 6573 652d 6172 652d 7468 652d 6b61  these-are-the-ka
+00000010: 7461 2d73 6563 7265 7473 0001 0203 0405  ta-secrets......
+00000020: 0607                                     ..
 
-> > However... it does look like there's nothing preventing a sibling being
-> > brought online *while* the dance you mention above is occurring.
->=20
-> Bottom line is: of the two SMT siblings, one needs to be updating
-> microcode while the other is idle. I.e., what __reload_late() does.
->=20
-> > Shouldn't __reload_late() take the device_hotplug_lock to prevent that?
->=20
-> See reload_store().
+# rm /sys/kernel/security/coco/efi_secret/e6f5a162-d67f-4750-a67c-5d065f2a9910
 
-Hm, not sure I see how that's protecting itself from someone
-simultaneously echoing 1 > /sys/devices/system/cpu/cpu${SIBLING}/online
-
-
---=-TyjvgykTtx18eaGdQ9cZ
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Transfer-Encoding: base64
-
-MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCEkQw
-ggYQMIID+KADAgECAhBNlCwQ1DvglAnFgS06KwZPMA0GCSqGSIb3DQEBDAUAMIGIMQswCQYDVQQG
-EwJVUzETMBEGA1UECBMKTmV3IEplcnNleTEUMBIGA1UEBxMLSmVyc2V5IENpdHkxHjAcBgNVBAoT
-FVRoZSBVU0VSVFJVU1QgTmV0d29yazEuMCwGA1UEAxMlVVNFUlRydXN0IFJTQSBDZXJ0aWZpY2F0
-aW9uIEF1dGhvcml0eTAeFw0xODExMDIwMDAwMDBaFw0zMDEyMzEyMzU5NTlaMIGWMQswCQYDVQQG
-EwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYD
-VQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50
-aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
-AQEAyjztlApB/975Rrno1jvm2pK/KxBOqhq8gr2+JhwpKirSzZxQgT9tlC7zl6hn1fXjSo5MqXUf
-ItMltrMaXqcESJuK8dtK56NCSrq4iDKaKq9NxOXFmqXX2zN8HHGjQ2b2Xv0v1L5Nk1MQPKA19xeW
-QcpGEGFUUd0kN+oHox+L9aV1rjfNiCj3bJk6kJaOPabPi2503nn/ITX5e8WfPnGw4VuZ79Khj1YB
-rf24k5Ee1sLTHsLtpiK9OjG4iQRBdq6Z/TlVx/hGAez5h36bBJMxqdHLpdwIUkTqT8se3ed0PewD
-ch/8kHPo5fZl5u1B0ecpq/sDN/5sCG52Ds+QU5O5EwIDAQABo4IBZDCCAWAwHwYDVR0jBBgwFoAU
-U3m/WqorSs9UgOHYm8Cd8rIDZsswHQYDVR0OBBYEFAnA8vwL2pTbX/4r36iZQs/J4K0AMA4GA1Ud
-DwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/AgEAMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEF
-BQcDBDARBgNVHSAECjAIMAYGBFUdIAAwUAYDVR0fBEkwRzBFoEOgQYY/aHR0cDovL2NybC51c2Vy
-dHJ1c3QuY29tL1VTRVJUcnVzdFJTQUNlcnRpZmljYXRpb25BdXRob3JpdHkuY3JsMHYGCCsGAQUF
-BwEBBGowaDA/BggrBgEFBQcwAoYzaHR0cDovL2NydC51c2VydHJ1c3QuY29tL1VTRVJUcnVzdFJT
-QUFkZFRydXN0Q0EuY3J0MCUGCCsGAQUFBzABhhlodHRwOi8vb2NzcC51c2VydHJ1c3QuY29tMA0G
-CSqGSIb3DQEBDAUAA4ICAQBBRHUAqznCFfXejpVtMnFojADdF9d6HBA4kMjjsb0XMZHztuOCtKF+
-xswhh2GqkW5JQrM8zVlU+A2VP72Ky2nlRA1GwmIPgou74TZ/XTarHG8zdMSgaDrkVYzz1g3nIVO9
-IHk96VwsacIvBF8JfqIs+8aWH2PfSUrNxP6Ys7U0sZYx4rXD6+cqFq/ZW5BUfClN/rhk2ddQXyn7
-kkmka2RQb9d90nmNHdgKrwfQ49mQ2hWQNDkJJIXwKjYA6VUR/fZUFeCUisdDe/0ABLTI+jheXUV1
-eoYV7lNwNBKpeHdNuO6Aacb533JlfeUHxvBz9OfYWUiXu09sMAviM11Q0DuMZ5760CdO2VnpsXP4
-KxaYIhvqPqUMWqRdWyn7crItNkZeroXaecG03i3mM7dkiPaCkgocBg0EBYsbZDZ8bsG3a08LwEsL
-1Ygz3SBsyECa0waq4hOf/Z85F2w2ZpXfP+w8q4ifwO90SGZZV+HR/Jh6rEaVPDRF/CEGVqR1hiuQ
-OZ1YL5ezMTX0ZSLwrymUE0pwi/KDaiYB15uswgeIAcA6JzPFf9pLkAFFWs1QNyN++niFhsM47qod
-x/PL+5jR87myx5uYdBEQkkDc+lKB1Wct6ucXqm2EmsaQ0M95QjTmy+rDWjkDYdw3Ms6mSWE3Bn7i
-5ZgtwCLXgAIe5W8mybM2JzCCBhQwggT8oAMCAQICEQDGvhmWZ0DEAx0oURL6O6l+MA0GCSqGSIb3
-DQEBCwUAMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYD
-VQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28g
-UlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMB4XDTIyMDEwNzAw
-MDAwMFoXDTI1MDEwNjIzNTk1OVowJDEiMCAGCSqGSIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9y
-ZzCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBALQ3GpC2bomUqk+91wLYBzDMcCj5C9m6
-oZaHwvmIdXftOgTbCJXADo6G9T7BBAebw2JV38EINgKpy/ZHh7htyAkWYVoFsFPrwHounto8xTsy
-SSePMiPlmIdQ10BcVSXMUJ3Juu16GlWOnAMJY2oYfEzmE7uT9YgcBqKCo65pTFmOnR/VVbjJk4K2
-xE34GC2nAdUQkPFuyaFisicc6HRMOYXPuF0DuwITEKnjxgNjP+qDrh0db7PAjO1D4d5ftfrsf+kd
-RR4gKVGSk8Tz2WwvtLAroJM4nXjNPIBJNT4w/FWWc/5qPHJy2U+eITZ5LLE5s45mX2oPFknWqxBo
-bQZ8a9dsZ3dSPZBvE9ZrmtFLrVrN4eo1jsXgAp1+p7bkfqd3BgBEmfsYWlBXO8rVXfvPgLs32VdV
-NZxb/CDWPqBsiYv0Hv3HPsz07j5b+/cVoWqyHDKzkaVbxfq/7auNVRmPB3v5SWEsH8xi4Bez2V9U
-KxfYCnqsjp8RaC2/khxKt0A552Eaxnz/4ly/2C7wkwTQnBmdlFYhAflWKQ03Ufiu8t3iBE3VJbc2
-5oMrglj7TRZrmKq3CkbFnX0fyulB+kHimrt6PIWn7kgyl9aelIl6vtbhMA+l0nfrsORMa4kobqQ5
-C5rveVgmcIad67EDa+UqEKy/GltUwlSh6xy+TrK1tzDvAgMBAAGjggHMMIIByDAfBgNVHSMEGDAW
-gBQJwPL8C9qU21/+K9+omULPyeCtADAdBgNVHQ4EFgQUzMeDMcimo0oz8o1R1Nver3ZVpSkwDgYD
-VR0PAQH/BAQDAgWgMAwGA1UdEwEB/wQCMAAwHQYDVR0lBBYwFAYIKwYBBQUHAwQGCCsGAQUFBwMC
-MEAGA1UdIAQ5MDcwNQYMKwYBBAGyMQECAQEBMCUwIwYIKwYBBQUHAgEWF2h0dHBzOi8vc2VjdGln
-by5jb20vQ1BTMFoGA1UdHwRTMFEwT6BNoEuGSWh0dHA6Ly9jcmwuc2VjdGlnby5jb20vU2VjdGln
-b1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5jcmwwgYoGCCsGAQUFBwEB
-BH4wfDBVBggrBgEFBQcwAoZJaHR0cDovL2NydC5zZWN0aWdvLmNvbS9TZWN0aWdvUlNBQ2xpZW50
-QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFpbENBLmNydDAjBggrBgEFBQcwAYYXaHR0cDovL29j
-c3Auc2VjdGlnby5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5mcmFkZWFkLm9yZzANBgkqhkiG9w0B
-AQsFAAOCAQEAyW6MUir5dm495teKqAQjDJwuFCi35h4xgnQvQ/fzPXmtR9t54rpmI2TfyvcKgOXp
-qa7BGXNFfh1JsqexVkIqZP9uWB2J+uVMD+XZEs/KYNNX2PvIlSPrzIB4Z2wyIGQpaPLlYflrrVFK
-v9CjT2zdqvy2maK7HKOQRt3BiJbVG5lRiwbbygldcALEV9ChWFfgSXvrWDZspnU3Gjw/rMHrGnql
-Htlyebp3pf3fSS9kzQ1FVtVIDrL6eqhTwJxe+pXSMMqFiN0whpBtXdyDjzBtQTaZJ7zTT/vlehc/
-tDuqZwGHm/YJy883Ll+GP3NvOkgaRGWEuYWJJ6hFCkXYjyR9IzCCBhQwggT8oAMCAQICEQDGvhmW
-Z0DEAx0oURL6O6l+MA0GCSqGSIb3DQEBCwUAMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3Jl
-YXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0
-ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJl
-IEVtYWlsIENBMB4XDTIyMDEwNzAwMDAwMFoXDTI1MDEwNjIzNTk1OVowJDEiMCAGCSqGSIb3DQEJ
-ARYTZHdtdzJAaW5mcmFkZWFkLm9yZzCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBALQ3
-GpC2bomUqk+91wLYBzDMcCj5C9m6oZaHwvmIdXftOgTbCJXADo6G9T7BBAebw2JV38EINgKpy/ZH
-h7htyAkWYVoFsFPrwHounto8xTsySSePMiPlmIdQ10BcVSXMUJ3Juu16GlWOnAMJY2oYfEzmE7uT
-9YgcBqKCo65pTFmOnR/VVbjJk4K2xE34GC2nAdUQkPFuyaFisicc6HRMOYXPuF0DuwITEKnjxgNj
-P+qDrh0db7PAjO1D4d5ftfrsf+kdRR4gKVGSk8Tz2WwvtLAroJM4nXjNPIBJNT4w/FWWc/5qPHJy
-2U+eITZ5LLE5s45mX2oPFknWqxBobQZ8a9dsZ3dSPZBvE9ZrmtFLrVrN4eo1jsXgAp1+p7bkfqd3
-BgBEmfsYWlBXO8rVXfvPgLs32VdVNZxb/CDWPqBsiYv0Hv3HPsz07j5b+/cVoWqyHDKzkaVbxfq/
-7auNVRmPB3v5SWEsH8xi4Bez2V9UKxfYCnqsjp8RaC2/khxKt0A552Eaxnz/4ly/2C7wkwTQnBmd
-lFYhAflWKQ03Ufiu8t3iBE3VJbc25oMrglj7TRZrmKq3CkbFnX0fyulB+kHimrt6PIWn7kgyl9ae
-lIl6vtbhMA+l0nfrsORMa4kobqQ5C5rveVgmcIad67EDa+UqEKy/GltUwlSh6xy+TrK1tzDvAgMB
-AAGjggHMMIIByDAfBgNVHSMEGDAWgBQJwPL8C9qU21/+K9+omULPyeCtADAdBgNVHQ4EFgQUzMeD
-Mcimo0oz8o1R1Nver3ZVpSkwDgYDVR0PAQH/BAQDAgWgMAwGA1UdEwEB/wQCMAAwHQYDVR0lBBYw
-FAYIKwYBBQUHAwQGCCsGAQUFBwMCMEAGA1UdIAQ5MDcwNQYMKwYBBAGyMQECAQEBMCUwIwYIKwYB
-BQUHAgEWF2h0dHBzOi8vc2VjdGlnby5jb20vQ1BTMFoGA1UdHwRTMFEwT6BNoEuGSWh0dHA6Ly9j
-cmwuc2VjdGlnby5jb20vU2VjdGlnb1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1h
-aWxDQS5jcmwwgYoGCCsGAQUFBwEBBH4wfDBVBggrBgEFBQcwAoZJaHR0cDovL2NydC5zZWN0aWdv
-LmNvbS9TZWN0aWdvUlNBQ2xpZW50QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFpbENBLmNydDAj
-BggrBgEFBQcwAYYXaHR0cDovL29jc3Auc2VjdGlnby5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5m
-cmFkZWFkLm9yZzANBgkqhkiG9w0BAQsFAAOCAQEAyW6MUir5dm495teKqAQjDJwuFCi35h4xgnQv
-Q/fzPXmtR9t54rpmI2TfyvcKgOXpqa7BGXNFfh1JsqexVkIqZP9uWB2J+uVMD+XZEs/KYNNX2PvI
-lSPrzIB4Z2wyIGQpaPLlYflrrVFKv9CjT2zdqvy2maK7HKOQRt3BiJbVG5lRiwbbygldcALEV9Ch
-WFfgSXvrWDZspnU3Gjw/rMHrGnqlHtlyebp3pf3fSS9kzQ1FVtVIDrL6eqhTwJxe+pXSMMqFiN0w
-hpBtXdyDjzBtQTaZJ7zTT/vlehc/tDuqZwGHm/YJy883Ll+GP3NvOkgaRGWEuYWJJ6hFCkXYjyR9
-IzGCBMcwggTDAgEBMIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVz
-dGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMT
-NVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEA
-xr4ZlmdAxAMdKFES+jupfjANBglghkgBZQMEAgEFAKCCAeswGAYJKoZIhvcNAQkDMQsGCSqGSIb3
-DQEHATAcBgkqhkiG9w0BCQUxDxcNMjIwMjAxMTIzOTE3WjAvBgkqhkiG9w0BCQQxIgQgj62bH2Jf
-flFvJ+lzzzXRkNUPlUKtxv0mAK1zW4QUzrkwgb0GCSsGAQQBgjcQBDGBrzCBrDCBljELMAkGA1UE
-BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEYMBYG
-A1UEChMPU2VjdGlnbyBMaW1pdGVkMT4wPAYDVQQDEzVTZWN0aWdvIFJTQSBDbGllbnQgQXV0aGVu
-dGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQQIRAMa+GZZnQMQDHShREvo7qX4wgb8GCyqGSIb3
-DQEJEAILMYGvoIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVy
-MRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNl
-Y3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEAxr4Z
-lmdAxAMdKFES+jupfjANBgkqhkiG9w0BAQEFAASCAgCNFpV1wQb1yg1XOnuWMyF338fDbpdcOxk/
-RVcLgGPz5LMLa3xgK7fdYMoqypegHvGV6tt6NnQk4x4nLN+hjF8sZa1sAA6/aHPQ/s3YJuVhx19x
-Ea3A2PgWpcu4uMa1M3AP/HpwatTBxRkuUErbKt6AUP6xp4i9659ilL4+Cl+jXvs39uXC9Nah4G5S
-O/k6IFMNg8cOQvLKXKOgsGM16ra/3VGEyCZqMpC8xEm2cjLIDtmBVIuWUFRn2XtBl/M4sk5jYBvo
-sHz0dUCXzaqZNooZvitkRN1tOMNK6kwDth+o7x7wZ5m0wTeZaTKE0SGuJL/EjdXFxMBtQD3mrqNV
-xpkcgJklb0JzN3394YMo4SYQB2n1dDcica7PeqouitzsB/PjVpPK31BVzJO7kEhg3uGeE1VqRNG7
-0Xlj1sYEgYkV3fwA0ezFNL8ZUkgIHWFOa2iRg0Ol71kje9GpEfQlUbYX21lvdtAeyvHHzdx2/wHC
-Ef+l1cEGu5DCrKIpQcZJ7Rf17qkg8/blyOAynSNLlTnKgj3O6ut3jm+K1oDCnLBbontyPW95ehPQ
-EzWGDPVwgOgQ6IvTHuFBE+ym/Xft0kDfDly6RelIjEssHHfWA4tIXyxQekZgnGljHKpUwtjNe55k
-plsBhwXz7HKI7i0zV81XVH/s6wP9+GBa+5P3gCJUNAAAAAAAAA==
+# ls -la /sys/kernel/security/coco/efi_secret
+total 0
+drwxr-xr-x 2 root root 0 Jun 28 11:55 .
+drwxr-xr-x 3 root root 0 Jun 28 11:54 ..
+-r--r----- 1 root root 0 Jun 28 11:54 736870e5-84f0-4973-92ec-06879ce3da0b
+-r--r----- 1 root root 0 Jun 28 11:54 83c83f7f-1356-4975-8b7e-d3a0b54312c6
+-r--r----- 1 root root 0 Jun 28 11:54 9553f55d-3da2-43ee-ab5d-ff17f78864d2
 
 
---=-TyjvgykTtx18eaGdQ9cZ--
+[1] https://github.com/tianocore/edk2/commit/01726b6d23d4
+
+
+---
+
+v7 changes:
+ - Improve description of efi_secret module in Kconfig.
+ - Fix sparse warnings on pointer address space mismatch
+   (Reported-by: kernel test robot <lkp@intel.com>)
+
+v6: https://lore.kernel.org/linux-coco/20211129114251.3741721-1-dovmurik@linux.ibm.com/
+v6 changes:
+ - Autoload the efi_secret module if the secret area is populated
+   (thanks Greg KH).
+ - efi_secret: Depend on X86_64 because we use ioremap_encrypted() which
+   is only defined for this arch.
+ - efi_secret.c: Remove unneeded tableheader_guid local variable.
+ - Documentation fixes.
+
+v5: https://lore.kernel.org/linux-coco/20211118113359.642571-1-dovmurik@linux.ibm.com/
+v5 changes:
+ - Simplify EFI code: instead of copying the secret area, the firmware
+   marks the secret area as EFI_RESERVED_TYPE, and then the uefi_init()
+   code just keeps the pointer as it appears in the EFI configuration
+   table.  The use of reserved pages is similar to the AMD SEV-SNP
+   patches for handling SNP-Secrets and SNP-CPUID pages.
+ - In order to handle OVMF releases out there which mark the
+   confidential computing secrets page as EFI_BOOT_SERVICES_DATA, add
+   efi/libstub code that detects this and fixes the E820 map to reserve
+   this page.
+ - In the efi_secret module code, map the secrets page using
+   ioremap_encrypted (again, similar to the AMD SEV-SNP guest patches
+   for accessing SNP-Secrets and SNP-CPUID pages).
+ - Add documentation in Documentation/security/coco/efi_secret.
+
+v4: https://lore.kernel.org/linux-coco/20211020061408.3447533-1-dovmurik@linux.ibm.com/
+v4 changes:
+ - Guard all the new EFI and efi-stub code (patches 1+2) with #ifdef
+   CONFIG_EFI_COCO_SECRET (thanks Greg KH).  Selecting
+   CONFIG_EFI_SECRET=m (patch 3) will enable the EFI parts as well.
+ - Guard call to clflush_cache_range() with #ifdef CONFIG_X86
+   (Reported-by: kernel test robot <lkp@intel.com>)
+
+v3: https://lore.kernel.org/linux-coco/20211014130848.592611-1-dovmurik@linux.ibm.com/
+v3 changes:
+ - Rename the module to efi_secret
+ - Remove the exporting of clean_cache_range
+ - Use clflush_cache_range in wipe_memory
+ - Document function wipe_memory
+ - Initialize efi.coco_secret to EFI_INVALID_TABLE_ADDR to correctly detect
+   when there's no secret area published in the EFI configuration tables
+
+v2: https://lore.kernel.org/linux-coco/20211007061838.1381129-1-dovmurik@linux.ibm.com
+v2 changes:
+ - Export clean_cache_range()
+ - When deleteing a secret, call clean_cache_range() after explicit_memzero
+ - Add Documentation/ABI/testing/securityfs-coco-sev_secret
+
+v1: https://lore.kernel.org/linux-coco/20210809190157.279332-1-dovmurik@linux.ibm.com/
+
+RFC: https://lore.kernel.org/linux-coco/20210628183431.953934-1-dovmurik@linux.ibm.com/
+
+
+Dov Murik (5):
+  efi: Save location of EFI confidential computing area
+  efi/libstub: Reserve confidential computing secret area
+  virt: Add efi_secret module to expose confidential computing secrets
+  efi: Load efi_secret module if EFI secret area is populated
+  docs: security: Add coco/efi_secret documentation
+
+ .../ABI/testing/securityfs-coco-efi_secret    |  51 +++
+ Documentation/security/coco/efi_secret.rst    | 102 ++++++
+ Documentation/security/coco/index.rst         |   9 +
+ Documentation/security/index.rst              |   1 +
+ arch/x86/platform/efi/efi.c                   |   3 +
+ drivers/firmware/efi/Kconfig                  |  16 +
+ drivers/firmware/efi/Makefile                 |   1 +
+ drivers/firmware/efi/coco.c                   |  58 +++
+ drivers/firmware/efi/efi.c                    |   6 +
+ drivers/firmware/efi/libstub/x86-stub.c       |  28 ++
+ drivers/virt/Kconfig                          |   3 +
+ drivers/virt/Makefile                         |   1 +
+ drivers/virt/coco/efi_secret/Kconfig          |  19 +
+ drivers/virt/coco/efi_secret/Makefile         |   2 +
+ drivers/virt/coco/efi_secret/efi_secret.c     | 337 ++++++++++++++++++
+ include/linux/efi.h                           |  10 +
+ 16 files changed, 647 insertions(+)
+ create mode 100644 Documentation/ABI/testing/securityfs-coco-efi_secret
+ create mode 100644 Documentation/security/coco/efi_secret.rst
+ create mode 100644 Documentation/security/coco/index.rst
+ create mode 100644 drivers/firmware/efi/coco.c
+ create mode 100644 drivers/virt/coco/efi_secret/Kconfig
+ create mode 100644 drivers/virt/coco/efi_secret/Makefile
+ create mode 100644 drivers/virt/coco/efi_secret/efi_secret.c
+
+
+base-commit: 26291c54e111ff6ba87a164d85d4a4e134b7315c
+-- 
+2.25.1
 
