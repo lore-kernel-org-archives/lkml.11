@@ -2,63 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A67ECC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 10:44:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE94EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 10:44:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236028AbiBAKoT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 05:44:19 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:40170 "EHLO
-        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230497AbiBAKoK (ORCPT
+        id S235502AbiBAKoW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 05:44:22 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:58298 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235227AbiBAKoM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 05:44:10 -0500
+        Tue, 1 Feb 2022 05:44:12 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 38221CE17DF;
-        Tue,  1 Feb 2022 10:44:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BD32C340EC;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 42A0D614DC;
+        Tue,  1 Feb 2022 10:44:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BB2BC340ED;
         Tue,  1 Feb 2022 10:44:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1643712247;
-        bh=SIMjmziUWcpbFkWXO7CyZMzPR2P0hvql51eASbOkzis=;
-        h=From:To:Cc:Subject:Date:From;
-        b=B5fIHLJYWzWQBmVfNMUozPR8fvhTFnIa9of6gN1Mb8cKZp9fzFNmeBFMnh7Uardll
-         tbivBn7W4RAmhH/TOgcfUxwUg2YsLvV+LRx1yn6omsRwQuEHHNMiCCD4O4VnPdM9qq
-         6/L/AdVgLvstke9fX1E7oWxz8sw8lp7HdRv4VjFpPVVXA0WR2K5MvZW7Khhl5j7B+e
-         JbSv9k2qINnNd9W5m1CdiX2K0cqtuItF2R4qf0211iobAPWhA0BOYTZwjT4OaNrO+J
-         OY9wRsKSXtgE0Y0DsYpIwlB6yDdgL7e7fZkDDNsghkGsrmNvbjcWLeOSg0zoy+Bl5G
-         AV6NsCjhSAxQw==
+        bh=Sr/xJ/zkGk830k1xHWi1d7aXDQK5hf8tSKnBh/dmt2I=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=f8J9bAwf+8m3h7StnLUBrtZhlnXi9Y875sfPp4CbGxj6+oLEqO+bWI8p1h/h1C4Z6
+         7uvj+cGA49uB1irkIkvI9YH/xQndKzFvtznewqW+J+0kRx9bxgm5c8x3GpxP/PGrv3
+         UolN2wTjfHPQ2YWAV379XohlFX4SMHKc4bA1uToX7d9Khl9osqXXiy1nKyfFsK2Slv
+         qTuTW4BnRaEYIbJi028nH5iywJI9h70tZ5Oo+DWBnlOYfZUKxZOM91BoaMQqzGY8s5
+         aAYxVCs0xcVBdVyV+HQ3GJy2edwTkT/MjjWOalPQwxSrB9QI8rcKVyYEaBzsudHeGA
+         sIiBmO9xVyGDg==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan@kernel.org>)
-        id 1nEqdb-0002hQ-Fw; Tue, 01 Feb 2022 11:43:51 +0100
+        id 1nEqdb-0002hU-Mn; Tue, 01 Feb 2022 11:43:51 +0100
 From:   Johan Hovold <johan@kernel.org>
 To:     Johan Hovold <johan@kernel.org>
 Cc:     "Russell, Scott" <Scott.Russell2@ncr.com>,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 0/2] USB: serial: cp210x: add device ids for NCR products
-Date:   Tue,  1 Feb 2022 11:42:51 +0100
-Message-Id: <20220201104253.10345-1-johan@kernel.org>
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: [PATCH 2/2] USB: serial: cp210x: add CPI Bulk Coin Recycler id
+Date:   Tue,  1 Feb 2022 11:42:53 +0100
+Message-Id: <20220201104253.10345-3-johan@kernel.org>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220201104253.10345-1-johan@kernel.org>
+References: <20220201104253.10345-1-johan@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series adds a couple of new ids to the cp210x driver for devices
-found in various NCR products.
+Add the device id for the Crane Payment Innovation / Money Controls Bulk
+Coin Recycler:
 
-Johan
+	https://www.cranepi.com/en/system/files/Support/OM_BCR_EN_V1-04_0.pdf
 
+Reported-by: Scott Russell <Scott.Russell2@ncr.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Johan Hovold <johan@kernel.org>
+---
+ drivers/usb/serial/cp210x.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Johan Hovold (2):
-  USB: serial: cp210x: add NCR Retail IO box id
-  USB: serial: cp210x: add CPI Bulk Coin Recycler id
-
- drivers/usb/serial/cp210x.c | 2 ++
- 1 file changed, 2 insertions(+)
-
+diff --git a/drivers/usb/serial/cp210x.c b/drivers/usb/serial/cp210x.c
+index 5172e7ac16fd..a27f7efcec6a 100644
+--- a/drivers/usb/serial/cp210x.c
++++ b/drivers/usb/serial/cp210x.c
+@@ -69,6 +69,7 @@ static const struct usb_device_id id_table[] = {
+ 	{ USB_DEVICE(0x0FCF, 0x1004) }, /* Dynastream ANT2USB */
+ 	{ USB_DEVICE(0x0FCF, 0x1006) }, /* Dynastream ANT development board */
+ 	{ USB_DEVICE(0x0FDE, 0xCA05) }, /* OWL Wireless Electricity Monitor CM-160 */
++	{ USB_DEVICE(0x106F, 0x0003) },	/* CPI / Money Controls Bulk Coin Recycler */
+ 	{ USB_DEVICE(0x10A6, 0xAA26) }, /* Knock-off DCU-11 cable */
+ 	{ USB_DEVICE(0x10AB, 0x10C5) }, /* Siemens MC60 Cable */
+ 	{ USB_DEVICE(0x10B5, 0xAC70) }, /* Nokia CA-42 USB */
 -- 
 2.34.1
 
