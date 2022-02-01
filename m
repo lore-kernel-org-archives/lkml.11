@@ -2,108 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99A57C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 01:29:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 375B1C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 01:33:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231852AbiBAB34 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 20:29:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48156 "EHLO
+        id S231881AbiBABdH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 31 Jan 2022 20:33:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231829AbiBAB3y (ORCPT
+        with ESMTP id S231829AbiBABdG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 20:29:54 -0500
-Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8554DC061714;
-        Mon, 31 Jan 2022 17:29:54 -0800 (PST)
-Received: by mail-il1-x12e.google.com with SMTP id i1so13030121ils.5;
-        Mon, 31 Jan 2022 17:29:54 -0800 (PST)
+        Mon, 31 Jan 2022 20:33:06 -0500
+Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D3BDC061714
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 17:33:06 -0800 (PST)
+Received: by mail-qt1-x833.google.com with SMTP id s1so14364qtw.9
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 17:33:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XqG+5fzWY0U/afJ1BOIAM3pbp3MnppszbdOcfZ9XLtI=;
-        b=eT2WsnR1FbC9brGF7W8Vk+2VvwRznIY7/OT1DBCaXlkXWT5CErIBQYnrko4m6aUHpB
-         3EwaWXW2Ro5EwSP84rvJhBFjlrim3RxiB0fPdAISf7x32lWX1PiV0IERjh0T1I53muxI
-         ozmuuMjZ5IwZCUUBZRDQeZyJywS8mId6mt1GympL0FHCYqy7ROo/2zzxIqJZ9t5k/EyW
-         KRBRj975mgUledpaue1zFz1KY072gGM96y0gxZqAKvLSZCac0lag0xrBG32VVNz9jyLj
-         58b6VD0bVR6CeUHzzcAK4WyZdHuStG5rxXgYiqEHuFtfg0s7HuRGtoVNr5lNJNSC4DVF
-         SxDQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MoWm32zvhEyqRVmUpa5LXZEYybwAAQFRmq/wU8a+Gt4=;
+        b=EgGzc5rt8LRF5c2Eif2fVlYrh9HTecIoACGjTA6wXsMIE5Cq6qPShWc2VkeRIbLQLJ
+         NzdWdQo2IAl4ibTNTDpXspNbyJX8M4MXNhOrJdH7s1L6p52qZ4QQmdA9tPnPO84GtTBx
+         t7MPx8RQAxDA9goxsppgIVZ+UrbAWYJM/6BsuBOZkSZXcDSdMWpTIxG/j+/nhuMs3Lqj
+         3/1dB0rzc7uOB2csLmqRxJfM1rzyDgXH68UG9wViOR32SdzStDiwpIWGxdl9ILrg8+5K
+         qn0HtVvCShbOisPior89CQpUSaHiw49SefIEMrjQqmB2DRVai7BMhol9HGp4yJaVyAvZ
+         B1yQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XqG+5fzWY0U/afJ1BOIAM3pbp3MnppszbdOcfZ9XLtI=;
-        b=rdEZL6SJOwUBuoDPzsfL4Zc2n/7NNWVFDnd2c/M3TgPT0b22uexbR6M0cIdiGMPlal
-         CXKRrx/LmANEWPuMrAvqyjInMrrqfIgW6NmG7Ec72PYGFhHBdTGzR54tx8IO1dvmNKSZ
-         wGLaZ+nkKs3K9z3lhQBnKyvlNnAOtQAmhO8nXh2+I1zY2XXr3IbrZWM4Vzb5K/CJVgqG
-         yXzpytfh+E0obNjgKDei8ZErRVh9UoLxy+dzPB5OiguPhtWtnnnLMOxCW4kagX08MwWl
-         UFciV32zdOpO6WwmFohtVEcpPRwZK+5YTssVwVSkMLNJD05F+BJzdynH1wf7S6kKX6A+
-         8oLw==
-X-Gm-Message-State: AOAM533X2UFrbxzATe91Uy/eUuL42XH3B0cJMn0iZKsYC/cxhJV9GSRb
-        LkCz37xz57cUxOvsLdVfJ0FY0tmAEkI/ngljGFg=
-X-Google-Smtp-Source: ABdhPJycYZQaQXEpbkKL1+jfKuIawVfU7apQcaQUm9HHQzIFTwYqhllQUkV2zogf0BOGtvghjEJDVcZtEj64Hv7xtAk=
-X-Received: by 2002:a05:6e02:20cd:: with SMTP id 13mr13460574ilq.225.1643678993918;
- Mon, 31 Jan 2022 17:29:53 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MoWm32zvhEyqRVmUpa5LXZEYybwAAQFRmq/wU8a+Gt4=;
+        b=6H7YPR+tj4ZrSyqoJ/7nEOeWTVx7hr2FtBqvNDvOe0qQFa/um9yYk4KshooTIsjFLd
+         mK3W1ikCFIL2Jv3DaszDliua9DhU7IoXg/rmO3b0tClHuwvaC25mrO5RojcUBzQJE41v
+         bGYRakCdsQjYBs0V47e61wI8xuwiw1oNuhFgCO36d6xb32u7OOUum+aOd9G+tB2iwneq
+         FPK0/craCDrD8Kz42gxNPNQeRxzyNVgPduLx2csJUev/uM121rUqPfb1uoWvq52ird+0
+         83QE1xKley/rKfjsNHAMBmN8s4zdVPHS35Ksot7tLIVhFB2Vuls6m40jqBhu7A3Q0c6N
+         NHcQ==
+X-Gm-Message-State: AOAM531KkH7kCpzRA4UIyE4QFcH6dIvY7j4uzaz2ws2TMh2DH/m4Qjvd
+        3+mUQysStLAmGimGas3bhPiFOGSWJM6hPOVk
+X-Google-Smtp-Source: ABdhPJx9XbvUrAI3Emn6dngj5AmQ9NNxFJ3HrnmEE5AIo9Ak4wHhNAJY3XZGyeDXTS4yuiTX27NoKw==
+X-Received: by 2002:a05:622a:1881:: with SMTP id v1mr17345340qtc.683.1643679185259;
+        Mon, 31 Jan 2022 17:33:05 -0800 (PST)
+Received: from WRT-WX9.. ([207.246.89.135])
+        by smtp.gmail.com with ESMTPSA id v73sm9272458qkb.51.2022.01.31.17.33.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 31 Jan 2022 17:33:04 -0800 (PST)
+From:   Changbin Du <changbin.du@gmail.com>
+To:     Nick Desaulniers <ndesaulniers@google.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
+        llvm@lists.linux.dev, Changbin Du <changbin.du@gmail.com>
+Subject: [PATCH] kallsyms: ignore all local labels prefixed by '.L'
+Date:   Tue,  1 Feb 2022 09:32:57 +0800
+Message-Id: <20220201013257.17926-1-changbin.du@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-References: <20220131105233.561926043@linuxfoundation.org>
-In-Reply-To: <20220131105233.561926043@linuxfoundation.org>
-From:   Zan Aziz <zanaziz313@gmail.com>
-Date:   Mon, 31 Jan 2022 18:29:43 -0700
-Message-ID: <CAFU3qoarf16tYk6JxRn=R07pp4G4ZjU1RDTO+xwgLyAzsVU_Ag@mail.gmail.com>
-Subject: Re: [PATCH 5.16 000/200] 5.16.5-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 31, 2022 at 8:38 AM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> This is the start of the stable review cycle for the 5.16.5 release.
-> There are 200 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Wed, 02 Feb 2022 10:51:59 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.5-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+The llvm compiler can generate lots of local labels ('.LBB', '.Ltmpxxx',
+'.L__unnamed_xx', etc.). These symbols usually are useless for debugging.
+And they might overlap with handwritten symbols.
 
-Hi Greg,
+Before this change, a dumpstack shows a local symbol for epc:
+[    0.040341][    T0] Hardware name: riscv-virtio,qemu (DT)
+[    0.040376][    T0] epc : .LBB6_14+0x22/0x6a
+[    0.040452][    T0]  ra : restore_all+0x12/0x6e
 
-Compiled and booted on my test system Lenovo P50s: Intel Core i7
-No emergency and critical messages in the dmesg
+The simple solution is that we can ignore all local labels prefixed by '.L'.
+For handwritten symbols which need to be preserved should drop the '.L'
+prefix.
 
-./perf bench sched all
-# Running sched/messaging benchmark...
-# 20 sender and receiver processes per group
-# 10 groups == 400 processes run
+After this change, the C defined symbol is shown so we can locate the
+problematical code immediately:
+[    0.035795][    T0] Hardware name: riscv-virtio,qemu (DT)
+[    0.036332][    T0] epc : trace_hardirqs_on+0x54/0x13c
+[    0.036567][    T0]  ra : restore_all+0x12/0x6e
 
-     Total time: 0.436 [sec]
+Signed-off-by: Changbin Du <changbin.du@gmail.com>
+---
+ scripts/kallsyms.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-# Running sched/pipe benchmark...
-# Executed 1000000 pipe operations between two processes
+diff --git a/scripts/kallsyms.c b/scripts/kallsyms.c
+index 54ad86d13784..8caabddf817c 100644
+--- a/scripts/kallsyms.c
++++ b/scripts/kallsyms.c
+@@ -108,7 +108,7 @@ static bool is_ignored_symbol(const char *name, char type)
+ 	/* Symbol names that begin with the following are ignored.*/
+ 	static const char * const ignored_prefixes[] = {
+ 		"$",			/* local symbols for ARM, MIPS, etc. */
+-		".LASANPC",		/* s390 kasan local symbols */
++		".L",			/* local labels, .LBB,.Ltmpxxx,.L__unnamed_xx,.LASANPC, etc. */
+ 		"__crc_",		/* modversions */
+ 		"__efistub_",		/* arm64 EFI stub namespace */
+ 		"__kvm_nvhe_",		/* arm64 non-VHE KVM namespace */
+-- 
+2.32.0
 
-     Total time: 7.170 [sec]
-
-       7.170326 usecs/op
-         139463 ops/sec
-
-Tested-by: Zan Aziz <zanaziz313@gmail.com>
-
-Thanks
--Zan
