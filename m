@@ -2,235 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 480E0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 10:35:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA5BAC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 10:36:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236673AbiBAKfg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 05:35:36 -0500
-Received: from mga11.intel.com ([192.55.52.93]:29580 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236363AbiBAKfd (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 05:35:33 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643711733; x=1675247733;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=dR+QOJxnkE6GVHwgAPs37bLNEhZ4Eqned8O/rWJz3FM=;
-  b=Yj7NHm7YHWWtzFVfjhzSAihpFIqRVuFmTj80w+mPzEnnGRzrHi0lkk5X
-   YOE+capjXZxc3F3XtpiZsPVacLsRiyht3sE8G05q4ZBdYLSTl1h8Maapf
-   T20IUxZ1XZqbYb5wmmGW6SJBBuunSacDYBPW9o6sxKUlGY1cehlgYaKPG
-   agi88FhWmXy9smA6VJOpfEDd9zZsHjl7UGaZJKRZ5Yz9XK7cPFlKLd9ou
-   r1GY2KCIAxMN50642/4onDT94s4qNZQOPsRfcUib7s5tJnLZt3Pf7pZnK
-   emDFCYMkEM9KbmYv+EmNki/X/BTt/9C3020qGdCnRxCv1BiB8MBVQF+qZ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10244"; a="245256287"
-X-IronPort-AV: E=Sophos;i="5.88,333,1635231600"; 
-   d="scan'208";a="245256287"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2022 02:35:32 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,333,1635231600"; 
-   d="scan'208";a="619755407"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 01 Feb 2022 02:35:31 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nEqVW-000T8V-Kp; Tue, 01 Feb 2022 10:35:30 +0000
-Date:   Tue, 01 Feb 2022 18:34:29 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [paulmck-rcu:dev.2022.01.26b] BUILD SUCCESS
- e3e3a2353a263f709be2817bf9d5b43b728921fe
-Message-ID: <61f90cb5.LE+q1zeIIdN7ZgzX%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        id S236691AbiBAKgy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 05:36:54 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:48279 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236678AbiBAKgx (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 1 Feb 2022 05:36:53 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643711812;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=kaqBrIFOHvMLEnJtoyzrnK2gwLgrZ2ScPtfEFGlgxAY=;
+        b=UTlJo8OdsCAk5giON9iSJqA41YHNOkiVF7bKoCiHubF1VzcstSpz0D7EEtkoELp1Y6PoIb
+        CtbcVuXlP+ZjcpWhIibsFG1MgCjoBuiET1ZZyX3iv7v58tTetPnmAnQRe54hehO4MYepap
+        J6oy1UaNMJ1Svs8CEgE8Rx6aXnle3iM=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-294-1C3FyQkKN6aqq-xI4NDTqQ-1; Tue, 01 Feb 2022 05:36:51 -0500
+X-MC-Unique: 1C3FyQkKN6aqq-xI4NDTqQ-1
+Received: by mail-wr1-f69.google.com with SMTP id i25-20020adfaad9000000b001e01f5804abso3193316wrc.2
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Feb 2022 02:36:51 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=kaqBrIFOHvMLEnJtoyzrnK2gwLgrZ2ScPtfEFGlgxAY=;
+        b=MtUIEZi+4xSpH+Exyd6WkmjI1dprhfEyadvK0kKsdXiFaDDRAscyYcFM8qpo69Q9hg
+         cmnCosgVM4dnyPGyfDk1HWA/Rt8EPMISNllAGFQbR5R1lYAN1jLAp0Xu5h0Yvsn7QEAN
+         wgZOqHGvz6GEYrWlOdbr23jnPBMXCP2xoIXaNtDbMRvcOFWGtptMMxzUjXLZjicSOvVi
+         rK/sGAlSEZ3pyvQ7+9gdJiuaYAd+k17pIMk+4KbDB8OxKyswVsyoCo4OnmKZFrYzZOpH
+         KaikEwZ4JJJU8BdNCaOmDrLBWn0fu+cR3nadtW+KjwcjAY4FyQXPtpCsw98pExdSmZbz
+         upGQ==
+X-Gm-Message-State: AOAM531RE76aAH3nk8ELlYjEzMHlKWrJ7hb0nAm2OezzV1DUacVdskhR
+        kmfr2LEA5BpO+Cf600kKELIKdVlSNNT7FWPVR5a1Btb3O4PJVaX3EVQTMCP93BY7uBnbaIqj2kD
+        KnhcU+2RalzJ06vBsBKzY7/oM
+X-Received: by 2002:a7b:c44e:: with SMTP id l14mr1191964wmi.185.1643711810162;
+        Tue, 01 Feb 2022 02:36:50 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwIelI3cz+7Zacd+5ZQQgX/8LYNpRzY3LsR8zgGmcKlb1QIdL+Q4hi84F8M/23d0R26+66jvw==
+X-Received: by 2002:a7b:c44e:: with SMTP id l14mr1191934wmi.185.1643711809893;
+        Tue, 01 Feb 2022 02:36:49 -0800 (PST)
+Received: from [192.168.1.102] ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id k25sm1751285wms.23.2022.02.01.02.36.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 01 Feb 2022 02:36:49 -0800 (PST)
+Message-ID: <1a49a91a-1f6d-51c0-561b-5e5a519f3b49@redhat.com>
+Date:   Tue, 1 Feb 2022 11:36:48 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 0/4] drm/tiny: Add driver for Solomon SSD1307 OLED
+ displays
+Content-Language: en-US
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+        Linux PWM List <linux-pwm@vger.kernel.org>
+References: <20220131201225.2324984-1-javierm@redhat.com>
+ <CAMuHMdXMayLLRavAJJujmPqT+Vd11dPfycqXie3w_pOkS8i9eA@mail.gmail.com>
+From:   Javier Martinez Canillas <javierm@redhat.com>
+In-Reply-To: <CAMuHMdXMayLLRavAJJujmPqT+Vd11dPfycqXie3w_pOkS8i9eA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git dev.2022.01.26b
-branch HEAD: e3e3a2353a263f709be2817bf9d5b43b728921fe  fixup! srcu: Automatically determine size-transition strategy at boot
+Hello Geert,
 
-elapsed time: 732m
+On 2/1/22 09:43, Geert Uytterhoeven wrote:
+> Hi Javier,
+> 
+> On Mon, Jan 31, 2022 at 9:12 PM Javier Martinez Canillas
+> <javierm@redhat.com> wrote:
+>> This patch series adds a DRM driver for the Solomon OLED SSD1305, SSD1306,
+>> SSD1307 and SSD1309 displays. It is a port of the ssd1307fb fbdev driver.
+> 
+> Thanks for your series!
+> 
+> I'll give it a try on an Adafruit FeatherWing 128x32 OLED, connected
+> to an OrangeCrab ECP5 FPGA board running a 64 MHz VexRiscv RISC-V
+> softcore.
+>
 
-configs tested: 160
-configs skipped: 3
+Awesome! let me know if you have any issues. I keep an update-to-date version
+at https://github.com/martinezjavier/linux/tree/ssd1307
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+>> Using the DRM fb emulation, all the tests from Geert Uytterhoeven's fbtest
+>> (https://git.kernel.org/pub/scm/linux/kernel/git/geert/fbtest.git) passes:
+>>
+>>      ./fbtest -f /dev/fb1
+>>     Using drawops cfb32 (32 bpp packed pixels)
+>>     Available visuals:
+>>       Monochrome
+>>       Grayscale 256
+>>       Truecolor 8:8:8:0
+> 
+> Oh, fake 32-bpp truecolor ;-)
+>
 
-gcc tested configs:
-arm                                 defconfig
-arm64                            allyesconfig
-arm64                               defconfig
-arm                              allyesconfig
-arm                              allmodconfig
-i386                 randconfig-c001-20220131
-powerpc              randconfig-c003-20220131
-i386                          randconfig-c001
-sh                          rsk7203_defconfig
-mips                           xway_defconfig
-um                               alldefconfig
-powerpc                 mpc834x_mds_defconfig
-sh                          urquell_defconfig
-arm                       imx_v6_v7_defconfig
-arc                            hsdk_defconfig
-powerpc                     taishan_defconfig
-sh                            titan_defconfig
-m68k                           sun3_defconfig
-sh                        sh7763rdp_defconfig
-mips                         mpc30x_defconfig
-sh                          rsk7269_defconfig
-powerpc                    klondike_defconfig
-powerpc                      ppc40x_defconfig
-powerpc                 mpc837x_rdb_defconfig
-parisc                           alldefconfig
-m68k                       m5208evb_defconfig
-xtensa                           allyesconfig
-arc                    vdk_hs38_smp_defconfig
-powerpc                 mpc837x_mds_defconfig
-riscv                    nommu_k210_defconfig
-mips                      fuloong2e_defconfig
-powerpc                      arches_defconfig
-arm                           stm32_defconfig
-sh                  sh7785lcr_32bit_defconfig
-powerpc                     asp8347_defconfig
-arm                      footbridge_defconfig
-sh                          kfr2r09_defconfig
-sh                           se7724_defconfig
-ia64                        generic_defconfig
-sh                           se7343_defconfig
-sh                             shx3_defconfig
-arm                          gemini_defconfig
-xtensa                       common_defconfig
-h8300                            allyesconfig
-powerpc                       eiger_defconfig
-powerpc                        cell_defconfig
-microblaze                      mmu_defconfig
-arc                                 defconfig
-sh                               alldefconfig
-m68k                          sun3x_defconfig
-mips                      maltasmvp_defconfig
-powerpc                      bamboo_defconfig
-mips                        jmr3927_defconfig
-openrisc                         alldefconfig
-mips                         db1xxx_defconfig
-arm                  randconfig-c002-20220130
-arm                  randconfig-c002-20220131
-ia64                             allmodconfig
-ia64                                defconfig
-ia64                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-m68k                             allyesconfig
-nios2                               defconfig
-arc                              allyesconfig
-nds32                             allnoconfig
-nds32                               defconfig
-nios2                            allyesconfig
-csky                                defconfig
-alpha                               defconfig
-alpha                            allyesconfig
-sh                               allmodconfig
-parisc                              defconfig
-s390                             allyesconfig
-s390                             allmodconfig
-parisc                           allyesconfig
-s390                                defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-sparc                               defconfig
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                          allmodconfig
-powerpc                           allnoconfig
-x86_64               randconfig-a004-20220131
-x86_64               randconfig-a003-20220131
-x86_64               randconfig-a001-20220131
-x86_64               randconfig-a006-20220131
-x86_64               randconfig-a005-20220131
-x86_64               randconfig-a002-20220131
-i386                 randconfig-a006-20220131
-i386                 randconfig-a005-20220131
-i386                 randconfig-a003-20220131
-i386                 randconfig-a002-20220131
-i386                 randconfig-a001-20220131
-i386                 randconfig-a004-20220131
-i386                          randconfig-a012
-i386                          randconfig-a014
-i386                          randconfig-a016
-riscv                            allyesconfig
-riscv                    nommu_virt_defconfig
-riscv                             allnoconfig
-riscv                               defconfig
-riscv                          rv32_defconfig
-riscv                            allmodconfig
-x86_64                    rhel-8.3-kselftests
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                           allyesconfig
-x86_64                              defconfig
-x86_64                               rhel-8.3
-x86_64                          rhel-8.3-func
-x86_64                                  kexec
+Yes :) that's what the repaper drivers does to have maximum compatibility
+with existing user-space and I followed the same.
+ 
+> Does it run modetest, too?
+>
 
-clang tested configs:
-riscv                randconfig-c006-20220130
-x86_64                        randconfig-c007
-arm                  randconfig-c002-20220130
-powerpc              randconfig-c003-20220130
-mips                 randconfig-c004-20220130
-i386                          randconfig-c001
-riscv                randconfig-c006-20220201
-powerpc              randconfig-c003-20220201
-mips                 randconfig-c004-20220201
-arm                  randconfig-c002-20220201
-powerpc                          allyesconfig
-arm                             mxs_defconfig
-arm                        spear3xx_defconfig
-powerpc                        fsp2_defconfig
-arm                           spitz_defconfig
-powerpc                          allmodconfig
-arm                  colibri_pxa270_defconfig
-arm                       versatile_defconfig
-arm                         orion5x_defconfig
-mips                   sb1250_swarm_defconfig
-powerpc                 mpc8560_ads_defconfig
-arm                        vexpress_defconfig
-mips                       lemote2f_defconfig
-mips                          rm200_defconfig
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-x86_64               randconfig-a013-20220131
-x86_64               randconfig-a015-20220131
-x86_64               randconfig-a014-20220131
-x86_64               randconfig-a016-20220131
-x86_64               randconfig-a011-20220131
-x86_64               randconfig-a012-20220131
-i386                 randconfig-a011-20220131
-i386                 randconfig-a013-20220131
-i386                 randconfig-a014-20220131
-i386                 randconfig-a012-20220131
-i386                 randconfig-a015-20220131
-i386                 randconfig-a016-20220131
-i386                          randconfig-a011
-i386                          randconfig-a013
-i386                          randconfig-a015
-riscv                randconfig-r042-20220131
-hexagon              randconfig-r045-20220130
-hexagon              randconfig-r045-20220131
-hexagon              randconfig-r041-20220130
-hexagon              randconfig-r041-20220131
+It does, yes. And for example `modetest -M ssd1307` will print all the
+info about encoders, connectors, CRTs, etc.
+ 
+> I'm trying to get modetest working on my atari DRM driver.
+> Comparing to the cirrus driver doesn't help much, as modetest doesn't
+> seem to work with the cirrus driver (modified to not do hardware
+> access, as I don't have cirrus hardware):
+> 
+>     # modetest -M cirrus -s 31:1024x768-60Hz
+>     setting mode 1024x768-60.00Hz on connectors 31, crtc 34
+>     failed to set gamma: Function not implemented
+>
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+# modetest -M ssd1307 -c -s 31:128x64-0.12Hz
+...
+setting mode 128x64-0.12Hz on connectors 31, crtc 33
+failed to set gamma: Function not implemented
+
+this seems to be a bug in modetest. I found a patch posted some time ago
+but never landed: https://www.spinics.net/lists/dri-devel/msg251356.html
+ 
+> Does there exist another simple test program for showing something
+> using the DRM API?
+>
+
+I tested with plymouth and gdm that make use of the DRM API, they do
+start and I see something on the screen but don't really handle that
+well the fact that's a 128x64 resolution.
+
+I didn't test with more DRM programs because was mostly interested in
+making sure that the fbdev emulation was working correctly.
+
+Noticed that Simon shared some simple examples, I'll give them a try. 
+
+Best regards,
+-- 
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
+
