@@ -2,109 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E3CCC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 02:57:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE9EFC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 02:58:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232659AbiBAC4O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 21:56:14 -0500
-Received: from mga02.intel.com ([134.134.136.20]:28241 "EHLO mga02.intel.com"
+        id S232742AbiBAC6x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 31 Jan 2022 21:58:53 -0500
+Received: from zinan.dashjr.org ([192.3.11.21]:45044 "EHLO zinan.dashjr.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229519AbiBAC4N (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 21:56:13 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643684173; x=1675220173;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=/j4MttSatOc0Tx7VFvWr6LM+70zW2UZKPfizy8rvSjg=;
-  b=kv29FfkrvC526TMZ9cYH7PnjikiLlrqNT5QjPkwC/3/1DQiGH7fuZIo/
-   8hbJiKrykfWHA97Sdtzkfefuk06DhMa1/IXlvJhdjZCuQZ/K299RVLLY5
-   SuPmGk5VYBxLIdKJEVmlgR5C55N3DkEw9URwoe8yUSRUnv9vNIzLX4QjI
-   LSHebuEKDqWwgGEu8mq7eLE/r5GVOZFownED6vxzNoLpwWD9rZqc7iGa3
-   Qa3+OBCwO7e+qAId9dta8eKwmUcwTl2LVHUq1EL2hUZ0+sBglxfFxSOrI
-   u/NYCkR1vuarRqH5cuPgb/8ABIKP20Wv9kWh1E5rsm8GYPUUu2zl9w0UA
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10244"; a="235003623"
-X-IronPort-AV: E=Sophos;i="5.88,332,1635231600"; 
-   d="scan'208";a="235003623"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 18:56:12 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,332,1635231600"; 
-   d="scan'208";a="698254737"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 31 Jan 2022 18:56:10 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nEjL0-000SfV-0G; Tue, 01 Feb 2022 02:56:10 +0000
-Date:   Tue, 1 Feb 2022 10:55:42 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Tomohito Esaki <etom@igel.co.jp>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: [drm-misc:drm-misc-next 3/4] drivers/gpu/drm/sprd/sprd_drm.c:46:19:
- error: no member named 'allow_fb_modifiers' in 'struct drm_mode_config'
-Message-ID: <202202011014.rBztJFU3-lkp@intel.com>
+        id S229519AbiBAC6w (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 21:58:52 -0500
+X-Greylist: delayed 1717 seconds by postgrey-1.27 at vger.kernel.org; Mon, 31 Jan 2022 21:58:52 EST
+Received: from ishibashi.lan (unknown [12.190.236.195])
+        (Authenticated sender: luke-jr)
+        by zinan.dashjr.org (Postfix) with ESMTPSA id CAA6738ACF8C;
+        Tue,  1 Feb 2022 02:29:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=dashjr.org; s=zinan;
+        t=1643682613; bh=o3gtN/Vx2dLD0Uuszh1E05+YciwGrZmwzVe2XUNBr9o=;
+        h=From:To:Subject:Date:Cc;
+        b=Ye7eMxYq7XKPQSss2wi4UOVUH+xPtWuOVPyryzXJu2vkOvncNOIO1cHSBZEM98cMR
+         N2istwtUdnZG2dy5W4S0jsD+gqbEYYoFmQlQqhlwPtGxOAtOpJw82Jms1QT01Z2tQy
+         U4rYYzbGXBi8GySZo6p6JWbBA2nr25gDMq6yDMjc=
+X-Hashcash: 1:25:220201:minchan@kernel.org::SIp/2hwevdeFI/wg:fQvo
+X-Hashcash: 1:25:220201:ngupta@vflare.org::/D0dYl5Oml0l5GcH:brE7S
+X-Hashcash: 1:25:220201:linux-kernel@vger.kernel.org::JHReup3bv3dE2UgU:bo6US
+From:   Luke Dashjr <luke@dashjr.org>
+To:     Minchan Kim <minchan@kernel.org>, Nitin Gupta <ngupta@vflare.org>
+Subject: zram corruption
+Date:   Tue, 1 Feb 2022 02:29:26 +0000
+User-Agent: KMail/1.9.10
+Cc:     linux-kernel@vger.kernel.org
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: Text/Plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Message-Id: <202202010229.27088.luke@dashjr.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://anongit.freedesktop.org/drm/drm-misc drm-misc-next
-head:   d80976d9ffd9d7f89a26134a299b236910477f3b
-commit: 3d082157a24216ca084082ce421a37d14ecfcfad [3/4] drm: remove allow_fb_modifiers
-config: arm-buildonly-randconfig-r004-20220130 (https://download.01.org/0day-ci/archive/20220201/202202011014.rBztJFU3-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 6b1e844b69f15bb7dffaf9365cd2b355d2eb7579)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        git remote add drm-misc git://anongit.freedesktop.org/drm/drm-misc
-        git fetch --no-tags drm-misc drm-misc-next
-        git checkout 3d082157a24216ca084082ce421a37d14ecfcfad
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/gpu/drm/sprd/
+I use ext4 on zram for my temp directories, and sometimes rarely, things get 
+corrupted. Using ext4 on a normal disk works fine in the same scenarios.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+I haven't managed to figure out what exactly is going on, but I do have a
+157 GB strace log of it happening.
 
-All errors (new ones prefixed by >>):
+One scenario that fairly reliably reproduces it, is building 3 copies of 
+binutils in parallel. About half the 
+time, /var/tmp/portage/cross-i686-w64-mingw32/binutils-2.37_p1-r2/work/build/binutils/.deps/stabs.Po 
+ends up truncated, and one of the builds fails.
 
->> drivers/gpu/drm/sprd/sprd_drm.c:46:19: error: no member named 'allow_fb_modifiers' in 'struct drm_mode_config'
-           drm->mode_config.allow_fb_modifiers = true;
-           ~~~~~~~~~~~~~~~~ ^
-   1 error generated.
+The only other scenario I've seen it happen in (much less reproducible), is 
+running Bitcoin functional tests. In this case, however, the ext4 structure 
+itself got corrupted, and Linux was unable to recover (the directories 
+affected became unusable until reboot).
 
+I suspect it's probably a threading-related issue, but it's plausible it could 
+be page size related (I *think* I'm using 64k pages) though in the latter 
+case I would expect it to be much more common.
 
-vim +46 drivers/gpu/drm/sprd/sprd_drm.c
-
-43531edd53f07c Kevin Tang 2021-12-07  39  
-43531edd53f07c Kevin Tang 2021-12-07  40  static void sprd_drm_mode_config_init(struct drm_device *drm)
-43531edd53f07c Kevin Tang 2021-12-07  41  {
-43531edd53f07c Kevin Tang 2021-12-07  42  	drm->mode_config.min_width = 0;
-43531edd53f07c Kevin Tang 2021-12-07  43  	drm->mode_config.min_height = 0;
-43531edd53f07c Kevin Tang 2021-12-07  44  	drm->mode_config.max_width = 8192;
-43531edd53f07c Kevin Tang 2021-12-07  45  	drm->mode_config.max_height = 8192;
-43531edd53f07c Kevin Tang 2021-12-07 @46  	drm->mode_config.allow_fb_modifiers = true;
-43531edd53f07c Kevin Tang 2021-12-07  47  
-43531edd53f07c Kevin Tang 2021-12-07  48  	drm->mode_config.funcs = &sprd_drm_mode_config_funcs;
-43531edd53f07c Kevin Tang 2021-12-07  49  	drm->mode_config.helper_private = &sprd_drm_mode_config_helper;
-43531edd53f07c Kevin Tang 2021-12-07  50  }
-43531edd53f07c Kevin Tang 2021-12-07  51  
-
-:::::: The code at line 46 was first introduced by commit
-:::::: 43531edd53f07cbe977a0b33dea6dd6c29b21fea drm/sprd: add Unisoc's drm kms master
-
-:::::: TO: Kevin Tang <kevin3.tang@gmail.com>
-:::::: CC: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+https://bugzilla.kernel.org/show_bug.cgi?id=215557
