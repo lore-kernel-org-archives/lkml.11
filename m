@@ -2,457 +2,449 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91F1BC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 16:14:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 580EDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 16:14:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240927AbiBAQOq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 11:14:46 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:45238 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240852AbiBAQOo (ORCPT
+        id S240953AbiBAQOy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 11:14:54 -0500
+Received: from mail.nearlyone.de ([46.163.114.145]:38254 "EHLO
+        mail.nearlyone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240933AbiBAQOw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 11:14:44 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 70BD961704;
-        Tue,  1 Feb 2022 16:14:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31FEAC340EB;
-        Tue,  1 Feb 2022 16:14:43 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="iZYIzyVE"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1643732080;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=Bow9uuvNYJkUAuO8yGFI2Stb2coPPn6tOpqzzE/dSXc=;
-        b=iZYIzyVEnEKn20GOanSb7JMCrjLnxm9u2xJXjn5vmuQ03/pd5hVZMOdcI0meMjXckWbEAZ
-        vii+ufabXzEczB7wlgsx185rJYLM4sH3q9YMbf2oFfmiCGhIQFrb4dluW22xeFRj80YsTM
-        mdWnqAjNmxQMYy9KkY8cIq5ZHT1Cm8A=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 1311b805 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Tue, 1 Feb 2022 16:14:39 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>
-Subject: [PATCH] random: use computational hash for entropy extraction
-Date:   Tue,  1 Feb 2022 17:13:42 +0100
-Message-Id: <20220201161342.154666-1-Jason@zx2c4.com>
+        Tue, 1 Feb 2022 11:14:52 -0500
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 555365D21F;
+        Tue,  1 Feb 2022 17:14:45 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=monom.org; s=dkim;
+        t=1643732087; h=from:subject:date:message-id:to:cc:mime-version:content-type:
+         content-transfer-encoding; bh=ZaY+B690gHIE/b2OMxz8FeJ18Z7IoX5XKEqGbr+wHAk=;
+        b=ra1iG1k3m9z6Yve5OJ+GDTS3xnlo0RfoFjAReAx8i32oPUoPOpYypsi5edBtgoSmYKSvNX
+        W5+s7f7dbSqnJLsxHK9t5T4otEBwkSJC+LQZGOvd40zdIccT3UhyREKqNnVgt+NPzApnDK
+        i+GrK4w7rYg15xNxgfDYG5c4R1rzOtKngQ06l+LbMzKymHEzM+/lzPMBZNaJP3kboQEAyO
+        Zu0Om3x/5DmJ701y527wvArLbjR53glUpP8LSUvHox6qbvWcWysRZ3Aj8G+ZrHmJghMWAN
+        TVy+EAVeTS2egk2/1n6TgX7RJrustZkHro1RLxwAmuiM5aXTtvTLktaNBHkv/g==
+Date:   Tue, 1 Feb 2022 17:14:43 +0100
+From:   Daniel Wagner <wagi@monom.org>
+To:     LKML <linux-kernel@vger.kernel.org>,
+        linux-rt-users <linux-rt-users@vger.kernel.org>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Carsten Emde <C.Emde@osadl.org>,
+        John Kacur <jkacur@redhat.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Tom Zanussi <tom.zanussi@linux.intel.com>,
+        Clark Williams <williams@redhat.com>,
+        Pavel Machek <pavel@denx.de>
+Subject: [ANNOUNCE] 4.4.301-rt231
+Message-ID: <164373149744.25521.668105457088547829@beryllium.lan>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+X-Last-TLS-Session-Version: TLSv1.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The current 4096-bit LFSR used for entropy collection had a few
-desirable attributes for the context in which it was created. For
-example, the state was huge, which meant that /dev/random would be able
-to output quite a bit of accumulated entropy before blocking. It was
-also, in its time, quite fast at accumulating entropy byte-by-byte,
-which matters given the varying contexts in which mix_pool_bytes() is
-called. And its diffusion was relatively high, which meant that changes
-would ripple across several words of state rather quickly.
+Hello RT-list!
 
-However, it also suffers from a few security vulnerabilities. In
-particular, inputs learned by an attacker can be undone, but more over,
-if the state of the pool leaks, its contents can be controlled and
-entirely zeroed out. I've demonstrated this attack with this SMT2
-script, <https://xn--4db.cc/5o9xO8pb>, which Boolector/CaDiCal solves in
-a matter of seconds on a single core of my laptop, resulting in little
-proof of concept C demonstrators such as <https://xn--4db.cc/jCkvvIaH/c>.
+I'm pleased to announce the 4.4.301-rt231 stable release.
 
-For basically all recent formal models of RNGs, these attacks represent
-a significant cryptographic flaw. But how does this manifest
-practically? If an attacker has access to the system to such a degree
-that he can learn the internal state of the RNG, arguably there are
-other lower hanging vulnerabilities -- side-channel, infoleak, or
-otherwise -- that might have higher priority. On the other hand, seed
-files are frequently used on systems that have a hard time generating
-much entropy on their own, and these seed files, being files, often leak
-or are duplicated and distributed accidentally, or are even seeded over
-the Internet intentionally, where their contents might be recorded or
-tampered with. Seen this way, an otherwise quasi-implausible
-vulnerability is a bit more practical than initially thought.
+This is just an update to the latest and last 4.4.x stable
+release. There are no RT specific changes.
 
-Another aspect of the current mix_pool_bytes() function is that, while
-its performance was arguably competitive for the time in which it was
-created, it's no longer considered so. This patch improves performance
-significantly: on a high-end CPU, an i7-11850H, it improves performance
-of mix_pool_bytes() by 225%, and on a low-end CPU, a Cortex-A7, it
-improves performance by 103%.
+With this release there wont be any updates for this branch in
+stable-rt tree. I understand Pavel Machek is continuing to maintaining
+the v4.4-rt branch under the CIP umbrella:
 
-This commit replaces the LFSR of mix_pool_bytes() with a straight-
-forward cryptographic hash function, BLAKE2s, which is already in use
-for pool extraction. Universal hashing with a secret seed was considered
-too, something along the lines of <https://eprint.iacr.org/2013/338>,
-but the requirement for a secret seed makes for a chicken & egg problem.
-Instead we go with a formally proven scheme using a computational hash
-function, described in section B.1.8 of <https://eprint.iacr.org/2019/198>.
+  https://git.kernel.org/pub/scm/linux/kernel/git/cip/linux-cip.git/log/?h=linux-4.4.y-cip-rt
 
-BLAKE2s outputs 256 bits, which should give us an appropriate amount of
-min-entropy accumulation, and a wide enough margin of collision
-resistance against active attacks. mix_pool_bytes() becomes a simple
-call to blake2s_update(), for accumulation, while the extraction step
-becomes a blake2s_final() to generate a seed, with which we can then do
-a HKDF-like or BLAKE2X-like expansion, the first part of which we fold
-back as an init key for subsequent blake2s_update()s, and the rest we
-produce to the caller. This then is provided to our CRNG like usual. In
-that expansion step, we make opportunistic use of 32 bytes of RDRAND
-output, just as before. We also always reseed the crng with 32 bytes,
-unconditionally, or not at all, rather than sometimes with 16 as before,
-as we don't win anything by limiting beyond the 16 byte threshold.
+You can get this release via the git tree at:
 
-Going for a hash function as an entropy collector is a conservative,
-proven approach. The result of all this is a much simpler and much less
-bespoke construction than what's there now, which not only plugs a
-vulnerability but also improves performance considerably.
+  git://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 
-Cc: Theodore Ts'o <tytso@mit.edu>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Reviewed-by: Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+  branch: v4.4-rt
+  Head SHA1: 5031d00d4f5a1e3b1e9aab6deb4055986826440c
+
+Or to build 4.4.301-rt231 directly, the following patches should be applied:
+
+  https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.4.tar.xz
+
+  https://www.kernel.org/pub/linux/kernel/v4.x/patch-4.4.301.xz
+
+  https://www.kernel.org/pub/linux/kernel/projects/rt/4.4/patch-4.4.301-rt231.patch.xz
+
+Signing key fingerprint:
+
+  5BF6 7BC5 0826 72CA BB45  ACAE 587C 5ECA 5D0A 306C
+
+Enjoy!
+Daniel
+
+Changes from v4.4.296-rt229:
 ---
- drivers/char/random.c | 232 ++++++++++--------------------------------
- 1 file changed, 55 insertions(+), 177 deletions(-)
 
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index b411182df6f6..0e03e9a05eff 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -358,79 +358,15 @@
- 
- /* #define ADD_INTERRUPT_BENCH */
- 
--/*
-- * If the entropy count falls under this number of bits, then we
-- * should wake up processes which are selecting or polling on write
-- * access to /dev/random.
-- */
--static int random_write_wakeup_bits = 28 * (1 << 5);
--
--/*
-- * Originally, we used a primitive polynomial of degree .poolwords
-- * over GF(2).  The taps for various sizes are defined below.  They
-- * were chosen to be evenly spaced except for the last tap, which is 1
-- * to get the twisting happening as fast as possible.
-- *
-- * For the purposes of better mixing, we use the CRC-32 polynomial as
-- * well to make a (modified) twisted Generalized Feedback Shift
-- * Register.  (See M. Matsumoto & Y. Kurita, 1992.  Twisted GFSR
-- * generators.  ACM Transactions on Modeling and Computer Simulation
-- * 2(3):179-194.  Also see M. Matsumoto & Y. Kurita, 1994.  Twisted
-- * GFSR generators II.  ACM Transactions on Modeling and Computer
-- * Simulation 4:254-266)
-- *
-- * Thanks to Colin Plumb for suggesting this.
-- *
-- * The mixing operation is much less sensitive than the output hash,
-- * where we use BLAKE2s.  All that we want of mixing operation is that
-- * it be a good non-cryptographic hash; i.e. it not produce collisions
-- * when fed "random" data of the sort we expect to see.  As long as
-- * the pool state differs for different inputs, we have preserved the
-- * input entropy and done a good job.  The fact that an intelligent
-- * attacker can construct inputs that will produce controlled
-- * alterations to the pool's state is not important because we don't
-- * consider such inputs to contribute any randomness.  The only
-- * property we need with respect to them is that the attacker can't
-- * increase his/her knowledge of the pool's state.  Since all
-- * additions are reversible (knowing the final state and the input,
-- * you can reconstruct the initial state), if an attacker has any
-- * uncertainty about the initial state, he/she can only shuffle that
-- * uncertainty about, but never cause any collisions (which would
-- * decrease the uncertainty).
-- *
-- * Our mixing functions were analyzed by Lacharme, Roeck, Strubel, and
-- * Videau in their paper, "The Linux Pseudorandom Number Generator
-- * Revisited" (see: http://eprint.iacr.org/2012/251.pdf).  In their
-- * paper, they point out that we are not using a true Twisted GFSR,
-- * since Matsumoto & Kurita used a trinomial feedback polynomial (that
-- * is, with only three taps, instead of the six that we are using).
-- * As a result, the resulting polynomial is neither primitive nor
-- * irreducible, and hence does not have a maximal period over
-- * GF(2**32).  They suggest a slight change to the generator
-- * polynomial which improves the resulting TGFSR polynomial to be
-- * irreducible, which we have made here.
-- */
- enum poolinfo {
--	POOL_WORDS = 128,
--	POOL_WORDMASK = POOL_WORDS - 1,
--	POOL_BYTES = POOL_WORDS * sizeof(u32),
--	POOL_BITS = POOL_BYTES * 8,
-+	POOL_BITS = BLAKE2S_HASH_SIZE * 8,
- 	POOL_BITSHIFT = ilog2(POOL_BITS),
- 
- 	/* To allow fractional bits to be tracked, the entropy_count field is
- 	 * denominated in units of 1/8th bits. */
- 	POOL_ENTROPY_SHIFT = 3,
- #define POOL_ENTROPY_BITS() (input_pool.entropy_count >> POOL_ENTROPY_SHIFT)
--	POOL_FRACBITS = POOL_BITS << POOL_ENTROPY_SHIFT,
--
--	/* x^128 + x^104 + x^76 + x^51 +x^25 + x + 1 */
--	POOL_TAP1 = 104,
--	POOL_TAP2 = 76,
--	POOL_TAP3 = 51,
--	POOL_TAP4 = 25,
--	POOL_TAP5 = 1,
--
--	EXTRACT_SIZE = BLAKE2S_HASH_SIZE / 2
-+	POOL_FRACBITS = POOL_BITS << POOL_ENTROPY_SHIFT
- };
- 
- /*
-@@ -438,6 +374,12 @@ enum poolinfo {
-  */
- static DECLARE_WAIT_QUEUE_HEAD(random_write_wait);
- static struct fasync_struct *fasync;
-+/*
-+ * If the entropy count falls under this number of bits, then we
-+ * should wake up processes which are selecting or polling on write
-+ * access to /dev/random.
-+ */
-+static int random_write_wakeup_bits = POOL_BITS * 3 / 4;
- 
- static DEFINE_SPINLOCK(random_ready_list_lock);
- static LIST_HEAD(random_ready_list);
-@@ -493,73 +435,31 @@ MODULE_PARM_DESC(ratelimit_disable, "Disable random ratelimit suppression");
-  *
-  **********************************************************************/
- 
--static u32 input_pool_data[POOL_WORDS] __latent_entropy;
--
- static struct {
-+	struct blake2s_state hash;
- 	spinlock_t lock;
--	u16 add_ptr;
--	u16 input_rotate;
- 	int entropy_count;
- } input_pool = {
-+	.hash.h = { BLAKE2S_IV0 ^ (0x01010000 | BLAKE2S_HASH_SIZE),
-+		    BLAKE2S_IV1, BLAKE2S_IV2, BLAKE2S_IV3, BLAKE2S_IV4,
-+		    BLAKE2S_IV5, BLAKE2S_IV6, BLAKE2S_IV7 },
-+	.hash.outlen = BLAKE2S_HASH_SIZE,
- 	.lock = __SPIN_LOCK_UNLOCKED(input_pool.lock),
- };
- 
--static ssize_t extract_entropy(void *buf, size_t nbytes, int min);
--static ssize_t _extract_entropy(void *buf, size_t nbytes);
-+static bool extract_entropy(void *buf, size_t nbytes, int min);
-+static void _extract_entropy(void *buf, size_t nbytes);
- 
- static void crng_reseed(struct crng_state *crng, bool use_input_pool);
- 
--static const u32 twist_table[8] = {
--	0x00000000, 0x3b6e20c8, 0x76dc4190, 0x4db26158,
--	0xedb88320, 0xd6d6a3e8, 0x9b64c2b0, 0xa00ae278 };
--
- /*
-  * This function adds bytes into the entropy "pool".  It does not
-  * update the entropy estimate.  The caller should call
-  * credit_entropy_bits if this is appropriate.
-- *
-- * The pool is stirred with a primitive polynomial of the appropriate
-- * degree, and then twisted.  We twist by three bits at a time because
-- * it's cheap to do so and helps slightly in the expected case where
-- * the entropy is concentrated in the low-order bits.
-  */
- static void _mix_pool_bytes(const void *in, int nbytes)
- {
--	unsigned long i;
--	int input_rotate;
--	const u8 *bytes = in;
--	u32 w;
--
--	input_rotate = input_pool.input_rotate;
--	i = input_pool.add_ptr;
--
--	/* mix one byte at a time to simplify size handling and churn faster */
--	while (nbytes--) {
--		w = rol32(*bytes++, input_rotate);
--		i = (i - 1) & POOL_WORDMASK;
--
--		/* XOR in the various taps */
--		w ^= input_pool_data[i];
--		w ^= input_pool_data[(i + POOL_TAP1) & POOL_WORDMASK];
--		w ^= input_pool_data[(i + POOL_TAP2) & POOL_WORDMASK];
--		w ^= input_pool_data[(i + POOL_TAP3) & POOL_WORDMASK];
--		w ^= input_pool_data[(i + POOL_TAP4) & POOL_WORDMASK];
--		w ^= input_pool_data[(i + POOL_TAP5) & POOL_WORDMASK];
--
--		/* Mix the result back in with a twist */
--		input_pool_data[i] = (w >> 3) ^ twist_table[w & 7];
--
--		/*
--		 * Normally, we add 7 bits of rotation to the pool.
--		 * At the beginning of the pool, add an extra 7 bits
--		 * rotation, so that successive passes spread the
--		 * input bits across the pool evenly.
--		 */
--		input_rotate = (input_rotate + (i ? 7 : 14)) & 31;
--	}
--
--	input_pool.input_rotate = input_rotate;
--	input_pool.add_ptr = i;
-+	blake2s_update(&input_pool.hash, in, nbytes);
- }
- 
- static void __mix_pool_bytes(const void *in, int nbytes)
-@@ -954,15 +854,14 @@ static int crng_slow_load(const u8 *cp, size_t len)
- static void crng_reseed(struct crng_state *crng, bool use_input_pool)
- {
- 	unsigned long flags;
--	int i, num;
-+	int i;
- 	union {
- 		u8 block[CHACHA_BLOCK_SIZE];
- 		u32 key[8];
- 	} buf;
- 
- 	if (use_input_pool) {
--		num = extract_entropy(&buf, 32, 16);
--		if (num == 0)
-+		if (!extract_entropy(&buf, 32, 16))
- 			return;
- 	} else {
- 		_extract_crng(&primary_crng, buf.block);
-@@ -1329,74 +1228,48 @@ static size_t account(size_t nbytes, int min)
- }
- 
- /*
-- * This function does the actual extraction for extract_entropy.
-- *
-- * Note: we assume that .poolwords is a multiple of 16 words.
-+ * This is an HKDF-like construction for using the hashed collected entropy
-+ * as a PRF key, that's then expanded block-by-block.
-  */
--static void extract_buf(u8 *out)
-+static void _extract_entropy(void *buf, size_t nbytes)
- {
--	struct blake2s_state state __aligned(__alignof__(unsigned long));
--	u8 hash[BLAKE2S_HASH_SIZE];
--	unsigned long *salt;
- 	unsigned long flags;
--
--	blake2s_init(&state, sizeof(hash));
--
--	/*
--	 * If we have an architectural hardware random number
--	 * generator, use it for BLAKE2's salt & personal fields.
--	 */
--	for (salt = (unsigned long *)&state.h[4];
--	     salt < (unsigned long *)&state.h[8]; ++salt) {
--		unsigned long v;
--		if (!arch_get_random_long(&v))
--			break;
--		*salt ^= v;
-+	u8 seed[BLAKE2S_HASH_SIZE], next_key[BLAKE2S_HASH_SIZE];
-+	struct {
-+		unsigned long rdrand[32 / sizeof(long)];
-+		size_t counter;
-+	} block;
-+	size_t i;
-+
-+	for (i = 0; i < ARRAY_SIZE(block.rdrand); ++i) {
-+		if (!arch_get_random_long(&block.rdrand[i]))
-+			block.rdrand[i] = random_get_entropy();
- 	}
- 
--	/* Generate a hash across the pool */
- 	spin_lock_irqsave(&input_pool.lock, flags);
--	blake2s_update(&state, (const u8 *)input_pool_data, POOL_BYTES);
--	blake2s_final(&state, hash); /* final zeros out state */
- 
--	/*
--	 * We mix the hash back into the pool to prevent backtracking
--	 * attacks (where the attacker knows the state of the pool
--	 * plus the current outputs, and attempts to find previous
--	 * outputs), unless the hash function can be inverted. By
--	 * mixing at least a hash worth of hash data back, we make
--	 * brute-forcing the feedback as hard as brute-forcing the
--	 * hash.
--	 */
--	__mix_pool_bytes(hash, sizeof(hash));
--	spin_unlock_irqrestore(&input_pool.lock, flags);
-+	/* seed = HASHPRF(last_key, entropy_input) */
-+	blake2s_final(&input_pool.hash, seed);
- 
--	/* Note that EXTRACT_SIZE is half of hash size here, because above
--	 * we've dumped the full length back into mixer. By reducing the
--	 * amount that we emit, we retain a level of forward secrecy.
--	 */
--	memcpy(out, hash, EXTRACT_SIZE);
--	memzero_explicit(hash, sizeof(hash));
--}
-+	/* next_key = HASHPRF(key, RDRAND || 0) */
-+	block.counter = 0;
-+	blake2s(next_key, (u8 *)&block, seed, sizeof(next_key), sizeof(block), sizeof(seed));
-+	blake2s_init_key(&input_pool.hash, BLAKE2S_HASH_SIZE, next_key, sizeof(next_key));
- 
--static ssize_t _extract_entropy(void *buf, size_t nbytes)
--{
--	ssize_t ret = 0, i;
--	u8 tmp[EXTRACT_SIZE];
-+	spin_unlock_irqrestore(&input_pool.lock, flags);
-+	memzero_explicit(next_key, sizeof(next_key));
- 
- 	while (nbytes) {
--		extract_buf(tmp);
--		i = min_t(int, nbytes, EXTRACT_SIZE);
--		memcpy(buf, tmp, i);
-+		i = min_t(size_t, nbytes, BLAKE2S_HASH_SIZE);
-+		/* output = HASHPRF(key, RDRAND || ++counter) */
-+		++block.counter;
-+		blake2s(buf, (u8 *)&block, seed, i, sizeof(block), sizeof(seed));
- 		nbytes -= i;
- 		buf += i;
--		ret += i;
- 	}
- 
--	/* Wipe data just returned from memory */
--	memzero_explicit(tmp, sizeof(tmp));
--
--	return ret;
-+	memzero_explicit(seed, sizeof(seed));
-+	memzero_explicit(&block, sizeof(block));
- }
- 
- /*
-@@ -1404,13 +1277,18 @@ static ssize_t _extract_entropy(void *buf, size_t nbytes)
-  * returns it in a buffer.
-  *
-  * The min parameter specifies the minimum amount we can pull before
-- * failing to avoid races that defeat catastrophic reseeding.
-+ * failing to avoid races that defeat catastrophic reseeding. If we
-+ * have less than min entropy available, we return false and buf is
-+ * not filled.
-  */
--static ssize_t extract_entropy(void *buf, size_t nbytes, int min)
-+static bool extract_entropy(void *buf, size_t nbytes, int min)
- {
- 	trace_extract_entropy(nbytes, POOL_ENTROPY_BITS(), _RET_IP_);
--	nbytes = account(nbytes, min);
--	return _extract_entropy(buf, nbytes);
-+	if (account(nbytes, min)) {
-+		_extract_entropy(buf, nbytes);
-+		return true;
-+	}
-+	return false;
- }
- 
- #define warn_unseeded_randomness(previous) \
-@@ -1674,7 +1552,7 @@ static void __init init_std_data(void)
- 	unsigned long rv;
- 
- 	mix_pool_bytes(&now, sizeof(now));
--	for (i = POOL_BYTES; i > 0; i -= sizeof(rv)) {
-+	for (i = BLAKE2S_BLOCK_SIZE; i > 0; i -= sizeof(rv)) {
- 		if (!arch_get_random_seed_long(&rv) &&
- 		    !arch_get_random_long(&rv))
- 			rv = random_get_entropy();
--- 
-2.35.0
+Alan Stern (2):
+      USB: core: Fix bug in resuming hub's handling of wakeup requests
+      USB: Fix "slab-out-of-bounds Write" bug in usb_hcd_poll_rh_status
 
+Alexander Aring (1):
+      fs: dlm: filter user dlm messages for kernel locks
+
+Alexey Makhalov (1):
+      scsi: vmw_pvscsi: Set residual data length conditionally
+
+Andy Shevchenko (1):
+      mfd: intel-lpss: Fix too early PM enablement in the ACPI ->probe()
+
+Ard Biesheuvel (1):
+      ARM: 9169/1: entry: fix Thumb2 bug in iWMMXt exception handling
+
+Arnd Bergmann (1):
+      dmaengine: pxa/mmp: stop referencing config->slave_id
+
+Avihai Horon (1):
+      RDMA/core: Let ib_find_gid() continue search even after empty entry
+
+Benjamin Tissoires (1):
+      HID: holtek: fix mouse probing
+
+Bixuan Cui (1):
+      ALSA: oss: fix compile error when OSS_DEBUG is enabled
+
+Brian Silverman (1):
+      can: gs_usb: gs_can_start_xmit(): zero-initialize hf->{flags,reserved}
+
+Chengfeng Ye (2):
+      crypto: qce - fix uaf on qce_ahash_register_one
+      HSI: core: Fix return freed object in hsi_new_client
+
+Christoph Hellwig (1):
+      scsi: sr: Don't use GFP_DMA
+
+Christophe Leroy (1):
+      w1: Misuse of get_user()/put_user() reported by sparse
+
+Colin Ian King (1):
+      ALSA: drivers: opl3: Fix incorrect use of vp->state
+
+Daniel Borkmann (1):
+      bpf, test: fix ld_abs + vlan push/pop stress test
+
+Daniel Wagner (4):
+      Merge tag 'v4.4.299' into v4.4-rt
+      Linux 4.4.299-rt230
+      Merge tag 'v4.4.301' into v4.4-rt
+      Linux 4.4.301-rt231
+
+Darrick J. Wong (1):
+      xfs: map unwritten blocks in XFS_IOC_{ALLOC,FREE}SP just like fallocate
+
+Dmitry Baryshkov (1):
+      arm64: dts: qcom: msm8916: fix MMC controller aliases
+
+Dmitry V. Levin (1):
+      uapi: fix linux/nfc.h userspace compilation errors
+
+Dominik Brodowski (1):
+      pcmcia: fix setting of kthread task states
+
+Eric Dumazet (4):
+      sch_qfq: prevent shift-out-of-bounds in qfq_init_qdisc
+      ppp: ensure minimum packet size in ppp_write()
+      af_unix: annote lockless accesses to unix_tot_inflight & gc_in_progress
+      netns: add schedule point in ops_exit_list()
+
+Fernando Fernandez Mancera (1):
+      bonding: fix ad_actor_system option setting to default
+
+Florian Fainelli (1):
+      net: mdio: Demote probed message to debug print
+
+Florian Westphal (1):
+      netfilter: bridge: add support for pppoe filtering
+
+Greg Jesionowski (1):
+      net: usb: lan78xx: add Allied Telesis AT29M2-AF
+
+Greg Kroah-Hartman (5):
+      Linux 4.4.297
+      Linux 4.4.298
+      Linux 4.4.299
+      Linux 4.4.300
+      Linux 4.4.301
+
+Guenter Roeck (1):
+      hwmon: (lm90) Fix usage of CONFIG2 register in detect function
+
+Hangyu Hua (1):
+      phonet: refcount leak in pep_sock_accep
+
+Heiko Carstens (1):
+      recordmcount.pl: fix typo in s390 mcount regex
+
+Heiner Kallweit (1):
+      i2c: i801: Don't silently correct invalid transfer size
+
+Jan Kara (1):
+      ext4: avoid trim error on fs with small groups
+
+Jann Horn (1):
+      HID: uhid: Fix worker destroying device without any protection
+
+Jedrzej Jagielski (1):
+      i40e: Fix incorrect netdev's real number of RX/TX queues
+
+Jiasheng Jiang (4):
+      qlcnic: potential dereference null pointer of rx_queue->page_ring
+      drivers: net: smc911x: Check for error irq
+      can: xilinx_can: xcan_probe(): check for error irq
+      ASoC: samsung: idma: Check of ioremap return value
+
+Jimmy Assarsson (1):
+      can: kvaser_usb: get CAN clock frequency from device
+
+Joakim Tjernlund (1):
+      i2c: mpc: Correct I2C reset procedure
+
+Joe Thornber (2):
+      dm btree: add a defensive bounds check to insert_at()
+      dm space map common: add bounds check to sm_ll_lookup_bitmap()
+
+Johan Hovold (7):
+      Bluetooth: bfusb: fix division by zero in send path
+      media: uvcvideo: fix division by zero at stream start
+      media: mceusb: fix control-message timeouts
+      media: em28xx: fix control-message timeouts
+      media: pvrusb2: fix control-message timeouts
+      media: stk1160: fix control-message timeouts
+      can: softing_cs: softingcs_probe(): fix memleak on registration failure
+
+Johannes Berg (1):
+      iwlwifi: mvm: synchronize with FW after multicast commands
+
+John David Anglin (1):
+      parisc: Avoid calling faulthandler_disabled() twice
+
+Josef Bacik (2):
+      btrfs: remove BUG_ON() in find_parent_nodes()
+      btrfs: remove BUG_ON(!eie) in find_parent_nodes
+
+José Expósito (1):
+      IB/qib: Fix memory leak in qib_user_sdma_queue_pkts()
+
+Juergen Gross (1):
+      xen/blkfront: fix bug in backported patch
+
+Julia Lawall (4):
+      powerpc/6xx: add missing of_node_put
+      powerpc/powernv: add missing of_node_put
+      powerpc/cell: add missing of_node_put
+      powerpc/btext: add missing of_node_put
+
+Kai-Heng Feng (1):
+      usb: hub: Add delay for SuperSpeed hub resume to let links transit to U0
+
+Kamal Heib (1):
+      RDMA/cxgb4: Set queue pair state when being queried
+
+Kees Cook (1):
+      char/mwave: Adjust io port register size
+
+Kevin Bracey (1):
+      net_sched: restore "mpu xxx" handling
+
+Krzysztof Kozlowski (2):
+      nfc: uapi: use kernel size_t to fix user-space builds
+      nfc: llcp: fix NULL error pointer dereference on sendmsg() after failed bind()
+
+Lakshmi Sowjanya D (1):
+      i2c: designware-pci: Fix to change data types of hcnt and lcnt parameters
+
+Larry Finger (1):
+      rtlwifi: rtl8192cu: Fix WARNING when calling local_irq_restore() with interrupts enabled
+
+Leo L. Schwab (1):
+      Input: spaceball - fix parsing of movement data packets
+
+Lin Ma (3):
+      ax25: NPD bug when detaching AX25 device
+      hamradio: defer ax25 kfree after unregister_netdev
+      hamradio: improve the incomplete fix to avoid NPD
+
+Lino Sanfilippo (1):
+      serial: amba-pl011: do not request memory region twice
+
+Lixiaokeng (1):
+      scsi: libiscsi: Fix UAF in iscsi_conn_get_param()/iscsi_conn_teardown()
+
+Lukas Wunner (2):
+      serial: pl010: Drop CR register reset on set_termios
+      serial: core: Keep mctrl register state and cached copy in sync
+
+Luís Henriques (1):
+      ext4: set csum seed in tmp inode while migrating to extents
+
+Marc Kleine-Budde (2):
+      can: gs_usb: fix use of uninitialized variable, detach device on reception of invalid USB data
+      can: softing: softing_startstop(): fix set but not used variable warning
+
+Mateusz Jończyk (1):
+      rtc: cmos: take rtc_lock while reading from CMOS
+
+Mathias Nyman (1):
+      xhci: Fresco FL1100 controller should not have BROKEN_MSI quirk set.
+
+Mauro Carvalho Chehab (1):
+      media: m920x: don't use stack on USB reads
+
+Miaoqian Lin (3):
+      spi: spi-meson-spifc: Add missing pm_runtime_disable() in meson_spifc_probe
+      parisc: pdc_stable: Fix memory leak in pdcs_register_pathentries
+      lib82596: Fix IRQ check in sni_82596_probe
+
+Michael Ellerman (1):
+      powerpc/smp: Move setup_profiling_timer() under CONFIG_PROFILING
+
+Michael Kuron (1):
+      media: dib0700: fix undefined behavior in tuner shutdown
+
+Muchun Song (1):
+      net: fix use-after-free in tw_timer_handler
+
+Nathan Chancellor (2):
+      power: reset: ltc2952: Fix use of floating point literals
+      drm/i915: Avoid bitwise vs logical OR warning in snb_wm_latency_quirk()
+
+Pavankumar Kondeti (1):
+      usb: gadget: f_fs: Use stream_open() for endpoint files
+
+Pavel Skripkin (4):
+      Input: appletouch - initialize work before device registration
+      ieee802154: atusb: fix uninit value in atusb_set_extended_addr
+      Bluetooth: stop proccessing malicious adv data
+      net: mcs7830: handle usb read errors properly
+
+Peiwei Hu (1):
+      powerpc/prom_init: Fix improper check of prom_getprop()
+
+Petr Cvachoucek (1):
+      ubifs: Error path in ubifs_remount_rw() seems to wrongly free write buffers
+
+Rafael J. Wysocki (2):
+      ACPICA: Utilities: Avoid deleting the same object twice in a row
+      ACPICA: Executer: Fix the REFCLASS_REFOF case in acpi_ex_opcode_1A_0T_1R()
+
+Randy Dunlap (3):
+      mips: lantiq: add support for clk_set_parent()
+      mips: bcm63xx: add support for clk_set_parent()
+      um: registers: Rename function names to avoid conflicts and build problems
+
+Robert Hancock (2):
+      net: axienet: Wait for PhyRstCmplt after core reset
+      net: axienet: fix number of TX ring slots for available check
+
+Rémi Denis-Courmont (1):
+      phonet/pep: refuse to enable an unbound pipe
+
+Sean Young (1):
+      media: igorplugusb: receiver overflow should be reported
+
+Sergey Shtylyov (1):
+      bcmgenet: add WOL IRQ check
+
+Suresh Kumar (1):
+      net: bonding: debug: avoid printing debug logs when bond is not notifying peers
+
+Takashi Iwai (5):
+      Bluetooth: btusb: Apply QCA Rome patches for some ATH3012 models
+      ALSA: jack: Add missing rwsem around snd_ctl_remove() calls
+      ALSA: PCM: Add missing rwsem around snd_ctl_remove() calls
+      ALSA: hda: Add missing rwsem around snd_ctl_remove() calls
+      ALSA: seq: Set upper limit of processed events
+
+Tasos Sahanidis (1):
+      floppy: Fix hang in watchdog when disk is ejected
+
+Theodore Ts'o (1):
+      ext4: don't use the orphan list when migrating an inode
+
+Thomas Toye (1):
+      rndis_host: support Hytera digital radios
+
+Tianjia Zhang (1):
+      MIPS: Octeon: Fix build errors using clang
+
+Tobias Waldekranz (2):
+      powerpc/fsl/dts: Enable WA for erratum A-009885 on fman3l MDIO buses
+      net/fsl: xgmac_mdio: Fix incorrect iounmap when removing module
+
+Tom Rix (2):
+      selinux: initialize proto variable in selinux_ip_postroute_compat()
+      mac80211: initialize variable have_higher_than_11mbit
+
+Tudor Ambarus (6):
+      tty: serial: atmel: Check return code of dmaengine_submit()
+      tty: serial: atmel: Call dma_async_issue_pending()
+      dmaengine: at_xdmac: Don't start transactions at tx_submit level
+      dmaengine: at_xdmac: Print debug message after realeasing the lock
+      dmaengine: at_xdmac: Fix lld view setting
+      dmaengine: at_xdmac: Fix at_xdmac_lld struct definition
+
+Tvrtko Ursulin (1):
+      drm/i915: Flush TLBs before releasing backing store
+
+Vincent Pelletier (1):
+      usb: gadget: f_fs: Clear ffs_eventfd in ffs_data_clear.
+
+Wang Hai (2):
+      Bluetooth: cmtp: fix possible panic when cmtp_init_sockets() fails
+      media: msi001: fix possible null-ptr-deref in msi001_probe()
+
+Wang Qing (1):
+      platform/x86: apple-gmux: use resource_size() with res
+
+Wei Yongjun (3):
+      usb: ftdi-elan: fix memory leak on device disconnect
+      misc: lattice-ecp3-config: Fix task hung when firmware load failed
+      Bluetooth: Fix debugfs entry leak in hci_register_dev()
+
+William Zhao (1):
+      ip6_vti: initialize __ip6_tnl_parm struct in vti6_siocdevprivate
+
+Xiaoke Wang (1):
+      ALSA: jack: Check the return value of kstrdup()
+
+Xiongwei Song (1):
+      floppy: Add max size check for user space request
+
+Yauhen Kharuzhy (1):
+      power: bq25890: Enable continuous conversion for ADC at charging
+
+Ye Bin (1):
+      ext4: Fix BUG_ON in ext4_bread when write quota data
+
+Yifeng Li (1):
+      PCI: Add function 1 DMA alias quirk for Marvell 88SE9125 SATA controller
+
+Zekun Shen (3):
+      ar5523: Fix null-ptr-deref with unexpected WDCMSG_TARGET_START reply
+      mwifiex: Fix skb_over_panic in mwifiex_usb_recv()
+      ath9k: Fix out-of-bound memcpy in ath9k_hif_usb_rx_stream
+
+Zheyu Ma (1):
+      media: b2c2: Add missing check in flexcop_pci_isr:
+
+Zhou Qingyang (7):
+      drm/amdgpu: Fix a NULL pointer dereference in amdgpu_connector_lcd_native_mode()
+      media: dib8000: Fix a memleak in dib8000_init()
+      media: saa7146: mxb: Fix a NULL pointer dereference in mxb_attach()
+      pcmcia: rsrc_nonstatic: Fix a NULL pointer dereference in __nonstatic_find_io_region()
+      pcmcia: rsrc_nonstatic: Fix a NULL pointer dereference in nonstatic_find_mem_region()
+      media: saa7146: hexium_orion: Fix a NULL pointer dereference in hexium_attach()
+      media: saa7146: hexium_gemini: Fix a NULL pointer dereference in hexium_attach()
+
+wolfgang huang (1):
+      mISDN: change function names to avoid conflicts
+
+yangxingwu (1):
+      net: udp: fix alignment problem in udp4_seq_show()
