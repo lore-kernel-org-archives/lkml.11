@@ -2,115 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10762C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 12:46:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81A50C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 12:48:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238188AbiBAMqC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 07:46:02 -0500
-Received: from jabberwock.ucw.cz ([46.255.230.98]:36184 "EHLO
-        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238157AbiBAMqB (ORCPT
+        id S238205AbiBAMse (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 07:48:34 -0500
+Received: from maury.uberspace.de ([185.26.156.175]:60888 "EHLO
+        maury.uberspace.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229725AbiBAMsc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 07:46:01 -0500
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id D87651C0B81; Tue,  1 Feb 2022 13:45:59 +0100 (CET)
-Date:   Tue, 1 Feb 2022 13:45:59 +0100
-From:   Pavel Machek <pavel@denx.de>
-To:     Pavel Machek <pavel@denx.de>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com
-Subject: Re: [PATCH 5.10 000/100] 5.10.96-rc1 review
-Message-ID: <20220201124559.GB549@duo.ucw.cz>
-References: <20220131105220.424085452@linuxfoundation.org>
- <20220201120557.GA549@duo.ucw.cz>
+        Tue, 1 Feb 2022 07:48:32 -0500
+X-Greylist: delayed 400 seconds by postgrey-1.27 at vger.kernel.org; Tue, 01 Feb 2022 07:48:31 EST
+Received: (qmail 12855 invoked by uid 990); 1 Feb 2022 12:41:50 -0000
+Authentication-Results: maury.uberspace.de;
+        auth=pass (plain)
+From:   Joern Koerner <joern.koerner@ijwo.de>
+To:     linux-bluetooth@vger.kernel.org
+Cc:     Joern Koerner <joern.koerner@ijwo.de>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] Bluetooth: btusb: Add support for Edup BT5.1 Class1 Adapter (RTL8761B)
+Date:   Tue,  1 Feb 2022 13:41:34 +0100
+Message-Id: <20220201124134.806135-1-joern.koerner@ijwo.de>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="XOIedfhf+7KOe/yw"
-Content-Disposition: inline
-In-Reply-To: <20220201120557.GA549@duo.ucw.cz>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+X-Rspamd-Bar: ++
+X-Rspamd-Report: R_MISSING_CHARSET(0.5) MIME_GOOD(-0.1) MID_CONTAINS_FROM(1) SUSPICIOUS_RECIPS(1.5)
+X-Rspamd-Score: 2.9
+Received: from unknown (HELO unkown) (::1)
+        by maury.uberspace.de (Haraka/2.8.28) with ESMTPSA; Tue, 01 Feb 2022 13:41:50 +0100
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+$ cat /sys/kernel/debug/usb/devices. T:  Bus=02 Lev=02
+ Prnt=02 Port=00 Cnt=01 Dev#=  7 Spd=12   MxCh= 0 D:  Ver= 1.10 Cls=e0(wlcon)
+ Sub=01 Prot=01 MxPS=64 #Cfgs=  1 P:  Vendor=2550 ProdID=8761 Rev= 2.00 S: 
+ Manufacturer=Realtek S:  Product=Bluetooth Radio S: 
+ SerialNumber=00E04C239987 C:* #Ifs= 2 Cfg#= 1 Atr=e0 MxPwr=500mA I:* If#= 0
+ Alt= 0 #EPs= 3 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb E:  Ad=81(I)
+ Atr=03(Int.) MxPS=  16 Ivl=1ms E:  Ad=02(O) Atr=02(Bulk) MxPS=  64 Ivl=0ms E:
+  Ad=82(I) Atr=02(Bulk) MxPS=  64 Ivl=0ms I:* If#= 1 Alt= 0 #EPs= 2
+ Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb E:  Ad=03(O) Atr=01(Isoc) MxPS=   0
+ Ivl=1ms E:  Ad=83(I) Atr=01(Isoc) MxPS=   0 Ivl=1ms I:  If#= 1 Alt= 1 #EPs= 2
+ Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb E:  Ad=03(O) Atr=01(Isoc) MxPS=   9
+ Ivl=1ms E:  Ad=83(I) Atr=01(Isoc) MxPS=   9 Ivl=1ms I:  If#= 1 Alt= 2 #EPs= 2
+ Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb E:  Ad=03(O) Atr=01(Isoc) MxPS=  17
+ Ivl=1ms E:  Ad=83(I) Atr=01(Isoc) MxPS=  17 Ivl=1ms I:  If#= 1 Alt= 3 #EPs= 2
+ Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb E:  Ad=03(O) Atr=01(Isoc) MxPS=  25
+ Ivl=1ms E:  Ad=83(I) Atr=01(Isoc) MxPS=  25 Ivl=1ms I:  If#= 1 Alt= 4 #EPs= 2
+ Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb E:  Ad=03(O) Atr=01(Isoc) MxPS=  33
+ Ivl=1ms E:  Ad=83(I) Atr=01(Isoc) MxPS=  33 Ivl=1ms I:  If#= 1 Alt= 5 #EPs= 2
+ Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb E:  Ad=03(O) Atr=01(Isoc) MxPS=  49
+ Ivl=1ms E:  Ad=83(I) Atr=01(Isoc) MxPS=  49 Ivl=1ms
 
---XOIedfhf+7KOe/yw
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Joern Koerner <joern.koerner@ijwo.de>
+---
+ drivers/bluetooth/btusb.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Hi!
+diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
+index ea72afb7abea..ba467663b79a 100644
+--- a/drivers/bluetooth/btusb.c
++++ b/drivers/bluetooth/btusb.c
+@@ -477,6 +477,8 @@ static const struct usb_device_id blacklist_table[] = {
+ 	/* Additional Realtek 8761B Bluetooth devices */
+ 	{ USB_DEVICE(0x2357, 0x0604), .driver_info = BTUSB_REALTEK |
+ 						     BTUSB_WIDEBAND_SPEECH },
++	{ USB_DEVICE(0x2550, 0x8761), .driver_info = BTUSB_REALTEK |
++						     BTUSB_WIDEBAND_SPEECH },
+ 
+ 	/* Additional Realtek 8761BU Bluetooth devices */
+ 	{ USB_DEVICE(0x0b05, 0x190e), .driver_info = BTUSB_REALTEK |
+-- 
+2.35.1
 
-> > This is the start of the stable review cycle for the 5.10.96 release.
-> > There are 100 patches in this series, all will be posted as a response
-> > to this one.  If anyone has any issues with these being applied, please
-> > let me know.
-> >=20
-> > Responses should be made by Wed, 02 Feb 2022 10:51:59 +0000.
-> > Anything received after that time might be too late.
-> >=20
-> > The whole patch series can be found in one patch at:
-> > 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.=
-96-rc1.gz
-> > or in the git tree and branch at:
-> > 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.g=
-it linux-5.10.y
-> > and the diffstat can be found below.
->=20
-> It seems we have boot problem on x86 qemu:
->=20
-> https://lava.ciplatform.org/scheduler/job/616782
->=20
->=20
-> [    0.183194] APIC: Switch to symmetric I/O mode setup
-> [    0.187399] ..TIMER: vector=3D0x30 apic1=3D0 pin1=3D2 apic2=3D-1 pin2=
-=3D-1
-> [    0.200659] ..MP-BIOS bug: 8254 timer not connected to IO-APIC
-> [    0.200984] ...trying to set up timer (IRQ0) through the 8259A ...
-> [    0.201309] ..... (found apic 0 pin 2) ...
-> [    0.214131] ....... failed.
-> [    0.214303] ...trying to set up timer as Virtual Wire IRQ...
-> [    0.227212] ..... failed.
-> [    0.227390] ...trying to set up timer as ExtINT IRQ...
-> [    1.287247] ..... failed :(.
-> [    1.287584] Kernel panic - not syncing: IO-APIC + timer doesn't work! =
- Boot with apic=3Ddebug and send a report.  Then try booting with the 'noap=
-ic' option.
-> [    1.288043] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.10.96-rc1+ #1
-> [    1.288231] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIO=
-S 1.12.0-1 04/01/2014
-> [    1.288582] Call Trace:
->=20
-> Other than that we have only the usual gmp.h failures.
->=20
-> https://gitlab.com/cip-project/cip-testing/linux-stable-rc-ci/-/pipelines=
-/459895032
->=20
-> I'll re-trigger the x86 qemu test, but it looks like real problem to me.
-
-Huh. It suceeded this time.
-
-https://gitlab.com/cip-project/cip-testing/linux-stable-rc-ci/-/jobs/203900=
-3632
-
-Best regards,
-								Pavel
---=20
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-
---XOIedfhf+7KOe/yw
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYfkrhwAKCRAw5/Bqldv6
-8rI7AJ4txjW8RTdvDEsWc4GFAZgOHr7INACdHPp4OnuptDvnTqgBRWQvOapgtgk=
-=bMFq
------END PGP SIGNATURE-----
-
---XOIedfhf+7KOe/yw--
