@@ -2,101 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7517C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 06:33:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88979C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 06:34:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234190AbiBAGdm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 01:33:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58482 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233754AbiBAGdl (ORCPT
+        id S234352AbiBAGeV convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 01:34:21 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:23174 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234266AbiBAGeK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 01:33:41 -0500
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BF27C061714
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 22:33:41 -0800 (PST)
-Received: by mail-ed1-x535.google.com with SMTP id j23so31929325edp.5
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 22:33:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:reply-to:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=JrzOIwB/15hXdxo9+BD6kYpDhXtGeAQrIT7/EdNyUC8=;
-        b=KiOB8OZmozPHe204e845yU6DhE2s2Wii7ARJYDMRtL14WMcLChXIhgUC8V7Sc6qv3c
-         ygZAa9odMWs+SHECpaMYcYiFX2RKQgy2gueKBEfcNJ2YNd06zKBuVOk2+wzrG2OV99vd
-         4sLfTzxmDxzPh4V6Wq2X0aTg65IbvVqX02+Ez5Ubeld3riS+YfNItXkYYbyoFQQRp4tO
-         dNJSQ0LVj5ZatkwM46bWaMzeU3p9gwsJVctEqK2BJvWb2IIzwTsTNzmGniU3pC1eR8hP
-         3aQWB6BGEjSe11DSbIpQAn7imGk3yayzkeSqRzjHIs5hxqewKmSPM4FEPgPLBrc2wHZy
-         rOhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:reply-to
-         :references:mime-version:content-disposition:in-reply-to:user-agent;
-        bh=JrzOIwB/15hXdxo9+BD6kYpDhXtGeAQrIT7/EdNyUC8=;
-        b=YhAkelgNO0J2aso88eyW14OJXWVgo0ji/dt3VInqfcI2lwOgAx3IJ9CuiSMqbKix2p
-         E93FCnIcZ20WBmWAo42B36oAn8+2LQ1GH4fw/VxQNBHU1qaIece9FuVM7eDEOyNsKmcp
-         vqqK0eD3tA4Dr9zpO4saB3o6DKZT2wKc75qE7OVQ+03+aekqTjxQKpp8vCrItfIP0N2t
-         dEvUgBhG0ZjsWKQcf1TchN/t8xyBfZm7uytGMW5D8GSgDlunEv9JiNPMHqG4I+jTNUTR
-         EsvIm27wdyeFIj/RXZQ5HyJ8caGQa1QH8u3Hj5gkZRR7630lO9ZKEhq5h2ZWR5NTNi1s
-         Q7QQ==
-X-Gm-Message-State: AOAM532J2PL8KCH2S3S0qWkQDzKM4wFfUEAPJlwaiSjYE6GrlrgLCEk/
-        KZnJVV+UAXYVB0PWIwm3pCY=
-X-Google-Smtp-Source: ABdhPJz0L77NhTpN2CaRbV3UMUQngiAZFds2CfrdJ3MxZAJnDbRhUE2zdRKHZYmco5hzlmHATJSNsw==
-X-Received: by 2002:a50:eb82:: with SMTP id y2mr23327756edr.133.1643697219722;
-        Mon, 31 Jan 2022 22:33:39 -0800 (PST)
-Received: from localhost ([185.92.221.13])
-        by smtp.gmail.com with ESMTPSA id fh23sm14300698ejc.176.2022.01.31.22.33.39
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 31 Jan 2022 22:33:39 -0800 (PST)
-Date:   Tue, 1 Feb 2022 06:33:38 +0000
-From:   Wei Yang <richard.weiyang@gmail.com>
-To:     Michal Hocko <mhocko@suse.com>
-Cc:     Wei Yang <richard.weiyang@gmail.com>, akpm@linux-foundation.org,
-        mgorman@techsingularity.net, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mm/memory_hotplug: build zonelist for managed_zone
-Message-ID: <20220201063338.u4ux2jsgctuo7tex@master>
-Reply-To: Wei Yang <richard.weiyang@gmail.com>
-References: <20220127012023.18095-1-richard.weiyang@gmail.com>
- <YfJXoSVkQ3X5u44F@dhcp22.suse.cz>
- <20220129002628.2cwr35glahq5f5md@master>
- <Yfe48O7eBWSe0LjK@dhcp22.suse.cz>
+        Tue, 1 Feb 2022 01:34:10 -0500
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21111Ra4007814
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 22:34:09 -0800
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3dxq3gakcf-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 22:34:09 -0800
+Received: from twshared19733.18.frc3.facebook.com (2620:10d:c085:208::11) by
+ mail.thefacebook.com (2620:10d:c085:11d::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Mon, 31 Jan 2022 22:34:06 -0800
+Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
+        id 4FADF290EC90B; Mon, 31 Jan 2022 22:28:21 -0800 (PST)
+From:   Song Liu <song@kernel.org>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <kernel-team@fb.com>, <peterz@infradead.org>, <x86@kernel.org>,
+        <iii@linux.ibm.com>, Song Liu <song@kernel.org>
+Subject: [PATCH v8 bpf-next 6/9] bpf: introduce bpf_arch_text_copy
+Date:   Mon, 31 Jan 2022 22:28:00 -0800
+Message-ID: <20220201062803.2675204-7-song@kernel.org>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220201062803.2675204-1-song@kernel.org>
+References: <20220201062803.2675204-1-song@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yfe48O7eBWSe0LjK@dhcp22.suse.cz>
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-GUID: k86lWTSXupwe3NZZB1bR5mW3N5g2RFTw
+X-Proofpoint-ORIG-GUID: k86lWTSXupwe3NZZB1bR5mW3N5g2RFTw
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-01_02,2022-01-31_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 phishscore=0
+ clxscore=1015 spamscore=0 impostorscore=0 adultscore=0 bulkscore=0
+ priorityscore=1501 lowpriorityscore=0 mlxlogscore=992 mlxscore=0
+ suspectscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2201110000 definitions=main-2202010033
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 31, 2022 at 11:24:48AM +0100, Michal Hocko wrote:
->> >> This patch restore the original behavior by using the same criteria to
->> >> add a zone in zonelist during memory hotplug.
->> >
->> >Why?
->> >
->> 
->> In case we online a populated zone, but not managed. Then this zone will not
->> be in zonelist. Right?
->
->yeah. We can theoretically end up with a zone without any managed menory
->on the zonelists. But my primary question is why do we need this change?
+This will be used to copy JITed text to RO protected module memory. On
+x86, bpf_arch_text_copy is implemented with text_poke_copy.
 
-Currently I don't see a real case for this.
+bpf_arch_text_copy returns pointer to dst on success, and ERR_PTR(errno)
+on errors.
 
->Does it fix any existing problem? Does it make the code easier to
->read/understand? Does it improve performance? Every patch should have a
->justification. Your changelog merely lists the history and then states
->the new behavior without any explanation of why that is needed or
->desired. See?
+Signed-off-by: Song Liu <song@kernel.org>
+---
+ arch/x86/net/bpf_jit_comp.c | 7 +++++++
+ include/linux/bpf.h         | 2 ++
+ kernel/bpf/core.c           | 5 +++++
+ 3 files changed, 14 insertions(+)
 
-I don't have such reason now.
-
->-- 
->Michal Hocko
->SUSE Labs
-
+diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
+index 36f6fc3e6e69..c13d148f7396 100644
+--- a/arch/x86/net/bpf_jit_comp.c
++++ b/arch/x86/net/bpf_jit_comp.c
+@@ -2412,3 +2412,10 @@ bool bpf_jit_supports_kfunc_call(void)
+ {
+ 	return true;
+ }
++
++void *bpf_arch_text_copy(void *dst, void *src, size_t len)
++{
++	if (text_poke_copy(dst, src, len) == NULL)
++		return ERR_PTR(-EINVAL);
++	return dst;
++}
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index 366f88afd56b..ea0d7fd4a410 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -2362,6 +2362,8 @@ enum bpf_text_poke_type {
+ int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type t,
+ 		       void *addr1, void *addr2);
+ 
++void *bpf_arch_text_copy(void *dst, void *src, size_t len);
++
+ struct btf_id_set;
+ bool btf_id_set_contains(const struct btf_id_set *set, u32 id);
+ 
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index e3fe53df0a71..a5ec480f9862 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -2440,6 +2440,11 @@ int __weak bpf_arch_text_poke(void *ip, enum bpf_text_poke_type t,
+ 	return -ENOTSUPP;
+ }
+ 
++void * __weak bpf_arch_text_copy(void *dst, void *src, size_t len)
++{
++	return ERR_PTR(-ENOTSUPP);
++}
++
+ DEFINE_STATIC_KEY_FALSE(bpf_stats_enabled_key);
+ EXPORT_SYMBOL(bpf_stats_enabled_key);
+ 
 -- 
-Wei Yang
-Help you, Help me
+2.30.2
+
