@@ -2,191 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F7C5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 18:17:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E610C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 18:17:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237315AbiBASRX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 13:17:23 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:56438 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236138AbiBASRK (ORCPT
+        id S241913AbiBASRd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 13:17:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49924 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241848AbiBASRS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 13:17:10 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7DED461464;
-        Tue,  1 Feb 2022 18:17:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37BFBC340EC;
-        Tue,  1 Feb 2022 18:17:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643739429;
-        bh=kXypGRT995K2TldK3CnDmAxVvB2BMkpZEaUm521hT8k=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XIs3kqO5i53S447szItw/qerALfORxO1PiVkce93kUpU0Go5U+946wvFKsfVk3lTA
-         y4zcIW0rmamJOOaa73IdyQ1vv/nt00ahbJpECOrESWxsSMTowKD5cvYSVsgzGxfibf
-         QfaJrHKBEx4gLV04bA6zkncY2ZFeF5n1Bnv3IVe8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guangwu Zhang <guazhang@redhat.com>,
-        Maurizio Lombardi <mlombard@redhat.com>,
-        John Meneghini <jmeneghi@redhat.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 4.4 13/25] scsi: bnx2fc: Flush destroy_work queue before calling bnx2fc_interface_put()
-Date:   Tue,  1 Feb 2022 19:16:37 +0100
-Message-Id: <20220201180822.580318904@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220201180822.148370751@linuxfoundation.org>
-References: <20220201180822.148370751@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 1 Feb 2022 13:17:18 -0500
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95E1DC06173E
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Feb 2022 10:17:18 -0800 (PST)
+Received: by mail-wr1-x431.google.com with SMTP id u15so33692870wrt.3
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Feb 2022 10:17:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rJMqXPaVL95oHWo02aWXgQXHFtdA4jRaSIHaF0ly6XU=;
+        b=b+1KBNp5Lw9AD8Qnazv2vW8RzF6NmPGFa0WKMrf+rFINVItMfyYLnVtgJ+RfFQp8nj
+         KpVcIOY0uKE7gdMZ6ETcdqSg2pjdV+AD+OTVOZLO2Bbhtsw/zuzJqxulVH3UqeAjobb3
+         9KS6UeWcfYC13BC8Y2sD5cGieepcq3chmbpDVZ+kkbKFI9aSBVAtXBvUWIxwWQbTvigy
+         SsXoHmgi8obf3S8y9//vvkaLI+i08jGKzSqsVKbGO62MnbkECn5B911bSWqBPdTvf6WO
+         QLl591I6BOpdB7QLyrNz63Ev96faPzXRdBzq1/8tPRInkS4+yd8m5/p8a8N1lMn0XW48
+         lrHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rJMqXPaVL95oHWo02aWXgQXHFtdA4jRaSIHaF0ly6XU=;
+        b=xF4Fm3mMpds9yo/JBbpAXKLkXlU9q0wjsTeOxs75FUVCrpaV1IXfFn8zVHuoYpAoPx
+         lGrHDCybKJPXbO6Wf6gmDtyUaorZWUN13dSitSrU39K2yd9gmE7RSpphO935g/G/Loxh
+         m+NuKGGOIPozH8nb5jjVT5AiSrUCseD4kfcY57gMzQukdQ+MGoxrziqb9Qe/I27VCQsH
+         fQ9Vh9Y/M6hoU8xkLZSsJKV499r7e5PfjFx+7H4V323ysSh5By+VpSM6PEDEvIe9jyjE
+         WSMISw/sUOf/7HDetbYtvahdxthkhH8NWIe9zVM/yJs+MNickaz39zzMnQo143/w6/Tj
+         i3qw==
+X-Gm-Message-State: AOAM532lOhBSIEvJHiWzTb5cM/AXBihEO2xxXDcjn0XoU84fpPe67ZLC
+        u7kz6EM3CDFlAKBhLkyVOw9Ftw==
+X-Google-Smtp-Source: ABdhPJyisbO2n8MvBSUDTLTcPtXZSt3lzj3iXiDCZkIsdtLuFkmC1jOySJN+bs4gDXGNY3Eny1RTGw==
+X-Received: by 2002:a05:6000:1081:: with SMTP id y1mr22581838wrw.660.1643739437084;
+        Tue, 01 Feb 2022 10:17:17 -0800 (PST)
+Received: from maple.lan (cpc141216-aztw34-2-0-cust174.18-1.cable.virginm.net. [80.7.220.175])
+        by smtp.gmail.com with ESMTPSA id b2sm17585900wri.88.2022.02.01.10.17.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Feb 2022 10:17:16 -0800 (PST)
+From:   Daniel Thompson <daniel.thompson@linaro.org>
+To:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     Daniel Thompson <daniel.thompson@linaro.org>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3] drm/cma-helper: Describe what a "contiguous chunk" actually means
+Date:   Tue,  1 Feb 2022 18:17:07 +0000
+Message-Id: <20220201181707.204693-1-daniel.thompson@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Meneghini <jmeneghi@redhat.com>
+Since it's inception in 2012 it has been understood that the DRM GEM CMA
+helpers do not depend on CMA as the backend allocator. In fact the first
+bug fix to ensure the cma-helpers work correctly with an IOMMU backend
+appeared in 2014. However currently the documentation for
+drm_gem_cma_create() talks about "a contiguous chunk of memory" without
+making clear which address space it will be a contiguous part of.
+Additionally the CMA introduction is actively misleading because it only
+contemplates the CMA backend.
 
-commit 847f9ea4c5186fdb7b84297e3eeed9e340e83fce upstream.
+This matters because when the device accesses the bus through an IOMMU
+(and don't use the CMA backend) then the allocated memory is contiguous
+only in the IOVA space. This is a significant difference compared to the
+CMA backend and the behaviour can be a surprise even to someone who does
+a reasonable level of code browsing (but doesn't find all the relevant
+function pointers ;-) ).
 
-The bnx2fc_destroy() functions are removing the interface before calling
-destroy_work. This results multiple WARNings from sysfs_remove_group() as
-the controller rport device attributes are removed too early.
+Improve the kernel doc comments accordingly.
 
-Replace the fcoe_port's destroy_work queue. It's not needed.
-
-The problem is easily reproducible with the following steps.
-
-Example:
-
-  $ dmesg -w &
-  $ systemctl enable --now fcoe
-  $ fipvlan -s -c ens2f1
-  $ fcoeadm -d ens2f1.802
-  [  583.464488] host2: libfc: Link down on port (7500a1)
-  [  583.472651] bnx2fc: 7500a1 - rport not created Yet!!
-  [  583.490468] ------------[ cut here ]------------
-  [  583.538725] sysfs group 'power' not found for kobject 'rport-2:0-0'
-  [  583.568814] WARNING: CPU: 3 PID: 192 at fs/sysfs/group.c:279 sysfs_remove_group+0x6f/0x80
-  [  583.607130] Modules linked in: dm_service_time 8021q garp mrp stp llc bnx2fc cnic uio rpcsec_gss_krb5 auth_rpcgss nfsv4 ...
-  [  583.942994] CPU: 3 PID: 192 Comm: kworker/3:2 Kdump: loaded Not tainted 5.14.0-39.el9.x86_64 #1
-  [  583.984105] Hardware name: HP ProLiant DL120 G7, BIOS J01 07/01/2013
-  [  584.016535] Workqueue: fc_wq_2 fc_rport_final_delete [scsi_transport_fc]
-  [  584.050691] RIP: 0010:sysfs_remove_group+0x6f/0x80
-  [  584.074725] Code: ff 5b 48 89 ef 5d 41 5c e9 ee c0 ff ff 48 89 ef e8 f6 b8 ff ff eb d1 49 8b 14 24 48 8b 33 48 c7 c7 ...
-  [  584.162586] RSP: 0018:ffffb567c15afdc0 EFLAGS: 00010282
-  [  584.188225] RAX: 0000000000000000 RBX: ffffffff8eec4220 RCX: 0000000000000000
-  [  584.221053] RDX: ffff8c1586ce84c0 RSI: ffff8c1586cd7cc0 RDI: ffff8c1586cd7cc0
-  [  584.255089] RBP: 0000000000000000 R08: 0000000000000000 R09: ffffb567c15afc00
-  [  584.287954] R10: ffffb567c15afbf8 R11: ffffffff8fbe7f28 R12: ffff8c1486326400
-  [  584.322356] R13: ffff8c1486326480 R14: ffff8c1483a4a000 R15: 0000000000000004
-  [  584.355379] FS:  0000000000000000(0000) GS:ffff8c1586cc0000(0000) knlGS:0000000000000000
-  [  584.394419] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-  [  584.421123] CR2: 00007fe95a6f7840 CR3: 0000000107674002 CR4: 00000000000606e0
-  [  584.454888] Call Trace:
-  [  584.466108]  device_del+0xb2/0x3e0
-  [  584.481701]  device_unregister+0x13/0x60
-  [  584.501306]  bsg_unregister_queue+0x5b/0x80
-  [  584.522029]  bsg_remove_queue+0x1c/0x40
-  [  584.541884]  fc_rport_final_delete+0xf3/0x1d0 [scsi_transport_fc]
-  [  584.573823]  process_one_work+0x1e3/0x3b0
-  [  584.592396]  worker_thread+0x50/0x3b0
-  [  584.609256]  ? rescuer_thread+0x370/0x370
-  [  584.628877]  kthread+0x149/0x170
-  [  584.643673]  ? set_kthread_struct+0x40/0x40
-  [  584.662909]  ret_from_fork+0x22/0x30
-  [  584.680002] ---[ end trace 53575ecefa942ece ]---
-
-Link: https://lore.kernel.org/r/20220115040044.1013475-1-jmeneghi@redhat.com
-Fixes: 0cbf32e1681d ("[SCSI] bnx2fc: Avoid calling bnx2fc_if_destroy with unnecessary locks")
-Tested-by: Guangwu Zhang <guazhang@redhat.com>
-Co-developed-by: Maurizio Lombardi <mlombard@redhat.com>
-Signed-off-by: Maurizio Lombardi <mlombard@redhat.com>
-Signed-off-by: John Meneghini <jmeneghi@redhat.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
 ---
- drivers/scsi/bnx2fc/bnx2fc_fcoe.c |   20 +++++---------------
- 1 file changed, 5 insertions(+), 15 deletions(-)
 
---- a/drivers/scsi/bnx2fc/bnx2fc_fcoe.c
-+++ b/drivers/scsi/bnx2fc/bnx2fc_fcoe.c
-@@ -79,7 +79,7 @@ static int bnx2fc_bind_pcidev(struct bnx
- static void bnx2fc_unbind_pcidev(struct bnx2fc_hba *hba);
- static struct fc_lport *bnx2fc_if_create(struct bnx2fc_interface *interface,
- 				  struct device *parent, int npiv);
--static void bnx2fc_destroy_work(struct work_struct *work);
-+static void bnx2fc_port_destroy(struct fcoe_port *port);
- 
- static struct bnx2fc_hba *bnx2fc_hba_lookup(struct net_device *phys_dev);
- static struct bnx2fc_interface *bnx2fc_interface_lookup(struct net_device
-@@ -855,9 +855,6 @@ static void bnx2fc_indicate_netevent(voi
- 				__bnx2fc_destroy(interface);
- 		}
- 		mutex_unlock(&bnx2fc_dev_lock);
--
--		/* Ensure ALL destroy work has been completed before return */
--		flush_workqueue(bnx2fc_wq);
- 		return;
- 
- 	default:
-@@ -1148,8 +1145,8 @@ static int bnx2fc_vport_destroy(struct f
- 	mutex_unlock(&n_port->lp_mutex);
- 	bnx2fc_free_vport(interface->hba, port->lport);
- 	bnx2fc_port_shutdown(port->lport);
-+	bnx2fc_port_destroy(port);
- 	bnx2fc_interface_put(interface);
--	queue_work(bnx2fc_wq, &port->destroy_work);
- 	return 0;
- }
- 
-@@ -1457,7 +1454,6 @@ static struct fc_lport *bnx2fc_if_create
- 	port->lport = lport;
- 	port->priv = interface;
- 	port->get_netdev = bnx2fc_netdev;
--	INIT_WORK(&port->destroy_work, bnx2fc_destroy_work);
- 
- 	/* Configure fcoe_port */
- 	rc = bnx2fc_lport_config(lport);
-@@ -1582,8 +1578,8 @@ static void __bnx2fc_destroy(struct bnx2
- 	bnx2fc_interface_cleanup(interface);
- 	bnx2fc_stop(interface);
- 	list_del(&interface->list);
-+	bnx2fc_port_destroy(port);
- 	bnx2fc_interface_put(interface);
--	queue_work(bnx2fc_wq, &port->destroy_work);
- }
- 
+Notes:
+    Changes in v3:
+    - Rebased on v5.17-rc2
+    - Minor improvements to wording.
+    
+    Changes in v2:
+    - Oops. I did a final proof read and acidentally committed these
+      changes as a seperate patch. This means that v1 contains only
+      one tenth of the actual patch. This is fixed in v2. Many apologies
+      for the noise!
+
+ drivers/gpu/drm/drm_gem_cma_helper.c | 39 +++++++++++++++++++++-------
+ 1 file changed, 29 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/gpu/drm/drm_gem_cma_helper.c b/drivers/gpu/drm/drm_gem_cma_helper.c
+index cefd0cbf9debb..ee003af40ffe6 100644
+--- a/drivers/gpu/drm/drm_gem_cma_helper.c
++++ b/drivers/gpu/drm/drm_gem_cma_helper.c
+@@ -26,12 +26,22 @@
  /**
-@@ -1624,15 +1620,12 @@ netdev_err:
- 	return rc;
- }
- 
--static void bnx2fc_destroy_work(struct work_struct *work)
-+static void bnx2fc_port_destroy(struct fcoe_port *port)
- {
--	struct fcoe_port *port;
- 	struct fc_lport *lport;
- 
--	port = container_of(work, struct fcoe_port, destroy_work);
- 	lport = port->lport;
--
--	BNX2FC_HBA_DBG(lport, "Entered bnx2fc_destroy_work\n");
-+	BNX2FC_HBA_DBG(lport, "Entered %s, destroying lport %p\n", __func__, lport);
- 
- 	bnx2fc_if_destroy(lport);
- }
-@@ -2469,9 +2462,6 @@ static void bnx2fc_ulp_exit(struct cnic_
- 			__bnx2fc_destroy(interface);
- 	mutex_unlock(&bnx2fc_dev_lock);
- 
--	/* Ensure ALL destroy work has been completed before return */
--	flush_workqueue(bnx2fc_wq);
--
- 	bnx2fc_ulp_stop(hba);
- 	/* unregister cnic device */
- 	if (test_and_clear_bit(BNX2FC_CNIC_REGISTERED, &hba->reg_with_cnic))
+  * DOC: cma helpers
+  *
+- * The Contiguous Memory Allocator reserves a pool of memory at early boot
+- * that is used to service requests for large blocks of contiguous memory.
++ * The DRM GEM/CMA helpers are a means to provide buffer objects that are
++ * presented to the device as a contiguous chunk of memory. This is useful
++ * for devices that do not support scatter-gather DMA (either directly or
++ * by using an intimately attached IOMMU).
+  *
+- * The DRM GEM/CMA helpers use this allocator as a means to provide buffer
+- * objects that are physically contiguous in memory. This is useful for
+- * display drivers that are unable to map scattered buffers via an IOMMU.
++ * Despite the name, the DRM GEM/CMA helpers are not hardwired to use the
++ * Contiguous Memory Allocator (CMA).
++ *
++ * For devices that access the memory bus through an (external) IOMMU then
++ * the buffer objects are allocated using a traditional page-based
++ * allocator and may be scattered through physical memory. However they
++ * are contiguous in the IOVA space so appear contiguous to devices using
++ * them.
++ *
++ * For other devices then the helpers rely on CMA to provide buffer
++ * objects that are physically contiguous in memory.
+  *
+  * For GEM callback helpers in struct &drm_gem_object functions, see likewise
+  * named functions with an _object_ infix (e.g., drm_gem_cma_object_vmap() wraps
+@@ -111,8 +121,14 @@ __drm_gem_cma_create(struct drm_device *drm, size_t size, bool private)
+  * @drm: DRM device
+  * @size: size of the object to allocate
+  *
+- * This function creates a CMA GEM object and allocates a contiguous chunk of
+- * memory as backing store.
++ * This function creates a CMA GEM object and allocates memory as backing store.
++ * The allocated memory will occupy a contiguous chunk of bus address space.
++ *
++ * For devices that are directly connected to the memory bus then the allocated
++ * memory will be physically contiguous. For devices that access through an
++ * IOMMU, then the allocated memory is not expected to be physically contiguous
++ * because having contiguous IOVAs is sufficient to meet a devices DMA
++ * requirements.
+  *
+  * Returns:
+  * A struct drm_gem_cma_object * on success or an ERR_PTR()-encoded negative
+@@ -162,9 +178,12 @@ EXPORT_SYMBOL_GPL(drm_gem_cma_create);
+  * @size: size of the object to allocate
+  * @handle: return location for the GEM handle
+  *
+- * This function creates a CMA GEM object, allocating a physically contiguous
+- * chunk of memory as backing store. The GEM object is then added to the list
+- * of object associated with the given file and a handle to it is returned.
++ * This function creates a CMA GEM object, allocating a chunk of memory as
++ * backing store. The GEM object is then added to the list of object associated
++ * with the given file and a handle to it is returned.
++ *
++ * The allocated memory will occupy a contiguous chunk of bus address space.
++ * See drm_gem_cma_create() for more details.
+  *
+  * Returns:
+  * A struct drm_gem_cma_object * on success or an ERR_PTR()-encoded negative
 
+base-commit: 26291c54e111ff6ba87a164d85d4a4e134b7315c
+--
+2.34.1
 
