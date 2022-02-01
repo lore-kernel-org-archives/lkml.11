@@ -2,109 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6DEEC4321E
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 12:06:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 939F2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 12:07:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237748AbiBAMGC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 07:06:02 -0500
-Received: from jabberwock.ucw.cz ([46.255.230.98]:60462 "EHLO
-        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237585AbiBAMF7 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 07:05:59 -0500
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 45F051C0B81; Tue,  1 Feb 2022 13:05:58 +0100 (CET)
-Date:   Tue, 1 Feb 2022 13:05:57 +0100
-From:   Pavel Machek <pavel@denx.de>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com
-Subject: Re: [PATCH 5.10 000/100] 5.10.96-rc1 review
-Message-ID: <20220201120557.GA549@duo.ucw.cz>
-References: <20220131105220.424085452@linuxfoundation.org>
+        id S237764AbiBAMHm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 07:07:42 -0500
+Received: from albireo.enyo.de ([37.24.231.21]:41608 "EHLO albireo.enyo.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237750AbiBAMHj (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 1 Feb 2022 07:07:39 -0500
+Received: from [172.17.203.2] (port=49315 helo=deneb.enyo.de)
+        by albireo.enyo.de ([172.17.140.2]) with esmtps (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        id 1nErwY-00EzF8-Uc; Tue, 01 Feb 2022 12:07:30 +0000
+Received: from fw by deneb.enyo.de with local (Exim 4.94.2)
+        (envelope-from <fw@deneb.enyo.de>)
+        id 1nErwR-000Ch0-BC; Tue, 01 Feb 2022 13:07:23 +0100
+From:   Florian Weimer <fw@deneb.enyo.de>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        "H . Peter Anvin" <hpa@zytor.com>, Paul Turner <pjt@google.com>,
+        linux-api@vger.kernel.org,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        David.Laight@ACULAB.COM, carlos@redhat.com,
+        Peter Oskolkov <posk@posk.io>
+Subject: Re: [RFC PATCH 1/2] rseq: extend struct rseq with numa node id
+References: <20220131205531.17873-1-mathieu.desnoyers@efficios.com>
+        <20220201110821.GV20638@worktop.programming.kicks-ass.net>
+Date:   Tue, 01 Feb 2022 13:07:23 +0100
+In-Reply-To: <20220201110821.GV20638@worktop.programming.kicks-ass.net> (Peter
+        Zijlstra's message of "Tue, 1 Feb 2022 12:08:21 +0100")
+Message-ID: <87fsp223k4.fsf@mid.deneb.enyo.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="huq684BweRXVnRxX"
-Content-Disposition: inline
-In-Reply-To: <20220131105220.424085452@linuxfoundation.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+* Peter Zijlstra:
 
---huq684BweRXVnRxX
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> On Mon, Jan 31, 2022 at 03:55:30PM -0500, Mathieu Desnoyers wrote:
+>
+>> It is also useful for implementing NUMA-aware user-space mutexes.
+>
+> That really wants a futex extention..
 
-Hi!
-
-> This is the start of the stable review cycle for the 5.10.96 release.
-> There are 100 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->=20
-> Responses should be made by Wed, 02 Feb 2022 10:51:59 +0000.
-> Anything received after that time might be too late.
->=20
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.96=
--rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git=
- linux-5.10.y
-> and the diffstat can be found below.
-
-It seems we have boot problem on x86 qemu:
-
-https://lava.ciplatform.org/scheduler/job/616782
-
-
-[    0.183194] APIC: Switch to symmetric I/O mode setup
-[    0.187399] ..TIMER: vector=3D0x30 apic1=3D0 pin1=3D2 apic2=3D-1 pin2=3D=
--1
-[    0.200659] ..MP-BIOS bug: 8254 timer not connected to IO-APIC
-[    0.200984] ...trying to set up timer (IRQ0) through the 8259A ...
-[    0.201309] ..... (found apic 0 pin 2) ...
-[    0.214131] ....... failed.
-[    0.214303] ...trying to set up timer as Virtual Wire IRQ...
-[    0.227212] ..... failed.
-[    0.227390] ...trying to set up timer as ExtINT IRQ...
-[    1.287247] ..... failed :(.
-[    1.287584] Kernel panic - not syncing: IO-APIC + timer doesn't work!  B=
-oot with apic=3Ddebug and send a report.  Then try booting with the 'noapic=
-' option.
-[    1.288043] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.10.96-rc1+ #1
-[    1.288231] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS =
-1.12.0-1 04/01/2014
-[    1.288582] Call Trace:
-
-Other than that we have only the usual gmp.h failures.
-
-https://gitlab.com/cip-project/cip-testing/linux-stable-rc-ci/-/pipelines/4=
-59895032
-
-I'll re-trigger the x86 qemu test, but it looks like real problem to me.
-
-Best regards,
-								Pavel
-
---=20
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-
---huq684BweRXVnRxX
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYfkiJQAKCRAw5/Bqldv6
-8n5AAJ9Vs2ZjiNv3VnRV6DLpWeNApOGjQQCeOUW/Aae6c5nuWxykrs8cjme32xs=
-=Tufm
------END PGP SIGNATURE-----
-
---huq684BweRXVnRxX--
+Do you mean with hashes per NUMA node?
