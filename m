@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E578AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 06:31:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20A2AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 06:31:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234230AbiBAGbM convert rfc822-to-8bit (ORCPT
+        id S234208AbiBAGbO convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 01:31:12 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:37398 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234105AbiBAGbG (ORCPT
+        Tue, 1 Feb 2022 01:31:14 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:30196 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234141AbiBAGbI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 01:31:06 -0500
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21134VCk018980
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 22:31:06 -0800
+        Tue, 1 Feb 2022 01:31:08 -0500
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21111W8W008005
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 22:31:08 -0800
 Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3dxvmp8kfy-5
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3dxq3gak0s-7
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 22:31:05 -0800
-Received: from twshared7500.02.ash7.facebook.com (2620:10d:c085:208::f) by
- mail.thefacebook.com (2620:10d:c085:11d::6) with Microsoft SMTP Server
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 22:31:08 -0800
+Received: from twshared7500.02.ash7.facebook.com (2620:10d:c085:108::4) by
+ mail.thefacebook.com (2620:10d:c085:21d::7) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2308.21; Mon, 31 Jan 2022 22:31:04 -0800
 Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
-        id 454A3290EC903; Mon, 31 Jan 2022 22:28:19 -0800 (PST)
+        id 171FC290EC8DE; Mon, 31 Jan 2022 22:28:11 -0800 (PST)
 From:   Song Liu <song@kernel.org>
 To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
 CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
         <kernel-team@fb.com>, <peterz@infradead.org>, <x86@kernel.org>,
-        <iii@linux.ibm.com>, Song Liu <song@kernel.org>
-Subject: [PATCH v8 bpf-next 5/9] x86/alternative: introduce text_poke_copy
-Date:   Mon, 31 Jan 2022 22:27:59 -0800
-Message-ID: <20220201062803.2675204-6-song@kernel.org>
+        <iii@linux.ibm.com>, Song Liu <songliubraving@fb.com>
+Subject: [PATCH v8 bpf-next 1/9] x86/Kconfig: select HAVE_ARCH_HUGE_VMALLOC with HAVE_ARCH_HUGE_VMAP
+Date:   Mon, 31 Jan 2022 22:27:55 -0800
+Message-ID: <20220201062803.2675204-2-song@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220201062803.2675204-1-song@kernel.org>
 References: <20220201062803.2675204-1-song@kernel.org>
@@ -42,88 +42,46 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8BIT
 X-FB-Internal: Safe
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: Adg0Gv-vSG5WrOhI2LLxSk1Cj-36z2Xs
-X-Proofpoint-GUID: Adg0Gv-vSG5WrOhI2LLxSk1Cj-36z2Xs
+X-Proofpoint-GUID: Hzg7zpTH2F5VnGCFcUhrGMKFWsXoDfFe
+X-Proofpoint-ORIG-GUID: Hzg7zpTH2F5VnGCFcUhrGMKFWsXoDfFe
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
  definitions=2022-02-01_02,2022-01-31_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 spamscore=0 bulkscore=0
- impostorscore=0 adultscore=0 priorityscore=1501 mlxscore=0
- lowpriorityscore=0 malwarescore=0 clxscore=1034 phishscore=0
- suspectscore=0 mlxlogscore=389 classifier=spam adjust=0 reason=mlx
+X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 phishscore=0
+ clxscore=1015 spamscore=0 impostorscore=0 adultscore=0 bulkscore=0
+ priorityscore=1501 lowpriorityscore=0 mlxlogscore=910 mlxscore=0
+ suspectscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
  scancount=1 engine=8.12.0-2201110000 definitions=main-2202010033
 X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This will be used by BPF jit compiler to dump JITed binary to a RX huge
-page, and thus allow multiple BPF programs sharing the a huge (2MB) page.
+From: Song Liu <songliubraving@fb.com>
 
-Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Song Liu <song@kernel.org>
+This enables module_alloc() to allocate huge page for 2MB+ requests.
+To check the difference of this change, we need enable config
+CONFIG_PTDUMP_DEBUGFS, and call module_alloc(2MB). Before the change,
+/sys/kernel/debug/page_tables/kernel shows pte for this map. With the
+change, /sys/kernel/debug/page_tables/ show pmd for thie map.
+
+Signed-off-by: Song Liu <songliubraving@fb.com>
 ---
- arch/x86/include/asm/text-patching.h |  1 +
- arch/x86/kernel/alternative.c        | 34 ++++++++++++++++++++++++++++
- 2 files changed, 35 insertions(+)
+ arch/x86/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/x86/include/asm/text-patching.h b/arch/x86/include/asm/text-patching.h
-index b7421780e4e9..4cc18ba1b75e 100644
---- a/arch/x86/include/asm/text-patching.h
-+++ b/arch/x86/include/asm/text-patching.h
-@@ -44,6 +44,7 @@ extern void text_poke_early(void *addr, const void *opcode, size_t len);
- extern void *text_poke(void *addr, const void *opcode, size_t len);
- extern void text_poke_sync(void);
- extern void *text_poke_kgdb(void *addr, const void *opcode, size_t len);
-+extern void *text_poke_copy(void *addr, const void *opcode, size_t len);
- extern int poke_int3_handler(struct pt_regs *regs);
- extern void text_poke_bp(void *addr, const void *opcode, size_t len, const void *emulate);
- 
-diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
-index 5007c3ffe96f..018b61febf0e 100644
---- a/arch/x86/kernel/alternative.c
-+++ b/arch/x86/kernel/alternative.c
-@@ -1102,6 +1102,40 @@ void *text_poke_kgdb(void *addr, const void *opcode, size_t len)
- 	return __text_poke(addr, opcode, len);
- }
- 
-+/**
-+ * text_poke_copy - Copy instructions into (an unused part of) RX memory
-+ * @addr: address to modify
-+ * @opcode: source of the copy
-+ * @len: length to copy, could be more than 2x PAGE_SIZE
-+ *
-+ * Not safe against concurrent execution; useful for JITs to dump
-+ * new code blocks into unused regions of RX memory. Can be used in
-+ * conjunction with synchronize_rcu_tasks() to wait for existing
-+ * execution to quiesce after having made sure no existing functions
-+ * pointers are live.
-+ */
-+void *text_poke_copy(void *addr, const void *opcode, size_t len)
-+{
-+	unsigned long start = (unsigned long)addr;
-+	size_t patched = 0;
-+
-+	if (WARN_ON_ONCE(core_kernel_text(start)))
-+		return NULL;
-+
-+	mutex_lock(&text_mutex);
-+	while (patched < len) {
-+		unsigned long ptr = start + patched;
-+		size_t s;
-+
-+		s = min_t(size_t, PAGE_SIZE * 2 - offset_in_page(ptr), len - patched);
-+
-+		__text_poke((void *)ptr, opcode + patched, s);
-+		patched += s;
-+	}
-+	mutex_unlock(&text_mutex);
-+	return addr;
-+}
-+
- static void do_sync_core(void *info)
- {
- 	sync_core();
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 6fddb63271d9..e0e0d00cf103 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -159,6 +159,7 @@ config X86
+ 	select HAVE_ALIGNED_STRUCT_PAGE		if SLUB
+ 	select HAVE_ARCH_AUDITSYSCALL
+ 	select HAVE_ARCH_HUGE_VMAP		if X86_64 || X86_PAE
++	select HAVE_ARCH_HUGE_VMALLOC		if HAVE_ARCH_HUGE_VMAP
+ 	select HAVE_ARCH_JUMP_LABEL
+ 	select HAVE_ARCH_JUMP_LABEL_RELATIVE
+ 	select HAVE_ARCH_KASAN			if X86_64
 -- 
 2.30.2
 
