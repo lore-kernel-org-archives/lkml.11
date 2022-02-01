@@ -1,154 +1,20260 @@
 Return-Path: <linux-kernel-owner@kernel.org>
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37A23C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 18:56:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BF1FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 01:59:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242088AbiBAS4p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 13:56:45 -0500
-Received: from mga11.intel.com ([192.55.52.93]:8469 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231249AbiBAS4m (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 13:56:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643741802; x=1675277802;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=JuDZ6FPmRuWvBu/he2gXnn3o7JnM46ZE0jP/1sEdyE0=;
-  b=NWkzHVxx+0PrXweh3941CmCzBMN/0AkX8UFZ4fg5Ib7SZXeX5NwI9R/F
-   eKELASEOqj9osTspQr9qc2+PhBi5LHH1uVc2mO2zZ+eHS2z+09pthC0+7
-   Gq4rXpJkjNjJxIDZzqm7MtqEx6U3OsbNO1pejRTaF7NR7JKLf/UBJvIjH
-   22PuRnGotha6APrW2ReVrrlqaA1VYooXTFwJcd+4vyJ4Q75zVzr4bXkqf
-   8GmrWg+GsRq+FXm2ey9X/lpOgsWC4pR22gYJykud5xbGqsz0IIB/iEWHR
-   RmjchQ3fXaz5Avsj+W0ztn1o/iYFCmg7y2PqVAQV6tfaXuRsYvhpzMKCB
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10245"; a="245356898"
-X-IronPort-AV: E=Sophos;i="5.88,334,1635231600"; 
-   d="scan'208";a="245356898"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2022 10:56:42 -0800
-X-IronPort-AV: E=Sophos;i="5.88,334,1635231600"; 
-   d="scan'208";a="771203856"
-Received: from rashmigh-mobl.amr.corp.intel.com (HELO intel.com) ([10.252.132.8])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2022 10:56:41 -0800
-Date:   Tue, 1 Feb 2022 10:56:40 -0800
-From:   Ben Widawsky <ben.widawsky@intel.com>
-To:     ira.weiny@intel.com
-Cc:     Dan Williams <dan.j.williams@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Alison Schofield <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        linux-kernel@vger.kernel.org, linux-cxl@vger.kernel.org,
-        linux-pci@vger.kernel.org
-Subject: Re: [PATCH V6 08/10] cxl/cdat: Introduce cdat_hdr_valid()
-Message-ID: <20220201185640.4kc5v66vsxd3cial@intel.com>
-References: <20220201071952.900068-1-ira.weiny@intel.com>
- <20220201071952.900068-9-ira.weiny@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220201071952.900068-9-ira.weiny@intel.com>
+        id S232234AbiBAB7d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 31 Jan 2022 20:59:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54636 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232202AbiBAB7Q (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 31 Jan 2022 20:59:16 -0500
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C713FC06173D
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 17:59:15 -0800 (PST)
+Received: by mail-yb1-xb4a.google.com with SMTP id c7-20020a25a2c7000000b00613e4dbaf97so30214904ybn.13
+        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 17:59:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc:content-transfer-encoding;
+        bh=q6c2g0Z0tY2Km6OO97wS+shkxCrhzkRWT8led+Mzjrw=;
+        b=SfIwQUHBofLSHdDZ6pB0VMt1oDqN5Kehe1aNos9mNc7owlv+0i3GVwobntpUJqEoW5
+         BJkFqvKiwEFebkn6OVy46fvjxWGXi/q84QUmcibZ/oeDWBAmHu5Re2UsEMFnOvlbBwoL
+         3glizi2ZkR5HzajjkSHxySv0h4AAp0c98lWQ6MjXq2gze2WK3i0EQoiREuSZuwBIxmvv
+         x4I6RttSSlnm6kzc5YThGDzGqB48cZREWAjkrVaPX4cl13slnXI7tV66q99A883RCo7z
+         13ClARuOQWNEPQBjh98S8wIB/qs7P9x3KflCXn+uG1GT13QtgRQK3CVwi0yizhwAeAVs
+         8i8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc:content-transfer-encoding;
+        bh=q6c2g0Z0tY2Km6OO97wS+shkxCrhzkRWT8led+Mzjrw=;
+        b=LATtBgd5vxxkbRiwl4U+7DdB7DSI5IYXgV9Wv5JLfsbzqlpbE6+y0RVVU/0enrzIH4
+         x6eu1SiRJXLk5XWMWZkq7JgCGnaaqSxstdC5LrPYksC1oPmEvcINPWGmtUrrAUL5pnCH
+         r335yZMN9t4A3wy0g285mLCRdkSC0jopwLqlCF9vVAERMuci4AlkNNwb//S9ZoBwT8m/
+         MLkubvEe2QJbil1JpdjqdgNwJTDsMxKIVU8gVKod4n8kfDODo7lhDLT7T53LCHYE4SFe
+         QcNQjBs0O3DAQxDrh1RZf6P+ervGrgHcNwnKy0HRV/Mxg275VfmXNCntdvcayESbGDXE
+         aA5Q==
+X-Gm-Message-State: AOAM531zHazdj31z4GgHiPoez41+nhGt0G+AlSs0fOgr47eNUmWZnrdU
+        KmItZEwFOGsDeA+db4iIPo2Q6XIdJjIg
+X-Google-Smtp-Source: ABdhPJwObzIRG2oxt1JT7DQftX8lwOw8YgMuoNqG2JwMPEtwk2v9z8UbtAty3QJjC0eoozcUJU8srZdz0Jki
+X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:b14e:bc64:b7f6:5d4b])
+ (user=irogers job=sendgmr) by 2002:a25:86d1:: with SMTP id
+ y17mr34794055ybm.243.1643680754878; Mon, 31 Jan 2022 17:59:14 -0800 (PST)
+Date:   Mon, 31 Jan 2022 17:58:36 -0800
+In-Reply-To: <20220201015858.1226914-1-irogers@google.com>
+Message-Id: <20220201015858.1226914-5-irogers@google.com>
+Mime-Version: 1.0
+References: <20220201015858.1226914-1-irogers@google.com>
+X-Mailer: git-send-email 2.35.0.rc2.247.g8bbb082509-goog
+Subject: [PATCH v2 04/26] perf vendor events: Update metrics for CascadelakeX
+From:   Ian Rogers <irogers@google.com>
+To:     Kan Liang <kan.liang@linux.intel.com>,
+        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        James Clark <james.clark@arm.com>,
+        John Garry <john.garry@huawei.com>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
+Cc:     Stephane Eranian <eranian@google.com>,
+        Ian Rogers <irogers@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22-01-31 23:19:50, ira.weiny@intel.com wrote:
-> From: Ira Weiny <ira.weiny@intel.com>
-> 
-> The CDAT data is protected by a checksum which should be checked when
-> the CDAT is read to ensure it is valid.  In addition the lengths
-> specified should be checked.
-> 
-> Introduce cdat_hdr_valid() to check the checksum.  While at it check and
-> store the sequence number.
-> 
-> Signed-off-by: Ira Weiny <ira.weiny@intel.com>
-> 
-> ---
-> Changes from V5
-> 	New patch, split out
-> 	Update cdat_hdr_valid()
-> 		Remove revision and cs field parsing
-> 			There is no point in these
-> 		Add seq check and debug print.
-> ---
->  drivers/cxl/cdat.h |  2 ++
->  drivers/cxl/pci.c  | 32 ++++++++++++++++++++++++++++++++
->  2 files changed, 34 insertions(+)
-> 
-> diff --git a/drivers/cxl/cdat.h b/drivers/cxl/cdat.h
-> index 4722b6bbbaf0..a7725d26f2d2 100644
-> --- a/drivers/cxl/cdat.h
-> +++ b/drivers/cxl/cdat.h
-> @@ -88,10 +88,12 @@
->   *
->   * @table: cache of CDAT table
->   * @length: length of cached CDAT table
-> + * @seq: Last read Sequence number of the CDAT table
->   */
->  struct cxl_cdat {
->  	void *table;
->  	size_t length;
-> +	u32 seq;
->  };
->  
->  #endif /* !__CXL_CDAT_H__ */
-> diff --git a/drivers/cxl/pci.c b/drivers/cxl/pci.c
-> index 28b973a9e29e..c362c75feed2 100644
-> --- a/drivers/cxl/pci.c
-> +++ b/drivers/cxl/pci.c
-> @@ -586,6 +586,35 @@ static int cxl_setup_doe_devices(struct cxl_dev_state *cxlds)
->  	return 0;
->  }
->  
-> +static bool cxl_cdat_hdr_valid(struct device *dev, struct cxl_cdat *cdat)
-> +{
-> +	u32 *table = cdat->table;
-> +	u8 *data8 = cdat->table;
-> +	u32 length, seq;
-> +	u8 check;
-> +	int i;
-> +
-> +	length = FIELD_GET(CDAT_HEADER_DW0_LENGTH, table[0]);
-> +	if (length < CDAT_HEADER_LENGTH_BYTES)
-> +		return false;
-> +
-> +	if (length > cdat->length)
-> +		return false;
-> +
-> +	seq = FIELD_GET(CDAT_HEADER_DW3_SEQUENCE, table[3]);
-> +
-> +	/* Store the sequence for now. */
-> +	if (cdat->seq != seq) {
-> +		dev_info(dev, "CDAT seq change %x -> %x\n", cdat->seq, seq);
-> +		cdat->seq = seq;
-> +	}
+Based on TMA_metrics-full.csv version 4.3 at 01.org:
+    https://download.01.org/perfmon/
+Events are updated to version 1.14:
+    https://download.01.org/perfmon/CLX
+Json files generated by:
+    https://github.com/intel/event-converter-for-linux-perf
 
-If sequence hasn't changed you could short-circuit the checksum.
+Tested:
+...
+  6: Parse event definition strings                                  : Ok
+  7: Simple expression parser                                        : Ok
+...
+  9: Parse perf pmu format                                           : Ok
+ 10: PMU events                                                      :
+ 10.1: PMU event table sanity                                        : Ok
+ 10.2: PMU event map aliases                                         : Ok
+ 10.3: Parsing of PMU event table metrics                            : Ok
+ 10.4: Parsing of PMU event table metrics with fake PMUs             : Ok
+...
+ 68: Parse and process metrics                                       : Ok
+...
+ 88: perf stat metrics (shadow stat) test                            : Ok
+ 89: perf all metricgroups test                                      : Ok
+ 90: perf all metrics test                                           : FAIL=
+ED!
+ 91: perf all PMU test                                               : Ok
+...
 
-> +
-> +	for (check = 0, i = 0; i < length; i++)
-> +		check += data8[i];
-> +
-> +	return check == 0;
-> +}
-> +
->  #define CDAT_DOE_REQ(entry_handle)					\
->  	(FIELD_PREP(CXL_DOE_TABLE_ACCESS_REQ_CODE,			\
->  		    CXL_DOE_TABLE_ACCESS_REQ_CODE_READ) |		\
-> @@ -658,6 +687,9 @@ static int cxl_cdat_read_table(struct cxl_dev_state *cxlds,
->  
->  	} while (entry_handle != 0xFFFF);
->  
-> +	if (!cxl_cdat_hdr_valid(cxlds->dev, cdat))
-> +		return -EIO;
-> +
->  	return 0;
->  }
->  
-> -- 
-> 2.31.1
-> 
+Test 90 failed due to MEM_PMM_Read_Latency as the test machine
+lacks optane memory, and the divide by 0 causes the metric not to
+print - which is intended behavior.
+
+Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
+Signed-off-by: Ian Rogers <irogers@google.com>
+---
+ .../arch/x86/cascadelakex/cache.json          |  967 ++++++++--------
+ .../arch/x86/cascadelakex/clx-metrics.json    |  469 +++++++-
+ .../arch/x86/cascadelakex/floating-point.json |   50 +-
+ .../arch/x86/cascadelakex/frontend.json       |   18 +-
+ .../arch/x86/cascadelakex/memory.json         | 1008 ++++++++---------
+ .../arch/x86/cascadelakex/other.json          |  952 ++++++++--------
+ .../arch/x86/cascadelakex/pipeline.json       |   11 +
+ .../arch/x86/cascadelakex/uncore-other.json   |   23 +
+ 8 files changed, 1983 insertions(+), 1515 deletions(-)
+
+diff --git a/tools/perf/pmu-events/arch/x86/cascadelakex/cache.json b/tools=
+/perf/pmu-events/arch/x86/cascadelakex/cache.json
+index ffafb9f284d2..732bf51e35af 100644
+--- a/tools/perf/pmu-events/arch/x86/cascadelakex/cache.json
++++ b/tools/perf/pmu-events/arch/x86/cascadelakex/cache.json
+@@ -314,6 +314,19 @@
+         "SampleAfterValue": "2000003",
+         "UMask": "0x82"
+     },
++    {
++        "BriefDescription": "All retired memory instructions.",
++        "Counter": "0,1,2,3",
++        "CounterHTOff": "0,1,2,3",
++        "Data_LA": "1",
++        "EventCode": "0xD0",
++        "EventName": "MEM_INST_RETIRED.ANY",
++        "L1_Hit_Indication": "1",
++        "PEBS": "1",
++        "PublicDescription": "Counts all retired memory instructions - loa=
+ds and stores.",
++        "SampleAfterValue": "2000003",
++        "UMask": "0x83"
++    },
+     {
+         "BriefDescription": "Retired load instructions with locked access.=
+",
+         "Counter": "0,1,2,3",
+@@ -358,6 +371,7 @@
+         "EventCode": "0xD0",
+         "EventName": "MEM_INST_RETIRED.STLB_MISS_LOADS",
+         "PEBS": "1",
++        "PublicDescription": "Number of retired load instructions that (st=
+art a) miss in the 2nd-level TLB (STLB).",
+         "SampleAfterValue": "100003",
+         "UMask": "0x11"
+     },
+@@ -370,6 +384,7 @@
+         "EventName": "MEM_INST_RETIRED.STLB_MISS_STORES",
+         "L1_Hit_Indication": "1",
+         "PEBS": "1",
++        "PublicDescription": "Number of retired store instructions that (s=
+tart a) miss in the 2nd-level TLB (STLB).",
+         "SampleAfterValue": "100003",
+         "UMask": "0x12"
+     },
+@@ -759,7 +774,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.ANY_RESPONSE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0000010491",
++        "MSRValue": "0x10491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -801,7 +816,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_HIT.HIT_OTHER_CORE_F=
+WD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08003C0491",
++        "MSRValue": "0x8003C0491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -815,7 +830,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_HIT.HIT_OTHER_CORE_N=
+O_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04003C0491",
++        "MSRValue": "0x4003C0491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -829,7 +844,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_HIT.NO_SNOOP_NEEDED"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01003C0491",
++        "MSRValue": "0x1003C0491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -843,7 +858,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_HIT.SNOOP_HIT_WITH_F=
+WD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08007C0491",
++        "MSRValue": "0x8007C0491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -857,7 +872,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_HIT.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02003C0491",
++        "MSRValue": "0x2003C0491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -871,7 +886,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_HIT.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00803C0491",
++        "MSRValue": "0x803C0491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -913,7 +928,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_HIT_E.HIT_OTHER_CORE=
+_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800080491",
++        "MSRValue": "0x800080491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -927,7 +942,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_HIT_E.HIT_OTHER_CORE=
+_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400080491",
++        "MSRValue": "0x400080491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -941,7 +956,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_HIT_E.NO_SNOOP_NEEDE=
+D",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100080491",
++        "MSRValue": "0x100080491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -955,7 +970,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_HIT_E.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200080491",
++        "MSRValue": "0x200080491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -969,7 +984,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_HIT_E.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080080491",
++        "MSRValue": "0x80080491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1011,7 +1026,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_HIT_F.HIT_OTHER_CORE=
+_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800200491",
++        "MSRValue": "0x800200491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1025,7 +1040,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_HIT_F.HIT_OTHER_CORE=
+_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400200491",
++        "MSRValue": "0x400200491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1039,7 +1054,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_HIT_F.NO_SNOOP_NEEDE=
+D",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100200491",
++        "MSRValue": "0x100200491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1053,7 +1068,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_HIT_F.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200200491",
++        "MSRValue": "0x200200491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1067,7 +1082,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_HIT_F.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080200491",
++        "MSRValue": "0x80200491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1109,7 +1124,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_HIT_M.HIT_OTHER_CORE=
+_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800040491",
++        "MSRValue": "0x800040491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1123,7 +1138,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_HIT_M.HIT_OTHER_CORE=
+_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400040491",
++        "MSRValue": "0x400040491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1137,7 +1152,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_HIT_M.NO_SNOOP_NEEDE=
+D",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100040491",
++        "MSRValue": "0x100040491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1151,7 +1166,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_HIT_M.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200040491",
++        "MSRValue": "0x200040491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1165,7 +1180,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_HIT_M.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080040491",
++        "MSRValue": "0x80040491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1207,7 +1222,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_HIT_S.HIT_OTHER_CORE=
+_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800100491",
++        "MSRValue": "0x800100491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1221,7 +1236,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_HIT_S.HIT_OTHER_CORE=
+_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400100491",
++        "MSRValue": "0x400100491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1235,7 +1250,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_HIT_S.NO_SNOOP_NEEDE=
+D",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100100491",
++        "MSRValue": "0x100100491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1249,7 +1264,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_HIT_S.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200100491",
++        "MSRValue": "0x200100491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1263,7 +1278,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_HIT_S.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080100491",
++        "MSRValue": "0x80100491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1291,7 +1306,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.PMM_HIT_LOCAL_PMM.SNOOP=
+_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080400491",
++        "MSRValue": "0x80400491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1305,7 +1320,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.PMM_HIT_LOCAL_PMM.SNOOP=
+_NOT_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100400491",
++        "MSRValue": "0x100400491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1347,7 +1362,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.SUPPLIER_NONE.HIT_OTHER=
+_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800020491",
++        "MSRValue": "0x800020491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1361,7 +1376,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.SUPPLIER_NONE.HIT_OTHER=
+_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400020491",
++        "MSRValue": "0x400020491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1375,7 +1390,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.SUPPLIER_NONE.NO_SNOOP_=
+NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100020491",
++        "MSRValue": "0x100020491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1389,7 +1404,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.SUPPLIER_NONE.SNOOP_MIS=
+S",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200020491",
++        "MSRValue": "0x200020491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1403,7 +1418,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.SUPPLIER_NONE.SNOOP_NON=
+E",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080020491",
++        "MSRValue": "0x80020491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1417,7 +1432,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.ANY_RESPONSE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0000010490",
++        "MSRValue": "0x10490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1459,7 +1474,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_HIT.HIT_OTHER_COR=
+E_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08003C0490",
++        "MSRValue": "0x8003C0490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1473,7 +1488,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_HIT.HIT_OTHER_COR=
+E_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04003C0490",
++        "MSRValue": "0x4003C0490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1487,7 +1502,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_HIT.NO_SNOOP_NEED=
+ED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01003C0490",
++        "MSRValue": "0x1003C0490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1501,7 +1516,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_HIT.SNOOP_HIT_WIT=
+H_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08007C0490",
++        "MSRValue": "0x8007C0490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1515,7 +1530,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_HIT.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02003C0490",
++        "MSRValue": "0x2003C0490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1529,7 +1544,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_HIT.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00803C0490",
++        "MSRValue": "0x803C0490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1571,7 +1586,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_HIT_E.HIT_OTHER_C=
+ORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800080490",
++        "MSRValue": "0x800080490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1585,7 +1600,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_HIT_E.HIT_OTHER_C=
+ORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400080490",
++        "MSRValue": "0x400080490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1599,7 +1614,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_HIT_E.NO_SNOOP_NE=
+EDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100080490",
++        "MSRValue": "0x100080490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1613,7 +1628,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_HIT_E.SNOOP_MISS"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200080490",
++        "MSRValue": "0x200080490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1627,7 +1642,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_HIT_E.SNOOP_NONE"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080080490",
++        "MSRValue": "0x80080490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1669,7 +1684,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_HIT_F.HIT_OTHER_C=
+ORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800200490",
++        "MSRValue": "0x800200490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1683,7 +1698,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_HIT_F.HIT_OTHER_C=
+ORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400200490",
++        "MSRValue": "0x400200490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1697,7 +1712,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_HIT_F.NO_SNOOP_NE=
+EDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100200490",
++        "MSRValue": "0x100200490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1711,7 +1726,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_HIT_F.SNOOP_MISS"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200200490",
++        "MSRValue": "0x200200490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1725,7 +1740,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_HIT_F.SNOOP_NONE"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080200490",
++        "MSRValue": "0x80200490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1767,7 +1782,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_HIT_M.HIT_OTHER_C=
+ORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800040490",
++        "MSRValue": "0x800040490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1781,7 +1796,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_HIT_M.HIT_OTHER_C=
+ORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400040490",
++        "MSRValue": "0x400040490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1795,7 +1810,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_HIT_M.NO_SNOOP_NE=
+EDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100040490",
++        "MSRValue": "0x100040490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1809,7 +1824,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_HIT_M.SNOOP_MISS"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200040490",
++        "MSRValue": "0x200040490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1823,7 +1838,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_HIT_M.SNOOP_NONE"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080040490",
++        "MSRValue": "0x80040490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1865,7 +1880,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_HIT_S.HIT_OTHER_C=
+ORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800100490",
++        "MSRValue": "0x800100490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1879,7 +1894,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_HIT_S.HIT_OTHER_C=
+ORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400100490",
++        "MSRValue": "0x400100490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1893,7 +1908,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_HIT_S.NO_SNOOP_NE=
+EDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100100490",
++        "MSRValue": "0x100100490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1907,7 +1922,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_HIT_S.SNOOP_MISS"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200100490",
++        "MSRValue": "0x200100490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1921,7 +1936,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_HIT_S.SNOOP_NONE"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080100490",
++        "MSRValue": "0x80100490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1949,7 +1964,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.PMM_HIT_LOCAL_PMM.SN=
+OOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080400490",
++        "MSRValue": "0x80400490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1963,7 +1978,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.PMM_HIT_LOCAL_PMM.SN=
+OOP_NOT_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100400490",
++        "MSRValue": "0x100400490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2005,7 +2020,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.SUPPLIER_NONE.HIT_OT=
+HER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800020490",
++        "MSRValue": "0x800020490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2019,7 +2034,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.SUPPLIER_NONE.HIT_OT=
+HER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400020490",
++        "MSRValue": "0x400020490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2033,7 +2048,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.SUPPLIER_NONE.NO_SNO=
+OP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100020490",
++        "MSRValue": "0x100020490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2047,7 +2062,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.SUPPLIER_NONE.SNOOP_=
+MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200020490",
++        "MSRValue": "0x200020490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2061,7 +2076,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.SUPPLIER_NONE.SNOOP_=
+NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080020490",
++        "MSRValue": "0x80020490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2075,7 +2090,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.ANY_RESPONSE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0000010120",
++        "MSRValue": "0x10120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2117,7 +2132,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_HIT.HIT_OTHER_CORE_FW=
+D",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08003C0120",
++        "MSRValue": "0x8003C0120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2131,7 +2146,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_HIT.HIT_OTHER_CORE_NO=
+_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04003C0120",
++        "MSRValue": "0x4003C0120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2145,7 +2160,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_HIT.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01003C0120",
++        "MSRValue": "0x1003C0120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2159,7 +2174,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_HIT.SNOOP_HIT_WITH_FW=
+D",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08007C0120",
++        "MSRValue": "0x8007C0120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2173,7 +2188,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_HIT.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02003C0120",
++        "MSRValue": "0x2003C0120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2187,7 +2202,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_HIT.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00803C0120",
++        "MSRValue": "0x803C0120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2229,7 +2244,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_HIT_E.HIT_OTHER_CORE_=
+FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800080120",
++        "MSRValue": "0x800080120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2243,7 +2258,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_HIT_E.HIT_OTHER_CORE_=
+NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400080120",
++        "MSRValue": "0x400080120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2257,7 +2272,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_HIT_E.NO_SNOOP_NEEDED=
+",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100080120",
++        "MSRValue": "0x100080120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2271,7 +2286,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_HIT_E.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200080120",
++        "MSRValue": "0x200080120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2285,7 +2300,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_HIT_E.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080080120",
++        "MSRValue": "0x80080120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2327,7 +2342,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_HIT_F.HIT_OTHER_CORE_=
+FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800200120",
++        "MSRValue": "0x800200120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2341,7 +2356,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_HIT_F.HIT_OTHER_CORE_=
+NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400200120",
++        "MSRValue": "0x400200120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2355,7 +2370,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_HIT_F.NO_SNOOP_NEEDED=
+",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100200120",
++        "MSRValue": "0x100200120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2369,7 +2384,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_HIT_F.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200200120",
++        "MSRValue": "0x200200120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2383,7 +2398,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_HIT_F.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080200120",
++        "MSRValue": "0x80200120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2425,7 +2440,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_HIT_M.HIT_OTHER_CORE_=
+FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800040120",
++        "MSRValue": "0x800040120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2439,7 +2454,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_HIT_M.HIT_OTHER_CORE_=
+NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400040120",
++        "MSRValue": "0x400040120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2453,7 +2468,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_HIT_M.NO_SNOOP_NEEDED=
+",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100040120",
++        "MSRValue": "0x100040120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2467,7 +2482,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_HIT_M.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200040120",
++        "MSRValue": "0x200040120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2481,7 +2496,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_HIT_M.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080040120",
++        "MSRValue": "0x80040120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2523,7 +2538,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_HIT_S.HIT_OTHER_CORE_=
+FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800100120",
++        "MSRValue": "0x800100120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2537,7 +2552,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_HIT_S.HIT_OTHER_CORE_=
+NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400100120",
++        "MSRValue": "0x400100120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2551,7 +2566,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_HIT_S.NO_SNOOP_NEEDED=
+",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100100120",
++        "MSRValue": "0x100100120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2565,7 +2580,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_HIT_S.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200100120",
++        "MSRValue": "0x200100120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2579,7 +2594,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_HIT_S.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080100120",
++        "MSRValue": "0x80100120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2607,7 +2622,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.PMM_HIT_LOCAL_PMM.SNOOP_=
+NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080400120",
++        "MSRValue": "0x80400120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2621,7 +2636,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.PMM_HIT_LOCAL_PMM.SNOOP_=
+NOT_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100400120",
++        "MSRValue": "0x100400120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2663,7 +2678,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.SUPPLIER_NONE.HIT_OTHER_=
+CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800020120",
++        "MSRValue": "0x800020120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2677,7 +2692,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.SUPPLIER_NONE.HIT_OTHER_=
+CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400020120",
++        "MSRValue": "0x400020120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2691,7 +2706,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.SUPPLIER_NONE.NO_SNOOP_N=
+EEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100020120",
++        "MSRValue": "0x100020120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2705,7 +2720,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.SUPPLIER_NONE.SNOOP_MISS=
+",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200020120",
++        "MSRValue": "0x200020120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2719,7 +2734,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.SUPPLIER_NONE.SNOOP_NONE=
+",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080020120",
++        "MSRValue": "0x80020120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2733,7 +2748,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.ANY_RESPONSE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00000107F7",
++        "MSRValue": "0x107F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2775,7 +2790,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_HIT.HIT_OTHER_CORE_FWD=
+",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08003C07F7",
++        "MSRValue": "0x8003C07F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2789,7 +2804,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_HIT.HIT_OTHER_CORE_NO_=
+FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04003C07F7",
++        "MSRValue": "0x4003C07F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2803,7 +2818,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_HIT.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01003C07F7",
++        "MSRValue": "0x1003C07F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2817,7 +2832,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_HIT.SNOOP_HIT_WITH_FWD=
+",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08007C07F7",
++        "MSRValue": "0x8007C07F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2831,7 +2846,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_HIT.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02003C07F7",
++        "MSRValue": "0x2003C07F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2845,7 +2860,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_HIT.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00803C07F7",
++        "MSRValue": "0x803C07F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2887,7 +2902,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_HIT_E.HIT_OTHER_CORE_F=
+WD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08000807F7",
++        "MSRValue": "0x8000807F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2901,7 +2916,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_HIT_E.HIT_OTHER_CORE_N=
+O_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04000807F7",
++        "MSRValue": "0x4000807F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2915,7 +2930,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_HIT_E.NO_SNOOP_NEEDED"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01000807F7",
++        "MSRValue": "0x1000807F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2929,7 +2944,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_HIT_E.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02000807F7",
++        "MSRValue": "0x2000807F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2943,7 +2958,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_HIT_E.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00800807F7",
++        "MSRValue": "0x800807F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2985,7 +3000,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_HIT_F.HIT_OTHER_CORE_F=
+WD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08002007F7",
++        "MSRValue": "0x8002007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2999,7 +3014,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_HIT_F.HIT_OTHER_CORE_N=
+O_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04002007F7",
++        "MSRValue": "0x4002007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3013,7 +3028,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_HIT_F.NO_SNOOP_NEEDED"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01002007F7",
++        "MSRValue": "0x1002007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3027,7 +3042,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_HIT_F.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02002007F7",
++        "MSRValue": "0x2002007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3041,7 +3056,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_HIT_F.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00802007F7",
++        "MSRValue": "0x802007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3083,7 +3098,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_HIT_M.HIT_OTHER_CORE_F=
+WD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08000407F7",
++        "MSRValue": "0x8000407F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3097,7 +3112,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_HIT_M.HIT_OTHER_CORE_N=
+O_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04000407F7",
++        "MSRValue": "0x4000407F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3111,7 +3126,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_HIT_M.NO_SNOOP_NEEDED"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01000407F7",
++        "MSRValue": "0x1000407F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3125,7 +3140,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_HIT_M.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02000407F7",
++        "MSRValue": "0x2000407F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3139,7 +3154,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_HIT_M.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00800407F7",
++        "MSRValue": "0x800407F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3181,7 +3196,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_HIT_S.HIT_OTHER_CORE_F=
+WD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08001007F7",
++        "MSRValue": "0x8001007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3195,7 +3210,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_HIT_S.HIT_OTHER_CORE_N=
+O_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04001007F7",
++        "MSRValue": "0x4001007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3209,7 +3224,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_HIT_S.NO_SNOOP_NEEDED"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01001007F7",
++        "MSRValue": "0x1001007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3223,7 +3238,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_HIT_S.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02001007F7",
++        "MSRValue": "0x2001007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3237,7 +3252,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_HIT_S.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00801007F7",
++        "MSRValue": "0x801007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3265,7 +3280,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.PMM_HIT_LOCAL_PMM.SNOOP_N=
+ONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00804007F7",
++        "MSRValue": "0x804007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3279,7 +3294,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.PMM_HIT_LOCAL_PMM.SNOOP_N=
+OT_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01004007F7",
++        "MSRValue": "0x1004007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3321,7 +3336,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.SUPPLIER_NONE.HIT_OTHER_C=
+ORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08000207F7",
++        "MSRValue": "0x8000207F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3335,7 +3350,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.SUPPLIER_NONE.HIT_OTHER_C=
+ORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04000207F7",
++        "MSRValue": "0x4000207F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3349,7 +3364,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.SUPPLIER_NONE.NO_SNOOP_NE=
+EDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01000207F7",
++        "MSRValue": "0x1000207F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3363,7 +3378,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.SUPPLIER_NONE.SNOOP_MISS"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02000207F7",
++        "MSRValue": "0x2000207F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3377,7 +3392,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.SUPPLIER_NONE.SNOOP_NONE"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00800207F7",
++        "MSRValue": "0x800207F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3391,7 +3406,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.ANY_RESPONSE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0000010122",
++        "MSRValue": "0x10122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3433,7 +3448,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_HIT.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08003C0122",
++        "MSRValue": "0x8003C0122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3447,7 +3462,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_HIT.HIT_OTHER_CORE_NO_FW=
+D",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04003C0122",
++        "MSRValue": "0x4003C0122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3461,7 +3476,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_HIT.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01003C0122",
++        "MSRValue": "0x1003C0122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3475,7 +3490,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_HIT.SNOOP_HIT_WITH_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08007C0122",
++        "MSRValue": "0x8007C0122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3489,7 +3504,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_HIT.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02003C0122",
++        "MSRValue": "0x2003C0122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3503,7 +3518,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_HIT.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00803C0122",
++        "MSRValue": "0x803C0122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3545,7 +3560,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_HIT_E.HIT_OTHER_CORE_FWD=
+",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800080122",
++        "MSRValue": "0x800080122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3559,7 +3574,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_HIT_E.HIT_OTHER_CORE_NO_=
+FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400080122",
++        "MSRValue": "0x400080122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3573,7 +3588,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_HIT_E.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100080122",
++        "MSRValue": "0x100080122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3587,7 +3602,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_HIT_E.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200080122",
++        "MSRValue": "0x200080122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3601,7 +3616,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_HIT_E.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080080122",
++        "MSRValue": "0x80080122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3643,7 +3658,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_HIT_F.HIT_OTHER_CORE_FWD=
+",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800200122",
++        "MSRValue": "0x800200122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3657,7 +3672,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_HIT_F.HIT_OTHER_CORE_NO_=
+FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400200122",
++        "MSRValue": "0x400200122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3671,7 +3686,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_HIT_F.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100200122",
++        "MSRValue": "0x100200122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3685,7 +3700,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_HIT_F.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200200122",
++        "MSRValue": "0x200200122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3699,7 +3714,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_HIT_F.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080200122",
++        "MSRValue": "0x80200122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3741,7 +3756,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_HIT_M.HIT_OTHER_CORE_FWD=
+",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800040122",
++        "MSRValue": "0x800040122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3755,7 +3770,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_HIT_M.HIT_OTHER_CORE_NO_=
+FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400040122",
++        "MSRValue": "0x400040122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3769,7 +3784,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_HIT_M.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100040122",
++        "MSRValue": "0x100040122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3783,7 +3798,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_HIT_M.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200040122",
++        "MSRValue": "0x200040122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3797,7 +3812,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_HIT_M.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080040122",
++        "MSRValue": "0x80040122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3839,7 +3854,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_HIT_S.HIT_OTHER_CORE_FWD=
+",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800100122",
++        "MSRValue": "0x800100122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3853,7 +3868,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_HIT_S.HIT_OTHER_CORE_NO_=
+FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400100122",
++        "MSRValue": "0x400100122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3867,7 +3882,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_HIT_S.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100100122",
++        "MSRValue": "0x100100122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3881,7 +3896,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_HIT_S.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200100122",
++        "MSRValue": "0x200100122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3895,7 +3910,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_HIT_S.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080100122",
++        "MSRValue": "0x80100122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3923,7 +3938,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.PMM_HIT_LOCAL_PMM.SNOOP_NON=
+E",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080400122",
++        "MSRValue": "0x80400122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3937,7 +3952,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.PMM_HIT_LOCAL_PMM.SNOOP_NOT=
+_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100400122",
++        "MSRValue": "0x100400122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3979,7 +3994,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.SUPPLIER_NONE.HIT_OTHER_COR=
+E_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800020122",
++        "MSRValue": "0x800020122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3993,7 +4008,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.SUPPLIER_NONE.HIT_OTHER_COR=
+E_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400020122",
++        "MSRValue": "0x400020122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4007,7 +4022,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.SUPPLIER_NONE.NO_SNOOP_NEED=
+ED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100020122",
++        "MSRValue": "0x100020122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4021,7 +4036,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.SUPPLIER_NONE.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200020122",
++        "MSRValue": "0x200020122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4035,7 +4050,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.SUPPLIER_NONE.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080020122",
++        "MSRValue": "0x80020122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4049,7 +4064,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.ANY_RESPONSE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0000010004",
++        "MSRValue": "0x10004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4091,7 +4106,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_HIT.HIT_OTHER_COR=
+E_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08003C0004",
++        "MSRValue": "0x8003C0004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4105,7 +4120,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_HIT.HIT_OTHER_COR=
+E_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04003C0004",
++        "MSRValue": "0x4003C0004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4119,7 +4134,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_HIT.NO_SNOOP_NEED=
+ED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01003C0004",
++        "MSRValue": "0x1003C0004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4133,7 +4148,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_HIT.SNOOP_HIT_WIT=
+H_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08007C0004",
++        "MSRValue": "0x8007C0004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4147,7 +4162,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_HIT.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02003C0004",
++        "MSRValue": "0x2003C0004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4161,7 +4176,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_HIT.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00803C0004",
++        "MSRValue": "0x803C0004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4203,7 +4218,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_HIT_E.HIT_OTHER_C=
+ORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800080004",
++        "MSRValue": "0x800080004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4217,7 +4232,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_HIT_E.HIT_OTHER_C=
+ORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400080004",
++        "MSRValue": "0x400080004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4231,7 +4246,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_HIT_E.NO_SNOOP_NE=
+EDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100080004",
++        "MSRValue": "0x100080004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4245,7 +4260,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_HIT_E.SNOOP_MISS"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200080004",
++        "MSRValue": "0x200080004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4259,7 +4274,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_HIT_E.SNOOP_NONE"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080080004",
++        "MSRValue": "0x80080004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4301,7 +4316,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_HIT_F.HIT_OTHER_C=
+ORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800200004",
++        "MSRValue": "0x800200004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4315,7 +4330,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_HIT_F.HIT_OTHER_C=
+ORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400200004",
++        "MSRValue": "0x400200004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4329,7 +4344,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_HIT_F.NO_SNOOP_NE=
+EDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100200004",
++        "MSRValue": "0x100200004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4343,7 +4358,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_HIT_F.SNOOP_MISS"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200200004",
++        "MSRValue": "0x200200004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4357,7 +4372,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_HIT_F.SNOOP_NONE"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080200004",
++        "MSRValue": "0x80200004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4399,7 +4414,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_HIT_M.HIT_OTHER_C=
+ORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800040004",
++        "MSRValue": "0x800040004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4413,7 +4428,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_HIT_M.HIT_OTHER_C=
+ORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400040004",
++        "MSRValue": "0x400040004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4427,7 +4442,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_HIT_M.NO_SNOOP_NE=
+EDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100040004",
++        "MSRValue": "0x100040004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4441,7 +4456,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_HIT_M.SNOOP_MISS"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200040004",
++        "MSRValue": "0x200040004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4455,7 +4470,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_HIT_M.SNOOP_NONE"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080040004",
++        "MSRValue": "0x80040004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4497,7 +4512,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_HIT_S.HIT_OTHER_C=
+ORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800100004",
++        "MSRValue": "0x800100004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4511,7 +4526,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_HIT_S.HIT_OTHER_C=
+ORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400100004",
++        "MSRValue": "0x400100004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4525,7 +4540,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_HIT_S.NO_SNOOP_NE=
+EDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100100004",
++        "MSRValue": "0x100100004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4539,7 +4554,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_HIT_S.SNOOP_MISS"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200100004",
++        "MSRValue": "0x200100004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4553,7 +4568,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_HIT_S.SNOOP_NONE"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080100004",
++        "MSRValue": "0x80100004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4581,7 +4596,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.PMM_HIT_LOCAL_PMM.SN=
+OOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080400004",
++        "MSRValue": "0x80400004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4595,7 +4610,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.PMM_HIT_LOCAL_PMM.SN=
+OOP_NOT_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100400004",
++        "MSRValue": "0x100400004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4637,7 +4652,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.SUPPLIER_NONE.HIT_OT=
+HER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800020004",
++        "MSRValue": "0x800020004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4651,7 +4666,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.SUPPLIER_NONE.HIT_OT=
+HER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400020004",
++        "MSRValue": "0x400020004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4665,7 +4680,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.SUPPLIER_NONE.NO_SNO=
+OP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100020004",
++        "MSRValue": "0x100020004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4679,7 +4694,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.SUPPLIER_NONE.SNOOP_=
+MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200020004",
++        "MSRValue": "0x200020004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4693,7 +4708,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.SUPPLIER_NONE.SNOOP_=
+NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080020004",
++        "MSRValue": "0x80020004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4707,7 +4722,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.ANY_RESPONSE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0000010001",
++        "MSRValue": "0x10001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4749,7 +4764,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_HIT.HIT_OTHER_COR=
+E_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08003C0001",
++        "MSRValue": "0x8003C0001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4763,7 +4778,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_HIT.HIT_OTHER_COR=
+E_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04003C0001",
++        "MSRValue": "0x4003C0001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4777,7 +4792,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_HIT.NO_SNOOP_NEED=
+ED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01003C0001",
++        "MSRValue": "0x1003C0001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4791,7 +4806,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_HIT.SNOOP_HIT_WIT=
+H_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08007C0001",
++        "MSRValue": "0x8007C0001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4805,7 +4820,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_HIT.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02003C0001",
++        "MSRValue": "0x2003C0001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4819,7 +4834,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_HIT.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00803C0001",
++        "MSRValue": "0x803C0001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4861,7 +4876,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_HIT_E.HIT_OTHER_C=
+ORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800080001",
++        "MSRValue": "0x800080001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4875,7 +4890,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_HIT_E.HIT_OTHER_C=
+ORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400080001",
++        "MSRValue": "0x400080001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4889,7 +4904,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_HIT_E.NO_SNOOP_NE=
+EDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100080001",
++        "MSRValue": "0x100080001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4903,7 +4918,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_HIT_E.SNOOP_MISS"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200080001",
++        "MSRValue": "0x200080001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4917,7 +4932,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_HIT_E.SNOOP_NONE"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080080001",
++        "MSRValue": "0x80080001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4959,7 +4974,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_HIT_F.HIT_OTHER_C=
+ORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800200001",
++        "MSRValue": "0x800200001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4973,7 +4988,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_HIT_F.HIT_OTHER_C=
+ORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400200001",
++        "MSRValue": "0x400200001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4987,7 +5002,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_HIT_F.NO_SNOOP_NE=
+EDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100200001",
++        "MSRValue": "0x100200001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5001,7 +5016,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_HIT_F.SNOOP_MISS"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200200001",
++        "MSRValue": "0x200200001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5015,7 +5030,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_HIT_F.SNOOP_NONE"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080200001",
++        "MSRValue": "0x80200001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5057,7 +5072,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_HIT_M.HIT_OTHER_C=
+ORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800040001",
++        "MSRValue": "0x800040001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5071,7 +5086,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_HIT_M.HIT_OTHER_C=
+ORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400040001",
++        "MSRValue": "0x400040001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5085,7 +5100,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_HIT_M.NO_SNOOP_NE=
+EDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100040001",
++        "MSRValue": "0x100040001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5099,7 +5114,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_HIT_M.SNOOP_MISS"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200040001",
++        "MSRValue": "0x200040001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5113,7 +5128,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_HIT_M.SNOOP_NONE"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080040001",
++        "MSRValue": "0x80040001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5155,7 +5170,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_HIT_S.HIT_OTHER_C=
+ORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800100001",
++        "MSRValue": "0x800100001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5169,7 +5184,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_HIT_S.HIT_OTHER_C=
+ORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400100001",
++        "MSRValue": "0x400100001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5183,7 +5198,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_HIT_S.NO_SNOOP_NE=
+EDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100100001",
++        "MSRValue": "0x100100001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5197,7 +5212,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_HIT_S.SNOOP_MISS"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200100001",
++        "MSRValue": "0x200100001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5211,7 +5226,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_HIT_S.SNOOP_NONE"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080100001",
++        "MSRValue": "0x80100001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5239,7 +5254,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.PMM_HIT_LOCAL_PMM.SN=
+OOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080400001",
++        "MSRValue": "0x80400001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5253,7 +5268,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.PMM_HIT_LOCAL_PMM.SN=
+OOP_NOT_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100400001",
++        "MSRValue": "0x100400001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5295,7 +5310,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.SUPPLIER_NONE.HIT_OT=
+HER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800020001",
++        "MSRValue": "0x800020001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5309,7 +5324,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.SUPPLIER_NONE.HIT_OT=
+HER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400020001",
++        "MSRValue": "0x400020001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5323,7 +5338,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.SUPPLIER_NONE.NO_SNO=
+OP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100020001",
++        "MSRValue": "0x100020001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5337,7 +5352,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.SUPPLIER_NONE.SNOOP_=
+MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200020001",
++        "MSRValue": "0x200020001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5351,7 +5366,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.SUPPLIER_NONE.SNOOP_=
+NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080020001",
++        "MSRValue": "0x80020001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5365,7 +5380,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.ANY_RESPONSE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0000010002",
++        "MSRValue": "0x10002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5407,7 +5422,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_HIT.HIT_OTHER_CORE_FW=
+D",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08003C0002",
++        "MSRValue": "0x8003C0002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5421,7 +5436,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_HIT.HIT_OTHER_CORE_NO=
+_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04003C0002",
++        "MSRValue": "0x4003C0002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5435,7 +5450,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_HIT.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01003C0002",
++        "MSRValue": "0x1003C0002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5449,7 +5464,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_HIT.SNOOP_HIT_WITH_FW=
+D",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08007C0002",
++        "MSRValue": "0x8007C0002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5463,7 +5478,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_HIT.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02003C0002",
++        "MSRValue": "0x2003C0002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5477,7 +5492,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_HIT.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00803C0002",
++        "MSRValue": "0x803C0002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5519,7 +5534,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_HIT_E.HIT_OTHER_CORE_=
+FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800080002",
++        "MSRValue": "0x800080002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5533,7 +5548,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_HIT_E.HIT_OTHER_CORE_=
+NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400080002",
++        "MSRValue": "0x400080002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5547,7 +5562,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_HIT_E.NO_SNOOP_NEEDED=
+",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100080002",
++        "MSRValue": "0x100080002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5561,7 +5576,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_HIT_E.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200080002",
++        "MSRValue": "0x200080002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5575,7 +5590,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_HIT_E.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080080002",
++        "MSRValue": "0x80080002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5617,7 +5632,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_HIT_F.HIT_OTHER_CORE_=
+FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800200002",
++        "MSRValue": "0x800200002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5631,7 +5646,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_HIT_F.HIT_OTHER_CORE_=
+NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400200002",
++        "MSRValue": "0x400200002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5645,7 +5660,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_HIT_F.NO_SNOOP_NEEDED=
+",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100200002",
++        "MSRValue": "0x100200002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5659,7 +5674,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_HIT_F.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200200002",
++        "MSRValue": "0x200200002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5673,7 +5688,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_HIT_F.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080200002",
++        "MSRValue": "0x80200002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5715,7 +5730,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_HIT_M.HIT_OTHER_CORE_=
+FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800040002",
++        "MSRValue": "0x800040002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5729,7 +5744,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_HIT_M.HIT_OTHER_CORE_=
+NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400040002",
++        "MSRValue": "0x400040002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5743,7 +5758,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_HIT_M.NO_SNOOP_NEEDED=
+",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100040002",
++        "MSRValue": "0x100040002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5757,7 +5772,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_HIT_M.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200040002",
++        "MSRValue": "0x200040002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5771,7 +5786,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_HIT_M.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080040002",
++        "MSRValue": "0x80040002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5813,7 +5828,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_HIT_S.HIT_OTHER_CORE_=
+FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800100002",
++        "MSRValue": "0x800100002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5827,7 +5842,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_HIT_S.HIT_OTHER_CORE_=
+NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400100002",
++        "MSRValue": "0x400100002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5841,7 +5856,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_HIT_S.NO_SNOOP_NEEDED=
+",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100100002",
++        "MSRValue": "0x100100002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5855,7 +5870,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_HIT_S.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200100002",
++        "MSRValue": "0x200100002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5869,7 +5884,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_HIT_S.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080100002",
++        "MSRValue": "0x80100002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5897,7 +5912,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.PMM_HIT_LOCAL_PMM.SNOOP_=
+NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080400002",
++        "MSRValue": "0x80400002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5911,7 +5926,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.PMM_HIT_LOCAL_PMM.SNOOP_=
+NOT_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100400002",
++        "MSRValue": "0x100400002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5953,7 +5968,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.SUPPLIER_NONE.HIT_OTHER_=
+CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800020002",
++        "MSRValue": "0x800020002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5967,7 +5982,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.SUPPLIER_NONE.HIT_OTHER_=
+CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400020002",
++        "MSRValue": "0x400020002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5981,7 +5996,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.SUPPLIER_NONE.NO_SNOOP_N=
+EEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100020002",
++        "MSRValue": "0x100020002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5995,7 +6010,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.SUPPLIER_NONE.SNOOP_MISS=
+",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200020002",
++        "MSRValue": "0x200020002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6009,7 +6024,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.SUPPLIER_NONE.SNOOP_NONE=
+",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080020002",
++        "MSRValue": "0x80020002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6023,7 +6038,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.ANY_RESPONSE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0000018000",
++        "MSRValue": "0x18000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6065,7 +6080,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_HIT.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08003C8000",
++        "MSRValue": "0x8003C8000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6079,7 +6094,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_HIT.HIT_OTHER_CORE_NO_FWD"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04003C8000",
++        "MSRValue": "0x4003C8000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6093,7 +6108,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_HIT.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01003C8000",
++        "MSRValue": "0x1003C8000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6107,7 +6122,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_HIT.SNOOP_HIT_WITH_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08007C8000",
++        "MSRValue": "0x8007C8000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6121,7 +6136,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_HIT.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02003C8000",
++        "MSRValue": "0x2003C8000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6135,7 +6150,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_HIT.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00803C8000",
++        "MSRValue": "0x803C8000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6177,7 +6192,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_HIT_E.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800088000",
++        "MSRValue": "0x800088000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6191,7 +6206,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_HIT_E.HIT_OTHER_CORE_NO_FW=
+D",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400088000",
++        "MSRValue": "0x400088000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6205,7 +6220,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_HIT_E.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100088000",
++        "MSRValue": "0x100088000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6219,7 +6234,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_HIT_E.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200088000",
++        "MSRValue": "0x200088000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6233,7 +6248,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_HIT_E.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080088000",
++        "MSRValue": "0x80088000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6275,7 +6290,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_HIT_F.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800208000",
++        "MSRValue": "0x800208000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6289,7 +6304,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_HIT_F.HIT_OTHER_CORE_NO_FW=
+D",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400208000",
++        "MSRValue": "0x400208000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6303,7 +6318,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_HIT_F.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100208000",
++        "MSRValue": "0x100208000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6317,7 +6332,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_HIT_F.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200208000",
++        "MSRValue": "0x200208000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6331,7 +6346,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_HIT_F.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080208000",
++        "MSRValue": "0x80208000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6373,7 +6388,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_HIT_M.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800048000",
++        "MSRValue": "0x800048000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6387,7 +6402,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_HIT_M.HIT_OTHER_CORE_NO_FW=
+D",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400048000",
++        "MSRValue": "0x400048000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6401,7 +6416,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_HIT_M.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100048000",
++        "MSRValue": "0x100048000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6415,7 +6430,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_HIT_M.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200048000",
++        "MSRValue": "0x200048000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6429,7 +6444,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_HIT_M.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080048000",
++        "MSRValue": "0x80048000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6471,7 +6486,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_HIT_S.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800108000",
++        "MSRValue": "0x800108000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6485,7 +6500,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_HIT_S.HIT_OTHER_CORE_NO_FW=
+D",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400108000",
++        "MSRValue": "0x400108000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6499,7 +6514,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_HIT_S.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100108000",
++        "MSRValue": "0x100108000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6513,7 +6528,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_HIT_S.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200108000",
++        "MSRValue": "0x200108000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6527,7 +6542,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_HIT_S.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080108000",
++        "MSRValue": "0x80108000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6555,7 +6570,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.PMM_HIT_LOCAL_PMM.SNOOP_NONE"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080408000",
++        "MSRValue": "0x80408000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6569,7 +6584,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.PMM_HIT_LOCAL_PMM.SNOOP_NOT_N=
+EEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100408000",
++        "MSRValue": "0x100408000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6611,7 +6626,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.SUPPLIER_NONE.HIT_OTHER_CORE_=
+FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800028000",
++        "MSRValue": "0x800028000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6625,7 +6640,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.SUPPLIER_NONE.HIT_OTHER_CORE_=
+NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400028000",
++        "MSRValue": "0x400028000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6639,7 +6654,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.SUPPLIER_NONE.NO_SNOOP_NEEDED=
+",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100028000",
++        "MSRValue": "0x100028000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6653,7 +6668,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.SUPPLIER_NONE.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200028000",
++        "MSRValue": "0x200028000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6667,7 +6682,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.SUPPLIER_NONE.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080028000",
++        "MSRValue": "0x80028000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6681,7 +6696,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.ANY_RESPONSE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0000010400",
++        "MSRValue": "0x10400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6723,7 +6738,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_HIT.HIT_OTHER_CORE=
+_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08003C0400",
++        "MSRValue": "0x8003C0400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6737,7 +6752,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_HIT.HIT_OTHER_CORE=
+_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04003C0400",
++        "MSRValue": "0x4003C0400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6751,7 +6766,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_HIT.NO_SNOOP_NEEDE=
+D",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01003C0400",
++        "MSRValue": "0x1003C0400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6765,7 +6780,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_HIT.SNOOP_HIT_WITH=
+_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08007C0400",
++        "MSRValue": "0x8007C0400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6779,7 +6794,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_HIT.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02003C0400",
++        "MSRValue": "0x2003C0400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6793,7 +6808,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_HIT.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00803C0400",
++        "MSRValue": "0x803C0400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6835,7 +6850,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_HIT_E.HIT_OTHER_CO=
+RE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800080400",
++        "MSRValue": "0x800080400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6849,7 +6864,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_HIT_E.HIT_OTHER_CO=
+RE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400080400",
++        "MSRValue": "0x400080400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6863,7 +6878,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_HIT_E.NO_SNOOP_NEE=
+DED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100080400",
++        "MSRValue": "0x100080400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6877,7 +6892,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_HIT_E.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200080400",
++        "MSRValue": "0x200080400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6891,7 +6906,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_HIT_E.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080080400",
++        "MSRValue": "0x80080400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6933,7 +6948,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_HIT_F.HIT_OTHER_CO=
+RE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800200400",
++        "MSRValue": "0x800200400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6947,7 +6962,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_HIT_F.HIT_OTHER_CO=
+RE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400200400",
++        "MSRValue": "0x400200400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6961,7 +6976,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_HIT_F.NO_SNOOP_NEE=
+DED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100200400",
++        "MSRValue": "0x100200400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6975,7 +6990,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_HIT_F.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200200400",
++        "MSRValue": "0x200200400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6989,7 +7004,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_HIT_F.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080200400",
++        "MSRValue": "0x80200400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7031,7 +7046,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_HIT_M.HIT_OTHER_CO=
+RE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800040400",
++        "MSRValue": "0x800040400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7045,7 +7060,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_HIT_M.HIT_OTHER_CO=
+RE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400040400",
++        "MSRValue": "0x400040400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7059,7 +7074,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_HIT_M.NO_SNOOP_NEE=
+DED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100040400",
++        "MSRValue": "0x100040400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7073,7 +7088,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_HIT_M.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200040400",
++        "MSRValue": "0x200040400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7087,7 +7102,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_HIT_M.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080040400",
++        "MSRValue": "0x80040400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7129,7 +7144,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_HIT_S.HIT_OTHER_CO=
+RE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800100400",
++        "MSRValue": "0x800100400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7143,7 +7158,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_HIT_S.HIT_OTHER_CO=
+RE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400100400",
++        "MSRValue": "0x400100400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7157,7 +7172,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_HIT_S.NO_SNOOP_NEE=
+DED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100100400",
++        "MSRValue": "0x100100400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7171,7 +7186,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_HIT_S.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200100400",
++        "MSRValue": "0x200100400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7185,7 +7200,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_HIT_S.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080100400",
++        "MSRValue": "0x80100400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7213,7 +7228,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.PMM_HIT_LOCAL_PMM.SNO=
+OP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080400400",
++        "MSRValue": "0x80400400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7227,7 +7242,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.PMM_HIT_LOCAL_PMM.SNO=
+OP_NOT_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100400400",
++        "MSRValue": "0x100400400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7269,7 +7284,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.SUPPLIER_NONE.HIT_OTH=
+ER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800020400",
++        "MSRValue": "0x800020400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7283,7 +7298,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.SUPPLIER_NONE.HIT_OTH=
+ER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400020400",
++        "MSRValue": "0x400020400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7297,7 +7312,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.SUPPLIER_NONE.NO_SNOO=
+P_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100020400",
++        "MSRValue": "0x100020400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7311,7 +7326,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.SUPPLIER_NONE.SNOOP_M=
+ISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200020400",
++        "MSRValue": "0x200020400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7325,7 +7340,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.SUPPLIER_NONE.SNOOP_N=
+ONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080020400",
++        "MSRValue": "0x80020400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7339,7 +7354,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.ANY_RESPONSE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0000010010",
++        "MSRValue": "0x10010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7381,7 +7396,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_HIT.HIT_OTHER_CORE=
+_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08003C0010",
++        "MSRValue": "0x8003C0010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7395,7 +7410,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_HIT.HIT_OTHER_CORE=
+_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04003C0010",
++        "MSRValue": "0x4003C0010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7409,7 +7424,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_HIT.NO_SNOOP_NEEDE=
+D",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01003C0010",
++        "MSRValue": "0x1003C0010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7423,7 +7438,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_HIT.SNOOP_HIT_WITH=
+_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08007C0010",
++        "MSRValue": "0x8007C0010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7437,7 +7452,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_HIT.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02003C0010",
++        "MSRValue": "0x2003C0010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7451,7 +7466,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_HIT.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00803C0010",
++        "MSRValue": "0x803C0010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7493,7 +7508,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_HIT_E.HIT_OTHER_CO=
+RE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800080010",
++        "MSRValue": "0x800080010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7507,7 +7522,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_HIT_E.HIT_OTHER_CO=
+RE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400080010",
++        "MSRValue": "0x400080010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7521,7 +7536,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_HIT_E.NO_SNOOP_NEE=
+DED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100080010",
++        "MSRValue": "0x100080010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7535,7 +7550,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_HIT_E.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200080010",
++        "MSRValue": "0x200080010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7549,7 +7564,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_HIT_E.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080080010",
++        "MSRValue": "0x80080010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7591,7 +7606,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_HIT_F.HIT_OTHER_CO=
+RE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800200010",
++        "MSRValue": "0x800200010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7605,7 +7620,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_HIT_F.HIT_OTHER_CO=
+RE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400200010",
++        "MSRValue": "0x400200010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7619,7 +7634,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_HIT_F.NO_SNOOP_NEE=
+DED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100200010",
++        "MSRValue": "0x100200010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7633,7 +7648,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_HIT_F.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200200010",
++        "MSRValue": "0x200200010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7647,7 +7662,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_HIT_F.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080200010",
++        "MSRValue": "0x80200010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7689,7 +7704,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_HIT_M.HIT_OTHER_CO=
+RE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800040010",
++        "MSRValue": "0x800040010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7703,7 +7718,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_HIT_M.HIT_OTHER_CO=
+RE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400040010",
++        "MSRValue": "0x400040010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7717,7 +7732,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_HIT_M.NO_SNOOP_NEE=
+DED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100040010",
++        "MSRValue": "0x100040010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7731,7 +7746,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_HIT_M.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200040010",
++        "MSRValue": "0x200040010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7745,7 +7760,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_HIT_M.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080040010",
++        "MSRValue": "0x80040010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7787,7 +7802,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_HIT_S.HIT_OTHER_CO=
+RE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800100010",
++        "MSRValue": "0x800100010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7801,7 +7816,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_HIT_S.HIT_OTHER_CO=
+RE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400100010",
++        "MSRValue": "0x400100010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7815,7 +7830,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_HIT_S.NO_SNOOP_NEE=
+DED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100100010",
++        "MSRValue": "0x100100010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7829,7 +7844,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_HIT_S.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200100010",
++        "MSRValue": "0x200100010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7843,7 +7858,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_HIT_S.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080100010",
++        "MSRValue": "0x80100010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7871,7 +7886,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.PMM_HIT_LOCAL_PMM.SNO=
+OP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080400010",
++        "MSRValue": "0x80400010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7885,7 +7900,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.PMM_HIT_LOCAL_PMM.SNO=
+OP_NOT_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100400010",
++        "MSRValue": "0x100400010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7927,7 +7942,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.SUPPLIER_NONE.HIT_OTH=
+ER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800020010",
++        "MSRValue": "0x800020010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7941,7 +7956,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.SUPPLIER_NONE.HIT_OTH=
+ER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400020010",
++        "MSRValue": "0x400020010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7955,7 +7970,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.SUPPLIER_NONE.NO_SNOO=
+P_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100020010",
++        "MSRValue": "0x100020010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7969,7 +7984,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.SUPPLIER_NONE.SNOOP_M=
+ISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200020010",
++        "MSRValue": "0x200020010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7983,7 +7998,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.SUPPLIER_NONE.SNOOP_N=
+ONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080020010",
++        "MSRValue": "0x80020010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7997,7 +8012,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.ANY_RESPONSE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0000010020",
++        "MSRValue": "0x10020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8039,7 +8054,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_HIT.HIT_OTHER_CORE_FWD=
+",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08003C0020",
++        "MSRValue": "0x8003C0020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8053,7 +8068,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_HIT.HIT_OTHER_CORE_NO_=
+FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04003C0020",
++        "MSRValue": "0x4003C0020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8067,7 +8082,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_HIT.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01003C0020",
++        "MSRValue": "0x1003C0020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8081,7 +8096,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_HIT.SNOOP_HIT_WITH_FWD=
+",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08007C0020",
++        "MSRValue": "0x8007C0020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8095,7 +8110,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_HIT.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02003C0020",
++        "MSRValue": "0x2003C0020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8109,7 +8124,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_HIT.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00803C0020",
++        "MSRValue": "0x803C0020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8151,7 +8166,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_HIT_E.HIT_OTHER_CORE_F=
+WD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800080020",
++        "MSRValue": "0x800080020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8165,7 +8180,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_HIT_E.HIT_OTHER_CORE_N=
+O_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400080020",
++        "MSRValue": "0x400080020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8179,7 +8194,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_HIT_E.NO_SNOOP_NEEDED"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100080020",
++        "MSRValue": "0x100080020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8193,7 +8208,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_HIT_E.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200080020",
++        "MSRValue": "0x200080020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8207,7 +8222,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_HIT_E.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080080020",
++        "MSRValue": "0x80080020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8249,7 +8264,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_HIT_F.HIT_OTHER_CORE_F=
+WD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800200020",
++        "MSRValue": "0x800200020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8263,7 +8278,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_HIT_F.HIT_OTHER_CORE_N=
+O_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400200020",
++        "MSRValue": "0x400200020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8277,7 +8292,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_HIT_F.NO_SNOOP_NEEDED"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100200020",
++        "MSRValue": "0x100200020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8291,7 +8306,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_HIT_F.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200200020",
++        "MSRValue": "0x200200020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8305,7 +8320,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_HIT_F.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080200020",
++        "MSRValue": "0x80200020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8347,7 +8362,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_HIT_M.HIT_OTHER_CORE_F=
+WD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800040020",
++        "MSRValue": "0x800040020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8361,7 +8376,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_HIT_M.HIT_OTHER_CORE_N=
+O_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400040020",
++        "MSRValue": "0x400040020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8375,7 +8390,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_HIT_M.NO_SNOOP_NEEDED"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100040020",
++        "MSRValue": "0x100040020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8389,7 +8404,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_HIT_M.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200040020",
++        "MSRValue": "0x200040020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8403,7 +8418,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_HIT_M.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080040020",
++        "MSRValue": "0x80040020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8445,7 +8460,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_HIT_S.HIT_OTHER_CORE_F=
+WD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800100020",
++        "MSRValue": "0x800100020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8459,7 +8474,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_HIT_S.HIT_OTHER_CORE_N=
+O_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400100020",
++        "MSRValue": "0x400100020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8473,7 +8488,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_HIT_S.NO_SNOOP_NEEDED"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100100020",
++        "MSRValue": "0x100100020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8487,7 +8502,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_HIT_S.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200100020",
++        "MSRValue": "0x200100020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8501,7 +8516,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_HIT_S.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080100020",
++        "MSRValue": "0x80100020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8529,7 +8544,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.PMM_HIT_LOCAL_PMM.SNOOP_N=
+ONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080400020",
++        "MSRValue": "0x80400020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8543,7 +8558,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.PMM_HIT_LOCAL_PMM.SNOOP_N=
+OT_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100400020",
++        "MSRValue": "0x100400020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8585,7 +8600,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.SUPPLIER_NONE.HIT_OTHER_C=
+ORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800020020",
++        "MSRValue": "0x800020020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8599,7 +8614,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.SUPPLIER_NONE.HIT_OTHER_C=
+ORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400020020",
++        "MSRValue": "0x400020020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8613,7 +8628,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.SUPPLIER_NONE.NO_SNOOP_NE=
+EDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100020020",
++        "MSRValue": "0x100020020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8627,7 +8642,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.SUPPLIER_NONE.SNOOP_MISS"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200020020",
++        "MSRValue": "0x200020020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8641,7 +8656,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.SUPPLIER_NONE.SNOOP_NONE"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080020020",
++        "MSRValue": "0x80020020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8655,7 +8670,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.ANY_RESPONSE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0000010080",
++        "MSRValue": "0x10080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8697,7 +8712,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_HIT.HIT_OTHER_CORE=
+_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08003C0080",
++        "MSRValue": "0x8003C0080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8711,7 +8726,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_HIT.HIT_OTHER_CORE=
+_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04003C0080",
++        "MSRValue": "0x4003C0080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8725,7 +8740,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_HIT.NO_SNOOP_NEEDE=
+D",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01003C0080",
++        "MSRValue": "0x1003C0080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8739,7 +8754,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_HIT.SNOOP_HIT_WITH=
+_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08007C0080",
++        "MSRValue": "0x8007C0080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8753,7 +8768,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_HIT.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02003C0080",
++        "MSRValue": "0x2003C0080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8767,7 +8782,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_HIT.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00803C0080",
++        "MSRValue": "0x803C0080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8809,7 +8824,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_HIT_E.HIT_OTHER_CO=
+RE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800080080",
++        "MSRValue": "0x800080080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8823,7 +8838,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_HIT_E.HIT_OTHER_CO=
+RE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400080080",
++        "MSRValue": "0x400080080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8837,7 +8852,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_HIT_E.NO_SNOOP_NEE=
+DED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100080080",
++        "MSRValue": "0x100080080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8851,7 +8866,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_HIT_E.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200080080",
++        "MSRValue": "0x200080080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8865,7 +8880,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_HIT_E.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080080080",
++        "MSRValue": "0x80080080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8907,7 +8922,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_HIT_F.HIT_OTHER_CO=
+RE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800200080",
++        "MSRValue": "0x800200080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8921,7 +8936,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_HIT_F.HIT_OTHER_CO=
+RE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400200080",
++        "MSRValue": "0x400200080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8935,7 +8950,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_HIT_F.NO_SNOOP_NEE=
+DED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100200080",
++        "MSRValue": "0x100200080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8949,7 +8964,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_HIT_F.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200200080",
++        "MSRValue": "0x200200080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8963,7 +8978,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_HIT_F.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080200080",
++        "MSRValue": "0x80200080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9005,7 +9020,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_HIT_M.HIT_OTHER_CO=
+RE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800040080",
++        "MSRValue": "0x800040080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9019,7 +9034,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_HIT_M.HIT_OTHER_CO=
+RE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400040080",
++        "MSRValue": "0x400040080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9033,7 +9048,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_HIT_M.NO_SNOOP_NEE=
+DED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100040080",
++        "MSRValue": "0x100040080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9047,7 +9062,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_HIT_M.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200040080",
++        "MSRValue": "0x200040080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9061,7 +9076,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_HIT_M.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080040080",
++        "MSRValue": "0x80040080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9103,7 +9118,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_HIT_S.HIT_OTHER_CO=
+RE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800100080",
++        "MSRValue": "0x800100080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9117,7 +9132,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_HIT_S.HIT_OTHER_CO=
+RE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400100080",
++        "MSRValue": "0x400100080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9131,7 +9146,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_HIT_S.NO_SNOOP_NEE=
+DED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100100080",
++        "MSRValue": "0x100100080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9145,7 +9160,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_HIT_S.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200100080",
++        "MSRValue": "0x200100080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9159,7 +9174,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_HIT_S.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080100080",
++        "MSRValue": "0x80100080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9187,7 +9202,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.PMM_HIT_LOCAL_PMM.SNO=
+OP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080400080",
++        "MSRValue": "0x80400080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9201,7 +9216,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.PMM_HIT_LOCAL_PMM.SNO=
+OP_NOT_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100400080",
++        "MSRValue": "0x100400080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9243,7 +9258,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.SUPPLIER_NONE.HIT_OTH=
+ER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800020080",
++        "MSRValue": "0x800020080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9257,7 +9272,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.SUPPLIER_NONE.HIT_OTH=
+ER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400020080",
++        "MSRValue": "0x400020080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9271,7 +9286,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.SUPPLIER_NONE.NO_SNOO=
+P_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100020080",
++        "MSRValue": "0x100020080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9285,7 +9300,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.SUPPLIER_NONE.SNOOP_M=
+ISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200020080",
++        "MSRValue": "0x200020080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9299,7 +9314,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.SUPPLIER_NONE.SNOOP_N=
+ONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080020080",
++        "MSRValue": "0x80020080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9313,7 +9328,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.ANY_RESPONSE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0000010100",
++        "MSRValue": "0x10100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9355,7 +9370,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_HIT.HIT_OTHER_CORE_FWD=
+",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08003C0100",
++        "MSRValue": "0x8003C0100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9369,7 +9384,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_HIT.HIT_OTHER_CORE_NO_=
+FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04003C0100",
++        "MSRValue": "0x4003C0100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9383,7 +9398,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_HIT.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01003C0100",
++        "MSRValue": "0x1003C0100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9397,7 +9412,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_HIT.SNOOP_HIT_WITH_FWD=
+",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08007C0100",
++        "MSRValue": "0x8007C0100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9411,7 +9426,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_HIT.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02003C0100",
++        "MSRValue": "0x2003C0100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9425,7 +9440,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_HIT.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00803C0100",
++        "MSRValue": "0x803C0100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9467,7 +9482,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_HIT_E.HIT_OTHER_CORE_F=
+WD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800080100",
++        "MSRValue": "0x800080100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9481,7 +9496,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_HIT_E.HIT_OTHER_CORE_N=
+O_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400080100",
++        "MSRValue": "0x400080100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9495,7 +9510,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_HIT_E.NO_SNOOP_NEEDED"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100080100",
++        "MSRValue": "0x100080100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9509,7 +9524,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_HIT_E.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200080100",
++        "MSRValue": "0x200080100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9523,7 +9538,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_HIT_E.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080080100",
++        "MSRValue": "0x80080100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9565,7 +9580,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_HIT_F.HIT_OTHER_CORE_F=
+WD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800200100",
++        "MSRValue": "0x800200100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9579,7 +9594,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_HIT_F.HIT_OTHER_CORE_N=
+O_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400200100",
++        "MSRValue": "0x400200100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9593,7 +9608,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_HIT_F.NO_SNOOP_NEEDED"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100200100",
++        "MSRValue": "0x100200100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9607,7 +9622,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_HIT_F.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200200100",
++        "MSRValue": "0x200200100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9621,7 +9636,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_HIT_F.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080200100",
++        "MSRValue": "0x80200100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9663,7 +9678,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_HIT_M.HIT_OTHER_CORE_F=
+WD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800040100",
++        "MSRValue": "0x800040100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9677,7 +9692,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_HIT_M.HIT_OTHER_CORE_N=
+O_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400040100",
++        "MSRValue": "0x400040100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9691,7 +9706,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_HIT_M.NO_SNOOP_NEEDED"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100040100",
++        "MSRValue": "0x100040100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9705,7 +9720,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_HIT_M.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200040100",
++        "MSRValue": "0x200040100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9719,7 +9734,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_HIT_M.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080040100",
++        "MSRValue": "0x80040100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9761,7 +9776,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_HIT_S.HIT_OTHER_CORE_F=
+WD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800100100",
++        "MSRValue": "0x800100100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9775,7 +9790,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_HIT_S.HIT_OTHER_CORE_N=
+O_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400100100",
++        "MSRValue": "0x400100100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9789,7 +9804,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_HIT_S.NO_SNOOP_NEEDED"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100100100",
++        "MSRValue": "0x100100100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9803,7 +9818,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_HIT_S.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200100100",
++        "MSRValue": "0x200100100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9817,7 +9832,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_HIT_S.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080100100",
++        "MSRValue": "0x80100100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9845,7 +9860,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.PMM_HIT_LOCAL_PMM.SNOOP_N=
+ONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080400100",
++        "MSRValue": "0x80400100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9859,7 +9874,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.PMM_HIT_LOCAL_PMM.SNOOP_N=
+OT_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100400100",
++        "MSRValue": "0x100400100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9901,7 +9916,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.SUPPLIER_NONE.HIT_OTHER_C=
+ORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800020100",
++        "MSRValue": "0x800020100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9915,7 +9930,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.SUPPLIER_NONE.HIT_OTHER_C=
+ORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400020100",
++        "MSRValue": "0x400020100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9929,7 +9944,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.SUPPLIER_NONE.NO_SNOOP_NE=
+EDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100020100",
++        "MSRValue": "0x100020100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9943,7 +9958,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.SUPPLIER_NONE.SNOOP_MISS"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200020100",
++        "MSRValue": "0x200020100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9957,7 +9972,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.SUPPLIER_NONE.SNOOP_NONE"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080020100",
++        "MSRValue": "0x80020100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+diff --git a/tools/perf/pmu-events/arch/x86/cascadelakex/clx-metrics.json b=
+/tools/perf/pmu-events/arch/x86/cascadelakex/clx-metrics.json
+index 5d6b2e6fcb7b..5a1631448b46 100644
+--- a/tools/perf/pmu-events/arch/x86/cascadelakex/clx-metrics.json
++++ b/tools/perf/pmu-events/arch/x86/cascadelakex/clx-metrics.json
+@@ -1,26 +1,167 @@
+ [
++    {
++        "BriefDescription": "This category represents fraction of slots wh=
+ere the processor's Frontend undersupplies its Backend",
++        "MetricExpr": "IDQ_UOPS_NOT_DELIVERED.CORE / (4 * CPU_CLK_UNHALTED=
+.THREAD)",
++        "MetricGroup": "TopdownL1",
++        "MetricName": "Frontend_Bound",
++        "PublicDescription": "This category represents fraction of slots w=
+here the processor's Frontend undersupplies its Backend. Frontend denotes t=
+he first part of the processor core responsible to fetch operations that ar=
+e executed later on by the Backend part. Within the Frontend; a branch pred=
+ictor predicts the next address to fetch; cache-lines are fetched from the =
+memory subsystem; parsed into instructions; and lastly decoded into micro-o=
+perations (uops). Ideally the Frontend can issue Machine_Width uops every c=
+ycle to the Backend. Frontend Bound denotes unutilized issue-slots when the=
+re is no Backend stall; i.e. bubbles where Frontend delivered no uops while=
+ Backend could have accepted them. For example; stalls due to instruction-c=
+ache misses would be categorized under Frontend Bound."
++    },
++    {
++        "BriefDescription": "This category represents fraction of slots wh=
+ere the processor's Frontend undersupplies its Backend. SMT version; use wh=
+en SMT is enabled and measuring per logical CPU.",
++        "MetricExpr": "IDQ_UOPS_NOT_DELIVERED.CORE / (4 * ( ( CPU_CLK_UNHA=
+LTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE / CPU_CLK_UNHA=
+LTED.REF_XCLK ) ))",
++        "MetricGroup": "TopdownL1_SMT",
++        "MetricName": "Frontend_Bound_SMT",
++        "PublicDescription": "This category represents fraction of slots w=
+here the processor's Frontend undersupplies its Backend. Frontend denotes t=
+he first part of the processor core responsible to fetch operations that ar=
+e executed later on by the Backend part. Within the Frontend; a branch pred=
+ictor predicts the next address to fetch; cache-lines are fetched from the =
+memory subsystem; parsed into instructions; and lastly decoded into micro-o=
+perations (uops). Ideally the Frontend can issue Machine_Width uops every c=
+ycle to the Backend. Frontend Bound denotes unutilized issue-slots when the=
+re is no Backend stall; i.e. bubbles where Frontend delivered no uops while=
+ Backend could have accepted them. For example; stalls due to instruction-c=
+ache misses would be categorized under Frontend Bound. SMT version; use whe=
+n SMT is enabled and measuring per logical CPU."
++    },
++    {
++        "BriefDescription": "This category represents fraction of slots wa=
+sted due to incorrect speculations",
++        "MetricExpr": "( UOPS_ISSUED.ANY - UOPS_RETIRED.RETIRE_SLOTS + 4 *=
+ INT_MISC.RECOVERY_CYCLES ) / (4 * CPU_CLK_UNHALTED.THREAD)",
++        "MetricGroup": "TopdownL1",
++        "MetricName": "Bad_Speculation",
++        "PublicDescription": "This category represents fraction of slots w=
+asted due to incorrect speculations. This include slots used to issue uops =
+that do not eventually get retired and slots for which the issue-pipeline w=
+as blocked due to recovery from earlier incorrect speculation. For example;=
+ wasted work due to miss-predicted branches are categorized under Bad Specu=
+lation category. Incorrect data speculation followed by Memory Ordering Nuk=
+es is another example."
++    },
++    {
++        "BriefDescription": "This category represents fraction of slots wa=
+sted due to incorrect speculations. SMT version; use when SMT is enabled an=
+d measuring per logical CPU.",
++        "MetricExpr": "( UOPS_ISSUED.ANY - UOPS_RETIRED.RETIRE_SLOTS + 4 *=
+ ( INT_MISC.RECOVERY_CYCLES_ANY / 2 ) ) / (4 * ( ( CPU_CLK_UNHALTED.THREAD =
+/ 2 ) * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE / CPU_CLK_UNHALTED.REF_XCL=
+K ) ))",
++        "MetricGroup": "TopdownL1_SMT",
++        "MetricName": "Bad_Speculation_SMT",
++        "PublicDescription": "This category represents fraction of slots w=
+asted due to incorrect speculations. This include slots used to issue uops =
+that do not eventually get retired and slots for which the issue-pipeline w=
+as blocked due to recovery from earlier incorrect speculation. For example;=
+ wasted work due to miss-predicted branches are categorized under Bad Specu=
+lation category. Incorrect data speculation followed by Memory Ordering Nuk=
+es is another example. SMT version; use when SMT is enabled and measuring p=
+er logical CPU."
++    },
++    {
++        "BriefDescription": "This category represents fraction of slots wh=
+ere no uops are being delivered due to a lack of required resources for acc=
+epting new uops in the Backend",
++        "MetricConstraint": "NO_NMI_WATCHDOG",
++        "MetricExpr": "1 - (IDQ_UOPS_NOT_DELIVERED.CORE / (4 * CPU_CLK_UNH=
+ALTED.THREAD)) - ( UOPS_ISSUED.ANY + 4 * INT_MISC.RECOVERY_CYCLES ) / (4 * =
+CPU_CLK_UNHALTED.THREAD)",
++        "MetricGroup": "TopdownL1",
++        "MetricName": "Backend_Bound",
++        "PublicDescription": "This category represents fraction of slots w=
+here no uops are being delivered due to a lack of required resources for ac=
+cepting new uops in the Backend. Backend is the portion of the processor co=
+re where the out-of-order scheduler dispatches ready uops into their respec=
+tive execution units; and once completed these uops get retired according t=
+o program order. For example; stalls due to data-cache misses or stalls due=
+ to the divider unit being overloaded are both categorized under Backend Bo=
+und. Backend Bound is further divided into two main categories: Memory Boun=
+d and Core Bound."
++    },
++    {
++        "BriefDescription": "This category represents fraction of slots wh=
+ere no uops are being delivered due to a lack of required resources for acc=
+epting new uops in the Backend. SMT version; use when SMT is enabled and me=
+asuring per logical CPU.",
++        "MetricExpr": "1 - (IDQ_UOPS_NOT_DELIVERED.CORE / (4 * ( ( CPU_CLK=
+_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE / CPU_CLK=
+_UNHALTED.REF_XCLK ) ))) - ( UOPS_ISSUED.ANY + 4 * ( INT_MISC.RECOVERY_CYCL=
+ES_ANY / 2 ) ) / (4 * ( ( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNH=
+ALTED.ONE_THREAD_ACTIVE / CPU_CLK_UNHALTED.REF_XCLK ) ))",
++        "MetricGroup": "TopdownL1_SMT",
++        "MetricName": "Backend_Bound_SMT",
++        "PublicDescription": "This category represents fraction of slots w=
+here no uops are being delivered due to a lack of required resources for ac=
+cepting new uops in the Backend. Backend is the portion of the processor co=
+re where the out-of-order scheduler dispatches ready uops into their respec=
+tive execution units; and once completed these uops get retired according t=
+o program order. For example; stalls due to data-cache misses or stalls due=
+ to the divider unit being overloaded are both categorized under Backend Bo=
+und. Backend Bound is further divided into two main categories: Memory Boun=
+d and Core Bound. SMT version; use when SMT is enabled and measuring per lo=
+gical CPU."
++    },
++    {
++        "BriefDescription": "This category represents fraction of slots ut=
+ilized by useful work i.e. issued uops that eventually get retired",
++        "MetricExpr": "UOPS_RETIRED.RETIRE_SLOTS / (4 * CPU_CLK_UNHALTED.T=
+HREAD)",
++        "MetricGroup": "TopdownL1",
++        "MetricName": "Retiring",
++        "PublicDescription": "This category represents fraction of slots u=
+tilized by useful work i.e. issued uops that eventually get retired. Ideall=
+y; all pipeline slots would be attributed to the Retiring category.  Retiri=
+ng of 100% would indicate the maximum Pipeline_Width throughput was achieve=
+d.  Maximizing Retiring typically increases the Instructions-per-cycle (see=
+ IPC metric). Note that a high Retiring value does not necessary mean there=
+ is no room for more performance.  For example; Heavy-operations or Microco=
+de Assists are categorized under Retiring. They often indicate suboptimal p=
+erformance and can often be optimized or avoided. "
++    },
++    {
++        "BriefDescription": "This category represents fraction of slots ut=
+ilized by useful work i.e. issued uops that eventually get retired. SMT ver=
+sion; use when SMT is enabled and measuring per logical CPU.",
++        "MetricExpr": "UOPS_RETIRED.RETIRE_SLOTS / (4 * ( ( CPU_CLK_UNHALT=
+ED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE / CPU_CLK_UNHALT=
+ED.REF_XCLK ) ))",
++        "MetricGroup": "TopdownL1_SMT",
++        "MetricName": "Retiring_SMT",
++        "PublicDescription": "This category represents fraction of slots u=
+tilized by useful work i.e. issued uops that eventually get retired. Ideall=
+y; all pipeline slots would be attributed to the Retiring category.  Retiri=
+ng of 100% would indicate the maximum Pipeline_Width throughput was achieve=
+d.  Maximizing Retiring typically increases the Instructions-per-cycle (see=
+ IPC metric). Note that a high Retiring value does not necessary mean there=
+ is no room for more performance.  For example; Heavy-operations or Microco=
+de Assists are categorized under Retiring. They often indicate suboptimal p=
+erformance and can often be optimized or avoided. SMT version; use when SMT=
+ is enabled and measuring per logical CPU."
++    },
++    {
++        "BriefDescription": "Total pipeline cost of Branch Misprediction r=
+elated bottlenecks",
++        "MetricExpr": "100 * ( ((BR_MISP_RETIRED.ALL_BRANCHES / ( BR_MISP_=
+RETIRED.ALL_BRANCHES + MACHINE_CLEARS.COUNT )) * (( UOPS_ISSUED.ANY - UOPS_=
+RETIRED.RETIRE_SLOTS + 4 * INT_MISC.RECOVERY_CYCLES ) / (4 * CPU_CLK_UNHALT=
+ED.THREAD))) + (4 * IDQ_UOPS_NOT_DELIVERED.CYCLES_0_UOPS_DELIV.CORE / (4 * =
+CPU_CLK_UNHALTED.THREAD)) * ((BR_MISP_RETIRED.ALL_BRANCHES / ( BR_MISP_RETI=
+RED.ALL_BRANCHES + MACHINE_CLEARS.COUNT )) * INT_MISC.CLEAR_RESTEER_CYCLES =
+/ CPU_CLK_UNHALTED.THREAD) / #(4 * IDQ_UOPS_NOT_DELIVERED.CYCLES_0_UOPS_DEL=
+IV.CORE / (4 * CPU_CLK_UNHALTED.THREAD)) )",
++        "MetricGroup": "Bad;BadSpec;BrMispredicts",
++        "MetricName": "Mispredictions"
++    },
++    {
++        "BriefDescription": "Total pipeline cost of Branch Misprediction r=
+elated bottlenecks",
++        "MetricExpr": "100 * ( ((BR_MISP_RETIRED.ALL_BRANCHES / ( BR_MISP_=
+RETIRED.ALL_BRANCHES + MACHINE_CLEARS.COUNT )) * (( UOPS_ISSUED.ANY - UOPS_=
+RETIRED.RETIRE_SLOTS + 4 * ( INT_MISC.RECOVERY_CYCLES_ANY / 2 ) ) / (4 * ( =
+( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE =
+/ CPU_CLK_UNHALTED.REF_XCLK ) )))) + (4 * IDQ_UOPS_NOT_DELIVERED.CYCLES_0_U=
+OPS_DELIV.CORE / (4 * ( ( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNH=
+ALTED.ONE_THREAD_ACTIVE / CPU_CLK_UNHALTED.REF_XCLK ) ))) * ((BR_MISP_RETIR=
+ED.ALL_BRANCHES / ( BR_MISP_RETIRED.ALL_BRANCHES + MACHINE_CLEARS.COUNT )) =
+* INT_MISC.CLEAR_RESTEER_CYCLES / CPU_CLK_UNHALTED.THREAD) / #(4 * IDQ_UOPS=
+_NOT_DELIVERED.CYCLES_0_UOPS_DELIV.CORE / (4 * ( ( CPU_CLK_UNHALTED.THREAD =
+/ 2 ) * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE / CPU_CLK_UNHALTED.REF_XCL=
+K ) ))) )",
++        "MetricGroup": "Bad;BadSpec;BrMispredicts_SMT",
++        "MetricName": "Mispredictions_SMT"
++    },
++    {
++        "BriefDescription": "Total pipeline cost of (external) Memory Band=
+width related bottlenecks",
++        "MetricExpr": "100 * ((( CYCLE_ACTIVITY.STALLS_MEM_ANY + EXE_ACTIV=
+ITY.BOUND_ON_STORES ) / (CYCLE_ACTIVITY.STALLS_TOTAL + (EXE_ACTIVITY.1_PORT=
+S_UTIL + (UOPS_RETIRED.RETIRE_SLOTS / (4 * CPU_CLK_UNHALTED.THREAD)) * EXE_=
+ACTIVITY.2_PORTS_UTIL) + EXE_ACTIVITY.BOUND_ON_STORES)) * (1 - (IDQ_UOPS_NO=
+T_DELIVERED.CORE / (4 * CPU_CLK_UNHALTED.THREAD)) - ( UOPS_ISSUED.ANY + 4 *=
+ INT_MISC.RECOVERY_CYCLES ) / (4 * CPU_CLK_UNHALTED.THREAD))) * ( ( ( (CYCL=
+E_ACTIVITY.STALLS_L3_MISS / CPU_CLK_UNHALTED.THREAD + (( CYCLE_ACTIVITY.STA=
+LLS_L1D_MISS - CYCLE_ACTIVITY.STALLS_L2_MISS ) / CPU_CLK_UNHALTED.THREAD) -=
+ (( (MEM_LOAD_RETIRED.L2_HIT * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RE=
+TIRED.L1_MISS) )) / ( (MEM_LOAD_RETIRED.L2_HIT * ( 1 + (MEM_LOAD_RETIRED.FB=
+_HIT / MEM_LOAD_RETIRED.L1_MISS) )) + cpu@L1D_PEND_MISS.FB_FULL\\,cmask\\=
+=3D1@ ) ) * (( CYCLE_ACTIVITY.STALLS_L1D_MISS - CYCLE_ACTIVITY.STALLS_L2_MI=
+SS ) / CPU_CLK_UNHALTED.THREAD))) - ( ( ( 1 - ( ( 19 * (MEM_LOAD_L3_MISS_RE=
+TIRED.REMOTE_DRAM * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MI=
+SS) )) + 10 * ( (MEM_LOAD_L3_MISS_RETIRED.LOCAL_DRAM * ( 1 + (MEM_LOAD_RETI=
+RED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) + (MEM_LOAD_L3_MISS_RETIRED.REMOT=
+E_FWD * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) + (ME=
+M_LOAD_L3_MISS_RETIRED.REMOTE_HITM * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_L=
+OAD_RETIRED.L1_MISS) )) ) ) / ( ( 19 * (MEM_LOAD_L3_MISS_RETIRED.REMOTE_DRA=
+M * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) + 10 * ( =
+(MEM_LOAD_L3_MISS_RETIRED.LOCAL_DRAM * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM=
+_LOAD_RETIRED.L1_MISS) )) + (MEM_LOAD_L3_MISS_RETIRED.REMOTE_FWD * ( 1 + (M=
+EM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) + (MEM_LOAD_L3_MISS_R=
+ETIRED.REMOTE_HITM * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_M=
+ISS) )) ) ) + ( 25 * ( MEM_LOAD_RETIRED.LOCAL_PMM * ( 1 + (MEM_LOAD_RETIRED=
+.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) ) ) + 33 * ( MEM_LOAD_L3_MISS_RETIRED.R=
+EMOTE_PMM * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) ) ) =
+) ) ) ) * (CYCLE_ACTIVITY.STALLS_L3_MISS / CPU_CLK_UNHALTED.THREAD + (( CYC=
+LE_ACTIVITY.STALLS_L1D_MISS - CYCLE_ACTIVITY.STALLS_L2_MISS ) / CPU_CLK_UNH=
+ALTED.THREAD) - (( (MEM_LOAD_RETIRED.L2_HIT * ( 1 + (MEM_LOAD_RETIRED.FB_HI=
+T / MEM_LOAD_RETIRED.L1_MISS) )) / ( (MEM_LOAD_RETIRED.L2_HIT * ( 1 + (MEM_=
+LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) + cpu@L1D_PEND_MISS.FB_F=
+ULL\\,cmask\\=3D1@ ) ) * (( CYCLE_ACTIVITY.STALLS_L1D_MISS - CYCLE_ACTIVITY=
+.STALLS_L2_MISS ) / CPU_CLK_UNHALTED.THREAD))) ) if ( 1000000 * ( MEM_LOAD_=
+L3_MISS_RETIRED.REMOTE_PMM + MEM_LOAD_RETIRED.LOCAL_PMM ) > MEM_LOAD_RETIRE=
+D.L1_MISS ) else 0 ) ) / #((( CYCLE_ACTIVITY.STALLS_MEM_ANY + EXE_ACTIVITY.=
+BOUND_ON_STORES ) / (CYCLE_ACTIVITY.STALLS_TOTAL + (EXE_ACTIVITY.1_PORTS_UT=
+IL + (UOPS_RETIRED.RETIRE_SLOTS / (4 * CPU_CLK_UNHALTED.THREAD)) * EXE_ACTI=
+VITY.2_PORTS_UTIL) + EXE_ACTIVITY.BOUND_ON_STORES)) * (1 - (IDQ_UOPS_NOT_DE=
+LIVERED.CORE / (4 * CPU_CLK_UNHALTED.THREAD)) - ( UOPS_ISSUED.ANY + 4 * INT=
+_MISC.RECOVERY_CYCLES ) / (4 * CPU_CLK_UNHALTED.THREAD))) ) * ( (min( CPU_C=
+LK_UNHALTED.THREAD , cpu@OFFCORE_REQUESTS_OUTSTANDING.ALL_DATA_RD\\,cmask\\=
+=3D4@ ) / CPU_CLK_UNHALTED.THREAD) / #( (CYCLE_ACTIVITY.STALLS_L3_MISS / CP=
+U_CLK_UNHALTED.THREAD + (( CYCLE_ACTIVITY.STALLS_L1D_MISS - CYCLE_ACTIVITY.=
+STALLS_L2_MISS ) / CPU_CLK_UNHALTED.THREAD) - (( (MEM_LOAD_RETIRED.L2_HIT *=
+ ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) / ( (MEM_LOA=
+D_RETIRED.L2_HIT * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MIS=
+S) )) + cpu@L1D_PEND_MISS.FB_FULL\\,cmask\\=3D1@ ) ) * (( CYCLE_ACTIVITY.ST=
+ALLS_L1D_MISS - CYCLE_ACTIVITY.STALLS_L2_MISS ) / CPU_CLK_UNHALTED.THREAD))=
+) - ( ( ( 1 - ( ( 19 * (MEM_LOAD_L3_MISS_RETIRED.REMOTE_DRAM * ( 1 + (MEM_L=
+OAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) + 10 * ( (MEM_LOAD_L3_MIS=
+S_RETIRED.LOCAL_DRAM * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1=
+_MISS) )) + (MEM_LOAD_L3_MISS_RETIRED.REMOTE_FWD * ( 1 + (MEM_LOAD_RETIRED.=
+FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) + (MEM_LOAD_L3_MISS_RETIRED.REMOTE_HI=
+TM * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) ) ) / ( =
+( 19 * (MEM_LOAD_L3_MISS_RETIRED.REMOTE_DRAM * ( 1 + (MEM_LOAD_RETIRED.FB_H=
+IT / MEM_LOAD_RETIRED.L1_MISS) )) + 10 * ( (MEM_LOAD_L3_MISS_RETIRED.LOCAL_=
+DRAM * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) + (MEM=
+_LOAD_L3_MISS_RETIRED.REMOTE_FWD * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOA=
+D_RETIRED.L1_MISS) )) + (MEM_LOAD_L3_MISS_RETIRED.REMOTE_HITM * ( 1 + (MEM_=
+LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) ) ) + ( 25 * ( MEM_LOAD_=
+RETIRED.LOCAL_PMM * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MI=
+SS) ) ) + 33 * ( MEM_LOAD_L3_MISS_RETIRED.REMOTE_PMM * ( 1 + (MEM_LOAD_RETI=
+RED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) ) ) ) ) ) ) * (CYCLE_ACTIVITY.STALLS=
+_L3_MISS / CPU_CLK_UNHALTED.THREAD + (( CYCLE_ACTIVITY.STALLS_L1D_MISS - CY=
+CLE_ACTIVITY.STALLS_L2_MISS ) / CPU_CLK_UNHALTED.THREAD) - (( (MEM_LOAD_RET=
+IRED.L2_HIT * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) ))=
+ / ( (MEM_LOAD_RETIRED.L2_HIT * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_R=
+ETIRED.L1_MISS) )) + cpu@L1D_PEND_MISS.FB_FULL\\,cmask\\=3D1@ ) ) * (( CYCL=
+E_ACTIVITY.STALLS_L1D_MISS - CYCLE_ACTIVITY.STALLS_L2_MISS ) / CPU_CLK_UNHA=
+LTED.THREAD))) ) if ( 1000000 * ( MEM_LOAD_L3_MISS_RETIRED.REMOTE_PMM + MEM=
+_LOAD_RETIRED.LOCAL_PMM ) > MEM_LOAD_RETIRED.L1_MISS ) else 0 ) ) ) + ( (( =
+CYCLE_ACTIVITY.STALLS_L2_MISS - CYCLE_ACTIVITY.STALLS_L3_MISS ) / CPU_CLK_U=
+NHALTED.THREAD) / #((( CYCLE_ACTIVITY.STALLS_MEM_ANY + EXE_ACTIVITY.BOUND_O=
+N_STORES ) / (CYCLE_ACTIVITY.STALLS_TOTAL + (EXE_ACTIVITY.1_PORTS_UTIL + (U=
+OPS_RETIRED.RETIRE_SLOTS / (4 * CPU_CLK_UNHALTED.THREAD)) * EXE_ACTIVITY.2_=
+PORTS_UTIL) + EXE_ACTIVITY.BOUND_ON_STORES)) * (1 - (IDQ_UOPS_NOT_DELIVERED=
+.CORE / (4 * CPU_CLK_UNHALTED.THREAD)) - ( UOPS_ISSUED.ANY + 4 * INT_MISC.R=
+ECOVERY_CYCLES ) / (4 * CPU_CLK_UNHALTED.THREAD))) ) * ( (OFFCORE_REQUESTS_=
+BUFFER.SQ_FULL / CPU_CLK_UNHALTED.THREAD) / #(( CYCLE_ACTIVITY.STALLS_L2_MI=
+SS - CYCLE_ACTIVITY.STALLS_L3_MISS ) / CPU_CLK_UNHALTED.THREAD) ) ) + ( (ma=
+x( ( CYCLE_ACTIVITY.STALLS_MEM_ANY - CYCLE_ACTIVITY.STALLS_L1D_MISS ) / CPU=
+_CLK_UNHALTED.THREAD , 0 )) / #((( CYCLE_ACTIVITY.STALLS_MEM_ANY + EXE_ACTI=
+VITY.BOUND_ON_STORES ) / (CYCLE_ACTIVITY.STALLS_TOTAL + (EXE_ACTIVITY.1_POR=
+TS_UTIL + (UOPS_RETIRED.RETIRE_SLOTS / (4 * CPU_CLK_UNHALTED.THREAD)) * EXE=
+_ACTIVITY.2_PORTS_UTIL) + EXE_ACTIVITY.BOUND_ON_STORES)) * (1 - (IDQ_UOPS_N=
+OT_DELIVERED.CORE / (4 * CPU_CLK_UNHALTED.THREAD)) - ( UOPS_ISSUED.ANY + 4 =
+* INT_MISC.RECOVERY_CYCLES ) / (4 * CPU_CLK_UNHALTED.THREAD))) ) * ( ((L1D_=
+PEND_MISS.PENDING / ( MEM_LOAD_RETIRED.L1_MISS + MEM_LOAD_RETIRED.FB_HIT ))=
+ * cpu@L1D_PEND_MISS.FB_FULL\\,cmask\\=3D1@ / CPU_CLK_UNHALTED.THREAD) / #(=
+max( ( CYCLE_ACTIVITY.STALLS_MEM_ANY - CYCLE_ACTIVITY.STALLS_L1D_MISS ) / C=
+PU_CLK_UNHALTED.THREAD , 0 )) ) ",
++        "MetricGroup": "Mem;MemoryBW;Offcore",
++        "MetricName": "Memory_Bandwidth"
++    },
++    {
++        "BriefDescription": "Total pipeline cost of (external) Memory Band=
+width related bottlenecks",
++        "MetricExpr": "100 * ((( CYCLE_ACTIVITY.STALLS_MEM_ANY + EXE_ACTIV=
+ITY.BOUND_ON_STORES ) / (CYCLE_ACTIVITY.STALLS_TOTAL + (EXE_ACTIVITY.1_PORT=
+S_UTIL + (UOPS_RETIRED.RETIRE_SLOTS / (4 * ( ( CPU_CLK_UNHALTED.THREAD / 2 =
+) * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE / CPU_CLK_UNHALTED.REF_XCLK ) =
+))) * EXE_ACTIVITY.2_PORTS_UTIL) + EXE_ACTIVITY.BOUND_ON_STORES)) * (1 - (I=
+DQ_UOPS_NOT_DELIVERED.CORE / (4 * ( ( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 +=
+ CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE / CPU_CLK_UNHALTED.REF_XCLK ) ))) - ( U=
+OPS_ISSUED.ANY + 4 * ( INT_MISC.RECOVERY_CYCLES_ANY / 2 ) ) / (4 * ( ( CPU_=
+CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE / CPU_=
+CLK_UNHALTED.REF_XCLK ) )))) * ( ( ( (CYCLE_ACTIVITY.STALLS_L3_MISS / CPU_C=
+LK_UNHALTED.THREAD + (( CYCLE_ACTIVITY.STALLS_L1D_MISS - CYCLE_ACTIVITY.STA=
+LLS_L2_MISS ) / CPU_CLK_UNHALTED.THREAD) - (( (MEM_LOAD_RETIRED.L2_HIT * ( =
+1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) / ( (MEM_LOAD_R=
+ETIRED.L2_HIT * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) =
+)) + cpu@L1D_PEND_MISS.FB_FULL\\,cmask\\=3D1@ ) ) * (( CYCLE_ACTIVITY.STALL=
+S_L1D_MISS - CYCLE_ACTIVITY.STALLS_L2_MISS ) / CPU_CLK_UNHALTED.THREAD))) -=
+ ( ( ( 1 - ( ( 19 * (MEM_LOAD_L3_MISS_RETIRED.REMOTE_DRAM * ( 1 + (MEM_LOAD=
+_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) + 10 * ( (MEM_LOAD_L3_MISS_R=
+ETIRED.LOCAL_DRAM * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MI=
+SS) )) + (MEM_LOAD_L3_MISS_RETIRED.REMOTE_FWD * ( 1 + (MEM_LOAD_RETIRED.FB_=
+HIT / MEM_LOAD_RETIRED.L1_MISS) )) + (MEM_LOAD_L3_MISS_RETIRED.REMOTE_HITM =
+* ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) ) ) / ( ( 1=
+9 * (MEM_LOAD_L3_MISS_RETIRED.REMOTE_DRAM * ( 1 + (MEM_LOAD_RETIRED.FB_HIT =
+/ MEM_LOAD_RETIRED.L1_MISS) )) + 10 * ( (MEM_LOAD_L3_MISS_RETIRED.LOCAL_DRA=
+M * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) + (MEM_LO=
+AD_L3_MISS_RETIRED.REMOTE_FWD * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_R=
+ETIRED.L1_MISS) )) + (MEM_LOAD_L3_MISS_RETIRED.REMOTE_HITM * ( 1 + (MEM_LOA=
+D_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) ) ) + ( 25 * ( MEM_LOAD_RET=
+IRED.LOCAL_PMM * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS)=
+ ) ) + 33 * ( MEM_LOAD_L3_MISS_RETIRED.REMOTE_PMM * ( 1 + (MEM_LOAD_RETIRED=
+.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) ) ) ) ) ) ) * (CYCLE_ACTIVITY.STALLS_L3=
+_MISS / CPU_CLK_UNHALTED.THREAD + (( CYCLE_ACTIVITY.STALLS_L1D_MISS - CYCLE=
+_ACTIVITY.STALLS_L2_MISS ) / CPU_CLK_UNHALTED.THREAD) - (( (MEM_LOAD_RETIRE=
+D.L2_HIT * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) / =
+( (MEM_LOAD_RETIRED.L2_HIT * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETI=
+RED.L1_MISS) )) + cpu@L1D_PEND_MISS.FB_FULL\\,cmask\\=3D1@ ) ) * (( CYCLE_A=
+CTIVITY.STALLS_L1D_MISS - CYCLE_ACTIVITY.STALLS_L2_MISS ) / CPU_CLK_UNHALTE=
+D.THREAD))) ) if ( 1000000 * ( MEM_LOAD_L3_MISS_RETIRED.REMOTE_PMM + MEM_LO=
+AD_RETIRED.LOCAL_PMM ) > MEM_LOAD_RETIRED.L1_MISS ) else 0 ) ) / #((( CYCLE=
+_ACTIVITY.STALLS_MEM_ANY + EXE_ACTIVITY.BOUND_ON_STORES ) / (CYCLE_ACTIVITY=
+.STALLS_TOTAL + (EXE_ACTIVITY.1_PORTS_UTIL + (UOPS_RETIRED.RETIRE_SLOTS / (=
+4 * ( ( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_A=
+CTIVE / CPU_CLK_UNHALTED.REF_XCLK ) ))) * EXE_ACTIVITY.2_PORTS_UTIL) + EXE_=
+ACTIVITY.BOUND_ON_STORES)) * (1 - (IDQ_UOPS_NOT_DELIVERED.CORE / (4 * ( ( C=
+PU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE / C=
+PU_CLK_UNHALTED.REF_XCLK ) ))) - ( UOPS_ISSUED.ANY + 4 * ( INT_MISC.RECOVER=
+Y_CYCLES_ANY / 2 ) ) / (4 * ( ( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_C=
+LK_UNHALTED.ONE_THREAD_ACTIVE / CPU_CLK_UNHALTED.REF_XCLK ) )))) ) * ( (min=
+( CPU_CLK_UNHALTED.THREAD , cpu@OFFCORE_REQUESTS_OUTSTANDING.ALL_DATA_RD\\,=
+cmask\\=3D4@ ) / CPU_CLK_UNHALTED.THREAD) / #( (CYCLE_ACTIVITY.STALLS_L3_MI=
+SS / CPU_CLK_UNHALTED.THREAD + (( CYCLE_ACTIVITY.STALLS_L1D_MISS - CYCLE_AC=
+TIVITY.STALLS_L2_MISS ) / CPU_CLK_UNHALTED.THREAD) - (( (MEM_LOAD_RETIRED.L=
+2_HIT * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) / ( (=
+MEM_LOAD_RETIRED.L2_HIT * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED=
+.L1_MISS) )) + cpu@L1D_PEND_MISS.FB_FULL\\,cmask\\=3D1@ ) ) * (( CYCLE_ACTI=
+VITY.STALLS_L1D_MISS - CYCLE_ACTIVITY.STALLS_L2_MISS ) / CPU_CLK_UNHALTED.T=
+HREAD))) - ( ( ( 1 - ( ( 19 * (MEM_LOAD_L3_MISS_RETIRED.REMOTE_DRAM * ( 1 +=
+ (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) + 10 * ( (MEM_LOAD=
+_L3_MISS_RETIRED.LOCAL_DRAM * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RET=
+IRED.L1_MISS) )) + (MEM_LOAD_L3_MISS_RETIRED.REMOTE_FWD * ( 1 + (MEM_LOAD_R=
+ETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) + (MEM_LOAD_L3_MISS_RETIRED.RE=
+MOTE_HITM * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) )=
+ ) / ( ( 19 * (MEM_LOAD_L3_MISS_RETIRED.REMOTE_DRAM * ( 1 + (MEM_LOAD_RETIR=
+ED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) + 10 * ( (MEM_LOAD_L3_MISS_RETIRED=
+.LOCAL_DRAM * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) ))=
+ + (MEM_LOAD_L3_MISS_RETIRED.REMOTE_FWD * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / =
+MEM_LOAD_RETIRED.L1_MISS) )) + (MEM_LOAD_L3_MISS_RETIRED.REMOTE_HITM * ( 1 =
++ (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) ) ) + ( 25 * ( ME=
+M_LOAD_RETIRED.LOCAL_PMM * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRE=
+D.L1_MISS) ) ) + 33 * ( MEM_LOAD_L3_MISS_RETIRED.REMOTE_PMM * ( 1 + (MEM_LO=
+AD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) ) ) ) ) ) ) * (CYCLE_ACTIVITY=
+.STALLS_L3_MISS / CPU_CLK_UNHALTED.THREAD + (( CYCLE_ACTIVITY.STALLS_L1D_MI=
+SS - CYCLE_ACTIVITY.STALLS_L2_MISS ) / CPU_CLK_UNHALTED.THREAD) - (( (MEM_L=
+OAD_RETIRED.L2_HIT * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_M=
+ISS) )) / ( (MEM_LOAD_RETIRED.L2_HIT * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM=
+_LOAD_RETIRED.L1_MISS) )) + cpu@L1D_PEND_MISS.FB_FULL\\,cmask\\=3D1@ ) ) * =
+(( CYCLE_ACTIVITY.STALLS_L1D_MISS - CYCLE_ACTIVITY.STALLS_L2_MISS ) / CPU_C=
+LK_UNHALTED.THREAD))) ) if ( 1000000 * ( MEM_LOAD_L3_MISS_RETIRED.REMOTE_PM=
+M + MEM_LOAD_RETIRED.LOCAL_PMM ) > MEM_LOAD_RETIRED.L1_MISS ) else 0 ) ) ) =
++ ( (( CYCLE_ACTIVITY.STALLS_L2_MISS - CYCLE_ACTIVITY.STALLS_L3_MISS ) / CP=
+U_CLK_UNHALTED.THREAD) / #((( CYCLE_ACTIVITY.STALLS_MEM_ANY + EXE_ACTIVITY.=
+BOUND_ON_STORES ) / (CYCLE_ACTIVITY.STALLS_TOTAL + (EXE_ACTIVITY.1_PORTS_UT=
+IL + (UOPS_RETIRED.RETIRE_SLOTS / (4 * ( ( CPU_CLK_UNHALTED.THREAD / 2 ) * =
+( 1 + CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE / CPU_CLK_UNHALTED.REF_XCLK ) ))) =
+* EXE_ACTIVITY.2_PORTS_UTIL) + EXE_ACTIVITY.BOUND_ON_STORES)) * (1 - (IDQ_U=
+OPS_NOT_DELIVERED.CORE / (4 * ( ( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU=
+_CLK_UNHALTED.ONE_THREAD_ACTIVE / CPU_CLK_UNHALTED.REF_XCLK ) ))) - ( UOPS_=
+ISSUED.ANY + 4 * ( INT_MISC.RECOVERY_CYCLES_ANY / 2 ) ) / (4 * ( ( CPU_CLK_=
+UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE / CPU_CLK_=
+UNHALTED.REF_XCLK ) )))) ) * ( (( OFFCORE_REQUESTS_BUFFER.SQ_FULL / 2 ) / (=
+ ( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE=
+ / CPU_CLK_UNHALTED.REF_XCLK ) )) / #(( CYCLE_ACTIVITY.STALLS_L2_MISS - CYC=
+LE_ACTIVITY.STALLS_L3_MISS ) / CPU_CLK_UNHALTED.THREAD) ) ) + ( (max( ( CYC=
+LE_ACTIVITY.STALLS_MEM_ANY - CYCLE_ACTIVITY.STALLS_L1D_MISS ) / CPU_CLK_UNH=
+ALTED.THREAD , 0 )) / #((( CYCLE_ACTIVITY.STALLS_MEM_ANY + EXE_ACTIVITY.BOU=
+ND_ON_STORES ) / (CYCLE_ACTIVITY.STALLS_TOTAL + (EXE_ACTIVITY.1_PORTS_UTIL =
++ (UOPS_RETIRED.RETIRE_SLOTS / (4 * ( ( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1=
+ + CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE / CPU_CLK_UNHALTED.REF_XCLK ) ))) * E=
+XE_ACTIVITY.2_PORTS_UTIL) + EXE_ACTIVITY.BOUND_ON_STORES)) * (1 - (IDQ_UOPS=
+_NOT_DELIVERED.CORE / (4 * ( ( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CL=
+K_UNHALTED.ONE_THREAD_ACTIVE / CPU_CLK_UNHALTED.REF_XCLK ) ))) - ( UOPS_ISS=
+UED.ANY + 4 * ( INT_MISC.RECOVERY_CYCLES_ANY / 2 ) ) / (4 * ( ( CPU_CLK_UNH=
+ALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE / CPU_CLK_UNH=
+ALTED.REF_XCLK ) )))) ) * ( ((L1D_PEND_MISS.PENDING / ( MEM_LOAD_RETIRED.L1=
+_MISS + MEM_LOAD_RETIRED.FB_HIT )) * cpu@L1D_PEND_MISS.FB_FULL\\,cmask\\=3D=
+1@ / CPU_CLK_UNHALTED.THREAD) / #(max( ( CYCLE_ACTIVITY.STALLS_MEM_ANY - CY=
+CLE_ACTIVITY.STALLS_L1D_MISS ) / CPU_CLK_UNHALTED.THREAD , 0 )) ) ",
++        "MetricGroup": "Mem;MemoryBW;Offcore_SMT",
++        "MetricName": "Memory_Bandwidth_SMT"
++    },
++    {
++        "BriefDescription": "Total pipeline cost of Memory Latency related=
+ bottlenecks (external memory and off-core caches)",
++        "MetricExpr": "100 * ((( CYCLE_ACTIVITY.STALLS_MEM_ANY + EXE_ACTIV=
+ITY.BOUND_ON_STORES ) / (CYCLE_ACTIVITY.STALLS_TOTAL + (EXE_ACTIVITY.1_PORT=
+S_UTIL + (UOPS_RETIRED.RETIRE_SLOTS / (4 * CPU_CLK_UNHALTED.THREAD)) * EXE_=
+ACTIVITY.2_PORTS_UTIL) + EXE_ACTIVITY.BOUND_ON_STORES)) * (1 - (IDQ_UOPS_NO=
+T_DELIVERED.CORE / (4 * CPU_CLK_UNHALTED.THREAD)) - ( UOPS_ISSUED.ANY + 4 *=
+ INT_MISC.RECOVERY_CYCLES ) / (4 * CPU_CLK_UNHALTED.THREAD))) * ( ( ( (CYCL=
+E_ACTIVITY.STALLS_L3_MISS / CPU_CLK_UNHALTED.THREAD + (( CYCLE_ACTIVITY.STA=
+LLS_L1D_MISS - CYCLE_ACTIVITY.STALLS_L2_MISS ) / CPU_CLK_UNHALTED.THREAD) -=
+ (( (MEM_LOAD_RETIRED.L2_HIT * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RE=
+TIRED.L1_MISS) )) / ( (MEM_LOAD_RETIRED.L2_HIT * ( 1 + (MEM_LOAD_RETIRED.FB=
+_HIT / MEM_LOAD_RETIRED.L1_MISS) )) + cpu@L1D_PEND_MISS.FB_FULL\\,cmask\\=
+=3D1@ ) ) * (( CYCLE_ACTIVITY.STALLS_L1D_MISS - CYCLE_ACTIVITY.STALLS_L2_MI=
+SS ) / CPU_CLK_UNHALTED.THREAD))) - ( ( ( 1 - ( ( 19 * (MEM_LOAD_L3_MISS_RE=
+TIRED.REMOTE_DRAM * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MI=
+SS) )) + 10 * ( (MEM_LOAD_L3_MISS_RETIRED.LOCAL_DRAM * ( 1 + (MEM_LOAD_RETI=
+RED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) + (MEM_LOAD_L3_MISS_RETIRED.REMOT=
+E_FWD * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) + (ME=
+M_LOAD_L3_MISS_RETIRED.REMOTE_HITM * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_L=
+OAD_RETIRED.L1_MISS) )) ) ) / ( ( 19 * (MEM_LOAD_L3_MISS_RETIRED.REMOTE_DRA=
+M * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) + 10 * ( =
+(MEM_LOAD_L3_MISS_RETIRED.LOCAL_DRAM * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM=
+_LOAD_RETIRED.L1_MISS) )) + (MEM_LOAD_L3_MISS_RETIRED.REMOTE_FWD * ( 1 + (M=
+EM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) + (MEM_LOAD_L3_MISS_R=
+ETIRED.REMOTE_HITM * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_M=
+ISS) )) ) ) + ( 25 * ( MEM_LOAD_RETIRED.LOCAL_PMM * ( 1 + (MEM_LOAD_RETIRED=
+.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) ) ) + 33 * ( MEM_LOAD_L3_MISS_RETIRED.R=
+EMOTE_PMM * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) ) ) =
+) ) ) ) * (CYCLE_ACTIVITY.STALLS_L3_MISS / CPU_CLK_UNHALTED.THREAD + (( CYC=
+LE_ACTIVITY.STALLS_L1D_MISS - CYCLE_ACTIVITY.STALLS_L2_MISS ) / CPU_CLK_UNH=
+ALTED.THREAD) - (( (MEM_LOAD_RETIRED.L2_HIT * ( 1 + (MEM_LOAD_RETIRED.FB_HI=
+T / MEM_LOAD_RETIRED.L1_MISS) )) / ( (MEM_LOAD_RETIRED.L2_HIT * ( 1 + (MEM_=
+LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) + cpu@L1D_PEND_MISS.FB_F=
+ULL\\,cmask\\=3D1@ ) ) * (( CYCLE_ACTIVITY.STALLS_L1D_MISS - CYCLE_ACTIVITY=
+.STALLS_L2_MISS ) / CPU_CLK_UNHALTED.THREAD))) ) if ( 1000000 * ( MEM_LOAD_=
+L3_MISS_RETIRED.REMOTE_PMM + MEM_LOAD_RETIRED.LOCAL_PMM ) > MEM_LOAD_RETIRE=
+D.L1_MISS ) else 0 ) ) / #((( CYCLE_ACTIVITY.STALLS_MEM_ANY + EXE_ACTIVITY.=
+BOUND_ON_STORES ) / (CYCLE_ACTIVITY.STALLS_TOTAL + (EXE_ACTIVITY.1_PORTS_UT=
+IL + (UOPS_RETIRED.RETIRE_SLOTS / (4 * CPU_CLK_UNHALTED.THREAD)) * EXE_ACTI=
+VITY.2_PORTS_UTIL) + EXE_ACTIVITY.BOUND_ON_STORES)) * (1 - (IDQ_UOPS_NOT_DE=
+LIVERED.CORE / (4 * CPU_CLK_UNHALTED.THREAD)) - ( UOPS_ISSUED.ANY + 4 * INT=
+_MISC.RECOVERY_CYCLES ) / (4 * CPU_CLK_UNHALTED.THREAD))) ) * ( (min( CPU_C=
+LK_UNHALTED.THREAD , OFFCORE_REQUESTS_OUTSTANDING.CYCLES_WITH_DATA_RD ) / C=
+PU_CLK_UNHALTED.THREAD - (min( CPU_CLK_UNHALTED.THREAD , cpu@OFFCORE_REQUES=
+TS_OUTSTANDING.ALL_DATA_RD\\,cmask\\=3D4@ ) / CPU_CLK_UNHALTED.THREAD)) / #=
+( (CYCLE_ACTIVITY.STALLS_L3_MISS / CPU_CLK_UNHALTED.THREAD + (( CYCLE_ACTIV=
+ITY.STALLS_L1D_MISS - CYCLE_ACTIVITY.STALLS_L2_MISS ) / CPU_CLK_UNHALTED.TH=
+READ) - (( (MEM_LOAD_RETIRED.L2_HIT * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_=
+LOAD_RETIRED.L1_MISS) )) / ( (MEM_LOAD_RETIRED.L2_HIT * ( 1 + (MEM_LOAD_RET=
+IRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) + cpu@L1D_PEND_MISS.FB_FULL\\,cm=
+ask\\=3D1@ ) ) * (( CYCLE_ACTIVITY.STALLS_L1D_MISS - CYCLE_ACTIVITY.STALLS_=
+L2_MISS ) / CPU_CLK_UNHALTED.THREAD))) - ( ( ( 1 - ( ( 19 * (MEM_LOAD_L3_MI=
+SS_RETIRED.REMOTE_DRAM * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.=
+L1_MISS) )) + 10 * ( (MEM_LOAD_L3_MISS_RETIRED.LOCAL_DRAM * ( 1 + (MEM_LOAD=
+_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) + (MEM_LOAD_L3_MISS_RETIRED.=
+REMOTE_FWD * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) =
++ (MEM_LOAD_L3_MISS_RETIRED.REMOTE_HITM * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / =
+MEM_LOAD_RETIRED.L1_MISS) )) ) ) / ( ( 19 * (MEM_LOAD_L3_MISS_RETIRED.REMOT=
+E_DRAM * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) + 10=
+ * ( (MEM_LOAD_L3_MISS_RETIRED.LOCAL_DRAM * ( 1 + (MEM_LOAD_RETIRED.FB_HIT =
+/ MEM_LOAD_RETIRED.L1_MISS) )) + (MEM_LOAD_L3_MISS_RETIRED.REMOTE_FWD * ( 1=
+ + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) + (MEM_LOAD_L3_M=
+ISS_RETIRED.REMOTE_HITM * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED=
+.L1_MISS) )) ) ) + ( 25 * ( MEM_LOAD_RETIRED.LOCAL_PMM * ( 1 + (MEM_LOAD_RE=
+TIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) ) ) + 33 * ( MEM_LOAD_L3_MISS_RETI=
+RED.REMOTE_PMM * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS)=
+ ) ) ) ) ) ) * (CYCLE_ACTIVITY.STALLS_L3_MISS / CPU_CLK_UNHALTED.THREAD + (=
+( CYCLE_ACTIVITY.STALLS_L1D_MISS - CYCLE_ACTIVITY.STALLS_L2_MISS ) / CPU_CL=
+K_UNHALTED.THREAD) - (( (MEM_LOAD_RETIRED.L2_HIT * ( 1 + (MEM_LOAD_RETIRED.=
+FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) / ( (MEM_LOAD_RETIRED.L2_HIT * ( 1 + =
+(MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) + cpu@L1D_PEND_MISS=
+.FB_FULL\\,cmask\\=3D1@ ) ) * (( CYCLE_ACTIVITY.STALLS_L1D_MISS - CYCLE_ACT=
+IVITY.STALLS_L2_MISS ) / CPU_CLK_UNHALTED.THREAD))) ) if ( 1000000 * ( MEM_=
+LOAD_L3_MISS_RETIRED.REMOTE_PMM + MEM_LOAD_RETIRED.LOCAL_PMM ) > MEM_LOAD_R=
+ETIRED.L1_MISS ) else 0 ) ) ) + ( (( CYCLE_ACTIVITY.STALLS_L2_MISS - CYCLE_=
+ACTIVITY.STALLS_L3_MISS ) / CPU_CLK_UNHALTED.THREAD) / #((( CYCLE_ACTIVITY.=
+STALLS_MEM_ANY + EXE_ACTIVITY.BOUND_ON_STORES ) / (CYCLE_ACTIVITY.STALLS_TO=
+TAL + (EXE_ACTIVITY.1_PORTS_UTIL + (UOPS_RETIRED.RETIRE_SLOTS / (4 * CPU_CL=
+K_UNHALTED.THREAD)) * EXE_ACTIVITY.2_PORTS_UTIL) + EXE_ACTIVITY.BOUND_ON_ST=
+ORES)) * (1 - (IDQ_UOPS_NOT_DELIVERED.CORE / (4 * CPU_CLK_UNHALTED.THREAD))=
+ - ( UOPS_ISSUED.ANY + 4 * INT_MISC.RECOVERY_CYCLES ) / (4 * CPU_CLK_UNHALT=
+ED.THREAD))) ) * ( (( (20.5 * ((CPU_CLK_UNHALTED.THREAD / CPU_CLK_UNHALTED.=
+REF_TSC) * msr@tsc@ / 1000000000 / duration_time)) - (3.5 * ((CPU_CLK_UNHAL=
+TED.THREAD / CPU_CLK_UNHALTED.REF_TSC) * msr@tsc@ / 1000000000 / duration_t=
+ime)) ) * MEM_LOAD_RETIRED.L3_HIT * (1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOA=
+D_RETIRED.L1_MISS) / 2) / CPU_CLK_UNHALTED.THREAD) / #(( CYCLE_ACTIVITY.STA=
+LLS_L2_MISS - CYCLE_ACTIVITY.STALLS_L3_MISS ) / CPU_CLK_UNHALTED.THREAD) ) =
++ ( (( (MEM_LOAD_RETIRED.L2_HIT * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD=
+_RETIRED.L1_MISS) )) / ( (MEM_LOAD_RETIRED.L2_HIT * ( 1 + (MEM_LOAD_RETIRED=
+.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) + cpu@L1D_PEND_MISS.FB_FULL\\,cmask\=
+\=3D1@ ) ) * (( CYCLE_ACTIVITY.STALLS_L1D_MISS - CYCLE_ACTIVITY.STALLS_L2_M=
+ISS ) / CPU_CLK_UNHALTED.THREAD)) / #((( CYCLE_ACTIVITY.STALLS_MEM_ANY + EX=
+E_ACTIVITY.BOUND_ON_STORES ) / (CYCLE_ACTIVITY.STALLS_TOTAL + (EXE_ACTIVITY=
+.1_PORTS_UTIL + (UOPS_RETIRED.RETIRE_SLOTS / (4 * CPU_CLK_UNHALTED.THREAD))=
+ * EXE_ACTIVITY.2_PORTS_UTIL) + EXE_ACTIVITY.BOUND_ON_STORES)) * (1 - (IDQ_=
+UOPS_NOT_DELIVERED.CORE / (4 * CPU_CLK_UNHALTED.THREAD)) - ( UOPS_ISSUED.AN=
+Y + 4 * INT_MISC.RECOVERY_CYCLES ) / (4 * CPU_CLK_UNHALTED.THREAD))) ) )",
++        "MetricGroup": "Mem;MemoryLat;Offcore",
++        "MetricName": "Memory_Latency"
++    },
++    {
++        "BriefDescription": "Total pipeline cost of Memory Latency related=
+ bottlenecks (external memory and off-core caches)",
++        "MetricExpr": "100 * ((( CYCLE_ACTIVITY.STALLS_MEM_ANY + EXE_ACTIV=
+ITY.BOUND_ON_STORES ) / (CYCLE_ACTIVITY.STALLS_TOTAL + (EXE_ACTIVITY.1_PORT=
+S_UTIL + (UOPS_RETIRED.RETIRE_SLOTS / (4 * ( ( CPU_CLK_UNHALTED.THREAD / 2 =
+) * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE / CPU_CLK_UNHALTED.REF_XCLK ) =
+))) * EXE_ACTIVITY.2_PORTS_UTIL) + EXE_ACTIVITY.BOUND_ON_STORES)) * (1 - (I=
+DQ_UOPS_NOT_DELIVERED.CORE / (4 * ( ( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 +=
+ CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE / CPU_CLK_UNHALTED.REF_XCLK ) ))) - ( U=
+OPS_ISSUED.ANY + 4 * ( INT_MISC.RECOVERY_CYCLES_ANY / 2 ) ) / (4 * ( ( CPU_=
+CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE / CPU_=
+CLK_UNHALTED.REF_XCLK ) )))) * ( ( ( (CYCLE_ACTIVITY.STALLS_L3_MISS / CPU_C=
+LK_UNHALTED.THREAD + (( CYCLE_ACTIVITY.STALLS_L1D_MISS - CYCLE_ACTIVITY.STA=
+LLS_L2_MISS ) / CPU_CLK_UNHALTED.THREAD) - (( (MEM_LOAD_RETIRED.L2_HIT * ( =
+1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) / ( (MEM_LOAD_R=
+ETIRED.L2_HIT * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) =
+)) + cpu@L1D_PEND_MISS.FB_FULL\\,cmask\\=3D1@ ) ) * (( CYCLE_ACTIVITY.STALL=
+S_L1D_MISS - CYCLE_ACTIVITY.STALLS_L2_MISS ) / CPU_CLK_UNHALTED.THREAD))) -=
+ ( ( ( 1 - ( ( 19 * (MEM_LOAD_L3_MISS_RETIRED.REMOTE_DRAM * ( 1 + (MEM_LOAD=
+_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) + 10 * ( (MEM_LOAD_L3_MISS_R=
+ETIRED.LOCAL_DRAM * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MI=
+SS) )) + (MEM_LOAD_L3_MISS_RETIRED.REMOTE_FWD * ( 1 + (MEM_LOAD_RETIRED.FB_=
+HIT / MEM_LOAD_RETIRED.L1_MISS) )) + (MEM_LOAD_L3_MISS_RETIRED.REMOTE_HITM =
+* ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) ) ) / ( ( 1=
+9 * (MEM_LOAD_L3_MISS_RETIRED.REMOTE_DRAM * ( 1 + (MEM_LOAD_RETIRED.FB_HIT =
+/ MEM_LOAD_RETIRED.L1_MISS) )) + 10 * ( (MEM_LOAD_L3_MISS_RETIRED.LOCAL_DRA=
+M * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) + (MEM_LO=
+AD_L3_MISS_RETIRED.REMOTE_FWD * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_R=
+ETIRED.L1_MISS) )) + (MEM_LOAD_L3_MISS_RETIRED.REMOTE_HITM * ( 1 + (MEM_LOA=
+D_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) ) ) + ( 25 * ( MEM_LOAD_RET=
+IRED.LOCAL_PMM * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS)=
+ ) ) + 33 * ( MEM_LOAD_L3_MISS_RETIRED.REMOTE_PMM * ( 1 + (MEM_LOAD_RETIRED=
+.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) ) ) ) ) ) ) * (CYCLE_ACTIVITY.STALLS_L3=
+_MISS / CPU_CLK_UNHALTED.THREAD + (( CYCLE_ACTIVITY.STALLS_L1D_MISS - CYCLE=
+_ACTIVITY.STALLS_L2_MISS ) / CPU_CLK_UNHALTED.THREAD) - (( (MEM_LOAD_RETIRE=
+D.L2_HIT * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) / =
+( (MEM_LOAD_RETIRED.L2_HIT * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETI=
+RED.L1_MISS) )) + cpu@L1D_PEND_MISS.FB_FULL\\,cmask\\=3D1@ ) ) * (( CYCLE_A=
+CTIVITY.STALLS_L1D_MISS - CYCLE_ACTIVITY.STALLS_L2_MISS ) / CPU_CLK_UNHALTE=
+D.THREAD))) ) if ( 1000000 * ( MEM_LOAD_L3_MISS_RETIRED.REMOTE_PMM + MEM_LO=
+AD_RETIRED.LOCAL_PMM ) > MEM_LOAD_RETIRED.L1_MISS ) else 0 ) ) / #((( CYCLE=
+_ACTIVITY.STALLS_MEM_ANY + EXE_ACTIVITY.BOUND_ON_STORES ) / (CYCLE_ACTIVITY=
+.STALLS_TOTAL + (EXE_ACTIVITY.1_PORTS_UTIL + (UOPS_RETIRED.RETIRE_SLOTS / (=
+4 * ( ( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_A=
+CTIVE / CPU_CLK_UNHALTED.REF_XCLK ) ))) * EXE_ACTIVITY.2_PORTS_UTIL) + EXE_=
+ACTIVITY.BOUND_ON_STORES)) * (1 - (IDQ_UOPS_NOT_DELIVERED.CORE / (4 * ( ( C=
+PU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE / C=
+PU_CLK_UNHALTED.REF_XCLK ) ))) - ( UOPS_ISSUED.ANY + 4 * ( INT_MISC.RECOVER=
+Y_CYCLES_ANY / 2 ) ) / (4 * ( ( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_C=
+LK_UNHALTED.ONE_THREAD_ACTIVE / CPU_CLK_UNHALTED.REF_XCLK ) )))) ) * ( (min=
+( CPU_CLK_UNHALTED.THREAD , OFFCORE_REQUESTS_OUTSTANDING.CYCLES_WITH_DATA_R=
+D ) / CPU_CLK_UNHALTED.THREAD - (min( CPU_CLK_UNHALTED.THREAD , cpu@OFFCORE=
+_REQUESTS_OUTSTANDING.ALL_DATA_RD\\,cmask\\=3D4@ ) / CPU_CLK_UNHALTED.THREA=
+D)) / #( (CYCLE_ACTIVITY.STALLS_L3_MISS / CPU_CLK_UNHALTED.THREAD + (( CYCL=
+E_ACTIVITY.STALLS_L1D_MISS - CYCLE_ACTIVITY.STALLS_L2_MISS ) / CPU_CLK_UNHA=
+LTED.THREAD) - (( (MEM_LOAD_RETIRED.L2_HIT * ( 1 + (MEM_LOAD_RETIRED.FB_HIT=
+ / MEM_LOAD_RETIRED.L1_MISS) )) / ( (MEM_LOAD_RETIRED.L2_HIT * ( 1 + (MEM_L=
+OAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) + cpu@L1D_PEND_MISS.FB_FU=
+LL\\,cmask\\=3D1@ ) ) * (( CYCLE_ACTIVITY.STALLS_L1D_MISS - CYCLE_ACTIVITY.=
+STALLS_L2_MISS ) / CPU_CLK_UNHALTED.THREAD))) - ( ( ( 1 - ( ( 19 * (MEM_LOA=
+D_L3_MISS_RETIRED.REMOTE_DRAM * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_R=
+ETIRED.L1_MISS) )) + 10 * ( (MEM_LOAD_L3_MISS_RETIRED.LOCAL_DRAM * ( 1 + (M=
+EM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) + (MEM_LOAD_L3_MISS_R=
+ETIRED.REMOTE_FWD * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MI=
+SS) )) + (MEM_LOAD_L3_MISS_RETIRED.REMOTE_HITM * ( 1 + (MEM_LOAD_RETIRED.FB=
+_HIT / MEM_LOAD_RETIRED.L1_MISS) )) ) ) / ( ( 19 * (MEM_LOAD_L3_MISS_RETIRE=
+D.REMOTE_DRAM * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) =
+)) + 10 * ( (MEM_LOAD_L3_MISS_RETIRED.LOCAL_DRAM * ( 1 + (MEM_LOAD_RETIRED.=
+FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) + (MEM_LOAD_L3_MISS_RETIRED.REMOTE_FW=
+D * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) + (MEM_LO=
+AD_L3_MISS_RETIRED.REMOTE_HITM * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_=
+RETIRED.L1_MISS) )) ) ) + ( 25 * ( MEM_LOAD_RETIRED.LOCAL_PMM * ( 1 + (MEM_=
+LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) ) ) + 33 * ( MEM_LOAD_L3_MI=
+SS_RETIRED.REMOTE_PMM * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L=
+1_MISS) ) ) ) ) ) ) * (CYCLE_ACTIVITY.STALLS_L3_MISS / CPU_CLK_UNHALTED.THR=
+EAD + (( CYCLE_ACTIVITY.STALLS_L1D_MISS - CYCLE_ACTIVITY.STALLS_L2_MISS ) /=
+ CPU_CLK_UNHALTED.THREAD) - (( (MEM_LOAD_RETIRED.L2_HIT * ( 1 + (MEM_LOAD_R=
+ETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) / ( (MEM_LOAD_RETIRED.L2_HIT *=
+ ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) + cpu@L1D_PE=
+ND_MISS.FB_FULL\\,cmask\\=3D1@ ) ) * (( CYCLE_ACTIVITY.STALLS_L1D_MISS - CY=
+CLE_ACTIVITY.STALLS_L2_MISS ) / CPU_CLK_UNHALTED.THREAD))) ) if ( 1000000 *=
+ ( MEM_LOAD_L3_MISS_RETIRED.REMOTE_PMM + MEM_LOAD_RETIRED.LOCAL_PMM ) > MEM=
+_LOAD_RETIRED.L1_MISS ) else 0 ) ) ) + ( (( CYCLE_ACTIVITY.STALLS_L2_MISS -=
+ CYCLE_ACTIVITY.STALLS_L3_MISS ) / CPU_CLK_UNHALTED.THREAD) / #((( CYCLE_AC=
+TIVITY.STALLS_MEM_ANY + EXE_ACTIVITY.BOUND_ON_STORES ) / (CYCLE_ACTIVITY.ST=
+ALLS_TOTAL + (EXE_ACTIVITY.1_PORTS_UTIL + (UOPS_RETIRED.RETIRE_SLOTS / (4 *=
+ ( ( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_ACTI=
+VE / CPU_CLK_UNHALTED.REF_XCLK ) ))) * EXE_ACTIVITY.2_PORTS_UTIL) + EXE_ACT=
+IVITY.BOUND_ON_STORES)) * (1 - (IDQ_UOPS_NOT_DELIVERED.CORE / (4 * ( ( CPU_=
+CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE / CPU_=
+CLK_UNHALTED.REF_XCLK ) ))) - ( UOPS_ISSUED.ANY + 4 * ( INT_MISC.RECOVERY_C=
+YCLES_ANY / 2 ) ) / (4 * ( ( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_=
+UNHALTED.ONE_THREAD_ACTIVE / CPU_CLK_UNHALTED.REF_XCLK ) )))) ) * ( (( (20.=
+5 * ((CPU_CLK_UNHALTED.THREAD / CPU_CLK_UNHALTED.REF_TSC) * msr@tsc@ / 1000=
+000000 / duration_time)) - (3.5 * ((CPU_CLK_UNHALTED.THREAD / CPU_CLK_UNHAL=
+TED.REF_TSC) * msr@tsc@ / 1000000000 / duration_time)) ) * MEM_LOAD_RETIRED=
+.L3_HIT * (1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) / 2) / =
+CPU_CLK_UNHALTED.THREAD) / #(( CYCLE_ACTIVITY.STALLS_L2_MISS - CYCLE_ACTIVI=
+TY.STALLS_L3_MISS ) / CPU_CLK_UNHALTED.THREAD) ) + ( (( (MEM_LOAD_RETIRED.L=
+2_HIT * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED.L1_MISS) )) / ( (=
+MEM_LOAD_RETIRED.L2_HIT * ( 1 + (MEM_LOAD_RETIRED.FB_HIT / MEM_LOAD_RETIRED=
+.L1_MISS) )) + cpu@L1D_PEND_MISS.FB_FULL\\,cmask\\=3D1@ ) ) * (( CYCLE_ACTI=
+VITY.STALLS_L1D_MISS - CYCLE_ACTIVITY.STALLS_L2_MISS ) / CPU_CLK_UNHALTED.T=
+HREAD)) / #((( CYCLE_ACTIVITY.STALLS_MEM_ANY + EXE_ACTIVITY.BOUND_ON_STORES=
+ ) / (CYCLE_ACTIVITY.STALLS_TOTAL + (EXE_ACTIVITY.1_PORTS_UTIL + (UOPS_RETI=
+RED.RETIRE_SLOTS / (4 * ( ( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_U=
+NHALTED.ONE_THREAD_ACTIVE / CPU_CLK_UNHALTED.REF_XCLK ) ))) * EXE_ACTIVITY.=
+2_PORTS_UTIL) + EXE_ACTIVITY.BOUND_ON_STORES)) * (1 - (IDQ_UOPS_NOT_DELIVER=
+ED.CORE / (4 * ( ( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHALTED.O=
+NE_THREAD_ACTIVE / CPU_CLK_UNHALTED.REF_XCLK ) ))) - ( UOPS_ISSUED.ANY + 4 =
+* ( INT_MISC.RECOVERY_CYCLES_ANY / 2 ) ) / (4 * ( ( CPU_CLK_UNHALTED.THREAD=
+ / 2 ) * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE / CPU_CLK_UNHALTED.REF_XC=
+LK ) )))) ) )",
++        "MetricGroup": "Mem;MemoryLat;Offcore_SMT",
++        "MetricName": "Memory_Latency_SMT"
++    },
++    {
++        "BriefDescription": "Total pipeline cost of Memory Address Transla=
+tion related bottlenecks (data-side TLBs)",
++        "MetricExpr": "100 * ((( CYCLE_ACTIVITY.STALLS_MEM_ANY + EXE_ACTIV=
+ITY.BOUND_ON_STORES ) / (CYCLE_ACTIVITY.STALLS_TOTAL + (EXE_ACTIVITY.1_PORT=
+S_UTIL + (UOPS_RETIRED.RETIRE_SLOTS / (4 * CPU_CLK_UNHALTED.THREAD)) * EXE_=
+ACTIVITY.2_PORTS_UTIL) + EXE_ACTIVITY.BOUND_ON_STORES)) * (1 - (IDQ_UOPS_NO=
+T_DELIVERED.CORE / (4 * CPU_CLK_UNHALTED.THREAD)) - ( UOPS_ISSUED.ANY + 4 *=
+ INT_MISC.RECOVERY_CYCLES ) / (4 * CPU_CLK_UNHALTED.THREAD))) * ( ( (max( (=
+ CYCLE_ACTIVITY.STALLS_MEM_ANY - CYCLE_ACTIVITY.STALLS_L1D_MISS ) / CPU_CLK=
+_UNHALTED.THREAD , 0 )) / ((( CYCLE_ACTIVITY.STALLS_MEM_ANY + EXE_ACTIVITY.=
+BOUND_ON_STORES ) / (CYCLE_ACTIVITY.STALLS_TOTAL + (EXE_ACTIVITY.1_PORTS_UT=
+IL + (UOPS_RETIRED.RETIRE_SLOTS / (4 * CPU_CLK_UNHALTED.THREAD)) * EXE_ACTI=
+VITY.2_PORTS_UTIL) + EXE_ACTIVITY.BOUND_ON_STORES)) * (1 - (IDQ_UOPS_NOT_DE=
+LIVERED.CORE / (4 * CPU_CLK_UNHALTED.THREAD)) - ( UOPS_ISSUED.ANY + 4 * INT=
+_MISC.RECOVERY_CYCLES ) / (4 * CPU_CLK_UNHALTED.THREAD))) ) * ( (min( 9 * c=
+pu@DTLB_LOAD_MISSES.STLB_HIT\\,cmask\\=3D1@ + DTLB_LOAD_MISSES.WALK_ACTIVE =
+, max( CYCLE_ACTIVITY.CYCLES_MEM_ANY - CYCLE_ACTIVITY.CYCLES_L1D_MISS , 0 )=
+ ) / CPU_CLK_UNHALTED.THREAD) / (max( ( CYCLE_ACTIVITY.STALLS_MEM_ANY - CYC=
+LE_ACTIVITY.STALLS_L1D_MISS ) / CPU_CLK_UNHALTED.THREAD , 0 )) ) + ( (EXE_A=
+CTIVITY.BOUND_ON_STORES / CPU_CLK_UNHALTED.THREAD) / #((( CYCLE_ACTIVITY.ST=
+ALLS_MEM_ANY + EXE_ACTIVITY.BOUND_ON_STORES ) / (CYCLE_ACTIVITY.STALLS_TOTA=
+L + (EXE_ACTIVITY.1_PORTS_UTIL + (UOPS_RETIRED.RETIRE_SLOTS / (4 * CPU_CLK_=
+UNHALTED.THREAD)) * EXE_ACTIVITY.2_PORTS_UTIL) + EXE_ACTIVITY.BOUND_ON_STOR=
+ES)) * (1 - (IDQ_UOPS_NOT_DELIVERED.CORE / (4 * CPU_CLK_UNHALTED.THREAD)) -=
+ ( UOPS_ISSUED.ANY + 4 * INT_MISC.RECOVERY_CYCLES ) / (4 * CPU_CLK_UNHALTED=
+.THREAD))) ) * ( (( 9 * cpu@DTLB_STORE_MISSES.STLB_HIT\\,cmask\\=3D1@ + DTL=
+B_STORE_MISSES.WALK_ACTIVE ) / CPU_CLK_UNHALTED.THREAD) / #(EXE_ACTIVITY.BO=
+UND_ON_STORES / CPU_CLK_UNHALTED.THREAD) ) ) ",
++        "MetricGroup": "Mem;MemoryTLB",
++        "MetricName": "Memory_Data_TLBs"
++    },
++    {
++        "BriefDescription": "Total pipeline cost of Memory Address Transla=
+tion related bottlenecks (data-side TLBs)",
++        "MetricExpr": "100 * ((( CYCLE_ACTIVITY.STALLS_MEM_ANY + EXE_ACTIV=
+ITY.BOUND_ON_STORES ) / (CYCLE_ACTIVITY.STALLS_TOTAL + (EXE_ACTIVITY.1_PORT=
+S_UTIL + (UOPS_RETIRED.RETIRE_SLOTS / (4 * ( ( CPU_CLK_UNHALTED.THREAD / 2 =
+) * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE / CPU_CLK_UNHALTED.REF_XCLK ) =
+))) * EXE_ACTIVITY.2_PORTS_UTIL) + EXE_ACTIVITY.BOUND_ON_STORES)) * (1 - (I=
+DQ_UOPS_NOT_DELIVERED.CORE / (4 * ( ( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 +=
+ CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE / CPU_CLK_UNHALTED.REF_XCLK ) ))) - ( U=
+OPS_ISSUED.ANY + 4 * ( INT_MISC.RECOVERY_CYCLES_ANY / 2 ) ) / (4 * ( ( CPU_=
+CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE / CPU_=
+CLK_UNHALTED.REF_XCLK ) )))) * ( ( (max( ( CYCLE_ACTIVITY.STALLS_MEM_ANY - =
+CYCLE_ACTIVITY.STALLS_L1D_MISS ) / CPU_CLK_UNHALTED.THREAD , 0 )) / ((( CYC=
+LE_ACTIVITY.STALLS_MEM_ANY + EXE_ACTIVITY.BOUND_ON_STORES ) / (CYCLE_ACTIVI=
+TY.STALLS_TOTAL + (EXE_ACTIVITY.1_PORTS_UTIL + (UOPS_RETIRED.RETIRE_SLOTS /=
+ (4 * ( ( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD=
+_ACTIVE / CPU_CLK_UNHALTED.REF_XCLK ) ))) * EXE_ACTIVITY.2_PORTS_UTIL) + EX=
+E_ACTIVITY.BOUND_ON_STORES)) * (1 - (IDQ_UOPS_NOT_DELIVERED.CORE / (4 * ( (=
+ CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE /=
+ CPU_CLK_UNHALTED.REF_XCLK ) ))) - ( UOPS_ISSUED.ANY + 4 * ( INT_MISC.RECOV=
+ERY_CYCLES_ANY / 2 ) ) / (4 * ( ( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU=
+_CLK_UNHALTED.ONE_THREAD_ACTIVE / CPU_CLK_UNHALTED.REF_XCLK ) )))) ) * ( (m=
+in( 9 * cpu@DTLB_LOAD_MISSES.STLB_HIT\\,cmask\\=3D1@ + DTLB_LOAD_MISSES.WAL=
+K_ACTIVE , max( CYCLE_ACTIVITY.CYCLES_MEM_ANY - CYCLE_ACTIVITY.CYCLES_L1D_M=
+ISS , 0 ) ) / CPU_CLK_UNHALTED.THREAD) / (max( ( CYCLE_ACTIVITY.STALLS_MEM_=
+ANY - CYCLE_ACTIVITY.STALLS_L1D_MISS ) / CPU_CLK_UNHALTED.THREAD , 0 )) ) +=
+ ( (EXE_ACTIVITY.BOUND_ON_STORES / CPU_CLK_UNHALTED.THREAD) / #((( CYCLE_AC=
+TIVITY.STALLS_MEM_ANY + EXE_ACTIVITY.BOUND_ON_STORES ) / (CYCLE_ACTIVITY.ST=
+ALLS_TOTAL + (EXE_ACTIVITY.1_PORTS_UTIL + (UOPS_RETIRED.RETIRE_SLOTS / (4 *=
+ ( ( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_ACTI=
+VE / CPU_CLK_UNHALTED.REF_XCLK ) ))) * EXE_ACTIVITY.2_PORTS_UTIL) + EXE_ACT=
+IVITY.BOUND_ON_STORES)) * (1 - (IDQ_UOPS_NOT_DELIVERED.CORE / (4 * ( ( CPU_=
+CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE / CPU_=
+CLK_UNHALTED.REF_XCLK ) ))) - ( UOPS_ISSUED.ANY + 4 * ( INT_MISC.RECOVERY_C=
+YCLES_ANY / 2 ) ) / (4 * ( ( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_=
+UNHALTED.ONE_THREAD_ACTIVE / CPU_CLK_UNHALTED.REF_XCLK ) )))) ) * ( (( 9 * =
+cpu@DTLB_STORE_MISSES.STLB_HIT\\,cmask\\=3D1@ + DTLB_STORE_MISSES.WALK_ACTI=
+VE ) / ( ( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHALTED.ONE_THREA=
+D_ACTIVE / CPU_CLK_UNHALTED.REF_XCLK ) )) / #(EXE_ACTIVITY.BOUND_ON_STORES =
+/ CPU_CLK_UNHALTED.THREAD) ) ) ",
++        "MetricGroup": "Mem;MemoryTLB;_SMT",
++        "MetricName": "Memory_Data_TLBs_SMT"
++    },
++    {
++        "BriefDescription": "Total pipeline cost of branch related instruc=
+tions (used for program control-flow including function calls)",
++        "MetricExpr": "100 * (( BR_INST_RETIRED.CONDITIONAL + 3 * BR_INST_=
+RETIRED.NEAR_CALL + (BR_INST_RETIRED.NEAR_TAKEN - ( BR_INST_RETIRED.CONDITI=
+ONAL - BR_INST_RETIRED.NOT_TAKEN ) - 2 * BR_INST_RETIRED.NEAR_CALL) ) / (4 =
+* CPU_CLK_UNHALTED.THREAD))",
++        "MetricGroup": "Ret",
++        "MetricName": "Branching_Overhead"
++    },
++    {
++        "BriefDescription": "Total pipeline cost of branch related instruc=
+tions (used for program control-flow including function calls)",
++        "MetricExpr": "100 * (( BR_INST_RETIRED.CONDITIONAL + 3 * BR_INST_=
+RETIRED.NEAR_CALL + (BR_INST_RETIRED.NEAR_TAKEN - ( BR_INST_RETIRED.CONDITI=
+ONAL - BR_INST_RETIRED.NOT_TAKEN ) - 2 * BR_INST_RETIRED.NEAR_CALL) ) / (4 =
+* ( ( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_ACT=
+IVE / CPU_CLK_UNHALTED.REF_XCLK ) )))",
++        "MetricGroup": "Ret_SMT",
++        "MetricName": "Branching_Overhead_SMT"
++    },
++    {
++        "BriefDescription": "Total pipeline cost of instruction fetch rela=
+ted bottlenecks by large code footprint programs (i-side cache; TLB and BTB=
+ misses)",
++        "MetricExpr": "100 * (4 * IDQ_UOPS_NOT_DELIVERED.CYCLES_0_UOPS_DEL=
+IV.CORE / (4 * CPU_CLK_UNHALTED.THREAD)) * ( (ICACHE_64B.IFTAG_STALL / CPU_=
+CLK_UNHALTED.THREAD) + (( ICACHE_16B.IFDATA_STALL + 2 * cpu@ICACHE_16B.IFDA=
+TA_STALL\\,cmask\\=3D1\\,edge@ ) / CPU_CLK_UNHALTED.THREAD) + (9 * BACLEARS=
+.ANY / CPU_CLK_UNHALTED.THREAD) ) / #(4 * IDQ_UOPS_NOT_DELIVERED.CYCLES_0_U=
+OPS_DELIV.CORE / (4 * CPU_CLK_UNHALTED.THREAD))",
++        "MetricGroup": "BigFoot;Fed;Frontend;IcMiss;MemoryTLB",
++        "MetricName": "Big_Code"
++    },
++    {
++        "BriefDescription": "Total pipeline cost of instruction fetch rela=
+ted bottlenecks by large code footprint programs (i-side cache; TLB and BTB=
+ misses)",
++        "MetricExpr": "100 * (4 * IDQ_UOPS_NOT_DELIVERED.CYCLES_0_UOPS_DEL=
+IV.CORE / (4 * ( ( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHALTED.O=
+NE_THREAD_ACTIVE / CPU_CLK_UNHALTED.REF_XCLK ) ))) * ( (ICACHE_64B.IFTAG_ST=
+ALL / CPU_CLK_UNHALTED.THREAD) + (( ICACHE_16B.IFDATA_STALL + 2 * cpu@ICACH=
+E_16B.IFDATA_STALL\\,cmask\\=3D1\\,edge@ ) / CPU_CLK_UNHALTED.THREAD) + (9 =
+* BACLEARS.ANY / CPU_CLK_UNHALTED.THREAD) ) / #(4 * IDQ_UOPS_NOT_DELIVERED.=
+CYCLES_0_UOPS_DELIV.CORE / (4 * ( ( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + C=
+PU_CLK_UNHALTED.ONE_THREAD_ACTIVE / CPU_CLK_UNHALTED.REF_XCLK ) )))",
++        "MetricGroup": "BigFoot;Fed;Frontend;IcMiss;MemoryTLB_SMT",
++        "MetricName": "Big_Code_SMT"
++    },
++    {
++        "BriefDescription": "Total pipeline cost of instruction fetch band=
+width related bottlenecks",
++        "MetricExpr": "100 * ( (IDQ_UOPS_NOT_DELIVERED.CORE / (4 * CPU_CLK=
+_UNHALTED.THREAD)) - (4 * IDQ_UOPS_NOT_DELIVERED.CYCLES_0_UOPS_DELIV.CORE /=
+ (4 * CPU_CLK_UNHALTED.THREAD)) * ((BR_MISP_RETIRED.ALL_BRANCHES / ( BR_MIS=
+P_RETIRED.ALL_BRANCHES + MACHINE_CLEARS.COUNT )) * INT_MISC.CLEAR_RESTEER_C=
+YCLES / CPU_CLK_UNHALTED.THREAD) / #(4 * IDQ_UOPS_NOT_DELIVERED.CYCLES_0_UO=
+PS_DELIV.CORE / (4 * CPU_CLK_UNHALTED.THREAD)) ) - (100 * (4 * IDQ_UOPS_NOT=
+_DELIVERED.CYCLES_0_UOPS_DELIV.CORE / (4 * CPU_CLK_UNHALTED.THREAD)) * ( (I=
+CACHE_64B.IFTAG_STALL / CPU_CLK_UNHALTED.THREAD) + (( ICACHE_16B.IFDATA_STA=
+LL + 2 * cpu@ICACHE_16B.IFDATA_STALL\\,cmask\\=3D1\\,edge@ ) / CPU_CLK_UNHA=
+LTED.THREAD) + (9 * BACLEARS.ANY / CPU_CLK_UNHALTED.THREAD) ) / #(4 * IDQ_U=
+OPS_NOT_DELIVERED.CYCLES_0_UOPS_DELIV.CORE / (4 * CPU_CLK_UNHALTED.THREAD))=
+)",
++        "MetricGroup": "Fed;FetchBW;Frontend",
++        "MetricName": "Instruction_Fetch_BW"
++    },
++    {
++        "BriefDescription": "Total pipeline cost of instruction fetch band=
+width related bottlenecks",
++        "MetricExpr": "100 * ( (IDQ_UOPS_NOT_DELIVERED.CORE / (4 * ( ( CPU=
+_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE / CPU=
+_CLK_UNHALTED.REF_XCLK ) ))) - (4 * IDQ_UOPS_NOT_DELIVERED.CYCLES_0_UOPS_DE=
+LIV.CORE / (4 * ( ( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHALTED.=
+ONE_THREAD_ACTIVE / CPU_CLK_UNHALTED.REF_XCLK ) ))) * ((BR_MISP_RETIRED.ALL=
+_BRANCHES / ( BR_MISP_RETIRED.ALL_BRANCHES + MACHINE_CLEARS.COUNT )) * INT_=
+MISC.CLEAR_RESTEER_CYCLES / CPU_CLK_UNHALTED.THREAD) / #(4 * IDQ_UOPS_NOT_D=
+ELIVERED.CYCLES_0_UOPS_DELIV.CORE / (4 * ( ( CPU_CLK_UNHALTED.THREAD / 2 ) =
+* ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE / CPU_CLK_UNHALTED.REF_XCLK ) ))=
+) ) - (100 * (4 * IDQ_UOPS_NOT_DELIVERED.CYCLES_0_UOPS_DELIV.CORE / (4 * ( =
+( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE =
+/ CPU_CLK_UNHALTED.REF_XCLK ) ))) * ( (ICACHE_64B.IFTAG_STALL / CPU_CLK_UNH=
+ALTED.THREAD) + (( ICACHE_16B.IFDATA_STALL + 2 * cpu@ICACHE_16B.IFDATA_STAL=
+L\\,cmask\\=3D1\\,edge@ ) / CPU_CLK_UNHALTED.THREAD) + (9 * BACLEARS.ANY / =
+CPU_CLK_UNHALTED.THREAD) ) / #(4 * IDQ_UOPS_NOT_DELIVERED.CYCLES_0_UOPS_DEL=
+IV.CORE / (4 * ( ( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHALTED.O=
+NE_THREAD_ACTIVE / CPU_CLK_UNHALTED.REF_XCLK ) ))))",
++        "MetricGroup": "Fed;FetchBW;Frontend_SMT",
++        "MetricName": "Instruction_Fetch_BW_SMT"
++    },
+     {
+         "BriefDescription": "Instructions Per Cycle (per Logical Processor=
+)",
+         "MetricExpr": "INST_RETIRED.ANY / CPU_CLK_UNHALTED.THREAD",
+-        "MetricGroup": "Summary",
++        "MetricGroup": "Ret;Summary",
+         "MetricName": "IPC"
+     },
+     {
+         "BriefDescription": "Uops Per Instruction",
+         "MetricExpr": "UOPS_RETIRED.RETIRE_SLOTS / INST_RETIRED.ANY",
+-        "MetricGroup": "Pipeline;Retire",
++        "MetricGroup": "Pipeline;Ret;Retire",
+         "MetricName": "UPI"
+     },
+     {
+         "BriefDescription": "Instruction per taken branch",
+-        "MetricExpr": "INST_RETIRED.ANY / BR_INST_RETIRED.NEAR_TAKEN",
+-        "MetricGroup": "Branches;FetchBW;PGO",
+-        "MetricName": "IpTB"
++        "MetricExpr": "UOPS_RETIRED.RETIRE_SLOTS / BR_INST_RETIRED.NEAR_TA=
+KEN",
++        "MetricGroup": "Branches;Fed;FetchBW",
++        "MetricName": "UpTB"
+     },
+     {
+         "BriefDescription": "Cycles Per Instruction (per Logical Processor=
+)",
+         "MetricExpr": "1 / (INST_RETIRED.ANY / CPU_CLK_UNHALTED.THREAD)",
+-        "MetricGroup": "Pipeline",
++        "MetricGroup": "Pipeline;Mem",
+         "MetricName": "CPI"
+     },
+     {
+@@ -30,39 +171,84 @@
+         "MetricName": "CLKS"
+     },
+     {
+-        "BriefDescription": "Instructions Per Cycle (per physical core)",
++        "BriefDescription": "Total issue-pipeline slots (per-Physical Core=
+ till ICL; per-Logical Processor ICL onward)",
++        "MetricExpr": "4 * CPU_CLK_UNHALTED.THREAD",
++        "MetricGroup": "TmaL1",
++        "MetricName": "SLOTS"
++    },
++    {
++        "BriefDescription": "Total issue-pipeline slots (per-Physical Core=
+ till ICL; per-Logical Processor ICL onward)",
++        "MetricExpr": "4 * ( ( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_C=
+LK_UNHALTED.ONE_THREAD_ACTIVE / CPU_CLK_UNHALTED.REF_XCLK ) )",
++        "MetricGroup": "TmaL1_SMT",
++        "MetricName": "SLOTS_SMT"
++    },
++    {
++        "BriefDescription": "The ratio of Executed- by Issued-Uops",
++        "MetricExpr": "UOPS_EXECUTED.THREAD / UOPS_ISSUED.ANY",
++        "MetricGroup": "Cor;Pipeline",
++        "MetricName": "Execute_per_Issue",
++        "PublicDescription": "The ratio of Executed- by Issued-Uops. Ratio=
+ > 1 suggests high rate of uop micro-fusions. Ratio < 1 suggest high rate o=
+f \"execute\" at rename stage."
++    },
++    {
++        "BriefDescription": "Instructions Per Cycle across hyper-threads (=
+per physical core)",
+         "MetricExpr": "INST_RETIRED.ANY / CPU_CLK_UNHALTED.THREAD",
+-        "MetricGroup": "SMT;TmaL1",
++        "MetricGroup": "Ret;SMT;TmaL1",
+         "MetricName": "CoreIPC"
+     },
+     {
+-        "BriefDescription": "Instructions Per Cycle (per physical core)",
++        "BriefDescription": "Instructions Per Cycle across hyper-threads (=
+per physical core)",
+         "MetricExpr": "INST_RETIRED.ANY / ( ( CPU_CLK_UNHALTED.THREAD / 2 =
+) * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE / CPU_CLK_UNHALTED.REF_XCLK ) =
+)",
+-        "MetricGroup": "SMT;TmaL1",
++        "MetricGroup": "Ret;SMT;TmaL1_SMT",
+         "MetricName": "CoreIPC_SMT"
+     },
+     {
+         "BriefDescription": "Floating Point Operations Per Cycle",
+         "MetricExpr": "( 1 * ( FP_ARITH_INST_RETIRED.SCALAR_SINGLE + FP_AR=
+ITH_INST_RETIRED.SCALAR_DOUBLE ) + 2 * FP_ARITH_INST_RETIRED.128B_PACKED_DO=
+UBLE + 4 * ( FP_ARITH_INST_RETIRED.128B_PACKED_SINGLE + FP_ARITH_INST_RETIR=
+ED.256B_PACKED_DOUBLE ) + 8 * ( FP_ARITH_INST_RETIRED.256B_PACKED_SINGLE + =
+FP_ARITH_INST_RETIRED.512B_PACKED_DOUBLE ) + 16 * FP_ARITH_INST_RETIRED.512=
+B_PACKED_SINGLE ) / CPU_CLK_UNHALTED.THREAD",
+-        "MetricGroup": "Flops",
++        "MetricGroup": "Ret;Flops",
+         "MetricName": "FLOPc"
+     },
+     {
+         "BriefDescription": "Floating Point Operations Per Cycle",
+         "MetricExpr": "( 1 * ( FP_ARITH_INST_RETIRED.SCALAR_SINGLE + FP_AR=
+ITH_INST_RETIRED.SCALAR_DOUBLE ) + 2 * FP_ARITH_INST_RETIRED.128B_PACKED_DO=
+UBLE + 4 * ( FP_ARITH_INST_RETIRED.128B_PACKED_SINGLE + FP_ARITH_INST_RETIR=
+ED.256B_PACKED_DOUBLE ) + 8 * ( FP_ARITH_INST_RETIRED.256B_PACKED_SINGLE + =
+FP_ARITH_INST_RETIRED.512B_PACKED_DOUBLE ) + 16 * FP_ARITH_INST_RETIRED.512=
+B_PACKED_SINGLE ) / ( ( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHAL=
+TED.ONE_THREAD_ACTIVE / CPU_CLK_UNHALTED.REF_XCLK ) )",
+-        "MetricGroup": "Flops_SMT",
++        "MetricGroup": "Ret;Flops_SMT",
+         "MetricName": "FLOPc_SMT"
+     },
++    {
++        "BriefDescription": "Actual per-core usage of the Floating Point e=
+xecution units (regardless of the vector width)",
++        "MetricExpr": "( (FP_ARITH_INST_RETIRED.SCALAR_SINGLE + FP_ARITH_I=
+NST_RETIRED.SCALAR_DOUBLE) + (FP_ARITH_INST_RETIRED.128B_PACKED_DOUBLE + FP=
+_ARITH_INST_RETIRED.128B_PACKED_SINGLE + FP_ARITH_INST_RETIRED.256B_PACKED_=
+DOUBLE + FP_ARITH_INST_RETIRED.256B_PACKED_SINGLE + FP_ARITH_INST_RETIRED.5=
+12B_PACKED_DOUBLE + FP_ARITH_INST_RETIRED.512B_PACKED_SINGLE) ) / ( 2 * CPU=
+_CLK_UNHALTED.THREAD )",
++        "MetricGroup": "Cor;Flops;HPC",
++        "MetricName": "FP_Arith_Utilization",
++        "PublicDescription": "Actual per-core usage of the Floating Point =
+execution units (regardless of the vector width). Values > 1 are possible d=
+ue to Fused-Multiply Add (FMA) counting."
++    },
++    {
++        "BriefDescription": "Actual per-core usage of the Floating Point e=
+xecution units (regardless of the vector width). SMT version; use when SMT =
+is enabled and measuring per logical CPU.",
++        "MetricExpr": "( (FP_ARITH_INST_RETIRED.SCALAR_SINGLE + FP_ARITH_I=
+NST_RETIRED.SCALAR_DOUBLE) + (FP_ARITH_INST_RETIRED.128B_PACKED_DOUBLE + FP=
+_ARITH_INST_RETIRED.128B_PACKED_SINGLE + FP_ARITH_INST_RETIRED.256B_PACKED_=
+DOUBLE + FP_ARITH_INST_RETIRED.256B_PACKED_SINGLE + FP_ARITH_INST_RETIRED.5=
+12B_PACKED_DOUBLE + FP_ARITH_INST_RETIRED.512B_PACKED_SINGLE) ) / ( 2 * ( (=
+ CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE /=
+ CPU_CLK_UNHALTED.REF_XCLK ) ) )",
++        "MetricGroup": "Cor;Flops;HPC_SMT",
++        "MetricName": "FP_Arith_Utilization_SMT",
++        "PublicDescription": "Actual per-core usage of the Floating Point =
+execution units (regardless of the vector width). Values > 1 are possible d=
+ue to Fused-Multiply Add (FMA) counting. SMT version; use when SMT is enabl=
+ed and measuring per logical CPU."
++    },
+     {
+         "BriefDescription": "Instruction-Level-Parallelism (average number=
+ of uops executed when there is at least 1 uop executed)",
+         "MetricExpr": "UOPS_EXECUTED.THREAD / (( UOPS_EXECUTED.CORE_CYCLES=
+_GE_1 / 2 ) if #SMT_on else UOPS_EXECUTED.CORE_CYCLES_GE_1)",
+-        "MetricGroup": "Pipeline;PortsUtil",
++        "MetricGroup": "Backend;Cor;Pipeline;PortsUtil",
+         "MetricName": "ILP"
+     },
++    {
++        "BriefDescription": "Branch Misprediction Cost: Fraction of TMA sl=
+ots wasted per non-speculative branch misprediction (retired JEClear)",
++        "MetricExpr": " ( ((BR_MISP_RETIRED.ALL_BRANCHES / ( BR_MISP_RETIR=
+ED.ALL_BRANCHES + MACHINE_CLEARS.COUNT )) * (( UOPS_ISSUED.ANY - UOPS_RETIR=
+ED.RETIRE_SLOTS + 4 * INT_MISC.RECOVERY_CYCLES ) / (4 * CPU_CLK_UNHALTED.TH=
+READ))) + (4 * IDQ_UOPS_NOT_DELIVERED.CYCLES_0_UOPS_DELIV.CORE / (4 * CPU_C=
+LK_UNHALTED.THREAD)) * ((BR_MISP_RETIRED.ALL_BRANCHES / ( BR_MISP_RETIRED.A=
+LL_BRANCHES + MACHINE_CLEARS.COUNT )) * INT_MISC.CLEAR_RESTEER_CYCLES / CPU=
+_CLK_UNHALTED.THREAD) / #(4 * IDQ_UOPS_NOT_DELIVERED.CYCLES_0_UOPS_DELIV.CO=
+RE / (4 * CPU_CLK_UNHALTED.THREAD)) ) * (4 * CPU_CLK_UNHALTED.THREAD) / BR_=
+MISP_RETIRED.ALL_BRANCHES",
++        "MetricGroup": "Bad;BrMispredicts",
++        "MetricName": "Branch_Misprediction_Cost"
++    },
++    {
++        "BriefDescription": "Branch Misprediction Cost: Fraction of TMA sl=
+ots wasted per non-speculative branch misprediction (retired JEClear)",
++        "MetricExpr": " ( ((BR_MISP_RETIRED.ALL_BRANCHES / ( BR_MISP_RETIR=
+ED.ALL_BRANCHES + MACHINE_CLEARS.COUNT )) * (( UOPS_ISSUED.ANY - UOPS_RETIR=
+ED.RETIRE_SLOTS + 4 * ( INT_MISC.RECOVERY_CYCLES_ANY / 2 ) ) / (4 * ( ( CPU=
+_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE / CPU=
+_CLK_UNHALTED.REF_XCLK ) )))) + (4 * IDQ_UOPS_NOT_DELIVERED.CYCLES_0_UOPS_D=
+ELIV.CORE / (4 * ( ( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHALTED=
+.ONE_THREAD_ACTIVE / CPU_CLK_UNHALTED.REF_XCLK ) ))) * ((BR_MISP_RETIRED.AL=
+L_BRANCHES / ( BR_MISP_RETIRED.ALL_BRANCHES + MACHINE_CLEARS.COUNT )) * INT=
+_MISC.CLEAR_RESTEER_CYCLES / CPU_CLK_UNHALTED.THREAD) / #(4 * IDQ_UOPS_NOT_=
+DELIVERED.CYCLES_0_UOPS_DELIV.CORE / (4 * ( ( CPU_CLK_UNHALTED.THREAD / 2 )=
+ * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE / CPU_CLK_UNHALTED.REF_XCLK ) )=
+)) ) * (4 * ( ( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHALTED.ONE_=
+THREAD_ACTIVE / CPU_CLK_UNHALTED.REF_XCLK ) )) / BR_MISP_RETIRED.ALL_BRANCH=
+ES",
++        "MetricGroup": "Bad;BrMispredicts_SMT",
++        "MetricName": "Branch_Misprediction_Cost_SMT"
++    },
+     {
+         "BriefDescription": "Number of Instructions per non-speculative Br=
+anch Misprediction (JEClear)",
+         "MetricExpr": "INST_RETIRED.ANY / BR_MISP_RETIRED.ALL_BRANCHES",
+-        "MetricGroup": "BrMispredicts",
++        "MetricGroup": "Bad;BadSpec;BrMispredicts",
+         "MetricName": "IpMispredict"
+     },
+     {
+@@ -86,128 +272,255 @@
+     {
+         "BriefDescription": "Instructions per Branch (lower number means h=
+igher occurrence rate)",
+         "MetricExpr": "INST_RETIRED.ANY / BR_INST_RETIRED.ALL_BRANCHES",
+-        "MetricGroup": "Branches;InsType",
++        "MetricGroup": "Branches;Fed;InsType",
+         "MetricName": "IpBranch"
+     },
+     {
+         "BriefDescription": "Instructions per (near) call (lower number me=
+ans higher occurrence rate)",
+         "MetricExpr": "INST_RETIRED.ANY / BR_INST_RETIRED.NEAR_CALL",
+-        "MetricGroup": "Branches",
++        "MetricGroup": "Branches;Fed;PGO",
+         "MetricName": "IpCall"
+     },
++    {
++        "BriefDescription": "Instruction per taken branch",
++        "MetricExpr": "INST_RETIRED.ANY / BR_INST_RETIRED.NEAR_TAKEN",
++        "MetricGroup": "Branches;Fed;FetchBW;Frontend;PGO",
++        "MetricName": "IpTB"
++    },
+     {
+         "BriefDescription": "Branch instructions per taken branch. ",
+         "MetricExpr": "BR_INST_RETIRED.ALL_BRANCHES / BR_INST_RETIRED.NEAR=
+_TAKEN",
+-        "MetricGroup": "Branches;PGO",
++        "MetricGroup": "Branches;Fed;PGO",
+         "MetricName": "BpTkBranch"
+     },
+     {
+         "BriefDescription": "Instructions per Floating Point (FP) Operatio=
+n (lower number means higher occurrence rate)",
+         "MetricExpr": "INST_RETIRED.ANY / ( 1 * ( FP_ARITH_INST_RETIRED.SC=
+ALAR_SINGLE + FP_ARITH_INST_RETIRED.SCALAR_DOUBLE ) + 2 * FP_ARITH_INST_RET=
+IRED.128B_PACKED_DOUBLE + 4 * ( FP_ARITH_INST_RETIRED.128B_PACKED_SINGLE + =
+FP_ARITH_INST_RETIRED.256B_PACKED_DOUBLE ) + 8 * ( FP_ARITH_INST_RETIRED.25=
+6B_PACKED_SINGLE + FP_ARITH_INST_RETIRED.512B_PACKED_DOUBLE ) + 16 * FP_ARI=
+TH_INST_RETIRED.512B_PACKED_SINGLE )",
+-        "MetricGroup": "Flops;FpArith;InsType",
++        "MetricGroup": "Flops;InsType",
+         "MetricName": "IpFLOP"
+     },
++    {
++        "BriefDescription": "Instructions per FP Arithmetic instruction (l=
+ower number means higher occurrence rate)",
++        "MetricExpr": "INST_RETIRED.ANY / ( (FP_ARITH_INST_RETIRED.SCALAR_=
+SINGLE + FP_ARITH_INST_RETIRED.SCALAR_DOUBLE) + (FP_ARITH_INST_RETIRED.128B=
+_PACKED_DOUBLE + FP_ARITH_INST_RETIRED.128B_PACKED_SINGLE + FP_ARITH_INST_R=
+ETIRED.256B_PACKED_DOUBLE + FP_ARITH_INST_RETIRED.256B_PACKED_SINGLE + FP_A=
+RITH_INST_RETIRED.512B_PACKED_DOUBLE + FP_ARITH_INST_RETIRED.512B_PACKED_SI=
+NGLE) )",
++        "MetricGroup": "Flops;InsType",
++        "MetricName": "IpArith",
++        "PublicDescription": "Instructions per FP Arithmetic instruction (=
+lower number means higher occurrence rate). May undercount due to FMA doubl=
+e counting. Approximated prior to BDW."
++    },
++    {
++        "BriefDescription": "Instructions per FP Arithmetic Scalar Single-=
+Precision instruction (lower number means higher occurrence rate)",
++        "MetricExpr": "INST_RETIRED.ANY / FP_ARITH_INST_RETIRED.SCALAR_SIN=
+GLE",
++        "MetricGroup": "Flops;FpScalar;InsType",
++        "MetricName": "IpArith_Scalar_SP",
++        "PublicDescription": "Instructions per FP Arithmetic Scalar Single=
+-Precision instruction (lower number means higher occurrence rate). May und=
+ercount due to FMA double counting."
++    },
++    {
++        "BriefDescription": "Instructions per FP Arithmetic Scalar Double-=
+Precision instruction (lower number means higher occurrence rate)",
++        "MetricExpr": "INST_RETIRED.ANY / FP_ARITH_INST_RETIRED.SCALAR_DOU=
+BLE",
++        "MetricGroup": "Flops;FpScalar;InsType",
++        "MetricName": "IpArith_Scalar_DP",
++        "PublicDescription": "Instructions per FP Arithmetic Scalar Double=
+-Precision instruction (lower number means higher occurrence rate). May und=
+ercount due to FMA double counting."
++    },
++    {
++        "BriefDescription": "Instructions per FP Arithmetic AVX/SSE 128-bi=
+t instruction (lower number means higher occurrence rate)",
++        "MetricExpr": "INST_RETIRED.ANY / ( FP_ARITH_INST_RETIRED.128B_PAC=
+KED_DOUBLE + FP_ARITH_INST_RETIRED.128B_PACKED_SINGLE )",
++        "MetricGroup": "Flops;FpVector;InsType",
++        "MetricName": "IpArith_AVX128",
++        "PublicDescription": "Instructions per FP Arithmetic AVX/SSE 128-b=
+it instruction (lower number means higher occurrence rate). May undercount =
+due to FMA double counting."
++    },
++    {
++        "BriefDescription": "Instructions per FP Arithmetic AVX* 256-bit i=
+nstruction (lower number means higher occurrence rate)",
++        "MetricExpr": "INST_RETIRED.ANY / ( FP_ARITH_INST_RETIRED.256B_PAC=
+KED_DOUBLE + FP_ARITH_INST_RETIRED.256B_PACKED_SINGLE )",
++        "MetricGroup": "Flops;FpVector;InsType",
++        "MetricName": "IpArith_AVX256",
++        "PublicDescription": "Instructions per FP Arithmetic AVX* 256-bit =
+instruction (lower number means higher occurrence rate). May undercount due=
+ to FMA double counting."
++    },
++    {
++        "BriefDescription": "Instructions per FP Arithmetic AVX 512-bit in=
+struction (lower number means higher occurrence rate)",
++        "MetricExpr": "INST_RETIRED.ANY / ( FP_ARITH_INST_RETIRED.512B_PAC=
+KED_DOUBLE + FP_ARITH_INST_RETIRED.512B_PACKED_SINGLE )",
++        "MetricGroup": "Flops;FpVector;InsType",
++        "MetricName": "IpArith_AVX512",
++        "PublicDescription": "Instructions per FP Arithmetic AVX 512-bit i=
+nstruction (lower number means higher occurrence rate). May undercount due =
+to FMA double counting."
++    },
+     {
+         "BriefDescription": "Total number of retired Instructions, Sample =
+with: INST_RETIRED.PREC_DIST",
+         "MetricExpr": "INST_RETIRED.ANY",
+         "MetricGroup": "Summary;TmaL1",
+         "MetricName": "Instructions"
+     },
++    {
++        "BriefDescription": "Average number of Uops issued by front-end wh=
+en it issued something",
++        "MetricExpr": "UOPS_ISSUED.ANY / cpu@UOPS_ISSUED.ANY\\,cmask\\=3D1=
+@",
++        "MetricGroup": "Fed;FetchBW",
++        "MetricName": "Fetch_UpC"
++    },
+     {
+         "BriefDescription": "Fraction of Uops delivered by the LSD (Loop S=
+tream Detector; aka Loop Cache)",
+         "MetricExpr": "LSD.UOPS / (IDQ.DSB_UOPS + LSD.UOPS + IDQ.MITE_UOPS=
+ + IDQ.MS_UOPS)",
+-        "MetricGroup": "LSD",
++        "MetricGroup": "Fed;LSD",
+         "MetricName": "LSD_Coverage"
+     },
+     {
+         "BriefDescription": "Fraction of Uops delivered by the DSB (aka De=
+coded ICache; or Uop Cache)",
+         "MetricExpr": "IDQ.DSB_UOPS / (IDQ.DSB_UOPS + LSD.UOPS + IDQ.MITE_=
+UOPS + IDQ.MS_UOPS)",
+-        "MetricGroup": "DSB;FetchBW",
++        "MetricGroup": "DSB;Fed;FetchBW",
+         "MetricName": "DSB_Coverage"
+     },
+     {
+-        "BriefDescription": "Actual Average Latency for L1 data-cache miss=
+ demand loads (in core cycles)",
++        "BriefDescription": "Total penalty related to DSB (uop cache) miss=
+es - subset/see of/the Instruction_Fetch_BW Bottleneck.",
++        "MetricExpr": "(4 * IDQ_UOPS_NOT_DELIVERED.CYCLES_0_UOPS_DELIV.COR=
+E / (4 * CPU_CLK_UNHALTED.THREAD)) * (DSB2MITE_SWITCHES.PENALTY_CYCLES / CP=
+U_CLK_UNHALTED.THREAD) / #(4 * IDQ_UOPS_NOT_DELIVERED.CYCLES_0_UOPS_DELIV.C=
+ORE / (4 * CPU_CLK_UNHALTED.THREAD)) + ((IDQ_UOPS_NOT_DELIVERED.CORE / (4 *=
+ CPU_CLK_UNHALTED.THREAD)) - (4 * IDQ_UOPS_NOT_DELIVERED.CYCLES_0_UOPS_DELI=
+V.CORE / (4 * CPU_CLK_UNHALTED.THREAD))) * (( IDQ.ALL_MITE_CYCLES_ANY_UOPS =
+- IDQ.ALL_MITE_CYCLES_4_UOPS ) / CPU_CLK_UNHALTED.THREAD / 2) / #((IDQ_UOPS=
+_NOT_DELIVERED.CORE / (4 * CPU_CLK_UNHALTED.THREAD)) - (4 * IDQ_UOPS_NOT_DE=
+LIVERED.CYCLES_0_UOPS_DELIV.CORE / (4 * CPU_CLK_UNHALTED.THREAD)))",
++        "MetricGroup": "DSBmiss;Fed",
++        "MetricName": "DSB_Misses_Cost"
++    },
++    {
++        "BriefDescription": "Total penalty related to DSB (uop cache) miss=
+es - subset/see of/the Instruction_Fetch_BW Bottleneck.",
++        "MetricExpr": "(4 * IDQ_UOPS_NOT_DELIVERED.CYCLES_0_UOPS_DELIV.COR=
+E / (4 * ( ( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHALTED.ONE_THR=
+EAD_ACTIVE / CPU_CLK_UNHALTED.REF_XCLK ) ))) * (DSB2MITE_SWITCHES.PENALTY_C=
+YCLES / CPU_CLK_UNHALTED.THREAD) / #(4 * IDQ_UOPS_NOT_DELIVERED.CYCLES_0_UO=
+PS_DELIV.CORE / (4 * ( ( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHA=
+LTED.ONE_THREAD_ACTIVE / CPU_CLK_UNHALTED.REF_XCLK ) ))) + ((IDQ_UOPS_NOT_D=
+ELIVERED.CORE / (4 * ( ( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHA=
+LTED.ONE_THREAD_ACTIVE / CPU_CLK_UNHALTED.REF_XCLK ) ))) - (4 * IDQ_UOPS_NO=
+T_DELIVERED.CYCLES_0_UOPS_DELIV.CORE / (4 * ( ( CPU_CLK_UNHALTED.THREAD / 2=
+ ) * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE / CPU_CLK_UNHALTED.REF_XCLK )=
+ )))) * (( IDQ.ALL_MITE_CYCLES_ANY_UOPS - IDQ.ALL_MITE_CYCLES_4_UOPS ) / ( =
+( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE =
+/ CPU_CLK_UNHALTED.REF_XCLK ) ) / 2) / #((IDQ_UOPS_NOT_DELIVERED.CORE / (4 =
+* ( ( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_ACT=
+IVE / CPU_CLK_UNHALTED.REF_XCLK ) ))) - (4 * IDQ_UOPS_NOT_DELIVERED.CYCLES_=
+0_UOPS_DELIV.CORE / (4 * ( ( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_=
+UNHALTED.ONE_THREAD_ACTIVE / CPU_CLK_UNHALTED.REF_XCLK ) ))))",
++        "MetricGroup": "DSBmiss;Fed_SMT",
++        "MetricName": "DSB_Misses_Cost_SMT"
++    },
++    {
++        "BriefDescription": "Number of Instructions per non-speculative DS=
+B miss",
++        "MetricExpr": "INST_RETIRED.ANY / FRONTEND_RETIRED.ANY_DSB_MISS",
++        "MetricGroup": "DSBmiss;Fed",
++        "MetricName": "IpDSB_Miss_Ret"
++    },
++    {
++        "BriefDescription": "Fraction of branches that are non-taken condi=
+tionals",
++        "MetricExpr": "BR_INST_RETIRED.NOT_TAKEN / BR_INST_RETIRED.ALL_BRA=
+NCHES",
++        "MetricGroup": "Bad;Branches;CodeGen;PGO",
++        "MetricName": "Cond_NT"
++    },
++    {
++        "BriefDescription": "Fraction of branches that are taken condition=
+als",
++        "MetricExpr": "( BR_INST_RETIRED.CONDITIONAL - BR_INST_RETIRED.NOT=
+_TAKEN )  / BR_INST_RETIRED.ALL_BRANCHES",
++        "MetricGroup": "Bad;Branches;CodeGen;PGO",
++        "MetricName": "Cond_TK"
++    },
++    {
++        "BriefDescription": "Fraction of branches that are CALL or RET",
++        "MetricExpr": "( BR_INST_RETIRED.NEAR_CALL + BR_INST_RETIRED.NEAR_=
+RETURN ) / BR_INST_RETIRED.ALL_BRANCHES",
++        "MetricGroup": "Bad;Branches",
++        "MetricName": "CallRet"
++    },
++    {
++        "BriefDescription": "Fraction of branches that are unconditional (=
+direct or indirect) jumps",
++        "MetricExpr": "(BR_INST_RETIRED.NEAR_TAKEN - ( BR_INST_RETIRED.CON=
+DITIONAL - BR_INST_RETIRED.NOT_TAKEN ) - 2 * BR_INST_RETIRED.NEAR_CALL) / B=
+R_INST_RETIRED.ALL_BRANCHES",
++        "MetricGroup": "Bad;Branches",
++        "MetricName": "Jump"
++    },
++    {
++        "BriefDescription": "Actual Average Latency for L1 data-cache miss=
+ demand load instructions (in core cycles)",
+         "MetricExpr": "L1D_PEND_MISS.PENDING / ( MEM_LOAD_RETIRED.L1_MISS =
++ MEM_LOAD_RETIRED.FB_HIT )",
+-        "MetricGroup": "MemoryBound;MemoryLat",
+-        "MetricName": "Load_Miss_Real_Latency"
++        "MetricGroup": "Mem;MemoryBound;MemoryLat",
++        "MetricName": "Load_Miss_Real_Latency",
++        "PublicDescription": "Actual Average Latency for L1 data-cache mis=
+s demand load instructions (in core cycles). Latency may be overestimated f=
+or multi-load instructions - e.g. repeat strings."
+     },
+     {
+         "BriefDescription": "Memory-Level-Parallelism (average number of L=
+1 miss demand load when there is at least one such miss. Per-Logical Proces=
+sor)",
+         "MetricExpr": "L1D_PEND_MISS.PENDING / L1D_PEND_MISS.PENDING_CYCLE=
+S",
+-        "MetricGroup": "MemoryBound;MemoryBW",
++        "MetricGroup": "Mem;MemoryBound;MemoryBW",
+         "MetricName": "MLP"
+     },
+-    {
+-        "BriefDescription": "Utilization of the core's Page Walker(s) serv=
+ing STLB misses triggered by instruction/Load/Store accesses",
+-        "MetricConstraint": "NO_NMI_WATCHDOG",
+-        "MetricExpr": "( ITLB_MISSES.WALK_PENDING + DTLB_LOAD_MISSES.WALK_=
+PENDING + DTLB_STORE_MISSES.WALK_PENDING + EPT.WALK_PENDING ) / ( 2 * CORE_=
+CLKS )",
+-        "MetricGroup": "MemoryTLB",
+-        "MetricName": "Page_Walks_Utilization"
+-    },
+     {
+         "BriefDescription": "Average data fill bandwidth to the L1 data ca=
+che [GB / sec]",
+         "MetricExpr": "64 * L1D.REPLACEMENT / 1000000000 / duration_time",
+-        "MetricGroup": "MemoryBW",
++        "MetricGroup": "Mem;MemoryBW",
+         "MetricName": "L1D_Cache_Fill_BW"
+     },
+     {
+         "BriefDescription": "Average data fill bandwidth to the L2 cache [=
+GB / sec]",
+         "MetricExpr": "64 * L2_LINES_IN.ALL / 1000000000 / duration_time",
+-        "MetricGroup": "MemoryBW",
++        "MetricGroup": "Mem;MemoryBW",
+         "MetricName": "L2_Cache_Fill_BW"
+     },
+     {
+         "BriefDescription": "Average per-core data fill bandwidth to the L=
+3 cache [GB / sec]",
+         "MetricExpr": "64 * LONGEST_LAT_CACHE.MISS / 1000000000 / duration=
+_time",
+-        "MetricGroup": "MemoryBW",
++        "MetricGroup": "Mem;MemoryBW",
+         "MetricName": "L3_Cache_Fill_BW"
+     },
+     {
+         "BriefDescription": "Average per-core data access bandwidth to the=
+ L3 cache [GB / sec]",
+         "MetricExpr": "64 * OFFCORE_REQUESTS.ALL_REQUESTS / 1000000000 / d=
+uration_time",
+-        "MetricGroup": "MemoryBW;Offcore",
++        "MetricGroup": "Mem;MemoryBW;Offcore",
+         "MetricName": "L3_Cache_Access_BW"
+     },
+     {
+         "BriefDescription": "L1 cache true misses per kilo instruction for=
+ retired demand loads",
+         "MetricExpr": "1000 * MEM_LOAD_RETIRED.L1_MISS / INST_RETIRED.ANY"=
+,
+-        "MetricGroup": "CacheMisses",
++        "MetricGroup": "Mem;CacheMisses",
+         "MetricName": "L1MPKI"
+     },
++    {
++        "BriefDescription": "L1 cache true misses per kilo instruction for=
+ all demand loads (including speculative)",
++        "MetricExpr": "1000 * L2_RQSTS.ALL_DEMAND_DATA_RD / INST_RETIRED.A=
+NY",
++        "MetricGroup": "Mem;CacheMisses",
++        "MetricName": "L1MPKI_Load"
++    },
+     {
+         "BriefDescription": "L2 cache true misses per kilo instruction for=
+ retired demand loads",
+         "MetricExpr": "1000 * MEM_LOAD_RETIRED.L2_MISS / INST_RETIRED.ANY"=
+,
+-        "MetricGroup": "CacheMisses",
++        "MetricGroup": "Mem;Backend;CacheMisses",
+         "MetricName": "L2MPKI"
+     },
+     {
+         "BriefDescription": "L2 cache misses per kilo instruction for all =
+request types (including speculative)",
+         "MetricExpr": "1000 * L2_RQSTS.MISS / INST_RETIRED.ANY",
+-        "MetricGroup": "CacheMisses;Offcore",
++        "MetricGroup": "Mem;CacheMisses;Offcore",
+         "MetricName": "L2MPKI_All"
+     },
++    {
++        "BriefDescription": "L2 cache misses per kilo instruction for all =
+demand loads  (including speculative)",
++        "MetricExpr": "1000 * L2_RQSTS.DEMAND_DATA_RD_MISS / INST_RETIRED.=
+ANY",
++        "MetricGroup": "Mem;CacheMisses",
++        "MetricName": "L2MPKI_Load"
++    },
+     {
+         "BriefDescription": "L2 cache hits per kilo instruction for all re=
+quest types (including speculative)",
+         "MetricExpr": "1000 * ( L2_RQSTS.REFERENCES - L2_RQSTS.MISS ) / IN=
+ST_RETIRED.ANY",
+-        "MetricGroup": "CacheMisses",
++        "MetricGroup": "Mem;CacheMisses",
+         "MetricName": "L2HPKI_All"
+     },
++    {
++        "BriefDescription": "L2 cache hits per kilo instruction for all de=
+mand loads  (including speculative)",
++        "MetricExpr": "1000 * L2_RQSTS.DEMAND_DATA_RD_HIT / INST_RETIRED.A=
+NY",
++        "MetricGroup": "Mem;CacheMisses",
++        "MetricName": "L2HPKI_Load"
++    },
+     {
+         "BriefDescription": "L3 cache true misses per kilo instruction for=
+ retired demand loads",
+         "MetricExpr": "1000 * MEM_LOAD_RETIRED.L3_MISS / INST_RETIRED.ANY"=
+,
+-        "MetricGroup": "CacheMisses",
++        "MetricGroup": "Mem;CacheMisses",
+         "MetricName": "L3MPKI"
+     },
++    {
++        "BriefDescription": "Fill Buffer (FB) true hits per kilo instructi=
+ons for retired demand loads",
++        "MetricExpr": "1000 * MEM_LOAD_RETIRED.FB_HIT / INST_RETIRED.ANY",
++        "MetricGroup": "Mem;CacheMisses",
++        "MetricName": "FB_HPKI"
++    },
++    {
++        "BriefDescription": "Utilization of the core's Page Walker(s) serv=
+ing STLB misses triggered by instruction/Load/Store accesses",
++        "MetricConstraint": "NO_NMI_WATCHDOG",
++        "MetricExpr": "( ITLB_MISSES.WALK_PENDING + DTLB_LOAD_MISSES.WALK_=
+PENDING + DTLB_STORE_MISSES.WALK_PENDING + EPT.WALK_PENDING ) / ( 2 * CPU_C=
+LK_UNHALTED.THREAD )",
++        "MetricGroup": "Mem;MemoryTLB",
++        "MetricName": "Page_Walks_Utilization"
++    },
++    {
++        "BriefDescription": "Utilization of the core's Page Walker(s) serv=
+ing STLB misses triggered by instruction/Load/Store accesses",
++        "MetricExpr": "( ITLB_MISSES.WALK_PENDING + DTLB_LOAD_MISSES.WALK_=
+PENDING + DTLB_STORE_MISSES.WALK_PENDING + EPT.WALK_PENDING ) / ( 2 * ( ( C=
+PU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE / C=
+PU_CLK_UNHALTED.REF_XCLK ) ) )",
++        "MetricGroup": "Mem;MemoryTLB_SMT",
++        "MetricName": "Page_Walks_Utilization_SMT"
++    },
+     {
+         "BriefDescription": "Rate of silent evictions from the L2 cache pe=
+r Kilo instruction where the evicted lines are dropped (no writeback to L3 =
+or memory)",
+         "MetricExpr": "1000 * L2_LINES_OUT.SILENT / INST_RETIRED.ANY",
+-        "MetricGroup": "L2Evicts;Server",
++        "MetricGroup": "L2Evicts;Mem;Server",
+         "MetricName": "L2_Evictions_Silent_PKI"
+     },
+     {
+         "BriefDescription": "Rate of non silent evictions from the L2 cach=
+e per Kilo instruction",
+         "MetricExpr": "1000 * L2_LINES_OUT.NON_SILENT / INST_RETIRED.ANY",
+-        "MetricGroup": "L2Evicts;Server",
++        "MetricGroup": "L2Evicts;Mem;Server",
+         "MetricName": "L2_Evictions_NonSilent_PKI"
+     },
+     {
+@@ -225,7 +538,7 @@
+     {
+         "BriefDescription": "Giga Floating Point Operations Per Second",
+         "MetricExpr": "( ( 1 * ( FP_ARITH_INST_RETIRED.SCALAR_SINGLE + FP_=
+ARITH_INST_RETIRED.SCALAR_DOUBLE ) + 2 * FP_ARITH_INST_RETIRED.128B_PACKED_=
+DOUBLE + 4 * ( FP_ARITH_INST_RETIRED.128B_PACKED_SINGLE + FP_ARITH_INST_RET=
+IRED.256B_PACKED_DOUBLE ) + 8 * ( FP_ARITH_INST_RETIRED.256B_PACKED_SINGLE =
++ FP_ARITH_INST_RETIRED.512B_PACKED_DOUBLE ) + 16 * FP_ARITH_INST_RETIRED.5=
+12B_PACKED_SINGLE ) / 1000000000 ) / duration_time",
+-        "MetricGroup": "Flops;HPC",
++        "MetricGroup": "Cor;Flops;HPC",
+         "MetricName": "GFLOPs"
+     },
+     {
+@@ -234,6 +547,48 @@
+         "MetricGroup": "Power",
+         "MetricName": "Turbo_Utilization"
+     },
++    {
++        "BriefDescription": "Fraction of Core cycles where the core was ru=
+nning with power-delivery for baseline license level 0",
++        "MetricExpr": "CORE_POWER.LVL0_TURBO_LICENSE / CPU_CLK_UNHALTED.TH=
+READ",
++        "MetricGroup": "Power",
++        "MetricName": "Power_License0_Utilization",
++        "PublicDescription": "Fraction of Core cycles where the core was r=
+unning with power-delivery for baseline license level 0.  This includes non=
+-AVX codes, SSE, AVX 128-bit, and low-current AVX 256-bit codes."
++    },
++    {
++        "BriefDescription": "Fraction of Core cycles where the core was ru=
+nning with power-delivery for baseline license level 0. SMT version; use wh=
+en SMT is enabled and measuring per logical CPU.",
++        "MetricExpr": "CORE_POWER.LVL0_TURBO_LICENSE / 2 / ( ( CPU_CLK_UNH=
+ALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE / CPU_CLK_UNH=
+ALTED.REF_XCLK ) )",
++        "MetricGroup": "Power_SMT",
++        "MetricName": "Power_License0_Utilization_SMT",
++        "PublicDescription": "Fraction of Core cycles where the core was r=
+unning with power-delivery for baseline license level 0.  This includes non=
+-AVX codes, SSE, AVX 128-bit, and low-current AVX 256-bit codes. SMT versio=
+n; use when SMT is enabled and measuring per logical CPU."
++    },
++    {
++        "BriefDescription": "Fraction of Core cycles where the core was ru=
+nning with power-delivery for license level 1",
++        "MetricExpr": "CORE_POWER.LVL1_TURBO_LICENSE / CPU_CLK_UNHALTED.TH=
+READ",
++        "MetricGroup": "Power",
++        "MetricName": "Power_License1_Utilization",
++        "PublicDescription": "Fraction of Core cycles where the core was r=
+unning with power-delivery for license level 1.  This includes high current=
+ AVX 256-bit instructions as well as low current AVX 512-bit instructions."
++    },
++    {
++        "BriefDescription": "Fraction of Core cycles where the core was ru=
+nning with power-delivery for license level 1. SMT version; use when SMT is=
+ enabled and measuring per logical CPU.",
++        "MetricExpr": "CORE_POWER.LVL1_TURBO_LICENSE / 2 / ( ( CPU_CLK_UNH=
+ALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE / CPU_CLK_UNH=
+ALTED.REF_XCLK ) )",
++        "MetricGroup": "Power_SMT",
++        "MetricName": "Power_License1_Utilization_SMT",
++        "PublicDescription": "Fraction of Core cycles where the core was r=
+unning with power-delivery for license level 1.  This includes high current=
+ AVX 256-bit instructions as well as low current AVX 512-bit instructions. =
+SMT version; use when SMT is enabled and measuring per logical CPU."
++    },
++    {
++        "BriefDescription": "Fraction of Core cycles where the core was ru=
+nning with power-delivery for license level 2 (introduced in SKX)",
++        "MetricExpr": "CORE_POWER.LVL2_TURBO_LICENSE / CPU_CLK_UNHALTED.TH=
+READ",
++        "MetricGroup": "Power",
++        "MetricName": "Power_License2_Utilization",
++        "PublicDescription": "Fraction of Core cycles where the core was r=
+unning with power-delivery for license level 2 (introduced in SKX).  This i=
+ncludes high current AVX 512-bit instructions."
++    },
++    {
++        "BriefDescription": "Fraction of Core cycles where the core was ru=
+nning with power-delivery for license level 2 (introduced in SKX). SMT vers=
+ion; use when SMT is enabled and measuring per logical CPU.",
++        "MetricExpr": "CORE_POWER.LVL2_TURBO_LICENSE / 2 / ( ( CPU_CLK_UNH=
+ALTED.THREAD / 2 ) * ( 1 + CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE / CPU_CLK_UNH=
+ALTED.REF_XCLK ) )",
++        "MetricGroup": "Power_SMT",
++        "MetricName": "Power_License2_Utilization_SMT",
++        "PublicDescription": "Fraction of Core cycles where the core was r=
+unning with power-delivery for license level 2 (introduced in SKX).  This i=
+ncludes high current AVX 512-bit instructions. SMT version; use when SMT is=
+ enabled and measuring per logical CPU."
++    },
+     {
+         "BriefDescription": "Fraction of cycles where both hardware Logica=
+l Processors were active",
+         "MetricExpr": "1 - CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE / ( CPU_CLK_=
+UNHALTED.REF_XCLK_ANY / 2 ) if #SMT_on else 0",
+@@ -246,52 +601,64 @@
+         "MetricGroup": "OS",
+         "MetricName": "Kernel_Utilization"
+     },
++    {
++        "BriefDescription": "Cycles Per Instruction for the Operating Syst=
+em (OS) Kernel mode",
++        "MetricExpr": "CPU_CLK_UNHALTED.THREAD_P:k / INST_RETIRED.ANY_P:k"=
+,
++        "MetricGroup": "OS",
++        "MetricName": "Kernel_CPI"
++    },
+     {
+         "BriefDescription": "Average external Memory Bandwidth Use for rea=
+ds and writes [GB / sec]",
+         "MetricExpr": "( 64 * ( uncore_imc@cas_count_read@ + uncore_imc@ca=
+s_count_write@ ) / 1000000000 ) / duration_time",
+-        "MetricGroup": "HPC;MemoryBW;SoC",
++        "MetricGroup": "HPC;Mem;MemoryBW;SoC",
+         "MetricName": "DRAM_BW_Use"
+     },
+     {
+         "BriefDescription": "Average latency of data read request to exter=
+nal memory (in nanoseconds). Accounts for demand loads and L1/L2 prefetches=
+",
+         "MetricExpr": "1000000000 * ( cha@event\\=3D0x36\\,umask\\=3D0x21\=
+\,config\\=3D0x40433@ / cha@event\\=3D0x35\\,umask\\=3D0x21\\,config\\=3D0x=
+40433@ ) / ( cha_0@event\\=3D0x0@ / duration_time )",
+-        "MetricGroup": "MemoryLat;SoC",
++        "MetricGroup": "Mem;MemoryLat;SoC",
+         "MetricName": "MEM_Read_Latency"
+     },
+     {
+         "BriefDescription": "Average number of parallel data read requests=
+ to external memory. Accounts for demand loads and L1/L2 prefetches",
+         "MetricExpr": "cha@event\\=3D0x36\\,umask\\=3D0x21\\,config\\=3D0x=
+40433@ / cha@event\\=3D0x36\\,umask\\=3D0x21\\,config\\=3D0x40433\\,thresh\=
+\=3D1@",
+-        "MetricGroup": "MemoryBW;SoC",
++        "MetricGroup": "Mem;MemoryBW;SoC",
+         "MetricName": "MEM_Parallel_Reads"
+     },
+     {
+         "BriefDescription": "Average latency of data read request to exter=
+nal 3D X-Point memory [in nanoseconds]. Accounts for demand loads and L1/L2=
+ data-read prefetches",
+         "MetricExpr": "( 1000000000 * ( imc@event\\=3D0xe0\\,umask\\=3D0x1=
+@ / imc@event\\=3D0xe3@ ) / imc_0@event\\=3D0x0@ )",
+-        "MetricGroup": "MemoryLat;SoC;Server",
++        "MetricGroup": "Mem;MemoryLat;SoC;Server",
+         "MetricName": "MEM_PMM_Read_Latency"
+     },
++    {
++        "BriefDescription": "Average latency of data read request to exter=
+nal DRAM memory [in nanoseconds]. Accounts for demand loads and L1/L2 data-=
+read prefetches",
++        "MetricExpr": "1000000000 * ( UNC_M_RPQ_OCCUPANCY / UNC_M_RPQ_INSE=
+RTS ) / imc_0@event\\=3D0x0@",
++        "MetricGroup": "Mem;MemoryLat;SoC;Server",
++        "MetricName": "MEM_DRAM_Read_Latency"
++    },
+     {
+         "BriefDescription": "Average 3DXP Memory Bandwidth Use for reads [=
+GB / sec]",
+         "MetricExpr": "( ( 64 * imc@event\\=3D0xe3@ / 1000000000 ) / durat=
+ion_time )",
+-        "MetricGroup": "MemoryBW;SoC;Server",
++        "MetricGroup": "Mem;MemoryBW;SoC;Server",
+         "MetricName": "PMM_Read_BW"
+     },
+     {
+         "BriefDescription": "Average 3DXP Memory Bandwidth Use for Writes =
+[GB / sec]",
+         "MetricExpr": "( ( 64 * imc@event\\=3D0xe7@ / 1000000000 ) / durat=
+ion_time )",
+-        "MetricGroup": "MemoryBW;SoC;Server",
++        "MetricGroup": "Mem;MemoryBW;SoC;Server",
+         "MetricName": "PMM_Write_BW"
+     },
+     {
+         "BriefDescription": "Average IO (network or disk) Bandwidth Use fo=
+r Writes [GB / sec]",
+         "MetricExpr": "( UNC_IIO_DATA_REQ_OF_CPU.MEM_READ.PART0 + UNC_IIO_=
+DATA_REQ_OF_CPU.MEM_READ.PART1 + UNC_IIO_DATA_REQ_OF_CPU.MEM_READ.PART2 + U=
+NC_IIO_DATA_REQ_OF_CPU.MEM_READ.PART3 ) * 4 / 1000000000 / duration_time",
+-        "MetricGroup": "IoBW;SoC;Server",
++        "MetricGroup": "IoBW;Mem;SoC;Server",
+         "MetricName": "IO_Write_BW"
+     },
+     {
+         "BriefDescription": "Average IO (network or disk) Bandwidth Use fo=
+r Reads [GB / sec]",
+         "MetricExpr": "( UNC_IIO_DATA_REQ_OF_CPU.MEM_WRITE.PART0 + UNC_IIO=
+_DATA_REQ_OF_CPU.MEM_WRITE.PART1 + UNC_IIO_DATA_REQ_OF_CPU.MEM_WRITE.PART2 =
++ UNC_IIO_DATA_REQ_OF_CPU.MEM_WRITE.PART3 ) * 4 / 1000000000 / duration_tim=
+e",
+-        "MetricGroup": "IoBW;SoC;Server",
++        "MetricGroup": "IoBW;Mem;SoC;Server",
+         "MetricName": "IO_Read_BW"
+     },
+     {
+diff --git a/tools/perf/pmu-events/arch/x86/cascadelakex/floating-point.jso=
+n b/tools/perf/pmu-events/arch/x86/cascadelakex/floating-point.json
+index ade925d7a68c..41a3d13fc4b2 100644
+--- a/tools/perf/pmu-events/arch/x86/cascadelakex/floating-point.json
++++ b/tools/perf/pmu-events/arch/x86/cascadelakex/floating-point.json
+@@ -1,37 +1,41 @@
+ [
+     {
+-        "BriefDescription": "Number of SSE/AVX computational 128-bit packe=
+d double precision floating-point instructions retired; some instructions w=
+ill count twice as noted below.  Each count represents 2 computation operat=
+ions, one for each element.  Applies to SSE* and AVX* packed double precisi=
+on floating-point instructions: ADD SUB HADD HSUB SUBADD MUL DIV MIN MAX SQ=
+RT RSQRT14 RCP14 DPP FM(N)ADD/SUB.  DPP and FM(N)ADD/SUB instructions count=
+ twice as they perform 2 calculations per element.",
++        "BriefDescription": "Counts once for most SIMD 128-bit packed comp=
+utational double precision floating-point instructions retired. Counts twic=
+e for DPP and FM(N)ADD/SUB instructions retired.",
+         "Counter": "0,1,2,3",
+         "CounterHTOff": "0,1,2,3,4,5,6,7",
+         "EventCode": "0xC7",
+         "EventName": "FP_ARITH_INST_RETIRED.128B_PACKED_DOUBLE",
++        "PublicDescription": "Counts once for most SIMD 128-bit packed com=
+putational double precision floating-point instructions retired; some instr=
+uctions will count twice as noted below.  Each count represents 2 computati=
+on operations, one for each element.  Applies to packed double precision fl=
+oating-point instructions: ADD SUB HADD HSUB SUBADD MUL DIV MIN MAX SQRT DP=
+P FM(N)ADD/SUB.  DPP and FM(N)ADD/SUB instructions count twice as they perf=
+orm 2 calculations per element. The DAZ and FTZ flags in the MXCSR register=
+ need to be set when using these events.",
+         "SampleAfterValue": "2000003",
+         "UMask": "0x4"
+     },
+     {
+-        "BriefDescription": "Number of SSE/AVX computational 128-bit packe=
+d single precision floating-point instructions retired; some instructions w=
+ill count twice as noted below.  Each count represents 4 computation operat=
+ions, one for each element.  Applies to SSE* and AVX* packed single precisi=
+on floating-point instructions: ADD SUB MUL DIV MIN MAX RCP14 RSQRT14 SQRT =
+DPP FM(N)ADD/SUB.  DPP and FM(N)ADD/SUB instructions count twice as they pe=
+rform 2 calculations per element.",
++        "BriefDescription": "Counts once for most SIMD 128-bit packed comp=
+utational single precision floating-point instruction retired. Counts twice=
+ for DPP and FM(N)ADD/SUB instructions retired.",
+         "Counter": "0,1,2,3",
+         "CounterHTOff": "0,1,2,3,4,5,6,7",
+         "EventCode": "0xC7",
+         "EventName": "FP_ARITH_INST_RETIRED.128B_PACKED_SINGLE",
++        "PublicDescription": "Counts once for most SIMD 128-bit packed com=
+putational single precision floating-point instructions retired; some instr=
+uctions will count twice as noted below.  Each count represents 4 computati=
+on operations, one for each element.  Applies to packed single precision fl=
+oating-point instructions: ADD SUB HADD HSUB SUBADD MUL DIV MIN MAX SQRT RS=
+QRT RCP DPP FM(N)ADD/SUB.  DPP and FM(N)ADD/SUB instructions count twice as=
+ they perform 2 calculations per element. The DAZ and FTZ flags in the MXCS=
+R register need to be set when using these events.",
+         "SampleAfterValue": "2000003",
+         "UMask": "0x8"
+     },
+     {
+-        "BriefDescription": "Number of SSE/AVX computational 256-bit packe=
+d double precision floating-point instructions retired; some instructions w=
+ill count twice as noted below.  Each count represents 4 computation operat=
+ions, one for each element.  Applies to SSE* and AVX* packed double precisi=
+on floating-point instructions: ADD SUB MUL DIV MIN MAX RCP14 RSQRT14 SQRT =
+DPP FM(N)ADD/SUB.  DPP and FM(N)ADD/SUB instructions count twice as they pe=
+rform 2 calculations per element.",
++        "BriefDescription": "Counts once for most SIMD 256-bit packed doub=
+le computational precision floating-point instructions retired. Counts twic=
+e for DPP and FM(N)ADD/SUB instructions retired.",
+         "Counter": "0,1,2,3",
+         "CounterHTOff": "0,1,2,3,4,5,6,7",
+         "EventCode": "0xC7",
+         "EventName": "FP_ARITH_INST_RETIRED.256B_PACKED_DOUBLE",
++        "PublicDescription": "Counts once for most SIMD 256-bit packed dou=
+ble computational precision floating-point instructions retired; some instr=
+uctions will count twice as noted below.  Each count represents 4 computati=
+on operations, one for each element.  Applies to packed double precision fl=
+oating-point instructions: ADD SUB HADD HSUB SUBADD MUL DIV MIN MAX SQRT FM=
+(N)ADD/SUB.  FM(N)ADD/SUB instructions count twice as they perform 2 calcul=
+ations per element. The DAZ and FTZ flags in the MXCSR register need to be =
+set when using these events.",
+         "SampleAfterValue": "2000003",
+         "UMask": "0x10"
+     },
+     {
+-        "BriefDescription": "Number of SSE/AVX computational 256-bit packe=
+d single precision floating-point instructions retired; some instructions w=
+ill count twice as noted below.  Each count represents 8 computation operat=
+ions, one for each element.  Applies to SSE* and AVX* packed single precisi=
+on floating-point instructions: ADD SUB MUL DIV MIN MAX RCP14 RSQRT14 SQRT =
+DPP FM(N)ADD/SUB.  DPP and FM(N)ADD/SUB instructions count twice as they pe=
+rform 2 calculations per element.",
++        "BriefDescription": "Counts once for most SIMD 256-bit packed sing=
+le computational precision floating-point instructions retired. Counts twic=
+e for DPP and FM(N)ADD/SUB instructions retired.",
+         "Counter": "0,1,2,3",
+         "CounterHTOff": "0,1,2,3,4,5,6,7",
+         "EventCode": "0xC7",
+         "EventName": "FP_ARITH_INST_RETIRED.256B_PACKED_SINGLE",
++        "PublicDescription": "Counts once for most SIMD 256-bit packed sin=
+gle computational precision floating-point instructions retired; some instr=
+uctions will count twice as noted below.  Each count represents 8 computati=
+on operations, one for each element.  Applies to packed single precision fl=
+oating-point instructions: ADD SUB HADD HSUB SUBADD MUL DIV MIN MAX SQRT RS=
+QRT RCP DPP FM(N)ADD/SUB.  DPP and FM(N)ADD/SUB instructions count twice as=
+ they perform 2 calculations per element. The DAZ and FTZ flags in the MXCS=
+R register need to be set when using these events.",
+         "SampleAfterValue": "2000003",
+         "UMask": "0x20"
+     },
+@@ -41,6 +45,7 @@
+         "CounterHTOff": "0,1,2,3,4,5,6,7",
+         "EventCode": "0xC7",
+         "EventName": "FP_ARITH_INST_RETIRED.512B_PACKED_DOUBLE",
++        "PublicDescription": "Number of SSE/AVX computational 512-bit pack=
+ed double precision floating-point instructions retired; some instructions =
+will count twice as noted below.  Each count represents 8 computation opera=
+tions, one for each element.  Applies to SSE* and AVX* packed double precis=
+ion floating-point instructions: ADD SUB MUL DIV MIN MAX RCP14 RSQRT14 SQRT=
+ DPP FM(N)ADD/SUB.  DPP and FM(N)ADD/SUB instructions count twice as they p=
+erform 2 calculations per element.  The DAZ and FTZ flags in the MXCSR regi=
+ster need to be set when using these events.",
+         "SampleAfterValue": "2000003",
+         "UMask": "0x40"
+     },
+@@ -50,27 +55,60 @@
+         "CounterHTOff": "0,1,2,3,4,5,6,7",
+         "EventCode": "0xC7",
+         "EventName": "FP_ARITH_INST_RETIRED.512B_PACKED_SINGLE",
++        "PublicDescription": "Number of SSE/AVX computational 512-bit pack=
+ed single precision floating-point instructions retired; some instructions =
+will count twice as noted below.  Each count represents 16 computation oper=
+ations, one for each element.  Applies to SSE* and AVX* packed single preci=
+sion floating-point instructions: ADD SUB MUL DIV MIN MAX RCP14 RSQRT14 SQR=
+T DPP FM(N)ADD/SUB.  DPP and FM(N)ADD/SUB instructions count twice as they =
+perform 2 calculations per element. The DAZ and FTZ flags in the MXCSR regi=
+ster need to be set when using these events.",
+         "SampleAfterValue": "2000003",
+         "UMask": "0x80"
+     },
+     {
+-        "BriefDescription": "Number of SSE/AVX computational scalar double=
+ precision floating-point instructions retired; some instructions will coun=
+t twice as noted below.  Each count represents 1 computation. Applies to SS=
+E* and AVX* scalar double precision floating-point instructions: ADD SUB MU=
+L DIV MIN MAX RCP14 RSQRT14 SQRT DPP FM(N)ADD/SUB.  DPP and FM(N)ADD/SUB in=
+structions count twice as they perform 2 calculations per element.",
++        "BriefDescription": "Counts once for most SIMD scalar computationa=
+l double precision floating-point instructions retired. Counts twice for DP=
+P and FM(N)ADD/SUB instructions retired.",
+         "Counter": "0,1,2,3",
+         "CounterHTOff": "0,1,2,3,4,5,6,7",
+         "EventCode": "0xC7",
+         "EventName": "FP_ARITH_INST_RETIRED.SCALAR_DOUBLE",
++        "PublicDescription": "Counts once for most SIMD scalar computation=
+al double precision floating-point instructions retired; some instructions =
+will count twice as noted below.  Each count represents 1 computational ope=
+ration. Applies to SIMD scalar double precision floating-point instructions=
+: ADD SUB MUL DIV MIN MAX SQRT FM(N)ADD/SUB.  FM(N)ADD/SUB instructions cou=
+nt twice as they perform 2 calculations per element. The DAZ and FTZ flags =
+in the MXCSR register need to be set when using these events.",
+         "SampleAfterValue": "2000003",
+         "UMask": "0x1"
+     },
+     {
+-        "BriefDescription": "Number of SSE/AVX computational scalar single=
+ precision floating-point instructions retired; some instructions will coun=
+t twice as noted below.  Each count represents 1 computation. Applies to SS=
+E* and AVX* scalar single precision floating-point instructions: ADD SUB MU=
+L DIV MIN MAX RCP14 RSQRT14 SQRT DPP FM(N)ADD/SUB.  DPP and FM(N)ADD/SUB in=
+structions count twice as they perform 2 calculations per element.",
++        "BriefDescription": "Counts once for most SIMD scalar computationa=
+l single precision floating-point instructions retired. Counts twice for DP=
+P and FM(N)ADD/SUB instructions retired.",
+         "Counter": "0,1,2,3",
+         "CounterHTOff": "0,1,2,3,4,5,6,7",
+         "EventCode": "0xC7",
+         "EventName": "FP_ARITH_INST_RETIRED.SCALAR_SINGLE",
++        "PublicDescription": "Counts once for most SIMD scalar computation=
+al single precision floating-point instructions retired; some instructions =
+will count twice as noted below.  Each count represents 1 computational ope=
+ration. Applies to SIMD scalar single precision floating-point instructions=
+: ADD SUB MUL DIV MIN MAX SQRT RSQRT RCP FM(N)ADD/SUB.  FM(N)ADD/SUB instru=
+ctions count twice as they perform 2 calculations per element. The DAZ and =
+FTZ flags in the MXCSR register need to be set when using these events.",
+         "SampleAfterValue": "2000003",
+         "UMask": "0x2"
+     },
++    {
++        "BriefDescription": "Intel AVX-512 computational 512-bit packed BF=
+loat16 instructions retired.",
++        "Counter": "0,1,2,3",
++        "CounterHTOff": "0,1,2,3,4,5,6,7",
++        "EventCode": "0xCF",
++        "EventName": "FP_ARITH_INST_RETIRED2.128BIT_PACKED_BF16",
++        "PublicDescription": "Counts once for each Intel AVX-512 computati=
+onal 512-bit packed BFloat16 floating-point instruction retired. Applies to=
+ the ZMM based VDPBF16PS instruction.  Each count represents 64 computation=
+ operations. This event is only supported on products formerly named Cooper=
+ Lake and is not supported on products formerly named Cascade Lake.",
++        "SampleAfterValue": "2000003",
++        "UMask": "0x20"
++    },
++    {
++        "BriefDescription": "Intel AVX-512 computational 128-bit packed BF=
+loat16 instructions retired.",
++        "Counter": "0,1,2,3",
++        "CounterHTOff": "0,1,2,3,4,5,6,7",
++        "EventCode": "0xCF",
++        "EventName": "FP_ARITH_INST_RETIRED2.256BIT_PACKED_BF16",
++        "PublicDescription": "Counts once for each Intel AVX-512 computati=
+onal 128-bit packed BFloat16 floating-point instruction retired. Applies to=
+ the XMM based VDPBF16PS instruction. Each count represents 16 computation =
+operations. This event is only supported on products formerly named Cooper =
+Lake and is not supported on products formerly named Cascade Lake.",
++        "SampleAfterValue": "2000003",
++        "UMask": "0x40"
++    },
++    {
++        "BriefDescription": "Intel AVX-512 computational 256-bit packed BF=
+loat16 instructions retired.",
++        "Counter": "0,1,2,3",
++        "CounterHTOff": "0,1,2,3,4,5,6,7",
++        "EventCode": "0xCF",
++        "EventName": "FP_ARITH_INST_RETIRED2.512BIT_PACKED_BF16",
++        "PublicDescription": "Counts once for each Intel AVX-512 computati=
+onal 256-bit packed BFloat16 floating-point instruction retired. Applies to=
+ the YMM based VDPBF16PS instruction.  Each count represents 32 computation=
+ operations. This event is only supported on products formerly named Cooper=
+ Lake and is not supported on products formerly named Cascade Lake.",
++        "SampleAfterValue": "2000003",
++        "UMask": "0x80"
++    },
+     {
+         "BriefDescription": "Cycles with any input/output SSE or FP assist=
+",
+         "Counter": "0,1,2,3",
+diff --git a/tools/perf/pmu-events/arch/x86/cascadelakex/frontend.json b/to=
+ols/perf/pmu-events/arch/x86/cascadelakex/frontend.json
+index 078706a50091..ecce4273ae52 100644
+--- a/tools/perf/pmu-events/arch/x86/cascadelakex/frontend.json
++++ b/tools/perf/pmu-events/arch/x86/cascadelakex/frontend.json
+@@ -30,7 +30,21 @@
+         "UMask": "0x2"
+     },
+     {
+-        "BriefDescription": "Retired Instructions who experienced decode s=
+tream buffer (DSB - the decoded instruction-cache) miss.",
++        "BriefDescription": "Retired Instructions who experienced DSB miss=
+.",
++        "Counter": "0,1,2,3",
++        "CounterHTOff": "0,1,2,3",
++        "EventCode": "0xC6",
++        "EventName": "FRONTEND_RETIRED.ANY_DSB_MISS",
++        "MSRIndex": "0x3F7",
++        "MSRValue": "0x1",
++        "PEBS": "1",
++        "PublicDescription": "Counts retired Instructions that experienced=
+ DSB (Decode stream buffer i.e. the decoded instruction-cache) miss.",
++        "SampleAfterValue": "100007",
++        "TakenAlone": "1",
++        "UMask": "0x1"
++    },
++    {
++        "BriefDescription": "Retired Instructions who experienced a critic=
+al DSB miss.",
+         "Counter": "0,1,2,3",
+         "CounterHTOff": "0,1,2,3",
+         "EventCode": "0xC6",
+@@ -38,7 +52,7 @@
+         "MSRIndex": "0x3F7",
+         "MSRValue": "0x11",
+         "PEBS": "1",
+-        "PublicDescription": "Counts retired Instructions that experienced=
+ DSB (Decode stream buffer i.e. the decoded instruction-cache) miss.",
++        "PublicDescription": "Number of retired Instructions that experien=
+ced a critical DSB (Decode stream buffer i.e. the decoded instruction-cache=
+) miss. Critical means stalls were exposed to the back-end as a result of t=
+he DSB miss.",
+         "SampleAfterValue": "100007",
+         "TakenAlone": "1",
+         "UMask": "0x1"
+diff --git a/tools/perf/pmu-events/arch/x86/cascadelakex/memory.json b/tool=
+s/perf/pmu-events/arch/x86/cascadelakex/memory.json
+index 7c2adadca87e..ae55c35c2f19 100644
+--- a/tools/perf/pmu-events/arch/x86/cascadelakex/memory.json
++++ b/tools/perf/pmu-events/arch/x86/cascadelakex/memory.json
+@@ -260,7 +260,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_MISS.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083C000491",
++        "MSRValue": "0x83C000491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -273,7 +273,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_MISS.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x043C000491",
++        "MSRValue": "0x43C000491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -286,7 +286,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_MISS.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x013C000491",
++        "MSRValue": "0x13C000491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -312,7 +312,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_MISS.REMOTE_HIT_FORWARD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083FC00491",
++        "MSRValue": "0x83FC00491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -325,7 +325,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_MISS.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x023C000491",
++        "MSRValue": "0x23C000491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -338,7 +338,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_MISS.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00BC000491",
++        "MSRValue": "0xBC000491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -377,7 +377,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_MISS_LOCAL_DRAM.HIT_OTHER_CORE_FW=
+D",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0804000491",
++        "MSRValue": "0x804000491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -390,7 +390,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_MISS_LOCAL_DRAM.HIT_OTHER_CORE_NO=
+_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0404000491",
++        "MSRValue": "0x404000491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -403,7 +403,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_MISS_LOCAL_DRAM.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0104000491",
++        "MSRValue": "0x104000491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -416,7 +416,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_MISS_LOCAL_DRAM.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0204000491",
++        "MSRValue": "0x204000491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -429,7 +429,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_MISS_LOCAL_DRAM.SNOOP_MISS_OR_NO_=
+FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0604000491",
++        "MSRValue": "0x604000491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -442,7 +442,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_MISS_LOCAL_DRAM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0084000491",
++        "MSRValue": "0x84000491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -455,7 +455,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_MISS_REMOTE_DRAM.SNOOP_MISS_OR_NO=
+_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x063B800491",
++        "MSRValue": "0x63B800491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -494,7 +494,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_MISS_REMOTE_HOP1_DRAM.HIT_OTHER_C=
+ORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0810000491",
++        "MSRValue": "0x810000491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -507,7 +507,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_MISS_REMOTE_HOP1_DRAM.HIT_OTHER_C=
+ORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0410000491",
++        "MSRValue": "0x410000491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -520,7 +520,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_MISS_REMOTE_HOP1_DRAM.NO_SNOOP_NE=
+EDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0110000491",
++        "MSRValue": "0x110000491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -533,7 +533,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_MISS_REMOTE_HOP1_DRAM.SNOOP_MISS"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0210000491",
++        "MSRValue": "0x210000491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -546,7 +546,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_MISS_REMOTE_HOP1_DRAM.SNOOP_NONE"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0090000491",
++        "MSRValue": "0x90000491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -585,7 +585,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_MISS.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083C000490",
++        "MSRValue": "0x83C000490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -598,7 +598,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_MISS.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x043C000490",
++        "MSRValue": "0x43C000490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -611,7 +611,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_MISS.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x013C000490",
++        "MSRValue": "0x13C000490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -637,7 +637,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_MISS.REMOTE_HIT_FORWARD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083FC00490",
++        "MSRValue": "0x83FC00490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -650,7 +650,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_MISS.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x023C000490",
++        "MSRValue": "0x23C000490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -663,7 +663,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_MISS.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00BC000490",
++        "MSRValue": "0xBC000490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -702,7 +702,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_MISS_LOCAL_DRAM.HIT_OTHER_CORE=
+_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0804000490",
++        "MSRValue": "0x804000490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -715,7 +715,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_MISS_LOCAL_DRAM.HIT_OTHER_CORE=
+_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0404000490",
++        "MSRValue": "0x404000490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -728,7 +728,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_MISS_LOCAL_DRAM.NO_SNOOP_NEEDE=
+D",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0104000490",
++        "MSRValue": "0x104000490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -741,7 +741,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_MISS_LOCAL_DRAM.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0204000490",
++        "MSRValue": "0x204000490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -754,7 +754,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_MISS_LOCAL_DRAM.SNOOP_MISS_OR_=
+NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0604000490",
++        "MSRValue": "0x604000490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -767,7 +767,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_MISS_LOCAL_DRAM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0084000490",
++        "MSRValue": "0x84000490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -780,7 +780,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_MISS_REMOTE_DRAM.SNOOP_MISS_OR=
+_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x063B800490",
++        "MSRValue": "0x63B800490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -819,7 +819,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_MISS_REMOTE_HOP1_DRAM.HIT_OTHE=
+R_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0810000490",
++        "MSRValue": "0x810000490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -832,7 +832,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_MISS_REMOTE_HOP1_DRAM.HIT_OTHE=
+R_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0410000490",
++        "MSRValue": "0x410000490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -845,7 +845,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_MISS_REMOTE_HOP1_DRAM.NO_SNOOP=
+_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0110000490",
++        "MSRValue": "0x110000490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -858,7 +858,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_MISS_REMOTE_HOP1_DRAM.SNOOP_MI=
+SS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0210000490",
++        "MSRValue": "0x210000490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -871,7 +871,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_MISS_REMOTE_HOP1_DRAM.SNOOP_NO=
+NE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0090000490",
++        "MSRValue": "0x90000490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -910,7 +910,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_MISS.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083C000120",
++        "MSRValue": "0x83C000120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -923,7 +923,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_MISS.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x043C000120",
++        "MSRValue": "0x43C000120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -936,7 +936,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_MISS.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x013C000120",
++        "MSRValue": "0x13C000120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -962,7 +962,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_MISS.REMOTE_HIT_FORWARD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083FC00120",
++        "MSRValue": "0x83FC00120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -975,7 +975,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_MISS.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x023C000120",
++        "MSRValue": "0x23C000120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -988,7 +988,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_MISS.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00BC000120",
++        "MSRValue": "0xBC000120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1027,7 +1027,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_MISS_LOCAL_DRAM.HIT_OTHER_CORE_FWD=
+",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0804000120",
++        "MSRValue": "0x804000120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1040,7 +1040,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_MISS_LOCAL_DRAM.HIT_OTHER_CORE_NO_=
+FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0404000120",
++        "MSRValue": "0x404000120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1053,7 +1053,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_MISS_LOCAL_DRAM.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0104000120",
++        "MSRValue": "0x104000120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1066,7 +1066,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_MISS_LOCAL_DRAM.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0204000120",
++        "MSRValue": "0x204000120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1079,7 +1079,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_MISS_LOCAL_DRAM.SNOOP_MISS_OR_NO_F=
+WD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0604000120",
++        "MSRValue": "0x604000120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1092,7 +1092,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_MISS_LOCAL_DRAM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0084000120",
++        "MSRValue": "0x84000120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1105,7 +1105,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_MISS_REMOTE_DRAM.SNOOP_MISS_OR_NO_=
+FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x063B800120",
++        "MSRValue": "0x63B800120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1144,7 +1144,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_MISS_REMOTE_HOP1_DRAM.HIT_OTHER_CO=
+RE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0810000120",
++        "MSRValue": "0x810000120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1157,7 +1157,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_MISS_REMOTE_HOP1_DRAM.HIT_OTHER_CO=
+RE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0410000120",
++        "MSRValue": "0x410000120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1170,7 +1170,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_MISS_REMOTE_HOP1_DRAM.NO_SNOOP_NEE=
+DED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0110000120",
++        "MSRValue": "0x110000120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1183,7 +1183,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_MISS_REMOTE_HOP1_DRAM.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0210000120",
++        "MSRValue": "0x210000120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1196,7 +1196,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_MISS_REMOTE_HOP1_DRAM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0090000120",
++        "MSRValue": "0x90000120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1235,7 +1235,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_MISS.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083C0007F7",
++        "MSRValue": "0x83C0007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1248,7 +1248,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_MISS.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x043C0007F7",
++        "MSRValue": "0x43C0007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1261,7 +1261,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_MISS.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x013C0007F7",
++        "MSRValue": "0x13C0007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1287,7 +1287,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_MISS.REMOTE_HIT_FORWARD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083FC007F7",
++        "MSRValue": "0x83FC007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1300,7 +1300,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_MISS.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x023C0007F7",
++        "MSRValue": "0x23C0007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1313,7 +1313,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_MISS.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00BC0007F7",
++        "MSRValue": "0xBC0007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1352,7 +1352,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_MISS_LOCAL_DRAM.HIT_OTHER_CORE_FWD"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08040007F7",
++        "MSRValue": "0x8040007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1365,7 +1365,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_MISS_LOCAL_DRAM.HIT_OTHER_CORE_NO_F=
+WD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04040007F7",
++        "MSRValue": "0x4040007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1378,7 +1378,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_MISS_LOCAL_DRAM.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01040007F7",
++        "MSRValue": "0x1040007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1391,7 +1391,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_MISS_LOCAL_DRAM.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02040007F7",
++        "MSRValue": "0x2040007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1404,7 +1404,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_MISS_LOCAL_DRAM.SNOOP_MISS_OR_NO_FW=
+D",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x06040007F7",
++        "MSRValue": "0x6040007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1417,7 +1417,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_MISS_LOCAL_DRAM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00840007F7",
++        "MSRValue": "0x840007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1430,7 +1430,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_MISS_REMOTE_DRAM.SNOOP_MISS_OR_NO_F=
+WD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x063B8007F7",
++        "MSRValue": "0x63B8007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1469,7 +1469,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_MISS_REMOTE_HOP1_DRAM.HIT_OTHER_COR=
+E_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08100007F7",
++        "MSRValue": "0x8100007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1482,7 +1482,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_MISS_REMOTE_HOP1_DRAM.HIT_OTHER_COR=
+E_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04100007F7",
++        "MSRValue": "0x4100007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1495,7 +1495,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_MISS_REMOTE_HOP1_DRAM.NO_SNOOP_NEED=
+ED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01100007F7",
++        "MSRValue": "0x1100007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1508,7 +1508,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_MISS_REMOTE_HOP1_DRAM.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02100007F7",
++        "MSRValue": "0x2100007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1521,7 +1521,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_MISS_REMOTE_HOP1_DRAM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00900007F7",
++        "MSRValue": "0x900007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1560,7 +1560,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_MISS.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083C000122",
++        "MSRValue": "0x83C000122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1573,7 +1573,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_MISS.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x043C000122",
++        "MSRValue": "0x43C000122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1586,7 +1586,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_MISS.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x013C000122",
++        "MSRValue": "0x13C000122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1612,7 +1612,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_MISS.REMOTE_HIT_FORWARD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083FC00122",
++        "MSRValue": "0x83FC00122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1625,7 +1625,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_MISS.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x023C000122",
++        "MSRValue": "0x23C000122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1638,7 +1638,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_MISS.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00BC000122",
++        "MSRValue": "0xBC000122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1677,7 +1677,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_MISS_LOCAL_DRAM.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0804000122",
++        "MSRValue": "0x804000122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1690,7 +1690,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_MISS_LOCAL_DRAM.HIT_OTHER_CORE_NO_FWD=
+",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0404000122",
++        "MSRValue": "0x404000122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1703,7 +1703,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_MISS_LOCAL_DRAM.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0104000122",
++        "MSRValue": "0x104000122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1716,7 +1716,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_MISS_LOCAL_DRAM.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0204000122",
++        "MSRValue": "0x204000122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1729,7 +1729,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_MISS_LOCAL_DRAM.SNOOP_MISS_OR_NO_FWD"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0604000122",
++        "MSRValue": "0x604000122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1742,7 +1742,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_MISS_LOCAL_DRAM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0084000122",
++        "MSRValue": "0x84000122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1755,7 +1755,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_MISS_REMOTE_DRAM.SNOOP_MISS_OR_NO_FWD=
+",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x063B800122",
++        "MSRValue": "0x63B800122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1794,7 +1794,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_MISS_REMOTE_HOP1_DRAM.HIT_OTHER_CORE_=
+FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0810000122",
++        "MSRValue": "0x810000122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1807,7 +1807,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_MISS_REMOTE_HOP1_DRAM.HIT_OTHER_CORE_=
+NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0410000122",
++        "MSRValue": "0x410000122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1820,7 +1820,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_MISS_REMOTE_HOP1_DRAM.NO_SNOOP_NEEDED=
+",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0110000122",
++        "MSRValue": "0x110000122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1833,7 +1833,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_MISS_REMOTE_HOP1_DRAM.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0210000122",
++        "MSRValue": "0x210000122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1846,7 +1846,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_MISS_REMOTE_HOP1_DRAM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0090000122",
++        "MSRValue": "0x90000122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1885,7 +1885,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_MISS.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083C000004",
++        "MSRValue": "0x83C000004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1898,7 +1898,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_MISS.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x043C000004",
++        "MSRValue": "0x43C000004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1911,7 +1911,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_MISS.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x013C000004",
++        "MSRValue": "0x13C000004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1937,7 +1937,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_MISS.REMOTE_HIT_FORWARD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083FC00004",
++        "MSRValue": "0x83FC00004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1950,7 +1950,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_MISS.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x023C000004",
++        "MSRValue": "0x23C000004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1963,7 +1963,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_MISS.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00BC000004",
++        "MSRValue": "0xBC000004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2002,7 +2002,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_MISS_LOCAL_DRAM.HIT_OTHER_CORE=
+_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0804000004",
++        "MSRValue": "0x804000004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2015,7 +2015,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_MISS_LOCAL_DRAM.HIT_OTHER_CORE=
+_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0404000004",
++        "MSRValue": "0x404000004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2028,7 +2028,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_MISS_LOCAL_DRAM.NO_SNOOP_NEEDE=
+D",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0104000004",
++        "MSRValue": "0x104000004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2041,7 +2041,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_MISS_LOCAL_DRAM.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0204000004",
++        "MSRValue": "0x204000004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2054,7 +2054,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_MISS_LOCAL_DRAM.SNOOP_MISS_OR_=
+NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0604000004",
++        "MSRValue": "0x604000004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2067,7 +2067,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_MISS_LOCAL_DRAM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0084000004",
++        "MSRValue": "0x84000004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2080,7 +2080,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_MISS_REMOTE_DRAM.SNOOP_MISS_OR=
+_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x063B800004",
++        "MSRValue": "0x63B800004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2119,7 +2119,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_MISS_REMOTE_HOP1_DRAM.HIT_OTHE=
+R_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0810000004",
++        "MSRValue": "0x810000004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2132,7 +2132,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_MISS_REMOTE_HOP1_DRAM.HIT_OTHE=
+R_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0410000004",
++        "MSRValue": "0x410000004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2145,7 +2145,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_MISS_REMOTE_HOP1_DRAM.NO_SNOOP=
+_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0110000004",
++        "MSRValue": "0x110000004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2158,7 +2158,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_MISS_REMOTE_HOP1_DRAM.SNOOP_MI=
+SS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0210000004",
++        "MSRValue": "0x210000004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2171,7 +2171,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_MISS_REMOTE_HOP1_DRAM.SNOOP_NO=
+NE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0090000004",
++        "MSRValue": "0x90000004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2210,7 +2210,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_MISS.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083C000001",
++        "MSRValue": "0x83C000001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2223,7 +2223,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_MISS.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x043C000001",
++        "MSRValue": "0x43C000001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2236,7 +2236,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_MISS.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x013C000001",
++        "MSRValue": "0x13C000001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2262,7 +2262,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_MISS.REMOTE_HIT_FORWARD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083FC00001",
++        "MSRValue": "0x83FC00001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2275,7 +2275,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_MISS.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x023C000001",
++        "MSRValue": "0x23C000001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2288,7 +2288,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_MISS.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00BC000001",
++        "MSRValue": "0xBC000001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2327,7 +2327,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_MISS_LOCAL_DRAM.HIT_OTHER_CORE=
+_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0804000001",
++        "MSRValue": "0x804000001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2340,7 +2340,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_MISS_LOCAL_DRAM.HIT_OTHER_CORE=
+_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0404000001",
++        "MSRValue": "0x404000001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2353,7 +2353,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_MISS_LOCAL_DRAM.NO_SNOOP_NEEDE=
+D",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0104000001",
++        "MSRValue": "0x104000001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2366,7 +2366,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_MISS_LOCAL_DRAM.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0204000001",
++        "MSRValue": "0x204000001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2379,7 +2379,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_MISS_LOCAL_DRAM.SNOOP_MISS_OR_=
+NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0604000001",
++        "MSRValue": "0x604000001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2392,7 +2392,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_MISS_LOCAL_DRAM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0084000001",
++        "MSRValue": "0x84000001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2405,7 +2405,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_MISS_REMOTE_DRAM.SNOOP_MISS_OR=
+_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x063B800001",
++        "MSRValue": "0x63B800001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2444,7 +2444,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_MISS_REMOTE_HOP1_DRAM.HIT_OTHE=
+R_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0810000001",
++        "MSRValue": "0x810000001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2457,7 +2457,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_MISS_REMOTE_HOP1_DRAM.HIT_OTHE=
+R_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0410000001",
++        "MSRValue": "0x410000001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2470,7 +2470,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_MISS_REMOTE_HOP1_DRAM.NO_SNOOP=
+_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0110000001",
++        "MSRValue": "0x110000001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2483,7 +2483,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_MISS_REMOTE_HOP1_DRAM.SNOOP_MI=
+SS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0210000001",
++        "MSRValue": "0x210000001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2496,7 +2496,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_MISS_REMOTE_HOP1_DRAM.SNOOP_NO=
+NE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0090000001",
++        "MSRValue": "0x90000001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2535,7 +2535,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_MISS.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083C000002",
++        "MSRValue": "0x83C000002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2548,7 +2548,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_MISS.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x043C000002",
++        "MSRValue": "0x43C000002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2561,7 +2561,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_MISS.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x013C000002",
++        "MSRValue": "0x13C000002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2587,7 +2587,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_MISS.REMOTE_HIT_FORWARD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083FC00002",
++        "MSRValue": "0x83FC00002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2600,7 +2600,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_MISS.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x023C000002",
++        "MSRValue": "0x23C000002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2613,7 +2613,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_MISS.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00BC000002",
++        "MSRValue": "0xBC000002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2652,7 +2652,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_MISS_LOCAL_DRAM.HIT_OTHER_CORE_FWD=
+",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0804000002",
++        "MSRValue": "0x804000002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2665,7 +2665,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_MISS_LOCAL_DRAM.HIT_OTHER_CORE_NO_=
+FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0404000002",
++        "MSRValue": "0x404000002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2678,7 +2678,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_MISS_LOCAL_DRAM.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0104000002",
++        "MSRValue": "0x104000002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2691,7 +2691,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_MISS_LOCAL_DRAM.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0204000002",
++        "MSRValue": "0x204000002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2704,7 +2704,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_MISS_LOCAL_DRAM.SNOOP_MISS_OR_NO_F=
+WD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0604000002",
++        "MSRValue": "0x604000002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2717,7 +2717,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_MISS_LOCAL_DRAM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0084000002",
++        "MSRValue": "0x84000002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2730,7 +2730,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_MISS_REMOTE_DRAM.SNOOP_MISS_OR_NO_=
+FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x063B800002",
++        "MSRValue": "0x63B800002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2769,7 +2769,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_MISS_REMOTE_HOP1_DRAM.HIT_OTHER_CO=
+RE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0810000002",
++        "MSRValue": "0x810000002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2782,7 +2782,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_MISS_REMOTE_HOP1_DRAM.HIT_OTHER_CO=
+RE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0410000002",
++        "MSRValue": "0x410000002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2795,7 +2795,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_MISS_REMOTE_HOP1_DRAM.NO_SNOOP_NEE=
+DED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0110000002",
++        "MSRValue": "0x110000002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2808,7 +2808,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_MISS_REMOTE_HOP1_DRAM.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0210000002",
++        "MSRValue": "0x210000002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2821,7 +2821,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_MISS_REMOTE_HOP1_DRAM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0090000002",
++        "MSRValue": "0x90000002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2860,7 +2860,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_MISS.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083C008000",
++        "MSRValue": "0x83C008000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2873,7 +2873,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_MISS.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x043C008000",
++        "MSRValue": "0x43C008000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2886,7 +2886,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_MISS.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x013C008000",
++        "MSRValue": "0x13C008000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2912,7 +2912,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_MISS.REMOTE_HIT_FORWARD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083FC08000",
++        "MSRValue": "0x83FC08000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2925,7 +2925,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_MISS.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x023C008000",
++        "MSRValue": "0x23C008000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2938,7 +2938,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_MISS.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00BC008000",
++        "MSRValue": "0xBC008000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2977,7 +2977,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_MISS_LOCAL_DRAM.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0804008000",
++        "MSRValue": "0x804008000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2990,7 +2990,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_MISS_LOCAL_DRAM.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0404008000",
++        "MSRValue": "0x404008000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3003,7 +3003,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_MISS_LOCAL_DRAM.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0104008000",
++        "MSRValue": "0x104008000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3016,7 +3016,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_MISS_LOCAL_DRAM.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0204008000",
++        "MSRValue": "0x204008000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3029,7 +3029,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_MISS_LOCAL_DRAM.SNOOP_MISS_OR_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0604008000",
++        "MSRValue": "0x604008000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3042,7 +3042,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_MISS_LOCAL_DRAM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0084008000",
++        "MSRValue": "0x84008000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3055,7 +3055,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_MISS_REMOTE_DRAM.SNOOP_MISS_OR_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x063B808000",
++        "MSRValue": "0x63B808000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3094,7 +3094,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_MISS_REMOTE_HOP1_DRAM.HIT_OTHER_CORE_FW=
+D",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0810008000",
++        "MSRValue": "0x810008000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3107,7 +3107,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_MISS_REMOTE_HOP1_DRAM.HIT_OTHER_CORE_NO=
+_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0410008000",
++        "MSRValue": "0x410008000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3120,7 +3120,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_MISS_REMOTE_HOP1_DRAM.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0110008000",
++        "MSRValue": "0x110008000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3133,7 +3133,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_MISS_REMOTE_HOP1_DRAM.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0210008000",
++        "MSRValue": "0x210008000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3146,7 +3146,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_MISS_REMOTE_HOP1_DRAM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0090008000",
++        "MSRValue": "0x90008000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3185,7 +3185,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_MISS.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083C000400",
++        "MSRValue": "0x83C000400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3198,7 +3198,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_MISS.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x043C000400",
++        "MSRValue": "0x43C000400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3211,7 +3211,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_MISS.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x013C000400",
++        "MSRValue": "0x13C000400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3237,7 +3237,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_MISS.REMOTE_HIT_FORWARD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083FC00400",
++        "MSRValue": "0x83FC00400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3250,7 +3250,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_MISS.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x023C000400",
++        "MSRValue": "0x23C000400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3263,7 +3263,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_MISS.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00BC000400",
++        "MSRValue": "0xBC000400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3302,7 +3302,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_MISS_LOCAL_DRAM.HIT_OTHER_CORE_=
+FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0804000400",
++        "MSRValue": "0x804000400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3315,7 +3315,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_MISS_LOCAL_DRAM.HIT_OTHER_CORE_=
+NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0404000400",
++        "MSRValue": "0x404000400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3328,7 +3328,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_MISS_LOCAL_DRAM.NO_SNOOP_NEEDED=
+",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0104000400",
++        "MSRValue": "0x104000400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3341,7 +3341,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_MISS_LOCAL_DRAM.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0204000400",
++        "MSRValue": "0x204000400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3354,7 +3354,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_MISS_LOCAL_DRAM.SNOOP_MISS_OR_N=
+O_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0604000400",
++        "MSRValue": "0x604000400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3367,7 +3367,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_MISS_LOCAL_DRAM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0084000400",
++        "MSRValue": "0x84000400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3380,7 +3380,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_MISS_REMOTE_DRAM.SNOOP_MISS_OR_=
+NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x063B800400",
++        "MSRValue": "0x63B800400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3419,7 +3419,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_MISS_REMOTE_HOP1_DRAM.HIT_OTHER=
+_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0810000400",
++        "MSRValue": "0x810000400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3432,7 +3432,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_MISS_REMOTE_HOP1_DRAM.HIT_OTHER=
+_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0410000400",
++        "MSRValue": "0x410000400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3445,7 +3445,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_MISS_REMOTE_HOP1_DRAM.NO_SNOOP_=
+NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0110000400",
++        "MSRValue": "0x110000400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3458,7 +3458,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_MISS_REMOTE_HOP1_DRAM.SNOOP_MIS=
+S",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0210000400",
++        "MSRValue": "0x210000400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3471,7 +3471,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_MISS_REMOTE_HOP1_DRAM.SNOOP_NON=
+E",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0090000400",
++        "MSRValue": "0x90000400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3510,7 +3510,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_MISS.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083C000010",
++        "MSRValue": "0x83C000010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3523,7 +3523,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_MISS.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x043C000010",
++        "MSRValue": "0x43C000010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3536,7 +3536,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_MISS.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x013C000010",
++        "MSRValue": "0x13C000010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3562,7 +3562,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_MISS.REMOTE_HIT_FORWARD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083FC00010",
++        "MSRValue": "0x83FC00010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3575,7 +3575,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_MISS.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x023C000010",
++        "MSRValue": "0x23C000010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3588,7 +3588,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_MISS.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00BC000010",
++        "MSRValue": "0xBC000010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3627,7 +3627,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_MISS_LOCAL_DRAM.HIT_OTHER_CORE_=
+FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0804000010",
++        "MSRValue": "0x804000010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3640,7 +3640,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_MISS_LOCAL_DRAM.HIT_OTHER_CORE_=
+NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0404000010",
++        "MSRValue": "0x404000010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3653,7 +3653,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_MISS_LOCAL_DRAM.NO_SNOOP_NEEDED=
+",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0104000010",
++        "MSRValue": "0x104000010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3666,7 +3666,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_MISS_LOCAL_DRAM.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0204000010",
++        "MSRValue": "0x204000010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3679,7 +3679,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_MISS_LOCAL_DRAM.SNOOP_MISS_OR_N=
+O_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0604000010",
++        "MSRValue": "0x604000010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3692,7 +3692,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_MISS_LOCAL_DRAM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0084000010",
++        "MSRValue": "0x84000010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3705,7 +3705,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_MISS_REMOTE_DRAM.SNOOP_MISS_OR_=
+NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x063B800010",
++        "MSRValue": "0x63B800010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3744,7 +3744,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_MISS_REMOTE_HOP1_DRAM.HIT_OTHER=
+_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0810000010",
++        "MSRValue": "0x810000010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3757,7 +3757,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_MISS_REMOTE_HOP1_DRAM.HIT_OTHER=
+_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0410000010",
++        "MSRValue": "0x410000010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3770,7 +3770,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_MISS_REMOTE_HOP1_DRAM.NO_SNOOP_=
+NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0110000010",
++        "MSRValue": "0x110000010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3783,7 +3783,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_MISS_REMOTE_HOP1_DRAM.SNOOP_MIS=
+S",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0210000010",
++        "MSRValue": "0x210000010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3796,7 +3796,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_MISS_REMOTE_HOP1_DRAM.SNOOP_NON=
+E",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0090000010",
++        "MSRValue": "0x90000010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3835,7 +3835,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_MISS.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083C000020",
++        "MSRValue": "0x83C000020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3848,7 +3848,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_MISS.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x043C000020",
++        "MSRValue": "0x43C000020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3861,7 +3861,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_MISS.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x013C000020",
++        "MSRValue": "0x13C000020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3887,7 +3887,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_MISS.REMOTE_HIT_FORWARD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083FC00020",
++        "MSRValue": "0x83FC00020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3900,7 +3900,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_MISS.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x023C000020",
++        "MSRValue": "0x23C000020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3913,7 +3913,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_MISS.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00BC000020",
++        "MSRValue": "0xBC000020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3952,7 +3952,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_MISS_LOCAL_DRAM.HIT_OTHER_CORE_FWD"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0804000020",
++        "MSRValue": "0x804000020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3965,7 +3965,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_MISS_LOCAL_DRAM.HIT_OTHER_CORE_NO_F=
+WD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0404000020",
++        "MSRValue": "0x404000020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3978,7 +3978,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_MISS_LOCAL_DRAM.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0104000020",
++        "MSRValue": "0x104000020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3991,7 +3991,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_MISS_LOCAL_DRAM.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0204000020",
++        "MSRValue": "0x204000020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4004,7 +4004,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_MISS_LOCAL_DRAM.SNOOP_MISS_OR_NO_FW=
+D",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0604000020",
++        "MSRValue": "0x604000020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4017,7 +4017,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_MISS_LOCAL_DRAM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0084000020",
++        "MSRValue": "0x84000020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4030,7 +4030,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_MISS_REMOTE_DRAM.SNOOP_MISS_OR_NO_F=
+WD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x063B800020",
++        "MSRValue": "0x63B800020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4069,7 +4069,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_MISS_REMOTE_HOP1_DRAM.HIT_OTHER_COR=
+E_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0810000020",
++        "MSRValue": "0x810000020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4082,7 +4082,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_MISS_REMOTE_HOP1_DRAM.HIT_OTHER_COR=
+E_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0410000020",
++        "MSRValue": "0x410000020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4095,7 +4095,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_MISS_REMOTE_HOP1_DRAM.NO_SNOOP_NEED=
+ED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0110000020",
++        "MSRValue": "0x110000020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4108,7 +4108,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_MISS_REMOTE_HOP1_DRAM.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0210000020",
++        "MSRValue": "0x210000020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4121,7 +4121,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_MISS_REMOTE_HOP1_DRAM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0090000020",
++        "MSRValue": "0x90000020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4160,7 +4160,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_MISS.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083C000080",
++        "MSRValue": "0x83C000080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4173,7 +4173,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_MISS.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x043C000080",
++        "MSRValue": "0x43C000080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4186,7 +4186,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_MISS.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x013C000080",
++        "MSRValue": "0x13C000080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4212,7 +4212,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_MISS.REMOTE_HIT_FORWARD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083FC00080",
++        "MSRValue": "0x83FC00080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4225,7 +4225,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_MISS.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x023C000080",
++        "MSRValue": "0x23C000080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4238,7 +4238,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_MISS.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00BC000080",
++        "MSRValue": "0xBC000080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4277,7 +4277,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_MISS_LOCAL_DRAM.HIT_OTHER_CORE_=
+FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0804000080",
++        "MSRValue": "0x804000080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4290,7 +4290,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_MISS_LOCAL_DRAM.HIT_OTHER_CORE_=
+NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0404000080",
++        "MSRValue": "0x404000080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4303,7 +4303,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_MISS_LOCAL_DRAM.NO_SNOOP_NEEDED=
+",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0104000080",
++        "MSRValue": "0x104000080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4316,7 +4316,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_MISS_LOCAL_DRAM.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0204000080",
++        "MSRValue": "0x204000080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4329,7 +4329,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_MISS_LOCAL_DRAM.SNOOP_MISS_OR_N=
+O_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0604000080",
++        "MSRValue": "0x604000080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4342,7 +4342,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_MISS_LOCAL_DRAM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0084000080",
++        "MSRValue": "0x84000080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4355,7 +4355,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_MISS_REMOTE_DRAM.SNOOP_MISS_OR_=
+NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x063B800080",
++        "MSRValue": "0x63B800080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4394,7 +4394,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_MISS_REMOTE_HOP1_DRAM.HIT_OTHER=
+_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0810000080",
++        "MSRValue": "0x810000080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4407,7 +4407,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_MISS_REMOTE_HOP1_DRAM.HIT_OTHER=
+_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0410000080",
++        "MSRValue": "0x410000080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4420,7 +4420,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_MISS_REMOTE_HOP1_DRAM.NO_SNOOP_=
+NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0110000080",
++        "MSRValue": "0x110000080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4433,7 +4433,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_MISS_REMOTE_HOP1_DRAM.SNOOP_MIS=
+S",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0210000080",
++        "MSRValue": "0x210000080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4446,7 +4446,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_MISS_REMOTE_HOP1_DRAM.SNOOP_NON=
+E",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0090000080",
++        "MSRValue": "0x90000080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4485,7 +4485,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_MISS.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083C000100",
++        "MSRValue": "0x83C000100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4498,7 +4498,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_MISS.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x043C000100",
++        "MSRValue": "0x43C000100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4511,7 +4511,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_MISS.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x013C000100",
++        "MSRValue": "0x13C000100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4537,7 +4537,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_MISS.REMOTE_HIT_FORWARD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083FC00100",
++        "MSRValue": "0x83FC00100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4550,7 +4550,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_MISS.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x023C000100",
++        "MSRValue": "0x23C000100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4563,7 +4563,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_MISS.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00BC000100",
++        "MSRValue": "0xBC000100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4602,7 +4602,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_MISS_LOCAL_DRAM.HIT_OTHER_CORE_FWD"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0804000100",
++        "MSRValue": "0x804000100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4615,7 +4615,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_MISS_LOCAL_DRAM.HIT_OTHER_CORE_NO_F=
+WD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0404000100",
++        "MSRValue": "0x404000100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4628,7 +4628,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_MISS_LOCAL_DRAM.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0104000100",
++        "MSRValue": "0x104000100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4641,7 +4641,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_MISS_LOCAL_DRAM.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0204000100",
++        "MSRValue": "0x204000100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4654,7 +4654,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_MISS_LOCAL_DRAM.SNOOP_MISS_OR_NO_FW=
+D",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0604000100",
++        "MSRValue": "0x604000100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4667,7 +4667,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_MISS_LOCAL_DRAM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0084000100",
++        "MSRValue": "0x84000100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4680,7 +4680,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_MISS_REMOTE_DRAM.SNOOP_MISS_OR_NO_F=
+WD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x063B800100",
++        "MSRValue": "0x63B800100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4719,7 +4719,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_MISS_REMOTE_HOP1_DRAM.HIT_OTHER_COR=
+E_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0810000100",
++        "MSRValue": "0x810000100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4732,7 +4732,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_MISS_REMOTE_HOP1_DRAM.HIT_OTHER_COR=
+E_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0410000100",
++        "MSRValue": "0x410000100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4745,7 +4745,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_MISS_REMOTE_HOP1_DRAM.NO_SNOOP_NEED=
+ED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0110000100",
++        "MSRValue": "0x110000100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4758,7 +4758,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_MISS_REMOTE_HOP1_DRAM.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0210000100",
++        "MSRValue": "0x210000100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4771,7 +4771,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_MISS_REMOTE_HOP1_DRAM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0090000100",
++        "MSRValue": "0x90000100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4852,7 +4852,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_MISS.HIT_OTHER_CORE_=
+FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083C000491",
++        "MSRValue": "0x83C000491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4866,7 +4866,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_MISS.HIT_OTHER_CORE_=
+NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x043C000491",
++        "MSRValue": "0x43C000491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4880,7 +4880,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_MISS.NO_SNOOP_NEEDED=
+",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x013C000491",
++        "MSRValue": "0x13C000491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4908,7 +4908,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_MISS.REMOTE_HIT_FORW=
+ARD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083FC00491",
++        "MSRValue": "0x83FC00491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4922,7 +4922,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_MISS.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x023C000491",
++        "MSRValue": "0x23C000491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4936,7 +4936,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_MISS.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00BC000491",
++        "MSRValue": "0xBC000491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4978,7 +4978,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_MISS_LOCAL_DRAM.HIT_=
+OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0804000491",
++        "MSRValue": "0x804000491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4992,7 +4992,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_MISS_LOCAL_DRAM.HIT_=
+OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0404000491",
++        "MSRValue": "0x404000491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5006,7 +5006,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_MISS_LOCAL_DRAM.NO_S=
+NOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0104000491",
++        "MSRValue": "0x104000491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5020,7 +5020,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_MISS_LOCAL_DRAM.SNOO=
+P_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0204000491",
++        "MSRValue": "0x204000491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5034,7 +5034,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_MISS_LOCAL_DRAM.SNOO=
+P_MISS_OR_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0604000491",
++        "MSRValue": "0x604000491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5048,7 +5048,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_MISS_LOCAL_DRAM.SNOO=
+P_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0084000491",
++        "MSRValue": "0x84000491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5062,7 +5062,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_MISS_REMOTE_DRAM.SNO=
+OP_MISS_OR_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x063B800491",
++        "MSRValue": "0x63B800491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5104,7 +5104,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_MISS_REMOTE_HOP1_DRA=
+M.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0810000491",
++        "MSRValue": "0x810000491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5118,7 +5118,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_MISS_REMOTE_HOP1_DRA=
+M.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0410000491",
++        "MSRValue": "0x410000491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5132,7 +5132,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_MISS_REMOTE_HOP1_DRA=
+M.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0110000491",
++        "MSRValue": "0x110000491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5146,7 +5146,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_MISS_REMOTE_HOP1_DRA=
+M.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0210000491",
++        "MSRValue": "0x210000491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5160,7 +5160,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_MISS_REMOTE_HOP1_DRA=
+M.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0090000491",
++        "MSRValue": "0x90000491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5202,7 +5202,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_MISS.HIT_OTHER_CO=
+RE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083C000490",
++        "MSRValue": "0x83C000490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5216,7 +5216,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_MISS.HIT_OTHER_CO=
+RE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x043C000490",
++        "MSRValue": "0x43C000490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5230,7 +5230,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_MISS.NO_SNOOP_NEE=
+DED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x013C000490",
++        "MSRValue": "0x13C000490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5258,7 +5258,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_MISS.REMOTE_HIT_F=
+ORWARD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083FC00490",
++        "MSRValue": "0x83FC00490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5272,7 +5272,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_MISS.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x023C000490",
++        "MSRValue": "0x23C000490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5286,7 +5286,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_MISS.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00BC000490",
++        "MSRValue": "0xBC000490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5328,7 +5328,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_MISS_LOCAL_DRAM.H=
+IT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0804000490",
++        "MSRValue": "0x804000490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5342,7 +5342,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_MISS_LOCAL_DRAM.H=
+IT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0404000490",
++        "MSRValue": "0x404000490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5356,7 +5356,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_MISS_LOCAL_DRAM.N=
+O_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0104000490",
++        "MSRValue": "0x104000490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5370,7 +5370,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_MISS_LOCAL_DRAM.S=
+NOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0204000490",
++        "MSRValue": "0x204000490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5384,7 +5384,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_MISS_LOCAL_DRAM.S=
+NOOP_MISS_OR_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0604000490",
++        "MSRValue": "0x604000490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5398,7 +5398,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_MISS_LOCAL_DRAM.S=
+NOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0084000490",
++        "MSRValue": "0x84000490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5412,7 +5412,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_MISS_REMOTE_DRAM.=
+SNOOP_MISS_OR_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x063B800490",
++        "MSRValue": "0x63B800490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5454,7 +5454,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_MISS_REMOTE_HOP1_=
+DRAM.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0810000490",
++        "MSRValue": "0x810000490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5468,7 +5468,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_MISS_REMOTE_HOP1_=
+DRAM.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0410000490",
++        "MSRValue": "0x410000490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5482,7 +5482,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_MISS_REMOTE_HOP1_=
+DRAM.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0110000490",
++        "MSRValue": "0x110000490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5496,7 +5496,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_MISS_REMOTE_HOP1_=
+DRAM.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0210000490",
++        "MSRValue": "0x210000490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5510,7 +5510,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_DATA_RD.L3_MISS_REMOTE_HOP1_=
+DRAM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0090000490",
++        "MSRValue": "0x90000490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5552,7 +5552,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_MISS.HIT_OTHER_CORE_F=
+WD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083C000120",
++        "MSRValue": "0x83C000120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5566,7 +5566,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_MISS.HIT_OTHER_CORE_N=
+O_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x043C000120",
++        "MSRValue": "0x43C000120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5580,7 +5580,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_MISS.NO_SNOOP_NEEDED"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x013C000120",
++        "MSRValue": "0x13C000120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5608,7 +5608,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_MISS.REMOTE_HIT_FORWA=
+RD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083FC00120",
++        "MSRValue": "0x83FC00120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5622,7 +5622,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_MISS.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x023C000120",
++        "MSRValue": "0x23C000120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5636,7 +5636,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_MISS.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00BC000120",
++        "MSRValue": "0xBC000120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5678,7 +5678,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_MISS_LOCAL_DRAM.HIT_O=
+THER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0804000120",
++        "MSRValue": "0x804000120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5692,7 +5692,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_MISS_LOCAL_DRAM.HIT_O=
+THER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0404000120",
++        "MSRValue": "0x404000120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5706,7 +5706,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_MISS_LOCAL_DRAM.NO_SN=
+OOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0104000120",
++        "MSRValue": "0x104000120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5720,7 +5720,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_MISS_LOCAL_DRAM.SNOOP=
+_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0204000120",
++        "MSRValue": "0x204000120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5734,7 +5734,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_MISS_LOCAL_DRAM.SNOOP=
+_MISS_OR_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0604000120",
++        "MSRValue": "0x604000120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5748,7 +5748,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_MISS_LOCAL_DRAM.SNOOP=
+_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0084000120",
++        "MSRValue": "0x84000120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5762,7 +5762,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_MISS_REMOTE_DRAM.SNOO=
+P_MISS_OR_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x063B800120",
++        "MSRValue": "0x63B800120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5804,7 +5804,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_MISS_REMOTE_HOP1_DRAM=
+.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0810000120",
++        "MSRValue": "0x810000120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5818,7 +5818,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_MISS_REMOTE_HOP1_DRAM=
+.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0410000120",
++        "MSRValue": "0x410000120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5832,7 +5832,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_MISS_REMOTE_HOP1_DRAM=
+.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0110000120",
++        "MSRValue": "0x110000120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5846,7 +5846,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_MISS_REMOTE_HOP1_DRAM=
+.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0210000120",
++        "MSRValue": "0x210000120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5860,7 +5860,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_PF_RFO.L3_MISS_REMOTE_HOP1_DRAM=
+.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0090000120",
++        "MSRValue": "0x90000120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5902,7 +5902,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_MISS.HIT_OTHER_CORE_FW=
+D",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083C0007F7",
++        "MSRValue": "0x83C0007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5916,7 +5916,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_MISS.HIT_OTHER_CORE_NO=
+_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x043C0007F7",
++        "MSRValue": "0x43C0007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5930,7 +5930,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_MISS.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x013C0007F7",
++        "MSRValue": "0x13C0007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5958,7 +5958,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_MISS.REMOTE_HIT_FORWAR=
+D",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083FC007F7",
++        "MSRValue": "0x83FC007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5972,7 +5972,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_MISS.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x023C0007F7",
++        "MSRValue": "0x23C0007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5986,7 +5986,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_MISS.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00BC0007F7",
++        "MSRValue": "0xBC0007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6028,7 +6028,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_MISS_LOCAL_DRAM.HIT_OT=
+HER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08040007F7",
++        "MSRValue": "0x8040007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6042,7 +6042,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_MISS_LOCAL_DRAM.HIT_OT=
+HER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04040007F7",
++        "MSRValue": "0x4040007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6056,7 +6056,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_MISS_LOCAL_DRAM.NO_SNO=
+OP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01040007F7",
++        "MSRValue": "0x1040007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6070,7 +6070,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_MISS_LOCAL_DRAM.SNOOP_=
+MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02040007F7",
++        "MSRValue": "0x2040007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6084,7 +6084,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_MISS_LOCAL_DRAM.SNOOP_=
+MISS_OR_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x06040007F7",
++        "MSRValue": "0x6040007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6098,7 +6098,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_MISS_LOCAL_DRAM.SNOOP_=
+NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00840007F7",
++        "MSRValue": "0x840007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6112,7 +6112,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_MISS_REMOTE_DRAM.SNOOP=
+_MISS_OR_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x063B8007F7",
++        "MSRValue": "0x63B8007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6154,7 +6154,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_MISS_REMOTE_HOP1_DRAM.=
+HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08100007F7",
++        "MSRValue": "0x8100007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6168,7 +6168,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_MISS_REMOTE_HOP1_DRAM.=
+HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04100007F7",
++        "MSRValue": "0x4100007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6182,7 +6182,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_MISS_REMOTE_HOP1_DRAM.=
+NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01100007F7",
++        "MSRValue": "0x1100007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6196,7 +6196,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_MISS_REMOTE_HOP1_DRAM.=
+SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02100007F7",
++        "MSRValue": "0x2100007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6210,7 +6210,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_MISS_REMOTE_HOP1_DRAM.=
+SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00900007F7",
++        "MSRValue": "0x900007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6252,7 +6252,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_MISS.HIT_OTHER_CORE_FWD"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083C000122",
++        "MSRValue": "0x83C000122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6266,7 +6266,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_MISS.HIT_OTHER_CORE_NO_F=
+WD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x043C000122",
++        "MSRValue": "0x43C000122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6280,7 +6280,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_MISS.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x013C000122",
++        "MSRValue": "0x13C000122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6308,7 +6308,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_MISS.REMOTE_HIT_FORWARD"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083FC00122",
++        "MSRValue": "0x83FC00122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6322,7 +6322,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_MISS.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x023C000122",
++        "MSRValue": "0x23C000122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6336,7 +6336,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_MISS.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00BC000122",
++        "MSRValue": "0xBC000122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6378,7 +6378,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_MISS_LOCAL_DRAM.HIT_OTHE=
+R_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0804000122",
++        "MSRValue": "0x804000122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6392,7 +6392,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_MISS_LOCAL_DRAM.HIT_OTHE=
+R_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0404000122",
++        "MSRValue": "0x404000122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6406,7 +6406,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_MISS_LOCAL_DRAM.NO_SNOOP=
+_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0104000122",
++        "MSRValue": "0x104000122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6420,7 +6420,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_MISS_LOCAL_DRAM.SNOOP_MI=
+SS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0204000122",
++        "MSRValue": "0x204000122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6434,7 +6434,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_MISS_LOCAL_DRAM.SNOOP_MI=
+SS_OR_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0604000122",
++        "MSRValue": "0x604000122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6448,7 +6448,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_MISS_LOCAL_DRAM.SNOOP_NO=
+NE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0084000122",
++        "MSRValue": "0x84000122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6462,7 +6462,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_MISS_REMOTE_DRAM.SNOOP_M=
+ISS_OR_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x063B800122",
++        "MSRValue": "0x63B800122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6504,7 +6504,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_MISS_REMOTE_HOP1_DRAM.HI=
+T_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0810000122",
++        "MSRValue": "0x810000122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6518,7 +6518,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_MISS_REMOTE_HOP1_DRAM.HI=
+T_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0410000122",
++        "MSRValue": "0x410000122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6532,7 +6532,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_MISS_REMOTE_HOP1_DRAM.NO=
+_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0110000122",
++        "MSRValue": "0x110000122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6546,7 +6546,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_MISS_REMOTE_HOP1_DRAM.SN=
+OOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0210000122",
++        "MSRValue": "0x210000122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6560,7 +6560,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_MISS_REMOTE_HOP1_DRAM.SN=
+OOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0090000122",
++        "MSRValue": "0x90000122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6602,7 +6602,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_MISS.HIT_OTHER_CO=
+RE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083C000004",
++        "MSRValue": "0x83C000004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6616,7 +6616,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_MISS.HIT_OTHER_CO=
+RE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x043C000004",
++        "MSRValue": "0x43C000004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6630,7 +6630,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_MISS.NO_SNOOP_NEE=
+DED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x013C000004",
++        "MSRValue": "0x13C000004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6658,7 +6658,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_MISS.REMOTE_HIT_F=
+ORWARD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083FC00004",
++        "MSRValue": "0x83FC00004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6672,7 +6672,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_MISS.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x023C000004",
++        "MSRValue": "0x23C000004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6686,7 +6686,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_MISS.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00BC000004",
++        "MSRValue": "0xBC000004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6728,7 +6728,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_MISS_LOCAL_DRAM.H=
+IT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0804000004",
++        "MSRValue": "0x804000004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6742,7 +6742,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_MISS_LOCAL_DRAM.H=
+IT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0404000004",
++        "MSRValue": "0x404000004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6756,7 +6756,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_MISS_LOCAL_DRAM.N=
+O_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0104000004",
++        "MSRValue": "0x104000004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6770,7 +6770,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_MISS_LOCAL_DRAM.S=
+NOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0204000004",
++        "MSRValue": "0x204000004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6784,7 +6784,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_MISS_LOCAL_DRAM.S=
+NOOP_MISS_OR_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0604000004",
++        "MSRValue": "0x604000004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6798,7 +6798,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_MISS_LOCAL_DRAM.S=
+NOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0084000004",
++        "MSRValue": "0x84000004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6812,7 +6812,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_MISS_REMOTE_DRAM.=
+SNOOP_MISS_OR_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x063B800004",
++        "MSRValue": "0x63B800004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6854,7 +6854,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_MISS_REMOTE_HOP1_=
+DRAM.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0810000004",
++        "MSRValue": "0x810000004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6868,7 +6868,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_MISS_REMOTE_HOP1_=
+DRAM.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0410000004",
++        "MSRValue": "0x410000004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6882,7 +6882,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_MISS_REMOTE_HOP1_=
+DRAM.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0110000004",
++        "MSRValue": "0x110000004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6896,7 +6896,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_MISS_REMOTE_HOP1_=
+DRAM.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0210000004",
++        "MSRValue": "0x210000004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6910,7 +6910,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_CODE_RD.L3_MISS_REMOTE_HOP1_=
+DRAM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0090000004",
++        "MSRValue": "0x90000004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6952,7 +6952,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_MISS.HIT_OTHER_CO=
+RE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083C000001",
++        "MSRValue": "0x83C000001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6966,7 +6966,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_MISS.HIT_OTHER_CO=
+RE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x043C000001",
++        "MSRValue": "0x43C000001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6980,7 +6980,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_MISS.NO_SNOOP_NEE=
+DED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x013C000001",
++        "MSRValue": "0x13C000001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7008,7 +7008,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_MISS.REMOTE_HIT_F=
+ORWARD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083FC00001",
++        "MSRValue": "0x83FC00001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7022,7 +7022,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_MISS.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x023C000001",
++        "MSRValue": "0x23C000001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7036,7 +7036,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_MISS.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00BC000001",
++        "MSRValue": "0xBC000001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7078,7 +7078,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_MISS_LOCAL_DRAM.H=
+IT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0804000001",
++        "MSRValue": "0x804000001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7092,7 +7092,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_MISS_LOCAL_DRAM.H=
+IT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0404000001",
++        "MSRValue": "0x404000001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7106,7 +7106,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_MISS_LOCAL_DRAM.N=
+O_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0104000001",
++        "MSRValue": "0x104000001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7120,7 +7120,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_MISS_LOCAL_DRAM.S=
+NOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0204000001",
++        "MSRValue": "0x204000001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7134,7 +7134,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_MISS_LOCAL_DRAM.S=
+NOOP_MISS_OR_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0604000001",
++        "MSRValue": "0x604000001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7148,7 +7148,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_MISS_LOCAL_DRAM.S=
+NOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0084000001",
++        "MSRValue": "0x84000001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7162,7 +7162,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_MISS_REMOTE_DRAM.=
+SNOOP_MISS_OR_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x063B800001",
++        "MSRValue": "0x63B800001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7204,7 +7204,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_MISS_REMOTE_HOP1_=
+DRAM.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0810000001",
++        "MSRValue": "0x810000001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7218,7 +7218,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_MISS_REMOTE_HOP1_=
+DRAM.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0410000001",
++        "MSRValue": "0x410000001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7232,7 +7232,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_MISS_REMOTE_HOP1_=
+DRAM.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0110000001",
++        "MSRValue": "0x110000001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7246,7 +7246,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_MISS_REMOTE_HOP1_=
+DRAM.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0210000001",
++        "MSRValue": "0x210000001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7260,7 +7260,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_DATA_RD.L3_MISS_REMOTE_HOP1_=
+DRAM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0090000001",
++        "MSRValue": "0x90000001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7302,7 +7302,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_MISS.HIT_OTHER_CORE_F=
+WD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083C000002",
++        "MSRValue": "0x83C000002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7316,7 +7316,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_MISS.HIT_OTHER_CORE_N=
+O_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x043C000002",
++        "MSRValue": "0x43C000002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7330,7 +7330,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_MISS.NO_SNOOP_NEEDED"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x013C000002",
++        "MSRValue": "0x13C000002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7358,7 +7358,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_MISS.REMOTE_HIT_FORWA=
+RD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083FC00002",
++        "MSRValue": "0x83FC00002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7372,7 +7372,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_MISS.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x023C000002",
++        "MSRValue": "0x23C000002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7386,7 +7386,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_MISS.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00BC000002",
++        "MSRValue": "0xBC000002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7428,7 +7428,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_MISS_LOCAL_DRAM.HIT_O=
+THER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0804000002",
++        "MSRValue": "0x804000002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7442,7 +7442,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_MISS_LOCAL_DRAM.HIT_O=
+THER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0404000002",
++        "MSRValue": "0x404000002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7456,7 +7456,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_MISS_LOCAL_DRAM.NO_SN=
+OOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0104000002",
++        "MSRValue": "0x104000002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7470,7 +7470,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_MISS_LOCAL_DRAM.SNOOP=
+_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0204000002",
++        "MSRValue": "0x204000002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7484,7 +7484,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_MISS_LOCAL_DRAM.SNOOP=
+_MISS_OR_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0604000002",
++        "MSRValue": "0x604000002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7498,7 +7498,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_MISS_LOCAL_DRAM.SNOOP=
+_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0084000002",
++        "MSRValue": "0x84000002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7512,7 +7512,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_MISS_REMOTE_DRAM.SNOO=
+P_MISS_OR_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x063B800002",
++        "MSRValue": "0x63B800002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7554,7 +7554,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_MISS_REMOTE_HOP1_DRAM=
+.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0810000002",
++        "MSRValue": "0x810000002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7568,7 +7568,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_MISS_REMOTE_HOP1_DRAM=
+.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0410000002",
++        "MSRValue": "0x410000002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7582,7 +7582,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_MISS_REMOTE_HOP1_DRAM=
+.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0110000002",
++        "MSRValue": "0x110000002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7596,7 +7596,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_MISS_REMOTE_HOP1_DRAM=
+.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0210000002",
++        "MSRValue": "0x210000002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7610,7 +7610,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.DEMAND_RFO.L3_MISS_REMOTE_HOP1_DRAM=
+.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0090000002",
++        "MSRValue": "0x90000002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7652,7 +7652,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_MISS.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083C008000",
++        "MSRValue": "0x83C008000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7666,7 +7666,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_MISS.HIT_OTHER_CORE_NO_FWD=
+",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x043C008000",
++        "MSRValue": "0x43C008000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7680,7 +7680,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_MISS.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x013C008000",
++        "MSRValue": "0x13C008000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7708,7 +7708,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_MISS.REMOTE_HIT_FORWARD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083FC08000",
++        "MSRValue": "0x83FC08000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7722,7 +7722,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_MISS.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x023C008000",
++        "MSRValue": "0x23C008000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7736,7 +7736,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_MISS.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00BC008000",
++        "MSRValue": "0xBC008000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7778,7 +7778,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_MISS_LOCAL_DRAM.HIT_OTHER_=
+CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0804008000",
++        "MSRValue": "0x804008000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7792,7 +7792,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_MISS_LOCAL_DRAM.HIT_OTHER_=
+CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0404008000",
++        "MSRValue": "0x404008000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7806,7 +7806,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_MISS_LOCAL_DRAM.NO_SNOOP_N=
+EEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0104008000",
++        "MSRValue": "0x104008000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7820,7 +7820,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_MISS_LOCAL_DRAM.SNOOP_MISS=
+",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0204008000",
++        "MSRValue": "0x204008000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7834,7 +7834,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_MISS_LOCAL_DRAM.SNOOP_MISS=
+_OR_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0604008000",
++        "MSRValue": "0x604008000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7848,7 +7848,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_MISS_LOCAL_DRAM.SNOOP_NONE=
+",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0084008000",
++        "MSRValue": "0x84008000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7862,7 +7862,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_MISS_REMOTE_DRAM.SNOOP_MIS=
+S_OR_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x063B808000",
++        "MSRValue": "0x63B808000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7904,7 +7904,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_MISS_REMOTE_HOP1_DRAM.HIT_=
+OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0810008000",
++        "MSRValue": "0x810008000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7918,7 +7918,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_MISS_REMOTE_HOP1_DRAM.HIT_=
+OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0410008000",
++        "MSRValue": "0x410008000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7932,7 +7932,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_MISS_REMOTE_HOP1_DRAM.NO_S=
+NOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0110008000",
++        "MSRValue": "0x110008000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7946,7 +7946,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_MISS_REMOTE_HOP1_DRAM.SNOO=
+P_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0210008000",
++        "MSRValue": "0x210008000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7960,7 +7960,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.OTHER.L3_MISS_REMOTE_HOP1_DRAM.SNOO=
+P_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0090008000",
++        "MSRValue": "0x90008000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8002,7 +8002,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_MISS.HIT_OTHER_COR=
+E_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083C000400",
++        "MSRValue": "0x83C000400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8016,7 +8016,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_MISS.HIT_OTHER_COR=
+E_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x043C000400",
++        "MSRValue": "0x43C000400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8030,7 +8030,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_MISS.NO_SNOOP_NEED=
+ED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x013C000400",
++        "MSRValue": "0x13C000400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8058,7 +8058,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_MISS.REMOTE_HIT_FO=
+RWARD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083FC00400",
++        "MSRValue": "0x83FC00400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8072,7 +8072,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_MISS.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x023C000400",
++        "MSRValue": "0x23C000400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8086,7 +8086,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_MISS.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00BC000400",
++        "MSRValue": "0xBC000400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8128,7 +8128,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_MISS_LOCAL_DRAM.HI=
+T_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0804000400",
++        "MSRValue": "0x804000400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8142,7 +8142,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_MISS_LOCAL_DRAM.HI=
+T_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0404000400",
++        "MSRValue": "0x404000400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8156,7 +8156,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_MISS_LOCAL_DRAM.NO=
+_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0104000400",
++        "MSRValue": "0x104000400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8170,7 +8170,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_MISS_LOCAL_DRAM.SN=
+OOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0204000400",
++        "MSRValue": "0x204000400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8184,7 +8184,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_MISS_LOCAL_DRAM.SN=
+OOP_MISS_OR_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0604000400",
++        "MSRValue": "0x604000400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8198,7 +8198,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_MISS_LOCAL_DRAM.SN=
+OOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0084000400",
++        "MSRValue": "0x84000400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8212,7 +8212,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_MISS_REMOTE_DRAM.S=
+NOOP_MISS_OR_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x063B800400",
++        "MSRValue": "0x63B800400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8254,7 +8254,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_MISS_REMOTE_HOP1_D=
+RAM.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0810000400",
++        "MSRValue": "0x810000400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8268,7 +8268,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_MISS_REMOTE_HOP1_D=
+RAM.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0410000400",
++        "MSRValue": "0x410000400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8282,7 +8282,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_MISS_REMOTE_HOP1_D=
+RAM.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0110000400",
++        "MSRValue": "0x110000400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8296,7 +8296,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_MISS_REMOTE_HOP1_D=
+RAM.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0210000400",
++        "MSRValue": "0x210000400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8310,7 +8310,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L1D_AND_SW.L3_MISS_REMOTE_HOP1_D=
+RAM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0090000400",
++        "MSRValue": "0x90000400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8352,7 +8352,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_MISS.HIT_OTHER_COR=
+E_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083C000010",
++        "MSRValue": "0x83C000010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8366,7 +8366,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_MISS.HIT_OTHER_COR=
+E_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x043C000010",
++        "MSRValue": "0x43C000010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8380,7 +8380,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_MISS.NO_SNOOP_NEED=
+ED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x013C000010",
++        "MSRValue": "0x13C000010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8408,7 +8408,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_MISS.REMOTE_HIT_FO=
+RWARD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083FC00010",
++        "MSRValue": "0x83FC00010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8422,7 +8422,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_MISS.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x023C000010",
++        "MSRValue": "0x23C000010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8436,7 +8436,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_MISS.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00BC000010",
++        "MSRValue": "0xBC000010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8478,7 +8478,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_MISS_LOCAL_DRAM.HI=
+T_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0804000010",
++        "MSRValue": "0x804000010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8492,7 +8492,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_MISS_LOCAL_DRAM.HI=
+T_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0404000010",
++        "MSRValue": "0x404000010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8506,7 +8506,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_MISS_LOCAL_DRAM.NO=
+_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0104000010",
++        "MSRValue": "0x104000010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8520,7 +8520,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_MISS_LOCAL_DRAM.SN=
+OOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0204000010",
++        "MSRValue": "0x204000010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8534,7 +8534,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_MISS_LOCAL_DRAM.SN=
+OOP_MISS_OR_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0604000010",
++        "MSRValue": "0x604000010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8548,7 +8548,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_MISS_LOCAL_DRAM.SN=
+OOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0084000010",
++        "MSRValue": "0x84000010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8562,7 +8562,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_MISS_REMOTE_DRAM.S=
+NOOP_MISS_OR_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x063B800010",
++        "MSRValue": "0x63B800010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8604,7 +8604,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_MISS_REMOTE_HOP1_D=
+RAM.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0810000010",
++        "MSRValue": "0x810000010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8618,7 +8618,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_MISS_REMOTE_HOP1_D=
+RAM.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0410000010",
++        "MSRValue": "0x410000010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8632,7 +8632,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_MISS_REMOTE_HOP1_D=
+RAM.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0110000010",
++        "MSRValue": "0x110000010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8646,7 +8646,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_MISS_REMOTE_HOP1_D=
+RAM.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0210000010",
++        "MSRValue": "0x210000010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8660,7 +8660,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_DATA_RD.L3_MISS_REMOTE_HOP1_D=
+RAM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0090000010",
++        "MSRValue": "0x90000010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8702,7 +8702,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_MISS.HIT_OTHER_CORE_FW=
+D",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083C000020",
++        "MSRValue": "0x83C000020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8716,7 +8716,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_MISS.HIT_OTHER_CORE_NO=
+_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x043C000020",
++        "MSRValue": "0x43C000020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8730,7 +8730,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_MISS.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x013C000020",
++        "MSRValue": "0x13C000020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8758,7 +8758,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_MISS.REMOTE_HIT_FORWAR=
+D",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083FC00020",
++        "MSRValue": "0x83FC00020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8772,7 +8772,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_MISS.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x023C000020",
++        "MSRValue": "0x23C000020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8786,7 +8786,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_MISS.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00BC000020",
++        "MSRValue": "0xBC000020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8828,7 +8828,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_MISS_LOCAL_DRAM.HIT_OT=
+HER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0804000020",
++        "MSRValue": "0x804000020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8842,7 +8842,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_MISS_LOCAL_DRAM.HIT_OT=
+HER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0404000020",
++        "MSRValue": "0x404000020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8856,7 +8856,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_MISS_LOCAL_DRAM.NO_SNO=
+OP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0104000020",
++        "MSRValue": "0x104000020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8870,7 +8870,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_MISS_LOCAL_DRAM.SNOOP_=
+MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0204000020",
++        "MSRValue": "0x204000020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8884,7 +8884,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_MISS_LOCAL_DRAM.SNOOP_=
+MISS_OR_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0604000020",
++        "MSRValue": "0x604000020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8898,7 +8898,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_MISS_LOCAL_DRAM.SNOOP_=
+NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0084000020",
++        "MSRValue": "0x84000020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8912,7 +8912,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_MISS_REMOTE_DRAM.SNOOP=
+_MISS_OR_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x063B800020",
++        "MSRValue": "0x63B800020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8954,7 +8954,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_MISS_REMOTE_HOP1_DRAM.=
+HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0810000020",
++        "MSRValue": "0x810000020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8968,7 +8968,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_MISS_REMOTE_HOP1_DRAM.=
+HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0410000020",
++        "MSRValue": "0x410000020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8982,7 +8982,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_MISS_REMOTE_HOP1_DRAM.=
+NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0110000020",
++        "MSRValue": "0x110000020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8996,7 +8996,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_MISS_REMOTE_HOP1_DRAM.=
+SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0210000020",
++        "MSRValue": "0x210000020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9010,7 +9010,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L2_RFO.L3_MISS_REMOTE_HOP1_DRAM.=
+SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0090000020",
++        "MSRValue": "0x90000020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9052,7 +9052,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_MISS.HIT_OTHER_COR=
+E_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083C000080",
++        "MSRValue": "0x83C000080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9066,7 +9066,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_MISS.HIT_OTHER_COR=
+E_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x043C000080",
++        "MSRValue": "0x43C000080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9080,7 +9080,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_MISS.NO_SNOOP_NEED=
+ED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x013C000080",
++        "MSRValue": "0x13C000080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9108,7 +9108,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_MISS.REMOTE_HIT_FO=
+RWARD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083FC00080",
++        "MSRValue": "0x83FC00080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9122,7 +9122,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_MISS.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x023C000080",
++        "MSRValue": "0x23C000080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9136,7 +9136,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_MISS.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00BC000080",
++        "MSRValue": "0xBC000080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9178,7 +9178,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_MISS_LOCAL_DRAM.HI=
+T_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0804000080",
++        "MSRValue": "0x804000080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9192,7 +9192,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_MISS_LOCAL_DRAM.HI=
+T_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0404000080",
++        "MSRValue": "0x404000080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9206,7 +9206,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_MISS_LOCAL_DRAM.NO=
+_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0104000080",
++        "MSRValue": "0x104000080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9220,7 +9220,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_MISS_LOCAL_DRAM.SN=
+OOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0204000080",
++        "MSRValue": "0x204000080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9234,7 +9234,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_MISS_LOCAL_DRAM.SN=
+OOP_MISS_OR_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0604000080",
++        "MSRValue": "0x604000080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9248,7 +9248,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_MISS_LOCAL_DRAM.SN=
+OOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0084000080",
++        "MSRValue": "0x84000080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9262,7 +9262,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_MISS_REMOTE_DRAM.S=
+NOOP_MISS_OR_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x063B800080",
++        "MSRValue": "0x63B800080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9304,7 +9304,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_MISS_REMOTE_HOP1_D=
+RAM.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0810000080",
++        "MSRValue": "0x810000080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9318,7 +9318,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_MISS_REMOTE_HOP1_D=
+RAM.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0410000080",
++        "MSRValue": "0x410000080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9332,7 +9332,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_MISS_REMOTE_HOP1_D=
+RAM.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0110000080",
++        "MSRValue": "0x110000080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9346,7 +9346,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_MISS_REMOTE_HOP1_D=
+RAM.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0210000080",
++        "MSRValue": "0x210000080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9360,7 +9360,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_DATA_RD.L3_MISS_REMOTE_HOP1_D=
+RAM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0090000080",
++        "MSRValue": "0x90000080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9402,7 +9402,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_MISS.HIT_OTHER_CORE_FW=
+D",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083C000100",
++        "MSRValue": "0x83C000100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9416,7 +9416,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_MISS.HIT_OTHER_CORE_NO=
+_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x043C000100",
++        "MSRValue": "0x43C000100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9430,7 +9430,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_MISS.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x013C000100",
++        "MSRValue": "0x13C000100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9458,7 +9458,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_MISS.REMOTE_HIT_FORWAR=
+D",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x083FC00100",
++        "MSRValue": "0x83FC00100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9472,7 +9472,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_MISS.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x023C000100",
++        "MSRValue": "0x23C000100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9486,7 +9486,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_MISS.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00BC000100",
++        "MSRValue": "0xBC000100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9528,7 +9528,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_MISS_LOCAL_DRAM.HIT_OT=
+HER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0804000100",
++        "MSRValue": "0x804000100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9542,7 +9542,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_MISS_LOCAL_DRAM.HIT_OT=
+HER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0404000100",
++        "MSRValue": "0x404000100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9556,7 +9556,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_MISS_LOCAL_DRAM.NO_SNO=
+OP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0104000100",
++        "MSRValue": "0x104000100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9570,7 +9570,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_MISS_LOCAL_DRAM.SNOOP_=
+MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0204000100",
++        "MSRValue": "0x204000100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9584,7 +9584,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_MISS_LOCAL_DRAM.SNOOP_=
+MISS_OR_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0604000100",
++        "MSRValue": "0x604000100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9598,7 +9598,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_MISS_LOCAL_DRAM.SNOOP_=
+NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0084000100",
++        "MSRValue": "0x84000100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9612,7 +9612,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_MISS_REMOTE_DRAM.SNOOP=
+_MISS_OR_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x063B800100",
++        "MSRValue": "0x63B800100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9654,7 +9654,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_MISS_REMOTE_HOP1_DRAM.=
+HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0810000100",
++        "MSRValue": "0x810000100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9668,7 +9668,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_MISS_REMOTE_HOP1_DRAM.=
+HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0410000100",
++        "MSRValue": "0x410000100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9682,7 +9682,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_MISS_REMOTE_HOP1_DRAM.=
+NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0110000100",
++        "MSRValue": "0x110000100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9696,7 +9696,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_MISS_REMOTE_HOP1_DRAM.=
+SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0210000100",
++        "MSRValue": "0x210000100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -9710,7 +9710,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_MISS_REMOTE_HOP1_DRAM.=
+SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0090000100",
++        "MSRValue": "0x90000100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+diff --git a/tools/perf/pmu-events/arch/x86/cascadelakex/other.json b/tools=
+/perf/pmu-events/arch/x86/cascadelakex/other.json
+index 2f111a22d81f..d8b145a7d303 100644
+--- a/tools/perf/pmu-events/arch/x86/cascadelakex/other.json
++++ b/tools/perf/pmu-events/arch/x86/cascadelakex/other.json
+@@ -76,7 +76,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.ANY_RESPONSE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0000010491",
++        "MSRValue": "0x10491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -115,7 +115,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_HIT.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08003C0491",
++        "MSRValue": "0x8003C0491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -128,7 +128,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_HIT.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04003C0491",
++        "MSRValue": "0x4003C0491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -141,7 +141,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_HIT.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01003C0491",
++        "MSRValue": "0x1003C0491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -154,7 +154,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_HIT.SNOOP_HIT_WITH_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08007C0491",
++        "MSRValue": "0x8007C0491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -167,7 +167,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_HIT.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02003C0491",
++        "MSRValue": "0x2003C0491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -180,7 +180,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_HIT.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00803C0491",
++        "MSRValue": "0x803C0491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -219,7 +219,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_HIT_E.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800080491",
++        "MSRValue": "0x800080491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -232,7 +232,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_HIT_E.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400080491",
++        "MSRValue": "0x400080491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -245,7 +245,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_HIT_E.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100080491",
++        "MSRValue": "0x100080491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -258,7 +258,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_HIT_E.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200080491",
++        "MSRValue": "0x200080491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -271,7 +271,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_HIT_E.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080080491",
++        "MSRValue": "0x80080491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -310,7 +310,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_HIT_F.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800200491",
++        "MSRValue": "0x800200491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -323,7 +323,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_HIT_F.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400200491",
++        "MSRValue": "0x400200491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -336,7 +336,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_HIT_F.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100200491",
++        "MSRValue": "0x100200491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -349,7 +349,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_HIT_F.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200200491",
++        "MSRValue": "0x200200491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -362,7 +362,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_HIT_F.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080200491",
++        "MSRValue": "0x80200491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -401,7 +401,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_HIT_M.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800040491",
++        "MSRValue": "0x800040491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -414,7 +414,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_HIT_M.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400040491",
++        "MSRValue": "0x400040491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -427,7 +427,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_HIT_M.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100040491",
++        "MSRValue": "0x100040491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -440,7 +440,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_HIT_M.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200040491",
++        "MSRValue": "0x200040491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -453,7 +453,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_HIT_M.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080040491",
++        "MSRValue": "0x80040491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -492,7 +492,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_HIT_S.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800100491",
++        "MSRValue": "0x800100491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -505,7 +505,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_HIT_S.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400100491",
++        "MSRValue": "0x400100491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -518,7 +518,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_HIT_S.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100100491",
++        "MSRValue": "0x100100491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -531,7 +531,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_HIT_S.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200100491",
++        "MSRValue": "0x200100491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -544,7 +544,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.L3_HIT_S.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080100491",
++        "MSRValue": "0x80100491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -570,7 +570,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.PMM_HIT_LOCAL_PMM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080400491",
++        "MSRValue": "0x80400491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -583,7 +583,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.PMM_HIT_LOCAL_PMM.SNOOP_NOT_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100400491",
++        "MSRValue": "0x100400491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -622,7 +622,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.SUPPLIER_NONE.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800020491",
++        "MSRValue": "0x800020491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -635,7 +635,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.SUPPLIER_NONE.HIT_OTHER_CORE_NO_FWD"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400020491",
++        "MSRValue": "0x400020491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -648,7 +648,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.SUPPLIER_NONE.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100020491",
++        "MSRValue": "0x100020491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -661,7 +661,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.SUPPLIER_NONE.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200020491",
++        "MSRValue": "0x200020491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -674,7 +674,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_DATA_RD.SUPPLIER_NONE.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080020491",
++        "MSRValue": "0x80020491",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -687,7 +687,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.ANY_RESPONSE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0000010490",
++        "MSRValue": "0x10490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -726,7 +726,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_HIT.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08003C0490",
++        "MSRValue": "0x8003C0490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -739,7 +739,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_HIT.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04003C0490",
++        "MSRValue": "0x4003C0490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -752,7 +752,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_HIT.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01003C0490",
++        "MSRValue": "0x1003C0490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -765,7 +765,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_HIT.SNOOP_HIT_WITH_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08007C0490",
++        "MSRValue": "0x8007C0490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -778,7 +778,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_HIT.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02003C0490",
++        "MSRValue": "0x2003C0490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -791,7 +791,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_HIT.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00803C0490",
++        "MSRValue": "0x803C0490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -830,7 +830,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_HIT_E.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800080490",
++        "MSRValue": "0x800080490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -843,7 +843,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_HIT_E.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400080490",
++        "MSRValue": "0x400080490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -856,7 +856,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_HIT_E.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100080490",
++        "MSRValue": "0x100080490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -869,7 +869,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_HIT_E.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200080490",
++        "MSRValue": "0x200080490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -882,7 +882,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_HIT_E.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080080490",
++        "MSRValue": "0x80080490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -921,7 +921,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_HIT_F.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800200490",
++        "MSRValue": "0x800200490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -934,7 +934,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_HIT_F.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400200490",
++        "MSRValue": "0x400200490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -947,7 +947,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_HIT_F.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100200490",
++        "MSRValue": "0x100200490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -960,7 +960,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_HIT_F.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200200490",
++        "MSRValue": "0x200200490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -973,7 +973,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_HIT_F.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080200490",
++        "MSRValue": "0x80200490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1012,7 +1012,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_HIT_M.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800040490",
++        "MSRValue": "0x800040490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1025,7 +1025,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_HIT_M.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400040490",
++        "MSRValue": "0x400040490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1038,7 +1038,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_HIT_M.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100040490",
++        "MSRValue": "0x100040490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1051,7 +1051,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_HIT_M.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200040490",
++        "MSRValue": "0x200040490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1064,7 +1064,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_HIT_M.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080040490",
++        "MSRValue": "0x80040490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1103,7 +1103,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_HIT_S.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800100490",
++        "MSRValue": "0x800100490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1116,7 +1116,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_HIT_S.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400100490",
++        "MSRValue": "0x400100490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1129,7 +1129,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_HIT_S.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100100490",
++        "MSRValue": "0x100100490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1142,7 +1142,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_HIT_S.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200100490",
++        "MSRValue": "0x200100490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1155,7 +1155,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.L3_HIT_S.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080100490",
++        "MSRValue": "0x80100490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1181,7 +1181,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.PMM_HIT_LOCAL_PMM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080400490",
++        "MSRValue": "0x80400490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1194,7 +1194,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.PMM_HIT_LOCAL_PMM.SNOOP_NOT_NEEDE=
+D",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100400490",
++        "MSRValue": "0x100400490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1233,7 +1233,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.SUPPLIER_NONE.HIT_OTHER_CORE_FWD"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800020490",
++        "MSRValue": "0x800020490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1246,7 +1246,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.SUPPLIER_NONE.HIT_OTHER_CORE_NO_F=
+WD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400020490",
++        "MSRValue": "0x400020490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1259,7 +1259,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.SUPPLIER_NONE.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100020490",
++        "MSRValue": "0x100020490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1272,7 +1272,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.SUPPLIER_NONE.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200020490",
++        "MSRValue": "0x200020490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1285,7 +1285,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_DATA_RD.SUPPLIER_NONE.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080020490",
++        "MSRValue": "0x80020490",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1298,7 +1298,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.ANY_RESPONSE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0000010120",
++        "MSRValue": "0x10120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1337,7 +1337,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_HIT.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08003C0120",
++        "MSRValue": "0x8003C0120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1350,7 +1350,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_HIT.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04003C0120",
++        "MSRValue": "0x4003C0120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1363,7 +1363,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_HIT.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01003C0120",
++        "MSRValue": "0x1003C0120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1376,7 +1376,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_HIT.SNOOP_HIT_WITH_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08007C0120",
++        "MSRValue": "0x8007C0120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1389,7 +1389,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_HIT.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02003C0120",
++        "MSRValue": "0x2003C0120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1402,7 +1402,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_HIT.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00803C0120",
++        "MSRValue": "0x803C0120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1441,7 +1441,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_HIT_E.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800080120",
++        "MSRValue": "0x800080120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1454,7 +1454,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_HIT_E.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400080120",
++        "MSRValue": "0x400080120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1467,7 +1467,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_HIT_E.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100080120",
++        "MSRValue": "0x100080120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1480,7 +1480,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_HIT_E.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200080120",
++        "MSRValue": "0x200080120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1493,7 +1493,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_HIT_E.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080080120",
++        "MSRValue": "0x80080120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1532,7 +1532,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_HIT_F.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800200120",
++        "MSRValue": "0x800200120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1545,7 +1545,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_HIT_F.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400200120",
++        "MSRValue": "0x400200120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1558,7 +1558,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_HIT_F.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100200120",
++        "MSRValue": "0x100200120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1571,7 +1571,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_HIT_F.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200200120",
++        "MSRValue": "0x200200120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1584,7 +1584,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_HIT_F.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080200120",
++        "MSRValue": "0x80200120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1623,7 +1623,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_HIT_M.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800040120",
++        "MSRValue": "0x800040120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1636,7 +1636,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_HIT_M.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400040120",
++        "MSRValue": "0x400040120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1649,7 +1649,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_HIT_M.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100040120",
++        "MSRValue": "0x100040120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1662,7 +1662,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_HIT_M.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200040120",
++        "MSRValue": "0x200040120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1675,7 +1675,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_HIT_M.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080040120",
++        "MSRValue": "0x80040120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1714,7 +1714,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_HIT_S.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800100120",
++        "MSRValue": "0x800100120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1727,7 +1727,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_HIT_S.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400100120",
++        "MSRValue": "0x400100120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1740,7 +1740,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_HIT_S.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100100120",
++        "MSRValue": "0x100100120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1753,7 +1753,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_HIT_S.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200100120",
++        "MSRValue": "0x200100120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1766,7 +1766,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.L3_HIT_S.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080100120",
++        "MSRValue": "0x80100120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1792,7 +1792,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.PMM_HIT_LOCAL_PMM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080400120",
++        "MSRValue": "0x80400120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1805,7 +1805,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.PMM_HIT_LOCAL_PMM.SNOOP_NOT_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100400120",
++        "MSRValue": "0x100400120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1844,7 +1844,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.SUPPLIER_NONE.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800020120",
++        "MSRValue": "0x800020120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1857,7 +1857,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.SUPPLIER_NONE.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400020120",
++        "MSRValue": "0x400020120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1870,7 +1870,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.SUPPLIER_NONE.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100020120",
++        "MSRValue": "0x100020120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1883,7 +1883,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.SUPPLIER_NONE.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200020120",
++        "MSRValue": "0x200020120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1896,7 +1896,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_PF_RFO.SUPPLIER_NONE.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080020120",
++        "MSRValue": "0x80020120",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1909,7 +1909,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.ANY_RESPONSE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00000107F7",
++        "MSRValue": "0x107F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1948,7 +1948,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_HIT.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08003C07F7",
++        "MSRValue": "0x8003C07F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1961,7 +1961,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_HIT.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04003C07F7",
++        "MSRValue": "0x4003C07F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1974,7 +1974,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_HIT.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01003C07F7",
++        "MSRValue": "0x1003C07F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -1987,7 +1987,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_HIT.SNOOP_HIT_WITH_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08007C07F7",
++        "MSRValue": "0x8007C07F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2000,7 +2000,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_HIT.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02003C07F7",
++        "MSRValue": "0x2003C07F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2013,7 +2013,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_HIT.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00803C07F7",
++        "MSRValue": "0x803C07F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2052,7 +2052,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_HIT_E.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08000807F7",
++        "MSRValue": "0x8000807F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2065,7 +2065,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_HIT_E.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04000807F7",
++        "MSRValue": "0x4000807F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2078,7 +2078,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_HIT_E.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01000807F7",
++        "MSRValue": "0x1000807F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2091,7 +2091,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_HIT_E.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02000807F7",
++        "MSRValue": "0x2000807F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2104,7 +2104,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_HIT_E.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00800807F7",
++        "MSRValue": "0x800807F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2143,7 +2143,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_HIT_F.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08002007F7",
++        "MSRValue": "0x8002007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2156,7 +2156,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_HIT_F.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04002007F7",
++        "MSRValue": "0x4002007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2169,7 +2169,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_HIT_F.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01002007F7",
++        "MSRValue": "0x1002007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2182,7 +2182,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_HIT_F.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02002007F7",
++        "MSRValue": "0x2002007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2195,7 +2195,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_HIT_F.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00802007F7",
++        "MSRValue": "0x802007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2234,7 +2234,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_HIT_M.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08000407F7",
++        "MSRValue": "0x8000407F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2247,7 +2247,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_HIT_M.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04000407F7",
++        "MSRValue": "0x4000407F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2260,7 +2260,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_HIT_M.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01000407F7",
++        "MSRValue": "0x1000407F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2273,7 +2273,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_HIT_M.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02000407F7",
++        "MSRValue": "0x2000407F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2286,7 +2286,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_HIT_M.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00800407F7",
++        "MSRValue": "0x800407F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2325,7 +2325,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_HIT_S.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08001007F7",
++        "MSRValue": "0x8001007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2338,7 +2338,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_HIT_S.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04001007F7",
++        "MSRValue": "0x4001007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2351,7 +2351,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_HIT_S.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01001007F7",
++        "MSRValue": "0x1001007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2364,7 +2364,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_HIT_S.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02001007F7",
++        "MSRValue": "0x2001007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2377,7 +2377,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.L3_HIT_S.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00801007F7",
++        "MSRValue": "0x801007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2403,7 +2403,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.PMM_HIT_LOCAL_PMM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00804007F7",
++        "MSRValue": "0x804007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2416,7 +2416,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.PMM_HIT_LOCAL_PMM.SNOOP_NOT_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01004007F7",
++        "MSRValue": "0x1004007F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2455,7 +2455,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.SUPPLIER_NONE.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08000207F7",
++        "MSRValue": "0x8000207F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2468,7 +2468,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.SUPPLIER_NONE.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04000207F7",
++        "MSRValue": "0x4000207F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2481,7 +2481,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.SUPPLIER_NONE.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01000207F7",
++        "MSRValue": "0x1000207F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2494,7 +2494,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.SUPPLIER_NONE.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02000207F7",
++        "MSRValue": "0x2000207F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2507,7 +2507,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_READS.SUPPLIER_NONE.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00800207F7",
++        "MSRValue": "0x800207F7",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2520,7 +2520,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.ANY_RESPONSE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0000010122",
++        "MSRValue": "0x10122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2559,7 +2559,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_HIT.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08003C0122",
++        "MSRValue": "0x8003C0122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2572,7 +2572,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_HIT.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04003C0122",
++        "MSRValue": "0x4003C0122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2585,7 +2585,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_HIT.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01003C0122",
++        "MSRValue": "0x1003C0122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2598,7 +2598,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_HIT.SNOOP_HIT_WITH_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08007C0122",
++        "MSRValue": "0x8007C0122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2611,7 +2611,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_HIT.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02003C0122",
++        "MSRValue": "0x2003C0122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2624,7 +2624,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_HIT.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00803C0122",
++        "MSRValue": "0x803C0122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2663,7 +2663,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_HIT_E.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800080122",
++        "MSRValue": "0x800080122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2676,7 +2676,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_HIT_E.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400080122",
++        "MSRValue": "0x400080122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2689,7 +2689,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_HIT_E.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100080122",
++        "MSRValue": "0x100080122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2702,7 +2702,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_HIT_E.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200080122",
++        "MSRValue": "0x200080122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2715,7 +2715,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_HIT_E.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080080122",
++        "MSRValue": "0x80080122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2754,7 +2754,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_HIT_F.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800200122",
++        "MSRValue": "0x800200122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2767,7 +2767,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_HIT_F.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400200122",
++        "MSRValue": "0x400200122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2780,7 +2780,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_HIT_F.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100200122",
++        "MSRValue": "0x100200122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2793,7 +2793,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_HIT_F.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200200122",
++        "MSRValue": "0x200200122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2806,7 +2806,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_HIT_F.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080200122",
++        "MSRValue": "0x80200122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2845,7 +2845,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_HIT_M.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800040122",
++        "MSRValue": "0x800040122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2858,7 +2858,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_HIT_M.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400040122",
++        "MSRValue": "0x400040122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2871,7 +2871,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_HIT_M.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100040122",
++        "MSRValue": "0x100040122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2884,7 +2884,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_HIT_M.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200040122",
++        "MSRValue": "0x200040122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2897,7 +2897,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_HIT_M.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080040122",
++        "MSRValue": "0x80040122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2936,7 +2936,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_HIT_S.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800100122",
++        "MSRValue": "0x800100122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2949,7 +2949,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_HIT_S.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400100122",
++        "MSRValue": "0x400100122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2962,7 +2962,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_HIT_S.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100100122",
++        "MSRValue": "0x100100122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2975,7 +2975,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_HIT_S.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200100122",
++        "MSRValue": "0x200100122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -2988,7 +2988,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.L3_HIT_S.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080100122",
++        "MSRValue": "0x80100122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3014,7 +3014,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.PMM_HIT_LOCAL_PMM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080400122",
++        "MSRValue": "0x80400122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3027,7 +3027,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.PMM_HIT_LOCAL_PMM.SNOOP_NOT_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100400122",
++        "MSRValue": "0x100400122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3066,7 +3066,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.SUPPLIER_NONE.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800020122",
++        "MSRValue": "0x800020122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3079,7 +3079,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.SUPPLIER_NONE.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400020122",
++        "MSRValue": "0x400020122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3092,7 +3092,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.SUPPLIER_NONE.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100020122",
++        "MSRValue": "0x100020122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3105,7 +3105,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.SUPPLIER_NONE.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200020122",
++        "MSRValue": "0x200020122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3118,7 +3118,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.ALL_RFO.SUPPLIER_NONE.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080020122",
++        "MSRValue": "0x80020122",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3131,7 +3131,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.ANY_RESPONSE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0000010004",
++        "MSRValue": "0x10004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3170,7 +3170,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_HIT.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08003C0004",
++        "MSRValue": "0x8003C0004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3183,7 +3183,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_HIT.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04003C0004",
++        "MSRValue": "0x4003C0004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3196,7 +3196,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_HIT.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01003C0004",
++        "MSRValue": "0x1003C0004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3209,7 +3209,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_HIT.SNOOP_HIT_WITH_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08007C0004",
++        "MSRValue": "0x8007C0004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3222,7 +3222,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_HIT.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02003C0004",
++        "MSRValue": "0x2003C0004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3235,7 +3235,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_HIT.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00803C0004",
++        "MSRValue": "0x803C0004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3274,7 +3274,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_HIT_E.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800080004",
++        "MSRValue": "0x800080004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3287,7 +3287,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_HIT_E.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400080004",
++        "MSRValue": "0x400080004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3300,7 +3300,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_HIT_E.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100080004",
++        "MSRValue": "0x100080004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3313,7 +3313,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_HIT_E.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200080004",
++        "MSRValue": "0x200080004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3326,7 +3326,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_HIT_E.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080080004",
++        "MSRValue": "0x80080004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3365,7 +3365,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_HIT_F.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800200004",
++        "MSRValue": "0x800200004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3378,7 +3378,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_HIT_F.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400200004",
++        "MSRValue": "0x400200004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3391,7 +3391,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_HIT_F.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100200004",
++        "MSRValue": "0x100200004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3404,7 +3404,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_HIT_F.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200200004",
++        "MSRValue": "0x200200004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3417,7 +3417,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_HIT_F.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080200004",
++        "MSRValue": "0x80200004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3456,7 +3456,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_HIT_M.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800040004",
++        "MSRValue": "0x800040004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3469,7 +3469,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_HIT_M.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400040004",
++        "MSRValue": "0x400040004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3482,7 +3482,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_HIT_M.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100040004",
++        "MSRValue": "0x100040004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3495,7 +3495,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_HIT_M.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200040004",
++        "MSRValue": "0x200040004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3508,7 +3508,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_HIT_M.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080040004",
++        "MSRValue": "0x80040004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3547,7 +3547,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_HIT_S.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800100004",
++        "MSRValue": "0x800100004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3560,7 +3560,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_HIT_S.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400100004",
++        "MSRValue": "0x400100004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3573,7 +3573,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_HIT_S.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100100004",
++        "MSRValue": "0x100100004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3586,7 +3586,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_HIT_S.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200100004",
++        "MSRValue": "0x200100004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3599,7 +3599,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.L3_HIT_S.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080100004",
++        "MSRValue": "0x80100004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3625,7 +3625,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.PMM_HIT_LOCAL_PMM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080400004",
++        "MSRValue": "0x80400004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3638,7 +3638,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.PMM_HIT_LOCAL_PMM.SNOOP_NOT_NEEDE=
+D",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100400004",
++        "MSRValue": "0x100400004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3677,7 +3677,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.SUPPLIER_NONE.HIT_OTHER_CORE_FWD"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800020004",
++        "MSRValue": "0x800020004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3690,7 +3690,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.SUPPLIER_NONE.HIT_OTHER_CORE_NO_F=
+WD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400020004",
++        "MSRValue": "0x400020004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3703,7 +3703,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.SUPPLIER_NONE.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100020004",
++        "MSRValue": "0x100020004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3716,7 +3716,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.SUPPLIER_NONE.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200020004",
++        "MSRValue": "0x200020004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3729,7 +3729,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_CODE_RD.SUPPLIER_NONE.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080020004",
++        "MSRValue": "0x80020004",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3742,7 +3742,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.ANY_RESPONSE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0000010001",
++        "MSRValue": "0x10001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3781,7 +3781,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_HIT.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08003C0001",
++        "MSRValue": "0x8003C0001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3794,7 +3794,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_HIT.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04003C0001",
++        "MSRValue": "0x4003C0001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3807,7 +3807,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_HIT.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01003C0001",
++        "MSRValue": "0x1003C0001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3820,7 +3820,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_HIT.SNOOP_HIT_WITH_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08007C0001",
++        "MSRValue": "0x8007C0001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3833,7 +3833,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_HIT.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02003C0001",
++        "MSRValue": "0x2003C0001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3846,7 +3846,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_HIT.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00803C0001",
++        "MSRValue": "0x803C0001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3885,7 +3885,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_HIT_E.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800080001",
++        "MSRValue": "0x800080001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3898,7 +3898,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_HIT_E.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400080001",
++        "MSRValue": "0x400080001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3911,7 +3911,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_HIT_E.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100080001",
++        "MSRValue": "0x100080001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3924,7 +3924,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_HIT_E.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200080001",
++        "MSRValue": "0x200080001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3937,7 +3937,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_HIT_E.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080080001",
++        "MSRValue": "0x80080001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3976,7 +3976,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_HIT_F.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800200001",
++        "MSRValue": "0x800200001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -3989,7 +3989,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_HIT_F.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400200001",
++        "MSRValue": "0x400200001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4002,7 +4002,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_HIT_F.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100200001",
++        "MSRValue": "0x100200001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4015,7 +4015,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_HIT_F.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200200001",
++        "MSRValue": "0x200200001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4028,7 +4028,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_HIT_F.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080200001",
++        "MSRValue": "0x80200001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4067,7 +4067,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_HIT_M.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800040001",
++        "MSRValue": "0x800040001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4080,7 +4080,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_HIT_M.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400040001",
++        "MSRValue": "0x400040001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4093,7 +4093,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_HIT_M.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100040001",
++        "MSRValue": "0x100040001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4106,7 +4106,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_HIT_M.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200040001",
++        "MSRValue": "0x200040001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4119,7 +4119,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_HIT_M.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080040001",
++        "MSRValue": "0x80040001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4158,7 +4158,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_HIT_S.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800100001",
++        "MSRValue": "0x800100001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4171,7 +4171,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_HIT_S.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400100001",
++        "MSRValue": "0x400100001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4184,7 +4184,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_HIT_S.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100100001",
++        "MSRValue": "0x100100001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4197,7 +4197,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_HIT_S.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200100001",
++        "MSRValue": "0x200100001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4210,7 +4210,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.L3_HIT_S.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080100001",
++        "MSRValue": "0x80100001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4236,7 +4236,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.PMM_HIT_LOCAL_PMM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080400001",
++        "MSRValue": "0x80400001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4249,7 +4249,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.PMM_HIT_LOCAL_PMM.SNOOP_NOT_NEEDE=
+D",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100400001",
++        "MSRValue": "0x100400001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4288,7 +4288,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.SUPPLIER_NONE.HIT_OTHER_CORE_FWD"=
+,
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800020001",
++        "MSRValue": "0x800020001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4301,7 +4301,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.SUPPLIER_NONE.HIT_OTHER_CORE_NO_F=
+WD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400020001",
++        "MSRValue": "0x400020001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4314,7 +4314,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.SUPPLIER_NONE.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100020001",
++        "MSRValue": "0x100020001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4327,7 +4327,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.SUPPLIER_NONE.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200020001",
++        "MSRValue": "0x200020001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4340,7 +4340,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_DATA_RD.SUPPLIER_NONE.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080020001",
++        "MSRValue": "0x80020001",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4353,7 +4353,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.ANY_RESPONSE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0000010002",
++        "MSRValue": "0x10002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4392,7 +4392,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_HIT.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08003C0002",
++        "MSRValue": "0x8003C0002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4405,7 +4405,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_HIT.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04003C0002",
++        "MSRValue": "0x4003C0002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4418,7 +4418,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_HIT.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01003C0002",
++        "MSRValue": "0x1003C0002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4431,7 +4431,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_HIT.SNOOP_HIT_WITH_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08007C0002",
++        "MSRValue": "0x8007C0002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4444,7 +4444,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_HIT.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02003C0002",
++        "MSRValue": "0x2003C0002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4457,7 +4457,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_HIT.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00803C0002",
++        "MSRValue": "0x803C0002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4496,7 +4496,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_HIT_E.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800080002",
++        "MSRValue": "0x800080002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4509,7 +4509,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_HIT_E.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400080002",
++        "MSRValue": "0x400080002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4522,7 +4522,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_HIT_E.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100080002",
++        "MSRValue": "0x100080002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4535,7 +4535,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_HIT_E.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200080002",
++        "MSRValue": "0x200080002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4548,7 +4548,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_HIT_E.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080080002",
++        "MSRValue": "0x80080002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4587,7 +4587,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_HIT_F.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800200002",
++        "MSRValue": "0x800200002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4600,7 +4600,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_HIT_F.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400200002",
++        "MSRValue": "0x400200002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4613,7 +4613,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_HIT_F.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100200002",
++        "MSRValue": "0x100200002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4626,7 +4626,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_HIT_F.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200200002",
++        "MSRValue": "0x200200002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4639,7 +4639,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_HIT_F.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080200002",
++        "MSRValue": "0x80200002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4678,7 +4678,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_HIT_M.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800040002",
++        "MSRValue": "0x800040002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4691,7 +4691,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_HIT_M.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400040002",
++        "MSRValue": "0x400040002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4704,7 +4704,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_HIT_M.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100040002",
++        "MSRValue": "0x100040002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4717,7 +4717,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_HIT_M.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200040002",
++        "MSRValue": "0x200040002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4730,7 +4730,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_HIT_M.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080040002",
++        "MSRValue": "0x80040002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4769,7 +4769,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_HIT_S.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800100002",
++        "MSRValue": "0x800100002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4782,7 +4782,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_HIT_S.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400100002",
++        "MSRValue": "0x400100002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4795,7 +4795,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_HIT_S.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100100002",
++        "MSRValue": "0x100100002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4808,7 +4808,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_HIT_S.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200100002",
++        "MSRValue": "0x200100002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4821,7 +4821,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.L3_HIT_S.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080100002",
++        "MSRValue": "0x80100002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4847,7 +4847,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.PMM_HIT_LOCAL_PMM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080400002",
++        "MSRValue": "0x80400002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4860,7 +4860,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.PMM_HIT_LOCAL_PMM.SNOOP_NOT_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100400002",
++        "MSRValue": "0x100400002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4899,7 +4899,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.SUPPLIER_NONE.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800020002",
++        "MSRValue": "0x800020002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4912,7 +4912,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.SUPPLIER_NONE.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400020002",
++        "MSRValue": "0x400020002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4925,7 +4925,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.SUPPLIER_NONE.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100020002",
++        "MSRValue": "0x100020002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4938,7 +4938,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.SUPPLIER_NONE.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200020002",
++        "MSRValue": "0x200020002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4951,7 +4951,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.DEMAND_RFO.SUPPLIER_NONE.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080020002",
++        "MSRValue": "0x80020002",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -4964,7 +4964,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.ANY_RESPONSE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0000018000",
++        "MSRValue": "0x18000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5003,7 +5003,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_HIT.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08003C8000",
++        "MSRValue": "0x8003C8000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5016,7 +5016,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_HIT.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04003C8000",
++        "MSRValue": "0x4003C8000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5029,7 +5029,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_HIT.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01003C8000",
++        "MSRValue": "0x1003C8000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5042,7 +5042,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_HIT.SNOOP_HIT_WITH_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08007C8000",
++        "MSRValue": "0x8007C8000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5055,7 +5055,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_HIT.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02003C8000",
++        "MSRValue": "0x2003C8000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5068,7 +5068,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_HIT.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00803C8000",
++        "MSRValue": "0x803C8000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5107,7 +5107,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_HIT_E.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800088000",
++        "MSRValue": "0x800088000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5120,7 +5120,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_HIT_E.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400088000",
++        "MSRValue": "0x400088000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5133,7 +5133,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_HIT_E.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100088000",
++        "MSRValue": "0x100088000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5146,7 +5146,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_HIT_E.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200088000",
++        "MSRValue": "0x200088000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5159,7 +5159,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_HIT_E.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080088000",
++        "MSRValue": "0x80088000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5198,7 +5198,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_HIT_F.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800208000",
++        "MSRValue": "0x800208000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5211,7 +5211,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_HIT_F.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400208000",
++        "MSRValue": "0x400208000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5224,7 +5224,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_HIT_F.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100208000",
++        "MSRValue": "0x100208000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5237,7 +5237,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_HIT_F.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200208000",
++        "MSRValue": "0x200208000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5250,7 +5250,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_HIT_F.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080208000",
++        "MSRValue": "0x80208000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5289,7 +5289,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_HIT_M.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800048000",
++        "MSRValue": "0x800048000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5302,7 +5302,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_HIT_M.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400048000",
++        "MSRValue": "0x400048000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5315,7 +5315,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_HIT_M.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100048000",
++        "MSRValue": "0x100048000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5328,7 +5328,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_HIT_M.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200048000",
++        "MSRValue": "0x200048000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5341,7 +5341,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_HIT_M.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080048000",
++        "MSRValue": "0x80048000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5380,7 +5380,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_HIT_S.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800108000",
++        "MSRValue": "0x800108000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5393,7 +5393,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_HIT_S.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400108000",
++        "MSRValue": "0x400108000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5406,7 +5406,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_HIT_S.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100108000",
++        "MSRValue": "0x100108000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5419,7 +5419,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_HIT_S.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200108000",
++        "MSRValue": "0x200108000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5432,7 +5432,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.L3_HIT_S.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080108000",
++        "MSRValue": "0x80108000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5458,7 +5458,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.PMM_HIT_LOCAL_PMM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080408000",
++        "MSRValue": "0x80408000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5471,7 +5471,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.PMM_HIT_LOCAL_PMM.SNOOP_NOT_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100408000",
++        "MSRValue": "0x100408000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5510,7 +5510,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.SUPPLIER_NONE.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800028000",
++        "MSRValue": "0x800028000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5523,7 +5523,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.SUPPLIER_NONE.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400028000",
++        "MSRValue": "0x400028000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5536,7 +5536,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.SUPPLIER_NONE.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100028000",
++        "MSRValue": "0x100028000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5549,7 +5549,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.SUPPLIER_NONE.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200028000",
++        "MSRValue": "0x200028000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5562,7 +5562,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.OTHER.SUPPLIER_NONE.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080028000",
++        "MSRValue": "0x80028000",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5575,7 +5575,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.ANY_RESPONSE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0000010400",
++        "MSRValue": "0x10400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5614,7 +5614,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_HIT.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08003C0400",
++        "MSRValue": "0x8003C0400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5627,7 +5627,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_HIT.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04003C0400",
++        "MSRValue": "0x4003C0400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5640,7 +5640,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_HIT.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01003C0400",
++        "MSRValue": "0x1003C0400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5653,7 +5653,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_HIT.SNOOP_HIT_WITH_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08007C0400",
++        "MSRValue": "0x8007C0400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5666,7 +5666,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_HIT.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02003C0400",
++        "MSRValue": "0x2003C0400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5679,7 +5679,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_HIT.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00803C0400",
++        "MSRValue": "0x803C0400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5718,7 +5718,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_HIT_E.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800080400",
++        "MSRValue": "0x800080400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5731,7 +5731,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_HIT_E.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400080400",
++        "MSRValue": "0x400080400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5744,7 +5744,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_HIT_E.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100080400",
++        "MSRValue": "0x100080400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5757,7 +5757,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_HIT_E.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200080400",
++        "MSRValue": "0x200080400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5770,7 +5770,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_HIT_E.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080080400",
++        "MSRValue": "0x80080400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5809,7 +5809,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_HIT_F.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800200400",
++        "MSRValue": "0x800200400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5822,7 +5822,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_HIT_F.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400200400",
++        "MSRValue": "0x400200400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5835,7 +5835,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_HIT_F.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100200400",
++        "MSRValue": "0x100200400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5848,7 +5848,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_HIT_F.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200200400",
++        "MSRValue": "0x200200400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5861,7 +5861,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_HIT_F.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080200400",
++        "MSRValue": "0x80200400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5900,7 +5900,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_HIT_M.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800040400",
++        "MSRValue": "0x800040400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5913,7 +5913,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_HIT_M.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400040400",
++        "MSRValue": "0x400040400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5926,7 +5926,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_HIT_M.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100040400",
++        "MSRValue": "0x100040400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5939,7 +5939,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_HIT_M.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200040400",
++        "MSRValue": "0x200040400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5952,7 +5952,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_HIT_M.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080040400",
++        "MSRValue": "0x80040400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -5991,7 +5991,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_HIT_S.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800100400",
++        "MSRValue": "0x800100400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6004,7 +6004,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_HIT_S.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400100400",
++        "MSRValue": "0x400100400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6017,7 +6017,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_HIT_S.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100100400",
++        "MSRValue": "0x100100400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6030,7 +6030,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_HIT_S.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200100400",
++        "MSRValue": "0x200100400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6043,7 +6043,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.L3_HIT_S.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080100400",
++        "MSRValue": "0x80100400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6069,7 +6069,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.PMM_HIT_LOCAL_PMM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080400400",
++        "MSRValue": "0x80400400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6082,7 +6082,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.PMM_HIT_LOCAL_PMM.SNOOP_NOT_NEEDED=
+",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100400400",
++        "MSRValue": "0x100400400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6121,7 +6121,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.SUPPLIER_NONE.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800020400",
++        "MSRValue": "0x800020400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6134,7 +6134,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.SUPPLIER_NONE.HIT_OTHER_CORE_NO_FW=
+D",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400020400",
++        "MSRValue": "0x400020400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6147,7 +6147,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.SUPPLIER_NONE.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100020400",
++        "MSRValue": "0x100020400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6160,7 +6160,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.SUPPLIER_NONE.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200020400",
++        "MSRValue": "0x200020400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6173,7 +6173,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L1D_AND_SW.SUPPLIER_NONE.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080020400",
++        "MSRValue": "0x80020400",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6186,7 +6186,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.ANY_RESPONSE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0000010010",
++        "MSRValue": "0x10010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6225,7 +6225,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_HIT.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08003C0010",
++        "MSRValue": "0x8003C0010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6238,7 +6238,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_HIT.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04003C0010",
++        "MSRValue": "0x4003C0010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6251,7 +6251,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_HIT.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01003C0010",
++        "MSRValue": "0x1003C0010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6264,7 +6264,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_HIT.SNOOP_HIT_WITH_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08007C0010",
++        "MSRValue": "0x8007C0010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6277,7 +6277,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_HIT.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02003C0010",
++        "MSRValue": "0x2003C0010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6290,7 +6290,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_HIT.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00803C0010",
++        "MSRValue": "0x803C0010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6329,7 +6329,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_HIT_E.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800080010",
++        "MSRValue": "0x800080010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6342,7 +6342,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_HIT_E.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400080010",
++        "MSRValue": "0x400080010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6355,7 +6355,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_HIT_E.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100080010",
++        "MSRValue": "0x100080010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6368,7 +6368,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_HIT_E.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200080010",
++        "MSRValue": "0x200080010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6381,7 +6381,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_HIT_E.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080080010",
++        "MSRValue": "0x80080010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6420,7 +6420,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_HIT_F.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800200010",
++        "MSRValue": "0x800200010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6433,7 +6433,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_HIT_F.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400200010",
++        "MSRValue": "0x400200010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6446,7 +6446,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_HIT_F.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100200010",
++        "MSRValue": "0x100200010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6459,7 +6459,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_HIT_F.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200200010",
++        "MSRValue": "0x200200010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6472,7 +6472,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_HIT_F.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080200010",
++        "MSRValue": "0x80200010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6511,7 +6511,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_HIT_M.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800040010",
++        "MSRValue": "0x800040010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6524,7 +6524,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_HIT_M.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400040010",
++        "MSRValue": "0x400040010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6537,7 +6537,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_HIT_M.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100040010",
++        "MSRValue": "0x100040010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6550,7 +6550,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_HIT_M.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200040010",
++        "MSRValue": "0x200040010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6563,7 +6563,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_HIT_M.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080040010",
++        "MSRValue": "0x80040010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6602,7 +6602,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_HIT_S.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800100010",
++        "MSRValue": "0x800100010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6615,7 +6615,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_HIT_S.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400100010",
++        "MSRValue": "0x400100010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6628,7 +6628,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_HIT_S.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100100010",
++        "MSRValue": "0x100100010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6641,7 +6641,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_HIT_S.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200100010",
++        "MSRValue": "0x200100010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6654,7 +6654,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.L3_HIT_S.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080100010",
++        "MSRValue": "0x80100010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6680,7 +6680,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.PMM_HIT_LOCAL_PMM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080400010",
++        "MSRValue": "0x80400010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6693,7 +6693,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.PMM_HIT_LOCAL_PMM.SNOOP_NOT_NEEDED=
+",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100400010",
++        "MSRValue": "0x100400010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6732,7 +6732,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.SUPPLIER_NONE.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800020010",
++        "MSRValue": "0x800020010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6745,7 +6745,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.SUPPLIER_NONE.HIT_OTHER_CORE_NO_FW=
+D",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400020010",
++        "MSRValue": "0x400020010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6758,7 +6758,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.SUPPLIER_NONE.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100020010",
++        "MSRValue": "0x100020010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6771,7 +6771,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.SUPPLIER_NONE.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200020010",
++        "MSRValue": "0x200020010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6784,7 +6784,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_DATA_RD.SUPPLIER_NONE.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080020010",
++        "MSRValue": "0x80020010",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6797,7 +6797,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.ANY_RESPONSE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0000010020",
++        "MSRValue": "0x10020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6836,7 +6836,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_HIT.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08003C0020",
++        "MSRValue": "0x8003C0020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6849,7 +6849,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_HIT.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04003C0020",
++        "MSRValue": "0x4003C0020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6862,7 +6862,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_HIT.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01003C0020",
++        "MSRValue": "0x1003C0020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6875,7 +6875,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_HIT.SNOOP_HIT_WITH_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08007C0020",
++        "MSRValue": "0x8007C0020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6888,7 +6888,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_HIT.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02003C0020",
++        "MSRValue": "0x2003C0020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6901,7 +6901,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_HIT.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00803C0020",
++        "MSRValue": "0x803C0020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6940,7 +6940,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_HIT_E.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800080020",
++        "MSRValue": "0x800080020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6953,7 +6953,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_HIT_E.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400080020",
++        "MSRValue": "0x400080020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6966,7 +6966,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_HIT_E.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100080020",
++        "MSRValue": "0x100080020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6979,7 +6979,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_HIT_E.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200080020",
++        "MSRValue": "0x200080020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -6992,7 +6992,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_HIT_E.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080080020",
++        "MSRValue": "0x80080020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7031,7 +7031,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_HIT_F.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800200020",
++        "MSRValue": "0x800200020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7044,7 +7044,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_HIT_F.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400200020",
++        "MSRValue": "0x400200020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7057,7 +7057,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_HIT_F.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100200020",
++        "MSRValue": "0x100200020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7070,7 +7070,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_HIT_F.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200200020",
++        "MSRValue": "0x200200020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7083,7 +7083,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_HIT_F.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080200020",
++        "MSRValue": "0x80200020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7122,7 +7122,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_HIT_M.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800040020",
++        "MSRValue": "0x800040020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7135,7 +7135,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_HIT_M.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400040020",
++        "MSRValue": "0x400040020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7148,7 +7148,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_HIT_M.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100040020",
++        "MSRValue": "0x100040020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7161,7 +7161,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_HIT_M.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200040020",
++        "MSRValue": "0x200040020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7174,7 +7174,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_HIT_M.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080040020",
++        "MSRValue": "0x80040020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7213,7 +7213,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_HIT_S.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800100020",
++        "MSRValue": "0x800100020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7226,7 +7226,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_HIT_S.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400100020",
++        "MSRValue": "0x400100020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7239,7 +7239,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_HIT_S.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100100020",
++        "MSRValue": "0x100100020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7252,7 +7252,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_HIT_S.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200100020",
++        "MSRValue": "0x200100020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7265,7 +7265,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.L3_HIT_S.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080100020",
++        "MSRValue": "0x80100020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7291,7 +7291,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.PMM_HIT_LOCAL_PMM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080400020",
++        "MSRValue": "0x80400020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7304,7 +7304,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.PMM_HIT_LOCAL_PMM.SNOOP_NOT_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100400020",
++        "MSRValue": "0x100400020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7343,7 +7343,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.SUPPLIER_NONE.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800020020",
++        "MSRValue": "0x800020020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7356,7 +7356,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.SUPPLIER_NONE.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400020020",
++        "MSRValue": "0x400020020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7369,7 +7369,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.SUPPLIER_NONE.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100020020",
++        "MSRValue": "0x100020020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7382,7 +7382,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.SUPPLIER_NONE.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200020020",
++        "MSRValue": "0x200020020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7395,7 +7395,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L2_RFO.SUPPLIER_NONE.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080020020",
++        "MSRValue": "0x80020020",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7408,7 +7408,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.ANY_RESPONSE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0000010080",
++        "MSRValue": "0x10080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7447,7 +7447,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_HIT.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08003C0080",
++        "MSRValue": "0x8003C0080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7460,7 +7460,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_HIT.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04003C0080",
++        "MSRValue": "0x4003C0080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7473,7 +7473,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_HIT.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01003C0080",
++        "MSRValue": "0x1003C0080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7486,7 +7486,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_HIT.SNOOP_HIT_WITH_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08007C0080",
++        "MSRValue": "0x8007C0080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7499,7 +7499,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_HIT.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02003C0080",
++        "MSRValue": "0x2003C0080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7512,7 +7512,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_HIT.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00803C0080",
++        "MSRValue": "0x803C0080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7551,7 +7551,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_HIT_E.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800080080",
++        "MSRValue": "0x800080080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7564,7 +7564,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_HIT_E.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400080080",
++        "MSRValue": "0x400080080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7577,7 +7577,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_HIT_E.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100080080",
++        "MSRValue": "0x100080080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7590,7 +7590,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_HIT_E.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200080080",
++        "MSRValue": "0x200080080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7603,7 +7603,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_HIT_E.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080080080",
++        "MSRValue": "0x80080080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7642,7 +7642,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_HIT_F.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800200080",
++        "MSRValue": "0x800200080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7655,7 +7655,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_HIT_F.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400200080",
++        "MSRValue": "0x400200080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7668,7 +7668,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_HIT_F.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100200080",
++        "MSRValue": "0x100200080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7681,7 +7681,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_HIT_F.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200200080",
++        "MSRValue": "0x200200080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7694,7 +7694,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_HIT_F.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080200080",
++        "MSRValue": "0x80200080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7733,7 +7733,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_HIT_M.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800040080",
++        "MSRValue": "0x800040080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7746,7 +7746,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_HIT_M.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400040080",
++        "MSRValue": "0x400040080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7759,7 +7759,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_HIT_M.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100040080",
++        "MSRValue": "0x100040080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7772,7 +7772,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_HIT_M.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200040080",
++        "MSRValue": "0x200040080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7785,7 +7785,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_HIT_M.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080040080",
++        "MSRValue": "0x80040080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7824,7 +7824,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_HIT_S.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800100080",
++        "MSRValue": "0x800100080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7837,7 +7837,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_HIT_S.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400100080",
++        "MSRValue": "0x400100080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7850,7 +7850,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_HIT_S.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100100080",
++        "MSRValue": "0x100100080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7863,7 +7863,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_HIT_S.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200100080",
++        "MSRValue": "0x200100080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7876,7 +7876,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.L3_HIT_S.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080100080",
++        "MSRValue": "0x80100080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7902,7 +7902,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.PMM_HIT_LOCAL_PMM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080400080",
++        "MSRValue": "0x80400080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7915,7 +7915,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.PMM_HIT_LOCAL_PMM.SNOOP_NOT_NEEDED=
+",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100400080",
++        "MSRValue": "0x100400080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7954,7 +7954,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.SUPPLIER_NONE.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800020080",
++        "MSRValue": "0x800020080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7967,7 +7967,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.SUPPLIER_NONE.HIT_OTHER_CORE_NO_FW=
+D",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400020080",
++        "MSRValue": "0x400020080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7980,7 +7980,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.SUPPLIER_NONE.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100020080",
++        "MSRValue": "0x100020080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -7993,7 +7993,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.SUPPLIER_NONE.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200020080",
++        "MSRValue": "0x200020080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8006,7 +8006,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_DATA_RD.SUPPLIER_NONE.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080020080",
++        "MSRValue": "0x80020080",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8019,7 +8019,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.ANY_RESPONSE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0000010100",
++        "MSRValue": "0x10100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8058,7 +8058,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_HIT.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08003C0100",
++        "MSRValue": "0x8003C0100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8071,7 +8071,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_HIT.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x04003C0100",
++        "MSRValue": "0x4003C0100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8084,7 +8084,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_HIT.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x01003C0100",
++        "MSRValue": "0x1003C0100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8097,7 +8097,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_HIT.SNOOP_HIT_WITH_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x08007C0100",
++        "MSRValue": "0x8007C0100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8110,7 +8110,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_HIT.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x02003C0100",
++        "MSRValue": "0x2003C0100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8123,7 +8123,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_HIT.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x00803C0100",
++        "MSRValue": "0x803C0100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8162,7 +8162,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_HIT_E.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800080100",
++        "MSRValue": "0x800080100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8175,7 +8175,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_HIT_E.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400080100",
++        "MSRValue": "0x400080100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8188,7 +8188,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_HIT_E.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100080100",
++        "MSRValue": "0x100080100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8201,7 +8201,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_HIT_E.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200080100",
++        "MSRValue": "0x200080100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8214,7 +8214,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_HIT_E.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080080100",
++        "MSRValue": "0x80080100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8253,7 +8253,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_HIT_F.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800200100",
++        "MSRValue": "0x800200100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8266,7 +8266,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_HIT_F.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400200100",
++        "MSRValue": "0x400200100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8279,7 +8279,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_HIT_F.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100200100",
++        "MSRValue": "0x100200100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8292,7 +8292,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_HIT_F.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200200100",
++        "MSRValue": "0x200200100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8305,7 +8305,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_HIT_F.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080200100",
++        "MSRValue": "0x80200100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8344,7 +8344,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_HIT_M.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800040100",
++        "MSRValue": "0x800040100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8357,7 +8357,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_HIT_M.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400040100",
++        "MSRValue": "0x400040100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8370,7 +8370,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_HIT_M.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100040100",
++        "MSRValue": "0x100040100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8383,7 +8383,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_HIT_M.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200040100",
++        "MSRValue": "0x200040100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8396,7 +8396,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_HIT_M.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080040100",
++        "MSRValue": "0x80040100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8435,7 +8435,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_HIT_S.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800100100",
++        "MSRValue": "0x800100100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8448,7 +8448,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_HIT_S.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400100100",
++        "MSRValue": "0x400100100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8461,7 +8461,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_HIT_S.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100100100",
++        "MSRValue": "0x100100100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8474,7 +8474,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_HIT_S.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200100100",
++        "MSRValue": "0x200100100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8487,7 +8487,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.L3_HIT_S.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080100100",
++        "MSRValue": "0x80100100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8513,7 +8513,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.PMM_HIT_LOCAL_PMM.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080400100",
++        "MSRValue": "0x80400100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8526,7 +8526,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.PMM_HIT_LOCAL_PMM.SNOOP_NOT_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100400100",
++        "MSRValue": "0x100400100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8565,7 +8565,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.SUPPLIER_NONE.HIT_OTHER_CORE_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0800020100",
++        "MSRValue": "0x800020100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8578,7 +8578,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.SUPPLIER_NONE.HIT_OTHER_CORE_NO_FWD",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0400020100",
++        "MSRValue": "0x400020100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8591,7 +8591,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.SUPPLIER_NONE.NO_SNOOP_NEEDED",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0100020100",
++        "MSRValue": "0x100020100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8604,7 +8604,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.SUPPLIER_NONE.SNOOP_MISS",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0200020100",
++        "MSRValue": "0x200020100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+@@ -8617,7 +8617,7 @@
+         "EventCode": "0xB7, 0xBB",
+         "EventName": "OCR.PF_L3_RFO.SUPPLIER_NONE.SNOOP_NONE",
+         "MSRIndex": "0x1a6,0x1a7",
+-        "MSRValue": "0x0080020100",
++        "MSRValue": "0x80020100",
+         "Offcore": "1",
+         "PublicDescription": "Offcore response can be programmed only with=
+ a specific pair of event select and counter MSR, and with specific event c=
+odes and predefine mask bit value in a dedicated MSR to specify attributes =
+of the offcore transaction.",
+         "SampleAfterValue": "100003",
+diff --git a/tools/perf/pmu-events/arch/x86/cascadelakex/pipeline.json b/to=
+ols/perf/pmu-events/arch/x86/cascadelakex/pipeline.json
+index ca5748120666..12eabae3e224 100644
+--- a/tools/perf/pmu-events/arch/x86/cascadelakex/pipeline.json
++++ b/tools/perf/pmu-events/arch/x86/cascadelakex/pipeline.json
+@@ -435,6 +435,17 @@
+         "PublicDescription": "Counts the number of instructions (EOMs) ret=
+ired. Counting covers macro-fused instructions individually (that is, incre=
+ments by two).",
+         "SampleAfterValue": "2000003"
+     },
++    {
++        "BriefDescription": "Number of all retired NOP instructions.",
++        "Counter": "0,1,2,3",
++        "CounterHTOff": "0,1,2,3,4,5,6,7",
++        "Errata": "SKL091, SKL044",
++        "EventCode": "0xC0",
++        "EventName": "INST_RETIRED.NOP",
++        "PEBS": "1",
++        "SampleAfterValue": "2000003",
++        "UMask": "0x2"
++    },
+     {
+         "BriefDescription": "Precise instruction retired event with HW to =
+reduce effect of PEBS shadow in IP distribution",
+         "Counter": "1",
+diff --git a/tools/perf/pmu-events/arch/x86/cascadelakex/uncore-other.json =
+b/tools/perf/pmu-events/arch/x86/cascadelakex/uncore-other.json
+index 3be09986ce8b..7f1cf4d8f0fa 100644
+--- a/tools/perf/pmu-events/arch/x86/cascadelakex/uncore-other.json
++++ b/tools/perf/pmu-events/arch/x86/cascadelakex/uncore-other.json
+@@ -558,6 +558,18 @@
+         "PublicDescription": "Counts clockticks of the 1GHz trafiic contro=
+ller clock in the IIO unit.",
+         "Unit": "IIO"
+     },
++    {
++        "BriefDescription": "PCIe Completion Buffer Inserts of completions=
+ with data: Part 0-3",
++        "Counter": "0,1,2,3",
++        "EventCode": "0xC2",
++        "EventName": "UNC_IIO_COMP_BUF_INSERTS.CMPD.ALL_PARTS",
++        "FCMask": "0x4",
++        "PerPkg": "1",
++        "PortMask": "0x0f",
++        "PublicDescription": "PCIe Completion Buffer Inserts of completion=
+s with data: Part 0-3",
++        "UMask": "0x03",
++        "Unit": "IIO"
++    },
+     {
+         "BriefDescription": "PCIe Completion Buffer Inserts of completions=
+ with data: Part 0",
+         "Counter": "0,1,2,3",
+@@ -606,6 +618,17 @@
+         "UMask": "0x03",
+         "Unit": "IIO"
+     },
++    {
++        "BriefDescription": "PCIe Completion Buffer occupancy of completio=
+ns with data: Part 0-3",
++        "Counter": "2,3",
++        "EventCode": "0xD5",
++        "EventName": "UNC_IIO_COMP_BUF_OCCUPANCY.CMPD.ALL_PARTS",
++        "FCMask": "0x04",
++        "PerPkg": "1",
++        "PublicDescription": "PCIe Completion Buffer occupancy of completi=
+ons with data: Part 0-3",
++        "UMask": "0x0f",
++        "Unit": "IIO"
++    },
+     {
+         "BriefDescription": "PCIe Completion Buffer occupancy of completio=
+ns with data: Part 0",
+         "Counter": "2,3",
+--=20
+2.35.0.rc2.247.g8bbb082509-goog
+
