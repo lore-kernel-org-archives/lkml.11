@@ -2,187 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 189C8C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 18:34:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8154BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 18:35:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235396AbiBASeQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 13:34:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54294 "EHLO
+        id S241803AbiBASfX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 13:35:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233694AbiBASeO (ORCPT
+        with ESMTP id S233694AbiBASfW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 13:34:14 -0500
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9900C061714;
-        Tue,  1 Feb 2022 10:34:13 -0800 (PST)
-Received: by mail-wr1-x42a.google.com with SMTP id u15so33769189wrt.3;
-        Tue, 01 Feb 2022 10:34:13 -0800 (PST)
+        Tue, 1 Feb 2022 13:35:22 -0500
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B1C8C061714;
+        Tue,  1 Feb 2022 10:35:22 -0800 (PST)
+Received: by mail-pg1-x52a.google.com with SMTP id e9so16126114pgb.3;
+        Tue, 01 Feb 2022 10:35:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=sCvk2JEkTN7cJ4ViA/+Q1mWtijvqc6HlgVsE2fUttPE=;
-        b=f9KQw0SsHC3XwbxZLFi5HTOVXULq8GAA1T7SheswJwe3Uh7T4s0oHTCBJ20O/+5/c0
-         FENox8mAvJOm99Z1qV/+bR2axUNOfR68w/KjC7ClaWJIkwjtsW5vq71YHkz8AIsFzr+T
-         cnzHsdUIwLH2eoQeln95eAHirPnE1Q9gbvOZG6DVwusrD38a47+n8RBqroFuywu59U9u
-         iw/ME37+LwcIGcWpEBQnXM8PMGhX9exRPQYtq/32fa93yKENBWWy8h+JT4ATH0Hjtk8v
-         19aIdSj/wpyMXDWZVr9FoyhtpxfPo6g6sIbNVklpmsQyXuQZV4IIQgKxOVVNp3iP810H
-         W4nw==
+        bh=Pz4b+3hAzSNvbeySYsUx19b9eBiW1i8lIctlQ7uzXAg=;
+        b=eUP+P7e2hUdpYsLP3G9fGpdBbMh7sB3G9ATGmOgGcpVIBMPT51kzL8J6WQBwKx7sKk
+         SVvRNLwRUOVggbE4J5cD9kH/EWDu04w/eWbgIgXCJPmSLocpjuwuL9f6dxSNvZKl9zY7
+         LHoZS/zQ+G44gpOT7BuAUfHh2oI+dmzTPqNLA9pU+aYHsXdkC20mL7nj/TYdvi4fBq1o
+         WwUuXw90Rg7gHWeLE3x5KJtEocbVkXO4jQ5eRGnGytyMBwo5I+J97TtEux6ig91umBae
+         kCF4i+j32YK3fLkmHN4kEU+wX7tLhOdLAc2a4T9w5cxONdp624GWBa2U3A7hCmFUchIg
+         KZ4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=sCvk2JEkTN7cJ4ViA/+Q1mWtijvqc6HlgVsE2fUttPE=;
-        b=sIauA3kl8RUNihqT9TaM4PYCMsI6lmASZPZgU+ICrU9KvKNB7IWVCUSSSSrFRwvb0s
-         u67ONImFi3FNcITCBuLuOVoIKuxJpTP9jaNfYLhDvvtOclGYeH0rikGOfmudJ/+kgF1w
-         Y8V2lU3b0hGHUIk0piqDFE6eU+VoO2+0DFAaZWqr50WMeRnllOgROlJyhHqCQrzdqqQ0
-         hCPdtxVpe3OYMDKeVCoXbV5DxVZVwEk2+uvofTJcyFr0QaLeZQBuiPgbYK0no0DKjYiZ
-         M69D+zAvc1pqEw6bjrS88GSicvz4nKytw2QTKEh/YM0x+sT0Yg9sJoZjlQ76T3BqJeLZ
-         oebQ==
-X-Gm-Message-State: AOAM533X4C1o91BxPWf+zySNqtLkHckHAB0YK2PtgtH3mkjZcnKIHSnz
-        oEANCT0i1pfc59PS2dogEB4=
-X-Google-Smtp-Source: ABdhPJxBKiYspzokfHzLalKSOyfp5oCM2yFNJiRRUv2fby6NHl0LPyRTYyGimtWMvaAdY7iHePaqKw==
-X-Received: by 2002:adf:ef88:: with SMTP id d8mr21442184wro.419.1643740452368;
-        Tue, 01 Feb 2022 10:34:12 -0800 (PST)
-Received: from kista.localdomain (cpe-86-58-32-107.static.triera.net. [86.58.32.107])
-        by smtp.gmail.com with ESMTPSA id x13sm15307236wru.28.2022.02.01.10.34.11
+        bh=Pz4b+3hAzSNvbeySYsUx19b9eBiW1i8lIctlQ7uzXAg=;
+        b=LXS1fhETbcdhPK28S617X5GT9eH6a7xF4edMqhtheg44lJ7Com56D7bR3Zo+i4NtAm
+         YfPaKaYKMf2kgQuQFeHJCnyK/0qTGyGTPhSbGy3vVKErt0G11jB+AtG0ExRwcShUVxl8
+         tikG/9XwVM08DA+vXreBS915H3qKqbNzHI3a0tAyPUFDi/FVjS0WUcsmaq3C76Di097D
+         pbUSTc7WKul33qYjkfLbvVE2TQiZW1JsbcNzHlCPBvce/FhQL7sQR8BIizxHWEX5tL0K
+         2lfYGDGokVyJPSs7WUA8dB6gxTJCR1V7Nl1HZGqlTi7UCtWLRo9jIukCPfmFe2JR6Igg
+         nSaw==
+X-Gm-Message-State: AOAM5317nUPqt02q7MxrGDy20qBdb1N3kKBnbVXeHmPGwVeJA4znDo/L
+        n88iEekeic8kLKsEC9IMU61SvIXtDj4=
+X-Google-Smtp-Source: ABdhPJwHNocghgY7wqhxp8332XY4hVlzmVW5zO7Aj/MN+AM0ddZEfsY+BxF6uQJixXS/r7Znuoa5Pw==
+X-Received: by 2002:a63:2a86:: with SMTP id q128mr22276483pgq.552.1643740521406;
+        Tue, 01 Feb 2022 10:35:21 -0800 (PST)
+Received: from athina.mtv.corp.google.com ([2620:15c:211:200:a654:25ee:f962:92ca])
+        by smtp.gmail.com with ESMTPSA id q8sm3815687pfl.143.2022.02.01.10.35.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Feb 2022 10:34:11 -0800 (PST)
-From:   Jernej Skrabec <jernej.skrabec@gmail.com>
-To:     mripard@kernel.org, paul.kocialkowski@bootlin.com
-Cc:     mchehab@kernel.org, wens@csie.org, linux-media@vger.kernel.org,
-        linux-staging@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org,
-        Jernej Skrabec <jernej.skrabec@gmail.com>
-Subject: [PATCH] media: cedrus: Add watchdog for job completion
-Date:   Tue,  1 Feb 2022 19:33:24 +0100
-Message-Id: <20220201183324.493542-1-jernej.skrabec@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 01 Feb 2022 10:35:20 -0800 (PST)
+From:   =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <zenczykowski@gmail.com>
+To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        BPF Mailing List <bpf@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: [PATCH bpf-next] RFC: bpf hashmap - improve iteration in the presence of concurrent delete operations
+Date:   Tue,  1 Feb 2022 10:35:14 -0800
+Message-Id: <20220201183514.3235495-1-zenczykowski@gmail.com>
+X-Mailer: git-send-email 2.35.0.rc2.247.g8bbb082509-goog
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, if job is not completed for whatever reason, userspace
-application can hang on ioctl and thus become unkillable.
+From: Maciej Żenczykowski <maze@google.com>
 
-In order to prevent that, implement watchdog, which will complete job
-after 2 seconds with error state.
+by resuming from the bucket the key would be in if it still existed
 
-Concept is borrowed from hantro driver.
+Note: AFAICT this an API change that would require some sort of guard...
 
-Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+bpf map iteration was added all the way back in v3.18-rc4-939-g0f8e4bd8a1fc
+but behaviour of find first key with NULL was only done in v4.11-rc7-2042-g8fe45924387b
+(before that you'd get EFAULT)
+
+this means previously find first key was done by calling with a non existing key
+(AFAICT this was hoping to get lucky, since if your non existing key actually existed,
+it wouldn't actually iterate right, since you couldn't guarantee your magic value was
+the first one)
+
+ie. do we need a BPF_MAP_GET_NEXT_KEY2 or a sysctl? some other approach?
+
+Not-Signed-off-by-Yet: Maciej Żenczykowski <maze@google.com>
 ---
- drivers/staging/media/sunxi/cedrus/cedrus.c   |  2 ++
- drivers/staging/media/sunxi/cedrus/cedrus.h   |  3 +++
- .../staging/media/sunxi/cedrus/cedrus_dec.c   |  4 +++
- .../staging/media/sunxi/cedrus/cedrus_hw.c    | 25 +++++++++++++++++++
- .../staging/media/sunxi/cedrus/cedrus_hw.h    |  2 ++
- 5 files changed, 36 insertions(+)
+ kernel/bpf/hashtab.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/staging/media/sunxi/cedrus/cedrus.c b/drivers/staging/media/sunxi/cedrus/cedrus.c
-index 4a4b714b0f26..68b3dcdb5df3 100644
---- a/drivers/staging/media/sunxi/cedrus/cedrus.c
-+++ b/drivers/staging/media/sunxi/cedrus/cedrus.c
-@@ -439,6 +439,8 @@ static int cedrus_probe(struct platform_device *pdev)
+diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
+index d29af9988f37..0d61a9a54279 100644
+--- a/kernel/bpf/hashtab.c
++++ b/kernel/bpf/hashtab.c
+@@ -780,7 +780,7 @@ static int htab_map_get_next_key(struct bpf_map *map, void *key, void *next_key)
+ 	key_size = map->key_size;
  
- 	mutex_init(&dev->dev_mutex);
+ 	if (!key)
+-		goto find_first_elem;
++		goto find_first_elem_this_bucket;
  
-+	INIT_DELAYED_WORK(&dev->watchdog_work, cedrus_watchdog);
-+
- 	ret = v4l2_device_register(&pdev->dev, &dev->v4l2_dev);
- 	if (ret) {
- 		dev_err(&pdev->dev, "Failed to register V4L2 device\n");
-diff --git a/drivers/staging/media/sunxi/cedrus/cedrus.h b/drivers/staging/media/sunxi/cedrus/cedrus.h
-index c345f2984041..3bc094eb497f 100644
---- a/drivers/staging/media/sunxi/cedrus/cedrus.h
-+++ b/drivers/staging/media/sunxi/cedrus/cedrus.h
-@@ -24,6 +24,7 @@
+ 	hash = htab_map_hash(key, key_size, htab->hashrnd);
  
- #include <linux/iopoll.h>
- #include <linux/platform_device.h>
-+#include <linux/workqueue.h>
+@@ -790,7 +790,7 @@ static int htab_map_get_next_key(struct bpf_map *map, void *key, void *next_key)
+ 	l = lookup_nulls_elem_raw(head, hash, key, key_size, htab->n_buckets);
  
- #define CEDRUS_NAME			"cedrus"
+ 	if (!l)
+-		goto find_first_elem;
++		goto find_first_elem_next_bucket;
  
-@@ -194,6 +195,8 @@ struct cedrus_dev {
- 	struct reset_control	*rstc;
+ 	/* key was found, get next key in the same bucket */
+ 	next_l = hlist_nulls_entry_safe(rcu_dereference_raw(hlist_nulls_next_rcu(&l->hash_node)),
+@@ -802,11 +802,12 @@ static int htab_map_get_next_key(struct bpf_map *map, void *key, void *next_key)
+ 		return 0;
+ 	}
  
- 	unsigned int		capabilities;
-+
-+	struct delayed_work	watchdog_work;
- };
++find_first_elem_next_bucket:
+ 	/* no more elements in this hash list, go to the next bucket */
+ 	i = hash & (htab->n_buckets - 1);
+ 	i++;
  
- extern struct cedrus_dec_ops cedrus_dec_ops_mpeg2;
-diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_dec.c b/drivers/staging/media/sunxi/cedrus/cedrus_dec.c
-index a16c1422558f..9c7200299465 100644
---- a/drivers/staging/media/sunxi/cedrus/cedrus_dec.c
-+++ b/drivers/staging/media/sunxi/cedrus/cedrus_dec.c
-@@ -97,4 +97,8 @@ void cedrus_device_run(void *priv)
- 		v4l2_ctrl_request_complete(src_req, &ctx->hdl);
- 
- 	dev->dec_ops[ctx->current_codec]->trigger(ctx);
-+
-+	/* Start the watchdog timer. */
-+	schedule_delayed_work(&dev->watchdog_work,
-+			      msecs_to_jiffies(2000));
- }
-diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_hw.c b/drivers/staging/media/sunxi/cedrus/cedrus_hw.c
-index 2d7663726467..a6470a89851e 100644
---- a/drivers/staging/media/sunxi/cedrus/cedrus_hw.c
-+++ b/drivers/staging/media/sunxi/cedrus/cedrus_hw.c
-@@ -118,6 +118,13 @@ static irqreturn_t cedrus_irq(int irq, void *data)
- 	enum vb2_buffer_state state;
- 	enum cedrus_irq_status status;
- 
-+	/*
-+	 * If cancel_delayed_work returns false it means watchdog already
-+	 * executed and finished the job.
-+	 */
-+	if (!cancel_delayed_work(&dev->watchdog_work))
-+		return IRQ_HANDLED;
-+
- 	ctx = v4l2_m2m_get_curr_priv(dev->m2m_dev);
- 	if (!ctx) {
- 		v4l2_err(&dev->v4l2_dev,
-@@ -143,6 +150,24 @@ static irqreturn_t cedrus_irq(int irq, void *data)
- 	return IRQ_HANDLED;
- }
- 
-+void cedrus_watchdog(struct work_struct *work)
-+{
-+	struct cedrus_dev *dev;
-+	struct cedrus_ctx *ctx;
-+
-+	dev = container_of(to_delayed_work(work),
-+			   struct cedrus_dev, watchdog_work);
-+
-+	ctx = v4l2_m2m_get_curr_priv(dev->m2m_dev);
-+	if (!ctx)
-+		return;
-+
-+	v4l2_err(&dev->v4l2_dev, "frame processing timed out!\n");
-+	reset_control_reset(dev->rstc);
-+	v4l2_m2m_buf_done_and_job_finish(ctx->dev->m2m_dev, ctx->fh.m2m_ctx,
-+					 VB2_BUF_STATE_ERROR);
-+}
-+
- int cedrus_hw_suspend(struct device *device)
- {
- 	struct cedrus_dev *dev = dev_get_drvdata(device);
-diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_hw.h b/drivers/staging/media/sunxi/cedrus/cedrus_hw.h
-index 45f641f0bfa2..7c92f00e36da 100644
---- a/drivers/staging/media/sunxi/cedrus/cedrus_hw.h
-+++ b/drivers/staging/media/sunxi/cedrus/cedrus_hw.h
-@@ -28,4 +28,6 @@ int cedrus_hw_resume(struct device *device);
- int cedrus_hw_probe(struct cedrus_dev *dev);
- void cedrus_hw_remove(struct cedrus_dev *dev);
- 
-+void cedrus_watchdog(struct work_struct *work);
-+
- #endif
+-find_first_elem:
++find_first_elem_this_bucket:
+ 	/* iterate over buckets */
+ 	for (; i < htab->n_buckets; i++) {
+ 		head = select_bucket(htab, i);
 -- 
-2.35.1
+2.35.0.rc2.247.g8bbb082509-goog
 
