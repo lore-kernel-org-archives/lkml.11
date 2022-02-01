@@ -2,116 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E2F9C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 20:32:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CB5BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 20:33:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238863AbiBAUc7 convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 15:32:59 -0500
-Received: from albireo.enyo.de ([37.24.231.21]:54248 "EHLO albireo.enyo.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234508AbiBAUc5 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 15:32:57 -0500
-Received: from [172.17.203.2] (port=56927 helo=deneb.enyo.de)
-        by albireo.enyo.de ([172.17.140.2]) with esmtps (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        id 1nEzpc-00HFx1-5m; Tue, 01 Feb 2022 20:32:52 +0000
-Received: from fw by deneb.enyo.de with local (Exim 4.94.2)
-        (envelope-from <fw@deneb.enyo.de>)
-        id 1nEzpb-000PPY-Ti; Tue, 01 Feb 2022 21:32:51 +0100
-From:   Florian Weimer <fw@deneb.enyo.de>
-To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        paulmck <paulmck@kernel.org>, Boqun Feng <boqun.feng@gmail.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Paul Turner <pjt@google.com>,
-        linux-api <linux-api@vger.kernel.org>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        David Laight <David.Laight@ACULAB.COM>,
-        carlos <carlos@redhat.com>, Peter Oskolkov <posk@posk.io>
-Subject: Re: [RFC PATCH 2/3] rseq: extend struct rseq with per thread group
- vcpu id
-References: <20220201192540.10439-1-mathieu.desnoyers@efficios.com>
-        <20220201192540.10439-2-mathieu.desnoyers@efficios.com>
-        <87bkzqz75q.fsf@mid.deneb.enyo.de>
-        <1075473571.25688.1643746930751.JavaMail.zimbra@efficios.com>
-Date:   Tue, 01 Feb 2022 21:32:51 +0100
-In-Reply-To: <1075473571.25688.1643746930751.JavaMail.zimbra@efficios.com>
-        (Mathieu Desnoyers's message of "Tue, 1 Feb 2022 15:22:10 -0500
-        (EST)")
-Message-ID: <87sft2xr7w.fsf@mid.deneb.enyo.de>
+        id S238439AbiBAUde (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 15:33:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53874 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238396AbiBAUd1 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 1 Feb 2022 15:33:27 -0500
+Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99212C06173B
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Feb 2022 12:33:26 -0800 (PST)
+Received: by mail-il1-x12f.google.com with SMTP id y17so15327422ilm.1
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Feb 2022 12:33:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=O6G+WcjnWmWZaQhRnWSHvUr/fYsky3pk6F/savisetw=;
+        b=S6YIuMY5Fm+oaiJY6rmrKKmVpoAYSiLE5Lme8sQjjSbjQd8T6WxRJ2kprv62ZTZQX8
+         FD/7SdvBXJvC6ab4i/9fZL+PW+Smfo2jcOMolENHyjl5Mc7NAIZWa1SrGLoMFrZuROr4
+         isR50HKiwMKGNoKKH3nZ8ywESgfVQ3B03ZivzYh5syhf5305yZ1/9Gb7KvV30i3hhXD8
+         F8+20ed5Y9cwN8jjAc4pcmuKRSPXos9l2BCaSdX3yNiL7ipjVkjCFV2Fdp5FIqVJUHdK
+         j6rfWoVjbKBJp4d+0zrsnj1/Bg+d+80dv8NYAbuLv4/CUjCmiulGE6VqBILiy6Q402Eu
+         9Kfw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=O6G+WcjnWmWZaQhRnWSHvUr/fYsky3pk6F/savisetw=;
+        b=F3p5nkgQs9ZHfYdpbq1hheR0pcs6EPqxbuVIkrimWxoIGiZkHs/wyhxFuDF9/ZhXU6
+         DdAEQkuBSG3byeDf2OVmpw2cp8uHOSLrQ96nIVYf8DvQb6keT1TINQDD+aju122sEXo4
+         wTx7dB7yzuebsfnSjyxjJj9Aut450VEPC+327V5N8Rnl6Z7Fio6QIUnwJJxx+8yz7PX4
+         hDIsX8BvSe3tPM1GrLu0SSy1Nerk+k/5STDBAiM+HZCFuKWLwejLldeksZ7xekWcoVfl
+         vLM3AoqIbRERfaDSa8tibWQINm7Phv2eIo422jX2KkzYcMwIglCqZCv0x03L7D5dshUW
+         BdWQ==
+X-Gm-Message-State: AOAM532WGsRgF9XQp0xPWnNZ/iJ7DzJI3jbWeGXnCQOjtGgZ1yxMTG0Z
+        5gj6d67E0a6dtqq+vY/giQC9+4Czyupae6b5d9ZEAg==
+X-Google-Smtp-Source: ABdhPJxt5BhITP52pxY1SzyuFggap4azRQscz98h3E+b2+lwZLStdiP5LIkCCJzoMpGE/HPC+jFNF+Jsv1ACaVqYE0U=
+X-Received: by 2002:a05:6e02:1708:: with SMTP id u8mr8462691ill.319.1643747605818;
+ Tue, 01 Feb 2022 12:33:25 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+References: <432231420.24682.1643727496135.JavaMail.zimbra@efficios.com>
+In-Reply-To: <432231420.24682.1643727496135.JavaMail.zimbra@efficios.com>
+From:   Chris Kennelly <ckennelly@google.com>
+Date:   Tue, 1 Feb 2022 15:33:15 -0500
+Message-ID: <CAEE+ybn_Cp1-T=2uB7xJqU2gEU-PxzsaV5jqCOupNp2cx_bK-Q@mail.gmail.com>
+Subject: Re: Aligning tcmalloc with glibc 2.35 rseq ABI
+To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Cc:     Paul Turner <pjt@google.com>, Peter Oskolkov <posk@posk.io>,
+        Florian Weimer <fweimer@redhat.com>,
+        libc-alpha <libc-alpha@sourceware.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-* Mathieu Desnoyers:
+Thanks for the heads up.
 
-> ----- On Feb 1, 2022, at 3:03 PM, Florian Weimer fw@deneb.enyo.de wrote:
+I did have a question about whether the new protocol would introduce
+an extra memory reference while initializing a critical section.
+
+* With initial-exec TLS, I can directly reference __rseq_abi.
+* With the new ABI, I might need to ask glibc for the address of the
+registered rseq structure in its thread data.
+
+I saw https://lkml.org/lkml/2022/1/24/859 mention using %gs, but it
+also mentions consulting "rseq_offset" in the address calculation.  Is
+rseq_offset something I can resolve to a constant or would I need to
+access a global for it, or does glibc take care of initializing %gs to
+the address of the structure registered with the kernel (for the
+current thread)?
+
+Thanks,
+Chris
+
+
+On Tue, Feb 1, 2022 at 9:58 AM Mathieu Desnoyers
+<mathieu.desnoyers@efficios.com> wrote:
 >
->> * Mathieu Desnoyers:
->> 
->>> If a thread group has fewer threads than cores, or is limited to run on
->>> few cores concurrently through sched affinity or cgroup cpusets, the
->>> virtual cpu ids will be values close to 0, thus allowing efficient use
->>> of user-space memory for per-cpu data structures.
->> 
->> From a userspace programmer perspective, what's a good way to obtain a
->> reasonable upper bound for the possible tg_vcpu_id values?
+> Hi Chris,
 >
-> Some effective upper bounds:
+> You will probably want to have a look at the userspace rseq ABI exposed by glibc 2.35 to ensure
+> tcmalloc becomes compatible with it.
 >
-> - sysconf(3) _SC_NPROCESSORS_CONF,
-> - the number of threads which exist concurrently in the process,
-> - the number of cpus in the cpu affinity mask applied by sched_setaffinity,
->   except in corner-case situations such as cpu hotplug removing all cpus from
->   the affinity set,
-> - cgroup cpuset "partition" limits,
-
-Affinity masks and _SC_NPROCESSORS_CONF can be off by more than an
-order of magnitude compared to the cgroup cpuset, I think, and those
-aren't even that atypical configurations.
-
-The number of concurrent threads sounds more tractable, but I'm
-worried about things creating threads behind libc's back (perhaps
-io_uring?).  So it couldn't be a hard upper bound.
-
-I'm worried about querying anything cgroup-related because these APIs
-have a reputation for being slow, convoluted, and unstable
-(effectively not subject to the “don't break userspace” rule).
-Hopefully I'm wrong about that.
-
->> I believe not all users of cgroup cpusets change the affinity mask.
+> If it helps, you can have a look at how I modified librseq to play nicely with glibc 2.35:
 >
-> AFAIR the sched affinity mask is tweaked independently of the cgroup cpuset.
-> Those are two mechanisms both affecting the scheduler task placement.
-
-There are container hosts out there that synthesize an affinity mask
-that matches the CPU allocation, assuming that anyone who calls
-sched_getaffinity only does so for counting the number of set bits.
-
-> I would expect the user-space code to use some sensible upper bound as a
-> hint about how many per-vcpu data structure elements to expect (and how many
-> to pre-allocate), but have a "lazy initialization" fall-back in case the
-> vcpu id goes up to the number of configured processors - 1. And I suspect
-> that even the number of configured processors may change with CRIU.
-
-Sounds reasonable.
-
->> Is the switch really useful?  I suspect it's faster to just write as
->> much as possible all the time.  The switch should be well-predictable
->> if running uniform userspace, but still …
+> https://git.kernel.org/pub/scm/libs/librseq/librseq.git/
 >
-> The switch ensures the kernel don't try to write to a memory area beyond
-> the rseq size which has been registered by user-space. So it seems to be
-> useful to ensure we don't corrupt user-space memory. Or am I missing your
-> point ?
-
-Due to the alignment, I think you'd only ever see 32 and 64 bytes for
-now?
-
-I'd appreciate if you could put the maximm supported size and possibly
-the alignment in the auxiliary vector, so that we don't have to rseq
-system calls in a loop on process startup.
+> Most relevant bits:
+>
+> https://git.kernel.org/pub/scm/libs/librseq/librseq.git/tree/src/rseq.c#n108
+>
+> Thanks,
+>
+> Mathieu
+>
+> --
+> Mathieu Desnoyers
+> EfficiOS Inc.
+> http://www.efficios.com
