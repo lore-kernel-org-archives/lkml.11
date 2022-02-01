@@ -2,79 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 965D6C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 09:49:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C2E6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 09:51:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236209AbiBAJtT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 04:49:19 -0500
-Received: from mga04.intel.com ([192.55.52.120]:59253 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236197AbiBAJtR (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 04:49:17 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643708957; x=1675244957;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=1hNFJnAAizxu1Af2pF6YdFa5NNIbQpqKneaS5sboPdA=;
-  b=WmSSLkmECoQmpKNkssCZ9v+hkbZ5dIrJkgbc7F4/3yO75T+TGMAAM+Lr
-   GlMvIY41itNZfcIMRgPtmwghyTs4JCdvh7KIqBWB5RB5K3T6eeBmt7boG
-   gl5B/Ij2V6ztJ41frTU9HIk25ISKCwpt0VbO/bQoiej+YZwQsq4mrULoU
-   MHyrSAd/4oZE7Hk5ERFIuzqSgEsPfMsOiEPZIYJbCJLjazC/kILrHLHsN
-   1wlqh81G79U9upcP6ZRLIX6XCD8c9MGO0WMz7HQi4SJ2V3daDvuPd+E6u
-   Lcu96io6pho/QTHyBA8aB1LsT099ZkCASDMdhFkdjQuH1ybWyVzk9GWrb
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10244"; a="246489804"
-X-IronPort-AV: E=Sophos;i="5.88,333,1635231600"; 
-   d="scan'208";a="246489804"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2022 01:49:17 -0800
-X-IronPort-AV: E=Sophos;i="5.88,333,1635231600"; 
-   d="scan'208";a="482231910"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2022 01:49:14 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nEplj-00HFdB-No;
-        Tue, 01 Feb 2022 11:48:11 +0200
-Date:   Tue, 1 Feb 2022 11:48:11 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Thomas Zimmermann <tzimmermann@suse.de>
-Cc:     Javier Martinez Canillas <javierm@redhat.com>,
-        linux-kernel@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        dri-devel@lists.freedesktop.org,
-        Noralf =?iso-8859-1?Q?Tr=F8nnes?= <noralf@tronnes.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Maxime Ripard <maxime@cerno.tech>
-Subject: Re: [PATCH 3/4] drm/tiny: Add driver for Solomon SSD1307 OLED
- displays
-Message-ID: <YfkB229Cuqyo/qOh@smile.fi.intel.com>
-References: <20220131202916.2374502-1-javierm@redhat.com>
- <cc093cd5-fba1-5d84-5894-81a6e1d039ff@suse.de>
+        id S236203AbiBAJvl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 04:51:41 -0500
+Received: from smtp-out2.suse.de ([195.135.220.29]:37352 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234561AbiBAJvk (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 1 Feb 2022 04:51:40 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id A31A81F383;
+        Tue,  1 Feb 2022 09:51:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1643709099; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=aXtpcbJyDyk4mWH2FPATZeadgV4+yzsbRgqmF24oHa4=;
+        b=OMiyGHQYaQUqTDF5tmaaHhkhcGdEldbHEITKVnuK6dPYV56pnh7Z0gWgx9TqGo+dF+QMXv
+        +PjZStCvY+miMlj1c1TlikXtuSEX6bnY2jPxKUPNVBwsDEJPs29RippT1erCf8UfGh/Dk5
+        Qd9epi9v5DzYcvVB/bmawc/0Q3/2F5Q=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 66F41A3B85;
+        Tue,  1 Feb 2022 09:51:39 +0000 (UTC)
+Date:   Tue, 1 Feb 2022 10:51:39 +0100
+From:   Michal Hocko <mhocko@suse.com>
+To:     Wei Yang <richard.weiyang@gmail.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        David Hildenbrand <david@redhat.com>,
+        Alexey Makhalov <amakhalov@vmware.com>,
+        Dennis Zhou <dennis@kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Oscar Salvador <osalvador@suse.de>, Tejun Heo <tj@kernel.org>,
+        Christoph Lameter <cl@linux.com>,
+        Nico Pache <npache@redhat.com>,
+        Rafael Aquini <raquini@redhat.com>
+Subject: Re: [PATCH 6/6] memcg: do not tweak node in
+ alloc_mem_cgroup_per_node_info
+Message-ID: <YfkCq5U4dBbmvOOf@dhcp22.suse.cz>
+References: <20220127085305.20890-1-mhocko@kernel.org>
+ <20220127085305.20890-7-mhocko@kernel.org>
+ <20220201024544.p2iqj2mz7bgq4pf3@master>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cc093cd5-fba1-5d84-5894-81a6e1d039ff@suse.de>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20220201024544.p2iqj2mz7bgq4pf3@master>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 01, 2022 at 10:33:31AM +0100, Thomas Zimmermann wrote:
-> Am 31.01.22 um 21:29 schrieb Javier Martinez Canillas:
-
-> > +obj-$(CONFIG_TINYDRM_SSD1307)		+= ssd1307.o
+On Tue 01-02-22 02:45:44, Wei Yang wrote:
+> On Thu, Jan 27, 2022 at 09:53:05AM +0100, Michal Hocko wrote:
+> >From: Wei Yang <richard.weiyang@gmail.com>
+> >
+> >alloc_mem_cgroup_per_node_info is allocated for each possible node and
+> >this used to be a problem because not !node_online nodes didn't have
+>                                    ^^^ a typo here?
 > 
-> Maybe call it ssd130x
+> 				   !node_online nodes is enough?
 
-Either way it's good to list all supported models in "help" of Kconfig.
+Yes. Fixed up. Thx!
 
-Also here is the question, should we keep backward compatibility or not?
-If not, we never can remove the old driver (until last user gone).
+ 
+> >appropriate data structure allocated. This has changed by "mm: handle
+> >uninitialized numa nodes gracefully" so we can drop the special casing
+> >here.
+> >
+> >Signed-off-by: Wei Yang <richard.weiyang@gmail.com>
+> >Signed-off-by: Michal Hocko <mhocko@suse.com>
+> 
+> -- 
+> Wei Yang
+> Help you, Help me
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+Michal Hocko
+SUSE Labs
