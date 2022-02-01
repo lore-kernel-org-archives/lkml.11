@@ -2,102 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B329AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 12:28:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C55DAC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 12:28:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238082AbiBAM2C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 07:28:02 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:58702 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237630AbiBAM2A (ORCPT
+        id S238096AbiBAM2Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 07:28:25 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:22979 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237630AbiBAM2W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 07:28:00 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0192F61524;
-        Tue,  1 Feb 2022 12:27:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD77EC340EB;
-        Tue,  1 Feb 2022 12:27:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643718462;
-        bh=JbkAYC/M1v6wy+velggKtiIsj1hfd2OT5WgmxqSpRmo=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=MvrZsek1b6VXbur1sjrSrW9r5HERM81Yh71gmHzYA9DzrL4MGX45gsGNTkUS2FCCv
-         Uk2LK0Ly8BTw9MdkDWc4CANUy0x8xK8FNWg81k3HA9UKjOvX1WLvFe8aEXIyUoE7HO
-         zZQCBOKH1AV1a6C7Jw/xokCSENcxjaOIJ3glevudARnyyvtU2lD/EFlCVy0kDGicoH
-         ke6CONaBXhJ+yYQ9hBO01aWYGgUG5sdtY2z7T+Sr8xJQGgdLRpGd1j7CSRuikONVLZ
-         7CE1k1DuL0yLZeoo6CtFFia21ojZFhRFUaXQP0SxiPfyP2RaUR1q6Pu4ECPsrxZinZ
-         iana8DFBgKVqQ==
-Content-Type: text/plain; charset="utf-8"
+        Tue, 1 Feb 2022 07:28:22 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643718502;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gYsMOanhgag9FX9U5PUDWc3Rn4Habp49ag3te6WP1O0=;
+        b=OsQlSFnA6Pccor2foPJpl/OlbAXZmhQIEhqg8j92DCF/+jRAA7pM8qO168jgIknQUhYEIU
+        okTYtQxKp/Dw6ZRHK2rLYK0OEHPSSLomURZA3g6OzduFL00wmdp8WcPD2qPP/5XOf8sm41
+        rciEMl8vgGOPbR67PbskJRwjXu5V5Js=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-576-gYjaq2YeOfennkLyOcPGPg-1; Tue, 01 Feb 2022 07:28:21 -0500
+X-MC-Unique: gYjaq2YeOfennkLyOcPGPg-1
+Received: by mail-ed1-f72.google.com with SMTP id v15-20020a50a44f000000b004094f4a8f3bso8636658edb.0
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Feb 2022 04:28:21 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=gYsMOanhgag9FX9U5PUDWc3Rn4Habp49ag3te6WP1O0=;
+        b=iYUhXnLae3q7eJC2tff0T52KZqF9FZOsNONh86tQCUensZtnVc7e2vEFaKwdRKH9Rw
+         yRr1dzMw7KRzGBf/6nA5rkzuAz/DYh74E2jIg/e7lZZXjZ/5sXqRzi+ZJK4TMxY+wK1k
+         bAxsRig19vZHoC+Id8/H8cPcha6Od8mMISi549VFaEvXAszhfw0do40jg2PYtz/x0RY9
+         G0RfjHrLLkyHEUjjvBpdwetqJha18mpp93xzNz1FG2l2JR9EaLIzrJPXcp56mtdY7Ad8
+         vBZyz8tm+OGn30S/nqyRm6mDzmoRCi7K9ZHWnYvgUlY2u1Bh9W01qbyjpZ9mk2qSvx8m
+         sDTw==
+X-Gm-Message-State: AOAM531R1nKzotLmeaY/s0j7mxx4n/nBwJsXlzeKlKsZeYbpDBW/yEax
+        ERnrwYS0VlzoINQ/9RmRdi0KTjGViBCO/eGJ0NkXXpJxQoBTw0sRmLrDypTf48Lk4lG5opAKIq1
+        KRIb3IqxbWcQC3KAezzGkoW0U
+X-Received: by 2002:a17:907:6091:: with SMTP id ht17mr20947054ejc.626.1643718500195;
+        Tue, 01 Feb 2022 04:28:20 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyRMhTfm6g/0pB4jH/vP9Y4MT+TpgfSycD16pvewkJM7tuG9Ae3/hbl+ctjuIB/GNDnbjbmrQ==
+X-Received: by 2002:a17:907:6091:: with SMTP id ht17mr20947035ejc.626.1643718500029;
+        Tue, 01 Feb 2022 04:28:20 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id s1sm19400809edt.49.2022.02.01.04.28.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 01 Feb 2022 04:28:19 -0800 (PST)
+Message-ID: <13de6271-61bc-7138-15b3-9241508d94fa@redhat.com>
+Date:   Tue, 1 Feb 2022 13:28:18 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH kvm/queue v2 3/3] KVM: x86/pmu: Setup the
+ {inte|amd}_event_mapping[] when hardware_setup
+Content-Language: en-US
+To:     Like Xu <like.xu.linux@gmail.com>,
+        Jim Mattson <jmattson@google.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Like Xu <likexu@tencent.com>
+References: <20220117085307.93030-1-likexu@tencent.com>
+ <20220117085307.93030-4-likexu@tencent.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220117085307.93030-4-likexu@tencent.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v4 1/9] brcmfmac: pcie: Release firmwares in the
- brcmf_pcie_setup error path
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20220131160713.245637-2-marcan@marcan.st>
-References: <20220131160713.245637-2-marcan@marcan.st>
-To:     Hector Martin <marcan@marcan.st>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Hector Martin <marcan@marcan.st>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Mark Kettenis <kettenis@openbsd.org>,
-        =?utf-8?b?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        "brian m. carlson" <sandals@crustytoothpaste.net>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        stable@vger.kernel.org
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <164371845418.16633.10070643455446160726.kvalo@kernel.org>
-Date:   Tue,  1 Feb 2022 12:27:35 +0000 (UTC)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hector Martin <marcan@marcan.st> wrote:
+On 1/17/22 09:53, Like Xu wrote:
+> +
+> +	for (i = 0; i < PERF_COUNT_HW_MAX; i++) {
+> +		config = perf_get_hw_event_config(i) & 0xFFFFULL;
+> +
+> +		kernel_hw_events[i] = (struct kvm_event_hw_type_mapping){
+> +			.eventsel = config & ARCH_PERFMON_EVENTSEL_EVENT,
+> +			.unit_mask = (config & ARCH_PERFMON_EVENTSEL_UMASK) >> 8,
+> +			.event_type = i,
+> +		};
 
-> This avoids leaking memory if brcmf_chip_get_raminfo fails. Note that
-> the CLM blob is released in the device remove path.
-> 
-> Fixes: 82f93cf46d60 ("brcmfmac: get chip's default RAM info during PCIe setup")
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-> Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Hector Martin <marcan@marcan.st>
-> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Should event_type be PERF_COUNT_HW_MAX if config is zero?
 
-8 patches applied to wireless-next.git, thanks.
+Thanks,
 
-5e90f0f3ead0 brcmfmac: pcie: Release firmwares in the brcmf_pcie_setup error path
-d19d8e3ba256 brcmfmac: firmware: Allocate space for default boardrev in nvram
-6d766d8cb505 brcmfmac: pcie: Declare missing firmware files in pcie.c
-9466987f2467 brcmfmac: pcie: Replace brcmf_pcie_copy_mem_todev with memcpy_toio
-b50255c83b91 brcmfmac: pcie: Fix crashes due to early IRQs
-9cf6d7f2c554 brcmfmac: of: Use devm_kstrdup for board_type & check for errors
-e7191182adc5 brcmfmac: fwil: Constify iovar name arguments
-b4bb8469e90e brcmfmac: pcie: Read the console on init and shutdown
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20220131160713.245637-2-marcan@marcan.st/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Paolo
 
