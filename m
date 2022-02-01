@@ -2,243 +2,382 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2FA6C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 15:02:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18023C43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 15:02:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239671AbiBAPCP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 10:02:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60948 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239648AbiBAPCM (ORCPT
+        id S239670AbiBAPC4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 10:02:56 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:44331 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239648AbiBAPCp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 10:02:12 -0500
-Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4586C06173B
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Feb 2022 07:02:12 -0800 (PST)
-Received: by mail-io1-xd33.google.com with SMTP id q204so21504677iod.8
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Feb 2022 07:02:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Psa2zXq9CIoesnxGhdNYAKpIpdpvJqYiAj5N20pw5fs=;
-        b=TobaHrqBNR77g0qOCWpypBwg6HIQxMn5bYtPxAZU+bHbGruKW9uW52W9KgiWE8kIcP
-         d2IUU8goU9kJ732v1Ii8+DCWuMxBXow5I/R+EN5jDHKpYpXf9wZfdfkWSPTlpFFweFkD
-         ClqPnk8MaECrlDi00jonB1myC0RsRdRcGdIf9IzT+lfxwvmfUX929HX8ayazCiQQffKe
-         vWgJtjxZJG1XZfVUGxSBpaRFYIr+LXiKlF0icAQO7Nhr5k8K+YNM7IlgTYOenc7A8m1o
-         StNvSYBDjHY5k3qhrSopYtzmO1pgmqChluk4mY3iuYOQrce8998Zqj8d3CvzhpyVRO5Z
-         3aZA==
+        Tue, 1 Feb 2022 10:02:45 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643727765;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=oZXW4ikWwqlgBCRGnwXxFczGKcuCYa2j1IpHwO1T0Pw=;
+        b=M+0wwcGElErVlbJduQ4LZhuo9/FY5vdijoEdWKyefkp2zM0+4NvBGFUGPjolg7bR01pmnL
+        2wjEZn3najrPuLSZIm+2T3psnF7yyPsmWghYLiyPnP2sYuXUr+IuWtdPAZ031iBgBVTQcm
+        pWuntAnlhIYjsUr3rVYVRI0C0a66WrI=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-652-Xw47Py86OdifK4N_jTtyKw-1; Tue, 01 Feb 2022 10:02:44 -0500
+X-MC-Unique: Xw47Py86OdifK4N_jTtyKw-1
+Received: by mail-ed1-f71.google.com with SMTP id ed6-20020a056402294600b004090fd8a936so8835357edb.23
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Feb 2022 07:02:43 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Psa2zXq9CIoesnxGhdNYAKpIpdpvJqYiAj5N20pw5fs=;
-        b=XDUkzTj9rCwpFSEpHvIfcfjS6gYpp+cQ2arENeoIUT1ksltSKBu12hGAtseWMiPrNt
-         bs2ZlRXrWt+SQvthoBncfXlSGEOquj0MQzJ7zRU6noiFlO711zkjkCQNrC5dbi0/IzbF
-         OZtu+x6mdB/hZnKv2MJbLNAqcz79PIjjosGc82qmdRFdXt1sf2rmsUrguJZeajOMVxpM
-         6HiKGW8HY2Bp+R8s9SDWGrpV1Q6FBTLEz+Lp/GqTjBrUgB7Oura/bbVfC/tdLYJci27z
-         x+Vt8FnGYp8I6yzwLZdmjOny/FSCZf5YEYuoYDzIHcAI/AzArn0Hubvk01pb4vkxXv0v
-         Uhbg==
-X-Gm-Message-State: AOAM532nTbu9I+90f/Aa25EB31RLeaMh2ZdKmXSMttr3E9F9ul+IvIU6
-        ut8ZWTajYzppKCCOUCurRZxYzw==
-X-Google-Smtp-Source: ABdhPJxnl2G6CdXw3UYQ2ueHlyZJNFOqm5B7PDylM0/r8g3VNPQFCfDE6WqyJy9+yyOOXXw+cnJRKQ==
-X-Received: by 2002:a05:6638:3591:: with SMTP id v17mr11788085jal.277.1643727732147;
-        Tue, 01 Feb 2022 07:02:12 -0800 (PST)
-Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id e17sm19141307ilm.67.2022.02.01.07.02.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Feb 2022 07:02:11 -0800 (PST)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     robh+dt@kernel.org, bjorn.andersson@linaro.org, agross@kernel.org,
-        mka@chromium.org, evgreen@chromium.org, cpratapa@codeaurora.org,
-        avuyyuru@codeaurora.org, jponduru@codeaurora.org,
-        subashab@codeaurora.org, elder@kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net v2 2/2] net: ipa: request IPA register values be retained
-Date:   Tue,  1 Feb 2022 09:02:05 -0600
-Message-Id: <20220201150205.468403-3-elder@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220201150205.468403-1-elder@linaro.org>
-References: <20220201150205.468403-1-elder@linaro.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=oZXW4ikWwqlgBCRGnwXxFczGKcuCYa2j1IpHwO1T0Pw=;
+        b=GhdlpCJ4lhX7qEMh0rOSTYN00YBUkH388Za1AbfNnrO6YtIiYdU2GvoAX+EGL8QNp/
+         Wm5c8X1LXs8GLAzyaO/ovGxtnXWBIo1hmMqvqrggFnLxt7rYEBvnJIUdZ1ap/ft8I9PY
+         kgxoQzU8T+7kuU1QTS3LtmKJeCCrYRGJ5pS/ROJSHygtiNb2a1spjBMR97Fu15tfMau8
+         6LY+qC4XkGWNEgq2H0NinZXricHZLcz61Ok6IelviyyVcEvCCuPvk2Bq1rk1aofC7XP4
+         5HGedHve++xvzLho7eMcdiDQleiFM35NjSH9oIb2FEd5lKr4HQG6hxymGHSnhWWjDx5j
+         1YJg==
+X-Gm-Message-State: AOAM531m0TTPYsEiZwhAknP7lI/tFZxZFmmaecgaTTOg+sPD1uzXtxg2
+        /grS/sylJlhpEHrbBA+HFFXZZsMvy/oMp1zm22M7lgA8j/cZDp1p934ZtrpioNA9/PGNy2HdTwO
+        Q8fpecJ8dw0/zeEb/NwctR6/x
+X-Received: by 2002:a05:6402:16cf:: with SMTP id r15mr25756611edx.406.1643727762667;
+        Tue, 01 Feb 2022 07:02:42 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyvCpVCBTZrtA2YZxbuCtFtMF8gZFN+tTu4VLRzWngSgADBV/xCYwrHYjRoBuJPzr957Nv0tA==
+X-Received: by 2002:a05:6402:16cf:: with SMTP id r15mr25756583edx.406.1643727762415;
+        Tue, 01 Feb 2022 07:02:42 -0800 (PST)
+Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
+        by smtp.gmail.com with ESMTPSA id pg25sm14900182ejb.174.2022.02.01.07.02.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 01 Feb 2022 07:02:41 -0800 (PST)
+Message-ID: <71094091-56ca-0f75-a9c7-fa1cabf2af22@redhat.com>
+Date:   Tue, 1 Feb 2022 16:02:40 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH v6 7/9] platform/x86: serial-multi-instantiate: Add SPI
+ support
+Content-Language: en-US
+To:     Stefan Binding <sbinding@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>, Mark Gross <markgross@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
+Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-acpi@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org, patches@opensource.cirrus.com
+References: <20220121172431.6876-1-sbinding@opensource.cirrus.com>
+ <20220121172431.6876-8-sbinding@opensource.cirrus.com>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <20220121172431.6876-8-sbinding@opensource.cirrus.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In some cases, the IPA hardware needs to request the always-on
-subsystem (AOSS) to coordinate with the IPA microcontroller to
-retain IPA register values at power collapse.  This is done by
-issuing a QMP request to the AOSS microcontroller.  A similar
-request ondoes that request.
+Hi,
 
-We must get and hold the "QMP" handle early, because we might get
-back EPROBE_DEFER for that.  But the actual request should be sent
-while we know the IPA clock is active, and when we know the
-microcontroller is operational.
+On 1/21/22 18:24, Stefan Binding wrote:
+> Add support for spi bus in serial-multi-instantiate driver
+> 
+> Some peripherals can have either a I2C or a SPI connection
+> to the host (but not both) but use the same HID for both
+> types. So it is not possible to use the HID to determine
+> whether it is I2C or SPI. The driver must check the node
+> to see if it contains I2cSerialBus or SpiSerialBus entries.
+> 
+> For backwards-compatibility with the existing nodes I2C is
+> checked first and if such entries are found ONLY I2C devices
+> are created. Since some existing nodes that were already
+> handled by this driver could also contain unrelated
+> SpiSerialBus nodes that were previously ignored, and this
+> preserves that behavior. If there is ever a need to handle
+> a node where both I2C and SPI devices must be instantiated
+> this can be added in future.
+> 
+> Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
+> ---
+>  drivers/platform/x86/Kconfig                  |   2 +-
+>  .../platform/x86/serial-multi-instantiate.c   | 174 +++++++++++++++---
+>  2 files changed, 151 insertions(+), 25 deletions(-)
+> 
+> diff --git a/drivers/platform/x86/Kconfig b/drivers/platform/x86/Kconfig
+> index 2e656909a866..8d1eec208854 100644
+> --- a/drivers/platform/x86/Kconfig
+> +++ b/drivers/platform/x86/Kconfig
+> @@ -992,7 +992,7 @@ config TOPSTAR_LAPTOP
+>  
+>  config SERIAL_MULTI_INSTANTIATE
+>  	tristate "Serial bus multi instantiate pseudo device driver"
+> -	depends on I2C && ACPI
+> +	depends on I2C && SPI && ACPI
+>  	help
+>  	  Some ACPI-based systems list multiple devices in a single ACPI
+>  	  firmware-node. This driver will instantiate separate clients
+> diff --git a/drivers/platform/x86/serial-multi-instantiate.c b/drivers/platform/x86/serial-multi-instantiate.c
+> index 4cd6d72a0741..3f05385ca2cf 100644
+> --- a/drivers/platform/x86/serial-multi-instantiate.c
+> +++ b/drivers/platform/x86/serial-multi-instantiate.c
+> @@ -14,6 +14,7 @@
+>  #include <linux/module.h>
+>  #include <linux/platform_device.h>
+>  #include <linux/property.h>
+> +#include <linux/spi/spi.h>
+>  #include <linux/types.h>
+>  
+>  #define IRQ_RESOURCE_TYPE	GENMASK(1, 0)
+> @@ -21,15 +22,28 @@
+>  #define IRQ_RESOURCE_GPIO	1
+>  #define IRQ_RESOURCE_APIC	2
+>  
+> +enum smi_bus_type {
+> +	SMI_I2C,
+> +	SMI_SPI,
+> +	SMI_AUTO_DETECT,
+> +};
+> +
+>  struct smi_instance {
+>  	const char *type;
+>  	unsigned int flags;
+>  	int irq_idx;
+>  };
+>  
+> +struct smi_node {
+> +	enum smi_bus_type bus_type;
+> +	struct smi_instance instances[];
+> +};
+> +
+>  struct smi {
+>  	int i2c_num;
+> +	int spi_num;
+>  	struct i2c_client **i2c_devs;
+> +	struct spi_device **spi_devs;
+>  };
+>  
+>  static int smi_get_irq(struct platform_device *pdev, struct acpi_device *adev,
+> @@ -59,6 +73,95 @@ static void smi_devs_unregister(struct smi *smi)
+>  {
+>  	while (smi->i2c_num > 0)
+>  		i2c_unregister_device(smi->i2c_devs[--smi->i2c_num]);
+> +
+> +	while (smi->spi_num > 0)
+> +		spi_unregister_device(smi->spi_devs[--smi->spi_num]);
+> +}
+> +
+> +/**
+> + * smi_spi_probe - Instantiate multiple SPI devices from inst array
+> + * @pdev:	Platform device
+> + * @adev:	ACPI device
+> + * @smi:	Internal struct for Serial multi instantiate driver
+> + * @inst_array:	Array of instances to probe
+> + *
+> + * Returns the number of SPI devices instantiate, Zero if none is found or a negative error code.
+> + */
+> +static int smi_spi_probe(struct platform_device *pdev, struct acpi_device *adev, struct smi *smi,
+> +			 const struct smi_instance *inst_array)
+> +{
+> +	struct device *dev = &pdev->dev;
+> +	struct spi_controller *ctlr;
+> +	struct spi_device *spi_dev;
+> +	char name[50];
+> +	int i, ret, count;
+> +
+> +	ret = acpi_spi_count_resources(adev);
+> +	if (ret < 0)
+> +		return ret;
+> +	else if (!ret)
+> +		return -ENODEV;
+> +
+> +	count = ret;
+> +
+> +	smi->spi_devs = devm_kcalloc(dev, count, sizeof(*smi->spi_devs), GFP_KERNEL);
+> +	if (!smi->spi_devs)
+> +		return -ENOMEM;
+> +
+> +	for (i = 0; i < count && inst_array[i].type; i++) {
+> +
+> +		spi_dev = acpi_spi_device_alloc(NULL, adev, i);
+> +		if (IS_ERR(spi_dev)) {
+> +			ret = PTR_ERR(spi_dev);
+> +			dev_err_probe(dev, ret, "failed to allocate SPI device %s from ACPI: %d\n",
+> +				      dev_name(&adev->dev), ret);
+> +			goto error;
+> +		}
+> +
+> +		ctlr = spi_dev->controller;
+> +
+> +		strscpy(spi_dev->modalias, inst_array[i].type, sizeof(spi_dev->modalias));
+> +
+> +		ret = smi_get_irq(pdev, adev, &inst_array[i]);
+> +		if (ret < 0) {
+> +			spi_dev_put(spi_dev);
+> +			goto error;
+> +		}
+> +		spi_dev->irq = ret;
+> +
+> +		snprintf(name, sizeof(name), "%s-%s-%s.%d", dev_name(&ctlr->dev), dev_name(dev),
+> +			 inst_array[i].type, i);
+> +		spi_dev->dev.init_name = name;
+> +
+> +		ret = spi_add_device(spi_dev);
+> +		if (ret) {
+> +			dev_err_probe(&ctlr->dev, ret,
+> +				      "failed to add SPI device %s from ACPI: %d\n",
+> +				      dev_name(&adev->dev), ret);
+> +			spi_dev_put(spi_dev);
+> +			goto error;
+> +		}
+> +
+> +		dev_dbg(dev, "SPI device %s using chip select %u", name, spi_dev->chip_select);
+> +
+> +		smi->spi_devs[i] = spi_dev;
+> +		smi->spi_num++;
+> +	}
+> +
+> +	if (smi->spi_num < count) {
+> +		dev_dbg(dev, "Error finding driver, idx %d\n", i);
+> +		ret = -ENODEV;
+> +		goto error;
+> +	}
+> +
+> +	dev_info(dev, "Instantiated %d SPI devices.\n", smi->spi_num);
+> +
+> +	return 0;
+> +error:
+> +	smi_devs_unregister(smi);
+> +
+> +	return ret;
+> +
+>  }
+>  
+>  /**
+> @@ -126,8 +229,8 @@ static int smi_i2c_probe(struct platform_device *pdev, struct acpi_device *adev,
+>  
+>  static int smi_probe(struct platform_device *pdev)
+>  {
+> -	const struct smi_instance *inst_array;
+>  	struct device *dev = &pdev->dev;
+> +	const struct smi_node *node;
+>  	struct acpi_device *adev;
+>  	struct smi *smi;
+>  
+> @@ -135,8 +238,8 @@ static int smi_probe(struct platform_device *pdev)
+>  	if (!adev)
+>  		return -ENODEV;
+>  
+> -	inst_array = device_get_match_data(dev);
+> -	if (!inst_array) {
+> +	node = device_get_match_data(dev);
+> +	if (!node) {
+>  		dev_dbg(dev, "Error ACPI match data is missing\n");
+>  		return -ENODEV;
+>  	}
+> @@ -147,7 +250,21 @@ static int smi_probe(struct platform_device *pdev)
+>  
+>  	platform_set_drvdata(pdev, smi);
+>  
+> -	return smi_i2c_probe(pdev, adev, smi, inst_array);
+> +	switch (node->bus_type) {
+> +	case SMI_I2C:
+> +		return smi_i2c_probe(pdev, adev, smi, node->instances);
+> +	case SMI_SPI:
+> +		return smi_spi_probe(pdev, adev, smi, node->instances);
+> +	case SMI_AUTO_DETECT:
+> +		if (i2c_acpi_client_count(adev) > 0)
+> +			return smi_i2c_probe(pdev, adev, smi, node->instances);
+> +		else
+> +			return smi_spi_probe(pdev, adev, smi, node->instances);
+> +	default:
+> +		break;
 
-Fixes: 2775cbc5afeb6 ("net: ipa: rename "ipa_clock.c"")
-Signed-off-by: Alex Elder <elder@linaro.org>
----
- drivers/net/ipa/ipa_power.c | 52 +++++++++++++++++++++++++++++++++++++
- drivers/net/ipa/ipa_power.h |  7 +++++
- drivers/net/ipa/ipa_uc.c    |  5 ++++
- 3 files changed, 64 insertions(+)
+Please replace this break with : "return -EINVAL" (since we really
+should never hit this default case).
 
-diff --git a/drivers/net/ipa/ipa_power.c b/drivers/net/ipa/ipa_power.c
-index b1c6c0fcb654f..f2989aac47a62 100644
---- a/drivers/net/ipa/ipa_power.c
-+++ b/drivers/net/ipa/ipa_power.c
-@@ -11,6 +11,8 @@
- #include <linux/pm_runtime.h>
- #include <linux/bitops.h>
- 
-+#include "linux/soc/qcom/qcom_aoss.h"
-+
- #include "ipa.h"
- #include "ipa_power.h"
- #include "ipa_endpoint.h"
-@@ -64,6 +66,7 @@ enum ipa_power_flag {
-  * struct ipa_power - IPA power management information
-  * @dev:		IPA device pointer
-  * @core:		IPA core clock
-+ * @qmp:		QMP handle for AOSS communication
-  * @spinlock:		Protects modem TX queue enable/disable
-  * @flags:		Boolean state flags
-  * @interconnect_count:	Number of elements in interconnect[]
-@@ -72,6 +75,7 @@ enum ipa_power_flag {
- struct ipa_power {
- 	struct device *dev;
- 	struct clk *core;
-+	struct qmp *qmp;
- 	spinlock_t spinlock;	/* used with STOPPED/STARTED power flags */
- 	DECLARE_BITMAP(flags, IPA_POWER_FLAG_COUNT);
- 	u32 interconnect_count;
-@@ -382,6 +386,47 @@ void ipa_power_modem_queue_active(struct ipa *ipa)
- 	clear_bit(IPA_POWER_FLAG_STARTED, ipa->power->flags);
- }
- 
-+static int ipa_power_retention_init(struct ipa_power *power)
-+{
-+	struct qmp *qmp = qmp_get(power->dev);
-+
-+	if (IS_ERR(qmp)) {
-+		if (PTR_ERR(qmp) == -EPROBE_DEFER)
-+			return -EPROBE_DEFER;
-+
-+		/* We assume any other error means it's not defined/needed */
-+		qmp = NULL;
-+	}
-+	power->qmp = qmp;
-+
-+	return 0;
-+}
-+
-+static void ipa_power_retention_exit(struct ipa_power *power)
-+{
-+	qmp_put(power->qmp);
-+	power->qmp = NULL;
-+}
-+
-+/* Control register retention on power collapse */
-+void ipa_power_retention(struct ipa *ipa, bool enable)
-+{
-+	static const char fmt[] = "{ class: bcm, res: ipa_pc, val: %c }";
-+	struct ipa_power *power = ipa->power;
-+	char buf[36];	/* Exactly enough for fmt[]; size a multiple of 4 */
-+	int ret;
-+
-+	if (!power->qmp)
-+		return;		/* Not needed on this platform */
-+
-+	(void)snprintf(buf, sizeof(buf), fmt, enable ? '1' : '0');
-+
-+	ret = qmp_send(power->qmp, buf, sizeof(buf));
-+	if (ret)
-+		dev_err(power->dev, "error %d sending QMP %sable request\n",
-+			ret, enable ? "en" : "dis");
-+}
-+
- int ipa_power_setup(struct ipa *ipa)
- {
- 	int ret;
-@@ -438,12 +483,18 @@ ipa_power_init(struct device *dev, const struct ipa_power_data *data)
- 	if (ret)
- 		goto err_kfree;
- 
-+	ret = ipa_power_retention_init(power);
-+	if (ret)
-+		goto err_interconnect_exit;
-+
- 	pm_runtime_set_autosuspend_delay(dev, IPA_AUTOSUSPEND_DELAY);
- 	pm_runtime_use_autosuspend(dev);
- 	pm_runtime_enable(dev);
- 
- 	return power;
- 
-+err_interconnect_exit:
-+	ipa_interconnect_exit(power);
- err_kfree:
- 	kfree(power);
- err_clk_put:
-@@ -460,6 +511,7 @@ void ipa_power_exit(struct ipa_power *power)
- 
- 	pm_runtime_disable(dev);
- 	pm_runtime_dont_use_autosuspend(dev);
-+	ipa_power_retention_exit(power);
- 	ipa_interconnect_exit(power);
- 	kfree(power);
- 	clk_put(clk);
-diff --git a/drivers/net/ipa/ipa_power.h b/drivers/net/ipa/ipa_power.h
-index 2151805d7fbb0..6f84f057a2095 100644
---- a/drivers/net/ipa/ipa_power.h
-+++ b/drivers/net/ipa/ipa_power.h
-@@ -40,6 +40,13 @@ void ipa_power_modem_queue_wake(struct ipa *ipa);
-  */
- void ipa_power_modem_queue_active(struct ipa *ipa);
- 
-+/**
-+ * ipa_power_retention() - Control register retention on power collapse
-+ * @ipa:	IPA pointer
-+ * @enable:	Whether retention should be enabled or disabled
-+ */
-+void ipa_power_retention(struct ipa *ipa, bool enable);
-+
- /**
-  * ipa_power_setup() - Set up IPA power management
-  * @ipa:	IPA pointer
-diff --git a/drivers/net/ipa/ipa_uc.c b/drivers/net/ipa/ipa_uc.c
-index 856e55a080a7f..fe11910518d95 100644
---- a/drivers/net/ipa/ipa_uc.c
-+++ b/drivers/net/ipa/ipa_uc.c
-@@ -11,6 +11,7 @@
- 
- #include "ipa.h"
- #include "ipa_uc.h"
-+#include "ipa_power.h"
- 
- /**
-  * DOC:  The IPA embedded microcontroller
-@@ -154,6 +155,7 @@ static void ipa_uc_response_hdlr(struct ipa *ipa, enum ipa_irq_id irq_id)
- 	case IPA_UC_RESPONSE_INIT_COMPLETED:
- 		if (ipa->uc_powered) {
- 			ipa->uc_loaded = true;
-+			ipa_power_retention(ipa, true);
- 			pm_runtime_mark_last_busy(dev);
- 			(void)pm_runtime_put_autosuspend(dev);
- 			ipa->uc_powered = false;
-@@ -184,6 +186,9 @@ void ipa_uc_deconfig(struct ipa *ipa)
- 
- 	ipa_interrupt_remove(ipa->interrupt, IPA_IRQ_UC_1);
- 	ipa_interrupt_remove(ipa->interrupt, IPA_IRQ_UC_0);
-+	if (ipa->uc_loaded)
-+		ipa_power_retention(ipa, false);
-+
- 	if (!ipa->uc_powered)
- 		return;
- 
--- 
-2.32.0
+With that fixed, please add my R-b to the next version:
+
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+
+Regards,
+
+Hans
+
+
+> +	}
+> +
+> +	return 0; /* never reached */
+>  }
+>  
+>  static int smi_remove(struct platform_device *pdev)
+> @@ -159,27 +276,36 @@ static int smi_remove(struct platform_device *pdev)
+>  	return 0;
+>  }
+>  
+> -static const struct smi_instance bsg1160_data[]  = {
+> -	{ "bmc150_accel", IRQ_RESOURCE_GPIO, 0 },
+> -	{ "bmc150_magn" },
+> -	{ "bmg160" },
+> -	{}
+> +static const struct smi_node bsg1160_data = {
+> +	.instances = {
+> +		{ "bmc150_accel", IRQ_RESOURCE_GPIO, 0 },
+> +		{ "bmc150_magn" },
+> +		{ "bmg160" },
+> +		{}
+> +	},
+> +	.bus_type = SMI_I2C,
+>  };
+>  
+> -static const struct smi_instance bsg2150_data[]  = {
+> -	{ "bmc150_accel", IRQ_RESOURCE_GPIO, 0 },
+> -	{ "bmc150_magn" },
+> -	/* The resources describe a 3th client, but it is not really there. */
+> -	{ "bsg2150_dummy_dev" },
+> -	{}
+> +static const struct smi_node bsg2150_data = {
+> +	.instances = {
+> +		{ "bmc150_accel", IRQ_RESOURCE_GPIO, 0 },
+> +		{ "bmc150_magn" },
+> +		/* The resources describe a 3th client, but it is not really there. */
+> +		{ "bsg2150_dummy_dev" },
+> +		{}
+> +	},
+> +	.bus_type = SMI_I2C,
+>  };
+>  
+> -static const struct smi_instance int3515_data[]  = {
+> -	{ "tps6598x", IRQ_RESOURCE_APIC, 0 },
+> -	{ "tps6598x", IRQ_RESOURCE_APIC, 1 },
+> -	{ "tps6598x", IRQ_RESOURCE_APIC, 2 },
+> -	{ "tps6598x", IRQ_RESOURCE_APIC, 3 },
+> -	{}
+> +static const struct smi_node int3515_data = {
+> +	.instances = {
+> +		{ "tps6598x", IRQ_RESOURCE_APIC, 0 },
+> +		{ "tps6598x", IRQ_RESOURCE_APIC, 1 },
+> +		{ "tps6598x", IRQ_RESOURCE_APIC, 2 },
+> +		{ "tps6598x", IRQ_RESOURCE_APIC, 3 },
+> +		{}
+> +	},
+> +	.bus_type = SMI_I2C,
+>  };
+>  
+>  /*
+> @@ -187,9 +313,9 @@ static const struct smi_instance int3515_data[]  = {
+>   * drivers/acpi/scan.c: acpi_device_enumeration_by_parent().
+>   */
+>  static const struct acpi_device_id smi_acpi_ids[] = {
+> -	{ "BSG1160", (unsigned long)bsg1160_data },
+> -	{ "BSG2150", (unsigned long)bsg2150_data },
+> -	{ "INT3515", (unsigned long)int3515_data },
+> +	{ "BSG1160", (unsigned long)&bsg1160_data },
+> +	{ "BSG2150", (unsigned long)&bsg2150_data },
+> +	{ "INT3515", (unsigned long)&int3515_data },
+>  	{ }
+>  };
+>  MODULE_DEVICE_TABLE(acpi, smi_acpi_ids);
+> 
 
