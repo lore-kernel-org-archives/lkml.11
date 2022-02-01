@@ -2,121 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8435C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 13:10:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E9FAC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 13:10:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238715AbiBANKG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 08:10:06 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:59592 "EHLO
+        id S238576AbiBANKT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 08:10:19 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:54966 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238716AbiBANJR (ORCPT
+        by vger.kernel.org with ESMTP id S238636AbiBANJ4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 08:09:17 -0500
+        Tue, 1 Feb 2022 08:09:56 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643720956;
+        s=mimecast20190719; t=1643720995;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Swdbs0KGcPDJP8bHPLb5XLPBG6TEyMwLGc8obCIfC/8=;
-        b=LEGsYCBg7TXAAfayGgTaQjj9Vzdj4ieCDTShYxGeR3lcaRXgrGEKNDhBXkPSKQa14zEFQl
-        YTKGADDAU6zX18sAdMuO6OPgCfYxE+ppUvRFnZ/q4Zm67ZnQkiYv4YZeN1wQN69YMMW3SE
-        FbZJ4y/TUFDJZApCGjb93w3Hj96rUdU=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=6m/oOMAeql9tfpB3KRE+NG5uI7PXHCqGYzT2XNpmPYw=;
+        b=OZt0C08KO4qWEolKrxOOy/D9qcCvOHdSI7S/w76XYBeZhLu2S7p4XIli1rbBqsOgMSjVPZ
+        fYNcgGpyoCCt5u2jQJeIyYpU1sUeppQnuPQ1R2yT0bAeVbfM7YpZqVpL7GPfogeFy0NXAQ
+        zdjZ9drrNTdLWgdqQA0CRQ+GwctXFnU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-464-fTwgoXliOEKm6HPCcC5q8A-1; Tue, 01 Feb 2022 08:09:15 -0500
-X-MC-Unique: fTwgoXliOEKm6HPCcC5q8A-1
-Received: by mail-wr1-f71.google.com with SMTP id g17-20020adfa591000000b001da86c91c22so6020416wrc.5
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Feb 2022 05:09:15 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Swdbs0KGcPDJP8bHPLb5XLPBG6TEyMwLGc8obCIfC/8=;
-        b=L/0p8mFu3EKKfMK5fAG5iIVgeEB78Dk7mUR3LLzBTSzcEauN5VOzNNjhoq3Ws2sBsn
-         iu8z3dcvcIFTSNaVwXDkKRZbotiDRXHkHfaLX1x9VWXNOwbYZXquUllfLHOTy1sg9tDI
-         P1CTIuignLJIf5lkenz8dKqpWJRe9c4SHORz+cWJ/e8hbT5IwmHcFizr2amiXoxo8m7U
-         /MGJPtNdcIanhr9hzRIGMel1MG5ec8bMJeSdP0G8/8x71hK7ca5oDRUTcXHlAobWye8P
-         r9Q2A1s+m6uLMWCyiAsOpVEan6ywuQMCv/mrklHucEgXW5ipVUP5lGq2OhWiiLXy34dM
-         LbqQ==
-X-Gm-Message-State: AOAM531Px+wUJjatfwMYHZkvXsz9RyYuKiXJ2HQiAtME1kEJiuieFDxO
-        3qF5eCDq2XFWHbJ8wKZ/H3JYeYiM1esYdVayvuRopaoSkHdvzqUFWBH2OVmiJv/wtCxU/Wf9suK
-        eXm7Sqp+YUTo3+hB4AdEJnlbO
-X-Received: by 2002:adf:e352:: with SMTP id n18mr21470517wrj.186.1643720954337;
-        Tue, 01 Feb 2022 05:09:14 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyOn1oxGJgGYrZTitNon0Jegeh+MsCQ2kZKpT+TAayFOqeP9U5cQ7Py9fW0vZeynCe+/FW0Dg==
-X-Received: by 2002:adf:e352:: with SMTP id n18mr21470498wrj.186.1643720954131;
-        Tue, 01 Feb 2022 05:09:14 -0800 (PST)
-Received: from [192.168.1.102] ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id l29sm3177560wms.1.2022.02.01.05.09.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Feb 2022 05:09:13 -0800 (PST)
-Message-ID: <51f54519-bb8b-f108-1c1e-4fed101ca5ef@redhat.com>
-Date:   Tue, 1 Feb 2022 14:09:12 +0100
+ us-mta-544-BHeNKujnNq6vC_kNUSxtZA-1; Tue, 01 Feb 2022 08:08:48 -0500
+X-MC-Unique: BHeNKujnNq6vC_kNUSxtZA-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BDAE91091DA0;
+        Tue,  1 Feb 2022 13:08:45 +0000 (UTC)
+Received: from shalem.redhat.com (unknown [10.39.194.196])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 595CB795B1;
+        Tue,  1 Feb 2022 13:08:42 +0000 (UTC)
+From:   Hans de Goede <hdegoede@redhat.com>
+To:     "Rafael J . Wysocki" <rafael@kernel.org>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Mark Gross <markgross@kernel.org>,
+        Andy Shevchenko <andy@kernel.org>,
+        Wolfram Sang <wsa@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Ard Biesheuvel <ardb@kernel.org>
+Cc:     Hans de Goede <hdegoede@redhat.com>, Len Brown <lenb@kernel.org>,
+        linux-acpi@vger.kernel.org, Yauhen Kharuzhy <jekhor@gmail.com>,
+        Tsuchiya Yuto <kitakar@gmail.com>,
+        Fabio Aiuto <fabioaiuto83@gmail.com>,
+        platform-driver-x86@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-efi@vger.kernel.org
+Subject: [PATCH v5 18/20] extcon: intel-cht-wc: Refactor cht_wc_extcon_get_charger()
+Date:   Tue,  1 Feb 2022 14:07:04 +0100
+Message-Id: <20220201130706.46685-19-hdegoede@redhat.com>
+In-Reply-To: <20220201130706.46685-1-hdegoede@redhat.com>
+References: <20220201130706.46685-1-hdegoede@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 0/4] drm/tiny: Add driver for Solomon SSD1307 OLED
- displays
-Content-Language: en-US
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Mark Brown <broonie@kernel.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>,
-        Maxime Ripard <maxime@cerno.tech>,
-        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>
-References: <20220131201225.2324984-1-javierm@redhat.com>
- <YfhM97cVH3+lJKg0@ravnborg.org> <Yfj/XGRRDNABsLPm@smile.fi.intel.com>
- <f8d71acb-5c8b-ac4e-0c32-38eb66af04c3@redhat.com>
- <CAMuHMdVP6ER119r2KAegjZes1a=KWZ47z6j=kgQ0oNx1oeUJ+w@mail.gmail.com>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <CAMuHMdVP6ER119r2KAegjZes1a=KWZ47z6j=kgQ0oNx1oeUJ+w@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Geert,
+This is a preparation patch for adding support for registering
+a power_supply class device.
 
-On 2/1/22 12:38, Geert Uytterhoeven wrote:
+Setting usbsrc to "CHT_WC_USBSRC_TYPE_SDP << CHT_WC_USBSRC_TYPE_SHIFT"
+will make the following switch-case return EXTCON_CHG_USB_SDP
+just as before, so there is no functional change.
 
-[snip]
+Acked-by: Chanwoo Choi <cw00.choi@samsung.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+Changes in v5:
+- s/Save/safe/ in a comment (spelling fix)
 
->>
->> Since the current binding has a compatible "ssd1305fb-i2c", we could make the
->> new one "ssd1305drm-i2c" or better, just "ssd1305-i2c".
-> 
-> DT describes hardware, not software policy.
-> If the hardware is the same, the DT bindings should stay the same.
-> 
+Changes in v3:
+- Reword the commit message
+---
+ drivers/extcon/extcon-intel-cht-wc.c | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
 
-Yes I know that but the thing is that the current binding don't describe
-the hardware correctly. For instance, don't use a backlight DT node as a
-property of the panel and have this "fb" suffix in the compatible strings.
-
-Having said that, my opinion is that we should just keep with the existing
-bindings and make compatible to that even if isn't completely correct.
-
-Since that will ease adoption of the new DRM driver and allow users to use
-it without the need to update their DTBs.
-
-Best regards,
+diff --git a/drivers/extcon/extcon-intel-cht-wc.c b/drivers/extcon/extcon-intel-cht-wc.c
+index 3fc5dd06849a..a828ca89ca7f 100644
+--- a/drivers/extcon/extcon-intel-cht-wc.c
++++ b/drivers/extcon/extcon-intel-cht-wc.c
+@@ -153,14 +153,15 @@ static int cht_wc_extcon_get_charger(struct cht_wc_extcon_data *ext,
+ 	} while (time_before(jiffies, timeout));
+ 
+ 	if (status != CHT_WC_USBSRC_STS_SUCCESS) {
+-		if (ignore_errors)
+-			return EXTCON_CHG_USB_SDP; /* Save fallback */
++		if (!ignore_errors) {
++			if (status == CHT_WC_USBSRC_STS_FAIL)
++				dev_warn(ext->dev, "Could not detect charger type\n");
++			else
++				dev_warn(ext->dev, "Timeout detecting charger type\n");
++		}
+ 
+-		if (status == CHT_WC_USBSRC_STS_FAIL)
+-			dev_warn(ext->dev, "Could not detect charger type\n");
+-		else
+-			dev_warn(ext->dev, "Timeout detecting charger type\n");
+-		return EXTCON_CHG_USB_SDP; /* Save fallback */
++		/* Safe fallback */
++		usbsrc = CHT_WC_USBSRC_TYPE_SDP << CHT_WC_USBSRC_TYPE_SHIFT;
+ 	}
+ 
+ 	usbsrc = (usbsrc & CHT_WC_USBSRC_TYPE_MASK) >> CHT_WC_USBSRC_TYPE_SHIFT;
 -- 
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
+2.33.1
 
