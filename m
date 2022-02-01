@@ -2,61 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCACDC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 10:56:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64214C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 10:56:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237009AbiBAK4L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 05:56:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32874 "EHLO
+        id S237040AbiBAK4Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 05:56:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237001AbiBAK4I (ORCPT
+        with ESMTP id S237019AbiBAK4R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 05:56:08 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4945C061714;
-        Tue,  1 Feb 2022 02:56:08 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Tue, 1 Feb 2022 05:56:17 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0AEDC061714;
+        Tue,  1 Feb 2022 02:56:17 -0800 (PST)
+Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EDCA1614DE;
-        Tue,  1 Feb 2022 10:55:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E231C340EB;
-        Tue,  1 Feb 2022 10:55:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643712925;
-        bh=+nXX+G97ZyuVMBtoWY1dd7htS4xhjedPyMjW5j4g8sA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=eFjvA2t6zrhb+6PW0HZyJMdL+obry1TnzDiuBOqf2vCIH5uNLwns8JMVTyLj5B4qI
-         c6tXawLaNKCj9WP7GZqMqzdZlPzsQRmGZMwj+Fy5cTZUz7t3BFh4HHvIDhT89CaGu9
-         W66nj9ptpA8hXAgfPakw32/AUDEGPWhR+k0oQv+ChqZQWydCLmVvBUg9FyAjsQvhVi
-         LxPCMKFBb51zLgRdHo7VzRmGU3CxeeV2TpIUi+AfCq1ZApoevq96fqxrlaWQrntmiW
-         sPuFhpdm9TL4Mln97fL1zjhZAUEsEj5mmsi9Lk7Mx90APXefVUA88TxxB+wh9p+z6b
-         eTHozjTd+czWA==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1nEqoX-0003nt-Kd; Tue, 01 Feb 2022 11:55:09 +0100
-Date:   Tue, 1 Feb 2022 11:55:09 +0100
-From:   Johan Hovold <johan@kernel.org>
-To:     Cameron Williams <cang1@live.co.uk>
-Cc:     gregkh@linuxfoundation.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] usb-serial: Add support for Brainboxes US-159/235/320
-Message-ID: <YfkRjaLh3T4RIyrm@hovoldconsulting.com>
-References: <AM5PR0202MB25641C06DA64C54B29F1B8B6C4269@AM5PR0202MB2564.eurprd02.prod.outlook.com>
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id EB4FE1EC04AD;
+        Tue,  1 Feb 2022 11:56:11 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1643712972;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=46aTMocMoAPOjkzOyW549Rg/pu0OxKnDcuckgk6b6E0=;
+        b=KX/7ShJt2YcMVtPaBZxAu52wRHUwNWk17MoeOKO7euO4o8CkggePNJzOO556ySLF708u6Q
+        ek2Kk9Kla3IO2X/9qJMSEn8YNcOw9E3qBggMCKUULGsqesAxEslwNFmLExPajRAnYksDsr
+        wW31SFVfgnyYqCxCpopoHnWWK+gaHfU=
+Date:   Tue, 1 Feb 2022 11:56:08 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     David Woodhouse <dwmw2@infradead.org>
+Cc:     Tom Lendacky <thomas.lendacky@amd.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Sean Christopherson <seanjc@google.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "rcu@vger.kernel.org" <rcu@vger.kernel.org>,
+        "mimoja@mimoja.de" <mimoja@mimoja.de>,
+        "hewenliang4@huawei.com" <hewenliang4@huawei.com>,
+        "hushiyuan@huawei.com" <hushiyuan@huawei.com>,
+        "luolongjun@huawei.com" <luolongjun@huawei.com>,
+        "hejingxian@huawei.com" <hejingxian@huawei.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Andrew Cooper <andrew.cooper3@citrix.com>
+Subject: Re: [PATCH v3 6/9] x86/smpboot: Support parallel startup of
+ secondary CPUs
+Message-ID: <YfkRyLV/auNzczfF@zn.tnic>
+References: <20211215145633.5238-1-dwmw2@infradead.org>
+ <20211215145633.5238-7-dwmw2@infradead.org>
+ <d10f529e-b1ee-6220-c6fc-80435f0061ee@amd.com>
+ <f25c6ad00689fee6ce3e294393c13f3dcdd5985f.camel@infradead.org>
+ <3d8e2d0d-1830-48fb-bc2d-995099f39ef0@amd.com>
+ <e742473935bf81be84adea6fa8061ce0846cc630.camel@infradead.org>
+ <330bedfee12022c1180d8752fb4abe908dac08d1.camel@infradead.org>
+ <YffrVMiO/NalRZjL@zn.tnic>
+ <3bc401a9f110a24a429316371c767507b493025a.camel@infradead.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <AM5PR0202MB25641C06DA64C54B29F1B8B6C4269@AM5PR0202MB2564.eurprd02.prod.outlook.com>
+In-Reply-To: <3bc401a9f110a24a429316371c767507b493025a.camel@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 01, 2022 at 10:12:51AM +0000, Cameron Williams wrote:
-> This patch adds support for the Brainboxes US-159, US-235
-> and US-320 USB-to-Serial devices.
-> 
-> Signed-off-by: Cameron Williams <cang1@live.co.uk>
+On Tue, Feb 01, 2022 at 10:25:01AM +0000, David Woodhouse wrote:
+> Thanks. It looks like that is only invoked after boot, with a write to
+> /sys/devices/system/cpu/microcode/reload.
+>
+> My series is only parallelising the initial bringup at boot time, so it
+> shouldn't make any difference.
 
-Applied, thanks.
+No, I don't mean __reload_late() - I pointed you at that function to
+show the dance we must do when updating microcode late.
 
-Johan
+The load_ucode_{ap,bsp}() routines are what is called when loading ucode
+early.
+
+So the question is, does the parallelizing change the order in which APs
+are brought up and can it happen that a SMT sibling of a two-SMT core
+executes *something* while the other SMT sibling is updating microcode.
+
+If so, that would be bad.
+
+> However... it does look like there's nothing preventing a sibling being
+> brought online *while* the dance you mention above is occurring.
+
+Bottom line is: of the two SMT siblings, one needs to be updating
+microcode while the other is idle. I.e., what __reload_late() does.
+
+> Shouldn't __reload_late() take the device_hotplug_lock to prevent that?
+
+See reload_store().
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
