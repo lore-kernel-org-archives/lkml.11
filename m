@@ -2,187 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36152C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 07:58:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD768C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 08:02:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234827AbiBAH6t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 02:58:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49222 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231873AbiBAH6s (ORCPT
+        id S235115AbiBAICQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 03:02:16 -0500
+Received: from lelv0142.ext.ti.com ([198.47.23.249]:45342 "EHLO
+        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230104AbiBAICP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 02:58:48 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A375C061714
-        for <linux-kernel@vger.kernel.org>; Mon, 31 Jan 2022 23:58:48 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nEo3e-00046y-6s; Tue, 01 Feb 2022 08:58:34 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nEo3V-00Dmxz-QK; Tue, 01 Feb 2022 08:58:25 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nEo3U-002kWK-5c; Tue, 01 Feb 2022 08:58:24 +0100
-Date:   Tue, 1 Feb 2022 08:58:24 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     conor.dooley@microchip.com
-Cc:     linus.walleij@linaro.org, brgl@bgdev.pl, robh+dt@kernel.org,
-        jassisinghbrar@gmail.com, thierry.reding@gmail.com,
-        lee.jones@linaro.org, a.zummo@towertech.it,
-        alexandre.belloni@bootlin.com, paul.walmsley@sifive.com,
-        palmer@dabbelt.com, aou@eecs.berkeley.edu, geert@linux-m68k.org,
-        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-pwm@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-riscv@lists.infradead.org, krzysztof.kozlowski@canonical.com,
-        bin.meng@windriver.com, heiko@sntech.de, lewis.hanly@microchip.com,
-        daire.mcnamara@microchip.com, ivan.griffin@microchip.com,
-        atishp@rivosinc.com, Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v5 06/12] dt-bindings: pwm: add microchip corepwm binding
-Message-ID: <20220201075824.aixrvkvmjde2ihxx@pengutronix.de>
-References: <20220131114726.973690-1-conor.dooley@microchip.com>
- <20220131114726.973690-7-conor.dooley@microchip.com>
+        Tue, 1 Feb 2022 03:02:15 -0500
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 211828La078868;
+        Tue, 1 Feb 2022 02:02:08 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1643702528;
+        bh=Aee/u77ubOE0vyCuYGfT7vvh+kz0CcyyjunwqH/rJt0=;
+        h=Date:From:To:CC:Subject:References:In-Reply-To;
+        b=pXwOBe42PkEfc0ds2HXv4oGOc+XGWbu6OqHo0PuCjHuW2Y5opM3ii983StFkDwr7l
+         f4BRGeDC44bD7ZiNAvEm3vPD6KJcc++6XfQA0QQl2OGQnqk4rPnpoOEMSmNWmunqCg
+         opCqDpeBJ6/P8rs3W48JTdwPYHacMomd8GhD4hAg=
+Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 211828cH037703
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 1 Feb 2022 02:02:08 -0600
+Received: from DFLE103.ent.ti.com (10.64.6.24) by DFLE115.ent.ti.com
+ (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 1
+ Feb 2022 02:02:08 -0600
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE103.ent.ti.com
+ (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Tue, 1 Feb 2022 02:02:08 -0600
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2118275l116286;
+        Tue, 1 Feb 2022 02:02:08 -0600
+Date:   Tue, 1 Feb 2022 13:32:07 +0530
+From:   Pratyush Yadav <p.yadav@ti.com>
+To:     <Tudor.Ambarus@microchip.com>
+CC:     <broonie@kernel.org>, <michael@walle.cc>,
+        <miquel.raynal@bootlin.com>, <tkuw584924@gmail.com>,
+        <linux-spi@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] spi: spi-mem: check if data buffers are on stack
+Message-ID: <20220201080207.bvqpzemldlvvykga@ti.com>
+References: <20220131114508.1028306-1-p.yadav@ti.com>
+ <366bad2d-ebb3-a2a5-330d-ff9019d18733@microchip.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="pqylyjr6p2p3xcpl"
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20220131114726.973690-7-conor.dooley@microchip.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+In-Reply-To: <366bad2d-ebb3-a2a5-330d-ff9019d18733@microchip.com>
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 01/02/22 07:44AM, Tudor.Ambarus@microchip.com wrote:
+> On 1/31/22 13:45, Pratyush Yadav wrote:
+> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> > 
+> > The buffers passed in the data phase must be DMA-able. Programmers often
+> > don't realise this requirement and pass in buffers that reside on the
+> > stack. This can be hard to spot when reviewing code. Reject ops if their
+> > data buffer is on the stack to avoid this.
+> > 
+> > Signed-off-by: Pratyush Yadav <p.yadav@ti.com>
+> > ---
+> >  drivers/spi/spi-mem.c | 9 +++++++++
+> >  1 file changed, 9 insertions(+)
+> > 
+> > diff --git a/drivers/spi/spi-mem.c b/drivers/spi/spi-mem.c
+> > index 37f4443ce9a0..b3793a2979ee 100644
+> > --- a/drivers/spi/spi-mem.c
+> > +++ b/drivers/spi/spi-mem.c
+> > @@ -207,6 +207,15 @@ static int spi_mem_check_op(const struct spi_mem_op *op)
+> >             !spi_mem_buswidth_is_valid(op->data.buswidth))
+> >                 return -EINVAL;
+> > 
+> > +       /* Buffers must be DMA-able. */
+> > +       if (op->data.dir == SPI_MEM_DATA_IN &&
+> > +           object_is_on_stack(op->data.buf.in))
+> 
+> should we also check if the virt addr is valid?
+> if (object_is_on_stack(op->data.buf.in) || !virt_addr_valid(op->data.buf.in))
 
---pqylyjr6p2p3xcpl
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+When would virt addr not be valid? When someone passes a bad pointer? I 
+generally have not seen kernel APIs checking for pointer validity (other 
+than NULL). If you pass a bad pointer then expect bad things to happen. 
+Plus a bad pointer might also point to a valid virtual address, and we 
+have no way of catching that. Dunno...
 
-On Mon, Jan 31, 2022 at 11:47:21AM +0000, conor.dooley@microchip.com wrote:
-> From: Conor Dooley <conor.dooley@microchip.com>
->=20
-> Add device tree bindings for the Microchip fpga fabric based "core" PWM
-> controller.
->=20
-> Reviewed-by: Rob Herring <robh@kernel.org>
->=20
-> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
-> ---
->  .../bindings/pwm/microchip,corepwm.yaml       | 75 +++++++++++++++++++
->  1 file changed, 75 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/pwm/microchip,corep=
-wm.yaml
->=20
-> diff --git a/Documentation/devicetree/bindings/pwm/microchip,corepwm.yaml=
- b/Documentation/devicetree/bindings/pwm/microchip,corepwm.yaml
-> new file mode 100644
-> index 000000000000..26a77cde2465
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pwm/microchip,corepwm.yaml
-> @@ -0,0 +1,75 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/pwm/microchip,corepwm.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Microchip ip core PWM controller bindings
-> +
-> +maintainers:
-> +  - Conor Dooley <conor.dooley@microchip.com>
-> +
-> +description: |
-> +  corePWM is an 16 channel pulse width modulator FPGA IP
-> +
-> +  https://www.microsemi.com/existing-parts/parts/152118
-> +
-> +properties:
-> +  compatible:
-> +    items:
-> +      - const: microchip,corepwm-rtl-v4
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    maxItems: 1
-> +
-> +  "#pwm-cells":
-> +    const: 2
-> +
-> +  microchip,sync-update:
-> +    description: |
-> +      In synchronous mode, all channels are updated at the beginning of =
-the PWM period.
-> +      Asynchronous mode is relevant to applications such as LED control,=
- where
-> +      synchronous updates are not required. Asynchronous mode lowers the=
- area size,
-> +      reducing shadow register requirements. This can be set at run time=
-, provided
-> +      SHADOW_REG_EN is asserted. SHADOW_REG_EN is set by the FPGA bitstr=
-eam programmed
-> +      to the device.
-> +      Each bit corresponds to a PWM channel & represents whether synchro=
-nous mode is
-> +      possible for the PWM channel.
-> +
-> +    $ref: /schemas/types.yaml#/definitions/uint16
-> +    default: 0
-
-I'm not sure I understand this correctly. This is a soft-core and you
-can synthesize it either with or without the ability to do synchronous
-updates or not, right? All 16 channels share the same period length and
-in the simple implementation changing the duty cycle is done at once
-(maybe introducing a glitch) and in the more expensive implementation
-there is a register to implement both variants?
-
-
-> +  microchip,dac-mode:
-> +    description: |
-> +      Optional, per-channel Low Ripple DAC mode is possible on this IP c=
-ore. It creates
-> +      a minimum period pulse train whose High/Low average is that of the=
- chosen duty
-> +      cycle. This "DAC" will have far better bandwidth and ripple perfor=
-mance than the
-> +      standard PWM algorithm can achieve.
-> +      Each bit corresponds to a PWM channel & represents whether dac mod=
-e is enabled
-> +      that PWM channel.
-
-In the last sentence a "for" is missing?
-
-These two properties are not detectable in software?
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---pqylyjr6p2p3xcpl
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmH46B0ACgkQwfwUeK3K
-7Am3Sgf/UTtQSsIPttdHYyNUxSYZF6fH8Mu324npdIKQ+39Z6OX/+MjR27kWtIP9
-PnRVaiT3ysheX8NpDwOr4mFokpvxx6yswleZStNKVh+xzGfPDwvGMbCElcf/RL7P
-UdSovN/QCVE/X+dCUDz+sZtlbnXMW3+mJmDr2Qs1xh0/R+wuHwIwetY/8jW8t1Hy
-AkxUBTyiszRkAlXctrW+k+NaoXvtJnLLS3oCyp/vuHXvsCuwzp5GwHjL7alf89uE
-h/EMEzivdI/Bks9p9w9jDMg6GNp3KoL4RYeQwCWz4DkO3kezyhIwIgbMRLF57IqZ
-HYcnZow7dopjm+dWBk/s32mz7/prow==
-=622s
------END PGP SIGNATURE-----
-
---pqylyjr6p2p3xcpl--
+-- 
+Regards,
+Pratyush Yadav
+Texas Instruments Inc.
