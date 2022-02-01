@@ -2,82 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA643C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 15:08:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DA24C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 15:10:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240164AbiBAPIR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 10:08:17 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:60064 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240091AbiBAPIH (ORCPT
+        id S239823AbiBAPJ7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 10:09:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34678 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233653AbiBAPJ6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 10:08:07 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AC31DB82E40;
-        Tue,  1 Feb 2022 15:08:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 624A5C340F3;
-        Tue,  1 Feb 2022 15:07:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643728084;
-        bh=Si9E3r6pYgLyZE78Wh6CEM9V0J4HBM/qUu4KIFvH+oc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eEuBg74CDZ3f6e40uvnJ5RT+SSwK1btZFI7S/uL/U8kEQKFmaRhBsDqnLCSARwUZ3
-         KNytW4sxdwomRz6uGtcIYBx5R1X/EtERVDp2SRYHEuDWMlN3gt5nt1U9B+R/mAagrj
-         lBQAywSJoO832oF0w0SFIIsC3dtJb9ybRVuwkRAbau7d3Y+4ITMf+j3Y8lPLHnzFZQ
-         g2XQSyewZOa2P5q0uosp1gznuC1qPs/vrzHrIjA5TrHE5af3auUXxeOjawqNSFn1jp
-         gED0x9TRgUjeg9doS6jwQ+ATkoPG6AeEbYS6+hXrOxYNVImxP3ZQYMqu+qKHmQcDop
-         k7rgXY9AMpikQ==
-From:   guoren@kernel.org
-To:     guoren@kernel.org, palmer@dabbelt.com, arnd@arndb.de,
-        anup@brainfault.org, gregkh@linuxfoundation.org,
-        liush@allwinnertech.com, wefu@redhat.com, drew@beagleboard.org,
-        wangjunqiang@iscas.ac.cn, hch@lst.de
-Cc:     linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-csky@vger.kernel.org,
-        linux-s390@vger.kernel.org, sparclinux@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-parisc@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        x86@kernel.org, Guo Ren <guoren@linux.alibaba.com>
-Subject: [PATCH V5 21/21] KVM: compat: riscv: Prevent KVM_COMPAT from being selected
-Date:   Tue,  1 Feb 2022 23:05:45 +0800
-Message-Id: <20220201150545.1512822-22-guoren@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220201150545.1512822-1-guoren@kernel.org>
-References: <20220201150545.1512822-1-guoren@kernel.org>
+        Tue, 1 Feb 2022 10:09:58 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A325C061714;
+        Tue,  1 Feb 2022 07:09:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=AN/jspz2JoBPtJ1HTGOsT/p4u4etOkVQMVBmx8Uzn50=; b=WZ5e8OwGjvIoFUlKOzpq5r3JBZ
+        FNMjL8sIW2SyI5neFlh6We62xXvGsLHHSQGOCSHhXHiil6prF36INPc9/M/30qCMpULBBpjNcwlIk
+        zbxzOOFt8hFGA1lr6V/RfHtRleV/Ttq+QYj5noyMiCeI6Ps7WRZQZGtmxptqMWOfyWchzSdu4bL0o
+        GKXjdYpFFbB7IqWLtgQXfvOAASjQnbAje4SMi7GutaLWLk6ax1JuUCGUuUU6y+z3iwQj2rwjGJHga
+        yfh95Fu66JdHlHGFGUvwOp3bEplThJuI5WFa5L+Wb5Hx6EAnG1Zbb5oZjGFKdwFYz1G38BxqilLZH
+        YflpeprA==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nEumr-00CSpr-Nm; Tue, 01 Feb 2022 15:09:41 +0000
+Date:   Tue, 1 Feb 2022 15:09:41 +0000
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Martin Uecker <Martin.Uecker@med.uni-goettingen.de>,
+        Ingo Molnar <mingo@kernel.org>,
+        Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
+        Rikard Falkeborn <rikard.falkeborn@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>, linux-doc@vger.kernel.org,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH] linux/const.h: Explain how __is_constexpr() works
+Message-ID: <YflNNRCibwcy7F3Q@casper.infradead.org>
+References: <20220131204357.1133674-1-keescook@chromium.org>
+ <dc86fdf7-3202-e836-6f71-af1e2458b105@rasmusvillemoes.dk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <dc86fdf7-3202-e836-6f71-af1e2458b105@rasmusvillemoes.dk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guo Ren <guoren@linux.alibaba.com>
+On Tue, Feb 01, 2022 at 02:05:53PM +0100, Rasmus Villemoes wrote:
+> I don't think adding slightly inaccurate comments would help a future
+> reader at all. Then it's better to just stick to Linus' "it's art, and
+> art should not be explained".
 
-Current riscv doesn't support the 32bit KVM API. Let's make it
-clear by not selecting KVM_COMPAT.
-
-Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
-Signed-off-by: Guo Ren <guoren@kernel.org>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Anup Patel <anup@brainfault.org>
----
- virt/kvm/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/virt/kvm/Kconfig b/virt/kvm/Kconfig
-index f4834c20e4a6..a8c5c9f06b3c 100644
---- a/virt/kvm/Kconfig
-+++ b/virt/kvm/Kconfig
-@@ -53,7 +53,7 @@ config KVM_GENERIC_DIRTYLOG_READ_PROTECT
- 
- config KVM_COMPAT
-        def_bool y
--       depends on KVM && COMPAT && !(S390 || ARM64)
-+       depends on KVM && COMPAT && !(S390 || ARM64 || RISCV)
- 
- config HAVE_KVM_IRQ_BYPASS
-        bool
--- 
-2.25.1
-
+/* You are not expected to understand this */
