@@ -2,124 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18F4BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 17:06:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98432C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 17:09:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241441AbiBARGr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 12:06:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33438 "EHLO
+        id S238732AbiBARJw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 12:09:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241434AbiBARGq (ORCPT
+        with ESMTP id S230490AbiBARJv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 12:06:46 -0500
-Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEC2EC061714
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Feb 2022 09:06:45 -0800 (PST)
-Received: by mail-oi1-x231.google.com with SMTP id m9so34493567oia.12
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Feb 2022 09:06:45 -0800 (PST)
+        Tue, 1 Feb 2022 12:09:51 -0500
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD595C061714;
+        Tue,  1 Feb 2022 09:09:50 -0800 (PST)
+Received: by mail-pj1-x1033.google.com with SMTP id q63so17699735pja.1;
+        Tue, 01 Feb 2022 09:09:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RdQTcqQ9Qr4h0L2NlLlM99qGIKmmmXyVpgAfVQlyXvw=;
-        b=aBXJGsBy39GcwPGw1gQwRkkKV6thDHpcyarDrmkoubQM6M8m7KheFYLmVcR/iba2MT
-         ++t5VYXBHifuxfZgt0rPdm2eEQIi4to/6t4QII6YDcjxIphQkcY9ydqlzF1HGNKaSs9V
-         IvfM1MNQmBgOqUNJRefzdJIahGbbWzxTo2tEE=
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=PUIgelpXEQevWyX1W8jBsBa/dCPezZfxgXScg7BVU5c=;
+        b=SW54mIhtH5QKZwMa5XF99tt04pvq6dTodAAzJOC/fyaSsk3YbovTPXlN9dJtQRy9RV
+         sZ5Dr2tD8bdIVEhWaqhIYeHFefl4pgIq29m2gZi8tpzDap4fJXTdR3kIIi9/v+aYemK7
+         NBsYzn2I5t8ouHEH4apgnJHW2iZ5yr/UbkcAhqdSVDWJW6R9FmeJJWj9nc4+BDqoqw7K
+         Tpk2sYjpqGYmk+u2ZqauQdVk0zErJXuHJDqCphJZJ+T9yXMODdkf4BGotlaiakIQxOy0
+         t25O1aVH9BsUDt+a2ggdR+VkgUv2zOMBHz7WI2miDkM4USIWtb8TTbHAVKfcAvaWPXwj
+         2fBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RdQTcqQ9Qr4h0L2NlLlM99qGIKmmmXyVpgAfVQlyXvw=;
-        b=u2CbEYxl9ZpNbGvYMaDDR20aicM8TQ2kGNAemwuNcdNLs+UyVgvrKYilmyogogRdP7
-         xQ9xhLNmYzZCV9OgDKkTQZm3ieS41ZkLvuRZcwjYNIB8V4XwVVRjdM+vvFmP4OmOiJMa
-         XQ39oP5kxf5Eu5xb1XLpVnsnHMAozAbiVwIzFyFTFZfS0M4KMJ+pRFPevgjQ8re8N1jH
-         yuARQlLsLnsvwTQi5E1Aj2Bab8FLd2DT/DiTRoq1Vupkv+4Vbi4Sw/uBqhoCGqca7umm
-         bFRpyF//fvP4TbTdmy+e5CWN2ugFxu7GACTJDptgI4A+qzNuN36VJKv6HiqEgBWiinfr
-         8KYw==
-X-Gm-Message-State: AOAM531SIcKmeeKZk6S3AA/T6oJV7ZqT6fmdCozwYmsX8DXJMen1w9cS
-        qYIh9xLXq6E14c7EeU/qN2Xe+ZFqPlnnpyyhH0k5pQ==
-X-Google-Smtp-Source: ABdhPJxmJTT10BhmESxaD9wSsaXi2TyqjKpx8TF/TQp9so++NA/uk65aK3wvzaI2XbQCX3/1SL7QYNE/AkpMguwVMkA=
-X-Received: by 2002:a05:6808:1641:: with SMTP id az1mr1928959oib.278.1643735204982;
- Tue, 01 Feb 2022 09:06:44 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=PUIgelpXEQevWyX1W8jBsBa/dCPezZfxgXScg7BVU5c=;
+        b=Vopuoq1bZ8J/AYquUtebk1M0niGaCf2BTC09RVNTpby6WFxn+h2IzsmkQ7eLnJ6bkN
+         niqX//bfUQEMlK/cIP2lN14NHB4e1DtJDXnGgm8S5Alrg4xiUEe+ewucWrXHrYctQUNh
+         nlDsl8hfYqPs4WHzxGzrp9eOL3yq2UhJUCEmARingKXNZEGz65oiCcMb1LAQRyjcfA8S
+         h7BmW9lf4l6Jl4SwFFinnrZECST9owAWLgGHL6vxEFloQEd5V2AVyMdedpDjCgeYpFPX
+         BmLrZvtJGhRnnzM0DWIyfJDQ2zlE5/Q/6Yy0nPFHdbp7gRJ4FHp1OJ5QobKjCimmaXkh
+         Ng0w==
+X-Gm-Message-State: AOAM532Y6eM/MNSmjnN0dFn1xqjVKmEClWER3GXFI8nPxWbGGVWsncgZ
+        cruexvC/pi4z6HZbi+ptgfs=
+X-Google-Smtp-Source: ABdhPJz5yB07Ix5o19k8F+dU8Px3ktIP0ST5YMwenoAWVaxtH3aTzk6TAg04YPusVJsGsVMBn8uNyQ==
+X-Received: by 2002:a17:902:e812:: with SMTP id u18mr26752712plg.12.1643735390153;
+        Tue, 01 Feb 2022 09:09:50 -0800 (PST)
+Received: from [192.168.254.17] ([50.39.160.154])
+        by smtp.gmail.com with ESMTPSA id h14sm23508476pfh.95.2022.02.01.09.09.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 01 Feb 2022 09:09:49 -0800 (PST)
+Message-ID: <d065921b-784c-be0c-3ad2-f2ededb201ac@gmail.com>
+Date:   Tue, 1 Feb 2022 09:09:49 -0800
 MIME-Version: 1.0
-References: <20220125202118.63362-1-andriy.shevchenko@linux.intel.com>
- <20220125202118.63362-2-andriy.shevchenko@linux.intel.com>
- <YfEG2qVO9K9G+g1d@kroah.com> <CAKMK7uGoRC9a4cMCADTipV67oivfWvTw=6RYm2kOthB_bhWnXQ@mail.gmail.com>
- <f671a112-880d-1526-a395-360947b40c5a@gmx.de> <YfEv7OQs98O9wJdJ@kroah.com>
- <YfFIpBb7lL4ukWjm@smile.fi.intel.com> <b8eb7111-43aa-cc8a-a1bc-f08e0f2987ed@redhat.com>
- <YfFV4EJosayH+e6C@smile.fi.intel.com> <YfFWPmG2D093gz4N@smile.fi.intel.com>
- <6e74d4cc-655a-e38e-0856-a59e4e6deb36@redhat.com> <c423a2f0-e7be-3884-3568-7629c7e9104e@redhat.com>
- <ddb0f354-be19-92fe-20b3-56b00c9304ab@suse.de> <840ec74d-60c6-9480-709c-8cd597c6f5b0@redhat.com>
- <e7fbef3c-2f87-15f9-b24d-34ffaa5a2853@suse.de> <CAMuHMdXnn+JcyMAV_Vbb4Yj8hJmae=Snc2R2fLviq67UYXg7Ew@mail.gmail.com>
-In-Reply-To: <CAMuHMdXnn+JcyMAV_Vbb4Yj8hJmae=Snc2R2fLviq67UYXg7Ew@mail.gmail.com>
-From:   Daniel Vetter <daniel@ffwll.ch>
-Date:   Tue, 1 Feb 2022 18:06:33 +0100
-Message-ID: <CAKMK7uEPuw1+-=h7gvSyCxW4zNuTK3UNZP6yjpP6MPV17sAasQ@mail.gmail.com>
-Subject: Re: [PATCH v1 1/4] fbtft: Unorphan the driver
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
-        Andy Shevchenko <andy@kernel.org>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Helge Deller <deller@gmx.de>, linux-staging@lists.linux.dev,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Carlis <zhangxuezhi1@yulong.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 0/5] x86: uaccess CMPXCHG + KVM bug fixes
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        llvm@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        syzbot+6cde2282daa792c49ab8@syzkaller.appspotmail.com,
+        Tadeusz Struk <tadeusz.struk@linaro.org>
+References: <20220201010838.1494405-1-seanjc@google.com>
+From:   Tadeusz Struk <tstruk@gmail.com>
+In-Reply-To: <20220201010838.1494405-1-seanjc@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 1, 2022 at 6:01 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
->
-> Hi Thomas,
->
-> On Tue, Feb 1, 2022 at 5:16 PM Thomas Zimmermann <tzimmermann@suse.de> wrote:
-> > Am 31.01.22 um 11:18 schrieb Javier Martinez Canillas:
-> > > Another thing that's missing is a DRM_MODE_CONNECTOR_I2C, because I used for
-> > > now a DRM_MODE_CONNECTOR_Unknown.
-> >
-> > That might have implications on userspace. Maybe ask around. (Not that
-> > we actually run userspace on the device).
->
-> Looking at the list of connector types (and wondering if we're gonna
-> need more when converting existing fbdev drivers to drm drivers),
-> there seem to be two different families of connector types, for
->   1. transports between CRTC and display (e.g. VGA, DVID, HDMI),
->   2. transports between CPU and CRTC (e.g. SPI, possibly USB, and
->      the proposed I2C)?
+On 1/31/22 17:08, Sean Christopherson wrote:
+> Add uaccess macros for doing CMPXCHG on userspace addresses and use the
+> macros to fix KVM bugs by replacing flawed code that maps memory into the
+> kernel address space without proper mmu_notifier protection (or with
+> broken pfn calculations in one case).
+> 
+> Add yet another Kconfig for guarding asm_volatile_goto() to workaround a
+> clang-13 bug.  I've verified the test passes on gcc versions of arm64,
+> PPC, RISC-V, and s390x that also pass the CC_HAS_ASM_GOTO_OUTPUT test.
+> 
+> Patches 1-4 are tagged for stable@ as patches 3 and 4 (mostly 3) need a
+> backportable fix, and doing CMPXCHG on the userspace address is the
+> simplest fix from a KVM perspective.
+> 
+> Peter Zijlstra (1):
+>    x86/uaccess: Implement macros for CMPXCHG on user addresses
+> 
+> Sean Christopherson (4):
+>    Kconfig: Add option for asm goto w/ tied outputs to workaround
+>      clang-13 bug
+>    KVM: x86: Use __try_cmpxchg_user() to update guest PTE A/D bits
+>    KVM: x86: Use __try_cmpxchg_user() to emulate atomic accesses
+>    KVM: x86: Bail to userspace if emulation of atomic user access faults
+> 
+>   arch/x86/include/asm/uaccess.h | 131 +++++++++++++++++++++++++++++++++
+>   arch/x86/kvm/mmu/paging_tmpl.h |  45 +----------
+>   arch/x86/kvm/x86.c             |  35 ++++-----
+>   init/Kconfig                   |   4 +
+>   4 files changed, 150 insertions(+), 65 deletions(-)
 
-I was trying to argue for a panel connector type and stop doing all
-these internal things because like you point out, it kinda doesn't,
-only the external connectors are relevant to users. But it didn't
-stick anywhere yet, we keep adding more connector types and then
-having to update userspace, which should map these all to "it's the
-panel" or something like that. But also since various technicolor
-abbreviations are about as useful to end-users as "unknown" it really
-doesn't matter, so I'm happy to let this bikeshed get a tad fancier
-every year :-)
--Daniel
+This also fixes the following syzbot issue:
+https://syzkaller.appspot.com/bug?id=6cb6102a0a7b0c52060753dd62d070a1d1e71347
 
-> Gr{oetje,eeting}s,
->
->                         Geert
->
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
->
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                 -- Linus Torvalds
+Tested-by: Tadeusz Struk <tadeusz.struk@linaro.org>
 
-
-
--- 
-Daniel Vetter
-Software Engineer, Intel Corporation
-http://blog.ffwll.ch
+--
+Thanks,
+Tadeusz
