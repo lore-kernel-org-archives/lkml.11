@@ -2,179 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D91BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 15:46:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61663C43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 15:48:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240555AbiBAPqm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 10:46:42 -0500
-Received: from mga04.intel.com ([192.55.52.120]:26867 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240521AbiBAPqj (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 10:46:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643730399; x=1675266399;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=d9eKHUfVREYlEXOMy6/dbAqRNvB0R5n8Xjyt6b1+6HE=;
-  b=d/Jx2ga3CIukNweVndQXc/EMFAs7jYvJantwB9CJlSKeXH/GB8GOCm0B
-   V5VsimeUIvRH+03XBD4i1yACVNTfVyeOqG8J6gTNLzR1n2gzkUvOzBsg0
-   xspWxa0tAwlexd9AiKvck026IZ9J4RB4eTq+7PLjbPDAdqdKRaJiZKUpM
-   3vvcvi971xvnL4HNDWeI4VEDWiar+ravQlKux4Xbk5jQuP+7akcMH/fXi
-   6U8qwVh4pGuhdrsuF75P3HQeIonbhMRde2AO2749jKP3hOA/EGqXxo6nr
-   tSDN76Z4o1ChYcaQJXC7crOnf59tZx3okshUL/McUB+vXWf2B8qwH2Q0P
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10244"; a="246550085"
-X-IronPort-AV: E=Sophos;i="5.88,334,1635231600"; 
-   d="scan'208";a="246550085"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2022 07:46:38 -0800
-X-IronPort-AV: E=Sophos;i="5.88,334,1635231600"; 
-   d="scan'208";a="537853590"
-Received: from tveit-mobl1.ger.corp.intel.com (HELO [10.252.37.11]) ([10.252.37.11])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2022 07:46:36 -0800
-Message-ID: <b0a06a30-f479-df9f-980c-b789f0f26ce9@linux.intel.com>
-Date:   Tue, 1 Feb 2022 16:46:33 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.5.1
-Subject: Re: [PATCH v8 00/10] vgaarb: Rework default VGA device selection
-Content-Language: en-US
-To:     Bjorn Helgaas <helgaas@kernel.org>,
+        id S240563AbiBAPsk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 10:48:40 -0500
+Received: from ptr.189.cn ([183.61.185.102]:13119 "EHLO 189.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S240546AbiBAPsi (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 1 Feb 2022 10:48:38 -0500
+HMM_SOURCE_IP: 10.64.8.41:39240.932732977
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-114.242.206.180 (unknown [10.64.8.41])
+        by 189.cn (HERMES) with SMTP id 018381002A8;
+        Tue,  1 Feb 2022 23:48:33 +0800 (CST)
+Received: from  ([114.242.206.180])
+        by gateway-151646-dep-b7fbf7d79-9vctg with ESMTP id 400e55ed5b4a46399fea4733af6fbb3d for dan.carpenter@oracle.com;
+        Tue, 01 Feb 2022 23:48:35 CST
+X-Transaction-ID: 400e55ed5b4a46399fea4733af6fbb3d
+X-Real-From: 15330273260@189.cn
+X-Receive-IP: 114.242.206.180
+X-MEDUSA-Status: 0
+Sender: 15330273260@189.cn
+From:   Sui Jingfeng <15330273260@189.cn>
+To:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Sam <Ravnborgsam@ravnborg.org>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Roland Scheidegger <sroland@vmware.com>,
+        Zack Rusin <zackr@vmware.com>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>,
         David Airlie <airlied@linux.ie>,
         Daniel Vetter <daniel@ffwll.ch>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>
-Cc:     linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Huacai Chen <chenhuacai@loongson.cn>
-References: <20220131222342.GA517488@bhelgaas>
-From:   Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
-In-Reply-To: <20220131222342.GA517488@bhelgaas>
-Content-Type: text/plain; charset=UTF-8
+        Rob Herring <robh+dt@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        suijingfeng <suijingfeng@loongson.cn>
+Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH v4 2/3] dt-bingdings: ls2k1000: add the display controller device node
+Date:   Tue,  1 Feb 2022 23:48:20 +0800
+Message-Id: <20220201154821.3058-3-15330273260@189.cn>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220201154821.3058-1-15330273260@189.cn>
+References: <20220201154821.3058-1-15330273260@189.cn>
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey,
- 
-Op 31-01-2022 om 23:23 schreef Bjorn Helgaas:
-> [+to Maarten, Maxime, Thomas; beginning of thread:
-> https://lore.kernel.org/r/20220106000658.243509-1-helgaas@kernel.org]
->
-> On Wed, Jan 05, 2022 at 06:06:48PM -0600, Bjorn Helgaas wrote:
->> From: Bjorn Helgaas <bhelgaas@google.com>
->>
->> Current default VGA device selection fails in some cases because part of it
->> is done in the vga_arb_device_init() subsys_initcall, and some arches
->> enumerate PCI devices in pcibios_init(), which runs *after* that.
-> Where are we at with this series?  Is there anything I can do to move
-> it forward?
->
-> Bjorn
+From: suijingfeng <suijingfeng@loongson.cn>
 
-Hi Bjorn,
+Signed-off-by: suijingfeng <suijingfeng@loongson.cn>
+Signed-off-by: Sui Jingfeng <15330273260@189.cn>
+---
+ arch/mips/boot/dts/loongson/loongson64-2k1000.dtsi | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-
-I'm afraid that I don't understand the vga arbiter or the vga code well enough to review.
-
-Could you perhaps find someone who could review?
-
-I see Chen wrote some patches and tested, so perhaps they could?
-
-~Maarten
-
->> For example:
->>
->>   - On BMC system, the AST2500 bridge [1a03:1150] does not implement
->>     PCI_BRIDGE_CTL_VGA.  This is perfectly legal but means the legacy VGA
->>     resources won't reach downstream devices unless they're included in the
->>     usual bridge windows.
->>
->>   - vga_arb_select_default_device() will set a device below such a bridge
->>     as the default VGA device as long as it has PCI_COMMAND_IO and
->>     PCI_COMMAND_MEMORY enabled.
->>
->>   - vga_arbiter_add_pci_device() is called for every VGA device, either at
->>     boot-time or at hot-add time, and it will also set the device as the
->>     default VGA device, but ONLY if all bridges leading to it implement
->>     PCI_BRIDGE_CTL_VGA.
->>
->>   - This difference between vga_arb_select_default_device() and
->>     vga_arbiter_add_pci_device() means that a device below an AST2500 or
->>     similar bridge can only be set as the default if it is enumerated
->>     before vga_arb_device_init().
->>
->>   - On ACPI-based systems, PCI devices are enumerated by acpi_init(), which
->>     runs before vga_arb_device_init().
->>
->>   - On non-ACPI systems, like on MIPS system, they are enumerated by
->>     pcibios_init(), which typically runs *after* vga_arb_device_init().
->>
->> This series consolidates all the default VGA device selection in
->> vga_arbiter_add_pci_device(), which is always called after enumerating a
->> PCI device.
->>
->> Almost all the work here is Huacai's.  I restructured it a little bit and
->> added a few trivial patches on top.
->>
->> I'd like to move vgaarb.c to drivers/pci eventually, but there's another
->> initcall ordering snag that needs to be resolved first, so this leaves 
->> it where it is.
->>
->> Bjorn
->>
->> Version history:
->> V0 original implementation as final quirk to set default device.
->> https://lore.kernel.org/r/20210514080025.1828197-6-chenhuacai@loongson.cn
->>
->> V1 rework vgaarb to do all default device selection in
->> vga_arbiter_add_pci_device().
->> https://lore.kernel.org/r/20210705100503.1120643-1-chenhuacai@loongson.cn
->>
->> V2 move arbiter to PCI subsystem, fix nits.
->> https://lore.kernel.org/r/20210722212920.347118-1-helgaas@kernel.org
->>
->> V3 rewrite the commit log of the last patch (which is also summarized
->> by Bjorn).
->> https://lore.kernel.org/r/20210820100832.663931-1-chenhuacai@loongson.cn
->>
->> V4 split the last patch to two steps.
->> https://lore.kernel.org/r/20210827083129.2781420-1-chenhuacai@loongson.cn
->>
->> V5 split Patch-9 again and sort the patches.
->> https://lore.kernel.org/r/20210911093056.1555274-1-chenhuacai@loongson.cn
->>
->> V6 split Patch-5 again and sort the patches again.
->> https://lore.kernel.org/r/20210916082941.3421838-1-chenhuacai@loongson.cn
->>
->> V7 stop moving vgaarb to drivers/pci because of ordering issues with
->> misc_init().
->> https://lore.kernel.org/r/20211015061512.2941859-1-chenhuacai@loongson.cn
->> https://lore.kernel.org/r/CAAhV-H7FhAjM-Ha42Z1dLrE4PvC9frfyeU27KHWcyWKkMftEsA@mail.gmail.com
->>
->>
->> Bjorn Helgaas (8):
->>   vgaarb: Factor out vga_select_framebuffer_device()
->>   vgaarb: Factor out default VGA device selection
->>   vgaarb: Move framebuffer detection to ADD_DEVICE path
->>   vgaarb: Move non-legacy VGA detection to ADD_DEVICE path
->>   vgaarb: Move disabled VGA device detection to ADD_DEVICE path
->>   vgaarb: Remove empty vga_arb_device_card_gone()
->>   vgaarb: Use unsigned format string to print lock counts
->>   vgaarb: Replace full MIT license text with SPDX identifier
->>
->> Huacai Chen (2):
->>   vgaarb: Move vga_arb_integrated_gpu() earlier in file
->>   vgaarb: Log bridge control messages when adding devices
->>
->>  drivers/gpu/vga/vgaarb.c | 311 +++++++++++++++++++--------------------
->>  1 file changed, 154 insertions(+), 157 deletions(-)
->>
->> -- 
->> 2.25.1
->>
+diff --git a/arch/mips/boot/dts/loongson/loongson64-2k1000.dtsi b/arch/mips/boot/dts/loongson/loongson64-2k1000.dtsi
+index 8143a61111e3..6510b0e6928a 100644
+--- a/arch/mips/boot/dts/loongson/loongson64-2k1000.dtsi
++++ b/arch/mips/boot/dts/loongson/loongson64-2k1000.dtsi
+@@ -198,6 +198,17 @@
+ 				interrupt-parent = <&liointc0>;
+ 			};
+ 
++			lsdc: dc@6,0 {
++				compatible = "pci0014,7a06.0",
++						   "pci0014,7a06",
++						   "pciclass030000",
++						   "pciclass0300";
++
++				reg = <0x3000 0x0 0x0 0x0 0x0>;
++				interrupts = <28 IRQ_TYPE_LEVEL_LOW>;
++				interrupt-parent = <&liointc0>;
++			};
++
+ 			pci_bridge@9,0 {
+ 				compatible = "pci0014,7a19.0",
+ 						   "pci0014,7a19",
+-- 
+2.20.1
 
