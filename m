@@ -2,126 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C36F1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 15:28:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6299BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 15:28:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240394AbiBAP2T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 10:28:19 -0500
-Received: from mail-bn8nam12on2053.outbound.protection.outlook.com ([40.107.237.53]:9728
-        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S240294AbiBAP2I (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 10:28:08 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LIa/3/MnZzIi1BIBakfzfUkzvx36SUWseBAR41hdeSWc4iINJzb0SHW+YWVsq7+ZXROlH6Zs3IuWUyoPnMayQgW42yviKo43tK4iUGc7IzF08utLO0c4tsRnee+Up99Q0e6EwspCmCyCvrBJHJffMeKfQH5t/t96Hr0N+O4Fdi/vbhnzEo/FecMg8h7T60P03jEh0QE7+syJdacpF147khVwGZZS8HWaaI5ZxFazECGlSsTdz/tZScQYDGlbRSOhuzgNcVJHdecb8sb5CXH4f6pNeQ7G1/P59Nd/YHlaVoS/qvSUuYfviFEYt3awquDm0rMFVYbK4sm/d38+tgBXKA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=BKFa6OiohdYASq+oTTIEjbVRDI9TAxJQnDuk0f/hbZo=;
- b=KeaDA0+f/Ek/8XenAL/H3oWwvF57a6UMYDiqu88b9WVqOSsh6VywHPiVTeaZafD70OxQsPdAAa5vnIRwgFqhq+Gy+aNWRfGFB3FM2jG4R9CfasLgROGCg1dFRYHNfTJr3os4NQhw869ES6WLxdnnfr1/OZt606HfB3rbbZ+1lyI1GWHiq0yy0A7EVcHOIB2hzSm23RAxBnpZjQRu15L8jYAGze0nq+51XyGbydpQz1EjiZqAZCTD3Fib+H9zYRMgCT9epcFZfnalLBrz3qZ3mdkiNj/PiYQOuw3otajTNfqiqpKBsCiCNK2p6/vuOuPtuWhOBJD6i2cSAz5vwLpsmA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.234) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BKFa6OiohdYASq+oTTIEjbVRDI9TAxJQnDuk0f/hbZo=;
- b=gMdTGEVKhtqNYMNTUONkUDx1hWALTj4TLSCSkB7ZvesQ2uvTJ8DDZJiL1XJvlRwZ8yYtzZjlTQPs9pnlxJq8Mzt3FjMNQ4oVd8bbf79usdciGfRntcZWUsBXXaS+hjcEOpxMgjLr2lSPXEIexC+nDBVToNtyQrQqt6zpO3B//ODWL8eNJpIZ4xyefU/599xCw1XdDcHiJlgHts1/6qI1BZ8tL7mEsubEf7w1unVfGW+lkzANymQvrjq4tzDfeszJQ22L4tzXvxRBu6ZvkVyghYGDRkPgR51001S2CBqtTMcDzd4KSQ4gQdPyDt+Eal2MTjbLVg6tAAaja4BmOoxTuw==
-Received: from BN6PR18CA0007.namprd18.prod.outlook.com (2603:10b6:404:121::17)
- by SA0PR12MB4351.namprd12.prod.outlook.com (2603:10b6:806:71::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Tue, 1 Feb
- 2022 15:28:04 +0000
-Received: from BN8NAM11FT064.eop-nam11.prod.protection.outlook.com
- (2603:10b6:404:121:cafe::ef) by BN6PR18CA0007.outlook.office365.com
- (2603:10b6:404:121::17) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.22 via Frontend
- Transport; Tue, 1 Feb 2022 15:28:04 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.234; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.234) by
- BN8NAM11FT064.mail.protection.outlook.com (10.13.176.160) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4930.15 via Frontend Transport; Tue, 1 Feb 2022 15:28:03 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL101.nvidia.com
- (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 1 Feb
- 2022 15:27:59 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Tue, 1 Feb 2022
- 07:27:59 -0800
-Received: from kyarlagadda-linux.nvidia.com (10.127.8.10) by mail.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server id 15.2.986.9 via Frontend
- Transport; Tue, 1 Feb 2022 07:27:55 -0800
-From:   Akhil R <akhilrajeev@nvidia.com>
-To:     <devicetree@vger.kernel.org>, <dmaengine@vger.kernel.org>,
-        <jonathanh@nvidia.com>, <kyarlagadda@nvidia.com>,
-        <ldewangan@nvidia.com>, <linux-kernel@vger.kernel.org>,
-        <linux-tegra@vger.kernel.org>, <p.zabel@pengutronix.de>,
-        <rgumasta@nvidia.com>, <robh+dt@kernel.org>,
-        <thierry.reding@gmail.com>, <vkoul@kernel.org>
-CC:     <akhilrajeev@nvidia.com>
-Subject: [PATCH v18 3/4] arm64: defconfig: tegra: Enable GPCDMA
-Date:   Tue, 1 Feb 2022 20:56:38 +0530
-Message-ID: <1643729199-19161-4-git-send-email-akhilrajeev@nvidia.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1643729199-19161-1-git-send-email-akhilrajeev@nvidia.com>
-References: <1643729199-19161-1-git-send-email-akhilrajeev@nvidia.com>
-X-NVConfidentiality: public
+        id S240436AbiBAP2W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 10:28:22 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:59316 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229593AbiBAP2P (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 1 Feb 2022 10:28:15 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id F077121122;
+        Tue,  1 Feb 2022 15:28:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1643729294; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=RQRLOb3bXZrYGcNHUZwT7I3GzHLLZBfOqR/e/Ky19U0=;
+        b=tDzwQ3OjYZK3aArHn/DGQi+rmnL8fLeYFwWwbSDdHLFkDbcOwnJFUTVS+NZ85Rjjyif4OL
+        4cG7+qsLAUyiem/flUf/ml1EdAtz9FkrFl0P6eTUIHlJb2YyJPcY9gp7M2WpRHeZgJDSrH
+        gXiAvAE+gYsHBZSWmYOWm7RRKNspuHM=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 9D789A3B95;
+        Tue,  1 Feb 2022 15:28:13 +0000 (UTC)
+Date:   Tue, 1 Feb 2022 16:28:13 +0100
+From:   Michal Hocko <mhocko@suse.com>
+To:     Waiman Long <longman@redhat.com>
+Cc:     Johannes Weiner <hannes@cmpxchg.org>,
+        Vladimir Davydov <vdavydov.dev@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
+        linux-mm@kvack.org, Ira Weiny <ira.weiny@intel.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Roman Gushchin <guro@fb.com>,
+        Rafael Aquini <aquini@redhat.com>,
+        Vlastimil Babka <vbabka@suse.cz>
+Subject: Re: [PATCH v4 4/4] mm/page_owner: Record task command name
+Message-ID: <YflRjeoC0jbzArDG@dhcp22.suse.cz>
+References: <20220131192308.608837-5-longman@redhat.com>
+ <20220131220328.622162-1-longman@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6c86da08-cfb5-4db4-c5d2-08d9e5977059
-X-MS-TrafficTypeDiagnostic: SA0PR12MB4351:EE_
-X-Microsoft-Antispam-PRVS: <SA0PR12MB4351B4A725EB1E840CA0BC30C0269@SA0PR12MB4351.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1079;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: gKKWVPOSmY2a1Ajy7DEwc1XGo01FbTQIynLB3aoEjWi8peCh+OTR+1HtChNHfQ1TDy/PJVRFzD5xzR8Y1h/AKrzavZGIcsI0gx5h3MamAB3tcNj9/jg0z8IgX/Rh7bRLKw+XcF6PfiuM7jPL+FTJ6XpXIzuJq79UwvNDY9XN6LJi8v8khfkvrjbV7XJZxaEjwx6LwTFnl5V+LtCfwgEBxuMbqGwwahVlUZCbpe9HweWtU/+wXyju7PNhc7SecxFWmMW1/F+BQibP0g5PRc4hWQLBIjyJ/MVbbF9natisCrDcrqvKWHLENFQ99UjUqMsifzOcAkmW0jo99ac+tJ64x43B9ASODma9LdIqMOVc4v1lkDSsr1LZ08GPG686p4maNGRCqVi8mwSZySVewCvVs3mB4zzs63y1AX3IoiHv+oqLLaXP/YhrTv4X1Z37/PtPi3eAddonG0pgrl/h6Ao8ERQtibJyeTwGiJxgEsHMhfuabelxnp0Yf4GEimeNbe3JNen0Wbcc1ilP8T1hvcRSojQBXJCde1Z6HP4uh5zh9n7wHuNxfnBoKamb7BrL6TOBWKxZYpgH1p3bX6eI59a8913nMWKwck9WtV3AIMI2OuDZDb5IvPpbz5KQ+giaStk8keo1579QeVWdoVeRbs1vrC7uxGYfwyF3GUjoX9bVtyDpEQCYS4jW6hB9lOxNzaYtEvFtziz5zQGml2NkaXhbWFELkdkYg8u5cqqhz2wdohXb87TQk4a5tibtO5W2MYncwzbu7UFUOS0AV93hGPIFlA==
-X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(82310400004)(921005)(356005)(81166007)(2906002)(7696005)(6666004)(40460700003)(5660300002)(4744005)(47076005)(107886003)(86362001)(70206006)(36756003)(70586007)(8676002)(8936002)(4326008)(110136005)(2616005)(426003)(186003)(336012)(36860700001)(26005)(508600001)(316002)(83996005)(2101003)(36900700001)(20210929001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Feb 2022 15:28:03.5671
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6c86da08-cfb5-4db4-c5d2-08d9e5977059
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT064.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB4351
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220131220328.622162-1-longman@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable TEGRA_GPC_DMA in defconfig for Tegra186 and Tegra196 gpc
-dma controller driver
+Cc Vlastimil
 
-Signed-off-by: Rajesh Gumasta <rgumasta@nvidia.com>
-Signed-off-by: Akhil R <akhilrajeev@nvidia.com>
-Reviewed-by: Jon Hunter <jonathanh@nvidia.com>
----
- arch/arm64/configs/defconfig | 1 +
- 1 file changed, 1 insertion(+)
+On Mon 31-01-22 17:03:28, Waiman Long wrote:
+> The page_owner information currently includes the pid of the calling
+> task. That is useful as long as the task is still running. Otherwise,
+> the number is meaningless. To have more information about the allocating
+> tasks that had exited by the time the page_owner information is
+> retrieved, we need to store the command name of the task.
+> 
+> Add a new comm field into page_owner structure to store the command name
+> and display it when the page_owner information is retrieved.
 
-diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index ee4bd77..96a796d 100644
---- a/arch/arm64/configs/defconfig
-+++ b/arch/arm64/configs/defconfig
-@@ -956,6 +956,7 @@ CONFIG_MV_XOR=y
- CONFIG_MV_XOR_V2=y
- CONFIG_OWL_DMA=y
- CONFIG_PL330_DMA=y
-+CONFIG_TEGRA186_GPC_DMA=m
- CONFIG_TEGRA20_APB_DMA=y
- CONFIG_TEGRA210_ADMA=m
- CONFIG_QCOM_BAM_DMA=y
+I completely agree that pid is effectivelly useless (if not misleading)
+but is comm really telling all that much to compensate for the
+additional storage required for _each_ page in the system?
+
+> 
+> Signed-off-by: Waiman Long <longman@redhat.com>
+> ---
+>  mm/page_owner.c | 15 +++++++++++----
+>  1 file changed, 11 insertions(+), 4 deletions(-)
+> 
+> diff --git a/mm/page_owner.c b/mm/page_owner.c
+> index a471c74c7fe0..485542155483 100644
+> --- a/mm/page_owner.c
+> +++ b/mm/page_owner.c
+> @@ -29,6 +29,7 @@ struct page_owner {
+>  	depot_stack_handle_t free_handle;
+>  	u64 ts_nsec;
+>  	u64 free_ts_nsec;
+> +	char comm[TASK_COMM_LEN];
+>  	pid_t pid;
+>  };
+>  
+> @@ -146,6 +147,7 @@ void __reset_page_owner(struct page *page, unsigned short order)
+>  		page_owner = get_page_owner(page_ext);
+>  		page_owner->free_handle = handle;
+>  		page_owner->free_ts_nsec = free_ts_nsec;
+> +		page_owner->comm[0] = '\0';
+>  		page_ext = page_ext_next(page_ext);
+>  	}
+>  }
+> @@ -165,6 +167,8 @@ static inline void __set_page_owner_handle(struct page_ext *page_ext,
+>  		page_owner->last_migrate_reason = -1;
+>  		page_owner->pid = current->pid;
+>  		page_owner->ts_nsec = local_clock();
+> +		strlcpy(page_owner->comm, current->comm,
+> +			sizeof(page_owner->comm));
+>  		__set_bit(PAGE_EXT_OWNER, &page_ext->flags);
+>  		__set_bit(PAGE_EXT_OWNER_ALLOCATED, &page_ext->flags);
+>  
+> @@ -232,6 +236,7 @@ void __folio_copy_owner(struct folio *newfolio, struct folio *old)
+>  	new_page_owner->pid = old_page_owner->pid;
+>  	new_page_owner->ts_nsec = old_page_owner->ts_nsec;
+>  	new_page_owner->free_ts_nsec = old_page_owner->ts_nsec;
+> +	strcpy(new_page_owner->comm, old_page_owner->comm);
+>  
+>  	/*
+>  	 * We don't clear the bit on the old folio as it's going to be freed
+> @@ -376,10 +381,11 @@ print_page_owner(char __user *buf, size_t count, unsigned long pfn,
+>  		return -ENOMEM;
+>  
+>  	ret = scnprintf(kbuf, count,
+> -			"Page allocated via order %u, mask %#x(%pGg), pid %d, ts %llu ns, free_ts %llu ns\n",
+> +			"Page allocated via order %u, mask %#x(%pGg), pid %d (%s), ts %llu ns, free_ts %llu ns\n",
+>  			page_owner->order, page_owner->gfp_mask,
+>  			&page_owner->gfp_mask, page_owner->pid,
+> -			page_owner->ts_nsec, page_owner->free_ts_nsec);
+> +			page_owner->comm, page_owner->ts_nsec,
+> +			page_owner->free_ts_nsec);
+>  
+>  	/* Print information relevant to grouping pages by mobility */
+>  	pageblock_mt = get_pageblock_migratetype(page);
+> @@ -446,9 +452,10 @@ void __dump_page_owner(const struct page *page)
+>  	else
+>  		pr_alert("page_owner tracks the page as freed\n");
+>  
+> -	pr_alert("page last allocated via order %u, migratetype %s, gfp_mask %#x(%pGg), pid %d, ts %llu, free_ts %llu\n",
+> +	pr_alert("page last allocated via order %u, migratetype %s, gfp_mask %#x(%pGg), pid %d (%s), ts %llu, free_ts %llu\n",
+>  		 page_owner->order, migratetype_names[mt], gfp_mask, &gfp_mask,
+> -		 page_owner->pid, page_owner->ts_nsec, page_owner->free_ts_nsec);
+> +		 page_owner->pid, page_owner->comm, page_owner->ts_nsec,
+> +		 page_owner->free_ts_nsec);
+>  
+>  	handle = READ_ONCE(page_owner->handle);
+>  	if (!handle)
+> -- 
+> 2.27.0
+
 -- 
-2.7.4
-
+Michal Hocko
+SUSE Labs
