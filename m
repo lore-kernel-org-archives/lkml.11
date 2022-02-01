@@ -2,83 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 510DBC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 05:29:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A97F5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 05:30:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231231AbiBAF3Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 00:29:24 -0500
-Received: from mga04.intel.com ([192.55.52.120]:59381 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229587AbiBAF3V (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 00:29:21 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643693361; x=1675229361;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=xhpFpVDfY3afe2MJSRhQ4vc7ruhyxXSmj52nPD8KzHM=;
-  b=T1rNbm773jVRTaEVyBY+23K80Iv6JPn6+DmYIyZ2N4TRumzdsTfdYLGx
-   QtUTn2kV+ZhyXSkGsCnaoKg1uOS8aNx3DKMdhWMCS2fzjQQ/ONwe3NRMR
-   V4FqnLPtJnUdPKEnehUwiYQDp227ij6jGcUmKMio+tW4MiknpQjQeNj5+
-   tUaj1Wt+Vjg78P/OU4VxP3ezZImcbMst5FhTzhfn+5/k3Kk02eyzRmtsq
-   QYwGOJyQURp+8NX5w0nRmJ/8FDljkAVFTdeYRuKwtlnDWLQ2BMQ02SGze
-   QUanowqW1JQtiroziPnxER47dzQxAe/gFP/zuupCbJMKWE2xNoniyFYDX
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10244"; a="246457536"
-X-IronPort-AV: E=Sophos;i="5.88,333,1635231600"; 
-   d="scan'208";a="246457536"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2022 21:29:21 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,333,1635231600"; 
-   d="scan'208";a="522931153"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 31 Jan 2022 21:29:19 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nEljC-000Soq-Ow; Tue, 01 Feb 2022 05:29:18 +0000
-Date:   Tue, 1 Feb 2022 13:28:45 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>
-Subject: [mtd:spi-mem-ecc 30/30] ld.lld: error: undefined symbol:
- nand_ecc_unregister_on_host_hw_engine
-Message-ID: <202202011308.a6RlPiGp-lkp@intel.com>
+        id S231785AbiBAFaP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 00:30:15 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41866 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231152AbiBAFaN (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 1 Feb 2022 00:30:13 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 356E461484;
+        Tue,  1 Feb 2022 05:30:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 76FC5C340ED;
+        Tue,  1 Feb 2022 05:30:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643693410;
+        bh=dxEhLGAPfFYwIotfbOYPoy4k4Qz/Kx96ise1IMTcyt0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=t5L/DMcEzt7y7M83xvCtYxJB8+8saFwOWuLb4s9elYiPDKg8yepthvUwhcLYv44Tl
+         jeZrATqOp02TlsjHuF3SBFgbWILBa+XQKQO9E6GEISBVhphhBSjGqUXroyRIK0UhQ0
+         0YWsJCu5jqKSx/B5a++we/YRilyAlpbLeJlzCVzhy86YnOqst4l5HRYb663YgyNO3E
+         /iypf0Hp0FwWOZMP6b7y+wycZNSrfbj8xYKHHf5r2A7PKTmITHnsIFG4ikCVxO+869
+         ZqExCkE2YCK6fIbIwTYmUFQZxleyglYwCBUtW1W0WiITdYFGCzy5nYQDpXOznfbHGt
+         uKB+atzQdPa7g==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5678FE5D08C;
+        Tue,  1 Feb 2022 05:30:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2] net: stmmac: dump gmac4 DMA registers correctly
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164369341035.4704.10544082245464060928.git-patchwork-notify@kernel.org>
+Date:   Tue, 01 Feb 2022 05:30:10 +0000
+References: <20220131083841.3346801-1-camel.guo@axis.com>
+In-Reply-To: <20220131083841.3346801-1-camel.guo@axis.com>
+To:     Camel Guo <camel.guo@axis.com>
+Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
+        mcoquelin.stm32@gmail.com, kernel@axis.com, camelg@axis.com,
+        clabbe.montjoie@gmail.com, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux.git spi-mem-ecc
-head:   6d0fadec1de4434fce145b374ef25c665357fa60
-commit: 6d0fadec1de4434fce145b374ef25c665357fa60 [30/30] spi: mxic: Add support for pipelined ECC operations
-config: hexagon-randconfig-r001-20220130 (https://download.01.org/0day-ci/archive/20220201/202202011308.a6RlPiGp-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 6b1e844b69f15bb7dffaf9365cd2b355d2eb7579)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux.git/commit/?id=6d0fadec1de4434fce145b374ef25c665357fa60
-        git remote add mtd https://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux.git
-        git fetch --no-tags mtd spi-mem-ecc
-        git checkout 6d0fadec1de4434fce145b374ef25c665357fa60
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash
+Hello:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-All errors (new ones prefixed by >>):
+On Mon, 31 Jan 2022 09:38:40 +0100 you wrote:
+> From: Camel Guo <camelg@axis.com>
+> 
+> Unlike gmac100, gmac1000, gmac4 has 27 DMA registers and they are
+> located at DMA_CHAN_BASE_ADDR (0x1100). In order for ethtool to dump
+> gmac4 DMA registers correctly, this commit checks if a net_device has
+> gmac4 and uses different logic to dump its DMA registers.
+> 
+> [...]
 
->> ld.lld: error: undefined symbol: nand_ecc_unregister_on_host_hw_engine
-   >>> referenced by spi-mxic.c
-   >>>               spi/spi-mxic.o:(mxic_spi_remove) in archive drivers/built-in.a
-   >>> referenced by spi-mxic.c
-   >>>               spi/spi-mxic.o:(mxic_spi_remove) in archive drivers/built-in.a
+Here is the summary with links:
+  - [v2] net: stmmac: dump gmac4 DMA registers correctly
+    https://git.kernel.org/netdev/net/c/7af037c39b60
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
