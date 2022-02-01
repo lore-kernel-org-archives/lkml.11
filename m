@@ -2,127 +2,358 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F218C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 13:06:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A795C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 13:07:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238345AbiBANGX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 08:06:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34302 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237005AbiBANGV (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 08:06:21 -0500
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABC33C06173B;
-        Tue,  1 Feb 2022 05:06:20 -0800 (PST)
-Received: by mail-lf1-x133.google.com with SMTP id b9so33706068lfq.6;
-        Tue, 01 Feb 2022 05:06:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=4zDZjUZzO0/LtwU7i9Sbk8gH9GLW2GWv2DNfc2cOlK8=;
-        b=JNAn9CjthSQNVzc8E9MvXEfIRED/5Pzbf2PSwdXbtYWxzebxjpuAEdSbwVR21MPhXV
-         GMOMYnR66hRxWJrFrvyxpwSivNaMAnWwH1bsUqFGgu+2g0CSZ6bennm5eoKV5/7obg/W
-         HLObfWN3gn9Pm7nWbFd9N3yHAl1IHxe6JQQD+M8vc17wnU2TYTuKwjHEs2c1Ykjv1gA/
-         igK5KCDPxVpzfSKsN4frwEogrZbMfnDep0GnnvhZldrioZu3jMnVWEDZRKyfwytuY+lB
-         KKH/pQ7U76q83LZbOjpDl1UPLTfLSatRLWXOuWXwHzDb4DIbvCMUrCN/XLFLLj3PNvWe
-         j6ww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=4zDZjUZzO0/LtwU7i9Sbk8gH9GLW2GWv2DNfc2cOlK8=;
-        b=C0+DzV/1WwV6lvpeGIcUdrIW2UtqkaYsXCfq7RhEI0xw/kWg+YlQnN9xIRovJ97aIY
-         /jQ6GZp9Vd6xB67JlwWD03q80XTUA9EN7v8boobG9Nl5tBiPQIIo72DhTj7EDiicwmnY
-         jpoYjar9Rx9N00BUzRxisOWkgxiMtqY7nqGtoy8kATNMQJ35CVveEvCz2z0F8dSk/4/b
-         P7Mu6BIw0hAlyjQvNQwNGlQ6U7Jf7RO3jyPGH5QHcRVJK+N+uFL6MlcF23xGhOanL3ve
-         cuV9O2Tgd4w4cz19GNRJKkzA9XB5J6L85alIgbDYgjS+3/E0u1UCszmVg/6my2u4kRrf
-         4V5w==
-X-Gm-Message-State: AOAM533Uxt45Xy8eGB8idu1iKRfSjvYK4ip9XnMilnN+v+SUQa5QOw8R
-        ZAwcPoUZfE/caIV33iXv86BXTSapV6E=
-X-Google-Smtp-Source: ABdhPJzQlKfW0CtWm4bXhyHTG7O7g1qPpYXDtoKXdkxclUHQ+RGjI+UtK3exNdt/OH4p05IWMjFUrw==
-X-Received: by 2002:ac2:55ad:: with SMTP id y13mr19034028lfg.38.1643720778908;
-        Tue, 01 Feb 2022 05:06:18 -0800 (PST)
-Received: from [192.168.2.145] (109-252-138-136.dynamic.spd-mgts.ru. [109.252.138.136])
-        by smtp.googlemail.com with ESMTPSA id n15sm3344584ljh.36.2022.02.01.05.06.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Feb 2022 05:06:18 -0800 (PST)
-Message-ID: <9900cecc-8e00-5b34-a8b2-95d8e1c1ad77@gmail.com>
-Date:   Tue, 1 Feb 2022 16:06:17 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+        id S238353AbiBANHj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 08:07:39 -0500
+Received: from mail-bn1nam07on2047.outbound.protection.outlook.com ([40.107.212.47]:27406
+        "EHLO NAM02-BN1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S231978AbiBANHh (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 1 Feb 2022 08:07:37 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ER/puhwtvfAgGBDx69B49ckiXArLvVPh12RCMCst3q0V6Wicq9CHQozPCin39aJ99tUfihhhQSMGPStJP5h2kPImsVQW1h2YL24jMu8QzKXIlKlaV07Vo4WLnyV0AKVVO3ovKXnr28wqO+NCu4V2tJyh5PgPxNHb0+Av9t0LSB+NzcB9s8e4EBu/0NYHABC+DRlvkyd1YhMciUTb1RBvxIg08XBcR8M/kVMm3w10EzGKfvILkAfs4udbRf9sy2i3BQcMrkquybY3PNrBEE7xMkPBXxKHOdBhY+GVBGBv6tDe7piI0edOujiZ0MDZydAxbjJjKXZcDAMxnhrXO9MP0Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Li3KsDHIjfbppUAkkik0w+1aCX3pVWezpvZvrYMGGVM=;
+ b=TllCDMa314JyVsi8ftaVmIZrz+49e6LaHYUWsBcXi87AywqSgM7+xHpyBjd4vjX9d4yCZt2vogvPhdIijLKACri+vkLVrjuO2y+4onvhC4q4OxGYXb2jw9wTOSZyZl/AREyoeKSluYyiS2ktnatJ/gXiys+k1pwAmKz6yJs1l8JBRCd0vjmxuGHgt/Tsfemve3JOh1NiD7C4epCGcd6ccy9Rodn4yX2VkuD62k2MGL3WwISEpwqE3p9lLy8X0ptDQi5DjhYTYJNepF/92ZV9YUX8h0niCFxIKZQRjTDQn07BrZKflEI0phqM7mY8khTLCUuSY2IrgWGm15xRNV6s4g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Li3KsDHIjfbppUAkkik0w+1aCX3pVWezpvZvrYMGGVM=;
+ b=J+IMq3Dm2RLYMOg9jC+xyKbLZ/6KIy/dbmv+4Zap1ifZQmN7ecxnqVHlWLGd3Jo4ds7WYw75NbZPw/ZdP7jRZ6ztalF8vAIViPGyYKBY8G2sunhDcGpmjtL+cL70iE7TGvS9vx9Cv6C5gQBqt2lGsjvBpLKldGenWOTaIDqnV+4=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BY5PR12MB4289.namprd12.prod.outlook.com (2603:10b6:a03:204::14)
+ by BN8PR12MB3233.namprd12.prod.outlook.com (2603:10b6:408:9f::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.11; Tue, 1 Feb
+ 2022 13:07:35 +0000
+Received: from BY5PR12MB4289.namprd12.prod.outlook.com
+ ([fe80::b1bf:8e72:56ca:4256]) by BY5PR12MB4289.namprd12.prod.outlook.com
+ ([fe80::b1bf:8e72:56ca:4256%8]) with mapi id 15.20.4930.022; Tue, 1 Feb 2022
+ 13:07:35 +0000
+Message-ID: <ff74bacd-9092-4ebb-a5bb-98e49cf314a9@amd.com>
+Date:   Tue, 1 Feb 2022 18:37:23 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH v17 2/4] dmaengine: tegra: Add tegra gpcdma driver
+Subject: Re: [RFC PATCH v0 0/3] sched/numa: Process Adaptive autoNUMA
 Content-Language: en-US
-To:     Akhil R <akhilrajeev@nvidia.com>
-Cc:     "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Krishna Yarlagadda <kyarlagadda@nvidia.com>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
-        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
-        Rajesh Gumasta <rgumasta@nvidia.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
-        "vkoul@kernel.org" <vkoul@kernel.org>,
-        Pavan Kunapuli <pkunapuli@nvidia.com>
-References: <1643474453-32619-1-git-send-email-akhilrajeev@nvidia.com>
- <1643474453-32619-3-git-send-email-akhilrajeev@nvidia.com>
- <ba109465-d7ee-09cb-775b-9b702a3910b0@gmail.com>
- <DM5PR12MB1850D836ACDF95008EF74CC7C0249@DM5PR12MB1850.namprd12.prod.outlook.com>
- <08f6571e-af75-b6b3-443e-e86e3bdb365b@gmail.com>
- <DM5PR12MB1850FD5F3EF5CBFEA97B3611C0259@DM5PR12MB1850.namprd12.prod.outlook.com>
- <20220131094205.73f5f8c3@dimatab>
- <DM5PR12MB1850D677140466EC74C621A4C0259@DM5PR12MB1850.namprd12.prod.outlook.com>
- <8abf2da8-9a11-8f16-b495-d8ef2d00ab51@gmail.com>
- <DM5PR12MB18505C4CB4A34F96E74BF28FC0259@DM5PR12MB1850.namprd12.prod.outlook.com>
- <6dfdfd02-bfc3-1626-f819-7ddcc8bf9c1c@gmail.com>
- <DM5PR12MB1850689286F20C18B12ADF1DC0269@DM5PR12MB1850.namprd12.prod.outlook.com>
-From:   Dmitry Osipenko <digetx@gmail.com>
-In-Reply-To: <DM5PR12MB1850689286F20C18B12ADF1DC0269@DM5PR12MB1850.namprd12.prod.outlook.com>
+To:     Mel Gorman <mgorman@suse.de>
+Cc:     linux-kernel@vger.kernel.org, mingo@redhat.com,
+        peterz@infradead.org, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
+        dishaa.talreja@amd.com, "Huang2, Wei" <Wei.Huang2@amd.com>
+References: <20220128052851.17162-1-bharata@amd.com>
+ <20220131121707.GW3301@suse.de>
+From:   Bharata B Rao <bharata@amd.com>
+In-Reply-To: <20220131121707.GW3301@suse.de>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MA1PR0101CA0035.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:a00:22::21) To BY5PR12MB4289.namprd12.prod.outlook.com
+ (2603:10b6:a03:204::14)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 9a912fae-cc0c-418e-81eb-08d9e583d03c
+X-MS-TrafficTypeDiagnostic: BN8PR12MB3233:EE_
+X-Microsoft-Antispam-PRVS: <BN8PR12MB32336E86397006933525F64FB0269@BN8PR12MB3233.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 5x4heLThh6XwoHuBM3oQZjiFHVRQPDUa1W238xE0BiOIBBx1urKcJP4EUpLzhU5cm7l/n6VCyboQyyAkQO0gj8tgQCOnAYDIwRVI74USf+uWvzvgT2vY0uMgwFjrAincEu+OsQumy43lh/GxYYx+Oa0pJWy28uDZ15S1uKQPM6LBueMGjQnSiL49guq7L3RBnoc2CJdRCuLhtisXN0ChzN3/dJedBgeOWpRqT4/6n5zcHliDAbEixeJaiJj1Wn1g8YVvnCWiSS4SXKheWYC5aIIDo9ECGLuttDn41KWlDVyRY10wIxS70ON1RpoAh1oS4upTq/r1NxV02aNP2iqOj+Pjid0vXSfpkbbx8Xpv6WbEE1iyjn8UkyqnWZ3eo0ZUIXRVUBAPvzReWdVOyB1w6q4eBi6D6WYRQ4CvHm54eUfQDBaF3eIZ8VXOBKSH6cjWtDgx65q1B3LxzhhSZLr13b5lo3hKcaJ+BgTes2YcGcARs0fpF9T8I/bAjovDPqFWM96MfyJqXOqh4ztoj4/jwuhx3S6EgGz8W7Es8r5BB+vs/vKQKPP1TkcbBNs695/wUDZsGKq7SAAyg8JuAfzdQhI38dS9UZ1wy51WwCW9Dk8Ei9QJJEblB3UskGFYXHklY1aZh5rGLoMPFmghbwvPryDvuKVOz/HDr6tdMoB3n3/W32ypkLdK9i21veP4Lo6csbwNhnq+5Dc7Bn5uh/7NslFljoYKwiUIqgAL7MmcdXM=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4289.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(31696002)(2906002)(66476007)(8936002)(8676002)(66556008)(66946007)(5660300002)(2616005)(4326008)(7416002)(6512007)(6506007)(53546011)(86362001)(6666004)(508600001)(6486002)(31686004)(83380400001)(38100700002)(316002)(186003)(6916009)(26005)(36756003)(43740500002)(45980500001)(20210929001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Z0JZYzFET2t1a2wzaHNBZUh1N3Vjang0cnZGT0JTSVFvcm1zYjdySldSc3B6?=
+ =?utf-8?B?Wmc5Rm5lZFRJalZNbHQ2UzRDTmczdXU2bmtYdVB5Zml5UUxhNkl1cytEMnE5?=
+ =?utf-8?B?UHRaVWhpS29CNFFrVmZGSWNYSUVBdjUrTHRIWVlQaUpha3VuMXRiZWEreFJi?=
+ =?utf-8?B?QVFuSHRGd1FLbE9XNG12WmgrajFaVXp0aXJURnN1MWh0V2NFVlYzcmJoanla?=
+ =?utf-8?B?NkRldHhDVTZRZCt5V1diRk54NDlFOXNqbjhicnNrNGczL1BGYnhDdGRGcE9j?=
+ =?utf-8?B?MTVzZW40b203QlkzRHhneXJPSDV3VEV5Z0ZhcWlJY3lPYnE2UklIZTdqRXVF?=
+ =?utf-8?B?NmloeG9td2ZyNEkxb0IrbTJXNXhKTGJpcGtNN1FrdXdZVUpmTFBleDJZVWI2?=
+ =?utf-8?B?MEJzT2FRQ2VxYU1rN09kVHBKSVRWeGtxTFNhdzA5YXpLRXMzQmoyRUxwR3Qr?=
+ =?utf-8?B?emk5R3c3blNUdzhQTHgva1Y0T2ZEbFRaSWgzL0RzK2tKWHVRZUtBMWdXbnYv?=
+ =?utf-8?B?WTE2L1pCTk94a3M2cTJuank4QlVQTUZTNEpHbUVEL3JEclA5SUVaelVVMExv?=
+ =?utf-8?B?TTlFQlRxdmhJNGFMajRSbXR3VTZEVmZlL05lcGxqNUZBNmw1QXlscVpvK2Zv?=
+ =?utf-8?B?UVh1TlVLVHVlUUFlY0RxQU1ObUMyb01ldUJETS94WGYrb2RtYkFiWlVyQXVM?=
+ =?utf-8?B?dkxOcWNtdjQ1S1o2UFoxeXk2aEdCM2RaNkpkMk1vQ2N2QnI4VitDQXVJMU5L?=
+ =?utf-8?B?MTdpU0t0UmJYQ0ZwdGlyZCtzK2k0RG1lNklUUkJXZFdqaThmZktGUi9qSzlI?=
+ =?utf-8?B?dFRETTFCYzVOaWM3ZktPREo0aEVPMWtiNWJzaFlVVVYwNVA2eXR2V1NybXpF?=
+ =?utf-8?B?NVQ4NVZWZnRDYWd4Vkw0WXcvbTFydmxEY2l2aHFEUEpvUXJoZXdxYkRaeExR?=
+ =?utf-8?B?QlhlaENKY29JcW13MHl6RmJ0MmxCcnBWdldjNS9XMXBtdUlZS1N3ZmN2eHU4?=
+ =?utf-8?B?RVlRNStaUGhEY3dXNzg1bmo4YWNsamdrR1E0cE5YbittSmlVRnk0NWpPVmw3?=
+ =?utf-8?B?OWJ0aXljdjFOSm9RTlV2NkkyZFIyWC82ekxiOCtuRUN6NmVrSW5rYklQZWJv?=
+ =?utf-8?B?U0tXQ3lnTDcyc1VSVEFsZlJ0bnpCVjhJanYxNmdSam56QTFDMVFTM09DZ3d5?=
+ =?utf-8?B?ZGp3T1FZc0tlSjhGajNIcTFkZWFCMXZUVVdQODkyZkJjbzU2YVEwSGMvMzN6?=
+ =?utf-8?B?K3Z6ZGx5Zk1Tb09nZUxETFNxcDFsTzdwbVZpdGpWWE9nNnAvREFUN1RyYnh5?=
+ =?utf-8?B?ZXJmWmhXMGNVTk1BeXJXdlB1V2pmU3pXY0xrNjVQUjdTZTU5aEhYQ0hXRjU0?=
+ =?utf-8?B?MEliUTVwVE53TGNncVRJYUZZbCs1Um9rcEY0cHFFbjFGNUwybGJpYXpKdmhy?=
+ =?utf-8?B?NFdqZGxuQXBDTVBDWUpNWGM3a2ZDcHA3NlViQ0pMaXN1cmhVK0EzTjBFbXFR?=
+ =?utf-8?B?dWl3QnBTQ3VsT1hQQk1WcTBVOG55c3pEQUJIZGRjQ1pHY1dLdnh5dW8vWldx?=
+ =?utf-8?B?KytLbWdMcU5OZmttKzJzbjdPT0tBbkIvMzREaVRZcUo3UnZmdjJ6cTlOV284?=
+ =?utf-8?B?bnVCVnNCZ2JYUGF2V0ZYczlldlFRM00vZ2dLdXJjSVB3NStMcXI1U1l6RFZi?=
+ =?utf-8?B?cU9kaFpkOWYzNy9UQ08xZHdqQnhzeEJ5R0RUY08rQkU2WWdhUEVkd1ZlcU8z?=
+ =?utf-8?B?cHFGSko0eVV3Z3VQeUFiQnliLzFwN2YzWEFTakF2U25CU0FhWnpubENzeHBO?=
+ =?utf-8?B?aEVqRHkxakltdUM0anZpWmNXcjZsZDNpWEpTcEJISmF1ampGVzE1L012MEl6?=
+ =?utf-8?B?bzJHYms5eGJTWDg4UHN2UUl3WjBsWmZ0amNMdDdJa2g5VEpKT0N4YU1KNXha?=
+ =?utf-8?B?NE9qVDBHZ3pMOC8wSHNza2lpUjcxSEo1dVYxNlRmQURDRlRjcEVISS9KWmNl?=
+ =?utf-8?B?UGFJdU5jcTBHaGRidjZkbzdudjY4UnJTcWlSM29SQWc1OUFxV1kzc0RrbXpk?=
+ =?utf-8?B?c2pLRFg3UFJGaWhmWjB5VVVtK0w3UXRZdis3aDBFbUtDN1NQaXNVdElqVWo4?=
+ =?utf-8?B?Y0dkUDBoVkptbHlreEQvUGZTZm1OZjhqYlV4Z285WEFtMHBrVFd2UGE2Yy8v?=
+ =?utf-8?Q?+D7V0eANCmwh0hXzcp51P5A=3D?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9a912fae-cc0c-418e-81eb-08d9e583d03c
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4289.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Feb 2022 13:07:34.9863
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: IIdOzsLSmcfrM0HnZ2GONW9f/yzVg55R+nqJpbOOVaW8yZFsiBSypnJZ+Uk24i88F72SB4SYuD3R79E/jBzThg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3233
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-01.02.2022 15:05, Akhil R пишет:
->> 31.01.2022 18:38, Akhil R пишет:
->>> Does the below method look good? bytes_xfer is updated on every ISR and in
->>> tx_status(), the wcount is read to calculate the intermittent value. If the
->> transfer
->>> get complete in between, use wcount as 0 to add sg_req.len to bytes_xfer
->>>
->>> static int tegra_dma_get_residual(struct tegra_dma_channel *tdc)
->>> {
->>>       unsigned long wcount = 0, status;
->>>       unsigned int bytes_xfer, residual;
->>>       struct tegra_dma_desc *dma_desc = tdc->dma_desc;
->>>       struct tegra_dma_sg_req *sg_req = dma_desc->sg_req;
->>>
->>>       /*
->>>        * Do not read from CHAN_XFER_COUNT if EOC bit is set
->>>        * as the transfer would have already completed and
->>>        * the register could have updated for next transfer
->>>        * in case of cyclic transfers.
->>>        */
->>>       status = tdc_read(tdc, TEGRA_GPCDMA_CHAN_STATUS);
->>>       if (!(status & TEGRA_GPCDMA_STATUS_ISE_EOC))
->>>               wcount = tdc_read(tdc, TEGRA_GPCDMA_CHAN_XFER_COUNT);
+On 1/31/2022 5:47 PM, Mel Gorman wrote:
+> On Fri, Jan 28, 2022 at 10:58:48AM +0530, Bharata B Rao wrote:
+>> Hi,
 >>
->> You can't read WCOUNT after the STATUS without racing with the STATUS
->> updates made by h/w. You should read the WCOUNT first and only then
->> check the STATUS.
->>
->> You should also check whether T20 tegra_dma_sg_bytes_xferred()
->> workarounds apply to newer h/w. I see that the h/w base hasn't changed
->> much since T20.
-> The calculation in T20 driver is not applicable here. The register shows the
-> actual number of words remaining to be transferred as far as I understand.
+>> This patchset implements an adaptive algorithm for calculating the autonuma
+>> scan period.
+> 
+> autonuma refers to the khugepaged-like approach to NUMA balancing that
+> was later superceded by NUMA Balancing (NUMAB) and is generally reflected
+> by the naming e.g. git grep -i autonuma and note how few references there
+> are to autonuma versus numab or "NUMA balancing". I know MMTests still
+> refers to AutoNUMA but mostly because at the time it was written,
+> autoNUMA was what was being evaluated and I never updated the naming.
 
-If downstream kernel DMA driver doesn't have any special quirks, then
-likely that they are indeed unneeded.
+Thanks. Noted and will use appropriate terminologies next time onward.
+
+> 
+>> In the existing mechanism of scan period calculation,
+>>
+>> - scan period is derived from the per-thread stats.
+>> - static threshold (NUMA_PERIOD_THRESHOLD) is used for changing the
+>>   scan rate.
+>>
+>> In this new approach (Process Adaptive autoNUMA or PAN), we gather NUMA
+>> fault stats at per-process level which allows for capturing the application
+>> behaviour better. In addition, the algorithm learns and adjusts the scan
+>> rate based on remote fault rate. By not sticking to a static threshold, the
+>> algorithm can respond better to different workload behaviours.
+>>
+> 
+> NUMA Balancing is concerned with threads (task) and an address space (mm)
+> so basing the naming on Address Space rather than process may be more
+> appropriate although I admit the acronym is not as snappy.
+
+Sure, will think about more appropriate naming.
+
+> 
+>> Since the threads of a processes are already considered as a group,
+>> we add a bunch of metrics to the task's mm to track the various
+>> types of faults and derive the scan rate from them.
+>>
+> 
+> Enumerate the types of faults and note how the per-thread and
+> per-address-space metrics are related.
+
+Sure will list the type of faults and describe the.
+
+Per-address-space metrics are essentially aggregate of the existing per-thread
+metrics. Unlike the existing task_numa_group mechanism, the threads are
+implicitly/already considered part of the address space group (p->mm).
+
+> 
+>> The new per-process fault stats contribute only to the per-process
+>> scan period calculation, while the existing per-thread stats continue
+>> to contribute towards the numa_group stats which eventually
+>> determine the thresholds for migrating memory and threads
+>> across nodes.
+>>
+>> This patchset has been tested with a bunch of benchmarks on the
+>> following system:
+>>
+> 
+> Please include the comparisons of both the headline metrics and notes on
+> the change in scan rates in the changelog of the patch. Not all people
+> are access to Google drive and it is not guaranteed to remain forever.
+> Similarly, the leader is not guaranteed to appear in the git history
+
+Sure, noted.
+
+> 
+>> ------------------------------------------------------
+>> % gain of PAN vs default (Avg of 3 runs)
+>> ------------------------------------------------------
+>> NAS-BT		-0.17
+>> NAS-CG		+9.39
+>> NAS-MG		+8.19
+>> NAS-FT		+2.23
+>> Hashjoin	+0.58
+>> Graph500	+14.93
+>> Pagerank	+0.37
+> 
+> 
+> 
+>> ------------------------------------------------------
+>> 		Default		PAN		%diff
+>> ------------------------------------------------------
+>> 		NUMA hint faults(Total of 3 runs)
+>> ------------------------------------------------------
+>> NAS-BT		758282358	539850429	+29
+>> NAS-CG		2179458823	1180301361	+46
+>> NAS-MG		517641172	346066391	+33
+>> NAS-FT		297044964	230033861	+23
+>> Hashjoin	201684863	268436275	-33
+>> Graph500	261808733	154338827	+41
+>> Pagerank	217917818	211260310	+03
+>> ------------------------------------------------------
+>> 		Migrations(Total of 3 runs)
+>> ------------------------------------------------------
+>> NAS-BT		106888517	86482076	+19
+>> NAS-CG		81191368	12859924	+84
+>> NAS-MG		83927451	39651254	+53
+>> NAS-FT		61807715	38934618	+37
+>> Hashjoin	45406983	59828843	-32
+>> Graph500	22798837	21560714	+05
+>> Pagerank	59072135	44968673	+24
+>> ------------------------------------------------------
+>>
+>> And here are some tests from a few microbenchmarks of mmtests suite.
+>> (The results are trimmed a bit here, the complete results can
+>> be viewed in the above mentioned link)
+>>
+>> Hackbench
+>> ---------
+>> hackbench-process-pipes
+>>                            hackbench              hackbench
+>>                              default                    pan
+>> Min       256     23.5510 (   0.00%)     23.1900 (   1.53%)
+>> Amean     256     24.4604 (   0.00%)     24.0353 *   1.74%*
+>> Stddev    256      0.4420 (   0.00%)      0.7611 ( -72.18%)
+>> CoeffVar  256      1.8072 (   0.00%)      3.1666 ( -75.22%)
+>> Max       256     25.4930 (   0.00%)     30.5450 ( -19.82%)
+>> BAmean-50 256     24.1074 (   0.00%)     23.6616 (   1.85%)
+>> BAmean-95 256     24.4111 (   0.00%)     23.9308 (   1.97%)
+>> BAmean-99 256     24.4499 (   0.00%)     23.9696 (   1.96%)
+>>
+>>                    hackbench   hackbench
+>>                      default         pan
+>> Duration User       25810.02    25158.93
+>> Duration System    276322.70   271729.32
+>> Duration Elapsed     2707.75     2671.33
+>>
+> 
+>>                                       hackbench      hackbench
+>>                                         default            pan
+>> Ops NUMA alloc hit                1082415453.00  1088025994.00
+>> Ops NUMA alloc miss                        0.00           0.00
+>> Ops NUMA interleave hit                    0.00           0.00
+>> Ops NUMA alloc local              1082415441.00  1088025974.00
+>> Ops NUMA base-page range updates       33475.00      228900.00
+>> Ops NUMA PTE updates                   33475.00      228900.00
+>> Ops NUMA PMD updates                       0.00           0.00
+>> Ops NUMA hint faults                   15758.00      222100.00
+>> Ops NUMA hint local faults %           15371.00      214570.00
+>> Ops NUMA hint local percent               97.54          96.61
+>> Ops NUMA pages migrated                  235.00        4029.00
+>> Ops AutoNUMA cost                         79.03        1112.18
+>>
+> 
+> Hackbench processes are generally short-lived enough that NUMA balancing
+> has a marginal impact. Interesting though that updates and hints were
+> increased by a lot relatively speaking.
+
+Yes, this increased AutoNUMA cost seen mostly with these micro benchmarks
+are not seen typically with the other benchmarks that we have listed at
+the beginning which we believe contributes to the gain that those
+benchmarks see.
+
+The algorithm tries aggressively to learn the application behaviour
+at the beginning and short-lived tasks will see more scanning than
+default.
+
+Having said that, we need to investigate and check why some of these
+micro benchmarks incur higher autonuma cost.
+
+> 
+>> Netperf-RR
+>> ----------
+>> netperf-udp-rr
+>>                            netperf                netperf
+>>                         rr-default                 rr-pan
+>> Min       1   104915.69 (   0.00%)   104505.71 (  -0.39%)
+>> Hmean     1   105865.46 (   0.00%)   105899.22 *   0.03%*
+>> Stddev    1      528.45 (   0.00%)      881.92 ( -66.89%)
+>> CoeffVar  1        0.50 (   0.00%)        0.83 ( -66.83%)
+>> Max       1   106410.28 (   0.00%)   107196.52 (   0.74%)
+>> BHmean-50 1   106232.53 (   0.00%)   106568.26 (   0.32%)
+>> BHmean-95 1   105972.05 (   0.00%)   106056.35 (   0.08%)
+>> BHmean-99 1   105972.05 (   0.00%)   106056.35 (   0.08%)
+>>
+>>                      netperf     netperf
+>>                   rr-default      rr-pan
+>> Duration User          11.20       10.74
+>> Duration System       202.40      201.32
+>> Duration Elapsed      303.09      303.08
+>>
+>>                                         netperf        netperf
+>>                                      rr-default         rr-pan
+>> Ops NUMA alloc hit                    183999.00      183853.00
+>> Ops NUMA alloc miss                        0.00           0.00
+>> Ops NUMA interleave hit                    0.00           0.00
+>> Ops NUMA alloc local                  183999.00      183853.00
+>> Ops NUMA base-page range updates           0.00       24370.00
+>> Ops NUMA PTE updates                       0.00       24370.00
+>> Ops NUMA PMD updates                       0.00           0.00
+>> Ops NUMA hint faults                     539.00       24470.00
+>> Ops NUMA hint local faults %             539.00       24447.00
+>> Ops NUMA hint local percent              100.00          99.91
+>> Ops NUMA pages migrated                    0.00          23.00
+>> Ops AutoNUMA cost                          2.69         122.52
+>>
+> 
+> Netperf these days usually runs on the same node so NUMA balancing
+> triggers very rarely.
+
+But we still see increase in the hint faults, need to investigate this.
+
+
+>>                 autonumabenchautonumabench
+>>                      default         pan
+>> Duration User       94363.43    94436.71
+>> Duration System     81671.72    81408.53
+>> Duration Elapsed     1676.81     1647.99
+>>
+>>                                   autonumabench  autonumabench
+>>                                         default            pan
+>> Ops NUMA alloc hit                 539544115.00   539522029.00
+>> Ops NUMA alloc miss                        0.00           0.00
+>> Ops NUMA interleave hit                    0.00           0.00
+>> Ops NUMA alloc local               279025768.00   281735736.00
+>> Ops NUMA base-page range updates    69695169.00    84767502.00
+>> Ops NUMA PTE updates                69695169.00    84767502.00
+>> Ops NUMA PMD updates                       0.00           0.00
+>> Ops NUMA hint faults                69691818.00    87895044.00
+>> Ops NUMA hint local faults %        56565519.00    65819747.00
+>> Ops NUMA hint local percent               81.17          74.88
+>> Ops NUMA pages migrated              5950362.00     8310169.00
+>> Ops AutoNUMA cost                     349060.01      440226.49
+>>
+> 
+> More hinting faults and migrations. Not clear which sub-test exactly but
+> most likely NUMA02.
+
+I will have to run them separately and check.
+
+Regards,
+Bharata.
