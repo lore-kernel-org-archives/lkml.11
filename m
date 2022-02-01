@@ -2,94 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3547CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 16:22:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE97AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 16:26:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241062AbiBAQWu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 11:22:50 -0500
-Received: from foss.arm.com ([217.140.110.172]:50024 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241080AbiBAQWo (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 11:22:44 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 83D4D113E;
-        Tue,  1 Feb 2022 08:22:44 -0800 (PST)
-Received: from FVFF77S0Q05N (unknown [10.57.8.51])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8AA4F3F40C;
-        Tue,  1 Feb 2022 08:22:39 -0800 (PST)
-Date:   Tue, 1 Feb 2022 16:22:37 +0000
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, aleksandar.qemu.devel@gmail.com,
-        alexandru.elisei@arm.com, anup@brainfault.org,
-        aou@eecs.berkeley.edu, atishp@atishpatra.org,
-        benh@kernel.crashing.org, borntraeger@linux.ibm.com, bp@alien8.de,
-        catalin.marinas@arm.com, chenhuacai@kernel.org,
-        dave.hansen@linux.intel.com, frederic@kernel.org,
-        hca@linux.ibm.com, james.morse@arm.com, jmattson@google.com,
-        joro@8bytes.org, maz@kernel.org, mingo@redhat.com,
-        mpe@ellerman.id.au, nsaenzju@redhat.com, palmer@dabbelt.com,
-        paulmck@kernel.org, paulus@samba.org, paul.walmsley@sifive.com,
-        seanjc@google.com, suzuki.poulose@arm.com, svens@linux.ibm.com,
-        tglx@linutronix.de, tsbogend@alpha.franken.de, vkuznets@redhat.com,
-        wanpengli@tencent.com, will@kernel.org
-Subject: Re: [PATCH v3 0/5] kvm: fix latent guest entry/exit bugs
-Message-ID: <YfleTYWIW1sBbMNn@FVFF77S0Q05N>
-References: <20220201132926.3301912-1-mark.rutland@arm.com>
- <87aa8af0-c262-ad04-58f8-da6c7882e23c@redhat.com>
+        id S241066AbiBAQ0U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 11:26:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52396 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241011AbiBAQ0S (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 1 Feb 2022 11:26:18 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85AE4C061714;
+        Tue,  1 Feb 2022 08:26:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 417ECB82EDF;
+        Tue,  1 Feb 2022 16:26:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28EC6C340EB;
+        Tue,  1 Feb 2022 16:26:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643732776;
+        bh=ensdKH5/5ATlXb56b9QEsLbO6Ls5DhgDYHxVsVdMhIU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=VcylpKYnkQjjYp3sXdZysU2q1BNMe6JPsf8gxCFs61I0Or0mtY/f9pZGsZGdY4p1S
+         VYasnMOMCv22nc6nbC7/gb/FFHHzlI+7dQ8SNylm3Nza0WdQLBR7aso5Uol9xLBn+x
+         eyDQ182yiwgxZcX38Gbp6/DaQGsrrwfzUAN4/+pb0xfoOzdNPoFo5p5p7gbdbqKmCJ
+         DKNRnAE81Gy8puPT/Uu5mRSNDg2/vFRt0LiVuOQL2eCaD63o8v3qv+4ghyy/bPOKvc
+         EkvMmJEkYXojv/ZwSQUc1KiHV58t1/3Kbbe9Hdf5eJ3lPd742vgGDo+aMLAnvCZqKi
+         ji1ymnLQyfFrA==
+Date:   Tue, 1 Feb 2022 09:26:11 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     =?iso-8859-1?Q?Ma=EDra?= Canal <maira.canal@usp.br>
+Cc:     gregkh@linuxfoundation.org, tj@kernel.org, viro@zeniv.linux.org.uk,
+        ndesaulniers@google.com, willy@infradead.org,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: Re: [PATCH v3] seq_file: fix NULL pointer arithmetic warning
+Message-ID: <YflfI9uAz0bR2r4m@dev-arch.archlinux-ax161>
+References: <Yfgo8p6Vk+h4+YHY@fedora>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <87aa8af0-c262-ad04-58f8-da6c7882e23c@redhat.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <Yfgo8p6Vk+h4+YHY@fedora>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 01, 2022 at 04:59:47PM +0100, Paolo Bonzini wrote:
-> On 2/1/22 14:29, Mark Rutland wrote:
-> > I've pushed the series (based on v5.17-rc2) to my kvm/entry-rework branch:
-> > 
-> >    https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git/log/?h=kvm/entry-rework
-> >    git://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git kvm/entry-rework
+Hi Maíra,
+
+On Mon, Jan 31, 2022 at 03:22:42PM -0300, Maíra Canal wrote:
+> Implement conditional logic in order to replace NULL pointer arithmetic.
 > 
-> Thanks!  I cherry-picked the basic, x86 and mips patches to kvm.git's master
-> branch (I did not use your branch in order to leave arm64 and riscv to the
-> respective maintainers).
-
-Since everything's dependent upon that core patch, IIUC that's going to make it
-a pain for them to queue things.
-
-How are you expecting the arm64 and riscv maintainers to queue things? Queue
-their own copies of that core patch?
-
-Thanks,
-Mark.
-
-> Paolo
+> The use of NULL pointer arithmetic was pointed out by clang with the
+> following warning:
 > 
-> > This version of the series is tagged as kvm-entry-rework-20220201.
-> > 
-> > [1] https://lore.kernel.org/r/20220111153539.2532246-1-mark.rutland@arm.com/
-> > [2] https://lore.kernel.org/r/20220119105854.3160683-1-mark.rutland@arm.com/
-> > 
-> > Thanks,
-> > 
-> > 
-> > Mark Rutland (5):
-> >    kvm: add guest_state_{enter,exit}_irqoff()
-> >    kvm/arm64: rework guest entry logic
-> >    kvm/x86: rework guest entry logic
-> >    kvm/riscv: rework guest entry logic
-> >    kvm/mips: rework guest entry logic
-> > 
-> >   arch/arm64/kvm/arm.c     |  51 +++++++++++-------
-> >   arch/mips/kvm/mips.c     |  50 +++++++++++++++--
-> >   arch/riscv/kvm/vcpu.c    |  44 +++++++++------
-> >   arch/x86/kvm/svm/svm.c   |   4 +-
-> >   arch/x86/kvm/vmx/vmx.c   |   4 +-
-> >   arch/x86/kvm/x86.c       |   4 +-
-> >   arch/x86/kvm/x86.h       |  45 ----------------
-> >   include/linux/kvm_host.h | 112 +++++++++++++++++++++++++++++++++++++--
-> >   8 files changed, 222 insertions(+), 92 deletions(-)
-> > 
+> fs/kernfs/file.c:128:15: warning: performing pointer arithmetic on a
+> null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>                 return NULL + !*ppos;
+>                        ~~~~ ^
+> fs/seq_file.c:559:14: warning: performing pointer arithmetic on a
+> null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>         return NULL + (*pos == 0);
+> 
+> Signed-off-by: Maíra Canal <maira.canal@usp.br>
+
+Thanks a lot for the patch!
+
+It looks like Arnd sent a similar patch but it was never picked up:
+
+https://lore.kernel.org/r/20201028151202.3074398-1-arnd@kernel.org/
+
+This is a cleaner solution as it uses existing defines and functions to
+deduplicate the code.
+
+Reviewed-by: Nathan Chancellor <nathan@kernel.org>
+
+> ---
+> V1 -> V2:
+> - Use SEQ_START_TOKEN instead of open-coding it
+> - kernfs_seq_start call single_start instead of open-coding it
+> V2 -> V3:
+> - Remove the EXPORT of the single_start symbol
+> ---
+>  fs/kernfs/file.c         | 7 +------
+>  fs/seq_file.c            | 4 ++--
+>  include/linux/seq_file.h | 1 +
+>  3 files changed, 4 insertions(+), 8 deletions(-)
+> 
+> diff --git a/fs/kernfs/file.c b/fs/kernfs/file.c
+> index 9414a7a60a9f..7aefaca876a0 100644
+> --- a/fs/kernfs/file.c
+> +++ b/fs/kernfs/file.c
+> @@ -120,13 +120,8 @@ static void *kernfs_seq_start(struct seq_file *sf, loff_t *ppos)
+>  		if (next == ERR_PTR(-ENODEV))
+>  			kernfs_seq_stop_active(sf, next);
+>  		return next;
+> -	} else {
+> -		/*
+> -		 * The same behavior and code as single_open().  Returns
+> -		 * !NULL if pos is at the beginning; otherwise, NULL.
+> -		 */
+> -		return NULL + !*ppos;
+>  	}
+> +	return single_start(sf, ppos);
+>  }
+>  
+>  static void *kernfs_seq_next(struct seq_file *sf, void *v, loff_t *ppos)
+> diff --git a/fs/seq_file.c b/fs/seq_file.c
+> index f8e1f4ee87ff..7ab8a58c29b6 100644
+> --- a/fs/seq_file.c
+> +++ b/fs/seq_file.c
+> @@ -554,9 +554,9 @@ int seq_dentry(struct seq_file *m, struct dentry *dentry, const char *esc)
+>  }
+>  EXPORT_SYMBOL(seq_dentry);
+>  
+> -static void *single_start(struct seq_file *p, loff_t *pos)
+> +void *single_start(struct seq_file *p, loff_t *pos)
+>  {
+> -	return NULL + (*pos == 0);
+> +	return *pos ? NULL : SEQ_START_TOKEN;
+>  }
+>  
+>  static void *single_next(struct seq_file *p, void *v, loff_t *pos)
+> diff --git a/include/linux/seq_file.h b/include/linux/seq_file.h
+> index 88cc16444b43..60820ab511d2 100644
+> --- a/include/linux/seq_file.h
+> +++ b/include/linux/seq_file.h
+> @@ -162,6 +162,7 @@ int seq_dentry(struct seq_file *, struct dentry *, const char *);
+>  int seq_path_root(struct seq_file *m, const struct path *path,
+>  		  const struct path *root, const char *esc);
+>  
+> +void *single_start(struct seq_file *, loff_t *);
+>  int single_open(struct file *, int (*)(struct seq_file *, void *), void *);
+>  int single_open_size(struct file *, int (*)(struct seq_file *, void *), void *, size_t);
+>  int single_release(struct inode *, struct file *);
+> -- 
+> 2.34.1
 > 
