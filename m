@@ -2,230 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81844C4167B
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 15:06:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AAEEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 15:06:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239793AbiBAPGZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 10:06:25 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:58642 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239768AbiBAPGV (ORCPT
+        id S239820AbiBAPG0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 10:06:26 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:62026 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S239789AbiBAPGW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 10:06:21 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E79A4B82E8D;
-        Tue,  1 Feb 2022 15:06:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA7B1C340F1;
-        Tue,  1 Feb 2022 15:06:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643727978;
-        bh=k8swjM4C0REanvyDU5IGed9a/4kmPz1sF37iD27Pza0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iFhpPPax1b0juU+TdmsPyXUqEuxdba7nGC1KgF0wWlznbK5KKRqwVsqPTsLjUF7y0
-         bR/aUR6AcjJY4yxWf15bX/svTZfJK7UYtj/dY2LnWMdi7Ou0t3vImDbMJHX/Qxgtvr
-         7NPT3Y6yR9l8lzClQvbH6M6JFyxqCbtTi7u0huhrTyUZwjopLmzT1y3ToxEY+b7KxP
-         LnDLO2mMQP1i9EiC22jk2VTNF3IanoJrcWEOKO/L36iX0p+vcZT2A86OzKKyu6kKbH
-         f6wq/MgnIiRHq63fUyPruGP+dmzdBsucbA/NlMZpxedUUYXjLOy7IEK6CI/IRkchrt
-         yEjP3K+F5Xz8A==
-From:   guoren@kernel.org
-To:     guoren@kernel.org, palmer@dabbelt.com, arnd@arndb.de,
-        anup@brainfault.org, gregkh@linuxfoundation.org,
-        liush@allwinnertech.com, wefu@redhat.com, drew@beagleboard.org,
-        wangjunqiang@iscas.ac.cn, hch@lst.de
-Cc:     linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-csky@vger.kernel.org,
-        linux-s390@vger.kernel.org, sparclinux@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-parisc@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        x86@kernel.org
-Subject: [PATCH V5 02/21] uapi: always define F_GETLK64/F_SETLK64/F_SETLKW64 in fcntl.h
-Date:   Tue,  1 Feb 2022 23:05:26 +0800
-Message-Id: <20220201150545.1512822-3-guoren@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220201150545.1512822-1-guoren@kernel.org>
-References: <20220201150545.1512822-1-guoren@kernel.org>
+        Tue, 1 Feb 2022 10:06:22 -0500
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 211DIYYN015638;
+        Tue, 1 Feb 2022 15:05:21 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : reply-to : to : cc : date : in-reply-to : references : content-type
+ : mime-version : content-transfer-encoding; s=pp1;
+ bh=ToXTNfkMZFKaX0cR4GMzptBPMUOwrlwYms0kQCUHCRw=;
+ b=WsAingg9xeS+2pWFI8eCa6N9KwIknymFrNib35nGQrZZGkokpZU5sRkpR2+THZ/qUq9B
+ yXisj7SGzKP0IlrHkLDm03amKAPIo4nRMNxx6L00kVqFfXgVoq75ZYOlXFgESywshyRq
+ OM3ctwRmNoS9SA6WvyBHMSRLsvhNUyZimZ8R5w7uTfhasZACl9vGbQhfBiae4Wjvxp/9
+ SaizqSTl8jZS/EK98AMSTfe0WOKjmqY9HNaNCXX+cvR6fNqgjxo5l2N1VqjY/vCUcz66
+ 5ApuNpgTbiI2fK4GYVYXmg/EBoOnJj/m4mTq+8Hq2K+/CgZb0/GY1+Z268LriHYp6NDg VA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3dy2rudv05-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 01 Feb 2022 15:05:20 +0000
+Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 211EuH4D014152;
+        Tue, 1 Feb 2022 15:05:20 GMT
+Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3dy2ruduy7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 01 Feb 2022 15:05:19 +0000
+Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
+        by ppma02wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 211F2NVs002911;
+        Tue, 1 Feb 2022 15:05:18 GMT
+Received: from b03cxnp08028.gho.boulder.ibm.com (b03cxnp08028.gho.boulder.ibm.com [9.17.130.20])
+        by ppma02wdc.us.ibm.com with ESMTP id 3dvw7atq34-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 01 Feb 2022 15:05:18 +0000
+Received: from b03ledav004.gho.boulder.ibm.com (b03ledav004.gho.boulder.ibm.com [9.17.130.235])
+        by b03cxnp08028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 211F5EBa35979592
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 1 Feb 2022 15:05:14 GMT
+Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3E73B78072;
+        Tue,  1 Feb 2022 15:05:14 +0000 (GMT)
+Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A3AEB78064;
+        Tue,  1 Feb 2022 15:05:09 +0000 (GMT)
+Received: from jarvis.int.hansenpartnership.com (unknown [9.211.75.243])
+        by b03ledav004.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Tue,  1 Feb 2022 15:05:09 +0000 (GMT)
+Message-ID: <936285f4de4520c1fa9e594ca5e912ea766c127b.camel@linux.ibm.com>
+Subject: Re: [PATCH v7 0/5] Allow guest access to EFI confidential computing
+ secret area
+From:   James Bottomley <jejb@linux.ibm.com>
+Reply-To: jejb@linux.ibm.com
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Dov Murik <dovmurik@linux.ibm.com>, linux-efi@vger.kernel.org,
+        Borislav Petkov <bp@suse.de>,
+        Ashish Kalra <ashish.kalra@amd.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Andrew Scull <ascull@google.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        "Dr. David Alan Gilbert" <dgilbert@redhat.com>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Lenny Szubowicz <lszubowi@redhat.com>,
+        Peter Gonda <pgonda@google.com>,
+        Tobin Feldman-Fitzthum <tobin@linux.ibm.com>,
+        Jim Cadden <jcadden@ibm.com>,
+        Daniele Buono <dbuono@linux.vnet.ibm.com>,
+        linux-coco@lists.linux.dev, linux-security-module@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Nayna Jain <nayna@linux.ibm.com>,
+        dougmill@linux.vnet.ibm.com, gcwilson@linux.ibm.com,
+        gjoyce@ibm.com, linuxppc-dev@lists.ozlabs.org, mjg59@srcf.ucam.org,
+        mpe@ellerman.id.au, dja@axtens.net
+Date:   Tue, 01 Feb 2022 10:05:08 -0500
+In-Reply-To: <YflGkNwyI6LUSVVk@kroah.com>
+References: <20220201124413.1093099-1-dovmurik@linux.ibm.com>
+         <Yfk6vEuZFtgtA+G+@kroah.com>
+         <37779659ca96ac9c1f11bcc0ac0665895c795b54.camel@linux.ibm.com>
+         <YflGkNwyI6LUSVVk@kroah.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.4 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: leA7HPKo2e59KhfKu2eGeqoLY4mV-OCA
+X-Proofpoint-ORIG-GUID: jz9EWbU0-KhkJDOZM4bKd9foUK75RIZW
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-01_07,2022-02-01_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ lowpriorityscore=0 mlxscore=0 phishscore=0 suspectscore=0 clxscore=1015
+ adultscore=0 impostorscore=0 mlxlogscore=926 spamscore=0 bulkscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202010085
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+On Tue, 2022-02-01 at 15:41 +0100, Greg KH wrote:
+> On Tue, Feb 01, 2022 at 09:24:50AM -0500, James Bottomley wrote:
+> > [cc's added]
+> > On Tue, 2022-02-01 at 14:50 +0100, Greg KH wrote:
+[...]
+> > > You all need to work together to come up with a unified place for
+> > > this and stop making it platform-specific.
+> > 
+> > I'm not entirely sure of that.  If you look at the differences
+> > between EFI variables and the COCO proposal: the former has an
+> > update API which, in the case of signed variables, is rather
+> > complex and a UC16 content requirement.  The latter is binary data
+> > with read only/delete.  Plus each variable in EFI is described by a
+> > GUID, so having a directory of random guids, some of which behave
+> > like COCO secrets and some of which are EFI variables is going to
+> > be incredibly confusing (and also break all our current listing
+> > tools which seems somewhat undesirable).
+> > 
+> > So we could end up with 
+> > 
+> > <common path prefix>/efivar
+> > <common path prefix>/coco
+> 
+> The powerpc stuff is not efi.  But yes, that is messy here.  But why
+> doesn't the powerpc follow the coco standard?
 
-The F_GETLK64/F_SETLK64/F_SETLKW64 fcntl opcodes are only implemented
-for the 32-bit syscall APIs, but are also needed for compat handling
-on 64-bit kernels.
+There is no coco standard for EFI variables.  There's only a UEFI
+variable standard which, I believe, power tries to follow in some
+measure since the variables are mostly used for its version of secure
+boot.  Certainly you're either a power or UEFI platform but not both,
+so they could live at the same location ... that's not true with the
+coco ones.  I added the cc's to see if there are other ideas, but I
+really think the use cases are too disjoint.
 
-Consolidate them in unistd.h instead of definining the internal compat
-definitions in compat.h, which is rather error prone (e.g. parisc
-gets the values wrong currently).
+As Daniel has previously proposed, it might be possible to unify the
+power and UEFI implementations ... useful if we want them to respond to
+the same tooling, but we'll do that by giving them the same EFI
+semantics.  The semantics and source of the coco secrets will still be
+immutable and completely alien to whatever backend does the non
+volatile power/efi authenticated variables, so we'll still need two
+different backends and then it's just a question of arguing about path,
+which doesn't make sense as a blocker.
 
-Note that before this change they were never visible to userspace due
-to the fact that CONFIG_64BIT is only set for kernel builds.
+> > To achieve the separation, but I really don't see what this buys
+> > us.  Both filesystems would likely end up with different backends
+> > because of the semantic differences and we can easily start now in
+> > different places (effectively we've already done this for efi
+> > variables) and unify later if that is the chosen direction, so it
+> > doesn't look like a blocker.
+> > 
+> > > Until then, we can't take this.
+> > 
+> > I don't believe anyone was asking you to take it.
+> 
+> I was on the review list...
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Guo Ren <guoren@kernel.org>
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
----
- arch/arm64/include/asm/compat.h        | 4 ----
- arch/mips/include/asm/compat.h         | 4 ----
- arch/mips/include/uapi/asm/fcntl.h     | 4 ++--
- arch/powerpc/include/asm/compat.h      | 4 ----
- arch/s390/include/asm/compat.h         | 4 ----
- arch/sparc/include/asm/compat.h        | 4 ----
- arch/x86/include/asm/compat.h          | 4 ----
- include/uapi/asm-generic/fcntl.h       | 4 ++--
- tools/include/uapi/asm-generic/fcntl.h | 2 --
- 9 files changed, 4 insertions(+), 30 deletions(-)
+You raised a doc/API concenrn.  I think you were on the review list to
+ensure it got addressed.
 
-diff --git a/arch/arm64/include/asm/compat.h b/arch/arm64/include/asm/compat.h
-index eaa6ca062d89..276328765408 100644
---- a/arch/arm64/include/asm/compat.h
-+++ b/arch/arm64/include/asm/compat.h
-@@ -73,10 +73,6 @@ struct compat_flock {
- 	compat_pid_t	l_pid;
- };
- 
--#define F_GETLK64	12	/*  using 'struct flock64' */
--#define F_SETLK64	13
--#define F_SETLKW64	14
--
- struct compat_flock64 {
- 	short		l_type;
- 	short		l_whence;
-diff --git a/arch/mips/include/asm/compat.h b/arch/mips/include/asm/compat.h
-index bbb3bc5a42fd..6a350c1f70d7 100644
---- a/arch/mips/include/asm/compat.h
-+++ b/arch/mips/include/asm/compat.h
-@@ -65,10 +65,6 @@ struct compat_flock {
- 	s32		pad[4];
- };
- 
--#define F_GETLK64	33
--#define F_SETLK64	34
--#define F_SETLKW64	35
--
- struct compat_flock64 {
- 	short		l_type;
- 	short		l_whence;
-diff --git a/arch/mips/include/uapi/asm/fcntl.h b/arch/mips/include/uapi/asm/fcntl.h
-index 9e44ac810db9..0369a38e3d4f 100644
---- a/arch/mips/include/uapi/asm/fcntl.h
-+++ b/arch/mips/include/uapi/asm/fcntl.h
-@@ -44,11 +44,11 @@
- #define F_SETOWN	24	/*  for sockets. */
- #define F_GETOWN	23	/*  for sockets. */
- 
--#ifndef __mips64
-+#if __BITS_PER_LONG == 32 || defined(__KERNEL__)
- #define F_GETLK64	33	/*  using 'struct flock64' */
- #define F_SETLK64	34
- #define F_SETLKW64	35
--#endif
-+#endif /* __BITS_PER_LONG == 32 || defined(__KERNEL__) */
- 
- #if _MIPS_SIM != _MIPS_SIM_ABI64
- #define __ARCH_FLOCK_EXTRA_SYSID	long l_sysid;
-diff --git a/arch/powerpc/include/asm/compat.h b/arch/powerpc/include/asm/compat.h
-index 7afc96fb6524..83d8f70779cb 100644
---- a/arch/powerpc/include/asm/compat.h
-+++ b/arch/powerpc/include/asm/compat.h
-@@ -52,10 +52,6 @@ struct compat_flock {
- 	compat_pid_t	l_pid;
- };
- 
--#define F_GETLK64	12	/*  using 'struct flock64' */
--#define F_SETLK64	13
--#define F_SETLKW64	14
--
- struct compat_flock64 {
- 	short		l_type;
- 	short		l_whence;
-diff --git a/arch/s390/include/asm/compat.h b/arch/s390/include/asm/compat.h
-index cdc7ae72529d..0f14b3188b1b 100644
---- a/arch/s390/include/asm/compat.h
-+++ b/arch/s390/include/asm/compat.h
-@@ -110,10 +110,6 @@ struct compat_flock {
- 	compat_pid_t	l_pid;
- };
- 
--#define F_GETLK64       12
--#define F_SETLK64       13
--#define F_SETLKW64      14    
--
- struct compat_flock64 {
- 	short		l_type;
- 	short		l_whence;
-diff --git a/arch/sparc/include/asm/compat.h b/arch/sparc/include/asm/compat.h
-index bd949fcf9d63..108078751bb5 100644
---- a/arch/sparc/include/asm/compat.h
-+++ b/arch/sparc/include/asm/compat.h
-@@ -84,10 +84,6 @@ struct compat_flock {
- 	short		__unused;
- };
- 
--#define F_GETLK64	12
--#define F_SETLK64	13
--#define F_SETLKW64	14
--
- struct compat_flock64 {
- 	short		l_type;
- 	short		l_whence;
-diff --git a/arch/x86/include/asm/compat.h b/arch/x86/include/asm/compat.h
-index 7516e4199b3c..8d19a212f4f2 100644
---- a/arch/x86/include/asm/compat.h
-+++ b/arch/x86/include/asm/compat.h
-@@ -58,10 +58,6 @@ struct compat_flock {
- 	compat_pid_t	l_pid;
- };
- 
--#define F_GETLK64	12	/*  using 'struct flock64' */
--#define F_SETLK64	13
--#define F_SETLKW64	14
--
- /*
-  * IA32 uses 4 byte alignment for 64 bit quantities,
-  * so we need to pack this structure.
-diff --git a/include/uapi/asm-generic/fcntl.h b/include/uapi/asm-generic/fcntl.h
-index 77aa9f2ff98d..f13d37b60775 100644
---- a/include/uapi/asm-generic/fcntl.h
-+++ b/include/uapi/asm-generic/fcntl.h
-@@ -116,13 +116,13 @@
- #define F_GETSIG	11	/* for sockets. */
- #endif
- 
--#ifndef CONFIG_64BIT
-+#if __BITS_PER_LONG == 32 || defined(__KERNEL__)
- #ifndef F_GETLK64
- #define F_GETLK64	12	/*  using 'struct flock64' */
- #define F_SETLK64	13
- #define F_SETLKW64	14
- #endif
--#endif
-+#endif /* __BITS_PER_LONG == 32 || defined(__KERNEL__) */
- 
- #ifndef F_SETOWN_EX
- #define F_SETOWN_EX	15
-diff --git a/tools/include/uapi/asm-generic/fcntl.h b/tools/include/uapi/asm-generic/fcntl.h
-index 99bc9b15ce2b..0197042b7dfb 100644
---- a/tools/include/uapi/asm-generic/fcntl.h
-+++ b/tools/include/uapi/asm-generic/fcntl.h
-@@ -115,13 +115,11 @@
- #define F_GETSIG	11	/* for sockets. */
- #endif
- 
--#ifndef CONFIG_64BIT
- #ifndef F_GETLK64
- #define F_GETLK64	12	/*  using 'struct flock64' */
- #define F_SETLK64	13
- #define F_SETLKW64	14
- #endif
--#endif
- 
- #ifndef F_SETOWN_EX
- #define F_SETOWN_EX	15
--- 
-2.25.1
+James
+
+
 
