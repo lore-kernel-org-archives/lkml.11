@@ -2,200 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85BA3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 18:17:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ABDAC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Feb 2022 18:17:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236426AbiBASRK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 13:17:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49560 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241869AbiBASQ4 (ORCPT
+        id S241814AbiBASRP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 13:17:15 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:56296 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234424AbiBASRB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 13:16:56 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF625C061755;
-        Tue,  1 Feb 2022 10:16:56 -0800 (PST)
+        Tue, 1 Feb 2022 13:17:01 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 500F061418;
-        Tue,  1 Feb 2022 18:16:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E98DEC340EC;
-        Tue,  1 Feb 2022 18:16:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6DD8C61418;
+        Tue,  1 Feb 2022 18:17:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E72AC340EC;
+        Tue,  1 Feb 2022 18:17:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643739415;
-        bh=TDuJuTDku0kHyQpV7ppZT1wjeLf9kcE4/fB7g/DaVgA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=oLLYH9xrWHS2yJ+XjN3XMpfDM4DacrCxo/G/t2zp8HqCcjPvZmbs3AORofOY7sKrI
-         N0DLjxBtYEMPC7amAVsgbUf6DkzkdHZl3bGox5l6isXE91sHNSKqOF+A1oS24Undhz
-         MA7QhcDoRrjBEAS/rGXUVL5/iS806R+av9Tc+qmc=
+        s=korg; t=1643739420;
+        bh=L8zZDxhrh4UHMsvji51RGgp50rdq0IiMFZy+Kf18rns=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=nkvhYE/s+fMk4kqW0FRdmi4jJoT/rkAucoCwPcOXwnrBr7kVc2gyVXuFipkyWSseS
+         u2Kk83fOyWjvXmL0ORB8xw7nnHTW/UrPsBSy+zS9Iex29lgLPIzCP7n242BQ5MfB6l
+         oJp/WBPXkKESn2lAPeKXjX7TQ8rIqqCFPcv9MTuw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com
-Subject: [PATCH 4.4 00/25] 4.4.302-rc1 review
-Date:   Tue,  1 Feb 2022 19:16:24 +0100
-Message-Id: <20220201180822.148370751@linuxfoundation.org>
+        stable@vger.kernel.org, Cameron Williams <cang1@live.co.uk>
+Subject: [PATCH 4.4 10/25] tty: Add support for Brainboxes UC cards.
+Date:   Tue,  1 Feb 2022 19:16:34 +0100
+Message-Id: <20220201180822.487981953@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
+In-Reply-To: <20220201180822.148370751@linuxfoundation.org>
+References: <20220201180822.148370751@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.4.302-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-4.4.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 4.4.302-rc1
-X-KernelTest-Deadline: 2022-02-03T18:08+00:00
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-NOTE!  This is the proposed LAST 4.4.y kernel release to happen under
-the rules of the normal stable kernel releases.  After this one, it will
-be marked End-Of-Life as it has been 6 years and you really should know
-better by now and have moved to a newer kernel tree.  After this one, no
-more security fixes will be backported and you will end up with an
-insecure system over time.
+From: Cameron Williams <cang1@live.co.uk>
 
---------------------------
+commit 152d1afa834c84530828ee031cf07a00e0fc0b8c upstream.
 
-This is the start of the stable review cycle for the 4.4.302 release.
-There are 25 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
+This commit adds support for the some of the Brainboxes PCI range of
+cards, including the UC-101, UC-235/246, UC-257, UC-268, UC-275/279,
+UC-302, UC-310, UC-313, UC-320/324, UC-346, UC-357, UC-368
+and UC-420/431.
 
-Responses should be made by Thu, 03 Feb 2022 18:08:10 +0000.
-Anything received after that time might be too late.
+Signed-off-by: Cameron Williams <cang1@live.co.uk>
+Cc: stable <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/AM5PR0202MB2564688493F7DD9B9C610827C45E9@AM5PR0202MB2564.eurprd02.prod.outlook.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/tty/serial/8250/8250_pci.c |  100 ++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 98 insertions(+), 2 deletions(-)
 
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.4.302-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.4.y
-and the diffstat can be found below.
-
-thanks,
-
-greg k-h
-
--------------
-Pseudo-Shortlog of commits:
-
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 4.4.302-rc1
-
-Guillaume Bertholon <guillaume.bertholon@ens.fr>
-    KVM: x86: Fix misplaced backport of "work around leak of uninitialized stack contents"
-
-Guillaume Bertholon <guillaume.bertholon@ens.fr>
-    Revert "tc358743: fix register i2c_rd/wr function fix"
-
-Guillaume Bertholon <guillaume.bertholon@ens.fr>
-    Revert "drm/radeon/ci: disable mclk switching for high refresh rates (v2)"
-
-Guillaume Bertholon <guillaume.bertholon@ens.fr>
-    Bluetooth: MGMT: Fix misplaced BT_HS check
-
-Eric Dumazet <edumazet@google.com>
-    ipv4: tcp: send zero IPID in SYNACK messages
-
-Eric Dumazet <edumazet@google.com>
-    ipv4: raw: lock the socket in raw_bind()
-
-Guenter Roeck <linux@roeck-us.net>
-    hwmon: (lm90) Reduce maximum conversion rate for G781
-
-Xianting Tian <xianting.tian@linux.alibaba.com>
-    drm/msm: Fix wrong size calculation
-
-Jianguo Wu <wujianguo@chinatelecom.cn>
-    net-procfs: show net devices bound packet types
-
-Eric Dumazet <edumazet@google.com>
-    ipv4: avoid using shared IP generator for connected sockets
-
-Congyu Liu <liu3101@purdue.edu>
-    net: fix information leakage in /proc/net/ptype
-
-Ido Schimmel <idosch@nvidia.com>
-    ipv6_tunnel: Rate limit warning messages
-
-John Meneghini <jmeneghi@redhat.com>
-    scsi: bnx2fc: Flush destroy_work queue before calling bnx2fc_interface_put()
-
-Alan Stern <stern@rowland.harvard.edu>
-    USB: core: Fix hang in usb_kill_urb by adding memory barriers
-
-Alan Stern <stern@rowland.harvard.edu>
-    usb-storage: Add unusual-devs entry for VL817 USB-SATA bridge
-
-Cameron Williams <cang1@live.co.uk>
-    tty: Add support for Brainboxes UC cards.
-
-daniel.starke@siemens.com <daniel.starke@siemens.com>
-    tty: n_gsm: fix SW flow control encoding/handling
-
-Valentin Caron <valentin.caron@foss.st.com>
-    serial: stm32: fix software flow control transfer
-
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    PM: wakeup: simplify the output logic of pm_show_wakelocks()
-
-Jan Kara <jack@suse.cz>
-    udf: Fix NULL ptr deref when converting from inline format
-
-Jan Kara <jack@suse.cz>
-    udf: Restore i_lenAlloc when inode expansion fails
-
-Steffen Maier <maier@linux.ibm.com>
-    scsi: zfcp: Fix failed recovery on gone remote port with non-NPIV FCP devices
-
-Vasily Gorbik <gor@linux.ibm.com>
-    s390/hypfs: include z/VM guests with access control group set
-
-Brian Gix <brian.gix@intel.com>
-    Bluetooth: refactor malicious adv data check
-
-Ziyang Xuan <william.xuanziyang@huawei.com>
-    can: bcm: fix UAF of bcm op
-
-
--------------
-
-Diffstat:
-
- Makefile                           |   4 +-
- arch/s390/hypfs/hypfs_vm.c         |   6 ++-
- arch/x86/kvm/x86.c                 |  14 +++---
- drivers/gpu/drm/msm/msm_drv.c      |   2 +-
- drivers/gpu/drm/radeon/ci_dpm.c    |   6 ---
- drivers/hwmon/lm90.c               |   2 +-
- drivers/media/i2c/tc358743.c       |   2 +-
- drivers/s390/scsi/zfcp_fc.c        |  13 ++++-
- drivers/scsi/bnx2fc/bnx2fc_fcoe.c  |  20 ++------
- drivers/tty/n_gsm.c                |   4 +-
- drivers/tty/serial/8250/8250_pci.c | 100 ++++++++++++++++++++++++++++++++++++-
- drivers/tty/serial/stm32-usart.c   |   2 +-
- drivers/usb/core/hcd.c             |  14 ++++++
- drivers/usb/core/urb.c             |  12 +++++
- drivers/usb/storage/unusual_devs.h |  10 ++++
- fs/udf/inode.c                     |   9 ++--
- include/linux/netdevice.h          |   1 +
- include/net/ip.h                   |  21 ++++----
- kernel/power/wakelock.c            |  12 ++---
- net/bluetooth/hci_event.c          |  10 ++--
- net/bluetooth/mgmt.c               |   8 +--
- net/can/bcm.c                      |  20 ++++----
- net/core/net-procfs.c              |  38 ++++++++++++--
- net/ipv4/ip_output.c               |  11 +++-
- net/ipv4/raw.c                     |   5 +-
- net/ipv6/ip6_tunnel.c              |   8 +--
- net/packet/af_packet.c             |   2 +
- 27 files changed, 262 insertions(+), 94 deletions(-)
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -5404,8 +5404,30 @@ static struct pci_device_id serial_pci_t
+ 	{	PCI_VENDOR_ID_INTASHIELD, PCI_DEVICE_ID_INTASHIELD_IS400,
+ 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,    /* 135a.0dc0 */
+ 		pbn_b2_4_115200 },
++	/* Brainboxes Devices */
+ 	/*
+-	 * BrainBoxes UC-260
++	* Brainboxes UC-101
++	*/
++	{       PCI_VENDOR_ID_INTASHIELD, 0x0BA1,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_2_115200 },
++	/*
++	 * Brainboxes UC-235/246
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x0AA1,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_1_115200 },
++	/*
++	 * Brainboxes UC-257
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x0861,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_2_115200 },
++	/*
++	 * Brainboxes UC-260/271/701/756
+ 	 */
+ 	{	PCI_VENDOR_ID_INTASHIELD, 0x0D21,
+ 		PCI_ANY_ID, PCI_ANY_ID,
+@@ -5413,7 +5435,81 @@ static struct pci_device_id serial_pci_t
+ 		pbn_b2_4_115200 },
+ 	{	PCI_VENDOR_ID_INTASHIELD, 0x0E34,
+ 		PCI_ANY_ID, PCI_ANY_ID,
+-		 PCI_CLASS_COMMUNICATION_MULTISERIAL << 8, 0xffff00,
++		PCI_CLASS_COMMUNICATION_MULTISERIAL << 8, 0xffff00,
++		pbn_b2_4_115200 },
++	/*
++	 * Brainboxes UC-268
++	 */
++	{       PCI_VENDOR_ID_INTASHIELD, 0x0841,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_4_115200 },
++	/*
++	 * Brainboxes UC-275/279
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x0881,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_8_115200 },
++	/*
++	 * Brainboxes UC-302
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x08E1,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_2_115200 },
++	/*
++	 * Brainboxes UC-310
++	 */
++	{       PCI_VENDOR_ID_INTASHIELD, 0x08C1,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_2_115200 },
++	/*
++	 * Brainboxes UC-313
++	 */
++	{       PCI_VENDOR_ID_INTASHIELD, 0x08A3,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_2_115200 },
++	/*
++	 * Brainboxes UC-320/324
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x0A61,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_1_115200 },
++	/*
++	 * Brainboxes UC-346
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x0B02,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_4_115200 },
++	/*
++	 * Brainboxes UC-357
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x0A81,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_2_115200 },
++	{	PCI_VENDOR_ID_INTASHIELD, 0x0A83,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_2_115200 },
++	/*
++	 * Brainboxes UC-368
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x0C41,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_4_115200 },
++	/*
++	 * Brainboxes UC-420/431
++	 */
++	{       PCI_VENDOR_ID_INTASHIELD, 0x0921,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
+ 		pbn_b2_4_115200 },
+ 	/*
+ 	 * Perle PCI-RAS cards
 
 
