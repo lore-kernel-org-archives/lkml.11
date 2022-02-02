@@ -2,167 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90D2CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 23:06:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC164C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 23:07:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348002AbiBBXG5 (ORCPT
+        id S1348011AbiBBXHN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 18:06:57 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:58304 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234207AbiBBXG4 (ORCPT
+        Wed, 2 Feb 2022 18:07:13 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:36946 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234207AbiBBXHL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 18:06:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643843216;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=srHq4RerCPcuK2/I9lWBI5nczQqLUr4zYMys9nonwW0=;
-        b=ANHHMEoEt4kme7PJSzZBjj3biAAgFIaNGmWaDG62aj49RUPavtiX6235XGQ+nM/Ujpq3L/
-        rIfzsl9T9wEBizsO/qTCKd+8YrhVswQpFyCxekSzqghzOobv74asghUS6tWYHam7OdDaIt
-        YqWDL/Yz3GlXUlf2bzJ/WHdnPYpJl2k=
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
- [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-511-i09LabvbO1eil30Q4Q1CrA-1; Wed, 02 Feb 2022 18:06:55 -0500
-X-MC-Unique: i09LabvbO1eil30Q4Q1CrA-1
-Received: by mail-qv1-f71.google.com with SMTP id u15-20020a0cec8f000000b00425d89d8be0so902975qvo.20
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 15:06:55 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=srHq4RerCPcuK2/I9lWBI5nczQqLUr4zYMys9nonwW0=;
-        b=5XvO2jFSAHiS8Fwtd7ksl6vHtZNVLqF/yKaKHumh++lF6KbGidmNYoDIZLzUi/b0vS
-         fvINYpBaI1+y0NDWSgIBdIXoWoNx4uupidwuoABKtAMqNq73XlhO/lOtQIDBplgM3mCn
-         I7ycae+iMmJEWQoYso6KCXtyqcBFuzJJ6CxclbII/40wZEOFgFWsEbjJEFrU6mqPyQe6
-         JegJn2INF0SmZCrie72RxXj/Ua8jzdGh8cskltctBaMt3bPTjFd/5PLxVJ4n8yM+SDcC
-         a4kFZw6rEhPL61OqjXbHQ+1zZ0VLD1CM62Ugys6NJfpu3Hen/B6xbKB4dR/FjxQs3zKW
-         iR3Q==
-X-Gm-Message-State: AOAM531TgZP5dUULOIy5DS15dKdD3BkV1AgIXaRrfX9M77cqfwarf8S4
-        G154egrVFAGTheeeUK9fWybc2EiaLgRdM17/7p3B6p9p/+lgoN8tKM/FXpnGQvB8X+y9R7DxAY9
-        F4eU8epKkNDgiI5U9jlJhbLRH
-X-Received: by 2002:a05:622a:144a:: with SMTP id v10mr16612648qtx.350.1643843214561;
-        Wed, 02 Feb 2022 15:06:54 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwhd9wQP9nLOoPNf+zPu0Q9gF2MAe960omGhUqE/PcrJrAiip/p0+OPiu1a41WQoa5ljwp9Zg==
-X-Received: by 2002:a05:622a:144a:: with SMTP id v10mr16612625qtx.350.1643843214253;
-        Wed, 02 Feb 2022 15:06:54 -0800 (PST)
-Received: from optiplex-fbsd (c-73-182-255-193.hsd1.nh.comcast.net. [73.182.255.193])
-        by smtp.gmail.com with ESMTPSA id h7sm3106143qtb.27.2022.02.02.15.06.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Feb 2022 15:06:53 -0800 (PST)
-Date:   Wed, 2 Feb 2022 18:06:51 -0500
-From:   Rafael Aquini <aquini@redhat.com>
-To:     Waiman Long <longman@redhat.com>
-Cc:     Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Vladimir Davydov <vdavydov.dev@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
-        linux-mm@kvack.org, Ira Weiny <ira.weiny@intel.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Roman Gushchin <guro@fb.com>
-Subject: Re: [PATCH v4 0/4] mm/page_owner: Extend page_owner to show memcg
- information
-Message-ID: <YfsOi38nXkyCrYam@optiplex-fbsd>
-References: <20220131192308.608837-5-longman@redhat.com>
- <20220202203036.744010-1-longman@redhat.com>
+        Wed, 2 Feb 2022 18:07:11 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D70CF6166C;
+        Wed,  2 Feb 2022 23:07:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9637CC004E1;
+        Wed,  2 Feb 2022 23:07:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643843230;
+        bh=qxCHvIg/XmXSNkQEWjgnOIlMgC9MvQaoNnK07mww1MA=;
+        h=From:To:Cc:Subject:Date:From;
+        b=D/vNnMsfjBEWN5uwhwwuz1iTGN088N+vXTPxamkIrjCb7cw+t+ZyYiOUby1nDKYVt
+         H3DXNYcV3sA+uXJK1CxbWg0uM69RZo+1kfqSRiB60ffBYyLhJDCIPdlugR6LexsmsA
+         qNMyF9xinPFKKILN5pKmcBtcPxA97gXnQe+hJGDNhAOS9zVxnZi0Mb09MF1/x9j0Z5
+         2KUO3svoi9aghC2FDkggfl8M5tuy4gquTVRy1x5PYfqE2GKhl6M0F06JBolj8t4KP5
+         MsEti2DkLLHZYDIt8pznZKki/ReN852avq6iBGT3Dmda9LjsKjwwl5O05sIg6cZyIi
+         ZTT6OyiL4BoBA==
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Masahiro Yamada <masahiroy@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Arnd Bergmann <arnd@arndb.de>
+Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>,
+        stable@vger.kernel.org
+Subject: [PATCH v2] Makefile.extrawarn: Move -Wunaligned-access to W=1
+Date:   Wed,  2 Feb 2022 16:05:16 -0700
+Message-Id: <20220202230515.2931333-1-nathan@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220202203036.744010-1-longman@redhat.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 02, 2022 at 03:30:32PM -0500, Waiman Long wrote:
->  v4:
->   - Take rcu_read_lock() when memcg is being accessed as suggested by
->     Michal.
->   - Make print_page_owner_memcg() return the new offset into the buffer
->     and put CONFIG_MEMCG block inside as suggested by Mike.
->   - Directly use TASK_COMM_LEN as length of name buffer as suggested by
->     Roman.
-> 
->  v3:
->   - Add unlikely() to patch 1 and clarify that -1 will not be returned.
->   - Use a helper function to print out memcg information in patch 3.
->   - Add a new patch 4 to store task command name in page_owner
->     structure.
-> 
->  v2:
->   - Remove the SNPRINTF() macro as suggested by Ira and use scnprintf()
->     instead to remove some buffer overrun checks.
->   - Add a patch to optimize vscnprintf with a size parameter of 0.
-> 
-> While debugging the constant increase in percpu memory consumption on
-> a system that spawned large number of containers, it was found that a
-> lot of offline mem_cgroup structures remained in place without being
-> freed. Further investigation indicated that those mem_cgroup structures
-> were pinned by some pages.
-> 
-> In order to find out what those pages are, the existing page_owner
-> debugging tool is extended to show memory cgroup information and whether
-> those memcgs are offline or not. With the enhanced page_owner tool,
-> the following is a typical page that pinned the mem_cgroup structure
-> in my test case:
-> 
-> Page allocated via order 0, mask 0x1100cca(GFP_HIGHUSER_MOVABLE), pid 162970 (podman), ts 1097761405537 ns, free_ts 1097760838089 ns
-> PFN 1925700 type Movable Block 3761 type Movable Flags 0x17ffffc00c001c(uptodate|dirty|lru|reclaim|swapbacked|node=0|zone=2|lastcpupid=0x1fffff)
->  prep_new_page+0xac/0xe0
->  get_page_from_freelist+0x1327/0x14d0
->  __alloc_pages+0x191/0x340
->  alloc_pages_vma+0x84/0x250
->  shmem_alloc_page+0x3f/0x90
->  shmem_alloc_and_acct_page+0x76/0x1c0
->  shmem_getpage_gfp+0x281/0x940
->  shmem_write_begin+0x36/0xe0
->  generic_perform_write+0xed/0x1d0
->  __generic_file_write_iter+0xdc/0x1b0
->  generic_file_write_iter+0x5d/0xb0
->  new_sync_write+0x11f/0x1b0
->  vfs_write+0x1ba/0x2a0
->  ksys_write+0x59/0xd0
->  do_syscall_64+0x37/0x80
->  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> Charged to offline memcg libpod-conmon-15e4f9c758422306b73b2dd99f9d50a5ea53cbb16b4a13a2c2308a4253cc0ec8.
-> 
-> So the page was not freed because it was part of a shmem segment. That
-> is useful information that can help users to diagnose similar problems.
-> 
-> With cgroup v1, /proc/cgroups can be read to find out the total number
-> of memory cgroups (online + offline). With cgroup v2, the cgroup.stat of
-> the root cgroup can be read to find the number of dying cgroups (most
-> likely pinned by dying memcgs).
-> 
-> The page_owner feature is not supposed to be enabled for production
-> system due to its memory overhead. However, if it is suspected that
-> dying memcgs are increasing over time, a test environment with page_owner
-> enabled can then be set up with appropriate workload for further analysis
-> on what may be causing the increasing number of dying memcgs.
-> 
-> Waiman Long (4):
->   lib/vsprintf: Avoid redundant work with 0 size
->   mm/page_owner: Use scnprintf() to avoid excessive buffer overrun check
->   mm/page_owner: Print memcg information
->   mm/page_owner: Record task command name
-> 
->  lib/vsprintf.c  |  8 +++---
->  mm/page_owner.c | 70 ++++++++++++++++++++++++++++++++++++++-----------
->  2 files changed, 60 insertions(+), 18 deletions(-)
-> 
-> -- 
-> 2.27.0
->
+-Wunaligned-access is a new warning in clang that is default enabled for
+arm and arm64 under certain circumstances within the clang frontend (see
+LLVM commit below). On v5.17-rc2, an ARCH=arm allmodconfig build shows
+1284 total/70 unique instances of this warning (most of the instances
+are in header files), which is quite noisy.
 
-Thank you, Waiman.
+To keep a normal build green through CONFIG_WERROR, only show this
+warning with W=1, which will allow automated build systems to catch new
+instances of the warning so that the total number can be driven down to
+zero eventually since catching unaligned accesses at compile time would
+be generally useful.
 
-Acked-by: Rafael Aquini <aquini@redhat.com>
+Cc: stable@vger.kernel.org
+Link: https://github.com/llvm/llvm-project/commit/35737df4dcd28534bd3090157c224c19b501278a
+Link: https://github.com/ClangBuiltLinux/linux/issues/1569
+Link: https://github.com/ClangBuiltLinux/linux/issues/1576
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+---
+
+v1 -> v2: https://lore.kernel.org/r/20220201232229.2992968-1-nathan@kernel.org/
+
+* Move to W=1 instead of W=2 so that new instances are caught (Arnd).
+* Add links to the ClangBuiltLinux issue tracker.
+
+ scripts/Makefile.extrawarn | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/scripts/Makefile.extrawarn b/scripts/Makefile.extrawarn
+index d53825503874..8be892887d71 100644
+--- a/scripts/Makefile.extrawarn
++++ b/scripts/Makefile.extrawarn
+@@ -51,6 +51,7 @@ KBUILD_CFLAGS += -Wno-sign-compare
+ KBUILD_CFLAGS += -Wno-format-zero-length
+ KBUILD_CFLAGS += $(call cc-disable-warning, pointer-to-enum-cast)
+ KBUILD_CFLAGS += -Wno-tautological-constant-out-of-range-compare
++KBUILD_CFLAGS += $(call cc-disable-warning, unaligned-access)
+ endif
+ 
+ endif
+
+base-commit: 26291c54e111ff6ba87a164d85d4a4e134b7315c
+-- 
+2.35.1
 
