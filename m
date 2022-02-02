@@ -2,81 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDCADC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 16:36:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39400C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 16:36:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345947AbiBBQfh (ORCPT
+        id S1345937AbiBBQgk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 11:35:37 -0500
-Received: from alexa-out.qualcomm.com ([129.46.98.28]:36817 "EHLO
-        alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345897AbiBBQff (ORCPT
+        Wed, 2 Feb 2022 11:36:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43440 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345953AbiBBQgg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 11:35:35 -0500
+        Wed, 2 Feb 2022 11:36:36 -0500
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C42C4C061714;
+        Wed,  2 Feb 2022 08:36:35 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id r10so43592773edt.1;
+        Wed, 02 Feb 2022 08:36:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1643819735; x=1675355735;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=F8cd0YD8rXLXdTg11NvSlE/wiVGFREMAolQeUbPPezQ=;
-  b=H8sOl5cdDP7QgCAO1qHwGSDNxj1HQproAxTqJDplbMvQP6EMMeX8dt71
-   ltOwjOqJT2gDauajBXHyl9bE2spPNOF4yBzz4q374sdGVAXXwWd/ubSnw
-   SbcnanzqGJwTrPlLnvR03EfXQz9zm871PzonB9J+R0FACNBKz6GQqv/Gq
-   A=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 02 Feb 2022 08:35:35 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 08:35:34 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Wed, 2 Feb 2022 08:35:34 -0800
-Received: from kathirav-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Wed, 2 Feb 2022 08:35:31 -0800
-From:   Kathiravan T <quic_kathirav@quicinc.com>
-To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     Kathiravan T <quic_kathirav@quicinc.com>
-Subject: [PATCH 2/2] arm64: dts: qcom: ipq6018: drop the clock-frequency property
-Date:   Wed, 2 Feb 2022 22:05:09 +0530
-Message-ID: <1643819709-5410-3-git-send-email-quic_kathirav@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1643819709-5410-1-git-send-email-quic_kathirav@quicinc.com>
-References: <1643819709-5410-1-git-send-email-quic_kathirav@quicinc.com>
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=S9ViQKjdafpkt5ic07P4h3uUAndSyjNg2nRx9QigItQ=;
+        b=Be99NaueJJ3OFKHNUAkGtQHsLLLV1C9MYXtI+GcXNjbfpd2dnLisNdYi/5F4VAyRcT
+         UyYGHmePZQm7BUKOI2OJDPusJ5kKN2piZ3LS7WKquPRWgqMfts8Mh+yytf0grWf5ISzc
+         qrBzI8kcHSZ22j1GDogU2xseaUwb+h/c6MxEzvtftxmP20NgkhdIzSVuPYB5r0Zfwlg/
+         oenvuIVuFkUl+j/+qjk7b93qECEWHGfSQhH/xssrenUasvHIDhbsZxYa0Vi56Ap4KX30
+         SV5MSKDftOjZtea8S/L6yGWp44yCWJp4eotPu/1egpzE171jShYZSy0KjmVBfFYmRnlQ
+         Txfw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=S9ViQKjdafpkt5ic07P4h3uUAndSyjNg2nRx9QigItQ=;
+        b=HT3mXDed7TPhCaXlyHJlSPAn3RAxAt7JuiaGTp5u011ydpkT08mMF4PglPo++Ggmjs
+         SPFyPfgmcK0ENudMOt4dX8fvSrB1+Cd9LpQ8RdXHmNbFW2ptr9iMBgXoLo+xfj71G7RO
+         F975Z6o4YL7VtLrcvYwHmo07eGg74TPxeKkZ1Wom3SazeSerxH8/tQL/lKW9apIZndqL
+         tzLY3VmR5Li1iT/0Ed+brXZTEbyTcUzqqHE+DG9ZZxYQBft9gubizDq673hHExsCNS8r
+         AGgs2obIvxyu+Wot62Jjk5D5XBOmokxqHkhjTEdXgWKZqvpMqHcu9vgOtOyahVNy4t63
+         lA7Q==
+X-Gm-Message-State: AOAM531MLl5FpBy3Wd9qMzirnEauN2D/Nu5Wthrl3s7gME4in7XfMBpW
+        HPI1e/0ZCX7MZ0Oro4IIMGc=
+X-Google-Smtp-Source: ABdhPJztGAeJV1pm9NWNjCRXMHxJfQvPEe+ZkAbMQvG6Gfb9slpHWl8MomEUWSu0fppuORMglpJ3ew==
+X-Received: by 2002:aa7:c5cf:: with SMTP id h15mr30714614eds.352.1643819793925;
+        Wed, 02 Feb 2022 08:36:33 -0800 (PST)
+Received: from adroid (027-177-184-091.ip-addr.vsenet.de. [91.184.177.27])
+        by smtp.gmail.com with ESMTPSA id a7sm21334313edr.34.2022.02.02.08.36.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Feb 2022 08:36:33 -0800 (PST)
+From:   =?UTF-8?q?Martin=20J=C3=BCcker?= <martin.juecker@gmail.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Russell King <linux@armlinux.org.uk>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     =?UTF-8?q?Martin=20J=C3=BCcker?= <martin.juecker@gmail.com>
+Subject: [PATCH 2/3] ARM: dts: exynos: add simple battery to p4note
+Date:   Wed,  2 Feb 2022 17:34:14 +0100
+Message-Id: <9436c417fc542eaa74011046369e089a68eea39e.1643757744.git.martin.juecker@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <5d15937b6a7c4ae82a8f0d164fa28a4d4ad46325.1643757744.git.martin.juecker@gmail.com>
+References: <5d15937b6a7c4ae82a8f0d164fa28a4d4ad46325.1643757744.git.martin.juecker@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-clock-frequency for IPQ6018 SoCs should be 24MHz, not 19.2MHz. Rather
-than correcting it, drop the property itself since its already
-configured by the bootloader.
+Add a simple battery node to the p4note device tree to set the missing
+values for the charger to work properly.
 
-Signed-off-by: Kathiravan T <quic_kathirav@quicinc.com>
+Signed-off-by: Martin Jücker <martin.juecker@gmail.com>
 ---
- arch/arm64/boot/dts/qcom/ipq6018.dtsi | 1 -
- 1 file changed, 1 deletion(-)
+ arch/arm/boot/dts/exynos4412-p4note.dtsi | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/ipq6018.dtsi b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
-index 66ec5615651d..2803b060126b 100644
---- a/arch/arm64/boot/dts/qcom/ipq6018.dtsi
-+++ b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
-@@ -520,7 +520,6 @@
- 			ranges;
- 			compatible = "arm,armv7-timer-mem";
- 			reg = <0x0 0x0b120000 0x0 0x1000>;
--			clock-frequency = <19200000>;
+diff --git a/arch/arm/boot/dts/exynos4412-p4note.dtsi b/arch/arm/boot/dts/exynos4412-p4note.dtsi
+index 63459db653ea..fcd75cceb877 100644
+--- a/arch/arm/boot/dts/exynos4412-p4note.dtsi
++++ b/arch/arm/boot/dts/exynos4412-p4note.dtsi
+@@ -115,6 +115,17 @@ wlan_pwrseq: sdhci3-pwrseq {
+ 		clock-names = "ext_clock";
+ 	};
  
- 			frame@b120000 {
- 				frame-number = <0>;
++	battery_cell: battery-cell {
++		compatible = "simple-battery";
++		device-chemistry = "lithium-ion";
++		constant-charge-current-max-microamp = <2200000>;
++		precharge-current-microamp = <250000>;
++		charge-term-current-microamp = <250000>;
++		constant-charge-voltage-max-microvolt = <4200000>;
++
++		power-supplies = <&power_supply>;
++	};
++
+ 	i2c-gpio-1 {
+ 		compatible = "i2c-gpio";
+ 		sda-gpios = <&gpy2 4 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+@@ -193,7 +204,7 @@ i2c-gpio-4 {
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 
+-		charger@6 {
++		power_supply: charger@6 {
+ 			compatible = "summit,smb347";
+ 			reg = <0x6>;
+ 			summit,enable-usb-charging;
+@@ -201,6 +212,8 @@ charger@6 {
+ 			summit,fast-voltage-threshold-microvolt = <2600000>;
+ 			summit,chip-temperature-threshold-celsius = <130>;
+ 			summit,usb-current-limit-microamp = <1800000>;
++
++			monitored-battery = <&battery_cell>;
+ 		};
+ 	};
+ 
 -- 
-2.7.4
+2.25.1
 
