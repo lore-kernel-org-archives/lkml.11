@@ -2,72 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0DCEC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 11:48:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8800C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 11:51:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344008AbiBBLs6 (ORCPT
+        id S1343998AbiBBLva (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 06:48:58 -0500
-Received: from vps.xff.cz ([195.181.215.36]:38674 "EHLO vps.xff.cz"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230257AbiBBLs5 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 06:48:57 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xff.cz; s=mail;
-        t=1643802535; bh=/hgS+imZp3qk+AdUYYHI9PR8cjgjAJL5NVJsn6Y/Qfo=;
-        h=Date:From:To:Cc:Subject:X-My-GPG-KeyId:References:From;
-        b=OUAQ0Y9X5VJIeaAlKm6JLf233KpCdiNhEK913DmP088solZNxLLJ1cHObgtdaByCt
-         RVo9X+LxOKl0cfpryd8OLNqFVhw6SWitYp0Ectv/sZTaOY48gAqckVW7XaiX53OhX5
-         Uq/PX26yq/eCN+3os6vwMC7TqB4zNAb0edMfuDAM=
-Date:   Wed, 2 Feb 2022 12:48:55 +0100
-From:   =?utf-8?Q?Ond=C5=99ej?= Jirman <x@xff.cz>
-To:     Samuel Holland <samuel@sholland.org>
-Cc:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-i2c@vger.kernel.org, Wolfram Sang <wsa@kernel.org>
-Subject: Re: [PATCH 2/5] Input: pinephone-keyboard - Add PinePhone keyboard
- driver
-Message-ID: <20220202114855.p36wlh4s3plpdyft@core.my.home>
-Mail-Followup-To: =?utf-8?Q?Ond=C5=99ej?= Jirman <x@xff.cz>,
-        Samuel Holland <samuel@sholland.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-i2c@vger.kernel.org, Wolfram Sang <wsa@kernel.org>
-X-My-GPG-KeyId: EBFBDDE11FB918D44D1F56C1F9F0A873BE9777ED
- <https://xff.cz/key.txt>
-References: <20220129230043.12422-1-samuel@sholland.org>
- <20220129230043.12422-3-samuel@sholland.org>
+        Wed, 2 Feb 2022 06:51:30 -0500
+Received: from mail-il1-f198.google.com ([209.85.166.198]:38560 "EHLO
+        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231839AbiBBLv2 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 2 Feb 2022 06:51:28 -0500
+Received: by mail-il1-f198.google.com with SMTP id l2-20020a922902000000b002bc386db1beso6298559ilg.5
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 03:51:28 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=Czam2PfI+vECvmB19D4+RWWem8qSnvaySN3xSaozTXs=;
+        b=KPuE/gMvScVOYwFJgWupeQJ5miLR0GdITyFQINZOTBg+sHJYloOJk5sjrpo82soSxi
+         256raWwX4gUPSRSOKd5yX1aAtD/LvSZUWBbTwcLSzZXigQ9TcQzB1pPLNV+GUbQfwsIv
+         ZMPfRx3leGsmctj9HGX72HRz/bVow79eE2gHagMELt+vp/oQr4QRH2xW3pcLYXdsic3P
+         W35DuIhidIMyFx0cPHytmVEv9o18HPrI9NmI3gSKs6PUVMSddp0pl2Y4STXqLfFSI2Ec
+         jpAvgPNfupARybfz5Iy+oyFf2RGHSt/DEZJYZ1h24XrzPq0blPaquVyy7hwQX6bc5ZII
+         MWrA==
+X-Gm-Message-State: AOAM5336l95fmKZNw2oDk2rKuUOkLmQQQXASi1wlE2C3XOy5LTms5OKU
+        alc+26dYzjlImLKoEQ6mccDl9fB3iMcOmceRfS+H96oF4u+x
+X-Google-Smtp-Source: ABdhPJzCjl2H/uG6VFwYRBIsNpqHTNX0x+oXtlYAGckAIJXlV+ich9wb3aySHYdPpjGigirpYnmfjxDN26ADh8P+f6NktX0xDGwC
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220129230043.12422-3-samuel@sholland.org>
+X-Received: by 2002:a5e:9507:: with SMTP id r7mr16328334ioj.199.1643802687773;
+ Wed, 02 Feb 2022 03:51:27 -0800 (PST)
+Date:   Wed, 02 Feb 2022 03:51:27 -0800
+In-Reply-To: <00000000000027db6705d6e6e88a@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000004923a605d707a31a@google.com>
+Subject: Re: [syzbot] possible deadlock in ___neigh_create
+From:   syzbot <syzbot+5239d0e1778a500d477a@syzkaller.appspotmail.com>
+To:     daniel@iogearbox.net, davem@davemloft.net, dsahern@kernel.org,
+        edumazet@google.com, john.fastabend@gmail.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        roopa@nvidia.com, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello again Samuel,
+syzbot has found a reproducer for the following issue on:
 
-On Sat, Jan 29, 2022 at 05:00:39PM -0600, Samuel Holland wrote:
-> The official Pine64 PinePhone keyboard case contains a matrix keypad and
-> a MCU which runs a libre firmware. Add support for its I2C interface.
+HEAD commit:    9f7fb8de5d9b Merge tag 'spi-fix-v5.17-rc2' of git://git.ke..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=12b5fcf4700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=b4a89edfcc8f7c74
+dashboard link: https://syzkaller.appspot.com/bug?extid=5239d0e1778a500d477a
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10dd62bfb00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10581cbfb00000
 
-I had one bug report from a user that reminded me of something that's
-missing in the driver.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+5239d0e1778a500d477a@syzkaller.appspotmail.com
 
-Please add a regulator support for power supply for the keyboard. On Pinephone
-the keyboard needs USB-5V regulator to be enabled, because final version of the
-keyboard is supplied from the VBAT POGO pin and not internally from kb battery,
-as on the prototypes.
+============================================
+WARNING: possible recursive locking detected
+5.17.0-rc2-syzkaller-00039-g9f7fb8de5d9b #0 Not tainted
+--------------------------------------------
+kworker/0:1/7 is trying to acquire lock:
+ffffffff8d4dd130 (&tbl->lock){+.-.}-{2:2}, at: ___neigh_create+0x9e1/0x2990 net/core/neighbour.c:652
 
-If this regulator is not enabled the keyboard will be supplied from battery
-- voltage drop on a boost regulator diode, which causes very frequent brownouts
-of the keyboard MCU.
+but task is already holding lock:
+ffffffff8d4dd130 (&tbl->lock){+.-.}-{2:2}, at: neigh_managed_work+0x35/0x250 net/core/neighbour.c:1572
 
-Users don't notice, becuse MCU recovers quickly and only a key or two is missed
-every once in a while, but it should be fixed. And this problem probably only
-shows up when the phone battery is either quite discharged, or random load
-spikes push its voltage bellow what's necessary for the MCU to run, temporarily.
+other info that might help us debug this:
+ Possible unsafe locking scenario:
 
-kind regards,
-	o.
+       CPU0
+       ----
+  lock(&tbl->lock);
+  lock(&tbl->lock);
+
+ *** DEADLOCK ***
+
+ May be due to missing lock nesting notation
+
+5 locks held by kworker/0:1/7:
+ #0: ffff888010c65d38 ((wq_completion)events_power_efficient){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
+ #0: ffff888010c65d38 ((wq_completion)events_power_efficient){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
+ #0: ffff888010c65d38 ((wq_completion)events_power_efficient){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
+ #0: ffff888010c65d38 ((wq_completion)events_power_efficient){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:631 [inline]
+ #0: ffff888010c65d38 ((wq_completion)events_power_efficient){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:658 [inline]
+ #0: ffff888010c65d38 ((wq_completion)events_power_efficient){+.+.}-{0:0}, at: process_one_work+0x890/0x1650 kernel/workqueue.c:2278
+ #1: ffffc90000cc7db8 ((work_completion)(&(&tbl->managed_work)->work)){+.+.}-{0:0}, at: process_one_work+0x8c4/0x1650 kernel/workqueue.c:2282
+ #2: ffffffff8d4dd130 (&tbl->lock){+.-.}-{2:2}, at: neigh_managed_work+0x35/0x250 net/core/neighbour.c:1572
+ #3: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: ip6_nd_hdr net/ipv6/ndisc.c:466 [inline]
+ #3: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: ndisc_send_skb+0x84b/0x17f0 net/ipv6/ndisc.c:502
+ #4: ffffffff8bb83bc0 (rcu_read_lock_bh){....}-{1:2}, at: lwtunnel_xmit_redirect include/net/lwtunnel.h:95 [inline]
+ #4: ffffffff8bb83bc0 (rcu_read_lock_bh){....}-{1:2}, at: ip6_finish_output2+0x2ad/0x14f0 net/ipv6/ip6_output.c:112
+
+stack backtrace:
+CPU: 0 PID: 7 Comm: kworker/0:1 Not tainted 5.17.0-rc2-syzkaller-00039-g9f7fb8de5d9b #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: events_power_efficient neigh_managed_work
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_deadlock_bug kernel/locking/lockdep.c:2956 [inline]
+ check_deadlock kernel/locking/lockdep.c:2999 [inline]
+ validate_chain kernel/locking/lockdep.c:3788 [inline]
+ __lock_acquire.cold+0x149/0x3ab kernel/locking/lockdep.c:5027
+ lock_acquire kernel/locking/lockdep.c:5639 [inline]
+ lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5604
+ __raw_write_lock_bh include/linux/rwlock_api_smp.h:202 [inline]
+ _raw_write_lock_bh+0x2f/0x40 kernel/locking/spinlock.c:334
+ ___neigh_create+0x9e1/0x2990 net/core/neighbour.c:652
+ ip6_finish_output2+0x1070/0x14f0 net/ipv6/ip6_output.c:123
+ __ip6_finish_output net/ipv6/ip6_output.c:191 [inline]
+ __ip6_finish_output+0x61e/0xe90 net/ipv6/ip6_output.c:170
+ ip6_finish_output+0x32/0x200 net/ipv6/ip6_output.c:201
+ NF_HOOK_COND include/linux/netfilter.h:296 [inline]
+ ip6_output+0x1e4/0x530 net/ipv6/ip6_output.c:224
+ dst_output include/net/dst.h:451 [inline]
+ NF_HOOK include/linux/netfilter.h:307 [inline]
+ ndisc_send_skb+0xa99/0x17f0 net/ipv6/ndisc.c:508
+ ndisc_send_ns+0x3a9/0x840 net/ipv6/ndisc.c:650
+ ndisc_solicit+0x2cd/0x4f0 net/ipv6/ndisc.c:742
+ neigh_probe+0xc2/0x110 net/core/neighbour.c:1040
+ __neigh_event_send+0x37d/0x1570 net/core/neighbour.c:1201
+ neigh_event_send include/net/neighbour.h:470 [inline]
+ neigh_managed_work+0x162/0x250 net/core/neighbour.c:1574
+ process_one_work+0x9ac/0x1650 kernel/workqueue.c:2307
+ worker_thread+0x657/0x1110 kernel/workqueue.c:2454
+ kthread+0x2e9/0x3a0 kernel/kthread.c:377
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+ </TASK>
+
