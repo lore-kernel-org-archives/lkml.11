@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31045C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 16:31:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92757C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 16:31:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345929AbiBBQby (ORCPT
+        id S1345944AbiBBQb5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 11:31:54 -0500
-Received: from mo4-p04-ob.smtp.rzone.de ([85.215.255.123]:33229 "EHLO
+        Wed, 2 Feb 2022 11:31:57 -0500
+Received: from mo4-p04-ob.smtp.rzone.de ([85.215.255.120]:40675 "EHLO
         mo4-p04-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345861AbiBBQbl (ORCPT
+        with ESMTP id S1345862AbiBBQbm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 11:31:41 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1643819490;
+        Wed, 2 Feb 2022 11:31:42 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1643819489;
     s=strato-dkim-0002; d=goldelico.com;
     h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
     From:Subject:Sender;
-    bh=i8pTmnLmwlb11chyD0dSM2jAOpH2BALjlZjdfMA39JQ=;
-    b=BTgrLYoMPcJmsQIQZCxQB6UDEt/oYFEBtjxtqDtyRUDMWQ8Bumz/zwd+PyPOaAGFVc
-    9uxwAMbG85QgTusZRhvSrCMEF3pHymddXA7voKiOG9+N0i6VpdwFqdN9fNmGynoFuS1O
-    BtXCyPPp9LIsKTkC44TGRIpbU4D40TtEsg+zG7r8YwXJ1pt3GsdfQRC6Nnk4hiPKtD4T
-    bqmGb3KZM8LfPlidwOBy+ExbwDWcVVgSmSBUC068IRnag7RqAWJ7RWL2NP4sMn/R1kIz
-    AfrcT4ufrxAHgNzC29fJPeRz1dkwclH10yr8Pfy/KR72iJZqLDCQTmh53LP2pCUcbK/Q
-    Q4Rg==
+    bh=LBxmbz4TfETrZ47YuEqnDes+Hpmtix3LD7VI+Fg8uyQ=;
+    b=KqYpppttCMbw7+71UpwlA3jGdiCZSthXDlyYyXQvdbQBAPeFjGWjbEVQLFC1f41LHB
+    DWFl8eMNfQAS4+jl85nQcveCTyUA9CyomXAGGRn+CDt0fpW4GHTY/KuPF0G5dWac6Y0x
+    dS/VrJEdH1nJUL2829yFsCRklE3oxXz/kB1qbxahiS4pluGEsnK/l9AwjLiq7nGBW1Ww
+    YgYplekwjNxkLzUn6O6p5ckg0vIxVYMvBBwVTZVArfC/xTNOqX9n77PnYbJpcuJrBfoT
+    Hg75pEJhe3ecjtuZfQdxz19rKWYNzCacAdlzFccFteSQP7RRdr+ndWf/VmXI/PFtCays
+    EqCQ==
 Authentication-Results: strato.com;
     dkim=none
 X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o1OAA2UMf2MwPVbjc9Y="
 X-RZG-CLASS-ID: mo00
 Received: from iMac.fritz.box
     by smtp.strato.de (RZmta 47.39.0 DYNA|AUTH)
-    with ESMTPSA id L29417y12GVTBms
+    with ESMTPSA id L29417y12GVSBmq
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
         (Client did not present a certificate);
-    Wed, 2 Feb 2022 17:31:29 +0100 (CET)
+    Wed, 2 Feb 2022 17:31:28 +0100 (CET)
 From:   "H. Nikolaus Schaller" <hns@goldelico.com>
 To:     Paul Cercueil <paul@crapouillou.net>,
         Rob Herring <robh+dt@kernel.org>,
@@ -63,9 +63,9 @@ Cc:     devicetree@vger.kernel.org, linux-mips@vger.kernel.org,
         linux-kernel@vger.kernel.org, letux-kernel@openphoenux.org,
         Jonas Karlman <jonas@kwiboo.se>,
         dri-devel@lists.freedesktop.org
-Subject: [PATCH v13 7/9] drm/bridge: display-connector: add ddc-en gpio support
-Date:   Wed,  2 Feb 2022 17:31:21 +0100
-Message-Id: <0a2546cbb7995841a9b91bf3dfd3c76dcaa3346a.1643819482.git.hns@goldelico.com>
+Subject: [PATCH v13 5/9] drm/synopsys+ingenic: repair hot plug detection
+Date:   Wed,  2 Feb 2022 17:31:19 +0100
+Message-Id: <08fb9549042d35c1904fd977e68aa52f74f755b0.1643819482.git.hns@goldelico.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <cover.1643819482.git.hns@goldelico.com>
 References: <cover.1643819482.git.hns@goldelico.com>
@@ -75,65 +75,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-"hdmi-connector.yaml" bindings defines an optional property
-"ddc-en-gpios" for a single gpio to enable DDC operation.
+so that it calls drm_kms_helper_hotplug_event().
 
-Usually this controls +5V power on the HDMI connector.
-This +5V may also be needed for HPD.
-
-This was not reflected in code.
-
-Now, the driver activates the ddc gpio after probe and
-deactivates after remove so it is "almost on".
-
-But only if this driver is loaded (and not e.g. blacklisted
-as module).
+We need to set .poll_enabled but that struct component
+can only be accessed in the core code. Hence we add a public
+setter function.
 
 Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
 ---
- drivers/gpu/drm/bridge/display-connector.c | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 9 +++++++++
+ drivers/gpu/drm/ingenic/ingenic-dw-hdmi.c | 2 ++
+ include/drm/bridge/dw_hdmi.h              | 1 +
+ 3 files changed, 12 insertions(+)
 
-diff --git a/drivers/gpu/drm/bridge/display-connector.c b/drivers/gpu/drm/bridge/display-connector.c
-index d24f5b90feabf..e4d52a7e31b71 100644
---- a/drivers/gpu/drm/bridge/display-connector.c
-+++ b/drivers/gpu/drm/bridge/display-connector.c
-@@ -24,6 +24,7 @@ struct display_connector {
- 	int			hpd_irq;
+diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+index 54d8fdad395f5..52e7cd2e020d3 100644
+--- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
++++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+@@ -3216,6 +3216,15 @@ static int dw_hdmi_parse_dt(struct dw_hdmi *hdmi)
+ 	return 0;
+ }
  
- 	struct regulator	*dp_pwr;
-+	struct gpio_desc	*ddc_en;
- };
- 
- static inline struct display_connector *
-@@ -345,6 +346,17 @@ static int display_connector_probe(struct platform_device *pdev)
- 		}
- 	}
- 
-+	/* enable DDC */
-+	if (type == DRM_MODE_CONNECTOR_HDMIA) {
-+		conn->ddc_en = devm_gpiod_get_optional(&pdev->dev, "ddc-en",
-+						       GPIOD_OUT_HIGH);
++void dw_hdmi_enable_poll(struct dw_hdmi *hdmi, bool enable)
++{
++	if (hdmi->bridge.dev)
++		hdmi->bridge.dev->mode_config.poll_enabled = enable;
++	else
++		dev_warn(hdmi->dev, "no hdmi->bridge.dev");
++}
++EXPORT_SYMBOL_GPL(dw_hdmi_enable_poll);
 +
-+		if (IS_ERR(conn->ddc_en)) {
-+			dev_err(&pdev->dev, "Couldn't get ddc-en gpio\n");
-+			return PTR_ERR(conn->ddc_en);
-+		}
-+	}
-+
- 	conn->bridge.funcs = &display_connector_bridge_funcs;
- 	conn->bridge.of_node = pdev->dev.of_node;
- 
-@@ -373,6 +385,9 @@ static int display_connector_remove(struct platform_device *pdev)
+ struct dw_hdmi *dw_hdmi_probe(struct platform_device *pdev,
+ 			      const struct dw_hdmi_plat_data *plat_data)
  {
- 	struct display_connector *conn = platform_get_drvdata(pdev);
+diff --git a/drivers/gpu/drm/ingenic/ingenic-dw-hdmi.c b/drivers/gpu/drm/ingenic/ingenic-dw-hdmi.c
+index 34e986dd606cf..90547a28dc5c7 100644
+--- a/drivers/gpu/drm/ingenic/ingenic-dw-hdmi.c
++++ b/drivers/gpu/drm/ingenic/ingenic-dw-hdmi.c
+@@ -55,6 +55,8 @@ ingenic_dw_hdmi_mode_valid(struct dw_hdmi *hdmi, void *data,
+ 	if (mode->clock > 216000)
+ 		return MODE_CLOCK_HIGH;
  
-+	if (conn->ddc_en)
-+		gpiod_set_value(conn->ddc_en, 0);
++	dw_hdmi_enable_poll(hdmi, true);
 +
- 	if (conn->dp_pwr)
- 		regulator_disable(conn->dp_pwr);
+ 	return MODE_OK;
+ }
  
+diff --git a/include/drm/bridge/dw_hdmi.h b/include/drm/bridge/dw_hdmi.h
+index 2a1f85f9a8a3f..963960794b40e 100644
+--- a/include/drm/bridge/dw_hdmi.h
++++ b/include/drm/bridge/dw_hdmi.h
+@@ -196,5 +196,6 @@ enum drm_connector_status dw_hdmi_phy_read_hpd(struct dw_hdmi *hdmi,
+ void dw_hdmi_phy_update_hpd(struct dw_hdmi *hdmi, void *data,
+ 			    bool force, bool disabled, bool rxsense);
+ void dw_hdmi_phy_setup_hpd(struct dw_hdmi *hdmi, void *data);
++void dw_hdmi_enable_poll(struct dw_hdmi *hdmi, bool enable);
+ 
+ #endif /* __IMX_HDMI_H__ */
 -- 
 2.33.0
 
