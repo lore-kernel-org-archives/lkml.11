@@ -2,144 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E8B5C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 17:23:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91812C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 17:24:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346238AbiBBRXg (ORCPT
+        id S1346246AbiBBRYV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 12:23:36 -0500
-Received: from mga09.intel.com ([134.134.136.24]:46902 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244506AbiBBRXc (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 12:23:32 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643822612; x=1675358612;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=dE+VPeGUtHZgWsAhv02d/C3FztwU1vH8EMY00U1inVA=;
-  b=T67dhNHcyWizoJyqOVVpBtRARzyW963sHZhd5N+Sjt88tLf5KWbeYRqW
-   3o+sY33mjBSoBEe4HlE/saTzvRItwb0HfxfDIiujOpFfDwEsas0z7hqm5
-   F3Kthum3irkh/UJtWBeMPI+NAuKeDhYL0S8sRjjGuwlJ3buGCZkH0LtSO
-   rWMchm1l23TKL6kOlJ+tdoxUgR0Erv+dFExHgtYEIB3W3rdVqmucNQptG
-   ifOgjM7l1xuldfqyiUcjFXS/cVuu7Pmjssl6RHGVC5WoGZh0enTWfOjpF
-   ZS+J/S4t8Ir0B/mhrL9jcsSuYpzv3136mnziRDPxMRrB0dWbeeTRGagGP
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10246"; a="247744503"
-X-IronPort-AV: E=Sophos;i="5.88,337,1635231600"; 
-   d="scan'208";a="247744503"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 09:14:12 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,337,1635231600"; 
-   d="scan'208";a="534924090"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 02 Feb 2022 09:14:10 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nFJCr-000UsJ-Ni; Wed, 02 Feb 2022 17:14:09 +0000
-Date:   Thu, 3 Feb 2022 01:14:01 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jorgen Hansen <jhansen@vmware.com>, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org
-Cc:     kbuild-all@lists.01.org, gregkh@linuxfoundation.org,
-        pv-drivers@vmware.com, Jorgen Hansen <jhansen@vmware.com>,
-        Vishnu Dasa <vdasa@vmware.com>
-Subject: Re: [PATCH 7/8] VMCI: dma dg: add support for DMA datagrams sends
-Message-ID: <202202030100.5Mr551y1-lkp@intel.com>
-References: <20220202144910.10349-8-jhansen@vmware.com>
+        Wed, 2 Feb 2022 12:24:21 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:43203 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S242514AbiBBRYR (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 2 Feb 2022 12:24:17 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643822656;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=a3OAAhJ1yQ586G1GSfs1iva0fA7dOQbeoU53qGnYVps=;
+        b=U6TIpxq+4usR7Gh+UpQnA9N/aodMJ82vXCKt7rXEub26n0j0mv/BVpwb+vHNSgq/F9LOU+
+        jojTLXOMhl0e+VbAkrCUcnRmaykPfYGc0XSdemhroI6Lo3DdfudPiRYVCDG8bQfg1wHg07
+        XIPrh0R/uwpXn6aLWgY30QPtoymY9CM=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-522-2jJZ7fGbPbOp9LgrWv-QXg-1; Wed, 02 Feb 2022 12:24:15 -0500
+X-MC-Unique: 2jJZ7fGbPbOp9LgrWv-QXg-1
+Received: by mail-wm1-f69.google.com with SMTP id s1-20020a1ca901000000b0034ece94dd8cso4293695wme.5
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 09:24:15 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=a3OAAhJ1yQ586G1GSfs1iva0fA7dOQbeoU53qGnYVps=;
+        b=okT3BaN827Ylogk5PW/YRTgt7oImwdOoCo2xC8jTxywgrFYu1cvljTscROSABEI+TN
+         +V7vAo5XhSNjzf5ecfN47+OTyyG4h3QVvzNK/lqLowaPvPkCaDD9D2YvHzI4DKCUr2hV
+         W4KIDW3n5N87qnj8zqgob3/J9LUE8M4Tg1rxtrh71b1hJVFhscBLenqqDKInJ1/C9OcH
+         1cBDjtrq4Mj36iuw5XH9z8n4/IEgWCBohbUBowgtsPC2FlTVUj866c68cPDVfD5fSUU7
+         J7LaOMRkFzIJ7sUSRrU8H5/uTZL9KcbtaL4L+EBmgffFtemWLhT2I4mjQBwmkDosJV+e
+         koUg==
+X-Gm-Message-State: AOAM533zpQOo2rbKfAFLuziSKEC7dQconJZbCEYpEE35Yaz7jRcpVd7f
+        yVCWdtDIkCJ1Y5EvzTW1VYh+Hw2TaOQiCwrticR5CPO4VcGBBJLUOByzjmAueeo4VHNZD36nSiE
+        BeCGZKSnbhNk0D4DYnL0DHQay
+X-Received: by 2002:a05:600c:4801:: with SMTP id i1mr7027713wmo.180.1643822654619;
+        Wed, 02 Feb 2022 09:24:14 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxSSayZ7Fi8nDt3X2L7PRK4VumZHeWPrHmdIcrsIB/sUgpK7JI78M0RwK69qEVM5hPwZUtFxg==
+X-Received: by 2002:a05:600c:4801:: with SMTP id i1mr7027702wmo.180.1643822654476;
+        Wed, 02 Feb 2022 09:24:14 -0800 (PST)
+Received: from krava (nat-pool-brq-u.redhat.com. [213.175.37.12])
+        by smtp.gmail.com with ESMTPSA id r2sm25729143wrz.99.2022.02.02.09.24.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Feb 2022 09:24:13 -0800 (PST)
+Date:   Wed, 2 Feb 2022 18:24:12 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Jiri Olsa <olsajiri@gmail.com>
+Subject: Re: [PATCH 0/8] bpf: Add fprobe link
+Message-ID: <Yfq+PJljylbwJ3Bf@krava>
+References: <20220202135333.190761-1-jolsa@kernel.org>
+ <CAADnVQ+hTWbvNgnvJpAeM_-Ui2-G0YSM3QHB9G2+2kWEd4-Ymw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220202144910.10349-8-jhansen@vmware.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <CAADnVQ+hTWbvNgnvJpAeM_-Ui2-G0YSM3QHB9G2+2kWEd4-Ymw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jorgen,
+On Wed, Feb 02, 2022 at 09:09:53AM -0800, Alexei Starovoitov wrote:
+> On Wed, Feb 2, 2022 at 5:53 AM Jiri Olsa <jolsa@redhat.com> wrote:
+> >
+> > hi,
+> > this patchset adds new link type BPF_LINK_TYPE_FPROBE that attaches kprobe
+> > program through fprobe API [1] instroduced by Masami.
+> 
+> No new prog type please.
+> I thought I made my reasons clear earlier.
+> It's a multi kprobe. Not a fprobe or any other name.
+> The kernel internal names should not leak into uapi.
+> 
 
-I love your patch! Perhaps something to improve:
+well it's not new prog type, it's new link type that allows
+to attach kprobe program to multiple functions
 
-[auto build test WARNING on char-misc/char-misc-testing]
-[also build test WARNING on linux/master linus/master v5.17-rc2 next-20220202]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+the original change used BPF_LINK_TYPE_RAW_KPROBE, which did not
+seem to fit anymore, so I moved to FPROBE, because that's what
+it is ;-)
 
-url:    https://github.com/0day-ci/linux/commits/Jorgen-Hansen/VMCI-dma-dg-Add-support-for-DMA-datagrams/20220202-230034
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/char-misc.git 7ab004dbcbee38b8a70798835d3ffcd97a985a5e
-config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220203/202202030100.5Mr551y1-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/0day-ci/linux/commit/303777a2a8daa11d529827395318bb698ddee57e
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Jorgen-Hansen/VMCI-dma-dg-Add-support-for-DMA-datagrams/20220202-230034
-        git checkout 303777a2a8daa11d529827395318bb698ddee57e
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/misc/vmw_vmci/
+but if you don't want new name in uapi we could make this more
+obvious with link name:
+  BPF_LINK_TYPE_MULTI_KPROBE
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+and bpf_attach_type:
+  BPF_TRACE_MULTI_KPROBE
 
-All warnings (new ones prefixed by >>):
+jirka
 
-   drivers/misc/vmw_vmci/vmci_guest.c:103:14: warning: no previous prototype for 'vmci_read_reg' [-Wmissing-prototypes]
-     103 | unsigned int vmci_read_reg(struct vmci_guest_device *dev, u32 reg)
-         |              ^~~~~~~~~~~~~
-   drivers/misc/vmw_vmci/vmci_guest.c:110:6: warning: no previous prototype for 'vmci_write_reg' [-Wmissing-prototypes]
-     110 | void vmci_write_reg(struct vmci_guest_device *dev, u32 val, u32 reg)
-         |      ^~~~~~~~~~~~~~
->> drivers/misc/vmw_vmci/vmci_guest.c:118:5: warning: no previous prototype for 'vmci_write_data' [-Wmissing-prototypes]
-     118 | int vmci_write_data(struct vmci_guest_device *dev, struct vmci_datagram *dg)
-         |     ^~~~~~~~~~~~~~~
-
-
-vim +/vmci_write_data +118 drivers/misc/vmw_vmci/vmci_guest.c
-
-   117	
- > 118	int vmci_write_data(struct vmci_guest_device *dev, struct vmci_datagram *dg)
-   119	{
-   120		int result;
-   121	
-   122		if (dev->mmio_base != NULL) {
-   123			struct vmci_data_in_out_header *buffer_header = dev->tx_buffer;
-   124			u8 *dg_out_buffer = (u8 *)(buffer_header + 1);
-   125	
-   126			if (VMCI_DG_SIZE(dg) > VMCI_MAX_DG_SIZE)
-   127				return VMCI_ERROR_INVALID_ARGS;
-   128	
-   129			/*
-   130			 * Initialize send buffer with outgoing datagram
-   131			 * and set up header for inline data. Device will
-   132			 * not access buffer asynchronously - only after
-   133			 * the write to VMCI_DATA_OUT_LOW_ADDR.
-   134			 */
-   135			memcpy(dg_out_buffer, dg, VMCI_DG_SIZE(dg));
-   136			buffer_header->opcode = 0;
-   137			buffer_header->size = VMCI_DG_SIZE(dg);
-   138			buffer_header->busy = 1;
-   139	
-   140			vmci_write_reg(dev, lower_32_bits(dev->tx_buffer_base),
-   141				       VMCI_DATA_OUT_LOW_ADDR);
-   142	
-   143			/* Caller holds a spinlock, so cannot block. */
-   144			spin_until_cond(buffer_header->busy == 0);
-   145	
-   146			result = vmci_read_reg(vmci_dev_g, VMCI_RESULT_LOW_ADDR);
-   147			if (result == VMCI_SUCCESS)
-   148				result = (int)buffer_header->result;
-   149		} else {
-   150			iowrite8_rep(dev->iobase + VMCI_DATA_OUT_ADDR,
-   151				     dg, VMCI_DG_SIZE(dg));
-   152			result = vmci_read_reg(vmci_dev_g, VMCI_RESULT_LOW_ADDR);
-   153		}
-   154	
-   155		return result;
-   156	}
-   157	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
