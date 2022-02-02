@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9792CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 18:18:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8EB4C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 18:18:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346432AbiBBSST (ORCPT
+        id S1346578AbiBBSSW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 13:18:19 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:33023 "EHLO
+        Wed, 2 Feb 2022 13:18:22 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:42800 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233501AbiBBSSR (ORCPT
+        by vger.kernel.org with ESMTP id S242423AbiBBSSS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 13:18:17 -0500
+        Wed, 2 Feb 2022 13:18:18 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643825897;
+        s=mimecast20190719; t=1643825898;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=KZ6cXjJk9Pdh7+gNJjwwBF/cTV5ERwqcH25JkZ6mTHU=;
-        b=Flu1gXIAPj63iiBbVMFaEj1IpH0qeey/KhoAGtZmZBo8oPsDbjE5pAxt0CIvttuTUK5QP4
-        dqsyEL7/KpbRT/45YD3Gi03mHv4Uo5vkJ3KlVBK1lDmDa0CPjPDFo2AlofTUGvHD2Ao5up
-        wuVNpEAPwY7Ft8rBtZKmGnAP+OPonH8=
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=BDwDrTJibr0ixLq4IwTrhHp/x9KXkNMTG4kmC+Qy0og=;
+        b=JH1ZdcP/MaIF3mza0dHux/tld3s9NIv85hZN5vFLLVK86HybHmPOCRIJK3AhG07ZRE9RlB
+        nf01ejp3XqTUZJQ5KkcSgFFvkGHF+894wz4ANfXeVdd/vpCMEeuKsVimkVPr5//XBgx6rl
+        krqF4hEQQbrJQLFiT7aUow35zunW8hg=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-183-bSOKndtiMlG64t8tVpQHQw-1; Wed, 02 Feb 2022 13:18:15 -0500
-X-MC-Unique: bSOKndtiMlG64t8tVpQHQw-1
+ us-mta-210-UcQvy9JTOwCeUo0EFRFVkQ-1; Wed, 02 Feb 2022 13:18:17 -0500
+X-MC-Unique: UcQvy9JTOwCeUo0EFRFVkQ-1
 Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A3DAE343CA;
-        Wed,  2 Feb 2022 18:18:14 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 21647180FD60;
+        Wed,  2 Feb 2022 18:18:16 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4736877466;
-        Wed,  2 Feb 2022 18:18:14 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id BFC567744F;
+        Wed,  2 Feb 2022 18:18:15 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     seanjc@google.com
-Subject: [PATCH 0/5] kvm: x86: better handling of NULL-able kvm_x86_ops
-Date:   Wed,  2 Feb 2022 13:18:08 -0500
-Message-Id: <20220202181813.1103496-1-pbonzini@redhat.com>
+Subject: [PATCH 3/5] KVM: x86: warn on incorrectly NULL static calls
+Date:   Wed,  2 Feb 2022 13:18:11 -0500
+Message-Id: <20220202181813.1103496-4-pbonzini@redhat.com>
+In-Reply-To: <20220202181813.1103496-1-pbonzini@redhat.com>
+References: <20220202181813.1103496-1-pbonzini@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
@@ -48,31 +51,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series is really two changes:
+Use the newly corrected KVM_X86_OP annotations to warn about possible
+NULL pointer dereferences as soon as the vendor module is loaded.
 
-- patch 1 to 4 clean up NULLable kvm_x86_ops so that they are marked
-  in kvm-x86-ops.h and the non-NULLable ones WARN if used incorrectly.
-  As an additional outcome of the review, a few more uses of
-  static_call_cond are introduced.
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+---
+ arch/x86/include/asm/kvm_host.h | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-- patch 5 allows to NULL a few kvm_x86_ops that return a value, by
-  using __static_call_ret0.
-
-Paolo Bonzini (5):
-  KVM: x86: use static_call_cond for optional callbacks
-  KVM: x86: mark NULL-able kvm_x86_ops
-  KVM: x86: warn on incorrectly NULL static calls
-  KVM: x86: change hwapic_{irr,isr}_update to NULLable calls
-  KVM: x86: allow defining return-0 static calls
-
- arch/x86/include/asm/kvm-x86-ops.h | 45 +++++++++++++++---------------
- arch/x86/include/asm/kvm_host.h    |  9 ++++--
- arch/x86/kvm/lapic.c               | 22 ++++++---------
- arch/x86/kvm/svm/avic.c            | 13 ---------
- arch/x86/kvm/svm/svm.c             | 28 -------------------
- arch/x86/kvm/x86.c                 | 10 ++-----
- 6 files changed, 41 insertions(+), 86 deletions(-)
-
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index c371ee7e45f7..61faeb57889c 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -1544,9 +1544,10 @@ extern struct kvm_x86_ops kvm_x86_ops;
+ 
+ static inline void kvm_ops_static_call_update(void)
+ {
+-#define KVM_X86_OP(func) \
++#define KVM_X86_OP_NULL(func) \
+ 	static_call_update(kvm_x86_##func, kvm_x86_ops.func);
+-#define KVM_X86_OP_NULL KVM_X86_OP
++#define KVM_X86_OP(func) \
++	WARN_ON(!kvm_x86_ops.func); KVM_X86_OP_NULL(func)
+ #include <asm/kvm-x86-ops.h>
+ }
+ 
 -- 
 2.31.1
+
 
