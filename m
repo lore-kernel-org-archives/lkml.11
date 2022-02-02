@@ -2,111 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5B02C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 10:40:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 216F9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 10:41:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233839AbiBBKkJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 05:40:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45650 "EHLO
+        id S237677AbiBBKlC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 05:41:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229759AbiBBKkI (ORCPT
+        with ESMTP id S231252AbiBBKlB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 05:40:08 -0500
-Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18D7CC061714
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 02:40:08 -0800 (PST)
-Received: by mail-oi1-x22e.google.com with SMTP id s185so38892611oie.3
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 02:40:08 -0800 (PST)
+        Wed, 2 Feb 2022 05:41:01 -0500
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C7E0C061714;
+        Wed,  2 Feb 2022 02:41:01 -0800 (PST)
+Received: by mail-wm1-x333.google.com with SMTP id i132so47479wma.1;
+        Wed, 02 Feb 2022 02:41:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kali.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=vF/oZ6LB0YKplLBoyHRWWtR7m3qveEBq0KdCXmv2Tdc=;
-        b=cwMRuj5+IcZmU9qUjtbaZdG/uvBiBGLAkTVFnE6KLC3iBhyxAAgB+EAfy0KnIGxs8j
-         5Oy+3Yg5/yX/fg2Vas1sJoaMIRVXdjY6FHdPyL0Y1Dl+krI78ZcerDMIg8dHg+TigiDs
-         7/v7wNh7ZOcmjRqw2utbYkWosXiX7v1ZSvszqC4HWf3o46XTixtL4yNoos+pdNub7ECT
-         wG91GFKoR7W6JvnnlLF0ACuQU3ZdjzpNQhSVu8aB8Zw1BMcMKvq4NO6KIWMcq6Ue99eS
-         poiR8MoZXnHiS3MR7KvFvRp0ua0G20VYcQgeFfeYKps6jiPIa91xKqYQ8E+Eeu7pukSG
-         2qQg==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=kroW8T87ODh2aoNqqwf6ZNFEi9qAb1WRvnyNc4fg4XE=;
+        b=N4c/iBWEAtqS3U7P8xZFi+tlzeZJLjGcNeZgbo6ADkEGv0MuD5TqNilOphkGQBDE6w
+         dLXZrSjBAcik0hXhEKYkev0NeQpVBk5P5XPeqYszZwDKRrn6218+vLbZwQaURPxFDNsm
+         N/IErhS+glWd3lPjW3Sfo+P0/8KfW8sA0cn+EIoNaE5LKEh2mFDP5oDBUcZG422foTM1
+         2dFTNKgVK/xMuDWOg4yri5kgwH1vYpd7xLiqe1HSDRnHlvTgqCL9/OQIYYUUnyntpr5v
+         0RsdWQO66ivewIUyleRzW7mnNmKDZp5y5jUcAg9T/edLigNYhNheiMJRVLLa87D/ZA04
+         KYAg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=vF/oZ6LB0YKplLBoyHRWWtR7m3qveEBq0KdCXmv2Tdc=;
-        b=IVXljkpWzGBQqmGYr+vEtZvBMK26wWzK2Lkk0VREqieT3FbYZeSsehwm3s4X9OYSnu
-         UMGyo6E+d7N9GFRUCSiUOTV1hKBC3fbScKKBRZyHj/AK9zOh4gesXk2eDeDYh2jJfaTj
-         Z503bRxxtTC3/hlXu1kbh3wP20kjnXYmW5lxYDNZNckr6+LzCuBJ5a5akza3OdluGCgq
-         4wAxexfsxmf97M547VVd9lExYdQFwVTulWIDdhev7gcZNvNzyw+bWp4/TI2R91MuQr26
-         jVc7hlRVaO3wvuT70QEmc4zi5ktd0egoCajH0566FVxOREWEjy6/mkTJN0cAHmkV6Z/p
-         FclA==
-X-Gm-Message-State: AOAM5330fy25OoiTZixIxaXzY+0bMqougNpnQcPMM1pAbN+uJlRyITK8
-        lulUzlnzHZyjhlpydMZeYHDx1g==
-X-Google-Smtp-Source: ABdhPJyF95jbDN/hf/M9NTL0kYDs4xzfY1R92JIb1GZnM6R7QKzcg90NmSHgWR3Nsn9K1aAJYHFTYA==
-X-Received: by 2002:a05:6808:1154:: with SMTP id u20mr4000312oiu.169.1643798407473;
-        Wed, 02 Feb 2022 02:40:07 -0800 (PST)
-Received: from [192.168.11.51] (cpe-173-173-107-246.satx.res.rr.com. [173.173.107.246])
-        by smtp.gmail.com with ESMTPSA id 100sm10162293oth.75.2022.02.02.02.40.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 02 Feb 2022 02:40:06 -0800 (PST)
-Message-ID: <fb4d3615-23e3-f001-be85-eb80ab57f9e9@kali.org>
-Date:   Wed, 2 Feb 2022 04:40:05 -0600
+        bh=kroW8T87ODh2aoNqqwf6ZNFEi9qAb1WRvnyNc4fg4XE=;
+        b=0Bstl8tupLdxFf95xLuUcZwxjSSUhc66Ut4eoXaSNhl1YiCpA6IrWvDbsNqGY3xxgk
+         CzHOet4mBxTLDtGYmHi/GinggCucwxxxAOtv5CRlsnhyaCyz3LP6EIBMfqIYyk+X2SX6
+         n1ubmnMizx8tvgWxPEgMZRyFYcf2uBQ5wcqrnWmhZzPy6KodyO+5ydkze3DyL/QJMnzp
+         zMa1a68uotW2EgZB/SIGI7z0HEW62cb7XAwkqJaLN4ppY214xuOfe3rtdBeFs/SCCFVl
+         g8ryah4hUKrCrSo435pdBAAC7F8uH6HJE7SvPWTMWP2oJjmirAKfCgmYzMj7eK4YnNKP
+         qxlQ==
+X-Gm-Message-State: AOAM530Skwqsr2oUR+H4brIsFhaJiU9Z4wijV4CgbcqRHhDUjowsU8aR
+        L5ZoEbX3OQ8OOFWSN8Rm5Jw=
+X-Google-Smtp-Source: ABdhPJx7p4wOpsEBAPYzyrvAoma6a4T+0aDPLPPoyIX1M+383SaQQ4szMhJ31g7lvB33K8d1J9W9Kw==
+X-Received: by 2002:a05:600c:364f:: with SMTP id y15mr5611580wmq.125.1643798459967;
+        Wed, 02 Feb 2022 02:40:59 -0800 (PST)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id 1sm20324550wry.52.2022.02.02.02.40.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Feb 2022 02:40:59 -0800 (PST)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Pawel Laszczak <pawell@cadence.com>, linux-usb@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        pavel.hofman@ivitera.com
+Subject: [PATCH][next][V2] usb: gadget: f_uac2: change maxpctksize/maxpcktsize to wMaxPacketSize
+Date:   Wed,  2 Feb 2022 10:40:58 +0000
+Message-Id: <20220202104058.590312-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.5.1
-Subject: Re: [PATCH] irqchip/gic-v3-its: Skip HP notifier when no ITS is
- registered
-Content-Language: en-US
-To:     Marc Zyngier <maz@kernel.org>, linux-kernel@vger.kernel.org
-Cc:     Thomas Gleixner <tglx@linutronix.de>, kernel-team@android.com,
-        Valentin Schneider <valentin.schneider@arm.com>
-References: <20220202103454.2480465-1-maz@kernel.org>
-From:   Steev Klimaszewski <steev@kali.org>
-In-Reply-To: <20220202103454.2480465-1-maz@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The spelling of maxpctksize and maxpcktsize is inconsistent, rename them
+both to wMaxPacketSize instead.
 
-On 2/2/22 4:34 AM, Marc Zyngier wrote:
-> We have some systems out there that have both LPI support and an
-> ITS, but that don't expose the ITS in their firmware tables
-> (either because it is broken or because they run under a hypervisor
-> that hides it...).
->
-> Is such a configuration, we still register the HP notifier to free
-> the allocated tables if needed, resulting in a warning as there is
-> no memory to free (nothing was allocated the first place).
->
-> Fix it by keying the HP notifier on the presence of at least one
-> sucessfully probed ITS.
->
-> Fixes: d23bc2bc1d63 ("irqchip/gic-v3-its: Postpone LPI pending table freeing and memreserve")
-> Reported-by: Steev Klimaszewski <steev@kali.org>
-> Signed-off-by: Marc Zyngier <maz@kernel.org>
-> Cc: Valentin Schneider <valentin.schneider@arm.com>
-> ---
->   drivers/irqchip/irq-gic-v3-its.c | 3 +++
->   1 file changed, 3 insertions(+)
->
-> diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
-> index 9e93ff2b6375..cd772973114a 100644
-> --- a/drivers/irqchip/irq-gic-v3-its.c
-> +++ b/drivers/irqchip/irq-gic-v3-its.c
-> @@ -5517,6 +5517,9 @@ int __init its_lpi_memreserve_init(void)
->   	if (!efi_enabled(EFI_CONFIG_TABLES))
->   		return 0;
->   
-> +	if (list_empty(&its_nodes))
-> +		return 0;
-> +
->   	gic_rdists->cpuhp_memreserve_state = CPUHP_INVALID;
->   	state = cpuhp_setup_state(CPUHP_AP_ONLINE_DYN,
->   				  "irqchip/arm/gicv3/memreserve:online",
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+V2: change both strings to wMaxPacketSize
+---
+ drivers/usb/gadget/function/f_uac2.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Tested on the Lenovo Yoga C630
-
-Tested-by: Steev Klimaszewski <steev@kali.org>
+diff --git a/drivers/usb/gadget/function/f_uac2.c b/drivers/usb/gadget/function/f_uac2.c
+index f2237bcdba7c..2bc63e577b3b 100644
+--- a/drivers/usb/gadget/function/f_uac2.c
++++ b/drivers/usb/gadget/function/f_uac2.c
+@@ -755,11 +755,11 @@ static int set_ep_max_packet_size_bint(struct device *dev, const struct f_uac2_o
+ 
+ 	if (max_size_bw <= max_size_ep)
+ 		dev_dbg(dev,
+-			"%s %s: Would use maxpctksize %d and bInterval %d\n",
++			"%s %s: Would use wMaxPacketSize %d and bInterval %d\n",
+ 			speed_names[speed], dir, max_size_bw, bint);
+ 	else {
+ 		dev_warn(dev,
+-			"%s %s: Req. maxpcktsize %d at bInterval %d > max ISOC %d, may drop data!\n",
++			"%s %s: Req. wMaxPacketSize %d at bInterval %d > max ISOC %d, may drop data!\n",
+ 			speed_names[speed], dir, max_size_bw, bint, max_size_ep);
+ 		max_size_bw = max_size_ep;
+ 	}
+-- 
+2.34.1
 
