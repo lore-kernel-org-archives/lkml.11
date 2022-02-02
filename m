@@ -2,333 +2,317 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 640D2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 00:05:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7B6FC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 00:06:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230521AbiBBAFl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 19:05:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45518 "EHLO
+        id S230424AbiBBAGI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 19:06:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243069AbiBBAEI (ORCPT
+        with ESMTP id S243245AbiBBAF1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 19:04:08 -0500
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BABE3C061714;
-        Tue,  1 Feb 2022 16:04:07 -0800 (PST)
-Received: by mail-ed1-x52f.google.com with SMTP id u24so37668632eds.11;
-        Tue, 01 Feb 2022 16:04:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=EcT7RfY0lDOArqDYnMVNgzN36oOwKfvUCS+TXnzFQfQ=;
-        b=JQgEv9MfxFFgzBgIEMBw2wG6iK5AnYxGc5CHlpLTFNW7m1y8zLXSVRmM9gnmmNcCWD
-         7KhuDNLbnSH8PvlTYjzjO6Ur+FkpwMl+Mj4t5Uhuw4EVb6btjpPtzGg45P0s2tpDqa6c
-         c10BKANxOfxZjRG/O7Rxn5dD1pRbDPT12SplHZKNWjU+kR/qRJLEtE9hAMVNm+1MSPz2
-         iL2dtfMl5jA8HcCLXP9Y1/zGvONn4bOBe+bXNY17ZsmKXhV4aOZpn1yX2Gkz01VelQds
-         gepRj+tpWeAUdShgN7QVnrlubAcplr35OIHh8ac4Ru8wbcGPBldKNqnsGjNu0HTYcSXO
-         ObfA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=EcT7RfY0lDOArqDYnMVNgzN36oOwKfvUCS+TXnzFQfQ=;
-        b=FJ9xpf7DUFMuIvkALH5oKvPtyE+xWPdMDe+BU0jQWyaydkB/EZN+wxavoONgF0qiMT
-         MFqTXb6JFQDZWyOUlHlfs+WifFTdtc6EGt1k0jaiTWGAp3vodxbbWri7QyxAaA/GjjM4
-         HBfa9+TnmVd4QJv6D9RLaOgSJUaETKZokVqumq/3kObmd2OTNEEU69UTvEipdEnu9wif
-         p79OBT6jkgWJDeRNgc3wdzsC2U3ojuX7XI7vp0uVKZ6Alv5TgpT+4Um0YxIim6NozZ8W
-         bV/5Rp/Qqu9ISxhHZC/u8c9wKyn3sDzoaTFMH3GQZShaWQ4aaJwdrKbkJIBTvC31AFjH
-         pF3Q==
-X-Gm-Message-State: AOAM532OVt1lQtVnMiNSagSWwGvEDaXz856ez1G/fJO6bktH/SzGErPC
-        c9+MYt01ubxLHfaxZUNHckI=
-X-Google-Smtp-Source: ABdhPJwnS3w81doykxQJD+LHtD/0az/J9KRLRMHuDKL0cGkczYyDN/XMGfusse+HJ0J3Yregejj2Sg==
-X-Received: by 2002:a05:6402:2707:: with SMTP id y7mr27887077edd.329.1643760246160;
-        Tue, 01 Feb 2022 16:04:06 -0800 (PST)
-Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id n3sm3590451ejr.6.2022.02.01.16.04.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Feb 2022 16:04:05 -0800 (PST)
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [net-next PATCH v8 01/16] net: dsa: provide switch operations for tracking the master state
-Date:   Wed,  2 Feb 2022 01:03:20 +0100
-Message-Id: <20220202000335.19296-2-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20220202000335.19296-1-ansuelsmth@gmail.com>
-References: <20220202000335.19296-1-ansuelsmth@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Tue, 1 Feb 2022 19:05:27 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6748C061751;
+        Tue,  1 Feb 2022 16:05:26 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5206AB82FB7;
+        Wed,  2 Feb 2022 00:05:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3834C340EB;
+        Wed,  2 Feb 2022 00:05:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1643760324;
+        bh=k+4gymw4nBnG24/LUGE2XUMEwws/9D5/At5pUwBdShs=;
+        h=Date:To:From:Subject:From;
+        b=taZg6Irbu0FJPLQIUCIQ+ilD7bEm5HkLsFOXsZ3SBlFhgxT9MWzdwZd0aKb07bHdt
+         BTGkBPP2fZnM/m6nVMyV/0COgd7Sy0jCaZWCngYYhWGkTkPdWo+15llyIxsTsirTiF
+         /3wYHaWKO/kDxI3kmyWOpH3LFc6+avRJNJ7dz+/8=
+Received: by hp1 (sSMTP sendmail emulation); Tue, 01 Feb 2022 16:05:22 -0800
+Date:   Tue, 01 Feb 2022 16:05:22 -0800
+To:     broonie@kernel.org, mhocko@suse.cz, sfr@canb.auug.org.au,
+        linux-next@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        mm-commits@vger.kernel.org, akpm@linux-foundation.org
+From:   Andrew Morton <akpm@linux-foundation.org>
+Subject: mmotm 2022-02-01-16-04 uploaded
+Message-Id: <20220202000522.A3834C340EB@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+The mm-of-the-moment snapshot 2022-02-01-16-04 has been uploaded to
 
-Certain drivers may need to send management traffic to the switch for
-things like register access, FDB dump, etc, to accelerate what their
-slow bus (SPI, I2C, MDIO) can already do.
+   https://www.ozlabs.org/~akpm/mmotm/
 
-Ethernet is faster (especially in bulk transactions) but is also more
-unreliable, since the user may decide to bring the DSA master down (or
-not bring it up), therefore severing the link between the host and the
-attached switch.
+mmotm-readme.txt says
 
-Drivers needing Ethernet-based register access already should have
-fallback logic to the slow bus if the Ethernet method fails, but that
-fallback may be based on a timeout, and the I/O to the switch may slow
-down to a halt if the master is down, because every Ethernet packet will
-have to time out. The driver also doesn't have the option to turn off
-Ethernet-based I/O momentarily, because it wouldn't know when to turn it
-back on.
+README for mm-of-the-moment:
 
-Which is where this change comes in. By tracking NETDEV_CHANGE,
-NETDEV_UP and NETDEV_GOING_DOWN events on the DSA master, we should know
-the exact interval of time during which this interface is reliably
-available for traffic. Provide this information to switches so they can
-use it as they wish.
+https://www.ozlabs.org/~akpm/mmotm/
 
-An helper is added dsa_port_master_is_operational() to check if a master
-port is operational.
+This is a snapshot of my -mm patch queue.  Uploaded at random hopefully
+more than once a week.
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
----
- include/net/dsa.h  | 17 +++++++++++++++++
- net/dsa/dsa2.c     | 46 ++++++++++++++++++++++++++++++++++++++++++++++
- net/dsa/dsa_priv.h | 13 +++++++++++++
- net/dsa/slave.c    | 32 ++++++++++++++++++++++++++++++++
- net/dsa/switch.c   | 15 +++++++++++++++
- 5 files changed, 123 insertions(+)
+You will need quilt to apply these patches to the latest Linus release (5.x
+or 5.x-rcY).  The series file is in broken-out.tar.gz and is duplicated in
+https://ozlabs.org/~akpm/mmotm/series
 
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 57b3e4e7413b..43c4153ef53a 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -278,6 +278,10 @@ struct dsa_port {
- 
- 	u8			devlink_port_setup:1;
- 
-+	/* Master state bits, valid only on CPU ports */
-+	u8			master_admin_up:1;
-+	u8			master_oper_up:1;
-+
- 	u8			setup:1;
- 
- 	struct device_node	*dn;
-@@ -478,6 +482,12 @@ static inline bool dsa_port_is_unused(struct dsa_port *dp)
- 	return dp->type == DSA_PORT_TYPE_UNUSED;
- }
- 
-+static inline bool dsa_port_master_is_operational(struct dsa_port *dp)
-+{
-+	return dsa_port_is_cpu(dp) && dp->master_admin_up &&
-+	       dp->master_oper_up;
-+}
-+
- static inline bool dsa_is_unused_port(struct dsa_switch *ds, int p)
- {
- 	return dsa_to_port(ds, p)->type == DSA_PORT_TYPE_UNUSED;
-@@ -1036,6 +1046,13 @@ struct dsa_switch_ops {
- 	int	(*tag_8021q_vlan_add)(struct dsa_switch *ds, int port, u16 vid,
- 				      u16 flags);
- 	int	(*tag_8021q_vlan_del)(struct dsa_switch *ds, int port, u16 vid);
-+
-+	/*
-+	 * DSA master tracking operations
-+	 */
-+	void	(*master_state_change)(struct dsa_switch *ds,
-+				       const struct net_device *master,
-+				       bool operational);
- };
- 
- #define DSA_DEVLINK_PARAM_DRIVER(_id, _name, _type, _cmodes)		\
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index 3d21521453fe..ff998c0ede02 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -1279,6 +1279,52 @@ int dsa_tree_change_tag_proto(struct dsa_switch_tree *dst,
- 	return err;
- }
- 
-+static void dsa_tree_master_state_change(struct dsa_switch_tree *dst,
-+					 struct net_device *master)
-+{
-+	struct dsa_notifier_master_state_info info;
-+	struct dsa_port *cpu_dp = master->dsa_ptr;
-+
-+	info.master = master;
-+	info.operational = dsa_port_master_is_operational(cpu_dp);
-+
-+	dsa_tree_notify(dst, DSA_NOTIFIER_MASTER_STATE_CHANGE, &info);
-+}
-+
-+void dsa_tree_master_admin_state_change(struct dsa_switch_tree *dst,
-+					struct net_device *master,
-+					bool up)
-+{
-+	struct dsa_port *cpu_dp = master->dsa_ptr;
-+	bool notify = false;
-+
-+	if ((dsa_port_master_is_operational(cpu_dp)) !=
-+	    (up && cpu_dp->master_oper_up))
-+		notify = true;
-+
-+	cpu_dp->master_admin_up = up;
-+
-+	if (notify)
-+		dsa_tree_master_state_change(dst, master);
-+}
-+
-+void dsa_tree_master_oper_state_change(struct dsa_switch_tree *dst,
-+				       struct net_device *master,
-+				       bool up)
-+{
-+	struct dsa_port *cpu_dp = master->dsa_ptr;
-+	bool notify = false;
-+
-+	if ((dsa_port_master_is_operational(cpu_dp)) !=
-+	    (cpu_dp->master_admin_up && up))
-+		notify = true;
-+
-+	cpu_dp->master_oper_up = up;
-+
-+	if (notify)
-+		dsa_tree_master_state_change(dst, master);
-+}
-+
- static struct dsa_port *dsa_port_touch(struct dsa_switch *ds, int index)
- {
- 	struct dsa_switch_tree *dst = ds->dst;
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index 760306f0012f..2bbfa9efe9f8 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -40,6 +40,7 @@ enum {
- 	DSA_NOTIFIER_TAG_PROTO_DISCONNECT,
- 	DSA_NOTIFIER_TAG_8021Q_VLAN_ADD,
- 	DSA_NOTIFIER_TAG_8021Q_VLAN_DEL,
-+	DSA_NOTIFIER_MASTER_STATE_CHANGE,
- };
- 
- /* DSA_NOTIFIER_AGEING_TIME */
-@@ -109,6 +110,12 @@ struct dsa_notifier_tag_8021q_vlan_info {
- 	u16 vid;
- };
- 
-+/* DSA_NOTIFIER_MASTER_STATE_CHANGE */
-+struct dsa_notifier_master_state_info {
-+	const struct net_device *master;
-+	bool operational;
-+};
-+
- struct dsa_switchdev_event_work {
- 	struct dsa_switch *ds;
- 	int port;
-@@ -482,6 +489,12 @@ int dsa_tree_change_tag_proto(struct dsa_switch_tree *dst,
- 			      struct net_device *master,
- 			      const struct dsa_device_ops *tag_ops,
- 			      const struct dsa_device_ops *old_tag_ops);
-+void dsa_tree_master_admin_state_change(struct dsa_switch_tree *dst,
-+					struct net_device *master,
-+					bool up);
-+void dsa_tree_master_oper_state_change(struct dsa_switch_tree *dst,
-+				       struct net_device *master,
-+				       bool up);
- unsigned int dsa_bridge_num_get(const struct net_device *bridge_dev, int max);
- void dsa_bridge_num_put(const struct net_device *bridge_dev,
- 			unsigned int bridge_num);
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 22241afcac81..2b5b0f294233 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -2346,6 +2346,36 @@ static int dsa_slave_netdevice_event(struct notifier_block *nb,
- 		err = dsa_port_lag_change(dp, info->lower_state_info);
- 		return notifier_from_errno(err);
- 	}
-+	case NETDEV_CHANGE:
-+	case NETDEV_UP: {
-+		/* Track state of master port.
-+		 * DSA driver may require the master port (and indirectly
-+		 * the tagger) to be available for some special operation.
-+		 */
-+		if (netdev_uses_dsa(dev)) {
-+			struct dsa_port *cpu_dp = dev->dsa_ptr;
-+			struct dsa_switch_tree *dst = cpu_dp->ds->dst;
-+
-+			/* Track when the master port is UP */
-+			dsa_tree_master_oper_state_change(dst, dev,
-+							  netif_oper_up(dev));
-+
-+			/* Track when the master port is ready and can accept
-+			 * packet.
-+			 * NETDEV_UP event is not enough to flag a port as ready.
-+			 * We also have to wait for linkwatch_do_dev to dev_activate
-+			 * and emit a NETDEV_CHANGE event.
-+			 * We check if a master port is ready by checking if the dev
-+			 * have a qdisc assigned and is not noop.
-+			 */
-+			dsa_tree_master_admin_state_change(dst, dev,
-+							   !qdisc_tx_is_noop(dev));
-+
-+			return NOTIFY_OK;
-+		}
-+
-+		return NOTIFY_DONE;
-+	}
- 	case NETDEV_GOING_DOWN: {
- 		struct dsa_port *dp, *cpu_dp;
- 		struct dsa_switch_tree *dst;
-@@ -2357,6 +2387,8 @@ static int dsa_slave_netdevice_event(struct notifier_block *nb,
- 		cpu_dp = dev->dsa_ptr;
- 		dst = cpu_dp->ds->dst;
- 
-+		dsa_tree_master_admin_state_change(dst, dev, false);
-+
- 		list_for_each_entry(dp, &dst->ports, list) {
- 			if (!dsa_port_is_user(dp))
- 				continue;
-diff --git a/net/dsa/switch.c b/net/dsa/switch.c
-index e3c7d2627a61..4e9cbe3a3127 100644
---- a/net/dsa/switch.c
-+++ b/net/dsa/switch.c
-@@ -683,6 +683,18 @@ dsa_switch_disconnect_tag_proto(struct dsa_switch *ds,
- 	return 0;
- }
- 
-+static int
-+dsa_switch_master_state_change(struct dsa_switch *ds,
-+			       struct dsa_notifier_master_state_info *info)
-+{
-+	if (!ds->ops->master_state_change)
-+		return 0;
-+
-+	ds->ops->master_state_change(ds, info->master, info->operational);
-+
-+	return 0;
-+}
-+
- static int dsa_switch_event(struct notifier_block *nb,
- 			    unsigned long event, void *info)
- {
-@@ -756,6 +768,9 @@ static int dsa_switch_event(struct notifier_block *nb,
- 	case DSA_NOTIFIER_TAG_8021Q_VLAN_DEL:
- 		err = dsa_switch_tag_8021q_vlan_del(ds, info);
- 		break;
-+	case DSA_NOTIFIER_MASTER_STATE_CHANGE:
-+		err = dsa_switch_master_state_change(ds, info);
-+		break;
- 	default:
- 		err = -EOPNOTSUPP;
- 		break;
--- 
-2.33.1
+The file broken-out.tar.gz contains two datestamp files: .DATE and
+.DATE-yyyy-mm-dd-hh-mm-ss.  Both contain the string yyyy-mm-dd-hh-mm-ss,
+followed by the base kernel version against which this patch series is to
+be applied.
 
+This tree is partially included in linux-next.  To see which patches are
+included in linux-next, consult the `series' file.  Only the patches
+within the #NEXT_PATCHES_START/#NEXT_PATCHES_END markers are included in
+linux-next.
+
+
+A full copy of the full kernel tree with the linux-next and mmotm patches
+already applied is available through git within an hour of the mmotm
+release.  Individual mmotm releases are tagged.  The master branch always
+points to the latest release, so it's constantly rebasing.
+
+	https://github.com/hnaz/linux-mm
+
+The directory https://www.ozlabs.org/~akpm/mmots/ (mm-of-the-second)
+contains daily snapshots of the -mm tree.  It is updated more frequently
+than mmotm, and is untested.
+
+A git copy of this tree is also available at
+
+	https://github.com/hnaz/linux-mm
+
+
+
+This mmotm tree contains the following patches against 5.17-rc2:
+(patches marked "*" will be included in linux-next)
+
+* revert-mm-page_isolation-unset-migratetype-directly-for-non-buddy-page.patch
+* mm-debug_vm_pgtable-remove-pte-entry-from-the-page-table.patch
+* mm-page_table_check-use-unsigned-long-for-page-counters-and-cleanup.patch
+* mm-khugepaged-unify-collapse-pmd-clear-flush-and-free.patch
+* mm-page_table_check-check-entries-at-pmd-levels.patch
+* coredump-also-dump-first-pages-of-non-executable-elf-libraries.patch
+* mm-pgtable-define-pte_index-so-that-preprocessor-could-recognize-it.patch
+* ipc-sem-do-not-sleep-with-a-spin-lock-held.patch
+* mm-fix-panic-in-__alloc_pages.patch
+* fs-proc-task_mmuc-dont-read-mapcount-for-migration-entry.patch
+* mm-kmemleak-avoid-scanning-potential-huge-holes.patch
+* selftests-vm-cleanup-hugetlb-file-after-mremap-test.patch
+* proc-kpageflags-prevent-an-integer-overflow-in-stable_page_flags.patch
+* proc-kpageflags-do-not-use-uninitialized-struct-pages.patch
+* procfs-prevent-unpriveleged-processes-accessing-fdinfo-dir.patch
+* ntfs-add-sanity-check-on-allocation-size.patch
+* ocfs2-cleanup-some-return-variables.patch
+* ocfs2-reflink-deadlock-when-clone-file-to-the-same-directory-simultaneously.patch
+* ocfs2-clear-links-count-in-ocfs2_mknod-if-an-error-occurs.patch
+* ocfs2-fix-ocfs2-corrupt-when-iputting-an-inode.patch
+* remove-inode_congested.patch
+* remove-bdi_congested-and-wb_congested-and-related-functions.patch
+* remove-bdi_congested-and-wb_congested-and-related-functions-fix.patch
+* f2fs-change-retry-waiting-for-f2fs_write_single_data_page.patch
+* f2f2-replace-some-congestion_wait-calls-with-io_schedule_timeout.patch
+* cephfs-dont-set-clear-bdi_congestion.patch
+* fuse-dont-set-clear-bdi_congested.patch
+* nfs-remove-congestion-control.patch
+* block-bfq-ioschedc-use-false-rather-than-blk_rw_async.patch
+* remove-congestion-tracking-framework.patch
+* mount-warn-only-once-about-timestamp-range-expiration.patch
+  mm.patch
+* kasan-page_alloc-deduplicate-should_skip_kasan_poison.patch
+* kasan-page_alloc-move-tag_clear_highpage-out-of-kernel_init_free_pages.patch
+* kasan-page_alloc-merge-kasan_free_pages-into-free_pages_prepare.patch
+* kasan-page_alloc-simplify-kasan_poison_pages-call-site.patch
+* kasan-page_alloc-init-memory-of-skipped-pages-on-free.patch
+* kasan-drop-skip_kasan_poison-variable-in-free_pages_prepare.patch
+* mm-clarify-__gfp_zerotags-comment.patch
+* kasan-only-apply-__gfp_zerotags-when-memory-is-zeroed.patch
+* kasan-page_alloc-refactor-init-checks-in-post_alloc_hook.patch
+* kasan-page_alloc-merge-kasan_alloc_pages-into-post_alloc_hook.patch
+* kasan-page_alloc-combine-tag_clear_highpage-calls-in-post_alloc_hook.patch
+* kasan-page_alloc-move-setpageskipkasanpoison-in-post_alloc_hook.patch
+* kasan-page_alloc-move-kernel_init_free_pages-in-post_alloc_hook.patch
+* kasan-page_alloc-rework-kasan_unpoison_pages-call-site.patch
+* kasan-clean-up-metadata-byte-definitions.patch
+* kasan-define-kasan_vmalloc_invalid-for-sw_tags.patch
+* kasan-x86-arm64-s390-rename-functions-for-modules-shadow.patch
+* kasan-vmalloc-drop-outdated-vm_kasan-comment.patch
+* kasan-reorder-vmalloc-hooks.patch
+* kasan-add-wrappers-for-vmalloc-hooks.patch
+* kasan-vmalloc-reset-tags-in-vmalloc-functions.patch
+* kasan-fork-reset-pointer-tags-of-vmapped-stacks.patch
+* kasan-arm64-reset-pointer-tags-of-vmapped-stacks.patch
+* kasan-vmalloc-add-vmalloc-tagging-for-sw_tags.patch
+* kasan-vmalloc-arm64-mark-vmalloc-mappings-as-pgprot_tagged.patch
+* kasan-vmalloc-unpoison-vm_alloc-pages-after-mapping.patch
+* kasan-mm-only-define-___gfp_skip_kasan_poison-with-hw_tags.patch
+* kasan-page_alloc-allow-skipping-unpoisoning-for-hw_tags.patch
+* kasan-page_alloc-allow-skipping-memory-init-for-hw_tags.patch
+* kasan-vmalloc-add-vmalloc-tagging-for-hw_tags.patch
+* kasan-vmalloc-only-tag-normal-vmalloc-allocations.patch
+* kasan-arm64-dont-tag-executable-vmalloc-allocations.patch
+* kasan-mark-kasan_arg_stacktrace-as-__initdata.patch
+* kasan-clean-up-feature-flags-for-hw_tags-mode.patch
+* kasan-add-kasanvmalloc-command-line-flag.patch
+* kasan-allow-enabling-kasan_vmalloc-and-sw-hw_tags.patch
+* arm64-select-kasan_vmalloc-for-sw-hw_tags-modes.patch
+* kasan-documentation-updates.patch
+* kasan-improve-vmalloc-tests.patch
+* kasan-improve-vmalloc-tests-fix.patch
+* mm-memremap-avoid-calling-kasan_remove_zero_shadow-for-device-private-memory.patch
+* tools-vm-page_owner_sortc-sort-by-stacktrace-before-culling.patch
+* tools-vm-page_owner_sortc-sort-by-stacktrace-before-culling-fix.patch
+* tools-vm-page_owner_sortc-support-sorting-by-stack-trace.patch
+* tools-vm-page_owner_sortc-add-switch-between-culling-by-stacktrace-and-txt.patch
+* tools-vm-page_owner_sortc-support-sorting-pid-and-time.patch
+* tools-vm-page_owner_sortc-two-trivial-fixes.patch
+* tools-vm-page_owner_sortc-delete-invalid-duplicate-code.patch
+* documentation-vm-page_ownerrst-update-the-documentation.patch
+* documentation-vm-page_ownerrst-update-the-documentation-fix.patch
+* docs-vm-fix-unexpected-indentation-warns-in-page_owner.patch
+* mm-move-page-writeback-sysctls-to-is-own-file.patch
+* mm-move-page-writeback-sysctls-to-is-own-file-checkpatch-fixes.patch
+* mm-move-page-writeback-sysctls-to-is-own-file-fix.patch
+* mm-fix-invalid-page-pointer-returned-with-foll_pin-gups.patch
+* mm-gup-clean-up-follow_pfn_pte-slightly.patch
+* mm-gup-remove-unused-pin_user_pages_locked.patch
+* mm-gup-remove-get_user_pages_locked.patch
+* memcg-replace-in_interrupt-with-in_task.patch
+* memcg-add-per-memcg-total-kernel-memory-stat.patch
+* mm-memcg-mem_cgroup_per_node-is-already-set-to-0-on-allocation.patch
+* mm-memcg-retrieve-parent-memcg-from-cssparent.patch
+* mm-generalize-arch_has_filter_pgprot.patch
+* mm-optimize-do_wp_page-for-exclusive-pages-in-the-swapcache.patch
+* mm-optimize-do_wp_page-for-fresh-pages-in-local-lru-pagevecs.patch
+* mm-slightly-clarify-ksm-logic-in-do_swap_page.patch
+* mm-streamline-cow-logic-in-do_swap_page.patch
+* mm-huge_memory-streamline-cow-logic-in-do_huge_pmd_wp_page.patch
+* mm-khugepaged-remove-reuse_swap_page-usage.patch
+* mm-swapfile-remove-stale-reuse_swap_page.patch
+* mm-huge_memory-remove-stale-page_trans_huge_mapcount.patch
+* mm-huge_memory-remove-stale-locking-logic-from-__split_huge_pmd.patch
+* mm-thp-fix-wrong-cache-flush-in-remove_migration_pmd.patch
+* mm-fix-missing-cache-flush-for-all-tail-pages-of-compound-page.patch
+* mm-hugetlb-fix-missing-cache-flush-in-copy_huge_page_from_user.patch
+* mm-hugetlb-fix-missing-cache-flush-in-hugetlb_mcopy_atomic_pte.patch
+* mm-replace-multiple-dcache-flush-with-flush_dcache_folio.patch
+* mm-sparse-make-mminit_validate_memmodel_limits-static.patch
+* mm-sparsemem-fix-mem_section-will-never-be-null-gcc-12-warning.patch
+* mm-vmalloc-remove-unneeded-function-forward-declaration.patch
+* mm-vmalloc-move-draining-areas-out-of-caller-context.patch
+* mm-vmallocc-fix-unused-function-warning.patch
+* vmap-dont-allow-invalid-pages.patch
+* mm-page_alloc-avoid-merging-non-fallbackable-pageblocks-with-others.patch
+* mm-page_alloc-add-same-penalty-is-enough-to-get-round-robin-order.patch
+* mm-page_alloc-add-penalty-to-local_node.patch
+* mm-mmzonec-use-try_cmpxchg-in-page_cpupid_xchg_last.patch
+* mm-discard-__gfp_atomic.patch
+* mm-mmzoneh-remove-unused-macros.patch
+* mm-hwpoison-remove-obsolete-comment.patch
+* mm-hwpoison-fix-error-page-recovered-but-reported-not-recovered.patch
+* mm-hugetlb-free-the-2nd-vmemmap-page-associated-with-each-hugetlb-page.patch
+* mm-hugetlb-replace-hugetlb_free_vmemmap_enabled-with-a-static_key.patch
+* mm-sparsemem-use-page-table-lock-to-protect-kernel-pmd-operations.patch
+* selftests-vm-add-a-hugetlb-test-case.patch
+* mm-sparsemem-move-vmemmap-related-to-hugetlb-to-config_hugetlb_page_free_vmemmap.patch
+* mm-hugetlb-generalize-arch_want_general_hugetlb.patch
+* mm-mempolicy-convert-from-atomic_t-to-refcount_t-on-mempolicy-refcnt.patch
+* mm-mempolicy-convert-from-atomic_t-to-refcount_t-on-mempolicy-refcnt-fix.patch
+* mm-migration-add-trace-events-for-thp-migrations.patch
+* mm-migration-add-trace-events-for-base-page-and-hugetlb-migrations.patch
+* mmmigrate-fix-establishing-demotion-target.patch
+* mm-cma-provide-option-to-opt-out-from-exposing-pages-on-activation-failure.patch
+* powerpc-fadump-opt-out-from-freeing-pages-on-cma-activation-failure.patch
+* numa-balancing-add-page-promotion-counter.patch
+* numa-balancing-optimize-page-placement-for-memory-tiering-system.patch
+* memory-tiering-skip-to-scan-fast-memory.patch
+* mm-vmstat-add-event-for-ksm-swapping-in-copy.patch
+* mm-hwpoison-check-the-subpage-not-the-head-page.patch
+* mm-balloon_compaction-make-balloon-page-compaction-callbacks-static.patch
+* mm-fix-race-between-madv_free-reclaim-and-blkdev-direct-io-read.patch
+* mm-memory_hotplug-make-arch_alloc_nodedata-independent-on-config_memory_hotplug.patch
+* mm-handle-uninitialized-numa-nodes-gracefully.patch
+* mm-memory_hotplug-drop-arch_free_nodedata.patch
+* mm-memory_hotplug-reorganize-new-pgdat-initialization.patch
+* mm-make-free_area_init_node-aware-of-memory-less-nodes.patch
+* memcg-do-not-tweak-node-in-alloc_mem_cgroup_per_node_info.patch
+* drivers-base-memory-add-memory-block-to-memory-group-after-registration-succeeded.patch
+* mm-rmap-convert-from-atomic_t-to-refcount_t-on-anon_vma-refcount.patch
+* mm-zswapc-allow-handling-just-same-value-filled-pages.patch
+* highmem-document-kunmap_local.patch
+* highmem-document-kunmap_local-v2.patch
+* mm-highmem-remove-unnecessary-done-label.patch
+* mm-hmmc-remove-unneeded-local-variable-ret.patch
+* mm-add-zone-device-coherent-type-memory-support.patch
+* mm-add-device-coherent-vma-selection-for-memory-migration.patch
+* mm-gup-fail-get_user_pages-for-longterm-dev-coherent-type.patch
+* drm-amdkfd-add-spm-support-for-svm.patch
+* drm-amdkfd-coherent-type-as-sys-mem-on-migration-to-ram.patch
+* lib-test_hmm-add-ioctl-to-get-zone-device-type.patch
+* lib-test_hmm-add-module-param-for-zone-device-type.patch
+* lib-add-support-for-device-coherent-type-in-test_hmm.patch
+* tools-update-hmm-test-to-support-device-coherent-type.patch
+* tools-update-test_hmm-script-to-support-sp-config.patch
+* mm-damon-dbgfs-init_regions-use-target-index-instead-of-target-id.patch
+* docs-admin-guide-mm-damon-usage-update-for-changed-initail_regions-file-input.patch
+* mm-damon-core-move-damon_set_targets-into-dbgfs.patch
+* mm-damon-remove-the-target-id-concept.patch
+* mm-damon-remove-redundant-page-validation.patch
+* info-task-hung-in-generic_file_write_iter.patch
+* info-task-hung-in-generic_file_write-fix.patch
+* kernel-hung_taskc-monitor-killed-tasks.patch
+* proc-alloc-path_max-bytes-for-proc-pid-fd-symlinks.patch
+* proc-alloc-path_max-bytes-for-proc-pid-fd-symlinks-fix.patch
+* proc-vmcore-fix-possible-deadlock-on-concurrent-mmap-and-read.patch
+* proc-vmcore-fix-vmcore_alloc_buf-kernel-doc-comment.patch
+* proc-sysctl-make-protected_-world-readable.patch
+* kconfigdebug-make-debug_info-selectable-from-a-choice.patch
+* kconfigdebug-make-debug_info-selectable-from-a-choice-fix.patch
+* lz4-fix-lz4_decompress_safe_partial-read-out-of-bound.patch
+* checkpatch-prefer-module_licensegpl-over-module_licensegpl-v2.patch
+* checkpatch-add-fix-option-for-some-trailing_statements.patch
+* fs-binfmt_elf-fix-at_phdr-for-unusual-elf-files.patch
+* fs-binfmt_elf-fix-at_phdr-for-unusual-elf-files-v5.patch
+* fs-binfmt_elf-refactor-load_elf_binary-function.patch
+* elf-fix-overflow-in-total-mapping-size-calculation.patch
+* kallsyms-print-module-name-in-%ps-s-case-when-kallsyms-is-disabled.patch
+* init-mainc-silence-some-wunused-parameter-warnings.patch
+* fs-pipe-use-kvcalloc-to-allocate-a-pipe_buffer-array.patch
+* fs-pipe-local-vars-has-to-match-types-of-proper-pipe_inode_info-fields.patch
+* minix-fix-bug-when-opening-a-file-with-o_direct.patch
+* exec-force-single-empty-string-when-argv-is-empty.patch
+* exec-force-single-empty-string-when-argv-is-empty-fix.patch
+* selftests-exec-test-for-empty-string-on-null-argv.patch
+* kexec-make-crashk_res-crashk_low_res-and-crash_notes-symbols-always-visible.patch
+* riscv-mm-init-use-is_enabledconfig_kexec_core-instead-of-ifdef.patch
+* x86-setup-use-is_enabledconfig_kexec_core-instead-of-ifdef.patch
+* arm64-mm-use-is_enabledconfig_kexec_core-instead-of-ifdef.patch
+* docs-sysctl-kernel-add-missing-bit-to-panic_print.patch
+* docs-sysctl-kernel-add-missing-bit-to-panic_print-fix.patch
+* panic-add-option-to-dump-all-cpus-backtraces-in-panic_print.patch
+* panic-allow-printing-extra-panic-information-on-kdump.patch
+* kcov-split-ioctl-handling-into-locked-and-unlocked-parts.patch
+* kcov-properly-handle-subsequent-mmap-calls.patch
+* selftests-set-the-build-variable-to-absolute-path.patch
+* selftests-add-and-export-a-kernel-uapi-headers-path.patch
+* selftests-correct-the-headers-install-path.patch
+* selftests-futex-add-the-uapi-headers-include-variable.patch
+* selftests-kvm-add-the-uapi-headers-include-variable.patch
+* selftests-landlock-add-the-uapi-headers-include-variable.patch
+* selftests-net-add-the-uapi-headers-include-variable.patch
+* selftests-mptcp-add-the-uapi-headers-include-variable.patch
+* selftests-vm-add-the-uapi-headers-include-variable.patch
+* selftests-vm-remove-dependecy-from-internal-kernel-macros.patch
+* selftests-kselftest-framework-provide-finished-helper.patch
+* revert-ubsan-kcsan-dont-combine-sanitizer-with-kcov-on-clang.patch
+* ipc-mqueue-use-get_tree_nodev-in-mqueue_get_tree.patch
+  linux-next.patch
+  make-sure-nobodys-leaking-resources.patch
+  releasing-resources-with-children.patch
+  mutex-subsystem-synchro-test-module.patch
+  mutex-subsystem-synchro-test-module-fix.patch
+  kernel-forkc-export-kernel_thread-to-modules.patch
+  workaround-for-a-pci-restoring-bug.patch
