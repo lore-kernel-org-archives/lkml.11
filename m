@@ -2,138 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98EB4C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 16:19:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAC3AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 16:24:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345810AbiBBQT7 convert rfc822-to-8bit (ORCPT
+        id S1345811AbiBBQYQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 11:19:59 -0500
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:58516 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1345616AbiBBQT5 (ORCPT
+        Wed, 2 Feb 2022 11:24:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40494 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236409AbiBBQYP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 11:19:57 -0500
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-33-SGQvv5ccMsmU2w2G6u_tRw-1; Wed, 02 Feb 2022 16:19:55 +0000
-X-MC-Unique: SGQvv5ccMsmU2w2G6u_tRw-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.28; Wed, 2 Feb 2022 16:19:52 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.028; Wed, 2 Feb 2022 16:19:52 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Kees Cook' <keescook@chromium.org>,
-        Jonathan Corbet <corbet@lwn.net>
-CC:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Martin Uecker <Martin.Uecker@med.uni-goettingen.de>,
-        Ingo Molnar <mingo@kernel.org>,
-        Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
-        Rikard Falkeborn <rikard.falkeborn@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-hardening@vger.kernel.org" <linux-hardening@vger.kernel.org>
-Subject: RE: [PATCH] linux/const.h: Explain how __is_constexpr() works
-Thread-Topic: [PATCH] linux/const.h: Explain how __is_constexpr() works
-Thread-Index: AQHYFuNHRL4oDGFcTkyEh79ubpGBJ6yAbZqw
-Date:   Wed, 2 Feb 2022 16:19:52 +0000
-Message-ID: <6641e01b86374ce197020d57c65ae3b3@AcuMS.aculab.com>
-References: <20220131204357.1133674-1-keescook@chromium.org>
-In-Reply-To: <20220131204357.1133674-1-keescook@chromium.org>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Wed, 2 Feb 2022 11:24:15 -0500
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4DA4C061714
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 08:24:14 -0800 (PST)
+Received: by mail-pf1-x42b.google.com with SMTP id n32so19212150pfv.11
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 08:24:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=4RU4nT0A8ScUi0XH1TGWZby5UrMX36vrOc8ZNPOHMnY=;
+        b=BjMp2b4aJS29gAsExIeXJwymLti9bMZuWps/hQkbpCNpsSkjMKG09LT9KlGWO3iYiU
+         yS7C3p5MsMsRtocfTWpx56BrKisYaNkfHVkltZyjSpuHvpkOYS2YYtuSdmHYwYpOWlkw
+         3rnqE4y37W8fi0Qu04lzK5IPncZHF6JdALe3v3q/106EEJ5qvVLjWBi/Svm8JHK0L1vp
+         k+9Ub5bgSE6ayDgYSCg7bmeTkGLS4b4bvJI3TbSdP1Ib3Eqe2hYjknPEsuGlwZ6ZwgB4
+         2ZJHwHHShHV9OMe5dVX/bhSYQovPOz0pFqpSkl4bBzuKwAOWZ1McOZtuyTDx0xiGufRc
+         zZ9g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=4RU4nT0A8ScUi0XH1TGWZby5UrMX36vrOc8ZNPOHMnY=;
+        b=zs8FPhihEBcw+ockDqduCrTBvTe9UfgNfiSwTdL96URJ3BaiWs9j+TrPmRVq6Umz4F
+         5ebtg45zd0X7uqFtjgyWS3OV/PqhVVnChP9ezbpTUeAbgBfAU7mDJGUsU5B5XTQH2b3T
+         PvofxHkuTbuzK8D7CYKRdLeuCe2t5aSb+f7SvSAl6WK99sP9KhRXOt+WIufkoHy9cO9W
+         q3qmUkZ4zlVZGkvZZw6puYgFvZxyWNS7lvgp1Y+QKLHaC6xiTjoktShs2oc9rVhtgQlf
+         9J64EwMr5oeDxW2BuMwfoS6xPUyd1cKanMJtRBOEB0MtN7FZGzE3jRrAeSjWTHIe6HAc
+         n5Xw==
+X-Gm-Message-State: AOAM530uljqeR150hT6ERXH/iBS27JBJ5w0zgOHSZEG7B8DcM//e3RNy
+        2PbdP2hcE57TOiAJ4D9Glq0=
+X-Google-Smtp-Source: ABdhPJzKBckS0KU9uqHVFtKYVdrbjhsxdWHHuWUI+DUjuhAJZzFyyGTrixlAGa6YTa0wYc0A5+m80w==
+X-Received: by 2002:a05:6a00:885:: with SMTP id q5mr17134700pfj.6.1643819054229;
+        Wed, 02 Feb 2022 08:24:14 -0800 (PST)
+Received: from [10.230.29.214] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id m38sm33846917pgl.64.2022.02.02.08.24.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Feb 2022 08:24:13 -0800 (PST)
+Message-ID: <71178ae0-053d-d2f4-88cf-a41513432351@gmail.com>
+Date:   Wed, 2 Feb 2022 08:24:11 -0800
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 0/3] phy: phy-brcm-usb: Fixes for phy-brcm-usb driver
 Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+To:     Vinod Koul <vkoul@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Al Cooper <alcooperx@gmail.com>, linux-kernel@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        linux-phy@lists.infradead.org,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
+References: <20211201180653.35097-1-alcooperx@gmail.com>
+ <7cbb745e-8b95-1eed-0903-44070a112ec0@gmail.com> <Ye0/8MSBRVNuBr3L@matsya>
+ <e801d672-bedf-b08b-d27b-2b0cdd476a6d@gmail.com> <YfoPIGfs5Q3IwrPm@matsya>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <YfoPIGfs5Q3IwrPm@matsya>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook
-> Sent: 31 January 2022 20:44
+
+
+On 2/1/2022 8:57 PM, Vinod Koul wrote:
+> On 27-01-22, 17:01, Florian Fainelli wrote:
+>>
+>>
+>> On 1/23/2022 3:45 AM, Vinod Koul wrote:
+>>> On 19-01-22, 15:26, Florian Fainelli wrote:
+>>>> Hi Vinod,
+>>>>
+>>>> On 12/1/21 10:06 AM, Al Cooper wrote:
+>>>>> A few fixes for the phy-brcm-usb driver.
+>>>>>
+>>>>> Al Cooper (3):
+>>>>>     phy: usb: Leave some clocks running during suspend
+>>>>>     usb: Add "wake on" functionality for newer Synopsis XHCI controllers
+>>>>>     phy: broadcom: Kconfig: Fix PHY_BRCM_USB config option
+>>>>
+>>>> Are you able to pick up those patches? Thank you
+>>>
+>>> Applied phy patches to phy-fixes, thanks
+>>
+>> Thanks! I can see patches 1 and 3 there but patch 2 is not in phy-fixes or
+>> your next branch. Can you pick it up if it is satisfactory? Thanks!
 > 
-> The __is_constexpr() macro is dark magic. Shed some light on it with
-> a comment to explain how and why it works.
-> 
-...
-> diff --git a/include/linux/const.h b/include/linux/const.h
-> index 435ddd72d2c4..7122d6a1f8ce 100644
-> --- a/include/linux/const.h
-> +++ b/include/linux/const.h
-> @@ -7,6 +7,30 @@
->   * This returns a constant expression while determining if an argument is
->   * a constant expression, most importantly without evaluating the argument.
->   * Glory to Martin Uecker <Martin.Uecker@med.uni-goettingen.de>
-> + *
-> + * Details:
-> + * - sizeof() is an integer constant expression, and does not evaluate the
-> + *   value of its operand; it only examines the type of its operand.
-> + * - The results of comparing two integer constant expressions is also
-> + *   an integer constant expression.
-> + * - The use of literal "8" is to avoid warnings about unaligned pointers;
-> + *   these could otherwise just be "1"s.
-> + * - (long)(x) is used to avoid warnings about 64-bit types on 32-bit
-> + *   architectures.
-> + * - The C standard defines an "integer constant expression" as different
-> + *   from a "null pointer constant" (an integer constant 0 pointer).
-> + * - The conditional operator ("... ? ... : ...") returns the type of the
-> + *   operand that isn't a null pointer constant. This behavior is the
-> + *   central mechanism of the macro.
-> + * - If (x) is an integer constant expression, then the "* 0l" resolves it
-> + *   into a null pointer constant, which forces the conditional operator
-> + *   to return the type of the last operand: "(int *)".
-> + * - If (x) is not an integer constant expression, then the type of the
-> + *   conditional operator is from the first operand: "(void *)".
-> + * - sizeof(int) == 4 and sizeof(void) == 1.
-> + * - The ultimate comparison to "sizeof(int)" chooses between either:
-> + *     sizeof(*((int *) (8)) == sizeof(int)   (x was a constant expression)
-> + *     sizeof(*((void *)(8)) == sizeof(void)  (x was not a constant expression)
->   */
->  #define __is_constexpr(x) \
->  	(sizeof(int) == sizeof(*(8 ? ((void *)((long)(x) * 0l)) : (int *)8)))
+> That is usb patch right. I wont pick unless Greg acks it to go thru phy
+> tree
 
-This has been making my head hurt all day.
-The above isn't really a true description - ?: doesn't work that way.
-Try the following for size:
+This is an USB PHY patch, I suppose the subject including "usb: " did 
+somewhat mislead you. Here is the diffstat just for that patch:
 
-- The conditional operator (?:) requires that both expressions have the
-  the same type (after numeric promotions).
-  The type of the result is a compile time constant and doesn't depend on any
-  variables.
-- If the expressions have distinct non-NULL pointer types then they are both
-  cast to (void *) and the result has type 'void *'.
-- A NULL pointer can be made from any integer constant expression that
-  evaluates to 0, not just a literal 0.
-- So the type of (0 ? (void *)(x) : (int *)8) is 'int *' if (x) is zero
-  (because of the NULL) and (void *) otherwise because the pointer types
-  don't match.
+  .../phy/broadcom/phy-brcm-usb-init-synopsys.c | 46 +++++++++++++++----
+  1 file changed, 38 insertions(+), 8 deletions(-)
 
-You can test this by evaluating:
-	sizeof *(0 ? (float *)4 : (int *)4)
-This is 1 because of the implicit (void *) cast.
-
-I'd also delete the l from the 0l - it isn't needed.
-(Or at least use L)
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+definitively falling into the PHY subsystem.
+-- 
+Florian
