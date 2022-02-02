@@ -2,100 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66F06C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 11:07:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9903FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 11:08:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239930AbiBBLHR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 06:07:17 -0500
-Received: from mga18.intel.com ([134.134.136.126]:37287 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229552AbiBBLHQ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 06:07:16 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643800036; x=1675336036;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=IUN0B8wCPrd5whIz0ndsi5oEOD4UtnfCc7PBqv0ehBQ=;
-  b=hk9vZF99v6mtiQwvlMA8+YqtMVmu29mppypR1dXcDry4bN/fHIK8J5Z+
-   FlEKlW/rqe5dWukGyYGaL5RDsgLTSK3FyiAqNqUSjkqfy7K+tOpw95NKL
-   IKfhkd02lByzI0tsZpBeOrMor9ErilyMHmVNOr1cRUFhEZw5AZmCyiGEu
-   vxAQtCYjFC645bwmntrjwzAbnbT+sQDCi7Y5bw25wIbZCfq08ovGA7Dlw
-   0onufqzJmRRP1seaR3/mB5TCdvs6OMWo6KWZz8vZRZe0BfIgjqhrZh4UJ
-   qa5eOC3qhkMgL1/UH3SZ2wgLv0Pxzwuy9AzLW75BMb5M/VmWbSaLjfqr3
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10245"; a="231463039"
-X-IronPort-AV: E=Sophos;i="5.88,336,1635231600"; 
-   d="scan'208";a="231463039"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 03:07:16 -0800
-X-IronPort-AV: E=Sophos;i="5.88,336,1635231600"; 
-   d="scan'208";a="676400854"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 03:07:12 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nFDSj-0003No-Bi;
-        Wed, 02 Feb 2022 13:06:09 +0200
-Date:   Wed, 2 Feb 2022 13:06:09 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Javier Martinez Canillas <javierm@redhat.com>
-Cc:     Sam Ravnborg <sam@ravnborg.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Mark Brown <broonie@kernel.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Noralf =?iso-8859-1?Q?Tr=F8nnes?= <noralf@tronnes.org>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Peter Robinson <pbrobinson@gmail.com>
-Subject: Re: [PATCH 0/4] drm/tiny: Add driver for Solomon SSD1307 OLED
- displays
-Message-ID: <YfploeCM6C5y3Imj@smile.fi.intel.com>
-References: <20220131201225.2324984-1-javierm@redhat.com>
- <YfhM97cVH3+lJKg0@ravnborg.org>
- <Yfj/XGRRDNABsLPm@smile.fi.intel.com>
- <f8d71acb-5c8b-ac4e-0c32-38eb66af04c3@redhat.com>
- <CAMuHMdVP6ER119r2KAegjZes1a=KWZ47z6j=kgQ0oNx1oeUJ+w@mail.gmail.com>
- <51f54519-bb8b-f108-1c1e-4fed101ca5ef@redhat.com>
- <CAMuHMdVwUfv7pXhPazsgG6t=X=aVtDQkFUk_=mUuFH8Fscx8wg@mail.gmail.com>
- <abf63995-a529-1e80-18c3-df473a3e7a9c@redhat.com>
- <YfmaqUBqCrgp0QdO@ravnborg.org>
- <e552caec-5136-f4b2-12dc-23b182ab8af6@redhat.com>
+        id S231209AbiBBLIN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 06:08:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52212 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229552AbiBBLIL (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 2 Feb 2022 06:08:11 -0500
+Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 876F9C061714
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 03:08:11 -0800 (PST)
+Received: by mail-il1-x130.google.com with SMTP id z18so7915607ilp.3
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 03:08:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KvwP2pq0A69XLEtJRHQeT2K6fCrFL3jZAy9726cRZ/o=;
+        b=hkqcAskloSPcrI90jAiwlBCksVcgOjKlFwsucBqi2eYnoWM21moZyBpPgJZ2Xrm0Hd
+         pHAJYXSQZIBL8mbYzQFC59iVtLwvbHwLCgjJkw2aYGLyCF+AtQF7qcLxUvcPhU6i68hU
+         gYg0UVCo/wSNJrPZJr0TQh3Qlu6UwG2vGdV9uh8q22V2i6+O3tWLV9l7bpszGXrzzovf
+         VIxz33W0z2qTWPHNQDb1AMIDAqW+k1i+EyfL6Axy0eeh5oSMXA5T0eMJlGDXB2rPOIHQ
+         Q1Kn7C5pwmn/LatVJ9WCYsGLFluu6my88RVOd0QFA5llO69NciKTYbwEpxySXt7ODtRA
+         W8qA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KvwP2pq0A69XLEtJRHQeT2K6fCrFL3jZAy9726cRZ/o=;
+        b=GVq7CG33e/73sLF4s5AGDsIPE06efbcblIw5IF9Awhavc33LgeJ6PA9cXij3G526Aq
+         wQexMnl8A7b/3mqLlBi1rkmyYQ4Frx1sFzitvXMIwXLjeTuPvb1EfIZWrNVraf2/+bGp
+         z5df6ir/EBd7dp84hZe5+cfJmmWNhTFAdSDlBLHYkzPlP8oOYAt0/aTkNPC8GUzsdN1p
+         2EAziVSrQltG3mRS3ZnNqH1RSAMoWy4tMs/wdIAlJUQUSWtt9k7w1KBXs0SPaG6kqC0N
+         Wd+xyMtzzcvuKZLXJ334rISJrgj2yWuGaxEAR7d3/zTZDdt5sBBK0k88JmqRY+m9ieYd
+         Bjxw==
+X-Gm-Message-State: AOAM532Yosf04nSKWjdqd4lkCQuUUezB0frBlVihH9P4mwBvJQcmzzTp
+        ZqaVkbR/1drM/oUidKFLMorPeSZ24StvCCAuozMkwnWtmR29tg==
+X-Google-Smtp-Source: ABdhPJxvcnLnLL44YJGu9Hx6EDcJ3di6PMIRblKZuakSdFXT0QwOZsAXIX4XpbxJvvDNsWPbd6t+//aY4zx6dFeQpLw=
+X-Received: by 2002:a05:6e02:1a4f:: with SMTP id u15mr6037825ilv.245.1643800090714;
+ Wed, 02 Feb 2022 03:08:10 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e552caec-5136-f4b2-12dc-23b182ab8af6@redhat.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <00000000000038779505d5d8b372@google.com>
+In-Reply-To: <00000000000038779505d5d8b372@google.com>
+From:   Aleksandr Nogikh <nogikh@google.com>
+Date:   Wed, 2 Feb 2022 12:07:59 +0100
+Message-ID: <CANp29Y7WjwXwgxPrNq0XXjXPu+wGFqTreh9gry=O6aE7+cKpLQ@mail.gmail.com>
+Subject: Re: [syzbot] riscv/fixes boot error: can't ssh into the instance
+To:     linux-riscv@lists.infradead.org,
+        kasan-dev <kasan-dev@googlegroups.com>, palmer@dabbelt.com,
+        alexandre.ghiti@canonical.com
+Cc:     syzbot <syzbot+330a558d94b58f7601be@syzkaller.appspotmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 02, 2022 at 09:38:51AM +0100, Javier Martinez Canillas wrote:
-> On 2/1/22 21:40, Sam Ravnborg wrote:
+Hello,
 
-...
+syzbot has already not been able to fuzz its RISC-V instance for 97
+days now because the compiled kernel cannot boot. I bisected the issue
+to the following commit:
 
-> Peter Robinson suggested to
-> make the driver mutually exclusive and add !FB_SSD1307 in the config symbol.
+commit 54c5639d8f507ebefa814f574cb6f763033a72a5
+Author: Alexandre Ghiti <alexandre.ghiti@canonical.com>
+Date:   Fri Oct 29 06:59:27 2021 +0200
 
-And how will distros choose "the right" option in this case?
-What to do when I wan to see a regression and I want to change drivers w/o
-recompilation?
+    riscv: Fix asan-stack clang build
 
-NAK from me to that proposal.
+Apparently, the problem appears on GCC-built RISC-V kernels with KASAN
+enabled. In the previous message syzbot mentions
+"riscv64-linux-gnu-gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU
+Binutils for Debian) 2.35.2", but the issue also reproduces finely on
+a newer GCC compiler: "riscv64-linux-gnu-gcc (Debian 11.2.0-10)
+11.2.0, GNU ld (GNU Binutils for Debian) 2.37".
+For convenience, I also duplicate the .config file from the bot's
+message: https://syzkaller.appspot.com/x/.config?x=522544a2e0ef2a7d
 
--- 
-With Best Regards,
-Andy Shevchenko
+Can someone with KASAN and RISC-V expertise please take a look?
+
+--
+Best Regards,
+Aleksandr
 
 
+On Tue, Jan 18, 2022 at 11:26 AM syzbot
+<syzbot+330a558d94b58f7601be@syzkaller.appspotmail.com> wrote:
+>
+> Hello,
+>
+> syzbot found the following issue on:
+>
+> HEAD commit:    f6f7fbb89bf8 riscv: dts: sifive unmatched: Link the tmp451..
+> git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git fixes
+> console output: https://syzkaller.appspot.com/x/log.txt?x=1095f85bb00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=522544a2e0ef2a7d
+> dashboard link: https://syzkaller.appspot.com/bug?extid=330a558d94b58f7601be
+> compiler:       riscv64-linux-gnu-gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> userspace arch: riscv64
+>
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+330a558d94b58f7601be@syzkaller.appspotmail.com
+>
+>
+>
+> ---
+> This report is generated by a bot. It may contain errors.
+> See https://goo.gl/tpsmEJ for more information about syzbot.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+>
+> syzbot will keep track of this issue. See:
+> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+>
+> --
+> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
+> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
+> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/00000000000038779505d5d8b372%40google.com.
