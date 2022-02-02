@@ -2,104 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7A82C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 07:02:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76B37C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 07:02:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241429AbiBBHCF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 02:02:05 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:49598 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239384AbiBBHCD (ORCPT
+        id S243711AbiBBHCu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 02:02:50 -0500
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:44961 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239384AbiBBHCt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 02:02:03 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B4A561725;
-        Wed,  2 Feb 2022 07:02:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E623AC004E1;
-        Wed,  2 Feb 2022 07:02:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643785322;
-        bh=1Q7jHDq8Ep5G9c1wiZDgu8/YIoEi3BDZpHF88CwnPCw=;
-        h=Date:From:To:Cc:Subject:From;
-        b=ZFG/mYt5wvg0M4Hxk9AhiEFaWy9tEksm76vxSYmw7j9mTetnmD4sfp5ZwDsfkcmY+
-         Ss0J5lrYZanq+jovoF72FR/QfYJ2aEJ9sdAHlbR37D0Bzlt/yOWzPgqOX9WELMnfxx
-         aRcZIF5zQ1ewRyjFoOKqISlIzjlycticar01ZwwIcng4k30Klr7/Dd3YlR4owXyWht
-         PmUSTsc4xr+Bh2uPVxCHVXW99USJFfYZSCvQcPmPRKxJCP/dnZHUp02wyF9Jf2zghD
-         c561zoOZEjJ5RhEN8sryC9YmyksgIDZ0tz40mzTuaKbaSVeer4sDzBpTGj3IZ1sOi6
-         t7hV5vR17D3XQ==
-Date:   Wed, 2 Feb 2022 01:09:06 -0600
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-hardening@vger.kernel.org
-Subject: [PATCH v3][next] staging: r8188eu: Silence out-of-bounds warning in
- HT_caps_handler()
-Message-ID: <20220202070906.GA274379@embeddedor>
+        Wed, 2 Feb 2022 02:02:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1643785369; x=1675321369;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=qM2szEr4iwIMDuYBKDIcOf6vZ5wmYPS1pXc5cwARPHk=;
+  b=qODIniYKIN2wc8Nw34ig2ZIStbuV/xhfsWMk5fDScbSkvr4UxHjpEERG
+   0ReThgtCtTPp6KZndsseUV3JiQmCqcEGQ/atHNZbAOfjckt8FlL/fjjqj
+   04O7ftcPWRPfI8uHy7dBNVUKmzjerlGigPzFbTnQ3QHo87OMafjDTvAt1
+   WLWF7rd03JD0bsOkWdfpJ+az3y4EyFOzqJDiNFo7pI+hbdlQjKzIXQ9hQ
+   odStr2QnmTK7Btq9OMOAyW994d/505hKMjl9dZYN0Ts3XHA4BBX4mY4E2
+   RNoZY+ejyJaiAFJ+ZqRul1DiM+hshJM2ukBZeZi//GFtk0fjHYdEVFWZl
+   A==;
+IronPort-SDR: GuV5vXbw28Sc92CaDw1xxo/7kp2sMx6JQM68Y3wrxZHeTausrt0SbC9lmZZgH5C/iMPQzcgFu0
+ oCDVs52mZrae09njlWaIKyycszWX8nmmN2T6AXSzOWq0tZc0frOr0+h4UrDJdzX5eROiw05E2v
+ jKJTV20sL3UvE/7vFYmMSPcBTaCNOOtCQfmD+u7oqs7ODooG7nhy1n3/k5FPkKdVosODoOL3fg
+ KvZenwfn6aF2ORJssCM6GTMlwXWsB7q/IN2q53YAt4F42q/x54rSuU8bSRfjfKbixwqRWJ2hI4
+ vCudAbC+XC8PBI3hrtOhNS2G
+X-IronPort-AV: E=Sophos;i="5.88,336,1635231600"; 
+   d="scan'208";a="144624961"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 02 Feb 2022 00:02:48 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 2 Feb 2022 00:02:48 -0700
+Received: from ROB-ULT-M18064N.mchp-main.com (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Wed, 2 Feb 2022 00:02:46 -0700
+From:   Tudor Ambarus <tudor.ambarus@microchip.com>
+To:     <nicolas.ferre@microchip.com>, <claudiu.beznea@microchip.com>,
+        <alexandre.belloni@bootlin.com>
+CC:     <linux@armlinux.org.uk>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>
+Subject: [PATCH] ARM: configs: at91: sama7: Enable UBIFS_FS
+Date:   Wed, 2 Feb 2022 09:02:44 +0200
+Message-ID: <20220202070244.150022-1-tudor.ambarus@microchip.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Silence the following out-of-bounds warning (caught with -Warray-bounds=2):
+sama7g5 contains a Static Memory Controller that can communicate with
+NAND flashes. Enable UBIFS_FS in case one wants to put an ubifs rootfs
+on a NAND flash. CONFIG_CRYPTO_LZO and CONFIG_CRYPTO_DEFLATE appear as
+removed because they are selected by CONFIG_UBIFS_FS.
 
-drivers/staging/r8188eu/core/rtw_wlan_util.c: In function ‘HT_caps_handler’:
-drivers/staging/r8188eu/core/rtw_wlan_util.c:719:54: error: array subscript 2 is above array bounds of ‘u8[1]’ {aka ‘unsigned char[1]’} [-Werror=array-bounds]
-  719 |                                             pIE->data[i] & 0x3);
-      |                                             ~~~~~~~~~^~~
-./include/linux/minmax.h:32:39: note: in definition of macro ‘__cmp_once’
-   32 |                 typeof(y) unique_y = (y);               \
-      |                                       ^
-./include/linux/minmax.h:45:25: note: in expansion of macro ‘__careful_cmp’
-   45 | #define min(x, y)       __careful_cmp(x, y, <)
-      |                         ^~~~~~~~~~~~~
-drivers/staging/r8188eu/core/rtw_wlan_util.c:718:41: note: in expansion of macro ‘min’
-  718 |                         max_AMPDU_len = min(pmlmeinfo->HT_caps.u.HT_cap_element.AMPDU_para & 0x3,
-      |                                         ^~~
-In file included from drivers/staging/r8188eu/core/../include/drv_types.h:16,
-                 from drivers/staging/r8188eu/core/rtw_wlan_util.c:7:
-drivers/staging/r8188eu/core/../include/wlan_bssdef.h:64:13: note: while referencing ‘data’
-   64 |         u8  data[1];
-      |             ^~~~
-
-by transforming one-element array into a flexible-array member in
-struct ndis_802_11_var_ie
-
-This is part of the ongoing efforts to globally enable -Warray-bounds.
-
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
 ---
-Changes in v3:
- - Change subject line and changelog text.
- - Add RB tag.
+ arch/arm/configs/sama7_defconfig | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Changes in v2:
- - Fix subject line.
-
- drivers/staging/r8188eu/include/wlan_bssdef.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/staging/r8188eu/include/wlan_bssdef.h b/drivers/staging/r8188eu/include/wlan_bssdef.h
-index 99ca097b8edd..9d1c9e763287 100644
---- a/drivers/staging/r8188eu/include/wlan_bssdef.h
-+++ b/drivers/staging/r8188eu/include/wlan_bssdef.h
-@@ -61,7 +61,7 @@ struct ndis_802_11_fixed_ie {
- struct ndis_802_11_var_ie {
- 	u8  ElementID;
- 	u8  Length;
--	u8  data[1];
-+	u8  data[];
- };
- 
- /*
+diff --git a/arch/arm/configs/sama7_defconfig b/arch/arm/configs/sama7_defconfig
+index 342d9f30d9d2..c12278174579 100644
+--- a/arch/arm/configs/sama7_defconfig
++++ b/arch/arm/configs/sama7_defconfig
+@@ -86,6 +86,7 @@ CONFIG_MTD_RAW_NAND=y
+ CONFIG_MTD_NAND_ATMEL=y
+ # CONFIG_MTD_NAND_ECC_SW_HAMMING is not set
+ CONFIG_MTD_SPI_NOR=y
++CONFIG_MTD_UBI=y
+ CONFIG_BLK_DEV_LOOP=y
+ CONFIG_BLK_DEV_RAM=y
+ CONFIG_BLK_DEV_RAM_COUNT=1
+@@ -187,6 +188,7 @@ CONFIG_EXT3_FS=y
+ CONFIG_FANOTIFY=y
+ CONFIG_VFAT_FS=y
+ CONFIG_TMPFS=y
++CONFIG_UBIFS_FS=y
+ CONFIG_NFS_FS=y
+ CONFIG_ROOT_NFS=y
+ CONFIG_NLS_CODEPAGE_437=y
+@@ -194,8 +196,6 @@ CONFIG_NLS_CODEPAGE_850=y
+ CONFIG_NLS_ISO8859_1=y
+ CONFIG_NLS_UTF8=y
+ CONFIG_LSM="N"
+-CONFIG_CRYPTO_DEFLATE=y
+-CONFIG_CRYPTO_LZO=y
+ # CONFIG_CRYPTO_HW is not set
+ CONFIG_CRC_CCITT=y
+ CONFIG_CRC_ITU_T=y
 -- 
-2.27.0
+2.25.1
 
