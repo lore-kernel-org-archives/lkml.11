@@ -2,88 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBFF6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 02:55:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABEC1C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 02:56:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243892AbiBBCz3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 21:55:29 -0500
-Received: from smtp25.cstnet.cn ([159.226.251.25]:38602 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232917AbiBBCz2 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 21:55:28 -0500
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-05 (Coremail) with SMTP id zQCowAAH9kCM8vlhBN1HAA--.26718S2;
-        Wed, 02 Feb 2022 10:55:08 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     lee.jones@linaro.org
-Cc:     linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH v2] mfd: intel-lpss: Check for error irq
-Date:   Wed,  2 Feb 2022 10:55:06 +0800
-Message-Id: <20220202025506.494801-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        id S243909AbiBBC43 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 21:56:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55628 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232917AbiBBC41 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 1 Feb 2022 21:56:27 -0500
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1359BC061714;
+        Tue,  1 Feb 2022 18:56:27 -0800 (PST)
+Received: by mail-pg1-x536.google.com with SMTP id s16so17035799pgs.13;
+        Tue, 01 Feb 2022 18:56:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=2yRKNHx/xauWYxpu2ZUp2GgoA37uc6+7VJXoeQh4hxw=;
+        b=oNLA3acQKFhjApXA7fzgIJG9m1bapEGdW5Gv9rueazwKOh2w7dwXCH+Vd3iENhTrRg
+         Vimo8PafHwxPGgxiDNvPlWdn0Q3Pm+poNGl67dIsPK4mnj8/l1ObcDcAr8n6Q6TgyhJY
+         LaQnlF2xkMGThr1tGBihfFihJd6Z64eQvS1Qifbe7Qi8U4cOWzr4/NDn5vt8MYm0RsRa
+         sybCagL+YCIljnVbZvhMfu5XG4HFg3eTUChxrL33/54wwOWyi7wjVouIm+BmKk2JmAHh
+         DzFd0s7m84Gl6J5in3IlIoIodpakxaiVgcx0zd0excLrxFqufhxVin2dnTDbtzfD3QrK
+         YY9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=2yRKNHx/xauWYxpu2ZUp2GgoA37uc6+7VJXoeQh4hxw=;
+        b=idfEP+PzdfCOKgz/6S8OHXhNvrzFH+9jPSEEpXJTolY5QTgD1zRvxaqnWdl58ySlUq
+         Lj0TP4ea2W18eOS5zkyBPMyatnMbgv6cHVXo4J7skuoRdvGcV1IxFk5qNXubOCXvOgNd
+         OJwTJpgi0uDIydbm0VRIebHDA4QgxDs5xwFh5fTR5Afw44QOKQCnOu+3h3NM4BqlDYQj
+         PBPljamWdkKzWRjbJTRAgY9pwjHvo8ZmrEq2bMAM2aDzs6+kXui479X8+uIBliH3lYLe
+         y0ZyL16UbYe05m11UBn3uEIojA5VYxhC32qYV8P04DxHaiJDtG56ed+QYdDfZUY/LeA+
+         Gwlw==
+X-Gm-Message-State: AOAM531uwAf9iVxT8kevbfbxPeln/q2nqytETm3ab3Nt2ezkxzEnr7mM
+        MzxGNNIDJIVJMSQ5K2Xt2Og=
+X-Google-Smtp-Source: ABdhPJxdJGab9trExuG/ZnBYd3JkMFrqPFD+MpbcZqjInkaoyhDSWWZsxrbZd6dhbzSeCXhA5hVPag==
+X-Received: by 2002:aa7:8a05:: with SMTP id m5mr27599412pfa.40.1643770586235;
+        Tue, 01 Feb 2022 18:56:26 -0800 (PST)
+Received: from ?IPV6:2600:8802:b00:4a48:a52e:6781:7ca4:b203? ([2600:8802:b00:4a48:a52e:6781:7ca4:b203])
+        by smtp.gmail.com with ESMTPSA id k13sm25122249pfc.176.2022.02.01.18.56.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 01 Feb 2022 18:56:25 -0800 (PST)
+Message-ID: <b7176bb1-d36f-4b22-56cf-fcd14ea769ba@gmail.com>
+Date:   Tue, 1 Feb 2022 18:56:24 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: zQCowAAH9kCM8vlhBN1HAA--.26718S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7Aw1DAryDAFy3Wr18Jw47Arb_yoW8Gr43pF
-        srKF9rurn5Wa18uayUCwn8ZFW5ua10k3y8Gr4akry3Z3W5Jr13AFW5XFWIvrsrCFZ3twsx
-        tr45trW8uF4UZa7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkl14x267AKxVWUJVW8JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26r1I6r4UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
-        6F4UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gr
-        1j6F4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv
-        7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r
-        1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE14v_
-        Gr1l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxV
-        WUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1Y6r17MIIYrxkI
-        7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r
-        1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4U
-        MIIF0xvEx4A2jsIEc7CjxVAFwI0_Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa7VUbYhF7UUUU
-        U==
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [net-next PATCH v8 07/16] net: dsa: tag_qca: add define for
+ handling MIB packet
+Content-Language: en-US
+To:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20220202000335.19296-1-ansuelsmth@gmail.com>
+ <20220202000335.19296-8-ansuelsmth@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220202000335.19296-8-ansuelsmth@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For the possible failure of the platform_get_irq(), the returned irq
-could be error number and will finally cause the failure of the
-request_irq().
-Consider that platform_get_irq() can now in certain cases return
--EPROBE_DEFER, and the consequences of letting request_irq() effectively
-convert that into -EINVAL, even at probe time rather than later on.
-So it might be better to check just now.
 
-Fixes: 4b45efe85263 ("mfd: Add support for Intel Sunrisepoint LPSS devices")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
----
-Changelog:
 
-v1 -> v2
+On 2/1/2022 4:03 PM, Ansuel Smith wrote:
+> Add struct to correctly parse a mib Ethernet packet.
+> 
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> ---
+>   include/linux/dsa/tag_qca.h | 10 ++++++++++
+>   net/dsa/tag_qca.c           |  4 ++++
+>   2 files changed, 14 insertions(+)
+> 
+> diff --git a/include/linux/dsa/tag_qca.h b/include/linux/dsa/tag_qca.h
+> index f366422ab7a0..1fff57f2937b 100644
+> --- a/include/linux/dsa/tag_qca.h
+> +++ b/include/linux/dsa/tag_qca.h
+> @@ -62,4 +62,14 @@ struct qca_mgmt_ethhdr {
+>   	__be16 hdr;		/* qca hdr */
+>   } __packed;
+>   
+> +enum mdio_cmd {
+> +	MDIO_WRITE = 0x0,
+> +	MDIO_READ
+> +};
+> +
+> +struct mib_ethhdr {
+> +	u32 data[3];		/* first 3 mib counter */
+> +	__be16 hdr;		/* qca hdr */
+> +} __packed;
 
-* Change 1. Rebase the patch against the latest code.
----
- drivers/mfd/intel-lpss-acpi.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+For consistency with patch 7, you might want to name this structure 
+qca_mib_ethhdr?
 
-diff --git a/drivers/mfd/intel-lpss-acpi.c b/drivers/mfd/intel-lpss-acpi.c
-index f2ea6540a01e..8b1e1046a065 100644
---- a/drivers/mfd/intel-lpss-acpi.c
-+++ b/drivers/mfd/intel-lpss-acpi.c
-@@ -148,7 +148,11 @@ static int intel_lpss_acpi_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 
- 	info->mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	info->irq = platform_get_irq(pdev, 0);
-+	ret = platform_get_irq(pdev, 0);
-+	if (ret < 0)
-+		return ret;
-+
-+	info->irq = ret;
- 
- 	ret = intel_lpss_probe(&pdev->dev, info);
- 	if (ret)
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-2.25.1
-
+Florian
