@@ -2,147 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B143EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 14:26:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A35D9C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 14:26:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344906AbiBBO0C (ORCPT
+        id S1344921AbiBBO0K (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 09:26:02 -0500
-Received: from mga03.intel.com ([134.134.136.65]:4138 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231667AbiBBO0B (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 09:26:01 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643811961; x=1675347961;
-  h=from:to:cc:subject:date:message-id;
-  bh=onRXx5dDDrBXOghzzNCufG0cq9ldiklTldpyKj8wDcU=;
-  b=m017JzKniALUBmMNg7zVpvGyuzv5m9Yr/hDl0D0vslWqu/oF/5WGyM0b
-   YG23SeFpcZnobnBcCph5OcY/vHirTThAh1NB7dMpVNmEnC90bDRsDGcLG
-   /DcWCaPWPlqDfsnW+MNWiGplQMDjdfEF3uZMvLg1n7NFUSNW2sgJyhwF2
-   wqFtiGuH73bXx0ZOpA26JvnSHRG3cFTzN/aO1Wl/AzlUncPhOMXOBC4qW
-   xnJOS5d9680lMo2LmD3QmSNmKW8HW67tXsgzIg9LGEadGGP/K5rHrWyNC
-   HV7G0ozyOEHhQBRkxBOegcl9UGcXJvXew/O3TLauMF2ghLbBRWEE7DRo2
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10245"; a="247876042"
-X-IronPort-AV: E=Sophos;i="5.88,337,1635231600"; 
-   d="scan'208";a="247876042"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 06:26:01 -0800
-X-IronPort-AV: E=Sophos;i="5.88,337,1635231600"; 
-   d="scan'208";a="698908660"
-Received: from ssp-coyote-pass-cdi443.jf.intel.com ([10.54.87.221])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 06:26:01 -0800
-From:   Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org
-Cc:     "H . Peter Anvin" <hpa@zytor.com>, Tony Luck <tony.luck@intel.com>,
-        Kirill Shutemov <kirill.shutemov@linux.intel.com>,
-        Kuppuswamy Sathyanarayanan <knsathya@kernel.org>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v1 1/1] x86/apic:  Do apic driver probe for "nosmp" use case
-Date:   Wed,  2 Feb 2022 17:33:00 +0000
-Message-Id: <20220202173300.67713-1-sathyanarayanan.kuppuswamy@linux.intel.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 2 Feb 2022 09:26:10 -0500
+Received: from mail-ua1-f48.google.com ([209.85.222.48]:34362 "EHLO
+        mail-ua1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344911AbiBBO0J (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 2 Feb 2022 09:26:09 -0500
+Received: by mail-ua1-f48.google.com with SMTP id 60so2358495uae.1;
+        Wed, 02 Feb 2022 06:26:08 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Ad4RQzdAEV72aNypfbZ9YuoMVU2rEDrZVxH/YYvAS6A=;
+        b=g71/dD0O8hBruqovRkLort0hM0ha3llLh+cLAWR9x+0kupL3O+XI8TgJCYkeRk6c7z
+         4IVsP9Qy51sEBHn2ab7X60wtO/semQLblaJrBvMLdXdIk6r/USrOJW2a4J+JiEHCBAV/
+         ZWQ/eXWRtOC6en4bhF8X0hwnTS0LIhrdQmjfuSn4AhxtfYqBP39J96d15ak0cmfvEvOC
+         6hFgcdrp+IxIR9bf6x/MtrM9thai4RMYrdvGnQWHIiZawnzz/HiQYOSRHwBY8XvWLfmr
+         NytJ+p3zfgH3n/aON/71FM4/2oZfk5ArA9L22GesK0JMKA7hrEx+jHuUl/oXMpfURYkB
+         QCfg==
+X-Gm-Message-State: AOAM53324vgjE/awuHD56OPlL7kN6lEEUyLEacyPaIT57UJcW2jkShuh
+        SjiMrKpz/8TLVLaqiIHTN+Sqzt/zR18BAw==
+X-Google-Smtp-Source: ABdhPJzJDpjiJ/6shkqTMIhUMV2bIdPp4gRB/VIr9HGFRfzQE0nlzCmMk5uT2KzO1mB8+iDcurU+eQ==
+X-Received: by 2002:a67:fe88:: with SMTP id b8mr7811829vsr.16.1643811968197;
+        Wed, 02 Feb 2022 06:26:08 -0800 (PST)
+Received: from mail-ua1-f42.google.com (mail-ua1-f42.google.com. [209.85.222.42])
+        by smtp.gmail.com with ESMTPSA id l67sm2319312vkh.9.2022.02.02.06.26.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Feb 2022 06:26:07 -0800 (PST)
+Received: by mail-ua1-f42.google.com with SMTP id a24so5712403uat.10;
+        Wed, 02 Feb 2022 06:26:06 -0800 (PST)
+X-Received: by 2002:a67:fd63:: with SMTP id h3mr10854285vsa.77.1643811966714;
+ Wed, 02 Feb 2022 06:26:06 -0800 (PST)
+MIME-Version: 1.0
+References: <20220201120310.878267-1-maz@kernel.org> <20220201120310.878267-3-maz@kernel.org>
+In-Reply-To: <20220201120310.878267-3-maz@kernel.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 2 Feb 2022 15:25:55 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdX7RqQPw=H2AzMPaCJDy_pFqhM30hpNN-G4-_HP2tx_WA@mail.gmail.com>
+Message-ID: <CAMuHMdX7RqQPw=H2AzMPaCJDy_pFqhM30hpNN-G4-_HP2tx_WA@mail.gmail.com>
+Subject: Re: [PATCH 02/12] irqchip/gic: Move PM device over to irq domain
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-mediatek@lists.infradead.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:TI ETHERNET SWITCH DRIVER (CPSW)" 
+        <linux-omap@vger.kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        Kevin Hilman <khilman@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Avi Fishman <avifishman70@gmail.com>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Emil Renner Berthing <kernel@esmil.dk>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For the "nosmp" use case, APIC initialization code uses
-"APIC_SYMMETRIC_IO_NO_ROUTING" as a default interrupt mode. As per
-current design, APIC drivers are not probed (via
-default_setup_apic_routing()) for the above mentioned interrupt mode.
-Due to missing probe, later when local APIC is initialized (for x2APIC
-case), it leads to the null pointer exception due to missing allocation
-of "cluster_hotplug_mask" (aka 'cmsk').
+On Tue, Feb 1, 2022 at 1:16 PM Marc Zyngier <maz@kernel.org> wrote:
+> Move the reference to the GIC device over to the irq domain.
+> This allows for some localised cleanup.
+>
+> Signed-off-by: Marc Zyngier <maz@kernel.org>
 
-This is observed in TDX platform where x2APIC is enabled and "nosmp"
-command line option is allowed.
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-To fix this issue, probe APIC drivers via default_setup_apic_routing()
-for the APIC_SYMMETRIC_IO_NO_ROUTING interrupt mode. This will make the
-code similar to APIC_SYMMETRIC_IO and APIC_VIRTUAL_WIRE interrupt modes.
-Since APIC_SYMMETRIC_IO_NO_ROUTING interrupt mode is in-between
-configuration between APIC_SYMMETRIC_IO and APIC_VIRTUAL_WIRE, making
-the code similar to them will not have any impact (other than just
-loading the apic drivers).
+Gr{oetje,eeting}s,
 
-Since default_setup_apic_routing() is called for all cases with a break
-statement, move it outside the switch-case.
+                        Geert
 
- BUG: kernel NULL pointer dereference, address: 0000000000000000
- #PF: supervisor write access in kernel mode
- #PF: error_code(0x0002) - not-present page
- PGD 0 P4D 0
- Oops: 0002 1 SMP NOPTI
- CPU: 0 PID: 0 Comm: swapper/0 Tainted: G Y 5.14.0-rc4-tdx-guest-v5.14-2-tdx-attest-y-vsockets+ #32
- RIP: 0010:init_x2apic_ldr+0xaf/0xc0
- Code: fb 76 65 8b 15 9a 88 fb 76 89 d2 f0 48 0f ab 50 08 5b 5d 41 5c 41 5d c3 48 8b 05 74 0d fe 02 48 c7 05 69 0d fe 02 00 00 00 00 <89> 18 eb c9 48 89 e8 eb c7 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00
- RSP: 0000:ffffffff8ae03e48 EFLAGS: 00010283
- RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000200
- RDX: fffffffffffffffe RSI: 0000000000000000 RDI: 0000000000000200
- RBP: ffffffff8b7704a0 R08: 0000000000000000 R09: 0000000000000000
- R10: 0000000000000000 R11: 0000000000000007 R12: 0000000000000001
- R13: 0000000000017120 R14: ffffffff8ae13108 R15: ffffffff8aab7a20
- FS: 0000000000000000(0000) GS:ffff976a37c00000(0000) knlGS:0000000000000000
- CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
- CR2: 0000000000000000 CR3: 000000017ae0c001 CR4: 00000000000606f0
- DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
- DR3: 0000000000000000 DR6: 00000000fffe07f0 DR7: 0000000000000400
- Call Trace:
- setup_local_APIC+0x9b/0x350
- ? printk+0x58/0x6f
- apic_intr_mode_init+0xe5/0x109
- x86_late_time_init+0x20/0x30
- start_kernel+0x5fb/0x6b9
- secondary_startup_64_no_verify+0xbf/0xcb
- Modules linked in:
- CR2: 0000000000000000
- --[ end trace e82759a76de428f6 ]--
- RIP: 0010:init_x2apic_ldr+0xaf/0xc0
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-Suggested-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Suggested-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Reviewed-by: Tony Luck <tony.luck@intel.com>
-Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
----
- arch/x86/kernel/apic/apic.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/arch/x86/kernel/apic/apic.c b/arch/x86/kernel/apic/apic.c
-index 3c8f2c797a98..bbfa419b3f22 100644
---- a/arch/x86/kernel/apic/apic.c
-+++ b/arch/x86/kernel/apic/apic.c
-@@ -1419,22 +1419,22 @@ void __init apic_intr_mode_init(void)
- 		return;
- 	case APIC_VIRTUAL_WIRE:
- 		pr_info("APIC: Switch to virtual wire mode setup\n");
--		default_setup_apic_routing();
- 		break;
- 	case APIC_VIRTUAL_WIRE_NO_CONFIG:
- 		pr_info("APIC: Switch to virtual wire mode setup with no configuration\n");
- 		upmode = true;
--		default_setup_apic_routing();
- 		break;
- 	case APIC_SYMMETRIC_IO:
- 		pr_info("APIC: Switch to symmetric I/O mode setup\n");
--		default_setup_apic_routing();
- 		break;
- 	case APIC_SYMMETRIC_IO_NO_ROUTING:
- 		pr_info("APIC: Switch to symmetric I/O mode setup in no SMP routine\n");
-+		upmode = true;
- 		break;
- 	}
- 
-+	default_setup_apic_routing();
-+
- 	if (x86_platform.apic_post_init)
- 		x86_platform.apic_post_init();
- 
--- 
-2.17.1
-
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
