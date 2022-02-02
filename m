@@ -2,123 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1489C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 14:50:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E0B0C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 14:50:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345122AbiBBOuJ (ORCPT
+        id S1345133AbiBBOuS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 09:50:09 -0500
-Received: from mga11.intel.com ([192.55.52.93]:31380 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230423AbiBBOuI (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 09:50:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643813408; x=1675349408;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=0Yo3RSdxZoSESUoiGGWNuInvhxAPd9fHeAO96RDn9zc=;
-  b=fx9HzchkzrXcJoj74o28dRb4ycH3GfTmAy7Y/VmSBbAux0B9dQTYZooa
-   l+aDUjE4jUIbVgqisgNtqe6rPnjfqdny6OblmMkBQdXVhHd41DtDf3Mr5
-   U4/lWMiSQkmJjl4p3QCvzTLYqOYqvHBFurCctIojbFCNs3EwY2dskztKU
-   9FIcTv9Kjt7PqW5AZ9mx4WGQtcAercpckWUCQz89RHV3CbmPmQMtgUnD0
-   QkjdUHqF7tZLJapABSaQ+lUqUQMECP7VJTZys5EpQiO9I3KHV6z16P54q
-   lagbtasNGoF2Fk6zSenCLRul8sqN+SAJ2q3aBC/nbYlReWZum3R9cnq9d
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10245"; a="245523275"
-X-IronPort-AV: E=Sophos;i="5.88,337,1635231600"; 
-   d="scan'208";a="245523275"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 06:50:03 -0800
-X-IronPort-AV: E=Sophos;i="5.88,337,1635231600"; 
-   d="scan'208";a="538275520"
-Received: from mwnuczyn-mobl.ger.corp.intel.com (HELO localhost) ([10.249.137.160])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 06:49:49 -0800
-From:   Iwona Winiarska <iwona.winiarska@intel.com>
-To:     linux-kernel@vger.kernel.org, openbmc@lists.ozlabs.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     devicetree@vger.kernel.org, linux-aspeed@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, linux-hwmon@vger.kernel.org,
-        linux-doc@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Borislav Petkov <bp@alien8.de>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Zev Weiss <zweiss@equinix.com>,
-        David Muller <d.mueller@elsoft.ch>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Billy Tsai <billy_tsai@aspeedtech.com>,
-        Iwona Winiarska <iwona.winiarska@intel.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v7 01/13] dt-bindings: Add generic bindings for PECI
-Date:   Wed,  2 Feb 2022 15:48:26 +0100
-Message-Id: <20220202144838.163875-2-iwona.winiarska@intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220202144838.163875-1-iwona.winiarska@intel.com>
-References: <20220202144838.163875-1-iwona.winiarska@intel.com>
+        Wed, 2 Feb 2022 09:50:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46696 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345125AbiBBOuP (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 2 Feb 2022 09:50:15 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2DF9C061714;
+        Wed,  2 Feb 2022 06:50:15 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8FF1760B8A;
+        Wed,  2 Feb 2022 14:50:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E6D90C340EB;
+        Wed,  2 Feb 2022 14:50:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643813414;
+        bh=0Lyfnvij/5gGncnyr/u8/K/FKzma9y5FVY7+KvpdqYU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=kSgA/pLlVzBlhNR3sJHpGtbGlC0b906kH97WxYgg5pg0O+8TBAvJ2BU1YE3Wf19kw
+         UbUOMVeDScgQ87NKGiGTOtUYI6Uqdim/J5l1u/xttfKPcr45gIgBnnXVGJz8pllP7V
+         1bX9HAn7IRjgi6wBxDCb574xguSqrNOHk8Zvf3axoLn5VxmDwA447XYf+HTmt6+hU2
+         Cnle9lrkzTmmpvrhZL4dsfPZId7gI360rN0fdRALGjh3LmFy5oXM6ygck/F0Wdi0pt
+         dHroxvmZZWY5xZStfQjanqDEr7jb9ILOfJ0eHGrmGO0kyE6tXmNASmpY8zTKzYbMLy
+         6OcJS5oCi286A==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C7BFFE5D07E;
+        Wed,  2 Feb 2022 14:50:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [net-next PATCH v8 00/16] Add support for qca8k mdio rw in Ethernet
+ packet
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164381341380.24396.15212921424557438012.git-patchwork-notify@kernel.org>
+Date:   Wed, 02 Feb 2022 14:50:13 +0000
+References: <20220202000335.19296-1-ansuelsmth@gmail.com>
+In-Reply-To: <20220202000335.19296-1-ansuelsmth@gmail.com>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add device tree bindings for the PECI controller.
+Hello:
 
-Signed-off-by: Iwona Winiarska <iwona.winiarska@intel.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Joel Stanley <joel@jms.id.au>
----
- .../bindings/peci/peci-controller.yaml        | 33 +++++++++++++++++++
- 1 file changed, 33 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/peci/peci-controller.yaml
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-diff --git a/Documentation/devicetree/bindings/peci/peci-controller.yaml b/Documentation/devicetree/bindings/peci/peci-controller.yaml
-new file mode 100644
-index 000000000000..bbc3d3f3a929
---- /dev/null
-+++ b/Documentation/devicetree/bindings/peci/peci-controller.yaml
-@@ -0,0 +1,33 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/peci/peci-controller.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Generic Device Tree Bindings for PECI
-+
-+maintainers:
-+  - Iwona Winiarska <iwona.winiarska@intel.com>
-+
-+description:
-+  PECI (Platform Environment Control Interface) is an interface that provides a
-+  communication channel from Intel processors and chipset components to external
-+  monitoring or control devices.
-+
-+properties:
-+  $nodename:
-+    pattern: "^peci-controller(@.*)?$"
-+
-+  cmd-timeout-ms:
-+    description:
-+      Command timeout in units of ms.
-+
-+additionalProperties: true
-+
-+examples:
-+  - |
-+    peci-controller@1e78b000 {
-+      reg = <0x1e78b000 0x100>;
-+      cmd-timeout-ms = <500>;
-+    };
-+...
+On Wed,  2 Feb 2022 01:03:19 +0100 you wrote:
+> Hi, this is ready but require some additional test on a wider userbase.
+> 
+> The main reason for this is that we notice some routing problem in the
+> switch and it seems assisted learning is needed. Considering mdio is
+> quite slow due to the indirect write using this Ethernet alternative way
+> seems to be quicker.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,v8,01/16] net: dsa: provide switch operations for tracking the master state
+    https://git.kernel.org/netdev/net-next/c/295ab96f478d
+  - [net-next,v8,02/16] net: dsa: replay master state events in dsa_tree_{setup,teardown}_master
+    https://git.kernel.org/netdev/net-next/c/e83d56537859
+  - [net-next,v8,03/16] net: dsa: tag_qca: convert to FIELD macro
+    https://git.kernel.org/netdev/net-next/c/6b0458299297
+  - [net-next,v8,04/16] net: dsa: tag_qca: move define to include linux/dsa
+    https://git.kernel.org/netdev/net-next/c/3ec762fb13c7
+  - [net-next,v8,05/16] net: dsa: tag_qca: enable promisc_on_master flag
+    https://git.kernel.org/netdev/net-next/c/101c04c3463b
+  - [net-next,v8,06/16] net: dsa: tag_qca: add define for handling mgmt Ethernet packet
+    https://git.kernel.org/netdev/net-next/c/c2ee8181fddb
+  - [net-next,v8,07/16] net: dsa: tag_qca: add define for handling MIB packet
+    https://git.kernel.org/netdev/net-next/c/18be654a4345
+  - [net-next,v8,08/16] net: dsa: tag_qca: add support for handling mgmt and MIB Ethernet packet
+    https://git.kernel.org/netdev/net-next/c/31eb6b4386ad
+  - [net-next,v8,09/16] net: dsa: qca8k: add tracking state of master port
+    https://git.kernel.org/netdev/net-next/c/cddbec19466a
+  - [net-next,v8,10/16] net: dsa: qca8k: add support for mgmt read/write in Ethernet packet
+    https://git.kernel.org/netdev/net-next/c/5950c7c0a68c
+  - [net-next,v8,11/16] net: dsa: qca8k: add support for mib autocast in Ethernet packet
+    https://git.kernel.org/netdev/net-next/c/5c957c7ca78c
+  - [net-next,v8,12/16] net: dsa: qca8k: add support for phy read/write with mgmt Ethernet
+    https://git.kernel.org/netdev/net-next/c/2cd548566384
+  - [net-next,v8,13/16] net: dsa: qca8k: move page cache to driver priv
+    https://git.kernel.org/netdev/net-next/c/4264350acb75
+  - [net-next,v8,14/16] net: dsa: qca8k: cache lo and hi for mdio write
+    https://git.kernel.org/netdev/net-next/c/2481d206fae7
+  - [net-next,v8,15/16] net: dsa: qca8k: add support for larger read/write size with mgmt Ethernet
+    https://git.kernel.org/netdev/net-next/c/90386223f44e
+  - [net-next,v8,16/16] net: dsa: qca8k: introduce qca8k_bulk_read/write function
+    https://git.kernel.org/netdev/net-next/c/4f3701fc5998
+
+You are awesome, thank you!
 -- 
-2.34.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
