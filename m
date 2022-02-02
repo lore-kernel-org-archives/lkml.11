@@ -2,120 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9904EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 16:49:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC3CCC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 16:54:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231706AbiBBQtK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 11:49:10 -0500
-Received: from mail-yb1-f182.google.com ([209.85.219.182]:33728 "EHLO
-        mail-yb1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236171AbiBBQtI (ORCPT
+        id S1346030AbiBBQyG (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 11:54:06 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:40508 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231706AbiBBQyE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 11:49:08 -0500
-Received: by mail-yb1-f182.google.com with SMTP id j2so622673ybu.0;
-        Wed, 02 Feb 2022 08:49:08 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=no9drO4AwVZVF+z4nTPpFt+6o0kRfm9YBUAgclW1DkU=;
-        b=Yq1R3q1kBXwUs1T52kQiNKcMkRhwV2D6v2mgWiz9oNtwMNaqpgxaxKgJr370uUnT3y
-         c0375nUH2uu+mm5fwZmXjIPQ1Y8QXVxBES0GSYsufyCVmbQjSA0RXhiGBEQRHwpx1XAC
-         eWjPvIUwZqPBEce4BUWRGKVv8L68z+P+U86Fydc5tXybcz6cG67AvxOmMZoiOaB93fR6
-         X1a/bs/M122FEUtzSTDtbX4i8NIvjl2//0YxnAwreutxId36yDfRyJruq3GTs3z+vnc+
-         AydGMvqfTvZ2ih3P6WEUFFg4FoDpWti3rlSopErZSJj+BvCQ9ji6VaW/CwsXiz22WOLx
-         cpKQ==
-X-Gm-Message-State: AOAM532KNRcCgZ4fZ77I1W2Jv8A/cAsKPG1vcVn2vB3uj4/USigxTDWT
-        osPyWE1tVXgjBM1Pclg+sbgFHyvQiUcFRhfeDCU=
-X-Google-Smtp-Source: ABdhPJxhZWYXfLZSijf7rKMkiV9ag1pks2Uj7sioBdAzbrDzK5HXWPRSSb4myIx0NcdWihu8WtIoOTtltQNi+SP7VZk=
-X-Received: by 2002:a81:1e05:: with SMTP id e5mr1707964ywe.470.1643820547560;
- Wed, 02 Feb 2022 08:49:07 -0800 (PST)
+        Wed, 2 Feb 2022 11:54:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643820843;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=DPqXXCSvtXWPYnKF39SzZCno/APupEDKEIyaUUkXZKc=;
+        b=NiJ/10STi4hnZiI3pRYqmgT2tilamIlD9Ri/LCgiyt7qp0KLAwh0k+DiERJ8+NJQt5U4U9
+        aVzeZxWxEI81zNcP0AJcS+2atObDwNVUVY1JdynBHoMPyCecRO1C2y4tHtPlX97IbciUsD
+        mi9sZ0pIRb+JB9OhCIkhk5JTB9Y6Sno=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-127-QeDFCgTcO02K7x1KW0bJ2A-1; Wed, 02 Feb 2022 11:53:58 -0500
+X-MC-Unique: QeDFCgTcO02K7x1KW0bJ2A-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BF45118C89CC;
+        Wed,  2 Feb 2022 16:53:55 +0000 (UTC)
+Received: from [10.22.34.202] (unknown [10.22.34.202])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 05AF3753D0;
+        Wed,  2 Feb 2022 16:53:52 +0000 (UTC)
+Message-ID: <4ba66abe-5c6d-26a7-f11c-c3b8514bfb34@redhat.com>
+Date:   Wed, 2 Feb 2022 11:53:52 -0500
 MIME-Version: 1.0
-References: <5790600.lOV4Wx5bFT@kreacher> <fca634ba-a05a-10e3-4c12-8774c49a91fe@arm.com>
- <CAJZ5v0gKqhTD_ECRNVecmR_Lv_jRDn_LdszBRWwBwmD+75Mq4A@mail.gmail.com> <bb710dea-d8a8-f048-4ee4-0004a72e76ad@arm.com>
-In-Reply-To: <bb710dea-d8a8-f048-4ee4-0004a72e76ad@arm.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Wed, 2 Feb 2022 17:48:56 +0100
-Message-ID: <CAJZ5v0gt-3YMpJeqjaA==tk6VMhwF53ApQfU6_=9q1s47y-fHQ@mail.gmail.com>
-Subject: Re: [PATCH] hwtracing: coresight: Replace acpi_bus_get_device()
-To:     Suzuki K Poulose <suzuki.poulose@arm.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Mike Leach <mike.leach@linaro.org>,
-        Leo Yan <leo.yan@linaro.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux ACPI <linux-acpi@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH v4 4/4] mm/page_owner: Record task command name
+Content-Language: en-US
+To:     Michal Hocko <mhocko@suse.com>
+Cc:     Johannes Weiner <hannes@cmpxchg.org>,
+        Vladimir Davydov <vdavydov.dev@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
+        linux-mm@kvack.org, Ira Weiny <ira.weiny@intel.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Roman Gushchin <guro@fb.com>,
+        Rafael Aquini <aquini@redhat.com>,
+        Vlastimil Babka <vbabka@suse.cz>
+References: <20220131192308.608837-5-longman@redhat.com>
+ <20220131220328.622162-1-longman@redhat.com>
+ <YflRjeoC0jbzArDG@dhcp22.suse.cz>
+From:   Waiman Long <longman@redhat.com>
+In-Reply-To: <YflRjeoC0jbzArDG@dhcp22.suse.cz>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 2, 2022 at 5:46 PM Suzuki K Poulose <suzuki.poulose@arm.com> wrote:
->
-> On 02/02/2022 13:44, Rafael J. Wysocki wrote:
-> > On Wed, Feb 2, 2022 at 12:43 PM Suzuki K Poulose <suzuki.poulose@arm.com> wrote:
-> >>
-> >> Hi Rafael
-> >>
-> >> On 01/02/2022 17:58, Rafael J. Wysocki wrote:
-> >>> From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-> >>>
-> >>> Replace acpi_bus_get_device() that is going to be dropped with
-> >>> acpi_fetch_acpi_dev().
-> >>>
-> >>> No intentional functional impact.
-> >>>
-> >>> Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-> >>
-> >>
-> >>> ---
-> >>>    drivers/hwtracing/coresight/coresight-platform.c |    8 ++++----
-> >>>    1 file changed, 4 insertions(+), 4 deletions(-)
-> >>>
-> >>> Index: linux-pm/drivers/hwtracing/coresight/coresight-platform.c
-> >>> ===================================================================
-> >>> --- linux-pm.orig/drivers/hwtracing/coresight/coresight-platform.c
-> >>> +++ linux-pm/drivers/hwtracing/coresight/coresight-platform.c
-> >>> @@ -626,7 +626,7 @@ static int acpi_coresight_parse_link(str
-> >>>                                     const union acpi_object *link,
-> >>>                                     struct coresight_connection *conn)
-> >>>    {
-> >>> -     int rc, dir;
-> >>> +     int dir;
-> >>>        const union acpi_object *fields;
-> >>>        struct acpi_device *r_adev;
-> >>>        struct device *rdev;
-> >>> @@ -643,9 +643,9 @@ static int acpi_coresight_parse_link(str
-> >>>            fields[3].type != ACPI_TYPE_INTEGER)
-> >>>                return -EINVAL;
-> >>>
-> >>> -     rc = acpi_bus_get_device(fields[2].reference.handle, &r_adev);
-> >>> -     if (rc)
-> >>> -             return rc;
-> >>> +     r_adev = acpi_fetch_acpi_dev(fields[2].reference.handle);
-> >>> +     if (!r_adev)
-> >>> +             return -ENODEV;
-> >>>
-> >>
-> >> Is this patch part of a series ?
-> >
-> > No, it isn't.
-> >
-> >> I don't see acpi_fetch_acpi_dev() in v5.17-rc1, which our tree is based on at the moment.
-> >
-> > acpi_fetch_acpi_dev() is there in v5.17-rc1.  Please see
-> >
-> > https://elixir.bootlin.com/linux/v5.17-rc1/A/ident/acpi_fetch_acpi_dev
-> >
-> >> Please could you point us to the changes ?
-> >>
-> >> Also do you expect to pull this via your tree ?
-> >
-> > I can route it via the ACPI tree, but it may as well be routed along
-> > with other coresight-platform.c changes, if any.
->
-> Apologies, obviously, I was looking at the wrong tree. I will queue this
 
-Thanks!
+On 2/1/22 10:28, Michal Hocko wrote:
+> Cc Vlastimil
+>
+> On Mon 31-01-22 17:03:28, Waiman Long wrote:
+>> The page_owner information currently includes the pid of the calling
+>> task. That is useful as long as the task is still running. Otherwise,
+>> the number is meaningless. To have more information about the allocating
+>> tasks that had exited by the time the page_owner information is
+>> retrieved, we need to store the command name of the task.
+>>
+>> Add a new comm field into page_owner structure to store the command name
+>> and display it when the page_owner information is retrieved.
+> I completely agree that pid is effectivelly useless (if not misleading)
+> but is comm really telling all that much to compensate for the
+> additional storage required for _each_ page in the system?
+
+Yes, it does add an extra 16 bytes per page overhead. The command name 
+can be useful if one want to find out which userspace command is 
+responsible for a problematic page allocation. Maybe we can remove pid 
+from page_owner to save 8 bytes as you also agree that this number is 
+not that useful.
+
+Cheers,
+Longman
+
