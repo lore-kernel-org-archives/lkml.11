@@ -2,41 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8D46C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 07:16:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7B4EC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 07:17:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233894AbiBBHQz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 02:16:55 -0500
-Received: from thebollywoodstyle.com ([134.209.159.65]:58426 "EHLO
-        thebollywoodstyle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233466AbiBBHQx (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 02:16:53 -0500
-Date:   Wed, 2 Feb 2022 07:16:53 +0100
-From:   "Ganna" <aposporogony@thebollywoodstyle.com>
-Reply-To: "Ganna" <aposporogony@thebollywoodstyle.com>
-Subject: Pretty sociable girl
-To:     <linux-kernel@vger.kernel.org>
+        id S234569AbiBBHRP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 02:17:15 -0500
+Received: from ptr.189.cn ([183.61.185.103]:11844 "EHLO 189.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S233659AbiBBHRM (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 2 Feb 2022 02:17:12 -0500
+HMM_SOURCE_IP: 10.64.8.31:49686.384428371
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-114.242.206.180 (unknown [10.64.8.31])
+        by 189.cn (HERMES) with SMTP id 92AFA100220;
+        Wed,  2 Feb 2022 15:17:06 +0800 (CST)
+Received: from  ([114.242.206.180])
+        by gateway-151646-dep-b7fbf7d79-bwdqx with ESMTP id d9a2da96ae7042899cccab6844eda3da for dan.carpenter@oracle.com;
+        Wed, 02 Feb 2022 15:17:07 CST
+X-Transaction-ID: d9a2da96ae7042899cccab6844eda3da
+X-Real-From: 15330273260@189.cn
+X-Receive-IP: 114.242.206.180
+X-MEDUSA-Status: 0
+Sender: 15330273260@189.cn
+From:   Sui Jingfeng <15330273260@189.cn>
+To:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Roland Scheidegger <sroland@vmware.com>,
+        Zack Rusin <zackr@vmware.com>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        suijingfeng <suijingfeng@loongson.cn>
+Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH v5 2/3] dt-bindings: ls2k1000: add the display controller device node
+Date:   Wed,  2 Feb 2022 15:16:57 +0800
+Message-Id: <20220202071658.4769-3-15330273260@189.cn>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220202071658.4769-1-15330273260@189.cn>
+References: <20220202071658.4769-1-15330273260@189.cn>
 MIME-Version: 1.0
-Message-ID: <8c8409728fbf4ffcf249302-a6b68753cb7-f510bdfaaeedecc6197a39f7@thebollywoodstyle.com>
-X-dmid: 8c8409728fbf4ffcf249302-a6b68753cb7-f510bdfaaeedecc6197a39f7
-X-ListMember: linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SGVsbG8hIEkgYW0gb3BlbiBmb3IgdGhlIG1hbiB3aG8gaXMgcmVhZHkgdG8gc3RhcnQgc2VyaW91
-cyByZWxhdGlvbnNoaXAgd2l0aCBtZS4gSSB3b3VsZCAgZGVzY3JpYmUgbXlzZWxmIGFzIGEgcm9t
-YW50aWMsIHdhcm0sIGVtb3Rpb25hbCBhbmQgcHVycG9zZWZ1bCwgc2luY2VyaXR5IGFuZCB0cnV0
-aCBsYWR5LiANCg0KUGVvcGxlIHNheSBJIGFtIGEgbmljZSwgc21hcnQsIHdpdGggZ29vZCBzZW5z
-ZSBvZiBodW1vci4gDQpJIGxvdmUgdG8gaGF2ZSBmdW4gYW5kIGlmIEkgc21pbGUgb3IgZG8gc29t
-ZXRoaW5nIEkgYWx3YXlzIGRvIGl0IHNpbmNlcmVseSEgDQpNeSBJRCAtIGh0dHA6Ly9oaW5kaS5z
-YW5rYXJqeW90aS5jb20vY29udHJpdmVycS5waHA/dXRtX3NvdXJjZT03NiZ1dG1fY29udGVudD1i
-MSANCkFzIHByb2JhYmx5IGV2ZXJ5IHdvbWFuLCBJIGxpa2UgY29va2luZywgbWFraW5nIG15IGhv
-dXNlIHdlbGNvbWluZyBhbmQgY296eS4gDQpJIG5lZWQgYSBwZXJzb24sIHdobyB3aWxsIGJlIG15
-IHdob2xlIHdvcmxkLCB3aG8gaXMgbG92ZWx5LCB1bmF0dGFjaGVkLiBJZiB5b3UgaGF2ZSByZWFs
-bHkga2luZCBzb3VsIGFuZCBnb29kIHNlbnNlIG9mIGh1bW9yLSB5b3UgYXJlIG15IGRyZWFtLiAN
-Cg0KUmVnYXJkcywgDQpHYW5uYS4gDQoNCg==
+From: suijingfeng <suijingfeng@loongson.cn>
+
+The display controller is a pci device, its vendor id is 0x0014
+its device id is 0x7a06.
+
+Signed-off-by: suijingfeng <suijingfeng@loongson.cn>
+Signed-off-by: Sui Jingfeng <15330273260@189.cn>
+---
+ arch/mips/boot/dts/loongson/loongson64-2k1000.dtsi | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/arch/mips/boot/dts/loongson/loongson64-2k1000.dtsi b/arch/mips/boot/dts/loongson/loongson64-2k1000.dtsi
+index 8143a61111e3..6510b0e6928a 100644
+--- a/arch/mips/boot/dts/loongson/loongson64-2k1000.dtsi
++++ b/arch/mips/boot/dts/loongson/loongson64-2k1000.dtsi
+@@ -198,6 +198,17 @@
+ 				interrupt-parent = <&liointc0>;
+ 			};
+ 
++			lsdc: dc@6,0 {
++				compatible = "pci0014,7a06.0",
++						   "pci0014,7a06",
++						   "pciclass030000",
++						   "pciclass0300";
++
++				reg = <0x3000 0x0 0x0 0x0 0x0>;
++				interrupts = <28 IRQ_TYPE_LEVEL_LOW>;
++				interrupt-parent = <&liointc0>;
++			};
++
+ 			pci_bridge@9,0 {
+ 				compatible = "pci0014,7a19.0",
+ 						   "pci0014,7a19",
+-- 
+2.20.1
 
