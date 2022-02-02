@@ -2,56 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C29C3C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 20:30:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA9D8C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 20:30:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347125AbiBBUau (ORCPT
+        id S1347155AbiBBUay (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 15:30:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40670 "EHLO
+        Wed, 2 Feb 2022 15:30:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347107AbiBBUan (ORCPT
+        with ESMTP id S1347114AbiBBUaq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 15:30:43 -0500
+        Wed, 2 Feb 2022 15:30:46 -0500
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67B3AC061714;
-        Wed,  2 Feb 2022 12:30:43 -0800 (PST)
-Date:   Wed, 02 Feb 2022 20:30:40 -0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D677AC06173E;
+        Wed,  2 Feb 2022 12:30:45 -0800 (PST)
+Date:   Wed, 02 Feb 2022 20:30:43 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1643833842;
+        s=2020; t=1643833844;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=z0lMQ2E1ex2l9fna4M2GKB3BWXUSSPZ9p48oL8DuDBg=;
-        b=DjK2YQSnAeb8rfARV9Gq5HR2WzNri1cHUtw9chb/zqUmL5fvQcLEb3O1gUIidOhBFyKR+k
-        tbgrttjA8ac9cv3cVaeWylIkfShsmeUmomCXBUcZD1Z6j4QCjIQJkZQxJ2xWqjVwHDfot3
-        l4gC0889aOyRSMgSk0MHLBu7jfCJ9zFffRAUrv6KEOifsyLrKCkgxU8Eg+Xwwi1P5ahiGt
-        ZWdCdJEkcLeTEjcE90hY+O+D8pcYio3wd5nm1YZA1h9NUIMUgKBensPzJ97JpUQQGA1JSs
-        XFJcfMicUbGX0axfdXUAoxLr/OhQiTvJRC2rBF63EviXOTOVLSJ/JG5VA5NdaQ==
+        bh=cv1YEvdaevtkmWxf9NLAQBP3vs9OYwTtIjTh3hsEJvU=;
+        b=4UJ/AvaiK9/5wkaoEZXWjS7AwGGzdH936Gl5hQh5Jq40EaUQCmvYoPhNS55cwM4XOTeoah
+        sleH3QERNvju7BaXSPL9BUJshE66HSQkHhruPK+sprlocPUEa46RtFkIZVNnimKvIpWiN8
+        eMo+HmDIX3Pwy8u0K/KThDjiYOniT/11n228n6peGrcu9d/EL/XU4iac9GVPdAgCKfsw3c
+        nwk9Ou1g177skG1VuJXJg3lPFoz0VXRzhOTgq3WI7q59ytE4zgl+H2lOVQHsQbZtu8JFu+
+        ynt+1FGnLEAQ0QuPBRkk1KhArHinoNvjnubCVctXvhJZXwlJDtX7id5Rf1DijQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1643833842;
+        s=2020e; t=1643833844;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=z0lMQ2E1ex2l9fna4M2GKB3BWXUSSPZ9p48oL8DuDBg=;
-        b=uLgP7co0LiivC3eCEAk0DVCEZtgDh1JIbXLrjh0o646sLQFbU1KwwVFvjbA8aqqCXy/R7+
-        Gwce1N8PIC38fxDA==
+        bh=cv1YEvdaevtkmWxf9NLAQBP3vs9OYwTtIjTh3hsEJvU=;
+        b=MGKOMSmeQFi/wFM1/U0GbKXNzbdKctBj+pzepHvIN24uWrRAy8hhNE0dsSr0eiiZqIAm8Y
+        XNPobzmQQX6pz0DA==
 From:   "tip-bot2 for Maciej W. Rozycki" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/irq] x86/PCI: Add $IRT PIRQ routing table support
+Subject: [tip: x86/irq] x86/PCI: Add support for the SiS85C497 PIRQ router
 Cc:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Nikolai Zhubr <zhubr.2@gmail.com>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <alpine.DEB.2.21.2201022058050.56863@angie.orcam.me.uk>
-References: <alpine.DEB.2.21.2201022058050.56863@angie.orcam.me.uk>
+In-Reply-To: <alpine.DEB.2.21.2201022045560.56863@angie.orcam.me.uk>
+References: <alpine.DEB.2.21.2201022045560.56863@angie.orcam.me.uk>
 MIME-Version: 1.0
-Message-ID: <164383384095.16921.8293739918583226276.tip-bot2@tip-bot2>
+Message-ID: <164383384348.16921.6654843120675027854.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -62,156 +63,137 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the x86/irq branch of tip:
 
-Commit-ID:     d1ba93f1f1844e969051e144b4c3b30780fc4812
-Gitweb:        https://git.kernel.org/tip/d1ba93f1f1844e969051e144b4c3b30780fc4812
+Commit-ID:     d1f37bac9bebf1b983770ff61e6fd1310db8dc1f
+Gitweb:        https://git.kernel.org/tip/d1f37bac9bebf1b983770ff61e6fd1310db8dc1f
 Author:        Maciej W. Rozycki <macro@orcam.me.uk>
-AuthorDate:    Thu, 06 Jan 2022 11:24:11 
+AuthorDate:    Sun, 02 Jan 2022 23:25:10 
 Committer:     Thomas Gleixner <tglx@linutronix.de>
 CommitterDate: Wed, 02 Feb 2022 21:27:55 +01:00
 
-x86/PCI: Add $IRT PIRQ routing table support
+x86/PCI: Add support for the SiS85C497 PIRQ router
 
-Handle the $IRT PCI IRQ Routing Table format used by AMI for its BCP 
-(BIOS Configuration Program) external tool meant for tweaking BIOS 
-structures without the need to rebuild it from sources[1].
+The SiS 85C496/497 486 Green PC VESA/ISA/PCI Chipset has support for PCI 
+steering and the ELCR register implemented.  These features are handled 
+by the SiS85C497 AT Bus Controller & Megacell (ATM) ISA bridge, however 
+the device is wired as a peer bridge directly to the host bus and has 
+its PCI configuration registers decoded at addresses 0x80-0xff by the 
+accompanying SiS85C496 PCI & CPU Memory Controller (PCM) host bridge[1].  
+Therefore we need to match on the host bridge's vendor and device ID.
 
-The $IRT format has been invented by AMI before Microsoft has come up 
-with its $PIR format and a $IRT table is therefore there in some systems 
-that lack a $PIR table, such as the DataExpert EXP8449 mainboard based 
-on the ALi FinALi 486 chipset (M1489/M1487), which predates DMI 2.0 and 
-cannot therefore be easily identified at run time.
-
-Unlike with the $PIR format there is no alignment guarantee as to the 
-placement of the $IRT table, so scan the whole BIOS area bytewise.
-
-Credit to Michal Necasek for helping to chase documentation for the 
-format.
+Like with the SiS85C503 PIRQ router handle link value ranges of 1-4 and 
+0xc0-0xc3, corresponding respectively to PIRQ line numbers counted from 
+1 and link register PCI configuration space addresses.
 
 References:
 
-[1] "What is BCP? - AMI", <https://www.ami.com/what-is-bcp/>
+[1]  "486 Green PC VESA/ISA/PCI Chipset, SiS 85C496/497", Rev 3.0,
+     Silicon Integrated Systems Corp., July 1995, Part IV, Section 3. 
+     "PCI Configuration Space Registers (00h ~ FFh)", p. 114
 
 Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Link: https://lore.kernel.org/r/alpine.DEB.2.21.2201022058050.56863@angie.orcam.me.uk
+Tested-by: Nikolai Zhubr <zhubr.2@gmail.com>
+Link: https://lore.kernel.org/r/alpine.DEB.2.21.2201022045560.56863@angie.orcam.me.uk
 
 ---
- arch/x86/include/asm/pci_x86.h |  8 ++++-
- arch/x86/pci/irq.c             | 70 +++++++++++++++++++++++++++++++++-
- 2 files changed, 78 insertions(+)
+ arch/x86/pci/irq.c | 80 +++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 80 insertions(+)
 
-diff --git a/arch/x86/include/asm/pci_x86.h b/arch/x86/include/asm/pci_x86.h
-index 490411d..7be45da 100644
---- a/arch/x86/include/asm/pci_x86.h
-+++ b/arch/x86/include/asm/pci_x86.h
-@@ -90,6 +90,14 @@ struct irq_routing_table {
- 	struct irq_info slots[0];
- } __attribute__((packed));
- 
-+struct irt_routing_table {
-+	u32 signature;			/* IRT_SIGNATURE should be here */
-+	u8 size;			/* Number of entries provided */
-+	u8 used;			/* Number of entries actually used */
-+	u16 exclusive_irqs;		/* IRQs devoted exclusively to PCI usage */
-+	struct irq_info slots[0];
-+} __packed;
-+
- extern unsigned int pcibios_irq_mask;
- 
- extern raw_spinlock_t pci_config_lock;
 diff --git a/arch/x86/pci/irq.c b/arch/x86/pci/irq.c
-index 7113688..486ba58 100644
+index e003541..2abfcfc 100644
 --- a/arch/x86/pci/irq.c
 +++ b/arch/x86/pci/irq.c
-@@ -25,6 +25,8 @@
- #define PIRQ_SIGNATURE	(('$' << 0) + ('P' << 8) + ('I' << 16) + ('R' << 24))
- #define PIRQ_VERSION 0x0100
- 
-+#define IRT_SIGNATURE	(('$' << 0) + ('I' << 8) + ('R' << 16) + ('T' << 24))
-+
- static int broken_hp_bios_irq9;
- static int acer_tm360_irqrouting;
- 
-@@ -91,7 +93,69 @@ static inline struct irq_routing_table *pirq_check_routing_table(u8 *addr)
- 	return NULL;
+@@ -580,6 +580,81 @@ static int pirq_cyrix_set(struct pci_dev *router, struct pci_dev *dev, int pirq,
+ 	return 1;
  }
  
++
 +/*
-+ * Handle the $IRT PCI IRQ Routing Table format used by AMI for its BCP
-+ * (BIOS Configuration Program) external tool meant for tweaking BIOS
-+ * structures without the need to rebuild it from sources.  The $IRT
-+ * format has been invented by AMI before Microsoft has come up with its
-+ * $PIR format and a $IRT table is therefore there in some systems that
-+ * lack a $PIR table.
++ *	PIRQ routing for the SiS85C497 AT Bus Controller & Megacell (ATM)
++ *	ISA bridge used with the SiS 85C496/497 486 Green PC VESA/ISA/PCI
++ *	Chipset.
 + *
-+ * It uses the same PCI BIOS 2.1 format for interrupt routing entries
-+ * themselves but has a different simpler header prepended instead,
-+ * occupying 8 bytes, where a `$IRT' signature is followed by one byte
-+ * specifying the total number of interrupt routing entries allocated in
-+ * the table, then one byte specifying the actual number of entries used
-+ * (which the BCP tool can take advantage of when modifying the table),
-+ * and finally a 16-bit word giving the IRQs devoted exclusively to PCI.
-+ * Unlike with the $PIR table there is no alignment guarantee.
++ *	There are four PCI INTx#-to-IRQ Link registers provided in the
++ *	SiS85C497 part of the peculiar combined 85C496/497 configuration
++ *	space decoded by the SiS85C496 PCI & CPU Memory Controller (PCM)
++ *	host bridge, at 0xc0/0xc1/0xc2/0xc3 respectively for the PCI INT
++ *	A/B/C/D lines.  Bit 7 enables the respective link if set and bits
++ *	3:0 select the 8259A IRQ line as follows:
 + *
-+ * Given the similarity of the two formats the $IRT one is trivial to
-+ * convert to the $PIR one, which we do here, except that obviously we
-+ * have no information as to the router device to use, but we can handle
-+ * it by matching PCI device IDs actually seen on the bus against ones
-+ * that our individual routers recognise.
++ *	0000 : Reserved
++ *	0001 : Reserved
++ *	0010 : Reserved
++ *	0011 : IRQ3
++ *	0100 : IRQ4
++ *	0101 : IRQ5
++ *	0110 : IRQ6
++ *	0111 : IRQ7
++ *	1000 : Reserved
++ *	1001 : IRQ9
++ *	1010 : IRQ10
++ *	1011 : IRQ11
++ *	1100 : IRQ12
++ *	1101 : Reserved
++ *	1110 : IRQ14
++ *	1111 : IRQ15
 + *
-+ * Reportedly there is another $IRT table format where a 16-bit word
-+ * follows the header instead that points to interrupt routing entries
-+ * in a $PIR table provided elsewhere.  In that case this code will not
-+ * be reached though as the $PIR table will have been chosen instead.
++ *	We avoid using a reserved value for disabled links, hence the
++ *	choice of IRQ15 for that case.
++ *
++ *	References:
++ *
++ *	"486 Green PC VESA/ISA/PCI Chipset, SiS 85C496/497", Rev 3.0,
++ *	Silicon Integrated Systems Corp., July 1995
 + */
-+static inline struct irq_routing_table *pirq_convert_irt_table(u8 *addr)
++
++#define PCI_SIS497_INTA_TO_IRQ_LINK	0xc0u
++
++#define PIRQ_SIS497_IRQ_MASK		0x0fu
++#define PIRQ_SIS497_IRQ_ENABLE		0x80u
++
++static int pirq_sis497_get(struct pci_dev *router, struct pci_dev *dev,
++			   int pirq)
 +{
-+	struct irt_routing_table *ir;
-+	struct irq_routing_table *rt;
-+	u16 size;
-+	u8 sum;
-+	int i;
++	int reg;
++	u8 x;
 +
-+	ir = (struct irt_routing_table *)addr;
-+	if (ir->signature != IRT_SIGNATURE || !ir->used || ir->size < ir->used)
-+		return NULL;
++	reg = pirq;
++	if (reg >= 1 && reg <= 4)
++		reg += PCI_SIS497_INTA_TO_IRQ_LINK - 1;
 +
-+	DBG(KERN_DEBUG "PCI: $IRT Interrupt Routing Table found at 0x%lx\n",
-+	    __pa(ir));
-+
-+	size = sizeof(*rt) + ir->used * sizeof(rt->slots[0]);
-+	rt = kzalloc(size, GFP_KERNEL);
-+	if (!rt)
-+		return NULL;
-+
-+	rt->signature = PIRQ_SIGNATURE;
-+	rt->version = PIRQ_VERSION;
-+	rt->size = size;
-+	rt->exclusive_irqs = ir->exclusive_irqs;
-+	for (i = 0; i < ir->used; i++)
-+		rt->slots[i] = ir->slots[i];
-+
-+	addr = (u8 *)rt;
-+	sum = 0;
-+	for (i = 0; i < size; i++)
-+		sum += addr[i];
-+	rt->checksum = -sum;
- 
-+	return rt;
++	pci_read_config_byte(router, reg, &x);
++	return (x & PIRQ_SIS497_IRQ_ENABLE) ? (x & PIRQ_SIS497_IRQ_MASK) : 0;
 +}
- 
- /*
-  *  Search 0xf0000 -- 0xfffff for the PCI IRQ Routing Table.
-@@ -113,6 +177,12 @@ static struct irq_routing_table * __init pirq_find_routing_table(void)
- 		if (rt)
- 			return rt;
- 	}
 +
-+	for (addr = (u8 *)__va(0xf0000); addr < (u8 *)__va(0x100000); addr++) {
-+		rt = pirq_convert_irt_table(addr);
-+		if (rt)
-+			return rt;
-+	}
- 	return NULL;
- }
- 
++static int pirq_sis497_set(struct pci_dev *router, struct pci_dev *dev,
++			   int pirq, int irq)
++{
++	int reg;
++	u8 x;
++
++	reg = pirq;
++	if (reg >= 1 && reg <= 4)
++		reg += PCI_SIS497_INTA_TO_IRQ_LINK - 1;
++
++	pci_read_config_byte(router, reg, &x);
++	x &= ~(PIRQ_SIS497_IRQ_MASK | PIRQ_SIS497_IRQ_ENABLE);
++	x |= irq ? (PIRQ_SIS497_IRQ_ENABLE | irq) : PIRQ_SIS497_IRQ_MASK;
++	pci_write_config_byte(router, reg, x);
++	return 1;
++}
++
+ /*
+  *	PIRQ routing for SiS 85C503 router used in several SiS chipsets.
+  *	We have to deal with the following issues here:
+@@ -969,6 +1044,11 @@ static __init int serverworks_router_probe(struct irq_router *r,
+ static __init int sis_router_probe(struct irq_router *r, struct pci_dev *router, u16 device)
+ {
+ 	switch (device) {
++	case PCI_DEVICE_ID_SI_496:
++		r->name = "SiS85C497";
++		r->get = pirq_sis497_get;
++		r->set = pirq_sis497_set;
++		return 1;
+ 	case PCI_DEVICE_ID_SI_503:
+ 		r->name = "SiS85C503";
+ 		r->get = pirq_sis503_get;
