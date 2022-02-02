@@ -2,140 +2,290 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E7CCC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 06:53:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC19AC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 06:53:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245291AbiBBGxq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 01:53:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50840 "EHLO
+        id S245309AbiBBGxv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 01:53:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244751AbiBBGwi (ORCPT
+        with ESMTP id S244761AbiBBGwi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 2 Feb 2022 01:52:38 -0500
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C32CC061755;
-        Tue,  1 Feb 2022 22:08:26 -0800 (PST)
-Received: from ip4d144895.dynamic.kabel-deutschland.de ([77.20.72.149] helo=[192.168.66.200]); authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1nF8oW-0002ui-WD; Wed, 02 Feb 2022 07:08:21 +0100
-Message-ID: <7a1e66cc-a1c5-54c7-ca7d-04a389beb8b2@leemhuis.info>
-Date:   Wed, 2 Feb 2022 07:08:20 +0100
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63DACC06176F;
+        Tue,  1 Feb 2022 22:31:18 -0800 (PST)
+Date:   Wed, 02 Feb 2022 06:31:15 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1643783476;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=t4vU6gabHd1ocOg84fSAEe1CJwG1Qhq4TzEBgwvyT40=;
+        b=YvWXSzmCCdxRXanVFk+tABAFWKsbhqySZ5t+yW1XmtLe8a/vBy3YxMv27DAcsJFlUMGqdu
+        at8SuvGn02Q3FSM5Xt+ygutFrsHu9i/O/cl5aT5B+n1qJdyqHSh/HYxE9a3pvOtdTz+oW9
+        PoLtgnmN67bFYmvNCqjW5VOGEtKYx/OkAZAIqYEaw7PdM5U1Hai+hFiLsFUc859QELny2x
+        QSS0ayu1c7KiYqbgt8rEQWCMk+Pb2RYQqNDoeh9k6Hm0r3B49KraY7HQVEV+Ygn5iGQVLv
+        iUHIAsIhTSPOIRCtr0WLIPXWO6yKs61C4zPn/8GOwXbrlGPY5TeYWp8CdHGcOw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1643783476;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=t4vU6gabHd1ocOg84fSAEe1CJwG1Qhq4TzEBgwvyT40=;
+        b=Ph4Qsc61UYuHRfglnB5ScmYswjsWmGaXPUJ+uDDzQA9bh85uWQ94851+pJttUBYVg4LiI2
+        o+lImeEpHgZB1JDA==
+From:   "tip-bot2 for Tony Luck" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/cpu] x86/cpu: Merge Intel and AMD ppin_init() functions
+Cc:     Tony Luck <tony.luck@intel.com>, Borislav Petkov <bp@suse.de>,
+        x86@kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <20220131230111.2004669-2-tony.luck@intel.com>
+References: <20220131230111.2004669-2-tony.luck@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-BS
-To:     Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     workflows@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        regressions@lists.linux.dev,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-References: <cover.1643710947.git.linux@leemhuis.info>
- <978ad91647e93b20b7fe12c3f237f6de8f9eaca1.1643710947.git.linux@leemhuis.info>
- <87bkzq5fxu.fsf@meer.lwn.net>
-From:   Thorsten Leemhuis <linux@leemhuis.info>
-Subject: Re: [PATCH v4 3/3] docs: reporting-issues.rst: link new document
- about regressions
-In-Reply-To: <87bkzq5fxu.fsf@meer.lwn.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-bounce-key: webpack.hosteurope.de;linux@leemhuis.info;1643782106;67ce4a9f;
-X-HE-SMSGID: 1nF8oW-0002ui-WD
+Message-ID: <164378347590.16921.3765101452089124681.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 02.02.22 00:23, Jonathan Corbet wrote:
-> Thorsten Leemhuis <linux@leemhuis.info> writes:
-> 
->> Make Documentation/admin-guide/reporting-issues.rst point to the newly
->> created document about regressions
->> (Documentation/admin-guide/regressions-users.rst). This allows to
->> shorten a few explanations the new document describes better and in more
->> detail.
->>
->> While at it move the copyright hint to the end of the file, as suggested
->> during review of the new documents about regressions.
->>
->> Signed-off-by: Thorsten Leemhuis <linux@leemhuis.info>
->> ---
->>  .../admin-guide/reporting-issues.rst          | 60 +++++++++----------
->>  1 file changed, 29 insertions(+), 31 deletions(-)
-> 
-> [...]
-> 
->> +You deal with a regression if some application or practical use case running
->> +fine with one Linux kernel works worse or not at all with a newer version
->> +compiled using a similar configuration. The document
->> +'Documentation/admin-guide/regressions-users.rst' explains this in more detail.
-> 
-> Some of those quotes around file names are still sneaking in.
+The following commit has been merged into the x86/cpu branch of tip:
 
-I did that on purpose here, as the file right now uses single quotes for
-doc references almost everywhere and I thought I better stick to its
-style -- especially as one such a quoted references is pretty close by
-in this case, so it would look odd to quote one but not the other:
+Commit-ID:     0dcab41d3487acadf64d0667398e032341bd9918
+Gitweb:        https://git.kernel.org/tip/0dcab41d3487acadf64d0667398e032341bd9918
+Author:        Tony Luck <tony.luck@intel.com>
+AuthorDate:    Mon, 31 Jan 2022 15:01:07 -08:00
+Committer:     Borislav Petkov <bp@suse.de>
+CommitterDate: Tue, 01 Feb 2022 12:56:23 +01:00
 
-```
-[...] compiled using a similar configuration. The document
- 'Documentation/admin-guide/regressions-users.rst' explains this in more
-detail.
- It also provides a good deal of other information about regressions you
-might
- want to be aware of; it for example explains how to add your issue to
-the list
- of tracked regressions, to ensure it won't fall through the cracks.
+x86/cpu: Merge Intel and AMD ppin_init() functions
 
+The code to decide whether a system supports the PPIN (Protected
+Processor Inventory Number) MSR was cloned from the Intel
+implementation. Apart from the X86_FEATURE bit and the MSR numbers it is
+identical.
 
+Merge the two functions into common x86 code, but use x86_match_cpu()
+instead of the switch (c->x86_model) that was used by the old Intel
+code.
 
-What qualifies as security issue is left to your judgment. Consider reading
- 'Documentation/admin-guide/security-bugs.rst' before proceeding, as it
- [...]
-```
+No functional change.
 
-Stupid me just forgot to use single quotes for the second link to
-Documentation/admin-guide/regressions-users.rst. Will fix this up :-/
+Signed-off-by: Tony Luck <tony.luck@intel.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20220131230111.2004669-2-tony.luck@intel.com
+---
+ arch/x86/kernel/cpu/amd.c       | 30 +-------------
+ arch/x86/kernel/cpu/common.c    | 74 ++++++++++++++++++++++++++++++++-
+ arch/x86/kernel/cpu/mce/intel.c | 42 +------------------
+ 3 files changed, 74 insertions(+), 72 deletions(-)
 
-That being said: in a mail on Monday I already raised the issue like
-this (slightly reworded):
-
-----
-I noticed I quoted internal references in reporting-issues.rst quite
-often. IMHO it improves readability sometimes (it depends a lot on the
-title of the target document), as can be seen in this example.
-
-The source text looks like this:
-
-```
-If your kernel is tainted, study
-'Documentation/admin-guide/tainted-kernels.rst' to find out why.
-[...]
-To find the change there is a process called 'bisection' which the
-document 'Documentation/admin-guide/bug-bisect.rst' describes in detail.
-```
-
-After processing to HTML the text looks like this:
-
-```
-If your kernel is tainted, study ‘Tainted kernels‘ to find out why.
-[...]
-To find the change there is a process called ‘bisection’ which the
-document ‘Bisecting a bug’ describes in detail.
-```
-
-Sure, "Tainted kernels" and "Bisecting a bug" are links and hence
-displayed differently by the browser, but I think the quotes help. But YMMV.
-
-I sooner or later hope to improve and fix a few things in
-reporting-issues.rst anyway. Let me know if I should take the
-opportunity to remove the single quotes then.
-----
-
-So I'd say: I add two more quoted doc links to the file now and fix this
-up later, if you still think removing the quotes is a good idea. Or do
-you want me to remove the single quotes now in that patch (or a separate
-one?)? It's not a big deal, there are only about 10 docs references.
-
-Ciao, Thorsten
+diff --git a/arch/x86/kernel/cpu/amd.c b/arch/x86/kernel/cpu/amd.c
+index 4edb6f0..bad0fa4 100644
+--- a/arch/x86/kernel/cpu/amd.c
++++ b/arch/x86/kernel/cpu/amd.c
+@@ -394,35 +394,6 @@ static void amd_detect_cmp(struct cpuinfo_x86 *c)
+ 	per_cpu(cpu_llc_id, cpu) = c->cpu_die_id = c->phys_proc_id;
+ }
+ 
+-static void amd_detect_ppin(struct cpuinfo_x86 *c)
+-{
+-	unsigned long long val;
+-
+-	if (!cpu_has(c, X86_FEATURE_AMD_PPIN))
+-		return;
+-
+-	/* When PPIN is defined in CPUID, still need to check PPIN_CTL MSR */
+-	if (rdmsrl_safe(MSR_AMD_PPIN_CTL, &val))
+-		goto clear_ppin;
+-
+-	/* PPIN is locked in disabled mode, clear feature bit */
+-	if ((val & 3UL) == 1UL)
+-		goto clear_ppin;
+-
+-	/* If PPIN is disabled, try to enable it */
+-	if (!(val & 2UL)) {
+-		wrmsrl_safe(MSR_AMD_PPIN_CTL,  val | 2UL);
+-		rdmsrl_safe(MSR_AMD_PPIN_CTL, &val);
+-	}
+-
+-	/* If PPIN_EN bit is 1, return from here; otherwise fall through */
+-	if (val & 2UL)
+-		return;
+-
+-clear_ppin:
+-	clear_cpu_cap(c, X86_FEATURE_AMD_PPIN);
+-}
+-
+ u32 amd_get_nodes_per_socket(void)
+ {
+ 	return nodes_per_socket;
+@@ -947,7 +918,6 @@ static void init_amd(struct cpuinfo_x86 *c)
+ 	amd_detect_cmp(c);
+ 	amd_get_topology(c);
+ 	srat_detect_node(c);
+-	amd_detect_ppin(c);
+ 
+ 	init_amd_cacheinfo(c);
+ 
+diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
+index 7b8382c..b0bd8a6 100644
+--- a/arch/x86/kernel/cpu/common.c
++++ b/arch/x86/kernel/cpu/common.c
+@@ -88,6 +88,78 @@ EXPORT_SYMBOL_GPL(get_llc_id);
+ /* L2 cache ID of each logical CPU */
+ DEFINE_PER_CPU_READ_MOSTLY(u16, cpu_l2c_id) = BAD_APICID;
+ 
++static struct ppin_info {
++	int	feature;
++	int	msr_ppin_ctl;
++} ppin_info[] = {
++	[X86_VENDOR_INTEL] = {
++		.feature = X86_FEATURE_INTEL_PPIN,
++		.msr_ppin_ctl = MSR_PPIN_CTL,
++	},
++	[X86_VENDOR_AMD] = {
++		.feature = X86_FEATURE_AMD_PPIN,
++		.msr_ppin_ctl = MSR_AMD_PPIN_CTL,
++	},
++};
++
++static const struct x86_cpu_id ppin_cpuids[] = {
++	X86_MATCH_FEATURE(X86_FEATURE_AMD_PPIN, &ppin_info[X86_VENDOR_AMD]),
++
++	/* Legacy models without CPUID enumeration */
++	X86_MATCH_INTEL_FAM6_MODEL(IVYBRIDGE_X, &ppin_info[X86_VENDOR_INTEL]),
++	X86_MATCH_INTEL_FAM6_MODEL(HASWELL_X, &ppin_info[X86_VENDOR_INTEL]),
++	X86_MATCH_INTEL_FAM6_MODEL(BROADWELL_D, &ppin_info[X86_VENDOR_INTEL]),
++	X86_MATCH_INTEL_FAM6_MODEL(BROADWELL_X, &ppin_info[X86_VENDOR_INTEL]),
++	X86_MATCH_INTEL_FAM6_MODEL(SKYLAKE_X, &ppin_info[X86_VENDOR_INTEL]),
++	X86_MATCH_INTEL_FAM6_MODEL(ICELAKE_X, &ppin_info[X86_VENDOR_INTEL]),
++	X86_MATCH_INTEL_FAM6_MODEL(ICELAKE_D, &ppin_info[X86_VENDOR_INTEL]),
++	X86_MATCH_INTEL_FAM6_MODEL(SAPPHIRERAPIDS_X, &ppin_info[X86_VENDOR_INTEL]),
++	X86_MATCH_INTEL_FAM6_MODEL(XEON_PHI_KNL, &ppin_info[X86_VENDOR_INTEL]),
++	X86_MATCH_INTEL_FAM6_MODEL(XEON_PHI_KNM, &ppin_info[X86_VENDOR_INTEL]),
++
++	{}
++};
++
++static void ppin_init(struct cpuinfo_x86 *c)
++{
++	const struct x86_cpu_id *id;
++	unsigned long long val;
++	struct ppin_info *info;
++
++	id = x86_match_cpu(ppin_cpuids);
++	if (!id)
++		return;
++
++	/*
++	 * Testing the presence of the MSR is not enough. Need to check
++	 * that the PPIN_CTL allows reading of the PPIN.
++	 */
++	info = (struct ppin_info *)id->driver_data;
++
++	if (rdmsrl_safe(info->msr_ppin_ctl, &val))
++		goto clear_ppin;
++
++	if ((val & 3UL) == 1UL) {
++		/* PPIN locked in disabled mode */
++		goto clear_ppin;
++	}
++
++	/* If PPIN is disabled, try to enable */
++	if (!(val & 2UL)) {
++		wrmsrl_safe(info->msr_ppin_ctl,  val | 2UL);
++		rdmsrl_safe(info->msr_ppin_ctl, &val);
++	}
++
++	/* Is the enable bit set? */
++	if (val & 2UL) {
++		set_cpu_cap(c, info->feature);
++		return;
++	}
++
++clear_ppin:
++	clear_cpu_cap(c, info->feature);
++}
++
+ /* correctly size the local cpu masks */
+ void __init setup_cpu_local_masks(void)
+ {
+@@ -1655,6 +1727,8 @@ static void identify_cpu(struct cpuinfo_x86 *c)
+ 			c->x86_capability[i] |= boot_cpu_data.x86_capability[i];
+ 	}
+ 
++	ppin_init(c);
++
+ 	/* Init Machine Check Exception if available. */
+ 	mcheck_cpu_init(c);
+ 
+diff --git a/arch/x86/kernel/cpu/mce/intel.c b/arch/x86/kernel/cpu/mce/intel.c
+index baafbb3..95275a5 100644
+--- a/arch/x86/kernel/cpu/mce/intel.c
++++ b/arch/x86/kernel/cpu/mce/intel.c
+@@ -470,47 +470,6 @@ void intel_clear_lmce(void)
+ 	wrmsrl(MSR_IA32_MCG_EXT_CTL, val);
+ }
+ 
+-static void intel_ppin_init(struct cpuinfo_x86 *c)
+-{
+-	unsigned long long val;
+-
+-	/*
+-	 * Even if testing the presence of the MSR would be enough, we don't
+-	 * want to risk the situation where other models reuse this MSR for
+-	 * other purposes.
+-	 */
+-	switch (c->x86_model) {
+-	case INTEL_FAM6_IVYBRIDGE_X:
+-	case INTEL_FAM6_HASWELL_X:
+-	case INTEL_FAM6_BROADWELL_D:
+-	case INTEL_FAM6_BROADWELL_X:
+-	case INTEL_FAM6_SKYLAKE_X:
+-	case INTEL_FAM6_ICELAKE_X:
+-	case INTEL_FAM6_ICELAKE_D:
+-	case INTEL_FAM6_SAPPHIRERAPIDS_X:
+-	case INTEL_FAM6_XEON_PHI_KNL:
+-	case INTEL_FAM6_XEON_PHI_KNM:
+-
+-		if (rdmsrl_safe(MSR_PPIN_CTL, &val))
+-			return;
+-
+-		if ((val & 3UL) == 1UL) {
+-			/* PPIN locked in disabled mode */
+-			return;
+-		}
+-
+-		/* If PPIN is disabled, try to enable */
+-		if (!(val & 2UL)) {
+-			wrmsrl_safe(MSR_PPIN_CTL,  val | 2UL);
+-			rdmsrl_safe(MSR_PPIN_CTL, &val);
+-		}
+-
+-		/* Is the enable bit set? */
+-		if (val & 2UL)
+-			set_cpu_cap(c, X86_FEATURE_INTEL_PPIN);
+-	}
+-}
+-
+ /*
+  * Enable additional error logs from the integrated
+  * memory controller on processors that support this.
+@@ -535,7 +494,6 @@ void mce_intel_feature_init(struct cpuinfo_x86 *c)
+ {
+ 	intel_init_cmci();
+ 	intel_init_lmce();
+-	intel_ppin_init(c);
+ 	intel_imc_init(c);
+ }
+ 
