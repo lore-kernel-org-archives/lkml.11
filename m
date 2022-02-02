@@ -2,113 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D1A8C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 00:33:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D33AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 00:36:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243397AbiBBAdq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 19:33:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52296 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243361AbiBBAdp (ORCPT
+        id S243417AbiBBAf7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 19:35:59 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:43330 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243361AbiBBAf5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 19:33:45 -0500
-Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27654C06173B
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Feb 2022 16:33:45 -0800 (PST)
-Received: by mail-io1-xd32.google.com with SMTP id s18so23389730ioa.12
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Feb 2022 16:33:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JepB/7vXyZQxWCvygSiSQrAo+dG4wBZLbFMfRyPaAg4=;
-        b=BYjOOb9hkhtXBfhwGlSCCO509XKcvbv2hf2hjKfopkh4jOXW8O7HhQjDtyYIJa0jl5
-         qTtw9X86XWTlwMVzFMnM1PJoeTfB9MsBay3aIwLob3YGE1Oy90CKWlPXcFf5aPf5E+FR
-         QnQRAqB7avjTD9AOWkm0wdpaP7ob+3r/RNbW8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JepB/7vXyZQxWCvygSiSQrAo+dG4wBZLbFMfRyPaAg4=;
-        b=36+8vQOMlDUwus0EsLRllQPesNLet0KVnToDhkFG27HHECpqH9ce5JmGyVgeJGmml6
-         fASsXelcKsRPWYY6AWKEyTUJTc8nKpdbYSby9L45aodP6gmFVojiW1MjJiBuPBzVpxiQ
-         G6W7Bp37BNoRNU/E6rmHByYxymVUzG/hw+MldmzzHuoKXjkOlP7EPTZOIzXA6jQmWR6O
-         bxfuOkmtNK4qDs/f//Da6QqVwWxiEmxTDnOC/6m5HMfYDBLhQWnG++Y3Nn0+x+JEShP9
-         kH+hSAYFB1baPIdfKX3KPCpsmxbKQqWg4+98Kil9U0dttypqf0+u5O5yYMyzQx8ICfep
-         vpMg==
-X-Gm-Message-State: AOAM531bsPW9Fng5ZigxqLWdx/2tf8RbWz0U1s7ipBi0o7hqxx+FhR30
-        7oqa++fTN5mI/P9wGEjvpwUnTSAvF7i7Ng==
-X-Google-Smtp-Source: ABdhPJyLnuma3ioM5xd1+ADrOhX9jvjTMjYRkEa1l7nl/NLBbTeuZXG1YAA6NxvjtObNkd79ajkSow==
-X-Received: by 2002:a02:6248:: with SMTP id d69mr14688442jac.133.1643762024503;
-        Tue, 01 Feb 2022 16:33:44 -0800 (PST)
-Received: from shuah-tx13.internal ([71.205.29.0])
-        by smtp.gmail.com with ESMTPSA id l13sm5971445ilj.24.2022.02.01.16.33.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Feb 2022 16:33:44 -0800 (PST)
-From:   Shuah Khan <skhan@linuxfoundation.org>
-To:     akpm@linux-foundation.org, shuah@kernel.org, chi.minghao@zte.com.cn
-Cc:     Shuah Khan <skhan@linuxfoundation.org>, linux-mm@kvack.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] kselftest/vm: Revert "tools/testing/selftests/vm/userfaultfd.c: use swap() to make code cleaner"
-Date:   Tue,  1 Feb 2022 17:33:40 -0700
-Message-Id: <20220202003340.87195-1-skhan@linuxfoundation.org>
-X-Mailer: git-send-email 2.32.0
+        Tue, 1 Feb 2022 19:35:57 -0500
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1643762155;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=1Xudt/1SVXxRDSAo0YR4XJsi03SY4B60SrXuaXjIQIo=;
+        b=1iCDj2nNY6Bpay67jZM5r1f6Q5iMhDdg+lt0RI9DKvwBJUBFVp5tGpA4Q3xEGENgCICP7n
+        foYiweJUyhuSUTqR+EM6/OlXbMS+s0PhRzaa6skcCs26CJQkDwVnd5UWT2qauSJea/TOQB
+        CTI32CuBHvyNPEQS+EYnfqn6o3b83kF6ryXDGGFAZG38tJ57k67ULC7Zanj+DuSBOBtu55
+        e5iQ9bMmZ8CMSjgUtliApoxXK6CPLMRhGT3oBMZGdupAMdowWVLtpz7PrwxMYKhbewLr4U
+        gJsefiSqv1dvDYC42ploSxVa88ZhPEvV+N3QPyJjIaLqKBGkRLXTHqygTLbVFg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1643762155;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=1Xudt/1SVXxRDSAo0YR4XJsi03SY4B60SrXuaXjIQIo=;
+        b=8xCqzp14BPLDps1q/5K8jmFwezgWc3qF0nQFx7GcfOi4Ql7S0ZdnIJW65eVmjEBa1Ld7nf
+        A+jdpOYIZHRxcQCw==
+To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@intel.com,
+        luto@kernel.org, peterz@infradead.org
+Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
+        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
+        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
+        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
+        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
+        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        x86@kernel.org, linux-kernel@vger.kernel.org,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Subject: Re: [PATCHv2 23/29] x86/tdx: Add helper to convert memory between
+ shared and private
+In-Reply-To: <20220124150215.36893-24-kirill.shutemov@linux.intel.com>
+References: <20220124150215.36893-1-kirill.shutemov@linux.intel.com>
+ <20220124150215.36893-24-kirill.shutemov@linux.intel.com>
+Date:   Wed, 02 Feb 2022 01:35:54 +0100
+Message-ID: <878ruuw1ed.ffs@tglx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With this change, userfaultfd fails to build with undefined reference
-swap() error:
+On Mon, Jan 24 2022 at 18:02, Kirill A. Shutemov wrote:
+> Intel TDX protects guest memory from VMM access. Any memory that is
+> required for communication with the VMM must be explicitly shared.
+>
+> It is a two-step process: the guest sets the shared bit in the page
+> table entry and notifies VMM about the change. The notification happens
+> using MapGPA hypercall.
+>
+> Conversion back to private memory requires clearing the shared bit,
+> notifying VMM with MapGPA hypercall following with accepting the memory
+> with AcceptPage hypercall.
+>
+> Provide a helper to do conversion between shared and private memory.
+> It is going to be used by the following patch.
 
-userfaultfd.c: In function ‘userfaultfd_stress’:
-userfaultfd.c:1530:17: warning: implicit declaration of function ‘swap’; did you mean ‘swab’? [-Wimplicit-function-declaration]
- 1530 |                 swap(area_src, area_dst);
-      |                 ^~~~
-      |                 swab
-/usr/bin/ld: /tmp/ccDGOAdV.o: in function `userfaultfd_stress':
-userfaultfd.c:(.text+0x549e): undefined reference to `swap'
-/usr/bin/ld: userfaultfd.c:(.text+0x54bc): undefined reference to `swap'
-collect2: error: ld returned 1 exit status
+Strike that last sentence...
 
-Revert the commit to fix the problem.
+> --- a/arch/x86/kernel/tdx.c
+> +++ b/arch/x86/kernel/tdx.c
+> @@ -13,6 +13,10 @@
+>  /* TDX module Call Leaf IDs */
+>  #define TDX_GET_INFO			1
+>  #define TDX_GET_VEINFO			3
+> +#define TDX_ACCEPT_PAGE			6
+> +
+> +/* TDX hypercall Leaf IDs */
+> +#define TDVMCALL_MAP_GPA		0x10001
+>  
+>  /* See Exit Qualification for I/O Instructions in VMX documentation */
+>  #define VE_IS_IO_IN(exit_qual)		(((exit_qual) & 8) ? 1 : 0)
+> @@ -97,6 +101,80 @@ static void tdx_get_info(void)
+>  	td_info.attributes = out.rdx;
+>  }
+>  
+> +static bool tdx_accept_page(phys_addr_t gpa, enum pg_level pg_level)
+> +{
+> +	/*
+> +	 * Pass the page physical address to the TDX module to accept the
+> +	 * pending, private page.
+> +	 *
+> +	 * Bits 2:0 if GPA encodes page size: 0 - 4K, 1 - 2M, 2 - 1G.
+> +	 */
+> +	switch (pg_level) {
+> +	case PG_LEVEL_4K:
+> +		break;
+> +	case PG_LEVEL_2M:
+> +		gpa |= 1;
+> +		break;
+> +	case PG_LEVEL_1G:
+> +		gpa |= 2;
+> +		break;
+> +	default:
+> +		return true;
 
-Fixes: 2c769ed7137a ("tools/testing/selftests/vm/userfaultfd.c: use swap() to make code cleaner")
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
----
- tools/testing/selftests/vm/userfaultfd.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+Crack. boolean return true means success. Can we please keep this
+convention straight throughout the code and not as you see fit?
 
-diff --git a/tools/testing/selftests/vm/userfaultfd.c b/tools/testing/selftests/vm/userfaultfd.c
-index d3fd24f9fae8..2f49c9af1b58 100644
---- a/tools/testing/selftests/vm/userfaultfd.c
-+++ b/tools/testing/selftests/vm/userfaultfd.c
-@@ -1417,6 +1417,7 @@ static void userfaultfd_pagemap_test(unsigned int test_pgsize)
- static int userfaultfd_stress(void)
- {
- 	void *area;
-+	char *tmp_area;
- 	unsigned long nr;
- 	struct uffdio_register uffdio_register;
- 	struct uffd_stats uffd_stats[nr_cpus];
-@@ -1527,9 +1528,13 @@ static int userfaultfd_stress(void)
- 					    count_verify[nr], nr);
- 
- 		/* prepare next bounce */
--		swap(area_src, area_dst);
-+		tmp_area = area_src;
-+		area_src = area_dst;
-+		area_dst = tmp_area;
- 
--		swap(area_src_alias, area_dst_alias);
-+		tmp_area = area_src_alias;
-+		area_src_alias = area_dst_alias;
-+		area_dst_alias = tmp_area;
- 
- 		uffd_stats_report(uffd_stats, nr_cpus);
- 	}
--- 
-2.32.0
+This random choice of return code meanings is just a recipe for
+disaster. Consistency matters.
 
+> +	}
+> +
+> +	return __tdx_module_call(TDX_ACCEPT_PAGE, gpa, 0, 0, 0, NULL);
+> +}
+> +
+> +/*
+> + * Inform the VMM of the guest's intent for this physical page: shared with
+> + * the VMM or private to the guest.  The VMM is expected to change its mapping
+> + * of the page in response.
+> + */
+> +int tdx_hcall_request_gpa_type(phys_addr_t start, phys_addr_t end, bool enc)
+> +{
+> +	u64 ret;
+> +
+> +	if (end <= start)
+> +		return -EINVAL;
+> +
+> +	if (!enc) {
+> +		start |= tdx_shared_mask();
+> +		end |= tdx_shared_mask();
+> +	}
+> +
+> +	/*
+> +	 * Notify the VMM about page mapping conversion. More info about ABI
+> +	 * can be found in TDX Guest-Host-Communication Interface (GHCI),
+> +	 * sec "TDG.VP.VMCALL<MapGPA>"
+> +	 */
+> +	ret = _tdx_hypercall(TDVMCALL_MAP_GPA, start, end - start, 0, 0, NULL);
+> +
+> +	if (ret)
+> +		ret = -EIO;
+> +
+> +	if (ret || !enc)
+> +		return ret;
+> +
+> +	/*
+> +	 * For shared->private conversion, accept the page using
+> +	 * TDX_ACCEPT_PAGE TDX module call.
+> +	 */
+> +	while (start < end) {
+> +		/* Try 2M page accept first if possible */
+
+Talking about consistency:
+
+tdx_accept_page() implements 1G maps, but they are not required to be
+handled here for some random reason, right?
+
+> +		if (!(start & ~PMD_MASK) && end - start >= PMD_SIZE &&
+> +		    !tdx_accept_page(start, PG_LEVEL_2M)) {
+> +			start += PMD_SIZE;
+> +			continue;
+> +		}
+> +
+> +		if (tdx_accept_page(start, PG_LEVEL_4K))
+> +			return -EIO;
+> +		start += PAGE_SIZE;
+> +	}
+
+Thanks,
+
+        tglx
