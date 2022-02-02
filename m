@@ -2,86 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA144C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 10:25:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A142C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 10:28:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245127AbiBBKZ4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 05:25:56 -0500
-Received: from www62.your-server.de ([213.133.104.62]:54592 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242029AbiBBKZy (ORCPT
+        id S245208AbiBBK2C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 05:28:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42918 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234399AbiBBK2B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 05:25:54 -0500
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nFCpg-00009B-4Z; Wed, 02 Feb 2022 11:25:48 +0100
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nFCpf-00078Q-P3; Wed, 02 Feb 2022 11:25:47 +0100
-Subject: Re: [PATCH bpf-next 0/5] Allow CONFIG_DEBUG_INFO_DWARF5=y +
- CONFIG_DEBUG_INFO_BTF=y
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Nathan Chancellor <nathan@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>, llvm@lists.linux.dev
-References: <20220201205624.652313-1-nathan@kernel.org>
- <CAEf4BzbLwMCHDncHW-hH2kgOWc9jQK7QVkcH9aOKm7n7YC2LgQ@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <c1eb308e-1f02-492b-53f1-762daa3d8ff3@iogearbox.net>
-Date:   Wed, 2 Feb 2022 11:25:46 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        Wed, 2 Feb 2022 05:28:01 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CFC1C061714;
+        Wed,  2 Feb 2022 02:28:01 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 91869B8307D;
+        Wed,  2 Feb 2022 10:27:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E5D9C004E1;
+        Wed,  2 Feb 2022 10:27:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643797678;
+        bh=9309zuAje4ZSMnel2PPjJY6oVpPYtw+wX81daTgIU2c=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=oUczvM4XVLV2xIieRd93WKRA/bDWHPu3bGZ1u8+QBmSTrYhSFHaxVMbBYJtCSLWlk
+         mdX5x+MpZ4Sv5+uIMHU+jLXER4S/FFWljsc4xjDHWvsS+VEcrhMQAtNCX18hdie3Tq
+         tvOKmwaVTMS6R5Evd+SWcetYCUDouNAsmsSEUG+69PZy9uHqXoXCViCNb6bZCVNAR4
+         TG1+f7hrbRy5HLTvf0bQpQ8+Wk9CiYxQVNT/kLeieirnakYBqyqiI5wNV+xTUDVxYg
+         9zVoNTWVEA73IoTzK4CT6l4aPLhXwxbfLd3PZNF2l3ePPcUJBCWqpoo5+OLV1VGdhV
+         quemPrBSKHD+w==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1nFCrU-0003Pl-Ed; Wed, 02 Feb 2022 11:27:41 +0100
+Date:   Wed, 2 Feb 2022 11:27:40 +0100
+From:   Johan Hovold <johan@kernel.org>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     Mitchell Tasman <tasman@leaflabs.com>,
+        Alex Elder <elder@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        greybus-dev@lists.linaro.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH] staging: greybus: fix an error handling bug in
+ gb_svc_hello()
+Message-ID: <YfpcnDRAyeyoxi10@hovoldconsulting.com>
+References: <20220202072016.GA6748@kili>
 MIME-Version: 1.0
-In-Reply-To: <CAEf4BzbLwMCHDncHW-hH2kgOWc9jQK7QVkcH9aOKm7n7YC2LgQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.5/26440/Tue Feb  1 10:29:16 2022)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220202072016.GA6748@kili>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/2/22 8:05 AM, Andrii Nakryiko wrote:
-> On Tue, Feb 1, 2022 at 12:56 PM Nathan Chancellor <nathan@kernel.org> wrote:
->>
->> This series allows CONFIG_DEBUG_INFO_DWARF5 to be selected with
->> CONFIG_DEBUG_INFO_BTF=y by checking the pahole version.
->>
->> The first four patches add CONFIG_PAHOLE_VERSION and
->> scripts/pahole-version.sh to clean up all the places that pahole's
->> version is transformed into a 3-digit form.
->>
->> The fourth patch adds a PAHOLE_VERSION dependency to DEBUG_INFO_DWARF5
->> so that there are no build errors when it is selected with
->> DEBUG_INFO_BTF.
->>
->> I build tested Fedora's aarch64 and x86_64 config with ToT clang 14.0.0
->> and GCC 11 with CONFIG_DEBUG_INFO_DWARF5 enabled with both pahole 1.21
->> and 1.23.
->>
->> Nathan Chancellor (5):
->>    MAINTAINERS: Add scripts/pahole-flags.sh to BPF section
->>    kbuild: Add CONFIG_PAHOLE_VERSION
->>    scripts/pahole-flags.sh: Use pahole-version.sh
->>    lib/Kconfig.debug: Use CONFIG_PAHOLE_VERSION
->>    lib/Kconfig.debug: Allow BTF + DWARF5 with pahole 1.21+
->>
+On Wed, Feb 02, 2022 at 10:20:16AM +0300, Dan Carpenter wrote:
+> Cleanup if gb_svc_queue_deferred_request() fails.
 > 
-> LGTM. I'd probably combine patches 2 and 3, but it's minor. I really
-> like the CONFIG_PAHOLE_VERSION and how much cleaner it makes Kconfig
-> options.
+> Fixes: ee2f2074fdb2 ("greybus: svc: reconfig APBridgeA-Switch link to handle required load")
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> ---
+> From static analysis.  Not tested.
 
-+1, thanks for working on getting this enabled! I think patches 2 and 3 are
-rather logically separate, so as-is is fine as well imho. Applied, thanks!
+Look correct. Thanks, Dan.
+
+This part of Greybus no longer lives in staging and the prefix should be
+
+	greybus: svc:
+
+I'd also prefer to see all error labels use an err_ prefix consistently.
+
+When looking at this code I found another bug so I'll fix up the above
+nits and send a series with both fixes as there will be a dependency.
+
+>  drivers/greybus/svc.c | 8 +++++++-
+>  1 file changed, 7 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/greybus/svc.c b/drivers/greybus/svc.c
+> index ce7740ef449b..b19651048081 100644
+> --- a/drivers/greybus/svc.c
+> +++ b/drivers/greybus/svc.c
+> @@ -866,8 +866,14 @@ static int gb_svc_hello(struct gb_operation *op)
+>  
+>  	gb_svc_debugfs_init(svc);
+>  
+> -	return gb_svc_queue_deferred_request(op);
+> +	ret = gb_svc_queue_deferred_request(op);
+> +	if (ret)
+> +		goto remove_debugfs;
+> +
+> +	return 0;
+>  
+> +remove_debugfs:
+> +	gb_svc_debugfs_exit(svc);
+>  err_unregister_device:
+>  	gb_svc_watchdog_destroy(svc);
+>  	device_del(&svc->dev);
+
+Johan
