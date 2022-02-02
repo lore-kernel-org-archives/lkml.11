@@ -2,106 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17C50C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 15:41:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B7A3C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 15:42:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345536AbiBBPlw (ORCPT
+        id S1345546AbiBBPl7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 10:41:52 -0500
-Received: from out03.mta.xmission.com ([166.70.13.233]:44812 "EHLO
-        out03.mta.xmission.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233663AbiBBPlv (ORCPT
+        Wed, 2 Feb 2022 10:41:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58762 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231710AbiBBPlw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 10:41:51 -0500
-Received: from in01.mta.xmission.com ([166.70.13.51]:40424)
-        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nFHlW-00EXfX-2o; Wed, 02 Feb 2022 08:41:50 -0700
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:55992 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nFHlT-00BxRp-Mu; Wed, 02 Feb 2022 08:41:49 -0700
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Jann Horn <jannh@google.com>
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Denys Vlasenko <vda.linux@googlemail.com>,
-        Kees Cook <keescook@chromium.org>,
+        Wed, 2 Feb 2022 10:41:52 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98B5BC061714;
+        Wed,  2 Feb 2022 07:41:52 -0800 (PST)
+Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 7AA111EC059D;
+        Wed,  2 Feb 2022 16:41:46 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1643816506;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=Cwn6fgc2bkMiYdHSqTZKAKhqw+1pduKMoFZH27YbT8Y=;
+        b=o29kCM74d+MyTiTqpcCxRpbljquvzyplNJBA+CMkf8knQDxYiY21qy8QBJGKGgAy1eum37
+        TpbIkuA177QV71dnBX46PXwEGcU86EURDpaXwBrW6u7QPwYWPhR8yBGcwwX4EnlOnVcpRZ
+        GdB+9E+CacxFSZxCsUivyJA0/dxmY80=
+Date:   Wed, 2 Feb 2022 16:41:46 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     Brijesh Singh <brijesh.singh@amd.com>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-coco@lists.linux.dev, linux-mm@kvack.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Dov Murik <dovmurik@linux.ibm.com>,
+        Tobin Feldman-Fitzthum <tobin@ibm.com>,
+        Michael Roth <michael.roth@amd.com>,
         Vlastimil Babka <vbabka@suse.cz>,
-        "Liam R . Howlett" <liam.howlett@oracle.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-References: <20220131153740.2396974-1-willy@infradead.org>
-        <871r0nriy4.fsf@email.froward.int.ebiederm.org>
-        <YfgKw5z2uswzMVRQ@casper.infradead.org>
-        <877dafq3bw.fsf@email.froward.int.ebiederm.org>
-        <YfgPwPvopO1aqcVC@casper.infradead.org>
-        <CAG48ez3MCs8d8hjBfRSQxwUTW3o64iaSwxF=UEVtk+SEme0chQ@mail.gmail.com>
-        <87bkzroica.fsf_-_@email.froward.int.ebiederm.org>
-        <87zgnbn3pd.fsf_-_@email.froward.int.ebiederm.org>
-        <CAG48ez0uV87=myLX1X1KjQ_8q_Sgg1QZBG6vpdkGLWj==EAUBw@mail.gmail.com>
-Date:   Wed, 02 Feb 2022 09:41:40 -0600
-In-Reply-To: <CAG48ez0uV87=myLX1X1KjQ_8q_Sgg1QZBG6vpdkGLWj==EAUBw@mail.gmail.com>
-        (Jann Horn's message of "Tue, 1 Feb 2022 19:32:58 +0100")
-Message-ID: <87tudhjmx7.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Andi Kleen <ak@linux.intel.com>,
+        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
+        brijesh.ksingh@gmail.com, tony.luck@intel.com, marcorr@google.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com
+Subject: Re: [PATCH v9 18/43] x86/kernel: Validate ROM memory before
+ accessing when SEV-SNP is active
+Message-ID: <YfqmOritPOTDZTEx@zn.tnic>
+References: <20220128171804.569796-1-brijesh.singh@amd.com>
+ <20220128171804.569796-19-brijesh.singh@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nFHlT-00BxRp-Mu;;;mid=<87tudhjmx7.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX19hxM+4jOLsisAUfqQ7uFK0r+nGxRFEAbA=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH 2/5] coredump: Snapshot the vmas in do_coredump
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220128171804.569796-19-brijesh.singh@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Jann Horn <jannh@google.com> writes:
+On Fri, Jan 28, 2022 at 11:17:39AM -0600, Brijesh Singh wrote:
+> @@ -197,11 +198,21 @@ static int __init romchecksum(const unsigned char *rom, unsigned long length)
+>  
+>  void __init probe_roms(void)
+>  {
+> -	const unsigned char *rom;
+>  	unsigned long start, length, upper;
+> +	const unsigned char *rom;
+>  	unsigned char c;
+>  	int i;
+>  
+> +	/*
+> +	 * The ROM memory is not part of the E820 system RAM and is not pre-validated
+> +	 * by the BIOS. The kernel page table maps the ROM region as encrypted memory,
+> +	 * the SEV-SNP requires the encrypted memory must be validated before the
+> +	 * access. Validate the ROM before accessing it.
+> +	 */
 
-> On Mon, Jan 31, 2022 at 7:46 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
->> Move the call of dump_vma_snapshot and kvfree(vma_meta) out of the
->> individual coredump routines into do_coredump itself.  This makes
->> the code less error prone and easier to maintain.
->>
->> Make the vma snapshot available to the coredump routines
->> in struct coredump_params.  This makes it easier to
->> change and update what is captures in the vma snapshot
->> and will be needed for fixing fill_file_notes.
->>
->> Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
->
-> Reviewed-by: Jann Horn <jannh@google.com>
->
->>         for (i = 0, vma = first_vma(current, gate_vma); vma != NULL;
->>                         vma = next_vma(vma, gate_vma), i++) {
->> -               struct core_vma_metadata *m = (*vma_meta) + i;
->> +               struct core_vma_metadata *m = cprm->vma_meta + i;
->>
->>                 m->start = vma->vm_start;
->>                 m->end = vma->vm_end;
->>                 m->flags = vma->vm_flags;
->>                 m->dump_size = vma_dump_size(vma, cprm->mm_flags);
->>
->> -               vma_data_size += m->dump_size;
->> +               cprm->vma_data_size += m->dump_size;
->
-> FYI, this part is probably going to cause a merge conflict with the
-> fix https://www.ozlabs.org/~akpm/mmotm/broken-out/coredump-also-dump-first-pages-of-non-executable-elf-libraries.patch
-> in akpm's tree. I don't know what the right way to handle that is,
-> just thought I'd point it out.
+Lemme massage it:
 
-There are not any conflicts in principle we could just let resolution
-handle it.  Unfortunately both are candidates for backporting.
+        /*
+         * The ROM memory range is not part of the e820 table and is therefore not
+         * pre-validated by BIOS. The kernel page table maps the ROM region as encrypted
+         * memory, and SEV-SNP requires encrypted memory to be validated before access.
+         * Do that here.
+         */
 
-Either we replace your fix with a simple deletion of the executable
-check, or I need to base mine on yours.
+-- 
+Regards/Gruss,
+    Boris.
 
-Since I need to repost mine anyway I will look at the latter.
-
-Eric
-
-
+https://people.kernel.org/tglx/notes-about-netiquette
