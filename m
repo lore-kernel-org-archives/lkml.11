@@ -2,77 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD714C43219
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 17:20:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0DF8C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 17:23:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346231AbiBBRUN (ORCPT
+        id S1346230AbiBBRXd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 12:20:13 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:46048 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230363AbiBBRUL (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 12:20:11 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DC244617E3;
-        Wed,  2 Feb 2022 17:20:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 44AFAC340ED;
-        Wed,  2 Feb 2022 17:20:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643822410;
-        bh=1khkt3/JcCulRHYzhGquD0jyR/SW2E9+oMa5CW14XiU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=GPFi/OfU9uK1X2tyil9VCNsxixh0uyLySs2aGWcQnv4TO3BdGotHACbVC3LRKQuem
-         dh70Vp8VOZskwkOGZugll0XPBxsisOzmXGA7bJ2/L6jXGXK9GXXR8mjqclaEcuo1IQ
-         yM2TmbApRdZ+f7Fdi40gT0qaimTXVADn91nNTyF64x81Jv5OLevXp3an1EywsdoHlo
-         liFiJy8XaoGMAobnCYbIdnnlwosU1Xa1BD1W4b92RnLnfqTXdcc4FeSB/9pEUU23It
-         UaQ6VwmYYhwTZKJF+cGe6jczzU+RJt9Iybh4WuHUKjWKZBe0rjsC8Qv8+Ik22jdGLe
-         0Gfzob6sMPTWg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1A198E6BB30;
-        Wed,  2 Feb 2022 17:20:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Wed, 2 Feb 2022 12:23:33 -0500
+Received: from mga09.intel.com ([134.134.136.24]:46902 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237041AbiBBRXb (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 2 Feb 2022 12:23:31 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643822611; x=1675358611;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=FfQwTJzWKATT32F4p5gOzN+KE1zPEG9JU+pMAd3OQ4A=;
+  b=OC0X8g4Ja08YzvUc1tCLjxnDiSjmY6XGN9gFY1EpZ3aMinrZw8bu4kp/
+   UtVGDpNkeur1bRYRHlcUHtGosL9abPSutCTreZhVhBpj9zzEqiCMUoNmZ
+   CNhG+Nhq2Ou0sRKg8yg0s7woA28nvJh7K3tYv8Ir4f6rq0tUchOMBVGO/
+   WKB3CFMWrdW1Ir1jVTxXlvWOaoR46vkUagF7ihC2a71uDBcSwcvszn2Gx
+   sjWsBZRszES54XXaFDf3eo2RKTvyhmGn3JlXNgfueHHrs2avRdCnswVvZ
+   UT5olUVuMD/cQxOdh62SXvGSmcDotGEIGFezNidCowwYnWvMtyj5SYJMd
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10246"; a="247744500"
+X-IronPort-AV: E=Sophos;i="5.88,337,1635231600"; 
+   d="scan'208";a="247744500"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 09:14:12 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,337,1635231600"; 
+   d="scan'208";a="698967422"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 02 Feb 2022 09:14:10 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nFJCr-000UsG-Ma; Wed, 02 Feb 2022 17:14:09 +0000
+Date:   Thu, 3 Feb 2022 01:14:04 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Michael Walle <michael@walle.cc>, linux-mtd@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Cc:     kbuild-all@lists.01.org,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Pratyush Yadav <p.yadav@ti.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Michael Walle <michael@walle.cc>
+Subject: Re: [PATCH v1 05/14] mtd: spi-nor: xilinx: rename vendor specific
+ functions and defines
+Message-ID: <202202030130.meVKrEGw-lkp@intel.com>
+References: <20220202145853.4187726-6-michael@walle.cc>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2] net: sparx5: do not refer to skb after passing it on
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164382241009.2143.7850351482664563943.git-patchwork-notify@kernel.org>
-Date:   Wed, 02 Feb 2022 17:20:10 +0000
-References: <20220202083039.3774851-1-steen.hegelund@microchip.com>
-In-Reply-To: <20220202083039.3774851-1-steen.hegelund@microchip.com>
-To:     Steen Hegelund <steen.hegelund@microchip.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, UNGLinuxDriver@microchip.com,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, dan.carpenter@oracle.com,
-        lkp@intel.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220202145853.4187726-6-michael@walle.cc>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+Hi Michael,
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+I love your patch! Perhaps something to improve:
 
-On Wed, 2 Feb 2022 09:30:39 +0100 you wrote:
-> Do not try to use any SKB fields after the packet has been passed up in the
-> receive stack.
-> 
-> Reported-by: kernel test robot <lkp@intel.com>
-> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-> Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
-> 
-> [...]
+[auto build test WARNING on mtd/spi-nor/next]
+[also build test WARNING on linux/master linus/master v5.17-rc2 next-20220202]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Here is the summary with links:
-  - [net,v2] net: sparx5: do not refer to skb after passing it on
-    https://git.kernel.org/netdev/net/c/81eb8b0b1878
+url:    https://github.com/0day-ci/linux/commits/Michael-Walle/mtd-spi-nor-move-vendor-specific-code-into-vendor-modules/20220202-230139
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux.git spi-nor/next
+config: alpha-allmodconfig (https://download.01.org/0day-ci/archive/20220203/202202030130.meVKrEGw-lkp@intel.com/config)
+compiler: alpha-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/6527d5f32d65d5695ddcc0bcf3ac31928e64a935
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Michael-Walle/mtd-spi-nor-move-vendor-specific-code-into-vendor-modules/20220202-230139
+        git checkout 6527d5f32d65d5695ddcc0bcf3ac31928e64a935
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=alpha SHELL=/bin/bash drivers/mtd/spi-nor/
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/mtd/spi-nor/xilinx.c:103: warning: expecting prototype for spi_nor_xsr_ready(). Prototype was for xilinx_sr_ready() instead
 
 
+vim +103 drivers/mtd/spi-nor/xilinx.c
+
+37ccf5a41e1528 Michael Walle 2022-02-02   94  
+37ccf5a41e1528 Michael Walle 2022-02-02   95  /**
+37ccf5a41e1528 Michael Walle 2022-02-02   96   * spi_nor_xsr_ready() - Query the Status Register of the S3AN flash to see if
+37ccf5a41e1528 Michael Walle 2022-02-02   97   * the flash is ready for new commands.
+37ccf5a41e1528 Michael Walle 2022-02-02   98   * @nor:	pointer to 'struct spi_nor'.
+37ccf5a41e1528 Michael Walle 2022-02-02   99   *
+37ccf5a41e1528 Michael Walle 2022-02-02  100   * Return: 1 if ready, 0 if not ready, -errno on errors.
+37ccf5a41e1528 Michael Walle 2022-02-02  101   */
+6527d5f32d65d5 Michael Walle 2022-02-02  102  static int xilinx_sr_ready(struct spi_nor *nor)
+37ccf5a41e1528 Michael Walle 2022-02-02 @103  {
+37ccf5a41e1528 Michael Walle 2022-02-02  104  	int ret;
+37ccf5a41e1528 Michael Walle 2022-02-02  105  
+6527d5f32d65d5 Michael Walle 2022-02-02  106  	ret = xilinx_read_sr(nor, nor->bouncebuf);
+37ccf5a41e1528 Michael Walle 2022-02-02  107  	if (ret)
+37ccf5a41e1528 Michael Walle 2022-02-02  108  		return ret;
+37ccf5a41e1528 Michael Walle 2022-02-02  109  
+37ccf5a41e1528 Michael Walle 2022-02-02  110  	return !!(nor->bouncebuf[0] & XSR_RDY);
+37ccf5a41e1528 Michael Walle 2022-02-02  111  }
+37ccf5a41e1528 Michael Walle 2022-02-02  112  
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
