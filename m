@@ -2,132 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21C69C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 02:40:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC00CC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 02:40:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243847AbiBBCk2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 21:40:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51900 "EHLO
+        id S243857AbiBBCka (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 21:40:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230343AbiBBCk1 (ORCPT
+        with ESMTP id S231372AbiBBCk1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 1 Feb 2022 21:40:27 -0500
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26BF3C061714
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Feb 2022 18:40:27 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E37EBC061714;
+        Tue,  1 Feb 2022 18:40:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
         MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
         Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=zaI5vhQWWVE2GE+rss71ZZD7ibixm3ekss/HSDR7sR8=; b=WYxYr2TQKRqgj1IPtTb04wfK52
-        1vd3IYqwNo6cSmFTeOG2HGbDDqrDfN2ligjDUNqsjoBDUkUqcHy62187dp0X61WQZ6ZB4JR8YIaq3
-        FJpCfmS4soxRHO6xs0ZLwH+M7+6J9Kw3jVqwWk7KTy8rrJMv8DpQm8NQl0a5P77fm6pYNOdGZBbRe
-        kVBR5K1a/FOq7cwug8oxRD5TnL5gFYKCKEB7rakCht+uRmu3y8CRQPF+ZLUUfGeRkSP9Ye+6SL21f
-        rFcSkMlg0wHOJ78/ayhCdg6yi3HRn0OPUE1CqK5c3kRMMNdTR8y9LfaxNNsA1WZXBt7ylMmI9/xOx
-        TRDpSDsw==;
+        bh=E/DYkJcqiKd/IrHJwhT2qRCg8TBxS2l30y/78Ai/o68=; b=sBY6DGY4k1yUN0tYd7ADcg5yck
+        MtIq2bWMGIcbug4tiGEi3ROqA4nPx79oSq3hLG3jPsMz3wp6k2ZCxc6qtTklT1niFzkV0Nyo/9WQx
+        41MXOWe8+wqt8eEElNVfzR0wryKaApvm16Nfm4FKuz2JEEhuEyqm/06Kf0wrv6Bzf8D58ZqAiGKwi
+        qN9A+JDxpOPA7NRZY4eu+X9+0rH+ekjj7e1nHgRvcYLI3UXQEq90Q0mFy6LAFYJNWUCNjShFIADuy
+        amXc4z0WoJh52GeFGsZwYS6cvSjl6R0ONCk5rnmRI8F6UqJehXOWPMW+7ClHZXtKn4SnX59ogz5jN
+        BUpiClag==;
 Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nF5YJ-00DzlC-9e; Wed, 02 Feb 2022 02:39:23 +0000
-Date:   Tue, 1 Feb 2022 18:39:23 -0800
+        id 1nF5ZD-00DzuD-QP; Wed, 02 Feb 2022 02:40:19 +0000
+Date:   Tue, 1 Feb 2022 18:40:19 -0800
 From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     "Eric W. Biederman" <ebiederm@xmission.com>,
-        Jan Kara <jack@suse.cz>,
-        kernel test robot <oliver.sang@intel.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Amir Goldstein <amir73il@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Antti Palosaari <crope@iki.fi>, Arnd Bergmann <arnd@arndb.de>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Benjamin LaHaise <bcrl@kvack.org>,
-        Clemens Ladisch <clemens@ladisch.de>,
-        David Airlie <airlied@linux.ie>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Iurii Zaikin <yzaikin@google.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joel Becker <jlbec@evilplan.org>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Joseph Qi <joseph.qi@linux.alibaba.com>,
-        Julia Lawall <julia.lawall@inria.fr>,
-        Kees Cook <keescook@chromium.org>,
-        Lukas Middendorf <kernel@tuxforce.de>,
-        Mark Fasheh <mark@fasheh.com>, Paul Turner <pjt@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Qing Wang <wangqing@vivo.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Stephen Kitt <steve@sk2.org>,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Xiaoming Ni <nixiaoming@huawei.com>,
-        Douglas Gilbert <dgilbert@interlog.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        LKML <linux-kernel@vger.kernel.org>, lkp@lists.01.org,
-        kernel test robot <lkp@intel.com>
-Subject: Re: [ocfs2] c42ff46f97: sysctl_table_check_failed
-Message-ID: <Yfnu216aFQibbZ25@bombadil.infradead.org>
-References: <20220128065310.GF8421@xsang-OptiPlex-9020>
- <CAHk-=wgT6wuBB=pK2bGNQbioNCdJHT8Jnvs+4oT25jX1JFyhgg@mail.gmail.com>
- <20220128120421.kzo5iduigr7k55bs@quack3.lan>
- <87a6ffst4j.fsf@email.froward.int.ebiederm.org>
- <CAHk-=wjzWVW1xvVLCOvw-MMoVK9kiRn5CUx2am8jPdo09mHgjA@mail.gmail.com>
+To:     kernel test robot <lkp@intel.com>
+Cc:     tangmeng <tangmeng@uniontech.com>, tglx@linutronix.de,
+        keescook@chromium.org, yzaikin@google.com, john.stultz@linaro.org,
+        sboyd@kernel.org, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org
+Subject: Re: [PATCH v2] kernel/time: move timer sysctls to its own file
+Message-ID: <YfnvE9rPffDb4JHy@bombadil.infradead.org>
+References: <20220128085106.27031-1-tangmeng@uniontech.com>
+ <202201290325.Jyor2i8O-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAHk-=wjzWVW1xvVLCOvw-MMoVK9kiRn5CUx2am8jPdo09mHgjA@mail.gmail.com>
+In-Reply-To: <202201290325.Jyor2i8O-lkp@intel.com>
 Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 07:16:21PM +0200, Linus Torvalds wrote:
-> On Fri, Jan 28, 2022 at 6:49 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
-> >
-> > Yes.  There is a register_sysctl_paths that can be used if you want/need
-> > the embedded directories.  That probably would have been a better
-> > choice for an automated conversion.
-> >
-> > But since this there is only the single file in a single directory
-> > register_sysctl() with the full path is perfectly fine in this case.
-> >
-> > Reviewed-by: "Eric W. Biederman" <ebiederm@xmission.com>
-> 
-> I was doing filesystem pull requests anyway, and as a result (I tend
-> to group things by topic if there's multiple things pending) I already
-> committed that patch of mine based on Jan's reviewed/tested-by, so
-> this reviewed-by ended up not in the tree.
-> 
-> But maybe somebody should check the other automated conversions for
-> the same issue? Hint hint.
+These complaints are using and assuming and older kernel.
 
-I just double checked and indeed, the issue was that ocfs had a path
-underneath it, so indeed register_sysctl_paths() would have been better.
-The other drivers which were converted do not have paths underneath so
-they are safe.
+ Luis
 
-> Also, I'm somewhat unhappy about the fact that apparently the kernel
-> test robot already found this issue back in November of last year, yet
-> it made it to mainline several months later without being fixed.
+On Sat, Jan 29, 2022 at 05:03:38AM +0800, kernel test robot wrote:
+> Hi tangmeng,
 > 
-> It's hard to tell from this link:
+> Thank you for the patch! Yet something to improve:
 > 
->   https://lists.01.org/hyperkitty/list/lkp@lists.01.org/thread/KQ2F6TPJWMDVEXJM4WTUC4DU3EH3YJVT/
+> [auto build test ERROR on tip/timers/core]
+> [also build test ERROR on linus/master kees/for-next/pstore v5.17-rc1 next-20220128]
+> [If your patch is applied to the wrong git tree, kindly drop us a note.
+> And when submitting patch, we suggest to use '--base' as documented in
+> https://git-scm.com/docs/git-format-patch]
 > 
-> but it does look like that original report only made it to that lkp
-> list and not the actual people listed on the commit itself? That would
-> explain why the report was overlooked.
-
-Odd, no I got Cc'd on the email as I get 0day testing on all my branches
-prior to pushing patches out. For some reason this failure fell through
-the cracks. Sorry about that!
-
-  Luis
+> url:    https://github.com/0day-ci/linux/commits/tangmeng/kernel-time-move-timer-sysctls-to-its-own-file/20220128-165225
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git 35e13e9da9afbce13c1d36465504ece4e65f24fe
+> config: arm64-randconfig-r026-20220127 (https://download.01.org/0day-ci/archive/20220129/202201290325.Jyor2i8O-lkp@intel.com/config)
+> compiler: aarch64-linux-gcc (GCC) 11.2.0
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # https://github.com/0day-ci/linux/commit/8bd44d33085f8ab50523016cbdb0c918dc4b4f3c
+>         git remote add linux-review https://github.com/0day-ci/linux
+>         git fetch --no-tags linux-review tangmeng/kernel-time-move-timer-sysctls-to-its-own-file/20220128-165225
+>         git checkout 8bd44d33085f8ab50523016cbdb0c918dc4b4f3c
+>         # save the config file to linux build tree
+>         mkdir build_dir
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm64 SHELL=/bin/bash kernel/time/
+> 
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> All errors (new ones prefixed by >>):
+> 
+>    kernel/time/timer.c: In function 'timer_sysctl_init':
+> >> kernel/time/timer.c:283:9: error: implicit declaration of function 'register_sysctl_init'; did you mean 'timer_sysctl_init'? [-Werror=implicit-function-declaration]
+>      283 |         register_sysctl_init("kerneli/timer", timer_sysctl);
+>          |         ^~~~~~~~~~~~~~~~~~~~
+>          |         timer_sysctl_init
+>    cc1: some warnings being treated as errors
+> 
+> 
+> vim +283 kernel/time/timer.c
+> 
+>    280	
+>    281	static int __init timer_sysctl_init(void)
+>    282	{
+>  > 283		register_sysctl_init("kerneli/timer", timer_sysctl);
+>    284		return 0;
+>    285	}
+>    286	#else
+>    287	#define timer_sysctl_init() do { } while (0)
+>    288	#endif
+>    289	static inline bool is_timers_nohz_active(void)
+>    290	{
+>    291		return static_branch_unlikely(&timers_nohz_active);
+>    292	}
+>    293	#else
+>    294	static inline bool is_timers_nohz_active(void) { return false; }
+>    295	#endif /* NO_HZ_COMMON */
+>    296	
+> 
+> ---
+> 0-DAY CI Kernel Test Service, Intel Corporation
+> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
