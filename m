@@ -2,121 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBE75C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 09:53:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90427C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 09:54:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229890AbiBBJxV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 04:53:21 -0500
-Received: from mailout3.samsung.com ([203.254.224.33]:31390 "EHLO
-        mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231749AbiBBJxP (ORCPT
+        id S245650AbiBBJyJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 04:54:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35306 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229491AbiBBJyG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 04:53:15 -0500
-Received: from epcas5p1.samsung.com (unknown [182.195.41.39])
-        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220202095314epoutp03db48d397de7f9877de409e7829b7d216~P72I3VwNc1065010650epoutp03x
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 09:53:14 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220202095314epoutp03db48d397de7f9877de409e7829b7d216~P72I3VwNc1065010650epoutp03x
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1643795594;
-        bh=IRg0tmKr6sCE9jpi9L2MR10MQYPkKy8Hhn/HrSD4heo=;
-        h=Subject:Reply-To:From:To:CC:In-Reply-To:Date:References:From;
-        b=bXV2JFehdHDSTLPQNcUcNhVsxJhgpIG/x/PzqbMrmn8GGa1+kqAIytDS/fP+Kbpcd
-         xvyimb/vRMwN8IplDXOgCCBAatrNnG2jW89aSDgU2sLqZerfS0bA39mdfsSf2lhsDR
-         +FZUDveuJ0hsuSxF+M+lKsBus7+PDIZ4HOYAqQx4=
-Received: from epsmges5p3new.samsung.com (unknown [182.195.42.75]) by
-        epcas5p2.samsung.com (KnoxPortal) with ESMTP id
-        20220202095313epcas5p2c4774fc4974334047aeefa4958de38f1~P72IXMUXF2510525105epcas5p2A;
-        Wed,  2 Feb 2022 09:53:13 +0000 (GMT)
-X-AuditID: b6c32a4b-723ff700000015d6-38-61fa5489394b
-Received: from epcas5p1.samsung.com ( [182.195.41.39]) by
-        epsmges5p3new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        2C.60.05590.9845AF16; Wed,  2 Feb 2022 18:53:13 +0900 (KST)
-Mime-Version: 1.0
-Subject: RE: [PATCH RESEND v2] scripts/checkpatch.pl: remove _deferred and
- _deferred_once false warning
-Reply-To: maninder1.s@samsung.com
-Sender: Maninder Singh <maninder1.s@samsung.com>
-From:   Maninder Singh <maninder1.s@samsung.com>
-To:     Joe Perches <joe@perches.com>,
-        "apw@canonical.com" <apw@canonical.com>,
-        "dwaipayanray1@gmail.com" <dwaipayanray1@gmail.com>,
-        "lukas.bulwahn@gmail.com" <lukas.bulwahn@gmail.com>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Vaneet Narang <v.narang@samsung.com>
-X-Priority: 3
-X-Content-Kind-Code: NORMAL
-In-Reply-To: <4ee87d70d5348949787b2d747f90ecffa3119d0b.camel@perches.com>
-X-Drm-Type: N,general
-X-Msg-Generator: Mail
-X-Msg-Type: PERSONAL
-X-Reply-Demand: N
-Message-ID: <20220202095225epcms5p271da4783d86cb7c51d12d80f097aea44@epcms5p2>
-Date:   Wed, 02 Feb 2022 15:22:25 +0530
-X-CMS-MailID: 20220202095225epcms5p271da4783d86cb7c51d12d80f097aea44
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: REQ_APPROVE
-CMS-TYPE: 105P
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFupmleLIzCtJLcpLzFFi42LZdlhTXbcz5Feiwbtj4hYf1mpYrF+4jNli
-        9v3HLBaXd81hs2g52s5icejkXEYHNo9ZDb1sHjtn3WX3+LLqGrNH35ZVjB6fN8kFsEZx2aSk
-        5mSWpRbp2yVwZRy5OImp4K1oxcFNd5kbGOeLdjFyckgImEjc3LyJvYuRi0NIYDejxKRT/4Ac
-        Dg5eAUGJvzuEQWqEBTIl1h86xwJiCwkoSlyYsYYRpERYwEDi11YNkDCbgJ7Eql17WEDGiAjs
-        YJT43LScCSTBDNQ7u/M8G8QuXokZ7U9ZIGxpie3LtzKC2JwCnhInenezQsRFJW6ufssOY78/
-        Np8RwhaRaL13lhnCFpR48HM3VFxGYvXmXrDFEgLdjBLr3+2FcmYwSvQ8mgbVYS6xfskqsKm8
-        Ar4Sk54dBouzCKhKPPv7DmqSi8TDD2dZIa7Wlli28DUzyJfMApoS63fpQ5TISkw9tQ7qMT6J
-        3t9PmGAe2zEPxlaVaLm5gRXmyc8fP0I97CGxpX0DGySgjzJKbJnRyDKBUWEWIqxnIdk8C2Hz
-        AkbmVYySqQXFuempxaYFxnmp5XrFibnFpXnpesn5uZsYwelFy3sH46MHH/QOMTJxMB5ilOBg
-        VhLh3bvwe6IQb0piZVVqUX58UWlOavEhRmkOFiVx3lPpGxKFBNITS1KzU1MLUotgskwcnFIN
-        TFZ/Ly1Y5uIpKqr06YPN9lW6Vpuecmtv/KVYn7w5JuQs+ztXBcMZhQrK/CZKmp8KJzzheH7j
-        96n1Sr8nO3fuZloo3TzDjWF+eVih8Zm7pQzzzmk90fh2arr7pB9NEkxO/nkV/SasZyJzVl/e
-        dk9sYgLXvBkT09Jcp8p4l3q8vXHD+tDy51JBvtxNeyZM1nGXOfVWb8amO1Upyu7uO09WMVRN
-        ur/HpeZP/vHe3aYFmvMeSc6cpsla9a+jSc9owuPoU78abyRMZtm+YP+Hnt5IhWzrbZ4JEyb4
-        7qsUtHD7/FzofWqoU2SwU+ANew75kvf1FYerlpxIzLl9+8qiCSt7t19iYZwixBa18Ph1940B
-        hkosxRmJhlrMRcWJAPf6odyeAwAA
-X-CMS-RootMailID: 20220202071414epcas5p1d329ae4f76c281c1f8f7f07bfb36a919
-References: <4ee87d70d5348949787b2d747f90ecffa3119d0b.camel@perches.com>
-        <20220202071405.1872044-1-maninder1.s@samsung.com>
-        <CGME20220202071414epcas5p1d329ae4f76c281c1f8f7f07bfb36a919@epcms5p2>
+        Wed, 2 Feb 2022 04:54:06 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAE86C061714;
+        Wed,  2 Feb 2022 01:54:06 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 79CC761347;
+        Wed,  2 Feb 2022 09:54:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EBC3C004E1;
+        Wed,  2 Feb 2022 09:54:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643795645;
+        bh=ymx4fVg2b8Cf9MLrfn/D1ufiCS9ewfVqV7L5onrPKoM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=D3WXDw3ey3xl3Pf4AwGt9UQDfHPDqlMuMHtsmtuXCRX7uouPZtnpEOnH7Q2cvlcCz
+         CmNocV4fVh9rVZxjqApwffQMvmQyBT0pH+MHMfYwjowKJTu/3fdN0QAk1Wz6h/yet9
+         w0exBriYqTLG8CQcJITmBk0YRjooL27xnUoYrYsL4/89zjICrykFuR8F+1b0cIfVca
+         JBfi9csOgUYIYFjrI1p1Usoo8n5lDRWPfzf6VaLZkeAxg3ZS+GvB06spxcVkNWbKGJ
+         7o6SyQoi88f27fS5Gkw0+TVqDzrj1yFuDbhvi/Y8+l56Yc/w7jXtAlcfCvX7Rhg6ed
+         I3g5+x4f+lmog==
+Date:   Wed, 2 Feb 2022 10:53:58 +0100
+From:   Christian Brauner <brauner@kernel.org>
+To:     David Laight <David.Laight@ACULAB.COM>
+Cc:     Eryu Guan <guan@eryu.me>,
+        "fstests@vger.kernel.org" <fstests@vger.kernel.org>,
+        Ariadne Conill <ariadne@dereferenced.org>,
+        Kees Cook <keescook@chromium.org>,
+        Rich Felker <dalias@libc.org>,
+        Michael Kerrisk <mtk.manpages@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Eryu Guan <guaneryu@gmail.com>
+Subject: Re: [PATCH] generic/633: adapt execveat() invocations
+Message-ID: <20220202095358.gz6pjczalzpluxvh@wittgenstein>
+References: <20220131171023.2836753-1-brauner@kernel.org>
+ <08ff2c7dd57449a7ae9de70ba007c5fd@AcuMS.aculab.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <08ff2c7dd57449a7ae9de70ba007c5fd@AcuMS.aculab.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Wed, Feb 02, 2022 at 08:36:05AM +0000, David Laight wrote:
+> From: Christian Brauner
+> > Sent: 31 January 2022 17:10
+> > 
+> > There's a push by Ariadne to enforce that argv[0] cannot be NULL. So far
+> > we've allowed this. Fix the execveat() invocations to set argv[0] to the
+> > name of the file we're about to execute.
+> > 
+> ...
+> >  src/idmapped-mounts/idmapped-mounts.c | 16 ++++++++--------
+> >  1 file changed, 8 insertions(+), 8 deletions(-)
+> > 
+> > diff --git a/src/idmapped-mounts/idmapped-mounts.c b/src/idmapped-mounts/idmapped-mounts.c
+> > index 4cf6c3bb..76b559ae 100644
+> > --- a/src/idmapped-mounts/idmapped-mounts.c
+> > +++ b/src/idmapped-mounts/idmapped-mounts.c
+> > @@ -3598,7 +3598,7 @@ static int setid_binaries(void)
+> >  			NULL,
+> >  		};
+> >  		static char *argv[] = {
+> > -			NULL,
+> > +			"",
+> >  		};
+> 
+> Isn't that just plain wrong?
+> argv[] needs to be terminated by a NULL so you need to add the ""
+> before the NULL not replace the NULL by it.
+> 
+> Quite how this matches the patch description is another matter...
 
-
->>=C2=A0printk_deferred=C2=A0and=C2=A0printk_deferred_once=C2=A0requires=C2=
-=A0LOGLEVEL=C2=A0in=C2=A0argument,=0D=0A>>=C2=A0but=C2=A0checkpatch.pl=C2=
-=A0reports=C2=A0it=C2=A0as=C2=A0warning:=0D=0A=C2=A0=0D=0A>=20When=C2=A0did=
-=C2=A0that=C2=A0occur?=C2=A0=C2=A0Please=C2=A0reference=C2=A0the=C2=A0speci=
-fic=C2=A0commit.=0D=0A>=20When=C2=A0printk_sched=C2=A0(now=C2=A0printk_defe=
-rred)=C2=A0was=C2=A0created=C2=A0it=C2=A0did=C2=A0not=0D=0A>=20allow=C2=A0K=
-ERN_<LEVEL>.=0D=0A=C2=A0=0D=0A>=20see=C2=A0commit=C2=A03ccf3e830615=C2=A0(=
-=22printk/sched:=C2=A0Introduce=C2=A0special=C2=A0printk_sched()=C2=A0for=
-=C2=A0those=C2=A0awkward=C2=A0moments=22)=0D=0A=C2=A0=0D=0AI=20think=20with=
-=20below=20commit:=0D=0A=0D=0A98e35f5894cf208084688ec0c7bb7b713efc997f=20(p=
-rintk:=20git=20rid=20of=20=5Bsched_delayed=5D=20message=20for=20printk_defe=
-rred)=0D=0A=0D=0Aearlier=20it=20was=20passing=20hardcoded=20KERN_WARNING=20=
-to=20all=20printk_deferred=20messages,=20but=20now=20it=20switched=0D=0Ato=
-=20normal=20printk=20behavior.=0D=0A=0D=0A-=20=20=20=20=20=20=20if=20(in_sc=
-hed)=0D=0A-=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20text_len=20=3D=20sc=
-nprintf(text,=20sizeof(textbuf),=0D=0A-=20=20=20=20=20=20=20=20=20=20=20=20=
-=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20KER=
-N_WARNING=20=22=5Bsched_delayed=5D=20=22);=0D=0A-=0D=0A-=20=20=20=20=20=20=
-=20text_len=20+=3D=20vscnprintf(text=20+=20text_len,=0D=0A-=20=20=20=20=20=
-=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=
-sizeof(textbuf)=20-=20text_len,=20fmt,=20args);=0D=0A+=20=20=20=20=20=20=20=
-text_len=20=3D=20vscnprintf(text,=20sizeof(textbuf),=20fmt,=20args);=0D=0A=
-=0D=0A=0D=0AI=20did=20not=20search=20that=20earlier,=20because=20we=20were=
-=20fixing=20some=20issue=20in=20our=20local=20module=20code=20with=20printk=
-_deferred=0D=0Aand=20then=20checkatch=20reported=20the=20issues,=20so=20tho=
-ught=20of=20fixing=20it,=20becaue=20without=20level=0D=0Apritk_deferred=20m=
-essages=20was=20shifted=20to=20default=20loglevel=20as=20done=20by=20normal=
-=20printk.=0D=0A=0D=0ASo=20I=20thought=20it=20was=20designed=20to=20pass=20=
-loglevel=20from=20starting=20stage=20and=20checjpatch=20reports=20falsely.=
-=0D=0Abut=20seems=20checkpatch=20needs=20to=20fixed=20with=20that=20commit=
-=20itself,=20because=20earlier=20it=20was=20not=20required=20to=20pass=20lo=
-glevel.=0D=0A=0D=0A=0D=0A>=20There=C2=A0are=C2=A0many=C2=A0existing=C2=A0pr=
-intk_deferred=C2=A0uses=C2=A0without=C2=A0KERN_<LEVEL>.=0D=0A=0D=0AEither=
-=20that=20needs=20to=20be=20fixed=20after=20that=20commit(98e35f5894cf)=20o=
-r=20their=20purpose=20is=20to=0D=0Ause=20KERN_DEFAULT=20log=20level=20i=20t=
-hink.=0D=0A=0D=0AThanks,=0D=0AManinder=20Singh=0D=0A=C2=A0=0D=0A=C2=A0
+Bah, braino. I fired that too quickly.
