@@ -2,162 +2,309 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04C4CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 10:23:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7EE2C43219
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 10:24:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245260AbiBBKXH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 05:23:07 -0500
-Received: from mailout2.samsung.com ([203.254.224.25]:49286 "EHLO
-        mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245554AbiBBKXE (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 05:23:04 -0500
-Received: from epcas5p3.samsung.com (unknown [182.195.41.41])
-        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220202102302epoutp02d0dd5b72ea18e665b95f749caf8bc138~P8QKatU-w0454704547epoutp02g
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 10:23:02 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220202102302epoutp02d0dd5b72ea18e665b95f749caf8bc138~P8QKatU-w0454704547epoutp02g
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1643797382;
-        bh=uXYenapP+M+skViYeaA8T3CFXnCpSivrd+hyp8bOTAA=;
-        h=Date:Subject:Reply-To:From:To:CC:In-Reply-To:References:From;
-        b=sEhQFEMmeWQ+zSXvGJQxkgtZIuH2S7nW/DEiRBM44yzq7tsij5aeZDB230MADn9mb
-         kM2d+EZ9LrEOeOkaSPQuRUoKibOqaUF32ahuEDucKZbxellg59QAcMDo0lZLZ71AFs
-         lpY3NaoDgOBi3agplZcON766PJHuGcYPVBEiyrXo=
-Received: from epsmges5p2new.samsung.com (unknown [182.195.42.74]) by
-        epcas5p2.samsung.com (KnoxPortal) with ESMTP id
-        20220202102301epcas5p20f09cb35e779679944212bd076822a75~P8QJ3cZym0127201272epcas5p29;
-        Wed,  2 Feb 2022 10:23:01 +0000 (GMT)
-X-AuditID: b6c32a4a-de5ff7000000b6e6-56-61fa5b1fbbdb
-Received: from epcas5p1.samsung.com ( [182.195.41.39]) by
-        epsmges5p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        17.6C.46822.F1B5AF16; Wed,  2 Feb 2022 19:21:19 +0900 (KST)
-Date:   Wed, 02 Feb 2022 15:38:16 +0530
-Message-ID: <1167862481.1626207.1643796496590@mail-kr5-2>
-Mime-Version: 1.0
-Subject: RE: [PATCH RESEND v2] scripts/checkpatch.pl: remove _deferred and
- _deferred_once false warning
-Reply-To: maninder1.s@samsung.com
-Sender: Maninder Singh <maninder1.s@samsung.com>
-From:   Maninder Singh <maninder1.s@samsung.com>
-To:     Joe Perches <joe@perches.com>,
-        "apw@canonical.com" <apw@canonical.com>,
-        "dwaipayanray1@gmail.com" <dwaipayanray1@gmail.com>,
-        "lukas.bulwahn@gmail.com" <lukas.bulwahn@gmail.com>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Vaneet Narang <v.narang@samsung.com>
-X-Priority: 3
-X-Content-Kind-Code: NORMAL
-In-Reply-To: <b7f445008e9921f41df36077a7e28562675e8417.camel@perches.com>
-X-Drm-Type: N,general
-X-Msg-Generator: Mail
-X-Msg-Type: PERSONAL
-X-Reply-Demand: N
-X-CMS-MailID: 20220202100816epcms5p53058dc6f44229f8052f332f2a9b83249
-Content-Type: multipart/mixed;
-        boundary="----=_Part_1626206_1445824588.1643796496590"
-X-Sendblock-Type: REQ_APPROVE
-CMS-TYPE: 105P
-X-Brightmail-Tracker: H4sIAAAAAAAAA02Se0hTYRjG+XaOZ5u0OE6jV81Gll0sNbPLEouCqCloRdDFAnd0JzXnHJua
-        XahR2VKzrM2yeVlCJsxqw7zOlbHRZUaaRJZkmVpmjW44sDIt59mo/37f896e9+XjYHyLVwAn
-        XZZNK2SUNJjwxptsSxaFCfb+opa3/4gWfru5WGisvo4Jy/uHcOEzcwUhPHVfjQut9kq0gRDp
-        VMWEqFX3mi1yGnow0bkGAxKN1s/d5pXoHSOhpem5tCJivdg7rf9jL5LbBHlq2zNMhW4GFiIu
-        B8iV4Gh8wS5E3hw+2Yag7aWD5QrgZAhoO2yYi3nkWrA9rEGFiDPFPjDR4uuSfcl0MFo7cRfz
-        yXnwtOzGdIovuRx+NS52yQQZDgazBXe19yNbEIyeqJ1uj03Vlhd0EYwHHpSp3+MMB0JzbSNy
-        MZeMhXK1k8Xos6C37jPbw18f6BHDfpD/5gnGsA+8/dnm1udA3e3i6cFAFiEwfrnjfpQhODt4
-        yV2xBozXDO6um2DSamcz7nbBpPaMOycISjtuuV3PhOLxdyyP65YqD4fAqV6Tl2eD0e/f3duI
-        oEFtIpjrPmLBp14LUYIEun+H1P03jmEBNH+uwFwpGLkEjOYIRl4I2vNOguHVoFKX4gzPA23R
-        APsqYhuQPy1XZqbSylXyFTL6YLiSylTmyFLDU7Iy69H0pwqNa0EDb7+FWxGLg6xowVT5oKnu
-        KQrAZVkyOtiPd6d6jOLzJNShw7QiK0mRI6WVVhTIwYNn8x6nmig+mUpl0xk0LacVniiLww1Q
-        se72jCbKf/c94Leaa4er1I/PdMSubgo9uUhVu6+gVLMuKKVegm+5dzWR+BA/fHyz2MG6kBA/
-        X/5BGrO5PTuvyTLmqE7L3NmtiyqSdXMrLurF+VvH+o40dxri3pzz/3Ms1770z6W9E3ljmsTJ
-        JEGOLj7SWJOjzbUXOOssO66P5zuuzDH4PHq+u0vSdfSwz9DZK86JCxufD+uNms6Upo6wmphu
-        vSS5qvxkT1ZsVFDDAHtie9gM7ulOTVL8nuiX4ntxXdKMwTVmvtp37TbihwbiDshu6SPskuiU
-        ncukISFDG/H+oPcJYluJ4wCM728d4ZnMfgeTXyWMVJZULxi57G+opIJxZRoVGYoplNRfXiwn
-        Kc8DAAA=
-X-CMS-RootMailID: 20220202071414epcas5p1d329ae4f76c281c1f8f7f07bfb36a919
-References: <b7f445008e9921f41df36077a7e28562675e8417.camel@perches.com>
-        <4ee87d70d5348949787b2d747f90ecffa3119d0b.camel@perches.com>
-        <20220202071405.1872044-1-maninder1.s@samsung.com>
-        <20220202095225epcms5p271da4783d86cb7c51d12d80f097aea44@epcms5p2>
-        <CGME20220202071414epcas5p1d329ae4f76c281c1f8f7f07bfb36a919@epcms5p5>
+        id S244961AbiBBKYF convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 05:24:05 -0500
+Received: from aposti.net ([89.234.176.197]:44304 "EHLO aposti.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231215AbiBBKYD (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 2 Feb 2022 05:24:03 -0500
+Date:   Wed, 02 Feb 2022 10:23:47 +0000
+From:   Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH v12 2/9] drm/ingenic: Add support for JZ4780 and HDMI
+ output
+To:     "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Kees Cook <keescook@chromium.org>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Paul Boddie <paul@boddie.org.uk>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        devicetree@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org, letux-kernel@openphoenux.org,
+        Jonas Karlman <jonas@kwiboo.se>,
+        dri-devel@lists.freedesktop.org,
+        Ezequiel Garcia <ezequiel@collabora.com>
+Message-Id: <N7AO6R.7I6FABF106MT1@crapouillou.net>
+In-Reply-To: <6a7b188769a7ad477bf8cb71e1b9bc086b92388d.1643632014.git.hns@goldelico.com>
+References: <cover.1643632014.git.hns@goldelico.com>
+        <6a7b188769a7ad477bf8cb71e1b9bc086b92388d.1643632014.git.hns@goldelico.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-------=_Part_1626206_1445824588.1643796496590
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="utf-8"
+Hi Nikolaus,
 
-Hi,
+Le lun., janv. 31 2022 at 13:26:48 +0100, H. Nikolaus Schaller 
+<hns@goldelico.com> a écrit :
+> From: Paul Boddie <paul@boddie.org.uk>
+> 
+> Add support for the LCD controller present on JZ4780 SoCs.
+> This SoC uses 8-byte descriptors which extend the current
+> 4-byte descriptors used for other Ingenic SoCs.
+> 
+> Tested on MIPS Creator CI20 board.
+> 
+> Signed-off-by: Paul Boddie <paul@boddie.org.uk>
+> Signed-off-by: Ezequiel Garcia <ezequiel@collabora.com>
+> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+> ---
+>  drivers/gpu/drm/ingenic/ingenic-drm-drv.c | 61 
+> ++++++++++++++++++++++-
+>  drivers/gpu/drm/ingenic/ingenic-drm.h     | 38 ++++++++++++++
+>  2 files changed, 98 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/gpu/drm/ingenic/ingenic-drm-drv.c 
+> b/drivers/gpu/drm/ingenic/ingenic-drm-drv.c
+> index 9c60fc4605e4b..ccdb9eedd9247 100644
+> --- a/drivers/gpu/drm/ingenic/ingenic-drm-drv.c
+> +++ b/drivers/gpu/drm/ingenic/ingenic-drm-drv.c
+> @@ -6,6 +6,7 @@
+> 
+>  #include "ingenic-drm.h"
+> 
+> +#include <linux/bitfield.h>
+>  #include <linux/component.h>
+>  #include <linux/clk.h>
+>  #include <linux/dma-mapping.h>
+> @@ -49,6 +50,11 @@ struct ingenic_dma_hwdesc {
+>  	u32 addr;
+>  	u32 id;
+>  	u32 cmd;
+> +	/* extended hw descriptor for jz4780 */
+> +	u32 offsize;
+> +	u32 pagewidth;
+> +	u32 cpos;
+> +	u32 dessize;
+>  } __aligned(16);
+> 
+>  struct ingenic_dma_hwdescs {
+> @@ -59,7 +65,9 @@ struct ingenic_dma_hwdescs {
+>  struct jz_soc_info {
+>  	bool needs_dev_clk;
+>  	bool has_osd;
+> +	bool has_alpha;
+>  	bool map_noncoherent;
+> +	bool use_extended_hwdesc;
+>  	unsigned int max_width, max_height;
+>  	const u32 *formats_f0, *formats_f1;
+>  	unsigned int num_formats_f0, num_formats_f1;
+> @@ -446,6 +454,9 @@ static int ingenic_drm_plane_atomic_check(struct 
+> drm_plane *plane,
+>  	if (!crtc)
+>  		return 0;
+> 
+> +	if (plane == &priv->f0)
+> +		return -EINVAL;
 
-> > > >  printk_deferred and printk_deferred_once requires LOGLEVEL in argument,
-> > > >  but checkpatch.pl reports it as warning:
-> >  
-> > > When did that occur?  Please reference the specific commit.
-> > > When printk_sched (now printk_deferred) was created it did not
-> > > allow KERN_<LEVEL>.
-> >  
-> > > see commit 3ccf3e830615 ("printk/sched: Introduce special printk_sched() for those awkward moments")
-> >  
-> > I think with below commit:
-> > 
-> > 98e35f5894cf208084688ec0c7bb7b713efc997f (printk: git rid of [sched_delayed] message for printk_deferred)
-> > 
-> > earlier it was passing hardcoded KERN_WARNING to all printk_deferred messages, but now it switched
-> > to normal printk behavior.
-> > 
-> > -       if (in_sched)
-> > -               text_len = scnprintf(text, sizeof(textbuf),
-> > -                                    KERN_WARNING "[sched_delayed] ");
-> > -
-> > -       text_len += vscnprintf(text + text_len,
-> > -                              sizeof(textbuf) - text_len, fmt, args);
-> > +       text_len = vscnprintf(text, sizeof(textbuf), fmt, args);
-> > 
-> > 
-> > I did not search that earlier, because we were fixing some issue in our local module code with printk_deferred
-> > and then checkatch reported the issues, so thought of fixing it, becaue without level
-> > pritk_deferred messages was shifted to default loglevel as done by normal printk.
-> > 
-> > So I thought it was designed to pass loglevel from starting stage and checjpatch reports falsely.
-> > but seems checkpatch needs to fixed with that commit itself, because earlier it was not required to pass loglevel.
->  
-> Most of that should be in the commit message.
+This will break JZ4725B -> JZ4770 SoCs, the f0 plane is perfectly 
+usable there.
 
-Yes, Initially I thought it's added in checkpatch by mistake,
-I Should have checked history of printk_deferred also.
+Cheers,
+-Paul
 
-I will send new version with updated comit message.
+> +
+>  	crtc_state = drm_atomic_get_existing_crtc_state(state,
+>  							crtc);
+>  	if (WARN_ON(!crtc_state))
+> @@ -662,6 +673,33 @@ static void 
+> ingenic_drm_plane_atomic_update(struct drm_plane *plane,
+>  		hwdesc->cmd = JZ_LCD_CMD_EOF_IRQ | (width * height * cpp / 4);
+>  		hwdesc->next = dma_hwdesc_addr(priv, next_id);
+> 
+> +		if (priv->soc_info->use_extended_hwdesc) {
+> +			hwdesc->cmd |= JZ_LCD_CMD_FRM_ENABLE;
+> +
+> +			/* Extended 8-byte descriptor */
+> +			hwdesc->cpos = 0;
+> +			hwdesc->offsize = 0;
+> +			hwdesc->pagewidth = 0;
+> +
+> +			switch (newstate->fb->format->format) {
+> +			case DRM_FORMAT_XRGB1555:
+> +				hwdesc->cpos |= JZ_LCD_CPOS_RGB555;
+> +				fallthrough;
+> +			case DRM_FORMAT_RGB565:
+> +				hwdesc->cpos |= JZ_LCD_CPOS_BPP_15_16;
+> +				break;
+> +			case DRM_FORMAT_XRGB8888:
+> +				hwdesc->cpos |= JZ_LCD_CPOS_BPP_18_24;
+> +				break;
+> +			}
+> +			hwdesc->cpos |= (JZ_LCD_CPOS_COEFFICIENT_1 <<
+> +					 JZ_LCD_CPOS_COEFFICIENT_OFFSET);
+> +			hwdesc->dessize =
+> +				(0xff << JZ_LCD_DESSIZE_ALPHA_OFFSET) |
+> +				FIELD_PREP(JZ_LCD_DESSIZE_HEIGHT_MASK, height - 1) |
+> +				FIELD_PREP(JZ_LCD_DESSIZE_WIDTH_MASK, width - 1);
+> +		}
+> +
+>  		if (drm_atomic_crtc_needs_modeset(crtc_state)) {
+>  			fourcc = newstate->fb->format->format;
+> 
+> @@ -693,6 +731,9 @@ static void 
+> ingenic_drm_encoder_atomic_mode_set(struct drm_encoder *encoder,
+>  		    | JZ_LCD_CFG_SPL_DISABLE | JZ_LCD_CFG_REV_DISABLE;
+>  	}
+> 
+> +	if (priv->soc_info->use_extended_hwdesc)
+> +		cfg |= JZ_LCD_CFG_DESCRIPTOR_8;
+> +
+>  	if (mode->flags & DRM_MODE_FLAG_NHSYNC)
+>  		cfg |= JZ_LCD_CFG_HSYNC_ACTIVE_LOW;
+>  	if (mode->flags & DRM_MODE_FLAG_NVSYNC)
+> @@ -1015,6 +1056,7 @@ static int ingenic_drm_bind(struct device *dev, 
+> bool has_components)
+>  	long parent_rate;
+>  	unsigned int i, clone_mask = 0;
+>  	int ret, irq;
+> +	u32 osdc = 0;
+> 
+>  	soc_info = of_device_get_match_data(dev);
+>  	if (!soc_info) {
+> @@ -1272,7 +1314,10 @@ static int ingenic_drm_bind(struct device 
+> *dev, bool has_components)
+> 
+>  	/* Enable OSD if available */
+>  	if (soc_info->has_osd)
+> -		regmap_write(priv->map, JZ_REG_LCD_OSDC, JZ_LCD_OSDC_OSDEN);
+> +		osdc |= JZ_LCD_OSDC_OSDEN;
+> +	if (soc_info->has_alpha)
+> +		osdc |= JZ_LCD_OSDC_ALPHAEN;
+> +	regmap_write(priv->map, JZ_REG_LCD_OSDC, osdc);
+> 
+>  	mutex_init(&priv->clk_mutex);
+>  	priv->clock_nb.notifier_call = ingenic_drm_update_pixclk;
+> @@ -1468,10 +1513,24 @@ static const struct jz_soc_info 
+> jz4770_soc_info = {
+>  	.num_formats_f0 = ARRAY_SIZE(jz4770_formats_f0),
+>  };
+> 
+> +static const struct jz_soc_info jz4780_soc_info = {
+> +	.needs_dev_clk = true,
+> +	.has_osd = true,
+> +	.has_alpha = true,
+> +	.use_extended_hwdesc = true,
+> +	.max_width = 4096,
+> +	.max_height = 2048,
+> +	.formats_f1 = jz4770_formats_f1,
+> +	.num_formats_f1 = ARRAY_SIZE(jz4770_formats_f1),
+> +	.formats_f0 = jz4770_formats_f0,
+> +	.num_formats_f0 = ARRAY_SIZE(jz4770_formats_f0),
+> +};
+> +
+>  static const struct of_device_id ingenic_drm_of_match[] = {
+>  	{ .compatible = "ingenic,jz4740-lcd", .data = &jz4740_soc_info },
+>  	{ .compatible = "ingenic,jz4725b-lcd", .data = &jz4725b_soc_info },
+>  	{ .compatible = "ingenic,jz4770-lcd", .data = &jz4770_soc_info },
+> +	{ .compatible = "ingenic,jz4780-lcd", .data = &jz4780_soc_info },
+>  	{ /* sentinel */ },
+>  };
+>  MODULE_DEVICE_TABLE(of, ingenic_drm_of_match);
+> diff --git a/drivers/gpu/drm/ingenic/ingenic-drm.h 
+> b/drivers/gpu/drm/ingenic/ingenic-drm.h
+> index 22654ac1dde1c..cb1d09b625881 100644
+> --- a/drivers/gpu/drm/ingenic/ingenic-drm.h
+> +++ b/drivers/gpu/drm/ingenic/ingenic-drm.h
+> @@ -44,8 +44,11 @@
+>  #define JZ_REG_LCD_XYP1				0x124
+>  #define JZ_REG_LCD_SIZE0			0x128
+>  #define JZ_REG_LCD_SIZE1			0x12c
+> +#define JZ_REG_LCD_PCFG				0x2c0
+> 
+>  #define JZ_LCD_CFG_SLCD				BIT(31)
+> +#define JZ_LCD_CFG_DESCRIPTOR_8			BIT(28)
+> +#define JZ_LCD_CFG_RECOVER_FIFO_UNDERRUN	BIT(25)
+>  #define JZ_LCD_CFG_PS_DISABLE			BIT(23)
+>  #define JZ_LCD_CFG_CLS_DISABLE			BIT(22)
+>  #define JZ_LCD_CFG_SPL_DISABLE			BIT(21)
+> @@ -63,6 +66,7 @@
+>  #define JZ_LCD_CFG_DE_ACTIVE_LOW		BIT(9)
+>  #define JZ_LCD_CFG_VSYNC_ACTIVE_LOW		BIT(8)
+>  #define JZ_LCD_CFG_18_BIT			BIT(7)
+> +#define JZ_LCD_CFG_24_BIT			BIT(6)
+>  #define JZ_LCD_CFG_PDW				(BIT(5) | BIT(4))
+> 
+>  #define JZ_LCD_CFG_MODE_GENERIC_16BIT		0
+> @@ -132,6 +136,7 @@
+>  #define JZ_LCD_CMD_SOF_IRQ			BIT(31)
+>  #define JZ_LCD_CMD_EOF_IRQ			BIT(30)
+>  #define JZ_LCD_CMD_ENABLE_PAL			BIT(28)
+> +#define JZ_LCD_CMD_FRM_ENABLE			BIT(26)
+> 
+>  #define JZ_LCD_SYNC_MASK			0x3ff
+> 
+> @@ -153,6 +158,7 @@
+>  #define JZ_LCD_RGBC_EVEN_BGR			(0x5 << 0)
+> 
+>  #define JZ_LCD_OSDC_OSDEN			BIT(0)
+> +#define JZ_LCD_OSDC_ALPHAEN			BIT(2)
+>  #define JZ_LCD_OSDC_F0EN			BIT(3)
+>  #define JZ_LCD_OSDC_F1EN			BIT(4)
+> 
+> @@ -176,6 +182,38 @@
+>  #define JZ_LCD_SIZE01_WIDTH_LSB			0
+>  #define JZ_LCD_SIZE01_HEIGHT_LSB		16
+> 
+> +#define JZ_LCD_DESSIZE_ALPHA_OFFSET		24
+> +#define JZ_LCD_DESSIZE_HEIGHT_MASK		GENMASK(23, 12)
+> +#define JZ_LCD_DESSIZE_WIDTH_MASK		GENMASK(11, 0)
+> +
+> +#define JZ_LCD_CPOS_BPP_15_16			(4 << 27)
+> +#define JZ_LCD_CPOS_BPP_18_24			(5 << 27)
+> +#define JZ_LCD_CPOS_BPP_30			(7 << 27)
+> +#define JZ_LCD_CPOS_RGB555			BIT(30)
+> +#define JZ_LCD_CPOS_PREMULTIPLY_LCD		BIT(26)
+> +#define JZ_LCD_CPOS_COEFFICIENT_OFFSET		24
+> +#define JZ_LCD_CPOS_COEFFICIENT_0		0
+> +#define JZ_LCD_CPOS_COEFFICIENT_1		1
+> +#define JZ_LCD_CPOS_COEFFICIENT_ALPHA1		2
+> +#define JZ_LCD_CPOS_COEFFICIENT_1_ALPHA1	3
+> +
+> +#define JZ_LCD_RGBC_RGB_PADDING			BIT(15)
+> +#define JZ_LCD_RGBC_RGB_PADDING_FIRST		BIT(14)
+> +#define JZ_LCD_RGBC_422				BIT(8)
+> +#define JZ_LCD_RGBC_RGB_FORMAT_ENABLE		BIT(7)
+> +
+> +#define JZ_LCD_PCFG_PRI_MODE			BIT(31)
+> +#define JZ_LCD_PCFG_HP_BST_4			(0 << 28)
+> +#define JZ_LCD_PCFG_HP_BST_8			(1 << 28)
+> +#define JZ_LCD_PCFG_HP_BST_16			(2 << 28)
+> +#define JZ_LCD_PCFG_HP_BST_32			(3 << 28)
+> +#define JZ_LCD_PCFG_HP_BST_64			(4 << 28)
+> +#define JZ_LCD_PCFG_HP_BST_16_CONT		(5 << 28)
+> +#define JZ_LCD_PCFG_HP_BST_DISABLE		(7 << 28)
+> +#define JZ_LCD_PCFG_THRESHOLD2_OFFSET		18
+> +#define JZ_LCD_PCFG_THRESHOLD1_OFFSET		9
+> +#define JZ_LCD_PCFG_THRESHOLD0_OFFSET		0
+> +
+>  struct device;
+>  struct drm_plane;
+>  struct drm_plane_state;
+> --
+> 2.33.0
+> 
 
-Thanks
-------=_Part_1626206_1445824588.1643796496590
-Content-Type: application/octet-stream
-Content-Disposition: attachment; filename="rcptInfo.txt"
-Content-Transfer-Encoding: base64
 
-DQogICA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT0NCiAgICAgIFN1YmplY3QgICAgOiBSZTogW1BBVENIIFJFU0VO
-RCB2Ml0gc2NyaXB0cy9jaGVja3BhdGNoLnBsOiByZW1vdmUgX2RlZmVycmVkIGFuZCBfZGVmZXJy
-ZWRfb25jZSBmYWxzZSB3YXJuaW5nDQogICAgICBGcm9tICAgICAgIDogbnVsbA0KICAgICAgU2Vu
-dCBEYXRlICA6IDIwMjItMDItMDIgMTU6MjkgIEdNVCs1OjMwDQogICA9PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0N
-CiAgICAgICAgICAgICAgICAgIE5hbWUgICAgICAgICAgICAgICAgVHlwZSAgICAgICAgICBKb2Ig
-VGl0bGUgICAgICAgICAgICAgICAgICAgICAgIERlcHQuICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgIENvbXBhbnkgICAgICAgICAgICAgICAgDQogICA9PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0NCiAgICAg
-IE1hbmluZGVyIFNpbmdoICAgICAgICAgICAgICAgICBUTyAgICAgICAgIFN0YWZmIEVuZ2luZWVy
-ICAgICAgICAgICAgIFN5c3RlbSBTL1cgR3JvdXAgL1NSSS1EZWxoaSAgICAgICAgICAgICAgIFNh
-bXN1bmfCoEVsZWN0cm9uaWNzwqANCiAgICAgIGFwd0BjYW5vbmljYWwuY29tICAgICAgICAgICAg
-ICBUTw0KICAgICAgZHdhaXBheWFucmF5MUBnbWFpbC5jb20gICAgICAgIFRPDQogICAgICBsdWth
-cy5idWx3YWhuQGdtYWlsLmNvbSAgICAgICAgVE8NCiAgICAgIGxpbnV4LWtlcm5lbEB2Z2VyLmtl
-cm5lbC5vcmcgICBDQw0KICAgICAgVmFuZWV0IE5hcmFuZyAgICAgICAgICAgICAgICAgIENDICAg
-ICAgICAgQXNzb2NpYXRlIEFyY2hpdGVjdCAgICAgICAgU3lzdGVtIFMvVyBHcm91cCAvU1JJLURl
-bGhpICAgICAgICAgICAgICAgU2Ftc3VuZyBFbGVjdHJvbmljcw0KICAgPT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-DQo=
-
-------=_Part_1626206_1445824588.1643796496590--
