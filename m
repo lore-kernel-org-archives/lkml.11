@@ -2,103 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20865C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 08:07:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AA93C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 08:09:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243198AbiBBIHU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 03:07:20 -0500
-Received: from vps.xff.cz ([195.181.215.36]:38672 "EHLO vps.xff.cz"
+        id S243345AbiBBIJg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 03:09:36 -0500
+Received: from molly.corsac.net ([82.66.73.9]:42034 "EHLO mail.corsac.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237918AbiBBIHT (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 03:07:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xff.cz; s=mail;
-        t=1643789237; bh=DMb83cDhQ9rKfuJDRxlbrgx/yp3Sg6TPsG7z/FqFLqM=;
-        h=Date:From:To:Cc:Subject:X-My-GPG-KeyId:References:From;
-        b=SMjCuZQl5MJHcizfaQRtdVjolGreh3bV4fJivIFWoZsfsEEKAP0D1DUyV4VoJ2iHq
-         TBRUIYt2dJeggUIFbVk2gOghjgcQWHndb/PmwhQMSPnbf/pM+rmQGYtGhGGh0S9MSO
-         8chZOfzkHoI3bOtbVWS2bYGKvi0zx/d8JSgV5TBE=
-Date:   Wed, 2 Feb 2022 09:07:17 +0100
-From:   =?utf-8?Q?Ond=C5=99ej?= Jirman <x@xff.cz>
-To:     Samuel Holland <samuel@sholland.org>
-Cc:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-i2c@vger.kernel.org, Wolfram Sang <wsa@kernel.org>
-Subject: Re: [PATCH 2/5] Input: pinephone-keyboard - Add PinePhone keyboard
- driver
-Message-ID: <20220202080717.fai74mkjxdykqhht@core.my.home>
-Mail-Followup-To: =?utf-8?Q?Ond=C5=99ej?= Jirman <x@xff.cz>,
-        Samuel Holland <samuel@sholland.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-i2c@vger.kernel.org, Wolfram Sang <wsa@kernel.org>
-X-My-GPG-KeyId: EBFBDDE11FB918D44D1F56C1F9F0A873BE9777ED
- <https://xff.cz/key.txt>
-References: <20220129230043.12422-1-samuel@sholland.org>
- <20220129230043.12422-3-samuel@sholland.org>
+        id S235829AbiBBIJf (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 2 Feb 2022 03:09:35 -0500
+Received: from scapa.corsac.net (unknown [IPv6:2a01:e0a:2ff:c170:6af7:28ff:fe8d:2119])
+        by mail.corsac.net (Postfix) with ESMTPS id BCC9798
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 09:09:31 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=corsac.net; s=2021;
+        t=1643789371; bh=cwIF7F/SraYRZ1XqJOwvVwfaQlEYV0phYUPLhFULyt4=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=dNCsRHjRZcCnbCMENn3tYnv3dB5mf26YBqEkJF4Ngcy4Mh8Y1KQNW7Hzjf8P9AGUC
+         /SsRYjclabhS113SgGH19GEZUXsjgVSTXILsARw3ovSxPWGHR05ERbfdzh2DNqIo+9
+         OcZK4KvqPbclrug3tiwjvX6QMKwE/VM28OVa99PM71YxbvjuU643yp50v7fP0atFM+
+         5/vLUVDaCfeyit1SpdZISO7W9TsxHj78ejCuq7Qm5WzZN7PwTCFsaILdZC/TknLeA7
+         dCVUyS2v2ndsNzRTt6BJbDqGFXogb79rX5k9R6956ywWXsAzA2Ls5J6xvfIt54Rss7
+         ZdDhZQT1aERrA==
+Received: from corsac (uid 1000)
+        (envelope-from corsac@corsac.net)
+        id a0060
+        by scapa.corsac.net (DragonFly Mail Agent v0.13);
+        Wed, 02 Feb 2022 09:09:30 +0100
+Message-ID: <0414e435e29d4ddf53d189d86fae2c55ed0f81ac.camel@corsac.net>
+Subject: Re: [PATCH v2 0/1] ipheth URB overflow fix
+From:   Yves-Alexis Perez <corsac@corsac.net>
+To:     Jan Kiszka <jan.kiszka@siemens.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Georgi Valkov <gvalkov@abv.bg>
+Cc:     linux-usb <linux-usb@vger.kernel.org>,
+        Linux Netdev List <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "stable @ vger . kernel . org" <stable@vger.kernel.org>
+Date:   Wed, 02 Feb 2022 09:09:30 +0100
+In-Reply-To: <cover.1643699778.git.jan.kiszka@siemens.com>
+References: <cover.1643699778.git.jan.kiszka@siemens.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.42.3-1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220129230043.12422-3-samuel@sholland.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Samuel,
+On Tue, 2022-02-01 at 08:16 +0100, Jan Kiszka wrote:
+> Georgi Valkov (1):
+> =C2=A0 ipheth: fix EOVERFLOW in ipheth_rcvbulk_callback
+>=20
+> =C2=A0drivers/net/usb/ipheth.c | 6 +++---
+> =C2=A01 file changed, 3 insertions(+), 3 deletions(-)
 
-On Sat, Jan 29, 2022 at 05:00:39PM -0600, Samuel Holland wrote:
-> The official Pine64 PinePhone keyboard case contains a matrix keypad and
-> a MCU which runs a libre firmware. Add support for its I2C interface.
-> 
-> Signed-off-by: Samuel Holland <samuel@sholland.org>
-> ---
+Hi,
 
-> [...]
+sorry for the extra-long delay. I finally tested the patch, and it seems to
+work fine. I've tried it on my laptop for few hours without issue, but to b=
+e
+fair it was working just fine before, I never experienced the EOVERFLOW
+myself.
 
-> +
-> +	ppkb->buf_swap = !ppkb->buf_swap;
-> +
-> +	keymap = ppkb->fn_state ? ppkb->fn_keymap : ppkb->input->keycode;
-> +	for (col = 0; col < ppkb->cols; ++col) {
-> +		u8 old = *(++old_buf);
-> +		u8 new = *(++new_buf);
-> +		u8 changed = old ^ new;
-> +
-> +		for (row = 0; row < ppkb->rows; ++row) {
-> +			int code = MATRIX_SCAN_CODE(row, col, ppkb->row_shift);
-> +			int value = new & BIT(row);
-> +
-> +			if (!(changed & BIT(row)))
-> +				continue;
-> +
-> +			dev_dbg(dev, "row %u col %u %sed\n",
-> +				row, col, value ? "press" : "releas");
-> +			if (keymap[code] == KEY_FN) {
-> +				dev_dbg(dev, "FN is now %sed\n",
-> +					value ? "press" : "releas");
-> +				keymap = value ? ppkb->fn_keymap
-> +					       : ppkb->input->keycode;
-> +				ppkb->fn_state = value;
-> +			}
-> +			input_event(ppkb->input, EV_MSC, MSC_SCAN, code);
-> +			input_report_key(ppkb->input, keymap[code], value);
-
-I think there's a logic issue here with the Fn layer. Consider what happens
-when you press Fn press F1 and then release Fn and release F1. In that case
-input_report_key will report press of F1 (in fn layer) but release of '1'
-which is not in Fn layer, because Fn layer was de-activated before releasing
-the modified key.
-
-From the PoV of the user, this will probably lead to auto-repeat of F1 and
-spurious '1' release without preceding press event. So the userspace sees
-F1 as stuck and auto-repeats it.
-
-kind regards,
-	o.
-
-> +		}
-> +	}
-> +	input_sync(ppkb->input);
-> +}
-> +
+Regards,
+--=20
+Yves-Alexis
