@@ -2,110 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B82C3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 13:08:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FC05C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 13:11:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244477AbiBBNI5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 08:08:57 -0500
-Received: from mail.efficios.com ([167.114.26.124]:55572 "EHLO
-        mail.efficios.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229706AbiBBNI4 (ORCPT
+        id S1344210AbiBBNLP (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 08:11:15 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:57486 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229706AbiBBNLO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 08:08:56 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id 1647B34ECF1;
-        Wed,  2 Feb 2022 08:08:56 -0500 (EST)
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id iTcKd-Q8oOys; Wed,  2 Feb 2022 08:08:55 -0500 (EST)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id 9A13334ECF0;
-        Wed,  2 Feb 2022 08:08:55 -0500 (EST)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com 9A13334ECF0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
-        s=default; t=1643807335;
-        bh=vzO0p5w5j7FZ4ViC/C4AbqNMVeUQHoVdH0umaEKhaX8=;
-        h=Date:From:To:Message-ID:MIME-Version;
-        b=KLgBxHkf93QCuZ3WY8v/zAlE1UWPlw3hnI4czYXnJxuEEBSd5a2Haw2+OQWFkuz8b
-         Z34IyD5fi3wkpzf9sa264PdCaWwo7L44IFC+QtUHFJPFMaQM/dhr76D+5z/gO/UolN
-         qQIXZituMAETOD9Dbkp3RFbca0FP6PtRDehTDfYmvbybfmxGzJ9Cyv8/sdi9fREjef
-         Dv2UvYQ7png3U3WLXRPr1FHphItE/4cJA3Jf01SD+SC+bytkWOMbk9P8Rw61wgpAcR
-         FRcm+d+VsoJsV6CYMjEiO6BZ43FKVKXuvt7dUkGbV7OPWq57wF24n8w1FyBuFs1yhZ
-         9a99UaKcR/jCQ==
-X-Virus-Scanned: amavisd-new at efficios.com
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id GwcRLFcMm8Lg; Wed,  2 Feb 2022 08:08:55 -0500 (EST)
-Received: from mail03.efficios.com (mail03.efficios.com [167.114.26.124])
-        by mail.efficios.com (Postfix) with ESMTP id 7CEBE34EEEE;
-        Wed,  2 Feb 2022 08:08:55 -0500 (EST)
-Date:   Wed, 2 Feb 2022 08:08:55 -0500 (EST)
-From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-To:     Florian Weimer <fweimer@redhat.com>
-Cc:     Chris Kennelly <ckennelly@google.com>,
-        Paul Turner <pjt@google.com>, Peter Oskolkov <posk@posk.io>,
-        libc-alpha <libc-alpha@sourceware.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>
-Message-ID: <770517862.27112.1643807335312.JavaMail.zimbra@efficios.com>
-In-Reply-To: <1375227765.27051.1643801804042.JavaMail.zimbra@efficios.com>
-References: <432231420.24682.1643727496135.JavaMail.zimbra@efficios.com> <CAEE+ybn_Cp1-T=2uB7xJqU2gEU-PxzsaV5jqCOupNp2cx_bK-Q@mail.gmail.com> <87mtja1fuz.fsf@oldenburg.str.redhat.com> <875ypx1x0d.fsf@oldenburg.str.redhat.com> <1375227765.27051.1643801804042.JavaMail.zimbra@efficios.com>
-Subject: Re: Aligning tcmalloc with glibc 2.35 rseq ABI
+        Wed, 2 Feb 2022 08:11:14 -0500
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 8CC97212B5;
+        Wed,  2 Feb 2022 13:11:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1643807473; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Y1vdxpzI7EjUSPvPN4bFfe0t93Iya3IKe+RvVci8dVo=;
+        b=X3+GP8crsfhgoy2q8nRId53w++uim/wW9Wa65WLnT3/MmpkL7KnMD/MqFWKL5esiUgmSZo
+        Xwv6qfkIQX8KqrzSHDrmFCwLHlpjyGabJ6zlVM+r4lMvI8vw1vkuawR/SWUATE/IUZgsXX
+        KMQGcUgQGBCHu45ZspB9i/zOucIXBn0=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1643807473;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Y1vdxpzI7EjUSPvPN4bFfe0t93Iya3IKe+RvVci8dVo=;
+        b=wXLwDVkH0dWasbv9g8lh5s9tt/SJ3sUza+RgqnkfR9klA5mjPk+nsQkASQFPO649Epay5p
+        BTIa9XrSriYZLuCA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 7C02413E48;
+        Wed,  2 Feb 2022 13:11:13 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id BybZHfGC+mGtPgAAMHmgww
+        (envelope-from <hare@suse.de>); Wed, 02 Feb 2022 13:11:13 +0000
+Message-ID: <fe7f1960-2c1d-cbde-11e4-989408e41881@suse.de>
+Date:   Wed, 2 Feb 2022 14:11:12 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [167.114.26.124]
-X-Mailer: Zimbra 8.8.15_GA_4203 (ZimbraWebClient - FF96 (Linux)/8.8.15_GA_4203)
-Thread-Topic: Aligning tcmalloc with glibc 2.35 rseq ABI
-Thread-Index: bfYiCaJUUsTdq41BtJE3Fb9JJIH1YGMmnFBS
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCHv2 1/7] block: support pi with extended metadata
+Content-Language: en-US
+To:     Keith Busch <kbusch@kernel.org>, linux-nvme@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-block@vger.kernel.org
+Cc:     axboe@kernel.dk, hch@lst.de, martin.petersen@oracle.com,
+        colyli@suse.de
+References: <20220201190128.3075065-1-kbusch@kernel.org>
+ <20220201190128.3075065-2-kbusch@kernel.org>
+From:   Hannes Reinecke <hare@suse.de>
+In-Reply-To: <20220201190128.3075065-2-kbusch@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
------ On Feb 2, 2022, at 6:36 AM, Mathieu Desnoyers mathieu.desnoyers@efficios.com wrote:
-
-> ----- On Feb 2, 2022, at 3:41 AM, Florian Weimer fweimer@redhat.com wrote:
+On 2/1/22 20:01, Keith Busch wrote:
+> The nvme spec allows protection information formats with metadata
+> extending beyond the pi field. Use the actual size of the metadata field
+> for incrementing the protection buffer.
 > 
->> * Florian Weimer:
->> 
->>> * Chris Kennelly:
->>>
->>>> Thanks for the heads up.
->>>>
->>>> I did have a question about whether the new protocol would introduce
->>>> an extra memory reference while initializing a critical section.
->>>>
->>>> * With initial-exec TLS, I can directly reference __rseq_abi.
->>>> * With the new ABI, I might need to ask glibc for the address of the
->>>> registered rseq structure in its thread data.
->>>
->>> You can write __rseq_offset to a static/hidden variable in an ELF
->>> constructor, and then use pretty much the same assembler sequences as
->>> for initial-exec TLS on most architectures.
->> 
->> And now I'm kind of worried that we should be using ptrdiff_t for
->> __rseq_offset because that's what the initial-exec relocations use. 8-/
+> Signed-off-by: Keith Busch <kbusch@kernel.org>
+> ---
+>   block/bio-integrity.c         | 1 +
+>   block/t10-pi.c                | 4 ++--
+>   include/linux/blk-integrity.h | 1 +
+>   3 files changed, 4 insertions(+), 2 deletions(-)
 > 
-> I suspect the underlying question here is: how likely is it that a libc
-> requires an offset of more than 2GB either way from the thread pointer
-> to allocate its rseq thread area on a 64-bit architecture ?
+Reviewed-by: Hannes Reinecke <hare@suse.de>
 
-More to the point: is ptrdiff_t the correct type here ? I think so.
-Do we want to revert the ABI and wait another 6 months before we
-bring back rseq into glibc just for this ? I'm not sure this limitation
-justifies it.
+Cheers,
 
-So if there is a quick way to fix that before the official 2.35 release,
-I'm all for it, otherwise I cannot say that __rseq_offset being an "int"
-rather than a "ptrdiff_t" will make much real-life difference (unless
-I'm proven wrong). But we will be stuck with this quirk forever.
-
-Thanks,
-
-Mathieu
-
-
+Hannes
 -- 
-Mathieu Desnoyers
-EfficiOS Inc.
-http://www.efficios.com
+Dr. Hannes Reinecke		           Kernel Storage Architect
+hare@suse.de			                  +49 911 74053 688
+SUSE Software Solutions Germany GmbH, Maxfeldstr. 5, 90409 Nürnberg
+HRB 36809 (AG Nürnberg), GF: Felix Imendörffer
