@@ -2,128 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74257C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 13:52:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC01AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 13:52:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241606AbiBBNwj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 08:52:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60770 "EHLO
+        id S1344546AbiBBNwr (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 08:52:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344587AbiBBNuY (ORCPT
+        with ESMTP id S1344541AbiBBNwo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 08:50:24 -0500
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 271E7C061751
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 05:50:17 -0800 (PST)
-Received: by mail-pj1-x1030.google.com with SMTP id z14-20020a17090ab10e00b001b6175d4040so6959141pjq.0
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 05:50:17 -0800 (PST)
+        Wed, 2 Feb 2022 08:52:44 -0500
+Received: from mail-vk1-xa2a.google.com (mail-vk1-xa2a.google.com [IPv6:2607:f8b0:4864:20::a2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DE9CC06173D;
+        Wed,  2 Feb 2022 05:52:43 -0800 (PST)
+Received: by mail-vk1-xa2a.google.com with SMTP id z15so12618252vkp.13;
+        Wed, 02 Feb 2022 05:52:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=TnJY4R7pNFq+r1c9Hai8pZCAxCplMW9W4uneml+9vI4=;
-        b=oWAUpCfdpiugCygrTgIA9X8C/lV3LzbqgqOMRZO7X7MfSgx4XOx/FBGQjiEP1bNdkV
-         P2XpD8hAcBq+sHWNb0+VbeAN7xU9Cuc9a+imNhgeUIjXLwNyKzYfeDgonqpaKz5oGpI2
-         UFpiuHKEjD3JbhenDiu1XBlBW/6fU2qYI2Fko=
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BrtQqWd/LgMqmSVv1/9+8qzI7p+FENvHBb0XUxBtq6w=;
+        b=XfFSyenWWCOxiPR7sd8wyA4pPwSRw8+E3dLJJih/ci/kin16nIYX+qoRIvVq+m910L
+         YQ9g0+GU/sLeb4iDfoNnTBULoRsUsqi5h5DOBZHD7HfKjv0V2uyTgCl9pzn8Y/8jpOG1
+         a0R3nwg8UBr0etMbL46X29gJKRlJfwOSq/cbttOu5NZez03qZDnsjAd0nnYQr3qsMbYG
+         GsFGVfqPH8EhgjW/IsNMTNJbBUGMdF1al9YWZC5KR6N1Qh2DMJfzfbDU6hPuQv4unqY2
+         B6Sh83rbXkx7jGG8QJbS5oKyIed94fQ90muJbMRbznowqLqI6oeSt83PQYscys0hCIn3
+         uMHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=TnJY4R7pNFq+r1c9Hai8pZCAxCplMW9W4uneml+9vI4=;
-        b=AF4v6cE4epJEHGSpnKhPSRFwIC1Z4GTUNq/4/RQTR0OlOXOoJUPJnQilaM8PHO2qWW
-         L3b7badIt6U9HqjRes5fP0zNLYAChSDwQYKICLYAX0OYTwPQVyp+dzWRmHI04xfPlXDL
-         ifNovDJE+Va98gojnGxP4XPFhjjCsIqzuZZ7/VaSW9Z3Fgr6gyY3HeAXRQ5AHw4y1kGP
-         n5xyqAKTkkRDlPLlc4KsL71e9REkEBv9bmDxhpI9GqeJq1lSRJl3rmJBLiLE6v+XDEIU
-         rnlfn/FfZdR5a8lLPCcOktTMbk8RNuhkXF3rYZFrlY35DcKLZ7uOZvRlw0JA0balUdQF
-         z7Sg==
-X-Gm-Message-State: AOAM531+mRS4YSf/THwy6LKczmiXEeAk+xLJcbQFgj9OI/vOoNuHY/lE
-        hCqq5R2lef4MtLCiHQnBpMBp4Q==
-X-Google-Smtp-Source: ABdhPJzr0WbMa8H3fmltc1g6gtQpUKUFkIR/O0axG2tZ5a2Jx5HPYVY+Zgn++LYql9+AsJykPkGzBA==
-X-Received: by 2002:a17:90a:601:: with SMTP id j1mr8278507pjj.192.1643809816732;
-        Wed, 02 Feb 2022 05:50:16 -0800 (PST)
-Received: from wenstp920.tpe.corp.google.com ([2401:fa00:1:10:78b5:214c:c81:b9aa])
-        by smtp.gmail.com with ESMTPSA id w19sm27335684pfu.47.2022.02.02.05.50.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Feb 2022 05:50:16 -0800 (PST)
-From:   Chen-Yu Tsai <wenst@chromium.org>
-To:     Stephen Boyd <sboyd@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     Chen-Yu Tsai <wenst@chromium.org>,
-        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
-        Miles Chen <miles.chen@mediatek.com>,
-        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 19/31] clk: mediatek: Add mtk_clk_simple_remove()
-Date:   Wed,  2 Feb 2022 21:48:22 +0800
-Message-Id: <20220202134834.690675-20-wenst@chromium.org>
-X-Mailer: git-send-email 2.35.0.rc2.247.g8bbb082509-goog
-In-Reply-To: <20220202134834.690675-1-wenst@chromium.org>
-References: <20220202134834.690675-1-wenst@chromium.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BrtQqWd/LgMqmSVv1/9+8qzI7p+FENvHBb0XUxBtq6w=;
+        b=AYNUgoc6Omn/StoDT/pik2BWVopOYzKg6Txf75baa/Wegbv3xtYlG4GJa79v9ovl+n
+         jvSHuZMdhWwzRjgJCxk2wCA0/sENdEykHJ9vCweT5c7sjAbg/3jViNUgg+0L6yBgjSbj
+         StiZuMJihTXbQ0vc+aP4ffIAQrN1VIsf7QKOY6fJc+NaRmuvkCsfllHjXf/Hxc9cyUJz
+         Tgwfvtj2ztk0a87VlPnWkEw2X7f0P2NvP0BkXFosqAiVCl1chAgMATOhSecS0cpPfaOx
+         bIeu8Eo4y6f8giMLnPpYL+ueOAVESjWq3Sk2uFy0PRbLAeRKUlO1SGavblwerYm5uB1k
+         l7uw==
+X-Gm-Message-State: AOAM530Zp5ijXLsPPq7InSi95hsEpNR+UfiSdx6R7cCuW5mgc3UVhBFe
+        /iJXW+cTk8wz7A/JjUE6W+WGrJDDyaS/NefAJg==
+X-Google-Smtp-Source: ABdhPJxaKYpd6bp0XEgE4Lw/o/AGJQ7X8tYz0IBqU2gzTTaQ6Qdf2jLZ9HyPic3+C6dbllXnvjhL1NWc9/H08T3U4YY=
+X-Received: by 2002:a1f:aace:: with SMTP id t197mr12740476vke.36.1643809962517;
+ Wed, 02 Feb 2022 05:52:42 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220202121433.3697146-1-rppt@kernel.org>
+In-Reply-To: <20220202121433.3697146-1-rppt@kernel.org>
+From:   Rui Salvaterra <rsalvaterra@gmail.com>
+Date:   Wed, 2 Feb 2022 13:52:31 +0000
+Message-ID: <CALjTZvZiEOtVcpTm+fgAvCB6T88GzbGEZcdrQ77MLD7hJnnJ9w@mail.gmail.com>
+Subject: Re: [PATCH] fs/binfmt_elf: fix PT_LOAD p_align values for loaders
+To:     Mike Rapoport <rppt@kernel.org>
+Cc:     linux-fsdevel@vger.kernel.org,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Eric Biederman <ebiederm@xmission.com>,
+        "H.J. Lu" <hjl.tools@gmail.com>, Kees Cook <keescook@chromium.org>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In commit c58cd0e40ffa ("clk: mediatek: Add mtk_clk_simple_probe() to
-simplify clock providers"), a generic probe function was added to
-simplify clk drivers that only needed to support clk gates. However due
-to the lack of unregister APIs, a corresponding remove function was not
-added.
+Hi, Mike,
 
-Now that the unregister APIs have been implemented, add aforementioned
-remove function to make it complete.
+On Wed, 2 Feb 2022 at 12:14, Mike Rapoport <rppt@kernel.org> wrote:
+>
+> From: Mike Rapoport <rppt@linux.ibm.com>
+>
+> Rui Salvaterra reported that Aisleroit solitaire crashes with "Wrong
+> __data_start/_end pair" assertion from libgc after update to v5.17-rc1.
+>
+> Bisection pointed to commit 9630f0d60fec ("fs/binfmt_elf: use PT_LOAD
+> p_align values for static PIE") that fixed handling of static PIEs, but
+> made the condition that guards load_bias calculation to exclude loader
+> binaries.
+>
+> Restoring the check for presence of interpreter fixes the problem.
+>
+> Fixes: 9630f0d60fec ("fs/binfmt_elf: use PT_LOAD p_align values for static PIE")
+> Reported-by: Rui Salvaterra <rsalvaterra@gmail.com>
+> Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
+> ---
+>  fs/binfmt_elf.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/fs/binfmt_elf.c b/fs/binfmt_elf.c
+> index 605017eb9349..9e11e6f13e83 100644
+> --- a/fs/binfmt_elf.c
+> +++ b/fs/binfmt_elf.c
+> @@ -1117,7 +1117,7 @@ static int load_elf_binary(struct linux_binprm *bprm)
+>                          * without MAP_FIXED nor MAP_FIXED_NOREPLACE).
+>                          */
+>                         alignment = maximum_alignment(elf_phdata, elf_ex->e_phnum);
+> -                       if (alignment > ELF_MIN_ALIGN) {
+> +                       if (interpreter || alignment > ELF_MIN_ALIGN) {
+>                                 load_bias = ELF_ET_DYN_BASE;
+>                                 if (current->flags & PF_RANDOMIZE)
+>                                         load_bias += arch_mmap_rnd();
+> --
+> 2.34.1
+>
 
-Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
-Reviewed-by: Miles Chen <miles.chen@mediatek.com>
----
- drivers/clk/mediatek/clk-mtk.c | 15 +++++++++++++++
- drivers/clk/mediatek/clk-mtk.h |  1 +
- 2 files changed, 16 insertions(+)
+The patch does fix the problem for me, and is thus
 
-diff --git a/drivers/clk/mediatek/clk-mtk.c b/drivers/clk/mediatek/clk-mtk.c
-index 869e6ae55c82..f108786caeda 100644
---- a/drivers/clk/mediatek/clk-mtk.c
-+++ b/drivers/clk/mediatek/clk-mtk.c
-@@ -374,6 +374,8 @@ int mtk_clk_simple_probe(struct platform_device *pdev)
- 	if (r)
- 		goto free_data;
- 
-+	platform_set_drvdata(pdev, clk_data);
-+
- 	return r;
- 
- free_data:
-@@ -381,4 +383,17 @@ int mtk_clk_simple_probe(struct platform_device *pdev)
- 	return r;
- }
- 
-+int mtk_clk_simple_remove(struct platform_device *pdev)
-+{
-+	const struct mtk_clk_desc *mcd = of_device_get_match_data(&pdev->dev);
-+	struct clk_onecell_data *clk_data = platform_get_drvdata(pdev);
-+	struct device_node *node = pdev->dev.of_node;
-+
-+	of_clk_del_provider(node);
-+	mtk_clk_unregister_gates(mcd->clks, mcd->num_clks, clk_data);
-+	mtk_free_clk_data(clk_data);
-+
-+	return 0;
-+}
-+
- MODULE_LICENSE("GPL");
-diff --git a/drivers/clk/mediatek/clk-mtk.h b/drivers/clk/mediatek/clk-mtk.h
-index 3c3a934f53cd..4fa658f5d934 100644
---- a/drivers/clk/mediatek/clk-mtk.h
-+++ b/drivers/clk/mediatek/clk-mtk.h
-@@ -202,5 +202,6 @@ struct mtk_clk_desc {
- };
- 
- int mtk_clk_simple_probe(struct platform_device *pdev);
-+int mtk_clk_simple_remove(struct platform_device *pdev);
- 
- #endif /* __DRV_CLK_MTK_H */
--- 
-2.35.0.rc2.247.g8bbb082509-goog
+Tested-by: Rui Salvaterra <rsalvaterra@gmail.com>
 
+Thanks,
+Rui
