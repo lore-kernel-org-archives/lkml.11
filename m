@@ -2,116 +2,235 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B331C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 16:24:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93370C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 16:25:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345822AbiBBQYb (ORCPT
+        id S1345816AbiBBQZk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 11:24:31 -0500
-Received: from mga12.intel.com ([192.55.52.136]:9064 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236409AbiBBQYa (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 11:24:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643819070; x=1675355070;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=crIMANMLKBvQD5aO8/SbvlEbfgJkAqaDfeDT9EokKZE=;
-  b=P1DcY38jzVOvNCGuNJK6At4mFbxvK3q/sOtJ8Wmm6lUaTKsbQGx7Aa85
-   lq+OQDE8eTHxoPgH8CJPKmb1qv46/O1I6oEZgYcSB1ERL9QmyDKPVtiL8
-   9VRZ10d6xGodqYczHKlSKsc4cMoVVOKWsLX6Z3L3WjlYyT40cItxDk16b
-   ovcRFoOAj0jZE5lVL4EvMUqbm8FcLuNj927fNhlP6Ko6vlk/gap0OhLKK
-   taFDYaXZyYU3GIwV46lGjYauTFD37pqMsZICHLEyfDFAz4RhZy2ouvf6N
-   /6J1oXRz3z86cYVEGgw7Bd+IkjtWKWgjo9XLmE0wJ+KiR2JaFFbVW+ix9
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10246"; a="227923534"
-X-IronPort-AV: E=Sophos;i="5.88,337,1635231600"; 
-   d="scan'208";a="227923534"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 08:24:11 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,337,1635231600"; 
-   d="scan'208";a="771489431"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 02 Feb 2022 08:24:08 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nFIQR-000Uom-R8; Wed, 02 Feb 2022 16:24:07 +0000
-Date:   Thu, 3 Feb 2022 00:23:08 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jorgen Hansen <jhansen@vmware.com>, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org
-Cc:     kbuild-all@lists.01.org, gregkh@linuxfoundation.org,
-        pv-drivers@vmware.com, Jorgen Hansen <jhansen@vmware.com>,
-        Vishnu Dasa <vdasa@vmware.com>
-Subject: Re: [PATCH 2/8] VMCI: dma dg: add MMIO access to registers
-Message-ID: <202202030055.O6CyDujA-lkp@intel.com>
-References: <20220202144910.10349-3-jhansen@vmware.com>
+        Wed, 2 Feb 2022 11:25:40 -0500
+Received: from mail-mw2nam12on2054.outbound.protection.outlook.com ([40.107.244.54]:52064
+        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229437AbiBBQZj (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 2 Feb 2022 11:25:39 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WRlilx5qEmQVjFiz4Z12Xg3Mfloey4NVLQ3x1vDxTb+ALJqmtnYjLRst7R72biBzZNjtR7K8ovCa/yDpp7rjyVsPYReltOoUeecMvdcWz3STdr40eJ+TlqRcA3HPHHXUU83JU0HzbZjzX45LxrUFazYgUdKGjRK0mZzkFKdCws8tTi3zSJIyFh150rg9EG/ON/ka2AMMIgEUzlXET6W+H0W/rWhQwqiHhku2im2jREkDmQOD9tkSXBaYBK2yS6B+ef5StPDzu9RdMzpMsdNZrV5uy+vMJvlhtWsuWjieB40AmWrpvxhtmxBL3VLkIFupi9wGM7oVlHB1Ub/9kwCKdQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=oOFANyY7rEc+TDIcsKTdvLjfLK3nYfKRWVxY+I3ztNU=;
+ b=WpDSf18RGfPL/+eigJW4/mCnVaggDxq+/uq3AzJvrGXqMZ77B21qrTGf9FnSTVEHrboaoyDookVTNKPWcN9nFlqq++DAjR8LmyBIiw8JXeDFcdGFhyZHskBRv/EkhBwdsRNlx9s6SUPzWXTAMc1KIgqwko0bkk7HkKZMepo27tKaL99bGqgNeZmcJNDezF/MD17m31wsxZ51A+RtHE0CwIE24d9sof1eDFqUkmpsZa6DsRxKo7gIGXX13yNVSOt+S+ePqlOnFbhd1R+ZS/3aT8NPx0ycDFBGyAWQV3ZmNCSVENxzRPUwJQqhphmHf0DrOv0Z0l3dZ9IfvYOAJ9n+gQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=oOFANyY7rEc+TDIcsKTdvLjfLK3nYfKRWVxY+I3ztNU=;
+ b=e5OIL9lcG0nD/XLtqAWR/JVfhInJgrwT4mHoEDeBqQmkjIOcdq4rCBGU8rLTgrn4fWZfyVwmsHh7qcPek/zIJVRU7i4odH82bMpZ50AribPQmhf9dkteCAvFs2/4ULmPfjQOmqBJZf737KpYWNpVEadV9lT0hco5pz6jcQ0s61+pOgFtc06oDKfoEiCaBCybhGWC59OqBZCe5tmyOwSUhEXrkJr6keAPAzVMODS2tjakKnMY0Yw+LzzSiBehxutIpQYll2uRWN/ZX1eNIk3pn1dNcAZnSu+8X5Fsq7fskNVnq+oclJxyUAAdVHgx6cYJ0oje6z4KM0fahzs20xCbeA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB3823.namprd12.prod.outlook.com (2603:10b6:208:168::26)
+ by BL0PR12MB4914.namprd12.prod.outlook.com (2603:10b6:208:1c4::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.11; Wed, 2 Feb
+ 2022 16:25:37 +0000
+Received: from MN2PR12MB3823.namprd12.prod.outlook.com
+ ([fe80::a9db:9c46:183e:c213]) by MN2PR12MB3823.namprd12.prod.outlook.com
+ ([fe80::a9db:9c46:183e:c213%3]) with mapi id 15.20.4930.022; Wed, 2 Feb 2022
+ 16:25:37 +0000
+From:   Zi Yan <ziy@nvidia.com>
+To:     David Hildenbrand <david@redhat.com>
+Cc:     Oscar Salvador <osalvador@suse.de>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Christoph Hellwig <hch@lst.de>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        linuxppc-dev@lists.ozlabs.org,
+        virtualization@lists.linux-foundation.org,
+        iommu@lists.linux-foundation.org, Vlastimil Babka <vbabka@suse.cz>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Eric Ren <renzhengeek@gmail.com>
+Subject: Re: [PATCH v4 3/7] mm: page_isolation: check specified range for unmovable pages
+Date:   Wed, 02 Feb 2022 11:25:35 -0500
+X-Mailer: MailMate (1.14r5864)
+Message-ID: <ED2CBE9C-EC92-44BE-87B6-5FF594415FF1@nvidia.com>
+In-Reply-To: <21c196f8-18ca-d720-4241-00c9461854d3@redhat.com>
+References: <20220119190623.1029355-1-zi.yan@sent.com>
+ <20220119190623.1029355-4-zi.yan@sent.com>
+ <Yfp2rv0K6d3cNmwg@localhost.localdomain>
+ <21c196f8-18ca-d720-4241-00c9461854d3@redhat.com>
+Content-Type: multipart/signed;
+ boundary="=_MailMate_DDA32845-4AED-435A-8D84-6088D52B516B_=";
+ micalg=pgp-sha512; protocol="application/pgp-signature"
+X-ClientProxiedBy: MN2PR15CA0041.namprd15.prod.outlook.com
+ (2603:10b6:208:237::10) To MN2PR12MB3823.namprd12.prod.outlook.com
+ (2603:10b6:208:168::26)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220202144910.10349-3-jhansen@vmware.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 78537ba2-54e7-4818-6a68-08d9e668a541
+X-MS-TrafficTypeDiagnostic: BL0PR12MB4914:EE_
+X-Microsoft-Antispam-PRVS: <BL0PR12MB49149B9DC33735213180E455C2279@BL0PR12MB4914.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: J3QKMF8fgNEMm9Z6Sd6GCrLaxFJDsOZ5IgqUTNy0n4yRtn8Jb4B+AAF/NPHxYeu9eYzA5cC0FRqon+xrL1BYUMBCBylLNSXDs29TBGoOB+A98swr1k6hZ3r5YySc2ytd1yJpKBapMdoyvOE0iFZCU4m4GrzTo4BI3tB66ziPfEuhcgVExoAb8iEml8a/8qT3KDg2GLVXBb6k09H9W5HAazCPp/oYVog8q1X44ox+jWnqVjHjmzNZIoiMOC0ZNmNlbrKW+cFZXpkVjdy8OXiPSzCmDBhe8Vz91k1RRbeO1i9f0ZHFlyZax99MMxtk8xd2asX4RhvXq9XQ3DyS84B5wvDvA94JrgLyQ9FgQaUj9j1DNkyszNb2VRopXAGy0x6pDcv/Xmp0zvzJwimS4yIuZGONDy5io7WRAwPxhumowk5mAmbgSeZE9qONqwfXcz4H2YSpD3Wd5HrW1C5Kr+ewWuBDr5A7aYH2RCnG+liCh6JsH0dahCsbfBQSQLwTj8Uqf0cpwoqEJTki8Rw3Xz+dYrpTnOT/ggxYxDVYbDAPlNwHlHI77u6HMqcoo7ZLIV655T0ZIgi3pmfTuM/vYnxiJI8zI6IGKwJegzBDoFGEpKibTWMjh6X/buqc/dgpUt4N7AuOwbc1uiLcqsdZsOctNk29RLyB5o0Pcsl/SmKECGbk8CO0+E8N1g68fq0Ae/swHraV5QkStrSczyhhWmuNf/53PjOxkVB3BYbct2R6558=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB3823.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(66946007)(508600001)(26005)(53546011)(86362001)(6486002)(8676002)(7416002)(4326008)(2906002)(2616005)(83380400001)(5660300002)(8936002)(235185007)(66476007)(36756003)(66556008)(186003)(54906003)(6916009)(38100700002)(33656002)(21480400003)(6506007)(6512007)(316002)(72826004)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Nc/UpiSYzA9tXGcSRJ5pKL4+CLDPGG48cNOyVkVQgVUjHm+9XOvbUJCt5MEI?=
+ =?us-ascii?Q?gJDVVKErBc6Lx3H/psIP19R8+zkU6t2yC1qbogkRb4x78CDJziTL4DCQZ7ko?=
+ =?us-ascii?Q?nLN+ouAoMbrZjlG1gY3p0pEZ9hE/2+au07DcxUiYESH6ixhVU9/lLkQKhCSZ?=
+ =?us-ascii?Q?pZATk/KQd8UmRSaucwJVnQhvEVYF4J9WEC6A0TkwDm/OfC4t4Rrd1ODCstzh?=
+ =?us-ascii?Q?FgJhGYfR2el86eSlaaOk48IugbWe8u1lcS7ItRHb6+ElU/V918J/vByks8gf?=
+ =?us-ascii?Q?hgk9yjh7En40vnlJN4LPPc9KT3NsUClgKXcsezI4HtSl1ivrKzCc4/FQHXKe?=
+ =?us-ascii?Q?88gmufCYWyKHkfkp5ubUHWUoYCl8GW/I1XD7cwLll1CVqiAkQceH8ZIUUoLG?=
+ =?us-ascii?Q?fSoOCk9jh0wITduPmwvc6blwYY7JY3mLndN6NBKWO77O9Z+pwEk60jVcQGSB?=
+ =?us-ascii?Q?9hIpOeipZiKBSiM2aki6guhMPcV+w/9uXofbI7i1P1f+zJkAEzIDkJg3JvXZ?=
+ =?us-ascii?Q?Aq+fXwQEkB/CIA7HlTfoK5W0XcOrn7HAoULpWV16U/xnW7U31M8a9uWFAGO+?=
+ =?us-ascii?Q?1BX4kPqVVvsemWCl9satUxZVEgjp6y1j6BEFcKWOy/dvQaJPtSxBJjJnHoJN?=
+ =?us-ascii?Q?bq+Mu1GR/XvKGOKYftF8yFuBLwww9Dfwl3dNBQt1ESZbNBVY8swkglFjelaB?=
+ =?us-ascii?Q?jjn3hQgzqo4uaQYcUspKV03EF06mCncccWjbq8HmNbFbAGsLwzRgu3tau1Q7?=
+ =?us-ascii?Q?BreZrfg17NVuHBJ+vMaHfeMPAsGFabhw5DjgWbePDNV90qTBLOgWTEGQ7TIs?=
+ =?us-ascii?Q?ew79hRqxgImgsJUKF7rOEct0uOhUKSC2to77DPzVttSyzGVRaTNHktj560SB?=
+ =?us-ascii?Q?H2nzFXDfEE4/RiHd53n4uaQWl85bE/otKESzxfOzSzehOIGUGiPG9l8whmVo?=
+ =?us-ascii?Q?Un1KwpMWTckYq13V1+DjCnoG7xA8tKFQRwQAQrbKrOng1Xb0VN7lsTe0WtX8?=
+ =?us-ascii?Q?lDJueg1Hs7VtxU1j9tcpdRPvNio3d64Ez6WFzML43cgc3HS/8EGs6ig8j9v4?=
+ =?us-ascii?Q?1ujHapkolhF0DQIvVrckTd/2CSusbj97wHl28edRhh/pglgBMkCT9sZmTR4M?=
+ =?us-ascii?Q?A394RZ8Z/bEP9T/1bPUaulsEKqpIPVPMDLDHtNJrLbKnnlD7Ml3dCl4U60sy?=
+ =?us-ascii?Q?TaEgjvTfiOEI9SbLSC1Ip2+Gk8rBC3p/XYQBRkR8vYSyIN2zJ7YKx9/Pqqll?=
+ =?us-ascii?Q?b44+IMI2sAbBQ1uvaMtlJeaeK1CPyxpgOa6lj0ty43omLeLSLTuFgtUSgEAT?=
+ =?us-ascii?Q?F+4egI7dtRBqwd4Wv1l8ecUzDIe3o/Xl8rn9cXWNi4iYHIqyxCuBaug85ZXX?=
+ =?us-ascii?Q?rpwYGPAt7LXNBE1emgBwhpiD2pCBy6ivj6ClNelS1BBrH6RFPY6H06K2nXuw?=
+ =?us-ascii?Q?HIKBD1q1Tm7l2XnSj80kVOafbtQWJRnaqZKulNBQXkzzyH7Mf0HaKqRavesw?=
+ =?us-ascii?Q?v7HjKGMLleX4+XelRvNv2iZvQJMjI7oMnUmx7JJNvrCcgHP/ep81TGK8R++M?=
+ =?us-ascii?Q?vWT7S19E9P36MEqCJjI=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 78537ba2-54e7-4818-6a68-08d9e668a541
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB3823.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Feb 2022 16:25:37.5338
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: i8ULqr6yukvOOwJX4KOc4zUSUrldSWKPkAWc6f8tgrXMIwxbRvM0MvQmGUaVyNdQ
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB4914
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jorgen,
+--=_MailMate_DDA32845-4AED-435A-8D84-6088D52B516B_=
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 
-I love your patch! Perhaps something to improve:
+On 2 Feb 2022, at 7:25, David Hildenbrand wrote:
 
-[auto build test WARNING on char-misc/char-misc-testing]
-[also build test WARNING on linux/master linus/master v5.17-rc2 next-20220202]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+> On 02.02.22 13:18, Oscar Salvador wrote:
+>> On Wed, Jan 19, 2022 at 02:06:19PM -0500, Zi Yan wrote:
+>>> From: Zi Yan <ziy@nvidia.com>
+>>>
+>>> Enable set_migratetype_isolate() to check specified sub-range for
+>>> unmovable pages during isolation. Page isolation is done
+>>> at max(MAX_ORDER_NR_PAEGS, pageblock_nr_pages) granularity, but not a=
+ll
+>>> pages within that granularity are intended to be isolated. For exampl=
+e,
+>>> alloc_contig_range(), which uses page isolation, allows ranges withou=
+t
+>>> alignment. This commit makes unmovable page check only look for
+>>> interesting pages, so that page isolation can succeed for any
+>>> non-overlapping ranges.
+>>
+>> Another thing that came to my mind.
+>> Prior to this patch, has_unmovable_pages() was checking on pageblock
+>> granularity, starting at pfn#0 of the pageblock.
+>> With this patch, you no longer check on pageblock granularity, which
+>> means you might isolate a pageblock, but some pages that sneaked in
+>> might actually be unmovable.
+>>
+>> E.g:
+>>
+>> Let's say you have a pageblock that spans (pfn#512,pfn#1024),
+>> and you pass alloc_contig_range() (pfn#514,pfn#1024).
+>> has_unmovable_pages() will start checking the pageblock at pfn#514,
+>> and so it will mis pfn#512 and pfn#513. Isn't that a problem, if those=
 
-url:    https://github.com/0day-ci/linux/commits/Jorgen-Hansen/VMCI-dma-dg-Add-support-for-DMA-datagrams/20220202-230034
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/char-misc.git 7ab004dbcbee38b8a70798835d3ffcd97a985a5e
-config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220203/202202030055.O6CyDujA-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/0day-ci/linux/commit/f2afd39bab80c2e42ac789f6d949d779411df928
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Jorgen-Hansen/VMCI-dma-dg-Add-support-for-DMA-datagrams/20220202-230034
-        git checkout f2afd39bab80c2e42ac789f6d949d779411df928
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/misc/vmw_vmci/
+>> pfn turn out to be actually unmovable?
+>
+> That's the whole idea for being able to allocate parts of an unmovable
+> pageblock that are movable.
+>
+> If the first part is unmovable but the second part is movable, nothing
+> should stop us from trying to allocate the second part.
+>
+> Of course, we want to remember the original migratetype of the
+> pageblock, to restore that after isolation -- otherwise we'll end up
+> converting all such pageblocks to MIGRATE_MOVABLE. The next patch does
+> that IIRC.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Yes. A desirable optimization is to make MIGRATE_ISOLATE a standalone bit=
+,
+so isolating a pageblock will not remove its original migratetype. It is
+on my todo list.
 
-All warnings (new ones prefixed by >>):
+>
+> However, devil is in the detail, and I still have to review those parts=
 
->> drivers/misc/vmw_vmci/vmci_guest.c:93:14: warning: no previous prototype for 'vmci_read_reg' [-Wmissing-prototypes]
-      93 | unsigned int vmci_read_reg(struct vmci_guest_device *dev, u32 reg)
-         |              ^~~~~~~~~~~~~
->> drivers/misc/vmw_vmci/vmci_guest.c:100:6: warning: no previous prototype for 'vmci_write_reg' [-Wmissing-prototypes]
-     100 | void vmci_write_reg(struct vmci_guest_device *dev, u32 val, u32 reg)
-         |      ^~~~~~~~~~~~~~
+> of this series.
+
+Thanks. You can wait for my next version. I am planning to make
+start_isolate_page_range() accept any address range and move migratetype
+save and restore into it, so that the caller do not need to worry about
+alignment.
+
+Basically, start_isolate_page_range() will need to migrate compound pages=
+
+at the beginning and/or the end of the given range [start_pfn, end_pfn) i=
+f
+start_pfn and/or end_pfn-1 is in the middle of a compound page.
+If start_pfn and/or end_pfn-1 is in the middle of a free page, the free
+page will need to be split and put into separate migratetype lists.
+
+>
+>
+> Note that there are no current users of alloc_contig_range() that
+> allocate < MAX_ORDER - 1 -- except CMA, but for CMA we immediately exit=
+
+> has_unmovable_pages() either way.
+>
+> -- =
+
+> Thanks,
+>
+> David / dhildenb
 
 
-vim +/vmci_read_reg +93 drivers/misc/vmw_vmci/vmci_guest.c
+--
+Best Regards,
+Yan, Zi
 
-    92	
-  > 93	unsigned int vmci_read_reg(struct vmci_guest_device *dev, u32 reg)
-    94	{
-    95		if (dev->mmio_base != NULL)
-    96			return readl(dev->mmio_base + reg);
-    97		return ioread32(dev->iobase + reg);
-    98	}
-    99	
- > 100	void vmci_write_reg(struct vmci_guest_device *dev, u32 val, u32 reg)
-   101	{
-   102		if (dev->mmio_base != NULL)
-   103			writel(val, dev->mmio_base + reg);
-   104		else
-   105			iowrite32(val, dev->iobase + reg);
-   106	}
-   107	
+--=_MailMate_DDA32845-4AED-435A-8D84-6088D52B516B_=
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+Content-Type: application/pgp-signature; name="signature.asc"
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+-----BEGIN PGP SIGNATURE-----
+
+iQJDBAEBCgAtFiEEh7yFAW3gwjwQ4C9anbJR82th+ooFAmH6sH8PHHppeUBudmlk
+aWEuY29tAAoJEJ2yUfNrYfqKJmYP/iXmUcS1xeOlSjoCiof9XQMxBvznUPT2Ut/h
+uhbd8ZZGGShbY2c+6Eko0/00RwXCfuJx0zmSpBaxHv6dHiJ3dTCg0EAbV0EIjXm4
+AcWVsKx4aIeF+PT+DOih1jjku9+Iypq7knEcnmT5uCmqcgbTK4cCNV4agPKU5H9J
+oi2OqpmbJ8A6fe78sVZgQx94VKXfQ8EZSNkJpMqZOrdv0nsqLlTgnBq5JsEbi/t8
+PMBWYHuqAla+S050tqmK0leiHjbfxxXYb9xq6nYM1f58JV+QnTz+b5wkTj7B7Muh
+sqTLrfRXI0CW0uh0shKfJbTDnqIYcD3Dand+iZDXfwo4kIDrihn7Yvyi+z4Kc7TY
+X8u6xLXDqUH3c4c+a/uRcDwt/3hnVKVntQUBX10ksuE8bXeQOFEWSV0rFDuSgHPB
+1Luw6YOSPBO+WuIayG6YeQ4KaCzg0UjMbWKnrbyqpEIKxBCW7/Ugy2Rjk/97yI7w
+ZNo2lK22QETIeDUjRtQ5BYQ4xDAJF8Y+q4Lyh0ETQyfgsGn1WNiWc+AJvCz9yJgL
+UkKkjfmwdFyEa3tdQntJIE+1g3C6EA+HxqK3L1LuwysYJRinYDAWYKkNyX/kLScC
+dkZt/CenurWv0uMeu0bdhKFdRu7z0w8YQ+1ZhEIkxaNAQ7uLqafmGsdWaQnIrGlM
+8XIMpAeK
+=CvVD
+-----END PGP SIGNATURE-----
+
+--=_MailMate_DDA32845-4AED-435A-8D84-6088D52B516B_=--
