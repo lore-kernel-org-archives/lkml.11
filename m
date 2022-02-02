@@ -2,133 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10BE6C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 10:53:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66A93C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 10:54:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343561AbiBBKxT (ORCPT
+        id S1343575AbiBBKyg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 05:53:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48674 "EHLO
+        Wed, 2 Feb 2022 05:54:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245709AbiBBKxP (ORCPT
+        with ESMTP id S235421AbiBBKyc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 05:53:15 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B91FC061714
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 02:53:14 -0800 (PST)
-Date:   Wed, 02 Feb 2022 10:53:12 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1643799193;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Q+pYdL8GgbTSFRMCnYz1Eu7aFcukfwsJ3mc97NcLmm0=;
-        b=2urrzPaDlWxKahSjUkh1bsdYRfMUOK9PPHrIUhuwKzZPYlukr3WRgZHBCiid8Xrm3pff0g
-        +jqxqqrQkKDkwOSl1CJo+A3WZfxTid3Zoz6sU2IZoAxDn8N01x5kGq6LWjT8506BXI35Zi
-        j8XxJDPzojkEH520eNQbwSWoXX+91vp5N76GcqIkzwegT6Styo/3aXLTM0u2T0NtAAVpoo
-        Y/xe6li5nFbBu+cCpaIcjmWJoaOqg9sC/otx+BzDt/Yj79yeujnmRl4fXWrzGWoSqF7o5d
-        vM8onZKiA9XqqKgZYw3xhCLevAGBnAPa6juFi9E43WWE8IjoRWEm8DKKSe6R/g==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1643799193;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Q+pYdL8GgbTSFRMCnYz1Eu7aFcukfwsJ3mc97NcLmm0=;
-        b=OWZ8YBjzzOlpFPOC1aVBdYN+GGzdH7CxxfZKgcbabUlv7PmfUZV95acmqLmUd7wQ6p5pAr
-        56rCSu5/rVhUAkCA==
-From:   "irqchip-bot for Guo Ren" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-kernel@vger.kernel.org
-Subject: [irqchip: irq/irqchip-fixes] dt-bindings: update riscv plic compatible string
-Cc:     Guo Ren <guoren@linux.alibaba.com>,
-        Anup Patel <anup@brainfault.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Rob Herring <robh@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Marc Zyngier <maz@kernel.org>, tglx@linutronix.de
-In-Reply-To: <20220130135634.1213301-2-guoren@kernel.org>
-References: <20220130135634.1213301-2-guoren@kernel.org>
+        Wed, 2 Feb 2022 05:54:32 -0500
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5B81C061714
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 02:54:32 -0800 (PST)
+Received: by mail-ej1-x62a.google.com with SMTP id s13so64403953ejy.3
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 02:54:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qRzI+h4+4G3K8WlXyiWrWECSH5mt2N8z3QLOfw+ZawA=;
+        b=6crsEOUF+BltFBb1hKPB45Jbk3Fyj4l9PeUrgNqQ8AOLnFw4LYEyRY5oa1GelyZK81
+         8nGw12FZcCEM2I4sANtgtnYatCUbNXNep0WJn6RCGxLJ32w0zRK+nLRrdYCrk3psTiCr
+         PG3jOoCIiRmfA0pZ7w5P1eK5nikm24Ii4caBBq9/AMLek/z39uJOOga6xvzbx6dbqu//
+         MVvIimT51bMKW6c4S0KYvG4bAr3XTZdoM7nNKDfQVug0KHZhB3pV+QhkE1dshbn3W/WG
+         fLGChz5vNMF5IgKBkwhmpiDF2zkS99eIUCTGhljZJG4cSsS0tlGb0bnNMw2r1s7g8px/
+         tm5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qRzI+h4+4G3K8WlXyiWrWECSH5mt2N8z3QLOfw+ZawA=;
+        b=RE7z91EQ/fZq/DVd/A1npGEcuBVsOfYeKNGIiNRcNQVton6gtONqQQF3tEyCgm2UfT
+         WD1Gs4HcWa4ofNgRjKPnmg1uuUdF4SnxtwBIsqWcqB3iGfsL9dZWpds8Z66xnv+1uAYz
+         1sQggBQnZF4fH2RyXqSQzfLLhHoMFUw+gcnFUGnEmstMzYxf8Ks+W1H6rCrml5ocDHfr
+         OGMIaj5Ku4868M1TpWc5LRYQG6Qiw5BFfEETImlYwjZFV5N7t6dEZx6PnP6H94kPvu6t
+         GyALSsouqZ8rN96+svAWjaamkRgNH5n4UTGwj6nvtZJ0oa7em1u4qMSaS5SPDUGg0Ao8
+         oK8Q==
+X-Gm-Message-State: AOAM530imrQdi+Kvq4Q4w3r3S+9mv1Jj1tJmDqVzvNsLpzQSU8vXGrmt
+        jtC3Z2SUOnT+SLstN8HitPdxDgQ2pK5I/IyiJIoSYg==
+X-Google-Smtp-Source: ABdhPJwAMLpCwX1yF59xEw6bQlSCaxNpbgzeRxBctFwzXbjiP2pgZK6JNnp4qRE8QXsuXDh6SGCvOFE6PO5MkpWrlys=
+X-Received: by 2002:a17:906:c150:: with SMTP id dp16mr23410451ejc.736.1643799271223;
+ Wed, 02 Feb 2022 02:54:31 -0800 (PST)
 MIME-Version: 1.0
-Message-ID: <164379919219.16921.17083588550151120882.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+References: <6a62a531227cd4f20d77d50cdde60c7a18b9f052.1643625325.git.geert+renesas@glider.be>
+ <CAHp75Vd68gsU-NWTGv4Y7Mo4-Vq7DBePa_yVxpDq=DAN5GLEBA@mail.gmail.com>
+ <CAMuHMdUq3qZqVHH-QSVnwemVRyCp7b2Ldd-7Q2V8CXcj0+9aow@mail.gmail.com> <CAHp75VccHbfmmk7bEXRrQOcePYxCb28sEY-RV6GBCgXAo8A5Sw@mail.gmail.com>
+In-Reply-To: <CAHp75VccHbfmmk7bEXRrQOcePYxCb28sEY-RV6GBCgXAo8A5Sw@mail.gmail.com>
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+Date:   Wed, 2 Feb 2022 11:54:20 +0100
+Message-ID: <CAMRc=MeytMp7JSZUZ+6hz=g77dF1sp83uRMbf5bqvVgKneyV+Q@mail.gmail.com>
+Subject: Re: [PATCH] gpio: aggregator: Fix calling into sleeping GPIO controllers
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        =?UTF-8?Q?Mikko_Salom=C3=A4ki?= <ms@datarespons.se>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the irq/irqchip-fixes branch of irqchip:
+On Tue, Feb 1, 2022 at 9:59 PM Andy Shevchenko
+<andy.shevchenko@gmail.com> wrote:
+>
+> On Tue, Feb 1, 2022 at 10:54 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> > On Tue, Feb 1, 2022 at 9:35 PM Andy Shevchenko
+> > <andy.shevchenko@gmail.com> wrote:
+> > > On Tue, Feb 1, 2022 at 10:09 PM Geert Uytterhoeven
+> > > <geert+renesas@glider.be> wrote:
+>
+> ...
+>
+> > > > +       return chip->can_sleep ? gpiod_get_value_cansleep(fwd->descs[offset])
+> > > > +                              : gpiod_get_value(fwd->descs[offset]);
+> > >
+> > > This indentation kills the perfectionist in me :-)
+> >
+> > Why? The above is aligned perfectly ("?" just above ":")?
+> >
+> > > What about:
+> > >
+> > >        return chip->can_sleep ?
+> > >                gpiod_get_value_cansleep(fwd->descs[offset]) :
+> > > gpiod_get_value(fwd->descs[offset]);
+> > >
+> > > ?
+> > >
+> > > Or as variant
+> > >
+> > >        struct gpio_desc *desc = fwd->descs[offset];
+> > >
+> > >        return chip->can_sleep ? gpiod_get_value_cansleep(desc) :
+> > > gpiod_get_value(desc);
+> > >
+> > > ?
+> >
+> > IMHO, those are ugly as hell ;-)
+>
+> I have the same opinion about your initial variant. :-)
+>
+> So, up to the maintainer(s) what to do.
+>
 
-Commit-ID:     321a8be37e1a93cefeae990107533142c8515933
-Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/321a8be37e1a93cefeae990107533142c8515933
-Author:        Guo Ren <guoren@linux.alibaba.com>
-AuthorDate:    Sun, 30 Jan 2022 21:56:33 +08:00
-Committer:     Marc Zyngier <maz@kernel.org>
-CommitterDate: Wed, 02 Feb 2022 10:48:50 
+It's Geert's code so let's keep his version. I like it better myself too.
 
-dt-bindings: update riscv plic compatible string
+Queued for fixes.
 
-Add the compatible string "thead,c900-plic" to the riscv plic
-bindings to support allwinner d1 SOC which contains c906 core.
-
-Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
-Cc: Anup Patel <anup@brainfault.org>
-Cc: Heiko Stuebner <heiko@sntech.de>
-Cc: Rob Herring <robh@kernel.org>
-Cc: Rob Herring <robh+dt@kernel.org>
-Cc: Palmer Dabbelt <palmer@dabbelt.com>
-Cc: Samuel Holland <samuel@sholland.org>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220130135634.1213301-2-guoren@kernel.org
----
- Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml | 21 +++++++++++++++------
- 1 file changed, 15 insertions(+), 6 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml b/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
-index 0dfa6b2..27092c6 100644
---- a/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
-+++ b/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
-@@ -35,6 +35,10 @@ description:
-   contains a specific memory layout, which is documented in chapter 8 of the
-   SiFive U5 Coreplex Series Manual <https://static.dev.sifive.com/U54-MC-RVCoreIP.pdf>.
- 
-+  The thead,c900-plic is different from sifive,plic-1.0.0 in opensbi, the
-+  T-HEAD PLIC implementation requires setting a delegation bit to allow access
-+  from S-mode. So add thead,c900-plic to distinguish them.
-+
- maintainers:
-   - Sagar Kadam <sagar.kadam@sifive.com>
-   - Paul Walmsley  <paul.walmsley@sifive.com>
-@@ -42,12 +46,17 @@ maintainers:
- 
- properties:
-   compatible:
--    items:
--      - enum:
--          - sifive,fu540-c000-plic
--          - starfive,jh7100-plic
--          - canaan,k210-plic
--      - const: sifive,plic-1.0.0
-+    oneOf:
-+      - items:
-+          - enum:
-+              - sifive,fu540-c000-plic
-+              - starfive,jh7100-plic
-+              - canaan,k210-plic
-+          - const: sifive,plic-1.0.0
-+      - items:
-+          - enum:
-+              - allwinner,sun20i-d1-plic
-+          - const: thead,c900-plic
- 
-   reg:
-     maxItems: 1
+Bart
