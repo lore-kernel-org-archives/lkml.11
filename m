@@ -2,89 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DD9DC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 11:46:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D910C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 11:48:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343994AbiBBLqc (ORCPT
+        id S1343998AbiBBLsY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 06:46:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32794 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234359AbiBBLqb (ORCPT
+        Wed, 2 Feb 2022 06:48:24 -0500
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:14069 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231623AbiBBLsX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 06:46:31 -0500
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB916C061714;
-        Wed,  2 Feb 2022 03:46:30 -0800 (PST)
-Received: from ip4d144895.dynamic.kabel-deutschland.de ([77.20.72.149] helo=[192.168.66.200]); authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1nFE5k-0006et-9U; Wed, 02 Feb 2022 12:46:28 +0100
-Message-ID: <12e09497-a848-b767-88f4-7dabd8360c5e@leemhuis.info>
-Date:   Wed, 2 Feb 2022 12:46:27 +0100
+        Wed, 2 Feb 2022 06:48:23 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1643802503; x=1675338503;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=/ooeIqpkMxsEkNcUFKhpRrXRceojLoxawKfL1xZ15tU=;
+  b=iVYAYoS+ybYNe9UrE8KYhBUgBRghK/fCJ3tIexEUaxWfPzAThP81yHd8
+   7Pxkn2QnxgqCTCLc++YBx8fm69aUms4IQQYBcIHBYFpkHWR7U2H0d5/1X
+   c2WU5WjGeQYGxb54l/MZ+YS0GklyymyADgfsHf+/8i9ev63+cbP0SO2C3
+   dhuJPFH4sQHuMTTpfAFKGbCLyTM+9XQ2d8pItpIBr3FbZntqrkZ4M9eO7
+   WdMjCOOHtELD6fsQh1TAG+jd5toYJlAl0q7IprpodIVa4BneJYrN8bUH9
+   biIR1QM6HO4rbOQO5JraynxlPoJLOefLA4dAkxmnTHkTUhfsnqPj3apj7
+   A==;
+IronPort-SDR: CZXEDfGLotgAOrw2Cscrns4yqQ0oN4HKcKosSq/DKZWmyIopdKe1IM36dPTKOKBXrqOnhNuDWD
+ V5Zrzui6pBw2qkIh9MtrCu/0BaMx5wvqiLyMFpzaOpKk0RUShhTwySV/eGfCRLzBhNPu2rTgQZ
+ U3olrmlcNEkBe9uQtBRPwCiz1AaoKIyVOze8lD6xSvdqzwRvVU94DGTNr0RGpi5O8HPmD4O6O1
+ P/J7Wr69A1O3zm/9iPvrPKS567K1tgSypRN5FrzeMu5mS6b0mWHO5jEUH9RXIEP4wvNtMDJMxm
+ uCkHQmtLvCtlDoYLwT5bwegD
+X-IronPort-AV: E=Sophos;i="5.88,336,1635231600"; 
+   d="scan'208";a="160827207"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 02 Feb 2022 04:48:22 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 2 Feb 2022 04:48:22 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Wed, 2 Feb 2022 04:48:20 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <linux@armlinux.org.uk>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net-next] net: lan966x: use .mac_select_pcs() interface
+Date:   Wed, 2 Feb 2022 12:49:49 +0100
+Message-ID: <20220202114949.833075-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-BS
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        workflows@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        regressions@lists.linux.dev,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-References: <cover.1643110442.git.linux@leemhuis.info>
- <f97738d6250050bc982bf2947587f1c73f37446f.1643110442.git.linux@leemhuis.info>
- <CAMuHMdXRoVt_zRBNvugJjYhJnyYbABeCWv9fFRM0r_=s7FYvJQ@mail.gmail.com>
-From:   Thorsten Leemhuis <linux@leemhuis.info>
-Subject: Re: [PATCH v3 1/2] docs: add a document about regression handling
-In-Reply-To: <CAMuHMdXRoVt_zRBNvugJjYhJnyYbABeCWv9fFRM0r_=s7FYvJQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;linux@leemhuis.info;1643802390;286e733a;
-X-HE-SMSGID: 1nFE5k-0006et-9U
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi! I noticed I forgot to reply here:
+Convert lan966x to use the mac_select_interface instead of
+phylink_set_pcs.
 
-On 26.01.22 15:28, Geert Uytterhoeven wrote:
-> On Tue, Jan 25, 2022 at 5:45 PM Thorsten Leemhuis <linux@leemhuis.info> wrote:
->> +How to create a configuration similar to the one of an older kernel?
->> +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->> +
->> +Start a known-good kernel and configure the newer Linux version with ``make
->> +olddefconfig``. This makes the kernel's build scripts pick up the configuration
->> +file (the `.config` file) from the running kernel as base for the new one you
->> +are about to compile; afterwards they set all new configuration options to their
->> +default value, which should disable new features that might cause regressions.
-> 
-> Doing so may actually cause mutations to appear in your .config
-> when going back and forth (i.e. when bisecting), interfering with
-> the bisection process.
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+---
+ drivers/net/ethernet/microchip/lan966x/lan966x_main.c    | 1 -
+ drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c | 9 +++++++++
+ 2 files changed, 9 insertions(+), 1 deletion(-)
 
-Good point, I knew about this, but hadn't thought of this when writing
-the text.
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+index 6fe4fcba4474..9cb715a25fd5 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+@@ -720,7 +720,6 @@ static int lan966x_probe_port(struct lan966x *lan966x, u32 p,
+ 	}
+ 
+ 	port->phylink = phylink;
+-	phylink_set_pcs(phylink, &port->phylink_pcs);
+ 
+ 	err = register_netdev(dev);
+ 	if (err) {
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c b/drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c
+index b66a9aa00ea4..38a7e95d69b4 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c
+@@ -9,6 +9,14 @@
+ 
+ #include "lan966x_main.h"
+ 
++static struct phylink_pcs *lan966x_phylink_mac_select(struct phylink_config *config,
++						      phy_interface_t interface)
++{
++	struct lan966x_port *port = netdev_priv(to_net_dev(config->dev));
++
++	return &port->phylink_pcs;
++}
++
+ static void lan966x_phylink_mac_config(struct phylink_config *config,
+ 				       unsigned int mode,
+ 				       const struct phylink_link_state *state)
+@@ -114,6 +122,7 @@ static void lan966x_pcs_aneg_restart(struct phylink_pcs *pcs)
+ 
+ const struct phylink_mac_ops lan966x_phylink_mac_ops = {
+ 	.validate = phylink_generic_validate,
++	.mac_select_pcs = lan966x_phylink_mac_select,
+ 	.mac_config = lan966x_phylink_mac_config,
+ 	.mac_prepare = lan966x_phylink_mac_prepare,
+ 	.mac_link_down = lan966x_phylink_mac_link_down,
+-- 
+2.33.0
 
-> To avoid that, I usually start bisecting with
-> "cp .config <src>/arch/<arch>/configs/bisect_defconfig", and use
-> "make bisect_defconfig" in every bisection step. That way all steps
-> are reproducible, and unaffected by config mutations.
-
-That's a really cool trick, thx for mentioning it. But I think it's not
-needed in the text about regressions and instead better be mentioned in
-Documentation/admin-guide/bug-bisect.rst. I hope to sooner or later
-improve (rewrite?) that document anyway and will make sure to keep it in
-mind for that time.
-
-I wonder if there is a way to make this work without messing in the
-source tree? Took a quick look at the sources. It seems to me that it's
-possible to "cp .config ~/working.config" and then using "make
-KBUILD_DEFCONFIG=~/working.config defconfig" at every bisection step. It
-seems to do the trick as well -- but I only tried briefly, so maybe I
-might have missed something.
-
-Ciao, Thorsten
