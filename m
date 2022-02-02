@@ -2,100 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CED6FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 08:38:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 582D0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 08:39:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245033AbiBBIiw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 03:38:52 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:48612 "EHLO
+        id S245027AbiBBIjA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 03:39:00 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:34193 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236289AbiBBIit (ORCPT
+        by vger.kernel.org with ESMTP id S245039AbiBBIi4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 03:38:49 -0500
+        Wed, 2 Feb 2022 03:38:56 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643791123;
+        s=mimecast20190719; t=1643791135;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=pZeRfyP/3NDflTT3uYjL7nAay4ukmclUl6g3683qMY8=;
-        b=gb2Lqtrf1/pQkpVvdVN3YA4VajabStcWtjRd82XkTfRPRQpptxqxHM0LetFOqvfdxzrPyR
-        tfYxdjB279ci9d/CB/3M6Z4uNfexoFvbTTOWqU2s+6YJpOMqD6KuJDN6peCR+aXgHDv5Ie
-        KamQ/mOvq/MzRJ3gxusb9L09SOWSADU=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=IQ96plJnExVz4IofZgZgy11FIOo1veP7nuoBU4KJMcA=;
+        b=BQmHESqj7So+lESTgNlrXx12KcqJ3SGlSnqbUdeIlnOt3tKjzBvXxDV41RnR54R0yfUfJu
+        06JSlQkc7butqaeEC/TdQ5eYG6XMhfZ5Ywga6YikkPbmvlchYrs9qMwMh2bDRLSn21JkoT
+        /d9U9GsE9K1hS1tBz4jgxYb70LQz5Vc=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-298-pzyL3YZLODSNqGuB5n4qXg-1; Wed, 02 Feb 2022 03:38:38 -0500
-X-MC-Unique: pzyL3YZLODSNqGuB5n4qXg-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 88C74184608A;
-        Wed,  2 Feb 2022 08:38:35 +0000 (UTC)
-Received: from sirius.home.kraxel.org (unknown [10.39.193.47])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 11B9462D65;
-        Wed,  2 Feb 2022 08:38:25 +0000 (UTC)
-Received: by sirius.home.kraxel.org (Postfix, from userid 1000)
-        id 9C9DF1800397; Wed,  2 Feb 2022 09:38:22 +0100 (CET)
-Date:   Wed, 2 Feb 2022 09:38:22 +0100
-From:   Gerd Hoffmann <kraxel@redhat.com>
-To:     Dov Murik <dovmurik@linux.ibm.com>
-Cc:     linux-efi@vger.kernel.org, Borislav Petkov <bp@suse.de>,
-        Ashish Kalra <ashish.kalra@amd.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Andrew Scull <ascull@google.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        "Dr. David Alan Gilbert" <dgilbert@redhat.com>,
-        Lenny Szubowicz <lszubowi@redhat.com>,
-        Peter Gonda <pgonda@google.com>,
-        James Bottomley <jejb@linux.ibm.com>,
-        Tobin Feldman-Fitzthum <tobin@linux.ibm.com>,
-        Jim Cadden <jcadden@ibm.com>,
-        Daniele Buono <dbuono@linux.vnet.ibm.com>,
-        linux-coco@lists.linux.dev, linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v7 1/5] efi: Save location of EFI confidential computing
- area
-Message-ID: <20220202083822.fgyamauzqco374u2@sirius.home.kraxel.org>
-References: <20220201124413.1093099-1-dovmurik@linux.ibm.com>
- <20220201124413.1093099-2-dovmurik@linux.ibm.com>
+ us-mta-606-V1TOX9n-N9uDNGP3YlDnUQ-1; Wed, 02 Feb 2022 03:38:54 -0500
+X-MC-Unique: V1TOX9n-N9uDNGP3YlDnUQ-1
+Received: by mail-wm1-f70.google.com with SMTP id c7-20020a1c3507000000b0034a0dfc86aaso3423009wma.6
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 00:38:54 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=IQ96plJnExVz4IofZgZgy11FIOo1veP7nuoBU4KJMcA=;
+        b=t3BixA1nyhgnonhwfnUWptmnyxqfflihVO5U7kPKe5RY4dqQhxYR/sPVwQewTJpjD6
+         7Dg+G761gg9AZRsE8YUTtsZP6mhaE5PXqBzB+Q9QIXdTZrguq2rnUqW9y1A+tWKCsZZm
+         HaXPOqXSetGRoQoqW2iWNrPp6yZshO8LDfxk71Ms+bqiHLaWPZkfePFtMPHWh7/v8D9Z
+         CZsNpYT7KxOSnJZxVCDrqIHQ/XtOKlIR8WdAytS5G1rgH8A2SmxIC+I3hoODr9v4++oi
+         TFB1N2iYW23m8uyv+l09zLcggVDcwlVyKK/YOTmotnzrEMCgwndXi+k1LutncXjZNZ5F
+         0wQA==
+X-Gm-Message-State: AOAM532xqCnlVQ26eQLqUPsEjJHomjY8lA4hUgqYvaxw51aGFopgOSum
+        0vegZoKfu9LRqpFtsuZjlsUjZWPAGRsF5MH1FP4TLhQQlZo31gVx9xzWu6bi7TJT6z1OIhKccxu
+        IB8Wn5F+Tg4L8CC9JwZMmeXOh
+X-Received: by 2002:a05:600c:21c1:: with SMTP id x1mr5150573wmj.59.1643791133573;
+        Wed, 02 Feb 2022 00:38:53 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxC9orog6Z8LfxDGH06ODz7grjUoMzfg+w2FlDgm3DeIkMP38HoKyw95IAqRi1WUhNTRJi28Q==
+X-Received: by 2002:a05:600c:21c1:: with SMTP id x1mr5150546wmj.59.1643791133371;
+        Wed, 02 Feb 2022 00:38:53 -0800 (PST)
+Received: from [192.168.1.102] ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id z17sm3963598wmf.47.2022.02.02.00.38.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Feb 2022 00:38:52 -0800 (PST)
+Message-ID: <e552caec-5136-f4b2-12dc-23b182ab8af6@redhat.com>
+Date:   Wed, 2 Feb 2022 09:38:51 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220201124413.1093099-2-dovmurik@linux.ibm.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 0/4] drm/tiny: Add driver for Solomon SSD1307 OLED
+ displays
+Content-Language: en-US
+To:     Sam Ravnborg <sam@ravnborg.org>
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux PWM List <linux-pwm@vger.kernel.org>,
+        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Mark Brown <broonie@kernel.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>,
+        Maxime Ripard <maxime@cerno.tech>,
+        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Peter Robinson <pbrobinson@gmail.com>
+References: <20220131201225.2324984-1-javierm@redhat.com>
+ <YfhM97cVH3+lJKg0@ravnborg.org> <Yfj/XGRRDNABsLPm@smile.fi.intel.com>
+ <f8d71acb-5c8b-ac4e-0c32-38eb66af04c3@redhat.com>
+ <CAMuHMdVP6ER119r2KAegjZes1a=KWZ47z6j=kgQ0oNx1oeUJ+w@mail.gmail.com>
+ <51f54519-bb8b-f108-1c1e-4fed101ca5ef@redhat.com>
+ <CAMuHMdVwUfv7pXhPazsgG6t=X=aVtDQkFUk_=mUuFH8Fscx8wg@mail.gmail.com>
+ <abf63995-a529-1e80-18c3-df473a3e7a9c@redhat.com>
+ <YfmaqUBqCrgp0QdO@ravnborg.org>
+From:   Javier Martinez Canillas <javierm@redhat.com>
+In-Reply-To: <YfmaqUBqCrgp0QdO@ravnborg.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 01, 2022 at 12:44:09PM +0000, Dov Murik wrote:
-> Confidential computing (coco) hardware such as AMD SEV (Secure Encrypted
-> Virtualization) allows a guest owner to inject secrets into the VMs
-> memory without the host/hypervisor being able to read them.
-> 
-> Firmware support for secret injection is available in OVMF, which
-> reserves a memory area for secret injection and includes a pointer to it
-> the in EFI config table entry LINUX_EFI_COCO_SECRET_TABLE_GUID.
-> 
-> If EFI exposes such a table entry, uefi_init() will keep a pointer to
-> the EFI config table entry in efi.coco_secret, so it can be used later
-> by the kernel (specifically drivers/virt/coco/efi_secret).  It will also
-> appear in the kernel log as "CocoSecret=ADDRESS"; for example:
-> 
->     [    0.000000] efi: EFI v2.70 by EDK II
->     [    0.000000] efi: CocoSecret=0x7f22e680 SMBIOS=0x7f541000 ACPI=0x7f77e000 ACPI 2.0=0x7f77e014 MEMATTR=0x7ea0c018
-> 
-> The new functionality can be enabled with CONFIG_EFI_COCO_SECRET=y.
-> 
-> Signed-off-by: Dov Murik <dovmurik@linux.ibm.com>
+Hello Sam,
 
-Reviewed-by: Gerd Hoffmann <kraxel@redhat.com>
+On 2/1/22 21:40, Sam Ravnborg wrote:
 
-take care,
-  Gerd
+[snip]
+
+> 
+> I took a look at the datasheets - and all ssd1305, ssd1306 and ssd1307
+> are the same. They have timing constrains on the Vcc.
+> The random schematic I found on the net showed me that a PWM was used to
+> control the Vcc voltage - which again is used to control the brightness.
+> 
+> All the above has nothing to do with backlight - I had this mixed up in
+> my head.
+>
+
+Yes, same here. I was leaning towards fixing the DT binding but then due
+Geert comment and after reading the datasheets for ssd130{5,6,7} like you
+I had the same understanding.
+
+Glad that you agree.
+
+[snip] 
+
+> 
+> Last I recommend to drop the fbdev variant - if the drm driver has any
+> regressions we can fix them. And I do not see any other way to move
+> users over. Unless their setup breaks then they do not change.
+>
+
+As I mentioned in this thread I wouldn't propose to drop the fbdev variant.
+I prefer to use the carrot and not the stick. Peter Robinson suggested to
+make the driver mutually exclusive and add !FB_SSD1307 in the config symbol.
+
+I think that makes sense and will do it in v2.
+
+Best regards,
+-- 
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
 
