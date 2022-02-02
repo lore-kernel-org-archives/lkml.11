@@ -2,270 +2,223 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72466C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 09:52:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D35CBC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 09:52:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245642AbiBBJwX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 04:52:23 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:59782 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232671AbiBBJwW (ORCPT
+        id S245690AbiBBJwn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 04:52:43 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:60032 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S245645AbiBBJwZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 04:52:22 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 2 Feb 2022 04:52:25 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643795545;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fKKUKbYAx10NZBmqUNI8MqZqdsr2f4RjKNSF3VFdLUk=;
+        b=b1VmER6wwG3lP/7ucpxV9dCgZa8kL4xu/GSU8Meamuv8tC7TStkuK2eFGkQWCmAIfW82Rm
+        /JJXLEybPKLPCkgd0I8jA41Z5e6l4Q9zwCz6Tb8fLV2/vDkA3SAlmi2J6FVjc5g6fNb9/b
+        OgtTV1bE+LWdYt0kjTw8EJz2WTeOgxI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-359-8McRE6-iPW-k7kuGaVqgAg-1; Wed, 02 Feb 2022 04:52:22 -0500
+X-MC-Unique: 8McRE6-iPW-k7kuGaVqgAg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D1DE5B8305A;
-        Wed,  2 Feb 2022 09:52:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FC82C004E1;
-        Wed,  2 Feb 2022 09:52:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643795539;
-        bh=zTsakfmHfwgjvVmFqIUX9q0PunPtBXLCKRNOE0Dd9zk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=K4ZTLIXJcvnLRb+oi3YWXv9DVqGid8uBcr4p1QQHUTB5xeD3j9I1Ceo1M/5T2uMpN
-         SqUz28iMfVn8Q3vnh9FHQW764mR9ILKSCI+PsgvBjap7V0t/2jO74NTnJMuSk3N4/B
-         DazbZ8AgWPC46NJs9ZofcgrqTMj5AMxR+5u1z11I60kT9gewlpSDsKG8FmKOkYJ/Hq
-         FAcF73UVSB+jaeb54uUzrcEGD40ZD30ywjF4b5NQGjtxaUdh27r83cvNepSeIJVCf/
-         s27meK1UOrtygs913uq39GkzKvSy1L3ewxSEmi3NmbYTHITETBwCAfpiKbPek7ZM8v
-         GA00RpncKXbhA==
-From:   Christian Brauner <brauner@kernel.org>
-To:     Eryu Guan <guan@eryu.me>, fstests@vger.kernel.org
-Cc:     Ariadne Conill <ariadne@dereferenced.org>,
-        Kees Cook <keescook@chromium.org>,
-        Rich Felker <dalias@libc.org>,
-        Michael Kerrisk <mtk.manpages@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        David Laight <David.Laight@ACULAB.COM>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Christian Brauner <brauner@kernel.org>,
-        Eryu Guan <guaneryu@gmail.com>
-Subject: [PATCH] generic/633: pass non-empty argv with execveat()
-Date:   Wed,  2 Feb 2022 10:52:09 +0100
-Message-Id: <20220202095209.2953458-1-brauner@kernel.org>
-X-Mailer: git-send-email 2.32.0
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1BBD4363A6;
+        Wed,  2 Feb 2022 09:52:21 +0000 (UTC)
+Received: from fedora.redhat.com (unknown [10.40.194.240])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2DBF1752C8;
+        Wed,  2 Feb 2022 09:52:07 +0000 (UTC)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        Vineeth Pillai <viremana@linux.microsoft.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 4/4] KVM: nSVM: Implement Enlightened MSR-Bitmap feature
+Date:   Wed,  2 Feb 2022 10:51:00 +0100
+Message-Id: <20220202095100.129834-5-vkuznets@redhat.com>
+In-Reply-To: <20220202095100.129834-1-vkuznets@redhat.com>
+References: <20220202095100.129834-1-vkuznets@redhat.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=6733; h=from:subject; bh=zTsakfmHfwgjvVmFqIUX9q0PunPtBXLCKRNOE0Dd9zk=; b=owGbwMvMwCU28Zj0gdSKO4sYT6slMST+CjE9/+d32OF1jkdXGokpT/smUPZ6trRC9xlHb+O9bZbV 7KwJHaUsDGJcDLJiiiwO7Sbhcst5KjYbZWrAzGFlAhnCwMUpABN5k8HwV+rRk0jPYI9Nq+WksiZ7hb JlnhW/Wm3mOnODblOoRLDdQ4b/WYEin+92vOB5VL7lttPX2fVvhCQl+WOfKVUy8t6u/F/PCQA=
-X-Developer-Key: i=brauner@kernel.org; a=openpgp; fpr=4880B8C9BD0E5106FC070F4F7B3C391EFEA93624
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-So far the kernel allowed passing an empty argv. Given that there's now
-a push to restrict the kernel in that regard make sure we pass at least
-one argument with argv.
+Similar to nVMX commit 502d2bf5f2fd ("KVM: nVMX: Implement Enlightened MSR
+Bitmap feature"), add support for the feature for nSVM (Hyper-V on KVM).
 
-Cc: Ariadne Conill <ariadne@dereferenced.org>
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Rich Felker <dalias@libc.org>
-Cc: Eryu Guan <guaneryu@gmail.com>
-Cc: Michael Kerrisk <mtk.manpages@gmail.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Matthew Wilcox <willy@infradead.org>
-Cc: fstests@vger.kernel.org
-Cc: linux-fsdevel@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Link: https://lore.kernel.org/lkml/20220127000724.15106-1-ariadne@dereferenced.org
-Signed-off-by: Christian Brauner <brauner@kernel.org>
----
-/* v2 */
-- Make sure argv array is NULL terminated. I fired the first patch too
-  quickly.
-- Take the chance and remove the repeated argv open-coding and move it
-  directly into the execveat helper and rename it to reflect the fact
-  that it's not just a simple syscall wrapper anymore.
----
- src/idmapped-mounts/idmapped-mounts.c | 65 +++++++++------------------
- 1 file changed, 22 insertions(+), 43 deletions(-)
+Notable differences from nVMX implementation:
+- As the feature uses SW reserved fields in VMCB control, KVM needs to
+make sure it's dealing with a Hyper-V guest (kvm_hv_hypercall_enabled()).
 
-diff --git a/src/idmapped-mounts/idmapped-mounts.c b/src/idmapped-mounts/idmapped-mounts.c
-index 4cf6c3bb..5bab19a9 100644
---- a/src/idmapped-mounts/idmapped-mounts.c
-+++ b/src/idmapped-mounts/idmapped-mounts.c
-@@ -695,11 +695,14 @@ static int fd_to_fd(int from, int to)
- 	return 0;
+- 'msrpm_base_pa' needs to be always be overwritten in
+nested_svm_vmrun_msrpm(), even when the update is skipped. As an
+optimization, nested_vmcb02_prepare_control() copies it from VMCB01
+so when MSR-Bitmap feature for L2 is disabled nothing needs to be done.
+
+- 'struct vmcb_ctrl_area_cached' needs to be extended with clean
+fields/sw reserved data and __nested_copy_vmcb_control_to_cache() needs to
+copy it so nested_svm_vmrun_msrpm() can use it later.
+
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+---
+ arch/x86/kvm/hyperv.c     |  7 +------
+ arch/x86/kvm/svm/nested.c | 41 ++++++++++++++++++++++++++++++++-------
+ arch/x86/kvm/svm/svm.h    |  2 ++
+ 3 files changed, 37 insertions(+), 13 deletions(-)
+
+diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
+index ec01ec9992d4..9192b706be58 100644
+--- a/arch/x86/kvm/hyperv.c
++++ b/arch/x86/kvm/hyperv.c
+@@ -2412,10 +2412,6 @@ int kvm_get_hv_cpuid(struct kvm_vcpu *vcpu, struct kvm_cpuid2 *cpuid,
+ 	if (kvm_x86_ops.nested_ops->get_evmcs_version)
+ 		evmcs_ver = kvm_x86_ops.nested_ops->get_evmcs_version(vcpu);
+ 
+-	/* Skip NESTED_FEATURES if eVMCS is not supported */
+-	if (!evmcs_ver)
+-		--nent;
+-
+ 	if (cpuid->nent < nent)
+ 		return -E2BIG;
+ 
+@@ -2515,8 +2511,7 @@ int kvm_get_hv_cpuid(struct kvm_vcpu *vcpu, struct kvm_cpuid2 *cpuid,
+ 
+ 		case HYPERV_CPUID_NESTED_FEATURES:
+ 			ent->eax = evmcs_ver;
+-			if (evmcs_ver)
+-				ent->eax |= HV_X64_NESTED_MSR_BITMAP;
++			ent->eax |= HV_X64_NESTED_MSR_BITMAP;
+ 
+ 			break;
+ 
+diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
+index f27323728be2..7b26a4b518f7 100644
+--- a/arch/x86/kvm/svm/nested.c
++++ b/arch/x86/kvm/svm/nested.c
+@@ -28,6 +28,7 @@
+ #include "cpuid.h"
+ #include "lapic.h"
+ #include "svm.h"
++#include "hyperv.h"
+ 
+ #define CC KVM_NESTED_VMENTER_CONSISTENCY_CHECK
+ 
+@@ -165,14 +166,30 @@ void recalc_intercepts(struct vcpu_svm *svm)
+ 	vmcb_set_intercept(c, INTERCEPT_VMSAVE);
  }
  
--static int sys_execveat(int fd, const char *path, char **argv, char **envp,
--			int flags)
-+static int do_execveat(int fd, const char *path, char **envp)
++/*
++ * Merge L0's (KVM) and L1's (Nested VMCB) MSR permission bitmaps. The function
++ * is optimized in that it only merges the parts where KVM MSR permission bitmap
++ * may contain zero bits.
++ */
+ static bool nested_svm_vmrun_msrpm(struct vcpu_svm *svm)
  {
- #ifdef __NR_execveat
--	return syscall(__NR_execveat, fd, path, argv, envp, flags);
-+	static char *argv_empty[] = {
-+		"",
-+		NULL,
-+	};
-+	return syscall(__NR_execveat, fd, path, argv_empty, envp, 0);
- #else
- 	errno = ENOSYS;
- 	return -1;
-@@ -3597,15 +3600,12 @@ static int setid_binaries(void)
- 			"EXPECTED_EGID=5000",
- 			NULL,
- 		};
--		static char *argv[] = {
--			NULL,
--		};
++	struct hv_enlightenments *hve =
++		(struct hv_enlightenments *)svm->nested.ctl.reserved_sw;
++	int i;
++
+ 	/*
+-	 * This function merges the msr permission bitmaps of kvm and the
+-	 * nested vmcb. It is optimized in that it only merges the parts where
+-	 * the kvm msr permission bitmap may contain zero bits
++	 * MSR bitmap update can be skipped when:
++	 * - MSR bitmap for L1 hasn't changed.
++	 * - Nested hypervisor (L1) is attempting to launch the same L2 as
++	 *   before.
++	 * - Nested hypervisor (L1) is using Hyper-V emulation interface and
++	 * tells KVM (L0) there were no changes in MSR bitmap for L2.
+ 	 */
+-	int i;
++	if (!svm->nested.force_msr_bitmap_recalc &&
++	    kvm_hv_hypercall_enabled(&svm->vcpu) &&
++	    hve->hv_enlightenments_control.msr_bitmap &&
++	    (svm->nested.ctl.clean & VMCB_HV_NESTED_ENLIGHTENMENTS))
++		goto set_msrpm_base_pa;
  
- 		if (!expected_uid_gid(t_dir1_fd, FILE1, 0, 5000, 5000))
- 			die("failure: expected_uid_gid");
+ 	if (!(vmcb12_is_intercept(&svm->nested.ctl, INTERCEPT_MSR_PROT)))
+ 		return true;
+@@ -195,6 +212,7 @@ static bool nested_svm_vmrun_msrpm(struct vcpu_svm *svm)
  
--		sys_execveat(t_dir1_fd, FILE1, argv, envp, 0);
--		die("failure: sys_execveat");
-+		do_execveat(t_dir1_fd, FILE1, envp);
-+		die("failure: do_execveat");
+ 	svm->nested.force_msr_bitmap_recalc = false;
  
- 		exit(EXIT_FAILURE);
- 	}
-@@ -3725,15 +3725,12 @@ static int setid_binaries_idmapped_mounts(void)
- 			"EXPECTED_EGID=15000",
- 			NULL,
- 		};
--		static char *argv[] = {
--			NULL,
--		};
++set_msrpm_base_pa:
+ 	svm->vmcb->control.msrpm_base_pa = __sme_set(__pa(svm->nested.msrpm));
  
- 		if (!expected_uid_gid(open_tree_fd, FILE1, 0, 15000, 15000))
- 			die("failure: expected_uid_gid");
+ 	return true;
+@@ -300,7 +318,8 @@ static bool nested_vmcb_check_controls(struct kvm_vcpu *vcpu)
+ }
  
--		sys_execveat(open_tree_fd, FILE1, argv, envp, 0);
--		die("failure: sys_execveat");
-+		do_execveat(open_tree_fd, FILE1, envp);
-+		die("failure: do_execveat");
+ static
+-void __nested_copy_vmcb_control_to_cache(struct vmcb_ctrl_area_cached *to,
++void __nested_copy_vmcb_control_to_cache(struct kvm_vcpu *vcpu,
++					 struct vmcb_ctrl_area_cached *to,
+ 					 struct vmcb_control_area *from)
+ {
+ 	unsigned int i;
+@@ -333,12 +352,19 @@ void __nested_copy_vmcb_control_to_cache(struct vmcb_ctrl_area_cached *to,
+ 	to->asid           = from->asid;
+ 	to->msrpm_base_pa &= ~0x0fffULL;
+ 	to->iopm_base_pa  &= ~0x0fffULL;
++
++	/* Hyper-V extensions (Enlightened VMCB) */
++	if (kvm_hv_hypercall_enabled(vcpu)) {
++		to->clean = from->clean;
++		memcpy(to->reserved_sw, from->reserved_sw,
++		       sizeof(struct hv_enlightenments));
++	}
+ }
  
- 		exit(EXIT_FAILURE);
- 	}
-@@ -3864,9 +3861,6 @@ static int setid_binaries_idmapped_mounts_in_userns(void)
- 			"EXPECTED_EGID=5000",
- 			NULL,
- 		};
--		static char *argv[] = {
--			NULL,
--		};
+ void nested_copy_vmcb_control_to_cache(struct vcpu_svm *svm,
+ 				       struct vmcb_control_area *control)
+ {
+-	__nested_copy_vmcb_control_to_cache(&svm->nested.ctl, control);
++	__nested_copy_vmcb_control_to_cache(&svm->vcpu, &svm->nested.ctl, control);
+ }
  
- 		if (!switch_userns(attr.userns_fd, 0, 0, false))
- 			die("failure: switch_userns");
-@@ -3874,8 +3868,8 @@ static int setid_binaries_idmapped_mounts_in_userns(void)
- 		if (!expected_uid_gid(open_tree_fd, FILE1, 0, 5000, 5000))
- 			die("failure: expected_uid_gid");
+ static void __nested_copy_vmcb_save_to_cache(struct vmcb_save_area_cached *to,
+@@ -1305,6 +1331,7 @@ static void nested_copy_vmcb_cache_to_control(struct vmcb_control_area *dst,
+ 	dst->virt_ext              = from->virt_ext;
+ 	dst->pause_filter_count   = from->pause_filter_count;
+ 	dst->pause_filter_thresh  = from->pause_filter_thresh;
++	/* 'clean' and 'reserved_sw' are not changed by KVM */
+ }
  
--		sys_execveat(open_tree_fd, FILE1, argv, envp, 0);
--		die("failure: sys_execveat");
-+		do_execveat(open_tree_fd, FILE1, envp);
-+		die("failure: do_execveat");
+ static int svm_get_nested_state(struct kvm_vcpu *vcpu,
+@@ -1437,7 +1464,7 @@ static int svm_set_nested_state(struct kvm_vcpu *vcpu,
+ 		goto out_free;
  
- 		exit(EXIT_FAILURE);
- 	}
-@@ -3923,9 +3917,6 @@ static int setid_binaries_idmapped_mounts_in_userns(void)
- 			"EXPECTED_EGID=0",
- 			NULL,
- 		};
--		static char *argv[] = {
--			NULL,
--		};
+ 	ret = -EINVAL;
+-	__nested_copy_vmcb_control_to_cache(&ctl_cached, ctl);
++	__nested_copy_vmcb_control_to_cache(vcpu, &ctl_cached, ctl);
+ 	if (!__nested_vmcb_check_controls(vcpu, &ctl_cached))
+ 		goto out_free;
  
- 		if (!caps_supported()) {
- 			log_debug("skip: capability library not installed");
-@@ -3938,8 +3929,8 @@ static int setid_binaries_idmapped_mounts_in_userns(void)
- 		if (!expected_uid_gid(open_tree_fd, FILE1, 0, 0, 0))
- 			die("failure: expected_uid_gid");
+diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
+index 92fc4f554634..96473ecb2c6e 100644
+--- a/arch/x86/kvm/svm/svm.h
++++ b/arch/x86/kvm/svm/svm.h
+@@ -137,6 +137,8 @@ struct vmcb_ctrl_area_cached {
+ 	u32 event_inj_err;
+ 	u64 nested_cr3;
+ 	u64 virt_ext;
++	u32 clean;
++	u8 reserved_sw[32];
+ };
  
--		sys_execveat(open_tree_fd, FILE1, argv, envp, 0);
--		die("failure: sys_execveat");
-+		do_execveat(open_tree_fd, FILE1, envp);
-+		die("failure: do_execveat");
- 
- 		exit(EXIT_FAILURE);
- 	}
-@@ -3991,9 +3982,6 @@ static int setid_binaries_idmapped_mounts_in_userns(void)
- 			NULL,
- 			NULL,
- 		};
--		static char *argv[] = {
--			NULL,
--		};
- 
- 		if (!switch_userns(attr.userns_fd, 0, 0, false))
- 			die("failure: switch_userns");
-@@ -4007,8 +3995,8 @@ static int setid_binaries_idmapped_mounts_in_userns(void)
- 		if (!expected_uid_gid(open_tree_fd, FILE1, 0, t_overflowuid, t_overflowgid))
- 			die("failure: expected_uid_gid");
- 
--		sys_execveat(open_tree_fd, FILE1, argv, envp, 0);
--		die("failure: sys_execveat");
-+		do_execveat(open_tree_fd, FILE1, envp);
-+		die("failure: do_execveat");
- 
- 		exit(EXIT_FAILURE);
- 	}
-@@ -4149,9 +4137,6 @@ static int setid_binaries_idmapped_mounts_in_userns_separate_userns(void)
- 			"EXPECTED_EGID=5000",
- 			NULL,
- 		};
--		static char *argv[] = {
--			NULL,
--		};
- 
- 		userns_fd = get_userns_fd(0, 10000, 10000);
- 		if (userns_fd < 0)
-@@ -4163,8 +4148,8 @@ static int setid_binaries_idmapped_mounts_in_userns_separate_userns(void)
- 		if (!expected_uid_gid(open_tree_fd, FILE1, 0, 5000, 5000))
- 			die("failure: expected_uid_gid");
- 
--		sys_execveat(open_tree_fd, FILE1, argv, envp, 0);
--		die("failure: sys_execveat");
-+		do_execveat(open_tree_fd, FILE1, envp);
-+		die("failure: do_execveat");
- 
- 		exit(EXIT_FAILURE);
- 	}
-@@ -4213,9 +4198,6 @@ static int setid_binaries_idmapped_mounts_in_userns_separate_userns(void)
- 			"EXPECTED_EGID=0",
- 			NULL,
- 		};
--		static char *argv[] = {
--			NULL,
--		};
- 
- 		userns_fd = get_userns_fd(0, 10000, 10000);
- 		if (userns_fd < 0)
-@@ -4232,8 +4214,8 @@ static int setid_binaries_idmapped_mounts_in_userns_separate_userns(void)
- 		if (!expected_uid_gid(open_tree_fd, FILE1, 0, 0, 0))
- 			die("failure: expected_uid_gid");
- 
--		sys_execveat(open_tree_fd, FILE1, argv, envp, 0);
--		die("failure: sys_execveat");
-+		do_execveat(open_tree_fd, FILE1, envp);
-+		die("failure: do_execveat");
- 
- 		exit(EXIT_FAILURE);
- 	}
-@@ -4285,9 +4267,6 @@ static int setid_binaries_idmapped_mounts_in_userns_separate_userns(void)
- 			NULL,
- 			NULL,
- 		};
--		static char *argv[] = {
--			NULL,
--		};
- 
- 		userns_fd = get_userns_fd(0, 10000, 10000);
- 		if (userns_fd < 0)
-@@ -4305,8 +4284,8 @@ static int setid_binaries_idmapped_mounts_in_userns_separate_userns(void)
- 		if (!expected_uid_gid(open_tree_fd, FILE1, 0, t_overflowuid, t_overflowgid))
- 			die("failure: expected_uid_gid");
- 
--		sys_execveat(open_tree_fd, FILE1, argv, envp, 0);
--		die("failure: sys_execveat");
-+		do_execveat(open_tree_fd, FILE1, envp);
-+		die("failure: do_execveat");
- 
- 		exit(EXIT_FAILURE);
- 	}
-
-base-commit: d8dee1222ecdfa1cff1386a61248e587eb3b275d
+ struct svm_nested_state {
 -- 
-2.32.0
+2.34.1
 
