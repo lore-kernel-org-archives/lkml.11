@@ -2,89 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BBA6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 14:51:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64154C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 14:52:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235068AbiBBOvl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 09:51:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47090 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345133AbiBBOvi (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 09:51:38 -0500
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46367C061714
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 06:51:38 -0800 (PST)
-Received: by mail-pg1-x535.google.com with SMTP id 133so18518835pgb.0
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 06:51:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:in-reply-to:references:subject:message-id:date
-         :mime-version:content-transfer-encoding;
-        bh=86/HaWRp2y/SbuutjnhnFgYLOj+BcaVRE8VVajIjfRc=;
-        b=R/anZ7UkMnqaF3CW4Ump0dqYVUYUgaS4M/yiDIxTx2Cjcq+Qyd6YocKBZ8mPdRpPW+
-         17FNI88k1C/BmVXl825aLA0miu2S5PPr8PsT0fMqN4dVJU17+9S6pjmTH6QbSeNecx9r
-         0xP8jPO9Nw198zDO00TZswt+Ah25ZHBq+6KVkMYCNAEWgsPPHMXcAtmG4VsW3F3UiWKJ
-         rSIzxvJZQrspkqWsoTGnJsSlKKFTTNT/fSLrJ2tAT5TU1bpU2aG1AoRBu+acTX1dmWiy
-         dtFz/L7xjwsZ+s+MvP2INbmL3Bpln/WoZpGWMhz5gWzjqWyuCyzkWYcHCGIQZ7JI1y6B
-         ls9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject
-         :message-id:date:mime-version:content-transfer-encoding;
-        bh=86/HaWRp2y/SbuutjnhnFgYLOj+BcaVRE8VVajIjfRc=;
-        b=5s6yO+ZwuH9aXm2Jz7ku5sR1n12BrIIXJHEyJcEXRndhCCxafxpyZaynyaF5HGFkpb
-         3qvmbUpnt8Sxvti2utaYdy/ZymsozFbU05YdJmkv4JVaTTkmV2Mpz7GKM6DstJMakiwb
-         GFsgxsGMD/+QtTktC64fTUpq88lbQEtd/eu9nQEnCLWaOBRpO3rSfke3IOfHU7FVjIQf
-         xuuvCxXJ5fNbfl8sDXh4qexpf7oCbyOL+pPs+MFcn1pa9jZora+4tjyzCE3p9NMy+9Vf
-         wQZm5DWeGw34zTF62+C2yZNBjRGDgvFXuEdV2jlsJkmmruQ4O6f+SA7u4Y8FLWJhPAsH
-         mU5w==
-X-Gm-Message-State: AOAM533lw3bfUXdInuKl/feYVS2b4Psi8jHrtYF9DKVWnyzCgYKEKqkv
-        EMw6E2opG8+N1Yalx4dX1NU5kg==
-X-Google-Smtp-Source: ABdhPJwHqMALF/wOLDrSj4nmDW1I8tHyhaX9IDucrRtcOQAvGP0sRohPCEugxsJxmQaoZ0g8bCyDQg==
-X-Received: by 2002:a63:e206:: with SMTP id q6mr25071054pgh.165.1643813497682;
-        Wed, 02 Feb 2022 06:51:37 -0800 (PST)
-Received: from [192.168.1.116] ([66.219.217.159])
-        by smtp.gmail.com with ESMTPSA id 76sm28639747pge.93.2022.02.02.06.51.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Feb 2022 06:51:37 -0800 (PST)
-From:   Jens Axboe <axboe@kernel.dk>
-To:     Christoph Hellwig <hch@lst.de>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
-Cc:     ntfs3@lists.linux.dev, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-In-Reply-To: <20220128140922.GA29766@kili>
-References: <20220128140922.GA29766@kili>
-Subject: Re: [PATCH] fs/ntfs3: remove unnecessary NULL check
-Message-Id: <164381349664.170858.13226820250070489302.b4-ty@kernel.dk>
-Date:   Wed, 02 Feb 2022 07:51:36 -0700
+        id S1345150AbiBBOue (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 09:50:34 -0500
+Received: from mga03.intel.com ([134.134.136.65]:5972 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235610AbiBBOuc (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 2 Feb 2022 09:50:32 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643813432; x=1675349432;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=qSAzalWburnwFux0BpRZHgg+Y+rx8hWq9RbpE+mk5Xs=;
+  b=eVI24tm5VdHzjNJV780YuXalg1qlzQvc8N9hyhm0JiE9AIh5NiL2v5yJ
+   cvPBbd7/V4Pn77PUXxlEdAuwnA69Kudh1n7GYdQ26YwFu3UUe6uRYDtPf
+   65pw77iTwZTHu6GBopiZfnXhGFsPyu66Ab3ADGy5tjYYcQfo874mxci4y
+   gZY54dJs12PP17AXWT/+RjCSQVAWyIVICtSRDgw80cT1vPGKD0OeL1gvO
+   UxTytBplkG53G/zskrCmTEss/o+E6A0l55FQWrDRvzVxKZjTMAZZ9t5ZO
+   U/6uyr1F9/gATKAu33nkx9AFohg8EZUbWLR+RMj21jcuynpawffY8G50V
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10245"; a="247880532"
+X-IronPort-AV: E=Sophos;i="5.88,337,1635231600"; 
+   d="scan'208";a="247880532"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 06:50:31 -0800
+X-IronPort-AV: E=Sophos;i="5.88,337,1635231600"; 
+   d="scan'208";a="497763029"
+Received: from mwnuczyn-mobl.ger.corp.intel.com (HELO localhost) ([10.249.137.160])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 06:50:19 -0800
+From:   Iwona Winiarska <iwona.winiarska@intel.com>
+To:     linux-kernel@vger.kernel.org, openbmc@lists.ozlabs.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     devicetree@vger.kernel.org, linux-aspeed@lists.ozlabs.org,
+        linux-arm-kernel@lists.infradead.org, linux-hwmon@vger.kernel.org,
+        linux-doc@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Borislav Petkov <bp@alien8.de>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Zev Weiss <zweiss@equinix.com>,
+        David Muller <d.mueller@elsoft.ch>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Billy Tsai <billy_tsai@aspeedtech.com>,
+        Iwona Winiarska <iwona.winiarska@intel.com>,
+        Jae Hyun Yoo <jae.hyun.yoo@linux.intel.com>
+Subject: [PATCH v7 02/13] dt-bindings: Add bindings for peci-aspeed
+Date:   Wed,  2 Feb 2022 15:48:27 +0100
+Message-Id: <20220202144838.163875-3-iwona.winiarska@intel.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220202144838.163875-1-iwona.winiarska@intel.com>
+References: <20220202144838.163875-1-iwona.winiarska@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 28 Jan 2022 17:09:22 +0300, Dan Carpenter wrote:
-> This code triggers a Smatch warning:
-> 
->     fs/ntfs3/fsntfs.c:1606 ntfs_bio_fill_1()
->     warn: variable dereferenced before check 'bio' (see line 1591)
-> 
-> The "bio" pointer cannot be NULL so there is no need to check.
-> Originally there was more extensive NULL checking but it was removed
-> because bio_alloc() will never fail if it is allowed to sleep.
-> 
-> [...]
+Add device tree bindings for the peci-aspeed controller driver.
 
-Applied, thanks!
+Co-developed-by: Jae Hyun Yoo <jae.hyun.yoo@linux.intel.com>
+Signed-off-by: Jae Hyun Yoo <jae.hyun.yoo@linux.intel.com>
+Signed-off-by: Iwona Winiarska <iwona.winiarska@intel.com>
+Reviewed-by: Joel Stanley <joel@jms.id.au>
+---
+ .../devicetree/bindings/peci/peci-aspeed.yaml | 72 +++++++++++++++++++
+ 1 file changed, 72 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/peci/peci-aspeed.yaml
 
-[1/1] fs/ntfs3: remove unnecessary NULL check
-      commit: 365ab499153cdb2007d54e7e62bcbf2c67f7ab8f
-
-Best regards,
+diff --git a/Documentation/devicetree/bindings/peci/peci-aspeed.yaml b/Documentation/devicetree/bindings/peci/peci-aspeed.yaml
+new file mode 100644
+index 000000000000..1e68a801a92a
+--- /dev/null
++++ b/Documentation/devicetree/bindings/peci/peci-aspeed.yaml
+@@ -0,0 +1,72 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/peci/peci-aspeed.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Aspeed PECI Bus Device Tree Bindings
++
++maintainers:
++  - Iwona Winiarska <iwona.winiarska@intel.com>
++  - Jae Hyun Yoo <jae.hyun.yoo@linux.intel.com>
++
++allOf:
++  - $ref: peci-controller.yaml#
++
++properties:
++  compatible:
++    enum:
++      - aspeed,ast2400-peci
++      - aspeed,ast2500-peci
++      - aspeed,ast2600-peci
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  clocks:
++    description:
++      Clock source for PECI controller. Should reference the external
++      oscillator clock.
++    maxItems: 1
++
++  resets:
++    maxItems: 1
++
++  cmd-timeout-ms:
++    minimum: 1
++    maximum: 1000
++    default: 1000
++
++  clock-frequency:
++    description:
++      The desired operation frequency of PECI controller in Hz.
++    minimum: 2000
++    maximum: 2000000
++    default: 1000000
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clocks
++  - resets
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    #include <dt-bindings/clock/ast2600-clock.h>
++    peci-controller@1e78b000 {
++      compatible = "aspeed,ast2600-peci";
++      reg = <0x1e78b000 0x100>;
++      interrupts = <GIC_SPI 38 IRQ_TYPE_LEVEL_HIGH>;
++      clocks = <&syscon ASPEED_CLK_GATE_REF0CLK>;
++      resets = <&syscon ASPEED_RESET_PECI>;
++      cmd-timeout-ms = <1000>;
++      clock-frequency = <1000000>;
++    };
++...
 -- 
-Jens Axboe
-
+2.34.1
 
