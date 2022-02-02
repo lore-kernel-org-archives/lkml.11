@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8157C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 00:05:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 640D2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 00:05:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243438AbiBBAFQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 19:05:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45728 "EHLO
+        id S230521AbiBBAFl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 19:05:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243116AbiBBAEr (ORCPT
+        with ESMTP id S243069AbiBBAEI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 19:04:47 -0500
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8C12C061758;
-        Tue,  1 Feb 2022 16:04:38 -0800 (PST)
-Received: by mail-ej1-x631.google.com with SMTP id a8so59189690ejc.8;
-        Tue, 01 Feb 2022 16:04:38 -0800 (PST)
+        Tue, 1 Feb 2022 19:04:08 -0500
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BABE3C061714;
+        Tue,  1 Feb 2022 16:04:07 -0800 (PST)
+Received: by mail-ed1-x52f.google.com with SMTP id u24so37668632eds.11;
+        Tue, 01 Feb 2022 16:04:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=USR1Io0hJiFiGA+5muEeBM5of0zwK52quduqa9SF9yU=;
-        b=naOWCTyDCInxxyPLF0VfiKMFWhDLuEYUMt0cRuqjL++5KfWuXUY6Q47AMhUy+XFsDQ
-         m2QbF5dU5ZzOWRqj0uxeOM/e/3m9MWUBIlaUEckDLUP10JH5di+ZXijXM7LyiB7hOno8
-         L/XV4Xj3eSPcsb4ocekT3/G/eoAnIyG+h6zUg440qEauwjFroIk7MVf9GHxaMUNBu4Wj
-         zT8TrqAw6ePTgvYOZynipKudjMQYXYn33ZdLzBA5V7zJi32q1ufuMBQ/GtM1fdJpd9FQ
-         jCQkAru4EEyO4YNwG2RZQjyjCkGd0xzKUdCCyD8jnAP6scFQw3KGL9pkTduaGAaVKxaf
-         FIAw==
+        bh=EcT7RfY0lDOArqDYnMVNgzN36oOwKfvUCS+TXnzFQfQ=;
+        b=JQgEv9MfxFFgzBgIEMBw2wG6iK5AnYxGc5CHlpLTFNW7m1y8zLXSVRmM9gnmmNcCWD
+         7KhuDNLbnSH8PvlTYjzjO6Ur+FkpwMl+Mj4t5Uhuw4EVb6btjpPtzGg45P0s2tpDqa6c
+         c10BKANxOfxZjRG/O7Rxn5dD1pRbDPT12SplHZKNWjU+kR/qRJLEtE9hAMVNm+1MSPz2
+         iL2dtfMl5jA8HcCLXP9Y1/zGvONn4bOBe+bXNY17ZsmKXhV4aOZpn1yX2Gkz01VelQds
+         gepRj+tpWeAUdShgN7QVnrlubAcplr35OIHh8ac4Ru8wbcGPBldKNqnsGjNu0HTYcSXO
+         ObfA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=USR1Io0hJiFiGA+5muEeBM5of0zwK52quduqa9SF9yU=;
-        b=lnYRNPYKd17ZqYtSddx6lbzfcpXP4sscBrFZShlfdYbYUB8HfJ+oc9ILP/c1dAn9rb
-         RU3dZd7Vn1EjT2A08PTx1VaevjJMmLZjPHX7U+qqhaabXSkCN+snwCGnu/QB3as34PB1
-         5qIT/0Mq8MGppHu31k3BiiwR2IZ5OxyTFcrfXNBFgwIKdp96Uv2IiFlnH54/Zn9yRLkU
-         2v3igvulKJSjKJy8fvRTdtqJGV3Afz1IVIyvOMLpalvdULDZrKAt1vFJOJWQQ1k5xaPU
-         cXbt0YfYuMWGxvWTzeAg3ZsSMv4Fu33/QLNnvVtPVRiJVcieHq6yXSisrIVq+OeX/pzC
-         x3FQ==
-X-Gm-Message-State: AOAM530YjaGQNaRIKS1IPpqiJwg8g0kdpGpymck/R9jPR738baop0cWa
-        qG9Cz6+ETmGfMrowrmHj74Y=
-X-Google-Smtp-Source: ABdhPJzpch5bJEdgdUCz78q/UEKLLVMy4rA7D2YcBMfzsFu2asWQB7//UlIOJlbvwAHzzFTmWx1XyQ==
-X-Received: by 2002:a17:907:8a0b:: with SMTP id sc11mr22180570ejc.310.1643760277246;
-        Tue, 01 Feb 2022 16:04:37 -0800 (PST)
+        bh=EcT7RfY0lDOArqDYnMVNgzN36oOwKfvUCS+TXnzFQfQ=;
+        b=FJ9xpf7DUFMuIvkALH5oKvPtyE+xWPdMDe+BU0jQWyaydkB/EZN+wxavoONgF0qiMT
+         MFqTXb6JFQDZWyOUlHlfs+WifFTdtc6EGt1k0jaiTWGAp3vodxbbWri7QyxAaA/GjjM4
+         HBfa9+TnmVd4QJv6D9RLaOgSJUaETKZokVqumq/3kObmd2OTNEEU69UTvEipdEnu9wif
+         p79OBT6jkgWJDeRNgc3wdzsC2U3ojuX7XI7vp0uVKZ6Alv5TgpT+4Um0YxIim6NozZ8W
+         bV/5Rp/Qqu9ISxhHZC/u8c9wKyn3sDzoaTFMH3GQZShaWQ4aaJwdrKbkJIBTvC31AFjH
+         pF3Q==
+X-Gm-Message-State: AOAM532OVt1lQtVnMiNSagSWwGvEDaXz856ez1G/fJO6bktH/SzGErPC
+        c9+MYt01ubxLHfaxZUNHckI=
+X-Google-Smtp-Source: ABdhPJwnS3w81doykxQJD+LHtD/0az/J9KRLRMHuDKL0cGkczYyDN/XMGfusse+HJ0J3Yregejj2Sg==
+X-Received: by 2002:a05:6402:2707:: with SMTP id y7mr27887077edd.329.1643760246160;
+        Tue, 01 Feb 2022 16:04:06 -0800 (PST)
 Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id n3sm3590451ejr.6.2022.02.01.16.04.35
+        by smtp.googlemail.com with ESMTPSA id n3sm3590451ejr.6.2022.02.01.16.04.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Feb 2022 16:04:36 -0800 (PST)
+        Tue, 01 Feb 2022 16:04:05 -0800 (PST)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -56,10 +56,11 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org
-Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [net-next PATCH v8 16/16] net: dsa: qca8k: introduce qca8k_bulk_read/write function
-Date:   Wed,  2 Feb 2022 01:03:35 +0100
-Message-Id: <20220202000335.19296-17-ansuelsmth@gmail.com>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Ansuel Smith <ansuelsmth@gmail.com>
+Subject: [net-next PATCH v8 01/16] net: dsa: provide switch operations for tracking the master state
+Date:   Wed,  2 Feb 2022 01:03:20 +0100
+Message-Id: <20220202000335.19296-2-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20220202000335.19296-1-ansuelsmth@gmail.com>
 References: <20220202000335.19296-1-ansuelsmth@gmail.com>
@@ -69,105 +70,265 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce qca8k_bulk_read/write() function to use mgmt Ethernet way to
-read/write packet in bulk. Make use of this new function in the fdb
-function and while at it reduce the reg for fdb_read from 4 to 3 as the
-max bit for the ARL(fdb) table is 83 bits.
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
+Certain drivers may need to send management traffic to the switch for
+things like register access, FDB dump, etc, to accelerate what their
+slow bus (SPI, I2C, MDIO) can already do.
+
+Ethernet is faster (especially in bulk transactions) but is also more
+unreliable, since the user may decide to bring the DSA master down (or
+not bring it up), therefore severing the link between the host and the
+attached switch.
+
+Drivers needing Ethernet-based register access already should have
+fallback logic to the slow bus if the Ethernet method fails, but that
+fallback may be based on a timeout, and the I/O to the switch may slow
+down to a halt if the master is down, because every Ethernet packet will
+have to time out. The driver also doesn't have the option to turn off
+Ethernet-based I/O momentarily, because it wouldn't know when to turn it
+back on.
+
+Which is where this change comes in. By tracking NETDEV_CHANGE,
+NETDEV_UP and NETDEV_GOING_DOWN events on the DSA master, we should know
+the exact interval of time during which this interface is reliably
+available for traffic. Provide this information to switches so they can
+use it as they wish.
+
+An helper is added dsa_port_master_is_operational() to check if a master
+port is operational.
+
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- drivers/net/dsa/qca8k.c | 55 ++++++++++++++++++++++++++++++++---------
- 1 file changed, 43 insertions(+), 12 deletions(-)
+ include/net/dsa.h  | 17 +++++++++++++++++
+ net/dsa/dsa2.c     | 46 ++++++++++++++++++++++++++++++++++++++++++++++
+ net/dsa/dsa_priv.h | 13 +++++++++++++
+ net/dsa/slave.c    | 32 ++++++++++++++++++++++++++++++++
+ net/dsa/switch.c   | 15 +++++++++++++++
+ 5 files changed, 123 insertions(+)
 
-diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index a1b76dcd2eb6..52ec2800dd89 100644
---- a/drivers/net/dsa/qca8k.c
-+++ b/drivers/net/dsa/qca8k.c
-@@ -411,6 +411,43 @@ qca8k_regmap_update_bits_eth(struct qca8k_priv *priv, u32 reg, u32 mask, u32 wri
- 	return qca8k_write_eth(priv, reg, &val, sizeof(val));
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index 57b3e4e7413b..43c4153ef53a 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -278,6 +278,10 @@ struct dsa_port {
+ 
+ 	u8			devlink_port_setup:1;
+ 
++	/* Master state bits, valid only on CPU ports */
++	u8			master_admin_up:1;
++	u8			master_oper_up:1;
++
+ 	u8			setup:1;
+ 
+ 	struct device_node	*dn;
+@@ -478,6 +482,12 @@ static inline bool dsa_port_is_unused(struct dsa_port *dp)
+ 	return dp->type == DSA_PORT_TYPE_UNUSED;
+ }
+ 
++static inline bool dsa_port_master_is_operational(struct dsa_port *dp)
++{
++	return dsa_port_is_cpu(dp) && dp->master_admin_up &&
++	       dp->master_oper_up;
++}
++
+ static inline bool dsa_is_unused_port(struct dsa_switch *ds, int p)
+ {
+ 	return dsa_to_port(ds, p)->type == DSA_PORT_TYPE_UNUSED;
+@@ -1036,6 +1046,13 @@ struct dsa_switch_ops {
+ 	int	(*tag_8021q_vlan_add)(struct dsa_switch *ds, int port, u16 vid,
+ 				      u16 flags);
+ 	int	(*tag_8021q_vlan_del)(struct dsa_switch *ds, int port, u16 vid);
++
++	/*
++	 * DSA master tracking operations
++	 */
++	void	(*master_state_change)(struct dsa_switch *ds,
++				       const struct net_device *master,
++				       bool operational);
+ };
+ 
+ #define DSA_DEVLINK_PARAM_DRIVER(_id, _name, _type, _cmodes)		\
+diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+index 3d21521453fe..ff998c0ede02 100644
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@ -1279,6 +1279,52 @@ int dsa_tree_change_tag_proto(struct dsa_switch_tree *dst,
+ 	return err;
+ }
+ 
++static void dsa_tree_master_state_change(struct dsa_switch_tree *dst,
++					 struct net_device *master)
++{
++	struct dsa_notifier_master_state_info info;
++	struct dsa_port *cpu_dp = master->dsa_ptr;
++
++	info.master = master;
++	info.operational = dsa_port_master_is_operational(cpu_dp);
++
++	dsa_tree_notify(dst, DSA_NOTIFIER_MASTER_STATE_CHANGE, &info);
++}
++
++void dsa_tree_master_admin_state_change(struct dsa_switch_tree *dst,
++					struct net_device *master,
++					bool up)
++{
++	struct dsa_port *cpu_dp = master->dsa_ptr;
++	bool notify = false;
++
++	if ((dsa_port_master_is_operational(cpu_dp)) !=
++	    (up && cpu_dp->master_oper_up))
++		notify = true;
++
++	cpu_dp->master_admin_up = up;
++
++	if (notify)
++		dsa_tree_master_state_change(dst, master);
++}
++
++void dsa_tree_master_oper_state_change(struct dsa_switch_tree *dst,
++				       struct net_device *master,
++				       bool up)
++{
++	struct dsa_port *cpu_dp = master->dsa_ptr;
++	bool notify = false;
++
++	if ((dsa_port_master_is_operational(cpu_dp)) !=
++	    (cpu_dp->master_admin_up && up))
++		notify = true;
++
++	cpu_dp->master_oper_up = up;
++
++	if (notify)
++		dsa_tree_master_state_change(dst, master);
++}
++
+ static struct dsa_port *dsa_port_touch(struct dsa_switch *ds, int index)
+ {
+ 	struct dsa_switch_tree *dst = ds->dst;
+diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+index 760306f0012f..2bbfa9efe9f8 100644
+--- a/net/dsa/dsa_priv.h
++++ b/net/dsa/dsa_priv.h
+@@ -40,6 +40,7 @@ enum {
+ 	DSA_NOTIFIER_TAG_PROTO_DISCONNECT,
+ 	DSA_NOTIFIER_TAG_8021Q_VLAN_ADD,
+ 	DSA_NOTIFIER_TAG_8021Q_VLAN_DEL,
++	DSA_NOTIFIER_MASTER_STATE_CHANGE,
+ };
+ 
+ /* DSA_NOTIFIER_AGEING_TIME */
+@@ -109,6 +110,12 @@ struct dsa_notifier_tag_8021q_vlan_info {
+ 	u16 vid;
+ };
+ 
++/* DSA_NOTIFIER_MASTER_STATE_CHANGE */
++struct dsa_notifier_master_state_info {
++	const struct net_device *master;
++	bool operational;
++};
++
+ struct dsa_switchdev_event_work {
+ 	struct dsa_switch *ds;
+ 	int port;
+@@ -482,6 +489,12 @@ int dsa_tree_change_tag_proto(struct dsa_switch_tree *dst,
+ 			      struct net_device *master,
+ 			      const struct dsa_device_ops *tag_ops,
+ 			      const struct dsa_device_ops *old_tag_ops);
++void dsa_tree_master_admin_state_change(struct dsa_switch_tree *dst,
++					struct net_device *master,
++					bool up);
++void dsa_tree_master_oper_state_change(struct dsa_switch_tree *dst,
++				       struct net_device *master,
++				       bool up);
+ unsigned int dsa_bridge_num_get(const struct net_device *bridge_dev, int max);
+ void dsa_bridge_num_put(const struct net_device *bridge_dev,
+ 			unsigned int bridge_num);
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index 22241afcac81..2b5b0f294233 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -2346,6 +2346,36 @@ static int dsa_slave_netdevice_event(struct notifier_block *nb,
+ 		err = dsa_port_lag_change(dp, info->lower_state_info);
+ 		return notifier_from_errno(err);
+ 	}
++	case NETDEV_CHANGE:
++	case NETDEV_UP: {
++		/* Track state of master port.
++		 * DSA driver may require the master port (and indirectly
++		 * the tagger) to be available for some special operation.
++		 */
++		if (netdev_uses_dsa(dev)) {
++			struct dsa_port *cpu_dp = dev->dsa_ptr;
++			struct dsa_switch_tree *dst = cpu_dp->ds->dst;
++
++			/* Track when the master port is UP */
++			dsa_tree_master_oper_state_change(dst, dev,
++							  netif_oper_up(dev));
++
++			/* Track when the master port is ready and can accept
++			 * packet.
++			 * NETDEV_UP event is not enough to flag a port as ready.
++			 * We also have to wait for linkwatch_do_dev to dev_activate
++			 * and emit a NETDEV_CHANGE event.
++			 * We check if a master port is ready by checking if the dev
++			 * have a qdisc assigned and is not noop.
++			 */
++			dsa_tree_master_admin_state_change(dst, dev,
++							   !qdisc_tx_is_noop(dev));
++
++			return NOTIFY_OK;
++		}
++
++		return NOTIFY_DONE;
++	}
+ 	case NETDEV_GOING_DOWN: {
+ 		struct dsa_port *dp, *cpu_dp;
+ 		struct dsa_switch_tree *dst;
+@@ -2357,6 +2387,8 @@ static int dsa_slave_netdevice_event(struct notifier_block *nb,
+ 		cpu_dp = dev->dsa_ptr;
+ 		dst = cpu_dp->ds->dst;
+ 
++		dsa_tree_master_admin_state_change(dst, dev, false);
++
+ 		list_for_each_entry(dp, &dst->ports, list) {
+ 			if (!dsa_port_is_user(dp))
+ 				continue;
+diff --git a/net/dsa/switch.c b/net/dsa/switch.c
+index e3c7d2627a61..4e9cbe3a3127 100644
+--- a/net/dsa/switch.c
++++ b/net/dsa/switch.c
+@@ -683,6 +683,18 @@ dsa_switch_disconnect_tag_proto(struct dsa_switch *ds,
+ 	return 0;
  }
  
 +static int
-+qca8k_bulk_read(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
++dsa_switch_master_state_change(struct dsa_switch *ds,
++			       struct dsa_notifier_master_state_info *info)
 +{
-+	int i, count = len / sizeof(u32), ret;
-+
-+	if (priv->mgmt_master && !qca8k_read_eth(priv, reg, val, len))
++	if (!ds->ops->master_state_change)
 +		return 0;
 +
-+	for (i = 0; i < count; i++) {
-+		ret = regmap_read(priv->regmap, reg + (i * 4), val + i);
-+		if (ret < 0)
-+			return ret;
-+	}
++	ds->ops->master_state_change(ds, info->master, info->operational);
 +
 +	return 0;
 +}
 +
-+static int
-+qca8k_bulk_write(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
-+{
-+	int i, count = len / sizeof(u32), ret;
-+	u32 tmp;
-+
-+	if (priv->mgmt_master && !qca8k_write_eth(priv, reg, val, len))
-+		return 0;
-+
-+	for (i = 0; i < count; i++) {
-+		tmp = val[i];
-+
-+		ret = regmap_write(priv->regmap, reg + (i * 4), tmp);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
-+	return 0;
-+}
-+
- static int
- qca8k_regmap_read(void *ctx, uint32_t reg, uint32_t *val)
+ static int dsa_switch_event(struct notifier_block *nb,
+ 			    unsigned long event, void *info)
  {
-@@ -546,17 +583,13 @@ qca8k_busy_wait(struct qca8k_priv *priv, u32 reg, u32 mask)
- static int
- qca8k_fdb_read(struct qca8k_priv *priv, struct qca8k_fdb *fdb)
- {
--	u32 reg[4], val;
--	int i, ret;
-+	u32 reg[3];
-+	int ret;
- 
- 	/* load the ARL table into an array */
--	for (i = 0; i < 4; i++) {
--		ret = qca8k_read(priv, QCA8K_REG_ATU_DATA0 + (i * 4), &val);
--		if (ret < 0)
--			return ret;
--
--		reg[i] = val;
--	}
-+	ret = qca8k_bulk_read(priv, QCA8K_REG_ATU_DATA0, reg, sizeof(reg));
-+	if (ret)
-+		return ret;
- 
- 	/* vid - 83:72 */
- 	fdb->vid = FIELD_GET(QCA8K_ATU_VID_MASK, reg[2]);
-@@ -580,7 +613,6 @@ qca8k_fdb_write(struct qca8k_priv *priv, u16 vid, u8 port_mask, const u8 *mac,
- 		u8 aging)
- {
- 	u32 reg[3] = { 0 };
--	int i;
- 
- 	/* vid - 83:72 */
- 	reg[2] = FIELD_PREP(QCA8K_ATU_VID_MASK, vid);
-@@ -597,8 +629,7 @@ qca8k_fdb_write(struct qca8k_priv *priv, u16 vid, u8 port_mask, const u8 *mac,
- 	reg[0] |= FIELD_PREP(QCA8K_ATU_ADDR5_MASK, mac[5]);
- 
- 	/* load the array into the ARL table */
--	for (i = 0; i < 3; i++)
--		qca8k_write(priv, QCA8K_REG_ATU_DATA0 + (i * 4), reg[i]);
-+	qca8k_bulk_write(priv, QCA8K_REG_ATU_DATA0, reg, sizeof(reg));
- }
- 
- static int
+@@ -756,6 +768,9 @@ static int dsa_switch_event(struct notifier_block *nb,
+ 	case DSA_NOTIFIER_TAG_8021Q_VLAN_DEL:
+ 		err = dsa_switch_tag_8021q_vlan_del(ds, info);
+ 		break;
++	case DSA_NOTIFIER_MASTER_STATE_CHANGE:
++		err = dsa_switch_master_state_change(ds, info);
++		break;
+ 	default:
+ 		err = -EOPNOTSUPP;
+ 		break;
 -- 
 2.33.1
 
