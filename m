@@ -2,97 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A124C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 14:49:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1489C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 14:50:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345116AbiBBOtx (ORCPT
+        id S1345122AbiBBOuJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 09:49:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46582 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242306AbiBBOtv (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 09:49:51 -0500
-Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 470AEC061714
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 06:49:51 -0800 (PST)
-Received: by mail-oi1-x235.google.com with SMTP id q8so25613126oiw.7
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 06:49:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RqpgNSQqEtvHDhtnLQpmx4vhCkM9OOPAYGCYwN/UpUA=;
-        b=ABpJD8ClxeKSd60j9HNanNhLdkhkcGR6JgMCxv9C9NF9SyXyOofNQr1kSDq2TBfkDz
-         9BzwLvHlk0StPgaF7r5NYoVEg0/vgjoQZIA+zkhvgAcv4gxqER9nDaYjx37jFV8/dFBf
-         zLC880EnBvtuSeH7MuN4QD8Bi5xHD7c3UKO0pNYoycyTJBRNU3NLxzPmk2zexOizaWus
-         XP42NQJzMffcO62LtfYx017tx+hN31+VDJkdYDz9b85+iqTcsc2XXNBcwHrDx+OweCdW
-         lGKajBieBwDhgx5WYARzW0WogpCcFSx+HByAUq5idX+pl3r+5aUTijvEdkk1h1WWYoPR
-         xKSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RqpgNSQqEtvHDhtnLQpmx4vhCkM9OOPAYGCYwN/UpUA=;
-        b=bvI5d0HPImmXtAmS9pY9HxagWwk3MxxkOfkCitkbIpQantVoiAjUCQLserGLI2hWSp
-         mi++GVbPCgFZY2eUVZ4VKkMauI9f0R8ObOlJnOo4YjlJn5w35zwLprdv8BhsXk95T4/1
-         BogT1slvygW50lug5JyL1HLqibnttpy7Rsf+5LUebfLMq31FuTQbitdwsalrwtYlh/Fn
-         tHfTCOaSb4i9ZI8dVCJOwgMyb4/4fSiJS245s+sprfYCLr1jQYqL86qzwkT3byq2H1wN
-         ZfyYoO3ypHwuIph+OrIoIGw0ZooLx52MJxU2UPCN9zdNhvJHqeqsi1Xlc9S5xBGM1W+h
-         g52g==
-X-Gm-Message-State: AOAM5327v1Rqw8UedbVb7gyH8xSFrhAhaw/EkuGNeqT5m1miojYoDcR8
-        FuIOT9fLUG0Wjl/XjqWr2bxjy6hO/tkP71/+gzzEuQ==
-X-Google-Smtp-Source: ABdhPJxfI3zeLQ82ebGntwsMBQogioG4IwPuBvXRXbKc9toTzCugtUBpEDYfxQYd62QKGYxc6fRtiLhzvugCS3v4GvY=
-X-Received: by 2002:a05:6808:1901:: with SMTP id bf1mr4642177oib.197.1643813390322;
- Wed, 02 Feb 2022 06:49:50 -0800 (PST)
+        Wed, 2 Feb 2022 09:50:09 -0500
+Received: from mga11.intel.com ([192.55.52.93]:31380 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230423AbiBBOuI (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 2 Feb 2022 09:50:08 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643813408; x=1675349408;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=0Yo3RSdxZoSESUoiGGWNuInvhxAPd9fHeAO96RDn9zc=;
+  b=fx9HzchkzrXcJoj74o28dRb4ycH3GfTmAy7Y/VmSBbAux0B9dQTYZooa
+   l+aDUjE4jUIbVgqisgNtqe6rPnjfqdny6OblmMkBQdXVhHd41DtDf3Mr5
+   U4/lWMiSQkmJjl4p3QCvzTLYqOYqvHBFurCctIojbFCNs3EwY2dskztKU
+   9FIcTv9Kjt7PqW5AZ9mx4WGQtcAercpckWUCQz89RHV3CbmPmQMtgUnD0
+   QkjdUHqF7tZLJapABSaQ+lUqUQMECP7VJTZys5EpQiO9I3KHV6z16P54q
+   lagbtasNGoF2Fk6zSenCLRul8sqN+SAJ2q3aBC/nbYlReWZum3R9cnq9d
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10245"; a="245523275"
+X-IronPort-AV: E=Sophos;i="5.88,337,1635231600"; 
+   d="scan'208";a="245523275"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 06:50:03 -0800
+X-IronPort-AV: E=Sophos;i="5.88,337,1635231600"; 
+   d="scan'208";a="538275520"
+Received: from mwnuczyn-mobl.ger.corp.intel.com (HELO localhost) ([10.249.137.160])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 06:49:49 -0800
+From:   Iwona Winiarska <iwona.winiarska@intel.com>
+To:     linux-kernel@vger.kernel.org, openbmc@lists.ozlabs.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     devicetree@vger.kernel.org, linux-aspeed@lists.ozlabs.org,
+        linux-arm-kernel@lists.infradead.org, linux-hwmon@vger.kernel.org,
+        linux-doc@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Borislav Petkov <bp@alien8.de>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Zev Weiss <zweiss@equinix.com>,
+        David Muller <d.mueller@elsoft.ch>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Billy Tsai <billy_tsai@aspeedtech.com>,
+        Iwona Winiarska <iwona.winiarska@intel.com>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v7 01/13] dt-bindings: Add generic bindings for PECI
+Date:   Wed,  2 Feb 2022 15:48:26 +0100
+Message-Id: <20220202144838.163875-2-iwona.winiarska@intel.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220202144838.163875-1-iwona.winiarska@intel.com>
+References: <20220202144838.163875-1-iwona.winiarska@intel.com>
 MIME-Version: 1.0
-References: <0000000000000a9b7d05d6ee565f@google.com> <0000000000004cc7f905d709f0f6@google.com>
-In-Reply-To: <0000000000004cc7f905d709f0f6@google.com>
-From:   Marco Elver <elver@google.com>
-Date:   Wed, 2 Feb 2022 15:49:38 +0100
-Message-ID: <CANpmjNPL-12uWHk+EDPdz=6rs2+n2zJWX1zMAbsfUm=dbZJ4qQ@mail.gmail.com>
-Subject: Re: [syzbot] KASAN: vmalloc-out-of-bounds Write in ringbuf_map_alloc
-To:     syzbot <syzbot+5ad567a418794b9b5983@syzkaller.appspotmail.com>
-Cc:     akpm@linux-foundation.org, andreyknvl@google.com,
-        andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, glider@google.com,
-        hotforest@gmail.com, houtao1@huawei.com, john.fastabend@gmail.com,
-        kafai@fb.com, kpsingh@kernel.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        sfr@canb.auug.org.au, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2 Feb 2022 at 15:36, syzbot
-<syzbot+5ad567a418794b9b5983@syzkaller.appspotmail.com> wrote:
->
-> syzbot has bisected this issue to:
->
-> commit c34cdf846c1298de1c0f7fbe04820fe96c45068c
-> Author: Andrey Konovalov <andreyknvl@google.com>
-> Date:   Wed Feb 2 01:04:27 2022 +0000
->
->     kasan, vmalloc: unpoison VM_ALLOC pages after mapping
+Add device tree bindings for the PECI controller.
 
-Is this a case of a new bug surfacing due to KASAN improvements? But
-it's not quite clear to me why this commit.
+Signed-off-by: Iwona Winiarska <iwona.winiarska@intel.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Joel Stanley <joel@jms.id.au>
+---
+ .../bindings/peci/peci-controller.yaml        | 33 +++++++++++++++++++
+ 1 file changed, 33 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/peci/peci-controller.yaml
 
-Andrey, any thoughts?
+diff --git a/Documentation/devicetree/bindings/peci/peci-controller.yaml b/Documentation/devicetree/bindings/peci/peci-controller.yaml
+new file mode 100644
+index 000000000000..bbc3d3f3a929
+--- /dev/null
++++ b/Documentation/devicetree/bindings/peci/peci-controller.yaml
+@@ -0,0 +1,33 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/peci/peci-controller.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Generic Device Tree Bindings for PECI
++
++maintainers:
++  - Iwona Winiarska <iwona.winiarska@intel.com>
++
++description:
++  PECI (Platform Environment Control Interface) is an interface that provides a
++  communication channel from Intel processors and chipset components to external
++  monitoring or control devices.
++
++properties:
++  $nodename:
++    pattern: "^peci-controller(@.*)?$"
++
++  cmd-timeout-ms:
++    description:
++      Command timeout in units of ms.
++
++additionalProperties: true
++
++examples:
++  - |
++    peci-controller@1e78b000 {
++      reg = <0x1e78b000 0x100>;
++      cmd-timeout-ms = <500>;
++    };
++...
+-- 
+2.34.1
 
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=128cb900700000
-> start commit:   6abab1b81b65 Add linux-next specific files for 20220202
-> git tree:       linux-next
-> final oops:     https://syzkaller.appspot.com/x/report.txt?x=118cb900700000
-> console output: https://syzkaller.appspot.com/x/log.txt?x=168cb900700000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=b8d8750556896349
-> dashboard link: https://syzkaller.appspot.com/bug?extid=5ad567a418794b9b5983
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1450d9f0700000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=130ef35bb00000
->
-> Reported-by: syzbot+5ad567a418794b9b5983@syzkaller.appspotmail.com
-> Fixes: c34cdf846c12 ("kasan, vmalloc: unpoison VM_ALLOC pages after mapping")
->
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
