@@ -2,258 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B5B3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 20:56:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDA3AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 20:56:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347345AbiBBU4L (ORCPT
+        id S1347348AbiBBU4e (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 15:56:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46552 "EHLO
+        Wed, 2 Feb 2022 15:56:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347338AbiBBU4H (ORCPT
+        with ESMTP id S230399AbiBBU4c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 15:56:07 -0500
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FC64C06173B
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 12:56:07 -0800 (PST)
-Received: by mail-yb1-xb4a.google.com with SMTP id b2-20020a252e42000000b00619593ff8ddso1672231ybn.6
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 12:56:07 -0800 (PST)
+        Wed, 2 Feb 2022 15:56:32 -0500
+Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92901C061714;
+        Wed,  2 Feb 2022 12:56:32 -0800 (PST)
+Received: by mail-qk1-x72b.google.com with SMTP id bs32so826469qkb.1;
+        Wed, 02 Feb 2022 12:56:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=cx1XGJFOM9vV+ujVLRyBYr3s7YbuCuxv2q/Mj2t/VXY=;
-        b=Miom91qjEDgMZF68by2WdOphaXYlYcjxGQCKPhn3uKhvERmOjZvoPwNxb0+h2fk/pR
-         /5JTthMz96Wx5EzgrHxTPnfeAYcp3ZCDmX/P7/7TKMVjy7x09fASzF9wsB3LeYkmF4FA
-         aVbBg0/LEZC14qFUQReiphE+Wdiw7ZeareTm3wneA5hgdJeyyV6m7bZ/0LwWn/5aVhoJ
-         sscipcIXxHyQD3lnMykkRBE9k836RawsQ7ulT2UXzIRRdovonwz8e1HSAeUSTHPn8xMq
-         rvgx/jmtNUguHlpJqgQGCdWvqg2Jc6BgNOiiltVBeRi9HZ3ztGPPsL8g4gSqZcee9cY2
-         0r4Q==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=2oBJmK/+RBc8FE7PZmIHJK5BlYsD+KPlOD7Zr3SmWis=;
+        b=IjdRGcpiq/kU8e8JDfGm198uCN3Ay9NCRoeG99nRmaxObU0Z+Ri617Om8zaXoE25N4
+         14JG8CM/RGyQyTEmEZ4+/xrPY+FzfOxqvsNsFXoObz3HbjxApLOC/Q2tIYS0PXZlKNRE
+         LGa3aOcDFelY+Q1eIAIpWuM3dDiKp3hE1S1lbZDZRGDTBlcMXUrplj4T8l/imyPfc9DB
+         4UEBGlNi1HXoYdj3tVip7++2N72fQcrBvGXKPlWkWAOZJbnwjYU5Q4o2Ghh6+5VSlg+9
+         qhjojkaaqoKpnZaAUJc4hvxiQ3SS3GvcdCOnivES0J+XlIII3au78CeA64LzN25BvjtQ
+         aAEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=cx1XGJFOM9vV+ujVLRyBYr3s7YbuCuxv2q/Mj2t/VXY=;
-        b=VnaCdCNYgoBR4PnIVRq1445jj/sp/vO6znkxa/aS/VJz/MXgasmjhAmjOL+/MC2w/R
-         5kpqKf4gOVbLIaHr1y0iiKgUkd2xy2nhjo90UYmxSGXDepHbnitfsG47s56JNykInyUe
-         Mq0XrKx1Atn2Wa3IzLmbMk4MXc/6aZnhoZBgZjkJEnOw46Hj55RIv3SQDShW27LyZ88k
-         A+9nvpZURt02oc681NFOCgXjJDZP1ZKaqS8eJ2AAJ9MSuCLCkT2I8WluDcRzQzsCFZdm
-         D4EPjQCbhLYGo9MKJGGb1WZb67pbF1051XmKSzq+589Q/wYqxlXOta6GquaitvFi8/tl
-         E6sA==
-X-Gm-Message-State: AOAM531VFt4XY2u2O8yLYJklRFISehbL3mqwGs+vf3VjGnngZ3ltPKDD
-        tzql8XEQjSD1HX9+CPfGeQmS0/WKPMM9bdD/yeM=
-X-Google-Smtp-Source: ABdhPJzjOIdXwdMxzPKt+BAnyHps+zRIsPRjzOHXQtDzfFRtgjc/T/6/kRcAWunw6snKE7Ar13SGEnGpgafrtTQ7whk=
-X-Received: from ndesaulniers1.mtv.corp.google.com ([2620:15c:211:202:90a:a2a6:ce25:fda2])
- (user=ndesaulniers job=sendgmr) by 2002:a05:6902:1028:: with SMTP id
- x8mr41613379ybt.583.1643835366769; Wed, 02 Feb 2022 12:56:06 -0800 (PST)
-Date:   Wed,  2 Feb 2022 12:55:53 -0800
-Message-Id: <20220202205557.2260694-1-ndesaulniers@google.com>
-Mime-Version: 1.0
-X-Developer-Key: i=ndesaulniers@google.com; a=ed25519; pk=lvO/pmg+aaCb6dPhyGC1GyOCvPueDrrc8Zeso5CaGKE=
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1643835353; l=6651;
- s=20211004; h=from:subject; bh=XnpkEF4H4ongVqCF0+NLNSyetMQoOyby61mBk4p47DY=;
- b=SdUMlOeS7d9udoAwDdc3bdAJFGNhDRUrkTCaq1swi9UcYcxwZq13ZSbgwzWQokVLje1gGGZrmlzJ
- bOKCNeh/CJBE7uIqSjfgY0FkI5mTRG2wL/5cT7zW53BvZK4dB9qC
-X-Mailer: git-send-email 2.35.0.rc2.247.g8bbb082509-goog
-Subject: [PATCH] x86: bug.h: merge annotate_reachable into _BUG_FLAGS for __WARN_FLAGS
-From:   Nick Desaulniers <ndesaulniers@google.com>
-To:     Borislav Petkov <bp@alien8.de>,
-        Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>, llvm@lists.linux.dev,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Alexey Dobriyan <adobriyan@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-sparse@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=2oBJmK/+RBc8FE7PZmIHJK5BlYsD+KPlOD7Zr3SmWis=;
+        b=hm66H5HgdWqX9okOW0VTVXelXXtLURWsGam0L6T9/WZw3ZmGNJqL3l3vbI+kSdNaHQ
+         MBs2KZUYFyOCJ+XNvMMwfbVAKj9hsIXE6oHSpldpbl4zggjuq5wOWvV4e5szA1pDsMan
+         Vj5Wc89ibGM6O/FgkGaS1HXQXA0T7FUfRHji3Gvv2+4/nqUzFPQH+/J/zVtB77Ws3393
+         2qbqn4w7u11TejC+XJUvJEsK4p6lvO8YuwdUGQECi9S0cZXDoa9kjpb0K8LQhI/cskzM
+         1tGGeCnw4DLDoNkcBz5ZeMRabKHm/NY9qRID4e1Ain+Q0pKHQqrFVkJXThQiAfrIUOJG
+         m80w==
+X-Gm-Message-State: AOAM532CiQC1o0VZsvSjqUWtwOUBlvVh78XTHA1Y7fAPwOeHcVnRDVcH
+        WW7McOJno49COsrrDzBsPS8=
+X-Google-Smtp-Source: ABdhPJzZXB9Y3XZwRz0Y8ng7Vr5OzC7UnSl3/1MEpsMNYDrSC2FkfaMUKQHSNxKCEcO0f3zWWJ2T8w==
+X-Received: by 2002:a05:620a:319b:: with SMTP id bi27mr21596353qkb.505.1643835391682;
+        Wed, 02 Feb 2022 12:56:31 -0800 (PST)
+Received: from shaak (modemcable055.92-163-184.mc.videotron.ca. [184.163.92.55])
+        by smtp.gmail.com with ESMTPSA id b8sm1772339qtx.79.2022.02.02.12.56.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Feb 2022 12:56:30 -0800 (PST)
+Date:   Wed, 2 Feb 2022 15:56:28 -0500
+From:   Liam Beguin <liambeguin@gmail.com>
+To:     Peter Rosin <peda@axentia.se>
+Cc:     jic23@kernel.org, andy.shevchenko@gmail.com, lars@metafoo.de,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, robh+dt@kernel.org
+Subject: Re: [PATCH v13 08/11] iio: afe: rescale: add RTD temperature sensor
+ support
+Message-ID: <Yfrv/K8ohqTINEED@shaak>
+References: <20220130161101.1067691-1-liambeguin@gmail.com>
+ <20220130161101.1067691-9-liambeguin@gmail.com>
+ <cb48ec7c-da91-cadd-ee7f-02691671e7be@axentia.se>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cb48ec7c-da91-cadd-ee7f-02691671e7be@axentia.se>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In __WARN_FLAGS, we had two asm statements (abbreviated):
-asm volatile("ud2");
-asm volatile(".pushsection .discard.reachable");
+Hi Peter,
+On Wed, Feb 02, 2022 at 05:58:25PM +0100, Peter Rosin wrote:
+> Hi!
+> 
+> On 2022-01-30 17:10, Liam Beguin wrote:
+> > An RTD (Resistance Temperature Detector) is a kind of temperature
+> > sensor used to get a linear voltage to temperature reading within a
+> > give range (usually 0 to 100 degrees Celsius). Common types of RTDs
+> > include PT100, PT500, and PT1000.
+> > 
+> > Signed-off-by: Liam Beguin <liambeguin@gmail.com>
+> > Reviewed-by: Peter Rosin <peda@axentia.se>
+> > ---
 
-These pair of statements are used to trigger an exception, but then help
-objtool understand that for warnings, control flow will be restored
-immediately afterwards.
+-- snip --
 
-The problem is that volatile is not a compiler barrier. GCC explicitly
-documents this.
+> > +
+> > +	tmp = r0 * iexc * alpha / MEGA;
+> > +	factor = gcd(tmp, MEGA);
+> > +	rescale->numerator = MEGA / factor;
+> > +	rescale->denominator = tmp / factor;
+> > +
+> > +	rescale->offset = -1 * ((r0 * iexc) / MEGA * MILLI);
+> 
+> The inner (unneeded) brackets are not helping with clarifying
+> the precedence. The most "problematic" operation is the last
+> multiplication inside the outer brackets. Extra brackets are
+> more useful like this, methinks:
+> 
+> 	rescale->offset = -1 * ((r0 * iexc / MEGA) * MILLI);
+> 
+> But, what is more important is that you in v10 had:
+> 
+> 	rescale->offset = -1 * ((r0 * iexc) / 1000);
+> 
+> What you tricked yourself into writing when you converted to
+> these prefix defines is not equivalent. You lose precision.
+> 
+> I.e. dividing by 1000000 and then multiplying by 1000 is not
+> the same as dividing directly with 1000. And you know this, but
+> didn't notice perhaps exactly because you got yourself entangled
+> in prefix macros that blurred the picture?
 
-> Note that the compiler can move even volatile asm instructions
-> relative to other code, including across jump instructions.
+Apologies for this oversight. Your observation is correct, I looked at
+the prefix changes and failed to catch this mistake.
 
-Also, no clobbers are specified to prevent instructions from subsequent
-statements from being scheduled by compiler before the second asm
-statement. This can lead to instructions from subsequent statements
-being emitted by the compiler before the second asm statement.
+Would you be okay with the following:
 
-Providing a scheduling model such as via -march= options enables the
-compiler to better schedule instructions with known latencies to hide
-latencies from data hazards compared to inline asm statements in which
-latencies are not estimated.
+	rescale->offset = -1 * ((r0 * iexc) / KILO);
 
-If an instruction gets scheduled by the compiler between the two asm
-statements, then objtool will think that it is not reachable, producing
-a warning.
+This would keep things consistent with what I said here[1].
 
-To prevent instructions from being scheduled in between the two asm
-statements, merge them.
+[1] https://lore.kernel.org/linux-iio/YfmJ3P1gYaEkVjlY@shaak/
 
-This change also removes an unnecessary unreachable() asm annotation
-from BUG() in favor of __builtin_unreachable(). objtool is able to track
-that the ud2 from BUG() terminates control flow within the function.
+> These macros have wasted quite a bit of review time. I'm not
+> fully convinced they represent an improvement...
 
-Link: https://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html#Volatile
-Link: https://github.com/ClangBuiltLinux/linux/issues/1483
-Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
----
-Note to reviewers:
-This patch is related but somewhat orthogonal to
-https://lore.kernel.org/llvm/20220114010526.1776605-1-ndesaulniers@google.com/.
-We're still discussing in
-https://lore.kernel.org/llvm/20220131225250.409564-1-ndesaulniers@google.com/
-whether such a barrier exists to salvage instrumentation_{begin|end}. I
-may have follow up patches based on the result of that discussion.
-Regardless of the outcome, I think this patch stands on its own merit,
-and any changes to instrumentation_{begin|end} would not undo the
-merging of asm statements done in this patch. Finally, I tried adding a
-diagnostic to clang to warn when volatile is being used in a way that's
-suspicious (https://goto.google.com/llvm-cr/D118297), but I don't think
-that will land. Thanks to Nathan for the relevant citiation of the GCC
-docs.
+Sorry for the wasted cycles here.
 
- arch/x86/include/asm/bug.h | 20 +++++++++++---------
- include/linux/compiler.h   | 21 +++++----------------
- 2 files changed, 16 insertions(+), 25 deletions(-)
+Cheers,
+Liam
 
-diff --git a/arch/x86/include/asm/bug.h b/arch/x86/include/asm/bug.h
-index 84b87538a15d..f98db09bffd4 100644
---- a/arch/x86/include/asm/bug.h
-+++ b/arch/x86/include/asm/bug.h
-@@ -22,7 +22,7 @@
- 
- #ifdef CONFIG_DEBUG_BUGVERBOSE
- 
--#define _BUG_FLAGS(ins, flags)						\
-+#define _BUG_FLAGS(ins, flags, extra)					\
- do {									\
- 	asm_inline volatile("1:\t" ins "\n"				\
- 		     ".pushsection __bug_table,\"aw\"\n"		\
-@@ -31,7 +31,8 @@ do {									\
- 		     "\t.word %c1"        "\t# bug_entry::line\n"	\
- 		     "\t.word %c2"        "\t# bug_entry::flags\n"	\
- 		     "\t.org 2b+%c3\n"					\
--		     ".popsection"					\
-+		     ".popsection\n"					\
-+		     extra \
- 		     : : "i" (__FILE__), "i" (__LINE__),		\
- 			 "i" (flags),					\
- 			 "i" (sizeof(struct bug_entry)));		\
-@@ -39,14 +40,15 @@ do {									\
- 
- #else /* !CONFIG_DEBUG_BUGVERBOSE */
- 
--#define _BUG_FLAGS(ins, flags)						\
-+#define _BUG_FLAGS(ins, flags, extra)					\
- do {									\
- 	asm_inline volatile("1:\t" ins "\n"				\
- 		     ".pushsection __bug_table,\"aw\"\n"		\
- 		     "2:\t" __BUG_REL(1b) "\t# bug_entry::bug_addr\n"	\
- 		     "\t.word %c0"        "\t# bug_entry::flags\n"	\
- 		     "\t.org 2b+%c1\n"					\
--		     ".popsection"					\
-+		     ".popsection\n"					\
-+		     extra \
- 		     : : "i" (flags),					\
- 			 "i" (sizeof(struct bug_entry)));		\
- } while (0)
-@@ -55,7 +57,7 @@ do {									\
- 
- #else
- 
--#define _BUG_FLAGS(ins, flags)  asm volatile(ins)
-+#define _BUG_FLAGS(ins, flags, extra)  asm volatile(ins)
- 
- #endif /* CONFIG_GENERIC_BUG */
- 
-@@ -63,8 +65,8 @@ do {									\
- #define BUG()							\
- do {								\
- 	instrumentation_begin();				\
--	_BUG_FLAGS(ASM_UD2, 0);					\
--	unreachable();						\
-+	_BUG_FLAGS(ASM_UD2, 0, "");				\
-+	__builtin_unreachable();				\
- } while (0)
- 
- /*
-@@ -75,9 +77,9 @@ do {								\
-  */
- #define __WARN_FLAGS(flags)					\
- do {								\
-+	__auto_type f = BUGFLAG_WARNING|(flags);		\
- 	instrumentation_begin();				\
--	_BUG_FLAGS(ASM_UD2, BUGFLAG_WARNING|(flags));		\
--	annotate_reachable();					\
-+	_BUG_FLAGS(ASM_UD2, f, ASM_REACHABLE);			\
- 	instrumentation_end();					\
- } while (0)
- 
-diff --git a/include/linux/compiler.h b/include/linux/compiler.h
-index 429dcebe2b99..0f7fd205ab7e 100644
---- a/include/linux/compiler.h
-+++ b/include/linux/compiler.h
-@@ -117,14 +117,6 @@ void ftrace_likely_update(struct ftrace_likely_data *f, int val,
-  */
- #define __stringify_label(n) #n
- 
--#define __annotate_reachable(c) ({					\
--	asm volatile(__stringify_label(c) ":\n\t"			\
--		     ".pushsection .discard.reachable\n\t"		\
--		     ".long " __stringify_label(c) "b - .\n\t"		\
--		     ".popsection\n\t" : : "i" (c));			\
--})
--#define annotate_reachable() __annotate_reachable(__COUNTER__)
--
- #define __annotate_unreachable(c) ({					\
- 	asm volatile(__stringify_label(c) ":\n\t"			\
- 		     ".pushsection .discard.unreachable\n\t"		\
-@@ -133,24 +125,21 @@ void ftrace_likely_update(struct ftrace_likely_data *f, int val,
- })
- #define annotate_unreachable() __annotate_unreachable(__COUNTER__)
- 
--#define ASM_UNREACHABLE							\
--	"999:\n\t"							\
--	".pushsection .discard.unreachable\n\t"				\
--	".long 999b - .\n\t"						\
-+#define ASM_REACHABLE							\
-+	"998:\n\t"							\
-+	".pushsection .discard.reachable\n\t"				\
-+	".long 998b - .\n\t"						\
- 	".popsection\n\t"
- 
- /* Annotate a C jump table to allow objtool to follow the code flow */
- #define __annotate_jump_table __section(".rodata..c_jump_table")
- 
- #else
--#define annotate_reachable()
- #define annotate_unreachable()
-+# define ASM_REACHABLE
- #define __annotate_jump_table
- #endif
- 
--#ifndef ASM_UNREACHABLE
--# define ASM_UNREACHABLE
--#endif
- #ifndef unreachable
- # define unreachable() do {		\
- 	annotate_unreachable();		\
-
-base-commit: 26291c54e111ff6ba87a164d85d4a4e134b7315c
--- 
-2.35.0.rc2.247.g8bbb082509-goog
-
+> Cheers,
+> Peter
+> 
+> > +
+> > +	return 0;
+> > +}
+> > +
+> >  enum rescale_variant {
+> >  	CURRENT_SENSE_AMPLIFIER,
+> >  	CURRENT_SENSE_SHUNT,
+> >  	VOLTAGE_DIVIDER,
+> > +	TEMP_SENSE_RTD,
+> >  };
+> >  
+> >  static const struct rescale_cfg rescale_cfg[] = {
+> > @@ -414,6 +456,10 @@ static const struct rescale_cfg rescale_cfg[] = {
+> >  		.type = IIO_VOLTAGE,
+> >  		.props = rescale_voltage_divider_props,
+> >  	},
+> > +	[TEMP_SENSE_RTD] = {
+> > +		.type = IIO_TEMP,
+> > +		.props = rescale_temp_sense_rtd_props,
+> > +	},
+> >  };
+> >  
+> >  static const struct of_device_id rescale_match[] = {
+> > @@ -423,6 +469,8 @@ static const struct of_device_id rescale_match[] = {
+> >  	  .data = &rescale_cfg[CURRENT_SENSE_SHUNT], },
+> >  	{ .compatible = "voltage-divider",
+> >  	  .data = &rescale_cfg[VOLTAGE_DIVIDER], },
+> > +	{ .compatible = "temperature-sense-rtd",
+> > +	  .data = &rescale_cfg[TEMP_SENSE_RTD], },
+> >  	{ /* sentinel */ }
+> >  };
+> >  MODULE_DEVICE_TABLE(of, rescale_match);
