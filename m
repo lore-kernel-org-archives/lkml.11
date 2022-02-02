@@ -2,474 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42B51C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 18:37:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0A1CC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 18:38:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346695AbiBBShZ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 13:37:25 -0500
-Received: from m43-7.mailgun.net ([69.72.43.7]:54186 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232716AbiBBShX (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 13:37:23 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1643827043; h=References: In-Reply-To: Message-Id: Date:
- Subject: Cc: To: From: Sender;
- bh=00lZqAy3JgHwy8QZ/4SSrtFd9A6S8UTHdA19weFzwNs=; b=Tm+TZsyXxF26deiNL9wHs5fscLpnIoZ0xX1btsK5fF7AsWV5tic3ouQMjS3qydRenCJ758VT
- muvgMtKohIY+Ws93K7n7VsgSu8Qh5IC7c9ohqmXau1Pw2i15zJV4k+EFyKQg4Yc/HRZdpEUk
- u7Xs01I32VpqXQbli5u2gUyBPrE=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyI0MWYwYSIsICJsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n02.prod.us-west-2.postgun.com with SMTP id
- 61facf0c39713d071270e8a2 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 02 Feb 2022 18:35:56
- GMT
-Sender: tdas=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 14F53C43619; Wed,  2 Feb 2022 18:35:56 +0000 (UTC)
-Received: from hu-tdas-hyd.qualcomm.com (unknown [202.46.22.19])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: tdas)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 081C5C43616;
-        Wed,  2 Feb 2022 18:35:51 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 081C5C43616
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
-From:   Taniya Das <tdas@codeaurora.org>
-To:     Stephen Boyd <sboyd@kernel.org>,
-        =?UTF-8?q?Michael=20Turquette=20=C2=A0?= <mturquette@baylibre.com>
-Cc:     Rajendra Nayak <rnayak@codeaurora.org>,
-        linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Taniya Das <tdas@codeaurora.org>
-Subject: [PATCH v1 4/4] clk: qcom: sc7280: Update clk_init_data to const for clock controllers
-Date:   Thu,  3 Feb 2022 00:05:28 +0530
-Message-Id: <20220202183528.3911-4-tdas@codeaurora.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220202183528.3911-1-tdas@codeaurora.org>
-References: <20220202183528.3911-1-tdas@codeaurora.org>
+        id S229678AbiBBSiC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 13:38:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43422 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231772AbiBBSiA (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 2 Feb 2022 13:38:00 -0500
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84A90C061714;
+        Wed,  2 Feb 2022 10:38:00 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id j23so445733edp.5;
+        Wed, 02 Feb 2022 10:38:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=+Q/41PiLBQXzmyn5VtEH2Nyw/2Ag4csRH1/mB6NORos=;
+        b=ak7ORdFapMtapxfrIVLT+R0Of6b9+Tsea3svTwDFS+bot/lKFf1iWWJlZrelkA5V6S
+         ufv0QsARCjb75LgFiydAIaz8hjEHV2i5Twx/wpPpjFcbv8OhX3nCxw+X2k9WxRXA4q2V
+         Dbx9kODU2zGp5hVPpdtQOA0RaBNXgEGhLWRo9GzLHTECHFGJZiAMQcDCMZmdl4irvqlW
+         e7kB0aoUeb1V1AgAMi9ijuoJYMo898qP0JZ+GWtyrGvCa/Z2dhPbglMoNodqtVhUOJXu
+         egCmbGb3hseoysZLyQecUjGxMfVaIBsn6vh+HOs9K9vj51bbYxLBEaIq9Y8a/GrHMcuS
+         HoZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=+Q/41PiLBQXzmyn5VtEH2Nyw/2Ag4csRH1/mB6NORos=;
+        b=Mp/d06XKEkW6elpxjiQ7MzhoCED6pSlOSwKWORSlfR2NUltLUzN6MFGokbDO2t5gTF
+         FpSf/pgmCXhMSMIJB5/llkYE0P7kbCHhmb4egx/qclXtncTseJjVe9l5XpblTY2P+0aU
+         qj+Z5YHASpjzW2PorRBeI+kqThJvErs3mJF0UJD87OlUxnaL6pO5LWGOG2vm1c038Rrp
+         hvwC2N9SQQ9WLWQKg9V71m/pUiA8v9VDNzjwZAG2vwD2mC2pvj/xgY6d3b2NVcwACewV
+         ug5n2ehFM+1xHKE+8bR+5Os8wjqyTGdpu3pyy50JFLUJ/EfcBJQgB7K5HDcUJkXweZXK
+         W5WQ==
+X-Gm-Message-State: AOAM530aoAo0mbqbj4GksAsU8U3J5kh6kpSXVdaHk0fpE7dZnbU8yZUC
+        Hc82WidzqLHL3tqPYPeBP0U=
+X-Google-Smtp-Source: ABdhPJyeTIGpdkaFxcw/oEgRxs3A0lKv/tFdjAOCRH3+xV5fxECw2BwqgD/E0CFEqYZPCp7In5cmlg==
+X-Received: by 2002:aa7:c0d4:: with SMTP id j20mr31430342edp.319.1643827078924;
+        Wed, 02 Feb 2022 10:37:58 -0800 (PST)
+Received: from krava ([2a00:102a:400e:b6b3:b3d3:940b:f27f:5400])
+        by smtp.gmail.com with ESMTPSA id lo15sm15941787ejb.28.2022.02.02.10.37.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Feb 2022 10:37:58 -0800 (PST)
+Date:   Wed, 2 Feb 2022 19:37:54 +0100
+From:   Jiri Olsa <olsajiri@gmail.com>
+To:     Luis Chamberlain <mcgrof@kernel.org>
+Cc:     Nick Alcock <nick.alcock@oracle.com>, bas smit <bas@baslab.org>,
+        =?utf-8?B?VG9tw6HFoQ==?= Glozar <tglozar@gmail.com>,
+        Ast-x64 <Ast-x64@protonmail.com>,
+        Viktor Malik <viktor.malik@gmail.com>,
+        Daniel Xu <dxu@dxuuu.xyz>, Jiri Olsa <jolsa@kernel.org>,
+        jeyu@kernel.org, masahiroy@kernel.org,
+        linux-modules@vger.kernel.org, linux-kernel@vger.kernel.org,
+        arnd@arndb.de, akpm@linux-foundation.org, eugene.loh@oracle.com,
+        kris.van.hees@oracle.com, Andrii Nakryiko <andrii@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Ian Rogers <irogers@google.com>
+Subject: Re: [PING PATCH v7] kallsyms: new /proc/kallmodsyms with builtin
+ modules
+Message-ID: <YfrO2b4G/qMTHzQG@krava>
+References: <20211216201919.234994-1-nick.alcock@oracle.com>
+ <Yd8CDJA0dy0VaXrB@bombadil.infradead.org>
+ <878rvk7uv2.fsf@esperi.org.uk>
+ <Yfn145FyE3PDBEad@bombadil.infradead.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yfn145FyE3PDBEad@bombadil.infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update clk_init_data to const and also use index instead of fw_name for
-graphics, lpasscc and video clock controller.
+adding few more folks that might interested in this
 
-Fixes: 3e0f01d6c7e74 ("clk: qcom: Add graphics clock controller driver for SC7280")
-Fixes: 4ab43d171181d ("clk: qcom: Add lpass clock controller driver for SC7280")
-Fixes: fae7617bb1428 ("clk: qcom: Add video clock controller driver for SC7280")
-Signed-off-by: Taniya Das <tdas@codeaurora.org>
----
- drivers/clk/qcom/gpucc-sc7280.c   | 56 +++++++++++++++----------------
- drivers/clk/qcom/lpasscc-sc7280.c | 14 ++++----
- drivers/clk/qcom/videocc-sc7280.c | 26 +++++++-------
- 3 files changed, 48 insertions(+), 48 deletions(-)
-
-diff --git a/drivers/clk/qcom/gpucc-sc7280.c b/drivers/clk/qcom/gpucc-sc7280.c
-index 9a832f2bcf49..e8f6abc5261f 100644
---- a/drivers/clk/qcom/gpucc-sc7280.c
-+++ b/drivers/clk/qcom/gpucc-sc7280.c
-@@ -1,6 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0-only
- /*
-- * Copyright (c) 2021, The Linux Foundation. All rights reserved.
-+ * Copyright (c) 2021-2022, The Linux Foundation. All rights reserved.
-  */
-
- #include <linux/clk-provider.h>
-@@ -36,10 +36,10 @@ static struct clk_alpha_pll gpu_cc_pll0 = {
- 	.num_vco = ARRAY_SIZE(lucid_vco),
- 	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID],
- 	.clkr = {
--		.hw.init = &(struct clk_init_data){
-+		.hw.init = &(const struct clk_init_data){
- 			.name = "gpu_cc_pll0",
- 			.parent_data = &(const struct clk_parent_data){
--				.fw_name = "bi_tcxo",
-+				.index = 0,
- 			},
- 			.num_parents = 1,
- 			.ops = &clk_alpha_pll_lucid_ops,
-@@ -65,10 +65,10 @@ static struct clk_alpha_pll gpu_cc_pll1 = {
- 	.num_vco = ARRAY_SIZE(lucid_vco),
- 	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID],
- 	.clkr = {
--		.hw.init = &(struct clk_init_data){
-+		.hw.init = &(const struct clk_init_data){
- 			.name = "gpu_cc_pll1",
- 			.parent_data = &(const struct clk_parent_data){
--				.fw_name = "bi_tcxo",
-+				.index = 0,
- 			},
- 			.num_parents = 1,
- 			.ops = &clk_alpha_pll_lucid_ops,
-@@ -85,11 +85,11 @@ static const struct parent_map gpu_cc_parent_map_0[] = {
- };
-
- static const struct clk_parent_data gpu_cc_parent_data_0[] = {
--	{ .fw_name = "bi_tcxo" },
-+	{ .index = 0 },
- 	{ .hw = &gpu_cc_pll0.clkr.hw },
- 	{ .hw = &gpu_cc_pll1.clkr.hw },
--	{ .fw_name = "gcc_gpu_gpll0_clk_src" },
--	{ .fw_name = "gcc_gpu_gpll0_div_clk_src" },
-+	{ .index = 1 }, /* gcc_gpu_gpll0_clk_src */
-+	{ .index = 2 }, /* gcc_gpu_gpll0_div_clk_src */
- };
-
- static const struct parent_map gpu_cc_parent_map_1[] = {
-@@ -100,10 +100,10 @@ static const struct parent_map gpu_cc_parent_map_1[] = {
- };
-
- static const struct clk_parent_data gpu_cc_parent_data_1[] = {
--	{ .fw_name = "bi_tcxo", },
-+	{ .index = 0, },
- 	{ .hw = &gpu_cc_pll1.clkr.hw },
--	{ .fw_name = "gcc_gpu_gpll0_clk_src", },
--	{ .fw_name = "gcc_gpu_gpll0_div_clk_src", },
-+	{ .index = 1 }, /* gcc_gpu_gpll0_clk_src */
-+	{ .index = 2 }, /* gcc_gpu_gpll0_div_clk_src */
- };
-
- static const struct freq_tbl ftbl_gpu_cc_gmu_clk_src[] = {
-@@ -119,7 +119,7 @@ static struct clk_rcg2 gpu_cc_gmu_clk_src = {
- 	.hid_width = 5,
- 	.parent_map = gpu_cc_parent_map_0,
- 	.freq_tbl = ftbl_gpu_cc_gmu_clk_src,
--	.clkr.hw.init = &(struct clk_init_data){
-+	.clkr.hw.init = &(const struct clk_init_data){
- 		.name = "gpu_cc_gmu_clk_src",
- 		.parent_data = gpu_cc_parent_data_0,
- 		.num_parents = ARRAY_SIZE(gpu_cc_parent_data_0),
-@@ -140,7 +140,7 @@ static struct clk_rcg2 gpu_cc_hub_clk_src = {
- 	.hid_width = 5,
- 	.parent_map = gpu_cc_parent_map_1,
- 	.freq_tbl = ftbl_gpu_cc_hub_clk_src,
--	.clkr.hw.init = &(struct clk_init_data){
-+	.clkr.hw.init = &(const struct clk_init_data){
- 		.name = "gpu_cc_hub_clk_src",
- 		.parent_data = gpu_cc_parent_data_1,
- 		.num_parents = ARRAY_SIZE(gpu_cc_parent_data_1),
-@@ -152,7 +152,7 @@ static struct clk_regmap_div gpu_cc_hub_ahb_div_clk_src = {
- 	.reg = 0x11c0,
- 	.shift = 0,
- 	.width = 4,
--	.clkr.hw.init = &(struct clk_init_data) {
-+	.clkr.hw.init = &(const struct clk_init_data) {
- 		.name = "gpu_cc_hub_ahb_div_clk_src",
- 		.parent_hws = (const struct clk_hw*[]){
- 			&gpu_cc_hub_clk_src.clkr.hw,
-@@ -167,7 +167,7 @@ static struct clk_regmap_div gpu_cc_hub_cx_int_div_clk_src = {
- 	.reg = 0x11bc,
- 	.shift = 0,
- 	.width = 4,
--	.clkr.hw.init = &(struct clk_init_data) {
-+	.clkr.hw.init = &(const struct clk_init_data) {
- 		.name = "gpu_cc_hub_cx_int_div_clk_src",
- 		.parent_hws = (const struct clk_hw*[]){
- 			&gpu_cc_hub_clk_src.clkr.hw,
-@@ -184,7 +184,7 @@ static struct clk_branch gpu_cc_ahb_clk = {
- 	.clkr = {
- 		.enable_reg = 0x1078,
- 		.enable_mask = BIT(0),
--		.hw.init = &(struct clk_init_data){
-+		.hw.init = &(const struct clk_init_data){
- 			.name = "gpu_cc_ahb_clk",
- 			.parent_hws = (const struct clk_hw*[]){
- 				&gpu_cc_hub_ahb_div_clk_src.clkr.hw,
-@@ -202,7 +202,7 @@ static struct clk_branch gpu_cc_crc_ahb_clk = {
- 	.clkr = {
- 		.enable_reg = 0x107c,
- 		.enable_mask = BIT(0),
--		.hw.init = &(struct clk_init_data){
-+		.hw.init = &(const struct clk_init_data){
- 			.name = "gpu_cc_crc_ahb_clk",
- 			.parent_hws = (const struct clk_hw*[]){
- 				&gpu_cc_hub_ahb_div_clk_src.clkr.hw,
-@@ -220,7 +220,7 @@ static struct clk_branch gpu_cc_cx_gmu_clk = {
- 	.clkr = {
- 		.enable_reg = 0x1098,
- 		.enable_mask = BIT(0),
--		.hw.init = &(struct clk_init_data){
-+		.hw.init = &(const struct clk_init_data){
- 			.name = "gpu_cc_cx_gmu_clk",
- 			.parent_hws = (const struct clk_hw*[]){
- 				&gpu_cc_gmu_clk_src.clkr.hw,
-@@ -238,7 +238,7 @@ static struct clk_branch gpu_cc_cx_snoc_dvm_clk = {
- 	.clkr = {
- 		.enable_reg = 0x108c,
- 		.enable_mask = BIT(0),
--		.hw.init = &(struct clk_init_data){
-+		.hw.init = &(const struct clk_init_data){
- 			.name = "gpu_cc_cx_snoc_dvm_clk",
- 			.ops = &clk_branch2_ops,
- 		},
-@@ -251,7 +251,7 @@ static struct clk_branch gpu_cc_cxo_aon_clk = {
- 	.clkr = {
- 		.enable_reg = 0x1004,
- 		.enable_mask = BIT(0),
--		.hw.init = &(struct clk_init_data){
-+		.hw.init = &(const struct clk_init_data){
- 			.name = "gpu_cc_cxo_aon_clk",
- 			.ops = &clk_branch2_ops,
- 		},
-@@ -264,7 +264,7 @@ static struct clk_branch gpu_cc_cxo_clk = {
- 	.clkr = {
- 		.enable_reg = 0x109c,
- 		.enable_mask = BIT(0),
--		.hw.init = &(struct clk_init_data){
-+		.hw.init = &(const struct clk_init_data){
- 			.name = "gpu_cc_cxo_clk",
- 			.ops = &clk_branch2_aon_ops,
- 		},
-@@ -277,7 +277,7 @@ static struct clk_branch gpu_cc_gx_gmu_clk = {
- 	.clkr = {
- 		.enable_reg = 0x1064,
- 		.enable_mask = BIT(0),
--		.hw.init = &(struct clk_init_data){
-+		.hw.init = &(const struct clk_init_data){
- 			.name = "gpu_cc_gx_gmu_clk",
- 			.parent_hws = (const struct clk_hw*[]){
- 				&gpu_cc_gmu_clk_src.clkr.hw,
-@@ -295,7 +295,7 @@ static struct clk_branch gpu_cc_hlos1_vote_gpu_smmu_clk = {
- 	.clkr = {
- 		.enable_reg = 0x5000,
- 		.enable_mask = BIT(0),
--		.hw.init = &(struct clk_init_data){
-+		.hw.init = &(const struct clk_init_data){
- 			.name = "gpu_cc_hlos1_vote_gpu_smmu_clk",
- 			.ops = &clk_branch2_ops,
- 		},
-@@ -308,7 +308,7 @@ static struct clk_branch gpu_cc_hub_aon_clk = {
- 	.clkr = {
- 		.enable_reg = 0x1178,
- 		.enable_mask = BIT(0),
--		.hw.init = &(struct clk_init_data){
-+		.hw.init = &(const struct clk_init_data){
- 			.name = "gpu_cc_hub_aon_clk",
- 			.parent_hws = (const struct clk_hw*[]){
- 				&gpu_cc_hub_clk_src.clkr.hw,
-@@ -326,7 +326,7 @@ static struct clk_branch gpu_cc_hub_cx_int_clk = {
- 	.clkr = {
- 		.enable_reg = 0x1204,
- 		.enable_mask = BIT(0),
--		.hw.init = &(struct clk_init_data){
-+		.hw.init = &(const struct clk_init_data){
- 			.name = "gpu_cc_hub_cx_int_clk",
- 			.parent_hws = (const struct clk_hw*[]){
- 				&gpu_cc_hub_cx_int_div_clk_src.clkr.hw,
-@@ -344,7 +344,7 @@ static struct clk_branch gpu_cc_mnd1x_0_gfx3d_clk = {
- 	.clkr = {
- 		.enable_reg = 0x802c,
- 		.enable_mask = BIT(0),
--		.hw.init = &(struct clk_init_data){
-+		.hw.init = &(const struct clk_init_data){
- 			.name = "gpu_cc_mnd1x_0_gfx3d_clk",
- 			.ops = &clk_branch2_ops,
- 		},
-@@ -357,7 +357,7 @@ static struct clk_branch gpu_cc_mnd1x_1_gfx3d_clk = {
- 	.clkr = {
- 		.enable_reg = 0x8030,
- 		.enable_mask = BIT(0),
--		.hw.init = &(struct clk_init_data){
-+		.hw.init = &(const struct clk_init_data){
- 			.name = "gpu_cc_mnd1x_1_gfx3d_clk",
- 			.ops = &clk_branch2_ops,
- 		},
-@@ -370,7 +370,7 @@ static struct clk_branch gpu_cc_sleep_clk = {
- 	.clkr = {
- 		.enable_reg = 0x1090,
- 		.enable_mask = BIT(0),
--		.hw.init = &(struct clk_init_data){
-+		.hw.init = &(const struct clk_init_data){
- 			.name = "gpu_cc_sleep_clk",
- 			.ops = &clk_branch2_ops,
- 		},
-diff --git a/drivers/clk/qcom/lpasscc-sc7280.c b/drivers/clk/qcom/lpasscc-sc7280.c
-index b39ee1c9647b..ef055706b442 100644
---- a/drivers/clk/qcom/lpasscc-sc7280.c
-+++ b/drivers/clk/qcom/lpasscc-sc7280.c
-@@ -1,6 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0
- /*
-- * Copyright (c) 2021, The Linux Foundation. All rights reserved.
-+ * Copyright (c) 2021-2022, The Linux Foundation. All rights reserved.
-  */
-
- #include <linux/clk-provider.h>
-@@ -23,7 +23,7 @@ static struct clk_branch lpass_q6ss_ahbm_clk = {
- 	.clkr = {
- 		.enable_reg = 0x1c,
- 		.enable_mask = BIT(0),
--		.hw.init = &(struct clk_init_data){
-+		.hw.init = &(const struct clk_init_data){
- 			.name = "lpass_q6ss_ahbm_clk",
- 			.ops = &clk_branch2_ops,
- 		},
-@@ -36,7 +36,7 @@ static struct clk_branch lpass_q6ss_ahbs_clk = {
- 	.clkr = {
- 		.enable_reg = 0x20,
- 		.enable_mask = BIT(0),
--		.hw.init = &(struct clk_init_data){
-+		.hw.init = &(const struct clk_init_data){
- 			.name = "lpass_q6ss_ahbs_clk",
- 			.ops = &clk_branch2_ops,
- 		},
-@@ -49,7 +49,7 @@ static struct clk_branch lpass_top_cc_lpi_q6_axim_hs_clk = {
- 	.clkr = {
- 		.enable_reg = 0x0,
- 		.enable_mask = BIT(0),
--		.hw.init = &(struct clk_init_data){
-+		.hw.init = &(const struct clk_init_data){
- 			.name = "lpass_top_cc_lpi_q6_axim_hs_clk",
- 			.ops = &clk_branch2_ops,
- 		},
-@@ -63,7 +63,7 @@ static struct clk_branch lpass_qdsp6ss_core_clk = {
- 	.clkr = {
- 		.enable_reg = 0x20,
- 		.enable_mask = BIT(0),
--		.hw.init = &(struct clk_init_data){
-+		.hw.init = &(const struct clk_init_data){
- 			.name = "lpass_qdsp6ss_core_clk",
- 			.ops = &clk_branch2_ops,
- 		},
-@@ -77,7 +77,7 @@ static struct clk_branch lpass_qdsp6ss_xo_clk = {
- 	.clkr = {
- 		.enable_reg = 0x38,
- 		.enable_mask = BIT(0),
--		.hw.init = &(struct clk_init_data){
-+		.hw.init = &(const struct clk_init_data){
- 			.name = "lpass_qdsp6ss_xo_clk",
- 			.ops = &clk_branch2_ops,
- 		},
-@@ -91,7 +91,7 @@ static struct clk_branch lpass_qdsp6ss_sleep_clk = {
- 	.clkr = {
- 		.enable_reg = 0x3c,
- 		.enable_mask = BIT(0),
--		.hw.init = &(struct clk_init_data){
-+		.hw.init = &(const struct clk_init_data){
- 			.name = "lpass_qdsp6ss_sleep_clk",
- 			.ops = &clk_branch2_ops,
- 		},
-diff --git a/drivers/clk/qcom/videocc-sc7280.c b/drivers/clk/qcom/videocc-sc7280.c
-index 615695d82319..ba192ce6163e 100644
---- a/drivers/clk/qcom/videocc-sc7280.c
-+++ b/drivers/clk/qcom/videocc-sc7280.c
-@@ -1,6 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0-only
- /*
-- * Copyright (c) 2021, The Linux Foundation. All rights reserved.
-+ * Copyright (c) 2021-2022, The Linux Foundation. All rights reserved.
-  */
-
- #include <linux/clk-provider.h>
-@@ -45,10 +45,10 @@ static struct clk_alpha_pll video_pll0 = {
- 	.num_vco = ARRAY_SIZE(lucid_vco),
- 	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID],
- 	.clkr = {
--		.hw.init = &(struct clk_init_data){
-+		.hw.init = &(const struct clk_init_data){
- 			.name = "video_pll0",
- 			.parent_data = &(const struct clk_parent_data){
--				.fw_name = "bi_tcxo",
-+				.index = 0,
- 			},
- 			.num_parents = 1,
- 			.ops = &clk_alpha_pll_lucid_ops,
-@@ -62,7 +62,7 @@ static const struct parent_map video_cc_parent_map_0[] = {
- };
-
- static const struct clk_parent_data video_cc_parent_data_0[] = {
--	{ .fw_name = "bi_tcxo" },
-+	{ .index = 0 },
- 	{ .hw = &video_pll0.clkr.hw },
- };
-
-@@ -89,7 +89,7 @@ static struct clk_rcg2 video_cc_iris_clk_src = {
- 	.hid_width = 5,
- 	.parent_map = video_cc_parent_map_0,
- 	.freq_tbl = ftbl_video_cc_iris_clk_src,
--	.clkr.hw.init = &(struct clk_init_data){
-+	.clkr.hw.init = &(const struct clk_init_data){
- 		.name = "video_cc_iris_clk_src",
- 		.parent_data = video_cc_parent_data_0,
- 		.num_parents = ARRAY_SIZE(video_cc_parent_data_0),
-@@ -109,7 +109,7 @@ static struct clk_rcg2 video_cc_sleep_clk_src = {
- 	.hid_width = 5,
- 	.parent_map = video_cc_parent_map_1,
- 	.freq_tbl = ftbl_video_cc_sleep_clk_src,
--	.clkr.hw.init = &(struct clk_init_data){
-+	.clkr.hw.init = &(const struct clk_init_data){
- 		.name = "video_cc_sleep_clk_src",
- 		.parent_data = video_cc_parent_data_1,
- 		.num_parents = ARRAY_SIZE(video_cc_parent_data_1),
-@@ -123,7 +123,7 @@ static struct clk_branch video_cc_iris_ahb_clk = {
- 	.clkr = {
- 		.enable_reg = 0x5004,
- 		.enable_mask = BIT(0),
--		.hw.init = &(struct clk_init_data){
-+		.hw.init = &(const struct clk_init_data){
- 			.name = "video_cc_iris_ahb_clk",
- 			.parent_hws = (const struct clk_hw*[]){
- 				&video_cc_iris_clk_src.clkr.hw,
-@@ -141,7 +141,7 @@ static struct clk_branch video_cc_mvs0_axi_clk = {
- 	.clkr = {
- 		.enable_reg = 0x800c,
- 		.enable_mask = BIT(0),
--		.hw.init = &(struct clk_init_data){
-+		.hw.init = &(const struct clk_init_data){
- 			.name = "video_cc_mvs0_axi_clk",
- 			.ops = &clk_branch2_ops,
- 		},
-@@ -156,7 +156,7 @@ static struct clk_branch video_cc_mvs0_core_clk = {
- 	.clkr = {
- 		.enable_reg = 0x3010,
- 		.enable_mask = BIT(0),
--		.hw.init = &(struct clk_init_data){
-+		.hw.init = &(const struct clk_init_data){
- 			.name = "video_cc_mvs0_core_clk",
- 			.parent_hws = (const struct clk_hw*[]){
- 				&video_cc_iris_clk_src.clkr.hw,
-@@ -174,7 +174,7 @@ static struct clk_branch video_cc_mvsc_core_clk = {
- 	.clkr = {
- 		.enable_reg = 0x2014,
- 		.enable_mask = BIT(0),
--		.hw.init = &(struct clk_init_data){
-+		.hw.init = &(const struct clk_init_data){
- 			.name = "video_cc_mvsc_core_clk",
- 			.parent_hws = (const struct clk_hw*[]){
- 				&video_cc_iris_clk_src.clkr.hw,
-@@ -192,7 +192,7 @@ static struct clk_branch video_cc_mvsc_ctl_axi_clk = {
- 	.clkr = {
- 		.enable_reg = 0x8004,
- 		.enable_mask = BIT(0),
--		.hw.init = &(struct clk_init_data){
-+		.hw.init = &(const struct clk_init_data){
- 			.name = "video_cc_mvsc_ctl_axi_clk",
- 			.ops = &clk_branch2_ops,
- 		},
-@@ -205,7 +205,7 @@ static struct clk_branch video_cc_sleep_clk = {
- 	.clkr = {
- 		.enable_reg = 0x7034,
- 		.enable_mask = BIT(0),
--		.hw.init = &(struct clk_init_data){
-+		.hw.init = &(const struct clk_init_data){
- 			.name = "video_cc_sleep_clk",
- 			.parent_hws = (const struct clk_hw*[]){
- 				&video_cc_sleep_clk_src.clkr.hw,
-@@ -223,7 +223,7 @@ static struct clk_branch video_cc_venus_ahb_clk = {
- 	.clkr = {
- 		.enable_reg = 0x801c,
- 		.enable_mask = BIT(0),
--		.hw.init = &(struct clk_init_data){
-+		.hw.init = &(const struct clk_init_data){
- 			.name = "video_cc_venus_ahb_clk",
- 			.ops = &clk_branch2_ops,
- 		},
---
-Qualcomm INDIA, on behalf of Qualcomm Innovation Center, Inc.is a member
-of the Code Aurora Forum, hosted by the  Linux Foundation.
-
+On Tue, Feb 01, 2022 at 07:09:23PM -0800, Luis Chamberlain wrote:
+> CC'ing bfptrace folks for feedback.
+> 
+> I'm pretty reluctant to merge any of this unless we have wide community
+> desire to see this. I'm not quite seeing that yet.
+> 
+> On Wed, Jan 12, 2022 at 04:59:45PM +0000, Nick Alcock wrote:
+> > On 12 Jan 2022, Luis Chamberlain stated:
+> > 
+> > > On Thu, Dec 16, 2021 at 08:19:12PM +0000, Nick Alcock wrote:
+> > >> /proc/kallsyms is very useful for tracers and other tools that need to
+> > >> map kernel symbols to addresses.
+> > >> 
+> > >> It would be useful
+> > >
+> > > It took me digging on archives to see to *who* this is useful to.
+> > > The short answer seeme to be dtrace. Can you work on getting use
+> > > of this for something (I don't know, maybe kernelshark?) that does
+> > > not taint the kernel? Last I checked using dtrace on linux taints the
+> > > kernel.
+> > 
+> > It hasn't tainted the kernel for at least four years :) v1 (with a
+> > kernel module) has been GPLv2 since 2017; v2 is pure-BPF and has no
+> > DTrace-specific kernel modules,
+> 
+> I google for dtrace LInux and I end up here:
+> 
+> https://www.oracle.com/linux/downloads/linux-dtrace.html
+> 
+> It then has documentation dating back to year 2020, and I can't
+> apt-get install any of these "dtrace-utils" or anything with dtrace.
+> 
+> How do I get running with dtrace on debian? Typically this is a flag
+> it has some funky license. You metioned dtrace is GPLv2 since 2017, does
+> the same apply to the pure-BPF stuff?
+> 
+> Note I see a bpftrace effort, can that be made to use your changes?
+> At *least* I can install that on a regular distro. And it notes
+> "The bpftrace language is inspired by awk and C, and predecessor tracers
+> such as DTrace and SystemTap."
+> 
+> I see on that page it says:
+> 
+> Note that DTrace requires the Unbreakable Enterprise Kernel (UEK)
+> release 5 or higher. 
+> 
+> > just using some new things we have to
+> > add to the kernel, most of which seem plausibly useful to others too
+> > (kallmodsyms, waitfd pro tem until pidfd supports ptracers, and CTF).
+> 
+> All sounds nice, but I'd like to give this all a spin, but I can't
+> find anything remotely close to anything sensible to try it out.
+> I don't want to run any Oracle kernel. I want to run things upstream.
+> 
+> > This is not a DTrace-specific feature in any case: all my submissions
+> > have noted that it seems likely to be useful to anyone who wants a
+> > stable reference to modules that doesn't change whenever the kernel
+> > config changes, which probably means most tracers with support for
+> > kernel modules which implement anything like a programming language.
+> 
+> Great! But I'd like things to have tools
+> 
+> > > Without valid upstream users I see no need to add more complexity to the
+> > > kernel. And complexity added by tainting modules or not upstream modules
+> > 
+> > We don't need any of those any more :) Even CTF is now generated by GCC
+> > (once GCC 12 is released) and deduplicated by GNU ld: the CTF patch will
+> > be only a few hundred lines long once GCC 12 is out and I drop the
+> > DWARF->CTF translator.
+> 
+> Great!
+> 
+> > > Without a valid non-taining user being made very clear with a value-add,
+> > > I will have to ignore this.
+> > 
+> > I hope this gives you a reason to not ignore it! Have some links:
+> > 
+> > DTrace v1 (maintenance mode, fairly hefty GPL kernel module, UPL
+> > userspace; fully-functional including fbt, kernel side will shrink):
+> > 
+> >   https://github.com/oracle/dtrace-linux-kernel v1/5.15
+> >   https://github.com/oracle/dtrace-utils 1.x-branch-dev
+> > 
+> > DTrace v2 based on BPF, in progress, some features still missing (UPL
+> > userspace and a few GPL kernel patches, including this one: needs a BPF
+> > cross-compiler, which is a new GCC 12 target):
+> > 
+> >   https://github.com/oracle/dtrace-linux-kernel v2/5.14.9
+> >   https://github.com/oracle/dtrace-utils 2.0-branch
+> 
+> The "The Universal Permissive License (UPL)"? Really ? Anyway it seems
+> to be at least GPL compatible. I'm curios why no distro has picked up
+> any of this work?
+> 
+> I don't see much traction based on what you have said on dtrace
+> on anything other than Oracle Linux stuff, it would be nice if bpftrace
+> folks were excited about your changes and we had support for that
+> there.
+> 
+> > (I'm going to respin all of these kernel branches against 5.17-rc once
+> > the merge window closes, and bring the things both kernel trees have in
+> > common into sync. I'll drop you a line once that's done.)
+> 
+> Nice.
+> 
+> > Config-wise both of these need kernels with CONFIG_KALLMODSYMS,
+> > CONFIG_WAITFD and CONFIG_CTF turned on, and a kernel built with a 'make
+> > ctf' done after 'make', and the kernel source tree available when DTrace
+> > proper is built.
+> 
+> Thanks for the heads up.
+> 
+>   Luis
