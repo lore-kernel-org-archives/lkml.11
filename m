@@ -2,141 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 954A5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 11:31:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AA1DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 11:36:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343927AbiBBLbe (ORCPT
+        id S1343812AbiBBLgJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 06:31:34 -0500
-Received: from wnew4-smtp.messagingengine.com ([64.147.123.18]:57621 "EHLO
-        wnew4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S245225AbiBBLbc (ORCPT
+        Wed, 2 Feb 2022 06:36:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58634 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231363AbiBBLgI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 06:31:32 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.west.internal (Postfix) with ESMTP id 168362B00949;
-        Wed,  2 Feb 2022 06:31:31 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Wed, 02 Feb 2022 06:31:32 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm2; bh=s+xzvHlh5mml7Y
-        epjnQMHIC86SIHC20vVql/uYjQsSI=; b=HqO5YJBpXUdEVM3OC0JD7cnoQXtL2U
-        5XYV6/ILtpYHhITzZwjyg/6oPIh201uveyOhRfsEfx6XvTcK4WZXb05D6Dm7IqhG
-        YICSWmdEI+E2A5ft1Xw6KI8FwB00OckhAQR0nvny/jGo+0EfQf87maHxqL6Oe6At
-        JUcAOxnDqYZvBblBII/EVgxMFsht700O0qLrh5426vb26idMF5w+Xrd2dG9ky+mN
-        YumA+XVZpgMtbwVlCJ+0bnMEVbsd0+RdOr95eSQqp74puKvTaT/zKhW5DCFAYMRf
-        9pSDB7rM4pXsjon6e/GHvpy/EpQtWudxtRY/NoJM0PdHk2SqqpDpCHcg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm2; bh=s+xzvHlh5mml7YepjnQMHIC86SIHC20vVql/uYjQs
-        SI=; b=m41hyTiTMtqWUuyooz2/wKDf5xEh5yyJ7z8sS14WmLgr9RSghA/TnciXE
-        6U5lLeKUgCacrmwt4mUBmoJwncqu+kPhkjh5aQOuWfCJsaAjhzEitWK3ljeSbGmp
-        82wsuNvqgan+hMOmYn4h/m0R/XZGW8r/HetnB3dTy6Mt0nplBT7shHFx6CS79mY+
-        54bA9w0IVw4rTYppwt3Hy+8Zhkx8+tFbFXYXABpd4paQq4jWYGXV61W+Uwx3WYml
-        +u5fnuvNnDGjHLwNRdWGOGdQiP8croahNGvM/Zhb9fRsLUYLx7WtZOBa9JbKz4FJ
-        TavDjimST4Jg/OJ77aslL5TtmfklQ==
-X-ME-Sender: <xms:kWv6YbCpOWwbjo2fEEuZPQXR6fWs8WJ1txn3dnI23fPvR_jEq6BtYA>
-    <xme:kWv6YRh8NznxWsAQ0qT2a5VakvdP6rhEGxnbBiBpTPUyyd_ed0xtLh1qh1gWdi2o1
-    RYsPJ-ST-5zYXxEbzE>
-X-ME-Received: <xmr:kWv6YWm-nWM_bt1-HKUi0q0IXtnpvYgFdHhaqec5bvACze8gY3lsuD44_1voiOzGykZEhEfStHDo6MwtJ9AIE_N6Uz7gG4w6BdAI5Lg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrgeehgddvlecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggugfgjsehtqhertddttddvnecuhfhrohhmpeforgigihhm
-    vgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrth
-    htvghrnhepgfejtedtjefggfffvdetuedthedtheegheeuteekfeeghfdtteejkeeludeg
-    vddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmh
-    grgihimhgvsegtvghrnhhordhtvggthh
-X-ME-Proxy: <xmx:kWv6YdzU6_6XRI4ekXyhAC8YzPWi1m1xNUunpLwP_xM4f5se8A8_VQ>
-    <xmx:kWv6YQQOu6pQ-o8B5aZQ677z9Y2qiH_PDo09C_Wv5_V5NMXjRAbgAA>
-    <xmx:kWv6YQYs06Q3gCfuX_p_bffS9DRDIzXjyoge9q2TNCQJjM_hV0gSyQ>
-    <xmx:kmv6Ydj-2Ue1nKfs8umtoxrCpvUcJB1846mQ3s7l53Sz1eZ2oWHDrrYys-k>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 2 Feb 2022 06:31:28 -0500 (EST)
-Date:   Wed, 2 Feb 2022 12:31:26 +0100
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     Daniel Vetter <daniel.vetter@ffwll.ch>
-Cc:     DRI Development <dri-devel@lists.freedesktop.org>,
-        linux-fbdev@vger.kernel.org,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Tomi Valkeinen <tomi.valkeinen@ti.com>,
-        Claudio Suarez <cssk@net-c.es>,
-        Gerd Hoffmann <kraxel@redhat.com>, Pavel Machek <pavel@ucw.cz>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Sven Schnelle <svens@stackframe.org>
-Subject: Re: [PATCH 01/21] MAINTAINERS: Add entry for fbdev core
-Message-ID: <20220202113126.3rgzqkhnorrbfj6b@houat>
-References: <20220131210552.482606-1-daniel.vetter@ffwll.ch>
- <20220131210552.482606-2-daniel.vetter@ffwll.ch>
+        Wed, 2 Feb 2022 06:36:08 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B19A7C061714
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 03:36:08 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 56C3D616E3
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 11:36:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6F07C004E1;
+        Wed,  2 Feb 2022 11:36:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643801767;
+        bh=UyZaJ0tB41ZV6qBFKK9qIgn5LBAmyc6MC+K+6DFNjjY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Db18p5vr4c8W40fy+RORFCyNFR8aqxfBfI6Vy+ODBeUx/blR7PxB1PJ/iCWUVxnMb
+         nxGC8BMUbjizY78IYE0jYgBs9+4BLCiwDSvBDdS6u2HikLWZeWflhd/DpPrvSAmoy8
+         Jy+Z9GTjuJs3bowDt9RVwduyGJvWIvrrOoi3q1ywlE7hhVYEkrQ8sKpepnQJIZQ7rC
+         3chnSUOFKc0juQIVvC6xOHzad8HVnhWGLdCErGjEfhzL5GH9yV7/YBjQoWYueKm5kn
+         DhuoXjj6abIUFADblDBtaJg4mjp+mTSKf5wkBZYd9Ir5WCZvYe6MBiLlXAxvev8bRL
+         JkpbnY/ZP4+JA==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1nFDvT-0000M1-EE; Wed, 02 Feb 2022 12:35:51 +0100
+From:   Johan Hovold <johan@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Johan Hovold <johan@kernel.org>, Alex Elder <elder@kernel.org>,
+        Mitchell Tasman <tasman@leaflabs.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        greybus-dev@lists.linaro.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 3/3] greybus: svc: clean up link configuration hack at hello
+Date:   Wed,  2 Feb 2022 12:33:47 +0100
+Message-Id: <20220202113347.1288-4-johan@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220202113347.1288-1-johan@kernel.org>
+References: <20220202113347.1288-1-johan@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220131210552.482606-2-daniel.vetter@ffwll.ch>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 31, 2022 at 10:05:32PM +0100, Daniel Vetter wrote:
-> Ever since Tomi extracted the core code in 2014 it's been defacto me
-> maintaining this, with help from others from dri-devel and sometimes
-> Linus (but those are mostly merge conflicts):
->=20
-> $ git shortlog -ns  drivers/video/fbdev/core/ | head -n5
->     35  Daniel Vetter
->     23  Linus Torvalds
->     10  Hans de Goede
->      9  Dave Airlie
->      6  Peter Rosin
->=20
-> I think ideally we'd also record that the various firmware fb drivers
-> (efifb, vesafb, ...) are also maintained in drm-misc because for the
-> past few years the patches have either been to fix handover issues
-> with drm drivers, or caused handover issues with drm drivers. So any
-> other tree just doesn't make sense. But also, there's plenty of
-> outdated MAINTAINER entries for these with people and git trees that
-> haven't been active in years, so maybe let's just leave them alone.
-> And furthermore distros are now adopting simpledrm as the firmware fb
-> driver, so hopefully the need to care about the fbdev firmware drivers
-> will go down going forward.
->=20
-> Note that drm-misc is group maintained, I expect that to continue like
-> we've done before, so no new expectations that patches all go through
-> my hands. That would be silly. This also means I'm happy to put any
-> other volunteer's name in the M: line, but otherwise git log says I'm
-> the one who's stuck with this.
->=20
-> Cc: Dave Airlie <airlied@gmail.com>
-> Cc: Jani Nikula <jani.nikula@linux.intel.com>
-> Cc: Linus Torvalds <torvalds@linux-foundation.org>
-> Cc: Linux Fbdev development list <linux-fbdev@vger.kernel.org>
-> Cc: Pavel Machek <pavel@ucw.cz>
-> Cc: Sam Ravnborg <sam@ravnborg.org>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Javier Martinez Canillas <javierm@redhat.com>
-> Cc: DRI Development <dri-devel@lists.freedesktop.org>
-> Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-> Cc: Claudio Suarez <cssk@net-c.es>
-> Cc: Tomi Valkeinen <tomi.valkeinen@ti.com>
-> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-> Cc: Thomas Zimmermann <tzimmermann@suse.de>
-> Cc: Daniel Vetter <daniel.vetter@intel.com>
-> Cc: Sven Schnelle <svens@stackframe.org>
-> Cc: Gerd Hoffmann <kraxel@redhat.com>
-> Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
+Commit ee2f2074fdb2 ("greybus: svc: reconfig APBridgeA-Switch link to
+handle required load") added a temporary hack which reconfigures the
+link at HELLO by abusing the deferred request processing mechanism.
 
-Acked-by: Maxime Ripard <maxime@cerno.tech>
+Restructure the HELLO request processing so that the link-configuration
+work is queued before creating the debugfs files and add a comment
+explaining why it's there.
 
-Maxime
+Signed-off-by: Johan Hovold <johan@kernel.org>
+---
+ drivers/greybus/svc.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/greybus/svc.c b/drivers/greybus/svc.c
+index 4f93d6b2f4ed..56d2b44d6fef 100644
+--- a/drivers/greybus/svc.c
++++ b/drivers/greybus/svc.c
+@@ -864,16 +864,19 @@ static int gb_svc_hello(struct gb_operation *op)
+ 		goto err_deregister_svc;
+ 	}
+ 
+-	gb_svc_debugfs_init(svc);
+-
++	/*
++	 * FIXME: This is a temporary hack to reconfigure the link at HELLO
++	 * (which abuses the deferred request processing mechanism).
++	 */
+ 	ret = gb_svc_queue_deferred_request(op);
+ 	if (ret)
+-		goto err_remove_debugfs;
++		goto err_destroy_watchdog;
++
++	gb_svc_debugfs_init(svc);
+ 
+ 	return 0;
+ 
+-err_remove_debugfs:
+-	gb_svc_debugfs_exit(svc);
++err_destroy_watchdog:
+ 	gb_svc_watchdog_destroy(svc);
+ err_deregister_svc:
+ 	device_del(&svc->dev);
+-- 
+2.34.1
+
