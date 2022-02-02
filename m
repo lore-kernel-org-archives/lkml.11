@@ -2,100 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D6B1C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 22:42:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A6B4C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 22:42:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347557AbiBBWmY (ORCPT
+        id S1347717AbiBBWmp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 17:42:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42756 "EHLO
+        Wed, 2 Feb 2022 17:42:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346480AbiBBWmU (ORCPT
+        with ESMTP id S1346480AbiBBWmo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 17:42:20 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34A41C06173D
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 14:42:20 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id d5so668379pjk.5
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 14:42:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=sZFuR2vWOuiv7Zs+hDWJ+PkQ5hWBuLQprDWKtuu6j1w=;
-        b=TdhW3CHrwvcy7GYuBo8j779z2PW0TcMfM2V+vWaa9jaWOIhRClXmGian3FkoWPCV5o
-         ScljSpPu1PzLXsbgqOBE6JQrbO8oo2qV3iI3ZuNLXWksV5u1XR06NzypnNAUSoOMdiYS
-         /X2TEFOTHjcAgMY94U8nogoY8rTwTw1NVZhyg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=sZFuR2vWOuiv7Zs+hDWJ+PkQ5hWBuLQprDWKtuu6j1w=;
-        b=TuoBxs7plxFEUyHlpBm3vO/nx9xBx5uGXmQyySJD3kpPxIihuoiquZsO7mzWs1IPuk
-         j0nXAgJuk38Z5ZQdJHwX/mfHVagy0wYxj0+aBDybmD/xvFGgSHo1tGP/BgbXyXjm/Q/X
-         mtGj0F4RSiayLePnrFYmeqoE9j/bJY1VZAeZfPCjRtCKF3XX7HQPI4KrDJRueQr8ZMLX
-         x0dYdfqohlOw8bQtPcP3SBQ91w9kPsU5qWAP+wfxcwQIeIKeTvmCD0lvSY702fi5SZcb
-         qJ2OVReAxsjVZ0cJ7cb5pvefHp8My9jHjDSUdKHWuOXFHRmT8W3DH3MFCfr39Rvo82c3
-         JFyQ==
-X-Gm-Message-State: AOAM530Gfcu+XpQSSOuRxXj0iH2g5jUJYQBoeWg3WQUyps8sixuhrEFO
-        aEW+R+CM13nTOVIajbRPeKLlaDn4T0lmUA==
-X-Google-Smtp-Source: ABdhPJzckxs2l6JjLjk8Arc0ZPnEaekNFZUpWFliBg8YSV0xEtSQ+tzt24d16M+Cu05w0lhuL9dn9g==
-X-Received: by 2002:a17:902:8f92:: with SMTP id z18mr33425417plo.42.1643841739568;
-        Wed, 02 Feb 2022 14:42:19 -0800 (PST)
-Received: from localhost ([2620:15c:202:201:c0cb:3065:aa0:d6c9])
-        by smtp.gmail.com with UTF8SMTPSA id p17sm17498229pfh.59.2022.02.02.14.42.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 02 Feb 2022 14:42:19 -0800 (PST)
-Date:   Wed, 2 Feb 2022 14:42:16 -0800
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Douglas Anderson <dianders@chromium.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        pmaliset@codeaurora.org, quic_rjendra@quicinc.com,
-        Shaik Sajida Bhanu <sbhanu@codeaurora.org>,
-        kgodara@codeaurora.org, konrad.dybcio@somainline.org,
-        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
-        sibis@codeaurora.org, swboyd@chromium.org,
-        Andy Gross <agross@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 04/14] arm64: dts: qcom: sc7280: Clean up sdc1 / sdc2
- pinctrl
-Message-ID: <YfsIyGEks7O9DGXb@google.com>
-References: <20220202212348.1391534-1-dianders@chromium.org>
- <20220202132301.v3.4.I79baad7f52351aafb470f8b21a9fa79d7031ad6a@changeid>
+        Wed, 2 Feb 2022 17:42:44 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D647AC061714;
+        Wed,  2 Feb 2022 14:42:43 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 30074B832C2;
+        Wed,  2 Feb 2022 22:42:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A53FFC004E1;
+        Wed,  2 Feb 2022 22:42:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643841761;
+        bh=QeCtUyyg5QpqeRsRwiIlz7kYnbtIa8ywWz4Etso8L20=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=LBGjOSXjDuuJ7M5RDIoJ3+pHs+Oa3L9pfUIViyioOv7zKEIPhwLNzgjXxcefIJW5x
+         pIiH7G03PrVfSrS2bhtZSFjD9jwiLDIjx7jJxMmcrcAirMlwNB/hS8hcc9H8CyqDfQ
+         AdAeB8AgAAHAQkj0D0vl24SzGv6S7xS2/NWO//EB2AOH+dv6svC4UIId0LtsOFN3bf
+         pD2D33gqySYPMnSMUu3CYgKuMt0B0sHSw8O6Cy0NFTnaBrmpgUL7R/VElf7BzlISZe
+         n9vzjI4bZt06vo2FHXAmpzzcSEHRyAvKhGOXR7CvvEEcKSE5RCUS6bgmtI/GeYmXnZ
+         y+HyPpq8ZGPSQ==
+Date:   Wed, 2 Feb 2022 16:42:39 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Brent Spillner <spillner@acm.org>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, hpa@zytor.com, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] x86/PCI: Improve log message when IRQ cannot be
+ identified
+Message-ID: <20220202224239.GA49678@bhelgaas>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220202132301.v3.4.I79baad7f52351aafb470f8b21a9fa79d7031ad6a@changeid>
+In-Reply-To: <CAGwJgaMDJH-rhsc9+_vj1vjj6XLigvqVYLdu-6TgrDNxGpTubA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 02, 2022 at 01:23:38PM -0800, Douglas Anderson wrote:
-> This patch makes a few improvements to the way that sdc1 / sdc2
-> pinctrl is specified on sc7280:
+On Wed, Feb 02, 2022 at 10:13:31PM +0000, Brent Spillner wrote:
+> On Wed, Feb 2, 2022 at 6:13 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
+> > IIUC pirq_enable_irq() is only used for non-ACPI, non-DT, non-Xen,
+> > non-Intel MID systems, so this is a real legacy path.
+> >
+> > I don't think it's really worth cluttering an error case in a path
+> > that should be rarely used in the first place.
 > 
-> 1. There's no reason to "group" the sdc pins into one overarching node
-> and there's a downside: we have to replicate the hierarchy in the
-> board device tree files. Let's clean this up.
+> I figured if people are getting this message, then they either have
+> broken hardware or are debugging something, and if the message is
+> trying to be useful then it can't hurt to mention other things that
+> might help. If the pirq path has become buggy or unsupportable in
+> modern kernels then it probably ought to be removed altogether; if it
+> still works, however rarely it might be needed these days, then it's
+> perhaps worth mentioning to those who might occasionally have a use
+> for it.
 > 
-> 2. There's really not a lot of reason not to list the "pinctrl" for
-> sdc1 (eMMC) in the SoC dtsi file. These aren't GPIO pins and
-> everyone's going to specify the same pins.
+> > Are you seeing a problem where you're getting the wrong error message
+> > today?  Can we just fix that problem instead so no kernel parameter is
+> > needed in the first place?
 > 
-> 3. Even though it's likely that boards will need to override pinctrl
-> for sdc2 (SD card) to add the card detect GPIO, we can be symmetric
-> and add it to the SoC dsti file.
-> 
-> 4. Let's get rid of the word "on" from the normal config and add a
-> "sleep" suffix to the sleep config. This looks cleaner to me.
-> 
-> This is intended to be a no-op change but it could plausibly change
-> behavior depending on how the pinctrl code parses things. One thing to
-> note is that "SD card detect" is explicitly listed now as keeping its
-> pull enabled in sleep since we still want to detect card insertions
-> even if the controller is suspended (because no card is inserted). The
-> pinctrl framework likely did this anyway, but it's nice to see it
-> explicit.
+> I was trying to isolate intermittent ACPI errors and tried booting
+> with acpi=noirq, as seemingly the closest modern equivalent to the
+> acpi=ht that had solved, or at least half-split, similar issues for me
+> in the past. With noirq, a different PCIe device stopped working (MPT
+> Fusion driver not picking up any responses to doorbell interrupts),
 
-Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+If your system has ACPI, I think "pci=biosirq" and "acpi=noirq" are at
+best distractions from finding the real problem.
+
+> and while reviewing dmesg I noticed that the PCI error messages were
+> suggesting a kernel option that wasn't appropriate for my x86_64
+> architecture. In an ideal world with no hardware or driver problems
+> these log messages should never even happen, but in the real world of
+> troubleshooting and debugging I think they can be useful, and if
+> they're going to be reported they might as well be correct.
+> 
+> Obviously, this is a very minor bug, affecting only logs rather than
+> behavior, and I'm sure there are more pressing things to worry about.
+> On the other hand, it also seems like a very easy and low-risk fix
+> that leaves the kernel in a slightly better state for future users and
+> developers. At any rate, the current state of the PCI code (a)
+> generates a message that recommends specific kernel parameters, (b)
+> does so even on builds for which those parameters are inappropriate,
+> (c) doesn't say anything to encourage bug reports, and (d) doesn't
+> warn about the risks of noirq, which could cause other problems to be
+> misattributed. So even though the alternate messages I drafted may not
+> be perfect, and might need to be tuned in the future based on patterns
+> in whatever bug reports come in, I'm still confident that they're an
+> improvement (and I'm open to further suggestions).
+
+This path has to do with ancient x86 and BIOS history, which I know
+very little about.  If I were going to do something about these
+messages, here's what I would do.  Maybe it's too aggressive; I dunno.
+
+diff --git a/arch/x86/pci/irq.c b/arch/x86/pci/irq.c
+index 97b63e35e152..553c9f00c0e0 100644
+--- a/arch/x86/pci/irq.c
++++ b/arch/x86/pci/irq.c
+@@ -1473,8 +1473,6 @@ static int pirq_enable_irq(struct pci_dev *dev)
+ 
+ 	pci_read_config_byte(dev, PCI_INTERRUPT_PIN, &pin);
+ 	if (pin && !pcibios_lookup_irq(dev, 1)) {
+-		char *msg = "";
+-
+ 		if (!io_apic_assign_pci_irqs && dev->irq)
+ 			return 0;
+ 
+@@ -1516,13 +1514,9 @@ static int pirq_enable_irq(struct pci_dev *dev)
+ 				dev_info(&dev->dev, "PCI->APIC IRQ transform: "
+ 					 "INT %c -> IRQ %d\n", 'A' + pin - 1, irq);
+ 				return 0;
+-			} else
+-				msg = "; probably buggy MP table";
++			}
+ #endif
+-		} else if (pci_probe & PCI_BIOS_IRQ_SCAN)
+-			msg = "";
+-		else
+-			msg = "; please try using pci=biosirq";
++		}
+ 
+ 		/*
+ 		 * With IDE legacy devices the IRQ lookup failure is not
+@@ -1532,8 +1526,8 @@ static int pirq_enable_irq(struct pci_dev *dev)
+ 				!(dev->class & 0x5))
+ 			return 0;
+ 
+-		dev_warn(&dev->dev, "can't find IRQ for PCI INT %c%s\n",
+-			 'A' + pin - 1, msg);
++		dev_warn(&dev->dev, "can't find IRQ for PCI INT %c\n",
++			 'A' + pin - 1);
+ 	}
+ 	return 0;
+ }
