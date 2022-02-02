@@ -2,92 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1819C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 11:36:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C71BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 11:36:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244007AbiBBLgR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 06:36:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58650 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343899AbiBBLgL (ORCPT
+        id S1343943AbiBBLgs (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 06:36:48 -0500
+Received: from mail.efficios.com ([167.114.26.124]:54762 "EHLO
+        mail.efficios.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241292AbiBBLgp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 06:36:11 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CA42C06173D;
-        Wed,  2 Feb 2022 03:36:11 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 13330B8307E;
-        Wed,  2 Feb 2022 11:36:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC3C4C340EF;
-        Wed,  2 Feb 2022 11:36:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643801767;
-        bh=a1ae4CRR715CYUBaMy5Wvq7XIcUVZv3r/LRlFqiLhcU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ACAYFu7lMBxzuwbdfNTStL40XCbFtT6GoVWnv4CP3EgQ/iOz+K6wOcHkZfBm4jv4W
-         8+OYs7ENFOzdKOVFFenKyHPBfotEK0CvcdAWhyJTUZUY3j+czBWz1T/wuIik2zCqAW
-         4GP37+mFhknWkybJEpIzfN11Jthh7wPR3RKWTebgsO+/IvpJO1cOkbdLMBTuozK45u
-         pIlUpoqhbpD4X+r821bKC12WD9M/GJ+/j0iyqsHzmsVxy0uUYnzqlTztRoxkWyC2+1
-         O4Ylgk2bLhogace9pchPCSNE0w754rhmj74YrLYRFbIT4hu2tLqQAnEPZgADgp4/3G
-         SctclROqzLPWQ==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1nFDvT-0000Lx-8Z; Wed, 02 Feb 2022 12:35:51 +0100
-From:   Johan Hovold <johan@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Johan Hovold <johan@kernel.org>, Alex Elder <elder@kernel.org>,
-        Mitchell Tasman <tasman@leaflabs.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        greybus-dev@lists.linaro.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Subject: [PATCH 1/3] greybus: svc: fix an error handling bug in gb_svc_hello()
-Date:   Wed,  2 Feb 2022 12:33:45 +0100
-Message-Id: <20220202113347.1288-2-johan@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220202113347.1288-1-johan@kernel.org>
-References: <20220202113347.1288-1-johan@kernel.org>
+        Wed, 2 Feb 2022 06:36:45 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id B785434EB03;
+        Wed,  2 Feb 2022 06:36:44 -0500 (EST)
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id BcjIfy6EbqW3; Wed,  2 Feb 2022 06:36:44 -0500 (EST)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id 3A12B34E92B;
+        Wed,  2 Feb 2022 06:36:44 -0500 (EST)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com 3A12B34E92B
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
+        s=default; t=1643801804;
+        bh=rxS2P9dAZNsnpQt9S56KVrnhmEyCUB0/0QQLFiwcG4M=;
+        h=Date:From:To:Message-ID:MIME-Version;
+        b=fU+aRFidh/q56dL5ZhXWz9i50Q3f6eIBNxRcr3WK9Jv5AmwjHV9KdcZvACpBUgDQ6
+         ROejxUBkXZnK1hLCtXcFkwFmPaQtAAVy1jegehFEA3PfyqATvXss380XGsiO1pGP+z
+         JsOj5JNv0TOibk/uJUazbrLVf8g55CwQaRWGitHXMt5DKcGDm5clEUsf76Y6G4MwkD
+         bV13tgHVBhJeaWlUiOVitS6ZSYZLZWbGa5rnWuuZVZDinU2luTsOW8VtBHJm9wkl+1
+         3SqzkIiOaccx1Hd0eRmbnEm5A5OwFmGHgZ2fVn1K5JNNX2+oTHrb6jo88fg1x3FclO
+         HGc2FH+NLd5CQ==
+X-Virus-Scanned: amavisd-new at efficios.com
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id 2orB1KVM8yug; Wed,  2 Feb 2022 06:36:44 -0500 (EST)
+Received: from mail03.efficios.com (mail03.efficios.com [167.114.26.124])
+        by mail.efficios.com (Postfix) with ESMTP id 2BAFA34E9AD;
+        Wed,  2 Feb 2022 06:36:44 -0500 (EST)
+Date:   Wed, 2 Feb 2022 06:36:44 -0500 (EST)
+From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+To:     Florian Weimer <fweimer@redhat.com>
+Cc:     Chris Kennelly <ckennelly@google.com>,
+        Paul Turner <pjt@google.com>, Peter Oskolkov <posk@posk.io>,
+        libc-alpha <libc-alpha@sourceware.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>
+Message-ID: <1375227765.27051.1643801804042.JavaMail.zimbra@efficios.com>
+In-Reply-To: <875ypx1x0d.fsf@oldenburg.str.redhat.com>
+References: <432231420.24682.1643727496135.JavaMail.zimbra@efficios.com> <CAEE+ybn_Cp1-T=2uB7xJqU2gEU-PxzsaV5jqCOupNp2cx_bK-Q@mail.gmail.com> <87mtja1fuz.fsf@oldenburg.str.redhat.com> <875ypx1x0d.fsf@oldenburg.str.redhat.com>
+Subject: Re: Aligning tcmalloc with glibc 2.35 rseq ABI
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [167.114.26.124]
+X-Mailer: Zimbra 8.8.15_GA_4203 (ZimbraWebClient - FF96 (Linux)/8.8.15_GA_4203)
+Thread-Topic: Aligning tcmalloc with glibc 2.35 rseq ABI
+Thread-Index: bfYiCaJUUsTdq41BtJE3Fb9JJIH1YA==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+----- On Feb 2, 2022, at 3:41 AM, Florian Weimer fweimer@redhat.com wrote:
 
-Cleanup if gb_svc_queue_deferred_request() fails.
+> * Florian Weimer:
+> 
+>> * Chris Kennelly:
+>>
+>>> Thanks for the heads up.
+>>>
+>>> I did have a question about whether the new protocol would introduce
+>>> an extra memory reference while initializing a critical section.
+>>>
+>>> * With initial-exec TLS, I can directly reference __rseq_abi.
+>>> * With the new ABI, I might need to ask glibc for the address of the
+>>> registered rseq structure in its thread data.
+>>
+>> You can write __rseq_offset to a static/hidden variable in an ELF
+>> constructor, and then use pretty much the same assembler sequences as
+>> for initial-exec TLS on most architectures.
+> 
+> And now I'm kind of worried that we should be using ptrdiff_t for
+> __rseq_offset because that's what the initial-exec relocations use. 8-/
 
-Fixes: ee2f2074fdb2 ("greybus: svc: reconfig APBridgeA-Switch link to handle required load")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Link: https://lore.kernel.org/r/20220202072016.GA6748@kili
-Cc: stable@vger.kernel.org      # 4.9
-[johan: fix commit summary prefix and rename label ]
-Signed-off-by: Johan Hovold <johan@kernel.org>
----
- drivers/greybus/svc.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+I suspect the underlying question here is: how likely is it that a libc
+requires an offset of more than 2GB either way from the thread pointer
+to allocate its rseq thread area on a 64-bit architecture ?
 
-diff --git a/drivers/greybus/svc.c b/drivers/greybus/svc.c
-index ce7740ef449b..51d0875a3480 100644
---- a/drivers/greybus/svc.c
-+++ b/drivers/greybus/svc.c
-@@ -866,8 +866,14 @@ static int gb_svc_hello(struct gb_operation *op)
- 
- 	gb_svc_debugfs_init(svc);
- 
--	return gb_svc_queue_deferred_request(op);
-+	ret = gb_svc_queue_deferred_request(op);
-+	if (ret)
-+		goto err_remove_debugfs;
-+
-+	return 0;
- 
-+err_remove_debugfs:
-+	gb_svc_debugfs_exit(svc);
- err_unregister_device:
- 	gb_svc_watchdog_destroy(svc);
- 	device_del(&svc->dev);
+Thanks,
+
+Mathieu
+
 -- 
-2.34.1
-
+Mathieu Desnoyers
+EfficiOS Inc.
+http://www.efficios.com
