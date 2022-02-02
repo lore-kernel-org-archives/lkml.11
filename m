@@ -2,89 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C8ACC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 10:12:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E453C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 10:13:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245739AbiBBKMu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 05:12:50 -0500
-Received: from relay05.th.seeweb.it ([5.144.164.166]:45795 "EHLO
-        relay05.th.seeweb.it" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232501AbiBBKMs (ORCPT
+        id S245746AbiBBKNg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 05:13:36 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:45838 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232501AbiBBKNd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 05:12:48 -0500
-Received: from SoMainline.org (94-209-165-62.cable.dynamic.v4.ziggo.nl [94.209.165.62])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by m-r2.th.seeweb.it (Postfix) with ESMTPSA id 85EBA3F7B3;
-        Wed,  2 Feb 2022 11:12:47 +0100 (CET)
-Date:   Wed, 2 Feb 2022 11:12:46 +0100
-From:   Marijn Suijten <marijn.suijten@somainline.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     phone-devel@vger.kernel.org, Rob Herring <robh@kernel.org>,
-        linux-kernel@vger.kernel.org, Amit Pundir <amit.pundir@linaro.org>,
-        John Stultz <john.stultz@linaro.org>
-Subject: Re: [PATCH 1/2] config: android-recommended: Don't explicitly
- disable CONFIG_AIO
-Message-ID: <20220202101246.qinrngus3llyjwo6@SoMainline.org>
-Mail-Followup-To: Marijn Suijten <marijn.suijten@somainline.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        phone-devel@vger.kernel.org, Rob Herring <robh@kernel.org>,
-        linux-kernel@vger.kernel.org, Amit Pundir <amit.pundir@linaro.org>,
-        John Stultz <john.stultz@linaro.org>
-References: <20220202093314.107927-1-marijn.suijten@somainline.org>
- <YfpS19cSbsSTgKVk@kroah.com>
+        Wed, 2 Feb 2022 05:13:33 -0500
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1643796812;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=xTbQhS0nAomVSVXvI4ZBw2g7TFGRH2Ml/TQfqhl0PBw=;
+        b=kYkBXL5AW+b+hTMRVTwbebEjOirhVPiK+p81JQKYYec5TN2qW2sOcd4DFtiz9bAR4ZUzSb
+        VWRDNWjS+VAv701iWeGNvvc63ljkoCp3CSA+NOkTa30sSeoEN2pgE4sYlNj01SYpNc+Jnq
+        D1MfwGyAWNtEmLku6df+7CvGZNv4yieNy1JtPBFGl19REnNoXbPzsk+pGCR9Q589H8Vqfh
+        Nu4vBv24bcjbkYIQOfGMkjVbx0P2Zq3vxuCSZCG88p/aC52/2C+WZmHEAVjLHlIVFRUoyW
+        RP+jsaUFYCwEeNiBv9Ur09aIDM4obM82l0Qc5A7HW/wVHOdXL4jKsoKkVUQPYg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1643796812;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=xTbQhS0nAomVSVXvI4ZBw2g7TFGRH2Ml/TQfqhl0PBw=;
+        b=tRoQGuIEskb8IPgE6fXZTD9e29hdICxzXJBHkACcAC4z+asMRdL+onhHYaYhR5Y6Yvgk7B
+        81jwvG5XTy0fMABw==
+To:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Nikolai Zhubr <zhubr.2@gmail.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>
+Cc:     Arnd Bergmann <arnd@kernel.org>,
+        Michal Necasek <mnecasek@yahoo.com>, x86@kernel.org,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 0/4] x86/PCI: Improve $PIR and add $IRT PIRQ routing
+ support
+In-Reply-To: <alpine.DEB.2.21.2201021821480.56863@angie.orcam.me.uk>
+References: <alpine.DEB.2.21.2201021821480.56863@angie.orcam.me.uk>
+Date:   Wed, 02 Feb 2022 11:13:31 +0100
+Message-ID: <87sft1vano.ffs@tglx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YfpS19cSbsSTgKVk@kroah.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-02-02 10:45:59, Greg Kroah-Hartman wrote:
-> On Wed, Feb 02, 2022 at 10:33:13AM +0100, Marijn Suijten wrote:
-> > Android nowadays (for a couple years already) requires AIO for at least
-> > its `adb` "Android Debug Bridge" [1].  Without this config option
-> > (`default y`) it simply refuses start, making users unable to connect to
-> > their phone for debugging purposes when using these kernel fragments.
-> > 
-> > [1]: https://cs.android.com/android/_/android/platform/packages/modules/adb/+/a2cb8de5e68067a5e1d002886d5f3b42d91371e1
-> > 
-> > Cc: Amit Pundir <amit.pundir@linaro.org>
-> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > Cc: John Stultz <john.stultz@linaro.org>
-> > Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
-> > ---
-> >  kernel/configs/android-recommended.config | 1 -
-> >  1 file changed, 1 deletion(-)
-> > 
-> > diff --git a/kernel/configs/android-recommended.config b/kernel/configs/android-recommended.config
-> > index eb0029c9a6a6..22bd76e43aca 100644
-> > --- a/kernel/configs/android-recommended.config
-> > +++ b/kernel/configs/android-recommended.config
-> > @@ -1,5 +1,4 @@
-> >  #  KEEP ALPHABETICALLY SORTED
-> > -# CONFIG_AIO is not set
-> >  # CONFIG_CORE_DUMP_DEFAULT_ELF_HEADERS is not set
-> >  # CONFIG_INPUT_MOUSE is not set
-> >  # CONFIG_LEGACY_PTYS is not set
-> > -- 
-> > 2.35.1
-> > 
-> 
-> There are lots of "required" configs now for modern Android releases, do
-> you want to sync up with all of them here?  If so, look at the
-> gki_defconfig files in the AOSP kernels for the full list of what is
-> required.  Is it really needed to keep this file up to date or should it
-> be dropped entirely given that no one has noticed how out-of-date it is?
+Maciej,
 
-This is all I need for now to get Android booting with a mainline
-kernel, no fancy features though that make the device worthy of being a
-phone (pending hardware drivers).  Perhaps replacing these config
-fragments with gki_defconfig upstream is a good idea - as discussed with
-John - but that's not something for me to decide nor embark on :).
-Having them upstreamed might be nicer than finding the appropriate
-corresponding downstream tree.
+On Thu, Jan 06 2022 at 11:24, Maciej W. Rozycki wrote:
 
-- Marijn
+>  This is a new patch series made around a discrete patch submitted earlier 
+> on that has gone nowhere, which is now 1/4.  That change handles $PIR
+> PIRQ
+
+sorry for ignoring this due to stack overflow. I'll go over it later
+today.
+
+Thanks,
+
+        tglx
