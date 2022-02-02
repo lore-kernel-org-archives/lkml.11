@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D02A5C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 14:02:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 346B3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 14:02:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231950AbiBBOCj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 09:02:39 -0500
-Received: from mx07-00178001.pphosted.com ([185.132.182.106]:41196 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1344740AbiBBOCf (ORCPT
+        id S1344773AbiBBOCl (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 09:02:41 -0500
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:60426 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S236875AbiBBOCh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 09:02:35 -0500
-Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 212BA9Ua019056;
-        Wed, 2 Feb 2022 15:00:13 +0100
+        Wed, 2 Feb 2022 09:02:37 -0500
+Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 212BHSnv008883;
+        Wed, 2 Feb 2022 15:00:11 +0100
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-type; s=selector1;
- bh=x/cihyvrH/Vo/S1qjQOeKWSVuT1WeZROMAX2rBN9Khk=;
- b=77Ad28hmdKbvaYmdG0RIUA3oiIgAPbiCnL/xgdHFeHDxgAV6xJTe/cUesbVrA80P0nmj
- rX+qxtZEih5PZw7RuujPA0n8P2Sw/L9JRzeiQx0FRRRmTgPRMP8V4iF2jzCeflt8pEp1
- l2/cEdILJDRP1ofpUrraJyR8Q5AjlezSLWY35/tT91pVRjZ8R94AZWmNmYxhFKvVCxHF
- JeB79GQUs3zL3SlnfwlK35PzbvFF6HSDYS66qi69VynZKIMDC7ZNtZtLL21Gvf+UoUKe
- cvTWM4FpAvLGCHMaeg6KvnKk1NvTTG6zMBz5sWrHXhIW5+MI8LbeGotlZSZl0W0R6Lug 4w== 
+ bh=QO75VVUtLxytzTAB78gKyxinIEuCKxE3/gSrZc3vF48=;
+ b=3EXTZHzWH8i/yNWoN5JmS6nmGSKab60UkUiqpgBwP0KlUJzEPnHQ4TmQ6E4RoKBPUNFH
+ /6OoLMzz8GT9dA2laFxA5PnmjKa1/K7AX6Nf6c8XCXEyr/yVUcybKO/hVbjjcmFkdLSJ
+ OE2QxCinekBuAaNmA/qny+KWvhWA1K41eAIBtFg7edzJZQMn+6eaqCpLP4+WNKZ7pcuZ
+ p40C3iNHz8wBW3PPtKPGQjPJHXK97CYDHYvbKpzWUk3On/GSI3PvWmdIMZMseioJSCLg
+ 71MecnPAew64O3nYNhcJMzpQ2DxFGduhEpnRTv3bImJpZML05ZPbS70L67orzbUhsYbS gg== 
 Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3dyrujgv7q-1
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3dyhe9junp-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 02 Feb 2022 15:00:13 +0100
+        Wed, 02 Feb 2022 15:00:11 +0100
 Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 8E34210002A;
-        Wed,  2 Feb 2022 15:00:12 +0100 (CET)
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id B7297100034;
+        Wed,  2 Feb 2022 15:00:10 +0100 (CET)
 Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 8238D21F0D0;
-        Wed,  2 Feb 2022 15:00:12 +0100 (CET)
-Received: from localhost (10.75.127.51) by SFHDAG2NODE2.st.com (10.75.127.5)
- with Microsoft SMTP Server (TLS) id 15.0.1497.26; Wed, 2 Feb 2022 15:00:12
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id AFB0321F0D0;
+        Wed,  2 Feb 2022 15:00:10 +0100 (CET)
+Received: from localhost (10.75.127.48) by SFHDAG2NODE2.st.com (10.75.127.5)
+ with Microsoft SMTP Server (TLS) id 15.0.1497.26; Wed, 2 Feb 2022 15:00:09
  +0100
 From:   Alexandre Torgue <alexandre.torgue@foss.st.com>
 To:     Thomas Gleixner <tglx@linutronix.de>,
@@ -44,15 +45,15 @@ CC:     <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>,
         <linux-stm32@st-md-mailman.stormreply.com>,
         <devicetree@vger.kernel.org>, <alexandre.torgue@foss.st.com>
-Subject: [PATCH v3 3/3] ARM: dts: stm32: Enable EXTI on stm32mp13
-Date:   Wed, 2 Feb 2022 15:00:05 +0100
-Message-ID: <20220202140005.860-4-alexandre.torgue@foss.st.com>
+Subject: [PATCH v3 1/3] dt-bindings: interrupt-controller: stm32-exti: document st,stm32mp13-exti
+Date:   Wed, 2 Feb 2022 15:00:03 +0100
+Message-ID: <20220202140005.860-2-alexandre.torgue@foss.st.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220202140005.860-1-alexandre.torgue@foss.st.com>
 References: <20220202140005.860-1-alexandre.torgue@foss.st.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Originating-IP: [10.75.127.51]
+X-Originating-IP: [10.75.127.48]
 X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SFHDAG2NODE2.st.com
  (10.75.127.5)
 X-Proofpoint-Virus-Version: vendor=baseguard
@@ -62,29 +63,23 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As EXTI/GIC mapping has changed between STM32MP15 and STM32MP13, a new
-compatible is needed to choose mp13 mapping table in stm32-exti driver.
+Support of STM32MP13 SoC implies to create a new compatible in order to
+manage EXTI/GIC mapping changes.
 
 Signed-off-by: Alexandre Torgue <alexandre.torgue@foss.st.com>
 
-diff --git a/arch/arm/boot/dts/stm32mp131.dtsi b/arch/arm/boot/dts/stm32mp131.dtsi
-index 86126dc0d898..c249dbe64354 100644
---- a/arch/arm/boot/dts/stm32mp131.dtsi
-+++ b/arch/arm/boot/dts/stm32mp131.dtsi
-@@ -115,6 +115,13 @@
- 			status = "disabled";
- 		};
+diff --git a/Documentation/devicetree/bindings/interrupt-controller/st,stm32-exti.yaml b/Documentation/devicetree/bindings/interrupt-controller/st,stm32-exti.yaml
+index d19c881b4abc..e44daa09b137 100644
+--- a/Documentation/devicetree/bindings/interrupt-controller/st,stm32-exti.yaml
++++ b/Documentation/devicetree/bindings/interrupt-controller/st,stm32-exti.yaml
+@@ -20,6 +20,7 @@ properties:
+       - items:
+           - enum:
+               - st,stm32mp1-exti
++              - st,stm32mp13-exti
+           - const: syscon
  
-+		exti: interrupt-controller@5000d000 {
-+			compatible = "st,stm32mp13-exti", "syscon";
-+			interrupt-controller;
-+			#interrupt-cells = <2>;
-+			reg = <0x5000d000 0x400>;
-+		};
-+
- 		syscfg: syscon@50020000 {
- 			compatible = "st,stm32mp157-syscfg", "syscon";
- 			reg = <0x50020000 0x400>;
+   "#interrupt-cells":
 -- 
 2.17.1
 
