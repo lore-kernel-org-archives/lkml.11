@@ -2,116 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E768C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 13:59:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FAEAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 14:00:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242722AbiBBN7H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 08:59:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34768 "EHLO
+        id S1344600AbiBBOA1 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 09:00:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230213AbiBBN7F (ORCPT
+        with ESMTP id S230213AbiBBOAY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 08:59:05 -0500
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96EA2C061714
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 05:59:05 -0800 (PST)
-Received: by mail-yb1-xb33.google.com with SMTP id p5so61172998ybd.13
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 05:59:05 -0800 (PST)
+        Wed, 2 Feb 2022 09:00:24 -0500
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2719BC061714
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 06:00:24 -0800 (PST)
+Received: by mail-lf1-x130.google.com with SMTP id z4so40899576lft.3
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 06:00:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=aWG9s1d/GvbwnTAYal6lRjtSrir89rmlhhFZo56v7xg=;
-        b=0nQIn2NAlIoliEmY6SS6YwYBuiIbHPE+5Apygk3dbZfBoCgVICwMSvt9lX90OuMT9S
-         6QrtNpPBhvW6Vl0yZw4cHWfyaz0WaHJ0LeTL7B873nyREhUI4pi82laXzphU34F6cujz
-         xsjRgnBHHZYb/CGMqVOwxpRNZ8ChRWryGOXrvZS1FL16+NILZ8x4A6KHaxhsNfCSY+vo
-         culkY6dG8arMD37GC2AGT+NwvcYKA0k3s0d0sdtssSfO/mAHI8XUwbcC/8gkK7+jpM/w
-         7L1mwjf24KLb13ToS5UztFDh4tGi/fZp1Z+0SamF0syShLYGKe2rIDc9whjazf5VTzNH
-         qcEg==
+         :cc:content-transfer-encoding;
+        bh=RfWPagEh50UG5AQsw4YG/NPcNcgAiuaDDHKAvh28Pfo=;
+        b=gWuBXj+qXx0RfDEcvw60W9ulUvSlUlHE8bFwjkCfpL4a47/GFof5cDKoPsXVQOVdfv
+         EoO/yOcOEOxWxZ+MjVdX7iyZPFgVwM02RaYqc2bEldH7dNpAk8Gz7W8FP+iIox80alGi
+         ki+u1RmCp17bDsTFYcmQTQih55MQLrYSwxFrcA4IxoD4E9dIIAwpfYriXo1sCRgdWBYN
+         Xaaq1tg/2s9jh+qpLM4o79OewjUhdEwvIJoUI42zNqiwAcbE0jU17Q/h7u1dRGdK/dUc
+         1zc/YOEkzjGJLcIWNOwDw5RydsIi2qQrrtwGpClnqtKYbpzyMK8KHPOjxihh0nCbMYXH
+         ue4g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=aWG9s1d/GvbwnTAYal6lRjtSrir89rmlhhFZo56v7xg=;
-        b=jBOSS9W7YwLaFyikUiwBQVi0hGUVE9R4mizmpohi/W2+5rQBZozAOmcRndA7tADMFX
-         ajhMf24fKQIBKieJKE495KGfIcxUpswPwTmEFOdsIijsTEhIUgxrHA0rFb1ddmX1QygT
-         pZ6KGHpUrN6e/McZYtgoBoJGGoFqHvqVyVK63oMgRElQw0kQbTwojzwuKKspbUSa0snF
-         J3XNOk0ZCI1VoppKJmd5yMjk6ITkIXNAdWEJrOt5yN0tOuQyRr3yDlZah8Adzb3cAAho
-         2DXXq5B7U52dJgoYeaLGZVEUFX6+wvktl58Lsqi8FA2L/jPV2EQhQjuf34m/M6vGuYrN
-         y2AA==
-X-Gm-Message-State: AOAM532KfqlT4qylAXhIFQ43Zc4L4zVZwqTQ94z4uLhU2xAL8OubR02H
-        2bT5AI7gOOBzPC4LiYSiwmOe9HnvT1T2Jt2Bbg+7ew==
-X-Google-Smtp-Source: ABdhPJxnAIVW3l9/Qp/Grw4bohejfPa8v/qFOIktxw0zhGzSL9UlCZsT5sNDz0zULIC2JOT6+Dx4DqAbc2IbbSrXlDI=
-X-Received: by 2002:a25:6b4e:: with SMTP id o14mr30320536ybm.485.1643810344332;
- Wed, 02 Feb 2022 05:59:04 -0800 (PST)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=RfWPagEh50UG5AQsw4YG/NPcNcgAiuaDDHKAvh28Pfo=;
+        b=tMHQF7JK2W8pq/FT9+Li6VU5cWOrGUs3wex5DsD35oVORcvui+FTPQn1s4FUth5G5h
+         fDv+yL6chSoE5oa+Pxonsgw5pvzOOqRwi99trtcisuX5p4FB5W5jNDVrczJpr34ELc4R
+         kwYsq4+UVyDa7cbGg1koBe8jYqdwIziLFytG23zc8p45ocTXLaiIGwnIV+wbNouILUfx
+         Q+Hxj5tqFWN7L2E5oB2+UMjVXDCObzMQXGBP+KGscovp9pRxeJwum6vwi7oftWHwR639
+         dJ7enlIlWPmL0HQeSff7O263y2LaKy0DLJ7CECOFPrqXU7ynajuCCgzfyeWT+TPdD1EB
+         Znjg==
+X-Gm-Message-State: AOAM531NQXADGdkOxGvf3RvAfTU9I2pIZRtuu0Zu5xaBUpayGcSHIeol
+        uaFFuhNU/iHMRGfRNnU6Dg9NsjmfOwTJ5VIk17gN8Q==
+X-Google-Smtp-Source: ABdhPJyStv54EPifbmyjjo5mPhJzT0KvmzQ4l/aBbOIzs2lV1jYzKtxILnikfpnxSP/qWf4MckalpLs8F3T1He52QnI=
+X-Received: by 2002:a05:6512:2342:: with SMTP id p2mr23187896lfu.382.1643810422358;
+ Wed, 02 Feb 2022 06:00:22 -0800 (PST)
 MIME-Version: 1.0
-References: <20220131160254.43211-1-songmuchun@bytedance.com>
- <20220131160254.43211-5-songmuchun@bytedance.com> <14df55c2-cab5-8ff0-5986-fd186c2f60d7@oracle.com>
-In-Reply-To: <14df55c2-cab5-8ff0-5986-fd186c2f60d7@oracle.com>
-From:   Muchun Song <songmuchun@bytedance.com>
-Date:   Wed, 2 Feb 2022 21:58:26 +0800
-Message-ID: <CAMZfGtWet8NB6+psZpEQDzX9uoUMNL4OiNDukREB4=D91JRG=Q@mail.gmail.com>
-Subject: Re: [PATCH v3 4/5] mm: hugetlb: fix missing cache flush in hugetlb_mcopy_atomic_pte()
-To:     Mike Kravetz <mike.kravetz@oracle.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>, zi.yan@cs.rutgers.edu,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Lars Persson <lars.persson@axis.com>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Xiongchun duan <duanxiongchun@bytedance.com>,
-        Matthew Wilcox <willy@infradead.org>
+References: <20220202091134.3565514-1-lucas.demarchi@intel.com>
+ <514cdee2-655e-7e52-d6a5-a7176ee603cc@amd.com> <20220202093814.i5z2nmlunrwm2n6c@ldmartin-desk2>
+In-Reply-To: <20220202093814.i5z2nmlunrwm2n6c@ldmartin-desk2>
+From:   Sumit Semwal <sumit.semwal@linaro.org>
+Date:   Wed, 2 Feb 2022 19:30:10 +0530
+Message-ID: <CAO_48GGeZqzAMEBfspWAR5N1RWh0QAdQFSxgyhrPQHiE3ooJsA@mail.gmail.com>
+Subject: Re: [PATCH v2] dma-buf-map: Rename to iosys-map
+To:     Lucas De Marchi <lucas.demarchi@intel.com>
+Cc:     =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org, srinivas.kandagatla@linaro.org,
+        gregkh@linuxfoundation.org, daniel.vetter@ffwll.ch,
+        airlied@linux.ie, lyude@redhat.com, tzimmermann@suse.de,
+        linux-media@vger.kernel.org, nouveau@lists.freedesktop.org
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 2, 2022 at 6:24 AM Mike Kravetz <mike.kravetz@oracle.com> wrote:
->
-> Cc: Matthew
->
-> On 1/31/22 08:02, Muchun Song wrote:
-> > folio_copy() will copy the data from one page to the target page, then
-> > the target page will be mapped to the user space address, which might
-> > have an alias issue with the kernel address used to copy the data from
-> > the page to.  Fix this issue by flushing dcache but not use
-> > flush_dcache_folio() since it is not backportable.
-> >
-> > Fixes: 8cc5fcbb5be8 ("mm, hugetlb: fix racy resv_huge_pages underflow on UFFDIO_COPY")
-> > Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-> > ---
-> >  mm/hugetlb.c | 5 +++++
-> >  1 file changed, 5 insertions(+)
-> >
-> > diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-> > index a1baa198519a..f1f1ab31dc8a 100644
-> > --- a/mm/hugetlb.c
-> > +++ b/mm/hugetlb.c
-> > @@ -5804,6 +5804,8 @@ int hugetlb_mcopy_atomic_pte(struct mm_struct *dst_mm,
-> >                       goto out;
-> >               }
-> >       } else {
-> > +             int i, nr;
-> > +
-> >               if (vm_shared &&
-> >                   hugetlbfs_pagecache_present(h, dst_vma, dst_addr)) {
-> >                       put_page(*pagep);
-> > @@ -5819,6 +5821,9 @@ int hugetlb_mcopy_atomic_pte(struct mm_struct *dst_mm,
-> >                       goto out;
-> >               }
-> >               folio_copy(page_folio(page), page_folio(*pagep));
->
-> What if we changed that folio_copy() to?
->
->                 copy_user_huge_page(page, *pagep, dst_addr, dst_vma,
->                         pages_per_huge_page(h));
->
-> Seems like that would take care of the flush_dcache_page and it would be
-> backportable.
+Hello Lucas,
 
-Agree. I also can replace folio_copy() with copy_user_huge_page().
-
+On Wed, 2 Feb 2022 at 15:08, Lucas De Marchi <lucas.demarchi@intel.com> wro=
+te:
 >
-> Of course, Matthew may hate the idea.  Not sure if there are any plans to
-> convert copy_user_huge_page to use folio type as it has some special hinting
-> logic.
+> On Wed, Feb 02, 2022 at 10:25:28AM +0100, Christian K=C3=B6nig wrote:
+> >Am 02.02.22 um 10:11 schrieb Lucas De Marchi:
+> >>[SNIP]
+> >>diff --git a/MAINTAINERS b/MAINTAINERS
+> >>index d03ad8da1f36..112676f11792 100644
+> >>--- a/MAINTAINERS
+> >>+++ b/MAINTAINERS
+> >>@@ -5675,7 +5675,6 @@ T:      git git://anongit.freedesktop.org/drm/drm=
+-misc
+> >>  F:  Documentation/driver-api/dma-buf.rst
+> >>  F:  drivers/dma-buf/
+> >>  F:  include/linux/*fence.h
+> >
+> >Oh, that is not correct to begin with.
+>
+> right, include/linux/dma-fence*
+>
+> >
+> >>-F:   include/linux/dma-buf*
+> >
+> >That here should probably be changed to point directly to
+> >include/linux/dma-buf.h, but that can come later on.
+>
+> thanks for catching that. I will change it on next version and add your
+> (and any additional) ack.
+>
+> Lucas De Marchi
+>
+> >
+> >Feel free to add an Acked-by: Christian K=C3=B6nig
+> ><christian.koenig@amd.com> to the patch.
+> >
+> >If nobody objects I'm going to push it drm-misc-next and provide a
+> >follow up to cleanup the MAINTAINERS file a bit more.
+Thank you for the patch; apologies for not being able to respond
+earlier (was out due to covid, just getting back slowly).
+
+With Christian's suggestions, looks good to me as well - feel free to add a=
+n
+Acked-by: Sumit Semwal <sumit.semwal@linaro.org> to the same.
+
+> >
+> >Regards,
+> >Christian.
+Best,
+Sumit.
+
+> >
+> >>  F:  include/linux/dma-resv.h
+> >>  K:  \bdma_(?:buf|fence|resv)\b
+> >>@@ -9976,6 +9975,13 @@ F:     include/linux/iova.h
+> >>  F:  include/linux/of_iommu.h
+> >>  F:  include/uapi/linux/iommu.h
+> >>+IOSYS-MAP HELPERS
+> >>+M:   Thomas Zimmermann <tzimmermann@suse.de>
+> >>+L:   dri-devel@lists.freedesktop.org
+> >>+S:   Maintained
+> >>+T:   git git://anongit.freedesktop.org/drm/drm-misc
+> >>+F:   include/linux/iosys-map.h
+> >>+
+> >
