@@ -2,157 +2,295 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3230DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 08:14:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 102B6C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 08:19:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244489AbiBBIOf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 03:14:35 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:27161 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S244330AbiBBIO0 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 03:14:26 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643789665;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=2Rq6N4dNe/uLrGvcKxFQPZwRPXOX6fDs2MMCU1MQ9Tc=;
-        b=W5LR27OJBae8uWnoMBT0EIbsrOMWeBlqi8GI8p+igHNzV3jCDS2SmlrSFeKn5gR3hCX7hO
-        S1dRDBlCNAe6cpfoEaKGJYjLw+szwkMs/bR1WY7p7A531mJrxclEPC8QpE3WdX1V3WZvsv
-        opp17ZCYz5ZwDXyBUf9SH1lVQ4csT6c=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-586-ikBwpYNrN5iuVVgreWTKMA-1; Wed, 02 Feb 2022 03:14:23 -0500
-X-MC-Unique: ikBwpYNrN5iuVVgreWTKMA-1
-Received: by mail-ed1-f72.google.com with SMTP id i22-20020a50fd16000000b00405039f2c59so10008343eds.1
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 00:14:23 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:organization:subject
-         :in-reply-to:content-transfer-encoding;
-        bh=2Rq6N4dNe/uLrGvcKxFQPZwRPXOX6fDs2MMCU1MQ9Tc=;
-        b=Vi+2enT/aKgs5RdKeUIp2x3pepqhyE5GLeqLqY4196ZZ3ox8xDodpDMZ6skJjmsATs
-         IzKVhSmVG4nVxdDBpLChSWLEckRe15Y8fCekxvoEG0xCM3v3iQPQjRsTMJ2pFW0CayM7
-         KIDp5jxiq5KkUBICwOI7NMsi/qOlvCvnNU5mESEMu9DU7jHGb87ePkuMDLctNlM6kBhZ
-         3BbzAJLl0vtJ0hNXoMSE1WPNyhqq4KksOheK8EdqH78rkNmA+flmZLmsHG13VZPOLZuG
-         wnAxTIe/W5mh7c6dIO/jOo6NhxXpZGDWrz5jQVwBG/lN5F7o5/ah0b0UQEzsQSUOYy5f
-         v8fw==
-X-Gm-Message-State: AOAM530G7WVsM8fG54PPQcFNbLZvbHx2iIXftRDQDKG8wSGsN/RPPdpu
-        UAgUS2kOEbAPlEcgIVsk7rOtZvSJa82pGmoB0McW4RqdhC1a4z6XlABSCMJmejGJ2olTfApsYUz
-        DNDN68elNLfY0YeriwhXOpMJ9
-X-Received: by 2002:a17:906:9756:: with SMTP id o22mr15847194ejy.448.1643789662478;
-        Wed, 02 Feb 2022 00:14:22 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyqH3rVTg5DRRB8rQxbvHzgYDMg49Oc4tMCYxG37o/ZZRNCcg4Pgudybt6DPaMHv/Zy74LpvQ==
-X-Received: by 2002:a17:906:9756:: with SMTP id o22mr15847174ejy.448.1643789662268;
-        Wed, 02 Feb 2022 00:14:22 -0800 (PST)
-Received: from ?IPV6:2003:cb:c709:f800:a55c:e484:3cd9:3632? (p200300cbc709f800a55ce4843cd93632.dip0.t-ipconnect.de. [2003:cb:c709:f800:a55c:e484:3cd9:3632])
-        by smtp.gmail.com with ESMTPSA id d2sm15370010ejw.79.2022.02.02.00.14.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 02 Feb 2022 00:14:21 -0800 (PST)
-Message-ID: <20571829-9d3d-0b48-817c-b6b15565f651@redhat.com>
-Date:   Wed, 2 Feb 2022 09:14:19 +0100
+        id S244330AbiBBITT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 03:19:19 -0500
+Received: from mga12.intel.com ([192.55.52.136]:54667 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231628AbiBBITR (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 2 Feb 2022 03:19:17 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643789957; x=1675325957;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=8FUTnB+neOfsiAnGwSfgWEkpPzljgOQLUdu2mTTAd70=;
+  b=DIEN2TWSRhKH4fLn9vBpa8L8kKMkx0ferOO6+OJJnFAMj6dZPgjWG7HE
+   9bLsAa3vhF5pwaj6cUedRmxnJ4+8A3/6FAt7zw3Dg/aPvUqfJbhDrQcli
+   WWYNQyhdSrzdDqyjdlqW//EYXTbKQ0xwybzDFvlXQgsInjX1FX/kNFckY
+   xebsjPiT55lnRbExuYSZ41rKJi93j/Ops3ewByHRJZxa9AphR4UfUPLRg
+   9nUTTF1TCkDhwRtwhAlPq2istDHgBio1LZb8umR8O1OKyQBOVSlka3GEW
+   CGZDgzEPjd4+H1iHshYRYHIbvKEy0hA3NURLF1uAhjpk/+M05s9As58qd
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10245"; a="227838065"
+X-IronPort-AV: E=Sophos;i="5.88,336,1635231600"; 
+   d="scan'208";a="227838065"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 00:19:17 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,336,1635231600"; 
+   d="scan'208";a="676365354"
+Received: from kuha.fi.intel.com ([10.237.72.185])
+  by fmsmga001.fm.intel.com with SMTP; 02 Feb 2022 00:19:14 -0800
+Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Wed, 02 Feb 2022 10:19:13 +0200
+Date:   Wed, 2 Feb 2022 10:19:13 +0200
+From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To:     Won Chung <wonchung@google.com>
+Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Benson Leung <bleung@chromium.org>,
+        Prashant Malani <pmalani@chromium.org>,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4] ACPI: device_sysfs: Add sysfs support for _PLD
+Message-ID: <Yfo+gYLLOGN69Re1@kuha.fi.intel.com>
+References: <20220201015518.3118404-1-wonchung@google.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Content-Language: en-US
-To:     Mike Kravetz <mike.kravetz@oracle.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Cc:     Naoya Horiguchi <naoya.horiguchi@linux.dev>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Mina Almasry <almasrymina@google.com>,
-        Michal Hocko <mhocko@suse.com>, Peter Xu <peterx@redhat.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-References: <20220202014034.182008-1-mike.kravetz@oracle.com>
- <20220202014034.182008-2-mike.kravetz@oracle.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-Subject: Re: [PATCH v2 1/3] mm: enable MADV_DONTNEED for hugetlb mappings
-In-Reply-To: <20220202014034.182008-2-mike.kravetz@oracle.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220201015518.3118404-1-wonchung@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 02.02.22 02:40, Mike Kravetz wrote:
-> MADV_DONTNEED is currently disabled for hugetlb mappings.  This
-> certainly makes sense in shared file mappings as the pagecache maintains
-> a reference to the page and it will never be freed.  However, it could
-> be useful to unmap and free pages in private mappings.
-> 
-> The only thing preventing MADV_DONTNEED from working on hugetlb mappings
-> is a check in can_madv_lru_vma().  To allow support for hugetlb mappings
-> create and use a new routine madvise_dontneed_free_valid_vma() that will
-> allow hugetlb mappings.  Also, before calling zap_page_range in the
-> DONTNEED case align start and size to huge page size for hugetlb vmas.
-> madvise only requires PAGE_SIZE alignment, but the hugetlb unmap routine
-> requires huge page size alignment.
-> 
-> Signed-off-by: Mike Kravetz <mike.kravetz@oracle.com>
+Hi Won,
+
+On Tue, Feb 01, 2022 at 01:55:18AM +0000, Won Chung wrote:
+> When ACPI table includes _PLD fields for a device, create a new
+> directory (pld) in sysfs to share _PLD fields.
+
+I think you need to explain what needs this information in user space.
+
+> Signed-off-by: Won Chung <wonchung@google.com>
 > ---
->  mm/madvise.c | 24 ++++++++++++++++++++++--
->  1 file changed, 22 insertions(+), 2 deletions(-)
+>  Documentation/ABI/testing/sysfs-bus-acpi | 107 +++++++++++++++++++++++
+>  drivers/acpi/device_sysfs.c              |  55 ++++++++++++
+>  include/acpi/acpi_bus.h                  |   1 +
+>  3 files changed, 163 insertions(+)
 > 
-> diff --git a/mm/madvise.c b/mm/madvise.c
-> index 5604064df464..7ae891e030a4 100644
-> --- a/mm/madvise.c
-> +++ b/mm/madvise.c
-> @@ -796,10 +796,30 @@ static int madvise_free_single_vma(struct vm_area_struct *vma,
->  static long madvise_dontneed_single_vma(struct vm_area_struct *vma,
->  					unsigned long start, unsigned long end)
->  {
-> +	/*
-> +	 * start and size (end - start) must be huge page size aligned
-> +	 * for hugetlb vmas.
-> +	 */
-> +	if (is_vm_hugetlb_page(vma)) {
-> +		struct hstate *h = hstate_vma(vma);
+> diff --git a/Documentation/ABI/testing/sysfs-bus-acpi b/Documentation/ABI/testing/sysfs-bus-acpi
+> index 58abacf59b2a..b8b71c8f3cfd 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-acpi
+> +++ b/Documentation/ABI/testing/sysfs-bus-acpi
+> @@ -96,3 +96,110 @@ Description:
+>  		hardware, if the _HRV control method is present.  It is mostly
+>  		useful for non-PCI devices because lspci can list the hardware
+>  		version for PCI devices.
 > +
-> +		start = ALIGN_DOWN(start, huge_page_size(h));
-> +		end = ALIGN(end, huge_page_size(h));
+> +What:		/sys/bus/acpi/devices/.../pld/
+> +Date:		Feb, 2022
+> +Contact:	Won Chung <wonchung@google.com>
+> +Description:
+> +		This directory contains the output of the device object's _PLD
+> +		control method, if present. This information provides details
+> +		on physical location of a device.
+> +
+> +What:		/sys/bus/acpi/devices/.../pld/revision
+> +Date:		Feb, 2022
+> +Contact:	Won Chung <wonchung@google.com>
+> +Description:
+> +		The current revision is 0x2.
+> +
+> +What:           /sys/bus/acpi/devices/.../pld/group_token
+> +Date:           Feb, 2022
+> +Contact:        Won Chung <wonchung@google.com>
+> +Description:
+> +		Unique numerical value identifying a group.
+> +
+> +What:           /sys/bus/acpi/devices/.../pld/group_position
+> +Date:           Feb, 2022
+> +Contact:        Won Chung <wonchung@google.com>
+> +Description:
+> +		Identifies this device connection point’s position in the group.
+> +
+> +What:           /sys/bus/acpi/devices/.../pld/user_visible
+> +Date:           Feb, 2022
+> +Contact:        Won Chung <wonchung@google.com>
+> +Description:
+> +		Set if the device connection point can be seen by the user
+> +		without disassembly.
+> +
+> +What:           /sys/bus/acpi/devices/.../pld/dock
+> +Date:           Feb, 2022
+> +Contact:        Won Chung <wonchung@google.com>
+> +Description:
+> +		Set if the device connection point resides in a docking station
+> +		or port replicator.
+> +
+> +What:           /sys/bus/acpi/devices/.../pld/bay
+> +Date:           Feb, 2022
+> +Contact:        Won Chung <wonchung@google.com>
+> +Description:
+> +		Set if describing a device in a bay or if device connection
+> +		point is a bay.
+> +
+> +What:           /sys/bus/acpi/devices/.../pld/lid
+> +Date:           Feb, 2022
+> +Contact:        Won Chung <wonchung@google.com>
+> +Description:
+> +		Set if this device connection point resides on the lid of
+> +		laptop system.
+> +
+> +What:           /sys/bus/acpi/devices/.../pld/panel
+> +Date:           Feb, 2022
+> +Contact:        Won Chung <wonchung@google.com>
+> +Description:
+> +		Describes which panel surface of the system’s housing the
+> +		device connection point resides on:
+> +		0 - Top
+> +		1 - Bottom
+> +		2 - Left
+> +		3 - Right
+> +		4 - Front
+> +		5 - Back
+> +		6 - Unknown (Vertical Position and Horizontal Position will be
+> +		ignored)
+> +
+> +What:           /sys/bus/acpi/devices/.../pld/vertical_position
+> +Date:           Feb, 2022
+> +Contact:        Won Chung <wonchung@google.com>
+> +Description:
+> +		0 - Upper
+> +		1 - Center
+> +		2 - Lower
+> +
+> +What:           /sys/bus/acpi/devices/.../pld/horizontal_position
+> +Date:           Feb, 2022
+> +Contact:        Won Chung <wonchung@google.com>
+> +Description:
+> +		ACPI specification does not define horizontal position field.
+> +		Can be used as either
+> +		0 - Left
+> +		1 - Center
+> +		2 - Right
+> +		or
+> +		0 - Leftmost
+> +		and higher numbers going toward the right.
+> +
+> +What:           /sys/bus/acpi/devices/.../pld/shape
+> +Date:           Feb, 2022
+> +Contact:        Won Chung <wonchung@google.com>
+> +Description:
+> +		Describes the shape of the device connection point.
+> +		0 - Round
+> +		1 - Oval
+> +		2 - Square
+> +		3 - Vertical Rectangle
+> +		4 - Horizontal Rectangle
+> +		5 - Vertical Trapezoid
+> +		6 - Horizontal Trapezoid
+> +		7 - Unknown - Shape rendered as a Rectangle with dotted lines
+> +		8 - Chamfered
+> +		15:9 - Reserved
+> +
+> diff --git a/drivers/acpi/device_sysfs.c b/drivers/acpi/device_sysfs.c
+> index d5d6403ba07b..610be93635a0 100644
+> --- a/drivers/acpi/device_sysfs.c
+> +++ b/drivers/acpi/device_sysfs.c
+> @@ -509,6 +509,49 @@ static ssize_t status_show(struct device *dev, struct device_attribute *attr,
+>  }
+>  static DEVICE_ATTR_RO(status);
+>  
+> +#define DEV_ATTR_PLD_PROP(prop) \
+> +	static ssize_t prop##_show(struct device *dev, struct device_attribute *attr, \
+> +		char *buf) \
+> +{ \
+> +	struct acpi_device *acpi_dev = to_acpi_device(dev); \
+> +	if (acpi_dev->pld == NULL) \
+> +		return -EIO; \
+> +	return sprintf(buf, "%u\n", acpi_dev->pld->prop); \
+> +}; \
 
-So you effectively extend the range silently. IIUC, if someone would zap
-a 4k range you would implicitly zap a whole 2M page and effectively zero
-out more data than requested.
+Ah, you are storing the _PLD below. Before there were concerns about
+the memory that the cached _PLD information would consume. Another way
+of doing this would be to just always evaluate the _PLD here.
 
+Rafael needs to comment on this. My personal opinion is that let's
+just store the thing.
 
-Looking at do_madvise(), we:
-(1) reject start addresses that are not page-aligned
-(2) shrink lengths that are not page-aligned and refuse if it turns 0
+> +static DEVICE_ATTR_RO(prop)
+> +
+> +DEV_ATTR_PLD_PROP(revision);
+> +DEV_ATTR_PLD_PROP(group_token);
+> +DEV_ATTR_PLD_PROP(group_position);
+> +DEV_ATTR_PLD_PROP(user_visible);
+> +DEV_ATTR_PLD_PROP(dock);
+> +DEV_ATTR_PLD_PROP(bay);
+> +DEV_ATTR_PLD_PROP(lid);
+> +DEV_ATTR_PLD_PROP(panel);
+> +DEV_ATTR_PLD_PROP(vertical_position);
+> +DEV_ATTR_PLD_PROP(horizontal_position);
+> +DEV_ATTR_PLD_PROP(shape);
+> +
+> +static struct attribute *dev_attr_pld[] = {
+> +	&dev_attr_revision.attr,
+> +	&dev_attr_group_token.attr,
+> +	&dev_attr_group_position.attr,
+> +	&dev_attr_user_visible.attr,
+> +	&dev_attr_dock.attr,
+> +	&dev_attr_bay.attr,
+> +	&dev_attr_lid.attr,
+> +	&dev_attr_panel.attr,
+> +	&dev_attr_vertical_position.attr,
+> +	&dev_attr_horizontal_position.attr,
+> +	&dev_attr_shape.attr,
+> +	NULL,
+> +};
+> +
+> +static struct attribute_group dev_attr_pld_group = {
+> +	.name = "pld",
+> +	.attrs = dev_attr_pld,
+> +};
+> +
+>  /**
+>   * acpi_device_setup_files - Create sysfs attributes of an ACPI device.
+>   * @dev: ACPI device object.
+> @@ -595,6 +638,16 @@ int acpi_device_setup_files(struct acpi_device *dev)
+>  						    &dev_attr_real_power_state);
+>  	}
+>  
+> +	if (acpi_has_method(dev->handle, "_PLD")) {
+> +		status = acpi_get_physical_device_location(dev->handle,
+> +			&dev->pld);
+> +		if (ACPI_FAILURE(status))
+> +			goto end;
+> +		result = device_add_group(&dev->dev, &dev_attr_pld_group);
+> +		if (result)
+> +			goto end;
+> +	}
 
-The man page documents (1) but doesn't really document (2).
+You probable want to store the pld in acpi_store_pld_crc(). Perhaps
+also rename that function to just acpi_store_pld() at the same time.
 
-Naturally I'd have assume that we apply the same logic to huge page
-sizes and documenting it in the man page accordingly.
+Here you just want to create the sysfs group.
 
+>  	acpi_expose_nondev_subnodes(&dev->dev.kobj, &dev->data);
+>  
+>  end:
+> @@ -645,4 +698,6 @@ void acpi_device_remove_files(struct acpi_device *dev)
+>  		device_remove_file(&dev->dev, &dev_attr_status);
+>  	if (dev->handle)
+>  		device_remove_file(&dev->dev, &dev_attr_path);
+> +	if (acpi_has_method(dev->handle, "_PLD"))
+> +		device_remove_group(&dev->dev, &dev_attr_pld_group);
+>  }
+> diff --git a/include/acpi/acpi_bus.h b/include/acpi/acpi_bus.h
+> index ca88c4706f2b..929e726a666b 100644
+> --- a/include/acpi/acpi_bus.h
+> +++ b/include/acpi/acpi_bus.h
+> @@ -381,6 +381,7 @@ struct acpi_device {
+>  	struct acpi_hotplug_context *hp;
+>  	struct acpi_driver *driver;
+>  	const struct acpi_gpio_mapping *driver_gpios;
+> +	struct acpi_pld_info *pld;
+>  	void *driver_data;
+>  	struct device dev;
+>  	unsigned int physical_node_count;
+> -- 
 
-Why did you decide to extend the range? I'd assume MADV_REMOVE behaves
-like FALLOC_FL_PUNCH_HOLE:
-  "Within the specified range, partial filesystem blocks are zeroed, and
-   whole filesystem blocks are removed from the file.  After a
-   successful call, subsequent reads from  this  range will return
-   zeros."
-So we don't "discard more than requested".
-
-
-I see the following possible alternatives:
-(a) Fail if the range is not aligned
--> Clear semantics
-(b) Fail if the start is not aligned, shrink the end if required
--> Same rules as for PAGE_SIZE
-(c) Zero out the requested part
--> Same semantics as FALLOC_FL_PUNCH_HOLE.
-
-My preference would be a), properly documenting it in the man page.
+thanks,
 
 -- 
-Thanks,
-
-David / dhildenb
-
+heikki
