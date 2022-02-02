@@ -2,57 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA06EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 14:45:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2B8BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 14:47:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345063AbiBBOpu (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 09:45:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45634 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231812AbiBBOps (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 09:45:48 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9876C061714
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 06:45:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=zCS0xrA163LrWKKod/qW1i1A5aFwglNYqiR5hYaaFUk=; b=jrhJfASq3CsQc+l41MDvpWNWKs
-        nid/U/ydq2D2e+DYYY9/tblIHMdaI9+Ydt1P9SjptezZI0XaquBbMIxKzs4fTSg908LdeZJ1bK94e
-        l9zvJ5sj5VrWF1C/OZNa0GPN4iCo9B8+G9tATTK79JsCH68x4uqGZpCwgoOxIgrH359bBD0dsuJAd
-        7HCd/v3xSMS1Jd4FOteeXjcivPOyxazH+ATGQBSc9Ni9+bu2UEhwlYMWYwLeW2s7csomwVL7jdZh0
-        JMpR6vhniNkCu3/YOwmYc+2thg9CIpaQhvk1wzdrg54Fslc0FSuxwf2gaFUZ7DMHlBNRmFo5iaDVK
-        EMtVttrA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nFGtC-006Du3-Nh; Wed, 02 Feb 2022 14:45:42 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 53D3A984C61; Wed,  2 Feb 2022 15:45:42 +0100 (CET)
-Date:   Wed, 2 Feb 2022 15:45:42 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Minchan Kim <minchan@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Tim Murray <timmurray@google.com>,
-        Waiman Long <longman@redhat.com>
-Subject: Re: [PATCH] locking: add missing __sched attributes
-Message-ID: <20220202144542.GC20638@worktop.programming.kicks-ass.net>
-References: <20220115231657.84828-1-minchan@kernel.org>
+        id S242012AbiBBOrG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 09:47:06 -0500
+Received: from mga07.intel.com ([134.134.136.100]:34451 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231812AbiBBOrE (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 2 Feb 2022 09:47:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643813224; x=1675349224;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=e9ApRorwSHDr+0KV5qWN6o3xmkRImjO3SBNQu4ZKOSc=;
+  b=Y3bkW4bPPlL6FLlOTDrPKfuT/ik8dScclo3w8mwDLIMgLKu/09BEEKWh
+   9OGDX0iingbe3PKEpGh9ci6PreJWyDoYDmw1I4r//3jYfDDaPrBx3cAT4
+   h9fR+5ISIGzpzeHYh751n0Ct9euftQq/meRxenJTGIRv7e+PHL2NYL7Ej
+   t0s2OIWe4t5G1z01ndp/HGkSRvPrBU3ySaqmiQNFnh227bh/tVS/b/nFt
+   /PrpifG26ppZQhPM/gy1VD0LpQDQmuzhLDixy8qud+Nb9c26NyHKiRcZ3
+   zc/DmFYSJHtCV1V7w+vVBHqrwmcbo+k6YZ/x/mw5MdvooWXKPv7VygAqq
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10245"; a="311236392"
+X-IronPort-AV: E=Sophos;i="5.88,337,1635231600"; 
+   d="scan'208";a="311236392"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 06:47:03 -0800
+X-IronPort-AV: E=Sophos;i="5.88,337,1635231600"; 
+   d="scan'208";a="676454265"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 06:47:00 -0800
+Received: by lahna (sSMTP sendmail emulation); Wed, 02 Feb 2022 16:46:58 +0200
+Date:   Wed, 2 Feb 2022 16:46:58 +0200
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Cc:     Wolfram Sang <wsa@kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        Linux ACPI <linux-acpi@vger.kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-i2c@vger.kernel.org
+Subject: Re: [PATCH] i2c: ACPI: Replace acpi_bus_get_device()
+Message-ID: <YfqZYkVYrz4MEwGV@lahna>
+References: <4374434.LvFx2qVVIh@kreacher>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220115231657.84828-1-minchan@kernel.org>
+In-Reply-To: <4374434.LvFx2qVVIh@kreacher>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jan 15, 2022 at 03:16:57PM -0800, Minchan Kim wrote:
-> This patch adds __sched attributes to a few missing places
-> to show blocked function rather than locking function
-> in get_wchan.
+On Tue, Feb 01, 2022 at 07:00:42PM +0100, Rafael J. Wysocki wrote:
+> From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 > 
-> Signed-off-by: Minchan Kim <minchan@kernel.org>
+> Replace acpi_bus_get_device() that is going to be dropped with
+> acpi_fetch_acpi_dev().
+> 
+> No intentional functional impact.
+> 
+> Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-Thanks!
+Acked-by: Mika Westerberg <mika.westerberg@linux.intel.com>
