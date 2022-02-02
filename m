@@ -2,90 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CE6BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 07:10:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F561C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 07:10:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231862AbiBBHKZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 02:10:25 -0500
-Received: from mailout2.samsung.com ([203.254.224.25]:16567 "EHLO
-        mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231293AbiBBHKX (ORCPT
+        id S233395AbiBBHKa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 02:10:30 -0500
+Received: from cavan.codon.org.uk ([176.126.240.207]:50482 "EHLO
+        cavan.codon.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231321AbiBBHKY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 02:10:23 -0500
-Received: from epcas5p4.samsung.com (unknown [182.195.41.42])
-        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220202063441epoutp02968ed1bb9f36ba40595f9cc83bc00954~P5IyKY41d2878428784epoutp02k
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 06:34:41 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220202063441epoutp02968ed1bb9f36ba40595f9cc83bc00954~P5IyKY41d2878428784epoutp02k
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1643783681;
-        bh=OkigBjbJ/hUZbBEBYwYdVxU4vhRxGSoOZRXY6T4zfiI=;
-        h=Subject:Reply-To:From:To:CC:In-Reply-To:Date:References:From;
-        b=N3UsHnAJPVt4zXKeb7h9I/oXBojyUcGdLZ2rNEH2vK3baQvQ79apvA9vFo++z2Kt4
-         FSCUJXClSatz3j4FITWbZ4DX2WWa7UoYTILsk/kH6FaMsI4lWOsPYJ3726J+MnkTGu
-         x+FZHI1u6ZMSKe0FMb7CZGEErD6BG9g6axcmRp0M=
-Received: from epsmges5p1new.samsung.com (unknown [182.195.42.73]) by
-        epcas5p2.samsung.com (KnoxPortal) with ESMTP id
-        20220202063440epcas5p24619f00b5d8605edec8300817bd009fc~P5IxOguKg0884508845epcas5p2F;
-        Wed,  2 Feb 2022 06:34:40 +0000 (GMT)
-X-AuditID: b6c32a49-b01ff70000001917-23-61fa25cadc5c
-Received: from epcas5p4.samsung.com ( [182.195.41.42]) by
-        epsmges5p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        B6.B0.06423.AC52AF16; Wed,  2 Feb 2022 15:33:46 +0900 (KST)
-Mime-Version: 1.0
-Subject: RE: FW: [PATCH v2] scripts/checkpatch.pl: remove _deferred and
- _deferred_once false warning
-Reply-To: maninder1.s@samsung.com
-Sender: Maninder Singh <maninder1.s@samsung.com>
-From:   Maninder Singh <maninder1.s@samsung.com>
-To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>
-CC:     "apw@canonical.com" <apw@canonical.com>,
-        "joe@perches.com" <joe@perches.com>,
-        "dwaipayanray1@gmail.com" <dwaipayanray1@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Vaneet Narang <v.narang@samsung.com>
-X-Priority: 3
-X-Content-Kind-Code: NORMAL
-In-Reply-To: <CAKXUXMyEKXtSde4vJiEKKpjKpcGv7E4LG5WcfjvwsaG3-5Kh9g@mail.gmail.com>
-X-Drm-Type: N,general
-X-Msg-Generator: Mail
-X-Msg-Type: PERSONAL
-X-Reply-Demand: N
-Message-ID: <20220202062806epcms5p4d8b2ee8e44369c7670ed89d81ef7c19f@epcms5p4>
-Date:   Wed, 02 Feb 2022 11:58:06 +0530
-X-CMS-MailID: 20220202062806epcms5p4d8b2ee8e44369c7670ed89d81ef7c19f
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: REQ_APPROVE
-CMS-TYPE: 105P
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFupkleLIzCtJLcpLzFFi42LZdlhTS/eU6q9Eg43rxS0+rNWwWL9wGbPF
-        7PuPWSwu75rDZtFytJ3F4tDJuYwObB6zGnrZPHbOusvu8WXVNWaPvi2rGD0+b5ILYI3isklJ
-        zcksSy3St0vgymhsamEr+MNYsWFXL3sD4zHGLkZODgkBE4nGhtUsXYxcHEICuxklli/5wdbF
-        yMHBKyAo8XeHMEiNsECaxPEv3UwgtpCAosSFGWsYQUqEBQwkfm3VAAmzCehJrNq1hwUkLCKg
-        LbF1rTTIRGaBD4wS99f9ZYdYxSsxo/0pC4QtLbF9+VawMZwCgRItb00gwqISN1e/ZYex3x+b
-        D3WliETrvbPMELagxIOfu6HiMhKrN/eCXS8h0M0osf7dXihnBqNEz6NpUB3mEuuXrAKbyivg
-        K/Fq03ZWEJtFQFVi4pErTBA1LhIn/t4BO45ZQF5i+9s5zCDHMQtoSqzfpQ9RIisx9dQ6JogS
-        Pone30+YYP7aMQ/GVpVoubmBFebHzx8/Qv3rIbHo2Q5GSDDfYZSY+nsh2wRGhVmIkJ6FZPMs
-        hM0LGJlXMUqmFhTnpqcWmxYY5qWW6xUn5haX5qXrJefnbmIEpxYtzx2Mdx980DvEyMTBeIhR
-        goNZSYR378LviUK8KYmVValF+fFFpTmpxYcYpTlYlMR5T6dvSBQSSE8sSc1OTS1ILYLJMnFw
-        SjUwzfO2zJqTIfj2z4P/QZM27t93VMYwW5r/eMKemdcPXUtwTaiNZYjkE1HQqxQ2/la68N79
-        Og0hT/lMryN8Sso1Mx7IRjvkPr99KPzeXG3Na++zvpx2zu1ikjZ/oCBQ2Hzq5pn2bdPym4rd
-        pp0MuN6+WE/yXnWFwP22vJAe+a96nxibTDW8TsnOOLvmmeCpaVzcofH8q514AlKZn1fknph9
-        78n/ax9/rN7670uWc1a8akFFRHnOzJOdF8KbEv2mVXTzVXPWT9lV8ktxS4CUrp7x6ijx5RfP
-        XD0UWPmtW9EmsGODxItVN6+XNRqnrJhw7CDjtWsTJ5cEOdbKKzHz+OU91BeobzONMJUTi1J0
-        ZVViKc5INNRiLipOBAB2uk9TnAMAAA==
-X-CMS-RootMailID: 20220202044123epcms5p59b0c283f2fe3c7b8654bb600019c1d4f
-References: <CAKXUXMyEKXtSde4vJiEKKpjKpcGv7E4LG5WcfjvwsaG3-5Kh9g@mail.gmail.com>
-        <20220202044123epcms5p59b0c283f2fe3c7b8654bb600019c1d4f@epcms5p5>
-        <CGME20220202044123epcms5p59b0c283f2fe3c7b8654bb600019c1d4f@epcms5p4>
+        Wed, 2 Feb 2022 02:10:24 -0500
+Received: by cavan.codon.org.uk (Postfix, from userid 1000)
+        id 56FE540A51; Wed,  2 Feb 2022 07:10:23 +0000 (GMT)
+Date:   Wed, 2 Feb 2022 07:10:23 +0000
+From:   Matthew Garrett <mjg59@srcf.ucam.org>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     James Bottomley <jejb@linux.ibm.com>,
+        Dov Murik <dovmurik@linux.ibm.com>, linux-efi@vger.kernel.org,
+        Borislav Petkov <bp@suse.de>,
+        Ashish Kalra <ashish.kalra@amd.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Andrew Scull <ascull@google.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        "Dr. David Alan Gilbert" <dgilbert@redhat.com>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Lenny Szubowicz <lszubowi@redhat.com>,
+        Peter Gonda <pgonda@google.com>,
+        Tobin Feldman-Fitzthum <tobin@linux.ibm.com>,
+        Jim Cadden <jcadden@ibm.com>,
+        Daniele Buono <dbuono@linux.vnet.ibm.com>,
+        linux-coco@lists.linux.dev, linux-security-module@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Nayna Jain <nayna@linux.ibm.com>,
+        dougmill@linux.vnet.ibm.com, gcwilson@linux.ibm.com,
+        gjoyce@ibm.com, linuxppc-dev@lists.ozlabs.org, mpe@ellerman.id.au,
+        dja@axtens.net
+Subject: Re: [PATCH v7 0/5] Allow guest access to EFI confidential computing
+ secret area
+Message-ID: <20220202071023.GA9489@srcf.ucam.org>
+References: <20220201124413.1093099-1-dovmurik@linux.ibm.com>
+ <Yfk6vEuZFtgtA+G+@kroah.com>
+ <37779659ca96ac9c1f11bcc0ac0665895c795b54.camel@linux.ibm.com>
+ <20220202040157.GA8019@srcf.ucam.org>
+ <YfogOurPZb7+Yelo@kroah.com>
+ <20220202065443.GA9249@srcf.ucam.org>
+ <YfotMyQiQ66xfCOQ@kroah.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YfotMyQiQ66xfCOQ@kroah.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Wed, Feb 02, 2022 at 08:05:23AM +0100, Greg KH wrote:
 
-> Your email will not reach the mailing list due to the HTML content and picture below. Please set up your email client properly.
+> I see different platform patches trying to stick these blobs in
+> different locations and ways to access (securityfs, sysfs, char device
+> node), which seems crazy to me.  Why can't we at least pick one way to
+> access these to start with, and then have the filesystem layout be
+> platform-specific as needed, which will give the correct hints to
+> userspace as to what it needs to do here?
 
-Ok, I will resend the patch from git-email again rather than from this email client
-
-Thanks,
-Maninder Singh
+Which other examples are you thinking of? I think this conversation may 
+have accidentally become conflated with a different prior one and now 
+we're talking at cross purposes.
