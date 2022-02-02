@@ -2,141 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26A46C4167B
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 13:29:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5AA4C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 13:29:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344336AbiBBN3D convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 08:29:03 -0500
-Received: from mail-ua1-f44.google.com ([209.85.222.44]:39841 "EHLO
-        mail-ua1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344349AbiBBN3B (ORCPT
+        id S241254AbiBBN3e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 08:29:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56014 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229829AbiBBN3c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 08:29:01 -0500
-Received: by mail-ua1-f44.google.com with SMTP id p7so19091666uao.6;
-        Wed, 02 Feb 2022 05:29:01 -0800 (PST)
+        Wed, 2 Feb 2022 08:29:32 -0500
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04CFBC061714
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 05:29:32 -0800 (PST)
+Received: by mail-lj1-x229.google.com with SMTP id z7so28931655ljj.4
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 05:29:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ventanamicro.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ut1heMlmneP+6IiHVYaCsRV+iQnMtY/plsON5gFnw/s=;
+        b=pSxMvG+egIt4WW80jF9dDVL3Z8lG/xgxzcN3gE1P+6SGJWoI6nsWsoHQEl+4+ug4UX
+         gOar1xx+mu87pvf4RiobK4x+KVC1BJ0rMGMqGoKBLxkSpfVs45nt0jEUavC6xXXffZGS
+         3a77UePfRjq+OPgpZjJkUwohMc5aUQDULSqqZwagYfF0RicMliSE9QWN0Hrn0IuXxiAt
+         c9ViyFifNmmf1QaV6qNZXiz2p1HT/DmQ2aV8i4BCX+OIXIhGarMZzkeX/thOFYt3BPi1
+         X8hme+1Sv7Cr9o2AxrucOVRe6/pynI7ogzarWIANwAiNk6dOQAL3W7orgc2jNEDuDVzJ
+         upnw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=trhdKZIi8I2pglvejnlK+EON8M6pVXEzurOEfFekmwA=;
-        b=NDIuG5Pi0RdZNClC6AFzmJq+zx47L+ZZZjLB2ZFaV6XrOF3ywZH+eiY2bVFLsGSMrs
-         O4DRqoCyI6KEWdCbmdwUFKch1il2Qtz/HSVlPo3XicEQrluhlmmpug4ldYDTV4kfnrPu
-         QZG9puHGwLxTgxqt/sOxUywruSr79hqJdYFJH3iXkSIvL9wJj80vl3WEUj3ivYCv6Glb
-         FRHYMcTBcQdQZVpkKu11OOm6vCk4wvhbX1Lk431h3fNhG3xivZsuhcptT3yVpbRSzn5V
-         P5D3Ayk4w778vx4y0VJBVMnFfjF3+rPcChOHgmT4e9T9grh1sKXh4+nJQXQwRMUBIVIM
-         X1SA==
-X-Gm-Message-State: AOAM532BgyTnqVM6Dt47WKltyeLBfzEvwaS/0JMdFxymQWjA7MHkS/xh
-        HDF9ssRoQp4g2yPolL6Ciejl3iNtfwAY3g==
-X-Google-Smtp-Source: ABdhPJwOCYEB0n0smzN8MUREPyW9ujuCeDrEIwHTWP/Cw+4jPYq/YplrVxvwMHSN7Ip3AGfOlIuXSQ==
-X-Received: by 2002:a05:6102:2416:: with SMTP id j22mr12057554vsi.8.1643808540650;
-        Wed, 02 Feb 2022 05:29:00 -0800 (PST)
-Received: from mail-ua1-f54.google.com (mail-ua1-f54.google.com. [209.85.222.54])
-        by smtp.gmail.com with ESMTPSA id 17sm3369288vky.10.2022.02.02.05.28.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 02 Feb 2022 05:29:00 -0800 (PST)
-Received: by mail-ua1-f54.google.com with SMTP id b37so19051548uad.12;
-        Wed, 02 Feb 2022 05:28:59 -0800 (PST)
-X-Received: by 2002:a67:5f83:: with SMTP id t125mr11229610vsb.68.1643808539621;
- Wed, 02 Feb 2022 05:28:59 -0800 (PST)
+         :message-id:subject:to:cc;
+        bh=ut1heMlmneP+6IiHVYaCsRV+iQnMtY/plsON5gFnw/s=;
+        b=bi+SL0x1b9CjWMqtx+5BD9xUAuOMPFwZbwptnujrGOicxO7EZGKgYVASNSkkvpqxv9
+         NG9kP4BSMohLF1K807ZJ99+iNYYFJePeMeSCbskFzlOTtbziZ6buJoRO2iUJpSqGleB0
+         MnkFx2rSgVYBiEZ/cinmCRIh+vfe2LrZqmYU6xpBqubw85otpPWXRXTaP95EJTnvsjIR
+         RpV1q0MMglnc3bowzUGnNCxJu1yvpMyLMY/bKWInz7CjUubOJRIZmhH/Xb3ADC5PSSLF
+         YNmVf/r3778b9hLehytTboLXBjEH6oJW2evzBlj0pjaK5aIhzCgdK6xfeJiOOz4xh8MD
+         VR+A==
+X-Gm-Message-State: AOAM533CnOT+ZUn5ihr0RyLpULwKT3NJfwGWopS1MlLYyn+NNUhScA8w
+        scAet5scJJq9HFHw3vsRr7raegKy5fmkM3PYy9llxviaNSL5kQ==
+X-Google-Smtp-Source: ABdhPJx5vsaf3f2A8imbwwx+BlfgfCJf+ICQ65e5a/dtBqayDqwZfU1QHrHiSP/evaTJiDLlffNcX5TPkt9HUMaKhUw=
+X-Received: by 2002:a05:651c:a0b:: with SMTP id k11mr15027229ljq.266.1643808570290;
+ Wed, 02 Feb 2022 05:29:30 -0800 (PST)
 MIME-Version: 1.0
-References: <20220201075824.aixrvkvmjde2ihxx@pengutronix.de> <20220202123542.3721512-1-conor.dooley@microchip.com>
-In-Reply-To: <20220202123542.3721512-1-conor.dooley@microchip.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 2 Feb 2022 14:28:48 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdWrmuY7pwY8U0t9LumEvUTBEA06uV7hNyKFAPMQtE98_A@mail.gmail.com>
-Message-ID: <CAMuHMdWrmuY7pwY8U0t9LumEvUTBEA06uV7hNyKFAPMQtE98_A@mail.gmail.com>
-Subject: Re: [PATCH v5 06/12] dt-bindings: pwm: add microchip corepwm binding
-To:     Conor Dooley <conor.dooley@microchip.com>
-Cc:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Atish Patra <atishp@rivosinc.com>,
-        Bin Meng <bin.meng@windriver.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        daire.mcnamara@microchip.com,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, Heiko Stuebner <heiko@sntech.de>,
-        ivan.griffin@microchip.com, Jassi Brar <jassisinghbrar@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Lewis Hanly <lewis.hanly@microchip.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
+References: <20220131110307.1684739-1-mchitale@ventanamicro.com>
+ <CAAhSdy2wX7Re4yepV7ReNQazF9jb-eqSUDE7rLCarr3iUchzkQ@mail.gmail.com> <B04F937F-6FC8-42F5-9D6B-7EF1148F9646@jrtc27.com>
+In-Reply-To: <B04F937F-6FC8-42F5-9D6B-7EF1148F9646@jrtc27.com>
+From:   Anup Patel <apatel@ventanamicro.com>
+Date:   Wed, 2 Feb 2022 18:59:18 +0530
+Message-ID: <CAK9=C2WPmH4snAH1Ft4jNoaNuLRQ9dEuYm_K4ePVHdS9wkBYPA@mail.gmail.com>
+Subject: Re: [PATCH] RISC-V: KVM: make CY, TM, and IR counters accessible in
+ VU mode
+To:     Jessica Clarke <jrtc27@jrtc27.com>
+Cc:     Anup Patel <anup@brainfault.org>,
+        Mayuresh Chitale <mchitale@ventanamicro.com>,
+        Atish Patra <atishp@atishpatra.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        kvm-riscv@lists.infradead.org,
         linux-riscv <linux-riscv@lists.infradead.org>,
-        linux-rtc@vger.kernel.org, Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>
+        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Conor,
-
-On Wed, Feb 2, 2022 at 1:33 PM <conor.dooley@microchip.com> wrote:
-> >On 01/02/2022 07:58, Uwe Kleine-König wrote:
-> >> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> >> On Mon, Jan 31, 2022 at 11:47:21AM +0000, conor.dooley@microchip.com wrote:
-> >> From: Conor Dooley <conor.dooley@microchip.com>
-> >>
-> >> Add device tree bindings for the Microchip fpga fabric based "core" PWM
-> >> controller.
-> >>
-> >> Reviewed-by: Rob Herring <robh@kernel.org>
-> >>
-> >> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
-> >> ---
-> >> .../bindings/pwm/microchip,corepwm.yaml       | 75 +++++++++++++++++++
-
-> >> +  microchip,sync-update:
-> >> +    description: |
-> >> +      In synchronous mode, all channels are updated at the beginning of the PWM period.
-> >> +      Asynchronous mode is relevant to applications such as LED control, where
-> >> +      synchronous updates are not required. Asynchronous mode lowers the area size,
-> >> +      reducing shadow register requirements. This can be set at run time, provided
-> >> +      SHADOW_REG_EN is asserted. SHADOW_REG_EN is set by the FPGA bitstream programmed
-> >> +      to the device.
-> >> +      Each bit corresponds to a PWM channel & represents whether synchronous mode is
-> >> +      possible for the PWM channel.
-> >> +
-> >> +    $ref: /schemas/types.yaml#/definitions/uint16
-> >> +    default: 0
+On Wed, Feb 2, 2022 at 6:49 PM Jessica Clarke <jrtc27@jrtc27.com> wrote:
+>
+> On 2 Feb 2022, at 11:14, Anup Patel <anup@brainfault.org> wrote:
 > >
-> >I'm not sure I understand this correctly. This is a soft-core and you
-> >can synthesize it either with or without the ability to do synchronous
-> >updates or not, right? All 16 channels share the same period length and
-> >in the simple implementation changing the duty cycle is done at once
-> >(maybe introducing a glitch) and in the more expensive implementation
-> >there is a register to implement both variants?
+> > On Mon, Jan 31, 2022 at 4:33 PM Mayuresh Chitale
+> > <mchitale@ventanamicro.com> wrote:
+> >>
+> >> Those applications that run in VU mode and access the time CSR cause
+> >> a virtual instruction trap as Guest kernel currently does not
+> >> initialize the scounteren CSR.
+> >>
+> >> To fix this, we should make CY, TM, and IR counters accessibile
+> >> by default in VU mode (similar to OpenSBI).
+> >>
+> >> Fixes: a33c72faf2d73 ("RISC-V: KVM: Implement VCPU create, init and
+> >> destroy functions")
+> >> Cc:stable@vger.kernel.org
+> >> Signed-off-by: Mayuresh Chitale <mchitale@ventanamicro.com>
+> >
+> > Thanks, I have queued this for fixes.
 >
-> Correct. If the IP is instantiated with SHADOW_REG_ENx=1, both
-> registers that control the duty cycle for channel x have a second
-> "shadow reg" synthesised. At runtime a bit wide register exposed to
-> APB can be used to toggle on/off synchronised mode for all channels
-> it has been synthesised for.
+> The formatting is clearly wrong...
+
+I have updated this in my fixes queue.
+
 >
-> I will reword this description since it is not clear.
+> > Regards,
+> > Anup
+> >
+> >> ---
+> >> arch/riscv/kvm/vcpu.c | 4 ++++
+> >> 1 file changed, 4 insertions(+)
+> >>
+> >> diff --git a/arch/riscv/kvm/vcpu.c b/arch/riscv/kvm/vcpu.c
+> >> index 0c5239e05721..caaf824347b9 100644
+> >> --- a/arch/riscv/kvm/vcpu.c
+> >> +++ b/arch/riscv/kvm/vcpu.c
+> >> @@ -90,6 +90,7 @@ int kvm_arch_vcpu_precreate(struct kvm *kvm, unsigned int id)
+> >> int kvm_arch_vcpu_create(struct kvm_vcpu *vcpu)
+> >> {
+> >>        struct kvm_cpu_context *cntx;
+> >> +       struct kvm_vcpu_csr *reset_csr = &vcpu->arch.guest_reset_csr;
+> >>
+> >>        /* Mark this VCPU never ran */
+> >>        vcpu->arch.ran_atleast_once = false;
+> >> @@ -106,6 +107,9 @@ int kvm_arch_vcpu_create(struct kvm_vcpu *vcpu)
+> >>        cntx->hstatus |= HSTATUS_SPVP;
+> >>        cntx->hstatus |= HSTATUS_SPV;
+> >>
+> >> +       /* By default, make CY, TM, and IR counters accessible in VU mode */
+> >> +       reset_csr->scounteren=0x7;
+>
+> ... here
 
-Shouldn't it use a different compatible value instead?
-Differentiation by properties is not recommended, as it's easy to
-miss a difference.
+Same as above, I have updated this my queue as well.
 
-Gr{oetje,eeting}s,
+Thanks,
+Anup
 
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+>
+> Jess
+>
+> >> +
+> >>        /* Setup VCPU timer */
+> >>        kvm_riscv_vcpu_timer_init(vcpu);
+> >>
+> >> --
+> >> 2.25.1
+> >>
+> >
+> > _______________________________________________
+> > linux-riscv mailing list
+> > linux-riscv@lists.infradead.org
+> > http://lists.infradead.org/mailman/listinfo/linux-riscv
+>
