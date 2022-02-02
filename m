@@ -2,141 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 791D8C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 14:43:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 508C1C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 14:43:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345106AbiBBOng (ORCPT
+        id S1345116AbiBBOni (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 09:43:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45064 "EHLO
+        Wed, 2 Feb 2022 09:43:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229829AbiBBOn2 (ORCPT
+        with ESMTP id S1345074AbiBBOna (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 09:43:28 -0500
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2398CC06173B
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 06:43:28 -0800 (PST)
-Received: by mail-lf1-x134.google.com with SMTP id b9so41119690lfq.6
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 06:43:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=7GjHKzpzlHplDDKhV9GIkeeSyQMGz4QdXm9jvUoDJkU=;
-        b=bmd97pCEXeyn5PPSmzHRH7h3OSBMvz3CoXiZjjx1CEOVI8kXv1j5ktwfNBSeMRvzN4
-         sLdxdbi3sps7VBUXAct7IZG5/RAJYxwLKkAOoYAAI4zX0zFhI65Xcrj0oZ6qFc2f1dJN
-         oiGNIEzNLKc5fp+MFX1gjdhY3GEFNWhlzDBEABhtYWbUMPc9CrhIWLt5sJbMAcKCqT9G
-         TJUH7osbZ3a9FIVV1ah5Y+nz2QYL+ZripbfnUBcMG90CIxCJX1reafF339YaZdwR7mQq
-         x+SjlZG4PlPUFWD9jR92XpTWm/yDovzzjlGMYt/CjRC9emiWyprXK/e+riFC75x3eGcF
-         IU0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=7GjHKzpzlHplDDKhV9GIkeeSyQMGz4QdXm9jvUoDJkU=;
-        b=LaEXxNsYAgn2vJAvZMef2J4lgoh1LBvmi32XjrwI4n0nAE0JUjOak5I6Tq7+K90CTp
-         znAUQFTqQBsEebNyrZH0RNpuKQ6Ly3/FAySBTmwjGNHXP7AZHWrqNtXjc7T8hCxzAcaQ
-         i2Qp5jakijsS9jQprtKiR94AN+Qh0Prn53bCrBouvS4Io9bAwnSdCKRU10A2UTcg6a29
-         lbrKBLQtni4Ttf/L+P0NWZsHpE3kAF0ZatD/VeWiQGEe3KB68xVifDU3KF+sacbjfkrB
-         C94iuEPjszcpmQdr8PgBoayQf7LGryM9Xu3+wY3ZELMXyQsXh0TxFxHy729qEwGVEZ93
-         wEWg==
-X-Gm-Message-State: AOAM531+UiDRZtejH8zqYxN/43yUmPeVEDu4CG298wyNzbE36OnBv6r4
-        +wLvomrSNPXgEDHpGfnvFVLpIZSxmJxQQQbT
-X-Google-Smtp-Source: ABdhPJyuHVoOe8yvmGKP1oxWVGTwY1FfE/NyRFWRjjVauPIERtz6cKTY1Mu1vGLoXOB2uLQEiQvgkA==
-X-Received: by 2002:a05:6512:b23:: with SMTP id w35mr22739713lfu.653.1643813006440;
-        Wed, 02 Feb 2022 06:43:26 -0800 (PST)
-Received: from dabros-l.roam.corp.google.com ([185.157.14.92])
-        by smtp.gmail.com with ESMTPSA id z5sm2849610ljz.38.2022.02.02.06.43.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Feb 2022 06:43:25 -0800 (PST)
-From:   Jan Dabros <jsd@semihalf.com>
-To:     linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
-        jarkko.nikula@linux.intel.com, andriy.shevchenko@linux.intel.com
-Cc:     mika.westerberg@linux.intel.com, hdegoede@redhat.com,
-        wsa@kernel.org, rrangel@chromium.org, mw@semihalf.com,
-        jaz@semihalf.com, upstream@semihalf.com, thomas.lendacky@amd.com,
-        alexander.deucher@amd.com, Nimesh.Easow@amd.com,
-        mario.limonciello@amd.com, jsd@semihalf.com,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH v3 0/2] i2c-designware: Add support for AMD PSP semaphore
-Date:   Wed,  2 Feb 2022 15:43:01 +0100
-Message-Id: <20220202144302.1438303-1-jsd@semihalf.com>
-X-Mailer: git-send-email 2.35.0.rc2.247.g8bbb082509-goog
-In-Reply-To: <20220120001621.705352-2-jsd@semihalf.com>
-References: <20220120001621.705352-2-jsd@semihalf.com>
+        Wed, 2 Feb 2022 09:43:30 -0500
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E725C061714;
+        Wed,  2 Feb 2022 06:43:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=xufQ1Q9+1ygsCDJZkQhhHAWRleHJVLLr4QMMU3vcj5Y=; b=oOIEYjuILakE8XqGmGL6SEPV+T
+        k3Z1T7J1Ni4TDwlzj9JH+w9eKYjh7JvxasFf6ZJvIa1yph2ueVL7S4jDGsdYSN9mZ3IcgWkHFaLYg
+        5NgkC7K5e+UqFO0+2x1Gwk8mNXl9ip5gkrlIxJ1PbFckCa8t2JQJE4Hu5IgScl4LFXPizKTY00Fgd
+        K2eEWXOMF6GJyrBZPoZPeNdjl1ITT+Z0Wu8qEw3CwTR0OPepSXztO4T1QFIA/FlvBlj8n6JjwZSic
+        PKN89hiqv0IjCAfwi3Y2kZrGCfE8XR3WGmv/BEIG9EnNWxYkZyB/nqi8XkLqJbnQsJxT8N80DSrny
+        ehaJ2xrQ==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nFGqk-006Dr6-1S; Wed, 02 Feb 2022 14:43:10 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id A2626984C61; Wed,  2 Feb 2022 15:43:08 +0100 (CET)
+Date:   Wed, 2 Feb 2022 15:43:08 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Like Xu <like.xu.linux@gmail.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Like Xu <likexu@tencent.com>
+Subject: Re: [PATCH kvm/queue v2 2/3] perf: x86/core: Add interface to query
+ perfmon_event_map[] directly
+Message-ID: <20220202144308.GB20638@worktop.programming.kicks-ass.net>
+References: <20220117085307.93030-1-likexu@tencent.com>
+ <20220117085307.93030-3-likexu@tencent.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220117085307.93030-3-likexu@tencent.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patchset comprises support for new i2c-designware controller setup on some
-AMD Cezanne SoCs, where x86 is sharing i2c bus with PSP. PSP uses the same
-controller and acts as an i2c arbitrator there (x86 is leasing bus from it).
+On Mon, Jan 17, 2022 at 04:53:06PM +0800, Like Xu wrote:
+> From: Like Xu <likexu@tencent.com>
+> 
+> Currently, we have [intel|knc|p4|p6]_perfmon_event_map on the Intel
+> platforms and amd_[f17h]_perfmon_event_map on the AMD platforms.
+> 
+> Early clumsy KVM code or other potential perf_event users may have
+> hard-coded these perfmon_maps (e.g., arch/x86/kvm/svm/pmu.c), so
+> it would not make sense to program a common hardware event based
+> on the generic "enum perf_hw_id" once the two tables do not match.
+> 
+> Let's provide an interface for callers outside the perf subsystem to get
+> the counter config based on the perfmon_event_map currently in use,
+> and it also helps to save bytes.
+> 
+> Cc: Peter Zijlstra <peterz@infradead.org>
+> Signed-off-by: Like Xu <likexu@tencent.com>
+> ---
+>  arch/x86/events/core.c            | 9 +++++++++
+>  arch/x86/include/asm/perf_event.h | 2 ++
+>  2 files changed, 11 insertions(+)
+> 
+> diff --git a/arch/x86/events/core.c b/arch/x86/events/core.c
+> index 38b2c779146f..751048f4cc97 100644
+> --- a/arch/x86/events/core.c
+> +++ b/arch/x86/events/core.c
+> @@ -693,6 +693,15 @@ void x86_pmu_disable_all(void)
+>  	}
+>  }
+>  
+> +u64 perf_get_hw_event_config(int perf_hw_id)
+> +{
+> +	if (perf_hw_id < x86_pmu.max_events)
+> +		return x86_pmu.event_map(perf_hw_id);
+> +
+> +	return 0;
+> +}
 
-First commit aims to improve generic i2c-designware code by adding extra locking
-on probe() and disable() paths. I would like to ask someone with access to
-boards which use Intel BayTrail(CONFIG_I2C_DESIGNWARE_BAYTRAIL) to verify
-behavior of my changes on such setup.
+Where does perf_hw_id come from? Does this need to be
+array_index_nospec() ?
 
-Second commit adds support for new PSP semaphore arbitration mechanism.
-Implementation is similar to the one from i2c-designware-baytrail.c however
-there are two main differences:
-1) Add new ACPI ID in order to protect against silent binding of the old driver
-to the setup with PSP semaphore. Extra flag ARBITRATION_SEMAPHORE added to this
-new _HID allows to recognize setup with PSP.
-2) Beside acquire_lock() and release_lock() methods we are also applying quirks
-to the lock_bus() and unlock_bus() global adapter methods. With this in place
-all i2c clients drivers may lock i2c bus for a desired number of i2c
-transactions (e.g. write-wait-read) without being aware of that such bus is
-shared with another entity.
+> +EXPORT_SYMBOL_GPL(perf_get_hw_event_config);
 
-This patchset is a follow-up to the RFC sent earlier on LKML [1], with review
-comments applied.
+Urgh... hate on kvm being a module again. We really need something like
+EXPORT_SYMBOL_KVM() or something.
 
-Looking forward to some feedback.
 
-[1] https://lkml.org/lkml/2021/12/22/219
+>  struct perf_guest_switch_msr *perf_guest_get_msrs(int *nr)
+>  {
+>  	return static_call(x86_pmu_guest_get_msrs)(nr);
+> diff --git a/arch/x86/include/asm/perf_event.h b/arch/x86/include/asm/perf_event.h
+> index 8fc1b5003713..d1e325517b74 100644
+> --- a/arch/x86/include/asm/perf_event.h
+> +++ b/arch/x86/include/asm/perf_event.h
+> @@ -492,9 +492,11 @@ static inline void perf_check_microcode(void) { }
+>  
+>  #if defined(CONFIG_PERF_EVENTS) && defined(CONFIG_CPU_SUP_INTEL)
+>  extern struct perf_guest_switch_msr *perf_guest_get_msrs(int *nr);
+> +extern u64 perf_get_hw_event_config(int perf_hw_id);
+>  extern int x86_perf_get_lbr(struct x86_pmu_lbr *lbr);
+>  #else
+>  struct perf_guest_switch_msr *perf_guest_get_msrs(int *nr);
+> +u64 perf_get_hw_event_config(int perf_hw_id);
 
-v2 -> v3:
-* Change X86_64 Kconfig dependency to X86_MSR
-* Switch from phys_addr_t to u64 in mailbox struct definition
-* Remove redundant guard in semaphores' probes
-* Add comments about error propagation
-* Move credits for kernel test robot into changelog
+I think Paolo already spotted this one.
 
-v1 -> v2:
-* Remove usage of unions
-* Get rid of unnecessary __packed attributes
-* Switch to use iopoll.h and bitfields.h APIs were applicable
-* Follow the convention to check for the error first
-* Reorder entries (includes, table entries) alphabetically
-* Add necessary includes
-* Add Kconfig dependency on X86_64
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: kernel test robot <lkp@intel.com>
-* Modify probe() to use terminating entry for traversing through table
-  instead of ARRAY_SIZE
-* Fix typos in comments
-* Rebase patchset
-
-Jan Dabros (2):
-  i2c: designware: Add missing locks
-  i2c: designware: Add AMD PSP I2C bus support
-
- MAINTAINERS                                  |   1 +
- drivers/acpi/acpi_apd.c                      |   7 +-
- drivers/i2c/busses/Kconfig                   |  11 +
- drivers/i2c/busses/Makefile                  |   1 +
- drivers/i2c/busses/i2c-designware-amdpsp.c   | 389 +++++++++++++++++++
- drivers/i2c/busses/i2c-designware-baytrail.c |  12 +-
- drivers/i2c/busses/i2c-designware-common.c   |  12 +
- drivers/i2c/busses/i2c-designware-core.h     |  18 +-
- drivers/i2c/busses/i2c-designware-master.c   |   6 +
- drivers/i2c/busses/i2c-designware-platdrv.c  |  60 +++
- 10 files changed, 505 insertions(+), 12 deletions(-)
- create mode 100644 drivers/i2c/busses/i2c-designware-amdpsp.c
-
--- 
-2.35.0.rc2.247.g8bbb082509-goog
-
+>  static inline int x86_perf_get_lbr(struct x86_pmu_lbr *lbr)
+>  {
+>  	return -1;
+> -- 
+> 2.33.1
+> 
