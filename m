@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8EA7C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 00:04:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11AEAC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 00:04:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243288AbiBBAEs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 19:04:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45606 "EHLO
+        id S243208AbiBBAEv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 19:04:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243150AbiBBAEZ (ORCPT
+        with ESMTP id S243110AbiBBAER (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 19:04:25 -0500
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EEA2C061757;
-        Tue,  1 Feb 2022 16:04:23 -0800 (PST)
-Received: by mail-ej1-x633.google.com with SMTP id s13so59557955ejy.3;
-        Tue, 01 Feb 2022 16:04:23 -0800 (PST)
+        Tue, 1 Feb 2022 19:04:17 -0500
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAA4FC06173B;
+        Tue,  1 Feb 2022 16:04:16 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id p7so37891411edc.12;
+        Tue, 01 Feb 2022 16:04:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Y34PhNDVNLF/FkWy9gLL8vjlqns7WhueetcWJw0qPmk=;
-        b=fVXZbpiqImdaRirT99KyibyrE1tur46RvpUZw19yR2XDWsJ5tjrZLwmjSqPiBmejd3
-         jWlCNwqaUXI+VhuxYQRYYqah8HBMa1eTej3L1u2jiEfqpzfFcZhqDoRAQDu1fn2xFQ/f
-         ssxATPVJgRv3GFwrAVYkb2pzZ0Yu97bwRImpnxqaAn994yV9+/yPPD97TbBcUSZU6wH1
-         OVnILivu7ICoiBZyZ2QLjmBbWzqP7gyjoaERF/2w3MRX5Aup9fUPN+jK6IwfjxTEoLyo
-         bShK+duqh9/0ygiU2cgJBueeVPghBMRP+rqxHJC77i+kB1DxAAvYElsopaCRQUYEc7CD
-         cEoA==
+        bh=Z9VGchsPoiNssfykfKpnr6kDcC1pZ+R5aD7drdmLAPA=;
+        b=KM9JOsJ3pWyyciBhOdnBGiUF9l0FW4I1jbD85meOFBdc9aqV2Y18RVwTeUNn3U66R/
+         dyLqheEMv8LQ00yPSQxuZ2ifLxDkCKaY7bEf8TqSwgnf097W+dU53XeBQnYr9A2S7q24
+         PmFhu/rmLw99oaB4V9mfc1ZplPkwE5tyivdu/QwaMG/CSG6Fsr94xW+gSaAmdpErYrwr
+         s9iyC7C4YPIAQF4tXn8sTzo9LfI841/WON3nwjdiPgt62vTeZ+jPVvE+gAEoJKP6hEMv
+         tTq4v6LZN48jxEFfGnFncCWgcU9BUEp2+mWZ1aRMsPJbST/bBAY53TXjMVvJnpYhzuE4
+         2EnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Y34PhNDVNLF/FkWy9gLL8vjlqns7WhueetcWJw0qPmk=;
-        b=439OPODXdpjP1ai9YqgnKC7Ur66NlOY+aTzgTW9A1iZB34StXG5NctuaA2TB//ZC9O
-         fkj0OWAJNKj4VXTLNO80lKmOJO4zU1uWkrg8xgciLZW+IbjIo2piMhgwpFcEMbEaeVZ8
-         Huteh9ADcRCG2tl+xY2xfP7ZgX/sG2wBFW2Lwq8bzVUaEm+R+AxAGT28YRpxWYK+J+et
-         WGGfQMtflLJo2anUK4UbCDd5sUEGHrF85h1uha6HO2oIK0j9K0Ho7yN4NeMfluXnfUPA
-         k8enFadtrl/jNrWH+CESlFmxra7MjKct4vBu6iq8TPsOMe74+HcUUR52X/h2RAxl+xCl
-         mYhQ==
-X-Gm-Message-State: AOAM533NX4t6XuQ60pnFS+Q3xeiPLMv8t/mNAn8wWJlewi4BtglF2Jvr
-        EJ+NfgjD3V2nofmHWhqbA9hEVSEQQlU=
-X-Google-Smtp-Source: ABdhPJwVfed6fk0AW28HEsi2+9jf29iazx7Upxq6MAvhwqyyG0F8D1vOEXNiv1mxbw91a4pXrPaayw==
-X-Received: by 2002:a17:907:9491:: with SMTP id dm17mr22547068ejc.47.1643760261805;
-        Tue, 01 Feb 2022 16:04:21 -0800 (PST)
+        bh=Z9VGchsPoiNssfykfKpnr6kDcC1pZ+R5aD7drdmLAPA=;
+        b=lFvz7uZ1oGbSQ0n9PLANFvdfMUteUmM9Ts5vnsjdNBY0rytNZf4YnlB1oOi+XW4Xxj
+         5g/Xs3p0cuwhltXaGnTU+2Q5R6unOHB6azL2c7Qx7eylE8wHwpmM11BsSTzwAMYMgUie
+         XeZZesOjSmRkr8hLhFrZ0CFyyamWetDIJs46WDwbq+PHTpFFdqcAcinnXlufEHZpXdbU
+         KHcfKk7XTvS/GslXthPcxdklXyYcDvPXmXpQQ8N1oWeYKSzndqYYMXu1jACbvVRPsDq7
+         i95MzYKJf4iny130M1jCekalQJU+dISSelO3D8U//9nQG+Mw/xA4be5+Q9MfLtFMswOH
+         Txjg==
+X-Gm-Message-State: AOAM533zuvwkLZp8k0LRHPYQUsksynNV83W/sVMAPGkvTxjM/YNf2rF1
+        0NGRy0ziP37xcLGAM3ZkbpQ=
+X-Google-Smtp-Source: ABdhPJz+5joJ7I4Seo3Ebr8vtIviOmthgO16WXP1vN5/rD94n8BkNhbI04od638o9PXUrdLOXKRxXw==
+X-Received: by 2002:a05:6402:190d:: with SMTP id e13mr28068962edz.38.1643760255449;
+        Tue, 01 Feb 2022 16:04:15 -0800 (PST)
 Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id n3sm3590451ejr.6.2022.02.01.16.04.20
+        by smtp.googlemail.com with ESMTPSA id n3sm3590451ejr.6.2022.02.01.16.04.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Feb 2022 16:04:21 -0800 (PST)
+        Tue, 01 Feb 2022 16:04:15 -0800 (PST)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -57,9 +57,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org
 Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [net-next PATCH v8 08/16] net: dsa: tag_qca: add support for handling mgmt and MIB Ethernet packet
-Date:   Wed,  2 Feb 2022 01:03:27 +0100
-Message-Id: <20220202000335.19296-9-ansuelsmth@gmail.com>
+Subject: [net-next PATCH v8 05/16] net: dsa: tag_qca: enable promisc_on_master flag
+Date:   Wed,  2 Feb 2022 01:03:24 +0100
+Message-Id: <20220202000335.19296-6-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20220202000335.19296-1-ansuelsmth@gmail.com>
 References: <20220202000335.19296-1-ansuelsmth@gmail.com>
@@ -69,119 +69,29 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add connect/disconnect helper to assign private struct to the DSA switch.
-Add support for Ethernet mgmt and MIB if the DSA driver provide an handler
-to correctly parse and elaborate the data.
+Ethernet MDIO packets are non-standard and DSA master expects the first
+6 octets to be the MAC DA. To address these kind of packet, enable
+promisc_on_master flag for the tagger.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- include/linux/dsa/tag_qca.h |  7 +++++++
- net/dsa/tag_qca.c           | 39 ++++++++++++++++++++++++++++++++++---
- 2 files changed, 43 insertions(+), 3 deletions(-)
+ net/dsa/tag_qca.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/include/linux/dsa/tag_qca.h b/include/linux/dsa/tag_qca.h
-index 1fff57f2937b..4359fb0221cf 100644
---- a/include/linux/dsa/tag_qca.h
-+++ b/include/linux/dsa/tag_qca.h
-@@ -72,4 +72,11 @@ struct mib_ethhdr {
- 	__be16 hdr;		/* qca hdr */
- } __packed;
- 
-+struct qca_tagger_data {
-+	void (*rw_reg_ack_handler)(struct dsa_switch *ds,
-+				   struct sk_buff *skb);
-+	void (*mib_autocast_handler)(struct dsa_switch *ds,
-+				     struct sk_buff *skb);
-+};
-+
- #endif /* __TAG_QCA_H */
 diff --git a/net/dsa/tag_qca.c b/net/dsa/tag_qca.c
-index be792cf687d9..57d2e00f1e5d 100644
+index 34e565e00ece..f8df49d5956f 100644
 --- a/net/dsa/tag_qca.c
 +++ b/net/dsa/tag_qca.c
-@@ -5,6 +5,7 @@
- 
- #include <linux/etherdevice.h>
- #include <linux/bitfield.h>
-+#include <net/dsa.h>
- #include <linux/dsa/tag_qca.h>
- 
- #include "dsa_priv.h"
-@@ -32,6 +33,9 @@ static struct sk_buff *qca_tag_xmit(struct sk_buff *skb, struct net_device *dev)
- 
- static struct sk_buff *qca_tag_rcv(struct sk_buff *skb, struct net_device *dev)
- {
-+	struct qca_tagger_data *tagger_data;
-+	struct dsa_port *dp = dev->dsa_ptr;
-+	struct dsa_switch *ds = dp->ds;
- 	u8 ver, pk_type;
- 	__be16 *phdr;
- 	int port;
-@@ -39,6 +43,8 @@ static struct sk_buff *qca_tag_rcv(struct sk_buff *skb, struct net_device *dev)
- 
- 	BUILD_BUG_ON(sizeof(struct qca_mgmt_ethhdr) != QCA_HDR_MGMT_HEADER_LEN + QCA_HDR_LEN);
- 
-+	tagger_data = ds->tagger_data;
-+
- 	if (unlikely(!pskb_may_pull(skb, QCA_HDR_LEN)))
- 		return NULL;
- 
-@@ -53,13 +59,19 @@ static struct sk_buff *qca_tag_rcv(struct sk_buff *skb, struct net_device *dev)
- 	/* Get pk type */
- 	pk_type = FIELD_GET(QCA_HDR_RECV_TYPE, hdr);
- 
--	/* Ethernet MDIO read/write packet */
--	if (pk_type == QCA_HDR_RECV_TYPE_RW_REG_ACK)
-+	/* Ethernet mgmt read/write packet */
-+	if (pk_type == QCA_HDR_RECV_TYPE_RW_REG_ACK) {
-+		if (likely(tagger_data->rw_reg_ack_handler))
-+			tagger_data->rw_reg_ack_handler(ds, skb);
- 		return NULL;
-+	}
- 
- 	/* Ethernet MIB counter packet */
--	if (pk_type == QCA_HDR_RECV_TYPE_MIB)
-+	if (pk_type == QCA_HDR_RECV_TYPE_MIB) {
-+		if (likely(tagger_data->mib_autocast_handler))
-+			tagger_data->mib_autocast_handler(ds, skb);
- 		return NULL;
-+	}
- 
- 	/* Remove QCA tag and recalculate checksum */
- 	skb_pull_rcsum(skb, QCA_HDR_LEN);
-@@ -75,9 +87,30 @@ static struct sk_buff *qca_tag_rcv(struct sk_buff *skb, struct net_device *dev)
- 	return skb;
- }
- 
-+static int qca_tag_connect(struct dsa_switch *ds)
-+{
-+	struct qca_tagger_data *tagger_data;
-+
-+	tagger_data = kzalloc(sizeof(*tagger_data), GFP_KERNEL);
-+	if (!tagger_data)
-+		return -ENOMEM;
-+
-+	ds->tagger_data = tagger_data;
-+
-+	return 0;
-+}
-+
-+static void qca_tag_disconnect(struct dsa_switch *ds)
-+{
-+	kfree(ds->tagger_data);
-+	ds->tagger_data = NULL;
-+}
-+
- static const struct dsa_device_ops qca_netdev_ops = {
- 	.name	= "qca",
- 	.proto	= DSA_TAG_PROTO_QCA,
-+	.connect = qca_tag_connect,
-+	.disconnect = qca_tag_disconnect,
+@@ -68,6 +68,7 @@ static const struct dsa_device_ops qca_netdev_ops = {
  	.xmit	= qca_tag_xmit,
  	.rcv	= qca_tag_rcv,
  	.needed_headroom = QCA_HDR_LEN,
++	.promisc_on_master = true,
+ };
+ 
+ MODULE_LICENSE("GPL");
 -- 
 2.33.1
 
