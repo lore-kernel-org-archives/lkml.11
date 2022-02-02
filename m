@@ -2,93 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73806C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 20:32:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCF6AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 20:32:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347161AbiBBUcb (ORCPT
+        id S1347182AbiBBUct (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 15:32:31 -0500
-Received: from lelv0142.ext.ti.com ([198.47.23.249]:50266 "EHLO
-        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232762AbiBBUc3 (ORCPT
+        Wed, 2 Feb 2022 15:32:49 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:43798 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1347163AbiBBUcs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 15:32:29 -0500
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 212KWIfM117784;
-        Wed, 2 Feb 2022 14:32:18 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1643833938;
-        bh=sbQXzvwL+XaVbzlnAzXBMyJbFK3rlOJ8p8aDN+VKeLE=;
-        h=Date:From:To:CC:Subject:References:In-Reply-To;
-        b=xEqSeedddQkYBz1UitkGB2QpkeWG6UV7V52yZl9FK0z34eWzbADFJ2p6HJZaA4XJg
-         JP19dageajXB9uovDhBWTxF5TbKd5W1rLlvn6Yk0Hx0hfMY5eZciVDeK60Wf74a9nd
-         nlez345i6maiKip8zUCZICfUXGcEG28iRHruoF+E=
-Received: from DFLE111.ent.ti.com (dfle111.ent.ti.com [10.64.6.32])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 212KWIsL064212
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 2 Feb 2022 14:32:18 -0600
-Received: from DFLE103.ent.ti.com (10.64.6.24) by DFLE111.ent.ti.com
- (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 2
- Feb 2022 14:32:18 -0600
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE103.ent.ti.com
- (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 2 Feb 2022 14:32:18 -0600
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 212KWHRF038994;
-        Wed, 2 Feb 2022 14:32:17 -0600
-Date:   Wed, 2 Feb 2022 14:32:17 -0600
-From:   Nishanth Menon <nm@ti.com>
-To:     Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        <jan.kiszka@siemens.com>
-CC:     Vignesh Raghavendra <vigneshr@ti.com>,
-        Tero Kristo <kristo@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, <jan.kiszka@siemens.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/2] arm64: dts: ti: k3-am65: disable optional
- peripherals by default
-Message-ID: <20220202203217.sf2cr4orwl4usvyf@starry>
-References: <5beef188724ef42b0c2147ca9bf6e6ca25c75dec.1641900122.git.matthias.schiffer@ew.tq-group.com>
+        Wed, 2 Feb 2022 15:32:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643833967;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wcENReRHFRW4er+uIjMQ9SA6VL83pYAObKBta+stQfk=;
+        b=Oua1l7DJd7u+b4XmbJ1xBBfUnFT2dq+3PlvBE92yxSCsnZWCLMg1WW5FRmixEHICW8x6lf
+        DXka72rZgFB6Dd6MCqZeYrnr/EgoK/ykHUurh4GJ/YV/f1jibL7FfUatburHjLrAfuqJ4j
+        zd19mnv9f/32c3v9taaLkoHFP4+E+/w=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-277-cg6h955nOXS8hPI6xg15BQ-1; Wed, 02 Feb 2022 15:32:46 -0500
+X-MC-Unique: cg6h955nOXS8hPI6xg15BQ-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 16AC2344DD;
+        Wed,  2 Feb 2022 20:32:44 +0000 (UTC)
+Received: from llong.com (unknown [10.22.34.202])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E86B012E23;
+        Wed,  2 Feb 2022 20:32:19 +0000 (UTC)
+From:   Waiman Long <longman@redhat.com>
+To:     Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Vladimir Davydov <vdavydov.dev@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Cc:     linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
+        linux-mm@kvack.org, Ira Weiny <ira.weiny@intel.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Roman Gushchin <guro@fb.com>,
+        Rafael Aquini <aquini@redhat.com>,
+        Waiman Long <longman@redhat.com>
+Subject: [PATCH v4 0/4] mm/page_owner: Extend page_owner to show memcg information
+Date:   Wed,  2 Feb 2022 15:30:32 -0500
+Message-Id: <20220202203036.744010-1-longman@redhat.com>
+In-Reply-To: <20220131192308.608837-5-longman@redhat.com>
+References: <20220131192308.608837-5-longman@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <5beef188724ef42b0c2147ca9bf6e6ca25c75dec.1641900122.git.matthias.schiffer@ew.tq-group.com>
-User-Agent: NeoMutt/20171215
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12:25-20220111, Matthias Schiffer wrote:
-> All peripharals that require pinmuxing or other configuration to work
-> should be disabled by default. Dependent DTS are adjusted accordingly.
-> 
-> The following nodes are now "disabled" according to dtx_diff and were not
-> overridden to "okay", as they define no pinctrl:
-> 
-> k3-am654-base-board:
-> - mcu_i2c0
-> - mcu_spi0..2
-> - cal
-> - main_i2c3
-> - ehrpwm0..5
-> - main_uart1..2
-> - main_spi1..4
-> 
-> k3-am65-iot2050*:
-> - mci_spi1..2
-> - cal
-> - ehrpwm0..5
-> - main_spi0..4
-> 
-> Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+ v4:
+  - Take rcu_read_lock() when memcg is being accessed as suggested by
+    Michal.
+  - Make print_page_owner_memcg() return the new offset into the buffer
+    and put CONFIG_MEMCG block inside as suggested by Mike.
+  - Directly use TASK_COMM_LEN as length of name buffer as suggested by
+    Roman.
 
+ v3:
+  - Add unlikely() to patch 1 and clarify that -1 will not be returned.
+  - Use a helper function to print out memcg information in patch 3.
+  - Add a new patch 4 to store task command name in page_owner
+    structure.
 
-Jan: you ok with this series? Please ack.
+ v2:
+  - Remove the SNPRINTF() macro as suggested by Ira and use scnprintf()
+    instead to remove some buffer overrun checks.
+  - Add a patch to optimize vscnprintf with a size parameter of 0.
+
+While debugging the constant increase in percpu memory consumption on
+a system that spawned large number of containers, it was found that a
+lot of offline mem_cgroup structures remained in place without being
+freed. Further investigation indicated that those mem_cgroup structures
+were pinned by some pages.
+
+In order to find out what those pages are, the existing page_owner
+debugging tool is extended to show memory cgroup information and whether
+those memcgs are offline or not. With the enhanced page_owner tool,
+the following is a typical page that pinned the mem_cgroup structure
+in my test case:
+
+Page allocated via order 0, mask 0x1100cca(GFP_HIGHUSER_MOVABLE), pid 162970 (podman), ts 1097761405537 ns, free_ts 1097760838089 ns
+PFN 1925700 type Movable Block 3761 type Movable Flags 0x17ffffc00c001c(uptodate|dirty|lru|reclaim|swapbacked|node=0|zone=2|lastcpupid=0x1fffff)
+ prep_new_page+0xac/0xe0
+ get_page_from_freelist+0x1327/0x14d0
+ __alloc_pages+0x191/0x340
+ alloc_pages_vma+0x84/0x250
+ shmem_alloc_page+0x3f/0x90
+ shmem_alloc_and_acct_page+0x76/0x1c0
+ shmem_getpage_gfp+0x281/0x940
+ shmem_write_begin+0x36/0xe0
+ generic_perform_write+0xed/0x1d0
+ __generic_file_write_iter+0xdc/0x1b0
+ generic_file_write_iter+0x5d/0xb0
+ new_sync_write+0x11f/0x1b0
+ vfs_write+0x1ba/0x2a0
+ ksys_write+0x59/0xd0
+ do_syscall_64+0x37/0x80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+Charged to offline memcg libpod-conmon-15e4f9c758422306b73b2dd99f9d50a5ea53cbb16b4a13a2c2308a4253cc0ec8.
+
+So the page was not freed because it was part of a shmem segment. That
+is useful information that can help users to diagnose similar problems.
+
+With cgroup v1, /proc/cgroups can be read to find out the total number
+of memory cgroups (online + offline). With cgroup v2, the cgroup.stat of
+the root cgroup can be read to find the number of dying cgroups (most
+likely pinned by dying memcgs).
+
+The page_owner feature is not supposed to be enabled for production
+system due to its memory overhead. However, if it is suspected that
+dying memcgs are increasing over time, a test environment with page_owner
+enabled can then be set up with appropriate workload for further analysis
+on what may be causing the increasing number of dying memcgs.
+
+Waiman Long (4):
+  lib/vsprintf: Avoid redundant work with 0 size
+  mm/page_owner: Use scnprintf() to avoid excessive buffer overrun check
+  mm/page_owner: Print memcg information
+  mm/page_owner: Record task command name
+
+ lib/vsprintf.c  |  8 +++---
+ mm/page_owner.c | 70 ++++++++++++++++++++++++++++++++++++++-----------
+ 2 files changed, 60 insertions(+), 18 deletions(-)
 
 -- 
-Regards,
-Nishanth Menon
-Key (0xDDB5849D1736249D) / Fingerprint: F8A2 8693 54EB 8232 17A3  1A34 DDB5 849D 1736 249D
+2.27.0
+
