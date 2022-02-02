@@ -2,135 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FC58C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 13:33:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBAA3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 13:34:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344339AbiBBNdD (ORCPT
+        id S1344366AbiBBNe3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 08:33:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56778 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229552AbiBBNc7 (ORCPT
+        Wed, 2 Feb 2022 08:34:29 -0500
+Received: from mail-il1-f199.google.com ([209.85.166.199]:40769 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229552AbiBBNe1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 08:32:59 -0500
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADB6BC061714
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 05:32:59 -0800 (PST)
-Received: by mail-yb1-xb32.google.com with SMTP id 23so60959265ybf.7
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 05:32:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=49C1ROc5LMrtI2IRPZaBsdDysSCIk+RUi4xq89kMC0Q=;
-        b=ZUn4b/U/47chAtjr/MNZgInDUsb0hDXxHL7scO2+BXDqZ/qh4kyY8LfduGP0y8qrUM
-         B+crmPB+2dqAT7UNK+hLLr52fLpJqU7vDGbUhpEe9iQUzEhcKq3ZbJMUc58jWxkBqarE
-         1Dr2MaC+DBWZj3cdUGlD4Z7UWv+bTW1WPHvH+aMPgF03x3ernz3nxhCxcyBEhTSUyyYA
-         D5GL0fBA7KU3yB372PGQN3Tz0FXOP0aAK8wDmoAB3XK5d3v+AJgf/moxXK3ednbT+CzQ
-         lCVzgt7v5Yjr4Iqjuhw16UIE7IBG/1fxDUP/wY7sf9I7N8f3TDg2NSmWNRX1SU0x/tH2
-         h+pQ==
+        Wed, 2 Feb 2022 08:34:27 -0500
+Received: by mail-il1-f199.google.com with SMTP id h8-20020a92c088000000b002bc03432559so9016930ile.7
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 05:34:27 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=49C1ROc5LMrtI2IRPZaBsdDysSCIk+RUi4xq89kMC0Q=;
-        b=C5TID2K6cwVzUtqbVj4201y9fa5DWAv3iRx5x+2T46+lsDiX5pp6SwqNlUD2n/rm/i
-         hoA00QDpdSAGudVooV/u8AriX6rdGueqWA4A6RFKZ+qmR0EPsACiFxcPYJMndYU1Eq3h
-         vGs3AMIsvOtChsCeqCZ8lB+XtUp4Efhl1JDF1dbzDIjzICFZ4rzAh1iagtvzdU7Fz9Xg
-         tnVtlT8VaSEi57vTb9KUXXh3ucYEEXP5F3o06mOEjbSpcHGZReZV+1UZbYOvbhpoG29b
-         d5C+bab/+3x+1ZWXEm0wqy68OB8EQ8QlBX0wcw9CQ3ch4WB3ZwFqok0FDXu0C1/u8F2R
-         bCjQ==
-X-Gm-Message-State: AOAM530Sd5SUkQLjP8SrzzaRO4thztu6tezIyoAS8Z33g7rq3ss7hb4K
-        h5qMjymivBKM6+qxpwNKJiFnRiATtGLwseNHdziBGA==
-X-Google-Smtp-Source: ABdhPJzJyAQCcoB843YoDkZz7uho1finq6gZDC6Xle9/4bH7LFjvRLQxaJM13r6PFlV2ohOkBWRZcH+x7+2cHuVtJlc=
-X-Received: by 2002:a25:8f8e:: with SMTP id u14mr30612352ybl.495.1643808778816;
- Wed, 02 Feb 2022 05:32:58 -0800 (PST)
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=M/1U34ctxQMX21VtCVIOgMUTNahM5kENFa1u7AsdCkA=;
+        b=gaFAe4pbHm9u6DRb204a7jsClWb6WAZ5cXVS7zAVI4fB5z3ysfPqg7Hnmq/QaT6gtZ
+         coEa0mDu9kusFz9q9V3gOzWzlW1SuMJFdOtxzMYvtKVeaCpzhwwcH0qzFnmQ2V8sU1bI
+         gfg4s+ZQJwGBfcM0r6t+dAnkzDmwz6CEILnqpqUWATmjjdEDVV1SowIFxlktOKZsglfG
+         nek1ReH8FAyfE6LAti/W2deAZwh/GHp24PNsw1eKa35qi/9xbbpzVsPd++h+VcEOEsn2
+         JnGpJNPJ5nvoiHvhX+PTktvvVIHN5vWre1JbjtonchBqWzvYWKplhb1v5aAET2cBl+Xy
+         /6AQ==
+X-Gm-Message-State: AOAM5320EBzehQjDl9WkJjzfSLA+ysvAnyYXX1sHIjKLUXWMck+wWjG1
+        jyUJKJeiLB8M5LOIBPT8bhqeiEpuCQrT9kQxSfxpBsoxWCRl
+X-Google-Smtp-Source: ABdhPJyLHgAj/KO2NHeKvgZuC8ezewLfPM7CY9TzyTf9FkCrjGv1rdn0Y+v2GPPgymn2hTqj07SjfrFJv91Ddn1Padf2Sr8y3eqb
 MIME-Version: 1.0
-References: <20220131160254.43211-1-songmuchun@bytedance.com>
- <20220131160254.43211-3-songmuchun@bytedance.com> <9fa0211a-aee2-22fb-d076-0464a4d8524c@oracle.com>
-In-Reply-To: <9fa0211a-aee2-22fb-d076-0464a4d8524c@oracle.com>
-From:   Muchun Song <songmuchun@bytedance.com>
-Date:   Wed, 2 Feb 2022 21:32:20 +0800
-Message-ID: <CAMZfGtULga8fC=i2n2jPHNjr5-45DTQjJqJ6FeZmy9qi91bXtw@mail.gmail.com>
-Subject: Re: [PATCH v3 2/5] mm: fix missing cache flush for all tail pages of
- compound page
-To:     Mike Kravetz <mike.kravetz@oracle.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>, zi.yan@cs.rutgers.edu,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Lars Persson <lars.persson@axis.com>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Xiongchun duan <duanxiongchun@bytedance.com>,
-        Zi Yan <ziy@nvidia.com>
+X-Received: by 2002:a5d:884f:: with SMTP id t15mr16410337ios.198.1643808866941;
+ Wed, 02 Feb 2022 05:34:26 -0800 (PST)
+Date:   Wed, 02 Feb 2022 05:34:26 -0800
+In-Reply-To: <0000000000004cede805d58728c3@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000097bd8005d7091347@google.com>
+Subject: Re: [syzbot] possible deadlock in f2fs_write_checkpoint
+From:   syzbot <syzbot+0b9cadf5fc45a98a5083@syzkaller.appspotmail.com>
+To:     chao@kernel.org, jaegeuk@kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 2, 2022 at 7:33 AM Mike Kravetz <mike.kravetz@oracle.com> wrote:
->
-> On 1/31/22 08:02, Muchun Song wrote:
-> > The D-cache maintenance inside move_to_new_page() only consider one page,
-> > there is still D-cache maintenance issue for tail pages of compound page
-> > (e.g. THP or HugeTLB).  THP migration is only enabled on x86_64, ARM64
-> > and powerpc, while powerpc and arm64 need to maintain the consistency
-> > between I-Cache and D-Cache, which depends on flush_dcache_page() to
-> > maintain the consistency between I-Cache and D-Cache.  In theory, the
-> > issue can be found on arm64 and powerpc.  HugeTLB migration is enabled
-> > on arm, arm64, mips, parisc, powerpc, riscv, s390 and sh, while arm
-> > has handled the compound page cache flush in flush_dcache_page(), but
-> > most others do not.  In theory, the issue exists on many architectures.
-> > Fix this by not using flush_dcache_folio() since it is not backportable.
-> >
-> > Fixes: 616b8371539a ("mm: thp: enable thp migration in generic path")
-> > Fixes: 290408d4a250 ("hugetlb: hugepage migration core")
-> > Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-> > Reviewed-by: Zi Yan <ziy@nvidia.com>
-> > ---
-> >  mm/migrate.c | 7 +++++--
-> >  1 file changed, 5 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/mm/migrate.c b/mm/migrate.c
-> > index c9296d63878d..c418e8d92b9c 100644
-> > --- a/mm/migrate.c
-> > +++ b/mm/migrate.c
-> > @@ -933,9 +933,12 @@ static int move_to_new_page(struct page *newpage, struct page *page,
-> >               if (!PageMappingFlags(page))
-> >                       page->mapping = NULL;
-> >
-> > -             if (likely(!is_zone_device_page(newpage)))
-> > -                     flush_dcache_page(newpage);
-> > +             if (likely(!is_zone_device_page(newpage))) {
-> > +                     int i, nr = compound_nr(newpage);
-> >
-> > +                     for (i = 0; i < nr; i++)
-> > +                             flush_dcache_page(newpage + i);
-> > +             }
->
-> As you have already noted elsewhere, the arm64 version of flush_dcache_page
-> seems to handle this and flush the entire compound_page.  Is this going to
-> flush the entire compound page compound_nr times?
->
+syzbot has found a reproducer for the following issue on:
 
-Not flush cache compound_nr times but set PG_dcache_clean
-on page->flags compound_nr times.  The definition of
-flush_dcache_page() on arm64 is as follows.
+HEAD commit:    6abab1b81b65 Add linux-next specific files for 20220202
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=178ef35bb00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=b8d8750556896349
+dashboard link: https://syzkaller.appspot.com/bug?extid=0b9cadf5fc45a98a5083
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=150341d4700000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15649300700000
 
-void flush_dcache_page(struct page *page)
-{
-        if (test_bit(PG_dcache_clean, &page->flags))
-                clear_bit(PG_dcache_clean, &page->flags);
-}
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+0b9cadf5fc45a98a5083@syzkaller.appspotmail.com
 
-So I have a plan to improve this, e.g. implement flush_dcache_folio()
-on arm64 and replace those multiple dcache flush with
-flush_dcache_folio().
+F2FS-fs (loop0): Can't find valid F2FS filesystem in 2th superblock
+F2FS-fs (loop0): invalid crc_offset: 0
+F2FS-fs (loop0): Disable nat_bits due to incorrect cp_ver (8221872453892455638, 0)
+F2FS-fs (loop0): Try to recover 2th superblock, ret: 0
+F2FS-fs (loop0): Mounted with checkpoint version = 7ad43cd6
+============================================
+WARNING: possible recursive locking detected
+5.17.0-rc2-next-20220202-syzkaller #0 Not tainted
+--------------------------------------------
+syz-executor316/3595 is trying to acquire lock:
+ffff88801d514390 (&sem->internal_rwsem#2){++++}-{3:3}, at: f2fs_down_write fs/f2fs/f2fs.h:2156 [inline]
+ffff88801d514390 (&sem->internal_rwsem#2){++++}-{3:3}, at: f2fs_write_checkpoint+0x535/0x5c90 fs/f2fs/checkpoint.c:1616
 
-void flush_dcache_folio(struct folio *folio)
-{
-       if (test_bit(PG_dcache_clean, &folio->flags))
-               clear_bit(PG_dcache_clean, &folio->flags);
-}
+but task is already holding lock:
+ffff88801d515398 (&sem->internal_rwsem#2){++++}-{3:3}, at: f2fs_down_write fs/f2fs/f2fs.h:2156 [inline]
+ffff88801d515398 (&sem->internal_rwsem#2){++++}-{3:3}, at: f2fs_issue_checkpoint+0x149/0x480 fs/f2fs/checkpoint.c:1835
 
-Thanks.
+other info that might help us debug this:
+ Possible unsafe locking scenario:
+
+       CPU0
+       ----
+  lock(&sem->internal_rwsem#2);
+  lock(&sem->internal_rwsem#2);
+
+ *** DEADLOCK ***
+
+ May be due to missing lock nesting notation
+
+2 locks held by syz-executor316/3595:
+ #0: ffff888074db00e0 (&type->s_umount_key#46){+.+.}-{3:3}, at: deactivate_super+0xa5/0xd0 fs/super.c:362
+ #1: ffff88801d515398 (&sem->internal_rwsem#2){++++}-{3:3}, at: f2fs_down_write fs/f2fs/f2fs.h:2156 [inline]
+ #1: ffff88801d515398 (&sem->internal_rwsem#2){++++}-{3:3}, at: f2fs_issue_checkpoint+0x149/0x480 fs/f2fs/checkpoint.c:1835
+
+stack backtrace:
+CPU: 0 PID: 3595 Comm: syz-executor316 Not tainted 5.17.0-rc2-next-20220202-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_deadlock_bug kernel/locking/lockdep.c:2956 [inline]
+ check_deadlock kernel/locking/lockdep.c:2999 [inline]
+ validate_chain kernel/locking/lockdep.c:3788 [inline]
+ __lock_acquire.cold+0x149/0x3ab kernel/locking/lockdep.c:5027
+ lock_acquire kernel/locking/lockdep.c:5639 [inline]
+ lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5604
+ down_write+0x90/0x150 kernel/locking/rwsem.c:1514
+ f2fs_down_write fs/f2fs/f2fs.h:2156 [inline]
+ f2fs_write_checkpoint+0x535/0x5c90 fs/f2fs/checkpoint.c:1616
+ __write_checkpoint_sync fs/f2fs/checkpoint.c:1746 [inline]
+ f2fs_issue_checkpoint+0x156/0x480 fs/f2fs/checkpoint.c:1843
+ f2fs_sync_fs+0x20f/0x420 fs/f2fs/super.c:1644
+ sync_filesystem.part.0+0x13c/0x1d0 fs/sync.c:66
+ sync_filesystem+0x8b/0xc0 fs/sync.c:43
+ generic_shutdown_super+0x70/0x400 fs/super.c:445
+ kill_block_super+0x97/0xf0 fs/super.c:1394
+ kill_f2fs_super+0x2b3/0x3c0 fs/f2fs/super.c:4523
+ deactivate_locked_super+0x94/0x160 fs/super.c:332
+ deactivate_super+0xad/0xd0 fs/super.c:363
+ cleanup_mnt+0x3a2/0x540 fs/namespace.c:1159
+ task_work_run+0xdd/0x1a0 kernel/task_work.c:164
+ exit_task_work include/linux/task_work.h:32 [inline]
+ do_exit+0xb29/0x2b10 kernel/exit.c:806
+ do_group_exit+0xd2/0x2f0 kernel/exit.c:935
+ __do_sys_exit_group kernel/exit.c:946 [inline]
+ __se_sys_exit_group kernel/exit.c:944 [inline]
+ __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:944
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f93b7998639
+Code: Unable to access opcode bytes at RIP 0x7f93b799860f.
+RSP: 002b:00007fffe1dc7708 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
+RAX: ffffffffffffffda RBX: 00007f93b7a0d3
+
