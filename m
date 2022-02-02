@@ -2,99 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67561C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 19:20:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C88CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 19:27:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346904AbiBBTUO (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 14:20:14 -0500
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:41010 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229676AbiBBTUN (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 14:20:13 -0500
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 212JK4ND120200;
-        Wed, 2 Feb 2022 13:20:04 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1643829604;
-        bh=Rz47yo2CsOvSbBUqTAu/MeC9oxThZqNB7BiBBAeBZfE=;
-        h=Date:Subject:To:References:From:In-Reply-To;
-        b=Jvsv4wGbs+1GgJLy+NpYwrQ/IYEXLFSOPYPkeyDB+J7J0MjUYxlevRtwlCv5QRAAc
-         zRdL3Rt2Ec1QaTAnv1QA17X9Yk/slfIjkHxoYFOYYTNrS+1X/Sr4ISnLR4A3BZkbF8
-         tWOWEYzO94ll3CgtsK0JUTyE5F6Cry7WPyeYUD3Q=
-Received: from DLEE100.ent.ti.com (dlee100.ent.ti.com [157.170.170.30])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 212JK4Le130248
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 2 Feb 2022 13:20:04 -0600
-Received: from DLEE104.ent.ti.com (157.170.170.34) by DLEE100.ent.ti.com
- (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 2
- Feb 2022 13:20:03 -0600
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE104.ent.ti.com
- (157.170.170.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 2 Feb 2022 13:20:03 -0600
-Received: from [128.247.81.242] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 212JK33r043456;
-        Wed, 2 Feb 2022 13:20:03 -0600
-Message-ID: <9848466d-6307-8f74-87b6-e3f050651c8d@ti.com>
-Date:   Wed, 2 Feb 2022 13:20:02 -0600
+        id S240428AbiBBT1E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 14:27:04 -0500
+Received: from mga05.intel.com ([192.55.52.43]:30049 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235908AbiBBT1D (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 2 Feb 2022 14:27:03 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643830023; x=1675366023;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=OUNxb+dsMQzkYohtFuYtyeG+odtGDuE51GNKzPIL6xU=;
+  b=kpx2rU7xho5/d48JgXLiVHbiRXaarpm0h7im87HyeL/GWoe/iq0/FAPk
+   ECJm/UHq3R2nFuivR0Jx8/klTmJDRcb3lZugH0/VlrrvKSQ4kVJ0YFZMr
+   EtUQsZBka4094/oteUiNJhTxrKpDbnL8PyNThE7x75oqeqoNhl5d5s3h4
+   8C53M6sUbWyy0SAh2fGmfFFA9juF/5IkXgbxEnqkSgHIniXKhmS+gIVDU
+   heqyxl3zEfTvloJD4ciNv7YNfd0luq5P4JlqU3efRb9/8+8GLetdsV9R+
+   kGACsZ5bI2Qo1fYfRRMk6lrVbYYwJ/4DEKecQgVYV539cBL6hwYwLu/Mi
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10246"; a="334362721"
+X-IronPort-AV: E=Sophos;i="5.88,337,1635231600"; 
+   d="scan'208";a="334362721"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 11:27:02 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,337,1635231600"; 
+   d="scan'208";a="566134932"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga001.jf.intel.com with ESMTP; 02 Feb 2022 11:26:56 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1000)
+        id AAFD03B7; Wed,  2 Feb 2022 21:27:10 +0200 (EET)
+Date:   Wed, 2 Feb 2022 22:27:10 +0300
+From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     mingo@redhat.com, bp@alien8.de, dave.hansen@intel.com,
+        luto@kernel.org, peterz@infradead.org,
+        sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
+        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
+        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
+        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
+        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
+        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        x86@kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCHv2 22/29] x86/tdx: Make pages shared in ioremap()
+Message-ID: <20220202192710.d7k4pgqczpyrkers@black.fi.intel.com>
+References: <20220124150215.36893-1-kirill.shutemov@linux.intel.com>
+ <20220124150215.36893-23-kirill.shutemov@linux.intel.com>
+ <87bkzqw1vr.ffs@tglx>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] soc: ti: wkup_m3_ipc: Fix IRQ check in wkup_m3_ipc_probe
-Content-Language: en-US
-To:     Miaoqian Lin <linmq006@gmail.com>, Nishanth Menon <nm@ti.com>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        Tony Lindgren <tony@atomide.com>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-References: <20220114062840.16620-1-linmq006@gmail.com>
-From:   Dave Gerlach <d-gerlach@ti.com>
-In-Reply-To: <20220114062840.16620-1-linmq006@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87bkzqw1vr.ffs@tglx>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-On 1/14/22 00:28, Miaoqian Lin wrote:
-> platform_get_irq() returns negative error number instead 0 on failure.
-> And the doc of platform_get_irq() provides a usage example:
+On Wed, Feb 02, 2022 at 01:25:28AM +0100, Thomas Gleixner wrote:
+> On Mon, Jan 24 2022 at 18:02, Kirill A. Shutemov wrote:
 > 
->     int irq = platform_get_irq(pdev, 0);
->     if (irq < 0)
->         return irq;
+> > In TDX guests, guest memory is protected from host access. If a guest
+> > performs I/O, it needs to explicitly share the I/O memory with the host.
+> >
+> > Make all ioremap()ed pages that are not backed by normal memory
+> > (IORES_DESC_NONE or IORES_DESC_RESERVED) mapped as shared.
+> >
+> > Since TDX memory encryption support is similar to AMD SEV architecture,
+> > reuse the infrastructure from AMD SEV code.
+> >
+> > Add tdx_shared_mask() interface to get the TDX guest shared bitmask.
+> >
+> > pgprot_decrypted() is used by drivers (i915, virtio_gpu, vfio). Export
+> > both pgprot_encrypted() and pgprot_decrypted().
 > 
-> Fix the check of return value to catch errors correctly.
+> How so?
 > 
+> # git grep pgprot_encrypted
+> arch/x86/include/asm/pgtable.h:#define pgprot_encrypted(prot)   __pgprot(__sme_set(pgprot_val(prot)))
+> arch/x86/mm/ioremap.c:          prot = pgprot_encrypted(prot);
+> arch/x86/mm/ioremap.c:  return encrypted_prot ? pgprot_encrypted(prot)
+> arch/x86/mm/mem_encrypt_amd.c:          protection_map[i] = pgprot_encrypted(protection_map[i]);
+> arch/x86/mm/pat/set_memory.c:           cpa.mask_clr = pgprot_encrypted(cpa.mask_clr);
+> arch/x86/platform/efi/quirks.c:                           pgprot_val(pgprot_encrypted(FIXMAP_PAGE_NORMAL)));
+> fs/proc/vmcore.c:       prot = pgprot_encrypted(prot);
+> include/linux/pgtable.h:#ifndef pgprot_encrypted
+> include/linux/pgtable.h:#define pgprot_encrypted(prot)  (prot)
+> 
+> I cannot find any of the above mentioned subsystems in this grep
+> output. Neither does this patch add any users which require those
+> exports.
 
-Looks good to me.
+Try to grep pgprot_decrypted().
 
-Acked-by: Dave Gerlach <d-gerlach@ti.com>
+I guess we can get away not exporting pgprot_encrypted(), but this
+asymmetry bothers me :)
 
-> Fixes: cdd5de500b2c ("soc: ti: Add wkup_m3_ipc driver")
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-> ---
->  drivers/soc/ti/wkup_m3_ipc.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/soc/ti/wkup_m3_ipc.c b/drivers/soc/ti/wkup_m3_ipc.c
-> index 72386bd393fe..2f03ced0f411 100644
-> --- a/drivers/soc/ti/wkup_m3_ipc.c
-> +++ b/drivers/soc/ti/wkup_m3_ipc.c
-> @@ -450,9 +450,9 @@ static int wkup_m3_ipc_probe(struct platform_device *pdev)
->  		return PTR_ERR(m3_ipc->ipc_mem_base);
->  
->  	irq = platform_get_irq(pdev, 0);
-> -	if (!irq) {
-> +	if (irq < 0) {
->  		dev_err(&pdev->dev, "no irq resource\n");
-> -		return -ENXIO;
-> +		return irq;
->  	}
->  
->  	ret = devm_request_irq(dev, irq, wkup_m3_txev_handler,
+-- 
+ Kirill A. Shutemov
