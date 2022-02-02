@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8EB4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 18:18:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF169C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 18:18:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346578AbiBBSSW (ORCPT
+        id S1346607AbiBBSS0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 13:18:22 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:42800 "EHLO
+        Wed, 2 Feb 2022 13:18:26 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:53240 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S242423AbiBBSSS (ORCPT
+        by vger.kernel.org with ESMTP id S1346443AbiBBSSU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 13:18:18 -0500
+        Wed, 2 Feb 2022 13:18:20 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643825898;
+        s=mimecast20190719; t=1643825899;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=BDwDrTJibr0ixLq4IwTrhHp/x9KXkNMTG4kmC+Qy0og=;
-        b=JH1ZdcP/MaIF3mza0dHux/tld3s9NIv85hZN5vFLLVK86HybHmPOCRIJK3AhG07ZRE9RlB
-        nf01ejp3XqTUZJQ5KkcSgFFvkGHF+894wz4ANfXeVdd/vpCMEeuKsVimkVPr5//XBgx6rl
-        krqF4hEQQbrJQLFiT7aUow35zunW8hg=
+        bh=Xt9mcVUpdJQpnjeJRK6diyxmq8i9URv9SvRl8wszf7c=;
+        b=UYE19WjFnzyxTEHoXH4U0BmBdQoc/NSVbW9NsHctMNsRnD9jWo5p7VB9/+wHCDTwr6QtU6
+        zB3gtfzMsxVbRPaEz51JtDrZGWVbj4MLAChJrAdDhSH6wUQdGCCgrPJTB9HxdZdFvWs4eM
+        E6uXzxT0IbYL3TudRA5E1AMWiZcxM7I=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-210-UcQvy9JTOwCeUo0EFRFVkQ-1; Wed, 02 Feb 2022 13:18:17 -0500
-X-MC-Unique: UcQvy9JTOwCeUo0EFRFVkQ-1
+ us-mta-451-kF07KXLyNimRWKg7kCHZxA-1; Wed, 02 Feb 2022 13:18:16 -0500
+X-MC-Unique: kF07KXLyNimRWKg7kCHZxA-1
 Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 21647180FD60;
-        Wed,  2 Feb 2022 18:18:16 +0000 (UTC)
-Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BFC567744F;
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 220C71006AA3;
         Wed,  2 Feb 2022 18:18:15 +0000 (UTC)
+Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C05747744F;
+        Wed,  2 Feb 2022 18:18:14 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     seanjc@google.com
-Subject: [PATCH 3/5] KVM: x86: warn on incorrectly NULL static calls
-Date:   Wed,  2 Feb 2022 13:18:11 -0500
-Message-Id: <20220202181813.1103496-4-pbonzini@redhat.com>
+Subject: [PATCH 1/5] KVM: x86: use static_call_cond for optional callbacks
+Date:   Wed,  2 Feb 2022 13:18:09 -0500
+Message-Id: <20220202181813.1103496-2-pbonzini@redhat.com>
 In-Reply-To: <20220202181813.1103496-1-pbonzini@redhat.com>
 References: <20220202181813.1103496-1-pbonzini@redhat.com>
 MIME-Version: 1.0
@@ -51,31 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the newly corrected KVM_X86_OP annotations to warn about possible
-NULL pointer dereferences as soon as the vendor module is loaded.
+SVM implements neither update_emulated_instruction nor
+set_apic_access_page_addr.  Remove an "if" by calling them
+with static_call_cond().
 
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/include/asm/kvm_host.h | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ arch/x86/kvm/x86.c | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index c371ee7e45f7..61faeb57889c 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -1544,9 +1544,10 @@ extern struct kvm_x86_ops kvm_x86_ops;
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 862d654caedf..a527cffd0a2b 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -8421,8 +8421,7 @@ int x86_emulate_instruction(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa,
+ 			kvm_rip_write(vcpu, ctxt->eip);
+ 			if (r && (ctxt->tf || (vcpu->guest_debug & KVM_GUESTDBG_SINGLESTEP)))
+ 				r = kvm_vcpu_do_singlestep(vcpu);
+-			if (kvm_x86_ops.update_emulated_instruction)
+-				static_call(kvm_x86_update_emulated_instruction)(vcpu);
++			static_call_cond(kvm_x86_update_emulated_instruction)(vcpu);
+ 			__kvm_set_rflags(vcpu, ctxt->eflags);
+ 		}
  
- static inline void kvm_ops_static_call_update(void)
- {
--#define KVM_X86_OP(func) \
-+#define KVM_X86_OP_NULL(func) \
- 	static_call_update(kvm_x86_##func, kvm_x86_ops.func);
--#define KVM_X86_OP_NULL KVM_X86_OP
-+#define KVM_X86_OP(func) \
-+	WARN_ON(!kvm_x86_ops.func); KVM_X86_OP_NULL(func)
- #include <asm/kvm-x86-ops.h>
+@@ -9838,10 +9837,7 @@ static void kvm_vcpu_reload_apic_access_page(struct kvm_vcpu *vcpu)
+ 	if (!lapic_in_kernel(vcpu))
+ 		return;
+ 
+-	if (!kvm_x86_ops.set_apic_access_page_addr)
+-		return;
+-
+-	static_call(kvm_x86_set_apic_access_page_addr)(vcpu);
++	static_call_cond(kvm_x86_set_apic_access_page_addr)(vcpu);
  }
  
+ void __kvm_request_immediate_exit(struct kvm_vcpu *vcpu)
 -- 
 2.31.1
 
