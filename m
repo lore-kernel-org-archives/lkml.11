@@ -2,36 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2D58C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 14:59:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CF6BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 14:59:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345474AbiBBO7n (ORCPT
+        id S1345241AbiBBO7r (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 09:59:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48964 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345312AbiBBO7H (ORCPT
+        Wed, 2 Feb 2022 09:59:47 -0500
+Received: from ssl.serverraum.org ([176.9.125.105]:39231 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345293AbiBBO7H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 2 Feb 2022 09:59:07 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7F25C06173D
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 06:59:06 -0800 (PST)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id DB1E32244F;
-        Wed,  2 Feb 2022 15:59:04 +0100 (CET)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 1AFE722453;
+        Wed,  2 Feb 2022 15:59:06 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1643813945;
+        t=1643813946;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Uy8MwJsz+qTIsy4fz0a7GwIE/hOctTmlERX+mFQWMZ8=;
-        b=rk+b2bZ11j2dDHz+3FbBmD+NEjU4l66dF5CswP8UNsA3OZ1gAfj8yoNr3H7GmoaWBrwhI9
-        z+eJ0/ZC36yzHYQ6otE5BZu0nnOisv4QLhvFrVhwhw0+pFse7EYVJPMKhMUPNL6H/KvE2g
-        ZZShwP9C/WGPib///YAos+mwFxH5kPc=
+        bh=yIv4VTb5VdcS3L6sdsDDVGx9xtU3Q9aCaHFNOFlKMl4=;
+        b=IzDaFxdXy13k7GZxY4ID+OVShStO3QiiP1gNKzG19NZ4M2AmoAmC1yqNGRO13n5OUT+QiD
+        bvXimhKt540pTmk5ziVXRNqHvS0egaaeerKftJ4BQbsJa8qd89kSQTlC4lkT4JNJmYQGEs
+        J+QBcy//hW2N8kNR9LehmQAdkbSceR4=
 From:   Michael Walle <michael@walle.cc>
 To:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
@@ -40,9 +37,9 @@ Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
         Richard Weinberger <richard@nod.at>,
         Vignesh Raghavendra <vigneshr@ti.com>,
         Michael Walle <michael@walle.cc>
-Subject: [PATCH v1 11/14] mtd: spi-nor: spansion: slightly rework control flow in late_init()
-Date:   Wed,  2 Feb 2022 15:58:50 +0100
-Message-Id: <20220202145853.4187726-12-michael@walle.cc>
+Subject: [PATCH v1 14/14] mtd: spi-nor: renumber flags
+Date:   Wed,  2 Feb 2022 15:58:53 +0100
+Message-Id: <20220202145853.4187726-15-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220202145853.4187726-1-michael@walle.cc>
 References: <20220202145853.4187726-1-michael@walle.cc>
@@ -52,39 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Increase readability of the code. Instead of returning early if the
-flash size is smaller or equal than 16MiB and then do the fixups for
-larger flashes, do it within the condition.
+As we have deleted some flag, lets renumber them so there are no holes.
 
 Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- drivers/mtd/spi-nor/spansion.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ drivers/mtd/spi-nor/core.h | 28 ++++++++++++++--------------
+ 1 file changed, 14 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/mtd/spi-nor/spansion.c b/drivers/mtd/spi-nor/spansion.c
-index 534196b1d3e7..dedc2de90cb8 100644
---- a/drivers/mtd/spi-nor/spansion.c
-+++ b/drivers/mtd/spi-nor/spansion.c
-@@ -296,13 +296,12 @@ static const struct flash_info spansion_parts[] = {
+diff --git a/drivers/mtd/spi-nor/core.h b/drivers/mtd/spi-nor/core.h
+index 2130a96e2044..b7fd760e3b47 100644
+--- a/drivers/mtd/spi-nor/core.h
++++ b/drivers/mtd/spi-nor/core.h
+@@ -12,20 +12,20 @@
+ #define SPI_NOR_MAX_ID_LEN	6
  
- static void spansion_late_init(struct spi_nor *nor)
- {
--	if (nor->params->size <= SZ_16M)
--		return;
--
--	nor->flags |= SNOR_F_4B_OPCODES;
--	/* No small sector erase for 4-byte command set */
--	nor->erase_opcode = SPINOR_OP_SE;
--	nor->mtd.erasesize = nor->info->sector_size;
-+	if (nor->params->size > SZ_16M) {
-+		nor->flags |= SNOR_F_4B_OPCODES;
-+		/* No small sector erase for 4-byte command set */
-+		nor->erase_opcode = SPINOR_OP_SE;
-+		nor->mtd.erasesize = nor->info->sector_size;
-+	}
- }
+ enum spi_nor_option_flags {
+-	SNOR_F_HAS_SR_TB	= BIT(1),
+-	SNOR_F_NO_OP_CHIP_ERASE	= BIT(2),
+-	SNOR_F_BROKEN_RESET	= BIT(5),
+-	SNOR_F_4B_OPCODES	= BIT(6),
+-	SNOR_F_HAS_4BAIT	= BIT(7),
+-	SNOR_F_HAS_LOCK		= BIT(8),
+-	SNOR_F_HAS_16BIT_SR	= BIT(9),
+-	SNOR_F_NO_READ_CR	= BIT(10),
+-	SNOR_F_HAS_SR_TB_BIT6	= BIT(11),
+-	SNOR_F_HAS_4BIT_BP      = BIT(12),
+-	SNOR_F_HAS_SR_BP3_BIT6  = BIT(13),
+-	SNOR_F_IO_MODE_EN_VOLATILE = BIT(14),
+-	SNOR_F_SOFT_RESET	= BIT(15),
+-	SNOR_F_SWP_IS_VOLATILE	= BIT(16),
++	SNOR_F_HAS_SR_TB	= BIT(0),
++	SNOR_F_NO_OP_CHIP_ERASE	= BIT(1),
++	SNOR_F_BROKEN_RESET	= BIT(2),
++	SNOR_F_4B_OPCODES	= BIT(3),
++	SNOR_F_HAS_4BAIT	= BIT(4),
++	SNOR_F_HAS_LOCK		= BIT(5),
++	SNOR_F_HAS_16BIT_SR	= BIT(6),
++	SNOR_F_NO_READ_CR	= BIT(7),
++	SNOR_F_HAS_SR_TB_BIT6	= BIT(8),
++	SNOR_F_HAS_4BIT_BP      = BIT(9),
++	SNOR_F_HAS_SR_BP3_BIT6  = BIT(10),
++	SNOR_F_IO_MODE_EN_VOLATILE = BIT(11),
++	SNOR_F_SOFT_RESET	= BIT(12),
++	SNOR_F_SWP_IS_VOLATILE	= BIT(13),
+ };
  
- static const struct spi_nor_fixups spansion_fixups = {
+ struct spi_nor_read_command {
 -- 
 2.30.2
 
