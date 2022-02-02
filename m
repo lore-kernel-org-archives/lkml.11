@@ -2,107 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55C57C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 00:30:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D1A8C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 00:33:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243517AbiBBAau (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 19:30:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51560 "EHLO
+        id S243397AbiBBAdq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 19:33:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243361AbiBBAag (ORCPT
+        with ESMTP id S243361AbiBBAdp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 19:30:36 -0500
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96135C06173D
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Feb 2022 16:30:36 -0800 (PST)
-Received: by mail-pl1-x630.google.com with SMTP id c9so16763045plg.11
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Feb 2022 16:30:36 -0800 (PST)
+        Tue, 1 Feb 2022 19:33:45 -0500
+Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27654C06173B
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Feb 2022 16:33:45 -0800 (PST)
+Received: by mail-io1-xd32.google.com with SMTP id s18so23389730ioa.12
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Feb 2022 16:33:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=2O1a7UvShSC3gckKtrO0p2k1de7WSXmEEaGyfLWDtkQ=;
-        b=DhNq62Nd1Lt0lyxcdXftZsAHEPJuhU74yO3KkKkhQSkGJgdYSUNMTRxYY5uwjRbOXB
-         0KoYCLocVZukIPNWy3uhlLew+5AJ7zaqT0r1cAbvpkyfnrBTgai/iH8aynup4IRfkYwa
-         e1RE9tl7lT28g6N4gU0nR/IuWDVFcOb3iYfGA=
+        d=linuxfoundation.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JepB/7vXyZQxWCvygSiSQrAo+dG4wBZLbFMfRyPaAg4=;
+        b=BYjOOb9hkhtXBfhwGlSCCO509XKcvbv2hf2hjKfopkh4jOXW8O7HhQjDtyYIJa0jl5
+         qTtw9X86XWTlwMVzFMnM1PJoeTfB9MsBay3aIwLob3YGE1Oy90CKWlPXcFf5aPf5E+FR
+         QnQRAqB7avjTD9AOWkm0wdpaP7ob+3r/RNbW8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=2O1a7UvShSC3gckKtrO0p2k1de7WSXmEEaGyfLWDtkQ=;
-        b=i1Likh8bATPvnP1zUGiDHOtIhEh8GW+8UhBRzJ0bUt5WWXGxrxRj+sVO76xdxPZItD
-         lsDdwq54r60W1jg1Z9TGHsiHkcqIyDIqqQMUWcAlLpW7cuhEK7b1rRbgQ+YzoRsvDP3P
-         4vr7I8sLmewZ52wUXd62wCCcEj+9qPDQIyRpQRZedRpZgCboafIzkagUFngKqlGOAI0s
-         4YtNdg0ot5wC3Tujk1KlmwhthD0a22preYCbEYgEsp8ybgrcDQv9vY/01RdZcFqLmwRB
-         17oD5e6Yq+ZiW3TsgAt1fyn/0c6TPjk+WJBhLTOao2D+HvuZMTTb2yt+2+aV4i1DFnFi
-         j0Rg==
-X-Gm-Message-State: AOAM533/i5sXH2UJFezuGSySbRpMVO1yqnt9g5+IbCIIz/s2v1c4vltM
-        EY/DlVtHj46kxTeK4iBopr/f8A==
-X-Google-Smtp-Source: ABdhPJy4Ct5g0MqS0xgNdb9A3ATDvBTCJZs7Cundy1yyR6rX0KSc/3j5mjsPdWjDnsGn15z4kjkonA==
-X-Received: by 2002:a17:90b:1e41:: with SMTP id pi1mr5192990pjb.62.1643761836157;
-        Tue, 01 Feb 2022 16:30:36 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id k5sm24652213pfc.85.2022.02.01.16.30.34
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JepB/7vXyZQxWCvygSiSQrAo+dG4wBZLbFMfRyPaAg4=;
+        b=36+8vQOMlDUwus0EsLRllQPesNLet0KVnToDhkFG27HHECpqH9ce5JmGyVgeJGmml6
+         fASsXelcKsRPWYY6AWKEyTUJTc8nKpdbYSby9L45aodP6gmFVojiW1MjJiBuPBzVpxiQ
+         G6W7Bp37BNoRNU/E6rmHByYxymVUzG/hw+MldmzzHuoKXjkOlP7EPTZOIzXA6jQmWR6O
+         bxfuOkmtNK4qDs/f//Da6QqVwWxiEmxTDnOC/6m5HMfYDBLhQWnG++Y3Nn0+x+JEShP9
+         kH+hSAYFB1baPIdfKX3KPCpsmxbKQqWg4+98Kil9U0dttypqf0+u5O5yYMyzQx8ICfep
+         vpMg==
+X-Gm-Message-State: AOAM531bsPW9Fng5ZigxqLWdx/2tf8RbWz0U1s7ipBi0o7hqxx+FhR30
+        7oqa++fTN5mI/P9wGEjvpwUnTSAvF7i7Ng==
+X-Google-Smtp-Source: ABdhPJyLnuma3ioM5xd1+ADrOhX9jvjTMjYRkEa1l7nl/NLBbTeuZXG1YAA6NxvjtObNkd79ajkSow==
+X-Received: by 2002:a02:6248:: with SMTP id d69mr14688442jac.133.1643762024503;
+        Tue, 01 Feb 2022 16:33:44 -0800 (PST)
+Received: from shuah-tx13.internal ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id l13sm5971445ilj.24.2022.02.01.16.33.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Feb 2022 16:30:35 -0800 (PST)
-From:   Kees Cook <keescook@chromium.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Miguel Ojeda <ojeda@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nathan Chancellor <nathan@kernel.org>, llvm@lists.linux.dev,
-        George Burgess IV <gbiv@google.com>,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org,
-        linux-security-module@vger.kernel.org
-Subject: [PATCH 3/4] Compiler Attributes: Add __diagnose_as
-Date:   Tue,  1 Feb 2022 16:30:32 -0800
-Message-Id: <20220202003033.704951-4-keescook@chromium.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220202003033.704951-1-keescook@chromium.org>
-References: <20220202003033.704951-1-keescook@chromium.org>
+        Tue, 01 Feb 2022 16:33:44 -0800 (PST)
+From:   Shuah Khan <skhan@linuxfoundation.org>
+To:     akpm@linux-foundation.org, shuah@kernel.org, chi.minghao@zte.com.cn
+Cc:     Shuah Khan <skhan@linuxfoundation.org>, linux-mm@kvack.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] kselftest/vm: Revert "tools/testing/selftests/vm/userfaultfd.c: use swap() to make code cleaner"
+Date:   Tue,  1 Feb 2022 17:33:40 -0700
+Message-Id: <20220202003340.87195-1-skhan@linuxfoundation.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1423; h=from:subject; bh=i1fpN36antLyVBs1U1U1fSS2CEHxT+df0ZNPiHFG1jw=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBh+dCo/jbG9rFQBg8OANce/4aahaOqHs+lh9B2zqU8 116jf4uJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYfnQqAAKCRCJcvTf3G3AJvOwD/ sFAXq9aIInuKt669oChD+K7YlLbmjc+0Ev4yHmb/YOCrz7QXAyfTMQZpJqikdYEH3RFaxKnJDgwmzE mqc8G2OHkuxL5GyPhpv/O9LhhEfYBf63VDTQb8dWhG/SvsBPXM0q89OlkSDr/noi4du4zL9s+3534O kx6nfw288C24GCljYJLELUhi5IazVnMu90Eah73vJwhPj5ePPPV4W1YFVTws466TcQP232pmUTM+SN 0UGDJm7eowDUNz98idxmkAyF61U/Coi5a+Wd45R7Ieei11bgWmk972riSp9DRlY521GiRGRQ20zHp9 CAJP6EdVJc9VKK2h1idH4Lb6xwQOfbRRdUXJ1ePh2MMrt2hxWqRLwWpdpoM8hpGljgl70mtNxFSPDa q7FCYP3R+2xCQGjbWBftyNcQcsBlEqMLDJFzPfZ3UI/hMCkaW3ettYkIyEtQBwLy8Wq2YOoopQgGFw R/UZuVg8I2E6mTDYZU0ucXXYHn/6UkMntLq/F7dJfEqQKL3VPOsiDkdRFxsOpkyAsOS3fQxTmZIhb5 6GPjfb5mrzyRHCAGhWn+QNb1SQMuBdiSFQueS9KSs8nr9ApRKv6Hh9nnhWC29V7ki4CeKoInqseiEX j6AjgVKUE++SxwpcKHyfyy7/tCO16ohvH91YXRrutSLXYc7TxlBPaLRnu7nw==
-X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Clang will perform various compile-time diagnostics on uses of various
-functions (e.g. simple bounds-checking on strcpy(), etc). These
-diagnostics can be assigned to other functions (for example, new
-implementations of the string functions under CONFIG_FORTIFY_SOURCE)
-using the "diagnose_as_builtin" attribute. This allows those functions
-to retain their compile-time diagnostic warnings.
+With this change, userfaultfd fails to build with undefined reference
+swap() error:
 
-Cc: Miguel Ojeda <ojeda@kernel.org>
-Cc: Nick Desaulniers <ndesaulniers@google.com>
-Cc: Nathan Chancellor <nathan@kernel.org>
-Cc: llvm@lists.linux.dev
-Signed-off-by: Kees Cook <keescook@chromium.org>
+userfaultfd.c: In function ‘userfaultfd_stress’:
+userfaultfd.c:1530:17: warning: implicit declaration of function ‘swap’; did you mean ‘swab’? [-Wimplicit-function-declaration]
+ 1530 |                 swap(area_src, area_dst);
+      |                 ^~~~
+      |                 swab
+/usr/bin/ld: /tmp/ccDGOAdV.o: in function `userfaultfd_stress':
+userfaultfd.c:(.text+0x549e): undefined reference to `swap'
+/usr/bin/ld: userfaultfd.c:(.text+0x54bc): undefined reference to `swap'
+collect2: error: ld returned 1 exit status
+
+Revert the commit to fix the problem.
+
+Fixes: 2c769ed7137a ("tools/testing/selftests/vm/userfaultfd.c: use swap() to make code cleaner")
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 ---
- include/linux/compiler_attributes.h | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ tools/testing/selftests/vm/userfaultfd.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/compiler_attributes.h b/include/linux/compiler_attributes.h
-index 51e063347fd6..b4ae0d771302 100644
---- a/include/linux/compiler_attributes.h
-+++ b/include/linux/compiler_attributes.h
-@@ -100,6 +100,15 @@
- # define __copy(symbol)
- #endif
+diff --git a/tools/testing/selftests/vm/userfaultfd.c b/tools/testing/selftests/vm/userfaultfd.c
+index d3fd24f9fae8..2f49c9af1b58 100644
+--- a/tools/testing/selftests/vm/userfaultfd.c
++++ b/tools/testing/selftests/vm/userfaultfd.c
+@@ -1417,6 +1417,7 @@ static void userfaultfd_pagemap_test(unsigned int test_pgsize)
+ static int userfaultfd_stress(void)
+ {
+ 	void *area;
++	char *tmp_area;
+ 	unsigned long nr;
+ 	struct uffdio_register uffdio_register;
+ 	struct uffd_stats uffd_stats[nr_cpus];
+@@ -1527,9 +1528,13 @@ static int userfaultfd_stress(void)
+ 					    count_verify[nr], nr);
  
-+/*
-+ * clang: https://clang.llvm.org/docs/AttributeReference.html#diagnose_as_builtin
-+ */
-+#if __has_attribute(__diagnose_as_builtin__)
-+# define __diagnose_as(builtin...)	__attribute__((__diagnose_as_builtin__(builtin)))
-+#else
-+# define __diagnose_as(builtin...)
-+#endif
-+
- /*
-  * Don't. Just don't. See commit 771c035372a0 ("deprecate the '__deprecated'
-  * attribute warnings entirely and for good") for more information.
+ 		/* prepare next bounce */
+-		swap(area_src, area_dst);
++		tmp_area = area_src;
++		area_src = area_dst;
++		area_dst = tmp_area;
+ 
+-		swap(area_src_alias, area_dst_alias);
++		tmp_area = area_src_alias;
++		area_src_alias = area_dst_alias;
++		area_dst_alias = tmp_area;
+ 
+ 		uffd_stats_report(uffd_stats, nr_cpus);
+ 	}
 -- 
-2.30.2
+2.32.0
 
