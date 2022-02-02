@@ -2,60 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62306C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 11:04:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42F46C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 11:04:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232171AbiBBLEn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 06:04:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51290 "EHLO
+        id S1343918AbiBBLEr (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 06:04:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343861AbiBBLEQ (ORCPT
+        with ESMTP id S1343783AbiBBLER (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 06:04:16 -0500
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4661C06173E
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 03:04:08 -0800 (PST)
-Received: by mail-lj1-x234.google.com with SMTP id q127so28363582ljq.2
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 03:04:08 -0800 (PST)
+        Wed, 2 Feb 2022 06:04:17 -0500
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0880DC06175E
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 03:04:12 -0800 (PST)
+Received: by mail-lf1-x12b.google.com with SMTP id b9so39808542lfq.6
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 03:04:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Hy7Dd2f91UDJKml61GqO51OOP6//JtRGeIoiva3Pj4s=;
-        b=hWkfIui+gxpbLh2BPaL2aGtfyYaKHcp4xjQS9FMtAU1ZXoSx+pdqXlsqHxAs5rrJdu
-         r8C7jF0edJt/ShpCP8A1AuMeTmyNJhmVa8LL9cFNgLAp/ri/V7lkoxUVSHu4wWVNY3eD
-         lLNXhT2J8d9LwVxAVONMrDjhZSaVgJMQiD04c/lksq1dSAJP5wXqRlowohzXwLvP2OTj
-         A7BV1qMkx35bg0z1/pQxZ1HeS7y9QqL5ksSIXBKs+T2n/SJqGZNnGQLlhT429S7aPAgt
-         R+2EXzl5P2DKWkDtt9sVw3X02V8ixNDpOv31RaeBa/98c2CM0d6mlnlXYS1tyzp1/ODv
-         /K+w==
+        bh=fXs9Z9PQYCruMdcrfaMtY0ndpO2Xn6EDlt3MZzXYgdU=;
+        b=Dba5XaJ4YA9vpc0hY5gn45LFbLkG/VzuAUztdk53/XTRWBh6s761tDC/A3IF9fnCze
+         /+glyw8MSR1ID6IHiJ/cnI0y/V9M7hQ9NCNTrfZPzRBvwQrtxytnB2KCDvQb6r+z2RtW
+         8622a/Asuu1bjdAq6NmBzW8+bCABmCKpi6MQR4a6GEU2wmDB4ICldMvLYK6rW+8aVrMV
+         U+vMKFGCV3OOQYWwqTCQs0qm3T68s0XscVj7YpEbsaA8w9YEzjNveZLPo1W/MMa7l3p6
+         6Nck9ktAKT06GNvBgQlvPCzvETxBPW3zCbNi4vOYksN63nFZK57tFMrJPjJLWZF43eUF
+         n4Ng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Hy7Dd2f91UDJKml61GqO51OOP6//JtRGeIoiva3Pj4s=;
-        b=2fu/fTL4MKr08Xs0v2loL+qORT66aO08PLrG5W3Mw/3gkIhYKoLmoKr90WJXCKZ+V2
-         vq6rJcGon25zPfQqVXtoaYrFJsR4tSLBBtjA8juLdIpt+HgyqtTDZPDLx8o1yoHV7Ams
-         Py2M7f4wZ5dnu+7hKP6qYI+r4uVg7DBEJTUZ4uAqODH4BeRK5aMA8CbprE1hKNj3kKQy
-         ps7MSDui6F3m6gLO4Gdf03GO8V91lOiY38qFbO+WTr0jYrfWlYajeaXK78bhCc1WYvKu
-         DuoN/7/WWVolGIeTLUESQk0P+8yRN5fuxlZoGkHCHTQReojZ6YHQvr+0B5lhFJgonyJU
-         efHQ==
-X-Gm-Message-State: AOAM531dfBAUugZSEu4lfeE+UP/lXZKlG9FfQGPv0dfXvucxBrbpDuaG
-        mzDjKLLqhW3szVYi7JEtwEI=
-X-Google-Smtp-Source: ABdhPJy4ZUVUTqMEwlvM7qv5wc/wjd51q7EKuO8jIaWMRcUtjk+QKhtOa2tW0JXo/LWxTBbiOmZxFA==
-X-Received: by 2002:a2e:a4a9:: with SMTP id g9mr20061973ljm.289.1643799847040;
-        Wed, 02 Feb 2022 03:04:07 -0800 (PST)
+        bh=fXs9Z9PQYCruMdcrfaMtY0ndpO2Xn6EDlt3MZzXYgdU=;
+        b=Ncf91KMqpoANedy7Scbhs8b9DSX/HRimW2poI51TF9HNHUCdVOgHjLLWC7HUTd4jhA
+         bwJZ3OxG8JkOyRGWS7K9QKPEck33brxBTb3UMQq5He53shTH7SjjKJ8j9grSBaLDssol
+         9zpFGrCdi8CseczxM8f8mQNxpjQ2AP4mcjK2dvT9L1wZA2aiwtysp9hVfoQ70GAcj+Yn
+         OwGSWTI5SgX2SLSpyCUQajmK4+4Hy5dsXpBUoikzl9tdpqRzJ1Dx0vfX92sIA3tSW7UT
+         mitYSHO7wiVt4rOYwkuBkYjAMx6TZRYH6S++CU6Ruh4o/cn1EJ8x3DAW3dX4iIgvuovz
+         wMzQ==
+X-Gm-Message-State: AOAM530JKI7VMFv7VmV0LKBZfoxafZ+gSAQSgCyXVrIcE0AZ0CHkk0y8
+        CkVmxAQeVlZdr8JtUcCtIB8=
+X-Google-Smtp-Source: ABdhPJxR1zuszDMGjwGZeutMvY35G28bmpwlvPOGrKcn1rCWt6gy9RgtvgaRkVsAv3cFx97J4LRhBA==
+X-Received: by 2002:a05:6512:3f99:: with SMTP id x25mr10847382lfa.235.1643799850317;
+        Wed, 02 Feb 2022 03:04:10 -0800 (PST)
 Received: from localhost.localdomain (staticline-31-183-164-222.toya.net.pl. [31.183.164.222])
-        by smtp.gmail.com with ESMTPSA id r14sm4503937lfr.129.2022.02.02.03.04.06
+        by smtp.gmail.com with ESMTPSA id r14sm4503937lfr.129.2022.02.02.03.04.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Feb 2022 03:04:06 -0800 (PST)
+        Wed, 02 Feb 2022 03:04:09 -0800 (PST)
 From:   Karolina Drobnik <karolinadrobnik@gmail.com>
 To:     linux-mm@kvack.org
 Cc:     akpm@linux-foundation.org, rppt@kernel.org,
         linux-kernel@vger.kernel.org,
         Karolina Drobnik <karolinadrobnik@gmail.com>
-Subject: [PATCH v2 14/16] memblock tests: Add memblock_remove tests
-Date:   Wed,  2 Feb 2022 12:03:13 +0100
-Message-Id: <8e6aa005407bbe1a75b75e85ac04ebb51318a52a.1643796665.git.karolinadrobnik@gmail.com>
+Subject: [PATCH v2 16/16] memblock tests: Add memblock_free tests
+Date:   Wed,  2 Feb 2022 12:03:15 +0100
+Message-Id: <30af95c82754ad8029404c3b528a5ef1c05d1ed6.1643796665.git.karolinadrobnik@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <cover.1643796665.git.karolinadrobnik@gmail.com>
 References: <cover.1643796665.git.karolinadrobnik@gmail.com>
@@ -65,198 +66,194 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add checks for removing a region from available memory in different
+Add checks for removing a region from reserved memory in different
 scenarios:
- - The requested region matches one in the collection of available
+ - The requested region matches one in the collection of reserved
    memory regions
- - The requested region does not exist in memblock.memory
- - The region overlaps with one of the entries: from the top (its end
-   address is bigger than the base of the existing region) or from the
-   bottom (its base address is smaller than the end address of one of
-   the regions)
+ - The requested region does not exist in memblock.reserved
+ - The region overlaps with one of the entries: from the top (its
+   end address is bigger than the base of the existing region) or
+   from the bottom (its base address is smaller than the end address
+   of one of the regions)
  - The region is within an already defined region
 
 Signed-off-by: Karolina Drobnik <karolinadrobnik@gmail.com>
 ---
- tools/testing/memblock/tests/basic_api.c | 203 +++++++++++++++++++++++
- 1 file changed, 203 insertions(+)
+ tools/testing/memblock/tests/basic_api.c | 199 +++++++++++++++++++++++
+ 1 file changed, 199 insertions(+)
 
 diff --git a/tools/testing/memblock/tests/basic_api.c b/tools/testing/memblock/tests/basic_api.c
-index b055ff262d23..96af80bf9df9 100644
+index 02eb88358a58..568b05b52883 100644
 --- a/tools/testing/memblock/tests/basic_api.c
 +++ b/tools/testing/memblock/tests/basic_api.c
-@@ -450,11 +450,214 @@ static int memblock_reserve_checks(void)
+@@ -686,12 +686,211 @@ static int memblock_remove_checks(void)
  	return 0;
  }
  
-+ /*
-+  * A simple test that tries to remove the first entry of the array of available
-+  * memory regions. By "removing" a region we mean overwriting it with the next
-+  * region in memblock.memory. To check this is the case, the test adds two memory
-+  * blocks and verifies that the value of the latter was used to erase r1 region.
-+  * It also checks if the region counter and total size were updated to expected
-+  * values.
-+  */
-+static int memblock_remove_simple_check(void)
++/*
++ * A simple test that tries to free a memory block that was marked earlier as
++ * reserved. By "freeing" a region we mean overwriting it with the next entry
++ * in memblock.reserved. To check this is the case, the test reserves two memory
++ * regions and verifies that the value of the latter was used to erase r1 region.
++ * The test also checks if the region counter and total size were updated.
++ */
++static int memblock_free_simple_check(void)
 +{
 +	struct memblock_region *rgn;
 +
-+	rgn = &memblock.memory.regions[0];
++	rgn = &memblock.reserved.regions[0];
 +
 +	struct region r1 = {
-+		.base = SZ_2K,
-+		.size = SZ_4K
++		.base = SZ_4M,
++		.size = SZ_1M
 +	};
 +	struct region r2 = {
-+		.base = SZ_128K,
-+		.size = SZ_4M
++		.base = SZ_8M,
++		.size = SZ_1M
 +	};
 +
 +	reset_memblock();
-+	memblock_add(r1.base, r1.size);
-+	memblock_add(r2.base, r2.size);
-+	memblock_remove(r1.base, r1.size);
++	memblock_reserve(r1.base, r1.size);
++	memblock_reserve(r2.base, r2.size);
++	memblock_free((void *)r1.base, r1.size);
 +
 +	assert(rgn->base == r2.base);
 +	assert(rgn->size == r2.size);
 +
-+	assert(memblock.memory.cnt == 1);
-+	assert(memblock.memory.total_size == r2.size);
++	assert(memblock.reserved.cnt == 1);
++	assert(memblock.reserved.total_size == r2.size);
 +
 +	return 0;
 +}
 +
 + /*
-+  * A test that tries to remove a region that was not registered as available
-+  * memory (i.e. has no corresponding entry in memblock.memory). It verifies
-+  * that array, regions counter and total size were not modified.
++  * A test that tries to free a region that was not marked as reserved (i.e. has
++  * no corresponding entry in memblock.reserved). It verifies that array, regions
++  * counter and total size were not modified.
 +  */
-+static int memblock_remove_absent_check(void)
++static int memblock_free_absent_check(void)
 +{
 +	struct memblock_region *rgn;
 +
-+	rgn = &memblock.memory.regions[0];
++	rgn = &memblock.reserved.regions[0];
 +
 +	struct region r1 = {
-+		.base = SZ_512K,
-+		.size = SZ_4M
++		.base = SZ_2M,
++		.size = SZ_8K
 +	};
 +	struct region r2 = {
-+		.base = SZ_64M,
-+		.size = SZ_1G
++		.base = SZ_16M,
++		.size = SZ_128M
 +	};
 +
 +	reset_memblock();
-+	memblock_add(r1.base, r1.size);
-+	memblock_remove(r2.base, r2.size);
++	memblock_reserve(r1.base, r1.size);
++	memblock_free((void *)r2.base, r2.size);
 +
 +	assert(rgn->base == r1.base);
 +	assert(rgn->size == r1.size);
 +
-+	assert(memblock.memory.cnt == 1);
-+	assert(memblock.memory.total_size == r1.size);
++	assert(memblock.reserved.cnt == 1);
++	assert(memblock.reserved.total_size == r1.size);
 +
 +	return 0;
 +}
 +
 +/*
-+ * A test that tries to remove a region which overlaps with the beginning of
++ * A test that tries to free a region which overlaps with the beginning of
 + * the already existing entry r1 (that is r1.base < r2.base + r2.size). It
-+ * checks if only the intersection of both regions is removed from the available
-+ * memory pool. The test also checks if the regions counter and total size are
-+ * updated to expected values.
++ * checks if only the intersection of both regions is freed. The test also
++ * checks if the regions counter and total size are updated to expected values.
 + */
-+static int memblock_remove_overlap_top_check(void)
-+{
-+	struct memblock_region *rgn;
-+	phys_addr_t r1_end, r2_end, total_size;
-+
-+	rgn = &memblock.memory.regions[0];
-+
-+	struct region r1 = {
-+		.base = SZ_32M,
-+		.size = SZ_32M
-+	};
-+	struct region r2 = {
-+		.base = SZ_16M,
-+		.size = SZ_32M
-+	};
-+
-+	r1_end = r1.base + r1.size;
-+	r2_end = r2.base + r2.size;
-+	total_size = r1_end - r2_end;
-+
-+	reset_memblock();
-+	memblock_add(r1.base, r1.size);
-+	memblock_remove(r2.base, r2.size);
-+
-+	assert(rgn->base == r1.base + r2.base);
-+	assert(rgn->size == total_size);
-+
-+	assert(memblock.memory.cnt == 1);
-+	assert(memblock.memory.total_size == total_size);
-+
-+	return 0;
-+}
-+
-+/*
-+ * A test that tries to remove a region which overlaps with the end of the
-+ * first entry (that is r2.base < r1.base + r1.size). It checks if only the
-+ * intersection of both regions is removed from the available memory pool.
-+ * The test also checks if the regions counter and total size are updated to
-+ * expected values.
-+ */
-+static int memblock_remove_overlap_bottom_check(void)
++static int memblock_free_overlap_top_check(void)
 +{
 +	struct memblock_region *rgn;
 +	phys_addr_t total_size;
 +
-+	rgn = &memblock.memory.regions[0];
++	rgn = &memblock.reserved.regions[0];
 +
 +	struct region r1 = {
-+		.base = SZ_2M,
-+		.size = SZ_64M
++		.base = SZ_8M,
++		.size = SZ_32M
++	};
++	struct region r2 = {
++		.base = SZ_1M,
++		.size = SZ_8M
++	};
++
++	total_size = (r1.size + r1.base) - (r2.base + r2.size);
++
++	reset_memblock();
++	memblock_reserve(r1.base, r1.size);
++	memblock_free((void *)r2.base, r2.size);
++
++	assert(rgn->base == r2.base + r2.size);
++	assert(rgn->size == total_size);
++
++	assert(memblock.reserved.cnt == 1);
++	assert(memblock.reserved.total_size == total_size);
++
++	return 0;
++}
++
++/*
++ * A test that tries to free a region which overlaps with the end of the
++ * first entry (that is r2.base < r1.base + r1.size). It checks if only the
++ * intersection of both regions is freed. The test also checks if the regions
++ * counter and total size are updated to expected values.
++ */
++static int memblock_free_overlap_bottom_check(void)
++{
++	struct memblock_region *rgn;
++	phys_addr_t total_size;
++
++	rgn = &memblock.reserved.regions[0];
++
++	struct region r1 = {
++		.base = SZ_8M,
++		.size = SZ_32M
 +	};
 +	struct region r2 = {
 +		.base = SZ_32M,
-+		.size = SZ_256M
++		.size = SZ_32M
 +	};
 +
 +	total_size = r2.base - r1.base;
 +
 +	reset_memblock();
-+	memblock_add(r1.base, r1.size);
-+	memblock_remove(r2.base, r2.size);
++	memblock_reserve(r1.base, r1.size);
++	memblock_free((void *)r2.base, r2.size);
 +
 +	assert(rgn->base == r1.base);
 +	assert(rgn->size == total_size);
 +
-+	assert(memblock.memory.cnt == 1);
-+	assert(memblock.memory.total_size == total_size);
++	assert(memblock.reserved.cnt == 1);
++	assert(memblock.reserved.total_size == total_size);
++
 +	return 0;
 +}
 +
 +/*
-+ * A test that tries to remove a region which is within the range of the already
++ * A test that tries to free a region which is within the range of the already
 + * existing entry (that is (r1.base < r2.base) && (r2.base + r2.size < r1.base + r1.size)).
 + * It checks if the region is split into two - one that ends at r2.base and second
-+ * that starts at r2.base + size, with appropriate sizes. The test also checks if
-+ * the region counter and total size were updated to expected values.
++ * that starts at r2.base + size, with appropriate sizes. It is expected that
++ * the region counter and total size fields were updated t reflect that change.
 + */
-+static int memblock_remove_within_check(void)
++static int memblock_free_within_check(void)
 +{
 +	struct memblock_region *rgn1, *rgn2;
 +	phys_addr_t r1_size, r2_size, total_size;
 +
-+	rgn1 = &memblock.memory.regions[0];
-+	rgn2 = &memblock.memory.regions[1];
++	rgn1 = &memblock.reserved.regions[0];
++	rgn2 = &memblock.reserved.regions[1];
 +
 +	struct region r1 = {
 +		.base = SZ_1M,
-+		.size = SZ_32M
++		.size = SZ_8M
 +	};
 +	struct region r2 = {
-+		.base = SZ_16M,
++		.base = SZ_4M,
 +		.size = SZ_1M
 +	};
 +
@@ -265,8 +262,8 @@ index b055ff262d23..96af80bf9df9 100644
 +	total_size = r1_size + r2_size;
 +
 +	reset_memblock();
-+	memblock_add(r1.base, r1.size);
-+	memblock_remove(r2.base, r2.size);
++	memblock_reserve(r1.base, r1.size);
++	memblock_free((void *)r2.base, r2.size);
 +
 +	assert(rgn1->base == r1.base);
 +	assert(rgn1->size == r1_size);
@@ -274,19 +271,19 @@ index b055ff262d23..96af80bf9df9 100644
 +	assert(rgn2->base == r2.base + r2.size);
 +	assert(rgn2->size == r2_size);
 +
-+	assert(memblock.memory.cnt == 2);
-+	assert(memblock.memory.total_size == total_size);
++	assert(memblock.reserved.cnt == 2);
++	assert(memblock.reserved.total_size == total_size);
 +
 +	return 0;
 +}
 +
-+static int memblock_remove_checks(void)
++static int memblock_free_checks(void)
 +{
-+	memblock_remove_simple_check();
-+	memblock_remove_absent_check();
-+	memblock_remove_overlap_top_check();
-+	memblock_remove_overlap_bottom_check();
-+	memblock_remove_within_check();
++	memblock_free_simple_check();
++	memblock_free_absent_check();
++	memblock_free_overlap_top_check();
++	memblock_free_overlap_bottom_check();
++	memblock_free_within_check();
 +
 +	return 0;
 +}
@@ -296,7 +293,8 @@ index b055ff262d23..96af80bf9df9 100644
  	memblock_initialization_check();
  	memblock_add_checks();
  	memblock_reserve_checks();
-+	memblock_remove_checks();
+ 	memblock_remove_checks();
++	memblock_free_checks();
  
  	return 0;
  }
