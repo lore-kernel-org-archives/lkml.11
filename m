@@ -2,79 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B49F7C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 04:20:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAC2EC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 04:30:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244533AbiBBEUX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 23:20:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45868 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244518AbiBBEUP (ORCPT
+        id S244366AbiBBEaN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 23:30:13 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:60090 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244155AbiBBEaM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 23:20:15 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1250FC06174E;
-        Tue,  1 Feb 2022 20:14:21 -0800 (PST)
+        Tue, 1 Feb 2022 23:30:12 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8FB56616B1;
-        Wed,  2 Feb 2022 04:14:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 906F6C004E1;
-        Wed,  2 Feb 2022 04:14:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 255A8616E9;
+        Wed,  2 Feb 2022 04:30:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 81A37C340F2;
+        Wed,  2 Feb 2022 04:30:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643775260;
-        bh=Hf9Af+jIJfWV93bRscI2lryAE659jsusiZwyg3y49tg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PoasB37U8EYdh6TboLARgoAMle6yuc6Hkuj3+k7f2ec0y9l6Fl5QDCf/wQY5o/821
-         Pk6+3xpAk3MQxy7nqhyHaU988+uFVBWbNDCO+qqfE+cOiE58otE/B14kVd3z1Ojlbq
-         iKJ1rRUop04Yt3wV5R8kgavsU4fo2GPcZrJe8pHl7kk19pU8bS6EeQtC2EaZNgNJAx
-         E0OppVOKHUKxAMXP43FsPO+3Lxil960r/iy5yIaMCkA/beKmUpAatCfPClzlZdFsNR
-         nLx2yuulL6GgqpVeuHSSYGFWJwHqAfScQobZiyMcxRTlGOHK8tMTXIpzCCQ973w5LM
-         eWEn/xUC3tPKw==
-Date:   Tue, 1 Feb 2022 20:14:18 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Cc:     netdev@vger.kernel.org, Sunil Goutham <sgoutham@marvell.com>,
-        Iyappan Subramanian <iyappan@os.amperecomputing.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Keyur Chudgar <keyur@os.amperecomputing.com>,
-        Quan Nguyen <quan@os.amperecomputing.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux ACPI <linux-acpi@vger.kernel.org>
-Subject: Re: [PATCH v2] drivers: net: Replace acpi_bus_get_device()
-Message-ID: <20220201201418.67ae9005@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <11918902.O9o76ZdvQC@kreacher>
-References: <11918902.O9o76ZdvQC@kreacher>
+        s=k20201202; t=1643776211;
+        bh=v2mvwPosVusC+tleXQNEBb8lg+KCFnDh+6kynQsU9t8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=uWS3XABb8W2Sqt5W0yPf+U8uicSfpd6lzc1Fx2cbKioVOEbNZlNi6grHonjLZqZ3L
+         VE6hx3I8zz6/dEP7AmSQ9yOx2Wp1FLL6KhxGbu0m0nC33zPFmXZ7/PaMif/bCOwj9O
+         jlgcckm7hjSf5HSHHBZXOKAX+A00G0WIpecuReO7fI0d/s5E+TJihGj1LkY/cNuhKs
+         mnsWsijikdVSl3WJFYny32x0mScj1t1LpIiuVQe/Gb3NZv9gBOe+WER2Mww3dD9iel
+         gyoG+lhdIn9SfRPSM8Gtolvb43BIhAd6Z5jHiveOlhCj76BlOJGiExwAJOT4KWaFTa
+         jmzDkY1v9vZeg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6A4DAE6BB76;
+        Wed,  2 Feb 2022 04:30:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 0/1] ipheth URB overflow fix
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164377621143.13473.6910787189636373903.git-patchwork-notify@kernel.org>
+Date:   Wed, 02 Feb 2022 04:30:11 +0000
+References: <cover.1643699778.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1643699778.git.jan.kiszka@siemens.com>
+To:     Jan Kiszka <jan.kiszka@siemens.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, gvalkov@abv.bg,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        corsac@corsac.net
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 01 Feb 2022 20:58:36 +0100 Rafael J. Wysocki wrote:
-> -	struct bgx *bgx = context;
-> +	struct acpi_device *adev = acpi_fetch_acpi_dev(handle);
->  	struct device *dev = &bgx->pdev->dev;
-> -	struct acpi_device *adev;
-> +	struct bgx *bgx = context;
+Hello:
 
-Compiler says you can't move bgx before dev.
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Venturing deeper into the bikesheeding territory but I'd leave the
-variable declarations be and move init of adev before the check.
-Matter of preference but calling something that needs to be error 
-checked in variable init breaks the usual
-	
-	ret = func(some, arguments);
-	if (ret)
-		goto explosions;
+On Tue, 1 Feb 2022 08:16:17 +0100 you wrote:
+> Resent (v1 was mangled).
+> 
+> Note that the "Fixes:" tag is a strong assumption of mine. Speak up if
+> you think that is wrong.
+> 
+> Jan
+> 
+> [...]
 
-flow.
+Here is the summary with links:
+  - [v2,1/1] ipheth: fix EOVERFLOW in ipheth_rcvbulk_callback
+    https://git.kernel.org/netdev/net/c/63e4b45c82ed
 
-> -	if (acpi_bus_get_device(handle, &adev))
-> +	if (!adev)
->  		goto out;
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
