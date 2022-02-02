@@ -2,111 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A97B6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 06:54:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44590C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 06:54:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244884AbiBBGx7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 01:53:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50816 "EHLO
+        id S244907AbiBBGyD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 01:54:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244748AbiBBGwi (ORCPT
+        with ESMTP id S244739AbiBBGwh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 01:52:38 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90BF8C06176E;
-        Tue,  1 Feb 2022 22:31:17 -0800 (PST)
-Date:   Wed, 02 Feb 2022 06:31:15 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1643783476;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0emAQ48jRxtzizThS52wvAHsxt+GeSw1t2tSVXHJh78=;
-        b=0wPlwQMlRsBQeD5dMtreEyBz8ezQD1KBe/peAaAK/4aKwmXdfg1exGkfw+ayCj8GflmRcX
-        IFwD2dy+RKJNkn6f+e5aHbuo30VUVrcTL6dIdnvobxy8X2B4XwXNpuMfNaHrayeQMSPRQD
-        +0WD10wNi0a0XmrMwWEmdUBoKMnuh3NJzSVbQXluQumyUFbbdhOMzbEPlsmXs4RYWGUjbD
-        iOaIqEHy380c6wV6ePGoNbZsqRqHMInCFCRuIJ1NblqnoZCRe2My8I5DMhHmKLko+FHepw
-        n+l7sRiEu33puHFe67rLLh5fCyyWGpwjTSK2TU2aVTT/qFkdMtBlK4VIITqxXQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1643783476;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0emAQ48jRxtzizThS52wvAHsxt+GeSw1t2tSVXHJh78=;
-        b=Llsk0SsfehoDWDjnGmJhWEmOmDaCmHn0EnMavEp0MSRJ2ibPcA8tX5LL/WwUWwAVfh8L0Z
-        XEPG7cLFLwJ47BDg==
-From:   "tip-bot2 for Tony Luck" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/cpu] x86/cpu: X86_FEATURE_INTEL_PPIN finally has a CPUID bit
-Cc:     Tony Luck <tony.luck@intel.com>, Borislav Petkov <bp@suse.de>,
-        x86@kernel.org, linux-kernel@vger.kernel.org
-In-Reply-To: <20220131230111.2004669-3-tony.luck@intel.com>
-References: <20220131230111.2004669-3-tony.luck@intel.com>
+        Wed, 2 Feb 2022 01:52:37 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2BB9C061758;
+        Tue,  1 Feb 2022 22:10:05 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7898B6172A;
+        Wed,  2 Feb 2022 06:10:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2098FC004E1;
+        Wed,  2 Feb 2022 06:10:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643782204;
+        bh=o9OIrNJyZoJDYTVkKluL49dvJyVfEvgp3uWhpxsqSmQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ld+tSCVMYvFZDbuSb+SfbwOFsGI+9nN9mO4Xs6IEK+rExQGRHD3EcKPX+8kNRKwX/
+         7WqbwZzDUrH4ElEfoNwbTPZO6+2veEg1IygbQyrLDAq7iaDX3oLWPzMoMfer+TBUyn
+         jOjhBdeAk6RyCCnKbDyYnrMNwmdV4EOuYY4dJyos=
+Date:   Wed, 2 Feb 2022 07:10:02 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Matthew Garrett <mjg59@srcf.ucam.org>
+Cc:     James Bottomley <jejb@linux.ibm.com>,
+        Dov Murik <dovmurik@linux.ibm.com>, linux-efi@vger.kernel.org,
+        Borislav Petkov <bp@suse.de>,
+        Ashish Kalra <ashish.kalra@amd.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Andrew Scull <ascull@google.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        "Dr. David Alan Gilbert" <dgilbert@redhat.com>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Lenny Szubowicz <lszubowi@redhat.com>,
+        Peter Gonda <pgonda@google.com>,
+        Tobin Feldman-Fitzthum <tobin@linux.ibm.com>,
+        Jim Cadden <jcadden@ibm.com>,
+        Daniele Buono <dbuono@linux.vnet.ibm.com>,
+        linux-coco@lists.linux.dev, linux-security-module@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Nayna Jain <nayna@linux.ibm.com>,
+        dougmill@linux.vnet.ibm.com, gcwilson@linux.ibm.com,
+        gjoyce@ibm.com, linuxppc-dev@lists.ozlabs.org, mpe@ellerman.id.au,
+        dja@axtens.net
+Subject: Re: [PATCH v7 0/5] Allow guest access to EFI confidential computing
+ secret area
+Message-ID: <YfogOurPZb7+Yelo@kroah.com>
+References: <20220201124413.1093099-1-dovmurik@linux.ibm.com>
+ <Yfk6vEuZFtgtA+G+@kroah.com>
+ <37779659ca96ac9c1f11bcc0ac0665895c795b54.camel@linux.ibm.com>
+ <20220202040157.GA8019@srcf.ucam.org>
 MIME-Version: 1.0
-Message-ID: <164378347508.16921.12136876420722891274.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220202040157.GA8019@srcf.ucam.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/cpu branch of tip:
+On Wed, Feb 02, 2022 at 04:01:57AM +0000, Matthew Garrett wrote:
+> On Tue, Feb 01, 2022 at 09:24:50AM -0500, James Bottomley wrote:
+> > On Tue, 2022-02-01 at 14:50 +0100, Greg KH wrote:
+> > > You all need to work together to come up with a unified place for
+> > > this and stop making it platform-specific.
+> 
+> We're talking about things that have massively different semantics.
 
-Commit-ID:     00a2f23eef7d1fa6c2dfdc613857b84fbf5e2b3b
-Gitweb:        https://git.kernel.org/tip/00a2f23eef7d1fa6c2dfdc613857b84fbf5e2b3b
-Author:        Tony Luck <tony.luck@intel.com>
-AuthorDate:    Mon, 31 Jan 2022 15:01:08 -08:00
-Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Tue, 01 Feb 2022 16:15:19 +01:00
+I see lots of different platforms trying to provide access to their
+"secure" firmware data to userspace in different ways.  That feels to me
+like they are the same thing that userspace would care about in a
+unified way.
 
-x86/cpu: X86_FEATURE_INTEL_PPIN finally has a CPUID bit
+Unless we expeect userspace tools to have to be platform-specific for
+all of this?  That does not seem wise.
 
-After nine generations of adding to model specific list of CPUs that
-support PPIN (Protected Processor Inventory Number) Intel allocated
-a CPUID bit to enumerate the MSRs.
+what am I missing here?
 
-CPUID(EAX=7, ECX=1).EBX bit 0 enumerates presence of MSR_PPIN_CTL and
-MSR_PPIN. Add it to the "scattered" CPUID bits and add an entry to the
-ppin_cpuids[] x86_match_cpu() array to catch Intel CPUs that implement
-it.
+thanks,
 
-Signed-off-by: Tony Luck <tony.luck@intel.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20220131230111.2004669-3-tony.luck@intel.com
----
- arch/x86/kernel/cpu/common.c    | 1 +
- arch/x86/kernel/cpu/scattered.c | 1 +
- 2 files changed, 2 insertions(+)
-
-diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index b0bd8a6..0681c69 100644
---- a/arch/x86/kernel/cpu/common.c
-+++ b/arch/x86/kernel/cpu/common.c
-@@ -104,6 +104,7 @@ static struct ppin_info {
- 
- static const struct x86_cpu_id ppin_cpuids[] = {
- 	X86_MATCH_FEATURE(X86_FEATURE_AMD_PPIN, &ppin_info[X86_VENDOR_AMD]),
-+	X86_MATCH_FEATURE(X86_FEATURE_INTEL_PPIN, &ppin_info[X86_VENDOR_INTEL]),
- 
- 	/* Legacy models without CPUID enumeration */
- 	X86_MATCH_INTEL_FAM6_MODEL(IVYBRIDGE_X, &ppin_info[X86_VENDOR_INTEL]),
-diff --git a/arch/x86/kernel/cpu/scattered.c b/arch/x86/kernel/cpu/scattered.c
-index 21d1f06..4143b1e 100644
---- a/arch/x86/kernel/cpu/scattered.c
-+++ b/arch/x86/kernel/cpu/scattered.c
-@@ -26,6 +26,7 @@ struct cpuid_bit {
- static const struct cpuid_bit cpuid_bits[] = {
- 	{ X86_FEATURE_APERFMPERF,       CPUID_ECX,  0, 0x00000006, 0 },
- 	{ X86_FEATURE_EPB,		CPUID_ECX,  3, 0x00000006, 0 },
-+	{ X86_FEATURE_INTEL_PPIN,	CPUID_EBX,  0, 0x00000007, 1 },
- 	{ X86_FEATURE_CQM_LLC,		CPUID_EDX,  1, 0x0000000f, 0 },
- 	{ X86_FEATURE_CQM_OCCUP_LLC,	CPUID_EDX,  0, 0x0000000f, 1 },
- 	{ X86_FEATURE_CQM_MBM_TOTAL,	CPUID_EDX,  1, 0x0000000f, 1 },
+greg k-h
