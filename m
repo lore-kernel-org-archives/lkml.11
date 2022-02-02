@@ -2,118 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E510C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 10:38:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1A80C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 10:38:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231687AbiBBKih (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 05:38:37 -0500
-Received: from mail-ua1-f41.google.com ([209.85.222.41]:38783 "EHLO
-        mail-ua1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229540AbiBBKif (ORCPT
+        id S233007AbiBBKiu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 05:38:50 -0500
+Received: from mailout4.samsung.com ([203.254.224.34]:60560 "EHLO
+        mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232066AbiBBKit (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 05:38:35 -0500
-Received: by mail-ua1-f41.google.com with SMTP id n15so18276167uaq.5;
-        Wed, 02 Feb 2022 02:38:35 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mEdhH32JRLl4dka4c3SOy+Q/qa9dhrWU9+uGTrYbEM4=;
-        b=eVX95AnpLrYV4PKAAIcRitmEOYulT7cUNMx7bJKg1e5SxZqRqaax7LWo4FU4BBo2MW
-         LVAiI9WStsICxmMoM26bcPxlhmXreswDKOoOtxGunDBuC7+SODzC7k37mAf+0UJMR1zT
-         7/qDxVfFSZxEr94lY+yyE+ZoWeY6vpO98URs59PjVy6crRzc3gpOa8ADgoREkInNtdH7
-         BL0RPlSC2+FBO/cS+tT8mraK2Ip+3oQTvAO2F29NE7eubfyC0rGl5znhqcY8nB/EMeum
-         ui1yHQsOpDY7JsSt7/9GllaWrdTvVKWrY52AghM/OreRSz4LWwJmaBS9NSW9ixYIS5DK
-         kZJg==
-X-Gm-Message-State: AOAM532mYgbDGjVRUxRY+8ML3qNWcOqRzNST1X4Aspc5zBOd/yKfnF/E
-        ZevSWDFQuGuUpq704H/fzOE9JF0WZZb4Nw==
-X-Google-Smtp-Source: ABdhPJwXKrYZHdIyxNmwX0sNTJ/hF4BZ/nM61lp+5QJZre//BiEiJsS30dFkN1iIhslURAuoVuSimw==
-X-Received: by 2002:a05:6102:c47:: with SMTP id y7mr9775233vss.20.1643798314811;
-        Wed, 02 Feb 2022 02:38:34 -0800 (PST)
-Received: from mail-ua1-f47.google.com (mail-ua1-f47.google.com. [209.85.222.47])
-        by smtp.gmail.com with ESMTPSA id z10sm6092414uap.14.2022.02.02.02.38.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 02 Feb 2022 02:38:34 -0800 (PST)
-Received: by mail-ua1-f47.google.com with SMTP id n15so18276118uaq.5;
-        Wed, 02 Feb 2022 02:38:34 -0800 (PST)
-X-Received: by 2002:a67:b00e:: with SMTP id z14mr11213904vse.57.1643798314183;
- Wed, 02 Feb 2022 02:38:34 -0800 (PST)
+        Wed, 2 Feb 2022 05:38:49 -0500
+Received: from epcas5p1.samsung.com (unknown [182.195.41.39])
+        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220202103847epoutp046962ccf4dc412a1ea46212d3a8399796~P8d6jGdNt0362403624epoutp04T
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 10:38:47 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220202103847epoutp046962ccf4dc412a1ea46212d3a8399796~P8d6jGdNt0362403624epoutp04T
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1643798327;
+        bh=Wx8ROO8op3VTnOEzgAZLt9x0NeCwPv6eupDtuwPaXzw=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=MBjnLFWH3munjSxZuHkxDMbCbq6eVYwkIZ7lt6wXMXcNjjI+dcxEyI1rSkd3KShrL
+         cp3otcnStMdY80uFbe2A3F/DfDd3IMim36z3D1Cbicn/1Qy08gM/YR8FZtVkm/0wHy
+         ToIO57c0B/4Ay/jlOYiyTbSRj4e0/T3xec2DZAiU=
+Received: from epsmges5p3new.samsung.com (unknown [182.195.42.75]) by
+        epcas5p3.samsung.com (KnoxPortal) with ESMTP id
+        20220202103847epcas5p39d6bcdd378ab9380554fcab835dc2c6e~P8d6IXn_v3184231842epcas5p3K;
+        Wed,  2 Feb 2022 10:38:47 +0000 (GMT)
+Received: from epcas5p3.samsung.com ( [182.195.41.41]) by
+        epsmges5p3new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        F0.36.05590.63F5AF16; Wed,  2 Feb 2022 19:38:47 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas5p4.samsung.com (KnoxPortal) with ESMTPA id
+        20220202103319epcas5p4ed4ae53759fc5c241bc8068132c989d7~P8ZJd7Uef0903109031epcas5p4Y;
+        Wed,  2 Feb 2022 10:33:19 +0000 (GMT)
+Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220202103319epsmtrp1fe2c5a822bf6af3200f6c1fcf624a47f~P8ZJdJ_mH3005430054epsmtrp1B;
+        Wed,  2 Feb 2022 10:33:19 +0000 (GMT)
+X-AuditID: b6c32a4b-739ff700000015d6-11-61fa5f36fc73
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        1A.A1.08738.FED5AF16; Wed,  2 Feb 2022 19:33:19 +0900 (KST)
+Received: from localhost.localdomain (unknown [107.109.224.44]) by
+        epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
+        20220202103317epsmtip21b11c3fd8241b19a88a71f82c2fab296~P8ZHgBay02377923779epsmtip2o;
+        Wed,  2 Feb 2022 10:33:17 +0000 (GMT)
+From:   Maninder Singh <maninder1.s@samsung.com>
+To:     apw@canonical.com, joe@perches.com, dwaipayanray1@gmail.com,
+        lukas.bulwahn@gmail.com, markus@trippelsdorf.de,
+        akpm@linux-foundation.org
+Cc:     jack@suse.cz, rostedt@goodmis.org, linux-kernel@vger.kernel.org,
+        Maninder Singh <maninder1.s@samsung.com>,
+        Vaneet Narang <v.narang@samsung.com>
+Subject: [PATCH v3] scripts/checkpatch.pl: remove _deferred and
+ _deferred_once false warning
+Date:   Wed,  2 Feb 2022 16:03:09 +0530
+Message-Id: <20220202103309.1914992-1-maninder1.s@samsung.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220121014117.21248-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <CAMuHMdUW+7mCLHnWbPQ4oxNO9Awri9TNN8bTDq7uGSYncAdWKw@mail.gmail.com> <OS0PR01MB5922ECB3E4DEDB2595D0101786279@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-In-Reply-To: <OS0PR01MB5922ECB3E4DEDB2595D0101786279@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 2 Feb 2022 11:38:23 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdXw3Uy=jOivke6exPrUXg4a-yyg_Sg3ote48tqwTCwDzQ@mail.gmail.com>
-Message-ID: <CAMuHMdXw3Uy=jOivke6exPrUXg4a-yyg_Sg3ote48tqwTCwDzQ@mail.gmail.com>
-Subject: Re: [PATCH v2] soc: renesas: Add support for reading product revision
- for RZ/G2L family
-To:     Biju Das <biju.das.jz@bp.renesas.com>
-Cc:     Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Prabhakar <prabhakar.csengg@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrMKsWRmVeSWpSXmKPExsWy7bCmpq55/K9Eg/5nTBZz1q9hs/iwVsNi
+        /cJlzBazpzczWcy+/5jF4vKuOWwWLUfbWSwOz29jsfj//zaTxb6OB0wWh07OZXTg9pjV0Mvm
+        sXPWXXaPln232D1OzPjN4vFl1TVmj74tqxg9ziw4wu7Rv+sCk8fnTXIBnFFcNimpOZllqUX6
+        dglcGc8mdzAWvBKueDK1lb2B8Y1AFyMnh4SAicSMT1eZuhi5OIQEdjNKHF87hxkkISTwiVFi
+        3/IMiMRnRomLz46zwXS8efOPFSKxi1Fi24lfjBDOF0aJXZMXsoJUsQnoSazatYcFJCEi0Mso
+        MeP1crAWZoHpjBJT5nSzgFQJC8RJvDq5mwnEZhFQlTg1+RpYnFfATuLx8QmMEPvkJWZe+s4O
+        EReUODnzCVgNM1C8eetsZpChEgK9HBKP2nZCHegisWLtaiYIW1ji1fEt7BC2lMTL/jZ2iIZu
+        RokN3cdYIJwZjBKfD16FWmcv8eQiyBMcQCs0Jdbv0ocIy0pMPbWOCWIzn0Tv7ydQC3gldsyD
+        sVUlWm5uYIWwpSU+f/zIAmF7SDTMmsYCCdZYifWftjNOYJSfheShWUgemoWweQEj8ypGydSC
+        4tz01GLTAuO81HK94sTc4tK8dL3k/NxNjOB0peW9g/HRgw96hxiZOBgPMUpwMCuJ8O5d+D1R
+        iDclsbIqtSg/vqg0J7X4EKM0B4uSOO+p9A2JQgLpiSWp2ampBalFMFkmDk6pBiY504D9F13P
+        XMpedfi7/rxfPVclV8X+YlghuMPPuNbp5NHSG+szC/Ys7p+7b+WRpgs+8a2PVkTuWnDO+a+b
+        iZaEP8O0fx2HZQIfcf4KNr9hcKE69otVxSdupXlTtt6of35+9qzqVd1f3/LqMTfEfOv9Wf76
+        /W6XSS1njPivPc43fxO1b/5pnY0LnY1SfuQ46cYkKf+/NnXZn7nL3eR5y/z9wgotM3uW3FzB
+        aLhW4eH1epMj4Xz71D5brVFelfCk5v51SYEv4v3ujeteHeyV2zxhUVbvn2heN0/bD8tXKnBm
+        Vv5Q8/Y62ljZa1P81OFXUwC7352Ff5tmuGxgN6iNVwjKWG+uwRPeriG1War9yxolluKMREMt
+        5qLiRADUfbplxgMAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrOLMWRmVeSWpSXmKPExsWy7bCSvO772F+JBvueGlnMWb+GzeLDWg2L
+        9QuXMVvMnt7MZDH7/mMWi8u75rBZtBxtZ7E4PL+NxeL//9tMFvs6HjBZHDo5l9GB22NWQy+b
+        x85Zd9k9WvbdYvc4MeM3i8eXVdeYPfq2rGL0OLPgCLtH/64LTB6fN8kFcEZx2aSk5mSWpRbp
+        2yVwZTyb3MFY8Eq44snUVvYGxjcCXYycHBICJhJv3vxj7WLk4hAS2MEoMfnQfVaIhLTEz3/v
+        WSBsYYmV/56zg9hCAp8YJTadTQGx2QT0JFbt2sMC0iwiMJVR4t3VZewgDrPAbEaJe7sfgHUL
+        C8RItO77ATaVRUBV4tTka2BxXgE7icfHJzBCbJCXmHnpOztEXFDi5MwnYDXMQPHmrbOZJzDy
+        zUKSmoUktYCRaRWjZGpBcW56brFhgVFearlecWJucWleul5yfu4mRnDYa2ntYNyz6oPeIUYm
+        DsZDjBIczEoivHsXfk8U4k1JrKxKLcqPLyrNSS0+xCjNwaIkznuh62S8kEB6YklqdmpqQWoR
+        TJaJg1OqgWmNtbxiXs85gVK3q4rO15/86F7qK76YZabTbxav+05ff51nZ/3wh12m+llkyT7D
+        f57Bf1b4MRyd9yqO6XlMv36a4f0JJkoiIfY2Jzo8F71liFssdvxj4I4bWd3MwWd+flafkdE7
+        8XT02hC7Ez5R6z87OVxQUeQxllr38+DOWSUN705YCuv6v/57nGHiHp8ttndDzLJeNrc+skku
+        //PVSfRAImP+G/YLbI+ahPMMj3FJyFzYt9k7nWmr06eU5W4v+DNm+XatMlr5QXLbkZ1LWxan
+        uMkEz5S1j0pSYVVs2Ld98ctTL75NXbTh4MP9n5179wo6v9zv9OCmZ+JpJv1Nx7dZL7kswGB9
+        5Xkh56llUzWVWIozEg21mIuKEwFGx7Rx6gIAAA==
+X-CMS-MailID: 20220202103319epcas5p4ed4ae53759fc5c241bc8068132c989d7
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: REQ_APPROVE
+CMS-TYPE: 105P
+X-CMS-RootMailID: 20220202103319epcas5p4ed4ae53759fc5c241bc8068132c989d7
+References: <CGME20220202103319epcas5p4ed4ae53759fc5c241bc8068132c989d7@epcas5p4.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Biju,
+with commit 98e35f5894cf ("printk: git rid of [sched_delayed] message for
+printk_deferred") printk_deferred and printk_deferred_once requires
+LOGLEVEL in argument, but checkpatch.pl was not fixed and still reports
+it as warning:
 
-On Wed, Feb 2, 2022 at 10:51 AM Biju Das <biju.das.jz@bp.renesas.com> wrote:
-> > Subject: Re: [PATCH v2] soc: renesas: Add support for reading product
-> > revision for RZ/G2L family
-> > On Fri, Jan 21, 2022 at 2:41 AM Lad Prabhakar <prabhakar.mahadev-
-> > lad.rj@bp.renesas.com> wrote:
-> > > From: Biju Das <biju.das.jz@bp.renesas.com>
-> > > As per RZ/G2L HW manual (Rev.1.00 Sep, 2021) DEV_ID [31:28] indicates
-> > > product revision. Use this information to populate the revision info
-> > > for RZ/G2L family.
-> > >
-> > > Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> > > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+WARNING: Possible unnecessary KERN_ALERT
+printk_deferred(KERN_ALERT "checking deferred\n");
 
-> > > --- a/drivers/soc/renesas/renesas-soc.c
-> > > +++ b/drivers/soc/renesas/renesas-soc.c
-> > > @@ -405,41 +417,38 @@ static int __init renesas_soc_init(void)
-> > >
-> > >                         eshi = ((product >> 4) & 0x0f) + 1;
-> > >                         eslo = product & 0xf;
-> > > +                       soc_dev_attr->revision = kasprintf(GFP_KERNEL,
-> > "ES%u.%u",
-> > > +                                                          eshi, eslo);
-> > > +               }  else if (id == &id_rzg2l) {
-> > > +                       eshi =  ((product >> 28) & 0x0f);
-> > > +                       soc_dev_attr->revision = kasprintf(GFP_KERNEL,
-> > "Rev %u",
-> > > +                                                          eshi);
-> >
-> > Would you mind if I would drop the "Rev " while applying?
->
-> Kernel reports the below message after dropping Rev. Is it OK?
->
-> [    0.018297] Detected Renesas RZ/G2L r9a07g044 1
+As suggested by Andy, made 2 functions from logFunction.
 
-That's indeed not so nice...
+1. logFunction: with all checks
+2. logFunctionCore: without printk(?:_ratelimited|_once|_deferred) checking
 
-Either we have to add it back, or do something like:
+and call logFunctionCore instead of logFunction for checking of loglevel,
+which will exclude checking of printk(?:_ratelimited|_once|_deferred).
 
--       pr_info("Detected Renesas %s %s %s\n", soc_dev_attr->family,
--               soc_dev_attr->soc_id, soc_dev_attr->revision ?: "");
-+       pr_info("Detected Renesas %s %s%s%s\n", soc_dev_attr->family,
-+               soc_dev_attr->soc_id, soc_dev_attr->revision ? " Rev " : "",
-+               soc_dev_attr->revision ?: "");
+This way, there is no need to maintain same stanza at multipe places
+for removing printk flavours.
 
-Any other options?
+Co-developed-by: Vaneet Narang <v.narang@samsung.com>
+Signed-off-by: Vaneet Narang <v.narang@samsung.com>
+Signed-off-by: Maninder Singh <maninder1.s@samsung.com>
+---
+v1 -> v2: made 2 functions to remove _deferred and _deferred_once
+	as suggested by Andy Whitcroft.
+v2-> v3: updated commit message with info of change in printk_deferred.
+	https://lkml.org/lkml/2022/2/2/61
 
-Gr{oetje,eeting}s,
+ scripts/checkpatch.pl | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-                        Geert
+diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
+index b01c36a15d9d..a6fa0c7360be 100755
+--- a/scripts/checkpatch.pl
++++ b/scripts/checkpatch.pl
+@@ -584,8 +584,7 @@ our $typeTypedefs = qr{(?x:
+ 
+ our $zero_initializer = qr{(?:(?:0[xX])?0+$Int_type?|NULL|false)\b};
+ 
+-our $logFunctions = qr{(?x:
+-	printk(?:_ratelimited|_once|_deferred_once|_deferred|)|
++our $logFunctionsCore = qr{(?x:
+ 	(?:[a-z0-9]+_){1,2}(?:printk|emerg|alert|crit|err|warning|warn|notice|info|debug|dbg|vdbg|devel|cont|WARN)(?:_ratelimited|_once|)|
+ 	TP_printk|
+ 	WARN(?:_RATELIMIT|_ONCE|)|
+@@ -594,6 +593,11 @@ our $logFunctions = qr{(?x:
+ 	seq_vprintf|seq_printf|seq_puts
+ )};
+ 
++our $logFunctions = qr{(?x:
++	printk(?:_ratelimited|_once|_deferred_once|_deferred|)|
++	$logFunctionsCore
++)};
++
+ our $allocFunctions = qr{(?x:
+ 	(?:(?:devm_)?
+ 		(?:kv|k|v)[czm]alloc(?:_array)?(?:_node)? |
+@@ -6298,8 +6302,7 @@ sub process {
+ 		}
+ 
+ # check for logging functions with KERN_<LEVEL>
+-		if ($line !~ /printk(?:_ratelimited|_once)?\s*\(/ &&
+-		    $line =~ /\b$logFunctions\s*\(.*\b(KERN_[A-Z]+)\b/) {
++		if ($line =~ /\b$logFunctionsCore\s*\(.*\b(KERN_[A-Z]+)\b/) {
+ 			my $level = $1;
+ 			if (WARN("UNNECESSARY_KERN_LEVEL",
+ 				 "Possible unnecessary $level\n" . $herecurr) &&
+-- 
+2.17.1
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
