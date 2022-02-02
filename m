@@ -2,180 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFAACC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 07:29:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74D15C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 07:32:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237719AbiBBH3d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 02:29:33 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:34794 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236750AbiBBH3b (ORCPT
+        id S238034AbiBBHcA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 02:32:00 -0500
+Received: from mailout3.samsung.com ([203.254.224.33]:22227 "EHLO
+        mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237899AbiBBHbj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 02:29:31 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CB9BB6178D;
-        Wed,  2 Feb 2022 07:29:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D5DBC004E1;
-        Wed,  2 Feb 2022 07:29:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643786970;
-        bh=26oHZ8vPtcOPyXKDjLAHkT61kFVbwnkIgRev3TI/TwA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=vFkk5g2vuLW3BYdhspWsCLkp8cirZrU+YVzDQbWcw/nj/LfdPDhBK06B+vaCXqUl+
-         QusglW40WUHWbnW+t6EExHqg5DojLIPkHiKkJdbaubsdhOl2EYMIWnQlM8NYnN1lkE
-         OOx6Utx8ZbtaNe7qQyl+41U/11380DdLNJ08Dgvc+xV5rI4tQF6qOuu4wYV1/BsqpD
-         qxgEIcIOyvFarHhNWnQUafx+SIjf+XXUes6YAdAssjrYW6QU8vmHZz50R311TrT0+Z
-         4i190mTE8Dnge+5Ld1Dhwos46dYgSg0iI9yzrkPnczVVJtzzLa0HcyS6QqC/+m5V1D
-         PIKO0js96J0Gw==
-Date:   Wed, 2 Feb 2022 16:29:25 +0900
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v7 00/10] fprobe: Introduce fprobe function entry/exit
- probe
-Message-Id: <20220202162925.bd74e7970fc35cb4236eef48@kernel.org>
-In-Reply-To: <YfnKIyTwi+F3IPdI@krava>
-References: <164360522462.65877.1891020292202285106.stgit@devnote2>
-        <YfnKIyTwi+F3IPdI@krava>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Wed, 2 Feb 2022 02:31:39 -0500
+Received: from epcas5p3.samsung.com (unknown [182.195.41.41])
+        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220202073137epoutp03ce7a523d2d78c70d359ef9aa8248ee77~P56fhBiqu3217332173epoutp03H
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 07:31:37 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220202073137epoutp03ce7a523d2d78c70d359ef9aa8248ee77~P56fhBiqu3217332173epoutp03H
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1643787097;
+        bh=yqcm3oZY9JzuPvkNa0W1U0xYuUGGav2iywp4rUB8DgU=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=rtTKOCidXg9VxghQq4MzGta6IgfKFiovkB8oAM+OOmNr1yirvlRWLwEq3Kjgz1kfD
+         tYXgpkPlxUyLS8T4Fl4V2rgfQsR37ro/cDLpBGMN6jNzmsokxHqEXHILWCtNi54YZE
+         Gqfnygv1jtTXJWsscuKa1/WPYvzxax3pXZKZmL3c=
+Received: from epsmges5p2new.samsung.com (unknown [182.195.42.74]) by
+        epcas5p1.samsung.com (KnoxPortal) with ESMTP id
+        20220202073136epcas5p1e86388f436d053e74abb855b9e941326~P56fNEbEN2123821238epcas5p1c;
+        Wed,  2 Feb 2022 07:31:36 +0000 (GMT)
+Received: from epcas5p3.samsung.com ( [182.195.41.41]) by
+        epsmges5p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        FD.06.46822.8F23AF16; Wed,  2 Feb 2022 16:30:00 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas5p1.samsung.com (KnoxPortal) with ESMTPA id
+        20220202071414epcas5p1d329ae4f76c281c1f8f7f07bfb36a919~P5rUCXDDW1421914219epcas5p1i;
+        Wed,  2 Feb 2022 07:14:14 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220202071414epsmtrp13fcd5e30b3f04ea14a1abf5b275c83cc~P5rUBqV3y0935409354epsmtrp15;
+        Wed,  2 Feb 2022 07:14:14 +0000 (GMT)
+X-AuditID: b6c32a4a-dfbff7000000b6e6-56-61fa32f875d3
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        F3.28.29871.54F2AF16; Wed,  2 Feb 2022 16:14:13 +0900 (KST)
+Received: from localhost.localdomain (unknown [107.109.224.44]) by
+        epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
+        20220202071412epsmtip2af2fb1c2b7a5bcadc3f873091da19c68~P5rSq-5Au3149931499epsmtip2Z;
+        Wed,  2 Feb 2022 07:14:12 +0000 (GMT)
+From:   Maninder Singh <maninder1.s@samsung.com>
+To:     apw@canonical.com, joe@perches.com, dwaipayanray1@gmail.com,
+        lukas.bulwahn@gmail.com
+Cc:     linux-kernel@vger.kernel.org,
+        Maninder Singh <maninder1.s@samsung.com>,
+        Vaneet Narang <v.narang@samsung.com>
+Subject: [PATCH RESEND v2] scripts/checkpatch.pl: remove _deferred and
+ _deferred_once false warning
+Date:   Wed,  2 Feb 2022 12:44:05 +0530
+Message-Id: <20220202071405.1872044-1-maninder1.s@samsung.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFmpnleLIzCtJLcpLzFFi42LZdlhTU/eH0a9Egzk3OSw+rNWwWL9wGbPF
+        7PuPWSwu75rDZtFytJ3F4vD8NhaLQyfnMjqwe8xq6GXz2DnrLrvHl1XXmD36tqxi9Pi8SS6A
+        NYrLJiU1J7MstUjfLoEro/vBRZaCBqGK/U82sDcwLubvYuTkkBAwkZg37zxjFyMXh5DAbkaJ
+        rr2X2SCcT4wSf7dcZodwvjFKvP/YDFTGAdayYUoJRHwvo8TaoytZIJwvjBKX301kBZnLJqAn
+        sWrXHhYQW0QgSqJr2VlGEJtZoEjiy7VOsEHCAqkSmyYJgZgsAqoSn/7IgVTwCthJvJ/0jR3i
+        OnmJmZe+s0PEBSVOznzCAjFFXqJ562xmkLUSAufYJY5M/c0G0eAisW3lSqhmYYlXx7dA2VIS
+        L/vb2CEauhklNnQfY4FwZjBKfD54lRGiyl7iycWFrCAXMQtoSqzfpQ8RlpWYemodE8RmPone
+        30+YIOK8EjvmwdiqEi03N7BC2NISnz9+ZIGwPSS2tG8AO05IIFai+flU1gmM8rOQPDQLyUOz
+        EDYvYGRexSiZWlCcm55abFpglJdarlecmFtcmpeul5yfu4kRnFa0vHYwPnzwQe8QIxMH4yFG
+        CQ5mJRHevQu/JwrxpiRWVqUW5ccXleakFh9ilOZgURLnPZ2+IVFIID2xJDU7NbUgtQgmy8TB
+        KdXAtPmSx4Somt+HvFf8WBielqLxePLRPK0LO/ha5y29tWblQvashycVbs1Xt2tP1Etm2xtr
+        5uU0KTr6mf/v9Lqnj/97brFonGCbaqnge8Rvf95Ss4bK5SLl8g781hu3XHj3JGvi83ipjKLe
+        Vt+bvy9zfPN55705dqOhj0+31OarB4t4antVXhamr1t1aPnZvriVcmJTb+7S631jZd/ZxmXN
+        oe8uI560ztM8QF70WOr2ooinh63/fQ5dzr5uuvo1j/jthfNeL7IVaRdb+vua/rsW15SKCaaN
+        L5sm+fE0r3MttJDckRWzc8fhBUFGiw6GtP7x8m/NK2OeI38lOWvmTubs5gDZv/qP/J0S+8XX
+        xLMpsRRnJBpqMRcVJwIApMTD8JoDAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrNLMWRmVeSWpSXmKPExsWy7bCSvK6r/q9Eg7nPDSw+rNWwWL9wGbPF
+        7PuPWSwu75rDZtFytJ3F4vD8NhaLQyfnMjqwe8xq6GXz2DnrLrvHl1XXmD36tqxi9Pi8SS6A
+        NYrLJiU1J7MstUjfLoEro/vBRZaCBqGK/U82sDcwLubvYuTgkBAwkdgwpaSLkYtDSGA3o8Sy
+        iesZuxg5geLSEj//vWeBsIUlVv57zg5R9IlRYuO7xWBFbAJ6Eqt27QErEhGIk5h8dAkzyFBm
+        gRKJn3u8QcLCAskS/0/dYgQJswioSnz6IwcS5hWwk3g/6Rs7xHh5iZmXvrNDxAUlTs58AjaR
+        GSjevHU28wRGvllIUrOQpBYwMq1ilEwtKM5Nzy02LDDMSy3XK07MLS7NS9dLzs/dxAgOTy3N
+        HYzbV33QO8TIxMF4iFGCg1lJhHfvwu+JQrwpiZVVqUX58UWlOanFhxilOViUxHkvdJ2MFxJI
+        TyxJzU5NLUgtgskycXBKNTBZyv5OFeQ+/2H22+7SSdKfxEI7L+ZO9JrUZem/nOXbuSo56xL9
+        QxGTd383ncF8Ntc/qXOFW8KD0C++wdL2fBy1+i/LWt+2Rl4477c0w5s3yfnePJfLIdJdV3QP
+        TJGd7P24hvnjpC2zb07dENBgerZWJSe9aJVRWdy3hs/eXM2XRK6n87461JM+c02x3OOqls9Z
+        CUwsTlenb2ea7MdZeKlYQjHDMITjiM+iRX/ezp+eNHF7DrulUJTe8ubfD99Vvlf1Kl88Q55h
+        y5mdHqveyf715xXnDBJZZXq54ZvkUv3Wy9UnDXLS9D5vKz5y9dSDd6w+6m+Ml/7dJirQaDvJ
+        n/u9gfwayRV67cIJZ5T63ymxFGckGmoxFxUnAgB0KtzpvgIAAA==
+X-CMS-MailID: 20220202071414epcas5p1d329ae4f76c281c1f8f7f07bfb36a919
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: REQ_APPROVE
+CMS-TYPE: 105P
+X-CMS-RootMailID: 20220202071414epcas5p1d329ae4f76c281c1f8f7f07bfb36a919
+References: <CGME20220202071414epcas5p1d329ae4f76c281c1f8f7f07bfb36a919@epcas5p1.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jiri,
+printk_deferred and printk_deferred_once requires LOGLEVEL in argument,
+but checkpatch.pl reports it as warning:
 
-On Wed, 2 Feb 2022 01:02:43 +0100
-Jiri Olsa <jolsa@redhat.com> wrote:
+WARNING: Possible unnecessary KERN_ALERT
+printk_deferred(KERN_ALERT "checking deferred\n");
 
-> On Mon, Jan 31, 2022 at 02:00:24PM +0900, Masami Hiramatsu wrote:
-> > Hi,
-> > 
-> > Here is the 7th version of fprobe. This version fixes unregister_fprobe()
-> > ensures that exit_handler is not called after returning from the
-> > unregister_fprobe(), and fixes some comments and documents.
-> > 
-> > The previous version is here[1];
-> > 
-> > [1] https://lore.kernel.org/all/164338031590.2429999.6203979005944292576.stgit@devnote2/T/#u
-> > 
-> > This series introduces the fprobe, the function entry/exit probe
-> > with multiple probe point support. This also introduces the rethook
-> > for hooking function return as same as the kretprobe does. This
-> > abstraction will help us to generalize the fgraph tracer,
-> > because we can just switch to it from the rethook in fprobe,
-> > depending on the kernel configuration.
-> > 
-> > The patch [1/10] is from Jiri's series[2].
-> > 
-> > [2] https://lore.kernel.org/all/20220104080943.113249-1-jolsa@kernel.org/T/#u
-> > 
-> > And the patch [9/10] adds the FPROBE_FL_KPROBE_SHARED flag for the case
-> > if user wants to share the same code (or share a same resource) on the
-> > fprobe and the kprobes.
-> 
-> hi,
-> it works fine for bpf selftests, but when I use it through bpftrace
-> to attach more probes with:
-> 
->   # ./src/bpftrace -e 'kprobe:ksys_* { }'
->   Attaching 27 probes
-> 
-> I'm getting stalls like:
-> 
-> krava33 login: [  988.574069] INFO: task bpftrace:4137 blocked for more than 122 seconds.
-> [  988.577577]       Not tainted 5.16.0+ #89
-> [  988.580173] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-> [  988.585538] task:bpftrace        state:D stack:    0 pid: 4137 ppid:  4123 flags:0x00004004
-> [  988.589869] Call Trace:
-> [  988.591312]  <TASK>
-> [  988.592577]  __schedule+0x3a8/0xd30
-> [  988.594469]  ? wait_for_completion+0x84/0x110
-> [  988.596753]  schedule+0x4e/0xc0
-> [  988.598480]  schedule_timeout+0xed/0x130
-> [  988.600524]  ? rcu_read_lock_sched_held+0x12/0x70
-> [  988.602901]  ? lock_release+0x253/0x4a0
-> [  988.604935]  ? lock_acquired+0x1b7/0x410
-> [  988.607041]  ? trace_hardirqs_on+0x1b/0xe0
-> [  988.609202]  wait_for_completion+0xae/0x110
-> [  988.613762]  __wait_rcu_gp+0x127/0x130
-> [  988.615787]  synchronize_rcu_tasks_generic+0x46/0xa0
-> [  988.618329]  ? call_rcu_tasks+0x20/0x20
-> [  988.620600]  ? rcu_tasks_pregp_step+0x10/0x10
-> [  988.623232]  ftrace_shutdown.part.0+0x174/0x210
-> [  988.625820]  unregister_ftrace_function+0x37/0x60
-> [  988.628480]  unregister_fprobe+0x2d/0x50
-> [  988.630928]  bpf_link_free+0x4e/0x70
-> [  988.633126]  bpf_link_release+0x11/0x20
-> [  988.635249]  __fput+0xae/0x270
-> [  988.637022]  task_work_run+0x5c/0xa0
-> [  988.639016]  exit_to_user_mode_prepare+0x251/0x260
-> [  988.641294]  syscall_exit_to_user_mode+0x16/0x50
-> [  988.646249]  do_syscall_64+0x48/0x90
-> [  988.648218]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> [  988.650787] RIP: 0033:0x7f9079e95fbb
-> [  988.652761] RSP: 002b:00007ffd474fa3b0 EFLAGS: 00000293 ORIG_RAX: 0000000000000003
-> [  988.656718] RAX: 0000000000000000 RBX: 00000000011bf8d0 RCX: 00007f9079e95fbb
-> [  988.660110] RDX: 0000000000000000 RSI: 00007ffd474fa3b0 RDI: 0000000000000019
-> [  988.663512] RBP: 00007ffd474faaf0 R08: 0000000000000000 R09: 000000000000001a
-> [  988.666673] R10: 0000000000000064 R11: 0000000000000293 R12: 0000000000000001
-> [  988.669770] R13: 00000000004a19a1 R14: 00007f9083428c00 R15: 00000000008c02d8
-> [  988.672601]  </TASK>
-> [  988.675763] INFO: lockdep is turned off.
-> 
-> I have't investigated yet, any idea?
+As suggested by Andy, made 2 functions from logFunction.
 
-Hmm, no, as far as I tested with my example module, it works well as below;
+1. logFunction: with all checks
+2. logFunctionCore: without printk(?:_ratelimited|_once|_deferred) checking
 
- # insmod fprobe_example.ko symbol='ksys_*' && ls && sleep 1 && rmmod  fprobe_example.ko 
-[  125.820113] fprobe_init: Planted fprobe at ksys_*
-[  125.823153] sample_entry_handler: Enter <ksys_write+0x0/0xf0> ip = 0x000000008d8da91f
-[  125.824247]                          fprobe_handler.part.0+0xb1/0x150
-[  125.825024]                          fprobe_handler+0x1e/0x20
-[  125.825799]                          0xffffffffa000e0e3
-[  125.826540]                          ksys_write+0x5/0xf0
-[  125.827344]                          do_syscall_64+0x3b/0x90
-[  125.828144]                          entry_SYSCALL_64_after_hwframe+0x44/0xae
-fprobe_example.ko
-[  125.829178] sample_exit_handler: Return from <ksys_write+0x0/0xf0> ip = 0x000000008d8da91f to rip = 0x00000000be5e197e (__x64_sys_write+0x1a/0x20)
-[  125.830707]                          fprobe_exit_handler+0x29/0x30
-[  125.831415]                          rethook_trampoline_handler+0x99/0x140
-[  125.832259]                          arch_rethook_trampoline_callback+0x3f/0x50
-[  125.833110]                          arch_rethook_trampoline+0x2f/0x50
-[  125.833803]                          __x64_sys_write+0x1a/0x20
-[  125.834448]                          do_syscall_64+0x3b/0x90
-[  125.835055]                          entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  126.878825] fprobe_exit: fprobe at ksys_* unregistered
-#
+and call logFunctionCore instead of logFunction for checking of loglevel,
+which will exclude checking of printk(?:_ratelimited|_once|_deferred).
 
-Even with NR_CPUS=3, it didn't cause the stall. But maybe you'd better test
-with Paul's fix as Andrii pointed.
+This way, there is no need to maintain same stanza at  places for removing
+printk flavours.
 
-Thank you,
+Co-developed-by: Vaneet Narang <v.narang@samsung.com>
+Signed-off-by: Vaneet Narang <v.narang@samsung.com>
+Signed-off-by: Maninder Singh <maninder1.s@samsung.com>
+---
+v1 -> v2: made 2 functions to remove _deferred and _deferred_once
+	as suggested by Andy Whitcroft.
 
+ scripts/checkpatch.pl | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-
-
-> 
-> thanks,
-> jirka
-> 
-
-
+diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
+index b01c36a15d9d..a6fa0c7360be 100755
+--- a/scripts/checkpatch.pl
++++ b/scripts/checkpatch.pl
+@@ -584,8 +584,7 @@ our $typeTypedefs = qr{(?x:
+ 
+ our $zero_initializer = qr{(?:(?:0[xX])?0+$Int_type?|NULL|false)\b};
+ 
+-our $logFunctions = qr{(?x:
+-	printk(?:_ratelimited|_once|_deferred_once|_deferred|)|
++our $logFunctionsCore = qr{(?x:
+ 	(?:[a-z0-9]+_){1,2}(?:printk|emerg|alert|crit|err|warning|warn|notice|info|debug|dbg|vdbg|devel|cont|WARN)(?:_ratelimited|_once|)|
+ 	TP_printk|
+ 	WARN(?:_RATELIMIT|_ONCE|)|
+@@ -594,6 +593,11 @@ our $logFunctions = qr{(?x:
+ 	seq_vprintf|seq_printf|seq_puts
+ )};
+ 
++our $logFunctions = qr{(?x:
++	printk(?:_ratelimited|_once|_deferred_once|_deferred|)|
++	$logFunctionsCore
++)};
++
+ our $allocFunctions = qr{(?x:
+ 	(?:(?:devm_)?
+ 		(?:kv|k|v)[czm]alloc(?:_array)?(?:_node)? |
+@@ -6298,8 +6302,7 @@ sub process {
+ 		}
+ 
+ # check for logging functions with KERN_<LEVEL>
+-		if ($line !~ /printk(?:_ratelimited|_once)?\s*\(/ &&
+-		    $line =~ /\b$logFunctions\s*\(.*\b(KERN_[A-Z]+)\b/) {
++		if ($line =~ /\b$logFunctionsCore\s*\(.*\b(KERN_[A-Z]+)\b/) {
+ 			my $level = $1;
+ 			if (WARN("UNNECESSARY_KERN_LEVEL",
+ 				 "Possible unnecessary $level\n" . $herecurr) &&
 -- 
-Masami Hiramatsu <mhiramat@kernel.org>
+2.17.1
+
