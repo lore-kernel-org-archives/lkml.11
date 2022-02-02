@@ -2,154 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D911AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 18:13:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95267C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 18:13:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346491AbiBBSNU (ORCPT
+        id S1346501AbiBBSNZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 13:13:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37598 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243619AbiBBSNR (ORCPT
+        Wed, 2 Feb 2022 13:13:25 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:42326 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238368AbiBBSNV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 13:13:17 -0500
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A200DC061714;
-        Wed,  2 Feb 2022 10:13:17 -0800 (PST)
-Received: by mail-pf1-x42c.google.com with SMTP id a19so13500023pfx.4;
-        Wed, 02 Feb 2022 10:13:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=pHZD/3m5dxJ6IF3Od83WC30BwhA/YhVb9CJ0r7xBZXQ=;
-        b=O70YXkiE34Dc/ztb7BQO0rXKUGQeWGOrKWjJU+YrZKJeBjipCQWIPoUpZFXR1mrQdD
-         5TILl6CH5BhxFIhTnNTjH1beHQe+BNeLwHLkbd2pSXSbOwb8vILhkmzbimcLoKEVyl80
-         IzwOPMJXMGIIwNaywHkIat+JLnWcgexpdE6MRAHSXsZ9YDhlAjuFTvFGX3e0Ix2ncsHA
-         UsHVHH+ydFy8ZK3MuEenGka4JctZY88uG5K55MLRMVHGXiFirPZe9dzmBQOJBW2z3i6z
-         7JiDfIx227hhhWoWiLelU73qFKCPFA7kynsErlkO3cC+33UWtGCfJxefWkJU43a+Yg25
-         9tOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=pHZD/3m5dxJ6IF3Od83WC30BwhA/YhVb9CJ0r7xBZXQ=;
-        b=YK0T3GSZxWoJOXy3zzS039b0asgJoJ9I0/5+4h7xfNwk5MmeemWSqli0tQI1cZetKL
-         G7wb62i5R+e0+YugZJFmCM4A/oj812jOQkDUiT3gLQ+fAIN4vkL0NABuP9w9qatcOky4
-         l+2bQc4ZHeYSdNs+dW27mJRbWCfj6HKHFoJJ5FqPSdZjcbH0wYWrDqP1SV7AO32WMykb
-         PwHUUohn57pLuPf7MK71AD2/hsuh2qMVB6awhG+mZquWjxyo+Nt+RoUBZZykcIgdWW+s
-         ziQiaBWxLcrmXnxCxJAOlY/NyL8EIr4nk9s7rrJbcMHj07XGG6tv/MVxcUwxALsB80yq
-         vVww==
-X-Gm-Message-State: AOAM530zRs1H7jrVO463OMKVPmZeTS6Auxx1mz1Pj6vuQh2UySdkRezM
-        q+FHDX0Xycf+7/SiT6jGb5k=
-X-Google-Smtp-Source: ABdhPJzJNJmZPfs0N47WtDR+83RFhCPwzfXNltg2LDFPAEp/nSP5/Rgr/ZEXnArkXhY72KUqsXT7og==
-X-Received: by 2002:a63:1262:: with SMTP id 34mr25214052pgs.194.1643825596972;
-        Wed, 02 Feb 2022 10:13:16 -0800 (PST)
-Received: from localhost.localdomain (101-137-118-25.mobile.dynamic.aptg.com.tw. [101.137.118.25])
-        by smtp.gmail.com with ESMTPSA id 22sm9803716pgf.11.2022.02.02.10.13.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Feb 2022 10:13:16 -0800 (PST)
-From:   Joseph CHAMG <josright123@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Joseph CHANG <josright123@gmail.com>,
-        joseph_chang@davicom.com.tw
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, andy.shevchenko@gmail.com,
-        andrew@lunn.ch, leon@kernel.org, Rob Herring <robh@kernel.org>
-Subject: [PATCH v17, 1/2] yaml: Add dm9051 SPI network yaml file
-Date:   Thu,  3 Feb 2022 02:12:47 +0800
-Message-Id: <20220202181248.18344-2-josright123@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220202181248.18344-1-josright123@gmail.com>
-References: <20220202181248.18344-1-josright123@gmail.com>
+        Wed, 2 Feb 2022 13:13:21 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C5B156189A;
+        Wed,  2 Feb 2022 18:13:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEE88C004E1;
+        Wed,  2 Feb 2022 18:13:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643825600;
+        bh=W7XCI06/Ylc9GMz/SPCh+EaDCTdMMnEF4ru0ssHogmc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=p6gbM9RaaXjLYLTMPY3DdcD/bfNZZIb75BBjPYCWjrHK53ulGt8CVyO8CH5SFGTEH
+         ir34jm8h1mMyZcsLlgOA2QAZ5Jt9Pit8pGPRTFBvzQQ76ilr7z4piokRLR/ndg+7aS
+         ghwA2qIKTM7eCkHwhkIKau+DYxWktipAg2WohVy1BBQXvzXcwXJbl2SLEnzwg3UYc/
+         s0OEsRBOXsHF1RBU1pA78jqUezUWQ2c8OPBNEnjttUncMLpjQYikS+/kwbCWNK/8g6
+         vk1iFxiBpmRrWa/PL5yeqRJ2DW6vcDGEhI9/wM56MROHxp88Tfo0/TUgdR+r5KBoqP
+         uEgpYdyRGTYLQ==
+Date:   Wed, 2 Feb 2022 12:13:18 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Brent Spillner <spillner@acm.org>
+Cc:     bhelgaas@google.com, tglx@linutronix.de, mingo@redhat.com,
+        bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
+        hpa@zytor.com, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] x86/PCI: Improve log message when IRQ cannot be
+ identified
+Message-ID: <20220202181318.GA26584@bhelgaas>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YfiBfdAf9uHYTf4T@jupiter.dyndns.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: JosephCHANG <josright123@gmail.com>
+On Tue, Feb 01, 2022 at 12:40:29AM +0000, Brent Spillner wrote:
+> The existing code always suggests trying the pci=biosirq kernel parameter, but
+> this option is only recognized when CONFIG_PCI_BIOS is set, which in turn
+> depends on CONFIG_X86_32, so it is never appropriate on x86_64.
+> kernel-parameters.txt confirms that pci=biosirq is intended to be supported
+> only on X86-32.
+> 
+> The new version tries to be more helpful by recommending changes to ACPI
+> settings if appropriate, and only mentioning pci=biosirq (and the manual
+> pirq= option) for kernels that support it. Additionally, it encourages
+> the user to file bug reports so faulty firmware can be identified and
+> potentially handled via known quirks in a future kernel release.
+> 
+> ACPI is relevant to these warnings because it will significantly change
+> the path taken through the PCI discovery (and later interrupt routing)
+> code. Booting with acpi=noirq should be highly unusual and likely
+> indicates an attempt to work around faulty motherboard firmware, so I
+> added a new log message in pci_acpi_init() for this case, with yet
+> another recommendation to file a bug report.
+> 
+> Signed-off-by: Brent Spillner <spillner@acm.org>
 
-This is a new yaml base data file for configure davicom dm9051 with
-device tree
+IIUC pirq_enable_irq() is only used for non-ACPI, non-DT, non-Xen,
+non-Intel MID systems, so this is a real legacy path.
 
-Cc: Rob Herring <robh@kernel.org>
-Signed-off-by: JosephCHANG <josright123@gmail.com>
----
- .../bindings/net/davicom,dm9051.yaml          | 62 +++++++++++++++++++
- 1 file changed, 62 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/net/davicom,dm9051.yaml
+I don't think it's really worth cluttering an error case in a path
+that should be rarely used in the first place.
 
-diff --git a/Documentation/devicetree/bindings/net/davicom,dm9051.yaml b/Documentation/devicetree/bindings/net/davicom,dm9051.yaml
-new file mode 100644
-index 000000000000..52e852fef753
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/davicom,dm9051.yaml
-@@ -0,0 +1,62 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/davicom,dm9051.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Davicom DM9051 SPI Ethernet Controller
-+
-+maintainers:
-+  - Joseph CHANG <josright123@gmail.com>
-+
-+description: |
-+  The DM9051 is a fully integrated and cost-effective low pin count single
-+  chip Fast Ethernet controller with a Serial Peripheral Interface (SPI).
-+
-+allOf:
-+  - $ref: ethernet-controller.yaml#
-+
-+properties:
-+  compatible:
-+    const: davicom,dm9051
-+
-+  reg:
-+    maxItems: 1
-+
-+  spi-max-frequency:
-+    maximum: 45000000
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  local-mac-address: true
-+
-+  mac-address: true
-+
-+required:
-+  - compatible
-+  - reg
-+  - spi-max-frequency
-+  - interrupts
-+
-+additionalProperties: false
-+
-+examples:
-+  # Raspberry Pi platform
-+  - |
-+    /* for Raspberry Pi with pin control stuff for GPIO irq */
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    #include <dt-bindings/gpio/gpio.h>
-+    spi {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        ethernet@0 {
-+            compatible = "davicom,dm9051";
-+            reg = <0>; /* spi chip select */
-+            local-mac-address = [00 00 00 00 00 00];
-+            interrupt-parent = <&gpio>;
-+            interrupts = <26 IRQ_TYPE_LEVEL_LOW>;
-+            spi-max-frequency = <31200000>;
-+        };
-+    };
--- 
-2.20.1
+Are you seeing a problem where you're getting the wrong error message
+today?  Can we just fix that problem instead so no kernel parameter is
+needed in the first place?
 
+> ---
+> Changes in v2:
+>  - Tried to make the code more legible by reducing use of #ifdef (only
+>    used where required to guard reference to acpi_noirq)
+>  - The tradeoff is there's now an idiosyncratic use of do {...} while (0),
+>    but that lets me early-out from the acpi_noirq case without more #ifdefs
+>    or duplicated if statements.
+>  - Included a warning for acpi_noirq in pci_acpi_init() per maintainer suggestion
+>  - Encourage user to file bug reports in all warning messages
+> 
+>  arch/x86/pci/acpi.c |  4 +++-
+>  arch/x86/pci/irq.c  | 22 +++++++++++++++++++---
+>  2 files changed, 22 insertions(+), 4 deletions(-)
+> 
+> diff --git a/arch/x86/pci/acpi.c b/arch/x86/pci/acpi.c
+> index 052f1d78a562..12f894d345a9 100644
+> --- a/arch/x86/pci/acpi.c
+> +++ b/arch/x86/pci/acpi.c
+> @@ -401,8 +401,10 @@ int __init pci_acpi_init(void)
+>  {
+>  	struct pci_dev *dev = NULL;
+>  
+> -	if (acpi_noirq)
+> +	if (acpi_noirq) {
+> +		printk(KERN_WARNING "PCI: ACPI IRQ routing disabled; please submit a bug report if this was required to work around firmware defects\n");
+>  		return -ENODEV;
+> +	}
+>  
+>  	printk(KERN_INFO "PCI: Using ACPI for IRQ routing\n");
+>  	acpi_irq_penalty_init();
+> diff --git a/arch/x86/pci/irq.c b/arch/x86/pci/irq.c
+> index 97b63e35e152..393b036e773b 100644
+> --- a/arch/x86/pci/irq.c
+> +++ b/arch/x86/pci/irq.c
+> @@ -1519,10 +1519,26 @@ static int pirq_enable_irq(struct pci_dev *dev)
+>  			} else
+>  				msg = "; probably buggy MP table";
+>  #endif
+> -		} else if (pci_probe & PCI_BIOS_IRQ_SCAN)
+> +		} else if (pci_probe & PCI_BIOS_IRQ_SCAN) {
+>  			msg = "";
+> -		else
+> -			msg = "; please try using pci=biosirq";
+> +		} else {
+> +			do {	/* just one iteration; allows break to minimize code duplication */
+> +#ifdef CONFIG_ACPI
+> +				if (acpi_noirq) {
+> +				    msg = "; consider removing acpi=noirq, and file a bug report if that does not help";
+> +					break;		/* out of remainder of one-iteration do {} loop */
+> +				}
+> +#endif
+> +				if (IS_ENABLED(CONFIG_PCI_BIOS))
+> +					/* pci=biosirq and pirq= are valid only on x86_32, and should never be necessary */
+> +					msg = "; try using pci=biosirq or manual pirq=, and file a bug report for this device";
+> +				else if (!IS_ENABLED(CONFIG_ACPI))
+> +					/* ACPI will change code path through PCI subsystem, and is worth trying */
+> +					msg = "; try enabling ACPI if feasible, and file a bug report for this device";
+> +				else
+> +					msg = "; please file a bug report for failure to discover device IRQ via ACPI";
+> +			} while (0);
+> +		}
+>  
+>  		/*
+>  		 * With IDE legacy devices the IRQ lookup failure is not
+> -- 
+> 2.35.1
+> 
