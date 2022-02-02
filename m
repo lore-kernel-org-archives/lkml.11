@@ -2,99 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC868C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 21:43:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E57AFC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 21:45:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347698AbiBBVnG (ORCPT
+        id S1347702AbiBBVpO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 16:43:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57702 "EHLO
+        Wed, 2 Feb 2022 16:45:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233512AbiBBVnE (ORCPT
+        with ESMTP id S230183AbiBBVpM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 16:43:04 -0500
-Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A625CC061714
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 13:43:04 -0800 (PST)
-Received: by mail-oi1-x22a.google.com with SMTP id e81so917658oia.6
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 13:43:04 -0800 (PST)
+        Wed, 2 Feb 2022 16:45:12 -0500
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21490C061714;
+        Wed,  2 Feb 2022 13:45:12 -0800 (PST)
+Received: by mail-lf1-x135.google.com with SMTP id k13so1749152lfg.9;
+        Wed, 02 Feb 2022 13:45:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=W3C86wM4RRIil8SxMQCDDt7pq/c7kC+1ToUwcaauhcY=;
-        b=bcf0lTZn99V9oVeN3ea94gI1jVOL8i6cIyNZAtSXBbrZbPkj8NiwExPSavIGezwB08
-         Yt2kEnAKIfK+aMT4IMo13Lf2CI613trgWsAu4Xz7yme4kxZTHYcGto0WkIrYeqeJ2paT
-         28Laff0Gxkao9X+felx3/7XAyw5d+vPztBfK2aBiCnNS2KLhhgYku9YK3wc5FwDD98aI
-         GuRSCHSGpXjmhiq+79D/+vguYkybVKv6rM+Qmswkz29/ARg/whzqyxkQIqtY90nsJCB9
-         ewRk0pOkfGjjbCxd9KVqKUXTYPjmxbargNak9k85YpPdHIQKt+5zr5g+F5J4deC7ebCm
-         wG/w==
+        bh=bsZCuSDsUy/P9AjbDsDGnz1EDK8jhukP3jFdHxX+3Is=;
+        b=cR1CTcfVhHaKXOr9wEEIqlQtWxBGArI0hq6ww4zkWxV7ubwux4VgBLeYZBBsM1llWj
+         UpUbOHcgBOiXwaDAhHXCuiI9wWSF3J69izYk9Oi1errJRRqCt2Mg64xxcuhIIFVMd0I9
+         wTQD/2qBMa40GlYR+o4HmjaHXt8ukK6SxH0m9Ho5B+hyckOx7E2tn0neolZEJuEpk1q/
+         IIIwFB78AZ3nzwb9d4iWdyO2+CfZaPc3807H/XnCtE7IK+X1ZMg82bkUtwcNCbO4UMq2
+         qubaSytclcHZ2uQmuMcK6a79FToEMGkgFIAyUtgF6Y4/W+409FOCC1E7qDFYgpAIZLiU
+         3cFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=W3C86wM4RRIil8SxMQCDDt7pq/c7kC+1ToUwcaauhcY=;
-        b=dAPtpZ/QgE9eP8vSpegOX/hFMXnNFz36x0pTb1GjyXcaGCeGnf7wBLGoJnV33gahzN
-         PoaqVeupmmSn3CDlYB49gDY07v59yRtNlb1Wjw55dZoi+cD5kP+nhq6D+XIEW5P0FAq8
-         G4ooxLyD3QH1P5XDWSAcxhr1QbXK4Ux0kljEhezi8yoTzwynZMJLedeJURgwnSm0lXdQ
-         spHk1jP6MZnzklvjV8CmVrkbL6yjFbHOXVJd4aTwjuIaYL9mZd63XLmiuk3bIByd9ydA
-         N3KiTgVKsGCjSJQ1nugVCAJskYL+VOCNnXu1HyF4SaIcsMTKk8PC6lIGCr5+sxpdpImD
-         Yfkg==
-X-Gm-Message-State: AOAM532HUKCOsOIhFj15WJzzFbh68lQVJ0R1PrfFXcyBUxn1bJENKNql
-        ht3NrcUdgmKuYmoYO+Ywlbo=
-X-Google-Smtp-Source: ABdhPJxX0n9uNpXvgGpEUqJyCL3sYTi8+QyGIJtIaJ57BLSpqMGEySXmBI0EIFOhg4b3VrVTjkeuvw==
-X-Received: by 2002:a05:6808:10ce:: with SMTP id s14mr1474773ois.164.1643838183932;
-        Wed, 02 Feb 2022 13:43:03 -0800 (PST)
-Received: from magali.lan ([191.181.56.252])
-        by smtp.gmail.com with ESMTPSA id y15sm11701268oof.37.2022.02.02.13.43.00
+        bh=bsZCuSDsUy/P9AjbDsDGnz1EDK8jhukP3jFdHxX+3Is=;
+        b=U1nh/GmC7Q9ckGD6WtockVjA7Crt2PQV9swtbKOv3TOJgYQ2b9okRSgp2PMTUwxAK/
+         78ryqaXDjEE9oCSSn6msv6nB5ISyEWcAiPOZ/Qm4Pq53wcPrjoxf2VpQsC9caWRIdZpc
+         Si6H8SRFSzXyA2gb5wjlhv/ANQJk/qmGFW7vW13l1/oi2ffDir2YRLkf2e9MgEjgbEfu
+         CezoysRM6u4eh42ZgRNWSoYZBbXqGhtJkoq6uCofjHVXnlaQzmL5JMu0QMsy7UifPMIq
+         8CVxXstkL3uVMekWiCDgfvd0oLI1mAUeVgqKEfzvcSiY66liH2RbP9/j+REQNR7t9PZv
+         ci9A==
+X-Gm-Message-State: AOAM533Oub71xVKPUQkjlKR6zUMJujMmAAPrBAo8/JtN1LGbZSVF4Hv3
+        9tqV07wW273EZBrJ+krWzheOraO5gROZXJxHZtA=
+X-Google-Smtp-Source: ABdhPJyniYMv/i84IlAxliz5k4dHMzgc9Dq6LJ0H4VPEWda5T6t/Lcep3V+w5zJeMzj6/fyfZz0xyA==
+X-Received: by 2002:a19:f014:: with SMTP id p20mr24450386lfc.68.1643838310069;
+        Wed, 02 Feb 2022 13:45:10 -0800 (PST)
+Received: from ArchRescue.. ([81.198.232.185])
+        by smtp.gmail.com with ESMTPSA id p21sm3357970ljm.60.2022.02.02.13.45.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Feb 2022 13:43:03 -0800 (PST)
-From:   Magali Lemes <magalilemes00@gmail.com>
-To:     harry.wentland@amd.com, sunpeng.li@amd.com,
-        Rodrigo.Siqueira@amd.com, alexander.deucher@amd.com,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch
-Cc:     Magali Lemes <magalilemes00@gmail.com>,
-        kernel test robot <lkp@intel.com>,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] drm/amd/display: Use NULL pointer instead of plain integer
-Date:   Wed,  2 Feb 2022 18:38:56 -0300
-Message-Id: <20220202213856.409403-1-magalilemes00@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 02 Feb 2022 13:45:09 -0800 (PST)
+From:   =?UTF-8?q?D=C4=81vis=20Mos=C4=81ns?= <davispuh@gmail.com>
+To:     linux-btrfs@vger.kernel.org
+Cc:     Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?D=C4=81vis=20Mos=C4=81ns?= <davispuh@gmail.com>
+Subject: [PATCH 1/2] btrfs: add lzo workspace buffer length constants
+Date:   Wed,  2 Feb 2022 23:44:54 +0200
+Message-Id: <20220202214455.15753-1-davispuh@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Assigning 0L to a pointer variable caused the following warning:
+It makes it more readable for length checking
 
-drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dsc/rc_calc_fpu.c:71:40:
-warning: Using plain integer as NULL pointer
-
-In order to remove this warning, this commit assigns a NULL pointer to
-the pointer variable that caused this issue.
-
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Magali Lemes <magalilemes00@gmail.com>
+Signed-off-by: Dāvis Mosāns <davispuh@gmail.com>
 ---
- drivers/gpu/drm/amd/display/dc/dml/dsc/rc_calc_fpu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/btrfs/lzo.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/dml/dsc/rc_calc_fpu.c b/drivers/gpu/drm/amd/display/dc/dml/dsc/rc_calc_fpu.c
-index ec636d06e18c..ef75eb7d5adc 100644
---- a/drivers/gpu/drm/amd/display/dc/dml/dsc/rc_calc_fpu.c
-+++ b/drivers/gpu/drm/amd/display/dc/dml/dsc/rc_calc_fpu.c
-@@ -68,7 +68,7 @@ static void get_qp_set(qp_set qps, enum colour_mode cm, enum bits_per_comp bpc,
- 	int sel = table_hash(mode, bpc, max_min);
- 	int table_size = 0;
- 	int index;
--	const struct qp_entry *table = 0L;
-+	const struct qp_entry *table = NULL;
+diff --git a/fs/btrfs/lzo.c b/fs/btrfs/lzo.c
+index 0fb90cbe7669..31319dfcc9fb 100644
+--- a/fs/btrfs/lzo.c
++++ b/fs/btrfs/lzo.c
+@@ -55,6 +55,9 @@
+  * 0x1000   | SegHdr N+1| Data payload N+1 ...                |
+  */
  
- 	// alias enum
- 	enum { min = DAL_MM_MIN, max = DAL_MM_MAX };
++#define WORKSPACE_BUF_LENGTH lzo1x_worst_compress(PAGE_SIZE)
++#define WORKSPACE_CBUF_LENGTH lzo1x_worst_compress(PAGE_SIZE)
++
+ struct workspace {
+ 	void *mem;
+ 	void *buf;	/* where decompressed data goes */
+@@ -83,8 +86,8 @@ struct list_head *lzo_alloc_workspace(unsigned int level)
+ 		return ERR_PTR(-ENOMEM);
+ 
+ 	workspace->mem = kvmalloc(LZO1X_MEM_COMPRESS, GFP_KERNEL);
+-	workspace->buf = kvmalloc(lzo1x_worst_compress(PAGE_SIZE), GFP_KERNEL);
+-	workspace->cbuf = kvmalloc(lzo1x_worst_compress(PAGE_SIZE), GFP_KERNEL);
++	workspace->buf = kvmalloc(WORKSPACE_BUF_LENGTH, GFP_KERNEL);
++	workspace->cbuf = kvmalloc(WORKSPACE_CBUF_LENGTH, GFP_KERNEL);
+ 	if (!workspace->mem || !workspace->buf || !workspace->cbuf)
+ 		goto fail;
+ 
+@@ -422,7 +425,7 @@ int lzo_decompress(struct list_head *ws, unsigned char *data_in,
+ 	struct workspace *workspace = list_entry(ws, struct workspace, list);
+ 	size_t in_len;
+ 	size_t out_len;
+-	size_t max_segment_len = lzo1x_worst_compress(PAGE_SIZE);
++	size_t max_segment_len = WORKSPACE_BUF_LENGTH;
+ 	int ret = 0;
+ 	char *kaddr;
+ 	unsigned long bytes;
 -- 
-2.25.1
+2.35.1
 
