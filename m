@@ -2,258 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EB5AC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 20:29:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C42FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 20:30:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347096AbiBBU33 (ORCPT
+        id S1347105AbiBBUan (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 15:29:29 -0500
-Received: from mga07.intel.com ([134.134.136.100]:1364 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230454AbiBBU32 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 15:29:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643833768; x=1675369768;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=cCD02Yx9Gu0a31iJjmnPVyynU/NEGUjd0OPG2bpWqPU=;
-  b=S+AkB9J2mFo7DyJnALf4K2eghBlA6P4zgUhxO/Jlq7XgAzOb+Xc/WWVj
-   E+L7uVuaDL+4d2EAXDa6OQ7bNN84P6NoxwuYWQ8BmlEys8xXD+cElQOSV
-   TZkr0XAH67ihHt0O7266VlepB1UXOfUaKIYeEZUnX6uaEGRTO1EKkAIIq
-   7+u6MUMBuYN88c5Dh8qYhNYBnUW8WkJSXrxotTkgJzfbLiV2gGK8dPZDa
-   s8QHQ/xrLFsgaozDc3AhfWzZrhgVugOh/PRYB8pG3K+qOKIHzL11nFHka
-   bCR98qwCOSyBXwLCYL6JiOKBNa9wXayszNtaUnNJLCL+HP4kuI0vxBNjl
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10246"; a="311319842"
-X-IronPort-AV: E=Sophos;i="5.88,337,1635231600"; 
-   d="scan'208";a="311319842"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 12:29:27 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,337,1635231600"; 
-   d="scan'208";a="482984220"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga006.jf.intel.com with ESMTP; 02 Feb 2022 12:29:25 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 20E903B7; Wed,  2 Feb 2022 22:29:39 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH v1 1/1] iio: frequency: adf4350: Make use of device properties
-Date:   Wed,  2 Feb 2022 22:29:36 +0200
-Message-Id: <20220202202936.56475-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
+        Wed, 2 Feb 2022 15:30:43 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:48936 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230454AbiBBUam (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 2 Feb 2022 15:30:42 -0500
+Date:   Wed, 02 Feb 2022 20:30:39 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1643833841;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=54afrDkQmYef/7+IzIcc6kjzecS6H7UHSY23IZtpV+k=;
+        b=uM1KuDg0Z2BWAGs0/oJkePKm2RKyyl2FrmMaTudHZ6XlFHar5lCQuMMUH9op731+NfHRO+
+        u2OHgfFFyqIICq1qIAuA+CtPsivOLdkpfvEq4/TKzgQigVDmQrQ3UiYyOWzbnBe51V8Z2l
+        E9H3IgUV8aga9v1c+PLPGTsXh62zbim0tA9Wu+whW+ENwMQ9fWplOjEn5Kn3Wz1c4kU/Bw
+        KlqjWPLrraoqYxU4UPFJRlTVy4hUPQ4NE0LDyP2tQbpdWxgNnitOT0ubdPG70lNjUvQw3k
+        P5U7M/16jJHxiSUJg5knQeiH6WyDaPBqVupZrmgr14lojYHpMDzbcdNfXK4QIg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1643833841;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=54afrDkQmYef/7+IzIcc6kjzecS6H7UHSY23IZtpV+k=;
+        b=Wo7x8CaY74Kqj6HeK6Fa+04Ho+bziicX5e/KDuInAl/040ChhBEccysdxucNIOJvYryg+K
+        mFOffYA0ytjnjFCw==
+From:   "tip-bot2 for Maciej W. Rozycki" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/irq] x86/PCI: Fix ALi M1487 (IBC) PIRQ router link value
+ interpretation
+Cc:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <alpine.DEB.2.21.2201022131050.56863@angie.orcam.me.uk>
+References: <alpine.DEB.2.21.2201022131050.56863@angie.orcam.me.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Message-ID: <164383383990.16921.10511731021620392794.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the module to be property provider agnostic and allow
-it to be used on non-OF platforms.
+The following commit has been merged into the x86/irq branch of tip:
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Commit-ID:     07a9d83afc3d193da7abad1929725ba3fcfb703c
+Gitweb:        https://git.kernel.org/tip/07a9d83afc3d193da7abad1929725ba3fcfb703c
+Author:        Maciej W. Rozycki <macro@orcam.me.uk>
+AuthorDate:    Thu, 06 Jan 2022 11:24:16 
+Committer:     Thomas Gleixner <tglx@linutronix.de>
+CommitterDate: Wed, 02 Feb 2022 21:27:55 +01:00
+
+x86/PCI: Fix ALi M1487 (IBC) PIRQ router link value interpretation
+
+Correct ALi M1487 (IBC) PIRQ router link value (`pirq' cookie)
+interpretation according to findings in the BIOS.
+
+Credit to Nikolai Zhubr for the detective work as to the bit layout.
+
+Fixes: 1ce849c75534 ("x86/PCI: Add support for the ALi M1487 (IBC) PIRQ router")
+Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Link: https://lore.kernel.org/r/alpine.DEB.2.21.2201022131050.56863@angie.orcam.me.uk
+
 ---
- drivers/iio/frequency/adf4350.c | 103 +++++++++++++-------------------
- 1 file changed, 42 insertions(+), 61 deletions(-)
+ arch/x86/pci/irq.c | 19 ++++++++++++++++---
+ 1 file changed, 16 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/frequency/adf4350.c b/drivers/iio/frequency/adf4350.c
-index 3d9eba716b69..fe5435e76957 100644
---- a/drivers/iio/frequency/adf4350.c
-+++ b/drivers/iio/frequency/adf4350.c
-@@ -7,17 +7,18 @@
- 
- #include <linux/device.h>
- #include <linux/kernel.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/module.h>
-+#include <linux/property.h>
- #include <linux/slab.h>
- #include <linux/sysfs.h>
- #include <linux/spi/spi.h>
- #include <linux/regulator/consumer.h>
- #include <linux/err.h>
--#include <linux/module.h>
- #include <linux/gcd.h>
- #include <linux/gpio/consumer.h>
- #include <asm/div64.h>
- #include <linux/clk.h>
--#include <linux/of.h>
- 
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
-@@ -381,10 +382,8 @@ static const struct iio_info adf4350_info = {
- 	.debugfs_reg_access = &adf4350_reg_access,
- };
- 
--#ifdef CONFIG_OF
- static struct adf4350_platform_data *adf4350_parse_dt(struct device *dev)
- {
--	struct device_node *np = dev->of_node;
- 	struct adf4350_platform_data *pdata;
- 	unsigned int tmp;
- 
-@@ -392,101 +391,83 @@ static struct adf4350_platform_data *adf4350_parse_dt(struct device *dev)
- 	if (!pdata)
- 		return NULL;
- 
--	snprintf(&pdata->name[0], SPI_NAME_SIZE - 1, "%pOFn", np);
-+	snprintf(pdata->name, sizeof(pdata->name), "%pfw", dev_fwnode(dev));
- 
- 	tmp = 10000;
--	of_property_read_u32(np, "adi,channel-spacing", &tmp);
-+	device_property_read_u32(dev, "adi,channel-spacing", &tmp);
- 	pdata->channel_spacing = tmp;
- 
- 	tmp = 0;
--	of_property_read_u32(np, "adi,power-up-frequency", &tmp);
-+	device_property_read_u32(dev, "adi,power-up-frequency", &tmp);
- 	pdata->power_up_frequency = tmp;
- 
- 	tmp = 0;
--	of_property_read_u32(np, "adi,reference-div-factor", &tmp);
-+	device_property_read_u32(dev, "adi,reference-div-factor", &tmp);
- 	pdata->ref_div_factor = tmp;
- 
--	pdata->ref_doubler_en = of_property_read_bool(np,
--			"adi,reference-doubler-enable");
--	pdata->ref_div2_en = of_property_read_bool(np,
--			"adi,reference-div2-enable");
-+	pdata->ref_doubler_en = device_property_read_bool(dev, "adi,reference-doubler-enable");
-+	pdata->ref_div2_en = device_property_read_bool(dev, "adi,reference-div2-enable");
- 
- 	/* r2_user_settings */
--	pdata->r2_user_settings = of_property_read_bool(np,
--			"adi,phase-detector-polarity-positive-enable") ?
--			ADF4350_REG2_PD_POLARITY_POS : 0;
--	pdata->r2_user_settings |= of_property_read_bool(np,
--			"adi,lock-detect-precision-6ns-enable") ?
--			ADF4350_REG2_LDP_6ns : 0;
--	pdata->r2_user_settings |= of_property_read_bool(np,
--			"adi,lock-detect-function-integer-n-enable") ?
--			ADF4350_REG2_LDF_INT_N : 0;
-+	pdata->r2_user_settings = 0;
-+	if (deivice_property_read_bool(dev, "adi,phase-detector-polarity-positive-enable"))
-+		pdata->r2_user_settings |= ADF4350_REG2_PD_POLARITY_POS;
-+	if (device_property_read_bool(dev, "adi,lock-detect-precision-6ns-enable"))
-+		pdata->r2_user_settings |= ADF4350_REG2_LDP_6ns;
-+	if (device_property_read_bool(dev, "adi,lock-detect-function-integer-n-enable"))
-+		pdata->r2_user_settings |= ADF4350_REG2_LDF_INT_N;
- 
- 	tmp = 2500;
--	of_property_read_u32(np, "adi,charge-pump-current", &tmp);
-+	device_property_read_u32(dev, "adi,charge-pump-current", &tmp);
- 	pdata->r2_user_settings |= ADF4350_REG2_CHARGE_PUMP_CURR_uA(tmp);
- 
- 	tmp = 0;
--	of_property_read_u32(np, "adi,muxout-select", &tmp);
-+	device_property_read_u32(dev, "adi,muxout-select", &tmp);
- 	pdata->r2_user_settings |= ADF4350_REG2_MUXOUT(tmp);
- 
--	pdata->r2_user_settings |= of_property_read_bool(np,
--			"adi,low-spur-mode-enable") ?
--			ADF4350_REG2_NOISE_MODE(0x3) : 0;
-+	if (device_property_read_bool(dev, "adi,low-spur-mode-enable"))
-+		pdata->r2_user_settings |= ADF4350_REG2_NOISE_MODE(0x3);
- 
- 	/* r3_user_settings */
- 
--	pdata->r3_user_settings = of_property_read_bool(np,
--			"adi,cycle-slip-reduction-enable") ?
--			ADF4350_REG3_12BIT_CSR_EN : 0;
--	pdata->r3_user_settings |= of_property_read_bool(np,
--			"adi,charge-cancellation-enable") ?
--			ADF4351_REG3_CHARGE_CANCELLATION_EN : 0;
--
--	pdata->r3_user_settings |= of_property_read_bool(np,
--			"adi,anti-backlash-3ns-enable") ?
--			ADF4351_REG3_ANTI_BACKLASH_3ns_EN : 0;
--	pdata->r3_user_settings |= of_property_read_bool(np,
--			"adi,band-select-clock-mode-high-enable") ?
--			ADF4351_REG3_BAND_SEL_CLOCK_MODE_HIGH : 0;
-+	pdata->r3_user_settings = 0;
-+	if (device_property_read_bool(dev, "adi,cycle-slip-reduction-enable"))
-+		pdata->r3_user_settings |= ADF4350_REG3_12BIT_CSR_EN;
-+	if (device_property_read_bool(dev, "adi,charge-cancellation-enable"))
-+		pdata->r3_user_settings |= ADF4351_REG3_CHARGE_CANCELLATION_EN;
-+	if (device_property_read_bool(dev, "adi,anti-backlash-3ns-enable"))
-+		pdata->r3_user_settings |= ADF4351_REG3_ANTI_BACKLASH_3ns_EN;
-+	if (device_property_read_bool(dev, "adi,band-select-clock-mode-high-enable"))
-+		pdata->r3_user_settings |= ADF4351_REG3_BAND_SEL_CLOCK_MODE_HIGH;
- 
- 	tmp = 0;
--	of_property_read_u32(np, "adi,12bit-clk-divider", &tmp);
-+	device_property_read_u32(dev, "adi,12bit-clk-divider", &tmp);
- 	pdata->r3_user_settings |= ADF4350_REG3_12BIT_CLKDIV(tmp);
- 
- 	tmp = 0;
--	of_property_read_u32(np, "adi,clk-divider-mode", &tmp);
-+	device_property_read_u32(dev, "adi,clk-divider-mode", &tmp);
- 	pdata->r3_user_settings |= ADF4350_REG3_12BIT_CLKDIV_MODE(tmp);
- 
- 	/* r4_user_settings */
- 
--	pdata->r4_user_settings = of_property_read_bool(np,
--			"adi,aux-output-enable") ?
--			ADF4350_REG4_AUX_OUTPUT_EN : 0;
--	pdata->r4_user_settings |= of_property_read_bool(np,
--			"adi,aux-output-fundamental-enable") ?
--			ADF4350_REG4_AUX_OUTPUT_FUND : 0;
--	pdata->r4_user_settings |= of_property_read_bool(np,
--			"adi,mute-till-lock-enable") ?
--			ADF4350_REG4_MUTE_TILL_LOCK_EN : 0;
-+	pdata->r4_user_settings = 0;
-+	if (device_property_read_bool(dev, "adi,aux-output-enable"))
-+		pdata->r4_user_settings |= ADF4350_REG4_AUX_OUTPUT_EN;
-+	if (device_property_read_bool(dev, "adi,aux-output-fundamental-enable"))
-+		pdata->r4_user_settings |= ADF4350_REG4_AUX_OUTPUT_FUND;
-+	if (device_property_read_bool(dev, "adi,mute-till-lock-enable"))
-+		pdata->r4_user_settings |= ADF4350_REG4_MUTE_TILL_LOCK_EN;
- 
- 	tmp = 0;
--	of_property_read_u32(np, "adi,output-power", &tmp);
-+	device_property_read_u32(dev, "adi,output-power", &tmp);
- 	pdata->r4_user_settings |= ADF4350_REG4_OUTPUT_PWR(tmp);
- 
- 	tmp = 0;
--	of_property_read_u32(np, "adi,aux-output-power", &tmp);
-+	device_property_read_u32(dev, "adi,aux-output-power", &tmp);
- 	pdata->r4_user_settings |= ADF4350_REG4_AUX_OUTPUT_PWR(tmp);
- 
- 	return pdata;
+diff --git a/arch/x86/pci/irq.c b/arch/x86/pci/irq.c
+index 486ba58..b0d0640 100644
+--- a/arch/x86/pci/irq.c
++++ b/arch/x86/pci/irq.c
+@@ -324,6 +324,15 @@ static void write_pc_conf_nybble(u8 base, u8 index, u8 val)
+ 	pc_conf_set(reg, x);
  }
--#else
--static
--struct adf4350_platform_data *adf4350_parse_dt(struct device *dev)
--{
--	return NULL;
--}
--#endif
  
- static int adf4350_probe(struct spi_device *spi)
++/*
++ * FinALi pirq rules are as follows:
++ *
++ * - bit 0 selects between INTx Routing Table Mapping Registers,
++ *
++ * - bit 3 selects the nibble within the INTx Routing Table Mapping Register,
++ *
++ * - bits 7:4 map to bits 3:0 of the PCI INTx Sensitivity Register.
++ */
+ static int pirq_finali_get(struct pci_dev *router, struct pci_dev *dev,
+ 			   int pirq)
  {
-@@ -496,7 +477,7 @@ static int adf4350_probe(struct spi_device *spi)
- 	struct clk *clk = NULL;
- 	int ret;
+@@ -331,11 +340,13 @@ static int pirq_finali_get(struct pci_dev *router, struct pci_dev *dev,
+ 		0, 9, 3, 10, 4, 5, 7, 6, 0, 11, 0, 12, 0, 14, 0, 15
+ 	};
+ 	unsigned long flags;
++	u8 index;
+ 	u8 x;
  
--	if (spi->dev.of_node) {
-+	if (dev_fwnode(&spi->dev)) {
- 		pdata = adf4350_parse_dt(&spi->dev);
- 		if (pdata == NULL)
- 			return -EINVAL;
-@@ -625,7 +606,7 @@ MODULE_DEVICE_TABLE(spi, adf4350_id);
- static struct spi_driver adf4350_driver = {
- 	.driver = {
- 		.name	= "adf4350",
--		.of_match_table = of_match_ptr(adf4350_of_match),
-+		.of_match_table = adf4350_of_match,
- 	},
- 	.probe		= adf4350_probe,
- 	.remove		= adf4350_remove,
--- 
-2.34.1
-
++	index = (pirq & 1) << 1 | (pirq & 8) >> 3;
+ 	raw_spin_lock_irqsave(&pc_conf_lock, flags);
+ 	pc_conf_set(PC_CONF_FINALI_LOCK, PC_CONF_FINALI_LOCK_KEY);
+-	x = irqmap[read_pc_conf_nybble(PC_CONF_FINALI_PCI_INTX_RT1, pirq - 1)];
++	x = irqmap[read_pc_conf_nybble(PC_CONF_FINALI_PCI_INTX_RT1, index)];
+ 	pc_conf_set(PC_CONF_FINALI_LOCK, 0);
+ 	raw_spin_unlock_irqrestore(&pc_conf_lock, flags);
+ 	return x;
+@@ -349,13 +360,15 @@ static int pirq_finali_set(struct pci_dev *router, struct pci_dev *dev,
+ 	};
+ 	u8 val = irqmap[irq];
+ 	unsigned long flags;
++	u8 index;
+ 
+ 	if (!val)
+ 		return 0;
+ 
++	index = (pirq & 1) << 1 | (pirq & 8) >> 3;
+ 	raw_spin_lock_irqsave(&pc_conf_lock, flags);
+ 	pc_conf_set(PC_CONF_FINALI_LOCK, PC_CONF_FINALI_LOCK_KEY);
+-	write_pc_conf_nybble(PC_CONF_FINALI_PCI_INTX_RT1, pirq - 1, val);
++	write_pc_conf_nybble(PC_CONF_FINALI_PCI_INTX_RT1, index, val);
+ 	pc_conf_set(PC_CONF_FINALI_LOCK, 0);
+ 	raw_spin_unlock_irqrestore(&pc_conf_lock, flags);
+ 	return 1;
+@@ -364,7 +377,7 @@ static int pirq_finali_set(struct pci_dev *router, struct pci_dev *dev,
+ static int pirq_finali_lvl(struct pci_dev *router, struct pci_dev *dev,
+ 			   int pirq, int irq)
+ {
+-	u8 mask = ~(1u << (pirq - 1));
++	u8 mask = ~((pirq & 0xf0u) >> 4);
+ 	unsigned long flags;
+ 	u8 trig;
+ 
