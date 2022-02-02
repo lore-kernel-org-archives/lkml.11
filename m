@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBE52C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 04:13:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 716B0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 04:13:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244355AbiBBENo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 23:13:44 -0500
-Received: from mail-bn7nam10on2082.outbound.protection.outlook.com ([40.107.92.82]:23809
-        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
+        id S244397AbiBBENr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 23:13:47 -0500
+Received: from mail-bn8nam12on2085.outbound.protection.outlook.com ([40.107.237.85]:44129
+        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S244275AbiBBENf (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 23:13:35 -0500
+        id S244284AbiBBENj (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 1 Feb 2022 23:13:39 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=P2IFgTHL92Y2/0T6/b+GY9fnxsXan84KLRDcNJFF4wTaVBl1bKNxRVOTesdlED8g/m9uqn2e6QC9stWx3tv15kGKKyS1sPZIHvy9xAAbbQxCxhCOBO8ytzRrrHvN/zjaw4GCSNaLk0FSlC5cy5stvVCxOaESvBVWXhvEJTTDGPu+Bz2ME+GGK953M7rRWrJFDScP5hZK6ELn1C0v21x+hvEavOSAMckKeir8UpyB1UMkMCpa9h0Ex2jjhk+A13xz8qURoBa/jV+IuFBP6nccucWpgL1wNRe1kh6qhotxGplRr3OduJtFJA0dKyXtIuDLF+0/+MEZvQHc7edoDAL1rg==
+ b=PIfFjswjtWYs1gU9SEx9JDG5egB5+bgBNciurJVaSCDjTqW+1IKV/479zVThca3qkeftCJi5G4KSLPh7tQ0RA2O5hkawhKwQcIzh00NxwGe4I2Of8StlA2QL58kgDLYhrvS1VYY+QN1mOloF7O0oEZzZoEBBLvvBK1CenFLtrI4bmmZgcZNRfBwMsWcMEQ+3HvqnjzrViOVR7rZEz3uGbWlxLR8VRiKDu/QivwfgkHBfmPCdqg4C55b2qDAwtHrCsldaN3dzwsNlYQgdNDNJLcP9YMVsPJttaX6OmNTnpND5JF58W+vMViLVleiaYZhKo2DSs+0Ijbpnf+jwREX1Ag==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=T8kDgA3ZhNJgcp8z9OczXhS/s3+uCb+h8OAHgrpCkbk=;
- b=joWhGRCSsFgU7NoDs/W/cGPp+oerKkmT5IEsPmlhK7IdUByPoYQHGSMsmQJQc6dgQaADaIpEkbk9ZT4YL3FqTzWrz8gV66vZLH1zOUEnvK7dTckRDpGw8tbgZzLu+i6cO1JVioIGrOik76rVDePQNudTTyTbVySJqJYhHeSxtotQelRjazpdkjWVj+qGNU268DZQWYk5NFirpuG9MrQ55KWg/qcUX1AvfB2EH1ojsIWrfG9nBDVGsU0phqUs1tVLHVSwmXl0ByrnH0BC6Ita9hX0YntkvRZf30gWTXfuHKTPvGwIE8EyPKPr2tWTzXrkzIDsSKi7Zn2+TZ2ZqGVr3Q==
+ bh=jQhHVcB3XSF5DeZCvqLESGm6Wktrl8qqMwb0pA1Zt0s=;
+ b=bKLyYlZGamr1j/0nJSibcpcHtB1XeWaTGdJmNqFlgnWxPUEVh+blNXt4mD+oLtPNnw4D+xKBnA1aYe95Yb3Hx/+WKdsA9Fvo2344BAVgohhDhDYKQzG5hbcQTKU/4iVTVOnVTBuRLKt+6UkOM8vru85fXJVY3CcarMJFA1HQ+pxnoqA1n8q8wkWKjs+1ao2DZpxIGGpQGscj6NCaftriEgaxOPF23+xMCOQUubUD8ZRsVG69fMEGGsK81F3c2Qc/icij7RAQfPLlBGxXd0H27pCZ1hx23EthtsQo7ZLGycG2uQtNvuxHBHrpAuRdHXnoGEXSeArIChjZ7M3MdPVT4Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=T8kDgA3ZhNJgcp8z9OczXhS/s3+uCb+h8OAHgrpCkbk=;
- b=A5euqg70RGVOGuWDeMwjGCajK2ai4IjbobcFlMWeREUhu2kWPon7n0+LJ/IjZOVQqKj3FQ95VaP06yHQiHO5UTrzNZcxNelmJbYIc1y7h0SvhUs9v/JaRSsFN/sWC2ZqgP5shoBqP1y+LXpiLzG/65B7Ez4GxxL8UgTuOJtx/VI=
-Received: from DM5PR2001CA0018.namprd20.prod.outlook.com (2603:10b6:4:16::28)
- by DM6PR12MB3196.namprd12.prod.outlook.com (2603:10b6:5:187::27) with
+ bh=jQhHVcB3XSF5DeZCvqLESGm6Wktrl8qqMwb0pA1Zt0s=;
+ b=TeJEPF1OG3HbZ7YgDHrZ1qwgjTlrGYVDF5vsm3pqAxkx6OemUh8F80oZlSjIRXOZ1Q1hYeZPLYg5wEIzEisZI2DYDrwQjLuW/B7hz2pmrmsCNEVztVdJMDgK13ipHesyLZTFuPX0ZxtzwK4F4MFW6i5bF1lMduZoAuMOsSbhn0U=
+Received: from DM6PR02CA0152.namprd02.prod.outlook.com (2603:10b6:5:332::19)
+ by BL0PR12MB2436.namprd12.prod.outlook.com (2603:10b6:207:42::19) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.20; Wed, 2 Feb
- 2022 04:13:31 +0000
-Received: from DM6NAM11FT021.eop-nam11.prod.protection.outlook.com
- (2603:10b6:4:16:cafe::77) by DM5PR2001CA0018.outlook.office365.com
- (2603:10b6:4:16::28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.22 via Frontend
- Transport; Wed, 2 Feb 2022 04:13:31 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.11; Wed, 2 Feb
+ 2022 04:13:34 +0000
+Received: from DM6NAM11FT027.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:332:cafe::6c) by DM6PR02CA0152.outlook.office365.com
+ (2603:10b6:5:332::19) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.15 via Frontend
+ Transport; Wed, 2 Feb 2022 04:13:34 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -44,13 +44,13 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT021.mail.protection.outlook.com (10.13.173.76) with Microsoft SMTP
+ DM6NAM11FT027.mail.protection.outlook.com (10.13.172.205) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.4951.12 via Frontend Transport; Wed, 2 Feb 2022 04:13:31 +0000
+ 15.20.4951.12 via Frontend Transport; Wed, 2 Feb 2022 04:13:33 +0000
 Received: from sp5-759chost.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Tue, 1 Feb
- 2022 22:13:28 -0600
+ 2022 22:13:31 -0600
 From:   Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 To:     <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>,
         <x86@kernel.org>
@@ -59,9 +59,9 @@ CC:     <seanjc@google.com>, <mlevitsk@redhat.com>, <pbonzini@redhat.com>,
         <bp@alien8.de>, <peterz@infradead.org>, <hpa@zytor.com>,
         <jon.grimm@amd.com>,
         "Suravee Suthikulpanit" <suravee.suthikulpanit@amd.com>
-Subject: [PATCH v4 1/3] KVM: SVM: Only call vcpu_(un)blocking when AVIC is enabled.
-Date:   Tue, 1 Feb 2022 22:11:10 -0600
-Message-ID: <20220202041112.273017-2-suravee.suthikulpanit@amd.com>
+Subject: [PATCH v4 3/3] KVM: SVM: Add support for 12-bit host physical APIC ID
+Date:   Tue, 1 Feb 2022 22:11:12 -0600
+Message-ID: <20220202041112.273017-4-suravee.suthikulpanit@amd.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220202041112.273017-1-suravee.suthikulpanit@amd.com>
 References: <20220202041112.273017-1-suravee.suthikulpanit@amd.com>
@@ -73,132 +73,143 @@ X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d38a0e75-6bb0-45f6-05ba-08d9e6025f56
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3196:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB31967D128F4E80412E965FB6F3279@DM6PR12MB3196.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:120;
+X-MS-Office365-Filtering-Correlation-Id: 9d104e1c-bcf9-439c-2942-08d9e60260eb
+X-MS-TrafficTypeDiagnostic: BL0PR12MB2436:EE_
+X-Microsoft-Antispam-PRVS: <BL0PR12MB243687A8BA3641EA5A8839EBF3279@BL0PR12MB2436.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:883;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: GRYW76rGfG8ZDC0AKw0ROEBUueeDPZLXmpS/zD2HY3Dd4YFFgrXnCkylUCLn+RlfXem5CZTtFV4fom6Q1sxMY1JuBSpYzQRfwPhvDtANH23CRbA+tSbz94/ncgnbSgaMAfjZ93b6Cqi4Jbz4K5edQZankQl2q+PtxnwbAmaIeVkeUpuifg2cn1WStLb4tRlwwZuPBItGjy18BjO3SCZ6dVo4JkXZyzmQb5Lvd6k3pu0tpTPmb5uPqIkFIllk964e7naUeq0j87cFm/HbJ6RPWDkiz0sCpFYzXUPaF1eyVhMuc88caF6t2tsZRmfIPA65D70SS1/RbqW+Pc1nDX0HtJveVW48sGRQc+cu2Dsufd5Yh11tWILtWCyTU00Azpk6TCU6aT89NNk5f5oNFxv4UFweqKd52+GVf4xsrc6lOFX0BM1+IH5XL2BMf6IN+SH0T4ZRfv0NH6VkixvBqvLSrAibE2UXykE6l7piIqqBY580llu7n+qd3Ev+MPFW+zqcY+oAIz0j2AzLJo1iJHRXvgwdUU+QXG57XHZ8OQfXds5gpbFWapSDNm/hAPpBgw1AkiY5k+9dRwONEzVXxONPvCznp3nB4Xv5xEAcuHL3vDH0QUNbfloUbjFia974U03chXCRtSR6wRmjsqnK8SgqP3F5IKBZtUiuwkN3tREQF59VBbOpGbMny9fin+5bC7NZl+8YpctArAg2lQb2kFG6JxUGjSR+RYrsBbdflhr4sNtH7STeGAiLqTCrCevgYvmtUwnbGiy50glw5zGtletDYA==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(82310400004)(2906002)(54906003)(7696005)(6666004)(110136005)(36756003)(7416002)(508600001)(8676002)(8936002)(316002)(44832011)(70586007)(4326008)(70206006)(5660300002)(47076005)(16526019)(83380400001)(81166007)(86362001)(356005)(1076003)(26005)(186003)(336012)(426003)(2616005)(36860700001)(40460700003)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: /92hMAsgBUDVhqdCdJjHATu81Y2CjoAxUi+lqXH9IkJEbWsWw0XeWqUMEoDwqij6f4MwHSsK1BGQhh0r0u2MZuYPLl44Y7MpkGA/thIhXk0f3rHOA/R60M4RiR/9o+DMp+D22QTpo8dWfuABY4W0ztcD851Qba25wZA72E9jcDoPAMeAazNaow4HgYol3zweY9NCwH/CLA7xVIlCt+QddCbBsYpMafFy8dqBHySdUW3wFjWEI2+XngRb2C8dNyaSdPlTXD6h+iBiGLkwVX+ecqbgyVdT96idGdeELnUrDhvzxeVfhj8LKXyrNUbVuG/x4KzAZ8Oq6WK9/GGb76w0N6eeDZmXoNEeq1p/1hV+t+WwDW09JSpnlT8l0evPqJCClJbSD8ORldD6HmkHglnYE38ytyvWI7V653KuM2pxMPvpUZWiHpvlXugtaOGZU8a9wDr6P0DyUXsETGdhUkjvmUcg5b8UgphXSapw9yfCIfYOys88o2iuKtoq3nVlin3+Dv8dxP+nysp0/SiFZRPiVYCQjR1tAyZk1WbLboF/hCTHwzi3Aj4Wr9XsSzxi7ueWtXp+JwicG2ndKTyrFikCg3pxHQiyCVHbtrX4R7lxoVdSw0Qr1LQPX4pyYFsQDb6CqcjN6gScf7FwplkhyZVloOLJNYfJ0gMC6mhPOj7w8URyYJC9HUjSTPILeY5tcpM6YHdAqSsDQ8Avwz0cZOjz3Q==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(36860700001)(8676002)(8936002)(7696005)(70206006)(6666004)(508600001)(186003)(16526019)(83380400001)(70586007)(4326008)(82310400004)(110136005)(316002)(26005)(54906003)(36756003)(1076003)(426003)(336012)(47076005)(86362001)(2906002)(81166007)(356005)(40460700003)(5660300002)(44832011)(2616005)(7416002)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Feb 2022 04:13:31.2338
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Feb 2022 04:13:33.8889
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d38a0e75-6bb0-45f6-05ba-08d9e6025f56
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9d104e1c-bcf9-439c-2942-08d9e60260eb
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT021.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT027.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3196
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB2436
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The kvm_x86_ops.vcpu_(un)blocking are needed by AVIC only.
-Therefore, set the ops only when AVIC is enabled.
+The AVIC physical APIC ID table entry contains the host physical
+APIC ID field, which the hardware uses to keep track of where each
+vCPU is running. Originally, the field is an 8-bit value. For system
+w/ maximum physical APIC ID larger than 255, AVIC can support
+upto 12-bit value.
 
-Also, refactor AVIC hardware setup logic into helper function
-To prepare for upcoming AVIC changes.
+However, there is no CPUID bit to help determine the AVIC capability
+to support 12-bit host physical APIC ID. Therefore, use the maximum
+physical APIC ID available on the system to determine the proper
+host physical APIC ID mask size.
 
-Suggested-by: Sean Christopherson <seanjc@google.com>
+Cc: Sean Christopherson <seanjc@google.com>
+Cc: Maxim Levitsky <mlevitsk@redhat.com>
 Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 ---
- arch/x86/kvm/svm/avic.c | 17 +++++++++++++++--
- arch/x86/kvm/svm/svm.c  | 10 ++--------
- arch/x86/kvm/svm/svm.h  |  3 +--
- 3 files changed, 18 insertions(+), 12 deletions(-)
+ arch/x86/kvm/svm/avic.c | 33 ++++++++++++++++++++++++---------
+ arch/x86/kvm/svm/svm.h  |  1 -
+ 2 files changed, 24 insertions(+), 10 deletions(-)
 
 diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-index 90364d02f22a..f5c6cab42d74 100644
+index f5c6cab42d74..3ca5776348a8 100644
 --- a/arch/x86/kvm/svm/avic.c
 +++ b/arch/x86/kvm/svm/avic.c
-@@ -1027,7 +1027,7 @@ void avic_vcpu_put(struct kvm_vcpu *vcpu)
- 	WRITE_ONCE(*(svm->avic_physical_id_cache), entry);
+@@ -19,6 +19,7 @@
+ #include <linux/amd-iommu.h>
+ #include <linux/kvm_host.h>
+ 
++#include <asm/apic.h>
+ #include <asm/irq_remapping.h>
+ 
+ #include "trace.h"
+@@ -63,6 +64,7 @@
+ static DEFINE_HASHTABLE(svm_vm_data_hash, SVM_VM_DATA_HASH_BITS);
+ static u32 next_vm_id = 0;
+ static bool next_vm_id_wrapped = 0;
++static u16 avic_host_physical_id_mask;
+ static DEFINE_SPINLOCK(svm_vm_data_hash_lock);
+ 
+ /*
+@@ -133,6 +135,23 @@ void avic_vm_destroy(struct kvm *kvm)
+ 	spin_unlock_irqrestore(&svm_vm_data_hash_lock, flags);
  }
  
--void avic_vcpu_blocking(struct kvm_vcpu *vcpu)
-+static void avic_vcpu_blocking(struct kvm_vcpu *vcpu)
- {
- 	if (!kvm_vcpu_apicv_active(vcpu))
- 		return;
-@@ -1052,7 +1052,7 @@ void avic_vcpu_blocking(struct kvm_vcpu *vcpu)
- 	preempt_enable();
- }
- 
--void avic_vcpu_unblocking(struct kvm_vcpu *vcpu)
-+static void avic_vcpu_unblocking(struct kvm_vcpu *vcpu)
- {
- 	int cpu;
- 
-@@ -1066,3 +1066,16 @@ void avic_vcpu_unblocking(struct kvm_vcpu *vcpu)
- 
- 	put_cpu();
- }
-+
-+bool avic_hardware_setup(struct kvm_x86_ops *x86_ops)
++static void avic_init_host_physical_apicid_mask(void)
 +{
-+	if (!npt_enabled || !boot_cpu_has(X86_FEATURE_AVIC))
-+		return false;
++	u32 count = get_count_order(apic_get_max_phys_apicid());
 +
-+	x86_ops->vcpu_blocking = avic_vcpu_blocking,
-+	x86_ops->vcpu_unblocking = avic_vcpu_unblocking,
-+
-+	pr_info("AVIC enabled\n");
-+	amd_iommu_register_ga_log_notifier(&avic_ga_log_notifier);
-+	return true;
++	/*
++	 * Depending on the maximum host physical APIC ID available
++	 * on the system, AVIC can support upto 8-bit or 12-bit host
++	 * physical APIC ID.
++	 */
++	if (count <= 8)
++		avic_host_physical_id_mask = GENMASK(7, 0);
++	else
++		avic_host_physical_id_mask = GENMASK(11, 0);
++	pr_debug("Using AVIC host physical APIC ID mask %#0x\n",
++		 avic_host_physical_id_mask);
 +}
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index 2c99b18d76c0..459edd2a1359 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -4391,8 +4391,6 @@ static struct kvm_x86_ops svm_x86_ops __initdata = {
- 	.prepare_guest_switch = svm_prepare_guest_switch,
- 	.vcpu_load = svm_vcpu_load,
- 	.vcpu_put = svm_vcpu_put,
--	.vcpu_blocking = avic_vcpu_blocking,
--	.vcpu_unblocking = avic_vcpu_unblocking,
++
+ int avic_vm_init(struct kvm *kvm)
+ {
+ 	unsigned long flags;
+@@ -974,17 +993,12 @@ avic_update_iommu_vcpu_affinity(struct kvm_vcpu *vcpu, int cpu, bool r)
+ void avic_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
+ {
+ 	u64 entry;
+-	/* ID = 0xff (broadcast), ID > 0xff (reserved) */
+-	int h_physical_id = kvm_cpu_get_apicid(cpu);
++	u16 h_physical_id = (u16)kvm_cpu_get_apicid(cpu);
+ 	struct vcpu_svm *svm = to_svm(vcpu);
  
- 	.update_exception_bitmap = svm_update_exception_bitmap,
- 	.get_msr_feature = svm_get_msr_feature,
-@@ -4676,13 +4674,9 @@ static __init int svm_hardware_setup(void)
- 			nrips = false;
- 	}
+ 	lockdep_assert_preemption_disabled();
  
--	enable_apicv = avic = avic && npt_enabled && boot_cpu_has(X86_FEATURE_AVIC);
-+	enable_apicv = avic = avic && avic_hardware_setup(&svm_x86_ops);
+-	/*
+-	 * Since the host physical APIC id is 8 bits,
+-	 * we can support host APIC ID upto 255.
+-	 */
+-	if (WARN_ON(h_physical_id > AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK))
++	if (WARN_ON((h_physical_id & avic_host_physical_id_mask) != h_physical_id))
+ 		return;
  
--	if (enable_apicv) {
--		pr_info("AVIC enabled\n");
--
--		amd_iommu_register_ga_log_notifier(&avic_ga_log_notifier);
--	} else {
-+	if (!enable_apicv) {
- 		svm_x86_ops.vcpu_blocking = NULL;
- 		svm_x86_ops.vcpu_unblocking = NULL;
- 	}
+ 	/*
+@@ -1000,8 +1014,8 @@ void avic_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
+ 	entry = READ_ONCE(*(svm->avic_physical_id_cache));
+ 	WARN_ON(entry & AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK);
+ 
+-	entry &= ~AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK;
+-	entry |= (h_physical_id & AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK);
++	entry &= ~((u64)avic_host_physical_id_mask);
++	entry |= h_physical_id;
+ 	entry |= AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK;
+ 
+ 	WRITE_ONCE(*(svm->avic_physical_id_cache), entry);
+@@ -1076,6 +1090,7 @@ bool avic_hardware_setup(struct kvm_x86_ops *x86_ops)
+ 	x86_ops->vcpu_unblocking = avic_vcpu_unblocking,
+ 
+ 	pr_info("AVIC enabled\n");
++	avic_init_host_physical_apicid_mask();
+ 	amd_iommu_register_ga_log_notifier(&avic_ga_log_notifier);
+ 	return true;
+ }
 diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
-index 47ef8f4a9358..f2507d11a31a 100644
+index f2507d11a31a..70c55f20c0f1 100644
 --- a/arch/x86/kvm/svm/svm.h
 +++ b/arch/x86/kvm/svm/svm.h
-@@ -572,6 +572,7 @@ extern struct kvm_x86_nested_ops svm_nested_ops;
+@@ -565,7 +565,6 @@ extern struct kvm_x86_nested_ops svm_nested_ops;
+ #define AVIC_LOGICAL_ID_ENTRY_VALID_BIT			31
+ #define AVIC_LOGICAL_ID_ENTRY_VALID_MASK		(1 << 31)
  
- #define VMCB_AVIC_APIC_BAR_MASK		0xFFFFFFFFFF000ULL
- 
-+bool avic_hardware_setup(struct kvm_x86_ops *ops);
- int avic_ga_log_notifier(u32 ga_tag);
- void avic_vm_destroy(struct kvm *kvm);
- int avic_vm_init(struct kvm *kvm);
-@@ -592,8 +593,6 @@ int svm_deliver_avic_intr(struct kvm_vcpu *vcpu, int vec);
- bool svm_dy_apicv_has_pending_interrupt(struct kvm_vcpu *vcpu);
- int svm_update_pi_irte(struct kvm *kvm, unsigned int host_irq,
- 		       uint32_t guest_irq, bool set);
--void avic_vcpu_blocking(struct kvm_vcpu *vcpu);
--void avic_vcpu_unblocking(struct kvm_vcpu *vcpu);
- 
- /* sev.c */
- 
+-#define AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK	(0xFFULL)
+ #define AVIC_PHYSICAL_ID_ENTRY_BACKING_PAGE_MASK	(0xFFFFFFFFFFULL << 12)
+ #define AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK		(1ULL << 62)
+ #define AVIC_PHYSICAL_ID_ENTRY_VALID_MASK		(1ULL << 63)
 -- 
 2.25.1
 
