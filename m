@@ -2,91 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACBA7C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 00:26:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 361EEC4167D
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 00:30:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243333AbiBBA0q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 19:26:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50700 "EHLO
+        id S243373AbiBBAah (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 19:30:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230330AbiBBA0p (ORCPT
+        with ESMTP id S243348AbiBBAaf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 19:26:45 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C38FC061714;
-        Tue,  1 Feb 2022 16:26:45 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id h12so18680772pjq.3;
-        Tue, 01 Feb 2022 16:26:45 -0800 (PST)
+        Tue, 1 Feb 2022 19:30:35 -0500
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF894C061401
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Feb 2022 16:30:35 -0800 (PST)
+Received: by mail-pg1-x52b.google.com with SMTP id e16so16902005pgn.4
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Feb 2022 16:30:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:in-reply-to:subject:to:cc
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=7VOcx1z2LQk1UVKN1GshLFL3aoPwBOYAHUTpT33dawQ=;
-        b=g3xgkZyLby77vQpeK/xLBaf60/4qM/xPAt0hur2nFw7UTOwt2mrv1uCyKISqPPptGF
-         NxfUTkUEXc2tMJOd051Jm1cO84TQQ7ybRU7d5dJ9z5fkF/7xsnFRin4yxbny/zulcElO
-         5K4XhXlC7lqbHtvMAsSQqB833l01R1T50BRH0qdI37FTCx+lvEyScDafkkG5hBnSF52j
-         vaPN07F0GFE1z72uORg7Pf5JGxGjN/jZv2t18u0iNHhKddLlgib1dgzeX8D3SGLhTKev
-         Vf8yr6YDWzlGnwl44PLal4xXToTOxQJbJzLOMMLklUsVAyGpMxG1CT4x2pcqcbIzO8Y+
-         WTIA==
+        bh=14jvoQeqKtuOk6Mr4+0C6OLoJKyxEeffQvdA+jlHBmg=;
+        b=JqtonjpTgg0b8htWFsCRcqqN28M/Rj/GjM986XzCkwGftoGXxTfbXInvqAAsMH0z2K
+         ugIZoEmIXpPEdLMesDzVJZQcpOoG0EHB5zlq7jSOa2Ni3fWcKMLBUd4BwWt2PdSNJmAr
+         ehPwqkv1CZcRE6T8hbQJu+GdZKZuoCx0531OQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:in-reply-to:subject:to:cc
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=7VOcx1z2LQk1UVKN1GshLFL3aoPwBOYAHUTpT33dawQ=;
-        b=SINDnIYzDtwXD5P2am4kynTH9LFE/wNTzI3uqDOMXxLJGgwLnuFtczsMI1CdTBIs2i
-         1HlMziSC4GxrpjlbAgdMFIqIQMtmX04PLht+PH3k/1VWKMlexa0x8TMQsxHxyzz/nyut
-         VvODxCWn+YTR7G/XobO5Zy4uhT7qBR+unroWOUuYMhyCXzwGnv8mEk2G/2zYhcvW26wS
-         R2YCLO9N4WrfNeu8T10du00oYOovshSZXJLGrxFcBO37844mFGN9zhq7Njpkh61DMXtf
-         k4LWvhgYL3uKyWJT7v5+wZr/+aYPkA0nCrT0zE5PiBgQDpFRb+uRMs1l1z0/WLHPXKsY
-         GKKw==
-X-Gm-Message-State: AOAM530U3ooAL9YqK6DT2iSWLxE8LfJNkVlU/hS7xogWJTSbvYzqTmso
-        S++9q6682SVMpbn9Ea3VxV8BLTg7/JPZx4EyB8s=
-X-Google-Smtp-Source: ABdhPJxQyEYbdz6uT7LBgYyBdxnyeBGMoJKKdxsZmccXRFVAqdje1uJIZo8aWlg/iR4JMHMdhH9x8Q==
-X-Received: by 2002:a17:90b:4d82:: with SMTP id oj2mr5315169pjb.170.1643761604074;
-        Tue, 01 Feb 2022 16:26:44 -0800 (PST)
-Received: from cl-arch-kdev (cl-arch-kdev.xen.prgmr.com. [71.19.144.195])
-        by smtp.gmail.com with ESMTPSA id l17sm23360760pfu.61.2022.02.01.16.26.38
+        bh=14jvoQeqKtuOk6Mr4+0C6OLoJKyxEeffQvdA+jlHBmg=;
+        b=s4OkxKTLina9lHETbJ6wE9LjEuz6t/ueB4ZPUjOlUyF6nuO9G200Nx0uFmf6LB0s0x
+         tugKTZm6wrUbJUwteWqPYad6ikh/WeXX8Nfiet03JGNH8noGazsW2v1mKPgSQGEpJWXH
+         S83qa+oZFS9ZHyCMBovpQCBTRe6LjK99CJZSYDRjwMU/nUwEbNNy4Bwv1U1cA5k7VB6m
+         Y3hom1SNCgLwrFdtaJ6Pwz/EAMuQOPVFRrTxH9H4IseasURDSG8QD7i87qhH8Ok8lHaN
+         HcMT6kIOCoLlhm6DUO9RiKj7Z1TERwAS3MwANGgasnk3UrpdC+yfjbbqdr9FTFKrC65U
+         5dbA==
+X-Gm-Message-State: AOAM530PLQxfTXtpyfO5AbapC5FVi+A0VfSikauZCT+LLIWDw/pTeQWI
+        6/a+fArLSaMo2BslfLIxsgGYJw==
+X-Google-Smtp-Source: ABdhPJyPbhjJHeF7NXhuxl1KHgGfYpXz6s1ERxX7MxNSnV1oyBrhE9RaU2+8dmrYIQVnmWjyfe1wfg==
+X-Received: by 2002:a65:58cf:: with SMTP id e15mr22850329pgu.172.1643761835332;
+        Tue, 01 Feb 2022 16:30:35 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id bv22sm4184717pjb.31.2022.02.01.16.30.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Feb 2022 16:26:43 -0800 (PST)
-Message-ID: <61f9cfc3.1c69fb81.a4390.e1fa@mx.google.com>
-Date:   Tue, 01 Feb 2022 16:26:43 -0800 (PST)
-X-Google-Original-Date: Wed, 02 Feb 2022 00:26:36 GMT
-From:   Fox Chen <foxhlchen@gmail.com>
-In-Reply-To: <20220131105229.959216821@linuxfoundation.org>
-Subject: RE: [PATCH 5.15 000/171] 5.15.19-rc1 review
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, Fox Chen <foxhlchen@gmail.com>
-Content-Transfer-Encoding: 7bit
+        Tue, 01 Feb 2022 16:30:34 -0800 (PST)
+From:   Kees Cook <keescook@chromium.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Miguel Ojeda <ojeda@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        George Burgess IV <gbiv@google.com>,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        linux-hardening@vger.kernel.org,
+        linux-security-module@vger.kernel.org
+Subject: [PATCH 0/4 v5] fortify: Add Clang support
+Date:   Tue,  1 Feb 2022 16:30:29 -0800
+Message-Id: <20220202003033.704951-1-keescook@chromium.org>
+X-Mailer: git-send-email 2.30.2
+MIME-Version: 1.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1350; h=from:subject; bh=6KvsI71PT+JlnQyQ662Nyi7JCW7rzErZj2gDq9QB56U=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBh+dCnjHLnvpGi5TnrdR8f2ys13IgaTmLG1sJwJyvB 7ooS3KmJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYfnQpwAKCRCJcvTf3G3AJhytD/ wK6WOdEoT2YI9H0XjDjQ/NualqA3pjJoYJrGr6Vs8iaBcQw4OAQWxg1niXGY7FxYMz+tmE73Tum6IC 266PDWnqdUm42keREwroQbd+kwQ8kS8XvOwLkTJT/i4Ooef23B3t3mNn8jusyNbk6ZJLzjn1d8s6NY JwQHFXGZA69s2hmMxc5TEsjDRUiWYyNajkmBxnMjj/3jdqsgEuOpOJFdvLxFZYJbD1vOxoHj0ZSafC lAOPsUXrRmLTQu+ApRXnq0u3SAGIDkNVtZKUDWCvafyLDlmeXpJtriZ0tPpiN+lmf0uN6nPyg2FFJm Wmlzb1fOBOVgnBVWWXS5r53d1ytpzfLEe7pX5hDoxopvhbRv8Sl7pQj7GRPyJzJvnA6x0j4pn8to0a Qgrrg4CIAQz969JG1PFmwaYD6stOAOr3bDDl+jwQG8qyZ2BCzpfo9oYfc2Mj9U3RFZ1Gpf0H36l2yy Q91IkhfyEO4soOai0LqQW65tEFt44I1G3+ugq7ct1yixYCQUtPQhXHSH1vU+0ioQp68DeC5j6AFLgW NPe3MhwmBwmiwIi5110A0RXhJFMKJigIRPkuf7q+Za9pKKimsDtmV/sX2dlnUyoM75DNEqStVplmzd EMCBO8FeGOhI3wXXPk4bDWqhgPGu7kGUUw6NW4XFAfqm3xxz6yrgNu+7ZZHg==
+X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 31 Jan 2022 11:54:25 +0100, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
-> This is the start of the stable review cycle for the 5.15.19 release.
-> There are 171 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Wed, 02 Feb 2022 10:51:59 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.19-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-> 
+Hi,
 
-5.15.19-rc1 Successfully Compiled and booted on my Raspberry PI 4b (8g) (bcm2711)
-                
-Tested-by: Fox Chen <foxhlchen@gmail.com>
+So, after looking at v4 at little longer I decided that it is just too
+invasive. After spending time researching the primary issue that needed to
+be worked around (__builtin_object_size(p, 1) not working from inlines),
+I got some help from gbiv to use some Clang-specific attributes to get the
+same effect.
+
+I think the result is much less invasive, and it even lets us easily
+expand size verification coverage into non-inlines if we ever want to.
+
+Please take a look. :)
+
+-Kees
+
+v1: https://lore.kernel.org/linux-hardening/20210727205855.411487-61-keescook@chromium.org/
+v2: https://lore.kernel.org/linux-hardening/20210818060533.3569517-64-keescook@chromium.org/
+v3: https://lore.kernel.org/linux-hardening/20211213223331.135412-18-keescook@chromium.org/
+v4: https://lore.kernel.org/linux-hardening/20220130182204.420775-1-keescook@chromium.org/
+v5: - rewritten to use Clang attributes
+
+Kees Cook (4):
+  Compiler Attributes: Add Clang's __pass_object_size
+  Compiler Attributes: Add __overloadable
+  Compiler Attributes: Add __diagnose_as
+  fortify: Add Clang support
+
+ include/linux/compiler_attributes.h | 29 ++++++++++++++++
+ include/linux/fortify-string.h      | 52 ++++++++++++++++++++---------
+ security/Kconfig                    |  2 +-
+ 3 files changed, 67 insertions(+), 16 deletions(-)
+
+-- 
+2.30.2
 
