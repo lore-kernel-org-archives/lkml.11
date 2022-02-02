@@ -2,123 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32FC1C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 06:53:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E7CCC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 06:53:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245280AbiBBGxn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 01:53:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50814 "EHLO
+        id S245291AbiBBGxq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 01:53:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244753AbiBBGwi (ORCPT
+        with ESMTP id S244751AbiBBGwi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 2 Feb 2022 01:52:38 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3362DC061770;
-        Tue,  1 Feb 2022 22:31:19 -0800 (PST)
-Date:   Wed, 02 Feb 2022 06:31:16 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1643783477;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9a4iN6wHrTrn2PGCHDd4HQDED416KMkM/YrYCi4T+Ws=;
-        b=Ks23IaFy7JmqZTXJjTn5Yy4/vb4D1/3JXSsfi68SHOI6tOy/sjMq/br+TLR8ZBUuTGNgr+
-        PnGA3Aauyn8HMIezVZqDDA2EjgyGuDjCNdlWUPcc48PEt7sG0l2kIKICGzUHIpLa0x65dn
-        doF7bSsaCQYJrzvXS/lsmVJlMkF70fetmWRNPlWJnYbBCdxLASVKctlE2Mu/rqlLkqk7Cq
-        KMbNR44YMKxmLvYZLQnd/T3aPxp5x+VJoD7l1F361qTwWBWUBaCY5roUDO9Km1ZpZe9g9p
-        7hGO/NSISiduN6jepNF7AKs3Tvwe/2B7PjrkOfjl8Zg6POHdW070uIUZEcxnMQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1643783477;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9a4iN6wHrTrn2PGCHDd4HQDED416KMkM/YrYCi4T+Ws=;
-        b=GjeQSjLUX+g+7BjbB/3H21/xwVrBS34C5r9sQghMVN1oCcLsEAYh/4RX+Ei66v+rVxM9U4
-        F9ErUu6PBsAiY8AQ==
-From:   "tip-bot2 for Greg Kroah-Hartman" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/cpu] x86/CPU/AMD: Use default_groups in kobj_type
-Cc:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        Borislav Petkov <bp@suse.de>,
-        Yazen Ghannam <yazen.ghannam@amd.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220106103537.3663852-1-gregkh@linuxfoundation.org>
-References: <20220106103537.3663852-1-gregkh@linuxfoundation.org>
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C32CC061755;
+        Tue,  1 Feb 2022 22:08:26 -0800 (PST)
+Received: from ip4d144895.dynamic.kabel-deutschland.de ([77.20.72.149] helo=[192.168.66.200]); authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1nF8oW-0002ui-WD; Wed, 02 Feb 2022 07:08:21 +0100
+Message-ID: <7a1e66cc-a1c5-54c7-ca7d-04a389beb8b2@leemhuis.info>
+Date:   Wed, 2 Feb 2022 07:08:20 +0100
 MIME-Version: 1.0
-Message-ID: <164378347670.16921.9170590914847958506.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-BS
+To:     Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     workflows@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        regressions@lists.linux.dev,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+References: <cover.1643710947.git.linux@leemhuis.info>
+ <978ad91647e93b20b7fe12c3f237f6de8f9eaca1.1643710947.git.linux@leemhuis.info>
+ <87bkzq5fxu.fsf@meer.lwn.net>
+From:   Thorsten Leemhuis <linux@leemhuis.info>
+Subject: Re: [PATCH v4 3/3] docs: reporting-issues.rst: link new document
+ about regressions
+In-Reply-To: <87bkzq5fxu.fsf@meer.lwn.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-bounce-key: webpack.hosteurope.de;linux@leemhuis.info;1643782106;67ce4a9f;
+X-HE-SMSGID: 1nF8oW-0002ui-WD
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/cpu branch of tip:
+On 02.02.22 00:23, Jonathan Corbet wrote:
+> Thorsten Leemhuis <linux@leemhuis.info> writes:
+> 
+>> Make Documentation/admin-guide/reporting-issues.rst point to the newly
+>> created document about regressions
+>> (Documentation/admin-guide/regressions-users.rst). This allows to
+>> shorten a few explanations the new document describes better and in more
+>> detail.
+>>
+>> While at it move the copyright hint to the end of the file, as suggested
+>> during review of the new documents about regressions.
+>>
+>> Signed-off-by: Thorsten Leemhuis <linux@leemhuis.info>
+>> ---
+>>  .../admin-guide/reporting-issues.rst          | 60 +++++++++----------
+>>  1 file changed, 29 insertions(+), 31 deletions(-)
+> 
+> [...]
+> 
+>> +You deal with a regression if some application or practical use case running
+>> +fine with one Linux kernel works worse or not at all with a newer version
+>> +compiled using a similar configuration. The document
+>> +'Documentation/admin-guide/regressions-users.rst' explains this in more detail.
+> 
+> Some of those quotes around file names are still sneaking in.
 
-Commit-ID:     7f99cb5e60392fc3494c610776e733b68784280c
-Gitweb:        https://git.kernel.org/tip/7f99cb5e60392fc3494c610776e733b68784280c
-Author:        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-AuthorDate:    Thu, 06 Jan 2022 11:35:37 +01:00
-Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Tue, 01 Feb 2022 12:41:24 +01:00
+I did that on purpose here, as the file right now uses single quotes for
+doc references almost everywhere and I thought I better stick to its
+style -- especially as one such a quoted references is pretty close by
+in this case, so it would look odd to quote one but not the other:
 
-x86/CPU/AMD: Use default_groups in kobj_type
+```
+[...] compiled using a similar configuration. The document
+ 'Documentation/admin-guide/regressions-users.rst' explains this in more
+detail.
+ It also provides a good deal of other information about regressions you
+might
+ want to be aware of; it for example explains how to add your issue to
+the list
+ of tracked regressions, to ensure it won't fall through the cracks.
 
-There are currently 2 ways to create a set of sysfs files for a
-kobj_type, through the default_attrs field, and the default_groups
-field. Move the AMD mce sysfs code to use default_groups field which has
-been the preferred way since
 
-  aa30f47cf666 ("kobject: Add support for default attribute groups to kobj_type")
 
-so that the obsolete default_attrs field can be removed soon.
+What qualifies as security issue is left to your judgment. Consider reading
+ 'Documentation/admin-guide/security-bugs.rst' before proceeding, as it
+ [...]
+```
 
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Tested-by: Yazen Ghannam <yazen.ghannam@amd.com>
-Link: https://lore.kernel.org/r/20220106103537.3663852-1-gregkh@linuxfoundation.org
----
- arch/x86/kernel/cpu/mce/amd.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+Stupid me just forgot to use single quotes for the second link to
+Documentation/admin-guide/regressions-users.rst. Will fix this up :-/
 
-diff --git a/arch/x86/kernel/cpu/mce/amd.c b/arch/x86/kernel/cpu/mce/amd.c
-index 9f4b508..1940d30 100644
---- a/arch/x86/kernel/cpu/mce/amd.c
-+++ b/arch/x86/kernel/cpu/mce/amd.c
-@@ -993,6 +993,7 @@ static struct attribute *default_attrs[] = {
- 	NULL,	/* possibly interrupt_enable if supported, see below */
- 	NULL,
- };
-+ATTRIBUTE_GROUPS(default);
- 
- #define to_block(k)	container_of(k, struct threshold_block, kobj)
- #define to_attr(a)	container_of(a, struct threshold_attr, attr)
-@@ -1029,7 +1030,7 @@ static void threshold_block_release(struct kobject *kobj);
- 
- static struct kobj_type threshold_ktype = {
- 	.sysfs_ops		= &threshold_ops,
--	.default_attrs		= default_attrs,
-+	.default_groups		= default_groups,
- 	.release		= threshold_block_release,
- };
- 
-@@ -1101,10 +1102,10 @@ static int allocate_threshold_blocks(unsigned int cpu, struct threshold_bank *tb
- 	b->threshold_limit	= THRESHOLD_MAX;
- 
- 	if (b->interrupt_capable) {
--		threshold_ktype.default_attrs[2] = &interrupt_enable.attr;
-+		default_attrs[2] = &interrupt_enable.attr;
- 		b->interrupt_enable = 1;
- 	} else {
--		threshold_ktype.default_attrs[2] = NULL;
-+		default_attrs[2] = NULL;
- 	}
- 
- 	INIT_LIST_HEAD(&b->miscj);
+That being said: in a mail on Monday I already raised the issue like
+this (slightly reworded):
+
+----
+I noticed I quoted internal references in reporting-issues.rst quite
+often. IMHO it improves readability sometimes (it depends a lot on the
+title of the target document), as can be seen in this example.
+
+The source text looks like this:
+
+```
+If your kernel is tainted, study
+'Documentation/admin-guide/tainted-kernels.rst' to find out why.
+[...]
+To find the change there is a process called 'bisection' which the
+document 'Documentation/admin-guide/bug-bisect.rst' describes in detail.
+```
+
+After processing to HTML the text looks like this:
+
+```
+If your kernel is tainted, study ‘Tainted kernels‘ to find out why.
+[...]
+To find the change there is a process called ‘bisection’ which the
+document ‘Bisecting a bug’ describes in detail.
+```
+
+Sure, "Tainted kernels" and "Bisecting a bug" are links and hence
+displayed differently by the browser, but I think the quotes help. But YMMV.
+
+I sooner or later hope to improve and fix a few things in
+reporting-issues.rst anyway. Let me know if I should take the
+opportunity to remove the single quotes then.
+----
+
+So I'd say: I add two more quoted doc links to the file now and fix this
+up later, if you still think removing the quotes is a good idea. Or do
+you want me to remove the single quotes now in that patch (or a separate
+one?)? It's not a big deal, there are only about 10 docs references.
+
+Ciao, Thorsten
