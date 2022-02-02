@@ -2,242 +2,274 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86966C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 00:05:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 641F6C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 00:05:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243363AbiBBAFE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 19:05:04 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:42960 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243103AbiBBAEg (ORCPT
+        id S243214AbiBBAFG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 19:05:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45682 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243203AbiBBAEh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 19:04:36 -0500
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1643760274;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=neBd7VsOMbUMFR6PMS7C+obWvPyp6JMYXI1ks/Y8WS4=;
-        b=dcCV8sMFSZH7L7FQNrYo1AUakKq5AbOQmnfxqUvU9on3uX6bp40g5kQN7hF8NhCsAzQH+h
-        GsxTb2ZmWCWDQFMUOcdskrq9c21B8SIFDFp0aq8samN3F5tyaAuqBxegEyN49F3m0OaQPo
-        1rgnXSqOqaCjJJyQaAL+u8+8xE+5Hag01TrP1/J+OTOXrWDC3F46eSMeAD2Bete7LztCSv
-        zRwRA0ihlA1Ngq77EuKOa0Pgw2lN3+MW3mqzjQGQcLA8cWbpDVA7ycWAzN2nIHoLn0SVim
-        jtKXfqYe54wvxNQ+7rmuegljYQHa2cvbZYLKltz3MrREiOm3Gw+Ad4x9chHIZw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1643760274;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=neBd7VsOMbUMFR6PMS7C+obWvPyp6JMYXI1ks/Y8WS4=;
-        b=MpsRx+4r4+E3ehAA+L0k0ph8Kk7tgPP0iLJ6RzLPZazdxY1UzlZ0Tf90dcn3VG9YvR2+y5
-        byN9vTij0kJX6IAg==
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@intel.com,
-        luto@kernel.org, peterz@infradead.org
-Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
-        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
-        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
-        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
-        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
-        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        x86@kernel.org, linux-kernel@vger.kernel.org,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: Re: [PATCHv2 18/29] x86/boot: Avoid #VE during boot for TDX platforms
-In-Reply-To: <20220124150215.36893-19-kirill.shutemov@linux.intel.com>
-References: <20220124150215.36893-1-kirill.shutemov@linux.intel.com>
- <20220124150215.36893-19-kirill.shutemov@linux.intel.com>
-Date:   Wed, 02 Feb 2022 01:04:34 +0100
-Message-ID: <87sft2w2ul.ffs@tglx>
+        Tue, 1 Feb 2022 19:04:37 -0500
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C269DC061401;
+        Tue,  1 Feb 2022 16:04:36 -0800 (PST)
+Received: by mail-ej1-x632.google.com with SMTP id jx6so59820148ejb.0;
+        Tue, 01 Feb 2022 16:04:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=fCx5KlkpSS2nAjbxyeLU5dvrwqF18spHvQqdDuhuBTU=;
+        b=Tf6ClGsAM5d3WuhS+t4apP0wwTZNTw10VUGSxzI7mRJ9VtJ7vXYxaAgE5LnwRfuPIT
+         Uf7QoGKIwEf2a/y7ZUr97ET7Ju2Sv/OMKhqZIlvM9iYiTeLeUrQDjvW1J9SKAfIVMdWu
+         gqBwTW+U7xOhmkbXq2OON0Cvr2ZZTP91+UI6V4BNiOEEJ69OWhgP9F2OfKG1ZIew6P4N
+         5DH95FEhTwoEFGhT0ZxszmjZts8hLwzdnZFSBa5RmF02914yZxC7Eitc18AuAJSwsaMA
+         jTOGqjMQ2rB3CtXsGAVXVbrYPAX0tGwqWf2StzFfIpOYIMUfu+WiM+AuqHOwMiWErM+q
+         tUqg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=fCx5KlkpSS2nAjbxyeLU5dvrwqF18spHvQqdDuhuBTU=;
+        b=ApD7c36z3AuySVV8TJJBhfqhv1LeN29vLBH1mi6qBfKsrvVliaJAejfiyPqhyvmeFZ
+         59RfzfQguhzmKADqZxE76POJ/+tgSBMWVucl1a6UW5lE4+43Ae+3E9tLezpz2IiFA8B9
+         VMmeFLXO1RkOev1b6Y652VJpisXzmxrvFnF3Q/xWFRLRahTkOw02pephh17V5NbZu1k4
+         RgdrQ+pXDYyR3NLAPgngzCj1jdpQUwkmOq298PsHpUikuznX49kuSCytB8/GXrAz324P
+         LmNVt9mw8YIM5Xo/fodphN0k8VeHDZ/jEexJOpqDrEy2iIFjQzCCjtlVjaZ/7PUnytjH
+         loXQ==
+X-Gm-Message-State: AOAM533aqbPEjI4u+OFLVKt7nMewuc35XddY2Nl4pUfD1WyzbE5R2DbJ
+        hJIPBFRlqiv97zgqNAgBz18=
+X-Google-Smtp-Source: ABdhPJxlHon7qDIw8ReezeOpjLaPxRmi7vR1Z1W19Nqmw9RhvrHAExAUCuOd/S8jrKd7LcKFGRn+UQ==
+X-Received: by 2002:a17:906:7316:: with SMTP id di22mr23544259ejc.505.1643760275072;
+        Tue, 01 Feb 2022 16:04:35 -0800 (PST)
+Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
+        by smtp.googlemail.com with ESMTPSA id n3sm3590451ejr.6.2022.02.01.16.04.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Feb 2022 16:04:34 -0800 (PST)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>
+Subject: [net-next PATCH v8 15/16] net: dsa: qca8k: add support for larger read/write size with mgmt Ethernet
+Date:   Wed,  2 Feb 2022 01:03:34 +0100
+Message-Id: <20220202000335.19296-16-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <20220202000335.19296-1-ansuelsmth@gmail.com>
+References: <20220202000335.19296-1-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 24 2022 at 18:02, Kirill A. Shutemov wrote:
->
-> Change the common boot code to work on TDX and non-TDX systems.
-> This should have no functional effect on non-TDX systems.
+mgmt Ethernet packet can read/write up to 16byte at times. The len reg
+is limited to 15 (0xf). The switch actually sends and accepts data in 4
+different steps of len values.
+Len steps:
+- 0: nothing
+- 1-4: first 4 byte
+- 5-6: first 12 byte
+- 7-15: all 16 byte
 
-Emphasis on should? :)
+In the alloc skb function we check if the len is 16 and we fix it to a
+len of 15. It the read/write function interest to extract the real asked
+data. The tagger handler will always copy the fully 16byte with a READ
+command. This is useful for some big regs like the fdb reg that are
+more than 4byte of data. This permits to introduce a bulk function that
+will send and request the entire entry in one go.
+Write function is changed and it does now require to pass the pointer to
+val to also handle array val.
 
-> --- a/arch/x86/boot/compressed/head_64.S
-> +++ b/arch/x86/boot/compressed/head_64.S
-> @@ -643,12 +643,25 @@ SYM_CODE_START(trampoline_32bit_src)
->  	movl	$MSR_EFER, %ecx
->  	rdmsr
->  	btsl	$_EFER_LME, %eax
-> +	/* Avoid writing EFER if no change was made (for TDX guest) */
-> +	jc	1f
->  	wrmsr
-> -	popl	%edx
-> +1:	popl	%edx
->  	popl	%ecx
->  
->  	/* Enable PAE and LA57 (if required) paging modes */
+Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+---
+ drivers/net/dsa/qca8k.c | 61 +++++++++++++++++++++++++++--------------
+ 1 file changed, 41 insertions(+), 20 deletions(-)
 
-This comment should move after the #endif below and here it wants a
-comment which explains why reading cr4 and the following code sequence
-is correct. If you write up that comment then you'll figure out that it
-is incorrect.
+diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+index 0cce3a6030af..a1b76dcd2eb6 100644
+--- a/drivers/net/dsa/qca8k.c
++++ b/drivers/net/dsa/qca8k.c
+@@ -222,7 +222,9 @@ static void qca8k_rw_reg_ack_handler(struct dsa_switch *ds, struct sk_buff *skb)
+ 	if (cmd == MDIO_READ) {
+ 		mgmt_eth_data->data[0] = mgmt_ethhdr->mdio_data;
+ 
+-		/* Get the rest of the 12 byte of data */
++		/* Get the rest of the 12 byte of data.
++		 * The read/write function will extract the requested data.
++		 */
+ 		if (len > QCA_HDR_MGMT_DATA1_LEN)
+ 			memcpy(mgmt_eth_data->data + 1, skb->data,
+ 			       QCA_HDR_MGMT_DATA2_LEN);
+@@ -232,16 +234,30 @@ static void qca8k_rw_reg_ack_handler(struct dsa_switch *ds, struct sk_buff *skb)
+ }
+ 
+ static struct sk_buff *qca8k_alloc_mdio_header(enum mdio_cmd cmd, u32 reg, u32 *val,
+-					       int priority)
++					       int priority, unsigned int len)
+ {
+ 	struct qca_mgmt_ethhdr *mgmt_ethhdr;
++	unsigned int real_len;
+ 	struct sk_buff *skb;
++	u32 *data2;
+ 	u16 hdr;
+ 
+ 	skb = dev_alloc_skb(QCA_HDR_MGMT_PKT_LEN);
+ 	if (!skb)
+ 		return NULL;
+ 
++	/* Max value for len reg is 15 (0xf) but the switch actually return 16 byte
++	 * Actually for some reason the steps are:
++	 * 0: nothing
++	 * 1-4: first 4 byte
++	 * 5-6: first 12 byte
++	 * 7-15: all 16 byte
++	 */
++	if (len == 16)
++		real_len = 15;
++	else
++		real_len = len;
++
+ 	skb_reset_mac_header(skb);
+ 	skb_set_network_header(skb, skb->len);
+ 
+@@ -254,7 +270,7 @@ static struct sk_buff *qca8k_alloc_mdio_header(enum mdio_cmd cmd, u32 reg, u32 *
+ 	hdr |= FIELD_PREP(QCA_HDR_XMIT_CONTROL, QCA_HDR_XMIT_TYPE_RW_REG);
+ 
+ 	mgmt_ethhdr->command = FIELD_PREP(QCA_HDR_MGMT_ADDR, reg);
+-	mgmt_ethhdr->command |= FIELD_PREP(QCA_HDR_MGMT_LENGTH, 4);
++	mgmt_ethhdr->command |= FIELD_PREP(QCA_HDR_MGMT_LENGTH, real_len);
+ 	mgmt_ethhdr->command |= FIELD_PREP(QCA_HDR_MGMT_CMD, cmd);
+ 	mgmt_ethhdr->command |= FIELD_PREP(QCA_HDR_MGMT_CHECK_CODE,
+ 					   QCA_HDR_MGMT_CHECK_CODE_VAL);
+@@ -264,7 +280,9 @@ static struct sk_buff *qca8k_alloc_mdio_header(enum mdio_cmd cmd, u32 reg, u32 *
+ 
+ 	mgmt_ethhdr->hdr = htons(hdr);
+ 
+-	skb_put_zero(skb, QCA_HDR_MGMT_DATA2_LEN + QCA_HDR_MGMT_PADDING_LEN);
++	data2 = skb_put_zero(skb, QCA_HDR_MGMT_DATA2_LEN + QCA_HDR_MGMT_PADDING_LEN);
++	if (cmd == MDIO_WRITE && len > QCA_HDR_MGMT_DATA1_LEN)
++		memcpy(data2, val + 1, len - QCA_HDR_MGMT_DATA1_LEN);
+ 
+ 	return skb;
+ }
+@@ -277,7 +295,7 @@ static void qca8k_mdio_header_fill_seq_num(struct sk_buff *skb, u32 seq_num)
+ 	mgmt_ethhdr->seq = FIELD_PREP(QCA_HDR_MGMT_SEQ_NUM, seq_num);
+ }
+ 
+-static int qca8k_read_eth(struct qca8k_priv *priv, u32 reg, u32 *val)
++static int qca8k_read_eth(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
+ {
+ 	struct qca8k_mgmt_eth_data *mgmt_eth_data = &priv->mgmt_eth_data;
+ 	struct sk_buff *skb;
+@@ -285,7 +303,7 @@ static int qca8k_read_eth(struct qca8k_priv *priv, u32 reg, u32 *val)
+ 	int ret;
+ 
+ 	skb = qca8k_alloc_mdio_header(MDIO_READ, reg, NULL,
+-				      QCA8K_ETHERNET_MDIO_PRIORITY);
++				      QCA8K_ETHERNET_MDIO_PRIORITY, len);
+ 	if (!skb)
+ 		return -ENOMEM;
+ 
+@@ -313,6 +331,9 @@ static int qca8k_read_eth(struct qca8k_priv *priv, u32 reg, u32 *val)
+ 					  msecs_to_jiffies(QCA8K_ETHERNET_TIMEOUT));
+ 
+ 	*val = mgmt_eth_data->data[0];
++	if (len > QCA_HDR_MGMT_DATA1_LEN)
++		memcpy(val + 1, mgmt_eth_data->data + 1, len - QCA_HDR_MGMT_DATA1_LEN);
++
+ 	ack = mgmt_eth_data->ack;
+ 
+ 	mutex_unlock(&mgmt_eth_data->mutex);
+@@ -326,15 +347,15 @@ static int qca8k_read_eth(struct qca8k_priv *priv, u32 reg, u32 *val)
+ 	return 0;
+ }
+ 
+-static int qca8k_write_eth(struct qca8k_priv *priv, u32 reg, u32 val)
++static int qca8k_write_eth(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
+ {
+ 	struct qca8k_mgmt_eth_data *mgmt_eth_data = &priv->mgmt_eth_data;
+ 	struct sk_buff *skb;
+ 	bool ack;
+ 	int ret;
+ 
+-	skb = qca8k_alloc_mdio_header(MDIO_WRITE, reg, &val,
+-				      QCA8K_ETHERNET_MDIO_PRIORITY);
++	skb = qca8k_alloc_mdio_header(MDIO_WRITE, reg, val,
++				      QCA8K_ETHERNET_MDIO_PRIORITY, len);
+ 	if (!skb)
+ 		return -ENOMEM;
+ 
+@@ -380,14 +401,14 @@ qca8k_regmap_update_bits_eth(struct qca8k_priv *priv, u32 reg, u32 mask, u32 wri
+ 	u32 val = 0;
+ 	int ret;
+ 
+-	ret = qca8k_read_eth(priv, reg, &val);
++	ret = qca8k_read_eth(priv, reg, &val, sizeof(val));
+ 	if (ret)
+ 		return ret;
+ 
+ 	val &= ~mask;
+ 	val |= write_val;
+ 
+-	return qca8k_write_eth(priv, reg, val);
++	return qca8k_write_eth(priv, reg, &val, sizeof(val));
+ }
+ 
+ static int
+@@ -398,7 +419,7 @@ qca8k_regmap_read(void *ctx, uint32_t reg, uint32_t *val)
+ 	u16 r1, r2, page;
+ 	int ret;
+ 
+-	if (!qca8k_read_eth(priv, reg, val))
++	if (!qca8k_read_eth(priv, reg, val, sizeof(val)))
+ 		return 0;
+ 
+ 	qca8k_split_addr(reg, &r1, &r2, &page);
+@@ -424,7 +445,7 @@ qca8k_regmap_write(void *ctx, uint32_t reg, uint32_t val)
+ 	u16 r1, r2, page;
+ 	int ret;
+ 
+-	if (!qca8k_write_eth(priv, reg, val))
++	if (!qca8k_write_eth(priv, reg, &val, sizeof(val)))
+ 		return 0;
+ 
+ 	qca8k_split_addr(reg, &r1, &r2, &page);
+@@ -959,21 +980,21 @@ qca8k_phy_eth_command(struct qca8k_priv *priv, bool read, int phy,
+ 	}
+ 
+ 	/* Prealloc all the needed skb before the lock */
+-	write_skb = qca8k_alloc_mdio_header(MDIO_WRITE, QCA8K_MDIO_MASTER_CTRL,
+-					    &write_val, QCA8K_ETHERNET_PHY_PRIORITY);
++	write_skb = qca8k_alloc_mdio_header(MDIO_WRITE, QCA8K_MDIO_MASTER_CTRL, &write_val,
++					    QCA8K_ETHERNET_PHY_PRIORITY, sizeof(write_val));
+ 	if (!write_skb)
+ 		return -ENOMEM;
+ 
+-	clear_skb = qca8k_alloc_mdio_header(MDIO_WRITE, QCA8K_MDIO_MASTER_CTRL,
+-					    &clear_val, QCA8K_ETHERNET_PHY_PRIORITY);
++	clear_skb = qca8k_alloc_mdio_header(MDIO_WRITE, QCA8K_MDIO_MASTER_CTRL, &clear_val,
++					    QCA8K_ETHERNET_PHY_PRIORITY, sizeof(clear_val));
+ 	if (!write_skb) {
+ 		ret = -ENOMEM;
+ 		goto err_clear_skb;
+ 	}
+ 
+-	read_skb = qca8k_alloc_mdio_header(MDIO_READ, QCA8K_MDIO_MASTER_CTRL,
+-					   &clear_val, QCA8K_ETHERNET_PHY_PRIORITY);
+-	if (!write_skb) {
++	read_skb = qca8k_alloc_mdio_header(MDIO_READ, QCA8K_MDIO_MASTER_CTRL, &clear_val,
++					   QCA8K_ETHERNET_PHY_PRIORITY, sizeof(clear_val));
++	if (!read_skb) {
+ 		ret = -ENOMEM;
+ 		goto err_read_skb;
+ 	}
+-- 
+2.33.1
 
-> -	movl	$X86_CR4_PAE, %eax
-> +	movl	%cr4, %eax
-
-Assume CR4 has X86_CR4_MCE set then how is the below correct when
-CONFIG_X86_MCE=n? Not to talk about any other bits which might be set in
-CR4 and are only cleared by the CONFIG_X86_MCE dependent 'andl'.
-
-> +#ifdef CONFIG_X86_MCE
-> +	/*
-> +	 * Preserve CR4.MCE if the kernel will enable #MC support.  Clearing
-> +	 * MCE may fault in some environments (that also force #MC support).
-> +	 * Any machine check that occurs before #MC support is fully configured
-> +	 * will crash the system regardless of the CR4.MCE value set here.
-> +	 */
-> +	andl	$X86_CR4_MCE, %eax
-> +#endif
-
-So this wants to be
-
-#ifdef CONFIG_X86_MCE
-	movl	%cr4, %eax
-	andl	$X86_CR4_MCE, %eax
-#else
-	movl	$0, %eax
-#endif
-
-No?
-
-> +	orl	$X86_CR4_PAE, %eax
->  	testl	%edx, %edx
->  	jz	1f
->  	orl	$X86_CR4_LA57, %eax
-> @@ -662,8 +675,12 @@ SYM_CODE_START(trampoline_32bit_src)
->  	pushl	$__KERNEL_CS
->  	pushl	%eax
->  
-> -	/* Enable paging again */
-> -	movl	$(X86_CR0_PG | X86_CR0_PE), %eax
-> +	/*
-> +	 * Enable paging again.  Keep CR0.NE set, FERR# is no longer used
-> +	 * to handle x87 FPU errors and clearing NE may fault in some
-> +	 * environments.
-
-FERR# is no longer used is really not informative here. The point is
-that any x86 CPU which is supported by the kernel requires CR0_NE to be
-set. This code was wrong from the very beginning because 64bit CPUs
-never supported #FERR. The reason why it exists is Copy&Pasta without
-brain applied and the sad fact that the hardware does not enforce it in
-native mode for whatever reason. So this want's to be a seperate patch
-with a coherent comment and changelong.
-
-> +	 */
-> +	movl	$(X86_CR0_PG | X86_CR0_NE | X86_CR0_PE), %eax
->  	movl	%eax, %cr0
->  
->  	/* Enable PAE mode, PGE and LA57 */
-> -	movl	$(X86_CR4_PAE | X86_CR4_PGE), %ecx
-> +	movq	%cr4, %rcx
-
-See above...
-
-> +#ifdef CONFIG_X86_MCE
-> +	/*
-> +	 * Preserve CR4.MCE if the kernel will enable #MC support.  Clearing
-> +	 * MCE may fault in some environments (that also force #MC support).
-> +	 * Any machine check that occurs before #MC support is fully configured
-> +	 * will crash the system regardless of the CR4.MCE value set here.
-> +	 */
-> +	andl	$X86_CR4_MCE, %ecx
-> +#endif
-> +	orl	$(X86_CR4_PAE | X86_CR4_PGE), %ecx
->  #ifdef CONFIG_X86_5LEVEL
->  	testl	$1, __pgtable_l5_enabled(%rip)
->  	jz	1f
-> @@ -246,13 +256,23 @@ SYM_INNER_LABEL(secondary_startup_64_no_verify, SYM_L_GLOBAL)
->  	/* Setup EFER (Extended Feature Enable Register) */
->  	movl	$MSR_EFER, %ecx
->  	rdmsr
-> +	/*
-> +	 * Preserve current value of EFER for comparison and to skip
-> +	 * EFER writes if no change was made (for TDX guest)
-> +	 */
-> +	movl    %eax, %edx
->  	btsl	$_EFER_SCE, %eax	/* Enable System Call */
->  	btl	$20,%edi		/* No Execute supported? */
->  	jnc     1f
->  	btsl	$_EFER_NX, %eax
->  	btsq	$_PAGE_BIT_NX,early_pmd_flags(%rip)
-> -1:	wrmsr				/* Make changes effective */
->  
-> +	/* Avoid writing EFER if no change was made (for TDX guest) */
-> +1:	cmpl	%edx, %eax
-> +	je	1f
-> +	xor	%edx, %edx
-> +	wrmsr				/* Make changes effective */
-> +1:
->  	/* Setup cr0 */
->  	movl	$CR0_STATE, %eax
->  	/* Make changes effective */
-> diff --git a/arch/x86/realmode/rm/trampoline_64.S b/arch/x86/realmode/rm/trampoline_64.S
-> index ae112a91592f..170f248d5769 100644
-> --- a/arch/x86/realmode/rm/trampoline_64.S
-> +++ b/arch/x86/realmode/rm/trampoline_64.S
-> @@ -143,13 +143,28 @@ SYM_CODE_START(startup_32)
->  	movl	%eax, %cr3
->  
->  	# Set up EFER
-> +	movl	$MSR_EFER, %ecx
-> +	rdmsr
-> +	/*
-> +	 * Skip writing to EFER if the register already has desired
-> +	 * value (to avoid #VE for the TDX guest).
-> +	 */
-> +	cmp	pa_tr_efer, %eax
-> +	jne	.Lwrite_efer
-> +	cmp	pa_tr_efer + 4, %edx
-> +	je	.Ldone_efer
-> +.Lwrite_efer:
->  	movl	pa_tr_efer, %eax
->  	movl	pa_tr_efer + 4, %edx
-> -	movl	$MSR_EFER, %ecx
->  	wrmsr
->  
-> -	# Enable paging and in turn activate Long Mode
-> -	movl	$(X86_CR0_PG | X86_CR0_WP | X86_CR0_PE), %eax
-> +.Ldone_efer:
-> +	/*
-> +	 * Enable paging and in turn activate Long Mode. Keep CR0.NE set, FERR#
-> +	 * is no longer used to handle x87 FPU errors and clearing NE may fault
-> +	 * in some environments.
-> +	 */
-> +	movl	$(X86_CR0_PG | X86_CR0_WP | X86_CR0_NE | X86_CR0_PE),
-> %eax
-
-See above.
-
->  	movl	%eax, %cr0
->  
->  	/*
-> @@ -169,7 +184,11 @@ SYM_CODE_START(pa_trampoline_compat)
->  	movl	$rm_stack_end, %esp
->  	movw	$__KERNEL_DS, %dx
->  
-> -	movl	$X86_CR0_PE, %eax
-> +	/*
-> +	 * Keep CR0.NE set, FERR# is no longer used to handle x87 FPU errors
-> +	 * and clearing NE may fault in some environments.
-> +	 */
-> +	movl	$(X86_CR0_NE | X86_CR0_PE), %eax
-
-Ditto.
-
->  	movl	%eax, %cr0
->  	ljmpl   $__KERNEL32_CS, $pa_startup_32
->  SYM_CODE_END(pa_trampoline_compat)
-
-Thanks,
-
-        tglx
