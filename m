@@ -2,119 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E91DAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 23:12:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE9C8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 23:17:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348044AbiBBXMv (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 18:12:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49644 "EHLO
+        id S231476AbiBBXRX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 18:17:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347913AbiBBXMu (ORCPT
+        with ESMTP id S239155AbiBBXRV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 18:12:50 -0500
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3FF1C061714
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 15:12:49 -0800 (PST)
-Received: by mail-lf1-x12b.google.com with SMTP id b9so2171343lfq.6
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 15:12:49 -0800 (PST)
+        Wed, 2 Feb 2022 18:17:21 -0500
+Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E14FC061714;
+        Wed,  2 Feb 2022 15:17:21 -0800 (PST)
+Received: by mail-ot1-x333.google.com with SMTP id o9-20020a9d7189000000b0059ee49b4f0fso967448otj.2;
+        Wed, 02 Feb 2022 15:17:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kxLZoNp/4LQPZ5USv0kT/ANrlVIeVswz1mwyMInuRpk=;
-        b=Q2moWDCWxi4BS8PPyCaJoqnrPIZQcruQgJjzpamHlvHl8nfkZnrnUwhlebZjL4Qlid
-         AZFzASi+lGjNRFfFNjvPEAV2OO1mxc2n/gPx8V0KnqP5u6M4wJHDfXsL1tbK3dOCogdZ
-         v5sFcJe1cu9GkyUnxpnJ3HA3l8dpy1RjXvbvrK8Z/rAK9aOYhuhE66KFBdjyjDKqfZlT
-         +wq0XncRggDytCxIhnPTtZSQBB8unOSP4gvw0dAqmb2KU9UablWXiH0mbP3wrGYlLrXp
-         3dsxxtU1+Z++ZC+wI7jM2kRxCYui1ckWsccWdwkq3TdAX9Dv2DXTOhZ2rgkBuiM3VxZa
-         mdNw==
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=SmM5LOXhBptwLoFRQx1xbAsZgGTvkZX2rXC6lKb25Rc=;
+        b=afYIE2hcFMLGO3iC6MkgeyjxvbwUqtd06XMSOBgKA1JmeSorzZXwTl1okvDiOYnB9l
+         I0H4UD7lxXr3PUThf/7IcIvIOsF5sWw5thHdOOKBvrdXNNtS/fD9Ym1WoVqea2HcAfwi
+         6eEM+v9OMcXZhik2LMP/jIpsfUBHKKr1qXWqemYWSWpEtU8twc7PHCgRkvAj36dDXHKE
+         uLVrjqstlVzY4jSFwk3Jc70uwRhAL+ie85/Q+5kwNmZl1ItfbAGYUKAEGF4u54rFb7cz
+         Sw3GPDOyJc4VqVkcsGaX8KF/n9Nh4c/uPgrvkaSGfcBxTVFi0X7Uj8fFeP1i1rAsy4Ge
+         cYCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kxLZoNp/4LQPZ5USv0kT/ANrlVIeVswz1mwyMInuRpk=;
-        b=QMmKTbQ5sMe6IfJoomANXn8dMSSvAmREaNZi17wKUWqjepmKumwCsznc2rqYIa7r/V
-         OCMnZVFQ4vkfKXPL9oLfgwsJbZLE4V4+9i5HzjFu8GDpzzCZFDUYgfe9LKEmVpziWVLk
-         o87HEuADfL6Kqn3wNSvy3Jq3+Xm6AL3cOhXqFJoCUYCaW/8gKn+gtqVVK+c099cd8j7o
-         HNkxd9Ar1HOCwAKf+C8Iarjo1zpRzCg2abrQcHIr8BNm6AskoZ/N4QlfHhRzbuusGbt2
-         8ZgBHvGwtuzbFXdztmWyFijry0fGh3CAqAyJqscmRiunsA5fRG8W/VhoZ50hqvZrK/iB
-         G4wg==
-X-Gm-Message-State: AOAM531WGGLA2IXQVE+eoeh/Ec2MrVoSE/rvaIZuL12dOcG0XlQnYkQt
-        CWu1rPwPoqUmdIrIEgovUMPg1ldopCY/ky2qyBDQ+Q==
-X-Google-Smtp-Source: ABdhPJwi69J10B5BJjANF390JZYBG3ldtIxVMDaHUe2bQC7/YKzyMziklWm0E/V2hAP0KIVpwrcww6mql102RTB9yMQ=
-X-Received: by 2002:ac2:5510:: with SMTP id j16mr24302186lfk.240.1643843567939;
- Wed, 02 Feb 2022 15:12:47 -0800 (PST)
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :mime-version:content-disposition;
+        bh=SmM5LOXhBptwLoFRQx1xbAsZgGTvkZX2rXC6lKb25Rc=;
+        b=UqPqRF20x5tjKZkHKVP93C2ErgpMRCYMEsjHTraMZHAKixjfI615vUBzN+oavEAP+x
+         tUFwRDmIt6BOpS049uiBG2haLJ9dz+N6L6s71MJqX/hlkzlTZWSAS46P4hHWyeT2Ai4N
+         WN92pl2BjlZ9naQIRwf/0IHj3HX0Hbnp8mrKB0iDx4uqU9MpU+BacbuoIXjX7qOHAulU
+         CJ9Sv67rujDLRD5DSKaEuL29HvT879wfHJx8wCSTHe+nC/py23/SteMb0v0aH1Ccpxtr
+         akp0/QErGDBhBnyJ3oxxJPOVmB/JOuHiLrBw/jzpRAo/SqJYY3vywgVj/y1v7ICiLf+5
+         7Pfw==
+X-Gm-Message-State: AOAM533x7ZZ4bkqShICCNu7fKrg03k9IvoDqw5JaidA5P6k2OEQZuFcu
+        wfJkV6iOu03h/51x7EIoewH04eEwQ1KmGQ==
+X-Google-Smtp-Source: ABdhPJzc1hV3sMwz9XpV4qq85jnj4BL44Eb+9Yn1lIeZrVv16PjI9mAH8w4AtSHfVcFztirlAFzaaQ==
+X-Received: by 2002:a05:6830:4409:: with SMTP id q9mr18658445otv.316.1643843840802;
+        Wed, 02 Feb 2022 15:17:20 -0800 (PST)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id a15sm21399821oil.13.2022.02.02.15.17.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Feb 2022 15:17:20 -0800 (PST)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Wed, 2 Feb 2022 15:17:18 -0800
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
+        linux-alpha@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH] alpha: Silence -Warray-bounds warnings
+Message-ID: <20220202231718.GA2539669@roeck-us.net>
 MIME-Version: 1.0
-References: <20220202230515.2931333-1-nathan@kernel.org>
-In-Reply-To: <20220202230515.2931333-1-nathan@kernel.org>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Wed, 2 Feb 2022 15:12:35 -0800
-Message-ID: <CAKwvOdkQ__2A3NohrcJgF+JABSDnSyEKzD97qVa4cpM==GPONQ@mail.gmail.com>
-Subject: Re: [PATCH v2] Makefile.extrawarn: Move -Wunaligned-access to W=1
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, linux-kbuild@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 2, 2022 at 3:07 PM Nathan Chancellor <nathan@kernel.org> wrote:
->
-> -Wunaligned-access is a new warning in clang that is default enabled for
-> arm and arm64 under certain circumstances within the clang frontend (see
-> LLVM commit below). On v5.17-rc2, an ARCH=arm allmodconfig build shows
-> 1284 total/70 unique instances of this warning (most of the instances
-> are in header files), which is quite noisy.
->
-> To keep a normal build green through CONFIG_WERROR, only show this
-> warning with W=1, which will allow automated build systems to catch new
-> instances of the warning so that the total number can be driven down to
-> zero eventually since catching unaligned accesses at compile time would
-> be generally useful.
->
-> Cc: stable@vger.kernel.org
-> Link: https://github.com/llvm/llvm-project/commit/35737df4dcd28534bd3090157c224c19b501278a
-> Link: https://github.com/ClangBuiltLinux/linux/issues/1569
-> Link: https://github.com/ClangBuiltLinux/linux/issues/1576
-> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+On Wed, Feb 02, 2022 at 02:18:25PM -0800, Kees Cook wrote:
+> GCC 11 (incorrectly[1]) assumes that literal values cast to (void *)
+> should be treated like a NULL pointer with an offset, and raises
+> diagnostics when doing bounds checking:
+> 
+> In function '__memset',
+>     inlined from '__bad_pagetable' at arch/alpha/mm/init.c:79:2:
+> ./arch/alpha/include/asm/string.h:37:32: error: '__builtin_memset' offset [0, 8191] is out of the bounds [0, 0] [-Werror=array-bounds]
+>    37 |                         return __builtin_memset(s, c, n);
+>       |                                ^~~~~~~~~~~~~~~~~~~~~~~~~
+> In function '__memset',
+>     inlined from '__bad_page' at arch/alpha/mm/init.c:86:2:
+> ./arch/alpha/include/asm/string.h:37:32: error: '__builtin_memset' offset [0, 8191] is out of the bounds [0, 0] [-Werror=array-bounds]
+>    37 |                         return __builtin_memset(s, c, n);
+>       |                                ^~~~~~~~~~~~~~~~~~~~~~~~~
+> In function '__memset',
+>     inlined from 'paging_init' at arch/alpha/mm/init.c:256:2:
+> ./arch/alpha/include/asm/string.h:37:32: error: '__builtin_memset' offset [0, 8191] is out of the bounds [0, 0] [-Werror=array-bounds]
+>    37 |                         return __builtin_memset(s, c, n);
+> 
+> This has been solved in other places[2] already by using the recently
+> added absolute_pointer() macro. Do the same here.
+> 
+> [1] https://gcc.gnu.org/bugzilla/show_bug.cgi?id=99578
+> [2] https://lore.kernel.org/all/20210912160149.2227137-1-linux@roeck-us.net/
+> 
+> Signed-off-by: Kees Cook <keescook@chromium.org>
 
-Thanks to you and Arnd for working out whether this is important to
-pursue. Sounds like it is.
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Reviewed-and-tested-by: Guenter Roeck <linux@roeck-us.net>
 
 > ---
->
-> v1 -> v2: https://lore.kernel.org/r/20220201232229.2992968-1-nathan@kernel.org/
->
-> * Move to W=1 instead of W=2 so that new instances are caught (Arnd).
-> * Add links to the ClangBuiltLinux issue tracker.
->
->  scripts/Makefile.extrawarn | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/scripts/Makefile.extrawarn b/scripts/Makefile.extrawarn
-> index d53825503874..8be892887d71 100644
-> --- a/scripts/Makefile.extrawarn
-> +++ b/scripts/Makefile.extrawarn
-> @@ -51,6 +51,7 @@ KBUILD_CFLAGS += -Wno-sign-compare
->  KBUILD_CFLAGS += -Wno-format-zero-length
->  KBUILD_CFLAGS += $(call cc-disable-warning, pointer-to-enum-cast)
->  KBUILD_CFLAGS += -Wno-tautological-constant-out-of-range-compare
-> +KBUILD_CFLAGS += $(call cc-disable-warning, unaligned-access)
->  endif
->
->  endif
->
-> base-commit: 26291c54e111ff6ba87a164d85d4a4e134b7315c
-> --
-> 2.35.1
->
-
-
--- 
-Thanks,
-~Nick Desaulniers
+>  arch/alpha/mm/init.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/arch/alpha/mm/init.c b/arch/alpha/mm/init.c
+> index f6114d03357c..7511723b7669 100644
+> --- a/arch/alpha/mm/init.c
+> +++ b/arch/alpha/mm/init.c
+> @@ -76,14 +76,14 @@ pgd_alloc(struct mm_struct *mm)
+>  pmd_t *
+>  __bad_pagetable(void)
+>  {
+> -	memset((void *) EMPTY_PGT, 0, PAGE_SIZE);
+> +	memset(absolute_pointer(EMPTY_PGT), 0, PAGE_SIZE);
+>  	return (pmd_t *) EMPTY_PGT;
+>  }
+>  
+>  pte_t
+>  __bad_page(void)
+>  {
+> -	memset((void *) EMPTY_PGE, 0, PAGE_SIZE);
+> +	memset(absolute_pointer(EMPTY_PGE), 0, PAGE_SIZE);
+>  	return pte_mkdirty(mk_pte(virt_to_page(EMPTY_PGE), PAGE_SHARED));
+>  }
+>  
+> @@ -253,7 +253,7 @@ void __init paging_init(void)
+>  	free_area_init(max_zone_pfn);
+>  
+>  	/* Initialize the kernel's ZERO_PGE. */
+> -	memset((void *)ZERO_PGE, 0, PAGE_SIZE);
+> +	memset(absolute_pointer(ZERO_PGE), 0, PAGE_SIZE);
+>  }
+>  
+>  #if defined(CONFIG_ALPHA_GENERIC) || defined(CONFIG_ALPHA_SRM)
+> -- 
+> 2.30.2
+> 
