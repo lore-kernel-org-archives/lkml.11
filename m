@@ -2,101 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76B37C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 07:02:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D77C2C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 07:03:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243711AbiBBHCu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 02:02:50 -0500
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:44961 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239384AbiBBHCt (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 02:02:49 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1643785369; x=1675321369;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=qM2szEr4iwIMDuYBKDIcOf6vZ5wmYPS1pXc5cwARPHk=;
-  b=qODIniYKIN2wc8Nw34ig2ZIStbuV/xhfsWMk5fDScbSkvr4UxHjpEERG
-   0ReThgtCtTPp6KZndsseUV3JiQmCqcEGQ/atHNZbAOfjckt8FlL/fjjqj
-   04O7ftcPWRPfI8uHy7dBNVUKmzjerlGigPzFbTnQ3QHo87OMafjDTvAt1
-   WLWF7rd03JD0bsOkWdfpJ+az3y4EyFOzqJDiNFo7pI+hbdlQjKzIXQ9hQ
-   odStr2QnmTK7Btq9OMOAyW994d/505hKMjl9dZYN0Ts3XHA4BBX4mY4E2
-   RNoZY+ejyJaiAFJ+ZqRul1DiM+hshJM2ukBZeZi//GFtk0fjHYdEVFWZl
-   A==;
-IronPort-SDR: GuV5vXbw28Sc92CaDw1xxo/7kp2sMx6JQM68Y3wrxZHeTausrt0SbC9lmZZgH5C/iMPQzcgFu0
- oCDVs52mZrae09njlWaIKyycszWX8nmmN2T6AXSzOWq0tZc0frOr0+h4UrDJdzX5eROiw05E2v
- jKJTV20sL3UvE/7vFYmMSPcBTaCNOOtCQfmD+u7oqs7ODooG7nhy1n3/k5FPkKdVosODoOL3fg
- KvZenwfn6aF2ORJssCM6GTMlwXWsB7q/IN2q53YAt4F42q/x54rSuU8bSRfjfKbixwqRWJ2hI4
- vCudAbC+XC8PBI3hrtOhNS2G
-X-IronPort-AV: E=Sophos;i="5.88,336,1635231600"; 
-   d="scan'208";a="144624961"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 02 Feb 2022 00:02:48 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 2 Feb 2022 00:02:48 -0700
-Received: from ROB-ULT-M18064N.mchp-main.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Wed, 2 Feb 2022 00:02:46 -0700
-From:   Tudor Ambarus <tudor.ambarus@microchip.com>
-To:     <nicolas.ferre@microchip.com>, <claudiu.beznea@microchip.com>,
-        <alexandre.belloni@bootlin.com>
-CC:     <linux@armlinux.org.uk>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>
-Subject: [PATCH] ARM: configs: at91: sama7: Enable UBIFS_FS
-Date:   Wed, 2 Feb 2022 09:02:44 +0200
-Message-ID: <20220202070244.150022-1-tudor.ambarus@microchip.com>
-X-Mailer: git-send-email 2.25.1
+        id S244736AbiBBHDX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 02:03:23 -0500
+Received: from foss.arm.com ([217.140.110.172]:39664 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239384AbiBBHDV (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 2 Feb 2022 02:03:21 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 583E6ED1;
+        Tue,  1 Feb 2022 22:25:42 -0800 (PST)
+Received: from [10.163.43.221] (unknown [10.163.43.221])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A167A3F718;
+        Tue,  1 Feb 2022 22:25:36 -0800 (PST)
+Subject: Re: [PATCH v5 1/4] mm/debug_vm_pgtable: remove pte entry from the
+ page table
+To:     Pasha Tatashin <pasha.tatashin@soleen.com>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        akpm@linux-foundation.org, rientjes@google.com, pjt@google.com,
+        weixugc@google.com, gthelen@google.com, mingo@redhat.com,
+        will@kernel.org, rppt@kernel.org, dave.hansen@linux.intel.com,
+        hpa@zytor.com, aneesh.kumar@linux.ibm.com, jirislaby@kernel.org,
+        songmuchun@bytedance.com, qydwhotmail@gmail.com, hughd@google.com,
+        ziy@nvidia.com
+References: <20220131203249.2832273-1-pasha.tatashin@soleen.com>
+ <20220131203249.2832273-2-pasha.tatashin@soleen.com>
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+Message-ID: <2b3bddd8-e869-a717-b849-d03f30e583c5@arm.com>
+Date:   Wed, 2 Feb 2022 11:55:30 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+In-Reply-To: <20220131203249.2832273-2-pasha.tatashin@soleen.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-sama7g5 contains a Static Memory Controller that can communicate with
-NAND flashes. Enable UBIFS_FS in case one wants to put an ubifs rootfs
-on a NAND flash. CONFIG_CRYPTO_LZO and CONFIG_CRYPTO_DEFLATE appear as
-removed because they are selected by CONFIG_UBIFS_FS.
 
-Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
----
- arch/arm/configs/sama7_defconfig | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/configs/sama7_defconfig b/arch/arm/configs/sama7_defconfig
-index 342d9f30d9d2..c12278174579 100644
---- a/arch/arm/configs/sama7_defconfig
-+++ b/arch/arm/configs/sama7_defconfig
-@@ -86,6 +86,7 @@ CONFIG_MTD_RAW_NAND=y
- CONFIG_MTD_NAND_ATMEL=y
- # CONFIG_MTD_NAND_ECC_SW_HAMMING is not set
- CONFIG_MTD_SPI_NOR=y
-+CONFIG_MTD_UBI=y
- CONFIG_BLK_DEV_LOOP=y
- CONFIG_BLK_DEV_RAM=y
- CONFIG_BLK_DEV_RAM_COUNT=1
-@@ -187,6 +188,7 @@ CONFIG_EXT3_FS=y
- CONFIG_FANOTIFY=y
- CONFIG_VFAT_FS=y
- CONFIG_TMPFS=y
-+CONFIG_UBIFS_FS=y
- CONFIG_NFS_FS=y
- CONFIG_ROOT_NFS=y
- CONFIG_NLS_CODEPAGE_437=y
-@@ -194,8 +196,6 @@ CONFIG_NLS_CODEPAGE_850=y
- CONFIG_NLS_ISO8859_1=y
- CONFIG_NLS_UTF8=y
- CONFIG_LSM="N"
--CONFIG_CRYPTO_DEFLATE=y
--CONFIG_CRYPTO_LZO=y
- # CONFIG_CRYPTO_HW is not set
- CONFIG_CRC_CCITT=y
- CONFIG_CRC_ITU_T=y
--- 
-2.25.1
+On 2/1/22 2:02 AM, Pasha Tatashin wrote:
+> The pte entry that is used in pte_advanced_tests() is never removed from
+> the page table at the end of the test.
+> 
+> The issue is detected by page_table_check, to repro compile kernel with
+> the following configs:
+> 
+> CONFIG_DEBUG_VM_PGTABLE=y
+> CONFIG_PAGE_TABLE_CHECK=y
+> CONFIG_PAGE_TABLE_CHECK_ENFORCED=y
+> 
+> During the boot the following BUG is printed:
+> 
+> [    2.262821] debug_vm_pgtable: [debug_vm_pgtable         ]: Validating
+>                architecture page table helpers
+> [    2.276826] ------------[ cut here ]------------
+> [    2.280426] kernel BUG at mm/page_table_check.c:162!
+> [    2.284118] invalid opcode: 0000 [#1] PREEMPT SMP PTI
+> [    2.287787] CPU: 0 PID: 1 Comm: swapper/0 Not tainted
+>                5.16.0-11413-g2c271fe77d52 #3
+> [    2.293226] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
+>                BIOS rel-1.15.0-0-g2dd4b9b3f840-prebuilt.qemu.org
+>                04/01/2014
+> ...
+> 
+> The entry should be properly removed from the page table before the page
+> is released to the free list.
+> 
+> Fixes: a5c3b9ffb0f4 ("mm/debug_vm_pgtable: add tests validating advanced arch page table helpers")
+> Cc: stable@vger.kernel.org # 5.9+
 
+Not sure marking stable is necessary here.
+
+> 
+> Signed-off-by: Pasha Tatashin <pasha.tatashin@soleen.com>
+> Reviewed-by: Zi Yan <ziy@nvidia.com>
+> Tested-by: Zi Yan <ziy@nvidia.com>
+> Acked-by: David Rientjes <rientjes@google.com>
+
+Dont see any problems on arm64. Although it would be great to run this
+on all enabled platforms.
+
+Reviewed-by: Anshuman Khandual <anshuman.khandual@arm.com>
+
+> ---
+>  mm/debug_vm_pgtable.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/mm/debug_vm_pgtable.c b/mm/debug_vm_pgtable.c
+> index a7ac97c76762..db2abd9e415b 100644
+> --- a/mm/debug_vm_pgtable.c
+> +++ b/mm/debug_vm_pgtable.c
+> @@ -171,6 +171,8 @@ static void __init pte_advanced_tests(struct pgtable_debug_args *args)
+>  	ptep_test_and_clear_young(args->vma, args->vaddr, args->ptep);
+>  	pte = ptep_get(args->ptep);
+>  	WARN_ON(pte_young(pte));
+> +
+> +	ptep_get_and_clear_full(args->mm, args->vaddr, args->ptep, 1);
+>  }
+>  
+>  static void __init pte_savedwrite_tests(struct pgtable_debug_args *args)
+> 
