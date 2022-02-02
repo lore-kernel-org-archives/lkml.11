@@ -2,304 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FDFBC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 17:57:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AF72C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 17:58:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241144AbiBBR5z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 12:57:55 -0500
-Received: from perceval.ideasonboard.com ([213.167.242.64]:58272 "EHLO
-        perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346449AbiBBR51 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 12:57:27 -0500
-Received: from tatooine.ideasonboard.com (unknown [IPv6:2a01:e0a:169:7140:7139:eada:2ff6:73dd])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id F1A601849;
-        Wed,  2 Feb 2022 18:56:52 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1643824613;
-        bh=5CetPsMNqlbOx/W3JD3+AaeH0cV+k4nWAztBn5qAQck=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=crsG/hiSB0jo42beYxyj4/suHBv+NVJa0eejMFd7+2OwZgJd6ek07n+7yRsPAPCw2
-         Dg0ytG7p8XP6XnnuoHHAq4rQNUvPu+VAlFweZfzY1r4ZydOs9ABnec+3++rt962Fgg
-         zZCvnFRnVK6cZZuf41FUodKAnGBuI85ur/UzqLvE=
-From:   Jean-Michel Hautbois <jeanmichel.hautbois@ideasonboard.com>
-To:     jeanmichel.hautbois@ideasonboard.com
-Cc:     dave.stevenson@raspberrypi.com, devicetree@vger.kernel.org,
-        kernel-list@raspberrypi.com, laurent.pinchart@ideasonboard.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
-        lukasz@jany.st, mchehab@kernel.org, naush@raspberrypi.com,
-        robh@kernel.org, tomi.valkeinen@ideasonboard.com
-Subject: [RFC PATCH v3 10/11] media: imx219: Add support for the V4L2 subdev active state
-Date:   Wed,  2 Feb 2022 18:56:38 +0100
-Message-Id: <20220202175639.149681-11-jeanmichel.hautbois@ideasonboard.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220202175639.149681-1-jeanmichel.hautbois@ideasonboard.com>
-References: <20220202175639.149681-1-jeanmichel.hautbois@ideasonboard.com>
+        id S236145AbiBBR6Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 12:58:16 -0500
+Received: from mga04.intel.com ([192.55.52.120]:58969 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1346442AbiBBR6I (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 2 Feb 2022 12:58:08 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643824689; x=1675360689;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=txTKV4GqxfW43WOJ6xN1Pg09D3EcGyQs318zawtFlSE=;
+  b=JfLAiPNblRJu3Kmu1EjL5Klsxi1tqAYpNEcdX6jua77HAhQYgZYAVAZP
+   NQMnzJrfCGD3iKk9tjO/KJur3J2BMbmWqCMlp8iNtXgbCYNXmLsV4/sOT
+   LnG2qmgED2TjAPPanSC57Axn7EVXu8tRoePJLseuvV4mQziC9pUE9pIvO
+   3Yf5QxnVpUjJLn8CA0YUB5LZHhTTsuD/GByd1bVG9bdk8ShHhREcpmR13
+   gcvEWYaYlR3yycoW7iyYpaT4CRCdDrTBvxHnMhLYA4LQ6dZweXYFc7Wel
+   tjlNbx9zPifLllcNZBhjousZMv2HxGZ+1NDfBfNbijKOHQjX8YQvPxHX4
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10246"; a="246818355"
+X-IronPort-AV: E=Sophos;i="5.88,337,1635231600"; 
+   d="scan'208";a="246818355"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 09:58:08 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,337,1635231600"; 
+   d="scan'208";a="599643976"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga004.fm.intel.com with ESMTP; 02 Feb 2022 09:58:06 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 6443F3B7; Wed,  2 Feb 2022 19:58:20 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        linux-iio@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 1/1] iio: trigger: stm32-timer: Make use of device properties
+Date:   Wed,  2 Feb 2022 19:58:15 +0200
+Message-Id: <20220202175815.54100-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that we have multiplexed streams support in the V4L2 API, add
-support for the subdev active state in the sensor.
+Convert the module to be property provider agnostic and allow
+it to be used on non-OF platforms.
 
-In order to use state to manage the active configuration, we need to
-initialize the subdevice state with a call to
-v4l2_subdev_init_finalize() before registering it. The call to
-v4l2_subdev_cleanup() is also required to release the resources before
-unregistering.
-
-Accessing the configuration is then done after a call to
-v4l2_subdev_lock_state() and the set_fmt operation can then call
-v4l2_state_get_stream_format() directly.
-
-The get_fmt operation does not need to be complex, and a simple call to
-v4l2_subdev_get_fmt will do the trick, as it will grab the configured
-format based on the state.
-
-Signed-off-by: Jean-Michel Hautbois <jeanmichel.hautbois@ideasonboard.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/media/i2c/imx219.c | 151 +++++++++++++++++++------------------
- 1 file changed, 77 insertions(+), 74 deletions(-)
+ drivers/iio/trigger/stm32-timer-trigger.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/media/i2c/imx219.c b/drivers/media/i2c/imx219.c
-index 7c224d007f3e..88212f86ce9b 100644
---- a/drivers/media/i2c/imx219.c
-+++ b/drivers/media/i2c/imx219.c
-@@ -870,78 +870,43 @@ static int imx219_enum_frame_size(struct v4l2_subdev *sd,
- 				  struct v4l2_subdev_state *sd_state,
- 				  struct v4l2_subdev_frame_size_enum *fse)
- {
--	struct imx219 *imx219 = to_imx219(sd);
--	u32 code;
--
--	if (fse->index >= ARRAY_SIZE(supported_modes))
+diff --git a/drivers/iio/trigger/stm32-timer-trigger.c b/drivers/iio/trigger/stm32-timer-trigger.c
+index 4f9461e1412c..5049d9ecfc1a 100644
+--- a/drivers/iio/trigger/stm32-timer-trigger.c
++++ b/drivers/iio/trigger/stm32-timer-trigger.c
+@@ -11,9 +11,10 @@
+ #include <linux/iio/timer/stm32-timer-trigger.h>
+ #include <linux/iio/trigger.h>
+ #include <linux/mfd/stm32-timers.h>
++#include <linux/mod_devicetable.h>
+ #include <linux/module.h>
+ #include <linux/platform_device.h>
+-#include <linux/of_device.h>
++#include <linux/property.h>
+ 
+ #define MAX_TRIGGERS 7
+ #define MAX_VALIDS 5
+@@ -771,11 +772,11 @@ static int stm32_timer_trigger_probe(struct platform_device *pdev)
+ 	unsigned int index;
+ 	int ret;
+ 
+-	if (of_property_read_u32(dev->of_node, "reg", &index))
 -		return -EINVAL;
--
--	mutex_lock(&imx219->mutex);
--	code = imx219_get_format_code(imx219, fse->code);
--	mutex_unlock(&imx219->mutex);
--	if (fse->code != code)
--		return -EINVAL;
-+	unsigned int i;
++	ret = device_property_read_u32(dev, "reg", &index);
++	if (ret)
++		return ret;
  
--	fse->min_width = supported_modes[fse->index].width;
--	fse->max_width = fse->min_width;
--	fse->min_height = supported_modes[fse->index].height;
--	fse->max_height = fse->min_height;
-+	if (fse->stream == 0) {
-+		for (i = 0; i < ARRAY_SIZE(imx219_mbus_formats); ++i) {
-+			if (imx219_mbus_formats[i] == fse->code)
-+				break;
-+		}
+-	cfg = (const struct stm32_timer_trigger_cfg *)
+-		of_match_device(dev->driver->of_match_table, dev)->data;
++	cfg = device_get_match_data(dev);
  
--	return 0;
--}
-+		if (i == ARRAY_SIZE(imx219_mbus_formats))
-+			return -EINVAL;
- 
--static void imx219_reset_colorspace(struct v4l2_mbus_framefmt *fmt)
--{
--	fmt->colorspace = V4L2_COLORSPACE_SRGB;
--	fmt->ycbcr_enc = V4L2_MAP_YCBCR_ENC_DEFAULT(fmt->colorspace);
--	fmt->quantization = V4L2_MAP_QUANTIZATION_DEFAULT(true,
--							  fmt->colorspace,
--							  fmt->ycbcr_enc);
--	fmt->xfer_func = V4L2_MAP_XFER_FUNC_DEFAULT(fmt->colorspace);
--}
-+		if (fse->index >= ARRAY_SIZE(supported_modes))
-+			return -EINVAL;
- 
--static void imx219_update_pad_format(struct imx219 *imx219,
--				     const struct imx219_mode *mode,
--				     struct v4l2_subdev_format *fmt)
--{
--	fmt->format.width = mode->width;
--	fmt->format.height = mode->height;
--	fmt->format.field = V4L2_FIELD_NONE;
--	imx219_reset_colorspace(&fmt->format);
--}
--
--static int __imx219_get_pad_format(struct imx219 *imx219,
--				   struct v4l2_subdev_state *sd_state,
--				   struct v4l2_subdev_format *fmt)
--{
--	if (fmt->which == V4L2_SUBDEV_FORMAT_TRY) {
--		struct v4l2_mbus_framefmt *try_fmt =
--			v4l2_subdev_get_try_format(&imx219->sd, sd_state,
--						   fmt->pad);
--		/* update the code which could change due to vflip or hflip: */
--		try_fmt->code = imx219_get_format_code(imx219, try_fmt->code);
--		fmt->format = *try_fmt;
-+		fse->min_width  = supported_modes[fse->index].width;
-+		fse->max_width  = fse->min_width;
-+		fse->max_height = supported_modes[fse->index].height;
-+		fse->min_height = fse->max_height;
- 	} else {
--		imx219_update_pad_format(imx219, imx219->mode, fmt);
--		fmt->format.code = imx219_get_format_code(imx219,
--							  imx219->fmt.code);
-+		if (fse->code != MEDIA_BUS_FMT_METADATA_8)
-+			return -EINVAL;
-+
-+		fse->min_width = IMX219_EMBEDDED_LINE_WIDTH;
-+		fse->max_width = fse->min_width;
-+		fse->min_height = IMX219_NUM_EMBEDDED_LINES;
-+		fse->max_height = fse->min_height;
- 	}
- 
- 	return 0;
- }
- 
--static int imx219_get_pad_format(struct v4l2_subdev *sd,
--				 struct v4l2_subdev_state *sd_state,
--				 struct v4l2_subdev_format *fmt)
-+static void imx219_update_metadata_pad_format(struct v4l2_subdev_format *fmt)
- {
--	struct imx219 *imx219 = to_imx219(sd);
--	int ret;
--
--	mutex_lock(&imx219->mutex);
--	ret = __imx219_get_pad_format(imx219, sd_state, fmt);
--	mutex_unlock(&imx219->mutex);
--
--	return ret;
-+	fmt->format.width = IMX219_EMBEDDED_LINE_WIDTH;
-+	fmt->format.height = IMX219_NUM_EMBEDDED_LINES;
-+	fmt->format.code = MEDIA_BUS_FMT_METADATA_8;
-+	fmt->format.field = V4L2_FIELD_NONE;
- }
- 
- static int imx219_set_pad_format(struct v4l2_subdev *sd,
-@@ -949,32 +914,58 @@ static int imx219_set_pad_format(struct v4l2_subdev *sd,
- 				 struct v4l2_subdev_format *fmt)
- {
- 	struct imx219 *imx219 = to_imx219(sd);
-+	struct i2c_client *client = v4l2_get_subdevdata(&imx219->sd);
- 	const struct imx219_mode *mode;
--	struct v4l2_mbus_framefmt *framefmt;
-+	struct v4l2_mbus_framefmt *format;
- 	int exposure_max, exposure_def, hblank;
- 	unsigned int i;
-+	int ret = 0;
- 
- 	mutex_lock(&imx219->mutex);
- 
-+	if (fmt->pad != 0) {
-+		dev_err(&client->dev, "%s Could not get pad %d\n", __func__,
-+			fmt->pad);
-+		ret = -EINVAL;
-+		goto done;
-+	}
-+
-+	if (fmt->stream == 1) {
-+		/* Only one embedded data mode is supported */
-+		imx219_update_metadata_pad_format(fmt);
-+		ret = 0;
-+		goto done;
-+	}
-+
- 	for (i = 0; i < ARRAY_SIZE(imx219_mbus_formats); i++)
- 		if (imx219_mbus_formats[i] == fmt->format.code)
- 			break;
- 	if (i >= ARRAY_SIZE(imx219_mbus_formats))
- 		i = 0;
- 
--	/* Bayer order varies with flips */
--	fmt->format.code = imx219_get_format_code(imx219, imx219_mbus_formats[i]);
--
- 	mode = v4l2_find_nearest_size(supported_modes,
- 				      ARRAY_SIZE(supported_modes),
- 				      width, height,
- 				      fmt->format.width, fmt->format.height);
--	imx219_update_pad_format(imx219, mode, fmt);
--	if (fmt->which == V4L2_SUBDEV_FORMAT_TRY) {
--		framefmt = v4l2_subdev_get_try_format(sd, sd_state, fmt->pad);
--		*framefmt = fmt->format;
--	} else if (imx219->mode != mode ||
--		   imx219->fmt.code != fmt->format.code) {
-+
-+	v4l2_subdev_lock_state(sd_state);
-+
-+	/* Update the stored format and return it. */
-+	format = v4l2_state_get_stream_format(sd_state, fmt->pad, fmt->stream);
-+
-+	if (fmt->which == V4L2_SUBDEV_FORMAT_ACTIVE && imx219->streaming) {
-+		ret = -EBUSY;
-+		goto err_state;
-+	}
-+
-+	/* Bayer order varies with flips */
-+	format->code = imx219_get_format_code(imx219, imx219_mbus_formats[i]);
-+	format->width = mode->width;
-+	format->height = mode->height;
-+	/* Bayer order varies with flips */
-+	fmt->format = *format;
-+
-+	if (fmt->which == V4L2_SUBDEV_FORMAT_ACTIVE) {
- 		imx219->fmt = fmt->format;
- 		imx219->mode = mode;
- 		/* Update limits and set FPS to default */
-@@ -1001,9 +992,12 @@ static int imx219_set_pad_format(struct v4l2_subdev *sd,
- 					 hblank);
- 	}
- 
-+err_state:
-+	v4l2_subdev_unlock_state(sd_state);
-+done:
- 	mutex_unlock(&imx219->mutex);
- 
--	return 0;
-+	return ret;
- }
- 
- static int imx219_set_framefmt(struct imx219 *imx219)
-@@ -1305,7 +1299,7 @@ static const struct v4l2_subdev_video_ops imx219_video_ops = {
- static const struct v4l2_subdev_pad_ops imx219_pad_ops = {
- 	.init_cfg		= imx219_init_cfg,
- 	.enum_mbus_code		= imx219_enum_mbus_code,
--	.get_fmt		= imx219_get_pad_format,
-+	.get_fmt		= v4l2_subdev_get_fmt,
- 	.set_fmt		= imx219_set_pad_format,
- 	.get_selection		= imx219_get_selection,
- 	.set_routing		= imx219_set_routing,
-@@ -1582,10 +1576,16 @@ static int imx219_probe(struct i2c_client *client)
- 		goto error_handler_free;
- 	}
- 
-+	ret = v4l2_subdev_init_finalize(sd);
-+	if (ret) {
-+		dev_err(dev, "failed to finalize sensor init: %d\n", ret);
-+		goto error_media_entity;
-+	}
-+
- 	ret = v4l2_async_register_subdev_sensor(sd);
- 	if (ret < 0) {
- 		dev_err(dev, "failed to register sensor sub-device: %d\n", ret);
--		goto error_media_entity;
-+		goto error_free_state;
- 	}
- 
- 	/* Enable runtime PM and turn off the device */
-@@ -1595,6 +1595,8 @@ static int imx219_probe(struct i2c_client *client)
- 
- 	return 0;
- 
-+error_free_state:
-+	v4l2_subdev_cleanup(sd);
- error_media_entity:
- 	media_entity_cleanup(&sd->entity);
- 
-@@ -1613,6 +1615,7 @@ static int imx219_remove(struct i2c_client *client)
- 	struct imx219 *imx219 = to_imx219(sd);
- 
- 	v4l2_async_unregister_subdev(sd);
-+	v4l2_subdev_cleanup(sd);
- 	media_entity_cleanup(&sd->entity);
- 	imx219_free_controls(imx219);
- 
+ 	if (index >= ARRAY_SIZE(triggers_table) ||
+ 	    index >= cfg->num_valids_table)
 -- 
-2.32.0
+2.34.1
 
