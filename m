@@ -2,110 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AFC2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 12:54:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8CE5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 12:54:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344232AbiBBMyq (ORCPT
+        id S1344243AbiBBMy5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 07:54:46 -0500
-Received: from meesny.iki.fi ([195.140.195.201]:59698 "EHLO meesny.iki.fi"
+        Wed, 2 Feb 2022 07:54:57 -0500
+Received: from mout.gmx.net ([212.227.17.20]:46767 "EHLO mout.gmx.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233535AbiBBMyo (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 07:54:44 -0500
-Received: from hillosipuli.retiisi.eu (89-27-103-169.bb.dnainternet.fi [89.27.103.169])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: sailus)
-        by meesny.iki.fi (Postfix) with ESMTPSA id 8A1D020071;
-        Wed,  2 Feb 2022 14:54:41 +0200 (EET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi; s=meesny;
-        t=1643806481;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=r0d4BfzJzIMCEfZztp3eu1A5yIM0C5PoqgkaW6Z2irY=;
-        b=uXrnP+GMBJuGqTlrLjB9mmbOk4ge/M6EfvCji15Qm4PTyvn759Eurn8HihI8Er/4KPQstC
-        d0mYB4/0GuUgwvEgpS86A1/g6qgSIeXk6xalC0CLQpV403uSt1wGzxEF21hq/4AaO36iN5
-        KPcE9NEtygFWOd12RY9CvT919OSX1Ik=
-Received: from valkosipuli.retiisi.eu (valkosipuli.localdomain [192.168.4.2])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by hillosipuli.retiisi.eu (Postfix) with ESMTPS id 0DCCB634C90;
-        Wed,  2 Feb 2022 14:54:41 +0200 (EET)
-Date:   Wed, 2 Feb 2022 14:54:40 +0200
-From:   Sakari Ailus <sakari.ailus@iki.fi>
-To:     Luiz Sampaio <sampaio.ime@gmail.com>
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org
-Subject: Re: [PATCH 12/31] media: v4l2-core: changing LED_* from enum
- led_brightness to actual value
-Message-ID: <Yfp/EF3oR594Dt3Y@valkosipuli.retiisi.eu>
-References: <20220121165436.30956-1-sampaio.ime@gmail.com>
- <20220121165436.30956-13-sampaio.ime@gmail.com>
+        id S1344246AbiBBMyz (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 2 Feb 2022 07:54:55 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1643806493;
+        bh=WRVN3BlGhrYJ2hDYSDvlgTraCSrMYSaHLg4/ooc3xLc=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=d1NFuz9AMPYS16tXGJNupOwJREnZAUOukweJ7C7/JuX8gxwzZYduZbDgVxfttH8G4
+         wzKGbiw6RteXDHocRk73pqD5LHk1ApJ96eJng56K6j1IktNcl/O7fu50Gav4CkmfY/
+         bSlKnNcrazrLD88DwsTXMSZW5osDj6PRc9crymLA=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from longitude ([5.146.194.160]) by mail.gmx.net (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1M8QWG-1nApJ63nxQ-004P4l; Wed, 02
+ Feb 2022 13:54:52 +0100
+From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
+To:     linux-gpio@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Joel Stanley <joel@jms.id.au>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
+Subject: [PATCH 0/2] Fixing the compile-test warnings in pinctrl-npcm7xx
+Date:   Wed,  2 Feb 2022 13:54:36 +0100
+Message-Id: <20220202125438.19345-1-j.neuschaefer@gmx.net>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220121165436.30956-13-sampaio.ime@gmail.com>
-ARC-Authentication-Results: i=1;
-        ORIGINATING;
-        auth=pass smtp.auth=sailus smtp.mailfrom=sakari.ailus@iki.fi
-ARC-Seal: i=1; s=meesny; d=iki.fi; t=1643806481; a=rsa-sha256; cv=none;
-        b=GtQ7mwoVUP78Eum5wzMBrwemADqkdKB176xlcTsMF/P6ARxEy6+PGvdSukdIfTHztiSXsB
-        XbF5KhBB7lTwWk2qTmlWv7EWEJrVEnicxrSxhwXJfDaDadBJjmnOYvScblydM5w6ckcr9G
-        /5Qb3B8Z+vgj9KNpWKzzwhjmfZLKkaE=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi;
-        s=meesny; t=1643806481;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=r0d4BfzJzIMCEfZztp3eu1A5yIM0C5PoqgkaW6Z2irY=;
-        b=u0RH96fY2diP2meBBTiWuYa5odtkzGAz8H3ohPRN3mYdqRK9WCelApZoNN3K0IRDy/zCeu
-        Z9B3VEGlVfD7CCYNKul3xpor/s/d8Ijj5uBBdeTBzc4HAOjCmtuqBleb6ABIUGvy6ErsBH
-        3OiO2wQ7neqFTCQqF8g5Qh1VNIM2dec=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:7glLdjVidDXKYvA7rh32xSpTaodXZIN4/AAX/UUQc44J9+3XhcZ
+ GJ9xwySyJkTGkTBq2N4d0NULN71a6rLYTDdxMSaqPpG2OJFbE86mtDDUi8/Uf01QP0mQE9d
+ 3MUGcN80Z5cLME0onWyYwMnshf7Ux4gqu5e0dtagdjCNMKmZIYOFJpzOcSqSPzOWDuo6bfw
+ SuGA7zA31PlsqNQ1tXA1w==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:ywwEcjU9F/M=:SsjdxaNV1jDrJ5JQKl4xlX
+ xLWXIjuGpS1El7RAbsVnz6Ydt0pCkOIuGwp9NiLUZPgWHgTCcQG51rYc33SMyaHMtwjcsb7GA
+ suXnwCyRnjv4NZ9CWAvhupK/9AOQajagutdBLwLbCYjPo3hDKqQDO2wsMn5xhJCtp6wQSga3H
+ QS2WSE8kFHL57W7q0q58bpReqloqJrWHl/M4AM4n6kMtBrSJoIX/HMQ8NqAavMOrmmIUwcBli
+ tpLvvWxRqYOt2c8p0FTwJ12iNVINfkh20kkIa7Htl1IzwcfYZctFiPk71j51u1QPxXBhIVAKy
+ DbU27DOWLOgrlPUfrmgETi2q5iCc+xfUcMUsDfD7AQkVvxVZJmpfOt4/eNoAMb0AUDV0q0H1i
+ FWqcAjhxnl57jkSi4Enr0uImrhc3UYQrnsceEDRsymF6589ffSC4mUwXbwkYVYfOteWoAZHD+
+ q5PaFon0vhEXM2FSrXFOOD+QcA2GdJ8VeOEIFUTau2G5UFommTuq7BeQcKb+DI7pY8u13rraL
+ 6t7GLXYiZB8Yf7NjrcrQv+HinBBlbLm4H9YZQpXpzs9B+YtC4KKjdsXrx9JOkZf+rtt+uawx9
+ Ez9ZMIdqcT7300puzetPDav5CQdhiJ4jMfPRypGM/KH2Bs46sPh8VWU5EqnxINeF5i+9dqsRn
+ lZCiOOhP3vzzlUE1jetHbG6oirmnRsIFQAxCKd30kAn/MG+kwvnVKWRRlifPTEKMusTOZuJlv
+ vwH60UXX+ettucE31eO9uWHOMyl1LMQuaS41deqcnrlAvW5xgD7bYMtnr54DOFkJbPiVirCI9
+ CEF9tAu91sG+M8M1HYX3LRQ2rZ6j3Xr9gZXVA5nVvcYmvVzzaXjsCwPD0QayOjRnCt/EWtnCv
+ Q2k/zLmvgpMXKY4CcwBdn2CwWETWJQWwLC6GsE/rIX5Ax+YCYmXhxzo0l462xj+QB5MCNS/Di
+ /2ffrdl5tHesYxuGoZxrY+Xc7TPdVMYiqDoTYWxrobFQ5574/sMVEtJkB7n4FB/zuKKUtTjvs
+ LMcepZuZlLvAmU4MPzv8exDPviZznvP9sXId0V6Bfsqp7Zpm/njq+jmPRzTPLR8IoHkv1wx7c
+ CpyYddv+SRZCog=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Luiz,
+My "Nuvoton WPCM450 pinctrl and GPIO driver" patchset brought two
+warnings[1] in the pinctrl-npcm7xx to light. Here's an attempt at fixing
+them.
 
-On Fri, Jan 21, 2022 at 01:54:17PM -0300, Luiz Sampaio wrote:
-> The enum led_brightness, which contains the declaration of LED_OFF,
-> LED_ON, LED_HALF and LED_FULL is obsolete, as the led class now supports
-> max_brightness.
+[1]: https://lore.kernel.org/lkml/202201292234.NpSNe4TD-lkp@intel.com/
 
-The set appears to be missing the Signed-off-by: line, at least in the
-three patches cc'd to the linux-media list.
+Jonathan Neusch=C3=A4fer (2):
+  pinctrl: nuvoton: npcm7xx: Use %zd printk format for ARRAY_SIZE()
+  pinctrl: nuvoton: npcm7xx: Rename DS() macro to DSTR()
 
-With this fixed, for this patch:
+ drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c | 160 +++++++++++-----------
+ 1 file changed, 80 insertions(+), 80 deletions(-)
 
-Acked-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+=2D-
+2.34.1
 
-> ---
->  drivers/media/v4l2-core/v4l2-flash-led-class.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/media/v4l2-core/v4l2-flash-led-class.c b/drivers/media/v4l2-core/v4l2-flash-led-class.c
-> index e70e128ccc9c..a47ac654c9f4 100644
-> --- a/drivers/media/v4l2-core/v4l2-flash-led-class.c
-> +++ b/drivers/media/v4l2-core/v4l2-flash-led-class.c
-> @@ -234,11 +234,11 @@ static int v4l2_flash_s_ctrl(struct v4l2_ctrl *c)
->  	case V4L2_CID_FLASH_LED_MODE:
->  		switch (c->val) {
->  		case V4L2_FLASH_LED_MODE_NONE:
-> -			led_set_brightness_sync(led_cdev, LED_OFF);
-> +			led_set_brightness_sync(led_cdev, 0);
->  			return led_set_flash_strobe(fled_cdev, false);
->  		case V4L2_FLASH_LED_MODE_FLASH:
->  			/* Turn the torch LED off */
-> -			led_set_brightness_sync(led_cdev, LED_OFF);
-> +			led_set_brightness_sync(led_cdev, 0);
->  			if (ctrls[STROBE_SOURCE]) {
->  				external_strobe = (ctrls[STROBE_SOURCE]->val ==
->  					V4L2_FLASH_STROBE_SOURCE_EXTERNAL);
-
--- 
-Regards,
-
-Sakari Ailus
