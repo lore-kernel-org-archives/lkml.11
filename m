@@ -2,155 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D0C5C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 10:35:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E510C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 10:38:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343579AbiBBKfp (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 05:35:45 -0500
-Received: from pop36.abv.bg ([194.153.145.227]:47376 "EHLO pop36.abv.bg"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1343559AbiBBKfn (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 05:35:43 -0500
-Received: from smtp.abv.bg (localhost [127.0.0.1])
-        by pop36.abv.bg (Postfix) with ESMTP id 7A4AB1805D2D;
-        Wed,  2 Feb 2022 12:35:35 +0200 (EET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=abv.bg; s=smtp-out;
-        t=1643798135; bh=LJ2bSPclt4CDkpG3k+w2M34FMl19qOebAQleIeO3j9I=;
-        h=Subject:From:In-Reply-To:Date:Cc:References:To:From;
-        b=mX8csLmiBLqAAq7f88AoxyszlnFNhZIKKrGKCG04QORhP9NJMwsELUUyo0pIFkACm
-         YtcTYzdqtwNyvBVqEpTOrA+xRt3qLNZbxllNGQUNgnaFBX561+RK1x3JFZxb4uWQkm
-         LlvNEBg9ev7115kZbxC0C9aJCULDxDKHiWaCO/f4=
-X-HELO: smtpclient.apple
-Authentication-Results: smtp.abv.bg; auth=pass (plain) smtp.auth=gvalkov@abv.bg
-Received: from 212-39-89-111.ip.btc-net.bg (HELO smtpclient.apple) (212.39.89.111)
- by smtp.abv.bg (qpsmtpd/0.96) with ESMTPSA (ECDHE-RSA-AES256-GCM-SHA384 encrypted); Wed, 02 Feb 2022 12:35:35 +0200
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.120.0.1.13\))
-Subject: Re: [PATCH v2 0/1] ipheth URB overflow fix
-From:   Georgi Valkov <gvalkov@abv.bg>
-In-Reply-To: <0414e435e29d4ddf53d189d86fae2c55ed0f81ac.camel@corsac.net>
-Date:   Wed, 2 Feb 2022 12:35:31 +0200
-Cc:     Jan Kiszka <jan.kiszka@siemens.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-usb <linux-usb@vger.kernel.org>,
-        Linux Netdev List <netdev@vger.kernel.org>,
+        id S231687AbiBBKih (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 05:38:37 -0500
+Received: from mail-ua1-f41.google.com ([209.85.222.41]:38783 "EHLO
+        mail-ua1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229540AbiBBKif (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 2 Feb 2022 05:38:35 -0500
+Received: by mail-ua1-f41.google.com with SMTP id n15so18276167uaq.5;
+        Wed, 02 Feb 2022 02:38:35 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mEdhH32JRLl4dka4c3SOy+Q/qa9dhrWU9+uGTrYbEM4=;
+        b=eVX95AnpLrYV4PKAAIcRitmEOYulT7cUNMx7bJKg1e5SxZqRqaax7LWo4FU4BBo2MW
+         LVAiI9WStsICxmMoM26bcPxlhmXreswDKOoOtxGunDBuC7+SODzC7k37mAf+0UJMR1zT
+         7/qDxVfFSZxEr94lY+yyE+ZoWeY6vpO98URs59PjVy6crRzc3gpOa8ADgoREkInNtdH7
+         BL0RPlSC2+FBO/cS+tT8mraK2Ip+3oQTvAO2F29NE7eubfyC0rGl5znhqcY8nB/EMeum
+         ui1yHQsOpDY7JsSt7/9GllaWrdTvVKWrY52AghM/OreRSz4LWwJmaBS9NSW9ixYIS5DK
+         kZJg==
+X-Gm-Message-State: AOAM532mYgbDGjVRUxRY+8ML3qNWcOqRzNST1X4Aspc5zBOd/yKfnF/E
+        ZevSWDFQuGuUpq704H/fzOE9JF0WZZb4Nw==
+X-Google-Smtp-Source: ABdhPJwXKrYZHdIyxNmwX0sNTJ/hF4BZ/nM61lp+5QJZre//BiEiJsS30dFkN1iIhslURAuoVuSimw==
+X-Received: by 2002:a05:6102:c47:: with SMTP id y7mr9775233vss.20.1643798314811;
+        Wed, 02 Feb 2022 02:38:34 -0800 (PST)
+Received: from mail-ua1-f47.google.com (mail-ua1-f47.google.com. [209.85.222.47])
+        by smtp.gmail.com with ESMTPSA id z10sm6092414uap.14.2022.02.02.02.38.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Feb 2022 02:38:34 -0800 (PST)
+Received: by mail-ua1-f47.google.com with SMTP id n15so18276118uaq.5;
+        Wed, 02 Feb 2022 02:38:34 -0800 (PST)
+X-Received: by 2002:a67:b00e:: with SMTP id z14mr11213904vse.57.1643798314183;
+ Wed, 02 Feb 2022 02:38:34 -0800 (PST)
+MIME-Version: 1.0
+References: <20220121014117.21248-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <CAMuHMdUW+7mCLHnWbPQ4oxNO9Awri9TNN8bTDq7uGSYncAdWKw@mail.gmail.com> <OS0PR01MB5922ECB3E4DEDB2595D0101786279@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+In-Reply-To: <OS0PR01MB5922ECB3E4DEDB2595D0101786279@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 2 Feb 2022 11:38:23 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdXw3Uy=jOivke6exPrUXg4a-yyg_Sg3ote48tqwTCwDzQ@mail.gmail.com>
+Message-ID: <CAMuHMdXw3Uy=jOivke6exPrUXg4a-yyg_Sg3ote48tqwTCwDzQ@mail.gmail.com>
+Subject: Re: [PATCH v2] soc: renesas: Add support for reading product revision
+ for RZ/G2L family
+To:     Biju Das <biju.das.jz@bp.renesas.com>
+Cc:     Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "stable @ vger . kernel . org" <stable@vger.kernel.org>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <CE7AE1A3-51E9-45CE-A4EE-DACB03B96D9C@abv.bg>
-References: <cover.1643699778.git.jan.kiszka@siemens.com>
- <0414e435e29d4ddf53d189d86fae2c55ed0f81ac.camel@corsac.net>
-To:     Yves-Alexis Perez <corsac@corsac.net>
-X-Mailer: Apple Mail (2.3654.120.0.1.13)
+        Prabhakar <prabhakar.csengg@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Biju,
 
+On Wed, Feb 2, 2022 at 10:51 AM Biju Das <biju.das.jz@bp.renesas.com> wrote:
+> > Subject: Re: [PATCH v2] soc: renesas: Add support for reading product
+> > revision for RZ/G2L family
+> > On Fri, Jan 21, 2022 at 2:41 AM Lad Prabhakar <prabhakar.mahadev-
+> > lad.rj@bp.renesas.com> wrote:
+> > > From: Biju Das <biju.das.jz@bp.renesas.com>
+> > > As per RZ/G2L HW manual (Rev.1.00 Sep, 2021) DEV_ID [31:28] indicates
+> > > product revision. Use this information to populate the revision info
+> > > for RZ/G2L family.
+> > >
+> > > Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> > > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-> On 2022-02-02, at 10:09 AM, Yves-Alexis Perez <corsac@corsac.net> =
-wrote:
->=20
-> On Tue, 2022-02-01 at 08:16 +0100, Jan Kiszka wrote:
->> Georgi Valkov (1):
->>   ipheth: fix EOVERFLOW in ipheth_rcvbulk_callback
->>=20
->>  drivers/net/usb/ipheth.c | 6 +++---
->>  1 file changed, 3 insertions(+), 3 deletions(-)
->=20
-> Hi,
->=20
-> sorry for the extra-long delay. I finally tested the patch, and it =
-seems to
-> work fine. I've tried it on my laptop for few hours without issue, but =
-to be
-> fair it was working just fine before, I never experienced the =
-EOVERFLOW
-> myself.
+> > > --- a/drivers/soc/renesas/renesas-soc.c
+> > > +++ b/drivers/soc/renesas/renesas-soc.c
+> > > @@ -405,41 +417,38 @@ static int __init renesas_soc_init(void)
+> > >
+> > >                         eshi = ((product >> 4) & 0x0f) + 1;
+> > >                         eslo = product & 0xf;
+> > > +                       soc_dev_attr->revision = kasprintf(GFP_KERNEL,
+> > "ES%u.%u",
+> > > +                                                          eshi, eslo);
+> > > +               }  else if (id == &id_rzg2l) {
+> > > +                       eshi =  ((product >> 28) & 0x0f);
+> > > +                       soc_dev_attr->revision = kasprintf(GFP_KERNEL,
+> > "Rev %u",
+> > > +                                                          eshi);
+> >
+> > Would you mind if I would drop the "Rev " while applying?
+>
+> Kernel reports the below message after dropping Rev. Is it OK?
+>
+> [    0.018297] Detected Renesas RZ/G2L r9a07g044 1
 
-Thank you for testing and committing the patch!
+That's indeed not so nice...
 
-Hi Yves!
-In order to experience the EOVERFLOW, the iPhone has to receive a large =
-packet
-of size 1514 bytes. Note that it is common for ISPs to limit the MTU, =
-which results
-in dropping large packets before they arrive at the iPhone. For example =
-if I run
+Either we have to add it back, or do something like:
 
-mtr 8.8.8.8 -n
+-       pr_info("Detected Renesas %s %s %s\n", soc_dev_attr->family,
+-               soc_dev_attr->soc_id, soc_dev_attr->revision ?: "");
++       pr_info("Detected Renesas %s %s%s%s\n", soc_dev_attr->family,
++               soc_dev_attr->soc_id, soc_dev_attr->revision ? " Rev " : "",
++               soc_dev_attr->revision ?: "");
 
- 1. 172.20.10.1
- 2. (waiting for reply)
- 3. 10.98.8.1
- 4. 10.98.8.253
- 5. 46.10.207.99
- 6. 212.39.69.106
- 7. 212.39.66.222
- 8. 216.239.59.239
- 9. 74.125.251.185
-10. 8.8.8.8
+Any other options?
 
-Host 5 drops large packets, while 3 and 4 replay. Now run
-ping 10.98.8.1 -D -s 1472
+Gr{oetje,eeting}s,
 
-Without the patch I get EOVERFLOW and there is no further communication.
-It would be nice if a failsafe mechanism is implemented to recover from =
-faults
-like that or in the event that no communication is detected over a =
-certain period.
-With the patch applied, everything works fine:
-1480 bytes from 10.98.8.1: icmp_seq=3D0 ttl=3D253 time=3D50.234 ms
+                        Geert
 
-There is another issue with my iPhone 7 Plus, which is unrelated to this =
-patch:
-If an iPhone is tethered to a MacBook, the next time it gets connected =
-to an
-OpenWRT router the USB Ethernet interface appears, but there is no
-communication. Hence I would assume this issue has to be fixed in =
-another
-patch. I can confirm that in this state macOS and Windows are able to =
-use
-USB tethering, only OpenWRT is affected. So far I found the following
-workarounds:
-* reboot the phone or run:
-* usbreset 002/002 && /etc/init.d/usbmuxd restart
-* or in macOS disable the USB Ethernet interface, before the iPhone is
-unplugged: e.g. Settings, Network, iPhone USB: check Disable unless =
-needed,
-then connect over wifi. The USB interface gets disabled.
-* the same effect can also be achieved using QuickTime, File,
-New Movie Recording. Selecting the iPhone, causes the USB Ethernet =
-interface
-to disappear. If we unplug and tether to OpenWRT now, it works fine. =
-This looks
-like an incomplete initialisation, likely in usbmuxd or ipheth, which =
-needs to switch
-the iPhone to the proper mode.
-
-The same happens if the phone is powered off, and then restarted while =
-tethered,
-or if it reboots due to extreme cold temperatures or low battery. =
-Finally there is
-also a bug or possible hardware/baseband fault in my phone where every =
-few
-days the modem reboots: the LTE icon disappears for a few seconds, and
-tethering is turned off. In the last case Personal Hotspot disappears in =
-Settings,
-but can still be accessed under Mobile Data. This is likely another iOS =
-bug.
-
-Either way, running the commands mentioned above re-enable tethering and
-restore the communication instantly. There is no need to unlock the =
-iPhone with
-a passcode after it restarts. It would be nice if a watchdog is =
-integrated
-in ipheth to trigger recovery automatically.
-
-Any ideas how to implement a watchdog to fix this separate issue?
 --
-Georgi Valkov
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
