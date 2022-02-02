@@ -2,217 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD21CC43219
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 14:34:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7240EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 14:35:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345050AbiBBOe4 (ORCPT
+        id S1345075AbiBBOfA convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 09:34:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43088 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345037AbiBBOey (ORCPT
+        Wed, 2 Feb 2022 09:35:00 -0500
+Received: from frasgout.his.huawei.com ([185.176.79.56]:4661 "EHLO
+        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234062AbiBBOez (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 09:34:54 -0500
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13416C06173B
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 06:34:54 -0800 (PST)
-Received: by mail-pl1-x634.google.com with SMTP id x11so18438167plg.6
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 06:34:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=uplRDMf9P3k9aUR6OrL9VGZsCccO7/3RG36fBhJFyME=;
-        b=kSLOTeQhvBFw7fsL96na0cRlWcVjElWVvAoseaINB/pZHqA7KWxP3av/18pkL1aF+0
-         MKOQJZSHRAd5a5PwAiR1h2yWe05lQOOjIoyguZQ6FRdfPhWOhYS2Q2cmjxo/HRQGt/Jy
-         BLny0ZANjrtCry2BJhLKzk1uwsIbJqH7I0w5IgRmX7/Xh8uBWszfMynYBEc3fqos21Qu
-         CxFcpkYtSGBHbUPVu/D5nyQUIrxpb/JUykO56+48bAqzUjS16agFbbk3P3Z3QbATWhrM
-         WyboLCUgxUOu26c9aIeOzVgtlweBJ8PzLJ1+xwkL63Hi5ucGoWjq0bEicpnPVjxdUrpG
-         lkKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=uplRDMf9P3k9aUR6OrL9VGZsCccO7/3RG36fBhJFyME=;
-        b=Ykn0GuXuvNDKgEqmE2yD0sBhLQVmXUGz+0vN5kdVh5D6wjpQluo1i87ieiFe167S0+
-         HXAXvlwScwDZv1KTkXAA6y16BxVRnlR9FUXV5ggZbsmFijJ2F0b9zGeqj9T5eqmCDypm
-         Aty2yOLkYcKJxFdfXOQi3RpPgZm044xZpK7EDPrjJ2E1EAjFvC8oiW6xMovyrOhqLORs
-         YWFKNg3THJtwLuw8RMKQuOthpnwD0hRU1KWi0PwKxK2wdh8e6GbfunsK4SYKCLNd0yzI
-         CphbRkfCLF6+wyCQEDtSColubVime1D/xJdZT6I42JtPEpS1nY/OENLuI8V/ulLxsv0u
-         WGPg==
-X-Gm-Message-State: AOAM530Z6Ftz0JqneWns8EKr95Pne8Eg1yxkti54MQ3ttV0LqG/YSbyx
-        OEbAkopC6YWM8wSmxUl4+hgCSg==
-X-Google-Smtp-Source: ABdhPJxYVhkrB3EfA0Rf/jBLdL6J+MWAJGy/3N8zt0fObDKgb6hfYJaRk8Ro75dji+V85rbzZGD4sA==
-X-Received: by 2002:a17:902:e851:: with SMTP id t17mr30063915plg.102.1643812493488;
-        Wed, 02 Feb 2022 06:34:53 -0800 (PST)
-Received: from FVFYT0MHHV2J.tiktokcdn.com ([139.177.225.241])
-        by smtp.gmail.com with ESMTPSA id s9sm29079268pgm.76.2022.02.02.06.34.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Feb 2022 06:34:53 -0800 (PST)
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     dan.j.williams@intel.com, willy@infradead.org, jack@suse.cz,
-        viro@zeniv.linux.org.uk, akpm@linux-foundation.org,
-        apopple@nvidia.com, shy828301@gmail.com, rcampbell@nvidia.com,
-        hughd@google.com, xiyuyang19@fudan.edu.cn,
-        kirill.shutemov@linux.intel.com, zwisler@kernel.org,
-        hch@infradead.org
-Cc:     linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        duanxiongchun@bytedance.com, Muchun Song <songmuchun@bytedance.com>
-Subject: [PATCH v2 5/6] dax: fix missing writeprotect the pte entry
-Date:   Wed,  2 Feb 2022 22:33:06 +0800
-Message-Id: <20220202143307.96282-6-songmuchun@bytedance.com>
-X-Mailer: git-send-email 2.32.0 (Apple Git-132)
-In-Reply-To: <20220202143307.96282-1-songmuchun@bytedance.com>
-References: <20220202143307.96282-1-songmuchun@bytedance.com>
+        Wed, 2 Feb 2022 09:34:55 -0500
+Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.200])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Jpkp33h5Xz67cpv;
+        Wed,  2 Feb 2022 22:34:19 +0800 (CST)
+Received: from lhreml713-chm.china.huawei.com (10.201.108.64) by
+ fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 2 Feb 2022 15:34:52 +0100
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ lhreml713-chm.china.huawei.com (10.201.108.64) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 2 Feb 2022 14:34:52 +0000
+Received: from lhreml710-chm.china.huawei.com ([169.254.81.184]) by
+ lhreml710-chm.china.huawei.com ([169.254.81.184]) with mapi id
+ 15.01.2308.021; Wed, 2 Feb 2022 14:34:52 +0000
+From:   Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+CC:     "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+        "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+        "mgurtovoy@nvidia.com" <mgurtovoy@nvidia.com>,
+        Linuxarm <linuxarm@huawei.com>,
+        liulongfang <liulongfang@huawei.com>,
+        "Zengtao (B)" <prime.zeng@hisilicon.com>,
+        yuzenghui <yuzenghui@huawei.com>,
+        "Jonathan Cameron" <jonathan.cameron@huawei.com>,
+        "Wangzhou (B)" <wangzhou1@hisilicon.com>
+Subject: RE: [RFC v2 0/4] vfio/hisilicon: add acc live migration driver
+Thread-Topic: [RFC v2 0/4] vfio/hisilicon: add acc live migration driver
+Thread-Index: AQHYGDbmFHRHIXj6i0KnDwR2h2vbX6yAR7ag
+Date:   Wed, 2 Feb 2022 14:34:52 +0000
+Message-ID: <a29ae3ea51344e18b9659424772a4b42@huawei.com>
+References: <20210702095849.1610-1-shameerali.kolothum.thodi@huawei.com>
+ <20220202131448.GA2538420@nvidia.com>
+In-Reply-To: <20220202131448.GA2538420@nvidia.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.202.227.178]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently dax_mapping_entry_mkclean() fails to clean and write protect
-the pte entry within a DAX PMD entry during an *sync operation. This
-can result in data loss in the following sequence:
 
-  1) process A mmap write to DAX PMD, dirtying PMD radix tree entry and
-     making the pmd entry dirty and writeable.
-  2) process B mmap with the @offset (e.g. 4K) and @length (e.g. 4K)
-     write to the same file, dirtying PMD radix tree entry (already
-     done in 1)) and making the pte entry dirty and writeable.
-  3) fsync, flushing out PMD data and cleaning the radix tree entry. We
-     currently fail to mark the pte entry as clean and write protected
-     since the vma of process B is not covered in dax_entry_mkclean().
-  4) process B writes to the pte. These don't cause any page faults since
-     the pte entry is dirty and writeable. The radix tree entry remains
-     clean.
-  5) fsync, which fails to flush the dirty PMD data because the radix tree
-     entry was clean.
-  6) crash - dirty data that should have been fsync'd as part of 5) could
-     still have been in the processor cache, and is lost.
 
-Just to use pfn_mkclean_range() to clean the pfns to fix this issue.
+> -----Original Message-----
+> From: Jason Gunthorpe [mailto:jgg@nvidia.com]
+> Sent: 02 February 2022 13:15
+> To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+> Cc: kvm@vger.kernel.org; linux-kernel@vger.kernel.org;
+> linux-crypto@vger.kernel.org; alex.williamson@redhat.com;
+> mgurtovoy@nvidia.com; Linuxarm <linuxarm@huawei.com>; liulongfang
+> <liulongfang@huawei.com>; Zengtao (B) <prime.zeng@hisilicon.com>;
+> yuzenghui <yuzenghui@huawei.com>; Jonathan Cameron
+> <jonathan.cameron@huawei.com>; Wangzhou (B) <wangzhou1@hisilicon.com>
+> Subject: Re: [RFC v2 0/4] vfio/hisilicon: add acc live migration driver
+> 
+> On Fri, Jul 02, 2021 at 10:58:45AM +0100, Shameer Kolothum wrote:
+> > This series attempts to add vfio live migration support for
+> > HiSilicon ACC VF devices. HiSilicon ACC VF device MMIO space
+> > includes both the functional register space and migration
+> > control register space. As discussed in RFCv1[0], this may create
+> > security issues as these regions get shared between the Guest
+> > driver and the migration driver. Based on the feedback, we tried
+> > to address those concerns in this version.
+> >
+> > This is now based on the new vfio-pci-core framework proposal[1].
+> > Understand that the framework proposal is still under discussion,
+> > but really appreciate any feedback on the approach taken here
+> > to mitigate the security risks.
+> 
+> Hi, can you look at the v6 proposal for the mlx5 implementation of the
+> migration API and see if it meets hisilicon acc's needs as well?
+> 
+> https://lore.kernel.org/all/20220130160826.32449-1-yishaih@nvidia.com/
 
-Fixes: 4b4bb46d00b3 ("dax: clear dirty entry tags on cache flush")
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
----
- fs/dax.c | 83 ++++++----------------------------------------------------------
- 1 file changed, 7 insertions(+), 76 deletions(-)
+Yes, I saw that one. Thanks for that and is now looking into it.
 
-diff --git a/fs/dax.c b/fs/dax.c
-index e031e4b6c13c..b64ac02d55d7 100644
---- a/fs/dax.c
-+++ b/fs/dax.c
-@@ -25,6 +25,7 @@
- #include <linux/sizes.h>
- #include <linux/mmu_notifier.h>
- #include <linux/iomap.h>
-+#include <linux/rmap.h>
- #include <asm/pgalloc.h>
- 
- #define CREATE_TRACE_POINTS
-@@ -801,87 +802,17 @@ static void *dax_insert_entry(struct xa_state *xas,
- 	return entry;
- }
- 
--static inline
--unsigned long pgoff_address(pgoff_t pgoff, struct vm_area_struct *vma)
--{
--	unsigned long address;
--
--	address = vma->vm_start + ((pgoff - vma->vm_pgoff) << PAGE_SHIFT);
--	VM_BUG_ON_VMA(address < vma->vm_start || address >= vma->vm_end, vma);
--	return address;
--}
--
- /* Walk all mappings of a given index of a file and writeprotect them */
--static void dax_entry_mkclean(struct address_space *mapping, pgoff_t index,
--		unsigned long pfn)
-+static void dax_entry_mkclean(struct address_space *mapping, unsigned long pfn,
-+			      unsigned long npfn, pgoff_t start)
- {
- 	struct vm_area_struct *vma;
--	pte_t pte, *ptep = NULL;
--	pmd_t *pmdp = NULL;
--	spinlock_t *ptl;
-+	pgoff_t end = start + npfn - 1;
- 
- 	i_mmap_lock_read(mapping);
--	vma_interval_tree_foreach(vma, &mapping->i_mmap, index, index) {
--		struct mmu_notifier_range range;
--		unsigned long address;
--
-+	vma_interval_tree_foreach(vma, &mapping->i_mmap, start, end) {
-+		pfn_mkclean_range(pfn, npfn, start, vma);
- 		cond_resched();
--
--		if (!(vma->vm_flags & VM_SHARED))
--			continue;
--
--		address = pgoff_address(index, vma);
--
--		/*
--		 * follow_invalidate_pte() will use the range to call
--		 * mmu_notifier_invalidate_range_start() on our behalf before
--		 * taking any lock.
--		 */
--		if (follow_invalidate_pte(vma->vm_mm, address, &range, &ptep,
--					  &pmdp, &ptl))
--			continue;
--
--		/*
--		 * No need to call mmu_notifier_invalidate_range() as we are
--		 * downgrading page table protection not changing it to point
--		 * to a new page.
--		 *
--		 * See Documentation/vm/mmu_notifier.rst
--		 */
--		if (pmdp) {
--#ifdef CONFIG_FS_DAX_PMD
--			pmd_t pmd;
--
--			if (pfn != pmd_pfn(*pmdp))
--				goto unlock_pmd;
--			if (!pmd_dirty(*pmdp) && !pmd_write(*pmdp))
--				goto unlock_pmd;
--
--			flush_cache_range(vma, address,
--					  address + HPAGE_PMD_SIZE);
--			pmd = pmdp_invalidate(vma, address, pmdp);
--			pmd = pmd_wrprotect(pmd);
--			pmd = pmd_mkclean(pmd);
--			set_pmd_at(vma->vm_mm, address, pmdp, pmd);
--unlock_pmd:
--#endif
--			spin_unlock(ptl);
--		} else {
--			if (pfn != pte_pfn(*ptep))
--				goto unlock_pte;
--			if (!pte_dirty(*ptep) && !pte_write(*ptep))
--				goto unlock_pte;
--
--			flush_cache_page(vma, address, pfn);
--			pte = ptep_clear_flush(vma, address, ptep);
--			pte = pte_wrprotect(pte);
--			pte = pte_mkclean(pte);
--			set_pte_at(vma->vm_mm, address, ptep, pte);
--unlock_pte:
--			pte_unmap_unlock(ptep, ptl);
--		}
--
--		mmu_notifier_invalidate_range_end(&range);
- 	}
- 	i_mmap_unlock_read(mapping);
- }
-@@ -949,7 +880,7 @@ static int dax_writeback_one(struct xa_state *xas, struct dax_device *dax_dev,
- 	count = 1UL << dax_entry_order(entry);
- 	index = xas->xa_index & ~(count - 1);
- 
--	dax_entry_mkclean(mapping, index, pfn);
-+	dax_entry_mkclean(mapping, pfn, count, index);
- 	dax_flush(dax_dev, page_address(pfn_to_page(pfn)), count * PAGE_SIZE);
- 	/*
- 	 * After we have flushed the cache, we can clear the dirty tag. There
--- 
-2.11.0
+> 
+> There are few topics to consider:
+>  - Which of the three feature sets (STOP_COPY, P2P and PRECOPY) make
+>    sense for this driver?
+
+I think it will be STOP_COPY only for now. We might have PRECOPY feature once
+we have the SMMUv3 HTTU support in future.
+
+> 
+>    I see pf_qm_state_pre_save() but didn't understand why it wanted to
+>    send the first 32 bytes in the PRECOPY mode? It is fine, but it
+>    will add some complexity to continue to do this.
+
+That was mainly to do a quick verification between src and dst compatibility
+before we start saving the state. I think probably we can delay that check
+for later.
+
+>  - I think we discussed the P2P implementation and decided it would
+>    work for this device? Can you re-read and confirm?
+
+In our case these devices are Integrated End Point devices and doesn't have
+P2P DMA capability. Hence the FSM arcs will be limited to STOP_COPY feature
+I guess. Also, since we cannot guarantee a NDMA state in STOP, my
+assumption currently is the onus of making sure that no MMIO access happens 
+in STOP is on the user. Is that a valid assumption?
+
+>  - Are the arcs we defined going to work here as well? The current
+>    implementation in hisi_acc_vf_set_device_state() is very far away
+>    from what the v1 protocol is, so I'm having a hard time guessing,
+>    but..
+
+Right. The FSM has changed a couple of times since we posted this.
+I am going to rebase all that now.
+
+>       RESUMING -> STOP
+>         Probably vf_qm_state_resume()
+> 
+>       RUNNING -> STOP
+>         vf_qm_fun_restart() - that is oddly named..
+> 
+>       STOP -> RESUMING
+>         Seems to be a nop (likely a bug)
+> 
+>       STOP -> RUNNING
+>          Not implemented currenty? (also a bug)
+> 
+>       STOP -> STOP_COPY
+>          pf_qm_state_pre_save / vf_qm_state_save
+> 
+>       STOP_COPY -> STOP
+>          NOP
+
+I will check and verify this.
+
+>    And the modification for the P2P/NO DMA is presumably just
+>    fun_restart too since stopping the device and stopping DMA are
+>    going to be the same thing here?
+
+Yes, in our case stopping device and stopping DMA are effectively the
+same thing.
+
+> 
+> The mlx5 implementation linked above is a full example you can cut and
+> paste from for how to implement the state function and the how to do
+> the data transfer. The f_ops read/write implementation for acc looks
+> trivial as it only streams the fixed size and pre-allocated 'struct
+> acc_vf_data'
+> 
+> It looks like it would be a short path to implement our v2 proposal
+> and remove a lot of driver code, as we saw in mlx5.
+> 
+
+Ok. These are the git repo I am using for the rework,
+https://github.com/jgunthorpe/qemu/commits/vfio_migration_v2
+https://github.com/jgunthorpe/linux/tree/vfio_migration_v2
+
+Please let me know if the above are not up to date.
+
+Also, just noted that my quick prototype is now failing
+with below error,
+
+" Error: VFIO device doesn't support migration"
+
+Do we need to set the below before the feature query?
+Or am I using a wrong Qemu/kernel repo?
+
+--- a/hw/vfio/migration.c
++++ b/hw/vfio/migration.c
+@@ -488,6 +488,7 @@ static int vfio_migration_query_flags(VFIODevice
+*vbasedev, uint64_t *mig_flags)
+     struct vfio_device_feature_migration *mig = (void *)feature->data;
+
+     feature->argsz = sizeof(buf);
++    feature->flags = VFIO_DEVICE_FEATURE_MIGRATION | VFIO_DEVICE_FEATURE_GET;
+     if (ioctl(vbasedev->fd, VFIO_DEVICE_FEATURE, feature) != 0)
+         return -EOPNOTSUPP;
+
+Thanks,
+Shameer
 
