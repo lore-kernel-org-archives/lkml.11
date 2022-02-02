@@ -2,218 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5035C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 00:29:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53015C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 00:30:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381471AbiBFA3r (ORCPT
+        id S1381489AbiBFAan (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 19:29:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42174 "EHLO
+        Sat, 5 Feb 2022 19:30:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229454AbiBFA3p (ORCPT
+        with ESMTP id S229454AbiBFAak (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 19:29:45 -0500
-Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3634CC061348
-        for <linux-kernel@vger.kernel.org>; Sat,  5 Feb 2022 16:29:45 -0800 (PST)
-Received: by mail-qk1-x72a.google.com with SMTP id b35so8055967qkp.6
-        for <linux-kernel@vger.kernel.org>; Sat, 05 Feb 2022 16:29:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qeONPiUHU0AkiH7BV62IDzBx2bto00KJNgoRZxV98iA=;
-        b=kQSC1Pe05Uz4giRgdSeG/dUCvYdNhR3xP6xWEaZUv4NLV0xtqB6Y8J6m3Y/jxAZzkG
-         QKc3MZOU4uIN7QPRnEj07KCQBXw93RTvFJqYM9cX6FonzmotOQwCJLHpFCWULcpBgCUr
-         h1zH734FivNvSBPPLS0za7XIMRMd8ApdcczRb3Mg8qXmttgMILXJUYGQ+jJwR8i5j48c
-         pcps2HslqXkZx4TUARgZBGBi8uBvao/mJ9jvbDowV0y4MU0x9/Q4isB16P+IV8ZIqRUM
-         NKjaNR3OBveIcHkM8N83VH6XWkY0hj49Kc/KXE5NTBCU22/WkmWFZ7Y5WinkNWL+HXSL
-         ISEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qeONPiUHU0AkiH7BV62IDzBx2bto00KJNgoRZxV98iA=;
-        b=h5DWux0KorSYKN7QrRYY8WsvdvtrID6IXZtE2cazfiTqoEVeLJlgBHNMpx+kuct7M4
-         7oz/nbQi9O7/Ttypv2JGaoZsf2Y/Uo5rpfRTRzKoqVI518tGS/TFz0a83a1YT718GUyi
-         nvCqdsOxg7+Qu9G5fTfGnygUiJVW8ZfjUCSaqQhoJEnTbAGLLlT6RGOh8iTRVMZUNLep
-         aD6S91/zINx6ywV11/Srb3C/3QxjI+71XKodtMK/6m/QGf09jZHy1RMp0IY/yECgpcl7
-         pJmslNkFGJydAma55nrfzMBXEtoO1KA7ulpCHEp5q5sccsPjiG5LCPO+F+pIs/P61JYY
-         R55g==
-X-Gm-Message-State: AOAM532ggJkoEy+H+vkcwS7JrSNoYVuRnMTpOuFo3y0fO3U5ncuKqWt6
-        GmDIN02k+aGTLJTOmbWTn6swFm+oHs/QKi1a
-X-Google-Smtp-Source: ABdhPJyV6jCtE/ezy346p9XWtZmyqXQshDZ6e6xVjWH6u7KSk2N9qiqrZZ2LUd/VmVvRAHZ3Xi3htQ==
-X-Received: by 2002:a05:620a:40cc:: with SMTP id g12mr3136238qko.308.1644107384324;
-        Sat, 05 Feb 2022 16:29:44 -0800 (PST)
-Received: from WRT-WX9.. ([207.246.89.135])
-        by smtp.gmail.com with ESMTPSA id w10sm3843598qtj.73.2022.02.05.16.29.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 05 Feb 2022 16:29:43 -0800 (PST)
-From:   Changbin Du <changbin.du@gmail.com>
-To:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>
-Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Changbin Du <changbin.du@gmail.com>
-Subject: [PATCH v3] riscv: fix oops caused by irqsoff latency tracer
-Date:   Sun,  6 Feb 2022 08:29:33 +0800
-Message-Id: <20220206002933.437563-1-changbin.du@gmail.com>
-X-Mailer: git-send-email 2.32.0
+        Sat, 5 Feb 2022 19:30:40 -0500
+Received: from mx1.smtp.larsendata.com (mx1.smtp.larsendata.com [91.221.196.215])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88519C061353
+        for <linux-kernel@vger.kernel.org>; Sat,  5 Feb 2022 16:30:39 -0800 (PST)
+Received: from mail01.mxhotel.dk (mail01.mxhotel.dk [91.221.196.236])
+        by mx1.smtp.larsendata.com (Halon) with ESMTPS
+        id 12f30462-8454-11ec-b20b-0050568c148b;
+        Wed, 02 Feb 2022 18:15:17 +0000 (UTC)
+Received: from ravnborg.org (80-162-45-141-cable.dk.customer.tdc.net [80.162.45.141])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: sam@ravnborg.org)
+        by mail01.mxhotel.dk (Postfix) with ESMTPSA id 67A6F194BFA;
+        Wed,  2 Feb 2022 19:14:11 +0100 (CET)
+Date:   Wed, 2 Feb 2022 19:14:08 +0100
+X-Report-Abuse-To: abuse@mxhotel.dk
+From:   Sam Ravnborg <sam@ravnborg.org>
+To:     nick.hawkins@hpe.com
+Cc:     verdun@hpe.com, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Corey Minyard <minyard@acm.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mark Brown <broonie@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        soc@kernel.org, Shawn Guo <shawnguo@kernel.org>,
+        Stanislav Jakubek <stano.jakubek@gmail.com>,
+        Hao Fang <fanghao11@huawei.com>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Wang Kefeng <wangkefeng.wang@huawei.com>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-i2c@vger.kernel.org,
+        openipmi-developer@lists.sourceforge.net,
+        linux-mtd@lists.infradead.org, netdev@vger.kernel.org,
+        linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH] HPE BMC GXP SUPPORT
+Message-ID: <YfrJ8JWjyH9ptV4z@ravnborg.org>
+References: <nick.hawkins@hpe.com>
+ <20220202165315.18282-1-nick.hawkins@hpe.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220202165315.18282-1-nick.hawkins@hpe.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The trace_hardirqs_{on,off}() requires at least two parent call frames.
-This because these two functions use macro 'CALLER_ADDR1' (aka.
-__builtin_return_address(1)) to acquire caller info. If there's no enough
-frames, the code generated the macro could trigger memory access fault.
+Hi Nick,
 
-[    0.039615][    T0] Unable to handle kernel NULL pointer dereference at virtual address 00000000000000f8
-[    0.041925][    T0] Oops [#1]
-[    0.042063][    T0] Modules linked in:
-[    0.042864][    T0] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.17.0-rc1-00233-g9a20c48d1ed2 #29
-[    0.043568][    T0] Hardware name: riscv-virtio,qemu (DT)
-[    0.044343][    T0] epc : trace_hardirqs_on+0x56/0xe2
-[    0.044601][    T0]  ra : restore_all+0x12/0x6e
-[    0.044721][    T0] epc : ffffffff80126a5c ra : ffffffff80003b94 sp : ffffffff81403db0
-[    0.044801][    T0]  gp : ffffffff8163acd8 tp : ffffffff81414880 t0 : 0000000000000020
-[    0.044882][    T0]  t1 : 0098968000000000 t2 : 0000000000000000 s0 : ffffffff81403de0
-[    0.044967][    T0]  s1 : 0000000000000000 a0 : 0000000000000001 a1 : 0000000000000100
-[    0.045046][    T0]  a2 : 0000000000000000 a3 : 0000000000000000 a4 : 0000000000000000
-[    0.045124][    T0]  a5 : 0000000000000000 a6 : 0000000000000000 a7 : 0000000054494d45
-[    0.045210][    T0]  s2 : ffffffff80003b94 s3 : ffffffff81a8f1b0 s4 : ffffffff80e27b50
-[    0.045289][    T0]  s5 : ffffffff81414880 s6 : ffffffff8160fa00 s7 : 00000000800120e8
-[    0.045389][    T0]  s8 : 0000000080013100 s9 : 000000000000007f s10: 0000000000000000
-[    0.045474][    T0]  s11: 0000000000000000 t3 : 7fffffffffffffff t4 : 0000000000000000
-[    0.045548][    T0]  t5 : 0000000000000000 t6 : ffffffff814aa368
-[    0.045620][    T0] status: 0000000200000100 badaddr: 00000000000000f8 cause: 000000000000000d
-[    0.046402][    T0] [<ffffffff80003b94>] restore_all+0x12/0x6e
+good to see all this stuff coming mainline,
 
-To fix above issue, here we add one extra level wrapper so they can be
-safely called by low level entry code.
+On Wed, Feb 02, 2022 at 10:52:50AM -0600, nick.hawkins@hpe.com wrote:
+> From: Nick Hawkins <nick.hawkins@hpe.com>
+> 
+> GXP is the name of the HPE SoC.
+> This SoC is used to implement BMC features of HPE servers
+> (all ProLiant, Synergy, and many Apollo, and Superdome machines)
+> It does support many features including:
+> 	ARMv7 architecture, and it is based on a Cortex A9 core
+> 	Use an AXI bus to which
+> 		a memory controller is attached, as well as
+>                  multiple SPI interfaces to connect boot flash,
+>                  and ROM flash, a 10/100/1000 Mac engine which
+>                  supports SGMII (2 ports) and RMII
+> 		Multiple I2C engines to drive connectivity with a host infrastructure
+> 		A video engine which support VGA and DP, as well as
+>                  an hardware video encoder
+> 		Multiple PCIe ports
+> 		A PECI interface, and LPC eSPI
+> 		Multiple UART for debug purpose, and Virtual UART for host connectivity
+> 		A GPIO engine
+> This Patch Includes:
+> 	Documentation for device tree bindings
+> 	Device Tree Bindings
+> 	GXP Timer Support
+> 	GXP Architecture Support
+> 
+> Signed-off-by: Nick Hawkins <nick.hawkins@hpe.com>
+> ---
+>  .../bindings/display/hpe,gxp-thumbnail.txt    |  21 +
+>  .../devicetree/bindings/gpio/hpe,gxp-gpio.txt |  16 +
+...
 
-Signed-off-by: Changbin Du <changbin.du@gmail.com>
+All new bindings must be in the DT-schema format (yaml files).
+This enables a lot of syntax checks and validation.
 
----
-v3: fix warning reported by documentation system.
-v2: fix compile warning.
----
- arch/riscv/kernel/Makefile    |  2 ++
- arch/riscv/kernel/entry.S     | 10 +++++-----
- arch/riscv/kernel/trace_irq.c | 26 ++++++++++++++++++++++++++
- arch/riscv/kernel/trace_irq.h | 11 +++++++++++
- 4 files changed, 44 insertions(+), 5 deletions(-)
- create mode 100644 arch/riscv/kernel/trace_irq.c
- create mode 100644 arch/riscv/kernel/trace_irq.h
+We are slowly migrating away from the .txt based bindings.
 
-diff --git a/arch/riscv/kernel/Makefile b/arch/riscv/kernel/Makefile
-index 612556faa527..ffc87e76b1dd 100644
---- a/arch/riscv/kernel/Makefile
-+++ b/arch/riscv/kernel/Makefile
-@@ -51,6 +51,8 @@ obj-$(CONFIG_MODULE_SECTIONS)	+= module-sections.o
- obj-$(CONFIG_FUNCTION_TRACER)	+= mcount.o ftrace.o
- obj-$(CONFIG_DYNAMIC_FTRACE)	+= mcount-dyn.o
- 
-+obj-$(CONFIG_TRACE_IRQFLAGS)	+= trace_irq.o
-+
- obj-$(CONFIG_RISCV_BASE_PMU)	+= perf_event.o
- obj-$(CONFIG_PERF_EVENTS)	+= perf_callchain.o
- obj-$(CONFIG_HAVE_PERF_REGS)	+= perf_regs.o
-diff --git a/arch/riscv/kernel/entry.S b/arch/riscv/kernel/entry.S
-index ed29e9c8f660..d6a46ed0bf05 100644
---- a/arch/riscv/kernel/entry.S
-+++ b/arch/riscv/kernel/entry.S
-@@ -108,7 +108,7 @@ _save_context:
- .option pop
- 
- #ifdef CONFIG_TRACE_IRQFLAGS
--	call trace_hardirqs_off
-+	call __trace_hardirqs_off
- #endif
- 
- #ifdef CONFIG_CONTEXT_TRACKING
-@@ -143,7 +143,7 @@ skip_context_tracking:
- 	li t0, EXC_BREAKPOINT
- 	beq s4, t0, 1f
- #ifdef CONFIG_TRACE_IRQFLAGS
--	call trace_hardirqs_on
-+	call __trace_hardirqs_on
- #endif
- 	csrs CSR_STATUS, SR_IE
- 
-@@ -234,7 +234,7 @@ ret_from_exception:
- 	REG_L s0, PT_STATUS(sp)
- 	csrc CSR_STATUS, SR_IE
- #ifdef CONFIG_TRACE_IRQFLAGS
--	call trace_hardirqs_off
-+	call __trace_hardirqs_off
- #endif
- #ifdef CONFIG_RISCV_M_MODE
- 	/* the MPP value is too large to be used as an immediate arg for addi */
-@@ -270,10 +270,10 @@ restore_all:
- 	REG_L s1, PT_STATUS(sp)
- 	andi t0, s1, SR_PIE
- 	beqz t0, 1f
--	call trace_hardirqs_on
-+	call __trace_hardirqs_on
- 	j 2f
- 1:
--	call trace_hardirqs_off
-+	call __trace_hardirqs_off
- 2:
- #endif
- 	REG_L a0, PT_STATUS(sp)
-diff --git a/arch/riscv/kernel/trace_irq.c b/arch/riscv/kernel/trace_irq.c
-new file mode 100644
-index 000000000000..54324d1bcc25
---- /dev/null
-+++ b/arch/riscv/kernel/trace_irq.c
-@@ -0,0 +1,26 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (C) 2022 Changbin Du <changbin.du@gmail.com>
-+ */
-+
-+#include <linux/irqflags.h>
-+#include <linux/kprobes.h>
-+#include "trace_irq.h"
-+
-+/*
-+ * trace_hardirqs_on/off requires at least two parent call frames.
-+ * Here we add one extra level so they can be safely called by low
-+ * level entry code.
-+ */
-+
-+void __trace_hardirqs_on(void)
-+{
-+	trace_hardirqs_on();
-+}
-+NOKPROBE_SYMBOL(__trace_hardirqs_on);
-+
-+void __trace_hardirqs_off(void)
-+{
-+	trace_hardirqs_off();
-+}
-+NOKPROBE_SYMBOL(__trace_hardirqs_off);
-diff --git a/arch/riscv/kernel/trace_irq.h b/arch/riscv/kernel/trace_irq.h
-new file mode 100644
-index 000000000000..99fe67377e5e
---- /dev/null
-+++ b/arch/riscv/kernel/trace_irq.h
-@@ -0,0 +1,11 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Copyright (C) 2022 Changbin Du <changbin.du@gmail.com>
-+ */
-+#ifndef __TRACE_IRQ_H
-+#define __TRACE_IRQ_H
-+
-+void __trace_hardirqs_on(void);
-+void __trace_hardirqs_off(void);
-+
-+#endif /* __TRACE_IRQ_H */
--- 
-2.32.0
+Also, for new bindings please follow the guide lines listed in
+Documentation/devicetree/bindings/submitting-patches.rst
 
+Consider including the bindings with the drivers using the bindings so
+things have a more natural split.
+
+	Sam
