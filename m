@@ -2,88 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A297C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 16:35:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C981C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 16:35:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239855AbiBBQf2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 11:35:28 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:53082 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229538AbiBBQf1 (ORCPT
+        id S1345866AbiBBQfb (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 11:35:31 -0500
+Received: from alexa-out-sd-02.qualcomm.com ([199.106.114.39]:38165 "EHLO
+        alexa-out-sd-02.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229538AbiBBQf3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 11:35:27 -0500
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 97A6E1F384;
-        Wed,  2 Feb 2022 16:35:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1643819726; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=4Dd4PVcW8Gh92qdOSXS52+1meGC/lQXnewRPI3vvCWE=;
-        b=M/SKFXYhXQ0yaSChw6wIxQwQ5d7HBnBbnYDlWEH+hnqD2gnRU3+xCI+6AWEYpiwh1tZdAu
-        KtJW8t4cx4QWxS5Zk62NXbTFdF8LzZ/KzDdwHjY0IPBREvgkfYKKJBsC6NFxl0sOiX45a/
-        hZg94FHTstR+iwC2GeJTfVyDJOOjisk=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1643819726;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=4Dd4PVcW8Gh92qdOSXS52+1meGC/lQXnewRPI3vvCWE=;
-        b=hsKjmKbgvjeh8w2ffnsVRR8qq8GIDQrxEVIgm82LLhaDtX8FUazOVZXfsAC08LwbHR+9cf
-        G0oQWZAD3QabcgCw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id DC30813E99;
-        Wed,  2 Feb 2022 16:35:24 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id HM+JMcyy+mFZNgAAMHmgww
-        (envelope-from <osalvador@suse.de>); Wed, 02 Feb 2022 16:35:24 +0000
-Date:   Wed, 2 Feb 2022 17:35:22 +0100
-From:   Oscar Salvador <osalvador@suse.de>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     Zi Yan <ziy@nvidia.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Christoph Hellwig <hch@lst.de>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        linuxppc-dev@lists.ozlabs.org,
-        virtualization@lists.linux-foundation.org,
-        iommu@lists.linux-foundation.org, Vlastimil Babka <vbabka@suse.cz>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Eric Ren <renzhengeek@gmail.com>
-Subject: Re: [PATCH v4 3/7] mm: page_isolation: check specified range for
- unmovable pages
-Message-ID: <YfqyyiB4HOxjStY/@localhost.localdomain>
-References: <20220119190623.1029355-1-zi.yan@sent.com>
- <20220119190623.1029355-4-zi.yan@sent.com>
- <Yfp2rv0K6d3cNmwg@localhost.localdomain>
- <21c196f8-18ca-d720-4241-00c9461854d3@redhat.com>
+        Wed, 2 Feb 2022 11:35:29 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1643819729; x=1675355729;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=GF8786NcjTUkQ45yr3Y6C8c0uWFsOEVJPM5o966ltR8=;
+  b=yo90xMikOVJ4uAZpsTe7fFN3eyacUi3ynXvMtuxWD8pwivSlFQ+p2Fho
+   qJB38Y5gVAPBezqx5L48TTLFQhcHNexcEsD+TGT15zBYx41NRP2DB32Ds
+   mr/Qlae0PfmW2rhacD1wRWUyn2zMrI5W3JyjzMfu44YrirvxG3W8CB+d9
+   8=;
+Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 02 Feb 2022 08:35:29 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 08:35:29 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Wed, 2 Feb 2022 08:35:28 -0800
+Received: from kathirav-linux.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Wed, 2 Feb 2022 08:35:25 -0800
+From:   Kathiravan T <quic_kathirav@quicinc.com>
+To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     Kathiravan T <quic_kathirav@quicinc.com>
+Subject: [PATCH 0/2] Drop the clock-frequency property from the MMIO timer node
+Date:   Wed, 2 Feb 2022 22:05:07 +0530
+Message-ID: <1643819709-5410-1-git-send-email-quic_kathirav@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <21c196f8-18ca-d720-4241-00c9461854d3@redhat.com>
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 02, 2022 at 01:25:28PM +0100, David Hildenbrand wrote:
-> That's the whole idea for being able to allocate parts of an unmovable
-> pageblock that are movable.
-> 
-> If the first part is unmovable but the second part is movable, nothing
-> should stop us from trying to allocate the second part.
+Drop the clock-frequency property from the MMIO timer node in both IPQ8074
+and IPQ6018 DTSI. There are couple of reasons for this change
 
-Yeah, I see, I was a bit slow there, but I see the point now.
- 
-Thanks David
+1) As per the DT binding, this property should be present only if the
+firmware is not configuring the clock frequency properly. In both IPQ8074
+and IPQ6018, bootloader is configuring it properly.
+
+2) For IPQ6018, clock frequency should be 24MHz, not 19.2MHz. Rather than
+correcting it, drop it based on the above mentioned point.
+
+Kathiravan T (2):
+  arm64: dts: qcom: ipq8074: drop the clock-frequency property
+  arm64: dts: qcom: ipq6018: drop the clock-frequency property
+
+ arch/arm64/boot/dts/qcom/ipq6018.dtsi | 1 -
+ arch/arm64/boot/dts/qcom/ipq8074.dtsi | 1 -
+ 2 files changed, 2 deletions(-)
 
 -- 
-Oscar Salvador
-SUSE Labs
+2.7.4
+
