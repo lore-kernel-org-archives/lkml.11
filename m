@@ -2,151 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D306C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 17:12:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CBFDC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 17:14:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346175AbiBBRMV (ORCPT
+        id S1346174AbiBBROw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 12:12:21 -0500
-Received: from brightrain.aerifal.cx ([216.12.86.13]:60138 "EHLO
-        brightrain.aerifal.cx" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237512AbiBBRMU (ORCPT
+        Wed, 2 Feb 2022 12:14:52 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:44541 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229751AbiBBROv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 12:12:20 -0500
-Date:   Wed, 2 Feb 2022 12:12:19 -0500
-From:   Rich Felker <dalias@libc.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Ariadne Conill <ariadne@dereferenced.org>,
-        Michael Kerrisk <mtk.manpages@gmail.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Eric Biederman <ebiederm@xmission.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        linux-fsdevel@vger.kernel.org, stable@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH] exec: Force single empty string when argv is empty
-Message-ID: <20220202171218.GQ7074@brightrain.aerifal.cx>
-References: <20220201000947.2453721-1-keescook@chromium.org>
- <20220201145324.GA29634@brightrain.aerifal.cx>
- <1A24DA4E-2B15-4A95-B2A1-F5F963E0CD6F@chromium.org>
+        Wed, 2 Feb 2022 12:14:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643822090;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=z5luWBqzyOZ8TMy1EXyCPtbt4++Mrcm5+Fa6Hswl/gc=;
+        b=B1IiOX9K4KkwAW28sJHHit19HN1g/oDEPCOUAdOIWe2RcBB1JrQfCLwv1zcFj0zPHALsa6
+        lEFXJRTUTlqhpD09aAzDkDERIto/dundPVShEwvVwhkPYjSZ1N2DS0/iJf1gB5Drg3+IZ3
+        /Ky8N+woa/2KNR90iijOw76yLVSM4e8=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-154-lVqn4mfUM2GICW8sPjmHFw-1; Wed, 02 Feb 2022 12:14:49 -0500
+X-MC-Unique: lVqn4mfUM2GICW8sPjmHFw-1
+Received: by mail-wm1-f70.google.com with SMTP id q127-20020a1ca785000000b00352a4860babso52432wme.0
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 09:14:49 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=z5luWBqzyOZ8TMy1EXyCPtbt4++Mrcm5+Fa6Hswl/gc=;
+        b=oH7mXxizc9fZMGYhhwKjfmsKM2oemskN6it4HlYvUd5oBaIZAA2nypu2RI/ePnpvDp
+         qGHN0kE80Zc4MLjA+wGCVleiCl8kI7nR3psxFR6sDhN4e0pITgxnDINqA0uLMvxtc+a/
+         IMQgeP5nNGDJVZCnjWxY1ehENtPVneLBMLFThbGrYIROMbvPYZN6MyZW7mRGQJ78ZYyq
+         H0y2oAXHFBd14psbn075ywnqoMF+29B6kvoVvJKZ1D1ssNega0PK+flYevnO/YRrZWUL
+         Pn4ZyeDchp/Ii4mlPYN7ryPflaMyNP/f+98MSAsmrFx0E0m1/yQiJsM1VIA4g3MtJx+h
+         9OvQ==
+X-Gm-Message-State: AOAM532nx3kbCtvRb2j3kalVGbx7IXeN0TiU9enoJp0PF8REJcyLj8Rw
+        AY1f7LjHMsAvoZm19CnfFlImMthHhhZSGZhIXWqF/XDDPuG4SWNW8CECbKqWPP6kxg67h4VmEGv
+        yVXlHztAeCuW1EUlHcTZfAQ8o
+X-Received: by 2002:a5d:6349:: with SMTP id b9mr25789769wrw.178.1643822088720;
+        Wed, 02 Feb 2022 09:14:48 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzxYywfTMgP3DeL9IBxHNRCeFE+uDAERjb3gBE+FqbAoFTNlYgMaIPAmOzHLnuT5Tho6NVoeg==
+X-Received: by 2002:a5d:6349:: with SMTP id b9mr25789754wrw.178.1643822088491;
+        Wed, 02 Feb 2022 09:14:48 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id n15sm21791299wrf.37.2022.02.02.09.14.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Feb 2022 09:14:47 -0800 (PST)
+Message-ID: <429afd81-7bef-8ead-6ca4-12671378d581@redhat.com>
+Date:   Wed, 2 Feb 2022 18:14:46 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1A24DA4E-2B15-4A95-B2A1-F5F963E0CD6F@chromium.org>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 0/4] KVM: SVM: nSVM: Implement Enlightened MSR-Bitmap
+ for Hyper-V-on-KVM
+Content-Language: en-US
+To:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        Vineeth Pillai <viremana@linux.microsoft.com>,
+        linux-kernel@vger.kernel.org
+References: <20220202095100.129834-1-vkuznets@redhat.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220202095100.129834-1-vkuznets@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 02, 2022 at 07:50:42AM -0800, Kees Cook wrote:
+On 2/2/22 10:50, Vitaly Kuznetsov wrote:
+> Changes since v1:
+> - Patches 1/2 from "[PATCH 0/5] KVM: SVM: nSVM: Implement Enlightened
+>    MSR-Bitmap for Hyper-V-on-KVM and fix it for KVM-on-Hyper-V" are already
+>    merged, dropped.
+> - Fix build when !CONFIG_HYPERV (PATCH3 "KVM: nSVM: Split off common
+>    definitions for Hyper-V on KVM and KVM on Hyper-V" added).
 > 
+> Description:
 > 
-> On February 1, 2022 6:53:25 AM PST, Rich Felker <dalias@libc.org> wrote:
-> >On Mon, Jan 31, 2022 at 04:09:47PM -0800, Kees Cook wrote:
-> >> Quoting[1] Ariadne Conill:
-> >> 
-> >> "In several other operating systems, it is a hard requirement that the
-> >> second argument to execve(2) be the name of a program, thus prohibiting
-> >> a scenario where argc < 1. POSIX 2017 also recommends this behaviour,
-> >> but it is not an explicit requirement[2]:
-> >> 
-> >>     The argument arg0 should point to a filename string that is
-> >>     associated with the process being started by one of the exec
-> >>     functions.
-> >> ....
-> >> Interestingly, Michael Kerrisk opened an issue about this in 2008[3],
-> >> but there was no consensus to support fixing this issue then.
-> >> Hopefully now that CVE-2021-4034 shows practical exploitative use[4]
-> >> of this bug in a shellcode, we can reconsider.
-> >> 
-> >> This issue is being tracked in the KSPP issue tracker[5]."
-> >> 
-> >> While the initial code searches[6][7] turned up what appeared to be
-> >> mostly corner case tests, trying to that just reject argv == NULL
-> >> (or an immediately terminated pointer list) quickly started tripping[8]
-> >> existing userspace programs.
-> >> 
-> >> The next best approach is forcing a single empty string into argv and
-> >> adjusting argc to match. The number of programs depending on argc == 0
-> >> seems a smaller set than those calling execve with a NULL argv.
-> >> 
-> >> Account for the additional stack space in bprm_stack_limits(). Inject an
-> >> empty string when argc == 0 (and set argc = 1). Warn about the case so
-> >> userspace has some notice about the change:
-> >> 
-> >>     process './argc0' launched './argc0' with NULL argv: empty string added
-> >> 
-> >> Additionally WARN() and reject NULL argv usage for kernel threads.
-> >> 
-> >> [1] https://lore.kernel.org/lkml/20220127000724.15106-1-ariadne@dereferenced.org/
-> >> [2] https://pubs.opengroup.org/onlinepubs/9699919799/functions/exec.html
-> >> [3] https://bugzilla.kernel.org/show_bug.cgi?id=8408
-> >> [4] https://www.qualys.com/2022/01/25/cve-2021-4034/pwnkit.txt
-> >> [5] https://github.com/KSPP/linux/issues/176
-> >> [6] https://codesearch.debian.net/search?q=execve%5C+*%5C%28%5B%5E%2C%5D%2B%2C+*NULL&literal=0
-> >> [7] https://codesearch.debian.net/search?q=execlp%3F%5Cs*%5C%28%5B%5E%2C%5D%2B%2C%5Cs*NULL&literal=0
-> >> [8] https://lore.kernel.org/lkml/20220131144352.GE16385@xsang-OptiPlex-9020/
-> >> 
-> >> Reported-by: Ariadne Conill <ariadne@dereferenced.org>
-> >> Reported-by: Michael Kerrisk <mtk.manpages@gmail.com>
-> >> Cc: Matthew Wilcox <willy@infradead.org>
-> >> Cc: Christian Brauner <brauner@kernel.org>
-> >> Cc: Rich Felker <dalias@libc.org>
-> >> Cc: Eric Biederman <ebiederm@xmission.com>
-> >> Cc: Alexander Viro <viro@zeniv.linux.org.uk>
-> >> Cc: linux-fsdevel@vger.kernel.org
-> >> Cc: stable@vger.kernel.org
-> >> Signed-off-by: Kees Cook <keescook@chromium.org>
-> >> ---
-> >>  fs/exec.c | 26 +++++++++++++++++++++++++-
-> >>  1 file changed, 25 insertions(+), 1 deletion(-)
-> >> 
-> >> diff --git a/fs/exec.c b/fs/exec.c
-> >> index 79f2c9483302..bbf3aadf7ce1 100644
-> >> --- a/fs/exec.c
-> >> +++ b/fs/exec.c
-> >> @@ -495,8 +495,14 @@ static int bprm_stack_limits(struct linux_binprm *bprm)
-> >>  	 * the stack. They aren't stored until much later when we can't
-> >>  	 * signal to the parent that the child has run out of stack space.
-> >>  	 * Instead, calculate it here so it's possible to fail gracefully.
-> >> +	 *
-> >> +	 * In the case of argc = 0, make sure there is space for adding a
-> >> +	 * empty string (which will bump argc to 1), to ensure confused
-> >> +	 * userspace programs don't start processing from argv[1], thinking
-> >> +	 * argc can never be 0, to keep them from walking envp by accident.
-> >> +	 * See do_execveat_common().
-> >>  	 */
-> >> -	ptr_size = (bprm->argc + bprm->envc) * sizeof(void *);
-> >> +	ptr_size = (min(bprm->argc, 1) + bprm->envc) * sizeof(void *);
-> >
-> >From #musl:
-> >
-> ><mixi> kees: shouldn't the min(bprm->argc, 1) be max(...) in your patch?
+> Enlightened MSR-Bitmap feature implements a PV protocol for L0 and L1
+> hypervisors to collaborate and skip unneeded updates to MSR-Bitmap.
+> KVM already implements the feature for KVM-on-Hyper-V.
 > 
-> Fix has already been sent, yup.
+> Vitaly Kuznetsov (4):
+>    KVM: nSVM: Track whether changes in L0 require MSR bitmap for L2 to be
+>      rebuilt
+>    KVM: x86: Make kvm_hv_hypercall_enabled() static inline
+>    KVM: nSVM: Split off common definitions for Hyper-V on KVM and KVM on
+>      Hyper-V
+>    KVM: nSVM: Implement Enlightened MSR-Bitmap feature
 > 
-> >I'm pretty sure without fixing that, you're introducing a giant vuln
-> >here.
+>   arch/x86/kvm/hyperv.c           | 12 +--------
+>   arch/x86/kvm/hyperv.h           |  6 ++++-
+>   arch/x86/kvm/svm/hyperv.h       | 35 ++++++++++++++++++++++++
+>   arch/x86/kvm/svm/nested.c       | 47 ++++++++++++++++++++++++++++-----
+>   arch/x86/kvm/svm/svm.c          |  3 ++-
+>   arch/x86/kvm/svm/svm.h          | 11 ++++++++
+>   arch/x86/kvm/svm/svm_onhyperv.h | 25 +-----------------
+>   7 files changed, 95 insertions(+), 44 deletions(-)
+>   create mode 100644 arch/x86/kvm/svm/hyperv.h
 > 
-> I wouldn't say "giant", but yes, it weakened a defense in depth for
-> avoiding high stack utilization.
 
-I thought it was deciding the amount of memory to allocate/reserve for
-the arg slots, but based on the comment it looks like it's just a way
-to fail early rather than making the new process image fault later if
-they don't fit.
+Queued, thanks.
 
-> > I believe this is the second time a patch attempting to fix this
-> >non-vuln has proposed adding a new vuln...
-> 
-> Mistakes happen, and that's why there is review and testing. Thank
-> you for being part of the review process! :)
+Paolo
 
-I know, and I'm sorry for being a bit hostile over it, and for jumping
-the gun about the severity. I just get frustrated when I see a rush to
-make changes over an incidental part of a popularized vuln, with
-disproportionate weight on "doing something" and not enough on being
-careful.
-
-Rich
