@@ -2,58 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84331C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 16:36:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDCADC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 16:36:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242615AbiBBQg1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 11:36:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43394 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241212AbiBBQgZ (ORCPT
+        id S1345947AbiBBQfh (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 11:35:37 -0500
+Received: from alexa-out.qualcomm.com ([129.46.98.28]:36817 "EHLO
+        alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345897AbiBBQff (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 11:36:25 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C115DC061714;
-        Wed,  2 Feb 2022 08:36:24 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DF406171B;
-        Wed,  2 Feb 2022 16:36:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DB5BC004E1;
-        Wed,  2 Feb 2022 16:36:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643819783;
-        bh=NpTl53ki0JoX6PQMusZWHm1sU34zPNG6sMVDbfk2CUQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=F/uLFrpBYOQKqAJ8lLgP1fd0QurQIyaN/3Cd5iNTCpNO16yuARBut1reAXCtQC7r+
-         Et7lsLmruheFwIkt0eUJvqX+s20K4IjGE1pDY7ImjvH4ktXIg3i+PFcoxpSdLZmbBZ
-         iwbRk/1B1Kem3EuJpMaXb1RGxBVlWF+kYit8Ea5hnBbYQOfJ1kpFyifQHLMF0OZvx8
-         dxeT0c5VWuHajBGCxCAmCNDlS4WNmyDebjXiJIIAt+NxZtor5YlIGamcR3dTdIhN8F
-         Azmje56r+qfcfntLAIa9+yOjF+8vS1x1vShPGTorSe8MKiTWNQ7OpStpEkEpeP0Zr4
-         KJGEw0ZGNr54A==
-Date:   Wed, 2 Feb 2022 10:36:22 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Bean Huo <huobean@gmail.com>
-Cc:     songxiaowei@hisilicon.com, wangbinghui@hisilicon.com,
-        lorenzo.pieralisi@arm.com, robh@kernel.org, kw@linux.com,
-        bhelgaas@google.com, ffclaire1224@gmail.com,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        beanhuo@micron.com
-Subject: Re: [PATCH] PCI: kirin: Fix kirin960-pcie probe failure issue
-Message-ID: <20220202163622.GA18307@bhelgaas>
+        Wed, 2 Feb 2022 11:35:35 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1643819735; x=1675355735;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=F8cd0YD8rXLXdTg11NvSlE/wiVGFREMAolQeUbPPezQ=;
+  b=H8sOl5cdDP7QgCAO1qHwGSDNxj1HQproAxTqJDplbMvQP6EMMeX8dt71
+   ltOwjOqJT2gDauajBXHyl9bE2spPNOF4yBzz4q374sdGVAXXwWd/ubSnw
+   SbcnanzqGJwTrPlLnvR03EfXQz9zm871PzonB9J+R0FACNBKz6GQqv/Gq
+   A=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 02 Feb 2022 08:35:35 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 08:35:34 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Wed, 2 Feb 2022 08:35:34 -0800
+Received: from kathirav-linux.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Wed, 2 Feb 2022 08:35:31 -0800
+From:   Kathiravan T <quic_kathirav@quicinc.com>
+To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     Kathiravan T <quic_kathirav@quicinc.com>
+Subject: [PATCH 2/2] arm64: dts: qcom: ipq6018: drop the clock-frequency property
+Date:   Wed, 2 Feb 2022 22:05:09 +0530
+Message-ID: <1643819709-5410-3-git-send-email-quic_kathirav@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1643819709-5410-1-git-send-email-quic_kathirav@quicinc.com>
+References: <1643819709-5410-1-git-send-email-quic_kathirav@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220202162659.GA12603@bhelgaas>
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 02, 2022 at 10:26:59AM -0600, Bjorn Helgaas wrote:
-> [+cc Fan]
-> 
-> If you're fixing a previous commit, please cc the author of that
-> commit.
+clock-frequency for IPQ6018 SoCs should be 24MHz, not 19.2MHz. Rather
+than correcting it, drop the property itself since its already
+configured by the bootloader.
 
-Sorry, I missed the fact that you already *did* cc Fan.
+Signed-off-by: Kathiravan T <quic_kathirav@quicinc.com>
+---
+ arch/arm64/boot/dts/qcom/ipq6018.dtsi | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/qcom/ipq6018.dtsi b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
+index 66ec5615651d..2803b060126b 100644
+--- a/arch/arm64/boot/dts/qcom/ipq6018.dtsi
++++ b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
+@@ -520,7 +520,6 @@
+ 			ranges;
+ 			compatible = "arm,armv7-timer-mem";
+ 			reg = <0x0 0x0b120000 0x0 0x1000>;
+-			clock-frequency = <19200000>;
+ 
+ 			frame@b120000 {
+ 				frame-number = <0>;
+-- 
+2.7.4
+
