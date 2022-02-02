@@ -2,65 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB96AC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 13:23:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B50EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 13:23:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344315AbiBBNXN (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 08:23:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54578 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232991AbiBBNXL (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 08:23:11 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEB0AC061714;
-        Wed,  2 Feb 2022 05:23:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=az6kboJE3mFyY36gmE38vP7/KWYCb2+HOse48wBjN30=; b=kJ/lrRzjPlsjblsRRL2zqRYXJB
-        +oU2VHVwqN3s2KJH9a4X4NkDQjetDteWEZXyAslmjd90P8P4LYaFstb8kKiMToioWHNtNZ9eqUaD7
-        l7ArUEF8GoI8guGIGipA/UBL74ymUHgzKQnnfTHqGz0Jq6F9n6cB+QJ7h96vlMItODbuAlej2wUIv
-        R8pSsqGLZYwb7h225s7k3bYekjlD2Daf0fwexVewXd2RhTU+1zlXChBTNJa7ydZ39h7shA2wpSINL
-        Lk4zIQkP0fSBw3S4uXEe2cCPWnyiSyq2ZjAE5YJUOsdoBTTxyxNVdDg3tUaQP4iYF7uSblobm0FED
-        6KTciqLw==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nFFbF-00FLX5-Ie; Wed, 02 Feb 2022 13:23:05 +0000
-Date:   Wed, 2 Feb 2022 05:23:05 -0800
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Jane Chu <jane.chu@oracle.com>
-Cc:     david@fromorbit.com, djwong@kernel.org, dan.j.williams@intel.com,
-        hch@infradead.org, vishal.l.verma@intel.com, dave.jiang@intel.com,
-        agk@redhat.com, snitzer@redhat.com, dm-devel@redhat.com,
-        ira.weiny@intel.com, willy@infradead.org, vgoyal@redhat.com,
-        linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-xfs@vger.kernel.org
-Subject: Re: [PATCH v5 2/7] dax: introduce dax device flag DAXDEV_RECOVERY
-Message-ID: <YfqFuUsvuUUUWKfu@infradead.org>
-References: <20220128213150.1333552-1-jane.chu@oracle.com>
- <20220128213150.1333552-3-jane.chu@oracle.com>
+        id S242503AbiBBNXS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 08:23:18 -0500
+Received: from foss.arm.com ([217.140.110.172]:59196 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1344309AbiBBNXM (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 2 Feb 2022 08:23:12 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 49719ED1;
+        Wed,  2 Feb 2022 05:23:12 -0800 (PST)
+Received: from [10.57.68.47] (unknown [10.57.68.47])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 65DE23F718;
+        Wed,  2 Feb 2022 05:23:08 -0800 (PST)
+Message-ID: <862bfda8-5c95-3743-3758-2e63faa7ac3e@arm.com>
+Date:   Wed, 2 Feb 2022 13:22:46 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220128213150.1333552-3-jane.chu@oracle.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH 0/2] x86/hyperv/Swiotlb: Add swiotlb_alloc_from_low_pages
+ switch
+Content-Language: en-GB
+To:     Christoph Hellwig <hch@infradead.org>,
+        Tianyu Lan <ltykernel@gmail.com>
+Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, hpa@zytor.com, m.szyprowski@samsung.com,
+        michael.h.kelley@microsoft.com,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        iommu@lists.linux-foundation.org, linux-hyperv@vger.kernel.org,
+        linux-kernel@vger.kernel.org, vkuznets@redhat.com,
+        brijesh.singh@amd.com, konrad.wilk@oracle.com, hch@lst.de,
+        parri.andrea@gmail.com, thomas.lendacky@amd.com
+References: <20220126161053.297386-1-ltykernel@gmail.com>
+ <Yfo84XYBsV7tA6Xd@infradead.org>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <Yfo84XYBsV7tA6Xd@infradead.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 02:31:45PM -0700, Jane Chu wrote:
-> +int dax_prep_recovery(struct dax_device *dax_dev, void **kaddr)
-> +{
-> +	if (dax_recovery_capable(dax_dev)) {
-> +		set_bit(DAXDEV_RECOVERY, (unsigned long *)kaddr);
-> +		return 0;
-> +	}
-> +	return -EINVAL;
+On 2022-02-02 08:12, Christoph Hellwig wrote:
+> I think this interface is a little too hacky.  In the end all the
+> non-trusted hypervisor schemes (including the per-device swiotlb one)
+> can allocate the memory from everywhere and want for force use of
+> swiotlb.  I think we need some kind of proper interface for that instead
+> of setting all kinds of global variables.
 
-Setting a random bit on a passed in memory address looks a little
-dangerous to me.
+Right, if platform/hypervisor code knows enough to be able to set magic 
+non-standard allocation flags correctly, surely it could equally just 
+perform whatever non-standard allocation it needs and call 
+swiotlb_init_with_tbl() instead of swiotlb_init().
 
-Also I'd return early for the EINVAL case to make the flow a little
-more clear.
+Robin.
