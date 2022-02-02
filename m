@@ -2,38 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDEB5C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 16:31:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E598EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 16:31:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345879AbiBBQbn (ORCPT
+        id S1345917AbiBBQbt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 11:31:43 -0500
-Received: from mo4-p03-ob.smtp.rzone.de ([85.215.255.104]:36171 "EHLO
-        mo4-p03-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345868AbiBBQbj (ORCPT
+        Wed, 2 Feb 2022 11:31:49 -0500
+Received: from mo4-p02-ob.smtp.rzone.de ([85.215.255.84]:37685 "EHLO
+        mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345865AbiBBQbk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 11:31:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1643819486;
+        Wed, 2 Feb 2022 11:31:40 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1643819485;
     s=strato-dkim-0002; d=goldelico.com;
-    h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
-    From:Subject:Sender;
-    bh=IUzZkNh3hv+pJ1izzM/JGBaApYyAwy04n6Naw56tbxE=;
-    b=PwyNbU7JgcnWv5uVVkRFga0wrhQ/Ff9LC1+5pyj71C5VqafIpnfx/LOe6LIEYZRxXe
-    q5OVUMD+9R95dChkYz/DKUbgJhHQLBeitTm3/MxB2y8lu7kWIbyxyIDYRkS7nacgl0eM
-    FKVSUuPL5Z9nkla2RL+Qb9p0XdVhICohuL6Ma+UHbpKTzjP8Ksj1Tb/Ii1DnBSBfduJr
-    DT2AjyzLcPBpaqi1ANVc3Fil4vmzRHhQeXiTCaaynHGqNQvfnOeY8t9x+wPpFrE0C5H1
-    HKdpw4Tlc0BXufnwJ1z0yXAIEf7FhI2Tb2Z/1ef1TW/KhDC5M5r3/LfrjKytvvj3Ei8F
-    hPiA==
+    h=Message-Id:Date:Subject:Cc:To:From:Cc:Date:From:Subject:Sender;
+    bh=99p0ifqV7U4RV4YuFoRRcCCspsekSCK8BjeDPuvaFdA=;
+    b=KrWNOz/eZN+Q/HuDNMbFs+mv1GRK66dZUl4+hloj5nrr3AXBXDCVD+N0t+DSFjSf7Q
+    wQTKTvUKlSZTkkAjO656Y0lRAPzrZlpGg8FL+O9DCbENCEN3Ni2H0nEuOFrl3JfRn20I
+    6q9iLwoMRVcEKkGRRCNZd98krU274+CrAH3Qb8O1oxivvgcd17WRt/l3LAfi8hsVY7lg
+    h/CHsJQYwyqkCnzqpmu2yEzBPBCF7F7mLevkq+tZZKHkOaN7cVj0J2lSlpZIaE8aCH9y
+    WptzzXEnmt5A9JfK9s0gvajfqo4E7qyMIjMdsjrvnpfYVM36lQUi0GVJsA6+e9qlzdD5
+    t+BA==
 Authentication-Results: strato.com;
     dkim=none
 X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o1OAA2UMf2MwPVbjc9Y="
 X-RZG-CLASS-ID: mo00
 Received: from iMac.fritz.box
     by smtp.strato.de (RZmta 47.39.0 DYNA|AUTH)
-    with ESMTPSA id L29417y12GVQBml
+    with ESMTPSA id L29417y12GVNBmi
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
         (Client did not present a certificate);
-    Wed, 2 Feb 2022 17:31:26 +0100 (CET)
+    Wed, 2 Feb 2022 17:31:23 +0100 (CET)
 From:   "H. Nikolaus Schaller" <hns@goldelico.com>
 To:     Paul Cercueil <paul@crapouillou.net>,
         Rob Herring <robh+dt@kernel.org>,
@@ -62,250 +61,155 @@ To:     Paul Cercueil <paul@crapouillou.net>,
 Cc:     devicetree@vger.kernel.org, linux-mips@vger.kernel.org,
         linux-kernel@vger.kernel.org, letux-kernel@openphoenux.org,
         Jonas Karlman <jonas@kwiboo.se>,
-        dri-devel@lists.freedesktop.org,
-        Ezequiel Garcia <ezequiel@collabora.com>
-Subject: [PATCH v13 2/9] drm/ingenic: Add support for JZ4780 and HDMI output
-Date:   Wed,  2 Feb 2022 17:31:16 +0100
-Message-Id: <eb95477398e11fd1d3ab8e357884de096a591f7e.1643819482.git.hns@goldelico.com>
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH v13 0/9] MIPS: JZ4780 and CI20 HDMI
+Date:   Wed,  2 Feb 2022 17:31:14 +0100
+Message-Id: <cover.1643819482.git.hns@goldelico.com>
 X-Mailer: git-send-email 2.33.0
-In-Reply-To: <cover.1643819482.git.hns@goldelico.com>
-References: <cover.1643819482.git.hns@goldelico.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul Boddie <paul@boddie.org.uk>
+PATCH V13 2022-02-02 17:31:22:
+* 7/9: remove call to gpiod_set_value() because of GPIOD_OUT_HIGH (by paul@crapouillou.net)
+* 4/9: replace ".." by "." (by paul@crapouillou.net)
+* 3/9: remove old hdmi-5v-power in the example (by paul@crapouillou.net)
+* 2/9: disable handling of plane f0 only for jz4780 (by paul@crapouillou.net)
 
-Add support for the LCD controller present on JZ4780 SoCs.
-This SoC uses 8-byte descriptors which extend the current
-4-byte descriptors used for other Ingenic SoCs.
+PATCH V12 2022-01-31 13:26:54:
+This version reworks how hdmi ddc power is controlled by connector and not
+by ddc/hdmi bridge driver.
 
-Tested on MIPS Creator CI20 board.
+Also some patches of the previous version of this series have been removed
+since they are already applied to mips-next/linux/next/v5.17-rc1.
 
-Signed-off-by: Paul Boddie <paul@boddie.org.uk>
-Signed-off-by: Ezequiel Garcia <ezequiel@collabora.com>
-Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
----
- drivers/gpu/drm/ingenic/ingenic-drm-drv.c | 63 ++++++++++++++++++++++-
- drivers/gpu/drm/ingenic/ingenic-drm.h     | 38 ++++++++++++++
- 2 files changed, 100 insertions(+), 1 deletion(-)
+Fixes and changes:
 
-diff --git a/drivers/gpu/drm/ingenic/ingenic-drm-drv.c b/drivers/gpu/drm/ingenic/ingenic-drm-drv.c
-index 9c60fc4605e4b..caa70fdd45466 100644
---- a/drivers/gpu/drm/ingenic/ingenic-drm-drv.c
-+++ b/drivers/gpu/drm/ingenic/ingenic-drm-drv.c
-@@ -6,6 +6,7 @@
- 
- #include "ingenic-drm.h"
- 
-+#include <linux/bitfield.h>
- #include <linux/component.h>
- #include <linux/clk.h>
- #include <linux/dma-mapping.h>
-@@ -49,6 +50,11 @@ struct ingenic_dma_hwdesc {
- 	u32 addr;
- 	u32 id;
- 	u32 cmd;
-+	/* extended hw descriptor for jz4780 */
-+	u32 offsize;
-+	u32 pagewidth;
-+	u32 cpos;
-+	u32 dessize;
- } __aligned(16);
- 
- struct ingenic_dma_hwdescs {
-@@ -59,7 +65,10 @@ struct ingenic_dma_hwdescs {
- struct jz_soc_info {
- 	bool needs_dev_clk;
- 	bool has_osd;
-+	bool has_alpha;
- 	bool map_noncoherent;
-+	bool use_extended_hwdesc;
-+	bool plane_f0_not_working;
- 	unsigned int max_width, max_height;
- 	const u32 *formats_f0, *formats_f1;
- 	unsigned int num_formats_f0, num_formats_f1;
-@@ -446,6 +455,9 @@ static int ingenic_drm_plane_atomic_check(struct drm_plane *plane,
- 	if (!crtc)
- 		return 0;
- 
-+	if (priv->soc_info->plane_f0_not_working && plane == &priv->f0)
-+		return -EINVAL;
-+
- 	crtc_state = drm_atomic_get_existing_crtc_state(state,
- 							crtc);
- 	if (WARN_ON(!crtc_state))
-@@ -662,6 +674,33 @@ static void ingenic_drm_plane_atomic_update(struct drm_plane *plane,
- 		hwdesc->cmd = JZ_LCD_CMD_EOF_IRQ | (width * height * cpp / 4);
- 		hwdesc->next = dma_hwdesc_addr(priv, next_id);
- 
-+		if (priv->soc_info->use_extended_hwdesc) {
-+			hwdesc->cmd |= JZ_LCD_CMD_FRM_ENABLE;
-+
-+			/* Extended 8-byte descriptor */
-+			hwdesc->cpos = 0;
-+			hwdesc->offsize = 0;
-+			hwdesc->pagewidth = 0;
-+
-+			switch (newstate->fb->format->format) {
-+			case DRM_FORMAT_XRGB1555:
-+				hwdesc->cpos |= JZ_LCD_CPOS_RGB555;
-+				fallthrough;
-+			case DRM_FORMAT_RGB565:
-+				hwdesc->cpos |= JZ_LCD_CPOS_BPP_15_16;
-+				break;
-+			case DRM_FORMAT_XRGB8888:
-+				hwdesc->cpos |= JZ_LCD_CPOS_BPP_18_24;
-+				break;
-+			}
-+			hwdesc->cpos |= (JZ_LCD_CPOS_COEFFICIENT_1 <<
-+					 JZ_LCD_CPOS_COEFFICIENT_OFFSET);
-+			hwdesc->dessize =
-+				(0xff << JZ_LCD_DESSIZE_ALPHA_OFFSET) |
-+				FIELD_PREP(JZ_LCD_DESSIZE_HEIGHT_MASK, height - 1) |
-+				FIELD_PREP(JZ_LCD_DESSIZE_WIDTH_MASK, width - 1);
-+		}
-+
- 		if (drm_atomic_crtc_needs_modeset(crtc_state)) {
- 			fourcc = newstate->fb->format->format;
- 
-@@ -693,6 +732,9 @@ static void ingenic_drm_encoder_atomic_mode_set(struct drm_encoder *encoder,
- 		    | JZ_LCD_CFG_SPL_DISABLE | JZ_LCD_CFG_REV_DISABLE;
- 	}
- 
-+	if (priv->soc_info->use_extended_hwdesc)
-+		cfg |= JZ_LCD_CFG_DESCRIPTOR_8;
-+
- 	if (mode->flags & DRM_MODE_FLAG_NHSYNC)
- 		cfg |= JZ_LCD_CFG_HSYNC_ACTIVE_LOW;
- 	if (mode->flags & DRM_MODE_FLAG_NVSYNC)
-@@ -1015,6 +1057,7 @@ static int ingenic_drm_bind(struct device *dev, bool has_components)
- 	long parent_rate;
- 	unsigned int i, clone_mask = 0;
- 	int ret, irq;
-+	u32 osdc = 0;
- 
- 	soc_info = of_device_get_match_data(dev);
- 	if (!soc_info) {
-@@ -1272,7 +1315,10 @@ static int ingenic_drm_bind(struct device *dev, bool has_components)
- 
- 	/* Enable OSD if available */
- 	if (soc_info->has_osd)
--		regmap_write(priv->map, JZ_REG_LCD_OSDC, JZ_LCD_OSDC_OSDEN);
-+		osdc |= JZ_LCD_OSDC_OSDEN;
-+	if (soc_info->has_alpha)
-+		osdc |= JZ_LCD_OSDC_ALPHAEN;
-+	regmap_write(priv->map, JZ_REG_LCD_OSDC, osdc);
- 
- 	mutex_init(&priv->clk_mutex);
- 	priv->clock_nb.notifier_call = ingenic_drm_update_pixclk;
-@@ -1468,10 +1514,25 @@ static const struct jz_soc_info jz4770_soc_info = {
- 	.num_formats_f0 = ARRAY_SIZE(jz4770_formats_f0),
- };
- 
-+static const struct jz_soc_info jz4780_soc_info = {
-+	.needs_dev_clk = true,
-+	.has_osd = true,
-+	.has_alpha = true,
-+	.use_extended_hwdesc = true,
-+	.plane_f0_not_working = true,	/* REVISIT */
-+	.max_width = 4096,
-+	.max_height = 2048,
-+	.formats_f1 = jz4770_formats_f1,
-+	.num_formats_f1 = ARRAY_SIZE(jz4770_formats_f1),
-+	.formats_f0 = jz4770_formats_f0,
-+	.num_formats_f0 = ARRAY_SIZE(jz4770_formats_f0),
-+};
-+
- static const struct of_device_id ingenic_drm_of_match[] = {
- 	{ .compatible = "ingenic,jz4740-lcd", .data = &jz4740_soc_info },
- 	{ .compatible = "ingenic,jz4725b-lcd", .data = &jz4725b_soc_info },
- 	{ .compatible = "ingenic,jz4770-lcd", .data = &jz4770_soc_info },
-+	{ .compatible = "ingenic,jz4780-lcd", .data = &jz4780_soc_info },
- 	{ /* sentinel */ },
- };
- MODULE_DEVICE_TABLE(of, ingenic_drm_of_match);
-diff --git a/drivers/gpu/drm/ingenic/ingenic-drm.h b/drivers/gpu/drm/ingenic/ingenic-drm.h
-index 22654ac1dde1c..cb1d09b625881 100644
---- a/drivers/gpu/drm/ingenic/ingenic-drm.h
-+++ b/drivers/gpu/drm/ingenic/ingenic-drm.h
-@@ -44,8 +44,11 @@
- #define JZ_REG_LCD_XYP1				0x124
- #define JZ_REG_LCD_SIZE0			0x128
- #define JZ_REG_LCD_SIZE1			0x12c
-+#define JZ_REG_LCD_PCFG				0x2c0
- 
- #define JZ_LCD_CFG_SLCD				BIT(31)
-+#define JZ_LCD_CFG_DESCRIPTOR_8			BIT(28)
-+#define JZ_LCD_CFG_RECOVER_FIFO_UNDERRUN	BIT(25)
- #define JZ_LCD_CFG_PS_DISABLE			BIT(23)
- #define JZ_LCD_CFG_CLS_DISABLE			BIT(22)
- #define JZ_LCD_CFG_SPL_DISABLE			BIT(21)
-@@ -63,6 +66,7 @@
- #define JZ_LCD_CFG_DE_ACTIVE_LOW		BIT(9)
- #define JZ_LCD_CFG_VSYNC_ACTIVE_LOW		BIT(8)
- #define JZ_LCD_CFG_18_BIT			BIT(7)
-+#define JZ_LCD_CFG_24_BIT			BIT(6)
- #define JZ_LCD_CFG_PDW				(BIT(5) | BIT(4))
- 
- #define JZ_LCD_CFG_MODE_GENERIC_16BIT		0
-@@ -132,6 +136,7 @@
- #define JZ_LCD_CMD_SOF_IRQ			BIT(31)
- #define JZ_LCD_CMD_EOF_IRQ			BIT(30)
- #define JZ_LCD_CMD_ENABLE_PAL			BIT(28)
-+#define JZ_LCD_CMD_FRM_ENABLE			BIT(26)
- 
- #define JZ_LCD_SYNC_MASK			0x3ff
- 
-@@ -153,6 +158,7 @@
- #define JZ_LCD_RGBC_EVEN_BGR			(0x5 << 0)
- 
- #define JZ_LCD_OSDC_OSDEN			BIT(0)
-+#define JZ_LCD_OSDC_ALPHAEN			BIT(2)
- #define JZ_LCD_OSDC_F0EN			BIT(3)
- #define JZ_LCD_OSDC_F1EN			BIT(4)
- 
-@@ -176,6 +182,38 @@
- #define JZ_LCD_SIZE01_WIDTH_LSB			0
- #define JZ_LCD_SIZE01_HEIGHT_LSB		16
- 
-+#define JZ_LCD_DESSIZE_ALPHA_OFFSET		24
-+#define JZ_LCD_DESSIZE_HEIGHT_MASK		GENMASK(23, 12)
-+#define JZ_LCD_DESSIZE_WIDTH_MASK		GENMASK(11, 0)
-+
-+#define JZ_LCD_CPOS_BPP_15_16			(4 << 27)
-+#define JZ_LCD_CPOS_BPP_18_24			(5 << 27)
-+#define JZ_LCD_CPOS_BPP_30			(7 << 27)
-+#define JZ_LCD_CPOS_RGB555			BIT(30)
-+#define JZ_LCD_CPOS_PREMULTIPLY_LCD		BIT(26)
-+#define JZ_LCD_CPOS_COEFFICIENT_OFFSET		24
-+#define JZ_LCD_CPOS_COEFFICIENT_0		0
-+#define JZ_LCD_CPOS_COEFFICIENT_1		1
-+#define JZ_LCD_CPOS_COEFFICIENT_ALPHA1		2
-+#define JZ_LCD_CPOS_COEFFICIENT_1_ALPHA1	3
-+
-+#define JZ_LCD_RGBC_RGB_PADDING			BIT(15)
-+#define JZ_LCD_RGBC_RGB_PADDING_FIRST		BIT(14)
-+#define JZ_LCD_RGBC_422				BIT(8)
-+#define JZ_LCD_RGBC_RGB_FORMAT_ENABLE		BIT(7)
-+
-+#define JZ_LCD_PCFG_PRI_MODE			BIT(31)
-+#define JZ_LCD_PCFG_HP_BST_4			(0 << 28)
-+#define JZ_LCD_PCFG_HP_BST_8			(1 << 28)
-+#define JZ_LCD_PCFG_HP_BST_16			(2 << 28)
-+#define JZ_LCD_PCFG_HP_BST_32			(3 << 28)
-+#define JZ_LCD_PCFG_HP_BST_64			(4 << 28)
-+#define JZ_LCD_PCFG_HP_BST_16_CONT		(5 << 28)
-+#define JZ_LCD_PCFG_HP_BST_DISABLE		(7 << 28)
-+#define JZ_LCD_PCFG_THRESHOLD2_OFFSET		18
-+#define JZ_LCD_PCFG_THRESHOLD1_OFFSET		9
-+#define JZ_LCD_PCFG_THRESHOLD0_OFFSET		0
-+
- struct device;
- struct drm_plane;
- struct drm_plane_state;
+- repair interworking of dw-hdmi with connector-hdmi (by hns@goldelico.com)
+- fix JZ_REG_LCD_OSDC setup for jz4780 (by hns@goldelico.com and paul@crapouillou.net)
+- adjustments for ci20.dts to use connector gpio for +5v (suggested by several)
+- to add control of "ddc-en-gpios" to hdmi-connector driver (by hns@goldelico.com)
+- regulator code removed because we now use the "ddc-en-gpios" of the connector
+  driver (suggested by paul@crapouillou.net)
+- bindings: addition of "ddc-i2c-bus" and "hdmi-5v-supply" removed (suggested by robh+dt@kernel.org)
+- rebase on v5.17-rc2
+
+PATCH V11 2021-12-02 19:39:52:
+- patch 4/8: change devm_regulator_get_optional to devm_regulator_get and
+             remove NULL check (requested by broonie@kernel.org)
+- patch 3/8: make hdmi-5v-supply required (requested by broonie@kernel.org)
+
+PATCH V10 2021-11-30 22:26:41:
+- patch 3/8: fix $id and $ref paths (found by robh@kernel.org)
+
+PATCH V9 2021-11-24 22:29:14:
+- patch 6/8: remove optional <0> for assigned-clocks and unintentionally included "unwedge" setup (found by paul@crapouillou.net)
+- patch 4/8: some cosmetics
+             make regulator enable/disable only if not NULL (found by paul@crapouillou.net)
+             simplify/fix error handling and driver cleanup on remove (proposed by paul@crapouillou.net)
+- patch 3/8: fix #include path in example (found by paul@crapouillou.net)
+             fix missing "i" in unevaluatedProperties (found by robh@kernel.org)
+             fix 4 spaces indentation for required: property (found by robh@kernel.org)
+
+PATCH V8 2021-11-23 19:14:00:
+- fix a bad editing result from patch 2/8 (found by paul@crapouillou.net)
+
+PATCH V7 2021-11-23 18:46:23:
+- changed gpio polarity of hdmi_power to 0 (suggested by paul@crapouillou.net)
+- fixed LCD1 irq number (bug found by paul@crapouillou.net)
+- removed "- 4" for calculating max_register (suggested by paul@crapouillou.net)
+- use unevaluatedPropertes instead of additionalProperties (suggested by robh@kernel.org)
+- moved and renamed ingenic,jz4780-hdmi.yaml (suggested by robh@kernel.org)
+- adjusted assigned-clocks changes to upstream which added some for SSI (by hns@goldelico.com)
+- rebased and tested with v5.16-rc2 + patch set drm/ingenic by paul@crapouillou.net (by hns@goldelico.com)
+
+PATCH V6 2021-11-10 20:43:33:
+- changed CONFIG_DRM_INGENIC_DW_HDMI to "m" (by hns@goldelico.com)
+- made ingenic-dw-hdmi an independent platform driver which can be compiled as module
+  and removed error patch fixes for IPU (suggested by paul@crapouillou.net)
+- moved assigned-clocks from jz4780.dtsi to ci20.dts (suggested by paul@crapouillou.net)
+- fixed reg property in jz4780.dtsi to cover all registers incl. gamma and vee (by hns@goldelico.com)
+- added a base patch to calculate regmap size from DTS reg property (requested by paul@crapouillou.net)
+- restored resetting all bits except one in LCDOSDC (requested by paul@crapouillou.net)
+- clarified setting of cpos (suggested by paul@crapouillou.net)
+- moved bindings definition for ddc-i2c-bus (suggested by paul@crapouillou.net)
+- simplified mask definitions for JZ_LCD_DESSIZE (requested by paul@crapouillou.net)
+- removed setting alpha premultiplication (suggested by paul@crapouillou.net)
+- removed some comments (suggested by paul@crapouillou.net)
+
+PATCH V5 2021-10-05 14:28:44:
+- dropped mode_fixup and timings support in dw-hdmi as it is no longer needed in this V5 (by hns@goldelico.com)
+- dropped "drm/ingenic: add some jz4780 specific features" (stimulated by paul@crapouillou.net)
+- fixed typo in commit subject: "synopsis" -> "synopsys" (by hns@goldelico.com)
+- swapped clocks in jz4780.dtsi to match synopsys,dw-hdmi.yaml (by hns@goldelico.com)
+- improved, simplified, fixed, dtbschecked ingenic-jz4780-hdmi.yaml and made dependent of bridge/synopsys,dw-hdmi.yaml (based on suggestions by maxime@cerno.tech)
+- fixed binding vs. driver&DTS use of hdmi-5v regulator (suggested by maxime@cerno.tech)
+- dropped "drm/bridge: synopsis: Fix to properly handle HPD" - was a no longer needed workaround for a previous version
+  (suggested by maxime@cerno.tech)
+
+PATCH V4 2021-09-27 18:44:38:
+- fix setting output_port = 1 (issue found by paul@crapouillou.net)
+- ci20.dts: convert to use hdmi-connector (by hns@goldelico.com)
+- add a hdmi-regulator to control +5V power (by hns@goldelico.com)
+- added a fix to dw-hdmi to call drm_kms_helper_hotplug_event on plugin event detection (by hns@goldelico.com)
+- always allocate extended descriptor but initialize only for jz4780 (by hns@goldelico.com)
+- updated to work on top of "[PATCH v3 0/6] drm/ingenic: Various improvements v3" (by paul@crapouillou.net)
+- rebased to v5.13-rc3
+
+PATCH V3 2021-08-08 07:10:50:
+This series adds HDMI support for JZ4780 and CI20 board (and fixes one IPU related issue in registration error path)
+- [patch 1/8] switched from mode_fixup to atomic_check (suggested by robert.foss@linaro.org)
+  - the call to the dw-hdmi specialization is still called mode_fixup
+- [patch 3/8] diverse fixes for ingenic-drm-drv (suggested by paul@crapouillou.net)
+  - factor out some non-HDMI features of the jz4780 into a separate patch
+  - multiple fixes around max height
+  - do not change regmap config but a copy on stack
+  - define some constants
+  - factor out fixing of drm_init error path for IPU into separate patch
+  - use FIELD_PREP()
+- [patch 8/8] conversion to component framework dropped (suggested by Laurent.pinchart@ideasonboard.com and paul@crapouillou.net)
+
+PATCH V2 2021-08-05 16:08:05:
+- code and commit messages revisited for checkpatch warnings
+- rebased on v5.14-rc4
+- include (failed, hence RFC 8/8) attempt to convert to component framework
+  (was suggested by Paul Cercueil <paul@crapouillou.net> a while ago)
+
+This series adds HDMI support for JZ4780 and CI20 board
+
+
+
+H. Nikolaus Schaller (5):
+  drm/ingenic: prepare ingenic drm for later addition of JZ4780
+  drm/synopsys+ingenic: repair hot plug detection
+  dw-hdmi/ingenic-dw-hdmi: repair interworking with hdmi-connector
+  drm/bridge: display-connector: add ddc-en gpio support
+  MIPS: DTS: CI20: fix how ddc power is enabled
+
+Paul Boddie (3):
+  drm/ingenic: Add support for JZ4780 and HDMI output
+  drm/ingenic: Add dw-hdmi driver specialization for jz4780
+  [RFC] drm/ingenic: add some more features specific to jz4780
+
+Sam Ravnborg (1):
+  dt-bindings: display: Add ingenic,jz4780-dw-hdmi DT Schema
+
+ .../display/bridge/ingenic,jz4780-hdmi.yaml   |  82 ++++++++++++++
+ arch/mips/boot/dts/ingenic/ci20.dts           |  15 +--
+ drivers/gpu/drm/bridge/display-connector.c    |  15 +++
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi.c     |  13 ++-
+ drivers/gpu/drm/ingenic/Kconfig               |   9 ++
+ drivers/gpu/drm/ingenic/Makefile              |   1 +
+ drivers/gpu/drm/ingenic/ingenic-drm-drv.c     | 106 +++++++++++++++++-
+ drivers/gpu/drm/ingenic/ingenic-drm.h         |  38 +++++++
+ drivers/gpu/drm/ingenic/ingenic-dw-hdmi.c     | 106 ++++++++++++++++++
+ include/drm/bridge/dw_hdmi.h                  |   1 +
+ 10 files changed, 367 insertions(+), 19 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/display/bridge/ingenic,jz4780-hdmi.yaml
+ create mode 100644 drivers/gpu/drm/ingenic/ingenic-dw-hdmi.c
+
 -- 
 2.33.0
 
