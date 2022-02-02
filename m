@@ -2,83 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70417C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 12:51:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AFC2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 12:54:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344223AbiBBMu7 (ORCPT
+        id S1344232AbiBBMyq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 07:50:59 -0500
-Received: from foss.arm.com ([217.140.110.172]:57630 "EHLO foss.arm.com"
+        Wed, 2 Feb 2022 07:54:46 -0500
+Received: from meesny.iki.fi ([195.140.195.201]:59698 "EHLO meesny.iki.fi"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230258AbiBBMu7 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 07:50:59 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B18111FB;
-        Wed,  2 Feb 2022 04:50:58 -0800 (PST)
-Received: from e113632-lin (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E52FF3F718;
-        Wed,  2 Feb 2022 04:50:57 -0800 (PST)
-From:   Valentin Schneider <valentin.schneider@arm.com>
-To:     Marc Zyngier <maz@kernel.org>, linux-kernel@vger.kernel.org
-Cc:     Thomas Gleixner <tglx@linutronix.de>, kernel-team@android.com,
-        Steev Klimaszewski <steev@kali.org>
-Subject: Re: [PATCH] irqchip/gic-v3-its: Skip HP notifier when no ITS is registered
-In-Reply-To: <20220202103454.2480465-1-maz@kernel.org>
-References: <20220202103454.2480465-1-maz@kernel.org>
-Date:   Wed, 02 Feb 2022 12:50:52 +0000
-Message-ID: <87pmo5o2j7.mognet@arm.com>
+        id S233535AbiBBMyo (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 2 Feb 2022 07:54:44 -0500
+Received: from hillosipuli.retiisi.eu (89-27-103-169.bb.dnainternet.fi [89.27.103.169])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: sailus)
+        by meesny.iki.fi (Postfix) with ESMTPSA id 8A1D020071;
+        Wed,  2 Feb 2022 14:54:41 +0200 (EET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi; s=meesny;
+        t=1643806481;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=r0d4BfzJzIMCEfZztp3eu1A5yIM0C5PoqgkaW6Z2irY=;
+        b=uXrnP+GMBJuGqTlrLjB9mmbOk4ge/M6EfvCji15Qm4PTyvn759Eurn8HihI8Er/4KPQstC
+        d0mYB4/0GuUgwvEgpS86A1/g6qgSIeXk6xalC0CLQpV403uSt1wGzxEF21hq/4AaO36iN5
+        KPcE9NEtygFWOd12RY9CvT919OSX1Ik=
+Received: from valkosipuli.retiisi.eu (valkosipuli.localdomain [192.168.4.2])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by hillosipuli.retiisi.eu (Postfix) with ESMTPS id 0DCCB634C90;
+        Wed,  2 Feb 2022 14:54:41 +0200 (EET)
+Date:   Wed, 2 Feb 2022 14:54:40 +0200
+From:   Sakari Ailus <sakari.ailus@iki.fi>
+To:     Luiz Sampaio <sampaio.ime@gmail.com>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org
+Subject: Re: [PATCH 12/31] media: v4l2-core: changing LED_* from enum
+ led_brightness to actual value
+Message-ID: <Yfp/EF3oR594Dt3Y@valkosipuli.retiisi.eu>
+References: <20220121165436.30956-1-sampaio.ime@gmail.com>
+ <20220121165436.30956-13-sampaio.ime@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220121165436.30956-13-sampaio.ime@gmail.com>
+ARC-Authentication-Results: i=1;
+        ORIGINATING;
+        auth=pass smtp.auth=sailus smtp.mailfrom=sakari.ailus@iki.fi
+ARC-Seal: i=1; s=meesny; d=iki.fi; t=1643806481; a=rsa-sha256; cv=none;
+        b=GtQ7mwoVUP78Eum5wzMBrwemADqkdKB176xlcTsMF/P6ARxEy6+PGvdSukdIfTHztiSXsB
+        XbF5KhBB7lTwWk2qTmlWv7EWEJrVEnicxrSxhwXJfDaDadBJjmnOYvScblydM5w6ckcr9G
+        /5Qb3B8Z+vgj9KNpWKzzwhjmfZLKkaE=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi;
+        s=meesny; t=1643806481;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=r0d4BfzJzIMCEfZztp3eu1A5yIM0C5PoqgkaW6Z2irY=;
+        b=u0RH96fY2diP2meBBTiWuYa5odtkzGAz8H3ohPRN3mYdqRK9WCelApZoNN3K0IRDy/zCeu
+        Z9B3VEGlVfD7CCYNKul3xpor/s/d8Ijj5uBBdeTBzc4HAOjCmtuqBleb6ABIUGvy6ErsBH
+        3OiO2wQ7neqFTCQqF8g5Qh1VNIM2dec=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 02/02/22 10:34, Marc Zyngier wrote:
-> We have some systems out there that have both LPI support and an
-> ITS, but that don't expose the ITS in their firmware tables
-> (either because it is broken or because they run under a hypervisor
-> that hides it...).
->
+Hi Luiz,
 
-Huh :)
+On Fri, Jan 21, 2022 at 01:54:17PM -0300, Luiz Sampaio wrote:
+> The enum led_brightness, which contains the declaration of LED_OFF,
+> LED_ON, LED_HALF and LED_FULL is obsolete, as the led class now supports
+> max_brightness.
 
-> Is such a configuration, we still register the HP notifier to free
-> the allocated tables if needed, resulting in a warning as there is
-> no memory to free (nothing was allocated the first place).
->
+The set appears to be missing the Signed-off-by: line, at least in the
+three patches cc'd to the linux-media list.
 
-Right, so list_empty(&its_nodes) means no ->pend_page, but still having the
-HP notifier means we hit the WARN_ON(!pend_page).
+With this fixed, for this patch:
 
-> Fix it by keying the HP notifier on the presence of at least one
-> sucessfully probed ITS.
->
+Acked-by: Sakari Ailus <sakari.ailus@linux.intel.com>
 
-That looks fine to me.
-
-Reviewed-by: Valentin Schneider <valentin.schneider@arm.com>
-
-> Fixes: d23bc2bc1d63 ("irqchip/gic-v3-its: Postpone LPI pending table freeing and memreserve")
-> Reported-by: Steev Klimaszewski <steev@kali.org>
-> Signed-off-by: Marc Zyngier <maz@kernel.org>
-> Cc: Valentin Schneider <valentin.schneider@arm.com>
 > ---
->  drivers/irqchip/irq-gic-v3-its.c | 3 +++
->  1 file changed, 3 insertions(+)
->
-> diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
-> index 9e93ff2b6375..cd772973114a 100644
-> --- a/drivers/irqchip/irq-gic-v3-its.c
-> +++ b/drivers/irqchip/irq-gic-v3-its.c
-> @@ -5517,6 +5517,9 @@ int __init its_lpi_memreserve_init(void)
->       if (!efi_enabled(EFI_CONFIG_TABLES))
->               return 0;
->
-> +	if (list_empty(&its_nodes))
-> +		return 0;
-> +
->       gic_rdists->cpuhp_memreserve_state = CPUHP_INVALID;
->       state = cpuhp_setup_state(CPUHP_AP_ONLINE_DYN,
->                                 "irqchip/arm/gicv3/memreserve:online",
-> --
-> 2.34.1
+>  drivers/media/v4l2-core/v4l2-flash-led-class.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/media/v4l2-core/v4l2-flash-led-class.c b/drivers/media/v4l2-core/v4l2-flash-led-class.c
+> index e70e128ccc9c..a47ac654c9f4 100644
+> --- a/drivers/media/v4l2-core/v4l2-flash-led-class.c
+> +++ b/drivers/media/v4l2-core/v4l2-flash-led-class.c
+> @@ -234,11 +234,11 @@ static int v4l2_flash_s_ctrl(struct v4l2_ctrl *c)
+>  	case V4L2_CID_FLASH_LED_MODE:
+>  		switch (c->val) {
+>  		case V4L2_FLASH_LED_MODE_NONE:
+> -			led_set_brightness_sync(led_cdev, LED_OFF);
+> +			led_set_brightness_sync(led_cdev, 0);
+>  			return led_set_flash_strobe(fled_cdev, false);
+>  		case V4L2_FLASH_LED_MODE_FLASH:
+>  			/* Turn the torch LED off */
+> -			led_set_brightness_sync(led_cdev, LED_OFF);
+> +			led_set_brightness_sync(led_cdev, 0);
+>  			if (ctrls[STROBE_SOURCE]) {
+>  				external_strobe = (ctrls[STROBE_SOURCE]->val ==
+>  					V4L2_FLASH_STROBE_SOURCE_EXTERNAL);
+
+-- 
+Regards,
+
+Sakari Ailus
