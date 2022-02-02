@@ -2,302 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42F46C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 11:04:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0E31C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 11:06:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343918AbiBBLEr (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 06:04:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51242 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343783AbiBBLER (ORCPT
+        id S235879AbiBBLGf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 06:06:35 -0500
+Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:65528 "EHLO
+        mx0a-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229552AbiBBLGb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 06:04:17 -0500
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0880DC06175E
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 03:04:12 -0800 (PST)
-Received: by mail-lf1-x12b.google.com with SMTP id b9so39808542lfq.6
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 03:04:11 -0800 (PST)
+        Wed, 2 Feb 2022 06:06:31 -0500
+Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2129makG008551;
+        Wed, 2 Feb 2022 11:06:21 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=corp-2021-07-09;
+ bh=R1GHe0oltkH2lpXeC/k+h87hlMLF7f1pEJwt5W37xWQ=;
+ b=Rj4C+Gd/TAr4gfnimQlCYxCXHjHhKOlZJdADC0+S34olbUdi8hVxzIPtzxfOm5zA5dQG
+ fCLgUnRLd/J2m7OzySI4Qmilh7LF8HfBXg43+XKgeY5dUW6dW5Ymmq0UqZksm+zKOQ4A
+ mTgC+lZb9Gge74dLKFZ7AYUEZYH1wLxGlhiKHfPfIuKgIDVgFcuyc44BwwRd4BtNoFoY
+ vpJsBuhPKKLLfs2Ih3YGNfbcH1WYSAYTchZjC3RFg1ZtODyVvw9sxmrvaPiOLgefA4fu
+ ws2uTrYzD3eKVdmShQ8P6i35Iw07J12TLkfCHfnqcwMiDIaC8CRSrCdU6cBS/+xQYIlP 8Q== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3dxjatwspk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 02 Feb 2022 11:06:20 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 212B0uv2166342;
+        Wed, 2 Feb 2022 11:06:19 GMT
+Received: from nam10-mw2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2104.outbound.protection.outlook.com [104.47.55.104])
+        by userp3020.oracle.com with ESMTP id 3dvy1s0sqg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 02 Feb 2022 11:06:19 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=i6DSyr30SS9clffN3YfykUzLf1k/vdvcvQQyeR5IjuBZHnAohzdX0Pr6d5hFjLGTH60si/WeQtNavfEtKrVYGBmvaVxMj7PYotAPc+Yxch/opKp8pNKM+r2caTGPbd/Y4ySt4R+ZfAftS9lF1KxBv4kyTih1yX4xat6ByFzzts5xYqZTrU6oyVU1LTQMaOFkpIHZsaFNIeJVaD0Vh/lu44nhPrjleD3ATu63Tf0ihIGEC/B4DSIcQ52Wq1cXVZ854k1tBjWeImwYH5ekF6/8pTfraxLILnJjoYRCgVv0BeenyS2/UIg2lqnTPs941LnleAWrjDRND7m/ucZqYjoP/Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=R1GHe0oltkH2lpXeC/k+h87hlMLF7f1pEJwt5W37xWQ=;
+ b=drFeusx/ezc/XD0kIu7MrYpcSeKfNmplnKG4sDBth3LFZRlMuZhxVbvTEveyjEzrajoSQ8tWqc5o7sxfPL4PVXh310H5ql4/qw9kVRXl8wv03fXnjFJVtIu3pJTHdK6E6C2zOdOBk7I4e9+my9t+ngGvh/Mh34rb8bFAYn6oXx3VEh6Zws9hKxAXpT9QG/3SF/cg/iPNxvLrl+4C0xIKR70OSDKcI2UkZniFgpG7YY/y1+azVdB2Iv1Y77Ghsxw4tRXAuHULhqbUo5gtshYnoZIeYUR7lPQteQXyWKtm7FULrhDlgi3aTIlfEr54Bu44JS59KGzqiIHoaEzP0xeHGA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=fXs9Z9PQYCruMdcrfaMtY0ndpO2Xn6EDlt3MZzXYgdU=;
-        b=Dba5XaJ4YA9vpc0hY5gn45LFbLkG/VzuAUztdk53/XTRWBh6s761tDC/A3IF9fnCze
-         /+glyw8MSR1ID6IHiJ/cnI0y/V9M7hQ9NCNTrfZPzRBvwQrtxytnB2KCDvQb6r+z2RtW
-         8622a/Asuu1bjdAq6NmBzW8+bCABmCKpi6MQR4a6GEU2wmDB4ICldMvLYK6rW+8aVrMV
-         U+vMKFGCV3OOQYWwqTCQs0qm3T68s0XscVj7YpEbsaA8w9YEzjNveZLPo1W/MMa7l3p6
-         6Nck9ktAKT06GNvBgQlvPCzvETxBPW3zCbNi4vOYksN63nFZK57tFMrJPjJLWZF43eUF
-         n4Ng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=fXs9Z9PQYCruMdcrfaMtY0ndpO2Xn6EDlt3MZzXYgdU=;
-        b=Ncf91KMqpoANedy7Scbhs8b9DSX/HRimW2poI51TF9HNHUCdVOgHjLLWC7HUTd4jhA
-         bwJZ3OxG8JkOyRGWS7K9QKPEck33brxBTb3UMQq5He53shTH7SjjKJ8j9grSBaLDssol
-         9zpFGrCdi8CseczxM8f8mQNxpjQ2AP4mcjK2dvT9L1wZA2aiwtysp9hVfoQ70GAcj+Yn
-         OwGSWTI5SgX2SLSpyCUQajmK4+4Hy5dsXpBUoikzl9tdpqRzJ1Dx0vfX92sIA3tSW7UT
-         mitYSHO7wiVt4rOYwkuBkYjAMx6TZRYH6S++CU6Ruh4o/cn1EJ8x3DAW3dX4iIgvuovz
-         wMzQ==
-X-Gm-Message-State: AOAM530JKI7VMFv7VmV0LKBZfoxafZ+gSAQSgCyXVrIcE0AZ0CHkk0y8
-        CkVmxAQeVlZdr8JtUcCtIB8=
-X-Google-Smtp-Source: ABdhPJxR1zuszDMGjwGZeutMvY35G28bmpwlvPOGrKcn1rCWt6gy9RgtvgaRkVsAv3cFx97J4LRhBA==
-X-Received: by 2002:a05:6512:3f99:: with SMTP id x25mr10847382lfa.235.1643799850317;
-        Wed, 02 Feb 2022 03:04:10 -0800 (PST)
-Received: from localhost.localdomain (staticline-31-183-164-222.toya.net.pl. [31.183.164.222])
-        by smtp.gmail.com with ESMTPSA id r14sm4503937lfr.129.2022.02.02.03.04.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Feb 2022 03:04:09 -0800 (PST)
-From:   Karolina Drobnik <karolinadrobnik@gmail.com>
-To:     linux-mm@kvack.org
-Cc:     akpm@linux-foundation.org, rppt@kernel.org,
-        linux-kernel@vger.kernel.org,
-        Karolina Drobnik <karolinadrobnik@gmail.com>
-Subject: [PATCH v2 16/16] memblock tests: Add memblock_free tests
-Date:   Wed,  2 Feb 2022 12:03:15 +0100
-Message-Id: <30af95c82754ad8029404c3b528a5ef1c05d1ed6.1643796665.git.karolinadrobnik@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <cover.1643796665.git.karolinadrobnik@gmail.com>
-References: <cover.1643796665.git.karolinadrobnik@gmail.com>
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=R1GHe0oltkH2lpXeC/k+h87hlMLF7f1pEJwt5W37xWQ=;
+ b=eTRq0T7UOUNZcvHx+Tzcnvun4xj0layv+81aB/GyMZKul8kgtCF6YLo47CTXPJDi3X7DkpKPjTFmiOZ5L7ikYd3KHVKUrYv45UaFMlh8JAwrmNywbFB5GN4X/YzzmBHxl8wlpVsy/psBOPgOwwvKfHoHCdafYTy6Rn4TyqmC+U0=
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by MWHPR1001MB2111.namprd10.prod.outlook.com
+ (2603:10b6:301:34::20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.19; Wed, 2 Feb
+ 2022 11:06:17 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::e5a5:8f49:7ec4:b7b8]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::e5a5:8f49:7ec4:b7b8%5]) with mapi id 15.20.4930.021; Wed, 2 Feb 2022
+ 11:06:17 +0000
+Date:   Wed, 2 Feb 2022 14:05:54 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Joe Perches <joe@perches.com>, Kees Cook <keescook@chromium.org>
+Cc:     Pkshih <pkshih@realtek.com>, "kvalo@kernel.org" <kvalo@kernel.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "colin.i.king@gmail.com" <colin.i.king@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] rtlwifi: remove redundant initialization of variable
+ ul_encalgo
+Message-ID: <20220202110554.GT1978@kadam>
+References: <20220130223714.6999-1-colin.i.king@gmail.com>
+ <55f8c7f2c75b18cd628d02a25ed96fae676eace2.camel@realtek.com>
+ <20220202050229.GS1951@kadam>
+ <90e40bb19320dcc2f2099b97b4b9d7d23325eaac.camel@perches.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <90e40bb19320dcc2f2099b97b4b9d7d23325eaac.camel@perches.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: JN2P275CA0018.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:3::30)
+ To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6f57e2be-b51b-4ac6-5752-08d9e63c0899
+X-MS-TrafficTypeDiagnostic: MWHPR1001MB2111:EE_
+X-Microsoft-Antispam-PRVS: <MWHPR1001MB21114538DD25FF7D70C0B34F8E279@MWHPR1001MB2111.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: UOsFn7LznaNsa5nc0TvNknINnsLnSNNex9gxO7r8zyEOwpsm49e8WwEFjZOg7W0gj8hOeSDS5vG6XzV35ZoskXBkDMysqslASVEcsqJTbj2dm0RrwEcewSKZlm9/xKbF0DlUedzgzZXRR4B/8y9rc5CV8/OlbcH+mLhmp0nPGdSYoovilDXOI0DUG1hx7yuPU2bg/uSF4ChvVJ/MDSbtfBNlVqqHhife608AE4N5IRjJOZ1y45naSDyYFm2I9w7Ixww5oq8ifXyOuqmavCFzoFhb9fL/bKQj1u+1Z5EXi5+k9S/88nzHnuKsifv6ydh1jmapneRlHD3Cm5e6qWlkM0U/EGO0GXG7kqZ1PLmD+zJIn5vaR7C/lsfUSUJm0spIqmmRkEn2p3NM08QMBGrW7tgWWGgFDu8sATRhm8vLBI+LOvhV+LXmtxuOqCEuxO7dr95MwmH0vAKBl/Q4JWlVQRsyE7hMgRbDkrZFbgs8lCHpihqZd6DHCapB1aRkHDdFw1ssQKIv4n5WlMztLHKqO0wI/HoQP+lpcfkliC926Deh163CktJahybSYMjkJquNAudA67BvMudtFunxz7LEVTikFypZ9Vchc6oTx2nC9TpxNILpDqm73V8uvtY9okqEkzmlQJ0Z69EeNyuAtVS1wqV/nd1Q/32SfyuRdYeYT02QDOuz+wVPeRTtE684jEqPp9WYvSMZ/LlwXkP5Aj+kag==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(66556008)(54906003)(8936002)(7416002)(66476007)(110136005)(38100700002)(2906002)(38350700002)(6512007)(5660300002)(66946007)(9686003)(6666004)(6506007)(186003)(86362001)(316002)(8676002)(44832011)(4326008)(508600001)(6486002)(26005)(83380400001)(33656002)(52116002)(33716001)(1076003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?XaL7bXcqhgmJ+SEeyp2n76ezEWhkFoQSzycOBMm79HmyVMfKHrJXYAq4xa5u?=
+ =?us-ascii?Q?SwbLQh+ezY0FZFHgraeZ5Tfxkr/5ysO6Ofzer8ITcrNNFNXb+WEoEhHOCrE6?=
+ =?us-ascii?Q?vUS3d010KpDSDT2SfimoZF/DwwC4kSvaUh+/AvWqT36/tplwF+0Kccp3MtmZ?=
+ =?us-ascii?Q?U1G/SmceogdqWAqjwwIcFPKFRDht/9TtyObFHHMEtjtQJaytoB6FUBZhikWh?=
+ =?us-ascii?Q?533xXsYF/fqP7EB1IGNE9IM/uT7kucw8B7oNbs34h8EYuH55mlZJX1iB/6J5?=
+ =?us-ascii?Q?YlZg+Mdhrpmv7fKppLIuUenBOrRkiJNJJ0DONtHkuZrJ9M8gkgAe3hxND9KQ?=
+ =?us-ascii?Q?uSc961RDhQFZ6qGnVwrR2EnIOOj+VA/5Is0xTA804N3n+JtA4JflM3frPfmG?=
+ =?us-ascii?Q?7b+U9evAmkYNwuAQTAkpatLWWTIydk5Q0cirW6ro4jY99A9OYHZ2h/kJNDIw?=
+ =?us-ascii?Q?u9/r7i7ybuW889s3AY6IqcusSOkFPbDqcRJatmghYxCNVCqDNktXbkPXNWPY?=
+ =?us-ascii?Q?jQMdeSvd7sGRU+oQR0jFdSLFdcrwmFaBPvaePjncqwj+GbsWRw5wqDN/FOuu?=
+ =?us-ascii?Q?E0HdVShWr7H6s9uG6hf38Fe+3gtl8lfmcIIjTMwdlnT2rSQ5/cWJ3NrHg7oi?=
+ =?us-ascii?Q?CWgZwQJ0VFWq4n0TIlNrFfYnwpUkK8EUx3mglaEJcwrnOHRvSHIu/5K4333K?=
+ =?us-ascii?Q?bFtPzcMSm76918CXLpZD4DJ3afsmdrtkaVgZK5jvqybOAuy05RsInW9vYK5w?=
+ =?us-ascii?Q?fqG0xmNL+X0w6OfG74XS1OeyghqS3uFhIJHokQE9Uer9LygY3UnpaLagGXbD?=
+ =?us-ascii?Q?H71DpWzMxIUqHotLqlmkDPl22Yk3gqFQ4icPTlmfEfK97aCosguy9XDnycnS?=
+ =?us-ascii?Q?dtz+zZjzs1D07VwQDEiMQ+Fei0IgW5XPxqfY0YSnrNNW5gTSr6zlt5Dx6SDC?=
+ =?us-ascii?Q?2V9wunN3ykGKSsP/HtI5HdKIPbePqP5O4MpyOqrzL8zJUbINrgGCbdycbgiB?=
+ =?us-ascii?Q?vHOvythO26F1R6QrkBiKSgzXxGISoQO9GFfrm9vhCsWPlB8B23Iy3AG73t4K?=
+ =?us-ascii?Q?tMe5PxBGKqtv3E1AURrrNcB9zDByWI5JHOthAN2R87HM41zWSOt63iRS8TUM?=
+ =?us-ascii?Q?AH3CGMffML0lyCIjNmZeTLhW6+D95unV949JnGGLqRNzYDUM0mB3DIjdsSb2?=
+ =?us-ascii?Q?6x6fGszlYWpw1ZehpLLwBOo6aW45jRkb3sBG7QhqLAAGUBDh7fci4YQSYNRi?=
+ =?us-ascii?Q?+l5+WT3tXQaiR4VrbnCWpO0DEPXocdpUKBjjgxv4B93ME4LadKC/kB3/WVGB?=
+ =?us-ascii?Q?MKWBYp98ucfyPwG6upLIKLc1h8mGIeZXmG3T27Tco0ONnFJYcAcCTA2VlJCW?=
+ =?us-ascii?Q?itFW9Or7N2jr6t84Z8rBKCSVsiVWnBDEFgRojblPFyI1VIMLYTlriyAO8D1W?=
+ =?us-ascii?Q?66dwyn0TxzoLrLcCZ7MlS35jiDbvB3p30LlUhBCNmpaenIoqj6MRyUWQ1/ZC?=
+ =?us-ascii?Q?VXxci51lf8LGtsVwACb31Q9RCe0YzS6ztxhfnM68evNBgXQ3NCCtWsP5fGm9?=
+ =?us-ascii?Q?ygZDm205Fk1ySUecu2Tak7YSZZxuTMtRXDKRSKPwssGJbTLZH0nL+ZHRmVRU?=
+ =?us-ascii?Q?0SRGUQBkK1NOTu25du68nvbsUz4GqCYSfJucnbGXE47CtJ6RI1anjJHJR3Z6?=
+ =?us-ascii?Q?Sj7tPVlpajsjhzL/mIPeiZWFhps=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6f57e2be-b51b-4ac6-5752-08d9e63c0899
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Feb 2022 11:06:17.1328
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: a+EokbtuxFNU8HRaZOrx30ZV6aUbxqJyBdjhDS2orcvRg6edJlu/kh9Jhf4//aA6RyWTdUE1LYGMNmrbkIzCW49BRKCe1uEMQHwIYleu6D8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR1001MB2111
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10245 signatures=673430
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 mlxscore=0 spamscore=0
+ bulkscore=0 adultscore=0 mlxlogscore=999 phishscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2202020059
+X-Proofpoint-GUID: Es9NMPL71DIJp6gVpDwSKCgejQSoZ-JZ
+X-Proofpoint-ORIG-GUID: Es9NMPL71DIJp6gVpDwSKCgejQSoZ-JZ
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add checks for removing a region from reserved memory in different
-scenarios:
- - The requested region matches one in the collection of reserved
-   memory regions
- - The requested region does not exist in memblock.reserved
- - The region overlaps with one of the entries: from the top (its
-   end address is bigger than the base of the existing region) or
-   from the bottom (its base address is smaller than the end address
-   of one of the regions)
- - The region is within an already defined region
+On Wed, Feb 02, 2022 at 02:10:40AM -0800, Joe Perches wrote:
+> On Wed, 2022-02-02 at 08:02 +0300, Dan Carpenter wrote:
+> > On Mon, Jan 31, 2022 at 02:53:40AM +0000, Pkshih wrote:
+> > > On Sun, 2022-01-30 at 22:37 +0000, Colin Ian King wrote:
+> > > 
+> > > When I check this patch, I find there is no 'break' for default case.
+> > > Do we need one? like
+> > > 
+> > > @@ -226,6 +226,7 @@ void rtl_cam_empty_entry(struct ieee80211_hw *hw, u8 uc_index)
+> > >                 break;
+> > >         default:
+> > >                 ul_encalgo = rtlpriv->cfg->maps[SEC_CAM_AES];
+> > > +               break;
+> > 
+> > No, it's not necessary.  The choice of style is up to the original
+> > developer.
+> 
+> every case should have one.
+> 
+> Documentation/process/deprecated.rst:
+> 
+> All switch/case blocks must end in one of:
+> 
+> * break;
+> * fallthrough;
+> * continue;
+> * goto <label>;
+> * return [expression];
+> 
 
-Signed-off-by: Karolina Drobnik <karolinadrobnik@gmail.com>
----
- tools/testing/memblock/tests/basic_api.c | 199 +++++++++++++++++++++++
- 1 file changed, 199 insertions(+)
+I doubt that's what Kees had in mind when he wrote that.
 
-diff --git a/tools/testing/memblock/tests/basic_api.c b/tools/testing/memblock/tests/basic_api.c
-index 02eb88358a58..568b05b52883 100644
---- a/tools/testing/memblock/tests/basic_api.c
-+++ b/tools/testing/memblock/tests/basic_api.c
-@@ -686,12 +686,211 @@ static int memblock_remove_checks(void)
- 	return 0;
- }
- 
-+/*
-+ * A simple test that tries to free a memory block that was marked earlier as
-+ * reserved. By "freeing" a region we mean overwriting it with the next entry
-+ * in memblock.reserved. To check this is the case, the test reserves two memory
-+ * regions and verifies that the value of the latter was used to erase r1 region.
-+ * The test also checks if the region counter and total size were updated.
-+ */
-+static int memblock_free_simple_check(void)
-+{
-+	struct memblock_region *rgn;
-+
-+	rgn = &memblock.reserved.regions[0];
-+
-+	struct region r1 = {
-+		.base = SZ_4M,
-+		.size = SZ_1M
-+	};
-+	struct region r2 = {
-+		.base = SZ_8M,
-+		.size = SZ_1M
-+	};
-+
-+	reset_memblock();
-+	memblock_reserve(r1.base, r1.size);
-+	memblock_reserve(r2.base, r2.size);
-+	memblock_free((void *)r1.base, r1.size);
-+
-+	assert(rgn->base == r2.base);
-+	assert(rgn->size == r2.size);
-+
-+	assert(memblock.reserved.cnt == 1);
-+	assert(memblock.reserved.total_size == r2.size);
-+
-+	return 0;
-+}
-+
-+ /*
-+  * A test that tries to free a region that was not marked as reserved (i.e. has
-+  * no corresponding entry in memblock.reserved). It verifies that array, regions
-+  * counter and total size were not modified.
-+  */
-+static int memblock_free_absent_check(void)
-+{
-+	struct memblock_region *rgn;
-+
-+	rgn = &memblock.reserved.regions[0];
-+
-+	struct region r1 = {
-+		.base = SZ_2M,
-+		.size = SZ_8K
-+	};
-+	struct region r2 = {
-+		.base = SZ_16M,
-+		.size = SZ_128M
-+	};
-+
-+	reset_memblock();
-+	memblock_reserve(r1.base, r1.size);
-+	memblock_free((void *)r2.base, r2.size);
-+
-+	assert(rgn->base == r1.base);
-+	assert(rgn->size == r1.size);
-+
-+	assert(memblock.reserved.cnt == 1);
-+	assert(memblock.reserved.total_size == r1.size);
-+
-+	return 0;
-+}
-+
-+/*
-+ * A test that tries to free a region which overlaps with the beginning of
-+ * the already existing entry r1 (that is r1.base < r2.base + r2.size). It
-+ * checks if only the intersection of both regions is freed. The test also
-+ * checks if the regions counter and total size are updated to expected values.
-+ */
-+static int memblock_free_overlap_top_check(void)
-+{
-+	struct memblock_region *rgn;
-+	phys_addr_t total_size;
-+
-+	rgn = &memblock.reserved.regions[0];
-+
-+	struct region r1 = {
-+		.base = SZ_8M,
-+		.size = SZ_32M
-+	};
-+	struct region r2 = {
-+		.base = SZ_1M,
-+		.size = SZ_8M
-+	};
-+
-+	total_size = (r1.size + r1.base) - (r2.base + r2.size);
-+
-+	reset_memblock();
-+	memblock_reserve(r1.base, r1.size);
-+	memblock_free((void *)r2.base, r2.size);
-+
-+	assert(rgn->base == r2.base + r2.size);
-+	assert(rgn->size == total_size);
-+
-+	assert(memblock.reserved.cnt == 1);
-+	assert(memblock.reserved.total_size == total_size);
-+
-+	return 0;
-+}
-+
-+/*
-+ * A test that tries to free a region which overlaps with the end of the
-+ * first entry (that is r2.base < r1.base + r1.size). It checks if only the
-+ * intersection of both regions is freed. The test also checks if the regions
-+ * counter and total size are updated to expected values.
-+ */
-+static int memblock_free_overlap_bottom_check(void)
-+{
-+	struct memblock_region *rgn;
-+	phys_addr_t total_size;
-+
-+	rgn = &memblock.reserved.regions[0];
-+
-+	struct region r1 = {
-+		.base = SZ_8M,
-+		.size = SZ_32M
-+	};
-+	struct region r2 = {
-+		.base = SZ_32M,
-+		.size = SZ_32M
-+	};
-+
-+	total_size = r2.base - r1.base;
-+
-+	reset_memblock();
-+	memblock_reserve(r1.base, r1.size);
-+	memblock_free((void *)r2.base, r2.size);
-+
-+	assert(rgn->base == r1.base);
-+	assert(rgn->size == total_size);
-+
-+	assert(memblock.reserved.cnt == 1);
-+	assert(memblock.reserved.total_size == total_size);
-+
-+	return 0;
-+}
-+
-+/*
-+ * A test that tries to free a region which is within the range of the already
-+ * existing entry (that is (r1.base < r2.base) && (r2.base + r2.size < r1.base + r1.size)).
-+ * It checks if the region is split into two - one that ends at r2.base and second
-+ * that starts at r2.base + size, with appropriate sizes. It is expected that
-+ * the region counter and total size fields were updated t reflect that change.
-+ */
-+static int memblock_free_within_check(void)
-+{
-+	struct memblock_region *rgn1, *rgn2;
-+	phys_addr_t r1_size, r2_size, total_size;
-+
-+	rgn1 = &memblock.reserved.regions[0];
-+	rgn2 = &memblock.reserved.regions[1];
-+
-+	struct region r1 = {
-+		.base = SZ_1M,
-+		.size = SZ_8M
-+	};
-+	struct region r2 = {
-+		.base = SZ_4M,
-+		.size = SZ_1M
-+	};
-+
-+	r1_size = r2.base - r1.base;
-+	r2_size = (r1.base + r1.size) - (r2.base + r2.size);
-+	total_size = r1_size + r2_size;
-+
-+	reset_memblock();
-+	memblock_reserve(r1.base, r1.size);
-+	memblock_free((void *)r2.base, r2.size);
-+
-+	assert(rgn1->base == r1.base);
-+	assert(rgn1->size == r1_size);
-+
-+	assert(rgn2->base == r2.base + r2.size);
-+	assert(rgn2->size == r2_size);
-+
-+	assert(memblock.reserved.cnt == 2);
-+	assert(memblock.reserved.total_size == total_size);
-+
-+	return 0;
-+}
-+
-+static int memblock_free_checks(void)
-+{
-+	memblock_free_simple_check();
-+	memblock_free_absent_check();
-+	memblock_free_overlap_top_check();
-+	memblock_free_overlap_bottom_check();
-+	memblock_free_within_check();
-+
-+	return 0;
-+}
-+
- int memblock_basic_checks(void)
- {
- 	memblock_initialization_check();
- 	memblock_add_checks();
- 	memblock_reserve_checks();
- 	memblock_remove_checks();
-+	memblock_free_checks();
- 
- 	return 0;
- }
--- 
-2.30.2
+The extra break statement doesn't improve readability.  It also doesn't
+hurt readability.
 
+There is no reason to add a break statement after a default case.  No
+one is going to add another case after the default case.  And if they
+do then a dozen static analysis tools will complain about the missing
+break.
+
+I looked through the code to see if break statements were more common
+than non-break statement code.  Both seem pretty common.  I got bored
+really quickly though and my sample might not have been representative.
+
+regards,
+dan carpenter
