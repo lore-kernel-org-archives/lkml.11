@@ -2,108 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D77C2C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 07:03:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C1AEC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 07:05:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244736AbiBBHDX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 02:03:23 -0500
-Received: from foss.arm.com ([217.140.110.172]:39664 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239384AbiBBHDV (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 02:03:21 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 583E6ED1;
-        Tue,  1 Feb 2022 22:25:42 -0800 (PST)
-Received: from [10.163.43.221] (unknown [10.163.43.221])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A167A3F718;
-        Tue,  1 Feb 2022 22:25:36 -0800 (PST)
-Subject: Re: [PATCH v5 1/4] mm/debug_vm_pgtable: remove pte entry from the
- page table
-To:     Pasha Tatashin <pasha.tatashin@soleen.com>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        akpm@linux-foundation.org, rientjes@google.com, pjt@google.com,
-        weixugc@google.com, gthelen@google.com, mingo@redhat.com,
-        will@kernel.org, rppt@kernel.org, dave.hansen@linux.intel.com,
-        hpa@zytor.com, aneesh.kumar@linux.ibm.com, jirislaby@kernel.org,
-        songmuchun@bytedance.com, qydwhotmail@gmail.com, hughd@google.com,
-        ziy@nvidia.com
-References: <20220131203249.2832273-1-pasha.tatashin@soleen.com>
- <20220131203249.2832273-2-pasha.tatashin@soleen.com>
-From:   Anshuman Khandual <anshuman.khandual@arm.com>
-Message-ID: <2b3bddd8-e869-a717-b849-d03f30e583c5@arm.com>
-Date:   Wed, 2 Feb 2022 11:55:30 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S244790AbiBBHF1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 02:05:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53842 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239384AbiBBHFZ (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 2 Feb 2022 02:05:25 -0500
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D3F4C061714;
+        Tue,  1 Feb 2022 23:05:25 -0800 (PST)
+Received: by mail-io1-xd34.google.com with SMTP id n17so24271589iod.4;
+        Tue, 01 Feb 2022 23:05:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=SpryQOT2uTRwsdibcfsESI84DVoBT/VezHdCUqIw1nM=;
+        b=Yh8JER6t2u+rs0xm1gDMhpppjo8c55JDcz4lc1HhglDS5vddc25oWSMVv5dafoq2tL
+         X0EqeQ14PSrUBuQkDiKHBefLoTCrIPMhBcMLC4RBUJhmE816dG1uZB9z3Sk6BbJklR3D
+         Y6a17cBDceerLRMxU8JtWsbkJrqxlp3m1OZNOmBvDWxdv1i3Z4SOTXFxfqYAnKryxNoS
+         Fhjl60AsaagVaNs1saZNbjsF9Vh7z04r7CWdRI6Fo4GCYvqXXp2ewZeDC79N66/yVUo6
+         LsUtUpHgRc6Rdk5tsGhSvgH2C2oCIAVi7+2HyASUyd7UtuupMDN9XfJnLBhHxs3Doeed
+         rmlg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SpryQOT2uTRwsdibcfsESI84DVoBT/VezHdCUqIw1nM=;
+        b=n7dBvnRJnjhyILduExkcn0unr80g4Bm7z3kXxCHYd+8CVwovS1gtEHbOP81Z/oGut4
+         C0ILWy3Qfgk2b0v1XZp0fMkpoCOePkGZJgOr7q6t3iobs9UOlLXe9jsIBsd8qW3cH/op
+         IZR3K13m6acyQAWhqTGcb9jkX4bMb8L+GKXSirnK6X/HXZP+k05zyHmlp4ZDONecz2+2
+         fJVn2RiZETIfcA0GxOgnc3oGbStWMdIwzxr016JG9pxtyOjdzjTwffvN6+pdFaKYiKM4
+         taQ/HjGxHDXTjsSR7DK+fV0U5uuhuc+ZP31MUMuYqb3zGkYR8krdzAbYjXRIA/rRuipb
+         OE6w==
+X-Gm-Message-State: AOAM533c5qjCKBr2AcCokzC8UJe3TSd5MDZsXIxgiV+uI1cxZS9edYtt
+        JXpblPQjcfo9fZHM5Lu+d4x/pN9gs8Ho3XZuq+8=
+X-Google-Smtp-Source: ABdhPJyR0STyeIw70QHeReGkVxZkBvrSHZI1p+33uA5B2bkuVWZRQTmlR4YBRQ37MslJVt1AuMhh4dGDaT+Tp8C9mTQ=
+X-Received: by 2002:a02:2422:: with SMTP id f34mr14962916jaa.237.1643785524885;
+ Tue, 01 Feb 2022 23:05:24 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20220131203249.2832273-2-pasha.tatashin@soleen.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20220201205624.652313-1-nathan@kernel.org>
+In-Reply-To: <20220201205624.652313-1-nathan@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 1 Feb 2022 23:05:13 -0800
+Message-ID: <CAEf4BzbLwMCHDncHW-hH2kgOWc9jQK7QVkcH9aOKm7n7YC2LgQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 0/5] Allow CONFIG_DEBUG_INFO_DWARF5=y + CONFIG_DEBUG_INFO_BTF=y
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>, llvm@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, Feb 1, 2022 at 12:56 PM Nathan Chancellor <nathan@kernel.org> wrote:
+>
+> Hi all,
+>
+> This series allows CONFIG_DEBUG_INFO_DWARF5 to be selected with
+> CONFIG_DEBUG_INFO_BTF=y by checking the pahole version.
+>
+> The first four patches add CONFIG_PAHOLE_VERSION and
+> scripts/pahole-version.sh to clean up all the places that pahole's
+> version is transformed into a 3-digit form.
+>
+> The fourth patch adds a PAHOLE_VERSION dependency to DEBUG_INFO_DWARF5
+> so that there are no build errors when it is selected with
+> DEBUG_INFO_BTF.
+>
+> I build tested Fedora's aarch64 and x86_64 config with ToT clang 14.0.0
+> and GCC 11 with CONFIG_DEBUG_INFO_DWARF5 enabled with both pahole 1.21
+> and 1.23.
+>
+> Nathan Chancellor (5):
+>   MAINTAINERS: Add scripts/pahole-flags.sh to BPF section
+>   kbuild: Add CONFIG_PAHOLE_VERSION
+>   scripts/pahole-flags.sh: Use pahole-version.sh
+>   lib/Kconfig.debug: Use CONFIG_PAHOLE_VERSION
+>   lib/Kconfig.debug: Allow BTF + DWARF5 with pahole 1.21+
+>
 
+LGTM. I'd probably combine patches 2 and 3, but it's minor. I really
+like the CONFIG_PAHOLE_VERSION and how much cleaner it makes Kconfig
+options.
 
-On 2/1/22 2:02 AM, Pasha Tatashin wrote:
-> The pte entry that is used in pte_advanced_tests() is never removed from
-> the page table at the end of the test.
-> 
-> The issue is detected by page_table_check, to repro compile kernel with
-> the following configs:
-> 
-> CONFIG_DEBUG_VM_PGTABLE=y
-> CONFIG_PAGE_TABLE_CHECK=y
-> CONFIG_PAGE_TABLE_CHECK_ENFORCED=y
-> 
-> During the boot the following BUG is printed:
-> 
-> [    2.262821] debug_vm_pgtable: [debug_vm_pgtable         ]: Validating
->                architecture page table helpers
-> [    2.276826] ------------[ cut here ]------------
-> [    2.280426] kernel BUG at mm/page_table_check.c:162!
-> [    2.284118] invalid opcode: 0000 [#1] PREEMPT SMP PTI
-> [    2.287787] CPU: 0 PID: 1 Comm: swapper/0 Not tainted
->                5.16.0-11413-g2c271fe77d52 #3
-> [    2.293226] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
->                BIOS rel-1.15.0-0-g2dd4b9b3f840-prebuilt.qemu.org
->                04/01/2014
-> ...
-> 
-> The entry should be properly removed from the page table before the page
-> is released to the free list.
-> 
-> Fixes: a5c3b9ffb0f4 ("mm/debug_vm_pgtable: add tests validating advanced arch page table helpers")
-> Cc: stable@vger.kernel.org # 5.9+
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
 
-Not sure marking stable is necessary here.
-
-> 
-> Signed-off-by: Pasha Tatashin <pasha.tatashin@soleen.com>
-> Reviewed-by: Zi Yan <ziy@nvidia.com>
-> Tested-by: Zi Yan <ziy@nvidia.com>
-> Acked-by: David Rientjes <rientjes@google.com>
-
-Dont see any problems on arm64. Although it would be great to run this
-on all enabled platforms.
-
-Reviewed-by: Anshuman Khandual <anshuman.khandual@arm.com>
-
-> ---
->  mm/debug_vm_pgtable.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/mm/debug_vm_pgtable.c b/mm/debug_vm_pgtable.c
-> index a7ac97c76762..db2abd9e415b 100644
-> --- a/mm/debug_vm_pgtable.c
-> +++ b/mm/debug_vm_pgtable.c
-> @@ -171,6 +171,8 @@ static void __init pte_advanced_tests(struct pgtable_debug_args *args)
->  	ptep_test_and_clear_young(args->vma, args->vaddr, args->ptep);
->  	pte = ptep_get(args->ptep);
->  	WARN_ON(pte_young(pte));
-> +
-> +	ptep_get_and_clear_full(args->mm, args->vaddr, args->ptep, 1);
->  }
->  
->  static void __init pte_savedwrite_tests(struct pgtable_debug_args *args)
-> 
+>  MAINTAINERS               |  2 ++
+>  init/Kconfig              |  4 ++++
+>  lib/Kconfig.debug         |  6 +++---
+>  scripts/pahole-flags.sh   |  2 +-
+>  scripts/pahole-version.sh | 13 +++++++++++++
+>  5 files changed, 23 insertions(+), 4 deletions(-)
+>  create mode 100755 scripts/pahole-version.sh
+>
+>
+> base-commit: 533de4aea6a91eb670ff8ff2b082bb34f2c5d6ab
+> --
+> 2.35.1
+>
