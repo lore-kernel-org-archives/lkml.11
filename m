@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F72BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 13:50:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FEF6C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 13:50:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344621AbiBBNuX (ORCPT
+        id S1344646AbiBBNu0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 08:50:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60746 "EHLO
+        Wed, 2 Feb 2022 08:50:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232838AbiBBNuK (ORCPT
+        with ESMTP id S1344558AbiBBNuB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 08:50:10 -0500
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC578C061714
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 05:50:10 -0800 (PST)
-Received: by mail-pj1-x1035.google.com with SMTP id s2-20020a17090ad48200b001b501977b23so6919951pju.2
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 05:50:10 -0800 (PST)
+        Wed, 2 Feb 2022 08:50:01 -0500
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E18F5C06175B
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 05:50:00 -0800 (PST)
+Received: by mail-pg1-x533.google.com with SMTP id 133so18387690pgb.0
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 05:50:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=8Wqt8bANP5ifvGkIaVLK4/SfxJUiMOM5777d8fxcmLM=;
-        b=m2ksXmN7GxvSJ/YH+L/9081yGbKbVptVViQ7mbt5uZRnW8oCM+USFPKAP+awj9+dFG
-         jO235c+pDT2bEX4Nr7VfDXg1JwB+GOzcK6xg5uUworwikrQ4prvPI/CJ3qNxqaLTyMGD
-         paUb6rV0mbYbYGkmOIZ+tDuDktrRvNfBZkToM=
+        bh=atVL6xJF/54HJ2aWxtM+9tGv7OBG0H7yvFIiBDi452k=;
+        b=KokZ29ZgNuAl3t+XgjfUEk3Bpr7iTEs+HxAkSQTAjFt8MtVd92B7EM//xJfeoxHFcG
+         CURs15ExfQ68RVYPKdkpcVHsJ21gFZHbfjRcl6tSu5KwHMu7ghFUrJxeLlmkYGyzqhJY
+         eJSDBxTcm6jX8Ys5/RBbe5fsYH5hpW/v1bP7Q=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=8Wqt8bANP5ifvGkIaVLK4/SfxJUiMOM5777d8fxcmLM=;
-        b=u6Crqw31mWZIj7ha/XqhTkKUuKKV1OTvVZ1BNob9LRL1ojjKFC+ywEdYZ54y++iHik
-         dWSzcL4QIBWGh624//s/dMm2Ecs6Dpj0T+Yu44Bnftz/bAwM/gv6i4cASPbF1Hg5HMm5
-         mp5Y4E5eLrtbmtUhs1UlMAzzc9y07OyzpI/GCHKiBvV1Y2RfETzZuPkcTVi+YURnqqe9
-         Vnys0Jn6cqOoLGX+fRGMvkp+CF038peDhS0RHbvxngpEjdoBwTmYptXl+nvq7F3rYYBu
-         X0/izHgDxpEwz09tA8ANlaqX7yTp9lxx9eFLj3yoZc6K05CpZI44xZrxBBuyWvsPA74x
-         W66A==
-X-Gm-Message-State: AOAM530v0hPjoze8y6fyqcy35UFkjtJiLC44T4kCzbaG4G4Jvg4sAaG6
-        7u7TtmGsQviPbLV2F0LBehuAfw==
-X-Google-Smtp-Source: ABdhPJz8hyWt2PyEVsnlaUWVM4Es83yV7JTMjXR/JmTG23iFKVNdT73cJkCBQTXNY12fQ41KC/4EBg==
-X-Received: by 2002:a17:90b:358e:: with SMTP id mm14mr8052020pjb.229.1643809810312;
-        Wed, 02 Feb 2022 05:50:10 -0800 (PST)
+        bh=atVL6xJF/54HJ2aWxtM+9tGv7OBG0H7yvFIiBDi452k=;
+        b=AqzMNrDlrQGSdfDKMDolSBhL8GccLnigQQXDTXJQa7rtN2v+UTvO1MVNEN/OXOG106
+         wkfIN719FqzME9ZhKKDZItfliiIQvVtBjc79vbBYecri8dyFVl9MYL2bVjlSiEpcNfVy
+         aiEzza8v07qGnbrht6ZRO9XII0IP9WoZ9VwTQfpRkLijuLL71BWZr8otps3SkqdAtHWy
+         uNL6YFmYNCOrzCyu5x8xZyQxyjkEONXZpm18ZmJFkJnDZXDP9NjngwsZHnPglSYYboo1
+         Yv/VaG9bCz3uW3hoycdPHTq4uzfvHpWf05CX6zQhulUK8FnuvYWKLI3Y6VDj/l7s3N7k
+         zOtQ==
+X-Gm-Message-State: AOAM530e2WLpi7iQEWq9WlfWwHSGOnVdCg0uzBtazTvmwjjjl18Fr9wM
+        NzlL69jF0SK2Iu5AZUTS01k+2g==
+X-Google-Smtp-Source: ABdhPJwJNNtXsmuuzMgKjlUyJSyJMix5Mr8FLafmoEYLOBjBKCisUB5Vl/24ORK+SOxnDNq5ZWil8A==
+X-Received: by 2002:a05:6a00:15d5:: with SMTP id o21mr3872002pfu.9.1643809800457;
+        Wed, 02 Feb 2022 05:50:00 -0800 (PST)
 Received: from wenstp920.tpe.corp.google.com ([2401:fa00:1:10:78b5:214c:c81:b9aa])
-        by smtp.gmail.com with ESMTPSA id w19sm27335684pfu.47.2022.02.02.05.50.08
+        by smtp.gmail.com with ESMTPSA id w19sm27335684pfu.47.2022.02.02.05.49.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Feb 2022 05:50:10 -0800 (PST)
+        Wed, 02 Feb 2022 05:50:00 -0800 (PST)
 From:   Chen-Yu Tsai <wenst@chromium.org>
 To:     Stephen Boyd <sboyd@kernel.org>,
         Michael Turquette <mturquette@baylibre.com>,
@@ -55,9 +55,9 @@ Cc:     Chen-Yu Tsai <wenst@chromium.org>,
         Miles Chen <miles.chen@mediatek.com>,
         linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 16/31] clk: mediatek: Implement mtk_clk_unregister_factors() API
-Date:   Wed,  2 Feb 2022 21:48:19 +0800
-Message-Id: <20220202134834.690675-17-wenst@chromium.org>
+Subject: [PATCH v2 11/31] clk: mediatek: mux: Clean up included headers
+Date:   Wed,  2 Feb 2022 21:48:14 +0800
+Message-Id: <20220202134834.690675-12-wenst@chromium.org>
 X-Mailer: git-send-email 2.35.0.rc2.247.g8bbb082509-goog
 In-Reply-To: <20220202134834.690675-1-wenst@chromium.org>
 References: <20220202134834.690675-1-wenst@chromium.org>
@@ -67,70 +67,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-mtk_clk_register_factors(), as the name suggests, is used to register
-a given list of fixed factor clks. However it is lacking a counterpart
-unregister API.
+Some included headers aren't actually used anywhere, while other headers
+with the declaration of functions and structures aren't directly
+included.
 
-Implement said unregister API so that the various clock platform drivers
-can utilize it to do proper unregistration, cleanup and removal.
+Get rid of the unused ones, and add the ones that should be included
+directly.
 
-In the header file, the register function's declaration is also
-reformatted to fit code style guidelines.
+On the header side, replace headers that are included purely for data
+structure definitions with forward declarations. This decreases the
+amount of preprocessing and compilation effort required for each
+inclusion.
 
 Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
 Reviewed-by: Miles Chen <miles.chen@mediatek.com>
 ---
- drivers/clk/mediatek/clk-mtk.c | 20 ++++++++++++++++++++
- drivers/clk/mediatek/clk-mtk.h |  6 ++++--
- 2 files changed, 24 insertions(+), 2 deletions(-)
+ drivers/clk/mediatek/clk-mux.c | 11 +++++++----
+ drivers/clk/mediatek/clk-mux.h |  8 +++++++-
+ 2 files changed, 14 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/clk/mediatek/clk-mtk.c b/drivers/clk/mediatek/clk-mtk.c
-index 7c0d5706eed7..b267b2f04b84 100644
---- a/drivers/clk/mediatek/clk-mtk.c
-+++ b/drivers/clk/mediatek/clk-mtk.c
-@@ -126,6 +126,26 @@ void mtk_clk_register_factors(const struct mtk_fixed_factor *clks,
- }
- EXPORT_SYMBOL_GPL(mtk_clk_register_factors);
+diff --git a/drivers/clk/mediatek/clk-mux.c b/drivers/clk/mediatek/clk-mux.c
+index 2d4d8dc0120a..01af6a52711a 100644
+--- a/drivers/clk/mediatek/clk-mux.c
++++ b/drivers/clk/mediatek/clk-mux.c
+@@ -4,13 +4,16 @@
+  * Author: Owen Chen <owen.chen@mediatek.com>
+  */
  
-+void mtk_clk_unregister_factors(const struct mtk_fixed_factor *clks, int num,
-+				struct clk_onecell_data *clk_data)
-+{
-+	int i;
-+
-+	if (!clk_data)
-+		return;
-+
-+	for (i = num; i > 0; i--) {
-+		const struct mtk_fixed_factor *ff = &clks[i - 1];
-+
-+		if (IS_ERR_OR_NULL(clk_data->clks[ff->id]))
-+			continue;
-+
-+		clk_unregister_fixed_factor(clk_data->clks[ff->id]);
-+		clk_data->clks[ff->id] = ERR_PTR(-ENOENT);
-+	}
-+}
-+EXPORT_SYMBOL_GPL(mtk_clk_unregister_factors);
-+
- struct clk *mtk_clk_register_composite(const struct mtk_composite *mc,
- 		void __iomem *base, spinlock_t *lock)
- {
-diff --git a/drivers/clk/mediatek/clk-mtk.h b/drivers/clk/mediatek/clk-mtk.h
-index cc7f920eabb4..4db1a97c1250 100644
---- a/drivers/clk/mediatek/clk-mtk.h
-+++ b/drivers/clk/mediatek/clk-mtk.h
-@@ -55,8 +55,10 @@ struct mtk_fixed_factor {
- 		.div = _div,				\
- 	}
+-#include <linux/of.h>
+-#include <linux/of_address.h>
+-#include <linux/slab.h>
++#include <linux/clk-provider.h>
++#include <linux/compiler_types.h>
++#include <linux/container_of.h>
++#include <linux/err.h>
+ #include <linux/mfd/syscon.h>
+ #include <linux/module.h>
++#include <linux/regmap.h>
++#include <linux/spinlock.h>
++#include <linux/slab.h>
  
--void mtk_clk_register_factors(const struct mtk_fixed_factor *clks,
--		int num, struct clk_onecell_data *clk_data);
-+void mtk_clk_register_factors(const struct mtk_fixed_factor *clks, int num,
-+			      struct clk_onecell_data *clk_data);
-+void mtk_clk_unregister_factors(const struct mtk_fixed_factor *clks, int num,
-+				struct clk_onecell_data *clk_data);
+-#include "clk-mtk.h"
+ #include "clk-mux.h"
  
- struct mtk_composite {
+ struct mtk_clk_mux {
+diff --git a/drivers/clk/mediatek/clk-mux.h b/drivers/clk/mediatek/clk-mux.h
+index 38a2b6014b08..903a3c937959 100644
+--- a/drivers/clk/mediatek/clk-mux.h
++++ b/drivers/clk/mediatek/clk-mux.h
+@@ -7,7 +7,13 @@
+ #ifndef __DRV_CLK_MTK_MUX_H
+ #define __DRV_CLK_MTK_MUX_H
+ 
+-#include <linux/clk-provider.h>
++#include <linux/spinlock.h>
++#include <linux/types.h>
++
++struct clk;
++struct clk_onecell_data;
++struct clk_ops;
++struct device_node;
+ 
+ struct mtk_mux {
  	int id;
 -- 
 2.35.0.rc2.247.g8bbb082509-goog
