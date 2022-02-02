@@ -2,125 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44482C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 10:21:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31596C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 10:23:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343523AbiBBKVz (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 05:21:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41536 "EHLO
+        id S245061AbiBBKW7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 05:22:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343511AbiBBKVw (ORCPT
+        with ESMTP id S238513AbiBBKW6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 05:21:52 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 340BBC061714
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 02:21:52 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id c24so41292047edy.4
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 02:21:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rasmusvillemoes.dk; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=onRlZdRbDosaab/y/zUC++ZMX5giuurTyAahBOEwPR8=;
-        b=Iw8mIF0IhzTswuIYzJcfjySaSEWJKOjDnQp43YD102crOmlk6ox48nP108mNAPQatc
-         scZPiFCncu7zFYS/sGdDAV32PuAL/d0WMFsnJKi/7/U/vBTfLXpKjIYfJys+khnY66Fn
-         taN0nCKP4/pAqVCuAHztjDePFlX0QmtWfoQ0g=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=onRlZdRbDosaab/y/zUC++ZMX5giuurTyAahBOEwPR8=;
-        b=gHY0yBS59YulTJFBJxH88JwRI0S+979c8ybTxpvLWb4PaNr0LloU8YS+4YKIUsncMg
-         MpwesN1WXtr6HaJaCn33N74WpxLxKwNnMcKxbdGLW/d2bWubcI3iQelJWhaTgKD4K1Ho
-         toMqMXDYINKktKMrpGYDX2Bl8kxHPxJp0Byo7GIOm13ydCjt9alukGqJjHVgyozP85Il
-         Dg7z6qVs5oy3jfKj7sQnZpZp8xn9W4attllqACPx20CgPSWogszN705SpVkuPGfrkegH
-         iRwsFInZ0KoQqS7RaokjSycuCbj5Uewrzgxa3nVOgQVwmnxsIQNja9N55YXvbc0QbpL6
-         1RJA==
-X-Gm-Message-State: AOAM533Id7jsAdN5dvF78xCnq8is3nfWsHdYZTlADr+5zPsF59DOiuzj
-        hlSnk1M4/79+nV+uiY2TIBUWbpOgUg22n6Ao
-X-Google-Smtp-Source: ABdhPJx+fpprtlVWRfOIbm22oor83E+wyYwA4ey03sqFiVnjRuxsTVTcpecmQmC5c/zbGMz6xVJlmw==
-X-Received: by 2002:a05:6402:2682:: with SMTP id w2mr29049244edd.355.1643797310747;
-        Wed, 02 Feb 2022 02:21:50 -0800 (PST)
-Received: from localhost.localdomain ([80.208.64.233])
-        by smtp.gmail.com with ESMTPSA id v2sm15277559ejb.114.2022.02.02.02.21.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Feb 2022 02:21:50 -0800 (PST)
-From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
-To:     Nick Desaulniers <ndesaulniers@google.com>,
-        Miguel Ojeda <ojeda@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-Subject: [PATCH] include: drop pointless __compiler_offsetof indirection
-Date:   Wed,  2 Feb 2022 11:21:47 +0100
-Message-Id: <20220202102147.326672-1-linux@rasmusvillemoes.dk>
-X-Mailer: git-send-email 2.31.1
+        Wed, 2 Feb 2022 05:22:58 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A047C061714
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 02:22:58 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E657361582
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 10:22:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EA49C340F0
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 10:22:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643797377;
+        bh=1g6pR90DmE3D5PkPmqUdmdNaw8tNm6G02ZzFamE9Lq0=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=tXVLUGDjsHzDsLHY+60iVaFROuDIexO8Tdmj1lPfp0poEbqCkf7x2jysCo07Mip8S
+         5Z2OHVBFuNjWZLHGT5TJiOCA+Kv3JgFzO6DODYSJk39SU22K6MnwlrciGuMcfQBZgG
+         VaR8EWw5LNIrqcy72TR13b764tjZYUq1dj6eLzwmfGomNzhu5BoyiAO1A3tHuPdj3c
+         yw4MKgyE572mwdpe7Zoz5xa26OBiZg/rk5nqSFaZ7OM+cpKougl0f8vFMrTwiOXBWn
+         DyYkPQdU97Akl+8ZUJ2b2COITg8tdljZ8z4MfzrsOmqzyKfgp4F/ynChX/td5cR6M3
+         eyvzuyLG/XShQ==
+Received: by mail-yb1-f174.google.com with SMTP id p5so59323271ybd.13
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 02:22:57 -0800 (PST)
+X-Gm-Message-State: AOAM530ajUSrI2HAhKvF7vnmbpc/7Si+aGEdNKy8/R48ySh9rad8Jztq
+        NpCphS/NBHLq/Yyu6WUg1gZst51JrGrort4iLoA=
+X-Google-Smtp-Source: ABdhPJwOhaLNVtCeH3jNGjEAiM4abeBok+LcUMR8mhQccCnrqyHO2Ut/4K44nDupwwdSL/sodkR/MCDd5hxtkfnO9mk=
+X-Received: by 2002:a5b:48:: with SMTP id e8mr29816093ybp.64.1643797376434;
+ Wed, 02 Feb 2022 02:22:56 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220201172424.3509544-1-jordy@pwning.systems> <CAFCwf12sExpnsBDZX+ay6KKQ1RXoS470a2X_SOUM9KOUwXH4=g@mail.gmail.com>
+In-Reply-To: <CAFCwf12sExpnsBDZX+ay6KKQ1RXoS470a2X_SOUM9KOUwXH4=g@mail.gmail.com>
+From:   Oded Gabbay <ogabbay@kernel.org>
+Date:   Wed, 2 Feb 2022 12:22:29 +0200
+X-Gmail-Original-Message-ID: <CAFCwf12QygXk=8WbH9qDhyyqKY6ZGVCUSJM93viQ0armc8dgfg@mail.gmail.com>
+Message-ID: <CAFCwf12QygXk=8WbH9qDhyyqKY6ZGVCUSJM93viQ0armc8dgfg@mail.gmail.com>
+Subject: Re: [PATCH] habanalabs: fix potential spectre v1 gadgets
+To:     Jordy Zomer <jordy@pwning.systems>
+Cc:     "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Ofir Bitton <obitton@habana.ai>,
+        Dani Liberman <dliberman@habana.ai>,
+        Tomer Tayar <ttayar@habana.ai>, Koby Elbaz <kelbaz@habana.ai>,
+        farah kassabri <fkassabri@habana.ai>,
+        Sagiv Ozeri <sozeri@habana.ai>,
+        Yuri Nudelman <ynudelman@habana.ai>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-(1) compiler_types.h is unconditionally included via an -include
-flag (see scripts/Makefile.lib), and it defines __compiler_offsetof
-unconditionally. So testing for definedness of __compiler_offsetof is
-mostly pointless.
+On Wed, Feb 2, 2022 at 9:50 AM Oded Gabbay <ogabbay@kernel.org> wrote:
+>
+> On Tue, Feb 1, 2022 at 7:25 PM Jordy Zomer <jordy@pwning.systems> wrote:
+> >
+> > It appears like nr could be a Spectre v1 gadget as it's supplied by a
+> > user and used as an array index. Prevent the contents
+> > of kernel memory from being leaked to userspace via speculative
+> > execution by using array_index_nospec.
+> >
+> > Signed-off-by: Jordy Zomer <jordy@pwning.systems>
+> > ---
+> >  drivers/misc/habanalabs/common/habanalabs_ioctl.c | 3 +++
+> >  1 file changed, 3 insertions(+)
+> >
+> > diff --git a/drivers/misc/habanalabs/common/habanalabs_ioctl.c b/drivers/misc/habanalabs/common/habanalabs_ioctl.c
+> > index 3ba3a8ffda3e..c1cdf712a10d 100644
+> > --- a/drivers/misc/habanalabs/common/habanalabs_ioctl.c
+> > +++ b/drivers/misc/habanalabs/common/habanalabs_ioctl.c
+> > @@ -14,6 +14,7 @@
+> >  #include <linux/fs.h>
+> >  #include <linux/uaccess.h>
+> >  #include <linux/slab.h>
+> > +#include <linux/nospec.h>
+> >
+> >  static u32 hl_debug_struct_size[HL_DEBUG_OP_TIMESTAMP + 1] = {
+> >         [HL_DEBUG_OP_ETR] = sizeof(struct hl_debug_params_etr),
+> > @@ -849,6 +850,7 @@ long hl_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
+> >         }
+> >
+> >         if ((nr >= HL_COMMAND_START) && (nr < HL_COMMAND_END)) {
+> > +               nr = array_index_nospec(nr, HL_COMMAND_END-1);
+This needs to be HL_COMMAND_END.
+The pattern (as described in array_index_nospec comment) is
+if (index < size) {
+        index = array_index_nospec(index, size);
+        val = array[index];
+}
 
-(2) Every relevant compiler provides __builtin_offsetof (even sparse
-has had that for 14 years), and if for whatever reason one would end
-up picking up the poor man's fallback definition (C file compiler with
-completely custom CFLAGS?), newer clang versions won't treat the
-result as an Integer Constant Expression, so if used in place where
-such is required (static initializer or static_assert), one would
-get errors like
+When you do -1, it misses the last value which causes that ioctl to
+get rejected.
 
-t.c:11:16: error: static_assert expression is not an integral constant expression
-t.c:11:16: note: cast that performs the conversions of a reinterpret_cast is not allowed in a constant expression
-t.c:4:33: note: expanded from macro 'offsetof'
-#define offsetof(TYPE, MEMBER)  ((size_t)&((TYPE *)0)->MEMBER)
+> >                 ioctl = &hl_ioctls[nr];
+> >         } else {
+> >                 dev_err(hdev->dev, "invalid ioctl: pid=%d, nr=0x%02x\n",
+> > @@ -872,6 +874,7 @@ long hl_ioctl_control(struct file *filep, unsigned int cmd, unsigned long arg)
+> >         }
+> >
+> >         if (nr == _IOC_NR(HL_IOCTL_INFO)) {
+> > +               nr = array_index_nospec(nr, _IOC_NR(HL_IOCTL_INFO));
+same here, it should be _IOC_NR(HL_IOCTL_INFO) + 1
 
-So just define offsetof unconditionally and directly in terms of
-__builtin_offsetof.
+Thanks,
+Oded
 
-Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
----
- include/linux/compiler_types.h | 2 --
- include/linux/stddef.h         | 6 +-----
- 2 files changed, 1 insertion(+), 7 deletions(-)
-
-diff --git a/include/linux/compiler_types.h b/include/linux/compiler_types.h
-index 3c1795fdb568..83ee7f7ada5d 100644
---- a/include/linux/compiler_types.h
-+++ b/include/linux/compiler_types.h
-@@ -137,8 +137,6 @@ struct ftrace_likely_data {
-  */
- #define __naked			__attribute__((__naked__)) notrace
- 
--#define __compiler_offsetof(a, b)	__builtin_offsetof(a, b)
--
- /*
-  * Prefer gnu_inline, so that extern inline functions do not emit an
-  * externally visible function. This makes extern inline behave as per gnu89
-diff --git a/include/linux/stddef.h b/include/linux/stddef.h
-index ca507bd5f808..929d67710cc5 100644
---- a/include/linux/stddef.h
-+++ b/include/linux/stddef.h
-@@ -13,11 +13,7 @@ enum {
- };
- 
- #undef offsetof
--#ifdef __compiler_offsetof
--#define offsetof(TYPE, MEMBER)	__compiler_offsetof(TYPE, MEMBER)
--#else
--#define offsetof(TYPE, MEMBER)	((size_t)&((TYPE *)0)->MEMBER)
--#endif
-+#define offsetof(TYPE, MEMBER)	__builtin_offsetof(TYPE, MEMBER)
- 
- /**
-  * sizeof_field() - Report the size of a struct field in bytes
--- 
-2.31.1
-
+> >                 ioctl = &hl_ioctls_control[nr];
+> >         } else {
+> >                 dev_err(hdev->dev_ctrl, "invalid ioctl: pid=%d, nr=0x%02x\n",
+> > --
+> > 2.27.0
+> >
+>
+> Thanks for the patch.
+> I'm going to run this through our CI and if nothing breaks I'll merge
+> it to our -next branch.
+>
+> Oded
