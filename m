@@ -2,78 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76C71C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 18:23:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F7C0C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 18:24:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346617AbiBBSXW (ORCPT
+        id S1346593AbiBBSYS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 13:23:22 -0500
-Received: from mga14.intel.com ([192.55.52.115]:3008 "EHLO mga14.intel.com"
+        Wed, 2 Feb 2022 13:24:18 -0500
+Received: from foss.arm.com ([217.140.110.172]:47344 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1346593AbiBBSXT (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 13:23:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643826199; x=1675362199;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=xFhmPdUAlKzbe2/npbitPjG/cXTyNVW3JhbWXb9WY6k=;
-  b=dhPiMHNghjF+pRVWS1dOujUZpcgUtqjELLXj1tBuilfJZ8WwOxjYNHSL
-   3aEm9jZohNwtbxB8ny08qc8iJc2Hy7ZaYUEAlSNgm6Bvj3RaPkiWH4obC
-   wUStI8mqleE0EQNhtTV4EXGrvin2r669yTb56jHEn9N1LKCkhSKV7UL92
-   DGGcuv7H1R64bzhREDkGEKIpOYY9auRGHYji1c46mFcLgsQIM7s9EGFD1
-   u7pOgjkpXySU5FyhJXhfjgDZT3SWM1o5c1mEpIN0g7ypx5EbNXoHILeMx
-   WXeAvBgsXuUyOvcyKz6ScCtuTNYZqoFxjMZ5yVr0fTZ6bpDwsKZVemRHf
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10246"; a="248210312"
-X-IronPort-AV: E=Sophos;i="5.88,337,1635231600"; 
-   d="scan'208";a="248210312"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 10:23:19 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,337,1635231600"; 
-   d="scan'208";a="627166535"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga002.fm.intel.com with ESMTP; 02 Feb 2022 10:23:13 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 8E5FF3B7; Wed,  2 Feb 2022 20:23:27 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Sebastian Reichel <sebastian.reichel@collabora.com>,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Sebastian Reichel <sre@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 1/1] power: supply: core: Use device_property_string_array_count()
-Date:   Wed,  2 Feb 2022 20:23:25 +0200
-Message-Id: <20220202182325.54680-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
+        id S229959AbiBBSYR (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 2 Feb 2022 13:24:17 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DBDC7113E;
+        Wed,  2 Feb 2022 10:24:15 -0800 (PST)
+Received: from e113632-lin (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 366AE3F40C;
+        Wed,  2 Feb 2022 10:24:15 -0800 (PST)
+From:   Valentin Schneider <valentin.schneider@arm.com>
+To:     Frederic Weisbecker <frederic@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>
+Subject: Re: [PATCH] sched/preempt: Tell about PREEMPT_DYNAMIC on kernel headers
+In-Reply-To: <20220202145954.458370-1-frederic@kernel.org>
+References: <20220202145954.458370-1-frederic@kernel.org>
+Date:   Wed, 02 Feb 2022 18:24:09 +0000
+Message-ID: <87mtj9nn3q.mognet@arm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use device_property_string_array_count() to get number of strings
-in a string array property.
+On 02/02/22 15:59, Frederic Weisbecker wrote:
+> Displaying "PREEMPT" on kernel headers when CONFIG_PREEMPT_DYNAMIC=y
+> can be misleading for anybody involved in remote debugging because it
+> is then not guaranteed that there is an actual preemption behaviour. It
+> depends on default Kconfig or boot defined choices.
+>
+> Therefore, tell about PREEMPT_DYNAMIC on static kernel headers and leave
+> the search for the actual preemption behaviour to browsing dmesg.
+>
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/power/supply/power_supply_core.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+Looks sensible. One small further cleanup nit below, otherwise:
 
-diff --git a/drivers/power/supply/power_supply_core.c b/drivers/power/supply/power_supply_core.c
-index df4471e50d33..fb638774577e 100644
---- a/drivers/power/supply/power_supply_core.c
-+++ b/drivers/power/supply/power_supply_core.c
-@@ -283,8 +283,7 @@ static int power_supply_check_supplies(struct power_supply *psy)
- 	if (!psy->dev.parent)
- 		return 0;
- 
--	nval = device_property_read_string_array(psy->dev.parent,
--						 "supplied-from", NULL, 0);
-+	nval = device_property_string_array_count(psy->dev.parent, "supplied-from");
- 	if (nval <= 0)
- 		return 0;
- 
--- 
-2.34.1
+Reviewed-by: Valentin Schneider <valentin.schneider@arm.com>
 
+> Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+> Cc: Valentin Schneider <valentin.schneider@arm.com>
+> ---
+>  init/Makefile       |  3 ++-
+>  scripts/mkcompile_h | 15 +++++++++++----
+>  2 files changed, 13 insertions(+), 5 deletions(-)
+>
+> diff --git a/init/Makefile b/init/Makefile
+> index 06326e304384..d82623d7fc8e 100644
+> --- a/init/Makefile
+> +++ b/init/Makefile
+> @@ -31,7 +31,8 @@ quiet_cmd_compile.h = CHK     $@
+>        cmd_compile.h = \
+>       $(CONFIG_SHELL) $(srctree)/scripts/mkcompile_h $@	\
+>       "$(UTS_MACHINE)" "$(CONFIG_SMP)" "$(CONFIG_PREEMPT_BUILD)"	\
+> -	"$(CONFIG_PREEMPT_RT)" "$(CONFIG_CC_VERSION_TEXT)" "$(LD)"
+> +	"$(CONFIG_PREEMPT_DYNAMIC)" "$(CONFIG_PREEMPT_RT)" \
+> +	"$(CONFIG_CC_VERSION_TEXT)" "$(LD)"
+>
+>  include/generated/compile.h: FORCE
+>       $(call cmd,compile.h)
+> diff --git a/scripts/mkcompile_h b/scripts/mkcompile_h
+> index 6a2a04d92f42..f4d6ca3c6fd7 100755
+> --- a/scripts/mkcompile_h
+> +++ b/scripts/mkcompile_h
+> @@ -5,9 +5,10 @@ TARGET=$1
+>  ARCH=$2
+>  SMP=$3
+>  PREEMPT=$4
+> -PREEMPT_RT=$5
+> -CC_VERSION="$6"
+> -LD=$7
+> +PREEMPT_DYNAMIC=$5
+> +PREEMPT_RT=$6
+> +CC_VERSION="$7"
+> +LD=$8
+>
+>  # Do not expand names
+>  set -f
+> @@ -41,7 +42,13 @@ fi
+>  UTS_VERSION="#$VERSION"
+>  CONFIG_FLAGS=""
+>  if [ -n "$SMP" ] ; then CONFIG_FLAGS="SMP"; fi
+> -if [ -n "$PREEMPT" ] ; then CONFIG_FLAGS="$CONFIG_FLAGS PREEMPT"; fi
+> +if [ -n "$PREEMPT" ] ; then
+> +	if [ -n "$PREEMPT_DYNAMIC" ] ; then
+> +		CONFIG_FLAGS="$CONFIG_FLAGS PREEMPT_DYNAMIC";
+> +	else
+> +		CONFIG_FLAGS="$CONFIG_FLAGS PREEMPT";
+> +	fi
+> +fi
+>  if [ -n "$PREEMPT_RT" ] ; then CONFIG_FLAGS="$CONFIG_FLAGS PREEMPT_RT"; fi
+>
+
+I got suspicious of that PREEMPT_RT line, but it works because
+PREEMPT_BUILD and PREEMPT_RT are mutually exclusive. Nevertheless, could we
+clear out the ambiguity and make that into:
+
+if   [ -n "$PREEMPT_RT" ] ;      then CONFIG_FLAGS="$CONFIG_FLAGS PREEMPT_RT";
+elif [ -n "$PREEMPT_DYNAMIC" ] ; then CONFIG_FLAGS="$CONFIG_FLAGS PREEMPT_DYNAMIC";
+elif [ -n "$PREEMPT" ] ;         then CONFIG_FLAGS="$CONFIG_FLAGS PREEMPT";
+fi
+
+
+>  # Truncate to maximum length
+> --
+> 2.25.1
