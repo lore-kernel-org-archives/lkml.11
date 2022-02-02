@@ -2,57 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FE9EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 13:54:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9AF0C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 13:54:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344614AbiBBNyR (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 08:54:17 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:30581 "EHLO
+        id S231156AbiBBNyV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 08:54:21 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:24242 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1344616AbiBBNyE (ORCPT
+        by vger.kernel.org with ESMTP id S229535AbiBBNyP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 08:54:04 -0500
+        Wed, 2 Feb 2022 08:54:15 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643810044;
+        s=mimecast20190719; t=1643810055;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=jBnKFQ30kOdAO0O49lD07YWI/2GEebyH6rvvven/zqI=;
-        b=BW5QoziwiXa/flqH8owlwPDHDyuClNMlLpnrYvkVtcMTzx78cgKd5RxLIBJK3Aps0BTo5g
-        VisC80HJZaFoo1FuN2mEGBEy3Lw8sAbkdKa7/o9VNviAcqLmM2xve85sySuLGNaLYwp1wJ
-        PIJDo83uuyU1EQCvEJpBYp/tXZCCAPE=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=oO9kCxYzu+S91SbPZpT/UZqtqo7+3S7Tz0558nP+sM4=;
+        b=fADYtXwDyZE3T8rGeH59pclR012WdVNgye3r58n3myzKPxo96XfI9aQWN+m9cUHnB0xaEQ
+        CsGMzYn4sn9ZrkMeGlyl0v5O4zj+XYu22Outf9KfTUhM5brhKOFJyUvl5mmZt/Y6AED4yx
+        a75elTzAG/ojJxT1QZmTMsp+cuaM3+U=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-426-JvUGRzKzOLuIEG9Iy0TQYg-1; Wed, 02 Feb 2022 08:54:01 -0500
-X-MC-Unique: JvUGRzKzOLuIEG9Iy0TQYg-1
-Received: by mail-ej1-f69.google.com with SMTP id 13-20020a170906328d00b006982d0888a4so8103664ejw.9
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 05:54:00 -0800 (PST)
+ us-mta-378-uoaelx7wN_O15rf4uRrMtQ-1; Wed, 02 Feb 2022 08:54:14 -0500
+X-MC-Unique: uoaelx7wN_O15rf4uRrMtQ-1
+Received: by mail-ej1-f72.google.com with SMTP id q19-20020a1709064c9300b006b39291ff3eso8175863eju.5
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 05:54:14 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=jBnKFQ30kOdAO0O49lD07YWI/2GEebyH6rvvven/zqI=;
-        b=YUAY0f+OP9Ozcd6W8mP3sEd6mzuW4wX21mbXuXggd3LJdUDwSdFSWrSw309Z+4Qdmy
-         slUTdQXhS3rJaFZKbLmUw/VFiPv/NszjnEREgbOd8gTTQvcpxRdsUvp1FiUNadskBi63
-         RgG26NnQsA5txR/XU2A6S4/mpePWU3ciulke6efoeHNw7AYrs0jW5jDbVsKAlO3eNwJm
-         whE7Wfd8HZ0A0kxdNa2F6ft6Y46C2OXPcchjst8S786UgK63Z0CfWef7ErQto2Vni2s+
-         QXoZ0uq1fHL5wD3JSmcTQyOVf+N0ec7JTna/v5wRuN+Wfm3Cx485zuEEnMnrlmh+WCeg
-         PAyw==
-X-Gm-Message-State: AOAM531wr8Hzx047TEh/JQF52UagtT+bwFfNTXjlzwPh2/zad2fmD1Fh
-        yEllpUYGEzz7bGcM5RcOBSjVjlCb0tL94MBmop9yoAA3/RYehfCY2q7ILqfE9NstsToxX+5GigI
-        Gui7WoJbswvpwxbmfLDb9F1jD
-X-Received: by 2002:a50:bb0a:: with SMTP id y10mr8988219ede.441.1643810039919;
-        Wed, 02 Feb 2022 05:53:59 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwpHD34n0QXTYfKs783CZ7B9M9fR7e6UeoB6pLhcbQSrQnEbVZssHdo7gWyGcK97/TJlR+epw==
-X-Received: by 2002:a50:bb0a:: with SMTP id y10mr8988201ede.441.1643810039727;
-        Wed, 02 Feb 2022 05:53:59 -0800 (PST)
+        bh=oO9kCxYzu+S91SbPZpT/UZqtqo7+3S7Tz0558nP+sM4=;
+        b=2mwn7WDid/0DiFtvkEhO7C6j6/ec+HhgEynZdjQcVZt9rXWV3pNcToplRlNgpMJbGG
+         ApcGqg2sQrhN9uWuwjPBQ+60Oyhrz4HHsxxHQhIEFQ72V6Dy1FW3uRcH33ymFS+4JxSN
+         TmawwSichZ8RbpClZfQDixHK+x+Tm4+2PAcNaQKZp1l6rER+Dx+cTixCYPfVVPgZ6iXW
+         wiYXSsljpi7fhRFuZj95OBr/O3dLyxEWPcM7tiuulJYB0d14KtDYsTrWWVn6ZA/llZtF
+         XZvFfjQnH//Bv5CAIkPJglzniBHXgEKanpN8yUAgQ4jpRU7TtVmKkNLcxPjhagsYvBMl
+         0svg==
+X-Gm-Message-State: AOAM533QR8Kw18Rd8D31103VaFhLFGKle9lSQjAKrjolCWPRXdA0dA2t
+        eNuTj77uT6UN1aTnNMdW6lk/b8jDQRK6814c1XXLo/MqUggrp1Nr5/Jx7HvNl5/2gnHoX0FTGCO
+        77AeSythk5N8Lhjlb5jXREFew
+X-Received: by 2002:a50:ee09:: with SMTP id g9mr1824085eds.387.1643810052945;
+        Wed, 02 Feb 2022 05:54:12 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJz1Sui85jvHnptZNNYz6ZXNsvi0FZvRDG85OezXcljt811sTnYz4JPS1Z27F+E8W9jeUIvoQg==
+X-Received: by 2002:a50:ee09:: with SMTP id g9mr1824065eds.387.1643810052726;
+        Wed, 02 Feb 2022 05:54:12 -0800 (PST)
 Received: from krava.redhat.com (nat-pool-brq-u.redhat.com. [213.175.37.12])
-        by smtp.gmail.com with ESMTPSA id f4sm15819702ejh.93.2022.02.02.05.53.58
+        by smtp.gmail.com with ESMTPSA id by22sm15763502ejb.5.2022.02.02.05.54.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Feb 2022 05:53:59 -0800 (PST)
+        Wed, 02 Feb 2022 05:54:12 -0800 (PST)
 From:   Jiri Olsa <jolsa@redhat.com>
 X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
@@ -67,9 +66,9 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         KP Singh <kpsingh@chromium.org>,
         Steven Rostedt <rostedt@goodmis.org>,
         Jiri Olsa <olsajiri@gmail.com>
-Subject: [PATCH 4/8] libbpf: Add libbpf__kallsyms_parse function
-Date:   Wed,  2 Feb 2022 14:53:29 +0100
-Message-Id: <20220202135333.190761-5-jolsa@kernel.org>
+Subject: [PATCH 6/8] libbpf: Add bpf_program__attach_kprobe_opts for multi kprobes
+Date:   Wed,  2 Feb 2022 14:53:31 +0100
+Message-Id: <20220202135333.190761-7-jolsa@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220202135333.190761-1-jolsa@kernel.org>
 References: <20220202135333.190761-1-jolsa@kernel.org>
@@ -79,124 +78,207 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move the kallsyms parsing in internal libbpf__kallsyms_parse
-function, so it can be used from other places.
+Adding support to bpf_program__attach_kprobe_opts to load kprobes
+to multiple functions.
 
-It will be used in following changes.
+If the kprobe program has BPF_TRACE_FPROBE as expected_attach_type
+it will use the new fprobe link to attach the program. In this case
+it will use 'func_name' as pattern for functions to attach.
+
+Adding also support to use '*' wildcard in 'kprobe/kretprobe' section
+name by SEC macro, like:
+
+  SEC("kprobe/bpf_fentry_test*")
+  SEC("kretprobe/bpf_fentry_test*")
+
+This will set kprobe's expected_attach_type to BPF_TRACE_FPROBE,
+and attach it to provided functions pattern.
 
 Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
- tools/lib/bpf/libbpf.c          | 62 ++++++++++++++++++++-------------
- tools/lib/bpf/libbpf_internal.h |  5 +++
- 2 files changed, 43 insertions(+), 24 deletions(-)
+ tools/lib/bpf/libbpf.c | 136 ++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 133 insertions(+), 3 deletions(-)
 
 diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 1b0936b016d9..7d595cfd03bc 100644
+index 7d595cfd03bc..6b343ef77ed8 100644
 --- a/tools/lib/bpf/libbpf.c
 +++ b/tools/lib/bpf/libbpf.c
-@@ -7165,12 +7165,10 @@ static int bpf_object__sanitize_maps(struct bpf_object *obj)
- 	return 0;
+@@ -8607,13 +8607,15 @@ static struct bpf_link *attach_trace(const struct bpf_program *prog, long cookie
+ static struct bpf_link *attach_lsm(const struct bpf_program *prog, long cookie);
+ static struct bpf_link *attach_iter(const struct bpf_program *prog, long cookie);
+ 
++static int init_kprobe(struct bpf_program *prog, long cookie);
++
+ static const struct bpf_sec_def section_defs[] = {
+ 	SEC_DEF("socket",		SOCKET_FILTER, 0, SEC_NONE | SEC_SLOPPY_PFX),
+ 	SEC_DEF("sk_reuseport/migrate",	SK_REUSEPORT, BPF_SK_REUSEPORT_SELECT_OR_MIGRATE, SEC_ATTACHABLE | SEC_SLOPPY_PFX),
+ 	SEC_DEF("sk_reuseport",		SK_REUSEPORT, BPF_SK_REUSEPORT_SELECT, SEC_ATTACHABLE | SEC_SLOPPY_PFX),
+-	SEC_DEF("kprobe/",		KPROBE,	0, SEC_NONE, attach_kprobe),
++	SEC_DEF("kprobe/",		KPROBE,	0, SEC_NONE, attach_kprobe, .init_fn = init_kprobe),
+ 	SEC_DEF("uprobe/",		KPROBE,	0, SEC_NONE),
+-	SEC_DEF("kretprobe/",		KPROBE, 0, SEC_NONE, attach_kprobe),
++	SEC_DEF("kretprobe/",		KPROBE, 0, SEC_NONE, attach_kprobe, .init_fn = init_kprobe),
+ 	SEC_DEF("uretprobe/",		KPROBE, 0, SEC_NONE),
+ 	SEC_DEF("tc",			SCHED_CLS, 0, SEC_NONE),
+ 	SEC_DEF("classifier",		SCHED_CLS, 0, SEC_NONE | SEC_SLOPPY_PFX | SEC_DEPRECATED),
+@@ -10031,6 +10033,123 @@ static int perf_event_kprobe_open_legacy(const char *probe_name, bool retprobe,
+ 	return pfd;
  }
  
--static int bpf_object__read_kallsyms_file(struct bpf_object *obj)
-+int libbpf__kallsyms_parse(void *arg, kallsyms_cb_t cb)
- {
- 	char sym_type, sym_name[500];
- 	unsigned long long sym_addr;
--	const struct btf_type *t;
--	struct extern_desc *ext;
- 	int ret, err = 0;
- 	FILE *f;
- 
-@@ -7189,35 +7187,51 @@ static int bpf_object__read_kallsyms_file(struct bpf_object *obj)
- 		if (ret != 3) {
- 			pr_warn("failed to read kallsyms entry: %d\n", ret);
- 			err = -EINVAL;
--			goto out;
-+			break;
- 		}
- 
--		ext = find_extern_by_name(obj, sym_name);
--		if (!ext || ext->type != EXT_KSYM)
--			continue;
--
--		t = btf__type_by_id(obj->btf, ext->btf_id);
--		if (!btf_is_var(t))
--			continue;
--
--		if (ext->is_set && ext->ksym.addr != sym_addr) {
--			pr_warn("extern (ksym) '%s' resolution is ambiguous: 0x%llx or 0x%llx\n",
--				sym_name, ext->ksym.addr, sym_addr);
--			err = -EINVAL;
--			goto out;
--		}
--		if (!ext->is_set) {
--			ext->is_set = true;
--			ext->ksym.addr = sym_addr;
--			pr_debug("extern (ksym) %s=0x%llx\n", sym_name, sym_addr);
--		}
-+		err = cb(arg, sym_addr, sym_type, sym_name);
-+		if (err)
-+			break;
- 	}
- 
--out:
- 	fclose(f);
- 	return err;
- }
- 
-+static int kallsyms_cb(void *arg, unsigned long long sym_addr,
-+		       char sym_type, const char *sym_name)
++struct fprobe_resolve {
++	const char *name;
++	__u64 *addrs;
++	__u32 alloc;
++	__u32 cnt;
++};
++
++static bool glob_matches(const char *glob, const char *s)
 +{
-+	struct bpf_object *obj = arg;
-+	const struct btf_type *t;
-+	struct extern_desc *ext;
++	int n = strlen(glob);
 +
-+	ext = find_extern_by_name(obj, sym_name);
-+	if (!ext || ext->type != EXT_KSYM)
++	if (n == 1 && glob[0] == '*')
++		return true;
++
++	if (glob[0] == '*' && glob[n - 1] == '*') {
++		const char *subs;
++		/* substring match */
++
++		/* this is hacky, but we don't want to allocate
++		 * for no good reason
++		 */
++		((char *)glob)[n - 1] = '\0';
++		subs = strstr(s, glob + 1);
++		((char *)glob)[n - 1] = '*';
++
++		return subs != NULL;
++	} else if (glob[0] == '*') {
++		size_t nn = strlen(s);
++		/* suffix match */
++
++		/* too short for a given suffix */
++		if (nn < n - 1)
++			return false;
++		return strcmp(s + nn - (n - 1), glob + 1) == 0;
++	} else if (glob[n - 1] == '*') {
++		/* prefix match */
++		return strncmp(s, glob, n - 1) == 0;
++	} else {
++		/* exact match */
++		return strcmp(glob, s) == 0;
++	}
++}
++
++static int resolve_fprobe_cb(void *arg, unsigned long long sym_addr,
++			     char sym_type, const char *sym_name)
++{
++	struct fprobe_resolve *res = arg;
++	__u64 *p;
++
++	if (!glob_matches(res->name, sym_name))
 +		return 0;
 +
-+	t = btf__type_by_id(obj->btf, ext->btf_id);
-+	if (!btf_is_var(t))
-+		return 0;
-+
-+	if (ext->is_set && ext->ksym.addr != sym_addr) {
-+		pr_warn("extern (ksym) '%s' resolution is ambiguous: 0x%llx or 0x%llx\n",
-+			sym_name, ext->ksym.addr, sym_addr);
-+		return -EINVAL;
++	if (res->cnt == res->alloc) {
++		res->alloc = max((__u32) 16, res->alloc * 3 / 2);
++		p = libbpf_reallocarray(res->addrs, res->alloc, sizeof(__u32));
++		if (!p)
++			return -ENOMEM;
++		res->addrs = p;
 +	}
-+	if (!ext->is_set) {
-+		ext->is_set = true;
-+		ext->ksym.addr = sym_addr;
-+		pr_debug("extern (ksym) %s=0x%llx\n", sym_name, sym_addr);
-+	}
++	res->addrs[res->cnt++] = sym_addr;
 +	return 0;
 +}
 +
-+static int bpf_object__read_kallsyms_file(struct bpf_object *obj)
++static struct bpf_link *
++attach_fprobe_opts(const struct bpf_program *prog,
++		   const char *func_name,
++		   const struct bpf_kprobe_opts *kopts)
 +{
-+	return libbpf__kallsyms_parse(obj, kallsyms_cb);
++	DECLARE_LIBBPF_OPTS(bpf_link_create_opts, opts);
++	struct fprobe_resolve res = {
++		.name = func_name,
++	};
++	struct bpf_link *link = NULL;
++	char errmsg[STRERR_BUFSIZE];
++	int err, link_fd, prog_fd;
++	bool retprobe;
++
++	err = libbpf__kallsyms_parse(&res, resolve_fprobe_cb);
++	if (err)
++		goto error;
++	if (!res.cnt) {
++		err = -ENOENT;
++		goto error;
++	}
++
++	retprobe = OPTS_GET(kopts, retprobe, false);
++
++	opts.fprobe.addrs = (__u64) res.addrs;
++	opts.fprobe.cnt = res.cnt;
++	opts.flags = retprobe ? BPF_F_FPROBE_RETURN : 0;
++
++	link = calloc(1, sizeof(*link));
++	if (!link) {
++		err = -ENOMEM;
++		goto error;
++	}
++	link->detach = &bpf_link__detach_fd;
++
++	prog_fd = bpf_program__fd(prog);
++	link_fd = bpf_link_create(prog_fd, 0, BPF_TRACE_FPROBE, &opts);
++	if (link_fd < 0) {
++		err = -errno;
++		pr_warn("prog '%s': failed to attach to %s: %s\n",
++			prog->name, res.name,
++			libbpf_strerror_r(err, errmsg, sizeof(errmsg)));
++		goto error;
++	}
++	link->fd = link_fd;
++	free(res.addrs);
++	return link;
++
++error:
++	free(link);
++	free(res.addrs);
++	return libbpf_err_ptr(err);
 +}
 +
- static int find_ksym_btf_id(struct bpf_object *obj, const char *ksym_name,
- 			    __u16 kind, struct btf **res_btf,
- 			    struct module_btf **res_mod_btf)
-diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
-index bc86b82e90d1..fb3b07d401df 100644
---- a/tools/lib/bpf/libbpf_internal.h
-+++ b/tools/lib/bpf/libbpf_internal.h
-@@ -449,6 +449,11 @@ __s32 btf__find_by_name_kind_own(const struct btf *btf, const char *type_name,
+ struct bpf_link *
+ bpf_program__attach_kprobe_opts(const struct bpf_program *prog,
+ 				const char *func_name,
+@@ -10047,6 +10166,9 @@ bpf_program__attach_kprobe_opts(const struct bpf_program *prog,
+ 	if (!OPTS_VALID(opts, bpf_kprobe_opts))
+ 		return libbpf_err_ptr(-EINVAL);
  
- extern enum libbpf_strict_mode libbpf_mode;
++	if (prog->expected_attach_type == BPF_TRACE_FPROBE)
++		return attach_fprobe_opts(prog, func_name, opts);
++
+ 	retprobe = OPTS_GET(opts, retprobe, false);
+ 	offset = OPTS_GET(opts, offset, 0);
+ 	pe_opts.bpf_cookie = OPTS_GET(opts, bpf_cookie, 0);
+@@ -10112,6 +10234,14 @@ struct bpf_link *bpf_program__attach_kprobe(const struct bpf_program *prog,
+ 	return bpf_program__attach_kprobe_opts(prog, func_name, &opts);
+ }
  
-+typedef int (*kallsyms_cb_t)(void *arg, unsigned long long sym_addr,
-+			     char sym_type, const char *sym_name);
++static int init_kprobe(struct bpf_program *prog, long cookie)
++{
++	/* If we have wildcard, switch to fprobe link. */
++	if (strchr(prog->sec_name, '*'))
++		bpf_program__set_expected_attach_type(prog, BPF_TRACE_FPROBE);
++	return 0;
++}
 +
-+int libbpf__kallsyms_parse(void *arg, kallsyms_cb_t cb);
-+
- /* handle direct returned errors */
- static inline int libbpf_err(int ret)
+ static struct bpf_link *attach_kprobe(const struct bpf_program *prog, long cookie)
  {
+ 	DECLARE_LIBBPF_OPTS(bpf_kprobe_opts, opts);
+@@ -10127,7 +10257,7 @@ static struct bpf_link *attach_kprobe(const struct bpf_program *prog, long cooki
+ 	else
+ 		func_name = prog->sec_name + sizeof("kprobe/") - 1;
+ 
+-	n = sscanf(func_name, "%m[a-zA-Z0-9_.]+%li", &func, &offset);
++	n = sscanf(func_name, "%m[a-zA-Z0-9_.*]+%li", &func, &offset);
+ 	if (n < 1) {
+ 		err = -EINVAL;
+ 		pr_warn("kprobe name is invalid: %s\n", func_name);
 -- 
 2.34.1
 
