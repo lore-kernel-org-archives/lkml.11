@@ -2,278 +2,242 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DAFEC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 00:05:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86966C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 00:05:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243201AbiBBAFA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Feb 2022 19:05:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45662 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243105AbiBBAEf (ORCPT
+        id S243363AbiBBAFE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Feb 2022 19:05:04 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:42960 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243103AbiBBAEg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Feb 2022 19:04:35 -0500
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47526C061741;
-        Tue,  1 Feb 2022 16:04:33 -0800 (PST)
-Received: by mail-ej1-x635.google.com with SMTP id o12so59324135eju.13;
-        Tue, 01 Feb 2022 16:04:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=vHbSxIzj8pGvQe+9cyVzG20+ePbfLgWllhuRABj5OOI=;
-        b=oEi5I0+XVLVOyzaDp6qiF1mr4twGlRmgr1tJ/9tT0Vbref/jGQejIHwZ8ah0L9l/Fx
-         m59TClVQu75tTSdOuFv2akay1bino+lKaSdNSIG5SJh8+4EjWPW22XH5d7thuSo+4XT9
-         a3yQBP68uxfLytdwqcxXahy132GiXwkzj9DeEZlUjJMTa6+UVjFtqf2BPubFFY0twe2h
-         g2H0tz8m2tLgNl3PR2BWjvHgMKL6btnVGj0afDb+7z/533Zr4TB5J1JH7XhnV3NfUkje
-         s8NcA9/vDCLUM2k5A4jBuPtHhSh+KUf37G8I1se6rxWk39eWXS53CCfcfFlvLa4c/mJr
-         2Aug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=vHbSxIzj8pGvQe+9cyVzG20+ePbfLgWllhuRABj5OOI=;
-        b=BDiHqKHh+k7PhReits7OyT6hh+HLEGKf6RMWvjFgiyTxbxyxT5v1xzcCd8O5yOFhnr
-         S35eS7drms0KsdHx7hhCqQNC/nQf1AqJq/D6zJBDrL1ATxAuEdZhRurpDrW74xFVRhCi
-         ue+vT9xd+6U1AZXgbBhCK4HzpqfpdunC1hYAX3NbI0puLO15IzIVxxee3jk3FJeEvQn4
-         T6p1NVixT8G38Hl9Hn/fI0ETzWqpd6Si0h0PflTGl6ZgmrDI1oe3UNB/olDZFiEvCrwV
-         Rsxqyw1/J//ZDEyrZwaQBNyTtUjEG9pNqn8kfa4Cyq8LxmIDWmqKI8PDHgtefEjNYuU7
-         IVIg==
-X-Gm-Message-State: AOAM530mXa+RM4rw1i2s0x7jAed2w0y2IoNI2CcX4+amIcSyunrfegQF
-        Xw+JAP8jHvh079E8Ohk13GFvi4DmQnQ=
-X-Google-Smtp-Source: ABdhPJzZ3mUuId+lwstRn1aQexSLiu/QNe8qUQWuGeURzmCNEWmLX4F27085traQ/l9+wZwUbswBBA==
-X-Received: by 2002:a17:907:6298:: with SMTP id nd24mr22526866ejc.76.1643760271679;
-        Tue, 01 Feb 2022 16:04:31 -0800 (PST)
-Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id n3sm3590451ejr.6.2022.02.01.16.04.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Feb 2022 16:04:31 -0800 (PST)
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [net-next PATCH v8 13/16] net: dsa: qca8k: move page cache to driver priv
-Date:   Wed,  2 Feb 2022 01:03:32 +0100
-Message-Id: <20220202000335.19296-14-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20220202000335.19296-1-ansuelsmth@gmail.com>
-References: <20220202000335.19296-1-ansuelsmth@gmail.com>
+        Tue, 1 Feb 2022 19:04:36 -0500
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1643760274;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=neBd7VsOMbUMFR6PMS7C+obWvPyp6JMYXI1ks/Y8WS4=;
+        b=dcCV8sMFSZH7L7FQNrYo1AUakKq5AbOQmnfxqUvU9on3uX6bp40g5kQN7hF8NhCsAzQH+h
+        GsxTb2ZmWCWDQFMUOcdskrq9c21B8SIFDFp0aq8samN3F5tyaAuqBxegEyN49F3m0OaQPo
+        1rgnXSqOqaCjJJyQaAL+u8+8xE+5Hag01TrP1/J+OTOXrWDC3F46eSMeAD2Bete7LztCSv
+        zRwRA0ihlA1Ngq77EuKOa0Pgw2lN3+MW3mqzjQGQcLA8cWbpDVA7ycWAzN2nIHoLn0SVim
+        jtKXfqYe54wvxNQ+7rmuegljYQHa2cvbZYLKltz3MrREiOm3Gw+Ad4x9chHIZw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1643760274;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=neBd7VsOMbUMFR6PMS7C+obWvPyp6JMYXI1ks/Y8WS4=;
+        b=MpsRx+4r4+E3ehAA+L0k0ph8Kk7tgPP0iLJ6RzLPZazdxY1UzlZ0Tf90dcn3VG9YvR2+y5
+        byN9vTij0kJX6IAg==
+To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@intel.com,
+        luto@kernel.org, peterz@infradead.org
+Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
+        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
+        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
+        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
+        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
+        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        x86@kernel.org, linux-kernel@vger.kernel.org,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
+Subject: Re: [PATCHv2 18/29] x86/boot: Avoid #VE during boot for TDX platforms
+In-Reply-To: <20220124150215.36893-19-kirill.shutemov@linux.intel.com>
+References: <20220124150215.36893-1-kirill.shutemov@linux.intel.com>
+ <20220124150215.36893-19-kirill.shutemov@linux.intel.com>
+Date:   Wed, 02 Feb 2022 01:04:34 +0100
+Message-ID: <87sft2w2ul.ffs@tglx>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There can be multiple qca8k switch on the same system. Move the static
-qca8k_current_page to qca8k_priv and make it specific for each switch.
+On Mon, Jan 24 2022 at 18:02, Kirill A. Shutemov wrote:
+>
+> Change the common boot code to work on TDX and non-TDX systems.
+> This should have no functional effect on non-TDX systems.
 
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
----
- drivers/net/dsa/qca8k.c | 42 ++++++++++++++++++++---------------------
- drivers/net/dsa/qca8k.h |  9 +++++++++
- 2 files changed, 29 insertions(+), 22 deletions(-)
+Emphasis on should? :)
 
-diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index 0ce5b7ca0b7f..86d3742b1038 100644
---- a/drivers/net/dsa/qca8k.c
-+++ b/drivers/net/dsa/qca8k.c
-@@ -75,12 +75,6 @@ static const struct qca8k_mib_desc ar8327_mib[] = {
- 	MIB_DESC(1, 0xac, "TXUnicast"),
- };
- 
--/* The 32bit switch registers are accessed indirectly. To achieve this we need
-- * to set the page of the register. Track the last page that was set to reduce
-- * mdio writes
-- */
--static u16 qca8k_current_page = 0xffff;
--
- static void
- qca8k_split_addr(u32 regaddr, u16 *r1, u16 *r2, u16 *page)
- {
-@@ -134,11 +128,13 @@ qca8k_mii_write32(struct mii_bus *bus, int phy_id, u32 regnum, u32 val)
- }
- 
- static int
--qca8k_set_page(struct mii_bus *bus, u16 page)
-+qca8k_set_page(struct qca8k_priv *priv, u16 page)
- {
-+	u16 *cached_page = &priv->mdio_cache.page;
-+	struct mii_bus *bus = priv->bus;
- 	int ret;
- 
--	if (page == qca8k_current_page)
-+	if (page == *cached_page)
- 		return 0;
- 
- 	ret = bus->write(bus, 0x18, 0, page);
-@@ -148,7 +144,7 @@ qca8k_set_page(struct mii_bus *bus, u16 page)
- 		return ret;
- 	}
- 
--	qca8k_current_page = page;
-+	*cached_page = page;
- 	usleep_range(1000, 2000);
- 	return 0;
- }
-@@ -374,7 +370,7 @@ qca8k_regmap_read(void *ctx, uint32_t reg, uint32_t *val)
- 
- 	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
- 
--	ret = qca8k_set_page(bus, page);
-+	ret = qca8k_set_page(priv, page);
- 	if (ret < 0)
- 		goto exit;
- 
-@@ -400,7 +396,7 @@ qca8k_regmap_write(void *ctx, uint32_t reg, uint32_t val)
- 
- 	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
- 
--	ret = qca8k_set_page(bus, page);
-+	ret = qca8k_set_page(priv, page);
- 	if (ret < 0)
- 		goto exit;
- 
-@@ -427,7 +423,7 @@ qca8k_regmap_update_bits(void *ctx, uint32_t reg, uint32_t mask, uint32_t write_
- 
- 	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
- 
--	ret = qca8k_set_page(bus, page);
-+	ret = qca8k_set_page(priv, page);
- 	if (ret < 0)
- 		goto exit;
- 
-@@ -1098,8 +1094,9 @@ qca8k_mdio_busy_wait(struct mii_bus *bus, u32 reg, u32 mask)
- }
- 
- static int
--qca8k_mdio_write(struct mii_bus *bus, int phy, int regnum, u16 data)
-+qca8k_mdio_write(struct qca8k_priv *priv, int phy, int regnum, u16 data)
- {
-+	struct mii_bus *bus = priv->bus;
- 	u16 r1, r2, page;
- 	u32 val;
- 	int ret;
-@@ -1116,7 +1113,7 @@ qca8k_mdio_write(struct mii_bus *bus, int phy, int regnum, u16 data)
- 
- 	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
- 
--	ret = qca8k_set_page(bus, page);
-+	ret = qca8k_set_page(priv, page);
- 	if (ret)
- 		goto exit;
- 
-@@ -1135,8 +1132,9 @@ qca8k_mdio_write(struct mii_bus *bus, int phy, int regnum, u16 data)
- }
- 
- static int
--qca8k_mdio_read(struct mii_bus *bus, int phy, int regnum)
-+qca8k_mdio_read(struct qca8k_priv *priv, int phy, int regnum)
- {
-+	struct mii_bus *bus = priv->bus;
- 	u16 r1, r2, page;
- 	u32 val;
- 	int ret;
-@@ -1152,7 +1150,7 @@ qca8k_mdio_read(struct mii_bus *bus, int phy, int regnum)
- 
- 	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
- 
--	ret = qca8k_set_page(bus, page);
-+	ret = qca8k_set_page(priv, page);
- 	if (ret)
- 		goto exit;
- 
-@@ -1181,7 +1179,6 @@ static int
- qca8k_internal_mdio_write(struct mii_bus *slave_bus, int phy, int regnum, u16 data)
- {
- 	struct qca8k_priv *priv = slave_bus->priv;
--	struct mii_bus *bus = priv->bus;
- 	int ret;
- 
- 	/* Use mdio Ethernet when available, fallback to legacy one on error */
-@@ -1189,14 +1186,13 @@ qca8k_internal_mdio_write(struct mii_bus *slave_bus, int phy, int regnum, u16 da
- 	if (!ret)
- 		return 0;
- 
--	return qca8k_mdio_write(bus, phy, regnum, data);
-+	return qca8k_mdio_write(priv, phy, regnum, data);
- }
- 
- static int
- qca8k_internal_mdio_read(struct mii_bus *slave_bus, int phy, int regnum)
- {
- 	struct qca8k_priv *priv = slave_bus->priv;
--	struct mii_bus *bus = priv->bus;
- 	int ret;
- 
- 	/* Use mdio Ethernet when available, fallback to legacy one on error */
-@@ -1204,7 +1200,7 @@ qca8k_internal_mdio_read(struct mii_bus *slave_bus, int phy, int regnum)
- 	if (ret >= 0)
- 		return ret;
- 
--	return qca8k_mdio_read(bus, phy, regnum);
-+	return qca8k_mdio_read(priv, phy, regnum);
- }
- 
- static int
-@@ -1225,7 +1221,7 @@ qca8k_phy_write(struct dsa_switch *ds, int port, int regnum, u16 data)
- 	if (!ret)
- 		return ret;
- 
--	return qca8k_mdio_write(priv->bus, port, regnum, data);
-+	return qca8k_mdio_write(priv, port, regnum, data);
- }
- 
- static int
-@@ -1246,7 +1242,7 @@ qca8k_phy_read(struct dsa_switch *ds, int port, int regnum)
- 	if (ret >= 0)
- 		return ret;
- 
--	ret = qca8k_mdio_read(priv->bus, port, regnum);
-+	ret = qca8k_mdio_read(priv, port, regnum);
- 
- 	if (ret < 0)
- 		return 0xffff;
-@@ -3042,6 +3038,8 @@ qca8k_sw_probe(struct mdio_device *mdiodev)
- 		return PTR_ERR(priv->regmap);
- 	}
- 
-+	priv->mdio_cache.page = 0xffff;
-+
- 	/* Check the detected switch id */
- 	ret = qca8k_read_switch_id(priv);
- 	if (ret)
-diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
-index c6f6abd2108e..57368acae41b 100644
---- a/drivers/net/dsa/qca8k.h
-+++ b/drivers/net/dsa/qca8k.h
-@@ -363,6 +363,14 @@ struct qca8k_ports_config {
- 	u8 rgmii_tx_delay[QCA8K_NUM_CPU_PORTS]; /* 0: CPU port0, 1: CPU port6 */
- };
- 
-+struct qca8k_mdio_cache {
-+/* The 32bit switch registers are accessed indirectly. To achieve this we need
-+ * to set the page of the register. Track the last page that was set to reduce
-+ * mdio writes
-+ */
-+	u16 page;
-+};
-+
- struct qca8k_priv {
- 	u8 switch_id;
- 	u8 switch_revision;
-@@ -383,6 +391,7 @@ struct qca8k_priv {
- 	struct net_device *mgmt_master; /* Track if mdio/mib Ethernet is available */
- 	struct qca8k_mgmt_eth_data mgmt_eth_data;
- 	struct qca8k_mib_eth_data mib_eth_data;
-+	struct qca8k_mdio_cache mdio_cache;
- };
- 
- struct qca8k_mib_desc {
--- 
-2.33.1
+> --- a/arch/x86/boot/compressed/head_64.S
+> +++ b/arch/x86/boot/compressed/head_64.S
+> @@ -643,12 +643,25 @@ SYM_CODE_START(trampoline_32bit_src)
+>  	movl	$MSR_EFER, %ecx
+>  	rdmsr
+>  	btsl	$_EFER_LME, %eax
+> +	/* Avoid writing EFER if no change was made (for TDX guest) */
+> +	jc	1f
+>  	wrmsr
+> -	popl	%edx
+> +1:	popl	%edx
+>  	popl	%ecx
+>  
+>  	/* Enable PAE and LA57 (if required) paging modes */
 
+This comment should move after the #endif below and here it wants a
+comment which explains why reading cr4 and the following code sequence
+is correct. If you write up that comment then you'll figure out that it
+is incorrect.
+
+> -	movl	$X86_CR4_PAE, %eax
+> +	movl	%cr4, %eax
+
+Assume CR4 has X86_CR4_MCE set then how is the below correct when
+CONFIG_X86_MCE=n? Not to talk about any other bits which might be set in
+CR4 and are only cleared by the CONFIG_X86_MCE dependent 'andl'.
+
+> +#ifdef CONFIG_X86_MCE
+> +	/*
+> +	 * Preserve CR4.MCE if the kernel will enable #MC support.  Clearing
+> +	 * MCE may fault in some environments (that also force #MC support).
+> +	 * Any machine check that occurs before #MC support is fully configured
+> +	 * will crash the system regardless of the CR4.MCE value set here.
+> +	 */
+> +	andl	$X86_CR4_MCE, %eax
+> +#endif
+
+So this wants to be
+
+#ifdef CONFIG_X86_MCE
+	movl	%cr4, %eax
+	andl	$X86_CR4_MCE, %eax
+#else
+	movl	$0, %eax
+#endif
+
+No?
+
+> +	orl	$X86_CR4_PAE, %eax
+>  	testl	%edx, %edx
+>  	jz	1f
+>  	orl	$X86_CR4_LA57, %eax
+> @@ -662,8 +675,12 @@ SYM_CODE_START(trampoline_32bit_src)
+>  	pushl	$__KERNEL_CS
+>  	pushl	%eax
+>  
+> -	/* Enable paging again */
+> -	movl	$(X86_CR0_PG | X86_CR0_PE), %eax
+> +	/*
+> +	 * Enable paging again.  Keep CR0.NE set, FERR# is no longer used
+> +	 * to handle x87 FPU errors and clearing NE may fault in some
+> +	 * environments.
+
+FERR# is no longer used is really not informative here. The point is
+that any x86 CPU which is supported by the kernel requires CR0_NE to be
+set. This code was wrong from the very beginning because 64bit CPUs
+never supported #FERR. The reason why it exists is Copy&Pasta without
+brain applied and the sad fact that the hardware does not enforce it in
+native mode for whatever reason. So this want's to be a seperate patch
+with a coherent comment and changelong.
+
+> +	 */
+> +	movl	$(X86_CR0_PG | X86_CR0_NE | X86_CR0_PE), %eax
+>  	movl	%eax, %cr0
+>  
+>  	/* Enable PAE mode, PGE and LA57 */
+> -	movl	$(X86_CR4_PAE | X86_CR4_PGE), %ecx
+> +	movq	%cr4, %rcx
+
+See above...
+
+> +#ifdef CONFIG_X86_MCE
+> +	/*
+> +	 * Preserve CR4.MCE if the kernel will enable #MC support.  Clearing
+> +	 * MCE may fault in some environments (that also force #MC support).
+> +	 * Any machine check that occurs before #MC support is fully configured
+> +	 * will crash the system regardless of the CR4.MCE value set here.
+> +	 */
+> +	andl	$X86_CR4_MCE, %ecx
+> +#endif
+> +	orl	$(X86_CR4_PAE | X86_CR4_PGE), %ecx
+>  #ifdef CONFIG_X86_5LEVEL
+>  	testl	$1, __pgtable_l5_enabled(%rip)
+>  	jz	1f
+> @@ -246,13 +256,23 @@ SYM_INNER_LABEL(secondary_startup_64_no_verify, SYM_L_GLOBAL)
+>  	/* Setup EFER (Extended Feature Enable Register) */
+>  	movl	$MSR_EFER, %ecx
+>  	rdmsr
+> +	/*
+> +	 * Preserve current value of EFER for comparison and to skip
+> +	 * EFER writes if no change was made (for TDX guest)
+> +	 */
+> +	movl    %eax, %edx
+>  	btsl	$_EFER_SCE, %eax	/* Enable System Call */
+>  	btl	$20,%edi		/* No Execute supported? */
+>  	jnc     1f
+>  	btsl	$_EFER_NX, %eax
+>  	btsq	$_PAGE_BIT_NX,early_pmd_flags(%rip)
+> -1:	wrmsr				/* Make changes effective */
+>  
+> +	/* Avoid writing EFER if no change was made (for TDX guest) */
+> +1:	cmpl	%edx, %eax
+> +	je	1f
+> +	xor	%edx, %edx
+> +	wrmsr				/* Make changes effective */
+> +1:
+>  	/* Setup cr0 */
+>  	movl	$CR0_STATE, %eax
+>  	/* Make changes effective */
+> diff --git a/arch/x86/realmode/rm/trampoline_64.S b/arch/x86/realmode/rm/trampoline_64.S
+> index ae112a91592f..170f248d5769 100644
+> --- a/arch/x86/realmode/rm/trampoline_64.S
+> +++ b/arch/x86/realmode/rm/trampoline_64.S
+> @@ -143,13 +143,28 @@ SYM_CODE_START(startup_32)
+>  	movl	%eax, %cr3
+>  
+>  	# Set up EFER
+> +	movl	$MSR_EFER, %ecx
+> +	rdmsr
+> +	/*
+> +	 * Skip writing to EFER if the register already has desired
+> +	 * value (to avoid #VE for the TDX guest).
+> +	 */
+> +	cmp	pa_tr_efer, %eax
+> +	jne	.Lwrite_efer
+> +	cmp	pa_tr_efer + 4, %edx
+> +	je	.Ldone_efer
+> +.Lwrite_efer:
+>  	movl	pa_tr_efer, %eax
+>  	movl	pa_tr_efer + 4, %edx
+> -	movl	$MSR_EFER, %ecx
+>  	wrmsr
+>  
+> -	# Enable paging and in turn activate Long Mode
+> -	movl	$(X86_CR0_PG | X86_CR0_WP | X86_CR0_PE), %eax
+> +.Ldone_efer:
+> +	/*
+> +	 * Enable paging and in turn activate Long Mode. Keep CR0.NE set, FERR#
+> +	 * is no longer used to handle x87 FPU errors and clearing NE may fault
+> +	 * in some environments.
+> +	 */
+> +	movl	$(X86_CR0_PG | X86_CR0_WP | X86_CR0_NE | X86_CR0_PE),
+> %eax
+
+See above.
+
+>  	movl	%eax, %cr0
+>  
+>  	/*
+> @@ -169,7 +184,11 @@ SYM_CODE_START(pa_trampoline_compat)
+>  	movl	$rm_stack_end, %esp
+>  	movw	$__KERNEL_DS, %dx
+>  
+> -	movl	$X86_CR0_PE, %eax
+> +	/*
+> +	 * Keep CR0.NE set, FERR# is no longer used to handle x87 FPU errors
+> +	 * and clearing NE may fault in some environments.
+> +	 */
+> +	movl	$(X86_CR0_NE | X86_CR0_PE), %eax
+
+Ditto.
+
+>  	movl	%eax, %cr0
+>  	ljmpl   $__KERNEL32_CS, $pa_startup_32
+>  SYM_CODE_END(pa_trampoline_compat)
+
+Thanks,
+
+        tglx
