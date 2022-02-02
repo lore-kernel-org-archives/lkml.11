@@ -2,110 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AE97C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 07:08:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CE6BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 07:10:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233658AbiBBHIr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 02:08:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54572 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231321AbiBBHIg (ORCPT
+        id S231862AbiBBHKZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 02:10:25 -0500
+Received: from mailout2.samsung.com ([203.254.224.25]:16567 "EHLO
+        mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231293AbiBBHKX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 02:08:36 -0500
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98888C061714
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Feb 2022 23:08:36 -0800 (PST)
-Received: by mail-pl1-x632.google.com with SMTP id k17so17509279plk.0
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Feb 2022 23:08:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=9t7iEOUj9IyscO6Mfw9DqFCGsAJD5/8QafkYWmvy0h8=;
-        b=hJRPa+N5tj4CLTB31qJhRznz2dktoYa5z33nyM0IiW/aPzkD0ZjayBNl+gtuvfSTCa
-         NBc+CN/o6P9DhbbpMg+LJ3qqZWYA/ga9OLPwGl6AAKVJ7gjEGw0WtYpKMFjk3Hyy18QY
-         nx06P2EpD5Tk/I094uwtoXWjZKYbWe8Z65fwrMFUqm6SlEbsXj5yU7secu7AZA5Mggd/
-         1Q88gHgzAPNd8YVjxedOiZaIVPJIkxfc3FeXLDvAp62f/tqcuQU85i7ut6bhjBUom63m
-         ZpaBnMBGeDtFTMdmxl3SvEKsy35wxCv6l/1fZR2fw7FvrPuvRqPWo8GeULDaGRxhpIQt
-         pTZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=9t7iEOUj9IyscO6Mfw9DqFCGsAJD5/8QafkYWmvy0h8=;
-        b=UhcV8XWmlzp80WI4ePHAfhWNi4lrURuYRVR8mvupc50oABF9FPbhFomhH6TEh5PcTt
-         gNPEI1pFr/ILP4qlnFtI4ViG2sC5LB1btlZUmCeRP3xmqc5FddWCuSVG3GCC7cdPNWVZ
-         w86G6lcel/Nfa9bpEgld4soY1A0kCKehJKE/OFKLgNXtTj7wfB2rFD33zkBW/5LN+nee
-         L7UjlwWVUda/LU4oq2C/QTMXtBz6DSdVYsOnHZHPQotdKfrko5/TJx1WG+bOrUZwiPAl
-         fO9tzcXLyMVKmlct7FPnbcRdAYKJttb8B5+uZvmQ1Eupw5pa+Wch1AelkDvA8bb8DWUo
-         HM0A==
-X-Gm-Message-State: AOAM532n8Za0d5cMz8iztS1Xpjcd0lZ5p+/fanK8aGuGZxhgSlI/6Tg1
-        6UueT96GOsIGw2ptte1vXE4=
-X-Google-Smtp-Source: ABdhPJxKC8gRPijHI+uVxcjWkaM59FKxj6SfHUty0BFB+3DLLBDw99XU4PT8nF7ebfbgBGFrnQ5hNQ==
-X-Received: by 2002:a17:903:32c2:: with SMTP id i2mr29075994plr.55.1643785716127;
-        Tue, 01 Feb 2022 23:08:36 -0800 (PST)
-Received: from balhae.hsd1.ca.comcast.net ([2601:647:4800:c6f0:9c9f:e426:5704:d42b])
-        by smtp.gmail.com with ESMTPSA id e15sm4936879pjd.52.2022.02.01.23.08.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Feb 2022 23:08:35 -0800 (PST)
-Sender: Namhyung Kim <namhyung@gmail.com>
-From:   Namhyung Kim <namhyung@kernel.org>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>
-Subject: [PATCH 4/4] perf annotate: Try chroot filename for objdump
-Date:   Tue,  1 Feb 2022 23:08:28 -0800
-Message-Id: <20220202070828.143303-5-namhyung@kernel.org>
-X-Mailer: git-send-email 2.35.0.rc2.247.g8bbb082509-goog
-In-Reply-To: <20220202070828.143303-1-namhyung@kernel.org>
-References: <20220202070828.143303-1-namhyung@kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Wed, 2 Feb 2022 02:10:23 -0500
+Received: from epcas5p4.samsung.com (unknown [182.195.41.42])
+        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220202063441epoutp02968ed1bb9f36ba40595f9cc83bc00954~P5IyKY41d2878428784epoutp02k
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 06:34:41 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220202063441epoutp02968ed1bb9f36ba40595f9cc83bc00954~P5IyKY41d2878428784epoutp02k
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1643783681;
+        bh=OkigBjbJ/hUZbBEBYwYdVxU4vhRxGSoOZRXY6T4zfiI=;
+        h=Subject:Reply-To:From:To:CC:In-Reply-To:Date:References:From;
+        b=N3UsHnAJPVt4zXKeb7h9I/oXBojyUcGdLZ2rNEH2vK3baQvQ79apvA9vFo++z2Kt4
+         FSCUJXClSatz3j4FITWbZ4DX2WWa7UoYTILsk/kH6FaMsI4lWOsPYJ3726J+MnkTGu
+         x+FZHI1u6ZMSKe0FMb7CZGEErD6BG9g6axcmRp0M=
+Received: from epsmges5p1new.samsung.com (unknown [182.195.42.73]) by
+        epcas5p2.samsung.com (KnoxPortal) with ESMTP id
+        20220202063440epcas5p24619f00b5d8605edec8300817bd009fc~P5IxOguKg0884508845epcas5p2F;
+        Wed,  2 Feb 2022 06:34:40 +0000 (GMT)
+X-AuditID: b6c32a49-b01ff70000001917-23-61fa25cadc5c
+Received: from epcas5p4.samsung.com ( [182.195.41.42]) by
+        epsmges5p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        B6.B0.06423.AC52AF16; Wed,  2 Feb 2022 15:33:46 +0900 (KST)
+Mime-Version: 1.0
+Subject: RE: FW: [PATCH v2] scripts/checkpatch.pl: remove _deferred and
+ _deferred_once false warning
+Reply-To: maninder1.s@samsung.com
+Sender: Maninder Singh <maninder1.s@samsung.com>
+From:   Maninder Singh <maninder1.s@samsung.com>
+To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>
+CC:     "apw@canonical.com" <apw@canonical.com>,
+        "joe@perches.com" <joe@perches.com>,
+        "dwaipayanray1@gmail.com" <dwaipayanray1@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Vaneet Narang <v.narang@samsung.com>
+X-Priority: 3
+X-Content-Kind-Code: NORMAL
+In-Reply-To: <CAKXUXMyEKXtSde4vJiEKKpjKpcGv7E4LG5WcfjvwsaG3-5Kh9g@mail.gmail.com>
+X-Drm-Type: N,general
+X-Msg-Generator: Mail
+X-Msg-Type: PERSONAL
+X-Reply-Demand: N
+Message-ID: <20220202062806epcms5p4d8b2ee8e44369c7670ed89d81ef7c19f@epcms5p4>
+Date:   Wed, 02 Feb 2022 11:58:06 +0530
+X-CMS-MailID: 20220202062806epcms5p4d8b2ee8e44369c7670ed89d81ef7c19f
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: REQ_APPROVE
+CMS-TYPE: 105P
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFupkleLIzCtJLcpLzFFi42LZdlhTS/eU6q9Eg43rxS0+rNWwWL9wGbPF
+        7PuPWSwu75rDZtFytJ3F4tDJuYwObB6zGnrZPHbOusvu8WXVNWaPvi2rGD0+b5ILYI3isklJ
+        zcksSy3St0vgymhsamEr+MNYsWFXL3sD4zHGLkZODgkBE4nGhtUsXYxcHEICuxklli/5wdbF
+        yMHBKyAo8XeHMEiNsECaxPEv3UwgtpCAosSFGWsYQUqEBQwkfm3VAAmzCehJrNq1hwUkLCKg
+        LbF1rTTIRGaBD4wS99f9ZYdYxSsxo/0pC4QtLbF9+VawMZwCgRItb00gwqISN1e/ZYex3x+b
+        D3WliETrvbPMELagxIOfu6HiMhKrN/eCXS8h0M0osf7dXihnBqNEz6NpUB3mEuuXrAKbyivg
+        K/Fq03ZWEJtFQFVi4pErTBA1LhIn/t4BO45ZQF5i+9s5zCDHMQtoSqzfpQ9RIisx9dQ6JogS
+        Pone30+YYP7aMQ/GVpVoubmBFebHzx8/Qv3rIbHo2Q5GSDDfYZSY+nsh2wRGhVmIkJ6FZPMs
+        hM0LGJlXMUqmFhTnpqcWmxYY5qWW6xUn5haX5qXrJefnbmIEpxYtzx2Mdx980DvEyMTBeIhR
+        goNZSYR378LviUK8KYmVValF+fFFpTmpxYcYpTlYlMR5T6dvSBQSSE8sSc1OTS1ILYLJMnFw
+        SjUwzfO2zJqTIfj2z4P/QZM27t93VMYwW5r/eMKemdcPXUtwTaiNZYjkE1HQqxQ2/la68N79
+        Og0hT/lMryN8Sso1Mx7IRjvkPr99KPzeXG3Na++zvpx2zu1ikjZ/oCBQ2Hzq5pn2bdPym4rd
+        pp0MuN6+WE/yXnWFwP22vJAe+a96nxibTDW8TsnOOLvmmeCpaVzcofH8q514AlKZn1fknph9
+        78n/ax9/rN7670uWc1a8akFFRHnOzJOdF8KbEv2mVXTzVXPWT9lV8ktxS4CUrp7x6ijx5RfP
+        XD0UWPmtW9EmsGODxItVN6+XNRqnrJhw7CDjtWsTJ5cEOdbKKzHz+OU91BeobzONMJUTi1J0
+        ZVViKc5INNRiLipOBAB2uk9TnAMAAA==
+X-CMS-RootMailID: 20220202044123epcms5p59b0c283f2fe3c7b8654bb600019c1d4f
+References: <CAKXUXMyEKXtSde4vJiEKKpjKpcGv7E4LG5WcfjvwsaG3-5Kh9g@mail.gmail.com>
+        <20220202044123epcms5p59b0c283f2fe3c7b8654bb600019c1d4f@epcms5p5>
+        <CGME20220202044123epcms5p59b0c283f2fe3c7b8654bb600019c1d4f@epcms5p4>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Likewise, it should use a proper name in case the task runs under
-chroot.
+Hi,
 
-Acked-by: Jiri Olsa <jolsa@kernel.org>
-Signed-off-by: Namhyung Kim <namhyung@kernel.org>
----
- tools/perf/util/annotate.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+> Your email will not reach the mailing list due to the HTML content and picture below. Please set up your email client properly.
 
-diff --git a/tools/perf/util/annotate.c b/tools/perf/util/annotate.c
-index 8190a124b99d..e4c641b240df 100644
---- a/tools/perf/util/annotate.c
-+++ b/tools/perf/util/annotate.c
-@@ -33,6 +33,7 @@
- #include "string2.h"
- #include "util/event.h"
- #include "arch/common.h"
-+#include "namespaces.h"
- #include <regex.h>
- #include <pthread.h>
- #include <linux/bitops.h>
-@@ -1696,6 +1697,15 @@ static int dso__disassemble_filename(struct dso *dso, char *filename, size_t fil
- 		 * DSO is the same as when 'perf record' ran.
- 		 */
- 		__symbol__join_symfs(filename, filename_size, dso->long_name);
-+
-+		if (access(filename, R_OK) && errno == ENOENT && dso->nsinfo) {
-+			char *new_name = filename_with_chroot(dso->nsinfo->pid,
-+							      filename);
-+			if (new_name) {
-+				strlcpy(filename, new_name, filename_size);
-+				free(new_name);
-+			}
-+		}
- 	}
- 
- 	free(build_id_path);
--- 
-2.35.0.rc2.247.g8bbb082509-goog
+Ok, I will resend the patch from git-email again rather than from this email client
 
+Thanks,
+Maninder Singh
