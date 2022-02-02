@@ -2,89 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35431C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 14:51:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BBA6C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 14:51:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345116AbiBBOvj (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 09:51:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47078 "EHLO
+        id S235068AbiBBOvl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 09:51:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345090AbiBBOvg (ORCPT
+        with ESMTP id S1345133AbiBBOvi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 09:51:36 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12AA6C061714
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 06:51:36 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A438060C72
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 14:51:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CAFDC340ED;
-        Wed,  2 Feb 2022 14:51:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643813495;
-        bh=drlEPGUjV+wPgfhl3A9RyJ1fkmiImQJzXyfMAKyI8dw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=KPfsp/oc70GAMbFCN18GnJ5AlJ2si4ALVO0wwc/Hzlx/zrqbKU+uq5gPe9eDEpUQq
-         trckAS1zVW2ZS17l8Z0NPAsuZ+6wokqoVrbf7qXqyqyCFUsRd1qrF7E8sdlq457tfz
-         PzS7kRRhN1GjjkjtsBwplntH3cOR4hTTl7W0icBRH2S4HwF9bhdoL/v8D2VZPkLpzW
-         ttwsyx8Y/L2wTUrS/LGpgFCeA+KJDgzLK6sl7e3suERhmjTzDph6IMPBc4eiFKCBXD
-         UoAeZQsxTe8I9joV6zWG+Oh5AWGM+BNWZch2Uy13C11JWfrGNWUYl56usHug6L8gg1
-         PGVnloVRq+DMA==
-From:   Mark Brown <broonie@kernel.org>
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>
-Subject: [PATCH] mfd: sprd: Add SPI device ID table
-Date:   Wed,  2 Feb 2022 14:43:36 +0000
-Message-Id: <20220202144336.16514-1-broonie@kernel.org>
-X-Mailer: git-send-email 2.30.2
+        Wed, 2 Feb 2022 09:51:38 -0500
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46367C061714
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 06:51:38 -0800 (PST)
+Received: by mail-pg1-x535.google.com with SMTP id 133so18518835pgb.0
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 06:51:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:in-reply-to:references:subject:message-id:date
+         :mime-version:content-transfer-encoding;
+        bh=86/HaWRp2y/SbuutjnhnFgYLOj+BcaVRE8VVajIjfRc=;
+        b=R/anZ7UkMnqaF3CW4Ump0dqYVUYUgaS4M/yiDIxTx2Cjcq+Qyd6YocKBZ8mPdRpPW+
+         17FNI88k1C/BmVXl825aLA0miu2S5PPr8PsT0fMqN4dVJU17+9S6pjmTH6QbSeNecx9r
+         0xP8jPO9Nw198zDO00TZswt+Ah25ZHBq+6KVkMYCNAEWgsPPHMXcAtmG4VsW3F3UiWKJ
+         rSIzxvJZQrspkqWsoTGnJsSlKKFTTNT/fSLrJ2tAT5TU1bpU2aG1AoRBu+acTX1dmWiy
+         dtFz/L7xjwsZ+s+MvP2INbmL3Bpln/WoZpGWMhz5gWzjqWyuCyzkWYcHCGIQZ7JI1y6B
+         ls9g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject
+         :message-id:date:mime-version:content-transfer-encoding;
+        bh=86/HaWRp2y/SbuutjnhnFgYLOj+BcaVRE8VVajIjfRc=;
+        b=5s6yO+ZwuH9aXm2Jz7ku5sR1n12BrIIXJHEyJcEXRndhCCxafxpyZaynyaF5HGFkpb
+         3qvmbUpnt8Sxvti2utaYdy/ZymsozFbU05YdJmkv4JVaTTkmV2Mpz7GKM6DstJMakiwb
+         GFsgxsGMD/+QtTktC64fTUpq88lbQEtd/eu9nQEnCLWaOBRpO3rSfke3IOfHU7FVjIQf
+         xuuvCxXJ5fNbfl8sDXh4qexpf7oCbyOL+pPs+MFcn1pa9jZora+4tjyzCE3p9NMy+9Vf
+         wQZm5DWeGw34zTF62+C2yZNBjRGDgvFXuEdV2jlsJkmmruQ4O6f+SA7u4Y8FLWJhPAsH
+         mU5w==
+X-Gm-Message-State: AOAM533lw3bfUXdInuKl/feYVS2b4Psi8jHrtYF9DKVWnyzCgYKEKqkv
+        EMw6E2opG8+N1Yalx4dX1NU5kg==
+X-Google-Smtp-Source: ABdhPJwHqMALF/wOLDrSj4nmDW1I8tHyhaX9IDucrRtcOQAvGP0sRohPCEugxsJxmQaoZ0g8bCyDQg==
+X-Received: by 2002:a63:e206:: with SMTP id q6mr25071054pgh.165.1643813497682;
+        Wed, 02 Feb 2022 06:51:37 -0800 (PST)
+Received: from [192.168.1.116] ([66.219.217.159])
+        by smtp.gmail.com with ESMTPSA id 76sm28639747pge.93.2022.02.02.06.51.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Feb 2022 06:51:37 -0800 (PST)
+From:   Jens Axboe <axboe@kernel.dk>
+To:     Christoph Hellwig <hch@lst.de>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+Cc:     ntfs3@lists.linux.dev, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+In-Reply-To: <20220128140922.GA29766@kili>
+References: <20220128140922.GA29766@kili>
+Subject: Re: [PATCH] fs/ntfs3: remove unnecessary NULL check
+Message-Id: <164381349664.170858.13226820250070489302.b4-ty@kernel.dk>
+Date:   Wed, 02 Feb 2022 07:51:36 -0700
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1362; h=from:subject; bh=drlEPGUjV+wPgfhl3A9RyJ1fkmiImQJzXyfMAKyI8dw=; b=owEBbQGS/pANAwAKASTWi3JdVIfQAcsmYgBh+ph89YzD2kVtiXi3TpVrYLRvh/ceF/6wLXZ5po6y ahB0mnKJATMEAAEKAB0WIQSt5miqZ1cYtZ/in+ok1otyXVSH0AUCYfqYfAAKCRAk1otyXVSH0JamB/ 4sCYFn05WkuStYCsPNLWC7z+b9cQYL9H4ffXLumfYpMcOjhfINAbTzfy7ZLQplk0HCtrBk6PSTlK+5 OgLAktXOAFTy46XuebBnhH3HsDO+wGZ63s3zoJoyxoe29n4cotw8bNS9NVGz5YSoGp6s7YXcZxAwlu 2ybNMnaTgpZL7+9qYRtZbiAasX7HqUft+QrDJHNplCVjpgHnhdGNUG30YJI7/yxw2ln6w5WzQcFD+W c7d39gnn/BOnD7pqgUbeY68TkkLtc6riauu85LYIIESLXd2cyYFfjodfytGY6IYF9Bz7wFaXnF0bxX 4JqTDy5nH7+b24O9s7zt6+93lzYyoE
-X-Developer-Key: i=broonie@kernel.org; a=openpgp; fpr=3F2568AAC26998F9E813A1C5C3F436CA30F5D8EB
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently autoloading for SPI devices does not use the DT ID table, it uses
-SPI modalises. Supporting OF modalises is going to be difficult if not
-impractical, an attempt was made but has been reverted, so ensure that
-module autoloading works for this driver by adding a SPI device ID table.
+On Fri, 28 Jan 2022 17:09:22 +0300, Dan Carpenter wrote:
+> This code triggers a Smatch warning:
+> 
+>     fs/ntfs3/fsntfs.c:1606 ntfs_bio_fill_1()
+>     warn: variable dereferenced before check 'bio' (see line 1591)
+> 
+> The "bio" pointer cannot be NULL so there is no need to check.
+> Originally there was more extensive NULL checking but it was removed
+> because bio_alloc() will never fail if it is allowed to sleep.
+> 
+> [...]
 
-Fixes: 96c8395e2166 ("spi: Revert modalias changes")
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Cc: Orson Zhai <orsonzhai@gmail.com>
-Cc: Baolin Wang <baolin.wang7@gmail.com>
-Cc: Chunyan Zhang <zhang.lyra@gmail.com>
----
+Applied, thanks!
 
-Rebased onto v5.17-rc1.
+[1/1] fs/ntfs3: remove unnecessary NULL check
+      commit: 365ab499153cdb2007d54e7e62bcbf2c67f7ab8f
 
- drivers/mfd/sprd-sc27xx-spi.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/drivers/mfd/sprd-sc27xx-spi.c b/drivers/mfd/sprd-sc27xx-spi.c
-index 55d2c31bdfb2..864031eccd4c 100644
---- a/drivers/mfd/sprd-sc27xx-spi.c
-+++ b/drivers/mfd/sprd-sc27xx-spi.c
-@@ -239,6 +239,12 @@ static int sprd_pmic_resume(struct device *dev)
- 
- static SIMPLE_DEV_PM_OPS(sprd_pmic_pm_ops, sprd_pmic_suspend, sprd_pmic_resume);
- 
-+static const struct spi_device_id sprd_pmic_spi_ids[] = {
-+	{ .name = "sc2731", .driver_data = (unsigned long)&sc2731_data },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(spi, sprd_pmic_spi_ids);
-+
- static const struct of_device_id sprd_pmic_match[] = {
- 	{ .compatible = "sprd,sc2731", .data = &sc2731_data },
- 	{ .compatible = "sprd,sc2730", .data = &sc2730_data },
+Best regards,
 -- 
-2.30.2
+Jens Axboe
+
 
