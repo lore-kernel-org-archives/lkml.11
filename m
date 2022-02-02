@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E310C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 16:03:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13720C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 16:03:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345733AbiBBQDm (ORCPT
+        id S1345727AbiBBQDp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 11:03:42 -0500
-Received: from foss.arm.com ([217.140.110.172]:39946 "EHLO foss.arm.com"
+        Wed, 2 Feb 2022 11:03:45 -0500
+Received: from foss.arm.com ([217.140.110.172]:39928 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1343607AbiBBQDc (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 11:03:32 -0500
+        id S1345722AbiBBQD3 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 2 Feb 2022 11:03:29 -0500
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4E62311FB;
-        Wed,  2 Feb 2022 08:03:32 -0800 (PST)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0646E11D4;
+        Wed,  2 Feb 2022 08:03:29 -0800 (PST)
 Received: from e121896.Emea.Arm.com (e121896.Emea.Arm.com [10.32.36.26])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 6C2423F73B;
-        Wed,  2 Feb 2022 08:03:30 -0800 (PST)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 9FD813F73B;
+        Wed,  2 Feb 2022 08:03:26 -0800 (PST)
 From:   James Clark <james.clark@arm.com>
 To:     mathieu.poirier@linaro.org, coresight@lists.linaro.org
 Cc:     suzuki.poulose@arm.com, leo.yan@linaro.com, mike.leach@linaro.org,
         James Clark <james.clark@arm.com>,
         Leo Yan <leo.yan@linaro.org>,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 15/15] coresight: Make ETM4x TRCRSCTLRn register accesses consistent with sysreg.h
-Date:   Wed,  2 Feb 2022 16:02:25 +0000
-Message-Id: <20220202160226.37858-16-james.clark@arm.com>
+Subject: [PATCH 14/15] coresight: Make ETM4x TRCBBCTLR register accesses consistent with sysreg.h
+Date:   Wed,  2 Feb 2022 16:02:24 +0000
+Message-Id: <20220202160226.37858-15-james.clark@arm.com>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20220202160226.37858-1-james.clark@arm.com>
 References: <20220202160226.37858-1-james.clark@arm.com>
@@ -41,44 +41,39 @@ binary produced by gcc-11.
 
 Signed-off-by: James Clark <james.clark@arm.com>
 ---
- drivers/hwtracing/coresight/coresight-etm4x-sysfs.c | 7 +++++--
- drivers/hwtracing/coresight/coresight-etm4x.h       | 9 +++++++++
- 2 files changed, 14 insertions(+), 2 deletions(-)
+ drivers/hwtracing/coresight/coresight-etm4x-sysfs.c | 5 +++--
+ drivers/hwtracing/coresight/coresight-etm4x.h       | 4 ++++
+ 2 files changed, 7 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
-index a0cdd2cd978a..c876a63fa84d 100644
+index 682819467755..a0cdd2cd978a 100644
 --- a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
 +++ b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
-@@ -1728,8 +1728,11 @@ static ssize_t res_ctrl_store(struct device *dev,
- 	/* For odd idx pair inversal bit is RES0 */
- 	if (idx % 2 != 0)
- 		/* PAIRINV, bit[21] */
--		val &= ~BIT(21);
--	config->res_ctrl[idx] = val & GENMASK(21, 0);
-+		val &= ~TRCRSCTLRn_PAIRINV;
-+	config->res_ctrl[idx] = val & (TRCRSCTLRn_PAIRINV |
-+				       TRCRSCTLRn_INV |
-+				       (TRCRSCTLRn_GROUP_MASK << TRCRSCTLRn_GROUP_SHIFT) |
-+				       (TRCRSCTLRn_SELECT_MASK << TRCRSCTLRn_SELECT_SHIFT));
- 	spin_unlock(&drvdata->spinlock);
+@@ -707,10 +707,11 @@ static ssize_t bb_ctrl_store(struct device *dev,
+ 	 * individual range comparators. If include then at least 1
+ 	 * range must be selected.
+ 	 */
+-	if ((val & BIT(8)) && (BMVAL(val, 0, 7) == 0))
++	if ((val & TRCBBCTLR_MODE) && (REG_VAL(val, TRCBBCTLR_RANGE) == 0))
+ 		return -EINVAL;
+ 
+-	config->bb_ctrl = val & GENMASK(8, 0);
++	config->bb_ctrl = val & (TRCBBCTLR_MODE |
++				 (TRCBBCTLR_RANGE_MASK << TRCBBCTLR_RANGE_SHIFT));
  	return size;
  }
+ static DEVICE_ATTR_RW(bb_ctrl);
 diff --git a/drivers/hwtracing/coresight/coresight-etm4x.h b/drivers/hwtracing/coresight/coresight-etm4x.h
-index 4d943faade33..dd2156a5e70b 100644
+index 9d0978540338..4d943faade33 100644
 --- a/drivers/hwtracing/coresight/coresight-etm4x.h
 +++ b/drivers/hwtracing/coresight/coresight-etm4x.h
-@@ -258,6 +258,15 @@
- #define TRCBBCTLR_RANGE_SHIFT			0
- #define TRCBBCTLR_RANGE_MASK			GENMASK(7, 0)
+@@ -254,6 +254,10 @@
+ #define TRCSSPCICRn_PC_SHIFT			0
+ #define TRCSSPCICRn_PC_MASK			GENMASK(7, 0)
  
-+#define TRCRSCTLRn_PAIRINV			BIT(21)
-+#define TRCRSCTLRn_INV				BIT(20)
-+#define TRCRSCTLRn_GROUP_SHIFT			16
-+#define TRCRSCTLRn_GROUP_MASK			GENMASK(3, 0)
-+#define TRCRSCTLRn_SELECT_SHIFT			0
-+#define TRCRSCTLRn_SELECT_MASK			GENMASK(15, 0)
-+
-+
++#define TRCBBCTLR_MODE				BIT(8)
++#define TRCBBCTLR_RANGE_SHIFT			0
++#define TRCBBCTLR_RANGE_MASK			GENMASK(7, 0)
 +
  /*
   * System instructions to access ETM registers.
