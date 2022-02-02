@@ -2,323 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 138EBC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 12:06:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91FF7C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 12:11:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231841AbiBBMG1 convert rfc822-to-8bit (ORCPT
+        id S1344067AbiBBMLb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 07:06:27 -0500
-Received: from aposti.net ([89.234.176.197]:36706 "EHLO aposti.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230184AbiBBMG0 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 07:06:26 -0500
-Date:   Wed, 02 Feb 2022 12:06:11 +0000
-From:   Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH v12 2/9] drm/ingenic: Add support for JZ4780 and HDMI
- output
-To:     "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Kees Cook <keescook@chromium.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Paul Boddie <paul@boddie.org.uk>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        devicetree@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org, letux-kernel@openphoenux.org,
-        Jonas Karlman <jonas@kwiboo.se>,
-        dri-devel@lists.freedesktop.org,
-        Ezequiel Garcia <ezequiel@collabora.com>
-Message-Id: <CYEO6R.2QDXEFO5G1WQ3@crapouillou.net>
-In-Reply-To: <1F27171F-DFCA-4707-8F50-D1A343F6D78E@goldelico.com>
-References: <cover.1643632014.git.hns@goldelico.com>
-        <6a7b188769a7ad477bf8cb71e1b9bc086b92388d.1643632014.git.hns@goldelico.com>
-        <N7AO6R.7I6FABF106MT1@crapouillou.net>
-        <1F27171F-DFCA-4707-8F50-D1A343F6D78E@goldelico.com>
+        Wed, 2 Feb 2022 07:11:31 -0500
+Received: from mail-il1-f199.google.com ([209.85.166.199]:36558 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232109AbiBBML0 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 2 Feb 2022 07:11:26 -0500
+Received: by mail-il1-f199.google.com with SMTP id z1-20020a92cec1000000b002bc0e7ab95fso7977935ilq.3
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 04:11:26 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=r1mdQGyWTemvOjpoJlyypcNoWRaGad2twbriXxSKjAE=;
+        b=TUC3Flzn8AF/Mg9bC5nKg1P8qROpbAkXonNjEuiG1ScjgLf0VUiOK2vz49sSXYsHVy
+         bbCJSB4ed3YwStfb1owVK+UIDRlQQpY+KWLoweBv2zzhxiFrsw+MFbWyeZj6EfVnl3eL
+         LDNkrdxUeCJkWhOlyaDPHrFpP2pgCMnVeK5hGD4AJcfp9RP6fG4H7Dl67yhDlwT+2uqO
+         +15y5vbDrP8egUhsAIOm8hbCrlI/ocdrpe5TyGImU3pGaZWhI/cHmIICRKinw4Nj0GQZ
+         Wq7yR55wkp2/cjCjhpFFRjN6AUsOUrdHVQv9Y7B9nQ/lBSecpCIdryR2d9pZ9ji0aJzb
+         NniQ==
+X-Gm-Message-State: AOAM530xNcTDIriow0DGd/1Md5oNDJYF5wf8yQE1JAKxZrbjrNd0hk6j
+        lQQoWSrzfUYHUh4uu/PdAeu1jIBkrnYkR737ur8cqtdJpVug
+X-Google-Smtp-Source: ABdhPJzuZ/5x/JPXp+PKC/4oY8hh4XkKP40OR0bMQlLRUBQ9Je4Pqg44TDuDGTEGAFTxyiu99NUMsXIikRTy6Vi2eEHJUqrwyM/z
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Transfer-Encoding: 8BIT
+X-Received: by 2002:a02:94e9:: with SMTP id x96mr15751317jah.80.1643803886048;
+ Wed, 02 Feb 2022 04:11:26 -0800 (PST)
+Date:   Wed, 02 Feb 2022 04:11:26 -0800
+In-Reply-To: <0000000000000a9b7d05d6ee565f@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000b559f905d707ea15@google.com>
+Subject: Re: [syzbot] KASAN: vmalloc-out-of-bounds Write in ringbuf_map_alloc
+From:   syzbot <syzbot+5ad567a418794b9b5983@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, hotforest@gmail.com,
+        houtao1@huawei.com, john.fastabend@gmail.com, kafai@fb.com,
+        kpsingh@kernel.org, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Nikolaus,
+syzbot has found a reproducer for the following issue on:
 
-Le mer., févr. 2 2022 at 12:56:35 +0100, H. Nikolaus Schaller 
-<hns@goldelico.com> a écrit :
-> Hi Paul,
-> thanks for the reviews. Looks as if we are close to making a goal.
-> 
->>  Am 02.02.2022 um 11:23 schrieb Paul Cercueil <paul@crapouillou.net>:
->> 
->>  Hi Nikolaus,
->> 
->>  Le lun., janv. 31 2022 at 13:26:48 +0100, H. Nikolaus Schaller 
->> <hns@goldelico.com> a écrit :
->>>  From: Paul Boddie <paul@boddie.org.uk>
->>>  Add support for the LCD controller present on JZ4780 SoCs.
->>>  This SoC uses 8-byte descriptors which extend the current
->>>  4-byte descriptors used for other Ingenic SoCs.
->>>  Tested on MIPS Creator CI20 board.
->>>  Signed-off-by: Paul Boddie <paul@boddie.org.uk>
->>>  Signed-off-by: Ezequiel Garcia <ezequiel@collabora.com>
->>>  Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
->>>  ---
->>>  drivers/gpu/drm/ingenic/ingenic-drm-drv.c | 61 
->>> ++++++++++++++++++++++-
->>>  drivers/gpu/drm/ingenic/ingenic-drm.h     | 38 ++++++++++++++
->>>  2 files changed, 98 insertions(+), 1 deletion(-)
->>>  diff --git a/drivers/gpu/drm/ingenic/ingenic-drm-drv.c 
->>> b/drivers/gpu/drm/ingenic/ingenic-drm-drv.c
->>>  index 9c60fc4605e4b..ccdb9eedd9247 100644
->>>  --- a/drivers/gpu/drm/ingenic/ingenic-drm-drv.c
->>>  +++ b/drivers/gpu/drm/ingenic/ingenic-drm-drv.c
->>>  @@ -6,6 +6,7 @@
->>>  #include "ingenic-drm.h"
->>>  +#include <linux/bitfield.h>
->>>  #include <linux/component.h>
->>>  #include <linux/clk.h>
->>>  #include <linux/dma-mapping.h>
->>>  @@ -49,6 +50,11 @@ struct ingenic_dma_hwdesc {
->>>  	u32 addr;
->>>  	u32 id;
->>>  	u32 cmd;
->>>  +	/* extended hw descriptor for jz4780 */
->>>  +	u32 offsize;
->>>  +	u32 pagewidth;
->>>  +	u32 cpos;
->>>  +	u32 dessize;
->>>  } __aligned(16);
->>>  struct ingenic_dma_hwdescs {
->>>  @@ -59,7 +65,9 @@ struct ingenic_dma_hwdescs {
->>>  struct jz_soc_info {
->>>  	bool needs_dev_clk;
->>>  	bool has_osd;
->>>  +	bool has_alpha;
->>>  	bool map_noncoherent;
->>>  +	bool use_extended_hwdesc;
->>>  	unsigned int max_width, max_height;
->>>  	const u32 *formats_f0, *formats_f1;
->>>  	unsigned int num_formats_f0, num_formats_f1;
->>>  @@ -446,6 +454,9 @@ static int 
->>> ingenic_drm_plane_atomic_check(struct drm_plane *plane,
->>>  	if (!crtc)
->>>  		return 0;
->>>  +	if (plane == &priv->f0)
->>>  +		return -EINVAL;
->> 
->>  This will break JZ4725B -> JZ4770 SoCs, the f0 plane is perfectly 
->> usable there.
-> 
-> Hm. I think it was your request/proposal to add this [1]?
+HEAD commit:    6abab1b81b65 Add linux-next specific files for 20220202
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=13f4b900700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=b8d8750556896349
+dashboard link: https://syzkaller.appspot.com/bug?extid=5ad567a418794b9b5983
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1450d9f0700000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=130ef35bb00000
 
-Because otherwise with your current patchset the f0 plane does not work 
-*on JZ4780*. It does work on older SoCs.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+5ad567a418794b9b5983@syzkaller.appspotmail.com
 
-> What I have forgotten is why the f0 plane should not be usable for 
-> jz4780.
+==================================================================
+BUG: KASAN: vmalloc-out-of-bounds in bpf_ringbuf_area_alloc kernel/bpf/ringbuf.c:110 [inline]
+BUG: KASAN: vmalloc-out-of-bounds in bpf_ringbuf_alloc kernel/bpf/ringbuf.c:133 [inline]
+BUG: KASAN: vmalloc-out-of-bounds in ringbuf_map_alloc kernel/bpf/ringbuf.c:172 [inline]
+BUG: KASAN: vmalloc-out-of-bounds in ringbuf_map_alloc+0x725/0x7b0 kernel/bpf/ringbuf.c:148
+Write of size 8 at addr ffffc9000c7a9078 by task syz-executor070/3595
 
-We return an error here to prevent userspace from using the f0 plane 
-until it's effectively working on the JZ4780.
+CPU: 0 PID: 3595 Comm: syz-executor070 Not tainted 5.17.0-rc2-next-20220202-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description.constprop.0.cold+0xf/0x3e0 mm/kasan/report.c:255
+ __kasan_report mm/kasan/report.c:442 [inline]
+ kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
+ bpf_ringbuf_area_alloc kernel/bpf/ringbuf.c:110 [inline]
+ bpf_ringbuf_alloc kernel/bpf/ringbuf.c:133 [inline]
+ ringbuf_map_alloc kernel/bpf/ringbuf.c:172 [inline]
+ ringbuf_map_alloc+0x725/0x7b0 kernel/bpf/ringbuf.c:148
+ find_and_alloc_map kernel/bpf/syscall.c:128 [inline]
+ map_create kernel/bpf/syscall.c:863 [inline]
+ __sys_bpf+0xc0f/0x5f10 kernel/bpf/syscall.c:4622
+ __do_sys_bpf kernel/bpf/syscall.c:4744 [inline]
+ __se_sys_bpf kernel/bpf/syscall.c:4742 [inline]
+ __x64_sys_bpf+0x75/0xb0 kernel/bpf/syscall.c:4742
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f26ddd0a029
+Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fff911fde88 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f26ddd0a029
+RDX: 0000000000000048 RSI: 0000000020000280 RDI: 0000000000000000
+RBP: 00007f26ddcce010 R08: 0000000000000000 R09: 0000000000000000
+R10: 00000000ffffffff R11: 0000000000000246 R12: 00007f26ddcce0a0
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+ </TASK>
 
-Cheers,
--Paul
 
-> BR and thanks,
-> Nikolaus
-> 
-> [1] end of 
-> https://patchwork.kernel.org/project/dri-devel/patch/2c7d0aa7d3ef480ebb996d37c27cbaa6f722728b.1633436959.git.hns@goldelico.com/#24578683
-> 
-> 
->> 
->>  Cheers,
->>  -Paul
->> 
->>>  +
->>>  	crtc_state = drm_atomic_get_existing_crtc_state(state,
->>>  							crtc);
->>>  	if (WARN_ON(!crtc_state))
->>>  @@ -662,6 +673,33 @@ static void 
->>> ingenic_drm_plane_atomic_update(struct drm_plane *plane,
->>>  		hwdesc->cmd = JZ_LCD_CMD_EOF_IRQ | (width * height * cpp / 4);
->>>  		hwdesc->next = dma_hwdesc_addr(priv, next_id);
->>>  +		if (priv->soc_info->use_extended_hwdesc) {
->>>  +			hwdesc->cmd |= JZ_LCD_CMD_FRM_ENABLE;
->>>  +
->>>  +			/* Extended 8-byte descriptor */
->>>  +			hwdesc->cpos = 0;
->>>  +			hwdesc->offsize = 0;
->>>  +			hwdesc->pagewidth = 0;
->>>  +
->>>  +			switch (newstate->fb->format->format) {
->>>  +			case DRM_FORMAT_XRGB1555:
->>>  +				hwdesc->cpos |= JZ_LCD_CPOS_RGB555;
->>>  +				fallthrough;
->>>  +			case DRM_FORMAT_RGB565:
->>>  +				hwdesc->cpos |= JZ_LCD_CPOS_BPP_15_16;
->>>  +				break;
->>>  +			case DRM_FORMAT_XRGB8888:
->>>  +				hwdesc->cpos |= JZ_LCD_CPOS_BPP_18_24;
->>>  +				break;
->>>  +			}
->>>  +			hwdesc->cpos |= (JZ_LCD_CPOS_COEFFICIENT_1 <<
->>>  +					 JZ_LCD_CPOS_COEFFICIENT_OFFSET);
->>>  +			hwdesc->dessize =
->>>  +				(0xff << JZ_LCD_DESSIZE_ALPHA_OFFSET) |
->>>  +				FIELD_PREP(JZ_LCD_DESSIZE_HEIGHT_MASK, height - 1) |
->>>  +				FIELD_PREP(JZ_LCD_DESSIZE_WIDTH_MASK, width - 1);
->>>  +		}
->>>  +
->>>  		if (drm_atomic_crtc_needs_modeset(crtc_state)) {
->>>  			fourcc = newstate->fb->format->format;
->>>  @@ -693,6 +731,9 @@ static void 
->>> ingenic_drm_encoder_atomic_mode_set(struct drm_encoder *encoder,
->>>  		    | JZ_LCD_CFG_SPL_DISABLE | JZ_LCD_CFG_REV_DISABLE;
->>>  	}
->>>  +	if (priv->soc_info->use_extended_hwdesc)
->>>  +		cfg |= JZ_LCD_CFG_DESCRIPTOR_8;
->>>  +
->>>  	if (mode->flags & DRM_MODE_FLAG_NHSYNC)
->>>  		cfg |= JZ_LCD_CFG_HSYNC_ACTIVE_LOW;
->>>  	if (mode->flags & DRM_MODE_FLAG_NVSYNC)
->>>  @@ -1015,6 +1056,7 @@ static int ingenic_drm_bind(struct device 
->>> *dev, bool has_components)
->>>  	long parent_rate;
->>>  	unsigned int i, clone_mask = 0;
->>>  	int ret, irq;
->>>  +	u32 osdc = 0;
->>>  	soc_info = of_device_get_match_data(dev);
->>>  	if (!soc_info) {
->>>  @@ -1272,7 +1314,10 @@ static int ingenic_drm_bind(struct device 
->>> *dev, bool has_components)
->>>  	/* Enable OSD if available */
->>>  	if (soc_info->has_osd)
->>>  -		regmap_write(priv->map, JZ_REG_LCD_OSDC, JZ_LCD_OSDC_OSDEN);
->>>  +		osdc |= JZ_LCD_OSDC_OSDEN;
->>>  +	if (soc_info->has_alpha)
->>>  +		osdc |= JZ_LCD_OSDC_ALPHAEN;
->>>  +	regmap_write(priv->map, JZ_REG_LCD_OSDC, osdc);
->>>  	mutex_init(&priv->clk_mutex);
->>>  	priv->clock_nb.notifier_call = ingenic_drm_update_pixclk;
->>>  @@ -1468,10 +1513,24 @@ static const struct jz_soc_info 
->>> jz4770_soc_info = {
->>>  	.num_formats_f0 = ARRAY_SIZE(jz4770_formats_f0),
->>>  };
->>>  +static const struct jz_soc_info jz4780_soc_info = {
->>>  +	.needs_dev_clk = true,
->>>  +	.has_osd = true,
->>>  +	.has_alpha = true,
->>>  +	.use_extended_hwdesc = true,
->>>  +	.max_width = 4096,
->>>  +	.max_height = 2048,
->>>  +	.formats_f1 = jz4770_formats_f1,
->>>  +	.num_formats_f1 = ARRAY_SIZE(jz4770_formats_f1),
->>>  +	.formats_f0 = jz4770_formats_f0,
->>>  +	.num_formats_f0 = ARRAY_SIZE(jz4770_formats_f0),
->>>  +};
->>>  +
->>>  static const struct of_device_id ingenic_drm_of_match[] = {
->>>  	{ .compatible = "ingenic,jz4740-lcd", .data = &jz4740_soc_info },
->>>  	{ .compatible = "ingenic,jz4725b-lcd", .data = &jz4725b_soc_info 
->>> },
->>>  	{ .compatible = "ingenic,jz4770-lcd", .data = &jz4770_soc_info },
->>>  +	{ .compatible = "ingenic,jz4780-lcd", .data = &jz4780_soc_info },
->>>  	{ /* sentinel */ },
->>>  };
->>>  MODULE_DEVICE_TABLE(of, ingenic_drm_of_match);
->>>  diff --git a/drivers/gpu/drm/ingenic/ingenic-drm.h 
->>> b/drivers/gpu/drm/ingenic/ingenic-drm.h
->>>  index 22654ac1dde1c..cb1d09b625881 100644
->>>  --- a/drivers/gpu/drm/ingenic/ingenic-drm.h
->>>  +++ b/drivers/gpu/drm/ingenic/ingenic-drm.h
->>>  @@ -44,8 +44,11 @@
->>>  #define JZ_REG_LCD_XYP1				0x124
->>>  #define JZ_REG_LCD_SIZE0			0x128
->>>  #define JZ_REG_LCD_SIZE1			0x12c
->>>  +#define JZ_REG_LCD_PCFG				0x2c0
->>>  #define JZ_LCD_CFG_SLCD				BIT(31)
->>>  +#define JZ_LCD_CFG_DESCRIPTOR_8			BIT(28)
->>>  +#define JZ_LCD_CFG_RECOVER_FIFO_UNDERRUN	BIT(25)
->>>  #define JZ_LCD_CFG_PS_DISABLE			BIT(23)
->>>  #define JZ_LCD_CFG_CLS_DISABLE			BIT(22)
->>>  #define JZ_LCD_CFG_SPL_DISABLE			BIT(21)
->>>  @@ -63,6 +66,7 @@
->>>  #define JZ_LCD_CFG_DE_ACTIVE_LOW		BIT(9)
->>>  #define JZ_LCD_CFG_VSYNC_ACTIVE_LOW		BIT(8)
->>>  #define JZ_LCD_CFG_18_BIT			BIT(7)
->>>  +#define JZ_LCD_CFG_24_BIT			BIT(6)
->>>  #define JZ_LCD_CFG_PDW				(BIT(5) | BIT(4))
->>>  #define JZ_LCD_CFG_MODE_GENERIC_16BIT		0
->>>  @@ -132,6 +136,7 @@
->>>  #define JZ_LCD_CMD_SOF_IRQ			BIT(31)
->>>  #define JZ_LCD_CMD_EOF_IRQ			BIT(30)
->>>  #define JZ_LCD_CMD_ENABLE_PAL			BIT(28)
->>>  +#define JZ_LCD_CMD_FRM_ENABLE			BIT(26)
->>>  #define JZ_LCD_SYNC_MASK			0x3ff
->>>  @@ -153,6 +158,7 @@
->>>  #define JZ_LCD_RGBC_EVEN_BGR			(0x5 << 0)
->>>  #define JZ_LCD_OSDC_OSDEN			BIT(0)
->>>  +#define JZ_LCD_OSDC_ALPHAEN			BIT(2)
->>>  #define JZ_LCD_OSDC_F0EN			BIT(3)
->>>  #define JZ_LCD_OSDC_F1EN			BIT(4)
->>>  @@ -176,6 +182,38 @@
->>>  #define JZ_LCD_SIZE01_WIDTH_LSB			0
->>>  #define JZ_LCD_SIZE01_HEIGHT_LSB		16
->>>  +#define JZ_LCD_DESSIZE_ALPHA_OFFSET		24
->>>  +#define JZ_LCD_DESSIZE_HEIGHT_MASK		GENMASK(23, 12)
->>>  +#define JZ_LCD_DESSIZE_WIDTH_MASK		GENMASK(11, 0)
->>>  +
->>>  +#define JZ_LCD_CPOS_BPP_15_16			(4 << 27)
->>>  +#define JZ_LCD_CPOS_BPP_18_24			(5 << 27)
->>>  +#define JZ_LCD_CPOS_BPP_30			(7 << 27)
->>>  +#define JZ_LCD_CPOS_RGB555			BIT(30)
->>>  +#define JZ_LCD_CPOS_PREMULTIPLY_LCD		BIT(26)
->>>  +#define JZ_LCD_CPOS_COEFFICIENT_OFFSET		24
->>>  +#define JZ_LCD_CPOS_COEFFICIENT_0		0
->>>  +#define JZ_LCD_CPOS_COEFFICIENT_1		1
->>>  +#define JZ_LCD_CPOS_COEFFICIENT_ALPHA1		2
->>>  +#define JZ_LCD_CPOS_COEFFICIENT_1_ALPHA1	3
->>>  +
->>>  +#define JZ_LCD_RGBC_RGB_PADDING			BIT(15)
->>>  +#define JZ_LCD_RGBC_RGB_PADDING_FIRST		BIT(14)
->>>  +#define JZ_LCD_RGBC_422				BIT(8)
->>>  +#define JZ_LCD_RGBC_RGB_FORMAT_ENABLE		BIT(7)
->>>  +
->>>  +#define JZ_LCD_PCFG_PRI_MODE			BIT(31)
->>>  +#define JZ_LCD_PCFG_HP_BST_4			(0 << 28)
->>>  +#define JZ_LCD_PCFG_HP_BST_8			(1 << 28)
->>>  +#define JZ_LCD_PCFG_HP_BST_16			(2 << 28)
->>>  +#define JZ_LCD_PCFG_HP_BST_32			(3 << 28)
->>>  +#define JZ_LCD_PCFG_HP_BST_64			(4 << 28)
->>>  +#define JZ_LCD_PCFG_HP_BST_16_CONT		(5 << 28)
->>>  +#define JZ_LCD_PCFG_HP_BST_DISABLE		(7 << 28)
->>>  +#define JZ_LCD_PCFG_THRESHOLD2_OFFSET		18
->>>  +#define JZ_LCD_PCFG_THRESHOLD1_OFFSET		9
->>>  +#define JZ_LCD_PCFG_THRESHOLD0_OFFSET		0
->>>  +
->>>  struct device;
->>>  struct drm_plane;
->>>  struct drm_plane_state;
->>>  --
->>>  2.33.0
->> 
->> 
-> 
-
+Memory state around the buggy address:
+ ffffc9000c7a8f00: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+ ffffc9000c7a8f80: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+>ffffc9000c7a9000: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+                                                                ^
+ ffffc9000c7a9080: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+ ffffc9000c7a9100: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+==================================================================
 
