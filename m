@@ -2,150 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE34EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 15:35:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10003C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  2 Feb 2022 15:35:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345500AbiBBPfl (ORCPT
+        id S1345503AbiBBPfv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 10:35:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57310 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345482AbiBBPfg (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 10:35:36 -0500
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E04BDC06173D
-        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 07:35:35 -0800 (PST)
-Received: by mail-pl1-x62c.google.com with SMTP id b15so18662077plg.3
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 07:35:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=7kL1KkyIWXceE/tVaN24Ly31VYKQD4vVNlo5DAeEyfY=;
-        b=b5YKAAMv5vUBLFWQo7/svxf4uW9c4jQdCBlNf+YEv43MWbabtbkORAN1zwYdD3Q9ZQ
-         qjb1pqvxN+woMw8Eqk6kW+KZs2VAKtXnsh1q8TCzqeJyDfj0vbZxe1YvqMo4pONZtFtN
-         M4tZ+iGO4UvOMRmV8zwFLcJbtGJ+XdytpGBi8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=7kL1KkyIWXceE/tVaN24Ly31VYKQD4vVNlo5DAeEyfY=;
-        b=piu085/5/aL7zTLeMdXY8RLg7kt0oWMT1VrOpCL1idJQ/pJZS43SxWJw/hVrC+k7ce
-         1OVE72sRbCbBDR8AwDA8zA4rjbndJzmuKuXmXk/L+MPqWR1wxKrJpFAgzWLq2GBiooGz
-         r29b4G6taS3omZZpE4Iqt/uXWVgybSuSlR14+UOGHpp8ttFWL5u+aiZVCi5JJmDZNXM6
-         UQ/ovGcx6moIYBYE5a5KV6nBnSHwfsTdrtFcleOM3VEkbrWVvmXnbYAqtfsz5UwRtg9E
-         ypVmh3uyr0bgFL4KDs6eQnFDvFZ0Zo/KL2XUcIZOW/FxP1JMcWSUcetCqif7rMaKrStI
-         fGsg==
-X-Gm-Message-State: AOAM532e16CbOBlfPk1mJEmTIHIJmbDtsT5tbWY0S75o6F9qZbFLdZ1J
-        qasPIlgMihgS/P6hcrc08HqWtA==
-X-Google-Smtp-Source: ABdhPJxDqqgJegVyPTA9BanZUtQtEA08JWZcOpDX3pVHOZSHFBzCbRoHQptLSCpYdHmg86Z5HQ0NUQ==
-X-Received: by 2002:a17:903:230f:: with SMTP id d15mr32346742plh.8.1643816135351;
-        Wed, 02 Feb 2022 07:35:35 -0800 (PST)
-Received: from wenstp920.tpe.corp.google.com ([2401:fa00:1:10:78b5:214c:c81:b9aa])
-        by smtp.gmail.com with ESMTPSA id q2sm11096617pfj.94.2022.02.02.07.35.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Feb 2022 07:35:35 -0800 (PST)
-From:   Chen-Yu Tsai <wenst@chromium.org>
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     Chen-Yu Tsai <wenst@chromium.org>,
-        Guodong Liu <guodong.liu@mediatek.com>,
-        Tinghan Shen <tinghan.shen@mediatek.com>,
-        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] dt-bindings: pinctrl: mt8195: fix bias-pull-{up,down} checks
-Date:   Wed,  2 Feb 2022 23:35:28 +0800
-Message-Id: <20220202153528.707185-1-wenst@chromium.org>
-X-Mailer: git-send-email 2.35.0.rc2.247.g8bbb082509-goog
+        Wed, 2 Feb 2022 10:35:51 -0500
+Received: from mail-co1nam11on2054.outbound.protection.outlook.com ([40.107.220.54]:23373
+        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1345482AbiBBPfu (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 2 Feb 2022 10:35:50 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UReawUM4KcnS870tVpHqiIS7Z4I1n1RImVD87D1ksm/vUOtRUyeN0we9c+nQV56Abq4Q1vw9Sjq62fxWmZWEyU5xTjfw+59SCk7LWH/4A2zBhoLDxsgW1AUn1Xe+PZ2eCFVu1cdviiBSgCf7deNsKDPDWKV8CH695LbEVxkZOfUNc/rBMAphghq0uEhlIXfhdIruVKlPtNjCuYsuPM0I66QTi6psFkzlyVhe61AO7BTiuD9nNI46i/MlYWgWDIrabZl5QzjhOpTvnz0nZf3aaTCQX9RnU7EsN26lKpYpOx16gLq9raYHsMGJ+Gme/jTyNdr8CH1Zg6ws1C+DiBNwww==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=e5fQV3G+KAPhyTJUpb2BuUgBzXO8OTaQ5aaB0Jis1Mk=;
+ b=dxFMw00ZYEyf3Xoe58qX77hWZLHxY/f4BDn6OUAnbNvZJVeJXbjsRCTp3zUO1jI4r9UO35mBr4R3RpERxz666NYiiDTXku5fAu4e0EYAySZmg/edUaYKRy977Arw3/KN1HEjMIaINaZoZ23Q7GSRHgotc4Ls9+XHqsArODRtq+mWtKHFwnHXCzq1fwnivEPU7zhKtR3WYPGU0U1Oz4uzPr/zhzB/dcsk9YwjvEfPBk1UbmxOkq/DjDlyiS3V4S16X4q/ChPonc8bWAPxjusrrISwFiVGCok2/zT2eUBfk4YtJrSXQD7x5utY2TU+9YacCLxpGt5z/wb2W4js/iMPbg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=roeck-us.net smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=e5fQV3G+KAPhyTJUpb2BuUgBzXO8OTaQ5aaB0Jis1Mk=;
+ b=r6cpXxftNQP9YKJyEHDzvyuOSUukm7znlQCZDevHqbpdoZMj0pHYfmxf+J4IxsrpYozi6eR7Mnz4ghWmmJGq/AyNmqWZZQ5Rd9HA3yyCAegzLRCzF6JaSG7jIC/foYoJ2ESHlxWayYJVtUcdojC3KN3ERrgTWkAwWTdl8uo98I8=
+Received: from DM6PR13CA0002.namprd13.prod.outlook.com (2603:10b6:5:bc::15) by
+ BN9PR12MB5035.namprd12.prod.outlook.com (2603:10b6:408:134::8) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4951.12; Wed, 2 Feb 2022 15:35:48 +0000
+Received: from DM6NAM11FT064.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:bc:cafe::b8) by DM6PR13CA0002.outlook.office365.com
+ (2603:10b6:5:bc::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.7 via Frontend
+ Transport; Wed, 2 Feb 2022 15:35:43 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ DM6NAM11FT064.mail.protection.outlook.com (10.13.172.234) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.4951.12 via Frontend Transport; Wed, 2 Feb 2022 15:35:43 +0000
+Received: from ethanolx7ea3host.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Wed, 2 Feb
+ 2022 09:35:41 -0600
+From:   Terry Bowman <terry.bowman@amd.com>
+To:     <terry.bowman@amd.com>, <linux@roeck-us.net>,
+        <linux-watchdog@vger.kernel.org>, <jdelvare@suse.com>,
+        <linux-i2c@vger.kernel.org>, <wsa@kernel.org>,
+        <andy.shevchenko@gmail.com>, <rafael.j.wysocki@intel.com>
+CC:     <linux-kernel@vger.kernel.org>, <wim@linux-watchdog.org>,
+        <rrichter@amd.com>, <thomas.lendacky@amd.com>,
+        <sudheesh.mavila@amd.com>, <Nehal-bakulchandra.Shah@amd.com>,
+        <Basavaraj.Natikar@amd.com>, <Shyam-sundar.S-k@amd.com>,
+        <Mario.Limonciello@amd.com>
+Subject: [PATCH v5 1/4] Watchdog: sp5100_tco: Move timer initialization into function
+Date:   Wed, 2 Feb 2022 09:35:22 -0600
+Message-ID: <20220202153525.1693378-2-terry.bowman@amd.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220202153525.1693378-1-terry.bowman@amd.com>
+References: <20220202153525.1693378-1-terry.bowman@amd.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 9f5445f4-c7dc-4f89-32f4-08d9e661acb4
+X-MS-TrafficTypeDiagnostic: BN9PR12MB5035:EE_
+X-Microsoft-Antispam-PRVS: <BN9PR12MB5035B03DFD0419BA4E4F93B483279@BN9PR12MB5035.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:962;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: K5xtjk/2vcUYoRFzbEdRvxlkGQBsxkyWjVFjQbXBRsjyEEiXqgFPUHMskah58lQsDjCl8CNgMZoNpMLvT0Qe6YANe+QZ40n+3E6rPHwNxpyXYc3DEC176v4iMMCYzmYCJKYLVB6FGoYn95EHhbVlWiDqrBrHVh3vnQayOWTscW7dhS5eavUcmSp9CQiqAjQxtrbl5xw5woCnC4YDPSOyRZBPo2N1nlA2KQNdfNvUdcSDkN2Ofu1EdQv3Jn04xJvOvz7TvpKZWJcXwf7qECEJXlgx7eTsGv/6iW8wD3+Xi7Ib0aGa/ROi9oeuaOC5ulNJTAhOUDnd4wnRkep4H2yZ9zSJ+9qazlLODKntgbxPx1sHggZAYzNqJr0k8GWBNJmjm7g2IF57Rq2tzc7qeiTot11N/RY9L++0/I0bbEHegCK3VJvL7GF8ekd3aUdoz7UseWDBxcva+jbUYJuKyRjYFGdV+r6Hjz0BS317aF2wVkF16URMkPy3c+qXUaHgehIX9D5t9dJW/zz1IbKp4JrBUYSnhfhPaiIUCVX9UeNd6RmHs7sJyNUAu09OLjbWpIemtuPQW8KXJcf2Kurbwyf1bMoJ5Svk1hngzSxa1bSdZmNtNfnJ5cWyUR6tRg5iudZTbiYwJh6y+5A1N5AeqUzw5906XtXkCiszJPgjSMj4TcoJTBK39Y7YOp90YQX3gNxQtx7FEMh6bb0wSNtOUWX/KB7ZQf8k8QM/XxFtR7QfzNE=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(2616005)(5660300002)(70586007)(4326008)(44832011)(8676002)(2906002)(70206006)(36860700001)(47076005)(7696005)(86362001)(82310400004)(8936002)(40460700003)(6666004)(336012)(508600001)(426003)(356005)(83380400001)(316002)(81166007)(110136005)(36756003)(1076003)(186003)(54906003)(26005)(16526019)(36900700001)(2101003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Feb 2022 15:35:43.2405
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9f5445f4-c7dc-4f89-32f4-08d9e661acb4
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT064.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5035
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When the constraints and description for bias-pull-{up,down} were added,
-the constraints were not indented correctly, resulting in them being
-parsed as part of the description. This effectively nullified their
-purpose.
+Refactor driver's timer initialization into new function. This is needed
+inorder to support adding new device layouts while using common timer
+initialization.
 
-Move the constraints out of the description block, make each description
-part of the same associative array as the enum its describing, and
-reindent them correctly so they take effect.
-
-Also add "type: boolean" to the list of valid values. This corresponds
-to having bias-pull-{up,down} without any arguments.
-
-Fixes: 91e7edceda96 ("dt-bindings: pinctrl: mt8195: change pull up/down description")
-Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+Co-developed-by: Robert Richter <rrichter@amd.com>
+Signed-off-by: Robert Richter <rrichter@amd.com>
+Signed-off-by: Terry Bowman <terry.bowman@amd.com>
+Tested-by: Jean Delvare <jdelvare@suse.de>
+Reviewed-by: Jean Delvare <jdelvare@suse.de>
 ---
- .../bindings/pinctrl/pinctrl-mt8195.yaml      | 30 ++++++++++---------
- 1 file changed, 16 insertions(+), 14 deletions(-)
+ drivers/watchdog/sp5100_tco.c | 65 +++++++++++++++++++----------------
+ 1 file changed, 36 insertions(+), 29 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8195.yaml b/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8195.yaml
-index 328ea59c5466..8299662c2c09 100644
---- a/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8195.yaml
-+++ b/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8195.yaml
-@@ -99,6 +99,14 @@ patternProperties:
-             enum: [2, 4, 6, 8, 10, 12, 14, 16]
+diff --git a/drivers/watchdog/sp5100_tco.c b/drivers/watchdog/sp5100_tco.c
+index dd9a744f82f8..b365bbc9ac36 100644
+--- a/drivers/watchdog/sp5100_tco.c
++++ b/drivers/watchdog/sp5100_tco.c
+@@ -223,6 +223,41 @@ static u32 sp5100_tco_read_pm_reg32(u8 index)
+ 	return val;
+ }
  
-           bias-pull-down:
-+            oneOf:
-+              - type: boolean
-+              - enum: [100, 101, 102, 103]
-+                description: mt8195 pull down PUPD/R0/R1 type define value.
-+              - enum: [200, 201, 202, 203, 204, 205, 206, 207]
-+                description: mt8195 pull down RSEL type define value.
-+              - enum: [75000, 5000]
-+                description: mt8195 pull down RSEL type si unit value(ohm).
-             description: |
-               For pull down type is normal, it don't need add RSEL & R1R0 define
-               and resistance value.
-@@ -115,13 +123,6 @@ patternProperties:
-               & "MTK_PULL_SET_RSEL_110" & "MTK_PULL_SET_RSEL_111"
-               define in mt8195. It can also support resistance value(ohm)
-               "75000" & "5000" in mt8195.
--              oneOf:
--                - enum: [100, 101, 102, 103]
--                - description: mt8195 pull down PUPD/R0/R1 type define value.
--                - enum: [200, 201, 202, 203, 204, 205, 206, 207]
--                - description: mt8195 pull down RSEL type define value.
--                - enum: [75000, 5000]
--                - description: mt8195 pull down RSEL type si unit value(ohm).
++static int sp5100_tco_timer_init(struct sp5100_tco *tco)
++{
++	struct watchdog_device *wdd = &tco->wdd;
++	struct device *dev = wdd->parent;
++	u32 val;
++
++	val = readl(SP5100_WDT_CONTROL(tco->tcobase));
++	if (val & SP5100_WDT_DISABLED) {
++		dev_err(dev, "Watchdog hardware is disabled\n");
++		return -ENODEV;
++	}
++
++	/*
++	 * Save WatchDogFired status, because WatchDogFired flag is
++	 * cleared here.
++	 */
++	if (val & SP5100_WDT_FIRED)
++		wdd->bootstatus = WDIOF_CARDRESET;
++
++	/* Set watchdog action to reset the system */
++	val &= ~SP5100_WDT_ACTION_RESET;
++	writel(val, SP5100_WDT_CONTROL(tco->tcobase));
++
++	/* Set a reasonable heartbeat before we stop the timer */
++	tco_timer_set_timeout(wdd, wdd->timeout);
++
++	/*
++	 * Stop the TCO before we change anything so we don't race with
++	 * a zeroed timer.
++	 */
++	tco_timer_stop(wdd);
++
++	return 0;
++}
++
+ static int sp5100_tco_setupdevice(struct device *dev,
+ 				  struct watchdog_device *wdd)
+ {
+@@ -348,35 +383,7 @@ static int sp5100_tco_setupdevice(struct device *dev,
+ 	/* Setup the watchdog timer */
+ 	tco_timer_enable(tco);
  
-               An example of using RSEL define:
-               pincontroller {
-@@ -146,6 +147,14 @@ patternProperties:
-               };
+-	val = readl(SP5100_WDT_CONTROL(tco->tcobase));
+-	if (val & SP5100_WDT_DISABLED) {
+-		dev_err(dev, "Watchdog hardware is disabled\n");
+-		ret = -ENODEV;
+-		goto unreg_region;
+-	}
+-
+-	/*
+-	 * Save WatchDogFired status, because WatchDogFired flag is
+-	 * cleared here.
+-	 */
+-	if (val & SP5100_WDT_FIRED)
+-		wdd->bootstatus = WDIOF_CARDRESET;
+-	/* Set watchdog action to reset the system */
+-	val &= ~SP5100_WDT_ACTION_RESET;
+-	writel(val, SP5100_WDT_CONTROL(tco->tcobase));
+-
+-	/* Set a reasonable heartbeat before we stop the timer */
+-	tco_timer_set_timeout(wdd, wdd->timeout);
+-
+-	/*
+-	 * Stop the TCO before we change anything so we don't race with
+-	 * a zeroed timer.
+-	 */
+-	tco_timer_stop(wdd);
+-
+-	release_region(SP5100_IO_PM_INDEX_REG, SP5100_PM_IOPORTS_SIZE);
+-
+-	return 0;
++	ret = sp5100_tco_timer_init(tco);
  
-           bias-pull-up:
-+            oneOf:
-+              - type: boolean
-+              - enum: [100, 101, 102, 103]
-+                description: mt8195 pull up PUPD/R0/R1 type define value.
-+              - enum: [200, 201, 202, 203, 204, 205, 206, 207]
-+                description: mt8195 pull up RSEL type define value.
-+              - enum: [1000, 1500, 2000, 3000, 4000, 5000, 10000, 75000]
-+                description: mt8195 pull up RSEL type si unit value(ohm).
-             description: |
-               For pull up type is normal, it don't need add RSEL & R1R0 define
-               and resistance value.
-@@ -163,13 +172,6 @@ patternProperties:
-               define in mt8195. It can also support resistance value(ohm)
-               "1000" & "1500" & "2000" & "3000" & "4000" & "5000" & "10000" &
-               "75000" in mt8195.
--              oneOf:
--                - enum: [100, 101, 102, 103]
--                - description: mt8195 pull up PUPD/R0/R1 type define value.
--                - enum: [200, 201, 202, 203, 204, 205, 206, 207]
--                - description: mt8195 pull up RSEL type define value.
--                - enum: [1000, 1500, 2000, 3000, 4000, 5000, 10000, 75000]
--                - description: mt8195 pull up RSEL type si unit value(ohm).
-               An example of using RSEL define:
-               pincontroller {
-                 i2c0-pins {
+ unreg_region:
+ 	release_region(SP5100_IO_PM_INDEX_REG, SP5100_PM_IOPORTS_SIZE);
 -- 
-2.35.0.rc2.247.g8bbb082509-goog
+2.30.2
 
