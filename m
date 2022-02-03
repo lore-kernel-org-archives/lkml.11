@@ -2,125 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6FA7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 10:48:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B527CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 10:49:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245544AbiBCKsC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 05:48:02 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:43501 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233621AbiBCKr7 (ORCPT
+        id S1343569AbiBCKtc (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Feb 2022 05:49:32 -0500
+Received: from smtp-out2.suse.de ([195.135.220.29]:40092 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230016AbiBCKtb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 05:47:59 -0500
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nFZXa-0005RQ-Au; Thu, 03 Feb 2022 11:40:38 +0100
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nFZXY-0001jE-BJ; Thu, 03 Feb 2022 11:40:36 +0100
-Date:   Thu, 3 Feb 2022 11:40:36 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     William Breathitt Gray <vilhelm.gray@gmail.com>
-Cc:     David Lechner <david@lechnology.com>, linux-iio@vger.kernel.org,
-        Robin van der Gracht <robin@protonic.nl>,
-        David Jander <david@protonic.nl>, linux-kernel@vger.kernel.org,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH v1] counter: interrupt-cnt: add counter_push_event()
-Message-ID: <20220203104036.GB12695@pengutronix.de>
-References: <20211207081602.45b1423c@erd992>
- <20211208135902.7j3aawytt3jlqgwr@pengutronix.de>
- <20211208171035.6ad117af@erd992>
- <Ybmr2kCLScuGZ41h@shinobu>
- <20211215100853.11f9262d@erd992>
- <YcaZEKbzRbX982YW@shinobu>
- <Yfp56WznEMh7rp2O@pengutronix.de>
- <7a22b7c7-e5ac-7574-9d65-179ab605e4ca@lechnology.com>
- <20220203072411.GA12695@pengutronix.de>
- <YfuJXrxpas1ufzp2@shinobu>
+        Thu, 3 Feb 2022 05:49:31 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 831C61F399;
+        Thu,  3 Feb 2022 10:49:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1643885369; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=a6gXtaxF4sUpqNbpvqW3e+eeQ67Q3V181j1MpX5xCXw=;
+        b=HaY3A8a7CHu+p6SkQfzXFxoRVgaixyso1zTY8l10onfr+4M1WM6Keh9Ypvjdw1ey18+Cq8
+        Pz48XGKgBpP8Ki2zWHuhHY1Gy46s/PE0MAZ4LbmxhJWmPuIQIKdMYbozDUo4+Q7MCpXRpB
+        UgCTlfrM191QhW6/Am1jz3JKp4une/4=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1643885369;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=a6gXtaxF4sUpqNbpvqW3e+eeQ67Q3V181j1MpX5xCXw=;
+        b=4EJKGBft4bAsvWMXkRCyg9VCRvMq2sAKI0INSYlhae42A7n/QFT0juKBfObRurO+3478Iw
+        wdlekzqTUvDT8pBQ==
+Received: from kunlun.suse.cz (unknown [10.100.128.76])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 7AACFA3B85;
+        Thu,  3 Feb 2022 10:49:27 +0000 (UTC)
+Date:   Thu, 3 Feb 2022 11:49:26 +0100
+From:   Michal =?iso-8859-1?Q?Such=E1nek?= <msuchanek@suse.de>
+To:     Luis Chamberlain <mcgrof@kernel.org>
+Cc:     David Howells <dhowells@redhat.com>, keyrings@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-integrity@vger.kernel.org,
+        kexec@lists.infradead.org, Philipp Rudo <prudo@redhat.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        Nayna <nayna@linux.vnet.ibm.com>, Rob Herring <robh@kernel.org>,
+        linux-s390@vger.kernel.org, Vasily Gorbik <gor@linux.ibm.com>,
+        Lakshmi Ramasubramanian <nramas@linux.microsoft.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Jessica Yu <jeyu@kernel.org>, linux-kernel@vger.kernel.org,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Hari Bathini <hbathini@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        linuxppc-dev@lists.ozlabs.org,
+        Frank van der Linden <fllinden@amazon.com>,
+        Thiago Jung Bauermann <bauerman@linux.ibm.com>,
+        Daniel Axtens <dja@axtens.net>, buendgen@de.ibm.com,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dmitry Kasatkin <dmitry.kasatkin@gmail.com>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Baoquan He <bhe@redhat.com>,
+        linux-security-module@vger.kernel.org
+Subject: Re: [PATCH v5 3/6] kexec_file: Don't opencode appended signature
+ verification.
+Message-ID: <20220203104926.GA3113@kunlun.suse.cz>
+References: <cover.1641900831.git.msuchanek@suse.de>
+ <7834eb187ef67cd88fc67f10e831130e3717d776.1641900831.git.msuchanek@suse.de>
+ <YfBafIXgnLzf0QMb@bombadil.infradead.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YfuJXrxpas1ufzp2@shinobu>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 08:54:14 up 54 days, 16:39, 66 users,  load average: 0.15, 0.10,
- 0.09
+In-Reply-To: <YfBafIXgnLzf0QMb@bombadil.infradead.org>
 User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi William,
+Hello,
 
-On Thu, Feb 03, 2022 at 04:50:54PM +0900, William Breathitt Gray wrote:
-> > Hm...
-> > 
-> > To detect pulse frequency, I need a burst of sequential time-stamps
-> > without drops. In case the pulse frequency is higher then the use space
-> > is able to get it out of FIFO, we will get high number of drops. 
-> > So, we do not need all time stamps. Only bunch of them without drops in
-> > the middle.
-> > 
-> > I know, at some frequency we wont be able to collect all pulses any way.
-> > Internal FIFO is just increasing the max detectable frequency. So, it is
-> > sort of optimization.
-> > 
-> > My current driver version has own FIFO which is filled directly by the
-> > IRQ handler and user space trigger flush_cb to push all collected
-> > time stamps. The main question is: how the flush procedure should be
-> > controlled. We have following options:
-> > 
-> > - Attach it to the read(). The disadvantage: at high frequencies, we
-> >   wont be able to get a burst with time stamps without drops in the
-> >   middle
-> > - Trigger flush from user space. In this case, we make user space a bit
-> >   more complicated and cant really get all advantages of poll().
-> > - kernel driver is using own timer to trigger flush. The timer can be
-> >   configured from user space. The advantage of it, the user space is
-> >   simple and has full advantage of using poll()
-> > 
-> > Regards,
-> > Oleksij
+thanks for the review.
+
+On Tue, Jan 25, 2022 at 12:15:56PM -0800, Luis Chamberlain wrote:
+> On Tue, Jan 11, 2022 at 12:37:45PM +0100, Michal Suchanek wrote:
+> > diff --git a/include/linux/verification.h b/include/linux/verification.h
+> > index a655923335ae..32db9287a7b0 100644
+> > --- a/include/linux/verification.h
+> > +++ b/include/linux/verification.h
+> > @@ -60,5 +60,8 @@ extern int verify_pefile_signature(const void *pebuf, unsigned pelen,
+> >  				   enum key_being_used_for usage);
+> >  #endif
+> >  
+> > +int verify_appended_signature(const void *data, unsigned long *len,
+> > +			      struct key *trusted_keys, const char *what);
+> > +
 > 
-> Hi Oleksij,
+> Looks very non-module specific.
+
+Which it is now that the same signature format is used for kernels.
+
 > 
-> Earlier in this thread, Jonathan Cameron suggested using the RCU macros
-> to protect access to the events. Taking an RCU approach would eliminate
-> the need for spinlocks because the memory barriers are built-in to the
-> macros, so I assume flushing would no longer be necessary. Would RCU be
-> a viable solution for your needs?
+> > diff --git a/kernel/module_signing.c b/kernel/module_signing.c
+> > index 8723ae70ea1f..30149969f21f 100644
+> > --- a/kernel/module_signing.c
+> > +++ b/kernel/module_signing.c
+> > @@ -14,32 +14,38 @@
+> >  #include <crypto/public_key.h>
+> >  #include "module-internal.h"
+> >  
+> > -/*
+> > - * Verify the signature on a module.
+> > +/**
+> > + * verify_appended_signature - Verify the signature on a module with the
+> > + * signature marker stripped.
+> > + * @data: The data to be verified
+> > + * @len: Size of @data.
+> > + * @trusted_keys: Keyring to use for verification
+> > + * @what: Informational string for log messages
+> >   */
+> > -int mod_verify_sig(const void *mod, struct load_info *info)
+> > +int verify_appended_signature(const void *data, unsigned long *len,
+> > +			      struct key *trusted_keys, const char *what)
+> >  {
+> > -	struct module_signature ms;
+> > -	size_t sig_len, modlen = info->len;
+> > +	struct module_signature *ms;
+> 
+> There goes the abstraction, so why not make this clear where we re-use
+> the struct module_signature for various things and call it as it is,
+> verify_mod_appended_signature() or some such?
 
-IMO, RCU is the wrong word in this context. It provide an advantage
-where we need to reuse/read less frequently changed data. In this use
-case we need to move data ASAP, so KFIFO seems to work just fine here.
+It sounds like the abstraction is actually improved by callers no longer
+dealing with struct module_signature when verifying signature on a
+kernel. That is the structure is misnamed but it is now hidden behind
+an abstraction.
 
-In any case, after implementi double FIFO and more testing I would
-prefer to stay with my initial patch. On a single core system, with have
-no waiting time at all. No concurrent access. And on the SMP system
-(iMX6Q), currently I can measure higher frequency with initial not
-optimized driver:
-- with counter_push_event() directly from IRQ: max freq 30-35kHz
-- with double FIFO, i have max freq of ~25kHz
+Or am I missing something?
 
-Your suggestion was to add COUNTER_EVENT_CHANGE_OF_STATE and use it for
-my use case. Correct?
+Thanks
 
-Regards,
-Oleksij
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Michal
