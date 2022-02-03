@@ -2,108 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97282C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 09:21:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C391BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 09:25:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347234AbiBCJVR (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 04:21:17 -0500
-Received: from mout.kundenserver.de ([212.227.126.187]:51529 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236784AbiBCJVN (ORCPT
+        id S244999AbiBCJZM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Feb 2022 04:25:12 -0500
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.85.151]:34611 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230204AbiBCJZL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 04:21:13 -0500
-Received: from mail-wm1-f52.google.com ([209.85.128.52]) by
- mrelayeu.kundenserver.de (mreue010 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MXop2-1mjjBb19tE-00Y9iS for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022
- 10:21:11 +0100
-Received: by mail-wm1-f52.google.com with SMTP id k6-20020a05600c1c8600b003524656034cso1379170wms.2
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 01:21:11 -0800 (PST)
-X-Gm-Message-State: AOAM532ArfxOsEPqs9LOYDo/6oTeKvYFfyaZIUL+E1NkRhaXcrG4J6Ui
-        0Cb+gqVVMenQJ9AlvjxAPFsRDMBddUTFZeeK7YI=
-X-Google-Smtp-Source: ABdhPJzzGHS040+Ga0s5Uewyaa/jDPD/fj5JRTVbX2eFjm6kLmPkl8rRFjQT8dqAI3jEVH6cV/zk5k8WD1CiDjX4ogQ=
-X-Received: by 2002:a05:600c:2309:: with SMTP id 9mr9597514wmo.82.1643880070927;
- Thu, 03 Feb 2022 01:21:10 -0800 (PST)
-MIME-Version: 1.0
-References: <20220203091340.20285-1-tzimmermann@suse.de>
-In-Reply-To: <20220203091340.20285-1-tzimmermann@suse.de>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 3 Feb 2022 10:20:55 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a3dYmCfyQV+iPj6KJAKpv8zYCVorDjqpeyVeAz7v7JyaQ@mail.gmail.com>
-Message-ID: <CAK8P3a3dYmCfyQV+iPj6KJAKpv8zYCVorDjqpeyVeAz7v7JyaQ@mail.gmail.com>
-Subject: Re: [PATCH] drm/panel: Select DRM_DP_HELPER for DRM_PANEL_EDP
-To:     Thomas Zimmermann <tzimmermann@suse.de>
-Cc:     Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, Lyude Paul <lyude@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Doug Anderson <dianders@chromium.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
+        Thu, 3 Feb 2022 04:25:11 -0500
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-32-mMsgCqnFOQGl0x65lu6MTQ-1; Thu, 03 Feb 2022 09:25:08 +0000
+X-MC-Unique: mMsgCqnFOQGl0x65lu6MTQ-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.28; Thu, 3 Feb 2022 09:25:07 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.028; Thu, 3 Feb 2022 09:25:07 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Miguel Ojeda' <miguel.ojeda.sandonis@gmail.com>,
+        Kees Cook <keescook@chromium.org>
+CC:     Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Martin Uecker <Martin.Uecker@med.uni-goettingen.de>,
+        Ingo Molnar <mingo@kernel.org>,
+        "Rikard Falkeborn" <rikard.falkeborn@gmail.com>,
         Arnd Bergmann <arnd@arndb.de>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:XHM8TnvLWDi7Z0voRc5CGdjb0zKP3XkptcFDPs90piIOw1gYKyL
- Y4jqG+IX4oSoXkVZx/NCh3norR++J6W4HuP5KXM7Kl3y1TA2fIXJ0cPE5O8nPN1g9T4cYCU
- fcryPQst19kstXyEttuFixS/PoyfeRk8WU8srGefIVZ9koyptRg/4q+innlN9IX/C+e9jdf
- JrbVBFVtzN/MiMgK7FQfQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:GxYDRdwi2wk=:Hg5bpc4UFiGRnhdaqH/Iao
- GUH+aKo7qSOfEgCmyGAqiZ/lKCFiWR55QauLF9hhJ/n/IipS+pQS1gWoZgvOu2eyRloam9wVY
- Brz5AmWYi+ixo/3RILEarYONv1oArHMx5gKDu4pih1NOh2VVs0CO5IiA9s6Xsh0vaS0eQSzJr
- +I2klSg896z0c+B+OPP3ffgXZIoju2E0LYIG5n4Ft6746cjo4aGNqqO8+AV9EiUzxTUCPJB2D
- 8dtj06nY4oNszqeKkBRKP5CQ4mrtRtru2JDYS4sJ1UrHytOF77Yh7lpByKu4VnAPJmbIDKT82
- xOJJxpA4Fx4QIqbkzltqXDiDvEFjwXW/J4ukn2pkPRGhjpBNj9Yvi+QsEZaHFUfhPF2XbIqma
- RskkMmlWTzhMVBrHlL3i+pTB/yp0nJHjNjuQ0wd34bVahiYIiN3bfP+LjQIg1BsbEi0NLh1SN
- GmJR1OcM8Znj+L1nbbcLWIw9fJGBE23PU91/kaHBGVxPcazEvRpa/6/jxALmbeihvCPzoigj4
- zm+QGi3mAzBN1jwcRxon07HrH993ijJanMGTnVWLeZO8airimsZjIbTnFQmtEk6TndHQ2lavW
- qzlC7TdGL4xdWWX/FjQRA0K0kMKyjKZysH9uMyCOXse6WRzkXHFjkwa40v4sMw/0V9ZjESEug
- eCFPgflSW/UTZHjGF8NujNr41IzMvdTCdRFGiS3u4F1aQDtT/aXTijsPqgN/+d8PgmmUOXRiM
- Ng4VMm7BbYZKeY7WL7mmVEG9L1gSpRf/g7XxZMPz2D5yp0eq8WYhoEIJDEkGNAOpr7KBb4LSD
- gKLytYowiUekCTnws3Zweag5Q0bWWdWdk1Jpr/nz1RxYLWzseA=
+        "Linux Doc Mailing List" <linux-doc@vger.kernel.org>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "linux-hardening@vger.kernel.org" <linux-hardening@vger.kernel.org>
+Subject: RE: [PATCH] linux/const.h: Explain how __is_constexpr() works
+Thread-Topic: [PATCH] linux/const.h: Explain how __is_constexpr() works
+Thread-Index: AQHYGHV8RL4oDGFcTkyEh79ubpGBJ6yBjFag
+Date:   Thu, 3 Feb 2022 09:25:07 +0000
+Message-ID: <8f41a0e40e78419d947ba322031acd2f@AcuMS.aculab.com>
+References: <20220131204357.1133674-1-keescook@chromium.org>
+ <CANiq72m+3UKC+PskuGYu_c_u1Ua-=bvkHi9Gess-59+pqXdSwA@mail.gmail.com>
+In-Reply-To: <CANiq72m+3UKC+PskuGYu_c_u1Ua-=bvkHi9Gess-59+pqXdSwA@mail.gmail.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
+MIME-Version: 1.0
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 3, 2022 at 10:13 AM Thomas Zimmermann <tzimmermann@suse.de> wrote:
->
-> As reported in [1], DRM_PANEL_EDP depends on DRM_DP_HELPER. Select
-> the option to fix the build failure. The issue has been reported
-> before, when DisplayPort helpers where hidden behind the option
-> CONFIG_DRM_KMS_HELPER. [2]
+RnJvbTogTWlndWVsIE9qZWRhDQo+IFNlbnQ6IDAyIEZlYnJ1YXJ5IDIwMjIgMjA6NDMNCj4gDQo+
+IE9uIE1vbiwgSmFuIDMxLCAyMDIyIGF0IDk6NDMgUE0gS2VlcyBDb29rIDxrZWVzY29va0BjaHJv
+bWl1bS5vcmc+IHdyb3RlOg0KPiA+DQo+ID4gKyAqIC0gVGhlIGNvbmRpdGlvbmFsIG9wZXJhdG9y
+ICgiLi4uID8gLi4uIDogLi4uIikgcmV0dXJucyB0aGUgdHlwZSBvZiB0aGUNCj4gPiArICogICBv
+cGVyYW5kIHRoYXQgaXNuJ3QgYSBudWxsIHBvaW50ZXIgY29uc3RhbnQuIFRoaXMgYmVoYXZpb3Ig
+aXMgdGhlDQo+IA0KPiBQZXJoYXBzIGNsYXJpZnkgdGhhdCB0aGlzIGhhcHBlbnMgb25seSBpZiBp
+dCBmaXRzIHRoYXQgY2FzZT8gLi4uDQo+IA0KPiA+ICsgKiAtIElmICh4KSBpcyBhbiBpbnRlZ2Vy
+IGNvbnN0YW50IGV4cHJlc3Npb24sIHRoZW4gdGhlICIqIDBsIiByZXNvbHZlcyBpdA0KPiA+ICsg
+KiAgIGludG8gYSBudWxsIHBvaW50ZXIgY29uc3RhbnQsIHdoaWNoIGZvcmNlcyB0aGUgY29uZGl0
+aW9uYWwgb3BlcmF0b3INCj4gPiArICogICB0byByZXR1cm4gdGhlIHR5cGUgb2YgdGhlIGxhc3Qg
+b3BlcmFuZDogIihpbnQgKikiLg0KPiA+ICsgKiAtIElmICh4KSBpcyBub3QgYW4gaW50ZWdlciBj
+b25zdGFudCBleHByZXNzaW9uLCB0aGVuIHRoZSB0eXBlIG9mIHRoZQ0KPiA+ICsgKiAgIGNvbmRp
+dGlvbmFsIG9wZXJhdG9yIGlzIGZyb20gdGhlIGZpcnN0IG9wZXJhbmQ6ICIodm9pZCAqKSIuDQo+
+IA0KPiAuLi4gaS5lLiB0aGlzIG9uZSBoYXBwZW5zIGJlY2F1c2UgaXQgaXMgc3BlY2lmaWVkIGFz
+IHJldHVybmluZyBhDQo+IHBvaW50ZXIgdG8gdm9pZCAob25lIGNvdWxkIHJlYWQgaXQgYXMgcmV0
+dXJuaW5nIHRoZSB0eXBlIG9mIHRoZSBmaXJzdA0KPiBvcGVyYW5kKS4NCj4gDQo+IFdoYXQgYWJv
+dXQgc29tZXRoaW5nIGxpa2U6DQo+IA0KPiAgIC0gVGhlIGJlaGF2aW9yIChpbmNsdWRpbmcgaXRz
+IHJldHVybiB0eXBlKSBvZiB0aGUgY29uZGl0aW9uYWwNCj4gb3BlcmF0b3IgKCIuLi4gPyAuLi4g
+OiAuLi4iKSBkZXBlbmRzIG9uIHRoZSBraW5kIG9mIGV4cHJlc3Npb25zIGdpdmVuDQo+IGZvciB0
+aGUgc2Vjb25kIGFuZCB0aGlyZCBvcGVyYW5kcy4gVGhpcyBpcyB0aGUgY2VudHJhbCBtZWNoYW5p
+c20gb2YNCj4gdGhlIG1hY3JvLg0KPiAgIC0gSWYgKHgpIGlzIGFuIGludGVnZXIgY29uc3RhbnQg
+ZXhwcmVzc2lvbiwgdGhlbiB0aGUgIiogMGwiIHJlc29sdmVzDQo+IGl0IGludG8gYSBudWxsIHBv
+aW50ZXIgY29uc3RhbnQuIFdoZW4gb25lIG9wZXJhbmQgaXMgYSBudWxsIHBvaW50ZXINCj4gY29u
+c3RhbnQgYW5kIHRoZSBvdGhlciBpcyBhIHBvaW50ZXIsIHRoZSBjb25kaXRpb25hbCBvcGVyYXRv
+ciByZXR1cm5zDQo+IHRoZSB0eXBlIG9mIHRoZSBwb2ludGVyIG9wZXJhbmQ7IHRoYXQgaXMsICJp
+bnQgKiIuDQo+ICAgLSBJZiAoeCkgaXMgbm90IGFuIGludGVnZXIgY29uc3RhbnQgZXhwcmVzc2lv
+biwgdGhlbiB0aGF0IG9wZXJhbmQgaXMNCj4gYSBwb2ludGVyIHRvIHZvaWQgKGJ1dCBub3QgYSBu
+dWxsIHBvaW50ZXIgY29uc3RhbnQpLiBXaGVuIG9uZSBvcGVyYW5kDQo+IGlzIGEgcG9pbnRlciB0
+byB2b2lkIGFuZCB0aGUgb3RoZXIgYSBwb2ludGVyIHRvIGFuIG9iamVjdCB0eXBlLCB0aGUNCj4g
+Y29uZGl0aW9uYWwgb3BlcmF0b3IgcmV0dXJucyBhICJ2b2lkICoiIHR5cGUuDQoNCk5pY2sncyBx
+dW90ZSBmcm9tIHRoZSBDIHN0YW5kYXJkIGFjdHVhbGx5IHN1bXMgaXQgdXAgbmljZWx5Og0KDQog
+ICAgVGhlIGtleSBoZXJlIGlzIHRoYXQgdGhlIGNvbmRpdGlvbmFsIG9wZXJhdG9yIHJldHVybnMg
+YSBkaWZmZXJlbnQgdHlwZQ0KICAgIGRlcGVuZGluZyBvbiB3aGV0aGVyIG9uZSBvZiB0aGUgb3Bl
+cmFuZHMgaXMgYSBudWxsIHBvaW50ZXIgY29uc3RhbnQNCiAgICAoNi41LjE1LjYpOg0KDQogICAg
+Wy4uLl0gaWYgb25lIG9wZXJhbmQgaXMgYSBudWxsIHBvaW50ZXIgY29uc3RhbnQsIHRoZSByZXN1
+bHQgaGFzIHRoZQ0KICAgIHR5cGUgb2YgdGhlIG90aGVyIG9wZXJhbmQ7IG90aGVyd2lzZSwgb25l
+IG9wZXJhbmQgaXMgYSBwb2ludGVyIHRvIHZvaWQNCiAgICBvciBhIHF1YWxpZmllZCB2ZXJzaW9u
+IG9mIHZvaWQsIGluIHdoaWNoIGNhc2UgdGhlIHJlc3VsdCB0eXBlIGlzIGENCiAgICBwb2ludGVy
+IHRvIGFuIGFwcHJvcHJpYXRlbHkgcXVhbGlmaWVkIHZlcnNpb24gb2Ygdm9pZC4NCg0KVGhhdCBm
+b2xsb3dlZCBieSBhIHJlbWluZGVyIHRoYXQgIih2b2lkICopeCBpcyBhIG51bGwgcG9pbnRlciBj
+b25zdGFudCBpZiB4DQppcyBhIGNvbXBpbGUgdGltZSBpbnRlZ2VyIGNvbnN0YW50IGV4cHJlc3Np
+b24iIGlzIGVub3VnaC4NCkFsbCB0aGUgcmVzdCBpcyBqdXN0IFRMO0RSLg0KDQpUaGUgJzgnIGFs
+c28ganVzdCBjb25mdXNlIHRoaW5ncywgdGhleSBhcmUgbm90IGltcG9ydGFudCBhdCBhbGwuDQpT
+byBpdCBjYW4gYmU6DQojZGVmaW5lIF9faXNfY29uc3RleHByKHgpIFwNCiAJKHNpemVvZigqKDAg
+PyAoKHZvaWQgKikoKGxvbmcpKHgpICogMCkpIDogKGludCAqKTApKSA9PSBzaXplb2YoaW50KSkN
+Cg0KCURhdmlkDQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2Fk
+LCBNb3VudCBGYXJtLCBNaWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5v
+OiAxMzk3Mzg2IChXYWxlcykNCg==
 
-The two links [1] and [2] appear to be missing here, and I would also recommend
-copying the build output into the changelog text for easier reference.
-
-When linking to a bug report, best use 'Link:' tags in below.
->
-> Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
-> Fixes: adb9d5a2cc77 ("drm/dp: Move DisplayPort helpers into separate helper module")
-> Fixes: 5f04e7ce392d ("drm/panel-edp: Split eDP panels out of panel-simple")
-> Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
-> Cc: Thomas Zimmermann <tzimmermann@suse.de>
-> Cc: Lyude Paul <lyude@redhat.com>
-> Cc: Daniel Vetter <daniel@ffwll.ch>
-> Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
-> Cc: Maxime Ripard <mripard@kernel.org>
-> Cc: dri-devel@lists.freedesktop.org
-> ---
->  drivers/gpu/drm/panel/Kconfig | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
-> index 434c2861bb40..0aec5a10b064 100644
-> --- a/drivers/gpu/drm/panel/Kconfig
-> +++ b/drivers/gpu/drm/panel/Kconfig
-> @@ -106,6 +106,7 @@ config DRM_PANEL_EDP
->         depends on PM
->         select VIDEOMODE_HELPERS
->         select DRM_DP_AUX_BUS
-> +       select DRM_DP_HELPER
->         help
->           DRM panel driver for dumb eDP panels that need at most a regulator and
->           a GPIO to be powered up. Optionally a backlight can be attached so
