@@ -2,48 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AB26C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:32:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 349EDC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:32:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354688AbiBCUcm (ORCPT
+        id S1354698AbiBCUcp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:32:42 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:33460 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351006AbiBCUaV (ORCPT
+        Thu, 3 Feb 2022 15:32:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57862 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354510AbiBCUbr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 15:30:21 -0500
+        Thu, 3 Feb 2022 15:31:47 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BF1BC06176D;
+        Thu,  3 Feb 2022 12:31:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B07F7B835AA;
-        Thu,  3 Feb 2022 20:30:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58EBBC36AE2;
-        Thu,  3 Feb 2022 20:30:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E20C61AB9;
+        Thu,  3 Feb 2022 20:31:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7000BC340F0;
+        Thu,  3 Feb 2022 20:31:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643920218;
-        bh=QtDiWEcSmKNrDcBtsN8v0rSVjLkbZyrSSGtXPtH3eQQ=;
+        s=k20201202; t=1643920282;
+        bh=L2abX2J6L4mBx7bs32Xn/5k1qnjftTG1FoPZV+6UUe4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uPqJ/YhleSujX/C8nlwK7pB8+Cy0FyXFJ1UCmaa2KTC1H4WtZ+24mgXyCZQKzx8oa
-         OgcMwNsKXm0XJvtyo5kq9J5OvZMmUBRrwMTQLix0Slkd65dor0z/LMPlYdUzQIBGfx
-         bdGIVKrGO/vmyKc3m0TGKs1vhHEAUdKYGDV7rEBJikOCM7gOFubcbGrA5iAaI/oJa8
-         Qg1NM4JbU8aOYsbhU255F3MQzQbmhUib8lBsNSL81vH0+CZmMWFo9VAPKRGGFP6i7n
-         oyfE397kyo4jz33ZBIJFm5Gj4HJ12YC0LDHMGlFy+GSnZhgvrGpvf2KJMmmtB81J/Y
-         ql7bIiWAUm5Wg==
+        b=BdT2AcNvjGHdAYQwN2k4HU0rSlkeQSjOFCLD1p8os0p8UnAK1NX0PANaLe4jiKgMM
+         pYErwI9LSC7wqVoYPSHvcjZJ8i1ga43rVC1FCynQPNBToFcFTkr4dJpk72Yb62nN0V
+         ecXb4y6uVo2W7qdtjksZC1w0OftT1NctiOh+V6gPqy8Zl+qatbF1L6H8TYJIQDMci3
+         qTOpNJfcLICH8PehJu+rCYODDczdeVNfebx8EhEyoGYgCT3iyvnkYt3nxBF6EOBJVn
+         VS1mO4ahNS4jO4ahombeXRihEcPlIbSrs/2GhXlb2Ev0A3p1sOvcOEmhWs6mfifADL
+         7AcK/f7/Q15bw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Padmanabha Srinivasaiah <treasure4paddy@gmail.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Sasha Levin <sashal@kernel.org>, emma@anholt.net,
-        mripard@kernel.org, airlied@linux.ie, daniel@ffwll.ch,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.16 19/52] drm/vc4: Fix deadlock on DSI device attach error
-Date:   Thu,  3 Feb 2022 15:29:13 -0500
-Message-Id: <20220203202947.2304-19-sashal@kernel.org>
+Cc:     =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
+        <amadeuszx.slawinski@linux.intel.com>,
+        Cezary Rojewski <cezary.rojewski@intel.com>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
+        pavel@ucw.cz, len.brown@intel.com, linux-pm@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 37/52] PM: hibernate: Remove register_nosave_region_late()
+Date:   Thu,  3 Feb 2022 15:29:31 -0500
+Message-Id: <20220203202947.2304-37-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220203202947.2304-1-sashal@kernel.org>
 References: <20220203202947.2304-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -51,118 +56,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Padmanabha Srinivasaiah <treasure4paddy@gmail.com>
+From: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
 
-[ Upstream commit 0a3d12ab5097b1d045e693412e6b366b7e82031b ]
+[ Upstream commit 33569ef3c754a82010f266b7b938a66a3ccf90a4 ]
 
-DSI device attach to DSI host will be done with host device's lock
-held.
+It is an unused wrapper forcing kmalloc allocation for registering
+nosave regions. Also, rename __register_nosave_region() to
+register_nosave_region() now that there is no need for disambiguation.
 
-Un-registering host in "device attach" error path (ex: probe retry)
-will result in deadlock with below call trace and non operational
-DSI display.
-
-Startup Call trace:
-[   35.043036]  rt_mutex_slowlock.constprop.21+0x184/0x1b8
-[   35.043048]  mutex_lock_nested+0x7c/0xc8
-[   35.043060]  device_del+0x4c/0x3e8
-[   35.043075]  device_unregister+0x20/0x40
-[   35.043082]  mipi_dsi_remove_device_fn+0x18/0x28
-[   35.043093]  device_for_each_child+0x68/0xb0
-[   35.043105]  mipi_dsi_host_unregister+0x40/0x90
-[   35.043115]  vc4_dsi_host_attach+0xf0/0x120 [vc4]
-[   35.043199]  mipi_dsi_attach+0x30/0x48
-[   35.043209]  tc358762_probe+0x128/0x164 [tc358762]
-[   35.043225]  mipi_dsi_drv_probe+0x28/0x38
-[   35.043234]  really_probe+0xc0/0x318
-[   35.043244]  __driver_probe_device+0x80/0xe8
-[   35.043254]  driver_probe_device+0xb8/0x118
-[   35.043263]  __device_attach_driver+0x98/0xe8
-[   35.043273]  bus_for_each_drv+0x84/0xd8
-[   35.043281]  __device_attach+0xf0/0x150
-[   35.043290]  device_initial_probe+0x1c/0x28
-[   35.043300]  bus_probe_device+0xa4/0xb0
-[   35.043308]  deferred_probe_work_func+0xa0/0xe0
-[   35.043318]  process_one_work+0x254/0x700
-[   35.043330]  worker_thread+0x4c/0x448
-[   35.043339]  kthread+0x19c/0x1a8
-[   35.043348]  ret_from_fork+0x10/0x20
-
-Shutdown Call trace:
-[  365.565417] Call trace:
-[  365.565423]  __switch_to+0x148/0x200
-[  365.565452]  __schedule+0x340/0x9c8
-[  365.565467]  schedule+0x48/0x110
-[  365.565479]  schedule_timeout+0x3b0/0x448
-[  365.565496]  wait_for_completion+0xac/0x138
-[  365.565509]  __flush_work+0x218/0x4e0
-[  365.565523]  flush_work+0x1c/0x28
-[  365.565536]  wait_for_device_probe+0x68/0x158
-[  365.565550]  device_shutdown+0x24/0x348
-[  365.565561]  kernel_restart_prepare+0x40/0x50
-[  365.565578]  kernel_restart+0x20/0x70
-[  365.565591]  __do_sys_reboot+0x10c/0x220
-[  365.565605]  __arm64_sys_reboot+0x2c/0x38
-[  365.565619]  invoke_syscall+0x4c/0x110
-[  365.565634]  el0_svc_common.constprop.3+0xfc/0x120
-[  365.565648]  do_el0_svc+0x2c/0x90
-[  365.565661]  el0_svc+0x4c/0xf0
-[  365.565671]  el0t_64_sync_handler+0x90/0xb8
-[  365.565682]  el0t_64_sync+0x180/0x184
-
-Signed-off-by: Padmanabha Srinivasaiah <treasure4paddy@gmail.com>
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220118005127.29015-1-treasure4paddy@gmail.com
+Signed-off-by: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
+Reviewed-by: Cezary Rojewski <cezary.rojewski@intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vc4/vc4_dsi.c | 14 ++++----------
- 1 file changed, 4 insertions(+), 10 deletions(-)
+ include/linux/suspend.h | 11 +----------
+ kernel/power/snapshot.c | 21 +++++++--------------
+ 2 files changed, 8 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_dsi.c b/drivers/gpu/drm/vc4/vc4_dsi.c
-index a229da58962a2..9300d3354c512 100644
---- a/drivers/gpu/drm/vc4/vc4_dsi.c
-+++ b/drivers/gpu/drm/vc4/vc4_dsi.c
-@@ -1262,7 +1262,6 @@ static int vc4_dsi_host_attach(struct mipi_dsi_host *host,
- 			       struct mipi_dsi_device *device)
- {
- 	struct vc4_dsi *dsi = host_to_dsi(host);
--	int ret;
+diff --git a/include/linux/suspend.h b/include/linux/suspend.h
+index 8af13ba60c7e4..c1310c571d805 100644
+--- a/include/linux/suspend.h
++++ b/include/linux/suspend.h
+@@ -430,15 +430,7 @@ struct platform_hibernation_ops {
  
- 	dsi->lanes = device->lanes;
- 	dsi->channel = device->channel;
-@@ -1297,18 +1296,15 @@ static int vc4_dsi_host_attach(struct mipi_dsi_host *host,
- 		return 0;
+ #ifdef CONFIG_HIBERNATION
+ /* kernel/power/snapshot.c */
+-extern void __register_nosave_region(unsigned long b, unsigned long e, int km);
+-static inline void __init register_nosave_region(unsigned long b, unsigned long e)
+-{
+-	__register_nosave_region(b, e, 0);
+-}
+-static inline void __init register_nosave_region_late(unsigned long b, unsigned long e)
+-{
+-	__register_nosave_region(b, e, 1);
+-}
++extern void register_nosave_region(unsigned long b, unsigned long e);
+ extern int swsusp_page_is_forbidden(struct page *);
+ extern void swsusp_set_page_free(struct page *);
+ extern void swsusp_unset_page_free(struct page *);
+@@ -457,7 +449,6 @@ int pfn_is_nosave(unsigned long pfn);
+ int hibernate_quiet_exec(int (*func)(void *data), void *data);
+ #else /* CONFIG_HIBERNATION */
+ static inline void register_nosave_region(unsigned long b, unsigned long e) {}
+-static inline void register_nosave_region_late(unsigned long b, unsigned long e) {}
+ static inline int swsusp_page_is_forbidden(struct page *p) { return 0; }
+ static inline void swsusp_set_page_free(struct page *p) {}
+ static inline void swsusp_unset_page_free(struct page *p) {}
+diff --git a/kernel/power/snapshot.c b/kernel/power/snapshot.c
+index f7a9860782135..330d499376924 100644
+--- a/kernel/power/snapshot.c
++++ b/kernel/power/snapshot.c
+@@ -978,8 +978,7 @@ static void memory_bm_recycle(struct memory_bitmap *bm)
+  * Register a range of page frames the contents of which should not be saved
+  * during hibernation (to be used in the early initialization code).
+  */
+-void __init __register_nosave_region(unsigned long start_pfn,
+-				     unsigned long end_pfn, int use_kmalloc)
++void __init register_nosave_region(unsigned long start_pfn, unsigned long end_pfn)
+ {
+ 	struct nosave_region *region;
+ 
+@@ -995,18 +994,12 @@ void __init __register_nosave_region(unsigned long start_pfn,
+ 			goto Report;
+ 		}
  	}
- 
--	ret = component_add(&dsi->pdev->dev, &vc4_dsi_ops);
--	if (ret) {
--		mipi_dsi_host_unregister(&dsi->dsi_host);
--		return ret;
+-	if (use_kmalloc) {
+-		/* During init, this shouldn't fail */
+-		region = kmalloc(sizeof(struct nosave_region), GFP_KERNEL);
+-		BUG_ON(!region);
+-	} else {
+-		/* This allocation cannot fail */
+-		region = memblock_alloc(sizeof(struct nosave_region),
+-					SMP_CACHE_BYTES);
+-		if (!region)
+-			panic("%s: Failed to allocate %zu bytes\n", __func__,
+-			      sizeof(struct nosave_region));
 -	}
--
--	return 0;
-+	return component_add(&dsi->pdev->dev, &vc4_dsi_ops);
- }
- 
- static int vc4_dsi_host_detach(struct mipi_dsi_host *host,
- 			       struct mipi_dsi_device *device)
- {
-+	struct vc4_dsi *dsi = host_to_dsi(host);
-+
-+	component_del(&dsi->pdev->dev, &vc4_dsi_ops);
- 	return 0;
- }
- 
-@@ -1686,9 +1682,7 @@ static int vc4_dsi_dev_remove(struct platform_device *pdev)
- 	struct device *dev = &pdev->dev;
- 	struct vc4_dsi *dsi = dev_get_drvdata(dev);
- 
--	component_del(&pdev->dev, &vc4_dsi_ops);
- 	mipi_dsi_host_unregister(&dsi->dsi_host);
--
- 	return 0;
- }
- 
++	/* This allocation cannot fail */
++	region = memblock_alloc(sizeof(struct nosave_region),
++				SMP_CACHE_BYTES);
++	if (!region)
++		panic("%s: Failed to allocate %zu bytes\n", __func__,
++		      sizeof(struct nosave_region));
+ 	region->start_pfn = start_pfn;
+ 	region->end_pfn = end_pfn;
+ 	list_add_tail(&region->list, &nosave_regions);
 -- 
 2.34.1
 
