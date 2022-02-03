@@ -2,161 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC79DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 21:52:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F6F3C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 21:53:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355533AbiBCVwR (ORCPT
+        id S1355549AbiBCVx2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 16:52:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49094 "EHLO
+        Thu, 3 Feb 2022 16:53:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355311AbiBCVwP (ORCPT
+        with ESMTP id S1347562AbiBCVxZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 16:52:15 -0500
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 169BBC061714;
-        Thu,  3 Feb 2022 13:52:15 -0800 (PST)
-Received: by mail-wm1-x32d.google.com with SMTP id o1-20020a1c4d01000000b0034d95625e1fso8128950wmh.4;
-        Thu, 03 Feb 2022 13:52:15 -0800 (PST)
+        Thu, 3 Feb 2022 16:53:25 -0500
+Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86605C061714
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 13:53:25 -0800 (PST)
+Received: by mail-il1-x132.google.com with SMTP id d3so3257045ilr.10
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 13:53:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=buRa9dy1somA+KRSylXRCFC8cwfGjuaHgmtJ/vC9N5I=;
-        b=AJNb52/UXg2h/IDNv/EvUdWeUh6pcQr6BUVY2EpdPy9u87X12BXD2JXN0P4WCGQtPN
-         vvV6SVqmjQz7RJxChS7bwJl65p5kVU69BBes0C+l84m1I/++PUxcpPCV5bHd5FZu7WdC
-         C4x4i1MfPCF44QyGdPdxgKDeKrQ5l0+QTxg85Pfpmepaa/fCpHb+yL5XlVYqCNKuOUTf
-         OGCTZCnAASFiJ2kc/PRnajASxWLpiOgZtZebOmwzPxLzHs3WarP/uPY3XB6EketqJiYv
-         kXe/cyB6tqWk0LqgtIuVIalJUlhrMiKvohA/evJaxHjrSdXNuH0c8gbu8efqAZw+47SD
-         mUlQ==
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Yw/OE+yoqHrGWOsbX30hBDztNYfmuxeKhNyJ4ntdaxg=;
+        b=Izi40afZ8OYZSbUSIHRmbNMv2qVTLhFfyqW43yk7xNplNKSKPf5mt2HhkphhkdWcLg
+         0ISLToWpdFUEATXPX/rGkJFhnCroXZUPHfEQL0mjnlv0jTPO+QOGix+uF/hpreTdH7ht
+         tFQFqJBjk0gHE2hEZ4b1INseWuqrj3T8HxMXM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=buRa9dy1somA+KRSylXRCFC8cwfGjuaHgmtJ/vC9N5I=;
-        b=etszp/6QbEpBplZhHZbf3LtK3CoxjI9WOBt4igzoD+uyGuTvh0l1aoc6eigRqZQGWm
-         5MIPnSYZS3GySmciHClDyeYkxwM75iDDUf5k8JpIcNDARlT9mcPH6SMWY7BZRchnHd6h
-         +d+hkQQ05vhLrZVmgOv9oZYGT72NLNOEuBkfXCkClUNk0K3FGb2K1W7e3dELQ/6CRB/a
-         4qLV0JePbU/PTlUA1WwFZQ5RmK7T9jQBbhihNsRJUH0ZFiUAZHF1mnfP+xSfO3ny3gnI
-         dr9JF5WwlsDBj/0oK1aRtx6KkITQOgzDsX/pntSRwuAoJ0IAbbrTeng7Yv+cmM0ksJ+T
-         Ey0A==
-X-Gm-Message-State: AOAM532irNy0iiz0iPvpP5f7UQfwt8GSkzjD0ZBU8zz94MO+AvT+zbUF
-        PZLLI+uvvq9WYkBU2Q/OCwsBO1KjfTU=
-X-Google-Smtp-Source: ABdhPJzPWwnqVZ6nC+SkSCc23HRV11PNduKuSsjkFgoYPxIiyQtPgz7ZqNcgsVUX7Sh0vdGTTA/TPw==
-X-Received: by 2002:a05:600c:3593:: with SMTP id p19mr11818890wmq.172.1643925133525;
-        Thu, 03 Feb 2022 13:52:13 -0800 (PST)
-Received: from [192.168.8.198] ([85.255.232.204])
-        by smtp.gmail.com with ESMTPSA id u14sm20350wrs.55.2022.02.03.13.52.12
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Yw/OE+yoqHrGWOsbX30hBDztNYfmuxeKhNyJ4ntdaxg=;
+        b=BgXXIJXd3wD96Zw1sOIYPiM/dK/U9cr6OSQCy1JKPzuevRotD9E1iTrX0p3u5sjepA
+         ji/CmcIaQdr9HHf0DFgE++sB5PcdR4ADG8W4BCqBQ0tlV2P0oy2yg5gyn7zwT+dELXO/
+         EQxhoQRv9CxOC4KzoKH7GkMQD85zAan6Xr1U/zFJKB8sR2BV7RuJ9+gRv8tDpnvXvr6E
+         NxqNnpmKzMp/4UkpEXX6r6i6Pjg6499Zrh7Fd7lo1G9Y4LFC/Akq4Nyfu+Fea0Yd/055
+         WJ/SuRjDpRCjHs7iNvVyDd+Rb8AGXQkkuM6Qrk60vWkG0/vY1Qfja5LHYrVvctLuaX+y
+         /Bug==
+X-Gm-Message-State: AOAM533vLHz2GTcvWi5LfGrBX4eX+dN6jB51NexMoJIuvLv92g8mNkZf
+        XgZBQgVW+jAPwNTRrAizMm3sN1fddjqevg==
+X-Google-Smtp-Source: ABdhPJxUx33IT5MLZJab5um7apbh171hwUGiltWQdmd74mAigB1hdg22PuVe6t0WPHSzjTOX9WRv8Q==
+X-Received: by 2002:a92:a001:: with SMTP id e1mr48858ili.108.1643925204473;
+        Thu, 03 Feb 2022 13:53:24 -0800 (PST)
+Received: from mail-il1-f175.google.com (mail-il1-f175.google.com. [209.85.166.175])
+        by smtp.gmail.com with ESMTPSA id k8sm50891ilo.45.2022.02.03.13.53.22
+        for <linux-kernel@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Feb 2022 13:52:13 -0800 (PST)
-Message-ID: <a2939109-5f97-ff56-df53-0a56ba12e268@gmail.com>
-Date:   Thu, 3 Feb 2022 21:47:21 +0000
+        Thu, 03 Feb 2022 13:53:22 -0800 (PST)
+Received: by mail-il1-f175.google.com with SMTP id d3so3256959ilr.10
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 13:53:22 -0800 (PST)
+X-Received: by 2002:a05:6e02:1bed:: with SMTP id y13mr38117ilv.27.1643925201892;
+ Thu, 03 Feb 2022 13:53:21 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [External] Re: [PATCH v3 2/3] io_uring: avoid ring quiesce while
- registering/unregistering eventfd
-Content-Language: en-US
-To:     Usama Arif <usama.arif@bytedance.com>,
-        Jens Axboe <axboe@kernel.dk>, io-uring@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     fam.zheng@bytedance.com
-References: <20220203174108.668549-1-usama.arif@bytedance.com>
- <20220203174108.668549-3-usama.arif@bytedance.com>
- <ffa271c7-3f49-2b5a-b67e-3bb1b052ee4e@kernel.dk>
- <877d54b9-5baa-f0b5-23fe-25aef78e37c4@bytedance.com>
- <dc6bb53f-19cc-ee23-2137-6e27396f7d57@kernel.dk>
- <ac5f5152-f9e4-8e83-642b-73c2620ce7c0@gmail.com>
- <a5992789-6b0b-f3a8-0a24-e00add2a005a@kernel.dk>
- <fc97036f-26a3-afb1-180f-30aa89d3cc01@bytedance.com>
-From:   Pavel Begunkov <asml.silence@gmail.com>
-In-Reply-To: <fc97036f-26a3-afb1-180f-30aa89d3cc01@bytedance.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20220202212348.1391534-1-dianders@chromium.org>
+ <20220202132301.v3.9.I5f367dcce8107f2186b2aad4aef0dfcfafa034b9@changeid> <CAE-0n51N4wB7aTRbZR3zh3hjz56vdkFNwOSuKjU7n9gd_JDcvA@mail.gmail.com>
+In-Reply-To: <CAE-0n51N4wB7aTRbZR3zh3hjz56vdkFNwOSuKjU7n9gd_JDcvA@mail.gmail.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Thu, 3 Feb 2022 13:53:09 -0800
+X-Gmail-Original-Message-ID: <CAD=FV=UKKZaHHz3-idahLg-ey3xmSZWKeTVVipzpZNQAkUVKmQ@mail.gmail.com>
+Message-ID: <CAD=FV=UKKZaHHz3-idahLg-ey3xmSZWKeTVVipzpZNQAkUVKmQ@mail.gmail.com>
+Subject: Re: [PATCH v3 09/14] arm64: dts: qcom: sc7280: Disable pull from pcie1_clkreq
+To:     Stephen Boyd <swboyd@chromium.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Prasad Malisetty <pmaliset@codeaurora.org>,
+        Matthias Kaehlcke <mka@chromium.org>, quic_rjendra@quicinc.com,
+        Shaik Sajida Bhanu <sbhanu@codeaurora.org>,
+        kgodara@codeaurora.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
+        Sibi Sankar <sibis@codeaurora.org>,
+        Andy Gross <agross@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/3/22 19:54, Usama Arif wrote:
-> On 03/02/2022 19:06, Jens Axboe wrote:
->> On 2/3/22 12:00 PM, Pavel Begunkov wrote:
->>> On 2/3/22 18:29, Jens Axboe wrote:
->>>> On 2/3/22 11:26 AM, Usama Arif wrote:
->>>>> Hmm, maybe i didn't understand you and Pavel correctly. Are you
->>>>> suggesting to do the below diff over patch 3? I dont think that would be
->>>>> correct, as it is possible that just after checking if ctx->io_ev_fd is
->>>>> present unregister can be called by another thread and set ctx->io_ev_fd
->>>>> to NULL that would cause a NULL pointer exception later? In the current
->>>>> patch, the check of whether ev_fd exists happens as the first thing
->>>>> after rcu_read_lock and the rcu_read_lock are extremely cheap i believe.
->>>>
->>>> They are cheap, but they are still noticeable at high requests/sec
->>>> rates. So would be best to avoid them.
->>>>
->>>> And yes it's obviously racy, there's the potential to miss an eventfd
->>>> notification if it races with registering an eventfd descriptor. But
->>>> that's not really a concern, as if you register with inflight IO
->>>> pending, then that always exists just depending on timing. The only
->>>> thing I care about here is that it's always _safe_. Hence something ala
->>>> what you did below is totally fine, as we're re-evaluating under rcu
->>>> protection.
->>>
->>> Indeed, the patch doesn't have any formal guarantees for propagation
->>> to already inflight requests, so this extra unsynchronised check
->>> doesn't change anything.
->>>
->>> I'm still more сurious why we need RCU and extra complexity when
->>> apparently there is no use case for that. If it's only about
->>> initial initialisation, then as I described there is a much
->>> simpler approach.
->>
->> Would be nice if we could get rid of the quiesce code in general, but I
->> haven't done a check to see what'd be missing after this...
->>
-> 
-> I had checked! I had posted below in in reply to v1 (https://lore.kernel.org/io-uring/02fb0bc3-fc38-b8f0-3067-edd2a525ef29@gmail.com/T/#m5ac7867ac61d86fe62c099be793ffe5a9a334976), but i think it got missed! Copy-pasting here for reference:
+Hi,
 
-May have missed it then, apologies
+On Thu, Feb 3, 2022 at 1:42 PM Stephen Boyd <swboyd@chromium.org> wrote:
+>
+> Quoting Douglas Anderson (2022-02-02 13:23:43)
+> > I believe that the PCIe clkreq pin is an output. That means we
+> > shouldn't have a pull enabled for it. Turn it off.
+>
+> It sounds like it's a request from the PCI device to the PCI phy that
+> the clk should be on. I googled pcie clkreq open drain and this pdf[1]
+> says
+>
+> "The CLKREQ# signal is an open drain, active low signal that is driven
+> low by the PCI Express M.2 add-I Card function to request that the PCI
+> Express reference clock be available (active clock state) in order to
+> allow the PCI Express interface to send/receive data"
+>
+> so presumably if there isn't an external pull on the signal the open
+> drain feature will not work and the PCIe device won't be able to drive
+> it low.
+>
+> [1] https://advdownload.advantech.com/productfile/PIS/96FD80-P512-LIS/Product%20-%20Datasheet/96FD80-P512-LIS_datasheet20180110154919.pdf
 
-> "
-> I see that if we remove ring quiesce from the the above 3 opcodes, then
-> only IORING_REGISTER_ENABLE_RINGS and IORING_REGISTER_RESTRICTIONS is
-> left for ring quiesce. I just had a quick look at those, and from what i
-> see we might not need to enter ring quiesce in
-> IORING_REGISTER_ENABLE_RINGS as the ring is already disabled at that point?
-> And for IORING_REGISTER_RESTRICTIONS if we do a similar approach to
-> IORING_REGISTER_EVENTFD, i.e. wrap ctx->restrictions inside an RCU
-> protected data structure, use spin_lock to prevent multiple
-> io_register_restrictions calls at the same time, and use read_rcu_lock
-> in io_check_restriction, then we can remove ring quiesce from
-> io_uring_register altogether?
-> 
-> My usecase only uses IORING_REGISTER_EVENTFD, but i think entering ring
-> quiesce costs similar in other opcodes. If the above sounds reasonable,
-> please let me know and i can send patches for removing ring quiesce for
-> io_uring_register.
-> "
-> 
-> Let me know if above makes sense, i can add patches on top of the current patchset, or we can do it after they get merged.
-> 
-> As for why, quiesce state is very expensive. its making io_uring_register the most expensive syscall in my usecase (~15ms) compared to ~0.1ms now with RCU, which is why i started investigating this. And this patchset avoids ring quiesce for 3 of the opcodes, so it would generally be quite helpful if someone does registers and unregisters eventfd multiple times.
+Yeah, I had some trouble figuring this out too, so if someone knows
+better than me then I'm more than happy to take advice here. I thought
+I had found something claiming that "clkreq" was an output and on the
+schematic I have from Qualcomm it shows an arrow going out from the
+SoC for this signal indicating that it's an output from the SoC. Of
+course, those arrows are notoriously wrong but at least it's one piece
+of evidence that someone thought this was an output from the SoC.
 
-I agree that 15ms for initial setup is silly and it has to be
-reduced. However, I'm trying weight the extra complexity against
-potential benefits of _also_ optimising [de,re]-registration
+Hrm, but I just checked the sc7280 "datasheet" which claims that this
+is an input. Sigh.
 
-Considering that you only register it one time at the beginning,
-we risk adding a yet another feature that nobody is going to ever
-use. This doesn't give me a nice feeling, well, unless you do
-have a use case.
+I guess the options are:
+* If we're sure this is an input to the SoC then I think we should
+remove the drive-strength, right?
+* If we don't know then I guess we can leave both?
 
-To emphasise, I'm comparing 15->0.1 improvement for only initial
-registration (which is simpler) vs 15->0.1 for both registration
-and unregistration.
 
-fwiw, it alters userpace visible behaviour in either case, shouldn't
-be as important here but there is always a chance to break userspace
+In any case, for now we can just drop this patch?
 
--- 
-Pavel Begunkov
+-Doug
