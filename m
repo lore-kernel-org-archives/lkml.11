@@ -2,88 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5043EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 10:36:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8004CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 10:39:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350136AbiBCKgW (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 05:36:22 -0500
-Received: from alexa-out.qualcomm.com ([129.46.98.28]:12391 "EHLO
-        alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350066AbiBCKgK (ORCPT
+        id S232425AbiBCKjM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Feb 2022 05:39:12 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:31948 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229946AbiBCKjL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 05:36:10 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1643884570; x=1675420570;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=ngqJhiJ5tdkhcY5b0/X08HsrS6YJqNRHbW0yKlAp4sU=;
-  b=kuM5ayVEUZGLdLz0+//omhmq9b4mU1GKyfCc3WdkPA1QLl2YWGE7fatc
-   yzSQWYSdsoAf95h4fMU9xO/HpoyIWzbtyHZejWdZKCxK/gTGbWqBcfuje
-   lm9Eo4RQVBO+qfYWOFdy/l2950VlEEAIFF9QQkbgqHZhHDEMmrb/sH6YP
-   8=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 03 Feb 2022 02:36:09 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2022 02:36:08 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Thu, 3 Feb 2022 02:36:02 -0800
-Received: from blr-ubuntu-525.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Thu, 3 Feb 2022 02:35:58 -0800
-From:   Souradeep Chowdhury <quic_schowdhu@quicinc.com>
-To:     <linux-arm-msm@vger.kernel.org>, <linux-usb@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <pure.logic@nexus-software.ie>,
-        <bjorn.andersson@linaro.org>, <greg@kroah.com>, <robh@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <quic_tsoni@quicinc.com>,
-        <quic_psodagud@quicinc.com>, <quic_satyap@quicinc.com>,
-        <quic_pheragu@quicinc.com>, <quic_rjendra@quicinc.com>,
-        <quic_sibis@quicinc.com>, <quic_saipraka@quicinc.com>,
-        <quic_schowdhu@quicinc.com>
-Subject: [PATCH V5 5/6] arm64: dts: qcom: sc7280: Set the default dr_mode for usb2
-Date:   Thu, 3 Feb 2022 16:04:34 +0530
-Message-ID: <19f0683c897b4eb73e1c5d6ff3debfffc51050f0.1643880577.git.quic_schowdhu@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <cover.1643880577.git.quic_schowdhu@quicinc.com>
-References: <cover.1643880577.git.quic_schowdhu@quicinc.com>
+        Thu, 3 Feb 2022 05:39:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643884750;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZU2hQlwm8ZITkE014YQsnffx0TQv/CDRydtKMinCyWg=;
+        b=GWKEcahWWiCUR4EnTQ+oefXaY2xe0m6wzBmjTlHOD7s4z4AVsEDR0OYakb1bsP8xNB9R9v
+        gs97WnfB6uDsYovfpskWeA9/eQh+n1Xepflcqs1wxvJ6Z1iuluTR+9G9eNk+UqW182x1TB
+        62Dsvk8YY1B8+ZI7yu5aKwqrI/k2d5s=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-153-GO3pvKxROUGcm-jYbCRuhg-1; Thu, 03 Feb 2022 05:39:09 -0500
+X-MC-Unique: GO3pvKxROUGcm-jYbCRuhg-1
+Received: by mail-ej1-f71.google.com with SMTP id kw5-20020a170907770500b006ba314a753eso969787ejc.21
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 02:39:09 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ZU2hQlwm8ZITkE014YQsnffx0TQv/CDRydtKMinCyWg=;
+        b=Kedo3vGHlSEjjXJXwzCLMAwiSFFVUrx6h1JqiUF3T4dSxPIk6XawNgMHpmeTuOtqHM
+         WhtFD4Bll0+0Uvt8CO2kshywohr2gOUMx7IxaHNMr60fwban/At5XvMJDF3yyrNaIc1W
+         VRDeVOKLI45OF3AAu0jWaia7i1qn8rL6X0pY/faNkfthJiXol0YpkC02/u7mzOqu3aLg
+         0Uf2qjDOdN74PJ73dTdhwXL1maSSGiLfLcVBjviSJ7GCHiVCcOQX3TOPyYWfzt9WncVK
+         8Cis3giEM6Di57rrAOyaygMXyfABIeEmqxb+Y9XwprweXinDvYmKzpXxhMwdbtvo/a/m
+         i6rQ==
+X-Gm-Message-State: AOAM5330pBcQrznaTQMFYx09qPTGmiZcC2QjpPZw5O/QXE1qFKtf0VeB
+        I+M4mF9+RoOHYYHyZ4FL2o69U4SucQiNzGj84Ny14y4ryenczN8Nwp8tVXdXTtTwwbgxQWh8Frg
+        SU0IFteKjAwEQ8xGlU33ByIxC
+X-Received: by 2002:a17:906:58ca:: with SMTP id e10mr28351525ejs.747.1643884748420;
+        Thu, 03 Feb 2022 02:39:08 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwKs+aSJvdcjbzyefZcODa3xJFx8vm3Ss3xSl2n1IOj95dcAGAXZsV3zQvJcOBmAMoellGPSw==
+X-Received: by 2002:a17:906:58ca:: with SMTP id e10mr28351495ejs.747.1643884748180;
+        Thu, 03 Feb 2022 02:39:08 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id h1sm21709716edz.64.2022.02.03.02.39.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 03 Feb 2022 02:39:07 -0800 (PST)
+Message-ID: <f3be1081-e7df-20ab-9706-29f4b7d61bbc@redhat.com>
+Date:   Thu, 3 Feb 2022 11:39:04 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 0/4] KVM: SVM: nSVM: Implement Enlightened MSR-Bitmap
+ for Hyper-V-on-KVM
+Content-Language: en-US
+To:     Vitaly Kuznetsov <vkuznets@redhat.com>
+Cc:     kvm@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        Vineeth Pillai <viremana@linux.microsoft.com>,
+        linux-kernel@vger.kernel.org
+References: <20220202095100.129834-1-vkuznets@redhat.com>
+ <429afd81-7bef-8ead-6ca4-12671378d581@redhat.com> <87czk4b7m2.fsf@redhat.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <87czk4b7m2.fsf@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Set the default dr_mode for usb2 node to "otg" to enable
-role-switch for EUD(Embedded USB Debugger) connector node.
+On 2/3/22 10:51, Vitaly Kuznetsov wrote:
+> Would it be possible to squash the attached patch in? Thanks!
 
-Signed-off-by: Souradeep Chowdhury <quic_schowdhu@quicinc.com>
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
----
- arch/arm64/boot/dts/qcom/sc7280-idp.dts | 4 ++++
- 1 file changed, 4 insertions(+)
+Yes, of course.  Tests FTW. :)
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dts b/arch/arm64/boot/dts/qcom/sc7280-idp.dts
-index 9b991ba..f40eaa5 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-idp.dts
-+++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dts
-@@ -61,6 +61,10 @@
- 	modem-init;
- };
- 
-+&usb_2_dwc3 {
-+	dr_mode = "otg";
-+};
-+
- &pmk8350_rtc {
- 	status = "okay";
- };
--- 
-2.7.4
+Paolo
 
