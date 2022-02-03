@@ -2,50 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86252C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:39:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47551C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:39:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231479AbiBCUjg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:39:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59016 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354828AbiBCUgn (ORCPT
+        id S1355116AbiBCUjk (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Feb 2022 15:39:40 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:38810 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354445AbiBCUgq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 15:36:43 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E49BC061748;
-        Thu,  3 Feb 2022 12:34:56 -0800 (PST)
+        Thu, 3 Feb 2022 15:36:46 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E515161B68;
-        Thu,  3 Feb 2022 20:34:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 222D5C36AE3;
-        Thu,  3 Feb 2022 20:34:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 01A78B835B2;
+        Thu,  3 Feb 2022 20:36:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7E20C340E8;
+        Thu,  3 Feb 2022 20:36:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643920495;
-        bh=IpJaUgCby7BfLwA8UIjAkqWSIcHsUn66qeLSJKTrifk=;
+        s=k20201202; t=1643920603;
+        bh=NpZm3yFy3Z1UNqbMTXkFjMGIfCtrlF8R0qEN3T7AHQA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UVLxOrvkv0p3TnfMY/fZl8mzUmu1Z8Ro3FevTv4yv2aW82TclSCKBRLXI5+eeC4p3
-         YnGlb41NcJg9sNS/Sqx0mExbi0ujApfuFk5FuIqYd5rP2fWwWki0Fi5wu6JD+yZ38s
-         L4j6LGQMA/VTJapASiRvQA2Sr8BHyyKHU3FRfcMPYRexdKEcUWX/yHZctp5aWVLCOF
-         tCxwl5GQMpN9uzj2Ot/o3JM8a61M7MBisTweO1B9sCwsaR3dQrrSYnEtEy960BnQm5
-         BOU9niRL0twBUYtucMNBL6OauUbFyIIbwGC1RF2BfW7KoIyGzYNTbsx9s+O7qcu+VW
-         DfWwQp8wHc6Qw==
+        b=g4Vb2US30qd0XVuiU4aObVD5EFV2p/6Wcj3YPoit8MeeNZrsU66ZRPDk6iWLj6GF+
+         qNcVXCnBNF1KEjDpB3oEnT/WwfMy2fS92PNU5zhfPwDnPeWsp5YBCBwgrsIPImOKSz
+         9TnRIipCP2EfxcZtZmAV9Cx19bZezTIpDRLah+bD75dT+mPdURRLjlrKR5gLGbzH8Y
+         IxzhQOc7BjE/z4sT1aFTtluKy1wCUxTiNF1MlwRv2pCiFekdUXKe3U8Rhgyf64NDDQ
+         Fl1ltFp3guaq43usbh5nomOMcdVDUP6XAnuRItiHQzMsBKely+fxqYFp5DzVz7VZRv
+         yPM79VeIYme1Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Florian Westphal <fw@strlen.de>, Yi Chen <yiche@redhat.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>, kadlec@netfilter.org,
-        davem@davemloft.net, kuba@kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 05/25] netfilter: nf_conntrack_netbios_ns: fix helper module alias
-Date:   Thu,  3 Feb 2022 15:34:26 -0500
-Message-Id: <20220203203447.3570-5-sashal@kernel.org>
+Cc:     Olga Kornievskaia <kolga@netapp.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Sasha Levin <sashal@kernel.org>,
+        trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
+        linux-nfs@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 6/9] NFSv4 expose nfs_parse_server_name function
+Date:   Thu,  3 Feb 2022 15:36:30 -0500
+Message-Id: <20220203203633.4685-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220203203447.3570-1-sashal@kernel.org>
-References: <20220203203447.3570-1-sashal@kernel.org>
+In-Reply-To: <20220203203633.4685-1-sashal@kernel.org>
+References: <20220203203633.4685-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,52 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Olga Kornievskaia <kolga@netapp.com>
 
-[ Upstream commit 0e906607b9c5ee22312c9af4d8adb45c617ea38a ]
+[ Upstream commit f5b27cc6761e27ee6387a24df1a99ca77b360fea ]
 
-The helper gets registered as 'netbios-ns', not netbios_ns.
-Intentionally not adding a fixes-tag because i don't want this to go to
-stable. This wasn't noticed for a very long time so no so no need to risk
-regressions.
+Make nfs_parse_server_name available outside of nfs4namespace.c.
 
-Reported-by: Yi Chen <yiche@redhat.com>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Olga Kornievskaia <kolga@netapp.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_conntrack_netbios_ns.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ fs/nfs/nfs4_fs.h       | 3 ++-
+ fs/nfs/nfs4namespace.c | 4 ++--
+ 2 files changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/net/netfilter/nf_conntrack_netbios_ns.c b/net/netfilter/nf_conntrack_netbios_ns.c
-index 7f19ee2596090..55415f011943d 100644
---- a/net/netfilter/nf_conntrack_netbios_ns.c
-+++ b/net/netfilter/nf_conntrack_netbios_ns.c
-@@ -20,13 +20,14 @@
- #include <net/netfilter/nf_conntrack_helper.h>
- #include <net/netfilter/nf_conntrack_expect.h>
- 
-+#define HELPER_NAME	"netbios-ns"
- #define NMBD_PORT	137
- 
- MODULE_AUTHOR("Patrick McHardy <kaber@trash.net>");
- MODULE_DESCRIPTION("NetBIOS name service broadcast connection tracking helper");
- MODULE_LICENSE("GPL");
- MODULE_ALIAS("ip_conntrack_netbios_ns");
--MODULE_ALIAS_NFCT_HELPER("netbios_ns");
-+MODULE_ALIAS_NFCT_HELPER(HELPER_NAME);
- 
- static unsigned int timeout __read_mostly = 3;
- module_param(timeout, uint, 0400);
-@@ -44,7 +45,7 @@ static int netbios_ns_help(struct sk_buff *skb, unsigned int protoff,
+diff --git a/fs/nfs/nfs4_fs.h b/fs/nfs/nfs4_fs.h
+index 22cff39cca29a..c9ca2237c3fec 100644
+--- a/fs/nfs/nfs4_fs.h
++++ b/fs/nfs/nfs4_fs.h
+@@ -242,7 +242,8 @@ struct vfsmount *nfs4_submount(struct nfs_server *, struct dentry *,
+ 			       struct nfs_fh *, struct nfs_fattr *);
+ int nfs4_replace_transport(struct nfs_server *server,
+ 				const struct nfs4_fs_locations *locations);
+-
++size_t nfs_parse_server_name(char *string, size_t len, struct sockaddr *sa,
++			     size_t salen, struct net *net);
+ /* nfs4proc.c */
+ extern int nfs4_handle_exception(struct nfs_server *, int, struct nfs4_exception *);
+ extern int nfs4_call_sync(struct rpc_clnt *, struct nfs_server *,
+diff --git a/fs/nfs/nfs4namespace.c b/fs/nfs/nfs4namespace.c
+index 8c3f327d858d5..b36361ca0d36b 100644
+--- a/fs/nfs/nfs4namespace.c
++++ b/fs/nfs/nfs4namespace.c
+@@ -121,8 +121,8 @@ static int nfs4_validate_fspath(struct dentry *dentry,
+ 	return 0;
  }
  
- static struct nf_conntrack_helper helper __read_mostly = {
--	.name			= "netbios-ns",
-+	.name			= HELPER_NAME,
- 	.tuple.src.l3num	= NFPROTO_IPV4,
- 	.tuple.src.u.udp.port	= cpu_to_be16(NMBD_PORT),
- 	.tuple.dst.protonum	= IPPROTO_UDP,
+-static size_t nfs_parse_server_name(char *string, size_t len,
+-		struct sockaddr *sa, size_t salen, struct net *net)
++size_t nfs_parse_server_name(char *string, size_t len, struct sockaddr *sa,
++			     size_t salen, struct net *net)
+ {
+ 	ssize_t ret;
+ 
 -- 
 2.34.1
 
