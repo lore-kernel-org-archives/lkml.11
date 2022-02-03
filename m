@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3F33C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 17:10:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97E55C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 17:10:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352721AbiBCRK2 (ORCPT
+        id S1352735AbiBCRKd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 12:10:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38394 "EHLO
+        Thu, 3 Feb 2022 12:10:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352545AbiBCRJo (ORCPT
+        with ESMTP id S1352572AbiBCRJr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 12:09:44 -0500
-Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4227C06174E
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 09:09:38 -0800 (PST)
-Received: by mail-il1-x12b.google.com with SMTP id i1so2658607ils.5
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 09:09:38 -0800 (PST)
+        Thu, 3 Feb 2022 12:09:47 -0500
+Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1F7DC06173D
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 09:09:46 -0800 (PST)
+Received: by mail-il1-x134.google.com with SMTP id y17so2674833ilm.1
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 09:09:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=1KdZcajVjZgu+pEXQdk/RqI6U+J/OtZyImbF73oIsC8=;
-        b=KVWM6AxxBaFX120lVv/FXvzsCdVidVZoQu+22yzFauzaZQF1Pg1OdEpW31fiL681Sr
-         A7xzZzpI+hh5O7jcnoPyIu8eSkZVNzCheS42OQ7v/WIYCyjv9ykLe6r0JIvgxyOETkol
-         DTDRgTu4YPvUcs7/Jpg73VQobIfJxuDpVLmL4Pgmi3F46B8OWBUm3VUrZnNRlkWI6TUq
-         +cXGeiEFgxq2V4E1kxeh+cH/ePUL8FHRjMOcwJRUD4PndHvTZMctDK8L2lDVavCIhl52
-         jWOyACDSFQJjZu/0ZwJ2XBd5pUxyICq2teLbH7zwRk0jjrg2kI2jWsUo/q6KiP91FZEX
-         YhdA==
+        bh=YVeOmvrDZv3hJhW6Jsr2R6/Y4bCLC3bv8VO35vQkvl0=;
+        b=Sb4qc8l3d6fQWal2+nYncDQdeid9w3iJdshg8xNvNmQ4F//S3vBoRXD26En58ipbPo
+         flL859XADrQx9pKN8Fb/GpOOZUfnf9NU5/iRRCma9rMXw994X/c3opxOJd3evH47XII3
+         T3iBsCsTcP3WZeKrU87xqe+D4lxJgFmfL2TTABvTsj+RpgSbxKEcmRZhb+zuneWMluLw
+         Xv2MXEL2Gp6uAsjYiZFmegoeXMHlura4ysUAl5wpYogmlxq0SWOf0pw0c5CxCrq7rb9j
+         w0hbl3o3FJU+/NPDtukSpF/nXxZf3ACDksHVonvoJnjhuCdXjwVlkYo2Pdapl2FJZECj
+         FORA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=1KdZcajVjZgu+pEXQdk/RqI6U+J/OtZyImbF73oIsC8=;
-        b=d40cvTBjXd/rQaKIfQZ6rInflibw6ejhfzInV39fGnGCU6I0UyNxUJ6xybPRt4b3K7
-         yo9r//ASGfx1Oots0drNoYqHHVrFjNK3qjEZnbz83BT3f1x2g25TvSovdYfZNClrSZyh
-         0A/GWK3S0i2jarYtomQqx14bRm+90mKefLvce8kMB0ASz8Jz9uwNK6Sqtl9toZPzsRxT
-         eNPsEZtz4GnPTYUHWtabbT+cBxHx6sHdvV3g6wT7+yMdXQoxkOcvNTnbo1tm/i4mSYbU
-         LSSpP8CgHn1sgYPiNZ2kTsswA1cQjwxlRV99Hg8LuMalwe29fnaBa7AQp1LSCUrGmdUL
-         Gp5A==
-X-Gm-Message-State: AOAM533mlNG+26QTVdVz/OjlSVTI24VuuNgir4NkxoTLwpFH9A1CojJE
-        ruXAq1gAe+G647qFkCkZMr4alA==
-X-Google-Smtp-Source: ABdhPJyZ6j2FHUvUiFHZhhEM1xkxbWU88BM9dMz889OeLePYeoqwj8yUiVMMWjVT1AuBOM0Y7HVQoA==
-X-Received: by 2002:a05:6e02:2185:: with SMTP id j5mr4789378ila.298.1643908178290;
-        Thu, 03 Feb 2022 09:09:38 -0800 (PST)
+        bh=YVeOmvrDZv3hJhW6Jsr2R6/Y4bCLC3bv8VO35vQkvl0=;
+        b=ELRNEuGeX5kHIZfpddFLyhDg7MDk79uWTtZUuy2fIK26PPLd74iaRSEuw+M+jRC9Hz
+         aZmfG/chNyss8fBZ+/OMMLYKtjS8SlOI/pgTa95pL8g+uWiIaXOJ5FXJ6iGdkFSBoijh
+         8Slr4t1kCg/y1zhspOok0S+aV/JZe47OpoOHCAkzZskNws/O3yQKCQIjCieCoaWQAR/x
+         5r1cDpCxslMzjZsGH4BQdKLjOQ00jUpNhg1mIJxvpC90QkbYiByANRsBIL5LZvXimNsh
+         17B3rDJowjP4cSEnoZaQOnsCVN0DUlRskX+7RfX+l5pKhIp58TilyUM3Mg+gy+gCF8/J
+         i45g==
+X-Gm-Message-State: AOAM5319tYPQ/M6vVlpVffxD0blIgiyLnYB6kObBQ+iHlAxrtRVJVxNy
+        8W2QK2FAzBGzNM2UtHa0aTXWgA==
+X-Google-Smtp-Source: ABdhPJzhqZlmD4YUH2TSGjEPaJJqyZwSZV111h2PXgaPokJLksR9esJgPnzvFD5Bx9/RrLdLwBGoeQ==
+X-Received: by 2002:a05:6e02:15c8:: with SMTP id q8mr21128743ilu.19.1643908186272;
+        Thu, 03 Feb 2022 09:09:46 -0800 (PST)
 Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id m12sm21869671iow.54.2022.02.03.09.09.37
+        by smtp.gmail.com with ESMTPSA id m12sm21869671iow.54.2022.02.03.09.09.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Feb 2022 09:09:37 -0800 (PST)
+        Thu, 03 Feb 2022 09:09:45 -0800 (PST)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     bjorn.andersson@linaro.org, mka@chromium.org, evgreen@chromium.org,
@@ -56,9 +56,9 @@ Cc:     bjorn.andersson@linaro.org, mka@chromium.org, evgreen@chromium.org,
         jponduru@codeaurora.org, subashab@codeaurora.org, elder@kernel.org,
         netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 04/10] net: ipa: decide on doorbell in replenish loop
-Date:   Thu,  3 Feb 2022 11:09:21 -0600
-Message-Id: <20220203170927.770572-5-elder@linaro.org>
+Subject: [PATCH net-next 10/10] net: ipa: determine replenish doorbell differently
+Date:   Thu,  3 Feb 2022 11:09:27 -0600
+Message-Id: <20220203170927.770572-11-elder@linaro.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220203170927.770572-1-elder@linaro.org>
 References: <20220203170927.770572-1-elder@linaro.org>
@@ -68,64 +68,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Decide whether the doorbell should be signaled when committing a
-replenish transaction in the main replenish loop, rather than in
-ipa_endpoint_replenish_one().  This is a step to facilitate the
-next patch.
+Rather than tracking the number of receive buffer transactions that
+have been submitted without a doorbell, just track the total number
+of transactions that have been issued.  Then ring the doorbell when
+that number modulo the replenish batch size is 0.
+
+The effect is roughly the same, but the new count is slightly more
+interesting, and this approach will someday allow the replenish
+batch size to be tuned at runtime.
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ipa/ipa_endpoint.c | 21 ++++++++++++---------
- 1 file changed, 12 insertions(+), 9 deletions(-)
+ drivers/net/ipa/ipa_endpoint.c | 12 ++++++++----
+ drivers/net/ipa/ipa_endpoint.h |  4 ++--
+ 2 files changed, 10 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
-index 060a025d70ec6..274cf1c30b593 100644
+index a236edf5bf068..888e94278a84f 100644
 --- a/drivers/net/ipa/ipa_endpoint.c
 +++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -1036,10 +1036,10 @@ static void ipa_endpoint_status(struct ipa_endpoint *endpoint)
- 	iowrite32(val, ipa->reg_virt + offset);
- }
+@@ -25,7 +25,8 @@
  
--static int ipa_endpoint_replenish_one(struct ipa_endpoint *endpoint)
-+static int
-+ipa_endpoint_replenish_one(struct ipa_endpoint *endpoint, bool doorbell)
- {
- 	struct gsi_trans *trans;
--	bool doorbell = false;
- 	struct page *page;
- 	u32 buffer_size;
- 	u32 offset;
-@@ -1064,11 +1064,6 @@ static int ipa_endpoint_replenish_one(struct ipa_endpoint *endpoint)
- 		goto err_free_pages;
- 	trans->data = page;	/* transaction owns page now */
+ #define atomic_dec_not_zero(v)	atomic_add_unless((v), -1, 0)
  
--	if (++endpoint->replenish_ready == IPA_REPLENISH_BATCH) {
--		doorbell = true;
--		endpoint->replenish_ready = 0;
--	}
--
- 	gsi_trans_commit(trans, doorbell);
+-#define IPA_REPLENISH_BATCH	16
++/* Hardware is told about receive buffers once a "batch" has been queued */
++#define IPA_REPLENISH_BATCH	16		/* Must be non-zero */
  
- 	return 0;
-@@ -1104,9 +1099,17 @@ static void ipa_endpoint_replenish(struct ipa_endpoint *endpoint)
- 	if (test_and_set_bit(IPA_REPLENISH_ACTIVE, endpoint->replenish_flags))
+ /* The amount of RX buffer space consumed by standard skb overhead */
+ #define IPA_RX_BUFFER_OVERHEAD	(PAGE_SIZE - SKB_MAX_ORDER(NET_SKB_PAD, 0))
+@@ -1086,14 +1087,15 @@ static void ipa_endpoint_replenish(struct ipa_endpoint *endpoint)
  		return;
  
--	while (atomic_dec_not_zero(&endpoint->replenish_backlog))
--		if (ipa_endpoint_replenish_one(endpoint))
-+	while (atomic_dec_not_zero(&endpoint->replenish_backlog)) {
+ 	while ((trans = ipa_endpoint_trans_alloc(endpoint, 1))) {
 +		bool doorbell;
 +
-+		if (++endpoint->replenish_ready == IPA_REPLENISH_BATCH)
-+			endpoint->replenish_ready = 0;
-+
-+		/* Ring the doorbell if we've got a full batch */
-+		doorbell = !endpoint->replenish_ready;
-+		if (ipa_endpoint_replenish_one(endpoint, doorbell))
+ 		if (ipa_endpoint_replenish_one(endpoint, trans))
  			goto try_again_later;
-+	}
+ 
+-		if (++endpoint->replenish_ready == IPA_REPLENISH_BATCH)
+-			endpoint->replenish_ready = 0;
+ 
+ 		/* Ring the doorbell if we've got a full batch */
+-		gsi_trans_commit(trans, !endpoint->replenish_ready);
++		doorbell = !(++endpoint->replenish_count % IPA_REPLENISH_BATCH);
++		gsi_trans_commit(trans, doorbell);
+ 	}
  
  	clear_bit(IPA_REPLENISH_ACTIVE, endpoint->replenish_flags);
+@@ -1863,6 +1865,8 @@ u32 ipa_endpoint_init(struct ipa *ipa, u32 count,
+ 	enum ipa_endpoint_name name;
+ 	u32 filter_map;
+ 
++	BUILD_BUG_ON(!IPA_REPLENISH_BATCH);
++
+ 	if (!ipa_endpoint_data_valid(ipa, count, data))
+ 		return 0;	/* Error */
+ 
+diff --git a/drivers/net/ipa/ipa_endpoint.h b/drivers/net/ipa/ipa_endpoint.h
+index 9a37f9387f011..12fd5b16c18eb 100644
+--- a/drivers/net/ipa/ipa_endpoint.h
++++ b/drivers/net/ipa/ipa_endpoint.h
+@@ -65,7 +65,7 @@ enum ipa_replenish_flag {
+  * @evt_ring_id:	GSI event ring used by the endpoint
+  * @netdev:		Network device pointer, if endpoint uses one
+  * @replenish_flags:	Replenishing state flags
+- * @replenish_ready:	Number of replenish transactions without doorbell
++ * @replenish_count:	Total number of replenish transactions committed
+  * @replenish_work:	Work item used for repeated replenish failures
+  */
+ struct ipa_endpoint {
+@@ -84,7 +84,7 @@ struct ipa_endpoint {
+ 
+ 	/* Receive buffer replenishing for RX endpoints */
+ 	DECLARE_BITMAP(replenish_flags, IPA_REPLENISH_COUNT);
+-	u32 replenish_ready;
++	u64 replenish_count;
+ 	struct delayed_work replenish_work;		/* global wq */
+ };
  
 -- 
 2.32.0
