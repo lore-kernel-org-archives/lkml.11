@@ -2,112 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CE06C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 15:49:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F241CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 15:52:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230457AbiBCPtP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 10:49:15 -0500
-Received: from mga05.intel.com ([192.55.52.43]:63034 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1344816AbiBCPtO (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 10:49:14 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643903354; x=1675439354;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=0vgO5gWthy3+FtdvuKnnN01Iq2gWepBMDOv33Ni2GVk=;
-  b=I/24nSw4VY0v5lHrIrYkK/46FrRmGrBD44GJrA0bT9KAEyoISVxGGCai
-   beIdSMSRJDOkB38UhjRfs4dFmstf6V11IvjeAGhoetQWXy5DY4r5yXUzR
-   +xk2VvUtEVMd22jU2fF1OP/lKmcDYeJFmrz8Z67aaZxVkfqMLkXR4FqVF
-   uHac5amy/TLnG+X/nBzq6MVEzL+v3WsN1HUz5EOa+Q0jOS1wcZA8kMeT6
-   bIhd++Ayw0Mq4EEMC1g+asG+hq/Toy8Y+4s0a1WxeWZh6Hg66CEPoUozY
-   MqVC1Xkp/8STxhaU24PCNaJOc35seXhnek+POrwwMNhpLYfZWJnYfzzSi
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10246"; a="334528030"
-X-IronPort-AV: E=Sophos;i="5.88,340,1635231600"; 
-   d="scan'208";a="334528030"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2022 07:49:14 -0800
-X-IronPort-AV: E=Sophos;i="5.88,340,1635231600"; 
-   d="scan'208";a="498171842"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2022 07:49:12 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nFeLD-000SjZ-O0;
-        Thu, 03 Feb 2022 17:48:11 +0200
-Date:   Thu, 3 Feb 2022 17:48:11 +0200
-From:   "andriy.shevchenko@linux.intel.com" 
-        <andriy.shevchenko@linux.intel.com>
-To:     "Ma, Jianpeng" <jianpeng.ma@intel.com>,
-        Yury Norov <yury.norov@gmail.com>
-Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        linux-kernel@vger.kernel.org
-Subject: Re: Why not use kvcalloc in bitmap_zalloc/bitmap_alloc?
-Message-ID: <Yfv5OxhDdfLHETkt@smile.fi.intel.com>
-References: <BN7PR11MB26099D11661A8D4D968CC646FDA90@BN7PR11MB2609.namprd11.prod.outlook.com>
+        id S1351992AbiBCPwe (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Feb 2022 10:52:34 -0500
+Received: from smtp-out2.suse.de ([195.135.220.29]:51134 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345506AbiBCPwb (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 3 Feb 2022 10:52:31 -0500
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id EF3311F399;
+        Thu,  3 Feb 2022 15:52:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1643903550; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mwqGB0P7BAikO77P4Cr4FPMD6wz7ALm2SA1ykdiVD4c=;
+        b=bRAvo3BLIj3v7SFT0I1ZjFRRPwQzLw6+P1UBcUoGsNmHOHsMvO21nSmKnc8NWP14j8Anm9
+        ZObOjKjm2gMw3GimS/gQRHbTCUgDU81+T6n3mXqk6y5JMvqMdNsM6j+qB4Hx+j2RXugh9c
+        esP9dGpVMjZ2y+r/17okfHCqiWuVaNA=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1643903550;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mwqGB0P7BAikO77P4Cr4FPMD6wz7ALm2SA1ykdiVD4c=;
+        b=aW0tglSdjAh8AHokGmM2D73KkeNY6L/4FrbYP8mg41JNl6Mlh0gVj5SyJ8sMmnzMH3uZc6
+        hf3uL/ArCxfdDXAw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id CCEB613C7C;
+        Thu,  3 Feb 2022 15:52:30 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id ssK0MD76+2G2EQAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Thu, 03 Feb 2022 15:52:30 +0000
+Message-ID: <b73d9d54-4311-1fd3-43b1-39ffd5d9c160@suse.cz>
+Date:   Thu, 3 Feb 2022 16:52:30 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <BN7PR11MB26099D11661A8D4D968CC646FDA90@BN7PR11MB2609.namprd11.prod.outlook.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH] mm/page_owner.c: record task name of process
+Content-Language: en-US
+To:     Yixuan Cao <caoyixuan2019@email.szu.edu.cn>,
+        akpm@linux-foundation.org
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Waiman Long <longman@redhat.com>
+References: <20220203120040.2338-1-caoyixuan2019@email.szu.edu.cn>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <20220203120040.2338-1-caoyixuan2019@email.szu.edu.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 13, 2021 at 01:02:30AM +0000, Ma, Jianpeng wrote:
-> Hi Andy:
->      Currently, I want to use bitmap_zalloc. But because I need large space(pages > 1024). So met the following message.
->      From the code, I know bitmap_zalloc use kmalloc.  To fix this problem, I change the code use "kvcalloc(BITS_TO_LONGS(ns->pages_total), sizeof(unsigned long), GFP_KERNEL);"
->      Because you introduced bitmap_zalloc, so I wanted to know why use kvcalloc in bitmap_zalloc?  Are there other considerations？
+On 2/3/22 13:00, Yixuan Cao wrote:
+> I think in tracing page allocation behavior,
+> It is useful to record the task name of the process.
+> 
+> Although the current Page Owner has recorded the process ID,
+> When the process exits,
+> It is difficult to distinguish the specific function of this process,
+> This brings some inconvenience to debugging memory problems.
+> 
+> Therefore, add the task name information to the Page Owner,
+> So that users can clearly understand the task name of the process.
+> At the same time, with this information,
+> We can use tools/vm/page_owner_sort.c,
+> Provides more output modes for Page Owner.
+> 
+> Signed-off-by: Yixuan Cao <caoyixuan2019@email.szu.edu.cn>
 
-+Cc: maintainer and mailing list
+A patch with the same goal is already part of Waiman's series:
+https://lore.kernel.org/all/20220131192308.608837-5-longman@redhat.com/
 
-> 2114 Jan 12 08:44:46 ceph kernel: [19770.801510] Modules linked in: test_nvm(E+) bcache(E) crc64 btrfs blake2b_generic xor zstd_compress raid6_pq ufs qnx4 hfsplus hfs minix ntfs msdos jfs intel_rapl_msr intel_rapl_common dax_pmem_compat  device_dax nd_pmem dax_pmem_core nd_btt skx_edac ipmi_ssif x86_pkg_temp_thermal binfmt_misc intel_powerclamp coretemp crct10dif_pclmul crc32_pclmul ghash_clmulni_intel aesni_intel crypto_simd cryptd glue_helper nls_iso8859_1 raplxfs intel_cstate libcrc32c input_leds efi_pstore ast drm_vram_helper drm_ttm_helper ttm drm_kms_helper cec drm i2c_algo_bit fb_sys_fops syscopyarea sysfillrect sysimgblt switchtec lpc_ich mei_me mei ioatdma acpi_ipmi ipmi_si ipmi_devintf ipmi_msghandler nfit acpi_pad acpi_power_meter mac_hid sch_fq_codel parport_pc ppdev lp parport ip_tables x_tables autofs4 hid_generic usbhid hid ixgbe megaraid_sas xfrm_algo i40e dca mdio nvme nvme_core ahci libahci wmi [last unloaded: bcache]
->  2115 Jan 12 08:44:46 ceph kernel: [19770.801568] CPU: 72 PID: 74351 Comm: insmod Tainted: G            E     5.10.0-rc5+ #1
->  2116 Jan 12 08:44:46 ceph kernel: [19770.801569] Hardware name: Intel Corporation S2600WFT/S2600WFT, BIOS SE5C620.86B.02.01.0008.031920191559 03/19/2019
->  2117 Jan 12 08:44:46 ceph kernel: [19770.801572] RIP: 0010:__alloc_pages_nodemask+0x297/0x330
->  2118 Jan 12 08:44:46 ceph kernel: [19770.801574] Code: 08 44 89 f9 44 89 ea 4c 89 f6 e8 54 96 fc ff e9 4c ff ff ff e8 fa 17 fc ff 48 89 c7 e9 b8 fe ff ff 41 81 e4 00 20 00 00 75 a7 <0f> 0b eb a3 31 c0 e9 1b fe ff ff 65 48 8b 04 25 c0 7b       01 00 8b 40
->  2119 Jan 12 08:44:46 ceph kernel: [19770.801575] RSP: 0018:ffffb2afcd4e39d8 EFLAGS: 00010246
->  2120 Jan 12 08:44:46 ceph kernel: [19770.801577] RAX: 0000000000000000 RBX: 0000000000000dc0 RCX: 0000000000000000
->  2121 Jan 12 08:44:46 ceph kernel: [19770.801578] RDX: 0000000000000001 RSI: 000000000000000b RDI: 0000000000040dc0
->  2122 Jan 12 08:44:46 ceph kernel: [19770.801579] RBP: ffffb2afcd4e3a30 R08: ffffffffb29c83c8 R09: 0000000000000000
->  2123 Jan 12 08:44:46 ceph kernel: [19770.801580] R10: 0000000000000000 R11: fefefefefefefeff R12: 0000000000000000
->  2124 Jan 12 08:44:46 ceph kernel: [19770.801581] R13: ffffffffb29c83c8 R14: 000000000000000b R15: 0000000000000000
->  2125 Jan 12 08:44:46 ceph kernel: [19770.801583] FS:  00007f24f731b540(0000) GS:ffff89abc1800000(0000) knlGS:0000000000000000
->  2126 Jan 12 08:44:46 ceph kernel: [19770.801584] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->  2127 Jan 12 08:44:46 ceph kernel: [19770.801585] CR2: 00007f24f6e9f450 CR3: 00000040fc79e004 CR4: 00000000007706e0
->  2128 Jan 12 08:44:46 ceph kernel: [19770.801586] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
->  2129 Jan 12 08:44:46 ceph kernel: [19770.801587] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
->  2130 Jan 12 08:44:46 ceph kernel: [19770.801588] PKRU: 55555554
->  2131 Jan 12 08:44:46 ceph kernel: [19770.801589] Call Trace:
->  2132 Jan 12 08:44:46 ceph kernel: [19770.801598]  alloc_pages_current+0x87/0xe0
->  2133 Jan 12 08:44:46 ceph kernel: [19770.801602]  kmalloc_order+0x2c/0x90
->  2134 Jan 12 08:44:46 ceph kernel: [19770.801604]  kmalloc_order_trace+0x1d/0x80
->  2135 Jan 12 08:44:46 ceph kernel: [19770.801608]  __kmalloc+0x271/0x300
->  2136 Jan 12 08:44:46 ceph kernel: [19770.801612]  bitmap_zalloc+0x1d/0x20
->  2137 Jan 12 08:44:46 ceph kernel: [19770.801630]  bch_register_namespace+0x387/0x4e0 [bcache]
->  2138 Jan 12 08:44:46 ceph kernel: [19770.801636]  ? __wake_up_common_lock+0x8a/0xc0
->  2139 Jan 12 08:44:46 ceph kernel: [19770.801639]  ? 0xffffffffc04e3000
->  2140 Jan 12 08:44:46 ceph kernel: [19770.801641]  test_nvm_init+0x2f/0x1000 [test_nvm]
->  2141 Jan 12 08:44:46 ceph kernel: [19770.801646]  ? netlink_broadcast_filtered+0x13e/0x480
->  2142 Jan 12 08:44:46 ceph kernel: [19770.801649]  ? _cond_resched+0x19/0x30
->  2143 Jan 12 08:44:46 ceph kernel: [19770.801651]  ? unmap_kernel_range_noflush+0x2e7/0x360
->  2144 Jan 12 08:44:46 ceph kernel: [19770.801653]  ? free_pcp_prepare+0x80/0x160
->  2145 Jan 12 08:44:46 ceph kernel: [19770.801654]  ? 0xffffffffc04e3000
->  2146 Jan 12 08:44:46 ceph kernel: [19770.801658]  do_one_initcall+0x48/0x1d0
->  2147 Jan 12 08:44:46 ceph kernel: [19770.801659]  ? _cond_resched+0x19/0x30
->  2148 Jan 12 08:44:46 ceph kernel: [19770.801661]  ? kmem_cache_alloc_trace+0x153/0x2b0
->  2149 Jan 12 08:44:46 ceph kernel: [19770.801664]  do_init_module+0x62/0x240
->  2150 Jan 12 08:44:46 ceph kernel: [19770.801666]  load_module+0x28a0/0x2c50
->  2151 Jan 12 08:44:46 ceph kernel: [19770.801672]  ? security_kernel_post_read_file+0x5c/0x70
->  2152 Jan 12 08:44:46 ceph kernel: [19770.801674]  __do_sys_finit_module+0xc2/0x120
->  2153 Jan 12 08:44:46 ceph kernel: [19770.801676]  ? __do_sys_finit_module+0xc2/0x120
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+> ---
+>  mm/page_owner.c | 12 +++++++++---
+>  1 file changed, 9 insertions(+), 3 deletions(-)
+> 
+> diff --git a/mm/page_owner.c b/mm/page_owner.c
+> index 99e360df9465..a8d666cd13ac 100644
+> --- a/mm/page_owner.c
+> +++ b/mm/page_owner.c
+> @@ -29,6 +29,7 @@ struct page_owner {
+>  	u64 ts_nsec;
+>  	u64 free_ts_nsec;
+>  	pid_t pid;
+> +	char task_name[TASK_COMM_LEN];
+>  };
+>  
+>  static bool page_owner_enabled = false;
+> @@ -163,6 +164,7 @@ static inline void __set_page_owner_handle(struct page_ext *page_ext,
+>  		page_owner->gfp_mask = gfp_mask;
+>  		page_owner->last_migrate_reason = -1;
+>  		page_owner->pid = current->pid;
+> +		strcpy(page_owner->task_name, current->comm);
+>  		page_owner->ts_nsec = local_clock();
+>  		__set_bit(PAGE_EXT_OWNER, &page_ext->flags);
+>  		__set_bit(PAGE_EXT_OWNER_ALLOCATED, &page_ext->flags);
+> @@ -229,6 +231,7 @@ void __folio_copy_owner(struct folio *newfolio, struct folio *old)
+>  		old_page_owner->last_migrate_reason;
+>  	new_page_owner->handle = old_page_owner->handle;
+>  	new_page_owner->pid = old_page_owner->pid;
+> +	strcpy(new_page_owner->task_name, old_page_owner->task_name);
+>  	new_page_owner->ts_nsec = old_page_owner->ts_nsec;
+>  	new_page_owner->free_ts_nsec = old_page_owner->ts_nsec;
+>  
+> @@ -339,9 +342,10 @@ print_page_owner(char __user *buf, size_t count, unsigned long pfn,
+>  		return -ENOMEM;
+>  
+>  	ret = snprintf(kbuf, count,
+> -			"Page allocated via order %u, mask %#x(%pGg), pid %d, ts %llu ns, free_ts %llu ns\n",
+> +			"Page allocated via order %u, mask %#x(%pGg), pid %d, task_name [%s], ts %llu ns, free_ts %llu ns\n",
+>  			page_owner->order, page_owner->gfp_mask,
+>  			&page_owner->gfp_mask, page_owner->pid,
+> +			page_owner->task_name,
+>  			page_owner->ts_nsec, page_owner->free_ts_nsec);
+>  
+>  	if (ret >= count)
+> @@ -415,9 +419,10 @@ void __dump_page_owner(const struct page *page)
+>  	else
+>  		pr_alert("page_owner tracks the page as freed\n");
+>  
+> -	pr_alert("page last allocated via order %u, migratetype %s, gfp_mask %#x(%pGg), pid %d, ts %llu, free_ts %llu\n",
+> +	pr_alert("page last allocated via order %u, migratetype %s, gfp_mask %#x(%pGg), pid %d, task_name [%s], ts %llu, free_ts %llu\n",
+>  		 page_owner->order, migratetype_names[mt], gfp_mask, &gfp_mask,
+> -		 page_owner->pid, page_owner->ts_nsec, page_owner->free_ts_nsec);
+> +		 page_owner->pid, page_owner->task_name,
+> +		 page_owner->ts_nsec, page_owner->free_ts_nsec);
+>  
+>  	handle = READ_ONCE(page_owner->handle);
+>  	if (!handle)
+> @@ -629,3 +634,4 @@ static int __init pageowner_init(void)
+>  	return 0;
+>  }
+>  late_initcall(pageowner_init)
+> +
 
