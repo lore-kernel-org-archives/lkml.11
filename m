@@ -2,224 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9D57C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 13:32:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB9ABC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 13:33:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350890AbiBCNcU (ORCPT
+        id S1349349AbiBCNdL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 08:32:20 -0500
-Received: from mga01.intel.com ([192.55.52.88]:14102 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244416AbiBCNcO (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 08:32:14 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643895134; x=1675431134;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=kVkbql0zjR75SsvgfKEtovhMYJ0DIWDAmm/mZl/XRIU=;
-  b=MbLMmnuhIGqMX4yDcAGIIG+5q/Q83FhZJjUvTzwIwgfgteYe6Glxptxs
-   WmbgLT3zPPnPYikMGoOxknpFR8YBIkP6iZ/QE+NhkZ9CRVRwUmfvPG6Xl
-   5GjcZZgzxnqrNp/pWYsKU3fZyeRC6tSCwn9tiBfV0Fch2SThplg40fVXj
-   XNjW8Tx2giVwsp7U04ymA4pdmasvlZEt9KYFXYvZ2ziszHGe69Td6M3k3
-   BqxS7BXbfOAPNUcOPWWZm5HLJ6ofFuat2WtR2ppQgQnm248jihJSg6tny
-   UfMdm/GhsxZTB/R6cg81JUPE++9azK6tMTb6K7t5u2qDnMP3uTWCk/kin
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10246"; a="272638723"
-X-IronPort-AV: E=Sophos;i="5.88,340,1635231600"; 
-   d="scan'208";a="272638723"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2022 05:32:14 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,340,1635231600"; 
-   d="scan'208";a="631341489"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 03 Feb 2022 05:32:12 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nFcDc-000W9Q-9t; Thu, 03 Feb 2022 13:32:12 +0000
-Date:   Thu, 03 Feb 2022 21:31:45 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:x86/irq] BUILD SUCCESS
- 449972c67ea78158bcd55d6a5ce6f941f8a4afa0
-Message-ID: <61fbd941.gGisq1YDVss4K6Jj%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Thu, 3 Feb 2022 08:33:11 -0500
+Received: from eu-shark1.inbox.eu ([195.216.236.81]:51666 "EHLO
+        eu-shark1.inbox.eu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232242AbiBCNdJ (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 3 Feb 2022 08:33:09 -0500
+Received: from eu-shark1.inbox.eu (localhost [127.0.0.1])
+        by eu-shark1-out.inbox.eu (Postfix) with ESMTP id CAA086C0071B;
+        Thu,  3 Feb 2022 15:33:07 +0200 (EET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=inbox.eu; s=20140211;
+        t=1643895187; bh=5CWjScT1XW8d+nIOT0i4Q+4qvhjMs70lGC/mjHRVjIY=;
+        h=References:From:To:Cc:Subject:Date:In-reply-to:Message-ID:
+         Content-Type:X-ESPOL:from:date:to:cc;
+        b=QbDZ+AbNbJpIH19pupUPjNn8t9Kn8yIi/BIE0k5tVF8HGZog91F2LStaomVMKuWm7
+         0pcT6zXr6qFciYcsKcx7eGR8qP3LP5E+APCdpy+FCYFYJDAPgAxL51SCArYl1ks/Lf
+         1qrtTb1Hnw5wyUtiHcAxeFQ72z+LGoui/XnKVLc0=
+Received: from localhost (localhost [127.0.0.1])
+        by eu-shark1-in.inbox.eu (Postfix) with ESMTP id BB8676C00715;
+        Thu,  3 Feb 2022 15:33:07 +0200 (EET)
+Received: from eu-shark1.inbox.eu ([127.0.0.1])
+        by localhost (eu-shark1.inbox.eu [127.0.0.1]) (spamfilter, port 35)
+        with ESMTP id hPg7AAATWSB6; Thu,  3 Feb 2022 15:33:07 +0200 (EET)
+Received: from mail.inbox.eu (eu-pop1 [127.0.0.1])
+        by eu-shark1-in.inbox.eu (Postfix) with ESMTP id 5F7006C006BE;
+        Thu,  3 Feb 2022 15:33:07 +0200 (EET)
+References: <20220202214455.15753-1-davispuh@gmail.com>
+ <20220202214455.15753-2-davispuh@gmail.com>
+User-agent: mu4e 1.7.0; emacs 27.2
+From:   Su Yue <l@damenly.su>
+To:     =?utf-8?B?RMSBdmlzIE1vc8SBbnM=?= <davispuh@gmail.com>
+Cc:     linux-btrfs@vger.kernel.org, Chris Mason <clm@fb.com>,
+        Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] btrfs: prevent copying too big compressed lzo segment
+Date:   Thu, 03 Feb 2022 21:26:20 +0800
+In-reply-to: <20220202214455.15753-2-davispuh@gmail.com>
+Message-ID: <iltw2hyu.fsf@damenly.su>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+X-Virus-Scanned: OK
+X-ESPOL: 6NpmlYxOGzysiV+lRWetewt38GpVJY3o+ue5zhxdnmX7NS+afEgJTHLEkGpqPg+1xF8X
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/irq
-branch HEAD: 449972c67ea78158bcd55d6a5ce6f941f8a4afa0  x86/PCI: Fix coding style in PIRQ table search functions
 
-elapsed time: 722m
+On Wed 02 Feb 2022 at 23:44, D=C4=81vis Mos=C4=81ns <davispuh@gmail.com>=20
+wrote:
 
-configs tested: 151
-configs skipped: 87
+> Compressed length can be corrupted to be a lot larger than=20
+> memory
+> we have allocated for buffer.
+> This will cause memcpy in copy_compressed_segment to write=20
+> outside
+> of allocated memory.
+>
+> This mostly results in stuck read syscall but sometimes when=20
+> using
+> btrfs send can get #GP
+>
+> kernel: general protection fault, probably for non-canonical=20
+> address 0x841551d5c1000: 0000 [#1] PREEMPT SMP NOPTI
+> kernel: CPU: 17 PID: 264 Comm: kworker/u256:7 Tainted: P=20
+> OE     5.17.0-rc2-1 #12
+> kernel: Workqueue: btrfs-endio btrfs_work_helper [btrfs]
+> kernel: RIP: 0010:lzo_decompress_bio=20
+> (./include/linux/fortify-string.h:225 fs/btrfs/lzo.c:322=20
+> fs/btrfs/lzo.c:394) btrfs
+> Code starting with the faulting instruction
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>    0:*  48 8b 06                mov    (%rsi),%rax=20
+>    <-- trapping instruction
+>    3:   48 8d 79 08             lea    0x8(%rcx),%rdi
+>    7:   48 83 e7 f8             and    $0xfffffffffffffff8,%rdi
+>    b:   48 89 01                mov    %rax,(%rcx)
+>    e:   44 89 f0                mov    %r14d,%eax
+>   11:   48 8b 54 06 f8          mov    -0x8(%rsi,%rax,1),%rdx
+> kernel: RSP: 0018:ffffb110812efd50 EFLAGS: 00010212
+> kernel: RAX: 0000000000001000 RBX: 000000009ca264c8 RCX:=20
+> ffff98996e6d8ff8
+> kernel: RDX: 0000000000000064 RSI: 000841551d5c1000 RDI:=20
+> ffffffff9500435d
+> kernel: RBP: ffff989a3be856c0 R08: 0000000000000000 R09:=20
+> 0000000000000000
+> kernel: R10: 0000000000000000 R11: 0000000000001000 R12:=20
+> ffff98996e6d8000
+> kernel: R13: 0000000000000008 R14: 0000000000001000 R15:=20
+> 000841551d5c1000
+> kernel: FS:  0000000000000000(0000) GS:ffff98a09d640000(0000)=20
+> knlGS:0000000000000000
+> kernel: CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> kernel: CR2: 00001e9f984d9ea8 CR3: 000000014971a000 CR4:=20
+> 00000000003506e0
+> kernel: Call Trace:
+> kernel:  <TASK>
+> kernel: end_compressed_bio_read (fs/btrfs/compression.c:104=20
+> fs/btrfs/compression.c:1363 fs/btrfs/compression.c:323) btrfs
+> kernel: end_workqueue_fn (fs/btrfs/disk-io.c:1923) btrfs
+> kernel: btrfs_work_helper (fs/btrfs/async-thread.c:326) btrfs
+> kernel: process_one_work (./arch/x86/include/asm/jump_label.h:27=20
+> ./include/linux/jump_label.h:212=20
+> ./include/trace/events/workqueue.h:108 kernel/workqueue.c:2312)
+> kernel: worker_thread (./include/linux/list.h:292=20
+> kernel/workqueue.c:2455)
+> kernel: ? process_one_work (kernel/workqueue.c:2397)
+> kernel: kthread (kernel/kthread.c:377)
+> kernel: ? kthread_complete_and_exit (kernel/kthread.c:332)
+> kernel: ret_from_fork (arch/x86/entry/entry_64.S:301)
+> kernel:  </TASK>
+>
+> Signed-off-by: D=C4=81vis Mos=C4=81ns <davispuh@gmail.com>
+> ---
+>  fs/btrfs/lzo.c | 7 +++++++
+>  1 file changed, 7 insertions(+)
+>
+> diff --git a/fs/btrfs/lzo.c b/fs/btrfs/lzo.c
+> index 31319dfcc9fb..ebaa5083f2ae 100644
+> --- a/fs/btrfs/lzo.c
+> +++ b/fs/btrfs/lzo.c
+> @@ -383,6 +383,13 @@ int lzo_decompress_bio(struct list_head=20
+> *ws, struct compressed_bio *cb)
+>  		kunmap(cur_page);
+>  		cur_in +=3D LZO_LEN;
+>
+> +		if (seg_len > WORKSPACE_CBUF_LENGTH) {
+> +			// seg_len shouldn't be larger than we=20
+> have allocated for workspace->cbuf
+>
+Makes sense.
+Is the corrupted lzo compressed extent produced by a normal fs or
+crafted manually? If it is from a normal fs, something insane=20
+happened
+in extent compressed path.
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+--
+Su
 
-gcc tested configs:
-arm                                 defconfig
-arm64                            allyesconfig
-arm64                               defconfig
-arm                              allyesconfig
-arm                              allmodconfig
-i386                 randconfig-c001-20220131
-arm                        clps711x_defconfig
-sh                           se7724_defconfig
-sh                         apsh4a3a_defconfig
-arm64                            alldefconfig
-mips                           ip32_defconfig
-powerpc                     redwood_defconfig
-arm                       aspeed_g5_defconfig
-arm                            zeus_defconfig
-powerpc                     asp8347_defconfig
-csky                             alldefconfig
-sh                          r7780mp_defconfig
-m68k                        stmark2_defconfig
-arm                        multi_v7_defconfig
-sh                               j2_defconfig
-m68k                       bvme6000_defconfig
-m68k                             allyesconfig
-openrisc                  or1klitex_defconfig
-parisc                generic-32bit_defconfig
-arm                           viper_defconfig
-mips                        vocore2_defconfig
-s390                       zfcpdump_defconfig
-h8300                       h8s-sim_defconfig
-powerpc                      pcm030_defconfig
-parisc                generic-64bit_defconfig
-sh                           se7721_defconfig
-s390                          debug_defconfig
-microblaze                          defconfig
-mips                           ci20_defconfig
-nds32                             allnoconfig
-arm                         axm55xx_defconfig
-powerpc                       holly_defconfig
-sh                  sh7785lcr_32bit_defconfig
-sh                        sh7785lcr_defconfig
-powerpc                      chrp32_defconfig
-mips                     decstation_defconfig
-m68k                        mvme147_defconfig
-ia64                            zx1_defconfig
-arm                           corgi_defconfig
-sh                          r7785rp_defconfig
-ia64                          tiger_defconfig
-m68k                          sun3x_defconfig
-microblaze                      mmu_defconfig
-sh                          rsk7203_defconfig
-arm                         assabet_defconfig
-sh                         ecovec24_defconfig
-powerpc                    amigaone_defconfig
-arm                          pxa910_defconfig
-arm                  randconfig-c002-20220202
-arm                  randconfig-c002-20220130
-arm                  randconfig-c002-20220131
-ia64                             allmodconfig
-ia64                                defconfig
-ia64                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-nios2                               defconfig
-arc                              allyesconfig
-nds32                               defconfig
-nios2                            allyesconfig
-csky                                defconfig
-alpha                               defconfig
-alpha                            allyesconfig
-xtensa                           allyesconfig
-h8300                            allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-parisc                              defconfig
-s390                             allyesconfig
-s390                             allmodconfig
-parisc                           allyesconfig
-s390                                defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-sparc                               defconfig
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                          allmodconfig
-powerpc                           allnoconfig
-x86_64               randconfig-a004-20220131
-x86_64               randconfig-a003-20220131
-x86_64               randconfig-a001-20220131
-x86_64               randconfig-a006-20220131
-x86_64               randconfig-a005-20220131
-x86_64               randconfig-a002-20220131
-i386                 randconfig-a006-20220131
-i386                 randconfig-a005-20220131
-i386                 randconfig-a003-20220131
-i386                 randconfig-a002-20220131
-i386                 randconfig-a001-20220131
-i386                 randconfig-a004-20220131
-i386                          randconfig-a012
-i386                          randconfig-a014
-i386                          randconfig-a016
-riscv                    nommu_k210_defconfig
-riscv                            allyesconfig
-riscv                    nommu_virt_defconfig
-riscv                             allnoconfig
-riscv                               defconfig
-riscv                          rv32_defconfig
-riscv                            allmodconfig
-x86_64                    rhel-8.3-kselftests
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                           allyesconfig
-x86_64                              defconfig
-x86_64                               rhel-8.3
-x86_64                          rhel-8.3-func
-x86_64                                  kexec
-
-clang tested configs:
-riscv                randconfig-c006-20220130
-x86_64                        randconfig-c007
-arm                  randconfig-c002-20220130
-powerpc              randconfig-c003-20220130
-mips                 randconfig-c004-20220130
-i386                          randconfig-c001
-mips                   sb1250_swarm_defconfig
-mips                  cavium_octeon_defconfig
-powerpc                 mpc832x_rdb_defconfig
-arm                          imote2_defconfig
-powerpc                 mpc836x_rdk_defconfig
-arm                         shannon_defconfig
-powerpc                        icon_defconfig
-arm                          pxa168_defconfig
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-x86_64               randconfig-a013-20220131
-x86_64               randconfig-a015-20220131
-x86_64               randconfig-a014-20220131
-x86_64               randconfig-a016-20220131
-x86_64               randconfig-a011-20220131
-x86_64               randconfig-a012-20220131
-i386                 randconfig-a011-20220131
-i386                 randconfig-a013-20220131
-i386                 randconfig-a014-20220131
-i386                 randconfig-a012-20220131
-i386                 randconfig-a015-20220131
-i386                 randconfig-a016-20220131
-riscv                randconfig-r042-20220131
-hexagon              randconfig-r045-20220130
-hexagon              randconfig-r045-20220131
-hexagon              randconfig-r041-20220130
-hexagon              randconfig-r041-20220131
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+> +			btrfs_err(fs_info, "unexpectedly large lzo=20
+> segment len %u", seg_len);
+> +			ret =3D -EUCLEAN;
+> +			goto out;
+> +		}
+> +
+>  		/* Copy the compressed segment payload into=20
+>  workspace */
+>  		copy_compressed_segment(cb, workspace->cbuf,=20
+>  seg_len, &cur_in);
