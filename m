@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A268C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:31:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CC27C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:31:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354097AbiBCUbR (ORCPT
+        id S1354420AbiBCUbU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:31:17 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:36082 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354170AbiBCUav (ORCPT
+        Thu, 3 Feb 2022 15:31:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57602 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354194AbiBCUaw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 15:30:51 -0500
+        Thu, 3 Feb 2022 15:30:52 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 504C2C061759;
+        Thu,  3 Feb 2022 12:30:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CA57C61AB6;
-        Thu,  3 Feb 2022 20:30:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3510FC340E8;
-        Thu,  3 Feb 2022 20:30:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E2E2161A88;
+        Thu,  3 Feb 2022 20:30:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CA83C36AE7;
+        Thu,  3 Feb 2022 20:30:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643920250;
-        bh=ToFmY0CrD+Ebxp7v5ksgT6MOXOiIoKyIqZF3W1YhNiY=;
+        s=k20201202; t=1643920215;
+        bh=oCjNf+rU3S5dH5f1hirali2pZr5Vjlm/sSzWw6z9kpk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YHGWmg4rIpzOLJOs2IN8Bj74ouVS4ItidU0eVuxKa4uoWb4mLu0JJGpWtNMmLdFAR
-         AJbH6oqBg5Pkp1fhSkPnrYDmSfvoa+CP6c1CCPs62DmFculxMzVWt5fAGjINjmmPnF
-         SAwyJVgv3SN0o+rz9GNYo3IDwHGMYM+u9VG/1hBZ5t+RTEgRhslL60SSVzPezyw+gy
-         GTTmP/LzqaHFrfSxdGefCIStZ0Lxus9MhE8yILPpluGWpBaVEv4Q9jAp3sX4o27+sf
-         R/z7Km3y0UQhwY9Lk7MqYsy63BNd5h+HOXSCNJwfH+1Fk2uNcXmLZEkUtOHURjrGOt
-         WdtythqNA518g==
+        b=Fg0hTP92XQsN8Y5JUM79oUq36Oi0OI0XZbkGqcTmTzjTfw+jE8pzKHDKk0sMetmS5
+         UmZpf17wsIhDHz58liWeggaFTA7QfuhMPfPXTOi0KcwYsE2NfxN/aCCbbMDhE71Ab5
+         SfgkSAdCslEz6nqMzKExzBahxcAutP7RFP19apZC7/mhe/h5FZbRb5HyPZccThnDVN
+         +XYnSpxOzCg463BdMfn1ZXDVUuuQUXnKVT/An0MBgNvWvmTI7+VILLjCQdGgZszhTb
+         7TNdYrVxudW/7DTENDndtMoltZbDIyq5KY3CBFpDT9Da2fDvW3sUFd1BvleUBi3MR1
+         7qKc4Jiht52Yg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Anshuman Khandual <anshuman.khandual@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Suzuki Poulose <suzuki.poulose@arm.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Sasha Levin <sashal@kernel.org>, mathieu.poirier@linaro.org,
-        marcan@marcan.st
-Subject: [PATCH AUTOSEL 5.16 24/52] arm64: Add Cortex-X2 CPU part definition
-Date:   Thu,  3 Feb 2022 15:29:18 -0500
-Message-Id: <20220203202947.2304-24-sashal@kernel.org>
+Cc:     Vincent Guittot <vincent.guittot@linaro.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Sachin Sant <sachinp@linux.ibm.com>,
+        Sasha Levin <sashal@kernel.org>, mingo@redhat.com,
+        juri.lelli@redhat.com
+Subject: [PATCH AUTOSEL 5.16 17/52] sched/pelt: Relax the sync of runnable_sum with runnable_avg
+Date:   Thu,  3 Feb 2022 15:29:11 -0500
+Message-Id: <20220203202947.2304-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220203202947.2304-1-sashal@kernel.org>
 References: <20220203202947.2304-1-sashal@kernel.org>
@@ -53,45 +55,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anshuman Khandual <anshuman.khandual@arm.com>
+From: Vincent Guittot <vincent.guittot@linaro.org>
 
-[ Upstream commit 72bb9dcb6c33cfac80282713c2b4f2b254cd24d1 ]
+[ Upstream commit 95246d1ec80b8d19d882cd8eb7ad094e63b41bb8 ]
 
-Add the CPU Partnumbers for the new Arm designs.
+Similarly to util_avg and util_sum, don't sync runnable_sum with the low
+bound of runnable_avg but only ensure that runnable_sum stays in the
+correct range.
 
-Cc: Will Deacon <will@kernel.org>
-Cc: Suzuki Poulose <suzuki.poulose@arm.com>
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
-Reviewed-by: Suzuki K Poulose <suzuki.poulose@arm.com>
-Link: https://lore.kernel.org/r/1642994138-25887-2-git-send-email-anshuman.khandual@arm.com
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: Vincent Guittot <vincent.guittot@linaro.org>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Tested-by: Sachin Sant <sachinp@linux.ibm.com>
+Link: https://lkml.kernel.org/r/20220111134659.24961-4-vincent.guittot@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/include/asm/cputype.h | 2 ++
- 1 file changed, 2 insertions(+)
+ kernel/sched/fair.c | 33 +++++++++++++++++++--------------
+ 1 file changed, 19 insertions(+), 14 deletions(-)
 
-diff --git a/arch/arm64/include/asm/cputype.h b/arch/arm64/include/asm/cputype.h
-index 19b8441aa8f26..657eeb06c7847 100644
---- a/arch/arm64/include/asm/cputype.h
-+++ b/arch/arm64/include/asm/cputype.h
-@@ -74,6 +74,7 @@
- #define ARM_CPU_PART_NEOVERSE_N1	0xD0C
- #define ARM_CPU_PART_CORTEX_A77		0xD0D
- #define ARM_CPU_PART_CORTEX_A710	0xD47
-+#define ARM_CPU_PART_CORTEX_X2		0xD48
- #define ARM_CPU_PART_NEOVERSE_N2	0xD49
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index f2cf047b25e56..d4e76af65433e 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -3479,11 +3479,11 @@ update_tg_cfs_util(struct cfs_rq *cfs_rq, struct sched_entity *se, struct cfs_rq
+ static inline void
+ update_tg_cfs_runnable(struct cfs_rq *cfs_rq, struct sched_entity *se, struct cfs_rq *gcfs_rq)
+ {
+-	long delta = gcfs_rq->avg.runnable_avg - se->avg.runnable_avg;
+-	u32 divider;
++	long delta_sum, delta_avg = gcfs_rq->avg.runnable_avg - se->avg.runnable_avg;
++	u32 new_sum, divider;
  
- #define APM_CPU_PART_POTENZA		0x000
-@@ -116,6 +117,7 @@
- #define MIDR_NEOVERSE_N1 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_N1)
- #define MIDR_CORTEX_A77	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A77)
- #define MIDR_CORTEX_A710 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A710)
-+#define MIDR_CORTEX_X2 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_X2)
- #define MIDR_NEOVERSE_N2 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_N2)
- #define MIDR_THUNDERX	MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX)
- #define MIDR_THUNDERX_81XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX_81XX)
+ 	/* Nothing to update */
+-	if (!delta)
++	if (!delta_avg)
+ 		return;
+ 
+ 	/*
+@@ -3494,11 +3494,16 @@ update_tg_cfs_runnable(struct cfs_rq *cfs_rq, struct sched_entity *se, struct cf
+ 
+ 	/* Set new sched_entity's runnable */
+ 	se->avg.runnable_avg = gcfs_rq->avg.runnable_avg;
+-	se->avg.runnable_sum = se->avg.runnable_avg * divider;
++	new_sum = se->avg.runnable_avg * divider;
++	delta_sum = (long)new_sum - (long)se->avg.runnable_sum;
++	se->avg.runnable_sum = new_sum;
+ 
+ 	/* Update parent cfs_rq runnable */
+-	add_positive(&cfs_rq->avg.runnable_avg, delta);
+-	cfs_rq->avg.runnable_sum = cfs_rq->avg.runnable_avg * divider;
++	add_positive(&cfs_rq->avg.runnable_avg, delta_avg);
++	add_positive(&cfs_rq->avg.runnable_sum, delta_sum);
++	/* See update_cfs_rq_load_avg() */
++	cfs_rq->avg.runnable_sum = max_t(u32, cfs_rq->avg.runnable_sum,
++					      cfs_rq->avg.runnable_avg * PELT_MIN_DIVIDER);
+ }
+ 
+ static inline void
+@@ -3686,7 +3691,10 @@ update_cfs_rq_load_avg(u64 now, struct cfs_rq *cfs_rq)
+ 
+ 		r = removed_runnable;
+ 		sub_positive(&sa->runnable_avg, r);
+-		sa->runnable_sum = sa->runnable_avg * divider;
++		sub_positive(&sa->runnable_sum, r * divider);
++		/* See sa->util_sum above */
++		sa->runnable_sum = max_t(u32, sa->runnable_sum,
++					      sa->runnable_avg * PELT_MIN_DIVIDER);
+ 
+ 		/*
+ 		 * removed_runnable is the unweighted version of removed_load so we
+@@ -3773,17 +3781,14 @@ static void attach_entity_load_avg(struct cfs_rq *cfs_rq, struct sched_entity *s
+  */
+ static void detach_entity_load_avg(struct cfs_rq *cfs_rq, struct sched_entity *se)
+ {
+-	/*
+-	 * cfs_rq->avg.period_contrib can be used for both cfs_rq and se.
+-	 * See ___update_load_avg() for details.
+-	 */
+-	u32 divider = get_pelt_divider(&cfs_rq->avg);
+-
+ 	dequeue_load_avg(cfs_rq, se);
+ 	sub_positive(&cfs_rq->avg.util_avg, se->avg.util_avg);
+ 	cfs_rq->avg.util_sum = cfs_rq->avg.util_avg * divider;
+ 	sub_positive(&cfs_rq->avg.runnable_avg, se->avg.runnable_avg);
+-	cfs_rq->avg.runnable_sum = cfs_rq->avg.runnable_avg * divider;
++	sub_positive(&cfs_rq->avg.runnable_sum, se->avg.runnable_sum);
++	/* See update_cfs_rq_load_avg() */
++	cfs_rq->avg.runnable_sum = max_t(u32, cfs_rq->avg.runnable_sum,
++					      cfs_rq->avg.runnable_avg * PELT_MIN_DIVIDER);
+ 
+ 	add_tg_cfs_propagate(cfs_rq, -se->avg.load_sum);
+ 
 -- 
 2.34.1
 
