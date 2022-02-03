@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78D4AC43217
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 17:16:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E797C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 17:16:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348497AbiBCRQH (ORCPT
+        id S1352664AbiBCRQK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 12:16:07 -0500
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:41856 "EHLO
+        Thu, 3 Feb 2022 12:16:10 -0500
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:39680 "EHLO
         mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1352784AbiBCRPi (ORCPT
+        by vger.kernel.org with ESMTP id S1352787AbiBCRPi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 3 Feb 2022 12:15:38 -0500
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 213Bqnrw011979;
-        Thu, 3 Feb 2022 18:13:24 +0100
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 213FKY4j012550;
+        Thu, 3 Feb 2022 18:13:25 +0100
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-type; s=selector1;
- bh=cKk2cA2cmuKql7YjYE5zBV0uRlabMNQq+kXwcKiX/RM=;
- b=gBKyyK059I9uncSngLUv/+M25a1wHYalgUUWdRY5ckFx8oo6eqH4arvwLN/tbQJxTjYn
- pvPgAEpZpHj+smNiaBA6T4Ne1Y345sYLjVH+TatO0LWr5eQHGPjRTMgEoFHQ3AvgV0ug
- l4f7MnhA9zhMECCgZTX8009+mgMW8tBmz2z5+YAd7m7wolDfTIGTRTyUMLpjNUYY2fez
- 95b+zuTs3nvqsXswrZM02nK6wwFR1aA3B7U9Iml05F2Hg30ZD1bXqlGD0nFuk9P8fIUv
- LPV4Rr6kSPks3nMqotP93a1cr6l6Ge5nQkgf9fdDUQjL/bFUXiVr2nDoR7kVnoX0KM+j 6Q== 
+ bh=1qswNEyk+EjTNAnmqwZ/JMaBAi2XcnYYAnBEud1Qd0E=;
+ b=hr0G/QsE3cqBtXHmGbWWnjzGLEr3C+P0rYIc8psHzmU1ntiuZEsq8/fpW7F9vBoKTrQs
+ gVToC3IPVDXveDPA+1RnJy0eQdN6uOXXHmoZZ6PYjWrP4b11Oa+E13xKzKe5TwZvmqL8
+ 962UnowkdI445WvxkR2Dm09MewPbORvDR1Zc+ps/STeAgEhoPUnBIurKNnIbE2Xcw8oQ
+ ttDaOG4mJAR0gHDwsZM0FLZWWGZQA1td4bnAQZHrzVuFG2Se+RD35xP6Rosi741zg7SW
+ QN9G5o8FeeOBSOEkZ55yr8H/G/S1k1ZNQvtV/T3Tk7XMhOI6G4+8+59s7BecWVpye276 AQ== 
 Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3e0ejj9gdp-1
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3e0c4fjdm4-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 03 Feb 2022 18:13:24 +0100
+        Thu, 03 Feb 2022 18:13:25 +0100
 Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 57E85100038;
-        Thu,  3 Feb 2022 18:13:24 +0100 (CET)
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 5D36A100034;
+        Thu,  3 Feb 2022 18:13:25 +0100 (CET)
 Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 5133322F7AA;
-        Thu,  3 Feb 2022 18:13:24 +0100 (CET)
-Received: from localhost (10.75.127.44) by SFHDAG2NODE2.st.com (10.75.127.5)
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 5503F22F7AB;
+        Thu,  3 Feb 2022 18:13:25 +0100 (CET)
+Received: from localhost (10.75.127.47) by SFHDAG2NODE2.st.com (10.75.127.5)
  with Microsoft SMTP Server (TLS) id 15.0.1497.26; Thu, 3 Feb 2022 18:13:24
  +0100
 From:   Erwan Le Ray <erwan.leray@foss.st.com>
@@ -52,15 +52,15 @@ CC:     Rob Herring <robh+dt@kernel.org>,
         <linux-stm32@st-md-mailman.stormreply.com>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>
-Subject: [PATCH 11/16] ARM: dts: stm32: keep uart4 behavior on stm32mp157c-odyssey
-Date:   Thu, 3 Feb 2022 18:11:09 +0100
-Message-ID: <20220203171114.10888-12-erwan.leray@foss.st.com>
+Subject: [PATCH 13/16] ARM: dts: stm32: keep uart nodes behavior on stm32mp15xx-dhcom-pdk2
+Date:   Thu, 3 Feb 2022 18:11:11 +0100
+Message-ID: <20220203171114.10888-14-erwan.leray@foss.st.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220203171114.10888-1-erwan.leray@foss.st.com>
 References: <20220203171114.10888-1-erwan.leray@foss.st.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Originating-IP: [10.75.127.44]
+X-Originating-IP: [10.75.127.47]
 X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
  (10.75.127.5)
 X-Proofpoint-Virus-Version: vendor=baseguard
@@ -71,21 +71,28 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 DMA configuration is added to uart nodes in stm32mp15x device tree.
-Delete uart4 DMA property in stm32mp157c-odyssey board device tree to
-keep console in irq mode, as DMA support for console has been removed
-from the driver by commit e359b4411c28 ("serial: stm32: fix threaded
-interrupt handling").
+Delete usart3 and uart8 DMA property in stm32mp15xx-dhcom-pdk2 board
+device tree to keep current behavior.
 
 Signed-off-by: Erwan Le Ray <erwan.leray@foss.st.com>
 
-diff --git a/arch/arm/boot/dts/stm32mp157c-odyssey.dts b/arch/arm/boot/dts/stm32mp157c-odyssey.dts
-index 554f5d3bcdc3..ed66d25b8bf3 100644
---- a/arch/arm/boot/dts/stm32mp157c-odyssey.dts
-+++ b/arch/arm/boot/dts/stm32mp157c-odyssey.dts
-@@ -81,6 +81,8 @@
- &uart4 {
+diff --git a/arch/arm/boot/dts/stm32mp15xx-dhcom-pdk2.dtsi b/arch/arm/boot/dts/stm32mp15xx-dhcom-pdk2.dtsi
+index fbf3826933e4..5f586f024060 100644
+--- a/arch/arm/boot/dts/stm32mp15xx-dhcom-pdk2.dtsi
++++ b/arch/arm/boot/dts/stm32mp15xx-dhcom-pdk2.dtsi
+@@ -287,6 +287,8 @@
+ &usart3 {
  	pinctrl-names = "default";
- 	pinctrl-0 = <&uart4_pins_a>;
+ 	pinctrl-0 = <&usart3_pins_a>;
++	/delete-property/dmas;
++	/delete-property/dma-names;
+ 	status = "okay";
+ };
+ 
+@@ -294,6 +296,8 @@
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&uart8_pins_a &uart8_rtscts_pins_a>;
+ 	uart-has-rtscts;
 +	/delete-property/dmas;
 +	/delete-property/dma-names;
  	status = "okay";
