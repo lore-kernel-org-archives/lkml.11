@@ -2,103 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89C2FC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 15:48:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17BC1C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 15:48:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351949AbiBCPsW (ORCPT
+        id S1351970AbiBCPs4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 10:48:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47558 "EHLO
+        Thu, 3 Feb 2022 10:48:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238679AbiBCPsU (ORCPT
+        with ESMTP id S1351962AbiBCPss (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 10:48:20 -0500
-Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96472C061714;
-        Thu,  3 Feb 2022 07:48:20 -0800 (PST)
-Received: by mail-io1-xd2e.google.com with SMTP id r144so3725270iod.9;
-        Thu, 03 Feb 2022 07:48:20 -0800 (PST)
+        Thu, 3 Feb 2022 10:48:48 -0500
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56AE5C061714;
+        Thu,  3 Feb 2022 07:48:48 -0800 (PST)
+Received: by mail-wr1-x435.google.com with SMTP id w11so5874544wra.4;
+        Thu, 03 Feb 2022 07:48:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=WLH1O+Vnbs8udHEehPW8PKl/Vsqp6/y9M/lwajCfmXg=;
-        b=O2CfoR+Kidy6Oil62L7eIH2efozt64sP75j6rrjblHbD93lfalaDPECmKMSLR1bMRI
-         MyATwiK8Iq8ewDJjL9wop/yWJRNXHiz+mJrQzvj/rLk2NFXEmmVyCEkcg+achzY/Ujzq
-         rBdpvZRBfpcjJDd2ziUgr3b7rDzDcNBZjr0Gp//MfAvWdMpIeAIpoAiu88IHAI0ldyRG
-         j42emqwxOa9uI2aqBdX7uWycKCXtCy+lxyp3ULgGou70LGIa8eRS1fabpdxJaLNt4Z9c
-         EqohgOdJ2zBGkWXIvlpxH3JWAuZYbjnKP6TLYl5zqR+gElcmUBERluM5d1nIYiV/h6cr
-         sCxA==
+        bh=gCcRTHRJr7f01fevcrPC8GA217103t1QOb6ugGoVskc=;
+        b=CCcL5YW9kYYLEnd4F0UXJcgwesKgEIBd+r9GfzB3qZ0coS3mlSxusvIR7vnWERfGa3
+         qNXoGebUErKgrYfx3v3/uh+4RQZ9dKGaOkN0IHAmcBUINWoeEtbLD9fzJ6JPq9yLP/PJ
+         kRqKFOjkkgVi2Ad2dCtDmDz/188N9WHRAd3As9xC6jVl8RGoYFt0pQOb5fe/7cgbJ2dv
+         3vdNeGO0vRDbSKN+u7jykuG7PDphZzSL+So5pyd7GQ6rnPsUr92nVr4uPSaWMQcRHWTj
+         rMf/AmHvHiBrHvNnfodF0PXg6APw4gLjoVDNAPGvQFtChnDw22OMIbNhvaCXTUTp6CTN
+         9shw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=WLH1O+Vnbs8udHEehPW8PKl/Vsqp6/y9M/lwajCfmXg=;
-        b=kbPlJ2uUhEOa4MCgi5/Tb3MOArMunrCJbx1nfLnal99dDid1n4Dlg8Ocw325aE40gg
-         RPdAAn9o9c9HKMUqh4FlyNWwOTB+BEOTTaiTKt4V8vSqBP8ZJbbNx4YAfnYbb8unuW5x
-         aT7ZHTSiLiYTCP4bo5I9qo+/HbHlUtbednGOKdMEhJ4Tfb/m3dWDhhXTgbxMXmiOvihl
-         iYEDLwZaQPZuvJe959DZnvc1aoResWHz8okEZgOPq5XS4ToZIr/qyVSfcI+8oLW8jeD0
-         ilZxxIGyFCgzMIDzMjovx25OwhzYkqONKps5jnuaW6PI1zYGeJT5sNcIhOA8lhjxKqw4
-         0K4g==
-X-Gm-Message-State: AOAM5323rKQDo+13iY+vy/UrqY1rAOPtbsay+jKSaTtq31UV/uxieU4K
-        Euo8ltYcPleFCsogSmNsrJgTuBM4m4Q=
-X-Google-Smtp-Source: ABdhPJytHT2ainnjTy8kuwJMbb9XvCK+xi9KdImDjah1yKuXQ7fyHkvMjlJDtILNHjHCwvaKCySTwA==
-X-Received: by 2002:a6b:4e18:: with SMTP id c24mr18972137iob.179.1643903300006;
-        Thu, 03 Feb 2022 07:48:20 -0800 (PST)
-Received: from ?IPV6:2601:282:800:dc80:8870:ce19:2c7:3513? ([2601:282:800:dc80:8870:ce19:2c7:3513])
-        by smtp.googlemail.com with ESMTPSA id o7sm8800664ilt.63.2022.02.03.07.48.18
+        bh=gCcRTHRJr7f01fevcrPC8GA217103t1QOb6ugGoVskc=;
+        b=5C/i77Cqh70yeNABRVBLB1td39hLAATwMTiG7y2FR6PM0FFpQYed2HTK5vK0cQjFRQ
+         c7K8J1gZ2emX7dfIm3ZiUSqH4GSx0YKoCJ4zp55ayTHAo6QynNc5+HeV1UeWdOKPU0lu
+         OJkIkOZDVpbIw9YYkD8oERCBZqC4hfkhpNZZIBuY3BV+e1dB9lQRGSYUk9ahUDEn87Nn
+         PmfnkFkSwlS1vLvdkmajRUFE16/ryBptGKUJtZ5EFOMTrsuWPIHx9kqAW6Ed433XWAex
+         qbdivKtqGFNdWx383G86ieMBHQGZClKHUBO+sdK9BNXRSN6KLIOf2LXbnFiJo/P+5OqI
+         5cug==
+X-Gm-Message-State: AOAM530QT/6niwyftLF133HAR1s2hSnqT75qRuwtqcFkp3J50SrlKKuj
+        aTQZmDfuvgdAOPS/xe9hsMLWw3bzxzc=
+X-Google-Smtp-Source: ABdhPJzVqtTWNdQ8ZTlZGEZXefEtRmguBwaFcZdYYdh5sJl0775P+Rymry8UlUfMBoOI5Mja0DguAQ==
+X-Received: by 2002:adf:e411:: with SMTP id g17mr12916563wrm.275.1643903326813;
+        Thu, 03 Feb 2022 07:48:46 -0800 (PST)
+Received: from [192.168.8.198] ([85.255.232.204])
+        by smtp.gmail.com with ESMTPSA id x6sm23958986wrn.18.2022.02.03.07.48.46
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Feb 2022 07:48:19 -0800 (PST)
-Message-ID: <e34e03db-9764-4728-9f6a-df85659c5089@gmail.com>
-Date:   Thu, 3 Feb 2022 08:48:17 -0700
+        Thu, 03 Feb 2022 07:48:46 -0800 (PST)
+Message-ID: <6cce16d3-e2ca-ca1e-1209-e6e243241231@gmail.com>
+Date:   Thu, 3 Feb 2022 15:44:21 +0000
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.5.1
-Subject: Re: [PATCH RFC 1/4] net: skb: use line number to trace dropped skb
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [External] Re: [RFC] io_uring: avoid ring quiesce while
+ registering/unregistering eventfd
 Content-Language: en-US
-To:     Dongli Zhang <dongli.zhang@oracle.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, rostedt@goodmis.org,
-        mingo@redhat.com, davem@davemloft.net, kuba@kernel.org,
-        edumazet@google.com, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        imagedong@tencent.com, joao.m.martins@oracle.com,
-        joe.jin@oracle.com
-References: <20220203153731.8992-1-dongli.zhang@oracle.com>
- <20220203153731.8992-2-dongli.zhang@oracle.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20220203153731.8992-2-dongli.zhang@oracle.com>
-Content-Type: text/plain; charset=UTF-8
+To:     Usama Arif <usama.arif@bytedance.com>,
+        Jens Axboe <axboe@kernel.dk>, io-uring@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     fam.zheng@bytedance.com
+References: <20220202155923.4117285-1-usama.arif@bytedance.com>
+ <86ae792e-d138-112e-02bb-ab70e3c2a147@kernel.dk>
+ <7df1059c-6151-29c8-9ed5-0bc0726c362d@kernel.dk>
+ <1494b8f0-2f48-0aa1-214c-a02bbc4b05eb@bytedance.com>
+From:   Pavel Begunkov <asml.silence@gmail.com>
+In-Reply-To: <1494b8f0-2f48-0aa1-214c-a02bbc4b05eb@bytedance.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/3/22 8:37 AM, Dongli Zhang wrote:
-> Sometimes the kernel may not directly call kfree_skb() to drop the sk_buff.
-> Instead, it "goto drop" and call kfree_skb() at 'drop'. This make it
-> difficult to track the reason that the sk_buff is dropped.
+On 2/3/22 15:14, Usama Arif wrote:
+> On 02/02/2022 19:18, Jens Axboe wrote:
+>> On 2/2/22 9:57 AM, Jens Axboe wrote:
+>>> On 2/2/22 8:59 AM, Usama Arif wrote:
+>>>> Acquire completion_lock at the start of __io_uring_register before
+>>>> registering/unregistering eventfd and release it at the end. Hence
+>>>> all calls to io_cqring_ev_posted which adds to the eventfd counter
+>>>> will finish before acquiring the spin_lock in io_uring_register, and
+>>>> all new calls will wait till the eventfd is registered. This avoids
+>>>> ring quiesce which is much more expensive than acquiring the
+>>>> spin_lock.
+>>>>
+>>>> On the system tested with this patch, io_uring_reigster with
+>>>> IORING_REGISTER_EVENTFD takes less than 1ms, compared to 15ms before.
+>>>
+>>> This seems like optimizing for the wrong thing, so I've got a few
+>>> questions. Are you doing a lot of eventfd registrations (and
+>>> unregister) in your workload? Or is it just the initial pain of
+>>> registering one? In talking to Pavel, he suggested that RCU might be a
+>>> good use case here, and I think so too. That would still remove the
+>>> need to quiesce, and the posted side just needs a fairly cheap rcu
+>>> read lock/unlock around it.
+>>
+>> Totally untested, but perhaps can serve as a starting point or
+>> inspiration.
+>>
 > 
-> The commit c504e5c2f964 ("net: skb: introduce kfree_skb_reason()") has
-> introduced the kfree_skb_reason() to help track the reason. However, we may
-> need to define many reasons for each driver/subsystem.
+> Hi,
 > 
-> To avoid introducing so many new reasons, this is to use line number
-> ("__LINE__") to trace where the sk_buff is dropped. As a result, the reason
-> will be generated automatically.
-> 
+> Thank you for the replies and comments. My usecase registers only one eventfd at the start.
 
-I don't agree with this approach. It is only marginally better than the
-old kfree_skb that only gave the instruction pointer. That tells you the
-function that dropped the packet, but not why the packet is dropped.
-Adding the line number only makes users have to consult the source code.
+Then it's overkill. Update io_register_op_must_quiesce(), set ->cq_ev_fd
+on registration with WRITE_ONCE(), read it in io_cqring_ev_posted* with
+READ_ONCE() and you're set.
 
-When I watch drop monitor for kfree_skb I want to know *why* the packet
-was dropped, not the line number in the source code. e.g., dropmon
-showing OTHERHOST means too many packets are sent to this host (e.g.,
-hypervisor) that do not belong to the host or the VMs running on it, or
-packets have invalid checksum (IP, TCP, UDP). Usable information by
-everyone, not just someone with access to the source code for that
-specific kernel.
+There is a caveat, ->cq_ev_fd won't be immediately visible to already
+inflight requests, but we can say it's the responsibility of the
+userspace to wait for a grace period, i.e. for all inflight requests
+submitted before registration io_cqring_ev_posted* might or might not
+see updated ->cq_ev_fd, which works perfectly if there was no requests
+in the first place. Of course it changes the behaviour so will need
+a new register opcode.
 
+-- 
+Pavel Begunkov
