@@ -2,137 +2,264 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53015C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 00:30:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0895C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 00:31:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381489AbiBFAan (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 19:30:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42568 "EHLO
+        id S235345AbiBFAbd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 5 Feb 2022 19:31:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229454AbiBFAak (ORCPT
+        with ESMTP id S229454AbiBFAbb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 19:30:40 -0500
-Received: from mx1.smtp.larsendata.com (mx1.smtp.larsendata.com [91.221.196.215])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88519C061353
-        for <linux-kernel@vger.kernel.org>; Sat,  5 Feb 2022 16:30:39 -0800 (PST)
+        Sat, 5 Feb 2022 19:31:31 -0500
+Received: from mx2.smtp.larsendata.com (mx2.smtp.larsendata.com [91.221.196.228])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFDBCC061353
+        for <linux-kernel@vger.kernel.org>; Sat,  5 Feb 2022 16:31:30 -0800 (PST)
 Received: from mail01.mxhotel.dk (mail01.mxhotel.dk [91.221.196.236])
-        by mx1.smtp.larsendata.com (Halon) with ESMTPS
-        id 12f30462-8454-11ec-b20b-0050568c148b;
-        Wed, 02 Feb 2022 18:15:17 +0000 (UTC)
+        by mx2.smtp.larsendata.com (Halon) with ESMTPS
+        id 8640be1c-8536-11ec-ac19-0050568cd888;
+        Thu, 03 Feb 2022 21:16:16 +0000 (UTC)
 Received: from ravnborg.org (80-162-45-141-cable.dk.customer.tdc.net [80.162.45.141])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: sam@ravnborg.org)
-        by mail01.mxhotel.dk (Postfix) with ESMTPSA id 67A6F194BFA;
-        Wed,  2 Feb 2022 19:14:11 +0100 (CET)
-Date:   Wed, 2 Feb 2022 19:14:08 +0100
+        by mail01.mxhotel.dk (Postfix) with ESMTPSA id 6844B194B5E;
+        Thu,  3 Feb 2022 22:15:16 +0100 (CET)
+Date:   Thu, 3 Feb 2022 22:15:14 +0100
 X-Report-Abuse-To: abuse@mxhotel.dk
 From:   Sam Ravnborg <sam@ravnborg.org>
-To:     nick.hawkins@hpe.com
-Cc:     verdun@hpe.com, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Corey Minyard <minyard@acm.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+To:     Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc:     DRI Development <dri-devel@lists.freedesktop.org>,
+        linux-fbdev@vger.kernel.org, Du Cheng <ducheng2@gmail.com>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Claudio Suarez <cssk@net-c.es>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Brown <broonie@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Russell King <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        soc@kernel.org, Shawn Guo <shawnguo@kernel.org>,
-        Stanislav Jakubek <stano.jakubek@gmail.com>,
-        Hao Fang <fanghao11@huawei.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Wang Kefeng <wangkefeng.wang@huawei.com>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-i2c@vger.kernel.org,
-        openipmi-developer@lists.sourceforge.net,
-        linux-mtd@lists.infradead.org, netdev@vger.kernel.org,
-        linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH] HPE BMC GXP SUPPORT
-Message-ID: <YfrJ8JWjyH9ptV4z@ravnborg.org>
-References: <nick.hawkins@hpe.com>
- <20220202165315.18282-1-nick.hawkins@hpe.com>
+        Daniel Vetter <daniel.vetter@intel.com>
+Subject: Re: [PATCH 11/21] fbcon: Extract fbcon_open/release helpers
+Message-ID: <YfxF4jq7BLX5rJe5@ravnborg.org>
+References: <20220131210552.482606-1-daniel.vetter@ffwll.ch>
+ <20220131210552.482606-12-daniel.vetter@ffwll.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220202165315.18282-1-nick.hawkins@hpe.com>
+In-Reply-To: <20220131210552.482606-12-daniel.vetter@ffwll.ch>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Nick,
+Hi Daniel,
 
-good to see all this stuff coming mainline,
-
-On Wed, Feb 02, 2022 at 10:52:50AM -0600, nick.hawkins@hpe.com wrote:
-> From: Nick Hawkins <nick.hawkins@hpe.com>
+On Mon, Jan 31, 2022 at 10:05:42PM +0100, Daniel Vetter wrote:
+> There's two minor behaviour changes in here:
+> - in error paths we now consistently call fb_ops->fb_release
+> - fb_release really can't fail (fbmem.c ignores it too) and there's no
+>   reasonable cleanup we can do anyway.
 > 
-> GXP is the name of the HPE SoC.
-> This SoC is used to implement BMC features of HPE servers
-> (all ProLiant, Synergy, and many Apollo, and Superdome machines)
-> It does support many features including:
-> 	ARMv7 architecture, and it is based on a Cortex A9 core
-> 	Use an AXI bus to which
-> 		a memory controller is attached, as well as
->                  multiple SPI interfaces to connect boot flash,
->                  and ROM flash, a 10/100/1000 Mac engine which
->                  supports SGMII (2 ports) and RMII
-> 		Multiple I2C engines to drive connectivity with a host infrastructure
-> 		A video engine which support VGA and DP, as well as
->                  an hardware video encoder
-> 		Multiple PCIe ports
-> 		A PECI interface, and LPC eSPI
-> 		Multiple UART for debug purpose, and Virtual UART for host connectivity
-> 		A GPIO engine
-> This Patch Includes:
-> 	Documentation for device tree bindings
-> 	Device Tree Bindings
-> 	GXP Timer Support
-> 	GXP Architecture Support
-> 
-> Signed-off-by: Nick Hawkins <nick.hawkins@hpe.com>
+> Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
+> Cc: Daniel Vetter <daniel@ffwll.ch>
+> Cc: Claudio Suarez <cssk@net-c.es>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+> Cc: Du Cheng <ducheng2@gmail.com>
 > ---
->  .../bindings/display/hpe,gxp-thumbnail.txt    |  21 +
->  .../devicetree/bindings/gpio/hpe,gxp-gpio.txt |  16 +
-...
+>  drivers/video/fbdev/core/fbcon.c | 107 +++++++++++++++----------------
+>  1 file changed, 53 insertions(+), 54 deletions(-)
+> 
+> diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
+> index fa30e1909164..eea2ee14b64c 100644
+> --- a/drivers/video/fbdev/core/fbcon.c
+> +++ b/drivers/video/fbdev/core/fbcon.c
+> @@ -680,19 +680,37 @@ static int fbcon_invalid_charcount(struct fb_info *info, unsigned charcount)
+>  
+>  #endif /* CONFIG_MISC_TILEBLITTING */
+>  
+> +static int fbcon_open(struct fb_info *info)
+> +{
+> +	if (!try_module_get(info->fbops->owner))
+> +		return -ENODEV;
+> +
+> +	if (info->fbops->fb_open &&
+> +	    info->fbops->fb_open(info, 0)) {
+> +		module_put(info->fbops->owner);
+> +		return -ENODEV;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static void fbcon_release(struct fb_info *info)
+> +{
+> +	if (info->fbops->fb_release)
+> +		info->fbops->fb_release(info, 0);
+> +
+> +	module_put(info->fbops->owner);
+> +}
+>  
+>  static int con2fb_acquire_newinfo(struct vc_data *vc, struct fb_info *info,
+>  				  int unit, int oldidx)
+>  {
+>  	struct fbcon_ops *ops = NULL;
+> -	int err = 0;
+> -
+> -	if (!try_module_get(info->fbops->owner))
+> -		err = -ENODEV;
+> +	int err;
+>  
+> -	if (!err && info->fbops->fb_open &&
+> -	    info->fbops->fb_open(info, 0))
+> -		err = -ENODEV;
+> +	err = fbcon_open(info);
+> +	if (err)
+> +		return err;
+>  
+>  	if (!err) {
+>  		ops = kzalloc(sizeof(struct fbcon_ops), GFP_KERNEL);
+> @@ -713,7 +731,7 @@ static int con2fb_acquire_newinfo(struct vc_data *vc, struct fb_info *info,
+>  
+>  	if (err) {
+>  		con2fb_map[unit] = oldidx;
+> -		module_put(info->fbops->owner);
+> +		fbcon_release(info);
+>  	}
+>  
+>  	return err;
+> @@ -724,45 +742,34 @@ static int con2fb_release_oldinfo(struct vc_data *vc, struct fb_info *oldinfo,
+>  				  int oldidx, int found)
+>  {
+>  	struct fbcon_ops *ops = oldinfo->fbcon_par;
+> -	int err = 0, ret;
+> +	int ret;
+>  
+> -	if (oldinfo->fbops->fb_release &&
+> -	    oldinfo->fbops->fb_release(oldinfo, 0)) {
+> -		con2fb_map[unit] = oldidx;
+The old code assigns con2fb_map[unit] before is calls
+newinfo->fbops->fb_release).
+I wonder if there can be any callback to fbcon where the value
+of con2fb_map[unit] matters?
 
-All new bindings must be in the DT-schema format (yaml files).
-This enables a lot of syntax checks and validation.
 
-We are slowly migrating away from the .txt based bindings.
+> -		if (!found && newinfo->fbops->fb_release)
+> -			newinfo->fbops->fb_release(newinfo, 0);
+> -		if (!found)
+> -			module_put(newinfo->fbops->owner);
+> -		err = -ENODEV;
+> -	}
+> +	fbcon_release(oldinfo);
+>  
+> -	if (!err) {
+> -		fbcon_del_cursor_work(oldinfo);
+> -		kfree(ops->cursor_state.mask);
+> -		kfree(ops->cursor_data);
+> -		kfree(ops->cursor_src);
+> -		kfree(ops->fontbuffer);
+> -		kfree(oldinfo->fbcon_par);
+> -		oldinfo->fbcon_par = NULL;
+> -		module_put(oldinfo->fbops->owner);
+> -		/*
+> -		  If oldinfo and newinfo are driving the same hardware,
+> -		  the fb_release() method of oldinfo may attempt to
+> -		  restore the hardware state.  This will leave the
+> -		  newinfo in an undefined state. Thus, a call to
+> -		  fb_set_par() may be needed for the newinfo.
+> -		*/
+> -		if (newinfo && newinfo->fbops->fb_set_par) {
+> -			ret = newinfo->fbops->fb_set_par(newinfo);
+> +	fbcon_del_cursor_work(oldinfo);
 
-Also, for new bindings please follow the guide lines listed in
-Documentation/devicetree/bindings/submitting-patches.rst
 
-Consider including the bindings with the drivers using the bindings so
-things have a more natural split.
+> +	kfree(ops->cursor_state.mask);
+> +	kfree(ops->cursor_data);
+> +	kfree(ops->cursor_src);
+> +	kfree(ops->fontbuffer);
+> +	kfree(oldinfo->fbcon_par);
+> +	oldinfo->fbcon_par = NULL;
+These all look like candidates to stuff into fbcon_release()
+That would drop the nice symmetry but make it more consistent.
+
+I think we miss freeing ops->cursor_data in fbcon_exit(),
+but I did not follow all the code.
+
+With my ramblings considered the patch is
+Acked-by: Sam Ravnborg <sam@ravnborg.org>
 
 	Sam
+
+> +	/*
+> +	  If oldinfo and newinfo are driving the same hardware,
+> +	  the fb_release() method of oldinfo may attempt to
+> +	  restore the hardware state.  This will leave the
+> +	  newinfo in an undefined state. Thus, a call to
+> +	  fb_set_par() may be needed for the newinfo.
+> +	*/
+> +	if (newinfo && newinfo->fbops->fb_set_par) {
+> +		ret = newinfo->fbops->fb_set_par(newinfo);
+>  
+> -			if (ret)
+> -				printk(KERN_ERR "con2fb_release_oldinfo: "
+> -					"detected unhandled fb_set_par error, "
+> -					"error code %d\n", ret);
+> -		}
+> +		if (ret)
+> +			printk(KERN_ERR "con2fb_release_oldinfo: "
+> +				"detected unhandled fb_set_par error, "
+> +				"error code %d\n", ret);
+>  	}
+>  
+> -	return err;
+> +	return 0;
+>  }
+>  
+>  static void con2fb_init_display(struct vc_data *vc, struct fb_info *info,
+> @@ -917,7 +924,6 @@ static const char *fbcon_startup(void)
+>  	struct fbcon_display *p = &fb_display[fg_console];
+>  	struct vc_data *vc = vc_cons[fg_console].d;
+>  	const struct font_desc *font = NULL;
+> -	struct module *owner;
+>  	struct fb_info *info = NULL;
+>  	struct fbcon_ops *ops;
+>  	int rows, cols;
+> @@ -936,17 +942,12 @@ static const char *fbcon_startup(void)
+>  	if (!info)
+>  		return NULL;
+>  	
+> -	owner = info->fbops->owner;
+> -	if (!try_module_get(owner))
+> +	if (fbcon_open(info))
+>  		return NULL;
+> -	if (info->fbops->fb_open && info->fbops->fb_open(info, 0)) {
+> -		module_put(owner);
+> -		return NULL;
+> -	}
+>  
+>  	ops = kzalloc(sizeof(struct fbcon_ops), GFP_KERNEL);
+>  	if (!ops) {
+> -		module_put(owner);
+> +		fbcon_release(info);
+>  		return NULL;
+>  	}
+>  
+> @@ -3331,10 +3332,6 @@ static void fbcon_exit(void)
+>  		}
+>  
+>  		if (mapped) {
+> -			if (info->fbops->fb_release)
+> -				info->fbops->fb_release(info, 0);
+> -			module_put(info->fbops->owner);
+> -
+>  			if (info->fbcon_par) {
+>  				struct fbcon_ops *ops = info->fbcon_par;
+>  
+> @@ -3344,6 +3341,8 @@ static void fbcon_exit(void)
+>  				kfree(info->fbcon_par);
+>  				info->fbcon_par = NULL;
+>  			}
+> +
+> +			fbcon_release(info);
+>  		}
+>  	}
+>  }
+> -- 
+> 2.33.0
