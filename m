@@ -2,156 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CBC5C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 09:52:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BE33C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 09:52:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234366AbiBCJwC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 04:52:02 -0500
-Received: from foss.arm.com ([217.140.110.172]:35148 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237370AbiBCJwB (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 04:52:01 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BC91F113E;
-        Thu,  3 Feb 2022 01:52:00 -0800 (PST)
-Received: from FVFF77S0Q05N (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1EA263F40C;
-        Thu,  3 Feb 2022 01:51:58 -0800 (PST)
-Date:   Thu, 3 Feb 2022 09:51:46 +0000
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Frederic Weisbecker <frederic@kernel.org>
-Cc:     linux-arm-kernel@lists.infradead.org, ardb@kernel.org,
-        catalin.marinas@arm.com, juri.lelli@redhat.com,
-        linux-kernel@vger.kernel.org, mingo@redhat.com,
-        peterz@infradead.org, will@kernel.org
-Subject: Re: [PATCH 5/6] sched/preempt: add PREEMPT_DYNAMIC using static keys
-Message-ID: <YfulsiWkphburRNX@FVFF77S0Q05N>
-References: <20211109172408.49641-1-mark.rutland@arm.com>
- <20211109172408.49641-6-mark.rutland@arm.com>
- <20220202232145.GA461279@lothringen>
+        id S1349965AbiBCJwl (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Feb 2022 04:52:41 -0500
+Received: from smtp-out2.suse.de ([195.135.220.29]:33594 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234483AbiBCJwh (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 3 Feb 2022 04:52:37 -0500
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 5D1101F3A8;
+        Thu,  3 Feb 2022 09:52:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1643881956; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=bLOn4HAXkPZHEb9tPDyeDY1N8Gi6hOouq8FDKvgLLrw=;
+        b=Wg8dB8Jrnul5bNu/F+Z9RTMleIZS4ejELJXXHwcvzi/A5roCngF5IlLfz+TAtpTMhgKWql
+        Ff+vsH1PcdEkGhzlTAZEF8l3Q1RF+Zd3q+Y9rezHMlISAq5IleCBD90P3UHr46+7hJM0YG
+        UYAkOiG42fN7Kkt3jlkL4rXoT++zXRA=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1643881956;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=bLOn4HAXkPZHEb9tPDyeDY1N8Gi6hOouq8FDKvgLLrw=;
+        b=/rn9Z+Zp9bAlNUNPoHB6h6DoQjrLD6qHN8x+dY2IpVEqrioQG4WuBLjuB5MJ7TeDNxx0Nn
+        0B29IMRiHSHd6fAQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 3077713B7F;
+        Thu,  3 Feb 2022 09:52:36 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id A17ICuSl+2G+RQAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Thu, 03 Feb 2022 09:52:36 +0000
+Message-ID: <13e0466d-d9ec-0efd-f7df-107940636a85@suse.cz>
+Date:   Thu, 3 Feb 2022 10:52:35 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220202232145.GA461279@lothringen>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Content-Language: en-US
+To:     Mike Rapoport <rppt@linux.ibm.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Linux Kernel <linux-kernel@vger.kernel.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Doug Berger <opendmb@gmail.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        SeongJae Park <sj@kernel.org>,
+        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+References: <fbad2233-207e-6b66-890b-ef1b1f97fdad@gmail.com>
+ <Yft92aSYi9QIfKNf@linux.ibm.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+Subject: Re: Updated git tree for MM patches??
+In-Reply-To: <Yft92aSYi9QIfKNf@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 03, 2022 at 12:21:45AM +0100, Frederic Weisbecker wrote:
-> On Tue, Nov 09, 2021 at 05:24:07PM +0000, Mark Rutland wrote:
-> > diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-> > index e5359b09de1d..8a94ccfc7dc8 100644
-> > --- a/include/linux/kernel.h
-> > +++ b/include/linux/kernel.h
-> > @@ -93,7 +93,7 @@ struct user;
-> >  extern int __cond_resched(void);
-> >  # define might_resched() __cond_resched()
-> >  
-> > -#elif defined(CONFIG_PREEMPT_DYNAMIC)
-> > +#elif defined(CONFIG_PREEMPT_DYNAMIC) && defined(CONFIG_HAVE_PREEMPT_DYNAMIC_CALL)
-> >  
-> >  extern int __cond_resched(void);
-> >  
-> > @@ -104,6 +104,11 @@ static __always_inline void might_resched(void)
-> >  	static_call_mod(might_resched)();
-> >  }
-> >  
-> > +#elif defined(CONFIG_PREEMPT_DYNAMIC) && defined(CONFIG_HAVE_PREEMPT_DYNAMIC_KEY)
-> > +
-> > +extern int dynamic_might_resched(void);
-> > +# define might_resched() dynamic_might_resched()
-> > +
-> >  #else
-> >  
-> >  # define might_resched() do { } while (0)
-> > diff --git a/include/linux/sched.h b/include/linux/sched.h
-> > index 78c351e35fec..7710b6593c72 100644
-> > --- a/include/linux/sched.h
-> > +++ b/include/linux/sched.h
-> > @@ -2008,7 +2008,7 @@ static inline int test_tsk_need_resched(struct task_struct *tsk)
-> >  #if !defined(CONFIG_PREEMPTION) || defined(CONFIG_PREEMPT_DYNAMIC)
-> >  extern int __cond_resched(void);
-> >  
-> > -#ifdef CONFIG_PREEMPT_DYNAMIC
-> > +#if defined(CONFIG_PREEMPT_DYNAMIC) && defined(CONFIG_HAVE_PREEMPT_DYNAMIC_CALL)
-> >  
-> >  DECLARE_STATIC_CALL(cond_resched, __cond_resched);
-> >  
-> > @@ -2017,6 +2017,14 @@ static __always_inline int _cond_resched(void)
-> >  	return static_call_mod(cond_resched)();
-> >  }
-> >  
-> > +#elif defined(CONFIG_PREEMPT_DYNAMIC) && defined(CONFIG_HAVE_PREEMPT_DYNAMIC_KEY)
-> > +extern int dynamic_cond_resched(void);
-> > +
-> > +static __always_inline int _cond_resched(void)
-> > +{
-> > +	return dynamic_cond_resched();
+On 2/3/22 08:01, Mike Rapoport wrote:
+> On Wed, Feb 02, 2022 at 04:21:38PM -0800, Florian Fainelli wrote:
+>> Hi Andrew, Johannes,
+>> 
+>> The MAINTAINERS file for MEMORY MANAGEMENT lists the following git tree:
+>> 
+>> git://github.com/hnaz/linux-mm.git
+>> 
+>> however it does not look like it has been updated in the past 5 months or so
+>> as master still points to 5.17-rc7-mm1
+>> 
+>> Is there another git tree that other memory management related subsystems
+>> use for development?
 > 
-> So in the end this is creating an indirect call for every preemption entrypoint.
+> AFAIK, hnaz/linux-mm was the only git mirror of mmotm series.
 
-Huh? "indirect call" usually means a branch to a function pointer, and I don't
-think that's what you mean here. Do you just mean that we add a (direct)
-call+return?
+IIRC Michal Hocko also used to maintain one, in a different way, but that
+was given up even longer ago.
 
-This gets inlined, and will be just a direct call to dynamic_cond_resched().
-e,g. on arm64 this will be a single instruction:
+linux-next seems to maintain its branch that's merged to the final next like
+this:
+https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/log/?h=akpm
+but that means getting the whole of next, not just mmotm. Maybe the branch
+'akpm-current/current' could be also exposed separately?
 
-	bl	dynamic_cond_resched
+> I keep a tree for memblock, but it follows Linus' tree rather than mmotm.
+> I think Vlastimil's slab tree does the same.
 
-... and (as the commit message desribes) then the implementation of
-dynamic_cond_resched will be the same as the regular __cond_resched *but* the
-static key trampoline is inlined at the start, e.g.
-
-| <dynamic_cond_resched>:
-|        bti     c
-|        b       <dynamic_cond_resched+0x10>
-|        mov     w0, #0x0                        // #0
-|        ret
-|        mrs     x0, sp_el0
-|        ldr     x0, [x0, #8]
-|        cbnz    x0, <dynamic_cond_resched+0x8>
-|        paciasp
-|        stp     x29, x30, [sp, #-16]!
-|        mov     x29, sp
-|        bl      <preempt_schedule_common>
-|        mov     w0, #0x1                        // #1
-|        ldp     x29, x30, [sp], #16
-|        autiasp
-|        ret
-
-... compared to the regular form of the function:
-
-| <__cond_resched>:
-|        bti     c
-|        mrs     x0, sp_el0
-|        ldr     x1, [x0, #8]
-|        cbz     x1, <__cond_resched+0x18>
-|        mov     w0, #0x0                        // #0
-|        ret
-|        paciasp
-|        stp     x29, x30, [sp, #-16]!
-|        mov     x29, sp
-|        bl      <preempt_schedule_common>
-|        mov     w0, #0x1                        // #1
-|        ldp     x29, x30, [sp], #16
-|        autiasp
-|        ret
-
-> It seems to me that this loses the whole point of using static keys.
-
-As above, I don't think that's the case. Relative to static keys using
-trampolines (which is all arm64 can implement), the gain is that we inline the
-trampoline into the *callee*. That saves on I-cache footprint, the compiler can
-generate the early returns more optimally (and compatibly with an CFI scheme we
-wish to use), and we don't have to maintain a separate patching mechanism.
-
-If you think that static call trampolines lose the whole point of static keys
-then we've lost to begin with, since that's all we can reasonably implement.
-
-> Is there something that prevents from using inlines or macros?
-
-Inlining of *what* ?
-
-Thanks,
-Mark.
+Yeah as that's how development should be done in general, the trees should
+be independent if possible.
