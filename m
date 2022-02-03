@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19C8DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:32:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65AACC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:32:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354656AbiBCUcd (ORCPT
+        id S1354680AbiBCUcj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:32:33 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:37254 "EHLO
+        Thu, 3 Feb 2022 15:32:39 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:35676 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354468AbiBCUbj (ORCPT
+        with ESMTP id S1354190AbiBCUaR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 15:31:39 -0500
+        Thu, 3 Feb 2022 15:30:17 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1325D61A66;
-        Thu,  3 Feb 2022 20:31:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DEF5C340F0;
-        Thu,  3 Feb 2022 20:31:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6287A61A6D;
+        Thu,  3 Feb 2022 20:30:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC054C36AE3;
+        Thu,  3 Feb 2022 20:30:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643920298;
-        bh=WFqTIFbcouaApt5mdXLi6vKpn1Gu/pyOz2IiuG4k3xc=;
+        s=k20201202; t=1643920216;
+        bh=MwkTiZJoksLSxaggOf2WpxBsuCuWyZjip0DdOvCxCRY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nhs8J4/CF26wXp6Knp1vPGgQQfVQUUlnCkS/S6Nf55PButSOnBwezRPH7lfXMWwt4
-         eUpvQlmkg7cGBFDzJl59ZlNNTotqWwv0GwTODD0I6H0fBSYHscJzKwsLCaA5tybU03
-         GZNBrXw7QF+ljQsYEGlYK1J3HSAyDxGMQTohOEEd4fNi0/VwCVjntcgPI0Xr4udQKC
-         ifHfBf+7Ng/s+NiuyiHdVPiDEagy7iLjekTaFhH46hlSimIBFYCKQjI1HUyvPbgiZ4
-         srx+kzxSF++rGtBNhNYNOe1y4ecjtxgI8/YZi/eor+CBXobShpM05U3dvNXqD2KrIV
-         K4zoNwTOD6zQA==
+        b=JfiFK+IQXTymMDxTqyywmp0cJ0T238B6Ii7Uw82A/DOvVgQ0i3CwWs4tyAVtaPA2S
+         NtB4y8wMzS+QLSDLfpZbAQxDVCaVH3tsF5cwT+L+WyzS0mcJj5uYa2aBAuG9YM2J4u
+         vl4FWcdE6L0Jvp7/8kg7W21f3eDAD2Nz4KNzvEdGhtPF3SzMAi7XN8f+zcqkVg+OuU
+         vyTSD/5KlChRuvBvbJ70MMR/w5keu1jUaeXeQxTGapPABO92LixsXz7tfN2IgrbOHj
+         y6r6dP9BlGAxMY996gu7Hh/Ek6jMIwdj4R7CSscq+sZacUPjJvwKXumfZ+3hrk4PQM
+         +oAZVByEFL68w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Amelie Delaunay <amelie.delaunay@foss.st.com>,
-        Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, hminas@synopsys.com,
-        linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 41/52] usb: dwc2: gadget: don't try to disable ep0 in dwc2_hsotg_suspend
-Date:   Thu,  3 Feb 2022 15:29:35 -0500
-Message-Id: <20220203202947.2304-41-sashal@kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        xuhaifeng <xuhaifeng@oppo.com>, Sasha Levin <sashal@kernel.org>,
+        mingo@redhat.com, juri.lelli@redhat.com, vincent.guittot@linaro.org
+Subject: [PATCH AUTOSEL 5.16 18/52] sched: Avoid double preemption in __cond_resched_*lock*()
+Date:   Thu,  3 Feb 2022 15:29:12 -0500
+Message-Id: <20220203202947.2304-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220203202947.2304-1-sashal@kernel.org>
 References: <20220203202947.2304-1-sashal@kernel.org>
@@ -51,48 +49,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amelie Delaunay <amelie.delaunay@foss.st.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-[ Upstream commit ac55d163855924aa5af9f1560977da8f346963c8 ]
+[ Upstream commit 7e406d1ff39b8ee574036418a5043c86723170cf ]
 
-Calling dwc2_hsotg_ep_disable on ep0 (in/out) will lead to the following
-logs before returning -EINVAL:
-dwc2 49000000.usb-otg: dwc2_hsotg_ep_disable: called for ep0
-dwc2 49000000.usb-otg: dwc2_hsotg_ep_disable: called for ep0
+For PREEMPT/DYNAMIC_PREEMPT the *_unlock() will already trigger a
+preemption, no point in then calling preempt_schedule_common()
+*again*.
 
-To avoid these two logs while suspending, start disabling the endpoint
-from the index 1, as done in dwc2_hsotg_udc_stop:
+Use _cond_resched() instead, since this is a NOP for the preemptible
+configs while it provide a preemption point for the others.
 
-	/* all endpoints should be shutdown */
-	for (ep = 1; ep < hsotg->num_of_eps; ep++) {
-		if (hsotg->eps_in[ep])
-			dwc2_hsotg_ep_disable_lock(&hsotg->eps_in[ep]->ep);
-		if (hsotg->eps_out[ep])
-			dwc2_hsotg_ep_disable_lock(&hsotg->eps_out[ep]->ep);
-	}
-
-Acked-by: Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>
-Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
-Link: https://lore.kernel.org/r/20211207130101.270314-1-amelie.delaunay@foss.st.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: xuhaifeng <xuhaifeng@oppo.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/YcGnvDEYBwOiV0cR@hirez.programming.kicks-ass.net
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/dwc2/gadget.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/sched/core.c | 12 +++---------
+ 1 file changed, 3 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/usb/dwc2/gadget.c b/drivers/usb/dwc2/gadget.c
-index 43cf49c4e5e59..da82e4140d545 100644
---- a/drivers/usb/dwc2/gadget.c
-+++ b/drivers/usb/dwc2/gadget.c
-@@ -5097,7 +5097,7 @@ int dwc2_hsotg_suspend(struct dwc2_hsotg *hsotg)
- 		hsotg->gadget.speed = USB_SPEED_UNKNOWN;
- 		spin_unlock_irqrestore(&hsotg->lock, flags);
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 77563109c0ea0..d24823b3c3f9f 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -8176,9 +8176,7 @@ int __cond_resched_lock(spinlock_t *lock)
  
--		for (ep = 0; ep < hsotg->num_of_eps; ep++) {
-+		for (ep = 1; ep < hsotg->num_of_eps; ep++) {
- 			if (hsotg->eps_in[ep])
- 				dwc2_hsotg_ep_disable_lock(&hsotg->eps_in[ep]->ep);
- 			if (hsotg->eps_out[ep])
+ 	if (spin_needbreak(lock) || resched) {
+ 		spin_unlock(lock);
+-		if (resched)
+-			preempt_schedule_common();
+-		else
++		if (!_cond_resched())
+ 			cpu_relax();
+ 		ret = 1;
+ 		spin_lock(lock);
+@@ -8196,9 +8194,7 @@ int __cond_resched_rwlock_read(rwlock_t *lock)
+ 
+ 	if (rwlock_needbreak(lock) || resched) {
+ 		read_unlock(lock);
+-		if (resched)
+-			preempt_schedule_common();
+-		else
++		if (!_cond_resched())
+ 			cpu_relax();
+ 		ret = 1;
+ 		read_lock(lock);
+@@ -8216,9 +8212,7 @@ int __cond_resched_rwlock_write(rwlock_t *lock)
+ 
+ 	if (rwlock_needbreak(lock) || resched) {
+ 		write_unlock(lock);
+-		if (resched)
+-			preempt_schedule_common();
+-		else
++		if (!_cond_resched())
+ 			cpu_relax();
+ 		ret = 1;
+ 		write_lock(lock);
 -- 
 2.34.1
 
