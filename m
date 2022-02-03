@@ -2,120 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A6B1C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 21:05:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D293C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 21:06:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352928AbiBCVFU (ORCPT
+        id S1354102AbiBCVGL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 16:05:20 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:31714 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1350895AbiBCVFS (ORCPT
+        Thu, 3 Feb 2022 16:06:11 -0500
+Received: from mail-io1-f70.google.com ([209.85.166.70]:42794 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1353213AbiBCVGJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 16:05:18 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643922317;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=wTxNTC4G8tZvfkXYsUOmWJZv2fn/RPNTA7Loz+ScVGk=;
-        b=XN6l54G61P8ojRC3rbCiPR2QZY54Qcb3digipnGP7bKz4JZ3dfO8o1wOHCf/l9hI2YxrAQ
-        lGYOaI9fGMb5iMZu4X4CakO647eBIf2OEQRUrLy/FsBYTsEeAY+5LCknjodJw+P/BhxGbc
-        Nta6c6G3YGXVsD2BJ5VmNLzQ2pb9H18=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-54-TfgIAPsoPVyuCWd6FYnpww-1; Thu, 03 Feb 2022 16:05:16 -0500
-X-MC-Unique: TfgIAPsoPVyuCWd6FYnpww-1
-Received: by mail-qv1-f69.google.com with SMTP id t5-20020a056214154500b00428bf2998c1so3577617qvw.13
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 13:05:16 -0800 (PST)
+        Thu, 3 Feb 2022 16:06:09 -0500
+Received: by mail-io1-f70.google.com with SMTP id n13-20020a056602340d00b006361f2312deso2825759ioz.9
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 13:06:09 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:organization:user-agent:mime-version
-         :content-transfer-encoding;
-        bh=wTxNTC4G8tZvfkXYsUOmWJZv2fn/RPNTA7Loz+ScVGk=;
-        b=1/viv3FwQh2q4zrV0kJx0u87p1SIZ7Z6R/tbWaXLDJMdFJwzhCisNTqjlvvrab8/Iw
-         6UAp8NcVo2NCnbQ4IHJ70pqE6vw0uQdS7lAzus15+0cGWY0KcNXkzO4Bqg2tcdh3ej8G
-         h1ch1J/ld54MjpwJN40tRImSkm8WPSR8TLorm+eL/3CtUSO97BefMwiDHcdB1mDtOxaP
-         4ap3NADOiQcpDNvfmxzFnHiNFSjZcV2GFeyQb+5LYogI6Z0wDGgA8ECM7p0AXZTYCnWh
-         S1yhOJGqY3//SayhDd1/Ca4fPiKNdxYat0o5kZBc27MC2l/5xL9Fx9sgvb0f98egbkRj
-         Ji+Q==
-X-Gm-Message-State: AOAM532uuk/lPciwzZTpWD1aa3ZtHhpZ2Mymakywmk49wXsSD5TdBl2i
-        D8ibWFQCiYk5KBU9Xb1vbdzV41OS/1pbprIrJXK134OQOOlEtUIGwoXDQ+HK9MGQ7XGs2peqUs6
-        f/XmStGYOPANkzU4DpolpjhcQ
-X-Received: by 2002:ac8:7c4e:: with SMTP id o14mr28037804qtv.637.1643922316193;
-        Thu, 03 Feb 2022 13:05:16 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzeOJe9pNmMZSKwkg3H/lznOtdXYM590bhHQNaVBR0XQtUXcP8pjO6id4B62LZk89cDR0u5Tg==
-X-Received: by 2002:ac8:7c4e:: with SMTP id o14mr28037790qtv.637.1643922316027;
-        Thu, 03 Feb 2022 13:05:16 -0800 (PST)
-Received: from [192.168.8.138] (pool-96-230-100-15.bstnma.fios.verizon.net. [96.230.100.15])
-        by smtp.gmail.com with ESMTPSA id f14sm10427270qko.117.2022.02.03.13.05.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Feb 2022 13:05:15 -0800 (PST)
-Message-ID: <8ab27937391733a9027a41af17a4a8155f78d549.camel@redhat.com>
-Subject: Re: [PATCH] drm/panel: Select DRM_DP_HELPER for DRM_PANEL_EDP
-From:   Lyude Paul <lyude@redhat.com>
-To:     Thomas Zimmermann <tzimmermann@suse.de>, thierry.reding@gmail.com,
-        sam@ravnborg.org, airlied@linux.ie, daniel@ffwll.ch,
-        linus.walleij@linaro.org, dianders@chromium.org, ardb@kernel.org,
-        naresh.kamboju@linaro.org
-Cc:     rdunlap@infradead.org, arnd@arndb.de,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>
-Date:   Thu, 03 Feb 2022 16:05:13 -0500
-In-Reply-To: <20220203091340.20285-1-tzimmermann@suse.de>
-References: <20220203091340.20285-1-tzimmermann@suse.de>
-Organization: Red Hat Inc.
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.3 (3.42.3-1.fc35) 
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=uBmyzhLL0AacmJiOO0ygo8pOFo4TfHCiGIA5EQdvXeE=;
+        b=TOLtxy5fIlJeEuz7LvEdmDxDYThrbHATZMl+U9dkkhFZs75LCiKLSPLnuigUqAWUwE
+         990UcpEP6zHJih2/CB9pJIwj2xjQPQDua+q/+PfpOXxX9LxMKEWJ17DsED4lHeDYG1fX
+         faP7PXTG6+GYKjUnioB7hVPArDTcgOHhmiBtIshnc3eFceR14jyR3YTlKshbgO9Y2M6f
+         w9z6pbq07SajCgNXBe80SC+ZNlYDEQvIh/B6lTZm7fh6U7vXNjPbu+iWTAQsR8rBPRzx
+         rVzKQe1OFfi4j0lQAmPkSVoDFUFM6DRbSZtVqwW74PtGuasO7nYqsO55oftOePuoiDx/
+         qwrw==
+X-Gm-Message-State: AOAM531OcC8zzO0qc8kE7LvpmpvIdWtPUvY9Wm86AbyY5dkuJ++UHdqC
+        kdOmoAIbY8sJ6vf2PisZ3HCZ8Z230LtOkLb8XOpsTbIva8x7
+X-Google-Smtp-Source: ABdhPJz7/ZbgejMhaE9OEyjG/6HURwiA2GryVh/9fg+CbYb99M8adUZngW39faXgneuMNTyLw+8Sk7QFCH8alyCPJh/ctQrEX+6V
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6638:3295:: with SMTP id f21mr16186925jav.193.1643922369206;
+ Thu, 03 Feb 2022 13:06:09 -0800 (PST)
+Date:   Thu, 03 Feb 2022 13:06:09 -0800
+In-Reply-To: <0000000000008c32e305d6d8e802@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000dade8505d72380c9@google.com>
+Subject: Re: [syzbot] general protection fault in submit_bio_checks
+From:   syzbot <syzbot+2b3f18414c37b42dcc94@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, axboe@kernel.dk,
+        bpf@vger.kernel.org, daniel@iogearbox.net, hch@lst.de,
+        john.fastabend@gmail.com, kafai@fb.com, kch@nvidia.com,
+        kpsingh@kernel.org, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Reviewed-by: Lyude Paul <lyude@redhat.com>
+syzbot has bisected this issue to:
 
-On Thu, 2022-02-03 at 10:13 +0100, Thomas Zimmermann wrote:
-> As reported in [1], DRM_PANEL_EDP depends on DRM_DP_HELPER. Select
-> the option to fix the build failure. The issue has been reported
-> before, when DisplayPort helpers where hidden behind the option
-> CONFIG_DRM_KMS_HELPER. [2]
-> 
-> Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
-> Fixes: adb9d5a2cc77 ("drm/dp: Move DisplayPort helpers into separate helper
-> module")
-> Fixes: 5f04e7ce392d ("drm/panel-edp: Split eDP panels out of panel-simple")
-> Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
-> Cc: Thomas Zimmermann <tzimmermann@suse.de>
-> Cc: Lyude Paul <lyude@redhat.com>
-> Cc: Daniel Vetter <daniel@ffwll.ch>
-> Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
-> Cc: Maxime Ripard <mripard@kernel.org>
-> Cc: dri-devel@lists.freedesktop.org
-> ---
->  drivers/gpu/drm/panel/Kconfig | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
-> index 434c2861bb40..0aec5a10b064 100644
-> --- a/drivers/gpu/drm/panel/Kconfig
-> +++ b/drivers/gpu/drm/panel/Kconfig
-> @@ -106,6 +106,7 @@ config DRM_PANEL_EDP
->         depends on PM
->         select VIDEOMODE_HELPERS
->         select DRM_DP_AUX_BUS
-> +       select DRM_DP_HELPER
->         help
->           DRM panel driver for dumb eDP panels that need at most a regulator
-> and
->           a GPIO to be powered up. Optionally a backlight can be attached so
+commit a7c50c940477bae89fb2b4f51bd969a2d95d7512
+Author: Christoph Hellwig <hch@lst.de>
+Date:   Mon Jan 24 09:11:07 2022 +0000
 
--- 
-Cheers,
- Lyude Paul (she/her)
- Software Engineer at Red Hat
+    block: pass a block_device and opf to bio_reset
 
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=12b4f1cc700000
+start commit:   2d3d8c7643a5 Add linux-next specific files for 20220203
+git tree:       linux-next
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=11b4f1cc700000
+console output: https://syzkaller.appspot.com/x/log.txt?x=16b4f1cc700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=27a9abf2c11167c7
+dashboard link: https://syzkaller.appspot.com/bug?extid=2b3f18414c37b42dcc94
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14635480700000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10eb2d14700000
+
+Reported-by: syzbot+2b3f18414c37b42dcc94@syzkaller.appspotmail.com
+Fixes: a7c50c940477 ("block: pass a block_device and opf to bio_reset")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
