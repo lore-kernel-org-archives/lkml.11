@@ -2,137 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69DE9C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 15:47:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89C2FC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 15:48:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351928AbiBCPr0 (ORCPT
+        id S1351949AbiBCPsW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 10:47:26 -0500
-Received: from ptr.189.cn ([183.61.185.101]:11376 "EHLO 189.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1344963AbiBCPrW (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 10:47:22 -0500
-HMM_SOURCE_IP: 10.64.8.41:58618.813769924
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-114.242.206.180 (unknown [10.64.8.41])
-        by 189.cn (HERMES) with SMTP id 2E9991001AF;
-        Thu,  3 Feb 2022 23:47:18 +0800 (CST)
-Received: from  ([114.242.206.180])
-        by gateway-151646-dep-b7fbf7d79-9vctg with ESMTP id 03f015533ad84bf7b23a2b34974ce730 for maxime@cerno.tech;
-        Thu, 03 Feb 2022 23:47:20 CST
-X-Transaction-ID: 03f015533ad84bf7b23a2b34974ce730
-X-Real-From: 15330273260@189.cn
-X-Receive-IP: 114.242.206.180
-X-MEDUSA-Status: 0
-Sender: 15330273260@189.cn
-Message-ID: <57805e19-285a-76d3-16e3-09a3eb7a9540@189.cn>
-Date:   Thu, 3 Feb 2022 23:47:16 +0800
+        Thu, 3 Feb 2022 10:48:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47558 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238679AbiBCPsU (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 3 Feb 2022 10:48:20 -0500
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96472C061714;
+        Thu,  3 Feb 2022 07:48:20 -0800 (PST)
+Received: by mail-io1-xd2e.google.com with SMTP id r144so3725270iod.9;
+        Thu, 03 Feb 2022 07:48:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=WLH1O+Vnbs8udHEehPW8PKl/Vsqp6/y9M/lwajCfmXg=;
+        b=O2CfoR+Kidy6Oil62L7eIH2efozt64sP75j6rrjblHbD93lfalaDPECmKMSLR1bMRI
+         MyATwiK8Iq8ewDJjL9wop/yWJRNXHiz+mJrQzvj/rLk2NFXEmmVyCEkcg+achzY/Ujzq
+         rBdpvZRBfpcjJDd2ziUgr3b7rDzDcNBZjr0Gp//MfAvWdMpIeAIpoAiu88IHAI0ldyRG
+         j42emqwxOa9uI2aqBdX7uWycKCXtCy+lxyp3ULgGou70LGIa8eRS1fabpdxJaLNt4Z9c
+         EqohgOdJ2zBGkWXIvlpxH3JWAuZYbjnKP6TLYl5zqR+gElcmUBERluM5d1nIYiV/h6cr
+         sCxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=WLH1O+Vnbs8udHEehPW8PKl/Vsqp6/y9M/lwajCfmXg=;
+        b=kbPlJ2uUhEOa4MCgi5/Tb3MOArMunrCJbx1nfLnal99dDid1n4Dlg8Ocw325aE40gg
+         RPdAAn9o9c9HKMUqh4FlyNWwOTB+BEOTTaiTKt4V8vSqBP8ZJbbNx4YAfnYbb8unuW5x
+         aT7ZHTSiLiYTCP4bo5I9qo+/HbHlUtbednGOKdMEhJ4Tfb/m3dWDhhXTgbxMXmiOvihl
+         iYEDLwZaQPZuvJe959DZnvc1aoResWHz8okEZgOPq5XS4ToZIr/qyVSfcI+8oLW8jeD0
+         ilZxxIGyFCgzMIDzMjovx25OwhzYkqONKps5jnuaW6PI1zYGeJT5sNcIhOA8lhjxKqw4
+         0K4g==
+X-Gm-Message-State: AOAM5323rKQDo+13iY+vy/UrqY1rAOPtbsay+jKSaTtq31UV/uxieU4K
+        Euo8ltYcPleFCsogSmNsrJgTuBM4m4Q=
+X-Google-Smtp-Source: ABdhPJytHT2ainnjTy8kuwJMbb9XvCK+xi9KdImDjah1yKuXQ7fyHkvMjlJDtILNHjHCwvaKCySTwA==
+X-Received: by 2002:a6b:4e18:: with SMTP id c24mr18972137iob.179.1643903300006;
+        Thu, 03 Feb 2022 07:48:20 -0800 (PST)
+Received: from ?IPV6:2601:282:800:dc80:8870:ce19:2c7:3513? ([2601:282:800:dc80:8870:ce19:2c7:3513])
+        by smtp.googlemail.com with ESMTPSA id o7sm8800664ilt.63.2022.02.03.07.48.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 03 Feb 2022 07:48:19 -0800 (PST)
+Message-ID: <e34e03db-9764-4728-9f6a-df85659c5089@gmail.com>
+Date:   Thu, 3 Feb 2022 08:48:17 -0700
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v6 1/3] drm/lsdc: add drm driver for loongson display
- controller
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.1
+Subject: Re: [PATCH RFC 1/4] net: skb: use line number to trace dropped skb
 Content-Language: en-US
-To:     Maxime Ripard <maxime@cerno.tech>
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Roland Scheidegger <sroland@vmware.com>,
-        Zack Rusin <zackr@vmware.com>,
-        Christian Gmeiner <christian.gmeiner@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        suijingfeng <suijingfeng@loongson.cn>,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        Randy Dunlap <rdunlap@infradead.org>
-References: <20220203082546.3099-1-15330273260@189.cn>
- <20220203082546.3099-2-15330273260@189.cn>
- <20220203085851.yqstkfgt4dz7rcnw@houat>
-From:   Sui Jingfeng <15330273260@189.cn>
-In-Reply-To: <20220203085851.yqstkfgt4dz7rcnw@houat>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Dongli Zhang <dongli.zhang@oracle.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, rostedt@goodmis.org,
+        mingo@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        edumazet@google.com, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        imagedong@tencent.com, joao.m.martins@oracle.com,
+        joe.jin@oracle.com
+References: <20220203153731.8992-1-dongli.zhang@oracle.com>
+ <20220203153731.8992-2-dongli.zhang@oracle.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20220203153731.8992-2-dongli.zhang@oracle.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 2/3/22 8:37 AM, Dongli Zhang wrote:
+> Sometimes the kernel may not directly call kfree_skb() to drop the sk_buff.
+> Instead, it "goto drop" and call kfree_skb() at 'drop'. This make it
+> difficult to track the reason that the sk_buff is dropped.
+> 
+> The commit c504e5c2f964 ("net: skb: introduce kfree_skb_reason()") has
+> introduced the kfree_skb_reason() to help track the reason. However, we may
+> need to define many reasons for each driver/subsystem.
+> 
+> To avoid introducing so many new reasons, this is to use line number
+> ("__LINE__") to trace where the sk_buff is dropped. As a result, the reason
+> will be generated automatically.
+> 
 
-On 2022/2/3 16:58, Maxime Ripard wrote:
->> diff --git a/drivers/gpu/drm/lsdc/Kconfig b/drivers/gpu/drm/lsdc/Kconfig
->> new file mode 100644
->> index 000000000000..7ed1b0fdbe1b
->> --- /dev/null
->> +++ b/drivers/gpu/drm/lsdc/Kconfig
->> @@ -0,0 +1,38 @@
->> +config DRM_LSDC
->> +	tristate "DRM Support for loongson's display controller"
->> +	depends on DRM && PCI
->> +	depends on MACH_LOONGSON64 || LOONGARCH || MIPS || COMPILE_TEST
->> +	select OF
->> +	select CMA if HAVE_DMA_CONTIGUOUS
->> +	select DMA_CMA if HAVE_DMA_CONTIGUOUS
->> +	select DRM_KMS_HELPER
->> +	select DRM_KMS_FB_HELPER
->> +	select DRM_GEM_CMA_HELPER
->> +	select VIDEOMODE_HELPERS
->> +	select BACKLIGHT_PWM if CPU_LOONGSON2K
->> +	select I2C_GPIO if CPU_LOONGSON2K
->> +	select I2C_LS2X if CPU_LOONGSON2K
->> +	default m
->> +	help
->> +	  This is a KMS driver for the display controller in the LS7A1000
->> +	  bridge chip and LS2K1000 SoC. The display controller has two
->> +	  display pipes and it is a PCI device.
->> +	  When using this driver on LS2K1000/LS2K0500 SoC, its framebuffer
->> +	  is located at system memory.
->> +	  If "M" is selected, the module will be called lsdc.
->> +
->> +	  If in doubt, say "Y".
->> +
->> +config DRM_LSDC_VRAM_DRIVER
->> +	bool "vram helper based device driver support"
->> +	depends on DRM_LSDC
->> +	select DRM_VRAM_HELPER
->> +	default y
->> +	help
->> +	  When using this driver on LS7A1000 + LS3A3000/LS3A4000/LS3A5000
->> +	  platform, the LS7A1000 bridge chip has dedicated video RAM. Using
->> +	  "lsdc.use_vram_helper=1" in the kernel command line will enable
->> +	  this driver mode and then the framebuffer will be located at the
->> +	  VRAM at the price of losing PRIME support.
->> +
->> +	  If in doubt, say "Y".
-> This doesn't sound right. The driver should make the proper decision
-> depending on the platform, not the user or the distribution.
+I don't agree with this approach. It is only marginally better than the
+old kfree_skb that only gave the instruction pointer. That tells you the
+function that dropped the packet, but not why the packet is dropped.
+Adding the line number only makes users have to consult the source code.
 
-The LS7A1000 north bridge chip has dedicated video RAM, but the DC in LS7A1000
-can also scanout from the system memory directly like a display controller in a
-SoC does. In fact, this display controller is envolved from early product of
-Loongson 2H SoC. This driver still works even if the downstream PC board
-manufacturer doesn't solder a video RAM on the mother board.
-
-The lsdc_should_vram_helper_based() function in lsdc_drv.c will examine
-if the DC device node contain a use_vram_helper property at driver loading time.
-If there is no use_vram_helper property, CMA helper based DRM driver will be used.
-Doing this way allow the user using "lsdc.use_vram_helper=0" override the default
-behavior even through there is a "use_vram_helper;" property in the DTS.
-
-In short, It is intend to let the command line passed from kernel has higher
-priority than the device tree. Otherwise the end user can not switch different
-driver mode through the kernel command line once the DC device node contain
-"use_vram_helper;" property.
-
-This driver's author already made the decision by the time when the patch is
-sent out, even through this**may not proper.
-
-The CMA helper based driver will be used by default, if the DC device node contain
-"use_vram_helper;" then VRAM based driver will be used. This is my initial intention.
-
+When I watch drop monitor for kfree_skb I want to know *why* the packet
+was dropped, not the line number in the source code. e.g., dropmon
+showing OTHERHOST means too many packets are sent to this host (e.g.,
+hypervisor) that do not belong to the host or the VMs running on it, or
+packets have invalid checksum (IP, TCP, UDP). Usable information by
+everyone, not just someone with access to the source code for that
+specific kernel.
 
