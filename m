@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CC27C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:31:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DED1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:31:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354420AbiBCUbU (ORCPT
+        id S1354434AbiBCUbX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:31:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57602 "EHLO
+        Thu, 3 Feb 2022 15:31:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354194AbiBCUaw (ORCPT
+        with ESMTP id S1354214AbiBCUaw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 3 Feb 2022 15:30:52 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 504C2C061759;
-        Thu,  3 Feb 2022 12:30:16 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D876C061768;
+        Thu,  3 Feb 2022 12:30:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E2E2161A88;
-        Thu,  3 Feb 2022 20:30:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CA83C36AE7;
-        Thu,  3 Feb 2022 20:30:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F98561A69;
+        Thu,  3 Feb 2022 20:30:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9427FC36AE2;
+        Thu,  3 Feb 2022 20:30:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643920215;
-        bh=oCjNf+rU3S5dH5f1hirali2pZr5Vjlm/sSzWw6z9kpk=;
+        s=k20201202; t=1643920221;
+        bh=sJ6+mzYe74c4klAocmWr1wXKcpylYLufUpLD0y2wM5s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Fg0hTP92XQsN8Y5JUM79oUq36Oi0OI0XZbkGqcTmTzjTfw+jE8pzKHDKk0sMetmS5
-         UmZpf17wsIhDHz58liWeggaFTA7QfuhMPfPXTOi0KcwYsE2NfxN/aCCbbMDhE71Ab5
-         SfgkSAdCslEz6nqMzKExzBahxcAutP7RFP19apZC7/mhe/h5FZbRb5HyPZccThnDVN
-         +XYnSpxOzCg463BdMfn1ZXDVUuuQUXnKVT/An0MBgNvWvmTI7+VILLjCQdGgZszhTb
-         7TNdYrVxudW/7DTENDndtMoltZbDIyq5KY3CBFpDT9Da2fDvW3sUFd1BvleUBi3MR1
-         7qKc4Jiht52Yg==
+        b=efVnIiaiPPtN3BHDdeiMg3JZ9yCvIx9ykBM8oIASgDqASuQfZ9GjYxeXEWlUtC9Af
+         jQ21/IckphuH1fjEfs671W1DoVyRsXdwsBKsgvNDz05ZuD0gSrGC6pJnW5UYMMLtL8
+         SxlPHZQ1MeqX80vEMJK8EEeCdhaNrfIO4xS1G0CngEImBv3LHLEdBVKnuDgmNNW0sj
+         X2v4GfSva+UTpTx6qD+/X+vCqFlwzoRE0Rb7+BX4tD8yQA8pLm0kvaHO5TEcooR334
+         cIp6ZLb/Am7sSin9C96fZwyihrvvjAsTAi/zeE8W97xrawMYeb9Q4h5O0xTJ56e8qP
+         pBtaEP+r7OX+Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vincent Guittot <vincent.guittot@linaro.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Sachin Sant <sachinp@linux.ibm.com>,
-        Sasha Levin <sashal@kernel.org>, mingo@redhat.com,
-        juri.lelli@redhat.com
-Subject: [PATCH AUTOSEL 5.16 17/52] sched/pelt: Relax the sync of runnable_sum with runnable_avg
-Date:   Thu,  3 Feb 2022 15:29:11 -0500
-Message-Id: <20220203202947.2304-17-sashal@kernel.org>
+Cc:     Victor Nogueira <victor@mojatatu.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us, kuba@kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 21/52] net: sched: Clarify error message when qdisc kind is unknown
+Date:   Thu,  3 Feb 2022 15:29:15 -0500
+Message-Id: <20220203202947.2304-21-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220203202947.2304-1-sashal@kernel.org>
 References: <20220203202947.2304-1-sashal@kernel.org>
@@ -55,96 +54,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincent Guittot <vincent.guittot@linaro.org>
+From: Victor Nogueira <victor@mojatatu.com>
 
-[ Upstream commit 95246d1ec80b8d19d882cd8eb7ad094e63b41bb8 ]
+[ Upstream commit 973bf8fdd12f0e70ea351c018e68edd377a836d1 ]
 
-Similarly to util_avg and util_sum, don't sync runnable_sum with the low
-bound of runnable_avg but only ensure that runnable_sum stays in the
-correct range.
+When adding a tc rule with a qdisc kind that is not supported or not
+compiled into the kernel, the kernel emits the following error: "Error:
+Specified qdisc not found.". Found via tdc testing when ETS qdisc was not
+compiled in and it was not obvious right away what the message meant
+without looking at the kernel code.
 
-Signed-off-by: Vincent Guittot <vincent.guittot@linaro.org>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
-Tested-by: Sachin Sant <sachinp@linux.ibm.com>
-Link: https://lkml.kernel.org/r/20220111134659.24961-4-vincent.guittot@linaro.org
+Change the error message to be more explicit and say the qdisc kind is
+unknown.
+
+Signed-off-by: Victor Nogueira <victor@mojatatu.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/sched/fair.c | 33 +++++++++++++++++++--------------
- 1 file changed, 19 insertions(+), 14 deletions(-)
+ net/sched/sch_api.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index f2cf047b25e56..d4e76af65433e 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -3479,11 +3479,11 @@ update_tg_cfs_util(struct cfs_rq *cfs_rq, struct sched_entity *se, struct cfs_rq
- static inline void
- update_tg_cfs_runnable(struct cfs_rq *cfs_rq, struct sched_entity *se, struct cfs_rq *gcfs_rq)
- {
--	long delta = gcfs_rq->avg.runnable_avg - se->avg.runnable_avg;
--	u32 divider;
-+	long delta_sum, delta_avg = gcfs_rq->avg.runnable_avg - se->avg.runnable_avg;
-+	u32 new_sum, divider;
+diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
+index 910a36ed56343..e4a7ce5c79f4f 100644
+--- a/net/sched/sch_api.c
++++ b/net/sched/sch_api.c
+@@ -1204,7 +1204,7 @@ static struct Qdisc *qdisc_create(struct net_device *dev,
  
- 	/* Nothing to update */
--	if (!delta)
-+	if (!delta_avg)
- 		return;
- 
- 	/*
-@@ -3494,11 +3494,16 @@ update_tg_cfs_runnable(struct cfs_rq *cfs_rq, struct sched_entity *se, struct cf
- 
- 	/* Set new sched_entity's runnable */
- 	se->avg.runnable_avg = gcfs_rq->avg.runnable_avg;
--	se->avg.runnable_sum = se->avg.runnable_avg * divider;
-+	new_sum = se->avg.runnable_avg * divider;
-+	delta_sum = (long)new_sum - (long)se->avg.runnable_sum;
-+	se->avg.runnable_sum = new_sum;
- 
- 	/* Update parent cfs_rq runnable */
--	add_positive(&cfs_rq->avg.runnable_avg, delta);
--	cfs_rq->avg.runnable_sum = cfs_rq->avg.runnable_avg * divider;
-+	add_positive(&cfs_rq->avg.runnable_avg, delta_avg);
-+	add_positive(&cfs_rq->avg.runnable_sum, delta_sum);
-+	/* See update_cfs_rq_load_avg() */
-+	cfs_rq->avg.runnable_sum = max_t(u32, cfs_rq->avg.runnable_sum,
-+					      cfs_rq->avg.runnable_avg * PELT_MIN_DIVIDER);
- }
- 
- static inline void
-@@ -3686,7 +3691,10 @@ update_cfs_rq_load_avg(u64 now, struct cfs_rq *cfs_rq)
- 
- 		r = removed_runnable;
- 		sub_positive(&sa->runnable_avg, r);
--		sa->runnable_sum = sa->runnable_avg * divider;
-+		sub_positive(&sa->runnable_sum, r * divider);
-+		/* See sa->util_sum above */
-+		sa->runnable_sum = max_t(u32, sa->runnable_sum,
-+					      sa->runnable_avg * PELT_MIN_DIVIDER);
- 
- 		/*
- 		 * removed_runnable is the unweighted version of removed_load so we
-@@ -3773,17 +3781,14 @@ static void attach_entity_load_avg(struct cfs_rq *cfs_rq, struct sched_entity *s
-  */
- static void detach_entity_load_avg(struct cfs_rq *cfs_rq, struct sched_entity *se)
- {
--	/*
--	 * cfs_rq->avg.period_contrib can be used for both cfs_rq and se.
--	 * See ___update_load_avg() for details.
--	 */
--	u32 divider = get_pelt_divider(&cfs_rq->avg);
--
- 	dequeue_load_avg(cfs_rq, se);
- 	sub_positive(&cfs_rq->avg.util_avg, se->avg.util_avg);
- 	cfs_rq->avg.util_sum = cfs_rq->avg.util_avg * divider;
- 	sub_positive(&cfs_rq->avg.runnable_avg, se->avg.runnable_avg);
--	cfs_rq->avg.runnable_sum = cfs_rq->avg.runnable_avg * divider;
-+	sub_positive(&cfs_rq->avg.runnable_sum, se->avg.runnable_sum);
-+	/* See update_cfs_rq_load_avg() */
-+	cfs_rq->avg.runnable_sum = max_t(u32, cfs_rq->avg.runnable_sum,
-+					      cfs_rq->avg.runnable_avg * PELT_MIN_DIVIDER);
- 
- 	add_tg_cfs_propagate(cfs_rq, -se->avg.load_sum);
+ 	err = -ENOENT;
+ 	if (!ops) {
+-		NL_SET_ERR_MSG(extack, "Specified qdisc not found");
++		NL_SET_ERR_MSG(extack, "Specified qdisc kind is unknown");
+ 		goto err_out;
+ 	}
  
 -- 
 2.34.1
