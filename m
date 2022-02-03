@@ -2,159 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B95FC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 06:53:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5573CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 06:56:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236426AbiBCGxY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 01:53:24 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:48494 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241737AbiBCGxW (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 01:53:22 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3050461799;
-        Thu,  3 Feb 2022 06:53:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAEEAC340E4;
-        Thu,  3 Feb 2022 06:53:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643871201;
-        bh=9nbtztfsgUhdr6aIZKYDMaKCReVO1EVdAswxzSjNC7E=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=L6HEisU3wiHHxL8R9caiTeqrkK56FJXhwb2DFel+9K7/RdNm4Abym6AZjPQJ+NRIG
-         RUmDLCvDW+mWgyKh8KuFV1evSRBK58szRcB/zqQzJv+AxciTxWg8rz133mfo6wSxUi
-         9c2ELDV7ixzAhlyQEz7+VvbHhyH1QoadIgBpJBu5nUpDAha3FFEuOXoqJlgQp2p6Hv
-         gPkrqy9u/H3pGZmDePLjGeGyXE5NXCe7adhLerCiQsWgbnb4LELuRs/bSzlztvlAds
-         Q7suEazu8PcoROGWUdjBttRsFysrf0TPvRT9JysqR1aAii9GBOGpVSCrzoq3fW9HVA
-         YbQYF9iNsK73g==
-Date:   Thu, 3 Feb 2022 08:53:10 +0200
-From:   Mike Rapoport <rppt@kernel.org>
-To:     Waiman Long <longman@redhat.com>
-Cc:     Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Vladimir Davydov <vdavydov.dev@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
-        linux-mm@kvack.org, Ira Weiny <ira.weiny@intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Roman Gushchin <guro@fb.com>, Rafael Aquini <aquini@redhat.com>
-Subject: Re: [PATCH v4 3/4] mm/page_owner: Print memcg information
-Message-ID: <Yft71q+OO7lg90sl@kernel.org>
-References: <20220131192308.608837-5-longman@redhat.com>
- <20220202203036.744010-4-longman@redhat.com>
+        id S1347537AbiBCGz7 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Feb 2022 01:55:59 -0500
+Received: from mga17.intel.com ([192.55.52.151]:36155 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231330AbiBCGz4 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 3 Feb 2022 01:55:56 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643871356; x=1675407356;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=eyI2/R+yROaV0RHfck1nac7STRkahOPVD6wvBxM7ZBo=;
+  b=oGrMXImeBi3EAod0Wtgin+22lBhF04RBSn8Bbj4T+T0kHXTrJA+Od+99
+   89xRCh9Nv99uQToFrTgy/Fkvb2oVsEewpaelH3VX+JdWriRpU36qi9+WD
+   fEVLn+6BF7STGWZFDDXDWGY94I2vkNMu5dKqjySXgvLRtK6uOUfSwLLYR
+   Fc1dLB88Ff00evdvsoK0NDph3myj/9/DLS1ky+4jw/6o5fqM5inGpKReA
+   WgjtZ0zKAu8OhD2CmtwFEQz+lrOe2SRJg2nxgiObu3KwUlysxDKawpxL4
+   MAJNur1+mf4wtplkk3AItsIDPHxs2N9/297jRBgOjnKcrgPzu1qKdIpF9
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10246"; a="228740302"
+X-IronPort-AV: E=Sophos;i="5.88,339,1635231600"; 
+   d="scan'208";a="228740302"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 22:55:55 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,339,1635231600"; 
+   d="scan'208";a="523788602"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga007.jf.intel.com with ESMTP; 02 Feb 2022 22:55:54 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nFW25-000Vm1-Ma; Thu, 03 Feb 2022 06:55:53 +0000
+Date:   Thu, 3 Feb 2022 14:55:27 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [mhiramat:kprobes/fprobe 7/10] arch/x86/kernel/rethook.c:14:23:
+ warning: no previous prototype for function
+ 'arch_rethook_trampoline_callback'
+Message-ID: <202202031451.vmQ3ciMx-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220202203036.744010-4-longman@redhat.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 02, 2022 at 03:30:35PM -0500, Waiman Long wrote:
-> It was found that a number of offline memcgs were not freed because
-> they were pinned by some charged pages that were present. Even "echo 1 >
-> /proc/sys/vm/drop_caches" wasn't able to free those pages. These offline
-> but not freed memcgs tend to increase in number over time with the side
-> effect that percpu memory consumption as shown in /proc/meminfo also
-> increases over time.
-> 
-> In order to find out more information about those pages that pin
-> offline memcgs, the page_owner feature is extended to print memory
-> cgroup information especially whether the cgroup is offline or not.
-> RCU read lock is taken when memcg is being accessed to make sure
-> that it won't be freed.
-> 
-> Signed-off-by: Waiman Long <longman@redhat.com>
-> Acked-by: David Rientjes <rientjes@google.com>
-> Acked-by: Roman Gushchin <guro@fb.com>
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mhiramat/linux.git kprobes/fprobe
+head:   1f4f90c86628a76e7eac24ab732db49fc3a961d6
+commit: 806149decce8b0870024d2676b46bb3d295c38b3 [7/10] fprobe: Add exit_handler support
+config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220203/202202031451.vmQ3ciMx-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a73e4ce6a59b01f0e37037761c1e6889d539d233)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mhiramat/linux.git/commit/?id=806149decce8b0870024d2676b46bb3d295c38b3
+        git remote add mhiramat https://git.kernel.org/pub/scm/linux/kernel/git/mhiramat/linux.git
+        git fetch --no-tags mhiramat kprobes/fprobe
+        git checkout 806149decce8b0870024d2676b46bb3d295c38b3
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash arch/x86/kernel/
 
-Acked-by: Mike Rapoport <rppt@linux.ibm.com>
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-And my akcs for the first two patches are missing somehow in v4...
+All warnings (new ones prefixed by >>):
 
-> ---
->  mm/page_owner.c | 42 ++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 42 insertions(+)
-> 
-> diff --git a/mm/page_owner.c b/mm/page_owner.c
-> index 28dac73e0542..f7820357e4d4 100644
-> --- a/mm/page_owner.c
-> +++ b/mm/page_owner.c
-> @@ -10,6 +10,7 @@
->  #include <linux/migrate.h>
->  #include <linux/stackdepot.h>
->  #include <linux/seq_file.h>
-> +#include <linux/memcontrol.h>
->  #include <linux/sched/clock.h>
->  
->  #include "internal.h"
-> @@ -325,6 +326,45 @@ void pagetypeinfo_showmixedcount_print(struct seq_file *m,
->  	seq_putc(m, '\n');
->  }
->  
-> +/*
-> + * Looking for memcg information and print it out
-> + */
-> +static inline int print_page_owner_memcg(char *kbuf, size_t count, int ret,
-> +					 struct page *page)
-> +{
-> +#ifdef CONFIG_MEMCG
-> +	unsigned long memcg_data;
-> +	struct mem_cgroup *memcg;
-> +	bool online;
-> +	char name[80];
-> +
-> +	rcu_read_lock();
-> +	memcg_data = READ_ONCE(page->memcg_data);
-> +	if (!memcg_data)
-> +		goto out_unlock;
-> +
-> +	if (memcg_data & MEMCG_DATA_OBJCGS)
-> +		ret += scnprintf(kbuf + ret, count - ret,
-> +				"Slab cache page\n");
-> +
-> +	memcg = page_memcg_check(page);
-> +	if (!memcg)
-> +		goto out_unlock;
-> +
-> +	online = (memcg->css.flags & CSS_ONLINE);
-> +	cgroup_name(memcg->css.cgroup, name, sizeof(name));
-> +	ret += scnprintf(kbuf + ret, count - ret,
-> +			"Charged %sto %smemcg %s\n",
-> +			PageMemcgKmem(page) ? "(via objcg) " : "",
-> +			online ? "" : "offline ",
-> +			name);
-> +out_unlock:
-> +	rcu_read_unlock();
-> +#endif /* CONFIG_MEMCG */
-> +
-> +	return ret;
-> +}
-> +
->  static ssize_t
->  print_page_owner(char __user *buf, size_t count, unsigned long pfn,
->  		struct page *page, struct page_owner *page_owner,
-> @@ -365,6 +405,8 @@ print_page_owner(char __user *buf, size_t count, unsigned long pfn,
->  			migrate_reason_names[page_owner->last_migrate_reason]);
->  	}
->  
-> +	ret = print_page_owner_memcg(kbuf, count, ret, page);
-> +
->  	ret += snprintf(kbuf + ret, count - ret, "\n");
->  	if (ret >= count)
->  		goto err;
-> -- 
-> 2.27.0
-> 
-> 
+>> arch/x86/kernel/rethook.c:14:23: warning: no previous prototype for function 'arch_rethook_trampoline_callback' [-Wmissing-prototypes]
+   __used __visible void arch_rethook_trampoline_callback(struct pt_regs *regs)
+                         ^
+   arch/x86/kernel/rethook.c:14:18: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   __used __visible void arch_rethook_trampoline_callback(struct pt_regs *regs)
+                    ^
+                    static 
+   1 warning generated.
 
--- 
-Sincerely yours,
-Mike.
+
+vim +/arch_rethook_trampoline_callback +14 arch/x86/kernel/rethook.c
+
+9de3b995c35eb6 Masami Hiramatsu 2022-01-26  10  
+9de3b995c35eb6 Masami Hiramatsu 2022-01-26  11  /*
+9de3b995c35eb6 Masami Hiramatsu 2022-01-26  12   * Called from arch_rethook_trampoline
+9de3b995c35eb6 Masami Hiramatsu 2022-01-26  13   */
+9de3b995c35eb6 Masami Hiramatsu 2022-01-26 @14  __used __visible void arch_rethook_trampoline_callback(struct pt_regs *regs)
+9de3b995c35eb6 Masami Hiramatsu 2022-01-26  15  {
+9de3b995c35eb6 Masami Hiramatsu 2022-01-26  16  	unsigned long *frame_pointer;
+9de3b995c35eb6 Masami Hiramatsu 2022-01-26  17  
+9de3b995c35eb6 Masami Hiramatsu 2022-01-26  18  	/* fixup registers */
+9de3b995c35eb6 Masami Hiramatsu 2022-01-26  19  	regs->cs = __KERNEL_CS;
+9de3b995c35eb6 Masami Hiramatsu 2022-01-26  20  #ifdef CONFIG_X86_32
+9de3b995c35eb6 Masami Hiramatsu 2022-01-26  21  	regs->gs = 0;
+9de3b995c35eb6 Masami Hiramatsu 2022-01-26  22  #endif
+9de3b995c35eb6 Masami Hiramatsu 2022-01-26  23  	regs->ip = (unsigned long)&arch_rethook_trampoline;
+9de3b995c35eb6 Masami Hiramatsu 2022-01-26  24  	regs->orig_ax = ~0UL;
+9de3b995c35eb6 Masami Hiramatsu 2022-01-26  25  	regs->sp += sizeof(long);
+9de3b995c35eb6 Masami Hiramatsu 2022-01-26  26  	frame_pointer = &regs->sp + 1;
+9de3b995c35eb6 Masami Hiramatsu 2022-01-26  27  
+9de3b995c35eb6 Masami Hiramatsu 2022-01-26  28  	/*
+9de3b995c35eb6 Masami Hiramatsu 2022-01-26  29  	 * The return address at 'frame_pointer' is recovered by the
+9de3b995c35eb6 Masami Hiramatsu 2022-01-26  30  	 * arch_rethook_fixup_return() which called from this
+9de3b995c35eb6 Masami Hiramatsu 2022-01-26  31  	 * rethook_trampoline_handler().
+9de3b995c35eb6 Masami Hiramatsu 2022-01-26  32  	 */
+9de3b995c35eb6 Masami Hiramatsu 2022-01-26  33  	rethook_trampoline_handler(regs, (unsigned long)frame_pointer);
+9de3b995c35eb6 Masami Hiramatsu 2022-01-26  34  
+9de3b995c35eb6 Masami Hiramatsu 2022-01-26  35  	/*
+9de3b995c35eb6 Masami Hiramatsu 2022-01-26  36  	 * Copy FLAGS to 'pt_regs::sp' so that arch_rethook_trapmoline()
+9de3b995c35eb6 Masami Hiramatsu 2022-01-26  37  	 * can do RET right after POPF.
+9de3b995c35eb6 Masami Hiramatsu 2022-01-26  38  	 */
+9de3b995c35eb6 Masami Hiramatsu 2022-01-26  39  	regs->sp = regs->flags;
+9de3b995c35eb6 Masami Hiramatsu 2022-01-26  40  }
+9de3b995c35eb6 Masami Hiramatsu 2022-01-26  41  NOKPROBE_SYMBOL(arch_rethook_trampoline_callback);
+9de3b995c35eb6 Masami Hiramatsu 2022-01-26  42  
+
+:::::: The code at line 14 was first introduced by commit
+:::::: 9de3b995c35eb68273cf462f30663340ee47f8d6 rethook: x86: Add rethook x86 implementation
+
+:::::: TO: Masami Hiramatsu <mhiramat@kernel.org>
+:::::: CC: Masami Hiramatsu <mhiramat@kernel.org>
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
