@@ -2,57 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFBF9C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 14:35:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC1A9C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 14:35:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351674AbiBCOfd (ORCPT
+        id S1351725AbiBCOfl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 09:35:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58254 "EHLO
+        Thu, 3 Feb 2022 09:35:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351387AbiBCOdv (ORCPT
+        with ESMTP id S1351332AbiBCOdn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 09:33:51 -0500
+        Thu, 3 Feb 2022 09:33:43 -0500
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1E7AC06173E;
-        Thu,  3 Feb 2022 06:33:50 -0800 (PST)
-Date:   Thu, 03 Feb 2022 14:33:47 -0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CF5EC06173B;
+        Thu,  3 Feb 2022 06:33:43 -0800 (PST)
+Date:   Thu, 03 Feb 2022 14:33:40 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1643898828;
+        s=2020; t=1643898822;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=5LbmmkDtP8bns/di2T8gcpVYUig1vNfi1S0k7xZiMLo=;
-        b=iUFWu8o/XUCal5wcub9pvPBFvouH7U2I9dV0w0TBSkBk4R01/EY1vUyIZchn7zZjHiankB
-        vQvznStSmtX9QYjgbfIBwvjl5Z0wjiJt2LvIrM28/BqiNGAHanamjqYe855705oI23s0Gq
-        fjbiJSgBC5DcOinUsQ0COVA3eb2P+OPzE/pevqq+2ACdnj4pS8KEqBdbunPOrrtR2zV4Es
-        +sbMiBjkc1FYXaOJEbSP7KF4WDkZWmJirTrh2qCgWTqdh83m5cqYH+GnWX6u14L97lj9iU
-        NjSq3l/8XjuVqxNESslMbyhU64uQW7lD/tBfoSgYZDMb7A0fC96RQ0t1o4SKJg==
+        bh=RAyphi8GUVcsIw21fZnBuks9vuLeVomTTfPBNxbLeHY=;
+        b=lsfySTsNKJ8p1VQ2gTYq1rAYW1XMpR1SEct1f0XtYzvzPkZrjqLCqxNWVy4gZIQiHcvXAA
+        t1N3rVYgRSOhwWh1D/AF5Baz85dn/+QOsjWbGi0715LcBzyTW4FYNkJvKrv/avLJ57XN3G
+        qrADqSkdv3pJV788EOhwZOfSnSse8ey49++4AKHwWRwaz6IwiPc4K2biCs3CSmsCsIGSg1
+        7zwvBJoKKdWkdWHA1WH5Xynb1qFzc9vBqPX2NFgarcycEOIQLxZHTpEpgoq86Tl5qBKfnW
+        5gTsMfSLCE2E4TZIcC4scwUyBKbiR3diWUkL2Fp88fsIpOKG8JxAAt9QPuAxEg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1643898828;
+        s=2020e; t=1643898822;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=5LbmmkDtP8bns/di2T8gcpVYUig1vNfi1S0k7xZiMLo=;
-        b=WUOxyskKF7SaFZCqEJGEH7FT60JhEhtFnOnsdvtcjSfRx+wrDW0ewBumFqloePOTU5FiCL
-        HHfl/6V/cjuE8SCA==
-From:   "tip-bot2 for Mathieu Desnoyers" <tip-bot2@linutronix.de>
+        bh=RAyphi8GUVcsIw21fZnBuks9vuLeVomTTfPBNxbLeHY=;
+        b=QDph10v0n/dixK6OMMBBR6gBN0pBTZiCvuyND3hITD58NFDx3H1pI/DiT16EDapNzRHCeG
+        HKr/xoqUrlBm1ABw==
+From:   "tip-bot2 for Zhen Ni" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: sched/core] selftests/rseq: Uplift rseq selftests for
- compatibility with glibc-2.35
-Cc:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+Subject: [tip: sched/core] sched: move autogroup sysctls into its own file
+Cc:     Zhen Ni <nizhen@uniontech.com>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220124171253.22072-8-mathieu.desnoyers@efficios.com>
-References: <20220124171253.22072-8-mathieu.desnoyers@efficios.com>
+In-Reply-To: <20220128095025.8745-1-nizhen@uniontech.com>
+References: <20220128095025.8745-1-nizhen@uniontech.com>
 MIME-Version: 1.0
-Message-ID: <164389882788.16921.1787223779254646136.tip-bot2@tip-bot2>
+Message-ID: <164389882096.16921.11832456621387796894.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -63,296 +62,115 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the sched/core branch of tip:
 
-Commit-ID:     233e667e1ae3e348686bd9dd0172e62a09d852e1
-Gitweb:        https://git.kernel.org/tip/233e667e1ae3e348686bd9dd0172e62a09d852e1
-Author:        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-AuthorDate:    Mon, 24 Jan 2022 12:12:45 -05:00
+Commit-ID:     c8eaf6ac76f40f6c59fc7d056e2e08c4a57ea9c7
+Gitweb:        https://git.kernel.org/tip/c8eaf6ac76f40f6c59fc7d056e2e08c4a57ea9c7
+Author:        Zhen Ni <nizhen@uniontech.com>
+AuthorDate:    Fri, 28 Jan 2022 17:50:25 +08:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Wed, 02 Feb 2022 13:11:35 +01:00
+CommitterDate: Wed, 02 Feb 2022 13:11:37 +01:00
 
-selftests/rseq: Uplift rseq selftests for compatibility with glibc-2.35
+sched: move autogroup sysctls into its own file
 
-glibc-2.35 (upcoming release date 2022-02-01) exposes the rseq per-thread
-data in the TCB, accessible at an offset from the thread pointer, rather
-than through an actual Thread-Local Storage (TLS) variable, as the
-Linux kernel selftests initially expected.
+move autogroup sysctls to autogroup.c and use the new
+register_sysctl_init() to register the sysctl interface.
 
-The __rseq_abi TLS and glibc-2.35's ABI for per-thread data cannot
-actively coexist in a process, because the kernel supports only a single
-rseq registration per thread.
-
-Here is the scheme introduced to ensure selftests can work both with an
-older glibc and with glibc-2.35+:
-
-- librseq exposes its own "rseq_offset, rseq_size, rseq_flags" ABI.
-
-- librseq queries for glibc rseq ABI (__rseq_offset, __rseq_size,
-  __rseq_flags) using dlsym() in a librseq library constructor. If those
-  are found, copy their values into rseq_offset, rseq_size, and
-  rseq_flags.
-
-- Else, if those glibc symbols are not found, handle rseq registration
-  from librseq and use its own IE-model TLS to implement the rseq ABI
-  per-thread storage.
-
-Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Signed-off-by: Zhen Ni <nizhen@uniontech.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20220124171253.22072-8-mathieu.desnoyers@efficios.com
+Link: https://lkml.kernel.org/r/20220128095025.8745-1-nizhen@uniontech.com
 ---
- tools/testing/selftests/rseq/Makefile |   2 +-
- tools/testing/selftests/rseq/rseq.c   | 161 +++++++++++--------------
- tools/testing/selftests/rseq/rseq.h   |  13 +-
- 3 files changed, 88 insertions(+), 88 deletions(-)
+ include/linux/sched/sysctl.h |  4 ----
+ kernel/sched/autogroup.c     | 23 +++++++++++++++++++++++
+ kernel/sched/autogroup.h     |  1 +
+ kernel/sysctl.c              | 11 -----------
+ 4 files changed, 24 insertions(+), 15 deletions(-)
 
-diff --git a/tools/testing/selftests/rseq/Makefile b/tools/testing/selftests/rseq/Makefile
-index 2af9d39..215e106 100644
---- a/tools/testing/selftests/rseq/Makefile
-+++ b/tools/testing/selftests/rseq/Makefile
-@@ -6,7 +6,7 @@ endif
- 
- CFLAGS += -O2 -Wall -g -I./ -I../../../../usr/include/ -L$(OUTPUT) -Wl,-rpath=./ \
- 	  $(CLANG_FLAGS)
--LDLIBS += -lpthread
-+LDLIBS += -lpthread -ldl
- 
- # Own dependencies because we only want to build against 1st prerequisite, but
- # still track changes to header files and depend on shared object.
-diff --git a/tools/testing/selftests/rseq/rseq.c b/tools/testing/selftests/rseq/rseq.c
-index 1f905b6..07ba0d4 100644
---- a/tools/testing/selftests/rseq/rseq.c
-+++ b/tools/testing/selftests/rseq/rseq.c
-@@ -26,130 +26,123 @@
- #include <assert.h>
- #include <signal.h>
- #include <limits.h>
-+#include <dlfcn.h>
- 
- #include "../kselftest.h"
- #include "rseq.h"
- 
--__thread struct rseq_abi __rseq_abi = {
--	.cpu_id = RSEQ_ABI_CPU_ID_UNINITIALIZED,
--};
-+static const int *libc_rseq_offset_p;
-+static const unsigned int *libc_rseq_size_p;
-+static const unsigned int *libc_rseq_flags_p;
- 
--/*
-- * Shared with other libraries. This library may take rseq ownership if it is
-- * still 0 when executing the library constructor. Set to 1 by library
-- * constructor when handling rseq. Set to 0 in destructor if handling rseq.
-- */
--int __rseq_handled;
-+/* Offset from the thread pointer to the rseq area.  */
-+int rseq_offset;
-+
-+/* Size of the registered rseq area.  0 if the registration was
-+   unsuccessful.  */
-+unsigned int rseq_size = -1U;
-+
-+/* Flags used during rseq registration.  */
-+unsigned int rseq_flags;
- 
--/* Whether this library have ownership of rseq registration. */
- static int rseq_ownership;
- 
--static __thread volatile uint32_t __rseq_refcount;
-+static
-+__thread struct rseq_abi __rseq_abi __attribute__((tls_model("initial-exec"))) = {
-+	.cpu_id = RSEQ_ABI_CPU_ID_UNINITIALIZED,
-+};
- 
--static void signal_off_save(sigset_t *oldset)
-+static int sys_rseq(struct rseq_abi *rseq_abi, uint32_t rseq_len,
-+		    int flags, uint32_t sig)
- {
--	sigset_t set;
--	int ret;
--
--	sigfillset(&set);
--	ret = pthread_sigmask(SIG_BLOCK, &set, oldset);
--	if (ret)
--		abort();
-+	return syscall(__NR_rseq, rseq_abi, rseq_len, flags, sig);
- }
- 
--static void signal_restore(sigset_t oldset)
-+int rseq_available(void)
- {
--	int ret;
-+	int rc;
- 
--	ret = pthread_sigmask(SIG_SETMASK, &oldset, NULL);
--	if (ret)
-+	rc = sys_rseq(NULL, 0, 0, 0);
-+	if (rc != -1)
- 		abort();
--}
--
--static int sys_rseq(volatile struct rseq_abi *rseq_abi, uint32_t rseq_len,
--		    int flags, uint32_t sig)
--{
--	return syscall(__NR_rseq, rseq_abi, rseq_len, flags, sig);
-+	switch (errno) {
-+	case ENOSYS:
-+		return 0;
-+	case EINVAL:
-+		return 1;
-+	default:
-+		abort();
-+	}
- }
- 
- int rseq_register_current_thread(void)
- {
--	int rc, ret = 0;
--	sigset_t oldset;
-+	int rc;
- 
--	if (!rseq_ownership)
-+	if (!rseq_ownership) {
-+		/* Treat libc's ownership as a successful registration. */
- 		return 0;
--	signal_off_save(&oldset);
--	if (__rseq_refcount == UINT_MAX) {
--		ret = -1;
--		goto end;
- 	}
--	if (__rseq_refcount++)
--		goto end;
- 	rc = sys_rseq(&__rseq_abi, sizeof(struct rseq_abi), 0, RSEQ_SIG);
--	if (!rc) {
--		assert(rseq_current_cpu_raw() >= 0);
--		goto end;
--	}
--	if (errno != EBUSY)
--		RSEQ_WRITE_ONCE(__rseq_abi.cpu_id, RSEQ_ABI_CPU_ID_REGISTRATION_FAILED);
--	ret = -1;
--	__rseq_refcount--;
--end:
--	signal_restore(oldset);
--	return ret;
-+	if (rc)
-+		return -1;
-+	assert(rseq_current_cpu_raw() >= 0);
-+	return 0;
- }
- 
- int rseq_unregister_current_thread(void)
- {
--	int rc, ret = 0;
--	sigset_t oldset;
-+	int rc;
- 
--	if (!rseq_ownership)
-+	if (!rseq_ownership) {
-+		/* Treat libc's ownership as a successful unregistration. */
- 		return 0;
--	signal_off_save(&oldset);
--	if (!__rseq_refcount) {
--		ret = -1;
--		goto end;
- 	}
--	if (--__rseq_refcount)
--		goto end;
--	rc = sys_rseq(&__rseq_abi, sizeof(struct rseq_abi),
--		      RSEQ_ABI_FLAG_UNREGISTER, RSEQ_SIG);
--	if (!rc)
--		goto end;
--	__rseq_refcount = 1;
--	ret = -1;
--end:
--	signal_restore(oldset);
--	return ret;
-+	rc = sys_rseq(&__rseq_abi, sizeof(struct rseq_abi), RSEQ_ABI_FLAG_UNREGISTER, RSEQ_SIG);
-+	if (rc)
-+		return -1;
-+	return 0;
- }
- 
--int32_t rseq_fallback_current_cpu(void)
-+static __attribute__((constructor))
-+void rseq_init(void)
- {
--	int32_t cpu;
--
--	cpu = sched_getcpu();
--	if (cpu < 0) {
--		perror("sched_getcpu()");
--		abort();
-+	libc_rseq_offset_p = dlsym(RTLD_NEXT, "__rseq_offset");
-+	libc_rseq_size_p = dlsym(RTLD_NEXT, "__rseq_size");
-+	libc_rseq_flags_p = dlsym(RTLD_NEXT, "__rseq_flags");
-+	if (libc_rseq_size_p && libc_rseq_offset_p && libc_rseq_flags_p) {
-+		/* rseq registration owned by glibc */
-+		rseq_offset = *libc_rseq_offset_p;
-+		rseq_size = *libc_rseq_size_p;
-+		rseq_flags = *libc_rseq_flags_p;
-+		return;
- 	}
--	return cpu;
--}
--
--void __attribute__((constructor)) rseq_init(void)
--{
--	/* Check whether rseq is handled by another library. */
--	if (__rseq_handled)
-+	if (!rseq_available())
- 		return;
--	__rseq_handled = 1;
- 	rseq_ownership = 1;
-+	rseq_offset = (void *)&__rseq_abi - rseq_thread_pointer();
-+	rseq_size = sizeof(struct rseq_abi);
-+	rseq_flags = 0;
- }
- 
--void __attribute__((destructor)) rseq_fini(void)
-+static __attribute__((destructor))
-+void rseq_exit(void)
- {
- 	if (!rseq_ownership)
- 		return;
--	__rseq_handled = 0;
-+	rseq_offset = 0;
-+	rseq_size = -1U;
- 	rseq_ownership = 0;
- }
-+
-+int32_t rseq_fallback_current_cpu(void)
-+{
-+	int32_t cpu;
-+
-+	cpu = sched_getcpu();
-+	if (cpu < 0) {
-+		perror("sched_getcpu()");
-+		abort();
-+	}
-+	return cpu;
-+}
-diff --git a/tools/testing/selftests/rseq/rseq.h b/tools/testing/selftests/rseq/rseq.h
-index ca668a2..17531cc 100644
---- a/tools/testing/selftests/rseq/rseq.h
-+++ b/tools/testing/selftests/rseq/rseq.h
-@@ -43,12 +43,19 @@
- #define RSEQ_INJECT_FAILED
+diff --git a/include/linux/sched/sysctl.h b/include/linux/sched/sysctl.h
+index c19dd5a..3f2b70f 100644
+--- a/include/linux/sched/sysctl.h
++++ b/include/linux/sched/sysctl.h
+@@ -45,10 +45,6 @@ extern unsigned int sysctl_sched_uclamp_util_min_rt_default;
+ extern unsigned int sysctl_sched_cfs_bandwidth_slice;
  #endif
  
--extern __thread struct rseq_abi __rseq_abi;
--extern int __rseq_handled;
-+#include "rseq-thread-pointer.h"
+-#ifdef CONFIG_SCHED_AUTOGROUP
+-extern unsigned int sysctl_sched_autogroup_enabled;
+-#endif
+-
+ extern int sysctl_sched_rr_timeslice;
+ extern int sched_rr_timeslice;
+ 
+diff --git a/kernel/sched/autogroup.c b/kernel/sched/autogroup.c
+index 8629b37..31dd259 100644
+--- a/kernel/sched/autogroup.c
++++ b/kernel/sched/autogroup.c
+@@ -9,6 +9,28 @@ unsigned int __read_mostly sysctl_sched_autogroup_enabled = 1;
+ static struct autogroup autogroup_default;
+ static atomic_t autogroup_seq_nr;
+ 
++#ifdef CONFIG_SYSCTL
++static struct ctl_table sched_autogroup_sysctls[] = {
++	{
++		.procname       = "sched_autogroup_enabled",
++		.data           = &sysctl_sched_autogroup_enabled,
++		.maxlen         = sizeof(unsigned int),
++		.mode           = 0644,
++		.proc_handler   = proc_dointvec_minmax,
++		.extra1         = SYSCTL_ZERO,
++		.extra2         = SYSCTL_ONE,
++	},
++	{}
++};
 +
-+/* Offset from the thread pointer to the rseq area.  */
-+extern int rseq_offset;
-+/* Size of the registered rseq area.  0 if the registration was
-+   unsuccessful.  */
-+extern unsigned int rseq_size;
-+/* Flags used during rseq registration.  */
-+extern unsigned int rseq_flags;
- 
- static inline struct rseq_abi *rseq_get_abi(void)
++static void __init sched_autogroup_sysctl_init(void)
++{
++	register_sysctl_init("kernel", sched_autogroup_sysctls);
++}
++#else
++#define sched_autogroup_sysctl_init() do { } while (0)
++#endif
++
+ void __init autogroup_init(struct task_struct *init_task)
  {
--	return &__rseq_abi;
-+	return (struct rseq_abi *) ((uintptr_t) rseq_thread_pointer() + rseq_offset);
- }
+ 	autogroup_default.tg = &root_task_group;
+@@ -198,6 +220,7 @@ void sched_autogroup_exit(struct signal_struct *sig)
+ static int __init setup_autogroup(char *str)
+ {
+ 	sysctl_sched_autogroup_enabled = 0;
++	sched_autogroup_sysctl_init();
  
- #define rseq_likely(x)		__builtin_expect(!!(x), 1)
+ 	return 1;
+ }
+diff --git a/kernel/sched/autogroup.h b/kernel/sched/autogroup.h
+index b964199..90fcbfd 100644
+--- a/kernel/sched/autogroup.h
++++ b/kernel/sched/autogroup.h
+@@ -27,6 +27,7 @@ extern bool task_wants_autogroup(struct task_struct *p, struct task_group *tg);
+ static inline struct task_group *
+ autogroup_task_group(struct task_struct *p, struct task_group *tg)
+ {
++	extern unsigned int sysctl_sched_autogroup_enabled;
+ 	int enabled = READ_ONCE(sysctl_sched_autogroup_enabled);
+ 
+ 	if (enabled && task_wants_autogroup(p, tg))
+diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+index 5ae443b..1cb7ca6 100644
+--- a/kernel/sysctl.c
++++ b/kernel/sysctl.c
+@@ -1750,17 +1750,6 @@ static struct ctl_table kern_table[] = {
+ 		.proc_handler	= sysctl_sched_uclamp_handler,
+ 	},
+ #endif
+-#ifdef CONFIG_SCHED_AUTOGROUP
+-	{
+-		.procname	= "sched_autogroup_enabled",
+-		.data		= &sysctl_sched_autogroup_enabled,
+-		.maxlen		= sizeof(unsigned int),
+-		.mode		= 0644,
+-		.proc_handler	= proc_dointvec_minmax,
+-		.extra1		= SYSCTL_ZERO,
+-		.extra2		= SYSCTL_ONE,
+-	},
+-#endif
+ #ifdef CONFIG_CFS_BANDWIDTH
+ 	{
+ 		.procname	= "sched_cfs_bandwidth_slice_us",
