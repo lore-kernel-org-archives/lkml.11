@@ -2,85 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A966CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 14:47:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1B46C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 14:47:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347901AbiBCOr1 (ORCPT
+        id S1351492AbiBCOrc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 09:47:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33452 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351351AbiBCOrN (ORCPT
+        Thu, 3 Feb 2022 09:47:32 -0500
+Received: from outbound-smtp05.blacknight.com ([81.17.249.38]:60949 "EHLO
+        outbound-smtp05.blacknight.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1351489AbiBCOrP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 09:47:13 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C674C06173D
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 06:47:13 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AE503619C6
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 14:47:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07328C340E4;
-        Thu,  3 Feb 2022 14:47:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643899632;
-        bh=HsISUCVfu1iUw1BVQ2l4vNJsgdtVwJ6qtpiQzSoC5as=;
-        h=From:To:Cc:Subject:Date:From;
-        b=SK+mkJx8u6S8ZgT7OW2Z+bbqatlwui/sMuRXvTn6ItzkjyGHBZZXJGwxQSfs79287
-         z+0aMg+lHj6gIMkdfG3T00Mvj24b1fUaiKxzlEi2/Ofb99QMM/W8djmhMJJDR/tfSZ
-         xdaFCLaA/RQcdQA5F+vMSmDWl7eEGMcldz6zue4UBaw+QBserFBtEDyy93q/liRIZh
-         yqie5ayExS+KmGqJs/EZpCCJG4++VpR9jWXofTJtbvPOEIVzIemit9xaG3mIdoN2op
-         0d1W67+YeDui5rOfznX876bXylj14gVZAZJJgg/MoSGLq5bvnjUmUOxyFPT2rk0tA7
-         bskTm/wQJoM6w==
-From:   Chao Yu <chao@kernel.org>
-To:     jaegeuk@kernel.org
-Cc:     linux-f2fs-devel@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, Chao Yu <chao@kernel.org>,
-        Pavel Machek <pavel@denx.de>
-Subject: [PATCH] f2fs: fix to unlock page correctly in error path of is_alive()
-Date:   Thu,  3 Feb 2022 22:47:05 +0800
-Message-Id: <20220203144705.23528-1-chao@kernel.org>
-X-Mailer: git-send-email 2.32.0
+        Thu, 3 Feb 2022 09:47:15 -0500
+Received: from mail.blacknight.com (pemlinmail01.blacknight.ie [81.17.254.10])
+        by outbound-smtp05.blacknight.com (Postfix) with ESMTPS id 92656CCD28
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 14:47:14 +0000 (GMT)
+Received: (qmail 1893 invoked from network); 3 Feb 2022 14:47:14 -0000
+Received: from unknown (HELO stampy.112glenside.lan) (mgorman@techsingularity.net@[84.203.17.223])
+  by 81.17.254.9 with ESMTPA; 3 Feb 2022 14:47:14 -0000
+From:   Mel Gorman <mgorman@techsingularity.net>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        Aubrey Li <aubrey.li@linux.intel.com>,
+        Barry Song <song.bao.hua@hisilicon.com>,
+        Mike Galbraith <efault@gmx.de>,
+        Srikar Dronamraju <srikar@linux.vnet.ibm.com>,
+        Gautham Shenoy <gautham.shenoy@amd.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Mel Gorman <mgorman@techsingularity.net>
+Subject: [PATCH 1/2] sched/fair: Improve consistency of allowed NUMA balance calculations
+Date:   Thu,  3 Feb 2022 14:46:51 +0000
+Message-Id: <20220203144652.12540-2-mgorman@techsingularity.net>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220203144652.12540-1-mgorman@techsingularity.net>
+References: <20220203144652.12540-1-mgorman@techsingularity.net>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As Pavel Machek reported in below link [1]:
+There are inconsistencies when determining if a NUMA imbalance is allowed
+that should be corrected.
 
-After commit 77900c45ee5c ("f2fs: fix to do sanity check in is_alive()"),
-node page should be unlock via calling f2fs_put_page() in the error path
-of is_alive(), otherwise, f2fs may hang when it tries to lock the node
-page, fix it.
+o allow_numa_imbalance changes types and is not always examining
+  the destination group so both the type should be corrected as
+  well as the naming.
+o find_idlest_group uses the sched_domain's weight instead of the
+  group weight which is different to find_busiest_group
+o find_busiest_group uses the source group instead of the destination
+  which is different to task_numa_find_cpu
+o Both find_idlest_group and find_busiest_group should account
+  for the number of running tasks if a move was allowed to be
+  consistent with task_numa_find_cpu
 
-[1] https://lore.kernel.org/stable/20220124203637.GA19321@duo.ucw.cz/
-
-Fixes: 77900c45ee5c ("f2fs: fix to do sanity check in is_alive()")
-Reported-by: Pavel Machek <pavel@denx.de>
-Signed-off-by: Pavel Machek <pavel@denx.de>
-Signed-off-by: Chao Yu <chao@kernel.org>
+Fixes: 7d2b5dd0bcc4 ("sched/numa: Allow a floating imbalance between NUMA nodes")
+Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
 ---
- fs/f2fs/gc.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ kernel/sched/fair.c | 18 ++++++++++--------
+ 1 file changed, 10 insertions(+), 8 deletions(-)
 
-diff --git a/fs/f2fs/gc.c b/fs/f2fs/gc.c
-index 0a6b0a8ae97e..2d53ef121e76 100644
---- a/fs/f2fs/gc.c
-+++ b/fs/f2fs/gc.c
-@@ -1038,8 +1038,10 @@ static bool is_alive(struct f2fs_sb_info *sbi, struct f2fs_summary *sum,
- 		set_sbi_flag(sbi, SBI_NEED_FSCK);
- 	}
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 095b0aa378df..4592ccf82c34 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -9003,9 +9003,10 @@ static bool update_pick_idlest(struct sched_group *idlest,
+  * This is an approximation as the number of running tasks may not be
+  * related to the number of busy CPUs due to sched_setaffinity.
+  */
+-static inline bool allow_numa_imbalance(int dst_running, int dst_weight)
++static inline bool
++allow_numa_imbalance(unsigned int running, unsigned int weight)
+ {
+-	return (dst_running < (dst_weight >> 2));
++	return (running < (weight >> 2));
+ }
  
--	if (f2fs_check_nid_range(sbi, dni->ino))
-+	if (f2fs_check_nid_range(sbi, dni->ino)) {
-+		f2fs_put_page(node_page, 1);
- 		return false;
-+	}
+ /*
+@@ -9139,12 +9140,13 @@ find_idlest_group(struct sched_domain *sd, struct task_struct *p, int this_cpu)
+ 				return idlest;
+ #endif
+ 			/*
+-			 * Otherwise, keep the task on this node to stay close
+-			 * its wakeup source and improve locality. If there is
+-			 * a real need of migration, periodic load balance will
+-			 * take care of it.
++			 * Otherwise, keep the task close to the wakeup source
++			 * and improve locality if the number of running tasks
++			 * would remain below threshold where an imbalance is
++			 * allowed. If there is a real need of migration,
++			 * periodic load balance will take care of it.
+ 			 */
+-			if (allow_numa_imbalance(local_sgs.sum_nr_running, sd->span_weight))
++			if (allow_numa_imbalance(local_sgs.sum_nr_running + 1, local_sgs.group_weight))
+ 				return NULL;
+ 		}
  
- 	*nofs = ofs_of_node(node_page);
- 	source_blkaddr = data_blkaddr(NULL, node_page, ofs_in_node);
+@@ -9350,7 +9352,7 @@ static inline void calculate_imbalance(struct lb_env *env, struct sd_lb_stats *s
+ 		/* Consider allowing a small imbalance between NUMA groups */
+ 		if (env->sd->flags & SD_NUMA) {
+ 			env->imbalance = adjust_numa_imbalance(env->imbalance,
+-				busiest->sum_nr_running, busiest->group_weight);
++				local->sum_nr_running + 1, local->group_weight);
+ 		}
+ 
+ 		return;
 -- 
-2.32.0
+2.31.1
 
