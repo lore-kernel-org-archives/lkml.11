@@ -2,142 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82E77C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 17:47:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A0CCC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 17:50:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353065AbiBCRrf (ORCPT
+        id S1353066AbiBCRuN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 12:47:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47972 "EHLO
+        Thu, 3 Feb 2022 12:50:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353051AbiBCRra (ORCPT
+        with ESMTP id S232884AbiBCRuL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 12:47:30 -0500
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A020BC061714
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 09:47:29 -0800 (PST)
-Received: by mail-wr1-x42e.google.com with SMTP id a13so6484602wrh.9
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 09:47:29 -0800 (PST)
+        Thu, 3 Feb 2022 12:50:11 -0500
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D99A5C061714;
+        Thu,  3 Feb 2022 09:50:10 -0800 (PST)
+Received: by mail-ed1-x52e.google.com with SMTP id w25so7599855edt.7;
+        Thu, 03 Feb 2022 09:50:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=znrMKNBSHwt+8IF1HzGLf7jCvuakzuIz97mrn0VfQe4=;
-        b=JKxxG0M/WmTjYUFgUOM0/taTapCtvV5FzO6Rv1QN+oZhkFb4tAutRK2wDWZbUlMRxq
-         F7QK4ZjqnR4SQ2BWzbfM4XhLvTkCNiW8RiGXG1O0J6y4MOTV8EI9kXXHeG1TUR72+1vY
-         8b4JetAjwbbCgcwNo0RAZlstnSp01CopodmD3Uo4uH+EOD8m36EMBjDC4oALOBkqiYAR
-         vKgRUZUqXz4PlsCowoYfB6x9UvIfxFN3hL6g9m0UAf6lW8zG/NzBhbX1l2AnAOZDvEKv
-         qWnGzIcYL5jy1lZ7AyjNVRGGTFKM3EPMDmLnaHfP73xfOj4qV70IY7B5RWVTaVIWMG3G
-         m/Yw==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=DlHF1ezZsVyyLw16v2PxMSWN/nd7gwtKLelkVX/tiX0=;
+        b=ByMXCyiJMiEqRQ+FEL4KhRZcgt0woCBUqDhuf335ndRQUq+VVT0KBKC9ARSbobSlow
+         EhlODK+uE5wAZ78xmgHSvNH3HMfUjoO0l7XCBapQlmHaJ4R0tzNKmZjU39DUqtECBY/Y
+         lMMUqORd3U+s37MGuvTrdwUTQEvpZMQqyYq5I6Zz2KMnaz00VF1LVxpQlyOUKsRnS5kP
+         r8MJGff6CNUi4ITPpoGJR9yE2qo+Ab6J3w+9WRhODjhiYkkxpOFDrWil94dAK9UMGmql
+         bwej8hONl1blIKeOO6uF7dclZG3RdUdixRL/O2xwKq9s/IBtKambkPYVOplcFFV5ybb8
+         AQSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=znrMKNBSHwt+8IF1HzGLf7jCvuakzuIz97mrn0VfQe4=;
-        b=bxN0EQFZ47uLw0xCCpb8iwnGoPi3K+CckL9v7j/By/EylAExRGGksBfT7onoxiSwr2
-         JkwBMxTMMKtNbk4JRgE+6TGyT2wBrHJPABeJRGswZv02kssKRqCdttwkPZWbkGUCdBxx
-         nnCW109xTEHqCN0DALmLBw8VKNDPjAvUBi5u5cl//6oT38dkE213oAY7BZ2xPhpNsbEt
-         rjeCbPGXYlBOO8nL/kMWTqx421yz6WK+sW/ts395oKwePRsENZKCdjbYP65deMEUTuv+
-         N482IElygRrCWkVEZhLLoVYk4mLheNSuWH0MVv/LBar/b+9QRvC4b3WRahsYxKUlnUvq
-         h4vg==
-X-Gm-Message-State: AOAM533CZGBFRqGA3CGmjEBq94afKoUZnpUuQU0z31AXtL52zgJahMGl
-        dRll4cinUrXJ/5g6d4gc69bLxA==
-X-Google-Smtp-Source: ABdhPJxaMocHiPYFyIi2qLgsf/YM7iw1VmTOkuhEQYkZ/daIxL0KzWIbd+foVuT9R5jkU86H+UdFAQ==
-X-Received: by 2002:adf:dcc9:: with SMTP id x9mr29421769wrm.591.1643910448288;
-        Thu, 03 Feb 2022 09:47:28 -0800 (PST)
-Received: from ?IPv6:2a02:6b6d:f804:0:28c2:5854:c832:e580? ([2a02:6b6d:f804:0:28c2:5854:c832:e580])
-        by smtp.gmail.com with ESMTPSA id u7sm7794525wml.7.2022.02.03.09.47.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Feb 2022 09:47:27 -0800 (PST)
-Subject: Re: [PATCH 1/2] io_uring: avoid ring quiesce while
- registering/unregistering eventfd
-To:     Pavel Begunkov <asml.silence@gmail.com>, io-uring@vger.kernel.org,
-        axboe@kernel.dk, linux-kernel@vger.kernel.org
-Cc:     fam.zheng@bytedance.com
-References: <20220203151153.574032-1-usama.arif@bytedance.com>
- <20220203151153.574032-2-usama.arif@bytedance.com>
- <f8ff62bf-4435-5da3-949a-fd337a9dfaf7@gmail.com>
-From:   Usama Arif <usama.arif@bytedance.com>
-Message-ID: <5df97fbf-cea5-c740-ae62-d75cb9390a0d@bytedance.com>
-Date:   Thu, 3 Feb 2022 17:47:27 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=DlHF1ezZsVyyLw16v2PxMSWN/nd7gwtKLelkVX/tiX0=;
+        b=ieDV4GtgbpMD++wnF8fNHhIikO75PGRjjEJvTIdtRZw9++ga+kjgtngxzwmc7TbG7p
+         j2PxSArZcMTRcnTxy5RzIKZzUOPAIkDB913XNgUm6NSQn7jPFUcWzWsBNnkXLHPYelNf
+         lvREbx05LM4e9FebWOT/QKMK6pLn4I07QS3xp4vrGMNxmbeE2RXWlzK7AZ80H/0C6fOg
+         6jDGpiCFNjkyldCwfMUUn74+o7o84Klh1oelnASiHkJwNpsnnOm29/a5N5ea4/Zt/dpG
+         Hbd/F7rcQstinfDGoWadC0dWu8MrRS7UFl19ppOasN1nXqAScGsWLEuNH7W2Uk1bRsNQ
+         sHXg==
+X-Gm-Message-State: AOAM532zF0rPE61OUz0JUagTfvbDOP2SINpcMAccihEKWrkAG6tAfhAw
+        1Hnq3A2BE/Snds2MEbENS+o=
+X-Google-Smtp-Source: ABdhPJzdxlCUVDtjmB3ENX5mKOqOonAT9GMGhVa+oTeOAuEEbGMNDuDWfBrWS+tw0rV3CDLh3UnogQ==
+X-Received: by 2002:a05:6402:1612:: with SMTP id f18mr14801649edv.454.1643910609310;
+        Thu, 03 Feb 2022 09:50:09 -0800 (PST)
+Received: from orome ([193.209.96.43])
+        by smtp.gmail.com with ESMTPSA id h8sm22578309edk.14.2022.02.03.09.50.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Feb 2022 09:50:08 -0800 (PST)
+Date:   Thu, 3 Feb 2022 18:50:05 +0100
+From:   Thierry Reding <thierry.reding@gmail.com>
+To:     Akhil R <akhilrajeev@nvidia.com>
+Cc:     devicetree@vger.kernel.org, digetx@gmail.com, jonathanh@nvidia.com,
+        ldewangan@nvidia.com, linux-i2c@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org,
+        mperttunen@nvidia.com, robh+dt@kernel.org
+Subject: Re: [PATCH v3 0/4] Add I2C and PWM support for T234
+Message-ID: <YfwVzVHZ6SQhKpLF@orome>
+References: <1643023097-5221-1-git-send-email-akhilrajeev@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <f8ff62bf-4435-5da3-949a-fd337a9dfaf7@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="ruUbb3Ly1noXTLRH"
+Content-Disposition: inline
+In-Reply-To: <1643023097-5221-1-git-send-email-akhilrajeev@nvidia.com>
+User-Agent: Mutt/2.1.5 (31b18ae9) (2021-12-30)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
+--ruUbb3Ly1noXTLRH
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On 03/02/2022 15:48, Pavel Begunkov wrote:
-> On 2/3/22 15:11, Usama Arif wrote:
->> This is done by creating a new RCU data structure (io_ev_fd) as part of
->> io_ring_ctx that holds the eventfd_ctx.
->>
->> The function io_eventfd_signal is executed under rcu_read_lock with a
->> single rcu_dereference to io_ev_fd so that if another thread unregisters
->> the eventfd while io_eventfd_signal is still being executed, the
->> eventfd_signal for which io_eventfd_signal was called completes
->> successfully.
->>
->> The process of registering/unregistering eventfd is done under a lock
->> so multiple threads don't enter a race condition while
->> registering/unregistering eventfd.
->>
->> With the above approach ring quiesce can be avoided which is much more
->> expensive then using RCU lock. On the system tested, io_uring_reigster 
->> with
->> IORING_REGISTER_EVENTFD takes less than 1ms with RCU lock, compared to 
->> 15ms
->> before with ring quiesce.
->>
->> Signed-off-by: Usama Arif <usama.arif@bytedance.com>
->> ---
->>   fs/io_uring.c | 103 +++++++++++++++++++++++++++++++++++++++-----------
->>   1 file changed, 80 insertions(+), 23 deletions(-)
->>
->> diff --git a/fs/io_uring.c b/fs/io_uring.c
->> index 2e04f718319d..f07cfbb387a6 100644
->> --- a/fs/io_uring.c
->> +++ b/fs/io_uring.c
->> @@ -326,6 +326,12 @@ struct io_submit_state {
->>       struct blk_plug        plug;
->>   };
-> 
->> -static inline bool io_should_trigger_evfd(struct io_ring_ctx *ctx)
->> +static inline bool io_should_trigger_evfd(struct io_ring_ctx *ctx, 
->> struct io_ev_fd *ev_fd)
->>   {
->> -    if (likely(!ctx->cq_ev_fd))
->> +    if (likely(!ev_fd))
->>           return false;
->>       if (READ_ONCE(ctx->rings->cq_flags) & IORING_CQ_EVENTFD_DISABLED)
->>           return false;
->>       return !ctx->eventfd_async || io_wq_current_is_worker();
->>   }
->> +static void io_eventfd_signal(struct io_ring_ctx *ctx)
->> +{
->> +    struct io_ev_fd *ev_fd;
->> +
->> +    rcu_read_lock();
-> 
-> Please always think about the fast path, which is not set eventfd.
-> We don't want extra overhead here.
-> 
+On Mon, Jan 24, 2022 at 04:48:13PM +0530, Akhil R wrote:
+> The patchset contains driver and devicetree changes to support I2C and
+> PWM for Tegra234
+>=20
+> v2->v3:
+>   * Sorted clock and reset based on ID
+> v1->v2:
+>   * Reverted changes in i2c-tegra.c. using tegra194_i2c_hw for tegra234
+>     as the values are compatible.
+>=20
+> Akhil R (4):
+>   dt-bindings: Add headers for Tegra234 I2C
+>   arm64: tegra: Add Tegra234 I2C devicetree nodes
+>   dt-bindings: Add headers for Tegra234 PWM
+>   arm64: tegra: Add Tegra234 PWM devicetree nodes
+>=20
+>  arch/arm64/boot/dts/nvidia/tegra234.dtsi   | 133 +++++++++++++++++++++++=
+++++++
+>  include/dt-bindings/clock/tegra234-clock.h |  35 +++++++-
+>  include/dt-bindings/reset/tegra234-reset.h |  16 ++++
+>  3 files changed, 183 insertions(+), 1 deletion(-)
 
-I guess this should be ok now from v3?
+Applied, thanks.
 
-Thanks,
-Usama
-> if (ctx->ev_fd) {
->      rcu_read_lock();
->          ev_fd = rcu_deref(...);
->          ...
->          rcu_read_unlock();
-> }
-> 
+Thierry
+
+--ruUbb3Ly1noXTLRH
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmH8Fc0ACgkQ3SOs138+
+s6GGCg/8CfokZvYlAjOMxpDQHvkgL6CKcSSOuY1KlwkyLC39mJ/NqFzh8rQO7YFe
+9YxInRWkjk0Kjf7uzyQMYIozXS6V+zdqmaPLPCvNyh6wgGlkc4IOuSshJQIyo8V5
+rAHjLtrJvdiw395TQn89XhXPPledVwYfjqE/jfRiVF9ZFhdwkkOmzdcznhPuFBrT
+Ud5fsxhidf8msw6GgEc9CJEwkWM2QIFhx5lZnPh0dMgqNs8DfNzMTYGdc+VjFvYP
+Yxo4TlMqurS4A/qr0a4mFG4FwNcKQEc1W5nNSlJQ8K8psiEk6lO1/MB87G01/uLe
+HYGhXLmo/ZtClcHjNsGuyiFJeevat+nZQd0JizmcCwcqX2zyhnCpRtgW/4dzXP1q
+f4cXtz+SkFuWJ1XXmyI30TySCOBcYPcN/xYE2jUma4lOJzRLhSO31Zdj26Q6pv38
+gKtxBJ37cEv8ON8fVx/mGWbnYgw/H0QMjbavajUJxSoDwh0j9X736mcsIKSX6/PK
+MSfaIuxvOi5gc3hPmVqgg4LO1k76dR3dLESq81fuplGWZROwoyuD8nIpENaH8/bS
+vH6eMoHiFICbNEaV/T73Wr4g8GCY5rQa8gPOp73rQC++7JT6CpOX8CtHDMojnf7R
+X8qR+wQi6uPqwa0BIFMBXlN+D2HioRJY3CUdKqileg2HFgWycuc=
+=v0Xn
+-----END PGP SIGNATURE-----
+
+--ruUbb3Ly1noXTLRH--
