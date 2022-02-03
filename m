@@ -2,261 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AF23C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 09:33:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC2D4C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 09:34:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349773AbiBCJdU (ORCPT
+        id S1349751AbiBCJee (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 04:33:20 -0500
-Received: from mail-bn7nam10on2088.outbound.protection.outlook.com ([40.107.92.88]:45792
-        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1349725AbiBCJdF (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 04:33:05 -0500
+        Thu, 3 Feb 2022 04:34:34 -0500
+Received: from de-smtp-delivery-102.mimecast.com ([194.104.111.102]:51879 "EHLO
+        de-smtp-delivery-102.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238921AbiBCJec (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 3 Feb 2022 04:34:32 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=mimecast20200619;
+        t=1643880871;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=4ncw2kWOjez7dLFA4O9EPyyiSuZ1gSc3/hhS10AUsDs=;
+        b=WOMGvzQ42Zb0wPD7fkwGjfPEA3/KLS+FiGStTr0rAIejePuD8AH3v+dIOvTvsghU0Ezn3W
+        GJNgKzLd75srPg+Rg8JW3vmbE3YH3DW1+GnzqOwq/giJsCpz0fdUZWzUccKy/HEJsBwo8d
+        7t8Pw0lyRW+x9oZC/5q5POelI3WpcmQ=
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com
+ (mail-vi1eur04lp2056.outbound.protection.outlook.com [104.47.14.56]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ de-mta-2-DpU7YE2EO5uS0LMVMatmYw-1; Thu, 03 Feb 2022 10:34:30 +0100
+X-MC-Unique: DpU7YE2EO5uS0LMVMatmYw-1
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SHnS3wCIVup09iv3oPMXf+wqVYKFwTTjjBlqkWwrIC7sseJFobSDxIK3SP6GoP5pVbOd/c6SDFqRo4haAKvHnCXpWImf3+VmSxutTmZi7N/qHj47BSZHZvptafpUOKqZNhxgaO9a+8uN+gjEqlaedhrwEshghVYZTaf8r71gBl770kMpYbPt5z8d5WZSf1gBGEYiHl7QvmC51OqUl11c/fxx3b3/y6QF819IAo86j1BJIZH43VBuoX40GJwa5LyjskaKJf+KcwOavsCHrmKWrCptNJzbx1AzZmKfKSIJ11iIZVVxVmbmkgl8oxAMIbEIQ6dRjvarLowKy+SHYc35gQ==
+ b=C/AY7xGmcK9+jjgXy5uhWZb74ldJjwiGaDvrl/vCtfSPAK5hPamE3gsaWyxaU8t8UvUX4nQaFYH51XcnPUjl0kMSVLChSNC+bY8x+8fhVSZDKGLFQi/vwSQaBVF4H/ynQo6IbcyojY+qel908IHmzQh0kh19D529NMvjz+s3VONgsVg3h/o65PPAdpSBCOsfmFXKeyoBr8/xj5mHqEqxKWFQvG7Mr1IGK3zHnLrHwJq82nKY//UjvEFflybpNeeq5AXPPNjjOZW1/TKWcW1UBoazMokzCz+r60Tnw9Fsusw+UFGdVsY5EoGYJKKSUIHaDbzJW2vSKIpv0YhxwQIWrg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2ZOQlvAvDS4/SPLvLjBz/5Ap3tNIGRbwmHAPau7fsxo=;
- b=WirnxRda0noN1ISeRX6JA2FV/xPKiRJb9Hao1IQkaK9QtjbhGETGpGjlFGh8iGFqv6NRx0xm3eIItRNrO5WKpSu7nhss/tkp9Zm2P21slmQVh5DC+itbuj9eHeYxRpgNIDMZ57YsUBm3pSJBhR4oZCpDqrUtX4aNLowJ2qrCzRa76RAMhEgvEZuEgpotRvBEJXhAvUPoROPFFqP1/mEJRWD+/V5fQ8+DqRAKa9sT+DgS/QaM7mE+sEa2Iod2CTDm/mQl+ouAgY5x1zc11r0QKzsGATO17IFFAqeCfUAlDMVQmqeKWi7KmkDrkjpehddpm7BfMWqa4W5DxvYXmEXcnA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.234) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2ZOQlvAvDS4/SPLvLjBz/5Ap3tNIGRbwmHAPau7fsxo=;
- b=f4GOiChxOf+T4oDV64oYZ5nHk6j073bC6gj4hY8I/vWzXGQx/voaO3uI5OVl7dXpqi+1LOwyVEjDFSJg9G9cSQ/bhPJkOsApzXWrLxe6FPG7a8snBMOquZiKqx3aRwvvlDeJyHDMGVweQ5kPmFZ26+wBOQa2YXWp1Cd1QQ89BNeZ4hBcTi+rqN01fmlH8rYZPkj0j1K7rQYNzPE6INoBTmuRWkonQ97t7kJYqWl820J/6MGlM0diWcvGutkv7moVkMVeyjX2A/HPP+S2m6k6ptyw/xd2xlPHQe1/KHWw4BYhqDotZFsEHcEkzNU6sk4pjCJlLiS6ldBlkvGNlZtmeQ==
-Received: from MWHPR1701CA0019.namprd17.prod.outlook.com
- (2603:10b6:301:14::29) by BN6PR1201MB0004.namprd12.prod.outlook.com
- (2603:10b6:404:ac::23) with Microsoft SMTP Server (version=TLS1_2,
+ bh=nVQnAXTf+AO9z/BWyyoYFdEUMdk+E4fUWk8PA8/BvGU=;
+ b=Yp6pbJN+UhnK+tq84RFjbtG9grKHu4mT7KeaNxUTeGO9ynRefGzT0boYX223eSoLU2el8P0corzMZkMgCFcrITL4aswtpShBxu0N0317RKIaR6nU+aMpZgaWcWm4BnuKP7EGqllEBv5eFv//8naGFAsfOJqODmHbVuYJXLVdqNS8SoK8J3YgF8TjgY80fWYBWmL4J9eMVWYYUBLb2GMEOHolpMksxzm4NqohepFBmc7RADZ1QFik+wqYhr7hP5rGxWcxY/umlvX7QqQJZ6WQOiXhubGhNe0oQswt5k19JNeCuzKmrTGmOSO8R06SHkBv36aekWM8MPJD5G+p/9sW/w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=suse.com;
+Received: from DB7PR04MB5050.eurprd04.prod.outlook.com (2603:10a6:10:22::23)
+ by DB6PR0402MB2695.eurprd04.prod.outlook.com (2603:10a6:4:95::13) with
+ Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Thu, 3 Feb
- 2022 09:33:03 +0000
-Received: from CO1NAM11FT041.eop-nam11.prod.protection.outlook.com
- (2603:10b6:301:14:cafe::18) by MWHPR1701CA0019.outlook.office365.com
- (2603:10b6:301:14::29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.13 via Frontend
- Transport; Thu, 3 Feb 2022 09:33:03 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.234; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.234) by
- CO1NAM11FT041.mail.protection.outlook.com (10.13.174.217) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4951.12 via Frontend Transport; Thu, 3 Feb 2022 09:33:02 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by DRHQMAIL101.nvidia.com
- (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 3 Feb
- 2022 09:33:02 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Thu, 3 Feb 2022
- 01:33:01 -0800
-Received: from sandstorm.attlocal.net (10.127.8.12) by mail.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server id 15.2.986.9 via Frontend
- Transport; Thu, 3 Feb 2022 01:33:01 -0800
-From:   John Hubbard <jhubbard@nvidia.com>
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>
-CC:     David Hildenbrand <david@redhat.com>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Jan Kara <jack@suse.cz>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH v3 4/4] mm/gup: remove get_user_pages_locked()
-Date:   Thu, 3 Feb 2022 01:32:32 -0800
-Message-ID: <20220203093232.572380-5-jhubbard@nvidia.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220203093232.572380-1-jhubbard@nvidia.com>
-References: <20220203093232.572380-1-jhubbard@nvidia.com>
+ 2022 09:34:28 +0000
+Received: from DB7PR04MB5050.eurprd04.prod.outlook.com
+ ([fe80::24bf:3192:1d1c:4115]) by DB7PR04MB5050.eurprd04.prod.outlook.com
+ ([fe80::24bf:3192:1d1c:4115%3]) with mapi id 15.20.4951.012; Thu, 3 Feb 2022
+ 09:34:28 +0000
+Message-ID: <41599e9d-20c0-d1ed-d793-cd7037013718@suse.com>
+Date:   Thu, 3 Feb 2022 10:34:25 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH net-next v1 0/4] usbnet: add "label" support
+Content-Language: en-US
+To:     Greg KH <gregkh@linuxfoundation.org>,
+        Oleksij Rempel <o.rempel@pengutronix.de>
+CC:     Oliver Neukum <oneukum@suse.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org
+References: <20220127104905.899341-1-o.rempel@pengutronix.de>
+ <YfJ6tZ3hJLbTeaDr@kroah.com>
+From:   Oliver Neukum <oneukum@suse.com>
+In-Reply-To: <YfJ6tZ3hJLbTeaDr@kroah.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-ClientProxiedBy: AS9PR06CA0044.eurprd06.prod.outlook.com
+ (2603:10a6:20b:463::35) To DB7PR04MB5050.eurprd04.prod.outlook.com
+ (2603:10a6:10:22::23)
 MIME-Version: 1.0
-X-NVConfidentiality: public
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: acdca6a0-5072-47d9-e2f3-08d9e6f82ce3
-X-MS-TrafficTypeDiagnostic: BN6PR1201MB0004:EE_
-X-Microsoft-Antispam-PRVS: <BN6PR1201MB0004483BCF6E0DB5EB075DDAA8289@BN6PR1201MB0004.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
+X-MS-Office365-Filtering-Correlation-Id: 19d15b70-823f-41ef-9aaa-08d9e6f85f84
+X-MS-TrafficTypeDiagnostic: DB6PR0402MB2695:EE_
+X-LD-Processed: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba,ExtFwd
+X-Microsoft-Antispam-PRVS: <DB6PR0402MB2695350EB12A4E6701F398B3C7289@DB6PR0402MB2695.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 1X6Krkv+Q8BDDCjh6cYyH+lMFUkgYIIGD1/a0gX8H+YcCIugs8G1BQ92EwfnCpPaRi8nb+JHQhAaFD/7g/uZuxwtdEm+dnFcEx3D37Zy3x4kU0JfdQrxsZMUdYVWCEaLe0Bns/5NjEwXH6jDLKHpTcMfeVoSbJY1xSVHrlCWJczU0iDUXOVYYuYJic1rz9Vq+NwahcsGM64wfHFPGAgWGtttc5o8o2vkF85TqGOpS7m8/R/ZmfPpU0B+NCAlRfmWQMQClzo4WRf0SQp02Tsn3300J0HxK6GyUkBQmyW9E5XW2eoJsLFkPcTT4St5ewR5L0qGhc7OVvtFf896jfd8sPy0rBl5QnWCS8S/+IB1a2X6hBBWNV2T28YSsIVwCBK3wxc4e2EdjcpxcKRhZ3TXeDn3ZCJ2srq+DcJSne/H1Ez0L50mSC4TnQBknDscTzUW6FB4DOKESj8v9gtmZ+g6031SgNpBDjmXRq69KF2gDgjE7J2GXC4Cwlk+IpMNxowbThrA4UXdQZ1bui0tgPtohjuvAvgIKb0eTMHtqRlyyuAgcUxjJderAQBrhVA8CBWPdmW7BdjI9xiJMAHjKbTMxQwS8TzxtldCHLgxAWit9SOUZJU57jQuU9Rx2CpGnpdAzcEyzP6Wn7H8bRuGLsKCF0nrwTepjM8XtmT/rt1JPtubYm1LNpRmEF2SWblMU6tc8jMCkYaM2kDQ30UlUzYd5Q==
-X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(356005)(2906002)(110136005)(426003)(86362001)(40460700003)(186003)(336012)(26005)(36756003)(107886003)(47076005)(5660300002)(81166007)(7416002)(36860700001)(70586007)(508600001)(70206006)(8676002)(8936002)(4326008)(83380400001)(54906003)(82310400004)(316002)(1076003)(2616005)(6666004)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Feb 2022 09:33:02.7952
+X-Microsoft-Antispam-Message-Info: ZCHVCQWHBrbtmm37EsYsOy+54lr5DRnStVuAxfuFHgFZrOnRNGOLpbAjXcQNTca0Cxm/pS4Pdm/JQQ9CCBxbUleO5/iyLqtW2/c2GiFf2F0uJfVCWna+aNb0+OVseU3Jky0l1tAdAnbS5OHEr04Mye+rz+bMfG7dO2BOKUZCQF2DgW0xJ8wXiRHoYmfsa9sGCRaYwc3OH+ihaq/PlnmStBvr93ydy5/QI+xrsRICcK80yR+nND2aB37b2gHjJAEB38Sji//LJf65Z6OFLDlxR8HPSJr2H1yy/5depEyWG0jMd6DEHOyuojukaV77adMSRZAr/OzEpQ8CL0qsIJRq87gT7RAw543VI2SPD5atndw63z+4A9q7CL3ihwvA8DBtYPKiurT9pxpUE9gHBvwjNr4miqZwp/l7sR7YKS1q7oYCJ8hBR9Drn+R9r5bUFC78/6pKRxZbguI98DnZIFzn/nkjyzZ2Jzd6MKtm7BKQSFnFxhs8bKJ+CUoX0wvSGlUiem8o8gaZm2DATXc605dZn2YaqHsy/ZW+RhlEDZLoSP+I8MLOsHn9sX4KPGOyf9upuPvgLsqC4I6AY0RfOfC1zFTlOZRUhp4ePH/XEWMkB/fzZSUb9KT5Azp36ZTLn0mNB5UhTocozNV4GQQ8qfZ+dhlJjxXT84OjrmH2dghebyYQyb0XJ+x9OKLWVsPkXmk98b50X8y7/jQGv8NGFDosEndp8+obzvh3BidCRuF6bKU=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR04MB5050.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(6506007)(31696002)(110136005)(6666004)(53546011)(6512007)(316002)(508600001)(38100700002)(6486002)(54906003)(86362001)(8936002)(8676002)(83380400001)(4326008)(66476007)(31686004)(5660300002)(7416002)(66556008)(186003)(2616005)(2906002)(36756003)(66946007)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ysvhQBICXpRTicbiH78qwzChTCfDVe48S1ZSsN1ILjg12TIlbQvr+W9veZUP?=
+ =?us-ascii?Q?79PRkiTV+eNxir1OZHVqGi1zdYl1Ao4JVtcf9N1qnzfBDkZfAU3BXzlXnYrO?=
+ =?us-ascii?Q?Z9sdEbC6ehJGsFqUTuUy0g/bbNRho7wWRKZHCbqi9F28w5NNZeJQz8ZiSLHD?=
+ =?us-ascii?Q?kEebKLJcUobJAXnkCISYypmQTrCJO1eB2WPRYn4y3UYHlk1sovOFvvbgQC6P?=
+ =?us-ascii?Q?s5EvzwPZrfvRnhdUU8eJM9G1E+7vc6TbSZ0vxbT6JEMEFfiKL13ctGQffwib?=
+ =?us-ascii?Q?RzwjtQw9rZwpRbali8nml78TL359PR9QUCvVOBWX6bvwjSHXzyi1UA/oqpsW?=
+ =?us-ascii?Q?SmIx2ZJ/14017inP+AvKqDze4x9JFg0RlgfNo0ePwKXnQgGbRgGL9zGUtR6/?=
+ =?us-ascii?Q?ANgc6/RcO0r356VLy/fktf9KWAGXwUcFXknbdZomUZootvEiV3o95WLlr9es?=
+ =?us-ascii?Q?kvp72FRZLcQsz2ZbR/20MXC/8d3HUSzLI48cFxMxCngaL6t47OaCCiH47u1W?=
+ =?us-ascii?Q?3JTEJ8x0uPztKBCB9QzTM2ewiYbmGsTBuCiS9HU9tAPUiK7gh6Dze2ezYwkG?=
+ =?us-ascii?Q?codZiMwmd7YoEHR1I0NuxzaGTxOxDVQba5qWqyA6+3uFXzL7yr/I59+mcavH?=
+ =?us-ascii?Q?22KuK8dtnxKofmZrZ3f8H1hfjtddNJqjv8X8U3svX84abA0JibYC4ShuvWGn?=
+ =?us-ascii?Q?NNN6SCAFaXri306dUEUebSpncfIUD3GAqCDdRw+Hxk8adNrU5PepsfWp57+Q?=
+ =?us-ascii?Q?CZukQYIQOKJhm77nUMpuMut04nxgBUoE6XXeYGIwY0KH6Ve1gUX4sSKEHbNT?=
+ =?us-ascii?Q?7/XWFjTA7p4F8zGQ4mlIwAh+01cytw4VvZmalxkpjjU9QZOkr7dRhLPtg9Gh?=
+ =?us-ascii?Q?TwIbRkM3/pfL7DuPAhc/TuyrPIarCL6NxbD3FB6QZkqCzZcKwukN8QReDQPm?=
+ =?us-ascii?Q?W2g1Dac6aOrV6BTUJ2cbwclQR0XQUx93mrrN15C3nRPr+hLZTDsqh3j4yr7L?=
+ =?us-ascii?Q?68S2v3iLczPIaHO0x56N6LjdwE5m8ZcVXk/Zr0Ci0NabGU8iVM0zD8pOm8ME?=
+ =?us-ascii?Q?NLsxRNaANHfnmgXmt2mU+nafQXE2WNDnf29bNQhOWrUbYexs4gg1yXaBpke/?=
+ =?us-ascii?Q?6yogC+gJ2+NPdu1ufflWKM9UcxBsKiu6xKmLo57AecgXYFfn+gR8L9JGJPLZ?=
+ =?us-ascii?Q?qPgMbpUNz+VFHuJDJsMRuAal5jnVBYtkNWdDxXfX7b4KF63fyqfxU3Fp5L95?=
+ =?us-ascii?Q?8uTSbQq+NJxNkIBewWfVhAbjwitM2RNVTmNBRrs60j3lLfB7kJ28XSeSYuZw?=
+ =?us-ascii?Q?x8bI0ABXTy7h4gb9E1fcUTcnaRzt143JyVxaC4t8E4GONxHXJk20aNIcn2qg?=
+ =?us-ascii?Q?gEmvIwOZUDr3lRrz72opDlxBS/1mHQ8eMBZr+mOlQe5it5C4qIClSVUBqKXI?=
+ =?us-ascii?Q?aqucjkP+eb5QH058oTxwpooMDKgd6vpr8Iyz9lStQdo+m0Vlcr25DIlgK0Mj?=
+ =?us-ascii?Q?XHvigEMhFf0P4TlYbUDdkk4Q4TSQDxECbls6NlYH/V3DC1XRBuHD4IzU9Sv1?=
+ =?us-ascii?Q?pKKVPK23MD3nrRHX1WMFJwcVyaaOhVK2uowMOA4Wd4MrjVcXPAgm34BV3yG8?=
+ =?us-ascii?Q?emWqSBz7QjhZ0lavl1jsoYaRcXPOrGYP6kiyiezbSIrviDYV6zDhGYE3wO9Q?=
+ =?us-ascii?Q?QFM7Bffn3u/Z+42VhidnSI0No/I=3D?=
+X-OriginatorOrg: suse.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 19d15b70-823f-41ef-9aaa-08d9e6f85f84
+X-MS-Exchange-CrossTenant-AuthSource: DB7PR04MB5050.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Feb 2022 09:34:28.0783
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: acdca6a0-5072-47d9-e2f3-08d9e6f82ce3
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT041.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR1201MB0004
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: tpUedgDFUadFZDqPQbubuvl46Wn0kHpdGC0WU5dGTKo8eFrGjIl33qazbQtuO1c8DGFBeSNhQWsno4aXcSMSmA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0402MB2695
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is only one caller of get_user_pages_locked(). The purpose of
-get_user_pages_locked() is to allow for unlocking the mmap_lock when
-reading a page from the disk during a page fault (hidden behind
-VM_FAULT_RETRY). The idea is to reduce contention on the heavily-used
-mmap_lock. (Thanks to Jan Kara for clearly pointing that out, and in
-fact I've used some of his wording here.)
 
-However, it is unlikely for lookup_node() to take a page fault. With
-that in mind, change over to calling get_user_pages_fast(). This
-simplifies the code, runs a little faster in the expected case, and
-allows removing get_user_pages_locked() entirely.
+On 27.01.22 11:57, Greg KH wrote:
+> On Thu, Jan 27, 2022 at 11:49:01AM +0100, Oleksij Rempel wrote:
+>> Add devicetree label property for usbnet devices and related yaml
+>> schema.
+> That says _what_ you are doing, but not _why_ you would want to do such
+> a crazy thing, nor what problem you are attempting to solve here.
 
-Reviewed-by: Jan Kara <jack@suse.cz>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: John Hubbard <jhubbard@nvidia.com>
----
- include/linux/mm.h |  2 --
- mm/gup.c           | 59 ----------------------------------------------
- mm/mempolicy.c     | 21 +++++++----------
- 3 files changed, 9 insertions(+), 73 deletions(-)
+Hi,
 
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 80c540c17d83..528ef1cb4f3a 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -1916,8 +1916,6 @@ long get_user_pages(unsigned long start, unsigned long nr_pages,
- long pin_user_pages(unsigned long start, unsigned long nr_pages,
- 		    unsigned int gup_flags, struct page **pages,
- 		    struct vm_area_struct **vmas);
--long get_user_pages_locked(unsigned long start, unsigned long nr_pages,
--		    unsigned int gup_flags, struct page **pages, int *locked);
- long get_user_pages_unlocked(unsigned long start, unsigned long nr_pages,
- 		    struct page **pages, unsigned int gup_flags);
- long pin_user_pages_unlocked(unsigned long start, unsigned long nr_pages,
-diff --git a/mm/gup.c b/mm/gup.c
-index b0ecbfe03928..7da49df59110 100644
---- a/mm/gup.c
-+++ b/mm/gup.c
-@@ -2118,65 +2118,6 @@ long get_user_pages(unsigned long start, unsigned long nr_pages,
- }
- EXPORT_SYMBOL(get_user_pages);
- 
--/**
-- * get_user_pages_locked() - variant of get_user_pages()
-- *
-- * @start:      starting user address
-- * @nr_pages:   number of pages from start to pin
-- * @gup_flags:  flags modifying lookup behaviour
-- * @pages:      array that receives pointers to the pages pinned.
-- *              Should be at least nr_pages long. Or NULL, if caller
-- *              only intends to ensure the pages are faulted in.
-- * @locked:     pointer to lock flag indicating whether lock is held and
-- *              subsequently whether VM_FAULT_RETRY functionality can be
-- *              utilised. Lock must initially be held.
-- *
-- * It is suitable to replace the form:
-- *
-- *      mmap_read_lock(mm);
-- *      do_something()
-- *      get_user_pages(mm, ..., pages, NULL);
-- *      mmap_read_unlock(mm);
-- *
-- *  to:
-- *
-- *      int locked = 1;
-- *      mmap_read_lock(mm);
-- *      do_something()
-- *      get_user_pages_locked(mm, ..., pages, &locked);
-- *      if (locked)
-- *          mmap_read_unlock(mm);
-- *
-- * We can leverage the VM_FAULT_RETRY functionality in the page fault
-- * paths better by using either get_user_pages_locked() or
-- * get_user_pages_unlocked().
-- *
-- */
--long get_user_pages_locked(unsigned long start, unsigned long nr_pages,
--			   unsigned int gup_flags, struct page **pages,
--			   int *locked)
--{
--	/*
--	 * FIXME: Current FOLL_LONGTERM behavior is incompatible with
--	 * FAULT_FLAG_ALLOW_RETRY because of the FS DAX check requirement on
--	 * vmas.  As there are no users of this flag in this call we simply
--	 * disallow this option for now.
--	 */
--	if (WARN_ON_ONCE(gup_flags & FOLL_LONGTERM))
--		return -EINVAL;
--	/*
--	 * FOLL_PIN must only be set internally by the pin_user_pages*() APIs,
--	 * never directly by the caller, so enforce that:
--	 */
--	if (WARN_ON_ONCE(gup_flags & FOLL_PIN))
--		return -EINVAL;
--
--	return __get_user_pages_locked(current->mm, start, nr_pages,
--				       pages, NULL, locked,
--				       gup_flags | FOLL_TOUCH);
--}
--EXPORT_SYMBOL(get_user_pages_locked);
--
- /*
-  * get_user_pages_unlocked() is suitable to replace the form:
-  *
-diff --git a/mm/mempolicy.c b/mm/mempolicy.c
-index 028e8dd82b44..3f8dc58da3e8 100644
---- a/mm/mempolicy.c
-+++ b/mm/mempolicy.c
-@@ -907,17 +907,14 @@ static void get_policy_nodemask(struct mempolicy *p, nodemask_t *nodes)
- static int lookup_node(struct mm_struct *mm, unsigned long addr)
- {
- 	struct page *p = NULL;
--	int err;
-+	int ret;
- 
--	int locked = 1;
--	err = get_user_pages_locked(addr & PAGE_MASK, 1, 0, &p, &locked);
--	if (err > 0) {
--		err = page_to_nid(p);
-+	ret = get_user_pages_fast(addr & PAGE_MASK, 1, 0, &p);
-+	if (ret > 0) {
-+		ret = page_to_nid(p);
- 		put_page(p);
- 	}
--	if (locked)
--		mmap_read_unlock(mm);
--	return err;
-+	return ret;
- }
- 
- /* Retrieve NUMA policy */
-@@ -968,14 +965,14 @@ static long do_get_mempolicy(int *policy, nodemask_t *nmask,
- 	if (flags & MPOL_F_NODE) {
- 		if (flags & MPOL_F_ADDR) {
- 			/*
--			 * Take a refcount on the mpol, lookup_node()
--			 * will drop the mmap_lock, so after calling
--			 * lookup_node() only "pol" remains valid, "vma"
--			 * is stale.
-+			 * Take a refcount on the mpol, because we are about to
-+			 * drop the mmap_lock, after which only "pol" remains
-+			 * valid, "vma" is stale.
- 			 */
- 			pol_refcount = pol;
- 			vma = NULL;
- 			mpol_get(pol);
-+			mmap_read_unlock(mm);
- 			err = lookup_node(mm, addr);
- 			if (err < 0)
- 				goto out;
--- 
-2.35.1
+could you at least describe what kind of systems we are talking
+about? Is this for a limited set of embedded devices?
+Are we talking about devices embedded on a motherboard,
+which happen to be connected by USB?
+
+That is, are we talking about another kind of firmware
+we are to take information about devices from?
+And if so, why are you proposing to solve this on the
+USB driver level?
+It looks to me like those devices are addressed by
+their USB path. But still there is no reason that a USB
+driver should actively interpret firmware stuff that
+comes from a source that tells us nothing about USB
+properties.
+In other words it looks to me like you are trying to put
+a generic facility for getting device properties into
+a specific driver. The question whether device names
+should be read out of firmware is not a USB question.
+
+I would suggest you implement a generic facility
+in the network layer and if everybody is happy with that
+obviously usbnet can pass through a pointer for that
+to operate on. Frankly, it looks to me like you are
+implementing only a subset of what device tree
+could contain for your specific use case.
+
+=C2=A0=C2=A0=C2=A0 Regards
+=C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 Oliver
+
 
