@@ -2,104 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44357C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 14:22:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C32FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 14:23:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351209AbiBCOWc (ORCPT
+        id S1351148AbiBCOXD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 09:22:32 -0500
-Received: from mout.gmx.net ([212.227.15.18]:56005 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1351158AbiBCOWZ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 09:22:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1643898128;
-        bh=5x3pHxlLl71DgoSFcmjLP8kuMLdBgGXQRD4L2C0Fmqg=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=f5/8YdQ+ifAou0fOsIDW3+pcUfjOaWGnuNgq2rrX/wxIDTvJMADSDxjfOwzqNoxy1
-         YZ/r/nOo5ZMr7QS/NKe4EYoL0M0mT8xp94Qb+RLtZhNyXA6o/RX3VqmxA66byhDKvE
-         tuTlirnr/pKIS+S1zmgdR1J09nozU1zy/QdlTdp0=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from longitude ([185.66.193.41]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1Mj8mV-1mcjLB0OLV-00fAMz; Thu, 03
- Feb 2022 15:22:08 +0100
-From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
-To:     linux-clk@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mips@vger.kernel.org,
-        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Dongjiu Geng <gengdongjiu@huawei.com>
-Subject: [PATCH v2 3/4] clk: hisilicon: Terminate clk_div_table with sentinel element
-Date:   Thu,  3 Feb 2022 15:21:52 +0100
-Message-Id: <20220203142153.260720-4-j.neuschaefer@gmx.net>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220203142153.260720-1-j.neuschaefer@gmx.net>
-References: <20220203142153.260720-1-j.neuschaefer@gmx.net>
+        Thu, 3 Feb 2022 09:23:03 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:53754 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235184AbiBCOXC (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 3 Feb 2022 09:23:02 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643898181;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=KaIydMUtYXzd2SdOD8PDJArEvRtbHzDDweqUKY1MfnQ=;
+        b=YTFXv0qwWtgFLiQ53Fo+D0LbUF7nNlPVLA6xA1FCZZEp3zWlskosiC02Od55AaV1uBZpOD
+        lcTy6OXRng3bqxmo6LJCdyDuTPIGUu5uDx1Cofrq1HcyqpZbcPuCwZG8RmTv5BNAnS85yv
+        yeHA4hEi+pZPah3dR+c3jYUKllr1K74=
+Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com
+ [209.85.214.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-412-DUGw1u8XPvWtKckVhsXHNA-1; Thu, 03 Feb 2022 09:23:00 -0500
+X-MC-Unique: DUGw1u8XPvWtKckVhsXHNA-1
+Received: by mail-pl1-f198.google.com with SMTP id f9-20020a170902684900b0014cd6059ecdso1285201pln.7
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 06:23:00 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KaIydMUtYXzd2SdOD8PDJArEvRtbHzDDweqUKY1MfnQ=;
+        b=wTPUNHHww+St4HHMmKO6vfxYsD2r6ncVE+U/bKaBRp8Yj4RdCcs8H9g31Vwt9BuGNd
+         4q9nLqqxpFTnuQjeY9fM6nUN0V4eXrFhxNgdNNllyZyhz6tBOCIvqRrTYwWBYW+iPoju
+         QTH+hnAheIP+u7TW36ebAtq1Rs0In2yXFScu/H32HiB+j3mYWdMT8VMDuH7aDZeo3uGn
+         2KD5OvbWvqIW7mP4H5S5r+hwM3cNWiJXYNTSDBanwxuOpFtYCUycRicdBLc+o2QVsKJu
+         QJsx6SzQLH56Bufklmuiz7yEm0IDdJS3PZWbswS55vBKo/29amHfsOig0ZvVSoOSbVdY
+         zlXA==
+X-Gm-Message-State: AOAM5305Pr8ppPj2vNHxnG8raQMS8A/+Hf8yJJ0wCspfP5Z57pIh4ysa
+        y5oEdFoIZLumi6r8B/fVqPVHKdcDT4OhJBHGAcWQT667cMuNnmV3tlSsWVadeQ7GjfiWxWzuPPf
+        0oXykXmNi/qJxCoXU828EkinSTL2GrMahx6VtWgGs
+X-Received: by 2002:a05:6a00:1345:: with SMTP id k5mr34765648pfu.29.1643898179528;
+        Thu, 03 Feb 2022 06:22:59 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyZXxOdPymMvq1/lvAi1LJJClXBajE6Ea91PyTd6v6mwww44IhsHlYvPtJvqmSVUJmQnIxRjS4A+EFXsMLOvTc=
+X-Received: by 2002:a05:6a00:1345:: with SMTP id k5mr34765625pfu.29.1643898179225;
+ Thu, 03 Feb 2022 06:22:59 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:sR+ZINOmGT6bpT/qa+XgvVT6K3G0USPH84cYE6Zln9QEMBD4w5I
- WiJH9nPZQ8s0k9V1IJynvsBn1KQggumwBo9Ks0RpiEN/EXjzMc7pJep3pATQUvXLyjwYCwz
- 6hZXRKPNbxrixNCMEzhn6YpA1a/0UI3bIf+tNX4oblGaBHB3UJSi8wpZ4liikfxEfONZtNC
- zcLM85edG2eDjKzQyzSzg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:A9oeZwvV0xw=:W/5CkOXPNEYWRecl4/NwRc
- +JYRzVCEI72+bd5FXOxWewXOe0TPNBl8BuKN7Ll9VrdLYrTUE8I8rbZUER9AcnbA/dQzq9fFe
- akXeA4uRvhfo6988AUzhLwSVohyfy6fcmiDdLZGVQck3FEztyrt+C/Vvzqc0RFriTiecsVH+f
- Y/06oXTleOpo1iTdu90hW0Ttcs8Fyq/OEbFkyOqckeFJPoGV33jV9s/ujeTlbC2O8DcwFdPS4
- c2m43KZZV3MmjJrcpb1iJnoUzKvACdSrf1IyxuO9J4cPUdY2i1TvYefhkAOdouv787m2DjoHo
- Z4SMDKE2gXNsSZESxSR/3CEeAIO3BrXDcyGYR2GCKP+X3hH/I44sWy1kzgoWCaCo+DR/mwAm1
- st0ohQj1TFL51tlMGXjhRwwE9VwGZnxMzKI07BoOO0QYiPT/lCNnXzQcVjWPHr2yXUyku7UQg
- rKglxSJCbLYcyjqRIPfz4T4R5vGRG6stIH1RH7rmMd8oOQF1A+Stie7q1oGTh/HrYacEznsxR
- ymvW3s5gAjQcTxnH7duHGNT48x5ZS2YbmGdYlIRRefKnh9ABuWY9R671/77Ghlsn7vmxi/687
- lTsEMuYZJcnDM8O5DpCpBmSkNCLRKmlg10h3hnButbIBdJ7daD7uqZurXBz+6JFzQ7agZ+gQO
- ESAniDQNT1bU4b4Fbnjxa/0y+g7of2XpjfDhtDYJMw7M8CNxVcgeDnEDoVmxCH0LImasCksnl
- J9tknL/LJqJrQnJgRyGJ1ihbPdZ5MM3w6SxVgtqMX16pSGFkGDwKlxssh6LbrnAgj5sOTjq33
- /nQArrO6gAgEIazvKMSxTD2xOoreknloX0sDAcizFwI+CvUbl2AHt4tm+cUBPETwCCg1+oC0K
- /4lk1o0/tgVqmI3ZQ+naEZYxaelGASMJ4N2mEg6xe2Kddp2IRZTeJCGYhfOWBw1SyfPhEiR9o
- yefaAizcrhXEgF3mW/spAIFmz9SSedreqOC2/JmNp3vs6JC4spGPlM1VsbyZJwaGYHC4EGXwq
- JxA5yNal6yW2+MB3rJL5HJilKa00MgaPJQGdHZozYCnRUIA1lN/HRf6Irs8VPjVkD+xuh58uF
- hzYQ72C02We6WM=
+References: <20220118072628.1617172-1-dmitry.torokhov@gmail.com>
+ <nycvar.YFH.7.76.2202021456020.11721@cbobk.fhfr.pm> <CAO-hwJJ08vfMTEhU03VEef8Ejx=Ts+akUwGMKTUGqMWwOK3QoA@mail.gmail.com>
+In-Reply-To: <CAO-hwJJ08vfMTEhU03VEef8Ejx=Ts+akUwGMKTUGqMWwOK3QoA@mail.gmail.com>
+From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Date:   Thu, 3 Feb 2022 15:22:47 +0100
+Message-ID: <CAO-hwJK8O+yYMxCdx6DFd9cpF6McW4KC+uERQ6EsTY14JVr5-g@mail.gmail.com>
+Subject: Re: [PATCH 00/12] i2c-hid: fixes for unnumbered reports and other improvements
+To:     Jiri Kosina <jikos@kernel.org>
+Cc:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Angela Czubak <acz@semihalf.com>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order that the end of a clk_div_table can be detected, it must be
-terminated with a sentinel element (.div =3D 0).
+On Wed, Feb 2, 2022 at 6:59 PM Benjamin Tissoires
+<benjamin.tissoires@redhat.com> wrote:
+>
+> On Wed, Feb 2, 2022 at 2:56 PM Jiri Kosina <jikos@kernel.org> wrote:
+> >
+> > On Mon, 17 Jan 2022, Dmitry Torokhov wrote:
+> >
+> > > Hi,
+> > >
+> > > This series came about after I reviewed Angela's patch that fixed issues
+> > > with incorrect handling of high-numbered reports (15 and above) in
+> > > i2c-hid driver:
+> > >
+> > > - it appears to me that the driver did not handle unnumbered reports
+> > >   correctly as the kernel internally expects unnumbered reports to be
+> > >   still prepended with report number 0, but i2c_hid_get_raw_report() and
+> > >   i2c_hid_output_raw_report() only expected report ID to be present for
+> > >   numbered reports.
+> > >
+> > > - the driver tried to consolidate both command handling and sending
+> > >   output reports in __i2c_hid_command() but the rules for different
+> > >   commands vary significantly and because of that the logic was hard to
+> > >   follow and it bled out from __i2c_hid_command() to callers. I decided
+> > >   to introduce a few simple helpers and have the data encoding for
+> > >   individual commands done at the call site. I believe this made it
+> > >   easier to validate the rules and the logic and allowed to remove
+> > >   special handling for the HID descriptor retrieval, among other things.
+> > >
+> > > - the driver does too many copying of data; encoding the data for
+> > >   commands at the call site allowed to only copy data once into the
+> > >   transfer buffers.
+> > >
+> > > I tested this on a couple of Chromebooks with i2c-hid touchscreens, but
+> > > it would be great if other folks tried it out as well.
+> >
+> > Benjamin,
+> >
+> > is this something you could feed into your testing machinery as well? (not
+> > sure whether it's handling i2c-hid specifics).
+>
+> Not really. I mean I have a sample touchpad connected on an USB to I2C
+> bridge that I included in the automated tests (though it may be
+> failing in the latest release because I need to update the patch that
+> enables it), but it would probably not catch all the corner cases.
+>
+> I can add this series to my local tree and test on my XPS with both
+> and Elan touchpad and a Wacom touchscreen/panel. It will still add a
+> few more tests :)
 
-Fixes: 6c81966107dc0 ("clk: hisilicon: Add clock driver for hi3559A SoC")
-Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
-=2D--
+OK, So I applied the series on my development laptop.
+I had to apply it on top of v5.16 and then rebase on top of
+hid.git/for-next because there is a minor conflict.
 
-v2:
-- Add Fixes tag
-=2D--
- drivers/clk/hisilicon/clk-hi3559a.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+I changed the register as mentioned in 5/12, and gave it a try.
+Both the Elan touchpad and the Wacom panel on my XPS-13 are behaving
+properly, suspend/resume works also as expected.
 
-diff --git a/drivers/clk/hisilicon/clk-hi3559a.c b/drivers/clk/hisilicon/c=
-lk-hi3559a.c
-index 56012a3d02192..28c2a0630474d 100644
-=2D-- a/drivers/clk/hisilicon/clk-hi3559a.c
-+++ b/drivers/clk/hisilicon/clk-hi3559a.c
-@@ -611,8 +611,8 @@ static struct hisi_mux_clock hi3559av100_shub_mux_clks=
-[] =3D {
+Tested-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 
+I gave a quick look at the individual patches, they all seem sane to
+me, but haven't dug into enough detail to be able to formally give my
+reviewed-by.
+Note that I have a small comment on patch 2, but if you want to apply
+it nevertheless Jiri (with the change in 5/12) it should be fine.
 
- /* shub div clk */
--static struct clk_div_table shub_spi_clk_table[] =3D {{0, 8}, {1, 4}, {2,=
- 2}};
--static struct clk_div_table shub_uart_div_clk_table[] =3D {{1, 8}, {2, 4}=
-};
-+static struct clk_div_table shub_spi_clk_table[] =3D {{0, 8}, {1, 4}, {2,=
- 2}, {}};
-+static struct clk_div_table shub_uart_div_clk_table[] =3D {{1, 8}, {2, 4}=
-, {}};
+Cheers,
+Benjamin
 
- static struct hisi_divider_clock hi3559av100_shub_div_clks[] =3D {
- 	{ HI3559AV100_SHUB_SPI_SOURCE_CLK, "clk_spi_clk", "shub_clk", 0, 0x20, 2=
-4, 2,
-=2D-
-2.34.1
+> I'll try to report that tomorrow now that I think I fixed my tablet series.
+>
+> Cheers,
+> Benjamin
+>
+> >
+> > Thanks!
+> >
+> > --
+> > Jiri Kosina
+> > SUSE Labs
+> >
 
