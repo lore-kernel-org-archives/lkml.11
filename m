@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6737DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:43:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32CD0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:43:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355595AbiBCUnX (ORCPT
+        id S1355624AbiBCUn1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:43:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59028 "EHLO
+        Thu, 3 Feb 2022 15:43:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355926AbiBCUkn (ORCPT
+        with ESMTP id S1356033AbiBCUk6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 15:40:43 -0500
+        Thu, 3 Feb 2022 15:40:58 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05C55C0619C7;
-        Thu,  3 Feb 2022 12:36:49 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5835FC061160;
+        Thu,  3 Feb 2022 12:36:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DC4C460C5D;
-        Thu,  3 Feb 2022 20:36:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C64BC340EB;
-        Thu,  3 Feb 2022 20:36:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EC5C360C5F;
+        Thu,  3 Feb 2022 20:36:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80AB7C340E8;
+        Thu,  3 Feb 2022 20:36:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643920608;
-        bh=5iuORTELvsKpZaPEF5mrgRcATjPKHLLV9RGRvSPJiN0=;
+        s=k20201202; t=1643920618;
+        bh=b8fL2XaRMWu5qFtd651cHRo05HAtGXpuzwwU+BnIfXw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W+yprcdpNKmypADhrnrMDf5lqMdB7/8Awf+828A10i21jX8Y6+F0o1GChCyzVezux
-         TH6dzVI2HiYfgCp4KmLtoIiVv+9+rQccnyt2noYYcrmmo44pqrHTQumFuwwuCimoeR
-         HGXocn76AfK4/HW2Yfu71v2uhAgAb4tEiDtzvqjr1nuDjJ1n/RtugoEbOEYlfHDYCN
-         NDaafhDtH1b7OJI1nQiP7Eo+DFRqlYOEmAfdRLMU8GH5Bc+hTqxql8kDGRmGJ5wxtW
-         Y7s/oP/tpGf6Xlr2e5Oa69ljlcXHT0cnm383Cww4QEbcfYjIcPid0MoHiEAZYlIVWP
-         cXERPKe/nzAAA==
+        b=eTzQdVdOfJk79q5Qq8zeT7kIox26Kr9+PXxb2UIHpW1krJI2eQEsO+ZuxatUvpH7H
+         UvvA/PNQFSILVvjF2I8AV2yAQOiQBMfKyHjc2x+W7j8/1nnWoxwutBRNfKSJT2Tzo0
+         WLtnvH1OLO4zpPoTz/ufI/h3e71E2f7xwLDkTZ8ueKFzc5D0B3cVh01wmRVhKBarUA
+         MMEveJuRFrThRDjLlVDxxRdvJVZynYAClcqV7ZHhjXUiCDgoTm2zjoQ8tkLUovSS4e
+         bYh47aflOIPNYAYgVm81J1DFGd8oCwwW5y+AK04ES8U+lamgiz7KVKJlgmZHE4AOOY
+         M222zDteVzH+w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Amelie Delaunay <amelie.delaunay@foss.st.com>,
-        Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, hminas@synopsys.com,
-        linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 8/9] usb: dwc2: gadget: don't try to disable ep0 in dwc2_hsotg_suspend
-Date:   Thu,  3 Feb 2022 15:36:32 -0500
-Message-Id: <20220203203633.4685-8-sashal@kernel.org>
+Cc:     Olga Kornievskaia <kolga@netapp.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Sasha Levin <sashal@kernel.org>,
+        trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
+        linux-nfs@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 4/7] NFSv4 remove zero number of fs_locations entries error check
+Date:   Thu,  3 Feb 2022 15:36:48 -0500
+Message-Id: <20220203203651.5158-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220203203633.4685-1-sashal@kernel.org>
-References: <20220203203633.4685-1-sashal@kernel.org>
+In-Reply-To: <20220203203651.5158-1-sashal@kernel.org>
+References: <20220203203651.5158-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,48 +54,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amelie Delaunay <amelie.delaunay@foss.st.com>
+From: Olga Kornievskaia <kolga@netapp.com>
 
-[ Upstream commit ac55d163855924aa5af9f1560977da8f346963c8 ]
+[ Upstream commit 90e12a3191040bd3854d3e236c35921e4e92a044 ]
 
-Calling dwc2_hsotg_ep_disable on ep0 (in/out) will lead to the following
-logs before returning -EINVAL:
-dwc2 49000000.usb-otg: dwc2_hsotg_ep_disable: called for ep0
-dwc2 49000000.usb-otg: dwc2_hsotg_ep_disable: called for ep0
+Remove the check for the zero length fs_locations reply in the
+xdr decoding, and instead check for that in the migration code.
 
-To avoid these two logs while suspending, start disabling the endpoint
-from the index 1, as done in dwc2_hsotg_udc_stop:
-
-	/* all endpoints should be shutdown */
-	for (ep = 1; ep < hsotg->num_of_eps; ep++) {
-		if (hsotg->eps_in[ep])
-			dwc2_hsotg_ep_disable_lock(&hsotg->eps_in[ep]->ep);
-		if (hsotg->eps_out[ep])
-			dwc2_hsotg_ep_disable_lock(&hsotg->eps_out[ep]->ep);
-	}
-
-Acked-by: Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>
-Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
-Link: https://lore.kernel.org/r/20211207130101.270314-1-amelie.delaunay@foss.st.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Olga Kornievskaia <kolga@netapp.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/dwc2/gadget.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/nfs/nfs4state.c | 3 +++
+ fs/nfs/nfs4xdr.c   | 2 --
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/usb/dwc2/gadget.c b/drivers/usb/dwc2/gadget.c
-index f1edc5727000c..dddc5d02b5524 100644
---- a/drivers/usb/dwc2/gadget.c
-+++ b/drivers/usb/dwc2/gadget.c
-@@ -4783,7 +4783,7 @@ int dwc2_hsotg_suspend(struct dwc2_hsotg *hsotg)
- 		hsotg->gadget.speed = USB_SPEED_UNKNOWN;
- 		spin_unlock_irqrestore(&hsotg->lock, flags);
+diff --git a/fs/nfs/nfs4state.c b/fs/nfs/nfs4state.c
+index 4e63daeef6339..466c07bd06295 100644
+--- a/fs/nfs/nfs4state.c
++++ b/fs/nfs/nfs4state.c
+@@ -1985,6 +1985,9 @@ static int nfs4_try_migration(struct nfs_server *server, struct rpc_cred *cred)
+ 	}
  
--		for (ep = 0; ep < hsotg->num_of_eps; ep++) {
-+		for (ep = 1; ep < hsotg->num_of_eps; ep++) {
- 			if (hsotg->eps_in[ep])
- 				dwc2_hsotg_ep_disable(&hsotg->eps_in[ep]->ep);
- 			if (hsotg->eps_out[ep])
+ 	result = -NFS4ERR_NXIO;
++	if (!locations->nlocations)
++		goto out;
++
+ 	if (!(locations->fattr.valid & NFS_ATTR_FATTR_V4_LOCATIONS)) {
+ 		dprintk("<-- %s: No fs_locations data, migration skipped\n",
+ 			__func__);
+diff --git a/fs/nfs/nfs4xdr.c b/fs/nfs/nfs4xdr.c
+index 29dbb14b6fd11..b50c97c6aecb3 100644
+--- a/fs/nfs/nfs4xdr.c
++++ b/fs/nfs/nfs4xdr.c
+@@ -3633,8 +3633,6 @@ static int decode_attr_fs_locations(struct xdr_stream *xdr, uint32_t *bitmap, st
+ 	if (unlikely(!p))
+ 		goto out_overflow;
+ 	n = be32_to_cpup(p);
+-	if (n <= 0)
+-		goto out_eio;
+ 	for (res->nlocations = 0; res->nlocations < n; res->nlocations++) {
+ 		u32 m;
+ 		struct nfs4_fs_location *loc;
 -- 
 2.34.1
 
