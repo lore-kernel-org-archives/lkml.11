@@ -2,22 +2,22 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AFE2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 12:06:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C11FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 12:06:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350499AbiBCMGr (ORCPT
+        id S1350516AbiBCMGx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 07:06:47 -0500
-Received: from foss.arm.com ([217.140.110.172]:42574 "EHLO foss.arm.com"
+        Thu, 3 Feb 2022 07:06:53 -0500
+Received: from foss.arm.com ([217.140.110.172]:42542 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1350451AbiBCMGd (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 07:06:33 -0500
+        id S1350459AbiBCMG2 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 3 Feb 2022 07:06:28 -0500
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7877F11D4;
-        Thu,  3 Feb 2022 04:06:33 -0800 (PST)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 29E911435;
+        Thu,  3 Feb 2022 04:06:28 -0800 (PST)
 Received: from e121896.arm.com (unknown [10.57.13.234])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id F070D3F774;
-        Thu,  3 Feb 2022 04:06:31 -0800 (PST)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id A27B13F774;
+        Thu,  3 Feb 2022 04:06:26 -0800 (PST)
 From:   James Clark <james.clark@arm.com>
 To:     suzuki.poulose@arm.com, mathieu.poirier@linaro.org,
         coresight@lists.linaro.org
@@ -25,9 +25,9 @@ Cc:     leo.yan@linaro.com, mike.leach@linaro.org,
         James Clark <james.clark@arm.com>,
         Leo Yan <leo.yan@linaro.org>,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 09/15] coresight: Make ETM4x TRCVICTLR register accesses consistent with sysreg.h
-Date:   Thu,  3 Feb 2022 12:05:57 +0000
-Message-Id: <20220203120604.128396-10-james.clark@arm.com>
+Subject: [PATCH v2 07/15] coresight: Make ETM4x TRCEVENTCTL1R register accesses consistent with sysreg.h
+Date:   Thu,  3 Feb 2022 12:05:55 +0000
+Message-Id: <20220203120604.128396-8-james.clark@arm.com>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20220203120604.128396-1-james.clark@arm.com>
 References: <20220203120604.128396-1-james.clark@arm.com>
@@ -42,212 +42,98 @@ binary produced by gcc-11.
 
 Signed-off-by: James Clark <james.clark@arm.com>
 ---
- .../coresight/coresight-etm4x-core.c          | 10 +++---
- .../coresight/coresight-etm4x-sysfs.c         | 32 +++++++++----------
- drivers/hwtracing/coresight/coresight-etm4x.h | 26 +++++++--------
- 3 files changed, 33 insertions(+), 35 deletions(-)
+ .../coresight/coresight-etm4x-sysfs.c         | 25 +++++++++++--------
+ drivers/hwtracing/coresight/coresight-etm4x.h |  9 +++++++
+ 2 files changed, 24 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-index dc936fb1cc74..2f7ea60fd003 100644
---- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
-+++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-@@ -1208,7 +1208,7 @@ static inline u32 etm4_get_victlr_access_type(struct etmv4_config *config)
- /* Set ELx trace filter access in the TRCVICTLR register */
- static void etm4_set_victlr_access(struct etmv4_config *config)
- {
--	config->vinst_ctrl &= ~TRCVICTLR_EXLEVEL_MASK;
-+	config->vinst_ctrl &= ~(TRCVICTLR_EXLEVEL_MASK << TRCVICTLR_EXLEVEL_SHIFT);
- 	config->vinst_ctrl |= etm4_get_victlr_access_type(config);
- }
- 
-@@ -1228,7 +1228,7 @@ static void etm4_set_default_config(struct etmv4_config *config)
- 	config->ts_ctrl = 0x0;
- 
- 	/* TRCVICTLR::EVENT = 0x01, select the always on logic */
--	config->vinst_ctrl = BIT(0);
-+	config->vinst_ctrl = (0x01 & TRCVICTLR_EVENT_MASK) << TRCVICTLR_EVENT_SHIFT;
- 
- 	/* TRCVICTLR::EXLEVEL_NS:EXLEVELS: Set kernel / user filtering */
- 	etm4_set_victlr_access(config);
-@@ -1337,7 +1337,7 @@ static void etm4_set_default_filter(struct etmv4_config *config)
- 	 * TRCVICTLR::SSSTATUS == 1, the start-stop logic is
- 	 * in the started state
- 	 */
--	config->vinst_ctrl |= BIT(9);
-+	config->vinst_ctrl |= TRCVICTLR_SSSTATUS;
- 	config->mode |= ETM_MODE_VIEWINST_STARTSTOP;
- 
- 	/* No start-stop filtering for ViewInst */
-@@ -1441,7 +1441,7 @@ static int etm4_set_event_filters(struct etmv4_drvdata *drvdata,
- 			 * TRCVICTLR::SSSTATUS == 1, the start-stop logic is
- 			 * in the started state
- 			 */
--			config->vinst_ctrl |= BIT(9);
-+			config->vinst_ctrl |= TRCVICTLR_SSSTATUS;
- 
- 			/* No start-stop filtering for ViewInst */
- 			config->vissctlr = 0x0;
-@@ -1469,7 +1469,7 @@ static int etm4_set_event_filters(struct etmv4_drvdata *drvdata,
- 			 * etm4_disable_perf().
- 			 */
- 			if (filters->ssstatus)
--				config->vinst_ctrl |= BIT(9);
-+				config->vinst_ctrl |= TRCVICTLR_SSSTATUS;
- 
- 			/* No include/exclude filtering for ViewInst */
- 			config->viiectlr = 0x0;
 diff --git a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
-index d808eeae8b07..87e52f685f05 100644
+index 4c29ab4464a0..cfa6f72a1e39 100644
 --- a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
 +++ b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
-@@ -206,11 +206,11 @@ static ssize_t reset_store(struct device *dev,
- 	 * started state. ARM recommends start-stop logic is set before
- 	 * each trace run.
- 	 */
--	config->vinst_ctrl = BIT(0);
-+	config->vinst_ctrl = (0x01 & TRCVICTLR_EVENT_MASK) << TRCVICTLR_EVENT_SHIFT;
- 	if (drvdata->nr_addr_cmp > 0) {
- 		config->mode |= ETM_MODE_VIEWINST_STARTSTOP;
- 		/* SSSTATUS, bit[9] */
--		config->vinst_ctrl |= BIT(9);
-+		config->vinst_ctrl |= TRCVICTLR_SSSTATUS;
- 	}
- 
- 	/* No address range filtering for ViewInst */
-@@ -416,22 +416,22 @@ static ssize_t mode_store(struct device *dev,
- 
- 	/* bit[9] Start/stop logic control bit */
- 	if (config->mode & ETM_MODE_VIEWINST_STARTSTOP)
--		config->vinst_ctrl |= BIT(9);
-+		config->vinst_ctrl |= TRCVICTLR_SSSTATUS;
+@@ -384,16 +384,16 @@ static ssize_t mode_store(struct device *dev,
+ 	/* bit[11], AMBA Trace Bus (ATB) trigger enable bit */
+ 	if ((config->mode & ETM_MODE_ATB_TRIGGER) &&
+ 	    (drvdata->atbtrig == true))
+-		config->eventctrl1 |= BIT(11);
++		config->eventctrl1 |= TRCEVENTCTL1R_ATB;
  	else
--		config->vinst_ctrl &= ~BIT(9);
-+		config->vinst_ctrl &= ~TRCVICTLR_SSSTATUS;
+-		config->eventctrl1 &= ~BIT(11);
++		config->eventctrl1 &= ~TRCEVENTCTL1R_ATB;
  
- 	/* bit[10], Whether a trace unit must trace a Reset exception */
- 	if (config->mode & ETM_MODE_TRACE_RESET)
--		config->vinst_ctrl |= BIT(10);
-+		config->vinst_ctrl |= TRCVICTLR_TRCRESET;
+ 	/* bit[12], Low-power state behavior override bit */
+ 	if ((config->mode & ETM_MODE_LPOVERRIDE) &&
+ 	    (drvdata->lpoverride == true))
+-		config->eventctrl1 |= BIT(12);
++		config->eventctrl1 |= TRCEVENTCTL1R_LPOVERRIDE;
  	else
--		config->vinst_ctrl &= ~BIT(10);
-+		config->vinst_ctrl &= ~TRCVICTLR_TRCRESET;
+-		config->eventctrl1 &= ~BIT(12);
++		config->eventctrl1 &= ~TRCEVENTCTL1R_LPOVERRIDE;
  
- 	/* bit[11], Whether a trace unit must trace a system error exception */
- 	if ((config->mode & ETM_MODE_TRACE_ERR) &&
- 		(drvdata->trc_error == true))
--		config->vinst_ctrl |= BIT(11);
-+		config->vinst_ctrl |= TRCVICTLR_TRCERR;
- 	else
--		config->vinst_ctrl &= ~BIT(11);
-+		config->vinst_ctrl &= ~TRCVICTLR_TRCERR;
- 
- 	if (config->mode & (ETM_MODE_EXCL_KERN | ETM_MODE_EXCL_USER))
- 		etm4_config_trace_mode(config);
-@@ -723,7 +723,7 @@ static ssize_t event_vinst_show(struct device *dev,
+ 	/* bit[8], Instruction stall bit */
+ 	if ((config->mode & ETM_MODE_ISTALL_EN) && (drvdata->stallctl == true))
+@@ -534,7 +534,7 @@ static ssize_t event_instren_show(struct device *dev,
  	struct etmv4_drvdata *drvdata = dev_get_drvdata(dev->parent);
  	struct etmv4_config *config = &drvdata->config;
  
--	val = config->vinst_ctrl & ETMv4_EVENT_MASK;
-+	val = REG_VAL(config->vinst_ctrl, TRCVICTLR_EVENT);
+-	val = BMVAL(config->eventctrl1, 0, 3);
++	val = REG_VAL(config->eventctrl1, TRCEVENTCTL1R_INSTEN);
  	return scnprintf(buf, PAGE_SIZE, "%#lx\n", val);
  }
  
-@@ -739,9 +739,9 @@ static ssize_t event_vinst_store(struct device *dev,
- 		return -EINVAL;
+@@ -551,23 +551,28 @@ static ssize_t event_instren_store(struct device *dev,
  
  	spin_lock(&drvdata->spinlock);
--	val &= ETMv4_EVENT_MASK;
--	config->vinst_ctrl &= ~ETMv4_EVENT_MASK;
--	config->vinst_ctrl |= val;
-+	val &= TRCVICTLR_EVENT_MASK;
-+	config->vinst_ctrl &= ~(TRCVICTLR_EVENT_MASK << TRCVICTLR_EVENT_SHIFT);
-+	config->vinst_ctrl |= val << TRCVICTLR_EVENT_SHIFT;
- 	spin_unlock(&drvdata->spinlock);
- 	return size;
- }
-@@ -755,7 +755,7 @@ static ssize_t s_exlevel_vinst_show(struct device *dev,
- 	struct etmv4_drvdata *drvdata = dev_get_drvdata(dev->parent);
- 	struct etmv4_config *config = &drvdata->config;
- 
--	val = (config->vinst_ctrl & TRCVICTLR_EXLEVEL_S_MASK) >> TRCVICTLR_EXLEVEL_S_SHIFT;
-+	val = REG_VAL(config->vinst_ctrl, TRCVICTLR_EXLEVEL_S);
- 	return scnprintf(buf, PAGE_SIZE, "%#lx\n", val);
- }
- 
-@@ -772,7 +772,7 @@ static ssize_t s_exlevel_vinst_store(struct device *dev,
- 
- 	spin_lock(&drvdata->spinlock);
- 	/* clear all EXLEVEL_S bits  */
--	config->vinst_ctrl &= ~(TRCVICTLR_EXLEVEL_S_MASK);
-+	config->vinst_ctrl &= ~(TRCVICTLR_EXLEVEL_S_MASK << TRCVICTLR_EXLEVEL_S_SHIFT);
- 	/* enable instruction tracing for corresponding exception level */
- 	val &= drvdata->s_ex_level;
- 	config->vinst_ctrl |= (val << TRCVICTLR_EXLEVEL_S_SHIFT);
-@@ -790,7 +790,7 @@ static ssize_t ns_exlevel_vinst_show(struct device *dev,
- 	struct etmv4_config *config = &drvdata->config;
- 
- 	/* EXLEVEL_NS, bits[23:20] */
--	val = (config->vinst_ctrl & TRCVICTLR_EXLEVEL_NS_MASK) >> TRCVICTLR_EXLEVEL_NS_SHIFT;
-+	val = REG_VAL(config->vinst_ctrl, TRCVICTLR_EXLEVEL_NS);
- 	return scnprintf(buf, PAGE_SIZE, "%#lx\n", val);
- }
- 
-@@ -807,7 +807,7 @@ static ssize_t ns_exlevel_vinst_store(struct device *dev,
- 
- 	spin_lock(&drvdata->spinlock);
- 	/* clear EXLEVEL_NS bits  */
--	config->vinst_ctrl &= ~(TRCVICTLR_EXLEVEL_NS_MASK);
-+	config->vinst_ctrl &= ~(TRCVICTLR_EXLEVEL_NS_MASK << TRCVICTLR_EXLEVEL_NS_SHIFT);
- 	/* enable instruction tracing for corresponding exception level */
- 	val &= drvdata->ns_ex_level;
- 	config->vinst_ctrl |= (val << TRCVICTLR_EXLEVEL_NS_SHIFT);
+ 	/* start by clearing all instruction event enable bits */
+-	config->eventctrl1 &= ~(BIT(0) | BIT(1) | BIT(2) | BIT(3));
++	config->eventctrl1 &= ~(TRCEVENTCTL1R_INSTEN_MASK << TRCEVENTCTL1R_INSTEN_SHIFT);
+ 	switch (drvdata->nr_event) {
+ 	case 0x0:
+ 		/* generate Event element for event 1 */
+-		config->eventctrl1 |= val & BIT(1);
++		config->eventctrl1 |= val & TRCEVENTCTL1R_INSTEN_1;
+ 		break;
+ 	case 0x1:
+ 		/* generate Event element for event 1 and 2 */
+-		config->eventctrl1 |= val & (BIT(0) | BIT(1));
++		config->eventctrl1 |= val & (TRCEVENTCTL1R_INSTEN_0 | TRCEVENTCTL1R_INSTEN_1);
+ 		break;
+ 	case 0x2:
+ 		/* generate Event element for event 1, 2 and 3 */
+-		config->eventctrl1 |= val & (BIT(0) | BIT(1) | BIT(2));
++		config->eventctrl1 |= val & (TRCEVENTCTL1R_INSTEN_0 |
++					     TRCEVENTCTL1R_INSTEN_1 |
++					     TRCEVENTCTL1R_INSTEN_2);
+ 		break;
+ 	case 0x3:
+ 		/* generate Event element for all 4 events */
+-		config->eventctrl1 |= val & 0xF;
++		config->eventctrl1 |= val & (TRCEVENTCTL1R_INSTEN_0 |
++					     TRCEVENTCTL1R_INSTEN_1 |
++					     TRCEVENTCTL1R_INSTEN_2 |
++					     TRCEVENTCTL1R_INSTEN_3);
+ 		break;
+ 	default:
+ 		break;
 diff --git a/drivers/hwtracing/coresight/coresight-etm4x.h b/drivers/hwtracing/coresight/coresight-etm4x.h
-index e37393934e0d..02afce9dcf6b 100644
+index 55e756020a94..eb72b81bbf85 100644
 --- a/drivers/hwtracing/coresight/coresight-etm4x.h
 +++ b/drivers/hwtracing/coresight/coresight-etm4x.h
-@@ -224,6 +224,18 @@
- #define TRCSTALLCTLR_INSTPRIORITY		BIT(10)
- #define TRCSTALLCTLR_NOOVERFLOW			BIT(13)
+@@ -211,6 +211,15 @@
+ #define TRCCONFIGR_DA				BIT(16)
+ #define TRCCONFIGR_DV				BIT(17)
  
-+#define TRCVICTLR_EVENT_SHIFT			0
-+#define TRCVICTLR_EVENT_MASK			GENMASK(7, 0)
-+#define TRCVICTLR_SSSTATUS			BIT(9)
-+#define TRCVICTLR_TRCRESET			BIT(10)
-+#define TRCVICTLR_TRCERR			BIT(11)
-+#define TRCVICTLR_EXLEVEL_SHIFT			16
-+#define TRCVICTLR_EXLEVEL_MASK			GENMASK(6, 0)
-+#define TRCVICTLR_EXLEVEL_S_SHIFT		16
-+#define TRCVICTLR_EXLEVEL_S_MASK		GENMASK(3, 0)
-+#define TRCVICTLR_EXLEVEL_NS_SHIFT		20
-+#define TRCVICTLR_EXLEVEL_NS_MASK		GENMASK(2, 0)
++#define TRCEVENTCTL1R_INSTEN_SHIFT		0
++#define TRCEVENTCTL1R_INSTEN_MASK		GENMASK(3, 0)
++#define TRCEVENTCTL1R_INSTEN_0			BIT(0)
++#define TRCEVENTCTL1R_INSTEN_1			BIT(1)
++#define TRCEVENTCTL1R_INSTEN_2			BIT(2)
++#define TRCEVENTCTL1R_INSTEN_3			BIT(3)
++#define TRCEVENTCTL1R_ATB			BIT(11)
++#define TRCEVENTCTL1R_LPOVERRIDE		BIT(12)
 +
  /*
   * System instructions to access ETM registers.
   * See ETMv4.4 spec ARM IHI0064F section 4.3.6 System instructions
-@@ -724,23 +736,9 @@
- #define ETM_EXLEVEL_NS_OS		BIT(5)	/* NonSecure EL1	*/
- #define ETM_EXLEVEL_NS_HYP		BIT(6)	/* NonSecure EL2	*/
- 
--#define ETM_EXLEVEL_MASK		(GENMASK(6, 0))
--#define ETM_EXLEVEL_S_MASK		(GENMASK(3, 0))
--#define ETM_EXLEVEL_NS_MASK		(GENMASK(6, 4))
--
- /* access level controls in TRCACATRn */
- #define TRCACATR_EXLEVEL_SHIFT		8
- 
--/* access level control in TRCVICTLR */
--#define TRCVICTLR_EXLEVEL_SHIFT		16
--#define TRCVICTLR_EXLEVEL_S_SHIFT	16
--#define TRCVICTLR_EXLEVEL_NS_SHIFT	20
--
--/* secure / non secure masks - TRCVICTLR, IDR3 */
--#define TRCVICTLR_EXLEVEL_MASK		(ETM_EXLEVEL_MASK << TRCVICTLR_EXLEVEL_SHIFT)
--#define TRCVICTLR_EXLEVEL_S_MASK	(ETM_EXLEVEL_S_MASK << TRCVICTLR_EXLEVEL_SHIFT)
--#define TRCVICTLR_EXLEVEL_NS_MASK	(ETM_EXLEVEL_NS_MASK << TRCVICTLR_EXLEVEL_SHIFT)
--
- #define ETM_TRCIDR1_ARCH_MAJOR_SHIFT	8
- #define ETM_TRCIDR1_ARCH_MAJOR_MASK	(0xfU << ETM_TRCIDR1_ARCH_MAJOR_SHIFT)
- #define ETM_TRCIDR1_ARCH_MAJOR(x)	\
 -- 
 2.28.0
 
