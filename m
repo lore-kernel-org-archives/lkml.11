@@ -2,68 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2A80C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 18:24:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CD73C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 18:24:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353336AbiBCSYf (ORCPT
+        id S1353434AbiBCSYq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 13:24:35 -0500
-Received: from mxout03.lancloud.ru ([45.84.86.113]:33960 "EHLO
-        mxout03.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353398AbiBCSYb (ORCPT
+        Thu, 3 Feb 2022 13:24:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56926 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245555AbiBCSYp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 13:24:31 -0500
-Received: from LanCloud
-DKIM-Filter: OpenDKIM Filter v2.11.0 mxout03.lancloud.ru E5FB72060038
-Received: from LanCloud
-Received: from LanCloud
-Received: from LanCloud
-Subject: Re: [PATCH] MAINTAINERS: add myself as Renesas R-Car SATA driver
- reviewer
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-CC:     <linux-ide@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
-References: <6c1f0131-fb02-f30a-86ed-63ce3788901b@omp.ru>
- <CAMuHMdVjCzEpDLnW-jy_kpHoV8DEa=KCAjp=QeXnr8auh3B5Pg@mail.gmail.com>
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Organization: Open Mobile Platform
-Message-ID: <ad4930d0-7d4a-6a81-5830-3a62a44572f5@omp.ru>
-Date:   Thu, 3 Feb 2022 21:24:27 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        Thu, 3 Feb 2022 13:24:45 -0500
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EC51C061714
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 10:24:45 -0800 (PST)
+Received: by mail-wr1-x432.google.com with SMTP id j25so6003097wrb.2
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 10:24:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QIZiYOb5KIYRl/qJc3StlrUHLBXvSan9TakJg38R+r0=;
+        b=hBlA3xaNLllrMEAMRhqVVebO2N0bJadJaFI+KSJaqMBuIR4QR3BSR6zVxK1U+oHfB1
+         yEEUIglJoDYa3z4eZN6P5y80hN7LykGGWvM8isNRSKtemPSw6JcHhqbcEf5ZLHIsgiR8
+         wtBA6e3oAtrz1FeG9FgkrAWPAE3RWFKH4fmeQFh0l3qvi5WpWiSLXBqFun/4CJcz579m
+         kP2OX3zuQEeQLrmsL8L2l1ZvGo1dYIm6+FPwndq0MrpMKMbIPh59UzOf87FPUd6y8iWJ
+         6AhLTR4y2F1GCDac4OfMY8dcNv7YUZcs2k9O8JvIl7xAca6s5PVk6XbUO2hWRG91503u
+         Ex6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QIZiYOb5KIYRl/qJc3StlrUHLBXvSan9TakJg38R+r0=;
+        b=a99HDlP0bDkxb8/cP5tBpBFTGhhECW/mdc39fC099FuCqul7X+JOvzVftjQIhtEPlE
+         6tSqfQ6aCXr7VEnccI70/BFWi0cE+D2XjIxjUHJRJaVhbdWGjTlVe9E9HFkeIexNXXyT
+         zbfg4SL4sxpPPwAbFcZRgBNvCe7l+WqUHAxiXLSQojxFLGtHRKvwgAV6KFdYKi3TP0J/
+         /uyqcbzao4Dzfbr7VMIzhwri/UYgPNs8Nu40QcAfUFK8Fuv/UyxSUEmE76oqdYdt+nS7
+         A7oLu05JEmucKwo6EriRXQEf7jrfv7kskoxfQHEiTuN92a9bFedmtIZQ3Zlq5pQsXuep
+         nYcg==
+X-Gm-Message-State: AOAM531FL9ZLGGBrpO25DUu11hB3xbWRjagc/7fRkMzzDS9TjgoykSJs
+        LjiyFAE8JwjSv0UsgTo1AT6TCg==
+X-Google-Smtp-Source: ABdhPJwkq1lu/FX3hmHrjWcRzfmDXRRgs1s6TEjLoxV53Cdc30bUV5zS5H2RhYT9CS9sVFZuekLC3Q==
+X-Received: by 2002:adf:fb0f:: with SMTP id c15mr31290512wrr.42.1643912683900;
+        Thu, 03 Feb 2022 10:24:43 -0800 (PST)
+Received: from usaari01.cust.communityfibre.co.uk ([2a02:6b6d:f804:0:28c2:5854:c832:e580])
+        by smtp.gmail.com with ESMTPSA id h18sm3540056wro.9.2022.02.03.10.24.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Feb 2022 10:24:43 -0800 (PST)
+From:   Usama Arif <usama.arif@bytedance.com>
+To:     io-uring@vger.kernel.org, axboe@kernel.dk, asml.silence@gmail.com,
+        linux-kernel@vger.kernel.org
+Cc:     fam.zheng@bytedance.com, Usama Arif <usama.arif@bytedance.com>
+Subject: [PATCH v4 0/3] io_uring: avoid ring quiesce in io_uring_register for eventfd opcodes
+Date:   Thu,  3 Feb 2022 18:24:38 +0000
+Message-Id: <20220203182441.692354-1-usama.arif@bytedance.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <CAMuHMdVjCzEpDLnW-jy_kpHoV8DEa=KCAjp=QeXnr8auh3B5Pg@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [192.168.11.198]
-X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
- LFEX1907.lancloud.ru (fd00:f066::207)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/3/22 9:13 PM, Geert Uytterhoeven wrote:
+This is done by creating a new RCU data structure (io_ev_fd) as part of
+io_ring_ctx that holds the eventfd_ctx, with reads to the structure protected
+by rcu_read_lock and writes (register/unregister calls) protected by a mutex.
 
->> Add myself as a reviewer for the Renesas R-Car SATA driver -- I don't have
->> the hardware anymore (Geert Uytterhoeven does have a lot of hardware!) but
->> I do have the manuals still! :-)
-> 
-> I guess some of the manuals are publicly available on the Renesas
-> website?
+With the above approach ring quiesce can be avoided which is much more
+expensive then using RCU lock. On the system tested, io_uring_reigster with
+IORING_REGISTER_EVENTFD takes less than 1ms with RCU lock, compared to 15ms
+before with ring quiesce.
 
-   Have they finally published the R-Car manuals? 8-)
+The first patch creates the RCU protected data structure and removes ring
+quiesce for IORING_REGISTER_EVENTFD and IORING_UNREGISTER_EVENTFD.
 
->> Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
-> 
-> Thanks for the offer!
-> 
-> Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>
+The second patch builds on top of the first patch and removes ring quiesce
+for IORING_REGISTER_EVENTFD_ASYNC.
 
-   TY!
+---
+v3->v4:
+- Switch back to call_rcu and use rcu_barrier incase io_eventfd_register fails
+to make sure all rcu callbacks have finished.
 
-[...]
+v2->v3:
+- Switched to using synchronize_rcu from call_rcu in io_eventfd_unregister.
 
-MBR, Sergey
+v1->v2:
+- Added patch to remove eventfd from tracepoint (Patch 1) (Jens Axboe)
+- Made the code of io_should_trigger_evfd as part of io_eventfd_signal (Jens Axboe)
+
+Usama Arif (3):
+  io_uring: remove trace for eventfd
+  io_uring: avoid ring quiesce while registering/unregistering eventfd
+  io_uring: avoid ring quiesce for IORING_REGISTER_EVENTFD_ASYNC
+
+ fs/io_uring.c                   | 127 +++++++++++++++++++++++---------
+ include/trace/events/io_uring.h |  13 ++--
+ 2 files changed, 96 insertions(+), 44 deletions(-)
+
+-- 
+2.25.1
+
