@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F74BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:30:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B129C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:31:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354270AbiBCUa5 (ORCPT
+        id S1354296AbiBCUbB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:30:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57512 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354153AbiBCUa2 (ORCPT
+        Thu, 3 Feb 2022 15:31:01 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:33602 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354290AbiBCUaf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 15:30:28 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8DBBC061753;
-        Thu,  3 Feb 2022 12:30:12 -0800 (PST)
+        Thu, 3 Feb 2022 15:30:35 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 862D761A6C;
-        Thu,  3 Feb 2022 20:30:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B09E7C340E8;
-        Thu,  3 Feb 2022 20:30:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B441BB83556;
+        Thu,  3 Feb 2022 20:30:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BC51C340F1;
+        Thu,  3 Feb 2022 20:30:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643920211;
-        bh=uTVbxloRA/oMSMkup+LNxAM+kjT2Mh6U5zYG9RnWECE=;
+        s=k20201202; t=1643920233;
+        bh=PgnNCRpAxiyodWJyZyyGogYzjGJ0Rm0cnQHlJk9t4W0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q/VH332pN2z3YvoHI29Dio+AbXAikl0/5bRuxptK48GS27tswlUWa3r7hYhhfEpum
-         wwBTNF587BtsR9D8d2meb4G8N1BmpjAuXYEbpvlZAqqbl4QF77cyH8NZsMP3wwgv0q
-         6ayuOOkp6Xik3a6luztX8iLs2f407ZTuMe2U95ML/Ln0k8V5KpU9FFh74a8++Ldb+u
-         WvcybdzzqwBIqdr0GbPPBuuq9ea28mnKxsGdhDP2pDobYEe8lOTKqDMnbKWT/aUeIU
-         WGzn9zx/2DXZutFt56h2o57SGEO0g3MKKr3X1H6TBglID0bbUJNvsAUkkkqlFh1qMt
-         tamC3G5tlWDtQ==
+        b=X1uXczWkcaNHHmRm9IpIdILI2yqMOH8rMa0MYwoh79JInTbpzfASPfJKRKXPmR+CI
+         21LSGFLuFgPI5ekYRNOZMbFE7fGaZWrKfWCMJG+scF96ihRRovIoD6Aa4SbOdtxhJY
+         a5Hh1AAYPO2WXT0xsEl4i8gTQEXDTxMaBldY+XHo4NPRbaQPdlnQWrzhKOPPy52G+W
+         H/Zsi5GgU3pbXOiKnLCJpmHsTWLA1R7YqfC54hEYEssm+vFev+LX7zm1T3j5owH9La
+         tsM/wAWKu48XlqX9WL86YnxvtPosX2RcB+3t0KxzwI7BOUBue4EaIL1a5xUJvC9oSp
+         6RpTiuwBHHW1w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Stephane Eranian <eranian@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Sasha Levin <sashal@kernel.org>, mingo@redhat.com,
-        acme@kernel.org, tglx@linutronix.de, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org,
-        linux-perf-users@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 15/52] perf/x86/rapl: fix AMD event handling
-Date:   Thu,  3 Feb 2022 15:29:09 -0500
-Message-Id: <20220203202947.2304-15-sashal@kernel.org>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Maxime Bizon <mbizon@freebox.fr>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>, aneesh.kumar@linux.ibm.com,
+        akpm@linux-foundation.org, joel@jms.id.au, npiggin@gmail.com,
+        geert@linux-m68k.org, shorne@gmail.com, anshuman.khandual@arm.com,
+        palmerdabbelt@google.com, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 5.16 22/52] powerpc/fixmap: Fix VM debug warning on unmap
+Date:   Thu,  3 Feb 2022 15:29:16 -0500
+Message-Id: <20220203202947.2304-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220203202947.2304-1-sashal@kernel.org>
 References: <20220203202947.2304-1-sashal@kernel.org>
@@ -55,67 +53,146 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephane Eranian <eranian@google.com>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-[ Upstream commit 0036fb00a756a2f6e360d44e2e3d2200a8afbc9b ]
+[ Upstream commit aec982603aa8cc0a21143681feb5f60ecc69d718 ]
 
-The RAPL events exposed under /sys/devices/power/events should only reflect
-what the underlying hardware actually support. This is how it works on Intel
-RAPL and Intel core/uncore PMUs in general.
-But on AMD, this was not the case. All possible RAPL events were advertised.
+Unmapping a fixmap entry is done by calling __set_fixmap()
+with FIXMAP_PAGE_CLEAR as flags.
 
-This is what it showed on an AMD Fam17h:
-$ ls /sys/devices/power/events/
-energy-cores        energy-gpu          energy-pkg          energy-psys
-energy-ram          energy-cores.scale  energy-gpu.scale    energy-pkg.scale
-energy-psys.scale   energy-ram.scale    energy-cores.unit   energy-gpu.unit
-energy-pkg.unit     energy-psys.unit    energy-ram.unit
+Today, powerpc __set_fixmap() calls map_kernel_page().
 
-Yet, on AMD Fam17h, only energy-pkg is supported.
+map_kernel_page() is not happy when called a second time
+for the same page.
 
-This patch fixes the problem. Given the way perf_msr_probe() works, the
-amd_rapl_msrs[] table has to have all entries filled out and in particular
-the group field, otherwise perf_msr_probe() defaults to making the event
-visible.
+	WARNING: CPU: 0 PID: 1 at arch/powerpc/mm/pgtable.c:194 set_pte_at+0xc/0x1e8
+	CPU: 0 PID: 1 Comm: swapper Not tainted 5.16.0-rc3-s3k-dev-01993-g350ff07feb7d-dirty #682
+	NIP:  c0017cd4 LR: c00187f0 CTR: 00000010
+	REGS: e1011d50 TRAP: 0700   Not tainted  (5.16.0-rc3-s3k-dev-01993-g350ff07feb7d-dirty)
+	MSR:  00029032 <EE,ME,IR,DR,RI>  CR: 42000208  XER: 00000000
 
-With the patch applied, the kernel now only shows was is actually supported:
+	GPR00: c0165fec e1011e10 c14c0000 c0ee2550 ff800000 c0f3d000 00000000 c001686c
+	GPR08: 00001000 b00045a9 00000001 c0f58460 c0f50000 00000000 c0007e10 00000000
+	GPR16: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+	GPR24: 00000000 00000000 c0ee2550 00000000 c0f57000 00000ff8 00000000 ff800000
+	NIP [c0017cd4] set_pte_at+0xc/0x1e8
+	LR [c00187f0] map_kernel_page+0x9c/0x100
+	Call Trace:
+	[e1011e10] [c0736c68] vsnprintf+0x358/0x6c8 (unreliable)
+	[e1011e30] [c0165fec] __set_fixmap+0x30/0x44
+	[e1011e40] [c0c13bdc] early_iounmap+0x11c/0x170
+	[e1011e70] [c0c06cb0] ioremap_legacy_serial_console+0x88/0xc0
+	[e1011e90] [c0c03634] do_one_initcall+0x80/0x178
+	[e1011ef0] [c0c0385c] kernel_init_freeable+0xb4/0x250
+	[e1011f20] [c0007e34] kernel_init+0x24/0x140
+	[e1011f30] [c0016268] ret_from_kernel_thread+0x5c/0x64
+	Instruction dump:
+	7fe3fb78 48019689 80010014 7c630034 83e1000c 5463d97e 7c0803a6 38210010
+	4e800020 81250000 712a0001 41820008 <0fe00000> 9421ffe0 93e1001c 48000030
 
-$ ls /sys/devices/power/events/
-energy-pkg  energy-pkg.scale  energy-pkg.unit
+Implement unmap_kernel_page() which clears an existing pte.
 
-The patch also uses the RAPL_MSR_MASK because only the 32-bits LSB of the
-RAPL counters are relevant when reading power consumption.
-
-Signed-off-by: Stephane Eranian <eranian@google.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20220105185659.643355-1-eranian@google.com
+Reported-by: Maxime Bizon <mbizon@freebox.fr>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Tested-by: Maxime Bizon <mbizon@freebox.fr>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/b0b752f6f6ecc60653e873f385c6f0dce4e9ab6a.1638789098.git.christophe.leroy@csgroup.eu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/events/rapl.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ arch/powerpc/include/asm/book3s/32/pgtable.h | 1 +
+ arch/powerpc/include/asm/book3s/64/pgtable.h | 2 ++
+ arch/powerpc/include/asm/fixmap.h            | 6 ++++--
+ arch/powerpc/include/asm/nohash/32/pgtable.h | 1 +
+ arch/powerpc/include/asm/nohash/64/pgtable.h | 1 +
+ arch/powerpc/mm/pgtable.c                    | 9 +++++++++
+ 6 files changed, 18 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/events/rapl.c b/arch/x86/events/rapl.c
-index 85feafacc445d..77e3a47af5ad5 100644
---- a/arch/x86/events/rapl.c
-+++ b/arch/x86/events/rapl.c
-@@ -536,11 +536,14 @@ static struct perf_msr intel_rapl_spr_msrs[] = {
-  * - perf_msr_probe(PERF_RAPL_MAX)
-  * - want to use same event codes across both architectures
-  */
--static struct perf_msr amd_rapl_msrs[PERF_RAPL_MAX] = {
--	[PERF_RAPL_PKG]  = { MSR_AMD_PKG_ENERGY_STATUS,  &rapl_events_pkg_group,   test_msr },
-+static struct perf_msr amd_rapl_msrs[] = {
-+	[PERF_RAPL_PP0]  = { 0, &rapl_events_cores_group, 0, false, 0 },
-+	[PERF_RAPL_PKG]  = { MSR_AMD_PKG_ENERGY_STATUS,  &rapl_events_pkg_group,   test_msr, false, RAPL_MSR_MASK },
-+	[PERF_RAPL_RAM]  = { 0, &rapl_events_ram_group,   0, false, 0 },
-+	[PERF_RAPL_PP1]  = { 0, &rapl_events_gpu_group,   0, false, 0 },
-+	[PERF_RAPL_PSYS] = { 0, &rapl_events_psys_group,  0, false, 0 },
- };
+diff --git a/arch/powerpc/include/asm/book3s/32/pgtable.h b/arch/powerpc/include/asm/book3s/32/pgtable.h
+index 609c80f671943..f8b94f78403f1 100644
+--- a/arch/powerpc/include/asm/book3s/32/pgtable.h
++++ b/arch/powerpc/include/asm/book3s/32/pgtable.h
+@@ -178,6 +178,7 @@ static inline bool pte_user(pte_t pte)
+ #ifndef __ASSEMBLY__
  
+ int map_kernel_page(unsigned long va, phys_addr_t pa, pgprot_t prot);
++void unmap_kernel_page(unsigned long va);
+ 
+ #endif /* !__ASSEMBLY__ */
+ 
+diff --git a/arch/powerpc/include/asm/book3s/64/pgtable.h b/arch/powerpc/include/asm/book3s/64/pgtable.h
+index 33e073d6b0c41..875730d5af408 100644
+--- a/arch/powerpc/include/asm/book3s/64/pgtable.h
++++ b/arch/powerpc/include/asm/book3s/64/pgtable.h
+@@ -1082,6 +1082,8 @@ static inline int map_kernel_page(unsigned long ea, unsigned long pa, pgprot_t p
+ 	return hash__map_kernel_page(ea, pa, prot);
+ }
+ 
++void unmap_kernel_page(unsigned long va);
++
+ static inline int __meminit vmemmap_create_mapping(unsigned long start,
+ 						   unsigned long page_size,
+ 						   unsigned long phys)
+diff --git a/arch/powerpc/include/asm/fixmap.h b/arch/powerpc/include/asm/fixmap.h
+index 947b5b9c44241..a832aeafe5601 100644
+--- a/arch/powerpc/include/asm/fixmap.h
++++ b/arch/powerpc/include/asm/fixmap.h
+@@ -111,8 +111,10 @@ static inline void __set_fixmap(enum fixed_addresses idx,
+ 		BUILD_BUG_ON(idx >= __end_of_fixed_addresses);
+ 	else if (WARN_ON(idx >= __end_of_fixed_addresses))
+ 		return;
 -
- static int rapl_cpu_offline(unsigned int cpu)
- {
- 	struct rapl_pmu *pmu = cpu_to_rapl_pmu(cpu);
+-	map_kernel_page(__fix_to_virt(idx), phys, flags);
++	if (pgprot_val(flags))
++		map_kernel_page(__fix_to_virt(idx), phys, flags);
++	else
++		unmap_kernel_page(__fix_to_virt(idx));
+ }
+ 
+ #define __early_set_fixmap	__set_fixmap
+diff --git a/arch/powerpc/include/asm/nohash/32/pgtable.h b/arch/powerpc/include/asm/nohash/32/pgtable.h
+index b67742e2a9b22..d959c2a73fbf4 100644
+--- a/arch/powerpc/include/asm/nohash/32/pgtable.h
++++ b/arch/powerpc/include/asm/nohash/32/pgtable.h
+@@ -64,6 +64,7 @@ extern int icache_44x_need_flush;
+ #ifndef __ASSEMBLY__
+ 
+ int map_kernel_page(unsigned long va, phys_addr_t pa, pgprot_t prot);
++void unmap_kernel_page(unsigned long va);
+ 
+ #endif /* !__ASSEMBLY__ */
+ 
+diff --git a/arch/powerpc/include/asm/nohash/64/pgtable.h b/arch/powerpc/include/asm/nohash/64/pgtable.h
+index 9d2905a474103..2225991c69b55 100644
+--- a/arch/powerpc/include/asm/nohash/64/pgtable.h
++++ b/arch/powerpc/include/asm/nohash/64/pgtable.h
+@@ -308,6 +308,7 @@ static inline void __ptep_set_access_flags(struct vm_area_struct *vma,
+ #define __swp_entry_to_pte(x)		__pte((x).val)
+ 
+ int map_kernel_page(unsigned long ea, unsigned long pa, pgprot_t prot);
++void unmap_kernel_page(unsigned long va);
+ extern int __meminit vmemmap_create_mapping(unsigned long start,
+ 					    unsigned long page_size,
+ 					    unsigned long phys);
+diff --git a/arch/powerpc/mm/pgtable.c b/arch/powerpc/mm/pgtable.c
+index ce94823831442..b7385e637e3e3 100644
+--- a/arch/powerpc/mm/pgtable.c
++++ b/arch/powerpc/mm/pgtable.c
+@@ -203,6 +203,15 @@ void set_pte_at(struct mm_struct *mm, unsigned long addr, pte_t *ptep,
+ 	__set_pte_at(mm, addr, ptep, pte, 0);
+ }
+ 
++void unmap_kernel_page(unsigned long va)
++{
++	pmd_t *pmdp = pmd_off_k(va);
++	pte_t *ptep = pte_offset_kernel(pmdp, va);
++
++	pte_clear(&init_mm, va, ptep);
++	flush_tlb_kernel_range(va, va + PAGE_SIZE);
++}
++
+ /*
+  * This is called when relaxing access to a PTE. It's also called in the page
+  * fault path when we don't hit any of the major fault cases, ie, a minor
 -- 
 2.34.1
 
