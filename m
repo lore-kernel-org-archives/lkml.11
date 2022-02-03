@@ -2,82 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C6EBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:46:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 738E9C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:47:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354076AbiBCUq6 (ORCPT
+        id S1354885AbiBCUrE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:46:58 -0500
-Received: from jabberwock.ucw.cz ([46.255.230.98]:52126 "EHLO
-        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354785AbiBCUpU (ORCPT
+        Thu, 3 Feb 2022 15:47:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32938 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1356596AbiBCUq2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 15:45:20 -0500
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id B59FD1C0B79; Thu,  3 Feb 2022 21:45:18 +0100 (CET)
-Date:   Thu, 3 Feb 2022 21:45:18 +0100
-From:   Pavel Machek <pavel@denx.de>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        syzbot+5ca851459ed04c778d1d@syzkaller.appspotmail.com,
-        Ziyang Xuan <william.xuanziyang@huawei.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>
-Subject: Re: [PATCH 4.14 2/2] can: bcm: fix UAF of bcm op
-Message-ID: <20220203204518.GA18824@duo.ucw.cz>
-References: <20220127180256.764665162@linuxfoundation.org>
- <20220127180256.840826051@linuxfoundation.org>
+        Thu, 3 Feb 2022 15:46:28 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9E4BC061182;
+        Thu,  3 Feb 2022 12:44:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=GdztUW9x+fNlUtnFtFu79iJaJ/d/JZTADTo3wiUu4gM=; b=x9OlGeOiYglbofGb2DmfMM2Oo9
+        hss+jAkhZ0AARNGf568KH2t244lOnXoiaeDkHJh9y88XSCfM4zhuX/O1ioBRmln6FZ8C6LcvxurRn
+        9BmgtvJh4O/xQJt5oCpe0LroEeYOhiR9ggMfxD+hCpj6XY8Tq+cFXyn9gzdRRPNndvGBKGm/V++RT
+        f56uVTLAp09p4IhpQeRdFSMw/NxMS1bYkXbDtLOdXU1SGwYn5ymmgLTLui08mbPMHtzmJ64zVl0An
+        p+vlKFaDtvUUgWMLwJ1bH8t5X1lTR/S94kMYPRbINNXfcsmdzm7HEZBnG/ol/aVX7WM9fYJ3HxNw/
+        nqdt8xjQ==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nFiyA-002piX-Io; Thu, 03 Feb 2022 20:44:42 +0000
+Date:   Thu, 3 Feb 2022 12:44:42 -0800
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     "atomlin@redhat.com" <atomlin@redhat.com>,
+        "linux-modules@vger.kernel.org" <linux-modules@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH 1/2] modules: Make module_enable_x() independant of
+ CONFIG_ARCH_HAS_STRICT_MODULE_RWX
+Message-ID: <Yfw+ulJ9mAT2tvvn@bombadil.infradead.org>
+References: <203348805c9ac9851d8939d15cb9802ef047b5e2.1643919758.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="9jxsPFA5p3P2qPhR"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220127180256.840826051@linuxfoundation.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <203348805c9ac9851d8939d15cb9802ef047b5e2.1643919758.git.christophe.leroy@csgroup.eu>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Feb 03, 2022 at 08:23:25PM +0000, Christophe Leroy wrote:
+> module_enable_x() has nothing to do with CONFIG_ARCH_HAS_STRICT_MODULE_RWX
+> allthough by coincidence architectures who need module_enable_x() are
+> selection CONFIG_ARCH_HAS_STRICT_MODULE_RWX.
+> 
+> Enable module_enable_x() for everyone everytime. If an architecture
+> already has module text set executable, it's a no-op.
+> 
+> Only check end boundary if CONFIG_STRICT_MODULE_RWX is set, and
+> make sure we entirely get the last page when the boundary is not
+> aligned. When CONFIG_STRICT_MODULE_RWX is not selected, it is not
+> a big deal to have the start of data as executable.
+> 
+> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 
---9jxsPFA5p3P2qPhR
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Thanks!
 
-Hi!
+Both patches look good to me! I can merge this once Aaron's
+then your's and then Michal's KEXEC stuff gets merged.
 
-
-> From: Ziyang Xuan <william.xuanziyang@huawei.com>
->=20
-> Stopping tasklet and hrtimer rely on the active state of tasklet and
-> hrtimer sequentially in bcm_remove_op(), the op object will be freed
-> if they are all unactive. Assume the hrtimer timeout is short, the
-> hrtimer cb has been excuted after tasklet conditional judgment which
-> must be false after last round tasklet_kill() and before condition
-> hrtimer_active(), it is false when execute to hrtimer_active(). Bug
-> is triggerd, because the stopping action is end and the op object
-> will be freed, but the tasklet is scheduled. The resources of the op
-> object will occur UAF bug.
->=20
-> Move hrtimer_cancel() behind tasklet_kill() and switch 'while () {...}'
-> to 'do {...} while ()' to fix the op UAF problem.
-
-I don't see this commit in mainline or next kernels. What is going on
-here? Is it one of those "only needed in -stable" things? Or do we
-still need to fix it in the mainline?
-
-Best regards,
-								Pavel
---=20
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-
---9jxsPFA5p3P2qPhR
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYfw+3gAKCRAw5/Bqldv6
-8uKwAJ0UfJMChXRoN1yhcxHknUTIq0A2DQCfT0NdPdj4mxrex8j1U/PlZy106Og=
-=ijM2
------END PGP SIGNATURE-----
-
---9jxsPFA5p3P2qPhR--
+  Luis
