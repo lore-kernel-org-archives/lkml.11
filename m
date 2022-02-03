@@ -2,236 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB14EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 23:26:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75F5AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 23:26:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355982AbiBCX0n (ORCPT
+        id S1355995AbiBCX0s (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 18:26:43 -0500
-Received: from mga09.intel.com ([134.134.136.24]:16725 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1355643AbiBCX0m (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 18:26:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643930802; x=1675466802;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=zZY4Ivfh19T6uztYvKyofmwLP+ftChMlikeJuWAwMGE=;
-  b=kLD/1sL7Cc68PKMqOjKs+mwwEp/+lNYjTYATb9oLsjIAuFsfT7j7B01O
-   eZX4UngKOTe1vD9NA8QxRe+zw6SD5XQ4XeJScMMXFm2Rhspktzr/dNbnG
-   uLy1mWbMp0k4MDNa5yxvF5GMHsHsqcYMaMC49ZCDCAEE+xd4VAsSfNoZC
-   yoMb560rgHZy90wU493F3p5MZetE3kAS6vrvPR7di3HRr7Gq59H9/ZxKo
-   GbBP4XJpbeoNNY+MvnvbTy+oA21+D/pzh2xHZwdK6ekLJzUQKhutvPzF5
-   TaK2K8pTGScuDgxm3lq/7QiODJi9Xmd4uyHN8IcePqQZBR4LEsPrrnaV9
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10247"; a="248039311"
-X-IronPort-AV: E=Sophos;i="5.88,340,1635231600"; 
-   d="scan'208";a="248039311"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2022 15:26:40 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,340,1635231600"; 
-   d="scan'208";a="524118350"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 03 Feb 2022 15:26:38 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nFlUs-000WlU-8P; Thu, 03 Feb 2022 23:26:38 +0000
-Date:   Fri, 04 Feb 2022 07:25:41 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:master] BUILD SUCCESS
- 6275d291a763090ed1ff8aed7376aebd9f9dd6f5
-Message-ID: <61fc6475.rwK8eqbKx2rOi4Yr%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Thu, 3 Feb 2022 18:26:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41754 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355983AbiBCX0o (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 3 Feb 2022 18:26:44 -0500
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29A75C061714;
+        Thu,  3 Feb 2022 15:26:44 -0800 (PST)
+Received: by mail-wr1-x42e.google.com with SMTP id k18so7991367wrg.11;
+        Thu, 03 Feb 2022 15:26:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=myVtROYgMKE1wZAdyLUyq1uGnyhk8OXwXD/l2iqY7sw=;
+        b=k37bXsanbVrjOlLv4wC/AL6qV941j3a0RvFnpqvUUBbhUw3j0z00u1LTEVo1WnPWmj
+         Aigl0CZLcs06jqA6X3kB7begqSBivKkxA8kXy77fkvZWg0AQLJQhJLalkTANXhr9yFft
+         h1ff4RtHvkZgiFszHPk59XHelYWiz5v634gjKOQAj9LyiwWTctoY6WyEFZQfpUqHyorE
+         d+f2Vog1hmnHyojNVvmfz7otrvviQ0LCoogAc+UdcL2GCijcffZntNtGrj92gHVwDOPH
+         MkUpOjs+INdSTBqhkgJeiTr+vMv8d7YT7rfU8VVBMQJEy3bVE/hLVmj33eAgu8v+ZSRk
+         RsbA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=myVtROYgMKE1wZAdyLUyq1uGnyhk8OXwXD/l2iqY7sw=;
+        b=fiFTvBt/8VkXRnlEjny6AYFthaxv8gyYWZwC8V8Dlg61++hlO1IjzRbF764FXtSh8K
+         NRwqXoH3u4Q6jze3UZemvPBWG92wy77j9uanigbHF+4T5Jel09H05r7trLvPpiQLJ0oc
+         MqvEU9GZk8CQxAhui4L7Ovjs20waHuxaGB7Rijn1/6QSd/UCgjkSmzgOhhD8Qg/OLRwr
+         ZDAF7dYd3jUpdEY5X50lwAUP6VUaNOvrV60YqWGeveq/GcJRuvFqWUJhbsYlWLznr4hg
+         hzjt+upvTFflV3oSXKJ8omRxdl/2XSxDTpoirL5MJTZCkkGax6JHxGpJiBOIHri0mXEd
+         6ohw==
+X-Gm-Message-State: AOAM531GnKfA5CKrvfFhmW4eVA1ix96GN1ePZKAsKskHVzETGcq/FrZh
+        UAJoVDMjWrxnFJwoE5etqtQ=
+X-Google-Smtp-Source: ABdhPJwzGTdqmsldZcdMUarsFpmwzYrK9XBhdJLM6+BLH5WHBw6etuBseYorYuEzeMq2sZ1lC5s0ww==
+X-Received: by 2002:a5d:500c:: with SMTP id e12mr177221wrt.193.1643930802640;
+        Thu, 03 Feb 2022 15:26:42 -0800 (PST)
+Received: from [192.168.8.198] ([85.255.232.204])
+        by smtp.gmail.com with ESMTPSA id p2sm120572wmc.33.2022.02.03.15.26.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 03 Feb 2022 15:26:42 -0800 (PST)
+Message-ID: <2104dd91-676b-84af-3005-a40c996b9403@gmail.com>
+Date:   Thu, 3 Feb 2022 23:21:41 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [External] Re: [PATCH v3 2/3] io_uring: avoid ring quiesce while
+ registering/unregistering eventfd
+Content-Language: en-US
+To:     Jens Axboe <axboe@kernel.dk>,
+        Usama Arif <usama.arif@bytedance.com>,
+        io-uring@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     fam.zheng@bytedance.com
+References: <20220203174108.668549-1-usama.arif@bytedance.com>
+ <20220203174108.668549-3-usama.arif@bytedance.com>
+ <ffa271c7-3f49-2b5a-b67e-3bb1b052ee4e@kernel.dk>
+ <877d54b9-5baa-f0b5-23fe-25aef78e37c4@bytedance.com>
+ <dc6bb53f-19cc-ee23-2137-6e27396f7d57@kernel.dk>
+ <ac5f5152-f9e4-8e83-642b-73c2620ce7c0@gmail.com>
+ <a5992789-6b0b-f3a8-0a24-e00add2a005a@kernel.dk>
+ <fc97036f-26a3-afb1-180f-30aa89d3cc01@bytedance.com>
+ <a2939109-5f97-ff56-df53-0a56ba12e268@gmail.com>
+ <582c8c6f-cbcf-f8d7-4976-e70d0d51c42d@kernel.dk>
+From:   Pavel Begunkov <asml.silence@gmail.com>
+In-Reply-To: <582c8c6f-cbcf-f8d7-4976-e70d0d51c42d@kernel.dk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git master
-branch HEAD: 6275d291a763090ed1ff8aed7376aebd9f9dd6f5  Merge irq/core into tip/master
+On 2/3/22 22:16, Jens Axboe wrote:
+> On 2/3/22 2:47 PM, Pavel Begunkov wrote:
+>> On 2/3/22 19:54, Usama Arif wrote:
+>>> On 03/02/2022 19:06, Jens Axboe wrote:
+>>>> On 2/3/22 12:00 PM, Pavel Begunkov wrote:
+>>>>> On 2/3/22 18:29, Jens Axboe wrote:
+>>>>>> On 2/3/22 11:26 AM, Usama Arif wrote:
+>>>>>>> Hmm, maybe i didn't understand you and Pavel correctly. Are you
+>>>>>>> suggesting to do the below diff over patch 3? I dont think that would be
+>>>>>>> correct, as it is possible that just after checking if ctx->io_ev_fd is
+>>>>>>> present unregister can be called by another thread and set ctx->io_ev_fd
+>>>>>>> to NULL that would cause a NULL pointer exception later? In the current
+>>>>>>> patch, the check of whether ev_fd exists happens as the first thing
+>>>>>>> after rcu_read_lock and the rcu_read_lock are extremely cheap i believe.
+>>>>>>
+>>>>>> They are cheap, but they are still noticeable at high requests/sec
+>>>>>> rates. So would be best to avoid them.
+>>>>>>
+>>>>>> And yes it's obviously racy, there's the potential to miss an eventfd
+>>>>>> notification if it races with registering an eventfd descriptor. But
+>>>>>> that's not really a concern, as if you register with inflight IO
+>>>>>> pending, then that always exists just depending on timing. The only
+>>>>>> thing I care about here is that it's always _safe_. Hence something ala
+>>>>>> what you did below is totally fine, as we're re-evaluating under rcu
+>>>>>> protection.
+>>>>>
+>>>>> Indeed, the patch doesn't have any formal guarantees for propagation
+>>>>> to already inflight requests, so this extra unsynchronised check
+>>>>> doesn't change anything.
+>>>>>
+>>>>> I'm still more сurious why we need RCU and extra complexity when
+>>>>> apparently there is no use case for that. If it's only about
+>>>>> initial initialisation, then as I described there is a much
+>>>>> simpler approach.
+>>>>
+>>>> Would be nice if we could get rid of the quiesce code in general, but I
+>>>> haven't done a check to see what'd be missing after this...
+>>>>
+>>>
+>>> I had checked! I had posted below in in reply to v1 (https://lore.kernel.org/io-uring/02fb0bc3-fc38-b8f0-3067-edd2a525ef29@gmail.com/T/#m5ac7867ac61d86fe62c099be793ffe5a9a334976), but i think it got missed! Copy-pasting here for reference:
+>>
+>> May have missed it then, apologies
+>>
+>>> "
+>>> I see that if we remove ring quiesce from the the above 3 opcodes, then
+>>> only IORING_REGISTER_ENABLE_RINGS and IORING_REGISTER_RESTRICTIONS is
+>>> left for ring quiesce. I just had a quick look at those, and from what i
+>>> see we might not need to enter ring quiesce in
+>>> IORING_REGISTER_ENABLE_RINGS as the ring is already disabled at that point?
+>>> And for IORING_REGISTER_RESTRICTIONS if we do a similar approach to
+>>> IORING_REGISTER_EVENTFD, i.e. wrap ctx->restrictions inside an RCU
+>>> protected data structure, use spin_lock to prevent multiple
+>>> io_register_restrictions calls at the same time, and use read_rcu_lock
+>>> in io_check_restriction, then we can remove ring quiesce from
+>>> io_uring_register altogether?
+>>>
+>>> My usecase only uses IORING_REGISTER_EVENTFD, but i think entering ring
+>>> quiesce costs similar in other opcodes. If the above sounds reasonable,
+>>> please let me know and i can send patches for removing ring quiesce for
+>>> io_uring_register.
+>>> "
+>>>
+>>> Let me know if above makes sense, i can add patches on top of the current patchset, or we can do it after they get merged.
+>>>
+>>> As for why, quiesce state is very expensive. its making io_uring_register the most expensive syscall in my usecase (~15ms) compared to ~0.1ms now with RCU, which is why i started investigating this. And this patchset avoids ring quiesce for 3 of the opcodes, so it would generally be quite helpful if someone does registers and unregisters eventfd multiple times.
+>>
+>> I agree that 15ms for initial setup is silly and it has to be
+>> reduced. However, I'm trying weight the extra complexity against
+>> potential benefits of _also_ optimising [de,re]-registration
+>>
+>> Considering that you only register it one time at the beginning,
+>> we risk adding a yet another feature that nobody is going to ever
+>> use. This doesn't give me a nice feeling, well, unless you do
+>> have a use case.
+> 
+> It's not really a new feature, it's just making the existing one not
+> suck quite as much...
 
-elapsed time: 731m
+Does it matter when nobody uses it? My point is that does not.
 
-configs tested: 160
-configs skipped: 3
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+>> To emphasise, I'm comparing 15->0.1 improvement for only initial
+>> registration (which is simpler) vs 15->0.1 for both registration
+>> and unregistration.
+> 
+> reg+unreg should be way faster too, if done properly with the assignment
+> tricks.
+> 
+>> fwiw, it alters userpace visible behaviour in either case, shouldn't
+>> be as important here but there is always a chance to break userspace
+> 
+> It doesn't alter userspace behavior, if the registration works like I
+> described with being able to assign a new one while the old one is being
+> torn down.
+> 
+> Or do you mean wrt inflight IO? I don't think the risk is very high
+> there, to be honest.
 
-gcc tested configs:
-arm                                 defconfig
-arm64                            allyesconfig
-arm64                               defconfig
-arm                              allyesconfig
-arm                              allmodconfig
-i386                 randconfig-c001-20220131
-i386                          randconfig-c001
-m68k                          hp300_defconfig
-sh                   sh7724_generic_defconfig
-arc                    vdk_hs38_smp_defconfig
-arm                        clps711x_defconfig
-powerpc                 linkstation_defconfig
-mips                            ar7_defconfig
-powerpc                     rainier_defconfig
-arm                           h5000_defconfig
-arm                           corgi_defconfig
-powerpc                     sequoia_defconfig
-sh                   secureedge5410_defconfig
-arc                        nsim_700_defconfig
-mips                           ci20_defconfig
-arm                           viper_defconfig
-mips                        vocore2_defconfig
-openrisc                  or1klitex_defconfig
-parisc                generic-32bit_defconfig
-powerpc                      ep88xc_defconfig
-arm                         lubbock_defconfig
-mips                          rb532_defconfig
-powerpc                      ppc40x_defconfig
-parisc                           allyesconfig
-sh                   rts7751r2dplus_defconfig
-sh                           se7206_defconfig
-arm                            qcom_defconfig
-powerpc                     pq2fads_defconfig
-m68k                            q40_defconfig
-sh                              ul2_defconfig
-arc                 nsimosci_hs_smp_defconfig
-sh                ecovec24-romimage_defconfig
-m68k                       m5249evb_defconfig
-arm                             rpc_defconfig
-arm                         axm55xx_defconfig
-mips                    maltaup_xpa_defconfig
-openrisc                 simple_smp_defconfig
-nios2                         10m50_defconfig
-h8300                     edosk2674_defconfig
-arm                          simpad_defconfig
-arm                  randconfig-c002-20220130
-arm                  randconfig-c002-20220131
-arm                  randconfig-c002-20220202
-ia64                                defconfig
-ia64                             allmodconfig
-ia64                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-m68k                             allyesconfig
-nios2                               defconfig
-arc                              allyesconfig
-nds32                             allnoconfig
-nds32                               defconfig
-nios2                            allyesconfig
-csky                                defconfig
-alpha                               defconfig
-alpha                            allyesconfig
-xtensa                           allyesconfig
-h8300                            allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-parisc                              defconfig
-s390                             allyesconfig
-s390                             allmodconfig
-s390                                defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-sparc                               defconfig
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                           allnoconfig
-powerpc                          allmodconfig
-powerpc                          allyesconfig
-x86_64               randconfig-a004-20220131
-x86_64               randconfig-a003-20220131
-x86_64               randconfig-a001-20220131
-x86_64               randconfig-a006-20220131
-x86_64               randconfig-a005-20220131
-x86_64               randconfig-a002-20220131
-i386                 randconfig-a003-20220131
-i386                 randconfig-a002-20220131
-i386                 randconfig-a001-20220131
-i386                 randconfig-a005-20220131
-i386                 randconfig-a004-20220131
-i386                 randconfig-a006-20220131
-riscv                randconfig-r042-20220130
-arc                  randconfig-r043-20220130
-arc                  randconfig-r043-20220131
-s390                 randconfig-r044-20220130
-riscv                    nommu_k210_defconfig
-riscv                            allyesconfig
-riscv                    nommu_virt_defconfig
-riscv                             allnoconfig
-riscv                               defconfig
-riscv                          rv32_defconfig
-riscv                            allmodconfig
-x86_64                    rhel-8.3-kselftests
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                           allyesconfig
-x86_64                              defconfig
-x86_64                               rhel-8.3
-x86_64                          rhel-8.3-func
-x86_64                                  kexec
+Right, if somebody tries such a trick it'll be pretty confusing to
+get randomly firing eventfd, though it's rather a marginal case.
 
-clang tested configs:
-riscv                randconfig-c006-20220201
-x86_64                        randconfig-c007
-powerpc              randconfig-c003-20220201
-mips                 randconfig-c004-20220201
-i386                          randconfig-c001
-arm                  randconfig-c002-20220201
-arm                       imx_v4_v5_defconfig
-powerpc                     ppa8548_defconfig
-arm                  colibri_pxa300_defconfig
-i386                             allyesconfig
-riscv                             allnoconfig
-arm                            mmp2_defconfig
-arm                        spear3xx_defconfig
-x86_64                           allyesconfig
-mips                          rm200_defconfig
-arm                             mxs_defconfig
-powerpc                   lite5200b_defconfig
-powerpc                      katmai_defconfig
-arm                              alldefconfig
-powerpc                     kilauea_defconfig
-arm                         socfpga_defconfig
-powerpc                 mpc832x_mds_defconfig
-arm                          pcm027_defconfig
-arm                           spitz_defconfig
-powerpc                       ebony_defconfig
-mips                malta_qemu_32r6_defconfig
-mips                      bmips_stb_defconfig
-arm                         lpc32xx_defconfig
-mips                        bcm63xx_defconfig
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-x86_64               randconfig-a013-20220131
-x86_64               randconfig-a015-20220131
-x86_64               randconfig-a014-20220131
-x86_64               randconfig-a016-20220131
-x86_64               randconfig-a011-20220131
-x86_64               randconfig-a012-20220131
-i386                 randconfig-a011-20220131
-i386                 randconfig-a013-20220131
-i386                 randconfig-a014-20220131
-i386                 randconfig-a012-20220131
-i386                 randconfig-a015-20220131
-i386                 randconfig-a016-20220131
-riscv                randconfig-r042-20220131
-hexagon              randconfig-r045-20220130
-hexagon              randconfig-r045-20220131
-hexagon              randconfig-r041-20220130
-hexagon              randconfig-r041-20220131
-s390                 randconfig-r044-20220131
-hexagon              randconfig-r045-20220203
-hexagon              randconfig-r041-20220203
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+-- 
+Pavel Begunkov
