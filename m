@@ -2,107 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C330C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 15:13:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC6E5C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 15:13:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240328AbiBCPNp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 10:13:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39600 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351724AbiBCPNl (ORCPT
+        id S1351731AbiBCPN6 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Feb 2022 10:13:58 -0500
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:46960 "EHLO
+        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1351779AbiBCPNw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 10:13:41 -0500
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DA67C061714;
-        Thu,  3 Feb 2022 07:13:41 -0800 (PST)
-Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 06EFB1EC058A;
-        Thu,  3 Feb 2022 16:13:35 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1643901215;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=su0chIW0cbLPhkXWhBMbksAxZ8gJeI5gzh3NlG+Xo84=;
-        b=IR0S7zOkfUWi6s+H1hW6QRZqmnqKiQr+TTTkruM9jmVAPrd6LPVMOz/kLFqsEMBL6OHUdb
-        0RirvheWyH6ntw7tYuI3euDtmJu0KSSIcQ2UrY+HQkOAfjVqNXUkgvupXLWO5B8tEQ0tDr
-        MFvLcIG8N1QcnGZL9J29hBqtFkThfxs=
-Date:   Thu, 3 Feb 2022 16:13:29 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     Brijesh Singh <brijesh.singh@amd.com>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-coco@lists.linux.dev, linux-mm@kvack.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Dov Murik <dovmurik@linux.ibm.com>,
-        Tobin Feldman-Fitzthum <tobin@ibm.com>,
-        Michael Roth <michael.roth@amd.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Andi Kleen <ak@linux.intel.com>,
-        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
-        brijesh.ksingh@gmail.com, tony.luck@intel.com, marcorr@google.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com
-Subject: Re: [PATCH v9 26/43] x86/compressed/acpi: Move EFI config table
- lookup to helper
-Message-ID: <YfvxGXNB8cCUT/Ia@zn.tnic>
-References: <20220128171804.569796-1-brijesh.singh@amd.com>
- <20220128171804.569796-27-brijesh.singh@amd.com>
+        Thu, 3 Feb 2022 10:13:52 -0500
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 8BCD81F45D8C
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1643901231;
+        bh=DRwHtfUXeJL5SMxS9YpwuFtjuxZGjG9oCJIGYngKhtg=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=CjPM8sjeGat4WGVSY4jbQoZJZRoxsZJQLq4pt6FmmJ4IIQc8gaa0uKCzlz5m7gh5n
+         Y2B5LbSljLG0DYKRg56/2iPN+AxtN5cdUitanzNK88KKhFCkOWtzr+pUOqPbb+FdhH
+         C/2L7hHdSws8U0EhubdOyOIUI+a2gnFZhAooIIL8X1BtjIBTvjt5gepqY4yeK2gzih
+         Vc9jh2bRxfyhtW3rvM9Q3XGyNkYQy4+nHKCL42Kc4OSa+FAl//Zeh8EvhFvOWqOvvE
+         F1mFbTrfxd9YRWucoUiXQfOqHAcirQ4EmTuP2h03M0KVk6AqdChAxNVB+m110fPo2M
+         o8U1mYASq/blw==
+Message-ID: <586066f9-c201-ff37-3e77-28ab3eb1c733@collabora.com>
+Date:   Thu, 3 Feb 2022 16:13:48 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220128171804.569796-27-brijesh.singh@amd.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [V11,PATCH 05/19] soc: mediatek: add support for mt6873
+Content-Language: en-US
+To:     Dawei Chien <dawei.chien@mediatek.com>,
+        Georgi Djakov <georgi.djakov@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Ryan Case <ryandcase@chromium.org>
+Cc:     Mark Rutland <mark.rutland@arm.com>,
+        Nicolas Boichat <drinkcat@google.com>,
+        devicetree@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        Fan Chen <fan.chen@mediatek.com>,
+        Arvin Wang <arvin.wang@mediatek.com>,
+        James Liao <jamesjj.liao@mediatek.com>,
+        Henry Chen <henryc.chen@mediatek.com>
+References: <20210812085846.2628-1-dawei.chien@mediatek.com>
+ <20210812085846.2628-6-dawei.chien@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20210812085846.2628-6-dawei.chien@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 11:17:47AM -0600, Brijesh Singh wrote:
-> +int efi_get_conf_table(struct boot_params *boot_params, unsigned long *cfg_tbl_pa,
-> +		       unsigned int *cfg_tbl_len)
-> +{
-> +	unsigned long sys_tbl_pa = 0;
-> +	enum efi_type et;
-> +	int ret;
-> +
-> +	if (!cfg_tbl_pa || !cfg_tbl_len)
-> +		return -EINVAL;
-> +
-> +	sys_tbl_pa = efi_get_system_table(boot_params);
-> +	if (!sys_tbl_pa)
-> +		return -EINVAL;
-> +
-> +	/* Handle EFI bitness properly */
-> +	et = efi_get_type(boot_params);
-> +	if (et == EFI_TYPE_64) {
-> +		efi_system_table_64_t *stbl =
-> +			(efi_system_table_64_t *)sys_tbl_pa;
-> +
-> +		*cfg_tbl_pa = stbl->tables;
-> +		*cfg_tbl_len = stbl->nr_tables;
-> +	} else if (et == EFI_TYPE_32) {
-> +		efi_system_table_32_t *stbl =
-> +			(efi_system_table_32_t *)sys_tbl_pa;
+Il 12/08/21 10:58, Dawei Chien ha scritto:
+> From: Henry Chen <henryc.chen@mediatek.com>
+> 
+> add support for mt6873
+> 
+> Signed-off-by: Henry Chen <henryc.chen@mediatek.com>
 
-You don't have to break those assignment lines - the 80 cols rule is not
-a hard one. Readability is more important.
+You forgot to add your Signed-off-by tag here. Even if this patch is
+not yours, you're the sender, so you have to sign it.
 
--- 
-Regards/Gruss,
-    Boris.
+Besides, can you please fix the title?
 
-https://people.kernel.org/tglx/notes-about-netiquette
+soc: mediatek: mtk-dvfsrc: Add support for MT6873
