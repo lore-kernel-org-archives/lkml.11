@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31B02C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 10:17:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7FDEC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 10:17:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350079AbiBCKRO (ORCPT
+        id S1350100AbiBCKRU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 05:17:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56724 "EHLO
+        Thu, 3 Feb 2022 05:17:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350043AbiBCKRH (ORCPT
+        with ESMTP id S1350066AbiBCKRL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 05:17:07 -0500
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D171EC06173B
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 02:17:06 -0800 (PST)
-Received: by mail-wr1-x42d.google.com with SMTP id m14so3955495wrg.12
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 02:17:06 -0800 (PST)
+        Thu, 3 Feb 2022 05:17:11 -0500
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E437C061744
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 02:17:09 -0800 (PST)
+Received: by mail-wr1-x430.google.com with SMTP id s10so1450370wra.5
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 02:17:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:organization:content-transfer-encoding;
-        bh=/al0prgIzPH9k1uNInWvvy4CEvy9CcExx2RD1oCo46Y=;
-        b=ykuAyEO7Zz2lYqqFSIrk2ysdk1zaZsO7ZQ+xLe4vX+sJjGcZ8yryVST6bfRC6Ug09Q
-         D8pdf1vVjTfJwpfKP4nKs9HzhyjAtVGUzDQIzxL/dW79Lb2reZaotyt8KPWz+XWdG626
-         FalXsepTOzgYIH3wzJmE/SaYZdJWRly1h13a0Q7PTjb7Us38hJELW97oRVuVe7CELs+j
-         HDdpyppXZq7eRNVbXRHFIksrUGNvayfZSx5r0qhbvhjWs4LkN1yv5yRLleV1DwJKfl9m
-         nNZeaSc/pRlVtP6PGP+whFQysJhq3NNqgEoJcbVkvtUN8BBtMz49Z8jaFm/rYUwBROSn
-         F5eg==
+        bh=ZsqgiQg4DyhZMtFGcYBtOqIcmksimVJQ+wXhCf+F5q4=;
+        b=xUj7JCe9ysvCQUikBJ2xTtpoghZRMuYJFNZE95fX39aRhfJQT1mv6mhVJEXzl5Y1mV
+         LLyIQTWPRvabw3gjz61FBWHSHBSdfpvwKOcknu1595Qa0VJlXI0fdC+LkZLY39own3co
+         2Kw8emOunrD+fiUUZNGgDY9HP1hFsAKbvrxq4sHjOUtwvYKIPAt3sGnNjbRiSl13K+NT
+         ddJXSYcIavO2Cx1L956LqKVIM36KEKhio2tulAGlVL/TW8ozupWSb0RP9TZV9jZBSU4Q
+         jAsJxc+Ep33zIkc/7RlCbVKl4pE320v9agP3B46UfdHz4M3jumn76L/husAQeGPL/0QL
+         zH+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:organization:content-transfer-encoding;
-        bh=/al0prgIzPH9k1uNInWvvy4CEvy9CcExx2RD1oCo46Y=;
-        b=OZ6Oh04cAx3asgeZnPaG8EWiyw8psEqNNQ+A3opasUknGMJHgJKKQnFV4sK4vknFii
-         22Q96g48Tb541uLQJN4nL8F/ouyy3zToyjjwThWVdzksB5imz+M83mDbanyPN2sEKtoX
-         704yd/kgFL1IpM/QnjVDv2AcwWc/gIl1SVweasI1NlYSic7CBPEMRjWI5GyjkUc4FWuQ
-         eLrAGudZBnHbntERw/wmXbYOUhNaqQTWKKuSjrr/jjXEkEV+1tsqycXtX6uWqhyq16CL
-         wojyki/+kiTpnczYZWOaaT7BMZsSUUtZk26wF9HcpNBHon/Oe6YL3LK0YDiQ9un20CWD
-         sKgw==
-X-Gm-Message-State: AOAM530oMlXpoJuHPcs9kM/TzdQQzSQtc33ZsoGZ3C0czfL+EmKshPug
-        UxMeAFCD+1YsGznlntHvSQHSvw==
-X-Google-Smtp-Source: ABdhPJzGN/eA8oMwkpIb673VebVUrG0sARzp5cCakB0m4ZmXye0dD4kQXCBmnt9zKjMHjzVCQ/i5kQ==
-X-Received: by 2002:a05:6000:18af:: with SMTP id b15mr27598340wri.589.1643883425399;
-        Thu, 03 Feb 2022 02:17:05 -0800 (PST)
+        bh=ZsqgiQg4DyhZMtFGcYBtOqIcmksimVJQ+wXhCf+F5q4=;
+        b=sBXVttdfeWViZ5J03kKXUwKX/CH70XIqwC6Y8Aqc5apQcuW0SO//KjpmTvIZT8m+//
+         nh8YxFEUxXbHLotjG9rfhrrbh5hxRvf1isPz9RoJIH9ALVHtr0GIiqhQ1NhrIee77frb
+         DvG1iMavArCjgU4KB6s1hj/b7Ir+KfPaXJA5bzpfF1kwnbSAkM5Zn4VfStA/eaUW+idq
+         9u264iSlCqmD0fQMcQrON48rwxoCGrQtmjpHbpo9LexZjZ/Gt0nUGCYRE8lG5nN1azm8
+         5+LhfzNFEuhtDu6DEp/7RJvT37aOLX3DJWwoc4ZAsznuw6Qztk7R4s2p93DJys6uA4mv
+         PBKw==
+X-Gm-Message-State: AOAM531uDG475TrEaP2XYmunTkS2RO7frNleogn3oo99zz8NP+G0LrFP
+        SZX05gXtGtbmlFmPTKEpxf3Jqg==
+X-Google-Smtp-Source: ABdhPJzwvfI8/AwHGgdy1d+CRsBzphC4aUVbBj569q6n//0yr0OScSgNddemwuqkzFN/I1uqmd3A2Q==
+X-Received: by 2002:a5d:64a1:: with SMTP id m1mr27938714wrp.358.1643883427991;
+        Thu, 03 Feb 2022 02:17:07 -0800 (PST)
 Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id g6sm19017148wrq.97.2022.02.03.02.17.04
+        by smtp.gmail.com with ESMTPSA id g6sm19017148wrq.97.2022.02.03.02.17.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Feb 2022 02:17:05 -0800 (PST)
+        Thu, 03 Feb 2022 02:17:07 -0800 (PST)
 From:   Tobias Waldekranz <tobias@waldekranz.com>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
@@ -56,9 +56,9 @@ Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 net-next 2/5] net: dsa: mv88e6xxx: Support policy entries in the VTU
-Date:   Thu,  3 Feb 2022 11:16:54 +0100
-Message-Id: <20220203101657.990241-3-tobias@waldekranz.com>
+Subject: [PATCH v2 net-next 4/5] net: dsa: mv88e6xxx: Improve multichip isolation of standalone ports
+Date:   Thu,  3 Feb 2022 11:16:56 +0100
+Message-Id: <20220203101657.990241-5-tobias@waldekranz.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220203101657.990241-1-tobias@waldekranz.com>
 References: <20220203101657.990241-1-tobias@waldekranz.com>
@@ -69,68 +69,165 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A VTU entry with policy enabled is used in combination with a port's
-VTU policy setting to override normal switching behavior for frames
-assigned to the entry's VID.
+Given that standalone ports are now configured to bypass the ATU and
+forward all frames towards the upstream port, extend the ATU bypass to
+multichip systems.
 
-A typical example is to Treat all frames in a particular VLAN as
-control traffic, and trap them to the CPU. In which case the relevant
-user port's VTU policy would be set to TRAP.
+Load VID 0 (standalone) into the VTU with the policy bit set. Since
+VID 4095 (bridged) is already loaded, we now know that all VIDs in use
+are always available in all VTUs. Therefore, we can safely enable
+802.1Q on DSA ports.
+
+Setting the DSA ports' VTU policy to TRAP means that all incoming
+frames on VID 0 will be classified as MGMT - as a result, the ATU is
+bypassed on all subsequent switches.
+
+With this isolation in place, we are able to support configurations
+that are simultaneously very quirky and very useful. Quirky because it
+involves looping cables between local switchports like in this
+example:
+
+   CPU
+    |     .------.
+.---0---. | .----0----.
+|  sw0  | | |   sw1   |
+'-1-2-3-' | '-1-2-3-4-'
+  $ @ '---'   $ @ % %
+
+We have three physically looped pairs ($, @, and %).
+
+This is very useful because it allows us to run the kernel's
+kselftests for the bridge on mv88e6xxx hardware.
 
 Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
 ---
- drivers/net/dsa/mv88e6xxx/chip.h        | 1 +
- drivers/net/dsa/mv88e6xxx/global1.h     | 1 +
- drivers/net/dsa/mv88e6xxx/global1_vtu.c | 5 ++++-
- 3 files changed, 6 insertions(+), 1 deletion(-)
+ drivers/net/dsa/mv88e6xxx/chip.c | 64 ++++++++++++++++++++++----------
+ include/net/dsa.h                |  6 +++
+ 2 files changed, 51 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
-index 438cee853d07..80dc7b549e81 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.h
-+++ b/drivers/net/dsa/mv88e6xxx/chip.h
-@@ -179,6 +179,7 @@ struct mv88e6xxx_vtu_entry {
- 	u16	fid;
- 	u8	sid;
- 	bool	valid;
-+	bool	policy;
- 	u8	member[DSA_MAX_PORTS];
- 	u8	state[DSA_MAX_PORTS];
- };
-diff --git a/drivers/net/dsa/mv88e6xxx/global1.h b/drivers/net/dsa/mv88e6xxx/global1.h
-index 4f3dbb015f77..2c1607c858a1 100644
---- a/drivers/net/dsa/mv88e6xxx/global1.h
-+++ b/drivers/net/dsa/mv88e6xxx/global1.h
-@@ -46,6 +46,7 @@
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 99151ba6f545..22391f8d4169 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -1630,21 +1630,11 @@ static int mv88e6xxx_fid_map_vlan(struct mv88e6xxx_chip *chip,
  
- /* Offset 0x02: VTU FID Register */
- #define MV88E6352_G1_VTU_FID		0x02
-+#define MV88E6352_G1_VTU_FID_VID_POLICY	0x1000
- #define MV88E6352_G1_VTU_FID_MASK	0x0fff
+ int mv88e6xxx_fid_map(struct mv88e6xxx_chip *chip, unsigned long *fid_bitmap)
+ {
+-	int i, err;
+-	u16 fid;
+-
+ 	bitmap_zero(fid_bitmap, MV88E6XXX_N_FID);
  
- /* Offset 0x03: VTU SID Register */
-diff --git a/drivers/net/dsa/mv88e6xxx/global1_vtu.c b/drivers/net/dsa/mv88e6xxx/global1_vtu.c
-index ae12c981923e..b1bd9274a562 100644
---- a/drivers/net/dsa/mv88e6xxx/global1_vtu.c
-+++ b/drivers/net/dsa/mv88e6xxx/global1_vtu.c
-@@ -27,7 +27,7 @@ static int mv88e6xxx_g1_vtu_fid_read(struct mv88e6xxx_chip *chip,
+-	/* Set every FID bit used by the (un)bridged ports */
+-	for (i = 0; i < mv88e6xxx_num_ports(chip); ++i) {
+-		err = mv88e6xxx_port_get_fid(chip, i, &fid);
+-		if (err)
+-			return err;
+-
+-		set_bit(fid, fid_bitmap);
+-	}
+-
+-	/* Set every FID bit used by the VLAN entries */
++	/* Every FID has an associated VID, so walking the VTU
++	 * will discover the full set of FIDs in use.
++	 */
+ 	return mv88e6xxx_vtu_walk(chip, mv88e6xxx_fid_map_vlan, fid_bitmap);
+ }
+ 
+@@ -1657,10 +1647,7 @@ static int mv88e6xxx_atu_new(struct mv88e6xxx_chip *chip, u16 *fid)
+ 	if (err)
  		return err;
  
- 	entry->fid = val & MV88E6352_G1_VTU_FID_MASK;
--
-+	entry->policy = !!(val & MV88E6352_G1_VTU_FID_VID_POLICY);
- 	return 0;
- }
+-	/* The reset value 0x000 is used to indicate that multiple address
+-	 * databases are not needed. Return the next positive available.
+-	 */
+-	*fid = find_next_zero_bit(fid_bitmap, MV88E6XXX_N_FID, 1);
++	*fid = find_first_zero_bit(fid_bitmap, MV88E6XXX_N_FID);
+ 	if (unlikely(*fid >= mv88e6xxx_num_databases(chip)))
+ 		return -ENOSPC;
  
-@@ -36,6 +36,9 @@ static int mv88e6xxx_g1_vtu_fid_write(struct mv88e6xxx_chip *chip,
- {
- 	u16 val = entry->fid & MV88E6352_G1_VTU_FID_MASK;
+@@ -2152,6 +2139,9 @@ static int mv88e6xxx_port_vlan_join(struct mv88e6xxx_chip *chip, int port,
+ 	if (!vlan.valid) {
+ 		memset(&vlan, 0, sizeof(vlan));
  
-+	if (entry->policy)
-+		val |= MV88E6352_G1_VTU_FID_VID_POLICY;
++		if (vid == MV88E6XXX_VID_STANDALONE)
++			vlan.policy = true;
 +
- 	return mv88e6xxx_g1_write(chip, MV88E6352_G1_VTU_FID, val);
+ 		err = mv88e6xxx_atu_new(chip, &vlan.fid);
+ 		if (err)
+ 			return err;
+@@ -2949,8 +2939,44 @@ static int mv88e6xxx_setup_port(struct mv88e6xxx_chip *chip, int port)
+ 	if (err)
+ 		return err;
+ 
++	/* On chips that support it, set all downstream DSA ports'
++	 * VLAN policy to TRAP. In combination with loading
++	 * MV88E6XXX_VID_STANDALONE as a policy entry in the VTU, this
++	 * provides a better isolation barrier between standalone
++	 * ports, as the ATU is bypassed on any intermediate switches
++	 * between the incoming port and the CPU.
++	 */
++	if (dsa_is_downstream_port(ds, port) &&
++	    chip->info->ops->port_set_policy) {
++		err = chip->info->ops->port_set_policy(chip, port,
++						MV88E6XXX_POLICY_MAPPING_VTU,
++						MV88E6XXX_POLICY_ACTION_TRAP);
++		if (err)
++			return err;
++	}
++
++	/* User ports start out in standalone mode and 802.1Q is
++	 * therefore disabled. On DSA ports, all valid VIDs are always
++	 * loaded in the VTU - therefore, enable 802.1Q in order to take
++	 * advantage of VLAN policy on chips that supports it.
++	 */
+ 	err = mv88e6xxx_port_set_8021q_mode(chip, port,
+-				MV88E6XXX_PORT_CTL2_8021Q_MODE_DISABLED);
++				dsa_is_user_port(ds, port) ?
++				MV88E6XXX_PORT_CTL2_8021Q_MODE_DISABLED :
++				MV88E6XXX_PORT_CTL2_8021Q_MODE_SECURE);
++	if (err)
++		return err;
++
++	/* Bind MV88E6XXX_VID_STANDALONE to MV88E6XXX_FID_STANDALONE by
++	 * virtue of the fact that mv88e6xxx_atu_new() will pick it as
++	 * the first free FID. This will be used as the private PVID for
++	 * unbridged ports. Shared (DSA and CPU) ports must also be
++	 * members of this VID, in order to trap all frames assigned to
++	 * it to the CPU.
++	 */
++	err = mv88e6xxx_port_vlan_join(chip, port, MV88E6XXX_VID_STANDALONE,
++				       MV88E6XXX_G1_VTU_DATA_MEMBER_TAG_UNMODIFIED,
++				       false);
+ 	if (err)
+ 		return err;
+ 
+@@ -2963,7 +2989,7 @@ static int mv88e6xxx_setup_port(struct mv88e6xxx_chip *chip, int port)
+ 	 * relying on their port default FID.
+ 	 */
+ 	err = mv88e6xxx_port_vlan_join(chip, port, MV88E6XXX_VID_BRIDGED,
+-				       MV88E6XXX_G1_VTU_DATA_MEMBER_TAG_UNTAGGED,
++				       MV88E6XXX_G1_VTU_DATA_MEMBER_TAG_UNMODIFIED,
+ 				       false);
+ 	if (err)
+ 		return err;
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index 6e5ef62a7dce..ca8c14b547b4 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -591,6 +591,12 @@ static inline bool dsa_is_upstream_port(struct dsa_switch *ds, int port)
+ 	return port == dsa_upstream_port(ds, port);
  }
  
++/* Return true if this is a DSA port leading away from the CPU */
++static inline bool dsa_is_downstream_port(struct dsa_switch *ds, int port)
++{
++	return dsa_is_dsa_port(ds, port) && !dsa_is_upstream_port(ds, port);
++}
++
+ /* Return the local port used to reach the CPU port */
+ static inline unsigned int dsa_switch_upstream_port(struct dsa_switch *ds)
+ {
 -- 
 2.25.1
 
