@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51AD6C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:33:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01051C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:33:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354797AbiBCUdC (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:33:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57604 "EHLO
+        id S239119AbiBCUdF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Feb 2022 15:33:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354501AbiBCUbr (ORCPT
+        with ESMTP id S1354535AbiBCUbs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 15:31:47 -0500
+        Thu, 3 Feb 2022 15:31:48 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCB7AC06175D;
-        Thu,  3 Feb 2022 12:31:16 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3EECC061796;
+        Thu,  3 Feb 2022 12:31:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 52BE761A5C;
-        Thu,  3 Feb 2022 20:31:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81919C340E8;
-        Thu,  3 Feb 2022 20:31:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 544FC61A6A;
+        Thu,  3 Feb 2022 20:31:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C40C2C340F3;
+        Thu,  3 Feb 2022 20:31:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643920275;
-        bh=cfXOxnZgcPdfoYQeHM0c0yyXmHPUq5UCgsWsGd9TXlo=;
+        s=k20201202; t=1643920301;
+        bh=E/9jBRbIyyEtc+13I+rJm5xa1JZLQM7ZW8OBG5cbk8w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HBdMEAYyY9/WblwtthYrRq5u0G3IL5xpzCL1izPZsbmJlCpbglHNWzlvnnln0PPPN
-         BtjE7/omMxmsIZ0tqpL5zHRMLkxKZVZ7EGcbrRl1jYogC5V1MXZg/ts4BzlCSSGvQX
-         mKAI14eQdOOID2LBN/alyJfLp+WbzklfIol/Zha1ha8WOz2P7utes5P9XKNW6n2sNG
-         CGF3/3+nwiy0tEmD6aOTTxMV4QvLl6WHalS1/5xwfQ/dUGXPfE+Bx7G5I+eFJZQYnh
-         lZwI5reHZlqfnWaO+F+chwJLd+J6PN6Jiqqfnntgw85PeAUHCOQZH+Yn0Jc+wCD7Rt
-         tdZ4IR4wOkBdg==
+        b=XlYMsQFquu/XpCa93XXMAa8BJNGOcWhHcGusvAMmPorNEzTZLu12/U5Pg3eLtcWVu
+         A3vKTTG+j+5a03xfexgD1vO6zrlun+IMRoAbEX0cpaK5bU76Xkt5LJdjVSzg+NIh9s
+         K3HsTaxE/V6FloREdgz35WrOFqih8UxL5y48QwCEzgs4I1EsmUFRArls2h7LjIN0L5
+         YuZRPY8VnAlcR2Wum3WgZh0B3/tk4S8cCZMJf8dgPMThyeZMda+QEjRPEoqim5K7+r
+         JBZImMZi9SVMZ/o2GOonH4+qXDKOkQjeOlbeOs5lPS7BYMQT7D+7wtvCkfl4MlVxxr
+         MppV3FQKFZ+BQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kiwoong Kim <kwmad.kim@samsung.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
-        bvanassche@acm.org, Avri.Altman@wdc.com, beanhuo@micron.com,
-        gustavoars@kernel.org, cang@codeaurora.org, caleb@connolly.tech,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 33/52] scsi: ufs: Treat link loss as fatal error
-Date:   Thu,  3 Feb 2022 15:29:27 -0500
-Message-Id: <20220203202947.2304-33-sashal@kernel.org>
+Cc:     Wu Zheng <wu.zheng@intel.com>, Ye Jinhe <jinhe.ye@intel.com>,
+        Keith Busch <kbusch@kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Sasha Levin <sashal@kernel.org>, axboe@fb.com,
+        sagi@grimberg.me, linux-nvme@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.16 43/52] nvme-pci: add the IGNORE_DEV_SUBNQN quirk for Intel P4500/P4600 SSDs
+Date:   Thu,  3 Feb 2022 15:29:37 -0500
+Message-Id: <20220203202947.2304-43-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220203202947.2304-1-sashal@kernel.org>
 References: <20220203202947.2304-1-sashal@kernel.org>
@@ -55,39 +53,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kiwoong Kim <kwmad.kim@samsung.com>
+From: Wu Zheng <wu.zheng@intel.com>
 
-[ Upstream commit c99b9b2301492b665b6e51ba6c06ec362eddcd10 ]
+[ Upstream commit 25e58af4be412d59e056da65cc1cefbd89185bd2 ]
 
-This event is raised when link is lost as specified in UFSHCI spec and that
-means communication is not possible. Thus initializing UFS interface needs
-to be done.
+The Intel P4500/P4600 SSDs do not report a subsystem NQN despite claiming
+compliance to a standards version where reporting one is required.
 
-Make UFS driver considers Link Lost as fatal in the INT_FATAL_ERRORS
-mask. This will trigger a host reset whenever a link lost interrupt occurs.
+Add the IGNORE_DEV_SUBNQN quirk to not fail the initialization of a
+second such SSDs in a system.
 
-Link: https://lore.kernel.org/r/1642743475-54275-1-git-send-email-kwmad.kim@samsung.com
-Signed-off-by: Kiwoong Kim <kwmad.kim@samsung.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Zheng Wu <wu.zheng@intel.com>
+Signed-off-by: Ye Jinhe <jinhe.ye@intel.com>
+Reviewed-by: Keith Busch <kbusch@kernel.org>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/ufs/ufshci.h | 3 ++-
+ drivers/nvme/host/pci.c | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/ufs/ufshci.h b/drivers/scsi/ufs/ufshci.h
-index 6a295c88d850f..a7ff0e5b54946 100644
---- a/drivers/scsi/ufs/ufshci.h
-+++ b/drivers/scsi/ufs/ufshci.h
-@@ -142,7 +142,8 @@ static inline u32 ufshci_version(u32 major, u32 minor)
- #define INT_FATAL_ERRORS	(DEVICE_FATAL_ERROR |\
- 				CONTROLLER_FATAL_ERROR |\
- 				SYSTEM_BUS_FATAL_ERROR |\
--				CRYPTO_ENGINE_FATAL_ERROR)
-+				CRYPTO_ENGINE_FATAL_ERROR |\
-+				UIC_LINK_LOST)
- 
- /* HCS - Host Controller Status 30h */
- #define DEVICE_PRESENT				0x1
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index ca2ee806d74b6..953ea3d5d4bfb 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -3326,7 +3326,8 @@ static const struct pci_device_id nvme_id_table[] = {
+ 				NVME_QUIRK_DEALLOCATE_ZEROES, },
+ 	{ PCI_VDEVICE(INTEL, 0x0a54),	/* Intel P4500/P4600 */
+ 		.driver_data = NVME_QUIRK_STRIPE_SIZE |
+-				NVME_QUIRK_DEALLOCATE_ZEROES, },
++				NVME_QUIRK_DEALLOCATE_ZEROES |
++				NVME_QUIRK_IGNORE_DEV_SUBNQN, },
+ 	{ PCI_VDEVICE(INTEL, 0x0a55),	/* Dell Express Flash P4600 */
+ 		.driver_data = NVME_QUIRK_STRIPE_SIZE |
+ 				NVME_QUIRK_DEALLOCATE_ZEROES, },
 -- 
 2.34.1
 
