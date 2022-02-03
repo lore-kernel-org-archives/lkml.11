@@ -2,89 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F26F1C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 10:30:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 937BDC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 10:30:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349471AbiBCKaD (ORCPT
+        id S1349599AbiBCKab (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 05:30:03 -0500
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:34640 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231725AbiBCKaB (ORCPT
+        Thu, 3 Feb 2022 05:30:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59750 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349205AbiBCKa3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 05:30:01 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1643884201; x=1675420201;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=1TXPyy/kpZBNxO1tbtGx3iBoVnJzfJ227qS4/tBvr18=;
-  b=LYJZ6XT+Hd0/9mScnCjCfZWzcX34xsA+MSAoIuY4EvOvv5CRs4tkBQLP
-   FL96IaQCZLClIyzDu0AJffAkQAEKYzkHqOOXP/TUapxTC6+zV9yCuTCxY
-   s4H70GI58T3ny3RYgoBa08eRILQxTSQ1vo1vEs2iANe0tTWPwo+tBICuv
-   yKKwaPKU8eamOoyXHsHNDlGAjkD/yerc4s1QnAHZZeVlCFEZDl2Y16TNo
-   4DUKZ6i/H/Imlpj30bp+Lqf6XlLqosDYFHabP/HszoGRr5HSCoS4frNVe
-   nlF5/kMiCIXAXQsj9KniYAXovTTtL/HF5iK4CIkb78ywm28gtxvKMUfm/
-   g==;
-IronPort-SDR: KptEahQXKMdnpFose7f1Df66KQBgN5k2e7W95KLW+AC4ubFgizza4MgTI+t5MrZ24ksmbfM/w1
- F68uLGKNQG6XHcStLBz+aPNh7uL5GEAtdkYyqVjYOmE6ca+EP42zwUSWue4JN9rPA7DHGLuugo
- LJWgr4dp/Z4NBtlHxGRml6/x9DVELeVMXtxm5h0XiHG2fnTs+oQVQUTAej+OccO7oxIxNY0QWj
- hLS8s1OkI606jg6a4WaC/Rkg81utatMXOWKT7J/cKPt1f1yyrd9D7I3RdG4n0Ydag2ut8pLOzP
- xwO4ms0GBCABQaEFHUvGAKYw
-X-IronPort-AV: E=Sophos;i="5.88,339,1635231600"; 
-   d="scan'208";a="84547385"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 03 Feb 2022 03:30:00 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 3 Feb 2022 03:30:01 -0700
-Received: from den-dk-m31857.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 3 Feb 2022 03:29:59 -0700
-From:   Steen Hegelund <steen.hegelund@microchip.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        <UNGLinuxDriver@microchip.com>, <netdev@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Steen Hegelund <steen.hegelund@microchip.com>
-Subject: [PATCH net] net: sparx5: Fix get_stat64 crash in tcpdump
-Date:   Thu, 3 Feb 2022 11:29:00 +0100
-Message-ID: <20220203102900.528987-1-steen.hegelund@microchip.com>
-X-Mailer: git-send-email 2.35.1
+        Thu, 3 Feb 2022 05:30:29 -0500
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C5DEC061714
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 02:30:29 -0800 (PST)
+Received: by mail-lj1-x22a.google.com with SMTP id z7so3241208ljj.4
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 02:30:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=fq71Zy1N9jBs3AfhHIITF18JMFrsGvlMgJHozhmwSWg=;
+        b=TOwrCUIKwnpw3MEY5F5d2dw/YLQlij2jV8hEjeKjupC3W8Y01aSXN99/GXn1A6cdVu
+         8V5jQ+osk+l8D2ArVLUz2mlEKJVDIp8F+ffF/qTW+sJMYmAJcRixFXeOrvfyupx2ZReV
+         wORIPuvt/gMDECvR9UXB1K7iAdZJWi2V2qBQ6veU2nXzE4WwFXpTvmaXjZFNHSDD+xXl
+         qRGBqvSBdPlAvnJVmVv4AtRp/17Izw4NEtfIRkJcZ6FAEmJdlx3aHG1Ynk5yrVuCrKBX
+         czERQqKMUM9965NTV8XEv/J6u/SJfaNeo4aaoC1C4h6hRC4KxyZELGVSPQPcVIAd4bfb
+         0Sow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=fq71Zy1N9jBs3AfhHIITF18JMFrsGvlMgJHozhmwSWg=;
+        b=cGYfxF53wgudYXFFu2PzA+J+Iwcz9+FxA3+FBOGm0yKkAWUGvTXVNVeDTOKO8q90ex
+         cRa9VZodazZa+A/YiO94FMS0MsZYwux/dKCjbYA6M1w2yx0rFHa+aRmgas3EtTyy65G2
+         nV2Ub8RhiN7pec9vlg7CXHjKd4R1W7v2Lkj0uZDFaj5Fsnwsmr7q2/q8US5aMXBAKYcA
+         u3CtMvr7owiLyvxRasbPlwrc8MoKP+Fqj9sfI71znmk7CDtWPi61+sqlvyR2J2/KorXt
+         N1qcH1lq+R3wt6vNDY7exbFyPKH4EvYlQhWlI/fkllU+fz7M7S0+0UmjWXvQWPJFf95r
+         Tr7g==
+X-Gm-Message-State: AOAM530I3sPnrjDwY0l2yj8RDOlCKc8+6JX7zkFKUbo4m2+oExh0+UGP
+        Lc3amE85636ZUMnJnns5BY4eAx8wSZez7H0fAbc=
+X-Google-Smtp-Source: ABdhPJzL16V++jZmbzUnKrXRb04xl6tmQyhPuNZ/871XgyeLYHwl/VJAKniZ3lXMFtIYLXJQgyj9twxqcmOu9OsacMU=
+X-Received: by 2002:a2e:a5c3:: with SMTP id n3mr14004615ljp.212.1643884227393;
+ Thu, 03 Feb 2022 02:30:27 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+From:   Nikita Popov <npv1310@gmail.com>
+Date:   Thu, 3 Feb 2022 15:30:16 +0500
+Message-ID: <CA+cA0PB92khCo7dNAyw-zUmhKJHg-D2aQyT=HmLHhyVvd_Cd5g@mail.gmail.com>
+Subject: A logical error in arch/x86/mm/init.c
+To:     dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org
+Cc:     linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This problem was found with Sparx5 when the tcpdump tool requests the
-do_get_stats64 (sparx5_get_stats64) statistic.
+Hello!
 
-The portstats pointer was incorrectly incremented when fetching priority
-based statistics.
+It appears that there is a logical error in arch/x86/mm/init.c in the
+master branch. Although it is unlikely to occur in practice. I
+discovered it while studying source code in that file.
 
-Fixes: af4b11022e2d (net: sparx5: add ethtool configuration and statistics support)
-Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
----
- drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Here is the description:
+1) The function 'init_range_memory_mapping' is responsible for direct
+mapping of the normal memory range. Before proceeding to mapping of a
+valid subrange containing usable RAM the function checks that it is
+safe to allocate pages from PGT_BUF subarea of BRK area (the 'safe'
+means we we are not mapping the page belonging to PGT_BUF subarea
+which can incur MMU issues if that page is allocated as a page
+directory). As a result the global flag 'can_use_brk_pgt' reflects
+whether the current subrange overlaps with the free area from PGT_BUF.
+The 'true' value means no overlapping.
+2) The function 'alloc_low_pages' is used during page directories
+construction. If it happens that we exhausted PGT_BUF completely (such
+condition usually causes can_use_brk_pgt == true), there is a chance
+that we use common BRK area on memblock allocation failure (memblock
+allocator is restricted to use already mapped pages only). If the
+'can_use_brk_pgt' flag is set we allocate a page from the common BRK
+area. But the BRK area is not protected with the similar check meaning
+that in theory we can allocate a page serving as page directory for
+the very same page. The flag 'can_use_brk_pgt' protects only the
+PGT_BUF subarea of the BRK area. Not the whole BRK area.
 
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c b/drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c
-index 59783fc46a7b..10b866e9f726 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c
-@@ -1103,7 +1103,7 @@ void sparx5_get_stats64(struct net_device *ndev,
- 	stats->tx_carrier_errors = portstats[spx5_stats_tx_csense_cnt];
- 	stats->tx_window_errors = portstats[spx5_stats_tx_late_coll_cnt];
- 	stats->rx_dropped = portstats[spx5_stats_ana_ac_port_stat_lsb_cnt];
--	for (idx = 0; idx < 2 * SPX5_PRIOS; ++idx, ++stats)
-+	for (idx = 0; idx < 2 * SPX5_PRIOS; ++idx)
- 		stats->rx_dropped += portstats[spx5_stats_green_p0_rx_port_drop
- 					       + idx];
- 	stats->tx_dropped = portstats[spx5_stats_tx_local_drop];
--- 
-2.35.1
+In my opinion one of the simplest fixes here is to completely remove
+the following lines:
+    if (!ret && can_use_brk_pgt)
+            ret = __pa(extend_brk(PAGE_SIZE * num, PAGE_SIZE));
 
+I look forward to seeing your comments on this.
+Kind regards.
+
+Nikita Popov
+Senior C Developer
