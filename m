@@ -2,94 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BA9FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 19:02:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A51E3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 19:04:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353645AbiBCTCR (ORCPT
+        id S1353651AbiBCTEX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 14:02:17 -0500
-Received: from foss.arm.com ([217.140.110.172]:37978 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237541AbiBCTCN (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 14:02:13 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 86753147A;
-        Thu,  3 Feb 2022 11:02:13 -0800 (PST)
-Received: from usa.arm.com (e103737-lin.cambridge.arm.com [10.1.197.49])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 5006D3F774;
-        Thu,  3 Feb 2022 11:02:12 -0800 (PST)
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Sudeep Holla <sudeep.holla@arm.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Mike Leach <mike.leach@linaro.org>,
-        Leo Yan <leo.yan@linaro.org>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        coresight@lists.linaro.org
-Subject: [PATCH v2] coresight: trbe: Move check for kernel page table isolation from EL0 to probe
-Date:   Thu,  3 Feb 2022 19:01:59 +0000
-Message-Id: <20220203190159.3145272-1-sudeep.holla@arm.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 3 Feb 2022 14:04:23 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:21842 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237541AbiBCTEV (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 3 Feb 2022 14:04:21 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643915061;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8WFk5VazJGj78aF3vcRFOwWn7//j5v/p/zsICay1c+U=;
+        b=OmCKu02w5dUeLpKhZoqXqtl4B04ntFeX4HXfTwitkdTUYU6O3llgreP79mxem9eSQWvJgc
+        7fNIPj8OHRkwPK62ZTDvkQ0Ho+gnvQszVWo9JUa5t4TQmo3GqrX51crqoRhD3pqLwaFE1k
+        lYhg2GOxIqHna57DIIBjnrfGnvXXS4s=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-544-1_xSlXEUNfiENHGx0Rm0IQ-1; Thu, 03 Feb 2022 14:04:18 -0500
+X-MC-Unique: 1_xSlXEUNfiENHGx0Rm0IQ-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A074518B613D;
+        Thu,  3 Feb 2022 19:04:15 +0000 (UTC)
+Received: from [10.22.8.80] (unknown [10.22.8.80])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 747A75D6BA;
+        Thu,  3 Feb 2022 19:03:59 +0000 (UTC)
+Message-ID: <3f042edb-3769-afea-17a7-899578cd5c69@redhat.com>
+Date:   Thu, 3 Feb 2022 14:03:58 -0500
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH v4 3/4] mm/page_owner: Print memcg information
+Content-Language: en-US
+To:     Michal Hocko <mhocko@suse.com>
+Cc:     Johannes Weiner <hannes@cmpxchg.org>,
+        Vladimir Davydov <vdavydov.dev@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
+        linux-mm@kvack.org, Ira Weiny <ira.weiny@intel.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Roman Gushchin <guro@fb.com>, Rafael Aquini <aquini@redhat.com>
+References: <20220131192308.608837-5-longman@redhat.com>
+ <20220202203036.744010-4-longman@redhat.com>
+ <YfvOp5VXrxy9IW1w@dhcp22.suse.cz>
+From:   Waiman Long <longman@redhat.com>
+In-Reply-To: <YfvOp5VXrxy9IW1w@dhcp22.suse.cz>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently with the check present in the module initialisation, it shouts
-on all the systems irrespective of presence of coresight trace buffer
-extensions.
+On 2/3/22 07:46, Michal Hocko wrote:
+> On Wed 02-02-22 15:30:35, Waiman Long wrote:
+> [...]
+>> +#ifdef CONFIG_MEMCG
+>> +	unsigned long memcg_data;
+>> +	struct mem_cgroup *memcg;
+>> +	bool online;
+>> +	char name[80];
+>> +
+>> +	rcu_read_lock();
+>> +	memcg_data = READ_ONCE(page->memcg_data);
+>> +	if (!memcg_data)
+>> +		goto out_unlock;
+>> +
+>> +	if (memcg_data & MEMCG_DATA_OBJCGS)
+>> +		ret += scnprintf(kbuf + ret, count - ret,
+>> +				"Slab cache page\n");
+>> +
+>> +	memcg = page_memcg_check(page);
+>> +	if (!memcg)
+>> +		goto out_unlock;
+>> +
+>> +	online = (memcg->css.flags & CSS_ONLINE);
+>> +	cgroup_name(memcg->css.cgroup, name, sizeof(name));
+> Is there any specific reason to use another buffer allocated on the
+> stack? Also 80B seems too short to cover NAME_MAX.
+>
+> Nothing else jumped at me.
 
-Similar to Arm SPE perf driver, move the check for kernel page table
-isolation from  EL0 to the device probe stage instead of the module
-initialisation so that it complains only on the systems that support TRBE.
+I suppose we can print directly into kbuf with cgroup_name(), but using 
+a separate buffer is easier to read and understand. 79 characters should 
+be enough for most cgroup names. Some auto-generated names with some 
+kind of embedded uuids may be longer than that, but the random sequence 
+of hex digits that may be missing do not convey much information for 
+identification purpose. We can always increase the buffer length later 
+if it turns out to be an issue.
 
-Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
-Cc: Suzuki K Poulose <suzuki.poulose@arm.com>
-Cc: Mike Leach <mike.leach@linaro.org>
-Cc: Leo Yan <leo.yan@linaro.org>
-Cc: Anshuman Khandual <anshuman.khandual@arm.com>
-Cc: coresight@lists.linaro.org
-Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
----
- drivers/hwtracing/coresight/coresight-trbe.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
-
-v1[1]->v2:
-	- Added comment about trace capture being not possible with kernel
-	  page table isolation
-[1] https://lore.kernel.org/r/20220201122212.3009461-1-sudeep.holla@arm.com
-
-diff --git a/drivers/hwtracing/coresight/coresight-trbe.c b/drivers/hwtracing/coresight/coresight-trbe.c
-index 276862c07e32..3e37a63cb7d2 100644
---- a/drivers/hwtracing/coresight/coresight-trbe.c
-+++ b/drivers/hwtracing/coresight/coresight-trbe.c
-@@ -1423,6 +1423,12 @@ static int arm_trbe_device_probe(struct platform_device *pdev)
- 	struct device *dev = &pdev->dev;
- 	int ret;
- 
-+	/* Trace capture is not possible with kernel page table isolation */
-+	if (arm64_kernel_unmapped_at_el0()) {
-+		pr_err("TRBE wouldn't work if kernel gets unmapped at EL0\n");
-+		return -EOPNOTSUPP;
-+	}
-+
- 	drvdata = devm_kzalloc(dev, sizeof(*drvdata), GFP_KERNEL);
- 	if (!drvdata)
- 		return -ENOMEM;
-@@ -1484,11 +1490,6 @@ static int __init arm_trbe_init(void)
- {
- 	int ret;
- 
--	if (arm64_kernel_unmapped_at_el0()) {
--		pr_err("TRBE wouldn't work if kernel gets unmapped at EL0\n");
--		return -EOPNOTSUPP;
--	}
--
- 	ret = platform_driver_register(&arm_trbe_driver);
- 	if (!ret)
- 		return 0;
--- 
-2.25.1
+Cheers,
+Longman
 
