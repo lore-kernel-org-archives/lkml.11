@@ -2,69 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 738E9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:47:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87976C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:47:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354885AbiBCUrE (ORCPT
+        id S1355092AbiBCUrP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:47:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32938 "EHLO
+        Thu, 3 Feb 2022 15:47:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356596AbiBCUq2 (ORCPT
+        with ESMTP id S1356627AbiBCUqd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 15:46:28 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9E4BC061182;
-        Thu,  3 Feb 2022 12:44:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=GdztUW9x+fNlUtnFtFu79iJaJ/d/JZTADTo3wiUu4gM=; b=x9OlGeOiYglbofGb2DmfMM2Oo9
-        hss+jAkhZ0AARNGf568KH2t244lOnXoiaeDkHJh9y88XSCfM4zhuX/O1ioBRmln6FZ8C6LcvxurRn
-        9BmgtvJh4O/xQJt5oCpe0LroEeYOhiR9ggMfxD+hCpj6XY8Tq+cFXyn9gzdRRPNndvGBKGm/V++RT
-        f56uVTLAp09p4IhpQeRdFSMw/NxMS1bYkXbDtLOdXU1SGwYn5ymmgLTLui08mbPMHtzmJ64zVl0An
-        p+vlKFaDtvUUgWMLwJ1bH8t5X1lTR/S94kMYPRbINNXfcsmdzm7HEZBnG/ol/aVX7WM9fYJ3HxNw/
-        nqdt8xjQ==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nFiyA-002piX-Io; Thu, 03 Feb 2022 20:44:42 +0000
-Date:   Thu, 3 Feb 2022 12:44:42 -0800
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     "atomlin@redhat.com" <atomlin@redhat.com>,
-        "linux-modules@vger.kernel.org" <linux-modules@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH 1/2] modules: Make module_enable_x() independant of
- CONFIG_ARCH_HAS_STRICT_MODULE_RWX
-Message-ID: <Yfw+ulJ9mAT2tvvn@bombadil.infradead.org>
-References: <203348805c9ac9851d8939d15cb9802ef047b5e2.1643919758.git.christophe.leroy@csgroup.eu>
+        Thu, 3 Feb 2022 15:46:33 -0500
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43156C061749
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 12:45:38 -0800 (PST)
+Received: by mail-pj1-x1032.google.com with SMTP id oa14-20020a17090b1bce00b001b61aed4a03so4122482pjb.5
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 12:45:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Ax+zgGQyyKWqqmUNa+Gr/NFN1a356webih9nQCbtRlA=;
+        b=lq4mnyUfUnu0BzR6Wiz2LqRbI6UXI+AlM29AzDRsgBJJEGxcudKiSVmcZVkBdH1V5R
+         H9ihEHFWxShy/iMqODNdF03wxTXBQYKV/ZiBFz64MRdzRlBLWokuqPF3y8/2M49e7xEO
+         8cpdAI1hx+7n5zGDn6/weEZdRv67FbbRqt0zI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Ax+zgGQyyKWqqmUNa+Gr/NFN1a356webih9nQCbtRlA=;
+        b=wPHl+nnEnJfUusqyhqEnmSIKKaDzUoi8bHi1eRnfhrfleAAb4Rqmw4Xt1ofqMAi3d2
+         vfBvg2tdq47pGIXbCmCZFMHwEthTJlR+jR6Guu+ZpgJ0TDXv0BpX45oMe0MEQtWj9Lq0
+         k+oUdVYKHEI2ZEgEBzmcbTOvceYSlzcrODRLS/xQf3UFA9FIHrzLtb0ck0dJRt6oifIH
+         Bi2bZjOxxKJ2MjVGxLk07cN5candAMIKau8rN1S2P9ZTWOXPb1HpPzHeGXdK4ZzNR6nq
+         mxc3sZmZiTPdu37dGIEuj6oTbXkuquNkixTXsvcH2yJX57PWYuCOSGhrWkt4qwdC1Psn
+         FbVw==
+X-Gm-Message-State: AOAM5333HaFNaDWUhtPbSjNOuvxgcrtSY14TJOaORhCUtuSzzTdLCEwv
+        1+QLIldareA8+hkPWqdSAKkX+A==
+X-Google-Smtp-Source: ABdhPJzyIjueAdPLPELPYzMN0XC6MvF7sAwGHIqciSmxWkbnOpbPZS4x4gmcwTPLeXlwCj4QQRQGWA==
+X-Received: by 2002:a17:902:6903:: with SMTP id j3mr37649101plk.137.1643921137797;
+        Thu, 03 Feb 2022 12:45:37 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id j10sm30543226pfu.93.2022.02.03.12.45.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Feb 2022 12:45:37 -0800 (PST)
+Date:   Thu, 3 Feb 2022 12:45:36 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Peter Rosin <peda@axentia.se>,
+        Andy Shevchenko <andy@kernel.org>,
+        Matteo Croce <mcroce@microsoft.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        llvm@lists.linux.dev, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH] lib/test_string.c: Add test for strlen()
+Message-ID: <202202031242.45A7F5704@keescook>
+References: <20220130183653.491292-1-keescook@chromium.org>
+ <20220202160149.GA2322037@roeck-us.net>
+ <202202021237.487D3DE73@keescook>
+ <5ff18cff-6cfd-1f85-da74-1e5660a1a250@roeck-us.net>
+ <CAMuHMdWssK2=NFc6NO-inQg5dWxZP4Wv41K3J3RqRXThXatovw@mail.gmail.com>
+ <202202030911.4914709E@keescook>
+ <CAMuHMdUBKofPP-6EofE3B7d6k0zv0nPJ7e4pjsznPF==ApJ6qg@mail.gmail.com>
+ <CAKwvOdnJ3w2Jb9tBZ+JnEfviquj2WktemCd833f=_P66a0qVag@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <203348805c9ac9851d8939d15cb9802ef047b5e2.1643919758.git.christophe.leroy@csgroup.eu>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+In-Reply-To: <CAKwvOdnJ3w2Jb9tBZ+JnEfviquj2WktemCd833f=_P66a0qVag@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 03, 2022 at 08:23:25PM +0000, Christophe Leroy wrote:
-> module_enable_x() has nothing to do with CONFIG_ARCH_HAS_STRICT_MODULE_RWX
-> allthough by coincidence architectures who need module_enable_x() are
-> selection CONFIG_ARCH_HAS_STRICT_MODULE_RWX.
-> 
-> Enable module_enable_x() for everyone everytime. If an architecture
-> already has module text set executable, it's a no-op.
-> 
-> Only check end boundary if CONFIG_STRICT_MODULE_RWX is set, and
-> make sure we entirely get the last page when the boundary is not
-> aligned. When CONFIG_STRICT_MODULE_RWX is not selected, it is not
-> a big deal to have the start of data as executable.
-> 
-> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+On Thu, Feb 03, 2022 at 11:50:34AM -0800, Nick Desaulniers wrote:
+> The kernel does not link against a libc; but it does provide many
+> symbols that libc would provide, with the same or similar enough
+> semantics that I would strongly recommend we _don't_ use
+> -ffreestanding in order to get such libcall optimizations (there are a
+> lot; see https://github.com/llvm/llvm-project/blob/main/llvm/lib/Transforms/Utils/SimplifyLibCalls.cpp
+> for some examples) and simply use -fno-builtin-* when necessary, or
+> fix the kernel implementations individually.
 
-Thanks!
+Right, we really don't want -ffreestanding. Rather, we want to not link
+against libgcc. This is mostly true already, though some of the smaller
+architectures still do:
 
-Both patches look good to me! I can merge this once Aaron's
-then your's and then Michal's KEXEC stuff gets merged.
+$ git grep print-libgcc
+arch/arc/Makefile:LIBGCC        = $(shell $(CC) $(cflags-y) --print-libgcc-file-name)
+arch/csky/Makefile:     $(shell $(CC) $(KBUILD_CFLAGS) $(KCFLAGS) -print-libgcc-file-name)
+arch/h8300/boot/compressed/Makefile:LIBGCC := $(shell $(CROSS-COMPILE)$(CC) $(KBUILD_CFLAGS) -print-libgcc-file-name 2>/dev/null)
+arch/nios2/Makefile:LIBGCC         := $(shell $(CC) $(KBUILD_CFLAGS) $(KCFLAGS) -print-libgcc-file-name)
+arch/openrisc/Makefile:LIBGCC           := $(shell $(CC) $(KBUILD_CFLAGS) -print-libgcc-file-name)
+arch/parisc/Makefile:LIBGCC             := $(shell $(CC) -print-libgcc-file-name)
+arch/xtensa/Makefile:LIBGCC := $(shell $(CC) $(KBUILD_CFLAGS) -print-libgcc-file-name)
+arch/xtensa/boot/boot-redboot/Makefile:LIBGCC := $(shell $(CC) $(KBUILD_CFLAGS) -print-libgcc-file-name)
 
-  Luis
+-- 
+Kees Cook
