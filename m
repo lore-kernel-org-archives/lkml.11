@@ -2,85 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52D4EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 17:11:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56F9CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 17:12:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352553AbiBCRLf (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 12:11:35 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:44118 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352733AbiBCRLQ (ORCPT
+        id S236040AbiBCRMC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Feb 2022 12:12:02 -0500
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.53]:39199 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234879AbiBCRL7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 12:11:16 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 82324B8350F;
-        Thu,  3 Feb 2022 17:11:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09989C340E8;
-        Thu,  3 Feb 2022 17:11:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643908274;
-        bh=0T1PX8l3N5+kpFJQ2G3e1jvblpArQwCSGcG+5Ha2rW8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=pT+7q6bbM5mpD1l386q6kNXft6lRRzlAvvqXVMD4LCNn/CbwgDiLB9PiKvFWVevAv
-         9aGjtPtyklCPRRZJ8Xcl7oBPf9+x14Q8KqhtNwVrALB1cSk2G7BLSL2WZORA4djUkZ
-         GhJEwAspdhRrLXpVt1Jm2xN3XtWhEzVNyT+Y/2BNTpKuQgMtkZ8KNsWfkvpxN6tawO
-         shlB49dHKNOTAWvl5JDsYgEaMBVdMZZwhauK6Wh4fWfAKxY4byYDWmcU/GPXCc5H6b
-         HM8FqWVLznEMjoVay+WeAsdCvkW1MTUxeW6vXWJo/BB8QqHEGATLEfeZe4Q+8vn9EJ
-         T9CJTqanVsfdw==
-Date:   Thu, 3 Feb 2022 11:11:12 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     ira.weiny@intel.com
-Cc:     Dan Williams <dan.j.williams@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Alison Schofield <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Ben Widawsky <ben.widawsky@intel.com>,
-        linux-kernel@vger.kernel.org, linux-cxl@vger.kernel.org,
-        linux-pci@vger.kernel.org
-Subject: Re: [PATCH V6 01/10] PCI: Add vendor ID for the PCI SIG
-Message-ID: <20220203171112.GA103601@bhelgaas>
+        Thu, 3 Feb 2022 12:11:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1643908315;
+    s=strato-dkim-0002; d=chronox.de;
+    h=References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Cc:Date:
+    From:Subject:Sender;
+    bh=in3ANS4p1/EJ1Vk8fAo3enQEiM4qdqkOrQ7NVZWdrM0=;
+    b=g43WW+klKEcQR1r6HM6JPA2vjUlwLzEaEEnxW/6JKB4llxJzBhans5dXOIxpgSEtAn
+    wZJFOOwTRwvty9UnrL9uTsIV54zWKO/4x21z9kk9OAictzIeZMNeT3kW9NLIUNzhCnnA
+    naRiTC0XbuMUoeJuJxoHCSE62589gRJs2QF6ImUIBqLe/Cbndn4rGu4XYGO4t3JssvZ5
+    cZQQh8oGjrosgrv61nXxlKKDfs+uDjMkIpqdW/vdwx/yzJMps4sQAeVrrHcDAxTpTnMy
+    16Wo0pMxJ6R+4GouMHQSo87JowHowitTTVIEpQnzD7I+vbUH4pZm/43s18q6TBjhRuvr
+    5K9A==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2ERcEykfu11Y98lp/T7+hdri+uKZK8TKWEqNyiHySGSa9k9zW8BKRp5UFiyGZZ4jof7Xg=="
+X-RZG-CLASS-ID: mo00
+Received: from tauon.chronox.de
+    by smtp.strato.de (RZmta 47.39.0 AUTH)
+    with ESMTPSA id z28df7y13HBsGQ7
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Thu, 3 Feb 2022 18:11:54 +0100 (CET)
+From:   Stephan Mueller <smueller@chronox.de>
+To:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Nicolai Stange <nstange@suse.de>
+Cc:     Hannes Reinecke <hare@suse.de>, Torsten Duwe <duwe@suse.de>,
+        David Howells <dhowells@redhat.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        keyrings@vger.kernel.org, Nicolai Stange <nstange@suse.de>
+Subject: Re: [PATCH v3 00/15] crypto: dh - infrastructure for NVM in-band auth and FIPS conformance
+Date:   Thu, 03 Feb 2022 18:11:53 +0100
+Message-ID: <8937519.l8FpVtv5Hg@tauon.chronox.de>
+In-Reply-To: <20220202104012.4193-1-nstange@suse.de>
+References: <20220202104012.4193-1-nstange@suse.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220201071952.900068-2-ira.weiny@intel.com>
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 31, 2022 at 11:19:43PM -0800, ira.weiny@intel.com wrote:
-> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> 
-> This ID is used in DOE headers to identify protocols that are defined
-> within the PCI Express Base Specification.
-> 
-> Specified in Table 7-x2 of the Data Object Exchange ECN (approved 12 March
-> 2020) available from https://members.pcisig.com/wg/PCI-SIG/document/14143
+Am Mittwoch, 2. Februar 2022, 11:39:57 CET schrieb Nicolai Stange:
 
-Please update this citation to PCIe r6.0, sec 6.30.1.1, table 6-32.
+Hi Nicolai,
 
-> Acked-by: Bjorn Helgaas <bhelgaas@google.com>
-> Reviewed-by: Dan Williams <dan.j.williams@intel.com>
-> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> ---
->  include/linux/pci_ids.h | 1 +
->  1 file changed, 1 insertion(+)
+> Hi all,
 > 
-> diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
-> index 011f2f1ea5bb..849f514cd7db 100644
-> --- a/include/linux/pci_ids.h
-> +++ b/include/linux/pci_ids.h
-> @@ -149,6 +149,7 @@
->  #define PCI_CLASS_OTHERS		0xff
->  
->  /* Vendors and devices.  Sort key: vendor first, device next. */
-> +#define PCI_VENDOR_ID_PCI_SIG		0x0001
->  
->  #define PCI_VENDOR_ID_LOONGSON		0x0014
->  
-> -- 
-> 2.31.1
+> first of all, to the people primarily interested in security/keys/, there's
+> a rather trivial change to security/keys/dh.c in patch 4/15. It would be
+> great to get ACKs for that...
 > 
+> This is a complete rework of the v2 patchset to be found at [1]. Most
+> notably, the ffdheXYZ groups are now made accessible by means of templates
+> wrapping the generic dh: ffdhe2048(dh) ffdhe3072(dh), etc, rather than by
+> that fixed enum dh_group_id as before. For your reference, this change has
+> been suggested at [2].
+> 
+> Plain "dh" usage will be disallowed in FIPS mode now, which will break
+> keyctl(KEYCTL_DH_COMPUTE) functionality in FIPS mode. As per the
+> discussion from [2], this is acceptable or perhaps even desirable.
+> 
+> The only motivation to include the RFC 3526 MODP groups in the previous v2
+> had been to keep keyctl(KEYCTL_DH_COMPUTE) somewhat workable in FIPS mode.
+> These groups have been dropped accordingly now and this patchset only
+> introduces support for the RFC 7919 FFDHE groups, which is what is needed
+> by NVM in-band authentication.
+> 
+> In order to be able to restrict plain "dh" usage in FIPS mode while
+> still allowing the usage of those new ffdheXYZ(dh) instantiations, I
+> incorporated a modified version of the patch posted by Herbert at
+> [3] ("crypto: api - Disallow sha1 in FIPS-mode while allowing hmac(sha1)")
+> into this series here as [12/15] ("crypto: api - allow algs only in
+> specific constructions in FIPS mode"). There had been two changes worth
+> mentioning:
+> - An attempt to make it more generic by having crypto_grab_spawn()
+>   to include FIPS_INTERNAL in the lookup and also, to let
+>   crypto_register_instance() to propagate this flag from the
+>   child spawns into the instance to be registered.
+> - To skip the actual self-test executions for !->fips_allowed algorithms,
+>   just as before. The rationale for this can be found in the discussion to
+>   [3].
+> With these changes, all breakage is to blame on me and thus, I assumed
+> authorship of this patch. I reflected the fact that this is heavily based
+> on Herbert's work by means of an Originally-by tag and sincerely hope this
+> is an appropriate way of recording the patch's history.
+> 
+> This series has been tested on x86_64 and s390x (big endian) with FIPS mode
+> both enabled and disabled each.
+
+Using the NIST ACVP reference implementation, shared secret computation and 
+key generation was successfully tested.
+
+Tested-by: Stephan Mueller <smueller@chronox.de>
+
+
+Ciao
+Stephan
+
+
