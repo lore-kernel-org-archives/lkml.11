@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4BF9C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 01:36:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25958C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 01:36:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348835AbiBCBgF (ORCPT
+        id S1348872AbiBCBgL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 20:36:05 -0500
-Received: from new4-smtp.messagingengine.com ([66.111.4.230]:50535 "EHLO
+        Wed, 2 Feb 2022 20:36:11 -0500
+Received: from new4-smtp.messagingengine.com ([66.111.4.230]:35097 "EHLO
         new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230005AbiBCBgC (ORCPT
+        by vger.kernel.org with ESMTP id S1348834AbiBCBgF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 20:36:02 -0500
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 03E4A5801D8;
-        Wed,  2 Feb 2022 20:36:02 -0500 (EST)
+        Wed, 2 Feb 2022 20:36:05 -0500
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 67D845801D8;
+        Wed,  2 Feb 2022 20:36:05 -0500 (EST)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Wed, 02 Feb 2022 20:36:02 -0500
+  by compute1.internal (MEProxy); Wed, 02 Feb 2022 20:36:05 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
         cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
         :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm1; bh=5AjGYad9sW+FKie1aNJ3+LpBiH4rzT
-        j/3qYmj3pgyJY=; b=nIFf0CEuLAcA7GwB0DxNrEmHzPCcN/hj5kEEKyz1T3kXIO
-        obQCh1Mo8ecLONj3blFtmUBKek+y6ktYgtQhDMOfnIKXDfyzHTt7FXHw1pDwRsCO
-        JAZB2DYPC2vKfBklt9siAoU6hjrg4ulGDlM93b9TQurYR48tpNnG2Mz7eJTmQpwi
-        7i3e5UetGMSHAr5SQLsnztPmePAnL6U3c1B75lvH/gC+7rV4WlTeo0waOUVUfEd5
-        wcHVoZtKgfLH4LYii4+DjQlEa+YlGWvqwIZQrr7uREppACqHPpjb2egD8rwA8Z1J
-        y3DoFwpSw0H8c1l3J8wbu9LHSSqZKvTXiSbrg4EA==
+        :subject:subject:to:to; s=fm1; bh=Qv9J1cRGGPx4g8yfYeZF9v08xNYwi0
+        aJAWkB6MIlnNo=; b=PsTXpCgOT5MWmZJun82tGr+XVHga3TcF2KbdsfcUSlRJwr
+        CM5n946W0YwpTidnusclb3EZmpdo7Yt+tJ8BCrm5gcCY0D6huNxovmFGHZDPzdqg
+        OHuiUlQQxAc8zBKUq49HLu1y56QS+ecPM2YUyg+sRlX2ISvNVVl1QmEX1/TX5myG
+        LmGOURKncuQsGkDAsKF8siYsqWtCEfCOUGQlOaI3Y6lBGUrF90K5m0glil/Fis4W
+        ju+okkFbHMnVSJfS/8lFlD9R1LeOOLk2qQlprws0P9S4R/Fl2QftdF2CfTpCxAqN
+        2SAxURcag3FPTdMG/hEA05rhgPkfpstmAJGkNaLQ==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
         :from:from:in-reply-to:in-reply-to:message-id:mime-version
         :references:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=5AjGYa
-        d9sW+FKie1aNJ3+LpBiH4rzTj/3qYmj3pgyJY=; b=a6W+pCQbElOaTUErmRAdkB
-        Rd0QnFuI4zCdQb8vpaDrJeslrCQDuxDjzDsRRW1HMj3gu9CBWcQIAnpc8B7FzWrn
-        d5bBI1u6oIG0PVpsPx21OIvXqHLycmfxUJb5arkcDQbvBeBaJAoxATS/YAmEB00K
-        8Z1oBcUQWwmQpSkmdhCPWFVNiKVY3ipkst2KmTwYoJmVbLytvNdOQPgRCwT3MGnX
-        dmta6yk2+lxUZW71YtbTHKbhhcVPVvU3lkheR3qf4ZkmdT+Lhwf3141kSw8f3Ijf
-        QDXrcQBx6gJFgtu2BMLdCFuqil8vZDQnFB0rIproBHPWKqoZiKUdeRYCCArqSlxQ
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=Qv9J1c
+        RGGPx4g8yfYeZF9v08xNYwi0aJAWkB6MIlnNo=; b=oG6ujevragac52soTNNY5a
+        v5PPCIYKTrEX8enK7AMQMfTMVQXQVDXeyHT6ZBzUvhaCFo6YprXNlWrMy/hoOexe
+        GZfCD3fQlV04xemT3AqxESAZoVkSFoJ/9gqRrwSJAY8y1W6xE6wx0eRYCTzs67VM
+        IVkaBloXm7GPvjtXW1RrzzwYlc6OcpsMUtlTPz/YCEeEpucs2ZMTc+VeU9FgtATC
+        c1msKONWRvTHXIB7tx7IJduuLGoH7sijUmbEEeIMGJxqTGmCDll298HIDaBSYcKk
+        elM2GWLQ+1I3yNHo7EKlOJ3uuPrUy0cGDfTnrkQfyTpuVNVgiqxcDaTAIjRrdWdA
         ==
-X-ME-Sender: <xms:gTH7YcMGHztxTDpi259jHncLb9SnsBST3KPY6egJwmB5tQraMZSSww>
-    <xme:gTH7YS8vA6pIKQltOiZrKoPPYkHhkEV09LDYjTFUGNewyqoIdYKiyxgaI1jPrmDy9
-    3XV_xcL1m-imNvpxA>
-X-ME-Received: <xmr:gTH7YTSpc3hWQ70MXZvJsVXOrUan4arrRkeUg0mEWWKE3vt4HTEKE0XA3JzGZDiuSKBrADimIHxZBswhYdTF0VkjsQtAkChYYKqrmZnYnreXSEA4iEW1bpGD986C_8TrDREN8Q>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrgeeigdefhecutefuodetggdotefrodftvf
+X-ME-Sender: <xms:hTH7YbXjzgxgQrunYqBCvZI7PixE2Mj6UVm4_d6_7fyh3kcoCMqAWg>
+    <xme:hTH7YTmufX3_X0glz-mbmqiez5WuEtzvNpc1WXpA0UhcLD6nACYl5lbc8-M_gwQG8
+    _kxFOZ-gTU-Ng2Cbw>
+X-ME-Received: <xmr:hTH7YXa89loeAW2Pss-OmISxfpSJG5iKjFG5svuxPro-WtYVR00JnEfFx93iC-WRxyEIwOvZSnlIeI1Ky19cNz6_uOa76g385e0ESF3Ob9XepucftpuCE1Li8drsh3GPCbSRcQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrgeeigdefiecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
     fjughrpefhvffufffkofgjfhgggfestdekredtredttdenucfhrhhomhepufgrmhhuvghl
@@ -52,12 +52,12 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrgeeigdefhecutefuodetggdote
     grthhtvghrnhepudfhjeefvdfhgfefheetgffhieeigfefhefgvddvveefgeejheejvdfg
     jeehueeinecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
     epshgrmhhuvghlsehshhholhhlrghnugdrohhrgh
-X-ME-Proxy: <xmx:gTH7YUsvF4xmHxv_kN-QzIwQ6j5S-yLGj9yBmcYO1Rd4kOJSQXc8gg>
-    <xmx:gTH7YUdJxFnqhAI4WZH87ieZ8BvvBfJg8oSP3BNWxUk-BQLo-9odPA>
-    <xmx:gTH7YY2ZwzLJmXcV_XkTKtuQttzYioSIEqwoEPmoWLyF1Sqcjk1ACA>
-    <xmx:gTH7YY0pVx0R-nE8-nSLbtUcrpSUQZMqrg2G5biYcOvSQARu1ska-g>
+X-ME-Proxy: <xmx:hTH7YWWuC75YL797VAW9eKKrlFMgzGPU1u1VDiggIaDVDkX02CwadQ>
+    <xmx:hTH7YVnDBwGm1k7z_yc7EHTTeiG88FK2yeK5bY5yeI2qVPFGHj5HJQ>
+    <xmx:hTH7YTe_wi5LNZao5QsXYdTCQGl6OJbw5J1ielHG-_IDaLSs0lDEzw>
+    <xmx:hTH7YbcNc-gvENjmmJ9vgqbNwXZ1cnAiNirRm98gB8vCWxpI58HY4Q>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 2 Feb 2022 20:36:00 -0500 (EST)
+ 2 Feb 2022 20:36:04 -0500 (EST)
 From:   Samuel Holland <samuel@sholland.org>
 To:     Kishon Vijay Abraham I <kishon@ti.com>,
         Vinod Koul <vkoul@kernel.org>
@@ -70,9 +70,9 @@ Cc:     Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
         linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
         Andre Przywara <andre.przywara@arm.com>,
         Samuel Holland <samuel@sholland.org>
-Subject: [PATCH 2/4] phy: sun4i-usb: Remove .disc_thresh where not applicable
-Date:   Wed,  2 Feb 2022 19:35:55 -0600
-Message-Id: <20220203013558.11490-2-samuel@sholland.org>
+Subject: [PATCH 4/4] phy: sun4i-usb: Add D1 variant
+Date:   Wed,  2 Feb 2022 19:35:57 -0600
+Message-Id: <20220203013558.11490-4-samuel@sholland.org>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20220203013558.11490-1-samuel@sholland.org>
 References: <20220203013558.11490-1-samuel@sholland.org>
@@ -82,27 +82,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-.disc_thresh is not used when .type = sun50i_h6_phy, so providing a
-value for it is misleading.
+D1 has a register layout like A100 and H616, with the moved SIDDQ bit.
+Unlike H616 it does not have any dependencies between PHY instances.
 
 Signed-off-by: Samuel Holland <samuel@sholland.org>
 ---
 
- drivers/phy/allwinner/phy-sun4i-usb.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/phy/allwinner/phy-sun4i-usb.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
 diff --git a/drivers/phy/allwinner/phy-sun4i-usb.c b/drivers/phy/allwinner/phy-sun4i-usb.c
-index 788dd5cdbb7d..624950fd48ba 100644
+index 6675dad17415..d5f3b42eb8ce 100644
 --- a/drivers/phy/allwinner/phy-sun4i-usb.c
 +++ b/drivers/phy/allwinner/phy-sun4i-usb.c
-@@ -962,7 +962,6 @@ static const struct sun4i_usb_phy_cfg sun50i_a64_cfg = {
- static const struct sun4i_usb_phy_cfg sun50i_h6_cfg = {
- 	.num_phys = 4,
- 	.type = sun50i_h6_phy,
--	.disc_thresh = 3,
- 	.phyctl_offset = REG_PHYCTL_A33,
- 	.dedicated_clocks = true,
+@@ -945,6 +945,15 @@ static const struct sun4i_usb_phy_cfg sun8i_v3s_cfg = {
  	.phy0_dual_route = true,
+ };
+ 
++static const struct sun4i_usb_phy_cfg sun20i_d1_cfg = {
++	.num_phys = 2,
++	.type = sun50i_h6_phy,
++	.phyctl_offset = REG_PHYCTL_A33,
++	.dedicated_clocks = true,
++	.hci_phy_ctl_clear = PHY_CTL_SIDDQ,
++	.phy0_dual_route = true,
++};
++
+ static const struct sun4i_usb_phy_cfg sun50i_a64_cfg = {
+ 	.num_phys = 2,
+ 	.type = sun50i_a64_phy,
+@@ -975,6 +984,7 @@ static const struct of_device_id sun4i_usb_phy_of_match[] = {
+ 	{ .compatible = "allwinner,sun8i-h3-usb-phy", .data = &sun8i_h3_cfg },
+ 	{ .compatible = "allwinner,sun8i-r40-usb-phy", .data = &sun8i_r40_cfg },
+ 	{ .compatible = "allwinner,sun8i-v3s-usb-phy", .data = &sun8i_v3s_cfg },
++	{ .compatible = "allwinner,sun20i-d1-usb-phy", .data = &sun20i_d1_cfg },
+ 	{ .compatible = "allwinner,sun50i-a64-usb-phy",
+ 	  .data = &sun50i_a64_cfg},
+ 	{ .compatible = "allwinner,sun50i-h6-usb-phy", .data = &sun50i_h6_cfg },
 -- 
 2.33.1
 
