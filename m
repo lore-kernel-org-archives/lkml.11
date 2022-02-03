@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC4A9C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 17:10:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0078C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 17:10:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352682AbiBCRKV (ORCPT
+        id S1352707AbiBCRKY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 12:10:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38406 "EHLO
+        Thu, 3 Feb 2022 12:10:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352550AbiBCRJo (ORCPT
+        with ESMTP id S242770AbiBCRJp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 12:09:44 -0500
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 489EDC061756
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 09:09:40 -0800 (PST)
-Received: by mail-io1-xd2a.google.com with SMTP id y84so4139795iof.0
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 09:09:40 -0800 (PST)
+        Thu, 3 Feb 2022 12:09:45 -0500
+Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5601C06175C
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 09:09:42 -0800 (PST)
+Received: by mail-il1-x12e.google.com with SMTP id z18so2661108ilp.3
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 09:09:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=mXk6/jklZ0AYGAuxmfmw3LNYpU5JINoBQKXGEs/0Dho=;
-        b=EefgkxqQKQHG4WYyEScxAiis4foYHb61WzvZjo2f5v0DG/JRMQWY2zr68+cuogzJVf
-         XEsaQs1Op9xOiOTzQugXWOcqNBWig8cY0shQQmpiz4tprv7COJERf6r4JBaN3myo11y6
-         QKH2k77gLUeBKGmaodl6ZRgvkPxbGp0ekZiRjdwGILD2YNzFVbuQI0y7rzrW7ZjejH4y
-         OTn9mRT7HlradYtEr9ArcsGuNkDD1RPrK/+/t6PbbBrKr4/OCRzX9xxcAPMqsD6qzt6j
-         Nv/BUtntiLDNhzhe/XVTwz+8EGoH1jdrZEvzqwCkv3taEsRB0BvylUS3Pxt6/rKW4Lf9
-         HhIw==
+        bh=UTD/8NZGtGtHN6WTCBTC3xofep8IAMari0myuecKnYQ=;
+        b=OYR8oTnqEhUdLucBWHO5TUpvftUwNm40eg0joHmIB1RFw06B4Khq67KtL9nRUj0dFI
+         VbuyDsFNOO7JA2DqdkcLnfmfDgQFFrpKdFqBfheY9A8hImWYM/rXDM0OTdDmYQY4eVSE
+         e3puryseN9tyXPExl8zcRyQhQpB7eTbL+v3QXj5v+L590JphWD4hTyNba4O8CEC5dpJz
+         1jTwbW7U1gKG6Kz9TfO/sKxikrcZZ3K19sJ8r+ddCH/U7FomyYj8Fdxhm9VuatCt+nrI
+         FopJHVkK9BVscMPzVfRWoRVHT6gmz5XYNEnR1MYLH1688qseSI6TG5aggtXsIEMeNQQM
+         K+lQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=mXk6/jklZ0AYGAuxmfmw3LNYpU5JINoBQKXGEs/0Dho=;
-        b=troF1AOEVeIxoyojwvLwdlwdC0zFQGSGQfGJ4d7lIxg6d59JRoBlQ0vPUWcyH/B79e
-         SQwN4tam/Lm+lqJt/aYEDsrRgHLpWYOugoCnzp1QBWWR84bi7GpcEKQhdHViMDkZmNOV
-         KRTubb/4BeiKKYmjkmkQtpTaCX9VhtAkHMlIHEffA07MIRmUK+vd053UzqIQQevslNTL
-         WJehzCd1vj4mKpnQe4WSzsxxxDo2XgVuR3+X+h5+iqRqwqVlTu1IlZ/kv9MUZWzmzCiK
-         gIEB3vnJj0Eb4OkePUy0OBrsPToTUbMPvGnCrQGQzUqioHAuOPWdJVlAL9SvLUOiWcI3
-         J0kw==
-X-Gm-Message-State: AOAM530uSvjZbVcUzkpNTznE36Ed9Fuk/E2uk2OzkX62gtw5m/k88/T6
-        OHSrKTWdalz80lc0mTGzQjCqRQ==
-X-Google-Smtp-Source: ABdhPJxXK062Agk9lwAVE0WtsAmkZa/PY1YW9Q/CwQlOV+ymoLZp3RIzIk6m1kR1w3/YcJYuVxyLFQ==
-X-Received: by 2002:a02:cc97:: with SMTP id s23mr12490030jap.31.1643908179655;
-        Thu, 03 Feb 2022 09:09:39 -0800 (PST)
+        bh=UTD/8NZGtGtHN6WTCBTC3xofep8IAMari0myuecKnYQ=;
+        b=ZbsjFbLVxOZGJLyKSNBVjj5NV4k4xj6JZQE1Trz8y8sku14531E/sbcYuXUMxqKykh
+         jcGx/mWYscNQC1E30sSJ9MW81oQMXes0HfjNUbvhI5ksnUeLuQxaCyIGoAklBzLdihSM
+         6I4ySrS9N+/Fv1GaSJ8WRCBAlujQcNZwqV9uXJb5wK2H69i0HvTp1i+MpyOGm3mhUT8r
+         eDm2e56hPer6bDDtfF+mIh4n8Te34YoGmktt5BFJGGpDab+pN6DTmNgKNyPL6W40b1rX
+         uPYX2gBRsFsAA9J9u3S0Vvo1vnp5ACh1tQpjesJhOtA2+q18r1tyOIDv4E4+iVvJLofR
+         P4jA==
+X-Gm-Message-State: AOAM5322R9ls9eLtos3yaPETLANXKVyy/mVU9uBqQ2TNLvJ8ZjYTSOsX
+        Zhlc4asuN+GvuUBlMsLHzuIOhg==
+X-Google-Smtp-Source: ABdhPJwhKCVVa3GlNNcFDuFJ0nVbvWnU46D74FgYnJqaUyx0SvYPrC9nNwh4YU8fl0EIhGBWYAx9wQ==
+X-Received: by 2002:a92:c548:: with SMTP id a8mr21026692ilj.51.1643908182246;
+        Thu, 03 Feb 2022 09:09:42 -0800 (PST)
 Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id m12sm21869671iow.54.2022.02.03.09.09.38
+        by smtp.gmail.com with ESMTPSA id m12sm21869671iow.54.2022.02.03.09.09.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Feb 2022 09:09:39 -0800 (PST)
+        Thu, 03 Feb 2022 09:09:41 -0800 (PST)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     bjorn.andersson@linaro.org, mka@chromium.org, evgreen@chromium.org,
@@ -56,9 +56,9 @@ Cc:     bjorn.andersson@linaro.org, mka@chromium.org, evgreen@chromium.org,
         jponduru@codeaurora.org, subashab@codeaurora.org, elder@kernel.org,
         netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 05/10] net: ipa: allocate transaction in replenish loop
-Date:   Thu,  3 Feb 2022 11:09:22 -0600
-Message-Id: <20220203170927.770572-6-elder@linaro.org>
+Subject: [PATCH net-next 07/10] net: ipa: introduce gsi_channel_trans_idle()
+Date:   Thu,  3 Feb 2022 11:09:24 -0600
+Message-Id: <20220203170927.770572-8-elder@linaro.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220203170927.770572-1-elder@linaro.org>
 References: <20220203170927.770572-1-elder@linaro.org>
@@ -68,119 +68,113 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When replenishing, have ipa_endpoint_replenish() allocate a
-transaction, and pass that to ipa_endpoint_replenish_one() to fill.
-Then, if that produces no error, commit the transaction within the
-replenish loop as well.  In this way we can distinguish between
-transaction failures and buffer allocation/mapping failures.
+Create a new function that returns true if all transactions for a
+channel are available for use.
 
-Failure to allocate a transaction simply means the hardware already
-has as many receive buffers as it can hold.  In that case we can
-break out of the replenish loop because there's nothing more to do.
-
-If we fail to allocate or map pages for the receive buffer, just
-try again later.
+Use it in ipa_endpoint_replenish_enable() to see whether to start
+replenishing, and in ipa_endpoint_replenish() to determine whether
+it's necessary after a failure to schedule delayed work to ensure a
+future replenish attempt occurs.
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ipa/ipa_endpoint.c | 40 ++++++++++++++--------------------
- 1 file changed, 16 insertions(+), 24 deletions(-)
+ drivers/net/ipa/gsi_trans.c    | 11 +++++++++++
+ drivers/net/ipa/gsi_trans.h    | 10 ++++++++++
+ drivers/net/ipa/ipa_endpoint.c | 17 +++++------------
+ 3 files changed, 26 insertions(+), 12 deletions(-)
 
+diff --git a/drivers/net/ipa/gsi_trans.c b/drivers/net/ipa/gsi_trans.c
+index 1544564bc2835..87e1d43c118c1 100644
+--- a/drivers/net/ipa/gsi_trans.c
++++ b/drivers/net/ipa/gsi_trans.c
+@@ -320,6 +320,17 @@ gsi_trans_tre_release(struct gsi_trans_info *trans_info, u32 tre_count)
+ 	atomic_add(tre_count, &trans_info->tre_avail);
+ }
+ 
++/* Return true if no transactions are allocated, false otherwise */
++bool gsi_channel_trans_idle(struct gsi *gsi, u32 channel_id)
++{
++	u32 tre_max = gsi_channel_tre_max(gsi, channel_id);
++	struct gsi_trans_info *trans_info;
++
++	trans_info = &gsi->channel[channel_id].trans_info;
++
++	return atomic_read(&trans_info->tre_avail) == tre_max;
++}
++
+ /* Allocate a GSI transaction on a channel */
+ struct gsi_trans *gsi_channel_trans_alloc(struct gsi *gsi, u32 channel_id,
+ 					  u32 tre_count,
+diff --git a/drivers/net/ipa/gsi_trans.h b/drivers/net/ipa/gsi_trans.h
+index 17fd1822d8a9f..af379b49299ee 100644
+--- a/drivers/net/ipa/gsi_trans.h
++++ b/drivers/net/ipa/gsi_trans.h
+@@ -129,6 +129,16 @@ void *gsi_trans_pool_alloc_dma(struct gsi_trans_pool *pool, dma_addr_t *addr);
+  */
+ void gsi_trans_pool_exit_dma(struct device *dev, struct gsi_trans_pool *pool);
+ 
++/**
++ * gsi_channel_trans_idle() - Return whether no transactions are allocated
++ * @gsi:	GSI pointer
++ * @channel_id:	Channel the transaction is associated with
++ *
++ * Return:	True if no transactions are allocated, false otherwise
++ *
++ */
++bool gsi_channel_trans_idle(struct gsi *gsi, u32 channel_id);
++
+ /**
+  * gsi_channel_trans_alloc() - Allocate a GSI transaction on a channel
+  * @gsi:	GSI pointer
 diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
-index 274cf1c30b593..f5367b902c27c 100644
+index fba8728ce12e3..b854a39c69925 100644
 --- a/drivers/net/ipa/ipa_endpoint.c
 +++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -1036,24 +1036,19 @@ static void ipa_endpoint_status(struct ipa_endpoint *endpoint)
- 	iowrite32(val, ipa->reg_virt + offset);
- }
- 
--static int
--ipa_endpoint_replenish_one(struct ipa_endpoint *endpoint, bool doorbell)
-+static int ipa_endpoint_replenish_one(struct ipa_endpoint *endpoint,
-+				      struct gsi_trans *trans)
- {
--	struct gsi_trans *trans;
- 	struct page *page;
- 	u32 buffer_size;
- 	u32 offset;
- 	u32 len;
- 	int ret;
- 
--	trans = ipa_endpoint_trans_alloc(endpoint, 1);
--	if (!trans)
--		return -ENOMEM;
--
- 	buffer_size = endpoint->data->rx.buffer_size;
- 	page = dev_alloc_pages(get_order(buffer_size));
- 	if (!page)
--		goto err_trans_free;
-+		return -ENOMEM;
- 
- 	/* Offset the buffer to make space for skb headroom */
- 	offset = NET_SKB_PAD;
-@@ -1061,19 +1056,11 @@ ipa_endpoint_replenish_one(struct ipa_endpoint *endpoint, bool doorbell)
- 
- 	ret = gsi_trans_page_add(trans, page, len, offset);
- 	if (ret)
--		goto err_free_pages;
--	trans->data = page;	/* transaction owns page now */
-+		__free_pages(page, get_order(buffer_size));
-+	else
-+		trans->data = page;	/* transaction owns page now */
- 
--	gsi_trans_commit(trans, doorbell);
--
--	return 0;
--
--err_free_pages:
--	__free_pages(page, get_order(buffer_size));
--err_trans_free:
--	gsi_trans_free(trans);
--
--	return -ENOMEM;
-+	return ret;
- }
- 
- /**
-@@ -1089,6 +1076,7 @@ ipa_endpoint_replenish_one(struct ipa_endpoint *endpoint, bool doorbell)
-  */
+@@ -1077,8 +1077,6 @@ static int ipa_endpoint_replenish_one(struct ipa_endpoint *endpoint,
  static void ipa_endpoint_replenish(struct ipa_endpoint *endpoint)
  {
-+	struct gsi_trans *trans;
- 	struct gsi *gsi;
- 	u32 backlog;
+ 	struct gsi_trans *trans;
+-	struct gsi *gsi;
+-	u32 backlog;
  
-@@ -1100,15 +1088,18 @@ static void ipa_endpoint_replenish(struct ipa_endpoint *endpoint)
+ 	if (!test_bit(IPA_REPLENISH_ENABLED, endpoint->replenish_flags))
  		return;
- 
- 	while (atomic_dec_not_zero(&endpoint->replenish_backlog)) {
--		bool doorbell;
-+		trans = ipa_endpoint_trans_alloc(endpoint, 1);
-+		if (!trans)
-+			break;
-+
-+		if (ipa_endpoint_replenish_one(endpoint, trans))
-+			goto try_again_later;
- 
- 		if (++endpoint->replenish_ready == IPA_REPLENISH_BATCH)
- 			endpoint->replenish_ready = 0;
- 
- 		/* Ring the doorbell if we've got a full batch */
--		doorbell = !endpoint->replenish_ready;
--		if (ipa_endpoint_replenish_one(endpoint, doorbell))
--			goto try_again_later;
-+		gsi_trans_commit(trans, !endpoint->replenish_ready);
- 	}
- 
- 	clear_bit(IPA_REPLENISH_ACTIVE, endpoint->replenish_flags);
-@@ -1116,6 +1107,7 @@ static void ipa_endpoint_replenish(struct ipa_endpoint *endpoint)
- 	return;
- 
- try_again_later:
-+	gsi_trans_free(trans);
+@@ -1108,30 +1106,25 @@ static void ipa_endpoint_replenish(struct ipa_endpoint *endpoint)
  	clear_bit(IPA_REPLENISH_ACTIVE, endpoint->replenish_flags);
  
  	/* The last one didn't succeed, so fix the backlog */
+-	backlog = atomic_inc_return(&endpoint->replenish_backlog);
++	atomic_inc(&endpoint->replenish_backlog);
+ 
+ 	/* Whenever a receive buffer transaction completes we'll try to
+ 	 * replenish again.  It's unlikely, but if we fail to supply even
+ 	 * one buffer, nothing will trigger another replenish attempt.
+-	 * Receive buffer transactions use one TRE, so schedule work to
+-	 * try replenishing again if our backlog is *all* available TREs.
++	 * If the hardware has no receive buffers queued, schedule work to
++	 * try replenishing again.
+ 	 */
+-	gsi = &endpoint->ipa->gsi;
+-	if (backlog == gsi_channel_tre_max(gsi, endpoint->channel_id))
++	if (gsi_channel_trans_idle(&endpoint->ipa->gsi, endpoint->channel_id))
+ 		schedule_delayed_work(&endpoint->replenish_work,
+ 				      msecs_to_jiffies(1));
+ }
+ 
+ static void ipa_endpoint_replenish_enable(struct ipa_endpoint *endpoint)
+ {
+-	struct gsi *gsi = &endpoint->ipa->gsi;
+-	u32 max_backlog;
+-
+ 	set_bit(IPA_REPLENISH_ENABLED, endpoint->replenish_flags);
+ 
+ 	/* Start replenishing if hardware currently has no buffers */
+-	max_backlog = gsi_channel_tre_max(gsi, endpoint->channel_id);
+-	if (atomic_read(&endpoint->replenish_backlog) == max_backlog)
++	if (gsi_channel_trans_idle(&endpoint->ipa->gsi, endpoint->channel_id))
+ 		ipa_endpoint_replenish(endpoint);
+ }
+ 
 -- 
 2.32.0
 
