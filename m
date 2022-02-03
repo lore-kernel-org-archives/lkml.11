@@ -2,89 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7603C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 19:43:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7097AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 19:44:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353823AbiBCTnW (ORCPT
+        id S1353832AbiBCToP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 14:43:22 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:36426 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231996AbiBCTnU (ORCPT
+        Thu, 3 Feb 2022 14:44:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46892 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231834AbiBCToM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 14:43:20 -0500
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id F3FE91F399;
-        Thu,  3 Feb 2022 19:43:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1643917399; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=djYBuNzUo5jlyYldd5YsGcxLff7fJbIGicD7buvtm2k=;
-        b=NwM5TkfR1zyi/rgDW50fbTo0gTVrSMXizrc1Hdhka9rZBFsRiu1IrRdxGRLSj4edOVDiaC
-        U4627lPy3D9aD6lTwPLKBYSjy1mDOQt7w/g2IzW7Mdz/Vz6arGUir9qfXv7vfY8ZS9SBZS
-        EAC6fEiLmRag8QFr2rnW3PubGKi1LkY=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1643917399;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=djYBuNzUo5jlyYldd5YsGcxLff7fJbIGicD7buvtm2k=;
-        b=QGceBBfehFjsqNEjwXcVC31z3bq7/nzYuwVBDa0BISCQVByB2w4M478kVcehlHYQosR5FL
-        QEnUNk5Norx3y0Cw==
-Received: from kunlun.suse.cz (unknown [10.100.128.76])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id A061FA3B81;
-        Thu,  3 Feb 2022 19:43:18 +0000 (UTC)
-Date:   Thu, 3 Feb 2022 20:43:17 +0100
-From:   Michal =?iso-8859-1?Q?Such=E1nek?= <msuchanek@suse.de>
-To:     Luis Chamberlain <mcgrof@kernel.org>
-Cc:     Aaron Tomlin <atomlin@redhat.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>, cl@linux.com,
-        pmladek@suse.com, mbenes@suse.cz, akpm@linux-foundation.org,
-        jeyu@kernel.org, linux-kernel@vger.kernel.org,
-        linux-modules@vger.kernel.org, live-patching@vger.kernel.org,
-        atomlin@atomlin.com, ghalat@redhat.com, allen.lkml@gmail.com,
-        void@manifault.com, joe@perches.com
-Subject: Re: [RFC PATCH v4 00/13] module: core code clean up
-Message-ID: <20220203194317.GC3113@kunlun.suse.cz>
-References: <20220130213214.1042497-1-atomlin@redhat.com>
- <Yfsf2SGELhQ71Ovo@bombadil.infradead.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yfsf2SGELhQ71Ovo@bombadil.infradead.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Thu, 3 Feb 2022 14:44:12 -0500
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49FDEC061714
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 11:44:12 -0800 (PST)
+Received: by mail-pl1-x64a.google.com with SMTP id h11-20020a170902eecb00b0014cc91d4bc4so1753750plb.16
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 11:44:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to;
+        bh=uIZzaMpM3HaDO6cWITwTjwY2xcC3K/nMvFelzMai3xA=;
+        b=Ttqw71MHgVKBj7jy1G2Cj+63M6I140I9QXq68KD+Kwmblnvhsp8wOlp4SO36CiaGLG
+         tthhK9NFZY5xi2cAMwwu/Jvol5881pe1lKcEy/jMn63qXhBQlCGlwIGeEIU42FB64B2Z
+         NP6ADMBXiQR6Sgj+KnEwgCmEu5eE0hzweeDYkuXRvaZVRAXflhbu9Ko9rP98C3qkiH4G
+         qgGOmIIJpQbs6WGt+XWp2mJvNjm7as9hsz9ajFzMKwREQtZ9I+UHyqtZE/E+82TF3Mpr
+         S6u0PtBZNQFNRBstpXQNDqUKmcvXjrhud3HYXe82vY7G2/jxuKOuXFY/Z/E8u4Pl6l1H
+         VKrw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to;
+        bh=uIZzaMpM3HaDO6cWITwTjwY2xcC3K/nMvFelzMai3xA=;
+        b=UQW3yjaFjGT4MrwHlnQasRT61Qkm2W028X5LeFEeEFPIdZSUWUWFPhA1bTfk1rAWIi
+         iKSqLUGrvmICJdsgQq2SMR4JmAZXufr9dHCJ66AfCJP0D9M8rO7XIEQnxpGLSYixCUca
+         X7HnEpwhAN6QAU+Yl/L3+uW6NfidVGzl9hb5Kxinx4BC1k3FVPxDb2cIWvb4r5T18+6J
+         nFHCSPhyZ6G00IDiPPf+vX/l1ttlkc2rYt4ek08QMqBEGsQ7HQdwdGPBpoSO241B7y2F
+         YvM4u+rRQA2SInQUJDpTgni8D6uE3cB2c/c9y6a0rsb5ASORgUoH1cA8qjWEpsJ6t4Wm
+         TLfQ==
+X-Gm-Message-State: AOAM530ttOrbU2wnxf7mKw/dIGJxLE03++n2nlmkvejUBo5fUXstWIHI
+        A6qSiX9zmhD0WYSx3t01ocPKG0teBNEuoA==
+X-Google-Smtp-Source: ABdhPJyhIykDGjitD7LHrige2sCD5gYPRuCHIMF/kbnhDe/kHDnRP/dUFMGoJ/W7uFDqUvvRChF8UH3gnzB2/A==
+X-Received: from tortoise.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:1a0d])
+ (user=jmattson job=sendgmr) by 2002:a17:90b:4c0c:: with SMTP id
+ na12mr14616417pjb.140.1643917451702; Thu, 03 Feb 2022 11:44:11 -0800 (PST)
+Date:   Thu,  3 Feb 2022 11:43:07 -0800
+Message-Id: <20220203194308.2469117-1-jmattson@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
+Subject: [PATCH 1/2] x86/cpufeatures: Put the AMX macros in the word 18 block
+From:   Jim Mattson <jmattson@google.com>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "Chang S. Bae" <chang.seok.bae@intel.com>,
+        Jim Mattson <jmattson@google.com>,
+        Juergen Gross <jgross@suse.com>,
+        Andrew Cooper <andrew.cooper3@citrix.com>,
+        Babu Moger <babu.moger@amd.com>,
+        Jing Liu <jing2.liu@intel.com>,
+        Sean Christopherson <seanjc@google.com>,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+These macros are for bits in CPUID.(EAX=7,ECX=0):EDX, not for bits in
+CPUID(EAX=7,ECX=1):EAX. Put them with their brethren.
 
-On Wed, Feb 02, 2022 at 04:20:41PM -0800, Luis Chamberlain wrote:
-> On Sun, Jan 30, 2022 at 09:32:01PM +0000, Aaron Tomlin wrote:
-> > Hi Luis,
-> > 
-> > As per your suggestion [1], this is an attempt to refactor and split
-> > optional code out of core module support code into separate components.
-> > This version is based on branch mcgrof/modules-next since a97ac8cb24a3/or
-> > modules-5.17-rc1. Please let me know your thoughts.
-> > 
-> > Changes since v1 [2]:
-> 
-> Thanks for all this work Aaron! Can you drop the RFC prefix,
-> rebase onto linus' latest tree (as he already merged my
-> modules-next, so his tree is more up to date), and submit again?
-> 
-> I'll then apply this to my modules-next, and then ask Christophe to
-> rebase on top of that.
-> 
-> Michal, you'd be up next if you want to go through modules-next.
+Signed-off-by: Jim Mattson <jmattson@google.com>
+---
+ arch/x86/include/asm/cpufeatures.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Sounds like a good idea. When rebasing on top of 5.17-rc1 the only
-conflict was on the module code.
+diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpufeatures.h
+index da872b6f8d8b..d7b51ddc8db3 100644
+--- a/arch/x86/include/asm/cpufeatures.h
++++ b/arch/x86/include/asm/cpufeatures.h
+@@ -299,9 +299,6 @@
+ /* Intel-defined CPU features, CPUID level 0x00000007:1 (EAX), word 12 */
+ #define X86_FEATURE_AVX_VNNI		(12*32+ 4) /* AVX VNNI instructions */
+ #define X86_FEATURE_AVX512_BF16		(12*32+ 5) /* AVX512 BFLOAT16 instructions */
+-#define X86_FEATURE_AMX_BF16		(18*32+22) /* AMX bf16 Support */
+-#define X86_FEATURE_AMX_TILE		(18*32+24) /* AMX tile Support */
+-#define X86_FEATURE_AMX_INT8		(18*32+25) /* AMX int8 Support */
+ 
+ /* AMD-defined CPU features, CPUID level 0x80000008 (EBX), word 13 */
+ #define X86_FEATURE_CLZERO		(13*32+ 0) /* CLZERO instruction */
+@@ -391,6 +388,9 @@
+ #define X86_FEATURE_ARCH_LBR		(18*32+19) /* Intel ARCH LBR */
+ #define X86_FEATURE_AVX512_FP16		(18*32+23) /* AVX512 FP16 */
+ #define X86_FEATURE_SPEC_CTRL		(18*32+26) /* "" Speculation Control (IBRS + IBPB) */
++#define X86_FEATURE_AMX_BF16		(18*32+22) /* AMX bf16 Support */
++#define X86_FEATURE_AMX_TILE		(18*32+24) /* AMX tile Support */
++#define X86_FEATURE_AMX_INT8		(18*32+25) /* AMX int8 Support */
+ #define X86_FEATURE_INTEL_STIBP		(18*32+27) /* "" Single Thread Indirect Branch Predictors */
+ #define X86_FEATURE_FLUSH_L1D		(18*32+28) /* Flush L1D cache */
+ #define X86_FEATURE_ARCH_CAPABILITIES	(18*32+29) /* IA32_ARCH_CAPABILITIES MSR (Intel) */
+-- 
+2.35.0.263.gb82422642f-goog
 
-Thanks
-
-Michal
