@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFF14C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 17:16:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05559C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 17:16:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241968AbiBCRQM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 12:16:12 -0500
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:39660 "EHLO
+        id S1352719AbiBCRQO (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Feb 2022 12:16:14 -0500
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:39662 "EHLO
         mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1352779AbiBCRPg (ORCPT
+        by vger.kernel.org with ESMTP id S1352778AbiBCRPg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 3 Feb 2022 12:15:36 -0500
 Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 213FMfX9012526;
-        Thu, 3 Feb 2022 18:13:25 +0100
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 213FMOJF012501;
+        Thu, 3 Feb 2022 18:13:24 +0100
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-type; s=selector1;
- bh=TXpXIlzV26pZ5NRPtk0I/4JOGJnFgINSPAo4W7gs0J0=;
- b=wo/e7bkyhmL5oqsol9ApUPFNx2UpR98tKrg9iTPy6NnsuIlyEsB9WWBeymgYrweXAs5U
- SVYA51MtEkcDhb4amfLIXlSGkefH+eSwem8pyY/O4l5zclKPxy4R0sj6/Usgsh5/Lr/e
- WzRncwBArgpTQKY+MH3GsszL5QGx9Cgjc8Dw1XUhmGVvwgryUYpxjMQC8Y5XDmw8WACQ
- DA5nlBXbIeDsPVbLT0URx2l7VasXvz7yrO+z5SqJ5y70u9OZNnJARK5jzxF1odcvkm10
- ervxQszM0Ubsq+gEz15HLyssdcxbbiL5NQH5HAxIJusXuTP2uxvL7itgeCJKRdnndHHz Zw== 
+ bh=uiE6sc74yjDbHsOp2HikwnfDjpH8yFw3BsWlFZx9FjA=;
+ b=nnstRr2jxaSb7yYQttMiwO8zMLgriqQRItiOJUvVkkjeZZiwWBZ44BQ/qRLu8zxdGf6P
+ ecuptG5Pybns9JHi6x8O/w0oX8LO6KIfOI9TsytJJG2ibt+a5xjYh6BZBpCFItfP2Hm6
+ UKtgBla0+Q1MrOb5OYa18UF5ZmqNI2uN6TF/jQPHkILvQamAQ+LtauHDSGFT1qNZIH2K
+ wlfe3r36UiSfc/DIHR1p5rbA/ZcUbs/Bq/GDsZ3K+O1XG/0ooNkDyqw4XqgZ7SDJjYVp
+ mEuLUCiYf0D/xC3uwz3MWgP93+Xk75DmoVE4MTVfDW7tqQGbH31vpGqfsECBpZJlQHRw hw== 
 Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3e0c4fjdm3-1
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3e0c4fjdm1-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 03 Feb 2022 18:13:25 +0100
+        Thu, 03 Feb 2022 18:13:24 +0100
 Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id D045110002A;
-        Thu,  3 Feb 2022 18:13:24 +0100 (CET)
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id D4CFE10002A;
+        Thu,  3 Feb 2022 18:13:23 +0100 (CET)
 Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id C7E7822F7AB;
-        Thu,  3 Feb 2022 18:13:24 +0100 (CET)
-Received: from localhost (10.75.127.45) by SFHDAG2NODE2.st.com (10.75.127.5)
- with Microsoft SMTP Server (TLS) id 15.0.1497.26; Thu, 3 Feb 2022 18:13:24
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id CD2D422F7AB;
+        Thu,  3 Feb 2022 18:13:23 +0100 (CET)
+Received: from localhost (10.75.127.46) by SFHDAG2NODE2.st.com (10.75.127.5)
+ with Microsoft SMTP Server (TLS) id 15.0.1497.26; Thu, 3 Feb 2022 18:13:23
  +0100
 From:   Erwan Le Ray <erwan.leray@foss.st.com>
 To:     Alexandre Torgue <alexandre.torgue@foss.st.com>
@@ -51,15 +52,15 @@ CC:     Rob Herring <robh+dt@kernel.org>,
         <linux-stm32@st-md-mailman.stormreply.com>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>
-Subject: [PATCH 12/16] ARM: dts: stm32: keep uart nodes behavior on stm32mp15xx-dhcom-drc02
-Date:   Thu, 3 Feb 2022 18:11:10 +0100
-Message-ID: <20220203171114.10888-13-erwan.leray@foss.st.com>
+Subject: [PATCH 10/16] ARM: dts: stm32: keep uart4 behavior on stm32mp157c-lxa-mc1
+Date:   Thu, 3 Feb 2022 18:11:08 +0100
+Message-ID: <20220203171114.10888-11-erwan.leray@foss.st.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220203171114.10888-1-erwan.leray@foss.st.com>
 References: <20220203171114.10888-1-erwan.leray@foss.st.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Originating-IP: [10.75.127.45]
+X-Originating-IP: [10.75.127.46]
 X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
  (10.75.127.5)
 X-Proofpoint-Virus-Version: vendor=baseguard
@@ -70,33 +71,25 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 DMA configuration is added to uart nodes in stm32mp15x device tree.
-Delete usart3 and uart8 nodes DMA property in stm32mp15xx-dhcom-drc02
-board device tree to keep current behavior.
+Delete uart4 DMA property in stm32mp157c-lxa-mc1 board device tree to
+keep console in irq mode, as DMA support for console has been removed
+from the driver by commit e359b4411c28 ("serial: stm32: fix threaded
+interrupt handling").
 
 Signed-off-by: Erwan Le Ray <erwan.leray@foss.st.com>
 
-diff --git a/arch/arm/boot/dts/stm32mp15xx-dhcom-drc02.dtsi b/arch/arm/boot/dts/stm32mp15xx-dhcom-drc02.dtsi
-index 4b10b013ffd5..35b1034aa3cf 100644
---- a/arch/arm/boot/dts/stm32mp15xx-dhcom-drc02.dtsi
-+++ b/arch/arm/boot/dts/stm32mp15xx-dhcom-drc02.dtsi
-@@ -131,6 +131,8 @@
- &usart3 {
+diff --git a/arch/arm/boot/dts/stm32mp157c-lxa-mc1.dts b/arch/arm/boot/dts/stm32mp157c-lxa-mc1.dts
+index 1e9bf7eea0f1..e8d2ec41d537 100644
+--- a/arch/arm/boot/dts/stm32mp157c-lxa-mc1.dts
++++ b/arch/arm/boot/dts/stm32mp157c-lxa-mc1.dts
+@@ -248,5 +248,7 @@
+ &uart4 {
  	pinctrl-names = "default";
- 	pinctrl-0 = <&usart3_pins_a>;
+ 	pinctrl-0 = <&uart4_pins_a>;
 +	/delete-property/dmas;
 +	/delete-property/dma-names;
  	status = "okay";
  };
- 
-@@ -144,6 +146,8 @@
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&uart8_pins_a>;
- 	rts-gpios = <&gpioe 6 GPIO_ACTIVE_HIGH>;
-+	/delete-property/dmas;
-+	/delete-property/dma-names;
- 	status = "okay";
- };
- 
 -- 
 2.17.1
 
