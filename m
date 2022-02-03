@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22F20C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:35:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9798BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:35:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354894AbiBCUfJ (ORCPT
+        id S1354528AbiBCUfO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:35:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58028 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352611AbiBCUde (ORCPT
+        Thu, 3 Feb 2022 15:35:14 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:36244 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354643AbiBCUdm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 15:33:34 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5692C06174E;
-        Thu,  3 Feb 2022 12:33:04 -0800 (PST)
+        Thu, 3 Feb 2022 15:33:42 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A7D0361ACF;
-        Thu,  3 Feb 2022 20:33:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D63B9C340E8;
-        Thu,  3 Feb 2022 20:33:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8E3B2B835A9;
+        Thu,  3 Feb 2022 20:33:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9B9DC340E8;
+        Thu,  3 Feb 2022 20:33:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643920384;
-        bh=gGkLfyr40uJZuMOzHhJ5bCp3liAMaPtfJXeg3XdSmYM=;
+        s=k20201202; t=1643920420;
+        bh=Y4I1XbzZkketrSB1+LOJA9GxTunIlw/Msl9gsyKUgh8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YbaF1adnFc+miLSnZCqZLRSjempgAWne6VimYbPmCCcDFBkA439R51AB+pfdWZp5W
-         Td0LluLIRIyonX77Q015Ycj5sKQOeDUiCmi/cBKPLXD7x+d4+nxr7oIzMikjM61qE4
-         MSr8CCvT7CC2hv4wI2DmQJLrZaTOPTu0rZg+b2PQ0hm85HRX2A9sCoCiTAwRq8DS3i
-         BT9+g6IzWwuGWa0uOL3bILy/a2ILVHsENZQovFPmqaUTRz55tOn7E4Sgz/CP7UYFns
-         xug5FPs8M9e57rAOoi3RT8tfd6DvXfbnQd3gI8Zkcowy3SVi9tpAFO6Ae4UH9ceFSe
-         NIkjk6c5Mh9GA==
+        b=tV5OxCNbVUmXyMeCjkcqrGJijUkfygCsLAdJcrUhnHBdVqcybLRceA5exWe5jC8oW
+         rF4msIOK2Ja0x6kcNUI9EKxD12hbdo/4SelCt7zNQmfDCekf2yzAGCgJe+qXq4NbBs
+         bjZcQp9DRArx6eyW/ttUXGOW04Xmpx+howysXjgtABQ9PfcL3T5dzjIWyxp7+6+Bzl
+         MzEjqDU3EXjSryUJasQcUcejeMsgSkKFJhmNPucpqqgq40a+43ByJYC4KYycDIbZvf
+         SHrHKX8bZTEnY3DvtPmfVb0xryqiba3hZWIhG92UADFldFtZ249ducJjTr1jc7FH+s
+         X4P8cx4KDvSgw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Olga Kornievskaia <kolga@netapp.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
-        Sasha Levin <sashal@kernel.org>,
-        trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
-        chuck.lever@oracle.com, davem@davemloft.net, kuba@kernel.org,
-        linux-nfs@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 11/41] SUNRPC allow for unspecified transport time in rpc_clnt_add_xprt
-Date:   Thu,  3 Feb 2022 15:32:15 -0500
-Message-Id: <20220203203245.3007-11-sashal@kernel.org>
+Cc:     Xiaoke Wang <xkernel.wang@foxmail.com>,
+        Bean Huo <beanhuo@micron.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
+        bvanassche@acm.org, stanley.chu@mediatek.com, avri.altman@wdc.com,
+        s.shtylyov@omprussia.ru, srinivas.kandagatla@linaro.org,
+        huyue2@yulong.com, linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 24/41] scsi: ufs: ufshcd-pltfrm: Check the return value of devm_kstrdup()
+Date:   Thu,  3 Feb 2022 15:32:28 -0500
+Message-Id: <20220203203245.3007-24-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220203203245.3007-1-sashal@kernel.org>
 References: <20220203203245.3007-1-sashal@kernel.org>
@@ -55,45 +53,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Olga Kornievskaia <kolga@netapp.com>
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-[ Upstream commit b8a09619a56334414cbd7f935a0796240d0cc07e ]
+[ Upstream commit a65b32748f4566f986ba2495a8236c141fa42a26 ]
 
-If the supplied argument doesn't specify the transport type, use the
-type of the existing rpc clnt and its existing transport.
+devm_kstrdup() returns pointer to allocated string on success, NULL on
+failure. So it is better to check the return value of it.
 
-Signed-off-by: Olga Kornievskaia <kolga@netapp.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Link: https://lore.kernel.org/r/tencent_4257E15D4A94FF9020DDCC4BB9B21C041408@qq.com
+Reviewed-by: Bean Huo <beanhuo@micron.com>
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sunrpc/clnt.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/scsi/ufs/ufshcd-pltfrm.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/net/sunrpc/clnt.c b/net/sunrpc/clnt.c
-index f056ff9314442..5da1d7e8468a5 100644
---- a/net/sunrpc/clnt.c
-+++ b/net/sunrpc/clnt.c
-@@ -2903,7 +2903,7 @@ int rpc_clnt_add_xprt(struct rpc_clnt *clnt,
- 	unsigned long connect_timeout;
- 	unsigned long reconnect_timeout;
- 	unsigned char resvport, reuseport;
--	int ret = 0;
-+	int ret = 0, ident;
+diff --git a/drivers/scsi/ufs/ufshcd-pltfrm.c b/drivers/scsi/ufs/ufshcd-pltfrm.c
+index 8b16bbbcb806c..87975d1a21c8b 100644
+--- a/drivers/scsi/ufs/ufshcd-pltfrm.c
++++ b/drivers/scsi/ufs/ufshcd-pltfrm.c
+@@ -92,6 +92,11 @@ static int ufshcd_parse_clock_info(struct ufs_hba *hba)
+ 		clki->min_freq = clkfreq[i];
+ 		clki->max_freq = clkfreq[i+1];
+ 		clki->name = devm_kstrdup(dev, name, GFP_KERNEL);
++		if (!clki->name) {
++			ret = -ENOMEM;
++			goto out;
++		}
++
+ 		if (!strcmp(name, "ref_clk"))
+ 			clki->keep_link_active = true;
+ 		dev_dbg(dev, "%s: min %u max %u name %s\n", "freq-table-hz",
+@@ -127,6 +132,8 @@ static int ufshcd_populate_vreg(struct device *dev, const char *name,
+ 		return -ENOMEM;
  
- 	rcu_read_lock();
- 	xps = xprt_switch_get(rcu_dereference(clnt->cl_xpi.xpi_xpswitch));
-@@ -2917,8 +2917,11 @@ int rpc_clnt_add_xprt(struct rpc_clnt *clnt,
- 	reuseport = xprt->reuseport;
- 	connect_timeout = xprt->connect_timeout;
- 	reconnect_timeout = xprt->max_reconnect_timeout;
-+	ident = xprt->xprt_class->ident;
- 	rcu_read_unlock();
+ 	vreg->name = devm_kstrdup(dev, name, GFP_KERNEL);
++	if (!vreg->name)
++		return -ENOMEM;
  
-+	if (!xprtargs->ident)
-+		xprtargs->ident = ident;
- 	xprt = xprt_create_transport(xprtargs);
- 	if (IS_ERR(xprt)) {
- 		ret = PTR_ERR(xprt);
+ 	snprintf(prop_name, MAX_PROP_SIZE, "%s-max-microamp", name);
+ 	if (of_property_read_u32(np, prop_name, &vreg->max_uA)) {
 -- 
 2.34.1
 
