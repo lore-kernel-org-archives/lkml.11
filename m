@@ -2,229 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFC94C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:46:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B8A1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:46:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354612AbiBCUqp (ORCPT
+        id S1343678AbiBCUqx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:46:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32936 "EHLO
+        Thu, 3 Feb 2022 15:46:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356270AbiBCUqI (ORCPT
+        with ESMTP id S1355427AbiBCUpg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 15:46:08 -0500
-Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75BE9C0617A9
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 12:42:45 -0800 (PST)
-Received: by mail-ot1-x330.google.com with SMTP id g15-20020a9d6b0f000000b005a062b0dc12so3596322otp.4
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 12:42:45 -0800 (PST)
+        Thu, 3 Feb 2022 15:45:36 -0500
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BCABC0604CF
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 12:40:36 -0800 (PST)
+Received: by mail-pf1-x42e.google.com with SMTP id i17so3178057pfq.13
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 12:40:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=9YhYiGrMThXgjtARncjWlXyWhx8xPMFx0EhdM5KOatg=;
-        b=w7pkS3GtOfpfBqiF5ERFxhZFm8E1H3vn7QVKcj6sQRrFUwnzrPS0Z27fW2lZMN55bC
-         U/aG6D8dMYSzq5mnGn7j6AxcV8XG14eCA6uvhlyjFObR79MfYy8k5qrWIVCYaYehrgDG
-         qlzsTwEBt7P97jy8eceolXjVtPzloZO6iiZFpqqu/KMDd5Wv7ntA7hI/ct68wExeaVlB
-         9+SvmeYxjAS+jwA9ByUnQIaaL5S/BsoEo5KDUz8IaZKXXTLwezJEwp0Qj0nGchuXESZ/
-         EUaFvtk/rXjjjt1FstUmVvjVeKolw4yhxwqBLResbLBrB236T9cDmj13EyrP/OQFMgAo
-         /J0g==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1Hq8t2i1lFDyLvRnwg1bUDP5VtBgoor+g4ujd66vONY=;
+        b=b6icVWzI0OszIxG8sXwiA9RMdLDR7GUV9sSVvqp5VED5n3y2Oxt2I4+88UHpjlzHLO
+         rpQFfWA4VPsCtbVYkl8G9rumQXEkuhu+2viy0b6Qc5212QmPyE4xSmAccbE65MHec9Uc
+         tG9k4cQbVJ5DgcewrpbY0J4HTW+IQKpH4KT80=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=9YhYiGrMThXgjtARncjWlXyWhx8xPMFx0EhdM5KOatg=;
-        b=5AdBeGNsVLeQk10m5arsu1Qk+WxS4Jc2iuppUiLbxD4pKmId/ug2JOYogW/SBMje64
-         w+2HFB+jQwX+zWquhk8qMmy4dB4QZKXWOU+ojZW135BembvAfR91AU/wq/fluXiH7AOV
-         aAiZuOCylO49tQ45rAF1mlhyj+KISMMq1dVBlsNFwBRRZ4RNw8ye60n8huYDRzuZI0vM
-         BT48kBNbYDWEbeZHVN1msq4ZwXGqfnLd6u4MXF+FIgZHvAEMwcI1dSenuFFJX/Pgarh/
-         IVWoAGFZ9Fa+rPREbq7QB3WlVCpVS1aFuiwxXYfDA+GqO6x19x5Hcccdv6vV9DmLBtG3
-         JbGA==
-X-Gm-Message-State: AOAM530D9bBdg6PBcRUkxQwjKI6bjtjINnJtdfl8H8MTRAFC4eBP12zZ
-        Gh+lFu9d1ZatBJ/Yos8bqRQX5A==
-X-Google-Smtp-Source: ABdhPJyvp/DHNYio8qfrOT7OrHzJNzTFJov3KT3hzWws0jWr4B0rdPZHHdHrJKuVqOvZUQZkAfnyDA==
-X-Received: by 2002:a9d:5c8a:: with SMTP id a10mr19959607oti.248.1643920964763;
-        Thu, 03 Feb 2022 12:42:44 -0800 (PST)
-Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
-        by smtp.gmail.com with ESMTPSA id bb16sm6709251oob.42.2022.02.03.12.42.43
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1Hq8t2i1lFDyLvRnwg1bUDP5VtBgoor+g4ujd66vONY=;
+        b=8HAS/kBPk2ZkL0NsZPKpbLl/niLVB60ZX6Vw7BcOdTe1IZ0ICQxo4wzpvpctKJg2Up
+         6sJP9r5SEO24soS/syBb/d62Cswnd0oyLWFQqu09wQbfwNSGQYfSJB4DiTYtQwN40Wsz
+         +s89kGws0QAuCQP6A1mUmht0BqDSWTJnXSK3+zOArmydacFr+AInDXvm1hoest2pnxx0
+         iJSkee/lFi3vEJhmoHjUwwSacEGajmkEQE/HiHCjEvh0++m3IiG4vBxI+3TS9/mxApBU
+         EC/8xaNNE6dfYraEe7KyEF/IbTi8QklgDz0XMMs7sc35WqtgHFh7vMQ/hBP7Ihcf54F7
+         EKaQ==
+X-Gm-Message-State: AOAM5324XCVYurHaoZX8u2noVGDII6v70W7yCG80RtkcZ/NKnD3UMIC/
+        Ter99TbMJvZWsPKHWSJgKCmDgQ==
+X-Google-Smtp-Source: ABdhPJw2mF4VsA2EY/uYHOsVHlSiVGc2GUGLjvQGcaAihNJ3QVKNN7ZmRuss4J4/DLYfnUaeevtwjw==
+X-Received: by 2002:a65:60c3:: with SMTP id r3mr29348450pgv.347.1643920835918;
+        Thu, 03 Feb 2022 12:40:35 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id z22sm20845328pfe.42.2022.02.03.12.40.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Feb 2022 12:42:44 -0800 (PST)
-Date:   Thu, 3 Feb 2022 12:43:01 -0800
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Mathieu Poirier <mathieu.poirier@linaro.org>
-Cc:     Puranjay Mohan <puranjay12@gmail.com>, kishon@ti.com,
-        vigneshr@ti.com, s-anna@ti.com, linux-remoteproc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Puranjay Mohan <p-mohan@ti.com>
-Subject: Re: [PATCH 1/2] remoteproc: Introduce deny_sysfs_ops flag
-Message-ID: <Yfw+VdrUJFjl6ZAQ@ripper>
-References: <1643638312-3912-1-git-send-email-p-mohan@ti.com>
- <1643638312-3912-2-git-send-email-p-mohan@ti.com>
- <20220203183700.GB2982815@p14s>
+        Thu, 03 Feb 2022 12:40:35 -0800 (PST)
+From:   Kees Cook <keescook@chromium.org>
+To:     x86@kernel.org
+Cc:     Kees Cook <keescook@chromium.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Arvind Sankar <nivedita@alum.mit.edu>,
+        Fangrui Song <maskray@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, linux-hardening@vger.kernel.org
+Subject: [PATCH v2] x86/build: don't build CONFIG_X86_32 as -ffreestanding
+Date:   Thu,  3 Feb 2022 12:40:25 -0800
+Message-Id: <20220203204025.1153397-1-keescook@chromium.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220203183700.GB2982815@p14s>
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2588; i=keescook@chromium.org; h=from:subject; bh=aiPc6rfVyVWJCKagb0y7ieq3kx54f7V2H4+w457nijQ=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBh/D2OPS4PZRzG7eB9tG4/CcwsHg28XpdLQzsy2j+R SeKm02uJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYfw9jgAKCRCJcvTf3G3AJkBND/ 0UWEgLQJQP2+R5E7y4DmNZF5k5JdGBlkXZL0IIlONprPjQFuw89jHA+HAU+tr+5Tyyu6tyRr02rcke /fh4NYXVdDl4RsvgzhilJKskySMBQ+9+OVoDS2GOlVl9M0R/zAtqnu+Y2MEBkeyq7Xpkzl//Emm17x 5X5krdYmXEzDZnn9KLxDibxKjybpBi4LFa4nFiefUnejjHtjiNx2t8WKGxvQoUn9hNEfAsFCnUXV5/ Ax298EcnluDNSx0rPDHRDctiFBr2Qwq7ZpXHdLQz9WZTOelKktJyBRBI+gWCHcdkSa/7H99Ec7uMY6 +fnUSaeseXl9gOGYINtD4ssfihdlC0A10aNxRiZpu8wNKQ8vs57zAc7Y03c0Q0M+dW/pFNqLWRNBDV y5WsYF2hodjEyGHoEmZZA1NqISeL1NDVI+T2E4u9TeotF/57OmZjsTU/7QJh6SXiwg848hsITVpYD8 rl3CpqvBzxhWvyXLXNC6wExhyLQB4PlVu39xquc+YwxAJkLzVEhraKfIQ2ukjT+4422Zn7O9ckZoPM foA2BMgXiC59qaDZNh3uNyxxdlRvA6ZRMZsc6jAItj5nogkEF0ZLEbhpZztkuj/n5e0VsXOlfl/TOJ nLNw7PvVYlGCYYZTJgnYO34NyNEaFe1pTmcPI04Brr6Vpwj1aZ8HglSBLrzw==
+X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 03 Feb 10:37 PST 2022, Mathieu Poirier wrote:
+From: Nick Desaulniers <ndesaulniers@google.com>
 
-> Hi Puranjay,
-> 
-> On Mon, Jan 31, 2022 at 07:41:51PM +0530, Puranjay Mohan wrote:
-> > The remoteproc framework provides sysfs interfaces for changing
-> > the firmware name and for starting/stopping a remote processor
-> > through the sysfs files 'state' and 'firmware'. The 'recovery'
-> > sysfs file can also be used similarly to control the error recovery
-> > state machine of a remoteproc. These interfaces are currently
-> > allowed irrespective of how the remoteprocs were booted (like
-> > remoteproc self auto-boot, remoteproc client-driven boot etc).
-> > These interfaces can adversely affect a remoteproc and its clients
-> > especially when a remoteproc is being controlled by a remoteproc
-> > client driver(s). Also, not all remoteproc drivers may want to
-> > support the sysfs interfaces by default.
-> > 
-> > Add support to deny the sysfs state/firmware/recovery change by
-> > introducing a state flag 'deny_sysfs_ops' that the individual
-> > remoteproc drivers can set based on their usage needs. The default
-> > behavior is to allow the sysfs operations as before.
-> > 
-> > Implement attribute_group->is_visible() to hide the sysfs
-> > state/firmware/recovery entries when deny_sysfs_ops flag is set.
-> > 
-> 
-> The address in the "To:" field of this email doesn't match the one in the SoB,
-> Something that makes checkpatch angry.
-> 
-> > Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
-> > ---
-> >  drivers/remoteproc/remoteproc_sysfs.c | 18 +++++++++++++++++-
-> >  include/linux/remoteproc.h            |  2 ++
-> >  2 files changed, 19 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/remoteproc/remoteproc_sysfs.c b/drivers/remoteproc/remoteproc_sysfs.c
-> > index ea8b89f97d7b..4a41abdd1f7b 100644
-> > --- a/drivers/remoteproc/remoteproc_sysfs.c
-> > +++ b/drivers/remoteproc/remoteproc_sysfs.c
-> > @@ -230,6 +230,21 @@ static ssize_t name_show(struct device *dev, struct device_attribute *attr,
-> >  }
-> >  static DEVICE_ATTR_RO(name);
-> >  
-> > +static umode_t rproc_is_visible(struct kobject *kobj, struct attribute *attr,
-> > +			       int n)
-> > +{
-> > +	struct device *dev = kobj_to_dev(kobj);
-> > +	struct rproc *rproc = to_rproc(dev);
-> > +	umode_t mode = attr->mode;
-> > +
-> > +	if (rproc->deny_sysfs_ops && (attr == &dev_attr_recovery.attr ||
-> > +				      attr == &dev_attr_firmware.attr ||
-> > +				      attr == &dev_attr_state.attr))
-> 
-> I toyed with this solution for a little while.  I think the use case is valid
-> but hiding the above options will also result in a system that is difficult to
-> use (and debug) because they convey important information.
-> 
-> I suggest introducing a new kernel configuration options to make the attributes
-> of the rproc_devgroup return -EINVAL when it is set.  So in remoteproc_sysfs.c
-> do something like:
-> 
-> #if CONFIG_REMOTEPROC_SYSFS_RO
+-ffreestanding typically inhibits "libcall optimizations" where calls to
+certain library functions can be replaced by the compiler in certain
+cases to calls to other library functions that may be more efficient.
+This can be problematic for embedded targets that don't provide full
+libc implementations.
 
-We should assume that people runs the common multi_v7_defconfig for arm,
-or defconfig for arm64, and still want this support.
+-ffreestanding inhibits all such optimizations, which is the safe
+choice, but generally we want the optimizations that are performed. The
+Linux kernel does implement a fair amount of libc routines. Instead of
+-ffreestanding (which makes more sense in smaller images like kexec's
+purgatory image), prefer -fno-builtin-* flags to disable the compiler
+from emitting calls to functions which may not be defined.
 
-Based on Puranjay's proposed patch I think it's also reasonable to
-assume that we might have platforms with a mixture of "read-only" and
-"normal" remoteprocs (e.g. some power-management uC + some DSP).
+If you see a linkage failure due to a missing symbol that's typically
+defined in a libc, and not explicitly called from the source code, then
+the compiler may have done such a transform.  You can either implement
+such a function (ie. in lib/string.c) or disable the transform outright
+via -fno-builtin-* flag (where * is the name of the library routine, ie.
+-fno-builtin-bcmp).
 
-> static bool option_is_read_only()
-> {
->         return true;
-> }
-> #else
-> static bool option_is_read_only()
-> {
->         return false;
-> }
-> #endif
-> 
-> [...]
-> 
-> static ssize_t recovery_store(struct device *dev,
-> 			      struct device_attribute *attr,
-> 			      const char *buf, size_t count)
-> {
-> 	struct rproc *rproc = to_rproc(dev);
-> 
->         if (option_is_read_only())
+i386_defconfig build+boot tested with GCC and Clang. Removes a pretty
+old TODO from the codebase.
 
-struct attribute_group has a .is_visible callback which I think is
-better to base this on.
+[kees: These libcall optimizations are specifically needed to allow Clang
+to correctly optimize the string functions under CONFIG_FORTIFY_SOURCE.]
 
-Regards,
-Bjorn
+Fixes: 6edfba1b33c7 ("x86_64: Don't define string functions to builtin")
+Suggested-by: Arvind Sankar <nivedita@alum.mit.edu>
+Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
+Reviewed-by: Fangrui Song <maskray@google.com>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/20200817220212.338670-5-ndesaulniers@google.com
+---
+This solves build issues for Clang+FORTIFY, and aligns X86_32 with X86_64
+builds again. x86 maintainers: I can carry this in my memcpy topic branch
+unless you'd prefer to take it?
+---
+ arch/x86/Makefile | 3 ---
+ 1 file changed, 3 deletions(-)
 
->                 return -EINVAL;
-> 
-> 	if (sysfs_streq(buf, "enabled")) {
-> 		/* change the flag and begin the recovery process if needed */
-> 		rproc->recovery_disabled = false;
-> 		rproc_trigger_recovery(rproc);
-> 	} else if (sysfs_streq(buf, "disabled")) {
-> 		rproc->recovery_disabled = true;
-> 	} else if (sysfs_streq(buf, "recover")) {
-> 		/* begin the recovery process without changing the flag */
-> 		rproc_trigger_recovery(rproc);
-> 	} else {
-> 		return -EINVAL;
-> 	}
-> 
-> 	return count;
-> }
-> 
-> Thanks,
-> Mathieu
-> 
-> > +		mode = 0;
-> > +
-> > +	return mode;
-> > +}
-> > +
-> >  static struct attribute *rproc_attrs[] = {
-> >  	&dev_attr_coredump.attr,
-> >  	&dev_attr_recovery.attr,
-> > @@ -240,7 +255,8 @@ static struct attribute *rproc_attrs[] = {
-> >  };
-> >  
-> >  static const struct attribute_group rproc_devgroup = {
-> > -	.attrs = rproc_attrs
-> > +	.attrs = rproc_attrs,
-> > +	.is_visible = rproc_is_visible,
-> >  };
-> >  
-> >  static const struct attribute_group *rproc_devgroups[] = {
-> > diff --git a/include/linux/remoteproc.h b/include/linux/remoteproc.h
-> > index e0600e1e5c17..3849c66ce38f 100644
-> > --- a/include/linux/remoteproc.h
-> > +++ b/include/linux/remoteproc.h
-> > @@ -523,6 +523,7 @@ struct rproc_dump_segment {
-> >   * @table_sz: size of @cached_table
-> >   * @has_iommu: flag to indicate if remote processor is behind an MMU
-> >   * @auto_boot: flag to indicate if remote processor should be auto-started
-> > + * @deny_sysfs_ops: flag to not permit sysfs operations on state, firmware and recovery
-> >   * @dump_segments: list of segments in the firmware
-> >   * @nb_vdev: number of vdev currently handled by rproc
-> >   * @elf_class: firmware ELF class
-> > @@ -562,6 +563,7 @@ struct rproc {
-> >  	size_t table_sz;
-> >  	bool has_iommu;
-> >  	bool auto_boot;
-> > +	bool deny_sysfs_ops;
-> >  	struct list_head dump_segments;
-> >  	int nb_vdev;
-> >  	u8 elf_class;
-> > -- 
-> > 2.24.3
-> > 
+diff --git a/arch/x86/Makefile b/arch/x86/Makefile
+index e84cdd409b64..7ef211865239 100644
+--- a/arch/x86/Makefile
++++ b/arch/x86/Makefile
+@@ -88,9 +88,6 @@ ifeq ($(CONFIG_X86_32),y)
+         include $(srctree)/arch/x86/Makefile_32.cpu
+         KBUILD_CFLAGS += $(cflags-y)
+ 
+-        # temporary until string.h is fixed
+-        KBUILD_CFLAGS += -ffreestanding
+-
+ 	ifeq ($(CONFIG_STACKPROTECTOR),y)
+ 		ifeq ($(CONFIG_SMP),y)
+ 			KBUILD_CFLAGS += -mstack-protector-guard-reg=fs -mstack-protector-guard-symbol=__stack_chk_guard
+-- 
+2.30.2
+
