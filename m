@@ -2,77 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EBA2C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 14:45:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C2EAC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 14:46:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351303AbiBCOpq (ORCPT
+        id S1351333AbiBCOqs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 09:45:46 -0500
-Received: from linux.microsoft.com ([13.77.154.182]:36916 "EHLO
-        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351329AbiBCOpf (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 09:45:35 -0500
-Received: from [192.168.254.32] (unknown [47.187.212.181])
-        by linux.microsoft.com (Postfix) with ESMTPSA id D578020B6C61;
-        Thu,  3 Feb 2022 06:45:34 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com D578020B6C61
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1643899535;
-        bh=6T6TqnQ60VFe1GoITTZzMuf6+4eJSAYeRne+E0cK7tk=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=mOmMYfralkp6smexQ22QrWT/kapUVlpLB9OeYLeaS5s4ExhfWiJfMymphaOJG5+BA
-         U28XLqoHB/vwfVOhASGzvXPYvMKB8G3SaDlWj8W/yAlLGunPzIl9fWEAtYXvuek8IW
-         36s8wOjRiHQ+zA3FvaNRxLWGwzYvPsdp8gZQkVdQ=
-Message-ID: <163f7d00-8d94-4be4-ef5d-f959fc03e96e@linux.microsoft.com>
-Date:   Thu, 3 Feb 2022 08:45:34 -0600
+        Thu, 3 Feb 2022 09:46:48 -0500
+Received: from mga06.intel.com ([134.134.136.31]:37909 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1351282AbiBCOqq (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 3 Feb 2022 09:46:46 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643899606; x=1675435606;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=G1NEaO4YfV+ndngmjLH9H1KfbSPd0dgTl8bo+81+nzU=;
+  b=kuMXRLy42m+amXIIullowRFx9hzSQRmtexgGFvHp4/qqE3eC9kT+Ud18
+   c9Ixo3eh4RXw04dwznRQ1ben1p9/hfKy+Ta4rDuGVaYpeDhsqNWJGDXXT
+   y7cWxUqILflAsM/fSC2iIyQF+7Lwfz5GC/Qfc29+5a2WmrJtNwgqoeXZ3
+   tyQyQIxX/YlsOwHsFxrnTudKvZ6PTm0dZYEdfhM+Ja4ToDpBgzNy9I9Fq
+   5rATs2TES7v043tbW6n2PKCs30KtMWtrZCEdOhAXTPaArwU7vRwQpUDSt
+   GSkwhI2IrR+onens0BzxTLg5HoZwhntdQ/oPZ37WlPAVe9aeU5fUDTmfD
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10246"; a="308882989"
+X-IronPort-AV: E=Sophos;i="5.88,340,1635231600"; 
+   d="scan'208";a="308882989"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2022 06:46:46 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,340,1635231600"; 
+   d="scan'208";a="676788140"
+Received: from black.fi.intel.com (HELO black.fi.intel.com.) ([10.237.72.28])
+  by fmsmga001.fm.intel.com with ESMTP; 03 Feb 2022 06:46:43 -0800
+From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Guenter Roeck <linux@roeck-us.net>,
+        Benson Leung <bleung@google.com>,
+        Prashant Malani <pmalani@chromium.org>,
+        Jameson Thies <jthies@google.com>,
+        "Regupathy, Rajaram" <rajaram.regupathy@intel.com>,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v1 0/3] usb: typec: Separate sysfs directory for all USB PD objects
+Date:   Thu,  3 Feb 2022 17:46:54 +0300
+Message-Id: <20220203144657.16527-1-heikki.krogerus@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v13 06/11] arm64: Use stack_trace_consume_fn and rename
- args to unwind()
-Content-Language: en-US
-To:     Mark Brown <broonie@kernel.org>
-Cc:     mark.rutland@arm.com, jpoimboe@redhat.com, ardb@kernel.org,
-        nobuta.keiya@fujitsu.com, sjitindarsingh@gmail.com,
-        catalin.marinas@arm.com, will@kernel.org, jmorris@namei.org,
-        linux-arm-kernel@lists.infradead.org,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <95691cae4f4504f33d0fc9075541b1e7deefe96f>
- <20220117145608.6781-1-madvenka@linux.microsoft.com>
- <20220117145608.6781-7-madvenka@linux.microsoft.com>
- <YfrRoA63/UOXTJc0@sirena.org.uk>
- <48b17c52-58d6-0df5-a50b-35a8ea408998@linux.microsoft.com>
- <Yfu8z5buJvIPvsoT@sirena.org.uk>
-From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-In-Reply-To: <Yfu8z5buJvIPvsoT@sirena.org.uk>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi,
 
+Ideally after this there should be no need to add any new USB Power
+Delivery specific attribute files directly to the USB Type-C devices
+in sysfs. They now have their own directory.
 
-On 2/3/22 05:30, Mark Brown wrote:
-> On Wed, Feb 02, 2022 at 06:34:43PM -0600, Madhavan T. Venkataraman wrote:
->> On 2/2/22 12:46, Mark Brown wrote:
->>> On Mon, Jan 17, 2022 at 08:56:03AM -0600, madvenka@linux.microsoft.com wrote:
-> 
->>>> Rename the arguments to unwind() for better consistency. Also, use the
->>>> typedef stack_trace_consume_fn for the consume_entry function as it is
->>>> already defined in linux/stacktrace.h.
-> 
->>> Consistency with...?  But otherwise:
-> 
->> Naming consistency. E.g., the name consume_entry is used in a lot of places.
->> This code used to use fn() instead of consume_entry(). arch_stack_walk()
->> names the argument to consume_entry as cookie. This code calls it data
->> instead of cookie. That is all. It is minor in nature. But I thought I might
->> as well make it conform while I am at it.
-> 
-> The commit message should probably say some of that then.
+The idea of the series is that any device (so not just USB Type-C
+connectors and the partners attached to them) that supports USB Power
+Delivery can have this separate sub-directory "usb_power_delivery" in
+sysfs, and that sub-directory will have all the USB Power Delivery
+objects and all the other USB Power Delivery details.
 
-OK. Will add that to the commit message in the next version.
+There are already ways that allow us to read the USB Power Delivery
+capabilities from potentially any USB PD capable USB device attached
+to the bus - one way is defined in the USB Type-C Bridge
+Specification.
 
-Madhavan
+Initially the Capability Messages (i.e. PDOs) are exposed.
+
+This is an example (tree view) of the capabilities that the ports on a
+normal x86 system advertise to the partner. First you have the message
+directory (source_capabilities and sink_capabilities), and that will
+have a sub-directory for each PDO that capability message has. The PDO
+sub-directories are named by their type. The number in front of the
+name is the object position of the PDO:
+
+/sys/class/typec/port0/usb_power_delivery
+|-- revision
+|-- sink_capabilities/
+|   |-- 1:fixed_supply/
+|   |   |-- dual_role_data
+|   |   |-- dual_role_power
+|   |   |-- fast_role_swap_current
+|   |   |-- operational_current
+|   |   |-- unchunked_extended_messages_supported
+|   |   |-- unconstrained_power
+|   |   |-- usb_communication_capable
+|   |   |-- usb_suspend_supported
+|   |   `-- voltage
+|   |-- 2:variable_supply/
+|   |   |-- maximum_voltage
+|   |   |-- minimum_voltage
+|   |   `-- operational_current
+|   `-- 3:battery/
+|       |-- maximum_voltage
+|       |-- minimum_voltage
+|       `-- operational_power
+`-- source_capabilities/
+    `-- 1:fixed_supply/
+        |-- dual_role_data
+        |-- dual_role_power
+        |-- maximum_current
+        |-- unchunked_extended_messages_supported
+        |-- unconstrained_power
+        |-- usb_communication_capable
+        |-- usb_suspend_supported
+        `-- voltage
+
+And these are the capabilities of my Thunderbolt3 dock:
+
+/sys/class/typec/port0-partner/usb_power_delivery
+|-- revision
+|-- sink_capabilities/
+|   `-- 1:fixed_supply/
+|       |-- dual_role_data
+|       |-- dual_role_power
+|       |-- fast_role_swap_current
+|       |-- operational_current
+|       |-- unchunked_extended_messages_supported
+|       |-- unconstrained_power
+|       |-- usb_communication_capable
+|       |-- usb_suspend_supported
+|       `-- voltage
+`-- source_capabilities/
+    |-- 1:fixed_supply/
+    |   |-- dual_role_data
+    |   |-- dual_role_power
+    |   |-- maximum_current
+    |   |-- unchunked_extended_messages_supported
+    |   |-- unconstrained_power
+    |   |-- usb_communication_capable
+    |   |-- usb_suspend_supported
+    |   `-- voltage
+    |-- 2:fixed_supply/
+    |   |-- maximum_current
+    |   `-- voltage
+    |-- 3:fixed_supply/
+    |   |-- maximum_current
+    |   `-- voltage
+    |-- 4:fixed_supply/
+    |   |-- maximum_current
+    |   `-- voltage
+    `-- 5:fixed_supply/
+        |-- maximum_current
+        `-- voltage
+
+thanks,
+
+Heikki Krogerus (3):
+  usb: typec: Separate USB Power Delivery from USB Type-C
+  usb: typec: Functions for USB PD capabilities registration
+  usb: typec: ucsi: Register USB Power Delivery Capabilities
+
+ Documentation/ABI/testing/sysfs-class-typec   |  22 +
+ .../testing/sysfs-devices-usb_power_delivery  | 273 ++++++++
+ drivers/usb/typec/Makefile                    |   2 +-
+ drivers/usb/typec/class.c                     | 328 +++++++++
+ drivers/usb/typec/class.h                     |   8 +
+ drivers/usb/typec/pd.c                        | 651 ++++++++++++++++++
+ drivers/usb/typec/pd.h                        |  39 ++
+ drivers/usb/typec/ucsi/ucsi.c                 | 128 +++-
+ drivers/usb/typec/ucsi/ucsi.h                 |   8 +
+ include/linux/usb/pd.h                        |  30 +
+ include/linux/usb/typec.h                     |  25 +
+ 11 files changed, 1502 insertions(+), 12 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-devices-usb_power_delivery
+ create mode 100644 drivers/usb/typec/pd.c
+ create mode 100644 drivers/usb/typec/pd.h
+
+-- 
+2.34.1
+
