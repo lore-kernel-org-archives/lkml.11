@@ -2,298 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 170DBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 08:37:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 461BCC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 08:38:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349528AbiBCIhN (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 03:37:13 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:38050 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349511AbiBCIhJ (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 03:37:09 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CA4E61857;
-        Thu,  3 Feb 2022 08:37:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBD76C340E4;
-        Thu,  3 Feb 2022 08:37:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643877428;
-        bh=tKF+x+jnytPxbLdDjGbdWLPzI9Cb2JI12V6ZvMG8p40=;
-        h=From:To:Cc:Subject:Date:From;
-        b=P7MusFJKo2H4m0VI1APhjwM+eziY1mUA4u1ge2OJ/37EHPSKyOSLUVnc1cqgotRu+
-         JarFCwrPKI7unnqq4yNz0Q0CN+ydq8Y/r2mSNUR8+TS57vwyHxb67WYDRWviZmrmJa
-         76v+nAwMfA981I114yEdM4fskcWkWRNBQH5ffXGEmGfUkEgPZRIXpHIloM3GoA6QL1
-         ZR9jVbpCTBDqz4vL6Ngye+iK6+RIwFTc3ytlslDX1Ofv8yaGpZbHBm0VH1DnuYZBph
-         EpMo27+yXQHpLnAXbP3P6rkr69/xYc8HUfX2W8Ciq/C7nbkaFqq33cwdYpEYdP6c7h
-         gzp3ksVxDPoeg==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     Russell King <linux@armlinux.org.uk>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        linux-usb@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] [v2] ARM: sa1100/assabet: move dmabounce hack to ohci driver
-Date:   Thu,  3 Feb 2022 09:36:33 +0100
-Message-Id: <20220203083658.559803-1-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
+        id S230504AbiBCIij (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Feb 2022 03:38:39 -0500
+Received: from mail-dm6nam10on2088.outbound.protection.outlook.com ([40.107.93.88]:32865
+        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S235967AbiBCIih (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 3 Feb 2022 03:38:37 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NJNb4k+JKBWwEDpACPuA4QEOUjxF6xQJGSWshY66yWaXh/UH4arNglfPyAT2JrJJ8VcuNqcUN0cavDflXu/Qd8wED8GzCFNbedV9t7GL2vlmtuUOgFBgLdu0P/2mzikbWD3OFdDkOTJqZDQvL7CPvxmYrh6rzAFOTVIpofvWfhSW+nuxToFdBgtBf2oo7ImUHMBn6ZmAXjPZMdGQDqW5ftb8BNN17FjT0JKnuVajNtOD7lbyjcPxVP3vvyDNiZCdET/BMqf1LbNv2OBjDMXH6I2Qx9SvLg7PDfo4AJ9jHuqSxw6aRyWYePf9JEe2+SuaWhGokyWq9MbEJEnZYSyBzw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ECGatShs7O/jYI12UUGfqoYXZUxQIXsL11R768nXKXo=;
+ b=JT77P10yPlmSfQUTHSnVE3dMUzrNguAdGJyKYW+IQ8pgEGRWMegMA8LjNqTWmPJps07HcPgKWfHOm1WjyPcqVe26W7rlRoKa2ECbU47SYsL9gnBK3n/gwwONB5md0DK4vT0i3zBqUdeGxp/z/rTYOshoIzwXgZmmrU9864Hm6Wt9d/wgM3GQntkrZw1hn9UF+AcyWcJIC+44LHskidMPRTyRqksNLMokV7umJ3F3kKcPtcKbn4HEH2n8Ug4sVzENTceSUYsFdxDfvfK5SxV8nE1jgUl66Vc20X/4chz/mMPrfU45ayOAd+zpnDyTAsJ+j5TL9V/kB4x2lq2rYaULpQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ECGatShs7O/jYI12UUGfqoYXZUxQIXsL11R768nXKXo=;
+ b=gz9pSDI17n4boyXahY/mH74dbj+Kr+jCbS7fXfdyfuLF3Ldrwttq1vUIeyoa95uJ7VqpBfFUPI67pmTKZ6xh5MixYy3iq5/AWWeBR2Auhyw9n/GIZWkUazoLjYTYGrXC0COeSEE6upchtxj6AB9uvsKNind3I5F47ko9BD8HeqV21AF68n/4VRJ65CiATvPo9QXGaJfwzqPL54J82qyPgbX3hbH63H6S9ZCmibUgh1YylmUrllZ+eKtepfFoc1e2ctICqjlpwxi55CqZ5mcgNFA1dgbvbsSqxNSlqKt4OL81AdMGCAFPqUToqI/kq3+0JPL4VeszP/dcKt5YFIfvOg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from DM6PR12MB4140.namprd12.prod.outlook.com (2603:10b6:5:221::13)
+ by SN1PR12MB2351.namprd12.prod.outlook.com (2603:10b6:802:2b::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Thu, 3 Feb
+ 2022 08:38:36 +0000
+Received: from DM6PR12MB4140.namprd12.prod.outlook.com
+ ([fe80::ede5:7f12:c1:b25]) by DM6PR12MB4140.namprd12.prod.outlook.com
+ ([fe80::ede5:7f12:c1:b25%7]) with mapi id 15.20.4951.012; Thu, 3 Feb 2022
+ 08:38:36 +0000
+Message-ID: <6d38ed2a-72cb-3eb6-5af1-caee61d94005@nvidia.com>
+Date:   Thu, 3 Feb 2022 00:38:33 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: Weird code with change "mm/gup: clean up follow_pfn_pte()
+ slightly"
+Content-Language: en-US
+To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>
+Cc:     Jason Gunthorpe <jgg@nvidia.com>, Peter Xu <peterx@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        David Hildenbrand <david@redhat.com>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+References: <CAKXUXMxFK9bo8jDoRZbQ0r2j-JwAGg3Xc5cpAcLaHfwHddJ7ew@mail.gmail.com>
+From:   John Hubbard <jhubbard@nvidia.com>
+In-Reply-To: <CAKXUXMxFK9bo8jDoRZbQ0r2j-JwAGg3Xc5cpAcLaHfwHddJ7ew@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BYAPR08CA0023.namprd08.prod.outlook.com
+ (2603:10b6:a03:100::36) To DM6PR12MB4140.namprd12.prod.outlook.com
+ (2603:10b6:5:221::13)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1fd3f9c2-c516-4869-784e-08d9e6f091af
+X-MS-TrafficTypeDiagnostic: SN1PR12MB2351:EE_
+X-Microsoft-Antispam-PRVS: <SN1PR12MB2351F1986EF5021B48FBBC70A8289@SN1PR12MB2351.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: R4nIIxAcOxKCRHzwSa59peK8wksYmZYBbqHQ8RuKvnNMBPIHfDfb1Ldsk9C3jD9eJHp/Ie8KML6xP9F9j/LV9P8sOrwZ9Y9i0aRZ9BAW+E8erk3o4LggXCKzVZ5xfzSIlzrMYwrlgKmICeyRiVvwiJgNVI8LKoSDlJQ6/ZS0JDQTcCw+DflLWA+SPDjGmQgUAKygazIYexZ7bmtkqT98BTnHjCXXF3kAYB0r6LvwKIXirXC3i57tF1dXBBywSdDf8JpWmRhqgV8B1xeocqOUxthyZkkdRa2qccdssN3MnBypoSvVlyR81Ct/lilDfPZKQRRNy37RY6eS7Y3AgN80TkCmyQ7j1qMejZY6m56iww6JPL32rU07QTzmyHWqaUby4GN75jJJuDlMDEs/AbgSm1WYaaB2tZZlORQiRv/ULQesxuHKh/oUlebun5+4p88UnSXc0+WDjLDXBC5OMkJEyRgrIvmcgfNnLzl7ZskEfe9UimKYMJfsM+M5JggWWRbX3ghIFFbkhEeixOgkI49V6Sd4cY7vGjt7UzLHtmuwiCtC1IYEOo0FsEqLUnCqPPCNXvMYfHnzzxUae81sDmHfSBfuongjdUFA3+rD1aEQTYhhD+A7okTcTNlx5HLuMehGhfVsCt8QGLb1gYRS1C8Gnde8WgnyHZJgLtsGf2tdPiJd3M3oCv2FVzAT6ZeFISiC6UPW84x6xjsGUWfeo7YcjtoZ0W2Qr2lNJXupbBNjHwV6U8GhJwe3hgnWQm6Jc9rpc1HeJ6jw40oowfPvyBdc5/RiBXBFUWmVNZ5wR+Iy/dMliWxo/FyNme/eP3KHtlRD
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4140.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(186003)(26005)(6506007)(7416002)(2616005)(6512007)(6666004)(5660300002)(110136005)(54906003)(6486002)(4326008)(966005)(66946007)(66556008)(66476007)(86362001)(8676002)(8936002)(31696002)(316002)(53546011)(36756003)(2906002)(83380400001)(31686004)(38100700002)(508600001)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?TWYzMGFNYjVVeGNVbTI0RlJIR3Rub0pQSk5KemJCeFY3VkErZjJmUUFVRGFj?=
+ =?utf-8?B?TWgwUlFnaDhkdnlFWSs4QzJFd0J6VTluMzcwWXZhRDZuRi9HdUtYWGJyNGk2?=
+ =?utf-8?B?Z0l2a1prczZhdFEyNDBIa01EaVlXVy9OTit3djVDRWtpSTByNHR5bGVqZHo1?=
+ =?utf-8?B?anRRYkxPem0yK09GK3YwU3JEVHgrV09GdjBoWDRMaHQxRjdmT0c1OXpzdzlt?=
+ =?utf-8?B?ZVdIVDlRNUFUcU1jOFdLd3ExQTdBUGRDb1dOSjEyYm0vSGhxUjFjVmRGaDY0?=
+ =?utf-8?B?VWpyRG81UXhrSVNWMGVERGZOaGZBNGdvc2RyYWJtV0greVJhcTJFS0VPWitR?=
+ =?utf-8?B?NkRVcyt3ZUk0WVlMNVIxR2cxYVlCcnk1ZEhnVzZjNkV5RUNFcUFZcHBzOVhZ?=
+ =?utf-8?B?bWZJMVZsSU0xWjRvMzl2V3pkSVNONmpBWkd4bFlHZG9IWFBQYlJpazE0QWpv?=
+ =?utf-8?B?SDN1U1grQmREZmVFTUxsODlqaFYwcFFYQXV6ZDNSR2dsU0J4UVhDSDNZcnRj?=
+ =?utf-8?B?OUllR3JWMHI1VDFaNTluYkFmRURXVUxyTm15YjVTM2xvbTRlZjZKR21jYm52?=
+ =?utf-8?B?K2V0ZitTRE0xbzYzZjVkZmFSVVRBaVcwdVZtR2NLVUlrSnpNMHFMcHhjV08x?=
+ =?utf-8?B?MEV4RVRQWHlLSHNaZm9KSjJJcVlIOHpOTU1ueFUzRWN5ak0zUllPV1E1dGVa?=
+ =?utf-8?B?cGlUbHhOWkUwQ1FiMnhjb1lrQUpXQ3lUWjZINFZHOFIxcE01UHVxUWpxL2Zu?=
+ =?utf-8?B?UzMrWWY4Sm84Q3hFUlBHb0JEM1lOYzNxWk9Tbkd3Z25LRkpieVNISFZub1RM?=
+ =?utf-8?B?T3F0NFlBQTlDcm42M0RGcENSdWx1Vjg1ckU0NFJvMVZTbFlrT0xBRWJRdWw4?=
+ =?utf-8?B?MlFsSFhmd0xHa2xacFF0dkJtTnhyUHlXTWFmZ0xkMHNzTHd4Z3JBVWQ4R2lm?=
+ =?utf-8?B?bEgyUFd4ZHp6NUxYQ0xudXp4bTdVbDlGNytpY2xaTmZXdkUxMUFDU2hsUDJE?=
+ =?utf-8?B?OHM2cnRVLzQ1LzhyOHpkSXJDdEwzR3pIZ2Y1U3MrZWJGVzM3Y3VNVng4bys5?=
+ =?utf-8?B?LytOWFJETGgzS0hFMkNpaHlLTUlkWVNHVHZyRU5EajdkNTFUaGNBZ25FdEZn?=
+ =?utf-8?B?VHFpQTFwZi8zb2pybmRZZmQyUEROMkJyS1I4TUY4TTBiaHl3TUdscU1XZW5M?=
+ =?utf-8?B?REVvbmNmNEFTZEhvd3N0bUw5N2Fjc0J1TzNaMSs3dlBIQ01NNFJDc3d4OVU4?=
+ =?utf-8?B?dHhjbUlSWTQxbVFGUllhMXRBdzU4R3F1QmhCOXNpSEZjM2lzN0RFblVTd2Zy?=
+ =?utf-8?B?SDE3S2xuRXBicU5lL1NyUWR2WHp5dFJnVHA1d1Q3cnpvVDVxQjBSQTR1bnBx?=
+ =?utf-8?B?NkVZbkFmbXRpekhFb25yTGF1M1IzaWVaRTAyQUZIRWVScXpocEl5UnJLT2wv?=
+ =?utf-8?B?dGQ3MzhGVTdQdjMrazhBSXhPNVgxUFVzb2d3dHNlOVdrMmdGMkpVWDhZS2pv?=
+ =?utf-8?B?bjZDMXY1QlNwMGl4T0pGZ0ZUdnd6Mk0vNFZwSmUvSXQvUkZDMUJObktLUWRT?=
+ =?utf-8?B?Qml6ckpoMFBzUzJ4ZVEraWZYNFBwTUR1MmlZVUU0VmU3RDl2c2lyTVZpaXRX?=
+ =?utf-8?B?Wlp0VmMwU0VuU2VQdFpUQ3F4TzhWTDQySlYxbFpqZkdQaDNYdHVndmJVQkM0?=
+ =?utf-8?B?TnRveHJRNHdUZGt1R1JWbUNZbE9KVXVpL3lUNm8zWUhYandJZGdlWU9welc5?=
+ =?utf-8?B?cmJzSlVNejU1OXFseWN1anVieFZMQWRVVUMzSHpKeEFDYmE3Z2hDS1RQTjhF?=
+ =?utf-8?B?bWZPSDZzQTZWRkVZeHZ2QXVuVS9UcVVRY1VIMGREQ3owR21tU3FVcmE0U3p1?=
+ =?utf-8?B?M05jUzAvTTdwb3htM2FNV0FDcnNvYzBQbkxUUTBMR21iZjl3VS8yNlFlWUpQ?=
+ =?utf-8?B?SmZPSGRXeXY4eTZUclZmOWJ6V1YwOHRHdllaZ2dYZWY5d0FxNU5ydTRCbTgz?=
+ =?utf-8?B?dXB1TFVGR1lDcTlwN0E4YTFJWStUWngxaE80Tk56b1NUVnVyVUNiQk9wQ0FN?=
+ =?utf-8?B?UUw5ZzZRSXlBR3RSN2g2NDZsYktBYkc3QWZSVUJpWWRVanEzZ0FKTjloT1p2?=
+ =?utf-8?B?SmQ3OWVjYXppbXJBZi9lazRjL2daVkRVNlgyNWQ0akxuQ05zOHpBOFdUdnZG?=
+ =?utf-8?Q?4vZhI3lOeKI5YAPtsbD3iWU=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1fd3f9c2-c516-4869-784e-08d9e6f091af
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB4140.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Feb 2022 08:38:36.2537
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ENPjCzOmLSKiDv81zDr8ZSzOcy4b3w1EWnKGPwrGD9n06RmvFcVkmWio6M+nVLMSVJPaPvKRZMQXEFAc/iMf3g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN1PR12MB2351
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+On 2/2/22 22:27, Lukas Bulwahn wrote:
+> Dear John,
+> 
+> Your change "mm/gup: clean up follow_pfn_pte() slightly" (see Link),
+> visible in linux-next as commit 05fef840b5c6 ("mm/gup: clean up
+> follow_pfn_pte() slightly"), is somehow weird.
 
-The sa1111 platform is one of the two remaining users of the old Arm
-specific "dmabounce" code, which is an earlier implementation of the
-generic swiotlb.
+Well. That sounds like something to be avoided. :)
 
-Linus Walleij submitted a patch that removes dmabounce support from
-the ixp4xx, and I had a look at the other user, which is the sa1111
-companion chip.
+> 
+> In the new branch if (pages), you set page = ERR_PTR(-EFAULT) and goto
+> out. However, at the label out, the value of page is not used, but the
+> return uses the variables i and ret.
 
-Looking at how dmabounce is used, I could narrow it down to one driver
-one three machines:
+Yes, I think that the complaint is accurate. The intent of this code is
+to return either number of pages so far (i) or ret (which should be zero
+in this case), because we are just stopping early, rather than calling
+this an actual error.
 
- - dmabounce is only initialized on assabet/neponset, jornada720 and
-   badge4, which are the platforms that have an sa1111 and support
-   DMA on it.
+And since we do skip over setting pages[i] = pages, it's pointless to
+assign page to anything.
 
- - All three of these suffer from "erratum #7" that requires only
-   doing DMA to half the memory sections based on one of the address
-   lines, in addition, the neponset also can't DMA to the RAM that
-   is connected to sa1111 itself.
+So instead of this:
 
- - the pxa lubbock machine also has sa1111, but does not support DMA
-   on it and does not set dmabounce.
+	if (pages) {
+		page = ERR_PTR(-EFAULT);
+		goto out;
+	}
 
- - only the OHCI and audio devices on sa1111 support DMA, but as
-   there is no audio driver for this hardware, only OHCI remains.
+...I should have written this:
 
-In the OHCI code, I noticed that two other platforms already have
-a local bounce buffer support in the form of the "local_mem"
-allocator. Specifically, TMIO and SM501 use this on a few other ARM
-boards with 16KB or 128KB of local SRAM that can be accessed from the
-OHCI and from the CPU.
+	if (pages)
+		goto out;
 
-While this is not the same problem as on sa1111, I could not find a
-reason why we can't re-use the existing implementation but replace the
-physical SRAM address mapping with a locally allocated DMA buffer.
 
-There are two main downsides:
+I'll send an updated series with this correction.
 
- - rather than using a dynamically sized pool, this buffer needs
-   to be allocated at probe time using a fixed size. Without
-   having any idea of what it should be, I picked a size of
-   64KB, which is between what the other two OHCI front-ends use
-   in their SRAM. If anyone has a better idea what that size
-   is reasonable, this can be trivially changed.
+Thank you for the report!
 
- - Previously, only USB transfers to unaddressable memory needed
-   to go through the bounce buffer, now all of them do, which may
-   impact runtime performance for USB endpoints that do a lot of
-   transfers.
 
-On the upside, the local_mem support uses write-combining buffers,
-which should be a bit faster for transfers to the device compared to
-normal uncached coherent memory as used in dmabounce.
-
-Cc: Linus Walleij <linus.walleij@linaro.org>
-Cc: Russell King <linux@armlinux.org.uk>
-Cc: Christoph Hellwig <hch@infradead.org>
-Cc: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-Cc: linux-usb@vger.kernel.org
-Acked-by: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
-Changes in v2:
-
- - drop check for assabet, as bounce buffers are required on
-   all sa1100 machines
- - select CONFIG_ZONE_DMA again
- - update comments and changelog text based on discussion
----
- arch/arm/common/Kconfig        |  2 +-
- arch/arm/common/sa1111.c       | 64 ----------------------------------
- drivers/usb/core/hcd.c         | 17 +++++++--
- drivers/usb/host/ohci-sa1111.c | 25 +++++++++++++
- 4 files changed, 40 insertions(+), 68 deletions(-)
-
-diff --git a/arch/arm/common/Kconfig b/arch/arm/common/Kconfig
-index c8e198631d41..bc158fd227e1 100644
---- a/arch/arm/common/Kconfig
-+++ b/arch/arm/common/Kconfig
-@@ -1,7 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0
- config SA1111
- 	bool
--	select DMABOUNCE if !ARCH_PXA
-+	select ZONE_DMA if ARCH_SA1100
- 
- config DMABOUNCE
- 	bool
-diff --git a/arch/arm/common/sa1111.c b/arch/arm/common/sa1111.c
-index 7df003b149c6..a00915883f78 100644
---- a/arch/arm/common/sa1111.c
-+++ b/arch/arm/common/sa1111.c
-@@ -1391,70 +1391,9 @@ void sa1111_driver_unregister(struct sa1111_driver *driver)
- }
- EXPORT_SYMBOL(sa1111_driver_unregister);
- 
--#ifdef CONFIG_DMABOUNCE
--/*
-- * According to the "Intel StrongARM SA-1111 Microprocessor Companion
-- * Chip Specification Update" (June 2000), erratum #7, there is a
-- * significant bug in the SA1111 SDRAM shared memory controller.  If
-- * an access to a region of memory above 1MB relative to the bank base,
-- * it is important that address bit 10 _NOT_ be asserted. Depending
-- * on the configuration of the RAM, bit 10 may correspond to one
-- * of several different (processor-relative) address bits.
-- *
-- * This routine only identifies whether or not a given DMA address
-- * is susceptible to the bug.
-- *
-- * This should only get called for sa1111_device types due to the
-- * way we configure our device dma_masks.
-- */
--static int sa1111_needs_bounce(struct device *dev, dma_addr_t addr, size_t size)
--{
--	/*
--	 * Section 4.6 of the "Intel StrongARM SA-1111 Development Module
--	 * User's Guide" mentions that jumpers R51 and R52 control the
--	 * target of SA-1111 DMA (either SDRAM bank 0 on Assabet, or
--	 * SDRAM bank 1 on Neponset). The default configuration selects
--	 * Assabet, so any address in bank 1 is necessarily invalid.
--	 */
--	return (machine_is_assabet() || machine_is_pfs168()) &&
--		(addr >= 0xc8000000 || (addr + size) >= 0xc8000000);
--}
--
--static int sa1111_notifier_call(struct notifier_block *n, unsigned long action,
--	void *data)
--{
--	struct sa1111_dev *dev = to_sa1111_device(data);
--
--	switch (action) {
--	case BUS_NOTIFY_ADD_DEVICE:
--		if (dev->dev.dma_mask && dev->dma_mask < 0xffffffffUL) {
--			int ret = dmabounce_register_dev(&dev->dev, 1024, 4096,
--					sa1111_needs_bounce);
--			if (ret)
--				dev_err(&dev->dev, "failed to register with dmabounce: %d\n", ret);
--		}
--		break;
--
--	case BUS_NOTIFY_DEL_DEVICE:
--		if (dev->dev.dma_mask && dev->dma_mask < 0xffffffffUL)
--			dmabounce_unregister_dev(&dev->dev);
--		break;
--	}
--	return NOTIFY_OK;
--}
--
--static struct notifier_block sa1111_bus_notifier = {
--	.notifier_call = sa1111_notifier_call,
--};
--#endif
--
- static int __init sa1111_init(void)
- {
- 	int ret = bus_register(&sa1111_bus_type);
--#ifdef CONFIG_DMABOUNCE
--	if (ret == 0)
--		bus_register_notifier(&sa1111_bus_type, &sa1111_bus_notifier);
--#endif
- 	if (ret == 0)
- 		platform_driver_register(&sa1111_device_driver);
- 	return ret;
-@@ -1463,9 +1402,6 @@ static int __init sa1111_init(void)
- static void __exit sa1111_exit(void)
- {
- 	platform_driver_unregister(&sa1111_device_driver);
--#ifdef CONFIG_DMABOUNCE
--	bus_unregister_notifier(&sa1111_bus_type, &sa1111_bus_notifier);
--#endif
- 	bus_unregister(&sa1111_bus_type);
- }
- 
-diff --git a/drivers/usb/core/hcd.c b/drivers/usb/core/hcd.c
-index 3c7c64ff3c0a..8417baedc89c 100644
---- a/drivers/usb/core/hcd.c
-+++ b/drivers/usb/core/hcd.c
-@@ -1260,7 +1260,8 @@ void usb_hcd_unlink_urb_from_ep(struct usb_hcd *hcd, struct urb *urb)
- EXPORT_SYMBOL_GPL(usb_hcd_unlink_urb_from_ep);
- 
- /*
-- * Some usb host controllers can only perform dma using a small SRAM area.
-+ * Some usb host controllers can only perform dma using a small SRAM area,
-+ * or have restrictions on addressable DRAM.
-  * The usb core itself is however optimized for host controllers that can dma
-  * using regular system memory - like pci devices doing bus mastering.
-  *
-@@ -3095,8 +3096,18 @@ int usb_hcd_setup_local_mem(struct usb_hcd *hcd, phys_addr_t phys_addr,
- 	if (IS_ERR(hcd->localmem_pool))
- 		return PTR_ERR(hcd->localmem_pool);
- 
--	local_mem = devm_memremap(hcd->self.sysdev, phys_addr,
--				  size, MEMREMAP_WC);
-+	/*
-+	 * if a physical SRAM address was passed, map it, otherwise
-+	 * allocate system memory as a buffer.
-+	 */
-+	if (phys_addr)
-+		local_mem = devm_memremap(hcd->self.sysdev, phys_addr,
-+					  size, MEMREMAP_WC);
-+	else
-+		local_mem = dmam_alloc_attrs(hcd->self.sysdev, size, &dma,
-+					     GFP_KERNEL,
-+					     DMA_ATTR_WRITE_COMBINE);
-+
- 	if (IS_ERR(local_mem))
- 		return PTR_ERR(local_mem);
- 
-diff --git a/drivers/usb/host/ohci-sa1111.c b/drivers/usb/host/ohci-sa1111.c
-index 137f66f6977f..0da2badf0658 100644
---- a/drivers/usb/host/ohci-sa1111.c
-+++ b/drivers/usb/host/ohci-sa1111.c
-@@ -206,6 +206,31 @@ static int ohci_hcd_sa1111_probe(struct sa1111_dev *dev)
- 		goto err1;
- 	}
- 
-+	/*
-+	 * According to the "Intel StrongARM SA-1111 Microprocessor Companion
-+	 * Chip Specification Update" (June 2000), erratum #7, there is a
-+	 * significant bug in the SA1111 SDRAM shared memory controller.  If
-+	 * an access to a region of memory above 1MB relative to the bank base,
-+	 * it is important that address bit 10 _NOT_ be asserted. Depending
-+	 * on the configuration of the RAM, bit 10 may correspond to one
-+	 * of several different (processor-relative) address bits.
-+	 *
-+	 * Section 4.6 of the "Intel StrongARM SA-1111 Development Module
-+	 * User's Guide" mentions that jumpers R51 and R52 control the
-+	 * target of SA-1111 DMA (either SDRAM bank 0 on Assabet, or
-+	 * SDRAM bank 1 on Neponset). The default configuration selects
-+	 * Assabet, so any address in bank 1 is necessarily invalid.
-+	 *
-+	 * As a workaround, use a bounce buffer in addressable memory
-+	 * as local_mem, relying on ZONE_DMA to provide an area that
-+	 * fits within the above constraints.
-+	 *
-+	 * SZ_64K is an estimate for what size this might need.
-+	 */
-+	ret = usb_hcd_setup_local_mem(hcd, 0, 0, SZ_64K);
-+	if (ret)
-+		goto err1;
-+
- 	if (!request_mem_region(hcd->rsrc_start, hcd->rsrc_len, hcd_name)) {
- 		dev_dbg(&dev->dev, "request_mem_region failed\n");
- 		ret = -EBUSY;
+thanks,
 -- 
-2.29.2
+John Hubbard
+NVIDIA
+> 
+> Static analysis tools, such as clang-analyzer, rightfully complain
+> about such weird code.
+> 
+> Maybe you can have another look at what you intended to set in the
+> branch of that commit or if you intend to jump to the label out?
+> 
+> 
+> Best regards,
+> 
+> Lukas
+> 
+> Link: https://lkml.kernel.org/r/20220201101108.306062-3-jhubbard@nvidia.com
 
