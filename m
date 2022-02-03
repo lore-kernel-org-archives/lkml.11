@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B60D9C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 09:50:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42BC7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 09:50:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349894AbiBCJun (ORCPT
+        id S1349904AbiBCJus (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 04:50:43 -0500
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:42636 "EHLO
+        Thu, 3 Feb 2022 04:50:48 -0500
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:42664 "EHLO
         bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349912AbiBCJui (ORCPT
+        with ESMTP id S1349908AbiBCJuq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 04:50:38 -0500
+        Thu, 3 Feb 2022 04:50:46 -0500
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: kholk11)
-        with ESMTPSA id 67EF71F45311
+        with ESMTPSA id 91C401F45310
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1643881837;
-        bh=mzOFXDAXAzLAhEhLjMCEupxX73tzuR4dAS6Der8FZvs=;
+        s=mail; t=1643881845;
+        bh=0YKA29I9dGqT+kRMVnEfwXAWDziKXePsM7uLyg8Eon8=;
         h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=buShtQpzXhsuTNYzJseURVnMRXIHBdpF7xQC3T/3BehhB4p8CJ5c7TQ/1LcychNtg
-         +ou5gLa/21biMSRzfpJ1N0RlJdHvzMoRqGqY2/wvpc6w19zUoRMHdn/oAzTWMkFiUd
-         h3DAsnrM7LKlF3JsxmDmXOVuhAI2PnNmlWROEJnYCnoiUUA9iypMUMmArVOe3artHC
-         jggksN1XsxIUbU1kaAO9kSOcT7q9yseXtPZ9U72xHuBj7PNE8bB96DxGBBzO9w1WPQ
-         w1fxdz6FoHNs1ILJ5c5wKn4xW3y7mkeMd0FU1xdZrdocaqwjZdSuQez2WQ0MRKW5IQ
-         6M97ZjcU0ajjA==
-Message-ID: <60067d0d-fc48-0af5-c182-d36388a89f45@collabora.com>
-Date:   Thu, 3 Feb 2022 10:50:35 +0100
+        b=ljfT+rGj4GAiBsF3Wbt0FcbftjA6VPN2TMas89EuJnfyt5wYsNp3AwT7iz+4RioAC
+         8mTmAcv9hLOhr/LFsDH6v7iaeyfG4IXqzCCnE0m1UaHentF2inNX4WSYzzhKOc06ZO
+         QmC5saGyFgNEQuNmoodrPYn76XKh0mbfzSPKbmXyCMchMeZbWm24te5Qizu7ejyDzl
+         Bk2BAYdxGfRo6owJAUYm3zMxTZObWKYWL+o5NNIILyRSP60AARUaiWhcmrG1FYh2Yo
+         KfNSVtPxuit25LS0jTU5lrz9grnwxHIMlzS8UzvjYMjV/hN0tglUIxQJSyr6bNXGaf
+         Mrd//1Ps3fcjA==
+Message-ID: <b8f6ca21-f516-5e13-2758-03bf9ddebe49@collabora.com>
+Date:   Thu, 3 Feb 2022 10:50:42 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.1
-Subject: Re: [PATCH v2 12/31] clk: mediatek: pll: Split definitions into
- separate header file
+Subject: Re: [PATCH v2 10/31] clk: mediatek: mux: Internalize struct
+ mtk_clk_mux
 Content-Language: en-US
 To:     Chen-Yu Tsai <wenst@chromium.org>, Stephen Boyd <sboyd@kernel.org>,
         Michael Turquette <mturquette@baylibre.com>,
@@ -42,10 +42,10 @@ Cc:     Chun-Jie Chen <chun-jie.chen@mediatek.com>,
         linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
 References: <20220202134834.690675-1-wenst@chromium.org>
- <20220202134834.690675-13-wenst@chromium.org>
+ <20220202134834.690675-11-wenst@chromium.org>
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220202134834.690675-13-wenst@chromium.org>
+In-Reply-To: <20220202134834.690675-11-wenst@chromium.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -53,17 +53,11 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Il 02/02/22 14:48, Chen-Yu Tsai ha scritto:
-> When the PLL type clk was implemented in the MediaTek clk driver
-> library, the data structure definitions and function declaration
-> were put in the common header file.
+> struct mtk_clk_mux is an implementation detail of the mux clk type,
+> and is not used outside of the implementation.
 > 
-> Since it is its own type of clk, and not all platform clk drivers
-> utilize it, having the definitions in the common header results
-> in wasted cycles during compilation.
-> 
-> Split out the related definitions and declarations into its own
-> header file, and include that only in the platform clk drivers that
-> need it.
+> Internalize the definition to minimize leakage of details and shrink
+> the header file.
 > 
 > Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
 > Reviewed-by: Miles Chen <miles.chen@mediatek.com>
