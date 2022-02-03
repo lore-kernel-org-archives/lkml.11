@@ -2,143 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B587C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:31:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CF7EC43217
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:31:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354392AbiBCUbv (ORCPT
+        id S1354409AbiBCUbz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:31:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57510 "EHLO
+        Thu, 3 Feb 2022 15:31:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354368AbiBCUbL (ORCPT
+        with ESMTP id S1354203AbiBCUbL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 3 Feb 2022 15:31:11 -0500
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD6CDC061749;
-        Thu,  3 Feb 2022 12:30:53 -0800 (PST)
-Received: by mail-ej1-x636.google.com with SMTP id s13so12392504ejy.3;
-        Thu, 03 Feb 2022 12:30:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=eTBrkv50iPcsCl3Axc+/Cs3Z68I2VsXqY0C0lgkJvTM=;
-        b=atofIeh4yIXZ0J9+2qb+Egv0Sj+9EN0yrcwr3AbxcuxVq4VZtPOzTUTa/fJnOOK7cP
-         xy79ZNP7g8hFten6aD1Zw07nLBR2WYOfj0i+Z67x5goL1dDtvH6i6EQFDWcS+48r2o5c
-         99nm4W1tPG69PYc9kxNd1zOUpGR7yyjKb03stUM0nuHC4tnQtKsUopp+8XRTgsC+txTq
-         AUPJT4JX+oCYGCLaHgI2Mi9e3mSuq7XJzuEamE3LqpM/J/0wVMWWqXCA4LQwSU702fv+
-         /38Y+DVaR5ank4+U4DfTvtrsBXtpADhaQfAPAY0NgOkyKggibE7Di+W0gcZZdAGwUkLv
-         OK9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=eTBrkv50iPcsCl3Axc+/Cs3Z68I2VsXqY0C0lgkJvTM=;
-        b=L7dh3JFlnk41Y/CyA3r3GGkxTOR/pmD7CnEGm1+fp++S2S1Tz6R57akQySiaaEVjlv
-         2EMctZvF3iX6JXPrP2EUzHFWSLBiGw2vRQC+bQaevy4Bb1RWaeXIvy+iLZ3HXRPJwa7w
-         9BN5zOv9ec/YuSDpT5gVK8cUKFkbVv+5mHpsO0KcZw/Nmv+bLjKiVSVJA9HxoJHuxUo9
-         IWLCctwXtSeoOhtIVukE8iq95Fa5IEPDqeXcfGjgGUSkAsgQmMCeIZpArEkOpz11fb4C
-         1iaaKlHH5tpmWgws6qo4+t1rsCNb5Boj10RWNdcNM+PX3KJJmHFqqXfdUuIcNkW8p0WQ
-         KYJg==
-X-Gm-Message-State: AOAM531iIJW8NsEpOuakx7WVz7SX6hB1OzT8Pw8B38BHKxXvs9hWVZKX
-        16JbICz05Ud6xfGwjxqxYBA=
-X-Google-Smtp-Source: ABdhPJyM5yR9dRAuxYavP8LBxjs7IkwqTDrm+TvEKoUHcoUHW5eMd/V4plTO6YUFaH5jH6c8o7fUKw==
-X-Received: by 2002:a17:907:2d11:: with SMTP id gs17mr31591742ejc.189.1643920252145;
-        Thu, 03 Feb 2022 12:30:52 -0800 (PST)
-Received: from adroid (027-177-184-091.ip-addr.vsenet.de. [91.184.177.27])
-        by smtp.gmail.com with ESMTPSA id ry6sm8843513ejc.45.2022.02.03.12.30.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Feb 2022 12:30:51 -0800 (PST)
-From:   =?UTF-8?q?Martin=20J=C3=BCcker?= <martin.juecker@gmail.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Russell King <linux@armlinux.org.uk>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Martin=20J=C3=BCcker?= <martin.juecker@gmail.com>
-Subject: [PATCH v2 1/2] ARM: dts: exynos: add charger and battery to p4note
-Date:   Thu,  3 Feb 2022 21:29:47 +0100
-Message-Id: <d7f7b0f87a18b5cc44ba97390461c15469439829.1643919230.git.martin.juecker@gmail.com>
-X-Mailer: git-send-email 2.25.1
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1084C06177D;
+        Thu,  3 Feb 2022 12:30:59 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6D0DCB835A3;
+        Thu,  3 Feb 2022 20:30:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C4E3C340E8;
+        Thu,  3 Feb 2022 20:30:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643920257;
+        bh=/T57QsHEXzWRyz9ngAgfSuXzq9rnlQ9xNPWF7J/q3zk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=jrI7CHBdPFVcKKxETuBIvpbNx+f526nfhYSNNuckE7OKpohhvmXKh8KQYBmKVF7w6
+         /gj5J+V2X8Sy5NbY96DRgUE0ED/c1N7+DfAsfq7cdm4hjlDuG8zd90XC0WqZNX9eeh
+         gKO7K+TyPDZEbRsLXTkrtJSsOO8qoKa1e57NArY6vAgHtCND8Ra/Pw4HcDASdEELSY
+         DLVJbZYFjgU3psD9TDcK+3ZT6kY+j9y/3hrv7JQEsle+5yD1hZK5QjaqqO2dUBVCVB
+         PyqkwINmCewFig7HWiGR9+ao476ccNGH/Nau/GtuwORC4c7yMpzvwjgfCnuYBkFXFk
+         PHO2wud5CgDWg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     ZouMingzhe <mingzhe.zou@easystack.cn>,
+        Mike Christie <michael.christie@oracle.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, linux-scsi@vger.kernel.org,
+        target-devel@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 26/52] scsi: target: iscsi: Make sure the np under each tpg is unique
+Date:   Thu,  3 Feb 2022 15:29:20 -0500
+Message-Id: <20220203202947.2304-26-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220203202947.2304-1-sashal@kernel.org>
+References: <20220203202947.2304-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add device tree entry to support the Summit SMB347 charger which is
-built into the p4note devices, as well as a simple battery node.
+From: ZouMingzhe <mingzhe.zou@easystack.cn>
 
-Signed-off-by: Martin Jücker <martin.juecker@gmail.com>
----
-Changes in v2:
-  - squash charger and battery commits
----
- arch/arm/boot/dts/exynos4412-p4note.dtsi | 35 ++++++++++++++++++++++++
- 1 file changed, 35 insertions(+)
+[ Upstream commit a861790afaa8b6369eee8a88c5d5d73f5799c0c6 ]
 
-diff --git a/arch/arm/boot/dts/exynos4412-p4note.dtsi b/arch/arm/boot/dts/exynos4412-p4note.dtsi
-index b386a9b8e188..fcd75cceb877 100644
---- a/arch/arm/boot/dts/exynos4412-p4note.dtsi
-+++ b/arch/arm/boot/dts/exynos4412-p4note.dtsi
-@@ -16,6 +16,7 @@
- #include <dt-bindings/input/linux-event-codes.h>
- #include <dt-bindings/interrupt-controller/irq.h>
- #include <dt-bindings/pinctrl/samsung.h>
-+#include <dt-bindings/power/summit,smb347-charger.h>
+iscsit_tpg_check_network_portal() has nested for_each loops and is supposed
+to return true when a match is found. However, the tpg loop will still
+continue after existing the tpg_np loop. If this tpg_np is not the last the
+match value will be changed.
+
+Break the outer loop after finding a match and make sure the np under each
+tpg is unique.
+
+Link: https://lore.kernel.org/r/20220111054742.19582-1-mingzhe.zou@easystack.cn
+Signed-off-by: ZouMingzhe <mingzhe.zou@easystack.cn>
+Reviewed-by: Mike Christie <michael.christie@oracle.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/target/iscsi/iscsi_target_tpg.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/target/iscsi/iscsi_target_tpg.c b/drivers/target/iscsi/iscsi_target_tpg.c
+index 8075f60fd02c3..2d5cf1714ae05 100644
+--- a/drivers/target/iscsi/iscsi_target_tpg.c
++++ b/drivers/target/iscsi/iscsi_target_tpg.c
+@@ -443,6 +443,9 @@ static bool iscsit_tpg_check_network_portal(
+ 				break;
+ 		}
+ 		spin_unlock(&tpg->tpg_np_lock);
++
++		if (match)
++			break;
+ 	}
+ 	spin_unlock(&tiqn->tiqn_tpg_lock);
  
- / {
- 	compatible = "samsung,p4note", "samsung,exynos4412", "samsung,exynos4";
-@@ -114,6 +115,17 @@ wlan_pwrseq: sdhci3-pwrseq {
- 		clock-names = "ext_clock";
- 	};
- 
-+	battery_cell: battery-cell {
-+		compatible = "simple-battery";
-+		device-chemistry = "lithium-ion";
-+		constant-charge-current-max-microamp = <2200000>;
-+		precharge-current-microamp = <250000>;
-+		charge-term-current-microamp = <250000>;
-+		constant-charge-voltage-max-microvolt = <4200000>;
-+
-+		power-supplies = <&power_supply>;
-+	};
-+
- 	i2c-gpio-1 {
- 		compatible = "i2c-gpio";
- 		sda-gpios = <&gpy2 4 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
-@@ -182,6 +194,29 @@ stmpe_adc {
- 			};
- 		};
- 	};
-+
-+	i2c-gpio-4 {
-+		compatible = "i2c-gpio";
-+		sda-gpios = <&gpm2 0 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
-+		scl-gpios = <&gpm2 1 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
-+
-+		i2c-gpio,delay-us = <2>;
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		power_supply: charger@6 {
-+			compatible = "summit,smb347";
-+			reg = <0x6>;
-+			summit,enable-usb-charging;
-+			summit,enable-charge-control = <SMB3XX_CHG_ENABLE_SW>;
-+			summit,fast-voltage-threshold-microvolt = <2600000>;
-+			summit,chip-temperature-threshold-celsius = <130>;
-+			summit,usb-current-limit-microamp = <1800000>;
-+
-+			monitored-battery = <&battery_cell>;
-+		};
-+	};
-+
- };
- 
- &adc {
 -- 
-2.25.1
+2.34.1
 
