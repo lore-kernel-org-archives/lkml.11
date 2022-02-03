@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CAEBC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:38:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B021C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:38:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355676AbiBCUin (ORCPT
+        id S1355678AbiBCUiq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:38:43 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:42230 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237703AbiBCUgF (ORCPT
+        Thu, 3 Feb 2022 15:38:46 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:38162 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355484AbiBCUfz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 15:36:05 -0500
+        Thu, 3 Feb 2022 15:35:55 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D092360AE0;
-        Thu,  3 Feb 2022 20:36:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 368F6C340EB;
-        Thu,  3 Feb 2022 20:36:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 703C1B835A9;
+        Thu,  3 Feb 2022 20:35:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3C55C340F0;
+        Thu,  3 Feb 2022 20:35:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643920564;
-        bh=+XLm7thfyAJVlyr8gpH4/JadVRLwjIRmSvXfhKOStXk=;
+        s=k20201202; t=1643920553;
+        bh=IpJaUgCby7BfLwA8UIjAkqWSIcHsUn66qeLSJKTrifk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LLk1h7X0BgP450VfGFMcv9e7YpwINDKKyG3GkTVCmom+16UQMrNWSa9Zdj/KN+Q4N
-         972ihKYcvrIEAHoB1+79rRQkVQiysD4MBOzgMZo+frl9A5qkhs/mzX/G9J5itvrT2F
-         ijPLfiG2JsHoMCjKpZTF0fpJdJY9x1wjpW32bjYGbUlzfu4VdsR1ll1S0vcCfx7dZ8
-         Eepick2rZY0Jc0UaAvlzwu/gxjOKNGsyQ9ppMH80XOKoF7v7S5f4sNImWFZeax6pcs
-         bMpUIstxxMC9joIKKCChJrrOLnoVwh/BWsMdOU3NE7ONwTCdbAMsXimFJtUVdAL4BH
-         Zhizh8Omzugrw==
+        b=uRRNfjFsuBEgEDuwd3ErkhR7mIgTrxFiRoCMdVYqdfGWf2rFD9NhzdQZFPGmy2g4A
+         2VLcjX9zeng2qsQob4sn40T5R/Ixn/79+FLMM5kyBjSkvqfx+/6OwBscSsTu0h+ubb
+         8FnQgOIzXRC8hKvOi+pw5yQu8kmk5ZERSbV9e1HX8ATjZDWEJ3eYBwLWQGhkM0fPEQ
+         2X7THXYx/nNvYsyyEKqHgmv6YHfKTuXmJwXIs0QR+Td/BBJB/l2msxJ6XZ1Vym5YaW
+         pljQE1z6Rtxz2EjugWTZAmUI3Sd4T2rIngdRUGkoou5ZhvJ1iZJxXOyH8/6qddpfTz
+         N3di4drq8ogHQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Saurav Kashyap <skashyap@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, jhasan@marvell.com,
-        GR-QLogic-Storage-Upstream@marvell.com, jejb@linux.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 10/15] scsi: qedf: Fix refcount issue when LOGO is received during TMF
-Date:   Thu,  3 Feb 2022 15:35:40 -0500
-Message-Id: <20220203203545.3879-10-sashal@kernel.org>
+Cc:     Florian Westphal <fw@strlen.de>, Yi Chen <yiche@redhat.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>, kadlec@netfilter.org,
+        davem@davemloft.net, kuba@kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 04/15] netfilter: nf_conntrack_netbios_ns: fix helper module alias
+Date:   Thu,  3 Feb 2022 15:35:34 -0500
+Message-Id: <20220203203545.3879-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220203203545.3879-1-sashal@kernel.org>
 References: <20220203203545.3879-1-sashal@kernel.org>
@@ -52,70 +52,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Saurav Kashyap <skashyap@marvell.com>
+From: Florian Westphal <fw@strlen.de>
 
-[ Upstream commit 5239ab63f17cee643bd4bf6addfedebaa7d4f41e ]
+[ Upstream commit 0e906607b9c5ee22312c9af4d8adb45c617ea38a ]
 
-Hung task call trace was seen during LOGO processing.
+The helper gets registered as 'netbios-ns', not netbios_ns.
+Intentionally not adding a fixes-tag because i don't want this to go to
+stable. This wasn't noticed for a very long time so no so no need to risk
+regressions.
 
-[  974.309060] [0000:00:00.0]:[qedf_eh_device_reset:868]: 1:0:2:0: LUN RESET Issued...
-[  974.309065] [0000:00:00.0]:[qedf_initiate_tmf:2422]: tm_flags 0x10 sc_cmd 00000000c16b930f op = 0x2a target_id = 0x2 lun=0
-[  974.309178] [0000:00:00.0]:[qedf_initiate_tmf:2431]: portid=016900 tm_flags =LUN RESET
-[  974.309222] [0000:00:00.0]:[qedf_initiate_tmf:2438]: orig io_req = 00000000ec78df8f xid = 0x180 ref_cnt = 1.
-[  974.309625] host1: rport 016900: Received LOGO request while in state Ready
-[  974.309627] host1: rport 016900: Delete port
-[  974.309642] host1: rport 016900: work event 3
-[  974.309644] host1: rport 016900: lld callback ev 3
-[  974.313243] [0000:61:00.2]:[qedf_execute_tmf:2383]:1: fcport is uploading, not executing flush.
-[  974.313295] [0000:61:00.2]:[qedf_execute_tmf:2400]:1: task mgmt command success...
-[  984.031088] INFO: task jbd2/dm-15-8:7645 blocked for more than 120 seconds.
-[  984.031136]       Not tainted 4.18.0-305.el8.x86_64 #1
-
-[  984.031166] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-[  984.031209] jbd2/dm-15-8    D    0  7645      2 0x80004080
-[  984.031212] Call Trace:
-[  984.031222]  __schedule+0x2c4/0x700
-[  984.031230]  ? unfreeze_partials.isra.83+0x16e/0x1a0
-[  984.031233]  ? bit_wait_timeout+0x90/0x90
-[  984.031235]  schedule+0x38/0xa0
-[  984.031238]  io_schedule+0x12/0x40
-[  984.031240]  bit_wait_io+0xd/0x50
-[  984.031243]  __wait_on_bit+0x6c/0x80
-[  984.031248]  ? free_buffer_head+0x21/0x50
-[  984.031251]  out_of_line_wait_on_bit+0x91/0xb0
-[  984.031257]  ? init_wait_var_entry+0x50/0x50
-[  984.031268]  jbd2_journal_commit_transaction+0x112e/0x19f0 [jbd2]
-[  984.031280]  kjournald2+0xbd/0x270 [jbd2]
-[  984.031284]  ? finish_wait+0x80/0x80
-[  984.031291]  ? commit_timeout+0x10/0x10 [jbd2]
-[  984.031294]  kthread+0x116/0x130
-[  984.031300]  ? kthread_flush_work_fn+0x10/0x10
-[  984.031305]  ret_from_fork+0x1f/0x40
-
-There was a ref count issue when LOGO is received during TMF. This leads to
-one of the I/Os hanging with the driver. Fix the ref count.
-
-Link: https://lore.kernel.org/r/20220117135311.6256-3-njavali@marvell.com
-Signed-off-by: Saurav Kashyap <skashyap@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Reported-by: Yi Chen <yiche@redhat.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qedf/qedf_io.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/netfilter/nf_conntrack_netbios_ns.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/qedf/qedf_io.c b/drivers/scsi/qedf/qedf_io.c
-index 4e8a284e606c0..d02d1ef0d0116 100644
---- a/drivers/scsi/qedf/qedf_io.c
-+++ b/drivers/scsi/qedf/qedf_io.c
-@@ -2253,6 +2253,7 @@ int qedf_initiate_cleanup(struct qedf_ioreq *io_req,
- 	    io_req->tm_flags == FCP_TMF_TGT_RESET) {
- 		clear_bit(QEDF_CMD_OUTSTANDING, &io_req->flags);
- 		io_req->sc_cmd = NULL;
-+		kref_put(&io_req->refcount, qedf_release_cmd);
- 		complete(&io_req->tm_done);
- 	}
+diff --git a/net/netfilter/nf_conntrack_netbios_ns.c b/net/netfilter/nf_conntrack_netbios_ns.c
+index 7f19ee2596090..55415f011943d 100644
+--- a/net/netfilter/nf_conntrack_netbios_ns.c
++++ b/net/netfilter/nf_conntrack_netbios_ns.c
+@@ -20,13 +20,14 @@
+ #include <net/netfilter/nf_conntrack_helper.h>
+ #include <net/netfilter/nf_conntrack_expect.h>
  
++#define HELPER_NAME	"netbios-ns"
+ #define NMBD_PORT	137
+ 
+ MODULE_AUTHOR("Patrick McHardy <kaber@trash.net>");
+ MODULE_DESCRIPTION("NetBIOS name service broadcast connection tracking helper");
+ MODULE_LICENSE("GPL");
+ MODULE_ALIAS("ip_conntrack_netbios_ns");
+-MODULE_ALIAS_NFCT_HELPER("netbios_ns");
++MODULE_ALIAS_NFCT_HELPER(HELPER_NAME);
+ 
+ static unsigned int timeout __read_mostly = 3;
+ module_param(timeout, uint, 0400);
+@@ -44,7 +45,7 @@ static int netbios_ns_help(struct sk_buff *skb, unsigned int protoff,
+ }
+ 
+ static struct nf_conntrack_helper helper __read_mostly = {
+-	.name			= "netbios-ns",
++	.name			= HELPER_NAME,
+ 	.tuple.src.l3num	= NFPROTO_IPV4,
+ 	.tuple.src.u.udp.port	= cpu_to_be16(NMBD_PORT),
+ 	.tuple.dst.protonum	= IPPROTO_UDP,
 -- 
 2.34.1
 
