@@ -2,72 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72717C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 10:25:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12118C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 10:28:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240045AbiBCKZN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 05:25:13 -0500
-Received: from mail-io1-f72.google.com ([209.85.166.72]:36416 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231462AbiBCKZM (ORCPT
+        id S241323AbiBCK2y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Feb 2022 05:28:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59352 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231462AbiBCK2x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 05:25:12 -0500
-Received: by mail-io1-f72.google.com with SMTP id b15-20020a056602330f00b006109348c3daso1601236ioz.3
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 02:25:12 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=Rxhq5+VXSIrIwj7a/GsrEywPOO2yQbABshUuuSgeFDs=;
-        b=3o0P1tDQYjuHo5V2kfaAIdA26GntEYgGGlzm2wQp3VB7EHyXGRkrkZVXKoxwBXgjiY
-         A19zi39r/zASn3Agc01Jv8z+Csz31bBgXc5XNV+1yaEHR4xKIKYzy9+HidmEXywoF9od
-         1vODzug3D5nRb+zFukaf62mbhTjzvIIv/oR5dxgwFZIRSLNWkxsc0YpOxh7kQ/VdTzJN
-         QOK04sWVgNWNS7RQD2hM42dmDeXhB3be/lsvX08giR9OeR5n8EzqCUWmXogFExYI+ams
-         a7tY+WyAYOXazPLh/UDZMUHUXvF5oWBjbQDfxwLCoaU/bY/8hgGI7VHmooC9TRGkmgPo
-         15jQ==
-X-Gm-Message-State: AOAM530x4duoFx2KILu+xfz2VbFihuRiKwbukm167QYhCrh+f0yhwGiV
-        +vT8RQI0D+QuKGqJNuUzCGepfXI4uWCDhs3pXsO8ulGTFyE2
-X-Google-Smtp-Source: ABdhPJwciDKQal6Z8tQiBUOtqqjZ9Z10+I25ua2fg40YZSw5o6TjWWvTvcWi43d589ZwucSUE+At081HdhPPiDtRhfgxGm6Iv0ds
+        Thu, 3 Feb 2022 05:28:53 -0500
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8A0A3C061714;
+        Thu,  3 Feb 2022 02:28:53 -0800 (PST)
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+        id DCAE592009C; Thu,  3 Feb 2022 11:28:50 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by angie.orcam.me.uk (Postfix) with ESMTP id D684B92009B;
+        Thu,  3 Feb 2022 10:28:50 +0000 (GMT)
+Date:   Thu, 3 Feb 2022 10:28:50 +0000 (GMT)
+From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
+To:     Thomas Gleixner <tglx@linutronix.de>
+cc:     Nikolai Zhubr <zhubr.2@gmail.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>, Arnd Bergmann <arnd@kernel.org>,
+        Michal Necasek <mnecasek@yahoo.com>, x86@kernel.org,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 0/4] x86/PCI: Improve $PIR and add $IRT PIRQ routing
+ support
+In-Reply-To: <87sft1vano.ffs@tglx>
+Message-ID: <alpine.DEB.2.21.2202031028220.34636@angie.orcam.me.uk>
+References: <alpine.DEB.2.21.2201021821480.56863@angie.orcam.me.uk> <87sft1vano.ffs@tglx>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-X-Received: by 2002:a6b:f218:: with SMTP id q24mr17682264ioh.55.1643883911669;
- Thu, 03 Feb 2022 02:25:11 -0800 (PST)
-Date:   Thu, 03 Feb 2022 02:25:11 -0800
-In-Reply-To: <00000000000079a24b05d714d69f@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000009b6eaa05d71a8c06@google.com>
-Subject: Re: [syzbot] general protection fault in btf_decl_tag_resolve
-From:   syzbot <syzbot+53619be9444215e785ed@syzkaller.appspotmail.com>
-To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        clang-built-linux@googlegroups.com, daniel@iogearbox.net,
-        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        nathan@kernel.org, ndesaulniers@google.com, netdev@vger.kernel.org,
-        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-syzbot has bisected this issue to:
+On Wed, 2 Feb 2022, Thomas Gleixner wrote:
 
-commit b5ea834dde6b6e7f75e51d5f66dac8cd7c97b5ef
-Author: Yonghong Song <yhs@fb.com>
-Date:   Tue Sep 14 22:30:15 2021 +0000
+> >  This is a new patch series made around a discrete patch submitted earlier 
+> > on that has gone nowhere, which is now 1/4.  That change handles $PIR
+> > PIRQ
+> 
+> sorry for ignoring this due to stack overflow. I'll go over it later
+> today.
 
-    bpf: Support for new btf kind BTF_KIND_TAG
+ Great, thanks!
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=12183484700000
-start commit:   b7892f7d5cb2 tools: Ignore errors from `which' when search..
-git tree:       bpf
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=11183484700000
-console output: https://syzkaller.appspot.com/x/log.txt?x=16183484700000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=5044676c290190f2
-dashboard link: https://syzkaller.appspot.com/bug?extid=53619be9444215e785ed
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16454914700000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16ceb884700000
-
-Reported-by: syzbot+53619be9444215e785ed@syzkaller.appspotmail.com
-Fixes: b5ea834dde6b ("bpf: Support for new btf kind BTF_KIND_TAG")
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+  Maciej
