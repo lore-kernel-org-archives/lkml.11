@@ -2,100 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25214C4167E
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 01:11:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF0ACC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 01:11:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348811AbiBCBLI (ORCPT
+        id S1348762AbiBCBL1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 20:11:08 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:40036 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1348666AbiBCBLF (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 20:11:05 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=5hB4xZfLGfPF68sFnaphimiyN3Dvoyj649Ifdg6NzMk=; b=2650jDKWUISCHWTrw+2qSb29hf
-        Eg0kIWNamRCUEsMC3LfeWZNitulODz/nCXrDMPmXFPMUE72VH61hPSx5uwNVoOZnrOvRJe9UHfori
-        IRhH/NKpS6Y8uLmfet+KJgbH4rzTYuyCthmjEIni6imLGrzK8nnQnLlUntVfmlaQkEJ0=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nFQdR-0042dQ-Py; Thu, 03 Feb 2022 02:10:05 +0100
-Date:   Thu, 3 Feb 2022 02:10:05 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     nick.hawkins@hpe.com
-Cc:     verdun@hpe.com, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Corey Minyard <minyard@acm.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Brown <broonie@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Russell King <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        soc@kernel.org, Shawn Guo <shawnguo@kernel.org>,
-        Stanislav Jakubek <stano.jakubek@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Hao Fang <fanghao11@huawei.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Wang Kefeng <wangkefeng.wang@huawei.com>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-i2c@vger.kernel.org,
-        openipmi-developer@lists.sourceforge.net,
-        linux-mtd@lists.infradead.org, netdev@vger.kernel.org,
-        linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH] HPE BMC GXP SUPPORT
-Message-ID: <YfsrbcgPb5de3Bvw@lunn.ch>
-References: <nick.hawkins@hpe.com>
- <20220202165315.18282-1-nick.hawkins@hpe.com>
+        Wed, 2 Feb 2022 20:11:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48850 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347916AbiBCBLY (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 2 Feb 2022 20:11:24 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D7FFC061714;
+        Wed,  2 Feb 2022 17:11:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=hOhBEfGKJL5dh/rxk/8eoA7ifF1eXVxecJDpKir0EBg=; b=WbqtMNLydw8158tplU3bFDJ3z6
+        Lbswcon7/7iW3KzzgNBMWBDSzH7m0equSARWFZNekgjXa+0pRMQKVeVQkAXSrTYfH5iRCE2M+Q/1c
+        +YhLpXx6VcjD7fCM3X3tVQvAlKWDn5K6KhK7tlzpE48HGH9BiWJPs2QWZljsakjZ8rQaIrYO/GPr8
+        i5tOsis+fpqQreFeksBrJFYW/VYoBT0XxKqdj+FJC1Qxh5wt4RhkOS8VXbG6dcyFYzCiGLyItNeSf
+        ugIbEdyeky+QIRKGf76aTPl6OZUnV+3gTqsMkscQRnLlQdJ8TKsRb4Uof0ZdoDd8J7au6RCQ+534x
+        L4XaPScg==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nFQee-00HHqw-AI; Thu, 03 Feb 2022 01:11:20 +0000
+Date:   Wed, 2 Feb 2022 17:11:20 -0800
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Tejun Heo <tj@kernel.org>, Aaron Tomlin <atomlin@redhat.com>
+Cc:     Igor Pylypiv <ipylypiv@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-modules@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Changyuan Lyu <changyuanl@google.com>
+Subject: Re: [PATCH] Revert "module, async: async_synchronize_full() on
+ module init iff async is used"
+Message-ID: <YfsruBT19o3j0KD2@bombadil.infradead.org>
+References: <20220127233953.2185045-1-ipylypiv@google.com>
+ <YflxP28HlVrrNBU2@slm.duckdns.org>
+ <Yfly0P4e84373mGF@slm.duckdns.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220202165315.18282-1-nick.hawkins@hpe.com>
+In-Reply-To: <Yfly0P4e84373mGF@slm.duckdns.org>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
->  .../bindings/display/hpe,gxp-thumbnail.txt    |  21 +
->  .../devicetree/bindings/gpio/hpe,gxp-gpio.txt |  16 +
->  .../devicetree/bindings/i2c/hpe,gxp-i2c.txt   |  19 +
->  .../bindings/ipmi/hpegxp-kcs-bmc-cfg.txt      |  13 +
->  .../bindings/ipmi/hpegxp-kcs-bmc.txt          |  21 +
+On Tue, Feb 01, 2022 at 07:50:08AM -1000, Tejun Heo wrote:
+> On Tue, Feb 01, 2022 at 07:43:27AM -1000, Tejun Heo wrote:
+> > That's quite a walk down the memory lane and I agree with your analysis. The
+> > PF_USED_ASYNC is redundant for correctness with the removal of synchrnous
+> > loading from iosched path and the WARN_ON guarantees that nothing in kernel
+> > is creating a similar situation.
+> > 
+> > Acked-by: Tejun Heo <tj@kernel.org>
+> 
+> BTW, I can route this through workqueue tree but -mm or going to Linus's
+> tree directly might be a better option. Any opinions?
 
-Hi Nick
+FWIW, although I was not working on modules when the reverted commit was
+merged, my take on this is concern for a regression, much more than
+others. However I do agree that async probe can help for any slowdown,
+and the idea was that folks would eventually strive slowly to make more
+and more modules default to async probe as they can verify that's fine.
 
-In addiiton to the other feedback also given, for new bindings you
-should be using yaml, not txt. You then gain validation of the
-bindings.
+With that said,
 
-	Andrew
+Reviewed-by: Luis Chamberlain <mcgrof@kernel.org>
 
+And I'd prefer this go through Linus' tree since this is a fix and
+can be merged already. That would help with Aaron's kernel/module.c
+refactor work (no functional changes) too as that will soon slice and
+dice that to a kernel/module/*.c files.
+
+ Luis
