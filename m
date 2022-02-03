@@ -2,196 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D861C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 05:42:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3BE8C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 05:43:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238891AbiBEFls (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 00:41:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58336 "EHLO
+        id S239049AbiBEFmW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 5 Feb 2022 00:42:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229486AbiBEFln (ORCPT
+        with ESMTP id S239195AbiBEFmL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 00:41:43 -0500
-X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 04 Feb 2022 21:41:42 PST
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84D2CC061346
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 21:41:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644039702; x=1675575702;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=e7h91uG9gFzk8os7ey825VYijrgfLN45ZHagC7mGNZ8=;
-  b=iVamqqcCqMY6h4RSYnH74Wiayox7Ft1g8er2+ohtrfDMbj2f4CruSOk8
-   wcsGjdeKPZ9+TLAHAydFxySn3glcRqYCsmurovSOvjDg+SUUvz5WDSUaF
-   oX2FeKtP4/jAZ2jSdczeBev+hwnEqMcEFY5oBXhNWPqK7zH0raBPrRzeQ
-   oI0FR6RHp/EHSGyA87r3nrwFmHMQ6jjY783Qj40V3Aa0C3+kKDJnq2THX
-   /yFYH7WcTdNo4ORSOp8LwDujXj3oU47+yEvvqvWUTSidIT8yIobcezGvC
-   aORH5hmddqUw0oquObUDEPhhYXA1aRmqLlGnJ6Mgj5rXBg2raoPQkUMXr
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10248"; a="248439406"
-X-IronPort-AV: E=Sophos;i="5.88,345,1635231600"; 
-   d="scan'208";a="248439406"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2022 21:40:39 -0800
-X-IronPort-AV: E=Sophos;i="5.88,345,1635231600"; 
-   d="scan'208";a="539432637"
-Received: from iweiny-desk2.sc.intel.com (HELO localhost) ([10.3.52.147])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2022 21:40:39 -0800
-Date:   Fri, 4 Feb 2022 21:40:39 -0800
-From:   Ira Weiny <ira.weiny@intel.com>
-To:     Dan Williams <dan.j.williams@intel.com>
-Cc:     "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "Yu, Fenghua" <fenghua.yu@intel.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH V8 36/44] memremap_pages: Reserve a PKS PKey for eventual
- use by PMEM
-Message-ID: <20220205054039.GE785175@iweiny-DESK2.sc.intel.com>
-References: <20220127175505.851391-1-ira.weiny@intel.com>
- <20220127175505.851391-37-ira.weiny@intel.com>
- <2193142f0cf3785a4225e0393eace397cbbe86e6.camel@intel.com>
- <CAPcyv4i_Jc865zEzNxbQB_XHqCwSS6zm_evquLv2BBu9ipa39Q@mail.gmail.com>
+        Sat, 5 Feb 2022 00:42:11 -0500
+Received: from mx1.smtp.larsendata.com (mx1.smtp.larsendata.com [91.221.196.215])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DE3AC061348
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 21:42:08 -0800 (PST)
+Received: from mail01.mxhotel.dk (mail01.mxhotel.dk [91.221.196.236])
+        by mx1.smtp.larsendata.com (Halon) with ESMTPS
+        id a1e59090-852f-11ec-b20b-0050568c148b;
+        Thu, 03 Feb 2022 20:26:56 +0000 (UTC)
+Received: from ravnborg.org (80-162-45-141-cable.dk.customer.tdc.net [80.162.45.141])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: sam@ravnborg.org)
+        by mail01.mxhotel.dk (Postfix) with ESMTPSA id 8B539194BAD;
+        Thu,  3 Feb 2022 21:25:55 +0100 (CET)
+Date:   Thu, 3 Feb 2022 21:25:53 +0100
+X-Report-Abuse-To: abuse@mxhotel.dk
+From:   Sam Ravnborg <sam@ravnborg.org>
+To:     Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc:     DRI Development <dri-devel@lists.freedesktop.org>,
+        linux-fbdev@vger.kernel.org,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Tomi Valkeinen <tomi.valkeinen@ti.com>,
+        Claudio Suarez <cssk@net-c.es>,
+        Gerd Hoffmann <kraxel@redhat.com>, Pavel Machek <pavel@ucw.cz>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Sven Schnelle <svens@stackframe.org>
+Subject: Re: [PATCH 01/21] MAINTAINERS: Add entry for fbdev core
+Message-ID: <Yfw6UVCdmDyxKpDa@ravnborg.org>
+References: <20220131210552.482606-1-daniel.vetter@ffwll.ch>
+ <20220131210552.482606-2-daniel.vetter@ffwll.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAPcyv4i_Jc865zEzNxbQB_XHqCwSS6zm_evquLv2BBu9ipa39Q@mail.gmail.com>
-User-Agent: Mutt/1.11.1 (2018-12-01)
+In-Reply-To: <20220131210552.482606-2-daniel.vetter@ffwll.ch>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 04, 2022 at 09:12:11AM -0800, Dan Williams wrote:
-> On Tue, Feb 1, 2022 at 10:35 AM Edgecombe, Rick P
-> <rick.p.edgecombe@intel.com> wrote:
-> >
-> > On Thu, 2022-01-27 at 09:54 -0800, ira.weiny@intel.com wrote:
-> > >  enum pks_pkey_consumers {
-> > > -       PKS_KEY_DEFAULT         = 0, /* Must be 0 for default PTE
-> > > values */
-> > > -       PKS_KEY_TEST            = 1,
-> > > -       PKS_KEY_NR_CONSUMERS    = 2,
-> > > +       PKS_KEY_DEFAULT                 = 0, /* Must be 0 for default
-> > > PTE values */
-> > > +       PKS_KEY_TEST                    = 1,
-> > > +       PKS_KEY_PGMAP_PROTECTION        = 2,
-> > > +       PKS_KEY_NR_CONSUMERS            = 3,
-> > >  };
-> >
-> > The c spec says that any enum member that doesn't have an "=" will be
-> > one more than the previous member. As a consequence you can leave the
-> > "=" off PKS_KEY_NR_CONSUMERS and it will get auto adjusted when you add
-> > more like this.
-> >
-> > I know we've gone around and around on this, but why also specify the
-> > value for each key? They should auto increment and the first one is
-> > guaranteed to be zero.
+Hi Daniel,
 
-Because it was easier to ensure that the init value had all the defaults
-covered.
-
-> >
-> > Otherwise this doesn't use any of the features of "enum", it's just a
-> > verbose series of const int's.
-
-True but does this really matter?
-
+On Mon, Jan 31, 2022 at 10:05:32PM +0100, Daniel Vetter wrote:
+> Ever since Tomi extracted the core code in 2014 it's been defacto me
+> maintaining this, with help from others from dri-devel and sometimes
+> Linus (but those are mostly merge conflicts):
 > 
-> Going further, this can also build in support for dynamically (at
-> build time) freeing keys based on config, something like:
+> $ git shortlog -ns  drivers/video/fbdev/core/ | head -n5
+>     35  Daniel Vetter
+>     23  Linus Torvalds
+>     10  Hans de Goede
+>      9  Dave Airlie
+>      6  Peter Rosin
 > 
-> enum {
-> #if IS_ENABLED(CONFIG_PKS_TEST)
-> PKS_KEY_TEST,
-> #endif
-> #if IS_ENABLED(CONFIG_DEVMAP_PROTECTION)
-> PKS_KEY_PGMAP_PROTECTION,
-> #endif
-> PKS_KEY_NR_CONSUMERS,
-> }
+> I think ideally we'd also record that the various firmware fb drivers
+> (efifb, vesafb, ...) are also maintained in drm-misc because for the
+> past few years the patches have either been to fix handover issues
+> with drm drivers, or caused handover issues with drm drivers. So any
+> other tree just doesn't make sense. But also, there's plenty of
+> outdated MAINTAINER entries for these with people and git trees that
+> haven't been active in years, so maybe let's just leave them alone.
+> And furthermore distros are now adopting simpledrm as the firmware fb
+> driver, so hopefully the need to care about the fbdev firmware drivers
+> will go down going forward.
+> 
+> Note that drm-misc is group maintained, I expect that to continue like
+> we've done before, so no new expectations that patches all go through
+> my hands. That would be silly. This also means I'm happy to put any
+> other volunteer's name in the M: line, but otherwise git log says I'm
+> the one who's stuck with this.
+> 
+> Cc: Dave Airlie <airlied@gmail.com>
+> Cc: Jani Nikula <jani.nikula@linux.intel.com>
+> Cc: Linus Torvalds <torvalds@linux-foundation.org>
+> Cc: Linux Fbdev development list <linux-fbdev@vger.kernel.org>
+> Cc: Pavel Machek <pavel@ucw.cz>
+> Cc: Sam Ravnborg <sam@ravnborg.org>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Javier Martinez Canillas <javierm@redhat.com>
+> Cc: DRI Development <dri-devel@lists.freedesktop.org>
+> Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+> Cc: Claudio Suarez <cssk@net-c.es>
+> Cc: Tomi Valkeinen <tomi.valkeinen@ti.com>
+> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+> Cc: Thomas Zimmermann <tzimmermann@suse.de>
+> Cc: Daniel Vetter <daniel.vetter@intel.com>
+> Cc: Sven Schnelle <svens@stackframe.org>
+> Cc: Gerd Hoffmann <kraxel@redhat.com>
+> Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
+> ---
+>  MAINTAINERS | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index ea3e6c914384..49809eaa3096 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -7573,6 +7573,12 @@ S:	Maintained
+>  W:	http://floatingpoint.sourceforge.net/emulator/index.html
+>  F:	arch/x86/math-emu/
+>  
+> +FRAMEBUFFER CORE
+> +M:	Daniel Vetter <daniel@ffwll.ch>
+> +F:	drivers/video/fbdev/core/
 
-This is all well and good until you get to the point of trying to define the
-initial MSR value.
+Maybe add:
+include/linux/fb.h
+include/uapi/linux/fb.h
 
-What Rick proposes without the Kconfig check is easier than this.  But to do
-what both you and Rick suggest this is the best crap I've been able to come up
-with that actually works...
+Both edited within some months - so they see a little changes.
 
-
-/* pkeys_common.h */
-#define PKR_AD_BIT 0x1u
-#define PKR_WD_BIT 0x2u
-#define PKR_BITS_PER_PKEY 2
-
-#define PKR_PKEY_SHIFT(pkey)    (pkey * PKR_BITS_PER_PKEY)
-
-#define PKR_KEY_INIT_RW(pkey)   (0          << PKR_PKEY_SHIFT(pkey))
-#define PKR_KEY_INIT_AD(pkey)   (PKR_AD_BIT << PKR_PKEY_SHIFT(pkey))
-#define PKR_KEY_INIT_WD(pkey)   (PKR_WD_BIT << PKR_PKEY_SHIFT(pkey))
-
-
-/* pks-keys.h */
-#define PKR_KEY_MASK(pkey)   (0xffffffff & ~((PKR_WD_BIT|PKR_AD_BIT) << PKR_PKEY_SHIFT(pkey)))
-
-enum pks_pkey_consumers {
-        PKS_KEY_DEFAULT                 = 0, /* Must be 0 for default PTE values */
-#if IS_ENABLED(CONFIG_PKS_TEST)
-        PKS_KEY_TEST,
-#endif
-#if IS_ENABLED(CONFIG_DEVMAP_ACCESS_PROTECTION)
-        PKS_KEY_PGMAP_PROTECTION,
-#endif
-        PKS_KEY_NR_CONSUMERS
-};
-
-#define PKS_DEFAULT_VALUE PKR_KEY_INIT_RW(PKS_KEY_DEFAULT)
-#define PKS_DEFAULT_MASK  PKR_KEY_MASK(PKS_KEY_DEFAULT)
-
-#if IS_ENABLED(CONFIG_PKS_TEST)
-#define PKS_TEST_VALUE PKR_KEY_INIT_AD(PKS_KEY_TEST)
-#define PKS_TEST_MASK  PKR_KEY_MASK(PKS_KEY_TEST)
-#else
-/* Just define another default value to fool the CPP */
-#define PKS_TEST_VALUE PKR_KEY_INIT_RW(0)
-#define PKS_TEST_MASK  PKR_KEY_MASK(0)
-#endif
-
-#if IS_ENABLED(CONFIG_DEVMAP_ACCESS_PROTECTION)
-#define PKS_PGMAP_VALUE PKR_KEY_INIT_AD(PKS_KEY_PGMAP_PROTECTION)
-#define PKS_PGMAP_MASK  PKR_KEY_MASK(PKS_KEY_PGMAP_PROTECTION)
-#else
-/* Just define another default value to fool the CPP */
-#define PKS_PGMAP_VALUE PKR_KEY_INIT_RW(0)
-#define PKS_PGMAP_MASK  PKR_KEY_MASK(0)
-#endif
-
-#define PKS_INIT_VALUE ((0xFFFFFFFF & \
-                        (PKS_DEFAULT_MASK & \
-                                PKS_TEST_MASK & \
-                                PKS_PGMAP_MASK \
-                        )) | \
-                        (PKS_DEFAULT_VALUE | \
-                        PKS_TEST_VALUE | \
-                        PKS_PGMAP_VALUE \
-                        ) \
-                        )
-
-
-I find the above much harder to parse and of little value.  I'm pretty sure
-that someone adding a key is much more likely to get the macro maze wrong.
-Reviewing a patch to add a key would be much more difficult as well, IMHO.
-
-I'm a bit tired of this back and forth trying to implement this for features
-which may never exist.  In all my discussions I don't think we have reached
-more than 10 use cases in our wildest dreams and only 4 have even been
-attempted with real code including the PKS test.
-
-So I'm just a bit frustrated with the effort we have put in to try and do
-dynamic or even compile time dynamic keys.
-
-Anyway I'll think on it more.  But I'm inclined to leave it alone right now.
-What I have is easy to review for correctness and only takes a bit of effort to
-actually use.
-
-Ira
+With or without this:
+Acked-by: Sam Ravnborg <sam@ravnborg.org>
