@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A932C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:37:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB03DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:38:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355387AbiBCUhv (ORCPT
+        id S1355528AbiBCUh7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:37:51 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:37914 "EHLO
+        Thu, 3 Feb 2022 15:37:59 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:37968 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355308AbiBCUfg (ORCPT
+        with ESMTP id S1355323AbiBCUfj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 15:35:36 -0500
+        Thu, 3 Feb 2022 15:35:39 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AA938B835AE;
-        Thu,  3 Feb 2022 20:35:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D0A6C340EB;
-        Thu,  3 Feb 2022 20:35:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B933EB835B8;
+        Thu,  3 Feb 2022 20:35:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 861D6C340E8;
+        Thu,  3 Feb 2022 20:35:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643920533;
-        bh=Oj7NXyw/WsaA4MVF4fR5lEQedQrm6KIDPdBManiDg4c=;
+        s=k20201202; t=1643920536;
+        bh=e7++UKLnpHgdLY0wud0yHtptEMp6tU2m8lqkAWd9MCU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=euKhTwQ/Ju/9i9sQCFDa1Qp1dWcF/u/2rzb2r/B2SDp1h/9Op0BNQjCHCLzGWJECU
-         G/Ii5ct+Uv/ErmHAih55rAQMCBhb+v8WU+Fx3DuQ/kF2vnOQxS7P3t4qq6yLEjYFlV
-         So0/vQI/XIQ6YYkXMpokCbYSqfFDGii87u+0n4xX2oY/7yh0tdhjhkWvOve3Kyxl1T
-         3NmK8rRdpiAhHacNhHicKo7RuDGIsWb0Th+KkvqmHbvDBpeGT3Xsl162fqSXrz10X6
-         QU6ZFJsrDqauaUntA5QaCsIMq8eZESShnlYwTqfGNe5eDdpguJWIVHO05PvR1gG+wW
-         6JPQvrpHeYsgA==
+        b=q7F/q9p6Fxk1XKxgFbXtPbtXkuBhK1bVm8ebXRcEh0zQWqhXjuQN89SMQNzrFj/Dj
+         Ni9xuBJIYnUEnApWLJhmd86wImXIX3ZMxKzKRPVihCJGYMRnFSFuCaazCw/eHIAND/
+         9xLFtGQ+5CUoOmleKdA9AQvCwcBBIdH/yoY8xqUoHRjCKqO1LaAB7gh/GzecvFXMwk
+         9oSgnrK9j2uHGuxhHQadOCFLDoK+5DZa92uPXi5qOY5QI2eCDEU/ktAVvyylgLrHP+
+         hqh5rBMMJH255Ap7i3U+yIcaCkZF0Q2VKqxLYkOpRjjISqFIhGZBL6uIwzGjzl3BEN
+         r9d8e1iOdyvrQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kiwoong Kim <kwmad.kim@samsung.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
-        bvanassche@acm.org, Avri.Altman@wdc.com, beanhuo@micron.com,
-        gustavoars@kernel.org, caleb@connolly.tech, cang@codeaurora.org,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 18/25] scsi: ufs: Treat link loss as fatal error
-Date:   Thu,  3 Feb 2022 15:34:39 -0500
-Message-Id: <20220203203447.3570-18-sashal@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
+        pavel@ucw.cz, len.brown@intel.com, linux-pm@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 20/25] PM: wakeup: simplify the output logic of pm_show_wakelocks()
+Date:   Thu,  3 Feb 2022 15:34:41 -0500
+Message-Id: <20220203203447.3570-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220203203447.3570-1-sashal@kernel.org>
 References: <20220203203447.3570-1-sashal@kernel.org>
@@ -52,39 +51,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kiwoong Kim <kwmad.kim@samsung.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-[ Upstream commit c99b9b2301492b665b6e51ba6c06ec362eddcd10 ]
+[ Upstream commit c9d967b2ce40d71e968eb839f36c936b8a9cf1ea ]
 
-This event is raised when link is lost as specified in UFSHCI spec and that
-means communication is not possible. Thus initializing UFS interface needs
-to be done.
+The buffer handling in pm_show_wakelocks() is tricky, and hopefully
+correct.  Ensure it really is correct by using sysfs_emit_at() which
+handles all of the tricky string handling logic in a PAGE_SIZE buffer
+for us automatically as this is a sysfs file being read from.
 
-Make UFS driver considers Link Lost as fatal in the INT_FATAL_ERRORS
-mask. This will trigger a host reset whenever a link lost interrupt occurs.
-
-Link: https://lore.kernel.org/r/1642743475-54275-1-git-send-email-kwmad.kim@samsung.com
-Signed-off-by: Kiwoong Kim <kwmad.kim@samsung.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/ufs/ufshci.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ kernel/power/wakelock.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/scsi/ufs/ufshci.h b/drivers/scsi/ufs/ufshci.h
-index 6795e1f0e8f8c..1d999228efc85 100644
---- a/drivers/scsi/ufs/ufshci.h
-+++ b/drivers/scsi/ufs/ufshci.h
-@@ -138,7 +138,8 @@ enum {
- #define INT_FATAL_ERRORS	(DEVICE_FATAL_ERROR |\
- 				CONTROLLER_FATAL_ERROR |\
- 				SYSTEM_BUS_FATAL_ERROR |\
--				CRYPTO_ENGINE_FATAL_ERROR)
-+				CRYPTO_ENGINE_FATAL_ERROR |\
-+				UIC_LINK_LOST)
+diff --git a/kernel/power/wakelock.c b/kernel/power/wakelock.c
+index 105df4dfc7839..52571dcad768b 100644
+--- a/kernel/power/wakelock.c
++++ b/kernel/power/wakelock.c
+@@ -39,23 +39,20 @@ ssize_t pm_show_wakelocks(char *buf, bool show_active)
+ {
+ 	struct rb_node *node;
+ 	struct wakelock *wl;
+-	char *str = buf;
+-	char *end = buf + PAGE_SIZE;
++	int len = 0;
  
- /* HCS - Host Controller Status 30h */
- #define DEVICE_PRESENT				0x1
+ 	mutex_lock(&wakelocks_lock);
+ 
+ 	for (node = rb_first(&wakelocks_tree); node; node = rb_next(node)) {
+ 		wl = rb_entry(node, struct wakelock, node);
+ 		if (wl->ws->active == show_active)
+-			str += scnprintf(str, end - str, "%s ", wl->name);
++			len += sysfs_emit_at(buf, len, "%s ", wl->name);
+ 	}
+-	if (str > buf)
+-		str--;
+ 
+-	str += scnprintf(str, end - str, "\n");
++	len += sysfs_emit_at(buf, len, "\n");
+ 
+ 	mutex_unlock(&wakelocks_lock);
+-	return (str - buf);
++	return len;
+ }
+ 
+ #if CONFIG_PM_WAKELOCKS_LIMIT > 0
 -- 
 2.34.1
 
