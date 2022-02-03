@@ -2,53 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B551BC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 14:33:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 411A8C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 14:34:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351408AbiBCOdx (ORCPT
+        id S1351337AbiBCOeA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 09:33:53 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:53508 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244088AbiBCOdb (ORCPT
+        Thu, 3 Feb 2022 09:34:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58214 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1351288AbiBCOdc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 09:33:31 -0500
-Date:   Thu, 03 Feb 2022 14:33:29 -0000
+        Thu, 3 Feb 2022 09:33:32 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F16AC061757;
+        Thu,  3 Feb 2022 06:33:29 -0800 (PST)
+Date:   Thu, 03 Feb 2022 14:33:26 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1643898810;
+        s=2020; t=1643898807;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=DghpKRiUTr7+jBgEPqSNTZlDDDSbF07vlFyhmMhXdmU=;
-        b=FndXhJYDKl9AV/KWkFeOEdoAUPYbIDtz3z057ANlmNkkjg32AkLzfkme71O+2kcBICVln+
-        PxIlSzloFoDr5EGPyy9e76P+ZLbDjC5ZTX99T8IPko5aEPT/St9fKesnkCH2u6gQGW4XhT
-        2KUfNZ12/sJVwQFrO1BEDJzqbYUV6N17GYh0pXOGhQVGG4vBVuqpGKbwShsVq8jrHiUA8N
-        9RNWX1PQEn4wsFMuE4j52NN0RGjrwjmV8i8XS9faaTw2oS0yAjGtNQofY7KARP52l0vGXl
-        P9xuOmkgEkx8NgG2BpPfFWhLDAF9p5ka+ZHPXyLO2WifrABJNniEdZ/Unam2qw==
+        bh=QrSyBIfkD1u8lUNBt/qjhgv5QiFixwQMP35MGmCUe+4=;
+        b=pH+1iryBuQNsoxo735oRB2rYGboGPaxEnVSNg0YuklQ2Q5HWXU8UUh3VWFsXpEiRbr0Jro
+        VEuWFxVPaheylD9cDYXd56EWa7ayAdVaVkew1s7WKgz+c7hArbeeVdQ0xv+1SDuP67F3Ec
+        aRhjSaQlsHaOKk1Ll63w8hVZb0o6TgJYZk8BzLJ5fzEB3rsXPtvGYh4KsP5cMq7jM78poC
+        Ye8Xrzk6wI5OX/Mefdo0KK8WrFTntdAJEA6jDs+z94uMnMqTUmrLY6FkEAGh/eDaTHcNUg
+        skeZ3Z2XJMws+O1+r/byHrkCslEmg11BnRSc4KDFAuZc/XsTu5/8Jba78V5fkg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1643898810;
+        s=2020e; t=1643898807;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=DghpKRiUTr7+jBgEPqSNTZlDDDSbF07vlFyhmMhXdmU=;
-        b=bhEZkcMLyA0CGq7pdWLw93mHCUycUJKuTebOaQgDshYqpcLUnH4nkNBaku6OQfjxaclZnS
-        PhJYTAZgvet8vUAg==
-From:   "tip-bot2 for Adrian Hunter" <tip-bot2@linutronix.de>
+        bh=QrSyBIfkD1u8lUNBt/qjhgv5QiFixwQMP35MGmCUe+4=;
+        b=BY1inOG+hWSbu4v0OgcLo071sEKR3gMff7nr2r11WSYVA/JmQhm/ZSi/hpKkmaRvEac7XM
+        AfhRSvDG8yuijxDQ==
+From:   "tip-bot2 for Kan Liang" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: perf/core] perf/core: Fix address filter parser for multiple filters
-Cc:     Adrian Hunter <adrian.hunter@intel.com>,
+Subject: [tip: perf/core] perf/x86/intel: Enable PEBS format 5
+Cc:     Kan Liang <kan.liang@linux.intel.com>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220131072453.2839535-4-adrian.hunter@intel.com>
-References: <20220131072453.2839535-4-adrian.hunter@intel.com>
+In-Reply-To: <1643750603-100733-1-git-send-email-kan.liang@linux.intel.com>
+References: <1643750603-100733-1-git-send-email-kan.liang@linux.intel.com>
 MIME-Version: 1.0
-Message-ID: <164389880921.16921.13721416537841626758.tip-bot2@tip-bot2>
+Message-ID: <164389880691.16921.406819605673953965.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -59,39 +62,93 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the perf/core branch of tip:
 
-Commit-ID:     d680ff24e9e14444c63945b43a37ede7cd6958f9
-Gitweb:        https://git.kernel.org/tip/d680ff24e9e14444c63945b43a37ede7cd6958f9
-Author:        Adrian Hunter <adrian.hunter@intel.com>
-AuthorDate:    Mon, 31 Jan 2022 09:24:51 +02:00
+Commit-ID:     2145e77fecfb3965b1dc299bac203b167238bd0b
+Gitweb:        https://git.kernel.org/tip/2145e77fecfb3965b1dc299bac203b167238bd0b
+Author:        Kan Liang <kan.liang@linux.intel.com>
+AuthorDate:    Tue, 01 Feb 2022 13:23:21 -08:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Wed, 02 Feb 2022 13:11:42 +01:00
+CommitterDate: Wed, 02 Feb 2022 13:11:43 +01:00
 
-perf/core: Fix address filter parser for multiple filters
+perf/x86/intel: Enable PEBS format 5
 
-Reset appropriate variables in the parser loop between parsing separate
-filters, so that they do not interfere with parsing the next filter.
+The new PEBS Record Format 5 is similar to the PEBS Record Format 4. The
+only difference is the layout of the Counter Reset fields of the PEBS
+Config Buffer in the DS area. For the PEBS format 4, the Counter Reset
+fields allocation is for 8 general-purpose counters followed by 4
+fixed-function counters. For the PEBS format 5, the Counter Reset fields
+allocation is for 32 general-purpose counters followed by 16
+fixed-function counters.
 
-Fixes: 375637bc524952 ("perf/core: Introduce address range filtering")
-Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+Extend the MAX_PEBS_EVENTS to 32. Add MAX_PEBS_EVENTS_FMT4 for the
+previous platform. Except for the DS auto-reload code, other places
+already assume 32 counters. Only check the PEBS_FMT in the DS
+auto-reload code.
+
+Extend the MAX_FIXED_PEBS_EVENTS to 16, which only impacts the size of
+struct debug_store and some local temporary variables. The size of
+struct debug_store increases 288B, which is small and should be
+acceptable.
+
+Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lore.kernel.org/r/20220131072453.2839535-4-adrian.hunter@intel.com
+Link: https://lkml.kernel.org/r/1643750603-100733-1-git-send-email-kan.liang@linux.intel.com
 ---
- kernel/events/core.c | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/x86/events/intel/ds.c      | 14 +++++++++++---
+ arch/x86/include/asm/intel_ds.h |  5 +++--
+ 2 files changed, 14 insertions(+), 5 deletions(-)
 
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index 76c754e..2889b82 100644
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -10558,8 +10558,11 @@ perf_event_parse_addr_filter(struct perf_event *event, char *fstr,
- 			}
- 
- 			/* ready to consume more filters */
-+			kfree(filename);
-+			filename = NULL;
- 			state = IF_STATE_ACTION;
- 			filter = NULL;
-+			kernel = 0;
+diff --git a/arch/x86/events/intel/ds.c b/arch/x86/events/intel/ds.c
+index 2e21536..376cc3d 100644
+--- a/arch/x86/events/intel/ds.c
++++ b/arch/x86/events/intel/ds.c
+@@ -1203,7 +1203,10 @@ static void intel_pmu_pebs_via_pt_enable(struct perf_event *event)
+ 	if (hwc->idx >= INTEL_PMC_IDX_FIXED) {
+ 		base = MSR_RELOAD_FIXED_CTR0;
+ 		idx = hwc->idx - INTEL_PMC_IDX_FIXED;
+-		value = ds->pebs_event_reset[MAX_PEBS_EVENTS + idx];
++		if (x86_pmu.intel_cap.pebs_format < 5)
++			value = ds->pebs_event_reset[MAX_PEBS_EVENTS_FMT4 + idx];
++		else
++			value = ds->pebs_event_reset[MAX_PEBS_EVENTS + idx];
+ 	}
+ 	wrmsrl(base + idx, value);
+ }
+@@ -1232,8 +1235,12 @@ void intel_pmu_pebs_enable(struct perf_event *event)
  		}
  	}
  
+-	if (idx >= INTEL_PMC_IDX_FIXED)
+-		idx = MAX_PEBS_EVENTS + (idx - INTEL_PMC_IDX_FIXED);
++	if (idx >= INTEL_PMC_IDX_FIXED) {
++		if (x86_pmu.intel_cap.pebs_format < 5)
++			idx = MAX_PEBS_EVENTS_FMT4 + (idx - INTEL_PMC_IDX_FIXED);
++		else
++			idx = MAX_PEBS_EVENTS + (idx - INTEL_PMC_IDX_FIXED);
++	}
+ 
+ 	/*
+ 	 * Use auto-reload if possible to save a MSR write in the PMI.
+@@ -2204,6 +2211,7 @@ void __init intel_ds_init(void)
+ 			break;
+ 
+ 		case 4:
++		case 5:
+ 			x86_pmu.drain_pebs = intel_pmu_drain_pebs_icl;
+ 			x86_pmu.pebs_record_size = sizeof(struct pebs_basic);
+ 			if (x86_pmu.intel_cap.pebs_baseline) {
+diff --git a/arch/x86/include/asm/intel_ds.h b/arch/x86/include/asm/intel_ds.h
+index 8380c3d..2f9eeb5 100644
+--- a/arch/x86/include/asm/intel_ds.h
++++ b/arch/x86/include/asm/intel_ds.h
+@@ -7,8 +7,9 @@
+ #define PEBS_BUFFER_SIZE	(PAGE_SIZE << 4)
+ 
+ /* The maximal number of PEBS events: */
+-#define MAX_PEBS_EVENTS		8
+-#define MAX_FIXED_PEBS_EVENTS	4
++#define MAX_PEBS_EVENTS_FMT4	8
++#define MAX_PEBS_EVENTS		32
++#define MAX_FIXED_PEBS_EVENTS	16
+ 
+ /*
+  * A debug store configuration.
