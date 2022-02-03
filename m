@@ -2,121 +2,244 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA149C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 08:19:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFD7EC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 08:26:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236813AbiBCIT3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 03:19:29 -0500
-Received: from mout.gmx.net ([212.227.15.15]:54997 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234410AbiBCIT1 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 03:19:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1643876317;
-        bh=8QRoItm8omsMVdEaP3c/pODPywpQ2eOKleZqsOez2Vo=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=cu/v/Ma7spwnj+wH7C8sz1lPDUjR2lipbEswfkuDZG2vMF5IuDBl2NgtBkAY994OD
-         /UKBtAj4hP+cx84vSgQ/9U7LVuWXl4dp67bf99/C/zAswSz4SVDZFOqKftmik/tNyk
-         z9KaBrzmBTZQ1uoosyMr4pQ2mt/Sz1WHQbAsw8ew=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.128.137]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MacSe-1mdRLj32N8-00c80p; Thu, 03
- Feb 2022 09:18:37 +0100
-Message-ID: <d323261d-b123-27e5-b629-559ca892163d@gmx.de>
-Date:   Thu, 3 Feb 2022 09:18:30 +0100
+        id S1349493AbiBCI0A (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Feb 2022 03:26:00 -0500
+Received: from ptr.189.cn ([183.61.185.102]:13124 "EHLO 189.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1346996AbiBCIZ6 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 3 Feb 2022 03:25:58 -0500
+HMM_SOURCE_IP: 10.64.8.41:55068.1434336740
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-114.242.206.180 (unknown [10.64.8.41])
+        by 189.cn (HERMES) with SMTP id 747F41002A0;
+        Thu,  3 Feb 2022 16:25:53 +0800 (CST)
+Received: from  ([172.27.8.53])
+        by gateway-151646-dep-b7fbf7d79-9vctg with ESMTP id cad0d7f99194492f8c96908ab712865a for dan.carpenter@oracle.com;
+        Thu, 03 Feb 2022 16:25:55 CST
+X-Transaction-ID: cad0d7f99194492f8c96908ab712865a
+X-Real-From: 15330273260@189.cn
+X-Receive-IP: 172.27.8.53
+X-MEDUSA-Status: 0
+Sender: 15330273260@189.cn
+From:   Sui Jingfeng <15330273260@189.cn>
+To:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Roland Scheidegger <sroland@vmware.com>,
+        Zack Rusin <zackr@vmware.com>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        suijingfeng <suijingfeng@loongson.cn>
+Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH v6 3/3] dt-bindings: mips: loongson: introduce board specific dts
+Date:   Thu,  3 Feb 2022 16:25:46 +0800
+Message-Id: <20220203082546.3099-4-15330273260@189.cn>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220203082546.3099-1-15330273260@189.cn>
+References: <20220203082546.3099-1-15330273260@189.cn>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH v6] fbdev: fbmem: Fix the implicit type casting
-Content-Language: en-US
-To:     Sam Ravnborg <sam@ravnborg.org>, Yizhuo Zhai <yzhai003@ucr.edu>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Xin Tan <tanxin.ctf@gmail.com>,
-        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Zhen Lei <thunder.leizhen@huawei.com>,
-        Zheyu Ma <zheyuma97@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-References: <f3b28143-5f59-ad77-f2b8-6274a6edbfdc@roeck-us.net>
- <20220202235811.1621017-1-yzhai003@ucr.edu> <Yft4qf3Hw7ntxc98@ravnborg.org>
-From:   Helge Deller <deller@gmx.de>
-In-Reply-To: <Yft4qf3Hw7ntxc98@ravnborg.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:bvXI+KtYNuoWC5NwXxyZCtdEipYA2eZZ70kwjxYtUwIXa6YSPlw
- jmqCPkmKkKIf9wCJyPONgzy8nMk6WWQYsEJ0L/ruLrlYf+K6P/4/htUX7Yv8SgyY56MXJHP
- 9RpY+ds4r6TIZPijag+ROIb7FR/y++csUlbSRkgK5lPX5AFGFxQk+75i5EKHUvFryIIUVIu
- xq7rcePYya+YVR9D+5iJQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:y9NmY3jX87o=:i9tMbCsrG4C0ba3HptrnWR
- UpS3Hq9caJN1q7XfZfgNikjP0I7UY43QXbb1a3eE42QehKYHyKrAqzNFqPiI7IR63ln+dhZ/r
- NLk5ndR4XKc5vSYt/am66WP9VgWQBV5wySdH8j0wc5m9z2H6V6kEEey7vAJijkYtZ2mM9Fq4B
- tk74k/flB6dqQu75VVCzhONiX5/sJOZFPz0qsCCD9p/KN2YtTRstRW3J0Ne70s0MNwxPs1QAB
- EXL8gvfeRrgbhPg1/q63jUr8OQr791rF07tZfGn9ySZKaW2/jtWOCmNTpaZeIjPm0R4WB3DMV
- H2l9Asg9aOtsxGDsjtGYY5/chH4LGkFx9wyfgdpovOj1Yd/rkdGiXZ/hhvaiLKz5LFtOOmmmG
- u0Z70BaOYD/0nWWcSS7PVobPslR5QJNPClQVGmznrO2fakW612jr2b4k2yGPvP2xhz7UHLTiJ
- pqkuxfm/XiYpWL4UDZgk3RT3bLRyv5gOboe2m10oYBlhk3FmhoCmVZ+ENrmBWY1Sdc/q5Prmy
- c1eyO0xhNBdCavhy7D7s9F3/jOLdKJt0KEVM7u3hutlxV65agB6aPgLt+l7MoPvrTFcREGZUq
- 4vF/8GOuBu1ujuxk2Lo14C1z/F8DvqgaeViQiqI3w30PbUpTqfFhM48K7YqJ4PeOpOeR1DUNa
- 0KCmtKcuYrqo1U7kW2kWtP9uAtZo7CjzYLzVjQwxSzzpO93UhZCIMM3YHwTt4oeM88tQxz/AS
- uhYm9tTZsw8rc21enWQ0FvEZ8Uv1NvoBnd8IHZps7NIB2wWsD3vtRQ3OJnBNYjrwD797dDA41
- wQKuOJNp4M7pQUhw6r3DcQlpKI4VGv+bORVpqHmhkLKp+rAeNk/i1zYP8jTItfNyZfCBIeBcR
- Dr+Ta8UMYL2bhhfvjWOqPW8Pil3nWoLymaE/mYbhcNzJqyKTj5SwSRKRklIILfTOX7t9Kw4RZ
- IW+BfdCQLssDlcSOhsQVnVGqH3hXBehs9ZfnbeNlUt0IQmZ0kvAVH9W/Ayi5IpgRU57COw7Jf
- 5thPrXV2rG7crDFuaVBLIBaz5Cu4xmCgB8OcWMH3bz7yLn+Rndw6zAwln///+iZy1Lc35RHSk
- g8hfb7mHD8crdQ=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/3/22 07:39, Sam Ravnborg wrote:
-> Hi Daniel,
->
-> I assume you will take this.
->
-> Patch is:
-> Reviewed-by: Sam Ravnborg <sam@ravnborg.org>
+From: suijingfeng <suijingfeng@loongson.cn>
 
+For board specific devices which is outside of the cpu and bridge chip.
+This patch introduce two dts, one for lemote a1901(aka LX-6901) motherboard
+which one only one vga output connected to DVO1.
+more document can be found from [1].
 
-Acked-by: Helge Deller <deller@gmx.de>
+Another one is ls3A4000+ls7a1000 evb board, this board have a VGA and DVO
+interface. The VGA is connected to the DVO0 and the dvi is connected to
+DVO1.
 
-Helge
+We need introduce board specific dts because of we need the device tree
+to tell how does the connectors and encoders are connected to the DVO port
+of the display controller.
 
->
-> 	Sam
->
-> On Wed, Feb 02, 2022 at 03:58:08PM -0800, Yizhuo Zhai wrote:
->> In function do_fb_ioctl(), the "arg" is the type of unsigned long,
->> and in "case FBIOBLANK:" this argument is casted into an int before
->> passig to fb_blank(). In fb_blank(), the comparision
->> if (blank > FB_BLANK_POWERDOWN) would be bypass if the original
->> "arg" is a large number, which is possible because it comes from
->> the user input. Fix this by adding the check before the function
->> call.
->>
->> Signed-off-by: Yizhuo Zhai <yzhai003@ucr.edu>
->> ---
->>  drivers/video/fbdev/core/fbmem.c | 2 ++
->>  1 file changed, 2 insertions(+)
->>
->> diff --git a/drivers/video/fbdev/core/fbmem.c b/drivers/video/fbdev/cor=
-e/fbmem.c
->> index 0fa7ede94fa6..13083ad8d751 100644
->> --- a/drivers/video/fbdev/core/fbmem.c
->> +++ b/drivers/video/fbdev/core/fbmem.c
->> @@ -1160,6 +1160,8 @@ static long do_fb_ioctl(struct fb_info *info, uns=
-igned int cmd,
->>  		ret =3D fbcon_set_con2fb_map_ioctl(argp);
->>  		break;
->>  	case FBIOBLANK:
->> +		if (arg > FB_BLANK_POWERDOWN)
->> +			return -EINVAL;
->>  		console_lock();
->>  		lock_fb_info(info);
->>  		ret =3D fb_blank(info, arg);
->> --
->> 2.25.1
+[1] https://wiki.godson.ac.cn/device:lemote_a1901
+
+Signed-off-by: suijingfeng <suijingfeng@loongson.cn>
+Signed-off-by: Sui Jingfeng <15330273260@189.cn>
+---
+ arch/mips/boot/dts/loongson/lemote_a1901.dts  | 64 +++++++++++++++++
+ .../boot/dts/loongson/ls3a4000_7a1000_evb.dts | 68 +++++++++++++++++++
+ arch/mips/boot/dts/loongson/ls7a-pch.dtsi     |  2 +-
+ 3 files changed, 133 insertions(+), 1 deletion(-)
+ create mode 100644 arch/mips/boot/dts/loongson/lemote_a1901.dts
+ create mode 100644 arch/mips/boot/dts/loongson/ls3a4000_7a1000_evb.dts
+
+diff --git a/arch/mips/boot/dts/loongson/lemote_a1901.dts b/arch/mips/boot/dts/loongson/lemote_a1901.dts
+new file mode 100644
+index 000000000000..81828945ba52
+--- /dev/null
++++ b/arch/mips/boot/dts/loongson/lemote_a1901.dts
+@@ -0,0 +1,64 @@
++// SPDX-License-Identifier: GPL-2.0
++
++/dts-v1/;
++
++#include "loongson64g-package.dtsi"
++#include "ls7a-pch.dtsi"
++
++/ {
++	compatible = "lemode,a1901", "loongson,loongson64g-4core-ls7a";
++	model = "lemode,a1901";
++};
++
++&package0 {
++	htvec: interrupt-controller@efdfb000080 {
++		compatible = "loongson,htvec-1.0";
++		reg = <0xefd 0xfb000080 0x40>;
++		interrupt-controller;
++		#interrupt-cells = <1>;
++
++		interrupt-parent = <&liointc>;
++		interrupts = <24 IRQ_TYPE_LEVEL_HIGH>,
++			     <25 IRQ_TYPE_LEVEL_HIGH>,
++			     <26 IRQ_TYPE_LEVEL_HIGH>,
++			     <27 IRQ_TYPE_LEVEL_HIGH>,
++			     <28 IRQ_TYPE_LEVEL_HIGH>,
++			     <29 IRQ_TYPE_LEVEL_HIGH>,
++			     <30 IRQ_TYPE_LEVEL_HIGH>,
++			     <31 IRQ_TYPE_LEVEL_HIGH>;
++	};
++};
++
++&pch {
++	msi: msi-controller@2ff00000 {
++		compatible = "loongson,pch-msi-1.0";
++		reg = <0 0x2ff00000 0 0x8>;
++		interrupt-controller;
++		msi-controller;
++		loongson,msi-base-vec = <64>;
++		loongson,msi-num-vecs = <192>;
++		interrupt-parent = <&htvec>;
++	};
++};
++
++&lsdc {
++	/* use_vram_helper; */
++	output-ports = <&dvo0 &dvo1>;
++
++	#address-cells = <1>;
++	#size-cells = <0>;
++
++	dvo0: dvo@0 {
++		/* 0 for DVO0 */
++		reg = <0>;
++		status = "disabled";
++	};
++
++	dvo1: dvo@1 {
++		/* 1 for DVO1 */
++		reg = <1>;
++		connector = "vga-connector";
++		encoder = "adi,adv7125";
++		status = "okay";
++	};
++};
+diff --git a/arch/mips/boot/dts/loongson/ls3a4000_7a1000_evb.dts b/arch/mips/boot/dts/loongson/ls3a4000_7a1000_evb.dts
+new file mode 100644
+index 000000000000..ff07f529ea43
+--- /dev/null
++++ b/arch/mips/boot/dts/loongson/ls3a4000_7a1000_evb.dts
+@@ -0,0 +1,68 @@
++// SPDX-License-Identifier: GPL-2.0
++
++/dts-v1/;
++
++#include "loongson64g-package.dtsi"
++#include "ls7a-pch.dtsi"
++
++/ {
++	compatible = "loongson,loongson64g-4core-ls7a";
++	model = "loongson,ls3a4000_7a1000_evb";
++	version = "v1.4";
++};
++
++&package0 {
++	htvec: interrupt-controller@efdfb000080 {
++		compatible = "loongson,htvec-1.0";
++		reg = <0xefd 0xfb000080 0x40>;
++		interrupt-controller;
++		#interrupt-cells = <1>;
++
++		interrupt-parent = <&liointc>;
++		interrupts = <24 IRQ_TYPE_LEVEL_HIGH>,
++			     <25 IRQ_TYPE_LEVEL_HIGH>,
++			     <26 IRQ_TYPE_LEVEL_HIGH>,
++			     <27 IRQ_TYPE_LEVEL_HIGH>,
++			     <28 IRQ_TYPE_LEVEL_HIGH>,
++			     <29 IRQ_TYPE_LEVEL_HIGH>,
++			     <30 IRQ_TYPE_LEVEL_HIGH>,
++			     <31 IRQ_TYPE_LEVEL_HIGH>;
++	};
++};
++
++&pch {
++	msi: msi-controller@2ff00000 {
++		compatible = "loongson,pch-msi-1.0";
++		reg = <0 0x2ff00000 0 0x8>;
++		interrupt-controller;
++		msi-controller;
++		loongson,msi-base-vec = <64>;
++		loongson,msi-num-vecs = <192>;
++		interrupt-parent = <&htvec>;
++	};
++};
++
++&lsdc {
++	/* use_vram_helper; */
++	output-ports = <&dvo0 &dvo1>;
++
++	#address-cells = <1>;
++	#size-cells = <0>;
++
++	dvo0: dvo@0 {
++		/* 0 for DVO0 */
++		reg = <0>;
++		connector = "vga-connector";
++		encoder = "adi,adv7125";
++		status = "okay";
++	};
++
++	dvo1: dvo@1 {
++		/* 1 for DVO1 */
++		reg = <1>;
++		connector = "dvi-connector";
++		encoder = "ti,tfp410";
++		digital;
++		status = "okay";
++	};
++};
+diff --git a/arch/mips/boot/dts/loongson/ls7a-pch.dtsi b/arch/mips/boot/dts/loongson/ls7a-pch.dtsi
+index 2f45fce2cdc4..70a0b7ac0839 100644
+--- a/arch/mips/boot/dts/loongson/ls7a-pch.dtsi
++++ b/arch/mips/boot/dts/loongson/ls7a-pch.dtsi
+@@ -160,7 +160,7 @@
+ 				interrupt-parent = <&pic>;
+ 			};
+ 
+-			dc@6,1 {
++			lsdc: dc@6,1 {
+ 				compatible = "pci0014,7a06.0",
+ 						   "pci0014,7a06",
+ 						   "pciclass030000",
+-- 
+2.20.1
 
