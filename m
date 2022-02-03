@@ -2,104 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83CFBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 17:09:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 800E9C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 17:09:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352527AbiBCRJg (ORCPT
+        id S1352542AbiBCRJo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 12:09:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38326 "EHLO
+        Thu, 3 Feb 2022 12:09:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242046AbiBCRJd (ORCPT
+        with ESMTP id S236960AbiBCRJe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 12:09:33 -0500
-Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6809FC06173D
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 09:09:33 -0800 (PST)
-Received: by mail-il1-x12b.google.com with SMTP id d3so2630117ilr.10
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 09:09:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0sm9twsYFfUl1R441+dZUp0hhjan8fnG22qNYzem82s=;
-        b=K+67PkiyounXfx3XxuFDqeMRI9AsURutUzG0sKB4ty9jFEZfY7ApL2ijfwu1EmiTp7
-         /bmeqBzbV9FzNgFAquA4o5Uut8m3JIiZdX6rCgiVvG09mjRyicRDAwjdp7JgX81X+8zE
-         KcqCjlfQBjl7rpy203itqWJqjnnf7vT0G2k8E5EOLDEelqOHTtCQZMghThvHl35fX9c/
-         hUPADzN/Wftr+GJbmG1esy6dIJAhd1ftiCKQynFhZm3UkQ9XirdThOj1tgp7S1OI6ke4
-         rhnchifGkdstU5jlVX3MqRbJy5D7zyMzWtTuv3Crh1SewOMYjeJ0iw9mPZUuoK4KFiGB
-         ll6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0sm9twsYFfUl1R441+dZUp0hhjan8fnG22qNYzem82s=;
-        b=XBaoTeQOMea+NliH98Sjri6QKOOiEn1ZzRGxyfXBqZ0CUMZWXfnaKuzZoKgiuupAxO
-         IF1S24F2e6GFjOq4n1/qrQihEq5tZeDRrCEH6zF5EoIPkV+5ljhbhsmILhmZTeaNOlhA
-         S0B0kUgnsXJO63w5kqlPsPC0Bwr6LsKDXGriInXsGM8To/Rd1VAOBX47yYk02edhmE+7
-         QadV7vDNm7/GL26VGPYJw7pUHYagJ8FsnpVKHc9YBHRL0XOKdRvxC2EmQJ4ec3xq19Wm
-         ZC+5a4ewnOqga0nkQPROpoL2AkaN6m/W3uvx9zuP2DFTY2wtn6DiB493cRNzOtRSgRoi
-         OmwA==
-X-Gm-Message-State: AOAM531ZS0QQ3raxBsdXmZSgusNlTaDAlfF9fJJqB4Un+cYUZwZz31rU
-        MxKmTrBIsyv31DG0CXktZIF8DA==
-X-Google-Smtp-Source: ABdhPJwaQ52DTaKWHABJgB2ZMw/+Zx27WmRxJoY1MVrVdTPkQZCnfV42JqEEyHdQfZXOsuRhEBP5BA==
-X-Received: by 2002:a05:6e02:188c:: with SMTP id o12mr11555055ilu.44.1643908172619;
-        Thu, 03 Feb 2022 09:09:32 -0800 (PST)
-Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id m12sm21869671iow.54.2022.02.03.09.09.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Feb 2022 09:09:31 -0800 (PST)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     bjorn.andersson@linaro.org, mka@chromium.org, evgreen@chromium.org,
-        cpratapa@codeaurora.org, avuyyuru@codeaurora.org,
-        jponduru@codeaurora.org, subashab@codeaurora.org, elder@kernel.org,
-        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 00/10] net: ipa: improve RX buffer replenishing
-Date:   Thu,  3 Feb 2022 11:09:17 -0600
-Message-Id: <20220203170927.770572-1-elder@linaro.org>
-X-Mailer: git-send-email 2.32.0
+        Thu, 3 Feb 2022 12:09:34 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A60E1C061714;
+        Thu,  3 Feb 2022 09:09:34 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 26099B8350E;
+        Thu,  3 Feb 2022 17:09:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83E18C340E8;
+        Thu,  3 Feb 2022 17:09:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643908171;
+        bh=lw506HOrYlGmJA6MjUljcsQtm/9VJ1py1ZAa57fuLK0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=YxbDCrkX3gkzHafUpB2M8wBBLlWW9Hfml70NSQFstCd4V0iVKQO8QUW6OD6hewWV2
+         fF2Kjx6y/nQGOLpNGqjpmrzNSS8SIva0qXLUsp28JLnxVew7Ikn1S2HKfaYRqG6Cno
+         e0co+ToS2LMjS7b7hiR/Mo4r1LSA61cmxFhPzPjQTKiRWG7X5nUvDfb5EgD+82yUGm
+         F1wbLg1Pr1kDy2BNHVmn/EEe1Y60yY+o+O67HjXmFV9QMAky5vMm27uA+aFzPQzvZq
+         vbplvEoe7m1YjKhQwzMegw5NI3gXijKiKaFihG6Ynsg2ZnHaLn7M4DuvJwjh2UyhjW
+         DAt2tauffj5NQ==
+Date:   Thu, 3 Feb 2022 10:09:27 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Sekhar Nori <nsekhar@ti.com>
+Cc:     Bartosz Golaszewski <brgl@bgdev.pl>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH] ARM: davinci: da850-evm: Avoid NULL pointer dereference
+Message-ID: <YfwMR5EigHpfIDa7@dev-arch.archlinux-ax161>
+References: <20211223222141.1253092-1-nathan@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211223222141.1253092-1-nathan@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series revises the algorithm used for replenishing receive
-buffers on RX endpoints.  Currently there are two atomic variables
-that track how many receive buffers can be sent to the hardware.
-The new algorithm obviates the need for those, by just assuming we
-always want to provide the hardware with buffers until it can hold
-no more.
+On Thu, Dec 23, 2021 at 03:21:41PM -0700, Nathan Chancellor wrote:
+> With newer versions of GCC, there is a panic in da850_evm_config_emac()
+> when booting multi_v5_defconfig in QEMU under the palmetto-bmc machine:
+> 
+> Unable to handle kernel NULL pointer dereference at virtual address 00000020
+> pgd = (ptrval)
+> [00000020] *pgd=00000000
+> Internal error: Oops: 5 [#1] PREEMPT ARM
+> Modules linked in:
+> CPU: 0 PID: 1 Comm: swapper Not tainted 5.15.0 #1
+> Hardware name: Generic DT based system
+> PC is at da850_evm_config_emac+0x1c/0x120
+> LR is at do_one_initcall+0x50/0x1e0
+> 
+> The emac_pdata pointer in soc_info is NULL because davinci_soc_info only
+> gets populated on davinci machines but da850_evm_config_emac() is called
+> on all machines via device_initcall().
+> 
+> Move the rmii_en assignment below the machine check so that it is only
+> dereferenced when running on a supported SoC.
+> 
+> Cc: stable@vger.kernel.org
+> Fixes: bae105879f2f ("davinci: DA850/OMAP-L138 EVM: implement autodetect of RMII PHY")
+> Link: https://lore.kernel.org/r/YcS4xVWs6bQlQSPC@archlinux-ax161/
+> Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+> ---
+>  arch/arm/mach-davinci/board-da850-evm.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/arm/mach-davinci/board-da850-evm.c b/arch/arm/mach-davinci/board-da850-evm.c
+> index 428012687a80..7f7f6bae21c2 100644
+> --- a/arch/arm/mach-davinci/board-da850-evm.c
+> +++ b/arch/arm/mach-davinci/board-da850-evm.c
+> @@ -1101,11 +1101,13 @@ static int __init da850_evm_config_emac(void)
+>  	int ret;
+>  	u32 val;
+>  	struct davinci_soc_info *soc_info = &davinci_soc_info;
+> -	u8 rmii_en = soc_info->emac_pdata->rmii_en;
+> +	u8 rmii_en;
+>  
+>  	if (!machine_is_davinci_da850_evm())
+>  		return 0;
+>  
+> +	rmii_en = soc_info->emac_pdata->rmii_en;
+> +
+>  	cfg_chip3_base = DA8XX_SYSCFG0_VIRT(DA8XX_CFGCHIP3_REG);
+>  
+>  	val = __raw_readl(cfg_chip3_base);
+> 
+> base-commit: a7904a538933c525096ca2ccde1e60d0ee62c08e
+> -- 
+> 2.34.1
+> 
+> 
 
-The first patch eliminates an atomic variable that's not required.
-The next moves some code into the main replenish function's caller,
-making one of the called function's arguments unnecessary.   The
-next six refactor things a bit more, adding a new helper function
-that allows us to eliminate an additional atomic variable.  And the
-final two implement two more minor improvements.
+Could someone pick this patch up? This is still broken on mainline and
+-next.
 
-					-Alex
-
-Alex Elder (10):
-  net: ipa: kill replenish_saved
-  net: ipa: allocate transaction before pages when replenishing
-  net: ipa: increment backlog in replenish caller
-  net: ipa: decide on doorbell in replenish loop
-  net: ipa: allocate transaction in replenish loop
-  net: ipa: don't use replenish_backlog
-  net: ipa: introduce gsi_channel_trans_idle()
-  net: ipa: kill replenish_backlog
-  net: ipa: replenish after delivering payload
-  net: ipa: determine replenish doorbell differently
-
- drivers/net/ipa/gsi_trans.c    |  11 ++++
- drivers/net/ipa/gsi_trans.h    |  10 +++
- drivers/net/ipa/ipa_endpoint.c | 112 +++++++++++----------------------
- drivers/net/ipa/ipa_endpoint.h |   8 +--
- 4 files changed, 60 insertions(+), 81 deletions(-)
-
--- 
-2.32.0
-
+Cheers,
+Nathan
