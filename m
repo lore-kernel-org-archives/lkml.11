@@ -2,101 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8EDEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:43:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F127C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:44:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355847AbiBCUnx (ORCPT
+        id S1355968AbiBCUoA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:43:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59118 "EHLO
+        Thu, 3 Feb 2022 15:44:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356044AbiBCUk7 (ORCPT
+        with ESMTP id S1356541AbiBCUly (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 15:40:59 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B065C0613E3;
-        Thu,  3 Feb 2022 12:37:00 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 56FF360A77;
-        Thu,  3 Feb 2022 20:37:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAA6BC340F0;
-        Thu,  3 Feb 2022 20:36:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643920619;
-        bh=J0oY2ELlrWXgd10fbeUVF1lyKQTWa7uQM3TycUZkb1k=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NEUR+89R6QzFcM4YUA81VnO2Z5NO9sncV6j3LqwqBxND+kJup1ENdZsVncux7PbJM
-         s5tGIx23CdtVIqiEYnHH5yxjbDs8WgVutJ6bHiLtA8fP53gEkQh2CfWviL+i/MXN93
-         w0vurP2mNIWCPIxMcFaQr56w6jsA7EHBiG4U/CZhcH5t2G7RN6TYz4cyC/G77uoDTo
-         QwDZmWnpsWNhXr1ELqKIbi4kOcJq7XBTQEqe2guUEriNz5hw7PGnwPeEXG1r6YLsmZ
-         5v2OBg8wZoiDYV2I+Z/ZbEOVeYcMqarpu0WIoVSa1RVIpthr6WGtPaeNPhqa8GZ7lQ
-         iHP7md/B03u+A==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Olga Kornievskaia <kolga@netapp.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
-        Sasha Levin <sashal@kernel.org>,
-        trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
-        linux-nfs@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 5/7] NFSv4 expose nfs_parse_server_name function
-Date:   Thu,  3 Feb 2022 15:36:49 -0500
-Message-Id: <20220203203651.5158-5-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220203203651.5158-1-sashal@kernel.org>
-References: <20220203203651.5158-1-sashal@kernel.org>
+        Thu, 3 Feb 2022 15:41:54 -0500
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87432C0613B2
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 12:37:54 -0800 (PST)
+Received: by mail-lf1-x12d.google.com with SMTP id l27so3699009lfe.1
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 12:37:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+VrxapYZdFw5zNLlkG7gwQPQd4MEqlLeWHHaNG101EE=;
+        b=iCzeaUDYVxkrKStctnh8zTlYnJAAnFTeTA+LUgTna1b2xHj7nYwsZzrWUq+lpOMu83
+         hFYTUH1t2BGH0R0K84qzSGj7WZfSb0zOJ2HX2O59nvLkeAlgQkjs9bUMrtHGXFVhvmdc
+         qbDBPiIfo/AIUQsTRKQ2xTIEHF3zDJM1D3Yzqtk4pigP8J+2t0QRhWVAfLHGALrVdDfB
+         4I78e9t1ZCyXsLUOqKmlUn0qY2tsP1rPnrag0+pKS/h0LkzxSWvPQ4BYmVAPzXL3YLyk
+         +epwFz/vCNK8khzRX+jNkDsGrbrZDaLCjSyTMAQUzHPPvzoQLjMbxNsKu2AjBSyTbvm8
+         Qkeg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+VrxapYZdFw5zNLlkG7gwQPQd4MEqlLeWHHaNG101EE=;
+        b=2HP68It7MRHKkpEoZdlfHN2R01wlNdAO/L3Sqw+Nc20hoBnSEzCfze8ufLc4eD64Xl
+         bWl9ofS52j5O/ddDPcafeeWkR1aVmJNXkEhf+WdX2cmws38Oa5ZJdnCT0KxttVzx5hGU
+         GHJcCd0Fd7KNv3c+Z+bPiqHQi8FSYpUOwBKbYIMQx6PiWfB7YJP1y0CkvhkfenF3ouhT
+         NBJWfQFrvkl8QxOmvauFV5wFkjz+5Mi0jqPeR3uYT7JrbpSq4bJqL+R9eiWy+gRK2ZsI
+         GXBbLcVbjJ2PDexhn1IvM+CPR7HyFZXA79LE8+4nYXNuF+9EwY3G4FqCG6HhQTk6/yYM
+         HPzw==
+X-Gm-Message-State: AOAM532E//wDhCpzMTpl2MDMzYMq7I5bX+cye6TRJALnvJv9l8g8FICj
+        NVAS50/rL2KUrmFFYLKis8EV4QdgyRpj4KbOkugUPA==
+X-Google-Smtp-Source: ABdhPJyEO7toB9Xk7e12MVsMQizH8I6uc0Z/+GxXMZU3C+7qqlJE+19v8i3RwheJW1fHMv6ZQfY04Q/j+HvgjnlzS2w=
+X-Received: by 2002:a05:6512:3c96:: with SMTP id h22mr28020130lfv.489.1643920672718;
+ Thu, 03 Feb 2022 12:37:52 -0800 (PST)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+References: <20220203173307.1033257-1-keescook@chromium.org> <20220203173307.1033257-5-keescook@chromium.org>
+In-Reply-To: <20220203173307.1033257-5-keescook@chromium.org>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Thu, 3 Feb 2022 12:37:41 -0800
+Message-ID: <CAKwvOdk0UMAaw2j9OmjXN0Jc6FBOhfMP3JmSqMps2_MQFQLq-g@mail.gmail.com>
+Subject: Re: [PATCH v6 4/4] fortify: Add Clang support
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Miguel Ojeda <ojeda@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        George Burgess IV <gbiv@google.com>, llvm@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Olga Kornievskaia <kolga@netapp.com>
+On Thu, Feb 3, 2022 at 9:33 AM Kees Cook <keescook@chromium.org> wrote:
+>
+> Enable FORTIFY_SOURCE support for Clang:
+>
+> Use the new __pass_object_size and __overloadable attributes so
+> that Clang will have appropriate visibility into argument sizes such
+> that __builtin_object_size(p, 1) will behave correctly. Additional
+> details here:
+>     https://github.com/llvm/llvm-project/issues/53516
+>     https://github.com/ClangBuiltLinux/linux/issues/1401
+>
+> When available, use the new __diagnose_as attribute to make sure no
+> compile-time diagnostic warnings are lost due to the effectively renamed
+> string functions.
 
-[ Upstream commit f5b27cc6761e27ee6387a24df1a99ca77b360fea ]
+Consider adding something along the lines of the following to the
+above paragraph:
+Without diagnose_as, compile time error messages won't be as precise
+as they could be, but at least users of older toolchains will have
+fortified routines. That is more valuable, but certainly a tradeoff.
 
-Make nfs_parse_server_name available outside of nfs4namespace.c.
+>
+> Redefine strlen() as a macro that tests for being a constant expression
+> so that strlen() can still be used in static initializers, which was
+> lost when adding __pass_object_size and __overloadable.
 
-Signed-off-by: Olga Kornievskaia <kolga@netapp.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- fs/nfs/nfs4_fs.h       | 3 ++-
- fs/nfs/nfs4namespace.c | 4 ++--
- 2 files changed, 4 insertions(+), 3 deletions(-)
+I'd like to see `const` changes explicit in 4/4; I suspect that's
+_why_ __overloadable is even needed? If so, then a comment here about
+that wouldn't hurt.
 
-diff --git a/fs/nfs/nfs4_fs.h b/fs/nfs/nfs4_fs.h
-index c719389381dc4..0b867d7c02992 100644
---- a/fs/nfs/nfs4_fs.h
-+++ b/fs/nfs/nfs4_fs.h
-@@ -241,7 +241,8 @@ struct vfsmount *nfs4_submount(struct nfs_server *, struct dentry *,
- 			       struct nfs_fh *, struct nfs_fattr *);
- int nfs4_replace_transport(struct nfs_server *server,
- 				const struct nfs4_fs_locations *locations);
--
-+size_t nfs_parse_server_name(char *string, size_t len, struct sockaddr *sa,
-+			     size_t salen, struct net *net);
- /* nfs4proc.c */
- extern int nfs4_handle_exception(struct nfs_server *, int, struct nfs4_exception *);
- extern int nfs4_call_sync(struct rpc_clnt *, struct nfs_server *,
-diff --git a/fs/nfs/nfs4namespace.c b/fs/nfs/nfs4namespace.c
-index d8b040bd9814d..2b1921bb5348b 100644
---- a/fs/nfs/nfs4namespace.c
-+++ b/fs/nfs/nfs4namespace.c
-@@ -120,8 +120,8 @@ static int nfs4_validate_fspath(struct dentry *dentry,
- 	return 0;
- }
- 
--static size_t nfs_parse_server_name(char *string, size_t len,
--		struct sockaddr *sa, size_t salen, struct net *net)
-+size_t nfs_parse_server_name(char *string, size_t len, struct sockaddr *sa,
-+			     size_t salen, struct net *net)
- {
- 	ssize_t ret;
- 
+Having const be more explicit in the signature will make it more
+obvious why the definition cannot modify the parameter.
+
+
 -- 
-2.34.1
-
+Thanks,
+~Nick Desaulniers
