@@ -2,22 +2,22 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D4DDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 12:06:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F684C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 12:06:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350494AbiBCMGi (ORCPT
+        id S1350456AbiBCMGl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 07:06:38 -0500
-Received: from foss.arm.com ([217.140.110.172]:42526 "EHLO foss.arm.com"
+        Thu, 3 Feb 2022 07:06:41 -0500
+Received: from foss.arm.com ([217.140.110.172]:42562 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1350450AbiBCMGZ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 07:06:25 -0500
+        id S1350475AbiBCMGb (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 3 Feb 2022 07:06:31 -0500
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 85CCF11D4;
-        Thu,  3 Feb 2022 04:06:25 -0800 (PST)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D66341396;
+        Thu,  3 Feb 2022 04:06:30 -0800 (PST)
 Received: from e121896.arm.com (unknown [10.57.13.234])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 0A73A3F774;
-        Thu,  3 Feb 2022 04:06:23 -0800 (PST)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 5A8C83F774;
+        Thu,  3 Feb 2022 04:06:29 -0800 (PST)
 From:   James Clark <james.clark@arm.com>
 To:     suzuki.poulose@arm.com, mathieu.poirier@linaro.org,
         coresight@lists.linaro.org
@@ -25,9 +25,9 @@ Cc:     leo.yan@linaro.com, mike.leach@linaro.org,
         James Clark <james.clark@arm.com>,
         Leo Yan <leo.yan@linaro.org>,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 06/15] coresight: Make ETM4x TRCCONFIGR register accesses consistent with sysreg.h
-Date:   Thu,  3 Feb 2022 12:05:54 +0000
-Message-Id: <20220203120604.128396-7-james.clark@arm.com>
+Subject: [PATCH v2 08/15] coresight: Make ETM4x TRCSTALLCTLR register accesses consistent with sysreg.h
+Date:   Thu,  3 Feb 2022 12:05:56 +0000
+Message-Id: <20220203120604.128396-9-james.clark@arm.com>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20220203120604.128396-1-james.clark@arm.com>
 References: <20220203120604.128396-1-james.clark@arm.com>
@@ -42,202 +42,54 @@ binary produced by gcc-11.
 
 Signed-off-by: James Clark <james.clark@arm.com>
 ---
- .../coresight/coresight-etm4x-core.c          | 10 ++--
- .../coresight/coresight-etm4x-sysfs.c         | 46 +++++++++----------
- drivers/hwtracing/coresight/coresight-etm4x.h | 17 +++++++
- 3 files changed, 45 insertions(+), 28 deletions(-)
+ drivers/hwtracing/coresight/coresight-etm4x-sysfs.c | 12 ++++++------
+ drivers/hwtracing/coresight/coresight-etm4x.h       |  4 ++++
+ 2 files changed, 10 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-index 0f0628968bfd..dc936fb1cc74 100644
---- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
-+++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-@@ -633,7 +633,7 @@ static int etm4_parse_event_config(struct coresight_device *csdev,
- 
- 	/* Go from generic option to ETMv4 specifics */
- 	if (attr->config & BIT(ETM_OPT_CYCACC)) {
--		config->cfg |= BIT(4);
-+		config->cfg |= TRCCONFIGR_CCI;
- 		/* TRM: Must program this for cycacc to work */
- 		config->ccctlr = ETM_CYC_THRESHOLD_DEFAULT;
- 	}
-@@ -653,12 +653,12 @@ static int etm4_parse_event_config(struct coresight_device *csdev,
- 			goto out;
- 
- 		/* bit[11], Global timestamp tracing bit */
--		config->cfg |= BIT(11);
-+		config->cfg |= TRCCONFIGR_TS;
- 	}
- 
- 	if (attr->config & BIT(ETM_OPT_CTXTID))
- 		/* bit[6], Context ID tracing bit */
--		config->cfg |= BIT(ETM4_CFG_BIT_CTXTID);
-+		config->cfg |= TRCCONFIGR_CID;
- 
- 	/*
- 	 * If set bit ETM_OPT_CTXTID2 in perf config, this asks to trace VMID
-@@ -670,13 +670,13 @@ static int etm4_parse_event_config(struct coresight_device *csdev,
- 			ret = -EINVAL;
- 			goto out;
- 		}
--		config->cfg |= BIT(ETM4_CFG_BIT_VMID) | BIT(ETM4_CFG_BIT_VMID_OPT);
-+		config->cfg |= TRCCONFIGR_VMID | TRCCONFIGR_VMIDOPT;
- 	}
- 
- 	/* return stack - enable if selected and supported */
- 	if ((attr->config & BIT(ETM_OPT_RETSTK)) && drvdata->retstack)
- 		/* bit[12], Return stack enable bit */
--		config->cfg |= BIT(12);
-+		config->cfg |= TRCCONFIGR_RS;
- 
- 	/*
- 	 * Set any selected configuration and preset.
 diff --git a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
-index 57e94424a8d6..4c29ab4464a0 100644
+index cfa6f72a1e39..d808eeae8b07 100644
 --- a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
 +++ b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
-@@ -180,12 +180,12 @@ static ssize_t reset_store(struct device *dev,
+@@ -397,22 +397,22 @@ static ssize_t mode_store(struct device *dev,
  
- 	/* Disable data tracing: do not trace load and store data transfers */
- 	config->mode &= ~(ETM_MODE_LOAD | ETM_MODE_STORE);
--	config->cfg &= ~(BIT(1) | BIT(2));
-+	config->cfg &= ~(TRCCONFIGR_INSTP0_LOAD | TRCCONFIGR_INSTP0_STORE);
- 
- 	/* Disable data value and data address tracing */
- 	config->mode &= ~(ETM_MODE_DATA_TRACE_ADDR |
- 			   ETM_MODE_DATA_TRACE_VAL);
--	config->cfg &= ~(BIT(16) | BIT(17));
-+	config->cfg &= ~(TRCCONFIGR_DA | TRCCONFIGR_DV);
- 
- 	/* Disable all events tracing */
- 	config->eventctrl0 = 0x0;
-@@ -304,82 +304,82 @@ static ssize_t mode_store(struct device *dev,
- 
- 	if (drvdata->instrp0 == true) {
- 		/* start by clearing instruction P0 field */
--		config->cfg  &= ~(BIT(1) | BIT(2));
-+		config->cfg  &= ~TRCCONFIGR_INSTP0_LOAD_STORE;
- 		if (config->mode & ETM_MODE_LOAD)
- 			/* 0b01 Trace load instructions as P0 instructions */
--			config->cfg  |= BIT(1);
-+			config->cfg  |= TRCCONFIGR_INSTP0_LOAD;
- 		if (config->mode & ETM_MODE_STORE)
- 			/* 0b10 Trace store instructions as P0 instructions */
--			config->cfg  |= BIT(2);
-+			config->cfg  |= TRCCONFIGR_INSTP0_STORE;
- 		if (config->mode & ETM_MODE_LOAD_STORE)
- 			/*
- 			 * 0b11 Trace load and store instructions
- 			 * as P0 instructions
- 			 */
--			config->cfg  |= BIT(1) | BIT(2);
-+			config->cfg  |= TRCCONFIGR_INSTP0_LOAD_STORE;
- 	}
- 
- 	/* bit[3], Branch broadcast mode */
- 	if ((config->mode & ETM_MODE_BB) && (drvdata->trcbb == true))
--		config->cfg |= BIT(3);
-+		config->cfg |= TRCCONFIGR_BB;
+ 	/* bit[8], Instruction stall bit */
+ 	if ((config->mode & ETM_MODE_ISTALL_EN) && (drvdata->stallctl == true))
+-		config->stall_ctrl |= BIT(8);
++		config->stall_ctrl |= TRCSTALLCTLR_ISTALL;
  	else
--		config->cfg &= ~BIT(3);
-+		config->cfg &= ~TRCCONFIGR_BB;
+-		config->stall_ctrl &= ~BIT(8);
++		config->stall_ctrl &= ~TRCSTALLCTLR_ISTALL;
  
- 	/* bit[4], Cycle counting instruction trace bit */
- 	if ((config->mode & ETMv4_MODE_CYCACC) &&
- 		(drvdata->trccci == true))
--		config->cfg |= BIT(4);
-+		config->cfg |= TRCCONFIGR_CCI;
+ 	/* bit[10], Prioritize instruction trace bit */
+ 	if (config->mode & ETM_MODE_INSTPRIO)
+-		config->stall_ctrl |= BIT(10);
++		config->stall_ctrl |= TRCSTALLCTLR_INSTPRIORITY;
  	else
--		config->cfg &= ~BIT(4);
-+		config->cfg &= ~TRCCONFIGR_CCI;
+-		config->stall_ctrl &= ~BIT(10);
++		config->stall_ctrl &= ~TRCSTALLCTLR_INSTPRIORITY;
  
- 	/* bit[6], Context ID tracing bit */
- 	if ((config->mode & ETMv4_MODE_CTXID) && (drvdata->ctxid_size))
--		config->cfg |= BIT(6);
-+		config->cfg |= TRCCONFIGR_CID;
+ 	/* bit[13], Trace overflow prevention bit */
+ 	if ((config->mode & ETM_MODE_NOOVERFLOW) &&
+ 		(drvdata->nooverflow == true))
+-		config->stall_ctrl |= BIT(13);
++		config->stall_ctrl |= TRCSTALLCTLR_NOOVERFLOW;
  	else
--		config->cfg &= ~BIT(6);
-+		config->cfg &= ~TRCCONFIGR_CID;
+-		config->stall_ctrl &= ~BIT(13);
++		config->stall_ctrl &= ~TRCSTALLCTLR_NOOVERFLOW;
  
- 	if ((config->mode & ETM_MODE_VMID) && (drvdata->vmid_size))
--		config->cfg |= BIT(7);
-+		config->cfg |= TRCCONFIGR_VMID;
- 	else
--		config->cfg &= ~BIT(7);
-+		config->cfg &= ~TRCCONFIGR_VMID;
- 
- 	/* bits[10:8], Conditional instruction tracing bit */
- 	mode = ETM_MODE_COND(config->mode);
- 	if (drvdata->trccond == true) {
--		config->cfg &= ~(BIT(8) | BIT(9) | BIT(10));
--		config->cfg |= mode << 8;
-+		config->cfg &= ~(TRCCONFIGR_COND_MASK << TRCCONFIGR_COND_SHIFT);
-+		config->cfg |= mode << TRCCONFIGR_COND_SHIFT;
- 	}
- 
- 	/* bit[11], Global timestamp tracing bit */
- 	if ((config->mode & ETMv4_MODE_TIMESTAMP) && (drvdata->ts_size))
--		config->cfg |= BIT(11);
-+		config->cfg |= TRCCONFIGR_TS;
- 	else
--		config->cfg &= ~BIT(11);
-+		config->cfg &= ~TRCCONFIGR_TS;
- 
- 	/* bit[12], Return stack enable bit */
- 	if ((config->mode & ETM_MODE_RETURNSTACK) &&
- 					(drvdata->retstack == true))
--		config->cfg |= BIT(12);
-+		config->cfg |= TRCCONFIGR_RS;
- 	else
--		config->cfg &= ~BIT(12);
-+		config->cfg &= ~TRCCONFIGR_RS;
- 
- 	/* bits[14:13], Q element enable field */
- 	mode = ETM_MODE_QELEM(config->mode);
- 	/* start by clearing QE bits */
--	config->cfg &= ~(BIT(13) | BIT(14));
-+	config->cfg &= ~(TRCCONFIGR_QE_W_COUNTS | TRCCONFIGR_QE_WO_COUNTS);
- 	/*
- 	 * if supported, Q elements with instruction counts are enabled.
- 	 * Always set the low bit for any requested mode. Valid combos are
- 	 * 0b00, 0b01 and 0b11.
- 	 */
- 	if (mode && drvdata->q_support)
--		config->cfg |= BIT(13);
-+		config->cfg |= TRCCONFIGR_QE_W_COUNTS;
- 	/*
- 	 * if supported, Q elements with and without instruction
- 	 * counts are enabled
- 	 */
- 	if ((mode & BIT(1)) && (drvdata->q_support & BIT(1)))
--		config->cfg |= BIT(14);
-+		config->cfg |= TRCCONFIGR_QE_WO_COUNTS;
- 
- 	/* bit[11], AMBA Trace Bus (ATB) trigger enable bit */
- 	if ((config->mode & ETM_MODE_ATB_TRIGGER) &&
+ 	/* bit[9] Start/stop logic control bit */
+ 	if (config->mode & ETM_MODE_VIEWINST_STARTSTOP)
 diff --git a/drivers/hwtracing/coresight/coresight-etm4x.h b/drivers/hwtracing/coresight/coresight-etm4x.h
-index ca6ed39ceaf7..55e756020a94 100644
+index eb72b81bbf85..e37393934e0d 100644
 --- a/drivers/hwtracing/coresight/coresight-etm4x.h
 +++ b/drivers/hwtracing/coresight/coresight-etm4x.h
-@@ -194,6 +194,23 @@
- #define TRCIDR5_NUMCNTR_SHIFT			28
- #define TRCIDR5_NUMCNTR_MASK			GENMASK(2, 0)
+@@ -220,6 +220,10 @@
+ #define TRCEVENTCTL1R_ATB			BIT(11)
+ #define TRCEVENTCTL1R_LPOVERRIDE		BIT(12)
  
-+#define TRCCONFIGR_INSTP0_LOAD			BIT(1)
-+#define TRCCONFIGR_INSTP0_STORE			BIT(2)
-+#define TRCCONFIGR_INSTP0_LOAD_STORE		(TRCCONFIGR_INSTP0_LOAD | TRCCONFIGR_INSTP0_STORE)
-+#define TRCCONFIGR_BB				BIT(3)
-+#define TRCCONFIGR_CCI				BIT(4)
-+#define TRCCONFIGR_CID				BIT(6)
-+#define TRCCONFIGR_VMID				BIT(7)
-+#define TRCCONFIGR_COND_SHIFT			8
-+#define TRCCONFIGR_COND_MASK			GENMASK(2, 0)
-+#define TRCCONFIGR_TS				BIT(11)
-+#define TRCCONFIGR_RS				BIT(12)
-+#define TRCCONFIGR_QE_W_COUNTS			BIT(13)
-+#define TRCCONFIGR_QE_WO_COUNTS			BIT(14)
-+#define TRCCONFIGR_VMIDOPT			BIT(15)
-+#define TRCCONFIGR_DA				BIT(16)
-+#define TRCCONFIGR_DV				BIT(17)
++#define TRCSTALLCTLR_ISTALL			BIT(8)
++#define TRCSTALLCTLR_INSTPRIORITY		BIT(10)
++#define TRCSTALLCTLR_NOOVERFLOW			BIT(13)
 +
  /*
   * System instructions to access ETM registers.
