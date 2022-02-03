@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31027C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:34:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79EDAC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:34:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354088AbiBCUew (ORCPT
+        id S1354153AbiBCUey (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:34:52 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:35914 "EHLO
+        Thu, 3 Feb 2022 15:34:54 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:35956 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354800AbiBCUdN (ORCPT
+        with ESMTP id S1354831AbiBCUdQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 15:33:13 -0500
+        Thu, 3 Feb 2022 15:33:16 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1EFCBB835AF;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 250EBB835AC;
+        Thu,  3 Feb 2022 20:33:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04956C340E8;
         Thu,  3 Feb 2022 20:33:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 817C1C340EF;
-        Thu,  3 Feb 2022 20:33:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643920390;
-        bh=uTVbxloRA/oMSMkup+LNxAM+kjT2Mh6U5zYG9RnWECE=;
+        s=k20201202; t=1643920394;
+        bh=/xlu2VM/Pmf6/hEtweejH6o/3L605ACUbkorLULWzOM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UcSTMhCMemZQLiOcjpjDxn/cSXeU+HgItFYb6ax0LoDn7k1X7paVVurIjnHRAbOSs
-         hH12qVMWmaygSfEL2YjQESzgaPJVI2QqQZYABF53MCI1t1Cqf5RUoRgIA9Os0PM73t
-         Ev7W79AbCGMRvXuXClWdIMJ206LY+jKhS4UO+kiCB4IzbHRGtNGw4mk4K/O4HHb6oG
-         rRjVmf89stvz3Lbme+ZPYQFawpMiRwwvbeFOGyM5B2DCp+mtKZm0rCVDNlHm/D9Hp/
-         0HNtv4kunfjlyFRLKbPFEQVfeNxsnWGMrCKhXzLEFk1WYh9KmKanQXV1hQO/1yYMlm
-         Ez7FYnFce677Q==
+        b=d7FBjsJpSU2PLoLK46OZDgGpT5Z+IHFkwlAeTZDKLCTMCHbZNR3sM6gBhuTZeZaKC
+         TuAcWaxnCVOGRY8FM04GkJap/ZhXUxdms1qNwD3xdvFtDnsVE+jEFzNPFzHG1xGkEP
+         Wv2iOullaQIqdJorq7s7f43M5B4UzVavCeQB0AOrvbT/xReNKzOb6EEcdUN0cuLqW9
+         Fc6wOiIcd27+m6akqv93Ol9EVMmwrxTJa1nZsF+1izh5pVu9llbQYfI7xunjqHTS2/
+         Yo0Fl2hkbGn2/UmOdykIRCEjUPFSK4NVxUBH3NKrvjTqBI1w0bBuSzHkN9yC8VyDZ6
+         CWt7rMv+YadKQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Stephane Eranian <eranian@google.com>,
+Cc:     Vincent Guittot <vincent.guittot@linaro.org>,
         Peter Zijlstra <peterz@infradead.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Sachin Sant <sachinp@linux.ibm.com>,
         Sasha Levin <sashal@kernel.org>, mingo@redhat.com,
-        acme@kernel.org, tglx@linutronix.de, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org,
-        linux-perf-users@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 15/41] perf/x86/rapl: fix AMD event handling
-Date:   Thu,  3 Feb 2022 15:32:19 -0500
-Message-Id: <20220203203245.3007-15-sashal@kernel.org>
+        juri.lelli@redhat.com
+Subject: [PATCH AUTOSEL 5.15 17/41] sched/pelt: Relax the sync of runnable_sum with runnable_avg
+Date:   Thu,  3 Feb 2022 15:32:21 -0500
+Message-Id: <20220203203245.3007-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220203203245.3007-1-sashal@kernel.org>
 References: <20220203203245.3007-1-sashal@kernel.org>
@@ -52,67 +52,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephane Eranian <eranian@google.com>
+From: Vincent Guittot <vincent.guittot@linaro.org>
 
-[ Upstream commit 0036fb00a756a2f6e360d44e2e3d2200a8afbc9b ]
+[ Upstream commit 95246d1ec80b8d19d882cd8eb7ad094e63b41bb8 ]
 
-The RAPL events exposed under /sys/devices/power/events should only reflect
-what the underlying hardware actually support. This is how it works on Intel
-RAPL and Intel core/uncore PMUs in general.
-But on AMD, this was not the case. All possible RAPL events were advertised.
+Similarly to util_avg and util_sum, don't sync runnable_sum with the low
+bound of runnable_avg but only ensure that runnable_sum stays in the
+correct range.
 
-This is what it showed on an AMD Fam17h:
-$ ls /sys/devices/power/events/
-energy-cores        energy-gpu          energy-pkg          energy-psys
-energy-ram          energy-cores.scale  energy-gpu.scale    energy-pkg.scale
-energy-psys.scale   energy-ram.scale    energy-cores.unit   energy-gpu.unit
-energy-pkg.unit     energy-psys.unit    energy-ram.unit
-
-Yet, on AMD Fam17h, only energy-pkg is supported.
-
-This patch fixes the problem. Given the way perf_msr_probe() works, the
-amd_rapl_msrs[] table has to have all entries filled out and in particular
-the group field, otherwise perf_msr_probe() defaults to making the event
-visible.
-
-With the patch applied, the kernel now only shows was is actually supported:
-
-$ ls /sys/devices/power/events/
-energy-pkg  energy-pkg.scale  energy-pkg.unit
-
-The patch also uses the RAPL_MSR_MASK because only the 32-bits LSB of the
-RAPL counters are relevant when reading power consumption.
-
-Signed-off-by: Stephane Eranian <eranian@google.com>
+Signed-off-by: Vincent Guittot <vincent.guittot@linaro.org>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20220105185659.643355-1-eranian@google.com
+Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Tested-by: Sachin Sant <sachinp@linux.ibm.com>
+Link: https://lkml.kernel.org/r/20220111134659.24961-4-vincent.guittot@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/events/rapl.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ kernel/sched/fair.c | 33 +++++++++++++++++++--------------
+ 1 file changed, 19 insertions(+), 14 deletions(-)
 
-diff --git a/arch/x86/events/rapl.c b/arch/x86/events/rapl.c
-index 85feafacc445d..77e3a47af5ad5 100644
---- a/arch/x86/events/rapl.c
-+++ b/arch/x86/events/rapl.c
-@@ -536,11 +536,14 @@ static struct perf_msr intel_rapl_spr_msrs[] = {
-  * - perf_msr_probe(PERF_RAPL_MAX)
-  * - want to use same event codes across both architectures
-  */
--static struct perf_msr amd_rapl_msrs[PERF_RAPL_MAX] = {
--	[PERF_RAPL_PKG]  = { MSR_AMD_PKG_ENERGY_STATUS,  &rapl_events_pkg_group,   test_msr },
-+static struct perf_msr amd_rapl_msrs[] = {
-+	[PERF_RAPL_PP0]  = { 0, &rapl_events_cores_group, 0, false, 0 },
-+	[PERF_RAPL_PKG]  = { MSR_AMD_PKG_ENERGY_STATUS,  &rapl_events_pkg_group,   test_msr, false, RAPL_MSR_MASK },
-+	[PERF_RAPL_RAM]  = { 0, &rapl_events_ram_group,   0, false, 0 },
-+	[PERF_RAPL_PP1]  = { 0, &rapl_events_gpu_group,   0, false, 0 },
-+	[PERF_RAPL_PSYS] = { 0, &rapl_events_psys_group,  0, false, 0 },
- };
- 
--
- static int rapl_cpu_offline(unsigned int cpu)
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index d41f966f5866a..2c06e50a4fac2 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -3519,11 +3519,11 @@ update_tg_cfs_util(struct cfs_rq *cfs_rq, struct sched_entity *se, struct cfs_rq
+ static inline void
+ update_tg_cfs_runnable(struct cfs_rq *cfs_rq, struct sched_entity *se, struct cfs_rq *gcfs_rq)
  {
- 	struct rapl_pmu *pmu = cpu_to_rapl_pmu(cpu);
+-	long delta = gcfs_rq->avg.runnable_avg - se->avg.runnable_avg;
+-	u32 divider;
++	long delta_sum, delta_avg = gcfs_rq->avg.runnable_avg - se->avg.runnable_avg;
++	u32 new_sum, divider;
+ 
+ 	/* Nothing to update */
+-	if (!delta)
++	if (!delta_avg)
+ 		return;
+ 
+ 	/*
+@@ -3534,11 +3534,16 @@ update_tg_cfs_runnable(struct cfs_rq *cfs_rq, struct sched_entity *se, struct cf
+ 
+ 	/* Set new sched_entity's runnable */
+ 	se->avg.runnable_avg = gcfs_rq->avg.runnable_avg;
+-	se->avg.runnable_sum = se->avg.runnable_avg * divider;
++	new_sum = se->avg.runnable_avg * divider;
++	delta_sum = (long)new_sum - (long)se->avg.runnable_sum;
++	se->avg.runnable_sum = new_sum;
+ 
+ 	/* Update parent cfs_rq runnable */
+-	add_positive(&cfs_rq->avg.runnable_avg, delta);
+-	cfs_rq->avg.runnable_sum = cfs_rq->avg.runnable_avg * divider;
++	add_positive(&cfs_rq->avg.runnable_avg, delta_avg);
++	add_positive(&cfs_rq->avg.runnable_sum, delta_sum);
++	/* See update_cfs_rq_load_avg() */
++	cfs_rq->avg.runnable_sum = max_t(u32, cfs_rq->avg.runnable_sum,
++					      cfs_rq->avg.runnable_avg * PELT_MIN_DIVIDER);
+ }
+ 
+ static inline void
+@@ -3726,7 +3731,10 @@ update_cfs_rq_load_avg(u64 now, struct cfs_rq *cfs_rq)
+ 
+ 		r = removed_runnable;
+ 		sub_positive(&sa->runnable_avg, r);
+-		sa->runnable_sum = sa->runnable_avg * divider;
++		sub_positive(&sa->runnable_sum, r * divider);
++		/* See sa->util_sum above */
++		sa->runnable_sum = max_t(u32, sa->runnable_sum,
++					      sa->runnable_avg * PELT_MIN_DIVIDER);
+ 
+ 		/*
+ 		 * removed_runnable is the unweighted version of removed_load so we
+@@ -3813,17 +3821,14 @@ static void attach_entity_load_avg(struct cfs_rq *cfs_rq, struct sched_entity *s
+  */
+ static void detach_entity_load_avg(struct cfs_rq *cfs_rq, struct sched_entity *se)
+ {
+-	/*
+-	 * cfs_rq->avg.period_contrib can be used for both cfs_rq and se.
+-	 * See ___update_load_avg() for details.
+-	 */
+-	u32 divider = get_pelt_divider(&cfs_rq->avg);
+-
+ 	dequeue_load_avg(cfs_rq, se);
+ 	sub_positive(&cfs_rq->avg.util_avg, se->avg.util_avg);
+ 	cfs_rq->avg.util_sum = cfs_rq->avg.util_avg * divider;
+ 	sub_positive(&cfs_rq->avg.runnable_avg, se->avg.runnable_avg);
+-	cfs_rq->avg.runnable_sum = cfs_rq->avg.runnable_avg * divider;
++	sub_positive(&cfs_rq->avg.runnable_sum, se->avg.runnable_sum);
++	/* See update_cfs_rq_load_avg() */
++	cfs_rq->avg.runnable_sum = max_t(u32, cfs_rq->avg.runnable_sum,
++					      cfs_rq->avg.runnable_avg * PELT_MIN_DIVIDER);
+ 
+ 	add_tg_cfs_propagate(cfs_rq, -se->avg.load_sum);
+ 
 -- 
 2.34.1
 
