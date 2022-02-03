@@ -2,101 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FAE1C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 11:28:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE0BBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 11:29:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350208AbiBCL2k (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 06:28:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44650 "EHLO
+        id S235534AbiBCL3V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Feb 2022 06:29:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238011AbiBCL2i (ORCPT
+        with ESMTP id S236857AbiBCL3U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 06:28:38 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39DC4C061714;
-        Thu,  3 Feb 2022 03:28:38 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EEA19B8339D;
-        Thu,  3 Feb 2022 11:28:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CDEFC340E4;
-        Thu,  3 Feb 2022 11:28:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643887715;
-        bh=COBWLwcvaTKIWzrOUANpuFO9WSzhU9FhS0VUHIshlV4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=KX4egKwcJHnFYFMcluZjjHnbkdk1/gVrGHQHLahtyR3oV2gFSQSskLLiR6xgRoy8Z
-         X+nA7fl5bITNU3brrXT7HvyrL/ncs1/2xOwr8EGf+Dzy7k228bLkzWaFqCOnNMBVQQ
-         vZUIMXUQLdDmL33jTUg7cCn2NWMi7xB6UGyG/T7Sdt7aJ6mKK9Sd/b1FK5FWzvgq+Y
-         mY3stX9tHGzc/whzQfnKrFQRfG2J0sy/ac4u2qfBlStBpkhan8sCw5zEMKx6KG7cen
-         pBN9KQtNRULx9zjr+Y9pJ18U6Ea+9NaM1HUaSa7Cdv6AIklINZUrgfDvCysGm/bPsv
-         WElpX3oY6h8Cg==
-Date:   Thu, 3 Feb 2022 11:28:30 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     David Collins <quic_collinsd@quicinc.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        devicetree@vger.kernel.org, Liam Girdwood <lgirdwood@gmail.com>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org,
-        Subbaraman Narayanamurthy <quic_subbaram@quicinc.com>
-Subject: Re: [RESEND PATCH 1/2] dt-bindings: firmware: arm,scmi: define
- support for name based regulators
-Message-ID: <Yfu8XulvWQbpQoBR@sirena.org.uk>
-References: <cover.1643069954.git.quic_collinsd@quicinc.com>
- <fcd130891cc1d52cb09b8bfc866ab7ef1ce3b2a1.1643069954.git.quic_collinsd@quicinc.com>
- <YfREsxeSSX2pbALf@sirena.org.uk>
- <8355035c-6d90-adfd-c4e1-7bb37a2d8055@quicinc.com>
- <YfrBharI91QYkPR1@sirena.org.uk>
- <532aa931-2471-8fb3-0db4-7ab8a60333e8@quicinc.com>
+        Thu, 3 Feb 2022 06:29:20 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E45FC061714
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 03:29:19 -0800 (PST)
+From:   John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1643887756;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=DHfSE0+ZjCNul2AthoCsWVuf+A6D43MMD2PnhTHCNMk=;
+        b=gJ6DVQA8j4ACufeOfn8sqTwmf4oLsDyKgi2yxwcVQ1ZBs8R/vSRYrqcCDLLDd02J7FNOXX
+        mCVmGTdNuJpuMJ/rZlFJtEwMyikSNguoD+Fnm6IPpLembrSkgri57ipROuVCWXMrCuIl/t
+        oDuKrLQ4jSWwQrybI4pNDj6KQRoVYI+m/Yb0Qm/Bl+jj1TOkfTRQ+2sp9LEqGsBXXZlOMb
+        9g5t6mCi8Ah4oozy/unwM+efuhi7zm+0CHdSDoHCdW5Z4Akr3I5wpBSpaZg9TjrO4jA7vB
+        cRhlSTvXjuNZYKKceGgpIdXpPKG3UC8GDB23n0MlTLKLKoCqqp8tc7bfPFSOSQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1643887756;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=DHfSE0+ZjCNul2AthoCsWVuf+A6D43MMD2PnhTHCNMk=;
+        b=2d19tgkrKxvW0p5pBq0N3PXF8CFvohKAxboETvG+tff3YBR49ym8oGl9lNNw5HwHwjHJ9n
+        nWm/TauEmOulCDCw==
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        linux-kernel@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH] printk: defer_console_output: do not assume interrupts disabled
+Date:   Thu,  3 Feb 2022 12:35:15 +0106
+Message-Id: <20220203112915.1350753-1-john.ogness@linutronix.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="FHEHOoLIGiZXymy0"
-Content-Disposition: inline
-In-Reply-To: <532aa931-2471-8fb3-0db4-7ab8a60333e8@quicinc.com>
-X-Cookie: Prices higher in Alaska and Hawaii.
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+With commit 458df9fd4815 ("printk: remove separate printk_sched
+buffers and use printk buf instead") defer_console_output() was
+changed to no longer disable interrupts. However, it used the
+function __this_cpu_or(), which assumes interrupts disabled. That
+also should have been changed to this_cpu_or().
 
---FHEHOoLIGiZXymy0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Although defer_console_output() is mostly used when interrupts are
+disabled, this is not always the case. One example is
+get_random_bytes(), which is often called with interrupts enabled.
 
-On Wed, Feb 02, 2022 at 04:09:43PM -0800, David Collins wrote:
-> On 2/2/22 9:38 AM, Mark Brown wrote:
+  get_random_bytes()
+    warn_unseeded_randomness()
+      printk_deferred()
 
-> > This seems like a scenario where the DT should be being generated at
-> > runtime along with the virtualisation of the platform?  TBH a setup
-> > where this is an issue feels like it's asking for trouble.
+Reported-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+---
+ kernel/printk/printk.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> I'm not familiar with runtime device tree generation.  Could you please
-> point to an example of it or documentation for it?  How would this
-> handle kernel devices on the VM side which need a phandle to an
-> scmi-regulator DT subnode in order to get a pointer to the corresponding
-> regulator device at runtime via devm_regulator_get()?
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 82abfaf3c2aa..164ccdb9423e 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -3262,7 +3262,7 @@ void defer_console_output(void)
+ 		return;
+ 
+ 	preempt_disable();
+-	__this_cpu_or(printk_pending, PRINTK_PENDING_OUTPUT);
++	this_cpu_or(printk_pending, PRINTK_PENDING_OUTPUT);
+ 	irq_work_queue(this_cpu_ptr(&wake_up_klogd_work));
+ 	preempt_enable();
+ }
 
-I believe qemu does this for the virt machine.  I'm not sure what you're
-seeing as particularly complex about generating regulator links in
-particular though?
+base-commit: 88808fbbead481aedb46640a5ace69c58287f56a
+-- 
+2.30.2
 
---FHEHOoLIGiZXymy0
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmH7vF0ACgkQJNaLcl1U
-h9DDlQf/YzYI3j06uft9Q3I/6yHQsgA1u1k5QKi5P1/6CCVe1u9jdfsaqOkfERqv
-9ccQrebFf9XObnh7/UjdJmQn9+QrDN9iWRah/6relqDKvVBZY8dtsRVhPNnDhr9w
-U+GBwujVRrY/F6mVxK2wst8PqsWlxpf8BC12NY52c7fKgF8cm54mEUVNpIBrAGun
-9eGAl5GqqfFw0a1FlS3eCzDUmv1ptqI+DWXanrUQLhLejUpfiVwLxQmFqXkOitL5
-6uH+oZ8/xYYOHS37NK4nXzVY+uonIvw5AghpXC0c3cGHGqHjTGE6AVlDfkG+9jGW
-leW8W1h5fAeK60ebJ7sOibX+OoIU/w==
-=xs8h
------END PGP SIGNATURE-----
-
---FHEHOoLIGiZXymy0--
