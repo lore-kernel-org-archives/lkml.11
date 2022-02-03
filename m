@@ -2,37 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 454AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:30:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71FB3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:30:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354173AbiBCUaP (ORCPT
+        id S1354189AbiBCUaR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:30:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57378 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354098AbiBCUaC (ORCPT
+        Thu, 3 Feb 2022 15:30:17 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:33054 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354117AbiBCUaE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 15:30:02 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 663C3C061741;
-        Thu,  3 Feb 2022 12:30:01 -0800 (PST)
+        Thu, 3 Feb 2022 15:30:04 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2AF8EB835A1;
-        Thu,  3 Feb 2022 20:30:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC506C340E8;
-        Thu,  3 Feb 2022 20:29:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 332A7B835A7;
+        Thu,  3 Feb 2022 20:30:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23793C340F0;
+        Thu,  3 Feb 2022 20:30:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643920198;
-        bh=YM/MiN94tclE5DakqWiee+fJMcKbPpmVpnWIdmn1l24=;
+        s=k20201202; t=1643920202;
+        bh=01qhbpbzi9zTKTLBiqQl76Ns3a+R6Qym8QX6U2G65A0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MIk7BFz/1qG9sFMTrLcuE5Mg5yhan9Weg1NbW6sCguT1R4bH9eYxJi6x6qfj6lZJZ
-         fP1IHgpRyE5gj4segN2HMv6QNGgOE+bvuiNFs4Ca5BJiBZC0WPwur7JiCKXmB6GtsU
-         eKP/UVPY39fvsa9fCaWNFLtS81oBqJfjv/ADM8VLtSG/zFmH+NKdWCtrOfcOQWILWR
-         1sPHcyiO47iphcmC6ipLdg/Te/WdXg8Hu1pYKKZIYp50Lm4i10HOvbVwlZI46trbNi
-         cgqcQ38jAg92sUHo3SJ4feyIR5r67cuV6zp7IReCQRx+66OIrp+835m6JNKPF04gLA
-         yF9tQXWWWio4g==
+        b=UYRjpWLbzP21Fayc2kW5+daD+eesGXl6q91baqGBTFBASizuetMpieDzPBH6MuSR3
+         YcRLdVQ8dA8YoCDWWZOYMmxqAW/gebe0C6SiNw5L1z0ixCBeL6fH/K9DwPb64ZwbUP
+         uNxfUtf724KSa7pU1RAxTDFR5HOlCWkogfIVGVQas+TTLdItF5vvENy+3Cf8FgUAoG
+         R9rjxEnsyoWSxmgqUKj3Ekz6vuU5Puh7pq5xOR2JY2h38gdK/CenbnLxymQj4agCii
+         Wx4BsCcYKKgpz7vOYdXScVMiN4CJAWZnvDZ9Jcdv7hep8I3pbBv2H8xVn4vojND4Cc
+         Qjw0eFxYZgEcw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Olga Kornievskaia <kolga@netapp.com>,
@@ -40,9 +37,9 @@ Cc:     Olga Kornievskaia <kolga@netapp.com>,
         Sasha Levin <sashal@kernel.org>,
         trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
         linux-nfs@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 07/52] NFSv4 store server support for fs_location attribute
-Date:   Thu,  3 Feb 2022 15:29:01 -0500
-Message-Id: <20220203202947.2304-7-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.16 09/52] NFSv4 expose nfs_parse_server_name function
+Date:   Thu,  3 Feb 2022 15:29:03 -0500
+Message-Id: <20220203202947.2304-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220203202947.2304-1-sashal@kernel.org>
 References: <20220203202947.2304-1-sashal@kernel.org>
@@ -56,43 +53,47 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Olga Kornievskaia <kolga@netapp.com>
 
-[ Upstream commit 8a59bb93b7e3cca389af44781a429ac12ac49be6 ]
+[ Upstream commit f5b27cc6761e27ee6387a24df1a99ca77b360fea ]
 
-Define and store if server returns it supports fs_locations attribute
-as a capability.
+Make nfs_parse_server_name available outside of nfs4namespace.c.
 
 Signed-off-by: Olga Kornievskaia <kolga@netapp.com>
 Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/nfs4proc.c         | 2 ++
- include/linux/nfs_fs_sb.h | 2 +-
- 2 files changed, 3 insertions(+), 1 deletion(-)
+ fs/nfs/nfs4_fs.h       | 3 ++-
+ fs/nfs/nfs4namespace.c | 4 ++--
+ 2 files changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/fs/nfs/nfs4proc.c b/fs/nfs/nfs4proc.c
-index 322ff45ad15ca..f924d3029d13b 100644
---- a/fs/nfs/nfs4proc.c
-+++ b/fs/nfs/nfs4proc.c
-@@ -3874,6 +3874,8 @@ static int _nfs4_server_capabilities(struct nfs_server *server, struct nfs_fh *f
- 		if (res.attr_bitmask[2] & FATTR4_WORD2_SECURITY_LABEL)
- 			server->caps |= NFS_CAP_SECURITY_LABEL;
- #endif
-+		if (res.attr_bitmask[0] & FATTR4_WORD0_FS_LOCATIONS)
-+			server->caps |= NFS_CAP_FS_LOCATIONS;
- 		if (!(res.attr_bitmask[0] & FATTR4_WORD0_FILEID))
- 			server->fattr_valid &= ~NFS_ATTR_FATTR_FILEID;
- 		if (!(res.attr_bitmask[1] & FATTR4_WORD1_MODE))
-diff --git a/include/linux/nfs_fs_sb.h b/include/linux/nfs_fs_sb.h
-index 2a9acbfe00f0f..9a6e70ccde56e 100644
---- a/include/linux/nfs_fs_sb.h
-+++ b/include/linux/nfs_fs_sb.h
-@@ -287,5 +287,5 @@ struct nfs_server {
- #define NFS_CAP_COPY_NOTIFY	(1U << 27)
- #define NFS_CAP_XATTR		(1U << 28)
- #define NFS_CAP_READ_PLUS	(1U << 29)
+diff --git a/fs/nfs/nfs4_fs.h b/fs/nfs/nfs4_fs.h
+index 2402a3d8ba997..734ac09becf73 100644
+--- a/fs/nfs/nfs4_fs.h
++++ b/fs/nfs/nfs4_fs.h
+@@ -280,7 +280,8 @@ struct rpc_clnt *nfs4_negotiate_security(struct rpc_clnt *, struct inode *,
+ int nfs4_submount(struct fs_context *, struct nfs_server *);
+ int nfs4_replace_transport(struct nfs_server *server,
+ 				const struct nfs4_fs_locations *locations);
 -
-+#define NFS_CAP_FS_LOCATIONS	(1U << 30)
- #endif
++size_t nfs_parse_server_name(char *string, size_t len, struct sockaddr *sa,
++			     size_t salen, struct net *net);
+ /* nfs4proc.c */
+ extern int nfs4_handle_exception(struct nfs_server *, int, struct nfs4_exception *);
+ extern int nfs4_async_handle_error(struct rpc_task *task,
+diff --git a/fs/nfs/nfs4namespace.c b/fs/nfs/nfs4namespace.c
+index 873342308dc0d..f1ed4f60a7f33 100644
+--- a/fs/nfs/nfs4namespace.c
++++ b/fs/nfs/nfs4namespace.c
+@@ -164,8 +164,8 @@ static int nfs4_validate_fspath(struct dentry *dentry,
+ 	return 0;
+ }
+ 
+-static size_t nfs_parse_server_name(char *string, size_t len,
+-		struct sockaddr *sa, size_t salen, struct net *net)
++size_t nfs_parse_server_name(char *string, size_t len, struct sockaddr *sa,
++			     size_t salen, struct net *net)
+ {
+ 	ssize_t ret;
+ 
 -- 
 2.34.1
 
