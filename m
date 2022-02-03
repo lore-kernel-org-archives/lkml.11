@@ -2,113 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56F9CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 17:12:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F50DC43217
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 17:13:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236040AbiBCRMC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 12:12:02 -0500
-Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.53]:39199 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234879AbiBCRL7 (ORCPT
+        id S1346393AbiBCRNr (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Feb 2022 12:13:47 -0500
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:38602 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S232865AbiBCRNo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 12:11:59 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1643908315;
-    s=strato-dkim-0002; d=chronox.de;
-    h=References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Cc:Date:
-    From:Subject:Sender;
-    bh=in3ANS4p1/EJ1Vk8fAo3enQEiM4qdqkOrQ7NVZWdrM0=;
-    b=g43WW+klKEcQR1r6HM6JPA2vjUlwLzEaEEnxW/6JKB4llxJzBhans5dXOIxpgSEtAn
-    wZJFOOwTRwvty9UnrL9uTsIV54zWKO/4x21z9kk9OAictzIeZMNeT3kW9NLIUNzhCnnA
-    naRiTC0XbuMUoeJuJxoHCSE62589gRJs2QF6ImUIBqLe/Cbndn4rGu4XYGO4t3JssvZ5
-    cZQQh8oGjrosgrv61nXxlKKDfs+uDjMkIpqdW/vdwx/yzJMps4sQAeVrrHcDAxTpTnMy
-    16Wo0pMxJ6R+4GouMHQSo87JowHowitTTVIEpQnzD7I+vbUH4pZm/43s18q6TBjhRuvr
-    5K9A==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P2ERcEykfu11Y98lp/T7+hdri+uKZK8TKWEqNyiHySGSa9k9zW8BKRp5UFiyGZZ4jof7Xg=="
-X-RZG-CLASS-ID: mo00
-Received: from tauon.chronox.de
-    by smtp.strato.de (RZmta 47.39.0 AUTH)
-    with ESMTPSA id z28df7y13HBsGQ7
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Thu, 3 Feb 2022 18:11:54 +0100 (CET)
-From:   Stephan Mueller <smueller@chronox.de>
-To:     Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Nicolai Stange <nstange@suse.de>
-Cc:     Hannes Reinecke <hare@suse.de>, Torsten Duwe <duwe@suse.de>,
-        David Howells <dhowells@redhat.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        keyrings@vger.kernel.org, Nicolai Stange <nstange@suse.de>
-Subject: Re: [PATCH v3 00/15] crypto: dh - infrastructure for NVM in-band auth and FIPS conformance
-Date:   Thu, 03 Feb 2022 18:11:53 +0100
-Message-ID: <8937519.l8FpVtv5Hg@tauon.chronox.de>
-In-Reply-To: <20220202104012.4193-1-nstange@suse.de>
-References: <20220202104012.4193-1-nstange@suse.de>
+        Thu, 3 Feb 2022 12:13:44 -0500
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 213FKY4X012550;
+        Thu, 3 Feb 2022 18:11:21 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=selector1;
+ bh=5mX/rV067/0j4iOB+HwcMN16NHTF+lFBccW3GMsodP4=;
+ b=VGyGXV05FXKojlkQivPLgiMYQvL0vvqQVUKpzAhbs20szYJn+fFtGEEKq5kqJSLNwvP2
+ GTu5zFml7jC8GTPv714dhEkUaovOkOLd642RS6jMZJzl23hdvg+0Ew2fmhXU2hWEjR3r
+ +q6EuYnz7RaGxB/+Z2XCkweHzPgnHkjAbM7oNsP+ArGf0lDy3GyeK/vj8zd9XZHMSc2P
+ t7YksuFs0Gw1/0+pj6tsB4FmGtXSzZsW4IvgTCD4IG0ZfN2yQnIcntz7e+zo4YtSrC2f
+ QwPdZkCIn7OE3AFpgT70usp72J1ozHPRvkqLQhho3jDCOnCDP8bwo8o0cAmWWdoM/G/u +A== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3e0c4fjdb7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 03 Feb 2022 18:11:21 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 81C4210003A;
+        Thu,  3 Feb 2022 18:11:20 +0100 (CET)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 7A83922F7A3;
+        Thu,  3 Feb 2022 18:11:20 +0100 (CET)
+Received: from localhost (10.75.127.46) by SFHDAG2NODE2.st.com (10.75.127.5)
+ with Microsoft SMTP Server (TLS) id 15.0.1497.26; Thu, 3 Feb 2022 18:11:20
+ +0100
+From:   Erwan Le Ray <erwan.leray@foss.st.com>
+To:     Alexandre Torgue <alexandre.torgue@foss.st.com>
+CC:     Rob Herring <robh+dt@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Erwan Le Ray <erwan.leray@foss.st.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Marek Vasut <marex@denx.de>,
+        Marcin Sloniewski <marcin.sloniewski@gmail.com>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        Jagan Teki <jagan@amarulasolutions.com>,
+        <devicetree@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH 04/16] ARM: dts: stm32: keep uart4 behavior on icore-stm32mp1-ctouch2
+Date:   Thu, 3 Feb 2022 18:11:02 +0100
+Message-ID: <20220203171114.10888-5-erwan.leray@foss.st.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220203171114.10888-1-erwan.leray@foss.st.com>
+References: <20220203171114.10888-1-erwan.leray@foss.st.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.46]
+X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-03_06,2022-02-03_01,2021-12-02_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Mittwoch, 2. Februar 2022, 11:39:57 CET schrieb Nicolai Stange:
+DMA configuration is added to uart nodes in stm32mp15x device tree.
+Delete uart4 DMA property in icore-stm32mp1-ctouch2 board device tree
+to keep console in irq mode, as DMA support for console has been
+removed from the driver by commit e359b4411c28 ("serial: stm32: fix
+threaded interrupt handling").
 
-Hi Nicolai,
+Signed-off-by: Erwan Le Ray <erwan.leray@foss.st.com>
 
-> Hi all,
-> 
-> first of all, to the people primarily interested in security/keys/, there's
-> a rather trivial change to security/keys/dh.c in patch 4/15. It would be
-> great to get ACKs for that...
-> 
-> This is a complete rework of the v2 patchset to be found at [1]. Most
-> notably, the ffdheXYZ groups are now made accessible by means of templates
-> wrapping the generic dh: ffdhe2048(dh) ffdhe3072(dh), etc, rather than by
-> that fixed enum dh_group_id as before. For your reference, this change has
-> been suggested at [2].
-> 
-> Plain "dh" usage will be disallowed in FIPS mode now, which will break
-> keyctl(KEYCTL_DH_COMPUTE) functionality in FIPS mode. As per the
-> discussion from [2], this is acceptable or perhaps even desirable.
-> 
-> The only motivation to include the RFC 3526 MODP groups in the previous v2
-> had been to keep keyctl(KEYCTL_DH_COMPUTE) somewhat workable in FIPS mode.
-> These groups have been dropped accordingly now and this patchset only
-> introduces support for the RFC 7919 FFDHE groups, which is what is needed
-> by NVM in-band authentication.
-> 
-> In order to be able to restrict plain "dh" usage in FIPS mode while
-> still allowing the usage of those new ffdheXYZ(dh) instantiations, I
-> incorporated a modified version of the patch posted by Herbert at
-> [3] ("crypto: api - Disallow sha1 in FIPS-mode while allowing hmac(sha1)")
-> into this series here as [12/15] ("crypto: api - allow algs only in
-> specific constructions in FIPS mode"). There had been two changes worth
-> mentioning:
-> - An attempt to make it more generic by having crypto_grab_spawn()
->   to include FIPS_INTERNAL in the lookup and also, to let
->   crypto_register_instance() to propagate this flag from the
->   child spawns into the instance to be registered.
-> - To skip the actual self-test executions for !->fips_allowed algorithms,
->   just as before. The rationale for this can be found in the discussion to
->   [3].
-> With these changes, all breakage is to blame on me and thus, I assumed
-> authorship of this patch. I reflected the fact that this is heavily based
-> on Herbert's work by means of an Originally-by tag and sincerely hope this
-> is an appropriate way of recording the patch's history.
-> 
-> This series has been tested on x86_64 and s390x (big endian) with FIPS mode
-> both enabled and disabled each.
-
-Using the NIST ACVP reference implementation, shared secret computation and 
-key generation was successfully tested.
-
-Tested-by: Stephan Mueller <smueller@chronox.de>
-
-
-Ciao
-Stephan
-
+diff --git a/arch/arm/boot/dts/stm32mp157a-icore-stm32mp1-ctouch2.dts b/arch/arm/boot/dts/stm32mp157a-icore-stm32mp1-ctouch2.dts
+index d3058a036c74..1f75f1d45181 100644
+--- a/arch/arm/boot/dts/stm32mp157a-icore-stm32mp1-ctouch2.dts
++++ b/arch/arm/boot/dts/stm32mp157a-icore-stm32mp1-ctouch2.dts
+@@ -43,5 +43,7 @@
+ 	pinctrl-0 = <&uart4_pins_a>;
+ 	pinctrl-1 = <&uart4_sleep_pins_a>;
+ 	pinctrl-2 = <&uart4_idle_pins_a>;
++	/delete-property/dmas;
++	/delete-property/dma-names;
+ 	status = "okay";
+ };
+-- 
+2.17.1
 
