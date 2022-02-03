@@ -2,88 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75207C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 11:33:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CD6CC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 11:33:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350243AbiBCLdX (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 06:33:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45718 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236227AbiBCLdV (ORCPT
+        id S243914AbiBCLdZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Feb 2022 06:33:25 -0500
+Received: from alexa-out-sd-01.qualcomm.com ([199.106.114.38]:36751 "EHLO
+        alexa-out-sd-01.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1350241AbiBCLdW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 06:33:21 -0500
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FB97C061714
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 03:33:20 -0800 (PST)
-Received: by mail-wr1-x42b.google.com with SMTP id g18so4079466wrb.6
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 03:33:20 -0800 (PST)
+        Thu, 3 Feb 2022 06:33:22 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=ihC5hJaqvYSQGhRdPK0mq/Z76ynLvAUUCPiRBOw5uQg=;
-        b=K0Nam3dJfnHj+3BDyNnPokPHpA4E6WH+f8vUMRLUBRA5Luaowlbirb7CtWEH1LlyhY
-         qLL2maDnUpT9Wq93fEbrY5H3D0iGgq3LPvQfxJrZlVDLz1r2atkhkDswBx0EhOccyj1P
-         Mf/M8SOJoWhq9T2tyOpHtw/WzBr4tHw8OBdexFm8BaCmrMlyaDtUD771e/N25ewknx//
-         drV9ziL/KdaRiN6rwS9bI3GwmmB+jDId1xp3lm4MRbWfovvI5HUsy1ZAGOY0JSUtjwtS
-         AWc+B0l0DytzEiOh/JM44qGoG/zvHXQdC/xJwhDjMZ7Y3gPrQNa4tHpde5XCvzJFU1Kd
-         Gy9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=ihC5hJaqvYSQGhRdPK0mq/Z76ynLvAUUCPiRBOw5uQg=;
-        b=kEv8JLNdqzTNZZvpuMpqCSHxnWpMRF+gPZA0Z0J6cVgIZREpX3X3TtbsZ+M/15tk6K
-         /x2tOiVW7o/PUvN0oMMJc6MdsVc8DOuh9YpByC4nwr5WAGrz+KERKTf2c6eh3gmJowcG
-         hZPa0wVxAR1/HB3GMGJgSmwfnxH+GSeXYI/4o7mPNwWWi/hpcQ1SCyi00sE+0r6MODKj
-         p/AHPA0BPB1d6OmzUZzfDB/dRolUwjotkUyuWERCu43hiJC5M2WZU8XcnXbsdkO0SwCk
-         CuoiCEMTxg2LgZ8Vq9JZrd4LoHW3zVMbAVYOQPfiHhCs/75iDZdcU+2+3RXA1X1grwOy
-         pmag==
-X-Gm-Message-State: AOAM533eyS+XouYgIpBfxe6YIYvcD6SuitD/iw7SwR9AQedmL1svtLwW
-        ElyS1hiXF7tlwfiYMuQz909iIsOb2pGAaUGE
-X-Google-Smtp-Source: ABdhPJyEvYyyOR1OwmI6zAiFUXsf6iSdACxEm3v/Fiq2gPb5ThkPciCqvRSff9klEBEEjI8eh3gc9w==
-X-Received: by 2002:a5d:59ae:: with SMTP id p14mr27899372wrr.643.1643887999249;
-        Thu, 03 Feb 2022 03:33:19 -0800 (PST)
-Received: from google.com (cpc106310-bagu17-2-0-cust853.1-3.cable.virginm.net. [86.15.223.86])
-        by smtp.gmail.com with ESMTPSA id z17sm6929238wmf.47.2022.02.03.03.33.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Feb 2022 03:33:18 -0800 (PST)
-Date:   Thu, 3 Feb 2022 11:33:16 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH] mfd: ab8500: Rewrite bindings in YAML
-Message-ID: <Yfu9fE16W/29z7Va@google.com>
-References: <20220115002649.1526163-1-linus.walleij@linaro.org>
- <CACRpkdZPdg7koKf1RkRNzDgF_V-XsEod5C4JA10ps7G7fUwaXw@mail.gmail.com>
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1643888002; x=1675424002;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=CKB6XxhPcmYXpzASIp+ItgBcBPMlb9gXew6VSrAap/I=;
+  b=UX8HCLErpwnYWjBPUo6n0kdTOjFFDFjfMz6fYgE0tWUpsPwB7K1TRDAC
+   4JQc8J39gF69a0RLgvy00KNV40oPRdklbqesZmZ6I3f+d4spVRFZzfLNe
+   l869ptjrOb6chiZQeUIy1AE6ok8xpP6fLStRfz9PM7aQlIlDbJ39b4W4n
+   M=;
+Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 03 Feb 2022 03:33:22 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2022 03:33:22 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Thu, 3 Feb 2022 03:33:21 -0800
+Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Thu, 3 Feb 2022 03:33:18 -0800
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <rohitkr@codeaurora.org>, <srinivas.kandagatla@linaro.org>,
+        <dianders@chromium.org>, <swboyd@chromium.org>,
+        <judyhsiao@chromium.org>
+CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Subject: [PATCH v3 0/3] Add soundcard support for sc7280 based platforms.
+Date:   Thu, 3 Feb 2022 17:02:58 +0530
+Message-ID: <1643887981-31011-1-git-send-email-quic_srivasam@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CACRpkdZPdg7koKf1RkRNzDgF_V-XsEod5C4JA10ps7G7fUwaXw@mail.gmail.com>
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 03 Feb 2022, Linus Walleij wrote:
+This patch set is to add bolero digital macros, WCD and maxim codecs nodes
+for audio on sc7280 based platforms.
 
-> On Sat, Jan 15, 2022 at 1:28 AM Linus Walleij <linus.walleij@linaro.org> wrote:
-> 
-> > This rewrites the former text based AB8500 bindings in YAML.
-> 
-> Is this something we can merge?
+This patch set depends on:
+	-- https://patchwork.kernel.org/project/alsa-devel/patch/1638551345-24979-2-git-send-email-srivasam@codeaurora.com/
+	-- https://patchwork.kernel.org/project/alsa-devel/patch/1639503391-10715-10-git-send-email-quic_srivasam@quicinc.com/
+	-- https://patchwork.kernel.org/project/linux-arm-msm/patch/20220202053207.14256-1-tdas@codeaurora.org/.
+	-- MSM DP node yet to be upstreamed.
+Changes Since V2:
+    -- Add power domains to digital codec macro nodes.
+    -- Change clock node usage in lpass cpu node.
+    -- Add codec mem clock to lpass cpu node.
+    -- Modify the node names to be generic.
+    -- Move sound and codec nodes to root node.
+    -- sort dai links as per reg.
+    -- Fix typo errors
+Changes Since V1:
+    -- Update the commit message of cpu node patch.
+    -- Add gpio control property to support Euro headset in wcd938x node.
+    -- Fix clock properties in lpass cpu and digital codec macro node.
 
-I can't merge this without Rob's Ack.
 
-> These MFD bindings become large and complex so I
-> add Rob on the To-line so he can have a look if he has
-> time.
+Srinivasa Rao Mandadapu (3):
+  arm64: dts: qcom: sc7280: Add nodes for va tx and rx macros and
+    external codecs
+  arm64: dts: qcom: sc7280: Add lpass cpu node
+  arm64: dts: qcom: sc7280: add sound card support
+
+ arch/arm64/boot/dts/qcom/sc7280-crd.dts  |  12 ++
+ arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 176 ++++++++++++++++++++++++++++++
+ arch/arm64/boot/dts/qcom/sc7280.dtsi     | 181 +++++++++++++++++++++++++++++++
+ 3 files changed, 369 insertions(+)
 
 -- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.7.4
+
