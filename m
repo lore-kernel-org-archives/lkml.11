@@ -2,104 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53223C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 13:56:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AC8AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 13:58:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350927AbiBCN46 (ORCPT
+        id S1350937AbiBCN6Y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 08:56:58 -0500
-Received: from gloria.sntech.de ([185.11.138.130]:54912 "EHLO gloria.sntech.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232957AbiBCN44 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 08:56:56 -0500
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <heiko@sntech.de>)
-        id 1nFcbM-0002C8-Tr; Thu, 03 Feb 2022 14:56:44 +0100
-From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To:     Palmer Dabbelt <palmer@dabbelt.com>,
-        Tsukasa OI <research_trasio@irq.a4lg.com>,
-        linux-riscv@lists.infradead.org
-Cc:     "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
-        Atish Patra <atishp@rivosinc.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Anup Patel <anup@brainfault.org>,
-        Damien Le Moal <damien.lemoal@wdc.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        Jisheng Zhang <jszhang@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Atish Patra <atishp@atishpatra.org>
-Subject: Re: [PATCH v1 0/2] Provide a fraemework for RISC-V ISA extensions
-Date:   Thu, 03 Feb 2022 14:56:43 +0100
-Message-ID: <1859467.Zi3Bu27KEa@diego>
-In-Reply-To: <CAOnJCULirV30g6ti7QvY40=p_W9+-XG+nAbxiZ4qDZLo28RJ6A@mail.gmail.com>
-References: <20211224211632.1698523-1-atishp@rivosinc.com> <mhng-791652b4-53f0-48e4-a640-f4c418c9926b@palmer-ri-x1c9> <CAOnJCULirV30g6ti7QvY40=p_W9+-XG+nAbxiZ4qDZLo28RJ6A@mail.gmail.com>
+        Thu, 3 Feb 2022 08:58:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50098 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232957AbiBCN6X (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 3 Feb 2022 08:58:23 -0500
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36395C061714
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 05:58:23 -0800 (PST)
+Received: by mail-lf1-x12d.google.com with SMTP id z19so6073963lfq.13
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 05:58:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=J5ajnrFHB2Itynjvb8zArw+50BJi/x0Eej9kTRNExuQ=;
+        b=hPwDZRyjA9txtxuG+5/cTuFGbSUc2fcWxGgS1ejgy07ob3tcGH200w0Aqj/q3x4Dl7
+         lc+zXOvZQyLgh/xP+nnIe/dnJfaTWhwTG20PXsa5Z2Z9/BN3qtCE/unCOC4VVpxk95ti
+         xdf88IG+x3gl9AbrSHVKgvcMv2MEJXxiE83DIDneZINppKaHKkG7fbVGchzlYl6i/9Aj
+         Jb8P9TTHKKlT2PVJhhehQa7RQgeZXwn+VHMugpK3TSyuu1DMLJ+LbKlOKgZVaqagVQpK
+         ASks1OPp9LZga9EhyfU+9cqxsW3pmMgl5tqJO4xjcVRJSN8suWjxwx95+JQUDz7RXx+n
+         9bdw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=J5ajnrFHB2Itynjvb8zArw+50BJi/x0Eej9kTRNExuQ=;
+        b=W1PsK0Tqzde+lhoJdH0DCUSF3B+1bxDKCuQwfULa/zM25NCo3eBwfb29DyJGesVOfZ
+         39Z9BW60UFC+DY+M8P6CxAiHDm47y6Xbs1ZxpV/SBpU2jrBrKMuODVrO92hPyutDvWZR
+         jp1+ZTFW7NvrUyMVgbchOsjBv6tiIfYebiwPGTzPGzpn2S1mFMWj1tjerWQwNo3apAG8
+         HQ0avFiBWdK1dYr/UeVvf72BxWhh+xmi/wmjQQ61suzPyT1FzTJ53fcLXMjH6SIpy6Ar
+         oem1AraLV9ArqaugaeBYKN7vY04+Nk9RiLO4JE9izldIRQMRSaKejsaoqk+fxfrB572v
+         KSFQ==
+X-Gm-Message-State: AOAM530brkGsG6Av7g/TypjFqyMohdnXE/61alBLP+b1uIufXhvg34ZP
+        2wN0nfe8aufRQDZMqlpasPE=
+X-Google-Smtp-Source: ABdhPJyuhFv/OFce48B1/qo4kUyUlmpXlBHEkqfwAjcb3ui8pvzKNu1ezVfGSF/a/3pLJdY7P0XJyQ==
+X-Received: by 2002:a05:6512:33cf:: with SMTP id d15mr26471232lfg.544.1643896701426;
+        Thu, 03 Feb 2022 05:58:21 -0800 (PST)
+Received: from grain.localdomain ([5.18.251.97])
+        by smtp.gmail.com with ESMTPSA id z15sm3532246ljm.64.2022.02.03.05.58.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Feb 2022 05:58:20 -0800 (PST)
+Received: by grain.localdomain (Postfix, from userid 1000)
+        id 8602A5A0020; Thu,  3 Feb 2022 16:58:19 +0300 (MSK)
+Date:   Thu, 3 Feb 2022 16:58:19 +0300
+From:   Cyrill Gorcunov <gorcunov@gmail.com>
+To:     Jason Andryuk <jandryuk@gmail.com>
+Cc:     linux-kernel@vger.kernel.org,
+        "Eric W . Biederman" <ebiederm@xmission.com>
+Subject: Re: [PATCH v2] kcmp: Comment get_file_raw_ptr() RCU usage
+Message-ID: <Yfvfe+TmR1WIuj/U@grain>
+References: <20220203133134.6949-1-jandryuk@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220203133134.6949-1-jandryuk@gmail.com>
+User-Agent: Mutt/2.0.7 (2021-05-04)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Atish,
-
-Am Samstag, 8. Januar 2022, 03:24:12 CET schrieb Atish Patra:
-> On Fri, Jan 7, 2022 at 1:58 PM Palmer Dabbelt <palmer@dabbelt.com> wrote:
-> >
-> > On Fri, 24 Dec 2021 13:16:30 PST (-0800), atishp@atishpatra.org wrote:
-> > > This series implements a generic framework to parse multi-letter ISA
-> > > extensions. It introduces a new DT node that can be under /cpus or
-> > > individual cpu depends on the platforms with homogeneous or heterogeneous
-> > > harts. This version of the series only allows adds support for homogeneous
-> > > harts as there are no platforms with heterogeneous harts yet. However,
-> > > the DT binding allows both.
-> > >
-> > > The patch also indicates the user space about the available ISA extensions
-> > > via /proc/cpuinfo.
-> > >
-> > > Here is the example output of /proc/cpuinfo:
-> > > (with debug patches in Qemu and Linux kernel)
-> > >
-> > > / # cat /proc/cpuinfo
-> > > processor     : 0
-> > > hart          : 0
-> > > isa           : rv64imafdcsu
-> > > isa-ext               : sstc,sscofpmf
-> > > mmu           : sv48
-> >
-> > IMO this is the wrong way to go.  I get that the ISA string is very
-> > complicated to parse, but we've tried to come up with other
-> > representations of this we've ended up having that interface break when
-> > the ISA string rules eventually change.  We should just stick to the ISA
-> > string for these interfaces, as that's at least something everyone can
-> > agree on because they're defined by the spec.
-> >
+On Thu, Feb 03, 2022 at 08:31:34AM -0500, Jason Andryuk wrote:
+> This usage of RCU appears wrong since the pointer is passed outside the
+> RCU region.  However, it is only used as a number and not dereferenced,
+> so it is okay.  Leave a comment for the next reader.
 > 
-> Fair enough.
+> Without a reference, these comparisons are racy, but even with their use
+> inside an RCU region, the result could go stale.
 > 
-> > That said, we should add the spec versions into this interface.  At
-> > least the user spec version is relevant here, but given that we're
-> > passing through some other priv-level details we might as well pass that
-> > though too.
-> >
-> 
-> Tsukasa already has a version that extends the isa string parsing for
-> multi-letter extensions
-> and versions parsing. We just need to add the ISA bitmap support on top of it.
-> 
-> I will coordinate with Tsukasa to have a complete framework based on
-> string parsing.
-> It would be good to have this series asap as all other series  (perf,
-> svpbmt) will rely on it.
+> Signed-off-by: Jason Andryuk <jandryuk@gmail.com>
 
-out of curiosity, did this go anywhere yet in terms of the coordinated
-approach you wrote about?
+Looks ok to me, thanks a lot! I should put somthing similar a way
+earlier when this code been developed. I must confess I'm not a big
+fan of merging comments-only commits (since they affect git history),
+but since it brings more understanding into what the code is doing
 
-Thanks
-Heiko
-
-
+Acked-by: Cyrill Gorcunov <gorcunov@gmail.com>
