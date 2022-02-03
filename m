@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5C6EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:34:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31027C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:34:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355088AbiBCUes (ORCPT
+        id S1354088AbiBCUew (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:34:48 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:35846 "EHLO
+        Thu, 3 Feb 2022 15:34:52 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:35914 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354361AbiBCUdI (ORCPT
+        with ESMTP id S1354800AbiBCUdN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 15:33:08 -0500
+        Thu, 3 Feb 2022 15:33:13 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 331F4B835A3;
-        Thu,  3 Feb 2022 20:33:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96361C340F0;
-        Thu,  3 Feb 2022 20:33:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1EFCBB835AF;
+        Thu,  3 Feb 2022 20:33:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 817C1C340EF;
+        Thu,  3 Feb 2022 20:33:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643920386;
-        bh=+NBcL0Eq3UCVybOvYfablR+3wu7sDTLFohP96udNTEs=;
+        s=k20201202; t=1643920390;
+        bh=uTVbxloRA/oMSMkup+LNxAM+kjT2Mh6U5zYG9RnWECE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ogfveCHm+8DuSQegcbzCAO0Hn5W0MvnoKnaG7vZuMjLpMEs9f780tZE6DfmdZeqqQ
-         iLE6fm5fx3PB6ur4xbxuw/cKlaeZ937MlEeqiQ3QnedjAK36JVLg88t9iVKSsDrEaY
-         OcIWoBFL5egAThnW9BXoAunW2BDLaiEZsOROIb7jL/CZo5d7dAtb1hoMaR6xM0ypfC
-         49pU2AU7RLBRJKmptUopfHlg4Yz5DWsk4p/HXIn6/cyZQsJF2l5tQi/Y+rVP9SM6IR
-         VYRsqVlMwMCasqATYuIkbj7ju49IY74ZoIzZpgz70KIvaFmxLPWgvudn+d59qJVNOq
-         1TK7ZYaK7myPw==
+        b=UcSTMhCMemZQLiOcjpjDxn/cSXeU+HgItFYb6ax0LoDn7k1X7paVVurIjnHRAbOSs
+         hH12qVMWmaygSfEL2YjQESzgaPJVI2QqQZYABF53MCI1t1Cqf5RUoRgIA9Os0PM73t
+         Ev7W79AbCGMRvXuXClWdIMJ206LY+jKhS4UO+kiCB4IzbHRGtNGw4mk4K/O4HHb6oG
+         rRjVmf89stvz3Lbme+ZPYQFawpMiRwwvbeFOGyM5B2DCp+mtKZm0rCVDNlHm/D9Hp/
+         0HNtv4kunfjlyFRLKbPFEQVfeNxsnWGMrCKhXzLEFk1WYh9KmKanQXV1hQO/1yYMlm
+         Ez7FYnFce677Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        Xin Xiong <xiongx18@fudan.edu.cn>,
-        Xin Tan <tanxin.ctf@gmail.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
-        Sasha Levin <sashal@kernel.org>,
-        trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
-        chuck.lever@oracle.com, davem@davemloft.net, kuba@kernel.org,
-        linux-nfs@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 12/41] net/sunrpc: fix reference count leaks in rpc_sysfs_xprt_state_change
-Date:   Thu,  3 Feb 2022 15:32:16 -0500
-Message-Id: <20220203203245.3007-12-sashal@kernel.org>
+Cc:     Stephane Eranian <eranian@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Sasha Levin <sashal@kernel.org>, mingo@redhat.com,
+        acme@kernel.org, tglx@linutronix.de, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org,
+        linux-perf-users@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 15/41] perf/x86/rapl: fix AMD event handling
+Date:   Thu,  3 Feb 2022 15:32:19 -0500
+Message-Id: <20220203203245.3007-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220203203245.3007-1-sashal@kernel.org>
 References: <20220203203245.3007-1-sashal@kernel.org>
@@ -54,47 +52,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiyu Yang <xiyuyang19@fudan.edu.cn>
+From: Stephane Eranian <eranian@google.com>
 
-[ Upstream commit 776d794f28c95051bc70405a7b1fa40115658a18 ]
+[ Upstream commit 0036fb00a756a2f6e360d44e2e3d2200a8afbc9b ]
 
-The refcount leak issues take place in an error handling path. When the
-3rd argument buf doesn't match with "offline", "online" or "remove", the
-function simply returns -EINVAL and forgets to decrease the reference
-count of a rpc_xprt object and a rpc_xprt_switch object increased by
-rpc_sysfs_xprt_kobj_get_xprt() and
-rpc_sysfs_xprt_kobj_get_xprt_switch(), causing reference count leaks of
-both unused objects.
+The RAPL events exposed under /sys/devices/power/events should only reflect
+what the underlying hardware actually support. This is how it works on Intel
+RAPL and Intel core/uncore PMUs in general.
+But on AMD, this was not the case. All possible RAPL events were advertised.
 
-Fix this issue by jumping to the error handling path labelled with
-out_put when buf matches none of "offline", "online" or "remove".
+This is what it showed on an AMD Fam17h:
+$ ls /sys/devices/power/events/
+energy-cores        energy-gpu          energy-pkg          energy-psys
+energy-ram          energy-cores.scale  energy-gpu.scale    energy-pkg.scale
+energy-psys.scale   energy-ram.scale    energy-cores.unit   energy-gpu.unit
+energy-pkg.unit     energy-psys.unit    energy-ram.unit
 
-Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
-Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Yet, on AMD Fam17h, only energy-pkg is supported.
+
+This patch fixes the problem. Given the way perf_msr_probe() works, the
+amd_rapl_msrs[] table has to have all entries filled out and in particular
+the group field, otherwise perf_msr_probe() defaults to making the event
+visible.
+
+With the patch applied, the kernel now only shows was is actually supported:
+
+$ ls /sys/devices/power/events/
+energy-pkg  energy-pkg.scale  energy-pkg.unit
+
+The patch also uses the RAPL_MSR_MASK because only the 32-bits LSB of the
+RAPL counters are relevant when reading power consumption.
+
+Signed-off-by: Stephane Eranian <eranian@google.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20220105185659.643355-1-eranian@google.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sunrpc/sysfs.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ arch/x86/events/rapl.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/net/sunrpc/sysfs.c b/net/sunrpc/sysfs.c
-index 9a6f17e18f73b..379cf0e4d965b 100644
---- a/net/sunrpc/sysfs.c
-+++ b/net/sunrpc/sysfs.c
-@@ -291,8 +291,10 @@ static ssize_t rpc_sysfs_xprt_state_change(struct kobject *kobj,
- 		online = 1;
- 	else if (!strncmp(buf, "remove", 6))
- 		remove = 1;
--	else
--		return -EINVAL;
-+	else {
-+		count = -EINVAL;
-+		goto out_put;
-+	}
+diff --git a/arch/x86/events/rapl.c b/arch/x86/events/rapl.c
+index 85feafacc445d..77e3a47af5ad5 100644
+--- a/arch/x86/events/rapl.c
++++ b/arch/x86/events/rapl.c
+@@ -536,11 +536,14 @@ static struct perf_msr intel_rapl_spr_msrs[] = {
+  * - perf_msr_probe(PERF_RAPL_MAX)
+  * - want to use same event codes across both architectures
+  */
+-static struct perf_msr amd_rapl_msrs[PERF_RAPL_MAX] = {
+-	[PERF_RAPL_PKG]  = { MSR_AMD_PKG_ENERGY_STATUS,  &rapl_events_pkg_group,   test_msr },
++static struct perf_msr amd_rapl_msrs[] = {
++	[PERF_RAPL_PP0]  = { 0, &rapl_events_cores_group, 0, false, 0 },
++	[PERF_RAPL_PKG]  = { MSR_AMD_PKG_ENERGY_STATUS,  &rapl_events_pkg_group,   test_msr, false, RAPL_MSR_MASK },
++	[PERF_RAPL_RAM]  = { 0, &rapl_events_ram_group,   0, false, 0 },
++	[PERF_RAPL_PP1]  = { 0, &rapl_events_gpu_group,   0, false, 0 },
++	[PERF_RAPL_PSYS] = { 0, &rapl_events_psys_group,  0, false, 0 },
+ };
  
- 	if (wait_on_bit_lock(&xprt->state, XPRT_LOCKED, TASK_KILLABLE)) {
- 		count = -EINTR;
+-
+ static int rapl_cpu_offline(unsigned int cpu)
+ {
+ 	struct rapl_pmu *pmu = cpu_to_rapl_pmu(cpu);
 -- 
 2.34.1
 
