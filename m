@@ -2,126 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D92EDC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:33:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59FFCC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:33:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354351AbiBCUdH (ORCPT
+        id S1354574AbiBCUdK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:33:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57882 "EHLO
+        Thu, 3 Feb 2022 15:33:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354531AbiBCUbs (ORCPT
+        with ESMTP id S1354530AbiBCUbs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 3 Feb 2022 15:31:48 -0500
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F305EC06178C;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AEF7C06178A;
         Thu,  3 Feb 2022 12:31:39 -0800 (PST)
-Received: by mail-wm1-x330.google.com with SMTP id v123so2994731wme.2;
-        Thu, 03 Feb 2022 12:31:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=XCETMGPdW3wgDml3MFs9nN0HklerhJbhRnBgKtYF4PQ=;
-        b=em3FJJQloIOEeprnF4u4I4qEEDM53eBf/lx9p/V1denFvq6gHoHI5O66X9kka74gc6
-         WMhvHUkobWukp2UghFYiekXFHVFZczuOhj6z1a10ORgoqwg7FzEA6wjXUoojF28h1Nk+
-         2WFScLbaeKKpc44MnRAaB9csJNu6Hh+/zMNgFyL4CBEKgFr7HNeCx8zRRb8A1Yxyi23B
-         44Y18jthVnWZpr0MiTWlNypCe709EvJU/idreuTsANSR8RY8QSxfpuzpJ0vQxQAl0xgm
-         Z3IiC7iEY+ZYiXpu7YliH4VqgncEEoxV8Z2z2ljcyUo91boB8ZxAcXY60w1zydjMGtTn
-         xACw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=XCETMGPdW3wgDml3MFs9nN0HklerhJbhRnBgKtYF4PQ=;
-        b=5uSk8+T71/tjcrNPBmEaQZB56Pk6qOeCMNyBDu7IMI9+CNtrdUOHOyl6KCiF85bh58
-         P/SnzBDcREYlk+Exls2tcD0a2iqzdFYxdkTKn6CMhj0aAX07tustU1eWtT7tmKys9DKl
-         i9oW6CWHurtZbILQU1BfkK7bOtTzxLkvwnU2Y0Sm3GLa/QLzRxxGORaKPEYdA/jq2nBB
-         KDjHM9gj2FQtpDcfvnha1UbEGXWcEXItUHZ/qY2XMamXJMb1S8YLQTW0oORocZdvnHyT
-         wR2DVB/DDHsu4z/uIHmjIQgK88UL4+TH22IIDgxzRTZoUZDhg3wgVZG3dh6qIGDjn7+x
-         sVPA==
-X-Gm-Message-State: AOAM533Zd5l3XOhswZJPQ0KInJMQ+/thIcwCCYdWA3kTqzsz1PQbG8Jq
-        LB1SYbdNiIZXZSXsOH278F0=
-X-Google-Smtp-Source: ABdhPJzdSKkKjlx679FjpFTddMZ+VF58pxrgSngrczbC4LnV6jfBRPKrWKfOGBA5NIc7m8RhnsgLng==
-X-Received: by 2002:a05:600c:d4:: with SMTP id u20mr12017791wmm.52.1643920298199;
-        Thu, 03 Feb 2022 12:31:38 -0800 (PST)
-Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.gmail.com with ESMTPSA id u7sm8060744wml.7.2022.02.03.12.31.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Feb 2022 12:31:37 -0800 (PST)
-Date:   Thu, 3 Feb 2022 21:31:34 +0100
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [RFC PATCH v7 00/16] Add support for qca8k mdio rw in Ethernet
- packet
-Message-ID: <Yfw7phxyufXvowJl@Ansuel-xps.localdomain>
-References: <20220123013337.20945-1-ansuelsmth@gmail.com>
- <YfaZrsewBMhqr0Db@Ansuel-xps.localdomain>
- <a8244311-175d-79d3-d61b-c7bb99ffdfb7@gmail.com>
- <YfwX8YDDygBEsyo3@Ansuel-xps.localdomain>
- <20220203182128.z6xflse7fezccvhx@skbuf>
- <20220203121027.7a6ea0f8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 58CDBB835A2;
+        Thu,  3 Feb 2022 20:31:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C9AAC340EF;
+        Thu,  3 Feb 2022 20:31:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643920297;
+        bh=Vv//BExRI3t85Qsd/+tzwcI53cblzmjE6OyXjRNe/UE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=guzqe2jqKMS06lrroT4FRQg0LZNUoxZoIQ4whJ91bk137i7hL+u495EIo86FeD9Cb
+         3ADAlKU1yzCfBhOI9N+3547t1juie0WS9McJ4HApZJnDJ4bf/9p00oJ8GlR3c4XjRX
+         ZskJymJPMXuYtdGmxIu8fv5RWcX9hifcIP5G77IZR85CBQ6KEgi8RZpNI3nvr29FkS
+         Ch1GDuYAkzSEkri6PBzkMX/QetJWi9rfBMckb77SlAsCV2e71O7+21gQ0dhbJ5lynz
+         srTG0aP6drX6u+m4B7+5I2Dj4rrgoapiymrQFQom7Ey3bPEzNSX1ywaBoNv8s/MdVc
+         ksQXrmP3nx+EQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Alex Deucher <alexander.deucher@amd.com>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Sasha Levin <sashal@kernel.org>, sunpeng.li@amd.com,
+        Rodrigo.Siqueira@amd.com, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        Jun.Lei@amd.com, wenjing.liu@amd.com, George.Shen@amd.com,
+        Jimmy.Kizito@amd.com, Wesley.Chalmers@amd.com, Jerry.Zuo@amd.com,
+        stylon.wang@amd.com, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.16 40/52] drm/amdgpu/display: use msleep rather than udelay for long delays
+Date:   Thu,  3 Feb 2022 15:29:34 -0500
+Message-Id: <20220203202947.2304-40-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220203202947.2304-1-sashal@kernel.org>
+References: <20220203202947.2304-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220203121027.7a6ea0f8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 03, 2022 at 12:10:27PM -0800, Jakub Kicinski wrote:
-> On Thu, 3 Feb 2022 20:21:28 +0200 Vladimir Oltean wrote:
-> > To my knowledge, when you call dev_queue_xmit(), the skb is no longer
-> > yours, end of story, it doesn't matter whether you increase the refcount
-> > on it or not. The DSA master may choose to do whatever it wishes with
-> > that buffer after its TX completion interrupt fires: it may not call
-> > napi_consume_skb() but directly recycle that buffer in its pool of RX
-> > buffers, as part of some weird buffer recycling scheme. So you'll think
-> > that the buffer is yours, but it isn't, because the driver hasn't
-> > returned it to the allocator, and your writes for the next packet may be
-> > concurrent with some RX DMA transactions. I don't have a mainline
-> > example to give you, but I've seen the pattern, and I don't think it's
-> > illegal (although of course, I stand to be corrected if necessary).
-> 
-> Are we talking about holding onto the Tx skb here or also recycling 
-> the Rx one? Sorry for another out of context comment in advance..
->
+From: Alex Deucher <alexander.deucher@amd.com>
 
-Here we are talking about tx skb. (We can't really operate on the
-received skb handled by the tagger)
-What I want to improve is the fact that we alloc 3 very small skb that
-will have only some part of them modified and the rest equal on all 3
-skb. So my idea is find a way to preallocate a space and build a skb
-around it. In short as we force a 1:1 comunication where we send an skb
-and we wait for the response to be processed, we can reuse the same skb
-everytime and just modify the data in it. I'm asking if anyone have some
-hint/direction without proposing a patch that is a big massive hack that
-will be NACK in 0.1 ms LOL
+[ Upstream commit 98fdcacb45f7cd2092151d6af2e60152811eb79c ]
 
-> AFAIK in theory shared skbs are supposed to be untouched or unshared
-> explicitly by the driver on Tx. pktgen takes advantage of it.
-> We have IFF_TX_SKB_SHARING. 
-> 
+Some architectures (e.g., ARM) throw an compilation error if the
+udelay is too long.  In general udelays of longer than 2000us are
+not recommended on any architecture.  Switch to msleep in these
+cases.
 
-Will check how this flags is used. If you have any hint about this feel
-free to suggest it.
+Reviewed-by: Harry Wentland <harry.wentland@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> In practice everyone gets opted into SKB_SHARING because ether_setup()
-> sets the flag. A lot of drivers are not aware of the requirement and
-> will assume full ownership (and for example use skb->cb[]) :/
-> 
-
-Consider that currently this will be used by stmmac driver, brcm driver
-and someother atheros driver.
-
-> I don't think there is any Tx completion -> Rx pool recycling scheme
-> inside the drivers (if that's what you described).
-
+diff --git a/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c b/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
+index 01ac1a64c78b9..d1b47c0d7791a 100644
+--- a/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
++++ b/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
+@@ -6038,7 +6038,7 @@ bool dpcd_write_128b_132b_sst_payload_allocation_table(
+ 			}
+ 		}
+ 		retries++;
+-		udelay(5000);
++		msleep(5);
+ 	}
+ 
+ 	if (!result && retries == max_retries) {
+@@ -6090,7 +6090,7 @@ bool dpcd_poll_for_allocation_change_trigger(struct dc_link *link)
+ 			break;
+ 		}
+ 
+-		udelay(5000);
++		msleep(5);
+ 	}
+ 
+ 	if (result == ACT_FAILED) {
 -- 
-	Ansuel
+2.34.1
+
