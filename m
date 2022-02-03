@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48832C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:31:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 114DAC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:31:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354443AbiBCUbY (ORCPT
+        id S1353641AbiBCUb3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:31:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57510 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354211AbiBCUaw (ORCPT
+        Thu, 3 Feb 2022 15:31:29 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:33984 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354245AbiBCUa4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 15:30:52 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 038C9C061763;
-        Thu,  3 Feb 2022 12:30:21 -0800 (PST)
+        Thu, 3 Feb 2022 15:30:56 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9740561A8A;
-        Thu,  3 Feb 2022 20:30:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC19CC340E8;
-        Thu,  3 Feb 2022 20:30:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 042E7B835A1;
+        Thu,  3 Feb 2022 20:30:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B055C340E8;
+        Thu,  3 Feb 2022 20:30:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643920220;
-        bh=5aLdZcklCu3DFC/Gykz4dyVw4uYl4546Sw0ES2dxX6U=;
+        s=k20201202; t=1643920253;
+        bh=j1g3Ine8G433kS6IRoLdXKc+ZFe8y8VI1aADr+jnjJo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uCro5z7mq7gAGohmijof7VXHq0a9dKFHyHQ9cfl9J7jahM4mbF1bTtKJ1MA/dx6At
-         oAch6lERs56FYf+FduAk7I3Cbx+suBxpAbGOODMmC1ylrI3WNoKn9ycAXVEIj9dsmY
-         pdewM12wXMqgDgl/c99H9OX6ESisqPeaXgM6kLn+gPMnSUULOMB8nYdd/IHgD22U62
-         JLFyk4GDTkp9pCysB/Wq1QEJYi396qechHllcFQiRlNmkhAah4uFh3GAiAxP2jh1qs
-         DPsunmXRwusoC9N0uQQE2E0/QXtvTTkEX5KVekQHFvEE2+JWrCWi07Bg032bpflJlp
-         ReFURe2M5J/SQ==
+        b=TtRaKFg3nV4aFjc9qEzHHTQZl6UkY8FOvj+/g/wyYG5obORchDfuqkP6RnHW3qraK
+         QpDqcJFTgc6l7Ek+mcpX9Tglpcv3udHkH9FgVuvzVwClgIW7XFUDM1uuUfbuVTdC48
+         rg+DRAz/F9BD67foyKJbS5nFkul0ipsFucGftu2CtXD4sHlxm65bkyFff9Y3/PYORS
+         m/3wmn8ceSbTXtkIDa943OZXNhDAf/MS/xJWBnxZFN659jXtoPeI1LAgQk0kdYUhCY
+         Qo/agNL1dBk4WMjhDsqRDPqIlIkejrtJZXKYpzYfwT6XILFG5doCn4dYU2g+lMf8TE
+         acCSnYl2/vG8Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Raymond Jay Golo <rjgolo@gmail.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Sasha Levin <sashal@kernel.org>,
-        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
-        tzimmermann@suse.de, airlied@linux.ie, daniel@ffwll.ch,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.16 20/52] drm: panel-orientation-quirks: Add quirk for the 1Netbook OneXPlayer
-Date:   Thu,  3 Feb 2022 15:29:14 -0500
-Message-Id: <20220203202947.2304-20-sashal@kernel.org>
+Cc:     Anshuman Khandual <anshuman.khandual@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki Poulose <suzuki.poulose@arm.com>,
+        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Sasha Levin <sashal@kernel.org>, corbet@lwn.net,
+        mark.rutland@arm.com, rwiley@nvidia.com, linux-doc@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 25/52] arm64: errata: Update ARM64_ERRATUM_[2119858|2224489] with Cortex-X2 ranges
+Date:   Thu,  3 Feb 2022 15:29:19 -0500
+Message-Id: <20220203202947.2304-25-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220203202947.2304-1-sashal@kernel.org>
 References: <20220203202947.2304-1-sashal@kernel.org>
@@ -55,51 +54,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Raymond Jay Golo <rjgolo@gmail.com>
+From: Anshuman Khandual <anshuman.khandual@arm.com>
 
-[ Upstream commit d3cbc6e323c9299d10c8d2e4127c77c7d05d07b1 ]
+[ Upstream commit eb30d838a44c9e59a2a106884f536119859c7257 ]
 
-The 1Netbook OneXPlayer uses a panel which has been mounted
-90 degrees rotated. Add a quirk for this.
+Errata ARM64_ERRATUM_[2119858|2224489] also affect some Cortex-X2 ranges as
+well. Lets update these errata definition and detection to accommodate all
+new Cortex-X2 based cpu MIDR ranges.
 
-Signed-off-by: Raymond Jay Golo <rjgolo@gmail.com>
-Signed-off-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220113000619.90988-1-rjgolo@gmail.com
+Cc: Will Deacon <will@kernel.org>
+Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
+Cc: Suzuki Poulose <suzuki.poulose@arm.com>
+Cc: coresight@lists.linaro.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+Reviewed-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+Link: https://lore.kernel.org/r/1642994138-25887-3-git-send-email-anshuman.khandual@arm.com
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/drm_panel_orientation_quirks.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ Documentation/arm64/silicon-errata.rst |  4 ++++
+ arch/arm64/Kconfig                     | 12 ++++++------
+ arch/arm64/kernel/cpu_errata.c         |  2 ++
+ 3 files changed, 12 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/gpu/drm/drm_panel_orientation_quirks.c b/drivers/gpu/drm/drm_panel_orientation_quirks.c
-index 042bb80383c93..b910978d3e480 100644
---- a/drivers/gpu/drm/drm_panel_orientation_quirks.c
-+++ b/drivers/gpu/drm/drm_panel_orientation_quirks.c
-@@ -115,6 +115,12 @@ static const struct drm_dmi_panel_orientation_data lcd1280x1920_rightside_up = {
- 	.orientation = DRM_MODE_PANEL_ORIENTATION_RIGHT_UP,
- };
+diff --git a/Documentation/arm64/silicon-errata.rst b/Documentation/arm64/silicon-errata.rst
+index 5342e895fb604..8789c79310bbd 100644
+--- a/Documentation/arm64/silicon-errata.rst
++++ b/Documentation/arm64/silicon-errata.rst
+@@ -98,6 +98,10 @@ stable kernels.
+ +----------------+-----------------+-----------------+-----------------------------+
+ | ARM            | Cortex-A710     | #2224489        | ARM64_ERRATUM_2224489       |
+ +----------------+-----------------+-----------------+-----------------------------+
++| ARM            | Cortex-X2       | #2119858        | ARM64_ERRATUM_2119858       |
+++----------------+-----------------+-----------------+-----------------------------+
++| ARM            | Cortex-X2       | #2224489        | ARM64_ERRATUM_2224489       |
+++----------------+-----------------+-----------------+-----------------------------+
+ | ARM            | Neoverse-N1     | #1188873,1418040| ARM64_ERRATUM_1418040       |
+ +----------------+-----------------+-----------------+-----------------------------+
+ | ARM            | Neoverse-N1     | #1349291        | N/A                         |
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index c4207cf9bb17f..d8046c832225c 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -671,14 +671,14 @@ config ARM64_WORKAROUND_TRBE_OVERWRITE_FILL_MODE
+ 	bool
  
-+static const struct drm_dmi_panel_orientation_data lcd1600x2560_leftside_up = {
-+	.width = 1600,
-+	.height = 2560,
-+	.orientation = DRM_MODE_PANEL_ORIENTATION_LEFT_UP,
-+};
-+
- static const struct dmi_system_id orientation_data[] = {
- 	{	/* Acer One 10 (S1003) */
- 		.matches = {
-@@ -275,6 +281,12 @@ static const struct dmi_system_id orientation_data[] = {
- 		  DMI_EXACT_MATCH(DMI_PRODUCT_VERSION, "Default string"),
- 		},
- 		.driver_data = (void *)&onegx1_pro,
-+	}, {	/* OneXPlayer */
-+		.matches = {
-+		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "ONE-NETBOOK TECHNOLOGY CO., LTD."),
-+		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "ONE XPLAYER"),
-+		},
-+		.driver_data = (void *)&lcd1600x2560_leftside_up,
- 	}, {	/* Samsung GalaxyBook 10.6 */
- 		.matches = {
- 		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "SAMSUNG ELECTRONICS CO., LTD."),
+ config ARM64_ERRATUM_2119858
+-	bool "Cortex-A710: 2119858: workaround TRBE overwriting trace data in FILL mode"
++	bool "Cortex-A710/X2: 2119858: workaround TRBE overwriting trace data in FILL mode"
+ 	default y
+ 	depends on CORESIGHT_TRBE
+ 	select ARM64_WORKAROUND_TRBE_OVERWRITE_FILL_MODE
+ 	help
+-	  This option adds the workaround for ARM Cortex-A710 erratum 2119858.
++	  This option adds the workaround for ARM Cortex-A710/X2 erratum 2119858.
+ 
+-	  Affected Cortex-A710 cores could overwrite up to 3 cache lines of trace
++	  Affected Cortex-A710/X2 cores could overwrite up to 3 cache lines of trace
+ 	  data at the base of the buffer (pointed to by TRBASER_EL1) in FILL mode in
+ 	  the event of a WRAP event.
+ 
+@@ -761,14 +761,14 @@ config ARM64_ERRATUM_2253138
+ 	  If unsure, say Y.
+ 
+ config ARM64_ERRATUM_2224489
+-	bool "Cortex-A710: 2224489: workaround TRBE writing to address out-of-range"
++	bool "Cortex-A710/X2: 2224489: workaround TRBE writing to address out-of-range"
+ 	depends on CORESIGHT_TRBE
+ 	default y
+ 	select ARM64_WORKAROUND_TRBE_WRITE_OUT_OF_RANGE
+ 	help
+-	  This option adds the workaround for ARM Cortex-A710 erratum 2224489.
++	  This option adds the workaround for ARM Cortex-A710/X2 erratum 2224489.
+ 
+-	  Affected Cortex-A710 cores might write to an out-of-range address, not reserved
++	  Affected Cortex-A710/X2 cores might write to an out-of-range address, not reserved
+ 	  for TRBE. Under some conditions, the TRBE might generate a write to the next
+ 	  virtually addressed page following the last page of the TRBE address space
+ 	  (i.e., the TRBLIMITR_EL1.LIMIT), instead of wrapping around to the base.
+diff --git a/arch/arm64/kernel/cpu_errata.c b/arch/arm64/kernel/cpu_errata.c
+index 9e1c1aef9ebd6..29cc062a4153c 100644
+--- a/arch/arm64/kernel/cpu_errata.c
++++ b/arch/arm64/kernel/cpu_errata.c
+@@ -347,6 +347,7 @@ static const struct midr_range trbe_overwrite_fill_mode_cpus[] = {
+ #endif
+ #ifdef CONFIG_ARM64_ERRATUM_2119858
+ 	MIDR_ALL_VERSIONS(MIDR_CORTEX_A710),
++	MIDR_RANGE(MIDR_CORTEX_X2, 0, 0, 2, 0),
+ #endif
+ 	{},
+ };
+@@ -371,6 +372,7 @@ static struct midr_range trbe_write_out_of_range_cpus[] = {
+ #endif
+ #ifdef CONFIG_ARM64_ERRATUM_2224489
+ 	MIDR_ALL_VERSIONS(MIDR_CORTEX_A710),
++	MIDR_RANGE(MIDR_CORTEX_X2, 0, 0, 2, 0),
+ #endif
+ 	{},
+ };
 -- 
 2.34.1
 
