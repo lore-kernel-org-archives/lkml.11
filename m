@@ -2,22 +2,22 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F684C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 12:06:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C90B7C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 12:06:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350456AbiBCMGl (ORCPT
+        id S1350454AbiBCMGp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 07:06:41 -0500
-Received: from foss.arm.com ([217.140.110.172]:42562 "EHLO foss.arm.com"
+        Thu, 3 Feb 2022 07:06:45 -0500
+Received: from foss.arm.com ([217.140.110.172]:42592 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1350475AbiBCMGb (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 07:06:31 -0500
+        id S1350462AbiBCMGg (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 3 Feb 2022 07:06:36 -0500
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D66341396;
-        Thu,  3 Feb 2022 04:06:30 -0800 (PST)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 11DE41396;
+        Thu,  3 Feb 2022 04:06:36 -0800 (PST)
 Received: from e121896.arm.com (unknown [10.57.13.234])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 5A8C83F774;
-        Thu,  3 Feb 2022 04:06:29 -0800 (PST)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 89BC23F774;
+        Thu,  3 Feb 2022 04:06:34 -0800 (PST)
 From:   James Clark <james.clark@arm.com>
 To:     suzuki.poulose@arm.com, mathieu.poirier@linaro.org,
         coresight@lists.linaro.org
@@ -25,9 +25,9 @@ Cc:     leo.yan@linaro.com, mike.leach@linaro.org,
         James Clark <james.clark@arm.com>,
         Leo Yan <leo.yan@linaro.org>,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 08/15] coresight: Make ETM4x TRCSTALLCTLR register accesses consistent with sysreg.h
-Date:   Thu,  3 Feb 2022 12:05:56 +0000
-Message-Id: <20220203120604.128396-9-james.clark@arm.com>
+Subject: [PATCH v2 10/15] coresight: Make ETM3x ETMTECR1 register accesses consistent with sysreg.h
+Date:   Thu,  3 Feb 2022 12:05:58 +0000
+Message-Id: <20220203120604.128396-11-james.clark@arm.com>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20220203120604.128396-1-james.clark@arm.com>
 References: <20220203120604.128396-1-james.clark@arm.com>
@@ -42,58 +42,36 @@ binary produced by gcc-11.
 
 Signed-off-by: James Clark <james.clark@arm.com>
 ---
- drivers/hwtracing/coresight/coresight-etm4x-sysfs.c | 12 ++++++------
- drivers/hwtracing/coresight/coresight-etm4x.h       |  4 ++++
- 2 files changed, 10 insertions(+), 6 deletions(-)
+ drivers/hwtracing/coresight/coresight-etm3x-core.c  | 2 +-
+ drivers/hwtracing/coresight/coresight-etm3x-sysfs.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
-index cfa6f72a1e39..d808eeae8b07 100644
---- a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
-+++ b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
-@@ -397,22 +397,22 @@ static ssize_t mode_store(struct device *dev,
+diff --git a/drivers/hwtracing/coresight/coresight-etm3x-core.c b/drivers/hwtracing/coresight/coresight-etm3x-core.c
+index cf64ce73a741..35e4bdee848c 100644
+--- a/drivers/hwtracing/coresight/coresight-etm3x-core.c
++++ b/drivers/hwtracing/coresight/coresight-etm3x-core.c
+@@ -204,7 +204,7 @@ void etm_set_default(struct etm_config *config)
+ 	 *  set all bits in register 0x007, the ETMTECR2, to 0
+ 	 *  set register 0x008, the ETMTEEVR, to 0x6F (TRUE).
+ 	 */
+-	config->enable_ctrl1 = BIT(24);
++	config->enable_ctrl1 = ETMTECR1_INC_EXC;
+ 	config->enable_ctrl2 = 0x0;
+ 	config->enable_event = ETM_HARD_WIRE_RES_A;
  
- 	/* bit[8], Instruction stall bit */
- 	if ((config->mode & ETM_MODE_ISTALL_EN) && (drvdata->stallctl == true))
--		config->stall_ctrl |= BIT(8);
-+		config->stall_ctrl |= TRCSTALLCTLR_ISTALL;
- 	else
--		config->stall_ctrl &= ~BIT(8);
-+		config->stall_ctrl &= ~TRCSTALLCTLR_ISTALL;
+diff --git a/drivers/hwtracing/coresight/coresight-etm3x-sysfs.c b/drivers/hwtracing/coresight/coresight-etm3x-sysfs.c
+index e8c7649f123e..68fcbf4ce7a8 100644
+--- a/drivers/hwtracing/coresight/coresight-etm3x-sysfs.c
++++ b/drivers/hwtracing/coresight/coresight-etm3x-sysfs.c
+@@ -474,7 +474,7 @@ static ssize_t addr_start_store(struct device *dev,
+ 	config->addr_val[idx] = val;
+ 	config->addr_type[idx] = ETM_ADDR_TYPE_START;
+ 	config->startstop_ctrl |= (1 << idx);
+-	config->enable_ctrl1 |= BIT(25);
++	config->enable_ctrl1 |= ETMTECR1_START_STOP;
+ 	spin_unlock(&drvdata->spinlock);
  
- 	/* bit[10], Prioritize instruction trace bit */
- 	if (config->mode & ETM_MODE_INSTPRIO)
--		config->stall_ctrl |= BIT(10);
-+		config->stall_ctrl |= TRCSTALLCTLR_INSTPRIORITY;
- 	else
--		config->stall_ctrl &= ~BIT(10);
-+		config->stall_ctrl &= ~TRCSTALLCTLR_INSTPRIORITY;
- 
- 	/* bit[13], Trace overflow prevention bit */
- 	if ((config->mode & ETM_MODE_NOOVERFLOW) &&
- 		(drvdata->nooverflow == true))
--		config->stall_ctrl |= BIT(13);
-+		config->stall_ctrl |= TRCSTALLCTLR_NOOVERFLOW;
- 	else
--		config->stall_ctrl &= ~BIT(13);
-+		config->stall_ctrl &= ~TRCSTALLCTLR_NOOVERFLOW;
- 
- 	/* bit[9] Start/stop logic control bit */
- 	if (config->mode & ETM_MODE_VIEWINST_STARTSTOP)
-diff --git a/drivers/hwtracing/coresight/coresight-etm4x.h b/drivers/hwtracing/coresight/coresight-etm4x.h
-index eb72b81bbf85..e37393934e0d 100644
---- a/drivers/hwtracing/coresight/coresight-etm4x.h
-+++ b/drivers/hwtracing/coresight/coresight-etm4x.h
-@@ -220,6 +220,10 @@
- #define TRCEVENTCTL1R_ATB			BIT(11)
- #define TRCEVENTCTL1R_LPOVERRIDE		BIT(12)
- 
-+#define TRCSTALLCTLR_ISTALL			BIT(8)
-+#define TRCSTALLCTLR_INSTPRIORITY		BIT(10)
-+#define TRCSTALLCTLR_NOOVERFLOW			BIT(13)
-+
- /*
-  * System instructions to access ETM registers.
-  * See ETMv4.4 spec ARM IHI0064F section 4.3.6 System instructions
+ 	return size;
 -- 
 2.28.0
 
