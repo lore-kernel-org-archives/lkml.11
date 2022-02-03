@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DDC5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:37:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 281D9C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:37:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355206AbiBCUhO (ORCPT
+        id S1354646AbiBCUhR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:37:14 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:37364 "EHLO
+        Thu, 3 Feb 2022 15:37:17 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:36244 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354104AbiBCUfA (ORCPT
+        with ESMTP id S1355160AbiBCUfE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 15:35:00 -0500
+        Thu, 3 Feb 2022 15:35:04 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 85F3BB835AF;
-        Thu,  3 Feb 2022 20:34:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54770C340E8;
-        Thu,  3 Feb 2022 20:34:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AEA89B8354B;
+        Thu,  3 Feb 2022 20:35:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3ED4DC340E8;
+        Thu,  3 Feb 2022 20:35:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643920498;
-        bh=l/brSncTN6vdt2U5TbNasSHodgL5NGbj4Cmm4cRhARM=;
+        s=k20201202; t=1643920501;
+        bh=HPNkYZ6HbCou+CsnDqdrKXygkWm/hAwXXOrhmqblAW4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EexiStfLG0g87l54dljnt1y85gFNH7zvRnabOUKpz8HT9WYcAiOir2dpsYmM6L9Uh
-         iNc1jwP7MYQv+fm/n76S29CjsVJEpVGnFk3sBd7QrePtJAIsl40op6GSqO6l+xEOLO
-         ZKRTepvNQjsjsVnv5fInq4XbVpyri2XzGoexzgl7o0/hqm+BAZ2+BmJp+sp/HQ08qo
-         BS21CSwCHorKVz43SL9/prvjWCV7lp4YAZDjr0NBiqD2Fv3YSd4zvDxV60V9nvzMi4
-         O8tCJynG/qXbSFSn3aYMbxupZrm+lSUgYT05T/QtineBcZxIud84HZSgstkSCP1Fz/
-         9tdlA0vK7Wigg==
+        b=Q/3n+T5frMNhAba4GHVUdoMKQwQTx+fmYqxfTiUen4uwm94xqIxG8PKu5AZKwAgUJ
+         RyS1oJoxr8Y2gmFd3PCQisp8Icj357FrWQmL82PGB0B04IBtQIqcNphc3d01JXtYCe
+         niAT4AAZZUFzu8pW3fgLmdwvm/49JcYr+3Pfpp7xOSMAaUPknaousE0O5hSYkS52OQ
+         x9e4yvDbNrUszraF12UgENP+MFjfc9g2yXysR/dO0Prqsla7eay0ABJbkqLC4oyZZI
+         bjV8vFlM4n+Gnfcthj09KmtxdTW7Neww4a5pqrRhFHHEmtuIRHYLg/A2fAxioGuRhB
+         sgKpYsN8rr7HQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Olga Kornievskaia <kolga@netapp.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
-        Sasha Levin <sashal@kernel.org>,
-        trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
-        linux-nfs@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 07/25] NFSv4 expose nfs_parse_server_name function
-Date:   Thu,  3 Feb 2022 15:34:28 -0500
-Message-Id: <20220203203447.3570-7-sashal@kernel.org>
+Cc:     Andi Kleen <ak@linux.intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Sasha Levin <sashal@kernel.org>, mingo@redhat.com,
+        acme@kernel.org, tglx@linutronix.de, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org,
+        linux-perf-users@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 09/25] x86/perf: Avoid warning for Arch LBR without XSAVE
+Date:   Thu,  3 Feb 2022 15:34:30 -0500
+Message-Id: <20220203203447.3570-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220203203447.3570-1-sashal@kernel.org>
 References: <20220203203447.3570-1-sashal@kernel.org>
@@ -51,48 +52,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Olga Kornievskaia <kolga@netapp.com>
+From: Andi Kleen <ak@linux.intel.com>
 
-[ Upstream commit f5b27cc6761e27ee6387a24df1a99ca77b360fea ]
+[ Upstream commit 8c16dc047b5dd8f7b3bf4584fa75733ea0dde7dc ]
 
-Make nfs_parse_server_name available outside of nfs4namespace.c.
+Some hypervisors support Arch LBR, but without the LBR XSAVE support.
+The current Arch LBR init code prints a warning when the xsave size (0) is
+unexpected. Avoid printing the warning for the "no LBR XSAVE" case.
 
-Signed-off-by: Olga Kornievskaia <kolga@netapp.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20211215204029.150686-1-ak@linux.intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/nfs4_fs.h       | 3 ++-
- fs/nfs/nfs4namespace.c | 4 ++--
- 2 files changed, 4 insertions(+), 3 deletions(-)
+ arch/x86/events/intel/lbr.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/fs/nfs/nfs4_fs.h b/fs/nfs/nfs4_fs.h
-index 3e344bec3647b..de71cf89a24ee 100644
---- a/fs/nfs/nfs4_fs.h
-+++ b/fs/nfs/nfs4_fs.h
-@@ -281,7 +281,8 @@ struct rpc_clnt *nfs4_negotiate_security(struct rpc_clnt *, struct inode *,
- int nfs4_submount(struct fs_context *, struct nfs_server *);
- int nfs4_replace_transport(struct nfs_server *server,
- 				const struct nfs4_fs_locations *locations);
--
-+size_t nfs_parse_server_name(char *string, size_t len, struct sockaddr *sa,
-+			     size_t salen, struct net *net);
- /* nfs4proc.c */
- extern int nfs4_handle_exception(struct nfs_server *, int, struct nfs4_exception *);
- extern int nfs4_async_handle_error(struct rpc_task *task,
-diff --git a/fs/nfs/nfs4namespace.c b/fs/nfs/nfs4namespace.c
-index 873342308dc0d..f1ed4f60a7f33 100644
---- a/fs/nfs/nfs4namespace.c
-+++ b/fs/nfs/nfs4namespace.c
-@@ -164,8 +164,8 @@ static int nfs4_validate_fspath(struct dentry *dentry,
- 	return 0;
- }
- 
--static size_t nfs_parse_server_name(char *string, size_t len,
--		struct sockaddr *sa, size_t salen, struct net *net)
-+size_t nfs_parse_server_name(char *string, size_t len, struct sockaddr *sa,
-+			     size_t salen, struct net *net)
- {
- 	ssize_t ret;
+diff --git a/arch/x86/events/intel/lbr.c b/arch/x86/events/intel/lbr.c
+index 9c1a013d56822..bd8516e6c353c 100644
+--- a/arch/x86/events/intel/lbr.c
++++ b/arch/x86/events/intel/lbr.c
+@@ -1734,6 +1734,9 @@ static bool is_arch_lbr_xsave_available(void)
+ 	 * Check the LBR state with the corresponding software structure.
+ 	 * Disable LBR XSAVES support if the size doesn't match.
+ 	 */
++	if (xfeature_size(XFEATURE_LBR) == 0)
++		return false;
++
+ 	if (WARN_ON(xfeature_size(XFEATURE_LBR) != get_lbr_state_size()))
+ 		return false;
  
 -- 
 2.34.1
