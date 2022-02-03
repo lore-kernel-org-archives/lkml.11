@@ -2,110 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAB9EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:33:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D092AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:33:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354811AbiBCUdN (ORCPT
+        id S1354832AbiBCUdP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:33:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57688 "EHLO
+        Thu, 3 Feb 2022 15:33:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354479AbiBCUbm (ORCPT
+        with ESMTP id S1354538AbiBCUbs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 15:31:42 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A070DC061759;
-        Thu,  3 Feb 2022 12:31:11 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id ee12so7718849edb.8;
-        Thu, 03 Feb 2022 12:31:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=x9kRaOBtaHkhPekFjPvc1KlEAjAvRZ6bAcdpwAt4N2E=;
-        b=dLg1Cx/6SVsAqaFNvUz6VEy5UXo8GPtQKVYiFMmPZVTEtZoJJUKML81Y0qmwo6nzH1
-         /a8cdHZrsKXKgwKy3ED4CGw3ZANA2nkkKE7co6fJFrk6bb2cLBdE3I8t6hh2B2a4/n0m
-         cq//aX/hSDtquNG17KjzN4U8dP/B675TMT2X+OrvCtmyTrjJtffRd7nLHT2sU1axjCty
-         X1L50FkY8n1dBU1tl8i90/skMISorhHJT++kvCQrgx3ZYJQ8JGOLFikwfieLZXsXpurq
-         6aJsi1MbdfSqrwH0ftQddjH+WFo/M2vL6KL4X1BEi0lgTaGQT+aE1mAGii2DE9qxiIp8
-         olJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=x9kRaOBtaHkhPekFjPvc1KlEAjAvRZ6bAcdpwAt4N2E=;
-        b=5hXSYCkCsHiRAVcP3I/vR5pT/O1TuElahqdeSfRQQpNRQ6njnvwf3L7ta+fdfQULqD
-         F76JDm2OYdgR62LWIyHunvn4UWSNEZBEoGDny0g64fgB2SIALo6+TVkdsREoCrAtl9Py
-         pIOaBS3VXDPO2uiQ+PAQimB+DrHze85Rtm9EyzC+Zx/rJcm32wnXYNj9W3v7OJh0NV2N
-         V1SAFgHrikk3OCPAKS8Vl4B5wdAev132WDHNRACqoxC5ng9/lr1WKZDq9gsFGfRLk10n
-         DE+gbsjSyedmxeOWEW27BD0LAx40MX0HeVffkdfUymIhm/17fGSQKGjJ1NfaYosgW2/i
-         CccA==
-X-Gm-Message-State: AOAM531IMnTTXNlqJjPSqAFb+2CPFjvyGeiZFqNp8ifuifCutfasmQ7M
-        JZ1Ur19xTvZ0N1bptH+coIk=
-X-Google-Smtp-Source: ABdhPJyIpwS5FkWLDCaYhhE2Um6Y5E2Bl+Q1S01iKeEgMWY2iFpTpHVKSGlntNR1X/fLDOpRDU9SxA==
-X-Received: by 2002:aa7:de91:: with SMTP id j17mr37735684edv.396.1643920270055;
-        Thu, 03 Feb 2022 12:31:10 -0800 (PST)
-Received: from adroid (027-177-184-091.ip-addr.vsenet.de. [91.184.177.27])
-        by smtp.gmail.com with ESMTPSA id c25sm4634498edu.103.2022.02.03.12.31.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Feb 2022 12:31:09 -0800 (PST)
-From:   =?UTF-8?q?Martin=20J=C3=BCcker?= <martin.juecker@gmail.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Russell King <linux@armlinux.org.uk>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Martin=20J=C3=BCcker?= <martin.juecker@gmail.com>
-Subject: [PATCH v2 2/2] ARM: defconfig: add SMB347 charger driver for p4note
-Date:   Thu,  3 Feb 2022 21:29:48 +0100
-Message-Id: <4f1f6a4f8200855d07f3faed80ec5cc320e40941.1643919230.git.martin.juecker@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <d7f7b0f87a18b5cc44ba97390461c15469439829.1643919230.git.martin.juecker@gmail.com>
-References: <d7f7b0f87a18b5cc44ba97390461c15469439829.1643919230.git.martin.juecker@gmail.com>
+        Thu, 3 Feb 2022 15:31:48 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B9DFC061795;
+        Thu,  3 Feb 2022 12:31:42 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6033EB835AA;
+        Thu,  3 Feb 2022 20:31:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EEFFC340E8;
+        Thu,  3 Feb 2022 20:31:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643920300;
+        bh=gr4hxJsFwjXa6Hnqo/BSb8MBYbytSgyQNkmjcvloyLA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=iAH5XvKpopFp6Rt3Sn2AqDNPfk/PoAsa/pNm4pD3Mt1WkiNVxPetMRlihhu66BSCT
+         cbwPu8EWdbHnh7AevW2jCQbqFQYqeZMv1nwZCEYIGORhIoWjMCsgO21ThhAcjmv3RO
+         wkwOsJhypF2Z0WepfaJiB73y7/uRVId1pAFmt9S1+H03a2ikoUbNwhb2ZtmqqQNy5C
+         lhPL/Zrdw6G966GxUQCfNKeHWmn3WDsoXhLFqz97R41FDS6erWjmDWBaLkUtzZ1ab3
+         A+7vroCi1jj8oMNqrYdWF32ZVkLxQ01cOpogrDJRB3L/2BEbtg3R4BS0LR44KTcN6a
+         ohZrn7u8PvAnw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     James Clark <james.clark@arm.com>,
+        Ruben Ayrapetyan <Ruben.Ayrapetyan@arm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Sasha Levin <sashal@kernel.org>, mingo@redhat.com,
+        acme@kernel.org, linux-perf-users@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 42/52] perf: Always wake the parent event
+Date:   Thu,  3 Feb 2022 15:29:36 -0500
+Message-Id: <20220203202947.2304-42-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220203202947.2304-1-sashal@kernel.org>
+References: <20220203202947.2304-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Summit SMB347 charger is part of the p4note family of devices,
-enable the driver in exynos and multi_v7 defconfigs.
+From: James Clark <james.clark@arm.com>
 
-Signed-off-by: Martin Jücker <martin.juecker@gmail.com>
----
-Changes in v2:
-  - adjusted wording to decouple the patch from the dt changes
----
- arch/arm/configs/exynos_defconfig   | 1 +
- arch/arm/configs/multi_v7_defconfig | 1 +
- 2 files changed, 2 insertions(+)
+[ Upstream commit 961c39121759ad09a89598ec4ccdd34ae0468a19 ]
 
-diff --git a/arch/arm/configs/exynos_defconfig b/arch/arm/configs/exynos_defconfig
-index c58877cfdc9d..9d3191de96b6 100644
---- a/arch/arm/configs/exynos_defconfig
-+++ b/arch/arm/configs/exynos_defconfig
-@@ -159,6 +159,7 @@ CONFIG_CHARGER_MAX14577=y
- CONFIG_CHARGER_MAX77693=y
- CONFIG_CHARGER_MAX8997=y
- CONFIG_CHARGER_MAX8998=y
-+CONFIG_CHARGER_SMB347=y
- CONFIG_CHARGER_TPS65090=y
- CONFIG_SENSORS_LM90=y
- CONFIG_SENSORS_NTC_THERMISTOR=y
-diff --git a/arch/arm/configs/multi_v7_defconfig b/arch/arm/configs/multi_v7_defconfig
-index 1c2c3e9f0e05..bfbcb57e2083 100644
---- a/arch/arm/configs/multi_v7_defconfig
-+++ b/arch/arm/configs/multi_v7_defconfig
-@@ -510,6 +510,7 @@ CONFIG_CHARGER_MAX14577=m
- CONFIG_CHARGER_MAX77693=m
- CONFIG_CHARGER_MAX8997=m
- CONFIG_CHARGER_MAX8998=m
-+CONFIG_CHARGER_SMB347=m
- CONFIG_CHARGER_TPS65090=y
- CONFIG_SENSORS_ARM_SCMI=y
- CONFIG_SENSORS_ASPEED=m
+When using per-process mode and event inheritance is set to true,
+forked processes will create a new perf events via inherit_event() ->
+perf_event_alloc(). But these events will not have ring buffers
+assigned to them. Any call to wakeup will be dropped if it's called on
+an event with no ring buffer assigned because that's the object that
+holds the wakeup list.
+
+If the child event is disabled due to a call to
+perf_aux_output_begin() or perf_aux_output_end(), the wakeup is
+dropped leaving userspace hanging forever on the poll.
+
+Normally the event is explicitly re-enabled by userspace after it
+wakes up to read the aux data, but in this case it does not get woken
+up so the event remains disabled.
+
+This can be reproduced when using Arm SPE and 'stress' which forks once
+before running the workload. By looking at the list of aux buffers read,
+it's apparent that they stop after the fork:
+
+  perf record -e arm_spe// -vvv -- stress -c 1
+
+With this patch applied they continue to be printed. This behaviour
+doesn't happen when using systemwide or per-cpu mode.
+
+Reported-by: Ruben Ayrapetyan <Ruben.Ayrapetyan@arm.com>
+Signed-off-by: James Clark <james.clark@arm.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20211206113840.130802-2-james.clark@arm.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ kernel/events/core.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/events/core.c b/kernel/events/core.c
+index 63f0414666438..0b0655f4d0126 100644
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -5934,6 +5934,8 @@ static void ring_buffer_attach(struct perf_event *event,
+ 	struct perf_buffer *old_rb = NULL;
+ 	unsigned long flags;
+ 
++	WARN_ON_ONCE(event->parent);
++
+ 	if (event->rb) {
+ 		/*
+ 		 * Should be impossible, we set this when removing
+@@ -5991,6 +5993,9 @@ static void ring_buffer_wakeup(struct perf_event *event)
+ {
+ 	struct perf_buffer *rb;
+ 
++	if (event->parent)
++		event = event->parent;
++
+ 	rcu_read_lock();
+ 	rb = rcu_dereference(event->rb);
+ 	if (rb) {
+@@ -6004,6 +6009,9 @@ struct perf_buffer *ring_buffer_get(struct perf_event *event)
+ {
+ 	struct perf_buffer *rb;
+ 
++	if (event->parent)
++		event = event->parent;
++
+ 	rcu_read_lock();
+ 	rb = rcu_dereference(event->rb);
+ 	if (rb) {
+@@ -6703,7 +6711,7 @@ static unsigned long perf_prepare_sample_aux(struct perf_event *event,
+ 	if (WARN_ON_ONCE(READ_ONCE(sampler->oncpu) != smp_processor_id()))
+ 		goto out;
+ 
+-	rb = ring_buffer_get(sampler->parent ? sampler->parent : sampler);
++	rb = ring_buffer_get(sampler);
+ 	if (!rb)
+ 		goto out;
+ 
+@@ -6769,7 +6777,7 @@ static void perf_aux_sample_output(struct perf_event *event,
+ 	if (WARN_ON_ONCE(!sampler || !data->aux_size))
+ 		return;
+ 
+-	rb = ring_buffer_get(sampler->parent ? sampler->parent : sampler);
++	rb = ring_buffer_get(sampler);
+ 	if (!rb)
+ 		return;
+ 
 -- 
-2.25.1
+2.34.1
 
