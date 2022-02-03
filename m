@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FAF3C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DFB4C43219
 	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:36:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355411AbiBCUfv (ORCPT
+        id S1355496AbiBCUfz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:35:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58108 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354476AbiBCUdo (ORCPT
+        Thu, 3 Feb 2022 15:35:55 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:39656 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354466AbiBCUdg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 15:33:44 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 632ECC0617BC;
-        Thu,  3 Feb 2022 12:33:16 -0800 (PST)
+        Thu, 3 Feb 2022 15:33:36 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0150D61B05;
-        Thu,  3 Feb 2022 20:33:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80802C340F0;
-        Thu,  3 Feb 2022 20:33:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 76C3061A56;
+        Thu,  3 Feb 2022 20:33:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05EE6C340E8;
+        Thu,  3 Feb 2022 20:33:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643920395;
-        bh=Gp4lZMUWtUqof2YOT21LQIdrUUR7ioeSZppaIqJ5ESE=;
+        s=k20201202; t=1643920415;
+        bh=/T57QsHEXzWRyz9ngAgfSuXzq9rnlQ9xNPWF7J/q3zk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EMdY4PkJxRwh1HG8d9SdN7Ecsl84r5tkDUYY7LNrqEd+ImWXaITmCSg4falhGWf/L
-         7LxkQ76G4PJ5h1WbXFTSKnDAe9jqd5zjYLgGrsUtMX/ZybhYJxBm2eWZA40Yto4gUR
-         s3h4ho4OpX4kXnQGHZKOGAp+fv5J3VPz2uxWxr1PfmJWwhC1bLb6kyIVVYjxQC5ubc
-         PMZ2xXXUtEQTep7Oh7qrS162HGQ8Du7r7UI9X2Yjkc+XgKXUvJKXvWIWZd3haBOpY0
-         lGEdZES6xZGrKyf4My94w53pSP+8gz4pkzkEhCB04Bl0Bx+X3EWKI8IyMl/t2kvAY5
-         mpdD1q6WE9F7A==
+        b=KBrtZX0mfbUpDovOGXd6uVvXKLe3P2g8AFZgAPQKqYmuXSrO9Iwutni1GcHIfE/qK
+         DqyZpYRNQbUc9sdX3rc7tibq/I/lEpC0UwKbNRr0DcnHOMlttDQ/6zAh359AwaLRFE
+         RS54UE6eaH5z9YqvzfrCO37CmlF017jbj8Nqow0U7j50fpbjmqjitx3F/nWprsF3pG
+         KxQORtL0qXPY/7T3q7IcT+M8aKRCXSS4sfY7wxY+/ufQKYEzX8Sn4DEwCeOQheI5OH
+         q5+U0j1/NtYmbwfpSLeJuJkkaAF2Oa/538mqt0Xj/OQjiK7UMXuEz9Np5nM+iMpRiE
+         lwHc7xIFTRgCA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        xuhaifeng <xuhaifeng@oppo.com>, Sasha Levin <sashal@kernel.org>,
-        mingo@redhat.com, juri.lelli@redhat.com, vincent.guittot@linaro.org
-Subject: [PATCH AUTOSEL 5.15 18/41] sched: Avoid double preemption in __cond_resched_*lock*()
-Date:   Thu,  3 Feb 2022 15:32:22 -0500
-Message-Id: <20220203203245.3007-18-sashal@kernel.org>
+Cc:     ZouMingzhe <mingzhe.zou@easystack.cn>,
+        Mike Christie <michael.christie@oracle.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, linux-scsi@vger.kernel.org,
+        target-devel@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 23/41] scsi: target: iscsi: Make sure the np under each tpg is unique
+Date:   Thu,  3 Feb 2022 15:32:27 -0500
+Message-Id: <20220203203245.3007-23-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220203203245.3007-1-sashal@kernel.org>
 References: <20220203203245.3007-1-sashal@kernel.org>
@@ -52,62 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: ZouMingzhe <mingzhe.zou@easystack.cn>
 
-[ Upstream commit 7e406d1ff39b8ee574036418a5043c86723170cf ]
+[ Upstream commit a861790afaa8b6369eee8a88c5d5d73f5799c0c6 ]
 
-For PREEMPT/DYNAMIC_PREEMPT the *_unlock() will already trigger a
-preemption, no point in then calling preempt_schedule_common()
-*again*.
+iscsit_tpg_check_network_portal() has nested for_each loops and is supposed
+to return true when a match is found. However, the tpg loop will still
+continue after existing the tpg_np loop. If this tpg_np is not the last the
+match value will be changed.
 
-Use _cond_resched() instead, since this is a NOP for the preemptible
-configs while it provide a preemption point for the others.
+Break the outer loop after finding a match and make sure the np under each
+tpg is unique.
 
-Reported-by: xuhaifeng <xuhaifeng@oppo.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/YcGnvDEYBwOiV0cR@hirez.programming.kicks-ass.net
+Link: https://lore.kernel.org/r/20220111054742.19582-1-mingzhe.zou@easystack.cn
+Signed-off-by: ZouMingzhe <mingzhe.zou@easystack.cn>
+Reviewed-by: Mike Christie <michael.christie@oracle.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/sched/core.c | 12 +++---------
- 1 file changed, 3 insertions(+), 9 deletions(-)
+ drivers/target/iscsi/iscsi_target_tpg.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 0d12ec7be3017..c2dec6ce98091 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -8199,9 +8199,7 @@ int __cond_resched_lock(spinlock_t *lock)
+diff --git a/drivers/target/iscsi/iscsi_target_tpg.c b/drivers/target/iscsi/iscsi_target_tpg.c
+index 8075f60fd02c3..2d5cf1714ae05 100644
+--- a/drivers/target/iscsi/iscsi_target_tpg.c
++++ b/drivers/target/iscsi/iscsi_target_tpg.c
+@@ -443,6 +443,9 @@ static bool iscsit_tpg_check_network_portal(
+ 				break;
+ 		}
+ 		spin_unlock(&tpg->tpg_np_lock);
++
++		if (match)
++			break;
+ 	}
+ 	spin_unlock(&tiqn->tiqn_tpg_lock);
  
- 	if (spin_needbreak(lock) || resched) {
- 		spin_unlock(lock);
--		if (resched)
--			preempt_schedule_common();
--		else
-+		if (!_cond_resched())
- 			cpu_relax();
- 		ret = 1;
- 		spin_lock(lock);
-@@ -8219,9 +8217,7 @@ int __cond_resched_rwlock_read(rwlock_t *lock)
- 
- 	if (rwlock_needbreak(lock) || resched) {
- 		read_unlock(lock);
--		if (resched)
--			preempt_schedule_common();
--		else
-+		if (!_cond_resched())
- 			cpu_relax();
- 		ret = 1;
- 		read_lock(lock);
-@@ -8239,9 +8235,7 @@ int __cond_resched_rwlock_write(rwlock_t *lock)
- 
- 	if (rwlock_needbreak(lock) || resched) {
- 		write_unlock(lock);
--		if (resched)
--			preempt_schedule_common();
--		else
-+		if (!_cond_resched())
- 			cpu_relax();
- 		ret = 1;
- 		write_lock(lock);
 -- 
 2.34.1
 
