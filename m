@@ -2,134 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46818C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 00:25:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A4FAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 00:25:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348525AbiBCAZM (ORCPT
+        id S1348530AbiBCAZo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 19:25:12 -0500
-Received: from sonic314-27.consmr.mail.ne1.yahoo.com ([66.163.189.153]:35860
-        "EHLO sonic314-27.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239246AbiBCAZL (ORCPT
+        Wed, 2 Feb 2022 19:25:44 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:44379 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239246AbiBCAZn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 19:25:11 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1643847910; bh=ufFIfi+QJcABRY0VK+r+pIW1TjiSDfvy9tEFxMIQ5C8=; h=From:To:Cc:Subject:Date:In-Reply-To:References:From:Subject:Reply-To; b=R1mNa/Q794DYHK1XLg7zJ2HI+IeCme00pxQd7Ph6esvURqteiWhfOBYxwkMcotb7GtyMBiqsbovEbnfsiIO+aCNKhZUhmeYMnC/NSIBX3aOjnDe90jmSzdkamlwSuLRJfiIdVDieQYSdiDRtP50fAJ4MJTYNv8VMPigU125huGTJQgvh5nmbhW75o1A+Fs/M/0ilnSxvXrOSaxUnaCydDFObmTFrjvi+Z8SZ3M9ibH2YfIEYIJzA1z7bxnYoX0UtTaownHWh7w5nFL6CqwHrIIcNQT2wfF08Jj5WDSoQklMw+mM0PQSKO4n+w8l63SO7Ae741aF0YYRblA7aJMu4ig==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1643847910; bh=G5s4dn6DjGEuEutRnfaG5pRwh0unvfXgWtdEkUsCoo+=; h=X-Sonic-MF:From:To:Subject:Date:From:Subject; b=CPE8465Ta6XXIKGEV6XkJY9QXXaBxHynJKey0EF8WPuiD8wbzblHBL9nUjA7p7IkphGJWT4kiw4iTk/XhH47Vz5eVIFR0CKSbCvKZjJXXTSk3agK7olinzhU4zN3PnrfCXR+31JsSYQzplZwVupsib56CECSSXAx38ciIm7mh3YUI8h4PMJkx7/+xXIbhuINe0gh5gGKLSsaTAveOsJFSEE3ob93+1MU7fJlVWinyVbRyfd7fc993QCg3dbGOF0gPxXFKL8xSre4UyqIetfNQSn3oL5f6+H2E9OE6UoDlujjPC+ESPoFSMUbGsXHgi9YW2mGYwpWTRpV09G59q3ikQ==
-X-YMail-OSG: o9wezOAVM1mW_P0992CxGmY8y0GRsMMhQW05q7rvPao01lyxy13HDe25lOCY2fn
- 2qjELBW0htYWCqvVU_KrDkhhFDvu5zQR1hroeqDRikq0fqreVOcns0na7PMEvJ05pJ6jEmVeyTSG
- ArdWj3GdEPm2XXQM_9fTjkNigD5GLxFrYJ0Wzl6.geLJEmZdHa8khsKe15So9K_76x.VnslGJqRy
- 7aa143aYwdWWhcWy0CW1RWDRNUR7uXqO3kcjk1HMIwOXR_cg9R9PakbIsr3yLubl1uPan5KMMjfX
- o1.dTO237IkBvH1X_QlqIIxC8CsXW5fsR07jDv1P5zdUa7mK0uXXOz84Gs4NSF6jcXHcTJTit4rV
- YH.7DeJqfUs3WompJtU6iQ.YhC5pdvV0K9KJwEAyoXqIxXGRVcY3zrQVzPM3mYdkPQwrSizJg9Oe
- gBeCKcu3WFGcSmQYLlAYhKj4Yixo86RMjIX4OsmCN.gcR4tSwdm6oQnNq7Zwip705JSt8rc3Dv4x
- 3oLEzyWq50EieviGDh.xLw__RPA2WEatnXT2AvsqtMRe59Nx2pQW7REt9EOrvvOLsKZT5JatCwIS
- ADrwKPXUWy1kIrQ3pzcRSb7SN954ne8odDJSt8swhgpm8L0_pkQexGoXYoTLCBMpZc4cdJrQyO4y
- VRitT9Xn1FvAHiTPwxQd_PV1tZahPQLBvGPmo4Ec1Usyon8fLqxByQaPaJfpbCMnvH8k5MAS1z9g
- bvJr4k0HcSNHFm5wNjtfd4NDbpsEQua4eA0lgJnqTRZybGFjKhRJFbV_Zqfsj2lpuSowRDlCrqSB
- 6Cr7hmH4ext.z0rz7pONmFA5Yw2rjkJwBQYhQiCvj0tVT2pIKhrfc8TeBhwaCNy.f6oOC5bgtjEC
- bJjbk5S_3JgC5RgedtWdqbfMtb0E5mQmINaYDdk0m8CYmOkGNuB1miAJdpEr8r5fiwAc7i5dvx5M
- iqAqFkZRrjGQG0A.ikJEUsaZ0VCfOjLpsUaLXQcI_14cOmgXX_Avpnzg8NDkK_VaInHE4CmXRS3S
- RQELHS9cC7qTC5t9OH8ZrOrgRlwgXmXyHb9pMIBnaCFE04h4l.VEKpUMasnxl59U.S9ys6Zz0uMe
- 4ZzIH_y3A217.eFqNIFOInmvpZ2jVbxqwnRAXKSNdMoAfxxUUKNxE3Yo2ATJBAZzuHrvKhI.YL_k
- C9YxOQkrVsCgdvyHolcT0jBLn6N0IAMwEjWFeneRneFM6NDH_Esvr.y0SUyPaokxZNtRr5.mQ9dX
- lu4gHeIq8OEVktRuziHDe7.tt_ysvHmBv9kzWesZdK8HPBh7G4p9wfnu699Z7cnHlxA_Pd50e7gD
- AIjl4ei3FM9uc1BAcjku1dbXIQHcVtyJCn21uj4KQg_KhxqJd0oEgwz0tpF_emt4PI_OdOpa6.V1
- 3uHqqtuWExTo_gScuMyMvwf6My_4PsPxj3dCn5nW0HE0og.GnKjaSPCMp0JcPsIv7LBePYz2uAa8
- RSQ.QQA0es32rv2G38YPBL32VDO31Ev9LhJmfCk4q4e8g98m3wPaCJL4cGNtOU_ERhEV_OOAXFQB
- kH7bb7Q8angi61Kpm34AJyNVp12S0rpdyoWKUpzhANrNs256dzepPcs2ZaKtb6HassBefqKiJu9m
- 8wlu.rY24k6jndpnlz8UY_T1iYGmw23y1IW94GrDnAFCP.E5V9ofXctLqL8kXY9YF33nGdFyowMJ
- 1Di3kL5Ve1iQsbQsMiZaOj7gZ2kDnV3VzlgDukBYHdnenWnC1uSFPVDfyoXcC1pBWFLbjLeQO3jI
- 7.hCMdsGo4NpQeHqA0fL0mLl.NxkkscoA7CjoRp8cq49qBL41ePgXVFDJdMQ0xFG8MbQJNqFF6.J
- v0lRERFA.3Sths7vGHcW1TIShtWYHrsQvU.8dZJ9RB_1orfrXfr3sPHcpl2DbTPriWrlt_1KYkV9
- 1RdT4eGULU80634Wvy9R8sTTDYsA2ARSwy7VjTUMEfS3vanmg1OyTBThJfu9WFU1hze72RrsXYY_
- LiFVtPCiyNEh9KUy6rYMXjGo4.vh3hzmHoHXzhTzyh1kIzCggU6Hw198kdEXnFuZnd6rhyAY6qQ8
- DSDnh0oXk5NNKF3hVkaKKbWLLkO0FAn1WSG9jpv6poJwGcuqRp8cENNKIW.TAB4GGUBunFP8njZG
- Niqg_qtxTp7XMHbfDqusFmKevmqDzzcFPSxPzoJoTFWw24btCx805qOA20WcdfzMHhFdHqo6fibq
- RTfDKG9emF2xkvPpqvHjoqOYAyR6dmtmuWRzwVmHafSSV7Hy_jFw-
-X-Sonic-MF: <casey@schaufler-ca.com>
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic314.consmr.mail.ne1.yahoo.com with HTTP; Thu, 3 Feb 2022 00:25:10 +0000
-Received: by kubenode526.mail-prod1.omega.ne1.yahoo.com (VZM Hermes SMTP Server) with ESMTPA ID eabcb31384f559dd1421d5f3a1b09447;
-          Thu, 03 Feb 2022 00:25:10 +0000 (UTC)
-From:   Casey Schaufler <casey@schaufler-ca.com>
-To:     casey.schaufler@intel.com, jmorris@namei.org,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org
-Cc:     casey@schaufler-ca.com, linux-audit@redhat.com,
-        keescook@chromium.org, john.johansen@canonical.com,
-        penguin-kernel@i-love.sakura.ne.jp, paul@paul-moore.com,
-        sds@tycho.nsa.gov, linux-kernel@vger.kernel.org,
-        Stephen Smalley <stephen.smalley.work@gmail.com>
-Subject: [PATCH v32 28/28] AppArmor: Remove the exclusive flag
-Date:   Wed,  2 Feb 2022 15:53:23 -0800
-Message-Id: <20220202235323.23929-29-casey@schaufler-ca.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220202235323.23929-1-casey@schaufler-ca.com>
-References: <20220202235323.23929-1-casey@schaufler-ca.com>
+        Wed, 2 Feb 2022 19:25:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643847943;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=9ZQYqdbCEdIW0rdKYmSkTNvVSn6qBN3RtXQqCV8wMvU=;
+        b=dps7btC5soRI7xF9mQGEQq3w6NzcAOjzuOxQckBLB3iZ4BHO29a2l9raLoseP6iMgnItbe
+        e5DN5QRRUu3Vk7qH+gOvApYRqVPw4DfLg0qRm62IAFhEa17XYpbYRU3f3rl9O6Njn/E2vj
+        heszXzRd+52rpZ2g5xUGhp6myfH5HXU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-519-Vqa5I9KnO1G2j8vtwQWFGg-1; Wed, 02 Feb 2022 19:25:40 -0500
+X-MC-Unique: Vqa5I9KnO1G2j8vtwQWFGg-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C85C81054F97;
+        Thu,  3 Feb 2022 00:25:38 +0000 (UTC)
+Received: from cmirabil.remote.csb (unknown [10.22.8.140])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7C4454EC7F;
+        Thu,  3 Feb 2022 00:25:27 +0000 (UTC)
+From:   Charles Mirabile <cmirabil@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Charles Mirabile <cmirabil@redhat.com>,
+        Serge Schneider <serge@raspberrypi.org>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
+        Mattias Brugger <mbrugger@suse.com>,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, fedora-rpi@googlegroups.com
+Subject: [PATCH 0/6] Raspberry Pi Sense HAT driver
+Date:   Wed,  2 Feb 2022 19:25:15 -0500
+Message-Id: <20220203002521.162878-1-cmirabil@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With the inclusion of the interface LSM process attribute
-mechanism AppArmor no longer needs to be treated as an
-"exclusive" security module. Remove the flag that indicates
-it is exclusive. Remove the stub getpeersec_dgram AppArmor
-hook as it has no effect in the single LSM case and
-interferes in the multiple LSM case.
+This patch series adds a set of drivers for operating the Sense HAT
+peripheral device. This board is an add on for the Raspberry Pi that is
+designed to connect using the GPIO connector and communicate via I2C.
 
-Acked-by: Stephen Smalley <stephen.smalley.work@gmail.com>
-Acked-by: John Johansen <john.johansen@canonical.com>
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
----
- security/apparmor/lsm.c | 20 +-------------------
- 1 file changed, 1 insertion(+), 19 deletions(-)
+It features:
+	- a joystick
+	- an 8x8 RGB LED matrix display
+	- a whole bunch of environmental sensors with their own drivers
+	  (those are already in upstream Linux)
 
-diff --git a/security/apparmor/lsm.c b/security/apparmor/lsm.c
-index 1ee58c1491ab..388298a15556 100644
---- a/security/apparmor/lsm.c
-+++ b/security/apparmor/lsm.c
-@@ -1145,22 +1145,6 @@ static int apparmor_socket_getpeersec_stream(struct socket *sock,
- 	return error;
- }
- 
--/**
-- * apparmor_socket_getpeersec_dgram - get security label of packet
-- * @sock: the peer socket
-- * @skb: packet data
-- * @secid: pointer to where to put the secid of the packet
-- *
-- * Sets the netlabel socket state on sk from parent
-- */
--static int apparmor_socket_getpeersec_dgram(struct socket *sock,
--					    struct sk_buff *skb, u32 *secid)
--
--{
--	/* TODO: requires secid support */
--	return -ENOPROTOOPT;
--}
--
- /**
-  * apparmor_sock_graft - Initialize newly created socket
-  * @sk: child sock
-@@ -1264,8 +1248,6 @@ static struct security_hook_list apparmor_hooks[] __lsm_ro_after_init = {
- #endif
- 	LSM_HOOK_INIT(socket_getpeersec_stream,
- 		      apparmor_socket_getpeersec_stream),
--	LSM_HOOK_INIT(socket_getpeersec_dgram,
--		      apparmor_socket_getpeersec_dgram),
- 	LSM_HOOK_INIT(sock_graft, apparmor_sock_graft),
- #ifdef CONFIG_NETWORK_SECMARK
- 	LSM_HOOK_INIT(inet_conn_request, apparmor_inet_conn_request),
-@@ -1919,7 +1901,7 @@ static int __init apparmor_init(void)
- 
- DEFINE_LSM(apparmor) = {
- 	.name = "apparmor",
--	.flags = LSM_FLAG_LEGACY_MAJOR | LSM_FLAG_EXCLUSIVE,
-+	.flags = LSM_FLAG_LEGACY_MAJOR,
- 	.enabled = &apparmor_enabled,
- 	.blobs = &apparmor_blob_sizes,
- 	.init = apparmor_init,
+This is a refactor of the work of Serge Schneider, the author of a
+version of this driver that is currently in the Raspberry Pi downstream
+kernel. We modified his code to make it suitable for upstream Linux.
+
+A couple of tests are available for the driver in the test folder in
+this repo: https://github.com/underground-software/sensehat.git
+	- sensehat_joystick_test logs the input events from the
+	  joystick to the console
+	- sensehat_display_test displays various solid colors on
+	  the LED panel.
+	- full_sensehat_test displays a single lit cell that can be
+	  moved with the joystick. Pressing the joystick ends the
+	  program.
+
+For more information about the Sense HAT, visit:
+https://www.raspberrypi.org/products/sense-hat/
+
+Improvements since v5:
+	- The sensehat core driver has been removed and its functionality
+	  is now performed by simply adding the sensehat compatible string
+	  to the simple_mfd_i2c driver.
+	- the subdrivers now read information about their SMB registers and
+	  irqs from their own device tree meaning that these values are now
+	  configurable and no longer hard coded into the driver.
+	- As a result of removing the core driver and making each subdriver
+	  handle its own internal data itself, the drivers have finally become
+	  completely independent and so now it is finally truly possible to
+	  use more than one sensehat or more than one of its sub components
+	  in theory. (though in practice this would require modifying the
+	  firmware on the board).
+
+Fixes since v5:
+	- the joystick has been changed to use BTN_DPAD and BTN_SELECT
+	  instead of the arrow keys and enter, and lots of small issues
+	  with the joystick code have been fixed (thanks to Dmitry
+	  Torokhov for these suggestions)
+	- all forward declarations have been removed from the driver
+	  (thanks to Miguel Ojeda and Stefan Wahren for this suggestion)
+	- the userspace interface of the display driver has been changed to
+	  remove the need to process and copy the data as much before it can
+	  be sent to the device. (thanks to Matthias Brugger for this
+	  suggestion)
+	- fixed issue with interrupt parent property in device tree binding
+	  (thanks to Rob Herring for this suggestion)
+
+charliemirabile (6):
+  drivers/mfd: sensehat: Add Raspberry Pi Sense HAT to simple_mfd_i2c
+  drivers/input/joystick: sensehat: Raspberry Pi Sense HAT joystick
+    driver
+  drivers/auxdisplay: sensehat: Raspberry Pi Sense HAT display driver
+  dt-bindings: mfd: sensehat: Add Raspberry Pi Sense HAT schema
+  MAINTAINERS: Add sensehat driver authors to MAINTAINERS
+  DO NOT MERGE: full sensehat device tree overlay for raspberry pi 4
+
+ .../raspberrypi,sensehat-display.yaml         |  32 +++
+ .../input/raspberrypi,sensehat-joystick.yaml  |  37 +++
+ .../bindings/mfd/raspberrypi,sensehat.yaml    |  68 +++++
+ MAINTAINERS                                   |  12 +
+ drivers/auxdisplay/Kconfig                    |   8 +
+ drivers/auxdisplay/Makefile                   |   1 +
+ drivers/auxdisplay/sensehat-display.c         | 264 ++++++++++++++++++
+ drivers/input/joystick/Kconfig                |  11 +
+ drivers/input/joystick/Makefile               |   1 +
+ drivers/input/joystick/sensehat-joystick.c    | 128 +++++++++
+ drivers/mfd/simple-mfd-i2c.c                  |   1 +
+ include/uapi/linux/sensehat.h                 |  28 ++
+ sensehat.dtbs                                 |  56 ++++
+ 13 files changed, 647 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/auxdisplay/raspberrypi,sensehat-display.yaml
+ create mode 100644 Documentation/devicetree/bindings/input/raspberrypi,sensehat-joystick.yaml
+ create mode 100644 Documentation/devicetree/bindings/mfd/raspberrypi,sensehat.yaml
+ create mode 100644 drivers/auxdisplay/sensehat-display.c
+ create mode 100644 drivers/input/joystick/sensehat-joystick.c
+ create mode 100644 include/uapi/linux/sensehat.h
+ create mode 100644 sensehat.dtbs
+
 -- 
 2.31.1
 
