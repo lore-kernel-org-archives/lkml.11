@@ -2,89 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7346AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:18:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76B1FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:18:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353997AbiBCUSM (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:18:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54636 "EHLO
+        id S230100AbiBCUSj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Feb 2022 15:18:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354005AbiBCUSJ (ORCPT
+        with ESMTP id S231277AbiBCUSi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 15:18:09 -0500
-Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA17DC061741
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 12:18:09 -0800 (PST)
-Received: from dslb-188-096-149-005.188.096.pools.vodafone-ip.de ([188.96.149.5] helo=martin-debian-2.paytec.ch)
-        by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <martin@kaiser.cx>)
-        id 1nFiYK-0004N1-Vn; Thu, 03 Feb 2022 21:18:01 +0100
-From:   Martin Kaiser <martin@kaiser.cx>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Michael Straube <straube.linux@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 2/2] staging: r8188eu: simplify error handling in phy_BB8188E_Config_ParaFile
-Date:   Thu,  3 Feb 2022 21:17:45 +0100
-Message-Id: <20220203201745.251826-3-martin@kaiser.cx>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220203201745.251826-1-martin@kaiser.cx>
-References: <20220203201745.251826-1-martin@kaiser.cx>
+        Thu, 3 Feb 2022 15:18:38 -0500
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 085ACC061714
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 12:18:38 -0800 (PST)
+Received: by mail-lf1-x130.google.com with SMTP id x23so8506560lfc.0
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 12:18:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=gCptFjFQyDLvAsPO3z/ZgorjPLk8kmB9BpzPLd3AoP4=;
+        b=oU0+M7arecnlMXbVakVlEAbRXu94xUaFY0/OPRW2P+9kwSq7vW/H9modIRA0te7zvl
+         JmOP8qNowSrOi0+Ai5wnmVtBGBXoHOQAMC7R+IMa9lX6pqg35ZxG0eFiwl3AsUa+I3WL
+         FB4uceRGDMwEe14GkECpf1T7X/hjtPbiB5AxQYkKB4xptkLaF4FWjyKDmSxHiJ9V7cvj
+         OFWM8FDPOKuTXS7xOTrc9SlWJHPULVyS0ngCXxwr98p60xtKSefJQV4APo4xPAC9Igp6
+         q7/jmw2s7gttwrXaesVHXCrvW6ZhUxMgJJnPgxFhuQlbNu4+xMFtqlTz10cY6W5rm6EK
+         FsNA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=gCptFjFQyDLvAsPO3z/ZgorjPLk8kmB9BpzPLd3AoP4=;
+        b=pdALQWdYtv5cq/I2z7zYtCG/bV2+PkW6mcuXoRwp0DcLxEYUDLk5D7SvgsKuOcLYBb
+         zWGSzjiRklzaVGsJyZzl+bKElu2SY0egIW4DnyY5ThqkRyZWLRZMcKPuRX4GfsoTDABg
+         qfA7GX+wKpcX/lqt70pY9C4J0w0kdjglWINSxWcP533uoYgwSb7/Mb2CVl8nM2ZJqoXn
+         Z8PjU6ClCEGyrWdiLYV49W4Cr2aBiR/drx9BZrZMbq0bAh+IvXy5MpsrVS9smIW6CpM5
+         tiUXsx2GoDgdMSkfsm3jujHGhe7J5/wjdJoodYAx/m8+3PHzH0rIHNzrYRkvX/O08EsP
+         bc2Q==
+X-Gm-Message-State: AOAM530OGlVAgJ/rUhWUY/PqC9Z9V1GA6cV/Va5bNm6ponW/N2lCit2h
+        6G8FMq9FvmyUWanzBxRi3cw6vZWcptLJpxZAujsO3Q==
+X-Google-Smtp-Source: ABdhPJxVkEe48Bneez3y/gwEVbiSzb9e1vqBKgmV8jcTS2K/OQOrlZbIlrPKyO/N9wxFVDUCW6uI4ZY1VHbPi3L9vDA=
+X-Received: by 2002:a05:6512:e87:: with SMTP id bi7mr28833062lfb.550.1643919516107;
+ Thu, 03 Feb 2022 12:18:36 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220203173307.1033257-1-keescook@chromium.org> <20220203173307.1033257-2-keescook@chromium.org>
+In-Reply-To: <20220203173307.1033257-2-keescook@chromium.org>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Thu, 3 Feb 2022 12:18:24 -0800
+Message-ID: <CAKwvOdmzdQ+X2BsUbuVBWzFtaE2Vst4=ihNNR=LmOdozqQ5Ukg@mail.gmail.com>
+Subject: Re: [PATCH v6 1/4] Compiler Attributes: Add __pass_object_size for Clang
+To:     Kees Cook <keescook@chromium.org>,
+        George Burgess IV <gbiv@google.com>
+Cc:     Miguel Ojeda <ojeda@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>, llvm@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Simplify error handling in phy_BB8188E_Config_ParaFile. Exit immediately
-when there's an error, do not jump to the end of the function. We do not
-have anything to clean up before we return.
+On Thu, Feb 3, 2022 at 9:33 AM Kees Cook <keescook@chromium.org> wrote:
+>
+> In order to gain greater visibility to type information when using
+> __builtin_object_size(), Clang has a function attribute "pass_object_size=
+"
+> that will make size information available for marked arguments in
+> a function by way of implicit additional function arguments that are
+> then wired up the __builtin_object_size().
+>
+> This is needed to implement FORTIFY_SOURCE in Clang, as a workaround
+> to Clang's __builtin_object_size() having limited visibility[1] into type=
+s
+> across function calls (even inlines).
+>
+> Since any usage must also be const, include it in the macro.
 
-Signed-off-by: Martin Kaiser <martin@kaiser.cx>
----
- drivers/staging/r8188eu/hal/rtl8188e_phycfg.c | 11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
+I really don't like hiding the qualifier in the argument-attribute
+macro like that.  I'd rather we be more explicit about changing the
+function interfaces in include/linux/fortify-string.h.
 
-diff --git a/drivers/staging/r8188eu/hal/rtl8188e_phycfg.c b/drivers/staging/r8188eu/hal/rtl8188e_phycfg.c
-index accbd08d4fd1..8279768201b7 100644
---- a/drivers/staging/r8188eu/hal/rtl8188e_phycfg.c
-+++ b/drivers/staging/r8188eu/hal/rtl8188e_phycfg.c
-@@ -487,16 +487,13 @@ static	int phy_BB8188E_Config_ParaFile(struct adapter *Adapter)
- {
- 	struct eeprom_priv *pEEPROM = &Adapter->eeprompriv;
- 	struct hal_data_8188e *pHalData = &Adapter->haldata;
--	int			rtStatus = _SUCCESS;
- 
- 	/*  */
- 	/*  1. Read PHY_REG.TXT BB INIT!! */
- 	/*  We will separate as 88C / 92C according to chip version */
- 	/*  */
- 	if (HAL_STATUS_FAILURE == ODM_ReadAndConfig_PHY_REG_1T_8188E(&pHalData->odmpriv))
--		rtStatus = _FAIL;
--	if (rtStatus != _SUCCESS)
--		goto phy_BB8190_Config_ParaFile_Fail;
-+		return _FAIL;
- 
- 	/*  2. If EEPROM or EFUSE autoload OK, We must config by PHY_REG_PG.txt */
- 	if (!pEEPROM->bautoload_fail_flag) {
-@@ -506,11 +503,9 @@ static	int phy_BB8188E_Config_ParaFile(struct adapter *Adapter)
- 
- 	/*  3. BB AGC table Initialization */
- 	if (HAL_STATUS_FAILURE == ODM_ReadAndConfig_AGC_TAB_1T_8188E(&pHalData->odmpriv))
--		rtStatus = _FAIL;
-+		return _FAIL;
- 
--phy_BB8190_Config_ParaFile_Fail:
--
--	return rtStatus;
-+	return _SUCCESS;
- }
- 
- int
--- 
-2.30.2
+For instance, in patch 4/4, let's take a look at this hunk:
 
+-__FORTIFY_INLINE char *strncpy(char *p, const char *q, __kernel_size_t siz=
+e)
+...
++__FORTIFY_INLINE __diagnose_as(__builtin_strncpy, 1, 2, 3)
++char *strncpy(char * POS p, const char *q, __kernel_size_t size)
+
+manually expanded, this has changed the qualifiers on the type of the
+first parameter from `char *` to `char * const`.
+
+I think it might be helpful to quote the docs
+(https://clang.llvm.org/docs/AttributeReference.html#pass-object-size-pass-=
+dynamic-object-size)
+
+>> Additionally, any parameter that pass_object_size is applied to must be =
+marked const at its function=E2=80=99s definition.
+
+One thing that's concerning to me is though:
+
+>> It is an error to take the address of a function with pass_object_size o=
+n any of its parameters.
+
+Surely the kernel has indirect calls to some of these functions
+somewhere? Is that just an issue for C++ name-mangling perhaps?
+
+>
+> This attribute has an additional benefit that it can be used even on
+> non-inline functions to gain argument size information.
+>
+> [1] https://github.com/llvm/llvm-project/issues/53516
+>
+> Cc: Miguel Ojeda <ojeda@kernel.org>
+> Cc: Nick Desaulniers <ndesaulniers@google.com>
+> Cc: Nathan Chancellor <nathan@kernel.org>
+> Cc: llvm@lists.linux.dev
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+> ---
+>  include/linux/compiler_attributes.h | 14 ++++++++++++++
+>  1 file changed, 14 insertions(+)
+>
+> diff --git a/include/linux/compiler_attributes.h b/include/linux/compiler=
+_attributes.h
+> index 37e260020221..4ce370094e3a 100644
+> --- a/include/linux/compiler_attributes.h
+> +++ b/include/linux/compiler_attributes.h
+> @@ -263,6 +263,20 @@
+>   */
+>  #define __packed                        __attribute__((__packed__))
+>
+> +/*
+> + * Note: the "type" argument should match any __builtin_object_size(p, t=
+ype) usage.
+> + *
+> + * Optional: not supported by gcc.
+> + * Optional: not supported by icc.
+> + *
+> + * clang: https://clang.llvm.org/docs/AttributeReference.html#pass-objec=
+t-size-pass-dynamic-object-size
+> + */
+> +#if __has_attribute(__pass_object_size__)
+> +# define __pass_object_size(type)      const __attribute__((__pass_objec=
+t_size__(type)))
+> +#else
+> +# define __pass_object_size(type)
+> +#endif
+> +
+>  /*
+>   *   gcc: https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.=
+html#index-pure-function-attribute
+>   */
+> --
+> 2.30.2
+>
+
+
+--=20
+Thanks,
+~Nick Desaulniers
