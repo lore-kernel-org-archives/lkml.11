@@ -2,53 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D6F3C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:42:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3D29C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:42:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354049AbiBCUmm (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:42:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59114 "EHLO
+        id S233767AbiBCUmt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Feb 2022 15:42:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242140AbiBCUjF (ORCPT
+        with ESMTP id S1355773AbiBCUjH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 15:39:05 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DF79C061765;
-        Thu,  3 Feb 2022 12:36:11 -0800 (PST)
+        Thu, 3 Feb 2022 15:39:07 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB861C061370;
+        Thu,  3 Feb 2022 12:36:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ED298B835A4;
-        Thu,  3 Feb 2022 20:36:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 999D2C36AE3;
-        Thu,  3 Feb 2022 20:36:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 58F8360A54;
+        Thu,  3 Feb 2022 20:36:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2C32C340EB;
+        Thu,  3 Feb 2022 20:36:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643920568;
-        bh=nBbcmC2clBtFUE4+r3jUl7e4KKEhA/7ys6t+U2NjNkU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G2oG9puqbN7GqimjoSjJmz0N7/wjTehrMqxEDL/h2i/EQ6ackG0sEUDZgpMXWzSCL
-         u3kZZoXAMTVW0jtWTZRod5IIMxbahokU4K2iamCtseooyXQHGEzRQRtPjCO8XNpbLC
-         ebjr5gYZHOW5jN5bVsy0reflmNEJxWAqQrNMvu6Rn0iVR6fxLWQGQ+1/h60wUaIi+E
-         LXrWXbcyF3V3taoKG04BuQ2lGZeWd8eHSUUfl7o7Ur6Xpb556U24c4b5I3W2jlUr5Y
-         DX0W11o1qBqbHXbvNGCsok97J+a1dhbaWV0kk9y0sq/hV/ioknabBUaf7eE3TFdqOR
-         hhN3FCFWzhoVQ==
+        s=k20201202; t=1643920575;
+        bh=dSVK+aJJ+YeLT75dA4xUsNw9k+1NsvmkXiPj/ke5A3o=;
+        h=From:To:Cc:Subject:Date:From;
+        b=lxXl3p0BuML6Pi0j+caf0bLIfXoISGmiX5Rg1s/8lyFagtcX+d819hxmyAjUXRgBD
+         ku0B9+9jRcLJIiwCV1D4AhlOBo9LCBuMJXyUI588LPOzFRGWl/Pwo910ibxewSXi29
+         z4dNiFuvrVVoW/NFTetVFbiTENwDKkzvh6J1Nu4rrqWGzgvcF6nmlynNiFs9+rCwOv
+         YXmdRRNgz6ibNNF/7X289zpFN+hGHQ5hrZe8DEjUF7QGnw5MAJwP/pHNKlsyrxFg13
+         I8vgaxhiRxqcFT9C0qcoTptwF4Mi5elZ2fkdA4Odn2P+9G6QBxR/FH056Ie6fx5hKw
+         bVBTcHF4vO2wQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
-        <amadeuszx.slawinski@linux.intel.com>,
-        Cezary Rojewski <cezary.rojewski@intel.com>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
-        len.brown@intel.com, pavel@ucw.cz, linux-pm@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 13/15] PM: hibernate: Remove register_nosave_region_late()
-Date:   Thu,  3 Feb 2022 15:35:43 -0500
-Message-Id: <20220203203545.3879-13-sashal@kernel.org>
+Cc:     Olga Kornievskaia <kolga@netapp.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Sasha Levin <sashal@kernel.org>,
+        trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
+        linux-nfs@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 01/10] NFSv4 only print the label when its queried
+Date:   Thu,  3 Feb 2022 15:36:04 -0500
+Message-Id: <20220203203613.4165-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220203203545.3879-1-sashal@kernel.org>
-References: <20220203203545.3879-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -56,91 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
+From: Olga Kornievskaia <kolga@netapp.com>
 
-[ Upstream commit 33569ef3c754a82010f266b7b938a66a3ccf90a4 ]
+[ Upstream commit 2c52c8376db7160a1dd8a681c61c9258405ef143 ]
 
-It is an unused wrapper forcing kmalloc allocation for registering
-nosave regions. Also, rename __register_nosave_region() to
-register_nosave_region() now that there is no need for disambiguation.
+When the bitmask of the attributes doesn't include the security label,
+don't bother printing it. Since the label might not be null terminated,
+adjust the printing format accordingly.
 
-Signed-off-by: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
-Reviewed-by: Cezary Rojewski <cezary.rojewski@intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Olga Kornievskaia <kolga@netapp.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/suspend.h | 11 +----------
- kernel/power/snapshot.c | 21 +++++++--------------
- 2 files changed, 8 insertions(+), 24 deletions(-)
+ fs/nfs/nfs4xdr.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/include/linux/suspend.h b/include/linux/suspend.h
-index cd97d2c8840cc..44dd49cb2ea05 100644
---- a/include/linux/suspend.h
-+++ b/include/linux/suspend.h
-@@ -428,15 +428,7 @@ struct platform_hibernation_ops {
- 
- #ifdef CONFIG_HIBERNATION
- /* kernel/power/snapshot.c */
--extern void __register_nosave_region(unsigned long b, unsigned long e, int km);
--static inline void __init register_nosave_region(unsigned long b, unsigned long e)
--{
--	__register_nosave_region(b, e, 0);
--}
--static inline void __init register_nosave_region_late(unsigned long b, unsigned long e)
--{
--	__register_nosave_region(b, e, 1);
--}
-+extern void register_nosave_region(unsigned long b, unsigned long e);
- extern int swsusp_page_is_forbidden(struct page *);
- extern void swsusp_set_page_free(struct page *);
- extern void swsusp_unset_page_free(struct page *);
-@@ -453,7 +445,6 @@ extern struct pbe *restore_pblist;
- int pfn_is_nosave(unsigned long pfn);
- #else /* CONFIG_HIBERNATION */
- static inline void register_nosave_region(unsigned long b, unsigned long e) {}
--static inline void register_nosave_region_late(unsigned long b, unsigned long e) {}
- static inline int swsusp_page_is_forbidden(struct page *p) { return 0; }
- static inline void swsusp_set_page_free(struct page *p) {}
- static inline void swsusp_unset_page_free(struct page *p) {}
-diff --git a/kernel/power/snapshot.c b/kernel/power/snapshot.c
-index d65f2d5ab6942..46455aa7951ec 100644
---- a/kernel/power/snapshot.c
-+++ b/kernel/power/snapshot.c
-@@ -945,8 +945,7 @@ static void memory_bm_recycle(struct memory_bitmap *bm)
-  * Register a range of page frames the contents of which should not be saved
-  * during hibernation (to be used in the early initialization code).
-  */
--void __init __register_nosave_region(unsigned long start_pfn,
--				     unsigned long end_pfn, int use_kmalloc)
-+void __init register_nosave_region(unsigned long start_pfn, unsigned long end_pfn)
- {
- 	struct nosave_region *region;
- 
-@@ -962,18 +961,12 @@ void __init __register_nosave_region(unsigned long start_pfn,
- 			goto Report;
- 		}
+diff --git a/fs/nfs/nfs4xdr.c b/fs/nfs/nfs4xdr.c
+index 0a5cae8f8aff9..8a61dc21d3d68 100644
+--- a/fs/nfs/nfs4xdr.c
++++ b/fs/nfs/nfs4xdr.c
+@@ -4294,10 +4294,11 @@ static int decode_attr_security_label(struct xdr_stream *xdr, uint32_t *bitmap,
+ 		} else
+ 			printk(KERN_WARNING "%s: label too long (%u)!\n",
+ 					__func__, len);
++		if (label && label->label)
++			dprintk("%s: label=%.*s, len=%d, PI=%d, LFS=%d\n",
++				__func__, label->len, (char *)label->label,
++				label->len, label->pi, label->lfs);
  	}
--	if (use_kmalloc) {
--		/* During init, this shouldn't fail */
--		region = kmalloc(sizeof(struct nosave_region), GFP_KERNEL);
--		BUG_ON(!region);
--	} else {
--		/* This allocation cannot fail */
--		region = memblock_alloc(sizeof(struct nosave_region),
--					SMP_CACHE_BYTES);
--		if (!region)
--			panic("%s: Failed to allocate %zu bytes\n", __func__,
--			      sizeof(struct nosave_region));
--	}
-+	/* This allocation cannot fail */
-+	region = memblock_alloc(sizeof(struct nosave_region),
-+				SMP_CACHE_BYTES);
-+	if (!region)
-+		panic("%s: Failed to allocate %zu bytes\n", __func__,
-+		      sizeof(struct nosave_region));
- 	region->start_pfn = start_pfn;
- 	region->end_pfn = end_pfn;
- 	list_add_tail(&region->list, &nosave_regions);
+-	if (label && label->label)
+-		dprintk("%s: label=%s, len=%d, PI=%d, LFS=%d\n", __func__,
+-			(char *)label->label, label->len, label->pi, label->lfs);
+ 	return status;
+ 
+ out_overflow:
 -- 
 2.34.1
 
