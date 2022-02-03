@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D440C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:33:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26D9BC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:33:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354641AbiBCUdj (ORCPT
+        id S1354671AbiBCUdp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:33:39 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:38434 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354646AbiBCUca (ORCPT
+        Thu, 3 Feb 2022 15:33:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57688 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354328AbiBCUci (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 15:32:30 -0500
+        Thu, 3 Feb 2022 15:32:38 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 220C0C0613DC;
+        Thu,  3 Feb 2022 12:32:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CFCA461A60;
-        Thu,  3 Feb 2022 20:32:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A92C0C340EB;
-        Thu,  3 Feb 2022 20:32:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D8ABAB835A9;
+        Thu,  3 Feb 2022 20:32:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EC1CC340EB;
+        Thu,  3 Feb 2022 20:32:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643920349;
-        bh=zV5mVSHrLBiLshJorIhm2PR948GoEoOLENCUyAPJ+Ng=;
+        s=k20201202; t=1643920335;
+        bh=wLEOq3urc55jW+NWAQ6xw+F5yHn5AdI27akNuSKT6lI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bketYHsjzBFID8h3KiQHNHtLPBQJ45Ib2egyyqwIhao003sI35tM9m5FDDSHrW1Fn
-         1LlWLT4xFnsmJ2dxgYc6MkSBcGSynQ/JcrFbOyhFATB7eSDTBT5vAdYPttXuaLPM3S
-         y2RAIl+KgDKOKFes7Mw6H4UPlqRtYwrHoYEiE3NRfKx0qpaXS7NfZgiEQX3W4WkMGw
-         Qmu7f1Ly2nN7148y5ah9/0SWQHkK+W2lCVrSnYXqg+e2oxDSM0VG09FcjFEXh+zNd2
-         iMJxcAHspDYo2hhKQuoqG5kte6ssaCTQj9teq25ILaYXFj70+sC0Ti5nDOvy6ypmvi
-         ARC6GARftaq5Q==
+        b=Qekoc+rwlFAQGKSuJ8PuhpJ3iIcEz/ILHG7rO9JgVbZs/TXB0SJhkg2WA2XRIT5eg
+         2h9wqckVn4uN+Bh43FnFYkPRIzncnTlgi+4WeWuVLfO/3+ZqQjhs4gAdXz0urmoyQl
+         FNDYW0s4xBdCPpIrlJ2i6zn5Kv0IfKJLPAVrRjdPquK2A9NBXOgPPvucWvXRn/YCT4
+         rKOD9Pf/EPUDXlMcmJweLmkIIkCYfJGqO19j8JnnpS0r+ToKert4CwHDmZG0mkwIpl
+         MkyAhsZCBzqe+1etUFZ25WzZs7yCu6FcloTBXfldqS8T+tgafNEbtI7EJ5YhRQ3Ymy
+         t1sr4Sb6rYVVw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Anshuman Khandual <anshuman.khandual@arm.com>,
         Catalin Marinas <catalin.marinas@arm.com>,
         Will Deacon <will@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
         Suzuki Poulose <suzuki.poulose@arm.com>,
-        coresight@lists.linaro.org, linux-doc@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
-        Sasha Levin <sashal@kernel.org>, corbet@lwn.net,
-        mark.rutland@arm.com, rwiley@nvidia.com, broonie@kernel.org,
-        vincenzo.frascino@arm.com
-Subject: [PATCH AUTOSEL 5.16 48/52] arm64: errata: Add detection for TRBE invalid prohibited states
-Date:   Thu,  3 Feb 2022 15:29:42 -0500
-Message-Id: <20220203202947.2304-48-sashal@kernel.org>
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Sasha Levin <sashal@kernel.org>, marcan@marcan.st
+Subject: [PATCH AUTOSEL 5.16 46/52] arm64: Add Cortex-A510 CPU part definition
+Date:   Thu,  3 Feb 2022 15:29:40 -0500
+Message-Id: <20220203202947.2304-46-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220203202947.2304-1-sashal@kernel.org>
 References: <20220203202947.2304-1-sashal@kernel.org>
@@ -58,119 +58,45 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Anshuman Khandual <anshuman.khandual@arm.com>
 
-[ Upstream commit 3bd94a8759de9b724b83a80942b0354acd7701eb ]
+[ Upstream commit 53960faf2b731dd2f9ed6e1334634b8ba6286850 ]
 
-TRBE implementations affected by Arm erratum #2038923 might get TRBE into
-an inconsistent view on whether trace is prohibited within the CPU. As a
-result, the trace buffer or trace buffer state might be corrupted. This
-happens after TRBE buffer has been enabled by setting TRBLIMITR_EL1.E,
-followed by just a single context synchronization event before execution
-changes from a context, in which trace is prohibited to one where it isn't,
-or vice versa. In these mentioned conditions, the view of whether trace is
-prohibited is inconsistent between parts of the CPU, and the trace buffer
-or the trace buffer state might be corrupted. This adds a new errata
-ARM64_ERRATUM_2038923 in arm64 errata framework.
+Add the CPU Partnumbers for the new Arm designs.
 
 Cc: Catalin Marinas <catalin.marinas@arm.com>
 Cc: Will Deacon <will@kernel.org>
-Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
 Cc: Suzuki Poulose <suzuki.poulose@arm.com>
-Cc: coresight@lists.linaro.org
-Cc: linux-doc@vger.kernel.org
 Cc: linux-arm-kernel@lists.infradead.org
 Cc: linux-kernel@vger.kernel.org
 Reviewed-by: Suzuki K Poulose <suzuki.poulose@arm.com>
 Acked-by: Catalin Marinas <catalin.marinas@arm.com>
 Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
-Link: https://lore.kernel.org/r/1643120437-14352-4-git-send-email-anshuman.khandual@arm.com
+Link: https://lore.kernel.org/r/1643120437-14352-2-git-send-email-anshuman.khandual@arm.com
 Signed-off-by: Mathieu Poirier <mathieu.poirier@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/arm64/silicon-errata.rst |  2 ++
- arch/arm64/Kconfig                     | 23 +++++++++++++++++++++++
- arch/arm64/kernel/cpu_errata.c         |  9 +++++++++
- arch/arm64/tools/cpucaps               |  1 +
- 4 files changed, 35 insertions(+)
+ arch/arm64/include/asm/cputype.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/Documentation/arm64/silicon-errata.rst b/Documentation/arm64/silicon-errata.rst
-index 401a6e86c5084..d5c6befc44eb8 100644
---- a/Documentation/arm64/silicon-errata.rst
-+++ b/Documentation/arm64/silicon-errata.rst
-@@ -54,6 +54,8 @@ stable kernels.
- +----------------+-----------------+-----------------+-----------------------------+
- | ARM            | Cortex-A510     | #2064142        | ARM64_ERRATUM_2064142       |
- +----------------+-----------------+-----------------+-----------------------------+
-+| ARM            | Cortex-A510     | #2038923        | ARM64_ERRATUM_2038923       |
-++----------------+-----------------+-----------------+-----------------------------+
- | ARM            | Cortex-A53      | #826319         | ARM64_ERRATUM_826319        |
- +----------------+-----------------+-----------------+-----------------------------+
- | ARM            | Cortex-A53      | #827319         | ARM64_ERRATUM_827319        |
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 30c07b0d6b5c9..2b75e8a9bf88c 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -796,6 +796,29 @@ config ARM64_ERRATUM_2064142
- 
- 	  If unsure, say Y.
- 
-+config ARM64_ERRATUM_2038923
-+	bool "Cortex-A510: 2038923: workaround TRBE corruption with enable"
-+	depends on COMPILE_TEST # Until the CoreSight TRBE driver changes are in
-+	default y
-+	help
-+	  This option adds the workaround for ARM Cortex-A510 erratum 2038923.
-+
-+	  Affected Cortex-A510 core might cause an inconsistent view on whether trace is
-+	  prohibited within the CPU. As a result, the trace buffer or trace buffer state
-+	  might be corrupted. This happens after TRBE buffer has been enabled by setting
-+	  TRBLIMITR_EL1.E, followed by just a single context synchronization event before
-+	  execution changes from a context, in which trace is prohibited to one where it
-+	  isn't, or vice versa. In these mentioned conditions, the view of whether trace
-+	  is prohibited is inconsistent between parts of the CPU, and the trace buffer or
-+	  the trace buffer state might be corrupted.
-+
-+	  Work around this in the driver by preventing an inconsistent view of whether the
-+	  trace is prohibited or not based on TRBLIMITR_EL1.E by immediately following a
-+	  change to TRBLIMITR_EL1.E with at least one ISB instruction before an ERET, or
-+	  two ISB instructions if no ERET is to take place.
-+
-+	  If unsure, say Y.
-+
- config CAVIUM_ERRATUM_22375
- 	bool "Cavium erratum 22375, 24313"
- 	default y
-diff --git a/arch/arm64/kernel/cpu_errata.c b/arch/arm64/kernel/cpu_errata.c
-index a5456dd9a33f5..a64bf132c6336 100644
---- a/arch/arm64/kernel/cpu_errata.c
-+++ b/arch/arm64/kernel/cpu_errata.c
-@@ -609,6 +609,15 @@ const struct arm64_cpu_capabilities arm64_errata[] = {
- 		ERRATA_MIDR_REV_RANGE(MIDR_CORTEX_A510, 0, 0, 2)
- 	},
- #endif
-+#ifdef CONFIG_ARM64_ERRATUM_2038923
-+	{
-+		.desc = "ARM erratum 2038923",
-+		.capability = ARM64_WORKAROUND_2038923,
-+
-+		/* Cortex-A510 r0p0 - r0p2 */
-+		ERRATA_MIDR_REV_RANGE(MIDR_CORTEX_A510, 0, 0, 2)
-+	},
-+#endif
- 	{
- 	}
- };
-diff --git a/arch/arm64/tools/cpucaps b/arch/arm64/tools/cpucaps
-index fca3cb329e1db..45a06d36d0807 100644
---- a/arch/arm64/tools/cpucaps
-+++ b/arch/arm64/tools/cpucaps
-@@ -56,6 +56,7 @@ WORKAROUND_1463225
- WORKAROUND_1508412
- WORKAROUND_1542419
- WORKAROUND_2064142
-+WORKAROUND_2038923
- WORKAROUND_TRBE_OVERWRITE_FILL_MODE
- WORKAROUND_TSB_FLUSH_FAILURE
- WORKAROUND_TRBE_WRITE_OUT_OF_RANGE
+diff --git a/arch/arm64/include/asm/cputype.h b/arch/arm64/include/asm/cputype.h
+index 657eeb06c7847..999b9149f8568 100644
+--- a/arch/arm64/include/asm/cputype.h
++++ b/arch/arm64/include/asm/cputype.h
+@@ -73,6 +73,7 @@
+ #define ARM_CPU_PART_CORTEX_A76		0xD0B
+ #define ARM_CPU_PART_NEOVERSE_N1	0xD0C
+ #define ARM_CPU_PART_CORTEX_A77		0xD0D
++#define ARM_CPU_PART_CORTEX_A510	0xD46
+ #define ARM_CPU_PART_CORTEX_A710	0xD47
+ #define ARM_CPU_PART_CORTEX_X2		0xD48
+ #define ARM_CPU_PART_NEOVERSE_N2	0xD49
+@@ -116,6 +117,7 @@
+ #define MIDR_CORTEX_A76	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A76)
+ #define MIDR_NEOVERSE_N1 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_N1)
+ #define MIDR_CORTEX_A77	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A77)
++#define MIDR_CORTEX_A510 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A510)
+ #define MIDR_CORTEX_A710 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A710)
+ #define MIDR_CORTEX_X2 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_X2)
+ #define MIDR_NEOVERSE_N2 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_N2)
 -- 
 2.34.1
 
