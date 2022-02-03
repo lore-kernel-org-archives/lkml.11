@@ -2,50 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E576AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:40:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52492C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:40:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355550AbiBCUkP (ORCPT
+        id S1344567AbiBCUkT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:40:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59128 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355153AbiBCUhH (ORCPT
+        Thu, 3 Feb 2022 15:40:19 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:43340 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355097AbiBCUhG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 15:37:07 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ED99C06178C;
-        Thu,  3 Feb 2022 12:35:07 -0800 (PST)
+        Thu, 3 Feb 2022 15:37:06 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EBE15B835B1;
-        Thu,  3 Feb 2022 20:35:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3B83C340EF;
-        Thu,  3 Feb 2022 20:35:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2F0E260C7D;
+        Thu,  3 Feb 2022 20:37:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7628C340F0;
+        Thu,  3 Feb 2022 20:37:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643920504;
-        bh=UAB7gaH3NgMrAcDUBNS5Abh/HcDIdCVCCYEvBt09frA=;
+        s=k20201202; t=1643920624;
+        bh=js+fuAM4/WE8FT7Gl8fPuy4DPVo7Bz7KVm+bzuIfYAM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d/7xE2Y9Fthr5dBoIzh8HMs2XpuQwpJT27N/27gcSksMlvW0U2z6oGeIkIJmpemBb
-         +/33rEG6e7dOAS5kRwBsCtvyXR885mAEvv+uN0z0FvgfKlW38vHYt+HTYDT3USZ+pT
-         ODka3aJ7fqHIHV1cgnjV2w6JltH9XkgT7am4TLlaHNHvpRvAEQenXq0+KVmGK5SsMG
-         xna5hSujy1NSXGORY11Gmr9pIG9HKwYYtOb22k+KXkQpJg/sofEm7WmCfaIhACAMkg
-         5euOzWWa2Oigrdrw9HN/oOh4vKhxs+GYcPckDvmGahijObVglFmV1T28ICLWgoLZxM
-         pi50wo+aBXErg==
+        b=ugfd+oeupTvIqjhGBTAUjsccNsPf6h78Wtb+aUcMFU3ecH8HatUDn1NBD88tyzOVj
+         IPO3sRtH+bb8wn5X6Ia3jCELPbCo5+/uSoA7ulX84SNQU7wvck6WrJax3LJZFyy5rQ
+         hYrJGlB5YGfwrk7uz7ti2YHQmXr1YlkoX7Oh0WDEjT4vhw1Yvi1aDPmF7ZzlbYcflh
+         1n6nGjwaAJcS8s7nHSUmLFisRIvxk5aq4I5xXIzFFw35m8tr896JqRGflPlSxJ2YiZ
+         rrHrv3qeJfy9dH9WnKAViJ2rBP/n+AcVUt1uq9Lm/mu6WohHlPHVymJlFdRKvhT5Xa
+         KOqPqekp4UP2Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Victor Nogueira <victor@mojatatu.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, kuba@kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 11/25] net: sched: Clarify error message when qdisc kind is unknown
-Date:   Thu,  3 Feb 2022 15:34:32 -0500
-Message-Id: <20220203203447.3570-11-sashal@kernel.org>
+Cc:     Amelie Delaunay <amelie.delaunay@foss.st.com>,
+        Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, hminas@synopsys.com,
+        linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 7/7] usb: dwc2: gadget: don't try to disable ep0 in dwc2_hsotg_suspend
+Date:   Thu,  3 Feb 2022 15:36:51 -0500
+Message-Id: <20220203203651.5158-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220203203447.3570-1-sashal@kernel.org>
-References: <20220203203447.3570-1-sashal@kernel.org>
+In-Reply-To: <20220203203651.5158-1-sashal@kernel.org>
+References: <20220203203651.5158-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,39 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Victor Nogueira <victor@mojatatu.com>
+From: Amelie Delaunay <amelie.delaunay@foss.st.com>
 
-[ Upstream commit 973bf8fdd12f0e70ea351c018e68edd377a836d1 ]
+[ Upstream commit ac55d163855924aa5af9f1560977da8f346963c8 ]
 
-When adding a tc rule with a qdisc kind that is not supported or not
-compiled into the kernel, the kernel emits the following error: "Error:
-Specified qdisc not found.". Found via tdc testing when ETS qdisc was not
-compiled in and it was not obvious right away what the message meant
-without looking at the kernel code.
+Calling dwc2_hsotg_ep_disable on ep0 (in/out) will lead to the following
+logs before returning -EINVAL:
+dwc2 49000000.usb-otg: dwc2_hsotg_ep_disable: called for ep0
+dwc2 49000000.usb-otg: dwc2_hsotg_ep_disable: called for ep0
 
-Change the error message to be more explicit and say the qdisc kind is
-unknown.
+To avoid these two logs while suspending, start disabling the endpoint
+from the index 1, as done in dwc2_hsotg_udc_stop:
 
-Signed-off-by: Victor Nogueira <victor@mojatatu.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+	/* all endpoints should be shutdown */
+	for (ep = 1; ep < hsotg->num_of_eps; ep++) {
+		if (hsotg->eps_in[ep])
+			dwc2_hsotg_ep_disable_lock(&hsotg->eps_in[ep]->ep);
+		if (hsotg->eps_out[ep])
+			dwc2_hsotg_ep_disable_lock(&hsotg->eps_out[ep]->ep);
+	}
+
+Acked-by: Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>
+Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
+Link: https://lore.kernel.org/r/20211207130101.270314-1-amelie.delaunay@foss.st.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sched/sch_api.c | 2 +-
+ drivers/usb/dwc2/gadget.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
-index 7b24582a8a164..6758968e79327 100644
---- a/net/sched/sch_api.c
-+++ b/net/sched/sch_api.c
-@@ -1204,7 +1204,7 @@ static struct Qdisc *qdisc_create(struct net_device *dev,
+diff --git a/drivers/usb/dwc2/gadget.c b/drivers/usb/dwc2/gadget.c
+index e7ad3ae4ea6bd..65bcbbad6d545 100644
+--- a/drivers/usb/dwc2/gadget.c
++++ b/drivers/usb/dwc2/gadget.c
+@@ -3979,7 +3979,7 @@ int dwc2_hsotg_suspend(struct dwc2_hsotg *hsotg)
+ 		hsotg->gadget.speed = USB_SPEED_UNKNOWN;
+ 		spin_unlock_irqrestore(&hsotg->lock, flags);
  
- 	err = -ENOENT;
- 	if (!ops) {
--		NL_SET_ERR_MSG(extack, "Specified qdisc not found");
-+		NL_SET_ERR_MSG(extack, "Specified qdisc kind is unknown");
- 		goto err_out;
- 	}
- 
+-		for (ep = 0; ep < hsotg->num_of_eps; ep++) {
++		for (ep = 1; ep < hsotg->num_of_eps; ep++) {
+ 			if (hsotg->eps_in[ep])
+ 				dwc2_hsotg_ep_disable(&hsotg->eps_in[ep]->ep);
+ 			if (hsotg->eps_out[ep])
 -- 
 2.34.1
 
