@@ -2,77 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92171C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 21:30:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39060C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 21:31:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355189AbiBCVa6 (ORCPT
+        id S1355267AbiBCVbC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 16:30:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43956 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355164AbiBCVaw (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 16:30:52 -0500
-Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6DBBC06173B
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 13:30:51 -0800 (PST)
-Received: by mail-oi1-x22e.google.com with SMTP id u13so6174605oie.5
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 13:30:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
-         :subject:to:cc;
-        bh=00ac3hlM2unZobSlvHJEqP+jKCIiHUV5BCi5HRFJx/o=;
-        b=HbqyCFQdr7C261e37TCahpcR7IpbRr9Mi0HYnZvgVMCoLYIxMPAEcbSqwMm4zPoUIi
-         TVWUMxDfaMfC9dDt3Py/WnFSBnHAXMfpxRNXGp+GOQTY5VnbtkEYjfKJiyTkl6RyWysY
-         MUDRn5kXdK1sHC4hMrSvoH3FrinJvkXI9ZVgE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to:cc;
-        bh=00ac3hlM2unZobSlvHJEqP+jKCIiHUV5BCi5HRFJx/o=;
-        b=HTLWFp82xETAWHC5q2eF57nF+ptqMdPM2fy4/PkNJdJ0+R4rua2nTehRqALKRVUqI2
-         cgvGQ7B8AxTZuI9k0Q1vU0+96T25s78ItsMRJaFEq/1m2BC/t2HIOrbjQ1XgS/C09SO9
-         w9fpCuyV5QYvUjMqUGlt2SJG4iEP4KkdMSg6lvPAoiqf1X3kqMsvi5i2P6Bgt2E7tb87
-         ByKvzpNB1BjOaiMS8RGQxoMqEzY8DHiaDHZNNgopTkvyLCCkXRtGjxr7iiBc4JrPSCrg
-         q0scg0txB/ieyL5EtG3wcjkUe7wsyXZSIhwCBzGyrhd4TC4ayFDJFg+0dSkmrc3M/8P1
-         uiYA==
-X-Gm-Message-State: AOAM533M7jtt8ouXnM4uOan56oAoGPuyF5YnSllmBEU/ntmJ6pJ7nPKj
-        ZWC8xCE9osSA23vab2Cn+OCKG9KkjG8D6T6FHN/dCefIJDg=
-X-Google-Smtp-Source: ABdhPJwLOBr8jp05c5+YBfc+ITUEJcIQhl71CSXbv5OGeB/lRyHGakOPSg8ETT2LJ1mfYxCJA6Bzp4sD1iJMlnfftfE=
-X-Received: by 2002:aca:df82:: with SMTP id w124mr8794686oig.112.1643923851375;
- Thu, 03 Feb 2022 13:30:51 -0800 (PST)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Thu, 3 Feb 2022 21:30:51 +0000
+        Thu, 3 Feb 2022 16:31:02 -0500
+Received: from mga05.intel.com ([192.55.52.43]:32971 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1355186AbiBCVa7 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 3 Feb 2022 16:30:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643923858; x=1675459858;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=8K/8FE59HHxuTutcM3wLOa58kMUSPfrQoyCSTsffdP4=;
+  b=WVm3TV0Bdu3SCkOqLe+KSqZ/KbIt+aWsHsxZEeBel7qX8rYcRkHXs2jo
+   1YViNeq3eUlSXhp0ZWnFSKjqtvkv5CSWzYkXOEYIZGW+2+6kVjia2pqzo
+   5+7P3BELYnN650QipRVAVbuh5pQ01e1QqzMC8wKClH5E4292huIyayEzr
+   yEhfKTgKBfWMkZWWtNg+eQVICOWl9y3OxR2VpogBTfW8tl4y5N6If+LCm
+   I7utVavdL1pBctBNYS2ztFlUw2t0jzeYHgyFPUg+1hF8g0FUrBxk2aNm+
+   7aQohnSdnNsb90iw2M3fb49JOaMt+HMqlThNk9CpIER+cYHdDLe0+dmkA
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10247"; a="334633970"
+X-IronPort-AV: E=Sophos;i="5.88,340,1635231600"; 
+   d="scan'208";a="334633970"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2022 13:30:58 -0800
+X-IronPort-AV: E=Sophos;i="5.88,340,1635231600"; 
+   d="scan'208";a="583931498"
+Received: from rhweight-mobl.amr.corp.intel.com (HELO rhweight-mobl.ra.intel.com) ([10.209.6.75])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2022 13:30:57 -0800
+From:   Russ Weight <russell.h.weight@intel.com>
+To:     mcgrof@kernel.org, gregkh@linuxfoundation.org, rafael@kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     trix@redhat.com, lgoncalv@redhat.com, yilun.xu@intel.com,
+        hao.wu@intel.com, matthew.gerlach@intel.com,
+        basheer.ahmed.muddebihal@intel.com, tianfei.zhang@intel.com,
+        Russ Weight <russell.h.weight@intel.com>
+Subject: [RFC PATCH 0/5] Extend FW framework for user FW uploads
+Date:   Thu,  3 Feb 2022 14:30:47 -0700
+Message-Id: <20220203213053.360190-1-russell.h.weight@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20220202132301.v3.8.Iffff0c12440a047212a164601e637b03b9d2fc78@changeid>
-References: <20220202212348.1391534-1-dianders@chromium.org> <20220202132301.v3.8.Iffff0c12440a047212a164601e637b03b9d2fc78@changeid>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Thu, 3 Feb 2022 21:30:50 +0000
-Message-ID: <CAE-0n514WMxh58PSZHX-011EUxzt1jqJD4Bd_onDrfnBkbndJg@mail.gmail.com>
-Subject: Re: [PATCH v3 08/14] arm64: dts: qcom: sc7280: Move pcie1_clkreq pull
- / drive str to boards
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>
-Cc:     pmaliset@codeaurora.org, mka@chromium.org,
-        quic_rjendra@quicinc.com,
-        Shaik Sajida Bhanu <sbhanu@codeaurora.org>,
-        kgodara@codeaurora.org, konrad.dybcio@somainline.org,
-        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
-        sibis@codeaurora.org, Andy Gross <agross@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Douglas Anderson (2022-02-02 13:23:42)
-> Pullups and drive strength don't belong in the SoC dtsi file. Move to
-> the board file.
->
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
-> ---
+Extend the firmware loader subsystem to support a persistent sysfs
+interface that userspace may use to initiate a firmware update. For
+example, FPGA based PCIe cards automatically load firmware and FPGA images
+from local FLASH when the card boots. The images in FLASH may be updated
+with new images that are uploaded by the user.
 
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+A device driver may call fw_upload_register() to expose persistent
+"loading" and "data" sysfs files at /sys/class/firmare/<NAME>/*. These
+files are used in the same way as the fallback sysfs "loading" and "data"
+files. However, when 0 is written to "loading" to complete the write of
+firmware data, the data is also transferred to the lower-level driver
+using pre-registered call-back functions. The data transfer is done in
+the context of a kernel worker thread.
+
+Additional sysfs nodes are added in the same location as "loading" and
+"data" to monitor the transfer of the image data to the device using
+callback functions provided by the lower-level device driver and to allow
+the data transfer to be cancelled.
+
+Example usage:
+
+$ pwd
+/sys/class/firmware/n3000bmc-sec-update.8
+$ ls
+cancel  device  loading  remaining_size  subsystem
+data    error   power    status          uevent
+$ echo 1 > loading
+$ cat /tmp/firmware.bin > data
+$ echo 0 > loading
+$ while :; do cat status; cat remaining_size ; sleep 3; done
+preparing
+44590080
+<--snip-->
+transferring
+44459008
+transferring
+44311552
+<--snip-->
+<snip>
+transferring
+173056
+<--snip-->
+programming
+0
+<--snip-->
+idle
+0
+^C
+
+The first two patches in this set make minor changes to enable the
+fw_priv data structure and the sysfs interfaces to be used multiple times
+during the existence of the device driver instance. The third patch is
+mostly a reorganization of existing code in preparation for sharing common
+code with the firmware-upload support. The final two patches provide the
+code for user-initiated firmware uploads.
+
+This driver was previously submitted in the context of the FPGA sub-
+system as the "FPGA Image Load Framework", but the framework is generic
+enough to support other devices as well. The previous submission of this
+patch-set can be viewed here:
+
+https://marc.info/?l=linux-kernel&m=163295640216820&w=2
+
+The n3000bmc-sec-update driver is the first driver to use the Firmware
+Upload API. A recent version of these patches can be viewed here:
+
+https://marc.info/?l=linux-kernel&m=163295697217095&w=2
+
+- Russ
+
+Russ Weight (5):
+  firmware_loader: Clear data and size in fw_free_paged_buf
+  firmware_loader: Check fw_state_is_done in loading_store
+  firmware_loader: Split fw_sysfs support from fallback
+  firmware_loader: Add firmware-upload support
+  firmware_loader: Add sysfs nodes to monitor fw_upload
+
+ .../ABI/testing/sysfs-class-firmware          |  77 +++
+ .../driver-api/firmware/fw_upload.rst         | 103 ++++
+ Documentation/driver-api/firmware/index.rst   |   1 +
+ drivers/base/firmware_loader/Kconfig          |  18 +
+ drivers/base/firmware_loader/Makefile         |   2 +
+ drivers/base/firmware_loader/fallback.c       | 430 ----------------
+ drivers/base/firmware_loader/fallback.h       |  46 +-
+ drivers/base/firmware_loader/firmware.h       |  11 +
+ drivers/base/firmware_loader/fw_sysfs.c       | 468 ++++++++++++++++++
+ drivers/base/firmware_loader/fw_sysfs.h       |  98 ++++
+ drivers/base/firmware_loader/fw_upload.c      | 348 +++++++++++++
+ drivers/base/firmware_loader/fw_upload.h      |  29 ++
+ drivers/base/firmware_loader/main.c           |  18 +-
+ include/linux/firmware.h                      |  72 +++
+ 14 files changed, 1236 insertions(+), 485 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-class-firmware
+ create mode 100644 Documentation/driver-api/firmware/fw_upload.rst
+ create mode 100644 drivers/base/firmware_loader/fw_sysfs.c
+ create mode 100644 drivers/base/firmware_loader/fw_sysfs.h
+ create mode 100644 drivers/base/firmware_loader/fw_upload.c
+ create mode 100644 drivers/base/firmware_loader/fw_upload.h
+
+-- 
+2.25.1
+
