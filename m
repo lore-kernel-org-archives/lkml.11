@@ -2,147 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA2CCC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 21:20:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08CA2C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 21:23:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354688AbiBCVUt (ORCPT
+        id S1354717AbiBCVXV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 16:20:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41444 "EHLO
+        Thu, 3 Feb 2022 16:23:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354646AbiBCVUq (ORCPT
+        with ESMTP id S232544AbiBCVXS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 16:20:46 -0500
-Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C52A5C061714
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 13:20:45 -0800 (PST)
-Received: by mail-io1-xd32.google.com with SMTP id e79so4914237iof.13
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 13:20:45 -0800 (PST)
+        Thu, 3 Feb 2022 16:23:18 -0500
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ED33C061714
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 13:23:18 -0800 (PST)
+Received: by mail-wr1-x42f.google.com with SMTP id s18so7511459wrv.7
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 13:23:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=UETRfPh6Wqht0/YhIX8NetSXGnpaHUGlAB3aQZ/aOxY=;
-        b=OHVHCqax4u2Km7CnFwU2ykPQB3WWJ3+wDEc6u+lpBFuF2b9nhOTKThkj4cYe56dchD
-         b8NvB3icfUqfrsDcnpQGfhKTWpEN3Gabxgvp4klkmKB5dUl3Zl6PcFGBZmOHgZTKcifI
-         /z16bd4rKGd9ue/J7qUrc1gtsMaX1ujOtW0B6xDWn5ywMfw9Bgk0EMyZNdD8+0qxzjul
-         RivdzXirTrrQ+dNVkB+IoKyCONSovlEwDCaVq/PpRR2GCrFINoaOI42aTUw0iIbrHkNA
-         p72cmsdqKOsmCEPNPT7j6ZSMSww4fRl4f8c60SscYg/9iOa+BTo2qNVaHJk9DXuVebBW
-         DF5w==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=i1R30ilVEicJtysARGPLDhNbvvQjDKcL01YwzZ4J60k=;
+        b=a/UOw38GEiIQi5NLt42s0d4GjG0JTuKhrmGsPTlRg/QiQNCuK3Dq9wPBYw5twksuGp
+         1k+3zEdx/ZDx2L7B0XWralxWmoReZhSi+Qow1FOUoA/gcGSBoyFORWCWZigx+CA5IAbX
+         T6E2lCZ+BZMJS4TcklFcqKLCSapejn6gjd/VXRvSVfP0pWtUTpdEVj8lAME1uH6C98cw
+         6h0b1IdKcyF4gBIcqDOij1T/R/zgoPde6U2R06DrhehGTrMVfxcJq1Q6fyfLSO38qvPw
+         CbgyPZpcqPH+CiLYS4RVeVUlFave21aVoqNRr347pNf2DnQM77+ZWVz2SpS0WUFbg+kS
+         MLXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=UETRfPh6Wqht0/YhIX8NetSXGnpaHUGlAB3aQZ/aOxY=;
-        b=oRqOBd9xS1k3Z/y2hTUP7OWVGr+EjssVQaOYaFFBUxJhAmtNbQD8JJbuOCG+/gX4oE
-         y8R2fCYLa663662KJGXRGTa8i0C97qRlR/4YF1NlCx2i5qeei2lknqrlZ+Vbjm0DbHDC
-         rFt6aJ/6LryHayIz5t3OTke1a4JVRC0LveRe/RQSAoZ7rx4pXAdrBdzC/J2A0IZ15oyU
-         pgtPRUATEeWDuJfITSowdxXy+bAyXVU28/6H1nk8uf7OesFZp40snm16vUGELenPtI5l
-         2+Bi1Ih5PmZlDd8EBPLu5HfZ5EDxs/8rQFMnlDb4Izs/AX0GHmcffKJnYVlN1dGvBWqN
-         KASA==
-X-Gm-Message-State: AOAM531SA5awPTQ7RD6Cp8sMhbag7BSDKGbbn1n66WneRZL5yD8k1gaL
-        KUUts8b+VT0jxo8immnkJ0wj7Q==
-X-Google-Smtp-Source: ABdhPJz6PrX3QvS+M/jEJz6sqfvGlbg88F5EDkuwsyj/dxzoXr+dbILY7vReO4+yIDuq6Yz+1NN/XQ==
-X-Received: by 2002:a05:6638:25d4:: with SMTP id u20mr7173825jat.189.1643923245044;
-        Thu, 03 Feb 2022 13:20:45 -0800 (PST)
-Received: from [192.168.1.30] ([207.135.234.126])
-        by smtp.gmail.com with ESMTPSA id w5sm7805ilu.83.2022.02.03.13.20.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Feb 2022 13:20:44 -0800 (PST)
-Subject: Re: [syzbot] general protection fault in submit_bio_checks
-To:     syzbot <syzbot+2b3f18414c37b42dcc94@syzkaller.appspotmail.com>,
-        andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, john.fastabend@gmail.com, kafai@fb.com,
-        kpsingh@kernel.org, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com,
-        Christoph Hellwig <hch@lst.de>
-References: <0000000000008c32e305d6d8e802@google.com>
-From:   Jens Axboe <axboe@kernel.dk>
-Message-ID: <fe92753c-f46b-8df0-78cf-226a4a2662ba@kernel.dk>
-Date:   Thu, 3 Feb 2022 14:20:43 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        bh=i1R30ilVEicJtysARGPLDhNbvvQjDKcL01YwzZ4J60k=;
+        b=oH9uldhVzolcFa4KqOMi6rGYmdwGeKMEWh7iVcBOlU2gZu3/Gq8KKLoBCZqSsYYFVQ
+         FAgTAolupCRnOqtNId1q9of6fcqYp2ZgZq6B4C2KpWGtVFha5cJuESChU8aKXwCxkjaP
+         vexVOpC/Ynewzc2CLNnmp5kBNz8PnF1EurjeTiD01BUa353srGZewPtPbyLHuBsl1xsD
+         zWy+2s6Yrs/rpQ8a3JH51ofOMH1LL7Sy2g9pf/wVseQ+i4ktksU9lg3ZHL/id1HYs//o
+         ghcQbNGXmylUV1Htat1NxsBNxVNblUan8AacIeu4WAl/WjjXQk3cCCWjgvaWRX1zPUqO
+         pfWQ==
+X-Gm-Message-State: AOAM533sNAixDMTNgpN5Nw/Yoa60TPr7hRel8My6hEouj468bgtvgRsl
+        /D04FYBbtXDjUC6O9vPQZ1EuzF6ElSUppQ==
+X-Google-Smtp-Source: ABdhPJzT/mYLDXsGbH6e4OfwlmlkdwTVUgmytYv/5rkjfh7w5UEwIJauCSDbN0R5cmi35LI/thqsgQ==
+X-Received: by 2002:adf:d087:: with SMTP id y7mr30009202wrh.274.1643923397096;
+        Thu, 03 Feb 2022 13:23:17 -0800 (PST)
+Received: from localhost.localdomain (cpc141996-chfd3-2-0-cust928.12-3.cable.virginm.net. [86.13.91.161])
+        by smtp.gmail.com with ESMTPSA id x7sm2652030wrt.77.2022.02.03.13.23.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Feb 2022 13:23:16 -0800 (PST)
+From:   Daniel Scally <djrscally@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     sakari.ailus@linux.intel.com, paul.kocialkowski@bootlin.com,
+        Jean-Michel Hautbois <jeanmichel.hautbois@ideasonboard.com>
+Subject: [PATCH] media: i2c: Fix pixel array positions in ov8865
+Date:   Thu,  3 Feb 2022 21:23:03 +0000
+Message-Id: <20220203212303.633399-1-djrscally@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <0000000000008c32e305d6d8e802@google.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/30/22 9:06 PM, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following issue on:
-> 
-> HEAD commit:    b605fdc54c2b Add linux-next specific files for 20220128
-> git tree:       linux-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=150084b8700000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=da5090473475f3ca
-> dashboard link: https://syzkaller.appspot.com/bug?extid=2b3f18414c37b42dcc94
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> 
-> Unfortunately, I don't have any reproducer for this issue yet.
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+2b3f18414c37b42dcc94@syzkaller.appspotmail.com
-> 
-> general protection fault, probably for non-canonical address 0xdffffc000000002f: 0000 [#1] PREEMPT SMP KASAN
-> KASAN: null-ptr-deref in range [0x0000000000000178-0x000000000000017f]
-> CPU: 1 PID: 3642 Comm: syz-executor.5 Not tainted 5.17.0-rc1-next-20220128-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> RIP: 0010:blk_throtl_bio block/blk-throttle.h:175 [inline]
-> RIP: 0010:submit_bio_checks+0x7c0/0x1bf0 block/blk-core.c:765
-> Code: 08 3c 03 0f 8e 4a 11 00 00 48 b8 00 00 00 00 00 fc ff df 44 8b 6d 10 41 83 e5 01 4a 8d bc 2b 7c 01 00 00 48 89 fa 48 c1 ea 03 <0f> b6 04 02 48 89 fa 83 e2 07 38 d0 7f 08 84 c0 0f 85 09 11 00 00
-> RSP: 0018:ffffc900028cf680 EFLAGS: 00010203
-> RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
-> RDX: 000000000000002f RSI: ffffffff83d5f41e RDI: 000000000000017d
-> RBP: ffff88801e8be500 R08: ffffffff8a241580 R09: 0000000000000000
-> R10: ffffffff83d5f410 R11: 0000000000000000 R12: 0000000000000000
-> R13: 0000000000000001 R14: 00000000fffffffe R15: ffff88801ad9a4cc
-> FS:  0000555556299400(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 00007fed92bd5ec9 CR3: 000000003b65d000 CR4: 00000000003526e0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Call Trace:
->  <TASK>
->  __submit_bio+0xaf/0x360 block/blk-core.c:802
->  __submit_bio_noacct_mq block/blk-core.c:881 [inline]
->  submit_bio_noacct block/blk-core.c:907 [inline]
->  submit_bio_noacct+0x6c9/0x8a0 block/blk-core.c:896
->  submit_bio block/blk-core.c:968 [inline]
->  submit_bio+0x1ea/0x430 block/blk-core.c:926
->  write_dev_flush fs/btrfs/disk-io.c:4243 [inline]
->  barrier_all_devices fs/btrfs/disk-io.c:4293 [inline]
->  write_all_supers+0x3038/0x4440 fs/btrfs/disk-io.c:4388
->  btrfs_commit_transaction+0x1be3/0x3180 fs/btrfs/transaction.c:2362
->  btrfs_commit_super+0xc1/0x100 fs/btrfs/disk-io.c:4562
->  close_ctree+0x314/0xccc fs/btrfs/disk-io.c:4671
->  generic_shutdown_super+0x14c/0x400 fs/super.c:462
->  kill_anon_super+0x36/0x60 fs/super.c:1056
->  btrfs_kill_super+0x38/0x50 fs/btrfs/super.c:2365
->  deactivate_locked_super+0x94/0x160 fs/super.c:332
->  deactivate_super+0xad/0xd0 fs/super.c:363
->  cleanup_mnt+0x3a2/0x540 fs/namespace.c:1159
->  task_work_run+0xdd/0x1a0 kernel/task_work.c:164
->  tracehook_notify_resume include/linux/tracehook.h:188 [inline]
->  exit_to_user_mode_loop kernel/entry/common.c:175 [inline]
->  exit_to_user_mode_prepare+0x27e/0x290 kernel/entry/common.c:207
->  __syscall_exit_to_user_mode_work kernel/entry/common.c:289 [inline]
->  syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:300
->  do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
->  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> RIP: 0033:0x7fe814b274c7
-> Code: ff ff ff f7 d8 64 89 01 48 83 c8 ff c3 66 0f 1f 44 00 00 31 f6 e9 09 00 00 00 66 0f 1f 84 00 00 00 00 00 b8 a6 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+The ov8865's datasheet gives the pixel array as 3296x2528, and the
+active portion as the centre 3264x2448. This makes for a top offset
+of 40 and a left offset of 16, not 32 and 80.
 
-Christoph, looks like an issue with replacing bio_set_dev() with just
-assigning bio->bi_bdev in bio_reset(). The latter does not associate the
-blkcg, for example, which is what is causing this oops.
+Fixes: acd25e220921 ("media: i2c: Add .get_selection() support to ov8865")
 
+Reported-by: Jean-Michel Hautbois <jeanmichel.hautbois@ideasonboard.com>
+Signed-off-by: Daniel Scally <djrscally@gmail.com>
+---
+ drivers/media/i2c/ov8865.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/media/i2c/ov8865.c b/drivers/media/i2c/ov8865.c
+index d9d016cfa9ac..53e21ae8e886 100644
+--- a/drivers/media/i2c/ov8865.c
++++ b/drivers/media/i2c/ov8865.c
+@@ -457,8 +457,8 @@
+ 
+ #define OV8865_NATIVE_WIDTH			3296
+ #define OV8865_NATIVE_HEIGHT			2528
+-#define OV8865_ACTIVE_START_TOP			32
+-#define OV8865_ACTIVE_START_LEFT		80
++#define OV8865_ACTIVE_START_TOP			40
++#define OV8865_ACTIVE_START_LEFT		16
+ #define OV8865_ACTIVE_WIDTH			3264
+ #define OV8865_ACTIVE_HEIGHT			2448
+ 
 -- 
-Jens Axboe
+2.25.1
 
