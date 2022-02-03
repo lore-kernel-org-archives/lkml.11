@@ -2,96 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D7C4C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 08:06:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59EBDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 08:13:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241489AbiBCIGv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 03:06:51 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:53666 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231836AbiBCIGu (ORCPT
+        id S245648AbiBCINl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Feb 2022 03:13:41 -0500
+Received: from wout5-smtp.messagingengine.com ([64.147.123.21]:46103 "EHLO
+        wout5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231836AbiBCINj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 03:06:50 -0500
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id AF4211F3A8;
-        Thu,  3 Feb 2022 08:06:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1643875609; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=+/sNOeN4jj6ccVoCuEbZqorSHsEWu+h4B6ItBS/74BY=;
-        b=GKRftJcBwGEcS683kmNo1SEmU0CKbCynklXUKbnKG3Rva4p8fhBurPBs5WUjplvh7uY6oe
-        vSVDncBvEszJzyBz50I9127wccD9CSSztYiVsBBtRF98NFQQDmWRM6zWYQNmAvGzKR3IWR
-        GdGBVJq0yw382W1Qm2cTPgRrKG/MWL4=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1643875609;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=+/sNOeN4jj6ccVoCuEbZqorSHsEWu+h4B6ItBS/74BY=;
-        b=xHhPow6Ow3t4jpHN4xzGga41Kc5o2GDgPjX5f1nhU9wQ+Az9oST3bGPGRw3VNmWb1Lr1XQ
-        pn359lw2GUgLneCw==
-Received: from quack3.suse.cz (unknown [10.100.200.198])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id A0788A3B81;
-        Thu,  3 Feb 2022 08:06:49 +0000 (UTC)
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id 4E948A05B6; Thu,  3 Feb 2022 09:06:49 +0100 (CET)
-Date:   Thu, 3 Feb 2022 09:06:49 +0100
-From:   Jan Kara <jack@suse.cz>
-To:     Yang Li <yang.lee@linux.alibaba.com>
-Cc:     jack@suse.com, linux-ext4@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
-Subject: Re: [PATCH -next] mm/fs: remove variable bdi set but not used
-Message-ID: <20220203080649.5q4c7rvowwgf4ssp@quack3.lan>
-References: <20220203052633.54000-1-yang.lee@linux.alibaba.com>
+        Thu, 3 Feb 2022 03:13:39 -0500
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.west.internal (Postfix) with ESMTP id B3BED32020F0;
+        Thu,  3 Feb 2022 03:13:37 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Thu, 03 Feb 2022 03:13:38 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm2; bh=h+F9A27NvIA+GKJCYuxpPOGt5GYFFmLQcgR5pl
+        DO8E8=; b=Cdsyg0Pn3Ab6xErlAntB5MyGCgXAkk+uF09GN826cSXJp1nX39LKSn
+        QnpArFTJMqTf90vRHT5lV7nBTPMKViGa6U9Ca5eTl6lRrC5qOkI5+qDXohCcvuet
+        SZu/A3BzcDV2ID/A8L+Xxt7/92B2cYliI9OJ5XgRlhNatuH0XlgZK0pGHt/G3TRh
+        ZuCm6YNwGCheBVSTUkv2M37YxzxwqX/w1tE0GMqSA1D577Y3IoI18qvL/uf+duPO
+        imVwS5NCmigRFxxqWquEukcEO2Jbbyb3kD+ywJd05tLun7CESMeDpbTlARXY1NTI
+        S6TQRmVh3UlfXo6yatYJqJxQ1ZMXrOkw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=h+F9A27NvIA+GKJCY
+        uxpPOGt5GYFFmLQcgR5plDO8E8=; b=F5AFmheXYgFSOpakvoALGRVa0zVirxzRR
+        k5gmm198NMnClY00YwdSrF8U/CvukeyjO3jFSGbGSNE3eiNASVktWwkONMuj1JXk
+        crbBfwz5/Gp2gMhzst74OeTI9kWnSpPEz0swHxrSgANbwQcq7q/kXWMQZi69E5kF
+        LivQDWE9TPOpqlCuSL4/Mb0kJJDXAl7Jb+ftvFd6O03KVY5+9n4AtJc3t23XPYcy
+        +sKDk1/Z+cxpIlCK+PIh23yxFc7Uvk0IJFi+FliRQtpXoIoNIBRrijsvAkaB4smu
+        gAG0uZEvgN87ErXQECWNDckFLUC3S5gAcwZdgj3itvt3QPXPXNE1g==
+X-ME-Sender: <xms:sI77YcxhL75k8W8K0u04e4pYItRNKXdRVgwHRB9jGO36bUbCaKdfuw>
+    <xme:sI77YQQIEOR0oDxF1FxJxVY89vs-YwmbaWdJrzU5j8h4Mf_Gb3y3vOBIyhO52X2sz
+    IjmyS7APSIFu0-wX3c>
+X-ME-Received: <xmr:sI77YeVZF1UoOeRktb6FzpQFiSfd69_8E7mQBKRgPyRhjUoDWeqjn3QFH0oan7fRFUbVPSyKb3jcYxRXbueXhQhtHLf33T5fuFWt9hw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrgeeigdduudehucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehgtderredttddvnecuhfhrohhmpeforgigihhm
+    vgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrth
+    htvghrnhepleekgeehhfdutdeljefgleejffehfffgieejhffgueefhfdtveetgeehieeh
+    gedunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmh
+    grgihimhgvsegtvghrnhhordhtvggthh
+X-ME-Proxy: <xmx:sI77YahwtO8cMS1cPg9153h7U8dRjBbntU9a4j9SNcpsAyYJSlCrAw>
+    <xmx:sI77YeCrLvRZ1BOkBxWuH14FkG8K3uy-dpiV6xAh0aC48g4j6DbZlQ>
+    <xmx:sI77YbIKsRmFJlXWevFcNV-I6BhsqT4FVcpRS_MALk1xuO-2Cyxsbg>
+    <xmx:sY77YUCbWxw9vejeNnCW4z_95HC7isoQxLBb-OvfhHE7zfvD9yzvBA>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 3 Feb 2022 03:13:36 -0500 (EST)
+Date:   Thu, 3 Feb 2022 09:13:33 +0100
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Samuel Holland <samuel@sholland.org>
+Cc:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        linux-sunxi@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH 1/2] dt-bindings: nvmem: SID: Add compatible for D1
+Message-ID: <20220203081333.au4iblrlktqixgwk@houat>
+References: <20220203012502.10661-1-samuel@sholland.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="jikoomnds2xtwx5p"
 Content-Disposition: inline
-In-Reply-To: <20220203052633.54000-1-yang.lee@linux.alibaba.com>
+In-Reply-To: <20220203012502.10661-1-samuel@sholland.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 03-02-22 13:26:33, Yang Li wrote:
-> The code that uses the pointer 'bdi' has been removed in commit:
-> '37c32ade079f000c8e539730f254b14fae0d3b49' and inode_to_bdi() doesn't
-> change 'inode', so the declaration and assignment of 'bdi' can be removed.
-> 
-> Eliminate the following clang warning:
-> fs/ext2/ialloc.c:173:27: warning: variable 'bdi' set but not used
-> 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
 
-Thanks! The patch looks good. Feel free to add:
+--jikoomnds2xtwx5p
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Reviewed-by: Jan Kara <jack@suse.cz>
+On Wed, Feb 02, 2022 at 07:25:00PM -0600, Samuel Holland wrote:
+> D1 has a SID like other Allwinner SoCs, but with a unique eFuse layout.
+> Add a new compatible string for it.
+>=20
+> Signed-off-by: Samuel Holland <samuel@sholland.org>
 
-								Honza
+Acked-by: Maxime Ripard <maxime@cerno.tech>
 
-> ---
->  fs/ext2/ialloc.c | 3 ---
->  1 file changed, 3 deletions(-)
-> 
-> diff --git a/fs/ext2/ialloc.c b/fs/ext2/ialloc.c
-> index d632764da240..998dd2ac8008 100644
-> --- a/fs/ext2/ialloc.c
-> +++ b/fs/ext2/ialloc.c
-> @@ -170,9 +170,6 @@ static void ext2_preread_inode(struct inode *inode)
->  	unsigned long offset;
->  	unsigned long block;
->  	struct ext2_group_desc * gdp;
-> -	struct backing_dev_info *bdi;
-> -
-> -	bdi = inode_to_bdi(inode);
->  
->  	block_group = (inode->i_ino - 1) / EXT2_INODES_PER_GROUP(inode->i_sb);
->  	gdp = ext2_get_group_desc(inode->i_sb, block_group, NULL);
-> -- 
-> 2.20.1.7.g153144c
-> 
--- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+Maxime
+
+--jikoomnds2xtwx5p
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYfuOrQAKCRDj7w1vZxhR
+xVwcAQD18T5ARVFWMMXn8UrNE5dT0w2s+SM2DU9z03hLPLFilAD7BAezRRhjaUDk
+fKpizMoqTnZEnuFb6nepiOHApT7MfQ8=
+=fo+u
+-----END PGP SIGNATURE-----
+
+--jikoomnds2xtwx5p--
