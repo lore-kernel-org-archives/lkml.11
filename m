@@ -2,116 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 026DFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 07:54:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AC17C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 07:58:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235967AbiBCHyJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 02:54:09 -0500
-Received: from mail-ua1-f47.google.com ([209.85.222.47]:43594 "EHLO
-        mail-ua1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229746AbiBCHyG (ORCPT
+        id S241154AbiBCH6U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Feb 2022 02:58:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53758 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233434AbiBCH6R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 02:54:06 -0500
-Received: by mail-ua1-f47.google.com with SMTP id a24so3647581uat.10
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 23:54:06 -0800 (PST)
+        Thu, 3 Feb 2022 02:58:17 -0500
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0037CC06173B
+        for <linux-kernel@vger.kernel.org>; Wed,  2 Feb 2022 23:58:16 -0800 (PST)
+Received: by mail-yb1-xb36.google.com with SMTP id i62so6387474ybg.5
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 23:58:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=G8te9fm9uBsrUaVWugKAeTKH1DeJ7u2Cxa+zpUpsAWk=;
+        b=RLc26mKlJKGqZaYbJsxgavP6u0h8bb7n9zOgi5x58ejo4XgMD9YC4BXyaVfQAdQNnq
+         5QWxjDPw3yasqw1Jodx+qeAAcLoq26zWwgn21daH+X9CqH/nXsCTVyd0Xcmy5ffujHUn
+         HIGuAqzCjc5OVJ9cMp3dwzTK9f/+QjEX1TWZzzqvhZgXoeztVAM0+6k9x2PWc7va8rTR
+         GcJxbDQszD6uMX1/GF3RCs1tjHUgDXGDZKKmEQkHFZth85kOgEY/XUQiri8DqA1jn9Ux
+         UXBJPTSw2uS3LfDzUvSUp605Ldtqn3beQ0aYBlibra4/a0GeRL3bb25537zoOwQJSnYf
+         11Hw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=o1bdeogaytIIEqH3oTS2dReCAL1IGEgvZjy30/0m0Ag=;
-        b=iYTk/hlwhZGji/2XOkXI02Xpd5YxkEpoiiaX4uMsep/65shsNWfeWvU+5mDq23zxaH
-         bUCDtNIQO0ZmsVxW1QwORrj7cpB6XR6ZSyUt8qUsHPhTeWMJD/+Q3CB8qU7vuj+NNJAZ
-         dyLrfDW1XG3/9RmoW7tM0RBNmCihh8+fsgzb92vwQTWylgwdbvev+osI2bIDTeqe8Wys
-         E6gvupgy6ZpjR7MlaxtuvFU3yuxRfaEY9ZMYBpf4VY8pnO6C9jbyLy+UwVwtlnRFxw/0
-         ohmFyROE3frs+zW8HR2Ox5iv4qQuOKZtjJ7iEynmirW2xBGyA1T+3s6Gvh326Ua4gUA7
-         /VJA==
-X-Gm-Message-State: AOAM532MGhOYlseVlin4OXxJEC54uCQFqnbPEBtHwohQh5vQVml7EEhe
-        YbJZROG0YomHMyvj5pGxgu0Yh54VMFTuRA==
-X-Google-Smtp-Source: ABdhPJz4C8Qz329rfRxQtH8wEzFVvMn80cTAPWezuDpqFwd0gbr1/tYGscu7bUoStKmPzALdoaf5hg==
-X-Received: by 2002:a05:6102:508:: with SMTP id l8mr846615vsa.51.1643874845630;
-        Wed, 02 Feb 2022 23:54:05 -0800 (PST)
-Received: from mail-ua1-f51.google.com (mail-ua1-f51.google.com. [209.85.222.51])
-        by smtp.gmail.com with ESMTPSA id g22sm6447892vkm.3.2022.02.02.23.54.04
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 02 Feb 2022 23:54:05 -0800 (PST)
-Received: by mail-ua1-f51.google.com with SMTP id 60so3748284uae.1
-        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 23:54:04 -0800 (PST)
-X-Received: by 2002:a67:5f83:: with SMTP id t125mr12672642vsb.68.1643874844762;
- Wed, 02 Feb 2022 23:54:04 -0800 (PST)
+        bh=G8te9fm9uBsrUaVWugKAeTKH1DeJ7u2Cxa+zpUpsAWk=;
+        b=O7cEe6EboBjrQ1umdxAo1lvwSlvZDOZpv9YTjSL9Lx7hgxGtKcsKjOlqd4OezU1rRF
+         AtxcwUoE17bkPAysJdqf+Rtj9VMsLFtY2viH898/a19Uk99qivFpYcTE+ndC9fYLMFWL
+         WaYA9ugb+WvJ/sh34VyePJJb5dUau8bLNjZO0MOMB3+cQwxSbzMSTg6SZ3faQbrAuwwH
+         XIQRjzkyY7VjJ5VxOG0Bw/sfJ8JYKsAqgWHE2errmQn4aWrghUHuGjez8lIxRBmYioDz
+         juRshg9JPHkiTTDtGLTGEZIn0+PVCScQrpHQ8NoTwI4pBWdLrQvvbyIwLIuUZXPijhpU
+         RJzw==
+X-Gm-Message-State: AOAM5302wDlSzh74IncZdSg/BT/nNes1FMwA4I63tnwiX7whynn4ubq7
+        8RMGLwtmmMtKxKhp9wkti2jdQuGPXhakImUiJDAUkg==
+X-Google-Smtp-Source: ABdhPJwnTVuAbGhU4ghxbR17XGHR6LbAuYdyp2GDmnyM2pBL5JGzJZEJ32zBjc8CW4T6ZpuExgEmCpmR9NwjTi9RMMQ=
+X-Received: by 2002:a0d:d6c5:: with SMTP id y188mr3267883ywd.188.1643875095965;
+ Wed, 02 Feb 2022 23:58:15 -0800 (PST)
 MIME-Version: 1.0
-References: <87838c92-484e-d9f0-4840-f9e9db712c9d@oracle.com>
-In-Reply-To: <87838c92-484e-d9f0-4840-f9e9db712c9d@oracle.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 3 Feb 2022 08:53:53 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdXxYf2+skr3TN4ZmMx-=Eghe9Prm8KgDvFskovMG0MeOw@mail.gmail.com>
-Message-ID: <CAMuHMdXxYf2+skr3TN4ZmMx-=Eghe9Prm8KgDvFskovMG0MeOw@mail.gmail.com>
-Subject: Re: [PATCH v2 RESEND 3] video: fbdev: cirrusfb: check pixclock to
- avoid divide by zero
-To:     George Kennedy <george.kennedy@oracle.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>
+References: <20220203010746.610494-1-irogers@google.com> <ac97246f-0dbe-6118-dab6-dbc562e3c82c@linux.intel.com>
+In-Reply-To: <ac97246f-0dbe-6118-dab6-dbc562e3c82c@linux.intel.com>
+From:   Ian Rogers <irogers@google.com>
+Date:   Wed, 2 Feb 2022 23:58:02 -0800
+Message-ID: <CAP-5=fVxFy36wZKu+M199qic1VYWo_Z9GQ+jBAp6ZkBHTHv4Ww@mail.gmail.com>
+Subject: Re: [PATCH] perf metrics: Add literal for system TSC frequency
+To:     Andi Kleen <ak@linux.intel.com>
+Cc:     vineet.singh@intel.com, perry.taylor@intel.com,
+        caleb.biggers@intel.com, asaf.yaffe@intel.com,
+        kshipra.bopardikar@intel.com,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        James Clark <james.clark@arm.com>,
+        John Garry <john.garry@huawei.com>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        Stephane Eranian <eranian@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi George,
-
-CC Helge, linux-fbdev
-
-On Wed, Feb 2, 2022 at 7:23 PM George Kennedy <george.kennedy@oracle.com> wrote:
-> Do a sanity check on pixclock value to avoid divide by zero.
+On Wed, Feb 2, 2022 at 7:59 PM Andi Kleen <ak@linux.intel.com> wrote:
 >
-> If the pixclock value is zero, the cirrusfb driver will round up
-> pixclock to get the derived frequency as close to maxclock as
-> possible.
 >
-> Syzkaller reported a divide error in cirrusfb_check_pixclock.
+> On 2/2/2022 5:07 PM, Ian Rogers wrote:
+> > Such a literal is useful to calculate things like the average frequency
+> > [1]. The TSC frequency isn't exposed by sysfs although some experimental
+> > drivers look to add it [2]. This change computes the value using the
+> > frequency in /proc/cpuinfo which is accruate at least on Intel
+> > processors.
 >
-> divide error: 0000 [#1] SMP KASAN PTI
-> CPU: 0 PID: 14938 Comm: cirrusfb_test Not tainted 5.15.0-rc6 #1
-> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.11.0-2
-> RIP: 0010:cirrusfb_check_var+0x6f1/0x1260
+> FWIW the information in /proc/cpuinfo is going away.
 >
-> Call Trace:
->   fb_set_var+0x398/0xf90
->   do_fb_ioctl+0x4b8/0x6f0
->   fb_ioctl+0xeb/0x130
->   __x64_sys_ioctl+0x19d/0x220
->   do_syscall_64+0x3a/0x80
->   entry_SYSCALL_64_after_hwframe+0x44/0xae
+> You should really use CPUID for this, which has a new leaf for this.
+> Unfortunately there
 >
-> Cc: <stable@vger.kernel.org> # 5.4.y
-> Reported-by: syzkaller <syzkaller@googlegroups.com>
-> Signed-off-by: George Kennedy<george.kennedy@oracle.com>
-> Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> ---
-> Hi Andrew, can you pick this patch up?  Some of the fbdev drivers have
-> maintainers but the cirrusfb.c is basically orphaned.  I sent this patch
-> in Oct and again in Dec and no one picked it up.  Geert has reviewed it.
-> Obviously the original code just crashed so this shouldn't be
-> controversial.
+> were a few systems were it was inaccurate, but I suppose you could still
+> prefer /proc/cpuinfo
 >
-> v2: Geert says that instead of just returning an error, this is supposed
-> to find a valid pixclock and use that.
+> Also your method will not work when the metrics are used through perf
+> stat report or perf script
 >
-> RESEND: Added the Reviewed by: and Cc: <stable@vger.kernel.org>
+> and run on another system. For the perf script case there is support for
+> putting the TSC into
+>
+> perf.data (that is needed for PT), but the header is not dumped by
+> default unfortunately.
+>
+> So likely you would need some new mechanism for that.
 
-This is already queued in the fbdev for-next branch[1], as announced
-by Helge in [2].
+Thanks Andi,
 
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/deller/linux-fbdev.git/commit/?h=for-next&id=5c6f402bdcf9e7239c6bc7087eda71ac99b31379
-[2] https://lore.kernel.org/all/e1e5b7d1-ea09-6e28-9c39-45b983734a85@gmx.de/
+yep metrics with perf stat record are broken on a number of fronts and
+this will be another that will need a fix. It looks like the cpuid
+approach won't work pre-Skylake so sysfs could act as a fallback, but
+I don't have an ETA on when that will be available. We could have
+additional warnings when reading /proc/cpuinfo fails. Wdyt?
 
-Gr{oetje,eeting}s,
+Thanks,
+Ian
 
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+> -Andi
+>
