@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 032A5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:38:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48595C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:38:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355600AbiBCUiB (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:38:01 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:38022 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355331AbiBCUfn (ORCPT
+        id S233743AbiBCUiG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Feb 2022 15:38:06 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41936 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355342AbiBCUfn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 3 Feb 2022 15:35:43 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C2CF2B835B4;
-        Thu,  3 Feb 2022 20:35:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B812FC36AE2;
-        Thu,  3 Feb 2022 20:35:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 373FB61A5C;
+        Thu,  3 Feb 2022 20:35:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5EBAC340E8;
+        Thu,  3 Feb 2022 20:35:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643920539;
-        bh=ROdNpk6GGl3zwq7T6WvJRSyShTsDYOP5Ert8FCnHo9w=;
+        s=k20201202; t=1643920542;
+        bh=ZIoruihJRDf1q4OFLPrXAa1XVhoSo5Vgetf4aKxnfEQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HcViLvuJNBAifFsgmGc5Lhy/guEcejz7OA0M1TwPX3QwlWiFUW/PEj3riaUWjeV1U
-         NEZM4T3SPS404oWgln+e8DhOeAj2FHOYmMy5wBk+4dK8oklS9TF/BtVn+T4/QjzFUQ
-         D+TZQqk9o6dlX0/HzCWcBljppF0VMj2IJ0bJhhZPd5pHnbftcNDtInLV7DBjUmGknA
-         BveboFqtg1Fckl17cfOlhsIulIk52G1Ogu+PXSn3u3vhQLn+p4i1mvjex6WxqPXZot
-         rkMeIO6KO9fPU8pNul/8pivuZNu9earKGm85B1HV7NF1IC8YcOgjrHgnnoq0CbVCnP
-         RVpkLwR3hokcw==
+        b=h0Q8g56TUvX/gJMnJulQvHmviv7vLyWpRwJdkK93dwkt7O12rFnOUVhzdxNCGl96D
+         gDo+wBenOdLHYCSWh1+nANtLG283gmcUSgw+BHZZ20CuGV5rqg33b8QrU2eZY0lBaF
+         DlNwXMLF4flAQsifhFABXtegYDr58b/yMAYjdoKY9PGWbqFRkPHz7btSIlJvmwCNa5
+         mmjsX0Ag0d8LiPWk5Hw5WoXi9BrR4TO2OK1QDuRJQorZDPlliJYsZWSrpNrbvDfNkT
+         DdfhGNTxAuUZ+ADMHwRs19eVmjrbkJ4w0kiaUwfZ5Lo6+mM1kfDkvV/dUZN6xlne9W
+         c5FljZ7sTPRkg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Amelie Delaunay <amelie.delaunay@foss.st.com>,
-        Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, hminas@synopsys.com,
-        linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 22/25] usb: dwc2: gadget: don't try to disable ep0 in dwc2_hsotg_suspend
-Date:   Thu,  3 Feb 2022 15:34:43 -0500
-Message-Id: <20220203203447.3570-22-sashal@kernel.org>
+Cc:     Wu Zheng <wu.zheng@intel.com>, Ye Jinhe <jinhe.ye@intel.com>,
+        Keith Busch <kbusch@kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Sasha Levin <sashal@kernel.org>, axboe@fb.com,
+        sagi@grimberg.me, linux-nvme@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.10 24/25] nvme-pci: add the IGNORE_DEV_SUBNQN quirk for Intel P4500/P4600 SSDs
+Date:   Thu,  3 Feb 2022 15:34:45 -0500
+Message-Id: <20220203203447.3570-24-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220203203447.3570-1-sashal@kernel.org>
 References: <20220203203447.3570-1-sashal@kernel.org>
@@ -51,48 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amelie Delaunay <amelie.delaunay@foss.st.com>
+From: Wu Zheng <wu.zheng@intel.com>
 
-[ Upstream commit ac55d163855924aa5af9f1560977da8f346963c8 ]
+[ Upstream commit 25e58af4be412d59e056da65cc1cefbd89185bd2 ]
 
-Calling dwc2_hsotg_ep_disable on ep0 (in/out) will lead to the following
-logs before returning -EINVAL:
-dwc2 49000000.usb-otg: dwc2_hsotg_ep_disable: called for ep0
-dwc2 49000000.usb-otg: dwc2_hsotg_ep_disable: called for ep0
+The Intel P4500/P4600 SSDs do not report a subsystem NQN despite claiming
+compliance to a standards version where reporting one is required.
 
-To avoid these two logs while suspending, start disabling the endpoint
-from the index 1, as done in dwc2_hsotg_udc_stop:
+Add the IGNORE_DEV_SUBNQN quirk to not fail the initialization of a
+second such SSDs in a system.
 
-	/* all endpoints should be shutdown */
-	for (ep = 1; ep < hsotg->num_of_eps; ep++) {
-		if (hsotg->eps_in[ep])
-			dwc2_hsotg_ep_disable_lock(&hsotg->eps_in[ep]->ep);
-		if (hsotg->eps_out[ep])
-			dwc2_hsotg_ep_disable_lock(&hsotg->eps_out[ep]->ep);
-	}
-
-Acked-by: Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>
-Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
-Link: https://lore.kernel.org/r/20211207130101.270314-1-amelie.delaunay@foss.st.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Zheng Wu <wu.zheng@intel.com>
+Signed-off-by: Ye Jinhe <jinhe.ye@intel.com>
+Reviewed-by: Keith Busch <kbusch@kernel.org>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/dwc2/gadget.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/nvme/host/pci.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/usb/dwc2/gadget.c b/drivers/usb/dwc2/gadget.c
-index 449f19c3633c2..ec54971063f8f 100644
---- a/drivers/usb/dwc2/gadget.c
-+++ b/drivers/usb/dwc2/gadget.c
-@@ -5032,7 +5032,7 @@ int dwc2_hsotg_suspend(struct dwc2_hsotg *hsotg)
- 		hsotg->gadget.speed = USB_SPEED_UNKNOWN;
- 		spin_unlock_irqrestore(&hsotg->lock, flags);
- 
--		for (ep = 0; ep < hsotg->num_of_eps; ep++) {
-+		for (ep = 1; ep < hsotg->num_of_eps; ep++) {
- 			if (hsotg->eps_in[ep])
- 				dwc2_hsotg_ep_disable_lock(&hsotg->eps_in[ep]->ep);
- 			if (hsotg->eps_out[ep])
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index 1b85349f57af0..97afeb898b253 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -3198,7 +3198,8 @@ static const struct pci_device_id nvme_id_table[] = {
+ 				NVME_QUIRK_DEALLOCATE_ZEROES, },
+ 	{ PCI_VDEVICE(INTEL, 0x0a54),	/* Intel P4500/P4600 */
+ 		.driver_data = NVME_QUIRK_STRIPE_SIZE |
+-				NVME_QUIRK_DEALLOCATE_ZEROES, },
++				NVME_QUIRK_DEALLOCATE_ZEROES |
++				NVME_QUIRK_IGNORE_DEV_SUBNQN, },
+ 	{ PCI_VDEVICE(INTEL, 0x0a55),	/* Dell Express Flash P4600 */
+ 		.driver_data = NVME_QUIRK_STRIPE_SIZE |
+ 				NVME_QUIRK_DEALLOCATE_ZEROES, },
 -- 
 2.34.1
 
