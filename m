@@ -2,96 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBB4EC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 00:39:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E26DC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 00:42:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245106AbiBFAjB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 19:39:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45230 "EHLO
+        id S1348286AbiBFAmN (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 5 Feb 2022 19:42:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229454AbiBFAi7 (ORCPT
+        with ESMTP id S1347637AbiBFAmL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 19:38:59 -0500
-X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 05 Feb 2022 16:38:59 PST
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FB6EC061348;
-        Sat,  5 Feb 2022 16:38:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644107939; x=1675643939;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=KTPIgZBrzxCf7qt2ZO/zG35mF2Y7qEWR9qyoPdLQgPs=;
-  b=WF6UGFNuSVRwQ0s7/WIYNQo4Ln/rCBbi7GL8xueflI8XWafvkmItQ4jW
-   eynrQisaZ5sbk93l0pad5xYhywEwtvFfvvEx/u0C/XX/7JlTSNzc8ewwr
-   vPzn1amP8OtZkYONn3pyzMVZ96cz+6AB1crR77VzlpdVcqI7Dea5mAFB8
-   2PXvCsPXVgOvZZ073spBP9CBCl2wtKwkrNxIApMB+n+pX3KwRecqFY3MD
-   sjqQ/rmbAHR39UhQ0tn3HRkJzLYZTYAMgGN40BbMQjw2B5UPR+KMQU8pT
-   TOlZ/TG0hPreUDJnLp2jTRcyjlFlcRdgJa8iA/Jw2eQxasITVSQm84ve+
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10249"; a="247377593"
-X-IronPort-AV: E=Sophos;i="5.88,346,1635231600"; 
-   d="scan'208";a="247377593"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2022 16:37:56 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,346,1635231600"; 
-   d="scan'208";a="535872327"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 05 Feb 2022 16:37:54 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nGVYw-000ZgU-9a; Sun, 06 Feb 2022 00:37:54 +0000
-Date:   Sun, 6 Feb 2022 08:37:35 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Emil Renner Berthing <kernel@esmil.dk>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Huan Feng <huan.feng@starfivetech.com>,
-        Drew Fustini <drew@beagleboard.org>, linux-gpio@vger.kernel.org
-Subject: [PATCH] pinctrl: starfive: fix semicolon.cocci warnings
-Message-ID: <20220206003735.GA94316@d6598ff186c2>
-References: <202202060827.9dExlwbc-lkp@intel.com>
+        Sat, 5 Feb 2022 19:42:11 -0500
+Received: from mx2.smtp.larsendata.com (mx2.smtp.larsendata.com [91.221.196.228])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F846C061355
+        for <linux-kernel@vger.kernel.org>; Sat,  5 Feb 2022 16:42:10 -0800 (PST)
+Received: from mail01.mxhotel.dk (mail01.mxhotel.dk [91.221.196.236])
+        by mx2.smtp.larsendata.com (Halon) with ESMTPS
+        id 02d5ae26-8538-11ec-ac19-0050568cd888;
+        Thu, 03 Feb 2022 21:26:55 +0000 (UTC)
+Received: from ravnborg.org (80-162-45-141-cable.dk.customer.tdc.net [80.162.45.141])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: sam@ravnborg.org)
+        by mail01.mxhotel.dk (Postfix) with ESMTPSA id 1DC39194B78;
+        Thu,  3 Feb 2022 22:25:55 +0100 (CET)
+Date:   Thu, 3 Feb 2022 22:25:52 +0100
+X-Report-Abuse-To: abuse@mxhotel.dk
+From:   Sam Ravnborg <sam@ravnborg.org>
+To:     Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc:     DRI Development <dri-devel@lists.freedesktop.org>,
+        linux-fbdev@vger.kernel.org,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Du Cheng <ducheng2@gmail.com>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Claudio Suarez <cssk@net-c.es>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Helge Deller <deller@gmx.de>
+Subject: Re: [PATCH 05/21] fbcon: Introduce wrapper for console->fb_info
+ lookup
+Message-ID: <YfxIYAKE1RIVUT+9@ravnborg.org>
+References: <20220131210552.482606-1-daniel.vetter@ffwll.ch>
+ <20220131210552.482606-6-daniel.vetter@ffwll.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <202202060827.9dExlwbc-lkp@intel.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220131210552.482606-6-daniel.vetter@ffwll.ch>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: kernel test robot <lkp@intel.com>
-
-drivers/pinctrl/pinctrl-starfive.c:1029:2-3: Unneeded semicolon
-
-
- Remove unneeded semicolon.
-
-Generated by: scripts/coccinelle/misc/semicolon.cocci
-
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: kernel test robot <lkp@intel.com>
----
-
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   90c9e950c0def5c354b4a6154a2ddda3e5f214ac
-commit: ec648f6b7686b716424e8e73eebb4c11ae199187 pinctrl: starfive: Add pinctrl driver for StarFive SoCs
-:::::: branch date: 6 hours ago
-:::::: commit date: 7 weeks ago
-
- pinctrl-starfive.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
---- a/drivers/pinctrl/pinctrl-starfive.c
-+++ b/drivers/pinctrl/pinctrl-starfive.c
-@@ -1026,7 +1026,7 @@ static int starfive_gpio_set_config(stru
- 		break;
- 	default:
- 		return -ENOTSUPP;
--	};
-+	}
- 
- 	starfive_padctl_rmw(sfp, starfive_gpio_to_pin(sfp, gpio), mask, value);
- 	return 0;
+On Mon, Jan 31, 2022 at 10:05:36PM +0100, Daniel Vetter wrote:
+> Half of it is protected by console_lock, but the other half is a lot
+> more awkward: Registration/deregistration of fbdev are serialized, but
+> we don't really clear out anything in con2fb_map and so there's
+> potential for use-after free mixups.
+> 
+> First step is to encapsulate the lookup.
+> 
+> Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
+> Cc: Helge Deller <deller@gmx.de>
+> Cc: Daniel Vetter <daniel@ffwll.ch>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+> Cc: Du Cheng <ducheng2@gmail.com>
+> Cc: Claudio Suarez <cssk@net-c.es>
+> Cc: Thomas Zimmermann <tzimmermann@suse.de>
+Acked-by: Sam Ravnborg <sam@ravnborg.org>
