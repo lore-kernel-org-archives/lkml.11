@@ -2,88 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EBD9C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 08:35:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C48AFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 08:37:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349399AbiBCIfy (ORCPT
+        id S1349503AbiBCIhA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 03:35:54 -0500
-Received: from mail-ej1-f54.google.com ([209.85.218.54]:35471 "EHLO
-        mail-ej1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240103AbiBCIfx (ORCPT
+        Thu, 3 Feb 2022 03:37:00 -0500
+Received: from mail-ej1-f43.google.com ([209.85.218.43]:43626 "EHLO
+        mail-ej1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235967AbiBCIg6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 03:35:53 -0500
-Received: by mail-ej1-f54.google.com with SMTP id s5so6260738ejx.2
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 00:35:52 -0800 (PST)
+        Thu, 3 Feb 2022 03:36:58 -0500
+Received: by mail-ej1-f43.google.com with SMTP id d10so6207784eje.10
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 00:36:57 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=bdY1K6T2ZRynEdWPlGYudbJJYLecFbRD2m9wj0sjMls=;
-        b=Ptz2NVK3u1PzKfdUkurPO6GtVYhfC4TCNkTIeEn7rrqudGHcMAfP27ledHK/Xo4UsB
-         3eqwHKjIcdDO0oPXrcZ59vofrESpgOHCnOiLT1rjB522RfJPw8QCSZ9G1yJPzix0G8Eq
-         VRhi1CiFxtAbYR+ObEstbBu+O0yyPRW4RHUe/IXzXAccXIISlHS44nMN290hFx+WS4C/
-         WVD1pEcI/Epyz07Bau70h+devRQF2UXI9fx2BBKogmIGhGBTWEUowar4xx6ZyCgqLrP/
-         uvWDAAdAHi74K69mUPcXeLG5/ki8yOTOMKj+XUQV3GpQbvecQO3csXZgxiiu6VaYNOSR
-         45jw==
-X-Gm-Message-State: AOAM5313idQlVX47zgYqOm5aJ7Z/Kdo02PJZ1u2O8gc2+SCgM3gw0hSN
-        7coGW7Ou3geRuIwcCm56pwRDlEjzJOA=
-X-Google-Smtp-Source: ABdhPJyhISJLOhinLiZIjpKUbiBeko8PsGB1Ou07OiOW0Sc1S/Oq7h3T2kJMN6k1ufTKKZIW5AJJHw==
-X-Received: by 2002:a17:906:2287:: with SMTP id p7mr29848867eja.239.1643877351976;
-        Thu, 03 Feb 2022 00:35:51 -0800 (PST)
+        bh=rST6XoS1u5VzZxuiTsE/1QU7kaonjAW+wgoRJl2TR6U=;
+        b=Aow1bysBhxsa0Vu8IvCCXgsqfVt2r2PQ9j2rNct+RfCJRYSv9CkNzga7nqNI2rkpo3
+         TOl5tsFPwkDFO4eIu2u8rM8LmFRkeSaO6LZdrfiLh0D5jdcAcYMCcjtXazIWZ5Uq2PD+
+         HLMIiYsa3oN8MG5CuS0JdACxT4qEw8d6SQHHKEkJqq/3ABtjQUSfmd2Vww2XNJLeIGXc
+         Dm52oj3f+leYOnJmwMuTcqoJe62B+midEXf6U7b8HaVtcDos21jifta/w3KSvXcAOYGC
+         Z1hFnkvpfvbaeSVv74oTy9vzLZEortQKosF7SLte6Y1t2q+Y6QUt1A3exdAmVeG38jFl
+         bZUQ==
+X-Gm-Message-State: AOAM533TSk2symfGt+4ae4Wbc7nrXN+7OsqO0kBBT0x6AfK6E2AezyZ0
+        pQnW11HKcwUCXlq23wpTQCnQKYaC4+U=
+X-Google-Smtp-Source: ABdhPJw8WkVKaUmDwMBpPGJf+l+UkfYFE9ZLGalO/Mqir6cDzU/qaJZjacUk63kbsVD/jICvfkS7Sg==
+X-Received: by 2002:a17:907:6d83:: with SMTP id sb3mr28985595ejc.21.1643877416997;
+        Thu, 03 Feb 2022 00:36:56 -0800 (PST)
 Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id de43sm16731779ejc.12.2022.02.03.00.35.51
+        by smtp.gmail.com with ESMTPSA id i12sm16180535ejy.43.2022.02.03.00.36.56
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Feb 2022 00:35:51 -0800 (PST)
-Message-ID: <40c7b561-46f3-6a83-401d-7a6b1bf57219@kernel.org>
-Date:   Thu, 3 Feb 2022 09:35:50 +0100
+        Thu, 03 Feb 2022 00:36:56 -0800 (PST)
+Message-ID: <37e31d03-eee6-7052-fe32-1f37f1b460e1@kernel.org>
+Date:   Thu, 3 Feb 2022 09:36:55 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH v1 1/1] amiserial: Drop duplicate NULL check in shutdown()
+Subject: Re: [PATCH v1 1/1] tty: Drop duplicate NULL check in TTY port
+ functions
 Content-Language: en-US
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-kernel@vger.kernel.org
-References: <20220202165655.5647-1-andriy.shevchenko@linux.intel.com>
+References: <20220202165704.5680-1-andriy.shevchenko@linux.intel.com>
 From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20220202165655.5647-1-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20220202165704.5680-1-andriy.shevchenko@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 02. 02. 22, 17:56, Andy Shevchenko wrote:
-> The free_page(addr), which becomes free_pages(addr, 0) checks addr
-> against 0. No need to repeat this check in the caller.
+On 02. 02. 22, 17:57, Andy Shevchenko wrote:
+> The free_page(addr), which becomes free_pages(addr, 0) checks addr against 0.
+> No need to repeat this check in the callers, i.e.  tty_port_free_xmit_buf()
+> and tty_port_destructor().
 > 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Note, INIT_KFIFO() is safe without that check, because it's aware of kfifo PTR
+> versus embedded kfifo.
+
+Not sure what you mean here ^^^? But it might be one of the morning 
+brain parser errors.
 
 Acked-by: Jiri Slaby <jirislaby@kernel.org>
 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 > ---
->   drivers/tty/amiserial.c | 6 ++----
->   1 file changed, 2 insertions(+), 4 deletions(-)
+>   drivers/tty/tty_port.c | 11 ++++-------
+>   1 file changed, 4 insertions(+), 7 deletions(-)
 > 
-> diff --git a/drivers/tty/amiserial.c b/drivers/tty/amiserial.c
-> index 1e60dbef676c..533d02b38e02 100644
-> --- a/drivers/tty/amiserial.c
-> +++ b/drivers/tty/amiserial.c
-> @@ -538,10 +538,8 @@ static void shutdown(struct tty_struct *tty, struct serial_state *info)
->   	 */
->   	free_irq(IRQ_AMIGA_VERTB, info);
->   
-> -	if (info->xmit.buf) {
-> -		free_page((unsigned long) info->xmit.buf);
-> -		info->xmit.buf = NULL;
+> diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
+> index 4282895ede9e..880608a65773 100644
+> --- a/drivers/tty/tty_port.c
+> +++ b/drivers/tty/tty_port.c
+> @@ -240,11 +240,9 @@ EXPORT_SYMBOL(tty_port_alloc_xmit_buf);
+>   void tty_port_free_xmit_buf(struct tty_port *port)
+>   {
+>   	mutex_lock(&port->buf_mutex);
+> -	if (port->xmit_buf != NULL) {
+> -		free_page((unsigned long)port->xmit_buf);
+> -		port->xmit_buf = NULL;
+> -		INIT_KFIFO(port->xmit_fifo);
 > -	}
-> +	free_page((unsigned long)info->xmit.buf);
-> +	info->xmit.buf = NULL;
->   
->   	info->IER = 0;
->   	amiga_custom.intena = IF_RBF | IF_TBE;
+> +	free_page((unsigned long)port->xmit_buf);
+> +	port->xmit_buf = NULL;
+> +	INIT_KFIFO(port->xmit_fifo);
+>   	mutex_unlock(&port->buf_mutex);
+>   }
+>   EXPORT_SYMBOL(tty_port_free_xmit_buf);
+> @@ -271,8 +269,7 @@ static void tty_port_destructor(struct kref *kref)
+>   	/* check if last port ref was dropped before tty release */
+>   	if (WARN_ON(port->itty))
+>   		return;
+> -	if (port->xmit_buf)
+> -		free_page((unsigned long)port->xmit_buf);
+> +	free_page((unsigned long)port->xmit_buf);
+>   	tty_port_destroy(port);
+>   	if (port->ops && port->ops->destruct)
+>   		port->ops->destruct(port);
 
 
 -- 
