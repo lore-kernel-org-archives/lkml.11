@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC9C6C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:43:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FFC3C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:43:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355419AbiBCUnF (ORCPT
+        id S1349948AbiBCUnI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:43:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59324 "EHLO
+        Thu, 3 Feb 2022 15:43:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238476AbiBCUju (ORCPT
+        with ESMTP id S1355829AbiBCUjz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 15:39:50 -0500
+        Thu, 3 Feb 2022 15:39:55 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15974C061222;
-        Thu,  3 Feb 2022 12:36:31 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 214C0C06177E;
+        Thu,  3 Feb 2022 12:36:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A344CB835AD;
-        Thu,  3 Feb 2022 20:36:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6A97C340F0;
-        Thu,  3 Feb 2022 20:36:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DD6AFB835BC;
+        Thu,  3 Feb 2022 20:36:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA646C340F2;
+        Thu,  3 Feb 2022 20:36:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643920589;
-        bh=+4UDzhaXehTdGVEq5N8CE9X04U1EUpCRfvJYtC9LNkI=;
+        s=k20201202; t=1643920597;
+        bh=3ac+FuFvTfl2BMZ4CXOkDSBDx8Add5UW+u1yknlOleg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gOUvuOdldyZ6IJPmxFK2BHNfZj15vSB+h40WwRtdQ3Z0rtpyFzPJlG3hvtZU3c/bH
-         I2ufWryj2nUgDsRF3LdH5pXgmfZpUpUe9qgW1liIYkmlyEDzwWt93c3EZr/eT5rQdy
-         YaNVt5ddyrHojwLVWyi6P+ykzpf+lzx4vEJxjBxngTENi3pGlVTMXGnCc5vs7G34ej
-         T8f8DdA6hAsLeztbDmvtvMHJSgTALejnUt41WAxppl1sl+WXRLFD/t2Oelaai/Jf03
-         TOiRzo8TThPLFGEoLFexxHdqlUXY8Gcn2WQwxV8ia+EmI7JbZfmkFeWCLmwvk/o6jQ
-         2bKxY6Ssw0x0Q==
+        b=NgAYUT4ZSUqwR8oPQPR8wBqiQ9BK6URNMVGAAkXmLho1lzxFGn791YSJAQ+mcf+CC
+         /3x6KiZ0mNmShZ+3wcv6uezg2mSZtyccpiY//lA9jkMv4dOHL7Jv/WcRaPIok1tpSL
+         fWEGwlYF1F4MltrJmlILgvQ2b3weJlX0bVY0gwdT/cHQCQTiV2Dvnmhd/ckaZbZFQi
+         lppGEOCHDX73JZdEBMEincnpHXJm/9OafsR0zYeDmL6DGwPG/Uu8Z/+k1M5dVYH4LC
+         yq31uyCtFgkOss55NOnjDjI6fwbMPwIyjfPVWBrxi82d67x92lLrMpflZtG008bd2W
+         1GGDZ95b1EdgA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Amelie Delaunay <amelie.delaunay@foss.st.com>,
-        Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, hminas@synopsys.com,
-        linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 09/10] usb: dwc2: gadget: don't try to disable ep0 in dwc2_hsotg_suspend
-Date:   Thu,  3 Feb 2022 15:36:12 -0500
-Message-Id: <20220203203613.4165-9-sashal@kernel.org>
+Cc:     Xiaoke Wang <xkernel.wang@foxmail.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Sasha Levin <sashal@kernel.org>,
+        trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
+        linux-nfs@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 2/9] nfs: nfs4clinet: check the return value of kstrdup()
+Date:   Thu,  3 Feb 2022 15:36:26 -0500
+Message-Id: <20220203203633.4685-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220203203613.4165-1-sashal@kernel.org>
-References: <20220203203613.4165-1-sashal@kernel.org>
+In-Reply-To: <20220203203633.4685-1-sashal@kernel.org>
+References: <20220203203633.4685-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,48 +54,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amelie Delaunay <amelie.delaunay@foss.st.com>
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-[ Upstream commit ac55d163855924aa5af9f1560977da8f346963c8 ]
+[ Upstream commit fbd2057e5329d3502a27491190237b6be52a1cb6 ]
 
-Calling dwc2_hsotg_ep_disable on ep0 (in/out) will lead to the following
-logs before returning -EINVAL:
-dwc2 49000000.usb-otg: dwc2_hsotg_ep_disable: called for ep0
-dwc2 49000000.usb-otg: dwc2_hsotg_ep_disable: called for ep0
+kstrdup() returns NULL when some internal memory errors happen, it is
+better to check the return value of it so to catch the memory error in
+time.
 
-To avoid these two logs while suspending, start disabling the endpoint
-from the index 1, as done in dwc2_hsotg_udc_stop:
-
-	/* all endpoints should be shutdown */
-	for (ep = 1; ep < hsotg->num_of_eps; ep++) {
-		if (hsotg->eps_in[ep])
-			dwc2_hsotg_ep_disable_lock(&hsotg->eps_in[ep]->ep);
-		if (hsotg->eps_out[ep])
-			dwc2_hsotg_ep_disable_lock(&hsotg->eps_out[ep]->ep);
-	}
-
-Acked-by: Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>
-Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
-Link: https://lore.kernel.org/r/20211207130101.270314-1-amelie.delaunay@foss.st.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/dwc2/gadget.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/nfs/nfs4client.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/usb/dwc2/gadget.c b/drivers/usb/dwc2/gadget.c
-index b405c8ac8984b..1e46005929e44 100644
---- a/drivers/usb/dwc2/gadget.c
-+++ b/drivers/usb/dwc2/gadget.c
-@@ -4818,7 +4818,7 @@ int dwc2_hsotg_suspend(struct dwc2_hsotg *hsotg)
- 		hsotg->gadget.speed = USB_SPEED_UNKNOWN;
- 		spin_unlock_irqrestore(&hsotg->lock, flags);
+diff --git a/fs/nfs/nfs4client.c b/fs/nfs/nfs4client.c
+index 02b01b4025f6e..c7672c89b9673 100644
+--- a/fs/nfs/nfs4client.c
++++ b/fs/nfs/nfs4client.c
+@@ -1241,8 +1241,11 @@ int nfs4_update_server(struct nfs_server *server, const char *hostname,
+ 	}
+ 	nfs_put_client(clp);
  
--		for (ep = 0; ep < hsotg->num_of_eps; ep++) {
-+		for (ep = 1; ep < hsotg->num_of_eps; ep++) {
- 			if (hsotg->eps_in[ep])
- 				dwc2_hsotg_ep_disable_lock(&hsotg->eps_in[ep]->ep);
- 			if (hsotg->eps_out[ep])
+-	if (server->nfs_client->cl_hostname == NULL)
++	if (server->nfs_client->cl_hostname == NULL) {
+ 		server->nfs_client->cl_hostname = kstrdup(hostname, GFP_KERNEL);
++		if (server->nfs_client->cl_hostname == NULL)
++			return -ENOMEM;
++	}
+ 	nfs_server_insert_lists(server);
+ 
+ 	return nfs_probe_destination(server);
 -- 
 2.34.1
 
