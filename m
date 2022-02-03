@@ -2,96 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52DF9C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 16:44:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B37AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 16:45:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352413AbiBCQom (ORCPT
+        id S1352385AbiBCQpK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 11:44:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60792 "EHLO
+        Thu, 3 Feb 2022 11:45:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352386AbiBCQoh (ORCPT
+        with ESMTP id S1352207AbiBCQpH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 11:44:37 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2FDEC061714;
-        Thu,  3 Feb 2022 08:44:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=jThIhFNBrb3xj2YQLkczkGqkTy9wIvQP7gVhgnzkrew=; b=zGqOR7+LqSrG510WGhf1Ch1m+Q
-        zInXDUP+4zUsUrFPitgFSW+BwbHex8XmIlJT7thj0wp4BGrUyfHA+/mkPSu8CAYR2a8B7LsJpIVbA
-        N5gpuO+O7H3tPq8CUi8kGBhgqdRTkcgxmXICWE+dL+up2T1R+KeuuXYuzT7Gp4Cuf1mw3+s6E46yj
-        lg6bKHZlj4VFjSRnTYgs2sGXT/CoQbquXe3QK9Wwygp0lxg2M8kzhI/PcsZALiYg8Eqq511/Xxd+m
-        yInasAcEDOvhjUF3etd1bOFnYK37Zl3SlsnaKMYrH5FZyOWqqY69AUQdLoYSsrGcGv+5TW1HIoyo+
-        JgXhnVbQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57016)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nFfDf-0002s5-AV; Thu, 03 Feb 2022 16:44:27 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nFfDc-00049q-6H; Thu, 03 Feb 2022 16:44:24 +0000
-Date:   Thu, 3 Feb 2022 16:44:24 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Yannick Vignon <yannick.vignon@oss.nxp.com>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Rayagond Kokatanur <rayagond@vayavyalabs.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        sebastien.laveze@oss.nxp.com, Vladimir Oltean <olteanv@gmail.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>, mingkai.hu@nxp.com,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Yannick Vignon <yannick.vignon@nxp.com>
-Subject: Re: [PATCH net] net: stmmac: ensure PTP time register reads are
- consistent
-Message-ID: <YfwGaD06/3W1UFQ+@shell.armlinux.org.uk>
-References: <20220203160025.750632-1-yannick.vignon@oss.nxp.com>
- <YfwCnV2TV8fznZ33@shell.armlinux.org.uk>
- <13dc6f72-8ef4-6990-1c67-2b92c6894e87@oss.nxp.com>
+        Thu, 3 Feb 2022 11:45:07 -0500
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16BB9C061714
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 08:45:07 -0800 (PST)
+Received: by mail-wm1-x32f.google.com with SMTP id v123so2529157wme.2
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 08:45:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GkmgjzPDmiTZDo4dS1/4itPIhM2CrOgkYLrZJY0fN5E=;
+        b=WD3D6KgXTzr6asrsMV7sbcmqXABfIFtEhk4/9RhynJg7Qf6VydY6Xx6TdFfBw3BKc5
+         gTRgT0Nv73YM8RUvFMwoB8my2lqGSZq1W3Ud1fOWI5ol9AxTqVsv0Mz5r0mXepo0g0Ic
+         RwKz3nyxPvZS9yLWgOrJm/uZVykvZfHOUXyZ45mCR7nMv7kpaMD5VbgAxXR9qawmPd0O
+         7iiBm+cOSkxf8rGmkhgIrwdaXHyz8+Xza1iw8gy7DVB6OjG3t9bs5FKyyN/XVh8RXJsC
+         gxi5pzbHK8fItdoW2K0mfDBIiK4+NJ+PKbYT3hffKXuMMUg5QXhpIPnKfVEnyZr7yP1p
+         rpaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GkmgjzPDmiTZDo4dS1/4itPIhM2CrOgkYLrZJY0fN5E=;
+        b=GhhFtXE5Z833HbVfj1Z/tQP8LW0Np1/ZyNQatNCndbQmKKjbQ+m9t3J0Q2gDLZH37c
+         cbybPgHtZsPvD5L5tifbpVyB19RJsoGzCCszk6Yg8jD1MLsoJbhINXLAji1WCC/5NBtU
+         w/ds3tXEjpeOJjf88WYgLvQ3yam4ZDgEgCdXjaQT2rZ1HNGlgNZXoord8/W13+F+r52C
+         VYMoBjNongjKYK7KX1oyTvUfdJo4vYZb9ybBcP/DrVbGNRqQjmUhMjb0qJ+rHkd86r6H
+         uGPuNoCA2AgatFpynAjquDHCRf/I8Bd7TpwaiIRmCBEba4/MoSLOXXCahO0zhVLtyUoP
+         gnuA==
+X-Gm-Message-State: AOAM531fvHTN6ZRqXEmb34RdFJFAJTqWyy8LJ1R8GlR+FYD0QWuNt3Rs
+        j4LHHcg8dVZew4ExiM8e9tGznQ==
+X-Google-Smtp-Source: ABdhPJzRvucaBMs/agf4AhjeTwO8qjVnaidyVzbGAqCj5AnqQuSlddxyiT9kAyh6Yaluujy7sUha1Q==
+X-Received: by 2002:a7b:ce95:: with SMTP id q21mr11202942wmj.94.1643906705724;
+        Thu, 03 Feb 2022 08:45:05 -0800 (PST)
+Received: from usaari01.cust.communityfibre.co.uk ([2a02:6b6d:f804:0:28c2:5854:c832:e580])
+        by smtp.gmail.com with ESMTPSA id n14sm21412831wri.80.2022.02.03.08.45.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Feb 2022 08:45:05 -0800 (PST)
+From:   Usama Arif <usama.arif@bytedance.com>
+To:     io-uring@vger.kernel.org, axboe@kernel.dk, asml.silence@gmail.com,
+        linux-kernel@vger.kernel.org
+Cc:     fam.zheng@bytedance.com, Usama Arif <usama.arif@bytedance.com>
+Subject: [PATCH v2 0/3] io_uring: avoid ring quiesce in io_uring_register for eventfd opcodes
+Date:   Thu,  3 Feb 2022 16:45:00 +0000
+Message-Id: <20220203164503.641574-1-usama.arif@bytedance.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <13dc6f72-8ef4-6990-1c67-2b92c6894e87@oss.nxp.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 03, 2022 at 05:38:10PM +0100, Yannick Vignon wrote:
-> On 2/3/2022 5:28 PM, Russell King (Oracle) wrote:
-> > On Thu, Feb 03, 2022 at 05:00:25PM +0100, Yannick Vignon wrote:
-> > > From: Yannick Vignon <yannick.vignon@nxp.com>
-> > > 
-> > > Even if protected from preemption and interrupts, a small time window
-> > > remains when the 2 register reads could return inconsistent values,
-> > > each time the "seconds" register changes. This could lead to an about
-> > > 1-second error in the reported time.
-> > 
-> > Have you checked whether the hardware protects against this (i.o.w. the
-> > hardware latches the PTP_STSR value when PTP_STNSR is read, or vice
-> > versa? Several PTP devices I've looked at do this to allow consistent
-> > reading.
-> > 
-> 
-> It doesn't. I was able to observe inconsistent values doing reads in either
-> order, and we had already observed the issue with that same IP on another
-> device (Cortex-M based, not running Linux). It's not easy to reproduce, the
-> time window is small, but it's there.
+This is done by creating a new RCU data structure (io_ev_fd) as part of
+io_ring_ctx that holds the eventfd_ctx, with reads to the structure protected
+by rcu_read_lock and writes (register/unregister calls) protected by a mutex.
 
-Okay, thanks.
+With the above approach ring quiesce can be avoided which is much more
+expensive then using RCU lock. On the system tested, io_uring_reigster with
+IORING_REGISTER_EVENTFD takes less than 1ms with RCU lock, compared to 15ms
+before with ring quiesce.
 
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+The first patch creates the RCU protected data structure and removes ring
+quiesce for IORING_REGISTER_EVENTFD and IORING_UNREGISTER_EVENTFD.
+
+The second patch builds on top of the first patch and removes ring quiesce
+for IORING_REGISTER_EVENTFD_ASYNC.
+
+---
+v1->v2:
+- Added patch to remove eventfd from tracepoint (Patch 1) (Jens Axboe)
+- Made the code of io_should_trigger_evfd as part of io_eventfd_signal (Jens Axboe)
+
+Usama Arif (3):
+  io_uring: remove trace for eventfd
+  io_uring: avoid ring quiesce while registering/unregistering eventfd
+  io_uring: avoid ring quiesce for IORING_REGISTER_EVENTFD_ASYNC
+
+ fs/io_uring.c                   | 124 ++++++++++++++++++++++----------
+ include/trace/events/io_uring.h |  13 ++--
+ 2 files changed, 93 insertions(+), 44 deletions(-)
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.25.1
+
