@@ -2,210 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1D66C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 16:19:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8FCBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 16:20:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352184AbiBCQTY (ORCPT
+        id S1352193AbiBCQU5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 11:19:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54896 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352174AbiBCQTW (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 11:19:22 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E1F7C061741
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 08:19:22 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id q63so2881838pja.1
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 08:19:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=iGBChkCWnTbgPPOBwN9awx2yKgQkcYggUtrAhJJ2gIM=;
-        b=us5jN9fEnyeMy/verfBT3tD3AWIdjrGlWPuNTbhCanmymdv/y41nLY97O0DwD1KqzE
-         wIRiAz+FP638+ylzqYzE1p6vqHSeun3TTmX8MRjCavGSShkai5SAsiujZ0DwnKejkWTp
-         k4hfSlrK9jfTXzffHtbZCENT/ozSWj3T9aCvaytBPZ/qaK1NgRsiGdXVMzQMohllRsAx
-         UyrKRR9fvdV12y47JS/tOVZMPFHLd4kc8SM+xJxrEOagQiO8swILyuGhho7cXOP9e/dr
-         drTDnw0HtmDTYvw3mHXqo1zfo5PwX5mtG5sq8fgLJXj97hMrHjL5kiYENrGICZUq3Ctr
-         N3TA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=iGBChkCWnTbgPPOBwN9awx2yKgQkcYggUtrAhJJ2gIM=;
-        b=ATrz9MPFaF4xGZgcgl2imEzcRgF8MjYsxM9+qw9+cxU6/1Oz5o4CxMiSSRgdfFfZag
-         uzonLidaEv/ZCDyVCp10HKbx/XPV4oTRRWsBjQLGWHfJLlMKQx0beyNjCy/hM9M/dtdo
-         uUw3v1KI3pSzS7WfRFOULMJ3Xqr1ra8laLYrHkjEE6Bl4roHpDHPch7v6TxZu3uL2gT8
-         Anq0/BZVWyF1E0miU476w+3OA76dhHiulM0btn0+OPUOIaP882jbo1nYXk1FrKlDN1XW
-         I1K5QwbI4UkZsljF7vyoBj3DLfzbZbyCWeeqw/Z6xgjUaeif79TJGnQfaIO24W3DJkq9
-         hjvw==
-X-Gm-Message-State: AOAM532VW+w664+DrxrMB3lLYHtkEHn1kpUODtBhC0RVnaHSeeDqiUCc
-        w7wfLQvPEUr9Dp/2mlf4rH72JA==
-X-Google-Smtp-Source: ABdhPJzssGkXnHCtK3/m+umnyySPBdzHipEA8Y87gniVoV+4o5ha2kz0HYBz+8HkLRdDkHW+XKZIXQ==
-X-Received: by 2002:a17:90a:564f:: with SMTP id d15mr14604221pji.238.1643905162124;
-        Thu, 03 Feb 2022 08:19:22 -0800 (PST)
-Received: from localhost.localdomain ([50.39.160.154])
-        by smtp.gmail.com with ESMTPSA id o5sm30525001pfk.172.2022.02.03.08.19.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Feb 2022 08:19:21 -0800 (PST)
-From:   Tadeusz Struk <tadeusz.struk@linaro.org>
-To:     peterz@infradead.org
-Cc:     Tadeusz Struk <tadeusz.struk@linaro.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Zhang Qiao <zhangqiao22@huawei.com>, stable@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        syzbot+af7a719bc92395ee41b3@syzkaller.appspotmail.com
-Subject: [PATCH v5] sched/fair: Fix fault in reweight_entity
-Date:   Thu,  3 Feb 2022 08:18:46 -0800
-Message-Id: <20220203161846.1160750-1-tadeusz.struk@linaro.org>
-X-Mailer: git-send-email 2.34.1
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+        Thu, 3 Feb 2022 11:20:57 -0500
+Received: from mail-eopbgr00044.outbound.protection.outlook.com ([40.107.0.44]:16357
+        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S244826AbiBCQUz (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 3 Feb 2022 11:20:55 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BXIneyjTXyYU/1+tQ/8vFhIfzOyYj0c0BXeEyjhdPBRhjSALY39EfEMoUUtCzG8sW+wU1FDUDYLViKmvbWKlOXWp3KuuxxSjX3AwhOzkt99xVX+JQBsbK9TZOINVmUYnjcwIUj+RNJRL6Bf2nCKYvmBFjiWPnBGjsLDl4X1gd4/1aMEhF8L+lf2kZOnc6vSBCwba5uIb34XStirImdkocM88LaCMBCjUeD6tban0VX1H5rY80D2JfBckZzCVePXsgG7ErfEVY/Ucf5h6P4A3KQ6lDSvPzBB6oi2DkNBuj4yJb2zNae6uCUadRyXi3Bjc/db2tR3XFiuF1Ul3rOs+Rg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=XAk2Tm7zXlRiSvIUg4pWT3wMAM3j3Z/A+Xw1ELl0xhk=;
+ b=MV6tz0pch/zR/fwev82b6f1ecRKx26lcxYCq5xyAmMmBxX2qJgQng8sp4Yxhd0B4rGNGPu0N5zg5gPRUw8io2VYzFf5jl0UrKD4lh1j3p6zTsrEbq50OXuPI8j1EJ25RlgMkrSBkoy4MeiIbkvJQnjk8ysWFwDUy8X4d949591ts0kNhUbVR+MXoV13MRP8P10ZCxMXqxRwMD7u3YoCaPe0BPGEH3VQNHfNNoNL22bwlJGg+ucwdFKZfl05MWfcci6BJW0Ov+D1WN/gJmG9uu6nvQotb+DpvUEMJiBYwrXhYEpCJC+aJix7SDutz+BRxY26dDuQDwfpHZjXZ7Aa/tQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=XAk2Tm7zXlRiSvIUg4pWT3wMAM3j3Z/A+Xw1ELl0xhk=;
+ b=U3g4P143qZQKsUupT97K64CQZoXB+WqpBTD+ykvcmyVnWaHMlk1IGoFMweziPFCtU3CK/g4rxzR1KtUq6vjjCwkLvMX8mqPCwMej1NSqnHQeV4cd7m+Pn/HhAxlM7nHiD2IPWErQ4s/0Pu4ClT+bsESjqoMLh4l4tL4AXILrJ3s=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from DU2PR04MB8807.eurprd04.prod.outlook.com (2603:10a6:10:2e2::23)
+ by VE1PR04MB6478.eurprd04.prod.outlook.com (2603:10a6:803:12a::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Thu, 3 Feb
+ 2022 16:20:49 +0000
+Received: from DU2PR04MB8807.eurprd04.prod.outlook.com
+ ([fe80::9484:131d:7309:bd02]) by DU2PR04MB8807.eurprd04.prod.outlook.com
+ ([fe80::9484:131d:7309:bd02%5]) with mapi id 15.20.4951.012; Thu, 3 Feb 2022
+ 16:20:49 +0000
+From:   Yannick Vignon <yannick.vignon@oss.nxp.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Rayagond Kokatanur <rayagond@vayavyalabs.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        sebastien.laveze@oss.nxp.com, Vladimir Oltean <olteanv@gmail.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>, mingkai.hu@nxp.com,
+        Joakim Zhang <qiangqing.zhang@nxp.com>
+Cc:     Yannick Vignon <yannick.vignon@nxp.com>
+Subject: [PATCH net] net: stmmac: ensure PTP time register reads are consistent
+Date:   Thu,  3 Feb 2022 17:00:25 +0100
+Message-Id: <20220203160025.750632-1-yannick.vignon@oss.nxp.com>
+X-Mailer: git-send-email 2.25.1
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: AM0PR08CA0029.eurprd08.prod.outlook.com
+ (2603:10a6:208:d2::42) To DU2PR04MB8807.eurprd04.prod.outlook.com
+ (2603:10a6:10:2e2::23)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1d63f43d-5d08-48d2-94df-08d9e73123dc
+X-MS-TrafficTypeDiagnostic: VE1PR04MB6478:EE_
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-Microsoft-Antispam-PRVS: <VE1PR04MB6478B83AD0054A2C2E7BBACED2289@VE1PR04MB6478.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2512;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: l5YU5UoTHy0CZKc7F7s+Ix+gRPcmxUaH++3duTlb6LLq6XmyKhIGeVd68NrOmz9BS9+yTUZjzkB8mhAqaqAVvFsLrK2Sbk/Ua7xmJrOX+F2QoVhT2aQPBGoLsgwFy+6+RTIpQLywUCxDJBqXNUl7E07tn/N3ZE6b90xz8BowgtzgchXWATRLuKlpoppoXnFsg79bJXN7dNuTOHFjMXyNtA6+ynON/u8yrhQUbSLm87DpkwJjG+1+At/eYdmG4XT1ohaneo1wcOV5yjjbEa7dMs/j52CDzn6doY/AFZXbYLLct3FGsN2egzo3GS5s+3j/IW5WoWDYJJEmpWIT9bvbbskSVk53z9ygqrDmOfBPOyWcDFO6glpangdsBDIiOb++xoiwjH68uG2825qUA3LqIQlmrwD9HQVCPNV7OBhsD7AtZW99fgLGdZoKaecNivz90ZnhPfz/kbvM5wkuujZgfeDzwMi+/W8ebq1jmw1KXjRvFa6F3c7ooqBHG2BmLPvdPv9VNP9zUxNx+2RcM/VYdm4ryBOdTAWta8xSPYjcLgjojVHWX9WUw4m6fRuxerf26f+KIiNxnR4hXzHnoWouzwh3BMdZ8Jgoq1FlgKAdEMKFk8MhMXadUc3dBrAL2kwjKkKroWoWYS215cL8OIjMYVRa2kQYxdaDPA3E/cKXVTdjkcWN0qFCyEQCDXNuZDvfSP7zKlFAJ9x7BFXQO/m4ZEAY6arwJif+CFKgA+Phl+o=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU2PR04MB8807.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(83380400001)(6666004)(52116002)(2616005)(186003)(508600001)(1076003)(6486002)(6512007)(6506007)(38350700002)(38100700002)(86362001)(921005)(110136005)(316002)(66946007)(26005)(5660300002)(44832011)(8936002)(8676002)(66476007)(7416002)(66556008)(4326008)(2906002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?iYmU3qdgP14WEYIS6c7ehn4U1NgmvWcaJiCsTfEkp4tX5nYnt0g+A3c6gAS8?=
+ =?us-ascii?Q?KCN2hfOAagfY0+rtfxHUYecYw9qwIbLLWcF2J/3EWgIllDjBB8Zm1SUxTYfy?=
+ =?us-ascii?Q?NiCulX7rH/vX7QhQnSwd1FRVfUMhguQrdftoE1y+N3ZI3KrD50Op5VsunTbM?=
+ =?us-ascii?Q?DOvgOMDfpfUO2Cks+rFUL1ovHn6nnSQaBZR3ATlIsyR1lUp5/IS1zeSzgFSJ?=
+ =?us-ascii?Q?sjB6/kbkNx2YcW4XahRgJgFBeDQFf3Eac8G72QZSPNxT3u5sptGLntHkMWV+?=
+ =?us-ascii?Q?4fZwVgih0oDgxummMrHTQIn+2vMdc+OIA1x8dBEU7sKqBECCrfhebktWs3py?=
+ =?us-ascii?Q?uSLJ6+BgbTz4S/UJL44CoCKXp07C3vCGrB28drOq8jlF8mGHSt1YM2aui+jL?=
+ =?us-ascii?Q?GYe4Xsm0cbRZIsNyVWn+/rhgIbirW812+bztbaUM2gxrmU4qYqAZcdNc4Ytl?=
+ =?us-ascii?Q?3Gu/xVObNkZ/v6pO+KREWexZfTyijWkg2cLP2y/g1iDbvMUhrNkRII708Ril?=
+ =?us-ascii?Q?f/0BrhqQw3884PRhf74FcvOCtRZ6tSJHFMqxdqfxlDJy2ddGYgaWgu1xlYOH?=
+ =?us-ascii?Q?hdUvam3yv/koqL3vmYkJdtMPj/7IU0Z3bLillsAwzUKe0ifmI/67qlaqMMEs?=
+ =?us-ascii?Q?eElnm0nv2nEUzMiWnyApunHD08f3BQ1HrkLYTON5AbPb80StK3hgUqkZApWQ?=
+ =?us-ascii?Q?XHsKrU5hzcbi4tVBS+mlQKSAFkFZEri+gh1PEn18aHFWN6lZ1BbtwNfXkee7?=
+ =?us-ascii?Q?etYYpM4MRtw1VBwCLomc8aOa/5csGsA2NiOhehaTvuHrMghvoL/zJfPXM+oj?=
+ =?us-ascii?Q?RyY/bQXEVmmGD6SW6NcYe5YbZ++EU/sMvFy5I1kqc/pQpSeEEGASfAfCeoNt?=
+ =?us-ascii?Q?ThoCtKjJPEzFtFUWjvRiPk+uoq7eHHSdklJUsxRoZxovHKCQxYhPsEPwWfIX?=
+ =?us-ascii?Q?Js4FFHZ9JFGFbK8Oh1+S1vvU5yS22zmNqedvp3g4VfoLT5VStgNAx+0wtSWZ?=
+ =?us-ascii?Q?gTUbEqaiLJUKiS3SPGIFhsfXzRHVL+7EOfeRfmzTWQIn+1H++RUsgERL/63I?=
+ =?us-ascii?Q?k2Eq+jdo905VQLrfhQsRZfMHI/8GtuSWxv1st0S98ROQRWUIFk07x7xYEnWt?=
+ =?us-ascii?Q?CmkPBq92Z4HeMcx6NnHBitz0VA3fb4d9YGnJMcH55Dkg5tbpZYWu6HAcd7Pw?=
+ =?us-ascii?Q?AuVWJl8JAyhcFjNVPcPrgdAmbHJJ1l/wBwE/Uf1NZTxvSvR+Nz4+qy2YZJf2?=
+ =?us-ascii?Q?Ppk6uzFXGMj3dZpY7EVkmnI1x7iz6Ml3lgT4ikIHt9bA/9tETS5N3tzHB7xU?=
+ =?us-ascii?Q?rPFCyJJP3Wtk9GKDL88ZN55qEw8gbBt9HOhaEnpGZhXoo7nSJoQhKS4b7yOz?=
+ =?us-ascii?Q?ZHQXKfhuhf0XcdAeyqZKPCVVwx/j8wBupnKDhDEGCptJB1EfRYSwdJxW85N6?=
+ =?us-ascii?Q?KorX7iCqfun5LRTq+0EcxE2+KHX2oKjpuJ7eeY3b9Cr++pl+9FCRGNYWHfVg?=
+ =?us-ascii?Q?F6Dpnt2WB8WE6OPbHM6MKJeHyg5yHOfcpyesAW8E2t712YRHczXCYd54M40d?=
+ =?us-ascii?Q?EqLZDxn7vEAvNlTVUKB0RjXBq+ghMZ1CLNc/anjpd01XN3jE9FsPGX094ipN?=
+ =?us-ascii?Q?JbXB6imOGmXBbIjbuZq3/jI=3D?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1d63f43d-5d08-48d2-94df-08d9e73123dc
+X-MS-Exchange-CrossTenant-AuthSource: DU2PR04MB8807.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Feb 2022 16:20:49.3051
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: gWaNPziVmmCdxg6tmctEokIOilcsvRlOv64xipi/OZjO9nLe1ts0s7/hwMSefe4xqKcwOLFTrMknRauclUwFYw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6478
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Syzbot found a GPF in reweight_entity. This has been bisected to commit
-4ef0c5c6b5ba ("kernel/sched: Fix sched_fork() access an invalid sched_task_group")
+From: Yannick Vignon <yannick.vignon@nxp.com>
 
-There is a race between sched_post_fork() and setpriority(PRIO_PGRP)
-within a thread group that causes a null-ptr-deref in reweight_entity()
-in CFS. The scenario is that the main process spawns number of new
-threads, which then call setpriority(PRIO_PGRP, 0, -20), wait, and exit.
-For each of the new threads the copy_process() gets invoked, which adds
-the new task_struct and calls sched_post_fork() for it.
+Even if protected from preemption and interrupts, a small time window
+remains when the 2 register reads could return inconsistent values,
+each time the "seconds" register changes. This could lead to an about
+1-second error in the reported time.
 
-In the above scenario there is a possibility that setpriority(PRIO_PGRP)
-and set_one_prio() will be called for a thread in the group that is just
-being created by copy_process(), and for which the sched_post_fork() has
-not been executed yet. This will trigger a null pointer dereference in
-reweight_entity(), as it will try to access the run queue pointer, which
-hasn't been set. This results it a crash as shown below:
+Add logic to ensure the "seconds" and "nanoseconds" values are consistent.
 
-KASAN: null-ptr-deref in range [0x00000000000000a0-0x00000000000000a7]
-CPU: 0 PID: 2392 Comm: reduced_repro Not tainted 5.16.0-11201-gb42c5a161ea3
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1.fc35
-RIP: 0010:reweight_entity+0x15d/0x440
-RSP: 0018:ffffc900035dfcf8 EFLAGS: 00010006
-Call Trace:
-<TASK>
-reweight_task+0xde/0x1c0
-set_load_weight+0x21c/0x2b0
-set_user_nice.part.0+0x2d1/0x519
-set_user_nice.cold+0x8/0xd
-set_one_prio+0x24f/0x263
-__do_sys_setpriority+0x2d3/0x640
-__x64_sys_setpriority+0x84/0x8b
-do_syscall_64+0x35/0xb0
-entry_SYSCALL_64_after_hwframe+0x44/0xae
-</TASK>
----[ end trace 9dc80a9d378ed00a ]---
-
-Before the mentioned change the cfs_rq pointer for the task  has been
-set in sched_fork(), which is called much earlier in copy_process(),
-before the new task is added to the thread_group.
-Now it is done in the sched_post_fork(), which is called after that.
-To fix the issue the remove the update_load param from the
-update_load param() function and call reweight_task() only if the task
-flag doesn't have the TASK_NEW flag set.
-
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Juri Lelli <juri.lelli@redhat.com>
-Cc: Vincent Guittot <vincent.guittot@linaro.org>
-Cc: Dietmar Eggemann <dietmar.eggemann@arm.com>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: Ben Segall <bsegall@google.com>
-Cc: Mel Gorman <mgorman@suse.de>
-Cc: Daniel Bristot de Oliveira <bristot@redhat.com>
-Cc: Zhang Qiao <zhangqiao22@huawei.com>
-Cc: stable@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-
-Link: https://syzkaller.appspot.com/bug?id=9d9c27adc674e3a7932b22b61c79a02da82cbdc1
-Fixes: 4ef0c5c6b5ba ("kernel/sched: Fix sched_fork() access an invalid sched_task_group")
-Reported-by: syzbot+af7a719bc92395ee41b3@syzkaller.appspotmail.com
-Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
-Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
+Fixes: 92ba6888510c ("stmmac: add the support for PTP hw clock driver")
+Signed-off-by: Yannick Vignon <yannick.vignon@nxp.com>
 ---
-Changes in v5:
-- Changed the order of local variables declaration in set_load_weight
-  to comply with the coding standard
+ .../ethernet/stmicro/stmmac/stmmac_hwtstamp.c | 19 ++++++++++++-------
+ 1 file changed, 12 insertions(+), 7 deletions(-)
 
-Changes in v4:
-- Removed the update_load param from set_load_weight() and call
-  reweight_task() based on the TASK_NEW flag
-
-Changes in v3:
-- Removed the new check and changed the update_load condition from
-  always true to true if p->state != TASK_NEW
-
-Changes in v2:
-- Added a check in set_user_nice(), and return from there if the task
-  is not fully setup instead of returning from reweight_entity()
----
- kernel/sched/core.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
-
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 848eaa0efe0e..fcf0c180617c 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -1214,8 +1214,9 @@ int tg_nop(struct task_group *tg, void *data)
- }
- #endif
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
+index 074e2cdfb0fa..a7ec9f4d46ce 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
+@@ -145,15 +145,20 @@ static int adjust_systime(void __iomem *ioaddr, u32 sec, u32 nsec,
  
--static void set_load_weight(struct task_struct *p, bool update_load)
-+static void set_load_weight(struct task_struct *p)
+ static void get_systime(void __iomem *ioaddr, u64 *systime)
  {
-+	bool update_load = !(READ_ONCE(p->__state) & TASK_NEW);
- 	int prio = p->static_prio - MAX_RT_PRIO;
- 	struct load_weight *load = &p->se.load;
+-	u64 ns;
+-
+-	/* Get the TSSS value */
+-	ns = readl(ioaddr + PTP_STNSR);
+-	/* Get the TSS and convert sec time value to nanosecond */
+-	ns += readl(ioaddr + PTP_STSR) * 1000000000ULL;
++	u64 ns, sec0, sec1;
++
++	/* Get the TSS value */
++	sec1 = readl_relaxed(ioaddr + PTP_STSR);
++	do {
++		sec0 = sec1;
++		/* Get the TSSS value */
++		ns = readl_relaxed(ioaddr + PTP_STNSR);
++		/* Get the TSS value */
++		sec1 = readl_relaxed(ioaddr + PTP_STSR);
++	} while (sec0 != sec1);
  
-@@ -4406,7 +4407,7 @@ int sched_fork(unsigned long clone_flags, struct task_struct *p)
- 			p->static_prio = NICE_TO_PRIO(0);
- 
- 		p->prio = p->normal_prio = p->static_prio;
--		set_load_weight(p, false);
-+		set_load_weight(p);
- 
- 		/*
- 		 * We don't need the reset flag anymore after the fork. It has
-@@ -6921,7 +6922,7 @@ void set_user_nice(struct task_struct *p, long nice)
- 		put_prev_task(rq, p);
- 
- 	p->static_prio = NICE_TO_PRIO(nice);
--	set_load_weight(p, true);
-+	set_load_weight(p);
- 	old_prio = p->prio;
- 	p->prio = effective_prio(p);
- 
-@@ -7212,7 +7213,7 @@ static void __setscheduler_params(struct task_struct *p,
- 	 */
- 	p->rt_priority = attr->sched_priority;
- 	p->normal_prio = normal_prio(p);
--	set_load_weight(p, true);
-+	set_load_weight(p);
+ 	if (systime)
+-		*systime = ns;
++		*systime = ns + (sec1 * 1000000000ULL);
  }
  
- /*
-@@ -9445,7 +9446,7 @@ void __init sched_init(void)
- #endif
- 	}
- 
--	set_load_weight(&init_task, false);
-+	set_load_weight(&init_task);
- 
- 	/*
- 	 * The boot idle thread does lazy MMU switching as well:
+ static void get_ptptime(void __iomem *ptpaddr, u64 *ptp_time)
 -- 
-2.34.1
+2.25.1
 
