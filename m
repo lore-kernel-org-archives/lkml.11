@@ -2,27 +2,27 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63E59C41535
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 10:36:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AF79C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 10:36:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350123AbiBCKgO (ORCPT
+        id S1350133AbiBCKgQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 05:36:14 -0500
-Received: from alexa-out.qualcomm.com ([129.46.98.28]:12391 "EHLO
+        Thu, 3 Feb 2022 05:36:16 -0500
+Received: from alexa-out.qualcomm.com ([129.46.98.28]:38630 "EHLO
         alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349894AbiBCKgJ (ORCPT
+        with ESMTP id S1349980AbiBCKgK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 05:36:09 -0500
+        Thu, 3 Feb 2022 05:36:10 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
   t=1643884570; x=1675420570;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version;
-  bh=sQYj8BI3pdUAV5Nor9CGrZ5tasEBi1/5E/39PYFxV/c=;
-  b=oxnd6ojgBZ0kxEARg1RhocCj0lnJyPjCbEKuCW7O6sOYseD3y1zsOwOq
-   8BQtJuKWA6JXXQXde0yp9+ZJhSz5LB8TxJWCFAs3mSwRsQ/DH4rW2oXi7
-   H2SBxjcy8/ZWEQ13qFIVVJhsiQJLj8cAGq3vre3qtofHnqQgbubUHRZGA
-   I=;
+  bh=ijsmehNMI2+B/KXb/s5HerwlB555lt5C7U7VoLIaUvQ=;
+  b=G8J4PdJLC8PrXWSbQSwid6/B9zH6J9NcKxTLb25oqJJV3ul3iNxla9Nx
+   3jqct0ahtG4p/K2vED2dV3utrB8kXra8/EBCAuoGfqU4hA2LPt00U13/A
+   HlRZbEu9UtKh6aZ5j2Yj5BlavicMSI1dP+pXny11cDR/afgFe+uehzhHq
+   o=;
 Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
   by alexa-out.qualcomm.com with ESMTP; 03 Feb 2022 02:36:09 -0800
 X-QCInternal: smtphost
@@ -31,11 +31,11 @@ Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
 Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
  nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Thu, 3 Feb 2022 02:35:58 -0800
+ 15.2.922.19; Thu, 3 Feb 2022 02:36:07 -0800
 Received: from blr-ubuntu-525.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Thu, 3 Feb 2022 02:35:52 -0800
+ 15.2.922.19; Thu, 3 Feb 2022 02:36:02 -0800
 From:   Souradeep Chowdhury <quic_schowdhu@quicinc.com>
 To:     <linux-arm-msm@vger.kernel.org>, <linux-usb@vger.kernel.org>,
         <devicetree@vger.kernel.org>, <pure.logic@nexus-software.ie>,
@@ -45,9 +45,9 @@ CC:     <linux-kernel@vger.kernel.org>, <quic_tsoni@quicinc.com>,
         <quic_pheragu@quicinc.com>, <quic_rjendra@quicinc.com>,
         <quic_sibis@quicinc.com>, <quic_saipraka@quicinc.com>,
         <quic_schowdhu@quicinc.com>
-Subject: [PATCH V5 4/6] arm64: dts: qcom: sc7280: Add EUD dt node and dwc3 connector
-Date:   Thu, 3 Feb 2022 16:04:33 +0530
-Message-ID: <e5f5403134bf294ec0ee80bf9da3f2f6973d5edc.1643880577.git.quic_schowdhu@quicinc.com>
+Subject: [PATCH V5 6/6] MAINTAINERS: Add maintainer entry for EUD
+Date:   Thu, 3 Feb 2022 16:04:35 +0530
+Message-ID: <a3f8925e46d88babb22879ab9e7266615ff26d12.1643880577.git.quic_schowdhu@quicinc.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <cover.1643880577.git.quic_schowdhu@quicinc.com>
 References: <cover.1643880577.git.quic_schowdhu@quicinc.com>
@@ -60,72 +60,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the Embedded USB Debugger(EUD) device tree node. The
-node contains EUD base register region and EUD mode
-manager register regions along with the interrupt entry.
-Also add the typec connector node for EUD which is attached to
-EUD node via port. EUD is also attached to DWC3 node via port.
-Also add the role-switch property to dwc3 node.
+Add the entry for maintainer for EUD driver
+and other associated files.
 
 Signed-off-by: Souradeep Chowdhury <quic_schowdhu@quicinc.com>
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 ---
- arch/arm64/boot/dts/qcom/sc7280.dtsi | 36 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 36 insertions(+)
+ MAINTAINERS | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-index 937c2e0..96917fe 100644
---- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-@@ -2583,6 +2583,12 @@
- 				phys = <&usb_2_hsphy>;
- 				phy-names = "usb2-phy";
- 				maximum-speed = "high-speed";
-+				usb-role-switch;
-+				port {
-+					usb2_role_switch: endpoint {
-+						remote-endpoint = <&eud_ep>;
-+					};
-+				};
- 			};
- 		};
+diff --git a/MAINTAINERS b/MAINTAINERS
+index b84e2d5..f86ec0e 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -7227,6 +7227,14 @@ F:	include/uapi/linux/mdio.h
+ F:	include/uapi/linux/mii.h
+ F:	net/core/of_net.c
  
-@@ -2624,6 +2630,36 @@
- 			interrupts = <GIC_SPI 582 IRQ_TYPE_LEVEL_HIGH>;
- 		};
- 
-+		eud: eud@88e0000 {
-+			compatible = "qcom,sc7280-eud","qcom,eud";
-+			reg = <0 0x88e0000 0 0x2000>,
-+			      <0 0x88e2000 0 0x1000>;
-+			interrupts-extended = <&pdc 11 IRQ_TYPE_LEVEL_HIGH>;
-+			ports {
-+				port@0 {
-+					eud_ep: endpoint {
-+						remote-endpoint = <&usb2_role_switch>;
-+					};
-+				};
-+				port@1 {
-+					eud_con: endpoint {
-+						remote-endpoint = <&con_eud>;
-+					};
-+				};
-+			};
-+		};
++QCOM EMBEDDED USB DEBUGGER(EUD)
++M:	Souradeep Chowdhury <quic_schowdhu@quicinc.com>
++L:	linux-arm-msm@vger.kernel.org
++S:	Maintained
++F:	Documentation/ABI/testing/sysfs-driver-eud
++F:	Documentation/devicetree/bindings/soc/qcom/qcom,eud.yaml
++F:	drivers/usb/common/qcom_eud.c
 +
-+		eud_typec: connector {
-+			compatible = "usb-c-connector";
-+			ports {
-+				port@0 {
-+					con_eud: endpoint {
-+						remote-endpoint = <&eud_con>;
-+					};
-+				};
-+			};
-+		};
-+
- 		nsp_noc: interconnect@a0c0000 {
- 			reg = <0 0x0a0c0000 0 0x10000>;
- 			compatible = "qcom,sc7280-nsp-noc";
+ EXEC & BINFMT API
+ R:	Eric Biederman <ebiederm@xmission.com>
+ R:	Kees Cook <keescook@chromium.org>
 -- 
 2.7.4
 
