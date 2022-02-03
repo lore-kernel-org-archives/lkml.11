@@ -2,40 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 310EBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 09:49:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 986E5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 09:49:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349829AbiBCJt1 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 04:49:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50336 "EHLO
+        id S235826AbiBCJta (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Feb 2022 04:49:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236353AbiBCJt0 (ORCPT
+        with ESMTP id S238454AbiBCJt1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 04:49:26 -0500
+        Thu, 3 Feb 2022 04:49:27 -0500
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 785AEC061714;
-        Thu,  3 Feb 2022 01:49:26 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09625C061714;
+        Thu,  3 Feb 2022 01:49:27 -0800 (PST)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: kholk11)
-        with ESMTPSA id 9FA791F45309
+        with ESMTPSA id C6DAB1F45305
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
         s=mail; t=1643881765;
-        bh=bARkQo56/z3a4a3bVjDzMfuLx9fNoMUA9cghljgNxIA=;
+        bh=ipkRReMbtwAu7xVakE/HQLluSawAEt4oVRymv8x74FU=;
         h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=MpKhToUkeJcSvFz8cPFyQ4Wt1GAorxTEX493fgXevU490mCnLvOkdLcp2uyJRs+eO
-         uEWdQI9R+k++tgmZkxuu1v3IRyIKm4hzPeGY9/KuiA3RAV0iVTVads5nK6/kEDwGdT
-         YWMr7pr3mdel95IoU/oN18yUrtWuNsmNGJxJll44PIX9hVA/kcj9H5dJ+KkHG4FLPS
-         kKY3IxEyq79R8Wn0lvfnPpfeKDXeMvYESa/yLdt4jyZTK/eqQAu5tnTMyd/zdZ4NSm
-         I3qDNf4Dmm29kl2+krXfHDCMvYw9Wr2gckPCWPjD9UXut0rP0tazQHxDAYhJwtqdf5
-         OoBauzrgmiUtA==
-Message-ID: <1496895b-2f50-d52a-293e-cac81928056c@collabora.com>
-Date:   Thu, 3 Feb 2022 10:47:37 +0100
+        b=VTPrpDUv+2KVJfr+imEDhCwuRZwa0Ioi3IhiJgLqRu7h9pUWUnipcCflR3KhpBZ0L
+         0kdTyz6PQUVv7q1Y0rM/iotzT2hzZjfo5xPNINEL6yYM19KpJdh5YMR9bdBh3a0LU6
+         idyBkgXjrrSitF/1r4NYbgjLhJUdEiM/pbt759jOoPd1vX8AN94+fdAXXdKMLJ4wO9
+         JlVpOlufDeTyOMdVbf+bWV4DWnRy6vv2jwwY81ZEOPIlRQaAIdP19TsVVB6C7exeUB
+         eGs/C5ft/XDC0ehrV+DAOgBmelvG9dOFpB7C0oViTXbpZChrFwNzwkjX31pmYLem/9
+         HfUy1TdddgOlA==
+Message-ID: <2ecf754b-d59a-f426-3def-1d4c96b26600@collabora.com>
+Date:   Thu, 3 Feb 2022 10:47:39 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.1
-Subject: Re: [PATCH v2 23/31] clk: mediatek: mux: Reverse check for existing
- clk to reduce nesting level
+Subject: Re: [PATCH v2 20/31] clk: mediatek: mtk: Clean up included headers
 Content-Language: en-US
 To:     Chen-Yu Tsai <wenst@chromium.org>, Stephen Boyd <sboyd@kernel.org>,
         Michael Turquette <mturquette@baylibre.com>,
@@ -45,10 +43,10 @@ Cc:     Chun-Jie Chen <chun-jie.chen@mediatek.com>,
         linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
 References: <20220202134834.690675-1-wenst@chromium.org>
- <20220202134834.690675-24-wenst@chromium.org>
+ <20220202134834.690675-21-wenst@chromium.org>
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220202134834.690675-24-wenst@chromium.org>
+In-Reply-To: <20220202134834.690675-21-wenst@chromium.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -56,16 +54,17 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Il 02/02/22 14:48, Chen-Yu Tsai ha scritto:
-> The clk registration code here currently does:
+> Some included headers aren't actually used anywhere, while other headers
+> with the declaration of functions and structures aren't directly
+> included.
 > 
->      if (IS_ERR_OR_NULL(clk_data->clks[mux->id])) {
->              ... do clk registration ...
->      }
+> Get rid of the unused ones, and add the ones that should be included
+> directly.
 > 
-> This extra level of nesting wastes screen real estate.
-> 
-> Reduce the nesting level by reversing the conditional shown above.
-> Other than that, functionality is not changed.
+> On the header side, replace headers that are included purely for data
+> structure definitions with forward declarations. This decreases the
+> amount of preprocessing and compilation effort required for each
+> inclusion.
 > 
 > Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
 > Reviewed-by: Miles Chen <miles.chen@mediatek.com>
