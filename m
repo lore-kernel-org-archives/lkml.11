@@ -2,78 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70D3BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 09:32:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4320EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 09:33:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349719AbiBCJcS (ORCPT
+        id S1349722AbiBCJdD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 04:32:18 -0500
-Received: from mga06.intel.com ([134.134.136.31]:28901 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238557AbiBCJcR (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 04:32:17 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643880737; x=1675416737;
-  h=to:cc:references:from:subject:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=E5oKH9pNYnnZ4bfD+pbTHXt1O8eiHw5reOksh1C2xaY=;
-  b=is0xug6LQ/gmhwFpODmdBV/T3/RkDz/xXD1rwFcCjXhd5/WdP3JM3oh0
-   h6d1+rDS4KNFTzMLg1br0ycENcoCKTc3D195wbKGBUNkDo8E//VI8pUns
-   h5F2Z4LrBy6JNCAbcpW0lXKTxETntFNYjI5RJVOmWdWhlgZfRvaFfwV4Y
-   iIU4ZagLNM9rNeaDJFDc2yusdACAsHGVPkAgWOfUt2pR++mgc+uv7cPor
-   Z1WFE8hsxl2VkO3ZUNmVDrwFu1X5bey+TWVzgDj5RNywzDO2w8Tw0KzLj
-   T9bsfV6Odr+K1ihMinEYckE5hQ5/RMa0yMUeCG4VKwIQk9frJ0DUfrNXK
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10246"; a="308835891"
-X-IronPort-AV: E=Sophos;i="5.88,339,1635231600"; 
-   d="scan'208";a="308835891"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2022 01:32:17 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,339,1635231600"; 
-   d="scan'208";a="566348944"
-Received: from mattu-haswell.fi.intel.com (HELO [10.237.72.199]) ([10.237.72.199])
-  by orsmga001.jf.intel.com with ESMTP; 03 Feb 2022 01:32:14 -0800
-To:     Daehwan Jung <dh10.jung@samsung.com>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     "open list:USB XHCI DRIVER" <linux-usb@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Howard Yen <howardyen@google.com>,
-        Jack Pham <jackp@codeaurora.org>,
-        Puma Hsu <pumahsu@google.com>, "J . Avila" <elavila@google.com>
-References: <CGME20220203030000epcas2p2a924a55a5ae60e8685cd62b66a5482f3@epcas2p2.samsung.com>
- <1643857054-112415-1-git-send-email-dh10.jung@samsung.com>
-From:   Mathias Nyman <mathias.nyman@linux.intel.com>
-Subject: Re: [PATCH 0/3] support USB offload feature
-Message-ID: <27337aa9-2bfd-18d5-cded-7f8ae0f053d9@linux.intel.com>
-Date:   Thu, 3 Feb 2022 11:33:47 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.14.0
+        Thu, 3 Feb 2022 04:33:03 -0500
+Received: from mail-mw2nam08on2062.outbound.protection.outlook.com ([40.107.101.62]:41408
+        "EHLO NAM04-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232183AbiBCJdC (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 3 Feb 2022 04:33:02 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QImZb0tIDGKxzPgXTdrTlsRXtMTocufIb1aCP+cidB0wY6/7Yq/nbieZlpRJz++cGQPIS3+VQxj9NAt92mBVqIViYWGeN33gcJOxa772YhVAMhL3XTXuaHL01QhsruLEjqarjTc3gTXDMK+hudhDoQznsvAA3hEE7UeT9PxKpvI/we1sFv1DzSfAw7PwbB6AwF1joD+gYHH7n6et1GMvxe0gkx3578W7Kcg3j9L17sToqZp0jiY8m+DA6Yw8CDdIog7rFb92y8NOo3suVp/5X1iBpcs/ZafboHNbnEzl4nDV0G3A/3CfBb5qmC9xZ1GE3HTY/JXdmbePj8Grghn0Rg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=fhn4G9R2JdMWjlPYYBF8HfYA8itcIYN0WsrjZQtr6kU=;
+ b=DPDXmwIBfZQiT9NA+Jw1QW18EvXZamypUQwpJqMLslcjq1IEgBeH6Z11HS36JozvvGinR+c8YmgWMKgeulDmEJGxD0jlpjTaDMBjT7hDxi3qMKg/uTWSge5r5mPDizDYUynubayDpn74u1HE8SGo9vHGXHzxzqo9Hu3YVw2Ngs8wwtEcc7EI+fkKLZ0nh159xZNnHD5VbvZRv75T920dqplzw1flKljsTpiRDNg138WAQrAzGtZ1VNFXX01NbAPmuUMwiIeeU1vb36ZP9v6G5TVKalIIS90F/VWUAvYEsIT4RBZVaM64B150f3QqW55io7ABCqPSHwwutx1hu8OQyw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.235) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fhn4G9R2JdMWjlPYYBF8HfYA8itcIYN0WsrjZQtr6kU=;
+ b=QTuqNvPtVrrMuhT+nFZJTQIwb8AyMT7wo8CQGi3Vspe4JXqb2yCllHjjG0RYm2Hu+WCdE0JD8vzRLmhyzrEhX+ua813WWQey24jtydPFGEiCm2w5HqG4D+h9M5mF2LCKldBvt8BF2TnqW5GkbDBTO6Ccq9GpbGasicqVS/Iac/RJxvWtO6qt+NNIK7i7Z4fVcNVyPwjIYE7cyc9l/BOx58U0+g9AVTxtalJvANpclEL3lF4wltVymc/LzBpNk/y+TCOuDkFGgfvQDV+6Aoq87EbGn4lV5Dls/3TCxrW4YLoiYI28F4EUQdYorFfUHr60uS6C5jr8sftuWmev7k+43w==
+Received: from MW4PR04CA0096.namprd04.prod.outlook.com (2603:10b6:303:83::11)
+ by CH2PR12MB4325.namprd12.prod.outlook.com (2603:10b6:610:a9::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Thu, 3 Feb
+ 2022 09:33:00 +0000
+Received: from CO1NAM11FT007.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:83:cafe::c7) by MW4PR04CA0096.outlook.office365.com
+ (2603:10b6:303:83::11) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12 via Frontend
+ Transport; Thu, 3 Feb 2022 09:33:00 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.235; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.235) by
+ CO1NAM11FT007.mail.protection.outlook.com (10.13.174.131) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4951.12 via Frontend Transport; Thu, 3 Feb 2022 09:32:59 +0000
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by DRHQMAIL107.nvidia.com
+ (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 3 Feb
+ 2022 09:32:59 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail205.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Thu, 3 Feb 2022
+ 01:32:58 -0800
+Received: from sandstorm.attlocal.net (10.127.8.12) by mail.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server id 15.2.986.9 via Frontend
+ Transport; Thu, 3 Feb 2022 01:32:58 -0800
+From:   John Hubbard <jhubbard@nvidia.com>
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>
+CC:     David Hildenbrand <david@redhat.com>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Jan Kara <jack@suse.cz>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
+        John Hubbard <jhubbard@nvidia.com>
+Subject: [PATCH v3 0/4] mm/gup: some cleanups
+Date:   Thu, 3 Feb 2022 01:32:28 -0800
+Message-ID: <20220203093232.572380-1-jhubbard@nvidia.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-In-Reply-To: <1643857054-112415-1-git-send-email-dh10.jung@samsung.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+X-NVConfidentiality: public
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1f4f9c30-4486-449e-e250-08d9e6f82b2a
+X-MS-TrafficTypeDiagnostic: CH2PR12MB4325:EE_
+X-Microsoft-Antispam-PRVS: <CH2PR12MB432574F9825F1704E0E9027EA8289@CH2PR12MB4325.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3044;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: guF+PjfoRU1ogHeKRmrx5YtnL7bpJvcLAk3zYxIOlqMvlq+OMsunrcdHPRJeI2XaYPbeRcHlxQcXbncwaLvXaIALtneDW2O7L6I7wCzIsEeyFL7buAbImAR0UxJ01tZd+RLxRCYKyCGw0hJEMc8UXltB7nisHzdNFTtl+vVmiihTsWnr9slT+O/d9LcOBqQTfkee/tiuqyCNor2qrxGFdiaPl1NcO3Eb2xK/y9wLZABYDQTR4TMDRUL8lOEZEszK2n+G4aMUB0JVn6vBgiZixp60LrdMbtelV/X36gVTd1A0H9Qh9RMjdciBK3+oOv/d/pvZseOnwSBPlOWJXT4vNmW7pBjC97Jl4cb34GrrtqgMNk94Lv+aWoRZhBeS6jY2H9EzsdwOuvrFOpw4FPIrqwdg0OQikHwJGNLjFu2TBebG/DIWPVZOHEIQROVIaXsDtRB+H1X3XqB1xPRsqwuc/9TXzRB6aZIye/b5+ujGm9Ye+Q7gLrm4h8yfj03RZiTYjG1sS35tpkxHqcfLQeXBVHQqoseVv2Xsk252Y2gC4ZkANwC6RM+K7R9GNs10dxxYkzkYc2D7duyPwirCSwCj3kaLwq1hsCSD1hm/RJe/QgXgzg+kP7ZGAC7D5sup39dEE81H33aEqSOhCKmB3YUG7FGFwyk5bekyLR699ixGsKcv6LHbqHUXEc3bmK0K6drCguxS5aySzv9RWqLDU3YCTYsDWGcBw7Tva8Pu31MhDGozaMSRlZcIT2SSSXlsuBZQ2GsYfferjxSHQ0lVXV54jvJPrmmoXnr1EKyMfkf+wdozPUZcfRCm8O3c6l0QBVPf33pi1oIX1ltgWP0b25wD9Q==
+X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(6666004)(508600001)(316002)(8936002)(8676002)(4326008)(966005)(54906003)(36756003)(40460700003)(110136005)(47076005)(70586007)(70206006)(36860700001)(82310400004)(86362001)(2906002)(26005)(2616005)(186003)(1076003)(83380400001)(426003)(107886003)(336012)(5660300002)(81166007)(7416002)(356005)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Feb 2022 09:32:59.9050
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1f4f9c30-4486-449e-e250-08d9e6f82b2a
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT007.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4325
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3.2.2022 4.57, Daehwan Jung wrote:
-> This patchset is for USB offload feature, which makes Co-processor to use
-> some memories of xhci. Especially it's useful for USB Audio scenario.
-> Audio stream would get shortcut because Co-processor directly write/read
-> data in xhci memories. It could get speed-up using faster memory like SRAM.
-> That's why this also gives vendors flexibilty of memory management.
-> Below pathches have been merged in AOSP kernel(android12-5.10) and I put
-> together and split into 3 patches.
+Hi Peter, Jason and all,
 
-Can you share the full USB offload support series?
+Changes since v2:
 
-I'd like to see the big picture before taking any exporting and override
-patches.
+    * Patch 2: Removed an unnecessary line that was causing a
+      clang-analyzer complaint, as reported by Lukas Bulwahn
+      [1] (thanks!), and retested locally.
 
-Thanks
--Mathias
- 
+      Jason: I've boldly left your Reviewed-by tag on this patch,
+      because I am predicting you'll agree with it...
+
+    * Added Reviewed-by tags from Jan Kara, Christoph Hellwig, and
+      Jason Gunthorpe that have collected since v2.
+
+
+Changes since v1:
+    * Patch 4: changed from get_user_pages(), to get_user_pages_fast().
+
+    * Patch 4: Rewrote the commit description--thanks to Jan Kara for
+               that feedback.
+
+    * Patch 1: Removed Jerome's Cc from patch 1, due to a stale email
+               address.
+
+    * Added Reviewed-by's from David Hildenbrand and Jason Gunthorpe.
+
+Original cover letter, updated as necessary:
+
+I'm including Peter's patch as the first one in this tiny series. (The
+commit description has my r-b tag in place of my Cc, and removes
+Jerome's Cc because he is no longer at redhat.com) The second patch is
+what I had in mind for a follow-up to that, when we were discussing that
+fix [2].
+
+Plus, a couple more small removals that I had queued up:
+
+The third patch removes a completely unused routine:
+pin_user_pages_locked().
+
+The forth patch removes a similar routine, get_user_pages_locked(), that
+only has one caller. It now calls get_user_pages_fast(), instead.
+
+v1 of this patchset is here:
+https://lore.kernel.org/all/20220131051752.447699-1-jhubbard@nvidia.com/
+
+v2 of this patchset is here:
+https://lore.kernel.org/r/20220201101108.306062-1-jhubbard@nvidia.com
+
+[1] https://lore.kernel.org/r/CAKXUXMxFK9bo8jDoRZbQ0r2j-JwAGg3Xc5cpAcLaHfwHddJ7ew@mail.gmail.com
+
+[2] https://lore.kernel.org/all/20220125033700.69705-1-peterx@redhat.com/
+
+
+thanks,
+John Hubbard
+
+John Hubbard (3):
+  mm/gup: clean up follow_pfn_pte() slightly
+  mm/gup: remove unused pin_user_pages_locked()
+  mm/gup: remove get_user_pages_locked()
+
+Peter Xu (1):
+  mm: Fix invalid page pointer returned with FOLL_PIN gups
+
+ include/linux/mm.h |  4 --
+ mm/gup.c           | 99 +++-------------------------------------------
+ mm/mempolicy.c     | 21 +++++-----
+ 3 files changed, 15 insertions(+), 109 deletions(-)
+
+
+base-commit: 88808fbbead481aedb46640a5ace69c58287f56a
+--
+2.35.1
+
+
