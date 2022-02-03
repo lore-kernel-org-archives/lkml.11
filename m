@@ -2,107 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BE33C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 09:52:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D2FDC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 10:03:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349965AbiBCJwl (ORCPT
+        id S1349980AbiBCKDb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 04:52:41 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:33594 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234483AbiBCJwh (ORCPT
+        Thu, 3 Feb 2022 05:03:31 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:51714 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240750AbiBCKDa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 04:52:37 -0500
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 5D1101F3A8;
-        Thu,  3 Feb 2022 09:52:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1643881956; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=bLOn4HAXkPZHEb9tPDyeDY1N8Gi6hOouq8FDKvgLLrw=;
-        b=Wg8dB8Jrnul5bNu/F+Z9RTMleIZS4ejELJXXHwcvzi/A5roCngF5IlLfz+TAtpTMhgKWql
-        Ff+vsH1PcdEkGhzlTAZEF8l3Q1RF+Zd3q+Y9rezHMlISAq5IleCBD90P3UHr46+7hJM0YG
-        UYAkOiG42fN7Kkt3jlkL4rXoT++zXRA=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1643881956;
+        Thu, 3 Feb 2022 05:03:30 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id D06B5210F1;
+        Thu,  3 Feb 2022 10:03:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1643882609; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type;
+        bh=XFe4KRaJnmlSNS9ZV+8yOgyiyJH5UKwmTbZlHDLxHEE=;
+        b=APTLIlHGaPPZnk26W11ZryI+stoqJejBX7pfmdmB63QWIedA8EsHBLSFkvv0FdB1khn0Gf
+        gL110nJWv/vI86wikLtLXIXwBN0FJCN7Ue+UOoT9um3lVOt0zKm50F096ROZo8ZW1wj67V
+        Vl5ID4raPjVLAbEBZSNgyEtcJ9ZqZZA=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1643882609;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=bLOn4HAXkPZHEb9tPDyeDY1N8Gi6hOouq8FDKvgLLrw=;
-        b=/rn9Z+Zp9bAlNUNPoHB6h6DoQjrLD6qHN8x+dY2IpVEqrioQG4WuBLjuB5MJ7TeDNxx0Nn
-        0B29IMRiHSHd6fAQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+         mime-version:mime-version:content-type:content-type;
+        bh=XFe4KRaJnmlSNS9ZV+8yOgyiyJH5UKwmTbZlHDLxHEE=;
+        b=4RNCdlsyfAtrcoOxd1+ciLscNjsO+PrJ+3tpk0eFvu+enuU/0NSYimbClAaMqVzLYf7gqn
+        9ABW6LGcau4kYQAQ==
+Received: from suse.de (unknown [10.163.43.106])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 3077713B7F;
-        Thu,  3 Feb 2022 09:52:36 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id A17ICuSl+2G+RQAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Thu, 03 Feb 2022 09:52:36 +0000
-Message-ID: <13e0466d-d9ec-0efd-f7df-107940636a85@suse.cz>
-Date:   Thu, 3 Feb 2022 10:52:35 +0100
+        by relay2.suse.de (Postfix) with ESMTPS id E1FC7A3B88;
+        Thu,  3 Feb 2022 10:03:28 +0000 (UTC)
+Date:   Thu, 3 Feb 2022 10:03:26 +0000
+From:   Mel Gorman <mgorman@suse.de>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Hugh Dickins <hughd@google.com>, Michal Hocko <mhocko@suse.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Rik van Riel <riel@surriel.com>,
+        Linux-MM <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: [PATCH] mm: vmscan: remove deadlock due to throttling failing to
+ make progress
+Message-ID: <20220203100326.GD3301@suse.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Content-Language: en-US
-To:     Mike Rapoport <rppt@linux.ibm.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Linux Kernel <linux-kernel@vger.kernel.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Doug Berger <opendmb@gmail.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        SeongJae Park <sj@kernel.org>,
-        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-References: <fbad2233-207e-6b66-890b-ef1b1f97fdad@gmail.com>
- <Yft92aSYi9QIfKNf@linux.ibm.com>
-From:   Vlastimil Babka <vbabka@suse.cz>
-Subject: Re: Updated git tree for MM patches??
-In-Reply-To: <Yft92aSYi9QIfKNf@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-15
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/3/22 08:01, Mike Rapoport wrote:
-> On Wed, Feb 02, 2022 at 04:21:38PM -0800, Florian Fainelli wrote:
->> Hi Andrew, Johannes,
->> 
->> The MAINTAINERS file for MEMORY MANAGEMENT lists the following git tree:
->> 
->> git://github.com/hnaz/linux-mm.git
->> 
->> however it does not look like it has been updated in the past 5 months or so
->> as master still points to 5.17-rc7-mm1
->> 
->> Is there another git tree that other memory management related subsystems
->> use for development?
-> 
-> AFAIK, hnaz/linux-mm was the only git mirror of mmotm series.
+A soft lockup bug in kcompactd was reported in a private bugzilla with
+the following visible in dmesg;
 
-IIRC Michal Hocko also used to maintain one, in a different way, but that
-was given up even longer ago.
+[15980.045209][   C33] watchdog: BUG: soft lockup - CPU#33 stuck for 26s! [kcompactd0:479]
+[16008.044989][   C33] watchdog: BUG: soft lockup - CPU#33 stuck for 52s! [kcompactd0:479]
+[16036.044768][   C33] watchdog: BUG: soft lockup - CPU#33 stuck for 78s! [kcompactd0:479]
+[16064.044548][   C33] watchdog: BUG: soft lockup - CPU#33 stuck for 104s! [kcompactd0:479]
 
-linux-next seems to maintain its branch that's merged to the final next like
-this:
-https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/log/?h=akpm
-but that means getting the whole of next, not just mmotm. Maybe the branch
-'akpm-current/current' could be also exposed separately?
+The machine had 256G of RAM with no swap and an earlier failed allocation
+indicated that node 0 where kcompactd was run was potentially
+unreclaimable;
 
-> I keep a tree for memblock, but it follows Linus' tree rather than mmotm.
-> I think Vlastimil's slab tree does the same.
+Node 0 active_anon:29355112kB inactive_anon:2913528kB active_file:0kB
+  inactive_file:0kB unevictable:64kB isolated(anon):0kB isolated(file):0kB
+  mapped:8kB dirty:0kB writeback:0kB shmem:26780kB shmem_thp:
+  0kB shmem_pmdmapped: 0kB anon_thp: 23480320kB writeback_tmp:0kB
+  kernel_stack:2272kB pagetables:24500kB all_unreclaimable? yes
 
-Yeah as that's how development should be done in general, the trees should
-be independent if possible.
+Vlastimil Babka investigated a crash dump and found that a task migrating pages
+was trying to drain PCP lists;
+
+PID: 52922  TASK: ffff969f820e5000  CPU: 19  COMMAND: "kworker/u128:3"
+ #0 [ffffaf4e4f4c3848] __schedule at ffffffffb840116d
+ #1 [ffffaf4e4f4c3908] schedule at ffffffffb8401e81
+ #2 [ffffaf4e4f4c3918] schedule_timeout at ffffffffb84066e8
+ #3 [ffffaf4e4f4c3990] wait_for_completion at ffffffffb8403072
+ #4 [ffffaf4e4f4c39d0] __flush_work at ffffffffb7ac3e4d
+ #5 [ffffaf4e4f4c3a48] __drain_all_pages at ffffffffb7cb707c
+ #6 [ffffaf4e4f4c3a80] __alloc_pages_slowpath.constprop.114 at ffffffffb7cbd9dd
+ #7 [ffffaf4e4f4c3b60] __alloc_pages at ffffffffb7cbe4f5
+ #8 [ffffaf4e4f4c3bc0] alloc_migration_target at ffffffffb7cf329c
+ #9 [ffffaf4e4f4c3bf0] migrate_pages at ffffffffb7cf6d15
+ 10 [ffffaf4e4f4c3cb0] migrate_to_node at ffffffffb7cdb5aa
+ 11 [ffffaf4e4f4c3da8] do_migrate_pages at ffffffffb7cdcf26
+ 12 [ffffaf4e4f4c3e88] cpuset_migrate_mm_workfn at ffffffffb7b859d2
+ 13 [ffffaf4e4f4c3e98] process_one_work at ffffffffb7ac45f3
+ 14 [ffffaf4e4f4c3ed8] worker_thread at ffffffffb7ac47fd
+ 15 [ffffaf4e4f4c3f10] kthread at ffffffffb7acbdc6
+ 16 [ffffaf4e4f4c3f50] ret_from_fork at ffffffffb7a047e2
+
+The root of the problem is that kcompact0 is not rescheduling on a CPU
+while a task that has isolated a large number of the pages from the
+LRU is waiting on kcompact0 to reschedule so the pages can be released.
+While shrink_inactive_list() only loops once around too_many_isolated,
+reclaim can continue without rescheduling if sc->skipped_deactivate ==
+1 which could happen if there was no file LRU and the inactive anon list
+was not low.
+
+Debugged-by: Vlastimil Babka <vbabka@suse.cz>
+Signed-off-by: Mel Gorman <mgorman@suse.de>
+---
+ mm/vmscan.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/mm/vmscan.c b/mm/vmscan.c
+index 090bfb605ecf..59b14e0d696c 100644
+--- a/mm/vmscan.c
++++ b/mm/vmscan.c
+@@ -1066,8 +1066,10 @@ void reclaim_throttle(pg_data_t *pgdat, enum vmscan_throttle_state reason)
+ 	 * forward progress (e.g. journalling workqueues or kthreads).
+ 	 */
+ 	if (!current_is_kswapd() &&
+-	    current->flags & (PF_IO_WORKER|PF_KTHREAD))
++	    current->flags & (PF_IO_WORKER|PF_KTHREAD)) {
++		cond_resched();
+ 		return;
++	}
+ 
+ 	/*
+ 	 * These figures are pulled out of thin air.
