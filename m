@@ -2,262 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 335B1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 14:36:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F188C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 14:36:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351589AbiBCOgA (ORCPT
+        id S1351483AbiBCOgG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 09:36:00 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:58458 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1351388AbiBCOdv (ORCPT
+        Thu, 3 Feb 2022 09:36:06 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:53508 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1351342AbiBCOdw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 09:33:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643898831;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
+        Thu, 3 Feb 2022 09:33:52 -0500
+Date:   Thu, 03 Feb 2022 14:33:50 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1643898831;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=wA0dI14eSZx5t7rwKADFrF7BN7CoS/Nrs6Pdks+yZFw=;
-        b=A3hw5DEKyH80dCFxFNgiCP7KdTX6VFFG+f2oOjsA2liSMi+VLeC8rUqBhw5vlT+PKiS/A0
-        UD0Ztsz0XMNdd4sbdvL/55YU1xIp3vZslBcYwe3AoeopzpUNCXWrRHxfOxeyPfiXs2e6lz
-        9Qv2FNieiI3jY7x/CR1rrj5iRHABciE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-113-nG3ulzyBNvGamYiqbziOfQ-1; Thu, 03 Feb 2022 09:33:50 -0500
-X-MC-Unique: nG3ulzyBNvGamYiqbziOfQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 46E358145E0;
-        Thu,  3 Feb 2022 14:33:48 +0000 (UTC)
-Received: from plouf.redhat.com (unknown [10.39.192.114])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9F8D97D499;
-        Thu,  3 Feb 2022 14:33:42 +0000 (UTC)
-From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
-To:     Jiri Kosina <jikos@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?q?Ahelenia=20Ziemia=C5=84ska?= 
-        <nabijaczleweli@nabijaczleweli.xyz>,
-        Ping Cheng <pinglinux@gmail.com>,
-        Aaron Armstrong Skomra <skomra@gmail.com>,
-        Jason Gerecke <killertofu@gmail.com>,
-        Peter Hutterer <peter.hutterer@who-t.net>
-Cc:     linux-input@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Subject: [PATCH v2 10/12] HID: input: remove the need for HID_QUIRK_INVERT
-Date:   Thu,  3 Feb 2022 15:32:24 +0100
-Message-Id: <20220203143226.4023622-11-benjamin.tissoires@redhat.com>
-In-Reply-To: <20220203143226.4023622-1-benjamin.tissoires@redhat.com>
-References: <20220203143226.4023622-1-benjamin.tissoires@redhat.com>
+        bh=znfUhutvepz7DeR7g7rXe8R0vY+RYgHaHIrICHi1kzE=;
+        b=faYHyT4z73OTglhc5Eoquh15qNHk09+0x32kv+MTM2drvBGaIrI4+Vlt0LqlYlOX2x75DG
+        TD44pHPezgQy2dl6EaGX8eIrfUa9WSy2ZDKaZrhL/WN1+wugmgDI4Ho00Q/dYYzkAScUAl
+        /bTQT/pC/N+nU4dxFMl2duut7FPbfNqQA6Rp5KqNb4ExpAt19Vt0YDChYB/YNha1R1FKYk
+        cW4a9E4DF9wRdDEQl2NhRp5naDhRdHvhrGic2BbXmIh+v1MVm6dNZdnuq62hPVYPICuR7h
+        0gsysceEfH8PE8xocGh1WPeE7tje1DIL6L5lC7M437NPKqMoutjOAfrG7A8jrw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1643898831;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=znfUhutvepz7DeR7g7rXe8R0vY+RYgHaHIrICHi1kzE=;
+        b=PV+R3ViP8aWRloRrf64pDJuLq8J0Ac3YI+Hz/hCMzpyJYMfkgM4S/VDo1ZFKqDRMqe/KAt
+        8d1FbD1iTlRjM+Cg==
+From:   "tip-bot2 for Mathieu Desnoyers" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: sched/core] selftests/rseq: Remove volatile from __rseq_abi
+Cc:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220124171253.22072-5-mathieu.desnoyers@efficios.com>
+References: <20220124171253.22072-5-mathieu.desnoyers@efficios.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Message-ID: <164389883020.16921.17584681770566486508.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-HID_QUIRK_INVERT is kind of complex to deal with and was bogus.
+The following commit has been merged into the sched/core branch of tip:
 
-Furthermore, it didn't make sense to use a global per struct hid_device
-quirk for something dynamic as the current state.
+Commit-ID:     94b80a19ebfe347a01301d750040a61c38200e2b
+Gitweb:        https://git.kernel.org/tip/94b80a19ebfe347a01301d750040a61c38200e2b
+Author:        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+AuthorDate:    Mon, 24 Jan 2022 12:12:42 -05:00
+Committer:     Peter Zijlstra <peterz@infradead.org>
+CommitterDate: Wed, 02 Feb 2022 13:11:34 +01:00
 
-Store the current tool information in the report itself, and re-order
-the processing of the fields to enforce having all the tablet "state"
-fields before getting to In Range and other input fields.
+selftests/rseq: Remove volatile from __rseq_abi
 
-This way, we now have all the information whether a tool is present
-or not while processing In Range.
+This is done in preparation for the selftest uplift to become compatible
+with glibc-2.35.
 
-This new behavior enforces that only one tool gets forwarded to userspace
-at the same time, and that if either eraser or invert is set, we enforce
-BTN_TOOL_RUBBER.
+All accesses to the __rseq_abi fields are volatile, but remove the
+volatile from the TLS variable declaration, otherwise we are stuck with
+volatile for the upcoming rseq_get_abi() helper.
 
-Note that the release of the previous tool now happens in its own EV_SYN
-report so userspace doesn't get confused by having 2 tools.
-
-These changes are tested in the following hid-tools regression tests:
-https://gitlab.freedesktop.org/libevdev/hid-tools/-/merge_requests/127
-
-Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-
+Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20220124171253.22072-5-mathieu.desnoyers@efficios.com
 ---
+ tools/testing/selftests/rseq/rseq.c | 4 ++--
+ tools/testing/selftests/rseq/rseq.h | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-Changes in v2:
-- rework the entire tool switching, this makes the processing
-  slightly more complex but is better for existing userspace.
----
- drivers/hid/hid-input.c | 98 +++++++++++++++++++++++++++++++++++++----
- include/linux/hid.h     |  6 ++-
- 2 files changed, 95 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/hid/hid-input.c b/drivers/hid/hid-input.c
-index 61d91117f4ae..9f8853640648 100644
---- a/drivers/hid/hid-input.c
-+++ b/drivers/hid/hid-input.c
-@@ -63,8 +63,11 @@ static const struct {
-  * This still leaves us 65535 individual priority values.
-  */
- static const __u32 hidinput_usages_priorities[] = {
-+	HID_DG_ERASER,		/* Eraser (eraser touching) must always come before tipswitch */
- 	HID_DG_INVERT,		/* Invert must always come before In Range */
--	HID_DG_INRANGE,
-+	HID_DG_TIPSWITCH,	/* Is the tip of the tool touching? */
-+	HID_DG_TIPPRESSURE,	/* Tip Pressure might emulate tip switch */
-+	HID_DG_INRANGE,		/* In Range needs to come after the other tool states */
+diff --git a/tools/testing/selftests/rseq/rseq.c b/tools/testing/selftests/rseq/rseq.c
+index bfe1b26..1f905b6 100644
+--- a/tools/testing/selftests/rseq/rseq.c
++++ b/tools/testing/selftests/rseq/rseq.c
+@@ -30,7 +30,7 @@
+ #include "../kselftest.h"
+ #include "rseq.h"
+ 
+-__thread volatile struct rseq_abi __rseq_abi = {
++__thread struct rseq_abi __rseq_abi = {
+ 	.cpu_id = RSEQ_ABI_CPU_ID_UNINITIALIZED,
  };
  
- #define map_abs(c)	hid_map_usage(hidinput, usage, &bit, &max, EV_ABS, (c))
-@@ -1365,9 +1368,38 @@ static void hidinput_handle_scroll(struct hid_usage *usage,
- 	input_event(input, EV_REL, usage->code, hi_res);
+@@ -92,7 +92,7 @@ int rseq_register_current_thread(void)
+ 		goto end;
+ 	}
+ 	if (errno != EBUSY)
+-		__rseq_abi.cpu_id = RSEQ_ABI_CPU_ID_REGISTRATION_FAILED;
++		RSEQ_WRITE_ONCE(__rseq_abi.cpu_id, RSEQ_ABI_CPU_ID_REGISTRATION_FAILED);
+ 	ret = -1;
+ 	__rseq_refcount--;
+ end:
+diff --git a/tools/testing/selftests/rseq/rseq.h b/tools/testing/selftests/rseq/rseq.h
+index cb6bbc5..d580f8e 100644
+--- a/tools/testing/selftests/rseq/rseq.h
++++ b/tools/testing/selftests/rseq/rseq.h
+@@ -43,7 +43,7 @@
+ #define RSEQ_INJECT_FAILED
+ #endif
+ 
+-extern __thread volatile struct rseq_abi __rseq_abi;
++extern __thread struct rseq_abi __rseq_abi;
+ extern int __rseq_handled;
+ 
+ #define rseq_likely(x)		__builtin_expect(!!(x), 1)
+@@ -139,7 +139,7 @@ static inline uint32_t rseq_current_cpu(void)
+ 
+ static inline void rseq_clear_rseq_cs(void)
+ {
+-	__rseq_abi.rseq_cs.arch.ptr = 0;
++	RSEQ_WRITE_ONCE(__rseq_abi.rseq_cs.arch.ptr, 0);
  }
  
-+static void hid_report_release_tool(struct hid_report *report, struct input_dev *input,
-+				    unsigned int tool)
-+{
-+	/* if the given tool is not currently reported, ignore */
-+	if (!test_bit(tool, input->key))
-+		return;
-+
-+	/*
-+	 * if the given tool was previously set, release it,
-+	 * release any TOUCH and send an EV_SYN
-+	 */
-+	input_event(input, EV_KEY, BTN_TOUCH, 0);
-+	input_event(input, EV_KEY, tool, 0);
-+	input_event(input, EV_SYN, SYN_REPORT, 0);
-+
-+	report->tool = 0;
-+}
-+
-+static void hid_report_set_tool(struct hid_report *report, struct input_dev *input,
-+				unsigned int new_tool)
-+{
-+	if (report->tool != new_tool)
-+		hid_report_release_tool(report, input, report->tool);
-+
-+	input_event(input, EV_KEY, new_tool, 1);
-+	report->tool = new_tool;
-+}
-+
- void hidinput_hid_event(struct hid_device *hid, struct hid_field *field, struct hid_usage *usage, __s32 value)
- {
- 	struct input_dev *input;
-+	struct hid_report *report = field->report;
- 	unsigned *quirks = &hid->quirks;
- 
- 	if (!usage->type)
-@@ -1418,25 +1450,75 @@ void hidinput_hid_event(struct hid_device *hid, struct hid_field *field, struct
- 	}
- 
- 	switch (usage->hid) {
-+	case HID_DG_ERASER:
-+		report->tool_active |= !!value;
-+
-+		/*
-+		 * if eraser is set, we must enforce BTN_TOOL_RUBBER
-+		 * to accommodate for devices not following the spec.
-+		 */
-+		if (value)
-+			hid_report_set_tool(report, input, BTN_TOOL_RUBBER);
-+		else if (report->tool != BTN_TOOL_RUBBER)
-+			/* value is off, tool is not rubber, ignore */
-+			return;
-+
-+		/* let hid-input set BTN_TOUCH */
-+		break;
-+
- 	case HID_DG_INVERT:
--		*quirks = value ? (*quirks | HID_QUIRK_INVERT) : (*quirks & ~HID_QUIRK_INVERT);
-+		report->tool_active |= !!value;
-+
-+		/*
-+		 * If invert is set, we store BTN_TOOL_RUBBER.
-+		 */
-+		if (value)
-+			hid_report_set_tool(report, input, BTN_TOOL_RUBBER);
-+		else if (!report->tool_active)
-+			/* tool_active not set means Invert and Eraser are not set */
-+			hid_report_release_tool(report, input, BTN_TOOL_RUBBER);
-+
-+		/* no further processing */
- 		return;
- 
- 	case HID_DG_INRANGE:
--		if (value) {
--			input_event(input, usage->type, (*quirks & HID_QUIRK_INVERT) ? BTN_TOOL_RUBBER : usage->code, 1);
--			return;
-+		report->tool_active |= !!value;
-+
-+		if (report->tool_active) {
-+			/*
-+			 * if tool is not set but is marked as active,
-+			 * assume ours
-+			 */
-+			if (!report->tool)
-+				hid_report_set_tool(report, input, usage->code);
-+		} else {
-+			hid_report_release_tool(report, input, usage->code);
- 		}
--		input_event(input, usage->type, usage->code, 0);
--		input_event(input, usage->type, BTN_TOOL_RUBBER, 0);
-+
-+		/* reset tool_active for the next event */
-+		report->tool_active = false;
-+
-+		/* no further processing */
- 		return;
- 
-+	case HID_DG_TIPSWITCH:
-+		report->tool_active |= !!value;
-+
-+		/* if tool is set to RUBBER we should ignore the current value */
-+		if (report->tool == BTN_TOOL_RUBBER)
-+			return;
-+
-+		break;
-+
- 	case HID_DG_TIPPRESSURE:
- 		if (*quirks & HID_QUIRK_NOTOUCH) {
- 			int a = field->logical_minimum;
- 			int b = field->logical_maximum;
- 
--			input_event(input, EV_KEY, BTN_TOUCH, value > a + ((b - a) >> 3));
-+			if (value > a + ((b - a) >> 3)) {
-+				input_event(input, EV_KEY, BTN_TOUCH, 1);
-+				report->tool_active = true;
-+			}
- 		}
- 		break;
- 
-diff --git a/include/linux/hid.h b/include/linux/hid.h
-index eaad0655b05c..feb8df61168f 100644
---- a/include/linux/hid.h
-+++ b/include/linux/hid.h
-@@ -347,7 +347,7 @@ struct hid_item {
-  */
- #define MAX_USBHID_BOOT_QUIRKS 4
- 
--#define HID_QUIRK_INVERT			BIT(0)
-+/* BIT(0) reserved for backward compatibility, was HID_QUIRK_INVERT */
- #define HID_QUIRK_NOTOUCH			BIT(1)
- #define HID_QUIRK_IGNORE			BIT(2)
- #define HID_QUIRK_NOGET				BIT(3)
-@@ -515,6 +515,10 @@ struct hid_report {
- 	unsigned maxfield;				/* maximum valid field index */
- 	unsigned size;					/* size of the report (bits) */
- 	struct hid_device *device;			/* associated device */
-+
-+	/* tool related state */
-+	bool tool_active;				/* whether the current tool is active */
-+	unsigned int tool;				/* BTN_TOOL_* */
- };
- 
- #define HID_MAX_IDS 256
--- 
-2.33.1
-
+ /*
