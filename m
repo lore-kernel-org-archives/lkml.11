@@ -2,54 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29270C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:43:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E61EAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:43:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355698AbiBCUnh (ORCPT
+        id S1355735AbiBCUnl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:43:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59340 "EHLO
+        Thu, 3 Feb 2022 15:43:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355823AbiBCUjy (ORCPT
+        with ESMTP id S1355828AbiBCUjz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 15:39:54 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE1D8C0611FD;
-        Thu,  3 Feb 2022 12:36:32 -0800 (PST)
+        Thu, 3 Feb 2022 15:39:55 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9172C061183;
+        Thu,  3 Feb 2022 12:36:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 419EE608C4;
-        Thu,  3 Feb 2022 20:36:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02D32C340E8;
-        Thu,  3 Feb 2022 20:36:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 74884B835BC;
+        Thu,  3 Feb 2022 20:36:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66C16C36AE2;
+        Thu,  3 Feb 2022 20:36:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643920591;
-        bh=lP/9XNjr06Zs66IlC10yUo62yXsw8hTcr3FXGl4Gv0I=;
+        s=k20201202; t=1643920599;
+        bh=GyoKvYHjJdZEdczGMaOTHA3l7hEsSGN7FAAdvH/xJRg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iQZqN49UBdxGrEJVsrKmsCtTExZdhgmSm8ya8bwq8F0MA66O9d3D89H4QlAen/viM
-         RcXp8JOpqFzSOEL4vkPbI5+WUJshI2/Ne12ah6YDsLRAv+qg3k/rNYAjqDrMT8Z2NL
-         xWL3+05+ZrSxCoRnaIhO52JvImm1buJaSQnFPBudV0HpdaUHqikhQIBIQbgyHbsaKj
-         sczaRQCXIr6In/1rFtXrG/PXNLvGsGAgHCKcVjePpCORXy+U07Ziquus+ts+XbVvQZ
-         rDmkFhdL103fVUe3ZaNR13quIWagFVJYK+vT1//yt76dxqxrtnCcCiX65DumadlZC+
-         4pPqcGP05JJww==
+        b=LZarsZNf7x17VtfYrvnR6rnBpn3h6dZziWb92v7Itpm7IA2r1tY1qovZswdUgTOvE
+         YQxCwFESMV4i7fanLsYaW+YALpWdad+N6s7nFRBJA1Y0nLgW5jRBdhHfFhN932nMei
+         /NV0FiBhop8w1o/h8m2xXrRpA0r9Rdcl93etAi7UW8PWya454HLiPfphML+MHNcCOi
+         mGdiNsWu1cRDVZYHqunb4fsjF9yxNIFl38M7utU+7TiuvMX345pYTkRyuwIEAanjBd
+         VU1gMDOji+yv3ZFyMCu6tMNge09Bce+bhG25iJxkeY+E0nQwDxbwtjqMw34JSjwYS1
+         bug/fdHKvNWwA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jisheng Zhang <jszhang@kernel.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, peppe.cavallaro@st.com,
-        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
-        kuba@kernel.org, mripard@kernel.org, wens@csie.org,
-        mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-stm32@st-md-mailman.stormreply.com
-Subject: [PATCH AUTOSEL 4.19 10/10] net: stmmac: dwmac-sun8i: use return val of readl_poll_timeout()
-Date:   Thu,  3 Feb 2022 15:36:13 -0500
-Message-Id: <20220203203613.4165-10-sashal@kernel.org>
+Cc:     Trond Myklebust <trond.myklebust@hammerspace.com>,
+        rtm@csail.mit.edu, Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Sasha Levin <sashal@kernel.org>, anna.schumaker@netapp.com,
+        linux-nfs@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 3/9] NFSv4.1: Fix uninitialised variable in devicenotify
+Date:   Thu,  3 Feb 2022 15:36:27 -0500
+Message-Id: <20220203203633.4685-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220203203613.4165-1-sashal@kernel.org>
-References: <20220203203613.4165-1-sashal@kernel.org>
+In-Reply-To: <20220203203633.4685-1-sashal@kernel.org>
+References: <20220203203633.4685-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -58,40 +53,104 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jisheng Zhang <jszhang@kernel.org>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit 9e0db41e7a0b6f1271cbcfb16dbf5b8641b4e440 ]
+[ Upstream commit b05bf5c63b326ce1da84ef42498d8e0e292e694c ]
 
-When readl_poll_timeout() timeout, we'd better directly use its return
-value.
+When decode_devicenotify_args() exits with no entries, we need to
+ensure that the struct cb_devicenotifyargs is initialised to
+{ 0, NULL } in order to avoid problems in
+nfs4_callback_devicenotify().
 
-Before this patch:
-[    2.145528] dwmac-sun8i: probe of 4500000.ethernet failed with error -14
-
-After this patch:
-[    2.138520] dwmac-sun8i: probe of 4500000.ethernet failed with error -110
-
-Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
-Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reported-by: <rtm@csail.mit.edu>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/nfs/callback.h      |  2 +-
+ fs/nfs/callback_proc.c |  2 +-
+ fs/nfs/callback_xdr.c  | 18 +++++++++---------
+ 3 files changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-index 4382deaeb570d..0137cba2cb54b 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-@@ -712,7 +712,7 @@ static int sun8i_dwmac_reset(struct stmmac_priv *priv)
+diff --git a/fs/nfs/callback.h b/fs/nfs/callback.h
+index a20a0bce40a48..80ad04abcf309 100644
+--- a/fs/nfs/callback.h
++++ b/fs/nfs/callback.h
+@@ -168,7 +168,7 @@ struct cb_devicenotifyitem {
+ };
  
- 	if (err) {
- 		dev_err(priv->device, "EMAC reset timeout\n");
--		return -EFAULT;
-+		return err;
+ struct cb_devicenotifyargs {
+-	int				 ndevs;
++	uint32_t			 ndevs;
+ 	struct cb_devicenotifyitem	 *devs;
+ };
+ 
+diff --git a/fs/nfs/callback_proc.c b/fs/nfs/callback_proc.c
+index 440ff8e7082b6..3998b432e1b98 100644
+--- a/fs/nfs/callback_proc.c
++++ b/fs/nfs/callback_proc.c
+@@ -355,7 +355,7 @@ __be32 nfs4_callback_devicenotify(void *argp, void *resp,
+ 				  struct cb_process_state *cps)
+ {
+ 	struct cb_devicenotifyargs *args = argp;
+-	int i;
++	uint32_t i;
+ 	__be32 res = 0;
+ 	struct nfs_client *clp = cps->clp;
+ 	struct nfs_server *server = NULL;
+diff --git a/fs/nfs/callback_xdr.c b/fs/nfs/callback_xdr.c
+index 57de914630bc9..36c34be839d09 100644
+--- a/fs/nfs/callback_xdr.c
++++ b/fs/nfs/callback_xdr.c
+@@ -265,11 +265,9 @@ __be32 decode_devicenotify_args(struct svc_rqst *rqstp,
+ 				void *argp)
+ {
+ 	struct cb_devicenotifyargs *args = argp;
++	uint32_t tmp, n, i;
+ 	__be32 *p;
+ 	__be32 status = 0;
+-	u32 tmp;
+-	int n, i;
+-	args->ndevs = 0;
+ 
+ 	/* Num of device notifications */
+ 	p = read_buf(xdr, sizeof(uint32_t));
+@@ -278,7 +276,7 @@ __be32 decode_devicenotify_args(struct svc_rqst *rqstp,
+ 		goto out;
  	}
- 	return 0;
+ 	n = ntohl(*p++);
+-	if (n <= 0)
++	if (n == 0)
+ 		goto out;
+ 	if (n > ULONG_MAX / sizeof(*args->devs)) {
+ 		status = htonl(NFS4ERR_BADXDR);
+@@ -336,19 +334,21 @@ __be32 decode_devicenotify_args(struct svc_rqst *rqstp,
+ 			dev->cbd_immediate = 0;
+ 		}
+ 
+-		args->ndevs++;
+-
+ 		dprintk("%s: type %d layout 0x%x immediate %d\n",
+ 			__func__, dev->cbd_notify_type, dev->cbd_layout_type,
+ 			dev->cbd_immediate);
+ 	}
++	args->ndevs = n;
++	dprintk("%s: ndevs %d\n", __func__, args->ndevs);
++	return 0;
++err:
++	kfree(args->devs);
+ out:
++	args->devs = NULL;
++	args->ndevs = 0;
+ 	dprintk("%s: status %d ndevs %d\n",
+ 		__func__, ntohl(status), args->ndevs);
+ 	return status;
+-err:
+-	kfree(args->devs);
+-	goto out;
  }
+ 
+ static __be32 decode_sessionid(struct xdr_stream *xdr,
 -- 
 2.34.1
 
