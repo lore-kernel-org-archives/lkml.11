@@ -2,67 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EEB5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 19:40:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7603C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 19:43:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353822AbiBCTkZ (ORCPT
+        id S1353823AbiBCTnW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 14:40:25 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:35808 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353814AbiBCTkW (ORCPT
+        Thu, 3 Feb 2022 14:43:22 -0500
+Received: from smtp-out2.suse.de ([195.135.220.29]:36426 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231996AbiBCTnU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 14:40:22 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Thu, 3 Feb 2022 14:43:20 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id F3FE91F399;
+        Thu,  3 Feb 2022 19:43:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1643917399; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=djYBuNzUo5jlyYldd5YsGcxLff7fJbIGicD7buvtm2k=;
+        b=NwM5TkfR1zyi/rgDW50fbTo0gTVrSMXizrc1Hdhka9rZBFsRiu1IrRdxGRLSj4edOVDiaC
+        U4627lPy3D9aD6lTwPLKBYSjy1mDOQt7w/g2IzW7Mdz/Vz6arGUir9qfXv7vfY8ZS9SBZS
+        EAC6fEiLmRag8QFr2rnW3PubGKi1LkY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1643917399;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=djYBuNzUo5jlyYldd5YsGcxLff7fJbIGicD7buvtm2k=;
+        b=QGceBBfehFjsqNEjwXcVC31z3bq7/nzYuwVBDa0BISCQVByB2w4M478kVcehlHYQosR5FL
+        QEnUNk5Norx3y0Cw==
+Received: from kunlun.suse.cz (unknown [10.100.128.76])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A878F61949;
-        Thu,  3 Feb 2022 19:40:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 1F934C340E8;
-        Thu,  3 Feb 2022 19:40:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643917222;
-        bh=/0QUOiReOFNNywPWXIehNo6nlkCCJhv9EHrfvrPyW4Y=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=LgxRNuDKjlycBVITOho0n2QnclXE5obeBA2XlH69isSaoJGZg/zS9xdQiafhnKRxx
-         cKbKF791mIUctJSEeMHbpL1icHRFI68mRUF5yUK7ovB5xcv58d2L+DOoOEotXBwn5E
-         aq9fW5fF6321S33PcmLG0gfczW/hPhRNU2xMhwlVKFVuA99Gg08jSoxWxYpnhs/H1v
-         9KwwQ0R37KeIbUin1OlLvIc5amw3TcwfWVrMmZ1At9cod4kmPbx3hJN2E0EH3kJP44
-         LCc/455uuFSB3HNNAzMW0A2YE+pL1kSnz9zb7cYohYz2Nk3MOxk4iMlaa6tpiXADSt
-         8tXOY/gxknzWg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0CE3FE5D08C;
-        Thu,  3 Feb 2022 19:40:22 +0000 (UTC)
-Subject: Re: [GIT PULL] cgroup fixes for v5.17-rc2
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <Yfv/LMxqHSa3s5YS@slm.duckdns.org>
-References: <Yfv/LMxqHSa3s5YS@slm.duckdns.org>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <Yfv/LMxqHSa3s5YS@slm.duckdns.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tj/cgroup.git for-5.17-fixes
-X-PR-Tracked-Commit-Id: 2bdfd2825c9662463371e6691b1a794e97fa36b4
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 305e6c42e8de565864431510230a8ad75c85f4d4
-Message-Id: <164391722203.21505.14786787349066651579.pr-tracker-bot@kernel.org>
-Date:   Thu, 03 Feb 2022 19:40:22 +0000
-To:     Tejun Heo <tj@kernel.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
-        Waiman Long <longman@redhat.com>
+        by relay2.suse.de (Postfix) with ESMTPS id A061FA3B81;
+        Thu,  3 Feb 2022 19:43:18 +0000 (UTC)
+Date:   Thu, 3 Feb 2022 20:43:17 +0100
+From:   Michal =?iso-8859-1?Q?Such=E1nek?= <msuchanek@suse.de>
+To:     Luis Chamberlain <mcgrof@kernel.org>
+Cc:     Aaron Tomlin <atomlin@redhat.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>, cl@linux.com,
+        pmladek@suse.com, mbenes@suse.cz, akpm@linux-foundation.org,
+        jeyu@kernel.org, linux-kernel@vger.kernel.org,
+        linux-modules@vger.kernel.org, live-patching@vger.kernel.org,
+        atomlin@atomlin.com, ghalat@redhat.com, allen.lkml@gmail.com,
+        void@manifault.com, joe@perches.com
+Subject: Re: [RFC PATCH v4 00/13] module: core code clean up
+Message-ID: <20220203194317.GC3113@kunlun.suse.cz>
+References: <20220130213214.1042497-1-atomlin@redhat.com>
+ <Yfsf2SGELhQ71Ovo@bombadil.infradead.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yfsf2SGELhQ71Ovo@bombadil.infradead.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Thu, 3 Feb 2022 06:13:32 -1000:
+Hello,
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/tj/cgroup.git for-5.17-fixes
+On Wed, Feb 02, 2022 at 04:20:41PM -0800, Luis Chamberlain wrote:
+> On Sun, Jan 30, 2022 at 09:32:01PM +0000, Aaron Tomlin wrote:
+> > Hi Luis,
+> > 
+> > As per your suggestion [1], this is an attempt to refactor and split
+> > optional code out of core module support code into separate components.
+> > This version is based on branch mcgrof/modules-next since a97ac8cb24a3/or
+> > modules-5.17-rc1. Please let me know your thoughts.
+> > 
+> > Changes since v1 [2]:
+> 
+> Thanks for all this work Aaron! Can you drop the RFC prefix,
+> rebase onto linus' latest tree (as he already merged my
+> modules-next, so his tree is more up to date), and submit again?
+> 
+> I'll then apply this to my modules-next, and then ask Christophe to
+> rebase on top of that.
+> 
+> Michal, you'd be up next if you want to go through modules-next.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/305e6c42e8de565864431510230a8ad75c85f4d4
+Sounds like a good idea. When rebasing on top of 5.17-rc1 the only
+conflict was on the module code.
 
-Thank you!
+Thanks
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Michal
