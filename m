@@ -2,71 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 232F6C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 14:01:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA6F1C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 14:03:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350958AbiBCOBz (ORCPT
+        id S1350977AbiBCODA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 09:01:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50910 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234042AbiBCOBx (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 09:01:53 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ADF2C061714
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 06:01:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=Odwijx+uKepyk3NIvR5q7W0APreC/+JRwRuUWvXRhFA=; b=PxhtkCXk4Aa8m8wjxB18DGyPsi
-        ZXwdCYIl74iDvMUxCKeL9VuCOJUZ8efn2MRPJAaOzguR1Hq1UsGTg/nbrsh4xghpTqehBbMkXPszS
-        Hw7sVylgF3WjJoy/k+uisKD/bQr+N8+eFnX64ZMZIpF6QORUSsAovUYyUm7wY/2NoSpmAN0ksY7cw
-        Dc0HHP4U6wjlgi/8MfX0/mY9Ss0Ra7oSEVv1iDtQMS02ujXz+4+tQmXiI3l5cxblZ+jKJImqS2uXY
-        wt7Nx9H/710EW4iBtEE/4xHCCjuMjDLkOD1MIlWA4vptpiSV9TiYmiJ7PMztfa5YSBnWmtf1prlpz
-        F8gUhT3g==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nFcg4-001Vjb-Nr; Thu, 03 Feb 2022 14:01:36 +0000
-Date:   Thu, 3 Feb 2022 06:01:36 -0800
-From:   Christoph Hellwig <hch@infradead.org>
-To:     John Hubbard <jhubbard@nvidia.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        David Hildenbrand <david@redhat.com>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Jan Kara <jack@suse.cz>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>, linux-mm@kvack.org,
-        Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH v3 4/4] mm/gup: remove get_user_pages_locked()
-Message-ID: <YfvgQHewEbN3lR33@infradead.org>
-References: <20220203093232.572380-1-jhubbard@nvidia.com>
- <20220203093232.572380-5-jhubbard@nvidia.com>
+        Thu, 3 Feb 2022 09:03:00 -0500
+Received: from mx1.tq-group.com ([93.104.207.81]:7570 "EHLO mx1.tq-group.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1350961AbiBCOC4 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 3 Feb 2022 09:02:56 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1643896976; x=1675432976;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=CCsnc0uOCN0qsb/m7VDLjeBcg1llYDl/BF35hm4GcvI=;
+  b=QNG3LlT2ZB8+uTtFNEHzasOa5pxQdMaYJ9JBYsCyIOgtmwEVjvVfI5/o
+   NyH90mv17R/4opH8nvZcEL56IGY0X6Xl96lJXQ391JYYXg5bksalFG0K6
+   0U4d+xGOJ7bgIXrgT1VrmjTmX77eprxY3L+Pf8VXQdjMA62uXM6UCD/kX
+   GXvA/kSEPA3HzRfIjeiCcuru9ZISYSLLM3+Ad1MSyzYT43QnTbEWb5P79
+   8CMMmO5mY2QEyQd8zeqAy943+XM+Wvdp698DScOYgj98OjBXq89grPJyF
+   8jUq6pO73np+uXuBbfQQ0zEJPD3WH53VTPS4o2DHzM1cx5mfyVUAzRydi
+   g==;
+X-IronPort-AV: E=Sophos;i="5.88,340,1635199200"; 
+   d="scan'208";a="21881445"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 03 Feb 2022 15:02:53 +0100
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Thu, 03 Feb 2022 15:02:53 +0100
+X-PGP-Universal: processed;
+        by tq-pgp-pr1.tq-net.de on Thu, 03 Feb 2022 15:02:53 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1643896973; x=1675432973;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=CCsnc0uOCN0qsb/m7VDLjeBcg1llYDl/BF35hm4GcvI=;
+  b=PN0zbIDRnbGk0Obm3OQjSX0OkgUvicBfLaOyoV3EmBRmE3BPLajjYuxj
+   O9Y3mVUTzn6nt0+ddcwyVZPKbOeKp6Jl1Q6jlMmFPtc64eZPMYvqdTxXW
+   CECVAoZsr1qlAGvhk48w13GGWfN9K4rO4ilhIRKRHj+3kwBx80SYyQ33i
+   4H+yqQYs/CBILvbPHSk7uCX5JBjmFUo/Zh8IAZ1f0G9VjZe5ay+4Aj/MX
+   I1relw+FCbFpwWwugNsB3blnB/w19qdP6L+AMZHseEOrKa352o1+vGQnc
+   JWiyDw19y19nFoQkwovwA5LaG3v9Zo4XJUpCopWYr8bU5Bc7KbHM6ZC24
+   w==;
+X-IronPort-AV: E=Sophos;i="5.88,340,1635199200"; 
+   d="scan'208";a="21881444"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 03 Feb 2022 15:02:53 +0100
+Received: from localhost.localdomain (SCHIFFERM-M2.tq-net.de [10.121.201.138])
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id 0269B280075;
+        Thu,  3 Feb 2022 15:02:52 +0100 (CET)
+From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+To:     Nishanth Menon <nm@ti.com>, Vignesh Raghavendra <vigneshr@ti.com>,
+        Tero Kristo <kristo@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, jan.kiszka@siemens.com
+Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Subject: [PATCH v2 2/2] arm64: dts: ti: k3-am65*: remove #address-cells/#size-cells from flash nodes
+Date:   Thu,  3 Feb 2022 15:02:40 +0100
+Message-Id: <20220203140240.973690-2-matthias.schiffer@ew.tq-group.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220203140240.973690-1-matthias.schiffer@ew.tq-group.com>
+References: <20220203140240.973690-1-matthias.schiffer@ew.tq-group.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220203093232.572380-5-jhubbard@nvidia.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 03, 2022 at 01:32:32AM -0800, John Hubbard wrote:
-> There is only one caller of get_user_pages_locked(). The purpose of
-> get_user_pages_locked() is to allow for unlocking the mmap_lock when
-> reading a page from the disk during a page fault (hidden behind
-> VM_FAULT_RETRY). The idea is to reduce contention on the heavily-used
-> mmap_lock. (Thanks to Jan Kara for clearly pointing that out, and in
-> fact I've used some of his wording here.)
-> 
-> However, it is unlikely for lookup_node() to take a page fault. With
-> that in mind, change over to calling get_user_pages_fast(). This
-> simplifies the code, runs a little faster in the expected case, and
-> allows removing get_user_pages_locked() entirely.
+Specifying partitions directly in the flash node is deprecated, a
+fixed-partitions node should be used instead. Therefore, it doesn't make
+sense to have these properties in the flash nodes.
 
-Maybe split the lookup_node changes into a separate patch, as that
-allows to document that change even better.
+Acked-by: Jan Kiszka <jan.kiszka@siemens.com>
+Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+---
+ arch/arm64/boot/dts/ti/k3-am65-iot2050-common.dtsi | 2 --
+ arch/arm64/boot/dts/ti/k3-am654-base-board.dts     | 8 ++------
+ 2 files changed, 2 insertions(+), 8 deletions(-)
+
+v2: no changes, added Jan's Acked-by
+
+diff --git a/arch/arm64/boot/dts/ti/k3-am65-iot2050-common.dtsi b/arch/arm64/boot/dts/ti/k3-am65-iot2050-common.dtsi
+index 873c123c611ed..7eca697e1ca14 100644
+--- a/arch/arm64/boot/dts/ti/k3-am65-iot2050-common.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-am65-iot2050-common.dtsi
+@@ -623,8 +623,6 @@ flash@0 {
+ 		cdns,tchsh-ns = <60>;
+ 		cdns,tslch-ns = <60>;
+ 		cdns,read-delay = <2>;
+-		#address-cells = <1>;
+-		#size-cells = <1>;
+ 	};
+ };
+ 
+diff --git a/arch/arm64/boot/dts/ti/k3-am654-base-board.dts b/arch/arm64/boot/dts/ti/k3-am654-base-board.dts
+index 821ee7f2eff04..9c06da9d6d8f7 100644
+--- a/arch/arm64/boot/dts/ti/k3-am654-base-board.dts
++++ b/arch/arm64/boot/dts/ti/k3-am654-base-board.dts
+@@ -340,14 +340,12 @@ &main_spi0 {
+ 	ti,pindir-d0-out-d1-in;
+ 	status = "okay";
+ 
+-	flash@0{
++	flash@0 {
+ 		compatible = "jedec,spi-nor";
+ 		reg = <0x0>;
+ 		spi-tx-bus-width = <1>;
+ 		spi-rx-bus-width = <1>;
+ 		spi-max-frequency = <48000000>;
+-		#address-cells = <1>;
+-		#size-cells= <1>;
+ 	};
+ };
+ 
+@@ -442,7 +440,7 @@ &ospi0 {
+ 	pinctrl-0 = <&mcu_fss0_ospi0_pins_default>;
+ 	status = "okay";
+ 
+-	flash@0{
++	flash@0 {
+ 		compatible = "jedec,spi-nor";
+ 		reg = <0x0>;
+ 		spi-tx-bus-width = <8>;
+@@ -453,8 +451,6 @@ flash@0{
+ 		cdns,tchsh-ns = <60>;
+ 		cdns,tslch-ns = <60>;
+ 		cdns,read-delay = <0>;
+-		#address-cells = <1>;
+-		#size-cells = <1>;
+ 	};
+ };
+ 
+-- 
+2.25.1
+
