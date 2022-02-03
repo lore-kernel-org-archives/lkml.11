@@ -2,97 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40C63C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 23:35:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27E37C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 23:37:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356027AbiBCXfF (ORCPT
+        id S1345281AbiBCXhZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 18:35:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43648 "EHLO
+        Thu, 3 Feb 2022 18:37:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344366AbiBCXfA (ORCPT
+        with ESMTP id S229532AbiBCXhW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 18:35:00 -0500
-Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F736C061714
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 15:35:00 -0800 (PST)
-Received: by mail-io1-xd36.google.com with SMTP id y84so5430846iof.0
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 15:35:00 -0800 (PST)
+        Thu, 3 Feb 2022 18:37:22 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99EA7C061714
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 15:37:22 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id j25so7353105wrb.2
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 15:37:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Ne0ZORFuDwUgC8aqjM4wX7CGP1Jo0bJOP46NZX2Toec=;
-        b=leTpdfQNd4Zn0saReF9TO/gg+VcdQoP4DjI+kekHOxiXWyfA/GeCtp0hAXnHnMUTA6
-         Looo4GggkZqHbndOQYLS2Va/7moL6leCED9FQ8FGDQjgnCCSnH5ttAfSTRNgYzHKYRfP
-         hSVz7icboF/YLN4P0DwkKx5c1SF7Bb8ts6YM0=
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=cMLtxoaKOMblqcoSXrvnXLJcL2/9t7S9kcEj9MMGPJY=;
+        b=FYr5rXb9w8sXNRUvhTwRwCnK5L0UdP1E5QGqXF7uiMrty2lCwUv56Dbw9vokV6mV3n
+         P81HRfth66vdb6VBQ+ZkcqGkF5DPIRjcJKTVBwli4m0kM8g7k7LKuhcXKCwQ6fkGEA+H
+         Vhn5OfUeWVEb/qSZAm4O+OVPdPZ0ca4HBdxaMVtz1LIxEnEki8349JKgE8M2o1sdD42j
+         /NzivFp4zc/xCHqaTnNxOR0htps6ZjWdGyxfbC1xhmCLrsYqHxCRY1YIWDUzlt6hI2rX
+         QcUkhV+kc9s3Zo7QgCXqtG6zF4W9LGOpQE3YC2SsrP2X10di0cj041gILiQcXCvDG6rN
+         SsvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Ne0ZORFuDwUgC8aqjM4wX7CGP1Jo0bJOP46NZX2Toec=;
-        b=GgioQNAKx8kXUcYy5APlW5PiDXVC/W0Ijw8jiAHG/2iay8Ia0J7ovWrJwbkSWRW0Vg
-         KUtOGad8Sziwna+vmikEyH+JL5sjFLTZCKsGcTLdw9s0IkCpxVwMItvJGPDDv7b5M4dx
-         1qyC4HQ04L4zh6P1qNdNc/F6SEW39rfH8+ecolf6FoRxK6PLHkMacAGMTVVzH/tnBuuw
-         F0zBnDhImVtxWmnv/NxCmPtks0Mz/UuxRfwMpo6eigYf23rpyllraTNbMPYQLhFFtgLA
-         HsfApgIDtHi3b6RA/k6wZp1lAd1p78yPMkm0EZ2N2/NYX47tqTHpUs1rOq/GQ3eDJqaM
-         GBlA==
-X-Gm-Message-State: AOAM5313CzNn/fIOGiXVIpOpPr9sIIUezdFCcMzEQfKfCeST2QSl5vpW
-        Yks19hnmLEKB7kww3l5MBOe0K5gArcGHBw==
-X-Google-Smtp-Source: ABdhPJzIeZNqv4KBAMEGHoihiYJL6cpAiGpD5KaDoPRBH4ZYPf77CpO97T6Bj9nvcKDGY5p5pWz3Xw==
-X-Received: by 2002:a02:7f02:: with SMTP id r2mr154443jac.148.1643931299444;
-        Thu, 03 Feb 2022 15:34:59 -0800 (PST)
-Received: from mail-io1-f50.google.com (mail-io1-f50.google.com. [209.85.166.50])
-        by smtp.gmail.com with ESMTPSA id q9sm103650iop.30.2022.02.03.15.34.59
-        for <linux-kernel@vger.kernel.org>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=cMLtxoaKOMblqcoSXrvnXLJcL2/9t7S9kcEj9MMGPJY=;
+        b=nqRGItk/sXBA9nk3XQUtZ1f8eL0NBvKDayty19+5PbmNJ0/hneeHsxtdiK9kMe6kPi
+         Tcd5BTVJbLh17gxe5eN0TA7rdCYWxSo2CsUWPqwZGTOO3mUitwkbqSTPHtae98+cmJOd
+         eycmijEVixfQljvzgq5Tb6vqxv5QlETYgPgW6MhoJiQAdJez+0oMuDV1KC0FkVXFZgmF
+         89gwb6p/s1cJJ2541KPq1nf/ISs1ERkDjUPObUABg3J8seFxaba4p/XmeVX5iq235Pnx
+         myoABFqO7aqGmLWAS8SXUfqUGY/x05zgIP8iurduJBnt4Rmjt20hs+DZldc9ol3dF637
+         lguQ==
+X-Gm-Message-State: AOAM533c2jSqhufbAi8w3Pr0Ki7+LYRzaU/jqyt6ZfIuGtFnb4mRYg9m
+        7td2yUGK1JWGN6dohpN1tyLKtg==
+X-Google-Smtp-Source: ABdhPJxVk3Nhi9nL/gEjf+dAOllJ3A3p26KeLw5qBu0DPUqdwZlzbHJpys3HMcADgbz1bhDOTd7aIA==
+X-Received: by 2002:adf:fb05:: with SMTP id c5mr230271wrr.220.1643931441200;
+        Thu, 03 Feb 2022 15:37:21 -0800 (PST)
+Received: from ?IPv6:2a02:6b6d:f804:0:28c2:5854:c832:e580? ([2a02:6b6d:f804:0:28c2:5854:c832:e580])
+        by smtp.gmail.com with ESMTPSA id g4sm202184wrd.111.2022.02.03.15.37.20
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Feb 2022 15:34:59 -0800 (PST)
-Received: by mail-io1-f50.google.com with SMTP id z199so5324116iof.10
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 15:34:59 -0800 (PST)
-X-Received: by 2002:a05:6638:168d:: with SMTP id f13mr140596jat.44.1643930826719;
- Thu, 03 Feb 2022 15:27:06 -0800 (PST)
+        Thu, 03 Feb 2022 15:37:20 -0800 (PST)
+Subject: Re: [External] Re: [PATCH v4 2/3] io_uring: avoid ring quiesce while
+ registering/unregistering eventfd
+To:     Jens Axboe <axboe@kernel.dk>, io-uring@vger.kernel.org,
+        asml.silence@gmail.com, linux-kernel@vger.kernel.org
+Cc:     fam.zheng@bytedance.com
+References: <20220203182441.692354-1-usama.arif@bytedance.com>
+ <20220203182441.692354-3-usama.arif@bytedance.com>
+ <8369e0be-f922-ba6b-ceed-24886ebcdb78@kernel.dk>
+ <d390f325-0f5b-a321-841d-36ac873358f9@bytedance.com>
+ <11e423ca-4272-86cf-8d51-2620094cfe29@kernel.dk>
+From:   Usama Arif <usama.arif@bytedance.com>
+Message-ID: <7e1a1452-c7be-fa98-f1b1-e19088088424@bytedance.com>
+Date:   Thu, 3 Feb 2022 23:37:20 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-References: <20220202212348.1391534-1-dianders@chromium.org> <20220202132301.v3.12.I5604b7af908e8bbe709ac037a6a8a6ba8a2bfa94@changeid>
-In-Reply-To: <20220202132301.v3.12.I5604b7af908e8bbe709ac037a6a8a6ba8a2bfa94@changeid>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Thu, 3 Feb 2022 15:26:54 -0800
-X-Gmail-Original-Message-ID: <CAD=FV=XXFEM4u78qQZoGrdxpSTjdjWQ_01m+af_Xz1j_TNNDJw@mail.gmail.com>
-Message-ID: <CAD=FV=XXFEM4u78qQZoGrdxpSTjdjWQ_01m+af_Xz1j_TNNDJw@mail.gmail.com>
-Subject: Re: [PATCH v3 12/14] arm64: dts: qcom: sc7280: Add herobrine-r1
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Prasad Malisetty <pmaliset@codeaurora.org>,
-        Matthias Kaehlcke <mka@chromium.org>, quic_rjendra@quicinc.com,
-        Shaik Sajida Bhanu <sbhanu@codeaurora.org>,
-        kgodara@codeaurora.org,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
-        Sibi Sankar <sibis@codeaurora.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Andy Gross <agross@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <11e423ca-4272-86cf-8d51-2620094cfe29@kernel.dk>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
 
-On Wed, Feb 2, 2022 at 1:24 PM Douglas Anderson <dianders@chromium.org> wrote:
->
-> +&pcie1_clkreq_n {
-> +       bias-disable;
-> +       drive-strength = <2>;
-> +};
 
-As per the discussion [1] then maybe the above should be
-`bias-pull-up` instead of `bias-disable`. I'm happy to spin this, have
-it fixed by the maintainer when applied, or do a follow-up patch to
-fix this. Please let me know.
+On 03/02/2022 19:12, Jens Axboe wrote:
+> On 2/3/22 12:05 PM, Usama Arif wrote:
+>>
+>>
+>> On 03/02/2022 18:49, Jens Axboe wrote:
+>>> On 2/3/22 11:24 AM, Usama Arif wrote:
+>>>> -static inline bool io_should_trigger_evfd(struct io_ring_ctx *ctx)
+>>>> +static void io_eventfd_signal(struct io_ring_ctx *ctx)
+>>>>    {
+>>>> -	if (likely(!ctx->cq_ev_fd))
+>>>> -		return false;
+>>>> +	struct io_ev_fd *ev_fd;
+>>>> +
+>>>> +	rcu_read_lock();
+>>>> +	/* rcu_dereference ctx->io_ev_fd once and use it for both for checking and eventfd_signal */
+>>>> +	ev_fd = rcu_dereference(ctx->io_ev_fd);
+>>>> +
+>>>> +	if (likely(!ev_fd))
+>>>> +		goto out;
+>>>>    	if (READ_ONCE(ctx->rings->cq_flags) & IORING_CQ_EVENTFD_DISABLED)
+>>>> -		return false;
+>>>> -	return !ctx->eventfd_async || io_wq_current_is_worker();
+>>>> +		goto out;
+>>>> +
+>>>> +	if (!ctx->eventfd_async || io_wq_current_is_worker())
+>>>> +		eventfd_signal(ev_fd->cq_ev_fd, 1);
+>>>> +
+>>>> +out:
+>>>> +	rcu_read_unlock();
+>>>>    }
+>>>
+>>> This still needs what we discussed in v3, something ala:
+>>>
+>>> /*
+>>>    * This will potential race with eventfd registration, but that's
+>>>    * always going to be the case if there is IO inflight while an eventfd
+>>>    * descriptor is being registered.
+>>>    */
+>>> if (!rcu_dereference_raw(ctx->io_ev_fd))
+>>> 	return;
+>>>
+>>> rcu_read_lock();
+>>
+>> Hmm, so i am not so worried about the registeration, but actually
+>> worried about unregisteration.
+>> If after the check and before the rcu_read_lock, the eventfd is
+>> unregistered won't we get a NULL pointer exception at
+>> eventfd_signal(ev_fd->cq_ev_fd, 1)?
+> 
+> You need to check it twice, that's a hard requirement. The first racy
+> check is safe because we don't care if we miss a notification, once
+> inside rcu_read_lock() it needs to be done properly of course. Like you
+> do below, that's how it should be done.
+> 
+>>> I wonder if we can get away with assigning ctx->io_ev_fd to NULL when we
+>>> do the call_rcu(). The struct itself will remain valid as long as we're
+>>> under rcu_read_lock() protection, so I think we'd be fine? If we do
+>>> that, then we don't need any rcu_barrier() or synchronize_rcu() calls,
+>>> as we can register a new one while the previous one is still being
+>>> killed.
+>>>
+>>> Hmm?
+>>>
+>>
+>> We would have to remove the check that ctx->io_ev_fd != NULL. That we
+>> would also result in 2 successive calls to io_eventfd_register without
+>> any unregister in between being successful? Which i dont think is the
+>> right behaviour?
+>>
+>> I think the likelihood of hitting the rcu_barrier itself is quite low,
+>> so probably the cost is low as well.
+> 
+> Yeah it might very well be. To make what I suggested work, we'd need a
+> way to mark the io_ev_fd as going away. Which would be feasible, as we
+> know the memory will remain valid for us to check. So it could
+> definitely work, you'd just need a check for that.
+> 
+>> Thanks, will do that this in the next patchset with the above
+>> io_eventfd_signal changes if those look ok as well?
+> 
+> The code you pasted looked good. Consider the "is unregistration in
+> progress" suggestion as well, as it would be nice to avoid any kind of
+> rcu synchronization if at all possible.
+> 
 
--Doug
 
-[1] https://lore.kernel.org/r/CAD=FV=UKKZaHHz3-idahLg-ey3xmSZWKeTVVipzpZNQAkUVKmQ@mail.gmail.com
+Thanks for the review comments! I think all of them should have been 
+addressed now in v5. I also removed ring quiesce from io_uring_register 
+as the remaining 2 opcodes don't need them (Thanks Pavel for confirming 
+that!)
+
+Regards,
+Usama
