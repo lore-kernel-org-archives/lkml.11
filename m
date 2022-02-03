@@ -2,51 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52CCAC4321E
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:39:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 397ECC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:39:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355730AbiBCUjB (ORCPT
+        id S1355094AbiBCUjH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:39:01 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:38380 "EHLO
+        Thu, 3 Feb 2022 15:39:07 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:38428 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354503AbiBCUgP (ORCPT
+        with ESMTP id S1354762AbiBCUgT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 15:36:15 -0500
+        Thu, 3 Feb 2022 15:36:19 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3FF0BB835B3;
-        Thu,  3 Feb 2022 20:36:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 523B2C340EB;
-        Thu,  3 Feb 2022 20:36:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 49C5BB835B9;
+        Thu,  3 Feb 2022 20:36:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C5A7C340F2;
+        Thu,  3 Feb 2022 20:36:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643920572;
-        bh=v8lP6EEDA/v9fJnTYb2UloIEPhnQ0fkNOq4kTJaU4l4=;
+        s=k20201202; t=1643920577;
+        bh=Q0rgJ3uuJVNFnx5+PCV403tRiCwPGUedbmAIe320ilg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rRYuPCsWvanyTxL4i9H2Nlfaelk794BfvoYG6Zw6y0+UFlD+HewShv1dMq26x9Vzx
-         TSrels+uRF0dgaswSsNk+0tBU7sjYD/EAYszr1535r3gMrSfoV1vlH45n2DMsj8y7y
-         SmBDbnY3PI30/8JehGEFbebDagnDaKjMrBUR5HyK1Njwr7xtcyJLR6kst5sEn2XPFb
-         rY4rbfhp6SYYr2AdbLjCiahtHMJD6lAha1La3ks5z3PpTgtAZ/1nIeHUxXnTN7tI/6
-         imWxREtK3g5bDHixZU98wC6biaHbO2EsAybzXdz5n6CLBKczKv0hjOZOiFPpkm3i+p
-         jxF/nnKWwdynA==
+        b=icnMIrubaNfWSmZsry9UswP5HsArDSLhaDYbtYDNsiOF65mCqwzeSzJJjHPAqjbNt
+         YrhxBj4nSmInCKz+UzndzKO3McpQC6Cum4wuLGYd6ej9Ldl9h5lEr9KyzNJxo7/W3X
+         36GC4PV6xiioFuyVbaKnFrLAxqg+lp2uO8r5yfi0R9mdBAzRF+kQdscjT2g+/im6+I
+         puJBw9UtCWXf3aTtISxUh4pLwwGXHcFOs4/GSQMIhEgNXHj7jgw6GHkI46zwzjMGYa
+         uOP5ocIp0DYluyLiv5tHo1BlvA1PgpTVLjUmGfXdnM+ef8bvt6dl/vohg8rh+Z4QE/
+         Ie4b3PmBGD6dw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jisheng Zhang <jszhang@kernel.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, peppe.cavallaro@st.com,
-        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
-        kuba@kernel.org, mcoquelin.stm32@gmail.com, mripard@kernel.org,
-        wens@csie.org, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.4 15/15] net: stmmac: dwmac-sun8i: use return val of readl_poll_timeout()
-Date:   Thu,  3 Feb 2022 15:35:45 -0500
-Message-Id: <20220203203545.3879-15-sashal@kernel.org>
+Cc:     Xiaoke Wang <xkernel.wang@foxmail.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Sasha Levin <sashal@kernel.org>,
+        trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
+        linux-nfs@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 02/10] nfs: nfs4clinet: check the return value of kstrdup()
+Date:   Thu,  3 Feb 2022 15:36:05 -0500
+Message-Id: <20220203203613.4165-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220203203545.3879-1-sashal@kernel.org>
-References: <20220203203545.3879-1-sashal@kernel.org>
+In-Reply-To: <20220203203613.4165-1-sashal@kernel.org>
+References: <20220203203613.4165-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,40 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jisheng Zhang <jszhang@kernel.org>
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-[ Upstream commit 9e0db41e7a0b6f1271cbcfb16dbf5b8641b4e440 ]
+[ Upstream commit fbd2057e5329d3502a27491190237b6be52a1cb6 ]
 
-When readl_poll_timeout() timeout, we'd better directly use its return
-value.
+kstrdup() returns NULL when some internal memory errors happen, it is
+better to check the return value of it so to catch the memory error in
+time.
 
-Before this patch:
-[    2.145528] dwmac-sun8i: probe of 4500000.ethernet failed with error -14
-
-After this patch:
-[    2.138520] dwmac-sun8i: probe of 4500000.ethernet failed with error -110
-
-Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
-Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/nfs/nfs4client.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-index 2f6258ca95155..7c73d296b940d 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-@@ -718,7 +718,7 @@ static int sun8i_dwmac_reset(struct stmmac_priv *priv)
- 
- 	if (err) {
- 		dev_err(priv->device, "EMAC reset timeout\n");
--		return -EFAULT;
-+		return err;
+diff --git a/fs/nfs/nfs4client.c b/fs/nfs/nfs4client.c
+index 43659326b5191..c97ec2fa0bbcd 100644
+--- a/fs/nfs/nfs4client.c
++++ b/fs/nfs/nfs4client.c
+@@ -1273,8 +1273,11 @@ int nfs4_update_server(struct nfs_server *server, const char *hostname,
  	}
- 	return 0;
- }
+ 	nfs_put_client(clp);
+ 
+-	if (server->nfs_client->cl_hostname == NULL)
++	if (server->nfs_client->cl_hostname == NULL) {
+ 		server->nfs_client->cl_hostname = kstrdup(hostname, GFP_KERNEL);
++		if (server->nfs_client->cl_hostname == NULL)
++			return -ENOMEM;
++	}
+ 	nfs_server_insert_lists(server);
+ 
+ 	return nfs_probe_destination(server);
 -- 
 2.34.1
 
