@@ -2,65 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CB53C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 17:16:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3175FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 17:17:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352748AbiBCRQq (ORCPT
+        id S1352756AbiBCRRB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 12:16:46 -0500
-Received: from mx07-00178001.pphosted.com ([185.132.182.106]:58168 "EHLO
+        Thu, 3 Feb 2022 12:17:01 -0500
+Received: from mx07-00178001.pphosted.com ([185.132.182.106]:58232 "EHLO
         mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237917AbiBCRQl (ORCPT
+        by vger.kernel.org with ESMTP id S1352543AbiBCRQ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 12:16:41 -0500
+        Thu, 3 Feb 2022 12:16:57 -0500
 Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 213EhamF031133;
-        Thu, 3 Feb 2022 18:14:32 +0100
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 213ETuTu031139;
+        Thu, 3 Feb 2022 18:16:49 +0100
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=selector1;
- bh=oJsVc/G0V4FvZjE6ehLE8WHxeNAr1eqH/qcfE5+Oq3A=;
- b=oyACJjYaOyVVCeGQn+TtxgMMN1USwMEfUUu2w6r7s6lWpStqSrXgV0Cc1uSEHgPJ3Pi+
- yx6heCSTxVm1Tp45yzT/vXnfV85xBSFDfHbCeWAMjCphrrE7lf0BPyXN0v+rw86EeQAx
- CLR+NrvIpCbx4/Ivv7fADOoAcRfCdmv9hU+XL0h4O6ClTfJljtJLQyfGM4zto9J8xTZW
- FpZRNtzTGuobNCgcuXUQjhpYcZ3GpJYRN0V46pebbRP9RrUAkWzlJdCPuQczKM8aCnoV
- DiprXZ6ZoReE608wfeGr3p32/u1BtgLKg2mx3KSA8M0xmMBEVz5d66PQk0+vXK0+/89a Fg== 
+ subject : date : message-id : mime-version : content-type; s=selector1;
+ bh=TKIA8solX6AXS+UL0s0pv/PZH7DNrdl6t5DJPlGj+18=;
+ b=oM6zlwo5yH+NR+YaJ/QzGE2A5Clxi9atZ4IDoohx3OWYXj5CT39kE52EDVvJzbgaEx7g
+ LDfHVIJm8OjK+WQF3GUwGhn5p7Y6lTO2Ndp5s/Gocg10trv+esjpi2tGtQej/EeQOAPh
+ IT38uO9+/jyfQ0BAWLGyxjOqGT40Cb6Ea1Rqx4HQVP7LogAY/6SO9PGQj5iuxJw+iOSV
+ iTSqxyqc0JtB7QYR3Y3S1n0TdFVPRqF91r78M9oNM5VE1FqcT+VqOyGBdzPnYvj9rVbp
+ cv3BpxSmxpXJuvCDAppW/oMnQL9XBtWP9HpbteTvaCXohjuh7w+JEdUu0VQhKjNiL0nX Pg== 
 Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3e01qkcyq6-1
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3e01qkcyyq-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 03 Feb 2022 18:14:32 +0100
+        Thu, 03 Feb 2022 18:16:49 +0100
 Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id E8F8A10002A;
-        Thu,  3 Feb 2022 18:14:31 +0100 (CET)
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id D4AC110002A;
+        Thu,  3 Feb 2022 18:16:47 +0100 (CET)
 Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id E0F2222F7AB;
-        Thu,  3 Feb 2022 18:14:31 +0100 (CET)
-Received: from localhost (10.75.127.44) by SFHDAG2NODE2.st.com (10.75.127.5)
- with Microsoft SMTP Server (TLS) id 15.0.1497.26; Thu, 3 Feb 2022 18:14:31
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id CC9FA22F7AB;
+        Thu,  3 Feb 2022 18:16:47 +0100 (CET)
+Received: from localhost (10.75.127.46) by SFHDAG2NODE2.st.com (10.75.127.5)
+ with Microsoft SMTP Server (TLS) id 15.0.1497.26; Thu, 3 Feb 2022 18:16:47
  +0100
 From:   Erwan Le Ray <erwan.leray@foss.st.com>
-To:     Alexandre Torgue <alexandre.torgue@foss.st.com>
-CC:     Rob Herring <robh+dt@kernel.org>,
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC:     Jiri Slaby <jirislaby@kernel.org>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Gerald Baeza <gerald.baeza@st.com>,
         Erwan Le Ray <erwan.leray@foss.st.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Marek Vasut <marex@denx.de>,
-        Marcin Sloniewski <marcin.sloniewski@gmail.com>,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        Jagan Teki <jagan@amarulasolutions.com>,
-        <devicetree@vger.kernel.org>,
+        Valentin Caron <valentin.caron@foss.st.com>,
+        <linux-serial@vger.kernel.org>,
         <linux-stm32@st-md-mailman.stormreply.com>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>
-Subject: [PATCH 16/16] ARM: dts: stm32: keep uart nodes behavior on stm32mp15xx-dhcor-avenger96
-Date:   Thu, 3 Feb 2022 18:11:14 +0100
-Message-ID: <20220203171114.10888-17-erwan.leray@foss.st.com>
+Subject: [PATCH 0/2] STM32 enable gpio irqs as wakeup irqs for uart port
+Date:   Thu, 3 Feb 2022 18:16:42 +0100
+Message-ID: <20220203171644.12231-1-erwan.leray@foss.st.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220203171114.10888-1-erwan.leray@foss.st.com>
-References: <20220203171114.10888-1-erwan.leray@foss.st.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Originating-IP: [10.75.127.44]
+X-Originating-IP: [10.75.127.46]
 X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
  (10.75.127.5)
 X-Proofpoint-Virus-Version: vendor=baseguard
@@ -70,46 +65,21 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DMA configuration is added to uart nodes in stm32mp15x device tree.
-Delete uart4 DMA property in stm32mp15xx-dhcor-avenger96 board device
-tree to keep console in irq mode, as DMA support for console has been
-removed from the driver by commit e359b4411c28 ("serial: stm32: fix
-threaded interrupt handling").
-Delete also usart2 and uart7 DMA property to keep current behavior.
+This patchset allows to use mctrl_gpio pins as wakeup source.
+Add a new API to enable / disable wake_irq for serial mctrl_gpio pins.
+Use this API in STM32 usart driver to enable / disable mctrl_gpio pins
+wake_irq in suspend / resume procedure.
 
-Signed-off-by: Erwan Le Ray <erwan.leray@foss.st.com>
+Erwan Le Ray (2):
+  serial: mctrl_gpio: add a new API to enable / disable wake_irq
+  serial: stm32: enable / disable wake irqs for mcrtl_gpio wakeup
+    sources
 
-diff --git a/arch/arm/boot/dts/stm32mp15xx-dhcor-avenger96.dtsi b/arch/arm/boot/dts/stm32mp15xx-dhcor-avenger96.dtsi
-index 6885948f3024..61e17f44ce81 100644
---- a/arch/arm/boot/dts/stm32mp15xx-dhcor-avenger96.dtsi
-+++ b/arch/arm/boot/dts/stm32mp15xx-dhcor-avenger96.dtsi
-@@ -376,6 +376,8 @@
- 	label = "LS-UART1";
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&uart4_pins_b>;
-+	/delete-property/dmas;
-+	/delete-property/dma-names;
- 	status = "okay";
- };
- 
-@@ -385,6 +387,8 @@
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&uart7_pins_a>;
- 	uart-has-rtscts;
-+	/delete-property/dmas;
-+	/delete-property/dma-names;
- 	status = "okay";
- };
- 
-@@ -394,6 +398,8 @@
- 	pinctrl-0 = <&usart2_pins_a>;
- 	pinctrl-1 = <&usart2_sleep_pins_a>;
- 	st,hw-flow-ctrl;
-+	/delete-property/dmas;
-+	/delete-property/dma-names;
- 	status = "okay";
- 
- 	bluetooth {
+ drivers/tty/serial/serial_mctrl_gpio.c | 38 ++++++++++++++++++++++++++
+ drivers/tty/serial/serial_mctrl_gpio.h | 18 ++++++++++++
+ drivers/tty/serial/stm32-usart.c       |  3 +-
+ 3 files changed, 58 insertions(+), 1 deletion(-)
+
 -- 
 2.17.1
 
