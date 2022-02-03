@@ -2,39 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32980C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 09:51:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63A3DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 09:51:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349970AbiBCJvA (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 04:51:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50752 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239881AbiBCJuw (ORCPT
+        id S234654AbiBCJvD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Feb 2022 04:51:03 -0500
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:42706 "EHLO
+        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235694AbiBCJuw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 3 Feb 2022 04:50:52 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29E21C061714;
-        Thu,  3 Feb 2022 01:50:52 -0800 (PST)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: kholk11)
-        with ESMTPSA id 3B78B1F45312
+        with ESMTPSA id 5A9441F45313
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
         s=mail; t=1643881851;
-        bh=UslgxD+QUohWXG2QM5oeqgf7yzlI6Zmso8kNly/Sz/w=;
+        bh=HgNfql0xDMRNN68LGiYkvxm0vW+TozB6ZDFhQ+Q/MmI=;
         h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=mraiHQjxioYAQh7GhNkuMx01FlcRjUM5f3UhMbDIKfm2YSjRAgarnPNhJBlw8obXi
-         Jl/fu2mFPYGzi8KAQIC9eEcUKPLEEq2I3y+tWLN7i8O9GGUTLmA5oauDbfFZaOHxPH
-         o3NE69eAqrbrm1YYT9Qcj1LWiGwj2zttX205tRN8P0ymPHjXHVNpwkG/HW//L2vIeU
-         oZwcAH+4OE/EQbUAfBbSq9Xw2pva0M3u5JLMYCsMmkG8DJrJ4Lgewlx5YX+9EYftms
-         lM7mDBhdNKcdgtcfYvB3+tYAiM/gT1mc3VjfRI81d4X/dUM4do4z9JOdfw2ZT61XAo
-         haFC+qtr8LmVQ==
-Message-ID: <4587cdf3-a906-38cf-cedc-82b6795fc14f@collabora.com>
-Date:   Thu, 3 Feb 2022 10:50:48 +0100
+        b=WBPnKS5GhtsUKhfJnBNLSJ2g0Rn1lA0Jq+OO9FA/tHV6Y7cVq4bBE8JEP+3yHXneX
+         pRqznUvF5mhocQXKmxpT5luPZaW/7pDTOj8Hk2lm5rQIeJQxiZ/HH3eShgpxNsUldp
+         RHeNKyU2WAMRt6+IDUVIIsHTjDoj7ZD8BJBeoIyMJVnI0wHFZy3TCbKGWkLmAaCHs6
+         KrffmPmZYJyojT/NCmO/fICX8t/vQCkfGLg2JKMHH1brFuFUPqF7qL4J23V7X/Lt8f
+         FCzbdfkehpxfpS+aUArL22gm+9rZ+gRpNDMWCLt9zUTFaWf+hKnOOO8lHwC/aPfZoK
+         DucntcCYtDQGg==
+Message-ID: <7fc5e936-29e2-2cbf-623e-e515de5c5e9d@collabora.com>
+Date:   Thu, 3 Feb 2022 10:50:49 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.1
-Subject: Re: [PATCH v2 08/31] clk: mediatek: cpumux: Clean up included headers
+Subject: Re: [PATCH v2 07/31] clk: mediatek: cpumux: Internalize struct
+ mtk_clk_cpumux
 Content-Language: en-US
 To:     Chen-Yu Tsai <wenst@chromium.org>, Stephen Boyd <sboyd@kernel.org>,
         Michael Turquette <mturquette@baylibre.com>,
@@ -44,10 +41,10 @@ Cc:     Chun-Jie Chen <chun-jie.chen@mediatek.com>,
         linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
 References: <20220202134834.690675-1-wenst@chromium.org>
- <20220202134834.690675-9-wenst@chromium.org>
+ <20220202134834.690675-8-wenst@chromium.org>
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220202134834.690675-9-wenst@chromium.org>
+In-Reply-To: <20220202134834.690675-8-wenst@chromium.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -55,17 +52,14 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Il 02/02/22 14:48, Chen-Yu Tsai ha scritto:
-> Some headers with the declaration of functions and structures aren't
-> directly included. Explicitly include them so that future changes to
-> other headers would not result in an unexpected build break.
+> struct mtk_clk_cpumux is an implementation detail of the cpumux clk
+> type, and is not used outside of the implementation.
 > 
-> On the header side, add forward declarations for any data structures
-> whose pointers are used in function signatures. No headers are
-> required.
+> Internalize the definition to minimize leakage of details and shrink
+> the header file.
 > 
 > Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
 > Reviewed-by: Miles Chen <miles.chen@mediatek.com>
 
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-
 
