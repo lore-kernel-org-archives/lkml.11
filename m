@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84178C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:35:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8CEFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:35:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355281AbiBCUfY (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:35:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57690 "EHLO
+        id S236321AbiBCUfa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Feb 2022 15:35:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233705AbiBCUdo (ORCPT
+        with ESMTP id S1354215AbiBCUdo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 3 Feb 2022 15:33:44 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1BD8C061795;
-        Thu,  3 Feb 2022 12:33:09 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 688ECC0617B1;
+        Thu,  3 Feb 2022 12:33:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 934CD61B0F;
-        Thu,  3 Feb 2022 20:33:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49982C340F4;
-        Thu,  3 Feb 2022 20:33:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0950961AD2;
+        Thu,  3 Feb 2022 20:33:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F269C340F0;
+        Thu,  3 Feb 2022 20:33:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643920389;
-        bh=1M2WJ0LX7TAAjDwL4gYcineyz/ebR0L2eize8IzicgQ=;
+        s=k20201202; t=1643920392;
+        bh=mJFAQ4XWlIEWfk9/Ehgip/K6Kmf/6NuP5AUZM7Gisx8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mqsm890PtTB2zTkn5hDD+KrahHHK6b7ucCvUAOMmVdrtk2sG2IxdJWkjeppBEKEB4
-         K0h4xdkviQDr+V0P5vWg3q3+EzfXN+B+lJx8wKN7S3AEbAQfGk9Eki34xmTSros66s
-         pZ+TnLDdWuOsXHJnO+BqV75/yik6EBzVJp7yn/npUXLnRtiCfdT15DsRg1d9E5HN3T
-         lVbusa2jlISPsAnlyJtw8scK6L/HVLdbBTfu8xXkb9gOVHSZYwj++m5jiERNNS2Pbr
-         j4hFlFKZEyVuGAfsjqwXTNaxaQbfOaNDhCBcpdLTgu2mvbV0JyDvJ2vktvjCLu/6zo
-         COUS+PHUGJa+w==
+        b=qhqD+p5ugt1IbZQJPRmqpVeahHQC2ddaIkT+Xqq6/oDjOktrQ7FIC4EF9Tj6VIpRH
+         3MeMXn/f0LjZ4rIgvMmjNs94ZFfSWYpKJkGx+5UKO6OmoB22nGD1ckaAiiWLk9h4qO
+         AfpNJ0PbuAQRgnmzTM/k2iUQ+dERidr0XIqZtoaQDiUAOBvTf0jTsClWEimvGvdROF
+         F7qgJtwnibi/VJ6jqlnaAKJ2RyO42J3doCnq1FuZU0szy/4RSSjbwJR4PD2R5NEzmJ
+         iFTsE7zc0Xx9dhEOGaKDhtZSPL2eX8M7Kmh7mjIgqhypjzgBfITsMpl6eWk0wKCcvC
+         8d/TF2eW4u9Tw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sander Vanheule <sander@svanheule.net>,
-        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        tglx@linutronix.de
-Subject: [PATCH AUTOSEL 5.15 14/41] irqchip/realtek-rtl: Service all pending interrupts
-Date:   Thu,  3 Feb 2022 15:32:18 -0500
-Message-Id: <20220203203245.3007-14-sashal@kernel.org>
+Cc:     Andi Kleen <ak@linux.intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Sasha Levin <sashal@kernel.org>, mingo@redhat.com,
+        acme@kernel.org, tglx@linutronix.de, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org,
+        linux-perf-users@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 16/41] x86/perf: Avoid warning for Arch LBR without XSAVE
+Date:   Thu,  3 Feb 2022 15:32:20 -0500
+Message-Id: <20220203203245.3007-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220203203245.3007-1-sashal@kernel.org>
 References: <20220203203245.3007-1-sashal@kernel.org>
@@ -52,50 +54,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sander Vanheule <sander@svanheule.net>
+From: Andi Kleen <ak@linux.intel.com>
 
-[ Upstream commit 960dd884ddf5621ae6284cd3a42724500a97ae4c ]
+[ Upstream commit 8c16dc047b5dd8f7b3bf4584fa75733ea0dde7dc ]
 
-Instead of only servicing the lowest pending interrupt line, make sure
-all pending SoC interrupts are serviced before exiting the chained
-handler. This adds a small overhead if only one interrupt is pending,
-but should prevent rapid re-triggering of the handler.
+Some hypervisors support Arch LBR, but without the LBR XSAVE support.
+The current Arch LBR init code prints a warning when the xsave size (0) is
+unexpected. Avoid printing the warning for the "no LBR XSAVE" case.
 
-Signed-off-by: Sander Vanheule <sander@svanheule.net>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/5082ad3cb8b4eedf55075561b93eff6570299fe1.1641739718.git.sander@svanheule.net
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20211215204029.150686-1-ak@linux.intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/irqchip/irq-realtek-rtl.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ arch/x86/events/intel/lbr.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/irqchip/irq-realtek-rtl.c b/drivers/irqchip/irq-realtek-rtl.c
-index fd9f275592d29..1500278fa82d5 100644
---- a/drivers/irqchip/irq-realtek-rtl.c
-+++ b/drivers/irqchip/irq-realtek-rtl.c
-@@ -76,16 +76,20 @@ static void realtek_irq_dispatch(struct irq_desc *desc)
- {
- 	struct irq_chip *chip = irq_desc_get_chip(desc);
- 	struct irq_domain *domain;
--	unsigned int pending;
-+	unsigned long pending;
-+	unsigned int soc_int;
- 
- 	chained_irq_enter(chip, desc);
- 	pending = readl(REG(RTL_ICTL_GIMR)) & readl(REG(RTL_ICTL_GISR));
+diff --git a/arch/x86/events/intel/lbr.c b/arch/x86/events/intel/lbr.c
+index 9e6d6eaeb4cb6..f455dd93f9219 100644
+--- a/arch/x86/events/intel/lbr.c
++++ b/arch/x86/events/intel/lbr.c
+@@ -1734,6 +1734,9 @@ static bool is_arch_lbr_xsave_available(void)
+ 	 * Check the LBR state with the corresponding software structure.
+ 	 * Disable LBR XSAVES support if the size doesn't match.
+ 	 */
++	if (xfeature_size(XFEATURE_LBR) == 0)
++		return false;
 +
- 	if (unlikely(!pending)) {
- 		spurious_interrupt();
- 		goto out;
- 	}
-+
- 	domain = irq_desc_get_handler_data(desc);
--	generic_handle_domain_irq(domain, __ffs(pending));
-+	for_each_set_bit(soc_int, &pending, 32)
-+		generic_handle_domain_irq(domain, soc_int);
+ 	if (WARN_ON(xfeature_size(XFEATURE_LBR) != get_lbr_state_size()))
+ 		return false;
  
- out:
- 	chained_irq_exit(chip, desc);
 -- 
 2.34.1
 
