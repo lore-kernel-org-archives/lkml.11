@@ -2,79 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DBF4C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 17:20:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77458C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 17:20:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352772AbiBCRUU (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 12:20:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41128 "EHLO
+        id S231916AbiBCRUx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Feb 2022 12:20:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352679AbiBCRUQ (ORCPT
+        with ESMTP id S1352829AbiBCRPx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 12:20:16 -0500
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C088C061714
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 09:20:16 -0800 (PST)
-Received: by mail-pl1-x629.google.com with SMTP id s6so2677574plg.12
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 09:20:16 -0800 (PST)
+        Thu, 3 Feb 2022 12:15:53 -0500
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15C3FC061714
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 09:15:53 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id d5so3009977pjk.5
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 09:15:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=PBScQedjQsJUD7zIshQCOQWAkiVB3CKCT3jKw7sdwEI=;
-        b=LQ+1tVGqnoiCz4In7FgL8RYfgvEEBWaRO+VkrlDk2K5K3MzrcAy2PC/epsgRJIVsFr
-         YvWruhMeSn8CP6Pz2Q77tAkVpsN+Rz5GuO7oUj6w3qCJhT2EJ9Le0q3fKJuGicOns3+H
-         OlWGUOz9FxyKOYlh4UCQIMjJ+xuOGSuDdUEGg=
+        bh=eCxgeYKdwlKt0oqnTuPB4zw2ANgtkFxZ4Jnzg7Jm2aQ=;
+        b=c7TfdBKWq7b7RwXKegDo7mrxtFQaaMbFoWobJsoFragv/CCi7+NaQgykHUP9fODpAh
+         zDUYUZfAmM6XrgVppNUw1Zuu90Gp2iASFyev8WnefWTyjFibflL2S1CNcWlwjQx2YLCW
+         rvlQn7kFjydRTsZ1iGN4NjaGbVymOO3oSxaoc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=PBScQedjQsJUD7zIshQCOQWAkiVB3CKCT3jKw7sdwEI=;
-        b=4La7nQsM195YqGvLJC8YCK8QOJXu8PX/AeJzP8UlMG4gAlnavfTEMp+16TRlv3Y5A9
-         B79k/JGoE+mOizlVUTrWuf6jM3A279h7KgHopn5h/v2Dl3IQ55utJ07YI7/YxY3ldBS3
-         v278vsEK5PWdmpf/kTW6DlbiAt89ISqi5KgJ2x1I1uo8MP3URoVEolvBEDwuAC/RuSN5
-         x5kOqlEt1nGe4CL/XODztUWZy22vEC5Id8JTt3n0mWbhK7fSUCAGCj8hDJBGJC0MYbCZ
-         ZiETg22xarUwS6Hk7B7TUw/4YbjK6GqmIR6cQ3AkrFGn65Zcvg/DT+yW+updATiG58Xq
-         0lkA==
-X-Gm-Message-State: AOAM532Ha8sNMd/daQ4rSZTKdGIN7dzVmxnZvGtcHZpJSIqJg+EPHQ4w
-        vtYUzfM3xkT2B2OVftNpvy+5OUSZUlrReQ==
-X-Google-Smtp-Source: ABdhPJy500NuFjqwp00AVO85/fDzxFW/sTqua/T06bMcxxtDqRkqUwOzz8ZW+UnMjaxoumi+ZxwlOg==
-X-Received: by 2002:a17:902:cec8:: with SMTP id d8mr36025317plg.98.1643908816120;
-        Thu, 03 Feb 2022 09:20:16 -0800 (PST)
-Received: from localhost ([2620:15c:202:201:c0cb:3065:aa0:d6c9])
-        by smtp.gmail.com with UTF8SMTPSA id a14sm31533363pfv.212.2022.02.03.09.20.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Feb 2022 09:20:15 -0800 (PST)
-Date:   Thu, 3 Feb 2022 09:20:13 -0800
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Douglas Anderson <dianders@chromium.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        pmaliset@codeaurora.org, quic_rjendra@quicinc.com,
-        Shaik Sajida Bhanu <sbhanu@codeaurora.org>,
-        kgodara@codeaurora.org, konrad.dybcio@somainline.org,
-        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
-        sibis@codeaurora.org, swboyd@chromium.org,
-        Andy Gross <agross@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 09/14] arm64: dts: qcom: sc7280: Disable pull from
- pcie1_clkreq
-Message-ID: <YfwOzZNVlymi/w2c@google.com>
-References: <20220202212348.1391534-1-dianders@chromium.org>
- <20220202132301.v3.9.I5f367dcce8107f2186b2aad4aef0dfcfafa034b9@changeid>
+        bh=eCxgeYKdwlKt0oqnTuPB4zw2ANgtkFxZ4Jnzg7Jm2aQ=;
+        b=jazdZBEM0gLKXHmFFn239hXVhSR6jrljEVow06UGV4c3RbGe7EZYuyMJvx9CrzbN3Q
+         kEN6jZDRzYFwkXQZBu8Xdu3+jrA9uqlhISCAXFk9DDDVdhks8QGfdORvzStekEtfFS8o
+         joutisFfhCNsVG/JuTBM5N3MBbUldl1o6QKLfHWPEwdt06STs8dS/0Ip9cSzxXLRCmw2
+         PaojlgllK35Jn1joFNBb9upWeM3vrOkT+b8y74EeUuL9TlL1PDqhee4FizBR5FCSoera
+         SRZ8E7gwXjqwq1+sWaWSBU4DfMIx7fInp/dYVrRf6ElCAagqo6JKPbV+IoYqp714okLP
+         rIbQ==
+X-Gm-Message-State: AOAM530nysi+x4mfDsHZH7RX554JSo83Knb79XWexmQJbYixBuRJ7yux
+        kKKBC9IoXRSvD5nS4c69sFnyKQ==
+X-Google-Smtp-Source: ABdhPJzJUGd7ygya4e6M/1Gh2HV6OhdW0Ix+MHxpkRCd4Y5gQDZhB7ej+H+RwMQeV6zcPMjLwU3ZZw==
+X-Received: by 2002:a17:90b:3a87:: with SMTP id om7mr11784961pjb.196.1643908552517;
+        Thu, 03 Feb 2022 09:15:52 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id u18sm29699773pfk.14.2022.02.03.09.15.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Feb 2022 09:15:52 -0800 (PST)
+Date:   Thu, 3 Feb 2022 09:15:51 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Guenter Roeck <linux@roeck-us.net>, Peter Rosin <peda@axentia.se>,
+        Andy Shevchenko <andy@kernel.org>,
+        Matteo Croce <mcroce@microsoft.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        llvm@lists.linux.dev, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH] lib/test_string.c: Add test for strlen()
+Message-ID: <202202030911.4914709E@keescook>
+References: <20220130183653.491292-1-keescook@chromium.org>
+ <20220202160149.GA2322037@roeck-us.net>
+ <202202021237.487D3DE73@keescook>
+ <5ff18cff-6cfd-1f85-da74-1e5660a1a250@roeck-us.net>
+ <CAMuHMdWssK2=NFc6NO-inQg5dWxZP4Wv41K3J3RqRXThXatovw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220202132301.v3.9.I5f367dcce8107f2186b2aad4aef0dfcfafa034b9@changeid>
+In-Reply-To: <CAMuHMdWssK2=NFc6NO-inQg5dWxZP4Wv41K3J3RqRXThXatovw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 02, 2022 at 01:23:43PM -0800, Douglas Anderson wrote:
-> I believe that the PCIe clkreq pin is an output. That means we
-> shouldn't have a pull enabled for it. Turn it off.
-> 
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
+On Thu, Feb 03, 2022 at 09:04:22AM +0100, Geert Uytterhoeven wrote:
+> Not if -ffreestanding, which is what several architectures are
+> using nowadays, to a.o. prevent gcc from replacing calls to stdlib
+> functions to other stdlib functions (e.g. strncat() -> strlen() +
+> store, strncmp() -> strcmp()), which breaks linking if the latter is
+> only provided inline.
 
-Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+Hah, for i386:
+
+arch/x86/Makefile
+	# temporary until string.h is fixed
+	KBUILD_CFLAGS += -ffreestanding
+
+This "temporary" is from 2006. ;)
+
+6edfba1b33c7 ("[PATCH] x86_64: Don't define string functions to builtin")
+
+Removing that appears to solve it, and appears to build correctly. I'll
+continue testing.
+
+> It works after dropping -ffreestanding.
+
+I wonder if the other architectures were just copying x86?
+
+-- 
+Kees Cook
