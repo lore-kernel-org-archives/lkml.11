@@ -2,123 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D003AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 17:05:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5F35C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 17:07:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352479AbiBCRFN (ORCPT
+        id S1352501AbiBCRHa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 12:05:13 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:57384 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229671AbiBCRFJ (ORCPT
+        Thu, 3 Feb 2022 12:07:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37838 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234907AbiBCRH2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 12:05:09 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 76938615C7
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 17:05:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD2D3C340E8;
-        Thu,  3 Feb 2022 17:05:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643907908;
-        bh=KAuyN28aHSSH4Wt23WCzBB6asTr7zUVNWJAlCLXhRrw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=V2P/u9iN8VRZcYiM4QHl5VZsOa/q7K1IXmhiQK57+jlOXpSYMdQvBCLuiQ5pQeLi0
-         kpukXkKTOgDSf0CVG2YFLFi28T5qY9wa6HA8ZlqdfJIOPF2fP7pEgOowFwTpDr0gXP
-         iN8ovOV01u377c30OnocsSIjKfY5Wq3vlanW+WBfVl35gGMcFdqwGK5AXVnYYW4d79
-         5BF//LEj1AXFLh0XtQ8uL9F15KXKhgA7g/f7un4J+EB0tSIEKpOlWLZvqUReqz1OZ3
-         1txXidBzvYMSF4G3S3sUFcoP1dmy3LHXWdrTWAArRQor2aJ6O1IWaYqGE4s28BA4e5
-         a5SmUwPNlIO2A==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=hot-poop.lan)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nFfXe-005CWE-Ko; Thu, 03 Feb 2022 17:05:06 +0000
-From:   Marc Zyngier <maz@kernel.org>
-To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc:     Thomas Gleixner <tglx@linutronix.de>, kernel-team@android.com,
-        Mark Rutland <mark.rutland@arm.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>
-Subject: [PATCH] clocksource/drivers/arm_arch_timer: Use event stream scaling when available
-Date:   Thu,  3 Feb 2022 17:05:02 +0000
-Message-Id: <20220203170502.2694422-1-maz@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        Thu, 3 Feb 2022 12:07:28 -0500
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2773FC06173B
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 09:07:27 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id o16-20020a17090aac1000b001b62f629953so10598605pjq.3
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 09:07:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=LJp09xp8M+uPz3Zlp081AW6/VRw1By1H8gO/Cef3cHM=;
+        b=Adjh+T+uMn674K4lzSPEJAOpNaiO0jvKaXqteiO+51Q25gNHZ0YDnj8MXXM2f6ibRN
+         XWE1E3TNYEGYF4gqqPa6wBgMUEggrkOkie5/EOw77olyQeOmi8/yiRbc5pwWanV02BRY
+         L+6njpOsMrmUmGjN6zB6Rn8Z+b18QkFYGZWVw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=LJp09xp8M+uPz3Zlp081AW6/VRw1By1H8gO/Cef3cHM=;
+        b=Yqk2Hsvi0NBdPCHEJ8nyhVgWRRN+CXOf25vsWWLkVMdPWGV7qfzh+CsQWX7WXZ3DDX
+         uMiIuszd7Cokm6d6KuS1AY/XlWxXnoqzIzNlvxMsSSVUr0w/iT5NzcDTfiNmPqHDRsfP
+         Y2KfD2TlxMSPOXJvUl09iPVDPAayIohHJcrlvcbtE99cY8EJb2wVZk8quP+F6xFPA1mV
+         umM8LowKVw5uXGhvMbzLlK7JbF7+Rqd3VrXfVU7Sp9mcH6AV2VzbXrHX+QjIE3HJHRvQ
+         qKSiTCDnMCmMzgkSLc8f27xR1DzrU147DtUD2+rHIaHI/snIsPtUtTTSX51d+RLwt/zR
+         FL3g==
+X-Gm-Message-State: AOAM532efSAjrSb42OKgmhn44HHJHF7pcGsbCRpzuPvpNRm0aVRJdH8n
+        NDYT6mz6d8wC7qpqpu+zFTzUEg==
+X-Google-Smtp-Source: ABdhPJwlQtEnkwSVb6H/ujF0qK6GiHZBbZkSdS5LPsi/mn5p/6hLJIxQDWBkk3LMCBzm6bPY7W1VsA==
+X-Received: by 2002:a17:90b:33d2:: with SMTP id lk18mr14724761pjb.224.1643908046695;
+        Thu, 03 Feb 2022 09:07:26 -0800 (PST)
+Received: from localhost ([2620:15c:202:201:c0cb:3065:aa0:d6c9])
+        by smtp.gmail.com with UTF8SMTPSA id mi11sm10907797pjb.37.2022.02.03.09.07.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 03 Feb 2022 09:07:26 -0800 (PST)
+Date:   Thu, 3 Feb 2022 09:07:24 -0800
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Douglas Anderson <dianders@chromium.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        pmaliset@codeaurora.org, quic_rjendra@quicinc.com,
+        Shaik Sajida Bhanu <sbhanu@codeaurora.org>,
+        kgodara@codeaurora.org, konrad.dybcio@somainline.org,
+        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
+        sibis@codeaurora.org, swboyd@chromium.org,
+        Andy Gross <agross@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 08/14] arm64: dts: qcom: sc7280: Move pcie1_clkreq
+ pull / drive str to boards
+Message-ID: <YfwLzJP/QuBJasAq@google.com>
+References: <20220202212348.1391534-1-dianders@chromium.org>
+ <20220202132301.v3.8.Iffff0c12440a047212a164601e637b03b9d2fc78@changeid>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, tglx@linutronix.de, kernel-team@android.com, mark.rutland@arm.com, daniel.lezcano@linaro.org
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220202132301.v3.8.Iffff0c12440a047212a164601e637b03b9d2fc78@changeid>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With FEAT_ECV and the 1GHz counter, it is pretty likely that the
-event stream divider doesn't fit in the field that holds the
-divider value (we only have 4 bits to describe counter bits [15:0]
+On Wed, Feb 02, 2022 at 01:23:42PM -0800, Douglas Anderson wrote:
+> Pullups and drive strength don't belong in the SoC dtsi file. Move to
+> the board file.
+> 
+> Signed-off-by: Douglas Anderson <dianders@chromium.org>
 
-Thankfully, FEAT_ECV also provides a scaling mechanism to switch
-the field to cover counter bits [23:8] instead.
-
-Enable this on arm64 when ECV is available (32bit doesn't have
-any detection infrastructure and is unlikely to be run on an
-ARMv8.6 system anyway).
-
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
----
- drivers/clocksource/arm_arch_timer.c | 13 +++++++++++--
- include/clocksource/arm_arch_timer.h |  1 +
- 2 files changed, 12 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/clocksource/arm_arch_timer.c b/drivers/clocksource/arm_arch_timer.c
-index 1ecd52f903b8..9ab8221ee3c6 100644
---- a/drivers/clocksource/arm_arch_timer.c
-+++ b/drivers/clocksource/arm_arch_timer.c
-@@ -880,10 +880,19 @@ static void __arch_timer_setup(unsigned type,
- 	clockevents_config_and_register(clk, arch_timer_rate, 0xf, max_delta);
- }
- 
--static void arch_timer_evtstrm_enable(int divider)
-+static void arch_timer_evtstrm_enable(unsigned int divider)
- {
- 	u32 cntkctl = arch_timer_get_cntkctl();
- 
-+#ifdef CONFIG_ARM64
-+	/* ECV is likely to require a large divider. Use the EVNTIS flag. */
-+	if (cpus_have_const_cap(ARM64_HAS_ECV) && divider > 15) {
-+		cntkctl |= ARCH_TIMER_EVT_INTERVAL_SCALE;
-+		divider -= 8;
-+	}
-+#endif
-+
-+	divider = min(divider, 15U);
- 	cntkctl &= ~ARCH_TIMER_EVT_TRIGGER_MASK;
- 	/* Set the divider and enable virtual event stream */
- 	cntkctl |= (divider << ARCH_TIMER_EVT_TRIGGER_SHIFT)
-@@ -912,7 +921,7 @@ static void arch_timer_configure_evtstream(void)
- 		lsb++;
- 
- 	/* enable event stream */
--	arch_timer_evtstrm_enable(max(0, min(lsb, 15)));
-+	arch_timer_evtstrm_enable(max(0, lsb));
- }
- 
- static void arch_counter_set_user_access(void)
-diff --git a/include/clocksource/arm_arch_timer.h b/include/clocksource/arm_arch_timer.h
-index e715bdb720d5..057c8964aefb 100644
---- a/include/clocksource/arm_arch_timer.h
-+++ b/include/clocksource/arm_arch_timer.h
-@@ -56,6 +56,7 @@ enum arch_timer_spi_nr {
- #define ARCH_TIMER_EVT_TRIGGER_MASK	(0xF << ARCH_TIMER_EVT_TRIGGER_SHIFT)
- #define ARCH_TIMER_USR_VT_ACCESS_EN	(1 << 8) /* virtual timer registers */
- #define ARCH_TIMER_USR_PT_ACCESS_EN	(1 << 9) /* physical timer registers */
-+#define ARCH_TIMER_EVT_INTERVAL_SCALE	(1 << 17) /* EVNTIS in the ARMv8 ARM */
- 
- #define ARCH_TIMER_EVT_STREAM_PERIOD_US	100
- #define ARCH_TIMER_EVT_STREAM_FREQ				\
--- 
-2.34.1
-
+Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
