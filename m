@@ -2,126 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94E83C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 15:59:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F7B0C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 15:59:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352087AbiBCP7j (ORCPT
+        id S1352097AbiBCP7s (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 10:59:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50264 "EHLO
+        Thu, 3 Feb 2022 10:59:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231251AbiBCP7h (ORCPT
+        with ESMTP id S240514AbiBCP7q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 10:59:37 -0500
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52C69C061714;
-        Thu,  3 Feb 2022 07:59:37 -0800 (PST)
-Received: by mail-wr1-x435.google.com with SMTP id v13so5885009wrv.10;
-        Thu, 03 Feb 2022 07:59:37 -0800 (PST)
+        Thu, 3 Feb 2022 10:59:46 -0500
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58E17C06173B
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 07:59:46 -0800 (PST)
+Received: by mail-yb1-xb36.google.com with SMTP id 124so9687298ybw.6
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 07:59:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language
-         :from:to:cc:references:in-reply-to:content-transfer-encoding;
-        bh=+dl81ox9oLOsNstIVpWsT45Px3A+yIV/7i1ehqaDn+Y=;
-        b=jJRD9ovHm/6cgRNueQkqcsMQvaS0BPUQ0d77VlPILGy+vnI071ln2LB+ZcLtXtTGFe
-         NwDa+bci7eqbkiT6EilNkuZ5Oj1/Iw6PoMjcY6D9b40A7YdyCkaqi1MuH2SSV4qxL8x8
-         0WefZ/Epn26eZ8AwVZ7vsVL3Po23hByayQbj0E6BPmF9UY1IjdMZMNULMXK6vhtrvEhk
-         pw91dCRzmR0nFvNmTGoB23eubtkt91m/yeKcOKYsGOddm/Gw86K1h0kJ0sEc6neiOcKo
-         8lIUWcPxF0PzAu9je7SIDOlNQYN/KH1xDymDQuCe/G91aZkGLNkuS18XVMwNMHJPRWCO
-         A1SA==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vZlW9nTzqiP82XOUyxs3nRynux9nbwxL4Q5qCa2/9ng=;
+        b=kfge2IWtu3BmEiJsl+2poWE1AcoqBZWlXmdfkZjN8VwzHfq09mN6SUpWTUR5lKTKuk
+         vr4+4/h9UfMQmUtgSkJ0Nkf+RztJ0/WOsZiWYNr9q5kumYTVc9WPDnQnRhcZAuhAh+0d
+         IPXEwjRUPwK0fNbIgRSz86Jkw2O+VBkLG4zg4aed16C4UwgsCx6SIViwDc6+D9+ZPFmU
+         SsxuclPlYAQ/ubOkC0doBwqsXKRt59tbbADBBNIgcUVy47kqMJfY7fRe/cdphIyU0F+O
+         WVv6U65owm7quPChBeKi95P4N4LtW5eW5ekr/UpzFBPJ+vjCVLVrb0cArkPwM7JjWpQi
+         JunQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=+dl81ox9oLOsNstIVpWsT45Px3A+yIV/7i1ehqaDn+Y=;
-        b=YSO7wdQKZ/x/qJ3X9xbuCfOYHyybK+/yQPfIDCSyErxotOrLFZgtM7ol0CEOKb85Sm
-         vpRA2rsFSHQurM239mp2zNQVoD78zgxbF+mxTGF9k+ps+C6g2IwPEAvExQRFaamcBbvb
-         xHaBKSTSH0S7fVQq05H3e7Ld1KgQdRDYpuWggBbve0NTyUQH+jZrGSy9aFslOpr385eT
-         LiXbBkN1xuPCPRUynfWfl8dI4w675FJYKSTQu3USrho7SjYrHmU2ML/wRzpjXRX0uOq2
-         9oCrQif/dRczAvKlW8+oQnVtr1+r/zaiLn1KifutMWCuqVIGXOrPlx0397XaWtk5Y0zw
-         Z6wg==
-X-Gm-Message-State: AOAM533Z0uT/8/vqdC4EmwJZ8VTm3Kr6bI+CkHfGTbUcq1dO1spP1aXX
-        l2nOJpee+0hs8LFgZRJ1VRU=
-X-Google-Smtp-Source: ABdhPJz4mcMO5VCu7emIg7Vqh7PQEV38Ck+n/XjSj7JuEF67UyNWFH5e7rbXhGvOPMDAZQEJmXqFIA==
-X-Received: by 2002:a5d:570a:: with SMTP id a10mr29965757wrv.449.1643903975849;
-        Thu, 03 Feb 2022 07:59:35 -0800 (PST)
-Received: from [192.168.8.198] ([85.255.232.204])
-        by smtp.gmail.com with ESMTPSA id l10sm20431426wrz.20.2022.02.03.07.59.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Feb 2022 07:59:35 -0800 (PST)
-Message-ID: <02fb0bc3-fc38-b8f0-3067-edd2a525ef29@gmail.com>
-Date:   Thu, 3 Feb 2022 15:55:09 +0000
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vZlW9nTzqiP82XOUyxs3nRynux9nbwxL4Q5qCa2/9ng=;
+        b=ftZMHn86dxscGVAAwqK6v6QzuuA9LjexU78PCTsuw2PxPCxI4fS9ebGsfBBEYTJz86
+         SHFRC8FOkP8f39YAd3jJ5ir8QGr/+BwYtOuCx9S+zIlDWrNFtWyGM+xDNH+XJMs+Djpi
+         lJXyQvUjqay5c6QQC8SVtHZke8gD6T385vg7/ehK5uR2v7Ts3Pvp47zyuKHo6wwxDe9U
+         0vBdA/DWpDptFa5BCOlh8NFLtwwj/guVunR01FRG6iiZ20g3YQjZFxbVOtHS+n56LIgz
+         hUXFJ5hRXUJdeksuasTNgBVuml/SOYYjZQpEzrMqBLmoBmilwb6J+Rk8or6VdwVqZmHb
+         wLTQ==
+X-Gm-Message-State: AOAM530jsmz2GKt0ZTLdK1fjQ9+HnNQaueZ5fOqdBC1Qhkggigy3NWb2
+        gHqYmCVnloRyM83gl/IQT5TYXdsoJu0iiA5SG5r3rQ==
+X-Google-Smtp-Source: ABdhPJwxctVyhczd5Vsao4vH0OpNLnZ31ThKwaMgIW7/rtBe9J3D/uJZQUOq4C7vDEtlNsjGsqNblnJMKrZpTG3V5Wo=
+X-Received: by 2002:a0d:c7c2:: with SMTP id j185mr4794755ywd.105.1643903985178;
+ Thu, 03 Feb 2022 07:59:45 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [External] Re: [RFC] io_uring: avoid ring quiesce while
- registering/unregistering eventfd
-Content-Language: en-US
-From:   Pavel Begunkov <asml.silence@gmail.com>
-To:     Usama Arif <usama.arif@bytedance.com>,
-        Jens Axboe <axboe@kernel.dk>, io-uring@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     fam.zheng@bytedance.com
-References: <20220202155923.4117285-1-usama.arif@bytedance.com>
- <86ae792e-d138-112e-02bb-ab70e3c2a147@kernel.dk>
- <7df1059c-6151-29c8-9ed5-0bc0726c362d@kernel.dk>
- <1494b8f0-2f48-0aa1-214c-a02bbc4b05eb@bytedance.com>
- <6cce16d3-e2ca-ca1e-1209-e6e243241231@gmail.com>
-In-Reply-To: <6cce16d3-e2ca-ca1e-1209-e6e243241231@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220203153731.8992-1-dongli.zhang@oracle.com> <20220203153731.8992-2-dongli.zhang@oracle.com>
+In-Reply-To: <20220203153731.8992-2-dongli.zhang@oracle.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 3 Feb 2022 07:59:34 -0800
+Message-ID: <CANn89iLB-zmM1YTn4mjikMLhZwQ6fQUAHeCBznLuvE=gB2R-sg@mail.gmail.com>
+Subject: Re: [PATCH RFC 1/4] net: skb: use line number to trace dropped skb
+To:     Dongli Zhang <dongli.zhang@oracle.com>
+Cc:     netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Menglong Dong <imagedong@tencent.com>,
+        Joao Martins <joao.m.martins@oracle.com>, joe.jin@oracle.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/3/22 15:44, Pavel Begunkov wrote:
-> On 2/3/22 15:14, Usama Arif wrote:
->> On 02/02/2022 19:18, Jens Axboe wrote:
->>> On 2/2/22 9:57 AM, Jens Axboe wrote:
->>>> On 2/2/22 8:59 AM, Usama Arif wrote:
->>>>> Acquire completion_lock at the start of __io_uring_register before
->>>>> registering/unregistering eventfd and release it at the end. Hence
->>>>> all calls to io_cqring_ev_posted which adds to the eventfd counter
->>>>> will finish before acquiring the spin_lock in io_uring_register, and
->>>>> all new calls will wait till the eventfd is registered. This avoids
->>>>> ring quiesce which is much more expensive than acquiring the
->>>>> spin_lock.
->>>>>
->>>>> On the system tested with this patch, io_uring_reigster with
->>>>> IORING_REGISTER_EVENTFD takes less than 1ms, compared to 15ms before.
->>>>
->>>> This seems like optimizing for the wrong thing, so I've got a few
->>>> questions. Are you doing a lot of eventfd registrations (and
->>>> unregister) in your workload? Or is it just the initial pain of
->>>> registering one? In talking to Pavel, he suggested that RCU might be a
->>>> good use case here, and I think so too. That would still remove the
->>>> need to quiesce, and the posted side just needs a fairly cheap rcu
->>>> read lock/unlock around it.
->>>
->>> Totally untested, but perhaps can serve as a starting point or
->>> inspiration.
->>>
->>
->> Hi,
->>
->> Thank you for the replies and comments. My usecase registers only one eventfd at the start.
-> 
-> Then it's overkill. Update io_register_op_must_quiesce(), set ->cq_ev_fd
-> on registration with WRITE_ONCE(), read it in io_cqring_ev_posted* with
-> READ_ONCE() and you're set.
+On Thu, Feb 3, 2022 at 7:38 AM Dongli Zhang <dongli.zhang@oracle.com> wrote:
+>
+> Sometimes the kernel may not directly call kfree_skb() to drop the sk_buff.
+> Instead, it "goto drop" and call kfree_skb() at 'drop'. This make it
+> difficult to track the reason that the sk_buff is dropped.
+>
+> The commit c504e5c2f964 ("net: skb: introduce kfree_skb_reason()") has
+> introduced the kfree_skb_reason() to help track the reason. However, we may
+> need to define many reasons for each driver/subsystem.
+>
+> To avoid introducing so many new reasons, this is to use line number
+> ("__LINE__") to trace where the sk_buff is dropped. As a result, the reason
+> will be generated automatically.
+>
+> Cc: Joao Martins <joao.m.martins@oracle.com>
+> Cc: Joe Jin <joe.jin@oracle.com>
+> Signed-off-by: Dongli Zhang <dongli.zhang@oracle.com>
+> ---
+>  include/linux/skbuff.h     | 21 ++++-----------------
+>  include/trace/events/skb.h | 35 ++++++-----------------------------
+>  net/core/dev.c             |  2 +-
+>  net/core/skbuff.c          |  9 ++++-----
+>  net/ipv4/tcp_ipv4.c        | 14 +++++++-------
+>  net/ipv4/udp.c             | 14 +++++++-------
+>  6 files changed, 29 insertions(+), 66 deletions(-)
+>
+> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> index 8a636e678902..471268a4a497 100644
+> --- a/include/linux/skbuff.h
+> +++ b/include/linux/skbuff.h
+> @@ -307,21 +307,8 @@ struct sk_buff_head {
+>
+>  struct sk_buff;
+>
+> -/* The reason of skb drop, which is used in kfree_skb_reason().
+> - * en...maybe they should be splited by group?
+> - *
+> - * Each item here should also be in 'TRACE_SKB_DROP_REASON', which is
+> - * used to translate the reason to string.
+> - */
+> -enum skb_drop_reason {
+> -       SKB_DROP_REASON_NOT_SPECIFIED,
+> -       SKB_DROP_REASON_NO_SOCKET,
+> -       SKB_DROP_REASON_PKT_TOO_SMALL,
+> -       SKB_DROP_REASON_TCP_CSUM,
+> -       SKB_DROP_REASON_SOCKET_FILTER,
+> -       SKB_DROP_REASON_UDP_CSUM,
+> -       SKB_DROP_REASON_MAX,
+> -};
 
-Actually needs smp_store_release/smp_load_acquire
 
+Seriously, we have to stop messing with things like that.
 
-> There is a caveat, ->cq_ev_fd won't be immediately visible to already
-> inflight requests, but we can say it's the responsibility of the
-> userspace to wait for a grace period, i.e. for all inflight requests
-> submitted before registration io_cqring_ev_posted* might or might not
-> see updated ->cq_ev_fd, which works perfectly if there was no requests
-> in the first place. Of course it changes the behaviour so will need
-> a new register opcode.
-> 
+Your patch comes too late, another approach has been taken.
 
--- 
-Pavel Begunkov
+Please continue this effort by providing patches that improve things,
+instead of throwing away effort already done.
+
+I say no to this patch.
