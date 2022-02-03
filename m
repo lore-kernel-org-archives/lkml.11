@@ -2,282 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35B94C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 08:00:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2302BC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 08:04:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344244AbiBCIAu (ORCPT
+        id S238291AbiBCIEh convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 03:00:50 -0500
-Received: from alexa-out-sd-02.qualcomm.com ([199.106.114.39]:59011 "EHLO
-        alexa-out-sd-02.qualcomm.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S242436AbiBCIAe (ORCPT
+        Thu, 3 Feb 2022 03:04:37 -0500
+Received: from mail-ua1-f46.google.com ([209.85.222.46]:35818 "EHLO
+        mail-ua1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231836AbiBCIEf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 03:00:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1643875234; x=1675411234;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=QXOmxEMVPU6vevHf2GfW4l11m4U80TCpw621pvpOI6M=;
-  b=aev+30TdNgD48TwkHkrjaHni/nY76ffHTPfnHReGjgUuwa82cCHK5+nR
-   SmAMdCKarTWFpTbVq6j2lycR0fVlWzwlGo2iucRl/2sLSzKPWl7ainO1c
-   UbjreA8FlQhTh1hxQ7cWRf+FG2wO2CEj9oO+RNBsdmVWQ54+IO3LzvGmr
-   Q=;
-Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 03 Feb 2022 00:00:34 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2022 00:00:33 -0800
-Received: from nalasex01b.na.qualcomm.com (10.47.209.197) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Thu, 3 Feb 2022 00:00:33 -0800
-Received: from wcheng-linux.qualcomm.com (10.80.80.8) by
- nalasex01b.na.qualcomm.com (10.47.209.197) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Thu, 3 Feb 2022 00:00:32 -0800
-From:   Wesley Cheng <quic_wcheng@quicinc.com>
-To:     <balbi@kernel.org>, <gregkh@linuxfoundation.org>
-CC:     <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <quic_jackp@quicinc.com>, <Thinh.Nguyen@synopsys.com>,
-        Wesley Cheng <quic_wcheng@quicinc.com>
-Subject: [RFC PATCH 1/3] usb: dwc3: Flush pending SETUP data during stop active xfers
-Date:   Thu, 3 Feb 2022 00:00:15 -0800
-Message-ID: <20220203080017.27339-2-quic_wcheng@quicinc.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20220203080017.27339-1-quic_wcheng@quicinc.com>
-References: <20220203080017.27339-1-quic_wcheng@quicinc.com>
+        Thu, 3 Feb 2022 03:04:35 -0500
+Received: by mail-ua1-f46.google.com with SMTP id m90so3780288uam.2;
+        Thu, 03 Feb 2022 00:04:35 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=tQv5LD/cgbiE7FIrokd4eJrbJYiLRJK3S6XRnywILyw=;
+        b=7do9hpyj2WTT3P3Yt/bE+niRMLmy1xL+5NNPJanKe3+jYkr0oPfXrQZ95vgVH9pV/o
+         sLSNQzFz8Dglrwur713VCEC9mjT/I8gwesZJHjZysOP74vilIWZImknS8u7Hw3ktwAaJ
+         I4qMHZi5/MpAToueC7E2gYzkfCVLHZb2gIGW5GaW/8h4+m32tfwUQ9+KYTInGOMqhMtD
+         hvTIpztFMyOjlGyGn8RiWhC1MPudzQe0nh/O38Nbe8jlQWAg74dPQDwJ9pILTyR5okGM
+         H/rQYf8wVmRBNslrLm2LzsqQ/uEBkB2tkJu7vwpIZ4ZMHmqd7RPLk//37Nrj5Dem05Hv
+         uKTg==
+X-Gm-Message-State: AOAM5337mTh0JjJl0lEWlZ9nfEF52Xcdz4l5HAaRrPtkAGmD71MGAqdc
+        YqDIzEzc1aw8h8658q9q6i4BSUadWIKvTA==
+X-Google-Smtp-Source: ABdhPJyfO3PhvmPjX6xnqfeCL97HwTCRK4R2wqM2/6k0RDpDcR4EoGXPQEnorY4DhYbPYm5LghAhUA==
+X-Received: by 2002:a67:c58b:: with SMTP id h11mr12880341vsk.82.1643875474595;
+        Thu, 03 Feb 2022 00:04:34 -0800 (PST)
+Received: from mail-ua1-f51.google.com (mail-ua1-f51.google.com. [209.85.222.51])
+        by smtp.gmail.com with ESMTPSA id 10sm6468235uaq.9.2022.02.03.00.04.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 03 Feb 2022 00:04:34 -0800 (PST)
+Received: by mail-ua1-f51.google.com with SMTP id m90so3780243uam.2;
+        Thu, 03 Feb 2022 00:04:34 -0800 (PST)
+X-Received: by 2002:ab0:6f0d:: with SMTP id r13mr11231577uah.114.1643875473946;
+ Thu, 03 Feb 2022 00:04:33 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
+References: <20220130183653.491292-1-keescook@chromium.org>
+ <20220202160149.GA2322037@roeck-us.net> <202202021237.487D3DE73@keescook> <5ff18cff-6cfd-1f85-da74-1e5660a1a250@roeck-us.net>
+In-Reply-To: <5ff18cff-6cfd-1f85-da74-1e5660a1a250@roeck-us.net>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 3 Feb 2022 09:04:22 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdWssK2=NFc6NO-inQg5dWxZP4Wv41K3J3RqRXThXatovw@mail.gmail.com>
+Message-ID: <CAMuHMdWssK2=NFc6NO-inQg5dWxZP4Wv41K3J3RqRXThXatovw@mail.gmail.com>
+Subject: Re: [PATCH] lib/test_string.c: Add test for strlen()
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Kees Cook <keescook@chromium.org>, Peter Rosin <peda@axentia.se>,
+        Andy Shevchenko <andy@kernel.org>,
+        Matteo Croce <mcroce@microsoft.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        llvm@lists.linux.dev, linux-hardening@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-While running the pullup disable sequence, if there are pending SETUP
-transfers stored in the controller, then the endxfer commands will
-fail w/ ETIMEDOUT.  As a suggestion from SNPS, in order to drain the
-SETUP packets, SW needs to issue a STARTXFER command.  After issuing
-the STARTXFER, and retrying the ENDXFER, the command should succeed.
-Else, if the endpoints are not properly stopped, the controller halt
-sequence will fail as well.
+Hi Günter,
 
-One limitation is that the current logic will drop the SETUP data
-being received (ie dropping the SETUP packet), however, it should be
-acceptable in the pullup disable case, as the device is eventually
-going to disconnect from the host.
+On Thu, Feb 3, 2022 at 12:12 AM Guenter Roeck <linux@roeck-us.net> wrote:
+> On 2/2/22 12:52, Kees Cook wrote:
+> > On Wed, Feb 02, 2022 at 08:01:49AM -0800, Guenter Roeck wrote:
+> >> On Sun, Jan 30, 2022 at 10:36:53AM -0800, Kees Cook wrote:
+> >>> Add a simple test for strlen() functionality, including using it as a
+> >>> constant expression.
+> >>>
+> >>> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+> >>> Cc: Peter Rosin <peda@axentia.se>
+> >>> Signed-off-by: Kees Cook <keescook@chromium.org>
+> >>> ---
+> >>> I'll be taking this as part of my Clang FORTIFY_SOURCE series.
+> >>> ---
+> >>>   lib/test_string.c | 37 +++++++++++++++++++++++++++++++++++++
+> >>>   1 file changed, 37 insertions(+)
+> >>>
+> >>> diff --git a/lib/test_string.c b/lib/test_string.c
+> >>> index 9dfd6f52de92..59994f552c48 100644
+> >>> --- a/lib/test_string.c
+> >>> +++ b/lib/test_string.c
+> >>> @@ -179,6 +179,38 @@ static __init int strnchr_selftest(void)
+> >>>     return 0;
+> >>>   }
+> >>>
+> >>> +/*
+> >>> + * Unlike many other string functions, strlen() can be used in
+> >>> + * static initializers when string lengths are known at compile
+> >>> + * time. (i.e. Under these conditions, strlen() is a constant
+> >>> + * expression.) Make sure it can be used this way.
+> >>> + */
+> >>> +static const int strlen_ce = strlen("tada, a constant expression");
+> >>> +
+> >>
+> >> This results in:
+> >>
+> >> lib/test_string.c:188:30: error: initializer element is not constant
+> >>    188 | static const int strlen_ce = strlen("tada, a constant expression");
+> >>
+> >> for several of my tests. I don't think you can mandate that a compiler
+> >> implements this.
+> >
+> > Which tests?
+> >
+>
+> Some examples:
+>
+> Build reference: next-20220202
+> Compiler version: m68k-linux-gcc (GCC) 11.2.0
+>
+> Building m68k:defconfig ... failed
+> --------------
+> Error log:
+> lib/test_string.c:188:30: error: initializer element is not constant
+>    188 | static const int strlen_ce = strlen("tada, a constant expression");
+>
+> Building mips:malta_defconfig:nocd:smp:net,e1000:initrd ... failed
+> ------------
+> Error log:
+> lib/test_string.c:188:30: error: initializer element is not constant
+>   static const int strlen_ce = strlen("tada, a constant expression");
+>
+> Building i386:q35:Broadwell:defconfig:smp:ata:net,rtl8139:hd ... failed
+> ------------
+> Error log:
+> lib/test_string.c:188:30: error: initializer element is not constant
+>    188 | static const int strlen_ce = strlen("tada, a constant expression");
+>
+> i386 and is defconfig + CONFIG_STRING_SELFTEST=y; mips is
+> malta_defconfig + CONFIG_STRING_SELFTEST=y. All use gcc 11.2.
+>
+> There may be more, but there are so many failures in -next right now
+> that I may be missing some.
+>
+> > This property of strlen() is already required by our builds (this is how
+> > I tripped over it). For example:
+> >
+> > drivers/firmware/xilinx/zynqmp-debug.c:
+> >
+> > #define PM_API(id)               {id, #id, strlen(#id)}
+> > static struct pm_api_info pm_api_list[] = {
+> >          PM_API(PM_GET_API_VERSION),
+> >          PM_API(PM_QUERY_DATA),
+> > };
+>
+> I do not think that it is a C standard that strlen() on a constant string
+> must be compile-time evaluated and result in a constant.
 
-Signed-off-by: Wesley Cheng <quic_wcheng@quicinc.com>
----
- drivers/usb/dwc3/core.h   |  7 +++++++
- drivers/usb/dwc3/ep0.c    | 21 ++++++++++++--------
- drivers/usb/dwc3/gadget.c | 42 ++++++++++++++++++++++++++++++++++-----
- 3 files changed, 57 insertions(+), 13 deletions(-)
+Not if -ffreestanding, which is what several architectures are
+using nowadays, to a.o. prevent gcc from replacing calls to stdlib
+functions to other stdlib functions (e.g. strncat() -> strlen() +
+store, strncmp() -> strcmp()), which breaks linking if the latter is
+only provided inline.
 
-diff --git a/drivers/usb/dwc3/core.h b/drivers/usb/dwc3/core.h
-index e1cc3f7398fb..a124694c0038 100644
---- a/drivers/usb/dwc3/core.h
-+++ b/drivers/usb/dwc3/core.h
-@@ -1546,6 +1546,8 @@ int dwc3_send_gadget_ep_cmd(struct dwc3_ep *dep, unsigned int cmd,
- int dwc3_send_gadget_generic_command(struct dwc3 *dwc, unsigned int cmd,
- 		u32 param);
- void dwc3_gadget_clear_tx_fifos(struct dwc3 *dwc);
-+void dwc3_ep0_stall_and_restart(struct dwc3 *dwc);
-+void dwc3_ep0_end_control_data(struct dwc3 *dwc, struct dwc3_ep *dep);
- #else
- static inline int dwc3_gadget_init(struct dwc3 *dwc)
- { return 0; }
-@@ -1567,6 +1569,11 @@ static inline int dwc3_send_gadget_generic_command(struct dwc3 *dwc,
- { return 0; }
- static inline void dwc3_gadget_clear_tx_fifos(struct dwc3 *dwc)
- { }
-+static inline void dwc3_ep0_stall_and_restart(struct dwc3 *dwc)
-+{ }
-+static inline void dwc3_ep0_end_control_data(struct dwc3 *dwc,
-+					     struct dwc3_ep *dep)
-+{ }
- #endif
- 
- #if IS_ENABLED(CONFIG_USB_DWC3_DUAL_ROLE)
-diff --git a/drivers/usb/dwc3/ep0.c b/drivers/usb/dwc3/ep0.c
-index 658739410992..eb677b888610 100644
---- a/drivers/usb/dwc3/ep0.c
-+++ b/drivers/usb/dwc3/ep0.c
-@@ -197,7 +197,7 @@ int dwc3_gadget_ep0_queue(struct usb_ep *ep, struct usb_request *request,
- 	int				ret;
- 
- 	spin_lock_irqsave(&dwc->lock, flags);
--	if (!dep->endpoint.desc || !dwc->pullups_connected) {
-+	if (!dep->endpoint.desc || !dwc->pullups_connected || !dwc->connected) {
- 		dev_err(dwc->dev, "%s: can't queue to disabled endpoint\n",
- 				dep->name);
- 		ret = -ESHUTDOWN;
-@@ -218,19 +218,21 @@ int dwc3_gadget_ep0_queue(struct usb_ep *ep, struct usb_request *request,
- 	return ret;
- }
- 
--static void dwc3_ep0_stall_and_restart(struct dwc3 *dwc)
-+void dwc3_ep0_stall_and_restart(struct dwc3 *dwc)
- {
- 	struct dwc3_ep		*dep;
- 
- 	/* reinitialize physical ep1 */
- 	dep = dwc->eps[1];
- 	dep->flags = DWC3_EP_ENABLED;
-+	dep->trb_enqueue = 0;
- 
- 	/* stall is always issued on EP0 */
- 	dep = dwc->eps[0];
- 	__dwc3_gadget_ep_set_halt(dep, 1, false);
- 	dep->flags = DWC3_EP_ENABLED;
- 	dwc->delayed_status = false;
-+	dep->trb_enqueue = 0;
- 
- 	if (!list_empty(&dep->pending_list)) {
- 		struct dwc3_request	*req;
-@@ -240,7 +242,9 @@ static void dwc3_ep0_stall_and_restart(struct dwc3 *dwc)
- 	}
- 
- 	dwc->ep0state = EP0_SETUP_PHASE;
--	dwc3_ep0_out_start(dwc);
-+	complete(&dwc->ep0_in_setup);
-+	if (dwc->softconnect)
-+		dwc3_ep0_out_start(dwc);
- }
- 
- int __dwc3_gadget_ep0_set_halt(struct usb_ep *ep, int value)
-@@ -272,8 +276,6 @@ void dwc3_ep0_out_start(struct dwc3 *dwc)
- 	struct dwc3_ep			*dep;
- 	int				ret;
- 
--	complete(&dwc->ep0_in_setup);
--
- 	dep = dwc->eps[0];
- 	dwc3_ep0_prepare_one_trb(dep, dwc->ep0_trb_addr, 8,
- 			DWC3_TRBCTL_CONTROL_SETUP, false);
-@@ -922,7 +924,9 @@ static void dwc3_ep0_complete_status(struct dwc3 *dwc,
- 		dwc->setup_packet_pending = true;
- 
- 	dwc->ep0state = EP0_SETUP_PHASE;
--	dwc3_ep0_out_start(dwc);
-+	complete(&dwc->ep0_in_setup);
-+	if (dwc->softconnect)
-+		dwc3_ep0_out_start(dwc);
- }
- 
- static void dwc3_ep0_xfer_complete(struct dwc3 *dwc,
-@@ -1073,7 +1077,7 @@ void dwc3_ep0_send_delayed_status(struct dwc3 *dwc)
- 	__dwc3_ep0_do_control_status(dwc, dwc->eps[direction]);
- }
- 
--static void dwc3_ep0_end_control_data(struct dwc3 *dwc, struct dwc3_ep *dep)
-+void dwc3_ep0_end_control_data(struct dwc3 *dwc, struct dwc3_ep *dep)
- {
- 	struct dwc3_gadget_ep_cmd_params params;
- 	u32			cmd;
-@@ -1083,7 +1087,8 @@ static void dwc3_ep0_end_control_data(struct dwc3 *dwc, struct dwc3_ep *dep)
- 		return;
- 
- 	cmd = DWC3_DEPCMD_ENDTRANSFER;
--	cmd |= DWC3_DEPCMD_CMDIOC;
-+	cmd |= dwc->connected ? 0 : DWC3_DEPCMD_HIPRI_FORCERM;
-+	cmd |= dwc->connected ? DWC3_DEPCMD_CMDIOC : 0;
- 	cmd |= DWC3_DEPCMD_PARAM(dep->resource_index);
- 	memset(&params, 0, sizeof(params));
- 	ret = dwc3_send_gadget_ep_cmd(dep, cmd, &params);
-diff --git a/drivers/usb/dwc3/gadget.c b/drivers/usb/dwc3/gadget.c
-index 520031ba38aa..19b8d837e9d0 100644
---- a/drivers/usb/dwc3/gadget.c
-+++ b/drivers/usb/dwc3/gadget.c
-@@ -885,12 +885,13 @@ static int __dwc3_gadget_ep_enable(struct dwc3_ep *dep, unsigned int action)
- 		reg |= DWC3_DALEPENA_EP(dep->number);
- 		dwc3_writel(dwc->regs, DWC3_DALEPENA, reg);
- 
--		if (usb_endpoint_xfer_control(desc))
--			goto out;
--
- 		/* Initialize the TRB ring */
- 		dep->trb_dequeue = 0;
- 		dep->trb_enqueue = 0;
-+
-+		if (usb_endpoint_xfer_control(desc))
-+			goto out;
-+
- 		memset(dep->trb_pool, 0,
- 		       sizeof(struct dwc3_trb) * DWC3_TRB_NUM);
- 
-@@ -2463,7 +2464,8 @@ static int dwc3_gadget_pullup(struct usb_gadget *g, int is_on)
- 	 * Per databook, when we want to stop the gadget, if a control transfer
- 	 * is still in process, complete it and get the core into setup phase.
- 	 */
--	if (!is_on && dwc->ep0state != EP0_SETUP_PHASE) {
-+	if ((!is_on && (dwc->ep0state != EP0_SETUP_PHASE ||
-+	     dwc->ep0_next_event != DWC3_EP0_COMPLETE))) {
- 		reinit_completion(&dwc->ep0_in_setup);
- 
- 		ret = wait_for_completion_timeout(&dwc->ep0_in_setup,
-@@ -2506,6 +2508,17 @@ static int dwc3_gadget_pullup(struct usb_gadget *g, int is_on)
- 		u32 count;
- 
- 		dwc->connected = false;
-+
-+		/*
-+		 * Ensure no pending data/setup stages, and disable ep0 to
-+		 * block further EP0 transactions before stopping pending
-+		 * transfers.
-+		 */
-+		dwc3_ep0_end_control_data(dwc, dwc->eps[1]);
-+		dwc3_ep0_stall_and_restart(dwc);
-+		__dwc3_gadget_ep_disable(dwc->eps[0]);
-+		__dwc3_gadget_ep_disable(dwc->eps[1]);
-+
- 		/*
- 		 * In the Synopsis DesignWare Cores USB3 Databook Rev. 3.30a
- 		 * Section 4.1.8 Table 4-7, it states that for a device-initiated
-@@ -3587,8 +3600,10 @@ static void dwc3_stop_active_transfer(struct dwc3_ep *dep, bool force,
- 	bool interrupt)
- {
- 	struct dwc3_gadget_ep_cmd_params params;
-+	struct dwc3 *dwc = dep->dwc;
- 	u32 cmd;
- 	int ret;
-+	int retries = 1;
- 
- 	if (!(dep->flags & DWC3_EP_TRANSFER_STARTED) ||
- 	    (dep->flags & DWC3_EP_END_TRANSFER_PENDING))
-@@ -3620,7 +3635,7 @@ static void dwc3_stop_active_transfer(struct dwc3_ep *dep, bool force,
- 	 *
- 	 * This mode is NOT available on the DWC_usb31 IP.
- 	 */
--
-+retry:
- 	cmd = DWC3_DEPCMD_ENDTRANSFER;
- 	cmd |= force ? DWC3_DEPCMD_HIPRI_FORCERM : 0;
- 	cmd |= interrupt ? DWC3_DEPCMD_CMDIOC : 0;
-@@ -3628,6 +3643,23 @@ static void dwc3_stop_active_transfer(struct dwc3_ep *dep, bool force,
- 	memset(&params, 0, sizeof(params));
- 	ret = dwc3_send_gadget_ep_cmd(dep, cmd, &params);
- 	WARN_ON_ONCE(ret);
-+	if (ret == -ETIMEDOUT) {
-+		if (!dwc->connected) {
-+			/*
-+			 * While the controller is in an active setup/control
-+			 * transfer, the HW is unable to service other eps
-+			 * potentially leading to an endxfer command timeout.
-+			 * It was recommended to ensure that there are no
-+			 * pending/cached setup packets stored in internal
-+			 * memory.  Only way to achieve this is to issue another
-+			 * start transfer, and retry.
-+			 */
-+			if (retries--) {
-+				dwc3_ep0_out_start(dwc);
-+				goto retry;
-+			}
-+		}
-+	}
- 	dep->resource_index = 0;
- 
- 	if (!interrupt)
+> Anyway, key difference, I think, is the presence of an architecture-specific
+> version of strlen(), or the maybe non-presence of __HAVE_ARCH_STRLEN,
+> or the definition of strlen() in include/linux/fortify-string.h.
+
+It works after dropping -ffreestanding.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
