@@ -2,54 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E1C8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 14:35:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37B68C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 14:35:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351692AbiBCOfi (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 09:35:38 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:53598 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351330AbiBCOdn (ORCPT
+        id S233409AbiBCOfn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Feb 2022 09:35:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58290 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1351320AbiBCOdk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 09:33:43 -0500
-Date:   Thu, 03 Feb 2022 14:33:41 -0000
+        Thu, 3 Feb 2022 09:33:40 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F465C06175C;
+        Thu,  3 Feb 2022 06:33:36 -0800 (PST)
+Date:   Thu, 03 Feb 2022 14:33:33 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1643898822;
+        s=2020; t=1643898814;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=oEhdm6SxHY62zgnNJynGHEYOtP+5xY68TFi8zATwSN4=;
-        b=zF1UPWtF8LAKxfHR9d2hafZoQuehsa2pT339HTjIsR62lIBrmxoq1PLV9eTV1IqFj9TC56
-        mkGho9Yxis/3Ntka8yIym/NSUpbKjY9rO01uS48LCIiq6diholS7AzIyIds2IjoP1+eodC
-        otaYW+GdhzAd3x7KSbxNIQpmT+9eNByeLtL+OsYzdlCIBQbUaBUvl6i8RwQ3g6t/T1Ft3I
-        xcTPIbuQVekKn/iiJRryz1issHjViVi1Z6VFx1sLSWQAIoCKWfxFDg2mazsMvIDvkBvL9o
-        zj6uEbIwxg62bK6mHVFfTdwHI0cWOUxfZdP0IG9w5s0iWtghFWwk9Hmij4RSog==
+        bh=syUutp0w1EE9/WDnLShnHZRoAbLvsxwnkGM9FWJyhC8=;
+        b=AdoDhzWHNN6hfxcFel02XPkF9QBUydM9jyR8F3Wvb5SHp+qEJtlaZcIT9i9NXrkQ1LzENG
+        IZYitKbLOpHtd02zAaWIUCV00N+d78wuZh74rC4lMrV2DKf6p/P3rFN1xQkElg3tdJqiFZ
+        ZFHdMAMDGicq6ev0YXSIpImPj1NflSaAUva+WYqExJbVgP6WuRtGdi6Go8X6Q+hVOauSH2
+        ByZBhaEqK9EYcaFw3PgV1TpbCx3+GZzi1ZyZslRJhx9XjDKu5nlg2NwXeUaKTnafwMh4Tq
+        if0NOTN8PlRlDu5gWb/hjd9QZZPO3JYwqyXMecMdGZV97QH2YWTJQPqz6QXX7w==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1643898822;
+        s=2020e; t=1643898814;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=oEhdm6SxHY62zgnNJynGHEYOtP+5xY68TFi8zATwSN4=;
-        b=qK/JJei6up6f/VKsNApqSm0vf4bMUYTb0HCeJM/C8PuaOTRITbsMs/yxf4SnvSfd2INvPl
-        LiM3XizkpQJsE9AA==
-From:   "tip-bot2 for Mathieu Desnoyers" <tip-bot2@linutronix.de>
+        bh=syUutp0w1EE9/WDnLShnHZRoAbLvsxwnkGM9FWJyhC8=;
+        b=oKUKaCnudKncwHN20c7iQaLScpAqVQWYOEsunQGEW38Bba8yO5HlVzGr1V5BtaG5vQ0VJv
+        +1HZz54hhGDQyaDA==
+From:   "tip-bot2 for Marco Elver" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: sched/core] selftests/rseq: x86-32: use %gs segment selector
- for accessing rseq thread area
-Cc:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+Subject: [tip: perf/urgent] perf: Copy perf_event_attr::sig_data on modification
+Cc:     Dmitry Vyukov <dvyukov@google.com>, Marco Elver <elver@google.com>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220124171253.22072-16-mathieu.desnoyers@efficios.com>
-References: <20220124171253.22072-16-mathieu.desnoyers@efficios.com>
+In-Reply-To: <20220131103407.1971678-1-elver@google.com>
+References: <20220131103407.1971678-1-elver@google.com>
 MIME-Version: 1.0
-Message-ID: <164389882171.16921.9829327395460133558.tip-bot2@tip-bot2>
+Message-ID: <164389881392.16921.6632551424370921603.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -58,258 +59,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the sched/core branch of tip:
+The following commit has been merged into the perf/urgent branch of tip:
 
-Commit-ID:     127b6429d235ab7c358223bbfd8a8b8d8cc799b6
-Gitweb:        https://git.kernel.org/tip/127b6429d235ab7c358223bbfd8a8b8d8cc799b6
-Author:        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-AuthorDate:    Mon, 24 Jan 2022 12:12:53 -05:00
+Commit-ID:     3c25fc97f5590060464cabfa25710970ecddbc96
+Gitweb:        https://git.kernel.org/tip/3c25fc97f5590060464cabfa25710970ecddbc96
+Author:        Marco Elver <elver@google.com>
+AuthorDate:    Mon, 31 Jan 2022 11:34:05 +01:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Wed, 02 Feb 2022 13:11:37 +01:00
+CommitterDate: Wed, 02 Feb 2022 13:11:40 +01:00
 
-selftests/rseq: x86-32: use %gs segment selector for accessing rseq thread area
+perf: Copy perf_event_attr::sig_data on modification
 
-Rather than use rseq_get_abi() and pass its result through a register to
-the inline assembler, directly access the per-thread rseq area through a
-memory reference combining the %gs segment selector, the constant offset
-of the field in struct rseq, and the rseq_offset value (in a register).
+The intent has always been that perf_event_attr::sig_data should also be
+modifiable along with PERF_EVENT_IOC_MODIFY_ATTRIBUTES, because it is
+observable by user space if SIGTRAP on events is requested.
 
-Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Currently only PERF_TYPE_BREAKPOINT is modifiable, and explicitly copies
+relevant breakpoint-related attributes in hw_breakpoint_copy_attr().
+This misses copying perf_event_attr::sig_data.
+
+Since sig_data is not specific to PERF_TYPE_BREAKPOINT, introduce a
+helper to copy generic event-type-independent attributes on
+modification.
+
+Fixes: 97ba62b27867 ("perf: Add support for SIGTRAP on perf events")
+Reported-by: Dmitry Vyukov <dvyukov@google.com>
+Signed-off-by: Marco Elver <elver@google.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20220124171253.22072-16-mathieu.desnoyers@efficios.com
+Reviewed-by: Dmitry Vyukov <dvyukov@google.com>
+Link: https://lore.kernel.org/r/20220131103407.1971678-1-elver@google.com
 ---
- tools/testing/selftests/rseq/rseq-x86.h | 66 ++++++++++++------------
- 1 file changed, 34 insertions(+), 32 deletions(-)
+ kernel/events/core.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-diff --git a/tools/testing/selftests/rseq/rseq-x86.h b/tools/testing/selftests/rseq/rseq-x86.h
-index 2976966..f704d36 100644
---- a/tools/testing/selftests/rseq/rseq-x86.h
-+++ b/tools/testing/selftests/rseq/rseq-x86.h
-@@ -633,6 +633,8 @@ int rseq_cmpeqv_trymemcpy_storev_release(intptr_t *v, intptr_t expect,
+diff --git a/kernel/events/core.c b/kernel/events/core.c
+index 76c754e..57c7197 100644
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -3238,6 +3238,15 @@ static int perf_event_modify_breakpoint(struct perf_event *bp,
+ 	return err;
+ }
  
- #elif defined(__i386__)
- 
-+#define RSEQ_ASM_TP_SEGMENT	%%gs
++/*
++ * Copy event-type-independent attributes that may be modified.
++ */
++static void perf_event_modify_copy_attr(struct perf_event_attr *to,
++					const struct perf_event_attr *from)
++{
++	to->sig_data = from->sig_data;
++}
 +
- #define rseq_smp_mb()	\
- 	__asm__ __volatile__ ("lock; addl $0,-128(%%esp)" ::: "memory", "cc")
- #define rseq_smp_rmb()	\
-@@ -732,14 +734,14 @@ int rseq_cmpeqv_storev(intptr_t *v, intptr_t expect, intptr_t newv, int cpu)
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[error2])
- #endif
- 		/* Start rseq by storing table entry pointer into rseq_cs. */
--		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_CS_OFFSET(%[rseq_abi]))
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), 4f)
-+		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_ASM_TP_SEGMENT:RSEQ_CS_OFFSET(%[rseq_offset]))
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), 4f)
- 		RSEQ_INJECT_ASM(3)
- 		"cmpl %[v], %[expect]\n\t"
- 		"jnz %l[cmpfail]\n\t"
- 		RSEQ_INJECT_ASM(4)
- #ifdef RSEQ_COMPARE_TWICE
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), %l[error1])
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), %l[error1])
- 		"cmpl %[v], %[expect]\n\t"
- 		"jnz %l[error2]\n\t"
- #endif
-@@ -750,7 +752,7 @@ int rseq_cmpeqv_storev(intptr_t *v, intptr_t expect, intptr_t newv, int cpu)
- 		RSEQ_ASM_DEFINE_ABORT(4, "", abort)
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [rseq_abi]		"r" (rseq_get_abi()),
-+		  [rseq_offset]		"r" (rseq_offset),
- 		  [v]			"m" (*v),
- 		  [expect]		"r" (expect),
- 		  [newv]		"r" (newv)
-@@ -798,15 +800,15 @@ int rseq_cmpnev_storeoffp_load(intptr_t *v, intptr_t expectnot,
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[error2])
- #endif
- 		/* Start rseq by storing table entry pointer into rseq_cs. */
--		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_CS_OFFSET(%[rseq_abi]))
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), 4f)
-+		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_ASM_TP_SEGMENT:RSEQ_CS_OFFSET(%[rseq_offset]))
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), 4f)
- 		RSEQ_INJECT_ASM(3)
- 		"movl %[v], %%ebx\n\t"
- 		"cmpl %%ebx, %[expectnot]\n\t"
- 		"je %l[cmpfail]\n\t"
- 		RSEQ_INJECT_ASM(4)
- #ifdef RSEQ_COMPARE_TWICE
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), %l[error1])
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), %l[error1])
- 		"movl %[v], %%ebx\n\t"
- 		"cmpl %%ebx, %[expectnot]\n\t"
- 		"je %l[error2]\n\t"
-@@ -821,7 +823,7 @@ int rseq_cmpnev_storeoffp_load(intptr_t *v, intptr_t expectnot,
- 		RSEQ_ASM_DEFINE_ABORT(4, "", abort)
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [rseq_abi]		"r" (rseq_get_abi()),
-+		  [rseq_offset]		"r" (rseq_offset),
- 		  /* final store input */
- 		  [v]			"m" (*v),
- 		  [expectnot]		"r" (expectnot),
-@@ -864,11 +866,11 @@ int rseq_addv(intptr_t *v, intptr_t count, int cpu)
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[error1])
- #endif
- 		/* Start rseq by storing table entry pointer into rseq_cs. */
--		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_CS_OFFSET(%[rseq_abi]))
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), 4f)
-+		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_ASM_TP_SEGMENT:RSEQ_CS_OFFSET(%[rseq_offset]))
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), 4f)
- 		RSEQ_INJECT_ASM(3)
- #ifdef RSEQ_COMPARE_TWICE
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), %l[error1])
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), %l[error1])
- #endif
- 		/* final store */
- 		"addl %[count], %[v]\n\t"
-@@ -877,7 +879,7 @@ int rseq_addv(intptr_t *v, intptr_t count, int cpu)
- 		RSEQ_ASM_DEFINE_ABORT(4, "", abort)
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [rseq_abi]		"r" (rseq_get_abi()),
-+		  [rseq_offset]		"r" (rseq_offset),
- 		  /* final store input */
- 		  [v]			"m" (*v),
- 		  [count]		"ir" (count)
-@@ -916,14 +918,14 @@ int rseq_cmpeqv_trystorev_storev(intptr_t *v, intptr_t expect,
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[error2])
- #endif
- 		/* Start rseq by storing table entry pointer into rseq_cs. */
--		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_CS_OFFSET(%[rseq_abi]))
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), 4f)
-+		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_ASM_TP_SEGMENT:RSEQ_CS_OFFSET(%[rseq_offset]))
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), 4f)
- 		RSEQ_INJECT_ASM(3)
- 		"cmpl %[v], %[expect]\n\t"
- 		"jnz %l[cmpfail]\n\t"
- 		RSEQ_INJECT_ASM(4)
- #ifdef RSEQ_COMPARE_TWICE
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), %l[error1])
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), %l[error1])
- 		"cmpl %[v], %[expect]\n\t"
- 		"jnz %l[error2]\n\t"
- #endif
-@@ -938,7 +940,7 @@ int rseq_cmpeqv_trystorev_storev(intptr_t *v, intptr_t expect,
- 		RSEQ_ASM_DEFINE_ABORT(4, "", abort)
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [rseq_abi]		"r" (rseq_get_abi()),
-+		  [rseq_offset]		"r" (rseq_offset),
- 		  /* try store input */
- 		  [v2]			"m" (*v2),
- 		  [newv2]		"m" (newv2),
-@@ -987,15 +989,15 @@ int rseq_cmpeqv_trystorev_storev_release(intptr_t *v, intptr_t expect,
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[error2])
- #endif
- 		/* Start rseq by storing table entry pointer into rseq_cs. */
--		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_CS_OFFSET(%[rseq_abi]))
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), 4f)
-+		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_ASM_TP_SEGMENT:RSEQ_CS_OFFSET(%[rseq_offset]))
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), 4f)
- 		RSEQ_INJECT_ASM(3)
- 		"movl %[expect], %%eax\n\t"
- 		"cmpl %[v], %%eax\n\t"
- 		"jnz %l[cmpfail]\n\t"
- 		RSEQ_INJECT_ASM(4)
- #ifdef RSEQ_COMPARE_TWICE
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), %l[error1])
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), %l[error1])
- 		"movl %[expect], %%eax\n\t"
- 		"cmpl %[v], %%eax\n\t"
- 		"jnz %l[error2]\n\t"
-@@ -1011,7 +1013,7 @@ int rseq_cmpeqv_trystorev_storev_release(intptr_t *v, intptr_t expect,
- 		RSEQ_ASM_DEFINE_ABORT(4, "", abort)
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [rseq_abi]		"r" (rseq_get_abi()),
-+		  [rseq_offset]		"r" (rseq_offset),
- 		  /* try store input */
- 		  [v2]			"m" (*v2),
- 		  [newv2]		"r" (newv2),
-@@ -1062,8 +1064,8 @@ int rseq_cmpeqv_cmpeqv_storev(intptr_t *v, intptr_t expect,
- 		RSEQ_ASM_DEFINE_EXIT_POINT(1f, %l[error3])
- #endif
- 		/* Start rseq by storing table entry pointer into rseq_cs. */
--		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_CS_OFFSET(%[rseq_abi]))
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), 4f)
-+		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_ASM_TP_SEGMENT:RSEQ_CS_OFFSET(%[rseq_offset]))
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), 4f)
- 		RSEQ_INJECT_ASM(3)
- 		"cmpl %[v], %[expect]\n\t"
- 		"jnz %l[cmpfail]\n\t"
-@@ -1072,7 +1074,7 @@ int rseq_cmpeqv_cmpeqv_storev(intptr_t *v, intptr_t expect,
- 		"jnz %l[cmpfail]\n\t"
- 		RSEQ_INJECT_ASM(5)
- #ifdef RSEQ_COMPARE_TWICE
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), %l[error1])
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), %l[error1])
- 		"cmpl %[v], %[expect]\n\t"
- 		"jnz %l[error2]\n\t"
- 		"cmpl %[expect2], %[v2]\n\t"
-@@ -1086,7 +1088,7 @@ int rseq_cmpeqv_cmpeqv_storev(intptr_t *v, intptr_t expect,
- 		RSEQ_ASM_DEFINE_ABORT(4, "", abort)
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [rseq_abi]		"r" (rseq_get_abi()),
-+		  [rseq_offset]		"r" (rseq_offset),
- 		  /* cmp2 input */
- 		  [v2]			"m" (*v2),
- 		  [expect2]		"r" (expect2),
-@@ -1144,15 +1146,15 @@ int rseq_cmpeqv_trymemcpy_storev(intptr_t *v, intptr_t expect,
- 		"movl %[dst], %[rseq_scratch1]\n\t"
- 		"movl %[len], %[rseq_scratch2]\n\t"
- 		/* Start rseq by storing table entry pointer into rseq_cs. */
--		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_CS_OFFSET(%[rseq_abi]))
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), 4f)
-+		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_ASM_TP_SEGMENT:RSEQ_CS_OFFSET(%[rseq_offset]))
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), 4f)
- 		RSEQ_INJECT_ASM(3)
- 		"movl %[expect], %%eax\n\t"
- 		"cmpl %%eax, %[v]\n\t"
- 		"jnz 5f\n\t"
- 		RSEQ_INJECT_ASM(4)
- #ifdef RSEQ_COMPARE_TWICE
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), 6f)
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), 6f)
- 		"movl %[expect], %%eax\n\t"
- 		"cmpl %%eax, %[v]\n\t"
- 		"jnz 7f\n\t"
-@@ -1202,7 +1204,7 @@ int rseq_cmpeqv_trymemcpy_storev(intptr_t *v, intptr_t expect,
- #endif
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [rseq_abi]		"r" (rseq_get_abi()),
-+		  [rseq_offset]		"r" (rseq_offset),
- 		  /* final store input */
- 		  [v]			"m" (*v),
- 		  [expect]		"m" (expect),
-@@ -1261,15 +1263,15 @@ int rseq_cmpeqv_trymemcpy_storev_release(intptr_t *v, intptr_t expect,
- 		"movl %[dst], %[rseq_scratch1]\n\t"
- 		"movl %[len], %[rseq_scratch2]\n\t"
- 		/* Start rseq by storing table entry pointer into rseq_cs. */
--		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_CS_OFFSET(%[rseq_abi]))
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), 4f)
-+		RSEQ_ASM_STORE_RSEQ_CS(1, 3b, RSEQ_ASM_TP_SEGMENT:RSEQ_CS_OFFSET(%[rseq_offset]))
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), 4f)
- 		RSEQ_INJECT_ASM(3)
- 		"movl %[expect], %%eax\n\t"
- 		"cmpl %%eax, %[v]\n\t"
- 		"jnz 5f\n\t"
- 		RSEQ_INJECT_ASM(4)
- #ifdef RSEQ_COMPARE_TWICE
--		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_CPU_ID_OFFSET(%[rseq_abi]), 6f)
-+		RSEQ_ASM_CMP_CPU_ID(cpu_id, RSEQ_ASM_TP_SEGMENT:RSEQ_CPU_ID_OFFSET(%[rseq_offset]), 6f)
- 		"movl %[expect], %%eax\n\t"
- 		"cmpl %%eax, %[v]\n\t"
- 		"jnz 7f\n\t"
-@@ -1320,7 +1322,7 @@ int rseq_cmpeqv_trymemcpy_storev_release(intptr_t *v, intptr_t expect,
- #endif
- 		: /* gcc asm goto does not allow outputs */
- 		: [cpu_id]		"r" (cpu),
--		  [rseq_abi]		"r" (rseq_get_abi()),
-+		  [rseq_offset]		"r" (rseq_offset),
- 		  /* final store input */
- 		  [v]			"m" (*v),
- 		  [expect]		"m" (expect),
+ static int perf_event_modify_attr(struct perf_event *event,
+ 				  struct perf_event_attr *attr)
+ {
+@@ -3260,10 +3269,17 @@ static int perf_event_modify_attr(struct perf_event *event,
+ 	WARN_ON_ONCE(event->ctx->parent_ctx);
+ 
+ 	mutex_lock(&event->child_mutex);
++	/*
++	 * Event-type-independent attributes must be copied before event-type
++	 * modification, which will validate that final attributes match the
++	 * source attributes after all relevant attributes have been copied.
++	 */
++	perf_event_modify_copy_attr(&event->attr, attr);
+ 	err = func(event, attr);
+ 	if (err)
+ 		goto out;
+ 	list_for_each_entry(child, &event->child_list, child_list) {
++		perf_event_modify_copy_attr(&child->attr, attr);
+ 		err = func(child, attr);
+ 		if (err)
+ 			goto out;
