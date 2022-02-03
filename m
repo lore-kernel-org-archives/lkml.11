@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 504DCC4167D
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:34:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C40B3C43219
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:34:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354705AbiBCUeS (ORCPT
+        id S1354808AbiBCUeZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:34:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58130 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354492AbiBCUcn (ORCPT
+        Thu, 3 Feb 2022 15:34:25 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:38854 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354736AbiBCUcw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 15:32:43 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2105AC061714;
-        Thu,  3 Feb 2022 12:32:43 -0800 (PST)
+        Thu, 3 Feb 2022 15:32:52 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D6602B835AE;
-        Thu,  3 Feb 2022 20:32:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEB50C340F1;
-        Thu,  3 Feb 2022 20:32:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C6076619D3;
+        Thu,  3 Feb 2022 20:32:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DC1BC340E8;
+        Thu,  3 Feb 2022 20:32:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643920360;
-        bh=ifE1v8Glm0+46fo4SD9U2xsciJHsM1QktgWn5k6e/Yo=;
+        s=k20201202; t=1643920371;
+        bh=QpdYhPz1QbxmW08mKdB8W1Sz1fYm/QS12h4YxaF3K4s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XJQPHt4mH+lBJOvpMviGDu2qe+aQiBZajoj+70NFkrhA246TInvWGo+8cJLQ2UIe/
-         Ps7uJzMduyHdiQFjBFMzM/DNxusjGXuBGEbvWnpsgwX6SOsBd5CQO9TrUO2cq0tE1i
-         nZd01TINUNAuLhfhLhGbYoGCxwejjIUtVPBgpHVgKgWhgowUk6eQslaxZAEYqivIfX
-         EXGhnvGhAaDacSlAextTUBQym1HErat95yTK5i3H0KWsvqMWSGSYyE24zQBs/jy/M2
-         D4CG16edG+qvr5rRGs2VbRKKDPzJ6uP4LIVPLotO9774FsODQvQjrbkGjoacE9pJBn
-         +JT1chWWuePpQ==
+        b=Zhx2Nlx1ASKHznaRZ9+bppLWe4Dx5HbVrcMzRQbzurUPBaw1rHF+P/k0z7XH6YfjM
+         Q0E9M6PBXSDFoRfath4zcDAV3LN8Me73shsffxkZDNfdqPYJVExa/X+FvuSQ/WUevY
+         Kfsnk3hAVp6eKUgSqcM/EushlTSLnF/jkJnKMRwBHW+042jkUvHIYUn28bvmATnRO6
+         p6ZzArkpNWTwtjfTgvK5HZdPjz85ZbSBAPxHbRQbyXrnDEDMBxC3u2zQLtf6Mm4Ua0
+         yIlu8G5pIIVK70xU50qh4d9YM5oEETaTAsKU+KPdihlifKZ/Z8Xc435Gbnwgf+a7K9
+         bqYPF/EytjwZg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mike Snitzer <snitzer@redhat.com>, Christoph Hellwig <hch@lst.de>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>,
-        linux-block@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 51/52] block: add bio_start_io_acct_time() to control start_time
-Date:   Thu,  3 Feb 2022 15:29:45 -0500
-Message-Id: <20220203202947.2304-51-sashal@kernel.org>
+Cc:     Xiaoke Wang <xkernel.wang@foxmail.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Sasha Levin <sashal@kernel.org>,
+        trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
+        linux-nfs@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 03/41] nfs: nfs4clinet: check the return value of kstrdup()
+Date:   Thu,  3 Feb 2022 15:32:07 -0500
+Message-Id: <20220203203245.3007-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220203202947.2304-1-sashal@kernel.org>
-References: <20220203202947.2304-1-sashal@kernel.org>
+In-Reply-To: <20220203203245.3007-1-sashal@kernel.org>
+References: <20220203203245.3007-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,96 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Snitzer <snitzer@redhat.com>
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-[ Upstream commit e45c47d1f94e0cc7b6b079fdb4bcce2995e2adc4 ]
+[ Upstream commit fbd2057e5329d3502a27491190237b6be52a1cb6 ]
 
-bio_start_io_acct_time() interface is like bio_start_io_acct() that
-allows start_time to be passed in. This gives drivers the ability to
-defer starting accounting until after IO is issued (but possibily not
-entirely due to bio splitting).
+kstrdup() returns NULL when some internal memory errors happen, it is
+better to check the return value of it so to catch the memory error in
+time.
 
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Mike Snitzer <snitzer@redhat.com>
-Link: https://lore.kernel.org/r/20220128155841.39644-2-snitzer@redhat.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/blk-core.c       | 25 +++++++++++++++++++------
- include/linux/blkdev.h |  1 +
- 2 files changed, 20 insertions(+), 6 deletions(-)
+ fs/nfs/nfs4client.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/block/blk-core.c b/block/blk-core.c
-index 1378d084c770f..9ebeb9bdf5832 100644
---- a/block/blk-core.c
-+++ b/block/blk-core.c
-@@ -1258,20 +1258,32 @@ void __blk_account_io_start(struct request *rq)
- }
+diff --git a/fs/nfs/nfs4client.c b/fs/nfs/nfs4client.c
+index af57332503bed..ed06b68b2b4e9 100644
+--- a/fs/nfs/nfs4client.c
++++ b/fs/nfs/nfs4client.c
+@@ -1368,8 +1368,11 @@ int nfs4_update_server(struct nfs_server *server, const char *hostname,
+ 	}
+ 	nfs_put_client(clp);
  
- static unsigned long __part_start_io_acct(struct block_device *part,
--					  unsigned int sectors, unsigned int op)
-+					  unsigned int sectors, unsigned int op,
-+					  unsigned long start_time)
- {
- 	const int sgrp = op_stat_group(op);
--	unsigned long now = READ_ONCE(jiffies);
+-	if (server->nfs_client->cl_hostname == NULL)
++	if (server->nfs_client->cl_hostname == NULL) {
+ 		server->nfs_client->cl_hostname = kstrdup(hostname, GFP_KERNEL);
++		if (server->nfs_client->cl_hostname == NULL)
++			return -ENOMEM;
++	}
+ 	nfs_server_insert_lists(server);
  
- 	part_stat_lock();
--	update_io_ticks(part, now, false);
-+	update_io_ticks(part, start_time, false);
- 	part_stat_inc(part, ios[sgrp]);
- 	part_stat_add(part, sectors[sgrp], sectors);
- 	part_stat_local_inc(part, in_flight[op_is_write(op)]);
- 	part_stat_unlock();
- 
--	return now;
-+	return start_time;
-+}
-+
-+/**
-+ * bio_start_io_acct_time - start I/O accounting for bio based drivers
-+ * @bio:	bio to start account for
-+ * @start_time:	start time that should be passed back to bio_end_io_acct().
-+ */
-+void bio_start_io_acct_time(struct bio *bio, unsigned long start_time)
-+{
-+	__part_start_io_acct(bio->bi_bdev, bio_sectors(bio),
-+			     bio_op(bio), start_time);
- }
-+EXPORT_SYMBOL_GPL(bio_start_io_acct_time);
- 
- /**
-  * bio_start_io_acct - start I/O accounting for bio based drivers
-@@ -1281,14 +1293,15 @@ static unsigned long __part_start_io_acct(struct block_device *part,
-  */
- unsigned long bio_start_io_acct(struct bio *bio)
- {
--	return __part_start_io_acct(bio->bi_bdev, bio_sectors(bio), bio_op(bio));
-+	return __part_start_io_acct(bio->bi_bdev, bio_sectors(bio),
-+				    bio_op(bio), jiffies);
- }
- EXPORT_SYMBOL_GPL(bio_start_io_acct);
- 
- unsigned long disk_start_io_acct(struct gendisk *disk, unsigned int sectors,
- 				 unsigned int op)
- {
--	return __part_start_io_acct(disk->part0, sectors, op);
-+	return __part_start_io_acct(disk->part0, sectors, op, jiffies);
- }
- EXPORT_SYMBOL(disk_start_io_acct);
- 
-diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
-index bd4370baccca3..d73887c805e05 100644
---- a/include/linux/blkdev.h
-+++ b/include/linux/blkdev.h
-@@ -1254,6 +1254,7 @@ unsigned long disk_start_io_acct(struct gendisk *disk, unsigned int sectors,
- void disk_end_io_acct(struct gendisk *disk, unsigned int op,
- 		unsigned long start_time);
- 
-+void bio_start_io_acct_time(struct bio *bio, unsigned long start_time);
- unsigned long bio_start_io_acct(struct bio *bio);
- void bio_end_io_acct_remapped(struct bio *bio, unsigned long start_time,
- 		struct block_device *orig_bdev);
+ 	return nfs_probe_destination(server);
 -- 
 2.34.1
 
