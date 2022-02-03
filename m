@@ -2,131 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F7B0C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 15:59:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86DB1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 16:01:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352097AbiBCP7s (ORCPT
+        id S1352060AbiBCQBO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 10:59:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50308 "EHLO
+        Thu, 3 Feb 2022 11:01:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240514AbiBCP7q (ORCPT
+        with ESMTP id S235479AbiBCQBM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 10:59:46 -0500
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58E17C06173B
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 07:59:46 -0800 (PST)
-Received: by mail-yb1-xb36.google.com with SMTP id 124so9687298ybw.6
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 07:59:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vZlW9nTzqiP82XOUyxs3nRynux9nbwxL4Q5qCa2/9ng=;
-        b=kfge2IWtu3BmEiJsl+2poWE1AcoqBZWlXmdfkZjN8VwzHfq09mN6SUpWTUR5lKTKuk
-         vr4+4/h9UfMQmUtgSkJ0Nkf+RztJ0/WOsZiWYNr9q5kumYTVc9WPDnQnRhcZAuhAh+0d
-         IPXEwjRUPwK0fNbIgRSz86Jkw2O+VBkLG4zg4aed16C4UwgsCx6SIViwDc6+D9+ZPFmU
-         SsxuclPlYAQ/ubOkC0doBwqsXKRt59tbbADBBNIgcUVy47kqMJfY7fRe/cdphIyU0F+O
-         WVv6U65owm7quPChBeKi95P4N4LtW5eW5ekr/UpzFBPJ+vjCVLVrb0cArkPwM7JjWpQi
-         JunQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vZlW9nTzqiP82XOUyxs3nRynux9nbwxL4Q5qCa2/9ng=;
-        b=ftZMHn86dxscGVAAwqK6v6QzuuA9LjexU78PCTsuw2PxPCxI4fS9ebGsfBBEYTJz86
-         SHFRC8FOkP8f39YAd3jJ5ir8QGr/+BwYtOuCx9S+zIlDWrNFtWyGM+xDNH+XJMs+Djpi
-         lJXyQvUjqay5c6QQC8SVtHZke8gD6T385vg7/ehK5uR2v7Ts3Pvp47zyuKHo6wwxDe9U
-         0vBdA/DWpDptFa5BCOlh8NFLtwwj/guVunR01FRG6iiZ20g3YQjZFxbVOtHS+n56LIgz
-         hUXFJ5hRXUJdeksuasTNgBVuml/SOYYjZQpEzrMqBLmoBmilwb6J+Rk8or6VdwVqZmHb
-         wLTQ==
-X-Gm-Message-State: AOAM530jsmz2GKt0ZTLdK1fjQ9+HnNQaueZ5fOqdBC1Qhkggigy3NWb2
-        gHqYmCVnloRyM83gl/IQT5TYXdsoJu0iiA5SG5r3rQ==
-X-Google-Smtp-Source: ABdhPJwxctVyhczd5Vsao4vH0OpNLnZ31ThKwaMgIW7/rtBe9J3D/uJZQUOq4C7vDEtlNsjGsqNblnJMKrZpTG3V5Wo=
-X-Received: by 2002:a0d:c7c2:: with SMTP id j185mr4794755ywd.105.1643903985178;
- Thu, 03 Feb 2022 07:59:45 -0800 (PST)
+        Thu, 3 Feb 2022 11:01:12 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC190C061714;
+        Thu,  3 Feb 2022 08:01:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5AEDD611CB;
+        Thu,  3 Feb 2022 16:01:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7DADC340E8;
+        Thu,  3 Feb 2022 16:01:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643904071;
+        bh=5kczdKTMoX76feLuZmuxkNuEpdZUqjoDwEN1wHNC5BU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=JVdx8bk/OQBNl2g1PkMWk6VFuj0hmsWgrVvbPP1vJvc6cDQhklsFrfubykXMx8+mb
+         wr9cGovrUFHNbB5cwQgGz2Oc6kvKPPQ3YgLctdF//TqN86XtkTHAOR9vPMbkiBum8s
+         BfDOmKqxEKqiHrYQ0TRCGuO8oWrwIfRoCEbYJPxSnynrun01OP1SzidkqNVop5IJsp
+         3wqGZo4+gxCB2s9wttN75GTGwm9yrssHxxP84D6ycxFZt9a4HTxp9wgWupKqDdloA0
+         U3Lmbrk/6F3B5EbrQQlgDNXavpszHWFe8twEVDoWEtrkQzoFOu/HE1+w9luDRKxl3E
+         kc+GzJZP571wQ==
+Date:   Thu, 3 Feb 2022 17:01:04 +0100
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Tobias Waldekranz <tobias@waldekranz.com>, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 1/5] net: dsa: mv88e6xxx: Improve isolation of
+ standalone ports
+Message-ID: <20220203170104.1cca571d@thinkpad>
+In-Reply-To: <20220203135606.z37vulus7rjimx5y@skbuf>
+References: <20220131154655.1614770-1-tobias@waldekranz.com>
+        <20220131154655.1614770-2-tobias@waldekranz.com>
+        <20220201170634.wnxy3s7f6jnmt737@skbuf>
+        <87a6fabbtb.fsf@waldekranz.com>
+        <20220201201141.u3qhhq75bo3xmpiq@skbuf>
+        <8735l2b7ui.fsf@waldekranz.com>
+        <20220203135606.z37vulus7rjimx5y@skbuf>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220203153731.8992-1-dongli.zhang@oracle.com> <20220203153731.8992-2-dongli.zhang@oracle.com>
-In-Reply-To: <20220203153731.8992-2-dongli.zhang@oracle.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 3 Feb 2022 07:59:34 -0800
-Message-ID: <CANn89iLB-zmM1YTn4mjikMLhZwQ6fQUAHeCBznLuvE=gB2R-sg@mail.gmail.com>
-Subject: Re: [PATCH RFC 1/4] net: skb: use line number to trace dropped skb
-To:     Dongli Zhang <dongli.zhang@oracle.com>
-Cc:     netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Menglong Dong <imagedong@tencent.com>,
-        Joao Martins <joao.m.martins@oracle.com>, joe.jin@oracle.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 3, 2022 at 7:38 AM Dongli Zhang <dongli.zhang@oracle.com> wrote:
->
-> Sometimes the kernel may not directly call kfree_skb() to drop the sk_buff.
-> Instead, it "goto drop" and call kfree_skb() at 'drop'. This make it
-> difficult to track the reason that the sk_buff is dropped.
->
-> The commit c504e5c2f964 ("net: skb: introduce kfree_skb_reason()") has
-> introduced the kfree_skb_reason() to help track the reason. However, we may
-> need to define many reasons for each driver/subsystem.
->
-> To avoid introducing so many new reasons, this is to use line number
-> ("__LINE__") to trace where the sk_buff is dropped. As a result, the reason
-> will be generated automatically.
->
-> Cc: Joao Martins <joao.m.martins@oracle.com>
-> Cc: Joe Jin <joe.jin@oracle.com>
-> Signed-off-by: Dongli Zhang <dongli.zhang@oracle.com>
-> ---
->  include/linux/skbuff.h     | 21 ++++-----------------
->  include/trace/events/skb.h | 35 ++++++-----------------------------
->  net/core/dev.c             |  2 +-
->  net/core/skbuff.c          |  9 ++++-----
->  net/ipv4/tcp_ipv4.c        | 14 +++++++-------
->  net/ipv4/udp.c             | 14 +++++++-------
->  6 files changed, 29 insertions(+), 66 deletions(-)
->
-> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> index 8a636e678902..471268a4a497 100644
-> --- a/include/linux/skbuff.h
-> +++ b/include/linux/skbuff.h
-> @@ -307,21 +307,8 @@ struct sk_buff_head {
->
->  struct sk_buff;
->
-> -/* The reason of skb drop, which is used in kfree_skb_reason().
-> - * en...maybe they should be splited by group?
-> - *
-> - * Each item here should also be in 'TRACE_SKB_DROP_REASON', which is
-> - * used to translate the reason to string.
-> - */
-> -enum skb_drop_reason {
-> -       SKB_DROP_REASON_NOT_SPECIFIED,
-> -       SKB_DROP_REASON_NO_SOCKET,
-> -       SKB_DROP_REASON_PKT_TOO_SMALL,
-> -       SKB_DROP_REASON_TCP_CSUM,
-> -       SKB_DROP_REASON_SOCKET_FILTER,
-> -       SKB_DROP_REASON_UDP_CSUM,
-> -       SKB_DROP_REASON_MAX,
-> -};
+On Thu, 3 Feb 2022 15:56:06 +0200
+Vladimir Oltean <olteanv@gmail.com> wrote:
 
+> On Tue, Feb 01, 2022 at 10:22:13PM +0100, Tobias Waldekranz wrote:
+> > No worries. I have recently started using get_maintainers.pl to auto
+> > generate the recipient list, with the result that the cover is only sent
+> > to the list. Ideally I would like send-email to use the union of all
+> > recipients for the cover letter, but I haven't figured that one out yet.  
+> 
+> Maybe auto-generating isn't the best solution? Wait until you need to
+> post a link to https://patchwork.kernel.org/project/netdevbpf/, and
+> get_maintainers.pl will draw in all the BPF maintainers for you...
+> The union appears when you run get_maintainer.pl on multiple patch
+> files. I typically run get_maintainer.pl on *.patch, and adjust the
+> git-send-email list from there.
+> 
+> > I actually gave up on getting my mailinglists from my email provider,
+> > now I just download it directly from lore. I hacked together a script
+> > that will scrape a public-inbox repo and convert it to a Maildir:
+> > 
+> > https://github.com/wkz/notmuch-lore
+> > 
+> > As you can tell from the name, it is tailored for plugging into notmuch,
+> > but the guts are pretty generic.  
+> 
+> Thanks, I set that up, it's syncing right now, I'm also going to compare
+> the size of the git tree vs the maildir I currently have.
 
-Seriously, we have to stop messing with things like that.
-
-Your patch comes too late, another approach has been taken.
-
-Please continue this effort by providing patches that improve things,
-instead of throwing away effort already done.
-
-I say no to this patch.
+Hi Vladimir, please let me know the results.
+Marek
