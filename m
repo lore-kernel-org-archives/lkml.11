@@ -2,101 +2,237 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E128C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 10:17:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 370C1C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 10:17:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350047AbiBCKRH (ORCPT
+        id S1350064AbiBCKRL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 05:17:07 -0500
-Received: from smtp-out1.suse.de ([195.135.220.28]:54326 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349918AbiBCKRF (ORCPT
+        Thu, 3 Feb 2022 05:17:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56716 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350038AbiBCKRF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 3 Feb 2022 05:17:05 -0500
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 2DA36210F5;
-        Thu,  3 Feb 2022 10:17:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1643883424; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=kuei1RsrZ1XayODHiwABNR6bsWtBgImk04EOWC1VWlw=;
-        b=cn0dkVNM6a8g6Q5J0snibEzl61eXoeHCLqGgnEDSLadhko8wMC5ZdfG9sqC5Qx59j09VjU
-        vzmmLMmpf1iH834oQmWBLtJiO13ekk281MzWcZcWLrgNGWIJ6F24AQwbdC3bC0o2v3ZpIe
-        KNKr4s2a3KK+AGsxswUdZzLFa17FqyY=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1643883424;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=kuei1RsrZ1XayODHiwABNR6bsWtBgImk04EOWC1VWlw=;
-        b=ZMfqE1Cx+GaUDCKmrFbxZ4gEbxAzrQ4RwUrkbNizGFVSQBh0KEBOj6liQLr5mwDS0cloIY
-        FzOCiBf/grZyuEAA==
-Received: from quack3.suse.cz (unknown [10.100.200.198])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 1B315A3B8F;
-        Thu,  3 Feb 2022 10:17:04 +0000 (UTC)
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id D489AA05B6; Thu,  3 Feb 2022 11:17:03 +0100 (CET)
-Date:   Thu, 3 Feb 2022 11:17:03 +0100
-From:   Jan Kara <jack@suse.cz>
-To:     Muchun Song <songmuchun@bytedance.com>
-Cc:     dan.j.williams@intel.com, willy@infradead.org, jack@suse.cz,
-        viro@zeniv.linux.org.uk, akpm@linux-foundation.org,
-        apopple@nvidia.com, shy828301@gmail.com, rcampbell@nvidia.com,
-        hughd@google.com, xiyuyang19@fudan.edu.cn,
-        kirill.shutemov@linux.intel.com, zwisler@kernel.org,
-        hch@infradead.org, linux-fsdevel@vger.kernel.org,
-        nvdimm@lists.linux.dev, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, duanxiongchun@bytedance.com
-Subject: Re: [PATCH v2 2/6] dax: fix cache flush on PMD-mapped pages
-Message-ID: <20220203101703.a7ixac6h7kit4wng@quack3.lan>
-References: <20220202143307.96282-1-songmuchun@bytedance.com>
- <20220202143307.96282-3-songmuchun@bytedance.com>
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90888C06173B
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 02:17:05 -0800 (PST)
+Received: by mail-wr1-x430.google.com with SMTP id l25so3946469wrb.13
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 02:17:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:organization:content-transfer-encoding;
+        bh=/Y1SGflGAIYTrfSHZW1KxRMgLGYweKcQKzZD79XSb+I=;
+        b=5xFNXTNcQybbUCvfbdXBQXVpXDCbxlPs6VGcM6I7MmjNfSmWr7h3wRHPNWOlCQy9G2
+         l1Xu2cw5NOEx4ZVxmST86yqW3xWWrSb7JX20E/+Gjer1AEI69zkjOuHGXjtpTx7YzacW
+         r/rxr72xYPy2jKPMOF2/SUpF8npIKQoafCzh4aEaCXPmv+8cg0iz+Ah+6Mk+csSXqUQ2
+         uFx+KLdKWtcYoKTlxnVY6VMpNIXyWYKuV5a17nllLh6X+hQPwPIksJmJGBxaouvD4y9N
+         OAHqALhFAuzSvodSsltNQBrqgSrsqmWQmlzqp2VR0Ocv+XbjUcviwbbux/zY+bPTRx2n
+         osYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:organization:content-transfer-encoding;
+        bh=/Y1SGflGAIYTrfSHZW1KxRMgLGYweKcQKzZD79XSb+I=;
+        b=zy5mREv8EswCH8h/u9AiPdmnbrStKmLmLqWBDWkaUnwgQFO3rGLho5uKZrMtw2ZNKX
+         KPbmA0WcuECULF9W62c7E2LPt9H1WNAR/1BpCp9ikgDKM8G+RzdYMtTNJVsp6Fgsoyy6
+         pwypVXvP613PIUATj/3HPem5PrUW8WU/AytnUer0OmOZpRgEXXFxQgKyeaVf7HqZ0C7g
+         VsqQIr5WtamHtO82bYvgHzKiNxHfdnjbWhQGqxAO98lc/16yP6QMWExVMonqBioKswEX
+         kyau+OtT0oIl1UsJdJYE+ikT9hWLJfTpfuVGBe9py337zemytYC9Vhd0cj1v0hamGWjv
+         PQzw==
+X-Gm-Message-State: AOAM531x/RM1EIKxdIqftMlRWyyKSfmozOTh1Gkyl61krkpc6HdA8M0G
+        QKErFlR/Ab0oQSFZLnYEyHVA/Q==
+X-Google-Smtp-Source: ABdhPJy/WbpS1vuW/iPC1sqKn+Nomc09nKtAvnrr7pgQUGqB0W9Ldu4Frvn1DNAGaVIoQ+311DAeeQ==
+X-Received: by 2002:adf:f54d:: with SMTP id j13mr27773915wrp.596.1643883424083;
+        Thu, 03 Feb 2022 02:17:04 -0800 (PST)
+Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id g6sm19017148wrq.97.2022.02.03.02.17.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Feb 2022 02:17:03 -0800 (PST)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 net-next 1/5] net: dsa: mv88e6xxx: Improve isolation of standalone ports
+Date:   Thu,  3 Feb 2022 11:16:53 +0100
+Message-Id: <20220203101657.990241-2-tobias@waldekranz.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220203101657.990241-1-tobias@waldekranz.com>
+References: <20220203101657.990241-1-tobias@waldekranz.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220202143307.96282-3-songmuchun@bytedance.com>
+Organization: Westermo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed 02-02-22 22:33:03, Muchun Song wrote:
-> The flush_cache_page() only remove a PAGE_SIZE sized range from the cache.
-> However, it does not cover the full pages in a THP except a head page.
-> Replace it with flush_cache_range() to fix this issue.
-> 
-> Fixes: f729c8c9b24f ("dax: wrprotect pmd_t in dax_mapping_entry_mkclean")
-> Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+Clear MapDA on standalone ports to bypass any ATU lookup that might
+point the packet in the wrong direction. This means that all packets
+are flooded using the PVT config. So make sure that standalone ports
+are only allowed to communicate with the local upstream port.
 
-Looks good. Feel free to add:
+Here is a scenario in which this is needed:
 
-Reviewed-by: Jan Kara <jack@suse.cz>
+   CPU
+    |     .----.
+.---0---. | .--0--.
+|  sw0  | | | sw1 |
+'-1-2-3-' | '-1-2-'
+      '---'
 
-								Honza
+- sw0p1 and sw1p1 are bridged
+- sw0p2 and sw1p2 are in standalone mode
+- Learning must be enabled on sw0p3 in order for hardware forwarding
+  to work properly between bridged ports
 
-> ---
->  fs/dax.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/fs/dax.c b/fs/dax.c
-> index 88be1c02a151..e031e4b6c13c 100644
-> --- a/fs/dax.c
-> +++ b/fs/dax.c
-> @@ -857,7 +857,8 @@ static void dax_entry_mkclean(struct address_space *mapping, pgoff_t index,
->  			if (!pmd_dirty(*pmdp) && !pmd_write(*pmdp))
->  				goto unlock_pmd;
->  
-> -			flush_cache_page(vma, address, pfn);
-> +			flush_cache_range(vma, address,
-> +					  address + HPAGE_PMD_SIZE);
->  			pmd = pmdp_invalidate(vma, address, pmdp);
->  			pmd = pmd_wrprotect(pmd);
->  			pmd = pmd_mkclean(pmd);
-> -- 
-> 2.11.0
-> 
+1. A packet with SA :aa comes in on sw1p2
+   1a. Egresses sw1p0
+   1b. Ingresses sw0p3, ATU adds an entry for :aa towards port 3
+   1c. Egresses sw0p0
+
+2. A packet with DA :aa comes in on sw0p2
+   2a. If an ATU lookup is done at this point, the packet will be
+       incorrectly forwarded towards sw0p3. With this change in place,
+       the ATU is bypassed and the packet is forwarded in accordance
+       with the PVT, which only contains the CPU port.
+
+Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+---
+ drivers/net/dsa/mv88e6xxx/chip.c | 32 +++++++++++++++++++++++++-------
+ drivers/net/dsa/mv88e6xxx/port.c |  7 +++++--
+ drivers/net/dsa/mv88e6xxx/port.h |  2 +-
+ include/net/dsa.h                | 12 ++++++++++++
+ 4 files changed, 43 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 1023e4549359..7f02ec502e71 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -1290,8 +1290,15 @@ static u16 mv88e6xxx_port_vlan(struct mv88e6xxx_chip *chip, int dev, int port)
+ 
+ 	pvlan = 0;
+ 
+-	/* Frames from user ports can egress any local DSA links and CPU ports,
+-	 * as well as any local member of their bridge group.
++	/* Frames from standalone user ports can only egress on the
++	 * upstream port.
++	 */
++	if (!dsa_port_bridge_dev_get(dp))
++		return BIT(dsa_switch_upstream_port(ds));
++
++	/* Frames from bridged user ports can egress any local DSA
++	 * links and CPU ports, as well as any local member of their
++	 * bridge group.
+ 	 */
+ 	dsa_switch_for_each_port(other_dp, ds)
+ 		if (other_dp->type == DSA_PORT_TYPE_CPU ||
+@@ -2487,6 +2494,10 @@ static int mv88e6xxx_port_bridge_join(struct dsa_switch *ds, int port,
+ 	if (err)
+ 		goto unlock;
+ 
++	err = mv88e6xxx_port_set_map_da(chip, port, true);
++	if (err)
++		return err;
++
+ 	err = mv88e6xxx_port_commit_pvid(chip, port);
+ 	if (err)
+ 		goto unlock;
+@@ -2521,6 +2532,12 @@ static void mv88e6xxx_port_bridge_leave(struct dsa_switch *ds, int port,
+ 	    mv88e6xxx_port_vlan_map(chip, port))
+ 		dev_err(ds->dev, "failed to remap in-chip Port VLAN\n");
+ 
++	err = mv88e6xxx_port_set_map_da(chip, port, false);
++	if (err)
++		dev_err(ds->dev,
++			"port %d failed to restore map-DA: %pe\n",
++			port, ERR_PTR(err));
++
+ 	err = mv88e6xxx_port_commit_pvid(chip, port);
+ 	if (err)
+ 		dev_err(ds->dev,
+@@ -2918,12 +2935,13 @@ static int mv88e6xxx_setup_port(struct mv88e6xxx_chip *chip, int port)
+ 		return err;
+ 
+ 	/* Port Control 2: don't force a good FCS, set the MTU size to
+-	 * 10222 bytes, disable 802.1q tags checking, don't discard tagged or
+-	 * untagged frames on this port, do a destination address lookup on all
+-	 * received packets as usual, disable ARP mirroring and don't send a
+-	 * copy of all transmitted/received frames on this port to the CPU.
++	 * 10222 bytes, disable 802.1q tags checking, don't discard
++	 * tagged or untagged frames on this port, skip destination
++	 * address lookup on user ports, disable ARP mirroring and don't
++	 * send a copy of all transmitted/received frames on this port
++	 * to the CPU.
+ 	 */
+-	err = mv88e6xxx_port_set_map_da(chip, port);
++	err = mv88e6xxx_port_set_map_da(chip, port, !dsa_is_user_port(ds, port));
+ 	if (err)
+ 		return err;
+ 
+diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
+index ab41619a809b..ceb450113f88 100644
+--- a/drivers/net/dsa/mv88e6xxx/port.c
++++ b/drivers/net/dsa/mv88e6xxx/port.c
+@@ -1278,7 +1278,7 @@ int mv88e6xxx_port_drop_untagged(struct mv88e6xxx_chip *chip, int port,
+ 	return mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_CTL2, new);
+ }
+ 
+-int mv88e6xxx_port_set_map_da(struct mv88e6xxx_chip *chip, int port)
++int mv88e6xxx_port_set_map_da(struct mv88e6xxx_chip *chip, int port, bool map)
+ {
+ 	u16 reg;
+ 	int err;
+@@ -1287,7 +1287,10 @@ int mv88e6xxx_port_set_map_da(struct mv88e6xxx_chip *chip, int port)
+ 	if (err)
+ 		return err;
+ 
+-	reg |= MV88E6XXX_PORT_CTL2_MAP_DA;
++	if (map)
++		reg |= MV88E6XXX_PORT_CTL2_MAP_DA;
++	else
++		reg &= ~MV88E6XXX_PORT_CTL2_MAP_DA;
+ 
+ 	return mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_CTL2, reg);
+ }
+diff --git a/drivers/net/dsa/mv88e6xxx/port.h b/drivers/net/dsa/mv88e6xxx/port.h
+index 03382b66f800..5c347cc58baf 100644
+--- a/drivers/net/dsa/mv88e6xxx/port.h
++++ b/drivers/net/dsa/mv88e6xxx/port.h
+@@ -425,7 +425,7 @@ int mv88e6185_port_get_cmode(struct mv88e6xxx_chip *chip, int port, u8 *cmode);
+ int mv88e6352_port_get_cmode(struct mv88e6xxx_chip *chip, int port, u8 *cmode);
+ int mv88e6xxx_port_drop_untagged(struct mv88e6xxx_chip *chip, int port,
+ 				 bool drop_untagged);
+-int mv88e6xxx_port_set_map_da(struct mv88e6xxx_chip *chip, int port);
++int mv88e6xxx_port_set_map_da(struct mv88e6xxx_chip *chip, int port, bool map);
+ int mv88e6095_port_set_upstream_port(struct mv88e6xxx_chip *chip, int port,
+ 				     int upstream_port);
+ int mv88e6xxx_port_set_mirror(struct mv88e6xxx_chip *chip, int port,
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index 43c4153ef53a..6e5ef62a7dce 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -591,6 +591,18 @@ static inline bool dsa_is_upstream_port(struct dsa_switch *ds, int port)
+ 	return port == dsa_upstream_port(ds, port);
+ }
+ 
++/* Return the local port used to reach the CPU port */
++static inline unsigned int dsa_switch_upstream_port(struct dsa_switch *ds)
++{
++	struct dsa_port *dp;
++
++	dsa_switch_for_each_available_port(dp, ds) {
++		return dsa_upstream_port(ds, dp->index);
++	}
++
++	return ds->num_ports;
++}
++
+ /* Return true if @upstream_ds is an upstream switch of @downstream_ds, meaning
+  * that the routing port from @downstream_ds to @upstream_ds is also the port
+  * which @downstream_ds uses to reach its dedicated CPU.
 -- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+2.25.1
+
