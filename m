@@ -2,81 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36281C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:10:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8502C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:10:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353951AbiBCUKQ (ORCPT
+        id S1347864AbiBCUKc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:10:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52832 "EHLO
+        Thu, 3 Feb 2022 15:10:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238986AbiBCUKO (ORCPT
+        with ESMTP id S231625AbiBCUKa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 15:10:14 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6DC7C061714;
-        Thu,  3 Feb 2022 12:10:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=zpQHkd2Xwed3B/yhMJC1nsWJsO1WsU38lPs21+hQc84=; b=qMuEqiay4sjEx5tB1bhFZBMvHP
-        jRl8Nav6ArT3YSaK2RTfowp4y6WRzz7Ot7x+QFv/Al7LNExFhel6R0HQKtDqNzqTA7gXU/a9EN6eR
-        XhedeSU86Cg8qc2bLGW+fiPV7mAvD6wXGUwBWvrk9X1jvRmvM5Gp+GbL0fGXwGFlz9halbshQzcXG
-        DDPVNCDa3ZuRvC4R4XI+zijSn9X1tO2RhS3R2TdDeDNDDKABdrOsul/kmfZqLklCK7AHTbci6c3Zh
-        01CNnMnDE+BVWNxNwMgZx+29DB6bpvBBJXMxZA08W8wNjj5ClDEKv+B2GCGI7Zy41wlMy74SUHVnU
-        frK+YkuQ==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nFiQg-002gcJ-EH; Thu, 03 Feb 2022 20:10:06 +0000
-Date:   Thu, 3 Feb 2022 12:10:06 -0800
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Aaron Tomlin <atomlin@redhat.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michal Suchanek <msuchanek@suse.de>
-Cc:     cl@linux.com, pmladek@suse.com, mbenes@suse.cz,
-        akpm@linux-foundation.org, jeyu@kernel.org,
-        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
-        live-patching@vger.kernel.org, atomlin@atomlin.com,
-        ghalat@redhat.com, allen.lkml@gmail.com, void@manifault.com,
-        joe@perches.com
-Subject: Re: [RFC PATCH v4 00/13] module: core code clean up
-Message-ID: <Yfw2nm5X+8jRic0C@bombadil.infradead.org>
-References: <20220130213214.1042497-1-atomlin@redhat.com>
- <Yfsf2SGELhQ71Ovo@bombadil.infradead.org>
+        Thu, 3 Feb 2022 15:10:30 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C7D5C061714;
+        Thu,  3 Feb 2022 12:10:30 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 817F1619E6;
+        Thu,  3 Feb 2022 20:10:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96F71C340E8;
+        Thu,  3 Feb 2022 20:10:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643919028;
+        bh=tdemnrdxS55d4CRNdh8HseqTkfZMq5xOxf+vvygaoTE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=mG9OBgnDnMTatUgZ92dcn7rkUf1wn39vweLw3nEOcVbz2mgOw1oeaYHVvbYpdmZlt
+         G4fPP/OfiTDlNgKnjV6u0qzU3gacNknksYYymRgTx4kUIbbSTyDDjhdi8YSMQcNLAE
+         zrhGTtc3wauOgM7RJIL3/sPxyJENbFBGcTl2D9hgTEt/gBD8wp63vMFu3v9FxzFJ2T
+         hGHIMZsAkKhPMnGt1kGQBH0i8x8bQ654KgfhwJDjocwsf1p5yGFvvanjP/rZqocLWB
+         uaxxNpKjlMubZsFxh9CRRsLDZ12KH3HfVt0gZGZqBy+VgVsns5o9Ym2cym49bZnq+J
+         NuYYjO6awc6sg==
+Date:   Thu, 3 Feb 2022 12:10:27 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [RFC PATCH v7 00/16] Add support for qca8k mdio rw in Ethernet
+ packet
+Message-ID: <20220203121027.7a6ea0f8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220203182128.z6xflse7fezccvhx@skbuf>
+References: <20220123013337.20945-1-ansuelsmth@gmail.com>
+        <YfaZrsewBMhqr0Db@Ansuel-xps.localdomain>
+        <a8244311-175d-79d3-d61b-c7bb99ffdfb7@gmail.com>
+        <YfwX8YDDygBEsyo3@Ansuel-xps.localdomain>
+        <20220203182128.z6xflse7fezccvhx@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yfsf2SGELhQ71Ovo@bombadil.infradead.org>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 02, 2022 at 04:20:41PM -0800, Luis Chamberlain wrote:
-> On Sun, Jan 30, 2022 at 09:32:01PM +0000, Aaron Tomlin wrote:
-> > Hi Luis,
-> > 
-> > As per your suggestion [1], this is an attempt to refactor and split
-> > optional code out of core module support code into separate components.
-> > This version is based on branch mcgrof/modules-next since a97ac8cb24a3/or
-> > modules-5.17-rc1. Please let me know your thoughts.
-> > 
-> > Changes since v1 [2]:
-> 
-> Thanks for all this work Aaron! Can you drop the RFC prefix,
-> rebase onto linus' latest tree (as he already merged my
-> modules-next, so his tree is more up to date), and submit again?
+On Thu, 3 Feb 2022 20:21:28 +0200 Vladimir Oltean wrote:
+> To my knowledge, when you call dev_queue_xmit(), the skb is no longer
+> yours, end of story, it doesn't matter whether you increase the refcount
+> on it or not. The DSA master may choose to do whatever it wishes with
+> that buffer after its TX completion interrupt fires: it may not call
+> napi_consume_skb() but directly recycle that buffer in its pool of RX
+> buffers, as part of some weird buffer recycling scheme. So you'll think
+> that the buffer is yours, but it isn't, because the driver hasn't
+> returned it to the allocator, and your writes for the next packet may be
+> concurrent with some RX DMA transactions. I don't have a mainline
+> example to give you, but I've seen the pattern, and I don't think it's
+> illegal (although of course, I stand to be corrected if necessary).
 
-Linus now merged the fix in question, just be sure to use his
-latest tree, it should include 67d6212afda218d564890d1674bab28e8612170f
+Are we talking about holding onto the Tx skb here or also recycling 
+the Rx one? Sorry for another out of context comment in advance..
 
-> I'll then apply this to my modules-next, and then ask Christophe to
-> rebase on top of that.
+AFAIK in theory shared skbs are supposed to be untouched or unshared
+explicitly by the driver on Tx. pktgen takes advantage of it.
+We have IFF_TX_SKB_SHARING. 
 
-If you can fix the issues from your patches which Christophe mentioned
-that would be great. Then I'll apply then and then Christophe can work
-off of that.
+In practice everyone gets opted into SKB_SHARING because ether_setup()
+sets the flag. A lot of drivers are not aware of the requirement and
+will assume full ownership (and for example use skb->cb[]) :/
 
-> Michal, you'd be up next if you want to go through modules-next.
-
-  Luis
+I don't think there is any Tx completion -> Rx pool recycling scheme
+inside the drivers (if that's what you described).
