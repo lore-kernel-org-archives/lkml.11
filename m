@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D01CFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:36:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54765C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:36:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354591AbiBCUgk (ORCPT
+        id S1354442AbiBCUgp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:36:40 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:36678 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355009AbiBCUeN (ORCPT
+        Thu, 3 Feb 2022 15:36:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57958 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355006AbiBCUeM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 15:34:13 -0500
+        Thu, 3 Feb 2022 15:34:12 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80CDDC061765;
+        Thu,  3 Feb 2022 12:33:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 89320B835AD;
-        Thu,  3 Feb 2022 20:34:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39B67C36AE2;
-        Thu,  3 Feb 2022 20:34:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3C816B835A7;
+        Thu,  3 Feb 2022 20:33:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14ADCC36AE7;
+        Thu,  3 Feb 2022 20:33:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643920451;
-        bh=SlsAxB7GlVdFg1xsl04fZWbORDq09QyWjRaYXy2tIvE=;
+        s=k20201202; t=1643920437;
+        bh=HaqVs4QPEEUCzW8Zpf+6cvRAf3Kw8e0KtqSsmrSwqOA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b0zJLDIzQsan7YmqbhrTCBgmh38qyuDbK/XAMu7W1uF5pY12d+EtowCy6RdRgwvag
-         nZEPSP9rcM8u5LRWIR6KPf5CUtxHeLxsrj4bjD0bEORLDCYEKCUgUoqE/koe1L6+pA
-         8dADNI40eGAEJMNhGDRE6PPcEuIxd7iynSoV/ljrftthudOS7UIg79qNnJg2SRqWCt
-         vXcFiPxrmu1J8EWt2fioReBqhap1rsHuiSQ3j+vHq/C+1qyRihUVZhnNS0naMIo+V2
-         ac0VpZFfMqpDd0oOCuNPL4fE4FQxTl/w5bFxYMXufmqIqAZNwBhmhX3C5zsnFMuXyn
-         vkOe6gZWwA+/w==
+        b=CzNjj5QEgOq0yq2YZXQWe0osm8O9aoCTnxGDqn0Oo69yV/scp/dq6MnWPNNNvdPQy
+         diaoSe7gN/UZkYYZPE0dNZ3jSJjFuGyDOzJXys2iSrsq58J+Sr7MygZxmY7MY15x6E
+         O0WSbBQTPZDITUYhp9BMJaGP+IUjseW7WPcj6T4gcf70cySkl0q9CxGAEr+LTPIM4F
+         jPmqWT37htzjftP+6MphIjmysknywTMlrZjAlDlDcp8tlCKLWAPEz1Dj2n6NGAQ+Y0
+         3I2MXRp5/Uz0miVaZKLpBbrBRJpUbpwM2Y0iZkiBEz3f9Xu+0npJBKD9jSkRoy8GL2
+         aZIMAAUHpfDqw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wu Zheng <wu.zheng@intel.com>, Ye Jinhe <jinhe.ye@intel.com>,
-        Keith Busch <kbusch@kernel.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Sasha Levin <sashal@kernel.org>, axboe@fb.com,
-        sagi@grimberg.me, linux-nvme@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 38/41] nvme-pci: add the IGNORE_DEV_SUBNQN quirk for Intel P4500/P4600 SSDs
-Date:   Thu,  3 Feb 2022 15:32:42 -0500
-Message-Id: <20220203203245.3007-38-sashal@kernel.org>
+Cc:     Tong Zhang <ztong0001@gmail.com>, Hannes Reinecke <hare@suse.de>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, hare@kernel.org,
+        jejb@linux.ibm.com, linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 31/41] scsi: myrs: Fix crash in error case
+Date:   Thu,  3 Feb 2022 15:32:35 -0500
+Message-Id: <20220203203245.3007-31-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220203203245.3007-1-sashal@kernel.org>
 References: <20220203203245.3007-1-sashal@kernel.org>
@@ -51,39 +53,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wu Zheng <wu.zheng@intel.com>
+From: Tong Zhang <ztong0001@gmail.com>
 
-[ Upstream commit 25e58af4be412d59e056da65cc1cefbd89185bd2 ]
+[ Upstream commit 4db09593af0b0b4d7d4805ebb3273df51d7cc30d ]
 
-The Intel P4500/P4600 SSDs do not report a subsystem NQN despite claiming
-compliance to a standards version where reporting one is required.
+In myrs_detect(), cs->disable_intr is NULL when privdata->hw_init() fails
+with non-zero. In this case, myrs_cleanup(cs) will call a NULL ptr and
+crash the kernel.
 
-Add the IGNORE_DEV_SUBNQN quirk to not fail the initialization of a
-second such SSDs in a system.
+[    1.105606] myrs 0000:00:03.0: Unknown Initialization Error 5A
+[    1.105872] myrs 0000:00:03.0: Failed to initialize Controller
+[    1.106082] BUG: kernel NULL pointer dereference, address: 0000000000000000
+[    1.110774] Call Trace:
+[    1.110950]  myrs_cleanup+0xe4/0x150 [myrs]
+[    1.111135]  myrs_probe.cold+0x91/0x56a [myrs]
+[    1.111302]  ? DAC960_GEM_intr_handler+0x1f0/0x1f0 [myrs]
+[    1.111500]  local_pci_probe+0x48/0x90
 
-Signed-off-by: Zheng Wu <wu.zheng@intel.com>
-Signed-off-by: Ye Jinhe <jinhe.ye@intel.com>
-Reviewed-by: Keith Busch <kbusch@kernel.org>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220123225717.1069538-1-ztong0001@gmail.com
+Reviewed-by: Hannes Reinecke <hare@suse.de>
+Signed-off-by: Tong Zhang <ztong0001@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/pci.c | 3 ++-
+ drivers/scsi/myrs.c | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index 149ecf73df384..b925a5f4afc3a 100644
---- a/drivers/nvme/host/pci.c
-+++ b/drivers/nvme/host/pci.c
-@@ -3300,7 +3300,8 @@ static const struct pci_device_id nvme_id_table[] = {
- 				NVME_QUIRK_DEALLOCATE_ZEROES, },
- 	{ PCI_VDEVICE(INTEL, 0x0a54),	/* Intel P4500/P4600 */
- 		.driver_data = NVME_QUIRK_STRIPE_SIZE |
--				NVME_QUIRK_DEALLOCATE_ZEROES, },
-+				NVME_QUIRK_DEALLOCATE_ZEROES |
-+				NVME_QUIRK_IGNORE_DEV_SUBNQN, },
- 	{ PCI_VDEVICE(INTEL, 0x0a55),	/* Dell Express Flash P4600 */
- 		.driver_data = NVME_QUIRK_STRIPE_SIZE |
- 				NVME_QUIRK_DEALLOCATE_ZEROES, },
+diff --git a/drivers/scsi/myrs.c b/drivers/scsi/myrs.c
+index 07f274afd7e5e..a4d244ee4548c 100644
+--- a/drivers/scsi/myrs.c
++++ b/drivers/scsi/myrs.c
+@@ -2265,7 +2265,8 @@ static void myrs_cleanup(struct myrs_hba *cs)
+ 	myrs_unmap(cs);
+ 
+ 	if (cs->mmio_base) {
+-		cs->disable_intr(cs);
++		if (cs->disable_intr)
++			cs->disable_intr(cs);
+ 		iounmap(cs->mmio_base);
+ 		cs->mmio_base = NULL;
+ 	}
 -- 
 2.34.1
 
