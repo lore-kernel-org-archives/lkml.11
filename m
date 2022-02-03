@@ -2,302 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0106C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 11:32:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75207C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 11:33:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350235AbiBCLci (ORCPT
+        id S1350243AbiBCLdX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 06:32:38 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:44451 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S242857AbiBCLch (ORCPT
+        Thu, 3 Feb 2022 06:33:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45718 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236227AbiBCLdV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 06:32:37 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643887956;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=itWiruytU2kLGOGapHpMQOUeYdsg6uAbojfcTpmhA2E=;
-        b=TbI7e/nlDzsEU3kHhROZ8iXIB2Tf0jx5o8VMrkc8Of31Ihru2HVJWQI6gs8DvnN8ttwi7M
-        p9IjKYiX3P/Dc0QqFOmVqXP9HNWBYdF+pclEbYDQ6wN8WyrTKVMbFjoBFq5BQu70rakZpG
-        2tzM/J3pkjGCZn1HEg1UQ9YHMLSeSgw=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-670-hcx4XKbxOPW6cEycXh4z_A-1; Thu, 03 Feb 2022 06:32:35 -0500
-X-MC-Unique: hcx4XKbxOPW6cEycXh4z_A-1
-Received: by mail-wr1-f71.google.com with SMTP id k7-20020adfb347000000b001dd761d46c7so552568wrd.4
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 03:32:35 -0800 (PST)
+        Thu, 3 Feb 2022 06:33:21 -0500
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FB97C061714
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 03:33:20 -0800 (PST)
+Received: by mail-wr1-x42b.google.com with SMTP id g18so4079466wrb.6
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 03:33:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=ihC5hJaqvYSQGhRdPK0mq/Z76ynLvAUUCPiRBOw5uQg=;
+        b=K0Nam3dJfnHj+3BDyNnPokPHpA4E6WH+f8vUMRLUBRA5Luaowlbirb7CtWEH1LlyhY
+         qLL2maDnUpT9Wq93fEbrY5H3D0iGgq3LPvQfxJrZlVDLz1r2atkhkDswBx0EhOccyj1P
+         Mf/M8SOJoWhq9T2tyOpHtw/WzBr4tHw8OBdexFm8BaCmrMlyaDtUD771e/N25ewknx//
+         drV9ziL/KdaRiN6rwS9bI3GwmmB+jDId1xp3lm4MRbWfovvI5HUsy1ZAGOY0JSUtjwtS
+         AWc+B0l0DytzEiOh/JM44qGoG/zvHXQdC/xJwhDjMZ7Y3gPrQNa4tHpde5XCvzJFU1Kd
+         Gy9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=itWiruytU2kLGOGapHpMQOUeYdsg6uAbojfcTpmhA2E=;
-        b=Cioj5c/WrRt4liLUB+ZNOSZQ1Fh4IPLSv6jREmwgs97T+2c3rQ0evjCV/1PGhdblyx
-         y4SQTLp9BGi2mHj1S5PRbCIJ1UOmglkB6MoKQ8JhlccZpsRkB2OITS7pcf56TrgWuXFP
-         98lKBfARMRCEu6FEzgq6MCaxu8Ui1ybPurn8ja+zgnnhZjbaS59RDcZwYKdEKrcrKn8f
-         GCCnok6K84tzgx78XF6L4wbaoLX9Oy9Ny70Yp/sCafX6L/lzFRavAGs7Sn1UCO88+qCF
-         HRRFLP9zCjz7jllGYmAoocZ7CjRKfVeCek2pVjuvOR1JWYffhztopsWEed61jJRgAC9Z
-         Z3Cg==
-X-Gm-Message-State: AOAM531jpcskAkcdZV7L5NT+dMeL/4Mlysne0Jg0doWTUgsxXKfHrmzl
-        YidUS5mHZ9NfvNDWAWsA+GbrxFI70UxlLELN5A0883MjQJhrCSoTc3gmXoMdS6lBzD2f8ettu2L
-        6jnk1hMLoW734I85rVqr+3oyN
-X-Received: by 2002:a5d:588e:: with SMTP id n14mr30777354wrf.45.1643887954389;
-        Thu, 03 Feb 2022 03:32:34 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzdLaO64Cw0scAK+697PXreQjSocOclVGkxGWknz3mN3YgqgeWd6Q25NgJrPtGirlAqR87WZw==
-X-Received: by 2002:a5d:588e:: with SMTP id n14mr30777336wrf.45.1643887954184;
-        Thu, 03 Feb 2022 03:32:34 -0800 (PST)
-Received: from redhat.com ([2.52.9.182])
-        by smtp.gmail.com with ESMTPSA id bg23sm8886500wmb.5.2022.02.03.03.32.31
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=ihC5hJaqvYSQGhRdPK0mq/Z76ynLvAUUCPiRBOw5uQg=;
+        b=kEv8JLNdqzTNZZvpuMpqCSHxnWpMRF+gPZA0Z0J6cVgIZREpX3X3TtbsZ+M/15tk6K
+         /x2tOiVW7o/PUvN0oMMJc6MdsVc8DOuh9YpByC4nwr5WAGrz+KERKTf2c6eh3gmJowcG
+         hZPa0wVxAR1/HB3GMGJgSmwfnxH+GSeXYI/4o7mPNwWWi/hpcQ1SCyi00sE+0r6MODKj
+         p/AHPA0BPB1d6OmzUZzfDB/dRolUwjotkUyuWERCu43hiJC5M2WZU8XcnXbsdkO0SwCk
+         CuoiCEMTxg2LgZ8Vq9JZrd4LoHW3zVMbAVYOQPfiHhCs/75iDZdcU+2+3RXA1X1grwOy
+         pmag==
+X-Gm-Message-State: AOAM533eyS+XouYgIpBfxe6YIYvcD6SuitD/iw7SwR9AQedmL1svtLwW
+        ElyS1hiXF7tlwfiYMuQz909iIsOb2pGAaUGE
+X-Google-Smtp-Source: ABdhPJyEvYyyOR1OwmI6zAiFUXsf6iSdACxEm3v/Fiq2gPb5ThkPciCqvRSff9klEBEEjI8eh3gc9w==
+X-Received: by 2002:a5d:59ae:: with SMTP id p14mr27899372wrr.643.1643887999249;
+        Thu, 03 Feb 2022 03:33:19 -0800 (PST)
+Received: from google.com (cpc106310-bagu17-2-0-cust853.1-3.cable.virginm.net. [86.15.223.86])
+        by smtp.gmail.com with ESMTPSA id z17sm6929238wmf.47.2022.02.03.03.33.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Feb 2022 03:32:33 -0800 (PST)
-Date:   Thu, 3 Feb 2022 06:32:29 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Cristian Marussi <cristian.marussi@arm.com>
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        sudeep.holla@arm.com, james.quinlan@broadcom.com,
-        Jonathan.Cameron@huawei.com, f.fainelli@gmail.com,
-        etienne.carriere@linaro.org, vincent.guittot@linaro.org,
-        souvik.chakravarty@arm.com, peter.hilber@opensynergy.com,
-        igor.skalkin@opensynergy.com,
-        virtualization@lists.linux-foundation.org
-Subject: Re: [PATCH v2 3/9] [RFC] virtio_ring: Embed a wrap counter in opaque
- poll index value
-Message-ID: <20220203063115-mutt-send-email-mst@kernel.org>
-References: <20220201171601.53316-1-cristian.marussi@arm.com>
- <20220201171601.53316-4-cristian.marussi@arm.com>
- <20220201131434-mutt-send-email-mst@kernel.org>
- <20220203105105.GB2535@e120937-lin>
+        Thu, 03 Feb 2022 03:33:18 -0800 (PST)
+Date:   Thu, 3 Feb 2022 11:33:16 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH] mfd: ab8500: Rewrite bindings in YAML
+Message-ID: <Yfu9fE16W/29z7Va@google.com>
+References: <20220115002649.1526163-1-linus.walleij@linaro.org>
+ <CACRpkdZPdg7koKf1RkRNzDgF_V-XsEod5C4JA10ps7G7fUwaXw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220203105105.GB2535@e120937-lin>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CACRpkdZPdg7koKf1RkRNzDgF_V-XsEod5C4JA10ps7G7fUwaXw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 03, 2022 at 10:51:19AM +0000, Cristian Marussi wrote:
-> On Tue, Feb 01, 2022 at 01:27:38PM -0500, Michael S. Tsirkin wrote:
-> > Looks correct, thanks. Some minor comments below:
-> > 
-> 
-> Hi Michael,
-> 
-> thanks for the feedback.
-> 
-> > On Tue, Feb 01, 2022 at 05:15:55PM +0000, Cristian Marussi wrote:
-> > > Exported API virtqueue_poll() can be used to support polling mode operation
-> > > on top of virtio layer if needed; currently the parameter last_used_idx is
-> > > the opaque value that needs to be passed to the virtqueue_poll() function
-> > > to check if there are new pending used buffers in the queue: such opaque
-> > > value would have been previously obtained by a call to the API function
-> > > virtqueue_enable_cb_prepare().
-> > > 
-> > > Since such opaque value is indeed containing simply a snapshot in time of
-> > > the internal
-> > 
-> > to add: 16 bit
-> > 
-> > > last_used_index (roughly), it is possible that,
-> > 
-> > to add here: 
-> > 
-> > if another thread calls virtqueue_add_*()
-> > at the same time (which existing drivers don't do,
-> > but does not seem to be documented as prohibited anywhere), and
-> > 
-> > > if exactly
-> > > 2**16 buffers are marked as used between two successive calls to
-> > > virtqueue_poll(), the caller is fooled into thinking that nothing is
-> > > pending (ABA problem).
-> > > Keep a full fledged internal wraps counter
-> > 
-> > s/full fledged/a 16 bit/
-> > 
-> > since I don't see why is a 16 bit counter full but not e.g. a 32 bit one
-> > 
-> .. :D I wanted to stress the fact that this being a 16bits counter has a
-> higher rollover than a 1-bit one wrap_counter already used...but indeed
-> all are just counters at the end, it's justthe wrapround that changes...
-> 
-> I'll fix.
-> 
-> > > per virtqueue and embed it into
-> > > the upper 16bits of the returned opaque value, so that the above scenario
-> > > can be detected transparently by virtqueue_poll(): this way each single
-> > > possible last_used_idx value is really belonging to a different wrap.
-> > 
-> > Just to add here: the ABA problem can in theory still happen but
-> > now that's after 2^32 requests, which seems sufficient in practice.
-> > 
-> 
-> Sure, I'll fix the commit message as above advised.
-> 
-> > > Cc: "Michael S. Tsirkin" <mst@redhat.com>
-> > > Cc: Igor Skalkin <igor.skalkin@opensynergy.com>
-> > > Cc: Peter Hilber <peter.hilber@opensynergy.com>
-> > > Cc: virtualization@lists.linux-foundation.org
-> > > Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
-> > > ---
-> > > Still no perf data on this, I was wondering what exactly to measure in
-> > > term of perf metrics to evaluate the impact of the rolling vq->wraps
-> > > counter.
-> > > ---
-> > >  drivers/virtio/virtio_ring.c | 51 +++++++++++++++++++++++++++++++++---
-> > >  1 file changed, 47 insertions(+), 4 deletions(-)
-> > > 
-> > > diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-> > > index 00f64f2f8b72..613ec0503509 100644
-> > > --- a/drivers/virtio/virtio_ring.c
-> > > +++ b/drivers/virtio/virtio_ring.c
-> > > @@ -12,6 +12,8 @@
-> > >  #include <linux/hrtimer.h>
-> > >  #include <linux/dma-mapping.h>
-> > >  #include <linux/spinlock.h>
-> > > +#include <linux/bits.h>
-> > > +#include <linux/bitfield.h>
-> > >  #include <xen/xen.h>
-> > >  
-> > >  static bool force_used_validation = false;
-> > > @@ -69,6 +71,17 @@ module_param(force_used_validation, bool, 0444);
-> > >  #define LAST_ADD_TIME_INVALID(vq)
-> > >  #endif
-> > >  
-> > > +#define VRING_IDX_MASK					GENMASK(15, 0)
-> > > +#define VRING_GET_IDX(opaque)				\
-> > > +	((u16)FIELD_GET(VRING_IDX_MASK, (opaque)))
-> > > +
-> > > +#define VRING_WRAPS_MASK				GENMASK(31, 16)
-> > > +#define VRING_GET_WRAPS(opaque)				\
-> > > +	((u16)FIELD_GET(VRING_WRAPS_MASK, (opaque)))
-> > > +
-> > > +#define VRING_BUILD_OPAQUE(idx, wraps)			\
-> > > +	(FIELD_PREP(VRING_WRAPS_MASK, (wraps)) | ((idx) & VRING_IDX_MASK))
-> > > +
-> > 
-> > Maybe prefix with VRING_POLL_  since that is the only user.
-> > 
-> 
-> I'll do.
-> 
-> > 
-> > >  struct vring_desc_state_split {
-> > >  	void *data;			/* Data for callback. */
-> > >  	struct vring_desc *indir_desc;	/* Indirect descriptor, if any. */
-> > > @@ -117,6 +130,8 @@ struct vring_virtqueue {
-> > >  	/* Last used index we've seen. */
-> > >  	u16 last_used_idx;
-> > >  
-> > > +	u16 wraps;
-> > > +
-> > >  	/* Hint for event idx: already triggered no need to disable. */
-> > >  	bool event_triggered;
-> > >  
-> > > @@ -806,6 +821,8 @@ static void *virtqueue_get_buf_ctx_split(struct virtqueue *_vq,
-> > >  	ret = vq->split.desc_state[i].data;
-> > >  	detach_buf_split(vq, i, ctx);
-> > >  	vq->last_used_idx++;
-> > > +	if (unlikely(!vq->last_used_idx))
-> > > +		vq->wraps++;
-> > >  	/* If we expect an interrupt for the next entry, tell host
-> > >  	 * by writing event index and flush out the write before
-> > >  	 * the read in the next get_buf call. */
-> > 
-> > So most drivers don't call virtqueue_poll.
-> > Concerned about the overhead here: another option is
-> > with a flag that will have to be set whenever a driver
-> > wants to use virtqueue_poll.
-> 
-> Do you mean a compile time flag/Kconfig to just remove the possible
-> overhead instructions as a whole when not needed by the driver ?
-> 
-> Or do you mean at runtime since checking the flag evry time should be
-> less costly than checking the wrpas each time AND counting when it
-> happens ?
+On Thu, 03 Feb 2022, Linus Walleij wrote:
 
-The later.
-
-> > Could you pls do a quick perf test e.g. using tools/virtio/
-> > to see what's faster?
+> On Sat, Jan 15, 2022 at 1:28 AM Linus Walleij <linus.walleij@linaro.org> wrote:
 > 
-> Yes I'll do, thanks for the hint, I have some compilation issues in
-> tools/virtio due to my additions (missing mirrored hehaders) or to some
-> recently added stuff (missing drv_to_virtio & friends for
-> suppressed_used_validation thing)...anyway I fixed those now and I'll
-> post related tools/virtio patches with next iteration.
+> > This rewrites the former text based AB8500 bindings in YAML.
 > 
-> Anyway, do you mean perf data about vringh_test and virtio_test/vhost
-> right ? (ringtest/ excluded 'cause does not use any API is just
-> prototyping)
+> Is this something we can merge?
 
-can be either or both, virtio_test/vhost is a bit easier to use.
+I can't merge this without Rob's Ack.
 
-> > 
-> > 
-> > 
-> > > @@ -1508,6 +1525,7 @@ static void *virtqueue_get_buf_ctx_packed(struct virtqueue *_vq,
-> > >  	if (unlikely(vq->last_used_idx >= vq->packed.vring.num)) {
-> > >  		vq->last_used_idx -= vq->packed.vring.num;
-> > >  		vq->packed.used_wrap_counter ^= 1;
-> > > +		vq->wraps++;
-> > >  	}
-> > >  
-> > >  	/*
-> > > @@ -1744,6 +1762,7 @@ static struct virtqueue *vring_create_virtqueue_packed(
-> > >  	vq->weak_barriers = weak_barriers;
-> > >  	vq->broken = false;
-> > >  	vq->last_used_idx = 0;
-> > > +	vq->wraps = 0;
-> > >  	vq->event_triggered = false;
-> > >  	vq->num_added = 0;
-> > >  	vq->packed_ring = true;
-> > > @@ -2092,13 +2111,17 @@ EXPORT_SYMBOL_GPL(virtqueue_disable_cb);
-> > >   */
-> > >  unsigned virtqueue_enable_cb_prepare(struct virtqueue *_vq)
-> > >  {
-> > > +	unsigned int last_used_idx;
-> > >  	struct vring_virtqueue *vq = to_vvq(_vq);
-> > >  
-> > >  	if (vq->event_triggered)
-> > >  		vq->event_triggered = false;
-> > >  
-> > > -	return vq->packed_ring ? virtqueue_enable_cb_prepare_packed(_vq) :
-> > > -				 virtqueue_enable_cb_prepare_split(_vq);
-> > > +	last_used_idx = vq->packed_ring ?
-> > > +			virtqueue_enable_cb_prepare_packed(_vq) :
-> > > +			virtqueue_enable_cb_prepare_split(_vq);
-> > > +
-> > > +	return VRING_BUILD_OPAQUE(last_used_idx, vq->wraps);
-> > >  }
-> > >  EXPORT_SYMBOL_GPL(virtqueue_enable_cb_prepare);
-> > >  
-> > > @@ -2107,6 +2130,21 @@ EXPORT_SYMBOL_GPL(virtqueue_enable_cb_prepare);
-> > >   * @_vq: the struct virtqueue we're talking about.
-> > >   * @last_used_idx: virtqueue state (from call to virtqueue_enable_cb_prepare).
-> > >   *
-> > > + * The provided last_used_idx, as returned by virtqueue_enable_cb_prepare(),
-> > > + * is an opaque value representing the queue state and it is built as follows:
-> > > + *
-> > > + *	---------------------------------------------------------
-> > > + *	|	vq->wraps	|	vq->last_used_idx	|
-> > > + *	31------------------------------------------------------0
-> > > + *
-> > > + * The MSB 16bits embedding the wraps counter for the underlying virtqueue
-> > > + * is stripped out here before reaching into the lower layer helpers.
-> > > + *
-> > > + * This structure of the opaque value mitigates the scenario in which, when
-> > > + * exactly 2**16 messages are marked as used between two successive calls to
-> > > + * virtqueue_poll(), the caller is fooled into thinking nothing new has arrived
-> > > + * since the pure last_used_idx is exactly the same.
-> > > + *
-> > 
-> > Do you want to move this comment to where the macros implementing it
-> > are?
-> > 
-> 
-> Sure, I'll do.
-> 
-> Thanks,
-> Cristian
+> These MFD bindings become large and complex so I
+> add Rob on the To-line so he can have a look if he has
+> time.
 
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
