@@ -2,285 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00710C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 02:40:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2650C43219
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 02:44:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349101AbiBCCkz (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 21:40:55 -0500
-Received: from mga06.intel.com ([134.134.136.31]:10743 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1349104AbiBCCkw (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 21:40:52 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643856052; x=1675392052;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Fr4QYVGryPRCB9GK8wBYEAQ+/I6R6J7BVEbebjxhu/c=;
-  b=MehTSnhtmahSvHE13JSNFdRSkMNsupL1QSuQWfyrg0WcR2urKqbfSXXx
-   rSLXR5KBLS2YHNM/i2bJ4Nga8CtUQIapAXEcMx2S8GVEOXGRw0UQ0nhvp
-   FU2lff6Xz1EXpdQesqNWB02LIdgx26B4yGmUbWLSyB/1lALcg6MPfGi36
-   XfL7FlG8KaVpF81Sz/g/7O7oVvjmgMgkjupg0UWjNAXyl8Ecwk1ksU463
-   8AJbISsdhpwLGQpc3MSeTKYip6LePslEMyXK15DRcMcMdBDhmBP0WWwXC
-   h7w581hD9rF+/FSdmaRUIG/OKHX/EFlPTxkEVQ6gx4rpTpvn5TU91G4m0
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10246"; a="308792905"
-X-IronPort-AV: E=Sophos;i="5.88,338,1635231600"; 
-   d="scan'208";a="308792905"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 18:40:42 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,338,1635231600"; 
-   d="scan'208";a="627290236"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by fmsmga002.fm.intel.com with ESMTP; 02 Feb 2022 18:40:39 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nFS34-000VS9-E2; Thu, 03 Feb 2022 02:40:38 +0000
-Date:   Thu, 3 Feb 2022 10:39:43 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Bean Huo <huobean@gmail.com>, ulf.hansson@linaro.org,
-        eugen.hristev@microchip.com, adrian.hunter@intel.com,
-        nicolas.ferre@microchip.com, linux-mmc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, beanhuo@micron.com
-Subject: Re: [PATCH 3/5] mmc: sdhci-omap: Use of_device_get_match_data()
- helper
-Message-ID: <202202030919.aWKiSg0Q-lkp@intel.com>
-References: <20220202180648.1252154-4-huobean@gmail.com>
+        id S245287AbiBCCoR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 21:44:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41482 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229630AbiBCCoP (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 2 Feb 2022 21:44:15 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8D64C061714;
+        Wed,  2 Feb 2022 18:44:14 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7C649B8330A;
+        Thu,  3 Feb 2022 02:44:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33C42C340F6;
+        Thu,  3 Feb 2022 02:44:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643856252;
+        bh=V51eVJiRBfBtAiPpggOpCZR3uh94Yz/dWJnManIUqRA=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=IfifaL/YvkQeOydK0cgYgy7MaOnD1ofDN9TZ9U0AAgJgX5vkoOM/UCN+eqFDFX8e0
+         SIROG24sqmSXhudRlXA3k1jWkp77oSEpy958cVODa3+sWBKJFg5/KfQgGGdSVjxxIs
+         tBS1ttU+VD/lfGZc6laeZXX3nMQbkvJraFwXMBoSDxQnFXqyuk7KNTCbNzoNPaUxXu
+         obu4PEKMkaRLF0VBJAceVG1kvUSawTvpCDv+XjctdvSnwyZA7NM+d+opMx9qUChsMA
+         QIiebpV47EWTVL21TA8YNmrdIhNU6Tt7q6oAVfTnyRCqH7wGOKGMQC/DtV00pJqZ7Z
+         uKgAZRx6fuHVA==
+Received: by mail-ua1-f50.google.com with SMTP id c36so2662895uae.13;
+        Wed, 02 Feb 2022 18:44:12 -0800 (PST)
+X-Gm-Message-State: AOAM530dWv5SezYpodmaWPAG61rIo/wPi4mSgGXb9lJmfM4pQkN5nm73
+        CuR79aC0qdVj+NkLKFBif1wZQiqTkPcUAvLObO4=
+X-Google-Smtp-Source: ABdhPJwcymlbtGZh6tQbwNbq4eIqK1FMhWR2Ntg5Vpt7lVSBlW8sS85pNzZxGeDyQITxXLpJvbICejijlor03wlRbBs=
+X-Received: by 2002:ab0:2092:: with SMTP id r18mr12760634uak.66.1643856251122;
+ Wed, 02 Feb 2022 18:44:11 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220202180648.1252154-4-huobean@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220201150545.1512822-1-guoren@kernel.org> <20220201150545.1512822-16-guoren@kernel.org>
+ <20220202075159.GB18398@lst.de>
+In-Reply-To: <20220202075159.GB18398@lst.de>
+From:   Guo Ren <guoren@kernel.org>
+Date:   Thu, 3 Feb 2022 10:44:00 +0800
+X-Gmail-Original-Message-ID: <CAJF2gTTxzFo1kdkCDH=2RKkQ1gEzOnUCjxotcsjrqivG4qg-Dw@mail.gmail.com>
+Message-ID: <CAJF2gTTxzFo1kdkCDH=2RKkQ1gEzOnUCjxotcsjrqivG4qg-Dw@mail.gmail.com>
+Subject: Re: [PATCH V5 15/21] riscv: compat: Add hw capability check for elf
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Palmer Dabbelt <palmer@dabbelt.com>, Arnd Bergmann <arnd@arndb.de>,
+        Anup Patel <anup@brainfault.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        liush <liush@allwinnertech.com>, Wei Fu <wefu@redhat.com>,
+        Drew Fustini <drew@beagleboard.org>,
+        Wang Junqiang <wangjunqiang@iscas.ac.cn>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        linux-csky@vger.kernel.org,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        sparclinux <sparclinux@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Parisc List <linux-parisc@vger.kernel.org>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Guo Ren <guoren@linux.alibaba.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Bean,
+On Wed, Feb 2, 2022 at 3:52 PM Christoph Hellwig <hch@lst.de> wrote:
+>
+> On Tue, Feb 01, 2022 at 11:05:39PM +0800, guoren@kernel.org wrote:
+> > +bool compat_elf_check_arch(Elf32_Ehdr *hdr)
+> > +{
+> > +     if (compat_mode_support && (hdr->e_machine == EM_RISCV))
+> > +             return true;
+> > +     else
+> > +             return false;
+> > +}
+>
+> This can be simplified to:
+>
+>         return compat_mode_support && hdr->e_machine == EM_RISCV;
+Good point.
 
-Thank you for the patch! Perhaps something to improve:
+>
+> I'd also rename compat_mode_support to compat_mode_supported
+Okay
 
-[auto build test WARNING on tegra/for-next]
-[also build test WARNING on linus/master ulf-hansson-mmc-mirror/next v5.17-rc2 next-20220202]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+>
+> > +
+> > +static int compat_mode_detect(void)
+> > +{
+> > +     unsigned long tmp = csr_read(CSR_STATUS);
+> > +
+> > +     csr_write(CSR_STATUS, (tmp & ~SR_UXL) | SR_UXL_32);
+> > +
+> > +     if ((csr_read(CSR_STATUS) & SR_UXL) != SR_UXL_32) {
+> > +             pr_info("riscv: 32bit compat mode detect failed\n");
+> > +             compat_mode_support = false;
+> > +     } else {
+> > +             compat_mode_support = true;
+> > +             pr_info("riscv: 32bit compat mode detected\n");
+> > +     }
+>
+> I don't think we need these printks here.
+Okay
 
-url:    https://github.com/0day-ci/linux/commits/Bean-Huo/Use-of_device_get_match_data-helper/20220203-020721
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/tegra/linux.git for-next
-config: riscv-allyesconfig (https://download.01.org/0day-ci/archive/20220203/202202030919.aWKiSg0Q-lkp@intel.com/config)
-compiler: riscv64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/33ccc62e7dd0ac8f965521ed7ff44ff52182f4b0
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Bean-Huo/Use-of_device_get_match_data-helper/20220203-020721
-        git checkout 33ccc62e7dd0ac8f965521ed7ff44ff52182f4b0
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=riscv SHELL=/bin/bash drivers/iio/multiplexer/ drivers/mmc/host/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   drivers/mmc/host/sdhci-omap.c: In function 'sdhci_omap_probe':
->> drivers/mmc/host/sdhci-omap.c:1226:14: warning: assignment discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
-    1226 |         data = of_device_get_match_data(&pdev->dev);
-         |              ^
+>
+> Also this could be simplified to:
+>
+>         compat_mode_supported = (csr_read(CSR_STATUS) & SR_UXL) == SR_UXL_32;
+Okay
 
 
-vim +/const +1226 drivers/mmc/host/sdhci-omap.c
 
-  1212	
-  1213	static int sdhci_omap_probe(struct platform_device *pdev)
-  1214	{
-  1215		int ret;
-  1216		u32 offset;
-  1217		struct device *dev = &pdev->dev;
-  1218		struct sdhci_host *host;
-  1219		struct sdhci_pltfm_host *pltfm_host;
-  1220		struct sdhci_omap_host *omap_host;
-  1221		struct mmc_host *mmc;
-  1222		struct sdhci_omap_data *data;
-  1223		const struct soc_device_attribute *soc;
-  1224		struct resource *regs;
-  1225	
-> 1226		data = of_device_get_match_data(&pdev->dev);
-  1227		if (!data) {
-  1228			dev_err(dev, "no sdhci omap data\n");
-  1229			return -EINVAL;
-  1230		}
-  1231		offset = data->offset;
-  1232	
-  1233		regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-  1234		if (!regs)
-  1235			return -ENXIO;
-  1236	
-  1237		host = sdhci_pltfm_init(pdev, &sdhci_omap_pdata,
-  1238					sizeof(*omap_host));
-  1239		if (IS_ERR(host)) {
-  1240			dev_err(dev, "Failed sdhci_pltfm_init\n");
-  1241			return PTR_ERR(host);
-  1242		}
-  1243	
-  1244		pltfm_host = sdhci_priv(host);
-  1245		omap_host = sdhci_pltfm_priv(pltfm_host);
-  1246		omap_host->host = host;
-  1247		omap_host->base = host->ioaddr;
-  1248		omap_host->dev = dev;
-  1249		omap_host->power_mode = MMC_POWER_UNDEFINED;
-  1250		omap_host->timing = MMC_TIMING_LEGACY;
-  1251		omap_host->flags = data->flags;
-  1252		omap_host->omap_offset = data->omap_offset;
-  1253		omap_host->con = -EINVAL; /* Prevent invalid restore on first resume */
-  1254		host->ioaddr += offset;
-  1255		host->mapbase = regs->start + offset;
-  1256	
-  1257		mmc = host->mmc;
-  1258		sdhci_get_of_property(pdev);
-  1259		ret = mmc_of_parse(mmc);
-  1260		if (ret)
-  1261			goto err_pltfm_free;
-  1262	
-  1263		soc = soc_device_match(sdhci_omap_soc_devices);
-  1264		if (soc) {
-  1265			omap_host->version = "rev11";
-  1266			if (!strcmp(dev_name(dev), "4809c000.mmc"))
-  1267				mmc->f_max = 96000000;
-  1268			if (!strcmp(dev_name(dev), "480b4000.mmc"))
-  1269				mmc->f_max = 48000000;
-  1270			if (!strcmp(dev_name(dev), "480ad000.mmc"))
-  1271				mmc->f_max = 48000000;
-  1272		}
-  1273	
-  1274		if (!mmc_can_gpio_ro(mmc))
-  1275			mmc->caps2 |= MMC_CAP2_NO_WRITE_PROTECT;
-  1276	
-  1277		pltfm_host->clk = devm_clk_get(dev, "fck");
-  1278		if (IS_ERR(pltfm_host->clk)) {
-  1279			ret = PTR_ERR(pltfm_host->clk);
-  1280			goto err_pltfm_free;
-  1281		}
-  1282	
-  1283		ret = clk_set_rate(pltfm_host->clk, mmc->f_max);
-  1284		if (ret) {
-  1285			dev_err(dev, "failed to set clock to %d\n", mmc->f_max);
-  1286			goto err_pltfm_free;
-  1287		}
-  1288	
-  1289		omap_host->pbias = devm_regulator_get_optional(dev, "pbias");
-  1290		if (IS_ERR(omap_host->pbias)) {
-  1291			ret = PTR_ERR(omap_host->pbias);
-  1292			if (ret != -ENODEV)
-  1293				goto err_pltfm_free;
-  1294			dev_dbg(dev, "unable to get pbias regulator %d\n", ret);
-  1295		}
-  1296		omap_host->pbias_enabled = false;
-  1297	
-  1298		/*
-  1299		 * omap_device_pm_domain has callbacks to enable the main
-  1300		 * functional clock, interface clock and also configure the
-  1301		 * SYSCONFIG register of omap devices. The callback will be invoked
-  1302		 * as part of pm_runtime_get_sync.
-  1303		 */
-  1304		pm_runtime_use_autosuspend(dev);
-  1305		pm_runtime_set_autosuspend_delay(dev, 50);
-  1306		pm_runtime_enable(dev);
-  1307		ret = pm_runtime_resume_and_get(dev);
-  1308		if (ret) {
-  1309			dev_err(dev, "pm_runtime_get_sync failed\n");
-  1310			goto err_rpm_disable;
-  1311		}
-  1312	
-  1313		ret = sdhci_omap_set_capabilities(host);
-  1314		if (ret) {
-  1315			dev_err(dev, "failed to set system capabilities\n");
-  1316			goto err_rpm_put;
-  1317		}
-  1318	
-  1319		host->mmc_host_ops.start_signal_voltage_switch =
-  1320						sdhci_omap_start_signal_voltage_switch;
-  1321		host->mmc_host_ops.set_ios = sdhci_omap_set_ios;
-  1322		host->mmc_host_ops.card_busy = sdhci_omap_card_busy;
-  1323		host->mmc_host_ops.execute_tuning = sdhci_omap_execute_tuning;
-  1324		host->mmc_host_ops.enable_sdio_irq = sdhci_omap_enable_sdio_irq;
-  1325	
-  1326		/*
-  1327		 * Switch to external DMA only if there is the "dmas" property and
-  1328		 * ADMA is not available on the controller instance.
-  1329		 */
-  1330		if (device_property_present(dev, "dmas") &&
-  1331		    !sdhci_omap_has_adma(omap_host, offset))
-  1332			sdhci_switch_external_dma(host, true);
-  1333	
-  1334		if (device_property_read_bool(dev, "ti,non-removable")) {
-  1335			dev_warn_once(dev, "using old ti,non-removable property\n");
-  1336			mmc->caps |= MMC_CAP_NONREMOVABLE;
-  1337		}
-  1338	
-  1339		/* R1B responses is required to properly manage HW busy detection. */
-  1340		mmc->caps |= MMC_CAP_NEED_RSP_BUSY;
-  1341	
-  1342		/* Allow card power off and runtime PM for eMMC/SD card devices */
-  1343		mmc->caps |= MMC_CAP_POWER_OFF_CARD | MMC_CAP_AGGRESSIVE_PM;
-  1344	
-  1345		ret = sdhci_setup_host(host);
-  1346		if (ret)
-  1347			goto err_rpm_put;
-  1348	
-  1349		ret = sdhci_omap_config_iodelay_pinctrl_state(omap_host);
-  1350		if (ret)
-  1351			goto err_cleanup_host;
-  1352	
-  1353		ret = __sdhci_add_host(host);
-  1354		if (ret)
-  1355			goto err_cleanup_host;
-  1356	
-  1357		/*
-  1358		 * SDIO devices can use the dat1 pin as a wake-up interrupt. Some
-  1359		 * devices like wl1xxx, use an out-of-band GPIO interrupt instead.
-  1360		 */
-  1361		omap_host->wakeirq = of_irq_get_byname(dev->of_node, "wakeup");
-  1362		if (omap_host->wakeirq == -EPROBE_DEFER) {
-  1363			ret = -EPROBE_DEFER;
-  1364			goto err_cleanup_host;
-  1365		}
-  1366		if (omap_host->wakeirq > 0) {
-  1367			device_init_wakeup(dev, true);
-  1368			ret = dev_pm_set_dedicated_wake_irq(dev, omap_host->wakeirq);
-  1369			if (ret) {
-  1370				device_init_wakeup(dev, false);
-  1371				goto err_cleanup_host;
-  1372			}
-  1373			host->mmc->pm_caps |= MMC_PM_KEEP_POWER | MMC_PM_WAKE_SDIO_IRQ;
-  1374		}
-  1375	
-  1376		pm_runtime_mark_last_busy(dev);
-  1377		pm_runtime_put_autosuspend(dev);
-  1378	
-  1379		return 0;
-  1380	
-  1381	err_cleanup_host:
-  1382		sdhci_cleanup_host(host);
-  1383	
-  1384	err_rpm_put:
-  1385		pm_runtime_mark_last_busy(dev);
-  1386		pm_runtime_put_autosuspend(dev);
-  1387	err_rpm_disable:
-  1388		pm_runtime_dont_use_autosuspend(dev);
-  1389		pm_runtime_disable(dev);
-  1390	
-  1391	err_pltfm_free:
-  1392		sdhci_pltfm_free(pdev);
-  1393		return ret;
-  1394	}
-  1395	
+-- 
+Best Regards
+ Guo Ren
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ML: https://lore.kernel.org/linux-csky/
