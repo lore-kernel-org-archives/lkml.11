@@ -2,292 +2,298 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABE3BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 02:40:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0081CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 02:40:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349062AbiBCCkm (ORCPT
+        id S1349069AbiBCCkn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 21:40:42 -0500
-Received: from mga03.intel.com ([134.134.136.65]:41324 "EHLO mga03.intel.com"
+        Wed, 2 Feb 2022 21:40:43 -0500
+Received: from mga14.intel.com ([192.55.52.115]:44673 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233972AbiBCCkk (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 21:40:40 -0500
+        id S1349057AbiBCCkl (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 2 Feb 2022 21:40:41 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643856040; x=1675392040;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=R19Sr8Sjx+OtLUdQ7xAco/jqgt110mMokX2E0gw3Dzc=;
-  b=dsILqkXNxlmid5uTmSsnfYC/6o06ZsQaqjBOJkL7Jx2lDxHoU433bcJ5
-   GKupOZQwBwolH0CDR2wSUIYj1FhbqoOsuQASEJRkQWPsG0h3gdMRsfBMJ
-   v7McbAwhOZqHItnc7xbBP1o7PwU6ML5rDVC45TkvWHVpWUESnYx+/u1j3
-   wnH5MuQeRVmYHf9aRa4+k6uDOBb/R/yjcU/RuVcQhGx1fcw09gAzx/bXl
-   fRUkggBGBJDqigOoTKLy0tBOYCvdADSdVcXgA1LRDZUjUt/mrakBWGEsf
-   /n0H0WP8eluqFWnr0EaolabNq2ATNsqhpFU0q0QH1hiulQH16nbHHoCOT
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10246"; a="248017067"
+  t=1643856041; x=1675392041;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=l45lVgeFoDmyu7LIRd40q5vSoxl1folQLuv3T+fdiL4=;
+  b=m/TtNi/RpK3aX6SfPgi1nZgwNjOsSCESSkR+3d0OIWRBtYZ5cBsYLySl
+   fHLAxOdJThkW8oPnoKkic9LxFULkAlia6x4IHsmnhFUG5sna4lWWKqGBH
+   4Nt7Wxx71ImunC0F0bQ0C50NG8YCkLjMdT8bogh4l2YOkswc/U0bN9HtX
+   IAqbbliwu2B3t8I5ebKAtJ0/XgOj/pM8OvQ2C6iUDIBS/tAdExHlEMVeg
+   fpWZPdk5K7LMIh2lIT7OBA5YCNIg2WMM0LDbrbvYEnmJlQcZ41/JBYLQH
+   Djq7NdVXV7xPORKCGl3IW+XFZ+l0SPh2YWiPt2+nd4yoNqFF3/xLmQ59O
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10246"; a="248281652"
 X-IronPort-AV: E=Sophos;i="5.88,338,1635231600"; 
-   d="scan'208";a="248017067"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 18:40:40 -0800
+   d="scan'208";a="248281652"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2022 18:40:41 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,338,1635231600"; 
-   d="scan'208";a="771651829"
+   d="scan'208";a="676642550"
 Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 02 Feb 2022 18:40:39 -0800
+  by fmsmga001.fm.intel.com with ESMTP; 02 Feb 2022 18:40:38 -0800
 Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1nFS34-000VS1-CH; Thu, 03 Feb 2022 02:40:38 +0000
-Date:   Thu, 3 Feb 2022 10:39:40 +0800
+        id 1nFS34-000VRz-BY; Thu, 03 Feb 2022 02:40:38 +0000
+Date:   Thu, 3 Feb 2022 10:39:48 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Manisha Chinthapally <manisha.chinthapally@intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [mchinth:sep_socwatch_linux_5_16 1/1]
- drivers/platform/x86/sepdk/sep/eventmux.c:371:13: warning: no previous
- prototype for 'EVENTMUX_Start'
-Message-ID: <202202030918.94O8WKsL-lkp@intel.com>
+To:     Anjelique Melendez <quic_amelende@quicinc.com>,
+        dmitry.torokhov@gmail.com
+Cc:     kbuild-all@lists.01.org, linux-input@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        collinsd@codeaurora.org, bjorn.andersson@linaro.org,
+        swboyd@chromium.org, skakit@codeaurora.org,
+        Anjelique Melendez <quic_amelende@quicinc.com>
+Subject: Re: [PATCH v3 2/4] input: misc: pm8941-pwrkey: add support for PON
+ GEN3 base addresses
+Message-ID: <202202031020.M3pmrtmN-lkp@intel.com>
+References: <20220203010804.20883-3-quic_amelende@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220203010804.20883-3-quic_amelende@quicinc.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/mchinth/linux sep_socwatch_linux_5_16
-head:   4cbfca15a262729ae8557758b49226fe4769f582
-commit: 4cbfca15a262729ae8557758b49226fe4769f582 [1/1] Platform/x86 Updated SEP/SOCPERF drivers to latest version
-config: x86_64-randconfig-a004-20220131 (https://download.01.org/0day-ci/archive/20220203/202202030918.94O8WKsL-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+Hi Anjelique,
+
+Thank you for the patch! Perhaps something to improve:
+
+[auto build test WARNING on dtor-input/next]
+[also build test WARNING on hid/for-next linux/master linus/master v5.17-rc2 next-20220202]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/0day-ci/linux/commits/Anjelique-Melendez/input-misc-pm8941-pwrkey-fix-error-message/20220203-091113
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/dtor/input.git next
+config: s390-allyesconfig (https://download.01.org/0day-ci/archive/20220203/202202031020.M3pmrtmN-lkp@intel.com/config)
+compiler: s390-linux-gcc (GCC) 11.2.0
 reproduce (this is a W=1 build):
-        # https://github.com/mchinth/linux/commit/4cbfca15a262729ae8557758b49226fe4769f582
-        git remote add mchinth https://github.com/mchinth/linux
-        git fetch --no-tags mchinth sep_socwatch_linux_5_16
-        git checkout 4cbfca15a262729ae8557758b49226fe4769f582
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/11f3823037831d0412ab1a6895c5bcf204a3c3b1
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Anjelique-Melendez/input-misc-pm8941-pwrkey-fix-error-message/20220203-091113
+        git checkout 11f3823037831d0412ab1a6895c5bcf204a3c3b1
         # save the config file to linux build tree
         mkdir build_dir
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/platform/x86/sepdk/pax/ drivers/platform/x86/sepdk/sep/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=s390 SHELL=/bin/bash drivers/input/misc/
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
 All warnings (new ones prefixed by >>):
 
->> drivers/platform/x86/sepdk/pax/pax.c:171:5: warning: no previous prototype for 'pax_Disable_NMIWatchdog' [-Wmissing-prototypes]
-     171 | S32 pax_Disable_NMIWatchdog(PVOID data)
-         |     ^~~~~~~~~~~~~~~~~~~~~~~
->> drivers/platform/x86/sepdk/pax/pax.c:240:5: warning: no previous prototype for 'pax_Check_NMIWatchdog' [-Wmissing-prototypes]
-     240 | S32 pax_Check_NMIWatchdog(PVOID data)
-         |     ^~~~~~~~~~~~~~~~~~~~~
->> drivers/platform/x86/sepdk/pax/pax.c:280:5: warning: no previous prototype for 'pax_Enable_NMIWatchdog' [-Wmissing-prototypes]
-     280 | S32 pax_Enable_NMIWatchdog(PVOID data)
-         |     ^~~~~~~~~~~~~~~~~~~~~~
->> drivers/platform/x86/sepdk/pax/pax.c:700:22: warning: no previous prototype for 'pax_Service_IOCTL' [-Wmissing-prototypes]
-     700 | extern IOCTL_OP_TYPE pax_Service_IOCTL(IOCTL_USE_INODE struct file *filp,
-         |                      ^~~~~~~~~~~~~~~~~
->> drivers/platform/x86/sepdk/pax/pax.c:738:13: warning: no previous prototype for 'pax_Device_Control' [-Wmissing-prototypes]
-     738 | extern long pax_Device_Control(IOCTL_USE_INODE struct file *filp,
-         |             ^~~~~~~~~~~~~~~~~~
->> drivers/platform/x86/sepdk/pax/pax.c:754:22: warning: no previous prototype for 'pax_Device_Control_Compat' [-Wmissing-prototypes]
-     754 | extern IOCTL_OP_TYPE pax_Device_Control_Compat(struct file *filp,
-         |                      ^~~~~~~~~~~~~~~~~~~~~~~~~
->> drivers/platform/x86/sepdk/pax/pax.c:859:12: warning: no previous prototype for 'pax_Load' [-Wmissing-prototypes]
-     859 | extern int pax_Load(VOID)
-         |            ^~~~~~~~
->> drivers/platform/x86/sepdk/pax/pax.c:935:13: warning: no previous prototype for 'pax_Unload' [-Wmissing-prototypes]
-     935 | extern VOID pax_Unload(VOID)
-         |             ^~~~~~~~~~
---
-   drivers/platform/x86/sepdk/sep/lwpmudrv.c: In function 'lwpmudrv_Trigger_Read_Op':
->> drivers/platform/x86/sepdk/sep/lwpmudrv.c:1990:12: warning: variable 'pcpu' set but not used [-Wunused-but-set-variable]
-    1990 |  CPU_STATE pcpu;
-         |            ^~~~
-   drivers/platform/x86/sepdk/sep/lwpmudrv.c: At top level:
->> drivers/platform/x86/sepdk/sep/lwpmudrv.c:6693:22: warning: no previous prototype for 'lwpmu_Service_IOCTL' [-Wmissing-prototypes]
-    6693 | extern IOCTL_OP_TYPE lwpmu_Service_IOCTL(IOCTL_USE_INODE struct file *filp,
-         |                      ^~~~~~~~~~~~~~~~~~~
->> drivers/platform/x86/sepdk/sep/lwpmudrv.c:7031:13: warning: no previous prototype for 'lwpmu_Device_Control' [-Wmissing-prototypes]
-    7031 | extern long lwpmu_Device_Control(IOCTL_USE_INODE struct file *filp,
-         |             ^~~~~~~~~~~~~~~~~~~~
->> drivers/platform/x86/sepdk/sep/lwpmudrv.c:7066:13: warning: no previous prototype for 'lwpmu_Device_Control_Compat' [-Wmissing-prototypes]
-    7066 | extern long lwpmu_Device_Control_Compat(struct file *filp, unsigned int cmd,
-         |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~
->> drivers/platform/x86/sepdk/sep/lwpmudrv.c:7120:12: warning: no previous prototype for 'LWPMUDRV_Abnormal_Terminate' [-Wmissing-prototypes]
-    7120 | extern int LWPMUDRV_Abnormal_Terminate(void)
-         |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~
---
-   drivers/platform/x86/sepdk/sep/cpumon.c: In function 'CPUMON_is_Online_Allowed':
->> drivers/platform/x86/sepdk/sep/cpumon.c:133:17: warning: old-style function definition [-Wold-style-definition]
-     133 | extern DRV_BOOL CPUMON_is_Online_Allowed()
-         |                 ^~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/platform/x86/sepdk/sep/cpumon.c: In function 'CPUMON_is_Offline_Allowed':
-   drivers/platform/x86/sepdk/sep/cpumon.c:172:17: warning: old-style function definition [-Wold-style-definition]
-     172 | extern DRV_BOOL CPUMON_is_Offline_Allowed()
-         |                 ^~~~~~~~~~~~~~~~~~~~~~~~~
---
->> drivers/platform/x86/sepdk/sep/eventmux.c:371:13: warning: no previous prototype for 'EVENTMUX_Start' [-Wmissing-prototypes]
-     371 | extern VOID EVENTMUX_Start(VOID)
-         |             ^~~~~~~~~~~~~~
->> drivers/platform/x86/sepdk/sep/eventmux.c:400:13: warning: no previous prototype for 'EVENTMUX_Initialize' [-Wmissing-prototypes]
-     400 | extern VOID EVENTMUX_Initialize(VOID)
-         |             ^~~~~~~~~~~~~~~~~~~
->> drivers/platform/x86/sepdk/sep/eventmux.c:455:13: warning: no previous prototype for 'EVENTMUX_Destroy' [-Wmissing-prototypes]
-     455 | extern VOID EVENTMUX_Destroy(VOID)
-         |             ^~~~~~~~~~~~~~~~
---
->> drivers/platform/x86/sepdk/sep/linuxos.c:710:5: warning: no previous prototype for 'linuxos_online_cpu' [-Wmissing-prototypes]
-     710 | int linuxos_online_cpu(unsigned int cpu)
-         |     ^~~~~~~~~~~~~~~~~~
->> drivers/platform/x86/sepdk/sep/linuxos.c:735:5: warning: no previous prototype for 'linuxos_offline_cpu' [-Wmissing-prototypes]
-     735 | int linuxos_offline_cpu(unsigned int cpu)
-         |     ^~~~~~~~~~~~~~~~~~~
---
->> drivers/platform/x86/sepdk/sep/pmi.c:81:5: warning: no previous prototype for 'pmi_Get_CSD' [-Wmissing-prototypes]
-      81 | U32 pmi_Get_CSD(U32 seg, U32 *low, U32 *high)
-         |     ^~~~~~~~~~~
---
-   drivers/platform/x86/sepdk/sep/sys_info.c: In function 'sys_info_Fill_CPUID':
->> drivers/platform/x86/sepdk/sep/sys_info.c:325:6: warning: variable 'family' set but not used [-Wunused-but-set-variable]
-     325 |  U32 family = 0;
-         |      ^~~~~~
-   drivers/platform/x86/sepdk/sep/sys_info.c: In function 'SYS_INFO_Build':
->> drivers/platform/x86/sepdk/sep/sys_info.c:935:6: warning: variable 'me' set but not used [-Wunused-but-set-variable]
-     935 |  int me;
-         |      ^~
---
-   drivers/platform/x86/sepdk/sep/unc_power.c: In function 'unc_rdt_program_autormid':
->> drivers/platform/x86/sepdk/sep/unc_power.c:60:6: warning: variable 'cur_grp' set but not used [-Wunused-but-set-variable]
-      60 |  U32 cur_grp;
-         |      ^~~~~~~
-   drivers/platform/x86/sepdk/sep/unc_power.c: In function 'unc_power_Trigger_Read':
-   drivers/platform/x86/sepdk/sep/unc_power.c:350:6: warning: variable 'cur_grp' set but not used [-Wunused-but-set-variable]
-     350 |  U32 cur_grp;
-         |      ^~~~~~~
---
-   drivers/platform/x86/sepdk/sep/core2.c: In function 'core2_Swap_Group':
->> drivers/platform/x86/sepdk/sep/core2.c:996:6: warning: variable 'cur_grp' set but not used [-Wunused-but-set-variable]
-     996 |  U32 cur_grp;
-         |      ^~~~~~~
-   drivers/platform/x86/sepdk/sep/core2.c: In function 'corei7_Read_LBRs':
->> drivers/platform/x86/sepdk/sep/core2.c:1391:6: warning: variable 'pairs' set but not used [-Wunused-but-set-variable]
-    1391 |  U32 pairs = 0;
-         |      ^~~~~
---
-   drivers/platform/x86/sepdk/sep/perfver4.c: In function 'perfver4_Read_LBRs':
->> drivers/platform/x86/sepdk/sep/perfver4.c:1054:6: warning: variable 'pairs' set but not used [-Wunused-but-set-variable]
-    1054 |  U32 pairs = 0;
-         |      ^~~~~
---
-   drivers/platform/x86/sepdk/sep/silvermont.c: In function 'silvermont_Initialize':
->> drivers/platform/x86/sepdk/sep/silvermont.c:764:13: warning: variable 'pcfg' set but not used [-Wunused-but-set-variable]
-     764 |  DEV_CONFIG pcfg;
-         |             ^~~~
-..
+   drivers/input/misc/pm8941-pwrkey.c: In function 'pm8941_pwrkey_probe':
+>> drivers/input/misc/pm8941-pwrkey.c:221:41: warning: passing argument 1 of '__be32_to_cpup' makes pointer from integer without a cast [-Wint-conversion]
+     221 |         pwrkey->baseaddr = be32_to_cpup(*addr);
+         |                                         ^~~~~
+         |                                         |
+         |                                         __be32 {aka unsigned int}
+   In file included from include/linux/byteorder/big_endian.h:5,
+                    from arch/s390/include/uapi/asm/byteorder.h:5,
+                    from include/asm-generic/bitops/le.h:7,
+                    from arch/s390/include/asm/bitops.h:393,
+                    from include/linux/bitops.h:33,
+                    from include/linux/thread_info.h:27,
+                    from arch/s390/include/asm/preempt.h:6,
+                    from include/linux/preempt.h:78,
+                    from arch/s390/include/asm/percpu.h:5,
+                    from include/linux/irqflags.h:17,
+                    from include/linux/rcupdate.h:26,
+                    from include/linux/rculist.h:11,
+                    from include/linux/pid.h:5,
+                    from include/linux/sched.h:14,
+                    from include/linux/delay.h:23,
+                    from drivers/input/misc/pm8941-pwrkey.c:7:
+   include/uapi/linux/byteorder/big_endian.h:81:59: note: expected 'const __be32 *' {aka 'const unsigned int *'} but argument is of type '__be32' {aka 'unsigned int'}
+      81 | static __always_inline __u32 __be32_to_cpup(const __be32 *p)
+         |                                             ~~~~~~~~~~~~~~^
+   drivers/input/misc/pm8941-pwrkey.c:227:65: warning: passing argument 1 of '__be32_to_cpup' makes pointer from integer without a cast [-Wint-conversion]
+     227 |                         pwrkey->pon_pbs_baseaddr = be32_to_cpup(*addr);
+         |                                                                 ^~~~~
+         |                                                                 |
+         |                                                                 __be32 {aka unsigned int}
+   In file included from include/linux/byteorder/big_endian.h:5,
+                    from arch/s390/include/uapi/asm/byteorder.h:5,
+                    from include/asm-generic/bitops/le.h:7,
+                    from arch/s390/include/asm/bitops.h:393,
+                    from include/linux/bitops.h:33,
+                    from include/linux/thread_info.h:27,
+                    from arch/s390/include/asm/preempt.h:6,
+                    from include/linux/preempt.h:78,
+                    from arch/s390/include/asm/percpu.h:5,
+                    from include/linux/irqflags.h:17,
+                    from include/linux/rcupdate.h:26,
+                    from include/linux/rculist.h:11,
+                    from include/linux/pid.h:5,
+                    from include/linux/sched.h:14,
+                    from include/linux/delay.h:23,
+                    from drivers/input/misc/pm8941-pwrkey.c:7:
+   include/uapi/linux/byteorder/big_endian.h:81:59: note: expected 'const __be32 *' {aka 'const unsigned int *'} but argument is of type '__be32' {aka 'unsigned int'}
+      81 | static __always_inline __u32 __be32_to_cpup(const __be32 *p)
+         |                                             ~~~~~~~~~~~~~~^
 
 
-vim +/EVENTMUX_Start +371 drivers/platform/x86/sepdk/sep/eventmux.c
+vim +/__be32_to_cpup +221 drivers/input/misc/pm8941-pwrkey.c
 
-   354	
-   355	/* ------------------------------------------------------------------------- */
-   356	/*!
-   357	 * @fn          VOID EVENTMUX_Start (
-   358	 *                         VOID
-   359	 *                         )
-   360	 *
-   361	 * @brief       Start the timers and enable all the threads
-   362	 *
-   363	 * @param       NONE
-   364	 *
-   365	 * @return      NONE
-   366	 *
-   367	 * <I>Special Notes:</I>
-   368	 *              if event multiplexing has been enabled, set up the time slices and
-   369	 *              start the timer threads for all the timers
-   370	 */
- > 371	extern VOID EVENTMUX_Start(VOID)
-   372	{
-   373		SEP_DRV_LOG_TRACE_IN("");
-   374	
-   375		/*
-   376	     * Start the timer for all cpus
-   377	     */
-   378		CONTROL_Invoke_Parallel(eventmux_Start_Timers, NULL);
-   379	
-   380		SEP_DRV_LOG_TRACE_OUT("");
-   381	}
-   382	
-   383	/* ------------------------------------------------------------------------- */
-   384	/*!
-   385	 * @fn          VOID EVENTMUX_Initialize (
-   386	 *                         VOID
-   387	 *                         )
-   388	 *
-   389	 * @brief       Initialize the event multiplexing module
-   390	 *
-   391	 * @param       NONE
-   392	 *
-   393	 * @return      NONE
-   394	 *
-   395	 * <I>Special Notes:</I>
-   396	 *              if event multiplexing has been enabled,
-   397	 *              then allocate the memory needed to save and restore all the counter data
-   398	 *              set up the timers needed, but do not start them
-   399	 */
- > 400	extern VOID EVENTMUX_Initialize(VOID)
-   401	{
-   402		S32 size_of_vector;
-   403		S32 cpu_num;
-   404		CPU_STATE pcpu;
-   405		U32 dev_idx;
-   406		EVENT_CONFIG ec;
-   407	
-   408		SEP_DRV_LOG_TRACE_IN("");
-   409	
-   410		for (cpu_num = 0; cpu_num < GLOBAL_STATE_num_cpus(driver_state);
-   411		     cpu_num++) {
-   412			pcpu = &pcb[cpu_num];
-   413			dev_idx = core_to_dev_map[cpu_num];
-   414			ec = LWPMU_DEVICE_ec(&devices[dev_idx]);
-   415			if (ec == NULL) {
-   416				continue;
-   417			}
-   418			if (EVENT_CONFIG_mode(ec) == EM_DISABLED ||
-   419			    EVENT_CONFIG_num_groups(ec) == 1) {
-   420				continue;
-   421			}
-   422			size_of_vector = EVENT_CONFIG_num_groups(ec) *
-   423					 EVENT_CONFIG_max_gp_events(ec) * sizeof(S64);
-   424			CPU_STATE_em_table_offset(pcpu) = em_tables_size;
-   425			em_tables_size += size_of_vector;
-   426		}
-   427	
-   428		if (em_tables_size) {
-   429			em_tables = CONTROL_Allocate_Memory(em_tables_size);
-   430		}
-   431		CONTROL_Invoke_Parallel(eventmux_Allocate_Groups, NULL);
-   432	
-   433		CONTROL_Invoke_Parallel(eventmux_Prepare_Timer_Threads,
-   434					(VOID *)(size_t)0);
-   435	
-   436		SEP_DRV_LOG_TRACE_OUT("");
-   437	}
-   438	
-   439	/* ------------------------------------------------------------------------- */
-   440	/*!
-   441	 * @fn          VOID EVENTMUX_Destroy (
-   442	 *                         VOID
-   443	 *                         )
-   444	 *
-   445	 * @brief       Clean up the event multiplexing threads
-   446	 *
-   447	 * @param       NONE
-   448	 *
-   449	 * @return      NONE
-   450	 *
-   451	 * <I>Special Notes:</I>
-   452	 *              if event multiplexing has been enabled, then stop and cancel all the timers
-   453	 *              free up all the memory that is associated with EM
-   454	 */
- > 455	extern VOID EVENTMUX_Destroy(VOID)
+   168	
+   169	static SIMPLE_DEV_PM_OPS(pm8941_pwr_key_pm_ops,
+   170				 pm8941_pwrkey_suspend, pm8941_pwrkey_resume);
+   171	
+   172	static int pm8941_pwrkey_probe(struct platform_device *pdev)
+   173	{
+   174		struct pm8941_pwrkey *pwrkey;
+   175		bool pull_up;
+   176		struct device *parent;
+   177		struct device_node *regmap_node;
+   178		const __be32 *addr;
+   179		u32 req_delay;
+   180		int error;
+   181	
+   182		if (of_property_read_u32(pdev->dev.of_node, "debounce", &req_delay))
+   183			req_delay = 15625;
+   184	
+   185		if (req_delay > 2000000 || req_delay == 0) {
+   186			dev_err(&pdev->dev, "invalid debounce time: %u\n", req_delay);
+   187			return -EINVAL;
+   188		}
+   189	
+   190		pull_up = of_property_read_bool(pdev->dev.of_node, "bias-pull-up");
+   191	
+   192		pwrkey = devm_kzalloc(&pdev->dev, sizeof(*pwrkey), GFP_KERNEL);
+   193		if (!pwrkey)
+   194			return -ENOMEM;
+   195	
+   196		pwrkey->dev = &pdev->dev;
+   197		pwrkey->data = of_device_get_match_data(&pdev->dev);
+   198	
+   199		parent = pdev->dev.parent;
+   200		regmap_node = pdev->dev.of_node;
+   201		pwrkey->regmap = dev_get_regmap(parent, NULL);
+   202		if (!pwrkey->regmap) {
+   203			regmap_node = parent->of_node;
+   204			/*
+   205			 * We failed to get regmap for parent. Let's see if we are
+   206			 * a child of pon node and read regmap and reg from its
+   207			 * parent.
+   208			 */
+   209			pwrkey->regmap = dev_get_regmap(parent->parent, NULL);
+   210			if (!pwrkey->regmap) {
+   211				dev_err(&pdev->dev, "failed to locate regmap\n");
+   212				return -ENODEV;
+   213			}
+   214		}
+   215	
+   216		addr = of_get_address(regmap_node, 0, NULL, NULL);
+   217		if (!addr) {
+   218			dev_err(&pdev->dev, "reg property missing\n");
+   219			return -EINVAL;
+   220		}
+ > 221		pwrkey->baseaddr = be32_to_cpup(*addr);
+   222	
+   223		if (pwrkey->data->has_pon_pbs) {
+   224			/* PON_PBS base address is optional */
+   225			addr = of_get_address(regmap_node, 1, NULL, NULL);
+   226			if (addr)
+   227				pwrkey->pon_pbs_baseaddr = be32_to_cpup(*addr);
+   228		}
+   229	
+   230		pwrkey->irq = platform_get_irq(pdev, 0);
+   231		if (pwrkey->irq < 0)
+   232			return pwrkey->irq;
+   233	
+   234		error = regmap_read(pwrkey->regmap, pwrkey->baseaddr + PON_REV2,
+   235				    &pwrkey->revision);
+   236		if (error) {
+   237			dev_err(&pdev->dev, "failed to read revision: %d\n", error);
+   238			return error;
+   239		}
+   240	
+   241		error = of_property_read_u32(pdev->dev.of_node, "linux,code",
+   242					     &pwrkey->code);
+   243		if (error) {
+   244			dev_dbg(&pdev->dev,
+   245				"no linux,code assuming power (%d)\n", error);
+   246			pwrkey->code = KEY_POWER;
+   247		}
+   248	
+   249		pwrkey->input = devm_input_allocate_device(&pdev->dev);
+   250		if (!pwrkey->input) {
+   251			dev_dbg(&pdev->dev, "unable to allocate input device\n");
+   252			return -ENOMEM;
+   253		}
+   254	
+   255		input_set_capability(pwrkey->input, EV_KEY, pwrkey->code);
+   256	
+   257		pwrkey->input->name = pwrkey->data->name;
+   258		pwrkey->input->phys = pwrkey->data->phys;
+   259	
+   260		if (pwrkey->data->supports_debounce_config) {
+   261			req_delay = (req_delay << 6) / USEC_PER_SEC;
+   262			req_delay = ilog2(req_delay);
+   263	
+   264			error = regmap_update_bits(pwrkey->regmap,
+   265						   pwrkey->baseaddr + PON_DBC_CTL,
+   266						   PON_DBC_DELAY_MASK,
+   267						   req_delay);
+   268			if (error) {
+   269				dev_err(&pdev->dev, "failed to set debounce: %d\n",
+   270					error);
+   271				return error;
+   272			}
+   273		}
+   274	
+   275		if (pwrkey->data->pull_up_bit) {
+   276			error = regmap_update_bits(pwrkey->regmap,
+   277						   pwrkey->baseaddr + PON_PULL_CTL,
+   278						   pwrkey->data->pull_up_bit,
+   279						   pull_up ? pwrkey->data->pull_up_bit :
+   280							     0);
+   281			if (error) {
+   282				dev_err(&pdev->dev, "failed to set pull: %d\n", error);
+   283				return error;
+   284			}
+   285		}
+   286	
+   287		error = devm_request_threaded_irq(&pdev->dev, pwrkey->irq,
+   288						  NULL, pm8941_pwrkey_irq,
+   289						  IRQF_ONESHOT,
+   290						  pwrkey->data->name, pwrkey);
+   291		if (error) {
+   292			dev_err(&pdev->dev, "failed requesting IRQ: %d\n", error);
+   293			return error;
+   294		}
+   295	
+   296		error = input_register_device(pwrkey->input);
+   297		if (error) {
+   298			dev_err(&pdev->dev, "failed to register input device: %d\n",
+   299				error);
+   300			return error;
+   301		}
+   302	
+   303		if (pwrkey->data->supports_ps_hold_poff_config) {
+   304			pwrkey->reboot_notifier.notifier_call = pm8941_reboot_notify;
+   305			error = register_reboot_notifier(&pwrkey->reboot_notifier);
+   306			if (error) {
+   307				dev_err(&pdev->dev, "failed to register reboot notifier: %d\n",
+   308					error);
+   309				return error;
+   310			}
+   311		}
+   312	
+   313		platform_set_drvdata(pdev, pwrkey);
+   314		device_init_wakeup(&pdev->dev, 1);
+   315	
+   316		return 0;
+   317	}
+   318	
 
 ---
 0-DAY CI Kernel Test Service, Intel Corporation
