@@ -2,269 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C27DC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 14:33:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72D32C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 14:33:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351303AbiBCOdf (ORCPT
+        id S1351311AbiBCOdr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 09:33:35 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:26624 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1351220AbiBCOdT (ORCPT
+        Thu, 3 Feb 2022 09:33:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58208 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1351255AbiBCOdb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 09:33:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643898799;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
+        Thu, 3 Feb 2022 09:33:31 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1009C06173D;
+        Thu,  3 Feb 2022 06:33:28 -0800 (PST)
+Date:   Thu, 03 Feb 2022 14:33:24 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1643898806;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=b5j0N0MXhPzEQU00nTmU5V9bnIUoEjM+0zli124kmSk=;
-        b=WMUgyK8Za2R1EB+AJynBvgbLLJuLuXGGdeecPS2i9CaBxQ4b//4+b40pUryEoDD6sPjCOP
-        Lyst1C1CzCX7sKuonYF22knKOjHJfLs75DwbUAu9dzr7VSixaMMJUMBkoOmnZ1aeWfX5Fg
-        3xjuGR+IfQBzNw/FFkoqbj89TKgwWsc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-520-sFs62tweOrq32XIQq9Jtng-1; Thu, 03 Feb 2022 09:33:14 -0500
-X-MC-Unique: sFs62tweOrq32XIQq9Jtng-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AD64B18C89CF;
-        Thu,  3 Feb 2022 14:33:11 +0000 (UTC)
-Received: from plouf.redhat.com (unknown [10.39.192.114])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 38E0C7D4D0;
-        Thu,  3 Feb 2022 14:33:09 +0000 (UTC)
-From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
-To:     Jiri Kosina <jikos@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?q?Ahelenia=20Ziemia=C5=84ska?= 
-        <nabijaczleweli@nabijaczleweli.xyz>,
-        Ping Cheng <pinglinux@gmail.com>,
-        Aaron Armstrong Skomra <skomra@gmail.com>,
-        Jason Gerecke <killertofu@gmail.com>,
-        Peter Hutterer <peter.hutterer@who-t.net>
-Cc:     linux-input@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Subject: [PATCH v2 07/12] HID: compute an ordered list of input fields to process
-Date:   Thu,  3 Feb 2022 15:32:21 +0100
-Message-Id: <20220203143226.4023622-8-benjamin.tissoires@redhat.com>
-In-Reply-To: <20220203143226.4023622-1-benjamin.tissoires@redhat.com>
-References: <20220203143226.4023622-1-benjamin.tissoires@redhat.com>
+        bh=HT14HuhGCyRztC/jLqSJDtWvRkIQmRDoajpEtKu27yA=;
+        b=Nw245KOI2KOsm56VYgaBg8ryGObxi/7Ph9QWBHGMMXCHi7q8MsnW468ybUVPrxTZT1z4Nz
+        dASIdP8XUYrdYuWRHexLq9V+gelESWMSsEL8fhttV/LA8SdGp47s0mOkuercbaLPkUjrw9
+        WKtIfyx8KY1hCVVfXRzBRa65rOgfj3bgmL/gU1+VRV2lzlvVcaGa5y97fqiVsCNiND/Rqg
+        g4UbPb37ooAgjGC+0jmyPZ9H+mD0bJOtDFQ1Ry3w6nkTyw38dnXRdX/B5Nofyk7/HYHpka
+        WcoBleo7719JtwvFsOc6Tb40BGwEDbhyWKPGb2gA0Rrp/yvPp2ZRhCuI3mAECA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1643898806;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=HT14HuhGCyRztC/jLqSJDtWvRkIQmRDoajpEtKu27yA=;
+        b=kZj76hgSukAiQgD8bsnCy+itgFrO7kfiFalO24otzNH5+Vao5QBTqAMxotKfRy5Beltkb2
+        5LTdZvgUHwvcp5CA==
+From:   "tip-bot2 for Kan Liang" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: perf/core] perf/x86/intel: Increase max number of the fixed counters
+Cc:     Kan Liang <kan.liang@linux.intel.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Andi Kleen <ak@linux.intel.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <1643750603-100733-3-git-send-email-kan.liang@linux.intel.com>
+References: <1643750603-100733-3-git-send-email-kan.liang@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Message-ID: <164389880492.16921.3490541855090565957.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This will be used in a later commit:
-we build a list of input fields (and usage_index) that is ordered based
-on a usage priority.
+The following commit has been merged into the perf/core branch of tip:
 
-Changing the usage priority allows to re-order the processed list, meaning
-that we can enforce some usages to be process before others.
+Commit-ID:     ee28855a54493ce83bc2a3fbe30210be61b57bc7
+Gitweb:        https://git.kernel.org/tip/ee28855a54493ce83bc2a3fbe30210be61b57bc7
+Author:        Kan Liang <kan.liang@linux.intel.com>
+AuthorDate:    Tue, 01 Feb 2022 13:23:23 -08:00
+Committer:     Peter Zijlstra <peterz@infradead.org>
+CommitterDate: Wed, 02 Feb 2022 13:11:44 +01:00
 
-For instance, before processing InRange in the HID tablets, we need to
-know if we are using the eraser (side or button). Enforcing a higher
-(lower number) priority for Invert allows to force the input stack to
-process that field before.
+perf/x86/intel: Increase max number of the fixed counters
 
-Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+The new PEBS format 5 implies that the number of the fixed counters can
+be up to 16. The current INTEL_PMC_MAX_FIXED is still 4. If the current
+kernel runs on a future platform which has more than 4 fixed counters,
+a warning will be triggered. The number of the fixed counters will be
+clipped to 4. Users have to upgrade the kernel to access the new fixed
+counters.
+
+Add a new default constraint for PerfMon v5 and up, which can support
+up to 16 fixed counters. The pseudo-encoding is applied for the fixed
+counters 4 and later. The user can have generic support for the new
+fixed counters on the future platfroms without updating the kernel.
+
+Increase the INTEL_PMC_MAX_FIXED to 16.
+
+Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Andi Kleen <ak@linux.intel.com>
+Link: https://lkml.kernel.org/r/1643750603-100733-3-git-send-email-kan.liang@linux.intel.com
 ---
- drivers/hid/hid-core.c | 105 ++++++++++++++++++++++++++++++++++++++++-
- include/linux/hid.h    |  10 ++++
- 2 files changed, 114 insertions(+), 1 deletion(-)
+ arch/x86/events/intel/core.c      | 40 +++++++++++++++++++++++++++++-
+ arch/x86/include/asm/perf_event.h |  2 +-
+ 2 files changed, 40 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/hid/hid-core.c b/drivers/hid/hid-core.c
-index 34188d7ac0f7..b38528118642 100644
---- a/drivers/hid/hid-core.c
-+++ b/drivers/hid/hid-core.c
-@@ -81,6 +81,7 @@ struct hid_report *hid_register_report(struct hid_device *device,
- 	report_enum->report_id_hash[id] = report;
+diff --git a/arch/x86/events/intel/core.c b/arch/x86/events/intel/core.c
+index c914340..88dcfb4 100644
+--- a/arch/x86/events/intel/core.c
++++ b/arch/x86/events/intel/core.c
+@@ -181,6 +181,27 @@ static struct event_constraint intel_gen_event_constraints[] __read_mostly =
+ 	EVENT_CONSTRAINT_END
+ };
  
- 	list_add_tail(&report->list, &report_enum->report_list);
-+	INIT_LIST_HEAD(&report->field_entry_list);
- 
- 	return report;
- }
-@@ -101,7 +102,7 @@ static struct hid_field *hid_register_field(struct hid_report *report, unsigned
- 
- 	field = kzalloc((sizeof(struct hid_field) +
- 			 usages * sizeof(struct hid_usage) +
--			 2 * usages * sizeof(unsigned int)), GFP_KERNEL);
-+			 3 * usages * sizeof(unsigned int)), GFP_KERNEL);
- 	if (!field)
- 		return NULL;
- 
-@@ -110,6 +111,7 @@ static struct hid_field *hid_register_field(struct hid_report *report, unsigned
- 	field->usage = (struct hid_usage *)(field + 1);
- 	field->value = (s32 *)(field->usage + usages);
- 	field->new_value = (s32 *)(field->value + usages);
-+	field->usages_priorities = (s32 *)(field->new_value + usages);
- 	field->report = report;
- 
- 	return field;
-@@ -657,6 +659,8 @@ static void hid_free_report(struct hid_report *report)
- {
- 	unsigned n;
- 
-+	kfree(report->field_entries);
-+
- 	for (n = 0; n < report->maxfield; n++)
- 		kfree(report->field[n]);
- 	kfree(report);
-@@ -1667,6 +1671,103 @@ static void hid_process_report(struct hid_device *hid,
- 	}
- }
- 
-+/*
-+ * Insert a given usage_index in a field in the list
-+ * of processed usages in the report.
-+ *
-+ * The elements of lower priority score are processed
-+ * first.
-+ */
-+static void __hid_insert_field_entry(struct hid_device *hid,
-+				     struct hid_report *report,
-+				     struct hid_field_entry *entry,
-+				     struct hid_field *field,
-+				     unsigned int usage_index)
++static struct event_constraint intel_v5_gen_event_constraints[] __read_mostly =
 +{
-+	struct hid_field_entry *next;
-+
-+	entry->field = field;
-+	entry->index = usage_index;
-+	entry->priority = field->usages_priorities[usage_index];
-+
-+	/* insert the element at the correct position */
-+	list_for_each_entry(next,
-+			    &report->field_entry_list,
-+			    list) {
-+		/*
-+		 * the priority of our element is strictly higher
-+		 * than the next one, insert it before
-+		 */
-+		if (entry->priority > next->priority) {
-+			list_add_tail(&entry->list, &next->list);
-+			return;
-+		}
-+	}
-+
-+	/* lowest priority score: insert at the end */
-+	list_add_tail(&entry->list, &report->field_entry_list);
-+}
-+
-+static void hid_report_process_ordering(struct hid_device *hid,
-+					struct hid_report *report)
-+{
-+	struct hid_field *field;
-+	struct hid_field_entry *entries;
-+	unsigned int a, u, usages;
-+	unsigned int count = 0;
-+
-+	/* count the number of individual fields in the report */
-+	for (a = 0; a < report->maxfield; a++) {
-+		field = report->field[a];
-+
-+		if (field->flags & HID_MAIN_ITEM_VARIABLE)
-+			count += field->report_count;
-+		else
-+			count++;
-+	}
-+
-+	/* allocate the memory to process the fields */
-+	entries = kcalloc(count, sizeof(*entries), GFP_KERNEL);
-+	if (!entries)
-+		return;
-+
-+	report->field_entries = entries;
-+
-+	/*
-+	 * walk through all fields in the report and
-+	 * store them by priority order in report->field_entry_list
-+	 *
-+	 * - Var elements are individualized (field + usage_index)
-+	 * - Arrays are taken as one, we can not chose an order for them
-+	 */
-+	usages = 0;
-+	for (a = 0; a < report->maxfield; a++) {
-+		field = report->field[a];
-+
-+		if (field->flags & HID_MAIN_ITEM_VARIABLE) {
-+			for (u = 0; u < field->report_count; u++) {
-+				__hid_insert_field_entry(hid, report,
-+							 &entries[usages],
-+							 field, u);
-+				usages++;
-+			}
-+		} else {
-+			__hid_insert_field_entry(hid, report, &entries[usages],
-+						 field, 0);
-+			usages++;
-+		}
-+	}
-+}
-+
-+static void hid_process_ordering(struct hid_device *hid)
-+{
-+	struct hid_report *report;
-+	struct hid_report_enum *report_enum = &hid->report_enum[HID_INPUT_REPORT];
-+
-+	list_for_each_entry(report, &report_enum->report_list, list)
-+		hid_report_process_ordering(hid, report);
-+}
-+
- /*
-  * Output the field into the report.
-  */
-@@ -2050,6 +2151,8 @@ int hid_connect(struct hid_device *hdev, unsigned int connect_mask)
- 		return -ENODEV;
- 	}
- 
-+	hid_process_ordering(hdev);
-+
- 	if ((hdev->claimed & HID_CLAIMED_INPUT) &&
- 			(connect_mask & HID_CONNECT_FF) && hdev->ff_init)
- 		hdev->ff_init(hdev);
-diff --git a/include/linux/hid.h b/include/linux/hid.h
-index cf79eb3da465..f25020c0d6b8 100644
---- a/include/linux/hid.h
-+++ b/include/linux/hid.h
-@@ -477,6 +477,7 @@ struct hid_field {
- 	unsigned  report_type;		/* (input,output,feature) */
- 	__s32    *value;		/* last known value(s) */
- 	__s32    *new_value;		/* newly read value(s) */
-+	__s32    *usages_priorities;	/* priority of each usage when reading the report */
- 	__s32     logical_minimum;
- 	__s32     logical_maximum;
- 	__s32     physical_minimum;
-@@ -493,13 +494,22 @@ struct hid_field {
- 
- #define HID_MAX_FIELDS 256
- 
-+struct hid_field_entry {
-+	struct list_head list;
-+	struct hid_field *field;
-+	unsigned int index;
-+	__s32 priority;
++	FIXED_EVENT_CONSTRAINT(0x00c0, 0), /* INST_RETIRED.ANY */
++	FIXED_EVENT_CONSTRAINT(0x003c, 1), /* CPU_CLK_UNHALTED.CORE */
++	FIXED_EVENT_CONSTRAINT(0x0300, 2), /* CPU_CLK_UNHALTED.REF */
++	FIXED_EVENT_CONSTRAINT(0x0400, 3), /* SLOTS */
++	FIXED_EVENT_CONSTRAINT(0x0500, 4),
++	FIXED_EVENT_CONSTRAINT(0x0600, 5),
++	FIXED_EVENT_CONSTRAINT(0x0700, 6),
++	FIXED_EVENT_CONSTRAINT(0x0800, 7),
++	FIXED_EVENT_CONSTRAINT(0x0900, 8),
++	FIXED_EVENT_CONSTRAINT(0x0a00, 9),
++	FIXED_EVENT_CONSTRAINT(0x0b00, 10),
++	FIXED_EVENT_CONSTRAINT(0x0c00, 11),
++	FIXED_EVENT_CONSTRAINT(0x0d00, 12),
++	FIXED_EVENT_CONSTRAINT(0x0e00, 13),
++	FIXED_EVENT_CONSTRAINT(0x0f00, 14),
++	FIXED_EVENT_CONSTRAINT(0x1000, 15),
++	EVENT_CONSTRAINT_END
 +};
 +
- struct hid_report {
- 	struct list_head list;
- 	struct list_head hidinput_list;
-+	struct list_head field_entry_list;		/* ordered list of input fields */
- 	unsigned int id;				/* id of this report */
- 	unsigned int type;				/* report type */
- 	unsigned int application;			/* application usage for this report */
- 	struct hid_field *field[HID_MAX_FIELDS];	/* fields of the report */
-+	struct hid_field_entry *field_entries;		/* allocated memory of input field_entry */
- 	unsigned maxfield;				/* maximum valid field index */
- 	unsigned size;					/* size of the report (bits) */
- 	struct hid_device *device;			/* associated device */
--- 
-2.33.1
-
+ static struct event_constraint intel_slm_event_constraints[] __read_mostly =
+ {
+ 	FIXED_EVENT_CONSTRAINT(0x00c0, 0), /* INST_RETIRED.ANY */
+@@ -6295,7 +6316,9 @@ __init int intel_pmu_init(void)
+ 			pr_cont("generic architected perfmon v1, ");
+ 			name = "generic_arch_v1";
+ 			break;
+-		default:
++		case 2:
++		case 3:
++		case 4:
+ 			/*
+ 			 * default constraints for v2 and up
+ 			 */
+@@ -6303,6 +6326,21 @@ __init int intel_pmu_init(void)
+ 			pr_cont("generic architected perfmon, ");
+ 			name = "generic_arch_v2+";
+ 			break;
++		default:
++			/*
++			 * The default constraints for v5 and up can support up to
++			 * 16 fixed counters. For the fixed counters 4 and later,
++			 * the pseudo-encoding is applied.
++			 * The constraints may be cut according to the CPUID enumeration
++			 * by inserting the EVENT_CONSTRAINT_END.
++			 */
++			if (x86_pmu.num_counters_fixed > INTEL_PMC_MAX_FIXED)
++				x86_pmu.num_counters_fixed = INTEL_PMC_MAX_FIXED;
++			intel_v5_gen_event_constraints[x86_pmu.num_counters_fixed].weight = -1;
++			x86_pmu.event_constraints = intel_v5_gen_event_constraints;
++			pr_cont("generic architected perfmon, ");
++			name = "generic_arch_v5+";
++			break;
+ 		}
+ 	}
+ 
+diff --git a/arch/x86/include/asm/perf_event.h b/arch/x86/include/asm/perf_event.h
+index 8fc1b50..58d9e4b 100644
+--- a/arch/x86/include/asm/perf_event.h
++++ b/arch/x86/include/asm/perf_event.h
+@@ -7,7 +7,7 @@
+  */
+ 
+ #define INTEL_PMC_MAX_GENERIC				       32
+-#define INTEL_PMC_MAX_FIXED					4
++#define INTEL_PMC_MAX_FIXED				       16
+ #define INTEL_PMC_IDX_FIXED				       32
+ 
+ #define X86_PMC_IDX_MAX					       64
