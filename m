@@ -2,50 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B5C3C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:36:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C210C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:36:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236700AbiBCUgs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:36:48 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:38830 "EHLO
+        id S1354954AbiBCUgx (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Feb 2022 15:36:53 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41000 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354724AbiBCUeH (ORCPT
+        with ESMTP id S1355099AbiBCUev (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 15:34:07 -0500
+        Thu, 3 Feb 2022 15:34:51 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6090761AE9;
-        Thu,  3 Feb 2022 20:34:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE76EC340E8;
-        Thu,  3 Feb 2022 20:34:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6428A61B03;
+        Thu,  3 Feb 2022 20:34:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C8A2C36B08;
+        Thu,  3 Feb 2022 20:34:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643920446;
-        bh=a9hRDb8jeBX3+CfUzzLMVZKn6WHEX5RbBWJPBjc8rVk=;
+        s=k20201202; t=1643920490;
+        bh=XVFM1tXUzp/miplACsf4svGjDWRV9r3TUJTlD4CJNVE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LfBFJaeeNIQKoD9lPLKdLafhvCD5hnTT2D0F/VyKx8BE15WYyqKFz/UaPrafUPaWg
-         TtXz3qHSGaKvwZKsECNK1JepnMDnEVEdmgDbTAPUH+GnGePfqrB9FB/r5r/iu0jwu1
-         +RupkGb+lt26wswf5QQ0wjaNkIrqzr7XQA3CSicnXP22HXtJzHSmt01PgMRVGJVf7k
-         Fp+wKVohN0J80RTX5mO4sEbo5sVsvQ8iPhdkTHzVnv3l79d2kUI7VbXumnT28RPTeW
-         W1qlJJbpwTgkJnPzBjc9W3Y9JArfMzqZ/NC5Vwey8wm4BxMQQ49kOh2VsN1+OSi4o8
-         bAUJxUdAD+Zbw==
+        b=bhFUMb3mQ6JS3ZQQQPJorWgXF5fmSQ5VZ+HHccUnAHyweGMfNRYIoozgBvk+yK9DX
+         FKc7Ve0fXy/N3JF/8aOBHoFDzJZpaMoYONEOgnEKMrsVPXyoFlWDTbr6qPDvdkU+Bg
+         LH+W2tNhe2tdGXvkLhbpE/+cFkFhLEa8NRu1CRe8jCdzrSDDF325XzmI01llOtCR0/
+         nAL5nKKbmeOE87NkU00z/Tn6n6wjutQRUyjNrG5gIl0XhPXQZRez6sb3juV5rJzNJg
+         wQ6IVy7o75rpHyvFfuhyXN/FQYxjWluwheGp6aUmlWRuvIGhaPLJ2LWEDuvhzsoQ93
+         vEpvsoKlignKw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zhan Liu <zhan.liu@amd.com>, Charlene Liu <charlene.liu@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, harry.wentland@amd.com,
-        sunpeng.li@amd.com, Rodrigo.Siqueira@amd.com,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch, nikola.cornij@amd.com, Dmytro.Laktyushkin@amd.com,
-        Charlene.Liu@amd.com, angus.wang@amd.com, Qingqing.Zhuo@amd.com,
-        charles.sun@amd.com, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.15 35/41] drm/amd/display: Correct MPC split policy for DCN301
-Date:   Thu,  3 Feb 2022 15:32:39 -0500
-Message-Id: <20220203203245.3007-35-sashal@kernel.org>
+Cc:     Olga Kornievskaia <kolga@netapp.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Sasha Levin <sashal@kernel.org>,
+        trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
+        linux-nfs@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 02/25] NFSv4 only print the label when its queried
+Date:   Thu,  3 Feb 2022 15:34:23 -0500
+Message-Id: <20220203203447.3570-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220203203245.3007-1-sashal@kernel.org>
-References: <20220203203245.3007-1-sashal@kernel.org>
+In-Reply-To: <20220203203447.3570-1-sashal@kernel.org>
+References: <20220203203447.3570-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,39 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhan Liu <zhan.liu@amd.com>
+From: Olga Kornievskaia <kolga@netapp.com>
 
-[ Upstream commit ac46d93235074a6c5d280d35771c23fd8620e7d9 ]
+[ Upstream commit 2c52c8376db7160a1dd8a681c61c9258405ef143 ]
 
-[Why]
-DCN301 has seamless boot enabled. With MPC split enabled
-at the same time, system will hang.
+When the bitmask of the attributes doesn't include the security label,
+don't bother printing it. Since the label might not be null terminated,
+adjust the printing format accordingly.
 
-[How]
-Revert MPC split policy back to "MPC_SPLIT_AVOID". Since we have
-ODM combine enabled on DCN301, pipe split is not necessary here.
-
-Signed-off-by: Zhan Liu <zhan.liu@amd.com>
-Reviewed-by: Charlene Liu <charlene.liu@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Olga Kornievskaia <kolga@netapp.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/dc/dcn301/dcn301_resource.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/nfs/nfs4xdr.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn301/dcn301_resource.c b/drivers/gpu/drm/amd/display/dc/dcn301/dcn301_resource.c
-index 9e2f18a0c9483..26ebe00a55f67 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn301/dcn301_resource.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn301/dcn301_resource.c
-@@ -863,7 +863,7 @@ static const struct dc_debug_options debug_defaults_drv = {
- 	.disable_clock_gate = true,
- 	.disable_pplib_clock_request = true,
- 	.disable_pplib_wm_range = true,
--	.pipe_split_policy = MPC_SPLIT_DYNAMIC,
-+	.pipe_split_policy = MPC_SPLIT_AVOID,
- 	.force_single_disp_pipe_split = false,
- 	.disable_dcc = DCC_ENABLE,
- 	.vsr_support = true,
+diff --git a/fs/nfs/nfs4xdr.c b/fs/nfs/nfs4xdr.c
+index c16b93df1bc14..9f8bd45379e72 100644
+--- a/fs/nfs/nfs4xdr.c
++++ b/fs/nfs/nfs4xdr.c
+@@ -4184,10 +4184,11 @@ static int decode_attr_security_label(struct xdr_stream *xdr, uint32_t *bitmap,
+ 		} else
+ 			printk(KERN_WARNING "%s: label too long (%u)!\n",
+ 					__func__, len);
++		if (label && label->label)
++			dprintk("%s: label=%.*s, len=%d, PI=%d, LFS=%d\n",
++				__func__, label->len, (char *)label->label,
++				label->len, label->pi, label->lfs);
+ 	}
+-	if (label && label->label)
+-		dprintk("%s: label=%s, len=%d, PI=%d, LFS=%d\n", __func__,
+-			(char *)label->label, label->len, label->pi, label->lfs);
+ 	return status;
+ }
+ 
 -- 
 2.34.1
 
