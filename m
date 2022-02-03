@@ -2,48 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C9EFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:34:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A3A7C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:34:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354571AbiBCUeb (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:34:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57940 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354401AbiBCUdC (ORCPT
+        id S244863AbiBCUeh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Feb 2022 15:34:37 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:38986 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354778AbiBCUc6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 15:33:02 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F20C1C061786;
-        Thu,  3 Feb 2022 12:32:56 -0800 (PST)
+        Thu, 3 Feb 2022 15:32:58 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B2894B835AC;
-        Thu,  3 Feb 2022 20:32:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 466C4C36AE9;
-        Thu,  3 Feb 2022 20:32:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2BCE161A5C;
+        Thu,  3 Feb 2022 20:32:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3993C36AE5;
+        Thu,  3 Feb 2022 20:32:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643920374;
-        bh=IpJaUgCby7BfLwA8UIjAkqWSIcHsUn66qeLSJKTrifk=;
+        s=k20201202; t=1643920377;
+        bh=C8dHEA5Be/M4HwoHN9qOTlysc8sgv88UKMWgUlc+Z6I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SOzSVj0mRH3O6k5gotBnpelYn6QNHk9TJfG6CFIvHWlZ0DRx1AqPOY36YP9ykOlGh
-         1zU52I71snumjnhhBEDI551ZS3XsMmZe4udtO0/l8SEM2TpzO93G/yTaBjOEsmizm5
-         doF109sOsJrEQkIZHbgMKwl9S74r1PdrQOyzlGPDR1phX3w/SBOtmP5nzr6d85TCsH
-         QvW2Xf3bVIIwr9EcELA5dJOCp2NW8jQZ5Q1HflWF0BvsB0xYAZlsET0qzJYL+wYblh
-         80y5QP9ndvYeiFa29cLTM9+OQPFOUXNq0K917QplJ1fFFYOX+TdSRQ2jviHb1UER5S
-         q9lzJzO7AeEJg==
+        b=dKWJvKwKHaaOL1XzcvKFr/y/whEtw9PIJuMaTOfDS2RpfIy9L986eTcV4OwdwRnR1
+         4tMSPtoODYqzR9hWGwV2rKv/U7LfwQXeZNzIoM0iwhvnhBLJnG8ePRe131dxbsC1Ih
+         5jwFKO9p/tlO5GU1l5NfYYdENi+TVTvGANzU7JY9pdQ28RFjy9lqgaIObndufrYdkb
+         d63Uz+5h9UY19cKrYgREJNnpeP/ibQal2tnw92FXxx7XJP71Z0XXfVlPWQxKO76xvR
+         fxYRnOn9WoSslKb59OOcPBuIPdHnRxpM9d6JNEAaAPKun9KLXFzpnbpfjrhNgzum5j
+         1NQlo296LiVKw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Florian Westphal <fw@strlen.de>, Yi Chen <yiche@redhat.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>, kadlec@netfilter.org,
-        davem@davemloft.net, kuba@kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 05/41] netfilter: nf_conntrack_netbios_ns: fix helper module alias
-Date:   Thu,  3 Feb 2022 15:32:09 -0500
-Message-Id: <20220203203245.3007-5-sashal@kernel.org>
+Cc:     Olga Kornievskaia <kolga@netapp.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Sasha Levin <sashal@kernel.org>,
+        trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
+        linux-nfs@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 07/41] NFSv4 store server support for fs_location attribute
+Date:   Thu,  3 Feb 2022 15:32:11 -0500
+Message-Id: <20220203203245.3007-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220203203245.3007-1-sashal@kernel.org>
 References: <20220203203245.3007-1-sashal@kernel.org>
@@ -55,52 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Olga Kornievskaia <kolga@netapp.com>
 
-[ Upstream commit 0e906607b9c5ee22312c9af4d8adb45c617ea38a ]
+[ Upstream commit 8a59bb93b7e3cca389af44781a429ac12ac49be6 ]
 
-The helper gets registered as 'netbios-ns', not netbios_ns.
-Intentionally not adding a fixes-tag because i don't want this to go to
-stable. This wasn't noticed for a very long time so no so no need to risk
-regressions.
+Define and store if server returns it supports fs_locations attribute
+as a capability.
 
-Reported-by: Yi Chen <yiche@redhat.com>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Olga Kornievskaia <kolga@netapp.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_conntrack_netbios_ns.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ fs/nfs/nfs4proc.c         | 2 ++
+ include/linux/nfs_fs_sb.h | 2 +-
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/net/netfilter/nf_conntrack_netbios_ns.c b/net/netfilter/nf_conntrack_netbios_ns.c
-index 7f19ee2596090..55415f011943d 100644
---- a/net/netfilter/nf_conntrack_netbios_ns.c
-+++ b/net/netfilter/nf_conntrack_netbios_ns.c
-@@ -20,13 +20,14 @@
- #include <net/netfilter/nf_conntrack_helper.h>
- #include <net/netfilter/nf_conntrack_expect.h>
- 
-+#define HELPER_NAME	"netbios-ns"
- #define NMBD_PORT	137
- 
- MODULE_AUTHOR("Patrick McHardy <kaber@trash.net>");
- MODULE_DESCRIPTION("NetBIOS name service broadcast connection tracking helper");
- MODULE_LICENSE("GPL");
- MODULE_ALIAS("ip_conntrack_netbios_ns");
--MODULE_ALIAS_NFCT_HELPER("netbios_ns");
-+MODULE_ALIAS_NFCT_HELPER(HELPER_NAME);
- 
- static unsigned int timeout __read_mostly = 3;
- module_param(timeout, uint, 0400);
-@@ -44,7 +45,7 @@ static int netbios_ns_help(struct sk_buff *skb, unsigned int protoff,
- }
- 
- static struct nf_conntrack_helper helper __read_mostly = {
--	.name			= "netbios-ns",
-+	.name			= HELPER_NAME,
- 	.tuple.src.l3num	= NFPROTO_IPV4,
- 	.tuple.src.u.udp.port	= cpu_to_be16(NMBD_PORT),
- 	.tuple.dst.protonum	= IPPROTO_UDP,
+diff --git a/fs/nfs/nfs4proc.c b/fs/nfs/nfs4proc.c
+index 443eab71c9a9e..367a1b99b7550 100644
+--- a/fs/nfs/nfs4proc.c
++++ b/fs/nfs/nfs4proc.c
+@@ -3894,6 +3894,8 @@ static int _nfs4_server_capabilities(struct nfs_server *server, struct nfs_fh *f
+ 		if (res.attr_bitmask[2] & FATTR4_WORD2_SECURITY_LABEL)
+ 			server->caps |= NFS_CAP_SECURITY_LABEL;
+ #endif
++		if (res.attr_bitmask[0] & FATTR4_WORD0_FS_LOCATIONS)
++			server->caps |= NFS_CAP_FS_LOCATIONS;
+ 		if (!(res.attr_bitmask[0] & FATTR4_WORD0_FILEID))
+ 			server->fattr_valid &= ~NFS_ATTR_FATTR_FILEID;
+ 		if (!(res.attr_bitmask[1] & FATTR4_WORD1_MODE))
+diff --git a/include/linux/nfs_fs_sb.h b/include/linux/nfs_fs_sb.h
+index 2a9acbfe00f0f..9a6e70ccde56e 100644
+--- a/include/linux/nfs_fs_sb.h
++++ b/include/linux/nfs_fs_sb.h
+@@ -287,5 +287,5 @@ struct nfs_server {
+ #define NFS_CAP_COPY_NOTIFY	(1U << 27)
+ #define NFS_CAP_XATTR		(1U << 28)
+ #define NFS_CAP_READ_PLUS	(1U << 29)
+-
++#define NFS_CAP_FS_LOCATIONS	(1U << 30)
+ #endif
 -- 
 2.34.1
 
