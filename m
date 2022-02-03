@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2FC0C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:40:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 522BBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:40:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355468AbiBCUj5 (ORCPT
+        id S1355895AbiBCUkD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:39:57 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:43206 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354990AbiBCUg6 (ORCPT
+        Thu, 3 Feb 2022 15:40:03 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:38962 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238158AbiBCUg5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 15:36:58 -0500
+        Thu, 3 Feb 2022 15:36:57 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 91CF060ACB;
-        Thu,  3 Feb 2022 20:36:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFE53C340F2;
-        Thu,  3 Feb 2022 20:36:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8233CB835C2;
+        Thu,  3 Feb 2022 20:36:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D2C6C340EF;
+        Thu,  3 Feb 2022 20:36:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643920617;
-        bh=5H7ZWdZ/Wp1Y3BFdLHd5wftiDtn0QwxHwepFUjOJhtU=;
+        s=k20201202; t=1643920615;
+        bh=Rk+bx6izfFhamqI62DLqstxwO1vrmy+lWTIj8j3BP2o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZoEAzh7YGywCYqdnYZMncrREXaP042nq1pkoRNKgr6wU0ka+ALFzaXwtP7ier3oWS
-         jG0BGvLIucz7F6C9EMLKP+On9dwT8PoofMkFSytX4qkTpeMcsFOKrONHvKaUJSydtw
-         4CBLccUlx4CxK9ILmx4NK2iN/9KXAEbje7WLuC3jDlKpl8h7KjQBvp+2UwHrtGto4f
-         J3VOMm4jnXv/WNI5AgfvUa/ZhsuJf8I2NMq2q01cHOQp5zlwctKtMWrBgyf3zBLjvE
-         zc77sdw1HyxrVPUt9jIiZFOnxnW6aFpLs1KSa+jGWm4fUw5t5mbocZo3I/2l3sPWyB
-         1UuZjHs+XWQiQ==
+        b=BP+am+wv2MmFtx8THquOAmMAbzbMAuWZX+xDf005Cv1n/jFFEziqXmVqkAIaBF32t
+         7V4GITe6pgMlgM1avlRXhulZPAZYzTW0vByZyU5DTjqD3BqeTDfLADfEpQ4uMme++v
+         pvxDp8MhYfGmYeEDQXMpBy6LlMLU5xygGnf9BLCkGiahfewgoYO8t/Fg43uzb1ZRXl
+         AsnRzLUEJo/xDH+KSDzuIx/0fK/BdEV8lBrcHAqUbRdWYhWxhf4PYsGQgEDdi/xWiI
+         thYF3TaTKNsGkrPBGvDCMMUaEjQqMLdh34kkqxjJ0JCGWnrNTN2BaKHZJZqYXqjeaC
+         va2mN+YVXKnNQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Florian Westphal <fw@strlen.de>, Yi Chen <yiche@redhat.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>, kadlec@netfilter.org,
-        davem@davemloft.net, kuba@kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 3/7] netfilter: nf_conntrack_netbios_ns: fix helper module alias
-Date:   Thu,  3 Feb 2022 15:36:47 -0500
-Message-Id: <20220203203651.5158-3-sashal@kernel.org>
+Cc:     Xiaoke Wang <xkernel.wang@foxmail.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Sasha Levin <sashal@kernel.org>,
+        trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
+        linux-nfs@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 2/7] nfs: nfs4clinet: check the return value of kstrdup()
+Date:   Thu,  3 Feb 2022 15:36:46 -0500
+Message-Id: <20220203203651.5158-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220203203651.5158-1-sashal@kernel.org>
 References: <20220203203651.5158-1-sashal@kernel.org>
@@ -52,52 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-[ Upstream commit 0e906607b9c5ee22312c9af4d8adb45c617ea38a ]
+[ Upstream commit fbd2057e5329d3502a27491190237b6be52a1cb6 ]
 
-The helper gets registered as 'netbios-ns', not netbios_ns.
-Intentionally not adding a fixes-tag because i don't want this to go to
-stable. This wasn't noticed for a very long time so no so no need to risk
-regressions.
+kstrdup() returns NULL when some internal memory errors happen, it is
+better to check the return value of it so to catch the memory error in
+time.
 
-Reported-by: Yi Chen <yiche@redhat.com>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_conntrack_netbios_ns.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ fs/nfs/nfs4client.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/net/netfilter/nf_conntrack_netbios_ns.c b/net/netfilter/nf_conntrack_netbios_ns.c
-index 4c8f30a3d6d27..1c429f2186eaf 100644
---- a/net/netfilter/nf_conntrack_netbios_ns.c
-+++ b/net/netfilter/nf_conntrack_netbios_ns.c
-@@ -24,13 +24,14 @@
- #include <net/netfilter/nf_conntrack_helper.h>
- #include <net/netfilter/nf_conntrack_expect.h>
+diff --git a/fs/nfs/nfs4client.c b/fs/nfs/nfs4client.c
+index 2fb4633897084..48baa92846e5f 100644
+--- a/fs/nfs/nfs4client.c
++++ b/fs/nfs/nfs4client.c
+@@ -1329,8 +1329,11 @@ int nfs4_update_server(struct nfs_server *server, const char *hostname,
+ 		goto out;
+ 	}
  
-+#define HELPER_NAME	"netbios-ns"
- #define NMBD_PORT	137
+-	if (server->nfs_client->cl_hostname == NULL)
++	if (server->nfs_client->cl_hostname == NULL) {
+ 		server->nfs_client->cl_hostname = kstrdup(hostname, GFP_KERNEL);
++		if (server->nfs_client->cl_hostname == NULL)
++			return -ENOMEM;
++	}
+ 	nfs_server_insert_lists(server);
  
- MODULE_AUTHOR("Patrick McHardy <kaber@trash.net>");
- MODULE_DESCRIPTION("NetBIOS name service broadcast connection tracking helper");
- MODULE_LICENSE("GPL");
- MODULE_ALIAS("ip_conntrack_netbios_ns");
--MODULE_ALIAS_NFCT_HELPER("netbios_ns");
-+MODULE_ALIAS_NFCT_HELPER(HELPER_NAME);
- 
- static unsigned int timeout __read_mostly = 3;
- module_param(timeout, uint, S_IRUSR);
-@@ -47,7 +48,7 @@ static int netbios_ns_help(struct sk_buff *skb, unsigned int protoff,
- }
- 
- static struct nf_conntrack_helper helper __read_mostly = {
--	.name			= "netbios-ns",
-+	.name			= HELPER_NAME,
- 	.tuple.src.l3num	= NFPROTO_IPV4,
- 	.tuple.src.u.udp.port	= cpu_to_be16(NMBD_PORT),
- 	.tuple.dst.protonum	= IPPROTO_UDP,
+ 	error = nfs_probe_destination(server);
 -- 
 2.34.1
 
