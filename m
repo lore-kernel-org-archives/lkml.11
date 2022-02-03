@@ -2,272 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83EABC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 18:16:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCBDEC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 18:19:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353338AbiBCSQD (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 13:16:03 -0500
-Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:12263 "EHLO
-        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353310AbiBCSQA (ORCPT
+        id S237251AbiBCSTO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Feb 2022 13:19:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55600 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234287AbiBCSTN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 13:16:00 -0500
+        Thu, 3 Feb 2022 13:19:13 -0500
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 604D9C061714;
+        Thu,  3 Feb 2022 10:19:12 -0800 (PST)
+Received: by mail-ej1-x632.google.com with SMTP id s5so11371936ejx.2;
+        Thu, 03 Feb 2022 10:19:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.de; i=@amazon.de; q=dns/txt; s=amazon201209;
-  t=1643912160; x=1675448160;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=P04UnRBV76MpDpOOK6q6643kAlnLXt09lfQX/PkSX+E=;
-  b=b5GAs4ypYj4piUVQuEYQ01A1DKTQs3KFxSBReYuERvIvozHkvwLILs28
-   RUn82lsA9zDrVIa7mV/Jnouj0mbbaJtHgv72gIUH64ovMHuhC05PvxAZx
-   gjTYAWJYDhaAj5fLJHg3mVOiYcR6DsLXDLP77uvbXqs+eEdXxIaBJQAig
-   s=;
-X-IronPort-AV: E=Sophos;i="5.88,340,1635206400"; 
-   d="scan'208";a="175354490"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1d-54a073b7.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-6001.iad6.amazon.com with ESMTP; 03 Feb 2022 18:15:49 +0000
-Received: from EX13D07EUA003.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1d-54a073b7.us-east-1.amazon.com (Postfix) with ESMTPS id 75E19A28C2;
-        Thu,  3 Feb 2022 18:15:45 +0000 (UTC)
-Received: from dev-dsk-faresx-1b-818bcd8f.eu-west-1.amazon.com (10.43.160.132)
- by EX13D07EUA003.ant.amazon.com (10.43.165.176) with Microsoft SMTP Server
- (TLS) id 15.0.1497.28; Thu, 3 Feb 2022 18:15:39 +0000
-From:   Fares Mehanna <faresx@amazon.de>
-To:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>
-CC:     <x86@kernel.org>, <kvm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-sgx@vger.kernel.org>,
-        Fares Mehanna <faresx@amazon.de>
-Subject: [PATCH] KVM: VMX: pass TME information to guests
-Date:   Thu, 3 Feb 2022 18:14:32 +0000
-Message-ID: <20220203181432.34911-1-faresx@amazon.de>
-X-Mailer: git-send-email 2.32.0
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MXUPAf5aXmp6w/5uWB/DhRxTO8yyeowOCWlMvMizPTE=;
+        b=CqIEFZuDwccYOvD96Az75oR/nYY+OofjGMJ5LLA+B/Jth8srxNJ3XTNuMOxmFEdSpo
+         d3AvxokjJmXWlE4N8eUyt40LiSuBqOP5YzNDY860q+9NL9DDup9jK2FYbk5IHlqY0Whk
+         D6t0NKnafNn5oMf1hE18ZdnCBrp+5trObYFGkYtJD4ERTcyGlvkwuMy0Tolq9l16OYuj
+         LmwbEhjtJzOsLyGdzrsJyebZTiOun7VB1n4PEeanxz1DEvJrg3A/qWFcKJO2eU38zKpH
+         opRIa7INcEHH3bQTppwq3qTm6HPMHNkeN0D1ckkPQA/emfFu0RU9ewQAbJZlLFgTYbRa
+         xJVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MXUPAf5aXmp6w/5uWB/DhRxTO8yyeowOCWlMvMizPTE=;
+        b=Prb/2NuX4MHSCKsL0QDFXS05e3L2OWfIyAqnl7cLQqmKo8ObLZmZ002fOVY7ICqSbE
+         xFUk5OxyjGyBaQGiz/dF90y4h86GBnR/yrWhRqKJ1hZa7w41yoOARY88oqNN0BAHf/Nm
+         +zN2abhzeSic/iDhhjF26IJIjbggoxaPt5cBAxsVMcuvTceZeiz6ECs52JmXR+Zefg9j
+         XVbSTngcSzecqrfJ+Yh2HnvSuariD0x8VjA2X0vWXVNE9xG3zUAGYqW8T2EFH5ansnTs
+         tbu5EB5rwYrsG50LaMcbl/3CsJEHkA2kyeHijxgcADBScVC0UWQRnHS/8p6i5cxk2ZU5
+         kt7g==
+X-Gm-Message-State: AOAM532turoxi8aGVl1/4JFzOkpZXQSsv+tIm79QNsEjzxlQmM2lFH6s
+        HGdhLvCcVuyxHlplB7ygt5+fSVx3XZLdlbGm7eM=
+X-Google-Smtp-Source: ABdhPJx/p2dXpsI30KxLEdXxUBHffNnvD5GM3myjox1llU6UgosBPf62UpKdu7Y4008UhmdufeocRGwYNKVVTgISNLE=
+X-Received: by 2002:a17:907:6089:: with SMTP id ht9mr29709939ejc.612.1643912350815;
+ Thu, 03 Feb 2022 10:19:10 -0800 (PST)
 MIME-Version: 1.0
-X-Originating-IP: [10.43.160.132]
-X-ClientProxiedBy: EX13D11UWB001.ant.amazon.com (10.43.161.53) To
- EX13D07EUA003.ant.amazon.com (10.43.165.176)
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+References: <20220201223837.790617-1-shy828301@gmail.com> <eef6fe68-1501-b07c-acc9-287e76c65420@redhat.com>
+In-Reply-To: <eef6fe68-1501-b07c-acc9-287e76c65420@redhat.com>
+From:   Yang Shi <shy828301@gmail.com>
+Date:   Thu, 3 Feb 2022 10:18:53 -0800
+Message-ID: <CAHbLzkqxe0-5AKp2ALPYpisfiYKFk2Fp8w8JP0viYoAry2aiKA@mail.gmail.com>
+Subject: Re: [v3 PATCH] fs/proc: task_mmu.c: don't read mapcount for migration entry
+To:     David Hildenbrand <david@redhat.com>
+Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Jann Horn <jannh@google.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux MM <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        stable <stable@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Guests running on IceLake have TME-EN disabled in CPUID, and they can't read TME
-related MSRs [IA32_TME_CAPABILITY, IA32_TME_ACTIVATE, IA32_TME_EXCLUDE_MASK,
-IA32_TME_EXCLUDE_BASE].
+On Tue, Feb 1, 2022 at 11:53 PM David Hildenbrand <david@redhat.com> wrote:
+>
+> On 01.02.22 23:38, Yang Shi wrote:
+> > The syzbot reported the below BUG:
+> >
+> > kernel BUG at include/linux/page-flags.h:785!
+> > invalid opcode: 0000 [#1] PREEMPT SMP KASAN
+> > CPU: 1 PID: 4392 Comm: syz-executor560 Not tainted 5.16.0-rc6-syzkaller #0
+> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> > RIP: 0010:PageDoubleMap include/linux/page-flags.h:785 [inline]
+> > RIP: 0010:__page_mapcount+0x2d2/0x350 mm/util.c:744
+> > Code: e8 d3 16 d1 ff 48 c7 c6 c0 00 b6 89 48 89 ef e8 94 4e 04 00 0f 0b e8 bd 16 d1 ff 48 c7 c6 60 01 b6 89 48 89 ef e8 7e 4e 04 00 <0f> 0b e8 a7 16 d1 ff 48 c7 c6 a0 01 b6 89 4c 89 f7 e8 68 4e 04 00
+> > RSP: 0018:ffffc90002b6f7b8 EFLAGS: 00010293
+> > RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+> > RDX: ffff888019619d00 RSI: ffffffff81a68c12 RDI: 0000000000000003
+> > RBP: ffffea0001bdc2c0 R08: 0000000000000029 R09: 00000000ffffffff
+> > R10: ffffffff8903e29f R11: 00000000ffffffff R12: 00000000ffffffff
+> > R13: 00000000ffffea00 R14: ffffc90002b6fb30 R15: ffffea0001bd8001
+> > FS:  00007faa2aefd700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+> > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > CR2: 00007fff7e663318 CR3: 0000000018c6e000 CR4: 00000000003506e0
+> > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> > Call Trace:
+> >  <TASK>
+> >  page_mapcount include/linux/mm.h:837 [inline]
+> >  smaps_account+0x470/0xb10 fs/proc/task_mmu.c:466
+> >  smaps_pte_entry fs/proc/task_mmu.c:538 [inline]
+> >  smaps_pte_range+0x611/0x1250 fs/proc/task_mmu.c:601
+> >  walk_pmd_range mm/pagewalk.c:128 [inline]
+> >  walk_pud_range mm/pagewalk.c:205 [inline]
+> >  walk_p4d_range mm/pagewalk.c:240 [inline]
+> >  walk_pgd_range mm/pagewalk.c:277 [inline]
+> >  __walk_page_range+0xe23/0x1ea0 mm/pagewalk.c:379
+> >  walk_page_vma+0x277/0x350 mm/pagewalk.c:530
+> >  smap_gather_stats.part.0+0x148/0x260 fs/proc/task_mmu.c:768
+> >  smap_gather_stats fs/proc/task_mmu.c:741 [inline]
+> >  show_smap+0xc6/0x440 fs/proc/task_mmu.c:822
+> >  seq_read_iter+0xbb0/0x1240 fs/seq_file.c:272
+> >  seq_read+0x3e0/0x5b0 fs/seq_file.c:162
+> >  vfs_read+0x1b5/0x600 fs/read_write.c:479
+> >  ksys_read+0x12d/0x250 fs/read_write.c:619
+> >  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> >  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+> >  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> > RIP: 0033:0x7faa2af6c969
+> > Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 11 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+> > RSP: 002b:00007faa2aefd288 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
+> > RAX: ffffffffffffffda RBX: 00007faa2aff4418 RCX: 00007faa2af6c969
+> > RDX: 0000000000002025 RSI: 0000000020000100 RDI: 0000000000000003
+> > RBP: 00007faa2aff4410 R08: 00007faa2aefd700 R09: 0000000000000000
+> > R10: 00007faa2aefd700 R11: 0000000000000246 R12: 00007faa2afc20ac
+> > R13: 00007fff7e6632bf R14: 00007faa2aefd400 R15: 0000000000022000
+> >  </TASK>
+> > Modules linked in:
+> > ---[ end trace 24ec93ff95e4ac3d ]---
+> > RIP: 0010:PageDoubleMap include/linux/page-flags.h:785 [inline]
+> > RIP: 0010:__page_mapcount+0x2d2/0x350 mm/util.c:744
+> > Code: e8 d3 16 d1 ff 48 c7 c6 c0 00 b6 89 48 89 ef e8 94 4e 04 00 0f 0b e8 bd 16 d1 ff 48 c7 c6 60 01 b6 89 48 89 ef e8 7e 4e 04 00 <0f> 0b e8 a7 16 d1 ff 48 c7 c6 a0 01 b6 89 4c 89 f7 e8 68 4e 04 00
+> > RSP: 0018:ffffc90002b6f7b8 EFLAGS: 00010293
+> > RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+> > RDX: ffff888019619d00 RSI: ffffffff81a68c12 RDI: 0000000000000003
+> > RBP: ffffea0001bdc2c0 R08: 0000000000000029 R09: 00000000ffffffff
+> > R10: ffffffff8903e29f R11: 00000000ffffffff R12: 00000000ffffffff
+> > R13: 00000000ffffea00 R14: ffffc90002b6fb30 R15: ffffea0001bd8001
+> > FS:  00007faa2aefd700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+> > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > CR2: 00007fff7e663318 CR3: 0000000018c6e000 CR4: 00000000003506e0
+> > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> >
+> > The reproducer was trying to reading /proc/$PID/smaps when calling
+> > MADV_FREE at the mean time.  MADV_FREE may split THPs if it is called
+> > for partial THP.  It may trigger the below race:
+> >
+> >          CPU A                         CPU B
+> >          -----                         -----
+> > smaps walk:                      MADV_FREE:
+> > page_mapcount()
+> >   PageCompound()
+> >                                  split_huge_page()
+> >   page = compound_head(page)
+> >   PageDoubleMap(page)
+> >
+> > When calling PageDoubleMap() this page is not a tail page of THP anymore
+> > so the BUG is triggered.
+> >
+> > This could be fixed by elevated refcount of the page before calling
+> > mapcount, but it prevents from counting migration entries, and it seems
+> > overkilling because the race just could happen when PMD is split so all
+> > PTE entries of tail pages are actually migration entries, and
+> > smaps_account() does treat migration entries as mapcount == 1 as Kirill
+> > pointed out.
+> >
+> > Add a new parameter for smaps_account() to tell this entry is migration
+> > entry then skip calling page_mapcount().  Don't skip getting mapcount for
+> > device private entries since they do track references with mapcount.
+> >
+> > Pagemap also has the similar issue although it was not reported.  Fixed
+> > it as well.
+> >
+> > Fixes: e9b61f19858a ("thp: reintroduce split_huge_page()")
+> > Reported-by: syzbot+1f52b3a18d5633fa7f82@syzkaller.appspotmail.com
+> > Cc: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+> > Cc: Jann Horn <jannh@google.com>
+> > Cc: Matthew Wilcox <willy@infradead.org>
+> > Cc: David Hildenbrand <david@redhat.com>
+> > Cc: <stable@vger.kernel.org>
+> > Signed-off-by: Yang Shi <shy828301@gmail.com>
+> > ---
+> > v3: * Fixed the fix tag, the one used by v2 was not accurate
+> >     * Added comment about the risk calling page_mapcount() per David
+> >     * Fix pagemap
+> >
+> > v2: * Added proper fix tag per Jann Horn
+> >     * Rebased to the latest linus's tree
+> >
+> >  fs/proc/task_mmu.c | 38 ++++++++++++++++++++++++++++++--------
+> >  1 file changed, 30 insertions(+), 8 deletions(-)
+> >
+> > diff --git a/fs/proc/task_mmu.c b/fs/proc/task_mmu.c
+> > index 18f8c3acbb85..d753eda6020c 100644
+> > --- a/fs/proc/task_mmu.c
+> > +++ b/fs/proc/task_mmu.c
+> > @@ -440,7 +440,8 @@ static void smaps_page_accumulate(struct mem_size_stats *mss,
+> >  }
+> >
+> >  static void smaps_account(struct mem_size_stats *mss, struct page *page,
+> > -             bool compound, bool young, bool dirty, bool locked)
+> > +             bool compound, bool young, bool dirty, bool locked,
+> > +             bool migration)
+> >  {
+> >       int i, nr = compound ? compound_nr(page) : 1;
+> >       unsigned long size = nr * PAGE_SIZE;
+> > @@ -467,8 +468,15 @@ static void smaps_account(struct mem_size_stats *mss, struct page *page,
+> >        * page_count(page) == 1 guarantees the page is mapped exactly once.
+> >        * If any subpage of the compound page mapped with PTE it would elevate
+> >        * page_count().
+> > +      *
+> > +      * The page_mapcount() is called to get a snapshot of the mapcount.
+> > +      * Without holding the page lock this snapshot can be slightly wrong as
+> > +      * we cannot always read the mapcount atomically.  It is not safe to
+> > +      * call page_mapcount() even with PTL held if the page is not mapped,
+> > +      * especially for migration entries.  Treated regular migration entries
+> > +      * as mapcount == 1.
+>
+> Minor nit: s/Treated/Treat/
 
-So guests don't know if they are running with TME enabled or not.
+Will fix in v4.
 
-In this patch, TME information is passed to the guest if the host has `TME-EN`
-enabled in CPUID and TME MSRs are locked and the exclusion range is disabled.
+>
+> Thanks!
+>
+> Acked-by: David Hildenbrand <david@redhat.com>
 
-This will guarantee that hardware supports TME, MSRs are locked, so host can't
-change them and exclusion range is disabled, so TME rules apply on all host
-memory.
+Thanks.
 
-In IA32_TME_CAPABILITY and IA32_TME_ACTIVATE we mask out the reserved bits and
-MKTME related bits.
-
-So in IA32_TME_CAPABILITY, we are passing:
-Bit[0]:  Support for AES-XTS 128-bit encryption algorithm
-Bit[2]:  Support for AES-XTS 256-bit encryption algorithm
-Bit[31]: TME encryption bypass supported
-
-And in IA32_TME_ACTIVATE, we are passing:
-Bit[0]:   Lock RO
-Bit[1]:   TME Enable RWL
-Bit[2]:   Key select
-Bit[3]:   Save TME key for Standby
-Bit[4:7]: Encryption Algorithm
-Bit[31]:  TME Encryption Bypass Enable
-
-However IA32_TME_EXCLUDE_MASK and IA32_TME_EXCLUDE_BASE are read by the guest as
-zero, since we will only pass TME information if the exclusion range is
-disabled.
-
-Those information are helpful for the guest to determine if TME is enabled by
-the BIOS or not.
-
-Signed-off-by: Fares Mehanna <faresx@amazon.de>
----
- arch/x86/include/asm/msr-index.h |  6 ++++++
- arch/x86/include/asm/processor.h | 14 ++++++++++++++
- arch/x86/kernel/cpu/intel.c      | 15 +--------------
- arch/x86/kvm/cpuid.c             | 19 ++++++++++++++++++-
- arch/x86/kvm/vmx/vmx.c           | 20 ++++++++++++++++++++
- 5 files changed, 59 insertions(+), 15 deletions(-)
-
-diff --git a/arch/x86/include/asm/msr-index.h b/arch/x86/include/asm/msr-index.h
-index 3faf0f97edb1..908aad1a7cad 100644
---- a/arch/x86/include/asm/msr-index.h
-+++ b/arch/x86/include/asm/msr-index.h
-@@ -438,6 +438,12 @@
- #define MSR_RELOAD_PMC0			0x000014c1
- #define MSR_RELOAD_FIXED_CTR0		0x00001309
- 
-+/* Memory encryption MSRs */
-+#define MSR_IA32_TME_CAPABILITY		0x981
-+#define MSR_IA32_TME_ACTIVATE		0x982
-+#define MSR_IA32_TME_EXCLUDE_MASK	0x983
-+#define MSR_IA32_TME_EXCLUDE_BASE	0x984
-+
- /*
-  * AMD64 MSRs. Not complete. See the architecture manual for a more
-  * complete list.
-diff --git a/arch/x86/include/asm/processor.h b/arch/x86/include/asm/processor.h
-index 2c5f12ae7d04..28387ae7277b 100644
---- a/arch/x86/include/asm/processor.h
-+++ b/arch/x86/include/asm/processor.h
-@@ -863,4 +863,18 @@ bool arch_is_platform_page(u64 paddr);
- #define arch_is_platform_page arch_is_platform_page
- #endif
- 
-+/* Helpers to access TME_ACTIVATE MSR */
-+#define TME_ACTIVATE_LOCKED(x)		((x) & 0x1)
-+#define TME_ACTIVATE_ENABLED(x)		((x) & 0x2)
-+
-+#define TME_ACTIVATE_POLICY(x)		(((x) >> 4) & 0xf)        /* Bits 7:4 */
-+#define TME_ACTIVATE_POLICY_AES_XTS_128	0
-+
-+#define TME_ACTIVATE_KEYID_BITS(x)	(((x) >> 32) & 0xf)     /* Bits 35:32 */
-+
-+#define TME_ACTIVATE_CRYPTO_ALGS(x)	(((x) >> 48) & 0xffff)    /* Bits 63:48 */
-+#define TME_ACTIVATE_CRYPTO_AES_XTS_128	1
-+
-+#define TME_EXCLUSION_ENABLED(x)	((x) & 0x800) /* Bit 11 */
-+
- #endif /* _ASM_X86_PROCESSOR_H */
-diff --git a/arch/x86/kernel/cpu/intel.c b/arch/x86/kernel/cpu/intel.c
-index 8321c43554a1..46ad006089a3 100644
---- a/arch/x86/kernel/cpu/intel.c
-+++ b/arch/x86/kernel/cpu/intel.c
-@@ -14,6 +14,7 @@
- 
- #include <asm/cpufeature.h>
- #include <asm/msr.h>
-+#include <asm/processor.h>
- #include <asm/bugs.h>
- #include <asm/cpu.h>
- #include <asm/intel-family.h>
-@@ -492,20 +493,6 @@ static void srat_detect_node(struct cpuinfo_x86 *c)
- #endif
- }
- 
--#define MSR_IA32_TME_ACTIVATE		0x982
--
--/* Helpers to access TME_ACTIVATE MSR */
--#define TME_ACTIVATE_LOCKED(x)		(x & 0x1)
--#define TME_ACTIVATE_ENABLED(x)		(x & 0x2)
--
--#define TME_ACTIVATE_POLICY(x)		((x >> 4) & 0xf)	/* Bits 7:4 */
--#define TME_ACTIVATE_POLICY_AES_XTS_128	0
--
--#define TME_ACTIVATE_KEYID_BITS(x)	((x >> 32) & 0xf)	/* Bits 35:32 */
--
--#define TME_ACTIVATE_CRYPTO_ALGS(x)	((x >> 48) & 0xffff)	/* Bits 63:48 */
--#define TME_ACTIVATE_CRYPTO_AES_XTS_128	1
--
- /* Values for mktme_status (SW only construct) */
- #define MKTME_ENABLED			0
- #define MKTME_DISABLED			1
-diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
-index 28be02adc669..c5a18527f099 100644
---- a/arch/x86/kvm/cpuid.c
-+++ b/arch/x86/kvm/cpuid.c
-@@ -84,6 +84,22 @@ static inline struct kvm_cpuid_entry2 *cpuid_entry2_find(
- 	return NULL;
- }
- 
-+static bool kvm_tme_supported(void)
-+{
-+	u64 tme_activation, tme_exclusion;
-+
-+	if (!feature_bit(TME))
-+		return false;
-+
-+	if (rdmsrl_safe(MSR_IA32_TME_EXCLUDE_MASK, &tme_exclusion))
-+		return false;
-+	if (rdmsrl_safe(MSR_IA32_TME_ACTIVATE, &tme_activation))
-+		return false;
-+
-+	return TME_ACTIVATE_LOCKED(tme_activation) &&
-+		!TME_EXCLUSION_ENABLED(tme_exclusion);
-+}
-+
- static int kvm_check_cpuid(struct kvm_vcpu *vcpu,
- 			   struct kvm_cpuid_entry2 *entries,
- 			   int nent)
-@@ -508,6 +524,7 @@ static __always_inline void kvm_cpu_cap_mask(enum cpuid_leafs leaf, u32 mask)
- 
- void kvm_set_cpu_caps(void)
- {
-+	unsigned int f_tme = kvm_tme_supported() ? F(TME) : 0;
- #ifdef CONFIG_X86_64
- 	unsigned int f_gbpages = F(GBPAGES);
- 	unsigned int f_lm = F(LM);
-@@ -565,7 +582,7 @@ void kvm_set_cpu_caps(void)
- 		F(AVX512VBMI) | F(LA57) | F(PKU) | 0 /*OSPKE*/ | F(RDPID) |
- 		F(AVX512_VPOPCNTDQ) | F(UMIP) | F(AVX512_VBMI2) | F(GFNI) |
- 		F(VAES) | F(VPCLMULQDQ) | F(AVX512_VNNI) | F(AVX512_BITALG) |
--		F(CLDEMOTE) | F(MOVDIRI) | F(MOVDIR64B) | 0 /*WAITPKG*/ |
-+		f_tme | F(CLDEMOTE) | F(MOVDIRI) | F(MOVDIR64B) | 0 /*WAITPKG*/ |
- 		F(SGX_LC) | F(BUS_LOCK_DETECT)
- 	);
- 	/* Set LA57 based on hardware capability. */
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index aca3ae2a02f3..f8cbf935cfe0 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -1913,6 +1913,26 @@ static int vmx_get_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 	case MSR_IA32_DEBUGCTLMSR:
- 		msr_info->data = vmcs_read64(GUEST_IA32_DEBUGCTL);
- 		break;
-+	case MSR_IA32_TME_CAPABILITY:
-+		if (!guest_cpuid_has(vcpu, X86_FEATURE_TME))
-+			return 1;
-+		if (rdmsrl_safe(MSR_IA32_TME_CAPABILITY, &msr_info->data))
-+			return 1;
-+		msr_info->data &= 0x80000005; /* Bit 0, 2, 31 */
-+		break;
-+	case MSR_IA32_TME_ACTIVATE:
-+		if (!guest_cpuid_has(vcpu, X86_FEATURE_TME))
-+			return 1;
-+		if (rdmsrl_safe(MSR_IA32_TME_ACTIVATE, &msr_info->data))
-+			return 1;
-+		msr_info->data &= 0x800000FF; /* Bits [0-7] and Bit 31 */
-+		break;
-+	case MSR_IA32_TME_EXCLUDE_MASK:
-+	case MSR_IA32_TME_EXCLUDE_BASE:
-+		if (!guest_cpuid_has(vcpu, X86_FEATURE_TME))
-+			return 1;
-+		msr_info->data = 0x0;
-+		break;
- 	default:
- 	find_uret_msr:
- 		msr = vmx_find_uret_msr(vmx, msr_info->index);
--- 
-2.32.0
-
-
-
-
-Amazon Development Center Germany GmbH
-Krausenstr. 38
-10117 Berlin
-Geschaeftsfuehrung: Christian Schlaeger, Jonathan Weiss
-Eingetragen am Amtsgericht Charlottenburg unter HRB 149173 B
-Sitz: Berlin
-Ust-ID: DE 289 237 879
-
-
-
+>
+> --
+> Thanks,
+>
+> David / dhildenb
+>
