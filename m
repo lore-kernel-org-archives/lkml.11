@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E121C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F40BC43217
 	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:36:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355326AbiBCUfj (ORCPT
+        id S1355462AbiBCUfx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:35:39 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:39910 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354519AbiBCUdr (ORCPT
+        Thu, 3 Feb 2022 15:35:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57496 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354098AbiBCUdn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 15:33:47 -0500
+        Thu, 3 Feb 2022 15:33:43 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5BCDC061793;
+        Thu,  3 Feb 2022 12:33:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BAB061B14;
-        Thu,  3 Feb 2022 20:33:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A73ABC340EB;
-        Thu,  3 Feb 2022 20:33:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 52A1A61A04;
+        Thu,  3 Feb 2022 20:33:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 940DEC340EF;
+        Thu,  3 Feb 2022 20:33:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643920426;
-        bh=5NI6v6ENI4LJ8+7Sal+JkNeHTLytWYu+LXR+N9wM5j8=;
+        s=k20201202; t=1643920387;
+        bh=0y/IZM+9R7R9WIPYSINAAR4GixoHnxscFamQq446Yng=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VSMWQHwcAyy3+gwr1CS59AdxsCdqrnGF1TadE/oOKHXhIQWNd5JVbcQ8503FtZgGt
-         LQUwuZc2gt3ZELBi8xoFVMentfMUcwF/llZFzX305tPvm4foMUY2KWdOPF30LsNSur
-         FKmkFHvD7DQScrAHhp84zNCSS/2kr9mW4iS+WhiGm0FOSiKhGhM5JoJRyCRK72kZl6
-         gE2ClGrGJEaTA+WDMBdR7E6J94TMCiv0J/FroNqtpqiBFXNGfTQZL7BkGmzrJRSVXQ
-         +g1NNUC0C/Suux7INk362yk3l28v1xPC/rB4ArlxpgAr5thwbUsyeyJt5TCGlr63oW
-         LUU6mBlFYjTBg==
+        b=BzvcUENgy1RX49AMRjkBaQ58+LAQ2sGsNadUiVU5bUonneUmXpU0UxJZvvHE/+a8r
+         i8+I/mHssKMCjNZ2cNPP3u+o8eGVY7wtP5EcW3FA0ZAMfTTigsaYj5eZkvdTQs9vuq
+         r80P6vZWKtPzol+0HD96jIXa3omTaFhkkz8qZ9ffphO30yU2SAHFSddI74obXVPCiY
+         VrZw4M7rFNIbNGC1vYJp58KxtwcAdmyMxa/Qw/p+8T1q4kTNjinzlEE3Dxf074drqb
+         RslYz4ihLKDoyV4qL4LzyB0ihbKW7zK5qAFcFT2IuFjh118YGwv9FAQtsr8IjpbiU1
+         Ja0WVwKf6Faug==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     John Garry <john.garry@huawei.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, jinpu.wang@cloud.ionos.com,
-        jejb@linux.ibm.com, linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 28/41] scsi: pm8001: Fix bogus FW crash for maxcpus=1
-Date:   Thu,  3 Feb 2022 15:32:32 -0500
-Message-Id: <20220203203245.3007-28-sashal@kernel.org>
+Cc:     Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Sasha Levin <sashal@kernel.org>,
+        trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
+        chuck.lever@oracle.com, davem@davemloft.net, kuba@kernel.org,
+        linux-nfs@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 13/41] sunrpc: Fix potential race conditions in rpc_sysfs_xprt_state_change()
+Date:   Thu,  3 Feb 2022 15:32:17 -0500
+Message-Id: <20220203203245.3007-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220203203245.3007-1-sashal@kernel.org>
 References: <20220203203245.3007-1-sashal@kernel.org>
@@ -51,82 +54,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Garry <john.garry@huawei.com>
+From: Anna Schumaker <Anna.Schumaker@Netapp.com>
 
-[ Upstream commit 62afb379a0fee7e9c2f9f68e1abeb85ceddf51b9 ]
+[ Upstream commit 1a48db3fef499f615b56093947ec4b0d3d8e3021 ]
 
-According to the comment in check_fw_ready() we should not check the
-IOP1_READY field in register SCRATCH_PAD_1 for 8008 or 8009 controllers.
+We need to use test_and_set_bit() when changing xprt state flags to
+avoid potentially getting xps->xps_nactive out of sync.
 
-However we check this very field in process_oq() for processing the highest
-index interrupt vector. The highest interrupt vector is checked as the FW
-is programmed to signal fatal errors through this irq.
-
-Change that function to not check IOP1_READY for those mentioned
-controllers, but do check ILA_READY in both cases.
-
-The reason I assume that this was not hit earlier was because we always
-allocated 64 MSI(X), and just did not pass the vector index check in
-process_oq(), i.e.  the handler never ran for vector index 63.
-
-Link: https://lore.kernel.org/r/1642508105-95432-1-git-send-email-john.garry@huawei.com
-Tested-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: John Garry <john.garry@huawei.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/pm8001/pm80xx_hwi.c | 16 ++++++++++++++--
- drivers/scsi/pm8001/pm80xx_hwi.h |  6 +++++-
- 2 files changed, 19 insertions(+), 3 deletions(-)
+ net/sunrpc/sysfs.c | 35 +++++++++++++++++++----------------
+ 1 file changed, 19 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
-index ed02e1aaf868c..ed13e0e044b74 100644
---- a/drivers/scsi/pm8001/pm80xx_hwi.c
-+++ b/drivers/scsi/pm8001/pm80xx_hwi.c
-@@ -4154,10 +4154,22 @@ static int process_oq(struct pm8001_hba_info *pm8001_ha, u8 vec)
- 	u32 ret = MPI_IO_STATUS_FAIL;
- 	u32 regval;
- 
-+	/*
-+	 * Fatal errors are programmed to be signalled in irq vector
-+	 * pm8001_ha->max_q_num - 1 through pm8001_ha->main_cfg_tbl.pm80xx_tbl.
-+	 * fatal_err_interrupt
-+	 */
- 	if (vec == (pm8001_ha->max_q_num - 1)) {
-+		u32 mipsall_ready;
-+
-+		if (pm8001_ha->chip_id == chip_8008 ||
-+		    pm8001_ha->chip_id == chip_8009)
-+			mipsall_ready = SCRATCH_PAD_MIPSALL_READY_8PORT;
-+		else
-+			mipsall_ready = SCRATCH_PAD_MIPSALL_READY_16PORT;
-+
- 		regval = pm8001_cr32(pm8001_ha, 0, MSGU_SCRATCH_PAD_1);
--		if ((regval & SCRATCH_PAD_MIPSALL_READY) !=
--					SCRATCH_PAD_MIPSALL_READY) {
-+		if ((regval & mipsall_ready) != mipsall_ready) {
- 			pm8001_ha->controller_fatal_error = true;
- 			pm8001_dbg(pm8001_ha, FAIL,
- 				   "Firmware Fatal error! Regval:0x%x\n",
-diff --git a/drivers/scsi/pm8001/pm80xx_hwi.h b/drivers/scsi/pm8001/pm80xx_hwi.h
-index c7e5d93bea924..c41ed039c92ac 100644
---- a/drivers/scsi/pm8001/pm80xx_hwi.h
-+++ b/drivers/scsi/pm8001/pm80xx_hwi.h
-@@ -1405,8 +1405,12 @@ typedef struct SASProtocolTimerConfig SASProtocolTimerConfig_t;
- #define SCRATCH_PAD_BOOT_LOAD_SUCCESS	0x0
- #define SCRATCH_PAD_IOP0_READY		0xC00
- #define SCRATCH_PAD_IOP1_READY		0x3000
--#define SCRATCH_PAD_MIPSALL_READY	(SCRATCH_PAD_IOP1_READY | \
-+#define SCRATCH_PAD_MIPSALL_READY_16PORT	(SCRATCH_PAD_IOP1_READY | \
- 					SCRATCH_PAD_IOP0_READY | \
-+					SCRATCH_PAD_ILA_READY | \
-+					SCRATCH_PAD_RAAE_READY)
-+#define SCRATCH_PAD_MIPSALL_READY_8PORT	(SCRATCH_PAD_IOP0_READY | \
-+					SCRATCH_PAD_ILA_READY | \
- 					SCRATCH_PAD_RAAE_READY)
- 
- /* boot loader state */
+diff --git a/net/sunrpc/sysfs.c b/net/sunrpc/sysfs.c
+index 379cf0e4d965b..326a31422a3c1 100644
+--- a/net/sunrpc/sysfs.c
++++ b/net/sunrpc/sysfs.c
+@@ -305,25 +305,28 @@ static ssize_t rpc_sysfs_xprt_state_change(struct kobject *kobj,
+ 		goto release_tasks;
+ 	}
+ 	if (offline) {
+-		set_bit(XPRT_OFFLINE, &xprt->state);
+-		spin_lock(&xps->xps_lock);
+-		xps->xps_nactive--;
+-		spin_unlock(&xps->xps_lock);
++		if (!test_and_set_bit(XPRT_OFFLINE, &xprt->state)) {
++			spin_lock(&xps->xps_lock);
++			xps->xps_nactive--;
++			spin_unlock(&xps->xps_lock);
++		}
+ 	} else if (online) {
+-		clear_bit(XPRT_OFFLINE, &xprt->state);
+-		spin_lock(&xps->xps_lock);
+-		xps->xps_nactive++;
+-		spin_unlock(&xps->xps_lock);
++		if (test_and_clear_bit(XPRT_OFFLINE, &xprt->state)) {
++			spin_lock(&xps->xps_lock);
++			xps->xps_nactive++;
++			spin_unlock(&xps->xps_lock);
++		}
+ 	} else if (remove) {
+ 		if (test_bit(XPRT_OFFLINE, &xprt->state)) {
+-			set_bit(XPRT_REMOVE, &xprt->state);
+-			xprt_force_disconnect(xprt);
+-			if (test_bit(XPRT_CONNECTED, &xprt->state)) {
+-				if (!xprt->sending.qlen &&
+-				    !xprt->pending.qlen &&
+-				    !xprt->backlog.qlen &&
+-				    !atomic_long_read(&xprt->queuelen))
+-					rpc_xprt_switch_remove_xprt(xps, xprt);
++			if (!test_and_set_bit(XPRT_REMOVE, &xprt->state)) {
++				xprt_force_disconnect(xprt);
++				if (test_bit(XPRT_CONNECTED, &xprt->state)) {
++					if (!xprt->sending.qlen &&
++					    !xprt->pending.qlen &&
++					    !xprt->backlog.qlen &&
++					    !atomic_long_read(&xprt->queuelen))
++						rpc_xprt_switch_remove_xprt(xps, xprt);
++				}
+ 			}
+ 		} else {
+ 			count = -EINVAL;
 -- 
 2.34.1
 
