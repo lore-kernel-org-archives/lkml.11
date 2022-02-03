@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0EA1C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:32:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94AFFC4321E
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:32:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354601AbiBCUcN (ORCPT
+        id S1354341AbiBCUcX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:32:13 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:34480 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354421AbiBCUbV (ORCPT
+        Thu, 3 Feb 2022 15:32:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57686 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348713AbiBCUbc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 15:31:21 -0500
+        Thu, 3 Feb 2022 15:31:32 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BB91C0613EB;
+        Thu,  3 Feb 2022 12:31:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 57D55B835A7;
-        Thu,  3 Feb 2022 20:31:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D003BC340F2;
-        Thu,  3 Feb 2022 20:31:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C886AB835A3;
+        Thu,  3 Feb 2022 20:31:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9F57C340E8;
+        Thu,  3 Feb 2022 20:31:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643920279;
-        bh=6ytp33LHeA0fWlCO8dxFEv7EPxbWH7tru4IbV3pym4A=;
+        s=k20201202; t=1643920265;
+        bh=nDySB6UXuT3u6CrlRf1gGUS+olwtOzGHIaEFmYJVFJc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MUtEKr1lQWjUhOtjTf52BGtHYAP3iM7+fCLpv7Wggg1ZdhmkaR78ossZ4g11Ke26g
-         8hM0N1T8mlSpN1zGGWw41Rfx5gKb7LD9IeLytki7dxwWWmW8vsJ8lrHwe30DPe2ZGC
-         z//vNCvk0tXG6ojX55c+NnrQEHEJu2ESEbenB9wfjEdppuDqMxZvo/hfoNXYt1EU/F
-         ktMKo3iebjlSDYtJoLfwEq64xM++w++W+suach+P0eU+rxGm6tf7luTzyIiWN1S+wo
-         jNoEpkJws4cgf6G29X20iFQ5jpbI8MA16qBaOqJ5xokOBEjPT2yjdKw7XAVSwoPmaw
-         MUlVV8rCeCTUA==
+        b=L7BKLUFf7gHZ4HIXDKB/J/UDXGPTzvwcS6Z3iIAhWEn9MkPU+UP/HHv+bbbz5Fr91
+         O4GX4aUn0dSsjLculfAT0XFTVCeRug3nawBV1pt13aS7CXh/bZbfn4LGRnTlAGwH8g
+         bKii/I9RbcwlrAQg/B1t+C+EAPEM9fLv9qEVmrB2ILKJnJrS0GxawoCGIFLxluMH5P
+         4iNrnvFl23m8se0qHx9DJ4P1DFZayM33T8a5+H8jop2OBOtwXA/T1EW8u7t+8WaOa4
+         yddQLnkg3vzhxMQ3abAganUPT1rBXdxX8DR6sISwHqXwU9nuMb3zX4kHxukW+4Ysm3
+         QWh3UD0WhO4IQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jisheng Zhang <jszhang@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, peppe.cavallaro@st.com,
-        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
-        kuba@kernel.org, mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.16 35/52] net: stmmac: reduce unnecessary wakeups from eee sw timer
-Date:   Thu,  3 Feb 2022 15:29:29 -0500
-Message-Id: <20220203202947.2304-35-sashal@kernel.org>
+Cc:     Saurav Kashyap <skashyap@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, jhasan@marvell.com,
+        GR-QLogic-Storage-Upstream@marvell.com, jejb@linux.ibm.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 30/52] scsi: qedf: Change context reset messages to ratelimited
+Date:   Thu,  3 Feb 2022 15:29:24 -0500
+Message-Id: <20220203202947.2304-30-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220203202947.2304-1-sashal@kernel.org>
 References: <20220203202947.2304-1-sashal@kernel.org>
@@ -53,73 +55,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jisheng Zhang <jszhang@kernel.org>
+From: Saurav Kashyap <skashyap@marvell.com>
 
-[ Upstream commit c74ead223deb88bdf18af8c772d7ca5a9b6c3c2b ]
+[ Upstream commit 64fd4af6274eb0f49d29772c228fffcf6bde1635 ]
 
-Currently, on EEE capable platforms, if EEE SW timer is used, the SW
-timer cause 1 wakeup/s even if the TX has successfully entered EEE.
-Remove this unnecessary wakeup by only calling mod_timer() if we
-haven't successfully entered EEE.
+If FCoE is not configured, libfc/libfcoe keeps on retrying FLOGI and after
+3 retries driver does a context reset and tries fipvlan again.  This leads
+to context reset message flooding the logs. Hence ratelimit the message to
+prevent flooding the logs.
 
-Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Link: https://lore.kernel.org/r/20220117135311.6256-4-njavali@marvell.com
+Signed-off-by: Saurav Kashyap <skashyap@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ drivers/scsi/qedf/qedf_main.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index e81a79845d425..a361ad8e863ae 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -400,7 +400,7 @@ static void stmmac_lpi_entry_timer_config(struct stmmac_priv *priv, bool en)
-  * Description: this function is to verify and enter in LPI mode in case of
-  * EEE.
-  */
--static void stmmac_enable_eee_mode(struct stmmac_priv *priv)
-+static int stmmac_enable_eee_mode(struct stmmac_priv *priv)
- {
- 	u32 tx_cnt = priv->plat->tx_queues_to_use;
- 	u32 queue;
-@@ -410,13 +410,14 @@ static void stmmac_enable_eee_mode(struct stmmac_priv *priv)
- 		struct stmmac_tx_queue *tx_q = &priv->tx_queue[queue];
+diff --git a/drivers/scsi/qedf/qedf_main.c b/drivers/scsi/qedf/qedf_main.c
+index 6e367b40ecc96..e0e03443d7703 100644
+--- a/drivers/scsi/qedf/qedf_main.c
++++ b/drivers/scsi/qedf/qedf_main.c
+@@ -911,7 +911,7 @@ void qedf_ctx_soft_reset(struct fc_lport *lport)
+ 	struct qed_link_output if_link;
  
- 		if (tx_q->dirty_tx != tx_q->cur_tx)
--			return; /* still unfinished work */
-+			return -EBUSY; /* still unfinished work */
+ 	if (lport->vport) {
+-		QEDF_ERR(NULL, "Cannot issue host reset on NPIV port.\n");
++		printk_ratelimited("Cannot issue host reset on NPIV port.\n");
+ 		return;
  	}
  
- 	/* Check and enter in LPI mode */
- 	if (!priv->tx_path_in_lpi_mode)
- 		stmmac_set_eee_mode(priv, priv->hw,
- 				priv->plat->en_tx_lpi_clockgating);
-+	return 0;
+@@ -3979,7 +3979,9 @@ void qedf_stag_change_work(struct work_struct *work)
+ 	struct qedf_ctx *qedf =
+ 	    container_of(work, struct qedf_ctx, stag_work.work);
+ 
+-	QEDF_ERR(&qedf->dbg_ctx, "Performing software context reset.\n");
++	printk_ratelimited("[%s]:[%s:%d]:%d: Performing software context reset.",
++			dev_name(&qedf->pdev->dev), __func__, __LINE__,
++			qedf->dbg_ctx.host_no);
+ 	qedf_ctx_soft_reset(qedf->lport);
  }
  
- /**
-@@ -448,8 +449,8 @@ static void stmmac_eee_ctrl_timer(struct timer_list *t)
- {
- 	struct stmmac_priv *priv = from_timer(priv, t, eee_ctrl_timer);
- 
--	stmmac_enable_eee_mode(priv);
--	mod_timer(&priv->eee_ctrl_timer, STMMAC_LPI_T(priv->tx_lpi_timer));
-+	if (stmmac_enable_eee_mode(priv))
-+		mod_timer(&priv->eee_ctrl_timer, STMMAC_LPI_T(priv->tx_lpi_timer));
- }
- 
- /**
-@@ -2640,8 +2641,8 @@ static int stmmac_tx_clean(struct stmmac_priv *priv, int budget, u32 queue)
- 
- 	if (priv->eee_enabled && !priv->tx_path_in_lpi_mode &&
- 	    priv->eee_sw_timer_en) {
--		stmmac_enable_eee_mode(priv);
--		mod_timer(&priv->eee_ctrl_timer, STMMAC_LPI_T(priv->tx_lpi_timer));
-+		if (stmmac_enable_eee_mode(priv))
-+			mod_timer(&priv->eee_ctrl_timer, STMMAC_LPI_T(priv->tx_lpi_timer));
- 	}
- 
- 	/* We still have pending packets, let's call for a new scheduling */
 -- 
 2.34.1
 
