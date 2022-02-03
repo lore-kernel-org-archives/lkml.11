@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 114DAC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:31:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06957C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:31:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353641AbiBCUb3 (ORCPT
+        id S1354333AbiBCUbe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:31:29 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:33984 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354245AbiBCUa4 (ORCPT
+        Thu, 3 Feb 2022 15:31:34 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:36304 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354304AbiBCUbD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 15:30:56 -0500
+        Thu, 3 Feb 2022 15:31:03 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 042E7B835A1;
-        Thu,  3 Feb 2022 20:30:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B055C340E8;
-        Thu,  3 Feb 2022 20:30:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2229A61A56;
+        Thu,  3 Feb 2022 20:31:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8462DC340EB;
+        Thu,  3 Feb 2022 20:31:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643920253;
-        bh=j1g3Ine8G433kS6IRoLdXKc+ZFe8y8VI1aADr+jnjJo=;
+        s=k20201202; t=1643920262;
+        bh=x4XQYM5nJO+yQAGR11Fx9n3eVpNCCNywTwTDhK1as+g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TtRaKFg3nV4aFjc9qEzHHTQZl6UkY8FOvj+/g/wyYG5obORchDfuqkP6RnHW3qraK
-         QpDqcJFTgc6l7Ek+mcpX9Tglpcv3udHkH9FgVuvzVwClgIW7XFUDM1uuUfbuVTdC48
-         rg+DRAz/F9BD67foyKJbS5nFkul0ipsFucGftu2CtXD4sHlxm65bkyFff9Y3/PYORS
-         m/3wmn8ceSbTXtkIDa943OZXNhDAf/MS/xJWBnxZFN659jXtoPeI1LAgQk0kdYUhCY
-         Qo/agNL1dBk4WMjhDsqRDPqIlIkejrtJZXKYpzYfwT6XILFG5doCn4dYU2g+lMf8TE
-         acCSnYl2/vG8Q==
+        b=PA8H8ck1tDkNf6xCJkOqARLfTvMnyTudM53vBWErNQKMjW0NvbBgdIqOR94e15KQw
+         k+hL4Qb2su0qUHnvV1ijghR4QQO6vxRVFcj4PYwAkUgGGKhh3fhSyfDkfMNkhNiTCB
+         35ssPAhkqw2Dvqlukxi0c4exwk7VtmTipO7FV44o/vFNf2aMHnrXIgjs5jUcda1xGx
+         l3CZFN2r9FGaRUNXAdUGpcbYVFdBi4AlNqkdSZ8GiwJo8STY/RWn5yPk1TdzFdV4UB
+         Cr1H0lY1IRHDVM3Q763EF4lDqa2arF3MG/VeGTVWZqRgN0K6gb/dBbuoss31Cy9VEY
+         EdMu8+wOpAeHQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Anshuman Khandual <anshuman.khandual@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Suzuki Poulose <suzuki.poulose@arm.com>,
-        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Sasha Levin <sashal@kernel.org>, corbet@lwn.net,
-        mark.rutland@arm.com, rwiley@nvidia.com, linux-doc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 25/52] arm64: errata: Update ARM64_ERRATUM_[2119858|2224489] with Cortex-X2 ranges
-Date:   Thu,  3 Feb 2022 15:29:19 -0500
-Message-Id: <20220203202947.2304-25-sashal@kernel.org>
+Cc:     Saurav Kashyap <skashyap@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, jhasan@marvell.com,
+        GR-QLogic-Storage-Upstream@marvell.com, jejb@linux.ibm.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 28/52] scsi: qedf: Add stag_work to all the vports
+Date:   Thu,  3 Feb 2022 15:29:22 -0500
+Message-Id: <20220203202947.2304-28-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220203202947.2304-1-sashal@kernel.org>
 References: <20220203202947.2304-1-sashal@kernel.org>
@@ -54,106 +52,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anshuman Khandual <anshuman.khandual@arm.com>
+From: Saurav Kashyap <skashyap@marvell.com>
 
-[ Upstream commit eb30d838a44c9e59a2a106884f536119859c7257 ]
+[ Upstream commit b70a99fd13282d7885f69bf1372e28b7506a1613 ]
 
-Errata ARM64_ERRATUM_[2119858|2224489] also affect some Cortex-X2 ranges as
-well. Lets update these errata definition and detection to accommodate all
-new Cortex-X2 based cpu MIDR ranges.
+Call trace seen when creating NPIV ports, only 32 out of 64 show online.
+stag work was not initialized for vport, hence initialize the stag work.
 
-Cc: Will Deacon <will@kernel.org>
-Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
-Cc: Suzuki Poulose <suzuki.poulose@arm.com>
-Cc: coresight@lists.linaro.org
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
-Reviewed-by: Suzuki K Poulose <suzuki.poulose@arm.com>
-Link: https://lore.kernel.org/r/1642994138-25887-3-git-send-email-anshuman.khandual@arm.com
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+WARNING: CPU: 8 PID: 645 at kernel/workqueue.c:1635 __queue_delayed_work+0x68/0x80
+CPU: 8 PID: 645 Comm: kworker/8:1 Kdump: loaded Tainted: G IOE    --------- --
+ 4.18.0-348.el8.x86_64 #1
+Hardware name: Dell Inc. PowerEdge MX740c/0177V9, BIOS 2.12.2 07/09/2021
+Workqueue: events fc_lport_timeout [libfc]
+RIP: 0010:__queue_delayed_work+0x68/0x80
+Code: 89 b2 88 00 00 00 44 89 82 90 00 00 00 48 01 c8 48 89 42 50 41 81
+f8 00 20 00 00 75 1d e9 60 24 07 00 44 89 c7 e9 98 f6 ff ff <0f> 0b eb
+c5 0f 0b eb a1 0f 0b eb a7 0f 0b eb ac 44 89 c6 e9 40 23
+RSP: 0018:ffffae514bc3be40 EFLAGS: 00010006
+RAX: ffff8d25d6143750 RBX: 0000000000000202 RCX: 0000000000000002
+RDX: ffff8d2e31383748 RSI: ffff8d25c000d600 RDI: ffff8d2e31383788
+RBP: ffff8d2e31380de0 R08: 0000000000002000 R09: ffff8d2e31383750
+R10: ffffffffc0c957e0 R11: ffff8d2624800000 R12: ffff8d2e31380a58
+R13: ffff8d2d915eb000 R14: ffff8d25c499b5c0 R15: ffff8d2e31380e18
+FS:  0000000000000000(0000) GS:ffff8d2d1fb00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000055fd0484b8b8 CR3: 00000008ffc10006 CR4: 00000000007706e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+PKRU: 55555554
+Call Trace:
+  queue_delayed_work_on+0x36/0x40
+  qedf_elsct_send+0x57/0x60 [qedf]
+  fc_lport_enter_flogi+0x90/0xc0 [libfc]
+  fc_lport_timeout+0xb7/0x140 [libfc]
+  process_one_work+0x1a7/0x360
+  ? create_worker+0x1a0/0x1a0
+  worker_thread+0x30/0x390
+  ? create_worker+0x1a0/0x1a0
+  kthread+0x116/0x130
+  ? kthread_flush_work_fn+0x10/0x10
+  ret_from_fork+0x35/0x40
+ ---[ end trace 008f00f722f2c2ff ]--
+
+Initialize stag work for all the vports.
+
+Link: https://lore.kernel.org/r/20220117135311.6256-2-njavali@marvell.com
+Signed-off-by: Saurav Kashyap <skashyap@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/arm64/silicon-errata.rst |  4 ++++
- arch/arm64/Kconfig                     | 12 ++++++------
- arch/arm64/kernel/cpu_errata.c         |  2 ++
- 3 files changed, 12 insertions(+), 6 deletions(-)
+ drivers/scsi/qedf/qedf_main.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/arm64/silicon-errata.rst b/Documentation/arm64/silicon-errata.rst
-index 5342e895fb604..8789c79310bbd 100644
---- a/Documentation/arm64/silicon-errata.rst
-+++ b/Documentation/arm64/silicon-errata.rst
-@@ -98,6 +98,10 @@ stable kernels.
- +----------------+-----------------+-----------------+-----------------------------+
- | ARM            | Cortex-A710     | #2224489        | ARM64_ERRATUM_2224489       |
- +----------------+-----------------+-----------------+-----------------------------+
-+| ARM            | Cortex-X2       | #2119858        | ARM64_ERRATUM_2119858       |
-++----------------+-----------------+-----------------+-----------------------------+
-+| ARM            | Cortex-X2       | #2224489        | ARM64_ERRATUM_2224489       |
-++----------------+-----------------+-----------------+-----------------------------+
- | ARM            | Neoverse-N1     | #1188873,1418040| ARM64_ERRATUM_1418040       |
- +----------------+-----------------+-----------------+-----------------------------+
- | ARM            | Neoverse-N1     | #1349291        | N/A                         |
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index c4207cf9bb17f..d8046c832225c 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -671,14 +671,14 @@ config ARM64_WORKAROUND_TRBE_OVERWRITE_FILL_MODE
- 	bool
+diff --git a/drivers/scsi/qedf/qedf_main.c b/drivers/scsi/qedf/qedf_main.c
+index 1bf7a22d49480..6e367b40ecc96 100644
+--- a/drivers/scsi/qedf/qedf_main.c
++++ b/drivers/scsi/qedf/qedf_main.c
+@@ -1862,6 +1862,7 @@ static int qedf_vport_create(struct fc_vport *vport, bool disabled)
+ 	vport_qedf->cmd_mgr = base_qedf->cmd_mgr;
+ 	init_completion(&vport_qedf->flogi_compl);
+ 	INIT_LIST_HEAD(&vport_qedf->fcports);
++	INIT_DELAYED_WORK(&vport_qedf->stag_work, qedf_stag_change_work);
  
- config ARM64_ERRATUM_2119858
--	bool "Cortex-A710: 2119858: workaround TRBE overwriting trace data in FILL mode"
-+	bool "Cortex-A710/X2: 2119858: workaround TRBE overwriting trace data in FILL mode"
- 	default y
- 	depends on CORESIGHT_TRBE
- 	select ARM64_WORKAROUND_TRBE_OVERWRITE_FILL_MODE
- 	help
--	  This option adds the workaround for ARM Cortex-A710 erratum 2119858.
-+	  This option adds the workaround for ARM Cortex-A710/X2 erratum 2119858.
- 
--	  Affected Cortex-A710 cores could overwrite up to 3 cache lines of trace
-+	  Affected Cortex-A710/X2 cores could overwrite up to 3 cache lines of trace
- 	  data at the base of the buffer (pointed to by TRBASER_EL1) in FILL mode in
- 	  the event of a WRAP event.
- 
-@@ -761,14 +761,14 @@ config ARM64_ERRATUM_2253138
- 	  If unsure, say Y.
- 
- config ARM64_ERRATUM_2224489
--	bool "Cortex-A710: 2224489: workaround TRBE writing to address out-of-range"
-+	bool "Cortex-A710/X2: 2224489: workaround TRBE writing to address out-of-range"
- 	depends on CORESIGHT_TRBE
- 	default y
- 	select ARM64_WORKAROUND_TRBE_WRITE_OUT_OF_RANGE
- 	help
--	  This option adds the workaround for ARM Cortex-A710 erratum 2224489.
-+	  This option adds the workaround for ARM Cortex-A710/X2 erratum 2224489.
- 
--	  Affected Cortex-A710 cores might write to an out-of-range address, not reserved
-+	  Affected Cortex-A710/X2 cores might write to an out-of-range address, not reserved
- 	  for TRBE. Under some conditions, the TRBE might generate a write to the next
- 	  virtually addressed page following the last page of the TRBE address space
- 	  (i.e., the TRBLIMITR_EL1.LIMIT), instead of wrapping around to the base.
-diff --git a/arch/arm64/kernel/cpu_errata.c b/arch/arm64/kernel/cpu_errata.c
-index 9e1c1aef9ebd6..29cc062a4153c 100644
---- a/arch/arm64/kernel/cpu_errata.c
-+++ b/arch/arm64/kernel/cpu_errata.c
-@@ -347,6 +347,7 @@ static const struct midr_range trbe_overwrite_fill_mode_cpus[] = {
- #endif
- #ifdef CONFIG_ARM64_ERRATUM_2119858
- 	MIDR_ALL_VERSIONS(MIDR_CORTEX_A710),
-+	MIDR_RANGE(MIDR_CORTEX_X2, 0, 0, 2, 0),
- #endif
- 	{},
- };
-@@ -371,6 +372,7 @@ static struct midr_range trbe_write_out_of_range_cpus[] = {
- #endif
- #ifdef CONFIG_ARM64_ERRATUM_2224489
- 	MIDR_ALL_VERSIONS(MIDR_CORTEX_A710),
-+	MIDR_RANGE(MIDR_CORTEX_X2, 0, 0, 2, 0),
- #endif
- 	{},
- };
+ 	rc = qedf_vport_libfc_config(vport, vn_port);
+ 	if (rc) {
 -- 
 2.34.1
 
