@@ -2,240 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEDA9C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 14:36:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B670CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 14:36:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351815AbiBCOg1 (ORCPT
+        id S1351829AbiBCOg3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 09:36:27 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:35391 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1351367AbiBCOd4 (ORCPT
+        Thu, 3 Feb 2022 09:36:29 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:53620 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1351401AbiBCOdx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 09:33:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643898836;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
+        Thu, 3 Feb 2022 09:33:53 -0500
+Date:   Thu, 03 Feb 2022 14:33:51 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1643898832;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=FgR1T10PmKgYXr3n6p0CSnu6UNlPvhOSkcyMPTZFwsA=;
-        b=FCpWuyz9QBlHoH1yXWrtXULrfJTsPpnMGI8ly9ihpS85i18zgWceHBFalvX2x0Wv5UPZNm
-        FhGwejHRIM/lYGh+v5xxtxwGQbwLJBW39TDNcWgIsrgNkJoUtwGw5s+7LLcbT+8P1lrz+Z
-        tTyEvLq1q8FTqEHbvPRxt3FnzF9xDYQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-297-7vUL1IaQOVyofIhOq0N3fw-1; Thu, 03 Feb 2022 09:33:53 -0500
-X-MC-Unique: 7vUL1IaQOVyofIhOq0N3fw-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 14336190A7A1;
-        Thu,  3 Feb 2022 14:33:51 +0000 (UTC)
-Received: from plouf.redhat.com (unknown [10.39.192.114])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 956E07D499;
-        Thu,  3 Feb 2022 14:33:48 +0000 (UTC)
-From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
-To:     Jiri Kosina <jikos@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?q?Ahelenia=20Ziemia=C5=84ska?= 
-        <nabijaczleweli@nabijaczleweli.xyz>,
-        Ping Cheng <pinglinux@gmail.com>,
-        Aaron Armstrong Skomra <skomra@gmail.com>,
-        Jason Gerecke <killertofu@gmail.com>,
-        Peter Hutterer <peter.hutterer@who-t.net>
-Cc:     linux-input@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Subject: [PATCH v2 11/12] HID: input: accommodate priorities for slotted devices
-Date:   Thu,  3 Feb 2022 15:32:25 +0100
-Message-Id: <20220203143226.4023622-12-benjamin.tissoires@redhat.com>
-In-Reply-To: <20220203143226.4023622-1-benjamin.tissoires@redhat.com>
-References: <20220203143226.4023622-1-benjamin.tissoires@redhat.com>
+        bh=lSf6rlv5YTtxyugVtc/cg07pk8VXyFLfTGMubGQ4FEk=;
+        b=VypHDqB7gElwSvCHZ2S14/9QY4LD++9r+bXWMpboG4WHGlFPoJ0qPH40jUqqNc/Lod/hfI
+        QFN2S2EmSZDQX6XjoxADWy5rIoz49WHBJNVq4uphZbSUCsW1I/Kz1ArZoeSmR2Hs0dKQb5
+        Q66X+eXnaDncqVz4Qvh0Yoz1S/0M4Ckh4PQ1DHBsXELg/yHm4FTa6/lT/Ns2oncabi+61J
+        q7Jc2VlrdogxCAk7HLiZhex5B++HLHSWtv5sh9RMuhg5xpXJuR/1cuICKHI94gFzFGj2Kg
+        bVrZda/tYHD64Ef6Hze4/nn+Pz2JU9MX1y7d1q/QzSkZTLHSqcvNh0Y1UKBXMw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1643898832;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=lSf6rlv5YTtxyugVtc/cg07pk8VXyFLfTGMubGQ4FEk=;
+        b=NNHPUW+fR7ecl1hdBuBTXRTExrSofR/AeS+64/AG8XK6FjiRpp4tb8uOPv/4ncZwBScMw1
+        AeeFtYoVP4ifOjAA==
+From:   "tip-bot2 for Mathieu Desnoyers" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: sched/core] rseq: Remove broken uapi field layout on 32-bit
+ little endian
+Cc:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220127152720.25898-1-mathieu.desnoyers@efficios.com>
+References: <20220127152720.25898-1-mathieu.desnoyers@efficios.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Message-ID: <164389883175.16921.4926542633767739124.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Multitouch devices in hybrid mode are reporting multiple times the
-same collection. We should accommodate for this in our handling
-of priorities by defining the slots they belong to.
+The following commit has been merged into the sched/core branch of tip:
 
-Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Commit-ID:     bfdf4e6208051ed7165b2e92035b4bf11f43eb63
+Gitweb:        https://git.kernel.org/tip/bfdf4e6208051ed7165b2e92035b4bf11f43eb63
+Author:        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+AuthorDate:    Thu, 27 Jan 2022 10:27:20 -05:00
+Committer:     Peter Zijlstra <peterz@infradead.org>
+CommitterDate: Wed, 02 Feb 2022 13:11:34 +01:00
+
+rseq: Remove broken uapi field layout on 32-bit little endian
+
+The rseq rseq_cs.ptr.{ptr32,padding} uapi endianness handling is
+entirely wrong on 32-bit little endian: a preprocessor logic mistake
+wrongly uses the big endian field layout on 32-bit little endian
+architectures.
+
+Fortunately, those ptr32 accessors were never used within the kernel,
+and only meant as a convenience for user-space.
+
+Remove those and replace the whole rseq_cs union by a __u64 type, as
+this is the only thing really needed to express the ABI. Document how
+32-bit architectures are meant to interact with this field.
+
+Fixes: ec9c82e03a74 ("rseq: uapi: Declare rseq_cs field as union, update includes")
+Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20220127152720.25898-1-mathieu.desnoyers@efficios.com
 ---
- drivers/hid/hid-input.c | 103 ++++++++++++++++++++++++++++++++++++----
- include/linux/hid.h     |   1 +
- 2 files changed, 96 insertions(+), 8 deletions(-)
+ include/uapi/linux/rseq.h | 20 ++++----------------
+ kernel/rseq.c             |  8 ++++----
+ 2 files changed, 8 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/hid/hid-input.c b/drivers/hid/hid-input.c
-index 9f8853640648..56d4e91c4750 100644
---- a/drivers/hid/hid-input.c
-+++ b/drivers/hid/hid-input.c
-@@ -48,6 +48,16 @@ static const struct {
- 	__s32 y;
- }  hid_hat_to_axis[] = {{ 0, 0}, { 0,-1}, { 1,-1}, { 1, 0}, { 1, 1}, { 0, 1}, {-1, 1}, {-1, 0}, {-1,-1}};
+diff --git a/include/uapi/linux/rseq.h b/include/uapi/linux/rseq.h
+index 9a402fd..77ee207 100644
+--- a/include/uapi/linux/rseq.h
++++ b/include/uapi/linux/rseq.h
+@@ -105,23 +105,11 @@ struct rseq {
+ 	 * Read and set by the kernel. Set by user-space with single-copy
+ 	 * atomicity semantics. This field should only be updated by the
+ 	 * thread which registered this data structure. Aligned on 64-bit.
++	 *
++	 * 32-bit architectures should update the low order bits of the
++	 * rseq_cs field, leaving the high order bits initialized to 0.
+ 	 */
+-	union {
+-		__u64 ptr64;
+-#ifdef __LP64__
+-		__u64 ptr;
+-#else
+-		struct {
+-#if (defined(__BYTE_ORDER) && (__BYTE_ORDER == __BIG_ENDIAN)) || defined(__BIG_ENDIAN)
+-			__u32 padding;		/* Initialized to zero. */
+-			__u32 ptr32;
+-#else /* LITTLE */
+-			__u32 ptr32;
+-			__u32 padding;		/* Initialized to zero. */
+-#endif /* ENDIAN */
+-		} ptr;
+-#endif
+-	} rseq_cs;
++	__u64 rseq_cs;
  
-+struct usage_priority {
-+	__u32 usage;			/* the HID usage associated */
-+	bool global;			/* we assume all usages to be slotted,
-+					 * unless global
-+					 */
-+	unsigned int slot_overwrite;	/* for globals: allows to set the usage
-+					 * before or after the slots
-+					 */
-+};
-+
- /*
-  * hid-input will convert this list into priorities:
-  * the first element will have the highest priority
-@@ -57,17 +67,30 @@ static const struct {
-  * hid-input will then shift the priority by 8 bits to leave some space
-  * in case drivers want to interleave other fields.
-  *
-+ * To accommodate slotted devices, the slot priority is
-+ * defined in the next 8 bits (defined by 0xff - slot).
-+ *
-  * If drivers want to add fields before those, hid-input will
-  * leave out the first 8 bits of the priority value.
-  *
-  * This still leaves us 65535 individual priority values.
-  */
--static const __u32 hidinput_usages_priorities[] = {
--	HID_DG_ERASER,		/* Eraser (eraser touching) must always come before tipswitch */
--	HID_DG_INVERT,		/* Invert must always come before In Range */
--	HID_DG_TIPSWITCH,	/* Is the tip of the tool touching? */
--	HID_DG_TIPPRESSURE,	/* Tip Pressure might emulate tip switch */
--	HID_DG_INRANGE,		/* In Range needs to come after the other tool states */
-+static const struct usage_priority hidinput_usages_priorities[] = {
-+	{ /* Eraser (eraser touching) must always come before tipswitch */
-+	  .usage = HID_DG_ERASER,
-+	},
-+	{ /* Invert must always come before In Range */
-+	  .usage = HID_DG_INVERT,
-+	},
-+	{ /* Is the tip of the tool touching? */
-+	  .usage = HID_DG_TIPSWITCH,
-+	},
-+	{ /* Tip Pressure might emulate tip switch */
-+	  .usage = HID_DG_TIPPRESSURE,
-+	},
-+	{ /* In Range needs to come after the other tool states */
-+	  .usage = HID_DG_INRANGE,
-+	},
- };
+ 	/*
+ 	 * Restartable sequences flags field.
+diff --git a/kernel/rseq.c b/kernel/rseq.c
+index 6d45ac3..97ac20b 100644
+--- a/kernel/rseq.c
++++ b/kernel/rseq.c
+@@ -128,10 +128,10 @@ static int rseq_get_rseq_cs(struct task_struct *t, struct rseq_cs *rseq_cs)
+ 	int ret;
  
- #define map_abs(c)	hid_map_usage(hidinput, usage, &bit, &max, EV_ABS, (c))
-@@ -612,6 +635,7 @@ static void hidinput_configure_usage(struct hid_input *hidinput, struct hid_fiel
- {
- 	struct input_dev *input = hidinput->input;
- 	struct hid_device *device = input_get_drvdata(input);
-+	const struct usage_priority *usage_priority = NULL;
- 	int max = 0, code;
- 	unsigned int i = 0;
- 	unsigned long *bit = NULL;
-@@ -633,13 +657,26 @@ static void hidinput_configure_usage(struct hid_input *hidinput, struct hid_fiel
- 
- 	/* assign a priority based on the static list declared here */
- 	for (i = 0; i < ARRAY_SIZE(hidinput_usages_priorities); i++) {
--		if (usage->hid == hidinput_usages_priorities[i]) {
-+		if (usage->hid == hidinput_usages_priorities[i].usage) {
-+			usage_priority = &hidinput_usages_priorities[i];
-+
- 			field->usages_priorities[usage_index] =
- 				(ARRAY_SIZE(hidinput_usages_priorities) - i) << 8;
- 			break;
- 		}
- 	}
- 
-+	/*
-+	 * For slotted devices, we need to also add the slot index
-+	 * in the priority.
-+	 */
-+	if (usage_priority && usage_priority->global)
-+		field->usages_priorities[usage_index] |=
-+			usage_priority->slot_overwrite;
-+	else
-+		field->usages_priorities[usage_index] |=
-+			(0xff - field->slot_idx) << 16;
-+
- 	if (device->driver->input_mapping) {
- 		int ret = device->driver->input_mapping(device, hidinput, field,
- 				usage, &bit, &max);
-@@ -2068,7 +2105,57 @@ static struct hid_input *hidinput_match_application(struct hid_report *report)
- static inline void hidinput_configure_usages(struct hid_input *hidinput,
- 					     struct hid_report *report)
- {
--	int i, j;
-+	int i, j, k;
-+	int first_field_index = 0;
-+	int slot_collection_index = -1;
-+	int prev_collection_index = -1;
-+	unsigned int slot_idx = 0;
-+	struct hid_field *field;
-+
-+	/*
-+	 * First tag all the fields that are part of a slot,
-+	 * a slot needs to have one Contact ID in the collection
-+	 */
-+	for (i = 0; i < report->maxfield; i++) {
-+		field = report->field[i];
-+
-+		/* ignore fields without usage */
-+		if (field->maxusage < 1)
-+			continue;
-+
-+		/*
-+		 * janitoring when collection_index changes
-+		 */
-+		if (prev_collection_index != field->usage->collection_index) {
-+			prev_collection_index = field->usage->collection_index;
-+			first_field_index = i;
-+		}
-+
-+		/*
-+		 * if we already found a Contact ID in the collection,
-+		 * tag and continue to the next.
-+		 */
-+		if (slot_collection_index == field->usage->collection_index) {
-+			field->slot_idx = slot_idx;
-+			continue;
-+		}
-+
-+		/* check if the current field has Contact ID */
-+		for (j = 0; j < field->maxusage; j++) {
-+			if (field->usage[j].hid == HID_DG_CONTACTID) {
-+				slot_collection_index = field->usage->collection_index;
-+				slot_idx++;
-+
-+				/*
-+				 * mark all previous fields and this one in the
-+				 * current collection to be slotted.
-+				 */
-+				for (k = first_field_index; k <= i; k++)
-+					report->field[k]->slot_idx = slot_idx;
-+				break;
-+			}
-+		}
-+	}
- 
- 	for (i = 0; i < report->maxfield; i++)
- 		for (j = 0; j < report->field[i]->maxusage; j++)
-diff --git a/include/linux/hid.h b/include/linux/hid.h
-index feb8df61168f..4363a63b9775 100644
---- a/include/linux/hid.h
-+++ b/include/linux/hid.h
-@@ -492,6 +492,7 @@ struct hid_field {
- 	/* hidinput data */
- 	struct hid_input *hidinput;	/* associated input structure */
- 	__u16 dpad;			/* dpad input code */
-+	unsigned int slot_idx;		/* slot index in a report */
- };
- 
- #define HID_MAX_FIELDS 256
--- 
-2.33.1
-
+ #ifdef CONFIG_64BIT
+-	if (get_user(ptr, &t->rseq->rseq_cs.ptr64))
++	if (get_user(ptr, &t->rseq->rseq_cs))
+ 		return -EFAULT;
+ #else
+-	if (copy_from_user(&ptr, &t->rseq->rseq_cs.ptr64, sizeof(ptr)))
++	if (copy_from_user(&ptr, &t->rseq->rseq_cs, sizeof(ptr)))
+ 		return -EFAULT;
+ #endif
+ 	if (!ptr) {
+@@ -217,9 +217,9 @@ static int clear_rseq_cs(struct task_struct *t)
+ 	 * Set rseq_cs to NULL.
+ 	 */
+ #ifdef CONFIG_64BIT
+-	return put_user(0UL, &t->rseq->rseq_cs.ptr64);
++	return put_user(0UL, &t->rseq->rseq_cs);
+ #else
+-	if (clear_user(&t->rseq->rseq_cs.ptr64, sizeof(t->rseq->rseq_cs.ptr64)))
++	if (clear_user(&t->rseq->rseq_cs, sizeof(t->rseq->rseq_cs)))
+ 		return -EFAULT;
+ 	return 0;
+ #endif
