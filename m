@@ -2,193 +2,415 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A448C43219
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 00:14:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E444C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 00:14:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234079AbiBCAOP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 19:14:15 -0500
-Received: from sonic317-39.consmr.mail.ne1.yahoo.com ([66.163.184.50]:43625
-        "EHLO sonic317-39.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239650AbiBCAOO (ORCPT
+        id S1348401AbiBCAO3 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 19:14:29 -0500
+Received: from mail-il1-f200.google.com ([209.85.166.200]:52791 "EHLO
+        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242074AbiBCAO2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 19:14:14 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1643847254; bh=OPmcc6RxdekExVViioUe9rMhP6xIsP6mDCh0RBi/+Qs=; h=From:To:Cc:Subject:Date:In-Reply-To:References:From:Subject:Reply-To; b=h8ffBTPMoJFah9n8Qm3CDl+XbQlVrT8q5syZItmtyN9hlRKqoT+Ft3pWI7Ip3Tvw29hnjwoe4lnrA3SG3iL7NHNfnFPPhDtzlv4HdA1NilUmRfpyHMkebIFdSS+aTq3dANiyPsWKBHxG5atXI6qpi4w5ofBoLUs45oHfNguS+ttLHzbN8dg4/MMzd5zmvye23HFGf1XuivJdREpa/UMYqzRRp13IXFWoOva6ckrW0847SI6LGR1cG+oFbcPi+GfsL3U7xWEOTgYhj2TChFAbtceTgzfjldpOt2gOevqf3o1lQL2P5nPbDplORDaHRJrY0iZiXaRN3iW9zMftB2ULvw==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1643847254; bh=JWLmen0v1iaGlr+fMYDNSNw6J81iTVeWtMd+lDm0dp1=; h=X-Sonic-MF:From:To:Subject:Date:From:Subject; b=TCC7t3uvlVUcJOtc4rr3X2vGyYaihwytEuMAHvyoqj/gboDkj+yPKA1mBYyPhPJ5/VYEV+L6AUu/s4D6nAm93L/guduUYY/Y8KIb+jxznKFsTbSdsb7i3IDnD2LHVeG+8Mtz3+O5sYTXaUBegXW90y7dcdBa/enHCw1y8NFjYVzZJeevwlqS25abvMqJi0IIL7BykJeXLhdlyNzpkKor42wdR7jD4RLBx7yWKQlBNO94cfUaxdAF+gxBulin/ZA/PXarTxwboUVWNqL+PRRNtPjzFH6bQA8dAC2tbVZ3e4fO0fYVn/PyLnSff69vLRwVKMJcU4doA8fZ3zO8rRoZIg==
-X-YMail-OSG: qosHQDwVM1nikMe.7SO6m5ncuiKLq9iyb4U_sxQnVywwIUTg9s9QO9r3LUQnwH7
- aDGbdAHz4USz5O3roJ_uy.70DLhLLasHmaUz1C9bxDRhKVaFFzvV4Bw0.X3EbmPoRrrSQ.r1vAW6
- aj3c9sejtoK0KfvByyqMomQOwAe23XzYZ74UuCfAEKXKgmwiQIdcNRNQACblPX7x5CwNMqsJBA73
- idy4M9MMLHdPoWcxgvAqGZ2pDjonrN9WR7rOsqXyzO_HNI4xCZJ72sk7MoslCwAk3.D6b52MzTEs
- jnmnhBT.gxBVeEd.GsZu2fHzNUlIQUGxKUDKlzO29wbsvvDht.TMW9qf9qPnalWcMIyOQo1CDTdN
- P9M4qcJ8fR7XTk1kGYAYF2GrYZ3MMrxp7NLuse44J1tJLJTSYQLnFtrsi4V_IVqnabbqcXWIQCaM
- JtU_K8xxALIfnhZrWutIX7TSzBVtxkchRq98MlLj_N0GCxHbFLtVWfOBGqxnUCxU4UQ0o0rcTHmg
- Mhgy501Vc5QaigA68jNaeZBGgqpz9QXPWSeniiuGAm62bmD2RCvDKp78Wn8PRCxxNqz9HJWFk.Zs
- 5wBMxubGu4nOJ6AQCFIXaEbxZ_wk3MQ2ewW6uJdd3uv_OxHPiyJNtkbkX4MxhVqQeZ8SBea94yIs
- THXQfS.9zWNF4l4KUME2SYQm.8h9boHyZpZj5tZlRCVV8Ya3MQbRLHC.Jg9p593WgvekFTw0BTx0
- rj4SPrXqvdyWHaUC3u.Lrm.kV0pU7wPnPuIzIKhV03wEaFfn59Evxe0DgD98eQcoFPssBpChP.M5
- Ne9uQzSN31l5gNEWO4LNF8D73gDst_31l0QbMf.gwOI89Qjv1Y4Gf2SWfvul7sMD8dsWfMWH53R9
- 3pm50utRysavJ6S8ZWFRXOVGW9aTeWjrv_X5xEEfR_F4X_NXKOfHoPsAtgJWPapNqwFViAJdf_rw
- WEF09weCRWjDj3OTYx87Q3a6tXYMtd8VEdQTDnZCs4CXGQh6cVTtj9VOGzLsLxZD.gRmYfQAf1qO
- KvTdvDeV3QEDKW7cL3pfKrrHSXh4xb8oWg2wOWDvEjlD3UdrRxH7elcXL8REq9_N8mCFKZOjd8nv
- 8MGsA4ghmnbnSCHRhyZRHi8mYw14jF_Eir9BgOVgcRE1wBKuQuveXIuT0dgH_GmnP3cO5uOuztIT
- HCS9fpzVtnqmtTvt1wn5e8zS3XnPdzULFujL2nzR0CQsNgHPNaABtXdXgJfcOLy3ni4.Cf21TbQJ
- xPrVCbwwtzVJUTD1rQQiH6nWrGGasRSgIa5tYAVyVbTfQqoh_2QsLTlo9YkWaA3HoRNKvU5MXiSO
- ADkH24wZGcOX7viG03JDrTis7pDdEgu9FzvjeN28JhVI8pPDUioZvJaskPYHldO9hKXiDulyl_xO
- akvApLx4UHSKdMNItUZ0eb6AuQdy1_P51Vhi4NrbVxVDpPOB8tPYj8QlVVYj_UuvAL0.GvYmVXEl
- xg86A2nGc65alT04BURVI_2GOAsP_paM1eseUXDJ_031GA2WvhGNQrouCkokXDcXDharTG2RAD6n
- C_LrCmW.Z68HmrReEh0VXi6t0kaBZ66TlMIie2IPjFwD0rTnXG5brd0MzTKuScGWj63sKoPQr8Gm
- y2mByFfB7LbIaBL2P5unH1g_OsjGqRavwaOqZzyGszPZ7YpqWH9QGsZjuHR8NbysW6KmPiW6iqi1
- 0i0Xu4VbXj2RH4yPZMWpKyNZFaFgFjDHnIQ.41bx4SLIfIzZiTsi.BQ_zpjN5foA6d_6dPhUgRhZ
- Wew1p0VxwfFya9iEIe.WRkAo47_6Znv16DP4M8hzPn.8ZD9C4e0akt1GMfBN2jeuQmzNymeYMNqd
- 4Io_BFeMWO7WOrOeJpBSradF95J1mJSLcc2n6H69BLZSF3JISMrp5yVGvABje03JqAiAJU5nKUYN
- b_Zl5bWQbiD5x6MCYpchmMWw8_MWxuxkci57hCAp0NpcOCUHZeTNJNJfdGRTwdikrk87ighHz.cq
- CSvkIiJpZpjbd4DBqXBlXuB7UnYEHC_x37MivQeybXPyPHaHAJnN2g8eYJn8VVH0pbWScSH5.hGd
- 50bmm5C3xfHVIc0imJnIp.CWnbCSVoLQKvnl6X_za3X.vIpnZy8xNX8Vr4jh2goZJpbzwQi7piW_
- SXnWWYhJijl4F3_pMZcic4ryk9br8S3aTFqJIczvrs2IdAQE_4BAJcXdqAOdJ6lbMSnST3a7.yaw
- fDu2NUvV4wpcInIPCuC.3zdp7bOmJRSMdbU3Ur.NOT_ygqsWZH2RwobwBSLj3aw1bWXPYZVQhPrK
- d
-X-Sonic-MF: <casey@schaufler-ca.com>
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic317.consmr.mail.ne1.yahoo.com with HTTP; Thu, 3 Feb 2022 00:14:14 +0000
-Received: by kubenode514.mail-prod1.omega.bf1.yahoo.com (VZM Hermes SMTP Server) with ESMTPA ID a29bd64dc2f4fffffe40b3652cb32a1f;
-          Thu, 03 Feb 2022 00:14:11 +0000 (UTC)
-From:   Casey Schaufler <casey@schaufler-ca.com>
-To:     casey.schaufler@intel.com, jmorris@namei.org,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org
-Cc:     casey@schaufler-ca.com, linux-audit@redhat.com,
-        keescook@chromium.org, john.johansen@canonical.com,
-        penguin-kernel@i-love.sakura.ne.jp, paul@paul-moore.com,
-        sds@tycho.nsa.gov, linux-kernel@vger.kernel.org,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org
-Subject: [PATCH v32 18/28] LSM: security_secid_to_secctx in netlink netfilter
-Date:   Wed,  2 Feb 2022 15:53:13 -0800
-Message-Id: <20220202235323.23929-19-casey@schaufler-ca.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220202235323.23929-1-casey@schaufler-ca.com>
-References: <20220202235323.23929-1-casey@schaufler-ca.com>
+        Wed, 2 Feb 2022 19:14:28 -0500
+Received: by mail-il1-f200.google.com with SMTP id m3-20020a056e02158300b002b6e3d1f97cso575553ilu.19
+        for <linux-kernel@vger.kernel.org>; Wed, 02 Feb 2022 16:14:28 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=K3xUYBdrgERWV983QtOv6QyIMmoJBk7bFt+sRMZN/YQ=;
+        b=Vs961bkSIJmZy/43Ocm46oTE52sX12BNjjDdiltDXeYj1+BqQCWybh67x/9rHOJaTy
+         /qZsWqDLz3nNQIYhX4PVBoAvhxhYkD0/bWuVErcKDRJihCIqznycLuYqvosUPmgTEJNz
+         4AALq7mO2nUgIeajMZXW5LxGd1bNNnjnkLZV1S5qcwy/pG1I1cMA3cOIuPEmxoNTi3rh
+         6iF1ccXmd+im/NHFCZ4Pmyi+Kjnn/6XFf5Dv2pIyd+O6dgaZolwrPGyjFGW+y4DNvvB+
+         sFG9QjcPbuZZxwVGcEblNWH2s4sq0mhO1kaNCSlkGCx/sUdtVOc8TGFqCanhym8m7FY9
+         TgHA==
+X-Gm-Message-State: AOAM530gsD8hqH/VEwBbzt8AKTtCJROpDr1O+XkYFSxelDqqDbDh9W/W
+        t3pOo3J6kcPuMdlcn2wu8UaGAWXD6029CTC/kCowA9+UUaAQ
+X-Google-Smtp-Source: ABdhPJx+AeAAHHbn9ew503YElCJNCxC7dYZgP91iqo/7kh4vUgf3uJ2CCR4unGEJTj5PnnmgXnxepMu+KALmrapUoDAe0L2scwFS
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6638:16d3:: with SMTP id g19mr9946777jat.307.1643847267931;
+ Wed, 02 Feb 2022 16:14:27 -0800 (PST)
+Date:   Wed, 02 Feb 2022 16:14:27 -0800
+In-Reply-To: <0000000000006527b405d653df1f@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000785f9605d712043f@google.com>
+Subject: Re: [syzbot] INFO: task can't die in show_free_areas
+From:   syzbot <syzbot+8f41dccfb6c03cc36fd6@syzkaller.appspotmail.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Change netlink netfilter interfaces to use lsmcontext
-pointers, and remove scaffolding.
+syzbot has found a reproducer for the following issue on:
 
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Reviewed-by: John Johansen <john.johansen@canonical.com>
-Acked-by: Paul Moore <paul@paul-moore.com>
-Acked-by: Stephen Smalley <stephen.smalley.work@gmail.com>
-Acked-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
-Cc: netdev@vger.kernel.org
-Cc: netfilter-devel@vger.kernel.org
----
- net/netfilter/nfnetlink_queue.c | 37 +++++++++++++--------------------
- 1 file changed, 14 insertions(+), 23 deletions(-)
+HEAD commit:    6abab1b81b65 Add linux-next specific files for 20220202
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=10de0ec8700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=b8d8750556896349
+dashboard link: https://syzkaller.appspot.com/bug?extid=8f41dccfb6c03cc36fd6
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=133f0c58700000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1205d17c700000
 
-diff --git a/net/netfilter/nfnetlink_queue.c b/net/netfilter/nfnetlink_queue.c
-index 625cd787ffc1..2aff40578045 100644
---- a/net/netfilter/nfnetlink_queue.c
-+++ b/net/netfilter/nfnetlink_queue.c
-@@ -301,15 +301,13 @@ static int nfqnl_put_sk_uidgid(struct sk_buff *skb, struct sock *sk)
- 	return -1;
- }
- 
--static u32 nfqnl_get_sk_secctx(struct sk_buff *skb, char **secdata)
-+static void nfqnl_get_sk_secctx(struct sk_buff *skb, struct lsmcontext *context)
- {
--	u32 seclen = 0;
- #if IS_ENABLED(CONFIG_NETWORK_SECMARK)
- 	struct lsmblob blob;
--	struct lsmcontext context = { };
- 
- 	if (!skb || !sk_fullsock(skb->sk))
--		return 0;
-+		return;
- 
- 	read_lock_bh(&skb->sk->sk_callback_lock);
- 
-@@ -318,14 +316,12 @@ static u32 nfqnl_get_sk_secctx(struct sk_buff *skb, char **secdata)
- 		 * blob. security_secid_to_secctx() will know which security
- 		 * module to use to create the secctx.  */
- 		lsmblob_init(&blob, skb->secmark);
--		security_secid_to_secctx(&blob, &context);
--		*secdata = context.context;
-+		security_secid_to_secctx(&blob, context);
- 	}
- 
- 	read_unlock_bh(&skb->sk->sk_callback_lock);
--	seclen = context.len;
- #endif
--	return seclen;
-+	return;
- }
- 
- static u32 nfqnl_get_bridge_size(struct nf_queue_entry *entry)
-@@ -397,12 +393,10 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
- 	struct net_device *indev;
- 	struct net_device *outdev;
- 	struct nf_conn *ct = NULL;
-+	struct lsmcontext context = { };
- 	enum ip_conntrack_info ctinfo = 0;
- 	const struct nfnl_ct_hook *nfnl_ct;
- 	bool csum_verify;
--	struct lsmcontext scaff; /* scaffolding */
--	char *secdata = NULL;
--	u32 seclen = 0;
- 
- 	size = nlmsg_total_size(sizeof(struct nfgenmsg))
- 		+ nla_total_size(sizeof(struct nfqnl_msg_packet_hdr))
-@@ -470,9 +464,9 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
- 	}
- 
- 	if ((queue->flags & NFQA_CFG_F_SECCTX) && entskb->sk) {
--		seclen = nfqnl_get_sk_secctx(entskb, &secdata);
--		if (seclen)
--			size += nla_total_size(seclen);
-+		nfqnl_get_sk_secctx(entskb, &context);
-+		if (context.len)
-+			size += nla_total_size(context.len);
- 	}
- 
- 	skb = alloc_skb(size, GFP_ATOMIC);
-@@ -603,7 +597,8 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
- 	    nfqnl_put_sk_uidgid(skb, entskb->sk) < 0)
- 		goto nla_put_failure;
- 
--	if (seclen && nla_put(skb, NFQA_SECCTX, seclen, secdata))
-+	if (context.len &&
-+	    nla_put(skb, NFQA_SECCTX, context.len, context.context))
- 		goto nla_put_failure;
- 
- 	if (ct && nfnl_ct->build(skb, ct, ctinfo, NFQA_CT, NFQA_CT_INFO) < 0)
-@@ -631,10 +626,8 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
- 	}
- 
- 	nlh->nlmsg_len = skb->len;
--	if (seclen) {
--		lsmcontext_init(&scaff, secdata, seclen, 0);
--		security_release_secctx(&scaff);
--	}
-+	if (context.len)
-+		security_release_secctx(&context);
- 	return skb;
- 
- nla_put_failure:
-@@ -642,10 +635,8 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
- 	kfree_skb(skb);
- 	net_err_ratelimited("nf_queue: error creating packet message\n");
- nlmsg_failure:
--	if (seclen) {
--		lsmcontext_init(&scaff, secdata, seclen, 0);
--		security_release_secctx(&scaff);
--	}
-+	if (context.len)
-+		security_release_secctx(&context);
- 	return NULL;
- }
- 
--- 
-2.31.1
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+8f41dccfb6c03cc36fd6@syzkaller.appspotmail.com
+
+INFO: task syz-executor372:3664 can't die for more than 143 seconds.
+task:syz-executor372 state:R  running task     stack:26120 pid: 3664 ppid:  3651 flags:0x00004004
+Call Trace:
+ <TASK>
+ context_switch kernel/sched/core.c:5000 [inline]
+ __schedule+0xab2/0x4db0 kernel/sched/core.c:6309
+ preempt_schedule_common+0x45/0xc0 kernel/sched/core.c:6475
+ preempt_schedule_thunk+0x16/0x18 arch/x86/entry/thunk_64.S:35
+ vprintk_emit+0x1c9/0x4f0 kernel/printk/printk.c:2249
+ vprintk+0x80/0x90 kernel/printk/printk_safe.c:50
+ _printk+0xba/0xed kernel/printk/printk.c:2269
+ show_free_areas.cold+0x4aa/0x961 mm/page_alloc.c:6052
+ show_mem+0x31/0x191 lib/show_mem.c:17
+ warn_alloc_show_mem mm/page_alloc.c:4268 [inline]
+ warn_alloc.cold+0x121/0x189 mm/page_alloc.c:4293
+ __vmalloc_area_node mm/vmalloc.c:3003 [inline]
+ __vmalloc_node_range+0xeb5/0x1130 mm/vmalloc.c:3157
+ __vmalloc_node mm/vmalloc.c:3222 [inline]
+ vzalloc+0x67/0x80 mm/vmalloc.c:3292
+ n_tty_open+0x16/0x170 drivers/tty/n_tty.c:1813
+ tty_ldisc_open+0x9b/0x110 drivers/tty/tty_ldisc.c:433
+ tty_ldisc_setup+0x43/0x100 drivers/tty/tty_ldisc.c:740
+ tty_init_dev.part.0+0x1f4/0x610 drivers/tty/tty_io.c:1443
+ tty_init_dev include/linux/err.h:36 [inline]
+ tty_open_by_driver drivers/tty/tty_io.c:2086 [inline]
+ tty_open+0xb16/0x1000 drivers/tty/tty_io.c:2133
+ chrdev_open+0x266/0x770 fs/char_dev.c:414
+ do_dentry_open+0x4b9/0x1240 fs/open.c:957
+ do_open fs/namei.c:3476 [inline]
+ path_openat+0x1c9e/0x2940 fs/namei.c:3609
+ do_filp_open+0x1aa/0x400 fs/namei.c:3636
+ do_sys_openat2+0x16d/0x4d0 fs/open.c:1347
+ do_sys_open fs/open.c:1363 [inline]
+ __do_sys_openat fs/open.c:1379 [inline]
+ __se_sys_openat fs/open.c:1374 [inline]
+ __x64_sys_openat+0x13f/0x1f0 fs/open.c:1374
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f5f16eac9d7
+RSP: 002b:00007ffe798c0ac0 EFLAGS: 00000246 ORIG_RAX: 0000000000000101
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00007f5f16eac9d7
+RDX: 0000000000000002 RSI: 00007ffe798c0b50 RDI: 00000000ffffff9c
+RBP: 00007ffe798c0b50 R08: 0000000000000000 R09: 000000000000000e
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000002
+R13: 00007ffe798c0c10 R14: 00007ffe798c0c50 R15: 0000000000000000
+ </TASK>
+INFO: task syz-executor372:3665 can't die for more than 143 seconds.
+task:syz-executor372 state:D stack:28112 pid: 3665 ppid:  3654 flags:0x00000004
+Call Trace:
+ <TASK>
+ context_switch kernel/sched/core.c:5000 [inline]
+ __schedule+0xab2/0x4db0 kernel/sched/core.c:6309
+ schedule+0xd2/0x260 kernel/sched/core.c:6382
+ schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:6441
+ __mutex_lock_common kernel/locking/mutex.c:673 [inline]
+ __mutex_lock+0xa32/0x12f0 kernel/locking/mutex.c:733
+ tty_open_by_driver drivers/tty/tty_io.c:2050 [inline]
+ tty_open+0x55e/0x1000 drivers/tty/tty_io.c:2133
+ chrdev_open+0x266/0x770 fs/char_dev.c:414
+ do_dentry_open+0x4b9/0x1240 fs/open.c:957
+ do_open fs/namei.c:3476 [inline]
+ path_openat+0x1c9e/0x2940 fs/namei.c:3609
+ do_filp_open+0x1aa/0x400 fs/namei.c:3636
+ do_sys_openat2+0x16d/0x4d0 fs/open.c:1347
+ do_sys_open fs/open.c:1363 [inline]
+ __do_sys_openat fs/open.c:1379 [inline]
+ __se_sys_openat fs/open.c:1374 [inline]
+ __x64_sys_openat+0x13f/0x1f0 fs/open.c:1374
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f5f16eac9d7
+RSP: 002b:00007ffe798c0ac0 EFLAGS: 00000246 ORIG_RAX: 0000000000000101
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00007f5f16eac9d7
+RDX: 0000000000000002 RSI: 00007ffe798c0b50 RDI: 00000000ffffff9c
+RBP: 00007ffe798c0b50 R08: 0000000000000000 R09: 000000000000000e
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000002
+R13: 00007ffe798c0c10 R14: 00007ffe798c0c50 R15: 0000000000000000
+ </TASK>
+INFO: task syz-executor372:3665 blocked for more than 144 seconds.
+      Not tainted 5.17.0-rc2-next-20220202-syzkaller #0
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:syz-executor372 state:D stack:28112 pid: 3665 ppid:  3654 flags:0x00000004
+Call Trace:
+ <TASK>
+ context_switch kernel/sched/core.c:5000 [inline]
+ __schedule+0xab2/0x4db0 kernel/sched/core.c:6309
+ schedule+0xd2/0x260 kernel/sched/core.c:6382
+ schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:6441
+ __mutex_lock_common kernel/locking/mutex.c:673 [inline]
+ __mutex_lock+0xa32/0x12f0 kernel/locking/mutex.c:733
+ tty_open_by_driver drivers/tty/tty_io.c:2050 [inline]
+ tty_open+0x55e/0x1000 drivers/tty/tty_io.c:2133
+ chrdev_open+0x266/0x770 fs/char_dev.c:414
+ do_dentry_open+0x4b9/0x1240 fs/open.c:957
+ do_open fs/namei.c:3476 [inline]
+ path_openat+0x1c9e/0x2940 fs/namei.c:3609
+ do_filp_open+0x1aa/0x400 fs/namei.c:3636
+ do_sys_openat2+0x16d/0x4d0 fs/open.c:1347
+ do_sys_open fs/open.c:1363 [inline]
+ __do_sys_openat fs/open.c:1379 [inline]
+ __se_sys_openat fs/open.c:1374 [inline]
+ __x64_sys_openat+0x13f/0x1f0 fs/open.c:1374
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f5f16eac9d7
+RSP: 002b:00007ffe798c0ac0 EFLAGS: 00000246 ORIG_RAX: 0000000000000101
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00007f5f16eac9d7
+RDX: 0000000000000002 RSI: 00007ffe798c0b50 RDI: 00000000ffffff9c
+RBP: 00007ffe798c0b50 R08: 0000000000000000 R09: 000000000000000e
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000002
+R13: 00007ffe798c0c10 R14: 00007ffe798c0c50 R15: 0000000000000000
+ </TASK>
+INFO: task syz-executor372:3666 can't die for more than 144 seconds.
+task:syz-executor372 state:D stack:27696 pid: 3666 ppid:  3653 flags:0x00000004
+Call Trace:
+ <TASK>
+ context_switch kernel/sched/core.c:5000 [inline]
+ __schedule+0xab2/0x4db0 kernel/sched/core.c:6309
+ schedule+0xd2/0x260 kernel/sched/core.c:6382
+ schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:6441
+ __mutex_lock_common kernel/locking/mutex.c:673 [inline]
+ __mutex_lock+0xa32/0x12f0 kernel/locking/mutex.c:733
+ tty_open_by_driver drivers/tty/tty_io.c:2050 [inline]
+ tty_open+0x55e/0x1000 drivers/tty/tty_io.c:2133
+ chrdev_open+0x266/0x770 fs/char_dev.c:414
+ do_dentry_open+0x4b9/0x1240 fs/open.c:957
+ do_open fs/namei.c:3476 [inline]
+ path_openat+0x1c9e/0x2940 fs/namei.c:3609
+ do_filp_open+0x1aa/0x400 fs/namei.c:3636
+ do_sys_openat2+0x16d/0x4d0 fs/open.c:1347
+ do_sys_open fs/open.c:1363 [inline]
+ __do_sys_openat fs/open.c:1379 [inline]
+ __se_sys_openat fs/open.c:1374 [inline]
+ __x64_sys_openat+0x13f/0x1f0 fs/open.c:1374
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f5f16eac9d7
+RSP: 002b:00007ffe798c0ac0 EFLAGS: 00000246 ORIG_RAX: 0000000000000101
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00007f5f16eac9d7
+RDX: 0000000000000002 RSI: 00007ffe798c0b50 RDI: 00000000ffffff9c
+RBP: 00007ffe798c0b50 R08: 0000000000000000 R09: 000000000000000e
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000002
+R13: 00007ffe798c0c10 R14: 00007ffe798c0c50 R15: 0000000000000000
+ </TASK>
+INFO: task syz-executor372:3666 blocked for more than 144 seconds.
+      Not tainted 5.17.0-rc2-next-20220202-syzkaller #0
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:syz-executor372 state:D stack:27696 pid: 3666 ppid:  3653 flags:0x00000004
+Call Trace:
+ <TASK>
+ context_switch kernel/sched/core.c:5000 [inline]
+ __schedule+0xab2/0x4db0 kernel/sched/core.c:6309
+ schedule+0xd2/0x260 kernel/sched/core.c:6382
+ schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:6441
+ __mutex_lock_common kernel/locking/mutex.c:673 [inline]
+ __mutex_lock+0xa32/0x12f0 kernel/locking/mutex.c:733
+ tty_open_by_driver drivers/tty/tty_io.c:2050 [inline]
+ tty_open+0x55e/0x1000 drivers/tty/tty_io.c:2133
+ chrdev_open+0x266/0x770 fs/char_dev.c:414
+ do_dentry_open+0x4b9/0x1240 fs/open.c:957
+ do_open fs/namei.c:3476 [inline]
+ path_openat+0x1c9e/0x2940 fs/namei.c:3609
+ do_filp_open+0x1aa/0x400 fs/namei.c:3636
+ do_sys_openat2+0x16d/0x4d0 fs/open.c:1347
+ do_sys_open fs/open.c:1363 [inline]
+ __do_sys_openat fs/open.c:1379 [inline]
+ __se_sys_openat fs/open.c:1374 [inline]
+ __x64_sys_openat+0x13f/0x1f0 fs/open.c:1374
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f5f16eac9d7
+RSP: 002b:00007ffe798c0ac0 EFLAGS: 00000246 ORIG_RAX: 0000000000000101
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00007f5f16eac9d7
+RDX: 0000000000000002 RSI: 00007ffe798c0b50 RDI: 00000000ffffff9c
+RBP: 00007ffe798c0b50 R08: 0000000000000000 R09: 000000000000000e
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000002
+R13: 00007ffe798c0c10 R14: 00007ffe798c0c50 R15: 0000000000000000
+ </TASK>
+INFO: task syz-executor372:3671 can't die for more than 144 seconds.
+task:syz-executor372 state:D stack:28112 pid: 3671 ppid:  3652 flags:0x00000004
+Call Trace:
+ <TASK>
+ context_switch kernel/sched/core.c:5000 [inline]
+ __schedule+0xab2/0x4db0 kernel/sched/core.c:6309
+ schedule+0xd2/0x260 kernel/sched/core.c:6382
+ schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:6441
+ __mutex_lock_common kernel/locking/mutex.c:673 [inline]
+ __mutex_lock+0xa32/0x12f0 kernel/locking/mutex.c:733
+ tty_open_by_driver drivers/tty/tty_io.c:2050 [inline]
+ tty_open+0x55e/0x1000 drivers/tty/tty_io.c:2133
+ chrdev_open+0x266/0x770 fs/char_dev.c:414
+ do_dentry_open+0x4b9/0x1240 fs/open.c:957
+ do_open fs/namei.c:3476 [inline]
+ path_openat+0x1c9e/0x2940 fs/namei.c:3609
+ do_filp_open+0x1aa/0x400 fs/namei.c:3636
+ do_sys_openat2+0x16d/0x4d0 fs/open.c:1347
+ do_sys_open fs/open.c:1363 [inline]
+ __do_sys_openat fs/open.c:1379 [inline]
+ __se_sys_openat fs/open.c:1374 [inline]
+ __x64_sys_openat+0x13f/0x1f0 fs/open.c:1374
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f5f16eac9d7
+RSP: 002b:00007ffe798c0ac0 EFLAGS: 00000246 ORIG_RAX: 0000000000000101
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00007f5f16eac9d7
+RDX: 0000000000000002 RSI: 00007ffe798c0b50 RDI: 00000000ffffff9c
+RBP: 00007ffe798c0b50 R08: 0000000000000000 R09: 000000000000000e
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000002
+R13: 00007ffe798c0c10 R14: 00007ffe798c0c50 R15: 0000000000000001
+ </TASK>
+INFO: task syz-executor372:3671 blocked for more than 145 seconds.
+      Not tainted 5.17.0-rc2-next-20220202-syzkaller #0
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:syz-executor372 state:D stack:28112 pid: 3671 ppid:  3652 flags:0x00000004
+Call Trace:
+ <TASK>
+ context_switch kernel/sched/core.c:5000 [inline]
+ __schedule+0xab2/0x4db0 kernel/sched/core.c:6309
+ schedule+0xd2/0x260 kernel/sched/core.c:6382
+ schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:6441
+ __mutex_lock_common kernel/locking/mutex.c:673 [inline]
+ __mutex_lock+0xa32/0x12f0 kernel/locking/mutex.c:733
+ tty_open_by_driver drivers/tty/tty_io.c:2050 [inline]
+ tty_open+0x55e/0x1000 drivers/tty/tty_io.c:2133
+ chrdev_open+0x266/0x770 fs/char_dev.c:414
+ do_dentry_open+0x4b9/0x1240 fs/open.c:957
+ do_open fs/namei.c:3476 [inline]
+ path_openat+0x1c9e/0x2940 fs/namei.c:3609
+ do_filp_open+0x1aa/0x400 fs/namei.c:3636
+ do_sys_openat2+0x16d/0x4d0 fs/open.c:1347
+ do_sys_open fs/open.c:1363 [inline]
+ __do_sys_openat fs/open.c:1379 [inline]
+ __se_sys_openat fs/open.c:1374 [inline]
+ __x64_sys_openat+0x13f/0x1f0 fs/open.c:1374
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f5f16eac9d7
+RSP: 002b:00007ffe798c0ac0 EFLAGS: 00000246 ORIG_RAX: 0000000000000101
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00007f5f16eac9d7
+RDX: 0000000000000002 RSI: 00007ffe798c0b50 RDI: 00000000ffffff9c
+RBP: 00007ffe798c0b50 R08: 0000000000000000 R09: 000000000000000e
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000002
+R13: 00007ffe798c0c10 R14: 00007ffe798c0c50 R15: 0000000000000001
+ </TASK>
+
+Showing all locks held in the system:
+1 lock held by khungtaskd/27:
+ #0: ffffffff8bb83a60 (rcu_read_lock){....}-{1:2}, at: debug_show_all_locks+0x53/0x260 kernel/locking/lockdep.c:6463
+2 locks held by getty/3274:
+ #0: ffff88814abb0098 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_ref_wait+0x22/0x80 drivers/tty/tty_ldisc.c:244
+ #1: ffffc90002b562e8 (&ldata->atomic_read_lock){+.+.}-{3:3}, at: n_tty_read+0xcf0/0x1230 drivers/tty/n_tty.c:2077
+3 locks held by syz-executor372/3664:
+1 lock held by syz-executor372/3665:
+ #0: ffffffff8c5b60c8 (tty_mutex){+.+.}-{3:3}, at: tty_open_by_driver drivers/tty/tty_io.c:2050 [inline]
+ #0: ffffffff8c5b60c8 (tty_mutex){+.+.}-{3:3}, at: tty_open+0x55e/0x1000 drivers/tty/tty_io.c:2133
+1 lock held by syz-executor372/3666:
+ #0: ffffffff8c5b60c8 (tty_mutex){+.+.}-{3:3}, at: tty_open_by_driver drivers/tty/tty_io.c:2050 [inline]
+ #0: ffffffff8c5b60c8 (tty_mutex){+.+.}-{3:3}, at: tty_open+0x55e/0x1000 drivers/tty/tty_io.c:2133
+1 lock held by syz-executor372/3671:
+ #0: ffffffff8c5b60c8 (tty_mutex){+.+.}-{3:3}, at: tty_open_by_driver drivers/tty/tty_io.c:2050 [inline]
+ #0: ffffffff8c5b60c8 (tty_mutex){+.+.}-{3:3}, at: tty_open+0x55e/0x1000 drivers/tty/tty_io.c:2133
+1 lock held by syz-executor372/3680:
+ #0: ffffffff8c5b60c8 (tty_mutex){+.+.}-{3:3}, at: tty_open_by_driver drivers/tty/tty_io.c:2050 [inline]
+ #0: ffffffff8c5b60c8 (tty_mutex){+.+.}-{3:3}, at: tty_open+0x55e/0x1000 drivers/tty/tty_io.c:2133
+1 lock held by syz-executor372/3683:
+ #0: ffffffff8c5b60c8 (tty_mutex){+.+.}-{3:3}, at: tty_open_by_driver drivers/tty/tty_io.c:2050 [inline]
+ #0: ffffffff8c5b60c8 (tty_mutex){+.+.}-{3:3}, at: tty_open+0x55e/0x1000 drivers/tty/tty_io.c:2133
+
+=============================================
+
+NMI backtrace for cpu 0
+CPU: 0 PID: 27 Comm: khungtaskd Not tainted 5.17.0-rc2-next-20220202-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ nmi_cpu_backtrace.cold+0x47/0x144 lib/nmi_backtrace.c:111
+ nmi_trigger_cpumask_backtrace+0x1e6/0x230 lib/nmi_backtrace.c:62
+ trigger_all_cpu_backtrace include/linux/nmi.h:146 [inline]
+ check_hung_uninterruptible_tasks kernel/hung_task.c:256 [inline]
+ watchdog+0xcb7/0xed0 kernel/hung_task.c:413
+ kthread+0x2e9/0x3a0 kernel/kthread.c:377
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+ </TASK>
+Sending NMI from CPU 0 to CPUs 1:
+NMI backtrace for cpu 1
+CPU: 1 PID: 3668 Comm: kworker/u4:6 Not tainted 5.17.0-rc2-next-20220202-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: events_unbound toggle_allocation_gate
+RIP: 0010:__lock_release kernel/locking/lockdep.c:5323 [inline]
+RIP: 0010:lock_release+0x217/0x720 kernel/locking/lockdep.c:5659
+Code: e8 6e 08 ff ff 48 85 c0 48 89 c3 0f 84 85 03 00 00 48 8d 78 24 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 0f b6 14 02 <48> 89 f8 83 e0 07 83 c0 03 38 d0 7c 08 84 d2 0f 85 94 04 00 00 8b
+RSP: 0018:ffffc900028bf920 EFLAGS: 00000807
+RAX: dffffc0000000000 RBX: ffff88801f760b30 RCX: ffffc900028bf970
+RDX: 0000000000000000 RSI: ffff888010db6138 RDI: ffff88801f760b54
+RBP: 1ffff92000517f26 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000001 R11: 000000000000003f R12: ffff888010db6138
+R13: 0000000000000006 R14: ffff88801f760a60 R15: ffff88801f760000
+FS:  0000000000000000(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f80cab3f680 CR3: 000000000b88e000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ __raw_spin_unlock include/linux/spinlock_api_smp.h:141 [inline]
+ _raw_spin_unlock+0x12/0x40 kernel/locking/spinlock.c:186
+ spin_unlock include/linux/spinlock.h:394 [inline]
+ __text_poke+0x5d4/0x8c0 arch/x86/kernel/alternative.c:1059
+ text_poke_bp_batch+0x2c3/0x4e0 arch/x86/kernel/alternative.c:1313
+ text_poke_flush arch/x86/kernel/alternative.c:1470 [inline]
+ text_poke_flush arch/x86/kernel/alternative.c:1467 [inline]
+ text_poke_finish+0x16/0x30 arch/x86/kernel/alternative.c:1477
+ arch_jump_label_transform_apply+0x13/0x20 arch/x86/kernel/jump_label.c:146
+ jump_label_update+0x1da/0x400 kernel/jump_label.c:830
+ static_key_disable_cpuslocked+0x152/0x1b0 kernel/jump_label.c:207
+ static_key_disable+0x16/0x20 kernel/jump_label.c:215
+ toggle_allocation_gate mm/kfence/core.c:748 [inline]
+ toggle_allocation_gate+0x183/0x390 mm/kfence/core.c:726
+ process_one_work+0x996/0x1610 kernel/workqueue.c:2289
+ worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+ kthread+0x2e9/0x3a0 kernel/kthread.c:377
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+ </TASK>
+INFO: NMI handler (nmi_cpu_backtrace_handler) took too long to run: 1.308 msecs
+----------------
+Code disassembly (best guess):
+   0:	e8 6e 08 ff ff       	callq  0xffff0873
+   5:	48 85 c0             	test   %rax,%rax
+   8:	48 89 c3             	mov    %rax,%rbx
+   b:	0f 84 85 03 00 00    	je     0x396
+  11:	48 8d 78 24          	lea    0x24(%rax),%rdi
+  15:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
+  1c:	fc ff df
+  1f:	48 89 fa             	mov    %rdi,%rdx
+  22:	48 c1 ea 03          	shr    $0x3,%rdx
+  26:	0f b6 14 02          	movzbl (%rdx,%rax,1),%edx
+* 2a:	48 89 f8             	mov    %rdi,%rax <-- trapping instruction
+  2d:	83 e0 07             	and    $0x7,%eax
+  30:	83 c0 03             	add    $0x3,%eax
+  33:	38 d0                	cmp    %dl,%al
+  35:	7c 08                	jl     0x3f
+  37:	84 d2                	test   %dl,%dl
+  39:	0f 85 94 04 00 00    	jne    0x4d3
+  3f:	8b                   	.byte 0x8b
 
