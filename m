@@ -2,117 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F0BCC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 15:59:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94E83C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 15:59:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352094AbiBCP7T (ORCPT
+        id S1352087AbiBCP7j (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 10:59:19 -0500
-Received: from mga14.intel.com ([192.55.52.115]:17221 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231251AbiBCP7N (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 10:59:13 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643903953; x=1675439953;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=5llCnZ5NOHSTX0eHbDBs0UZwkjIn4HngtUVZ5yJy0Jg=;
-  b=cB2Qj0INVjxAvrmne+m5AJ/xNnEtX6gluhmp9zOgKgbRN19fTRK+pwya
-   qOAvLWCi0yn2gYFlh1PmcW4IQm7+BKGExwmmKLzx7T3QrRsLU0wNIX9GC
-   OXnF2e+1+ZMz3MO+QONYXHV/1s3jaAeOFB+iIIl6cXY93J3r1xXXOpqkf
-   ctzV3mcx8yF8Lmpnu9t9GPCQzUZjz0TBngRAt47uaGfFM1qfHR23lI6cE
-   4I8jhod+mPMsbGW4Otem8Z2j0VxOEytmr1doGjua/bnhwLabJEiT2KFiM
-   AldVBjG/0f519x1+qrCl/d1i1wdFLLWhxnLj/lI0K8uIEIqdXitxinob2
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10246"; a="248387172"
-X-IronPort-AV: E=Sophos;i="5.88,340,1635231600"; 
-   d="scan'208";a="248387172"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2022 07:59:11 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,340,1635231600"; 
-   d="scan'208";a="699353547"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga005.jf.intel.com with ESMTP; 03 Feb 2022 07:59:09 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 2A87030A; Thu,  3 Feb 2022 17:59:24 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v1 3/3] iio: imu: inv_mpu6050: Make use of device properties
-Date:   Thu,  3 Feb 2022 17:59:20 +0200
-Message-Id: <20220203155920.18586-3-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220203155920.18586-1-andriy.shevchenko@linux.intel.com>
-References: <20220203155920.18586-1-andriy.shevchenko@linux.intel.com>
+        Thu, 3 Feb 2022 10:59:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50264 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231251AbiBCP7h (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 3 Feb 2022 10:59:37 -0500
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52C69C061714;
+        Thu,  3 Feb 2022 07:59:37 -0800 (PST)
+Received: by mail-wr1-x435.google.com with SMTP id v13so5885009wrv.10;
+        Thu, 03 Feb 2022 07:59:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language
+         :from:to:cc:references:in-reply-to:content-transfer-encoding;
+        bh=+dl81ox9oLOsNstIVpWsT45Px3A+yIV/7i1ehqaDn+Y=;
+        b=jJRD9ovHm/6cgRNueQkqcsMQvaS0BPUQ0d77VlPILGy+vnI071ln2LB+ZcLtXtTGFe
+         NwDa+bci7eqbkiT6EilNkuZ5Oj1/Iw6PoMjcY6D9b40A7YdyCkaqi1MuH2SSV4qxL8x8
+         0WefZ/Epn26eZ8AwVZ7vsVL3Po23hByayQbj0E6BPmF9UY1IjdMZMNULMXK6vhtrvEhk
+         pw91dCRzmR0nFvNmTGoB23eubtkt91m/yeKcOKYsGOddm/Gw86K1h0kJ0sEc6neiOcKo
+         8lIUWcPxF0PzAu9je7SIDOlNQYN/KH1xDymDQuCe/G91aZkGLNkuS18XVMwNMHJPRWCO
+         A1SA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=+dl81ox9oLOsNstIVpWsT45Px3A+yIV/7i1ehqaDn+Y=;
+        b=YSO7wdQKZ/x/qJ3X9xbuCfOYHyybK+/yQPfIDCSyErxotOrLFZgtM7ol0CEOKb85Sm
+         vpRA2rsFSHQurM239mp2zNQVoD78zgxbF+mxTGF9k+ps+C6g2IwPEAvExQRFaamcBbvb
+         xHaBKSTSH0S7fVQq05H3e7Ld1KgQdRDYpuWggBbve0NTyUQH+jZrGSy9aFslOpr385eT
+         LiXbBkN1xuPCPRUynfWfl8dI4w675FJYKSTQu3USrho7SjYrHmU2ML/wRzpjXRX0uOq2
+         9oCrQif/dRczAvKlW8+oQnVtr1+r/zaiLn1KifutMWCuqVIGXOrPlx0397XaWtk5Y0zw
+         Z6wg==
+X-Gm-Message-State: AOAM533Z0uT/8/vqdC4EmwJZ8VTm3Kr6bI+CkHfGTbUcq1dO1spP1aXX
+        l2nOJpee+0hs8LFgZRJ1VRU=
+X-Google-Smtp-Source: ABdhPJz4mcMO5VCu7emIg7Vqh7PQEV38Ck+n/XjSj7JuEF67UyNWFH5e7rbXhGvOPMDAZQEJmXqFIA==
+X-Received: by 2002:a5d:570a:: with SMTP id a10mr29965757wrv.449.1643903975849;
+        Thu, 03 Feb 2022 07:59:35 -0800 (PST)
+Received: from [192.168.8.198] ([85.255.232.204])
+        by smtp.gmail.com with ESMTPSA id l10sm20431426wrz.20.2022.02.03.07.59.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 03 Feb 2022 07:59:35 -0800 (PST)
+Message-ID: <02fb0bc3-fc38-b8f0-3067-edd2a525ef29@gmail.com>
+Date:   Thu, 3 Feb 2022 15:55:09 +0000
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [External] Re: [RFC] io_uring: avoid ring quiesce while
+ registering/unregistering eventfd
+Content-Language: en-US
+From:   Pavel Begunkov <asml.silence@gmail.com>
+To:     Usama Arif <usama.arif@bytedance.com>,
+        Jens Axboe <axboe@kernel.dk>, io-uring@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     fam.zheng@bytedance.com
+References: <20220202155923.4117285-1-usama.arif@bytedance.com>
+ <86ae792e-d138-112e-02bb-ab70e3c2a147@kernel.dk>
+ <7df1059c-6151-29c8-9ed5-0bc0726c362d@kernel.dk>
+ <1494b8f0-2f48-0aa1-214c-a02bbc4b05eb@bytedance.com>
+ <6cce16d3-e2ca-ca1e-1209-e6e243241231@gmail.com>
+In-Reply-To: <6cce16d3-e2ca-ca1e-1209-e6e243241231@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the module to be property provider agnostic and allow
-it to be used on non-OF platforms.
+On 2/3/22 15:44, Pavel Begunkov wrote:
+> On 2/3/22 15:14, Usama Arif wrote:
+>> On 02/02/2022 19:18, Jens Axboe wrote:
+>>> On 2/2/22 9:57 AM, Jens Axboe wrote:
+>>>> On 2/2/22 8:59 AM, Usama Arif wrote:
+>>>>> Acquire completion_lock at the start of __io_uring_register before
+>>>>> registering/unregistering eventfd and release it at the end. Hence
+>>>>> all calls to io_cqring_ev_posted which adds to the eventfd counter
+>>>>> will finish before acquiring the spin_lock in io_uring_register, and
+>>>>> all new calls will wait till the eventfd is registered. This avoids
+>>>>> ring quiesce which is much more expensive than acquiring the
+>>>>> spin_lock.
+>>>>>
+>>>>> On the system tested with this patch, io_uring_reigster with
+>>>>> IORING_REGISTER_EVENTFD takes less than 1ms, compared to 15ms before.
+>>>>
+>>>> This seems like optimizing for the wrong thing, so I've got a few
+>>>> questions. Are you doing a lot of eventfd registrations (and
+>>>> unregister) in your workload? Or is it just the initial pain of
+>>>> registering one? In talking to Pavel, he suggested that RCU might be a
+>>>> good use case here, and I think so too. That would still remove the
+>>>> need to quiesce, and the posted side just needs a fairly cheap rcu
+>>>> read lock/unlock around it.
+>>>
+>>> Totally untested, but perhaps can serve as a starting point or
+>>> inspiration.
+>>>
+>>
+>> Hi,
+>>
+>> Thank you for the replies and comments. My usecase registers only one eventfd at the start.
+> 
+> Then it's overkill. Update io_register_op_must_quiesce(), set ->cq_ev_fd
+> on registration with WRITE_ONCE(), read it in io_cqring_ev_posted* with
+> READ_ONCE() and you're set.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c | 8 ++++----
- drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c | 1 -
- 2 files changed, 4 insertions(+), 5 deletions(-)
+Actually needs smp_store_release/smp_load_acquire
 
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-index ccb06d9af760..55cffb5fa115 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-@@ -9,8 +9,8 @@
- #include <linux/iio/iio.h>
- #include <linux/mod_devicetable.h>
- #include <linux/module.h>
--#include <linux/of_device.h>
- #include <linux/property.h>
-+
- #include "inv_mpu_iio.h"
- 
- static const struct regmap_config inv_mpu_regmap_config = {
-@@ -51,7 +51,7 @@ static int inv_mpu_i2c_aux_setup(struct iio_dev *indio_dev)
- {
- 	struct inv_mpu6050_state *st = iio_priv(indio_dev);
- 	struct device *dev = indio_dev->dev.parent;
--	struct device_node *mux_node;
-+	struct fwnode_handle *mux_node;
- 	int ret;
- 
- 	/*
-@@ -65,12 +65,12 @@ static int inv_mpu_i2c_aux_setup(struct iio_dev *indio_dev)
- 	case INV_MPU9150:
- 	case INV_MPU9250:
- 	case INV_MPU9255:
--		mux_node = of_get_child_by_name(dev->of_node, "i2c-gate");
-+		mux_node = device_get_named_child_node(dev, "i2c-gate");
- 		if (mux_node != NULL) {
- 			st->magn_disabled = true;
- 			dev_warn(dev, "disable internal use of magnetometer\n");
- 		}
--		of_node_put(mux_node);
-+		fwnode_handle_put(mux_node);
- 		break;
- 	default:
- 		break;
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
-index 44b4f74b9256..26a7c2521dc4 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
-@@ -4,7 +4,6 @@
- */
- #include <linux/mod_devicetable.h>
- #include <linux/module.h>
--#include <linux/of.h>
- #include <linux/property.h>
- #include <linux/spi/spi.h>
- #include <linux/regmap.h>
+
+> There is a caveat, ->cq_ev_fd won't be immediately visible to already
+> inflight requests, but we can say it's the responsibility of the
+> userspace to wait for a grace period, i.e. for all inflight requests
+> submitted before registration io_cqring_ev_posted* might or might not
+> see updated ->cq_ev_fd, which works perfectly if there was no requests
+> in the first place. Of course it changes the behaviour so will need
+> a new register opcode.
+> 
+
 -- 
-2.34.1
-
+Pavel Begunkov
