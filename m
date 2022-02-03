@@ -2,55 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37B68C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 14:35:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E80DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 14:35:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233409AbiBCOfn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 09:35:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58290 "EHLO
+        id S1351350AbiBCOft (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Feb 2022 09:35:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351320AbiBCOdk (ORCPT
+        with ESMTP id S1351308AbiBCOdg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 09:33:40 -0500
+        Thu, 3 Feb 2022 09:33:36 -0500
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F465C06175C;
-        Thu,  3 Feb 2022 06:33:36 -0800 (PST)
-Date:   Thu, 03 Feb 2022 14:33:33 -0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB657C061744;
+        Thu,  3 Feb 2022 06:33:32 -0800 (PST)
+Date:   Thu, 03 Feb 2022 14:33:30 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1643898814;
+        s=2020; t=1643898811;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=syUutp0w1EE9/WDnLShnHZRoAbLvsxwnkGM9FWJyhC8=;
-        b=AdoDhzWHNN6hfxcFel02XPkF9QBUydM9jyR8F3Wvb5SHp+qEJtlaZcIT9i9NXrkQ1LzENG
-        IZYitKbLOpHtd02zAaWIUCV00N+d78wuZh74rC4lMrV2DKf6p/P3rFN1xQkElg3tdJqiFZ
-        ZFHdMAMDGicq6ev0YXSIpImPj1NflSaAUva+WYqExJbVgP6WuRtGdi6Go8X6Q+hVOauSH2
-        ByZBhaEqK9EYcaFw3PgV1TpbCx3+GZzi1ZyZslRJhx9XjDKu5nlg2NwXeUaKTnafwMh4Tq
-        if0NOTN8PlRlDu5gWb/hjd9QZZPO3JYwqyXMecMdGZV97QH2YWTJQPqz6QXX7w==
+        bh=76aaEtLvtb96qbgKQMJWMnfLkp3YrTCJLKcwmf6pAwU=;
+        b=js++n0NRJen2XGkBHgvAIHdPTPkhRBUPWKZQ6vo3CNctLpSU4HmHjCBV3GpZs0arOaB9fS
+        GYiiC1gEbtWPFRBq/AIfqc1YKJr8jzeZP2m4CKjtz7+eLjj3RYm69G+zS5T72vn91jjQq3
+        yHzhXrdLsEJLtTs7KTrRnFz7pEJjETAfYeDvJn6qBOH5rIlFlYTg6t6IoifInB9N2+0Lt4
+        MbNMtBmxGuBx3K97aM/BqCYAnwcuyTtKVWZz1vnj9WmneoA6p5jwO1uKyZX3yetCJuQQw3
+        R5DMuprW9ZGmFIeo5axO+VFAoP3QB2xoIMF6MNjbXFrZFs/71NO/zUKPNwLZlw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1643898814;
+        s=2020e; t=1643898811;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=syUutp0w1EE9/WDnLShnHZRoAbLvsxwnkGM9FWJyhC8=;
-        b=oKUKaCnudKncwHN20c7iQaLScpAqVQWYOEsunQGEW38Bba8yO5HlVzGr1V5BtaG5vQ0VJv
-        +1HZz54hhGDQyaDA==
-From:   "tip-bot2 for Marco Elver" <tip-bot2@linutronix.de>
+        bh=76aaEtLvtb96qbgKQMJWMnfLkp3YrTCJLKcwmf6pAwU=;
+        b=sNpNRFUq4K3w3ba6E1VU39MVmUf7JwZjdcBCMRpYXElFdawS8Dll0sFkaKavMR8gPYCeqp
+        h4WUoZB7tdI7/iBQ==
+From:   "tip-bot2 for Adrian Hunter" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: perf/urgent] perf: Copy perf_event_attr::sig_data on modification
-Cc:     Dmitry Vyukov <dvyukov@google.com>, Marco Elver <elver@google.com>,
+Subject: [tip: perf/core] x86: Share definition of __is_canonical_address()
+Cc:     Adrian Hunter <adrian.hunter@intel.com>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220131103407.1971678-1-elver@google.com>
-References: <20220131103407.1971678-1-elver@google.com>
+In-Reply-To: <20220131072453.2839535-3-adrian.hunter@intel.com>
+References: <20220131072453.2839535-3-adrian.hunter@intel.com>
 MIME-Version: 1.0
-Message-ID: <164389881392.16921.6632551424370921603.tip-bot2@tip-bot2>
+Message-ID: <164389881004.16921.2715409372429832557.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -59,74 +60,165 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the perf/urgent branch of tip:
+The following commit has been merged into the perf/core branch of tip:
 
-Commit-ID:     3c25fc97f5590060464cabfa25710970ecddbc96
-Gitweb:        https://git.kernel.org/tip/3c25fc97f5590060464cabfa25710970ecddbc96
-Author:        Marco Elver <elver@google.com>
-AuthorDate:    Mon, 31 Jan 2022 11:34:05 +01:00
+Commit-ID:     1fb85d06ad6754796cd1b920639ca9d8840abefd
+Gitweb:        https://git.kernel.org/tip/1fb85d06ad6754796cd1b920639ca9d8840abefd
+Author:        Adrian Hunter <adrian.hunter@intel.com>
+AuthorDate:    Mon, 31 Jan 2022 09:24:50 +02:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Wed, 02 Feb 2022 13:11:40 +01:00
+CommitterDate: Wed, 02 Feb 2022 13:11:42 +01:00
 
-perf: Copy perf_event_attr::sig_data on modification
+x86: Share definition of __is_canonical_address()
 
-The intent has always been that perf_event_attr::sig_data should also be
-modifiable along with PERF_EVENT_IOC_MODIFY_ATTRIBUTES, because it is
-observable by user space if SIGTRAP on events is requested.
+Reduce code duplication by moving canonical address code to a common header
+file.
 
-Currently only PERF_TYPE_BREAKPOINT is modifiable, and explicitly copies
-relevant breakpoint-related attributes in hw_breakpoint_copy_attr().
-This misses copying perf_event_attr::sig_data.
-
-Since sig_data is not specific to PERF_TYPE_BREAKPOINT, introduce a
-helper to copy generic event-type-independent attributes on
-modification.
-
-Fixes: 97ba62b27867 ("perf: Add support for SIGTRAP on perf events")
-Reported-by: Dmitry Vyukov <dvyukov@google.com>
-Signed-off-by: Marco Elver <elver@google.com>
+Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Dmitry Vyukov <dvyukov@google.com>
-Link: https://lore.kernel.org/r/20220131103407.1971678-1-elver@google.com
+Link: https://lore.kernel.org/r/20220131072453.2839535-3-adrian.hunter@intel.com
 ---
- kernel/events/core.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ arch/x86/events/intel/pt.c  | 14 ++------------
+ arch/x86/include/asm/page.h | 10 ++++++++++
+ arch/x86/kvm/emulate.c      |  4 ++--
+ arch/x86/kvm/x86.c          |  2 +-
+ arch/x86/kvm/x86.h          |  7 +------
+ arch/x86/mm/maccess.c       |  7 +------
+ 6 files changed, 17 insertions(+), 27 deletions(-)
 
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index 76c754e..57c7197 100644
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -3238,6 +3238,15 @@ static int perf_event_modify_breakpoint(struct perf_event *bp,
- 	return err;
+diff --git a/arch/x86/events/intel/pt.c b/arch/x86/events/intel/pt.c
+index 0ebcf9a..93676a5 100644
+--- a/arch/x86/events/intel/pt.c
++++ b/arch/x86/events/intel/pt.c
+@@ -1350,20 +1350,10 @@ static void pt_addr_filters_fini(struct perf_event *event)
  }
  
-+/*
-+ * Copy event-type-independent attributes that may be modified.
-+ */
-+static void perf_event_modify_copy_attr(struct perf_event_attr *to,
-+					const struct perf_event_attr *from)
+ #ifdef CONFIG_X86_64
+-static u64 canonical_address(u64 vaddr, u8 vaddr_bits)
+-{
+-	return ((s64)vaddr << (64 - vaddr_bits)) >> (64 - vaddr_bits);
+-}
+-
+-static u64 is_canonical_address(u64 vaddr, u8 vaddr_bits)
+-{
+-	return canonical_address(vaddr, vaddr_bits) == vaddr;
+-}
+-
+ /* Clamp to a canonical address greater-than-or-equal-to the address given */
+ static u64 clamp_to_ge_canonical_addr(u64 vaddr, u8 vaddr_bits)
+ {
+-	return is_canonical_address(vaddr, vaddr_bits) ?
++	return __is_canonical_address(vaddr, vaddr_bits) ?
+ 	       vaddr :
+ 	       -BIT_ULL(vaddr_bits - 1);
+ }
+@@ -1371,7 +1361,7 @@ static u64 clamp_to_ge_canonical_addr(u64 vaddr, u8 vaddr_bits)
+ /* Clamp to a canonical address less-than-or-equal-to the address given */
+ static u64 clamp_to_le_canonical_addr(u64 vaddr, u8 vaddr_bits)
+ {
+-	return is_canonical_address(vaddr, vaddr_bits) ?
++	return __is_canonical_address(vaddr, vaddr_bits) ?
+ 	       vaddr :
+ 	       BIT_ULL(vaddr_bits - 1) - 1;
+ }
+diff --git a/arch/x86/include/asm/page.h b/arch/x86/include/asm/page.h
+index 4d5810c..9cc82f3 100644
+--- a/arch/x86/include/asm/page.h
++++ b/arch/x86/include/asm/page.h
+@@ -71,6 +71,16 @@ static inline void copy_user_page(void *to, void *from, unsigned long vaddr,
+ extern bool __virt_addr_valid(unsigned long kaddr);
+ #define virt_addr_valid(kaddr)	__virt_addr_valid((unsigned long) (kaddr))
+ 
++static __always_inline u64 __canonical_address(u64 vaddr, u8 vaddr_bits)
 +{
-+	to->sig_data = from->sig_data;
++	return ((s64)vaddr << (64 - vaddr_bits)) >> (64 - vaddr_bits);
 +}
 +
- static int perf_event_modify_attr(struct perf_event *event,
- 				  struct perf_event_attr *attr)
- {
-@@ -3260,10 +3269,17 @@ static int perf_event_modify_attr(struct perf_event *event,
- 	WARN_ON_ONCE(event->ctx->parent_ctx);
++static __always_inline u64 __is_canonical_address(u64 vaddr, u8 vaddr_bits)
++{
++	return __canonical_address(vaddr, vaddr_bits) == vaddr;
++}
++
+ #endif	/* __ASSEMBLY__ */
  
- 	mutex_lock(&event->child_mutex);
-+	/*
-+	 * Event-type-independent attributes must be copied before event-type
-+	 * modification, which will validate that final attributes match the
-+	 * source attributes after all relevant attributes have been copied.
-+	 */
-+	perf_event_modify_copy_attr(&event->attr, attr);
- 	err = func(event, attr);
- 	if (err)
- 		goto out;
- 	list_for_each_entry(child, &event->child_list, child_list) {
-+		perf_event_modify_copy_attr(&child->attr, attr);
- 		err = func(child, attr);
- 		if (err)
- 			goto out;
+ #include <asm-generic/memory_model.h>
+diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
+index 5719d8c..40da8c7 100644
+--- a/arch/x86/kvm/emulate.c
++++ b/arch/x86/kvm/emulate.c
+@@ -665,7 +665,7 @@ static inline u8 ctxt_virt_addr_bits(struct x86_emulate_ctxt *ctxt)
+ static inline bool emul_is_noncanonical_address(u64 la,
+ 						struct x86_emulate_ctxt *ctxt)
+ {
+-	return get_canonical(la, ctxt_virt_addr_bits(ctxt)) != la;
++	return !__is_canonical_address(la, ctxt_virt_addr_bits(ctxt));
+ }
+ 
+ /*
+@@ -715,7 +715,7 @@ static __always_inline int __linearize(struct x86_emulate_ctxt *ctxt,
+ 	case X86EMUL_MODE_PROT64:
+ 		*linear = la;
+ 		va_bits = ctxt_virt_addr_bits(ctxt);
+-		if (get_canonical(la, va_bits) != la)
++		if (!__is_canonical_address(la, va_bits))
+ 			goto bad;
+ 
+ 		*max_size = min_t(u64, ~0u, (1ull << va_bits) - la);
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 74b53a1..197209f 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -1735,7 +1735,7 @@ static int __kvm_set_msr(struct kvm_vcpu *vcpu, u32 index, u64 data,
+ 		 * value, and that something deterministic happens if the guest
+ 		 * invokes 64-bit SYSENTER.
+ 		 */
+-		data = get_canonical(data, vcpu_virt_addr_bits(vcpu));
++		data = __canonical_address(data, vcpu_virt_addr_bits(vcpu));
+ 		break;
+ 	case MSR_TSC_AUX:
+ 		if (!kvm_is_supported_user_return_msr(MSR_TSC_AUX))
+diff --git a/arch/x86/kvm/x86.h b/arch/x86/kvm/x86.h
+index 635b75f..fc4b68a 100644
+--- a/arch/x86/kvm/x86.h
++++ b/arch/x86/kvm/x86.h
+@@ -211,14 +211,9 @@ static inline u8 vcpu_virt_addr_bits(struct kvm_vcpu *vcpu)
+ 	return kvm_read_cr4_bits(vcpu, X86_CR4_LA57) ? 57 : 48;
+ }
+ 
+-static inline u64 get_canonical(u64 la, u8 vaddr_bits)
+-{
+-	return ((int64_t)la << (64 - vaddr_bits)) >> (64 - vaddr_bits);
+-}
+-
+ static inline bool is_noncanonical_address(u64 la, struct kvm_vcpu *vcpu)
+ {
+-	return get_canonical(la, vcpu_virt_addr_bits(vcpu)) != la;
++	return !__is_canonical_address(la, vcpu_virt_addr_bits(vcpu));
+ }
+ 
+ static inline void vcpu_cache_mmio_info(struct kvm_vcpu *vcpu,
+diff --git a/arch/x86/mm/maccess.c b/arch/x86/mm/maccess.c
+index 92ec176..5a53c2c 100644
+--- a/arch/x86/mm/maccess.c
++++ b/arch/x86/mm/maccess.c
+@@ -4,11 +4,6 @@
+ #include <linux/kernel.h>
+ 
+ #ifdef CONFIG_X86_64
+-static __always_inline u64 canonical_address(u64 vaddr, u8 vaddr_bits)
+-{
+-	return ((s64)vaddr << (64 - vaddr_bits)) >> (64 - vaddr_bits);
+-}
+-
+ bool copy_from_kernel_nofault_allowed(const void *unsafe_src, size_t size)
+ {
+ 	unsigned long vaddr = (unsigned long)unsafe_src;
+@@ -19,7 +14,7 @@ bool copy_from_kernel_nofault_allowed(const void *unsafe_src, size_t size)
+ 	 * we also need to include the userspace guard page.
+ 	 */
+ 	return vaddr >= TASK_SIZE_MAX + PAGE_SIZE &&
+-	       canonical_address(vaddr, boot_cpu_data.x86_virt_bits) == vaddr;
++	       __is_canonical_address(vaddr, boot_cpu_data.x86_virt_bits);
+ }
+ #else
+ bool copy_from_kernel_nofault_allowed(const void *unsafe_src, size_t size)
