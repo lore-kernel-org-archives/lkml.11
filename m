@@ -2,120 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECA7FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 10:31:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97DEEC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 10:34:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349706AbiBCKbq (ORCPT
+        id S1349747AbiBCKew (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 05:31:46 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:52103 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230227AbiBCKbp (ORCPT
+        Thu, 3 Feb 2022 05:34:52 -0500
+Received: from alexa-out-sd-01.qualcomm.com ([199.106.114.38]:32322 "EHLO
+        alexa-out-sd-01.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234355AbiBCKeu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 05:31:45 -0500
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nFZKe-0003rg-Qk; Thu, 03 Feb 2022 11:27:16 +0100
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nFZKX-00DAH6-3F; Thu, 03 Feb 2022 11:27:09 +0100
-Date:   Thu, 3 Feb 2022 11:27:09 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Oliver Neukum <oneukum@suse.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next v1 0/4] usbnet: add "label" support
-Message-ID: <Yfut/RbMAoaIhx41@pengutronix.de>
-References: <20220127104905.899341-1-o.rempel@pengutronix.de>
- <YfJ6tZ3hJLbTeaDr@kroah.com>
- <41599e9d-20c0-d1ed-d793-cd7037013718@suse.com>
+        Thu, 3 Feb 2022 05:34:50 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1643884490; x=1675420490;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=9gWwvc8qN1nZHzXucwAWYiq6S0breJjv7fSYzpSenLo=;
+  b=BNGe0ckdDsv2QPGe/y3/udo4wP34a26B2jOMCNCeJq+E9frieV7jZr6q
+   ZRvtYcSp4HoTJBc/AJVUAAkKM0j4fyOBTXn5cbSHaNeBCO5FWmER27Ar8
+   ZQ4S7yZxO2tiJkzakfKBCldqq14aEOIQW0lJnYTGd3OA41iGaR2Mz5YgT
+   c=;
+Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 03 Feb 2022 02:34:50 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2022 02:34:49 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Thu, 3 Feb 2022 02:34:49 -0800
+Received: from [10.216.62.64] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Thu, 3 Feb 2022
+ 02:34:45 -0800
+Subject: Re: [PATCH v2 1/3] arm64: dts: qcom: sc7280: Add nodes for va tx and
+ rx macros and external codecs
+To:     Vincent Knecht <vincent.knecht@mailoo.org>, <agross@kernel.org>,
+        <bjorn.andersson@linaro.org>, <robh+dt@kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <rohitkr@codeaurora.org>,
+        <srinivas.kandagatla@linaro.org>, <dianders@chromium.org>,
+        <swboyd@chromium.org>, <judyhsiao@chromium.org>
+CC:     Venkata Prasad Potturu <quic_potturu@quicinc.com>
+References: <1641208380-15510-1-git-send-email-quic_srivasam@quicinc.com>
+ <1641208380-15510-2-git-send-email-quic_srivasam@quicinc.com>
+ <fd7f6a115ece824c75f5b8fd02f1fc84cefca176.camel@mailoo.org>
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Organization: Qualcomm
+Message-ID: <5779db22-b4a7-b376-293d-9a5b7eb9acf8@quicinc.com>
+Date:   Thu, 3 Feb 2022 16:04:41 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <41599e9d-20c0-d1ed-d793-cd7037013718@suse.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 11:08:31 up 98 days, 16:35, 87 users,  load average: 2.02, 3.35,
- 2.95
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+In-Reply-To: <fd7f6a115ece824c75f5b8fd02f1fc84cefca176.camel@mailoo.org>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 03, 2022 at 10:34:25AM +0100, Oliver Neukum wrote:
-> 
-> On 27.01.22 11:57, Greg KH wrote:
-> > On Thu, Jan 27, 2022 at 11:49:01AM +0100, Oleksij Rempel wrote:
-> >> Add devicetree label property for usbnet devices and related yaml
-> >> schema.
-> > That says _what_ you are doing, but not _why_ you would want to do such
-> > a crazy thing, nor what problem you are attempting to solve here.
-> 
-> could you at least describe what kind of systems we are talking
-> about? Is this for a limited set of embedded devices?
-> Are we talking about devices embedded on a motherboard,
-> which happen to be connected by USB?
 
-In this particular use case there is a PCB with a imx6 SoC with hard
-wired USB attached USB-Ethernet-MAC adapters. One of these adapters is
-connected in the same PCB to an Ethernet switch chip. There is a DSA
-driver for the switch, so we want to describe the whole boards in a DT.
-Putting a label in the DT that renames the network interface is "nice to
-have" but not so important.
-
-As the DT DSA bindings rely on linking a MAC phandle to the switch we
-need to describe the USB Ethernet adapter in the DT, this is more
-important. See this discussion:
-
-https://lore.kernel.org/all/20220127120039.GE9150@pengutronix.de/
-
-> That is, are we talking about another kind of firmware
-> we are to take information about devices from?
-
-There is no other firmware involved. The switch chip is attached via
-RGMII to the USB/MAC and with SPI to the CPU for the configuration
-interface. (I2C to the CPU or MDIO to the USB/MAC would be another
-option for the configuration interface.)
-
-> And if so, why are you proposing to solve this on the
-> USB driver level?
-> It looks to me like those devices are addressed by
-> their USB path. But still there is no reason that a USB
-> driver should actively interpret firmware stuff that
-> comes from a source that tells us nothing about USB
-> properties.
-> In other words it looks to me like you are trying to put
-> a generic facility for getting device properties into
-> a specific driver. The question whether device names
-> should be read out of firmware is not a USB question.
-> 
-> I would suggest you implement a generic facility
-> in the network layer and if everybody is happy with that
-> obviously usbnet can pass through a pointer for that
-> to operate on. Frankly, it looks to me like you are
-> implementing only a subset of what device tree
-> could contain for your specific use case.
-
-Sounds good, but we'll focus on the DSA use case, as this is more
-important. So patches 1 and 2 of this patches set have highest prio for
-us.
-
-Regards,
-Oleksij & Marc
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+On 1/5/2022 3:34 AM, Vincent Knecht wrote:
+Thanks for Your time Vincent!!!
+> Le lundi 03 janvier 2022 à 16:42 +0530, Srinivasa Rao Mandadapu a écrit :
+>> SC7280 has VA, TX and RX macros with SoundWire Controllers to attach with
+>> codecs like WCD938x, max98360a using soundwire masters and i2s bus.
+>> Add these nodes for sc7280 based platforms audio use case.
+>> Add tlmm gpio property in wcd938x node for switching CTIA/OMTP Headset.
+>>
+>> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+>> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+>> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+>> ---
+>>   arch/arm64/boot/dts/qcom/sc7280-crd.dts  |   4 ++
+>>   arch/arm64/boot/dts/qcom/sc7280-idp.dtsi |  52 ++++++++++++++
+>>   arch/arm64/boot/dts/qcom/sc7280.dtsi     | 113 +++++++++++++++++++++++++++++++
+>>   3 files changed, 169 insertions(+)
+>>
+>> diff --git a/arch/arm64/boot/dts/qcom/sc7280-crd.dts b/arch/arm64/boot/dts/qcom/sc7280-crd.dts
+>> index cd2755c..035cca9 100644
+>> --- a/arch/arm64/boot/dts/qcom/sc7280-crd.dts
+>> +++ b/arch/arm64/boot/dts/qcom/sc7280-crd.dts
+>> @@ -72,6 +72,10 @@ ap_ts_pen_1v8: &i2c13 {
+>>          pins = "gpio51";
+>>   };
+>>   
+>> +&wcd938x {
+>> +       qcom,us-euro-gpios = <&tlmm 81 0>;
+>> +};
+>> +
+> Maybe using a defined value is possible, rather than an obscure zero ?
+> GPIO_ACTIVE_HIGH ?
+Okay. Will change accordingly!!!
+>
+>
+>
