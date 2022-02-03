@@ -2,125 +2,272 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2650C43219
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 02:44:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B37CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 02:45:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245287AbiBCCoR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 2 Feb 2022 21:44:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41482 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229630AbiBCCoP (ORCPT
+        id S1347778AbiBCCpc (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 2 Feb 2022 21:45:32 -0500
+Received: from mailout2.samsung.com ([203.254.224.25]:34797 "EHLO
+        mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233002AbiBCCpa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 2 Feb 2022 21:44:15 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8D64C061714;
-        Wed,  2 Feb 2022 18:44:14 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7C649B8330A;
-        Thu,  3 Feb 2022 02:44:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33C42C340F6;
-        Thu,  3 Feb 2022 02:44:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643856252;
-        bh=V51eVJiRBfBtAiPpggOpCZR3uh94Yz/dWJnManIUqRA=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=IfifaL/YvkQeOydK0cgYgy7MaOnD1ofDN9TZ9U0AAgJgX5vkoOM/UCN+eqFDFX8e0
-         SIROG24sqmSXhudRlXA3k1jWkp77oSEpy958cVODa3+sWBKJFg5/KfQgGGdSVjxxIs
-         tBS1ttU+VD/lfGZc6laeZXX3nMQbkvJraFwXMBoSDxQnFXqyuk7KNTCbNzoNPaUxXu
-         obu4PEKMkaRLF0VBJAceVG1kvUSawTvpCDv+XjctdvSnwyZA7NM+d+opMx9qUChsMA
-         QIiebpV47EWTVL21TA8YNmrdIhNU6Tt7q6oAVfTnyRCqH7wGOKGMQC/DtV00pJqZ7Z
-         uKgAZRx6fuHVA==
-Received: by mail-ua1-f50.google.com with SMTP id c36so2662895uae.13;
-        Wed, 02 Feb 2022 18:44:12 -0800 (PST)
-X-Gm-Message-State: AOAM530dWv5SezYpodmaWPAG61rIo/wPi4mSgGXb9lJmfM4pQkN5nm73
-        CuR79aC0qdVj+NkLKFBif1wZQiqTkPcUAvLObO4=
-X-Google-Smtp-Source: ABdhPJwcymlbtGZh6tQbwNbq4eIqK1FMhWR2Ntg5Vpt7lVSBlW8sS85pNzZxGeDyQITxXLpJvbICejijlor03wlRbBs=
-X-Received: by 2002:ab0:2092:: with SMTP id r18mr12760634uak.66.1643856251122;
- Wed, 02 Feb 2022 18:44:11 -0800 (PST)
+        Wed, 2 Feb 2022 21:45:30 -0500
+Received: from epcas1p1.samsung.com (unknown [182.195.41.45])
+        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220203024529epoutp02c1019834935ba1b5a710051c51f3d33f~QJp8zqEyD0743807438epoutp02U
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 02:45:29 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220203024529epoutp02c1019834935ba1b5a710051c51f3d33f~QJp8zqEyD0743807438epoutp02U
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1643856329;
+        bh=LTMx0mvoTh7gsldxW1ELZHlFxhkhF5WWa60fzIk8E7k=;
+        h=Date:Subject:To:From:In-Reply-To:References:From;
+        b=tL3/76ezFVuw51yj/KspCnSx1sXvx4vqoq3PgDwTpdJa0tUnoWd2Ababs8xkqkC3G
+         CffoSqw74ZBlTSxXL2w92nbmLgsicmAYKhURDjjKh7W2QAbUXk77HzXOLa4Vy4fLRN
+         N3XdEt0zfJReJ7Zc4tFz1JVmXxA8rTQixsnZpQb0=
+Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
+        epcas1p4.samsung.com (KnoxPortal) with ESMTP id
+        20220203024528epcas1p43e630f8cfcc2a02b75bcee3ed700cef9~QJp8G2Ye53213532135epcas1p4K;
+        Thu,  3 Feb 2022 02:45:28 +0000 (GMT)
+Received: from epsmges1p1.samsung.com (unknown [182.195.38.237]) by
+        epsnrtp3.localdomain (Postfix) with ESMTP id 4Jq31b4GtNz4x9Px; Thu,  3 Feb
+        2022 02:45:23 +0000 (GMT)
+Received: from epcas1p4.samsung.com ( [182.195.41.48]) by
+        epsmges1p1.samsung.com (Symantec Messaging Gateway) with SMTP id
+        F1.64.64085.3C14BF16; Thu,  3 Feb 2022 11:45:23 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas1p4.samsung.com (KnoxPortal) with ESMTPA id
+        20220203024523epcas1p49abd1129eeb53bbf48c9933f23060282~QJp3MG5kt2091920919epcas1p4d;
+        Thu,  3 Feb 2022 02:45:23 +0000 (GMT)
+Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20220203024523epsmtrp28a7e26c1d45f9ee51b1dc8e15f07562d~QJp3LNTo_2773627736epsmtrp2w;
+        Thu,  3 Feb 2022 02:45:23 +0000 (GMT)
+X-AuditID: b6c32a35-9c3ff7000000fa55-06-61fb41c36050
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        15.58.08738.3C14BF16; Thu,  3 Feb 2022 11:45:23 +0900 (KST)
+Received: from [10.113.221.211] (unknown [10.113.221.211]) by
+        epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
+        20220203024522epsmtip204196f5f1c1c26fb95e31826b9737847~QJp2lyW8s2085620856epsmtip2d;
+        Thu,  3 Feb 2022 02:45:22 +0000 (GMT)
+Message-ID: <0813963b-db28-f931-cf28-771b2141ee1c@samsung.com>
+Date:   Thu, 3 Feb 2022 11:57:12 +0900
 MIME-Version: 1.0
-References: <20220201150545.1512822-1-guoren@kernel.org> <20220201150545.1512822-16-guoren@kernel.org>
- <20220202075159.GB18398@lst.de>
-In-Reply-To: <20220202075159.GB18398@lst.de>
-From:   Guo Ren <guoren@kernel.org>
-Date:   Thu, 3 Feb 2022 10:44:00 +0800
-X-Gmail-Original-Message-ID: <CAJF2gTTxzFo1kdkCDH=2RKkQ1gEzOnUCjxotcsjrqivG4qg-Dw@mail.gmail.com>
-Message-ID: <CAJF2gTTxzFo1kdkCDH=2RKkQ1gEzOnUCjxotcsjrqivG4qg-Dw@mail.gmail.com>
-Subject: Re: [PATCH V5 15/21] riscv: compat: Add hw capability check for elf
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Palmer Dabbelt <palmer@dabbelt.com>, Arnd Bergmann <arnd@arndb.de>,
-        Anup Patel <anup@brainfault.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        liush <liush@allwinnertech.com>, Wei Fu <wefu@redhat.com>,
-        Drew Fustini <drew@beagleboard.org>,
-        Wang Junqiang <wangjunqiang@iscas.ac.cn>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        linux-csky@vger.kernel.org,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Guo Ren <guoren@linux.alibaba.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+        Thunderbird/91.5.0
+Subject: Re: [PATCH] drm/exynos: fimd: add BGR support for exynos4/5
+Content-Language: en-US
+To:     =?UTF-8?Q?Martin_J=c3=bccker?= <martin.juecker@gmail.com>,
+        Joonyoung Shim <jy0922.shim@samsung.com>,
+        Seung-Woo Kim <sw0312.kim@samsung.com>,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+From:   Inki Dae <inki.dae@samsung.com>
+In-Reply-To: <20220129220153.GA33165@adroid>
+Content-Transfer-Encoding: 8bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrLJsWRmVeSWpSXmKPExsWy7bCmge5hx9+JBo/eKFj0njvJZPF/20Rm
+        iytf37NZvLh3kcVi49sfTBZnm96wW2x6fI3V4vKuOWwWM87vY7I4828qi8WMyS/ZHLg9ZjX0
+        snns/baAxWPnrLvsHtu/PWD1uN99nMlj85J6j74tqxg9Pm+SC+CIyrbJSE1MSS1SSM1Lzk/J
+        zEu3VfIOjneONzUzMNQ1tLQwV1LIS8xNtVVy8QnQdcvMATpUSaEsMacUKBSQWFyspG9nU5Rf
+        WpKqkJFfXGKrlFqQklNgWqBXnJhbXJqXrpeXWmJlaGBgZApUmJCd0Tl5H3PBI82KW39PMDYw
+        nlHsYuTkkBAwkWjefJWti5GLQ0hgB6PE3W9rmCGcT4wS6059YIdwPjNK7H67jg2mZVrXN0aI
+        xC5GicMv9zBBOO8ZJdY+nskMUsUrYCexvO0lI4jNIqAicef2P3aIuKDEyZlPWEBsUYEIiZdH
+        /jKB2MICLhJzFh0GizMLiEvcejIfbKiIwElmiQf3JoENZRNQlZi44j7YGZwCOhJnD3xngmiQ
+        l2jeOhvscAmBHRwSM3eeZoW41UXi679eFghbWOLV8S3sELaUxOd3e9kgGiYzSty5voIFwpkB
+        9NDP64wQVcYS+5dOBlrBAbRCU2L9Ln2IsKLEzt9zGSE280m8+9rDClIiIcAr0dEmBFGiJHHs
+        4g2oKRISF5ZMhIadh8SPY+fAbhMSqJdY2HeVeQKjwiykgJmFFACzkPw2C+GIBYwsqxjFUguK
+        c9NTiw0LDOERnpyfu4kRnI61THcwTnz7Qe8QIxMH4yFGCQ5mJRHevQu/JwrxpiRWVqUW5ccX
+        leakFh9iNAVGz0RmKdHkfGBGyCuJNzSxNDAxMzI2sTA0M1QS51017XSikEB6YklqdmpqQWoR
+        TB8TB6dUA1PovN512xaaXrdbvW1Jj7dnUrPX9NerTW/+W32GedYb7u4T/K363GopswyOd/fV
+        KzEX+xhfX7X5uuf65ya323+ckO+tctwbEX7v56P9vSc59Oau+hn5ypj1hEd97eZjJr0Vbx57
+        Fs0+lfxd+Iv8l2X31INO/DJr6KvLjiwNn8Dy0vmo096XC99Xic9Z+dR+7Vmx87PLUhXSw5PP
+        rtm5xqhRqm3mc7bPQedL9e7377Kp/KAh8PTT7WmxnDGPlzH+2ft3f/+evl9HKwIXXhZ9yJh6
+        u/m09cJET1ebx12CVnVL12vGXZHfV2Ji7HUi8EQmR2X6IoXNDpb/XnRkffUNELpi9mh6av/m
+        P8ee+Rmd6pNSYinOSDTUYi4qTgQAVn7erFAEAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFupikeLIzCtJLcpLzFFi42LZdlhJXvew4+9Eg6kT2S16z51ksvi/bSKz
+        xZWv79ksXty7yGKx8e0PJouzTW/YLTY9vsZqcXnXHDaLGef3MVmc+TeVxWLG5JdsDtwesxp6
+        2Tz2flvA4rFz1l12j+3fHrB63O8+zuSxeUm9R9+WVYwenzfJBXBEcdmkpOZklqUW6dslcGV0
+        Tt7HXPBIs+LW3xOMDYxnFLsYOTkkBEwkpnV9Y+xi5OIQEtjBKNG88jFTFyMHUEJCYstWDghT
+        WOLw4WKIkreMEqcWLWcF6eUVsJNY3vaSEcRmEVCRuHP7HztEXFDi5MwnLCC2qECERNuyKcwg
+        trCAi8ScRYfB4swC4hK3nsxnAhkqInCaWWLihZVgg4QE6iVOT14NVsQmoCoxccV9NhCbU0BH
+        4uyB72C3MQuoS6yfJwQxR16ieets5gmMgrOQrJ6FZMUshI5ZSDoWMLKsYpRMLSjOTc8tNiww
+        ykst1ytOzC0uzUvXS87P3cQIji4trR2Me1Z90DvEyMTBeIhRgoNZSYR378LviUK8KYmVValF
+        +fFFpTmpxYcYpTlYlMR5L3SdjBcSSE8sSc1OTS1ILYLJMnFwSjUw7TKYNMNy99tfObFSP+Rv
+        508RSnPf75H10euah3VIu8nfRh7x/y22Uwqf8/2f6buIMWq9gs+izY9yf3ExK2/0M7k7VTWe
+        v9DUkCMqw073gmbN+oucN20uOz6fPV1rp85+tolhi95MrDgS47hx7uXaA/oS5kViHHvEjnHL
+        xhZPEzYPX3LQI2KCi96Wz0rKav/X3705XWaWvmF7ybWftkclU89xJd3uEp8UbOXTOeN6aRPH
+        oWUq7GrN+3c3fUopXuqtPnvPYrNTXMdnZOx7d+N79JyHPbsnKTPMWrGFQ91MtCLBdm/eU/XK
+        laqB6v7/M04c2dqaseDHiTVqW75GqP1hOjR99zYZ4den5rrNXsW9T4mlOCPRUIu5qDgRAPSd
+        y2YdAwAA
+X-CMS-MailID: 20220203024523epcas1p49abd1129eeb53bbf48c9933f23060282
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: SVC_REQ_APPROVE
+CMS-TYPE: 101P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220129220203epcas1p25b1704191dd7babfb8d5b8dc6704d566
+References: <CGME20220129220203epcas1p25b1704191dd7babfb8d5b8dc6704d566@epcas1p2.samsung.com>
+        <20220129220153.GA33165@adroid>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 2, 2022 at 3:52 PM Christoph Hellwig <hch@lst.de> wrote:
->
-> On Tue, Feb 01, 2022 at 11:05:39PM +0800, guoren@kernel.org wrote:
-> > +bool compat_elf_check_arch(Elf32_Ehdr *hdr)
-> > +{
-> > +     if (compat_mode_support && (hdr->e_machine == EM_RISCV))
-> > +             return true;
-> > +     else
-> > +             return false;
-> > +}
->
-> This can be simplified to:
->
->         return compat_mode_support && hdr->e_machine == EM_RISCV;
-Good point.
+Hi Martin.
 
->
-> I'd also rename compat_mode_support to compat_mode_supported
-Okay
+Thanks for your contribution,
+Inki Dae
 
->
-> > +
-> > +static int compat_mode_detect(void)
-> > +{
-> > +     unsigned long tmp = csr_read(CSR_STATUS);
-> > +
-> > +     csr_write(CSR_STATUS, (tmp & ~SR_UXL) | SR_UXL_32);
-> > +
-> > +     if ((csr_read(CSR_STATUS) & SR_UXL) != SR_UXL_32) {
-> > +             pr_info("riscv: 32bit compat mode detect failed\n");
-> > +             compat_mode_support = false;
-> > +     } else {
-> > +             compat_mode_support = true;
-> > +             pr_info("riscv: 32bit compat mode detected\n");
-> > +     }
->
-> I don't think we need these printks here.
-Okay
-
->
-> Also this could be simplified to:
->
->         compat_mode_supported = (csr_read(CSR_STATUS) & SR_UXL) == SR_UXL_32;
-Okay
-
-
-
--- 
-Best Regards
- Guo Ren
-
-ML: https://lore.kernel.org/linux-csky/
+22. 1. 30. 07:01에 Martin Jücker 이(가) 쓴 글:
+> In the downstream kernels for exynos4 and exynos5 devices, there is an
+> undocumented register that controls the order of the RGB output. It can
+> be set to either normal order or reversed, which enables BGR support for
+> those SoCs.
+> 
+> This patch enables the BGR support for all the SoCs that were found to
+> have at least one device with this logic in the corresponding downstream
+> kernels.
+> 
+> Signed-off-by: Martin Jücker <martin.juecker@gmail.com>
+> ---
+>  drivers/gpu/drm/exynos/exynos_drm_fimd.c | 42 ++++++++++++++++++++++--
+>  include/video/samsung_fimd.h             |  4 +++
+>  2 files changed, 44 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/exynos/exynos_drm_fimd.c b/drivers/gpu/drm/exynos/exynos_drm_fimd.c
+> index c735e53939d8..cb632360c968 100644
+> --- a/drivers/gpu/drm/exynos/exynos_drm_fimd.c
+> +++ b/drivers/gpu/drm/exynos/exynos_drm_fimd.c
+> @@ -109,6 +109,7 @@ struct fimd_driver_data {
+>  	unsigned int has_dp_clk:1;
+>  	unsigned int has_hw_trigger:1;
+>  	unsigned int has_trigger_per_te:1;
+> +	unsigned int has_bgr_support:1;
+>  };
+>  
+>  static struct fimd_driver_data s3c64xx_fimd_driver_data = {
+> @@ -138,6 +139,7 @@ static struct fimd_driver_data exynos4_fimd_driver_data = {
+>  	.lcdblk_bypass_shift = 1,
+>  	.has_shadowcon = 1,
+>  	.has_vtsel = 1,
+> +	.has_bgr_support = 1,
+>  };
+>  
+>  static struct fimd_driver_data exynos5_fimd_driver_data = {
+> @@ -149,6 +151,7 @@ static struct fimd_driver_data exynos5_fimd_driver_data = {
+>  	.has_vidoutcon = 1,
+>  	.has_vtsel = 1,
+>  	.has_dp_clk = 1,
+> +	.has_bgr_support = 1,
+>  };
+>  
+>  static struct fimd_driver_data exynos5420_fimd_driver_data = {
+> @@ -162,6 +165,7 @@ static struct fimd_driver_data exynos5420_fimd_driver_data = {
+>  	.has_vtsel = 1,
+>  	.has_mic_bypass = 1,
+>  	.has_dp_clk = 1,
+> +	.has_bgr_support = 1,
+>  };
+>  
+>  struct fimd_context {
+> @@ -226,6 +230,18 @@ static const uint32_t fimd_formats[] = {
+>  	DRM_FORMAT_ARGB8888,
+>  };
+>  
+> +static const uint32_t fimd_extended_formats[] = {
+> +	DRM_FORMAT_C8,
+> +	DRM_FORMAT_XRGB1555,
+> +	DRM_FORMAT_XBGR1555,
+> +	DRM_FORMAT_RGB565,
+> +	DRM_FORMAT_BGR565,
+> +	DRM_FORMAT_XRGB8888,
+> +	DRM_FORMAT_XBGR8888,
+> +	DRM_FORMAT_ARGB8888,
+> +	DRM_FORMAT_ABGR8888,
+> +};
+> +
+>  static const unsigned int capabilities[WINDOWS_NR] = {
+>  	0,
+>  	EXYNOS_DRM_PLANE_CAP_WIN_BLEND | EXYNOS_DRM_PLANE_CAP_PIX_BLEND,
+> @@ -673,21 +689,25 @@ static void fimd_win_set_pixfmt(struct fimd_context *ctx, unsigned int win,
+>  		val |= WINCONx_BYTSWP;
+>  		break;
+>  	case DRM_FORMAT_XRGB1555:
+> +	case DRM_FORMAT_XBGR1555:
+>  		val |= WINCON0_BPPMODE_16BPP_1555;
+>  		val |= WINCONx_HAWSWP;
+>  		val |= WINCONx_BURSTLEN_16WORD;
+>  		break;
+>  	case DRM_FORMAT_RGB565:
+> +	case DRM_FORMAT_BGR565:
+>  		val |= WINCON0_BPPMODE_16BPP_565;
+>  		val |= WINCONx_HAWSWP;
+>  		val |= WINCONx_BURSTLEN_16WORD;
+>  		break;
+>  	case DRM_FORMAT_XRGB8888:
+> +	case DRM_FORMAT_XBGR8888:
+>  		val |= WINCON0_BPPMODE_24BPP_888;
+>  		val |= WINCONx_WSWP;
+>  		val |= WINCONx_BURSTLEN_16WORD;
+>  		break;
+>  	case DRM_FORMAT_ARGB8888:
+> +	case DRM_FORMAT_ABGR8888:
+>  	default:
+>  		val |= WINCON1_BPPMODE_25BPP_A1888;
+>  		val |= WINCONx_WSWP;
+> @@ -695,6 +715,18 @@ static void fimd_win_set_pixfmt(struct fimd_context *ctx, unsigned int win,
+>  		break;
+>  	}
+>  
+> +	switch (pixel_format) {
+> +	case DRM_FORMAT_XBGR1555:
+> +	case DRM_FORMAT_XBGR8888:
+> +	case DRM_FORMAT_ABGR8888:
+> +	case DRM_FORMAT_BGR565:
+> +		writel(WIN_RGB_ORDER_REVERSE, ctx->regs + WIN_RGB_ORDER(win));
+> +		break;
+> +	default:
+> +		writel(WIN_RGB_ORDER_FORWARD, ctx->regs + WIN_RGB_ORDER(win));
+> +		break;
+> +	}
+> +
+>  	/*
+>  	 * Setting dma-burst to 16Word causes permanent tearing for very small
+>  	 * buffers, e.g. cursor buffer. Burst Mode switching which based on
+> @@ -1074,8 +1106,14 @@ static int fimd_bind(struct device *dev, struct device *master, void *data)
+>  	ctx->drm_dev = drm_dev;
+>  
+>  	for (i = 0; i < WINDOWS_NR; i++) {
+> -		ctx->configs[i].pixel_formats = fimd_formats;
+> -		ctx->configs[i].num_pixel_formats = ARRAY_SIZE(fimd_formats);
+> +		if (ctx->driver_data->has_bgr_support) {
+> +			ctx->configs[i].pixel_formats = fimd_extended_formats;
+> +			ctx->configs[i].num_pixel_formats = ARRAY_SIZE(fimd_extended_formats);
+> +		} else {
+> +			ctx->configs[i].pixel_formats = fimd_formats;
+> +			ctx->configs[i].num_pixel_formats = ARRAY_SIZE(fimd_formats);
+> +		}
+> +
+>  		ctx->configs[i].zpos = i;
+>  		ctx->configs[i].type = fimd_win_types[i];
+>  		ctx->configs[i].capabilities = capabilities[i];
+> diff --git a/include/video/samsung_fimd.h b/include/video/samsung_fimd.h
+> index c4a93ce1de48..e6966d187591 100644
+> --- a/include/video/samsung_fimd.h
+> +++ b/include/video/samsung_fimd.h
+> @@ -476,6 +476,10 @@
+>   * 1111		-none-	 -none-   -none-   -none-    -none-
+>  */
+>  
+> +#define WIN_RGB_ORDER(_win)			(0x2020 + ((_win) * 4))
+> +#define WIN_RGB_ORDER_FORWARD			(0 << 11)
+> +#define WIN_RGB_ORDER_REVERSE			(1 << 11)
+> +
+>  /* FIMD Version 8 register offset definitions */
+>  #define FIMD_V8_VIDTCON0	0x20010
+>  #define FIMD_V8_VIDTCON1	0x20014
