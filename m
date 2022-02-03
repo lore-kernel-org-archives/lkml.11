@@ -2,191 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C767C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 10:40:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24CE2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 10:41:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236313AbiBCKk3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 05:40:29 -0500
-Received: from foss.arm.com ([217.140.110.172]:37780 "EHLO foss.arm.com"
+        id S237104AbiBCKlF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Feb 2022 05:41:05 -0500
+Received: from mga17.intel.com ([192.55.52.151]:26135 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231717AbiBCKk0 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 05:40:26 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 93FDC113E;
-        Thu,  3 Feb 2022 02:40:26 -0800 (PST)
-Received: from [10.57.13.234] (unknown [10.57.13.234])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6AF363F40C;
-        Thu,  3 Feb 2022 02:40:25 -0800 (PST)
-Message-ID: <da8768ba-fb10-e2d5-fdcf-2b3c6b9c6b18@arm.com>
-Date:   Thu, 3 Feb 2022 10:40:23 +0000
+        id S231717AbiBCKlE (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 3 Feb 2022 05:41:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643884864; x=1675420864;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=oLUmTfZDsAWXmEeQWmWD3Qq4JViFB1KKg28eTNl8OUs=;
+  b=deKyawh0TSBHvWKS+PVaJwWwb7nOptPo4eNQAvCr3RdKyQVDgOW2SZMK
+   /zTCc7dNBYcwC9D0m8VJzAgmzRHPMl/tBXDL4Z47Q5XJHYBHF7Gs0ZlRX
+   UnikL6eLVMocAdn8qdvRXnV3NvP4tNdlWSF+pAeBQN3PluEzcGVoswbPV
+   4m5DV1bwRyQnd0hNGC5pxtdrdkrQYpGfc+ujP7ivBL8TmN+/Q+1eBGU4x
+   rah9bDYwjTepm5xzSQUsFJvDjf8bW1Fq6/IydJJMAVHLyohKx0isQePOh
+   P9rXGT/2agUw+FSvwibJoXBRfvAn3xI2ItpjftqpO6X2xxC4U5cX2ZhS+
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10246"; a="228770745"
+X-IronPort-AV: E=Sophos;i="5.88,339,1635231600"; 
+   d="scan'208";a="228770745"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2022 02:41:03 -0800
+X-IronPort-AV: E=Sophos;i="5.88,339,1635231600"; 
+   d="scan'208";a="498096024"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2022 02:41:02 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nFZWz-000NUf-6O;
+        Thu, 03 Feb 2022 12:40:01 +0200
+Date:   Thu, 3 Feb 2022 12:40:00 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jiri Slaby <jirislaby@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 1/1] tty: Drop duplicate NULL check in TTY port
+ functions
+Message-ID: <YfuxANmSQDfIQZO4@smile.fi.intel.com>
+References: <20220202165704.5680-1-andriy.shevchenko@linux.intel.com>
+ <37e31d03-eee6-7052-fe32-1f37f1b460e1@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 01/15] coresight: Make ETM4x TRCIDR0 register accesses
- consistent with sysreg.h
-Content-Language: en-US
-To:     Suzuki K Poulose <suzuki.poulose@arm.com>,
-        mathieu.poirier@linaro.org, coresight@lists.linaro.org
-Cc:     leo.yan@linaro.com, mike.leach@linaro.org,
-        Leo Yan <leo.yan@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220202160226.37858-1-james.clark@arm.com>
- <20220202160226.37858-2-james.clark@arm.com>
- <41b08fa5-6333-48e8-4727-2082c001e148@arm.com>
-From:   James Clark <james.clark@arm.com>
-In-Reply-To: <41b08fa5-6333-48e8-4727-2082c001e148@arm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <37e31d03-eee6-7052-fe32-1f37f1b460e1@kernel.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Feb 03, 2022 at 09:36:55AM +0100, Jiri Slaby wrote:
+> On 02. 02. 22, 17:57, Andy Shevchenko wrote:
+> > The free_page(addr), which becomes free_pages(addr, 0) checks addr against 0.
+> > No need to repeat this check in the callers, i.e.  tty_port_free_xmit_buf()
+> > and tty_port_destructor().
+> > 
+> > Note, INIT_KFIFO() is safe without that check, because it's aware of kfifo PTR
+> > versus embedded kfifo.
+> 
+> Not sure what you mean here ^^^? But it might be one of the morning brain
+> parser errors.
+
+Or maybe my evening weren't working...
+
+Actually INIT_KFIFO() can be outside of that check from day 1 because it
+operates on a separate member and does not rely on the FIFO itself to be
+allocated.
+
+I tried to explain that, while kfifo allocation goes together with buffer,
+there is no dependency to any of those allocations.
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-On 02/02/2022 17:05, Suzuki K Poulose wrote:
-> Hi James
-> 
-> Thanks for taking this tedious task of cleaning the code and making
-> this robust and readable.
-> 
-> One minor comment below.
-> 
-> On 02/02/2022 16:02, James Clark wrote:
->> This is a no-op change for style and consistency and has no effect on the
->> binary produced by gcc-11.
->>
->> Signed-off-by: James Clark <james.clark@arm.com>
->> ---
->>   .../coresight/coresight-etm4x-core.c          | 37 +++++--------------
->>   drivers/hwtracing/coresight/coresight-etm4x.h | 17 +++++++++
->>   drivers/hwtracing/coresight/coresight-priv.h  |  1 +
->>   3 files changed, 27 insertions(+), 28 deletions(-)
->>
->> diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
->> index bf18128cf5de..8aefee4e72fd 100644
->> --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
->> +++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
->> @@ -1091,41 +1091,22 @@ static void etm4_init_arch_data(void *info)
->>       etmidr0 = etm4x_relaxed_read32(csa, TRCIDR0);
->>         /* INSTP0, bits[2:1] P0 tracing support field */
->> -    if (BMVAL(etmidr0, 1, 1) && BMVAL(etmidr0, 2, 2))
->> -        drvdata->instrp0 = true;
->> -    else
->> -        drvdata->instrp0 = false;
->> -
->> +    drvdata->instrp0 = !!((REG_VAL(etmidr0, TRCIDR0_INSTP0) & 0b01) &&
->> +                  (REG_VAL(etmidr0, TRCIDR0_INSTP0) & 0b10));
-> 
-> I don't understand this check. For ETMv4, here is what I find in the spec (ARM IHI 0064C)
-> 
-> P0 tracing support field. The permitted values are:
-> 0b00  Tracing of load and store instructions as P0 elements is not
->       supported.
-> 0b11  Tracing of load and store instructions as P0 elements is
->       supported, so TRCCONFIGR.INSTP0 is supported.
-> 
-> All other values are reserved.
-> 
-> So the check could simply be :
-> 
->     drvdata->instrp0 = (REG_VAL(emtidr0, TRCIDR0_INSTP0) == 0b11;
-
-Yes I can make this change, but it does make the compiler emit a slightly different binary
-so we can't rely on that to check the refactor is ok.
-
-Should I change it in this commit or stick it on the very end? Probably the end is best
-in case I have to do any rebases and I still need to validate there are no mistakes.
-
-> 
-> That said, I think this is all dead code on ETMv4 as we never support
-> data tracing on A class. May be there will be a use with R class in the
-> future.
-> 
-> 
->>       /* TRCBB, bit[5] Branch broadcast tracing support bit */
->> -    if (BMVAL(etmidr0, 5, 5))
->> -        drvdata->trcbb = true;
->> -    else
->> -        drvdata->trcbb = false;
->> -
->> +    drvdata->trcbb = !!(etmidr0 & TRCIDR0_TRCBB);
->>       /* TRCCOND, bit[6] Conditional instruction tracing support bit */
->> -    if (BMVAL(etmidr0, 6, 6))
->> -        drvdata->trccond = true;
->> -    else
->> -        drvdata->trccond = false;
->> -
->> +    drvdata->trccond = !!(etmidr0 & TRCIDR0_TRCCOND);
->>       /* TRCCCI, bit[7] Cycle counting instruction bit */
->> -    if (BMVAL(etmidr0, 7, 7))
->> -        drvdata->trccci = true;
->> -    else
->> -        drvdata->trccci = false;
->> -
->> +    drvdata->trccci = !!(etmidr0 & TRCIDR0_TRCCCI);
->>       /* RETSTACK, bit[9] Return stack bit */
->> -    if (BMVAL(etmidr0, 9, 9))
->> -        drvdata->retstack = true;
->> -    else
->> -        drvdata->retstack = false;
->> -
->> +    drvdata->retstack = !!(etmidr0 & TRCIDR0_RETSTACK);
->>       /* NUMEVENT, bits[11:10] Number of events field */
->> -    drvdata->nr_event = BMVAL(etmidr0, 10, 11);
->> +    drvdata->nr_event = REG_VAL(etmidr0, TRCIDR0_NUMEVENT);
->>       /* QSUPP, bits[16:15] Q element support field */
->> -    drvdata->q_support = BMVAL(etmidr0, 15, 16);
->> +    drvdata->q_support = REG_VAL(etmidr0, TRCIDR0_QSUPP);
->>       /* TSSIZE, bits[28:24] Global timestamp size field */
->> -    drvdata->ts_size = BMVAL(etmidr0, 24, 28);
->> +    drvdata->ts_size = REG_VAL(etmidr0, TRCIDR0_TSSIZE);
->>         /* maximum size of resources */
->>       etmidr2 = etm4x_relaxed_read32(csa, TRCIDR2);
->> diff --git a/drivers/hwtracing/coresight/coresight-etm4x.h b/drivers/hwtracing/coresight/coresight-etm4x.h
->> index 3c4d69b096ca..2bd8ad953b8e 100644
->> --- a/drivers/hwtracing/coresight/coresight-etm4x.h
->> +++ b/drivers/hwtracing/coresight/coresight-etm4x.h
->> @@ -130,6 +130,23 @@
->>     #define TRCRSR_TA            BIT(12)
->>   +/*
->> + * Bit positions of registers that are defined above, in the sysreg.h style
->> + * of _MASK, _SHIFT and BIT().
->> + */
->> +#define TRCIDR0_INSTP0_SHIFT            1
->> +#define TRCIDR0_INSTP0_MASK            GENMASK(1, 0)
->> +#define TRCIDR0_TRCBB                BIT(5)
->> +#define TRCIDR0_TRCCOND                BIT(6)
->> +#define TRCIDR0_TRCCCI                BIT(7)
->> +#define TRCIDR0_RETSTACK            BIT(9)
->> +#define TRCIDR0_NUMEVENT_SHIFT            10
->> +#define TRCIDR0_NUMEVENT_MASK            GENMASK(1, 0)
->> +#define TRCIDR0_QSUPP_SHIFT            15
->> +#define TRCIDR0_QSUPP_MASK            GENMASK(1, 0)
->> +#define TRCIDR0_TSSIZE_SHIFT            24
->> +#define TRCIDR0_TSSIZE_MASK            GENMASK(4, 0)
->> +
-> 
-> Cross checked the spec, and they look correct.
-> 
->>   /*
->>    * System instructions to access ETM registers.
->>    * See ETMv4.4 spec ARM IHI0064F section 4.3.6 System instructions
->> diff --git a/drivers/hwtracing/coresight/coresight-priv.h b/drivers/hwtracing/coresight/coresight-priv.h
->> index ff1dd2092ac5..e22fa6184c6d 100644
->> --- a/drivers/hwtracing/coresight/coresight-priv.h
->> +++ b/drivers/hwtracing/coresight/coresight-priv.h
->> @@ -36,6 +36,7 @@
->>     #define TIMEOUT_US        100
->>   #define BMVAL(val, lsb, msb)    ((val & GENMASK(msb, lsb)) >> lsb)
->> +#define REG_VAL(val, name)    ((val & (name##_MASK << name##_SHIFT)) >> name##_SHIFT)
-> 
-> super minor nit: s/name/field ?
-
-Will change and add a comment.
-
-Thanks for the review.
-
-> 
->>     #define ETM_MODE_EXCL_KERN    BIT(30)
->>   #define ETM_MODE_EXCL_USER    BIT(31)
-> 
