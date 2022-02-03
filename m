@@ -2,53 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 440F1C4321E
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 17:10:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DCB5C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 17:10:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352589AbiBCRKE (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 12:10:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38382 "EHLO
+        id S234378AbiBCRKL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Feb 2022 12:10:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352553AbiBCRJp (ORCPT
+        with ESMTP id S1352557AbiBCRJp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 3 Feb 2022 12:09:45 -0500
 Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81134C061757
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 09:09:41 -0800 (PST)
-Received: by mail-il1-x136.google.com with SMTP id m2so2625135ilg.11
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 09:09:41 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66DCEC061714
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 09:09:44 -0800 (PST)
+Received: by mail-il1-x136.google.com with SMTP id z4so2654565ilz.4
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 09:09:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=lgsdnCvj6CM3pv7GIi7Q7qxhb/rwEQOt/gAxMz7ESwo=;
-        b=CV9xhfZ4p0xRwN3tI5jIW7vkfasMn89uQPYfbgfEIRzmhSKWGFDIibcLrUd/XAE3LZ
-         9lFBSDFl0HyFQ+r4NXc0NEMLC5cCgKDBQGtn3cM5IOwKhQuc2JSmeKxGagNlE4aB3u2T
-         PrhktKmmbfJVOJAVYd2p8dyo9PwwgWdtRq5T7KFMFaFotAiOlBySMnyG7pMF0Nku1WtA
-         4aKtoEYGT3s49glN2KXpPDtnWNe5E0+B0h/lripFYoNBWssVkWBZjwfYUmTdDvquEsKe
-         PDqu8waRlxXthYp99P9TfH+I350rX0bJujYbjqOjnysdEcf6CaKeKAzBqMvD34eohO94
-         RGWA==
+        bh=TIZyuqBufxAitJOiYAoUO6ML7BGyW72LuYL7A9Zd06I=;
+        b=l0cNK/ZoNnrcd1AYeAyM4hvz0Xi7q+a9VciorTZrJw/NQUe/pu0lWzj2GADHrJT/G8
+         L8mxRxQ4zJDPW3+Jrl6QFjLJFUlBQtFwDTI/HqZdN8Hm9CKwLYQL5sRCNQsRoF9KNYet
+         Yw35Zk988oetFskQSyg2D6XV8d+TeHry9855Rq4qWIUZOcpgjqCT1XFJFvlwYOLQEevY
+         aYMmaJHb44yUKpY1rRBqc75CtGitB/ayOiXx5SjGgYkloywhg7mSgLRHRMg6n7yd375G
+         5dlrxRdCEeb75z8OiBmGTz4GqsbsU+IuuO8vAw6Fc8K2GMP4skS8H15oOFxouzHteLTP
+         xbRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=lgsdnCvj6CM3pv7GIi7Q7qxhb/rwEQOt/gAxMz7ESwo=;
-        b=HOX3X5Aaingih6ZSyCtVeUT6hBROWWJvH1tHAkHHk7cjUIIgX13cRY8NGfvm5osOXr
-         hJrM8cSnDqiY2yc0Mj83XLMIFrbNlmc20+Wt7uOoi7R5WN/NpKE4+mbAzhCymsJ0Gcrh
-         zdRyF7W4d93sNMojOosCMnrr40uq+86TusRzs0/753k2oJ7ZLJkhPN4Gr+jVppYS63hh
-         JgUPcBmAsBE4kc0hCxuHFJ1pKd39ntXnN5Y1pXj2AWPjzebFIoP3/V/NBMqQbKO4/Rar
-         V2e/vcTfYsAEwP6sPEe7V3Bbrj4qu9B14yaI0pOUkHRp3XAyge4H8j2/bCByuUZ6bCze
-         UpOA==
-X-Gm-Message-State: AOAM530CH6mx+lVSp5BKvhANOQiNqSaQqyojbG6Q/ncYgy3mErvaWnuV
-        J7JpF2Jetk0PgHxs80ysv8gI+w==
-X-Google-Smtp-Source: ABdhPJwPNHidFImaNmF7P2maK7ImXz0odBg3rq1AugQJbNWk9HprTIkONp3Cqhoc/6JALaNpiRutLw==
-X-Received: by 2002:a05:6e02:1946:: with SMTP id x6mr5642505ilu.236.1643908180968;
-        Thu, 03 Feb 2022 09:09:40 -0800 (PST)
+        bh=TIZyuqBufxAitJOiYAoUO6ML7BGyW72LuYL7A9Zd06I=;
+        b=LUvoOqIrREg2rBovVCO7o/eZ3Rvjv94V71TwqbuQ++rS6ISmH+Aq2yU6FFticZ9bKe
+         L2/Lo+U9Ha6iJBvXEw2AekSplSWD24LGgnzH5/p8Q8tVEWfjT68td5a/r+A5fTrf5DFE
+         kVsSIMDmE/WxOJYrpbyWpyJk6JBtrW4xQQfUSAaD/9MQYvBFbX+SP5Gxhoa/ENycloNn
+         MoyagMHCGjET9YFc//GqLdiLV0OdWEFIX/UZYrguqfmiVfoU4Q3Z1i43GBgInS5hsw90
+         o0oDmBoVTMAslQUwiphOE81leHIJqyNg21GJIW8qeDOvZ9EqfqWWOGIkdyDfPpQMg7BN
+         7WXg==
+X-Gm-Message-State: AOAM531ez164NyD5g4Hd2+agePIAACV9zkqvHWNrS27+DRCknWF7T8Z5
+        8bItzcGTtddVzpdwD0STDiR7nw==
+X-Google-Smtp-Source: ABdhPJyk0r+iDfI5LvKb3rFl035/2uwyP9pIu2kHmets5AjQAqhM+87VIbldc+yqFQkHFsIgl4i4pw==
+X-Received: by 2002:a05:6e02:2163:: with SMTP id s3mr19853641ilv.244.1643908183577;
+        Thu, 03 Feb 2022 09:09:43 -0800 (PST)
 Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id m12sm21869671iow.54.2022.02.03.09.09.39
+        by smtp.gmail.com with ESMTPSA id m12sm21869671iow.54.2022.02.03.09.09.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Feb 2022 09:09:40 -0800 (PST)
+        Thu, 03 Feb 2022 09:09:43 -0800 (PST)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     bjorn.andersson@linaro.org, mka@chromium.org, evgreen@chromium.org,
@@ -56,9 +55,9 @@ Cc:     bjorn.andersson@linaro.org, mka@chromium.org, evgreen@chromium.org,
         jponduru@codeaurora.org, subashab@codeaurora.org, elder@kernel.org,
         netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 06/10] net: ipa: don't use replenish_backlog
-Date:   Thu,  3 Feb 2022 11:09:23 -0600
-Message-Id: <20220203170927.770572-7-elder@linaro.org>
+Subject: [PATCH net-next 08/10] net: ipa: kill replenish_backlog
+Date:   Thu,  3 Feb 2022 11:09:25 -0600
+Message-Id: <20220203170927.770572-9-elder@linaro.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220203170927.770572-1-elder@linaro.org>
 References: <20220203170927.770572-1-elder@linaro.org>
@@ -68,32 +67,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rather than determining when to stop replenishing using the
-replenish backlog, just stop when we have exhausted all available
-transactions.
+We no longer use the replenish_backlog atomic variable to decide
+when we've got work to do providing receive buffers to hardware.
+Basically, we try to keep the hardware as full as possible, all the
+time.  We keep supplying buffers until the hardware has no more
+space for them.
+
+As a result, we can get rid of the replenish_backlog field and the
+atomic operations performed on it.
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ipa/ipa_endpoint.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ drivers/net/ipa/ipa_endpoint.c | 7 -------
+ drivers/net/ipa/ipa_endpoint.h | 2 --
+ 2 files changed, 9 deletions(-)
 
 diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
-index f5367b902c27c..fba8728ce12e3 100644
+index b854a39c69925..9d875126a360e 100644
 --- a/drivers/net/ipa/ipa_endpoint.c
 +++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -1087,11 +1087,8 @@ static void ipa_endpoint_replenish(struct ipa_endpoint *endpoint)
- 	if (test_and_set_bit(IPA_REPLENISH_ACTIVE, endpoint->replenish_flags))
+@@ -1086,7 +1086,6 @@ static void ipa_endpoint_replenish(struct ipa_endpoint *endpoint)
  		return;
  
--	while (atomic_dec_not_zero(&endpoint->replenish_backlog)) {
--		trans = ipa_endpoint_trans_alloc(endpoint, 1);
--		if (!trans)
--			break;
--
-+	while ((trans = ipa_endpoint_trans_alloc(endpoint, 1))) {
-+		WARN_ON(!atomic_dec_not_zero(&endpoint->replenish_backlog));
+ 	while ((trans = ipa_endpoint_trans_alloc(endpoint, 1))) {
+-		WARN_ON(!atomic_dec_not_zero(&endpoint->replenish_backlog));
  		if (ipa_endpoint_replenish_one(endpoint, trans))
  			goto try_again_later;
+ 
+@@ -1105,9 +1104,6 @@ static void ipa_endpoint_replenish(struct ipa_endpoint *endpoint)
+ 	gsi_trans_free(trans);
+ 	clear_bit(IPA_REPLENISH_ACTIVE, endpoint->replenish_flags);
+ 
+-	/* The last one didn't succeed, so fix the backlog */
+-	atomic_inc(&endpoint->replenish_backlog);
+-
+ 	/* Whenever a receive buffer transaction completes we'll try to
+ 	 * replenish again.  It's unlikely, but if we fail to supply even
+ 	 * one buffer, nothing will trigger another replenish attempt.
+@@ -1346,7 +1342,6 @@ static void ipa_endpoint_rx_complete(struct ipa_endpoint *endpoint,
+ 	struct page *page;
+ 
+ 	ipa_endpoint_replenish(endpoint);
+-	atomic_inc(&endpoint->replenish_backlog);
+ 
+ 	if (trans->cancelled)
+ 		return;
+@@ -1693,8 +1688,6 @@ static void ipa_endpoint_setup_one(struct ipa_endpoint *endpoint)
+ 		 */
+ 		clear_bit(IPA_REPLENISH_ENABLED, endpoint->replenish_flags);
+ 		clear_bit(IPA_REPLENISH_ACTIVE, endpoint->replenish_flags);
+-		atomic_set(&endpoint->replenish_backlog,
+-			   gsi_channel_tre_max(gsi, endpoint->channel_id));
+ 		INIT_DELAYED_WORK(&endpoint->replenish_work,
+ 				  ipa_endpoint_replenish_work);
+ 	}
+diff --git a/drivers/net/ipa/ipa_endpoint.h b/drivers/net/ipa/ipa_endpoint.h
+index c95816d882a74..9a37f9387f011 100644
+--- a/drivers/net/ipa/ipa_endpoint.h
++++ b/drivers/net/ipa/ipa_endpoint.h
+@@ -66,7 +66,6 @@ enum ipa_replenish_flag {
+  * @netdev:		Network device pointer, if endpoint uses one
+  * @replenish_flags:	Replenishing state flags
+  * @replenish_ready:	Number of replenish transactions without doorbell
+- * @replenish_backlog:	Number of buffers needed to fill hardware queue
+  * @replenish_work:	Work item used for repeated replenish failures
+  */
+ struct ipa_endpoint {
+@@ -86,7 +85,6 @@ struct ipa_endpoint {
+ 	/* Receive buffer replenishing for RX endpoints */
+ 	DECLARE_BITMAP(replenish_flags, IPA_REPLENISH_COUNT);
+ 	u32 replenish_ready;
+-	atomic_t replenish_backlog;
+ 	struct delayed_work replenish_work;		/* global wq */
+ };
  
 -- 
 2.32.0
