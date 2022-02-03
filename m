@@ -2,63 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1533CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 18:23:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAD11C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 18:24:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353363AbiBCSXW (ORCPT
+        id S1353422AbiBCSYd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 13:23:22 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:46296 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234771AbiBCSXU (ORCPT
+        Thu, 3 Feb 2022 13:24:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56858 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234771AbiBCSYa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 13:23:20 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E0802B8339B
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 18:23:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2912DC340EC;
-        Thu,  3 Feb 2022 18:23:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643912598;
-        bh=DdgGyWSLki5WOyQp2k6JeCY8krqNvNnDxCSP04S3ao4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cIly+4dW0MAzvOMsvmfLYlxAF0YRFlotbvzXl/Au+2ZQfd0JLubGHMw78YEoszDxC
-         fLTkRAvEuHG6f3g8yEBOkaM8caIGUMlsc18Bc4zuygdcRCry6bVzuwDCslUP2pLawN
-         gRKfMykTuQXdNCO3vWH5TEmzejR8bbkn7zaOO70/JZnclwTNsyJh25dputhl5UrylP
-         /toSbQXKBLO08lPD9yFlRXs1caFUurl3MlDF9ghjzWFmADsnOzP1NCyTCdzxvXEC8y
-         QutG8iR5We5qSh9u4njALr63FJx5//i2QqUvaTLLJZIVkYHZjUDYphiQzYJFssXbTa
-         U+VmtQI9of2TQ==
-Date:   Thu, 3 Feb 2022 19:23:16 +0100
-From:   Frederic Weisbecker <frederic@kernel.org>
-To:     Marcelo Tosatti <mtosatti@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, Nitesh Lal <nilal@redhat.com>,
-        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Christoph Lameter <cl@linux.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Alex Belits <abelits@belits.com>, Peter Xu <peterx@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>
-Subject: Re: [patch v10 05/10] task isolation: add hook to task exit
-Message-ID: <20220203182316.GA475173@lothringen>
-References: <20220127173037.318440631@fedora.localdomain>
- <20220127173206.645742130@fedora.localdomain>
+        Thu, 3 Feb 2022 13:24:30 -0500
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98880C06173D
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 10:24:30 -0800 (PST)
+Received: by mail-yb1-xb2d.google.com with SMTP id w81so11447082ybg.12
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 10:24:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=eclypsium.com; s=google;
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
+         :cc;
+        bh=1fRhWHaiX3rkmKEuOvxk4MdWU+5ch329S/1ViDgbzuQ=;
+        b=KX8rWrzrI4SmeeXMyhAJN94FJ/BtvuLWK+a+fEtNaIBeSUb/nXfmIj+MN9RQ0o7+mQ
+         SwQe77+rarjoaurkLkwjWstN1NWmV+xd9D3Wn3XvJSyJukBCZpXcmD/HDqOwApqaTAak
+         XGNvn02OrLI5jDtuy9UljW7DOLBN7KMgFEyXf/gf/4VpE4WqqiBa3B4q9wF3v5tDvzFs
+         AqHfqKsKQt/6eF0lcKT5E8BYQjGIkPqsswV9TXkfHqhy55m1gPO5L0xwD4gXLybdIrfq
+         zJUjnTeaQQUUkGj6vSUElVHZzCuVzQxX9ETcx+/12BQY9watxH97OYFpCpLkWbPlIgZz
+         tXfw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
+         :message-id:subject:to:cc;
+        bh=1fRhWHaiX3rkmKEuOvxk4MdWU+5ch329S/1ViDgbzuQ=;
+        b=yILDdryFxjGyHYFaM/1l5+CMqIlzHeQ1DsiDqYS3+AEcS8t1dXWj2wmwvRdltf4o4K
+         oJSxuWENR7yMtm0vFhU66th5oKk9/50qpXpENtMKDH2UEXNHwNJLCJAy0cjDJy8sGCTL
+         Cc27j/P9noSLC1+v2rkGvgBl+m50V6zYUgwpHCwmiBoiQeMdbFv6X/NA7s6de3OmxQyT
+         BzfmNpNA5XD/MvvBpNPdivmal8NHhj8jZpIZxHktB53T3lyd52qG8m2s1IIadeTs8eEb
+         DbUyOKqeh5FjWQpQLJlGzSgaR0MdPpOi8LUzaHDhkAqESU4TGYdtp0+hEIyJyJphy5wp
+         CumQ==
+X-Gm-Message-State: AOAM5317WUS6rMOXO0HLvqlXr2GfvRwW6JWnCESBmuUJjfuyqDmTDwWc
+        DREFa/2Iu+l0P0MK6oARh5SlLodivGnGTQihbTZEZw==
+X-Google-Smtp-Source: ABdhPJwUT60W3ByLAudmauSaRtgoF18uDF+5y3xNpKLwb86Fuj5obEj1Uw0y9+Xke1Xujg5UscpZstiv8/jNzr6gMZE=
+X-Received: by 2002:a81:1d8f:: with SMTP id d137mr5310092ywd.383.1643912669833;
+ Thu, 03 Feb 2022 10:24:29 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220127173206.645742130@fedora.localdomain>
+Received: by 2002:a81:1756:0:0:0:0:0 with HTTP; Thu, 3 Feb 2022 10:24:29 -0800 (PST)
+In-Reply-To: <YfwZ6ne9ND1JaReS@kernel.org>
+References: <20220203164328.203629-1-martin.fernandez@eclypsium.com>
+ <20220203164328.203629-2-martin.fernandez@eclypsium.com> <YfwZ6ne9ND1JaReS@kernel.org>
+From:   Martin Fernandez <martin.fernandez@eclypsium.com>
+Date:   Thu, 3 Feb 2022 15:24:29 -0300
+Message-ID: <CAKgze5ZVHax5AWP3Q764dSmjAJWncyZbn4ENQCkYs0ahbG9Haw@mail.gmail.com>
+Subject: Re: [PATCH v6 1/6] mm/memblock: Tag memblocks with crypto capabilities
+To:     Mike Rapoport <rppt@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, linux-efi@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org, linux-mm@kvack.org,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+        ardb@kernel.org, dvhart@infradead.org, andy@infradead.org,
+        gregkh@linuxfoundation.org, rafael@kernel.org,
+        akpm@linux-foundation.org, daniel.gutson@eclypsium.com,
+        hughsient@gmail.com, alex.bazhaniuk@eclypsium.com,
+        alison.schofield@intel.com, keescook@chromium.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 02:30:42PM -0300, Marcelo Tosatti wrote:
-> Add task isolation specific hook to task exit routines.
-> 
-> Signed-off-by: Marcelo Tosatti <mtosatti@redhat.com>
+On 2/3/22, Mike Rapoport <rppt@kernel.org> wrote:
+> On Thu, Feb 03, 2022 at 01:43:23PM -0300, Martin Fernandez wrote:
+>> +/**
+>> + * memblock_node_is_crypto_capable - get if whole node is capable
+>> + * of encryption
+>> + * @nid: number of node
+>> + *
+>> + * Iterate over all memory memblock_type and find if all regions under
+>> + * node @nid are capable of hardware encryption.
+>> + *
+>> + * Return:
+>> + * true if every region in memory memblock_type is capable of
+>> + * encryption, false otherwise.
+>> + */
+>> +bool __init_memblock memblock_node_is_crypto_capable(int nid)
+>> +{
+>> +	struct memblock_region *region;
+>> +	bool crypto_capable = false;
+>> +	bool not_crypto_capable = false;
+>> +
+>> +	for_each_mem_region(region) {
+>> +		if (memblock_get_region_node(region) == nid) {
+>> +			crypto_capable =
+>> +				crypto_capable ||
+>> +				(region->flags & MEMBLOCK_CRYPTO_CAPABLE);
+>> +			not_crypto_capable =
+>> +				not_crypto_capable ||
+>> +				!(region->flags & MEMBLOCK_CRYPTO_CAPABLE);
+>
+> Isn't
+>
+>  			if (region->flags & MEMBLOCK_CRYPTO_CAPABLE)
+> 				crypto_capable++;
+> 			else
+> 				not_crypto_capable++;
+>
+> simpler and clearer?
+>
+> (of course s/bool/int in the declaration)
+>
 
-Maybe merge this into "[patch v10 07/10] task isolation: enable return to
-userspace processing" because that patch alone doesn't make much sense?
+Yes! It is. I like that.
 
-Thanks.
+>> +		}
+>> +	}
+>> +
+>> +	if (crypto_capable && not_crypto_capable)
+>> +		pr_warn_once("Node %d has regions that are encryptable and regions that
+>> aren't",
+>> +			     nid);
+>
+> This will print only the first node with mixed regions. With a single
+> caller of memblock_node_is_crypto_capable() I think pr_warn() is ok.
+>
+
+Yes, you are correct, don't really want _once here.
