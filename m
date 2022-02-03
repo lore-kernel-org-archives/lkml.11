@@ -2,126 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC991C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 09:05:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C625C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 09:05:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349688AbiBCJFV (ORCPT
+        id S1349694AbiBCJF0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 04:05:21 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:52513 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231674AbiBCJFT (ORCPT
+        Thu, 3 Feb 2022 04:05:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40394 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349689AbiBCJFW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 04:05:19 -0500
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nFXz7-0001Ju-OT; Thu, 03 Feb 2022 10:00:57 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nFXz7-00EEKb-Kr; Thu, 03 Feb 2022 10:00:56 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nFXz6-005FX4-3S; Thu, 03 Feb 2022 10:00:56 +0100
-Date:   Thu, 3 Feb 2022 10:00:53 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     William Breathitt Gray <vilhelm.gray@gmail.com>
-Cc:     jic23@kernel.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] counter: Set counter device name
-Message-ID: <20220203090053.oki5ts4c2gdpi2c6@pengutronix.de>
-References: <20220203073459.90093-1-vilhelm.gray@gmail.com>
+        Thu, 3 Feb 2022 04:05:22 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 996FDC06173B;
+        Thu,  3 Feb 2022 01:05:22 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5DB2BB83376;
+        Thu,  3 Feb 2022 09:05:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A847C340E4;
+        Thu,  3 Feb 2022 09:05:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643879120;
+        bh=ka31XnUdzDPVoP4gtRyLrU0AKLDgZbk5b+AQBM6fMiU=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=Wvuju0luhlSZncifUc+VBM5JTfT7R53lLSF/Hp82Gf3UH+hzqlWDSAU5u3HgcYMuE
+         kT4rFvPknbChBSgt8QXYUCAo3ghbImJasRgDv9ao32J1DRFYXl0e2HjupocAqAofTo
+         ch2g5hGj+BPI1zy3hr93XJ1BWBlwucL8OoclrGP8xYbzlF6WT10NDdn8eVz/YvUIf5
+         8mNtJqvKDemJmXofskVMuRMuwS/ndsS4MsxTzTuK+7H/XLikxi3qwQaCODuwgog1Fo
+         VhWdl89yCkR8mLDIu6Iu49l8LMWriMIlSjv1y+ARsIsQK9MgJM4iKedo8P4tc9J4+D
+         yUEgdBq5i8Kwg==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="jh4osnqu6wmxh7l3"
-Content-Disposition: inline
-In-Reply-To: <20220203073459.90093-1-vilhelm.gray@gmail.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH -next] wcn36xx: clean up some inconsistent indenting
+From:   Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <20220201041548.18464-1-yang.lee@linux.alibaba.com>
+References: <20220201041548.18464-1-yang.lee@linux.alibaba.com>
+To:     Yang Li <yang.lee@linux.alibaba.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, wcn36xx@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <164387911640.6516.16681553921400829209.kvalo@kernel.org>
+Date:   Thu,  3 Feb 2022 09:05:17 +0000 (UTC)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Yang Li <yang.lee@linux.alibaba.com> wrote:
 
---jh4osnqu6wmxh7l3
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> Eliminate the follow smatch warnings:
+> drivers/net/wireless/ath/wcn36xx/main.c:1394 wcn36xx_get_survey() warn:
+> inconsistent indenting
+> drivers/net/wireless/ath/wcn36xx/txrx.c:379 wcn36xx_rx_skb() warn:
+> inconsistent indenting
+> 
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+> Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
 
-On Thu, Feb 03, 2022 at 04:34:59PM +0900, William Breathitt Gray wrote:
-> Naming the counter device provides a convenient way to identify it in
-> devres_log events and similar situations. This patch names the counter
-> device by combining the prefix "counter" with the counter device's
-> unique ID.
->=20
-> Cc: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
-> ---
->  drivers/counter/counter-core.c | 12 +++++++++++-
->  1 file changed, 11 insertions(+), 1 deletion(-)
->=20
-> diff --git a/drivers/counter/counter-core.c b/drivers/counter/counter-cor=
-e.c
-> index 7e0957eea094..2ebd9adf0bd2 100644
-> --- a/drivers/counter/counter-core.c
-> +++ b/drivers/counter/counter-core.c
-> @@ -22,6 +22,8 @@
->  #include "counter-chrdev.h"
->  #include "counter-sysfs.h"
-> =20
-> +#define COUNTER_NAME	"counter"
-> +
->  /* Provides a unique ID for each counter device */
->  static DEFINE_IDA(counter_ida);
-> =20
-> @@ -104,6 +106,10 @@ struct counter_device *counter_alloc(size_t sizeof_p=
-riv)
->  		goto err_ida_alloc;
->  	dev->id =3D err;
-> =20
-> +	err =3D dev_set_name(dev, COUNTER_NAME "%d", dev->id);
-> +	if (err)
-> +		goto err_dev_set_name;
-> +
->  	mutex_init(&counter->ops_exist_lock);
->  	dev->type =3D &counter_device_type;
->  	dev->bus =3D &counter_bus_type;
-> @@ -119,6 +125,9 @@ struct counter_device *counter_alloc(size_t sizeof_pr=
-iv)
-> =20
->  err_chrdev_add:
-> =20
-> +	kfree(dev_name(dev));
-> +err_dev_set_name:
-> +
+Patch applied to ath-next branch of ath.git, thanks.
 
-I think this is wrong as kobject_cleanup frees the name.
+df507a7f8675 wcn36xx: clean up some inconsistent indenting
 
-Best regards
-Uwe
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/20220201041548.18464-1-yang.lee@linux.alibaba.com/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---jh4osnqu6wmxh7l3
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmH7mcIACgkQwfwUeK3K
-7AlJzQf/cNuK0rtB1iKYAnzDVPvJyIJGTVT0IzvU7inl9odpeyTyYpPmlxPHpWm3
-Sm6uypswc05jVj1Tk5TSzFgHUAfA1bh3V7KXFJ7co+X3KS7T/k+KZt0+wstsnVFw
-lcnw+0s2ACwSPWW1tsUTnQo3UojaYBfqU/5nNN1OPoAM2BI9xZE5ghftnQqurQRm
-34fjYo5xWZbrpzHvOUblwpq/BZ8O8YPg+nzo5AFyw6nSdT+Do2PUxTvZhJV7i1xX
-O2rPFIxYWjxvx+I0xZfi1l7/Z2Ou1RP6oMJjmA+xhvWXlqLkM56y7a/q3fEqQDjt
-9kW/x1DL5ibLqTtdItY39Yg/Op2PDQ==
-=ALNc
------END PGP SIGNATURE-----
-
---jh4osnqu6wmxh7l3--
