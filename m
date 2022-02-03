@@ -2,101 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94AFFC4321E
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:32:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07600C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:32:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354341AbiBCUcX (ORCPT
+        id S1354628AbiBCUcZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:32:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57686 "EHLO
+        Thu, 3 Feb 2022 15:32:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348713AbiBCUbc (ORCPT
+        with ESMTP id S1354319AbiBCUbc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 3 Feb 2022 15:31:32 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BB91C0613EB;
-        Thu,  3 Feb 2022 12:31:08 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C886AB835A3;
-        Thu,  3 Feb 2022 20:31:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9F57C340E8;
-        Thu,  3 Feb 2022 20:31:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643920265;
-        bh=nDySB6UXuT3u6CrlRf1gGUS+olwtOzGHIaEFmYJVFJc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L7BKLUFf7gHZ4HIXDKB/J/UDXGPTzvwcS6Z3iIAhWEn9MkPU+UP/HHv+bbbz5Fr91
-         O4GX4aUn0dSsjLculfAT0XFTVCeRug3nawBV1pt13aS7CXh/bZbfn4LGRnTlAGwH8g
-         bKii/I9RbcwlrAQg/B1t+C+EAPEM9fLv9qEVmrB2ILKJnJrS0GxawoCGIFLxluMH5P
-         4iNrnvFl23m8se0qHx9DJ4P1DFZayM33T8a5+H8jop2OBOtwXA/T1EW8u7t+8WaOa4
-         yddQLnkg3vzhxMQ3abAganUPT1rBXdxX8DR6sISwHqXwU9nuMb3zX4kHxukW+4Ysm3
-         QWh3UD0WhO4IQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Saurav Kashyap <skashyap@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, jhasan@marvell.com,
-        GR-QLogic-Storage-Upstream@marvell.com, jejb@linux.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 30/52] scsi: qedf: Change context reset messages to ratelimited
-Date:   Thu,  3 Feb 2022 15:29:24 -0500
-Message-Id: <20220203202947.2304-30-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220203202947.2304-1-sashal@kernel.org>
-References: <20220203202947.2304-1-sashal@kernel.org>
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43608C061757;
+        Thu,  3 Feb 2022 12:31:10 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id p12so8509980edq.9;
+        Thu, 03 Feb 2022 12:31:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9ulW6uLO42kV5kik2BobfHbP7xAW9OLDANUtAn1JYzs=;
+        b=SK8QsZBnLVkBomK7z0ApY6hGnsrAxtcidnIG7no8x2umrDfnKYiFfQ4+n2/ig1Cx5r
+         lbN4n/bkZQHhNDH1nQ2LiA3bK/3Ni8n7gm/AORFz4Cw13bgeRRe0BauCUGRQzaksFnKZ
+         CV/ZrKHSvx4vpnpU6+kQRXE5adTxyyYaOxXpngx8t0+P1I/Gav1ZsJx62HiV7CZHc6V0
+         EARbMWJTrFh+J+5s6dpS/WwOuoum35xsljhxM2JvT4IVGWh3e2WUoeUedYvCbd7CPOi0
+         I12WLTNJPyNJnTBellnOa3+n9S3VYGYttrZ+AKNhxuWOLlJ12kQ7hdo8X0yTybY1G3s9
+         s+Ug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9ulW6uLO42kV5kik2BobfHbP7xAW9OLDANUtAn1JYzs=;
+        b=Szf3qyaPqMnAzVlq3Yy/JJ7B4OPeHwGghd+EnHx6OUugh3cg3MwMbhOGCuRdj+4N60
+         sz+/50j+EUuVkqZK11VpBeCZWG8jVrYkpGM/vkF9X7Ima6SBU4cwwI+kWca7QE02W3oq
+         db0PxUAjFkwzvIF1picO+zWy2gcvKKHkowMMIjyw2CXTzyuijg49QTG4s5QWFbWMxQ7T
+         1pFzQHgoR+6elilp3WX1vfwBUDiF6QYksxkyms3UNBJ2/y3ZDvxV1MQ1T4SxS4eke3xq
+         r4yOflyZe/fwwlDahssbwXiH1jrPY5SyP+QIfPgKIltgpOM36rWRrgei6PVBoQKvlC6J
+         uOKg==
+X-Gm-Message-State: AOAM530zhh3UoWlhaSiEZ2LOI8R0QLWxcRZAC3pBJLfIRKtj51nBHonO
+        IBhPTeSZcwxcGjABUJJmsUrUAgQ3MStpsA==
+X-Google-Smtp-Source: ABdhPJzrbjk4HOawDZkNhXaqZyUHm7t5dUA814bTJ08+jO3HwbGoPPIqIn3o98goz+AoB1LsIK7tCA==
+X-Received: by 2002:a50:aadd:: with SMTP id r29mr36849028edc.236.1643920268669;
+        Thu, 03 Feb 2022 12:31:08 -0800 (PST)
+Received: from tiger.museclub.art (p200300cf9f235800e668694710673d4b.dip0.t-ipconnect.de. [2003:cf:9f23:5800:e668:6947:1067:3d4b])
+        by smtp.googlemail.com with ESMTPSA id i14sm4688462edr.100.2022.02.03.12.31.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Feb 2022 12:31:08 -0800 (PST)
+From:   Eugene Shalygin <eugene.shalygin@gmail.com>
+To:     eugene.shalygin@gmail.com
+Cc:     Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jonathan Corbet <corbet@lwn.net>, linux-hwmon@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: hwmon: (asus-ec-sensors) Add Crosshair VIII Hero WiFi
+Date:   Thu,  3 Feb 2022 21:30:52 +0100
+Message-Id: <20220203203052.441712-1-eugene.shalygin@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Saurav Kashyap <skashyap@marvell.com>
+The Wi-Fi variant of Crosshair VIII Hero provides the same sensors,
+which was tested by a Libre Hardware Monitor user [1].
 
-[ Upstream commit 64fd4af6274eb0f49d29772c228fffcf6bde1635 ]
+[1] https://github.com/LibreHardwareMonitor/LibreHardwareMonitor/pull/453#issuecomment-1028398487
 
-If FCoE is not configured, libfc/libfcoe keeps on retrying FLOGI and after
-3 retries driver does a context reset and tries fipvlan again.  This leads
-to context reset message flooding the logs. Hence ratelimit the message to
-prevent flooding the logs.
-
-Link: https://lore.kernel.org/r/20220117135311.6256-4-njavali@marvell.com
-Signed-off-by: Saurav Kashyap <skashyap@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Eugene Shalygin <eugene.shalygin@gmail.com>
 ---
- drivers/scsi/qedf/qedf_main.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ Documentation/hwmon/asus_ec_sensors.rst | 1 +
+ drivers/hwmon/asus-ec-sensors.c         | 6 ++++++
+ 2 files changed, 7 insertions(+)
 
-diff --git a/drivers/scsi/qedf/qedf_main.c b/drivers/scsi/qedf/qedf_main.c
-index 6e367b40ecc96..e0e03443d7703 100644
---- a/drivers/scsi/qedf/qedf_main.c
-+++ b/drivers/scsi/qedf/qedf_main.c
-@@ -911,7 +911,7 @@ void qedf_ctx_soft_reset(struct fc_lport *lport)
- 	struct qed_link_output if_link;
- 
- 	if (lport->vport) {
--		QEDF_ERR(NULL, "Cannot issue host reset on NPIV port.\n");
-+		printk_ratelimited("Cannot issue host reset on NPIV port.\n");
- 		return;
- 	}
- 
-@@ -3979,7 +3979,9 @@ void qedf_stag_change_work(struct work_struct *work)
- 	struct qedf_ctx *qedf =
- 	    container_of(work, struct qedf_ctx, stag_work.work);
- 
--	QEDF_ERR(&qedf->dbg_ctx, "Performing software context reset.\n");
-+	printk_ratelimited("[%s]:[%s:%d]:%d: Performing software context reset.",
-+			dev_name(&qedf->pdev->dev), __func__, __LINE__,
-+			qedf->dbg_ctx.host_no);
- 	qedf_ctx_soft_reset(qedf->lport);
- }
- 
+diff --git a/Documentation/hwmon/asus_ec_sensors.rst b/Documentation/hwmon/asus_ec_sensors.rst
+index b12ac7ebeb1a..22de1b037cfb 100644
+--- a/Documentation/hwmon/asus_ec_sensors.rst
++++ b/Documentation/hwmon/asus_ec_sensors.rst
+@@ -7,6 +7,7 @@ Supported boards:
+  * PRIME X570-PRO,
+  * Pro WS X570-ACE,
+  * ROG CROSSHAIR VIII DARK HERO,
++ * ROG CROSSHAIR VIII HERO (WI-FI)
+  * ROG CROSSHAIR VIII FORMULA,
+  * ROG CROSSHAIR VIII HERO,
+  * ROG CROSSHAIR VIII IMPACT,
+diff --git a/drivers/hwmon/asus-ec-sensors.c b/drivers/hwmon/asus-ec-sensors.c
+index 7285334c7d80..05244209c0c6 100644
+--- a/drivers/hwmon/asus-ec-sensors.c
++++ b/drivers/hwmon/asus-ec-sensors.c
+@@ -188,6 +188,12 @@ static const struct dmi_system_id asus_ec_dmi_table[] __initconst = {
+ 		SENSOR_TEMP_VRM | SENSOR_SET_TEMP_WATER |
+ 		SENSOR_FAN_CPU_OPT | SENSOR_FAN_CHIPSET |
+ 		SENSOR_FAN_WATER_FLOW | SENSOR_CURR_CPU),
++	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE,
++			      "ROG CROSSHAIR VIII HERO (WI-FI)",
++		SENSOR_SET_TEMP_CHIPSET_CPU_MB | SENSOR_TEMP_T_SENSOR |
++		SENSOR_TEMP_VRM | SENSOR_SET_TEMP_WATER |
++		SENSOR_FAN_CPU_OPT | SENSOR_FAN_CHIPSET |
++		SENSOR_FAN_WATER_FLOW | SENSOR_CURR_CPU),
+ 	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE,
+ 			      "ROG CROSSHAIR VIII IMPACT",
+ 		SENSOR_SET_TEMP_CHIPSET_CPU_MB | SENSOR_TEMP_T_SENSOR |
 -- 
-2.34.1
+2.35.1
 
