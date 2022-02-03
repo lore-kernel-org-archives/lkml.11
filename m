@@ -2,109 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94C91C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 17:11:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52D4EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 17:11:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352737AbiBCRLT (ORCPT
+        id S1352553AbiBCRLf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 12:11:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38512 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346667AbiBCRLI (ORCPT
+        Thu, 3 Feb 2022 12:11:35 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:44118 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1352733AbiBCRLQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 12:11:08 -0500
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C000C06173B;
-        Thu,  3 Feb 2022 09:11:06 -0800 (PST)
-Received: by mail-ej1-x62d.google.com with SMTP id ka4so10752688ejc.11;
-        Thu, 03 Feb 2022 09:11:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=sovBYQAcoAyRD+IIp48jmZd62dc3/cLT/aahzL7f+PY=;
-        b=UjJ6eCdCr1s35/Zo6xyKw4ExVCZWsabyMSRJPkW67/rmaNf6eywVd5fYWuVKjzsZ1a
-         hkEqLCHF//sbgceQvWe/DKmEw1ETKhUbrxKLa5NwHqHyzskqYVDomlaQlVp4I2u0d+tp
-         1Zv0nQ7fTHzczJUWhlhsUyE+skpdhD+D5Tikriz0fV1/DmZ6/SJKpNrSBM1puEVLULiV
-         Iuy8E3nZTM0q/d98bV6q4+HXzeHVDwEjORppIh2FXwNtl3a4dLSQz98FpBa8GfsrEwFV
-         /XHfVa4XimsgNOZqgQkeqnCAObuEufllNAee3Qx2GZLIhcibJyVaajFCD4my587rkZBz
-         jcUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=sovBYQAcoAyRD+IIp48jmZd62dc3/cLT/aahzL7f+PY=;
-        b=CoMTD7P1jo6myrtiRPozkSS4Hc0Ir+q7D4Acs0wJ58MEOI54uNJgRXGDyqu7wV0A+/
-         cckJjyhxAHufpwJ/dwbSmvEfEq4l9kK0NmRGoDRA33w4M3PnCU+kMPAO+S8ZlOQIofxr
-         x8Rv1Ri4o7EuWpoLmOsdJREml1GNOic6hsP4N9pA3Q+oP0IRYSxlVDm9iSBWzNj8IrZc
-         /hfDbr5E0hQV5Ua8G/YWoEqjyxP0CG5fZkPQwrXusxKFsLYLnw3PXB+lYPCkPXPZyUD/
-         gwmtCDr2o7tML4MHgvSSOL0hXz5ZZ/0VefuAI0km0RAl+k/C4n5If6/sUIETdV44pk7P
-         OvCg==
-X-Gm-Message-State: AOAM531Oce6xEIeEnKJsvXuLQC3rpu47coCI6qcOMHCV+Ut44W4ypGKH
-        aD5Pw/NQbddxKhLYAuHH2Jc=
-X-Google-Smtp-Source: ABdhPJx3sYSUxiXz5lyDAeE53N1p30al3RfLZxJr/EGh4DnCjrKY+oKW+E0n7MmYR6U2CYbraG/Jug==
-X-Received: by 2002:a17:907:868f:: with SMTP id qa15mr32261051ejc.518.1643908264487;
-        Thu, 03 Feb 2022 09:11:04 -0800 (PST)
-Received: from ?IPV6:2003:ea:8f4d:2b00:71d8:a0a4:4bb5:bafa? (p200300ea8f4d2b0071d8a0a44bb5bafa.dip0.t-ipconnect.de. [2003:ea:8f4d:2b00:71d8:a0a4:4bb5:bafa])
-        by smtp.googlemail.com with ESMTPSA id u3sm17315462ejz.99.2022.02.03.09.11.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Feb 2022 09:11:03 -0800 (PST)
-Message-ID: <84f17973-96c3-6513-ca4f-20750c896e6b@gmail.com>
-Date:   Thu, 3 Feb 2022 18:10:57 +0100
+        Thu, 3 Feb 2022 12:11:16 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 82324B8350F;
+        Thu,  3 Feb 2022 17:11:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09989C340E8;
+        Thu,  3 Feb 2022 17:11:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643908274;
+        bh=0T1PX8l3N5+kpFJQ2G3e1jvblpArQwCSGcG+5Ha2rW8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=pT+7q6bbM5mpD1l386q6kNXft6lRRzlAvvqXVMD4LCNn/CbwgDiLB9PiKvFWVevAv
+         9aGjtPtyklCPRRZJ8Xcl7oBPf9+x14Q8KqhtNwVrALB1cSk2G7BLSL2WZORA4djUkZ
+         GhJEwAspdhRrLXpVt1Jm2xN3XtWhEzVNyT+Y/2BNTpKuQgMtkZ8KNsWfkvpxN6tawO
+         shlB49dHKNOTAWvl5JDsYgEaMBVdMZZwhauK6Wh4fWfAKxY4byYDWmcU/GPXCc5H6b
+         HM8FqWVLznEMjoVay+WeAsdCvkW1MTUxeW6vXWJo/BB8QqHEGATLEfeZe4Q+8vn9EJ
+         T9CJTqanVsfdw==
+Date:   Thu, 3 Feb 2022 11:11:12 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     ira.weiny@intel.com
+Cc:     Dan Williams <dan.j.williams@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Alison Schofield <alison.schofield@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Ben Widawsky <ben.widawsky@intel.com>,
+        linux-kernel@vger.kernel.org, linux-cxl@vger.kernel.org,
+        linux-pci@vger.kernel.org
+Subject: Re: [PATCH V6 01/10] PCI: Add vendor ID for the PCI SIG
+Message-ID: <20220203171112.GA103601@bhelgaas>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH] eeprom: ee1004: limit i2c reads to I2C_SMBUS_BLOCK_MAX
-Content-Language: en-US
-To:     Jonas Malaco <jonas@protocubo.io>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     stable@vger.kernel.org, Wolfram Sang <wsa@kernel.org>,
-        linux-kernel@vger.kernel.org
-References: <20220203165024.47767-1-jonas@protocubo.io>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-In-Reply-To: <20220203165024.47767-1-jonas@protocubo.io>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220201071952.900068-2-ira.weiny@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 03.02.2022 17:49, Jonas Malaco wrote:
-> Commit effa453168a7 ("i2c: i801: Don't silently correct invalid transfer
-> size") revealed that ee1004_eeprom_read() did not properly limit how
-> many bytes to read at once.
+On Mon, Jan 31, 2022 at 11:19:43PM -0800, ira.weiny@intel.com wrote:
+> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 > 
-> In particular, i2c_smbus_read_i2c_block_data_or_emulated() takes the
-> length to read as an u8.  If count == 256 after taking into account the
-> offset and page boundary, the cast to u8 overflows.  And this is common
-> when user space tries to read the entire EEPROM at once.
+> This ID is used in DOE headers to identify protocols that are defined
+> within the PCI Express Base Specification.
 > 
-> To fix it, limit each read to I2C_SMBUS_BLOCK_MAX (32) bytes, already
-> the maximum length i2c_smbus_read_i2c_block_data_or_emulated() allows.
-> 
-> Fixes: effa453168a7 ("i2c: i801: Don't silently correct invalid transfer size")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Jonas Malaco <jonas@protocubo.io>
-> ---
->  drivers/misc/eeprom/ee1004.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/drivers/misc/eeprom/ee1004.c b/drivers/misc/eeprom/ee1004.c
-> index bb9c4512c968..9fbfe784d710 100644
-> --- a/drivers/misc/eeprom/ee1004.c
-> +++ b/drivers/misc/eeprom/ee1004.c
-> @@ -114,6 +114,9 @@ static ssize_t ee1004_eeprom_read(struct i2c_client *client, char *buf,
->  	if (offset + count > EE1004_PAGE_SIZE)
->  		count = EE1004_PAGE_SIZE - offset;
->  
-> +	if (count > I2C_SMBUS_BLOCK_MAX)
-> +		count = I2C_SMBUS_BLOCK_MAX;
-> +
->  	return i2c_smbus_read_i2c_block_data_or_emulated(client, offset, count, buf);
->  }
->  
-> 
-> base-commit: 88808fbbead481aedb46640a5ace69c58287f56a
+> Specified in Table 7-x2 of the Data Object Exchange ECN (approved 12 March
+> 2020) available from https://members.pcisig.com/wg/PCI-SIG/document/14143
 
-Reviewed-by: Heiner Kallweit <hkallweit1@gmail.com>
+Please update this citation to PCIe r6.0, sec 6.30.1.1, table 6-32.
+
+> Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+> Reviewed-by: Dan Williams <dan.j.williams@intel.com>
+> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> ---
+>  include/linux/pci_ids.h | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
+> index 011f2f1ea5bb..849f514cd7db 100644
+> --- a/include/linux/pci_ids.h
+> +++ b/include/linux/pci_ids.h
+> @@ -149,6 +149,7 @@
+>  #define PCI_CLASS_OTHERS		0xff
+>  
+>  /* Vendors and devices.  Sort key: vendor first, device next. */
+> +#define PCI_VENDOR_ID_PCI_SIG		0x0001
+>  
+>  #define PCI_VENDOR_ID_LOONGSON		0x0014
+>  
+> -- 
+> 2.31.1
+> 
