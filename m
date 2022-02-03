@@ -2,131 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE885C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:31:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B587C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:31:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354461AbiBCUbg (ORCPT
+        id S1354392AbiBCUbv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:31:36 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:34320 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354337AbiBCUbJ (ORCPT
+        Thu, 3 Feb 2022 15:31:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57510 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354368AbiBCUbL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 15:31:09 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 77D40B83556;
-        Thu,  3 Feb 2022 20:31:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41644C340EF;
-        Thu,  3 Feb 2022 20:31:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643920267;
-        bh=bjoUDtJjdYhBbXWDCNWeCPkAHE8XCLOofGzvfH6ksWQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CF+vp0N2al/KtjuCOGU4mx/c1b6chrIYR6SHU0n36uzINm7k1/TY4vMV9KCvQ+8Tr
-         QEkhkd6bZUrZpERwVMd+iYnTE1uTA8gkXUkRheC2qefCSM1y2haZmikmjXdVMcP6ry
-         vDRsbAbWdhGQl1xftxK4toU3sa6cDvtX8uFG4b88rOOfUvVKBzYtnPc7W2aJPPKygy
-         +vSPmxtaL1M5IW6WjsYBBNbcDNiDMXiOAZLP7KSaY1pwE3iIXqsjPcvOqajQk2pii+
-         Q0mu4FQeorLcBXy4kG0gSgEE1hEgTtcmCs90OAJ3a8no/rFQ7l7d3HRrX9ARAFerW3
-         TvQvwNyBhRQLw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     John Garry <john.garry@huawei.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, jinpu.wang@cloud.ionos.com,
-        jejb@linux.ibm.com, linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 31/52] scsi: pm8001: Fix bogus FW crash for maxcpus=1
-Date:   Thu,  3 Feb 2022 15:29:25 -0500
-Message-Id: <20220203202947.2304-31-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220203202947.2304-1-sashal@kernel.org>
-References: <20220203202947.2304-1-sashal@kernel.org>
+        Thu, 3 Feb 2022 15:31:11 -0500
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD6CDC061749;
+        Thu,  3 Feb 2022 12:30:53 -0800 (PST)
+Received: by mail-ej1-x636.google.com with SMTP id s13so12392504ejy.3;
+        Thu, 03 Feb 2022 12:30:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eTBrkv50iPcsCl3Axc+/Cs3Z68I2VsXqY0C0lgkJvTM=;
+        b=atofIeh4yIXZ0J9+2qb+Egv0Sj+9EN0yrcwr3AbxcuxVq4VZtPOzTUTa/fJnOOK7cP
+         xy79ZNP7g8hFten6aD1Zw07nLBR2WYOfj0i+Z67x5goL1dDtvH6i6EQFDWcS+48r2o5c
+         99nm4W1tPG69PYc9kxNd1zOUpGR7yyjKb03stUM0nuHC4tnQtKsUopp+8XRTgsC+txTq
+         AUPJT4JX+oCYGCLaHgI2Mi9e3mSuq7XJzuEamE3LqpM/J/0wVMWWqXCA4LQwSU702fv+
+         /38Y+DVaR5ank4+U4DfTvtrsBXtpADhaQfAPAY0NgOkyKggibE7Di+W0gcZZdAGwUkLv
+         OK9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eTBrkv50iPcsCl3Axc+/Cs3Z68I2VsXqY0C0lgkJvTM=;
+        b=L7dh3JFlnk41Y/CyA3r3GGkxTOR/pmD7CnEGm1+fp++S2S1Tz6R57akQySiaaEVjlv
+         2EMctZvF3iX6JXPrP2EUzHFWSLBiGw2vRQC+bQaevy4Bb1RWaeXIvy+iLZ3HXRPJwa7w
+         9BN5zOv9ec/YuSDpT5gVK8cUKFkbVv+5mHpsO0KcZw/Nmv+bLjKiVSVJA9HxoJHuxUo9
+         IWLCctwXtSeoOhtIVukE8iq95Fa5IEPDqeXcfGjgGUSkAsgQmMCeIZpArEkOpz11fb4C
+         1iaaKlHH5tpmWgws6qo4+t1rsCNb5Boj10RWNdcNM+PX3KJJmHFqqXfdUuIcNkW8p0WQ
+         KYJg==
+X-Gm-Message-State: AOAM531iIJW8NsEpOuakx7WVz7SX6hB1OzT8Pw8B38BHKxXvs9hWVZKX
+        16JbICz05Ud6xfGwjxqxYBA=
+X-Google-Smtp-Source: ABdhPJyM5yR9dRAuxYavP8LBxjs7IkwqTDrm+TvEKoUHcoUHW5eMd/V4plTO6YUFaH5jH6c8o7fUKw==
+X-Received: by 2002:a17:907:2d11:: with SMTP id gs17mr31591742ejc.189.1643920252145;
+        Thu, 03 Feb 2022 12:30:52 -0800 (PST)
+Received: from adroid (027-177-184-091.ip-addr.vsenet.de. [91.184.177.27])
+        by smtp.gmail.com with ESMTPSA id ry6sm8843513ejc.45.2022.02.03.12.30.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Feb 2022 12:30:51 -0800 (PST)
+From:   =?UTF-8?q?Martin=20J=C3=BCcker?= <martin.juecker@gmail.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Russell King <linux@armlinux.org.uk>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     =?UTF-8?q?Martin=20J=C3=BCcker?= <martin.juecker@gmail.com>
+Subject: [PATCH v2 1/2] ARM: dts: exynos: add charger and battery to p4note
+Date:   Thu,  3 Feb 2022 21:29:47 +0100
+Message-Id: <d7f7b0f87a18b5cc44ba97390461c15469439829.1643919230.git.martin.juecker@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Garry <john.garry@huawei.com>
+Add device tree entry to support the Summit SMB347 charger which is
+built into the p4note devices, as well as a simple battery node.
 
-[ Upstream commit 62afb379a0fee7e9c2f9f68e1abeb85ceddf51b9 ]
-
-According to the comment in check_fw_ready() we should not check the
-IOP1_READY field in register SCRATCH_PAD_1 for 8008 or 8009 controllers.
-
-However we check this very field in process_oq() for processing the highest
-index interrupt vector. The highest interrupt vector is checked as the FW
-is programmed to signal fatal errors through this irq.
-
-Change that function to not check IOP1_READY for those mentioned
-controllers, but do check ILA_READY in both cases.
-
-The reason I assume that this was not hit earlier was because we always
-allocated 64 MSI(X), and just did not pass the vector index check in
-process_oq(), i.e.  the handler never ran for vector index 63.
-
-Link: https://lore.kernel.org/r/1642508105-95432-1-git-send-email-john.garry@huawei.com
-Tested-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: John Garry <john.garry@huawei.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Martin Jücker <martin.juecker@gmail.com>
 ---
- drivers/scsi/pm8001/pm80xx_hwi.c | 16 ++++++++++++++--
- drivers/scsi/pm8001/pm80xx_hwi.h |  6 +++++-
- 2 files changed, 19 insertions(+), 3 deletions(-)
+Changes in v2:
+  - squash charger and battery commits
+---
+ arch/arm/boot/dts/exynos4412-p4note.dtsi | 35 ++++++++++++++++++++++++
+ 1 file changed, 35 insertions(+)
 
-diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
-index 2101fc5761c3c..4c5b945bf3187 100644
---- a/drivers/scsi/pm8001/pm80xx_hwi.c
-+++ b/drivers/scsi/pm8001/pm80xx_hwi.c
-@@ -4161,10 +4161,22 @@ static int process_oq(struct pm8001_hba_info *pm8001_ha, u8 vec)
- 	u32 ret = MPI_IO_STATUS_FAIL;
- 	u32 regval;
+diff --git a/arch/arm/boot/dts/exynos4412-p4note.dtsi b/arch/arm/boot/dts/exynos4412-p4note.dtsi
+index b386a9b8e188..fcd75cceb877 100644
+--- a/arch/arm/boot/dts/exynos4412-p4note.dtsi
++++ b/arch/arm/boot/dts/exynos4412-p4note.dtsi
+@@ -16,6 +16,7 @@
+ #include <dt-bindings/input/linux-event-codes.h>
+ #include <dt-bindings/interrupt-controller/irq.h>
+ #include <dt-bindings/pinctrl/samsung.h>
++#include <dt-bindings/power/summit,smb347-charger.h>
  
-+	/*
-+	 * Fatal errors are programmed to be signalled in irq vector
-+	 * pm8001_ha->max_q_num - 1 through pm8001_ha->main_cfg_tbl.pm80xx_tbl.
-+	 * fatal_err_interrupt
-+	 */
- 	if (vec == (pm8001_ha->max_q_num - 1)) {
-+		u32 mipsall_ready;
-+
-+		if (pm8001_ha->chip_id == chip_8008 ||
-+		    pm8001_ha->chip_id == chip_8009)
-+			mipsall_ready = SCRATCH_PAD_MIPSALL_READY_8PORT;
-+		else
-+			mipsall_ready = SCRATCH_PAD_MIPSALL_READY_16PORT;
-+
- 		regval = pm8001_cr32(pm8001_ha, 0, MSGU_SCRATCH_PAD_1);
--		if ((regval & SCRATCH_PAD_MIPSALL_READY) !=
--					SCRATCH_PAD_MIPSALL_READY) {
-+		if ((regval & mipsall_ready) != mipsall_ready) {
- 			pm8001_ha->controller_fatal_error = true;
- 			pm8001_dbg(pm8001_ha, FAIL,
- 				   "Firmware Fatal error! Regval:0x%x\n",
-diff --git a/drivers/scsi/pm8001/pm80xx_hwi.h b/drivers/scsi/pm8001/pm80xx_hwi.h
-index c7e5d93bea924..c41ed039c92ac 100644
---- a/drivers/scsi/pm8001/pm80xx_hwi.h
-+++ b/drivers/scsi/pm8001/pm80xx_hwi.h
-@@ -1405,8 +1405,12 @@ typedef struct SASProtocolTimerConfig SASProtocolTimerConfig_t;
- #define SCRATCH_PAD_BOOT_LOAD_SUCCESS	0x0
- #define SCRATCH_PAD_IOP0_READY		0xC00
- #define SCRATCH_PAD_IOP1_READY		0x3000
--#define SCRATCH_PAD_MIPSALL_READY	(SCRATCH_PAD_IOP1_READY | \
-+#define SCRATCH_PAD_MIPSALL_READY_16PORT	(SCRATCH_PAD_IOP1_READY | \
- 					SCRATCH_PAD_IOP0_READY | \
-+					SCRATCH_PAD_ILA_READY | \
-+					SCRATCH_PAD_RAAE_READY)
-+#define SCRATCH_PAD_MIPSALL_READY_8PORT	(SCRATCH_PAD_IOP0_READY | \
-+					SCRATCH_PAD_ILA_READY | \
- 					SCRATCH_PAD_RAAE_READY)
+ / {
+ 	compatible = "samsung,p4note", "samsung,exynos4412", "samsung,exynos4";
+@@ -114,6 +115,17 @@ wlan_pwrseq: sdhci3-pwrseq {
+ 		clock-names = "ext_clock";
+ 	};
  
- /* boot loader state */
++	battery_cell: battery-cell {
++		compatible = "simple-battery";
++		device-chemistry = "lithium-ion";
++		constant-charge-current-max-microamp = <2200000>;
++		precharge-current-microamp = <250000>;
++		charge-term-current-microamp = <250000>;
++		constant-charge-voltage-max-microvolt = <4200000>;
++
++		power-supplies = <&power_supply>;
++	};
++
+ 	i2c-gpio-1 {
+ 		compatible = "i2c-gpio";
+ 		sda-gpios = <&gpy2 4 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+@@ -182,6 +194,29 @@ stmpe_adc {
+ 			};
+ 		};
+ 	};
++
++	i2c-gpio-4 {
++		compatible = "i2c-gpio";
++		sda-gpios = <&gpm2 0 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
++		scl-gpios = <&gpm2 1 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
++
++		i2c-gpio,delay-us = <2>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		power_supply: charger@6 {
++			compatible = "summit,smb347";
++			reg = <0x6>;
++			summit,enable-usb-charging;
++			summit,enable-charge-control = <SMB3XX_CHG_ENABLE_SW>;
++			summit,fast-voltage-threshold-microvolt = <2600000>;
++			summit,chip-temperature-threshold-celsius = <130>;
++			summit,usb-current-limit-microamp = <1800000>;
++
++			monitored-battery = <&battery_cell>;
++		};
++	};
++
+ };
+ 
+ &adc {
 -- 
-2.34.1
+2.25.1
 
