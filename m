@@ -2,109 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0D15C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 13:53:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E09C6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 13:56:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237861AbiBCNx5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 08:53:57 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:59932 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240877AbiBCNxx (ORCPT
+        id S1350919AbiBCN4N (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Feb 2022 08:56:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49598 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232957AbiBCN4K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 08:53:53 -0500
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id A187F1F3AF;
-        Thu,  3 Feb 2022 13:53:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1643896432; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=VPcGj79vup/xftEUTwDECNujdK5ZRlnSHT2lp1q2f9M=;
-        b=14WdU8eCrNFqgKv2TI0sjyolRoRpgevK923gOQnPYL6/lZ1M1/ySFE4j/sy1fu/aXUhxBG
-        j15kJa5Kgh/XM2Gn4vwtFcwBg1Zq+589YyRJkZ3s/fSziAbl0e/2vq19ZHtwUTu2bzCq0e
-        a/WF6SJw7LLOwNsu7w20LdRR194iWqU=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1643896432;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=VPcGj79vup/xftEUTwDECNujdK5ZRlnSHT2lp1q2f9M=;
-        b=J14NvFaplAkr+hhdnT45sk/xOh2p+jXRGapbEmn5XpIiTRt57pPiktXxBRd63Hbu0XiGme
-        sG30JcQwr/UTkhCw==
-Received: from quack3.suse.cz (unknown [10.100.200.198])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 7B376A3B81;
-        Thu,  3 Feb 2022 13:53:52 +0000 (UTC)
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id 31CF2A05B6; Thu,  3 Feb 2022 14:53:52 +0100 (CET)
-Date:   Thu, 3 Feb 2022 14:53:52 +0100
-From:   Jan Kara <jack@suse.cz>
-To:     John Hubbard <jhubbard@nvidia.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        David Hildenbrand <david@redhat.com>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Jan Kara <jack@suse.cz>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>, linux-mm@kvack.org,
-        Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH v3 2/4] mm/gup: clean up follow_pfn_pte() slightly
-Message-ID: <20220203135352.55f35pztwmdx2rhk@quack3.lan>
-References: <20220203093232.572380-1-jhubbard@nvidia.com>
- <20220203093232.572380-3-jhubbard@nvidia.com>
+        Thu, 3 Feb 2022 08:56:10 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25B02C061714;
+        Thu,  3 Feb 2022 05:56:10 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id h7so9176996ejf.1;
+        Thu, 03 Feb 2022 05:56:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=s+N0cchWNDKHWOg0SvQ0GRlgi8ukyL5VHO/Wt96Fcbw=;
+        b=ctWN5TdDLzuhnLizq+Ehvu4Nv9cwG2GzBTcbxtqeifXJi1Mpj3hq8ZgNIVkP6VoCaH
+         FjhpU2EcAw0jlc5vSkdocFwsi4UQF/2964Yh834AkEaTBuOmzfk2ECznjNIGYSkAHiay
+         Hqyqbw1sZXNThFWwPOM5XEh9LDmNinVJlJuUwYskOmEc3+qz85Yhp65JKcABjv4kZH9v
+         im+58kAhKuIbI8os8+kqlUBLkLfBmNpKtjRJ+HzKhJBITkiaX7Wf8mpCsjD/m3r1hcyy
+         n2LiFB988su1fcTSc99UMsk4cz2Lng3v68oV/wFW2KQ5oD0n2+UyZQAoKzclyc0whDRJ
+         5Rjg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=s+N0cchWNDKHWOg0SvQ0GRlgi8ukyL5VHO/Wt96Fcbw=;
+        b=R9RWuQ9aHLoqr0mRzfKxfRvZr4YrfaEiOb2PXkjro7WQhD931ilZp1dXAgYsCvVmBb
+         8z4DWewYK18fDsXLLk+Rvnygr8F9+3ChraLs4E9wfbl2V0LJh9sq6O7YqM+iAdGJg3ax
+         3NYLf9PMUgoYZJdsN41FSLaV3YBov6OG6sJqZ86Y4jjBN04c+/6CSPHUlXgx1sLFziuS
+         +EmsoubPQNQoXvbW2rYX8jMsAzym/367UYxXFhYYarDwwWfGKfqmfPvnV27/6A2aJBNf
+         5E6leW+OdBe3CqN9mJfhQBMGJzEdKFDcgVK5VnULrpRLyggCF4RE2V7pyDnu4CFfQ9Tu
+         gbzg==
+X-Gm-Message-State: AOAM531ozxwo3gvp1zInCeZeQ6X6fHUINAD4T8CZSccLLpbBfCdW1FXR
+        8awKDU5dDN0K4lXdzTBW6fI=
+X-Google-Smtp-Source: ABdhPJxp5S39GhjqcRplc42VQVlMi0FnpJ7CXoJQpHf5QDprdPYA1PNVrBOHycDgjKvkMCo4q01wyQ==
+X-Received: by 2002:a17:907:1c97:: with SMTP id nb23mr29632884ejc.92.1643896568614;
+        Thu, 03 Feb 2022 05:56:08 -0800 (PST)
+Received: from skbuf ([188.27.184.105])
+        by smtp.gmail.com with ESMTPSA id fn3sm16725339ejc.47.2022.02.03.05.56.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Feb 2022 05:56:07 -0800 (PST)
+Date:   Thu, 3 Feb 2022 15:56:06 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 1/5] net: dsa: mv88e6xxx: Improve isolation of
+ standalone ports
+Message-ID: <20220203135606.z37vulus7rjimx5y@skbuf>
+References: <20220131154655.1614770-1-tobias@waldekranz.com>
+ <20220131154655.1614770-2-tobias@waldekranz.com>
+ <20220201170634.wnxy3s7f6jnmt737@skbuf>
+ <87a6fabbtb.fsf@waldekranz.com>
+ <20220201201141.u3qhhq75bo3xmpiq@skbuf>
+ <8735l2b7ui.fsf@waldekranz.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220203093232.572380-3-jhubbard@nvidia.com>
+In-Reply-To: <8735l2b7ui.fsf@waldekranz.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 03-02-22 01:32:30, John Hubbard wrote:
-> Regardless of any FOLL_* flags, get_user_pages() and its variants should
-> handle PFN-only entries by stopping early, if the caller expected
-> **pages to be filled in.
-> 
-> This makes for a more reliable API, as compared to the previous approach
-> of skipping over such entries (and thus leaving them silently
-> unwritten).
-> 
-> Cc: Peter Xu <peterx@redhat.com>
-> Cc: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
-> ---
->  mm/gup.c | 11 ++++++-----
->  1 file changed, 6 insertions(+), 5 deletions(-)
-> 
-> diff --git a/mm/gup.c b/mm/gup.c
-> index 65575ae3602f..cad3f28492e3 100644
-> --- a/mm/gup.c
-> +++ b/mm/gup.c
-> @@ -439,10 +439,6 @@ static struct page *no_page_table(struct vm_area_struct *vma,
->  static int follow_pfn_pte(struct vm_area_struct *vma, unsigned long address,
->  		pte_t *pte, unsigned int flags)
->  {
-> -	/* No page to get reference */
-> -	if (flags & (FOLL_GET | FOLL_PIN))
-> -		return -EFAULT;
-> -
->  	if (flags & FOLL_TOUCH) {
->  		pte_t entry = *pte;
->  
+On Tue, Feb 01, 2022 at 10:22:13PM +0100, Tobias Waldekranz wrote:
+> No worries. I have recently started using get_maintainers.pl to auto
+> generate the recipient list, with the result that the cover is only sent
+> to the list. Ideally I would like send-email to use the union of all
+> recipients for the cover letter, but I haven't figured that one out yet.
 
-This will also modify the error code returned from follow_page(). A quick
-audit shows that at least the user in mm/migrate.c will propagate this
-error code to userspace and I'm not sure the change in error code will not
-break something... EEXIST is a bit strange error code to get from
-move_pages(2).
+Maybe auto-generating isn't the best solution? Wait until you need to
+post a link to https://patchwork.kernel.org/project/netdevbpf/, and
+get_maintainers.pl will draw in all the BPF maintainers for you...
+The union appears when you run get_maintainer.pl on multiple patch
+files. I typically run get_maintainer.pl on *.patch, and adjust the
+git-send-email list from there.
 
-								Honza
--- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+> I actually gave up on getting my mailinglists from my email provider,
+> now I just download it directly from lore. I hacked together a script
+> that will scrape a public-inbox repo and convert it to a Maildir:
+> 
+> https://github.com/wkz/notmuch-lore
+> 
+> As you can tell from the name, it is tailored for plugging into notmuch,
+> but the guts are pretty generic.
+
+Thanks, I set that up, it's syncing right now, I'm also going to compare
+the size of the git tree vs the maildir I currently have.
