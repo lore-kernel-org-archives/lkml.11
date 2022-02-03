@@ -2,123 +2,243 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A0CCC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 17:50:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB5E8C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 17:50:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353066AbiBCRuN (ORCPT
+        id S1353083AbiBCRu2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 12:50:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48574 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232884AbiBCRuL (ORCPT
+        Thu, 3 Feb 2022 12:50:28 -0500
+Received: from perceval.ideasonboard.com ([213.167.242.64]:58972 "EHLO
+        perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238989AbiBCRu0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 12:50:11 -0500
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D99A5C061714;
-        Thu,  3 Feb 2022 09:50:10 -0800 (PST)
-Received: by mail-ed1-x52e.google.com with SMTP id w25so7599855edt.7;
-        Thu, 03 Feb 2022 09:50:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=DlHF1ezZsVyyLw16v2PxMSWN/nd7gwtKLelkVX/tiX0=;
-        b=ByMXCyiJMiEqRQ+FEL4KhRZcgt0woCBUqDhuf335ndRQUq+VVT0KBKC9ARSbobSlow
-         EhlODK+uE5wAZ78xmgHSvNH3HMfUjoO0l7XCBapQlmHaJ4R0tzNKmZjU39DUqtECBY/Y
-         lMMUqORd3U+s37MGuvTrdwUTQEvpZMQqyYq5I6Zz2KMnaz00VF1LVxpQlyOUKsRnS5kP
-         r8MJGff6CNUi4ITPpoGJR9yE2qo+Ab6J3w+9WRhODjhiYkkxpOFDrWil94dAK9UMGmql
-         bwej8hONl1blIKeOO6uF7dclZG3RdUdixRL/O2xwKq9s/IBtKambkPYVOplcFFV5ybb8
-         AQSQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=DlHF1ezZsVyyLw16v2PxMSWN/nd7gwtKLelkVX/tiX0=;
-        b=ieDV4GtgbpMD++wnF8fNHhIikO75PGRjjEJvTIdtRZw9++ga+kjgtngxzwmc7TbG7p
-         j2PxSArZcMTRcnTxy5RzIKZzUOPAIkDB913XNgUm6NSQn7jPFUcWzWsBNnkXLHPYelNf
-         lvREbx05LM4e9FebWOT/QKMK6pLn4I07QS3xp4vrGMNxmbeE2RXWlzK7AZ80H/0C6fOg
-         6jDGpiCFNjkyldCwfMUUn74+o7o84Klh1oelnASiHkJwNpsnnOm29/a5N5ea4/Zt/dpG
-         Hbd/F7rcQstinfDGoWadC0dWu8MrRS7UFl19ppOasN1nXqAScGsWLEuNH7W2Uk1bRsNQ
-         sHXg==
-X-Gm-Message-State: AOAM532zF0rPE61OUz0JUagTfvbDOP2SINpcMAccihEKWrkAG6tAfhAw
-        1Hnq3A2BE/Snds2MEbENS+o=
-X-Google-Smtp-Source: ABdhPJzdxlCUVDtjmB3ENX5mKOqOonAT9GMGhVa+oTeOAuEEbGMNDuDWfBrWS+tw0rV3CDLh3UnogQ==
-X-Received: by 2002:a05:6402:1612:: with SMTP id f18mr14801649edv.454.1643910609310;
-        Thu, 03 Feb 2022 09:50:09 -0800 (PST)
-Received: from orome ([193.209.96.43])
-        by smtp.gmail.com with ESMTPSA id h8sm22578309edk.14.2022.02.03.09.50.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Feb 2022 09:50:08 -0800 (PST)
-Date:   Thu, 3 Feb 2022 18:50:05 +0100
-From:   Thierry Reding <thierry.reding@gmail.com>
-To:     Akhil R <akhilrajeev@nvidia.com>
-Cc:     devicetree@vger.kernel.org, digetx@gmail.com, jonathanh@nvidia.com,
-        ldewangan@nvidia.com, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org,
-        mperttunen@nvidia.com, robh+dt@kernel.org
-Subject: Re: [PATCH v3 0/4] Add I2C and PWM support for T234
-Message-ID: <YfwVzVHZ6SQhKpLF@orome>
-References: <1643023097-5221-1-git-send-email-akhilrajeev@nvidia.com>
+        Thu, 3 Feb 2022 12:50:26 -0500
+Received: from tatooine.ideasonboard.com (unknown [IPv6:2a01:e0a:169:7140:5173:4d3f:4ddc:2012])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 111BC5D;
+        Thu,  3 Feb 2022 18:50:24 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1643910624;
+        bh=7y7ErRCqRvGjBiW6scFiMS9GmFfGY4Ox4SOCKmH+PC4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=QsHQWK7szICcFXtroyOVpWdhTbqIUoTSSvOIK0GXq0wjK8MJP5h3Q74jNyjsdmo6R
+         WMXZFTiVL5RdHKOwTE/R+Hxyjqscld1tANckwwDO4E+Lqxu14EfCHsfx3OzGQywUY8
+         64jIeJPdMJN6AgaqBHH2lmJJEJsnICxjd9gKhvTI=
+From:   Jean-Michel Hautbois <jeanmichel.hautbois@ideasonboard.com>
+To:     jeanmichel.hautbois@ideasonboard.com
+Cc:     dave.stevenson@raspberrypi.com, devicetree@vger.kernel.org,
+        kernel-list@raspberrypi.com, laurent.pinchart@ideasonboard.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
+        lukasz@jany.st, mchehab@kernel.org, naush@raspberrypi.com,
+        robh@kernel.org, tomi.valkeinen@ideasonboard.com,
+        nsaenz@kernel.org, bcm-kernel-feedback-list@broadcom.com
+Subject: [RFC PATCH v4 00/12] Add support for BCM2835 camera interface (unicam)
+Date:   Thu,  3 Feb 2022 18:49:57 +0100
+Message-Id: <20220203175009.558868-1-jeanmichel.hautbois@ideasonboard.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="ruUbb3Ly1noXTLRH"
-Content-Disposition: inline
-In-Reply-To: <1643023097-5221-1-git-send-email-akhilrajeev@nvidia.com>
-User-Agent: Mutt/2.1.5 (31b18ae9) (2021-12-30)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hello !
 
---ruUbb3Ly1noXTLRH
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This patch series adds the BCM2835 CCP2/CSI2 camera interface named
+unicam. This driver is already used in the out-of-tree linux-rpi
+repository [1], and this work aims to support it in mainline.
 
-On Mon, Jan 24, 2022 at 04:48:13PM +0530, Akhil R wrote:
-> The patchset contains driver and devicetree changes to support I2C and
-> PWM for Tegra234
->=20
-> v2->v3:
->   * Sorted clock and reset based on ID
-> v1->v2:
->   * Reverted changes in i2c-tegra.c. using tegra194_i2c_hw for tegra234
->     as the values are compatible.
->=20
-> Akhil R (4):
->   dt-bindings: Add headers for Tegra234 I2C
->   arm64: tegra: Add Tegra234 I2C devicetree nodes
->   dt-bindings: Add headers for Tegra234 PWM
->   arm64: tegra: Add Tegra234 PWM devicetree nodes
->=20
->  arch/arm64/boot/dts/nvidia/tegra234.dtsi   | 133 +++++++++++++++++++++++=
-++++++
->  include/dt-bindings/clock/tegra234-clock.h |  35 +++++++-
->  include/dt-bindings/reset/tegra234-reset.h |  16 ++++
->  3 files changed, 183 insertions(+), 1 deletion(-)
+The series is based on top of:
+- Rebased on top of 5.16 Tomi Valkeinen's multiplexed stream work, on
+  his multistream/work branch [2] which has been submitted as v10 at the
+  time of this writing. The objective is to demonstrate the use of
+  multiplexed streams on a real world widely used example as well as
+  supporting unicam mainline.
+- The "Add 12bit and 14bit luma-only formats" series [3] is partly
+  applied (the Y10P format bug) the new formats are now part of this
+  series.
 
-Applied, thanks.
+The series is made of 12 patches:
+- 1/12 and 2/12 introduce the new formats needed for the unicam driver
+- 3/12 introduces dt-bindings documentation
+- 4/12 adds the MAINTAINERS entry
+- 5/12 adds the driver support in media/platform
+- 6/12 introduces the csi nodes in the bcm2711 file, in a disabled state
+- 7/12 to 11/12 modifies imx219 driver to make it use the multiplexed
+  streams API
+- 12/12 is the imx219 dtsi file tested on my RPi 4b with the mainline
+  dtb and not the downstream dtb anymore. *This patch is not intended to
+be applied*.
 
-Thierry
+All those patches are in my tree [4].
 
---ruUbb3Ly1noXTLRH
-Content-Type: application/pgp-signature; name="signature.asc"
+Patch 5/12 comes from the linux-rpi work [1] with substantial
+modifications:
+- Removed the non-mc API which is deprecated, and not needed upstream
+- Moved from one video node with two source pads (image and embedded) to
+  two video nodes
+- Added a subdev between the sensor and the video nodes to properly
+  route the streams
+- Added support for multiplexed streams API
 
------BEGIN PGP SIGNATURE-----
+In order to test it, one will need a RPi board and the camv2 (imx219)
+sensor.  An updated v4l-utils is also needed [5] to have support for
+multiplexed streams.
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmH8Fc0ACgkQ3SOs138+
-s6GGCg/8CfokZvYlAjOMxpDQHvkgL6CKcSSOuY1KlwkyLC39mJ/NqFzh8rQO7YFe
-9YxInRWkjk0Kjf7uzyQMYIozXS6V+zdqmaPLPCvNyh6wgGlkc4IOuSshJQIyo8V5
-rAHjLtrJvdiw395TQn89XhXPPledVwYfjqE/jfRiVF9ZFhdwkkOmzdcznhPuFBrT
-Ud5fsxhidf8msw6GgEc9CJEwkWM2QIFhx5lZnPh0dMgqNs8DfNzMTYGdc+VjFvYP
-Yxo4TlMqurS4A/qr0a4mFG4FwNcKQEc1W5nNSlJQ8K8psiEk6lO1/MB87G01/uLe
-HYGhXLmo/ZtClcHjNsGuyiFJeevat+nZQd0JizmcCwcqX2zyhnCpRtgW/4dzXP1q
-f4cXtz+SkFuWJ1XXmyI30TySCOBcYPcN/xYE2jUma4lOJzRLhSO31Zdj26Q6pv38
-gKtxBJ37cEv8ON8fVx/mGWbnYgw/H0QMjbavajUJxSoDwh0j9X736mcsIKSX6/PK
-MSfaIuxvOi5gc3hPmVqgg4LO1k76dR3dLESq81fuplGWZROwoyuD8nIpENaH8/bS
-vH6eMoHiFICbNEaV/T73Wr4g8GCY5rQa8gPOp73rQC++7JT6CpOX8CtHDMojnf7R
-X8qR+wQi6uPqwa0BIFMBXlN+D2HioRJY3CUdKqileg2HFgWycuc=
-=v0Xn
------END PGP SIGNATURE-----
+v4l2-compliance passes on both video devices, without streaming testing
+though with one exception: as the colorspace support is removed in v3,
+we now have:
 
---ruUbb3Ly1noXTLRH--
+test VIDIOC_G_FMT: OK
+  fail: v4l2-test-formats.cpp(363): colorspace >= 0xff
+  fail: v4l2-test-formats.cpp(465): testColorspace(!node->is_io_mc,
+	pix.pixelformat, pix.colorspace, pix.ycbcr_enc, pix.quantization)
+test VIDIOC_TRY_FMT: FAIL
+  fail: v4l2-test-formats.cpp(363): colorspace >= 0xff
+  fail: v4l2-test-formats.cpp(465): testColorspace(!node->is_io_mc,
+	pix.pixelformat, pix.colorspace, pix.ycbcr_enc, pix.quantization)
+test VIDIOC_S_FMT: FAIL
+
+This series since its v2 does integrate the device tree nodes into the
+upstream BCM2835 or BCM2711 device tree support.
+
+In order to properly configure the media pipeline, it is needed to call
+the usual ioctls, and configure routing in order to send the embedded
+data from the sensor to the "unicam-embedded" device node :
+
+```
+media=0
+media-ctl -d${media} -l "'imx219 2-0010':0->'unicam-subdev':0 [1]"
+media-ctl -d${media} -l "'unicam-subdev':1->'unicam-image':0 [1]"
+media-ctl -d${media} -v -R "'unicam-subdev' [0/0->1/0[1],0/1->2/0[1]]"
+media-ctl -d${media} -V "'imx219 2-0010':0/0 [fmt:SRGGB10_1X10/3280x2464 field:none]"
+v4l2-ctl -d0 --set-fmt-video width=3280,height=2464,pixelformat='pRAA',field=none
+media-ctl -d${media} -v -V "'imx219 2-0010':0/1 [fmt:METADATA_8/16384x1 field:none]"
+media-ctl -d${media} -p
+```
+
+Be sure to configure the routes before setting the format, as s_routing
+resets the default format.
+
+The media-ctl topology is:
+```
+pi@raspberrypi:~ $ media-ctl -d${media} -p
+Media controller API version 5.16.0
+
+Media device information
+------------------------
+driver          unicam
+model           unicam
+serial          
+bus info        platform:fe801000.csi
+hw revision     0x0
+driver version  5.16.0
+
+Device topology
+- entity 1: unicam-subdev (3 pads, 3 links, 2 routes)
+            type V4L2 subdev subtype Unknown flags 0
+            device node name /dev/v4l-subdev0
+	routes:
+		0/0 -> 1/0 [ACTIVE]
+		0/1 -> 2/0 [ACTIVE]
+	pad0: Sink
+		[stream:0 fmt:SRGGB10_1X10/3280x2464 field:none colorspace:raw]
+		[stream:1 fmt:METADATA_8/16384x1 field:none]
+		<- "imx219 2-0010":0 [ENABLED,IMMUTABLE]
+	pad1: Source
+		[stream:0 fmt:SRGGB10_1X10/3280x2464 field:none colorspace:raw]
+		-> "unicam-image":0 [ENABLED,IMMUTABLE]
+	pad2: Source
+		[stream:0 fmt:METADATA_8/16384x1 field:none]
+		-> "unicam-embedded":0 [ENABLED,IMMUTABLE]
+
+- entity 5: imx219 2-0010 (1 pad, 1 link, 2 routes)
+            type V4L2 subdev subtype Sensor flags 0
+            device node name /dev/v4l-subdev1
+	routes:
+		0/0 -> 0/0 [ACTIVE, IMMUTABLE, SOURCE]
+		0/0 -> 0/1 [ACTIVE, SOURCE]
+	pad0: Source
+		[stream:0 fmt:SRGGB10_1X10/3280x2464 field:none colorspace:raw
+		crop.bounds:(8,8)/3280x2464
+		crop:(8,8)/3280x2464]
+		[stream:1 fmt:METADATA_8/16384x1 field:none
+		crop.bounds:(8,8)/3280x2464
+		crop:(8,8)/3280x2464]
+		-> "unicam-subdev":0 [ENABLED,IMMUTABLE]
+
+- entity 9: unicam-image (1 pad, 1 link, 0 route)
+            type Node subtype V4L flags 1
+            device node name /dev/video0
+	pad0: Sink
+		<- "unicam-subdev":1 [ENABLED,IMMUTABLE]
+
+- entity 15: unicam-embedded (1 pad, 1 link, 0 route)
+             type Node subtype V4L flags 0
+             device node name /dev/video1
+	pad0: Sink
+		<- "unicam-subdev":2 [ENABLED,IMMUTABLE]
+
+```
+
+Then a frame can be capture with yavta:
+`yavta --capture=1 /dev/video0 -F/tmp/test-#.bin`
+
+In v3, capture on the metadata node (/dev/video1 in my case) can't be
+started if capture on image node (/dev/video0) is not already started.
+This can be tested using yavta, letting it capture frames indefinitely
+and start another yavta instance on the /dev/video1 node.
+
+
+Side note:
+My tree [4] also includes a backport for the unicam-isp drivers, it is
+then possible, and it has been successfully tested, to use libcamera and
+qcam to display the camera output.
+
+[1]: https://github.com/raspberrypi/linux/tree/rpi-5.15.y
+[2]: https://git.kernel.org/pub/scm/linux/kernel/git/tomba/linux.git/log/?h=multistream/work
+[3]: https://patchwork.linuxtv.org/project/linux-media/list/?series=7099
+[4]: https://github.com/jhautbois/linux-rpi/tree/jmh/unicam-multiplexed-streams
+[5]: https://github.com/jhautbois/v4l-utils/tree/jmh/tomi-multiplexed-streams
+
+Jean-Michel Hautbois (12):
+  media: v4l: Add V4L2-PIX-FMT-Y12P format
+  media: v4l: Add V4L2-PIX-FMT-Y14P format
+  dt-bindings: media: Add bindings for bcm2835-unicam
+  media: MAINTAINERS: add bcm2835 unicam driver
+  media: bcm2835-unicam: Add support for CCP2/CSI2 camera interface
+  ARM: dts: bcm2711: Add unicam CSI nodes
+  media: imx219: Rename mbus codes array
+  media: imx219: Switch from open to init_cfg
+  media: imx219: Introduce the set_routing operation
+  media: imx219: use a local v4l2_subdev to simplify reading
+  media: imx219: Add support for the V4L2 subdev active state
+  media: bcm283x: Include the imx219 node
+
+ .../bindings/media/brcm,bcm2835-unicam.yaml   |  110 +
+ .../media/v4l/pixfmt-yuv-luma.rst             |   44 +
+ MAINTAINERS                                   |    8 +
+ arch/arm/boot/dts/bcm2711-rpi-4-b.dts         |    1 +
+ arch/arm/boot/dts/bcm2711-rpi.dtsi            |   15 +
+ arch/arm/boot/dts/bcm2711.dtsi                |   16 +
+ arch/arm/boot/dts/bcm283x-rpi-imx219.dtsi     |  102 +
+ drivers/media/i2c/imx219.c                    |  344 ++-
+ drivers/media/platform/Kconfig                |    1 +
+ drivers/media/platform/Makefile               |    2 +
+ drivers/media/platform/bcm2835/Kconfig        |   21 +
+ drivers/media/platform/bcm2835/Makefile       |    3 +
+ .../media/platform/bcm2835/bcm2835-unicam.c   | 2586 +++++++++++++++++
+ .../media/platform/bcm2835/vc4-regs-unicam.h  |  253 ++
+ drivers/media/v4l2-core/v4l2-ioctl.c          |    2 +
+ include/uapi/linux/videodev2.h                |    2 +
+ 16 files changed, 3362 insertions(+), 148 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/media/brcm,bcm2835-unicam.yaml
+ create mode 100644 arch/arm/boot/dts/bcm283x-rpi-imx219.dtsi
+ create mode 100644 drivers/media/platform/bcm2835/Kconfig
+ create mode 100644 drivers/media/platform/bcm2835/Makefile
+ create mode 100644 drivers/media/platform/bcm2835/bcm2835-unicam.c
+ create mode 100644 drivers/media/platform/bcm2835/vc4-regs-unicam.h
+
+-- 
+2.32.0
+
