@@ -2,157 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 335A9C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 16:45:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38DA5C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 16:45:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352439AbiBCQpQ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 11:45:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60950 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352257AbiBCQpL (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 11:45:11 -0500
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9F8CC061714
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 08:45:10 -0800 (PST)
-Received: by mail-wm1-x333.google.com with SMTP id l35-20020a05600c1d2300b0034d477271c1so2164376wms.3
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 08:45:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Y6U7YdQVGA2YDGwsgkTnmQr3nQCNLxRAeMrGbxyU310=;
-        b=0XuF/JGS5W8qkzma5i9WGPf31yOnDg4Ylqo4ISkoU/IijIll9Ymf3Td8QgD0+DmH0o
-         sDoOH2il8HeN4WYLZlb1Plj59s9x6fvPOvbtozwkPU2aYwpEyhjezsrbj8kA0i3hoOGx
-         tylG7ndZx1hzx6AXXef+3kj1EPL2RRxgL0sk4s6685tNFccloCAwQzWKjzw+1uBxhXsO
-         Cwq7N1VZTwYZWHEKkRsSpCf+fWiZ5bNAWhC0FAaVXKztuVhg2l4izMROTTfQr5ZTl6JO
-         C3PDQNGL2HWl3Gf+0mmccAwgzkf7N1T45DFS0awEToUo5CcWF2+SAghMZYLB+LUHJI1V
-         aGxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Y6U7YdQVGA2YDGwsgkTnmQr3nQCNLxRAeMrGbxyU310=;
-        b=AzGjhLwocNpnBdOWM5b8SB7WiqamhStlU1lXoKE5nYoHg/lXscWPobfkFCyt5yqSYh
-         e1CKEltVQueFhRF4SoToCqm6XR6piZtCiuSvSAiFSxwMAL4ZAFCUIY5qgP8Jy8hXKmMK
-         x5DRMi2rgjc3Kn2TOiHFwKC7QJ0Xe0HtDcYBd9uXcjqLDONZuIPRWFlYSCKZsFJ/UZxt
-         3/7SFhaOkrXcpUv/VXZIiZ7J9oQcVz1NGF16nCogveZs/RqeVim6tIobnkJ75eExMCL5
-         zGJKI32bDqQEGvesAE08TgQ6yGgtMuJFoZ3qF8/VFDKqA5DUr/p+wt8qj1DXk+Q0BMM8
-         6M2Q==
-X-Gm-Message-State: AOAM53188KTNiVjVuqEXaz/VCETOKb/zQ1FlrOdXMh7pCsEQOHFNT+7x
-        K6alfYbiiV2VSyLZtmHzcrphjw==
-X-Google-Smtp-Source: ABdhPJyhbFlaAl5r8+IIntVrV4V0/fEuqNg0yeotDlykZSJOMt2gxlgKbxy4VqszArLK1r8LlHt2Pw==
-X-Received: by 2002:a05:600c:2154:: with SMTP id v20mr10891990wml.34.1643906709375;
-        Thu, 03 Feb 2022 08:45:09 -0800 (PST)
-Received: from usaari01.cust.communityfibre.co.uk ([2a02:6b6d:f804:0:28c2:5854:c832:e580])
-        by smtp.gmail.com with ESMTPSA id n14sm21412831wri.80.2022.02.03.08.45.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Feb 2022 08:45:09 -0800 (PST)
-From:   Usama Arif <usama.arif@bytedance.com>
-To:     io-uring@vger.kernel.org, axboe@kernel.dk, asml.silence@gmail.com,
-        linux-kernel@vger.kernel.org
-Cc:     fam.zheng@bytedance.com, Usama Arif <usama.arif@bytedance.com>
-Subject: [PATCH v2 3/3] io_uring: avoid ring quiesce for IORING_REGISTER_EVENTFD_ASYNC
-Date:   Thu,  3 Feb 2022 16:45:03 +0000
-Message-Id: <20220203164503.641574-4-usama.arif@bytedance.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220203164503.641574-1-usama.arif@bytedance.com>
-References: <20220203164503.641574-1-usama.arif@bytedance.com>
+        id S238420AbiBCQpw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Feb 2022 11:45:52 -0500
+Received: from mail-dm6nam12on2059.outbound.protection.outlook.com ([40.107.243.59]:48385
+        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229579AbiBCQpt (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 3 Feb 2022 11:45:49 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Fcf5L1O482YC3KSKA/SfKptdTPGBmUfrboKW6UtJmxxvv8Smo668yZw9M/RUP6snev+tLsuUrbTI0cjX4S1l5vTvk62t0jSK0XGLoBjL7TZEhgoIRtfkU45FaF+Km3lKoWQoJU2UrpaYaF0HvsvLX7Py6F6y/4oRo/yy8zl80YTjLmOwW3L8ycuZGiQ+dpg9A95R6yY2v14sAJXy8i+A0ZNzwm4iSnZI0v1rRkjwqK7eLe7wj0p64RJgIKk9hKnU5FNALqLKigeUXCklK7G7zLuhhaSKyDX57IZWdUIBHgv+m4LdEzwEj9WsGnED1mPZFUewriYIQuk36T7n0I69Og==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=EPXd+aIf5W7FbaQ4J9y/rSH7rfR0DoPweK6GLzu7um8=;
+ b=Bz/+ALyBCbK3Z+y0G5+xv76Zmyv30mCoLWLPu4aZUz4P/Lbd3mnLNsgbdI3lRq3H0n3RdAj8RXUvx4jqErwSCd8KPi5XA1wPtkSq6ZYrvP27v0+1RhqbIA/9iN8fkmqSYWUkPOdB7j5sJS4nGRLy2IycRDYqz4i2snZBKVw4rxDm0Aw4kc+y+69m5GxpqaJH2bqADKehTId87G/7bXo/eAPfPu3wcfewH6IqZpWsNFcI1+XZBnvMi6/MeXWy30rgSpQCn/H6QpFLEEA23G6/3Z7Dp5po9Xy5GNetyzarRnWgPQ9GB31zG+AXKqkk/g49PVHXZ5vsJa4/4yqo+OnbNg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=alien8.de smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EPXd+aIf5W7FbaQ4J9y/rSH7rfR0DoPweK6GLzu7um8=;
+ b=rzR7QM5VK0950mR1JsEySZMYMYsy5n/cWzCAUAf6sMPUAfYkF/PNNX42ZvQFUl2MUiK7jW7hB329WLVcSEJHdYTI28eTXQTRaHxsukFQjDN2UX+KwrpCZ8Jl+/KL+Ny0LM0NFOZ3gX6HYGZNptWvLpUOXaa3QAic0VNhtCu0MJU=
+Received: from DM5PR17CA0070.namprd17.prod.outlook.com (2603:10b6:3:13f::32)
+ by CH0PR12MB5329.namprd12.prod.outlook.com (2603:10b6:610:d4::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Thu, 3 Feb
+ 2022 16:45:47 +0000
+Received: from DM6NAM11FT059.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:3:13f:cafe::16) by DM5PR17CA0070.outlook.office365.com
+ (2603:10b6:3:13f::32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.14 via Frontend
+ Transport; Thu, 3 Feb 2022 16:45:47 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ DM6NAM11FT059.mail.protection.outlook.com (10.13.172.92) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.4951.12 via Frontend Transport; Thu, 3 Feb 2022 16:45:45 +0000
+Received: from localhost (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Thu, 3 Feb
+ 2022 10:45:45 -0600
+Date:   Thu, 3 Feb 2022 10:44:43 -0600
+From:   Michael Roth <michael.roth@amd.com>
+To:     Borislav Petkov <bp@alien8.de>
+CC:     Brijesh Singh <brijesh.singh@amd.com>, <x86@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>,
+        <linux-efi@vger.kernel.org>, <platform-driver-x86@vger.kernel.org>,
+        <linux-coco@lists.linux.dev>, <linux-mm@kvack.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        "Vitaly Kuznetsov" <vkuznets@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        "Andy Lutomirski" <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
+        "Peter Zijlstra" <peterz@infradead.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Dov Murik <dovmurik@linux.ibm.com>,
+        Tobin Feldman-Fitzthum <tobin@ibm.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Andi Kleen <ak@linux.intel.com>,
+        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
+        <brijesh.ksingh@gmail.com>, <tony.luck@intel.com>,
+        <marcorr@google.com>, <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        Venu Busireddy <venu.busireddy@oracle.com>
+Subject: Re: [PATCH v9 23/43] KVM: x86: Move lookup of indexed CPUID leafs to
+ helper
+Message-ID: <20220203164443.byaxr4fu2vlvh4d2@amd.com>
+References: <20220128171804.569796-1-brijesh.singh@amd.com>
+ <20220128171804.569796-24-brijesh.singh@amd.com>
+ <Yfvx0Rq8Tydyr/RO@zn.tnic>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <Yfvx0Rq8Tydyr/RO@zn.tnic>
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 59963bf5-d951-4c45-ae39-08d9e734a007
+X-MS-TrafficTypeDiagnostic: CH0PR12MB5329:EE_
+X-Microsoft-Antispam-PRVS: <CH0PR12MB53290F5DF085F8B35EFEAE6195289@CH0PR12MB5329.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: mwdPCPrfJvBHrozr0Sgb8ZBehs1F9mj9KPTTrxlIBoWwL9YkyTWedSNff+iPpVNgaQe0meGpBcjEEQSDZ/rG5ALntGbmIy6UJysP5g8opBsfLszbNueIB3NhxxImAEipnR2V7FvF3vlwn9kxhZ1NgZ9o+QUgHv8UWL4qYeNCrJ4y14oczbMxwxgH4ldqNDmf0n/QhdBFcn8o/gflchrT2bNU1lHe/djtbPwT+cD3j5QworbLn9NXPdeZDfIU1pEnKT+kWvcoMn8fc6EKOhUm8SFwlgRGu4uYltwM3xBTuzVUQuCnaGPFNn6SKllpmhReu1L9Y72xT9a2Yxj61PJL7xaoDP8oY70cfDqN6ZQ1zb9CplB7y+T4ceQgU0t9Hs7M4jAMRIbbjAbtFPd/KSS2UBn1XWa29PuHIz+7kn2m2M6l73hl+ArB5a1VwaaIpqE4BdulAI9GCKYq9eYy1c4QYB/YwP9GfwTFxSTJpDxR5yI7azFXvfvCJnxeCzDK6/5yVB0njtE0uBhx22LASpkjrYbQdKpVCFa+kzg0HsUWiHeaiMc3L/B+urlQmYduFDTyvbVWwnWAF1iANUV9kkuwhsWEppvQIl2VZ0ptzqWLOmRYYzMH4H5VtVVmAPZgbFwz3F2Kwl4Li/GyS6vBbuqUgKSHYpMXk6wi1sQ4KVjvYl3j+VDNu1cp0yYby4xGSd72w9BFx1dnedb4wY/FCNJaWLAhMRF5pPHh6vf/GKJk9W/MCESyPvQAH4b/zeeJYBNdH5MaHsLLbxff5fmfRg+V8bjnZVRVMfsOh8VMO+X5uxfnM7RxZVMZK2HtNPy/SvXP4BC3iXeMHwE91NIPXSH7Ew==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(508600001)(2906002)(36860700001)(6916009)(40460700003)(82310400004)(45080400002)(44832011)(86362001)(54906003)(7416002)(7406005)(5660300002)(36756003)(83380400001)(186003)(47076005)(316002)(8676002)(1076003)(70586007)(2616005)(8936002)(70206006)(16526019)(81166007)(426003)(336012)(4326008)(26005)(966005)(356005)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Feb 2022 16:45:45.7559
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 59963bf5-d951-4c45-ae39-08d9e734a007
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT059.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5329
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is done using the RCU data structure (io_ev_fd). eventfd_async
-is moved from io_ring_ctx to io_ev_fd which is RCU protected hence
-avoiding ring quiesce which is much more expensive than an RCU lock.
+On Thu, Feb 03, 2022 at 04:16:33PM +0100, Borislav Petkov wrote:
+> On Fri, Jan 28, 2022 at 11:17:44AM -0600, Brijesh Singh wrote:
+> > From: Michael Roth <michael.roth@amd.com>
+> > 
+> > Determining which CPUID leafs have significant ECX/index values is
+> > also needed by guest kernel code when doing SEV-SNP-validated CPUID
+> > lookups. Move this to common code to keep future updates in sync.
+> > 
+> > Reviewed-by: Venu Busireddy <venu.busireddy@oracle.com>
+> > Signed-off-by: Michael Roth <michael.roth@amd.com>
+> > Signed-off-by: Brijesh Singh <brijesh.singh@amd.com>
+> > ---
+> >  arch/x86/include/asm/cpuid.h | 38 ++++++++++++++++++++++++++++++++++++
+> >  arch/x86/kvm/cpuid.c         | 19 ++----------------
+> >  2 files changed, 40 insertions(+), 17 deletions(-)
+> >  create mode 100644 arch/x86/include/asm/cpuid.h
+> > 
+> > diff --git a/arch/x86/include/asm/cpuid.h b/arch/x86/include/asm/cpuid.h
+> > new file mode 100644
+> > index 000000000000..00408aded67c
+> > --- /dev/null
+> > +++ b/arch/x86/include/asm/cpuid.h
+> > @@ -0,0 +1,38 @@
+> > +/* SPDX-License-Identifier: GPL-2.0 */
+> > +/*
+> > + * Kernel-based Virtual Machine driver for Linux cpuid support routines
+> > + *
+> > + * derived from arch/x86/kvm/x86.c
+> > + * derived from arch/x86/kvm/cpuid.c
+> > + *
+> > + * Copyright 2011 Red Hat, Inc. and/or its affiliates.
+> > + * Copyright IBM Corporation, 2008
+> > + */
+> 
+> I have no clue what you're trying to achieve by copying the copyright of
+> the file this comes from. As dhansen properly points out, those lines
+> in that function come from other folks/companies too so why even bother
+> with this?
 
-Signed-off-by: Usama Arif <usama.arif@bytedance.com>
----
- fs/io_uring.c | 22 ++++++++++++----------
- 1 file changed, 12 insertions(+), 10 deletions(-)
+I think Dave's main concern was that I'd added an AMD copyright banner
+to a new file that was mostly derived from acpi.c. I thought we had some
+agreement on simply adopting the file-wide copyright banner of whatever
+source file the new one was derived from, since dropping an existing
+copyright seemed similarly in bad taste, but if it's sufficient to lean
+on git for getting a more accurate picture of copyright sources then
+that sounds good to me and I'll adopt that for the next spin if there
+are no objections.
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 9b6ee3b8b9f2..05fd059b3f1e 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -329,6 +329,7 @@ struct io_submit_state {
- struct io_ev_fd {
- 	struct eventfd_ctx	*cq_ev_fd;
- 	struct io_ring_ctx	*ctx;
-+	unsigned int		eventfd_async: 1;
- 	struct rcu_head		rcu;
- };
- 
-@@ -341,7 +342,6 @@ struct io_ring_ctx {
- 		unsigned int		flags;
- 		unsigned int		compat: 1;
- 		unsigned int		drain_next: 1;
--		unsigned int		eventfd_async: 1;
- 		unsigned int		restricted: 1;
- 		unsigned int		off_timeout_used: 1;
- 		unsigned int		drain_active: 1;
-@@ -1747,7 +1747,7 @@ static void io_eventfd_signal(struct io_ring_ctx *ctx)
- 	if (READ_ONCE(ctx->rings->cq_flags) & IORING_CQ_EVENTFD_DISABLED)
- 		goto out;
- 
--	if (!ctx->eventfd_async || io_wq_current_is_worker())
-+	if (!ev_fd->eventfd_async || io_wq_current_is_worker())
- 		eventfd_signal(ev_fd->cq_ev_fd, 1);
- 
- out:
-@@ -9368,7 +9368,8 @@ static int __io_sqe_buffers_update(struct io_ring_ctx *ctx,
- 	return done ? done : err;
- }
- 
--static int io_eventfd_register(struct io_ring_ctx *ctx, void __user *arg)
-+static int io_eventfd_register(struct io_ring_ctx *ctx, void __user *arg,
-+			       unsigned int eventfd_async)
- {
- 	struct io_ev_fd *ev_fd;
- 	__s32 __user *fds = arg;
-@@ -9395,6 +9396,7 @@ static int io_eventfd_register(struct io_ring_ctx *ctx, void __user *arg)
- 		goto out;
- 	}
- 	ev_fd->ctx = ctx;
-+	ev_fd->eventfd_async = eventfd_async;
- 
- 	rcu_assign_pointer(ctx->io_ev_fd, ev_fd);
- 	ret = 0;
-@@ -11010,6 +11012,7 @@ static bool io_register_op_must_quiesce(int op)
- 	case IORING_UNREGISTER_FILES:
- 	case IORING_REGISTER_FILES_UPDATE:
- 	case IORING_REGISTER_EVENTFD:
-+	case IORING_REGISTER_EVENTFD_ASYNC:
- 	case IORING_UNREGISTER_EVENTFD:
- 	case IORING_REGISTER_PROBE:
- 	case IORING_REGISTER_PERSONALITY:
-@@ -11110,17 +11113,16 @@ static int __io_uring_register(struct io_ring_ctx *ctx, unsigned opcode,
- 		ret = io_register_files_update(ctx, arg, nr_args);
- 		break;
- 	case IORING_REGISTER_EVENTFD:
--	case IORING_REGISTER_EVENTFD_ASYNC:
- 		ret = -EINVAL;
- 		if (nr_args != 1)
- 			break;
--		ret = io_eventfd_register(ctx, arg);
--		if (ret)
-+		ret = io_eventfd_register(ctx, arg, 0);
-+		break;
-+	case IORING_REGISTER_EVENTFD_ASYNC:
-+		ret = -EINVAL;
-+		if (nr_args != 1)
- 			break;
--		if (opcode == IORING_REGISTER_EVENTFD_ASYNC)
--			ctx->eventfd_async = 1;
--		else
--			ctx->eventfd_async = 0;
-+		ret = io_eventfd_register(ctx, arg, 1);
- 		break;
- 	case IORING_UNREGISTER_EVENTFD:
- 		ret = -EINVAL;
--- 
-2.25.1
+  https://lore.kernel.org/linux-efi/16afaa00-06a9-dc58-6c59-3d1dfb819009@amd.com/T/#m88a765b6090ec794872f73bf0ee6642fd39db947
 
+(In the case of acpi.c it happened to not have a file-wide copyright banner
+so things were a little more straightforward for the acpi.c->efi.c movement)
+
+> 
+> git history holds the correct and full copyright anyway...
+> 
+> -- 
+> Regards/Gruss,
+>     Boris.
+> 
+> https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fpeople.kernel.org%2Ftglx%2Fnotes-about-netiquette&amp;data=04%7C01%7CMichael.Roth%40amd.com%7C189a90d4aa3e459f7d7908d9e7282f9c%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637794982059320697%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=T95Les9sx71RFXYAImDag9%2FclmImsnjMbzPkOvIsbbY%3D&amp;reserved=0
