@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F40BC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FAF3C4332F
 	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 20:36:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355462AbiBCUfx (ORCPT
+        id S1355411AbiBCUfv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 15:35:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57496 "EHLO
+        Thu, 3 Feb 2022 15:35:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354098AbiBCUdn (ORCPT
+        with ESMTP id S1354476AbiBCUdo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 15:33:43 -0500
+        Thu, 3 Feb 2022 15:33:44 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5BCDC061793;
-        Thu,  3 Feb 2022 12:33:08 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 632ECC0617BC;
+        Thu,  3 Feb 2022 12:33:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 52A1A61A04;
-        Thu,  3 Feb 2022 20:33:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 940DEC340EF;
-        Thu,  3 Feb 2022 20:33:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0150D61B05;
+        Thu,  3 Feb 2022 20:33:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80802C340F0;
+        Thu,  3 Feb 2022 20:33:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643920387;
-        bh=0y/IZM+9R7R9WIPYSINAAR4GixoHnxscFamQq446Yng=;
+        s=k20201202; t=1643920395;
+        bh=Gp4lZMUWtUqof2YOT21LQIdrUUR7ioeSZppaIqJ5ESE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BzvcUENgy1RX49AMRjkBaQ58+LAQ2sGsNadUiVU5bUonneUmXpU0UxJZvvHE/+a8r
-         i8+I/mHssKMCjNZ2cNPP3u+o8eGVY7wtP5EcW3FA0ZAMfTTigsaYj5eZkvdTQs9vuq
-         r80P6vZWKtPzol+0HD96jIXa3omTaFhkkz8qZ9ffphO30yU2SAHFSddI74obXVPCiY
-         VrZw4M7rFNIbNGC1vYJp58KxtwcAdmyMxa/Qw/p+8T1q4kTNjinzlEE3Dxf074drqb
-         RslYz4ihLKDoyV4qL4LzyB0ihbKW7zK5qAFcFT2IuFjh118YGwv9FAQtsr8IjpbiU1
-         Ja0WVwKf6Faug==
+        b=EMdY4PkJxRwh1HG8d9SdN7Ecsl84r5tkDUYY7LNrqEd+ImWXaITmCSg4falhGWf/L
+         7LxkQ76G4PJ5h1WbXFTSKnDAe9jqd5zjYLgGrsUtMX/ZybhYJxBm2eWZA40Yto4gUR
+         s3h4ho4OpX4kXnQGHZKOGAp+fv5J3VPz2uxWxr1PfmJWwhC1bLb6kyIVVYjxQC5ubc
+         PMZ2xXXUtEQTep7Oh7qrS162HGQ8Du7r7UI9X2Yjkc+XgKXUvJKXvWIWZd3haBOpY0
+         lGEdZES6xZGrKyf4My94w53pSP+8gz4pkzkEhCB04Bl0Bx+X3EWKI8IyMl/t2kvAY5
+         mpdD1q6WE9F7A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Anna Schumaker <Anna.Schumaker@Netapp.com>,
-        Sasha Levin <sashal@kernel.org>,
-        trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
-        chuck.lever@oracle.com, davem@davemloft.net, kuba@kernel.org,
-        linux-nfs@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 13/41] sunrpc: Fix potential race conditions in rpc_sysfs_xprt_state_change()
-Date:   Thu,  3 Feb 2022 15:32:17 -0500
-Message-Id: <20220203203245.3007-13-sashal@kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        xuhaifeng <xuhaifeng@oppo.com>, Sasha Levin <sashal@kernel.org>,
+        mingo@redhat.com, juri.lelli@redhat.com, vincent.guittot@linaro.org
+Subject: [PATCH AUTOSEL 5.15 18/41] sched: Avoid double preemption in __cond_resched_*lock*()
+Date:   Thu,  3 Feb 2022 15:32:22 -0500
+Message-Id: <20220203203245.3007-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220203203245.3007-1-sashal@kernel.org>
 References: <20220203203245.3007-1-sashal@kernel.org>
@@ -54,68 +52,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anna Schumaker <Anna.Schumaker@Netapp.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-[ Upstream commit 1a48db3fef499f615b56093947ec4b0d3d8e3021 ]
+[ Upstream commit 7e406d1ff39b8ee574036418a5043c86723170cf ]
 
-We need to use test_and_set_bit() when changing xprt state flags to
-avoid potentially getting xps->xps_nactive out of sync.
+For PREEMPT/DYNAMIC_PREEMPT the *_unlock() will already trigger a
+preemption, no point in then calling preempt_schedule_common()
+*again*.
 
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Use _cond_resched() instead, since this is a NOP for the preemptible
+configs while it provide a preemption point for the others.
+
+Reported-by: xuhaifeng <xuhaifeng@oppo.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/YcGnvDEYBwOiV0cR@hirez.programming.kicks-ass.net
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sunrpc/sysfs.c | 35 +++++++++++++++++++----------------
- 1 file changed, 19 insertions(+), 16 deletions(-)
+ kernel/sched/core.c | 12 +++---------
+ 1 file changed, 3 insertions(+), 9 deletions(-)
 
-diff --git a/net/sunrpc/sysfs.c b/net/sunrpc/sysfs.c
-index 379cf0e4d965b..326a31422a3c1 100644
---- a/net/sunrpc/sysfs.c
-+++ b/net/sunrpc/sysfs.c
-@@ -305,25 +305,28 @@ static ssize_t rpc_sysfs_xprt_state_change(struct kobject *kobj,
- 		goto release_tasks;
- 	}
- 	if (offline) {
--		set_bit(XPRT_OFFLINE, &xprt->state);
--		spin_lock(&xps->xps_lock);
--		xps->xps_nactive--;
--		spin_unlock(&xps->xps_lock);
-+		if (!test_and_set_bit(XPRT_OFFLINE, &xprt->state)) {
-+			spin_lock(&xps->xps_lock);
-+			xps->xps_nactive--;
-+			spin_unlock(&xps->xps_lock);
-+		}
- 	} else if (online) {
--		clear_bit(XPRT_OFFLINE, &xprt->state);
--		spin_lock(&xps->xps_lock);
--		xps->xps_nactive++;
--		spin_unlock(&xps->xps_lock);
-+		if (test_and_clear_bit(XPRT_OFFLINE, &xprt->state)) {
-+			spin_lock(&xps->xps_lock);
-+			xps->xps_nactive++;
-+			spin_unlock(&xps->xps_lock);
-+		}
- 	} else if (remove) {
- 		if (test_bit(XPRT_OFFLINE, &xprt->state)) {
--			set_bit(XPRT_REMOVE, &xprt->state);
--			xprt_force_disconnect(xprt);
--			if (test_bit(XPRT_CONNECTED, &xprt->state)) {
--				if (!xprt->sending.qlen &&
--				    !xprt->pending.qlen &&
--				    !xprt->backlog.qlen &&
--				    !atomic_long_read(&xprt->queuelen))
--					rpc_xprt_switch_remove_xprt(xps, xprt);
-+			if (!test_and_set_bit(XPRT_REMOVE, &xprt->state)) {
-+				xprt_force_disconnect(xprt);
-+				if (test_bit(XPRT_CONNECTED, &xprt->state)) {
-+					if (!xprt->sending.qlen &&
-+					    !xprt->pending.qlen &&
-+					    !xprt->backlog.qlen &&
-+					    !atomic_long_read(&xprt->queuelen))
-+						rpc_xprt_switch_remove_xprt(xps, xprt);
-+				}
- 			}
- 		} else {
- 			count = -EINVAL;
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 0d12ec7be3017..c2dec6ce98091 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -8199,9 +8199,7 @@ int __cond_resched_lock(spinlock_t *lock)
+ 
+ 	if (spin_needbreak(lock) || resched) {
+ 		spin_unlock(lock);
+-		if (resched)
+-			preempt_schedule_common();
+-		else
++		if (!_cond_resched())
+ 			cpu_relax();
+ 		ret = 1;
+ 		spin_lock(lock);
+@@ -8219,9 +8217,7 @@ int __cond_resched_rwlock_read(rwlock_t *lock)
+ 
+ 	if (rwlock_needbreak(lock) || resched) {
+ 		read_unlock(lock);
+-		if (resched)
+-			preempt_schedule_common();
+-		else
++		if (!_cond_resched())
+ 			cpu_relax();
+ 		ret = 1;
+ 		read_lock(lock);
+@@ -8239,9 +8235,7 @@ int __cond_resched_rwlock_write(rwlock_t *lock)
+ 
+ 	if (rwlock_needbreak(lock) || resched) {
+ 		write_unlock(lock);
+-		if (resched)
+-			preempt_schedule_common();
+-		else
++		if (!_cond_resched())
+ 			cpu_relax();
+ 		ret = 1;
+ 		write_lock(lock);
 -- 
 2.34.1
 
