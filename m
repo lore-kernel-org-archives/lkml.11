@@ -2,124 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D2B1C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 19:48:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49B2AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 19:50:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353863AbiBCTsk (ORCPT
+        id S1353865AbiBCTut (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 14:48:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47896 "EHLO
+        Thu, 3 Feb 2022 14:50:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353854AbiBCTsj (ORCPT
+        with ESMTP id S242830AbiBCTus (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 14:48:39 -0500
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C546EC061714;
-        Thu,  3 Feb 2022 11:48:38 -0800 (PST)
-Received: by mail-wr1-x431.google.com with SMTP id f17so7134158wrx.1;
-        Thu, 03 Feb 2022 11:48:38 -0800 (PST)
+        Thu, 3 Feb 2022 14:50:48 -0500
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1806BC061714
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 11:50:48 -0800 (PST)
+Received: by mail-lj1-x22a.google.com with SMTP id a25so5428979lji.9
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 11:50:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=05r8VUvrEvBBOH+uU9Wqr+6VFcZz//gtH+Z9bZ85nWw=;
-        b=AD6JLrlw9Kac51I84aEr+fwId4/al2zxLrFnzx9c3ax287WdOzGTtTexXYaRGXsWbi
-         Q4cV4kX1lPriHxQLv+H+V+/iJqOIX0pUhgTl+5gLIoJxr1KEUWncEAtB+uMA00emPBHP
-         /U0vP6SvY/fqmyZNxVILQtqgnGCTjDl3AOJuQ2C35M+mJpjRkMLU51Gdy9UsYOi+zc7S
-         ZyR4zt3Bqe20tkv8w6KAsRoZOtIft8ZNxSfw2o632OuHMFxkWm2XhlnUjvQUzJIGFQnW
-         COB6h9a6/7wgoIqvtZxnom7FeQthAuTGCj0RjD1vl76vFSMcx7YzuI+utnfu15lxH+6F
-         LGdw==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=aVBeKDKPYFp+Sm22VFGesckBrKnktcRnAdKBFblfodE=;
+        b=AbjtmmjGWQpWdgmjPMsIc8GVNpR6kfz4i/s3EjeX9oSZeV1gQ+cJTDv9UvwEH5rH6C
+         kMf5vi9O1DUi3v8wRd+r927wglgfPiddZu468FnuMFIuDLhtL3ChMK/MxHI7PBY8gzQ/
+         zLOk6W9kMaJbsX0qZJ4X9jOZ6qInlhIMmfIyV/8XOmLBwQhOwmWniKtgiynBLd825bbA
+         5uSzfQYGoAvd0YSJGL+WNkDpnmx4YYLhUd06MnlzN/B455n933bNLVnktWVuVW1HPvAL
+         YcUfyDkoaKoXtKRPjTYXPkTK/x5PDS1HKlZYI/K/8Dlhe6U9B1tNuyAqaavcy5dWL9Sl
+         K7jQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=05r8VUvrEvBBOH+uU9Wqr+6VFcZz//gtH+Z9bZ85nWw=;
-        b=v8qY64127YPsWNXAABzroOcoxfzzt/jSyPY31q9tWdFYcAZ6VyHNhJPUxfvR2yFDQ+
-         PdfCvoqF8FLV0fyQ0HSjiX0VJx3PUrylArJybOLaR9PaD9ljO0CovPmW8SCnA2yaJAfj
-         WpZeLs3qewGMTiO401atk4wqn/lRdeoahkjicFow4xhjMa2Zy0TG6vkLZwBcRWHL1s0H
-         Ph0sE4S5X35QQo64qmVnBbb7IZesiOLdbWXPC4VKHLSaFCExyFsDTpcAxyTMNDSNsy3l
-         Fu5MW4QXp9JmX4KV1y2Kqdcrd3BCUWOM9psAQlO0zOa4C1d4Sc6sxG/FcIgkix+78X7W
-         /8SA==
-X-Gm-Message-State: AOAM531uS4gxpSNtlajYDre+rqdyNZa92XGEK/SOH1ncGioNBPJ9AjZP
-        L5XFSFrEcS15uzp/j+/UU2s=
-X-Google-Smtp-Source: ABdhPJw598AxU0Zebv7U3/z3KQtFW+ksv+LzojsXGFelcFxqnUNxSgNZ7lq4ru6KBGIBVIVXImMa3Q==
-X-Received: by 2002:a5d:6489:: with SMTP id o9mr28760589wri.628.1643917717328;
-        Thu, 03 Feb 2022 11:48:37 -0800 (PST)
-Received: from [192.168.8.198] ([85.255.232.204])
-        by smtp.gmail.com with ESMTPSA id j19sm9311230wmq.17.2022.02.03.11.48.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Feb 2022 11:48:36 -0800 (PST)
-Message-ID: <fc5a2421-f775-8195-39df-8e4bcda38af1@gmail.com>
-Date:   Thu, 3 Feb 2022 19:43:48 +0000
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=aVBeKDKPYFp+Sm22VFGesckBrKnktcRnAdKBFblfodE=;
+        b=S7MCZoD4rCMfF5nxCVewCdW+2NeQzhq1dEdIqRD6Eo4cG0DdhKQplQCw2W9L4NaTay
+         rmcZrkH1ytpSZe/2ZCbe8rY/aF8d2UQFZdjIxZw7g1xtJPUZVBmhgM8UpiXlaCqNjjIT
+         2KvnK1akpo6HwrbgQu59wNHh0aCE7zlQOx5WFxtMOJV7//dYNySnXgWqaTm99gYQu9M8
+         x1kLb96djK6TB1Zja+vAUmEW37Lq4sNnoWluoPlXd8tT29TLADmGuVN5A0X/9ko6/XF1
+         deNKkqVYlAvvO/lra8yCFAFmEvrCM7XnL7P3r+WT5vXYPB+1iwOC0AFQvVibD/bByErv
+         zBCA==
+X-Gm-Message-State: AOAM533neAqqZyPX6goAhByU0Eo6Yh+eb+PS5vkGBgcIUvZKktHnp1Ug
+        GELkw6EPeL//7lAtPHg4EdLK4mwwGsNstJT4z+lfVA==
+X-Google-Smtp-Source: ABdhPJxc3sO/oNI/Ujb2wt/q0D3RYB++ahedSpN+JSsytdZf3f4yykiSmktj8jSXmlhjNSYVKgmXGFiLyRxkOQ+A/4w=
+X-Received: by 2002:a2e:954:: with SMTP id 81mr14783838ljj.198.1643917846193;
+ Thu, 03 Feb 2022 11:50:46 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [External] Re: [PATCH v3 2/3] io_uring: avoid ring quiesce while
- registering/unregistering eventfd
-Content-Language: en-US
-To:     Jens Axboe <axboe@kernel.dk>,
-        Usama Arif <usama.arif@bytedance.com>,
-        io-uring@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     fam.zheng@bytedance.com
-References: <20220203174108.668549-1-usama.arif@bytedance.com>
- <20220203174108.668549-3-usama.arif@bytedance.com>
- <ffa271c7-3f49-2b5a-b67e-3bb1b052ee4e@kernel.dk>
- <877d54b9-5baa-f0b5-23fe-25aef78e37c4@bytedance.com>
- <dc6bb53f-19cc-ee23-2137-6e27396f7d57@kernel.dk>
- <ac5f5152-f9e4-8e83-642b-73c2620ce7c0@gmail.com>
- <a5992789-6b0b-f3a8-0a24-e00add2a005a@kernel.dk>
-From:   Pavel Begunkov <asml.silence@gmail.com>
-In-Reply-To: <a5992789-6b0b-f3a8-0a24-e00add2a005a@kernel.dk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20220130183653.491292-1-keescook@chromium.org>
+ <20220202160149.GA2322037@roeck-us.net> <202202021237.487D3DE73@keescook>
+ <5ff18cff-6cfd-1f85-da74-1e5660a1a250@roeck-us.net> <CAMuHMdWssK2=NFc6NO-inQg5dWxZP4Wv41K3J3RqRXThXatovw@mail.gmail.com>
+ <202202030911.4914709E@keescook> <CAMuHMdUBKofPP-6EofE3B7d6k0zv0nPJ7e4pjsznPF==ApJ6qg@mail.gmail.com>
+In-Reply-To: <CAMuHMdUBKofPP-6EofE3B7d6k0zv0nPJ7e4pjsznPF==ApJ6qg@mail.gmail.com>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Thu, 3 Feb 2022 11:50:34 -0800
+Message-ID: <CAKwvOdnJ3w2Jb9tBZ+JnEfviquj2WktemCd833f=_P66a0qVag@mail.gmail.com>
+Subject: Re: [PATCH] lib/test_string.c: Add test for strlen()
+To:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Kees Cook <keescook@chromium.org>
+Cc:     Guenter Roeck <linux@roeck-us.net>, Peter Rosin <peda@axentia.se>,
+        Andy Shevchenko <andy@kernel.org>,
+        Matteo Croce <mcroce@microsoft.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        llvm@lists.linux.dev, linux-hardening@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/3/22 19:06, Jens Axboe wrote:
-> On 2/3/22 12:00 PM, Pavel Begunkov wrote:
->> On 2/3/22 18:29, Jens Axboe wrote:
->>> On 2/3/22 11:26 AM, Usama Arif wrote:
->>>> Hmm, maybe i didn't understand you and Pavel correctly. Are you
->>>> suggesting to do the below diff over patch 3? I dont think that would be
->>>> correct, as it is possible that just after checking if ctx->io_ev_fd is
->>>> present unregister can be called by another thread and set ctx->io_ev_fd
->>>> to NULL that would cause a NULL pointer exception later? In the current
->>>> patch, the check of whether ev_fd exists happens as the first thing
->>>> after rcu_read_lock and the rcu_read_lock are extremely cheap i believe.
->>>
->>> They are cheap, but they are still noticeable at high requests/sec
->>> rates. So would be best to avoid them.
->>>
->>> And yes it's obviously racy, there's the potential to miss an eventfd
->>> notification if it races with registering an eventfd descriptor. But
->>> that's not really a concern, as if you register with inflight IO
->>> pending, then that always exists just depending on timing. The only
->>> thing I care about here is that it's always _safe_. Hence something ala
->>> what you did below is totally fine, as we're re-evaluating under rcu
->>> protection.
->>
->> Indeed, the patch doesn't have any formal guarantees for propagation
->> to already inflight requests, so this extra unsynchronised check
->> doesn't change anything.
->>
->> I'm still more сurious why we need RCU and extra complexity when
->> apparently there is no use case for that. If it's only about
->> initial initialisation, then as I described there is a much
->> simpler approach.
-> 
-> Would be nice if we could get rid of the quiesce code in general, but I
-> haven't done a check to see what'd be missing after this...
+On Thu, Feb 3, 2022 at 10:10 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+>
+> Hi Kees,
+>
+> On Thu, Feb 3, 2022 at 6:15 PM Kees Cook <keescook@chromium.org> wrote:
+> > On Thu, Feb 03, 2022 at 09:04:22AM +0100, Geert Uytterhoeven wrote:
+> > > Not if -ffreestanding, which is what several architectures are
+> > > using nowadays, to a.o. prevent gcc from replacing calls to stdlib
+> > > functions to other stdlib functions (e.g. strncat() -> strlen() +
+> > > store, strncmp() -> strcmp()), which breaks linking if the latter is
+> > > only provided inline.
+> >
+> > Hah, for i386:
+> >
+> > arch/x86/Makefile
+> >         # temporary until string.h is fixed
+> >         KBUILD_CFLAGS += -ffreestanding
+> >
+> > This "temporary" is from 2006. ;)\
 
-Ok, I do think full quiesce is worth keeping as don't think all
-registered parts need dynamic update. E.g. zc notification dynamic
-reregistation doesn't make sense and I'd rather rely on existing
-straightforward mechanisms than adding extra bits, even if it's
-rsrc_nodes. That's not mentioning unnecessary extra overhead.
+IIRC I sent a patch removing that. Yeah, Kees even signed off on it.
+https://lore.kernel.org/lkml/20200817220212.338670-5-ndesaulniers@google.com/#t
+I still think that's the right way to go, perhaps worth a resend to
+rekick discussions.
 
-btw, I wouldn't say this eventfd specific sync is much simpler than
-the whole full quiesce.
+>
+> And before that, we had it in the main Makefile.
+>
+> > 6edfba1b33c7 ("[PATCH] x86_64: Don't define string functions to builtin")
+> >
+> > Removing that appears to solve it, and appears to build correctly. I'll
+> > continue testing.
+> >
+> > > It works after dropping -ffreestanding.
+> >
+> > I wonder if the other architectures were just copying x86?
+>
+> At least on m68k it was added because gcc added new optimizations
+> that broke if an architecture provides some functions as inline.
+> As the kernel is not supposed to be linked with the standard C
+> library, -ffreestanding should be correct, isn't it?
+
+The kernel does not link against a libc; but it does provide many
+symbols that libc would provide, with the same or similar enough
+semantics that I would strongly recommend we _don't_ use
+-ffreestanding in order to get such libcall optimizations (there are a
+lot; see https://github.com/llvm/llvm-project/blob/main/llvm/lib/Transforms/Utils/SimplifyLibCalls.cpp
+for some examples) and simply use -fno-builtin-* when necessary, or
+fix the kernel implementations individually.
 
 -- 
-Pavel Begunkov
+Thanks,
+~Nick Desaulniers
