@@ -2,201 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FAB4C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 10:34:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25875C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 10:35:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230516AbiBCKey (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 05:34:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60708 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349745AbiBCKev (ORCPT
+        id S1349866AbiBCKfo (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Feb 2022 05:35:44 -0500
+Received: from alexa-out-sd-01.qualcomm.com ([199.106.114.38]:31276 "EHLO
+        alexa-out-sd-01.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1349894AbiBCKfl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 05:34:51 -0500
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79F94C06173B
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 02:34:51 -0800 (PST)
-Received: by mail-pf1-x434.google.com with SMTP id i65so1843129pfc.9
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 02:34:51 -0800 (PST)
+        Thu, 3 Feb 2022 05:35:41 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=YUz06pZnKz52lqRpYNAE/X72JjI+Vf6k4/BCrzBH3FU=;
-        b=UiyejmSz8yF32Lluhet7PwBZMrAziRCNepEXHIRQlOebPKYaQ8xt4lol4zyxxQHa/Q
-         CNWjJSte15D181ytzgj3PLcj5+ELoliMZD89UtGx38yFcahG0MiDDJA1doOLInEAr8ah
-         LsRKIOE+IfpQfIHa+RxnrPufXugbm5olIQbixPUcEQX7WZtpSoYxj73GznqwAW+gNCdc
-         Dd2IVudc1Nzg56St5hqWcSKMmDMGlEyuZgxCHwqAeA+4sxNcuS+sftySZMFJraqZCuOC
-         8ruvRCgfz9JW22ScJNYrirO4KHyEi988ltI9VsZdp6UdpD62mZ9QRBjiHNawA3Gh65Uf
-         xQBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=YUz06pZnKz52lqRpYNAE/X72JjI+Vf6k4/BCrzBH3FU=;
-        b=n7Qz8i927Jo+9fz8rto18D+6/SsZBQtG1xNbxSxmXpEV2560qtcSM+h8YTiDEcjMuz
-         Vpi0MSwhp0ZXLJz4sR74GGtfcXX4qWRN72at4eKbBYwMeQo8J7LGNAc0c4zdNL8rsnai
-         DWc172bVXFgbAgqVSDro1d9NADgWkp7FxnCJt9Gz7bu/2d51EohwVxXx0EdhnECC0kCs
-         ZxQ8qk57rh+gD/+JvxtBF9tgIor8HacYr3hkUAzrypCLXgcAmBNKa3EudR/kLXshQSuX
-         zou7RpcgAqa68ec9heTTEZH/BrNfVPHpnRcnHjR5A9+RcgI6oJJ4MN3QK+Sl3cYN0zC6
-         G3tw==
-X-Gm-Message-State: AOAM532HLbVXu+vs4FiMegPE5vZW0fLHVaKiOZqY0bhifNoSO3dnKVbW
-        aM7RJgeRuicOlxrGK80gl2z7
-X-Google-Smtp-Source: ABdhPJzrwgJPFeeQitXNGNkm/WAGb5B3nYHnSFQ8Z1cdKI47rjuG824pm5t6p2DPKTjVrvwLezE0Fw==
-X-Received: by 2002:a63:5460:: with SMTP id e32mr27756006pgm.330.1643884490874;
-        Thu, 03 Feb 2022 02:34:50 -0800 (PST)
-Received: from thinkpad ([117.217.179.179])
-        by smtp.gmail.com with ESMTPSA id m21sm29694312pfk.26.2022.02.03.02.34.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Feb 2022 02:34:50 -0800 (PST)
-Date:   Thu, 3 Feb 2022 16:04:44 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     Alex Elder <elder@ieee.org>
-Cc:     mhi@lists.linux.dev, hemantk@codeaurora.org, bbhatt@codeaurora.org,
-        quic_jhugo@quicinc.com, vinod.koul@linaro.org,
-        bjorn.andersson@linaro.org, dmitry.baryshkov@linaro.org,
-        skananth@codeaurora.org, vpernami@codeaurora.org,
-        vbadigan@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 03/20] bus: mhi: Make mhi_state_str[] array static const
- and move to common.h
-Message-ID: <20220203103444.GB6298@thinkpad>
-References: <20211202113553.238011-1-manivannan.sadhasivam@linaro.org>
- <20211202113553.238011-4-manivannan.sadhasivam@linaro.org>
- <0d850b27-5684-2ecf-fc96-3258c0462d3d@ieee.org>
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1643884541; x=1675420541;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=DPW1zRNgWsuV6eLK6ZnJNgLShUOjqEOCEDL/fcyJFdE=;
+  b=KzGxEr0TrFqANEJuK3/Cd61hLZ9nF0cTMQFDe8RwJ3XZKXc5R6uY7j6e
+   NA1Q80W0TAfjFTK88QPt3yYh5KESpOOuL6K86bsGXePDzMISzoMwfaKPi
+   k6cU+cNQf2++frc5WTydr7Eho+ktDQRUAAY+Uciap2TwdNTFBGQh2REyJ
+   Y=;
+Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 03 Feb 2022 02:35:40 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2022 02:35:40 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Thu, 3 Feb 2022 02:35:39 -0800
+Received: from blr-ubuntu-525.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Thu, 3 Feb 2022 02:35:34 -0800
+From:   Souradeep Chowdhury <quic_schowdhu@quicinc.com>
+To:     <linux-arm-msm@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <pure.logic@nexus-software.ie>,
+        <bjorn.andersson@linaro.org>, <greg@kroah.com>, <robh@kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <quic_tsoni@quicinc.com>,
+        <quic_psodagud@quicinc.com>, <quic_satyap@quicinc.com>,
+        <quic_pheragu@quicinc.com>, <quic_rjendra@quicinc.com>,
+        <quic_sibis@quicinc.com>, <quic_saipraka@quicinc.com>,
+        <quic_schowdhu@quicinc.com>
+Subject: [PATCH V5 0/6] Add Embedded USB Debugger (EUD) driver
+Date:   Thu, 3 Feb 2022 16:04:29 +0530
+Message-ID: <cover.1643880577.git.quic_schowdhu@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0d850b27-5684-2ecf-fc96-3258c0462d3d@ieee.org>
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 05, 2022 at 06:22:59PM -0600, Alex Elder wrote:
-> On 12/2/21 5:35 AM, Manivannan Sadhasivam wrote:
-> > mhi_state_str[] array could be used by MHI endpoint stack also. So let's
-> > make the array as "static const" and move it inside the "common.h" header
-> > so that the endpoint stack could also make use of it. Otherwise, the
-> > structure definition should be present in both host and endpoint stack and
-> > that'll result in duplication.
-> > 
-> > Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-> 
-> This result in common source code (which is good), but it will be
-> duplicated in everything that includes this file.
-> 
-> Do you have no common code, available to both the endpoint and host?
-> You could (in drivers/bus/mhi/common.c, for example).
-> 
-> If you don't, I have a different suggestion, below.  It does
-> basically the same thing you're doing here, but I much prefer
-> duplicating an inline function than a data structure.
-> 
-> > ---
-> >   drivers/bus/mhi/common.h    | 13 ++++++++++++-
-> >   drivers/bus/mhi/host/init.c | 12 ------------
-> >   2 files changed, 12 insertions(+), 13 deletions(-)
-> > 
-> > diff --git a/drivers/bus/mhi/common.h b/drivers/bus/mhi/common.h
-> > index 0f4f3b9f3027..2ea438205617 100644
-> > --- a/drivers/bus/mhi/common.h
-> > +++ b/drivers/bus/mhi/common.h
-> > @@ -174,7 +174,18 @@ struct mhi_cmd_ctxt {
-> >   	__u64 wp __packed __aligned(4);
-> >   };
-> > -extern const char * const mhi_state_str[MHI_STATE_MAX];
-> > +static const char * const mhi_state_str[MHI_STATE_MAX] = {
-> > +	[MHI_STATE_RESET] = "RESET",
-> > +	[MHI_STATE_READY] = "READY",
-> > +	[MHI_STATE_M0] = "M0",
-> > +	[MHI_STATE_M1] = "M1",
-> > +	[MHI_STATE_M2] = "M2",
-> > +	[MHI_STATE_M3] = "M3",
-> > +	[MHI_STATE_M3_FAST] = "M3 FAST",
-> > +	[MHI_STATE_BHI] = "BHI",
-> > +	[MHI_STATE_SYS_ERR] = "SYS ERROR",
-> > +};
-> > +
-> >   #define TO_MHI_STATE_STR(state) ((state >= MHI_STATE_MAX || \
-> >   				  !mhi_state_str[state]) ? \
-> >   				"INVALID_STATE" : mhi_state_str[state])
-> 
-> You could easily and safely define this as an inline function instead.
-> 
+This is a series of patches that implements a driver for the control
+peripheral, EUD (Embedded USB Debugger). The EUD is a mini-USB hub
+implemented on chip to support the USB-based debug and trace capabilities.
+Apart from debug capabilities, EUD has a control peripheral. Control
+Peripheral is on when EUD is on and gets signals like USB attach, pet
+EUD etc. EUD driver listens to events like USB attach or detach and then
+informs the USB about these events via ROLE-SWITCH. At regular intervals,
+the EUD driver receives an interrupt to pet the driver indicating that
+the software is functional.
 
-Sounds good!
+Changes in V5
 
-> #define MHI_STATE_CASE(x)	case MHI_STATE_ ## x: return #x
-> static inline const char *mhi_state_string(enum mhi_state state)
-> {
-> 	switch(state) {
-> 	MHI_STATE_CASE(RESET);
-> 	MHI_STATE_CASE(READY);
-> 	MHI_STATE_CASE(M0);
-> 	MHI_STATE_CASE(M1);
-> 	MHI_STATE_CASE(M2);
-> 	MHI_STATE_CASE(M3_FAST);
-> 	MHI_STATE_CASE(BHI);
-> 	MHI_STATE_CASE(SYS_ERR);
-> 	default: return "(unrecognized MHI state)";
-> 	}
-> }
-> #undef MHI_STATE_CASE
+* Added the review tags and implemented comments on V4 of the patch.
 
-I've used the below one:
+Changes in V4
 
-static inline const char * const mhi_state_str(enum mhi_state state)
-{
-        switch(state) {
-        case MHI_STATE_RESET:
-                return "RESET";
-        case MHI_STATE_READY:
-                return "READY";
-        case MHI_STATE_M0:
-                return "M0";
-        case MHI_STATE_M1:
-                return "M1";
-        case MHI_STATE_M2:
-                return"M2";
-        case MHI_STATE_M3:
-                return"M3";
-        case MHI_STATE_M3_FAST:
-                return"M3 FAST";
-        case MHI_STATE_BHI:
-                return"BHI";
-        case MHI_STATE_SYS_ERR:
-                return "SYS ERROR";
-        default:
-                return "Unknown state";
-        }
-};
+* Aligned the device tree node structure of EUD as per discussion.
 
-Thanks,
-Mani
+* Changes to usb-connector.yaml is no longer required and is not 
+  included in the patch series.
+  
+* Implemented the rest of the comments on Version 3 of the patch.  
 
-> 
-> 					-Alex
-> 
-> > diff --git a/drivers/bus/mhi/host/init.c b/drivers/bus/mhi/host/init.c
-> > index 5aaca6d0f52b..fa904e7468d8 100644
-> > --- a/drivers/bus/mhi/host/init.c
-> > +++ b/drivers/bus/mhi/host/init.c
-> > @@ -44,18 +44,6 @@ const char * const dev_state_tran_str[DEV_ST_TRANSITION_MAX] = {
-> >   	[DEV_ST_TRANSITION_DISABLE] = "DISABLE",
-> >   };
-> > -const char * const mhi_state_str[MHI_STATE_MAX] = {
-> > -	[MHI_STATE_RESET] = "RESET",
-> > -	[MHI_STATE_READY] = "READY",
-> > -	[MHI_STATE_M0] = "M0",
-> > -	[MHI_STATE_M1] = "M1",
-> > -	[MHI_STATE_M2] = "M2",
-> > -	[MHI_STATE_M3] = "M3",
-> > -	[MHI_STATE_M3_FAST] = "M3 FAST",
-> > -	[MHI_STATE_BHI] = "BHI",
-> > -	[MHI_STATE_SYS_ERR] = "SYS ERROR",
-> > -};
-> > -
-> >   const char * const mhi_ch_state_type_str[MHI_CH_STATE_TYPE_MAX] = {
-> >   	[MHI_CH_STATE_TYPE_RESET] = "RESET",
-> >   	[MHI_CH_STATE_TYPE_STOP] = "STOP",
-> > 
-> 
+Changes in V3
+
+* Removed the patch for registration of EUD connector as it is no longer
+  required.
+  
+* Added the description to include EUD in usb-connector.yaml  
+
+* Implemented comments on V2 of the patch.
+
+Changes in V2
+
+* Fixed the yaml issue and also implemented comments on yaml in V1.
+
+Changes in V1
+
+* EUD has now been mapped as a separate DT node as it is an independent QCOM IP.
+
+* EUD is attached to the connector child of dwc3 via port end point since EUD
+  driver needs the connector for role-switching.
+
+* EUD driver has been moved now to drivers/soc/qcom/qcom_eud.c.
+
+* All the comments from version 0 of the patch has been implemented.
+
+Souradeep Chowdhury (6):
+  dt-bindings: Add the yaml bindings for EUD
+  bindings: usb: dwc3: Update dwc3 properties for EUD connector
+  usb: common: eud: Add driver support for Embedded USB Debugger(EUD)
+  arm64: dts: qcom: sc7280: Add EUD dt node and dwc3 connector
+  arm64: dts: qcom: sc7280: Set the default dr_mode for usb2
+  MAINTAINERS: Add maintainer entry for EUD
+
+ Documentation/ABI/testing/sysfs-driver-eud         |   9 +
+ .../devicetree/bindings/soc/qcom/qcom,eud.yaml     |  77 +++++++
+ .../devicetree/bindings/usb/snps,dwc3.yaml         |   6 +
+ MAINTAINERS                                        |   8 +
+ arch/arm64/boot/dts/qcom/sc7280-idp.dts            |   4 +
+ arch/arm64/boot/dts/qcom/sc7280.dtsi               |  36 +++
+ drivers/usb/common/Kconfig                         |  10 +
+ drivers/usb/common/Makefile                        |   1 +
+ drivers/usb/common/qcom_eud.c                      | 251 +++++++++++++++++++++
+ 9 files changed, 402 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-driver-eud
+ create mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,eud.yaml
+ create mode 100644 drivers/usb/common/qcom_eud.c
+
+-- 
+2.7.4
+
