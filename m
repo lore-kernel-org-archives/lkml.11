@@ -2,98 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35876C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 14:36:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01836C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 14:36:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351856AbiBCOgd (ORCPT
+        id S1351334AbiBCOgh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 09:36:33 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:29119 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1351445AbiBCOeB (ORCPT
+        Thu, 3 Feb 2022 09:36:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58246 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1351339AbiBCOeE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 09:34:01 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643898841;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=6VJokSHsxPkfQMrVgiQDizkBiRMjzQ+sHIs7SD0nGIk=;
-        b=KpUzOcyxzIJZRNkXTEFE01tbQQPE2xFcOYcUt5GNnNjY/3xO2LDJwIr5th+oezdU2+OJrA
-        EEZFwd+tkexa9PaMhF/jvsw5B77nEqLwlT94bw6DatXW3i/MeJnt1MI1DD5cvkdn3zIbG3
-        oXZ1IvVrbMYXzSJ0LDbQ1JTwZjo2hPQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-21-vBG71VSYM-W7fbjWzrH9pA-1; Thu, 03 Feb 2022 09:33:56 -0500
-X-MC-Unique: vBG71VSYM-W7fbjWzrH9pA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 00A6F1091DA0;
-        Thu,  3 Feb 2022 14:33:54 +0000 (UTC)
-Received: from plouf.redhat.com (unknown [10.39.192.114])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 650947D4D0;
-        Thu,  3 Feb 2022 14:33:51 +0000 (UTC)
-From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
-To:     Jiri Kosina <jikos@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?q?Ahelenia=20Ziemia=C5=84ska?= 
-        <nabijaczleweli@nabijaczleweli.xyz>,
-        Ping Cheng <pinglinux@gmail.com>,
-        Aaron Armstrong Skomra <skomra@gmail.com>,
-        Jason Gerecke <killertofu@gmail.com>,
-        Peter Hutterer <peter.hutterer@who-t.net>
-Cc:     linux-input@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Subject: [PATCH v2 12/12] Input: docs: add more details on the use of BTN_TOOL
-Date:   Thu,  3 Feb 2022 15:32:26 +0100
-Message-Id: <20220203143226.4023622-13-benjamin.tissoires@redhat.com>
-In-Reply-To: <20220203143226.4023622-1-benjamin.tissoires@redhat.com>
-References: <20220203143226.4023622-1-benjamin.tissoires@redhat.com>
+        Thu, 3 Feb 2022 09:34:04 -0500
+Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AB19C06173B
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 06:34:04 -0800 (PST)
+Received: by mail-qt1-x835.google.com with SMTP id x5so2296632qtw.10
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 06:34:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=WtESLeYtc0Jg20kmUatCfJN0QM7WwgD2xCtN7UseXOs=;
+        b=Srm1pWpD7+dVLr0XsFjhkGfXDJLpFboMvJ3rV3L9faQs+iaF6pDBnt+9ykPS7k/vCz
+         YcFq1A83TTKmrstXGgUfY8wswu0NprN8KFTl8bX4xvzTddUUiCVtox7JuyXQcger+XbD
+         t8Xg25jK4hEnlCYbaWM97lrftHWkdHl9+FfGR25KFB/R72N+6ITyFb/KiOPyVtAFIBHj
+         HdzEzOpmJQzU0OLsldcNsc2IQhZ13xsF38Ya2oDyK8XSwrbBmWYmTlXll+gFew8Llg3G
+         Wc83bGQ+wYEV7eA32W7u5HORd03xs3dv47huMyXrkkr7NYq5OrqQa3ZvwAkdobJu116Z
+         n8xQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=WtESLeYtc0Jg20kmUatCfJN0QM7WwgD2xCtN7UseXOs=;
+        b=atLI8EF42DprsTfpMcTR6gh54t5MYNrR6dfg/p/rWu4H8/6SEKet8UxtarcgeMpqN6
+         SljqBPDfh0YsMS4BKZ3lanF2dLnVhC4/e/GHsloCRRioG3TJgKHk8I7acqEpdpX7qqcR
+         MCm6/qDYs/d/+zasCHSl2FXPFLbdjfc1kR1STF63f0VPr4TK+XF8Eawcn5m4hlzqdbo7
+         fjmVo4fjkTxKJSF8K0tpSZ/Byu4TykS4d0Rjvaen/y4bXO4lgoGg9ZpYlsHqcf3AAxQU
+         bPkDDhkr3FZxS2wvd3tyJ1XJPuyx5vkLJZUsO2jawBOedG7aJikRXIF5pb3QGIFu8dgI
+         2IEA==
+X-Gm-Message-State: AOAM530f98La0H7Iw70XKneOxr/gD6e06PROVyCRhViLyqZx4V57+KJ5
+        KOGxyky7MUIaCVs7Nrj0sI6jlg==
+X-Google-Smtp-Source: ABdhPJzPZHSHFUJG5JGw8tQ4HMCOi78TfB3MMbRyck9YZi6qNrSO5uWPC25vlutLQoU4ZRyLjwMhwA==
+X-Received: by 2002:a05:620a:c4e:: with SMTP id u14mr22844594qki.710.1643898843325;
+        Thu, 03 Feb 2022 06:34:03 -0800 (PST)
+Received: from localhost (cpe-98-15-154-102.hvc.res.rr.com. [98.15.154.102])
+        by smtp.gmail.com with ESMTPSA id s28sm13037951qkm.53.2022.02.03.06.34.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Feb 2022 06:34:02 -0800 (PST)
+Date:   Thu, 3 Feb 2022 09:34:02 -0500
+From:   Johannes Weiner <hannes@cmpxchg.org>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Linux Kernel <linux-kernel@vger.kernel.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Doug Berger <opendmb@gmail.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        SeongJae Park <sj@kernel.org>,
+        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Vlastimil Babka <vbabka@suse.cz>
+Subject: Re: Updated git tree for MM patches??
+Message-ID: <Yfvn2gatF0NA1ihp@cmpxchg.org>
+References: <fbad2233-207e-6b66-890b-ef1b1f97fdad@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <fbad2233-207e-6b66-890b-ef1b1f97fdad@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The HID core stack used to be very relaxed considering the BTN_TOOL_*
-usage. With the recent commits, we should now enforce to have only one
-tool at a time, meaning that we can now express that requirement in the
-docs.
+Hi Florian,
 
-Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+On Wed, Feb 02, 2022 at 04:21:38PM -0800, Florian Fainelli wrote:
+> Hi Andrew, Johannes,
+> 
+> The MAINTAINERS file for MEMORY MANAGEMENT lists the following git tree:
+> 
+> git://github.com/hnaz/linux-mm.git
+> 
+> however it does not look like it has been updated in the past 5 months or so
+> as master still points to 5.17-rc7-mm1
 
----
+Oops, that was a bug in my script. I had to work around a behavior
+change in wget and it looks like it started failing quietly in the
+next wget version.
 
-changes in v2:
-- changed to explain that switching tool in one EV_SYN report
-  is not nice for userspace
----
- Documentation/input/event-codes.rst | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+All fixed now and the tree is uptodate again. Thanks for the report.
 
-diff --git a/Documentation/input/event-codes.rst b/Documentation/input/event-codes.rst
-index b24ae7d292cc..8741d390b184 100644
---- a/Documentation/input/event-codes.rst
-+++ b/Documentation/input/event-codes.rst
-@@ -137,7 +137,11 @@ A few EV_KEY codes have special meanings:
-     code should be set to a value of 1. When the tool is no longer interacting
-     with the input device, the BTN_TOOL_<name> code should be reset to 0. All
-     trackpads, tablets, and touchscreens should use at least one BTN_TOOL_<name>
--    code when events are generated.
-+    code when events are generated. Likewise all trackpads, tablets, and
-+    touchscreens should export only one BTN_TOOL_<name> at a time. To not break
-+    existing userspace, it is recommended to not switch tool in one EV_SYN frame
-+    but first emitting the old BTN_TOOL_<name> at 0, then emit one SYN_REPORT
-+    and then set the new BTN_TOOL_<name> at 1.
- 
- * BTN_TOUCH:
- 
--- 
-2.33.1
-
+Johannes
