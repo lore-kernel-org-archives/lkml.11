@@ -2,328 +2,227 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70DB8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 10:04:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EA01C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  3 Feb 2022 10:08:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349993AbiBCKEx (ORCPT
+        id S1349684AbiBCKIs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 05:04:53 -0500
-Received: from frasgout.his.huawei.com ([185.176.79.56]:4666 "EHLO
-        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240750AbiBCKEw (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 05:04:52 -0500
-Received: from fraeml736-chm.china.huawei.com (unknown [172.18.147.226])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JqDhD2ZDZz67NW9;
-        Thu,  3 Feb 2022 18:01:00 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml736-chm.china.huawei.com (10.206.15.217) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 3 Feb 2022 11:04:50 +0100
-Received: from localhost.localdomain (10.69.192.58) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 3 Feb 2022 10:04:47 +0000
-From:   John Garry <john.garry@huawei.com>
-To:     <joro@8bytes.org>, <will@kernel.org>, <mst@redhat.com>,
-        <jasowang@redhat.com>, <robin.murphy@arm.com>
-CC:     <xieyongji@bytedance.com>, <iommu@lists.linux-foundation.org>,
-        <linux-kernel@vger.kernel.org>,
-        <virtualization@lists.linux-foundation.org>, <linuxarm@huawei.com>,
-        John Garry <john.garry@huawei.com>
-Subject: [PATCH v2] iommu/iova: Separate out rcache init
-Date:   Thu, 3 Feb 2022 17:59:20 +0800
-Message-ID: <1643882360-241739-1-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
+        Thu, 3 Feb 2022 05:08:48 -0500
+Received: from foss.arm.com ([217.140.110.172]:36126 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233557AbiBCKIr (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 3 Feb 2022 05:08:47 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 32747113E;
+        Thu,  3 Feb 2022 02:08:47 -0800 (PST)
+Received: from e120937-lin (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8C2FF3F40C;
+        Thu,  3 Feb 2022 02:08:45 -0800 (PST)
+Date:   Thu, 3 Feb 2022 10:08:39 +0000
+From:   Cristian Marussi <cristian.marussi@arm.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        sudeep.holla@arm.com, james.quinlan@broadcom.com,
+        Jonathan.Cameron@huawei.com, f.fainelli@gmail.com,
+        etienne.carriere@linaro.org, vincent.guittot@linaro.org,
+        souvik.chakravarty@arm.com, peter.hilber@opensynergy.com,
+        igor.skalkin@opensynergy.com
+Subject: Re: [PATCH v2 1/9] firmware: arm_scmi: Add a virtio channel refcount
+Message-ID: <20220203100732.GA2535@e120937-lin>
+References: <20220201171601.53316-1-cristian.marussi@arm.com>
+ <20220201171601.53316-2-cristian.marussi@arm.com>
+ <20220201165947-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220201165947-mutt-send-email-mst@kernel.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently the rcache structures are allocated for all IOVA domains, even if
-they do not use "fast" alloc+free interface. This is wasteful of memory.
+On Tue, Feb 01, 2022 at 05:05:27PM -0500, Michael S. Tsirkin wrote:
+> On Tue, Feb 01, 2022 at 05:15:53PM +0000, Cristian Marussi wrote:
+> > Currently SCMI VirtIO channels are marked with a ready flag and related
+> > lock to track channel lifetime and support proper synchronization at
+> > shutdown when virtqueues have to be stopped.
+> > 
+> > This leads to some extended spinlocked sections with IRQs off on the RX
+> > path to keep hold of the ready flag and does not scale well especially when
+> > SCMI VirtIO polling mode will be introduced.
+> > 
+> > Add an SCMI VirtIO channel dedicated refcount to track active users on both
+> > the TX and the RX path and properly enforce synchronization and cleanup at
+> > shutdown, inhibiting further usage of the channel once freed.
+> > 
+> > Cc: Igor Skalkin <igor.skalkin@opensynergy.com>
+> > Cc: Peter Hilber <peter.hilber@opensynergy.com>
+> > Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
+> > ---
+> >  drivers/firmware/arm_scmi/virtio.c | 148 +++++++++++++++++++----------
+> >  1 file changed, 100 insertions(+), 48 deletions(-)
+> > 
+> > diff --git a/drivers/firmware/arm_scmi/virtio.c b/drivers/firmware/arm_scmi/virtio.c
+> > index fd0f6f91fc0b..536e46eab462 100644
+> > --- a/drivers/firmware/arm_scmi/virtio.c
+> > +++ b/drivers/firmware/arm_scmi/virtio.c
+> > @@ -17,7 +17,9 @@
+> >   * virtqueue. Access to each virtqueue is protected by spinlocks.
+> >   */
+> >  
 
-In addition, fails in init_iova_rcaches() are not handled safely, which is
-less than ideal.
+Hi Michael,
 
-Make "fast" users call a separate rcache init explicitly, which includes
-error checking.
+thanks for your review first of all.
 
-Signed-off-by: John Garry <john.garry@huawei.com>
----
-Differences to v1:
-- Drop stubs for iova_domain_init_rcaches() and iova_domain_free_rcaches()
-- Use put_iova_domain() in vdpa code
+> > +#include <linux/completion.h>
+> >  #include <linux/errno.h>
+> > +#include <linux/refcount.h>
+> >  #include <linux/slab.h>
+> >  #include <linux/virtio.h>
+> >  #include <linux/virtio_config.h>
+> > @@ -27,6 +29,7 @@
+> >  
+> >  #include "common.h"
+> >  
+> > +#define VIRTIO_MAX_RX_TIMEOUT_MS	60000
+> >  #define VIRTIO_SCMI_MAX_MSG_SIZE 128 /* Value may be increased. */
+> >  #define VIRTIO_SCMI_MAX_PDU_SIZE \
+> >  	(VIRTIO_SCMI_MAX_MSG_SIZE + SCMI_MSG_MAX_PROT_OVERHEAD)
+> > @@ -39,23 +42,21 @@
+> >   * @cinfo: SCMI Tx or Rx channel
+> >   * @free_list: List of unused scmi_vio_msg, maintained for Tx channels only
+> >   * @is_rx: Whether channel is an Rx channel
+> > - * @ready: Whether transport user is ready to hear about channel
+> >   * @max_msg: Maximum number of pending messages for this channel.
+> > - * @lock: Protects access to all members except ready.
+> > - * @ready_lock: Protects access to ready. If required, it must be taken before
+> > - *              lock.
+> > + * @lock: Protects access to all members except users.
+> > + * @shutdown_done: A reference to a completion used when freeing this channel.
+> > + * @users: A reference count to currently active users of this channel.
+> >   */
+> >  struct scmi_vio_channel {
+> >  	struct virtqueue *vqueue;
+> >  	struct scmi_chan_info *cinfo;
+> >  	struct list_head free_list;
+> >  	bool is_rx;
+> > -	bool ready;
+> >  	unsigned int max_msg;
+> > -	/* lock to protect access to all members except ready. */
+> > +	/* lock to protect access to all members except users. */
+> >  	spinlock_t lock;
+> > -	/* lock to rotects access to ready flag. */
+> > -	spinlock_t ready_lock;
+> > +	struct completion *shutdown_done;
+> > +	refcount_t users;
+> >  };
+> >  
+> >  /**
+> > @@ -76,6 +77,71 @@ struct scmi_vio_msg {
+> >  /* Only one SCMI VirtIO device can possibly exist */
+> >  static struct virtio_device *scmi_vdev;
+> >  
+> > +static void scmi_vio_channel_ready(struct scmi_vio_channel *vioch,
+> > +				   struct scmi_chan_info *cinfo)
+> > +{
+> > +	unsigned long flags;
+> > +
+> > +	spin_lock_irqsave(&vioch->lock, flags);
+> > +	cinfo->transport_info = vioch;
+> > +	/* Indirectly setting channel not available any more */
+> > +	vioch->cinfo = cinfo;
+> > +	spin_unlock_irqrestore(&vioch->lock, flags);
+> > +
+> > +	refcount_set(&vioch->users, 1);
+> > +}
+> > +
+> > +static inline bool scmi_vio_channel_acquire(struct scmi_vio_channel *vioch)
+> > +{
+> > +	return refcount_inc_not_zero(&vioch->users);
+> > +}
+> > +
+> > +static inline void scmi_vio_channel_release(struct scmi_vio_channel *vioch)
+> > +{
+> > +	if (refcount_dec_and_test(&vioch->users)) {
+> > +		unsigned long flags;
+> > +
+> > +		spin_lock_irqsave(&vioch->lock, flags);
+> > +		if (vioch->shutdown_done) {
+> > +			vioch->cinfo = NULL;
+> > +			complete(vioch->shutdown_done);
+> > +		}
+> > +		spin_unlock_irqrestore(&vioch->lock, flags);
+> > +	}
+> > +}
+> > +
+> > +static void scmi_vio_channel_cleanup_sync(struct scmi_vio_channel *vioch)
+> > +{
+> > +	int timeout;
+> > +	char *vq_name;
+> > +	unsigned long flags;
+> > +	struct device *dev;
+> > +	DECLARE_COMPLETION_ONSTACK(vioch_shutdown_done);
+> > +
+> > +	/*
+> > +	 * Prepare to wait for the last release if not already released
+> > +	 * or in progress.
+> > +	 */
+> > +	spin_lock_irqsave(&vioch->lock, flags);
+> > +	if (!vioch->cinfo || vioch->shutdown_done) {
+> > +		spin_unlock_irqrestore(&vioch->lock, flags);
+> > +		return;
+> > +	}
+> > +	vioch->shutdown_done = &vioch_shutdown_done;
+> > +	vq_name = vioch->is_rx ? "RX" : "TX";
+> > +	/* vioch->cinfo could be NULLified after the release */
+> > +	dev = vioch->cinfo->dev;
+> > +	spin_unlock_irqrestore(&vioch->lock, flags);
+> > +
+> > +	scmi_vio_channel_release(vioch);
+> > +
+> > +	timeout = msecs_to_jiffies(VIRTIO_MAX_RX_TIMEOUT_MS + 10);
+> > +	/* Let any possibly concurrent RX path release the channel */
+> > +	if (!wait_for_completion_timeout(vioch->shutdown_done, timeout))
+> > +		dev_warn(dev,
+> > +			 "Timeout shutting down %s VQ.\n", vq_name);
+> > +}
+> > +
+> 
+> Hmm. So if it times out then what? It's ok to corrupt memory then?
+> Why? I suspect if you want to recover from this you need to mark device
+> as broken, synchronize with all callbacks (we don't have an API
+> for that but we really should). Only then you will know it's
+> not doing anything.
+> 
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index d85d54f2b549..b22034975301 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -525,6 +525,7 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
- 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
- 	unsigned long order, base_pfn;
- 	struct iova_domain *iovad;
-+	int ret;
- 
- 	if (!cookie || cookie->type != IOMMU_DMA_IOVA_COOKIE)
- 		return -EINVAL;
-@@ -559,6 +560,9 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
- 	}
- 
- 	init_iova_domain(iovad, 1UL << order, base_pfn);
-+	ret = iova_domain_init_rcaches(iovad);
-+	if (ret)
-+		return ret;
- 
- 	/* If the FQ fails we can simply fall back to strict mode */
- 	if (domain->type == IOMMU_DOMAIN_DMA_FQ && iommu_dma_init_fq(domain))
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index b28c9435b898..7e9c3a97c040 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -15,13 +15,14 @@
- /* The anchor node sits above the top of the usable address space */
- #define IOVA_ANCHOR	~0UL
- 
-+#define IOVA_RANGE_CACHE_MAX_SIZE 6	/* log of max cached IOVA range size (in pages) */
-+
- static bool iova_rcache_insert(struct iova_domain *iovad,
- 			       unsigned long pfn,
- 			       unsigned long size);
- static unsigned long iova_rcache_get(struct iova_domain *iovad,
- 				     unsigned long size,
- 				     unsigned long limit_pfn);
--static void init_iova_rcaches(struct iova_domain *iovad);
- static void free_cpu_cached_iovas(unsigned int cpu, struct iova_domain *iovad);
- static void free_iova_rcaches(struct iova_domain *iovad);
- 
-@@ -64,8 +65,6 @@ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
- 	iovad->anchor.pfn_lo = iovad->anchor.pfn_hi = IOVA_ANCHOR;
- 	rb_link_node(&iovad->anchor.node, NULL, &iovad->rbroot.rb_node);
- 	rb_insert_color(&iovad->anchor.node, &iovad->rbroot);
--	cpuhp_state_add_instance_nocalls(CPUHP_IOMMU_IOVA_DEAD, &iovad->cpuhp_dead);
--	init_iova_rcaches(iovad);
- }
- EXPORT_SYMBOL_GPL(init_iova_domain);
- 
-@@ -488,6 +487,13 @@ free_iova_fast(struct iova_domain *iovad, unsigned long pfn, unsigned long size)
- }
- EXPORT_SYMBOL_GPL(free_iova_fast);
- 
-+static void iova_domain_free_rcaches(struct iova_domain *iovad)
-+{
-+	cpuhp_state_remove_instance_nocalls(CPUHP_IOMMU_IOVA_DEAD,
-+					    &iovad->cpuhp_dead);
-+	free_iova_rcaches(iovad);
-+}
-+
- /**
-  * put_iova_domain - destroys the iova domain
-  * @iovad: - iova domain in question.
-@@ -497,9 +503,9 @@ void put_iova_domain(struct iova_domain *iovad)
- {
- 	struct iova *iova, *tmp;
- 
--	cpuhp_state_remove_instance_nocalls(CPUHP_IOMMU_IOVA_DEAD,
--					    &iovad->cpuhp_dead);
--	free_iova_rcaches(iovad);
-+	if (iovad->rcaches)
-+		iova_domain_free_rcaches(iovad);
-+
- 	rbtree_postorder_for_each_entry_safe(iova, tmp, &iovad->rbroot, node)
- 		free_iova_mem(iova);
- }
-@@ -608,6 +614,7 @@ EXPORT_SYMBOL_GPL(reserve_iova);
-  */
- 
- #define IOVA_MAG_SIZE 128
-+#define MAX_GLOBAL_MAGS 32	/* magazines per bin */
- 
- struct iova_magazine {
- 	unsigned long size;
-@@ -620,6 +627,13 @@ struct iova_cpu_rcache {
- 	struct iova_magazine *prev;
- };
- 
-+struct iova_rcache {
-+	spinlock_t lock;
-+	unsigned long depot_size;
-+	struct iova_magazine *depot[MAX_GLOBAL_MAGS];
-+	struct iova_cpu_rcache __percpu *cpu_rcaches;
-+};
-+
- static struct iova_magazine *iova_magazine_alloc(gfp_t flags)
- {
- 	return kzalloc(sizeof(struct iova_magazine), flags);
-@@ -693,28 +707,54 @@ static void iova_magazine_push(struct iova_magazine *mag, unsigned long pfn)
- 	mag->pfns[mag->size++] = pfn;
- }
- 
--static void init_iova_rcaches(struct iova_domain *iovad)
-+int iova_domain_init_rcaches(struct iova_domain *iovad)
- {
--	struct iova_cpu_rcache *cpu_rcache;
--	struct iova_rcache *rcache;
- 	unsigned int cpu;
--	int i;
-+	int i, ret;
-+
-+	iovad->rcaches = kcalloc(IOVA_RANGE_CACHE_MAX_SIZE,
-+				 sizeof(struct iova_rcache),
-+				 GFP_KERNEL);
-+	if (!iovad->rcaches)
-+		return -ENOMEM;
- 
- 	for (i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
-+		struct iova_cpu_rcache *cpu_rcache;
-+		struct iova_rcache *rcache;
-+
- 		rcache = &iovad->rcaches[i];
- 		spin_lock_init(&rcache->lock);
- 		rcache->depot_size = 0;
--		rcache->cpu_rcaches = __alloc_percpu(sizeof(*cpu_rcache), cache_line_size());
--		if (WARN_ON(!rcache->cpu_rcaches))
--			continue;
-+		rcache->cpu_rcaches = __alloc_percpu(sizeof(*cpu_rcache),
-+						     cache_line_size());
-+		if (!rcache->cpu_rcaches) {
-+			ret = -ENOMEM;
-+			goto out_err;
-+		}
- 		for_each_possible_cpu(cpu) {
- 			cpu_rcache = per_cpu_ptr(rcache->cpu_rcaches, cpu);
-+
- 			spin_lock_init(&cpu_rcache->lock);
- 			cpu_rcache->loaded = iova_magazine_alloc(GFP_KERNEL);
- 			cpu_rcache->prev = iova_magazine_alloc(GFP_KERNEL);
-+			if (!cpu_rcache->loaded || !cpu_rcache->prev) {
-+				ret = -ENOMEM;
-+				goto out_err;
-+			}
- 		}
- 	}
-+
-+	ret = cpuhp_state_add_instance_nocalls(CPUHP_IOMMU_IOVA_DEAD,
-+					       &iovad->cpuhp_dead);
-+	if (ret)
-+		goto out_err;
-+	return 0;
-+
-+out_err:
-+	free_iova_rcaches(iovad);
-+	return ret;
- }
-+EXPORT_SYMBOL_GPL(iova_domain_init_rcaches);
- 
- /*
-  * Try inserting IOVA range starting with 'iova_pfn' into 'rcache', and
-@@ -831,7 +871,7 @@ static unsigned long iova_rcache_get(struct iova_domain *iovad,
- {
- 	unsigned int log_size = order_base_2(size);
- 
--	if (log_size >= IOVA_RANGE_CACHE_MAX_SIZE)
-+	if (log_size >= IOVA_RANGE_CACHE_MAX_SIZE || !iovad->rcaches)
- 		return 0;
- 
- 	return __iova_rcache_get(&iovad->rcaches[log_size], limit_pfn - size);
-@@ -849,6 +889,8 @@ static void free_iova_rcaches(struct iova_domain *iovad)
- 
- 	for (i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
- 		rcache = &iovad->rcaches[i];
-+		if (!rcache->cpu_rcaches)
-+			break;
- 		for_each_possible_cpu(cpu) {
- 			cpu_rcache = per_cpu_ptr(rcache->cpu_rcaches, cpu);
- 			iova_magazine_free(cpu_rcache->loaded);
-@@ -858,6 +900,9 @@ static void free_iova_rcaches(struct iova_domain *iovad)
- 		for (j = 0; j < rcache->depot_size; ++j)
- 			iova_magazine_free(rcache->depot[j]);
- 	}
-+
-+	kfree(iovad->rcaches);
-+	iovad->rcaches = NULL;
- }
- 
- /*
-diff --git a/drivers/vdpa/vdpa_user/iova_domain.c b/drivers/vdpa/vdpa_user/iova_domain.c
-index 2b1143f11d8f..22f7d43f8a68 100644
---- a/drivers/vdpa/vdpa_user/iova_domain.c
-+++ b/drivers/vdpa/vdpa_user/iova_domain.c
-@@ -480,6 +480,7 @@ vduse_domain_create(unsigned long iova_limit, size_t bounce_size)
- 	struct file *file;
- 	struct vduse_bounce_map *map;
- 	unsigned long pfn, bounce_pfns;
-+	int ret;
- 
- 	bounce_pfns = PAGE_ALIGN(bounce_size) >> PAGE_SHIFT;
- 	if (iova_limit <= bounce_size)
-@@ -513,10 +514,20 @@ vduse_domain_create(unsigned long iova_limit, size_t bounce_size)
- 	spin_lock_init(&domain->iotlb_lock);
- 	init_iova_domain(&domain->stream_iovad,
- 			PAGE_SIZE, IOVA_START_PFN);
-+	ret = iova_domain_init_rcaches(&domain->stream_iovad);
-+	if (ret)
-+		goto err_iovad_stream;
- 	init_iova_domain(&domain->consistent_iovad,
- 			PAGE_SIZE, bounce_pfns);
-+	ret = iova_domain_init_rcaches(&domain->consistent_iovad);
-+	if (ret)
-+		goto err_iovad_consistent;
- 
- 	return domain;
-+err_iovad_consistent:
-+	put_iova_domain(&domain->stream_iovad);
-+err_iovad_stream:
-+	fput(file);
- err_file:
- 	vfree(domain->bounce_maps);
- err_map:
-diff --git a/include/linux/iova.h b/include/linux/iova.h
-index cea79cb9f26c..320a70e40233 100644
---- a/include/linux/iova.h
-+++ b/include/linux/iova.h
-@@ -21,18 +21,8 @@ struct iova {
- 	unsigned long	pfn_lo; /* Lowest allocated pfn */
- };
- 
--struct iova_magazine;
--struct iova_cpu_rcache;
- 
--#define IOVA_RANGE_CACHE_MAX_SIZE 6	/* log of max cached IOVA range size (in pages) */
--#define MAX_GLOBAL_MAGS 32	/* magazines per bin */
--
--struct iova_rcache {
--	spinlock_t lock;
--	unsigned long depot_size;
--	struct iova_magazine *depot[MAX_GLOBAL_MAGS];
--	struct iova_cpu_rcache __percpu *cpu_rcaches;
--};
-+struct iova_rcache;
- 
- /* holds all the iova translations for a domain */
- struct iova_domain {
-@@ -46,7 +36,7 @@ struct iova_domain {
- 	unsigned long	max32_alloc_size; /* Size of last failed allocation */
- 	struct iova	anchor;		/* rbtree lookup anchor */
- 
--	struct iova_rcache rcaches[IOVA_RANGE_CACHE_MAX_SIZE];	/* IOVA range caches */
-+	struct iova_rcache	*rcaches;
- 	struct hlist_node	cpuhp_dead;
- };
- 
-@@ -102,6 +92,7 @@ struct iova *reserve_iova(struct iova_domain *iovad, unsigned long pfn_lo,
- 	unsigned long pfn_hi);
- void init_iova_domain(struct iova_domain *iovad, unsigned long granule,
- 	unsigned long start_pfn);
-+int iova_domain_init_rcaches(struct iova_domain *iovad);
- struct iova *find_iova(struct iova_domain *iovad, unsigned long pfn);
- void put_iova_domain(struct iova_domain *iovad);
- #else
--- 
-2.26.2
+In fact I was not sure how to address this situation and not sure even
+if it was a real possibility, but indeed a constant flood of evily
+interleaved messages coming from the queues could keep the refcount
+indefinitely > 0 (and the fact that I am shutting down is no excuse to
+corrupt memory...my bad)
+
+So what if I mark the device broken here BEFORE this possible final
+release, so as to disrupt completely any communication on the virtqueus
+at first (inhibiting also any callbacks invocation on IRQ) and then sync
+on my channel refcount as it is now.
+(and then just wait indefintely without any timeout..)
+
+something like (not tried still..):
+
+....
+	vq_name = vioch->is_rx ? "RX" : "TX";
+	/* vioch->cinfo could be NULLified after the release */
+	dev = vioch->cinfo->dev;
++	virtio_break_device(vioch->vqueue->vdev);
+	spin_unlock_irqrestore(&vioch->lock, flags);
+
+	scmi_vio_channel_release(vioch);
+
+	/* Let any possibly concurrent RX path release the channel */
++	wait_for_completion(vioch->shutdown_done);
+
+
+Thanks,
+Cristian
 
