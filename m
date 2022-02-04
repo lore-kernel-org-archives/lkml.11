@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D90CC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 23:39:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA823C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 23:39:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378286AbiBDXjK (ORCPT
+        id S1378281AbiBDXjN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 18:39:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46266 "EHLO
+        Fri, 4 Feb 2022 18:39:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378231AbiBDXjF (ORCPT
+        with ESMTP id S1378232AbiBDXjF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 4 Feb 2022 18:39:05 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ED2BE025B2D;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22BE7E025B2E;
         Fri,  4 Feb 2022 15:39:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AA3A561C36;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B44F761C9C;
         Fri,  4 Feb 2022 23:39:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15A85C004E1;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C04EC340F0;
         Fri,  4 Feb 2022 23:39:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1644017944;
-        bh=4LJKR8LrRJnPaBrRYneeP2Xiv81UOQNEztaGmdaYkWg=;
+        bh=GaED8m6moSZlPrHrLk8hrW3KCvJ5yaGPsNW+YksLZx0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CrzsfZAU6BrQKiS8paJXVOS+vA8vuIFNCndI6SQEWTMRK35sU2o4Iv1IOqMYp1DNE
-         EHlAIlGcpJYO5oZO+4gv51pGE2AA5+jI/yqnS2urARjckX3XiMBzOCcRdC7oW384s3
-         /3T+UXNUGMnTD0ywBZ5ZN2BJxS6GoT79fkq7Fy/yrOHLverSXhREW/C3S2vNL9g2cZ
-         54OmKpSZitYdNPqseO9A8v8uqoG2qeZUvtqWtJJBW+9vn6Gq+7qN1n/EJug33iYA0C
-         DH9xPy5u6D6LdVP8mnxiVmQli9LDIQOnpOcO5b6OBubqM4+swyPVj85VsJp/Vch1Ym
-         mqe2robaYreAA==
+        b=HpIdZnCZJNa73OinJU/3Iy56uJGqrXp8ZqUVTIPqZW2UKLRfCudhWojiaCRrZHUC2
+         JGVW8by03zoCJa6vtIlgiejEw5MBnl4Ezb9sS/kYGmbCs4IaUG33uAu3N9hKNPOrTc
+         EwWgRQ0CD3tozPzFefyjIhEp3VMWexcdNQEo0wWe8POh+PAZH/s3dB+k3X/6A6V+Yw
+         PMUcahYkqi3LBsk/kIRrzIi63hjK9QEihjhjHMt5G4KsMNE+ZzfnyCqA2Gctzuevag
+         ARpUyqT2YBUbHW/nDmHilUPaju8s7nXAG9K+U5Y1+tPkxkpVq3/pxP7NA5NrYZ95hS
+         jKRsMt4i8UAGg==
 Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id E77755C0418; Fri,  4 Feb 2022 15:39:03 -0800 (PST)
+        id EB8B35C08B7; Fri,  4 Feb 2022 15:39:03 -0800 (PST)
 From:   "Paul E. McKenney" <paulmck@kernel.org>
 To:     rcu@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com,
         rostedt@goodmis.org, "Paul E. McKenney" <paulmck@kernel.org>
-Subject: [PATCH rcu 01/19] srcu: Tighten cleanup_srcu_struct() GP checks
-Date:   Fri,  4 Feb 2022 15:38:44 -0800
-Message-Id: <20220204233902.1902-1-paulmck@kernel.org>
+Subject: [PATCH rcu 03/19] srcu: Make srcu_funnel_gp_start() cache ->mynode in snp_leaf
+Date:   Fri,  4 Feb 2022 15:38:46 -0800
+Message-Id: <20220204233902.1902-3-paulmck@kernel.org>
 X-Mailer: git-send-email 2.31.1.189.g2e36527f23
 In-Reply-To: <20220204233858.GA1469@paulmck-ThinkPad-P17-Gen-1>
 References: <20220204233858.GA1469@paulmck-ThinkPad-P17-Gen-1>
@@ -51,35 +51,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, cleanup_srcu_struct() checks for a grace period in progress,
-but it does not check for a grace period that has not yet started but
-which might start at any time.  Such a situation could result in a
-use-after-free bug, so this commit adds a check for a grace period that
-is needed but not yet started to cleanup_srcu_struct().
+Currently, the srcu_funnel_gp_start() walks its local variable snp up the
+tree and reloads sdp->mynode whenever it is necessary to check whether
+it is still at the leaf srcu_node level.  This works, but is a bit more
+obtuse than absolutely necessary.  In addition, upcoming commits will
+dynamically size srcu_struct structures, in which case sdp->mynode will
+no longer necessarily be a constant, and this commit helps prepare for
+that dynamic sizing.
 
 Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 ---
- kernel/rcu/srcutree.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ kernel/rcu/srcutree.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
 diff --git a/kernel/rcu/srcutree.c b/kernel/rcu/srcutree.c
-index 6833d88871816..d30e4db04506a 100644
+index d30e4db04506a..7d13e35e5d277 100644
 --- a/kernel/rcu/srcutree.c
 +++ b/kernel/rcu/srcutree.c
-@@ -382,9 +382,11 @@ void cleanup_srcu_struct(struct srcu_struct *ssp)
- 			return; /* Forgot srcu_barrier(), so just leak it! */
- 	}
- 	if (WARN_ON(rcu_seq_state(READ_ONCE(ssp->srcu_gp_seq)) != SRCU_STATE_IDLE) ||
-+	    WARN_ON(rcu_seq_current(&ssp->srcu_gp_seq) != ssp->srcu_gp_seq_needed) ||
- 	    WARN_ON(srcu_readers_active(ssp))) {
--		pr_info("%s: Active srcu_struct %p state: %d\n",
--			__func__, ssp, rcu_seq_state(READ_ONCE(ssp->srcu_gp_seq)));
-+		pr_info("%s: Active srcu_struct %p read state: %d gp state: %lu/%lu\n",
-+			__func__, ssp, rcu_seq_state(READ_ONCE(ssp->srcu_gp_seq)),
-+			rcu_seq_current(&ssp->srcu_gp_seq), ssp->srcu_gp_seq_needed);
- 		return; /* Caller forgot to stop doing call_srcu()? */
- 	}
- 	free_percpu(ssp->sda);
+@@ -632,20 +632,21 @@ static void srcu_funnel_gp_start(struct srcu_struct *ssp, struct srcu_data *sdp,
+ {
+ 	unsigned long flags;
+ 	int idx = rcu_seq_ctr(s) % ARRAY_SIZE(sdp->mynode->srcu_have_cbs);
+-	struct srcu_node *snp = sdp->mynode;
++	struct srcu_node *snp;
++	struct srcu_node *snp_leaf = sdp->mynode;
+ 	unsigned long snp_seq;
+ 
+ 	/* Each pass through the loop does one level of the srcu_node tree. */
+-	for (; snp != NULL; snp = snp->srcu_parent) {
+-		if (rcu_seq_done(&ssp->srcu_gp_seq, s) && snp != sdp->mynode)
++	for (snp = snp_leaf; snp != NULL; snp = snp->srcu_parent) {
++		if (rcu_seq_done(&ssp->srcu_gp_seq, s) && snp != snp_leaf)
+ 			return; /* GP already done and CBs recorded. */
+ 		spin_lock_irqsave_rcu_node(snp, flags);
+ 		if (ULONG_CMP_GE(snp->srcu_have_cbs[idx], s)) {
+ 			snp_seq = snp->srcu_have_cbs[idx];
+-			if (snp == sdp->mynode && snp_seq == s)
++			if (snp == snp_leaf && snp_seq == s)
+ 				snp->srcu_data_have_cbs[idx] |= sdp->grpmask;
+ 			spin_unlock_irqrestore_rcu_node(snp, flags);
+-			if (snp == sdp->mynode && snp_seq != s) {
++			if (snp == snp_leaf && snp_seq != s) {
+ 				srcu_schedule_cbs_sdp(sdp, do_norm
+ 							   ? SRCU_INTERVAL
+ 							   : 0);
+@@ -656,7 +657,7 @@ static void srcu_funnel_gp_start(struct srcu_struct *ssp, struct srcu_data *sdp,
+ 			return;
+ 		}
+ 		snp->srcu_have_cbs[idx] = s;
+-		if (snp == sdp->mynode)
++		if (snp == snp_leaf)
+ 			snp->srcu_data_have_cbs[idx] |= sdp->grpmask;
+ 		if (!do_norm && ULONG_CMP_LT(snp->srcu_gp_seq_needed_exp, s))
+ 			WRITE_ONCE(snp->srcu_gp_seq_needed_exp, s);
 -- 
 2.31.1.189.g2e36527f23
 
