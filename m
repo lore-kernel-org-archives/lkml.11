@@ -2,205 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17C2AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 00:20:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C95B9C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 00:26:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356210AbiBDAUo (ORCPT
+        id S1356214AbiBDA0P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 19:20:44 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:42136 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356200AbiBDAUn (ORCPT
+        Thu, 3 Feb 2022 19:26:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55124 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354856AbiBDA0O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 19:20:43 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 92D966191C
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 00:20:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E628C340E8;
-        Fri,  4 Feb 2022 00:20:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643934043;
-        bh=SAspO1lsj8KC/6vzo9n7vXR2mlOb38UitSov7/738X0=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=np2YIvHbh/LZS/+wgvzyxlkDi9Vk8z8DGT5CGLc8RzU6E7U//hse3MneJX37CM51n
-         xa8bQUPOrpga74dOQpVKJ729lqxdK2CG6oGbQQ3smNjh4YDND1Lu3xso61eBjipfD7
-         ncCe6e9Iv2gbk66Bf1oj9FmghbKAdNal9qP1H/E0xkO0aTDbEioP4FvyYW73jGdpV6
-         QLNWPCy7agFnUDqPz0/TCwFpDGaYr5gU0c14ZA/niRUJP3EbqEcr6L/z0C0GoJ9SbP
-         n15LaTsVIPwR+etB1bIRGyO0xtf/72qKNj3fkzeI3zxMD9sdxVVsq54lxyWbXCX9Yw
-         Kj8fYEz6W7LbQ==
-Message-ID: <211c28eb-789e-e6e6-5daf-8040ac5ddd93@kernel.org>
-Date:   Fri, 4 Feb 2022 08:20:39 +0800
+        Thu, 3 Feb 2022 19:26:14 -0500
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A572C06173B
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 16:26:14 -0800 (PST)
+Received: by mail-pl1-x635.google.com with SMTP id t9so1482583plg.13
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 16:26:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=0eVjWkn3YypKipWU59VgB8hKpGPPC7yMLBku/5hkxYU=;
+        b=B/63qRKoTa/jPTvT35HS/ppnB6hN1ge8X/OnvCRnPNLr09AMTKLpwTtWlV/p1K0wTj
+         TNBYyZzDepc42Ky0lTjLbfsDa9eo1lJjo2OaJ230lmRphEb1jb+LaY9zv2FOqH1xu+Ho
+         bC4DYlB3dtVmyzGf1J8nTPkRpbDJEbgxaFqaU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=0eVjWkn3YypKipWU59VgB8hKpGPPC7yMLBku/5hkxYU=;
+        b=VXkZTpTDttxxNe5LBWJ3fYXt+48IFyVkmwLflFKZQleMpZzr3Dm6JcDtqDYn78X8Pm
+         Kv/EI3UPiOxWxa/VhznFBVd8XiY7wcjtdMmuRZT1JiqcpocgIXeBHZTXsWaBjF9Dhie3
+         yTX+hH5R1KamV575cc69SMCgixpToXnsYpZ6T02/95I63GmhXmEGWsxe6JFp/IFHpAJ6
+         ILAMOGwUUzcrZmfx+95wwaTSZYGUZPUrO83ttLza5v1BzauwM1yLE5SdZ9x52Ea8p9HZ
+         /aCp96lDOSj4wTHNwSUvRGtEb595HXcTubPheuzucHQ2KeYmStoYv5iBLsQEf0jbe6zb
+         RvFg==
+X-Gm-Message-State: AOAM5312YW8yCvLnTr2U9F/LeGfE4spNfhmtIroOYanh+22f7q87sfQ1
+        I5QsxSMWdZhf6tHnQInfYbBAlG9hyTrh4Q==
+X-Google-Smtp-Source: ABdhPJzePD01mIAj1XkpKw+GItPRqZPyAv9KEL3Ul555b3PT0ZywjsUHGOJxLNDywApQ4JvY2r3ybg==
+X-Received: by 2002:a17:90b:146:: with SMTP id em6mr280597pjb.214.1643934373835;
+        Thu, 03 Feb 2022 16:26:13 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id me4sm11588041pjb.26.2022.02.03.16.26.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Feb 2022 16:26:13 -0800 (PST)
+Date:   Thu, 3 Feb 2022 16:26:12 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Miguel Ojeda <ojeda@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>, llvm@lists.linux.dev,
+        George Burgess IV <gbiv@google.com>,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH v6 2/4] Compiler Attributes: Add __overloadable for Clang
+Message-ID: <202202031618.BC9EDA9D82@keescook>
+References: <20220203173307.1033257-1-keescook@chromium.org>
+ <20220203173307.1033257-3-keescook@chromium.org>
+ <CAKwvOdkU=5q-7Sb4BKYkRsigy_qYjo_7J+A73ZYKn+xArxUwXg@mail.gmail.com>
+ <202202031301.437D8FD3@keescook>
+ <CAKwvOdm-_uGYrm=2LTGSR7yhGK08NniGdkhLj_sM-QD-xdKVtA@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [f2fs-dev] [PATCH v2] f2fs: add a way to limit roll forward
- recovery time
-Content-Language: en-US
-To:     Jaegeuk Kim <jaegeuk@kernel.org>
-Cc:     linux-kernel@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net
-References: <20220127214102.2040254-1-jaegeuk@kernel.org>
- <YfsjEb2ii3eyPzng@google.com>
- <142d2cc9-73f2-f9fa-2543-6426c62e77a6@kernel.org>
- <YfwT/6bSqUqUF/B3@google.com>
-From:   Chao Yu <chao@kernel.org>
-In-Reply-To: <YfwT/6bSqUqUF/B3@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKwvOdm-_uGYrm=2LTGSR7yhGK08NniGdkhLj_sM-QD-xdKVtA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/2/4 1:42, Jaegeuk Kim wrote:
-> On 02/03, Chao Yu wrote:
->> On 2022/2/3 8:34, Jaegeuk Kim wrote:
->>> This adds a sysfs entry to call checkpoint during fsync() in order to avoid
->>> long elapsed time to run roll-forward recovery when booting the device.
->>> Default value doesn't enforce the limitation which is same as before.
->>>
->>> Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
->>> ---
->>> v2 from v1:
->>>    - make the default w/o enforcement
->>>
->>>    Documentation/ABI/testing/sysfs-fs-f2fs | 6 ++++++
->>>    fs/f2fs/checkpoint.c                    | 1 +
->>>    fs/f2fs/f2fs.h                          | 3 +++
->>>    fs/f2fs/node.c                          | 2 ++
->>>    fs/f2fs/node.h                          | 3 +++
->>>    fs/f2fs/recovery.c                      | 4 ++++
->>>    fs/f2fs/sysfs.c                         | 2 ++
->>>    7 files changed, 21 insertions(+)
->>>
->>> diff --git a/Documentation/ABI/testing/sysfs-fs-f2fs b/Documentation/ABI/testing/sysfs-fs-f2fs
->>> index 87d3884c90ea..ce8103f522cb 100644
->>> --- a/Documentation/ABI/testing/sysfs-fs-f2fs
->>> +++ b/Documentation/ABI/testing/sysfs-fs-f2fs
->>> @@ -567,3 +567,9 @@ Contact:	"Daeho Jeong" <daehojeong@google.com>
->>>    Description:	You can set the trial count limit for GC urgent high mode with this value.
->>>    		If GC thread gets to the limit, the mode will turn back to GC normal mode.
->>>    		By default, the value is zero, which means there is no limit like before.
->>> +
->>> +What:		/sys/fs/f2fs/<disk>/max_roll_forward_node_blocks
->>> +Date:		January 2022
->>> +Contact:	"Jaegeuk Kim" <jaegeuk@kernel.org>
->>> +Description:	Controls max # of node block writes to be used for roll forward
->>> +		recovery. This can limit the roll forward recovery time.
->>> diff --git a/fs/f2fs/checkpoint.c b/fs/f2fs/checkpoint.c
->>> index deeda95688f0..57a2d9164bee 100644
->>> --- a/fs/f2fs/checkpoint.c
->>> +++ b/fs/f2fs/checkpoint.c
->>> @@ -1543,6 +1543,7 @@ static int do_checkpoint(struct f2fs_sb_info *sbi, struct cp_control *cpc)
->>>    	/* update user_block_counts */
->>>    	sbi->last_valid_block_count = sbi->total_valid_block_count;
->>>    	percpu_counter_set(&sbi->alloc_valid_block_count, 0);
->>> +	percpu_counter_set(&sbi->rf_node_block_count, 0);
->>>    	/* Here, we have one bio having CP pack except cp pack 2 page */
->>>    	f2fs_sync_meta_pages(sbi, META, LONG_MAX, FS_CP_META_IO);
->>> diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
->>> index 63c90416364b..6ddb98ff0b7c 100644
->>> --- a/fs/f2fs/f2fs.h
->>> +++ b/fs/f2fs/f2fs.h
->>> @@ -913,6 +913,7 @@ struct f2fs_nm_info {
->>>    	nid_t max_nid;			/* maximum possible node ids */
->>>    	nid_t available_nids;		/* # of available node ids */
->>>    	nid_t next_scan_nid;		/* the next nid to be scanned */
->>> +	nid_t max_rf_node_blocks;	/* max # of nodes for recovery */
->>>    	unsigned int ram_thresh;	/* control the memory footprint */
->>>    	unsigned int ra_nid_pages;	/* # of nid pages to be readaheaded */
->>>    	unsigned int dirty_nats_ratio;	/* control dirty nats ratio threshold */
->>> @@ -1684,6 +1685,8 @@ struct f2fs_sb_info {
->>>    	atomic_t nr_pages[NR_COUNT_TYPE];
->>>    	/* # of allocated blocks */
->>>    	struct percpu_counter alloc_valid_block_count;
->>> +	/* # of node block writes as roll forward recovery */
->>> +	struct percpu_counter rf_node_block_count;
->>>    	/* writeback control */
->>>    	atomic_t wb_sync_req[META];	/* count # of WB_SYNC threads */
->>> diff --git a/fs/f2fs/node.c b/fs/f2fs/node.c
->>> index 93512f8859d5..0d9883457579 100644
->>> --- a/fs/f2fs/node.c
->>> +++ b/fs/f2fs/node.c
->>> @@ -1782,6 +1782,7 @@ int f2fs_fsync_node_pages(struct f2fs_sb_info *sbi, struct inode *inode,
->>>    			if (!atomic || page == last_page) {
->>>    				set_fsync_mark(page, 1);
->>> +				percpu_counter_inc(&sbi->rf_node_block_count);
->>
->> if (NM_I(sbi)->max_rf_node_blocks)
->> 	percpu_counter_inc(&sbi->rf_node_block_count);
+On Thu, Feb 03, 2022 at 02:11:48PM -0800, Nick Desaulniers wrote:
+> On Thu, Feb 3, 2022 at 1:04 PM Kees Cook <keescook@chromium.org> wrote:
+> >
+> > On Thu, Feb 03, 2022 at 12:26:15PM -0800, Nick Desaulniers wrote:
+> > > On Thu, Feb 3, 2022 at 9:33 AM Kees Cook <keescook@chromium.org> wrote:
+> > > >
+> > > > must be marked as being overloadable (i.e. different prototypes).
+> > > > This allows the __pass_object_size versions to take precedence.
+> > >
+> > > Is this because of the `const` additions to the function signatures?
+> >
+> > That might be an issue, but the *real* issue is the implicit mutation of
+> > the function into an inline with _additional_ arguments. i.e.
+> >
+> > char *strcpy(char * POS p, const char * POS q)
+> >
+> > is really
+> >
+> > char *strcpy(char * const p, const char * const q, size_t __size_of_p, size_t __size_of_q)
+> >
+> > (i.e. what I was doing with macros, but all internally and still an
+> > extern inline)
 > 
-> I think we can just count this and adjust right away once sysfs is changed.
+> What do you mean "is really"? 4/4 doesn't change the number of
+> parameters in strcpy explicitly in the definition AFAICT.
 
-Since this long recovery latency issue is a corner case, I guess we can avoid this
-to save cpu time...
+It really does change the number of parameters. See the IR difference:
 
-BTW, shouldn't we account all warn dnode blocks? as we will traverse all blocks there
-in warn node list.
+$ cat example.c
+#ifdef USE_POS
+# define POS __attribute__((pass_object_size(1)))
+#else
+# define POS
+#endif
 
-Thanks,
+int func(void * const POS);
 
-> 
->>
->> Thanks,
->>
->>>    				if (IS_INODE(page)) {
->>>    					if (is_inode_flag_set(inode,
->>>    								FI_DIRTY_INODE))
->>> @@ -3218,6 +3219,7 @@ static int init_node_manager(struct f2fs_sb_info *sbi)
->>>    	nm_i->ram_thresh = DEF_RAM_THRESHOLD;
->>>    	nm_i->ra_nid_pages = DEF_RA_NID_PAGES;
->>>    	nm_i->dirty_nats_ratio = DEF_DIRTY_NAT_RATIO_THRESHOLD;
->>> +	nm_i->max_rf_node_blocks = DEF_RF_NODE_BLOCKS;
->>>    	INIT_RADIX_TREE(&nm_i->free_nid_root, GFP_ATOMIC);
->>>    	INIT_LIST_HEAD(&nm_i->free_nid_list);
->>> diff --git a/fs/f2fs/node.h b/fs/f2fs/node.h
->>> index 18b98cf0465b..4c1d34bfea78 100644
->>> --- a/fs/f2fs/node.h
->>> +++ b/fs/f2fs/node.h
->>> @@ -31,6 +31,9 @@
->>>    /* control total # of nats */
->>>    #define DEF_NAT_CACHE_THRESHOLD			100000
->>> +/* control total # of node writes used for roll-fowrad recovery */
->>> +#define DEF_RF_NODE_BLOCKS			0
->>> +
->>>    /* vector size for gang look-up from nat cache that consists of radix tree */
->>>    #define NATVEC_SIZE	64
->>>    #define SETVEC_SIZE	32
->>> diff --git a/fs/f2fs/recovery.c b/fs/f2fs/recovery.c
->>> index 10d152cfa58d..1c8041fd854e 100644
->>> --- a/fs/f2fs/recovery.c
->>> +++ b/fs/f2fs/recovery.c
->>> @@ -53,9 +53,13 @@ extern struct kmem_cache *f2fs_cf_name_slab;
->>>    bool f2fs_space_for_roll_forward(struct f2fs_sb_info *sbi)
->>>    {
->>>    	s64 nalloc = percpu_counter_sum_positive(&sbi->alloc_valid_block_count);
->>> +	u32 rf_node = percpu_counter_sum_positive(&sbi->rf_node_block_count);
->>>    	if (sbi->last_valid_block_count + nalloc > sbi->user_block_count)
->>>    		return false;
->>> +	if (NM_I(sbi)->max_rf_node_blocks &&
->>> +			rf_node >= NM_I(sbi)->max_rf_node_blocks)
->>> +		return false;
->>>    	return true;
->>>    }
->>> diff --git a/fs/f2fs/sysfs.c b/fs/f2fs/sysfs.c
->>> index 281bc0133ee6..47efcf233afd 100644
->>> --- a/fs/f2fs/sysfs.c
->>> +++ b/fs/f2fs/sysfs.c
->>> @@ -732,6 +732,7 @@ F2FS_RW_ATTR(SM_INFO, f2fs_sm_info, min_ssr_sections, min_ssr_sections);
->>>    F2FS_RW_ATTR(NM_INFO, f2fs_nm_info, ram_thresh, ram_thresh);
->>>    F2FS_RW_ATTR(NM_INFO, f2fs_nm_info, ra_nid_pages, ra_nid_pages);
->>>    F2FS_RW_ATTR(NM_INFO, f2fs_nm_info, dirty_nats_ratio, dirty_nats_ratio);
->>> +F2FS_RW_ATTR(NM_INFO, f2fs_nm_info, max_roll_forward_node_blocks, max_rf_node_blocks);
->>>    F2FS_RW_ATTR(F2FS_SBI, f2fs_sb_info, max_victim_search, max_victim_search);
->>>    F2FS_RW_ATTR(F2FS_SBI, f2fs_sb_info, migration_granularity, migration_granularity);
->>>    F2FS_RW_ATTR(F2FS_SBI, f2fs_sb_info, dir_level, dir_level);
->>> @@ -855,6 +856,7 @@ static struct attribute *f2fs_attrs[] = {
->>>    	ATTR_LIST(ram_thresh),
->>>    	ATTR_LIST(ra_nid_pages),
->>>    	ATTR_LIST(dirty_nats_ratio),
->>> +	ATTR_LIST(max_roll_forward_node_blocks),
->>>    	ATTR_LIST(cp_interval),
->>>    	ATTR_LIST(idle_interval),
->>>    	ATTR_LIST(discard_idle_interval),
+struct foo
+{
+        int a;
+        char *b;
+};
+
+void usage(struct foo *example)
+{
+        func(example);
+}
+
+$ IR="-O2 -Xclang -disable-llvm-passes -emit-llvm -S"
+$ clang           example.c $IR -o normal.ll
+$ clang -DUSE_POS example.c $IR -o pos.ll
+$ diff -u normal.ll pos.ll
+--- normal.ll   2022-02-03 16:23:39.734065036 -0800
++++ pos.ll      2022-02-03 16:23:49.518083451 -0800
+@@ -11,14 +11,19 @@
+   store %struct.foo* %0, %struct.foo** %2, align 8, !tbaa !3
+   %3 = load %struct.foo*, %struct.foo** %2, align 8, !tbaa !3
+   %4 = bitcast %struct.foo* %3 to i8*
+-  %5 = call i32 @func(i8* noundef %4)
++  %5 = call i64 @llvm.objectsize.i64.p0i8(i8* %4, i1 false, i1 true, i1 false)
++  %6 = call i32 @func(i8* noundef %4, i64 noundef %5)
+   ret void
+ }
+...
+
+This is basically doing internally exactly what I was doing in v4 and
+earlier with macros (passing in the caller's view of __bos(arg, 1)).
+
+-- 
+Kees Cook
