@@ -2,120 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB72AC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 19:51:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9F5AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 19:53:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235783AbiBDTvV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 14:51:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37002 "EHLO
+        id S234962AbiBDTxS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 14:53:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234871AbiBDTvB (ORCPT
+        with ESMTP id S232023AbiBDTxR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 14:51:01 -0500
-Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F384C06175D
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 11:50:59 -0800 (PST)
-Received: by mail-il1-x131.google.com with SMTP id m17so5719421ilj.12
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Feb 2022 11:50:59 -0800 (PST)
+        Fri, 4 Feb 2022 14:53:17 -0500
+Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64738C061714
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 11:53:15 -0800 (PST)
+Received: by mail-oi1-x22d.google.com with SMTP id s24so2083202oic.6
+        for <linux-kernel@vger.kernel.org>; Fri, 04 Feb 2022 11:53:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Q42zjW8xahSVhGaNilfnj63EHK+Wikk3dCoDovWBQQY=;
-        b=Fqu8+ypIkgxeVioleBdx7cz2kzcNe89AS6NsggXAOlU1Ts4IPADKZ7XQeqdEbNyf89
-         SAwWXPLyU9ULlM70bsTCwyoO4AYCOLi9/eUmNITJ8VrsmKVKrxSjiJqvPtseykw4EZcI
-         7i8RqubLHz8YGtUo1UHLJKtlFDeKXKdw9yb2FasbkTYh78guITuK5WoEem40G8WTdxNI
-         N2ZTPzSdf0zgrNKA7v4PckXQhcoazag/+YBMSZrJJ51D1Yj4DXi3d3/mwjcQ34YFtLul
-         GJRRg3fl06CGSyOoSnuyNX5UWetE1yfvt15CEfeAHhUtgBC2UVyjdv2AnnMPDzCd61Vc
-         tpSw==
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rlfMiSQDubj+Ph8MLvtPCvN6/ufw7ffJHZWfJEWSM7s=;
+        b=DmZVl3HhtwyFLwUwi7HO1+M0i+lCxDISV0wxDw5RqxrQtuIfzfn2AtQJTe+gC0x+L0
+         tQRfEqm2UTKOqTnGFVVwEsFbOAKBYIqzquLFzOBFOH81dMl+v79dLs+aRHbnhoNiz5fF
+         nePK9zYZHUZDtWKk7Y3dmMMs+qTwS3eDOo+pA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Q42zjW8xahSVhGaNilfnj63EHK+Wikk3dCoDovWBQQY=;
-        b=fMdp+aDzV/PSSnlmnK5rWteLg6ny7mzDh6RqnsMuKt/25Id2RwNa8Kxyd21eQzpxsj
-         TE0obGtAlAZv4iQuBIggHGIatF8AxUkLmM1qLqRDBXGWgMmyl7XLMn5LTFyiMivA+YAm
-         D8TGmt/iLhY5b7zmE2b8BgdqRTjX8Jj4ZWoVoZypi1hAa+pn6O65WKHuK1+bB8SAaL7s
-         MOLehbH4SFQklbVprNyQimA8biH1WgipAq4AFxuI3lf4DQKURsUaBSdpEvcNnihFv0mj
-         N2nJgdQeaxEBllHmoo20J3wUrDJWdmoZUOlVdbEfRWBRcJ+C5P21MCzYWRTXvuR6r1YO
-         OuiA==
-X-Gm-Message-State: AOAM5310HU5LPHgx681MblRTtHeF5KbLutw5gntZOee/kbsNJGSPt8qx
-        NMpGLJh6rw85DKsP6oc+pQVxrQ==
-X-Google-Smtp-Source: ABdhPJwifcbLNOdRURW/rAIAn/Qb8lZQb1jM5cBMyOnP8fsp1/pvuwPkQuyCiwRCNj/Yx2I45RV8vQ==
-X-Received: by 2002:a92:c569:: with SMTP id b9mr374353ilj.140.1644004258743;
-        Fri, 04 Feb 2022 11:50:58 -0800 (PST)
-Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id k13sm1417564ili.22.2022.02.04.11.50.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Feb 2022 11:50:58 -0800 (PST)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     djakov@kernel.org, bjorn.andersson@linaro.org, mka@chromium.org,
-        evgreen@chromium.org, cpratapa@codeaurora.org,
-        avuyyuru@codeaurora.org, jponduru@codeaurora.org,
-        subashab@codeaurora.org, elder@kernel.org, netdev@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 7/7] net: ipa: use IPA power device pointer
-Date:   Fri,  4 Feb 2022 13:50:44 -0600
-Message-Id: <20220204195044.1082026-8-elder@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220204195044.1082026-1-elder@linaro.org>
-References: <20220204195044.1082026-1-elder@linaro.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rlfMiSQDubj+Ph8MLvtPCvN6/ufw7ffJHZWfJEWSM7s=;
+        b=HDEYnvjGsl5gfkqdKyggyGzxlpgEjfiJemcyzI3k03I7bx2IQHBUrE8KgFsjov0j3g
+         l21LxFIkYbZ0ytLSPIS8gkV3OGbqkdzHpZgjV48yerCbfRZTjbsLssyMy4t+Ehdlr2Sf
+         GVGs+8YhyaIWlb/6+bKRWh6p7LIU9EoZfyzClS2dZoz3ydKxY2hQTEij4TueMkBf+pPt
+         kF3Q/2JDDqP3WLZ5t80mreWYwUNHXAOQZLa/7vJjZnYSBXVJZCne5bS92zgs607VfsKU
+         gGWdDOnPgDy1Jw4MV2WjMCRZHOfthIcfI64SIYlP0QZy5HnF2O8s0DlD4A6fD3SFMNq+
+         p3Ng==
+X-Gm-Message-State: AOAM5316vKzHlXhBrmOSSyUJcMl0WKpwGeKLrl3QW93HDuEmQ0RWJsly
+        68aGD0jxL3cxA1ALuuAzOexZQSfWS+ITGA==
+X-Google-Smtp-Source: ABdhPJzQE/0QJuGAOYiVsEcKYkn2HZ+pXDvJHnYS6lvg8+GFnNc1Z0FvyMDlbviRjf4II7a98sPCwQ==
+X-Received: by 2002:a05:6808:3096:: with SMTP id bl22mr305511oib.280.1644004394483;
+        Fri, 04 Feb 2022 11:53:14 -0800 (PST)
+Received: from mail-oi1-f177.google.com (mail-oi1-f177.google.com. [209.85.167.177])
+        by smtp.gmail.com with ESMTPSA id k19sm1055102oot.41.2022.02.04.11.53.13
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 04 Feb 2022 11:53:13 -0800 (PST)
+Received: by mail-oi1-f177.google.com with SMTP id m10so9781418oie.2
+        for <linux-kernel@vger.kernel.org>; Fri, 04 Feb 2022 11:53:13 -0800 (PST)
+X-Received: by 2002:a05:6808:2026:: with SMTP id q38mr2109037oiw.243.1644004392644;
+ Fri, 04 Feb 2022 11:53:12 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <1587620791-5279-1-git-send-email-peng.fan@nxp.com>
+ <20200423104000.GD4808@sirena.org.uk> <DB6PR0402MB27600084E4A040609EF620A088D30@DB6PR0402MB2760.eurprd04.prod.outlook.com>
+ <20200423112244.GH4808@sirena.org.uk> <DB6PR0402MB2760FBCA05C1BADB27F0356488D00@DB6PR0402MB2760.eurprd04.prod.outlook.com>
+ <20200424103004.GB5850@sirena.org.uk> <Ye87P19+JOjPEGTY@google.com>
+ <Yf14RJbM10O3RdA+@sirena.org.uk> <CA+ASDXP+KeiRKASFakDjJ=cZPD_rGmV4=JgRH26zQi-uZDdiAQ@mail.gmail.com>
+ <Yf2BTelNlqplv06/@sirena.org.uk>
+In-Reply-To: <Yf2BTelNlqplv06/@sirena.org.uk>
+From:   Brian Norris <briannorris@chromium.org>
+Date:   Fri, 4 Feb 2022 11:53:01 -0800
+X-Gmail-Original-Message-ID: <CA+ASDXMJB4Egohc_V=su-tE=pU76=6zbmXSoptwwwbype1F7sw@mail.gmail.com>
+Message-ID: <CA+ASDXMJB4Egohc_V=su-tE=pU76=6zbmXSoptwwwbype1F7sw@mail.gmail.com>
+Subject: Re: regmap: mmio: lack of runtime_pm support for debugfs
+To:     Mark Brown <broonie@kernel.org>
+Cc:     Peng Fan <peng.fan@nxp.com>,
+        "rafael@kernel.org" <rafael@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        "S.j. Wang" <shengjiu.wang@nxp.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The ipa_power structure contains a copy of the IPA device pointer,
-so there's no need to pass it to ipa_interconnect_init().  We can
-also use that pointer for an error message in ipa_power_enable().
+On Fri, Feb 4, 2022 at 11:41 AM Mark Brown <broonie@kernel.org> wrote:
+> On Fri, Feb 04, 2022 at 11:21:51AM -0800, Brian Norris wrote:
+> > We do actually have a cache for the case I care about, but there's
+> > also a debugfs file for bypassing that and...for some reason I'm
+> > dealing with some diagnostic scripts that purposely toggle that. I'm
+> > not sure how wise that is, but in general I like to reduce the number
+> > of ways dumb user space can screw things up. I've even had to tell
+> > people that recursively grepping through sysfs or debugfs is a bad
+> > idea...
+>
+> Are you sure this extra thing that bypasses the cache isn't an out of
+> tree patch?  It really doesn't sound like a good idea to have that, and
+> if people think they need it they probably have drivers doing something
+> quite unfortunate.  Or are you just looking at the upstream debugfs with
+> some volatile registers?
 
-Signed-off-by: Alex Elder <elder@linaro.org>
----
- drivers/net/ipa/ipa_power.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+https://git.kernel.org/linus/d3dc5430d68fb91a62d971648170b34d46ab85bc
+regmap: debugfs: Allow writes to cache state settings
 
-diff --git a/drivers/net/ipa/ipa_power.c b/drivers/net/ipa/ipa_power.c
-index 8a564d72799da..16ece27d14d7e 100644
---- a/drivers/net/ipa/ipa_power.c
-+++ b/drivers/net/ipa/ipa_power.c
-@@ -71,7 +71,7 @@ struct ipa_power {
- };
- 
- /* Initialize interconnects required for IPA operation */
--static int ipa_interconnect_init(struct ipa_power *power, struct device *dev,
-+static int ipa_interconnect_init(struct ipa_power *power,
- 				 const struct ipa_interconnect_data *data)
- {
- 	struct icc_bulk_data *interconnect;
-@@ -89,7 +89,7 @@ static int ipa_interconnect_init(struct ipa_power *power, struct device *dev,
- 		interconnect++;
- 	}
- 
--	ret = of_icc_bulk_get(dev, power->interconnect_count,
-+	ret = of_icc_bulk_get(power->dev, power->interconnect_count,
- 			      power->interconnect);
- 	if (ret)
- 		return ret;
-@@ -123,7 +123,7 @@ static int ipa_power_enable(struct ipa *ipa)
- 
- 	ret = clk_prepare_enable(power->core);
- 	if (ret) {
--		dev_err(&ipa->pdev->dev, "error %d enabling core clock\n", ret);
-+		dev_err(power->dev, "error %d enabling core clock\n", ret);
- 		icc_bulk_disable(power->interconnect_count,
- 				 power->interconnect);
- 	}
-@@ -385,7 +385,7 @@ ipa_power_init(struct device *dev, const struct ipa_power_data *data)
- 	spin_lock_init(&power->spinlock);
- 	power->interconnect_count = data->interconnect_count;
- 
--	ret = ipa_interconnect_init(power, dev, data->interconnect_data);
-+	ret = ipa_interconnect_init(power, data->interconnect_data);
- 	if (ret)
- 		goto err_kfree;
- 
--- 
-2.32.0
+And it's still there:
+https://elixir.bootlin.com/linux/v5.16.5/source/drivers/base/regmap/regmap-debugfs.c#L521
 
+Again, I didn't claim the *use* of that bypass in the aforementioned
+diagnostic script was a good idea...but it's at least possible. I've
+already carved out more exceptions so that script doesn't do bad
+things on some systems, but maybe I'll poke the authors even more, to
+see if they have a good reason for using the bypass.
+
+Brian
