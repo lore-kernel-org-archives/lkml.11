@@ -2,64 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DD09C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 01:16:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6362C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 01:16:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356491AbiBDBQk (ORCPT
+        id S1356503AbiBDBQm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 20:16:40 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:55948 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236075AbiBDBQe (ORCPT
+        Thu, 3 Feb 2022 20:16:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38164 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238979AbiBDBQe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 3 Feb 2022 20:16:34 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84357C061714;
+        Thu,  3 Feb 2022 17:16:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 550C8B83569;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 43531B81E57;
         Fri,  4 Feb 2022 01:16:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 27835C340EF;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 12CFDC340E8;
         Fri,  4 Feb 2022 01:16:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1643937392;
-        bh=1XuypAmeblLioyIiAUzheUUKqXHjvQ4MlJ00JIZ2RZE=;
+        bh=Cyt3I3EBMavNFow1QRriz9SViu1nkBRsjpVOO+ycS+I=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=ayOKPLJMHfbtHrK6XFHFhDuYjk6InXupcq2HHfzpKFdhObvc1vRjOFgThJT7WoB7H
-         8VLyQR4huuprrPtR7XMc7Sp6PVWH3Y88/Nk+cSah1WANinENZc4OSUGwQNMiYr/c2J
-         WSiTMMh22Tqgzxj4B73hRLBbfWstneMNWJIf3Rd2Qiy/m0umxU6eRrvwsRwBRvj+7C
-         3O45npCAq29mhHawU4Sxp1/2mNCwSmk0/42sbJ/phJi5NqHVasTwhsrWLaBRSEidB5
-         0U/oW1bbMeWwl5nX6FoDLvKuwEsaXS9AE7JxG3WsM79HmcQXuetYC5AKSyFzdK3eL/
-         b8wOrCDj5wL3w==
+        b=X9VAtBBnW8BhgxZ3xzaECd0M5Vw9Zk1Bva5rCUCczmdoG6+rJT/i+ZMa/+UiRUtsj
+         NbBcZngkD4r7Npg/g4x+4ooAjhqRRZBIh2E3tdY5XUa+qxWKwST6D+cCJBQ3de9e37
+         PDhdgjmz5dJ0UXJ3L5onK4vqHQ9xOfiGsawkE5A2AxmQeqddQj43CTLZTvSporBMCZ
+         wlFE640yUF/8fs4gEkR41iFpfPDSyoWQxLAl7rzGf4+wgfc8T/bIJy7+W/KQ379i6B
+         bVmJ5gQVOn1NHi12oQ6gOAqBkMb5rz0UAr1DmRrgm/LhiAr5GLynIdulyHA1zW21Bk
+         pt3ERWVNg7Vdw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1338AE6BB30;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 02E73E5D08C;
         Fri,  4 Feb 2022 01:16:32 +0000 (UTC)
-Subject: Re: [GIT PULL] SELinux fixes for v5.17 (#1)
+Subject: Re: [GIT PULL] Kselftest fixes update for Linux 5.17-rc3
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <CAHC9VhQcLpAAXgs1oqB2WvturqvkMguYM40d=AK+LDSTnzAARg@mail.gmail.com>
-References: <CAHC9VhQcLpAAXgs1oqB2WvturqvkMguYM40d=AK+LDSTnzAARg@mail.gmail.com>
+In-Reply-To: <b82319f7-14d7-6a37-7b11-c53d90cadc4a@linuxfoundation.org>
+References: <b82319f7-14d7-6a37-7b11-c53d90cadc4a@linuxfoundation.org>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <CAHC9VhQcLpAAXgs1oqB2WvturqvkMguYM40d=AK+LDSTnzAARg@mail.gmail.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/pcmoore/selinux.git tags/selinux-pr-20220203
-X-PR-Tracked-Commit-Id: 186edf7e368c40d06cf727a1ad14698ea67b74ad
+X-PR-Tracked-Message-Id: <b82319f7-14d7-6a37-7b11-c53d90cadc4a@linuxfoundation.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/shuah/linux-kselftest tags/linux-kselftest-fixes-5.17-rc3
+X-PR-Tracked-Commit-Id: ec049891b2dc16591813eacaddc476b3d27c8c14
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 551007a8f10afdc45959ad637d6bee816716769f
-Message-Id: <164393739207.12311.8616946332803165738.pr-tracker-bot@kernel.org>
+X-PR-Merge-Commit-Id: 25b20ae8151b3d5289896f4f200ff790d2cdf4bf
+Message-Id: <164393739200.12311.15807559014449375931.pr-tracker-bot@kernel.org>
 Date:   Fri, 04 Feb 2022 01:16:32 +0000
-To:     Paul Moore <paul@paul-moore.com>
+To:     Shuah Khan <skhan@linuxfoundation.org>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        selinux@vger.kernel.org, linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+        Shuah Khan <skhan@linuxfoundation.org>,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Thu, 3 Feb 2022 17:30:43 -0500:
+The pull request you sent on Thu, 3 Feb 2022 13:35:26 -0700:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/pcmoore/selinux.git tags/selinux-pr-20220203
+> git://git.kernel.org/pub/scm/linux/kernel/git/shuah/linux-kselftest tags/linux-kselftest-fixes-5.17-rc3
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/551007a8f10afdc45959ad637d6bee816716769f
+https://git.kernel.org/torvalds/c/25b20ae8151b3d5289896f4f200ff790d2cdf4bf
 
 Thank you!
 
