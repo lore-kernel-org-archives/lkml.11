@@ -2,43 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 737D6C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:29:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ED59C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:29:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358570AbiBDJ26 (ORCPT
+        id S1358149AbiBDJ3G (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 04:28:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33338 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357591AbiBDJ1I (ORCPT
+        Fri, 4 Feb 2022 04:29:06 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:45824 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358109AbiBDJ1J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 04:27:08 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96502C061394;
-        Fri,  4 Feb 2022 01:26:23 -0800 (PST)
+        Fri, 4 Feb 2022 04:27:09 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 570ECB836F0;
-        Fri,  4 Feb 2022 09:26:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7ECADC340ED;
-        Fri,  4 Feb 2022 09:26:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1652461602;
+        Fri,  4 Feb 2022 09:27:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA12DC004E1;
+        Fri,  4 Feb 2022 09:27:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643966781;
-        bh=iaE1IqOh0EjTj9ysylMCuepe6iN/kPDrrbFWOLuRBw8=;
+        s=korg; t=1643966828;
+        bh=jhYVlAq+c39CVsH+sSlPV4y+433+nEv9z7fvwQl2K7U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G+KEVi3R4ycgyEZEtZ8aCMBY20VHSaUPJGdh0a9srQgkWt+llCFoSvpD0M9e4H3Do
-         wB7up5pDqkTdDUsHzehn8zqDSzdsHVOGA4olwToXHbYTMpqrWrpOceHxA6CX8SMDcG
-         XiXpK847YucSFNDfULzvwmdMmrkZKRZmUQ38elOk=
+        b=HggUP5HNJAmcCiNPq6zdR3wDaYVAfgttSjRrFIJsd0sY4UNPtYwoQSvVhOslsOy3P
+         TaoNo2G3ae0xWSQsaYH6YLfu/nNRemHLFqIhm3nwP6lwbzZoP4S9zPbsZ+SlKmOGHe
+         ptFQxThqRK4cGAi8dFBfaApO1C9e7qPL7dm8Mmjk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Georgi Valkov <gvalkov@abv.bg>,
-        Jan Kiszka <jan.kiszka@siemens.com>,
+        stable@vger.kernel.org, Alex Elder <elder@linaro.org>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.16 29/43] ipheth: fix EOVERFLOW in ipheth_rcvbulk_callback
-Date:   Fri,  4 Feb 2022 10:22:36 +0100
-Message-Id: <20220204091918.110218109@linuxfoundation.org>
+Subject: [PATCH 5.16 37/43] net: ipa: request IPA register values be retained
+Date:   Fri,  4 Feb 2022 10:22:44 +0100
+Message-Id: <20220204091918.370849377@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220204091917.166033635@linuxfoundation.org>
 References: <20220204091917.166033635@linuxfoundation.org>
@@ -50,57 +46,176 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Georgi Valkov <gvalkov@abv.bg>
+From: Alex Elder <elder@linaro.org>
 
-commit 63e4b45c82ed1bde979da7052229a4229ce9cabf upstream.
+commit 34a081761e4e3c35381cbfad609ebae2962fe2f8 upstream.
 
-When rx_buf is allocated we need to account for IPHETH_IP_ALIGN,
-which reduces the usable size by 2 bytes. Otherwise we have 1512
-bytes usable instead of 1514, and if we receive more than 1512
-bytes, ipheth_rcvbulk_callback is called with status -EOVERFLOW,
-after which the driver malfunctiones and all communication stops.
+In some cases, the IPA hardware needs to request the always-on
+subsystem (AOSS) to coordinate with the IPA microcontroller to
+retain IPA register values at power collapse.  This is done by
+issuing a QMP request to the AOSS microcontroller.  A similar
+request ondoes that request.
 
-Resolves ipheth 2-1:4.2: ipheth_rcvbulk_callback: urb status: -75
+We must get and hold the "QMP" handle early, because we might get
+back EPROBE_DEFER for that.  But the actual request should be sent
+while we know the IPA clock is active, and when we know the
+microcontroller is operational.
 
-Fixes: f33d9e2b48a3 ("usbnet: ipheth: fix connectivity with iOS 14")
-Signed-off-by: Georgi Valkov <gvalkov@abv.bg>
-Tested-by: Jan Kiszka <jan.kiszka@siemens.com>
-Link: https://lore.kernel.org/all/B60B8A4B-92A0-49B3-805D-809A2433B46C@abv.bg/
-Link: https://lore.kernel.org/all/24851bd2769434a5fc24730dce8e8a984c5a4505.1643699778.git.jan.kiszka@siemens.com/
+Fixes: 1aac309d3207 ("net: ipa: use autosuspend")
+Signed-off-by: Alex Elder <elder@linaro.org>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/usb/ipheth.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ipa/ipa_power.c |   52 ++++++++++++++++++++++++++++++++++++++++++++
+ drivers/net/ipa/ipa_power.h |    7 +++++
+ drivers/net/ipa/ipa_uc.c    |    5 ++++
+ 3 files changed, 64 insertions(+)
 
---- a/drivers/net/usb/ipheth.c
-+++ b/drivers/net/usb/ipheth.c
-@@ -121,7 +121,7 @@ static int ipheth_alloc_urbs(struct iphe
- 	if (tx_buf == NULL)
- 		goto free_rx_urb;
+--- a/drivers/net/ipa/ipa_power.c
++++ b/drivers/net/ipa/ipa_power.c
+@@ -11,6 +11,8 @@
+ #include <linux/pm_runtime.h>
+ #include <linux/bitops.h>
  
--	rx_buf = usb_alloc_coherent(iphone->udev, IPHETH_BUF_SIZE,
-+	rx_buf = usb_alloc_coherent(iphone->udev, IPHETH_BUF_SIZE + IPHETH_IP_ALIGN,
- 				    GFP_KERNEL, &rx_urb->transfer_dma);
- 	if (rx_buf == NULL)
- 		goto free_tx_buf;
-@@ -146,7 +146,7 @@ error_nomem:
++#include "linux/soc/qcom/qcom_aoss.h"
++
+ #include "ipa.h"
+ #include "ipa_power.h"
+ #include "ipa_endpoint.h"
+@@ -64,6 +66,7 @@ enum ipa_power_flag {
+  * struct ipa_power - IPA power management information
+  * @dev:		IPA device pointer
+  * @core:		IPA core clock
++ * @qmp:		QMP handle for AOSS communication
+  * @spinlock:		Protects modem TX queue enable/disable
+  * @flags:		Boolean state flags
+  * @interconnect_count:	Number of elements in interconnect[]
+@@ -72,6 +75,7 @@ enum ipa_power_flag {
+ struct ipa_power {
+ 	struct device *dev;
+ 	struct clk *core;
++	struct qmp *qmp;
+ 	spinlock_t spinlock;	/* used with STOPPED/STARTED power flags */
+ 	DECLARE_BITMAP(flags, IPA_POWER_FLAG_COUNT);
+ 	u32 interconnect_count;
+@@ -382,6 +386,47 @@ void ipa_power_modem_queue_active(struct
+ 	clear_bit(IPA_POWER_FLAG_STARTED, ipa->power->flags);
+ }
  
- static void ipheth_free_urbs(struct ipheth_device *iphone)
++static int ipa_power_retention_init(struct ipa_power *power)
++{
++	struct qmp *qmp = qmp_get(power->dev);
++
++	if (IS_ERR(qmp)) {
++		if (PTR_ERR(qmp) == -EPROBE_DEFER)
++			return -EPROBE_DEFER;
++
++		/* We assume any other error means it's not defined/needed */
++		qmp = NULL;
++	}
++	power->qmp = qmp;
++
++	return 0;
++}
++
++static void ipa_power_retention_exit(struct ipa_power *power)
++{
++	qmp_put(power->qmp);
++	power->qmp = NULL;
++}
++
++/* Control register retention on power collapse */
++void ipa_power_retention(struct ipa *ipa, bool enable)
++{
++	static const char fmt[] = "{ class: bcm, res: ipa_pc, val: %c }";
++	struct ipa_power *power = ipa->power;
++	char buf[36];	/* Exactly enough for fmt[]; size a multiple of 4 */
++	int ret;
++
++	if (!power->qmp)
++		return;		/* Not needed on this platform */
++
++	(void)snprintf(buf, sizeof(buf), fmt, enable ? '1' : '0');
++
++	ret = qmp_send(power->qmp, buf, sizeof(buf));
++	if (ret)
++		dev_err(power->dev, "error %d sending QMP %sable request\n",
++			ret, enable ? "en" : "dis");
++}
++
+ int ipa_power_setup(struct ipa *ipa)
  {
--	usb_free_coherent(iphone->udev, IPHETH_BUF_SIZE, iphone->rx_buf,
-+	usb_free_coherent(iphone->udev, IPHETH_BUF_SIZE + IPHETH_IP_ALIGN, iphone->rx_buf,
- 			  iphone->rx_urb->transfer_dma);
- 	usb_free_coherent(iphone->udev, IPHETH_BUF_SIZE, iphone->tx_buf,
- 			  iphone->tx_urb->transfer_dma);
-@@ -317,7 +317,7 @@ static int ipheth_rx_submit(struct iphet
+ 	int ret;
+@@ -438,12 +483,18 @@ ipa_power_init(struct device *dev, const
+ 	if (ret)
+ 		goto err_kfree;
  
- 	usb_fill_bulk_urb(dev->rx_urb, udev,
- 			  usb_rcvbulkpipe(udev, dev->bulk_in),
--			  dev->rx_buf, IPHETH_BUF_SIZE,
-+			  dev->rx_buf, IPHETH_BUF_SIZE + IPHETH_IP_ALIGN,
- 			  ipheth_rcvbulk_callback,
- 			  dev);
- 	dev->rx_urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
++	ret = ipa_power_retention_init(power);
++	if (ret)
++		goto err_interconnect_exit;
++
+ 	pm_runtime_set_autosuspend_delay(dev, IPA_AUTOSUSPEND_DELAY);
+ 	pm_runtime_use_autosuspend(dev);
+ 	pm_runtime_enable(dev);
+ 
+ 	return power;
+ 
++err_interconnect_exit:
++	ipa_interconnect_exit(power);
+ err_kfree:
+ 	kfree(power);
+ err_clk_put:
+@@ -460,6 +511,7 @@ void ipa_power_exit(struct ipa_power *po
+ 
+ 	pm_runtime_disable(dev);
+ 	pm_runtime_dont_use_autosuspend(dev);
++	ipa_power_retention_exit(power);
+ 	ipa_interconnect_exit(power);
+ 	kfree(power);
+ 	clk_put(clk);
+--- a/drivers/net/ipa/ipa_power.h
++++ b/drivers/net/ipa/ipa_power.h
+@@ -41,6 +41,13 @@ void ipa_power_modem_queue_wake(struct i
+ void ipa_power_modem_queue_active(struct ipa *ipa);
+ 
+ /**
++ * ipa_power_retention() - Control register retention on power collapse
++ * @ipa:	IPA pointer
++ * @enable:	Whether retention should be enabled or disabled
++ */
++void ipa_power_retention(struct ipa *ipa, bool enable);
++
++/**
+  * ipa_power_setup() - Set up IPA power management
+  * @ipa:	IPA pointer
+  *
+--- a/drivers/net/ipa/ipa_uc.c
++++ b/drivers/net/ipa/ipa_uc.c
+@@ -11,6 +11,7 @@
+ 
+ #include "ipa.h"
+ #include "ipa_uc.h"
++#include "ipa_power.h"
+ 
+ /**
+  * DOC:  The IPA embedded microcontroller
+@@ -154,6 +155,7 @@ static void ipa_uc_response_hdlr(struct
+ 	case IPA_UC_RESPONSE_INIT_COMPLETED:
+ 		if (ipa->uc_powered) {
+ 			ipa->uc_loaded = true;
++			ipa_power_retention(ipa, true);
+ 			pm_runtime_mark_last_busy(dev);
+ 			(void)pm_runtime_put_autosuspend(dev);
+ 			ipa->uc_powered = false;
+@@ -184,6 +186,9 @@ void ipa_uc_deconfig(struct ipa *ipa)
+ 
+ 	ipa_interrupt_remove(ipa->interrupt, IPA_IRQ_UC_1);
+ 	ipa_interrupt_remove(ipa->interrupt, IPA_IRQ_UC_0);
++	if (ipa->uc_loaded)
++		ipa_power_retention(ipa, false);
++
+ 	if (!ipa->uc_powered)
+ 		return;
+ 
 
 
