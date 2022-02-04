@@ -2,44 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DD0BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:26:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3627FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:26:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358269AbiBDJ0R (ORCPT
+        id S1358287AbiBDJ0V (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 04:26:17 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:43806 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357907AbiBDJYo (ORCPT
+        Fri, 4 Feb 2022 04:26:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33420 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1357972AbiBDJYx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 04:24:44 -0500
+        Fri, 4 Feb 2022 04:24:53 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 360E8C06176E;
+        Fri,  4 Feb 2022 01:24:53 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8DA1D612C8;
-        Fri,  4 Feb 2022 09:24:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20D12C004E1;
-        Fri,  4 Feb 2022 09:24:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E7F8FB836EE;
+        Fri,  4 Feb 2022 09:24:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F40E4C004E1;
+        Fri,  4 Feb 2022 09:24:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643966684;
-        bh=mPjX16zNpAn7LOPJg7nzi8nM1zws5ngvx/rWuXKPNwQ=;
+        s=korg; t=1643966690;
+        bh=4KnP9f2BG2N0gQWpClCCaBlbp1tyU3Pjw2Z1LPrgmQ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WB1e9oI/XO93yp067SmmVugLNYkJjrl+sm0Cllj2nr2gWdBg6oPJcVBVabdFDt6eH
-         NGuQs39juKQD+S7EKm5Knxp/Eg/HgyP1ag1OMHB7iX0hcC7CxgJtPUVd0x8jKhtrrv
-         v5lbuuEov+38BkCiWXqcGCnDl3C/1nnpImhcr+1k=
+        b=DZO8JA4tC9CreZvdM+j70RucL2HHbVyTrfJzNTiX81E2DjtQBCQ02tmh/U2JLntay
+         zoRphcu3guu8Dk3eEqOqnt2b5Kr4gxGdoKm/+0iO9LUuJ9IEdpdPEpeYUqsfQn+d9t
+         d/aR+es2lxA3zxK7Heoc3spB2QKgPT2H/2J5nEwI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sasha Neftin <sasha.neftin@intel.com>,
-        Nechama Kraus <nechamax.kraus@linux.intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.15 30/32] e1000e: Handshake with CSME starts from ADL platforms
-Date:   Fri,  4 Feb 2022 10:22:40 +0100
-Message-Id: <20220204091916.244764690@linuxfoundation.org>
+        stable@vger.kernel.org, Joseph Bao <joseph.bao@intel.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Stuart Hayes <stuart.w.hayes@gmail.com>
+Subject: [PATCH 5.16 01/43] PCI: pciehp: Fix infinite loop in IRQ handler upon power fault
+Date:   Fri,  4 Feb 2022 10:22:08 +0100
+Message-Id: <20220204091917.216583469@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220204091915.247906930@linuxfoundation.org>
-References: <20220204091915.247906930@linuxfoundation.org>
+In-Reply-To: <20220204091917.166033635@linuxfoundation.org>
+References: <20220204091917.166033635@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -47,44 +53,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sasha Neftin <sasha.neftin@intel.com>
+From: Lukas Wunner <lukas@wunner.de>
 
-commit cad014b7b5a6897d8c4fad13e2888978bfb7a53f upstream.
+commit 23584c1ed3e15a6f4bfab8dc5a88d94ab929ee12 upstream.
 
-Handshake with CSME/AMT on none provisioned platforms during S0ix flow
-is not supported on TGL platform and can cause to HW unit hang. Update
-the handshake with CSME flow to start from the ADL platform.
+The Power Fault Detected bit in the Slot Status register differs from
+all other hotplug events in that it is sticky:  It can only be cleared
+after turning off slot power.  Per PCIe r5.0, sec. 6.7.1.8:
 
-Fixes: 3e55d231716e ("e1000e: Add handshake with the CSME to support S0ix")
-Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
-Tested-by: Nechama Kraus <nechamax.kraus@linux.intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+  If a power controller detects a main power fault on the hot-plug slot,
+  it must automatically set its internal main power fault latch [...].
+  The main power fault latch is cleared when software turns off power to
+  the hot-plug slot.
+
+The stickiness used to cause interrupt storms and infinite loops which
+were fixed in 2009 by commits 5651c48cfafe ("PCI pciehp: fix power fault
+interrupt storm problem") and 99f0169c17f3 ("PCI: pciehp: enable
+software notification on empty slots").
+
+Unfortunately in 2020 the infinite loop issue was inadvertently
+reintroduced by commit 8edf5332c393 ("PCI: pciehp: Fix MSI interrupt
+race"):  The hardirq handler pciehp_isr() clears the PFD bit until
+pciehp's power_fault_detected flag is set.  That happens in the IRQ
+thread pciehp_ist(), which never learns of the event because the hardirq
+handler is stuck in an infinite loop.  Fix by setting the
+power_fault_detected flag already in the hardirq handler.
+
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=214989
+Link: https://lore.kernel.org/linux-pci/DM8PR11MB5702255A6A92F735D90A4446868B9@DM8PR11MB5702.namprd11.prod.outlook.com
+Fixes: 8edf5332c393 ("PCI: pciehp: Fix MSI interrupt race")
+Link: https://lore.kernel.org/r/66eaeef31d4997ceea357ad93259f290ededecfd.1637187226.git.lukas@wunner.de
+Reported-by: Joseph Bao <joseph.bao@intel.com>
+Tested-by: Joseph Bao <joseph.bao@intel.com>
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Cc: stable@vger.kernel.org # v4.19+
+Cc: Stuart Hayes <stuart.w.hayes@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/e1000e/netdev.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/pci/hotplug/pciehp_hpc.c |    7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
---- a/drivers/net/ethernet/intel/e1000e/netdev.c
-+++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-@@ -6346,7 +6346,8 @@ static void e1000e_s0ix_entry_flow(struc
- 	u32 mac_data;
- 	u16 phy_data;
+--- a/drivers/pci/hotplug/pciehp_hpc.c
++++ b/drivers/pci/hotplug/pciehp_hpc.c
+@@ -642,6 +642,8 @@ read_status:
+ 	 */
+ 	if (ctrl->power_fault_detected)
+ 		status &= ~PCI_EXP_SLTSTA_PFD;
++	else if (status & PCI_EXP_SLTSTA_PFD)
++		ctrl->power_fault_detected = true;
  
--	if (er32(FWSM) & E1000_ICH_FWSM_FW_VALID) {
-+	if (er32(FWSM) & E1000_ICH_FWSM_FW_VALID &&
-+	    hw->mac.type >= e1000_pch_adp) {
- 		/* Request ME configure the device for S0ix */
- 		mac_data = er32(H2ME);
- 		mac_data |= E1000_H2ME_START_DPG;
-@@ -6495,7 +6496,8 @@ static void e1000e_s0ix_exit_flow(struct
- 	u16 phy_data;
- 	u32 i = 0;
+ 	events |= status;
+ 	if (!events) {
+@@ -651,7 +653,7 @@ read_status:
+ 	}
  
--	if (er32(FWSM) & E1000_ICH_FWSM_FW_VALID) {
-+	if (er32(FWSM) & E1000_ICH_FWSM_FW_VALID &&
-+	    hw->mac.type >= e1000_pch_adp) {
- 		/* Request ME unconfigure the device from S0ix */
- 		mac_data = er32(H2ME);
- 		mac_data &= ~E1000_H2ME_START_DPG;
+ 	if (status) {
+-		pcie_capability_write_word(pdev, PCI_EXP_SLTSTA, events);
++		pcie_capability_write_word(pdev, PCI_EXP_SLTSTA, status);
+ 
+ 		/*
+ 		 * In MSI mode, all event bits must be zero before the port
+@@ -725,8 +727,7 @@ static irqreturn_t pciehp_ist(int irq, v
+ 	}
+ 
+ 	/* Check Power Fault Detected */
+-	if ((events & PCI_EXP_SLTSTA_PFD) && !ctrl->power_fault_detected) {
+-		ctrl->power_fault_detected = 1;
++	if (events & PCI_EXP_SLTSTA_PFD) {
+ 		ctrl_err(ctrl, "Slot(%s): Power fault\n", slot_name(ctrl));
+ 		pciehp_set_indicators(ctrl, PCI_EXP_SLTCTL_PWR_IND_OFF,
+ 				      PCI_EXP_SLTCTL_ATTN_IND_ON);
 
 
