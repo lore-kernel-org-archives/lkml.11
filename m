@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84C1BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 23:08:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1C9FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 23:08:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377920AbiBDXIQ (ORCPT
+        id S1377925AbiBDXIS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 18:08:16 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:53354 "EHLO
+        Fri, 4 Feb 2022 18:08:18 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:53364 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377895AbiBDXIJ (ORCPT
+        with ESMTP id S1377899AbiBDXIJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 4 Feb 2022 18:08:09 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 26BF7B83965;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 58822B83963;
         Fri,  4 Feb 2022 23:08:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC13BC004E1;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB0D4C36AE2;
         Fri,  4 Feb 2022 23:08:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644016086;
-        bh=CiCcujZjYhOJvEnjNIIZ+YVdOcFjULHe8Yb/A8k1ttI=;
+        s=k20201202; t=1644016087;
+        bh=unSHV5pCcmnfZnpIr4QRTxITUK7+vXyWYLgKVbprAK4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H56nWpBosw7NEj7C7wBlD+SpSrCJXvErjGPL4VGUbUO8i6mfjDb+4MXxmr4QaKp9P
-         mXZkW06xLnj8joGWYjiIfxl2WiQp3CLeXqkKFKczakIGRSy8bdqRq5Oien5QE7can5
-         PCX68Bs1SWxjq07WXda2tljvQPMH5lcZwde3FYtyKeDuGpC/iUZvHU6WCfVHGfSMA5
-         sqKCuObsSsAwLalz9e6NOdzWj6gmwGazZ3/F5C0RXhPovi5W7GSdZzQDv3z+cjAPxu
-         8sr2Uat7mmxPcuJrCt1O/FoHNo4v/FfJt5nQpc//EAXgconBjx7OkZaXDq8qhzMIEK
-         7haNnh7qRWvoQ==
+        b=q2nuwxUMINEcQUq4ReBOV8RjIQ80vmJviSaSEUvbIaTGN/AXFJbW48cDHofBjQUuP
+         3A862b7eab49xMCt7FxriB2e7IzDvaprXTLfeAOislr0S39ARNV4r5B4W+1GYSjwWQ
+         6gm1snjr6aJY/Mv7scINfGqTD6n9diIGPxMTAzFqeY6mmsGTzZK8D93QQlZ0vb97D1
+         BP53RWIvvduh6OFE6+8VNyGf2YM3mSozr1emNK2ucxy7VRObULIuU0TjKdAepxmZAN
+         509KmyELWzfvDVSg0h0zsVdm83PUCmtwLktTOTXizM90UkWDhSWewxd11YekSUjw4i
+         BDSKvoAxgtabA==
 Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 950B15C0418; Fri,  4 Feb 2022 15:08:06 -0800 (PST)
+        id 9AC7B5C08B7; Fri,  4 Feb 2022 15:08:06 -0800 (PST)
 From:   "Paul E. McKenney" <paulmck@kernel.org>
 To:     rcu@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com,
-        rostedt@goodmis.org, "Paul E. McKenney" <paulmck@kernel.org>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Frederic Weisbecker <frederic@kernel.org>
-Subject: [PATCH rcu 1/9] MAINTAINERS:  Add Frederic and Neeraj to their RCU files
-Date:   Fri,  4 Feb 2022 15:07:57 -0800
-Message-Id: <20220204230805.4193767-1-paulmck@kernel.org>
+        rostedt@goodmis.org, David Woodhouse <dwmw@amazon.co.uk>,
+        "Paul E . McKenney" <paulmck@kernel.org>
+Subject: [PATCH rcu 3/9] rcu: Add mutex for rcu boost kthread spawning and affinity setting
+Date:   Fri,  4 Feb 2022 15:07:59 -0800
+Message-Id: <20220204230805.4193767-3-paulmck@kernel.org>
 X-Mailer: git-send-email 2.31.1.189.g2e36527f23
 In-Reply-To: <20220204230751.GA4193671@paulmck-ThinkPad-P17-Gen-1>
 References: <20220204230751.GA4193671@paulmck-ThinkPad-P17-Gen-1>
@@ -50,32 +49,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adding Frederic as an RCU maintainer for kernel/rcu/tree_nocb.h given his
-work with offloading and de-offloading callbacks from CPUs.  Also adding
-Neeraj for kernel/rcu/tasks.h given his focused work on RCU Tasks Trace.
-As in I am reasonably certain that each understands the full contents
-of the corresponding file.
+From: David Woodhouse <dwmw@amazon.co.uk>
 
-Cc: Neeraj Upadhyay <quic_neeraju@quicinc.com>
-Cc: Frederic Weisbecker <frederic@kernel.org>
+As we handle parallel CPU bringup, we will need to take care to avoid
+spawning multiple boost threads, or race conditions when setting their
+affinity. Spotted by Paul McKenney.
+
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
 Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 ---
- MAINTAINERS | 2 ++
- 1 file changed, 2 insertions(+)
+ kernel/rcu/tree.c        |  1 +
+ kernel/rcu/tree.h        |  3 +++
+ kernel/rcu/tree_plugin.h | 10 ++++++++--
+ 3 files changed, 12 insertions(+), 2 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index ea3e6c9143848..5ad49de532b1a 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -16298,6 +16298,8 @@ F:	tools/testing/selftests/resctrl/
+diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
+index a4c25a6283b0b..d1d1a8c51223b 100644
+--- a/kernel/rcu/tree.c
++++ b/kernel/rcu/tree.c
+@@ -4570,6 +4570,7 @@ static void __init rcu_init_one(void)
+ 			init_waitqueue_head(&rnp->exp_wq[2]);
+ 			init_waitqueue_head(&rnp->exp_wq[3]);
+ 			spin_lock_init(&rnp->exp_lock);
++			mutex_init(&rnp->boost_kthread_mutex);
+ 		}
+ 	}
  
- READ-COPY UPDATE (RCU)
- M:	"Paul E. McKenney" <paulmck@kernel.org>
-+M:	Frederic Weisbecker <frederic@kernel.org> (kernel/rcu/tree_nocb.h)
-+M:	Neeraj Upadhyay <quic_neeraju@quicinc.com> (kernel/rcu/tasks.h)
- M:	Josh Triplett <josh@joshtriplett.org>
- R:	Steven Rostedt <rostedt@goodmis.org>
- R:	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+diff --git a/kernel/rcu/tree.h b/kernel/rcu/tree.h
+index 486fc901bd085..3b8b60de07c38 100644
+--- a/kernel/rcu/tree.h
++++ b/kernel/rcu/tree.h
+@@ -110,6 +110,9 @@ struct rcu_node {
+ 				/*  side effect, not as a lock. */
+ 	unsigned long boost_time;
+ 				/* When to start boosting (jiffies). */
++	struct mutex boost_kthread_mutex;
++				/* Exclusion for thread spawning and affinity */
++				/*  manipulation. */
+ 	struct task_struct *boost_kthread_task;
+ 				/* kthread that takes care of priority */
+ 				/*  boosting for this rcu_node structure. */
+diff --git a/kernel/rcu/tree_plugin.h b/kernel/rcu/tree_plugin.h
+index c5b45c2f68a15..07845dcd33c5e 100644
+--- a/kernel/rcu/tree_plugin.h
++++ b/kernel/rcu/tree_plugin.h
+@@ -1172,15 +1172,16 @@ static void rcu_spawn_one_boost_kthread(struct rcu_node *rnp)
+ 	struct sched_param sp;
+ 	struct task_struct *t;
+ 
++	mutex_lock(&rnp->boost_kthread_mutex);
+ 	if (rnp->boost_kthread_task || !rcu_scheduler_fully_active)
+-		return;
++		goto out;
+ 
+ 	rcu_state.boost = 1;
+ 
+ 	t = kthread_create(rcu_boost_kthread, (void *)rnp,
+ 			   "rcub/%d", rnp_index);
+ 	if (WARN_ON_ONCE(IS_ERR(t)))
+-		return;
++		goto out;
+ 
+ 	raw_spin_lock_irqsave_rcu_node(rnp, flags);
+ 	rnp->boost_kthread_task = t;
+@@ -1188,6 +1189,9 @@ static void rcu_spawn_one_boost_kthread(struct rcu_node *rnp)
+ 	sp.sched_priority = kthread_prio;
+ 	sched_setscheduler_nocheck(t, SCHED_FIFO, &sp);
+ 	wake_up_process(t); /* get to TASK_INTERRUPTIBLE quickly. */
++
++ out:
++	mutex_unlock(&rnp->boost_kthread_mutex);
+ }
+ 
+ /*
+@@ -1210,6 +1214,7 @@ static void rcu_boost_kthread_setaffinity(struct rcu_node *rnp, int outgoingcpu)
+ 		return;
+ 	if (!zalloc_cpumask_var(&cm, GFP_KERNEL))
+ 		return;
++	mutex_lock(&rnp->boost_kthread_mutex);
+ 	for_each_leaf_node_possible_cpu(rnp, cpu)
+ 		if ((mask & leaf_node_cpu_bit(rnp, cpu)) &&
+ 		    cpu != outgoingcpu)
+@@ -1218,6 +1223,7 @@ static void rcu_boost_kthread_setaffinity(struct rcu_node *rnp, int outgoingcpu)
+ 	if (cpumask_weight(cm) == 0)
+ 		cpumask_copy(cm, housekeeping_cpumask(HK_FLAG_RCU));
+ 	set_cpus_allowed_ptr(t, cm);
++	mutex_unlock(&rnp->boost_kthread_mutex);
+ 	free_cpumask_var(cm);
+ }
+ 
 -- 
 2.31.1.189.g2e36527f23
 
