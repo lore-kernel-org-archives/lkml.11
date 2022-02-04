@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25D69C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 20:03:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 022CAC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 20:03:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240796AbiBDUDM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 15:03:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39304 "EHLO
+        id S240981AbiBDUDQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 15:03:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235874AbiBDT7R (ORCPT
+        with ESMTP id S235470AbiBDT7R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 4 Feb 2022 14:59:17 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF72AC06174A
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 11:59:07 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DA34C061760
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 11:59:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=rAjdWgwyF0gJodoNZNOjCHqOyiYZl3gXKRPYvb6G/O4=; b=DpiiMK03QKn57cgRvR/FlwGaXA
-        q1tCS0HNQfUS2MgyAqnzvVsrWDs2SPT2Rq5Q3MLsBqrOObdi47e0C3RGbE3/ww4uXl6xjPxwKik0o
-        QfGVrGCdJ0nJt2cFF3EDlf8WdXdOGMBUZtgaGxXq4+JdFMfuvwNXd8Uetm3ocGzD+Adw9DCQTVAnL
-        /gUl5oOJZVOB+aNM6cOCWTjhgu724NUrI0p3FKKszCJ0VkqE30Ba6Vd0HD6h0mGaxKbGrTG2nDGIH
-        aZxLXz8DESdjO3U9KAQxP4HrDoxGArgNTmp4psaS1tXiIMdBQY0M89+LoTKLi/9bVfaoX+fgGuPir
-        1Eif6E5A==;
+        bh=o/R+lQNQz2S9kttUND7xl8Fc8rIYoPPqfeSJIPC2IiE=; b=kIDCkYhgA64vQwfZuKld1Xh8KJ
+        LMlStEtM6+YNsCitN0G96IvtSQvWcz3ochaqjgtz3vajIP2NQ66N5Z/FyktRf9MUSSbGh0X23CdaT
+        +Kb/RoFnH3ms5tQ8ChAjTq4LDkTlUYoRC31TFAShIKnMDNbIviRPgxMUY9uitlZSgwTq4WstkFxp1
+        I5rLmvDj5prZTaCfZQECDYGwUKbn/CH6G0+iqKc0gBIlNQ6wlTHG9YmreVUI87OM8ixGqbWXY7VHr
+        coQmV0PNuMyS6h2sueTlO32sEm7TcuJCRB4RzPD9yVCRF/5JIBL6BN3caPHYCSvZMizHe1mo4aUL8
+        Se46oAvA==;
 Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nG4ja-007LpU-2K; Fri, 04 Feb 2022 19:59:06 +0000
+        id 1nG4jY-007LoI-SV; Fri, 04 Feb 2022 19:59:04 +0000
 From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
 To:     linux-mm@kvack.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 58/75] mm: Turn page_anon_vma() into folio_anon_vma()
-Date:   Fri,  4 Feb 2022 19:58:35 +0000
-Message-Id: <20220204195852.1751729-59-willy@infradead.org>
+Subject: [PATCH 50/75] mm/huge_memory: Convert __split_huge_pmd() to take a folio
+Date:   Fri,  4 Feb 2022 19:58:27 +0000
+Message-Id: <20220204195852.1751729-51-willy@infradead.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220204195852.1751729-1-willy@infradead.org>
 References: <20220204195852.1751729-1-willy@infradead.org>
@@ -43,149 +43,202 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move the prototype from mm.h to mm/internal.h and convert all callers
-to pass a folio.
+Convert split_huge_pmd_address() at the same time since it only passes
+the folio through, and its two callers already have a folio on hand.
+Removes numerous calls to compound_head() and removes an assumption
+that a page cannot be larger than a PMD.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
- include/linux/mm.h |  1 -
- mm/internal.h      |  1 +
- mm/ksm.c           |  3 ++-
- mm/rmap.c          | 19 ++++++++++++-------
- mm/util.c          |  3 +--
- 5 files changed, 16 insertions(+), 11 deletions(-)
+ include/linux/huge_mm.h |  8 +++----
+ mm/huge_memory.c        | 50 ++++++++++++++++++++---------------------
+ mm/rmap.c               |  6 +++--
+ 3 files changed, 33 insertions(+), 31 deletions(-)
 
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 028bd9336e82..74d9cda7cfd6 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -1765,7 +1765,6 @@ static inline void *folio_address(const struct folio *folio)
+diff --git a/include/linux/huge_mm.h b/include/linux/huge_mm.h
+index 71c073d411ac..4368b314d9c8 100644
+--- a/include/linux/huge_mm.h
++++ b/include/linux/huge_mm.h
+@@ -194,7 +194,7 @@ static inline int split_huge_page(struct page *page)
+ void deferred_split_huge_page(struct page *page);
+ 
+ void __split_huge_pmd(struct vm_area_struct *vma, pmd_t *pmd,
+-		unsigned long address, bool freeze, struct page *page);
++		unsigned long address, bool freeze, struct folio *folio);
+ 
+ #define split_huge_pmd(__vma, __pmd, __address)				\
+ 	do {								\
+@@ -207,7 +207,7 @@ void __split_huge_pmd(struct vm_area_struct *vma, pmd_t *pmd,
+ 
+ 
+ void split_huge_pmd_address(struct vm_area_struct *vma, unsigned long address,
+-		bool freeze, struct page *page);
++		bool freeze, struct folio *folio);
+ 
+ void __split_huge_pud(struct vm_area_struct *vma, pud_t *pud,
+ 		unsigned long address);
+@@ -406,9 +406,9 @@ static inline void deferred_split_huge_page(struct page *page) {}
+ 	do { } while (0)
+ 
+ static inline void __split_huge_pmd(struct vm_area_struct *vma, pmd_t *pmd,
+-		unsigned long address, bool freeze, struct page *page) {}
++		unsigned long address, bool freeze, struct folio *folio) {}
+ static inline void split_huge_pmd_address(struct vm_area_struct *vma,
+-		unsigned long address, bool freeze, struct page *page) {}
++		unsigned long address, bool freeze, struct folio *folio) {}
+ 
+ #define split_huge_pud(__vma, __pmd, __address)	\
+ 	do { } while (0)
+diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+index 94e591d638eb..f934b93d08ca 100644
+--- a/mm/huge_memory.c
++++ b/mm/huge_memory.c
+@@ -2143,11 +2143,11 @@ static void __split_huge_pmd_locked(struct vm_area_struct *vma, pmd_t *pmd,
  }
  
- extern void *page_rmapping(struct page *page);
--extern struct anon_vma *page_anon_vma(struct page *page);
- extern pgoff_t __page_file_index(struct page *page);
- 
- /*
-diff --git a/mm/internal.h b/mm/internal.h
-index 66645972cbd7..360256e4ee06 100644
---- a/mm/internal.h
-+++ b/mm/internal.h
-@@ -393,6 +393,7 @@ static inline bool is_data_mapping(vm_flags_t flags)
- void __vma_link_list(struct mm_struct *mm, struct vm_area_struct *vma,
- 		struct vm_area_struct *prev);
- void __vma_unlink_list(struct mm_struct *mm, struct vm_area_struct *vma);
-+struct anon_vma *folio_anon_vma(struct folio *folio);
- 
- #ifdef CONFIG_MMU
- void unmap_mapping_folio(struct folio *folio);
-diff --git a/mm/ksm.c b/mm/ksm.c
-index 1639160c9e9a..212186dbc89f 100644
---- a/mm/ksm.c
-+++ b/mm/ksm.c
-@@ -2567,7 +2567,8 @@ void __ksm_exit(struct mm_struct *mm)
- struct page *ksm_might_need_to_copy(struct page *page,
- 			struct vm_area_struct *vma, unsigned long address)
+ void __split_huge_pmd(struct vm_area_struct *vma, pmd_t *pmd,
+-		unsigned long address, bool freeze, struct page *page)
++		unsigned long address, bool freeze, struct folio *folio)
  {
--	struct anon_vma *anon_vma = page_anon_vma(page);
-+	struct folio *folio = page_folio(page);
-+	struct anon_vma *anon_vma = folio_anon_vma(folio);
- 	struct page *new_page;
+ 	spinlock_t *ptl;
+ 	struct mmu_notifier_range range;
+-	bool do_unlock_page = false;
++	bool do_unlock_folio = false;
+ 	pmd_t _pmd;
  
- 	if (PageKsm(page)) {
+ 	mmu_notifier_range_init(&range, MMU_NOTIFY_CLEAR, 0, vma, vma->vm_mm,
+@@ -2157,20 +2157,20 @@ void __split_huge_pmd(struct vm_area_struct *vma, pmd_t *pmd,
+ 	ptl = pmd_lock(vma->vm_mm, pmd);
+ 
+ 	/*
+-	 * If caller asks to setup a migration entries, we need a page to check
+-	 * pmd against. Otherwise we can end up replacing wrong page.
++	 * If caller asks to setup a migration entry, we need a folio to check
++	 * pmd against. Otherwise we can end up replacing wrong folio.
+ 	 */
+-	VM_BUG_ON(freeze && !page);
+-	if (page) {
+-		VM_WARN_ON_ONCE(!PageLocked(page));
+-		if (page != pmd_page(*pmd))
++	VM_BUG_ON(freeze && !folio);
++	if (folio) {
++		VM_WARN_ON_ONCE(!folio_test_locked(folio));
++		if (folio != page_folio(pmd_page(*pmd)))
+ 			goto out;
+ 	}
+ 
+ repeat:
+ 	if (pmd_trans_huge(*pmd)) {
+-		if (!page) {
+-			page = pmd_page(*pmd);
++		if (!folio) {
++			folio = page_folio(pmd_page(*pmd));
+ 			/*
+ 			 * An anonymous page must be locked, to ensure that a
+ 			 * concurrent reuse_swap_page() sees stable mapcount;
+@@ -2178,33 +2178,33 @@ void __split_huge_pmd(struct vm_area_struct *vma, pmd_t *pmd,
+ 			 * and page lock must not be taken when zap_pmd_range()
+ 			 * calls __split_huge_pmd() while i_mmap_lock is held.
+ 			 */
+-			if (PageAnon(page)) {
+-				if (unlikely(!trylock_page(page))) {
+-					get_page(page);
++			if (folio_test_anon(folio)) {
++				if (unlikely(!folio_trylock(folio))) {
++					folio_get(folio);
+ 					_pmd = *pmd;
+ 					spin_unlock(ptl);
+-					lock_page(page);
++					folio_lock(folio);
+ 					spin_lock(ptl);
+ 					if (unlikely(!pmd_same(*pmd, _pmd))) {
+-						unlock_page(page);
+-						put_page(page);
+-						page = NULL;
++						folio_unlock(folio);
++						folio_put(folio);
++						folio = NULL;
+ 						goto repeat;
+ 					}
+-					put_page(page);
++					folio_put(folio);
+ 				}
+-				do_unlock_page = true;
++				do_unlock_folio = true;
+ 			}
+ 		}
+-		if (PageMlocked(page))
+-			clear_page_mlock(page);
++		if (folio_test_mlocked(folio))
++			folio_end_mlock(folio);
+ 	} else if (!(pmd_devmap(*pmd) || is_pmd_migration_entry(*pmd)))
+ 		goto out;
+ 	__split_huge_pmd_locked(vma, pmd, range.start, freeze);
+ out:
+ 	spin_unlock(ptl);
+-	if (do_unlock_page)
+-		unlock_page(page);
++	if (do_unlock_folio)
++		folio_unlock(folio);
+ 	/*
+ 	 * No need to double call mmu_notifier->invalidate_range() callback.
+ 	 * They are 3 cases to consider inside __split_huge_pmd_locked():
+@@ -2222,7 +2222,7 @@ void __split_huge_pmd(struct vm_area_struct *vma, pmd_t *pmd,
+ }
+ 
+ void split_huge_pmd_address(struct vm_area_struct *vma, unsigned long address,
+-		bool freeze, struct page *page)
++		bool freeze, struct folio *folio)
+ {
+ 	pgd_t *pgd;
+ 	p4d_t *p4d;
+@@ -2243,7 +2243,7 @@ void split_huge_pmd_address(struct vm_area_struct *vma, unsigned long address,
+ 
+ 	pmd = pmd_offset(pud, address);
+ 
+-	__split_huge_pmd(vma, pmd, address, freeze, page);
++	__split_huge_pmd(vma, pmd, address, freeze, folio);
+ }
+ 
+ static inline void split_huge_pmd_if_needed(struct vm_area_struct *vma, unsigned long address)
 diff --git a/mm/rmap.c b/mm/rmap.c
-index ba65d5d3eb5a..8bbbbea483cf 100644
+index a383e25fb196..42a147746ff8 100644
 --- a/mm/rmap.c
 +++ b/mm/rmap.c
-@@ -737,8 +737,9 @@ static bool should_defer_flush(struct mm_struct *mm, enum ttu_flags flags)
-  */
- unsigned long page_address_in_vma(struct page *page, struct vm_area_struct *vma)
+@@ -1422,6 +1422,7 @@ void page_remove_rmap(struct page *page, bool compound)
+ static bool try_to_unmap_one(struct page *page, struct vm_area_struct *vma,
+ 		     unsigned long address, void *arg)
  {
--	if (PageAnon(page)) {
--		struct anon_vma *page__anon_vma = page_anon_vma(page);
 +	struct folio *folio = page_folio(page);
-+	if (folio_test_anon(folio)) {
-+		struct anon_vma *page__anon_vma = folio_anon_vma(folio);
- 		/*
- 		 * Note: swapoff's unuse_vma() is more efficient with this
- 		 * check, and needs it to match anon_vma when KSM is active.
-@@ -748,7 +749,7 @@ unsigned long page_address_in_vma(struct page *page, struct vm_area_struct *vma)
- 			return -EFAULT;
- 	} else if (!vma->vm_file) {
- 		return -EFAULT;
--	} else if (vma->vm_file->f_mapping != compound_head(page)->mapping) {
-+	} else if (vma->vm_file->f_mapping != folio->mapping) {
- 		return -EFAULT;
- 	}
+ 	struct mm_struct *mm = vma->vm_mm;
+ 	struct page_vma_mapped_walk pvmw = {
+ 		.vma = vma,
+@@ -1444,7 +1445,7 @@ static bool try_to_unmap_one(struct page *page, struct vm_area_struct *vma,
+ 		pvmw.flags = PVMW_SYNC;
  
-@@ -1109,6 +1110,7 @@ static void __page_set_anon_rmap(struct page *page,
- static void __page_check_anon_rmap(struct page *page,
- 	struct vm_area_struct *vma, unsigned long address)
- {
-+	struct folio *folio = page_folio(page);
+ 	if (flags & TTU_SPLIT_HUGE_PMD)
+-		split_huge_pmd_address(vma, address, false, page);
++		split_huge_pmd_address(vma, address, false, folio);
+ 
  	/*
- 	 * The page's anon-rmap details (mapping and index) are guaranteed to
- 	 * be set up correctly at this point.
-@@ -1120,7 +1122,8 @@ static void __page_check_anon_rmap(struct page *page,
- 	 * are initially only visible via the pagetables, and the pte is locked
- 	 * over the call to page_add_new_anon_rmap.
- 	 */
--	VM_BUG_ON_PAGE(page_anon_vma(page)->root != vma->anon_vma->root, page);
-+	VM_BUG_ON_FOLIO(folio_anon_vma(folio)->root != vma->anon_vma->root,
-+			folio);
- 	VM_BUG_ON_PAGE(page_to_pgoff(page) != linear_page_index(vma, address),
- 		       page);
- }
-@@ -2278,6 +2281,7 @@ void __put_anon_vma(struct anon_vma *anon_vma)
- static struct anon_vma *rmap_walk_anon_lock(struct page *page,
- 					struct rmap_walk_control *rwc)
+ 	 * For THP, we have to assume the worse case ie pmd for invalidation.
+@@ -1721,6 +1722,7 @@ void try_to_unmap(struct page *page, enum ttu_flags flags)
+ static bool try_to_migrate_one(struct page *page, struct vm_area_struct *vma,
+ 		     unsigned long address, void *arg)
  {
 +	struct folio *folio = page_folio(page);
- 	struct anon_vma *anon_vma;
- 
- 	if (rwc->anon_lock)
-@@ -2289,7 +2293,7 @@ static struct anon_vma *rmap_walk_anon_lock(struct page *page,
- 	 * are holding mmap_lock. Users without mmap_lock are required to
- 	 * take a reference count to prevent the anon_vma disappearing
+ 	struct mm_struct *mm = vma->vm_mm;
+ 	struct page_vma_mapped_walk pvmw = {
+ 		.vma = vma,
+@@ -1747,7 +1749,7 @@ static bool try_to_migrate_one(struct page *page, struct vm_area_struct *vma,
+ 	 * TTU_SPLIT_HUGE_PMD and it wants to freeze.
  	 */
--	anon_vma = page_anon_vma(page);
-+	anon_vma = folio_anon_vma(folio);
- 	if (!anon_vma)
- 		return NULL;
+ 	if (flags & TTU_SPLIT_HUGE_PMD)
+-		split_huge_pmd_address(vma, address, true, page);
++		split_huge_pmd_address(vma, address, true, folio);
  
-@@ -2314,14 +2318,15 @@ static struct anon_vma *rmap_walk_anon_lock(struct page *page,
- static void rmap_walk_anon(struct page *page, struct rmap_walk_control *rwc,
- 		bool locked)
- {
-+	struct folio *folio = page_folio(page);
- 	struct anon_vma *anon_vma;
- 	pgoff_t pgoff_start, pgoff_end;
- 	struct anon_vma_chain *avc;
- 
- 	if (locked) {
--		anon_vma = page_anon_vma(page);
-+		anon_vma = folio_anon_vma(folio);
- 		/* anon_vma disappear under us? */
--		VM_BUG_ON_PAGE(!anon_vma, page);
-+		VM_BUG_ON_FOLIO(!anon_vma, folio);
- 	} else {
- 		anon_vma = rmap_walk_anon_lock(page, rwc);
- 	}
-diff --git a/mm/util.c b/mm/util.c
-index b614f423aaa4..13fc88ac8e70 100644
---- a/mm/util.c
-+++ b/mm/util.c
-@@ -679,9 +679,8 @@ bool folio_mapped(struct folio *folio)
- }
- EXPORT_SYMBOL(folio_mapped);
- 
--struct anon_vma *page_anon_vma(struct page *page)
-+struct anon_vma *folio_anon_vma(struct folio *folio)
- {
--	struct folio *folio = page_folio(page);
- 	unsigned long mapping = (unsigned long)folio->mapping;
- 
- 	if ((mapping & PAGE_MAPPING_FLAGS) != PAGE_MAPPING_ANON)
+ 	/*
+ 	 * For THP, we have to assume the worse case ie pmd for invalidation.
 -- 
 2.34.1
 
