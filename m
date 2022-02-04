@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F278C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:29:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 471C0C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:30:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358201AbiBDJ3v (ORCPT
+        id S1357802AbiBDJaH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 04:29:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33458 "EHLO
+        Fri, 4 Feb 2022 04:30:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358297AbiBDJ2E (ORCPT
+        with ESMTP id S1358034AbiBDJ2W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 04:28:04 -0500
+        Fri, 4 Feb 2022 04:28:22 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3398FC06174A;
-        Fri,  4 Feb 2022 01:26:51 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 149CBC061340;
+        Fri,  4 Feb 2022 01:27:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ED2DFB836EA;
-        Fri,  4 Feb 2022 09:26:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FAE7C340EF;
-        Fri,  4 Feb 2022 09:26:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CAB25B836EE;
+        Fri,  4 Feb 2022 09:26:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3991C004E1;
+        Fri,  4 Feb 2022 09:26:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643966808;
-        bh=r2AEvg0dJtsDUBsrPtvCkwyCzdKV51w5osYdpLkgFY0=;
+        s=korg; t=1643966818;
+        bh=u95f1E3cPlDrVSm0z4hyvD5olgUXo83F6mv+pe0hmvY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VmLpoH+FnhWMF8kRpLfrn300gWGhw+GbzX+L8ZRiJW+R+A+MoAQRrBEDZnxDvk6Fr
-         xsMrTFxNKjWkUQRoYGOL2q0W+qWbDurPuxyryMtnGvWzFWOb8O/9VJt4Zmz0vb78UD
-         FkssIZVQ+NucUNAJh9VGDrE2lW4bCTP/c6+ngAAU=
+        b=q8ui5L3TEu2rsCurl2sOISdsVpwFEmnekwzAPGJEyteoJjBqdFVCyM5gT0G3XQd1K
+         hlhhdsdl+/nc+47eKDmubnJs5U6vVxSaj6rR1+695j0IMCZ+ZrWl2h6ZB9IjRGFTCx
+         31Gp0gzjmWufSWrHL84FV/mZKn7UYZyKBL8IaKY4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Slawomir Laba <slawomirx.laba@intel.com>,
-        Sylwester Dziedziuch <sylwesterx.dziedziuch@intel.com>,
-        Karen Sornek <karen.sornek@intel.com>,
-        Gurucharan G <gurucharanx.g@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.16 31/43] i40e: Fix reset path while removing the driver
-Date:   Fri,  4 Feb 2022 10:22:38 +0100
-Message-Id: <20220204091918.186259322@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Mathias Krause <minipli@grsecurity.net>,
+        Jan Kara <jack@suse.cz>
+Subject: [PATCH 5.16 34/43] fanotify: Fix stale file descriptor in copy_event_to_user()
+Date:   Fri,  4 Feb 2022 10:22:41 +0100
+Message-Id: <20220204091918.278563230@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220204091917.166033635@linuxfoundation.org>
 References: <20220204091917.166033635@linuxfoundation.org>
@@ -52,113 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Karen Sornek <karen.sornek@intel.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit 6533e558c6505e94c3e0ed4281ed5e31ec985f4d upstream.
+commit ee12595147ac1fbfb5bcb23837e26dd58d94b15d upstream.
 
-Fix the crash in kernel while dereferencing the NULL pointer,
-when the driver is unloaded and simultaneously the VSI rings
-are being stopped.
+This code calls fd_install() which gives the userspace access to the fd.
+Then if copy_info_records_to_user() fails it calls put_unused_fd(fd) but
+that will not release it and leads to a stale entry in the file
+descriptor table.
 
-The hardware requires 50msec in order to finish RX queues
-disable. For this purpose the driver spins in mdelay function
-for the operation to be completed.
+Generally you can't trust the fd after a call to fd_install().  The fix
+is to delay the fd_install() until everything else has succeeded.
 
-For example changing number of queues which requires reset would
-fail in the following call stack:
+Fortunately it requires CAP_SYS_ADMIN to reach this code so the security
+impact is less.
 
-1) i40e_prep_for_reset
-2) i40e_pf_quiesce_all_vsi
-3) i40e_quiesce_vsi
-4) i40e_vsi_close
-5) i40e_down
-6) i40e_vsi_stop_rings
-7) i40e_vsi_control_rx -> disable requires the delay of 50msecs
-8) continue back in i40e_down function where
-   i40e_clean_tx_ring(vsi->tx_rings[i]) is going to crash
-
-When the driver was spinning vsi_release called
-i40e_vsi_free_arrays where the vsi->tx_rings resources
-were freed and the pointer was set to NULL.
-
-Fixes: 5b6d4a7f20b0 ("i40e: Fix crash during removing i40e driver")
-Signed-off-by: Slawomir Laba <slawomirx.laba@intel.com>
-Signed-off-by: Sylwester Dziedziuch <sylwesterx.dziedziuch@intel.com>
-Signed-off-by: Karen Sornek <karen.sornek@intel.com>
-Tested-by: Gurucharan G <gurucharanx.g@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Fixes: f644bc449b37 ("fanotify: fix copy_event_to_user() fid error clean up")
+Link: https://lore.kernel.org/r/20220128195656.GA26981@kili
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reviewed-by: Mathias Krause <minipli@grsecurity.net>
+Signed-off-by: Jan Kara <jack@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/i40e/i40e.h      |    1 +
- drivers/net/ethernet/intel/i40e/i40e_main.c |   19 ++++++++++++++++++-
- 2 files changed, 19 insertions(+), 1 deletion(-)
+ fs/notify/fanotify/fanotify_user.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/net/ethernet/intel/i40e/i40e.h
-+++ b/drivers/net/ethernet/intel/i40e/i40e.h
-@@ -144,6 +144,7 @@ enum i40e_state_t {
- 	__I40E_VIRTCHNL_OP_PENDING,
- 	__I40E_RECOVERY_MODE,
- 	__I40E_VF_RESETS_DISABLED,	/* disable resets during i40e_remove */
-+	__I40E_IN_REMOVE,
- 	__I40E_VFS_RELEASING,
- 	/* This must be last as it determines the size of the BITMAP */
- 	__I40E_STATE_SIZE__,
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -10863,6 +10863,9 @@ static void i40e_reset_and_rebuild(struc
- 				   bool lock_acquired)
- {
- 	int ret;
+--- a/fs/notify/fanotify/fanotify_user.c
++++ b/fs/notify/fanotify/fanotify_user.c
+@@ -656,9 +656,6 @@ static ssize_t copy_event_to_user(struct
+ 	if (fanotify_is_perm_event(event->mask))
+ 		FANOTIFY_PERM(event)->fd = fd;
+ 
+-	if (f)
+-		fd_install(fd, f);
+-
+ 	if (info_mode) {
+ 		ret = copy_info_records_to_user(event, info, info_mode, pidfd,
+ 						buf, count);
+@@ -666,6 +663,9 @@ static ssize_t copy_event_to_user(struct
+ 			goto out_close_fd;
+ 	}
+ 
++	if (f)
++		fd_install(fd, f);
 +
-+	if (test_bit(__I40E_IN_REMOVE, pf->state))
-+		return;
- 	/* Now we wait for GRST to settle out.
- 	 * We don't have to delete the VEBs or VSIs from the hw switch
- 	 * because the reset will make them disappear.
-@@ -12222,6 +12225,8 @@ int i40e_reconfig_rss_queues(struct i40e
+ 	return metadata.event_len;
  
- 		vsi->req_queue_pairs = queue_count;
- 		i40e_prep_for_reset(pf);
-+		if (test_bit(__I40E_IN_REMOVE, pf->state))
-+			return pf->alloc_rss_size;
- 
- 		pf->alloc_rss_size = new_rss_size;
- 
-@@ -13048,6 +13053,10 @@ static int i40e_xdp_setup(struct i40e_vs
- 	if (need_reset)
- 		i40e_prep_for_reset(pf);
- 
-+	/* VSI shall be deleted in a moment, just return EINVAL */
-+	if (test_bit(__I40E_IN_REMOVE, pf->state))
-+		return -EINVAL;
-+
- 	old_prog = xchg(&vsi->xdp_prog, prog);
- 
- 	if (need_reset) {
-@@ -15938,8 +15947,13 @@ static void i40e_remove(struct pci_dev *
- 	i40e_write_rx_ctl(hw, I40E_PFQF_HENA(0), 0);
- 	i40e_write_rx_ctl(hw, I40E_PFQF_HENA(1), 0);
- 
--	while (test_bit(__I40E_RESET_RECOVERY_PENDING, pf->state))
-+	/* Grab __I40E_RESET_RECOVERY_PENDING and set __I40E_IN_REMOVE
-+	 * flags, once they are set, i40e_rebuild should not be called as
-+	 * i40e_prep_for_reset always returns early.
-+	 */
-+	while (test_and_set_bit(__I40E_RESET_RECOVERY_PENDING, pf->state))
- 		usleep_range(1000, 2000);
-+	set_bit(__I40E_IN_REMOVE, pf->state);
- 
- 	if (pf->flags & I40E_FLAG_SRIOV_ENABLED) {
- 		set_bit(__I40E_VF_RESETS_DISABLED, pf->state);
-@@ -16138,6 +16152,9 @@ static void i40e_pci_error_reset_done(st
- {
- 	struct i40e_pf *pf = pci_get_drvdata(pdev);
- 
-+	if (test_bit(__I40E_IN_REMOVE, pf->state))
-+		return;
-+
- 	i40e_reset_and_rebuild(pf, false, false);
- }
- 
+ out_close_fd:
 
 
