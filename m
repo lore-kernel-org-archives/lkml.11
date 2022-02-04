@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C154CC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0DC4C43219
 	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 20:00:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236232AbiBDUAo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 15:00:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39372 "EHLO
+        id S233765AbiBDUAj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 15:00:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236343AbiBDT7W (ORCPT
+        with ESMTP id S235314AbiBDT7J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 14:59:22 -0500
+        Fri, 4 Feb 2022 14:59:09 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 299E7C061744
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 11:59:09 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC953C06174E
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 11:59:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=L37MxzcVyvY09GTWOfKpnrpDRYDGlN5/2cipacEt3mI=; b=ZhFNNZhgMvwA2TG2/a6FGpBoc9
-        AqK7iDGsWQzCBRJn+TEe0o+W86DMYD9LcFyzHjiowHJ8Tu6VXhtQjRLYHOE2KpmXIo8V/RRqsLTrF
-        WbG52N+2uWo532xUuSdlpYwuEK0pg3X/daE+obSOZZlg9P6iKyZOYpBevBtumYw9wIu/ubBuHFGzs
-        utudAFbWmLtrVZ3/ztqbAAA3oXWGGg377/i7eNlbgylA3AWNWj+KMTWnNMaQqLCH1et5AkgFy1ePM
-        1H4DVtT9Dn1TGeU/lLU510OFH5mEPPWfQInO8YndDKoPnP2aDo0LNMfdeFONzgQ+ceUEzlLdXc4q3
-        MZRnsSWQ==;
+        bh=z3sPhSbLDlsnaAomIZZPLnOqHhZ/qq70m6emg2A+ypQ=; b=K/ngvCfbirTWidLKv3SUZSSl0v
+        dzHdbtLw5VaV24sQnq07oLhjjHPA00pdvzQ5XXmuGai+KYKkbS9qSFnZfuRi1y0uzBN575Ud21i5U
+        8dGIqEXz8PPUkcn4Dpvd+f55TI5LtSvpfBRy2VPwlW8ljBsm6tuwZKaryMQ9NSopDBx6TLCdyCp8d
+        vOUajyHC4Cn94aJZ8jNhawiVbMyVQeQgizbSRntnFD5YAEJbZsblumJePTjQRLAbon5GwS91U7OHg
+        bnm2A8lzk66JRJRnvIi+bAe7G0OVOcvw+dAlgyspnIs1NJlu6WnOOIwsQRqh8zdDCcVFlVra3s20B
+        b1/dFB9g==;
 Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nG4jb-007Lqq-EK; Fri, 04 Feb 2022 19:59:07 +0000
+        id 1nG4jX-007Lml-43; Fri, 04 Feb 2022 19:59:03 +0000
 From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
 To:     linux-mm@kvack.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 67/75] mm/filemap: Allow large folios to be added to the page cache
-Date:   Fri,  4 Feb 2022 19:58:44 +0000
-Message-Id: <20220204195852.1751729-68-willy@infradead.org>
+Subject: [PATCH 36/75] mm: Add folio_mapcount()
+Date:   Fri,  4 Feb 2022 19:58:13 +0000
+Message-Id: <20220204195852.1751729-37-willy@infradead.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220204195852.1751729-1-willy@infradead.org>
 References: <20220204195852.1751729-1-willy@infradead.org>
@@ -43,108 +43,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We return -EEXIST if there are any non-shadow entries in the page
-cache in the range covered by the folio.  If there are multiple
-shadow entries in the range, we set *shadowp to one of them (currently
-the one at the highest index).  If that turns out to be the wrong
-answer, we can implement something more complex.  This is mostly
-modelled after the equivalent function in the shmem code.
+This implements the same algorithm as total_mapcount(), which is
+transformed into a wrapper function.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
- mm/filemap.c | 39 ++++++++++++++++++++++-----------------
- 1 file changed, 22 insertions(+), 17 deletions(-)
+ include/linux/mm.h |  8 +++++++-
+ mm/huge_memory.c   | 24 ------------------------
+ mm/util.c          | 33 +++++++++++++++++++++++++++++++++
+ 3 files changed, 40 insertions(+), 25 deletions(-)
 
-diff --git a/mm/filemap.c b/mm/filemap.c
-index ad8c39d90bf9..8f7ac3de9098 100644
---- a/mm/filemap.c
-+++ b/mm/filemap.c
-@@ -842,26 +842,27 @@ noinline int __filemap_add_folio(struct address_space *mapping,
- {
- 	XA_STATE(xas, &mapping->i_pages, index);
- 	int huge = folio_test_hugetlb(folio);
--	int error;
- 	bool charged = false;
-+	long nr = 1;
- 
- 	VM_BUG_ON_FOLIO(!folio_test_locked(folio), folio);
- 	VM_BUG_ON_FOLIO(folio_test_swapbacked(folio), folio);
- 	mapping_set_update(&xas, mapping);
- 
--	folio_get(folio);
--	folio->mapping = mapping;
--	folio->index = index;
--
- 	if (!huge) {
--		error = mem_cgroup_charge(folio, NULL, gfp);
-+		int error = mem_cgroup_charge(folio, NULL, gfp);
- 		VM_BUG_ON_FOLIO(index & (folio_nr_pages(folio) - 1), folio);
- 		if (error)
--			goto error;
-+			return error;
- 		charged = true;
-+		xas_set_order(&xas, index, folio_order(folio));
-+		nr = folio_nr_pages(folio);
- 	}
- 
- 	gfp &= GFP_RECLAIM_MASK;
-+	folio_ref_add(folio, nr);
-+	folio->mapping = mapping;
-+	folio->index = xas.xa_index;
- 
- 	do {
- 		unsigned int order = xa_get_order(xas.xa, xas.xa_index);
-@@ -885,6 +886,8 @@ noinline int __filemap_add_folio(struct address_space *mapping,
- 			/* entry may have been split before we acquired lock */
- 			order = xa_get_order(xas.xa, xas.xa_index);
- 			if (order > folio_order(folio)) {
-+				/* How to handle large swap entries? */
-+				BUG_ON(shmem_mapping(mapping));
- 				xas_split(&xas, old, order);
- 				xas_reset(&xas);
- 			}
-@@ -894,29 +897,31 @@ noinline int __filemap_add_folio(struct address_space *mapping,
- 		if (xas_error(&xas))
- 			goto unlock;
- 
--		mapping->nrpages++;
-+		mapping->nrpages += nr;
- 
- 		/* hugetlb pages do not participate in page cache accounting */
--		if (!huge)
--			__lruvec_stat_add_folio(folio, NR_FILE_PAGES);
-+		if (!huge) {
-+			__lruvec_stat_mod_folio(folio, NR_FILE_PAGES, nr);
-+			if (folio_test_pmd_mappable(folio))
-+				__lruvec_stat_mod_folio(folio,
-+						NR_FILE_THPS, nr);
-+		}
- unlock:
- 		xas_unlock_irq(&xas);
- 	} while (xas_nomem(&xas, gfp));
- 
--	if (xas_error(&xas)) {
--		error = xas_error(&xas);
--		if (charged)
--			mem_cgroup_uncharge(folio);
-+	if (xas_error(&xas))
- 		goto error;
--	}
- 
- 	trace_mm_filemap_add_to_page_cache(folio);
- 	return 0;
- error:
-+	if (charged)
-+		mem_cgroup_uncharge(folio);
- 	folio->mapping = NULL;
- 	/* Leave page->index set: truncation relies upon it */
--	folio_put(folio);
--	return error;
-+	folio_put_refs(folio, nr);
-+	return xas_error(&xas);
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 6ddf655f9279..6a19cd97d5aa 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -826,8 +826,14 @@ static inline int page_mapcount(struct page *page)
+ 	return atomic_read(&page->_mapcount) + 1;
  }
- ALLOW_ERROR_INJECTION(__filemap_add_folio, ERRNO);
  
++int folio_mapcount(struct folio *folio);
++
+ #ifdef CONFIG_TRANSPARENT_HUGEPAGE
+-int total_mapcount(struct page *page);
++static inline int total_mapcount(struct page *page)
++{
++	return folio_mapcount(page_folio(page));
++}
++
+ int page_trans_huge_mapcount(struct page *page);
+ #else
+ static inline int total_mapcount(struct page *page)
+diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+index 406a3c28c026..94e591d638eb 100644
+--- a/mm/huge_memory.c
++++ b/mm/huge_memory.c
+@@ -2494,30 +2494,6 @@ static void __split_huge_page(struct page *page, struct list_head *list,
+ 	}
+ }
+ 
+-int total_mapcount(struct page *page)
+-{
+-	int i, compound, nr, ret;
+-
+-	VM_BUG_ON_PAGE(PageTail(page), page);
+-
+-	if (likely(!PageCompound(page)))
+-		return atomic_read(&page->_mapcount) + 1;
+-
+-	compound = compound_mapcount(page);
+-	nr = compound_nr(page);
+-	if (PageHuge(page))
+-		return compound;
+-	ret = compound;
+-	for (i = 0; i < nr; i++)
+-		ret += atomic_read(&page[i]._mapcount) + 1;
+-	/* File pages has compound_mapcount included in _mapcount */
+-	if (!PageAnon(page))
+-		return ret - compound * nr;
+-	if (PageDoubleMap(page))
+-		ret -= nr;
+-	return ret;
+-}
+-
+ /*
+  * This calculates accurately how many mappings a transparent hugepage
+  * has (unlike page_mapcount() which isn't fully accurate). This full
+diff --git a/mm/util.c b/mm/util.c
+index 7e43369064c8..b614f423aaa4 100644
+--- a/mm/util.c
++++ b/mm/util.c
+@@ -740,6 +740,39 @@ int __page_mapcount(struct page *page)
+ }
+ EXPORT_SYMBOL_GPL(__page_mapcount);
+ 
++/**
++ * folio_mapcount() - Calculate the number of mappings of this folio.
++ * @folio: The folio.
++ *
++ * A large folio tracks both how many times the entire folio is mapped,
++ * and how many times each individual page in the folio is mapped.
++ * This function calculates the total number of times the folio is
++ * mapped.
++ *
++ * Return: The number of times this folio is mapped.
++ */
++int folio_mapcount(struct folio *folio)
++{
++	int i, compound, nr, ret;
++
++	if (likely(!folio_test_large(folio)))
++		return atomic_read(&folio->_mapcount) + 1;
++
++	compound = folio_entire_mapcount(folio);
++	nr = folio_nr_pages(folio);
++	if (folio_test_hugetlb(folio))
++		return compound;
++	ret = compound;
++	for (i = 0; i < nr; i++)
++		ret += atomic_read(&folio_page(folio, i)->_mapcount) + 1;
++	/* File pages has compound_mapcount included in _mapcount */
++	if (!folio_test_anon(folio))
++		return ret - compound * nr;
++	if (folio_test_double_map(folio))
++		ret -= nr;
++	return ret;
++}
++
+ /**
+  * folio_copy - Copy the contents of one folio to another.
+  * @dst: Folio to copy to.
 -- 
 2.34.1
 
