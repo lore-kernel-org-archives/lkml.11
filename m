@@ -2,92 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EBF1C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 16:29:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE2B8C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 16:31:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376587AbiBDQ3K (ORCPT
+        id S1376594AbiBDQbF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 11:29:10 -0500
-Received: from smtp-out1.suse.de ([195.135.220.28]:34024 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230139AbiBDQ3I (ORCPT
+        Fri, 4 Feb 2022 11:31:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47128 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239260AbiBDQbD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 11:29:08 -0500
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 87F91210F5;
-        Fri,  4 Feb 2022 16:29:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1643992147;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZR/3H3sIf6cDzCGCpTV09wbV22n9oSyBNgBb9XFveVs=;
-        b=ufR/iQ3awxDdyE/sGNRAFqh5y6bdZR18EDMLm/w4lAJGrCv4OWn8m2+fBhBtkk1WF+7h2t
-        +GvsT8FMZ9XPjQ75oGVW113p8c7PvkseZKl60IME9fZBo/9Ofp8Yy0qlKYDvp9U/PTeh3x
-        mmDVGGfMyWj1TC4DPDso9b8YaIdQ3Kg=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1643992147;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZR/3H3sIf6cDzCGCpTV09wbV22n9oSyBNgBb9XFveVs=;
-        b=mPvLfYOg7piogHCpj+bClsKvH9PqZmko6vp5TVeZ0sF0R667rVkaD+UFN1JI0xBpkB9cr2
-        2/TIgMV01VCgdBCw==
-Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
-        by relay2.suse.de (Postfix) with ESMTP id 7EDB7A3B8E;
-        Fri,  4 Feb 2022 16:29:07 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id D3229DA781; Fri,  4 Feb 2022 17:28:21 +0100 (CET)
-Date:   Fri, 4 Feb 2022 17:28:21 +0100
-From:   David Sterba <dsterba@suse.cz>
-To:     =?utf-8?B?RMSBdmlzIE1vc8SBbnM=?= <davispuh@gmail.com>
-Cc:     linux-btrfs@vger.kernel.org, Chris Mason <clm@fb.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] btrfs: send: in case of IO error log inode
-Message-ID: <20220204162821.GD14046@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz,
-        =?utf-8?B?RMSBdmlzIE1vc8SBbnM=?= <davispuh@gmail.com>,
-        linux-btrfs@vger.kernel.org, Chris Mason <clm@fb.com>,
-        Josef Bacik <josef@toxicpanda.com>, David Sterba <dsterba@suse.com>,
-        linux-kernel@vger.kernel.org
-References: <20220202201437.7718-1-davispuh@gmail.com>
+        Fri, 4 Feb 2022 11:31:03 -0500
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25E62C061714;
+        Fri,  4 Feb 2022 08:31:03 -0800 (PST)
+Received: by mail-ed1-x52d.google.com with SMTP id p12so14216191edq.9;
+        Fri, 04 Feb 2022 08:31:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=V7y7UvDThZqE9ABD6sPcRiftcOsF+0/rjlQVw86foiA=;
+        b=q5y0XjOB8ZUQ0d5M6GMB6FgbnQsza9GiZCyt9hJ7Gaa1PHjNyCHETl/Fg+MoxEkCpL
+         ttQbUcJOJnE/bF2fFXs62LMCg3/ZkHLgaHl3+TpTrJ74HIfoIgn9XVbQ7zSDIYYS8WxS
+         tVy1z/GUCZDj0Nv3ZVIIbsxVTJowVusiMFQUiQAT/65o2+y8KKSDYgO12Y8PouZcL3HG
+         gSKssFDIOiDV8ybRVlM9T9AbSRyThixpbjB7B2P1Il0Qoi+iiPSZr2rzJQOqF+nxlyfr
+         Wc5xNseL8euwRjlt0iKubTax3oQKCoXSHFUDyxfdruUDR+D6vGLlToushpdGUSk2if1V
+         xiBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=V7y7UvDThZqE9ABD6sPcRiftcOsF+0/rjlQVw86foiA=;
+        b=V6wspIWn3Tfs/iUDnHQIq/R+S23tcmwd8r5MzuXpz6IsTjCwdDzbgzOj6iBp2HDfSk
+         hXp+HfjhcYwvnVm2iPdKFrxpdZ15WktQArDhFW3yGas75vIvPC7fLn8MR9e61nfcpqey
+         k6C1c7qiUJDBxXWRxyGJP8yd27icq8HdF2KvR0qXYS9inxqqVvSsxsFrpWZanUMa93b/
+         qXyfWUy0+CqN8fGzU+OttS/g7UqPtA9rJOO4VEthN7YTMOoh36q3SpDJkHYzizt2/FSM
+         vKsTzIH1k6VqjzqJJC2NeaIBoIlt97d+1n8WC0wXpIjIQ8Ej8mY67BBHfIAtTo+apne1
+         5o5A==
+X-Gm-Message-State: AOAM5329ccvEriJyKGyepdvn5NwT4siqTzFsKt37I1D7LVjaSqmk2zwh
+        0aqSpN8EQU6q6wFUWTcq/tA=
+X-Google-Smtp-Source: ABdhPJyqDTlGFj1/81likfeAtFfM+w/saUkneHzuKnI25nekRGoT53ju4Gyhbd1RvzXXQ/2UdShMiA==
+X-Received: by 2002:a50:ab10:: with SMTP id s16mr3863526edc.382.1643992261596;
+        Fri, 04 Feb 2022 08:31:01 -0800 (PST)
+Received: from tiger.museclub.art (p200300cf9f235800e668694710673d4b.dip0.t-ipconnect.de. [2003:cf:9f23:5800:e668:6947:1067:3d4b])
+        by smtp.googlemail.com with ESMTPSA id d16sm819383eje.131.2022.02.04.08.31.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Feb 2022 08:31:01 -0800 (PST)
+From:   Eugene Shalygin <eugene.shalygin@gmail.com>
+To:     eugene.shalygin@gmail.com
+Cc:     Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Denis Pauk <pauk.denis@gmail.com>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] hwmon: (asus-ec-sensors) read sensors as signed ints
+Date:   Fri,  4 Feb 2022 17:30:45 +0100
+Message-Id: <20220204163045.576903-1-eugene.shalygin@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220202201437.7718-1-davispuh@gmail.com>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 02, 2022 at 10:14:37PM +0200, Dāvis Mosāns wrote:
-> Currently if we get IO error while doing send then we abort without
-> logging information about which file caused issue.
-> So log inode to help with debugging.
+Temperature sensor readings are signed, which is hinted by their blank
+value (oxd8, 216 as unsigned and -40 as signed). T_Sensor, Crosshair
+VIII Hero, and a freezer were used to confirm that.
 
-The Signed-off-by tag is missing.
+Here we read fan sensors as signed too, because with their typical
+values and 2-byte width, I can't tell a difference between signed and
+unsigned, as I don't have a high speed chipset fan.
 
-> ---
->  fs/btrfs/send.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/fs/btrfs/send.c b/fs/btrfs/send.c
-> index d8ccb62aa7d2..945d9c01d902 100644
-> --- a/fs/btrfs/send.c
-> +++ b/fs/btrfs/send.c
-> @@ -5000,6 +5000,7 @@ static int put_file_data(struct send_ctx *sctx, u64 offset, u32 len)
->  			if (!PageUptodate(page)) {
->  				unlock_page(page);
->  				put_page(page);
-> +				btrfs_err(fs_info, "received IO error for inode=%llu", sctx->cur_ino);
+Signed-off-by: Eugene Shalygin <eugene.shalygin@gmail.com>
+---
+ drivers/hwmon/asus-ec-sensors.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-A message here makes sense. I'd make it more explicit that it's for send
-(the word "received" is kind of confusing), the inode number is not
-unique identifier so the root id should be also printed, it's available
-from the sctx->send_root and maybe also the file offset (taken from the
-associated page by page_offset()).
+diff --git a/drivers/hwmon/asus-ec-sensors.c b/drivers/hwmon/asus-ec-sensors.c
+index 05244209c0c6..8a04c76527a4 100644
+--- a/drivers/hwmon/asus-ec-sensors.c
++++ b/drivers/hwmon/asus-ec-sensors.c
+@@ -221,7 +221,7 @@ static const struct dmi_system_id asus_ec_dmi_table[] __initconst = {
+ 
+ struct ec_sensor {
+ 	unsigned int info_index;
+-	u32 cached_value;
++	s32 cached_value;
+ };
+ 
+ struct ec_sensors_data {
+@@ -408,15 +408,15 @@ static int asus_ec_block_read(const struct device *dev,
+ 	return status;
+ }
+ 
+-static inline u32 get_sensor_value(const struct ec_sensor_info *si, u8 *data)
++static inline s32 get_sensor_value(const struct ec_sensor_info *si, u8 *data)
+ {
+ 	switch (si->addr.components.size) {
+ 	case 1:
+-		return *data;
++		return (s8)*data;
+ 	case 2:
+-		return get_unaligned_be16(data);
++		return (s16)get_unaligned_be16(data);
+ 	case 4:
+-		return get_unaligned_be32(data);
++		return (s32)get_unaligned_be32(data);
+ 	default:
+ 		return 0;
+ 	}
+@@ -462,7 +462,7 @@ static int update_ec_sensors(const struct device *dev,
+ 	return status;
+ }
+ 
+-static int scale_sensor_value(u32 value, int data_type)
++static long scale_sensor_value(s32 value, int data_type)
+ {
+ 	switch (data_type) {
+ 	case hwmon_curr:
+@@ -476,7 +476,7 @@ static int scale_sensor_value(u32 value, int data_type)
+ 
+ static int get_cached_value_or_update(const struct device *dev,
+ 				      int sensor_index,
+-				      struct ec_sensors_data *state, u32 *value)
++				      struct ec_sensors_data *state, s32 *value)
+ {
+ 	if (time_after(jiffies, state->last_updated + HZ)) {
+ 		if (update_ec_sensors(dev, state)) {
+@@ -499,7 +499,7 @@ static int asus_ec_hwmon_read(struct device *dev, enum hwmon_sensor_types type,
+ 			      u32 attr, int channel, long *val)
+ {
+ 	int ret;
+-	u32 value = 0;
++	s32 value = 0;
+ 
+ 	struct ec_sensors_data *state = dev_get_drvdata(dev);
+ 	int sidx = find_ec_sensor_index(state, type, channel);
+-- 
+2.35.1
+
