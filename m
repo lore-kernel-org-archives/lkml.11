@@ -2,92 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61C35C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 12:28:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0800DC41535
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 12:31:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358817AbiBDM24 (ORCPT
+        id S1358835AbiBDMbz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 07:28:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47604 "EHLO
+        Fri, 4 Feb 2022 07:31:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347114AbiBDM2z (ORCPT
+        with ESMTP id S234861AbiBDMby (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 07:28:55 -0500
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EC57C06173D
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 04:28:55 -0800 (PST)
-Received: by mail-lf1-x133.google.com with SMTP id a28so12259434lfl.7
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Feb 2022 04:28:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=u5EE+DkLgmN23BbMUE4nz7OGjEySA8/7jVCGdyEuQd4=;
-        b=l8iWC5a2b+sRIY7ZfxlfUPFTxvMH0CELbAuWVa9q815d/EK454CqeyWsNWJjCI9bl9
-         s1Odh8R1pOW0uN0YRnccOsWreV3t8GUcThTUiLUSMv5BWfNBNvyPL25+S9bn8oI6QB+B
-         yKlJXvcCk25Nm8qAuLZlHdfEUF7wf2zsPx8MrHkRWVB76FwvRbW73QzTRzSyqCI90xMw
-         J5MRctd43fhRsfT+boL4RV5ziKMcPD0EJLbVVkhTfNmAA9ZUguhSqPHU7MCV0Fi7W8kd
-         qaMf0mGSnD1XnRvY799LQaKjbNowpbQX39rCPeTtcVtPEST+9aYi9qu2fsqIHV4KeSyT
-         g6gA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=u5EE+DkLgmN23BbMUE4nz7OGjEySA8/7jVCGdyEuQd4=;
-        b=3eHsl/XS0qfHNnF6hiVcunD53Yl9CQEuf2eKIUHsycP/EH8AfPQnvnjBGWLJfuP6fy
-         fnU4FoPDYdgcRoEGgWgNlOv1lY0Gf6eaRzbVJP07V2pRjw8bfSJ2260d9v5/qPosx2NY
-         C68kmI9cgfmbVupNspzMuReRsU2aSqwcSCJn04ujugOygjf22P8TJf6m7PdrtIuJ+cqi
-         z6IWzf7cPv+416a1mJRcyuQvDbK3uhquFNJHA91ug3yMZuy8n5IlRvF6YnIEGRZm0NEu
-         /ZsLUH0IsY6xIdCuN/rGwO00VzdULyhkymbU561Cpze4SIti11RzSfOx8ftb2HdQVo4f
-         Wgcg==
-X-Gm-Message-State: AOAM531eA5eTKAPGHb+oKUpL8p+V36d9bxAmLmeKKgJhcncxnwwN6v0v
-        tPENwi5x6sd50IBGC+RErR+fkHKaOUSFrTrNV5+/xw==
-X-Google-Smtp-Source: ABdhPJxKiaraf1BxhQHs4VHBoTVENKbIOIstx8X8gx/Nh6NbS6taEj28l1A3fXhHQ2OUPqPHo2XxD9KaxtDCYCEMCWY=
-X-Received: by 2002:a05:6512:ba7:: with SMTP id b39mr2169011lfv.373.1643977733643;
- Fri, 04 Feb 2022 04:28:53 -0800 (PST)
+        Fri, 4 Feb 2022 07:31:54 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 883CDC061714;
+        Fri,  4 Feb 2022 04:31:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=mzxF9rMeHdGHwkTPDimCxRmilWqf6MiwMi9qg5Sr64g=; b=vl3i11hF8iQy1h0Ag1YRBLQAG7
+        dAUWYNtSwGnV/h/3SZGvDI79vCb1IEbbtu1UQ3FfZta2TTQ2uI3cfSWVhx6A7bIW/Wj5SVNcGD6XY
+        418/0rcrILwiuHAWq2bEWrG3CtJrTzBtQ1S0fQbDDKu7PuyDjJWcpusaTPiE+f8BhmPgO0W9dxqG4
+        ANF4a80aclwToWxEzEbz1ZbszC59Wpan34MN2z1REh6gVUGqTNlsaxyfNT/K03UeG6PDgF8dQPSMY
+        lB6C1Kf71mwm4Og/bizKfCFlky7D1xuMSKf6R6BoJmtueaOi3urC0I9J+3NpAOum1WYjEIoCK3VOg
+        bTdYh5bg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57040)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1nFxk9-0004Zj-N4; Fri, 04 Feb 2022 12:31:13 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1nFxk2-0004yb-7L; Fri, 04 Feb 2022 12:31:06 +0000
+Date:   Fri, 4 Feb 2022 12:31:06 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Joe Perches <joe@perches.com>
+Cc:     nick.hawkins@hpe.com, verdun@hpe.com,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Corey Minyard <minyard@acm.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mark Brown <broonie@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        soc@kernel.org, Shawn Guo <shawnguo@kernel.org>,
+        Stanislav Jakubek <stano.jakubek@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Hao Fang <fanghao11@huawei.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Wang Kefeng <wangkefeng.wang@huawei.com>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-i2c@vger.kernel.org,
+        openipmi-developer@lists.sourceforge.net,
+        linux-mtd@lists.infradead.org, netdev@vger.kernel.org,
+        linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH] HPE BMC GXP SUPPORT
+Message-ID: <Yf0cihUQ1byjnh3d@shell.armlinux.org.uk>
+References: <nick.hawkins@hpe.com>
+ <20220202165315.18282-1-nick.hawkins@hpe.com>
+ <Yf0Wm1kOV1Pss9HJ@shell.armlinux.org.uk>
+ <ad56e88206a8d66b715035362abe16ece0bde7d3.camel@perches.com>
 MIME-Version: 1.0
-References: <20220121014039.1693208-1-kai.heng.feng@canonical.com> <20220125055010.1866563-1-kai.heng.feng@canonical.com>
-In-Reply-To: <20220125055010.1866563-1-kai.heng.feng@canonical.com>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Fri, 4 Feb 2022 13:28:17 +0100
-Message-ID: <CAPDyKFrtD28NKTyUAR-6Rt4PwYvkOuWcRhxZZWVAq4KcTNG7QQ@mail.gmail.com>
-Subject: Re: [PATCH v6 1/4] mmc: rtsx: Use pm_runtime_{get,put}() to handle
- runtime PM
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     arnd@arndb.de, gregkh@linuxfoundation.org,
-        linux-pm@vger.kernel.org, Ricky WU <ricky_wu@realtek.com>,
-        Thomas Hebb <tommyhebb@gmail.com>, linux-mmc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ad56e88206a8d66b715035362abe16ece0bde7d3.camel@perches.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 25 Jan 2022 at 06:50, Kai-Heng Feng <kai.heng.feng@canonical.com> wrote:
->
-> Commit 5b4258f6721f ("misc: rtsx: rts5249 support runtime PM") doesn't
-> use pm_runtime_{get,put}() helpers when it should, so the RPM refcount
-> keeps at zero, hence its parent driver, rtsx_pci, has to do lots of
-> weird tricks to keep it from runtime suspending.
->
-> So use those helpers at right places to properly manage runtime PM.
->
-> Fixes: 5b4258f6721f ("misc: rtsx: rts5249 support runtime PM")
-> Cc: Ricky WU <ricky_wu@realtek.com>
-> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+On Fri, Feb 04, 2022 at 04:18:24AM -0800, Joe Perches wrote:
+> On Fri, 2022-02-04 at 12:05 +0000, Russell King (Oracle) wrote:
+> > On Wed, Feb 02, 2022 at 10:52:50AM -0600, nick.hawkins@hpe.com wrote:
+> > > +	if (readb_relaxed(timer->control) & MASK_TCS_TC) {
+> > > +		writeb_relaxed(MASK_TCS_TC, timer->control);
+> > > +
+> > > +		event_handler = READ_ONCE(timer->evt.event_handler);
+> > > +		if (event_handler)
+> > > +			event_handler(&timer->evt);
+> > > +		return IRQ_HANDLED;
+> > > +	} else {
+> > > +		return IRQ_NONE;
+> > > +	}
+> > > +}
+> 
+> It's also less indented code and perhaps clearer to reverse the test
+> 
+> 	if (!readb_relaxed(timer->control) & MASK_TCS_TC)
 
-The runtime PM reference counting for the mmc host device is managed
-by the mmc core. Have a look at __mmc_claim_host() and
-mmc_release_host().
+This will need to be:
 
-In other words, the runtime PM reference counting should not be needed
-in the mmc host driver, unless there are some specific cases, like for
-example during ->probe|remove().
+ 	if (!(readb_relaxed(timer->control) & MASK_TCS_TC))
 
-So perhaps it's only the changes in the ->probe|remove() functions
-that you need to fix the problems? No?
+> 		return IRQ_NONE;
+> 
+> 	writeb_relaxed(MASK_TCS_TC, timer->control);
+> 
+> 	event_handler = READ_ONCE(timer->evt.event_handler);
+> 	if (event_handler)
+> 		event_handler(&timer->evt);
+> 
+> 	return IRQ_HANDLED;
+> 
+> 
+> 
 
-[...]
-
-Kind regards
-Uffe
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
