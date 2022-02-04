@@ -2,55 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 388B8C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 21:11:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A76BEC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 21:12:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240509AbiBDVLH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 16:11:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58540 "EHLO
+        id S240723AbiBDVMt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 16:12:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231976AbiBDVLG (ORCPT
+        with ESMTP id S240638AbiBDVMr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 16:11:06 -0500
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55A69C061714
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 13:11:05 -0800 (PST)
-Received: by mail-pj1-x1031.google.com with SMTP id oa14-20020a17090b1bce00b001b61aed4a03so7219744pjb.5
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Feb 2022 13:11:05 -0800 (PST)
+        Fri, 4 Feb 2022 16:12:47 -0500
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD95AC061714
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 13:12:46 -0800 (PST)
+Received: by mail-pl1-x62f.google.com with SMTP id x3so6212213pll.3
+        for <linux-kernel@vger.kernel.org>; Fri, 04 Feb 2022 13:12:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=intel-com.20210112.gappssmtp.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=RgiksQOc66bKk1Qxc/E2lq0lexiQJ3+V8qY3o3U8E5c=;
-        b=x2EfMbj4RgYo9lbuojMbJhCdZA2j8JnOk0dRfvrTPSC/zdiCYyqf9kH+95Z3Uh5s1X
-         +hjEUuLkvQ33XAwuIIu2b36t7TYnb4yjM8grYNnuBBqlj4GfDypnIjvOoaXSCWMfPBUq
-         82I+28wPMvcQsigwoG7HDEuy7iGZy2urTfdA55S7Ce6xaxVb3Ush3V+zqsu/k13mB7U+
-         l92E0+PLgpADLs7/aMg4YkFXz38xPUhvpG3f7QPP9m9sYpDFpQaIydI1VBUz7Q/mQlt+
-         WsJG1tIVxG9xNcRAmRF9rSi+X3fsKs5TF/Q/o0RscKJKHm9+eiWr4zCvY07UaoOWGrDS
-         MyyA==
+        bh=VaouZC+y0pCzuA+V41l6/rGosRhmVXwne6sUSr70gfY=;
+        b=yJ7ITAUhmokbbTgM/46Xtj2VeUzNC51X4uIYa22QCS7v65/aXn3ZpaRWDtbDkJXBuM
+         KKKb71sEZrZlnqSWY4sm0xRuW+Q9hpcj6aIRZ61X+2B0JpbefNGvt/9Y1vreHsf4e4Bp
+         a5e/2fP4NoQISp66OfA521yB394CzhZe+wIB926YIHvEJmYU2I4acE4i4LaN/zCR9F+I
+         euxXfzFONUH4pemYGAcP5s6d2RntJKDzMezvxMRQ+rU/tfC0HkpJ6POX8FxXgjQrjUde
+         TUPHTlyW+IaJF+CGi+kgb9dtCcQ6mDG//rydQlbtdz2tQtSgNFxQRkTHP/oQefw7zaDc
+         5fkw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=RgiksQOc66bKk1Qxc/E2lq0lexiQJ3+V8qY3o3U8E5c=;
-        b=ojHIWqwgGFhmGZC1G6kgndO146H3Gzqu108jd7AxGBaZ87/rjIGMpGx06LT0GheuGs
-         gNAaMkDThaXlK41WQJXSxzl/DXyomRvdDWjkwCIbCAA/5p9+gm5UPmzl7+HHens+r2fA
-         q3OqY3SNOsCNrNiZBOeR4pudmLlLyW9ldpUKG75TRFwOYCJzhouHxVc4cI3fyEkEpVDN
-         vmWabhdYjwLhQEL1uFE0oxOsotOfySwyVeGkJES0broroO0EICmxm0+BC0PGxkNuj6kd
-         +mQ0ntima9W7nawwByJScmg/6xoXKvqL3K0LApyrYYTl43saufQ3cOndDmMcpeJ8Vn9F
-         s6OA==
-X-Gm-Message-State: AOAM532fiUHU83Yn1Dgp3ry1gRP0ehpSKJbfg/6afK0lAc606/eHt1+M
-        9f4s0F/toCx7awS9f9GVEnp/yZr0FD3GXYh+HOdmQZHNBv4=
-X-Google-Smtp-Source: ABdhPJxns8NvhgbQnMi6I7HTXzW12F5GZ9V3WK7V7keVI+wOCfmxZnDKvKOh+g2Txe3/QHzeTzqm8wTbrEcWbZ4egyY=
-X-Received: by 2002:a17:902:d705:: with SMTP id w5mr5237256ply.34.1644009064806;
- Fri, 04 Feb 2022 13:11:04 -0800 (PST)
+        bh=VaouZC+y0pCzuA+V41l6/rGosRhmVXwne6sUSr70gfY=;
+        b=5imDNfJz1nz3TWD4KxvIX1wfnIFv21LWUhKrHEJDMkeo8F58O9OxdT0OEcEhZ0RPer
+         WW1ZtBG2DVzXW1lZQd3UqEfn3qUwNlAGYxWHTdC0TFxMe8NB5J1CiSxHNI80lRAfaW2g
+         xOGKkfew3aBeOQyRPcJgMO6Uz7EPZI75YrVSOr78RKXwMrgIXurSZdzuZAcZvJ7OPsOh
+         FLrxbfuEBLPbcrBhbss7+GR44ViEgCFtWxxFKxBOXWny1Pm2JQZddEZ9TStFCnSluOq5
+         XJnp+mqunj4ljKexEiA369OnJZLHoRBsn2+ZyXFiiDwYsVyaaOJZ9gNk7ENEopvW5imJ
+         00ig==
+X-Gm-Message-State: AOAM532tsiM/2kZU1OR3jLwQtsNOzX/8CTUMy7eZzrMnbJFTk4bzVokh
+        hBZ4RYaY0tJ0++O2BpaH1JMrAb6U5UqOywofIBzV2Q==
+X-Google-Smtp-Source: ABdhPJxi+9dRZrFQof6J+CuPdxQjT3Bhel6UHMzo7F8xVzZT4UpxJWX9Inl0DIPWlo0Vu3OuWwJUdXKiddMadSiGLK8=
+X-Received: by 2002:a17:902:bcca:: with SMTP id o10mr5132570pls.147.1644009166378;
+ Fri, 04 Feb 2022 13:12:46 -0800 (PST)
 MIME-Version: 1.0
-References: <20220127175505.851391-1-ira.weiny@intel.com> <20220127175505.851391-44-ira.weiny@intel.com>
-In-Reply-To: <20220127175505.851391-44-ira.weiny@intel.com>
+References: <20220127175505.851391-1-ira.weiny@intel.com> <20220127175505.851391-45-ira.weiny@intel.com>
+In-Reply-To: <20220127175505.851391-45-ira.weiny@intel.com>
 From:   Dan Williams <dan.j.williams@intel.com>
-Date:   Fri, 4 Feb 2022 13:10:53 -0800
-Message-ID: <CAPcyv4idgNDaxJfj2MZgJnuGyygFJ9ozvrEghSnsR7zXB=pj0A@mail.gmail.com>
-Subject: Re: [PATCH V8 43/44] nvdimm/pmem: Enable stray access protection
+Date:   Fri, 4 Feb 2022 13:12:35 -0800
+Message-ID: <CAPcyv4g-_tNk3qJt_CUGCo458xS9FUQ_Dk1CpA3Z+O7bfbHy7Q@mail.gmail.com>
+Subject: Re: [PATCH V8 44/44] devdax: Enable stray access protection
 To:     "Weiny, Ira" <ira.weiny@intel.com>
 Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
         "H. Peter Anvin" <hpa@zytor.com>,
@@ -66,53 +66,34 @@ On Thu, Jan 27, 2022 at 9:55 AM <ira.weiny@intel.com> wrote:
 >
 > From: Ira Weiny <ira.weiny@intel.com>
 >
-> Now that all valid kernel access' to PMEM have been annotated with
-> {__}pgmap_mk_{readwrite,noaccess}() PGMAP_PROTECTION is safe to enable
-> in the pmem layer.
+> Device dax is primarily accessed through user space and kernel access is
+> controlled through the kmap interfaces.
 >
-> Implement the pmem_map_protected() and pmem_mk_{readwrite,noaccess}() to
-> communicate this memory has extra protection to the upper layers if
-> PGMAP_PROTECTION is specified.
->
-> Internally, the pmem driver uses a cached virtual address,
-> pmem->virt_addr (pmem_addr).  Use __pgmap_mk_{readwrite,noaccess}()
-> directly when PGMAP_PROTECTION is active on the device.
+> Now that all valid kernel initiated access to dax devices have been
+> accounted for, turn on PGMAP_PKEYS_PROTECT for device dax.
 >
 > Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 >
 > ---
 > Changes for V8
 >         Rebase to 5.17-rc1
->         Remove global param
->         Add internal structure which uses the pmem device and pgmap
->                 device directly in the *_mk_*() calls.
->         Add pmem dax ops callbacks
 >         Use pgmap_protection_available()
->         s/PGMAP_PKEY_PROTECT/PGMAP_PROTECTION
+>         s/PGMAP_PKEYS_PROTECT/PGMAP_PROTECTION/
 > ---
->  drivers/nvdimm/pmem.c | 52 ++++++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 51 insertions(+), 1 deletion(-)
+>  drivers/dax/device.c | 2 ++
+>  1 file changed, 2 insertions(+)
 >
-> diff --git a/drivers/nvdimm/pmem.c b/drivers/nvdimm/pmem.c
-> index 58d95242a836..2afff8157233 100644
-> --- a/drivers/nvdimm/pmem.c
-> +++ b/drivers/nvdimm/pmem.c
-> @@ -138,6 +138,18 @@ static blk_status_t read_pmem(struct page *page, unsigned int off,
->         return BLK_STS_OK;
->  }
->
-> +static void __pmem_mk_readwrite(struct pmem_device *pmem)
-> +{
-> +       if (pmem->pgmap.flags & PGMAP_PROTECTION)
-> +               __pgmap_mk_readwrite(&pmem->pgmap);
-> +}
-> +
-> +static void __pmem_mk_noaccess(struct pmem_device *pmem)
-> +{
-> +       if (pmem->pgmap.flags & PGMAP_PROTECTION)
-> +               __pgmap_mk_noaccess(&pmem->pgmap);
-> +}
-> +
+> diff --git a/drivers/dax/device.c b/drivers/dax/device.c
+> index d33a0613ed0c..cee375ef2cac 100644
+> --- a/drivers/dax/device.c
+> +++ b/drivers/dax/device.c
+> @@ -452,6 +452,8 @@ int dev_dax_probe(struct dev_dax *dev_dax)
+>         if (dev_dax->align > PAGE_SIZE)
+>                 pgmap->vmemmap_shift =
+>                         order_base_2(dev_dax->align >> PAGE_SHIFT);
+> +       if (pgmap_protection_available())
+> +               pgmap->flags |= PGMAP_PROTECTION;
 
-Per previous feedback let's find a way for the pmem driver to stay out
-of the loop, and just let these toggles by pgmap generic operations.
+Looks good.
+
+Reviewed-by: Dan Williams <dan.j.williams@intel.com>
