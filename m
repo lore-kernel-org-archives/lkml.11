@@ -2,219 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC15DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 00:03:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AC0BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 00:04:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356162AbiBDADn (ORCPT
+        id S1346041AbiBDAEh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 19:03:43 -0500
-Received: from mga01.intel.com ([192.55.52.88]:8517 "EHLO mga01.intel.com"
+        Thu, 3 Feb 2022 19:04:37 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:41882 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1356104AbiBDADc (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 19:03:32 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643933012; x=1675469012;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=VffKzQLRtyVZULvG4LXAW7g/t/tYRyIEC1MPKKJZ+6s=;
-  b=J1LcOjT15T7nfTrEa8vD0bfRJpgFEDmzNYqpEvyu9xmdYclofRhHyzS+
-   GQhAi+ax+iFanzh649iOYPYGIyWPxOaLtK0pR1UeJmWSYqicqIKF883bx
-   qOtTTGG/7fQNKlJmxB5oxeeHSyUR4/MOVuGUAwPaMBWfiVliwqOxMSFBl
-   aGrVn9vz9TDVYt0O/NOrx4S98uA4Dx9q3lvaDT8YrLBpdOw2j4DdOn+PV
-   fXmln6c7W7PIePXBtsZvXbfLnqAfOxCDnoTI1XOyCDJgMa9Ayr2D8Jqsi
-   UzGELpEivT8e0Tc5d/AeK0/7ZvhS0YxQN4B7PmAanExK181NvJZSgGIvy
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10247"; a="272779959"
-X-IronPort-AV: E=Sophos;i="5.88,340,1635231600"; 
-   d="scan'208";a="272779959"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2022 16:03:31 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,340,1635231600"; 
-   d="scan'208";a="620684679"
-Received: from spandruv-desk.jf.intel.com ([10.54.75.8])
-  by FMSMGA003.fm.intel.com with ESMTP; 03 Feb 2022 16:03:31 -0800
-From:   Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To:     hdegoede@redhat.com, markgross@kernel.org
-Cc:     platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Srinivas Pandruvada <srinivas.pandruvada@intel.com>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 3/4] platform/x86/intel/uncore-freq: Display uncore current frequency
-Date:   Thu,  3 Feb 2022 16:03:05 -0800
-Message-Id: <20220204000306.2517447-4-srinivas.pandruvada@linux.intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220204000306.2517447-1-srinivas.pandruvada@linux.intel.com>
-References: <20220204000306.2517447-1-srinivas.pandruvada@linux.intel.com>
+        id S233573AbiBDAEf (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 3 Feb 2022 19:04:35 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=1/X6M2RlKfhoxDI2wekvr9q+UaNHy+WB1KZulPhgmFk=; b=P53s8KveQe4m0t0uvtKCmzQv8o
+        l8d8gTo4zBbee2xUqPaU1nI7rsSFrAWPa7QZoyAoBK7NGyL+Siwbhb4OpZRXGD8yGwALKtjlUKetj
+        7T0xNLcqxggRQfju3DitCJABm8Vaegssy4pzGCMww25YWpoP/UQWhSr0rd3+65newjVc=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nFm5K-004CgG-IL; Fri, 04 Feb 2022 01:04:18 +0100
+Date:   Fri, 4 Feb 2022 01:04:18 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Tim Harvey <tharvey@gateworks.com>
+Cc:     Martin Schiller <ms@dev.tdt.de>, Hauke Mehrtens <hauke@hauke-m.de>,
+        martin.blumenstingl@googlemail.com,
+        Florian Fainelli <f.fainelli@gmail.com>, hkallweit1@gmail.com,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        David Miller <davem@davemloft.net>, kuba@kernel.org,
+        netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net v3] net: phy: intel-xway: enable integrated led
+ functions
+Message-ID: <YfxtglvVDx2JJM9w@lunn.ch>
+References: <20210421055047.22858-1-ms@dev.tdt.de>
+ <CAJ+vNU1=4sDmGXEzPwp0SCq4_p0J-odw-GLM=Qyi7zQnVHwQRA@mail.gmail.com>
+ <YfspazpWoKuHEwPU@lunn.ch>
+ <CAJ+vNU2v9WD2kzB9uTD5j6DqnBBKhv-XOttKLoZ-VzkwdzwjXw@mail.gmail.com>
+ <YfwEvgerYddIUp1V@lunn.ch>
+ <CAJ+vNU1qY1VJgw1QRsbmED6-TLQP2wwxSYb+bXfqZ3wiObLgHg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJ+vNU1qY1VJgw1QRsbmED6-TLQP2wwxSYb+bXfqZ3wiObLgHg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Srinivas Pandruvada <srinivas.pandruvada@intel.com>
+> Andrew,
+> 
+> The issue is that in an ideal world where all parts adhere to the
+> JEDEC standards 2ns would be correct but that is not reality. In my
+> experience with the small embedded boards I help design and support
+> not about trace lengths as it would take inches to skew 0.5ns but
+> instead differences in setup/hold values for various MAC/PHY parts
+> that are likely not adhering the standards.
+> 
+> Some examples from current boards I support:
+> - CN8030 MAC rgmii-rxid with intel-xway GPY111 PHY: we need to
+> configure this for rx_delay=1.5ns and tx_delay=0.5ns
 
-Add a new sysfs attribute "current_freq_khz" to display current uncore
-frequency. This value is read from MSR 0x621.
+So i assume this is what broke for you. Your bootloader sets these
+delays, phy-type is rgmii-id, and since you don't have the properties
+for what exact delays you want it default to what 802.3 specifies,
+2ns.
 
-Root user permission is required to read uncore current frequency.
+I actually think the current behaviour of the driver is correct.  By
+saying phy-type = rgmii-id you are telling the PHY driver to insert
+the delays and that is what it is doing.
 
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@intel.com>
-Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
----
- .../intel/uncore-frequency/uncore-frequency.c | 71 ++++++++++++++++---
- 1 file changed, 62 insertions(+), 9 deletions(-)
+In retrospect, i would say you had two choices to cleanly solve this.
 
-diff --git a/drivers/platform/x86/intel/uncore-frequency/uncore-frequency.c b/drivers/platform/x86/intel/uncore-frequency/uncore-frequency.c
-index 35b00608a81d..f5e980163911 100644
---- a/drivers/platform/x86/intel/uncore-frequency/uncore-frequency.c
-+++ b/drivers/platform/x86/intel/uncore-frequency/uncore-frequency.c
-@@ -22,6 +22,7 @@
- #include <asm/intel-family.h>
- 
- #define MSR_UNCORE_RATIO_LIMIT			0x620
-+#define MSR_UNCORE_PERF_STATUS			0x621
- #define UNCORE_FREQ_KHZ_MULTIPLIER		100000
- 
- /**
-@@ -40,6 +41,7 @@
-  * @mix_freq_khz_dev_attr: Storage for device attribute min_freq_khz
-  * @initial_max_freq_khz_dev_attr: Storage for device attribute initial_max_freq_khz
-  * @initial_min_freq_khz_dev_attr: Storage for device attribute initial_min_freq_khz
-+ * @current_freq_khz_dev_attr: Storage for device attribute current_freq_khz
-  * @uncore_attrs:	Attribute storage for group creation
-  *
-  * This structure is used to encapsulate all data related to uncore sysfs
-@@ -60,7 +62,8 @@ struct uncore_data {
- 	struct device_attribute min_freq_khz_dev_attr;
- 	struct device_attribute initial_max_freq_khz_dev_attr;
- 	struct device_attribute initial_min_freq_khz_dev_attr;
--	struct attribute *uncore_attrs[5];
-+	struct device_attribute current_freq_khz_dev_attr;
-+	struct attribute *uncore_attrs[6];
- };
- 
- /* Max instances for uncore data, one for each die */
-@@ -131,22 +134,32 @@ static int uncore_write_ratio(struct uncore_data *data, unsigned int input,
- 	return 0;
- }
- 
--static ssize_t show_min_max_freq_khz(struct uncore_data *data,
--				     char *buf, int min_max)
-+static int uncore_read_freq(struct uncore_data *data, unsigned int *freq)
- {
--	unsigned int min, max;
-+	u64 ratio;
-+	int ret;
-+
-+	ret = rdmsrl_on_cpu(data->control_cpu, MSR_UNCORE_PERF_STATUS, &ratio);
-+	if (ret)
-+		return ret;
-+
-+	*freq = (ratio & 0x7F) * UNCORE_FREQ_KHZ_MULTIPLIER;
-+
-+	return 0;
-+}
-+
-+static ssize_t show_perf_status_freq_khz(struct uncore_data *data, char *buf)
-+{
-+	unsigned int freq;
- 	int ret;
- 
- 	mutex_lock(&uncore_lock);
--	ret = uncore_read_ratio(data, &min, &max);
-+	ret = uncore_read_freq(data, &freq);
- 	mutex_unlock(&uncore_lock);
- 	if (ret)
- 		return ret;
- 
--	if (min_max)
--		return sprintf(buf, "%u\n", max);
--
--	return sprintf(buf, "%u\n", min);
-+	return sprintf(buf, "%u\n", freq);
- }
- 
- static ssize_t store_min_max_freq_khz(struct uncore_data *data,
-@@ -165,6 +178,24 @@ static ssize_t store_min_max_freq_khz(struct uncore_data *data,
- 	return count;
- }
- 
-+static ssize_t show_min_max_freq_khz(struct uncore_data *data,
-+				     char *buf, int min_max)
-+{
-+	unsigned int min, max;
-+	int ret;
-+
-+	mutex_lock(&uncore_lock);
-+	ret = uncore_read_ratio(data, &min, &max);
-+	mutex_unlock(&uncore_lock);
-+	if (ret)
-+		return ret;
-+
-+	if (min_max)
-+		return sprintf(buf, "%u\n", max);
-+
-+	return sprintf(buf, "%u\n", min);
-+}
-+
- #define store_uncore_min_max(name, min_max)				\
- 	static ssize_t store_##name(struct device *dev,		\
- 				    struct device_attribute *attr,	\
-@@ -185,12 +216,23 @@ static ssize_t store_min_max_freq_khz(struct uncore_data *data,
- 		return show_min_max_freq_khz(data, buf, min_max);	\
- 	}
- 
-+#define show_uncore_perf_status(name)					\
-+	static ssize_t show_##name(struct device *dev,		\
-+				   struct device_attribute *attr, char *buf)\
-+	{                                                               \
-+		struct uncore_data *data = container_of(attr, struct uncore_data, name##_dev_attr);\
-+									\
-+		return show_perf_status_freq_khz(data, buf); \
-+	}
-+
- store_uncore_min_max(min_freq_khz, 0);
- store_uncore_min_max(max_freq_khz, 1);
- 
- show_uncore_min_max(min_freq_khz, 0);
- show_uncore_min_max(max_freq_khz, 1);
- 
-+show_uncore_perf_status(current_freq_khz);
-+
- #define show_uncore_data(member_name)					\
- 	static ssize_t show_##member_name(struct device *dev,	\
- 					  struct device_attribute *attr, char *buf)\
-@@ -223,6 +265,15 @@ show_uncore_data(initial_max_freq_khz);
- 		data->_name##_dev_attr.attr.mode = 0444;		\
- 	} while (0)
- 
-+#define init_attribute_root_ro(_name)					\
-+	do {								\
-+		sysfs_attr_init(&data->_name##_dev_attr.attr);	\
-+		data->_name##_dev_attr.show = show_##_name;		\
-+		data->_name##_dev_attr.store = NULL;			\
-+		data->_name##_dev_attr.attr.name = #_name;		\
-+		data->_name##_dev_attr.attr.mode = 0400;		\
-+	} while (0)
-+
- static int create_attr_group(struct uncore_data *data, char *name)
- {
- 	int ret, index = 0;
-@@ -231,11 +282,13 @@ static int create_attr_group(struct uncore_data *data, char *name)
- 	init_attribute_rw(min_freq_khz);
- 	init_attribute_ro(initial_min_freq_khz);
- 	init_attribute_ro(initial_max_freq_khz);
-+	init_attribute_root_ro(current_freq_khz);
- 
- 	data->uncore_attrs[index++] = &data->max_freq_khz_dev_attr.attr;
- 	data->uncore_attrs[index++] = &data->min_freq_khz_dev_attr.attr;
- 	data->uncore_attrs[index++] = &data->initial_min_freq_khz_dev_attr.attr;
- 	data->uncore_attrs[index++] = &data->initial_max_freq_khz_dev_attr.attr;
-+	data->uncore_attrs[index++] = &data->current_freq_khz_dev_attr.attr;
- 	data->uncore_attrs[index] = NULL;
- 
- 	data->uncore_attr_group.name = name;
--- 
-2.31.1
+1) Do exactly what the patch does, add properties to define what
+actual delay you want, when you don't want 2ns.
+
+2) Have the bootloader set the delay, but also tell Linux you have set
+the phy mode including the delays, and it should not touch them. There
+is a well defined way to do this:
+
+PHY_INTERFACE_MODE_NA
+
+It has two main use cases. The first is that the MAC and PHY are
+integrated, there is no MII between them, phy-mode is completely
+unnecessary. This is the primary meaning.
+
+The second meaning is, something else has setup the phy mode, e.g. the
+bootloader. Don't touch it.
+
+This second meaning does not always work, since the driver might reset
+the PHY, and depending on the PHY, that might clear whatever the
+bootloader set. So it is not reliable.
+
+> - CN8030 MAC rgmii-rxid with dp83867 GPY111 PHY: we need to configure
+> this for rx_delay=2.0ns and tx_delay=2.0ns (as would be expected)
+> - IMX8MM FEC MAC rgmii-id with intel-xway PHY: we need to configure
+> this for rx_delay=2ns and tx_delay=2.5ns
+> - IMX8MM FEC MAC rgmii-id with dp83867 PHY: we need to configure this
+> for rx_delay=2.0ns and tx_delay=2.0ns (as would be expected)
+> 
+> The two boards above have identical well matched trace-lengths between
+> the two PHY variant designs so you can see here that the intel-xway
+> GPY111 PHY needs an extra 0.5ps delay to avoid RX errors on the
+> far-off board.
+
+So a couple of ideas.
+
+Since GPY111 and dp83867 use different properties for the delays, just
+put both in DT. The PHY driver will look for the property it
+understands and ignore the other. So you can have different delays for
+different PHYs.
+
+We have started to standardize on the delay property. And new driver
+should be using rx-internal-delay-ps and tx-internal-delay-ps. If you
+have two drivers using the same property name, what i just suggested
+will not work. Can you control the address the PHY uses? Put the
+GPY111 on a different address to the dp83867. List them both in DT. If
+you don't have a phy-handle in DT, the FEC will go hunting on its MDIO
+bus and use the first PHY it finds. You can put the needed delay
+properties in DT for the specific PHY.
+
+	Andrew
 
