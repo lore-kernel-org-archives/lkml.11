@@ -2,103 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBFAFC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 17:47:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C236EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 17:48:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351124AbiBDRrQ (ORCPT
+        id S1377148AbiBDRsI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 12:47:16 -0500
-Received: from gateway33.websitewelcome.com ([192.185.145.33]:44301 "EHLO
-        gateway33.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1377121AbiBDRrO (ORCPT
+        Fri, 4 Feb 2022 12:48:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36588 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241900AbiBDRsG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 12:47:14 -0500
-Received: from cm16.websitewelcome.com (cm16.websitewelcome.com [100.42.49.19])
-        by gateway33.websitewelcome.com (Postfix) with ESMTP id D13A315EDF1
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 11:47:05 -0600 (CST)
-Received: from gator4132.hostgator.com ([192.185.4.144])
-        by cmsmtp with SMTP
-        id G2fpnH28BXvvJG2fpnmRxa; Fri, 04 Feb 2022 11:47:05 -0600
-X-Authority-Reason: nr=8
-Received: from host-79-47-126-144.retail.telecomitalia.it ([79.47.126.144]:51660 helo=[10.0.1.2])
-        by gator4132.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <bristot@kernel.org>)
-        id 1nG2fp-0022hu-7t; Fri, 04 Feb 2022 11:47:05 -0600
-Message-ID: <23e7889f-9bb4-f607-630f-6f8f0ef90d3d@kernel.org>
-Date:   Fri, 4 Feb 2022 18:46:59 +0100
+        Fri, 4 Feb 2022 12:48:06 -0500
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B67F0C061714;
+        Fri,  4 Feb 2022 09:48:06 -0800 (PST)
+Received: by mail-pl1-x62d.google.com with SMTP id x11so5767143plg.6;
+        Fri, 04 Feb 2022 09:48:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=4Y2bzdSGviXq60UAJUwPl6VNHemh5FsztTQ19e+AzIM=;
+        b=gWlIZuD5AXuFcp67d+7phWRqrAVSGOkXgZObWSfD+qThKjUPbQCZgZqKSUrZk4qkLT
+         cuMo7HHFyngVG5l5Z8QRHupNW3YbI57o5HiVyDL/jW7yWl18hobBfYuFxHCU8rTQOR/L
+         BShL98Gd/fQg6pAn+BOauj1Qfh+IjDASyc3smt7p0T9eTw0z2WZCaSDqFmHhscKXRvIc
+         D8PIVwfZajnvN4R5jDhM8bhSZ1yWHBsyVuXgZ6Y3/VqM1TYsF+kXssNNGc8pMhC6o78r
+         STwm0Pqq+45z0QpyCWZJcWRcTcLaosjdu50X7ToLbb6oV4gjUIJw11j88MUgExjjHdFD
+         HLQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=4Y2bzdSGviXq60UAJUwPl6VNHemh5FsztTQ19e+AzIM=;
+        b=NBPWvlx2HfklgsSy8H5hYyRqHeSJpWTGBvyHiPiJNBHG0oGHxMdGPHZ01ri9RBjR2u
+         7X7BXtviIXvATpVcW/360bJvxrHvg46iXrfc1/7stiK7qaOClA0PRthLJ+84vXxtRxO0
+         pkcuKfgvpV2q41Jtg56VL+OVk5tY8xsQ57QLV32HdSKaUok12Uh2Tg1FkDaLEroUTaVv
+         pvtPynVtGMwLc8LkUxD6qpMsRsLifoxZtbFes0hOxEYXiCCZ9BGOgeMO5/WwGKZjszME
+         8FZ3AVcKWMdXR4Xmcjl5Eys+tdk1yLMYHxLgUTUmataSRirLQbFbDZcyLFilfcuSm3MU
+         DuAw==
+X-Gm-Message-State: AOAM533MjMn4ugZK4Ohgl8iSII7GaKBwY1S9+Au7WYIeGKe3siHsZHry
+        80BXRYUmlm3aC1snD0IxER0=
+X-Google-Smtp-Source: ABdhPJwOkW1NsAfaZTcVsoKEZ1fDF+2WkGefCHlRQDhTYvBLTKlohSZxwn8rGxcK+OlsZqzGyRS1HA==
+X-Received: by 2002:a17:902:6b83:: with SMTP id p3mr4113682plk.55.1643996886147;
+        Fri, 04 Feb 2022 09:48:06 -0800 (PST)
+Received: from [10.230.2.160] ([192.19.161.250])
+        by smtp.gmail.com with ESMTPSA id j8sm3546451pfc.48.2022.02.04.09.48.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 04 Feb 2022 09:48:05 -0800 (PST)
+Message-ID: <f4a3aac7-169f-0089-26e7-eef193bd5d29@gmail.com>
+Date:   Fri, 4 Feb 2022 09:48:03 -0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH 4/4] rtla/osnoise: Fix segmentation fault when failing to
- enable -t
+Subject: Re: [PATCH 5.15 00/32] 5.15.20-rc1 review
 Content-Language: en-US
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     linux-kernel@vger.kernel.org, linux-trace-devel@vger.kernel.org
-References: <cover.1643990447.git.bristot@kernel.org>
- <264ff7941b7551ec0b6e5862e40cf3dd593d0ff0.1643990447.git.bristot@kernel.org>
- <20220204124426.54d82ce2@gandalf.local.home>
-From:   Daniel Bristot de Oliveira <bristot@kernel.org>
-In-Reply-To: <20220204124426.54d82ce2@gandalf.local.home>
-Content-Type: text/plain; charset=UTF-8
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+References: <20220204091915.247906930@linuxfoundation.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220204091915.247906930@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4132.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - kernel.org
-X-BWhitelist: no
-X-Source-IP: 79.47.126.144
-X-Source-L: No
-X-Exim-ID: 1nG2fp-0022hu-7t
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: host-79-47-126-144.retail.telecomitalia.it ([10.0.1.2]) [79.47.126.144]:51660
-X-Source-Auth: kernel@bristot.me
-X-Email-Count: 2
-X-Source-Cap: YnJpc3RvdG1lO2JyaXN0b3RtZTtnYXRvcjQxMzIuaG9zdGdhdG9yLmNvbQ==
-X-Local-Domain: no
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/4/22 18:44, Steven Rostedt wrote:
-> On Fri,  4 Feb 2022 17:24:05 +0100
-> Daniel Bristot de Oliveira <bristot@kernel.org> wrote:
-> 
->> --- a/tools/tracing/rtla/src/osnoise.c
->> +++ b/tools/tracing/rtla/src/osnoise.c
->> @@ -750,6 +750,9 @@ void osnoise_put_context(struct osnoise_context *context)
->>   */
->>  void osnoise_destroy_tool(struct osnoise_tool *top)
->>  {
->> +	if (!top)
->> +		return;
->> +
->>  	trace_instance_destroy(&top->trace);
->>  
->>  	if (top->context)
-> Um, don't you still need to initialize everything to NULL?
-> 
-> i.e.
-> 
-> nt osnoise_top_main(int argc, char **argv)
-> {
->         struct osnoise_top_params *params;
->         struct trace_instance *trace;
->         struct osnoise_tool *record;
->         struct osnoise_tool *tool;
->         int return_value = 1;
->         int retval;
-> 
-> 
-> 
-> Does not guarantee that record and tool will be initialized to NULL.
 
-Aaarrrg, you're right.
 
-As this is not related to the other patches, could you just ignore this one, so
-I can re-send alone?
+On 2/4/2022 1:22 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.15.20 release.
+> There are 32 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Sun, 06 Feb 2022 09:19:05 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.20-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
 
--- Daniel
+On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
+
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
