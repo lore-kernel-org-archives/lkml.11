@@ -2,99 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 053D4C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 19:22:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BC04C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 19:22:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232981AbiBDTWc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 14:22:32 -0500
-Received: from mga01.intel.com ([192.55.52.88]:56286 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230453AbiBDTWa (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 14:22:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644002550; x=1675538550;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=wSIco4HSOt+lt6TCo7dRtlCvVXG5VRlkxc5iG/KagDM=;
-  b=oFV6gY7pFI+xkli7hbFFI2gJqq1ffbkGfgV6q+mCmLwTDZTQx5qT4sGP
-   f8p7jS/kxhUMdIX+GLje8aDjPVAxflMv9pdYwKUULQouVafnZzYSwGG5y
-   UGomPjmoBbqzyaFILTKKRCO4WpD/c2zMNJto3XpQ2wWw4BFdVzwjyBrLz
-   jSERJId/YgTC+OePNwFDgZznLApUmNRC5gyJ6hwR79d76Z2ts6Rh9avuc
-   b6tnXHW+MVvbHyjikLhAiFfiDstsFj3bjnuz51J5G7FPC85uA9FYDDNc6
-   1xOWgd7/FQDUDuZRLT9a96u4QeSTtQtY4eQAxLvGp9E8nkKik7Z748zSn
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10248"; a="272931237"
-X-IronPort-AV: E=Sophos;i="5.88,343,1635231600"; 
-   d="scan'208";a="272931237"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2022 11:21:28 -0800
-X-IronPort-AV: E=Sophos;i="5.88,343,1635231600"; 
-   d="scan'208";a="677187308"
-Received: from iweiny-desk2.sc.intel.com (HELO localhost) ([10.3.52.147])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2022 11:21:28 -0800
-Date:   Fri, 4 Feb 2022 11:21:28 -0800
-From:   Ira Weiny <ira.weiny@intel.com>
-To:     Dave Hansen <dave.hansen@intel.com>
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Rick Edgecombe <rick.p.edgecombe@intel.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V8 07/44] x86/pkeys: Add PKS CPU feature bit
-Message-ID: <20220204192128.GA785175@iweiny-DESK2.sc.intel.com>
-References: <20220127175505.851391-1-ira.weiny@intel.com>
- <20220127175505.851391-8-ira.weiny@intel.com>
- <63950211-4244-3f85-0fb3-eb5a38d4ed50@intel.com>
+        id S233052AbiBDTWs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 14:22:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58734 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230453AbiBDTWo (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 4 Feb 2022 14:22:44 -0500
+Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 637E5C061714
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 11:22:43 -0800 (PST)
+Received: by mail-qk1-x733.google.com with SMTP id b22so5546451qkk.12
+        for <linux-kernel@vger.kernel.org>; Fri, 04 Feb 2022 11:22:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=5odN6rMwltUoUEaPnfnI/Lwo2lMwPdE9aw/xm4uKQro=;
+        b=OQW1BNsJP3CX3IWKdckwO+Who2ZvMboyjVmT0ml0RenWk1xvYjkf0bhQMxcAfMVxES
+         63cTYk1FlcVVeS30hxkAx0J+cAToUYOHJ6y2wroPP95irRjAbEHmOswbJBkVfTVpWNHp
+         BPaTVoWNys9F115cJfEM2Z14ChvlNhcMDf1QIbkj7HBhsdqJhO7pfEezBSZZvJ57y4fd
+         3TGNQGk9sI1j2hFZJF9m15H0GdtXkblQNdQ+k60O40pGbEW9ve4LXfTGO56qDhqrqFYs
+         XGZJevT/nrvIjrjs0lOgAVexKzjJdvNDR3T2rg53j3Y+N4qYWdlShRmPWqjQchm6Oddh
+         Flqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=5odN6rMwltUoUEaPnfnI/Lwo2lMwPdE9aw/xm4uKQro=;
+        b=o00JZ4TlTqRcWVJYqMLd4Meze831roFzfc1Km9Apb3w9O3JzX5X+evq2mIwNlyiW9F
+         go683bIAWGFXHmLSvpXFpiGeQRaFsOkx+wuI0kOUHDXjKTTxWWQ4vJRf64Unfvo4DV5H
+         hxiyvwRmFBuS5IS7H847dp3ZX0FIqEb21sezAPBDWAHcbcnDyGpx65R3yjQXPWjlqjJu
+         Zz3njSmORWiRYYaVXC05aM08qmLS7Ob6VDaluzofP9XhUf2021yfQNxh+IJAxRRzzEz4
+         QLOXliQI3f6gyEvwlM/wt7LWhvEHIPeumsA7eRsd6yI2uOGZbPKDUfchSm8iqPzler8K
+         P0Cg==
+X-Gm-Message-State: AOAM530R/DW7Zg9/iZqjpM+MKzgksD/l2T4plUI4yt2B1T3DOsv9TfAK
+        z8niVr8igbSGyKkAcq2p+y39qA==
+X-Google-Smtp-Source: ABdhPJxMbUuv4qndRwWDoPG9ugcKRGL0z1iH6EYEWqmFX7Qc4bhvV0UY4cEzZh5+fjnOD2+IirMukg==
+X-Received: by 2002:a05:620a:4093:: with SMTP id f19mr378593qko.306.1644002562420;
+        Fri, 04 Feb 2022 11:22:42 -0800 (PST)
+Received: from localhost (cpe-98-15-154-102.hvc.res.rr.com. [98.15.154.102])
+        by smtp.gmail.com with ESMTPSA id u17sm1551317qkp.90.2022.02.04.11.22.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Feb 2022 11:22:41 -0800 (PST)
+Date:   Fri, 4 Feb 2022 14:22:40 -0500
+From:   Johannes Weiner <hannes@cmpxchg.org>
+To:     Yosry Ahmed <yosryahmed@google.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH v2] memcg: add per-memcg total kernel memory stat
+Message-ID: <Yf19ABluqVyNd5pI@cmpxchg.org>
+References: <20220203193856.972500-1-yosryahmed@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <63950211-4244-3f85-0fb3-eb5a38d4ed50@intel.com>
-User-Agent: Mutt/1.11.1 (2018-12-01)
+In-Reply-To: <20220203193856.972500-1-yosryahmed@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 03:05:36PM -0800, Dave Hansen wrote:
-> On 1/27/22 09:54, ira.weiny@intel.com wrote:
-> > From: Ira Weiny <ira.weiny@intel.com>
-> > 
-> > Protection Keys for Supervisor pages (PKS) enables fast, hardware thread
-> > specific, manipulation of permission restrictions on supervisor page
+On Thu, Feb 03, 2022 at 07:38:56PM +0000, Yosry Ahmed wrote:
+> Currently memcg stats show several types of kernel memory:
+> kernel stack, page tables, sock, vmalloc, and slab.
+> However, there are other allocations with __GFP_ACCOUNT
+> (or supersets such as GFP_KERNEL_ACCOUNT) that are not accounted
+> in any of those stats, a few examples are:
+> - various kvm allocations (e.g. allocated pages to create vcpus)
+> - io_uring
+> - tmp_page in pipes during pipe_write()
+> - bpf ringbuffers
+> - unix sockets
 > 
-> Nit: should be "hardware-thread-specific".
+> Keeping track of the total kernel memory is essential for the ease of
+> migration from cgroup v1 to v2 as there are large discrepancies between
+> v1's kmem.usage_in_bytes and the sum of the available kernel memory stats
+> in v2. Adding separate memcg stats for all __GFP_ACCOUNT kernel
+> allocations is an impractical maintenance burden as there a lot of those
+> all over the kernel code, with more use cases likely to show up in the
+> future.
 > 
-> > mappings.  It uses the same mechanism of Protection Keys as those on
-> > User mappings but applies that mechanism to supervisor mappings using a
-> > supervisor specific MSR.
+> Therefore, add a "kernel" memcg stat that is analogous to kmem
+> page counter, with added benefits such as using rstat infrastructure
+> which aggregates stats more efficiently. Additionally, this provides a
+> lighter alternative in case the legacy kmem is deprecated in the future
 > 
-> "supervisor-specific"
-> 
-> 	Memory Protection Keys (pkeys) provides a mechanism for
-> 	enforcing page-based protections, but without requiring
-> 	modification of the page tables when an application changes
-> 	protection domains.
-> 
-> 	The kernel currently supports the pkeys for userspace (PKU)
-> 	architecture.  That architecture has been extended to
-> 	additionally support supervisor mappings.  The supervisor
-> 	support is referred to as PKS.
-> 
-> I probably wouldn't mention the MSR unless you want to say:
-> 
-> 	The main difference between PKU and PKS is that PKS does not
-> 	introduce any new instructions to write to its register.  The
-> 	register is exposed as a normal MSR and is accessed with the
-> 	normal MSR instructions.
-> 
-> 
-> > The CPU indicates support for PKS in bit 31 of the ECX register after a
-> > cpuid instruction.
-> 
-> I'd just remove this sentence.  We don't need to rehash each tiny morsel
-> of the architecture in a commit message.
+> Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
+> Acked-by: Shakeel Butt <shakeelb@google.com>
+> Acked-by: Johannes Weiner <hannes@cmpxchg.org>
+> Reported-by: kernel test robot <lkp@intel.com>
 
-All done.  Thanks for the verbiage.
-Ira
-
+Looks good, thanks Yosry!
