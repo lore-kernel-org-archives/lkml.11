@@ -2,94 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFA0EC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 19:38:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D418C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 19:40:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234383AbiBDTir (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 14:38:47 -0500
-Received: from mail-pl1-f173.google.com ([209.85.214.173]:39450 "EHLO
-        mail-pl1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234318AbiBDTiq (ORCPT
+        id S234464AbiBDTkN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 14:40:13 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:47240 "EHLO
+        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232901AbiBDTkL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 14:38:46 -0500
-Received: by mail-pl1-f173.google.com with SMTP id x11so6020459plg.6
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Feb 2022 11:38:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=io+i+CzmLFcre/8lkkhzloSJnNMQ+D75oetcmjhqJnE=;
-        b=iEWVrGvcOBNJTRz/k21utK9LGBFXk5C4kB49dXuD7M+E2t7+rVz6Mfk+iQtcs63CUt
-         lVG48/BfK9l1uqm66dVAIjfjMCnim8bzJwHR3H50YH6qXEX1K0voVe9RX/xcGxdT5rTM
-         tDoA4A9h08I+UhtT+gI+w4MmiMYVk2H7loJc8ouqHYLBaYX6TtlHNRHlmep4fzJ6VQrd
-         JQzZznRP/49CNzZaRFozAz5foVpMoOUE+UhmkeBpzb6ML/gJxuEYEBNWzYdH6gCPF1dy
-         t56GobVgCM+3Z3BMzJe5Ry5H15yw+0hWfnp0jIFxwpWL8HlBepwdw0Kz6ZMxAyAlEJII
-         nGsg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=io+i+CzmLFcre/8lkkhzloSJnNMQ+D75oetcmjhqJnE=;
-        b=2v6pDMmsdTDBLdEZiNGzR1LF1pOiqSwGHlc4y3rf5V10t1fLjVcaNsDcntQg+g22jh
-         Ttj/TZY3ZPFf6Qv6yBeFN80dmBqEqbNfZvPQTgEcp24eyBeG/IEMqF1riPJTlJWoB1ur
-         H2FaIM3vICUAOkeTEJWlnc64DegQgQsEbWryEZhMYPoKrwrvID9zLKLqZMzOkFdJWH8o
-         5aHsw0CEbCxDO1LSdY+4m/0z3WMM5okwm39Fj7jPw58uITtr4L87a3QFPUQ6LFn1JW+f
-         MrWvOufrXqh/JtiS9MyJcSSzRjtKQlDaDWwRB1J28eSJcuaN1d+G38D/wEHKbXtZga61
-         lnfA==
-X-Gm-Message-State: AOAM530wOc2DniLq7YFHrpWh/4UoPwMm+6vAkOJdMYyu/JVumluvtEjg
-        Mwa35e+fSb9CE7fH34LcEvv5rQ==
-X-Google-Smtp-Source: ABdhPJzpgkqiwLJOGzbPh+9TmMR+/YMmBnd2cAKA9Ll6ZjIHckg3YNCOFKQNjSwEehyIW1AdoeE4pg==
-X-Received: by 2002:a17:902:ecc2:: with SMTP id a2mr4554988plh.12.1644003525574;
-        Fri, 04 Feb 2022 11:38:45 -0800 (PST)
-Received: from google.com (254.80.82.34.bc.googleusercontent.com. [34.82.80.254])
-        by smtp.gmail.com with ESMTPSA id y21sm3094863pfr.136.2022.02.04.11.38.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Feb 2022 11:38:44 -0800 (PST)
-Date:   Fri, 4 Feb 2022 19:38:41 +0000
-From:   David Matlack <dmatlack@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        seanjc@google.com, vkuznets@redhat.com
-Subject: Re: [PATCH 08/23] KVM: MMU: rephrase unclear comment
-Message-ID: <Yf2AweXukX3TLh5r@google.com>
-References: <20220204115718.14934-1-pbonzini@redhat.com>
- <20220204115718.14934-9-pbonzini@redhat.com>
+        Fri, 4 Feb 2022 14:40:11 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 56E76CE223E;
+        Fri,  4 Feb 2022 19:40:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 93276C340EB;
+        Fri,  4 Feb 2022 19:40:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644003608;
+        bh=9qfZzVg17+0zHsBBjelWLlxfLLBlRWQoKqn8lLWN2lA=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=tRVNSkC8iIf9DhleNKya8hTSjN8l3TfMQkJb1pxyzPwQmcO6fUuyqBcGIMk6Uiswu
+         smwCMJ+R9PeE38tHuWLRcRqusArIQoQpgU7NWRddGPs2apBZxhoz8mkLNQhO5Nlhuk
+         1OZxxXtrJ1qe6GZWYuslj3Sx1kCIfosVd/Sr5v4gZ4oQOHz4O51oQxXkDqCcGQ2Jrd
+         iHexdNPI4DxnJVQZWPXTiGw3ewliz9c+zMabDEs2INJC0dBdBUZugFOhPcGDW9+fN1
+         ql3Ah8yrAqyrhZ2rr5lEO8QlWd6eKrr5nxjGABA+f+LaOi88w8RcaPynUK9mws7m3N
+         CjDIseh8ngxFQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 78AFFC6D4EA;
+        Fri,  4 Feb 2022 19:40:08 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220204115718.14934-9-pbonzini@redhat.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf-next v3 0/2] limit bpf_core_types_are_compat recursion
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164400360849.5213.7518261706290398971.git-patchwork-notify@kernel.org>
+Date:   Fri, 04 Feb 2022 19:40:08 +0000
+References: <20220204005519.60361-1-mcroce@linux.microsoft.com>
+In-Reply-To: <20220204005519.60361-1-mcroce@linux.microsoft.com>
+To:     Matteo Croce <mcroce@linux.microsoft.com>
+Cc:     alexei.starovoitov@gmail.com, bpf@vger.kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 04, 2022 at 06:57:03AM -0500, Paolo Bonzini wrote:
-> If accessed bits are not supported there simple isn't any distinction
-> between accessed and non-accessed gPTEs, so the comment does not make
-> much sense.  Rephrase it in terms of what happens if accessed bits
-> *are* supported.
-> 
-> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Hello:
 
-Reviewed-by: David Matlack <dmatlack@google.com>
+This series was applied to bpf/bpf-next.git (master)
+by Alexei Starovoitov <ast@kernel.org>:
 
-> ---
->  arch/x86/kvm/mmu/paging_tmpl.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+On Fri,  4 Feb 2022 01:55:17 +0100 you wrote:
+> From: Matteo Croce <mcroce@microsoft.com>
 > 
-> diff --git a/arch/x86/kvm/mmu/paging_tmpl.h b/arch/x86/kvm/mmu/paging_tmpl.h
-> index 5b5bdac97c7b..6bb9a377bf89 100644
-> --- a/arch/x86/kvm/mmu/paging_tmpl.h
-> +++ b/arch/x86/kvm/mmu/paging_tmpl.h
-> @@ -193,7 +193,7 @@ static bool FNAME(prefetch_invalid_gpte)(struct kvm_vcpu *vcpu,
->  	if (!FNAME(is_present_gpte)(gpte))
->  		goto no_present;
->  
-> -	/* if accessed bit is not supported prefetch non accessed gpte */
-> +	/* if accessed bit is supported, prefetch only accessed gpte */
->  	if (PT_HAVE_ACCESSED_DIRTY(vcpu->arch.mmu) &&
->  	    !(gpte & PT_GUEST_ACCESSED_MASK))
->  		goto no_present;
-> -- 
-> 2.31.1
+> As formerly discussed on the BPF mailing list:
+> https://lore.kernel.org/bpf/CAADnVQJDax2j0-7uyqdqFEnpB57om_z+Cqmi1O2QyLpHqkVKwA@mail.gmail.com/
 > 
+> changes from v2:
+> test the bpf_core_type_exists() return value, and check that the recursion
+> limit is enforced.
 > 
+> [...]
+
+Here is the summary with links:
+  - [bpf-next,v3,1/2] bpf: limit bpf_core_types_are_compat() recursion
+    https://git.kernel.org/bpf/bpf-next/c/e70e13e7d4ab
+  - [bpf-next,v3,2/2] selftests/bpf: test maximum recursion depth for bpf_core_types_are_compat()
+    https://git.kernel.org/bpf/bpf-next/c/976a38e05a49
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
