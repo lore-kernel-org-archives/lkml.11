@@ -2,44 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBD3CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 23:24:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4DABC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 23:24:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378151AbiBDXYR (ORCPT
+        id S1378145AbiBDXYU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 18:24:17 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:45782 "EHLO
-        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378103AbiBDXYL (ORCPT
+        Fri, 4 Feb 2022 18:24:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42298 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1378110AbiBDXYL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 4 Feb 2022 18:24:11 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1722DFC13F7;
+        Fri,  4 Feb 2022 15:24:10 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B08A8CE24C1;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4D938B83971;
         Fri,  4 Feb 2022 23:24:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02851C340EF;
-        Fri,  4 Feb 2022 23:24:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2871C340ED;
+        Fri,  4 Feb 2022 23:24:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1644017048;
-        bh=lXaKWM2nPsvGaA4M3xknAyaLNPy151HXLW17hO5rkR0=;
+        bh=xnhPzJ/bmGOHPfjmOwYiKQqr+09QnV28RTS3sYV19ns=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QnImF1IPtt2zc7pNIiSc2VDYAKsr5iB+XuE8GMXgIErTZEXiwud2gsJLyx82dKXSJ
-         gr5xTuvTk3XW7wT32rpThhKRiTROaVolrxdCn2HnTeQn9gmHJpp7T5b4R9W4UXtzDo
-         chgLeBoJvXe711StkHFdLSA7zfQ92UsTxAq7hhbIbu8ap5YHXXfUDvSwXccd+980Nn
-         SVtPd+GXllM9hQQ1yEL36+SOyBAOoMmvRY4G8xzujEKG6p2ikTSS7s79+QmEvw9+5W
-         3lT9H2Wmntc1Wxfz0Bv7dOv8ueWgry79JhnhLpG/K6iKm/NIInF7PDsdkYHpF9ITm7
-         ILyofZD1mdihA==
+        b=JrysNh470JefdMAGjbfzB129wKp9vEiypUnHUgLKNUqqKoMkUtiDXg6Hbr/Vs+2Hn
+         t/xK4m+odPRNoohWnMd5v05VtySKS11E+kwCDTpo3ICuqaoqIMevwcgeunFP/i5Adl
+         oHSoZW0No9Z2pWp7BkbOLiAH4FPsE8HSPQzat74e2ZP4rUc5yHzxOq9BD9wI2l/3pd
+         +7NF8ffahkZCG/f6L6NI0XGyjQsUvUk1nAZZyedOJcG1i79LQmSqYn9dflPydIj5Qy
+         zO7SFvByANgwlEdtpyAsHu59ui84OGyOVbYe/KUDODnaTroJU/AhyN+wpM/njJ7WRG
+         d8B8qXW5f0Ipw==
 Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id C3B355C08B7; Fri,  4 Feb 2022 15:24:07 -0800 (PST)
+        id C1AE55C0829; Fri,  4 Feb 2022 15:24:07 -0800 (PST)
 From:   "Paul E. McKenney" <paulmck@kernel.org>
 To:     rcu@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com,
         rostedt@goodmis.org, Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        David Woodhouse <dwmw@amazon.co.uk>,
         "Paul E . McKenney" <paulmck@kernel.org>
-Subject: [PATCH rcu 03/10] rcu: Remove unused rcu_state.boost
-Date:   Fri,  4 Feb 2022 15:23:59 -0800
-Message-Id: <20220204232406.814-3-paulmck@kernel.org>
+Subject: [PATCH rcu 02/10] rcu/nocb: Handle concurrent nocb kthreads creation
+Date:   Fri,  4 Feb 2022 15:23:58 -0800
+Message-Id: <20220204232406.814-2-paulmck@kernel.org>
 X-Mailer: git-send-email 2.31.1.189.g2e36527f23
 In-Reply-To: <20220204232355.GA728@paulmck-ThinkPad-P17-Gen-1>
 References: <20220204232355.GA728@paulmck-ThinkPad-P17-Gen-1>
@@ -51,42 +55,65 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Neeraj Upadhyay <quic_neeraju@quicinc.com>
 
+When multiple CPUs in the same nocb gp/cb group concurrently
+come online, they might try to concurrently create the same
+rcuog kthread. Fix this by using nocb gp CPU's spawn mutex to
+provide mutual exclusion for the rcuog kthread creation code.
+
+[ paulmck: Whitespace fixes per kernel test robot feedback. ]
+
+Acked-by: David Woodhouse <dwmw@amazon.co.uk>
 Signed-off-by: Neeraj Upadhyay <quic_neeraju@quicinc.com>
 Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 ---
- kernel/rcu/tree.h        | 5 ++---
- kernel/rcu/tree_plugin.h | 2 --
- 2 files changed, 2 insertions(+), 5 deletions(-)
+ kernel/rcu/tree.h      | 2 ++
+ kernel/rcu/tree_nocb.h | 7 ++++++-
+ 2 files changed, 8 insertions(+), 1 deletion(-)
 
 diff --git a/kernel/rcu/tree.h b/kernel/rcu/tree.h
-index 24dd4b0d805f1..e9990945483f1 100644
+index 486fc901bd085..24dd4b0d805f1 100644
 --- a/kernel/rcu/tree.h
 +++ b/kernel/rcu/tree.h
-@@ -304,9 +304,8 @@ struct rcu_state {
+@@ -203,6 +203,8 @@ struct rcu_data {
+ 	int nocb_defer_wakeup;		/* Defer wakeup of nocb_kthread. */
+ 	struct timer_list nocb_timer;	/* Enforce finite deferral. */
+ 	unsigned long nocb_gp_adv_time;	/* Last call_rcu() CB adv (jiffies). */
++	struct mutex nocb_gp_kthread_mutex; /* Exclusion for nocb gp kthread */
++					    /* spawning */
  
- 	/* The following fields are guarded by the root rcu_node's lock. */
+ 	/* The following fields are used by call_rcu, hence own cacheline. */
+ 	raw_spinlock_t nocb_bypass_lock ____cacheline_internodealigned_in_smp;
+diff --git a/kernel/rcu/tree_nocb.h b/kernel/rcu/tree_nocb.h
+index eeafb546a7a09..1e40519d1a05a 100644
+--- a/kernel/rcu/tree_nocb.h
++++ b/kernel/rcu/tree_nocb.h
+@@ -1226,6 +1226,7 @@ static void __init rcu_boot_init_nocb_percpu_data(struct rcu_data *rdp)
+ 	raw_spin_lock_init(&rdp->nocb_gp_lock);
+ 	timer_setup(&rdp->nocb_timer, do_nocb_deferred_wakeup_timer, 0);
+ 	rcu_cblist_init(&rdp->nocb_bypass);
++	mutex_init(&rdp->nocb_gp_kthread_mutex);
+ }
  
--	u8	boost ____cacheline_internodealigned_in_smp;
--						/* Subject to priority boost. */
--	unsigned long gp_seq;			/* Grace-period sequence #. */
-+	unsigned long gp_seq ____cacheline_internodealigned_in_smp;
-+						/* Grace-period sequence #. */
- 	unsigned long gp_max;			/* Maximum GP duration in */
- 						/*  jiffies. */
- 	struct task_struct *gp_kthread;		/* Task for grace periods. */
-diff --git a/kernel/rcu/tree_plugin.h b/kernel/rcu/tree_plugin.h
-index c5b45c2f68a15..109429e70a642 100644
---- a/kernel/rcu/tree_plugin.h
-+++ b/kernel/rcu/tree_plugin.h
-@@ -1175,8 +1175,6 @@ static void rcu_spawn_one_boost_kthread(struct rcu_node *rnp)
- 	if (rnp->boost_kthread_task || !rcu_scheduler_fully_active)
- 		return;
+ /*
+@@ -1248,13 +1249,17 @@ static void rcu_spawn_cpu_nocb_kthread(int cpu)
  
--	rcu_state.boost = 1;
--
- 	t = kthread_create(rcu_boost_kthread, (void *)rnp,
- 			   "rcub/%d", rnp_index);
- 	if (WARN_ON_ONCE(IS_ERR(t)))
+ 	/* If we didn't spawn the GP kthread first, reorganize! */
+ 	rdp_gp = rdp->nocb_gp_rdp;
++	mutex_lock(&rdp_gp->nocb_gp_kthread_mutex);
+ 	if (!rdp_gp->nocb_gp_kthread) {
+ 		t = kthread_run(rcu_nocb_gp_kthread, rdp_gp,
+ 				"rcuog/%d", rdp_gp->cpu);
+-		if (WARN_ONCE(IS_ERR(t), "%s: Could not start rcuo GP kthread, OOM is now expected behavior\n", __func__))
++		if (WARN_ONCE(IS_ERR(t), "%s: Could not start rcuo GP kthread, OOM is now expected behavior\n", __func__)) {
++			mutex_unlock(&rdp_gp->nocb_gp_kthread_mutex);
+ 			return;
++		}
+ 		WRITE_ONCE(rdp_gp->nocb_gp_kthread, t);
+ 	}
++	mutex_unlock(&rdp_gp->nocb_gp_kthread_mutex);
+ 
+ 	/* Spawn the kthread for this CPU. */
+ 	t = kthread_run(rcu_nocb_cb_kthread, rdp,
 -- 
 2.31.1.189.g2e36527f23
 
