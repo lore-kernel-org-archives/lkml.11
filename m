@@ -2,82 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB246C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 22:58:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30BDCC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 22:58:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377511AbiBDW6d (ORCPT
+        id S1377800AbiBDW6i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 17:58:33 -0500
-Received: from mout.perfora.net ([74.208.4.194]:44975 "EHLO mout.perfora.net"
+        Fri, 4 Feb 2022 17:58:38 -0500
+Received: from mout.perfora.net ([74.208.4.194]:53167 "EHLO mout.perfora.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1358303AbiBDW6U (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 17:58:20 -0500
+        id S1358185AbiBDW6W (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 4 Feb 2022 17:58:22 -0500
 Received: from localhost.localdomain ([81.221.85.15]) by mrelay.perfora.net
- (mreueus003 [74.208.5.2]) with ESMTPSA (Nemesis) id 0MU0AR-1mpTor0C4v-00Qfkx;
- Fri, 04 Feb 2022 23:57:48 +0100
+ (mreueus003 [74.208.5.2]) with ESMTPSA (Nemesis) id 0MSLTZ-1mnorT0XWd-00TQuf;
+ Fri, 04 Feb 2022 23:58:00 +0100
 From:   Marcel Ziswiler <marcel@ziswiler.com>
 To:     linux-arm-kernel@lists.infradead.org
 Cc:     Marek Vasut <marek.vasut@gmail.com>,
         Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Song Liu <songliubraving@fb.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
         Arnd Bergmann <arnd@arndb.de>,
         Biju Das <biju.das.jz@bp.renesas.com>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
         Catalin Marinas <catalin.marinas@arm.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
         Enric Balletbo i Serra <enric.balletbo@collabora.com>,
         Geert Uytterhoeven <geert+renesas@glider.be>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
         Krzysztof Kozlowski <krzk@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
         Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
         Olof Johansson <olof@lixom.net>,
         Shawn Guo <shawnguo@kernel.org>, Will Deacon <will@kernel.org>,
-        Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v4 06/12] arm64: defconfig: enable bpf/cgroup firewalling
-Date:   Fri,  4 Feb 2022 23:57:00 +0100
-Message-Id: <20220204225706.1539818-7-marcel@ziswiler.com>
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v4 10/12] arm64: defconfig: enable verdin-imx8mm relevant drivers as modules
+Date:   Fri,  4 Feb 2022 23:57:04 +0100
+Message-Id: <20220204225706.1539818-11-marcel@ziswiler.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20220204225706.1539818-1-marcel@ziswiler.com>
 References: <20220204225706.1539818-1-marcel@ziswiler.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:kFkz1tuDGKgCmRQ8VMyzBmIGg2GLrG/LHFH3FRZfa1NcI8bbkqn
- RYQdzlQ9qRCegvAA0aT4N3aMrOKVGuQdQOqPZHhm0gszO1/d+3SfSr2gEKo/doZeIJIlXWc
- Ki82wSAcu76QJXkPpqw8KFIhB/DmKL7+KTF+WKuqLTaPm9T9boeeWtfvwbtZ3hb1E+YsavM
- DlNptzGHYziTpvkYIkeXg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:9EkdvJbUnKM=:BaAWlmA/99knQ7NcJl0isg
- n33hHWUjr3Y0jwFBusw9sz/3WScgFip0L/jONrFiPOsv/UfLkZeJcuJmPodNgVwDZO6uHshd/
- MrNugB4WxI0I+LI7rVQIT/wYKp3gkgIhMKPImzcrhVGE2j+Rlad+bc7SexKAMhm39uFqGEzGr
- disVIcH4w6gOK17d+zUpc4+IDBbHv6qtM05dDOP9uZEsb78ut7j9lMxfaAxdZBzpq2prbXFn0
- 3YE+WTP580YIUPhxLcwZy/rOjOEHerURislEa0NcPS4LtKiz731lF2usnI+HS4gFplSTCOwKw
- SU45y8X031sdbTSYGdF4gEgeivgY9S/VKD5UD0wpb6//mvBAHE0mfNhgpzooGVDNxY4D4xWU2
- IA4PGZho1rEX9eHa7gdayqWrbQK5aXyuBDMC5pt4+hWf2H5OxVsjLKmJbKuVNYBegvwyxBwAY
- dwoZPe/gfhxHe2952XqHLqYymBFtsdQxv0zqjpqMCqda5hGJRA8A0lpXimoeZc7e4MNGCXpel
- znejXWnc975BfYAb1hgTZVvOw5mZPlDrBJqYRssu4dxgrkvXFna+mnnMViaipEYYcQ5GMGpWq
- ty1j6B4rie0QBfAUEHHLpUE+X3C6H/xlQiBrNZATT20OyNRoJ5qUeR+9XuuJX+u6e7rcv4i/N
- +kRzZ14X+j0B0qeVh2ir5L2oVDk+9TF75sIjIlnui0ABUK/2i8KCPZV3/RiMMAF8kmuRnRjrp
- XisjfdhB3lRrAPbl
+X-Provags-ID: V03:K1:kH+5K7Es3VfXS8C/7EOIDa5q2YryXfVoF8zvruDZxxUvc3ElxE2
+ C3ZHTWf3g2/pcyON80pWJW1kkIElUousaLlKTSfCSxRqMTwMpSWJ1enX39SqlSXYgGqCRkI
+ 2tEP/+PQsAV5ygmAFdq+TppKPoPyD0zrxGj8Czx4Jmwu1rOgDTTN2i7/Vme8Gk5a2pnEHW1
+ mlVWG3mWV2d1zKvnrsENA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:2VuhEtqPsMw=:yjWDls8jo9b5DhIPjTdstL
+ AY6nNK/qa/KcxFEWqppPpdtVK9KR/tyckKxQCNKXvDaqQWbgYGXTsZqzhfobFYPwJu07CyHse
+ rRcjqVy/tfdb7cok9UB2istU4axvVsaEieOw8sVLpvBM4ifFPz8sxQGqMWn2wDwkn2srPMbNr
+ MC4Rhfnw01Di1c8K9/H1Lf2O/KN7LUAut46rMpwHKkFoB39ijKvaH/Wj1c+P20mlUpru4jJ1Q
+ +EoEj9yNGeo/rx1w6sV2t8qzfhP7T88dTigdsBkDHJ73AS2dqjqXOvH0UKHFf/N3wP3og+bS3
+ 5+W/U/ScRpT66wfzNLKrpwT7khp1UjKBs/fq53OtI2k06c7CBQpgskvnMcqTf04UFm2n+l6JT
+ wInpmbjUuHB+GAS/QQL/Q+8XBiVOMpeD6AYbjOn78bOfaPuaInFgS6lQN6YzQE8meHIxPpD//
+ qnodwEXdDSBQa7F+EqUAVPc5Z4GjmIaQtRYAkXutca0j24BsW7UcjDjdOQDsBe67evaGsZSj/
+ A1EnWB/sUsEkdedFrP2G3r4Vkf+RVf7/sDaobuzDegnsq7xPB/J8nuAI7+lPe1YUrFvrUjwZz
+ 9DjNm9QSRoQcA8stKEzkmSxis/9hKge3avQCO/NQoYuXhUAfJ4yWnm8sgIcBmTlnSS5S0BTWX
+ iOpMzfUCBpoxkfFblhHJXZtgZP1v8P2d+rjLG1kDduas8P3CGI/jQnUQfcNp6TvLbrzA=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
-This avoids the following systemd warning:
+Enable various drivers which support peripherals as found on the
+Verdin iMX8M Mini et al. computer/system on modules:
 
-[    2.618538] systemd[1]: system-getty.slice: unit configures an IP
- firewall, but the local system does not support BPF/cgroup firewalling.
-[    2.630916] systemd[1]: (This warning is only shown for the first
- unit using IP firewalling.)
+- CONFIG_CAN_MCP251XFD
+At least one Microchip MCP2518FDT SPI CAN controller which this driver
+also supports may be found on the Verdin iMX8M Mini computer/system on
+module.
+
+- CONFIG_BT_HCIUART_MRVL, CONFIG_BT_MRVL, CONFIG_BT_MRVL_SDIO and
+  CONFIG_MWIFIEX_SDIO
+The AzureWave AW-CM276NF which these Bluetooth and Wi-Fi drivers also
+support may be found on the Verdin iMX8M Mini (as well as the Apalis
+iMX8, Colibri iMX8X and Verdin iMX8M Plus for that matter) computer/
+system on module.
+
+- CONFIG_SENSORS_LM75
+The TI TMP75C temperature sensor which this driver also supports may be
+found on the Verdin iMX8M Mini (as well as the Verdin iMX8M Plus for
+that matter) computer/system on module.
+
+- CONFIG_SND_SOC_NAU8822
+The Nuvoton Technology Corporation (NTC) NAU88C22YG which this driver
+also supports may be found on the Verdin Development Board a carrier
+board for the Verdin family of computer/system on module which the
+Verdin iMX8M Mini (as well as the Verdin iMX8M Plus for that matter)
+may be mated in.
+
+- CONFIG_TI_ADS1015
+The TLA2024 ADC which this driver also supports may be found on the
+Verdin iMX8M Mini (as well as the Verdin iMX8M Plus for that matter)
+computer/system on module.
 
 Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-Acked-by: Song Liu <songliubraving@fb.com>
 Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
 ---
@@ -88,31 +103,66 @@ Changes in v3:
 - Add Krzysztof's reviewed-by tag.
 
 Changes in v2:
-- Add Song's acked-by tag.
+- Explain why enabling these may make sense and squash them relevant
+  changes as requested by Krzysztof.
 
- arch/arm64/configs/defconfig | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm64/configs/defconfig | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
 diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index 530ad076b5cb..444fec9ec73a 100644
+index 76334cb698af..8d2733f8a7d9 100644
 --- a/arch/arm64/configs/defconfig
 +++ b/arch/arm64/configs/defconfig
-@@ -3,6 +3,7 @@ CONFIG_POSIX_MQUEUE=y
- CONFIG_AUDIT=y
- CONFIG_NO_HZ_IDLE=y
- CONFIG_HIGH_RES_TIMERS=y
-+CONFIG_BPF_SYSCALL=y
- CONFIG_BPF_JIT=y
- CONFIG_PREEMPT=y
- CONFIG_IRQ_TIME_ACCOUNTING=y
-@@ -22,6 +23,7 @@ CONFIG_CPUSETS=y
- CONFIG_CGROUP_DEVICE=y
- CONFIG_CGROUP_CPUACCT=y
- CONFIG_CGROUP_PERF=y
-+CONFIG_CGROUP_BPF=y
- CONFIG_USER_NS=y
- CONFIG_SCHED_AUTOGROUP=y
- CONFIG_BLK_DEV_INITRD=y
+@@ -179,6 +179,7 @@ CONFIG_CAN=m
+ CONFIG_CAN_FLEXCAN=m
+ CONFIG_CAN_RCAR=m
+ CONFIG_CAN_RCAR_CANFD=m
++CONFIG_CAN_MCP251XFD=m
+ CONFIG_BT=m
+ CONFIG_BT_HIDP=m
+ # CONFIG_BT_LE is not set
+@@ -189,6 +190,9 @@ CONFIG_BT_HCIUART=m
+ CONFIG_BT_HCIUART_LL=y
+ CONFIG_BT_HCIUART_BCM=y
+ CONFIG_BT_HCIUART_QCA=y
++CONFIG_BT_HCIUART_MRVL=y
++CONFIG_BT_MRVL=m
++CONFIG_BT_MRVL_SDIO=m
+ CONFIG_BT_QCOMSMD=m
+ CONFIG_CFG80211=m
+ CONFIG_MAC80211=m
+@@ -380,6 +384,7 @@ CONFIG_ATH10K_SNOC=m
+ CONFIG_WCN36XX=m
+ CONFIG_BRCMFMAC=m
+ CONFIG_MWIFIEX=m
++CONFIG_MWIFIEX_SDIO=m
+ CONFIG_MWIFIEX_PCIE=m
+ CONFIG_WL18XX=m
+ CONFIG_WLCORE_SDIO=m
+@@ -556,6 +561,7 @@ CONFIG_CHARGER_BQ25980=m
+ CONFIG_SENSORS_ARM_SCMI=y
+ CONFIG_SENSORS_ARM_SCPI=y
+ CONFIG_SENSORS_JC42=m
++CONFIG_SENSORS_LM75=m
+ CONFIG_SENSORS_LM90=m
+ CONFIG_SENSORS_PWM_FAN=m
+ CONFIG_SENSORS_RASPBERRYPI_HWMON=m
+@@ -797,6 +803,7 @@ CONFIG_SND_SOC_WM8960=m
+ CONFIG_SND_SOC_WM8962=m
+ CONFIG_SND_SOC_WM8978=m
+ CONFIG_SND_SOC_WSA881X=m
++CONFIG_SND_SOC_NAU8822=m
+ CONFIG_SND_SOC_LPASS_WSA_MACRO=m
+ CONFIG_SND_SOC_LPASS_VA_MACRO=m
+ CONFIG_SND_SIMPLE_CARD=m
+@@ -1088,6 +1095,7 @@ CONFIG_QCOM_SPMI_VADC=m
+ CONFIG_QCOM_SPMI_ADC5=m
+ CONFIG_ROCKCHIP_SARADC=m
+ CONFIG_RZG2L_ADC=m
++CONFIG_TI_ADS1015=m
+ CONFIG_IIO_CROS_EC_SENSORS_CORE=m
+ CONFIG_IIO_CROS_EC_SENSORS=m
+ CONFIG_IIO_ST_LSM6DSX=m
 -- 
 2.33.1
 
