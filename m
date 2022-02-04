@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ABC2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:22:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 881D7C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:22:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357558AbiBDJWW (ORCPT
+        id S1357380AbiBDJW1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 04:22:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60616 "EHLO
+        Fri, 4 Feb 2022 04:22:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357549AbiBDJVs (ORCPT
+        with ESMTP id S1357543AbiBDJVr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 04:21:48 -0500
+        Fri, 4 Feb 2022 04:21:47 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DB76C06176E;
-        Fri,  4 Feb 2022 01:21:48 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FC0AC06176D;
+        Fri,  4 Feb 2022 01:21:46 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 38D31B836ED;
-        Fri,  4 Feb 2022 09:21:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7547DC004E1;
-        Fri,  4 Feb 2022 09:21:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 455CCB836B9;
+        Fri,  4 Feb 2022 09:21:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35548C004E1;
+        Fri,  4 Feb 2022 09:21:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643966507;
-        bh=QxDpZTI1T/K786gFZQxlq1ZSoTSFEF/Vn8/D4xcS44c=;
+        s=korg; t=1643966503;
+        bh=HF8PCrqcOsp+S8v1dXh6Awe5oWy11tf8qytKG0CdvcI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=URPHy5IoTX2oI7bxOzQTf3yjKRCC9jG62/PjrOEuVPZMxk0a7H+5Z/0I2bzjbBbiT
-         MUhtlAPnaCVlBDT+hoA7scMDIgBKi74ZuihiP3/uQjpDyvloHooqPFyxXtV5JlBaSi
-         c78r17kPmkWf+pg5UX6mmSGYCApHYohp1+nPafK0=
+        b=UAtF78ZfXTDsGUhmZw+zLOBe+0RSEjO+OHHYZjkybOHdGaQk0cD8Rq4v+zJ3f4H8c
+         pIxvAiOxOp0IKW2aCZIuZ8rb35z9IwqqxQqda2ZbBSF7JHvNmryEgCcQsCCUe3iW9T
+         s0feeMeRzTIO2gbXz3+Ih+W7/dThsBeuEiMj460s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Mathias Krause <minipli@grsecurity.net>,
-        Jan Kara <jack@suse.cz>
-Subject: [PATCH 5.10 20/25] fanotify: Fix stale file descriptor in copy_event_to_user()
-Date:   Fri,  4 Feb 2022 10:20:27 +0100
-Message-Id: <20220204091914.933296036@linuxfoundation.org>
+        stable@vger.kernel.org, Matthias Kaehlcke <mka@chromium.org>,
+        Alex Elder <elder@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.10 02/25] net: ipa: fix atomic update in ipa_endpoint_replenish()
+Date:   Fri,  4 Feb 2022 10:20:09 +0100
+Message-Id: <20220204091914.361925939@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220204091914.280602669@linuxfoundation.org>
 References: <20220204091914.280602669@linuxfoundation.org>
@@ -50,52 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Alex Elder <elder@linaro.org>
 
-commit ee12595147ac1fbfb5bcb23837e26dd58d94b15d upstream.
+commit 6c0e3b5ce94947b311348c367db9e11dcb2ccc93 upstream.
 
-This code calls fd_install() which gives the userspace access to the fd.
-Then if copy_info_records_to_user() fails it calls put_unused_fd(fd) but
-that will not release it and leads to a stale entry in the file
-descriptor table.
+In ipa_endpoint_replenish(), if an error occurs when attempting to
+replenish a receive buffer, we just quit and try again later.  In
+that case we increment the backlog count to reflect that the attempt
+was unsuccessful.  Then, if the add_one flag was true we increment
+the backlog again.
 
-Generally you can't trust the fd after a call to fd_install().  The fix
-is to delay the fd_install() until everything else has succeeded.
+This second increment is not included in the backlog local variable
+though, and its value determines whether delayed work should be
+scheduled.  This is a bug.
 
-Fortunately it requires CAP_SYS_ADMIN to reach this code so the security
-impact is less.
+Fix this by determining whether 1 or 2 should be added to the
+backlog before adding it in a atomic_add_return() call.
 
-Fixes: f644bc449b37 ("fanotify: fix copy_event_to_user() fid error clean up")
-Link: https://lore.kernel.org/r/20220128195656.GA26981@kili
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: Mathias Krause <minipli@grsecurity.net>
-Signed-off-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+Fixes: 84f9bd12d46db ("soc: qcom: ipa: IPA endpoints")
+Signed-off-by: Alex Elder <elder@linaro.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/notify/fanotify/fanotify_user.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ipa/ipa_endpoint.c |    5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
---- a/fs/notify/fanotify/fanotify_user.c
-+++ b/fs/notify/fanotify/fanotify_user.c
-@@ -366,9 +366,6 @@ static ssize_t copy_event_to_user(struct
- 	if (fanotify_is_perm_event(event->mask))
- 		FANOTIFY_PERM(event)->fd = fd;
+--- a/drivers/net/ipa/ipa_endpoint.c
++++ b/drivers/net/ipa/ipa_endpoint.c
+@@ -918,10 +918,7 @@ static void ipa_endpoint_replenish(struc
  
--	if (f)
--		fd_install(fd, f);
+ try_again_later:
+ 	/* The last one didn't succeed, so fix the backlog */
+-	backlog = atomic_inc_return(&endpoint->replenish_backlog);
 -
- 	/* Event info records order is: dir fid + name, child fid */
- 	if (fanotify_event_dir_fh_len(event)) {
- 		info_type = info->name_len ? FAN_EVENT_INFO_TYPE_DFID_NAME :
-@@ -432,6 +429,9 @@ static ssize_t copy_event_to_user(struct
- 		count -= ret;
- 	}
+-	if (count)
+-		atomic_add(count, &endpoint->replenish_backlog);
++	backlog = atomic_add_return(count + 1, &endpoint->replenish_backlog);
  
-+	if (f)
-+		fd_install(fd, f);
-+
- 	return metadata.event_len;
- 
- out_close_fd:
+ 	/* Whenever a receive buffer transaction completes we'll try to
+ 	 * replenish again.  It's unlikely, but if we fail to supply even
 
 
