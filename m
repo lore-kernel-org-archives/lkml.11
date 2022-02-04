@@ -2,42 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E910DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:27:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54A7EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:28:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358250AbiBDJ1w (ORCPT
+        id S1358270AbiBDJ16 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 04:27:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33162 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358194AbiBDJZv (ORCPT
+        Fri, 4 Feb 2022 04:27:58 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:44842 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1357970AbiBDJZz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 04:25:51 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0C1FC0617AE;
-        Fri,  4 Feb 2022 01:25:43 -0800 (PST)
+        Fri, 4 Feb 2022 04:25:55 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BACEFB836EB;
-        Fri,  4 Feb 2022 09:25:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19F8AC340ED;
-        Fri,  4 Feb 2022 09:25:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3FDEF616CA;
+        Fri,  4 Feb 2022 09:25:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18729C004E1;
+        Fri,  4 Feb 2022 09:25:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643966741;
-        bh=F09xohPniosmms5Yvx/zW1dXETIz/aFauXOjkMDVrOE=;
+        s=korg; t=1643966754;
+        bh=wDWmQp90kgCrwgiLNL+U3qc/fKgK7nB1VdZ628Ja/X0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Woe8oApd1ZUoCeySGUspKp83mWbLhuYEH4f53yZ7NGFKsywhxmiVHoKWyKpJDQctt
-         YoCbPgC9eGb67q8yLKOrLxrgH42yZ1c/RlsOizJLrBRWBTFXsaO7Ow7MTURmohAz/X
-         FnmtTnU04r9x6dIHEuBGz+iAmrZ1buhNzVH8HRRA=
+        b=oMx2divX1FbZST/Tw+nNN/g2csyFK/NVJyDVAmgm2c5+8sf2oe5PgCxWfVQV7Sp4t
+         M5dFLFLN3gqTHcxnkm3+NkY9pa0E4NpayYWRTvdPaSLJvRYycNAfMo99ibCVvAC+gv
+         ThMGA0Dy2zj94/LhKPT+N/dslvMNmVcJNzOxExhI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kees Cook <keescook@chromium.org>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH 5.16 24/43] net/mlx5e: Avoid field-overflowing memcpy()
-Date:   Fri,  4 Feb 2022 10:22:31 +0100
-Message-Id: <20220204091917.960946034@linuxfoundation.org>
+        stable@vger.kernel.org, Alex Elder <elder@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.16 03/43] net: ipa: use a bitmap for endpoint replenish_enabled
+Date:   Fri,  4 Feb 2022 10:22:10 +0100
+Message-Id: <20220204091917.294616582@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220204091917.166033635@linuxfoundation.org>
 References: <20220204091917.166033635@linuxfoundation.org>
@@ -49,133 +46,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Alex Elder <elder@linaro.org>
 
-commit ad5185735f7dab342fdd0dd41044da4c9ccfef67 upstream.
+commit c1aaa01dbf4cef95af3e04a5a43986c290e06ea3 upstream.
 
-In preparation for FORTIFY_SOURCE performing compile-time and run-time
-field bounds checking for memcpy(), memmove(), and memset(), avoid
-intentionally writing across neighboring fields.
+Define a new replenish_flags bitmap to contain Boolean flags
+associated with an endpoint's replenishing state.  Replace the
+replenish_enabled field with a flag in that bitmap.  This is to
+prepare for the next patch, which adds another flag.
 
-Use flexible arrays instead of zero-element arrays (which look like they
-are always overflowing) and split the cross-field memcpy() into two halves
-that can be appropriately bounds-checked by the compiler.
-
-We were doing:
-
-	#define ETH_HLEN  14
-	#define VLAN_HLEN  4
-	...
-	#define MLX5E_XDP_MIN_INLINE (ETH_HLEN + VLAN_HLEN)
-	...
-        struct mlx5e_tx_wqe      *wqe  = mlx5_wq_cyc_get_wqe(wq, pi);
-	...
-        struct mlx5_wqe_eth_seg  *eseg = &wqe->eth;
-        struct mlx5_wqe_data_seg *dseg = wqe->data;
-	...
-	memcpy(eseg->inline_hdr.start, xdptxd->data, MLX5E_XDP_MIN_INLINE);
-
-target is wqe->eth.inline_hdr.start (which the compiler sees as being
-2 bytes in size), but copying 18, intending to write across start
-(really vlan_tci, 2 bytes). The remaining 16 bytes get written into
-wqe->data[0], covering byte_count (4 bytes), lkey (4 bytes), and addr
-(8 bytes).
-
-struct mlx5e_tx_wqe {
-        struct mlx5_wqe_ctrl_seg   ctrl;                 /*     0    16 */
-        struct mlx5_wqe_eth_seg    eth;                  /*    16    16 */
-        struct mlx5_wqe_data_seg   data[];               /*    32     0 */
-
-        /* size: 32, cachelines: 1, members: 3 */
-        /* last cacheline: 32 bytes */
-};
-
-struct mlx5_wqe_eth_seg {
-        u8                         swp_outer_l4_offset;  /*     0     1 */
-        u8                         swp_outer_l3_offset;  /*     1     1 */
-        u8                         swp_inner_l4_offset;  /*     2     1 */
-        u8                         swp_inner_l3_offset;  /*     3     1 */
-        u8                         cs_flags;             /*     4     1 */
-        u8                         swp_flags;            /*     5     1 */
-        __be16                     mss;                  /*     6     2 */
-        __be32                     flow_table_metadata;  /*     8     4 */
-        union {
-                struct {
-                        __be16     sz;                   /*    12     2 */
-                        u8         start[2];             /*    14     2 */
-                } inline_hdr;                            /*    12     4 */
-                struct {
-                        __be16     type;                 /*    12     2 */
-                        __be16     vlan_tci;             /*    14     2 */
-                } insert;                                /*    12     4 */
-                __be32             trailer;              /*    12     4 */
-        };                                               /*    12     4 */
-
-        /* size: 16, cachelines: 1, members: 9 */
-        /* last cacheline: 16 bytes */
-};
-
-struct mlx5_wqe_data_seg {
-        __be32                     byte_count;           /*     0     4 */
-        __be32                     lkey;                 /*     4     4 */
-        __be64                     addr;                 /*     8     8 */
-
-        /* size: 16, cachelines: 1, members: 3 */
-        /* last cacheline: 16 bytes */
-};
-
-So, split the memcpy() so the compiler can reason about the buffer
-sizes.
-
-"pahole" shows no size nor member offset changes to struct mlx5e_tx_wqe
-nor struct mlx5e_umr_wqe. "objdump -d" shows no meaningful object
-code changes (i.e. only source line number induced differences and
-optimizations).
-
-Fixes: b5503b994ed5 ("net/mlx5e: XDP TX forwarding support")
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Alex Elder <elder@linaro.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en.h     |    6 +++---
- drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c |    4 +++-
- 2 files changed, 6 insertions(+), 4 deletions(-)
+ drivers/net/ipa/ipa_endpoint.c |    8 ++++----
+ drivers/net/ipa/ipa_endpoint.h |   15 +++++++++++++--
+ 2 files changed, 17 insertions(+), 6 deletions(-)
 
---- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-@@ -225,7 +225,7 @@ static inline int mlx5e_get_max_num_chan
- struct mlx5e_tx_wqe {
- 	struct mlx5_wqe_ctrl_seg ctrl;
- 	struct mlx5_wqe_eth_seg  eth;
--	struct mlx5_wqe_data_seg data[0];
-+	struct mlx5_wqe_data_seg data[];
- };
+--- a/drivers/net/ipa/ipa_endpoint.c
++++ b/drivers/net/ipa/ipa_endpoint.c
+@@ -1069,7 +1069,7 @@ static void ipa_endpoint_replenish(struc
+ 	u32 backlog;
+ 	int delta;
  
- struct mlx5e_rx_wqe_ll {
-@@ -242,8 +242,8 @@ struct mlx5e_umr_wqe {
- 	struct mlx5_wqe_umr_ctrl_seg   uctrl;
- 	struct mlx5_mkey_seg           mkc;
- 	union {
--		struct mlx5_mtt inline_mtts[0];
--		struct mlx5_klm inline_klms[0];
-+		DECLARE_FLEX_ARRAY(struct mlx5_mtt, inline_mtts);
-+		DECLARE_FLEX_ARRAY(struct mlx5_klm, inline_klms);
- 	};
- };
+-	if (!endpoint->replenish_enabled) {
++	if (!test_bit(IPA_REPLENISH_ENABLED, endpoint->replenish_flags)) {
+ 		if (add_one)
+ 			atomic_inc(&endpoint->replenish_saved);
+ 		return;
+@@ -1106,7 +1106,7 @@ static void ipa_endpoint_replenish_enabl
+ 	u32 max_backlog;
+ 	u32 saved;
  
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-@@ -341,8 +341,10 @@ mlx5e_xmit_xdp_frame(struct mlx5e_xdpsq
+-	endpoint->replenish_enabled = true;
++	set_bit(IPA_REPLENISH_ENABLED, endpoint->replenish_flags);
+ 	while ((saved = atomic_xchg(&endpoint->replenish_saved, 0)))
+ 		atomic_add(saved, &endpoint->replenish_backlog);
  
- 	/* copy the inline part if required */
- 	if (sq->min_inline_mode != MLX5_INLINE_MODE_NONE) {
--		memcpy(eseg->inline_hdr.start, xdptxd->data, MLX5E_XDP_MIN_INLINE);
-+		memcpy(eseg->inline_hdr.start, xdptxd->data, sizeof(eseg->inline_hdr.start));
- 		eseg->inline_hdr.sz = cpu_to_be16(MLX5E_XDP_MIN_INLINE);
-+		memcpy(dseg, xdptxd->data + sizeof(eseg->inline_hdr.start),
-+		       MLX5E_XDP_MIN_INLINE - sizeof(eseg->inline_hdr.start));
- 		dma_len  -= MLX5E_XDP_MIN_INLINE;
- 		dma_addr += MLX5E_XDP_MIN_INLINE;
- 		dseg++;
+@@ -1120,7 +1120,7 @@ static void ipa_endpoint_replenish_disab
+ {
+ 	u32 backlog;
+ 
+-	endpoint->replenish_enabled = false;
++	clear_bit(IPA_REPLENISH_ENABLED, endpoint->replenish_flags);
+ 	while ((backlog = atomic_xchg(&endpoint->replenish_backlog, 0)))
+ 		atomic_add(backlog, &endpoint->replenish_saved);
+ }
+@@ -1665,7 +1665,7 @@ static void ipa_endpoint_setup_one(struc
+ 		/* RX transactions require a single TRE, so the maximum
+ 		 * backlog is the same as the maximum outstanding TREs.
+ 		 */
+-		endpoint->replenish_enabled = false;
++		clear_bit(IPA_REPLENISH_ENABLED, endpoint->replenish_flags);
+ 		atomic_set(&endpoint->replenish_saved,
+ 			   gsi_channel_tre_max(gsi, endpoint->channel_id));
+ 		atomic_set(&endpoint->replenish_backlog, 0);
+--- a/drivers/net/ipa/ipa_endpoint.h
++++ b/drivers/net/ipa/ipa_endpoint.h
+@@ -41,6 +41,17 @@ enum ipa_endpoint_name {
+ #define IPA_ENDPOINT_MAX		32	/* Max supported by driver */
+ 
+ /**
++ * enum ipa_replenish_flag:	RX buffer replenish flags
++ *
++ * @IPA_REPLENISH_ENABLED:	Whether receive buffer replenishing is enabled
++ * @IPA_REPLENISH_COUNT:	Number of defined replenish flags
++ */
++enum ipa_replenish_flag {
++	IPA_REPLENISH_ENABLED,
++	IPA_REPLENISH_COUNT,	/* Number of flags (must be last) */
++};
++
++/**
+  * struct ipa_endpoint - IPA endpoint information
+  * @ipa:		IPA pointer
+  * @ee_id:		Execution environmnent endpoint is associated with
+@@ -51,7 +62,7 @@ enum ipa_endpoint_name {
+  * @trans_tre_max:	Maximum number of TRE descriptors per transaction
+  * @evt_ring_id:	GSI event ring used by the endpoint
+  * @netdev:		Network device pointer, if endpoint uses one
+- * @replenish_enabled:	Whether receive buffer replenishing is enabled
++ * @replenish_flags:	Replenishing state flags
+  * @replenish_ready:	Number of replenish transactions without doorbell
+  * @replenish_saved:	Replenish requests held while disabled
+  * @replenish_backlog:	Number of buffers needed to fill hardware queue
+@@ -72,7 +83,7 @@ struct ipa_endpoint {
+ 	struct net_device *netdev;
+ 
+ 	/* Receive buffer replenishing for RX endpoints */
+-	bool replenish_enabled;
++	DECLARE_BITMAP(replenish_flags, IPA_REPLENISH_COUNT);
+ 	u32 replenish_ready;
+ 	atomic_t replenish_saved;
+ 	atomic_t replenish_backlog;
 
 
