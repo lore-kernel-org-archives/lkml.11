@@ -2,64 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86F29C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 12:02:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05055C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 12:03:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236034AbiBDMCU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 07:02:20 -0500
-Received: from foss.arm.com ([217.140.110.172]:39440 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230211AbiBDMCS (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 07:02:18 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A003F1480;
-        Fri,  4 Feb 2022 04:02:17 -0800 (PST)
-Received: from [10.57.88.9] (unknown [10.57.88.9])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A782A3F40C;
-        Fri,  4 Feb 2022 04:02:15 -0800 (PST)
-Message-ID: <0c235c48-49b3-42ee-f65b-0043b599bcd3@arm.com>
-Date:   Fri, 4 Feb 2022 12:02:13 +0000
+        id S237442AbiBDMDV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 07:03:21 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:37328 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230211AbiBDMDS (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 4 Feb 2022 07:03:18 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6110661B5F
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 12:03:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05D74C004E1;
+        Fri,  4 Feb 2022 12:03:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643976197;
+        bh=It84ufP8YgcfgfysSWXPrYBSayPujRbyxFSE6YIvH1Q=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=NrXSLppXfblcJoorSIQLngs+LYixw5fvimV7M284USDtbJaBbcddvzLJpmG/VBRvg
+         kzpe/f0luf93VlI4lqJJVTjB2msq9YGtxccEBsHudVClDlEIpt+tVxg8SojOc60Vnv
+         EmFm+Os2Kv1C6gC1EdULUkf2fk6U0XhRREIe5zxxyUTkn04flcyLM9Xe2VbcHq9Fj/
+         WK+e1SQ96/Ca+D1YPZs1W1nvdWuwo+TuPca0Ti13B2Tp54JaFJJPIbTe+06SrsSLQI
+         +UYb7k4H9b/PLTUnVsrwFa/V9xuLBlFWPUVGNc1ul9KU/oyZ7u2Dzq6oqfrHSlaemq
+         UD72xuMmrkuAg==
+Message-ID: <d3ade685-871c-8ae9-ec57-c3446001cf59@kernel.org>
+Date:   Fri, 4 Feb 2022 20:03:13 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.5.1
-Subject: Re: [PATCH v2] coresight: trbe: Move check for kernel page table
- isolation from EL0 to probe
-To:     Sudeep Holla <sudeep.holla@arm.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Mike Leach <mike.leach@linaro.org>,
-        Leo Yan <leo.yan@linaro.org>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        coresight@lists.linaro.org
-References: <20220203190159.3145272-1-sudeep.holla@arm.com>
-From:   Suzuki K Poulose <suzuki.poulose@arm.com>
-In-Reply-To: <20220203190159.3145272-1-sudeep.holla@arm.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [f2fs-dev] [PATCH v2] f2fs: add a way to limit roll forward
+ recovery time
+Content-Language: en-US
+To:     Jaegeuk Kim <jaegeuk@kernel.org>
+Cc:     linux-kernel@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net
+References: <20220127214102.2040254-1-jaegeuk@kernel.org>
+ <YfsjEb2ii3eyPzng@google.com>
+ <142d2cc9-73f2-f9fa-2543-6426c62e77a6@kernel.org>
+ <YfwT/6bSqUqUF/B3@google.com>
+ <211c28eb-789e-e6e6-5daf-8040ac5ddd93@kernel.org>
+ <YfzEuA6XdnJ6nibk@google.com>
+From:   Chao Yu <chao@kernel.org>
+In-Reply-To: <YfzEuA6XdnJ6nibk@google.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 03/02/2022 19:01, Sudeep Holla wrote:
-> Currently with the check present in the module initialisation, it shouts
-> on all the systems irrespective of presence of coresight trace buffer
-> extensions.
+On 2022/2/4 14:16, Jaegeuk Kim wrote:
+> On 02/04, Chao Yu wrote:
+>> On 2022/2/4 1:42, Jaegeuk Kim wrote:
+>>> On 02/03, Chao Yu wrote:
+>>>> On 2022/2/3 8:34, Jaegeuk Kim wrote:
+>>>>> This adds a sysfs entry to call checkpoint during fsync() in order to avoid
+>>>>> long elapsed time to run roll-forward recovery when booting the device.
+>>>>> Default value doesn't enforce the limitation which is same as before.
+>>>>>
+>>>>> Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+>>>>> ---
+>>>>> v2 from v1:
+>>>>>     - make the default w/o enforcement
+>>>>>
+>>>>>     Documentation/ABI/testing/sysfs-fs-f2fs | 6 ++++++
+>>>>>     fs/f2fs/checkpoint.c                    | 1 +
+>>>>>     fs/f2fs/f2fs.h                          | 3 +++
+>>>>>     fs/f2fs/node.c                          | 2 ++
+>>>>>     fs/f2fs/node.h                          | 3 +++
+>>>>>     fs/f2fs/recovery.c                      | 4 ++++
+>>>>>     fs/f2fs/sysfs.c                         | 2 ++
+>>>>>     7 files changed, 21 insertions(+)
+>>>>>
+>>>>> diff --git a/Documentation/ABI/testing/sysfs-fs-f2fs b/Documentation/ABI/testing/sysfs-fs-f2fs
+>>>>> index 87d3884c90ea..ce8103f522cb 100644
+>>>>> --- a/Documentation/ABI/testing/sysfs-fs-f2fs
+>>>>> +++ b/Documentation/ABI/testing/sysfs-fs-f2fs
+>>>>> @@ -567,3 +567,9 @@ Contact:	"Daeho Jeong" <daehojeong@google.com>
+>>>>>     Description:	You can set the trial count limit for GC urgent high mode with this value.
+>>>>>     		If GC thread gets to the limit, the mode will turn back to GC normal mode.
+>>>>>     		By default, the value is zero, which means there is no limit like before.
+>>>>> +
+>>>>> +What:		/sys/fs/f2fs/<disk>/max_roll_forward_node_blocks
+>>>>> +Date:		January 2022
+>>>>> +Contact:	"Jaegeuk Kim" <jaegeuk@kernel.org>
+>>>>> +Description:	Controls max # of node block writes to be used for roll forward
+>>>>> +		recovery. This can limit the roll forward recovery time.
+>>>>> diff --git a/fs/f2fs/checkpoint.c b/fs/f2fs/checkpoint.c
+>>>>> index deeda95688f0..57a2d9164bee 100644
+>>>>> --- a/fs/f2fs/checkpoint.c
+>>>>> +++ b/fs/f2fs/checkpoint.c
+>>>>> @@ -1543,6 +1543,7 @@ static int do_checkpoint(struct f2fs_sb_info *sbi, struct cp_control *cpc)
+>>>>>     	/* update user_block_counts */
+>>>>>     	sbi->last_valid_block_count = sbi->total_valid_block_count;
+>>>>>     	percpu_counter_set(&sbi->alloc_valid_block_count, 0);
+>>>>> +	percpu_counter_set(&sbi->rf_node_block_count, 0);
+
+Should be initialized before use?
+
+Thanks,
+
+>>>>>     	/* Here, we have one bio having CP pack except cp pack 2 page */
+>>>>>     	f2fs_sync_meta_pages(sbi, META, LONG_MAX, FS_CP_META_IO);
+>>>>> diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
+>>>>> index 63c90416364b..6ddb98ff0b7c 100644
+>>>>> --- a/fs/f2fs/f2fs.h
+>>>>> +++ b/fs/f2fs/f2fs.h
+>>>>> @@ -913,6 +913,7 @@ struct f2fs_nm_info {
+>>>>>     	nid_t max_nid;			/* maximum possible node ids */
+>>>>>     	nid_t available_nids;		/* # of available node ids */
+>>>>>     	nid_t next_scan_nid;		/* the next nid to be scanned */
+>>>>> +	nid_t max_rf_node_blocks;	/* max # of nodes for recovery */
+>>>>>     	unsigned int ram_thresh;	/* control the memory footprint */
+>>>>>     	unsigned int ra_nid_pages;	/* # of nid pages to be readaheaded */
+>>>>>     	unsigned int dirty_nats_ratio;	/* control dirty nats ratio threshold */
+>>>>> @@ -1684,6 +1685,8 @@ struct f2fs_sb_info {
+>>>>>     	atomic_t nr_pages[NR_COUNT_TYPE];
+>>>>>     	/* # of allocated blocks */
+>>>>>     	struct percpu_counter alloc_valid_block_count;
+>>>>> +	/* # of node block writes as roll forward recovery */
+>>>>> +	struct percpu_counter rf_node_block_count;
+>>>>>     	/* writeback control */
+>>>>>     	atomic_t wb_sync_req[META];	/* count # of WB_SYNC threads */
+>>>>> diff --git a/fs/f2fs/node.c b/fs/f2fs/node.c
+>>>>> index 93512f8859d5..0d9883457579 100644
+>>>>> --- a/fs/f2fs/node.c
+>>>>> +++ b/fs/f2fs/node.c
+>>>>> @@ -1782,6 +1782,7 @@ int f2fs_fsync_node_pages(struct f2fs_sb_info *sbi, struct inode *inode,
+>>>>>     			if (!atomic || page == last_page) {
+>>>>>     				set_fsync_mark(page, 1);
+>>>>> +				percpu_counter_inc(&sbi->rf_node_block_count);
+>>>>
+>>>> if (NM_I(sbi)->max_rf_node_blocks)
+>>>> 	percpu_counter_inc(&sbi->rf_node_block_count);
+>>>
+>>> I think we can just count this and adjust right away once sysfs is changed.
+>>
+>> Since this long recovery latency issue is a corner case, I guess we can avoid this
+>> to save cpu time...
 > 
-> Similar to Arm SPE perf driver, move the check for kernel page table
-> isolation from  EL0 to the device probe stage instead of the module
-> initialisation so that it complains only on the systems that support TRBE.
+> I think we can show this in debugfs, as it won't give huge overhead.
 > 
-> Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
-> Cc: Suzuki K Poulose <suzuki.poulose@arm.com>
-> Cc: Mike Leach <mike.leach@linaro.org>
-> Cc: Leo Yan <leo.yan@linaro.org>
-> Cc: Anshuman Khandual <anshuman.khandual@arm.com>
-> Cc: coresight@lists.linaro.org
-> Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
-
-Thanks, I have now queued this.
-
-https://git.kernel.org/coresight/c/ebbce265bba164c4f0d5271c277a540bd3b2fd3c
-
-Kind regards
-Suzuki
+>>
+>> BTW, shouldn't we account all warn dnode blocks? as we will traverse all blocks there
+>> in warn node list.
+> 
+> I thought we don't need to track the whole bunch of chains, but would be enough
+> to record # of fsync calls roughly.
+> 
+>>
+>> Thanks,
+>>
+>>>
+>>>>
+>>>> Thanks,
+>>>>
+>>>>>     				if (IS_INODE(page)) {
+>>>>>     					if (is_inode_flag_set(inode,
+>>>>>     								FI_DIRTY_INODE))
+>>>>> @@ -3218,6 +3219,7 @@ static int init_node_manager(struct f2fs_sb_info *sbi)
+>>>>>     	nm_i->ram_thresh = DEF_RAM_THRESHOLD;
+>>>>>     	nm_i->ra_nid_pages = DEF_RA_NID_PAGES;
+>>>>>     	nm_i->dirty_nats_ratio = DEF_DIRTY_NAT_RATIO_THRESHOLD;
+>>>>> +	nm_i->max_rf_node_blocks = DEF_RF_NODE_BLOCKS;
+>>>>>     	INIT_RADIX_TREE(&nm_i->free_nid_root, GFP_ATOMIC);
+>>>>>     	INIT_LIST_HEAD(&nm_i->free_nid_list);
+>>>>> diff --git a/fs/f2fs/node.h b/fs/f2fs/node.h
+>>>>> index 18b98cf0465b..4c1d34bfea78 100644
+>>>>> --- a/fs/f2fs/node.h
+>>>>> +++ b/fs/f2fs/node.h
+>>>>> @@ -31,6 +31,9 @@
+>>>>>     /* control total # of nats */
+>>>>>     #define DEF_NAT_CACHE_THRESHOLD			100000
+>>>>> +/* control total # of node writes used for roll-fowrad recovery */
+>>>>> +#define DEF_RF_NODE_BLOCKS			0
+>>>>> +
+>>>>>     /* vector size for gang look-up from nat cache that consists of radix tree */
+>>>>>     #define NATVEC_SIZE	64
+>>>>>     #define SETVEC_SIZE	32
+>>>>> diff --git a/fs/f2fs/recovery.c b/fs/f2fs/recovery.c
+>>>>> index 10d152cfa58d..1c8041fd854e 100644
+>>>>> --- a/fs/f2fs/recovery.c
+>>>>> +++ b/fs/f2fs/recovery.c
+>>>>> @@ -53,9 +53,13 @@ extern struct kmem_cache *f2fs_cf_name_slab;
+>>>>>     bool f2fs_space_for_roll_forward(struct f2fs_sb_info *sbi)
+>>>>>     {
+>>>>>     	s64 nalloc = percpu_counter_sum_positive(&sbi->alloc_valid_block_count);
+>>>>> +	u32 rf_node = percpu_counter_sum_positive(&sbi->rf_node_block_count);
+>>>>>     	if (sbi->last_valid_block_count + nalloc > sbi->user_block_count)
+>>>>>     		return false;
+>>>>> +	if (NM_I(sbi)->max_rf_node_blocks &&
+>>>>> +			rf_node >= NM_I(sbi)->max_rf_node_blocks)
+>>>>> +		return false;
+>>>>>     	return true;
+>>>>>     }
+>>>>> diff --git a/fs/f2fs/sysfs.c b/fs/f2fs/sysfs.c
+>>>>> index 281bc0133ee6..47efcf233afd 100644
+>>>>> --- a/fs/f2fs/sysfs.c
+>>>>> +++ b/fs/f2fs/sysfs.c
+>>>>> @@ -732,6 +732,7 @@ F2FS_RW_ATTR(SM_INFO, f2fs_sm_info, min_ssr_sections, min_ssr_sections);
+>>>>>     F2FS_RW_ATTR(NM_INFO, f2fs_nm_info, ram_thresh, ram_thresh);
+>>>>>     F2FS_RW_ATTR(NM_INFO, f2fs_nm_info, ra_nid_pages, ra_nid_pages);
+>>>>>     F2FS_RW_ATTR(NM_INFO, f2fs_nm_info, dirty_nats_ratio, dirty_nats_ratio);
+>>>>> +F2FS_RW_ATTR(NM_INFO, f2fs_nm_info, max_roll_forward_node_blocks, max_rf_node_blocks);
+>>>>>     F2FS_RW_ATTR(F2FS_SBI, f2fs_sb_info, max_victim_search, max_victim_search);
+>>>>>     F2FS_RW_ATTR(F2FS_SBI, f2fs_sb_info, migration_granularity, migration_granularity);
+>>>>>     F2FS_RW_ATTR(F2FS_SBI, f2fs_sb_info, dir_level, dir_level);
+>>>>> @@ -855,6 +856,7 @@ static struct attribute *f2fs_attrs[] = {
+>>>>>     	ATTR_LIST(ram_thresh),
+>>>>>     	ATTR_LIST(ra_nid_pages),
+>>>>>     	ATTR_LIST(dirty_nats_ratio),
+>>>>> +	ATTR_LIST(max_roll_forward_node_blocks),
+>>>>>     	ATTR_LIST(cp_interval),
+>>>>>     	ATTR_LIST(idle_interval),
+>>>>>     	ATTR_LIST(discard_idle_interval),
