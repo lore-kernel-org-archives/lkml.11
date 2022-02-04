@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2E09C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:34:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D1FFC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:34:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349234AbiBDJeU (ORCPT
+        id S1356459AbiBDJeW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 04:34:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35660 "EHLO
+        Fri, 4 Feb 2022 04:34:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239431AbiBDJeM (ORCPT
+        with ESMTP id S240258AbiBDJeO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 04:34:12 -0500
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 567D4C06173D
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 01:34:12 -0800 (PST)
-Received: by mail-lf1-x12e.google.com with SMTP id b9so11469564lfq.6
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Feb 2022 01:34:12 -0800 (PST)
+        Fri, 4 Feb 2022 04:34:14 -0500
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DCD7C061744
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 01:34:14 -0800 (PST)
+Received: by mail-lj1-x22a.google.com with SMTP id e17so7666958ljk.5
+        for <linux-kernel@vger.kernel.org>; Fri, 04 Feb 2022 01:34:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=oN4lu8lbyhaxFZyXszWUPj3DflZg95OHRJxVYyEjsXM=;
-        b=UU95mJTP6WlHYcPQ0GN9VROVMxSS0JRSVCzbKFEAYHnJoB4JyMBBEiEkiwvUuswO3Z
-         SXFT3opI9McnKmzb5wMSV9LCGdlWtpJ0kzmItSwgLghRQ+Ym32W1nyVtOVYDh65Hcx0k
-         APLu3aqR/ytZvJv3OtwGG8kcEDR5m1d8XXUziRFOP/3Q00qlxu1KCHkwVlyDbWWCcKEn
-         kTAP1lO7yA+94HKU5PkuFhpfeQtd4JYnmYRNlTRK61gPxVzXR15l0HJMWoO2wyoQOeFd
-         PyMIfw16cJW2PFXyJRcE45IgkxI959nl53NwzsTKIq1Lt4Kl33zO5zz77c/RcxQTctHK
-         65wA==
+        bh=RJsD6xXO+PD8CsfT04affYv2wFE+MUYIEsBwIBL+qZs=;
+        b=uS6Q6kvYh6eo56AILGB/zlaWJMz4UVzmSwmpN5n9ARa5o9bl/0pmeLCu47bX/gq0xI
+         5V/7PCfrRfmVPl4Xq3tn6fZtbfnMTEGo8l0ZpteSQPi/KNeUO9muKzzQORgSc1JOsDJ0
+         wjfK0z58z0NfGYUsold9uKXY3DvyAOiPwc/XEV4TsqlxIB97xUZlz6lbm8OVRNRmkgu5
+         aYKVtYxEii7xWYMD+GakzSsgMcN93SdKJeGNqnlbEIIPRF29jOmncOmwYPZ9bUfPTXnV
+         O8pckVsNa9ScTopRjsFuDI0CIJP1K1pF8H0PDIXJGqe/Yr+T35dLn6DeCklGrIFSCsV5
+         aJaA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=oN4lu8lbyhaxFZyXszWUPj3DflZg95OHRJxVYyEjsXM=;
-        b=eRQNIP9xpcMdvkZoagUhuiB1ktO8U9Bu2G3ozsygNBH7BW77JzP1t+LysH11z9LFBX
-         DNpuy4mwflSd2hQ2rcbsJ1FYa4M0HnPKX+ei0xJmR3YCZ4R9crAb1aQ6itx9I6D/ttsh
-         fF+67R4IMxzwvDTQuxzRfCfdz5zD/S/qz+Z4FlSH9RsrCFJ/4St7iFn+ZwyIbPdqWZYq
-         RhAhc7WyBsXV75IjoA38fHzYIEju2sPBn4HOVUGcglw0r+zK9TNQkEeusY2+qIqKG2sf
-         LTLdb0MoF8iNZSuteeXMH/rLhbNV7ebWfEriDWsmiAcLUitodWG/uuM3WnrINcic3M6u
-         4jhw==
-X-Gm-Message-State: AOAM531Qwlo7JBJsY/6LlGhVP6+BRE0ibqx6bTh3eGA85wmyrNDfxjOZ
-        Go25MTVRstv054i++P4nDOvj3yx0VeFxkQ==
-X-Google-Smtp-Source: ABdhPJziNpLJLMmIZ85Q4lpqOwiwZHjxS5EeMJG95tfsUjeRSr6gPUjZF/BbVRFly7nfdMPfiKSLJQ==
-X-Received: by 2002:ac2:54aa:: with SMTP id w10mr1691943lfk.357.1643967250387;
-        Fri, 04 Feb 2022 01:34:10 -0800 (PST)
+        bh=RJsD6xXO+PD8CsfT04affYv2wFE+MUYIEsBwIBL+qZs=;
+        b=fl8ExBRP8egJXFOsZKy69aYY2UD/c7JkYm/N0mshg+o8H2ceZVUW6aCU5V9PbSl58F
+         i65HAIr+lj9eHhcPdlQewF9YEi/RjZ/bIe6rkUFC+k43qW697gVj4Va7hFz0Zo8jcJBr
+         LSUbHBkJqG2SssEgMVbvI/I4yYhD2OL6oBt2EWN66/nFLQdtcD6a+lqzrMjCxHf3NRvM
+         pQsSHHiETjWpz/2bj1MIGGxtOu3nDgwcto7Ya5qyb8y7xbzxuIlPUxLqJW/9qnMVUHw7
+         XrniMuwbhBfvMjlnYwb82Tlks1xAKU6JEWDx+C40kVSQocppoVBtzupP7bRJcRlErt5o
+         BTWw==
+X-Gm-Message-State: AOAM533TVJzgJymboo7HELlzXUw+wG+0rFsL104EJkWBq9nniAUvvs1V
+        599zM7x0nlh3HlOGoixqgmq4gVPAl0FGgA==
+X-Google-Smtp-Source: ABdhPJwmi128R/blOX9fRTJYrg5u0YYPW66NQdgr+od2VQVLltUMJMRLX6Bs2g3riaQmEEGjakO6Lg==
+X-Received: by 2002:a2e:bd82:: with SMTP id o2mr1324075ljq.454.1643967252595;
+        Fri, 04 Feb 2022 01:34:12 -0800 (PST)
 Received: from jade.urgonet (h-94-254-48-165.A175.priv.bahnhof.se. [94.254.48.165])
-        by smtp.gmail.com with ESMTPSA id u28sm230550lfl.160.2022.02.04.01.34.09
+        by smtp.gmail.com with ESMTPSA id u28sm230550lfl.160.2022.02.04.01.34.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Feb 2022 01:34:09 -0800 (PST)
+        Fri, 04 Feb 2022 01:34:12 -0800 (PST)
 From:   Jens Wiklander <jens.wiklander@linaro.org>
 To:     linux-kernel@vger.kernel.org, op-tee@lists.trustedfirmware.org
 Cc:     Sumit Garg <sumit.garg@linaro.org>,
@@ -58,9 +58,9 @@ Cc:     Sumit Garg <sumit.garg@linaro.org>,
         David Howells <dhowells@redhat.com>,
         Tyler Hicks <tyhicks@linux.microsoft.com>,
         Jens Wiklander <jens.wiklander@linaro.org>
-Subject: [PATCH v4 01/10] hwrng: optee-rng: use tee_shm_alloc_kernel_buf()
-Date:   Fri,  4 Feb 2022 10:33:50 +0100
-Message-Id: <20220204093359.359059-2-jens.wiklander@linaro.org>
+Subject: [PATCH v4 03/10] tee: add tee_shm_alloc_user_buf()
+Date:   Fri,  4 Feb 2022 10:33:52 +0100
+Message-Id: <20220204093359.359059-4-jens.wiklander@linaro.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220204093359.359059-1-jens.wiklander@linaro.org>
 References: <20220204093359.359059-1-jens.wiklander@linaro.org>
@@ -70,34 +70,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Uses the new simplified tee_shm_alloc_kernel_buf() function instead of
-the old deprecated tee_shm_alloc() function which required specific
-TEE_SHM-flags.
+Adds a new function tee_shm_alloc_user_buf() for user mode allocations,
+replacing passing the flags TEE_SHM_MAPPED | TEE_SHM_DMA_BUF to
+tee_shm_alloc().
 
 Reviewed-by: Sumit Garg <sumit.garg@linaro.org>
 Signed-off-by: Jens Wiklander <jens.wiklander@linaro.org>
 ---
- drivers/char/hw_random/optee-rng.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/tee/tee_core.c     |  2 +-
+ drivers/tee/tee_private.h  |  2 ++
+ drivers/tee/tee_shm.c      | 17 +++++++++++++++++
+ drivers/tee/tee_shm_pool.c |  2 +-
+ include/linux/tee_drv.h    |  2 +-
+ 5 files changed, 22 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/char/hw_random/optee-rng.c b/drivers/char/hw_random/optee-rng.c
-index 135a82590923..a948c0727b2b 100644
---- a/drivers/char/hw_random/optee-rng.c
-+++ b/drivers/char/hw_random/optee-rng.c
-@@ -145,10 +145,10 @@ static int optee_rng_init(struct hwrng *rng)
- 	struct optee_rng_private *pvt_data = to_optee_rng_private(rng);
- 	struct tee_shm *entropy_shm_pool = NULL;
+diff --git a/drivers/tee/tee_core.c b/drivers/tee/tee_core.c
+index 3fc426dad2df..a15812baaeb1 100644
+--- a/drivers/tee/tee_core.c
++++ b/drivers/tee/tee_core.c
+@@ -297,7 +297,7 @@ static int tee_ioctl_shm_alloc(struct tee_context *ctx,
+ 	if (data.flags)
+ 		return -EINVAL;
  
--	entropy_shm_pool = tee_shm_alloc(pvt_data->ctx, MAX_ENTROPY_REQ_SZ,
--					 TEE_SHM_MAPPED | TEE_SHM_DMA_BUF);
-+	entropy_shm_pool = tee_shm_alloc_kernel_buf(pvt_data->ctx,
-+						    MAX_ENTROPY_REQ_SZ);
- 	if (IS_ERR(entropy_shm_pool)) {
--		dev_err(pvt_data->dev, "tee_shm_alloc failed\n");
-+		dev_err(pvt_data->dev, "tee_shm_alloc_kernel_buf failed\n");
- 		return PTR_ERR(entropy_shm_pool);
- 	}
+-	shm = tee_shm_alloc(ctx, data.size, TEE_SHM_MAPPED | TEE_SHM_DMA_BUF);
++	shm = tee_shm_alloc_user_buf(ctx, data.size);
+ 	if (IS_ERR(shm))
+ 		return PTR_ERR(shm);
  
+diff --git a/drivers/tee/tee_private.h b/drivers/tee/tee_private.h
+index e55204df31ce..e09c8aa5d967 100644
+--- a/drivers/tee/tee_private.h
++++ b/drivers/tee/tee_private.h
+@@ -68,4 +68,6 @@ void tee_device_put(struct tee_device *teedev);
+ void teedev_ctx_get(struct tee_context *ctx);
+ void teedev_ctx_put(struct tee_context *ctx);
+ 
++struct tee_shm *tee_shm_alloc_user_buf(struct tee_context *ctx, size_t size);
++
+ #endif /*TEE_PRIVATE_H*/
+diff --git a/drivers/tee/tee_shm.c b/drivers/tee/tee_shm.c
+index 499fccba3d74..7e7e762fc1de 100644
+--- a/drivers/tee/tee_shm.c
++++ b/drivers/tee/tee_shm.c
+@@ -127,6 +127,23 @@ struct tee_shm *tee_shm_alloc(struct tee_context *ctx, size_t size, u32 flags)
+ }
+ EXPORT_SYMBOL_GPL(tee_shm_alloc);
+ 
++/**
++ * tee_shm_alloc_user_buf() - Allocate shared memory for user space
++ * @ctx:	Context that allocates the shared memory
++ * @size:	Requested size of shared memory
++ *
++ * Memory allocated as user space shared memory is automatically freed when
++ * the TEE file pointer is closed. The primary usage of this function is
++ * when the TEE driver doesn't support registering ordinary user space
++ * memory.
++ *
++ * @returns a pointer to 'struct tee_shm'
++ */
++struct tee_shm *tee_shm_alloc_user_buf(struct tee_context *ctx, size_t size)
++{
++	return tee_shm_alloc(ctx, size, TEE_SHM_MAPPED | TEE_SHM_DMA_BUF);
++}
++
+ /**
+  * tee_shm_alloc_kernel_buf() - Allocate shared memory for kernel buffer
+  * @ctx:	Context that allocates the shared memory
+diff --git a/drivers/tee/tee_shm_pool.c b/drivers/tee/tee_shm_pool.c
+index a9f9d50fd181..54c11aa374a8 100644
+--- a/drivers/tee/tee_shm_pool.c
++++ b/drivers/tee/tee_shm_pool.c
+@@ -1,6 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0-only
+ /*
+- * Copyright (c) 2015, Linaro Limited
++ * Copyright (c) 2015 Linaro Limited
+  */
+ #include <linux/device.h>
+ #include <linux/dma-buf.h>
+diff --git a/include/linux/tee_drv.h b/include/linux/tee_drv.h
+index 6b0f0d01ebdf..a4393c8c38f3 100644
+--- a/include/linux/tee_drv.h
++++ b/include/linux/tee_drv.h
+@@ -1,6 +1,6 @@
+ /* SPDX-License-Identifier: GPL-2.0-only */
+ /*
+- * Copyright (c) 2015-2016, Linaro Limited
++ * Copyright (c) 2015-2016 Linaro Limited
+  */
+ 
+ #ifndef __TEE_DRV_H
 -- 
 2.31.1
 
