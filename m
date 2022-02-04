@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF67FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 11:58:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8D5FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 11:58:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234861AbiBDL6R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 06:58:17 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:30027 "EHLO
+        id S1358795AbiBDL6V (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 06:58:21 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:54177 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1358600AbiBDL5d (ORCPT
+        by vger.kernel.org with ESMTP id S1358593AbiBDL5c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 06:57:33 -0500
+        Fri, 4 Feb 2022 06:57:32 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
         s=mimecast20190719; t=1643975852;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=e2E56FroKAIKAOPkFQHe02XUrHi9MAiTwjfpyI4L/KE=;
-        b=DiqiLhDqeHbklwZdaaUgNEVUghlYjngUMxrT+oebqkbWz6Im3z57vZ4DLITr3YchlULzFx
-        /qveOXmoLX9VpXa8fkRLCJ0YoMQhaCnW4PwirisrG+ERSWwxT+J4IHPHV6xKxvT0ZwD+nT
-        T0OQRkjMaCMh0zZhIvWWDE477IYzyGY=
+        bh=NJOP7FoyOCifyX0DKl4Q1LzWVmhR0iMvwQ8KGPl/v9U=;
+        b=DcWyt+dXbGw0ndTnQ/TA2rwcx6oR/aOufqNOqzxYXrvizdLyM5T1VkLqWu1sq2voRaxyma
+        i3uDIkXn97Pu4hg6XB86/ll4I25bl20XN9N1/0iIl4izeUxVRq8TG+CnIdTaQ6ruyYxDrs
+        ZIxMdBREPtGSEKzKo6n+obc3QiSKD9I=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-76-bh0r1GCTNkmrJHhXPsaXZA-1; Fri, 04 Feb 2022 06:57:31 -0500
-X-MC-Unique: bh0r1GCTNkmrJHhXPsaXZA-1
+ us-mta-629-9R-M2s5UO3K2MisQaDVVWw-1; Fri, 04 Feb 2022 06:57:29 -0500
+X-MC-Unique: 9R-M2s5UO3K2MisQaDVVWw-1
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 55C7D190B2AE;
-        Fri,  4 Feb 2022 11:57:30 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 182548710FB;
+        Fri,  4 Feb 2022 11:57:28 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DC1DD6E1EA;
-        Fri,  4 Feb 2022 11:57:29 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9E32B6E1F1;
+        Fri,  4 Feb 2022 11:57:27 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     dmatlack@google.com, seanjc@google.com, vkuznets@redhat.com
-Subject: [PATCH 19/23] KVM: MMU: simplify and/or inline computation of shadow MMU roles
-Date:   Fri,  4 Feb 2022 06:57:14 -0500
-Message-Id: <20220204115718.14934-20-pbonzini@redhat.com>
+Subject: [PATCH 15/23] KVM: MMU: cleanup computation of MMU roles for shadow paging
+Date:   Fri,  4 Feb 2022 06:57:10 -0500
+Message-Id: <20220204115718.14934-16-pbonzini@redhat.com>
 In-Reply-To: <20220204115718.14934-1-pbonzini@redhat.com>
 References: <20220204115718.14934-1-pbonzini@redhat.com>
 MIME-Version: 1.0
@@ -50,80 +51,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Shadow MMUs can compute their role from cpu_role.base, simply by adjusting
-the root level.  It's one line of code, so do not place it in a separate
-function.
+Pass the already-computed CPU role, instead of redoing it.
 
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/kvm/mmu/mmu.c | 32 +++++++-------------------------
- 1 file changed, 7 insertions(+), 25 deletions(-)
+ arch/x86/kvm/mmu/mmu.c | 17 ++++++-----------
+ 1 file changed, 6 insertions(+), 11 deletions(-)
 
 diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index bba712d1a6d7..01027da82e23 100644
+index 1650fc291284..817e6cc916fc 100644
 --- a/arch/x86/kvm/mmu/mmu.c
 +++ b/arch/x86/kvm/mmu/mmu.c
-@@ -4755,20 +4755,6 @@ static void init_kvm_tdp_mmu(struct kvm_vcpu *vcpu,
- 	reset_tdp_shadow_zero_bits_mask(context);
- }
+@@ -4751,13 +4751,11 @@ static void init_kvm_tdp_mmu(struct kvm_vcpu *vcpu,
  
--static union kvm_mmu_page_role
--kvm_calc_shadow_mmu_root_page_role(struct kvm_vcpu *vcpu,
--				   union kvm_mmu_role role)
--{
--	if (!role.ext.efer_lma)
--		role.base.level = PT32E_ROOT_LEVEL;
--	else if (role.ext.cr4_la57)
--		role.base.level = PT64_ROOT_5LEVEL;
--	else
--		role.base.level = PT64_ROOT_4LEVEL;
--
--	return role.base;
--}
--
- static void shadow_mmu_init_context(struct kvm_vcpu *vcpu, struct kvm_mmu *context,
- 				    union kvm_mmu_role cpu_role,
- 				    union kvm_mmu_page_role mmu_role)
-@@ -4797,9 +4783,10 @@ static void kvm_init_shadow_mmu(struct kvm_vcpu *vcpu,
+ static union kvm_mmu_role
+ kvm_calc_shadow_mmu_root_page_role(struct kvm_vcpu *vcpu,
+-				   const struct kvm_mmu_role_regs *regs)
++				   union kvm_mmu_role role)
  {
+-	union kvm_mmu_role role = kvm_calc_cpu_role(vcpu, regs);
+-
+-	if (!____is_efer_lma(regs))
++	if (!role.ext.efer_lma)
+ 		role.base.level = PT32E_ROOT_LEVEL;
+-	else if (____is_cr4_la57(regs))
++	else if (role.ext.cr4_la57)
+ 		role.base.level = PT64_ROOT_5LEVEL;
+ 	else
+ 		role.base.level = PT64_ROOT_4LEVEL;
+@@ -4794,7 +4792,7 @@ static void kvm_init_shadow_mmu(struct kvm_vcpu *vcpu,
  	struct kvm_mmu *context = &vcpu->arch.root_mmu;
  	union kvm_mmu_role cpu_role = kvm_calc_cpu_role(vcpu, regs);
--	union kvm_mmu_page_role mmu_role =
--		kvm_calc_shadow_mmu_root_page_role(vcpu, cpu_role);
-+	union kvm_mmu_page_role mmu_role;
+ 	union kvm_mmu_role mmu_role =
+-		kvm_calc_shadow_mmu_root_page_role(vcpu, regs);
++		kvm_calc_shadow_mmu_root_page_role(vcpu, cpu_role);
  
-+	mmu_role = cpu_role.base;
-+	mmu_role.level = max_t(u32, mmu_role.level, PT32E_ROOT_LEVEL);
  	shadow_mmu_init_context(vcpu, context, cpu_role, mmu_role);
  
- 	/*
-@@ -4813,14 +4800,6 @@ static void kvm_init_shadow_mmu(struct kvm_vcpu *vcpu,
- 	reset_shadow_zero_bits_mask(vcpu, context);
- }
+@@ -4811,11 +4809,8 @@ static void kvm_init_shadow_mmu(struct kvm_vcpu *vcpu,
  
--static union kvm_mmu_page_role
--kvm_calc_shadow_npt_root_page_role(struct kvm_vcpu *vcpu,
--				   union kvm_mmu_role role)
--{
--	role.base.level = kvm_mmu_get_tdp_level(vcpu);
--	return role.base;
--}
--
- void kvm_init_shadow_npt_mmu(struct kvm_vcpu *vcpu, unsigned long cr0,
- 			     unsigned long cr4, u64 efer, gpa_t nested_cr3)
+ static union kvm_mmu_role
+ kvm_calc_shadow_npt_root_page_role(struct kvm_vcpu *vcpu,
+-				   const struct kvm_mmu_role_regs *regs)
++				   union kvm_mmu_role role)
  {
-@@ -4831,7 +4810,10 @@ void kvm_init_shadow_npt_mmu(struct kvm_vcpu *vcpu, unsigned long cr0,
+-	union kvm_mmu_role role =
+-               kvm_calc_cpu_role(vcpu, regs);
+-
+ 	role.base.level = kvm_mmu_get_tdp_level(vcpu);
+ 
+ 	return role;
+@@ -4831,7 +4826,7 @@ void kvm_init_shadow_npt_mmu(struct kvm_vcpu *vcpu, unsigned long cr0,
  		.efer = efer,
  	};
  	union kvm_mmu_role cpu_role = kvm_calc_cpu_role(vcpu, &regs);
--	union kvm_mmu_page_role mmu_role = kvm_calc_shadow_npt_root_page_role(vcpu, cpu_role);
-+	union kvm_mmu_page_role mmu_role;
-+
-+	mmu_role = cpu_role.base;
-+	mmu_role.level = kvm_mmu_get_tdp_level(vcpu);
+-	union kvm_mmu_role mmu_role = kvm_calc_shadow_npt_root_page_role(vcpu, &regs);;
++	union kvm_mmu_role mmu_role = kvm_calc_shadow_npt_root_page_role(vcpu, cpu_role);
  
  	shadow_mmu_init_context(vcpu, context, cpu_role, mmu_role);
- 	reset_shadow_zero_bits_mask(vcpu, context);
+ 	reset_shadow_zero_bits_mask(vcpu, context, is_efer_nx(context));
 -- 
 2.31.1
 
