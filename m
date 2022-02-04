@@ -2,39 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54A7EC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:28:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73102C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:28:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358270AbiBDJ16 (ORCPT
+        id S1358294AbiBDJ2D (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 04:27:58 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:44842 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357970AbiBDJZz (ORCPT
+        Fri, 4 Feb 2022 04:28:03 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:53830 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1357513AbiBDJ0D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 04:25:55 -0500
+        Fri, 4 Feb 2022 04:26:03 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3FDEF616CA;
-        Fri,  4 Feb 2022 09:25:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18729C004E1;
-        Fri,  4 Feb 2022 09:25:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7C471B836F7;
+        Fri,  4 Feb 2022 09:26:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87B39C004E1;
+        Fri,  4 Feb 2022 09:26:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643966754;
-        bh=wDWmQp90kgCrwgiLNL+U3qc/fKgK7nB1VdZ628Ja/X0=;
+        s=korg; t=1643966761;
+        bh=y7kUMDzkk7KxDwnhmT+pG870mIhhFOi4y36sO8vIdTI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oMx2divX1FbZST/Tw+nNN/g2csyFK/NVJyDVAmgm2c5+8sf2oe5PgCxWfVQV7Sp4t
-         M5dFLFLN3gqTHcxnkm3+NkY9pa0E4NpayYWRTvdPaSLJvRYycNAfMo99ibCVvAC+gv
-         ThMGA0Dy2zj94/LhKPT+N/dslvMNmVcJNzOxExhI=
+        b=fA6yhIOE4XU0GBiC3yO4/FVpcZsmIv5BthZ8/6UY/h2lFce210QtP/cXMy6LDF6tX
+         WKB5TuIYPBdaWEdtKlodDzK3pus0a+BVw0fQDaCW1rdBBC6yLa0Jj2mzV+D8TSAI9J
+         /vaOuZ7MG1Zgi49Segvcgg0BzkKaWs/1i3+Az6Q0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alex Elder <elder@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.16 03/43] net: ipa: use a bitmap for endpoint replenish_enabled
-Date:   Fri,  4 Feb 2022 10:22:10 +0100
-Message-Id: <20220204091917.294616582@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Michael Stapelberg <michael+drm@stapelberg.ch>,
+        Maxime Ripard <maxime@cerno.tech>
+Subject: [PATCH 5.16 05/43] drm/vc4: hdmi: Make sure the device is powered with CEC
+Date:   Fri,  4 Feb 2022 10:22:12 +0100
+Message-Id: <20220204091917.363327130@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220204091917.166033635@linuxfoundation.org>
 References: <20220204091917.166033635@linuxfoundation.org>
@@ -46,98 +47,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Elder <elder@linaro.org>
+From: Maxime Ripard <maxime@cerno.tech>
 
-commit c1aaa01dbf4cef95af3e04a5a43986c290e06ea3 upstream.
+Commit 20b0dfa86bef0e80b41b0e5ac38b92f23b6f27f9 upstream.
 
-Define a new replenish_flags bitmap to contain Boolean flags
-associated with an endpoint's replenishing state.  Replace the
-replenish_enabled field with a flag in that bitmap.  This is to
-prepare for the next patch, which adds another flag.
+The original commit depended on a rework commit (724fc856c09e ("drm/vc4:
+hdmi: Split the CEC disable / enable functions in two")) that
+(rightfully) didn't reach stable.
 
-Signed-off-by: Alex Elder <elder@linaro.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+However, probably because the context changed, when the patch was
+applied to stable the pm_runtime_put called got moved to the end of the
+vc4_hdmi_cec_adap_enable function (that would have become
+vc4_hdmi_cec_disable with the rework) to vc4_hdmi_cec_init.
+
+This means that at probe time, we now drop our reference to the clocks
+and power domains and thus end up with a CPU hang when the CPU tries to
+access registers.
+
+The call to pm_runtime_resume_and_get() is also problematic since the
+.adap_enable CEC hook is called both to enable and to disable the
+controller. That means that we'll now call pm_runtime_resume_and_get()
+at disable time as well, messing with the reference counting.
+
+The behaviour we should have though would be to have
+pm_runtime_resume_and_get() called when the CEC controller is enabled,
+and pm_runtime_put when it's disabled.
+
+We need to move things around a bit to behave that way, but it aligns
+stable with upstream.
+
+Cc: <stable@vger.kernel.org> # 5.10.x
+Cc: <stable@vger.kernel.org> # 5.15.x
+Cc: <stable@vger.kernel.org> # 5.16.x
+Reported-by: Michael Stapelberg <michael+drm@stapelberg.ch>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ipa/ipa_endpoint.c |    8 ++++----
- drivers/net/ipa/ipa_endpoint.h |   15 +++++++++++++--
- 2 files changed, 17 insertions(+), 6 deletions(-)
+ drivers/gpu/drm/vc4/vc4_hdmi.c |   25 +++++++++++++------------
+ 1 file changed, 13 insertions(+), 12 deletions(-)
 
---- a/drivers/net/ipa/ipa_endpoint.c
-+++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -1069,7 +1069,7 @@ static void ipa_endpoint_replenish(struc
- 	u32 backlog;
- 	int delta;
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -1739,18 +1739,18 @@ static int vc4_hdmi_cec_adap_enable(stru
+ 	u32 val;
+ 	int ret;
  
--	if (!endpoint->replenish_enabled) {
-+	if (!test_bit(IPA_REPLENISH_ENABLED, endpoint->replenish_flags)) {
- 		if (add_one)
- 			atomic_inc(&endpoint->replenish_saved);
- 		return;
-@@ -1106,7 +1106,7 @@ static void ipa_endpoint_replenish_enabl
- 	u32 max_backlog;
- 	u32 saved;
+-	ret = pm_runtime_resume_and_get(&vc4_hdmi->pdev->dev);
+-	if (ret)
+-		return ret;
++	if (enable) {
++		ret = pm_runtime_resume_and_get(&vc4_hdmi->pdev->dev);
++		if (ret)
++			return ret;
  
--	endpoint->replenish_enabled = true;
-+	set_bit(IPA_REPLENISH_ENABLED, endpoint->replenish_flags);
- 	while ((saved = atomic_xchg(&endpoint->replenish_saved, 0)))
- 		atomic_add(saved, &endpoint->replenish_backlog);
+-	val = HDMI_READ(HDMI_CEC_CNTRL_5);
+-	val &= ~(VC4_HDMI_CEC_TX_SW_RESET | VC4_HDMI_CEC_RX_SW_RESET |
+-		 VC4_HDMI_CEC_CNT_TO_4700_US_MASK |
+-		 VC4_HDMI_CEC_CNT_TO_4500_US_MASK);
+-	val |= ((4700 / usecs) << VC4_HDMI_CEC_CNT_TO_4700_US_SHIFT) |
+-	       ((4500 / usecs) << VC4_HDMI_CEC_CNT_TO_4500_US_SHIFT);
++		val = HDMI_READ(HDMI_CEC_CNTRL_5);
++		val &= ~(VC4_HDMI_CEC_TX_SW_RESET | VC4_HDMI_CEC_RX_SW_RESET |
++			 VC4_HDMI_CEC_CNT_TO_4700_US_MASK |
++			 VC4_HDMI_CEC_CNT_TO_4500_US_MASK);
++		val |= ((4700 / usecs) << VC4_HDMI_CEC_CNT_TO_4700_US_SHIFT) |
++			((4500 / usecs) << VC4_HDMI_CEC_CNT_TO_4500_US_SHIFT);
  
-@@ -1120,7 +1120,7 @@ static void ipa_endpoint_replenish_disab
- {
- 	u32 backlog;
- 
--	endpoint->replenish_enabled = false;
-+	clear_bit(IPA_REPLENISH_ENABLED, endpoint->replenish_flags);
- 	while ((backlog = atomic_xchg(&endpoint->replenish_backlog, 0)))
- 		atomic_add(backlog, &endpoint->replenish_saved);
- }
-@@ -1665,7 +1665,7 @@ static void ipa_endpoint_setup_one(struc
- 		/* RX transactions require a single TRE, so the maximum
- 		 * backlog is the same as the maximum outstanding TREs.
- 		 */
--		endpoint->replenish_enabled = false;
-+		clear_bit(IPA_REPLENISH_ENABLED, endpoint->replenish_flags);
- 		atomic_set(&endpoint->replenish_saved,
- 			   gsi_channel_tre_max(gsi, endpoint->channel_id));
- 		atomic_set(&endpoint->replenish_backlog, 0);
---- a/drivers/net/ipa/ipa_endpoint.h
-+++ b/drivers/net/ipa/ipa_endpoint.h
-@@ -41,6 +41,17 @@ enum ipa_endpoint_name {
- #define IPA_ENDPOINT_MAX		32	/* Max supported by driver */
- 
- /**
-+ * enum ipa_replenish_flag:	RX buffer replenish flags
-+ *
-+ * @IPA_REPLENISH_ENABLED:	Whether receive buffer replenishing is enabled
-+ * @IPA_REPLENISH_COUNT:	Number of defined replenish flags
-+ */
-+enum ipa_replenish_flag {
-+	IPA_REPLENISH_ENABLED,
-+	IPA_REPLENISH_COUNT,	/* Number of flags (must be last) */
-+};
+-	if (enable) {
+ 		HDMI_WRITE(HDMI_CEC_CNTRL_5, val |
+ 			   VC4_HDMI_CEC_TX_SW_RESET | VC4_HDMI_CEC_RX_SW_RESET);
+ 		HDMI_WRITE(HDMI_CEC_CNTRL_5, val);
+@@ -1778,7 +1778,10 @@ static int vc4_hdmi_cec_adap_enable(stru
+ 			HDMI_WRITE(HDMI_CEC_CPU_MASK_SET, VC4_HDMI_CPU_CEC);
+ 		HDMI_WRITE(HDMI_CEC_CNTRL_5, val |
+ 			   VC4_HDMI_CEC_TX_SW_RESET | VC4_HDMI_CEC_RX_SW_RESET);
 +
-+/**
-  * struct ipa_endpoint - IPA endpoint information
-  * @ipa:		IPA pointer
-  * @ee_id:		Execution environmnent endpoint is associated with
-@@ -51,7 +62,7 @@ enum ipa_endpoint_name {
-  * @trans_tre_max:	Maximum number of TRE descriptors per transaction
-  * @evt_ring_id:	GSI event ring used by the endpoint
-  * @netdev:		Network device pointer, if endpoint uses one
-- * @replenish_enabled:	Whether receive buffer replenishing is enabled
-+ * @replenish_flags:	Replenishing state flags
-  * @replenish_ready:	Number of replenish transactions without doorbell
-  * @replenish_saved:	Replenish requests held while disabled
-  * @replenish_backlog:	Number of buffers needed to fill hardware queue
-@@ -72,7 +83,7 @@ struct ipa_endpoint {
- 	struct net_device *netdev;
++		pm_runtime_put(&vc4_hdmi->pdev->dev);
+ 	}
++
+ 	return 0;
+ }
  
- 	/* Receive buffer replenishing for RX endpoints */
--	bool replenish_enabled;
-+	DECLARE_BITMAP(replenish_flags, IPA_REPLENISH_COUNT);
- 	u32 replenish_ready;
- 	atomic_t replenish_saved;
- 	atomic_t replenish_backlog;
+@@ -1889,8 +1892,6 @@ static int vc4_hdmi_cec_init(struct vc4_
+ 	if (ret < 0)
+ 		goto err_remove_handlers;
+ 
+-	pm_runtime_put(&vc4_hdmi->pdev->dev);
+-
+ 	return 0;
+ 
+ err_remove_handlers:
 
 
