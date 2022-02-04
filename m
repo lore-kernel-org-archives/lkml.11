@@ -2,39 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D04FBC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:26:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DD0BC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:26:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358248AbiBDJ0L (ORCPT
+        id S1358269AbiBDJ0R (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 04:26:11 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:52944 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357873AbiBDJYj (ORCPT
+        Fri, 4 Feb 2022 04:26:17 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:43806 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1357907AbiBDJYo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 04:24:39 -0500
+        Fri, 4 Feb 2022 04:24:44 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 92607B836F0;
-        Fri,  4 Feb 2022 09:24:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBC9FC340ED;
-        Fri,  4 Feb 2022 09:24:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8DA1D612C8;
+        Fri,  4 Feb 2022 09:24:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20D12C004E1;
+        Fri,  4 Feb 2022 09:24:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643966677;
-        bh=Ai2pTBuMpi+ZpmwAJGWmVGypw5mKsno03Np5MzaPBcI=;
+        s=korg; t=1643966684;
+        bh=mPjX16zNpAn7LOPJg7nzi8nM1zws5ngvx/rWuXKPNwQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R4uDqLCZ/sPvqJj7xdMLidf8dhEAMrFkVqeNns5sMwCHDDudeZ3z+D0sXu8maS4SU
-         j39kj2zTyJIWb+H+Il8Q6/aUyPbm8AdVu2g41OLkX/occRLUb0/guhL3Ym+GLqOBY0
-         O26rR7PIHg4XU/1Ge06eYadrE+xndWvRLpyVGrT4=
+        b=WB1e9oI/XO93yp067SmmVugLNYkJjrl+sm0Cllj2nr2gWdBg6oPJcVBVabdFDt6eH
+         NGuQs39juKQD+S7EKm5Knxp/Eg/HgyP1ag1OMHB7iX0hcC7CxgJtPUVd0x8jKhtrrv
+         v5lbuuEov+38BkCiWXqcGCnDl3C/1nnpImhcr+1k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Jiri Pirko <jiri@nvidia.com>, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 28/32] rtnetlink: make sure to refresh master_dev/m_ops in __rtnl_newlink()
-Date:   Fri,  4 Feb 2022 10:22:38 +0100
-Message-Id: <20220204091916.184324998@linuxfoundation.org>
+        stable@vger.kernel.org, Sasha Neftin <sasha.neftin@intel.com>,
+        Nechama Kraus <nechamax.kraus@linux.intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Subject: [PATCH 5.15 30/32] e1000e: Handshake with CSME starts from ADL platforms
+Date:   Fri,  4 Feb 2022 10:22:40 +0100
+Message-Id: <20220204091916.244764690@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220204091915.247906930@linuxfoundation.org>
 References: <20220204091915.247906930@linuxfoundation.org>
@@ -46,47 +47,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Sasha Neftin <sasha.neftin@intel.com>
 
-commit c6f6f2444bdbe0079e41914a35081530d0409963 upstream.
+commit cad014b7b5a6897d8c4fad13e2888978bfb7a53f upstream.
 
-While looking at one unrelated syzbot bug, I found the replay logic
-in __rtnl_newlink() to potentially trigger use-after-free.
+Handshake with CSME/AMT on none provisioned platforms during S0ix flow
+is not supported on TGL platform and can cause to HW unit hang. Update
+the handshake with CSME flow to start from the ADL platform.
 
-It is better to clear master_dev and m_ops inside the loop,
-in case we have to replay it.
-
-Fixes: ba7d49b1f0f8 ("rtnetlink: provide api for getting and setting slave info")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Jiri Pirko <jiri@nvidia.com>
-Link: https://lore.kernel.org/r/20220201012106.216495-1-eric.dumazet@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 3e55d231716e ("e1000e: Add handshake with the CSME to support S0ix")
+Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
+Tested-by: Nechama Kraus <nechamax.kraus@linux.intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/core/rtnetlink.c |    6 ++++--
+ drivers/net/ethernet/intel/e1000e/netdev.c |    6 ++++--
  1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -3254,8 +3254,8 @@ static int __rtnl_newlink(struct sk_buff
- 	struct nlattr *slave_attr[RTNL_SLAVE_MAX_TYPE + 1];
- 	unsigned char name_assign_type = NET_NAME_USER;
- 	struct nlattr *linkinfo[IFLA_INFO_MAX + 1];
--	const struct rtnl_link_ops *m_ops = NULL;
--	struct net_device *master_dev = NULL;
-+	const struct rtnl_link_ops *m_ops;
-+	struct net_device *master_dev;
- 	struct net *net = sock_net(skb->sk);
- 	const struct rtnl_link_ops *ops;
- 	struct nlattr *tb[IFLA_MAX + 1];
-@@ -3293,6 +3293,8 @@ replay:
- 	else
- 		dev = NULL;
+--- a/drivers/net/ethernet/intel/e1000e/netdev.c
++++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+@@ -6346,7 +6346,8 @@ static void e1000e_s0ix_entry_flow(struc
+ 	u32 mac_data;
+ 	u16 phy_data;
  
-+	master_dev = NULL;
-+	m_ops = NULL;
- 	if (dev) {
- 		master_dev = netdev_master_upper_dev_get(dev);
- 		if (master_dev)
+-	if (er32(FWSM) & E1000_ICH_FWSM_FW_VALID) {
++	if (er32(FWSM) & E1000_ICH_FWSM_FW_VALID &&
++	    hw->mac.type >= e1000_pch_adp) {
+ 		/* Request ME configure the device for S0ix */
+ 		mac_data = er32(H2ME);
+ 		mac_data |= E1000_H2ME_START_DPG;
+@@ -6495,7 +6496,8 @@ static void e1000e_s0ix_exit_flow(struct
+ 	u16 phy_data;
+ 	u32 i = 0;
+ 
+-	if (er32(FWSM) & E1000_ICH_FWSM_FW_VALID) {
++	if (er32(FWSM) & E1000_ICH_FWSM_FW_VALID &&
++	    hw->mac.type >= e1000_pch_adp) {
+ 		/* Request ME unconfigure the device from S0ix */
+ 		mac_data = er32(H2ME);
+ 		mac_data &= ~E1000_H2ME_START_DPG;
 
 
