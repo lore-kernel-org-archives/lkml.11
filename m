@@ -2,120 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA448C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 17:35:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E50B9C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 17:36:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376905AbiBDRft (ORCPT
+        id S1376901AbiBDRgC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 12:35:49 -0500
-Received: from cloudserver094114.home.pl ([79.96.170.134]:63674 "EHLO
-        cloudserver094114.home.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376885AbiBDRfn (ORCPT
+        Fri, 4 Feb 2022 12:36:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33460 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1376900AbiBDRgB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 12:35:43 -0500
-Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
- by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 4.0.0)
- id 3cf6cf3a52c3a6f5; Fri, 4 Feb 2022 18:35:42 +0100
-Received: from kreacher.localnet (unknown [213.134.181.137])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by v370.home.net.pl (Postfix) with ESMTPSA id 3503266B456;
-        Fri,  4 Feb 2022 18:35:41 +0100 (CET)
-From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
-To:     Linux ACPI <linux-acpi@vger.kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        David Box <david.e.box@linux.intel.com>
-Subject: [PATCH v1 1/2] ACPI: PM: s2idle: Cancel wakeup before dispatching EC GPE
-Date:   Fri, 04 Feb 2022 18:31:02 +0100
-Message-ID: <5800804.lOV4Wx5bFT@kreacher>
-In-Reply-To: <11925099.O9o76ZdvQC@kreacher>
-References: <11925099.O9o76ZdvQC@kreacher>
+        Fri, 4 Feb 2022 12:36:01 -0500
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E62A9C061401
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 09:36:00 -0800 (PST)
+Received: by mail-yb1-xb35.google.com with SMTP id 124so20204116ybw.6
+        for <linux-kernel@vger.kernel.org>; Fri, 04 Feb 2022 09:36:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GyLfy4Dxm37OlH/M49r+dDaiFcR/y+/lQ3SW4Qp9TQg=;
+        b=jOwooElC3fQwQWVC3MwtgG1xiGKscZ3GouURpYpw9onOil65CqRD+3AcEPPJEibimA
+         u8AEVUs5rz5Wz6BHwti9PQXpcfLI99IyGB6W6iwskCt6ZonRllyvZMdBOF2l0xMFJKDB
+         6DSpLCYGSBI45i/y4eRzSgv4LLw7GEkocNoWI9+OVAKZSjqH/1CloMYCyYL4chL3trz1
+         fMSS9d3oAHMUy5GyN4u2BvbDtnZTcGdUwHj97p9ljekfc29gShtw2SPPRfolTAGQXZdg
+         z7jm0rMn4mKXjtsmxvlFMwxOmSDtqGC0LffclclC9WMAk0HsuNMHRkxlmn/O7/X5JzQy
+         Cnsw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GyLfy4Dxm37OlH/M49r+dDaiFcR/y+/lQ3SW4Qp9TQg=;
+        b=416Xj3m3BG9go83mfJ+tsBUKiMUi52DiArZ+X5NE8BFV/s5qwLoz1hk3WbRXrPvmm/
+         c8fVfyrSoYLMnwirCfSTliHYrTjU5NOlZLotxwg2Wy3MG3WXjm9JDrsFeatzDZ4Dty/X
+         lnApGPU3NoGeA691DoxF8cbvSz7f9NGQQB3xJa8KYv9bhYnxmPxejtcuu8xCo+YTVlJI
+         iFCxi82JnwhnDzcYGOycidFrAxYw/J5RQKKGmcYSMnPgOM3BcQRSDXOdli0v/83l9V4c
+         2gZ01XorsXBnO9w9Q8B92j/A9Hul6PJn4M8+HwS4snA0vXtGkvuK0/5CSY2NFAwfUALs
+         mopQ==
+X-Gm-Message-State: AOAM530G2MOwHqryfIXToIR6wtl5wbCydo39dKpgUHjMw4R4t7v45GUs
+        IehxRRe0ECh8QDKSjo8rSgH2yDIzPzWri0ZQnlITuA==
+X-Google-Smtp-Source: ABdhPJyOuH/xsfHATqvWwkAHVOssf+KzvqDIGJLV+nRclvMzKT1C9hxOlnyCwYh8reroGVnT571LCyViKkMZtG6Mb0U=
+X-Received: by 2002:a81:9f08:: with SMTP id s8mr3434556ywn.291.1643996159883;
+ Fri, 04 Feb 2022 09:35:59 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
+References: <20211111020738.2512932-1-seanjc@google.com> <20211111020738.2512932-10-seanjc@google.com>
+ <YfrQzoIWyv9lNljh@google.com>
+In-Reply-To: <YfrQzoIWyv9lNljh@google.com>
+From:   Sami Tolvanen <samitolvanen@google.com>
+Date:   Fri, 4 Feb 2022 09:35:49 -0800
+Message-ID: <CABCJKufg=ONNOvF8+BRXfLoTUfeiZZsdd8TnpV-GaNK_o-HuaA@mail.gmail.com>
+Subject: Re: [PATCH v4 09/17] perf/core: Use static_call to optimize perf_guest_info_callbacks
+To:     Sean Christopherson <seanjc@google.com>,
+        Kees Cook <keescook@chromium.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        kvmarm <kvmarm@lists.cs.columbia.edu>, kvm@vger.kernel.org,
+        Will McVicker <willmcvicker@google.com>
 Content-Type: text/plain; charset="UTF-8"
-X-CLIENT-IP: 213.134.181.137
-X-CLIENT-HOSTNAME: 213.134.181.137
-X-VADE-SPAMSTATE: clean
-X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrgeelgddutddvucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecujffqoffgrffnpdggtffipffknecuuegrihhlohhuthemucduhedtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkjghfggfgtgesthfuredttddtjeenucfhrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqeenucggtffrrghtthgvrhhnpedvjeelgffhiedukedtleekkedvudfggefhgfegjefgueekjeelvefggfdvledutdenucfkphepvddufedrudefgedrudekuddrudefjeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvudefrddufeegrddukedurddufeejpdhhvghlohepkhhrvggrtghhvghrrdhlohgtrghlnhgvthdpmhgrihhlfhhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqpdhnsggprhgtphhtthhopeehpdhrtghpthhtoheplhhinhhugidqrggtphhisehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqphhmsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheprhhuihdriihhrghnghesihhnthgvlhdrtghomhdprhgtphhtthho
- pegurghvihgurdgvrdgsohigsehlihhnuhigrdhinhhtvghlrdgtohhm
-X-DCC--Metrics: v370.home.net.pl 1024; Body=5 Fuz1=5 Fuz2=5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+On Wed, Feb 2, 2022 at 10:43 AM Sean Christopherson <seanjc@google.com> wrote:
+> > +DEFINE_STATIC_CALL_RET0(__perf_guest_state, *perf_guest_cbs->state);
+> > +DEFINE_STATIC_CALL_RET0(__perf_guest_get_ip, *perf_guest_cbs->get_ip);
+> > +DEFINE_STATIC_CALL_RET0(__perf_guest_handle_intel_pt_intr, *perf_guest_cbs->handle_intel_pt_intr);
+>
+> Using __static_call_return0() makes clang's CFI sad on arm64 due to the resulting
+> function prototype mistmatch, which IIUC, is verified by clang's __cfi_check()
+> for indirect calls, i.e. architectures without CONFIG_HAVE_STATIC_CALL.
+>
+> We could fudge around the issue by using stubs, massaging prototypes, etc..., but
+> that means doing that for every arch-agnostic user of __static_call_return0().
+>
+> Any clever ideas?  Can we do something like generate a unique function for every
+> DEFINE_STATIC_CALL_RET0 for CONFIG_HAVE_STATIC_CALL=n, e.g. using typeof() to
+> get the prototype?
 
-Commit 4a9af6cac050 ("ACPI: EC: Rework flushing of EC work while
-suspended to idle") made acpi_ec_dispatch_gpe() check
-pm_wakeup_pending(), but that is before canceling the SCI wakeup,
-so pm_wakeup_pending() is always true.  This causes the loop in
-acpi_ec_dispatch_gpe() to always terminate after one iteration which
-may not be correct.
+I'm not sure there's a clever fix for this. On architectures without
+HAVE_STATIC_CALL, this is an indirect call to a function with a
+mismatching type, which CFI is intended to catch.
 
-Address this issue by canceling the SCI wakeup earlier, from
-acpi_ec_dispatch_gpe() itself.
+The obvious way to solve the problem would be to use a stub function
+with the correct type, which I agree, isn't going to scale. You can
+alternatively check if .func points to __static_call_return0 and not
+make the indirect call if it does. If neither of these options are
+feasible, you can disable CFI checking in the functions that have
+these static calls using the __nocfi attribute.
 
-Fixes: 4a9af6cac050 ("ACPI: EC: Rework flushing of EC work while suspended to idle")
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
----
- drivers/acpi/ec.c    |   10 ++++++++++
- drivers/acpi/sleep.c |   15 +++++----------
- 2 files changed, 15 insertions(+), 10 deletions(-)
+Kees, any thoughts?
 
-Index: linux-pm/drivers/acpi/ec.c
-===================================================================
---- linux-pm.orig/drivers/acpi/ec.c
-+++ linux-pm/drivers/acpi/ec.c
-@@ -2066,6 +2066,16 @@ bool acpi_ec_dispatch_gpe(void)
- 		return true;
- 
- 	/*
-+	 * Cancel the SCI wakeup and process all pending events in case there
-+	 * are any wakeup ones in there.
-+	 *
-+	 * Note that if any non-EC GPEs are active at this point, the SCI will
-+	 * retrigger after the rearming in acpi_s2idle_wake(), so no events
-+	 * should be missed by canceling the wakeup here.
-+	 */
-+	pm_system_cancel_wakeup();
-+
-+	/*
- 	 * Dispatch the EC GPE in-band, but do not report wakeup in any case
- 	 * to allow the caller to process events properly after that.
- 	 */
-Index: linux-pm/drivers/acpi/sleep.c
-===================================================================
---- linux-pm.orig/drivers/acpi/sleep.c
-+++ linux-pm/drivers/acpi/sleep.c
-@@ -736,21 +736,15 @@ bool acpi_s2idle_wake(void)
- 			return true;
- 		}
- 
--		/* Check non-EC GPE wakeups and dispatch the EC GPE. */
-+		/*
-+		 * Check non-EC GPE wakeups and if there are none, cancel the
-+		 * SCI-related wakeup and dispatch the EC GPE.
-+		 */
- 		if (acpi_ec_dispatch_gpe()) {
- 			pm_pr_dbg("ACPI non-EC GPE wakeup\n");
- 			return true;
- 		}
- 
--		/*
--		 * Cancel the SCI wakeup and process all pending events in case
--		 * there are any wakeup ones in there.
--		 *
--		 * Note that if any non-EC GPEs are active at this point, the
--		 * SCI will retrigger after the rearming below, so no events
--		 * should be missed by canceling the wakeup here.
--		 */
--		pm_system_cancel_wakeup();
- 		acpi_os_wait_events_complete();
- 
- 		/*
-
-
-
+Sami
