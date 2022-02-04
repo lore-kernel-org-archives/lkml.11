@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 790B1C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 17:37:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1D31C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 17:38:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377067AbiBDRh5 (ORCPT
+        id S1377011AbiBDRiH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 12:37:57 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:50741 "EHLO
+        Fri, 4 Feb 2022 12:38:07 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:23991 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1376950AbiBDRhn (ORCPT
+        by vger.kernel.org with ESMTP id S1377045AbiBDRhr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 12:37:43 -0500
+        Fri, 4 Feb 2022 12:37:47 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643996263;
+        s=mimecast20190719; t=1643996266;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=38DxtezcbsPH3GE2fOqFRXG7ww80lFsCaLv2fHu/vZU=;
-        b=OwNmmTLSN+673kwaz0/Iv5rtdQUQuRqtRgxF/RgwkKX61HOJfHtD/lzSsb8BB8g7D0SW63
-        /17GslRzCkpQHWwMNVjbXBL2nD7P9qaiMs8veXitF4lPRzcuxsmYNZuGYh1K8rYUWFhf1d
-        E2AUuI1iG3u9EduLL5JnVjQ3YoZZALk=
+         references:references; bh=meBYTrvQY3Vzaw6ouSwzbarO8+EcbkWn/cKrybubalA=;
+        b=As+NSAJl2PlGhqzCMwkQUVoCh5G42BfHc+oP4Yp4srKW6hmDE3gf9HiCrm8yr1l5NzlL0w
+        QJaMC4KDbLENhnhHE2Bh4mNXzD936p9cildHPoEY2uep4AxNj7uztITzBk0EW5443J0Ptt
+        5Bxa4RNRYEDGymsvLyE9S5T93wSDXhI=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-310-O_9DZqciPCuyJCgftt8nKw-1; Fri, 04 Feb 2022 12:37:40 -0500
-X-MC-Unique: O_9DZqciPCuyJCgftt8nKw-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+ us-mta-6-qPJobStOO-ivGJ3dYYyzrw-1; Fri, 04 Feb 2022 12:37:44 -0500
+X-MC-Unique: qPJobStOO-ivGJ3dYYyzrw-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A13A564146;
-        Fri,  4 Feb 2022 17:37:38 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6E6AC801B2D;
+        Fri,  4 Feb 2022 17:37:43 +0000 (UTC)
 Received: from fuller.cnet (ovpn-112-3.gru2.redhat.com [10.97.112.3])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id ABA3210A4B2C;
-        Fri,  4 Feb 2022 17:37:11 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 8F8927DE50;
+        Fri,  4 Feb 2022 17:37:08 +0000 (UTC)
 Received: by fuller.cnet (Postfix, from userid 1000)
-        id A5D754168B9E; Fri,  4 Feb 2022 14:36:46 -0300 (-03)
-Message-ID: <20220204173554.995206454@fedora.localdomain>
+        id 722D2416D5C7; Fri,  4 Feb 2022 14:36:46 -0300 (-03)
+Message-ID: <20220204173554.491925589@fedora.localdomain>
 User-Agent: quilt/0.66
-Date:   Fri, 04 Feb 2022 14:35:49 -0300
+Date:   Fri, 04 Feb 2022 14:35:38 -0300
 From:   Marcelo Tosatti <mtosatti@redhat.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Nitesh Lal <nilal@redhat.com>,
@@ -51,102 +51,40 @@ Cc:     Nitesh Lal <nilal@redhat.com>,
         Thomas Gleixner <tglx@linutronix.de>,
         Daniel Bristot de Oliveira <bristot@redhat.com>,
         Oscar Shiang <oscar0225@livemail.tw>,
-        Marcelo Tosatti <mtosatti@redhat.com>
-Subject: [patch v11 12/13] mm: vmstat_refresh: avoid queueing work item if cpu stats are clean
+        linux-s390@vger.kernel.org, Marcelo Tosatti <mtosatti@redhat.com>
+Subject: [patch v11 01/13] s390: add support for TIF_TASK_ISOL
 References: <20220204173537.429902988@fedora.localdomain>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It is not necessary to queue work item to run refresh_vm_stats 
-on a remote CPU if that CPU has no dirty stats and no per-CPU
-allocations for remote nodes.
+Add TIF_TASK_ISOL handling for s390.
 
-This fixes sosreport hang (which uses vmstat_refresh) with 
-spinning SCHED_FIFO process.
-
+Cc: linux-s390@vger.kernel.org
 Signed-off-by: Marcelo Tosatti <mtosatti@redhat.com>
 
----
- mm/vmstat.c |   49 ++++++++++++++++++++++++++++++++++++++++++++-----
- 1 file changed, 44 insertions(+), 5 deletions(-)
-
-Index: linux-2.6/mm/vmstat.c
+Index: linux-2.6/arch/s390/include/asm/thread_info.h
 ===================================================================
---- linux-2.6.orig/mm/vmstat.c
-+++ linux-2.6/mm/vmstat.c
-@@ -1924,6 +1924,31 @@ static bool need_update(int cpu)
- }
+--- linux-2.6.orig/arch/s390/include/asm/thread_info.h
++++ linux-2.6/arch/s390/include/asm/thread_info.h
+@@ -73,6 +73,7 @@ void arch_setup_new_exec(void);
+ #define TIF_ISOLATE_BP		8	/* Run process with isolated BP */
+ #define TIF_ISOLATE_BP_GUEST	9	/* Run KVM guests with isolated BP */
+ #define TIF_PER_TRAP		10	/* Need to handle PER trap on exit to usermode */
++#define TIF_TASK_ISOL		11	/* task isolation work pending */
  
- #ifdef CONFIG_PROC_FS
-+static bool need_drain_remote_zones(int cpu)
-+{
-+#ifdef CONFIG_NUMA
-+	struct zone *zone;
-+
-+	for_each_populated_zone(zone) {
-+		struct per_cpu_pages *pcp;
-+
-+		pcp = per_cpu_ptr(zone->per_cpu_pageset, cpu);
-+		if (!pcp->count)
-+			continue;
-+
-+		if (!pcp->expire)
-+			continue;
-+
-+		if (zone_to_nid(zone) == cpu_to_node(cpu))
-+			continue;
-+
-+		return true;
-+	}
-+#endif
-+
-+	return false;
-+}
-+
- static void refresh_vm_stats(struct work_struct *work)
- {
- 	refresh_cpu_vm_stats(true);
-@@ -1933,8 +1958,12 @@ int vmstat_refresh(struct ctl_table *tab
- 		   void *buffer, size_t *lenp, loff_t *ppos)
- {
- 	long val;
--	int err;
--	int i;
-+	int i, cpu;
-+	struct work_struct __percpu *works;
-+
-+	works = alloc_percpu(struct work_struct);
-+	if (!works)
-+		return -ENOMEM;
+ #define TIF_31BIT		16	/* 32bit process */
+ #define TIF_MEMDIE		17	/* is terminating due to OOM killer */
+@@ -97,6 +98,7 @@ void arch_setup_new_exec(void);
+ #define _TIF_ISOLATE_BP		BIT(TIF_ISOLATE_BP)
+ #define _TIF_ISOLATE_BP_GUEST	BIT(TIF_ISOLATE_BP_GUEST)
+ #define _TIF_PER_TRAP		BIT(TIF_PER_TRAP)
++#define _TIF_TASK_ISOL		BIT(TIF_TASK_ISOL)
  
- 	/*
- 	 * The regular update, every sysctl_stat_interval, may come later
-@@ -1948,9 +1977,19 @@ int vmstat_refresh(struct ctl_table *tab
- 	 * transiently negative values, report an error here if any of
- 	 * the stats is negative, so we know to go looking for imbalance.
- 	 */
--	err = schedule_on_each_cpu(refresh_vm_stats);
--	if (err)
--		return err;
-+	cpus_read_lock();
-+	for_each_online_cpu(cpu) {
-+		struct work_struct *work = per_cpu_ptr(works, cpu);
-+
-+		INIT_WORK(work, refresh_vm_stats);
-+		if (need_update(cpu) || need_drain_remote_zones(cpu))
-+			schedule_work_on(cpu, work);
-+	}
-+	for_each_online_cpu(cpu)
-+		flush_work(per_cpu_ptr(works, cpu));
-+	cpus_read_unlock();
-+	free_percpu(works);
-+
- 	for (i = 0; i < NR_VM_ZONE_STAT_ITEMS; i++) {
- 		/*
- 		 * Skip checking stats known to go negative occasionally.
+ #define _TIF_31BIT		BIT(TIF_31BIT)
+ #define _TIF_SINGLE_STEP	BIT(TIF_SINGLE_STEP)
 
 
