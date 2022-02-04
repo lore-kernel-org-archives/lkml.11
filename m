@@ -2,165 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0493AC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 03:33:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7751BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 03:41:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356826AbiBDDd0 (ORCPT
+        id S1356838AbiBDDlt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 22:33:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39972 "EHLO
+        Thu, 3 Feb 2022 22:41:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236970AbiBDDdZ (ORCPT
+        with ESMTP id S232345AbiBDDls (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 22:33:25 -0500
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11A51C061714;
-        Thu,  3 Feb 2022 19:33:25 -0800 (PST)
-Received: by mail-pl1-x62c.google.com with SMTP id c3so4034202pls.5;
-        Thu, 03 Feb 2022 19:33:25 -0800 (PST)
+        Thu, 3 Feb 2022 22:41:48 -0500
+Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 736B2C061714;
+        Thu,  3 Feb 2022 19:41:48 -0800 (PST)
+Received: by mail-qt1-x833.google.com with SMTP id z1so4724332qto.3;
+        Thu, 03 Feb 2022 19:41:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Ma6PWHHr7hu/IjhSxyoQJ/J/Mu4XabGA7hf9x6U4ClM=;
-        b=G8DJch7bNa6zxZ+ePelXu0GaWg9cul13UKDVOwM3co6fG6Q+LfhRFPj1+GHxpyUIj6
-         W6x4yVDr0sk4xl+Vx5d2Jc84WeVkz2L3yEpOaHIHkv2o39mTeI8pNp7YX00C7vt/s4SL
-         vUyUHmmR5EFxXBoW/kdPcoQD0+nM9EUE1UIM/XjmUFl3oueHdR5IgU5jfROPP4l5AlWl
-         mGrcRCOq2oR7W7cBQBf/tWUwOUDqZVAg//xP2gdhtFAERyMg9JjF99tkZgFhHIurhJHl
-         TZLvOLXkdSGfR7PXi9RhkB8unhqxAvWxrSt97fw03NL79Hk614D905S63/TftzfDKWYA
-         0Owg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=7mi+rsnY3rOXooKo8WaV+dwZtlr3f4pyVzHcdNPQMpQ=;
+        b=T40GCJdjXaaTjaczrdWdZj7khY2Y7yBugzTdvsQorikd4Fj7O2S42NsW+TLWBwKNnu
+         G5PRYGPcxJcCI10fuuHsRsbwCT7G1wfllTdyMqB8eLp2I3/XqgQ1uDlIkda6dV1lIY0z
+         ie4zP+dHOXZWb0DqfEwZu4TFZlEx26WEhwprbAWrZn2UjVZMVoiF6kV9YmbCL2+aj1YA
+         jzgr9qdn0hmKH/78O653HptID/h3QxFMctqDlhht9anexxYXaAyDtGletsRvWtpEXMjv
+         9pUlrM21GEiljtlGg+wzhtx14+tDw5tZyUugtwBtY2Nr2tvAuY/pxbPzay2F94Hv1BpZ
+         sMtw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Ma6PWHHr7hu/IjhSxyoQJ/J/Mu4XabGA7hf9x6U4ClM=;
-        b=AAVBfqIhjbEHPxGucFAblByRzD8LIxyuXWJmXuT7+Q54l+Xlo75QMOtc4DOYa9i3st
-         N0Db5rMeM0vTe9srAo0WTbDF2qlnSJQmBgSOtfkSMclD7eudLMMXrbTLSi/y6G6K58KL
-         X8Hjk95kT8/21X2zzHM0ycIbT5hzONJZYobL7y0kXWj91R9KSJJgGMnxOeF2hP9UrKPv
-         AiuAzYcra/NNZmANTTJJawVT8+SbvuklwQ3XiKuorqiFPe1meyBo1sV1b0PWJohZHOd6
-         QGCwbNWWxAzO38gDgovFgwT4jRvWL/7bQ0Fx1p0SXwfTHcHPV0M8jb3QsS/HUd+cthks
-         H6/g==
-X-Gm-Message-State: AOAM531l36KvKTpU+oBe90ChpQncV0jh6fZDBKGihXGo/wA4W6oXyB+K
-        GNvXdhIafcNH6Jkdqibwb7xxfO1SQtcNBPnyO0g=
-X-Google-Smtp-Source: ABdhPJzlWg/yH0Yrf8I+HwdZURH0TrPBuQLTyJLS7k+kTjd+7AiFPXuuEKWgzGoXN+aBGXQW2s7hFM+DB6uYElnV9vw=
-X-Received: by 2002:a17:902:e54c:: with SMTP id n12mr986748plf.78.1643945604282;
- Thu, 03 Feb 2022 19:33:24 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=7mi+rsnY3rOXooKo8WaV+dwZtlr3f4pyVzHcdNPQMpQ=;
+        b=rCXih+OFPLAeVMoKWBXqrg/pcUXEcgPo0n/Aqpqpbfvjothmv44guK9EL78NHSATu9
+         FkbsAPh/BgQaN++8RZly/HlJcMMsOqCB1JQpeMFzSefOFC/WT2HkTB1UddavIFZkKF2j
+         Q2JA0NG1mhj4o3UF3xYiZmewH5F2u7sI9OuwNkzm4qccZiGUJLuuMiaSsvc6ZgJQmrQD
+         wLihb98A/GNozg/S6KrA4wGc5k8kN3CP1C495LjYb+Rdz/hyXQ8q/ia2khjaW+xByxLB
+         0a+5w+Mzve+c6lJMDV43Tbn/ivuvROK9QwM5Zei/ZIo8/EhbI0fywahBIYdyCBdXEbob
+         /2JQ==
+X-Gm-Message-State: AOAM533IuU6qtF7YshvQqh2+nTlB4uqcSaGfAc4UL/BE73nak1ymdJI3
+        IYLc1C3SpzR18uCTpGX0CyY=
+X-Google-Smtp-Source: ABdhPJyCq6LWvW14DLtDjrArdY2ynqb/JUcPPk0wBnj+yXyUU5psYtk8PSgDMA6MzcpNuwegbgeFxg==
+X-Received: by 2002:ac8:5a50:: with SMTP id o16mr831938qta.260.1643946107201;
+        Thu, 03 Feb 2022 19:41:47 -0800 (PST)
+Received: from [192.168.1.49] (c-67-187-90-124.hsd1.tn.comcast.net. [67.187.90.124])
+        by smtp.gmail.com with ESMTPSA id s1sm500616qkp.40.2022.02.03.19.41.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 03 Feb 2022 19:41:46 -0800 (PST)
+Subject: Re: [PATCH 1/1] of: unittest: print pass messages at same loglevel as
+ fail
+To:     Rob Herring <robh+dt@kernel.org>
+Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Anders Roxell <anders.roxell@linaro.org>,
+        devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220203211150.2912192-1-frowand.list@gmail.com>
+ <CAL_JsqKMZWMtvdTvYHmWkd5CmehKJexJVv_BUBENrMPOf002+w@mail.gmail.com>
+From:   Frank Rowand <frowand.list@gmail.com>
+Message-ID: <24652725-91d8-9db4-e14a-e1bb5ded87b1@gmail.com>
+Date:   Thu, 3 Feb 2022 21:41:45 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-References: <20220201205534.1962784-1-haoluo@google.com> <20220201205534.1962784-6-haoluo@google.com>
- <20220203180414.blk6ou3ccmod2qck@ast-mbp.dhcp.thefacebook.com> <CA+khW7jkJbvQrTx4oPJAoBZ0EOCtr3C2PKbrzhxj-7euBK8ojg@mail.gmail.com>
-In-Reply-To: <CA+khW7jkJbvQrTx4oPJAoBZ0EOCtr3C2PKbrzhxj-7euBK8ojg@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 3 Feb 2022 19:33:12 -0800
-Message-ID: <CAADnVQLZZ3SM2CDxnzgOnDgRtGU7+6wT9u5v4oFas5MnZF6DsQ@mail.gmail.com>
-Subject: Re: [PATCH RFC bpf-next v2 5/5] selftests/bpf: test for pinning for
- cgroup_view link
-To:     Hao Luo <haoluo@google.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Joe Burton <jevburton.kernel@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>, bpf <bpf@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAL_JsqKMZWMtvdTvYHmWkd5CmehKJexJVv_BUBENrMPOf002+w@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 3, 2022 at 2:46 PM Hao Luo <haoluo@google.com> wrote:
->
-> On Thu, Feb 3, 2022 at 10:04 AM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> > On Tue, Feb 01, 2022 at 12:55:34PM -0800, Hao Luo wrote:
-> > > +
-> > > +SEC("iter/cgroup_view")
-> > > +int dump_cgroup_lat(struct bpf_iter__cgroup_view *ctx)
-> > > +{
-> > > +     struct seq_file *seq = ctx->meta->seq;
-> > > +     struct cgroup *cgroup = ctx->cgroup;
-> > > +     struct wait_lat *lat;
-> > > +     u64 id;
-> > > +
-> > > +     BPF_SEQ_PRINTF(seq, "cgroup_id: %8lu\n", cgroup->kn->id);
-> > > +     lat = bpf_map_lookup_elem(&cgroup_lat, &id);
-> >
-> > Looks like "id = cgroup->kn->id" assignment is missing here?
-> >
->
-> Ah, yes. I'll fix it.
->
-> > Thanks a lot for this test. It explains the motivation well.
-> >
-> > It seems that the patches 1-4 are there to automatically
-> > supply cgroup pointer into bpf_iter__cgroup_view.
-> >
-> > Since user space needs to track good part of cgroup dir opreations
-> > can we task it with the job of patches 1-4 as well?
-> > It can register notifier for cgroupfs operations and
-> > do mkdir in bpffs similarly _and_ parametrize 'view' bpf program
-> > with corresponding cgroup_id.
-> > Ideally there is no new 'view' program and it's a subset of 'iter'
-> > bpf program. They're already parametrizable.
-> > When 'iter' is pinned the user space can tell it which object it should
-> > iterate on. The 'view' will be an interator of one element and
-> > argument to it can be cgroup_id.
-> > When user space pins the same 'view' program in a newly created bpffs
-> > directory it will parametrize it with a different cgroup_id.
-> > At the end the same 'view' program will be pinned in multiple directories
-> > with different cgroup_id arguments.
-> > This patch 5 will look very much the same, but patches 1-4 will not be
-> > necessary.
-> > Of course there are races between cgroup create/destroy and bpffs
-> > mkdir, prog pin operatiosn, but they will be there regardless.
-> > The patch 1-4 approach is not race free either.
->
-> Right. I tried to minimize the races between cgroupfs and bpffs in
-> this patchset. The cgroup and kernfs APIs called in this patchset
-> guarantee that the cgroup and kernfs objects are alive once get. Some
-> states in the objects such as 'id' should be valid at least.
->
-> > Will that work?
->
-> Thanks Alexei for the idea.
->
-> The parameterization part sounds good. By 'parametrize', do you mean a
-> variable in iter prog (like the 'pid' variable in bpf_iter_task_vma.c
-> [1])? or some metadata of the program? I assume it's program's
-> metadata. Either parameterizing with cgroup_id or passing cgroup
-> object to the prog should work. The problem is at pinning.
+On 2/3/22 3:40 PM, Rob Herring wrote:
+> On Thu, Feb 3, 2022 at 3:12 PM <frowand.list@gmail.com> wrote:
+>>
+>> From: Frank Rowand <frank.rowand@sony.com>
+>>
+>> Printing the devicetree unittest pass message for each passed test
+>> creates much console verbosity.  The existing pass messages are
+>> printed at loglevel KERN_DEBUG so they will not print by default.
+>>
+>> Change default to print the pass messages at the same loglevel as
+>> the fail messages.
+>>
+>> The test community expects either a pass or a fail message for each
+>> test in a test suite.  The messages are typically post-processed to
+>> report pass/fail results.
+>>
+>> Suppressing printing the pass message for each individual test is
+>> available via the kernel command line parameter unittest.hide_pass.
+>>
+>> Signed-off-by: Frank Rowand <frank.rowand@sony.com>
+>> ---
+>>  Documentation/admin-guide/kernel-parameters.txt |  4 ++++
+>>  drivers/of/unittest.c                           | 17 ++++++++++++++++-
+>>  2 files changed, 20 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+>> index f5a27f067db9..045455f9b7e1 100644
+>> --- a/Documentation/admin-guide/kernel-parameters.txt
+>> +++ b/Documentation/admin-guide/kernel-parameters.txt
+>> @@ -5997,6 +5997,10 @@
+>>                         Note that genuine overcurrent events won't be
+>>                         reported either.
+>>
+>> +       unittest.hide_pass
+> 
+> Can we rename the module name to include 'dt' so we're not taking a
+> generic name.
 
-The bpf_iter_link_info is used to parametrize the iterator.
-The map iterator will iterate the given map_fd.
-iirc pinning is not parameterizable yet,
-but that's not difficult to add.
+I got most of the way through writing a reply to the various questions, then got to
+the point where my answer to a specific question ended up being something to the
+effect of: "this line of code (where a change was suggested) will end up being
+replaced when I convert the unittest messages to KTAP format".
 
+Then I got sidelined by going back and re-reading the KTAP specification email
+thread from August, then discovering that there is also a patch submission email
+thread from December where a KTAP specification is accepted into the kernel tree.
 
-> In our use case, we can't ask the users who create cgroups to do the
-> pinning. Pinning requires root privilege. In our use case, we have
-> non-root users who can create cgroup directories and still want to
-> read bpf stats. They can't do pinning by themselves. This is why
-> inheritance is a requirement for us. With inheritance, they only need
-> to mkdir in cgroupfs and bpffs (unprivileged operations), no pinning
-> operation is required. Patch 1-4 are needed to implement inheritance.
->
-> It's also not a good idea in our use case to add a userspace
-> privileged process to monitor cgroupfs operations and perform the
-> pinning. It's more complex and has a higher maintenance cost and
-> runtime overhead, compared to the solution of asking whoever makes
-> cgroups to mkdir in bpffs. The other problem is: if there are nodes in
-> the data center that don't have the userspace process deployed, the
-> stats will be unavailable, which is a no-no for some of our users.
+Being KTAP compliant does not allow for suppressing the individual test pass
+messages, so I think I should just drop my desire to be able to do so.  That
+would reduce this patch to a one line change to print the pass messages at the
+same loglevel as the fail messages.  And I would prefer to not worry about
+whether the pass message is 'pass' vs 'PASS' since that text will get replaced
+by the KTAP syntax anyway.
 
-The commit log says that there will be a daemon that does that
-monitoring of cgroupfs. And that daemon needs to mkdir
-directories in bpffs when a new cgroup is created, no?
-The kernel is only doing inheritance of bpf progs into
-new dirs. I think that daemon can pin as well.
+Would you be ok with that one line patch?
 
-The cgroup creation is typically managed by an agent like systemd.
-Sounds like you have your own agent that creates cgroups?
-If so it has to be privileged and it can mkdir in bpffs and pin too ?
+-Frank
+
+> 
+>> +                       Disable printing individual drivers/of/unittest test
+>> +                       pass messages.
+>> +
+>>         unknown_nmi_panic
+>>                         [X86] Cause panic on unknown NMI.
+>>
+>> diff --git a/drivers/of/unittest.c b/drivers/of/unittest.c
+>> index 70992103c07d..2cfbdc6b29ac 100644
+>> --- a/drivers/of/unittest.c
+>> +++ b/drivers/of/unittest.c
+>> @@ -12,6 +12,7 @@
+>>  #include <linux/errno.h>
+>>  #include <linux/hashtable.h>
+>>  #include <linux/libfdt.h>
+>> +#include <linux/module.h>
+>>  #include <linux/of.h>
+>>  #include <linux/of_address.h>
+>>  #include <linux/of_fdt.h>
+>> @@ -32,6 +33,19 @@
+>>
+>>  #include "of_private.h"
+>>
+>> +MODULE_LICENSE("GPL v2");
+>> +static bool hide_pass;
+>> +
+>> +static int __init hide_pass_setup(char *str)
+>> +{
+>> +       hide_pass = true;
+>> +       return 0;
+>> +}
+>> +
+>> +early_param("hide_pass", hide_pass_setup);
+>> +module_param(hide_pass, bool, 0);
+>> +MODULE_PARM_DESC(hide_pass, "Disable printing individual of unittest pass messages");
+>> +
+>>  static struct unittest_results {
+>>         int passed;
+>>         int failed;
+>> @@ -44,7 +58,8 @@ static struct unittest_results {
+>>                 pr_err("FAIL %s():%i " fmt, __func__, __LINE__, ##__VA_ARGS__); \
+>>         } else { \
+>>                 unittest_results.passed++; \
+>> -               pr_debug("pass %s():%i\n", __func__, __LINE__); \
+>> +               if (!hide_pass) \
+>> +                       pr_err("pass %s():%i\n", __func__, __LINE__); \
+> 
+> Would 'PASS' be better here to align with FAIL?
+> 
+> If we make this info level, then you can filter with dmesg and also
+> seems to be aligned with what kunit does.
+> 
+> 
+> Rob
+> 
+
