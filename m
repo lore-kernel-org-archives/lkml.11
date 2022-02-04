@@ -2,41 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E9E3C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 20:04:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E6CEC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 20:04:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238942AbiBDUE0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 15:04:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40628 "EHLO
+        id S239589AbiBDUE2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 15:04:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237580AbiBDUCg (ORCPT
+        with ESMTP id S237328AbiBDUCf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 15:02:36 -0500
+        Fri, 4 Feb 2022 15:02:35 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BFF9C06177F
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 11:59:12 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05177C061757
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 11:59:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=uNHbiplzAhumMjir5hW/+5QrjINzxK7Ks9sjue7Fm7I=; b=Yu+bQPGiq4F1lldZgNWaep7jd4
-        B0nyFdzn0XB98KUc65p6nAzFc7ffg4qx2FIt15K37OcLI3DCIKVJhV+KLwOCmLT85GxkMOGIxRBoP
-        wD+Vw8+CL4sKwmaViXgSCwbJ2IdLKpJJNf00hceV2XOn2tOaABC6zWpVlTKMWDvmErj3vqC8F016L
-        X+RjWgcRWm9IdfqK0zzP10ZtkWOdQmvQmcCmL4D1TRcFPgLAYxvBt3PaTvyAHWWS458syi4TEdXt0
-        ExkyV0vflohQ4zlYlxa/pOya+T9IjPFvFYD7D87a9b0nBdMoSZFUQx5ymN4QMjjpGDPJHJIfJ5uWW
-        j7Lf5hhw==;
+        bh=PDfDz/oaz4L+aABam7Kbhp4ZsvE+ZH2V505Pz0ioVSI=; b=VvalZs9KsnrtIMbf36IKhtipY7
+        YxQQQYfjnSYwObbxqCfo6pgwfIg13eaTgNgyfqfADCi5k0O5/0EvwnLZ6YwR6uebbyByDeyJ30kBW
+        wE2d/kjJAUccWzusZy/CaG0hVZdoXnxHqQatwudN4k3s7vEdUVjJ3XRLC1gbrLNDxcS9VrdG5oY37
+        /Yxk6vfd+slWnnzn5RPKo1a56MGFnYJeP3X+ZWZgY4GiBmonifwXBQIVekfoAjkF92xWcSjvvwutd
+        mJBEdZxygP7x8UhjEGzaRqfGcb3SUqfcWC4TpA1/L0pLFNpGr53C7mhfkeaVi/QUA4nBvLhm8/m0u
+        VSoGtHtw==;
 Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nG4jU-007LlN-H4; Fri, 04 Feb 2022 19:59:00 +0000
+        id 1nG4jc-007Lrh-9D; Fri, 04 Feb 2022 19:59:08 +0000
 From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
 To:     linux-mm@kvack.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        linux-kernel@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        William Kucharski <william.kucharski@oracle.com>
-Subject: [PATCH 11/75] mm/gup: Remove hpage_pincount_sub()
-Date:   Fri,  4 Feb 2022 19:57:48 +0000
-Message-Id: <20220204195852.1751729-12-willy@infradead.org>
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 73/75] mm/readahead: Switch to page_cache_ra_order
+Date:   Fri,  4 Feb 2022 19:58:50 +0000
+Message-Id: <20220204195852.1751729-74-willy@infradead.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220204195852.1751729-1-willy@infradead.org>
 References: <20220204195852.1751729-1-willy@infradead.org>
@@ -46,53 +43,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move the assertion (and correct it to be a cheaper variant),
-and inline the atomic_sub() operation.
+do_page_cache_ra() was being exposed for the benefit of
+do_sync_mmap_readahead().  Switch it over to page_cache_ra_order()
+partly because it's a better interface but mostly for the benefit of
+the next patch.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: John Hubbard <jhubbard@nvidia.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: William Kucharski <william.kucharski@oracle.com>
 ---
- mm/gup.c | 13 +++----------
- 1 file changed, 3 insertions(+), 10 deletions(-)
+ mm/filemap.c   | 2 +-
+ mm/internal.h  | 4 ++--
+ mm/readahead.c | 4 ++--
+ 3 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/mm/gup.c b/mm/gup.c
-index 60168a09d52a..af623a139995 100644
---- a/mm/gup.c
-+++ b/mm/gup.c
-@@ -29,14 +29,6 @@ struct follow_page_context {
- 	unsigned int page_mask;
- };
+diff --git a/mm/filemap.c b/mm/filemap.c
+index 8f7ac3de9098..fe764225ae99 100644
+--- a/mm/filemap.c
++++ b/mm/filemap.c
+@@ -3027,7 +3027,7 @@ static struct file *do_sync_mmap_readahead(struct vm_fault *vmf)
+ 	ra->size = ra->ra_pages;
+ 	ra->async_size = ra->ra_pages / 4;
+ 	ractl._index = ra->start;
+-	do_page_cache_ra(&ractl, ra->size, ra->async_size);
++	page_cache_ra_order(&ractl, ra, 0);
+ 	return fpin;
+ }
  
--static void hpage_pincount_sub(struct page *page, int refs)
--{
--	VM_BUG_ON_PAGE(!hpage_pincount_available(page), page);
--	VM_BUG_ON_PAGE(page != compound_head(page), page);
--
--	atomic_sub(refs, compound_pincount_ptr(page));
--}
--
- /* Equivalent to calling put_page() @refs times. */
- static void put_page_refs(struct page *page, int refs)
- {
-@@ -169,12 +161,13 @@ __maybe_unused struct page *try_grab_compound_head(struct page *page,
+diff --git a/mm/internal.h b/mm/internal.h
+index 360256e4ee06..4b401313b9f2 100644
+--- a/mm/internal.h
++++ b/mm/internal.h
+@@ -83,8 +83,8 @@ void unmap_page_range(struct mmu_gather *tlb,
+ 			     unsigned long addr, unsigned long end,
+ 			     struct zap_details *details);
  
- static void put_compound_head(struct page *page, int refs, unsigned int flags)
+-void do_page_cache_ra(struct readahead_control *, unsigned long nr_to_read,
+-		unsigned long lookahead_size);
++void page_cache_ra_order(struct readahead_control *, struct file_ra_state *,
++		unsigned int order);
+ void force_page_cache_ra(struct readahead_control *, unsigned long nr);
+ static inline void force_page_cache_readahead(struct address_space *mapping,
+ 		struct file *file, pgoff_t index, unsigned long nr_to_read)
+diff --git a/mm/readahead.c b/mm/readahead.c
+index 5100eaf5b0ee..a20391d6a71b 100644
+--- a/mm/readahead.c
++++ b/mm/readahead.c
+@@ -247,7 +247,7 @@ EXPORT_SYMBOL_GPL(page_cache_ra_unbounded);
+  * behaviour which would occur if page allocations are causing VM writeback.
+  * We really don't want to intermingle reads and writes like that.
+  */
+-void do_page_cache_ra(struct readahead_control *ractl,
++static void do_page_cache_ra(struct readahead_control *ractl,
+ 		unsigned long nr_to_read, unsigned long lookahead_size)
  {
-+	VM_BUG_ON_PAGE(PageTail(page), page);
-+
- 	if (flags & FOLL_PIN) {
- 		mod_node_page_state(page_pgdat(page), NR_FOLL_PIN_RELEASED,
- 				    refs);
--
- 		if (hpage_pincount_available(page))
--			hpage_pincount_sub(page, refs);
-+			atomic_sub(refs, compound_pincount_ptr(page));
- 		else
- 			refs *= GUP_PIN_COUNTING_BIAS;
- 	}
+ 	struct inode *inode = ractl->mapping->host;
+@@ -462,7 +462,7 @@ static inline int ra_alloc_folio(struct readahead_control *ractl, pgoff_t index,
+ 	return err;
+ }
+ 
+-static void page_cache_ra_order(struct readahead_control *ractl,
++void page_cache_ra_order(struct readahead_control *ractl,
+ 		struct file_ra_state *ra, unsigned int new_order)
+ {
+ 	struct address_space *mapping = ractl->mapping;
 -- 
 2.34.1
 
