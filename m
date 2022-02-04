@@ -2,162 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4324DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 13:25:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9A37C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 13:32:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358699AbiBDNZi (ORCPT
+        id S1358764AbiBDNcb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 08:25:38 -0500
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:40146 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S235551AbiBDNZa (ORCPT
+        Fri, 4 Feb 2022 08:32:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33660 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1353799AbiBDNc3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 08:25:30 -0500
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2148QohX011944;
-        Fri, 4 Feb 2022 14:23:04 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=897N+JwPn9HsR13TZ+mpUH1Tpgf2LXHOh1v74lWbI7w=;
- b=rMWmSOZjQUwurdCMNkuWKpT9S3b+GmYyH+Tcs0lvO7Jgg+w8iTiuO25GnbHBuofyqj5z
- iS25mFWBXml+bJa4CntOfU7MnS+bWdP05bEGTjJGbbKftmFT6gAQiXavfW6TVpgLZ7TB
- /EmywQkiHZeU13/xbsTUYO/7Ut9Wq8UmREeZUhWpUjuN/nMq4F2CcoL3tZQI0PxxxZfJ
- jRvqwSLNkIZUK+kXdv/Kjj4TlQ0ViEH6AZh2Wu5LFl7T7YlF52O2WkTT3K1FLiU2B9so
- GvV/Lfy3PPxxsMKoxi6hceKRJuEYjwvnVEZCKbZcvoTgT2hx3WRxIe7xEoQazwqzLbEQ gg== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3e0ejje7de-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 04 Feb 2022 14:23:04 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id D3BAA10002A;
-        Fri,  4 Feb 2022 14:23:02 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id C47AE21FE8A;
-        Fri,  4 Feb 2022 14:23:02 +0100 (CET)
-Received: from [10.48.0.252] (10.75.127.47) by SFHDAG2NODE2.st.com
- (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Fri, 4 Feb
- 2022 14:23:02 +0100
-Message-ID: <f5aec360-c33c-0145-6596-541003e305b2@foss.st.com>
-Date:   Fri, 4 Feb 2022 14:22:56 +0100
+        Fri, 4 Feb 2022 08:32:29 -0500
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34EBFC06173D
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 05:32:29 -0800 (PST)
+Received: by mail-pg1-x52f.google.com with SMTP id h23so5026268pgk.11
+        for <linux-kernel@vger.kernel.org>; Fri, 04 Feb 2022 05:32:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=UbGuJT+82u/r5OVFIMOVDfayUzP0EGS/g4aR/lRMEDU=;
+        b=tb319ZxJaT2G2jEsLg001lXCi1v5OjI0tcX3tYb96s6yhPSV74Av/Fmqv0P0FhrD7G
+         s2KWFILCJ5Oe0/99QkM+8m8DWTGV1SDpUTKkSEDRGLnXb7mFRWlTwa9OyG+pZVFThbUg
+         rYfdGtniBA03bJjxGVdaQl6ucJZuNbaP7KhiG9fD1L61EpDe3plJ3LfLi9tciIE5Iv7a
+         mVRSxtjXq27G3q1MSzQc7EMJ3TBmmwQDnV0PsyF6L/Pih5jw/Bz24fS+cxAnAe5pbEeD
+         2zG+kzzIf0gF2GH7cIe7EgjqwptmQB9eylyoXBg9MZBZ+fmNMejHy8r7jHrrx4IhOgwi
+         HcKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=UbGuJT+82u/r5OVFIMOVDfayUzP0EGS/g4aR/lRMEDU=;
+        b=vRwIBP8XHND2PIDtxGlkA/rjlpuMOvIw63oFE8v81FyzA4PZ+vnsCO0Jv3yzXDlt2M
+         gcLYemi7QFspxIW1JLZ+kq8+HRyGVZI7FIoZp/E+CIIxJfSRwOqYMH9CYCPgfHyzk1pv
+         aDfWuKg7LIHsdSzca3JUs2HETe/5oyHpo5sldN/Pe32bsQ1ZZ6XSKoRgIq9ytVJ4xnMl
+         CncE969Q436apHjXJrzvwIe9+UZe0DIngU/mVcAC0j55PIb7vgfPoUA6tpfdUlEYt8Eg
+         UbHceZVfgpYVW1lNF3U3FWPyoe+tC4nx8ZXuBp+DWWmC04lvx749JC4o+k3eWn8HeTmt
+         VZZw==
+X-Gm-Message-State: AOAM530kUOG+UhWMFhQ4yTfy0CDFscftxP7n/WcN0Xk05AP8nhqMi3Qv
+        UVgEfHJEvFGSSGtKfG2gvFkxcw==
+X-Google-Smtp-Source: ABdhPJwqTE9JG+YJdZ4CiM388CYHQbBhyS5L72K7Y633EUO/ynw8J+ru2L9V+JSjCIgU1JgykhkwhQ==
+X-Received: by 2002:a63:f711:: with SMTP id x17mr2395738pgh.274.1643981548461;
+        Fri, 04 Feb 2022 05:32:28 -0800 (PST)
+Received: from [192.168.1.116] ([66.219.217.159])
+        by smtp.gmail.com with ESMTPSA id o5sm2727140pfk.172.2022.02.04.05.32.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 04 Feb 2022 05:32:28 -0800 (PST)
+Subject: Re: Partial direct-io loop regression in 5.17-rc
+To:     Milan Broz <gmazyland@gmail.com>
+Cc:     linux-block <linux-block@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Ondrej Kozina <okozina@redhat.com>
+References: <feb7e4b4-1a6f-71a7-0cdd-fda547408bea@gmail.com>
+From:   Jens Axboe <axboe@kernel.dk>
+Message-ID: <08e1dbde-b27c-fd99-294c-8e4715b92576@kernel.dk>
+Date:   Fri, 4 Feb 2022 06:32:27 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 00/16] STM32 configure UART nodes for DMA
+In-Reply-To: <feb7e4b4-1a6f-71a7-0cdd-fda547408bea@gmail.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-To:     Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        Erwan Le Ray <erwan.leray@foss.st.com>
-CC:     Rob Herring <robh+dt@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Marek Vasut <marex@denx.de>,
-        Marcin Sloniewski <marcin.sloniewski@gmail.com>,
-        Jagan Teki <jagan@amarulasolutions.com>,
-        <devicetree@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>
-References: <20220203171114.10888-1-erwan.leray@foss.st.com>
- <cc7633c5-de5f-0abf-4ac8-64a74633dfcc@pengutronix.de>
-From:   Alexandre TORGUE <alexandre.torgue@foss.st.com>
-In-Reply-To: <cc7633c5-de5f-0abf-4ac8-64a74633dfcc@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.47]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-04_05,2022-02-03_01,2021-12-02_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Ahmad
+On 2/4/22 2:22 AM, Milan Broz wrote:
+> Hi Jens,
+> 
+> It seems that there is a regression in direct-io over loop for partial
+> direct-io reads (or perhaps even for other situations).
+> 
+> If I run this code (loop over 6M file, dd direct-io read with 4M blocks)
+> 
+> IMG=tst.img
+> LOOP=/dev/loop66
+> 
+> truncate -s 6M $IMG
+> losetup $LOOP $IMG
+> dd if=$LOOP of=/dev/null bs=4M iflag=direct
+> losetup -d $LOOP
+> 
+> 
+> on older kernel (<=5.16) it reads the whole file
+>    6291456 bytes (6.3 MB, 6.0 MiB) copied, 0.201591 s, 31.2 MB/s
+> 
+> 
+> while on 5.17-rc (tested on today/s Linus' git) it reads only the full blocks:
+>    4194304 bytes (4.2 MB, 4.0 MiB) copied, 0.201904 s, 20.8 MB/s
+> 
+> No error reported, exit code is 0.
 
-On 2/3/22 18:25, Ahmad Fatoum wrote:
-> Hello Erwan,
-> 
-> On 03.02.22 18:10, Erwan Le Ray wrote:
->> Add DMA configuration to UART nodes in stm32mp15x (SOC level) and
->> remove it at board level to keep current PIO behavior when needed.
->> For stm32-ed1 and stm32-dkx boards, UART4 (console) and UART7
->> (no HW flow control pin available) are kept in PIO mode, while USART3
->> is now configured in DMA mode.
->> UART4 (console UART) has to be kept in irq mode, as DMA support for
->> console has been removed from the driver by commit e359b4411c28
->> ("serial: stm32: fix threaded interrupt handling").
-> 
-> Do I understand correctly that your first patch breaks consoles of
-> most/all boards, because they will briefly use DMA, which is refused
-> by the stm32-usart driver and then you add a patch for each board
-> to fix that breakage?
+Can you try:
 
-We have two solutions and both have pro/drawbacks. The first one (Erwan 
-ones, can break the boot if the patch is taken "alone". Your proposition 
-avoids this breakage but deletes a non define property (which is a bit 
-weird). However I prefer to keep a functional behavior, and keep Ahmad 
-proposition. Ahmad, just one question, dt-bindings check doesn't 
-complain about it ?
+https://git.kernel.dk/cgit/linux-block/commit/?h=block-5.17&id=3e1f941dd9f33776b3df4e30f741fe445ff773f3
 
-Cheers
-Alex
-
-> 
-> Such intermittent breakage makes bisection a hassle. /delete-property/
-> is a no-op when the property doesn't exist, so you could move the first
-> patch to the very end to avoid intermittent breakage.
-> 
-> I also think that the driver's behavior is a bit harsh. I think it would
-> be better for the UART driver to print a warning and fall back to
-> PIO for console instead of outright refusing and rendering the system
-> silent. That's not mutually exclusive with your patch series here, of course.
-> 
-> Cheers,
-> Ahmad
-> 
->>
->> For other stm32mp15x-based boards, current configuration is kept for
->> all UART instances.
->>
->> Erwan Le Ray (16):
->>    ARM: dts: stm32: add DMA configuration to UART nodes on stm32mp151
->>    ARM: dts: stm32: keep uart4 behavior on stm32mp157c-ed1
->>    ARM: dts: stm32: keep uart4 and uart7 behavior on stm32mp15xx-dkx
->>    ARM: dts: stm32: keep uart4 behavior on icore-stm32mp1-ctouch2
->>    ARM: dts: stm32: keep uart4 behavior on icore-stm32mp1-edimm2.2
->>    ARM: dts: stm32: keep uart4 behavior on stm32mp157a-iot-box
->>    ARM: dts: stm32: keep uart nodes behavior on stm32mp1-microdev2.0-of7
->>    ARM: dts: stm32: keep uart nodes behavior on stm32mp1-microdev2.0
->>    ARM: dts: stm32: keep uart nodes behavior on stm32mp157a-stinger96
->>    ARM: dts: stm32: keep uart4 behavior on stm32mp157c-lxa-mc1
->>    ARM: dts: stm32: keep uart4 behavior on stm32mp157c-odyssey
->>    ARM: dts: stm32: keep uart nodes behavior on stm32mp15xx-dhcom-drc02
->>    ARM: dts: stm32: keep uart nodes behavior on stm32mp15xx-dhcom-pdk2
->>    ARM: dts: stm32: keep uart nodes behavior on stm32mp15xx-dhcom-picoitx
->>    ARM: dts: stm32: keep uart4 behavior on stm32mp15xx-dhcom-som
->>    ARM: dts: stm32: keep uart nodes behavior on
->>      stm32mp15xx-dhcor-avenger96
->>
->>   arch/arm/boot/dts/stm32mp151.dtsi             | 21 +++++++++++++++++++
->>   .../stm32mp157a-icore-stm32mp1-ctouch2.dts    |  2 ++
->>   .../stm32mp157a-icore-stm32mp1-edimm2.2.dts   |  2 ++
->>   arch/arm/boot/dts/stm32mp157a-iot-box.dts     |  2 ++
->>   ...157a-microgea-stm32mp1-microdev2.0-of7.dts |  4 ++++
->>   ...32mp157a-microgea-stm32mp1-microdev2.0.dts |  4 ++++
->>   arch/arm/boot/dts/stm32mp157a-stinger96.dtsi  |  6 ++++++
->>   arch/arm/boot/dts/stm32mp157c-ed1.dts         |  2 ++
->>   arch/arm/boot/dts/stm32mp157c-lxa-mc1.dts     |  2 ++
->>   arch/arm/boot/dts/stm32mp157c-odyssey.dts     |  2 ++
->>   .../arm/boot/dts/stm32mp15xx-dhcom-drc02.dtsi |  4 ++++
->>   arch/arm/boot/dts/stm32mp15xx-dhcom-pdk2.dtsi |  4 ++++
->>   .../boot/dts/stm32mp15xx-dhcom-picoitx.dtsi   |  4 ++++
->>   arch/arm/boot/dts/stm32mp15xx-dhcom-som.dtsi  |  2 ++
->>   .../boot/dts/stm32mp15xx-dhcor-avenger96.dtsi |  6 ++++++
->>   arch/arm/boot/dts/stm32mp15xx-dkx.dtsi        |  4 ++++
->>   16 files changed, 71 insertions(+)
->>
-> 
-> 
+-- 
+Jens Axboe
 
