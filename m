@@ -2,98 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72CC4C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 17:58:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44666C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 17:58:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377223AbiBDR6U (ORCPT
+        id S1377267AbiBDR61 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 12:58:20 -0500
-Received: from mail-yb1-f175.google.com ([209.85.219.175]:36486 "EHLO
-        mail-yb1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377200AbiBDR6T (ORCPT
+        Fri, 4 Feb 2022 12:58:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38996 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377243AbiBDR60 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 12:58:19 -0500
-Received: by mail-yb1-f175.google.com with SMTP id c6so21050988ybk.3;
-        Fri, 04 Feb 2022 09:58:18 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1KpgwQenVwyvbtZUfE0b3LoE53JfPaVnSYNKALVtwLc=;
-        b=ooW2cVNhF+vxk4CEQxUCHkKzvc48NDyLNIMwXe4X9eVe1Odb80zmfH7V7XXh1GNzUW
-         TyC1lizVvsP4l7VFILIra9G/e0qV+fU25oBR/7BpKGue9ZtXaIb9RLtPwx+Giwmpa334
-         l+mQ+cbnK5CovlT4/tXGkANCTCdkTxdRqeQfzNFQXqAoLd9sz1s9nM9j2COA9FQ+6ON/
-         uPZBWOb5nyiwpaItG4tzq2iNA9ZT+GRwt3K0j0pKwVP+VOLIMF68mm2gaoFdjdLINK5H
-         +a7fuMm8M88DhThiivvjJlYMjsYDmv5pV9HbeSC45thxzSf0K4bZQ7NRh5G5oljdTBQf
-         0tZg==
-X-Gm-Message-State: AOAM531EeMK2AFdlLAWvfkR4msj8n3rOAc16FoJI+CWHZYzn1+Wn/pmL
-        Z1qdcnyol9fNtvdDDU1JAjw/xPzNuupcaLQIIjZVr+zG
-X-Google-Smtp-Source: ABdhPJxkHT0jLVjwRfw3Vut+GrEEwcFXR/6dyjSGizn7GeepbfgHMQDG1ODgzkT6s/vm7sLkkMTM7+N05Lm4VWj3z7Q=
-X-Received: by 2002:a81:3744:: with SMTP id e65mr613498ywa.301.1643997498498;
- Fri, 04 Feb 2022 09:58:18 -0800 (PST)
-MIME-Version: 1.0
-References: <20220126014853.2915981-1-jiasheng@iscas.ac.cn>
-In-Reply-To: <20220126014853.2915981-1-jiasheng@iscas.ac.cn>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Fri, 4 Feb 2022 18:58:07 +0100
-Message-ID: <CAJZ5v0igZFKcPojJyLkcn=aTVhyznENwLEbfzK7XvrrVrGu_vg@mail.gmail.com>
-Subject: Re: [PATCH v3] thermal/int340x_thermal: Check for null pointer after
- calling kmemdup
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        "Zhang, Rui" <rui.zhang@intel.com>,
-        Amit Kucheria <amitk@kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Fri, 4 Feb 2022 12:58:26 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0987CC061714;
+        Fri,  4 Feb 2022 09:58:26 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D91E61B56;
+        Fri,  4 Feb 2022 17:58:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0A287C340FB;
+        Fri,  4 Feb 2022 17:58:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643997505;
+        bh=zFYkm4VCUhyoKFnTtqkYM6XxiGZCvCrd3LFuBN4ldLo=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=fPrSZDGIMsZ5Vn7vOTJFNcO9I1qqKNVaf/ZPRLQJA8PULl6ysteDJyHveLXCuVItT
+         XGHOd5ifepY/rfqNqQrD2OJgCD7UuyJJFmQ9INtCmtG4Cl1sUeI1fOmpM03Xm2ljZG
+         5K0I0hWXjhuBYWrXohH05jc2DcEaq7wicXfCkPCQlxPzZrmJN5aVccFooVhxzckvJ5
+         rhGGCKeUt7qW1c3mtB0CzA+g7qqYdQ2eKoO+J5PHc/GzvuBDCQ5zeLoOPlx5fIuVah
+         xa6rSjMzPdSQrNfDzQugz1hFYXXntQiuF89ZBRoaPWNU6nKQ6Zfes+WctcyccooLM2
+         v8VmdyRgtQ5Bw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D67FAE6BBD2;
+        Fri,  4 Feb 2022 17:58:24 +0000 (UTC)
+Subject: Re: [GIT PULL] 9p for 5.17-rc3
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <Yf0Fh7xIgJuoxuSB@codewreck.org>
+References: <20220130130651.712293-1-asmadeus@codewreck.org> <Yf0Fh7xIgJuoxuSB@codewreck.org>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <Yf0Fh7xIgJuoxuSB@codewreck.org>
+X-PR-Tracked-Remote: git://github.com/martinetd/linux tags/9p-for-5.17-rc3
+X-PR-Tracked-Commit-Id: 22e424feb6658c5d6789e45121830357809c59cb
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 1eb7de177d4073085e3a1cebf19d5d538d171f10
+Message-Id: <164399750487.18890.15053692534783051413.pr-tracker-bot@kernel.org>
+Date:   Fri, 04 Feb 2022 17:58:24 +0000
+To:     Dominique Martinet <asmadeus@codewreck.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        v9fs-developer@lists.sourceforge.net, linux-kernel@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, stable@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 2:49 AM Jiasheng Jiang <jiasheng@iscas.ac.cn> wrote:
->
-> As the potential failure of the allocation, kmemdup() may return NULL
-> pointer.
-> Then the 'bin_attr_data_vault.private' will be NULL pointer but the
-> 'bin_attr_data_vault.size' is not 0.
-> Therefore, it should be better to check the return value of kmemdup() to
-> avoid the wrong size.
-> And since the error handling process is simple, it may not use the
-> 'goto' to simplify the code.
->
-> Fixes: 0ba13c763aac ("thermal/int340x_thermal: Export GDDV")
-> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-> ---
-> Changelog
->
-> v1 -> v2
->
-> * Change 1. Use out_kfree to simplify the code.
->
-> v2 -> v3
->
-> * Change 1. Revert the code to v1 and refine the commit message.
-> ---
->  drivers/thermal/intel/int340x_thermal/int3400_thermal.c | 5 +++++
->  1 file changed, 5 insertions(+)
->
-> diff --git a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-> index 8502b7d8df89..52ac3ee54309 100644
-> --- a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-> +++ b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-> @@ -464,6 +464,11 @@ static void int3400_setup_gddv(struct int3400_thermal_priv *priv)
->         priv->data_vault = kmemdup(obj->package.elements[0].buffer.pointer,
->                                    obj->package.elements[0].buffer.length,
->                                    GFP_KERNEL);
-> +       if (!priv->data_vault) {
-> +               kfree(buffer.pointer);
-> +               return;
-> +       }
-> +
->         bin_attr_data_vault.private = priv->data_vault;
->         bin_attr_data_vault.size = obj->package.elements[0].buffer.length;
->         kfree(buffer.pointer);
-> --
+The pull request you sent on Fri, 4 Feb 2022 19:52:55 +0900:
 
-Applied as 5.18 material with some edits in the subject and changelog, thanks!
+> git://github.com/martinetd/linux tags/9p-for-5.17-rc3
+
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/1eb7de177d4073085e3a1cebf19d5d538d171f10
+
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
