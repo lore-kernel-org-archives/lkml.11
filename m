@@ -2,39 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A771C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:24:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E2C1C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:24:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357826AbiBDJYY (ORCPT
+        id S1357831AbiBDJY3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 04:24:24 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:52278 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357684AbiBDJXb (ORCPT
+        Fri, 4 Feb 2022 04:24:29 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:42634 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1357864AbiBDJXX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 04:23:31 -0500
+        Fri, 4 Feb 2022 04:23:23 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F227BB836EF;
-        Fri,  4 Feb 2022 09:23:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B8AAC004E1;
-        Fri,  4 Feb 2022 09:23:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C23D7616B0;
+        Fri,  4 Feb 2022 09:23:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E95EC340ED;
+        Fri,  4 Feb 2022 09:23:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643966608;
-        bh=4+7MceMecYWOvPMGIDx+1UxoxBhhhIlOqFjbf6KJEtc=;
+        s=korg; t=1643966602;
+        bh=FAjeDFHv7D9J2c8F4j6IzyeX2v7R5BW6Uj33dBF69mE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Lt1Wugam6qHUw67mIDyFDpM5xePyogWQTmF6MbmtZCKCDksLj7sh1EH5IQ/3NBn2D
-         1myNETm8xDYxdQAG29WHuxUceWCxqWy8YJbYM6zjBlf2YRrYQUYUSe60kaL3yk9v+s
-         4J1C6l1TQ2BfbCo6kJMWc8oBwR+a/pAMXz0KMcmM=
+        b=x3w6WniikzNo705ZPZMZGGxVUBLObCw5gbXOtTF+MJdb75kSXQZQmrSTHr4jJh1ka
+         p6/0Ej8c+Izmn51Wy8omQiYW8ZR3WrQ87A/XIxhPvUVcfV0Y1nJCgVyDEcaRIF86ZP
+         ZsaLOw0u838D0Jrvw8s/XwmCCpJJv8KMHyoUixE8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dima Chumak <dchumak@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH 5.15 17/32] net/mlx5: Fix offloading with ESWITCH_IPV4_TTL_MODIFY_ENABLE
-Date:   Fri,  4 Feb 2022 10:22:27 +0100
-Message-Id: <20220204091915.826342216@linuxfoundation.org>
+        stable@vger.kernel.org, Maher Sanalla <msanalla@nvidia.com>,
+        Moshe Shemesh <moshe@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [PATCH 5.15 15/32] net/mlx5: Use del_timer_sync in fw reset flow of halting poll
+Date:   Fri,  4 Feb 2022 10:22:25 +0100
+Message-Id: <20220204091915.764312201@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220204091915.247906930@linuxfoundation.org>
 References: <20220204091915.247906930@linuxfoundation.org>
@@ -46,42 +47,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dima Chumak <dchumak@nvidia.com>
+From: Maher Sanalla <msanalla@nvidia.com>
 
-commit 55b2ca702cfa744a9eb108915996a2294da47e71 upstream.
+commit 3c5193a87b0fea090aa3f769d020337662d87b5e upstream.
 
-Only prio 1 is supported for nic mode when there is no ignore flow level
-support in firmware. But for switchdev mode, which supports fixed number
-of statically pre-allocated prios, this restriction is not relevant so
-it can be relaxed.
+Substitute del_timer() with del_timer_sync() in fw reset polling
+deactivation flow, in order to prevent a race condition which occurs
+when del_timer() is called and timer is deactivated while another
+process is handling the timer interrupt. A situation that led to
+the following call trace:
+	RIP: 0010:run_timer_softirq+0x137/0x420
+	<IRQ>
+	recalibrate_cpu_khz+0x10/0x10
+	ktime_get+0x3e/0xa0
+	? sched_clock_cpu+0xb/0xc0
+	__do_softirq+0xf5/0x2ea
+	irq_exit_rcu+0xc1/0xf0
+	sysvec_apic_timer_interrupt+0x9e/0xc0
+	asm_sysvec_apic_timer_interrupt+0x12/0x20
+	</IRQ>
 
-Fixes: d671e109bd85 ("net/mlx5: Fix tc max supported prio for nic mode")
-Signed-off-by: Dima Chumak <dchumak@nvidia.com>
-Reviewed-by: Roi Dayan <roid@nvidia.com>
+Fixes: 38b9f903f22b ("net/mlx5: Handle sync reset request event")
+Signed-off-by: Maher Sanalla <msanalla@nvidia.com>
+Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/lib/fs_chains.c |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_chains.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_chains.c
-@@ -121,12 +121,13 @@ u32 mlx5_chains_get_nf_ft_chain(struct m
- 
- u32 mlx5_chains_get_prio_range(struct mlx5_fs_chains *chains)
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
+@@ -131,7 +131,7 @@ static void mlx5_stop_sync_reset_poll(st
  {
--	if (!mlx5_chains_prios_supported(chains))
--		return 1;
--
- 	if (mlx5_chains_ignore_flow_level_supported(chains))
- 		return UINT_MAX;
+ 	struct mlx5_fw_reset *fw_reset = dev->priv.fw_reset;
  
-+	if (!chains->dev->priv.eswitch ||
-+	    chains->dev->priv.eswitch->mode != MLX5_ESWITCH_OFFLOADS)
-+		return 1;
-+
- 	/* We should get here only for eswitch case */
- 	return FDB_TC_MAX_PRIO;
+-	del_timer(&fw_reset->timer);
++	del_timer_sync(&fw_reset->timer);
  }
+ 
+ static void mlx5_sync_reset_clear_reset_requested(struct mlx5_core_dev *dev, bool poll_health)
 
 
