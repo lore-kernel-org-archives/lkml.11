@@ -2,203 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B37E6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 14:06:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80E5BC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 14:08:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359022AbiBDOGq (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 09:06:46 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:56468 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358899AbiBDOGn (ORCPT
+        id S243224AbiBDOIY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 09:08:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42328 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231415AbiBDOIV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 09:06:43 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D454EB83738;
-        Fri,  4 Feb 2022 14:06:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1DC1C004E1;
-        Fri,  4 Feb 2022 14:06:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643983600;
-        bh=UgZT237cW6cNc4wyNt2ygtpF0D/EQeuwNmT7ZY2vqeA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=kk290TYcfTXyCVPijD3DpfrCGXz3yHWOHSsArAMM2IgGPSUMSD6LPsjeXyUvo6E8A
-         JX5bBQcinGRGV8jf51U504XQ3aizznM9mrKPA1qqq21oUDk8kRklPoTcbd8wqtyIb0
-         fRImWv9Mwa7nEABQzEbOaSMryeS8D1CAS9xcY0Xk=
-Date:   Fri, 4 Feb 2022 14:59:26 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Cc:     Guenter Roeck <linux@roeck-us.net>,
-        Benson Leung <bleung@google.com>,
-        Prashant Malani <pmalani@chromium.org>,
-        Jameson Thies <jthies@google.com>,
-        "Regupathy, Rajaram" <rajaram.regupathy@intel.com>,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 1/3] usb: typec: Separate USB Power Delivery from USB
- Type-C
-Message-ID: <Yf0xPr957MxtaqBn@kroah.com>
-References: <20220203144657.16527-1-heikki.krogerus@linux.intel.com>
- <20220203144657.16527-2-heikki.krogerus@linux.intel.com>
- <Yfvs13vpsWULIVWu@kroah.com>
- <Yfz6OUbDBXVtQzrb@kuha.fi.intel.com>
+        Fri, 4 Feb 2022 09:08:21 -0500
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74095C061714;
+        Fri,  4 Feb 2022 06:08:21 -0800 (PST)
+Received: by mail-pg1-x544.google.com with SMTP id d186so5115110pgc.9;
+        Fri, 04 Feb 2022 06:08:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QjntbCnTDOBz4uQ6Ki+gLkrxg0YoRN4uV3LZcpuWQoo=;
+        b=H7IekxwEVxq+t5nWLxSo6enz+8ZETTlR+d5n3pu7FMq5KTNW8FxjXMVLaHCaFD1Q+J
+         QrFBI1vn/2URsY/FiDfF2xcKkQXclS+6vz8W+LHYxJxZ7iXL42YHWKvaYpg0CNc+84Eu
+         dCYebFGeKTnOZOG7rGmEWJ8Yb9aHf3HHOZweSE2dspedCXP8zxHOB5eloUx+TtdaOK6W
+         0nXxlmSGmAeNpZ+edpw7GncJVsBd3pb6Nz85DHcI9aO1wYErI1c3JAvop18HMlkcoI/e
+         g0g9DsbE/s0d6jmq2HGXfFrveUFKlMICYq5xO0omXE3/4uXZQwbcvdSCQdqqo6qWuMc4
+         YMSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QjntbCnTDOBz4uQ6Ki+gLkrxg0YoRN4uV3LZcpuWQoo=;
+        b=pHwu6Mltsv/HFT1S8u/6NQubdeZXwCyZM+OlPe3MkWVLdBAmtazp1yrqrly2CqVW+A
+         NVw9ujONluOGB/Xg1a41GGX3UvOUHzd5rthGe/y3TimXatE7mf7hFWkAhDYCj4e7p6yM
+         Zw1DnjQ7bd2qp7mCiMflKL+IUhJNu21kMWeP5MoCcqv22t1eRXd/Kl9Qnu5egpB8JbQh
+         oFYtizKAmRSAYQlvawEZMXXMhSp0c0DVaZ6PW16FYPIwIHNGnUCtG2u8+tnJAxgiawgm
+         wYosPtSjnv7K1EXbvhs6AUa+ng7cyWYt0fancpHOBqaQe0uwsYJmG4wyS4m/fBd+0vg6
+         AyBg==
+X-Gm-Message-State: AOAM532lUjqkIxMRmYa62Yy7ZF0zr+g6u1dDxTJdwlVKdIu+HhLvl8/V
+        KbBxDjzunv+5jzXmWsucncjOS2PRBa2Mbw==
+X-Google-Smtp-Source: ABdhPJwEXZik5KPcG7Rctjc91ymhw8t21YN6kFGcERW0JCRbEfao0aLOtzZNqQ4D//zmAUPkNSRFqA==
+X-Received: by 2002:a05:6a00:1494:: with SMTP id v20mr3235617pfu.82.1643983700960;
+        Fri, 04 Feb 2022 06:08:20 -0800 (PST)
+Received: from localhost.localdomain ([43.132.141.8])
+        by smtp.gmail.com with ESMTPSA id z22sm2896597pfe.42.2022.02.04.06.08.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Feb 2022 06:08:20 -0800 (PST)
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: imagedong@tencent.com
+To:     kuba@kernel.org, dsahern@kernel.org, idosch@idosch.org
+Cc:     nhorman@tuxdriver.com, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, rostedt@goodmis.org,
+        Menglong Dong <imagedong@tencent.com>
+Subject: [PATCH v5 net-next] net: drop_monitor: support drop reason
+Date:   Fri,  4 Feb 2022 22:08:13 +0800
+Message-Id: <20220204140813.4007173-1-imagedong@tencent.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yfz6OUbDBXVtQzrb@kuha.fi.intel.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 04, 2022 at 12:04:41PM +0200, Heikki Krogerus wrote:
-> Hi Greg,
-> 
-> On Thu, Feb 03, 2022 at 03:55:19PM +0100, Greg Kroah-Hartman wrote:
-> > On Thu, Feb 03, 2022 at 05:46:55PM +0300, Heikki Krogerus wrote:
-> > > +/* These additional details are only available with vSafe5V supplies */
-> > > +static struct kobj_attribute dual_role_power_attr = __ATTR_RO(dual_role_power);
-> > > +static struct kobj_attribute usb_suspend_supported_attr = __ATTR_RO(usb_suspend_supported);
-> > > +static struct kobj_attribute unconstrained_power_attr = __ATTR_RO(unconstrained_power);
-> > > +static struct kobj_attribute usb_communication_capable_attr = __ATTR_RO(usb_communication_capable);
-> > > +static struct kobj_attribute dual_role_data_attr = __ATTR_RO(dual_role_data);
-> > > +static struct kobj_attribute
-> > > +unchunked_extended_messages_supported_attr = __ATTR_RO(unchunked_extended_messages_supported);
-> > 
-> > Note, no 'struct device' should ever have a "raw" kobject hanging off of
-> > it.  If so, something went wrong.
-> > 
-> > If you do this, userspace will never be notified of the attributes and
-> > any userspace representation of the tree will be messed up.
-> > 
-> > Please, use an attribute directory with a name, or if you really need to
-> > go another level deep, use a real 'struct device'.  As-is here, I can't
-> > take it.
-> 
-> OK, got it. I don't think we can avoid the deeper levels, not without
-> making this really cryptic, and not really usable in all cases. These
-> objects are trying to represent (parts) of the protocol - the
-> messages, the objects in those messages, and later the responses to
-> those messages.
-> 
-> But I'm also trying to avoid having to claim that these objects are
-> "devices", because honestly, claiming that the packages used in
-> communication are devices is confusing, and just wrong. If we take
-> that road, then we really should redefine what struct device is
-> supposed to represent, and rename it also.
+From: Menglong Dong <imagedong@tencent.com>
 
-Fair enough, this isn't really a device, it's an "attribute" of your
-device you are wanting to show.  It's just that you are really "deep".
+In the commit c504e5c2f964 ("net: skb: introduce kfree_skb_reason()")
+drop reason is introduced to the tracepoint of kfree_skb. Therefore,
+drop_monitor is able to report the drop reason to users by netlink.
 
-You asked for:
+The drop reasons are reported as string to users, which is exactly
+the same as what we do when reporting it to ftrace.
 
-/sys/class/typec/port0/usb_power_delivery
-|-- revision
-|-- sink_capabilities/
-|   |-- 1:fixed_supply/
-|   |   |-- dual_role_data
-|   |   |-- dual_role_power
-|   |   |-- fast_role_swap_current
-|   |   |-- operational_current
-|   |   |-- unchunked_extended_messages_supported
-|   |   |-- unconstrained_power
-|   |   |-- usb_communication_capable
-|   |   |-- usb_suspend_supported
-|   |   `-- voltage
-|   |-- 2:variable_supply/
-|   |   |-- maximum_voltage
-|   |   |-- minimum_voltage
-|   |   `-- operational_current
-|   `-- 3:battery/
-|       |-- maximum_voltage
-|       |-- minimum_voltage
-|       `-- operational_power
-`-- source_capabilities/
-    `-- 1:fixed_supply/
-        |-- dual_role_data
-        |-- dual_role_power
-        |-- maximum_current
-        |-- unchunked_extended_messages_supported
-        |-- unconstrained_power
-        |-- usb_communication_capable
-        |-- usb_suspend_supported
-        `-- voltage
+Signed-off-by: Menglong Dong <imagedong@tencent.com>
+---
+v5:
+- check if drop reason larger than SKB_DROP_REASON_MAX
 
+v4:
+- report drop reasons as string
 
-To start with, your "attribute" is really "usb_power_delivery" here, so
-you can just use an attribute group name to get the "revision" file.
+v3:
+- referring to cb->reason and cb->pc directly in
+  net_dm_packet_report_fill()
 
-But then the later ones could be flat in that directory as well, using a
-':' to split as you did already, and the above could turn into:
+v2:
+- get a pointer to struct net_dm_skb_cb instead of local var for
+  each field
+---
+ include/uapi/linux/net_dropmon.h |  1 +
+ net/core/drop_monitor.c          | 29 +++++++++++++++++++++++++----
+ 2 files changed, 26 insertions(+), 4 deletions(-)
 
-/sys/class/typec/port0/usb_power_delivery
-|-- revision
-|-- sink_capabilites:1:fixed_supply:dual_role_data
-|-- sink_capabilites:1:fixed_supply:dual_role_power
-|-- sink_capabilites:1:fixed_supply:fase_role_swap_current
-....
-|-- sink_capabilites:2:variable_supply:maximum_voltage
-|-- sink_capabilites:2:variable_supply:minimum_voltage
-...
-|-- source_capabilities:1:fixed_supply:dual_role_data
-|-- source_capabilities:1:fixed_supply:dual_role_power
-|-- source_capabilities:1:fixed_supply:maximum_current
-...
+diff --git a/include/uapi/linux/net_dropmon.h b/include/uapi/linux/net_dropmon.h
+index 66048cc5d7b3..1bbea8f0681e 100644
+--- a/include/uapi/linux/net_dropmon.h
++++ b/include/uapi/linux/net_dropmon.h
+@@ -93,6 +93,7 @@ enum net_dm_attr {
+ 	NET_DM_ATTR_SW_DROPS,			/* flag */
+ 	NET_DM_ATTR_HW_DROPS,			/* flag */
+ 	NET_DM_ATTR_FLOW_ACTION_COOKIE,		/* binary */
++	NET_DM_ATTR_REASON,			/* string */
+ 
+ 	__NET_DM_ATTR_MAX,
+ 	NET_DM_ATTR_MAX = __NET_DM_ATTR_MAX - 1
+diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
+index 7b288a121a41..2d1c8e8dec83 100644
+--- a/net/core/drop_monitor.c
++++ b/net/core/drop_monitor.c
+@@ -48,6 +48,16 @@
+ static int trace_state = TRACE_OFF;
+ static bool monitor_hw;
+ 
++#undef EM
++#undef EMe
++
++#define EM(a, b)	[a] = #b,
++#define EMe(a, b)	[a] = #b
++
++static const char *drop_reasons[SKB_DROP_REASON_MAX + 1] = {
++	TRACE_SKB_DROP_REASON
++};
++
+ /* net_dm_mutex
+  *
+  * An overall lock guarding every operation coming from userspace.
+@@ -126,6 +136,7 @@ struct net_dm_skb_cb {
+ 		struct devlink_trap_metadata *hw_metadata;
+ 		void *pc;
+ 	};
++	enum skb_drop_reason reason;
+ };
+ 
+ #define NET_DM_SKB_CB(__skb) ((struct net_dm_skb_cb *)&((__skb)->cb[0]))
+@@ -498,6 +509,7 @@ static void net_dm_packet_trace_kfree_skb_hit(void *ignore,
+ {
+ 	ktime_t tstamp = ktime_get_real();
+ 	struct per_cpu_dm_data *data;
++	struct net_dm_skb_cb *cb;
+ 	struct sk_buff *nskb;
+ 	unsigned long flags;
+ 
+@@ -508,7 +520,9 @@ static void net_dm_packet_trace_kfree_skb_hit(void *ignore,
+ 	if (!nskb)
+ 		return;
+ 
+-	NET_DM_SKB_CB(nskb)->pc = location;
++	cb = NET_DM_SKB_CB(nskb);
++	cb->reason = reason;
++	cb->pc = location;
+ 	/* Override the timestamp because we care about the time when the
+ 	 * packet was dropped.
+ 	 */
+@@ -606,8 +620,9 @@ static int net_dm_packet_report_in_port_put(struct sk_buff *msg, int ifindex,
+ static int net_dm_packet_report_fill(struct sk_buff *msg, struct sk_buff *skb,
+ 				     size_t payload_len)
+ {
+-	u64 pc = (u64)(uintptr_t) NET_DM_SKB_CB(skb)->pc;
++	struct net_dm_skb_cb *cb = NET_DM_SKB_CB(skb);
+ 	char buf[NET_DM_MAX_SYMBOL_LEN];
++	enum skb_drop_reason reason;
+ 	struct nlattr *attr;
+ 	void *hdr;
+ 	int rc;
+@@ -620,10 +635,16 @@ static int net_dm_packet_report_fill(struct sk_buff *msg, struct sk_buff *skb,
+ 	if (nla_put_u16(msg, NET_DM_ATTR_ORIGIN, NET_DM_ORIGIN_SW))
+ 		goto nla_put_failure;
+ 
+-	if (nla_put_u64_64bit(msg, NET_DM_ATTR_PC, pc, NET_DM_ATTR_PAD))
++	if (nla_put_u64_64bit(msg, NET_DM_ATTR_PC, (u64)(uintptr_t)cb->pc,
++			      NET_DM_ATTR_PAD))
++		goto nla_put_failure;
++
++	reason = cb->reason;
++	if (reason < SKB_DROP_REASON_MAX &&
++	    nla_put_string(msg, NET_DM_ATTR_REASON, drop_reasons[reason]))
+ 		goto nla_put_failure;
+ 
+-	snprintf(buf, sizeof(buf), "%pS", NET_DM_SKB_CB(skb)->pc);
++	snprintf(buf, sizeof(buf), "%pS", cb->pc);
+ 	if (nla_put_string(msg, NET_DM_ATTR_SYMBOL, buf))
+ 		goto nla_put_failure;
+ 
+-- 
+2.34.1
 
-But ick, that's also a mess as you are now forced to parse filenames in
-userspace in a different way than "normal".
-
-Is there anything special about the number here?  It's the "position"
-which will be unique.  So make that position a device, as that's kind of
-what it is (like usb endpoints are devices)
-
-Then you could make a bus for the positions and all would be good, and
-you could turn this into:
-
-
-/sys/class/typec/port0/usb_power_delivery
-|-- revision
-|-- sink_capabilities:1/
-|   `-- fixed_supply/
-|       |-- dual_role_data
-|       |-- dual_role_power
-|       |-- fast_role_swap_current
-|       |-- operational_current
-|       |-- unchunked_extended_messages_supported
-|       |-- unconstrained_power
-|       |-- usb_communication_capable
-|       |-- usb_suspend_supported
-|       `-- voltage
-|-- sink_capabilities:2/
-|   `-- variable_supply/
-|       |-- maximum_voltage
-|       |-- minimum_voltage
-|       `-- operational_current
-|-- sink_capabilities:3/
-|   `-- battery/
-|       |-- maximum_voltage
-|       |-- minimum_voltage
-|       `-- operational_power
-`-- source_capabilities:1/
-    `-- fixed_supply/
-        |-- dual_role_data
-        |-- dual_role_power
-        |-- maximum_current
-        |-- unchunked_extended_messages_supported
-        |-- unconstrained_power
-        |-- usb_communication_capable
-        |-- usb_suspend_supported
-        `-- voltage
-
-Would that work?
-
-> So would it be OK that, instead of registering these objects as
-> devices, we just introduce a kset where we can group them
-> (/sys/kernel/usb_power_delivery)?
-
-You want to show this as attched to a specific port somehow, so that
-location is not going to work.
-
-thanks,
-
-greg k-h
