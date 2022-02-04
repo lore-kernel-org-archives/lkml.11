@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4D6BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:28:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70E07C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:28:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358522AbiBDJ2b (ORCPT
+        id S1357848AbiBDJ2k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 04:28:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33268 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357793AbiBDJ0u (ORCPT
+        Fri, 4 Feb 2022 04:28:40 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:54436 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358074AbiBDJ05 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 04:26:50 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4968CC0613F5;
-        Fri,  4 Feb 2022 01:26:15 -0800 (PST)
+        Fri, 4 Feb 2022 04:26:57 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DAF24612C8;
-        Fri,  4 Feb 2022 09:26:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0A91C004E1;
-        Fri,  4 Feb 2022 09:26:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 96E3CB836EA;
+        Fri,  4 Feb 2022 09:26:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92DF8C340ED;
+        Fri,  4 Feb 2022 09:26:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643966774;
-        bh=uIOOkmegQVgIMxeGdS22TVAxE7p78mJf/iAIGcpiIjA=;
+        s=korg; t=1643966815;
+        bh=RvwOnjJX5/yL2LBe52BFHiUhmabHjJ/rk3lPSN3zUmw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QT7myqCGhsYbHyy1wX9z6CF5JZxNJJy442uQ+9vtCflHl+9AxtkgqymuD04QThO0c
-         P2HovkhhBRvm2uzzmNaK+TOi4KEFDOFt2ca0Vw3KemDNNIaglauWuHb/gJLfX3VDMl
-         PNR67c0bMKiof2SbkkS6LJuAYHJPHgDhckz4lZPI=
+        b=mDvdSBi/laQwkV5POG2BZujR6OQwAkgidyE8qw2JZS2RQw624Bt5/dOzJokC79taD
+         X65Yr+7tUVsmuOMi7XCTZODsI5OljdbjHevoCc+q1N0FHxivlirg8tu/X3QWzCEAef
+         1YMYzicKizNpFfe7qK6P4KthsETfPkqPe0DuzdyI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Fritz <chf.fritz@googlemail.com>,
-        Miklos Szeredi <mszeredi@redhat.com>
-Subject: [PATCH 5.16 09/43] ovl: dont fail copy up if no fileattr support on upper
-Date:   Fri,  4 Feb 2022 10:22:16 +0100
-Message-Id: <20220204091917.486977077@linuxfoundation.org>
+        stable@vger.kernel.org, Tom Lendacky <thomas.lendacky@amd.com>,
+        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.16 33/43] net: amd-xgbe: Fix skb data length underflow
+Date:   Fri,  4 Feb 2022 10:22:40 +0100
+Message-Id: <20220204091918.247372279@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220204091917.166033635@linuxfoundation.org>
 References: <20220204091917.166033635@linuxfoundation.org>
@@ -49,55 +47,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miklos Szeredi <mszeredi@redhat.com>
+From: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
 
-commit 94fd19752b28aa66c98e7991734af91dfc529f8f upstream.
+commit 5aac9108a180fc06e28d4e7fb00247ce603b72ee upstream.
 
-Christoph Fritz is reporting that failure to copy up fileattr when upper
-doesn't support fileattr or xattr results in a regression.
+There will be BUG_ON() triggered in include/linux/skbuff.h leading to
+intermittent kernel panic, when the skb length underflow is detected.
 
-Return success in these failure cases; this reverts overlayfs to the old
-behavior.
+Fix this by dropping the packet if such length underflows are seen
+because of inconsistencies in the hardware descriptors.
 
-Add a pr_warn_once() in these cases to still let the user know about the
-copy up failures.
-
-Reported-by: Christoph Fritz <chf.fritz@googlemail.com>
-Fixes: 72db82115d2b ("ovl: copy up sync/noatime fileattr flags")
-Cc: <stable@vger.kernel.org> # v5.15
-Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
+Fixes: 622c36f143fc ("amd-xgbe: Fix jumbo MTU processing on newer hardware")
+Suggested-by: Tom Lendacky <thomas.lendacky@amd.com>
+Signed-off-by: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
+Acked-by: Tom Lendacky <thomas.lendacky@amd.com>
+Link: https://lore.kernel.org/r/20220127092003.2812745-1-Shyam-sundar.S-k@amd.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/overlayfs/copy_up.c |   12 +++++++++++-
+ drivers/net/ethernet/amd/xgbe/xgbe-drv.c |   12 +++++++++++-
  1 file changed, 11 insertions(+), 1 deletion(-)
 
---- a/fs/overlayfs/copy_up.c
-+++ b/fs/overlayfs/copy_up.c
-@@ -157,7 +157,9 @@ static int ovl_copy_fileattr(struct inod
- 	 */
- 	if (oldfa.flags & OVL_PROT_FS_FLAGS_MASK) {
- 		err = ovl_set_protattr(inode, new->dentry, &oldfa);
--		if (err)
-+		if (err == -EPERM)
-+			pr_warn_once("copying fileattr: no xattr on upper\n");
-+		else if (err)
- 			return err;
- 	}
+--- a/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
++++ b/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
+@@ -2555,6 +2555,14 @@ read_again:
+ 			buf2_len = xgbe_rx_buf2_len(rdata, packet, len);
+ 			len += buf2_len;
  
-@@ -167,6 +169,14 @@ static int ovl_copy_fileattr(struct inod
++			if (buf2_len > rdata->rx.buf.dma_len) {
++				/* Hardware inconsistency within the descriptors
++				 * that has resulted in a length underflow.
++				 */
++				error = 1;
++				goto skip_data;
++			}
++
+ 			if (!skb) {
+ 				skb = xgbe_create_skb(pdata, napi, rdata,
+ 						      buf1_len);
+@@ -2584,8 +2592,10 @@ skip_data:
+ 		if (!last || context_next)
+ 			goto read_again;
  
- 	err = ovl_real_fileattr_get(new, &newfa);
- 	if (err) {
-+		/*
-+		 * Returning an error if upper doesn't support fileattr will
-+		 * result in a regression, so revert to the old behavior.
-+		 */
-+		if (err == -ENOTTY || err == -EINVAL) {
-+			pr_warn_once("copying fileattr: no support on upper\n");
-+			return 0;
+-		if (!skb)
++		if (!skb || error) {
++			dev_kfree_skb(skb);
+ 			goto next_packet;
 +		}
- 		pr_warn("failed to retrieve upper fileattr (%pd2, err=%i)\n",
- 			new, err);
- 		return err;
+ 
+ 		/* Be sure we don't exceed the configured MTU */
+ 		max_len = netdev->mtu + ETH_HLEN;
 
 
