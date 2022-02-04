@@ -2,39 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BFDEC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:24:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1845C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:24:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357645AbiBDJYB (ORCPT
+        id S1357732AbiBDJYF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 04:24:01 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:42420 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357221AbiBDJXH (ORCPT
+        Fri, 4 Feb 2022 04:24:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60630 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1357647AbiBDJXL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 04:23:07 -0500
+        Fri, 4 Feb 2022 04:23:11 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AC05C061777;
+        Fri,  4 Feb 2022 01:23:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 33842615A5;
-        Fri,  4 Feb 2022 09:23:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F43EC004E1;
-        Fri,  4 Feb 2022 09:23:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C4F6615DC;
+        Fri,  4 Feb 2022 09:23:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53599C004E1;
+        Fri,  4 Feb 2022 09:23:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643966586;
-        bh=tTUbBlWGxGlAA/M3iRfxvQhYj3pYTSvQpKE+09KRzqE=;
+        s=korg; t=1643966590;
+        bh=Fek5eS//BUxZXWLl1ZZY4p+FXu9Z0HSyHuyF3HerRxM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fs4EAAR8gpz7MmIWc698a2HyBQotPqXWgyk7oRBUL2yRxYSGyySut5pUPV9z0v3vA
-         QOj3TPiBcDp7HrU54becujwlMfLYrJ4b2xQmEMxpO46LUGfjWAcUudhFqA3Nf8SMuc
-         jPr2IF4onVzXQ714DuplOPRMrZUmPLdYCf6lwF4Q=
+        b=yPr+EvM3OrIGSex8zWNNdkomNHO97F1CVPnyx68jWk9HP6i3z3PJBrLTcxJV04elp
+         EjSEsAVgeTYJZbwzlj4DrkjWww5lWV0qS67Ymcc+v1TjSviMcPOKZYQ5KRW9fZb6Z8
+         Udf7zrX9NH3dUR46CellvVY7QoKnLCuBbC3TsDII=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "J. Bruce Fields" <bfields@redhat.com>,
-        Chuck Lever <chuck.lever@oracle.com>
-Subject: [PATCH 5.15 10/32] lockd: fix failure to cleanup client locks
-Date:   Fri,  4 Feb 2022 10:22:20 +0100
-Message-Id: <20220204091915.606336966@linuxfoundation.org>
+        stable@vger.kernel.org, Raed Salem <raeds@nvidia.com>,
+        Maor Dickman <maord@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [PATCH 5.15 11/32] net/mlx5e: IPsec: Fix tunnel mode crypto offload for non TCP/UDP traffic
+Date:   Fri,  4 Feb 2022 10:22:21 +0100
+Message-Id: <20220204091915.636423988@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220204091915.247906930@linuxfoundation.org>
 References: <20220204091915.247906930@linuxfoundation.org>
@@ -46,41 +50,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: J. Bruce Fields <bfields@redhat.com>
+From: Raed Salem <raeds@nvidia.com>
 
-commit d19a7af73b5ecaac8168712d18be72b9db166768 upstream.
+commit de47db0cf7f4a9c555ad204e06baa70b50a70d08 upstream.
 
-In my testing, we're sometimes hitting the request->fl_flags & FL_EXISTS
-case in posix_lock_inode, presumably just by random luck since we're not
-actually initializing fl_flags here.
+IPsec Tunnel mode crypto offload software parser (SWP) setting in data
+path currently always set the inner L4 offset regardless of the
+encapsulated L4 header type and whether it exists in the first place,
+this breaks non TCP/UDP traffic as such.
 
-This probably didn't matter before commit 7f024fcd5c97 ("Keep read and
-write fds with each nlm_file") since we wouldn't previously unlock
-unless we knew there were locks.
+Set the SWP inner L4 offset only when the IPsec tunnel encapsulated L4
+header protocol is TCP/UDP.
 
-But now it causes lockd to give up on removing more locks.
+While at it fix inner ip protocol read for setting MLX5_ETH_WQE_SWP_INNER_L4_UDP
+flag to address the case where the ip header protocol is IPv6.
 
-We could just initialize fl_flags, but really it seems dubious to be
-calling vfs_lock_file with random values in some of the fields.
-
-Fixes: 7f024fcd5c97 ("Keep read and write fds with each nlm_file")
-Signed-off-by: J. Bruce Fields <bfields@redhat.com>
-[ cel: fixed checkpatch.pl nit ]
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Fixes: f1267798c980 ("net/mlx5: Fix checksum issue of VXLAN and IPsec crypto offload")
+Signed-off-by: Raed Salem <raeds@nvidia.com>
+Reviewed-by: Maor Dickman <maord@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/lockd/svcsubs.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c |   13 ++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
---- a/fs/lockd/svcsubs.c
-+++ b/fs/lockd/svcsubs.c
-@@ -180,6 +180,7 @@ static int nlm_unlock_files(struct nlm_f
- {
- 	struct file_lock lock;
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
+@@ -157,11 +157,20 @@ static void mlx5e_ipsec_set_swp(struct s
+ 	/* Tunnel mode */
+ 	if (mode == XFRM_MODE_TUNNEL) {
+ 		eseg->swp_inner_l3_offset = skb_inner_network_offset(skb) / 2;
+-		eseg->swp_inner_l4_offset = skb_inner_transport_offset(skb) / 2;
+ 		if (xo->proto == IPPROTO_IPV6)
+ 			eseg->swp_flags |= MLX5_ETH_WQE_SWP_INNER_L3_IPV6;
+-		if (inner_ip_hdr(skb)->protocol == IPPROTO_UDP)
++
++		switch (xo->inner_ipproto) {
++		case IPPROTO_UDP:
+ 			eseg->swp_flags |= MLX5_ETH_WQE_SWP_INNER_L4_UDP;
++			fallthrough;
++		case IPPROTO_TCP:
++			/* IP | ESP | IP | [TCP | UDP] */
++			eseg->swp_inner_l4_offset = skb_inner_transport_offset(skb) / 2;
++			break;
++		default:
++			break;
++		}
+ 		return;
+ 	}
  
-+	locks_init_lock(&lock);
- 	lock.fl_type  = F_UNLCK;
- 	lock.fl_start = 0;
- 	lock.fl_end   = OFFSET_MAX;
 
 
