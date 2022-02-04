@@ -2,272 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5A23C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 13:05:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 295D3C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 13:06:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352144AbiBDNFT (ORCPT
+        id S1348733AbiBDNGL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 08:05:19 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:43900 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347190AbiBDNFL (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 08:05:11 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F2C9861B94
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 13:05:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B5E4C340EF;
-        Fri,  4 Feb 2022 13:05:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643979910;
-        bh=lpyoTQGGfPdBu6D5jCoW1Uwqc9k9CFLDPrxe0jkTtMw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BecIEFLxszKNoUv4rr7cmZovS0iKx4AcRjz0TZyXIxG27hqzZXxlanjDaVcEhRTA6
-         Ts8FsHjAXMUeBpFtrEZi0G477+SD4O8otigg0Xe6fQEYWL1gU88ySaXfrRUewognwK
-         R9DqQMAu/PqIhlA2ZYJ0d4EfJ9wHBkE6rBZGKW652XvyGxESKF2PzOO2vPLTc4R7rg
-         uDWUzbOKZz5Uk9zqwDMCO43zBd1KQGMyxu/D4DZT9NHSkD6ZhFz8ktt5SX7JL13coa
-         pJA+GK/P44JywX9gfvPf06eY38LdZKMyzHszW0mcOUxDQK2YN3Hw6hEOjbepXH6v2+
-         0fif9AecBmjgQ==
-From:   Frederic Weisbecker <frederic@kernel.org>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Tejun Heo <tj@kernel.org>, Christoph Lameter <cl@gentwo.de>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Alex Belits <abelits@marvell.com>,
-        Nitesh Lal <nilal@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Nicolas Saenz <nsaenzju@redhat.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Phil Auld <pauld@redhat.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Zefan Li <lizefan.x@bytedance.com>
-Subject: [PATCH 8/8] sched/isolation: Split housekeeping cpumask per isolation features
-Date:   Fri,  4 Feb 2022 14:04:33 +0100
-Message-Id: <20220204130433.488085-9-frederic@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220204130433.488085-1-frederic@kernel.org>
-References: <20220204130433.488085-1-frederic@kernel.org>
+        Fri, 4 Feb 2022 08:06:11 -0500
+Received: from mail-bn8nam12on2076.outbound.protection.outlook.com ([40.107.237.76]:52640
+        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S240726AbiBDNGJ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 4 Feb 2022 08:06:09 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=P913wYApW1i096sLwyUOtuplH9V0pe0Z5h4n1gfkY2Wz29V2rGlYolsZlDgI8MIlcF1weShHRLXgxMeCIeuwjj9RPah8oOeej9U2MN09sykF86RM2ZDFn2fgGuDq2bYzMCVdVbIem65/QYJ6kEAeuAd6RRJNgzW9Rztz8SRIpRcklRoozVUE64cEG9TJNecm4zPzauc98x3M1JwXsTAb8xrWB7fEGBZ/ySmZrzY4ZeJ8wSGJAOgJQUoGcogvE3T/+8lpV3FHyWHbvwHzC3Fopma4rFiVx5V2aM6bZU+kPdcPHJawawRtVffBqjYPFImUWu4glDY1Z7QayT32GirUkw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=XQztx4CQJr/b+brzajSB/3W1dw9k+ExjvVcb8QD7fhE=;
+ b=RBWXIUPOuc0c/QWKOjv4DI5GqrpRINN/H1iD90KowrTSGNIX+khwbnjgT/ilCNxinGc4CMCLWnDkVol5WbALFn82UYttY6EQPaWOw+8ckByY2l8YCuBQ1lNVqlYcW04kZDUKDvb6M6bHYuZryQ5kQNynd8EFQHIHTXAQmS1g6XBFBcFhTgHXoJyPF2etLr8aQf3l8wkYxDuDO/bJOsAlSIvdYK7Ov4nFPUFIzQGmNS/G9bzgOeBKH6heFWsFnxAYXzFEv9ZAPMMAvVSPTfhzl4eyitQRp/SDwhmCgliPSDJtzq1Zhlih2cFdo2bvq/tfpBLf4o1AjDQELDgLDQPqKQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=xilinx.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=XQztx4CQJr/b+brzajSB/3W1dw9k+ExjvVcb8QD7fhE=;
+ b=sJOtHqxMrduZ08F1VIf5i01jzZyqxT2r5IYzTLK84xmYkq6tXqS8hThiBJgRD5+kOuy578NCHdikIApOTtMA7dyP8NashUsWCPxwK2by5NSLgvTknVR618AWxd9DesQZX6LK15JCLOvPzztGKO1p9A62row3q4HajTvlI6a5zRE=
+Received: from BN0PR02CA0023.namprd02.prod.outlook.com (2603:10b6:408:e4::28)
+ by DM6PR02MB5291.namprd02.prod.outlook.com (2603:10b6:5:45::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.20; Fri, 4 Feb
+ 2022 13:06:07 +0000
+Received: from BN1NAM02FT062.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:408:e4:cafe::b6) by BN0PR02CA0023.outlook.office365.com
+ (2603:10b6:408:e4::28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12 via Frontend
+ Transport; Fri, 4 Feb 2022 13:06:07 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com;
+Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
+ BN1NAM02FT062.mail.protection.outlook.com (10.13.2.168) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.4951.12 via Frontend Transport; Fri, 4 Feb 2022 13:06:06 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Fri, 4 Feb 2022 05:05:54 -0800
+Received: from smtp.xilinx.com (172.19.127.95) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Fri, 4 Feb 2022 05:05:54 -0800
+Envelope-to: linux-pci@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ lorenzo.pieralisi@arm.com,
+ bhelgaas@google.com
+Received: from [10.140.9.2] (port=44286 helo=xhdbharatku40.xilinx.com)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <bharat.kumar.gogada@xilinx.com>)
+        id 1nFyEN-000Bmk-73; Fri, 04 Feb 2022 05:02:27 -0800
+From:   Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
+To:     <linux-pci@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <lorenzo.pieralisi@arm.com>, <bhelgaas@google.com>,
+        <michals@xilinx.com>,
+        Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
+Subject: [PATCH 2/2] PCI: xilinx-cpm: Add support for Versal CPM5 Root Port driver
+Date:   Fri, 4 Feb 2022 18:32:16 +0530
+Message-ID: <20220204130216.2206-3-bharat.kumar.gogada@xilinx.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220204130216.2206-1-bharat.kumar.gogada@xilinx.com>
+References: <20220204130216.2206-1-bharat.kumar.gogada@xilinx.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: cb334d17-bedb-4cff-e779-08d9e7df1b05
+X-MS-TrafficTypeDiagnostic: DM6PR02MB5291:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR02MB529161B7EFB9A6BE6F5FF199A5299@DM6PR02MB5291.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Oob-TLC-OOBClassifiers: OLM:849;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 0uS4BlksizSF6upAkZdDEGIT6Ip8+0lxzLd2YBCcrsSvSloywdheXA75Xkwo32CNt8uftvLihrbBCzePHvCHDT+kDVqX7dstyCWZuSollgyh7UmqExf/9x4990qvuJ2QVon+pi+SEcV6s7uLYYPbxt+syOKmOtsXawAjJYCwthzHjx87DLvr6utnVj/ycwzx+5+mClOqHh7BnvNo0NcA3ug0d7bVJsAh0dwmWstdfmvCHnub2Ba7Cm6I5VFj2nuSJ5VZLEnLguDOj/Q3Bo77dLQj2Y0zSR1Vqf6COv4qZLbvcYN+v8Xs4emdGRiPd/e5NtWExfCZc0UqeJ15AgbF4RfzTevUi0HPOpEdn+n2cOLKQ1IL01XN23w3OY/A/k4wVs15hZiOrJVuFcq18fE47uUYJ7thSXFTYZPiQk6pO3kf6x/dGAB9FVdE81EH5pm8W+ryR5TgbZboTm1VqodT75gt8nusHyayw01gGkIO4tuhDSBaRfuVJd8sbjBAbdDKbjW5st4DFLa+YzZCUORtP8FftjhWA19VcSEtGmZp6calxLoJ2iGzClSzZ1aJGFrzXczTzGeS5A94V5jL0Kq2lQHno93uzHSxdkP24Kde8dUmgHK75OBYCUT90RfmAgdFFDE4dpQkkPDqCKLqb21vrAAR/7jdtPc8e6Zk4WWBR+ErFMNr2Z3Vb0sCIR2sUvbuKnWBnjgWVyu9DV/31Y3b5g==
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(103116003)(336012)(26005)(186003)(426003)(8936002)(36860700001)(1076003)(82310400004)(8676002)(4326008)(7636003)(356005)(107886003)(83380400001)(47076005)(2906002)(6666004)(508600001)(40460700003)(36756003)(9786002)(7696005)(70206006)(110136005)(54906003)(2616005)(316002)(5660300002)(70586007)(102446001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Feb 2022 13:06:06.5324
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: cb334d17-bedb-4cff-e779-08d9e7df1b05
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN1NAM02FT062.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR02MB5291
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To prepare for supporting each housekeeping feature toward cpuset, split
-the global housekeeping cpumask per HK_TYPE_* entry.
+Xilinx Versal Premium series has CPM5 block which supports Root port
+functioning at Gen5 speed.
+Xilinx Versal CPM5 has few changes with existing CPM block.
+- CPM5 has dedicated register space for control and status registers.
+- CPM5 legacy interrupt handling needs additional register bit
+  to enable and handle legacy interrupts.
 
-This will later allow, for example, to runtime modify the cpulist passed
-through "isolcpus=", "nohz_full=" and "rcu_nocbs=" kernel boot
-parameters.
-
-Reviewed-by: Juri Lelli <juri.lelli@redhat.com>
-Reviewed-by: Phil Auld <pauld@redhat.com>
-Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Juri Lelli <juri.lelli@redhat.com>
-Cc: Marcelo Tosatti <mtosatti@redhat.com>
-Cc: Nitesh Lal <nilal@redhat.com>
-Cc: Nicolas Saenz <nsaenzju@redhat.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Christoph Lameter <cl@gentwo.de>
-Cc: Tejun Heo <tj@kernel.org>
-Cc: Zefan Li <lizefan.x@bytedance.com>
-Cc: Alex Belits <abelits@marvell.com>
-Cc: Paul Gortmaker <paul.gortmaker@windriver.com>
-Cc: Paul E. McKenney  <paulmck@kernel.org>
+Signed-off-by: Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
 ---
- kernel/sched/isolation.c | 91 +++++++++++++++++++++++++++-------------
- 1 file changed, 62 insertions(+), 29 deletions(-)
+ drivers/pci/controller/pcie-xilinx-cpm.c | 33 +++++++++++++++++++++++-
+ 1 file changed, 32 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/sched/isolation.c b/kernel/sched/isolation.c
-index 883eee9fae22..b4d10815c45a 100644
---- a/kernel/sched/isolation.c
-+++ b/kernel/sched/isolation.c
-@@ -23,12 +23,17 @@ enum hk_flags {
+diff --git a/drivers/pci/controller/pcie-xilinx-cpm.c b/drivers/pci/controller/pcie-xilinx-cpm.c
+index c7cd44ed4dfc..eb69f494571a 100644
+--- a/drivers/pci/controller/pcie-xilinx-cpm.c
++++ b/drivers/pci/controller/pcie-xilinx-cpm.c
+@@ -35,6 +35,10 @@
+ #define XILINX_CPM_PCIE_MISC_IR_ENABLE	0x00000348
+ #define XILINX_CPM_PCIE_MISC_IR_LOCAL	BIT(1)
  
- DEFINE_STATIC_KEY_FALSE(housekeeping_overridden);
- EXPORT_SYMBOL_GPL(housekeeping_overridden);
--static cpumask_var_t housekeeping_mask;
--static unsigned int housekeeping_flags;
++#define XILINX_CPM_PCIE_IR_STATUS       0x000002A0
++#define XILINX_CPM_PCIE_IR_ENABLE       0x000002A8
++#define XILINX_CPM_PCIE_IR_LOCAL        BIT(0)
 +
-+struct housekeeping {
-+	cpumask_var_t cpumasks[HK_TYPE_MAX];
-+	unsigned long flags;
-+};
-+
-+static struct housekeeping housekeeping;
+ /* Interrupt registers definitions */
+ #define XILINX_CPM_PCIE_INTR_LINK_DOWN		0
+ #define XILINX_CPM_PCIE_INTR_HOT_RESET		3
+@@ -109,6 +113,7 @@
+  * @intx_irq: legacy interrupt number
+  * @irq: Error interrupt number
+  * @lock: lock protecting shared register access
++ * @is_cpm5: value to check cpm version
+  */
+ struct xilinx_cpm_pcie {
+ 	struct device			*dev;
+@@ -120,6 +125,7 @@ struct xilinx_cpm_pcie {
+ 	int				intx_irq;
+ 	int				irq;
+ 	raw_spinlock_t			lock;
++	bool                            is_cpm5;
+ };
  
- bool housekeeping_enabled(enum hk_type type)
- {
--	return !!(housekeeping_flags & BIT(type));
-+	return !!(housekeeping.flags & BIT(type));
- }
- EXPORT_SYMBOL_GPL(housekeeping_enabled);
+ static u32 pcie_read(struct xilinx_cpm_pcie *port, u32 reg)
+@@ -285,6 +291,14 @@ static void xilinx_cpm_pcie_event_flow(struct irq_desc *desc)
+ 		generic_handle_domain_irq(port->cpm_domain, i);
+ 	pcie_write(port, val, XILINX_CPM_PCIE_REG_IDR);
  
-@@ -37,12 +42,12 @@ int housekeeping_any_cpu(enum hk_type type)
- 	int cpu;
- 
- 	if (static_branch_unlikely(&housekeeping_overridden)) {
--		if (housekeeping_flags & BIT(type)) {
--			cpu = sched_numa_find_closest(housekeeping_mask, smp_processor_id());
-+		if (housekeeping.flags & BIT(type)) {
-+			cpu = sched_numa_find_closest(housekeeping.cpumasks[type], smp_processor_id());
- 			if (cpu < nr_cpu_ids)
- 				return cpu;
- 
--			return cpumask_any_and(housekeeping_mask, cpu_online_mask);
-+			return cpumask_any_and(housekeeping.cpumasks[type], cpu_online_mask);
- 		}
- 	}
- 	return smp_processor_id();
-@@ -52,8 +57,8 @@ EXPORT_SYMBOL_GPL(housekeeping_any_cpu);
- const struct cpumask *housekeeping_cpumask(enum hk_type type)
- {
- 	if (static_branch_unlikely(&housekeeping_overridden))
--		if (housekeeping_flags & BIT(type))
--			return housekeeping_mask;
-+		if (housekeeping.flags & BIT(type))
-+			return housekeeping.cpumasks[type];
- 	return cpu_possible_mask;
- }
- EXPORT_SYMBOL_GPL(housekeeping_cpumask);
-@@ -61,40 +66,53 @@ EXPORT_SYMBOL_GPL(housekeeping_cpumask);
- void housekeeping_affine(struct task_struct *t, enum hk_type type)
- {
- 	if (static_branch_unlikely(&housekeeping_overridden))
--		if (housekeeping_flags & BIT(type))
--			set_cpus_allowed_ptr(t, housekeeping_mask);
-+		if (housekeeping.flags & BIT(type))
-+			set_cpus_allowed_ptr(t, housekeeping.cpumasks[type]);
- }
- EXPORT_SYMBOL_GPL(housekeeping_affine);
- 
- bool housekeeping_test_cpu(int cpu, enum hk_type type)
- {
- 	if (static_branch_unlikely(&housekeeping_overridden))
--		if (housekeeping_flags & BIT(type))
--			return cpumask_test_cpu(cpu, housekeeping_mask);
-+		if (housekeeping.flags & BIT(type))
-+			return cpumask_test_cpu(cpu, housekeeping.cpumasks[type]);
- 	return true;
- }
- EXPORT_SYMBOL_GPL(housekeeping_test_cpu);
- 
- void __init housekeeping_init(void)
- {
--	if (!housekeeping_flags)
-+	enum hk_type type;
-+
-+	if (!housekeeping.flags)
- 		return;
- 
- 	static_branch_enable(&housekeeping_overridden);
- 
--	if (housekeeping_flags & HK_FLAG_TICK)
-+	if (housekeeping.flags & HK_FLAG_TICK)
- 		sched_tick_offload_init();
- 
--	/* We need at least one CPU to handle housekeeping work */
--	WARN_ON_ONCE(cpumask_empty(housekeeping_mask));
-+	for_each_set_bit(type, &housekeeping.flags, HK_TYPE_MAX) {
-+		/* We need at least one CPU to handle housekeeping work */
-+		WARN_ON_ONCE(cpumask_empty(housekeeping.cpumasks[type]));
++	if (port->is_cpm5) {
++		val = readl_relaxed(port->cpm_base + XILINX_CPM_PCIE_IR_STATUS);
++		if (val)
++			writel_relaxed(val,
++				       port->cpm_base +
++				       XILINX_CPM_PCIE_IR_STATUS);
 +	}
++
+ 	/*
+ 	 * XILINX_CPM_PCIE_MISC_IR_STATUS register is mapped to
+ 	 * CPM SLCR block.
+@@ -484,6 +498,12 @@ static void xilinx_cpm_pcie_init_port(struct xilinx_cpm_pcie *port)
+ 	 */
+ 	writel(XILINX_CPM_PCIE_MISC_IR_LOCAL,
+ 	       port->cpm_base + XILINX_CPM_PCIE_MISC_IR_ENABLE);
++
++	if (port->is_cpm5) {
++		writel(XILINX_CPM_PCIE_IR_LOCAL,
++		       port->cpm_base + XILINX_CPM_PCIE_IR_ENABLE);
++	}
++
+ 	/* Enable the Bridge enable bit */
+ 	pcie_write(port, pcie_read(port, XILINX_CPM_PCIE_REG_RPSC) |
+ 		   XILINX_CPM_PCIE_REG_RPSC_BEN,
+@@ -504,6 +524,9 @@ static int xilinx_cpm_pcie_parse_dt(struct xilinx_cpm_pcie *port,
+ 	struct platform_device *pdev = to_platform_device(dev);
+ 	struct resource *res;
+ 
++	if (of_device_is_compatible(dev->of_node, "xlnx,versal-cpm5-host-1.00"))
++		port->is_cpm5 = true;
++
+ 	port->cpm_base = devm_platform_ioremap_resource_byname(pdev,
+ 							       "cpm_slcr");
+ 	if (IS_ERR(port->cpm_base))
+@@ -518,7 +541,14 @@ static int xilinx_cpm_pcie_parse_dt(struct xilinx_cpm_pcie *port,
+ 	if (IS_ERR(port->cfg))
+ 		return PTR_ERR(port->cfg);
+ 
+-	port->reg_base = port->cfg->win;
++	if (!port->is_cpm5) {
++		port->reg_base = port->cfg->win;
++	} else {
++		port->reg_base = devm_platform_ioremap_resource_byname(pdev,
++								       "cpm_csr");
++		if (IS_ERR(port->reg_base))
++			return PTR_ERR(port->reg_base);
++	}
+ 
+ 	return 0;
  }
+@@ -593,6 +623,7 @@ static int xilinx_cpm_pcie_probe(struct platform_device *pdev)
  
--static int __init housekeeping_setup(char *str, enum hk_flags flags)
-+static void __init housekeeping_setup_type(enum hk_type type,
-+					   cpumask_var_t housekeeping_staging)
-+{
-+
-+	alloc_bootmem_cpumask_var(&housekeeping.cpumasks[type]);
-+	cpumask_copy(housekeeping.cpumasks[type],
-+		     housekeeping_staging);
-+}
-+
-+static int __init housekeeping_setup(char *str, unsigned long flags)
- {
- 	cpumask_var_t non_housekeeping_mask, housekeeping_staging;
- 	int err = 0;
+ static const struct of_device_id xilinx_cpm_pcie_of_match[] = {
+ 	{ .compatible = "xlnx,versal-cpm-host-1.00", },
++	{ .compatible = "xlnx,versal-cpm5-host-1.00", },
+ 	{}
+ };
  
--	if ((flags & HK_FLAG_TICK) && !(housekeeping_flags & HK_FLAG_TICK)) {
-+	if ((flags & HK_FLAG_TICK) && !(housekeeping.flags & HK_FLAG_TICK)) {
- 		if (!IS_ENABLED(CONFIG_NO_HZ_FULL)) {
- 			pr_warn("Housekeeping: nohz unsupported."
- 				" Build with CONFIG_NO_HZ_FULL\n");
-@@ -115,26 +133,41 @@ static int __init housekeeping_setup(char *str, enum hk_flags flags)
- 	if (!cpumask_intersects(cpu_present_mask, housekeeping_staging)) {
- 		__cpumask_set_cpu(smp_processor_id(), housekeeping_staging);
- 		__cpumask_clear_cpu(smp_processor_id(), non_housekeeping_mask);
--		if (!housekeeping_flags) {
-+		if (!housekeeping.flags) {
- 			pr_warn("Housekeeping: must include one present CPU, "
- 				"using boot CPU:%d\n", smp_processor_id());
- 		}
- 	}
- 
--	if (!housekeeping_flags) {
--		alloc_bootmem_cpumask_var(&housekeeping_mask);
--		cpumask_copy(housekeeping_mask, housekeeping_staging);
-+	if (!housekeeping.flags) {
-+		/* First setup call ("nohz_full=" or "isolcpus=") */
-+		enum hk_type type;
-+
-+		for_each_set_bit(type, &flags, HK_TYPE_MAX)
-+			housekeeping_setup_type(type, housekeeping_staging);
- 	} else {
--		if (!cpumask_equal(housekeeping_staging, housekeeping_mask)) {
--			pr_warn("Housekeeping: nohz_full= must match isolcpus=\n");
--			goto free_housekeeping_staging;
-+		/* Second setup call ("nohz_full=" after "isolcpus=" or the reverse) */
-+		enum hk_type type;
-+		unsigned long iter_flags = flags & housekeeping.flags;
-+
-+		for_each_set_bit(type, &iter_flags, HK_TYPE_MAX) {
-+			if (!cpumask_equal(housekeeping_staging,
-+					   housekeeping.cpumasks[type])) {
-+				pr_warn("Housekeeping: nohz_full= must match isolcpus=\n");
-+				goto free_housekeeping_staging;
-+			}
- 		}
-+
-+		iter_flags = flags & ~housekeeping.flags;
-+
-+		for_each_set_bit(type, &iter_flags, HK_TYPE_MAX)
-+			housekeeping_setup_type(type, housekeeping_staging);
- 	}
- 
--	if ((flags & HK_FLAG_TICK) && !(housekeeping_flags & HK_FLAG_TICK))
-+	if ((flags & HK_FLAG_TICK) && !(housekeeping.flags & HK_FLAG_TICK))
- 		tick_nohz_full_setup(non_housekeeping_mask);
- 
--	housekeeping_flags |= flags;
-+	housekeeping.flags |= flags;
- 	err = 1;
- 
- free_housekeeping_staging:
-@@ -147,7 +180,7 @@ static int __init housekeeping_setup(char *str, enum hk_flags flags)
- 
- static int __init housekeeping_nohz_full_setup(char *str)
- {
--	unsigned int flags;
-+	unsigned long flags;
- 
- 	flags = HK_FLAG_TICK | HK_FLAG_WQ | HK_FLAG_TIMER | HK_FLAG_RCU |
- 		HK_FLAG_MISC | HK_FLAG_KTHREAD;
-@@ -158,7 +191,7 @@ __setup("nohz_full=", housekeeping_nohz_full_setup);
- 
- static int __init housekeeping_isolcpus_setup(char *str)
- {
--	unsigned int flags = 0;
-+	unsigned long flags = 0;
- 	bool illegal = false;
- 	char *par;
- 	int len;
 -- 
-2.25.1
+2.17.1
 
