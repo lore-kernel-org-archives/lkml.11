@@ -2,114 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30CF3C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 22:33:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D6ADC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 22:36:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350145AbiBDWdq (ORCPT
+        id S1350430AbiBDWgJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 17:33:46 -0500
-Received: from mail-oo1-f54.google.com ([209.85.161.54]:47066 "EHLO
-        mail-oo1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241600AbiBDWdp (ORCPT
+        Fri, 4 Feb 2022 17:36:09 -0500
+Received: from mail-oi1-f172.google.com ([209.85.167.172]:37716 "EHLO
+        mail-oi1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237867AbiBDWgI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 17:33:45 -0500
-Received: by mail-oo1-f54.google.com with SMTP id o192-20020a4a2cc9000000b00300af40d795so6247023ooo.13;
-        Fri, 04 Feb 2022 14:33:45 -0800 (PST)
+        Fri, 4 Feb 2022 17:36:08 -0500
+Received: by mail-oi1-f172.google.com with SMTP id r27so10214895oiw.4;
+        Fri, 04 Feb 2022 14:36:08 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=Q4Gn8/JIPxPBAROIKOguet0/WP6sycYjFPMRswgQQ08=;
-        b=QqLiev350pJ7HKYG0c6KQuJfdMSx+uoRyjc5K75IzCkRO03PIlTHtNLJkRRCoOq3+v
-         bI/uWAaR6BbewDeavvdH4JlFCKMDOVLj+Tum1x5DKxt6UY0VdY94ONoVyfpaJkmyoXQW
-         2p36jsLy0QW+H2SinZlyq+a9FKUYit/QuAC5SXG52wIo2mGJv2tutY/l0SeVe7HQNEjv
-         5/wa7+5hDwo6m98qYuveFqAFYEjvGqhEJeK+gbpRVYtcgVfIkWGQlS5WxZBdfkTlBgEF
-         4GySQf+28NlbCy22Ymq4HMJD7HZHvbmwwthIU1IcK2DMo0XKI9/y4eCV0+nFenIRS5VQ
-         KlGg==
-X-Gm-Message-State: AOAM532ucZvNPAcJDtN8ughIqRnvGp2ACoACRvo+YyJb6KFucAC4ROmt
-        /1GaakOUSE3iaoP7TcM7pA==
-X-Google-Smtp-Source: ABdhPJxxGFbL+dwr9YXVucvOXSlOKzQXJ55WMPaQbBqLsMQeJKRuakTQZ//ZngXJ3zGtnHxq3V5LEQ==
-X-Received: by 2002:a05:6870:d88c:: with SMTP id dv12mr474170oab.113.1644014024814;
-        Fri, 04 Feb 2022 14:33:44 -0800 (PST)
+        bh=MqC4XXsfy4OSQxTMHWMiNrSGa1Al6Yednc9CWOuRGdY=;
+        b=b7XaWjDxKYwB50HR91Q8GG3Bpfd7iHh2YnP+gAksQvODVzGv2OGlMxm2eGjpUml/2b
+         uol5+WP2iJow3CymgFznLdV3/XWnpnoBejFiWSojizlUVbJOfqJIT3iFL7wNPGXSLEox
+         eyQYnVvyXWTVv8Vb2+uG13ZU0YoW2POGeOnoagS+oAbkjxBqDeNHtVySRv3nIKZUJRi2
+         h+zvmvOWZzm7JfYY6wUCBDzAAx2jxLboMmrEAavcgESalUr6FBKXUK3rtOFVaQzqup50
+         NNgpp+Ik3L/RGF30ScVz6orNozhYsfEygBDHyvvlATiAJPOKiI1+1HtiO+1rRASZITRq
+         wHPw==
+X-Gm-Message-State: AOAM532cynNQQ8Vf4qtejEzjx+TGXnoHzK0vvG0rrhdJQUkzXT0CQxhN
+        q2q1gF4LaekJ1BKUPod2ZQ==
+X-Google-Smtp-Source: ABdhPJzZc4Y0D4MVbBqCvKn1BX7lOTSIIrCE3xuG5Qvtfu5aTUoCVarqFItKADANNla6kGX1qln9HA==
+X-Received: by 2002:a05:6808:1a86:: with SMTP id bm6mr574161oib.182.1644014167720;
+        Fri, 04 Feb 2022 14:36:07 -0800 (PST)
 Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id 127sm1309058oih.8.2022.02.04.14.33.43
+        by smtp.gmail.com with ESMTPSA id e92sm1233655ote.72.2022.02.04.14.36.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Feb 2022 14:33:44 -0800 (PST)
-Received: (nullmailer pid 3305687 invoked by uid 1000);
-        Fri, 04 Feb 2022 22:33:42 -0000
-Date:   Fri, 4 Feb 2022 16:33:42 -0600
+        Fri, 04 Feb 2022 14:36:07 -0800 (PST)
+Received: (nullmailer pid 3308882 invoked by uid 1000);
+        Fri, 04 Feb 2022 22:36:06 -0000
+Date:   Fri, 4 Feb 2022 16:36:06 -0600
 From:   Rob Herring <robh@kernel.org>
-To:     Heiko Stuebner <heiko@sntech.de>
-Cc:     palmer@dabbelt.com, paul.walmsley@sifive.com,
-        aou@eecs.berkeley.edu, linux-riscv@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        wefu@redhat.com, liush@allwinnertech.com, guoren@kernel.org,
-        atishp@atishpatra.org, anup@brainfault.org, drew@beagleboard.org,
-        hch@lst.de, arnd@arndb.de, wens@csie.org, maxime@cerno.tech,
-        dlustig@nvidia.com, gfavor@ventanamicro.com,
-        andrea.mondelli@huawei.com, behrensj@mit.edu, xinhaoqu@huawei.com,
-        huffman@cadence.com, mick@ics.forth.gr,
-        allen.baum@esperantotech.com, jscheid@ventanamicro.com,
-        rtrauben@gmail.com, samuel@sholland.org, cmuellner@linux.com,
-        philipp.tomsich@vrull.eu
-Subject: Re: [PATCH v5 11/14] dt-bindings: riscv: add MMU Standard Extensions
- support for Svpbmt
-Message-ID: <Yf2pxvmG0t6eugOz@robh.at.kernel.org>
-References: <20220121163618.351934-1-heiko@sntech.de>
- <20220121163618.351934-12-heiko@sntech.de>
+To:     Fenglin Wu <quic_fenglinw@quicinc.com>
+Cc:     linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        sboyd@kernel.org, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        devicetree@vger.kernel.org, collinsd@codeaurora.org,
+        subbaram@codeaurora.org, tglx@linutronix.de, maz@kernel.org
+Subject: Re: [PATCH v5 08/10] bindings: spmi: spmi-pmic-arb: mark interrupt
+ properties as optional
+Message-ID: <Yf2qVi8Xj/iYYRNm@robh.at.kernel.org>
+References: <1643178713-17178-1-git-send-email-quic_fenglinw@quicinc.com>
+ <1643178713-17178-9-git-send-email-quic_fenglinw@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220121163618.351934-12-heiko@sntech.de>
+In-Reply-To: <1643178713-17178-9-git-send-email-quic_fenglinw@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 21, 2022 at 05:36:15PM +0100, Heiko Stuebner wrote:
-> From: Wei Fu <wefu@redhat.com>
+On Wed, Jan 26, 2022 at 02:31:50PM +0800, Fenglin Wu wrote:
+> From: David Collins <collinsd@codeaurora.org>
 > 
-> Previous patch has added svpbmt in arch/riscv and add "riscv,svpmbt"
-> in the DT mmu node. Update dt-bindings related property here.
+> Mark all interrupt related properties as optional instead of
+> required.  Some boards do not required PMIC IRQ support and it
+> isn't needed to handle SPMI bus transactions, so specify it as
+> optional.
 > 
-> Signed-off-by: Wei Fu <wefu@redhat.com>
-> Co-developed-by: Guo Ren <guoren@kernel.org>
-> Signed-off-by: Guo Ren <guoren@kernel.org>
-> Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-> Cc: Anup Patel <anup@brainfault.org>
-> Cc: Palmer Dabbelt <palmer@dabbelt.com>
-> Cc: Rob Herring <robh+dt@kernel.org>
+> Signed-off-by: David Collins <collinsd@codeaurora.org>
+> Signed-off-by: Fenglin Wu <quic_fenglinw@quicinc.com>
 > ---
->  Documentation/devicetree/bindings/riscv/cpus.yaml | 10 ++++++++++
->  1 file changed, 10 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/riscv/cpus.yaml b/Documentation/devicetree/bindings/riscv/cpus.yaml
-> index aa5fb64d57eb..3ad2593f1400 100644
-> --- a/Documentation/devicetree/bindings/riscv/cpus.yaml
-> +++ b/Documentation/devicetree/bindings/riscv/cpus.yaml
-> @@ -63,6 +63,16 @@ properties:
->        - riscv,sv48
->        - riscv,none
->  
-> +  mmu:
+>  Documentation/devicetree/bindings/spmi/qcom,spmi-pmic-arb.txt | 2 ++
+>  1 file changed, 2 insertions(+)
 
-riscv,mmu
+This will collide with converting it to DT schema[1].
 
-> +    description:
-> +      Describes the CPU's MMU Standard Extensions support.
-> +      These values originate from the RISC-V Privileged
-> +      Specification document, available from
-> +      https://riscv.org/specifications/
-> +    $ref: '/schemas/types.yaml#/definitions/string'
-> +    enum:
-> +      - riscv,svpbmt
+Rob
 
-Are there per vendor MMU extensions? If not, drop the 'riscv,' part. 
-
-> +
->    riscv,isa:
->      description:
->        Identifies the specific RISC-V instruction set architecture
-> -- 
-> 2.30.2
-> 
-> 
+[1] https://lore.kernel.org/all/20220131172450.2528065-2-vkoul@kernel.org/
