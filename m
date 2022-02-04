@@ -2,90 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AD59C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 14:06:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B37E6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 14:06:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358924AbiBDOGj (ORCPT
+        id S1359022AbiBDOGq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 09:06:39 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:51992 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232992AbiBDOGi (ORCPT
+        Fri, 4 Feb 2022 09:06:46 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:56468 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358899AbiBDOGn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 09:06:38 -0500
+        Fri, 4 Feb 2022 09:06:43 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CB7D860AFD;
-        Fri,  4 Feb 2022 14:06:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67452C004E1;
-        Fri,  4 Feb 2022 14:06:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D454EB83738;
+        Fri,  4 Feb 2022 14:06:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1DC1C004E1;
+        Fri,  4 Feb 2022 14:06:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643983597;
-        bh=RyIR8dJMc1IOcmZizEww/InxQ1bBAmYfnuCHIM1TwrA=;
+        s=korg; t=1643983600;
+        bh=UgZT237cW6cNc4wyNt2ygtpF0D/EQeuwNmT7ZY2vqeA=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=KGOrqyOrclHpuY//lkGpSrXAgd+1/lmaoLA3C4sQEGbyJ48BfRQM37xUmncb7bYFP
-         gD6YyG59Y6eHrX9NKVKAMA/aMgQVtOm+JO/dT9hm98kl+BMIkAbwI6OgFxByAD/A3Y
-         gNNS31Tk5WCehSMMv3hFb9192ZfLmGCe8jNYqNDQ=
-Date:   Fri, 4 Feb 2022 14:43:04 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     "David E. Box" <david.e.box@linux.intel.com>
-Cc:     Joe Perches <joe@perches.com>, hdegoede@redhat.com,
-        andriy.shevchenko@linux.intel.com, srinivas.pandruvada@intel.com,
-        mgross@linux.intel.com, linux-kernel@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org,
-        Mark Gross <markgross@kernel.org>
-Subject: Re: [PATCH V5 1/3] platform/x86: Add Intel Software Defined Silicon
- driver
-Message-ID: <Yf0taBe4PwTNbu9g@kroah.com>
-References: <20220204053046.2475671-1-david.e.box@linux.intel.com>
- <20220204053046.2475671-2-david.e.box@linux.intel.com>
- <aa16191c1241473fbfd55995bbba37bd2ab4a41c.camel@perches.com>
- <372f76f7b1b7cf3d0ca38a7a84bcc23322ff12ed.camel@linux.intel.com>
+        b=kk290TYcfTXyCVPijD3DpfrCGXz3yHWOHSsArAMM2IgGPSUMSD6LPsjeXyUvo6E8A
+         JX5bBQcinGRGV8jf51U504XQ3aizznM9mrKPA1qqq21oUDk8kRklPoTcbd8wqtyIb0
+         fRImWv9Mwa7nEABQzEbOaSMryeS8D1CAS9xcY0Xk=
+Date:   Fri, 4 Feb 2022 14:59:26 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc:     Guenter Roeck <linux@roeck-us.net>,
+        Benson Leung <bleung@google.com>,
+        Prashant Malani <pmalani@chromium.org>,
+        Jameson Thies <jthies@google.com>,
+        "Regupathy, Rajaram" <rajaram.regupathy@intel.com>,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 1/3] usb: typec: Separate USB Power Delivery from USB
+ Type-C
+Message-ID: <Yf0xPr957MxtaqBn@kroah.com>
+References: <20220203144657.16527-1-heikki.krogerus@linux.intel.com>
+ <20220203144657.16527-2-heikki.krogerus@linux.intel.com>
+ <Yfvs13vpsWULIVWu@kroah.com>
+ <Yfz6OUbDBXVtQzrb@kuha.fi.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <372f76f7b1b7cf3d0ca38a7a84bcc23322ff12ed.camel@linux.intel.com>
+In-Reply-To: <Yfz6OUbDBXVtQzrb@kuha.fi.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 04, 2022 at 05:23:07AM -0800, David E. Box wrote:
-> On Fri, 2022-02-04 at 02:14 -0800, Joe Perches wrote:
-> > On Thu, 2022-02-03 at 21:30 -0800, David E. Box wrote:
-> > > Intel Software Defined Silicon (SDSi) is a post manufacturing mechanism for
-> > > activating additional silicon features. Features are enabled through a
-> > > license activation process.
-> > 
-> > Why isn't this a user process and not a kernel one?
+On Fri, Feb 04, 2022 at 12:04:41PM +0200, Heikki Krogerus wrote:
+> Hi Greg,
 > 
-> This is a mechanism for provisioning CPU features during runtime. It requires a
-> driver to access the functionality. That functionality is discovered on a multi
-> functional PCI device that is owned by the upstream intel_vsec driver.
+> On Thu, Feb 03, 2022 at 03:55:19PM +0100, Greg Kroah-Hartman wrote:
+> > On Thu, Feb 03, 2022 at 05:46:55PM +0300, Heikki Krogerus wrote:
+> > > +/* These additional details are only available with vSafe5V supplies */
+> > > +static struct kobj_attribute dual_role_power_attr = __ATTR_RO(dual_role_power);
+> > > +static struct kobj_attribute usb_suspend_supported_attr = __ATTR_RO(usb_suspend_supported);
+> > > +static struct kobj_attribute unconstrained_power_attr = __ATTR_RO(unconstrained_power);
+> > > +static struct kobj_attribute usb_communication_capable_attr = __ATTR_RO(usb_communication_capable);
+> > > +static struct kobj_attribute dual_role_data_attr = __ATTR_RO(dual_role_data);
+> > > +static struct kobj_attribute
+> > > +unchunked_extended_messages_supported_attr = __ATTR_RO(unchunked_extended_messages_supported);
+> > 
+> > Note, no 'struct device' should ever have a "raw" kobject hanging off of
+> > it.  If so, something went wrong.
+> > 
+> > If you do this, userspace will never be notified of the attributes and
+> > any userspace representation of the tree will be messed up.
+> > 
+> > Please, use an attribute directory with a name, or if you really need to
+> > go another level deep, use a real 'struct device'.  As-is here, I can't
+> > take it.
 > 
-> > 
-> > > V5
-> > >   - Update kernel version to 5.18 in API doc and copyrights to 2022.
-> > >   - Remove unneeded prototypes.
-> > >   - In binary attribute handlers where ret is only used for errors,
-> > >     replace,
-> > >               return (ret < 0) ? ret : size;
-> > >     with,
-> > >               return ret ?: size;
-> > 
-> > I think this style overly tricky.
-> > 
-> > Why not the canonical:
-> > 
-> > 	if (ret < 0)
-> > 		return ret;
-> > 
-> > 	return size;
+> OK, got it. I don't think we can avoid the deeper levels, not without
+> making this really cryptic, and not really usable in all cases. These
+> objects are trying to represent (parts) of the protocol - the
+> messages, the objects in those messages, and later the responses to
+> those messages.
 > 
-> I can see not using the 2 parameter shortcut of the ternary operator, but the
-> regular 3 parameter expression is easy to read for simple operations.
+> But I'm also trying to avoid having to claim that these objects are
+> "devices", because honestly, claiming that the packages used in
+> communication are devices is confusing, and just wrong. If we take
+> that road, then we really should redefine what struct device is
+> supposed to represent, and rename it also.
 
-Not always.  Spell it out please and be obvious.
+Fair enough, this isn't really a device, it's an "attribute" of your
+device you are wanting to show.  It's just that you are really "deep".
+
+You asked for:
+
+/sys/class/typec/port0/usb_power_delivery
+|-- revision
+|-- sink_capabilities/
+|   |-- 1:fixed_supply/
+|   |   |-- dual_role_data
+|   |   |-- dual_role_power
+|   |   |-- fast_role_swap_current
+|   |   |-- operational_current
+|   |   |-- unchunked_extended_messages_supported
+|   |   |-- unconstrained_power
+|   |   |-- usb_communication_capable
+|   |   |-- usb_suspend_supported
+|   |   `-- voltage
+|   |-- 2:variable_supply/
+|   |   |-- maximum_voltage
+|   |   |-- minimum_voltage
+|   |   `-- operational_current
+|   `-- 3:battery/
+|       |-- maximum_voltage
+|       |-- minimum_voltage
+|       `-- operational_power
+`-- source_capabilities/
+    `-- 1:fixed_supply/
+        |-- dual_role_data
+        |-- dual_role_power
+        |-- maximum_current
+        |-- unchunked_extended_messages_supported
+        |-- unconstrained_power
+        |-- usb_communication_capable
+        |-- usb_suspend_supported
+        `-- voltage
+
+
+To start with, your "attribute" is really "usb_power_delivery" here, so
+you can just use an attribute group name to get the "revision" file.
+
+But then the later ones could be flat in that directory as well, using a
+':' to split as you did already, and the above could turn into:
+
+/sys/class/typec/port0/usb_power_delivery
+|-- revision
+|-- sink_capabilites:1:fixed_supply:dual_role_data
+|-- sink_capabilites:1:fixed_supply:dual_role_power
+|-- sink_capabilites:1:fixed_supply:fase_role_swap_current
+....
+|-- sink_capabilites:2:variable_supply:maximum_voltage
+|-- sink_capabilites:2:variable_supply:minimum_voltage
+...
+|-- source_capabilities:1:fixed_supply:dual_role_data
+|-- source_capabilities:1:fixed_supply:dual_role_power
+|-- source_capabilities:1:fixed_supply:maximum_current
+...
+
+But ick, that's also a mess as you are now forced to parse filenames in
+userspace in a different way than "normal".
+
+Is there anything special about the number here?  It's the "position"
+which will be unique.  So make that position a device, as that's kind of
+what it is (like usb endpoints are devices)
+
+Then you could make a bus for the positions and all would be good, and
+you could turn this into:
+
+
+/sys/class/typec/port0/usb_power_delivery
+|-- revision
+|-- sink_capabilities:1/
+|   `-- fixed_supply/
+|       |-- dual_role_data
+|       |-- dual_role_power
+|       |-- fast_role_swap_current
+|       |-- operational_current
+|       |-- unchunked_extended_messages_supported
+|       |-- unconstrained_power
+|       |-- usb_communication_capable
+|       |-- usb_suspend_supported
+|       `-- voltage
+|-- sink_capabilities:2/
+|   `-- variable_supply/
+|       |-- maximum_voltage
+|       |-- minimum_voltage
+|       `-- operational_current
+|-- sink_capabilities:3/
+|   `-- battery/
+|       |-- maximum_voltage
+|       |-- minimum_voltage
+|       `-- operational_power
+`-- source_capabilities:1/
+    `-- fixed_supply/
+        |-- dual_role_data
+        |-- dual_role_power
+        |-- maximum_current
+        |-- unchunked_extended_messages_supported
+        |-- unconstrained_power
+        |-- usb_communication_capable
+        |-- usb_suspend_supported
+        `-- voltage
+
+Would that work?
+
+> So would it be OK that, instead of registering these objects as
+> devices, we just introduce a kset where we can group them
+> (/sys/kernel/usb_power_delivery)?
+
+You want to show this as attched to a specific port somehow, so that
+location is not going to work.
 
 thanks,
 
