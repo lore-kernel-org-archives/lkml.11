@@ -2,38 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97A32C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 20:03:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF988C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 20:04:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241897AbiBDUD4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 15:03:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39166 "EHLO
+        id S238289AbiBDUEC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 15:04:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235547AbiBDT7I (ORCPT
+        with ESMTP id S236742AbiBDT7j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 14:59:08 -0500
+        Fri, 4 Feb 2022 14:59:39 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A04D0C061744
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 11:59:04 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80139C06175C
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 11:59:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=EiTl9q/RuSenIeiy7aVDh11eq3USPRI+K+nzMLYhC1I=; b=nYZFnIE/kJm3rIxMWsdUQ5p1+1
-        UsF5/II5qPuYXhFuNeCVTlWtyNQs+MeMp9rxkcPz/VBTqSb25An8emwpcu3Fs224hzJNrTWCScZqn
-        j+Bb52waX55cC/s/UvSfTbVwLA4F1fo8Ae/WyDZzmZZMChbckb+ONSZzNEDkdf8Zk9tBiXw0jb+dj
-        2aZoPNEHMlLP9XGKIpoRHZDSg20KeRZcP+hFiD+rqUOWU39cbG/BOjIBQ1PqJ1GaM0xzdDkeLpNFt
-        TsZc+IL19ZluYAkNp1rhKNQ8JclyA882yv0p4/eCKZf+R9B9VWgQWzpASvW9ioUPdx2Fpi8HWqk7p
-        id6mdA+w==;
+        bh=33UEnkkNiFlfpyXfZQc/LWytQLTqEtcMw8GjP7m9GVg=; b=Wgw2CjNZqh9Erx8pW4gMctzcJf
+        UZqLpn5pTUpas0OFMO2M5k5zis+SCoZIqOjYZthR6WSiz1fE/BONQXvgBQZOFNWoHgFKiYoYerw0d
+        qQP6VKW7n5A6fv3OPPdAZCyUIfG/56Yis5fso2i1DYM8qfhgLBLy1bcJXc0uMHlFsQfSxjhbpT2Ae
+        uEV0V5fIK1aSLAE9nDxhqQZbZW8+wsIuNtPJWl98mDeaSBPkGj+DfjEzswgwvQi8A2343UmsSyFyU
+        Liwh0IhA9veh31c4tGKIXEyRcPvCLA1G970OUx+hy8K56XI8f+92iPiU8v0pRaEj2FfudcUIBQbpX
+        5uy1vmpg==;
 Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nG4jW-007LmT-OJ; Fri, 04 Feb 2022 19:59:02 +0000
+        id 1nG4jT-007Ll5-QC; Fri, 04 Feb 2022 19:58:59 +0000
 From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
 To:     linux-mm@kvack.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 33/75] mm/vmscan: Convert __remove_mapping() to take a folio
-Date:   Fri,  4 Feb 2022 19:58:10 +0000
-Message-Id: <20220204195852.1751729-34-willy@infradead.org>
+        linux-kernel@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        William Kucharski <william.kucharski@oracle.com>
+Subject: [PATCH 02/75] mm/gup: Remove for_each_compound_range()
+Date:   Fri,  4 Feb 2022 19:57:39 +0000
+Message-Id: <20220204195852.1751729-3-willy@infradead.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220204195852.1751729-1-willy@infradead.org>
 References: <20220204195852.1751729-1-willy@infradead.org>
@@ -43,142 +46,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This removes a few hidden calls to compound_head().
+This macro doesn't simplify the users; it's easier to just call
+compound_range_next() inside the loop.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: John Hubbard <jhubbard@nvidia.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Reviewed-by: William Kucharski <william.kucharski@oracle.com>
 ---
- mm/vmscan.c | 44 +++++++++++++++++++++++---------------------
- 1 file changed, 23 insertions(+), 21 deletions(-)
+ mm/gup.c | 12 ++----------
+ 1 file changed, 2 insertions(+), 10 deletions(-)
 
-diff --git a/mm/vmscan.c b/mm/vmscan.c
-index 9f11960b1db8..15cbfae0d8ec 100644
---- a/mm/vmscan.c
-+++ b/mm/vmscan.c
-@@ -1237,17 +1237,16 @@ static pageout_t pageout(struct page *page, struct address_space *mapping)
-  * Same as remove_mapping, but if the page is removed from the mapping, it
-  * gets returned with a refcount of 0.
-  */
--static int __remove_mapping(struct address_space *mapping, struct page *page,
-+static int __remove_mapping(struct address_space *mapping, struct folio *folio,
- 			    bool reclaimed, struct mem_cgroup *target_memcg)
- {
--	struct folio *folio = page_folio(page);
- 	int refcount;
- 	void *shadow = NULL;
+diff --git a/mm/gup.c b/mm/gup.c
+index 08020987dfc0..dc00e46fae5a 100644
+--- a/mm/gup.c
++++ b/mm/gup.c
+@@ -261,9 +261,6 @@ static inline void compound_range_next(unsigned long i, unsigned long npages,
+ 	struct page *next, *page;
+ 	unsigned int nr = 1;
  
--	BUG_ON(!PageLocked(page));
--	BUG_ON(mapping != page_mapping(page));
-+	BUG_ON(!folio_test_locked(folio));
-+	BUG_ON(mapping != folio_mapping(folio));
- 
--	if (!PageSwapCache(page))
-+	if (!folio_test_swapcache(folio))
- 		spin_lock(&mapping->host->i_lock);
- 	xa_lock_irq(&mapping->i_pages);
- 	/*
-@@ -1275,23 +1274,23 @@ static int __remove_mapping(struct address_space *mapping, struct page *page,
- 	 * Note that if SetPageDirty is always performed via set_page_dirty,
- 	 * and thus under the i_pages lock, then this ordering is not required.
- 	 */
--	refcount = 1 + compound_nr(page);
--	if (!page_ref_freeze(page, refcount))
-+	refcount = 1 + folio_nr_pages(folio);
-+	if (!folio_ref_freeze(folio, refcount))
- 		goto cannot_free;
- 	/* note: atomic_cmpxchg in page_ref_freeze provides the smp_rmb */
--	if (unlikely(PageDirty(page))) {
--		page_ref_unfreeze(page, refcount);
-+	if (unlikely(folio_test_dirty(folio))) {
-+		folio_ref_unfreeze(folio, refcount);
- 		goto cannot_free;
- 	}
- 
--	if (PageSwapCache(page)) {
--		swp_entry_t swap = { .val = page_private(page) };
-+	if (folio_test_swapcache(folio)) {
-+		swp_entry_t swap = folio_swap_entry(folio);
- 		mem_cgroup_swapout(folio, swap);
- 		if (reclaimed && !mapping_exiting(mapping))
- 			shadow = workingset_eviction(folio, target_memcg);
--		__delete_from_swap_cache(page, swap, shadow);
-+		__delete_from_swap_cache(&folio->page, swap, shadow);
- 		xa_unlock_irq(&mapping->i_pages);
--		put_swap_page(page, swap);
-+		put_swap_page(&folio->page, swap);
- 	} else {
- 		void (*freepage)(struct page *);
- 
-@@ -1312,7 +1311,7 @@ static int __remove_mapping(struct address_space *mapping, struct page *page,
- 		 * exceptional entries and shadow exceptional entries in the
- 		 * same address_space.
- 		 */
--		if (reclaimed && page_is_file_lru(page) &&
-+		if (reclaimed && folio_is_file_lru(folio) &&
- 		    !mapping_exiting(mapping) && !dax_mapping(mapping))
- 			shadow = workingset_eviction(folio, target_memcg);
- 		__filemap_remove_folio(folio, shadow);
-@@ -1322,14 +1321,14 @@ static int __remove_mapping(struct address_space *mapping, struct page *page,
- 		spin_unlock(&mapping->host->i_lock);
- 
- 		if (freepage != NULL)
--			freepage(page);
-+			freepage(&folio->page);
- 	}
- 
- 	return 1;
- 
- cannot_free:
- 	xa_unlock_irq(&mapping->i_pages);
--	if (!PageSwapCache(page))
-+	if (!folio_test_swapcache(folio))
- 		spin_unlock(&mapping->host->i_lock);
- 	return 0;
+-	if (i >= npages)
+-		return;
+-
+ 	next = *list + i;
+ 	page = compound_head(next);
+ 	if (PageCompound(page) && compound_order(page) >= 1)
+@@ -274,12 +271,6 @@ static inline void compound_range_next(unsigned long i, unsigned long npages,
+ 	*ntails = nr;
  }
-@@ -1342,13 +1341,14 @@ static int __remove_mapping(struct address_space *mapping, struct page *page,
-  */
- int remove_mapping(struct address_space *mapping, struct page *page)
- {
--	if (__remove_mapping(mapping, page, false, NULL)) {
-+	struct folio *folio = page_folio(page);
-+	if (__remove_mapping(mapping, folio, false, NULL)) {
- 		/*
- 		 * Unfreezing the refcount with 1 rather than 2 effectively
- 		 * drops the pagecache ref for us without requiring another
- 		 * atomic operation.
- 		 */
--		page_ref_unfreeze(page, 1);
-+		folio_ref_unfreeze(folio, 1);
- 		return 1;
- 	}
- 	return 0;
-@@ -1530,14 +1530,16 @@ static unsigned int shrink_page_list(struct list_head *page_list,
- 	while (!list_empty(page_list)) {
- 		struct address_space *mapping;
- 		struct page *page;
-+		struct folio *folio;
- 		enum page_references references = PAGEREF_RECLAIM;
- 		bool dirty, writeback, may_enter_fs;
- 		unsigned int nr_pages;
  
- 		cond_resched();
+-#define for_each_compound_range(__i, __list, __npages, __head, __ntails) \
+-	for (__i = 0, \
+-	     compound_range_next(__i, __npages, __list, &(__head), &(__ntails)); \
+-	     __i < __npages; __i += __ntails, \
+-	     compound_range_next(__i, __npages, __list, &(__head), &(__ntails)))
+-
+ static inline void compound_next(unsigned long i, unsigned long npages,
+ 				 struct page **list, struct page **head,
+ 				 unsigned int *ntails)
+@@ -396,7 +387,8 @@ void unpin_user_page_range_dirty_lock(struct page *page, unsigned long npages,
+ 	struct page *head;
+ 	unsigned int ntails;
  
--		page = lru_to_page(page_list);
--		list_del(&page->lru);
-+		folio = lru_to_folio(page_list);
-+		list_del(&folio->lru);
-+		page = &folio->page;
- 
- 		if (!trylock_page(page))
- 			goto keep;
-@@ -1890,7 +1892,7 @@ static unsigned int shrink_page_list(struct list_head *page_list,
- 			 */
- 			count_vm_event(PGLAZYFREED);
- 			count_memcg_page_event(page, PGLAZYFREED);
--		} else if (!mapping || !__remove_mapping(mapping, page, true,
-+		} else if (!mapping || !__remove_mapping(mapping, folio, true,
- 							 sc->target_mem_cgroup))
- 			goto keep_locked;
- 
+-	for_each_compound_range(index, &page, npages, head, ntails) {
++	for (index = 0; index < npages; index += ntails) {
++		compound_range_next(index, npages, &page, &head, &ntails);
+ 		if (make_dirty && !PageDirty(head))
+ 			set_page_dirty_lock(head);
+ 		put_compound_head(head, ntails, FOLL_PIN);
 -- 
 2.34.1
 
