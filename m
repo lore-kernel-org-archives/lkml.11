@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 834E1C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:28:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8433DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:28:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358325AbiBDJ2L (ORCPT
+        id S1353142AbiBDJ2M (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 04:28:11 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:53970 "EHLO
+        Fri, 4 Feb 2022 04:28:12 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:53094 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358249AbiBDJ0N (ORCPT
+        with ESMTP id S1357659AbiBDJ0G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 04:26:13 -0500
+        Fri, 4 Feb 2022 04:26:06 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5A89EB836BA;
-        Fri,  4 Feb 2022 09:26:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FA71C004E1;
-        Fri,  4 Feb 2022 09:26:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 96446B836F8;
+        Fri,  4 Feb 2022 09:26:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA43FC004E1;
+        Fri,  4 Feb 2022 09:26:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643966771;
-        bh=VXbeeVkNkzOG24jf0vx5BOfcM06+BBpyEMjPdjTt5Ks=;
+        s=korg; t=1643966764;
+        bh=aWaycIVeAhO1p4ZgtcI+rJ4obhF3IJc4kVHZVcCnsLU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WacFyFc0Vh4WEi/m0Yl6Mx01MfVscyDRuAXDLnEHHignW2Mk8qmDBOR2M/o0DT33J
-         4VjyaTtD7F/QqhnebnnpHMA7GCi9T4eBOidAycui3ImiEsTmzIkRQgoe9EanbcHqq1
-         cusEfLM3P7QqBk5KgOVhpqnle3biDgOMLHHsrsFQ=
+        b=pqI4KgdGHNaBBlrGyX9Me+BAeZ0HckijPy8Z2Kq9DLvfbJ1PPj0aZf5chzKubKzPk
+         sPbjI3+9xr1myqwxoTXetaQbVTPr77IXii15OfwLpL2/7jGKMYXkmde7+O3qcgG9k0
+         4L0kiWvxTCmL1hVEmkKFoGRRUh7gzJgqSZwZ4OdI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jonathan McDowell <noodles@earth.li>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.16 08/43] net: phy: Fix qca8081 with speeds lower than 2.5Gb/s
-Date:   Fri,  4 Feb 2022 10:22:15 +0100
-Message-Id: <20220204091917.455414849@linuxfoundation.org>
+        stable@vger.kernel.org, Tabitha Sable <tabitha.c.sable@gmail.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Tejun Heo <tj@kernel.org>
+Subject: [PATCH 5.16 06/43] cgroup-v1: Require capabilities to set release_agent
+Date:   Fri,  4 Feb 2022 10:22:13 +0100
+Message-Id: <20220204091917.394618030@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220204091917.166033635@linuxfoundation.org>
 References: <20220204091917.166033635@linuxfoundation.org>
@@ -47,62 +47,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan McDowell <noodles@earth.li>
+From: Eric W. Biederman <ebiederm@xmission.com>
 
-commit 881cc731df6af99a21622e9be25a23b81adcd10b upstream.
+commit 24f6008564183aa120d07c03d9289519c2fe02af upstream.
 
-A typo in qca808x_read_status means we try to set SMII mode on the port
-rather than SGMII when the link speed is not 2.5Gb/s. This results in no
-traffic due to the mismatch in configuration between the phy and the
-mac.
+The cgroup release_agent is called with call_usermodehelper.  The function
+call_usermodehelper starts the release_agent with a full set fo capabilities.
+Therefore require capabilities when setting the release_agaent.
 
-v2:
- Only change interface mode when the link is up
-
-Fixes: 79c7bc0521545 ("net: phy: add qca8081 read_status")
-Cc: stable@vger.kernel.org
-Signed-off-by: Jonathan McDowell <noodles@earth.li>
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reported-by: Tabitha Sable <tabitha.c.sable@gmail.com>
+Tested-by: Tabitha Sable <tabitha.c.sable@gmail.com>
+Fixes: 81a6a5cdd2c5 ("Task Control Groups: automatic userspace notification of idle cgroups")
+Cc: stable@vger.kernel.org # v2.6.24+
+Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+Signed-off-by: Tejun Heo <tj@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/phy/at803x.c |   26 +++++++++++++-------------
- 1 file changed, 13 insertions(+), 13 deletions(-)
+ kernel/cgroup/cgroup-v1.c |   14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
---- a/drivers/net/phy/at803x.c
-+++ b/drivers/net/phy/at803x.c
-@@ -1688,19 +1688,19 @@ static int qca808x_read_status(struct ph
- 	if (ret < 0)
- 		return ret;
+--- a/kernel/cgroup/cgroup-v1.c
++++ b/kernel/cgroup/cgroup-v1.c
+@@ -549,6 +549,14 @@ static ssize_t cgroup_release_agent_writ
  
--	if (phydev->link && phydev->speed == SPEED_2500)
--		phydev->interface = PHY_INTERFACE_MODE_2500BASEX;
--	else
--		phydev->interface = PHY_INTERFACE_MODE_SMII;
--
--	/* generate seed as a lower random value to make PHY linked as SLAVE easily,
--	 * except for master/slave configuration fault detected.
--	 * the reason for not putting this code into the function link_change_notify is
--	 * the corner case where the link partner is also the qca8081 PHY and the seed
--	 * value is configured as the same value, the link can't be up and no link change
--	 * occurs.
--	 */
--	if (!phydev->link) {
-+	if (phydev->link) {
-+		if (phydev->speed == SPEED_2500)
-+			phydev->interface = PHY_INTERFACE_MODE_2500BASEX;
-+		else
-+			phydev->interface = PHY_INTERFACE_MODE_SGMII;
-+	} else {
-+		/* generate seed as a lower random value to make PHY linked as SLAVE easily,
-+		 * except for master/slave configuration fault detected.
-+		 * the reason for not putting this code into the function link_change_notify is
-+		 * the corner case where the link partner is also the qca8081 PHY and the seed
-+		 * value is configured as the same value, the link can't be up and no link change
-+		 * occurs.
+ 	BUILD_BUG_ON(sizeof(cgrp->root->release_agent_path) < PATH_MAX);
+ 
++	/*
++	 * Release agent gets called with all capabilities,
++	 * require capabilities to set release agent.
++	 */
++	if ((of->file->f_cred->user_ns != &init_user_ns) ||
++	    !capable(CAP_SYS_ADMIN))
++		return -EPERM;
++
+ 	cgrp = cgroup_kn_lock_live(of->kn, false);
+ 	if (!cgrp)
+ 		return -ENODEV;
+@@ -954,6 +962,12 @@ int cgroup1_parse_param(struct fs_contex
+ 		/* Specifying two release agents is forbidden */
+ 		if (ctx->release_agent)
+ 			return invalfc(fc, "release_agent respecified");
++		/*
++		 * Release agent gets called with all capabilities,
++		 * require capabilities to set release agent.
 +		 */
- 		if (phydev->master_slave_state == MASTER_SLAVE_STATE_ERR) {
- 			qca808x_phy_ms_seed_enable(phydev, false);
- 		} else {
++		if ((fc->user_ns != &init_user_ns) || !capable(CAP_SYS_ADMIN))
++			return invalfc(fc, "Setting release_agent not allowed");
+ 		ctx->release_agent = param->string;
+ 		param->string = NULL;
+ 		break;
 
 
