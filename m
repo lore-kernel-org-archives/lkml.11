@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB3FCC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 20:02:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63FE7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 20:02:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239577AbiBDUCB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 15:02:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39370 "EHLO
+        id S239627AbiBDUCG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 15:02:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236707AbiBDT7h (ORCPT
+        with ESMTP id S236240AbiBDT7U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 14:59:37 -0500
+        Fri, 4 Feb 2022 14:59:20 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD18EC061714
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 11:59:18 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 619C8C06176D
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 11:59:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=NpQTZRmbyZ8ig7SC3y4xH9qVn8a+1Pb7Y1x76z9zPRc=; b=aRLETaj7P4lPBQxBSFPwi4eY26
-        bFKvswEOwAbJQfhZbeRPFYhgmzH+g8O+lRfRMheKKCpIiTiKTABPGsvvSxH4EYrrg8BwQ7LrPlGlq
-        sbY0LVfNVK3y/sPfdD7dv/CBAXGeXs0HfdI55v+UAX175XhxtLI6odZ4aznlbMWiMc5Z86aHrh9Tk
-        HtrDbr0ak//EC2YSeOYEltNnXYHeCnuKBulzCYJt0mmsqGJfPXIbot4C5KRIrPl4T0zxhb2GrxMK0
-        bQu3oo9x0rda2lyrco7SQnVN9lAoR4H8Duj+X0i8fRyTzHC2GgKp1Kiax++ioGB3tgjLGDX9Kl94V
-        WcqQ5Oaw==;
+        bh=70COZ8CZm/Bsc1YB1cyqOpiJaL2hrqAd74yKJp7p4oc=; b=YJLl+0ZC7MeQqUdK+NLha6/3Iw
+        oh7csIrxrIDv5v/BUoQ7Do8V3M/xx+cpHIrjZaKqLzDAZueMNsFguiqEUZtpUJgP972C8dIw8uOod
+        3HP2mKS6bUPpcL7IzjCTQ7rgt8yTYyR5emKW0Ogs+ZLx2B0EyN2MyJ9/sLlNl6IcEM/JBs+iJTLgG
+        J6dNIf8CKqLlHMFfHQLmoeJ4r2ANMdkpgngATn+5dH0sGK4HDn99RHsc59h7RaumvrXSmccGnj6dX
+        GncAOHJ+mVzGdAuZxLE0eyT+fKU8HKXSyGmNvE3evqSwnnltZMY2lrf8qzWgkDgNLTeHWe0uP5eWL
+        bWlgSsrA==;
 Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nG4jU-007LlZ-SD; Fri, 04 Feb 2022 19:59:00 +0000
+        id 1nG4jV-007Llv-HZ; Fri, 04 Feb 2022 19:59:01 +0000
 From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
 To:     linux-mm@kvack.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
@@ -34,9 +34,9 @@ Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
         John Hubbard <jhubbard@nvidia.com>,
         Jason Gunthorpe <jgg@nvidia.com>,
         William Kucharski <william.kucharski@oracle.com>
-Subject: [PATCH 14/75] mm: Turn page_maybe_dma_pinned() into folio_maybe_dma_pinned()
-Date:   Fri,  4 Feb 2022 19:57:51 +0000
-Message-Id: <20220204195852.1751729-15-willy@infradead.org>
+Subject: [PATCH 22/75] mm/gup: Convert gup_huge_pmd() to use a folio
+Date:   Fri,  4 Feb 2022 19:57:59 +0000
+Message-Id: <20220204195852.1751729-23-willy@infradead.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220204195852.1751729-1-willy@infradead.org>
 References: <20220204195852.1751729-1-willy@infradead.org>
@@ -46,8 +46,7 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace three calls to compound_head() with one.  This removes the last
-user of compound_pincount(), so remove that helper too.
+Use the new folio-based APIs.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 Reviewed-by: Christoph Hellwig <hch@lst.de>
@@ -55,99 +54,45 @@ Reviewed-by: John Hubbard <jhubbard@nvidia.com>
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 Reviewed-by: William Kucharski <william.kucharski@oracle.com>
 ---
- include/linux/mm.h | 49 ++++++++++++++++++++++------------------------
- 1 file changed, 23 insertions(+), 26 deletions(-)
+ mm/gup.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index d5f0f2cfd552..a29dacec7294 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -901,13 +901,6 @@ static inline int head_compound_pincount(struct page *head)
- 	return atomic_read(compound_pincount_ptr(head));
+diff --git a/mm/gup.c b/mm/gup.c
+index 6faf8beb4cd9..ca8262392ce3 100644
+--- a/mm/gup.c
++++ b/mm/gup.c
+@@ -2509,7 +2509,8 @@ static int gup_huge_pmd(pmd_t orig, pmd_t *pmdp, unsigned long addr,
+ 			unsigned long end, unsigned int flags,
+ 			struct page **pages, int *nr)
+ {
+-	struct page *head, *page;
++	struct page *page;
++	struct folio *folio;
+ 	int refs;
+ 
+ 	if (!pmd_access_permitted(orig, flags & FOLL_WRITE))
+@@ -2525,17 +2526,17 @@ static int gup_huge_pmd(pmd_t orig, pmd_t *pmdp, unsigned long addr,
+ 	page = nth_page(pmd_page(orig), (addr & ~PMD_MASK) >> PAGE_SHIFT);
+ 	refs = record_subpages(page, addr, end, pages + *nr);
+ 
+-	head = try_grab_compound_head(pmd_page(orig), refs, flags);
+-	if (!head)
++	folio = try_grab_folio(page, refs, flags);
++	if (!folio)
+ 		return 0;
+ 
+ 	if (unlikely(pmd_val(orig) != pmd_val(*pmdp))) {
+-		put_compound_head(head, refs, flags);
++		gup_put_folio(folio, refs, flags);
+ 		return 0;
+ 	}
+ 
+ 	*nr += refs;
+-	SetPageReferenced(head);
++	folio_set_referenced(folio);
+ 	return 1;
  }
  
--static inline int compound_pincount(struct page *page)
--{
--	VM_BUG_ON_PAGE(!PageCompound(page), page);
--	page = compound_head(page);
--	return head_compound_pincount(page);
--}
--
- static inline void set_compound_order(struct page *page, unsigned int order)
- {
- 	page[1].compound_order = order;
-@@ -1280,48 +1273,52 @@ void unpin_user_page_range_dirty_lock(struct page *page, unsigned long npages,
- void unpin_user_pages(struct page **pages, unsigned long npages);
- 
- /**
-- * page_maybe_dma_pinned - Report if a page is pinned for DMA.
-- * @page: The page.
-+ * folio_maybe_dma_pinned - Report if a folio may be pinned for DMA.
-+ * @folio: The folio.
-  *
-- * This function checks if a page has been pinned via a call to
-+ * This function checks if a folio has been pinned via a call to
-  * a function in the pin_user_pages() family.
-  *
-- * For non-huge pages, the return value is partially fuzzy: false is not fuzzy,
-+ * For small folios, the return value is partially fuzzy: false is not fuzzy,
-  * because it means "definitely not pinned for DMA", but true means "probably
-  * pinned for DMA, but possibly a false positive due to having at least
-- * GUP_PIN_COUNTING_BIAS worth of normal page references".
-+ * GUP_PIN_COUNTING_BIAS worth of normal folio references".
-  *
-- * False positives are OK, because: a) it's unlikely for a page to get that many
-- * refcounts, and b) all the callers of this routine are expected to be able to
-- * deal gracefully with a false positive.
-+ * False positives are OK, because: a) it's unlikely for a folio to
-+ * get that many refcounts, and b) all the callers of this routine are
-+ * expected to be able to deal gracefully with a false positive.
-  *
-- * For huge pages, the result will be exactly correct. That's because we have
-- * more tracking data available: the 3rd struct page in the compound page is
-- * used to track the pincount (instead using of the GUP_PIN_COUNTING_BIAS
-- * scheme).
-+ * For large folios, the result will be exactly correct. That's because
-+ * we have more tracking data available: the compound_pincount is used
-+ * instead of the GUP_PIN_COUNTING_BIAS scheme.
-  *
-  * For more information, please see Documentation/core-api/pin_user_pages.rst.
-  *
-  * Return: True, if it is likely that the page has been "dma-pinned".
-  * False, if the page is definitely not dma-pinned.
-  */
--static inline bool page_maybe_dma_pinned(struct page *page)
-+static inline bool folio_maybe_dma_pinned(struct folio *folio)
- {
--	if (PageCompound(page))
--		return compound_pincount(page) > 0;
-+	if (folio_test_large(folio))
-+		return atomic_read(folio_pincount_ptr(folio)) > 0;
- 
- 	/*
--	 * page_ref_count() is signed. If that refcount overflows, then
--	 * page_ref_count() returns a negative value, and callers will avoid
-+	 * folio_ref_count() is signed. If that refcount overflows, then
-+	 * folio_ref_count() returns a negative value, and callers will avoid
- 	 * further incrementing the refcount.
- 	 *
--	 * Here, for that overflow case, use the signed bit to count a little
-+	 * Here, for that overflow case, use the sign bit to count a little
- 	 * bit higher via unsigned math, and thus still get an accurate result.
- 	 */
--	return ((unsigned int)page_ref_count(compound_head(page))) >=
-+	return ((unsigned int)folio_ref_count(folio)) >=
- 		GUP_PIN_COUNTING_BIAS;
- }
- 
-+static inline bool page_maybe_dma_pinned(struct page *page)
-+{
-+	return folio_maybe_dma_pinned(page_folio(page));
-+}
-+
- static inline bool is_cow_mapping(vm_flags_t flags)
- {
- 	return (flags & (VM_SHARED | VM_MAYWRITE)) == VM_MAYWRITE;
 -- 
 2.34.1
 
