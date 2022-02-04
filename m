@@ -2,41 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DDF5C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 20:02:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2585BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 20:02:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237545AbiBDUCf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 15:02:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39364 "EHLO
+        id S238666AbiBDUCi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 15:02:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236556AbiBDT7e (ORCPT
+        with ESMTP id S236420AbiBDT7X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 14:59:34 -0500
+        Fri, 4 Feb 2022 14:59:23 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD65EC061778
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 681B3C061753
         for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 11:59:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=JubzDfprAA1Un2jOXx0p+mdrOF9Jffo8nBXBBkxLbYU=; b=iPVQs+aC5XUS7bDv6l/us8ZJPC
-        yoKMdOcdnUTcRQccnXiOqXkmUbJAPjIyfQVsmbgEgbv71a2Dy++AKfMAQFWzcqe4yUrL5c9c+fzA4
-        RcO0epUbpGbz1nSWQtpIZUMhxy/6gnT/Q3yrN7ak0wNt1/7jsEnbccTXAqpS4cmSLPxEEtQcX3WXj
-        b6nhFkQQuX6oYFoa5y9eCojIRLouUlwz1YCknq186/1TBlmIcOn7i/F7tlEre+BsffFhwT3Gulqnh
-        Nd16VCX6tTTuQMZnb7MNHiUmwGdlgohj8lDQbUVLhBRiQGypYNapaRNN1FepCwKeb+OKiX095dUAR
-        S5HLkq8w==;
+        bh=rCeZZFnhMgFeUZK5dhbFsBos7wHqny8hzB4SCwbybSo=; b=nuGaQO9JHx2CVzfQ1TI2nfi9Hz
+        OTmxyNTT/O3OR66t73bZm4nNoBVQEpOWQcaUjR6WZZDlm9yiDLm4ogovQUVCPOCWBuAk/2OalnNcJ
+        7C1eiXNGx68vpIaSdoMQp/iCAjqamG0QCPCGncoCVgqtQsgsZYOp53AVVNtMaNYg5koJF0/0gE8hY
+        C/OhXYlISSt0Tqmqa+J2DQHv9oSWIcs3PxSaqp/vIWI1lX8TisBFT4+hz4DE5UtLfOaskxc/b3Tvl
+        EUckkV/Vd0Dyvos86okZ9o0EHRjJtiB/1OLsBoaKO6TYtbhAx2F4s3qgsNd5PIu5UwywA352/CGdv
+        qNhudXaQ==;
 Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nG4jV-007Llt-Er; Fri, 04 Feb 2022 19:59:01 +0000
+        id 1nG4jb-007Lr4-Mr; Fri, 04 Feb 2022 19:59:07 +0000
 From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
 To:     linux-mm@kvack.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        linux-kernel@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        William Kucharski <william.kucharski@oracle.com>
-Subject: [PATCH 21/75] mm/gup: Convert gup_hugepte() to use a folio
-Date:   Fri,  4 Feb 2022 19:57:58 +0000
-Message-Id: <20220204195852.1751729-22-willy@infradead.org>
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 69/75] mm: Make large folios depend on THP
+Date:   Fri,  4 Feb 2022 19:58:46 +0000
+Message-Id: <20220204195852.1751729-70-willy@infradead.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220204195852.1751729-1-willy@infradead.org>
 References: <20220204195852.1751729-1-willy@infradead.org>
@@ -46,59 +43,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There should be little to no effect from this patch; just removing
-uses of some old APIs.
+Some parts of the VM still depend on THP to handle large folios
+correctly.  Until those are fixed, prevent creating large folios
+if THP are disabled.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: John Hubbard <jhubbard@nvidia.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: William Kucharski <william.kucharski@oracle.com>
 ---
- mm/gup.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ include/linux/pagemap.h | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/mm/gup.c b/mm/gup.c
-index 44281350db1a..6faf8beb4cd9 100644
---- a/mm/gup.c
-+++ b/mm/gup.c
-@@ -2445,7 +2445,8 @@ static int gup_hugepte(pte_t *ptep, unsigned long sz, unsigned long addr,
- 		       struct page **pages, int *nr)
- {
- 	unsigned long pte_end;
--	struct page *head, *page;
-+	struct page *page;
-+	struct folio *folio;
- 	pte_t pte;
- 	int refs;
- 
-@@ -2461,21 +2462,20 @@ static int gup_hugepte(pte_t *ptep, unsigned long sz, unsigned long addr,
- 	/* hugepages are never "special" */
- 	VM_BUG_ON(!pfn_valid(pte_pfn(pte)));
- 
--	head = pte_page(pte);
--	page = nth_page(head, (addr & (sz - 1)) >> PAGE_SHIFT);
-+	page = nth_page(pte_page(pte), (addr & (sz - 1)) >> PAGE_SHIFT);
- 	refs = record_subpages(page, addr, end, pages + *nr);
- 
--	head = try_grab_compound_head(head, refs, flags);
--	if (!head)
-+	folio = try_grab_folio(page, refs, flags);
-+	if (!folio)
- 		return 0;
- 
- 	if (unlikely(pte_val(pte) != pte_val(*ptep))) {
--		put_compound_head(head, refs, flags);
-+		gup_put_folio(folio, refs, flags);
- 		return 0;
- 	}
- 
- 	*nr += refs;
--	SetPageReferenced(head);
-+	folio_set_referenced(folio);
- 	return 1;
+diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
+index 39115f75962c..ccf02a7d4d65 100644
+--- a/include/linux/pagemap.h
++++ b/include/linux/pagemap.h
+@@ -192,9 +192,14 @@ static inline void mapping_set_large_folios(struct address_space *mapping)
+ 	__set_bit(AS_LARGE_FOLIO_SUPPORT, &mapping->flags);
  }
  
++/*
++ * Large folio support currently depends on THP.  These dependencies are
++ * being worked on but are not yet fixed.
++ */
+ static inline bool mapping_large_folio_support(struct address_space *mapping)
+ {
+-	return test_bit(AS_LARGE_FOLIO_SUPPORT, &mapping->flags);
++	return IS_ENABLED(CONFIG_TRANSPARENT_HUGEPAGE) &&
++		test_bit(AS_LARGE_FOLIO_SUPPORT, &mapping->flags);
+ }
+ 
+ static inline int filemap_nr_thps(struct address_space *mapping)
 -- 
 2.34.1
 
