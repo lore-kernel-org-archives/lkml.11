@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B70F5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:23:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FE9BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:23:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357811AbiBDJXG (ORCPT
+        id S1357138AbiBDJXO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 04:23:06 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:41756 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357625AbiBDJWR (ORCPT
+        Fri, 4 Feb 2022 04:23:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60928 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1357434AbiBDJWY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 04:22:17 -0500
+        Fri, 4 Feb 2022 04:22:24 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CBC4C061768;
+        Fri,  4 Feb 2022 01:22:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F6F0615DC;
-        Fri,  4 Feb 2022 09:22:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DEDFC004E1;
-        Fri,  4 Feb 2022 09:22:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D78CB615C6;
+        Fri,  4 Feb 2022 09:22:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F917C004E1;
+        Fri,  4 Feb 2022 09:22:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643966536;
-        bh=XbccLvw/D0ZxgOoY+2yrv/Y8kbTKWwmyKM28ESuMBcU=;
+        s=korg; t=1643966543;
+        bh=BaI0hfJd/rGtZze9o9YgtkFOcrtctxZCV+DtA+iaZ6c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KRErtUQZS2eyAQg7+79VtMNhz3i3/DDfvdt4+qCiKejrVaLA9xf1jQ0c1Tnqdak5G
-         JPoG1TZajf7fmgGWGfjAo0k5rpmv6pzr2MQBZsrCNMq19WrAiJ7GMKLh+vo5U+5abT
-         b/ABE2OdVZQMSv6O6bJ5Hd92MpyoHlksiKQ9tYns=
+        b=aCgoWumMoh2xbuqwIIJpjbDoJtX8a7qvywKXgvFqE1N297ovvVKNLBvixCtuEy6iO
+         BgNPf7b0IvgNuFZYC9q9oooMLPOzRvRI6cmSubIV6XiOTYMc6/7iTCIQxroZYiu+ps
+         cCgAE1UzB8Y5GKWwiqGSYdd6ojLhlk7J6kgt9Dzc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+8112db3ab20e70d50c31@syzkaller.appspotmail.com,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Tadeusz Struk <tadeusz.struk@linaro.org>
-Subject: [PATCH 5.10 06/25] KVM: x86: Forcibly leave nested virt when SMM state is toggled
-Date:   Fri,  4 Feb 2022 10:20:13 +0100
-Message-Id: <20220204091914.497446272@linuxfoundation.org>
+        stable@vger.kernel.org, Marco Elver <elver@google.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>
+Subject: [PATCH 5.10 08/25] perf: Rework perf_event_exit_event()
+Date:   Fri,  4 Feb 2022 10:20:15 +0100
+Message-Id: <20220204091914.560626177@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220204091914.280602669@linuxfoundation.org>
 References: <20220204091914.280602669@linuxfoundation.org>
@@ -49,174 +49,265 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-commit f7e570780efc5cec9b2ed1e0472a7da14e864fdb upstream.
+commit ef54c1a476aef7eef26fe13ea10dc090952c00f8 upstream.
 
-Forcibly leave nested virtualization operation if userspace toggles SMM
-state via KVM_SET_VCPU_EVENTS or KVM_SYNC_X86_EVENTS.  If userspace
-forces the vCPU out of SMM while it's post-VMXON and then injects an SMI,
-vmx_enter_smm() will overwrite vmx->nested.smm.vmxon and end up with both
-vmxon=false and smm.vmxon=false, but all other nVMX state allocated.
+Make perf_event_exit_event() more robust, such that we can use it from
+other contexts. Specifically the up and coming remove_on_exec.
 
-Don't attempt to gracefully handle the transition as (a) most transitions
-are nonsencial, e.g. forcing SMM while L2 is running, (b) there isn't
-sufficient information to handle all transitions, e.g. SVM wants access
-to the SMRAM save state, and (c) KVM_SET_VCPU_EVENTS must precede
-KVM_SET_NESTED_STATE during state restore as the latter disallows putting
-the vCPU into L2 if SMM is active, and disallows tagging the vCPU as
-being post-VMXON in SMM if SMM is not active.
+For this to work we need to address a few issues. Remove_on_exec will
+not destroy the entire context, so we cannot rely on TASK_TOMBSTONE to
+disable event_function_call() and we thus have to use
+perf_remove_from_context().
 
-Abuse of KVM_SET_VCPU_EVENTS manifests as a WARN and memory leak in nVMX
-due to failure to free vmcs01's shadow VMCS, but the bug goes far beyond
-just a memory leak, e.g. toggling SMM on while L2 is active puts the vCPU
-in an architecturally impossible state.
+When using perf_remove_from_context(), there's two races to consider.
+The first is against close(), where we can have concurrent tear-down
+of the event. The second is against child_list iteration, which should
+not find a half baked event.
 
-  WARNING: CPU: 0 PID: 3606 at free_loaded_vmcs arch/x86/kvm/vmx/vmx.c:2665 [inline]
-  WARNING: CPU: 0 PID: 3606 at free_loaded_vmcs+0x158/0x1a0 arch/x86/kvm/vmx/vmx.c:2656
-  Modules linked in:
-  CPU: 1 PID: 3606 Comm: syz-executor725 Not tainted 5.17.0-rc1-syzkaller #0
-  Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-  RIP: 0010:free_loaded_vmcs arch/x86/kvm/vmx/vmx.c:2665 [inline]
-  RIP: 0010:free_loaded_vmcs+0x158/0x1a0 arch/x86/kvm/vmx/vmx.c:2656
-  Code: <0f> 0b eb b3 e8 8f 4d 9f 00 e9 f7 fe ff ff 48 89 df e8 92 4d 9f 00
-  Call Trace:
-   <TASK>
-   kvm_arch_vcpu_destroy+0x72/0x2f0 arch/x86/kvm/x86.c:11123
-   kvm_vcpu_destroy arch/x86/kvm/../../../virt/kvm/kvm_main.c:441 [inline]
-   kvm_destroy_vcpus+0x11f/0x290 arch/x86/kvm/../../../virt/kvm/kvm_main.c:460
-   kvm_free_vcpus arch/x86/kvm/x86.c:11564 [inline]
-   kvm_arch_destroy_vm+0x2e8/0x470 arch/x86/kvm/x86.c:11676
-   kvm_destroy_vm arch/x86/kvm/../../../virt/kvm/kvm_main.c:1217 [inline]
-   kvm_put_kvm+0x4fa/0xb00 arch/x86/kvm/../../../virt/kvm/kvm_main.c:1250
-   kvm_vm_release+0x3f/0x50 arch/x86/kvm/../../../virt/kvm/kvm_main.c:1273
-   __fput+0x286/0x9f0 fs/file_table.c:311
-   task_work_run+0xdd/0x1a0 kernel/task_work.c:164
-   exit_task_work include/linux/task_work.h:32 [inline]
-   do_exit+0xb29/0x2a30 kernel/exit.c:806
-   do_group_exit+0xd2/0x2f0 kernel/exit.c:935
-   get_signal+0x4b0/0x28c0 kernel/signal.c:2862
-   arch_do_signal_or_restart+0x2a9/0x1c40 arch/x86/kernel/signal.c:868
-   handle_signal_work kernel/entry/common.c:148 [inline]
-   exit_to_user_mode_loop kernel/entry/common.c:172 [inline]
-   exit_to_user_mode_prepare+0x17d/0x290 kernel/entry/common.c:207
-   __syscall_exit_to_user_mode_work kernel/entry/common.c:289 [inline]
-   syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:300
-   do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
-   entry_SYSCALL_64_after_hwframe+0x44/0xae
-   </TASK>
+To address this, teach perf_remove_from_context() to special case
+!ctx->is_active and about DETACH_CHILD.
 
-Cc: stable@vger.kernel.org
-Reported-by: syzbot+8112db3ab20e70d50c31@syzkaller.appspotmail.com
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220125220358.2091737-1-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Backported-by: Tadeusz Struk <tadeusz.struk@linaro.org>
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+[ elver@google.com: fix racing parent/child exit in sync_child_event(). ]
+Signed-off-by: Marco Elver <elver@google.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20210408103605.1676875-2-elver@google.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/kvm_host.h |    1 +
- arch/x86/kvm/svm/nested.c       |   10 ++++++++--
- arch/x86/kvm/svm/svm.c          |    2 +-
- arch/x86/kvm/svm/svm.h          |    2 +-
- arch/x86/kvm/vmx/nested.c       |    1 +
- arch/x86/kvm/x86.c              |    2 ++
- 6 files changed, 14 insertions(+), 4 deletions(-)
+ include/linux/perf_event.h |    1 
+ kernel/events/core.c       |  144 +++++++++++++++++++++++++--------------------
+ 2 files changed, 81 insertions(+), 64 deletions(-)
 
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -1285,6 +1285,7 @@ struct kvm_x86_ops {
- };
+--- a/include/linux/perf_event.h
++++ b/include/linux/perf_event.h
+@@ -607,6 +607,7 @@ struct swevent_hlist {
+ #define PERF_ATTACH_TASK_DATA	0x08
+ #define PERF_ATTACH_ITRACE	0x10
+ #define PERF_ATTACH_SCHED_CB	0x20
++#define PERF_ATTACH_CHILD	0x40
  
- struct kvm_x86_nested_ops {
-+	void (*leave_nested)(struct kvm_vcpu *vcpu);
- 	int (*check_events)(struct kvm_vcpu *vcpu);
- 	bool (*hv_timer_pending)(struct kvm_vcpu *vcpu);
- 	int (*get_state)(struct kvm_vcpu *vcpu,
---- a/arch/x86/kvm/svm/nested.c
-+++ b/arch/x86/kvm/svm/nested.c
-@@ -783,8 +783,10 @@ void svm_free_nested(struct vcpu_svm *sv
- /*
-  * Forcibly leave nested mode in order to be able to reset the VCPU later on.
-  */
--void svm_leave_nested(struct vcpu_svm *svm)
-+void svm_leave_nested(struct kvm_vcpu *vcpu)
+ struct perf_cgroup;
+ struct perf_buffer;
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -2276,6 +2276,26 @@ out:
+ 	perf_event__header_size(leader);
+ }
+ 
++static void sync_child_event(struct perf_event *child_event);
++
++static void perf_child_detach(struct perf_event *event)
++{
++	struct perf_event *parent_event = event->parent;
++
++	if (!(event->attach_state & PERF_ATTACH_CHILD))
++		return;
++
++	event->attach_state &= ~PERF_ATTACH_CHILD;
++
++	if (WARN_ON_ONCE(!parent_event))
++		return;
++
++	lockdep_assert_held(&parent_event->child_mutex);
++
++	sync_child_event(event);
++	list_del_init(&event->child_list);
++}
++
+ static bool is_orphaned_event(struct perf_event *event)
  {
-+	struct vcpu_svm *svm = to_svm(vcpu);
-+
- 	if (is_guest_mode(&svm->vcpu)) {
- 		struct vmcb *hsave = svm->nested.hsave;
- 		struct vmcb *vmcb = svm->vmcb;
-@@ -1185,7 +1187,7 @@ static int svm_set_nested_state(struct k
- 		return -EINVAL;
+ 	return event->state == PERF_EVENT_STATE_DEAD;
+@@ -2383,6 +2403,7 @@ group_sched_out(struct perf_event *group
+ }
  
- 	if (!(kvm_state->flags & KVM_STATE_NESTED_GUEST_MODE)) {
--		svm_leave_nested(svm);
-+		svm_leave_nested(vcpu);
- 		svm_set_gif(svm, !!(kvm_state->flags & KVM_STATE_NESTED_GIF_SET));
- 		return 0;
+ #define DETACH_GROUP	0x01UL
++#define DETACH_CHILD	0x02UL
+ 
+ /*
+  * Cross CPU call to remove a performance event
+@@ -2406,6 +2427,8 @@ __perf_remove_from_context(struct perf_e
+ 	event_sched_out(event, cpuctx, ctx);
+ 	if (flags & DETACH_GROUP)
+ 		perf_group_detach(event);
++	if (flags & DETACH_CHILD)
++		perf_child_detach(event);
+ 	list_del_event(event, ctx);
+ 
+ 	if (!ctx->nr_events && ctx->is_active) {
+@@ -2437,25 +2460,21 @@ static void perf_remove_from_context(str
+ 
+ 	lockdep_assert_held(&ctx->mutex);
+ 
+-	event_function_call(event, __perf_remove_from_context, (void *)flags);
+-
+ 	/*
+-	 * The above event_function_call() can NO-OP when it hits
+-	 * TASK_TOMBSTONE. In that case we must already have been detached
+-	 * from the context (by perf_event_exit_event()) but the grouping
+-	 * might still be in-tact.
+-	 */
+-	WARN_ON_ONCE(event->attach_state & PERF_ATTACH_CONTEXT);
+-	if ((flags & DETACH_GROUP) &&
+-	    (event->attach_state & PERF_ATTACH_GROUP)) {
+-		/*
+-		 * Since in that case we cannot possibly be scheduled, simply
+-		 * detach now.
+-		 */
+-		raw_spin_lock_irq(&ctx->lock);
+-		perf_group_detach(event);
++	 * Because of perf_event_exit_task(), perf_remove_from_context() ought
++	 * to work in the face of TASK_TOMBSTONE, unlike every other
++	 * event_function_call() user.
++	 */
++	raw_spin_lock_irq(&ctx->lock);
++	if (!ctx->is_active) {
++		__perf_remove_from_context(event, __get_cpu_context(ctx),
++					   ctx, (void *)flags);
+ 		raw_spin_unlock_irq(&ctx->lock);
++		return;
  	}
-@@ -1238,6 +1240,9 @@ static int svm_set_nested_state(struct k
- 	copy_vmcb_control_area(&hsave->control, &svm->vmcb->control);
- 	hsave->save = *save;
- 
-+	if (is_guest_mode(vcpu))
-+		svm_leave_nested(vcpu);
++	raw_spin_unlock_irq(&ctx->lock);
 +
- 	svm->nested.vmcb12_gpa = kvm_state->hdr.svm.vmcb_pa;
- 	load_nested_vmcb_control(svm, ctl);
- 	nested_prepare_vmcb_control(svm);
-@@ -1252,6 +1257,7 @@ out_free:
++	event_function_call(event, __perf_remove_from_context, (void *)flags);
  }
  
- struct kvm_x86_nested_ops svm_nested_ops = {
-+	.leave_nested = svm_leave_nested,
- 	.check_events = svm_check_nested_events,
- 	.get_nested_state_pages = svm_get_nested_state_pages,
- 	.get_state = svm_get_nested_state,
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -279,7 +279,7 @@ int svm_set_efer(struct kvm_vcpu *vcpu,
+ /*
+@@ -12330,14 +12349,17 @@ void perf_pmu_migrate_context(struct pmu
+ }
+ EXPORT_SYMBOL_GPL(perf_pmu_migrate_context);
  
- 	if ((old_efer & EFER_SVME) != (efer & EFER_SVME)) {
- 		if (!(efer & EFER_SVME)) {
--			svm_leave_nested(svm);
-+			svm_leave_nested(vcpu);
- 			svm_set_gif(svm, true);
+-static void sync_child_event(struct perf_event *child_event,
+-			       struct task_struct *child)
++static void sync_child_event(struct perf_event *child_event)
+ {
+ 	struct perf_event *parent_event = child_event->parent;
+ 	u64 child_val;
  
- 			/*
---- a/arch/x86/kvm/svm/svm.h
-+++ b/arch/x86/kvm/svm/svm.h
-@@ -393,7 +393,7 @@ static inline bool nested_exit_on_nmi(st
+-	if (child_event->attr.inherit_stat)
+-		perf_event_read_event(child_event, child);
++	if (child_event->attr.inherit_stat) {
++		struct task_struct *task = child_event->ctx->task;
++
++		if (task && task != TASK_TOMBSTONE)
++			perf_event_read_event(child_event, task);
++	}
  
- int enter_svm_guest_mode(struct vcpu_svm *svm, u64 vmcb_gpa,
- 			 struct vmcb *nested_vmcb);
--void svm_leave_nested(struct vcpu_svm *svm);
-+void svm_leave_nested(struct kvm_vcpu *vcpu);
- void svm_free_nested(struct vcpu_svm *svm);
- int svm_allocate_nested(struct vcpu_svm *svm);
- int nested_svm_vmrun(struct vcpu_svm *svm);
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -6628,6 +6628,7 @@ __init int nested_vmx_hardware_setup(int
+ 	child_val = perf_event_count(child_event);
+ 
+@@ -12352,60 +12374,53 @@ static void sync_child_event(struct perf
  }
  
- struct kvm_x86_nested_ops vmx_nested_ops = {
-+	.leave_nested = vmx_leave_nested,
- 	.check_events = vmx_check_nested_events,
- 	.hv_timer_pending = nested_vmx_preemption_timer_pending,
- 	.get_state = vmx_get_nested_state,
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -4391,6 +4391,8 @@ static int kvm_vcpu_ioctl_x86_set_vcpu_e
- 				vcpu->arch.hflags |= HF_SMM_MASK;
- 			else
- 				vcpu->arch.hflags &= ~HF_SMM_MASK;
-+
-+			kvm_x86_ops.nested_ops->leave_nested(vcpu);
- 			kvm_smm_changed(vcpu);
- 		}
+ static void
+-perf_event_exit_event(struct perf_event *child_event,
+-		      struct perf_event_context *child_ctx,
+-		      struct task_struct *child)
++perf_event_exit_event(struct perf_event *event, struct perf_event_context *ctx)
+ {
+-	struct perf_event *parent_event = child_event->parent;
++	struct perf_event *parent_event = event->parent;
++	unsigned long detach_flags = 0;
  
+-	/*
+-	 * Do not destroy the 'original' grouping; because of the context
+-	 * switch optimization the original events could've ended up in a
+-	 * random child task.
+-	 *
+-	 * If we were to destroy the original group, all group related
+-	 * operations would cease to function properly after this random
+-	 * child dies.
+-	 *
+-	 * Do destroy all inherited groups, we don't care about those
+-	 * and being thorough is better.
+-	 */
+-	raw_spin_lock_irq(&child_ctx->lock);
+-	WARN_ON_ONCE(child_ctx->is_active);
++	if (parent_event) {
++		/*
++		 * Do not destroy the 'original' grouping; because of the
++		 * context switch optimization the original events could've
++		 * ended up in a random child task.
++		 *
++		 * If we were to destroy the original group, all group related
++		 * operations would cease to function properly after this
++		 * random child dies.
++		 *
++		 * Do destroy all inherited groups, we don't care about those
++		 * and being thorough is better.
++		 */
++		detach_flags = DETACH_GROUP | DETACH_CHILD;
++		mutex_lock(&parent_event->child_mutex);
++	}
+ 
+-	if (parent_event)
+-		perf_group_detach(child_event);
+-	list_del_event(child_event, child_ctx);
+-	perf_event_set_state(child_event, PERF_EVENT_STATE_EXIT); /* is_event_hup() */
+-	raw_spin_unlock_irq(&child_ctx->lock);
++	perf_remove_from_context(event, detach_flags);
++
++	raw_spin_lock_irq(&ctx->lock);
++	if (event->state > PERF_EVENT_STATE_EXIT)
++		perf_event_set_state(event, PERF_EVENT_STATE_EXIT);
++	raw_spin_unlock_irq(&ctx->lock);
+ 
+ 	/*
+-	 * Parent events are governed by their filedesc, retain them.
++	 * Child events can be freed.
+ 	 */
+-	if (!parent_event) {
+-		perf_event_wakeup(child_event);
++	if (parent_event) {
++		mutex_unlock(&parent_event->child_mutex);
++		/*
++		 * Kick perf_poll() for is_event_hup();
++		 */
++		perf_event_wakeup(parent_event);
++		free_event(event);
++		put_event(parent_event);
+ 		return;
+ 	}
+-	/*
+-	 * Child events can be cleaned up.
+-	 */
+-
+-	sync_child_event(child_event, child);
+ 
+ 	/*
+-	 * Remove this event from the parent's list
+-	 */
+-	WARN_ON_ONCE(parent_event->ctx->parent_ctx);
+-	mutex_lock(&parent_event->child_mutex);
+-	list_del_init(&child_event->child_list);
+-	mutex_unlock(&parent_event->child_mutex);
+-
+-	/*
+-	 * Kick perf_poll() for is_event_hup().
++	 * Parent events are governed by their filedesc, retain them.
+ 	 */
+-	perf_event_wakeup(parent_event);
+-	free_event(child_event);
+-	put_event(parent_event);
++	perf_event_wakeup(event);
+ }
+ 
+ static void perf_event_exit_task_context(struct task_struct *child, int ctxn)
+@@ -12462,7 +12477,7 @@ static void perf_event_exit_task_context
+ 	perf_event_task(child, child_ctx, 0);
+ 
+ 	list_for_each_entry_safe(child_event, next, &child_ctx->event_list, event_entry)
+-		perf_event_exit_event(child_event, child_ctx, child);
++		perf_event_exit_event(child_event, child_ctx);
+ 
+ 	mutex_unlock(&child_ctx->mutex);
+ 
+@@ -12722,6 +12737,7 @@ inherit_event(struct perf_event *parent_
+ 	 */
+ 	raw_spin_lock_irqsave(&child_ctx->lock, flags);
+ 	add_event_to_ctx(child_event, child_ctx);
++	child_event->attach_state |= PERF_ATTACH_CHILD;
+ 	raw_spin_unlock_irqrestore(&child_ctx->lock, flags);
+ 
+ 	/*
 
 
