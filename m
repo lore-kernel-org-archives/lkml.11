@@ -2,107 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80113C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 15:33:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FCFBC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 15:33:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359781AbiBDPdr (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 10:33:47 -0500
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:30192 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359758AbiBDPdo (ORCPT
+        id S233900AbiBDPdz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 10:33:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33700 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359798AbiBDPdv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 10:33:44 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1643988825; x=1675524825;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=cMuHKZNdUu+zY6CdLdDCUWTRhz2pGKkgXeGpnTamYJQ=;
-  b=2h8fXKgOVw91o8ltCvmi9EnCnVk9H+MjBoWN/ddCMyTdlbtMu5FlQ9jg
-   tP2ZwmDrB1EHe28ndsVwHQQEztx0wf2UYoimkWqv4ieRm1gIojs6rKKJN
-   Xo3EfU9qiMqQ3l86bJlGZk9geGRlWteSN/KmtqVdcRFXwYaNvpCDVuxUP
-   btkX6bpx5V0ZJZ2+rYO9v4XRw7y8RfDsr7O7vLGzRx9qv4EvGOV4uAc5/
-   +I4x3rxzsJwCfnTy2Khfw/b04mb7khbrhwScLAKVcM36SqAUkvndAKXoW
-   HdeDKNKl1xkPsPwidIdQt1dWwVdYTcw5kHST9Sh97PRxY3m9bX84GzCa+
-   A==;
-IronPort-SDR: zpZdcWx37nKUNCq1otdCfN9xDfpo9XBmq4KvCYeAQV+8TuLvlspfalhFwIiH8pGgnTHshrIjjp
- OURIJqpcWtTPf+RZ5NTrz1hzdnQTbmIugMAT+VL9SuLhJ0JYP59d7kQNqNl132NfS/QJOxLuQg
- I+hRQCDIicV/4dovh7IQONReCDyTJk3feoq7mhRHjdzY3wY6J6i0y7sSomGy3XHYGVITkcnTkw
- y0wQTffP9lxZb6TNYFuHyT+qCWNyWXZadqOJPHIJjWlB6JASRAT6qQT/thOq9RX9ehT1IExfcH
- pAGFoszifsopF/mXTr34MzTg
-X-IronPort-AV: E=Sophos;i="5.88,343,1635231600"; 
-   d="scan'208";a="147655033"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Feb 2022 08:33:44 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 4 Feb 2022 08:33:44 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 4 Feb 2022 08:33:42 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <linux-gpio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <linus.walleij@linaro.org>, <robh+dt@kernel.org>,
-        <lars.povlsen@microchip.com>, <Steen.Hegelund@microchip.com>,
-        <UNGLinuxDriver@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH 2/2] arm64: dts: sparx5: Fix for sgpio nodes
-Date:   Fri, 4 Feb 2022 16:35:35 +0100
-Message-ID: <20220204153535.465827-3-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220204153535.465827-1-horatiu.vultur@microchip.com>
-References: <20220204153535.465827-1-horatiu.vultur@microchip.com>
+        Fri, 4 Feb 2022 10:33:51 -0500
+Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7D86C061756
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 07:33:49 -0800 (PST)
+Received: by mail-il1-x135.google.com with SMTP id w5so5147870ilo.2
+        for <linux-kernel@vger.kernel.org>; Fri, 04 Feb 2022 07:33:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=sMXiHyFzmCWgQxEDyehhgwNaKxoIkXmTAnhc9E5Tz7k=;
+        b=PZ+FFNjEjQConjxrjIpu8ar1icI68F4XDfgl76CwIf+IC5o51EMrrmIGjESSaWxyzU
+         cmYKPIiKyBJ/e8OT4qudBPOLLKZsEQRdHLrXedbt8+IbBCWWV0J11Bjk+5NMVvd8+Zqc
+         /6sQNKxjynDwNA/yAoDCdNa1mib7Y0ewzQvXnRqjSecOik1/Bhk8iMpCN5LuPqo/o39l
+         ig5NdvNmyAqDx6ouS8Ke55fplMg0jNsoSFhPFIH2MzbdLfFzBjKJDKOo/00dRTWRKWau
+         /ibCxF6WagtUys+8gT68UhL8WBiy7LOU+/huLof2DpAf6jNZ8RvQkjcfR2k4WVawMetx
+         xpdw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=sMXiHyFzmCWgQxEDyehhgwNaKxoIkXmTAnhc9E5Tz7k=;
+        b=kB9LuKDeL3e7270Yuib1Gca+Y0HmKFnZimBN9iOMpphAeBgUv4iXtDJ7Kkrt0W0yCi
+         vSTVhNBszeTkB6+Q3T3dX3BfdbE9k2rvzLiMyurAOPBvD8+gZ1LzH3ikkLIa1R1sA88c
+         TH+p4C4ypylNoOZvUF+kEHByFD3TxQ5fSmiVXp7nMR/dz4mYN1Q+hwg3y2ElY5zUbn5r
+         ptVSjmzxCcRLnB2XHIXgIvNJqYz53CW6jr+CykE6So8Zb/SAt2HrweMXCnoIKiVM+J6O
+         1F/Xf1Abi1EmbqrUoI1TGmEtwGP6i7aKyOO5w1Fv75oTz3IFTs6Ji6qshFSgWSX6u3KQ
+         rpJg==
+X-Gm-Message-State: AOAM531eE9dpgI18eNVlXtujE5uNrHzn24BYJeqKn0B0WKt2JWoLlkK/
+        KRBZmW8AZ4mOr2LDdfNypTectg==
+X-Google-Smtp-Source: ABdhPJyxJY+wPZeoWcH2SOmdAobH35e3EnCxOS/1SHm4IhpBQrwnGZDne//CO9i6kh4AXjsI3J/Gtw==
+X-Received: by 2002:a05:6e02:1687:: with SMTP id f7mr1127479ila.143.1643988829269;
+        Fri, 04 Feb 2022 07:33:49 -0800 (PST)
+Received: from [192.168.1.30] ([207.135.234.126])
+        by smtp.gmail.com with ESMTPSA id y22sm1087583iow.2.2022.02.04.07.33.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 04 Feb 2022 07:33:48 -0800 (PST)
+Subject: Re: Partial direct-io loop regression in 5.17-rc
+To:     Milan Broz <gmazyland@gmail.com>
+Cc:     linux-block <linux-block@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Ondrej Kozina <okozina@redhat.com>
+References: <feb7e4b4-1a6f-71a7-0cdd-fda547408bea@gmail.com>
+ <08e1dbde-b27c-fd99-294c-8e4715b92576@kernel.dk>
+ <54f98c2a-4a40-75ed-8f66-11cc6b2fd190@gmail.com>
+From:   Jens Axboe <axboe@kernel.dk>
+Message-ID: <65bfe3d6-504c-8fba-2bf4-541ab24b324b@kernel.dk>
+Date:   Fri, 4 Feb 2022 08:33:47 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+In-Reply-To: <54f98c2a-4a40-75ed-8f66-11cc6b2fd190@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When the support for irqs was added for sgpio driver the memory size was
-not updated. Because the irq registers are found at address 0x108.
+On 2/4/22 8:03 AM, Milan Broz wrote:
+> 
+> 
+> On 04/02/2022 14:32, Jens Axboe wrote:
+>> On 2/4/22 2:22 AM, Milan Broz wrote:
+>>> Hi Jens,
+>>>
+>>> It seems that there is a regression in direct-io over loop for partial
+>>> direct-io reads (or perhaps even for other situations).
+>>>
+>>> If I run this code (loop over 6M file, dd direct-io read with 4M blocks)
+>>>
+>>> IMG=tst.img
+>>> LOOP=/dev/loop66
+>>>
+>>> truncate -s 6M $IMG
+>>> losetup $LOOP $IMG
+>>> dd if=$LOOP of=/dev/null bs=4M iflag=direct
+>>> losetup -d $LOOP
+>>>
+>>>
+>>> on older kernel (<=5.16) it reads the whole file
+>>>     6291456 bytes (6.3 MB, 6.0 MiB) copied, 0.201591 s, 31.2 MB/s
+>>>
+>>>
+>>> while on 5.17-rc (tested on today/s Linus' git) it reads only the full blocks:
+>>>     4194304 bytes (4.2 MB, 4.0 MiB) copied, 0.201904 s, 20.8 MB/s
+>>>
+>>> No error reported, exit code is 0.
+>>
+>> Can you try:
+>>
+>> https://git.kernel.dk/cgit/linux-block/commit/?h=block-5.17&id=3e1f941dd9f33776b3df4e30f741fe445ff773f3
+> 
+> Yes, it works now.
+> (Not sure why I did not check if this patch is mainline, as I know
+> about it. My bad...)
+> 
+> So this is going to some next rc, right?
 
-Fixes: d0f482bb06f944 ("arm64: dts: sparx5: Add the Sparx5 switch node")
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- arch/arm64/boot/dts/microchip/sparx5.dtsi | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Yes, it'll be in -rc3, pushing it out today or tomorrow.
 
-diff --git a/arch/arm64/boot/dts/microchip/sparx5.dtsi b/arch/arm64/boot/dts/microchip/sparx5.dtsi
-index 787ebcec121d..b9f2e2fa3d43 100644
---- a/arch/arm64/boot/dts/microchip/sparx5.dtsi
-+++ b/arch/arm64/boot/dts/microchip/sparx5.dtsi
-@@ -305,7 +305,7 @@ sgpio0: gpio@61101036c {
- 			pinctrl-names = "default";
- 			resets = <&reset 0>;
- 			reset-names = "switch";
--			reg = <0x6 0x1101036c 0x100>;
-+			reg = <0x6 0x1101036c 0x118>;
- 			sgpio_in0: gpio@0 {
- 				compatible = "microchip,sparx5-sgpio-bank";
- 				reg = <0>;
-@@ -335,7 +335,7 @@ sgpio1: gpio@611010484 {
- 			pinctrl-names = "default";
- 			resets = <&reset 0>;
- 			reset-names = "switch";
--			reg = <0x6 0x11010484 0x100>;
-+			reg = <0x6 0x11010484 0x118>;
- 			sgpio_in1: gpio@0 {
- 				compatible = "microchip,sparx5-sgpio-bank";
- 				reg = <0>;
-@@ -365,7 +365,7 @@ sgpio2: gpio@61101059c {
- 			pinctrl-names = "default";
- 			resets = <&reset 0>;
- 			reset-names = "switch";
--			reg = <0x6 0x1101059c 0x100>;
-+			reg = <0x6 0x1101059c 0x118>;
- 			sgpio_in2: gpio@0 {
- 				reg = <0>;
- 				compatible = "microchip,sparx5-sgpio-bank";
 -- 
-2.33.0
+Jens Axboe
 
