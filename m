@@ -2,108 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9681C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:25:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90A09C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:25:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358130AbiBDJZf (ORCPT
+        id S1357864AbiBDJZk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 04:25:35 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:52684 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237246AbiBDJYN (ORCPT
+        Fri, 4 Feb 2022 04:25:40 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:34558 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1357478AbiBDJYP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 04:24:13 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Fri, 4 Feb 2022 04:24:15 -0500
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7E469B836EB;
-        Fri,  4 Feb 2022 09:24:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF43DC004E1;
-        Fri,  4 Feb 2022 09:24:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643966651;
-        bh=SyzHGSaCOZ3ivvI/sjcAeoQjKsYXInq4oIEakk1zE6M=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b+ZxyrjAN2mx2ekYPhsfy83k55Li8u9r+p8L6YATfA3cNmkZ7YVoHf46KWZpodrKd
-         /igXyRNnBG9wq0wXjDVAc+5lQBZaSZaQPbU81Ka0hSN3+Va0MH4ZjGWc2TweDjk91h
-         OIQkqVHm8C+1thHDOzFCcY8uWna3Xyw+YgsvKfTE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sylwester Dziedziuch <sylwesterx.dziedziuch@intel.com>,
-        Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Imam Hassan Reza Biswas <imam.hassan.reza.biswas@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.15 22/32] i40e: Fix reset bw limit when DCB enabled with 1 TC
-Date:   Fri,  4 Feb 2022 10:22:32 +0100
-Message-Id: <20220204091915.981867578@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220204091915.247906930@linuxfoundation.org>
-References: <20220204091915.247906930@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 211F0218F0;
+        Fri,  4 Feb 2022 09:24:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1643966654; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=8cDBknFJRIpxf5l9AdOZUIo0+FnYIcgRzSzamZqBACo=;
+        b=gyCozaF0GvUFq5S0NlfbfbHKvuxPf62o/USaPhpLav/RBPVy4Nr0Bk1+fgGQgJBBV05yi9
+        QZyhBkHtXcNpy0ehgel1ozmfdJra4Ag9a2khtpiKNnmGi1ma2A7SGfCSvLmalFvOQa+pct
+        absX5Rsz6cck3tpMHMwWSp2M1NF/XxA=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id EAB4013322;
+        Fri,  4 Feb 2022 09:24:13 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id oy3ON73w/GEMeQAAMHmgww
+        (envelope-from <jgross@suse.com>); Fri, 04 Feb 2022 09:24:13 +0000
+Message-ID: <1af6c334-4c5c-66da-7fea-0dfd0339e665@suse.com>
+Date:   Fri, 4 Feb 2022 10:24:13 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH v2] Improve docs for IOCTL_GNTDEV_MAP_GRANT_REF
+Content-Language: en-US
+To:     Demi Marie Obenour <demiobenour@gmail.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Stefano Stabellini <sstabellini@kernel.org>
+Cc:     xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org
+References: <f66c5a4e-2034-00b5-a635-6983bd999c07@gmail.com>
+From:   Juergen Gross <jgross@suse.com>
+In-Reply-To: <f66c5a4e-2034-00b5-a635-6983bd999c07@gmail.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------Eg4rG6ujboyviXGmG1PlN7iq"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------Eg4rG6ujboyviXGmG1PlN7iq
+Content-Type: multipart/mixed; boundary="------------sgWeOpdNgNKChkm3psCKSe9q";
+ protected-headers="v1"
+From: Juergen Gross <jgross@suse.com>
+To: Demi Marie Obenour <demiobenour@gmail.com>,
+ Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+ Stefano Stabellini <sstabellini@kernel.org>
+Cc: xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org
+Message-ID: <1af6c334-4c5c-66da-7fea-0dfd0339e665@suse.com>
+Subject: Re: [PATCH v2] Improve docs for IOCTL_GNTDEV_MAP_GRANT_REF
+References: <f66c5a4e-2034-00b5-a635-6983bd999c07@gmail.com>
+In-Reply-To: <f66c5a4e-2034-00b5-a635-6983bd999c07@gmail.com>
 
-commit 3d2504663c41104b4359a15f35670cfa82de1bbf upstream.
+--------------sgWeOpdNgNKChkm3psCKSe9q
+Content-Type: multipart/mixed; boundary="------------We0Qqb4jVkRXwDCuJewzkpGp"
 
-There was an AQ error I40E_AQ_RC_EINVAL when trying
-to reset bw limit as part of bw allocation setup.
-This was caused by trying to reset bw limit with
-DCB enabled. Bw limit should not be reset when
-DCB is enabled. The code was relying on the pf->flags
-to check if DCB is enabled but if only 1 TC is available
-this flag will not be set even though DCB is enabled.
-Add a check for number of TC and if it is 1
-don't try to reset bw limit even if pf->flags shows
-DCB as disabled.
+--------------We0Qqb4jVkRXwDCuJewzkpGp
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-Fixes: fa38e30ac73f ("i40e: Fix for Tx timeouts when interface is brought up if DCB is enabled")
-Suggested-by: Alexander Lobakin <alexandr.lobakin@intel.com> # Flatten the condition
-Signed-off-by: Sylwester Dziedziuch <sylwesterx.dziedziuch@intel.com>
-Signed-off-by: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
-Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Tested-by: Imam Hassan Reza Biswas <imam.hassan.reza.biswas@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/net/ethernet/intel/i40e/i40e_main.c |   12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+T24gMzEuMDEuMjIgMTg6MjMsIERlbWkgTWFyaWUgT2Jlbm91ciB3cm90ZToNCj4gVGhlIGN1
+cnJlbnQgaW1wbGVtZW50YXRpb24gb2YgZ250ZGV2IGd1YXJhbnRlZXMgdGhhdCB0aGUgZmly
+c3QgY2FsbCB0bw0KPiBJT0NUTF9HTlRERVZfTUFQX0dSQU5UX1JFRiB3aWxsIHNldCBAaW5k
+ZXggdG8gMC4gIFRoaXMgaXMgcmVxdWlyZWQgdG8NCj4gdXNlIGdudGRldiBmb3IgV2F5bGFu
+ZCwgd2hpY2ggaXMgYSBmdXR1cmUgZGVzaXJlIG9mIFF1YmVzIE9TLg0KPiBBZGRpdGlvbmFs
+bHksIHJlcXVlc3RpbmcgemVybyBncmFudHMgcmVzdWx0cyBpbiBhbiBlcnJvciwgYnV0IHRo
+aXMgd2FzDQo+IG5vdCBkb2N1bWVudGVkIGVpdGhlci4gIERvY3VtZW50IGJvdGggb2YgdGhl
+c2UuDQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBEZW1pIE1hcmllIE9iZW5vdXIgPGRlbWlvYmVu
+b3VyQGdtYWlsLmNvbT4NCg0KUHVzaGVkIHRvIHhlbi90aXAuZ2l0IGZvci1saW51cy01LjE3
+YQ0KDQoNCkp1ZXJnZW4NCg==
+--------------We0Qqb4jVkRXwDCuJewzkpGp
+Content-Type: application/pgp-keys; name="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Disposition: attachment; filename="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Description: OpenPGP public key
+Content-Transfer-Encoding: quoted-printable
 
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -5372,7 +5372,15 @@ static int i40e_vsi_configure_bw_alloc(s
- 	/* There is no need to reset BW when mqprio mode is on.  */
- 	if (pf->flags & I40E_FLAG_TC_MQPRIO)
- 		return 0;
--	if (!vsi->mqprio_qopt.qopt.hw && !(pf->flags & I40E_FLAG_DCB_ENABLED)) {
-+
-+	if (!vsi->mqprio_qopt.qopt.hw) {
-+		if (pf->flags & I40E_FLAG_DCB_ENABLED)
-+			goto skip_reset;
-+
-+		if (IS_ENABLED(CONFIG_I40E_DCB) &&
-+		    i40e_dcb_hw_get_num_tc(&pf->hw) == 1)
-+			goto skip_reset;
-+
- 		ret = i40e_set_bw_limit(vsi, vsi->seid, 0);
- 		if (ret)
- 			dev_info(&pf->pdev->dev,
-@@ -5380,6 +5388,8 @@ static int i40e_vsi_configure_bw_alloc(s
- 				 vsi->seid);
- 		return ret;
- 	}
-+
-+skip_reset:
- 	memset(&bw_data, 0, sizeof(bw_data));
- 	bw_data.tc_valid_bits = enabled_tc;
- 	for (i = 0; i < I40E_MAX_TRAFFIC_CLASS; i++)
+-----BEGIN PGP PUBLIC KEY BLOCK-----
 
+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
+jR/i1DG86lem3iBDXzXsZDn8R38=3D
+=3D2wuH
+-----END PGP PUBLIC KEY BLOCK-----
 
+--------------We0Qqb4jVkRXwDCuJewzkpGp--
+
+--------------sgWeOpdNgNKChkm3psCKSe9q--
+
+--------------Eg4rG6ujboyviXGmG1PlN7iq
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+-----BEGIN PGP SIGNATURE-----
+
+wsB5BAABCAAjFiEEhRJncuj2BJSl0Jf3sN6d1ii/Ey8FAmH88L0FAwAAAAAACgkQsN6d1ii/Ey/j
+WQf/YxiHmXcPdXmmKLO9PoqWdFJfJJn4O4YaSkpUpk7v31m2RRyFhLTRjvlcqHoAj7z2OM1oYV6h
+6khY2LgSF5OyioiowZU+47QNu354PbVPg2uJ2sRS2Av5836QiyNirH3Al7thSfLxtvtdReGE2xnJ
+P9AaeiVxC4s8N/lKjFqIlnqh/vPXBiVanmWzuByQ4Z0F8F+u/KVUoy26C8I3twUWyze7IabD5MIO
+NYMLENNFb3ByCgokQgoksiBuHDE3WBWxY4pLKO0J/V4t/MC6WElMzk4k2GSO6qfsoPrzormxytlW
+hwvyvt5qWnWSFC0Iigka9n7N875aR+0PjtobEGve3A==
+=yOqa
+-----END PGP SIGNATURE-----
+
+--------------Eg4rG6ujboyviXGmG1PlN7iq--
