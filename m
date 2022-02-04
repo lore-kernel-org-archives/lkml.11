@@ -2,98 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDF92C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 15:32:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2C0DC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 15:33:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359742AbiBDPco (ORCPT
+        id S1359750AbiBDPdm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 10:32:44 -0500
-Received: from mga06.intel.com ([134.134.136.31]:23256 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1359729AbiBDPco (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 10:32:44 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643988764; x=1675524764;
+        Fri, 4 Feb 2022 10:33:42 -0500
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:9341 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230213AbiBDPdl (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 4 Feb 2022 10:33:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1643988784; x=1675524784;
   h=from:to:cc:subject:date:message-id:mime-version:
    content-transfer-encoding;
-  bh=y90kpLLV55S7E+WAS5zMpsCx27LldDzWId8+y8ndgYs=;
-  b=gz0xkTTt9mrDrweqMtn3sAYrgOwxF+5M+q51x79ztl4uf5DOcdj4fK6r
-   lOYxli7gHfV3WclimXHXCQi3GMK0c9UtsoVrV3U8EM03oRUfEvArIuFlq
-   R9AO8JhoesvK2Gm7RWoH9vWZchZ4Z3jSKGQdh3jNeW711Bg/LMs8Nped6
-   sSzfBD6zgMFoUAo1LukLcuJL/hkIXod9GrqQ0+nFInso1zw2Bb2qX4lfg
-   xEEbbyWBKOg4pYyPQwx54QkMrRwz0gdBvg8vOnaAijkik7rOxn4hBvg30
-   CiKL9JYifLRkgg8ahCMYKdkJNuCEQq3YVdMX/oXKj5G263g4FpgXuhFKV
+  bh=4JknExYiSPKRFuX/Pmg3/yXzIABd/kiVY/FH+NRjNpE=;
+  b=vZ0Ew/2GAH05YiYEoP7Fs7fnB283U23QwJfbXsWBD6IS7UGrte0hidjl
+   JH29CWd7RxUkGMJxOd3LkemQ2ZxQ/09GFXRUXvu9+3Ff1q66xYh3X0P1T
+   /Q7rkZuPagf5HMXJTCjg/5ixErmM93qmRFc/VNUfcLVQ21CaqN+AeD7Ek
+   gpTnTrbN0gCl6HeRupGnJZ/glLN3eI4Xg6uGRtD8ZJRHiqktPiWI2R51t
+   KMh5P/5rUjys+W4SMt6AeWzMXV9wRSP/Yjm0O7arcMQmkM88ikAjYbFUO
+   MTFbkjelg5b0AZV0QAznZW9g5wF3+AIVKSqYffIJLbynVB2tRLcTHyc3e
    w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10247"; a="309130252"
+IronPort-SDR: 3blC7bM7KXIWrbVQGot97qpC5rQjaV6krojUX+F0DA9Yta9T5nvyiTvt6zGqg48SSj/tskFnqA
+ Zmcq7JWqAh3mn/LJe9OxS4E2mSFIN6JYEkjmislqk3xcGM6yb0uE/9mbWd02NAX9ekOCwBJ0mP
+ KGevGZcvtMh/Bk84pMv4DX8HrXwWumOfD7409gs35AfpC8YPtiygsLOXS8eTljVjUY8DY56cAR
+ 06c1ARzitpb0prMkcRRQ0gX8c+rXqfS1pehNMHEOsfgaM+n5VgasQRiQ6pEwOmlotrAiHP4mz9
+ xl4VUoRxVyreWoWU+SHo5C8O
 X-IronPort-AV: E=Sophos;i="5.88,343,1635231600"; 
-   d="scan'208";a="309130252"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2022 07:32:43 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,343,1635231600"; 
-   d="scan'208";a="566767476"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga001.jf.intel.com with ESMTP; 04 Feb 2022 07:32:42 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 0A71E204; Fri,  4 Feb 2022 17:32:56 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v2 1/1] tty: Drop duplicate NULL check in TTY port functions
-Date:   Fri,  4 Feb 2022 17:32:53 +0200
-Message-Id: <20220204153253.11006-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
+   d="scan'208";a="144922906"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Feb 2022 08:33:03 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 4 Feb 2022 08:33:39 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Fri, 4 Feb 2022 08:33:37 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <linux-gpio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <linus.walleij@linaro.org>, <robh+dt@kernel.org>,
+        <lars.povlsen@microchip.com>, <Steen.Hegelund@microchip.com>,
+        <UNGLinuxDriver@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH 0/2] pinctrl: pinctrl-microchip-sgpio: Fixes for irqs
+Date:   Fri, 4 Feb 2022 16:35:33 +0100
+Message-ID: <20220204153535.465827-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The free_page(addr), which becomes free_pages(addr, 0) checks addr against 0.
-No need to repeat this check in the callers, i.e.  tty_port_free_xmit_buf()
-and tty_port_destructor().
+The following patch series contains two fixes to the
+pinctrol-microchiop-sgpio, one in the documentation and the oter in the
+DT. They were introduced when the irq support was added to the driver.
 
-Note, INIT_KFIFO() is safe without that check, because it operates on
-a separate member and doesn't rely on the FIFO itself to be allocated.
+Horatiu Vultur (2):
+  dt-bindings: pinctrl: pinctrl-microchip-sgpio: Fix example
+  arm64: dts: sparx5: Fix for sgpio nodes
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Acked-by: Jiri Slaby <jirislaby@kernel.org>
----
-v2: updated note in commit message (Greg), added tag (Jiri)
- drivers/tty/tty_port.c | 11 ++++-------
- 1 file changed, 4 insertions(+), 7 deletions(-)
+ .../devicetree/bindings/pinctrl/microchip,sparx5-sgpio.yaml | 2 +-
+ arch/arm64/boot/dts/microchip/sparx5.dtsi                   | 6 +++---
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
-index 4282895ede9e..880608a65773 100644
---- a/drivers/tty/tty_port.c
-+++ b/drivers/tty/tty_port.c
-@@ -240,11 +240,9 @@ EXPORT_SYMBOL(tty_port_alloc_xmit_buf);
- void tty_port_free_xmit_buf(struct tty_port *port)
- {
- 	mutex_lock(&port->buf_mutex);
--	if (port->xmit_buf != NULL) {
--		free_page((unsigned long)port->xmit_buf);
--		port->xmit_buf = NULL;
--		INIT_KFIFO(port->xmit_fifo);
--	}
-+	free_page((unsigned long)port->xmit_buf);
-+	port->xmit_buf = NULL;
-+	INIT_KFIFO(port->xmit_fifo);
- 	mutex_unlock(&port->buf_mutex);
- }
- EXPORT_SYMBOL(tty_port_free_xmit_buf);
-@@ -271,8 +269,7 @@ static void tty_port_destructor(struct kref *kref)
- 	/* check if last port ref was dropped before tty release */
- 	if (WARN_ON(port->itty))
- 		return;
--	if (port->xmit_buf)
--		free_page((unsigned long)port->xmit_buf);
-+	free_page((unsigned long)port->xmit_buf);
- 	tty_port_destroy(port);
- 	if (port->ops && port->ops->destruct)
- 		port->ops->destruct(port);
 -- 
-2.34.1
+2.33.0
 
