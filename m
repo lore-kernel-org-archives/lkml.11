@@ -2,219 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0435EC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 23:56:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0885C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 23:57:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378641AbiBDX46 (ORCPT
+        id S1378490AbiBDX5c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 18:56:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52194 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378514AbiBDX4J (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 18:56:09 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47BFADB788C0;
-        Fri,  4 Feb 2022 15:56:08 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 80522B83978;
-        Fri,  4 Feb 2022 23:56:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D136AC340FC;
-        Fri,  4 Feb 2022 23:56:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644018962;
-        bh=7df+VBYTF6sNJWXaffHoxsD1+Ms6yjHX8EopTce+Ujg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LE49Lbqj/GCAhp57/SIeYP1wNk6vdc9dkC35lm8lgY4zwDNLJqI++/4+J3H02UbgJ
-         AxfEUdg3ARdw0F+b0qqvoq+hYSTFQ9LvMM0VJe5nuawCLspIzZIOoen4MAZC8n/PRT
-         Z4AxPy0jJDuQhYihJIh0T2eRgpwDUQ1OIL8jWwSUsfLAj/PS9fvO/7S9rxz19d4jPG
-         7EeV4OL5WA9uhmy9MIgFZAHVI19LpHV8nnD+OGQCAo8YKbnobjrj1uDxldf407LDOV
-         6qwgYGF+CgRFEIA967dT6slLtm8Od4K+Hllrx5TyYp0seBGcxljfmAO01v0z8/EYrZ
-         TAil3wukia4Jw==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 65BAA5C0BCB; Fri,  4 Feb 2022 15:56:02 -0800 (PST)
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     rcu@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com,
-        rostedt@goodmis.org, "Paul E. McKenney" <paulmck@kernel.org>,
-        Zhouyi Zhou <zhouzhouyi@gmail.com>
-Subject: [PATCH rcu 10/13] torture: Change KVM environment variable to RCUTORTURE
-Date:   Fri,  4 Feb 2022 15:55:58 -0800
-Message-Id: <20220204235601.3438-10-paulmck@kernel.org>
-X-Mailer: git-send-email 2.31.1.189.g2e36527f23
-In-Reply-To: <20220204235558.GA3221@paulmck-ThinkPad-P17-Gen-1>
-References: <20220204235558.GA3221@paulmck-ThinkPad-P17-Gen-1>
+        Fri, 4 Feb 2022 18:57:32 -0500
+Received: from mout.gmx.net ([212.227.17.20]:37375 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S241379AbiBDX5b (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 4 Feb 2022 18:57:31 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1644019036;
+        bh=1Kwp7/KAIFTkmXJSYkq3CZKgQvseK9UqHtzpJM2awG8=;
+        h=X-UI-Sender-Class:Date:From:To:Cc:Subject:References:In-Reply-To;
+        b=Gsc2nTVAR6tJrqcmCrHJaqNL8pSC8PkENl2iOnfVeB0Xp/WUWa3NUI+yDSjGD8YJF
+         BEvgNziaAJcTZ6FTIzjJ70zIDsBTobPipQrEInniP22+nMiBC+H0lMu3EzyCHg921e
+         /6SkhNvkn4AaVIv/DdjnJLSBzeHkf7DtzM+gAlnE=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from longitude ([5.146.194.160]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MPokN-1muSpU36YN-00MuYh; Sat, 05
+ Feb 2022 00:57:15 +0100
+Date:   Sat, 5 Feb 2022 00:57:14 +0100
+From:   Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
+To:     Manivannan Sadhasivam <mani@kernel.org>
+Cc:     Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Andreas =?utf-8?Q?F=C3=A4rber?= <afaerber@suse.de>,
+        Saravanan Sekar <sravanhome@gmail.com>,
+        Parthiban Nallathambi <pn@denx.de>,
+        linux-actions@lists.infradead.org
+Subject: Re: [PATCH v2 1/4] clk: actions: Terminate clk_div_table with
+ sentinel element
+Message-ID: <Yf29Wt6DGYxDUlDj@latitude>
+References: <20220203142153.260720-1-j.neuschaefer@gmx.net>
+ <20220203142153.260720-2-j.neuschaefer@gmx.net>
+ <20220203161210.GA138829@thinkpad>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="rJDN8eL983l7maVq"
+Content-Disposition: inline
+In-Reply-To: <20220203161210.GA138829@thinkpad>
+X-Provags-ID: V03:K1:qK3ksEUkC4NY6uQA9JGHANigRFTqspIpM3bfrw1t3TfmoxkEnDI
+ xsBoY+yOee54IhFeJG6I0IFn9sBfFDEwbzJdf7reoUgQ5e7koC2AB+BuDkPOC5jw/nuQL2N
+ nyedVTQnXfu/XI0sKaXhr/tPuSKw/M66Ef9yCGWt5Tajsfr9Ys7Pl+Pt7QGc7f4I2zLJtwO
+ ZWbUYKWRBzxmFFP4CssXQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:bKGC50lIqqM=:8FZ6ZutMvSeGn8vJnHPVMV
+ RHgaIKaXc8YRAMmCmHSoKSO3yzf8VCDT1Rr68lqnu1fb96T1temqzH2otu2jvvgaS2EOBtLqz
+ N9gjzAug2AMcOcAUgXs8qIVPodcBLAOhbes37nhkgNS3+LYpyzsTvMKLYgw+G0atXBCCTh3kj
+ fmOzOHJA7AzkVP6WZCAYIHMSbkJxk/4xGKI6TwBrcyKMTLt99zF6A25ZcJzwFJkS6r10Iarq/
+ 8J2Z9YhOdSzeF102jNXy+9WldBOeC1ivZlUA396SdTZO9Kb8k/IpP76nKt/3FtSMQBajGN4kA
+ i/K508HzjOpC8pEn8i2/x/m0578cg2pHDDW06/hu0yBBVKNx9yDv06GOZw1jGSikqrhq68+Z+
+ FcuVJ37N1JvYTYxBQI3jOPnUKbdeMuqvMThuaOQTQu344gnA6+OBftpK6iHu+47LIl+KspLkP
+ rxoo1Cxi0AGXouZpn2LIwUOSyC3z5cTiriKEMjPMQ9buoDSIEVKWKZV1O7zh/L3fnX3k8Bvyz
+ wDR/wcgFrXgMT24O/h9JysnWEfqjRTvBIuY90uXaWk8WFZc5KCkIAxzcTooyzZ9jpIRvpMb05
+ MWteaKSWlWkKCxuomCax1z+Ij/5l70LIQ5BkCLkQ9P1MSg0OnL98cCY+jz4mzxfi1oEofyRvD
+ sEF+YYnfafsxaQibpTrB6HUpEZLNGlxJpygyEK2HA8vRhni244yVQ6m057RXqz1oj12J+ecGr
+ XeRBdAAjY8sw1ecZ3ljMDldoENQ10s6mAQyYCclbfwpOeeUANWnzTwWIHspIWHYsFHcL40oHP
+ Zvc7sj86pnt5sVyoxPI4RgxHo/I9MGWsZTA/QIY34QQe0D5f4lkYvt0xLoZruFPaXBe9zH0jA
+ hyN9lvXnvtUuxOOrkmj7LLuc/DqKl0qRVYeccsL3s8rIh6aWpq6EDtTrf0CFzockXWd3i7sJa
+ SPu7vFe3sOnjV+o5u/jFVKnBUhcPQbKqroeqLTxXN7x36IGqsRJfvDsQYyu4ZdVrzEMzdM6kL
+ 0+t1+S9A3ClQEgUqeSGjWtBgboBY4lGiW8DoftpciYRH5LFrwODZTcDoeTdEh4OapuvSnpci2
+ g5eMutVCqY3SPg=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The torture-test scripting's long-standing use of KVM as the environment
-variable tracking the pathname of the rcutorture directory now conflicts
-with allmodconfig builds due to the virt/kvm/Makefile.kvm file's use
-of this as a makefile variable.  This commit therefore changes the
-torture-test scripting from KVM to RCUTORTURE, avoiding the name conflict.
 
-Reported-by: Zhouyi Zhou <zhouzhouyi@gmail.com>
-Tested-by: Zhouyi Zhou <zhouzhouyi@gmail.com>
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
----
- .../testing/selftests/rcutorture/bin/kvm-again.sh  |  4 ++--
- .../selftests/rcutorture/bin/kvm-check-branches.sh |  4 ++--
- .../selftests/rcutorture/bin/kvm-end-run-stats.sh  |  4 ++--
- .../testing/selftests/rcutorture/bin/kvm-remote.sh |  8 ++++----
- tools/testing/selftests/rcutorture/bin/kvm.sh      | 14 +++++++-------
- tools/testing/selftests/rcutorture/bin/torture.sh  |  4 ++--
- 6 files changed, 19 insertions(+), 19 deletions(-)
+--rJDN8eL983l7maVq
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/tools/testing/selftests/rcutorture/bin/kvm-again.sh b/tools/testing/selftests/rcutorture/bin/kvm-again.sh
-index 5a0023d183dac..0941f1ddab658 100755
---- a/tools/testing/selftests/rcutorture/bin/kvm-again.sh
-+++ b/tools/testing/selftests/rcutorture/bin/kvm-again.sh
-@@ -47,8 +47,8 @@ else
- 	exit 1
- fi
- 
--KVM="`pwd`/tools/testing/selftests/rcutorture"; export KVM
--PATH=${KVM}/bin:$PATH; export PATH
-+RCUTORTURE="`pwd`/tools/testing/selftests/rcutorture"; export RCUTORTURE
-+PATH=${RCUTORTURE}/bin:$PATH; export PATH
- . functions.sh
- 
- dryrun=
-diff --git a/tools/testing/selftests/rcutorture/bin/kvm-check-branches.sh b/tools/testing/selftests/rcutorture/bin/kvm-check-branches.sh
-index 370406bbfeedc..f17000a2ccf1f 100755
---- a/tools/testing/selftests/rcutorture/bin/kvm-check-branches.sh
-+++ b/tools/testing/selftests/rcutorture/bin/kvm-check-branches.sh
-@@ -49,8 +49,8 @@ fi
- mkdir $resdir/$ds
- echo Results directory: $resdir/$ds
- 
--KVM="`pwd`/tools/testing/selftests/rcutorture"; export KVM
--PATH=${KVM}/bin:$PATH; export PATH
-+RCUTORTURE="`pwd`/tools/testing/selftests/rcutorture"; export RCUTORTURE
-+PATH=${RCUTORTURE}/bin:$PATH; export PATH
- . functions.sh
- echo Using all `identify_qemu_vcpus` CPUs.
- 
-diff --git a/tools/testing/selftests/rcutorture/bin/kvm-end-run-stats.sh b/tools/testing/selftests/rcutorture/bin/kvm-end-run-stats.sh
-index e4a00779b8c69..ee886b40a5d2c 100755
---- a/tools/testing/selftests/rcutorture/bin/kvm-end-run-stats.sh
-+++ b/tools/testing/selftests/rcutorture/bin/kvm-end-run-stats.sh
-@@ -22,8 +22,8 @@ T=${TMPDIR-/tmp}/kvm-end-run-stats.sh.$$
- trap 'rm -rf $T' 0
- mkdir $T
- 
--KVM="`pwd`/tools/testing/selftests/rcutorture"; export KVM
--PATH=${KVM}/bin:$PATH; export PATH
-+RCUTORTURE="`pwd`/tools/testing/selftests/rcutorture"; export RCUTORTURE
-+PATH=${RCUTORTURE}/bin:$PATH; export PATH
- . functions.sh
- default_starttime="`get_starttime`"
- starttime="${2-default_starttime}"
-diff --git a/tools/testing/selftests/rcutorture/bin/kvm-remote.sh b/tools/testing/selftests/rcutorture/bin/kvm-remote.sh
-index 29b068a55b466..8c4c1e4792d02 100755
---- a/tools/testing/selftests/rcutorture/bin/kvm-remote.sh
-+++ b/tools/testing/selftests/rcutorture/bin/kvm-remote.sh
-@@ -19,8 +19,8 @@ then
- 	exit 1
- fi
- 
--KVM="`pwd`/tools/testing/selftests/rcutorture"; export KVM
--PATH=${KVM}/bin:$PATH; export PATH
-+RCUTORTURE="`pwd`/tools/testing/selftests/rcutorture"; export RCUTORTURE
-+PATH=${RCUTORTURE}/bin:$PATH; export PATH
- . functions.sh
- 
- starttime="`get_starttime`"
-@@ -108,8 +108,8 @@ else
- 		cat $T/kvm-again.sh.out | tee -a "$oldrun/remote-log"
- 		exit 2
- 	fi
--	cp -a "$rundir" "$KVM/res/"
--	oldrun="$KVM/res/$ds"
-+	cp -a "$rundir" "$RCUTORTURE/res/"
-+	oldrun="$RCUTORTURE/res/$ds"
- fi
- echo | tee -a "$oldrun/remote-log"
- echo " ----" kvm-again.sh output: "(`date`)" | tee -a "$oldrun/remote-log"
-diff --git a/tools/testing/selftests/rcutorture/bin/kvm.sh b/tools/testing/selftests/rcutorture/bin/kvm.sh
-index 348ad177a5acc..55b2c15332827 100755
---- a/tools/testing/selftests/rcutorture/bin/kvm.sh
-+++ b/tools/testing/selftests/rcutorture/bin/kvm.sh
-@@ -25,15 +25,15 @@ LANG=en_US.UTF-8; export LANG
- 
- dur=$((30*60))
- dryrun=""
--KVM="`pwd`/tools/testing/selftests/rcutorture"; export KVM
--PATH=${KVM}/bin:$PATH; export PATH
-+RCUTORTURE="`pwd`/tools/testing/selftests/rcutorture"; export RCUTORTURE
-+PATH=${RCUTORTURE}/bin:$PATH; export PATH
- . functions.sh
- 
- TORTURE_ALLOTED_CPUS="`identify_qemu_vcpus`"
- TORTURE_DEFCONFIG=defconfig
- TORTURE_BOOT_IMAGE=""
- TORTURE_BUILDONLY=
--TORTURE_INITRD="$KVM/initrd"; export TORTURE_INITRD
-+TORTURE_INITRD="$RCUTORTURE/initrd"; export TORTURE_INITRD
- TORTURE_KCONFIG_ARG=""
- TORTURE_KCONFIG_GDB_ARG=""
- TORTURE_BOOT_GDB_ARG=""
-@@ -262,7 +262,7 @@ else
- 	exit 1
- fi
- 
--CONFIGFRAG=${KVM}/configs/${TORTURE_SUITE}; export CONFIGFRAG
-+CONFIGFRAG=${RCUTORTURE}/configs/${TORTURE_SUITE}; export CONFIGFRAG
- 
- defaultconfigs="`tr '\012' ' ' < $CONFIGFRAG/CFLIST`"
- if test -z "$configs"
-@@ -272,7 +272,7 @@ fi
- 
- if test -z "$resdir"
- then
--	resdir=$KVM/res
-+	resdir=$RCUTORTURE/res
- fi
- 
- # Create a file of test-name/#cpus pairs, sorted by decreasing #cpus.
-@@ -386,7 +386,7 @@ END {
- # Generate a script to execute the tests in appropriate batches.
- cat << ___EOF___ > $T/script
- CONFIGFRAG="$CONFIGFRAG"; export CONFIGFRAG
--KVM="$KVM"; export KVM
-+RCUTORTURE="$RCUTORTURE"; export RCUTORTURE
- PATH="$PATH"; export PATH
- TORTURE_ALLOTED_CPUS="$TORTURE_ALLOTED_CPUS"; export TORTURE_ALLOTED_CPUS
- TORTURE_BOOT_IMAGE="$TORTURE_BOOT_IMAGE"; export TORTURE_BOOT_IMAGE
-@@ -569,7 +569,7 @@ ___EOF___
- awk < $T/cfgcpu.pack \
- 	-v TORTURE_BUILDONLY="$TORTURE_BUILDONLY" \
- 	-v CONFIGDIR="$CONFIGFRAG/" \
--	-v KVM="$KVM" \
-+	-v RCUTORTURE="$RCUTORTURE" \
- 	-v ncpus=$cpus \
- 	-v jitter="$jitter" \
- 	-v rd=$resdir/$ds/ \
-diff --git a/tools/testing/selftests/rcutorture/bin/torture.sh b/tools/testing/selftests/rcutorture/bin/torture.sh
-index d1cb60085d8f2..e00e60efb2310 100755
---- a/tools/testing/selftests/rcutorture/bin/torture.sh
-+++ b/tools/testing/selftests/rcutorture/bin/torture.sh
-@@ -13,8 +13,8 @@
- scriptname=$0
- args="$*"
- 
--KVM="`pwd`/tools/testing/selftests/rcutorture"; export KVM
--PATH=${KVM}/bin:$PATH; export PATH
-+RCUTORTURE="`pwd`/tools/testing/selftests/rcutorture"; export RCUTORTURE
-+PATH=${RCUTORTURE}/bin:$PATH; export PATH
- . functions.sh
- 
- TORTURE_ALLOTED_CPUS="`identify_qemu_vcpus`"
--- 
-2.31.1.189.g2e36527f23
+On Thu, Feb 03, 2022 at 09:42:10PM +0530, Manivannan Sadhasivam wrote:
+> On Thu, Feb 03, 2022 at 03:21:50PM +0100, Jonathan Neusch=C3=A4fer wrote:
+> > In order that the end of a clk_div_table can be detected, it must be
+> > terminated with a sentinel element (.div =3D 0).
+> >=20
+> > Fixes: d47317ca4ade1 ("clk: actions: Add S700 SoC clock support")
+> > Fixes: d85d20053e195 ("clk: actions: Add S900 SoC clock support")
+> > Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
+> > ---
+> >=20
+> > I'm not so sure about usb3_mac_div_table. Maybe the { 0, 8 } element was
+> > meant to be { 0, 0 }? I'd appreciate if someone with access to the
+> > datasheet or hardware could verify what's correct.
+>=20
+> USB3 factor table is not documented in the datasheet I have access to. Bu=
+t by
+> looking at the value, it looks to be a typo. So please change the last en=
+try.
 
+Okay.
+
+> With that,
+>=20
+> Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
+
+Thanks!
+
+Jonathan
+
+--rJDN8eL983l7maVq
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIyBAABCgAdFiEEvHAHGBBjQPVy+qvDCDBEmo7zX9sFAmH9vSwACgkQCDBEmo7z
+X9uuyg/413Iw4xZ5o1Tp/qcRiH6I1L+O4tPXbZJS1Oe/YbA96rMszKsKbFuKD93/
+XTGS1UEZBO8QRIT1hHF92JLWIDkCQIofhgsqyKFz7tTGxJ2yj23xszPF8GZvZSl1
+NXnL2CUNcUGq049M3eLJ7tW2x40b2r7ceK+IcsOGeKuCMqqaLFQcCe8yR7PH3Xar
+BkqVP22gj1zcVXfjDKFk9kio9c+uLTTg4r9xH+7ut6F5mXdSt9KW+54UfWcXWEHO
+8fO/NNhHwJ8kl7m3uhcVotEAwcdY4UYUq87qmEAbvB2TdBIgjw2RHP2T4gvUyG26
+HqywQf2oImnrFKGmeCSTkfuHshiRP0C9p5ayz6J2R535sqV7M3t9pOP/QmjdtDfM
+984lc5YNd22V4+rHc7k35UndhL5O6gEF9pMnWDTjxwamRKSehAhDQpNxY9F8JiBi
+UAgv+6Iw51qnI8D3Sugbnr7yAcLhVqUzXAORpUvusZRlaBXSUWWmpVR8Ac+D1yD/
+XYYT4ZdtIDnVPHlpxyU8vA6jmcVMueXBWN89umR/D3eIU25i+gvunf440evHm1PK
+CWaNNl8uxv4u380+BX3GDpgam4mAF2nxnb5z1rnyg1HJSYA4xJVGwyoxacfSoRb4
+9IeQMt76GNfWcxlpmeZWKmWmZQR7TrEBpFj1OqVGasJ52C+RBQ==
+=WP+E
+-----END PGP SIGNATURE-----
+
+--rJDN8eL983l7maVq--
