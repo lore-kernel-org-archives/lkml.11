@@ -2,211 +2,229 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66870C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 12:16:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93F4CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 12:17:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358768AbiBDMPk (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 07:15:40 -0500
-Received: from mx1.tq-group.com ([93.104.207.81]:57007 "EHLO mx1.tq-group.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1358587AbiBDMP2 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 07:15:28 -0500
+        id S240795AbiBDMRH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 07:17:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44862 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230029AbiBDMRG (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 4 Feb 2022 07:17:06 -0500
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0086C061714;
+        Fri,  4 Feb 2022 04:17:05 -0800 (PST)
+Received: by mail-ed1-x52c.google.com with SMTP id j23so12696971edp.5;
+        Fri, 04 Feb 2022 04:17:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1643976928; x=1675512928;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=WX0S5yywfJteoi/TvV8TssMpvmQJ3W0EAQZbPxU9SAY=;
-  b=T7K5cViJke0Teckn5Lk0mmJ3LhyyYPVUoiM18lLNrGSumiHzJylrJKSO
-   IGAJEgUK1Xaf7xck5f4/vG3w+AJG2S3jPVcEQ69CJ+cEL9LGV0J8Kex40
-   FS4mnJV6nbTLBnGPUYGrS1+KsRZ0Qxwl28kGz+dbLzT/2Kvlwhdw2pSeg
-   w3dZ1duPw3mu7d7f5cbxN/2cL94fUsc37HaMbF7G/xTYyx+HWXJu0xkwX
-   X436ccqnyfUctfJ2AGiid1ruB2sagUQZ/YFxVQfz2UTqgHeuDvl/IKDak
-   4G/F0sPBhstxG4jUPWoAw7WF242wT1HPva9Wx4feByb06yPRFYTlNAsmN
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.88,342,1635199200"; 
-   d="scan'208";a="21903438"
-Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 04 Feb 2022 13:15:26 +0100
-Received: from mx1.tq-group.com ([192.168.6.7])
-  by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Fri, 04 Feb 2022 13:15:26 +0100
-X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Fri, 04 Feb 2022 13:15:26 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1643976926; x=1675512926;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=WX0S5yywfJteoi/TvV8TssMpvmQJ3W0EAQZbPxU9SAY=;
-  b=UNFkcce9q6budxdHMNO+j4l/CwIDPZuVxW1Nz0ysYQ9GbAPUbSlNyFIP
-   VI0OHH3sxX7/zQ7b14VXozFCEqBdqyb+/KRXq7Ng+9CS0dc8xCFdN6JYX
-   h/mK2SQxQ7MqCjov6EXNr5ndPkGfeMcXTRmm+Y8KUg1hqmTpoOy3X7ei6
-   lui4d6HbmzT4aLSi9LtnW6rz/krFy3wDqa2seirQfvGIqNKH80xehZ7v+
-   Vrczd38PFJWWMgOzsojS8dstUifJhgTOC+WcSb+yDjL/h6EMU5vCn5xiZ
-   u4vrqwLd2RcuOJuYjUMGxHkcBRPUa+ysiJh5TcQS3X3dzDq+d7kk3w65w
-   A==;
-X-IronPort-AV: E=Sophos;i="5.88,342,1635199200"; 
-   d="scan'208";a="21903437"
-Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 04 Feb 2022 13:15:26 +0100
-Received: from steina-w.tq-net.de (unknown [10.123.49.12])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id 6D5A7280065;
-        Fri,  4 Feb 2022 13:15:26 +0100 (CET)
-From:   Alexander Stein <alexander.stein@ew.tq-group.com>
-To:     Steve Longerbeam <slongerbeam@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Rui Miguel Silva <rmfrfs@gmail.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Dorota Czaplejewicz <dorota.czaplejewicz@puri.sm>
-Cc:     Alexander Stein <alexander.stein@ew.tq-group.com>,
-        linux-media@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 8/8] [DNI] arm64: dts: tqma8mqml: add IMX327 MIPI-CSI overlay
-Date:   Fri,  4 Feb 2022 13:15:14 +0100
-Message-Id: <20220204121514.2762676-9-alexander.stein@ew.tq-group.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220204121514.2762676-1-alexander.stein@ew.tq-group.com>
-References: <20220204121514.2762676-1-alexander.stein@ew.tq-group.com>
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language
+         :from:to:cc:references:in-reply-to:content-transfer-encoding;
+        bh=eHBHzUia9mruyB4YUukSDrxzx6AfeOgulQdxUcrQ01Q=;
+        b=SBeg0hAuVOVt3vAT8e1Ie0QdqByT0wbgDPzNIQNUUEAT1U4w1LOaL2DptiroXUHdfE
+         Hkrw7cPb7cj5GDaCbStOaPaUkw+JP8qfpoQiCSQYYYzt4FjfH4dHw8qvlQk+lind9mtp
+         dHPvgQrqwYy45MqJB4mDWxMKbNgBBqcPMb+bpbwtcCxJzm6woxWG90oMXT0We4Q9BuK+
+         8BNiPi6096ZHmkyprgC6Qrb+KtcsmS/EoDebY+VBVw52SHkXM6yv+oRDOS7tscUg05a8
+         8awoA+Fq3UtBbdMH+QgXWfx15LjDMS5MOCIxWjajedF5rl7RKVdADQThId4tJbTWSxy8
+         FU6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=eHBHzUia9mruyB4YUukSDrxzx6AfeOgulQdxUcrQ01Q=;
+        b=CdXmZvD22G0x38YTm3MDOX9I+TWGfwmbDc1lpD0HNbhfBJnBHwhZqiY39QJkrhwyCa
+         h3OQE/bNor6JbgOjwDdufgPTANgLa+y0iFsShFwhBNqpl5o56b2wKWeEXog9T3EIJTlx
+         uBTIgQT5KRiby11/Vew1/HtQn/AaztUMH0qKQRpXQtJRfJ7BT20IcCpXXDpTbW93FAVz
+         pelSkoNn85yEroGM3DSM/GEkdwxXaLz1r23qKehL1umLpZGw9sB3yj704tLKeIpKNLr0
+         1yFIovvDjHRn4DSI0NfKJ27mmlsFLb3i4SYXsUBWNEunvqxqhpgX7saACitMd6MI/Edc
+         aAdw==
+X-Gm-Message-State: AOAM530LMYuUVz0Yv3Gvqbew+Xvf84NEAxnTvEp1GeY+ct0o+X1WMwaJ
+        FZrlktbXj6G/KF/pAk4R6Yw=
+X-Google-Smtp-Source: ABdhPJwNGOsK4+pWoc1ci4iXaJJz7WgHa2jxbtSwbSsa9Axav2aDtMiirV3zHvkRizynn7vEBUFnvQ==
+X-Received: by 2002:a05:6402:40cd:: with SMTP id z13mr2737770edb.119.1643977024173;
+        Fri, 04 Feb 2022 04:17:04 -0800 (PST)
+Received: from [192.168.2.1] (81-204-249-205.fixed.kpn.net. [81.204.249.205])
+        by smtp.gmail.com with ESMTPSA id d15sm610498ejw.143.2022.02.04.04.17.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 04 Feb 2022 04:17:03 -0800 (PST)
+Message-ID: <72304aa8-6845-250b-dc0e-5122428b8dd8@gmail.com>
+Date:   Fri, 4 Feb 2022 13:17:02 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v7 3/4] phy: rockchip: add naneng combo phy for RK3568
+Content-Language: en-US
+From:   Johan Jonker <jbx6244@gmail.com>
+To:     Yifeng Zhao <yifeng.zhao@rock-chips.com>, heiko@sntech.de
+Cc:     robh+dt@kernel.org, devicetree@vger.kernel.org, vkoul@kernel.org,
+        michael.riesch@wolfvision.net, linux-rockchip@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-phy@lists.infradead.org, kishon@ti.com,
+        p.zabel@pengutronix.de, cl@rock-chips.com,
+        kever.yang@rock-chips.com, lee.jones@linaro.org,
+        wulf@rock-chips.com, Frank Wunderlich <frank-w@public-files.de>
+References: <20211230084815.28110-1-yifeng.zhao@rock-chips.com>
+ <20211230084815.28110-4-yifeng.zhao@rock-chips.com>
+ <4838413b-c424-cf55-0699-9cd8ac23d9c2@gmail.com>
+In-Reply-To: <4838413b-c424-cf55-0699-9cd8ac23d9c2@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
----
- arch/arm64/boot/dts/freescale/Makefile        |  4 +
- .../imx8mm-tqma8mqml-mba8mx-imx327.dts        | 95 +++++++++++++++++++
- 2 files changed, 99 insertions(+)
- create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-tqma8mqml-mba8mx-imx327.dts
+Hi Heiko, Frank and others,
 
-diff --git a/arch/arm64/boot/dts/freescale/Makefile b/arch/arm64/boot/dts/freescale/Makefile
-index 852615febf9a..5ef8ff05452e 100644
---- a/arch/arm64/boot/dts/freescale/Makefile
-+++ b/arch/arm64/boot/dts/freescale/Makefile
-@@ -57,6 +57,10 @@ dtb-$(CONFIG_ARCH_MXC) += imx8mm-icore-mx8mm-edimm2.2.dtb
- dtb-$(CONFIG_ARCH_MXC) += imx8mm-kontron-n801x-s.dtb
- dtb-$(CONFIG_ARCH_MXC) += imx8mm-nitrogen-r2.dtb
- dtb-$(CONFIG_ARCH_MXC) += imx8mm-tqma8mqml-mba8mx.dtb
-+
-+tqma8mqml-mba8mx-imx327-dtbs += imx8mm-tqma8mqml-mba8mx.dtb imx8mm-tqma8mqml-mba8mx-imx327.dtbo
-+dtb-$(CONFIG_ARCH_MXC) += tqma8mqml-mba8mx-imx327.dtb
-+
- dtb-$(CONFIG_ARCH_MXC) += imx8mm-var-som-symphony.dtb
- dtb-$(CONFIG_ARCH_MXC) += imx8mm-venice-gw71xx-0x.dtb
- dtb-$(CONFIG_ARCH_MXC) += imx8mm-venice-gw72xx-0x.dtb
-diff --git a/arch/arm64/boot/dts/freescale/imx8mm-tqma8mqml-mba8mx-imx327.dts b/arch/arm64/boot/dts/freescale/imx8mm-tqma8mqml-mba8mx-imx327.dts
-new file mode 100644
-index 000000000000..3f1223d4d73b
---- /dev/null
-+++ b/arch/arm64/boot/dts/freescale/imx8mm-tqma8mqml-mba8mx-imx327.dts
-@@ -0,0 +1,95 @@
-+// SPDX-License-Identifier: (GPL-2.0-or-later OR MIT)
-+/*
-+ * Copyright 2021 TQ-Systems GmbH
-+ */
-+
-+#include <dt-bindings/gpio/gpio.h>
-+
-+/dts-v1/;
-+/plugin/;
-+
-+&{/} {
-+	compatible = "tq,imx8mm-tqma8mqml-mba8mx", "tq,imx8mm-tqma8mqml", "fsl,imx8mm";
-+
-+	sensor_clk: sensor-clk {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		clock-frequency = <37125000>;
-+	};
-+};
-+
-+&csi {
-+       status = "okay";
-+};
-+
-+&i2c3 {
-+	#address-cells = <1>;
-+	#size-cells = <0>;
-+
-+	vc_fpga: fpga@10 {
-+		reg = <0x10>;
-+		compatible = "vc,fpga";
-+
-+		vc_fpga_reg: regulator {
-+			regulator-name = "CAM_VCC";
-+		};
-+
-+		vc_fpga_reset: reset {
-+			#reset-cells = <0>;
-+		};
-+
-+		vc_fpga_gpio: gpio-chip {
-+			gpio-controller;
-+			#gpio-cells = <2>;
-+		};
-+	};
-+
-+	sony_imx327: camera@1a {
-+		#address-cells = <0x1>;
-+		#size-cells = <0x0>;
-+		reg = <0x1a>;
-+
-+		compatible = "sony,imx327", "sony,imx290";
-+
-+		clock-names = "xclk";
-+		clocks = <&sensor_clk>;
-+		clock-frequency = <37125000>;
-+
-+		vdd-supply = <&vc_fpga_reg>;
-+
-+		vdda-supply = <&vc_fpga_reg>;
-+		vddd-supply = <&vc_fpga_reg>;
-+		vdddo-supply = <&vc_fpga_reg>;
-+
-+		reset-gpios = <&vc_fpga_gpio 0 GPIO_ACTIVE_HIGH>;
-+
-+		port@0 {
-+			reg = <0>;
-+
-+			sony_imx327_ep0: endpoint {
-+				remote-endpoint = <&imx8mm_mipi_csi_in>;
-+				data-lanes = <1 2>;
-+				clock-lanes = <0>;
-+				clock-noncontinuous = <1>;
-+				link-frequencies = /bits/ 64 <445500000 297000000>;
-+			};
-+		};
-+	};
-+};
-+
-+&mipi_csi {
-+       status = "okay";
-+
-+       ports {
-+               #address-cells = <1>;
-+               #size-cells = <0>;
-+
-+               port@0 {
-+                       reg = <0>;
-+                       imx8mm_mipi_csi_in: endpoint {
-+                               remote-endpoint = <&sony_imx327_ep0>;
-+                               data-lanes = <1 2>;
-+                       };
-+               };
-+       };
-+};
-\ No newline at end of file
--- 
-2.25.1
+China is on new year vacation.
 
+Question for Heiko:
+With xpcs in a separate node, how do we pass phy modes from gmac to
+xpcs, multiphy in a correct DT way?
+Can we brand xpcs as phy?
+Please advise.
+
+Johan
+===
+
+Found example for the way Rockchip connects sgmii in the manufacturer DT.
+https://github.com/Poco-Ye/rk-ethernet/blob/master/SGMII.rar
+
+From gmac1.txt:
+
+> &mdio1 {
+>         sgmii_phy: phy@1 {
+         sgmii_phy: phy@0 { // ???
+
+What is correct?
+
+>                 compatible = "ethernet-phy-ieee802.3-c22";
+>                 reg = <0x0>;
+
+C45E
+Clause 45 PHY Enable
+When this bit is set, Clause 45 capable PHY is connected to MDIO.
+When this bit is reset, Clause 22 capable PHY is connected to
+MDIO.
+Values:
+1'b0: Clause 45 PHY is disabled
+1'b1: Clause 45 PHY is enabled
+
+>         };
+> };
+>
+>
+> &combphy2_psq {
+> +       rockchip,sgmii-mac-sel = <1>;
+>         status = "okay";
+> };
+>
+>
+> &gmac0 {
+> 	phy-mode = "sgmii";
+> 	
+> 	rockchip,pipegrf = <&pipegrf>;
+> 	rockchip,xpcs = <&xpcs>;
+>
+> 	snps,reset-gpio = <&gpio3 RK_PB4 GPIO_ACTIVE_LOW>;
+> 	snps,reset-active-low;
+> 	/* Reset time is 20ms, 100ms for rtl8211f */
+> 	snps,reset-delays-us = <0 20000 100000>;
+>
+> 	assigned-clocks = <&cru SCLK_GMAC1_RX_TX>;
+> 	assigned-clock-parents = <&gmac1_xpcsclk>;
+>
+> +	pinctrl-0 = <&gmac1m0_miim>;
+> 	power-domains = <&power RK3568_PD_PIPE>;
+> 	phys = <&combphy2_psq PHY_TYPE_SGMII>;
+> +	phy-handle = <&sgmii_phy>;
+>
+> 	status = "okay";
+> };
+
+===
+
+Proposal:
+xpcs driver passes mode info to multiphy driver.
+Phy arg is used for gmac source selection for PHY_INTERFACE_MODE_SGMII
+and PHY_INTERFACE_MODE_QSGMII.
+
+> 	phys = <&xpcs 0>;
+
+===
+
+{
+	gmac0_xpcsclk: xpcs-gmac0-clock {
+		compatible = "fixed-clock";
+		clock-frequency = <125000000>;
+		clock-output-names = "clk_gmac0_xpcs_mii";
+		#clock-cells = <0>;
+	};
+
+	gmac1_xpcsclk: xpcs-gmac1-clock {
+		compatible = "fixed-clock";
+		clock-frequency = <125000000>;
+		clock-output-names = "clk_gmac1_xpcs_mii";
+		#clock-cells = <0>;
+	};
+
+	xpcs: syscon@fda00000 {
+		compatible = "rockchip,rk3568-xpcs", "syscon";
+		reg = <0x0 0xfda00000 0x0 0x200000>;
+		clocks = <&cru PCLK_XPCS>;
+		clock-names = "pclk_xpcs";
+
+>		phys = <&multiphy2>;
+
+		power-domains = <&power RK3568_PD_PIPE>;
+ 		rockchip,pipegrf = <&pipegrf>; // Switch between gmac0 and gmac1
+		status = "disabled";
+	};
+}
+
+&mdio1 {
+         sgmii_phy: phy@0 {
+                 compatible = "ethernet-phy-ieee802.3-c22";
+                 reg = <0x0>;
+         };
+ };
+
+
+&multiphy2 {
+         status = "okay";
+};
+
+
+&gmac0 {
+	assigned-clocks = <&cru SCLK_GMAC1_RX_TX>;
+ 	assigned-clock-parents = <&gmac1_xpcsclk>;
+
+ 	phys = <&combphy2_psq PHY_TYPE_SGMII>;
+	phy-handle = <&sgmii_phy>;
+ 	phy-mode = "sgmii";
+
+> 	phys = <&xpcs 0>;
+
+	pinctrl-0 = <&gmac1m0_miim>;
+
+ 	snps,reset-gpio = <&gpio3 RK_PB4 GPIO_ACTIVE_LOW>;
+	snps,reset-active-low;
+ 	/* Reset time is 20ms, 100ms for rtl8211f */
+ 	snps,reset-delays-us = <0 20000 100000>;
+
+	status = "okay";
+};
+
+On 1/3/22 19:26, Johan Jonker wrote:
+> Hi Yifeng, Kishon, rob+dt,
+> 
+> Some comments, have a look if it's useful.
+> 
+> ====
+> 
+> Could the DT and phy maintainer advise the correct/right driver
+> structure to Yifeng, so that we can move forward!
+> 
+> ====
+> 
