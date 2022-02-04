@@ -2,119 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1D45C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 23:22:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A58DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 23:22:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378067AbiBDXWP (ORCPT
+        id S1378077AbiBDXWh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 18:22:15 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:35074 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235330AbiBDXWO (ORCPT
+        Fri, 4 Feb 2022 18:22:37 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:45530 "EHLO
+        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232809AbiBDXWg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 18:22:14 -0500
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1644016932;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=DBK2yZNYxvLy8x/PDAEC/NG09v5eFxGT61LctE0oxSY=;
-        b=aBDit1LkinvPfla5El5YaYm0kJu7cY2oxGsuMNIho93oSkb23VHPKLKfDIuNZT5GL2ZXsK
-        TMF2V7N8gzmmi0wwtlMRKOtVPURyNjzeSE4j1kVjooS6o1HavQyxx7MlHx8vnTkHQtG7/x
-        Faijrr64fpfWl3bPcBV63Zh5FNahx4KE7LxngzjUc2UixffxT5Ba0OuhgmulGbv8SbFNO7
-        sd06yCQaFBq0jrREyL0RfZDMXkfzYpSTa+w+DKPGvNXH3JOkQB4gXct2S8dy9ubTJs1Ypt
-        0fNlno6ElIe3scEa9P6ceksKYw3OHjRhSlE2E8tuaK0w0orsacxqjRRdw4JxDg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1644016932;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=DBK2yZNYxvLy8x/PDAEC/NG09v5eFxGT61LctE0oxSY=;
-        b=0USIK3EJKSRVIDVzeQ8qFn4rlRy37TsVmeexs71EbJ4kLHSFBJnN3VeIjAdrtxVUaJU3HP
-        dqhQiGyXYf0dqEDA==
-To:     Fenghua Yu <fenghua.yu@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andy Lutomirski <luto@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jacob Pan <jacob.jun.pan@linux.intel.com>,
-        Ashok Raj <ashok.raj@intel.com>,
-        Ravi V Shankar <ravi.v.shankar@intel.com>
-Cc:     iommu@lists.linux-foundation.org, x86 <x86@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Fenghua Yu <fenghua.yu@intel.com>
-Subject: Re: [PATCH v3 04/11] kernel/fork: Initialize mm's PASID
-In-Reply-To: <20220128202905.2274672-5-fenghua.yu@intel.com>
-References: <20220128202905.2274672-1-fenghua.yu@intel.com>
- <20220128202905.2274672-5-fenghua.yu@intel.com>
-Date:   Sat, 05 Feb 2022 00:22:12 +0100
-Message-ID: <87wniab4kb.ffs@tglx>
+        Fri, 4 Feb 2022 18:22:36 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id CECA1CE24BE;
+        Fri,  4 Feb 2022 23:22:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5C62C004E1;
+        Fri,  4 Feb 2022 23:22:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644016953;
+        bh=ILdoUIoX1tocW/C8hL7JwqWasbTDT9C6TZUJmP/1rAk=;
+        h=Date:From:To:Cc:Subject:From;
+        b=XHSTQxHzY2S6CQM/u4VOOLGOCbBtDuJ65nRjfmKCzV1O0vY6bK2p6/HNXln7/BlWn
+         wEhQg7YSoNVZdgCb4xVJsrPQkY7+d6Ttu+nTlXWlQRSHRxJotEOSg7/NByCI+4gTfu
+         t/AbKhVB1emP2zkY9DW/K7OxzBUfcJYIfCutKD2DF/knwcVRBcxjbMJ3zzT7+cxxSO
+         BiWZDQf4IOsTOM1eMwzOCaqgidXBalCuEtjPzdIgT617yYAoaNcbEpvqE5SSEbtYmw
+         Yd/CjOqnhLDcrw8H1uj9DIV8OTkTCxLCi9wm60owaQWmewMhkrusCq0rqAz3cQ//1M
+         73WxerqL/b78Q==
+Date:   Fri, 4 Feb 2022 17:29:44 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH][next] staging: gdm724x: Replace one-element array with
+ flexible-array member
+Message-ID: <20220204232944.GA454945@embeddedor>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 28 2022 at 12:28, Fenghua Yu wrote:
-> A new mm doesn't have a PASID yet when it's created. Initialize
-> the mm's PASID on fork() or for init_mm to INVALID_IOASID (-1).
+There is a regular need in the kernel to provide a way to declare having
+a dynamically sized set of trailing elements in a structure. Kernel code
+should always use “flexible array members”[1] for these cases. The older
+style of one-element or zero-length arrays should no longer be used[2].
 
-I must be missing something here.
+This helps with the ongoing efforts to globally enable -Warray-bounds
+and get us closer to being able to tighten the FORTIFY_SOURCE routines
+on memcpy().
 
-> diff --git a/include/linux/sched/mm.h b/include/linux/sched/mm.h
-> index aa5f09ca5bcf..c74d1edbac2f 100644
-> --- a/include/linux/sched/mm.h
-> +++ b/include/linux/sched/mm.h
-> @@ -8,6 +8,7 @@
->  #include <linux/mm_types.h>
->  #include <linux/gfp.h>
->  #include <linux/sync_core.h>
-> +#include <linux/ioasid.h>
->  
->  /*
->   * Routines for handling mm_structs
-> @@ -433,4 +434,13 @@ static inline void membarrier_update_current_mm(struct mm_struct *next_mm)
->  }
->  #endif
->  
-> +#ifdef CONFIG_IOMMU_SVA
-> +static inline void mm_pasid_init(struct mm_struct *mm)
-> +{
-> +	mm->pasid = INVALID_IOASID;
-> +}
-> +#else
-> +static inline void mm_pasid_init(struct mm_struct *mm) {}
-> +#endif
-> +
->  #endif /* _LINUX_SCHED_MM_H */
+This issue was found with the help of Coccinelle and audited and fixed,
+manually.
 
-So this adds mm_pasid_init() to linux/sched/mm.h which replaces:
+[1] https://en.wikipedia.org/wiki/Flexible_array_member
+[2] https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
 
-> -static void mm_init_pasid(struct mm_struct *mm)
-> -{
-> -#ifdef CONFIG_IOMMU_SVA
-> -	mm->pasid = INIT_PASID;
-> -#endif
-> -}
-> -
+Link: https://github.com/KSPP/linux/issues/79
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+ drivers/staging/gdm724x/hci_packet.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I.e. already existing code which is initializing mm->pasid with
-INIT_PASID (0) while the replacement initializes it with INVALID_IOASID
-(-1).
+diff --git a/drivers/staging/gdm724x/hci_packet.h b/drivers/staging/gdm724x/hci_packet.h
+index faecdfbc664f..3bb01e94f3b5 100644
+--- a/drivers/staging/gdm724x/hci_packet.h
++++ b/drivers/staging/gdm724x/hci_packet.h
+@@ -34,7 +34,7 @@ struct hci_packet {
+ struct tlv {
+ 	u8 type;
+ 	u8 len;
+-	u8 *data[1];
++	u8 *data[];
+ } __packed;
+ 
+ struct sdu_header {
+-- 
+2.27.0
 
-The change log does not have any information about why INIT_PASID is the
-wrong initialization value and why this change is not having any side
-effects.
-
-It neither mentions why having this in a global available header makes
-sense when the only call site is in the C file from which the already
-existing function is removed.
-
-Thanks,
-
-        tglx
