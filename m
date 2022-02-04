@@ -2,139 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B9CDC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 18:37:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 305BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 18:40:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377712AbiBDShL (ORCPT
+        id S1376821AbiBDSk1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 13:37:11 -0500
-Received: from alexa-out.qualcomm.com ([129.46.98.28]:44971 "EHLO
-        alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356850AbiBDSg5 (ORCPT
+        Fri, 4 Feb 2022 13:40:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48934 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237689AbiBDSk0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 13:36:57 -0500
+        Fri, 4 Feb 2022 13:40:26 -0500
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA7FAC061714;
+        Fri,  4 Feb 2022 10:40:25 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id u24so14721439eds.11;
+        Fri, 04 Feb 2022 10:40:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1643999817; x=1675535817;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=3tadDOiQgUCcHPUD6wqqZsXzt20xROqHOzDpJWPvJ5Q=;
-  b=GLnIUtMShjmuaooxm9hkR8FapDQ/Lb0w+rZPpCmZyvC9zzidAjv5N4Zt
-   aTj2gxYKnFc5uqSsUF6X6g4450mgKp1iBPdX5uF3TyiSzRkTq30p8/Z40
-   Ie/WQWiprFzHV0PsamVJ05IEvhD0Qw0p0petXMnYrjOKvJVbNuEhSeNRM
-   g=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 04 Feb 2022 10:36:57 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2022 10:36:56 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Fri, 4 Feb 2022 10:36:56 -0800
-Received: from khsieh-linux1.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Fri, 4 Feb 2022 10:36:55 -0800
-From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
-To:     <dri-devel@lists.freedesktop.org>, <robdclark@gmail.com>,
-        <sean@poorly.run>, <swboyd@chromium.org>, <vkoul@kernel.org>,
-        <daniel@ffwll.ch>, <airlied@linux.ie>, <agross@kernel.org>,
-        <dmitry.baryshkov@linaro.org>, <bjorn.andersson@linaro.org>
-CC:     Kuogee Hsieh <quic_khsieh@quicinc.com>,
-        <quic_abhinavk@quicinc.com>, <quic_aravindh@quicinc.com>,
-        <quic_sbillaka@quicinc.com>, <freedreno@lists.freedesktop.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v3 2/3] drm/msm/dp: revise timing engine programming to support compression (DSC)
-Date:   Fri, 4 Feb 2022 10:36:40 -0800
-Message-ID: <1643999801-20359-3-git-send-email-quic_khsieh@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1643999801-20359-1-git-send-email-quic_khsieh@quicinc.com>
-References: <1643999801-20359-1-git-send-email-quic_khsieh@quicinc.com>
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=ZGtsZQhsyyrcBRG0j+lN7s+2dtv9Gc6gA1EuDqdvH6c=;
+        b=arbPf9n8sfnhQZJyx/AG6Ogn3hTOZNDvfPc3y4PXMWw0EU1rRvj/PZe+bJaIiZPrZF
+         GzxbYbOwJ+BEbyeXSUIEEpVR/2Xmn5hGAur7LjX1uDiLnn078w3UbrUDCb/++eYe+Pgz
+         WvC6vIIenYdbvxtvQyF4iJTVPbJtgllBWEdDgOPk/LhnrmjwTWQwMHXVV4gTgXUEX9Yf
+         JQyDXXhAGSkxLNW5Z7PbEA7VY2IjvMRo4q1IMF3L95GOOfH6pTCFccRkL0yhqlpAldDc
+         6XtQoIVjkm2mTo7EUIZUM5aQ/ESJuY3mgS+Jlm66J8pgxox4gqKlvsOpzS4qzvy7dwjc
+         cnFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=ZGtsZQhsyyrcBRG0j+lN7s+2dtv9Gc6gA1EuDqdvH6c=;
+        b=Hg55LuA4M25YSy241pa5i4u/m5SWbGhhsi5v5DcxoTOd0Iabc/u8dC+XHfoAwn1KfY
+         0niBQl1uMyd2jJTDevlAhD50zBhYAWH0U7d4TL/tKhN5bChEfrck0GtTHt/OLCfrYIWe
+         7ZynIyKTHWqO9oUtoFZcf+F3oR3m8cbbE4q+OQfo8IBcZmg7wy4W0K9O6Vugoak6inQP
+         T7eB5ThHwzvFjZIz9//AbprMMA4nCwvtqrqWz/ykqKVIhs5y6Wv4iFtPoEY6WiqJ2mLV
+         mZki8BMsUUs35n/xEZWlcL3FQpfQECTkWVkjWJDLcrByI06p9S6iSCMhupY3wPs9+lTv
+         gRzQ==
+X-Gm-Message-State: AOAM533cbpk+/s7GZNEhSzB8Ghi2pnENS5FEX/sOVkeczeBrt2Efma1W
+        Qo6Xvit39j2ZP8h0Uj2fcQLrn6t0NjI2sXC3NTo=
+X-Google-Smtp-Source: ABdhPJxEm7NFYtDxqO0RvMy0fL2LAK2EIChbvzMQZ6XV4+dfC4ZuIY9e4NkrESmCV42jrxrTkFZjDGNZWYNdx/76ARk=
+X-Received: by 2002:aa7:dd8f:: with SMTP id g15mr489557edv.436.1644000024185;
+ Fri, 04 Feb 2022 10:40:24 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+References: <20220127200636.1456175-1-sean.anderson@seco.com>
+ <20220127200636.1456175-6-sean.anderson@seco.com> <CAHp75Vc--RYW7P0wLA8Jcr53xKSkphJV=wTeZiPC-AYu4sGYFA@mail.gmail.com>
+ <2c1832a5-1e13-1423-2be8-e31b5ec5195a@seco.com>
+In-Reply-To: <2c1832a5-1e13-1423-2be8-e31b5ec5195a@seco.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 4 Feb 2022 20:38:50 +0200
+Message-ID: <CAHp75VfGFNFqOU0BymNwh_FWKVw+rSyJJRDSKOinWY_Z39qaGA@mail.gmail.com>
+Subject: Re: [PATCH v3 5/7] usb: dwc3: Add snps,ref-clock-frequency-hz
+ property for ACPI
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        Robert Hancock <robert.hancock@calian.com>,
+        Baruch Siach <baruch@tkos.co.il>,
+        Felipe Balbi <balbi@kernel.org>,
+        Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Balaji Prakash J <bjagadee@codeaurora.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Divides horizontal width by 3 at timing engine of interface. There are
-major part of  compression (DSC) programming have to be done at DSC
-controller which is not covered by this patch.
+On Fri, Feb 4, 2022 at 6:00 PM Sean Anderson <sean.anderson@seco.com> wrote=
+:
+> On 2/4/22 7:54 AM, Andy Shevchenko wrote:
 
-Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
----
- drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.c | 22 ++++++++++++++++++----
- drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.h |  3 +++
- 2 files changed, 21 insertions(+), 4 deletions(-)
+...
 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.c
-index 35d4aaa..ee7ca34 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.c
-@@ -128,7 +128,7 @@ static void dpu_hw_intf_setup_timing_engine(struct dpu_hw_intf *ctx,
- 	 * video timing. It is recommended to enable it for all cases, except
- 	 * if compression is enabled in 1 pixel per clock mode
- 	 */
--	if (p->wide_bus_en)
-+	if (!p->compression_en || p->wide_bus_en)
- 		intf_cfg2 |= BIT(4);
- 
- 	if (p->wide_bus_en)
-@@ -150,10 +150,16 @@ static void dpu_hw_intf_setup_timing_engine(struct dpu_hw_intf *ctx,
- 	 */
- 	data_width = p->width;
- 
--	if (!dp_intf && p->wide_bus_en)
-+	if (p->compression_en) {
-+		data_width = DIV_ROUND_UP(p->dce_bytes_per_line, 3);
-+
-+		if (p->wide_bus_en)
-+			data_width >>= 1;
-+	} else if (!dp_intf && p->wide_bus_en) {
- 		data_width = p->width >> 1;
--	else
-+	} else {
- 		data_width = p->width;
-+	}
- 
- 	hsync_data_start_x = hsync_start_x;
- 	hsync_data_end_x =  hsync_start_x + data_width - 1;
-@@ -178,8 +184,16 @@ static void dpu_hw_intf_setup_timing_engine(struct dpu_hw_intf *ctx,
- 
- 	active_hctl = (active_h_end << 16) | active_h_start;
- 
--	if (dp_intf)
-+	if (dp_intf) {
- 		display_hctl = active_hctl;
-+		if (p->compression_en) {
-+			active_data_hctl = (hsync_start_x +
-+					p->extra_dto_cycles) << 16;
-+			active_data_hctl += hsync_start_x;
-+
-+			display_data_hctl = active_data_hctl;
-+		}
-+	}
- 
- 	den_polarity = 0;
- 	if (ctx->cap->type == INTF_HDMI) {
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.h
-index e4a518a..8fc71ce 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.h
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.h
-@@ -32,6 +32,9 @@ struct intf_timing_params {
- 	u32 hsync_skew;
- 
- 	bool wide_bus_en;
-+	bool compression_en;
-+	u32 extra_dto_cycles;   /* for DP only */
-+	u32 dce_bytes_per_line;
- };
- 
- struct intf_prog_fetch {
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+> > On Thursday, January 27, 2022, Sean Anderson <sean.anderson@seco.com <m=
+ailto:sean.anderson@seco.com>> wrote:
 
+> > Is it function or interface clock?
+> >
+> > We have standard property for the functional clock rate, I.e. =E2=80=9C=
+clock-frequency=E2=80=9D (in Hz), can it be used here?
+>
+> I believe this is a "functional" clock. It it is a reference for the USB
+> signals. I'm not sure exactly what the purpose of this clock is, since I
+> do not have access to the databook for this IP. I considered using
+> "clock-frequency", but I am concerned about ambiguity because there is a
+> second "suspend" clock which is also a "functional" clock. The latter
+> clock appears to be used when the PHY is shut down (and not necessarily
+> corresponding to Linux's notion of a suspended device). If it is
+> necessary in the future to configure that clock on ACPI platforms (e.g.
+> to set GCTL.PWRDNSCALE) I think it is clear what the property name would
+> be (snps,susp-clock-frequency-hz).
+
+In order to have more or less unified APIs in the future I would
+suggest using 'clock-frequency' for the "main" functional clock. For
+example, 8250_dw uses it for the baud rate generator, while it also
+utilizes auxiliary clock(s) on some platforms.
+
+--=20
+With Best Regards,
+Andy Shevchenko
