@@ -2,151 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8229C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 23:13:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D4D6C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 23:14:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234597AbiBDXNV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 18:13:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38972 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239973AbiBDXNS (ORCPT
+        id S1356929AbiBDXOi (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 18:14:38 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:44066 "EHLO
+        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236025AbiBDXOh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 18:13:18 -0500
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EF4CDFB27F1
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 15:13:17 -0800 (PST)
-Received: by mail-wr1-x435.google.com with SMTP id m27so30557wrb.2
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Feb 2022 15:13:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VfYCxFlpbvl7OujUUxXMKcam5bYyjMQ9TxZLwWilF4Y=;
-        b=IjKsNTP3UmtI+YfyHZJ0qh5DSvYiShtyinPh2WOTKo2LC1R5Im2gedu5u9xfLooF4+
-         UxUJXD/dy/Tl+V8My9opTUaU/uixmq5z0us3RoC7Bgbo700hMuzVj257AuS4ktrqgACR
-         JE1XfixdYgbAeynvegt5gll/MPrWdf0b6BQfbhRUpIoONgo6tKgQYpiUple0FwM9IaHG
-         CmD96KIrg2NPA61K7dJX0+azXzCvdQsfEjax6u2RHlHWTxFWp89xPocpS8yQG7q5+g0H
-         R9WNyOY2Y6TVuu7wHZLpnid1rpTlKUJT2O6qa3lVmtqr6HEuLuR4/QDnfyR3vG9Pq8nW
-         THtw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VfYCxFlpbvl7OujUUxXMKcam5bYyjMQ9TxZLwWilF4Y=;
-        b=V8Iefwilny0+lR1MK2SCPmk2HOZmchteDJBBor4v9TrpkQ94GFEhEz2TW1qAHpT24x
-         W5LjV+RqUoudr69qOprvcF+euAqgt9b/nk0khsSiny/+fKq9Kko54Mpl6T/LoFq3AL1P
-         2JdfS5ImgGoAyotI0zwKvg/DqoYS98RnvT+OFWQLuEqzg++iaOPO/BHP/O80pWk18rWH
-         c2mxzCkLwqtigz4KmKgnbsNM3mUHE6k2EryY8uoQ2YjuSaKk9IO4l1qmnvFNLzGOcBJE
-         ByLoljqfxtT9eZ57HFPyxkR2+7NGROYbPyrUqB0wvvWBB+NlDlf41N6y2+sMbxEza0L6
-         cySg==
-X-Gm-Message-State: AOAM530645YWnSFQQAr/2Z3Oorv2w18ea80Qh91AsSasZX0zdwgTGDzt
-        cx/QkpGCjRTHtUjmREn6a+sJgBiJKEoM9z8lOZabdg==
-X-Google-Smtp-Source: ABdhPJzL6D+TJwXa5HDo4f0yCGthyil6w59QwryxQD1ifMJhEDqjpOIWu7afVuh86c0pKEcjxS8nNWPb2G3HwFNPOes=
-X-Received: by 2002:a05:6000:1b88:: with SMTP id r8mr916267wru.447.1644016395758;
- Fri, 04 Feb 2022 15:13:15 -0800 (PST)
+        Fri, 4 Feb 2022 18:14:37 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B5BD0CE24BA;
+        Fri,  4 Feb 2022 23:14:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16F09C004E1;
+        Fri,  4 Feb 2022 23:14:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644016473;
+        bh=fkMwYBKvbFi2f59VTbiYok/TBWSxIk3qx+WKrnPRpZk=;
+        h=Date:From:To:Cc:Subject:From;
+        b=UW2/QdnhuVJNmOmrza0vFekR0P2u/O2D+OTJMk0rTeGqWMWisuTuILbDkg5I90lIJ
+         EwkJ/YQ/YsmetpfI2RW1LiiwpEWciB4AYi5dk4CgRl+r/VUlgn/UXL/GcaVdYRTd6R
+         vDkqcGR4AlgUoA2ORSCIODY7Szh8oJEBLNZrOOyyj8HZfcKbu9nwRLBEG2ovfMKDVe
+         tLthORsHTb3R50mWKyja9KbQgomrywzgnVMpyZq+w3DSmBSBg4jf1VmI0PrTCJvQiv
+         do2scjrg5gYGmhldIUXf8DpxTvGqy3P55jA4BONubFtAFV377v+gJkJSYhdAiV7RcE
+         CJk2/3WhXgYPQ==
+Date:   Fri, 4 Feb 2022 17:21:44 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Ariel Elior <aelior@marvell.com>,
+        Sudarsana Kalluru <skalluru@marvell.com>,
+        Manish Chopra <manishc@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH][next] bnx2x: Replace one-element array with flexible-array
+ member
+Message-ID: <20220204232144.GA442861@embeddedor>
 MIME-Version: 1.0
-References: <20220204203248.2981902-1-frowand.list@gmail.com>
-In-Reply-To: <20220204203248.2981902-1-frowand.list@gmail.com>
-From:   David Gow <davidgow@google.com>
-Date:   Sat, 5 Feb 2022 07:13:04 +0800
-Message-ID: <CABVgOS=JUxV6PRUZvTQhisSP+p34+K9Z6yT7HkXu6qeqtak1tw@mail.gmail.com>
-Subject: Re: [PATCH 1/1] Documentation: dev-tools: clarify KTAP specification wording
-To:     Frank Rowand <frowand.list@gmail.com>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Kees Cook <keescook@chromium.org>, Rae Moar <rmoar@google.com>,
-        "Bird, Tim" <Tim.Bird@sony.com>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Rae Moar <rmr167@gmail.com>,
-        Guillaume Tucker <guillaume.tucker@collabora.com>,
-        Daniel Latypov <dlatypov@google.com>, kernelci@groups.io,
-        KUnit Development <kunit-dev@googlegroups.com>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Feb 5, 2022 at 4:32 AM <frowand.list@gmail.com> wrote:
->
-> From: Frank Rowand <frank.rowand@sony.com>
->
-> Clarify some confusing phrasing.
+There is a regular need in the kernel to provide a way to declare having
+a dynamically sized set of trailing elements in a structure. Kernel code
+should always use “flexible array members”[1] for these cases. The older
+style of one-element or zero-length arrays should no longer be used[2].
 
-Thanks for this! A few comments below:
+This helps with the ongoing efforts to globally enable -Warray-bounds
+and get us closer to being able to tighten the FORTIFY_SOURCE routines
+on memcpy().
 
->
-> Signed-off-by: Frank Rowand <frank.rowand@sony.com>
-> ---
->
-> One item that may result in bikeshedding is that I added the spec
-> version to the title line.
+This issue was found with the help of Coccinelle and audited and fixed,
+manually.
 
-This is fine by me.
+[1] https://en.wikipedia.org/wiki/Flexible_array_member
+[2] https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
 
->
->  Documentation/dev-tools/ktap.rst | 12 ++++++------
->  1 file changed, 6 insertions(+), 6 deletions(-)
->
-> diff --git a/Documentation/dev-tools/ktap.rst b/Documentation/dev-tools/ktap.rst
-> index 878530cb9c27..3b7a26816930 100644
-> --- a/Documentation/dev-tools/ktap.rst
-> +++ b/Documentation/dev-tools/ktap.rst
-> @@ -1,8 +1,8 @@
->  .. SPDX-License-Identifier: GPL-2.0
->
-> -========================================
-> -The Kernel Test Anything Protocol (KTAP)
-> -========================================
-> +===================================================
-> +The Kernel Test Anything Protocol (KTAP), version 1
-> +===================================================
->
->  TAP, or the Test Anything Protocol is a format for specifying test results used
->  by a number of projects. It's website and specification are found at this `link
-> @@ -186,7 +186,7 @@ starting with another KTAP version line and test plan, and end with the overall
->  result. If one of the subtests fail, for example, the parent test should also
->  fail.
->
-> -Additionally, all result lines in a subtest should be indented. One level of
-> +Additionally, all lines in a subtest should be indented. One level of
+Link: https://github.com/KSPP/linux/issues/79
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-The original reason for this is to accommodate "unknown" lines which
-were not generated by the test itself (e.g, a KASAN report or BUG or
-something). These are awkward, as sometimes they're a useful thing to
-have as part of the test result, and sometimes they're unrelated spam.
-(Additionally, I think kselftest will indent these, as it indents the
-full results in a separate pass afterwards, but KUnit won't, as the
-level of nesting is done during printing.)
+diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h b/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h
+index a19dd6797070..447a75ea0cc1 100644
+--- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h
++++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h
+@@ -1271,7 +1271,7 @@ struct bnx2x_fw_stats_data {
+ 	struct per_port_stats		port;
+ 	struct per_pf_stats		pf;
+ 	struct fcoe_statistics_params	fcoe;
+-	struct per_queue_stats		queue_stats[1];
++	struct per_queue_stats		queue_stats[];
+ };
+ 
+ /* Public slow path states */
+-- 
+2.27.0
 
-Personally, I'd rather leave this as is, or perhaps call out "unknown"
-lines explicitly, e.g:
-Additionally, all lines in a subtest (except for 'unknown' lines)
-should be indented...
-
-Thoughts?
-
->  indentation is two spaces: "  ". The indentation should begin at the version
->  line and should end before the parent test's result line.
->
-> @@ -225,8 +225,8 @@ Major differences between TAP and KTAP
->  --------------------------------------
->
->  Note the major differences between the TAP and KTAP specification:
-> -- yaml and json are not recommended in diagnostic messages
-> -- TODO directive not recognized
-> +- yaml and json are not recommended in KTAP diagnostic messages
-> +- TODO directive not recognized in KTAP
->  - KTAP allows for an arbitrary number of tests to be nested
->
-
-Looks good here, cheers.
-
-
->  The TAP14 specification does permit nested tests, but instead of using another
-> --
-> Frank Rowand <frank.rowand@sony.com>
->
