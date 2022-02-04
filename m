@@ -2,48 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97C55C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:29:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B0FCC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:29:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357635AbiBDJ3f (ORCPT
+        id S1357937AbiBDJ3s (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 04:29:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33172 "EHLO
+        Fri, 4 Feb 2022 04:29:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358201AbiBDJ1R (ORCPT
+        with ESMTP id S1358298AbiBDJ2E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 04:27:17 -0500
+        Fri, 4 Feb 2022 04:28:04 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C43A9C0613B0;
-        Fri,  4 Feb 2022 01:26:41 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2242BC06176F;
+        Fri,  4 Feb 2022 01:26:53 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3CE93617CB;
-        Fri,  4 Feb 2022 09:26:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE24FC004E1;
-        Fri,  4 Feb 2022 09:26:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8BBEF61747;
+        Fri,  4 Feb 2022 09:26:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D8B8C004E1;
+        Fri,  4 Feb 2022 09:26:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643966800;
-        bh=IrH3Lq742IEwdP6JdFAIufJs3bG7n3Dw3Q/CAabNvN8=;
+        s=korg; t=1643966812;
+        bh=QrZLry4insApv+gQ37l7e+SnTkVoC6w8ESMnHsJwm00=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h/2udK2YXekoS+5iq2NB51aPywb6DCg1/bb1WRmzT7Jl7gluVaxrdYlE2bsucjeAC
-         uwFP+fkZoJsX7+KvZbIJwxovGP7GIkeuaKYa1oSH68sD7zrQv0a0KjhLiFzkFAyTFv
-         fGRlnIzzMdMp3V0BXgqHet9qNuKEZ4D/GUmibMOM=
+        b=fvbBr/re62sUpX1StsxuuOyv2Echx3Ht2+xoEPUkrlAER2+EGJ1eDbW7+Jg20BpRt
+         m3l20ywmu3e7IulcUTlxH3fvgjSReXG6PdogT+IH3vgkJPOLROIazaN7limpWZuvJ1
+         Vu6T4pMASHXFwnEHeREZATl7icO5+FXbf3mWzQ2s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Talal Ahmad <talalahmad@google.com>,
-        Arjun Roy <arjunroy@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Sudheesh Mavila <sudheesh.mavila@amd.com>,
+        Raju Rangoju <Raju.Rangoju@amd.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.16 43/43] tcp: add missing tcp_skb_can_collapse() test in tcp_shift_skb_data()
-Date:   Fri,  4 Feb 2022 10:22:50 +0100
-Message-Id: <20220204091918.568507348@linuxfoundation.org>
+Subject: [PATCH 5.16 32/43] net: amd-xgbe: ensure to reset the tx_timer_active flag
+Date:   Fri,  4 Feb 2022 10:22:39 +0100
+Message-Id: <20220204091918.217272476@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220204091917.166033635@linuxfoundation.org>
 References: <20220204091917.166033635@linuxfoundation.org>
@@ -55,55 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Raju Rangoju <Raju.Rangoju@amd.com>
 
-commit b67985be400969578d4d4b17299714c0e5d2c07b upstream.
+commit 7674b7b559b683478c3832527c59bceb169e701d upstream.
 
-tcp_shift_skb_data() might collapse three packets into a larger one.
+Ensure to reset the tx_timer_active flag in xgbe_stop(),
+otherwise a port restart may result in tx timeout due to
+uncleared flag.
 
-P_A, P_B, P_C  -> P_ABC
-
-Historically, it used a single tcp_skb_can_collapse_to(P_A) call,
-because it was enough.
-
-In commit 85712484110d ("tcp: coalesce/collapse must respect MPTCP extensions"),
-this call was replaced by a call to tcp_skb_can_collapse(P_A, P_B)
-
-But the now needed test over P_C has been missed.
-
-This probably broke MPTCP.
-
-Then later, commit 9b65b17db723 ("net: avoid double accounting for pure zerocopy skbs")
-added an extra condition to tcp_skb_can_collapse(), but the missing call
-from tcp_shift_skb_data() is also breaking TCP zerocopy, because P_A and P_C
-might have different skb_zcopy_pure() status.
-
-Fixes: 85712484110d ("tcp: coalesce/collapse must respect MPTCP extensions")
-Fixes: 9b65b17db723 ("net: avoid double accounting for pure zerocopy skbs")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Cc: Talal Ahmad <talalahmad@google.com>
-Cc: Arjun Roy <arjunroy@google.com>
-Cc: Willem de Bruijn <willemb@google.com>
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
-Acked-by: Paolo Abeni <pabeni@redhat.com>
-Link: https://lore.kernel.org/r/20220201184640.756716-1-eric.dumazet@gmail.com
+Fixes: c635eaacbf77 ("amd-xgbe: Remove Tx coalescing")
+Co-developed-by: Sudheesh Mavila <sudheesh.mavila@amd.com>
+Signed-off-by: Sudheesh Mavila <sudheesh.mavila@amd.com>
+Signed-off-by: Raju Rangoju <Raju.Rangoju@amd.com>
+Acked-by: Tom Lendacky <thomas.lendacky@amd.com>
+Link: https://lore.kernel.org/r/20220127060222.453371-1-Raju.Rangoju@amd.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/tcp_input.c |    2 ++
+ drivers/net/ethernet/amd/xgbe/xgbe-drv.c |    2 ++
  1 file changed, 2 insertions(+)
 
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -1660,6 +1660,8 @@ static struct sk_buff *tcp_shift_skb_dat
- 	    (mss != tcp_skb_seglen(skb)))
- 		goto out;
+--- a/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
++++ b/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
+@@ -721,7 +721,9 @@ static void xgbe_stop_timers(struct xgbe
+ 		if (!channel->tx_ring)
+ 			break;
  
-+	if (!tcp_skb_can_collapse(prev, skb))
-+		goto out;
- 	len = skb->len;
- 	pcount = tcp_skb_pcount(skb);
- 	if (tcp_skb_shift(prev, skb, pcount, len))
++		/* Deactivate the Tx timer */
+ 		del_timer_sync(&channel->tx_timer);
++		channel->tx_timer_active = 0;
+ 	}
+ }
+ 
 
 
