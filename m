@@ -2,115 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B37C3C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 06:28:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D79A6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 06:41:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243868AbiBDG2c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 01:28:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50072 "EHLO
+        id S244152AbiBDGlk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 01:41:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234257AbiBDG2a (ORCPT
+        with ESMTP id S232432AbiBDGlj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 01:28:30 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAEB8C061714;
-        Thu,  3 Feb 2022 22:28:29 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 77903B82FF0;
-        Fri,  4 Feb 2022 06:28:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBC95C004E1;
-        Fri,  4 Feb 2022 06:28:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643956107;
-        bh=QaFOZ+4F9bVAF26M1HaVC5kjbiVDzIfY69jkftb6Kao=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=b9ngHE683pVzCGLDEjg491rrD5f6vfgfZUE06M7/XMoPJEmYmGSHLSU9NmKeeAOtw
-         uyHttVx16YZbBlN9iAmOdfYLBCbstjpUytRpE6jy+BP8WAf6kzrDZKENykhFdNrFEM
-         j2xP2uhqLJyBld79JNy4sQzvZGhg4+h/uM8Jc9q56sHW7sSbd0SU/K+q5nBddJ19NE
-         aKCWCl7FrlSaqGYeC263P60on+RXOp9sRjfXBj5Egt7bMmrvn+Cch/R05SmqGuxGeL
-         joZglMI26btTOAKwxwTzpMfo5GmjefOEWnot7IusAJjMCei9lt6Peo1/BQ48k8dVou
-         PHMFm7gKDSSUg==
-Date:   Fri, 4 Feb 2022 08:27:59 +0200
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Yael Tiomkin <yaelt@google.com>
-Cc:     Martin Ross <mross@pobox.com>, corbet@lwn.net, dhowells@redhat.com,
-        jejb@linux.ibm.com, jmorris@namei.org, keyrings@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-integrity@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-security-module <linux-security-module@vger.kernel.org>,
-        serge@hallyn.com, Mimi Zohar <zohar@linux.ibm.com>
-Subject: Re: [PATCH v4] KEYS: encrypted: Instantiate key with user-provided
- decrypted data
-Message-ID: <YfzHb9K5wZciy5um@iki.fi>
-References: <CA++MVV3Jse4WZ-zr-SUWQz3Gk_dByU6JduVfUkvQNW+jgm9O4Q@mail.gmail.com>
- <YfFe9+XDPDIdSqF1@iki.fi>
- <YfFf8fvsDm8lQJgJ@iki.fi>
- <CAKoutNsaHNriobnsQ1X0Qfs=K+YN3JvfhTBnQqPL01AvjRm5EA@mail.gmail.com>
+        Fri, 4 Feb 2022 01:41:39 -0500
+Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22455C061714;
+        Thu,  3 Feb 2022 22:41:39 -0800 (PST)
+Received: by mail-qk1-x736.google.com with SMTP id 200so4072815qki.2;
+        Thu, 03 Feb 2022 22:41:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Y3VBysFzp1kRvgau2cMx1aSqaX9MmIj4iq8W0jdx/e4=;
+        b=OIuZqO1OIXVeWVnaiyLGJVRL3I6W/hyCBabm1Zy0YuNodpqx9vGtIcZxcIGJYCTmYo
+         E/y3ElBCa23/0THZUUZ9MWb7cYEsSjdaNgBDzkXbOpZkHaHmTHeG0wmt6abTgjATn/SW
+         gH9vn304BW5NQnfJoe6Jq+x27hOBGjfWtjLdW9iPTa5//CwBL6b0oIAkXs8m2x2++uxR
+         oz/rdx62ONw8ymolVqSu+nPPUKDKRmgH5xE8oqpDEmIgWOLnVSAgtp0VetN+Qa34OcH7
+         juWPSC+b3G2RYGWfSyuPa0BdBG9IgLBzDBzMzTPVZFKEfaRTN9JkuGRstB2+OWab8/R7
+         p4XQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Y3VBysFzp1kRvgau2cMx1aSqaX9MmIj4iq8W0jdx/e4=;
+        b=0/mfE9LOKsDmm3D+HkX8zdP7sAoDjxqwCJZ0WBJLQMHTLjRsKIZ0z+mm5lB6KX1fx4
+         J2yj5anJ1PFyZNv1AW1TqskNuz11y85dpu1lXac+oZcsaN9fmWEUU/WbROFpAW1efLSm
+         BIh4+okok+3U9rXswdfR8JZGzqHx9AMAM2H8/zThjDooaS4mgfxgAKBhIJHvhWu4domJ
+         RlqlFhfnSU7q0i5cMV8C2lED8v7NT5gN0u3LyS4jZEMgTwcMaC701tGm7US4mVM/1a1J
+         e/Z7bS2Y5SHxZhSehZpoSk2tPBiwQ3OX5zNk6xRX5MAW6i4GUmiX48a6LH6BAZalhje6
+         ZZdg==
+X-Gm-Message-State: AOAM531ekbRVDDWcBhsYuO1ySui3BAB88V5aSIQxu84OaMyTLOQvnZj9
+        YFVwHhYh0FXJM6qRFJdtBoVA7AVgGZEyAA==
+X-Google-Smtp-Source: ABdhPJwy0IQfuUSq9u5lwkcYWdm2c3eASYnBBQ4Y+lCyz9oYJ8XM0ry3tukzDPa2M4UR599HYv2rkA==
+X-Received: by 2002:a37:68d4:: with SMTP id d203mr777487qkc.79.1643956898081;
+        Thu, 03 Feb 2022 22:41:38 -0800 (PST)
+Received: from shinobu (113x37x72x24.ap113.ftth.ucom.ne.jp. [113.37.72.24])
+        by smtp.gmail.com with ESMTPSA id 195sm615793qkf.30.2022.02.03.22.41.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Feb 2022 22:41:37 -0800 (PST)
+Date:   Fri, 4 Feb 2022 15:41:33 +0900
+From:   William Breathitt Gray <vilhelm.gray@gmail.com>
+To:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc:     jic23@kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] counter: Set counter device name
+Message-ID: <YfzKnWJTwiWgOofi@shinobu>
+References: <20220203073459.90093-1-vilhelm.gray@gmail.com>
+ <20220203090053.oki5ts4c2gdpi2c6@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="SGhrym32gYZ7uNn8"
 Content-Disposition: inline
-In-Reply-To: <CAKoutNsaHNriobnsQ1X0Qfs=K+YN3JvfhTBnQqPL01AvjRm5EA@mail.gmail.com>
+In-Reply-To: <20220203090053.oki5ts4c2gdpi2c6@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 03:56:44PM -0500, Yael Tiomkin wrote:
-> On Wed, Jan 26, 2022 at 9:51 AM Jarkko Sakkinen <jarkko@kernel.org> wrote:
-> >
-> > On Wed, Jan 26, 2022 at 04:47:22PM +0200, Jarkko Sakkinen wrote:
-> > > On Tue, Jan 18, 2022 at 01:26:05PM -0500, Martin Ross wrote:
-> > > > Hi Jarkko,
-> > > >
-> > > > I have been working with Yael on this project so I thought I might add
-> > > > a bit of background here around the use case that this series of
-> > > > patches is trying to address.
-> > > >
-> > > > At a high level we are trying to provide users of encryption that have
-> > > > key management hierarchies a better tradeoff between security and
-> > > > availability.  For available and performance reasons master keys often
-> > > > need to be released (or derived/wrapped keys created) outside of a KMS
-> > > > to clients (which may in turn further wrap those keys in a series of
-> > > > levels).  What we are trying to do is provide a mechanism where the
-> > > > wrapping/unwrapping of these keys is not dependent on a remote call at
-> > > > runtime.  e.g.  To unwrap a key if you are using AWS KMS or Google
-> > > > Service you need to make an RPC.  In practice to defend against
-> > > > availability or performance issues, designers end up building their
-> > > > own kms and effectively encrypting everything with a DEK.  The DEK
-> > > > encrypts same set as the master key thereby eliminating the security
-> > > > benefit of keeping the master key segregated in the first place.
-> >
-> > Mainly this part (would be enough to explain why it is there).
-> >
-> > BR, Jarkko
-> 
-> Hi Jarkko,
-> 
-> As for the commit message, WDYT about the following:
-> 
-> KEYS: encrypted: Instantiate key with user-provided decrypted data
-> 
-> For availability and performance reasons master keys often need to be
-> released outside of a KMS to clients. It would be beneficial to provide a
-> mechanism where the wrapping/unwrapping of DEKs is not dependent
-> on a remote call at runtime yet security is not (or only minimally) compromised.
-> Master keys could be securely stored in the Kernel and be used to wrap/unwrap
-> keys from userspace.
-> 
-> The encrypted.c class supports instantiation of encrypted keys with
-> either an already-encrypted key material, or by generating new key
-> material based on random numbers. This patch defines a new datablob
-> format: [<format>] <master-key name> <decrypted data length>
-> <decrypted data> that allows to inject and encrypt user-provided
-> decrypted data.
-> 
-> 
-> I want to make sure we're on the same page before publishing a new version.
-> 
-> Thanks,
-> Yael
 
-It looks really good.
+--SGhrym32gYZ7uNn8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-/Jarkko
+On Thu, Feb 03, 2022 at 10:00:53AM +0100, Uwe Kleine-K=C3=B6nig wrote:
+> On Thu, Feb 03, 2022 at 04:34:59PM +0900, William Breathitt Gray wrote:
+> > Naming the counter device provides a convenient way to identify it in
+> > devres_log events and similar situations. This patch names the counter
+> > device by combining the prefix "counter" with the counter device's
+> > unique ID.
+> >=20
+> > Cc: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+> > Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+> > ---
+> >  drivers/counter/counter-core.c | 12 +++++++++++-
+> >  1 file changed, 11 insertions(+), 1 deletion(-)
+> >=20
+> > diff --git a/drivers/counter/counter-core.c b/drivers/counter/counter-c=
+ore.c
+> > index 7e0957eea094..2ebd9adf0bd2 100644
+> > --- a/drivers/counter/counter-core.c
+> > +++ b/drivers/counter/counter-core.c
+> > @@ -22,6 +22,8 @@
+> >  #include "counter-chrdev.h"
+> >  #include "counter-sysfs.h"
+> > =20
+> > +#define COUNTER_NAME	"counter"
+> > +
+> >  /* Provides a unique ID for each counter device */
+> >  static DEFINE_IDA(counter_ida);
+> > =20
+> > @@ -104,6 +106,10 @@ struct counter_device *counter_alloc(size_t sizeof=
+_priv)
+> >  		goto err_ida_alloc;
+> >  	dev->id =3D err;
+> > =20
+> > +	err =3D dev_set_name(dev, COUNTER_NAME "%d", dev->id);
+> > +	if (err)
+> > +		goto err_dev_set_name;
+> > +
+> >  	mutex_init(&counter->ops_exist_lock);
+> >  	dev->type =3D &counter_device_type;
+> >  	dev->bus =3D &counter_bus_type;
+> > @@ -119,6 +125,9 @@ struct counter_device *counter_alloc(size_t sizeof_=
+priv)
+> > =20
+> >  err_chrdev_add:
+> > =20
+> > +	kfree(dev_name(dev));
+> > +err_dev_set_name:
+> > +
+>=20
+> I think this is wrong as kobject_cleanup frees the name.
+>=20
+> Best regards
+> Uwe
+
+This is true once the device is initialized by device_initialize() but
+that won't happen until after counter_chrdev_add() is called; if
+counter_chrdev_add() fails, we need to free this memory lest it leak
+when we return the error code.
+
+I did notice kobject_cleanup() calls kfree_const() on the name rather
+than kfree(). Would it make sense to change this patch to call
+kfree_const() instead?
+
+William Breathitt Gray
+
+--SGhrym32gYZ7uNn8
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEk5I4PDJ2w1cDf/bghvpINdm7VJIFAmH8yoYACgkQhvpINdm7
+VJJBBQ//a+ffB0x18Li9NKcR4HsguAJsIwcQwPjK+c8ukpJt5TdehDpEPwiWAyH4
+M96rUrFA+yF1YHVnxyzC3Lt2+MdLm8D8gcQQdCnCCc+SJBJoW/pC1fid9YBGT8z2
+TeXbDlOLwGgxj9CQv4sABfrO79anUegPmLnaN/6dtlbROlV7m9FL7C51RmnCIZXF
+Tf3dTBdv3LbhdlSwI3y7oEmLKjuIg75iU7ucFLm3ygLylr9jEGUSHRkED2nJafRO
+j38xgBNlSEBqwj8KD9yBChzk5DybNLguyWzkEQeMrprDxR+st+2mARK1ANHYgzX1
+P0c/r1qKaW0g9JmKrp7/ADuf2h5u3ZHnaF8SR8mZOINL3IN2MlEWuRD9StY8YcR7
+k7gFwYyN9cfq41W9HEgG4VYYUyqnwTKdSNrUy7AizaFTReodMQuokOhLKhSWjzY2
+GP1Tjtj8D+uirxcmnKNhPk21hUPrauakmcDcnDkdcSR+HnoplvO8P+8DWFvcJ8vi
+QI3BiMJ500FccYJgdvykUQuwsD+ex0XqSTqnlHpkqTQjPl3A4PBy4Q3twDM/Ro72
+sQmzWg0w8dNWlt0+VbD3UYBIzVcNzNQ5xoxljaWtrEKG1zDsG3uJFnx06+Pu4TQc
+qBx6q8u83SpUVzbWPMQwobTNTha98h860gK2tGPd/JrHv7HQ/jc=
+=FRuA
+-----END PGP SIGNATURE-----
+
+--SGhrym32gYZ7uNn8--
