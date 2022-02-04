@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F3A7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:22:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C8B9C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:22:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357529AbiBDJWK (ORCPT
+        id S1357542AbiBDJWP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 04:22:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60658 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357453AbiBDJVe (ORCPT
+        Fri, 4 Feb 2022 04:22:15 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41128 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1357438AbiBDJVi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 04:21:34 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F656C061401;
-        Fri,  4 Feb 2022 01:21:33 -0800 (PST)
+        Fri, 4 Feb 2022 04:21:38 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 47E52B836EC;
-        Fri,  4 Feb 2022 09:21:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D739C004E1;
-        Fri,  4 Feb 2022 09:21:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 37746615F5;
+        Fri,  4 Feb 2022 09:21:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED55CC004E1;
+        Fri,  4 Feb 2022 09:21:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643966491;
-        bh=t6fosH+/jo0oyk3kX5RJYCWAgBNoLIkcuTpouivDE3Q=;
+        s=korg; t=1643966497;
+        bh=QrZLry4insApv+gQ37l7e+SnTkVoC6w8ESMnHsJwm00=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w4X6R4zdwaRWCPk7Q8xOtCXiduOiMqI2VYUPHPList7nq0c3KGulx7eYQUHtvP5Oe
-         SF6mCeovVSYtNrMHUphXTPAjBsgRnoUa12chZompe4cestSKRhvHLISKfaLRbz5V1L
-         Hl8ClXGJyqBoDZtmojec7hBK/TaHB8oRUcwhdcIk=
+        b=ZoGcCk+W/tnNCPg7SWwRYNSTKhiCPh4pa875AK0QEI47Ro7F3DtA0PzxFOBum7b8Q
+         LqIO3brlTMQkstwaHwxe/4vr9R+XsX/uhmzuPa1tYrxXzxJJgPKH7tfCEh2cj8VkTV
+         AwVNHAqS7GXMAuTeJVwOhXWyH3nq5p3k6MhMRJos=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maor Dickman <maord@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH 5.10 16/25] net/mlx5: E-Switch, Fix uninitialized variable modact
-Date:   Fri,  4 Feb 2022 10:20:23 +0100
-Message-Id: <20220204091914.813309593@linuxfoundation.org>
+        stable@vger.kernel.org, Sudheesh Mavila <sudheesh.mavila@amd.com>,
+        Raju Rangoju <Raju.Rangoju@amd.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.10 18/25] net: amd-xgbe: ensure to reset the tx_timer_active flag
+Date:   Fri,  4 Feb 2022 10:20:25 +0100
+Message-Id: <20220204091914.874394809@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220204091914.280602669@linuxfoundation.org>
 References: <20220204091914.280602669@linuxfoundation.org>
@@ -49,35 +48,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maor Dickman <maord@nvidia.com>
+From: Raju Rangoju <Raju.Rangoju@amd.com>
 
-commit d8e5883d694bb053b19c4142a2d1f43a34f6fe2c upstream.
+commit 7674b7b559b683478c3832527c59bceb169e701d upstream.
 
-The variable modact is not initialized before used in command
-modify header allocation which can cause command to fail.
+Ensure to reset the tx_timer_active flag in xgbe_stop(),
+otherwise a port restart may result in tx timeout due to
+uncleared flag.
 
-Fix by initializing modact with zeros.
-
-Addresses-Coverity: ("Uninitialized scalar variable")
-Fixes: 8f1e0b97cc70 ("net/mlx5: E-Switch, Mark miss packets with new chain id mapping")
-Signed-off-by: Maor Dickman <maord@nvidia.com>
-Reviewed-by: Roi Dayan <roid@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Fixes: c635eaacbf77 ("amd-xgbe: Remove Tx coalescing")
+Co-developed-by: Sudheesh Mavila <sudheesh.mavila@amd.com>
+Signed-off-by: Sudheesh Mavila <sudheesh.mavila@amd.com>
+Signed-off-by: Raju Rangoju <Raju.Rangoju@amd.com>
+Acked-by: Tom Lendacky <thomas.lendacky@amd.com>
+Link: https://lore.kernel.org/r/20220127060222.453371-1-Raju.Rangoju@amd.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/lib/fs_chains.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/amd/xgbe/xgbe-drv.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_chains.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_chains.c
-@@ -292,7 +292,7 @@ static int
- create_chain_restore(struct fs_chain *chain)
- {
- 	struct mlx5_eswitch *esw = chain->chains->dev->priv.eswitch;
--	char modact[MLX5_UN_SZ_BYTES(set_add_copy_action_in_auto)];
-+	u8 modact[MLX5_UN_SZ_BYTES(set_add_copy_action_in_auto)] = {};
- 	struct mlx5_fs_chains *chains = chain->chains;
- 	enum mlx5e_tc_attr_to_reg chain_to_reg;
- 	struct mlx5_modify_hdr *mod_hdr;
+--- a/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
++++ b/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
+@@ -721,7 +721,9 @@ static void xgbe_stop_timers(struct xgbe
+ 		if (!channel->tx_ring)
+ 			break;
+ 
++		/* Deactivate the Tx timer */
+ 		del_timer_sync(&channel->tx_timer);
++		channel->tx_timer_active = 0;
+ 	}
+ }
+ 
 
 
