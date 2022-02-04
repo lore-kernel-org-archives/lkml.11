@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 725A1C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 11:57:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB1F2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 11:57:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358726AbiBDL5n (ORCPT
+        id S1358750AbiBDL5q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 06:57:43 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:21435 "EHLO
+        Fri, 4 Feb 2022 06:57:46 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:37000 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1358549AbiBDL52 (ORCPT
+        by vger.kernel.org with ESMTP id S1358540AbiBDL51 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 06:57:28 -0500
+        Fri, 4 Feb 2022 06:57:27 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643975848;
+        s=mimecast20190719; t=1643975846;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=9Aa81Pa80imIk4UaTF0wxzL7ZPYrOTOis7eBwCIeEGQ=;
-        b=CCSyzt3hPhk5AifpcS5xLS1SK6/gS2j6cdnA2GphCb+S1FC4pipk7XuHPbxkpNWSiReNba
-        fq89xNP8La3MURv40Orlm+n6h4s+UYvOr4Uz9hr8On+0OpOIaSoFlH7/znUl4k1uFbRZLD
-        yjABxrPLUgUjpbVyipO3dWTUXmOmTMw=
+        bh=OzIDUAXsJoa+BiSWuGe751GcZgmjbrKEWZp98e47DYA=;
+        b=RV2fs8FiEN5OBPCsZkZxqwvyHUT2SbYBvyltOdy16lB9wZ9VtXi2PTDFY9O0mz6RLjHjNp
+        f1qlcMUgc4tRnQlhiYP0BTCeiP7ajWc7gGfdELHWrW7CraMbQ9aFv/4Yse4xFaZg/fzE08
+        cIaUjoNKorT0tacwdpbA3U+GLlEB3po=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-480-qj1A0x2mMGyZvYX7FywFtQ-1; Fri, 04 Feb 2022 06:57:24 -0500
-X-MC-Unique: qj1A0x2mMGyZvYX7FywFtQ-1
+ us-mta-657-ziQl9z8bOUeB2IVJ1VGaRQ-1; Fri, 04 Feb 2022 06:57:23 -0500
+X-MC-Unique: ziQl9z8bOUeB2IVJ1VGaRQ-1
 Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C6F0061280;
-        Fri,  4 Feb 2022 11:57:23 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B05268710F8;
+        Fri,  4 Feb 2022 11:57:22 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5BCA11084184;
-        Fri,  4 Feb 2022 11:57:23 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 429281084184;
+        Fri,  4 Feb 2022 11:57:22 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     dmatlack@google.com, seanjc@google.com, vkuznets@redhat.com
-Subject: [PATCH 08/23] KVM: MMU: rephrase unclear comment
-Date:   Fri,  4 Feb 2022 06:57:03 -0500
-Message-Id: <20220204115718.14934-9-pbonzini@redhat.com>
+Subject: [PATCH 06/23] KVM: MMU: load new PGD once nested two-dimensional paging is initialized
+Date:   Fri,  4 Feb 2022 06:57:01 -0500
+Message-Id: <20220204115718.14934-7-pbonzini@redhat.com>
 In-Reply-To: <20220204115718.14934-1-pbonzini@redhat.com>
 References: <20220204115718.14934-1-pbonzini@redhat.com>
 MIME-Version: 1.0
@@ -51,29 +51,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If accessed bits are not supported there simple isn't any distinction
-between accessed and non-accessed gPTEs, so the comment does not make
-much sense.  Rephrase it in terms of what happens if accessed bits
-*are* supported.
+__kvm_mmu_new_pgd looks at the MMU's root_level and shadow_root_level
+via fast_pgd_switch.  It makes no sense to call it before updating
+these fields, even though it was done like that ever since nested
+VMX grew the ability to use fast CR3 switch (commit 50c28f21d045,
+"kvm: x86: Use fast CR3 switch for nested VMX").
+
+Pull it to the end of the initialization of the shadow nested MMUs.
 
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/kvm/mmu/paging_tmpl.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kvm/mmu/mmu.c | 41 +++++++++++++++++++----------------------
+ 1 file changed, 19 insertions(+), 22 deletions(-)
 
-diff --git a/arch/x86/kvm/mmu/paging_tmpl.h b/arch/x86/kvm/mmu/paging_tmpl.h
-index 5b5bdac97c7b..6bb9a377bf89 100644
---- a/arch/x86/kvm/mmu/paging_tmpl.h
-+++ b/arch/x86/kvm/mmu/paging_tmpl.h
-@@ -193,7 +193,7 @@ static bool FNAME(prefetch_invalid_gpte)(struct kvm_vcpu *vcpu,
- 	if (!FNAME(is_present_gpte)(gpte))
- 		goto no_present;
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index 577e70509510..b8ab16323629 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -4869,10 +4869,9 @@ void kvm_init_shadow_npt_mmu(struct kvm_vcpu *vcpu, unsigned long cr0,
  
--	/* if accessed bit is not supported prefetch non accessed gpte */
-+	/* if accessed bit is supported, prefetch only accessed gpte */
- 	if (PT_HAVE_ACCESSED_DIRTY(vcpu->arch.mmu) &&
- 	    !(gpte & PT_GUEST_ACCESSED_MASK))
- 		goto no_present;
+ 	new_role = kvm_calc_shadow_npt_root_page_role(vcpu, &regs);
+ 
+-	__kvm_mmu_new_pgd(vcpu, nested_cr3, new_role.base);
+-
+ 	shadow_mmu_init_context(vcpu, context, &regs, new_role);
+ 	reset_shadow_zero_bits_mask(vcpu, context, is_efer_nx(context));
++	__kvm_mmu_new_pgd(vcpu, nested_cr3, new_role.base);
+ }
+ EXPORT_SYMBOL_GPL(kvm_init_shadow_npt_mmu);
+ 
+@@ -4906,27 +4905,25 @@ void kvm_init_shadow_ept_mmu(struct kvm_vcpu *vcpu, bool execonly,
+ 		kvm_calc_shadow_ept_root_page_role(vcpu, accessed_dirty,
+ 						   execonly, level);
+ 
+-	__kvm_mmu_new_pgd(vcpu, new_eptp, new_role.base);
+-
+-	if (new_role.as_u64 == context->mmu_role.as_u64)
+-		return;
+-
+-	context->mmu_role.as_u64 = new_role.as_u64;
+-
+-	context->shadow_root_level = level;
+-
+-	context->ept_ad = accessed_dirty;
+-	context->page_fault = ept_page_fault;
+-	context->gva_to_gpa = ept_gva_to_gpa;
+-	context->sync_page = ept_sync_page;
+-	context->invlpg = ept_invlpg;
+-	context->root_level = level;
+-	context->direct_map = false;
++	if (new_role.as_u64 != context->mmu_role.as_u64) {
++		context->mmu_role.as_u64 = new_role.as_u64;
++
++		context->shadow_root_level = level;
++
++		context->ept_ad = accessed_dirty;
++		context->page_fault = ept_page_fault;
++		context->gva_to_gpa = ept_gva_to_gpa;
++		context->sync_page = ept_sync_page;
++		context->invlpg = ept_invlpg;
++		context->root_level = level;
++		context->direct_map = false;
++		update_permission_bitmask(context, true);
++		context->pkru_mask = 0;
++		reset_rsvds_bits_mask_ept(vcpu, context, execonly, huge_page_level);
++		reset_ept_shadow_zero_bits_mask(context, execonly);
++	}
+ 
+-	update_permission_bitmask(context, true);
+-	context->pkru_mask = 0;
+-	reset_rsvds_bits_mask_ept(vcpu, context, execonly, huge_page_level);
+-	reset_ept_shadow_zero_bits_mask(context, execonly);
++	__kvm_mmu_new_pgd(vcpu, new_eptp, new_role.base);
+ }
+ EXPORT_SYMBOL_GPL(kvm_init_shadow_ept_mmu);
+ 
 -- 
 2.31.1
 
