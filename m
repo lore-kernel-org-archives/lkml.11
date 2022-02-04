@@ -2,269 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6A2FC43217
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 23:37:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D9F5C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 23:39:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378216AbiBDXhH (ORCPT
+        id S1378237AbiBDXjF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 18:37:07 -0500
-Received: from mail-oi1-f174.google.com ([209.85.167.174]:33348 "EHLO
-        mail-oi1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231367AbiBDXhD (ORCPT
+        Fri, 4 Feb 2022 18:39:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46238 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230020AbiBDXjC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 18:37:03 -0500
-Received: by mail-oi1-f174.google.com with SMTP id x193so10462793oix.0;
-        Fri, 04 Feb 2022 15:37:03 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=dZ4giCvADmPnDI6RyshIy9Yaq4H2NCsxVmH5tlfAm54=;
-        b=2eaWUY7DUJiA2MIVZMkRMnCfl371iXsMb7xkMlFwjsiHrALZZwmYPnwZfYDgQOYX+0
-         3syZXuLd4MexMWxtGPzDPs9bWWJNVMry1GMwXlG2BYMxE8PKG2X9E0NW9ynZ7wTFddO3
-         sWlfVnVzrRFew9vd1sKuiza9BNgTB4uwsufcdBtVvif9PAQpJBO7wcN/OxbKe+OLZImZ
-         o+2c9sQfUYy4leap1oscWCsWdEwuwU0eg+DQ3iFKBnwZSffec33dIyj4sXQI7Rk6if9B
-         W4vQeLpoUtf5d52h5quDctfXimOLh4ijhKlKPw3Gl2HTXFUClhMS9Un4dc9FUavEPlzP
-         LpPg==
-X-Gm-Message-State: AOAM532dvRfD072PW4UawdO4SA1Gaqntf4ArEI3s8PFwFInTk6obxoH4
-        pbyIy8GXnkAQ5/ukvV4hOg==
-X-Google-Smtp-Source: ABdhPJxg123KDgvEdmqZE2xZwnTt7BWrZGgzK8ifbHWV3OLex+k2YjpetEnJ15EfEWRnn92Dkbf3GA==
-X-Received: by 2002:a05:6808:1598:: with SMTP id t24mr2419529oiw.50.1644017823172;
-        Fri, 04 Feb 2022 15:37:03 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id d7sm1230028otf.66.2022.02.04.15.37.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Feb 2022 15:37:02 -0800 (PST)
-Received: (nullmailer pid 3395904 invoked by uid 1000);
-        Fri, 04 Feb 2022 23:37:01 -0000
-Date:   Fri, 4 Feb 2022 17:37:01 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Dipen Patel <dipenp@nvidia.com>
-Cc:     smangipudi@nvidia.com, thierry.reding@gmail.com,
-        jonathanh@nvidia.com, linux-kernel@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linus.walleij@linaro.org, bgolaszewski@baylibre.com,
-        warthog618@gmail.com, devicetree@vger.kernel.org,
-        linux-doc@vger.kernel.org
-Subject: Re: [PATCH v4 04/11] dt-bindings: Add HTE bindings
-Message-ID: <Yf24nR9drkBAnYA5@robh.at.kernel.org>
-References: <20220201222630.21246-1-dipenp@nvidia.com>
- <20220201222630.21246-5-dipenp@nvidia.com>
+        Fri, 4 Feb 2022 18:39:02 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 203DCE025B1E;
+        Fri,  4 Feb 2022 15:39:01 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CD7DAB838EB;
+        Fri,  4 Feb 2022 23:38:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56E6CC004E1;
+        Fri,  4 Feb 2022 23:38:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644017938;
+        bh=+HaRJ6tKdg7Lo/ikTwIrxa09KYNzLZvPNomKsueEx/w=;
+        h=Date:From:To:Cc:Subject:Reply-To:From;
+        b=OyY7iix577ACnhoT8F+cVw5/arCXHBWY85X949Aj3o71eZL7nIgXV5IqFwmgKhuJm
+         F9cgDi06fRVbjmBixRKGaRQitUJFeZP0/FL8tKvm//JvOgFzMS8wMHnz+4pRQlYwoK
+         Yt28pwG4Y7FX5qiblfjvOATcL1SYPS5+wDQerHHvqrrbLy5aSvOvahibJ1CR4jPXwY
+         1JOzw9Yl8jSBKjYNCO4mSFv8kPvt1U0n6QUsn5sltG+zE1/uG8xhSBx15Qo4wcC+qy
+         JkMM3BLZuP1f3kfVWPM/82MxnUjWPvUPy9H9diWBw82+QxflsmQ3jZwLpdEgxy9+e4
+         ezKgrbxiviTfQ==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 277FB5C0418; Fri,  4 Feb 2022 15:38:58 -0800 (PST)
+Date:   Fri, 4 Feb 2022 15:38:58 -0800
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     rcu@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com,
+        rostedt@goodmis.org
+Subject: [PATCH rcu 0/19] SRCU updates for v5.18
+Message-ID: <20220204233858.GA1469@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220201222630.21246-5-dipenp@nvidia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 01, 2022 at 02:26:23PM -0800, Dipen Patel wrote:
-> Introduces HTE devicetree binding details for the HTE subsystem. It
-> includes examples for the consumers, binding details for the providers
-> and specific binding details for the Tegra194 based HTE providers.
-> 
-> Signed-off-by: Dipen Patel <dipenp@nvidia.com>
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-> ---
->  .../hte/hardware-timestamps-common.yaml       | 29 +++++++
->  .../devicetree/bindings/hte/hte-consumer.yaml | 44 ++++++++++
->  .../bindings/hte/nvidia,tegra194-hte.yaml     | 82 +++++++++++++++++++
->  3 files changed, 155 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/hte/hardware-timestamps-common.yaml
->  create mode 100644 Documentation/devicetree/bindings/hte/hte-consumer.yaml
->  create mode 100644 Documentation/devicetree/bindings/hte/nvidia,tegra194-hte.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/hte/hardware-timestamps-common.yaml b/Documentation/devicetree/bindings/hte/hardware-timestamps-common.yaml
-> new file mode 100644
-> index 000000000000..ee6f94890695
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/hte/hardware-timestamps-common.yaml
-> @@ -0,0 +1,29 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/hte/hardware-timestamps-common.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Hardware timestamp providers
-> +
-> +maintainers:
-> +  - Dipen Patel <dipenp@nvidia.com>
-> +
-> +description: |
-> +  Some devices/SoCs have hardware time stamping engines which can use hardware
-> +  means to timestamp entity in realtime. The entity could be anything from
-> +  GPIOs, IRQs, Bus and so on. The hardware timestamp engine (HTE) present
-> +  itself as a provider with the bindings described in this document.
-> +
-> +properties:
-> +  $nodename:
-> +    pattern: "^hardware-timestamp(@.*|-[0-9a-f])?$"
-> +
-> +  "#hardware-timestamp-cells":
-> +    description:
-> +      Number of cells in a HTE specifier.
-> +
-> +required:
-> +  - "#hardware-timestamp-cells"
-> +
-> +additionalProperties: true
-> diff --git a/Documentation/devicetree/bindings/hte/hte-consumer.yaml b/Documentation/devicetree/bindings/hte/hte-consumer.yaml
-> new file mode 100644
-> index 000000000000..bb1232b31455
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/hte/hte-consumer.yaml
-> @@ -0,0 +1,44 @@
-> +# SPDX-License-Identifier: GPL-2.0
+Hello!
 
-dual license
+This series provides SRCU updates, perhaps most notably some changes
+that greatly reduce the size of the srcu_struct structure in kernels
+built with large values for the CONFIG_NR_CPUS Kconfig option.
 
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/hte/hte-consumer.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: HTE Consumer Device Tree Bindings
-> +
-> +maintainers:
-> +  - Dipen Patel <dipenp@nvidia.com>
+1.	Tighten cleanup_srcu_struct() GP checks.
 
-select: true
+2.	Fix s/is/if/ typo in srcu_node comment.
 
-Or this is never applied.
+3.	Make srcu_funnel_gp_start() cache ->mynode in snp_leaf.
 
-> +
-> +description: |
-> +  HTE properties should be named "hardware-timestamps". The exact meaning of
-> +  each hardware-timestamps property must be documented in the device tree
-> +  binding for each device. An optional property "hardware-timestamp-names" may
-> +  contain a list of strings to label each of the HTE devices listed in the
-> +  "hardware-timestamps" property.
-> +
-> +properties:
-> +  hardware-timestamps:
-> +    $ref: /schemas/types.yaml#/definitions/phandle-array
-> +    description:
-> +      The list of HTE provider phandle. The provider must document the number
-> +      of cell that must be passed in this property along with phandle.
-> +
-> +  hardware-timestamp-names:
-> +    $ref: /schemas/types.yaml#/definitions/string-array
-> +    description:
-> +      An optional string property.
-> +
-> +required:
-> +  - hardware-timestamps
+4.	Dynamically allocate srcu_node array.
 
-And drop this or it will then fail everywhere.
+5.	Make Tree SRCU able to operate without snp_node array.
 
-> +
-> +dependencies:
-> +  hardware-timestamp-names: [ hardware-timestamps ]
-> +
-> +additionalProperties: true
-> +
-> +examples:
-> +  - |
-> +    hte_irq_consumer {
-> +              hardware-timestamps = <&tegra_hte_lic 0x19>;
-> +              hardware-timestamp-names = "hte-irq";
-> +    };
-> diff --git a/Documentation/devicetree/bindings/hte/nvidia,tegra194-hte.yaml b/Documentation/devicetree/bindings/hte/nvidia,tegra194-hte.yaml
-> new file mode 100644
-> index 000000000000..c7d2acdb862e
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/hte/nvidia,tegra194-hte.yaml
-> @@ -0,0 +1,82 @@
-> +# SPDX-License-Identifier: GPL-2.0
+6.	Add size-state transitioning code.
 
-Dual license.
+7.	Make rcutorture dump the SRCU size state.
 
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/hte/nvidia,tegra194-hte.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Tegra194 on chip generic hardware timestamping engine (HTE)
-> +
-> +maintainers:
-> +  - Dipen Patel <dipenp@nvidia.com>
-> +
-> +description: |
+8.	Add boot-time control over srcu_node array allocation.
 
-Don't need '|' if no formatting.
+9.	Use export for srcu_struct defined by DEFINE_STATIC_SRCU(),
+	courtesy of Alexander Aring.
 
-> +  Tegra194 SoC has multiple generic hardware timestamping engines (GTE) which
-> +  can monitor subset of GPIO and on chip IRQ lines for the state change, upon
-> +  detection it will record timestamp (taken from system counter) in its
-> +  internal hardware FIFO. It has a bitmap array arranged in 32bit slices where
-> +  each bit represent signal/line to enable or disable for the hardware
-> +  timestamping.
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - nvidia,tegra194-gte-aon
-> +      - nvidia,tegra194-gte-lic
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  nvidia,int-threshold:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    description:
-> +      HTE device generates its interrupt based on this u32 FIFO threshold
-> +      value. The recommended value is 1.
-> +    minimum: 1
-> +    maximum: 256
-> +
-> +  nvidia,slices:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    description:
-> +      HTE lines are arranged in 32 bit slice where each bit represents different
-> +      line/signal that it can enable/configure for the timestamp. It is u32
-> +      property and depends on the HTE instance in the chip. The value 3 is for
-> +      GPIO GTE and 11 for IRQ GTE.
-> +    enum: [3, 11]
-> +
-> +  '#hardware-timestamp-cells':
-> +    const: 1
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +  - nvidia,slices
-> +  - "#hardware-timestamp-cells"
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    tegra_hte_aon: hardware-timestamp@c1e0000 {
-> +              compatible = "nvidia,tegra194-gte-aon";
-> +              reg = <0xc1e0000 0x10000>;
-> +              interrupts = <0 13 0x4>;
-> +              nvidia,int-threshold = <1>;
-> +              nvidia,slices = <3>;
-> +              #hardware-timestamp-cells = <1>;
-> +    };
-> +
-> +  - |
-> +    tegra_hte_lic: hardware-timestamp@3aa0000 {
-> +              compatible = "nvidia,tegra194-gte-lic";
-> +              reg = <0x3aa0000 0x10000>;
-> +              interrupts = <0 11 0x4>;
-> +              nvidia,int-threshold = <1>;
-> +              nvidia,slices = <11>;
-> +              #hardware-timestamp-cells = <1>;
-> +    };
-> +
-> +...
-> -- 
-> 2.17.1
-> 
-> 
+10.	Compute snp_seq earlier in srcu_funnel_gp_start().
+
+11.	Use invalid initial value for srcu_node GP sequence numbers.
+
+12.	Avoid NULL dereference in srcu_torture_stats_print().
+
+13.	Prevent cleanup_srcu_struct() from freeing non-dynamic ->sda.
+
+14.	Explain srcu_funnel_gp_start() call to list_add() is safe.
+
+15.	Create concurrency-safe helper for initiating size transition.
+
+16.	Add contention-triggered addition of srcu_node tree.
+
+17.	Make srcu_size_state_name static, courtesy of Jiapeng Chong.
+
+18.	Automatically determine size-transition strategy at boot.
+
+19.	Add contention check to call_srcu() srcu_data ->lock acquisition.
+
+						Thanx, Paul
+
+------------------------------------------------------------------------
+
+ Documentation/admin-guide/kernel-parameters.txt   |    9 
+ b/Documentation/admin-guide/kernel-parameters.txt |   22 
+ b/include/linux/srcutree.h                        |    8 
+ b/kernel/rcu/srcutree.c                           |    6 
+ include/linux/srcutree.h                          |   20 
+ kernel/rcu/srcutree.c                             |  644 +++++++++++++++-------
+ 6 files changed, 500 insertions(+), 209 deletions(-)
