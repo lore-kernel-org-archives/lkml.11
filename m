@@ -2,88 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB8EDC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:29:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22E4DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:29:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358191AbiBDJ3N (ORCPT
+        id S1358428AbiBDJ3P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 04:29:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32916 "EHLO
+        Fri, 4 Feb 2022 04:29:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357774AbiBDJ1K (ORCPT
+        with ESMTP id S1358166AbiBDJ1M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 04:27:10 -0500
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B48A0C061783;
-        Fri,  4 Feb 2022 01:26:28 -0800 (PST)
-Received: from ip4d144895.dynamic.kabel-deutschland.de ([77.20.72.149] helo=[192.168.66.200]); authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1nFurI-0007GZ-ER; Fri, 04 Feb 2022 10:26:25 +0100
-Message-ID: <585e1812-3d0c-552f-3195-4e947b4fef9d@leemhuis.info>
-Date:   Fri, 4 Feb 2022 10:26:23 +0100
+        Fri, 4 Feb 2022 04:27:12 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49F54C061397;
+        Fri,  4 Feb 2022 01:26:30 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0B7BFB836EE;
+        Fri,  4 Feb 2022 09:26:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12CFBC004E1;
+        Fri,  4 Feb 2022 09:26:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643966787;
+        bh=Hs1XBgBwYzOagplRloPnUlsaIUvnsyTiuejMIw75644=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=XYnfEmvlnExLFTfGR41w6+Gz04y2KBrRdeULNNygbq8H2jvZ2bFGfLjpYdioiLKUY
+         FfDDL9ZN/q1DE0egjvnMia7AGeGIVgL8BpDssi2fPiWbCk16iVtbIKWJcXVe8aYEBB
+         UC75ey4NeRhiCZ53+ogUvze1PFlg26e8lUV8/hSU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Tianchen Ding <dtcccc@linux.alibaba.com>,
+        Waiman Long <longman@redhat.com>, Tejun Heo <tj@kernel.org>
+Subject: [PATCH 5.16 39/43] cpuset: Fix the bug that subpart_cpus updated wrongly in update_cpumask()
+Date:   Fri,  4 Feb 2022 10:22:46 +0100
+Message-Id: <20220204091918.433886374@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220204091917.166033635@linuxfoundation.org>
+References: <20220204091917.166033635@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] MIPS: Fix build error due to PTR used in more places
-Content-Language: en-BS
-To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Guenter Roeck <linux@roeck-us.net>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220125141946.54114-1-tsbogend@alpha.franken.de>
- <20220130163725.GA2792319@roeck-us.net>
- <20220131100845.GA19252@alpha.franken.de>
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-In-Reply-To: <20220131100845.GA19252@alpha.franken.de>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1643966788;12f74f95;
-X-HE-SMSGID: 1nFurI-0007GZ-ER
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, this is your Linux kernel regression tracker speaking.
+From: Tianchen Ding <dtcccc@linux.alibaba.com>
 
-On 31.01.22 11:08, Thomas Bogendoerfer wrote:
-> On Sun, Jan 30, 2022 at 08:37:25AM -0800, Guenter Roeck wrote:
->> On Tue, Jan 25, 2022 at 03:19:44PM +0100, Thomas Bogendoerfer wrote:
->>> Use PTR_WD instead of PTR to avoid clashes with other parts.
->>>
->>> Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
->>
->> Building mips:cavium_octeon_defconfig ... failed
->> --------------
->> Error log:
->> arch/mips/cavium-octeon/octeon-memcpy.S: Assembler messages:
->> arch/mips/cavium-octeon/octeon-memcpy.S:187: Error: unrecognized opcode `ptr 9b,l_exc'
->> ...
->>
->> Missed one place in Cavium assembler code.
->>
->> arch/mips/cavium-octeon/octeon-memcpy.S:        PTR     9b, handler;
->>
->> #regzbot introduced: fa62f39dc7e2
+commit c80d401c52a2d1baf2a5afeb06f0ffe678e56d23 upstream.
 
-@Guenter: thx for getting the regression tracked!
+subparts_cpus should be limited as a subset of cpus_allowed, but it is
+updated wrongly by using cpumask_andnot(). Use cpumask_and() instead to
+fix it.
 
-> d'oh, fix sent.
+Fixes: ee8dde0cd2ce ("cpuset: Add new v2 cpuset.sched.partition flag")
+Signed-off-by: Tianchen Ding <dtcccc@linux.alibaba.com>
+Reviewed-by: Waiman Long <longman@redhat.com>
+Signed-off-by: Tejun Heo <tj@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ kernel/cgroup/cpuset.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-Sadly you didn't link to the report about the issue using a "Link:" tag,
-as explained by both Documentation/process/submitting-patches.rst and
-Documentation/process/5.Posting.rst
+--- a/kernel/cgroup/cpuset.c
++++ b/kernel/cgroup/cpuset.c
+@@ -1615,8 +1615,7 @@ static int update_cpumask(struct cpuset
+ 	 * Make sure that subparts_cpus is a subset of cpus_allowed.
+ 	 */
+ 	if (cs->nr_subparts_cpus) {
+-		cpumask_andnot(cs->subparts_cpus, cs->subparts_cpus,
+-			       cs->cpus_allowed);
++		cpumask_and(cs->subparts_cpus, cs->subparts_cpus, cs->cpus_allowed);
+ 		cs->nr_subparts_cpus = cpumask_weight(cs->subparts_cpus);
+ 	}
+ 	spin_unlock_irq(&callback_lock);
 
-Could you please do so in the future? Than would make my life as a Linux
-kernel's regression tracker a lot easier, as my regression tracking bot
-would then have been able to automatically detect the patch posting and
-the commit (I for now decided to not make the bot rely on the "Fixes:"
-tag alone, as that might do the wrong thing if one commit causes
-multiple regressions).
 
-Anyway: I no big deal (just makes regression tracking a lot harder), I
-can tell regzbot manually about the fix:
-
-#regzbot introduced: 50317b636e7184d
-
-Ciao, Thorsten
