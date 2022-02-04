@@ -2,167 +2,267 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12B55C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 23:20:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15CB1C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 23:22:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378048AbiBDXUz (ORCPT
+        id S1378056AbiBDXWB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 18:20:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41174 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378039AbiBDXUm (ORCPT
+        Fri, 4 Feb 2022 18:22:01 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:60040 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235330AbiBDXV5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 18:20:42 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56358DFBC71F;
-        Fri,  4 Feb 2022 15:20:41 -0800 (PST)
+        Fri, 4 Feb 2022 18:21:57 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id A715FCE24B8;
-        Fri,  4 Feb 2022 23:20:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9FDAC340F1;
-        Fri,  4 Feb 2022 23:20:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 90D71B83970;
+        Fri,  4 Feb 2022 23:21:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4E3EC004E1;
+        Fri,  4 Feb 2022 23:21:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644016837;
-        bh=S4eE3S6LI0fVFBCvPzoWLKyt6VIRD7KnrVxSw8qANRc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oNoKmx5gENNnY/2V1bzrutS0sYA6WM4B/GMjlKQiXLTKKEnTAyhVXWJ4cyoFNQeAS
-         4wEy0YO4KGIPtaOcKl1t7d9ohzzF4xFBOhXANuI1YTwNyxsngNePAIsU+KJ5p87XKO
-         9+bvRFnHcocUSPLpXXUfHtyrqEBFB2HuyffyT4w7n5fmsYHhm3f9urnVZ7QYQDl5mw
-         kEHsmzgDdAE7zj+YEDWv54X9oajDaUZ6TTty2mdGdACNRb4CREa0kZ3q1LgdxKGDg/
-         N2KVx7vG2YgZOH49WMxZmpYxyDTBoUU307O2faVd9PC1BIqhhrhQtp74jqXr1UP69f
-         uuOlp2KFBsItQ==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id AA35F5C0992; Fri,  4 Feb 2022 15:20:37 -0800 (PST)
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     rcu@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com,
-        rostedt@goodmis.org, "Paul E. McKenney" <paulmck@kernel.org>
-Subject: [PATCH rcu 5/5] rcu: Create and use an rcu_rdp_cpu_online()
-Date:   Fri,  4 Feb 2022 15:20:36 -0800
-Message-Id: <20220204232036.460-5-paulmck@kernel.org>
-X-Mailer: git-send-email 2.31.1.189.g2e36527f23
-In-Reply-To: <20220204232027.GA4194214@paulmck-ThinkPad-P17-Gen-1>
-References: <20220204232027.GA4194214@paulmck-ThinkPad-P17-Gen-1>
+        s=k20201202; t=1644016915;
+        bh=dNQlXe8yFAAudNMC9z/zBan2SRh+F26p++tT+7IHG2o=;
+        h=Date:From:To:Cc:Subject:From;
+        b=t1TGHu40hFiDfZvEEd1lIZiV6ovwel07U5OW2t/FskDZ8I416zduyN4FnDKTKbD6S
+         bd3igbmkybKpQ58MoaZ7G906Vuvx3s5l/Qz4Z3s9qm2a2UPYPDMgbU8tjE4zY1nmYs
+         M7GqknNhjGf2/YqlAysES4dzIoPvnpQkB4szhyZIErVRLC//0SsEdg1kqG1SPVvd3A
+         OV3rukzB63/XLYIWEE09XvH1LisJKVFFvPbVkWAd4DZhPQK4IS/MQ83JXZwtpxFAis
+         MQmUnvYHjX1lELAAAJcN83l84hGnN9h4oh/AUDSVgpBvHcHBVSQfntTT2TMxDGfXWd
+         2khiN7OXY1hxA==
+Date:   Fri, 4 Feb 2022 17:29:06 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Denis Kirjanov <kda@linux-powerpc.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH][next] net: sundance: Replace one-element array with
+ non-array object
+Message-ID: <20220204232906.GA442985@embeddedor>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pattern "rdp->grpmask & rcu_rnp_online_cpus(rnp)" occurs frequently
-in RCU code in order to determine whether rdp->cpu is online from an
-RCU perspective.  This commit therefore creates an rcu_rdp_cpu_online()
-function to replace it.
+It seems this one-element array is not actually being used as an
+array of variable size, so we can just replace it with just a
+non-array object of type struct desc_frag and refactor a bit the
+rest of the code.
 
-[ paulmck: Apply kernel test robot unused-variable feedback. ]
+This helps with the ongoing efforts to globally enable -Warray-bounds
+and get us closer to being able to tighten the FORTIFY_SOURCE routines
+on memcpy().
 
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+This issue was found with the help of Coccinelle and audited and fixed,
+manually.
+
+[1] https://en.wikipedia.org/wiki/Flexible_array_member
+[2] https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
+
+Link: https://github.com/KSPP/linux/issues/79
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 ---
- kernel/rcu/tree.c        | 21 +++++++++++++--------
- kernel/rcu/tree_plugin.h |  6 ++----
- 2 files changed, 15 insertions(+), 12 deletions(-)
+ drivers/net/ethernet/dlink/sundance.c | 60 +++++++++++++--------------
+ 1 file changed, 30 insertions(+), 30 deletions(-)
 
-diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
-index 1c30a01692076..6a470bb93b485 100644
---- a/kernel/rcu/tree.c
-+++ b/kernel/rcu/tree.c
-@@ -222,6 +222,16 @@ static unsigned long rcu_rnp_online_cpus(struct rcu_node *rnp)
- 	return READ_ONCE(rnp->qsmaskinitnext);
- }
+diff --git a/drivers/net/ethernet/dlink/sundance.c b/drivers/net/ethernet/dlink/sundance.c
+index c710dc17be90..8dd7bf9014ec 100644
+--- a/drivers/net/ethernet/dlink/sundance.c
++++ b/drivers/net/ethernet/dlink/sundance.c
+@@ -340,7 +340,7 @@ enum wake_event_bits {
+ struct netdev_desc {
+ 	__le32 next_desc;
+ 	__le32 status;
+-	struct desc_frag { __le32 addr, length; } frag[1];
++	struct desc_frag { __le32 addr, length; } frag;
+ };
  
-+/*
-+ * Is the CPU corresponding to the specified rcu_data structure online
-+ * from RCU's perspective?  This perspective is given by that structure's
-+ * ->qsmaskinitnext field rather than by the global cpu_online_mask.
-+ */
-+static bool rcu_rdp_cpu_online(struct rcu_data *rdp)
-+{
-+	return !!(rdp->grpmask & rcu_rnp_online_cpus(rdp->mynode));
-+}
-+
- /*
-  * Return true if an RCU grace period is in progress.  The READ_ONCE()s
-  * permit this function to be invoked without holding the root rcu_node
-@@ -1168,14 +1178,12 @@ void rcu_request_urgent_qs_task(struct task_struct *t)
- bool rcu_lockdep_current_cpu_online(void)
- {
- 	struct rcu_data *rdp;
--	struct rcu_node *rnp;
- 	bool ret = false;
- 
- 	if (in_nmi() || !rcu_scheduler_fully_active)
- 		return true;
- 	preempt_disable_notrace();
- 	rdp = this_cpu_ptr(&rcu_data);
--	rnp = rdp->mynode;
- 	/*
- 	 * Strictly, we care here about the case where the current CPU is
- 	 * in rcu_cpu_starting() and thus has an excuse for rdp->grpmask
-@@ -1183,8 +1191,7 @@ bool rcu_lockdep_current_cpu_online(void)
- 	 * false positive if it's held by some *other* CPU, but that's
- 	 * OK because that just means a false *negative* on the warning.
- 	 */
--	if (rdp->grpmask & rcu_rnp_online_cpus(rnp) ||
--	    arch_spin_is_locked(&rcu_state.ofl_lock))
-+	if (rcu_rdp_cpu_online(rdp) || arch_spin_is_locked(&rcu_state.ofl_lock))
- 		ret = true;
- 	preempt_enable_notrace();
- 	return ret;
-@@ -1269,8 +1276,7 @@ static int rcu_implicit_dynticks_qs(struct rcu_data *rdp)
- 	 * For more detail, please refer to the "Hotplug CPU" section
- 	 * of RCU's Requirements documentation.
- 	 */
--	if (WARN_ON_ONCE(!(rdp->grpmask & rcu_rnp_online_cpus(rnp)))) {
--		bool onl;
-+	if (WARN_ON_ONCE(!rcu_rdp_cpu_online(rdp))) {
- 		struct rcu_node *rnp1;
- 
- 		pr_info("%s: grp: %d-%d level: %d ->gp_seq %ld ->completedqs %ld\n",
-@@ -1279,9 +1285,8 @@ static int rcu_implicit_dynticks_qs(struct rcu_data *rdp)
- 		for (rnp1 = rnp; rnp1; rnp1 = rnp1->parent)
- 			pr_info("%s: %d:%d ->qsmask %#lx ->qsmaskinit %#lx ->qsmaskinitnext %#lx ->rcu_gp_init_mask %#lx\n",
- 				__func__, rnp1->grplo, rnp1->grphi, rnp1->qsmask, rnp1->qsmaskinit, rnp1->qsmaskinitnext, rnp1->rcu_gp_init_mask);
--		onl = !!(rdp->grpmask & rcu_rnp_online_cpus(rnp));
- 		pr_info("%s %d: %c online: %ld(%d) offline: %ld(%d)\n",
--			__func__, rdp->cpu, ".o"[onl],
-+			__func__, rdp->cpu, ".o"[rcu_rdp_cpu_online(rdp)],
- 			(long)rdp->rcu_onl_gp_seq, rdp->rcu_onl_gp_flags,
- 			(long)rdp->rcu_ofl_gp_seq, rdp->rcu_ofl_gp_flags);
- 		return 1; /* Break things loose after complaining. */
-diff --git a/kernel/rcu/tree_plugin.h b/kernel/rcu/tree_plugin.h
-index c5b45c2f68a15..d3db2168598ef 100644
---- a/kernel/rcu/tree_plugin.h
-+++ b/kernel/rcu/tree_plugin.h
-@@ -330,7 +330,7 @@ void rcu_note_context_switch(bool preempt)
- 		 * then queue the task as required based on the states
- 		 * of any ongoing and expedited grace periods.
- 		 */
--		WARN_ON_ONCE((rdp->grpmask & rcu_rnp_online_cpus(rnp)) == 0);
-+		WARN_ON_ONCE(!rcu_rdp_cpu_online(rdp));
- 		WARN_ON_ONCE(!list_empty(&t->rcu_node_entry));
- 		trace_rcu_preempt_task(rcu_state.name,
- 				       t->pid,
-@@ -773,7 +773,6 @@ dump_blkd_tasks(struct rcu_node *rnp, int ncheck)
- 	int cpu;
- 	int i;
- 	struct list_head *lhp;
--	bool onl;
- 	struct rcu_data *rdp;
- 	struct rcu_node *rnp1;
- 
-@@ -797,9 +796,8 @@ dump_blkd_tasks(struct rcu_node *rnp, int ncheck)
- 	pr_cont("\n");
- 	for (cpu = rnp->grplo; cpu <= rnp->grphi; cpu++) {
- 		rdp = per_cpu_ptr(&rcu_data, cpu);
--		onl = !!(rdp->grpmask & rcu_rnp_online_cpus(rnp));
- 		pr_info("\t%d: %c online: %ld(%d) offline: %ld(%d)\n",
--			cpu, ".o"[onl],
-+			cpu, ".o"[rcu_rdp_cpu_online(rdp)],
- 			(long)rdp->rcu_onl_gp_seq, rdp->rcu_onl_gp_flags,
- 			(long)rdp->rcu_ofl_gp_seq, rdp->rcu_ofl_gp_flags);
+ /* Bits in netdev_desc.status */
+@@ -980,8 +980,8 @@ static void tx_timeout(struct net_device *dev, unsigned int txqueue)
+ 				le32_to_cpu(np->tx_ring[i].next_desc),
+ 				le32_to_cpu(np->tx_ring[i].status),
+ 				(le32_to_cpu(np->tx_ring[i].status) >> 2) & 0xff,
+-				le32_to_cpu(np->tx_ring[i].frag[0].addr),
+-				le32_to_cpu(np->tx_ring[i].frag[0].length));
++				le32_to_cpu(np->tx_ring[i].frag.addr),
++				le32_to_cpu(np->tx_ring[i].frag.length));
+ 		}
+ 		printk(KERN_DEBUG "TxListPtr=%08x netif_queue_stopped=%d\n",
+ 			ioread32(np->base + TxListPtr),
+@@ -1027,7 +1027,7 @@ static void init_ring(struct net_device *dev)
+ 		np->rx_ring[i].next_desc = cpu_to_le32(np->rx_ring_dma +
+ 			((i+1)%RX_RING_SIZE)*sizeof(*np->rx_ring));
+ 		np->rx_ring[i].status = 0;
+-		np->rx_ring[i].frag[0].length = 0;
++		np->rx_ring[i].frag.length = 0;
+ 		np->rx_skbuff[i] = NULL;
  	}
+ 
+@@ -1039,16 +1039,16 @@ static void init_ring(struct net_device *dev)
+ 		if (skb == NULL)
+ 			break;
+ 		skb_reserve(skb, 2);	/* 16 byte align the IP header. */
+-		np->rx_ring[i].frag[0].addr = cpu_to_le32(
++		np->rx_ring[i].frag.addr = cpu_to_le32(
+ 			dma_map_single(&np->pci_dev->dev, skb->data,
+ 				np->rx_buf_sz, DMA_FROM_DEVICE));
+ 		if (dma_mapping_error(&np->pci_dev->dev,
+-					np->rx_ring[i].frag[0].addr)) {
++					np->rx_ring[i].frag.addr)) {
+ 			dev_kfree_skb(skb);
+ 			np->rx_skbuff[i] = NULL;
+ 			break;
+ 		}
+-		np->rx_ring[i].frag[0].length = cpu_to_le32(np->rx_buf_sz | LastFrag);
++		np->rx_ring[i].frag.length = cpu_to_le32(np->rx_buf_sz | LastFrag);
+ 	}
+ 	np->dirty_rx = (unsigned int)(i - RX_RING_SIZE);
+ 
+@@ -1097,12 +1097,12 @@ start_tx (struct sk_buff *skb, struct net_device *dev)
+ 
+ 	txdesc->next_desc = 0;
+ 	txdesc->status = cpu_to_le32 ((entry << 2) | DisableAlign);
+-	txdesc->frag[0].addr = cpu_to_le32(dma_map_single(&np->pci_dev->dev,
++	txdesc->frag.addr = cpu_to_le32(dma_map_single(&np->pci_dev->dev,
+ 				skb->data, skb->len, DMA_TO_DEVICE));
+ 	if (dma_mapping_error(&np->pci_dev->dev,
+-				txdesc->frag[0].addr))
++				txdesc->frag.addr))
+ 			goto drop_frame;
+-	txdesc->frag[0].length = cpu_to_le32 (skb->len | LastFrag);
++	txdesc->frag.length = cpu_to_le32 (skb->len | LastFrag);
+ 
+ 	/* Increment cur_tx before tasklet_schedule() */
+ 	np->cur_tx++;
+@@ -1151,7 +1151,7 @@ reset_tx (struct net_device *dev)
+ 		skb = np->tx_skbuff[i];
+ 		if (skb) {
+ 			dma_unmap_single(&np->pci_dev->dev,
+-				le32_to_cpu(np->tx_ring[i].frag[0].addr),
++				le32_to_cpu(np->tx_ring[i].frag.addr),
+ 				skb->len, DMA_TO_DEVICE);
+ 			dev_kfree_skb_any(skb);
+ 			np->tx_skbuff[i] = NULL;
+@@ -1271,12 +1271,12 @@ static irqreturn_t intr_handler(int irq, void *dev_instance)
+ 				skb = np->tx_skbuff[entry];
+ 				/* Free the original skb. */
+ 				dma_unmap_single(&np->pci_dev->dev,
+-					le32_to_cpu(np->tx_ring[entry].frag[0].addr),
++					le32_to_cpu(np->tx_ring[entry].frag.addr),
+ 					skb->len, DMA_TO_DEVICE);
+ 				dev_consume_skb_irq(np->tx_skbuff[entry]);
+ 				np->tx_skbuff[entry] = NULL;
+-				np->tx_ring[entry].frag[0].addr = 0;
+-				np->tx_ring[entry].frag[0].length = 0;
++				np->tx_ring[entry].frag.addr = 0;
++				np->tx_ring[entry].frag.length = 0;
+ 			}
+ 			spin_unlock(&np->lock);
+ 		} else {
+@@ -1290,12 +1290,12 @@ static irqreturn_t intr_handler(int irq, void *dev_instance)
+ 				skb = np->tx_skbuff[entry];
+ 				/* Free the original skb. */
+ 				dma_unmap_single(&np->pci_dev->dev,
+-					le32_to_cpu(np->tx_ring[entry].frag[0].addr),
++					le32_to_cpu(np->tx_ring[entry].frag.addr),
+ 					skb->len, DMA_TO_DEVICE);
+ 				dev_consume_skb_irq(np->tx_skbuff[entry]);
+ 				np->tx_skbuff[entry] = NULL;
+-				np->tx_ring[entry].frag[0].addr = 0;
+-				np->tx_ring[entry].frag[0].length = 0;
++				np->tx_ring[entry].frag.addr = 0;
++				np->tx_ring[entry].frag.length = 0;
+ 			}
+ 			spin_unlock(&np->lock);
+ 		}
+@@ -1372,16 +1372,16 @@ static void rx_poll(struct tasklet_struct *t)
+ 			    (skb = netdev_alloc_skb(dev, pkt_len + 2)) != NULL) {
+ 				skb_reserve(skb, 2);	/* 16 byte align the IP header */
+ 				dma_sync_single_for_cpu(&np->pci_dev->dev,
+-						le32_to_cpu(desc->frag[0].addr),
++						le32_to_cpu(desc->frag.addr),
+ 						np->rx_buf_sz, DMA_FROM_DEVICE);
+ 				skb_copy_to_linear_data(skb, np->rx_skbuff[entry]->data, pkt_len);
+ 				dma_sync_single_for_device(&np->pci_dev->dev,
+-						le32_to_cpu(desc->frag[0].addr),
++						le32_to_cpu(desc->frag.addr),
+ 						np->rx_buf_sz, DMA_FROM_DEVICE);
+ 				skb_put(skb, pkt_len);
+ 			} else {
+ 				dma_unmap_single(&np->pci_dev->dev,
+-					le32_to_cpu(desc->frag[0].addr),
++					le32_to_cpu(desc->frag.addr),
+ 					np->rx_buf_sz, DMA_FROM_DEVICE);
+ 				skb_put(skb = np->rx_skbuff[entry], pkt_len);
+ 				np->rx_skbuff[entry] = NULL;
+@@ -1427,18 +1427,18 @@ static void refill_rx (struct net_device *dev)
+ 			if (skb == NULL)
+ 				break;		/* Better luck next round. */
+ 			skb_reserve(skb, 2);	/* Align IP on 16 byte boundaries */
+-			np->rx_ring[entry].frag[0].addr = cpu_to_le32(
++			np->rx_ring[entry].frag.addr = cpu_to_le32(
+ 				dma_map_single(&np->pci_dev->dev, skb->data,
+ 					np->rx_buf_sz, DMA_FROM_DEVICE));
+ 			if (dma_mapping_error(&np->pci_dev->dev,
+-				    np->rx_ring[entry].frag[0].addr)) {
++				    np->rx_ring[entry].frag.addr)) {
+ 			    dev_kfree_skb_irq(skb);
+ 			    np->rx_skbuff[entry] = NULL;
+ 			    break;
+ 			}
+ 		}
+ 		/* Perhaps we need not reset this field. */
+-		np->rx_ring[entry].frag[0].length =
++		np->rx_ring[entry].frag.length =
+ 			cpu_to_le32(np->rx_buf_sz | LastFrag);
+ 		np->rx_ring[entry].status = 0;
+ 		cnt++;
+@@ -1870,14 +1870,14 @@ static int netdev_close(struct net_device *dev)
+ 			   (int)(np->tx_ring_dma));
+ 		for (i = 0; i < TX_RING_SIZE; i++)
+ 			printk(KERN_DEBUG " #%d desc. %4.4x %8.8x %8.8x.\n",
+-				   i, np->tx_ring[i].status, np->tx_ring[i].frag[0].addr,
+-				   np->tx_ring[i].frag[0].length);
++				   i, np->tx_ring[i].status, np->tx_ring[i].frag.addr,
++				   np->tx_ring[i].frag.length);
+ 		printk(KERN_DEBUG "  Rx ring %8.8x:\n",
+ 			   (int)(np->rx_ring_dma));
+ 		for (i = 0; i < /*RX_RING_SIZE*/4 ; i++) {
+ 			printk(KERN_DEBUG " #%d desc. %4.4x %4.4x %8.8x\n",
+-				   i, np->rx_ring[i].status, np->rx_ring[i].frag[0].addr,
+-				   np->rx_ring[i].frag[0].length);
++				   i, np->rx_ring[i].status, np->rx_ring[i].frag.addr,
++				   np->rx_ring[i].frag.length);
+ 		}
+ 	}
+ #endif /* __i386__ debugging only */
+@@ -1892,19 +1892,19 @@ static int netdev_close(struct net_device *dev)
+ 		skb = np->rx_skbuff[i];
+ 		if (skb) {
+ 			dma_unmap_single(&np->pci_dev->dev,
+-				le32_to_cpu(np->rx_ring[i].frag[0].addr),
++				le32_to_cpu(np->rx_ring[i].frag.addr),
+ 				np->rx_buf_sz, DMA_FROM_DEVICE);
+ 			dev_kfree_skb(skb);
+ 			np->rx_skbuff[i] = NULL;
+ 		}
+-		np->rx_ring[i].frag[0].addr = cpu_to_le32(0xBADF00D0); /* poison */
++		np->rx_ring[i].frag.addr = cpu_to_le32(0xBADF00D0); /* poison */
+ 	}
+ 	for (i = 0; i < TX_RING_SIZE; i++) {
+ 		np->tx_ring[i].next_desc = 0;
+ 		skb = np->tx_skbuff[i];
+ 		if (skb) {
+ 			dma_unmap_single(&np->pci_dev->dev,
+-				le32_to_cpu(np->tx_ring[i].frag[0].addr),
++				le32_to_cpu(np->tx_ring[i].frag.addr),
+ 				skb->len, DMA_TO_DEVICE);
+ 			dev_kfree_skb(skb);
+ 			np->tx_skbuff[i] = NULL;
 -- 
-2.31.1.189.g2e36527f23
+2.27.0
 
