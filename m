@@ -2,39 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76390C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:24:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBE1AC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:24:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357454AbiBDJYc (ORCPT
+        id S1357597AbiBDJYf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 04:24:32 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:52158 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357554AbiBDJXV (ORCPT
+        Fri, 4 Feb 2022 04:24:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33030 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1357918AbiBDJXd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 04:23:21 -0500
+        Fri, 4 Feb 2022 04:23:33 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AE2AC06177A;
+        Fri,  4 Feb 2022 01:23:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 58549B836ED;
-        Fri,  4 Feb 2022 09:23:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8731FC004E1;
-        Fri,  4 Feb 2022 09:23:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1173A61601;
+        Fri,  4 Feb 2022 09:23:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56B91C004E1;
+        Fri,  4 Feb 2022 09:23:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643966599;
-        bh=mXHryGW09fA1yrZtSbOXLAiQQeihs2gSPyR7qHrk/wI=;
+        s=korg; t=1643966612;
+        bh=v3/d9LHg2Vq5nYFMt9OKfTdjLvmPryjTGQBrElOwQDA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FvSWJ+7dSCR79kkHT2uJIErrxH3jVVdnIdhGO4bjUn2hH8IpKfODOlaijJX5nj0j3
-         keyg2Sf5zt+wPGYXAOTGpg1wupM7zknlYUxbBCVptofBY9+tZ4g9KcJi0pJs4Jc/Xm
-         tNEIDwrogIhyYUYTKZ/8gtW4Bxm/Ox8e22WOux4I=
+        b=08eNBgPkXXa6Pyw1MU6qmBr1jD3dWcwbcR53UUfwMh0ZNA6535Li6JAS8LTJ3lgik
+         6rx99dYhf4cCsqil0BFAn+y+cDTcGka9dj4B6exrBhEvr7HSqGpKjnrLfQ7EXcSFy5
+         RULOgciL6v0ByvKEodVd77QgSWWaAsDlwX0jyBjk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maor Dickman <maord@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH 5.15 14/32] net/mlx5e: Fix handling of wrong devices during bond netevent
-Date:   Fri,  4 Feb 2022 10:22:24 +0100
-Message-Id: <20220204091915.732532366@linuxfoundation.org>
+        stable@vger.kernel.org, Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [PATCH 5.15 18/32] net/mlx5e: Dont treat small ceil values as unlimited in HTB offload
+Date:   Fri,  4 Feb 2022 10:22:28 +0100
+Message-Id: <20220204091915.857237511@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220204091915.247906930@linuxfoundation.org>
 References: <20220204091915.247906930@linuxfoundation.org>
@@ -46,120 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maor Dickman <maord@nvidia.com>
+From: Maxim Mikityanskiy <maximmi@nvidia.com>
 
-commit ec41332e02bd0acf1f24206867bb6a02f5877a62 upstream.
+commit 736dfe4e68b868829a1e89dfef4a44c1580d4478 upstream.
 
-Current implementation of bond netevent handler only check if
-the handled netdev is VF representor and it missing a check if
-the VF representor is on the same phys device of the bond handling
-the netevent.
+The hardware spec defines max_average_bw == 0 as "unlimited bandwidth".
+max_average_bw is calculated as `ceil / BYTES_IN_MBIT`, which can become
+0 when ceil is small, leading to an undesired effect of having no
+bandwidth limit.
 
-Fix by adding the missing check and optimizing the check if
-the netdev is VF representor so it will not access uninitialized
-private data and crashes.
+This commit fixes it by rounding up small values of ceil to 1 Mbit/s.
 
-BUG: kernel NULL pointer dereference, address: 000000000000036c
-PGD 0 P4D 0
-Oops: 0000 [#1] SMP NOPTI
-Workqueue: eth3bond0 bond_mii_monitor [bonding]
-RIP: 0010:mlx5e_is_uplink_rep+0xc/0x50 [mlx5_core]
-RSP: 0018:ffff88812d69fd60 EFLAGS: 00010282
-RAX: 0000000000000000 RBX: ffff8881cf800000 RCX: 0000000000000000
-RDX: ffff88812d69fe10 RSI: 000000000000001b RDI: ffff8881cf800880
-RBP: ffff8881cf800000 R08: 00000445cabccf2b R09: 0000000000000008
-R10: 0000000000000004 R11: 0000000000000008 R12: ffff88812d69fe10
-R13: 00000000fffffffe R14: ffff88820c0f9000 R15: 0000000000000000
-FS:  0000000000000000(0000) GS:ffff88846fb00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000000000000036c CR3: 0000000103d80006 CR4: 0000000000370ea0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- mlx5e_eswitch_uplink_rep+0x31/0x40 [mlx5_core]
- mlx5e_rep_is_lag_netdev+0x94/0xc0 [mlx5_core]
- mlx5e_rep_esw_bond_netevent+0xeb/0x3d0 [mlx5_core]
- raw_notifier_call_chain+0x41/0x60
- call_netdevice_notifiers_info+0x34/0x80
- netdev_lower_state_changed+0x4e/0xa0
- bond_mii_monitor+0x56b/0x640 [bonding]
- process_one_work+0x1b9/0x390
- worker_thread+0x4d/0x3d0
- ? rescuer_thread+0x350/0x350
- kthread+0x124/0x150
- ? set_kthread_struct+0x40/0x40
- ret_from_fork+0x1f/0x30
-
-Fixes: 7e51891a237f ("net/mlx5e: Use netdev events to set/del egress acl forward-to-vport rule")
-Signed-off-by: Maor Dickman <maord@nvidia.com>
-Reviewed-by: Roi Dayan <roid@nvidia.com>
+Fixes: 214baf22870c ("net/mlx5e: Support HTB offload")
+Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en/rep/bond.c |   32 +++++++-----------
- 1 file changed, 14 insertions(+), 18 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en/qos.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bond.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bond.c
-@@ -183,18 +183,7 @@ void mlx5e_rep_bond_unslave(struct mlx5_
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/qos.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/qos.c
+@@ -553,7 +553,8 @@ static int mlx5e_htb_convert_rate(struct
  
- static bool mlx5e_rep_is_lag_netdev(struct net_device *netdev)
+ static void mlx5e_htb_convert_ceil(struct mlx5e_priv *priv, u64 ceil, u32 *max_average_bw)
  {
--	struct mlx5e_rep_priv *rpriv;
--	struct mlx5e_priv *priv;
--
--	/* A given netdev is not a representor or not a slave of LAG configuration */
--	if (!mlx5e_eswitch_rep(netdev) || !netif_is_lag_port(netdev))
--		return false;
--
--	priv = netdev_priv(netdev);
--	rpriv = priv->ppriv;
--
--	/* Egress acl forward to vport is supported only non-uplink representor */
--	return rpriv->rep->vport != MLX5_VPORT_UPLINK;
-+	return netif_is_lag_port(netdev) && mlx5e_eswitch_vf_rep(netdev);
- }
+-	*max_average_bw = div_u64(ceil, BYTES_IN_MBIT);
++	/* Hardware treats 0 as "unlimited", set at least 1. */
++	*max_average_bw = max_t(u32, div_u64(ceil, BYTES_IN_MBIT), 1);
  
- static void mlx5e_rep_changelowerstate_event(struct net_device *netdev, void *ptr)
-@@ -210,9 +199,6 @@ static void mlx5e_rep_changelowerstate_e
- 	u16 fwd_vport_num;
- 	int err;
- 
--	if (!mlx5e_rep_is_lag_netdev(netdev))
--		return;
--
- 	info = ptr;
- 	lag_info = info->lower_state_info;
- 	/* This is not an event of a representor becoming active slave */
-@@ -266,9 +252,6 @@ static void mlx5e_rep_changeupper_event(
- 	struct net_device *lag_dev;
- 	struct mlx5e_priv *priv;
- 
--	if (!mlx5e_rep_is_lag_netdev(netdev))
--		return;
--
- 	priv = netdev_priv(netdev);
- 	rpriv = priv->ppriv;
- 	lag_dev = info->upper_dev;
-@@ -293,6 +276,19 @@ static int mlx5e_rep_esw_bond_netevent(s
- 				       unsigned long event, void *ptr)
- {
- 	struct net_device *netdev = netdev_notifier_info_to_dev(ptr);
-+	struct mlx5e_rep_priv *rpriv;
-+	struct mlx5e_rep_bond *bond;
-+	struct mlx5e_priv *priv;
-+
-+	if (!mlx5e_rep_is_lag_netdev(netdev))
-+		return NOTIFY_DONE;
-+
-+	bond = container_of(nb, struct mlx5e_rep_bond, nb);
-+	priv = netdev_priv(netdev);
-+	rpriv = mlx5_eswitch_get_uplink_priv(priv->mdev->priv.eswitch, REP_ETH);
-+	/* Verify VF representor is on the same device of the bond handling the netevent. */
-+	if (rpriv->uplink_priv.bond != bond)
-+		return NOTIFY_DONE;
- 
- 	switch (event) {
- 	case NETDEV_CHANGELOWERSTATE:
+ 	qos_dbg(priv->mdev, "Convert: ceil %llu -> max_average_bw %u\n",
+ 		ceil, *max_average_bw);
 
 
