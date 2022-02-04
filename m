@@ -2,129 +2,227 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B7A8C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 15:53:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EF36C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 15:54:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241611AbiBDPxI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 10:53:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38148 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376283AbiBDPxE (ORCPT
+        id S1376299AbiBDPx7 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 10:53:59 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:29390 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S240524AbiBDPx6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 10:53:04 -0500
-Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CF37C06173E
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 07:53:04 -0800 (PST)
-Received: by mail-io1-xd32.google.com with SMTP id p63so7804375iod.11
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Feb 2022 07:53:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=R0/VRC6MJ23IQ50AYwFq/GKus1/XLDPRN4c2rFVnHh4=;
-        b=y8WVG/cr2hESo2ZAmi6wf+elNqaLhdSNLWBcBWKyCXqFmTfgBdvPdjEBItKIio9jrS
-         XvpGKHKh1MJ/GE6NqPmUQev2b5VYblmBdJKMq3aXJxvNs55OOV0F690ipyORSDJvxoKv
-         UDrI3wUyCybjZdImtwSs7C7HQhtrRy60DW1rxfvkoWI4NeVV5FDS1FfuVBv/tVR7OjS4
-         NhIu+MVi2LAhjrQXZbAw44SUhFWzv1t8b0GdIVFqoNMEkyEoSWY4J3SOnCPUDbctpqfk
-         HbgHNxyg4sREsA5kipSkq+ufpfWYUxa6U7YsCXWAir6Wr7Yhj26vbWshuQaEtBS+Fpow
-         30ag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=R0/VRC6MJ23IQ50AYwFq/GKus1/XLDPRN4c2rFVnHh4=;
-        b=Xlh/Eh3+Tc6ii02AR25h2KtwwQP2LIKSvNH12c4t8CgTJWv7Uzmfz+HTHLIwYSIdLt
-         i6HPcT7srnaAAZi6DBN9Ao4XEBjxjkWja5ZXSCB0YOYzB/poiVCwzJ2+b/CWSb6JrD3/
-         c1x7za2X/xXvNHTzgI9iWeWtr0b09/7v/DdrMiU9DZXBovQl3NNmlSvKSOsmXDubW9eV
-         CadFb1uv6Q7l7lntRlI2zYKfmTMTrDtdDT0gB4QNMsKkYWeIuRzz0M0+Vk/SwFqdYmMw
-         dXjmCMfyy0I/DkNIDpxdV0FYPO+JAvJdPVI2li/9VzafTNt6xCJfP6P3/Z7mxFwtuS2k
-         pNRA==
-X-Gm-Message-State: AOAM530IX63LxcbTV4gSyLnBMEVUwqnVQumCVo5ETZjbfwW9hl/srWWi
-        o0yWwD/LPbAfolnxPP17sFI35W3RU9rwmw==
-X-Google-Smtp-Source: ABdhPJz6JUld3GIj2G/MqGVt9QQZDE+ivq+9gC+gx6uR9GscY9lcvssPpMtbXVeagNeLAJ5EKhAcHw==
-X-Received: by 2002:a02:7417:: with SMTP id o23mr1653087jac.145.1643989983674;
-        Fri, 04 Feb 2022 07:53:03 -0800 (PST)
-Received: from [192.168.1.30] ([207.135.234.126])
-        by smtp.gmail.com with ESMTPSA id s18sm1132681iov.5.2022.02.04.07.53.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 04 Feb 2022 07:53:03 -0800 (PST)
-Subject: Re: [PATCH v6 0/5] io_uring: remove ring quiesce in io_uring_register
-To:     Usama Arif <usama.arif@bytedance.com>, io-uring@vger.kernel.org,
-        asml.silence@gmail.com, linux-kernel@vger.kernel.org
-Cc:     fam.zheng@bytedance.com
-References: <20220204145117.1186568-1-usama.arif@bytedance.com>
-From:   Jens Axboe <axboe@kernel.dk>
-Message-ID: <b67f1ce6-6110-b6f3-e66e-f636d47a736d@kernel.dk>
-Date:   Fri, 4 Feb 2022 08:53:02 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Fri, 4 Feb 2022 10:53:58 -0500
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 214EIxl2010489;
+        Fri, 4 Feb 2022 15:53:58 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=15UCtvlaHoQy8Fa+pxbqVOVB9XlIJR9eMIBLHYK7hMI=;
+ b=X3fVkdGLUvm/jwcFh5tdq8mQH6wkV/XhkEVdR4WdOmpvYK0Yny8UrDeQ1ZGvk4a5Qz+e
+ bjmn3bELHokU5LjwnKQusWdi1RaVKyRyXMIXEDuB7VMFHfcVNbhb7yFRCRkuJc+iKqy4
+ U82Aa3WXC0KzOEN5SXAx9q0kcyfill2105iQ577fbqS8Yl2uEg8Zm+IgaCFLzn+ezLuM
+ S0RhRCOVh4wuxaa+vcN2k4yNk87NMMsY3/SDSdBts3lNxVjy4HViU3TqcJqBj5BL/ul4
+ GbC4UBR65ksZ1cHoeHl0EOKV61O3xOtxsW6myOqQXMk3FEo63OwhV1e8AxC1ywGSLLBB eQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e0qx40sgs-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 04 Feb 2022 15:53:57 +0000
+Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 214FCTc5029582;
+        Fri, 4 Feb 2022 15:53:57 GMT
+Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e0qx40sg9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 04 Feb 2022 15:53:56 +0000
+Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
+        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 214FlL9N023865;
+        Fri, 4 Feb 2022 15:53:54 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma02fra.de.ibm.com with ESMTP id 3e0r0v60de-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 04 Feb 2022 15:53:54 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 214FhtW238666498
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 4 Feb 2022 15:43:55 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 16E06AE045;
+        Fri,  4 Feb 2022 15:53:51 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 848B4AE04D;
+        Fri,  4 Feb 2022 15:53:50 +0000 (GMT)
+Received: from p-imbrenda.bredband2.com (unknown [9.145.8.50])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri,  4 Feb 2022 15:53:50 +0000 (GMT)
+From:   Claudio Imbrenda <imbrenda@linux.ibm.com>
+To:     kvm@vger.kernel.org
+Cc:     borntraeger@de.ibm.com, frankja@linux.ibm.com, thuth@redhat.com,
+        pasic@linux.ibm.com, david@redhat.com, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, scgl@linux.ibm.com
+Subject: [PATCH v7 01/17] KVM: s390: pv: leak the topmost page table when destroy fails
+Date:   Fri,  4 Feb 2022 16:53:33 +0100
+Message-Id: <20220204155349.63238-2-imbrenda@linux.ibm.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220204155349.63238-1-imbrenda@linux.ibm.com>
+References: <20220204155349.63238-1-imbrenda@linux.ibm.com>
 MIME-Version: 1.0
-In-Reply-To: <20220204145117.1186568-1-usama.arif@bytedance.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: w1b3-0y-xRB2MbMnDgPg57sVekW06sbp
+X-Proofpoint-GUID: UOf-lD8AF4-xgA3e7N9vGaKqATY72Y2L
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-04_07,2022-02-03_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999
+ lowpriorityscore=0 phishscore=0 clxscore=1015 impostorscore=0 adultscore=0
+ mlxscore=0 spamscore=0 suspectscore=0 malwarescore=0 priorityscore=1501
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202040086
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/4/22 7:51 AM, Usama Arif wrote:
-> Ring quiesce is currently used for registering/unregistering eventfds,
-> registering restrictions and enabling rings.
-> 
-> For opcodes relating to registering/unregistering eventfds, ring quiesce
-> can be avoided by creating a new RCU data structure (io_ev_fd) as part
-> of io_ring_ctx that holds the eventfd_ctx, with reads to the structure
-> protected by rcu_read_lock and writes (register/unregister calls)
-> protected by a mutex.
-> 
-> With the above approach ring quiesce can be avoided which is much more
-> expensive then using RCU lock. On the system tested, io_uring_reigster with
-> IORING_REGISTER_EVENTFD takes less than 1ms with RCU lock, compared to 15ms
-> before with ring quiesce.
-> 
-> IORING_SETUP_R_DISABLED prevents submitting requests and
-> so there will be no requests until IORING_REGISTER_ENABLE_RINGS
-> is called. And IORING_REGISTER_RESTRICTIONS works only before
-> IORING_REGISTER_ENABLE_RINGS is called. Hence ring quiesce is
-> not needed for these opcodes.
+Each secure guest must have a unique ASCE (address space control
+element); we must avoid that new guests use the same page for their
+ASCE, to avoid errors.
 
-I wrote a simple test case just verifying register+unregister, and also
-doing a loop to catch any issues around that. Here's the current kernel:
+Since the ASCE mostly consists of the address of the topmost page table
+(plus some flags), we must not return that memory to the pool unless
+the ASCE is no longer in use.
 
-[root@archlinux liburing]# time test/eventfd-reg 
+Only a successful Destroy Secure Configuration UVC will make the ASCE
+reusable again.
 
-real	0m7.980s
-user	0m0.004s
-sys	0m0.000s
-[root@archlinux liburing]# time test/eventfd-reg 
+If the Destroy Configuration UVC fails, the ASCE cannot be reused for a
+secure guest (either for the ASCE or for other memory areas). To avoid
+a collision, it must not be used again. This is a permanent error and
+the page becomes in practice unusable, so we set it aside and leak it.
+On failure we already leak other memory that belongs to the ultravisor
+(i.e. the variable and base storage for a guest) and not leaking the
+topmost page table was an oversight.
 
-real	0m8.197s
-user	0m0.004s
-sys	0m0.000s
+This error (and thus the leakage) should not happen unless the hardware
+is broken or KVM has some unknown serious bug.
 
-which is around ~80ms for each register/unregister cycle, and here are
-the results with this patchset:
+Signed-off-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
+Fixes: 29b40f105ec8d55 ("KVM: s390: protvirt: Add initial vm and cpu lifecycle handling")
+---
+ arch/s390/include/asm/gmap.h |  2 ++
+ arch/s390/kvm/pv.c           |  9 +++--
+ arch/s390/mm/gmap.c          | 69 ++++++++++++++++++++++++++++++++++++
+ 3 files changed, 77 insertions(+), 3 deletions(-)
 
-[root@archlinux liburing]# time test/eventfd-reg
-
-real	0m0.002s
-user	0m0.001s
-sys	0m0.000s
-[root@archlinux liburing]# time test/eventfd-reg
-
-real	0m0.001s
-user	0m0.001s
-sys	0m0.000s
-
-which looks a lot more reasonable.
-
-I'll look over this one and see if I've got anything to complain about,
-just ran it first since I wrote the test anyway. Here's the test case,
-btw:
-
-https://git.kernel.dk/cgit/liburing/commit/?id=5bde26e4587168a439cabdbe73740454249e5204
-
+diff --git a/arch/s390/include/asm/gmap.h b/arch/s390/include/asm/gmap.h
+index 40264f60b0da..746e18bf8984 100644
+--- a/arch/s390/include/asm/gmap.h
++++ b/arch/s390/include/asm/gmap.h
+@@ -148,4 +148,6 @@ void gmap_sync_dirty_log_pmd(struct gmap *gmap, unsigned long dirty_bitmap[4],
+ 			     unsigned long gaddr, unsigned long vmaddr);
+ int gmap_mark_unmergeable(void);
+ void s390_reset_acc(struct mm_struct *mm);
++void s390_remove_old_asce(struct gmap *gmap);
++int s390_replace_asce(struct gmap *gmap);
+ #endif /* _ASM_S390_GMAP_H */
+diff --git a/arch/s390/kvm/pv.c b/arch/s390/kvm/pv.c
+index 7f7c0d6af2ce..3c59ef763dde 100644
+--- a/arch/s390/kvm/pv.c
++++ b/arch/s390/kvm/pv.c
+@@ -166,10 +166,13 @@ int kvm_s390_pv_deinit_vm(struct kvm *kvm, u16 *rc, u16 *rrc)
+ 	atomic_set(&kvm->mm->context.is_protected, 0);
+ 	KVM_UV_EVENT(kvm, 3, "PROTVIRT DESTROY VM: rc %x rrc %x", *rc, *rrc);
+ 	WARN_ONCE(cc, "protvirt destroy vm failed rc %x rrc %x", *rc, *rrc);
+-	/* Inteded memory leak on "impossible" error */
+-	if (!cc)
++	/* Intended memory leak on "impossible" error */
++	if (!cc) {
+ 		kvm_s390_pv_dealloc_vm(kvm);
+-	return cc ? -EIO : 0;
++		return 0;
++	}
++	s390_replace_asce(kvm->arch.gmap);
++	return -EIO;
+ }
+ 
+ int kvm_s390_pv_init_vm(struct kvm *kvm, u16 *rc, u16 *rrc)
+diff --git a/arch/s390/mm/gmap.c b/arch/s390/mm/gmap.c
+index dfee0ebb2fac..ce6cac4463f2 100644
+--- a/arch/s390/mm/gmap.c
++++ b/arch/s390/mm/gmap.c
+@@ -2714,3 +2714,72 @@ void s390_reset_acc(struct mm_struct *mm)
+ 	mmput(mm);
+ }
+ EXPORT_SYMBOL_GPL(s390_reset_acc);
++
++/**
++ * s390_remove_old_asce - Remove the topmost level of page tables from the
++ * list of page tables of the gmap.
++ * @gmap the gmap whose table is to be removed
++ *
++ * This means that it will not be freed when the VM is torn down, and needs
++ * to be handled separately by the caller, unless an intentional leak is
++ * intended.
++ */
++void s390_remove_old_asce(struct gmap *gmap)
++{
++	struct page *old;
++
++	old = virt_to_page(gmap->table);
++	spin_lock(&gmap->guest_table_lock);
++	list_del(&old->lru);
++	/*
++	 * in case the ASCE needs to be "removed" multiple times, for example
++	 * if the VM is rebooted into secure mode several times
++	 * concurrently.
++	 */
++	INIT_LIST_HEAD(&old->lru);
++	spin_unlock(&gmap->guest_table_lock);
++}
++EXPORT_SYMBOL_GPL(s390_remove_old_asce);
++
++/**
++ * s390_replace_asce - Try to replace the current ASCE of a gmap with
++ * another equivalent one.
++ * @gmap the gmap
++ *
++ * If the allocation of the new top level page table fails, the ASCE is not
++ * replaced.
++ * In any case, the old ASCE is always removed from the list. Therefore the
++ * caller has to make sure to save a pointer to it beforehands, unless an
++ * intentional leak is intended.
++ */
++int s390_replace_asce(struct gmap *gmap)
++{
++	unsigned long asce;
++	struct page *page;
++	void *table;
++
++	s390_remove_old_asce(gmap);
++
++	page = alloc_pages(GFP_KERNEL_ACCOUNT, CRST_ALLOC_ORDER);
++	if (!page)
++		return -ENOMEM;
++	table = page_to_virt(page);
++	memcpy(table, gmap->table, 1UL << (CRST_ALLOC_ORDER + PAGE_SHIFT));
++
++	/*
++	 * The caller has to deal with the old ASCE, but here we make sure
++	 * the new one is properly added to the list of page tables, so that
++	 * it will be freed when the VM is torn down.
++	 */
++	spin_lock(&gmap->guest_table_lock);
++	list_add(&page->lru, &gmap->crst_list);
++	spin_unlock(&gmap->guest_table_lock);
++
++	asce = (gmap->asce & ~PAGE_MASK) | __pa(table);
++	WRITE_ONCE(gmap->asce, asce);
++	WRITE_ONCE(gmap->mm->context.gmap_asce, asce);
++	WRITE_ONCE(gmap->table, table);
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(s390_replace_asce);
 -- 
-Jens Axboe
+2.34.1
 
