@@ -2,120 +2,329 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C45AC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 18:16:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D5C6C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 18:16:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238169AbiBDSQ2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 13:16:28 -0500
-Received: from mail-40138.protonmail.ch ([185.70.40.138]:57520 "EHLO
-        mail-40138.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377455AbiBDSQX (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 13:16:23 -0500
-Date:   Fri, 04 Feb 2022 18:16:17 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
-        s=protonmail2; t=1643998581;
-        bh=JAxZQH38X2RSQCAIWu1MiYgqJ5mWwl2CQgXP3NvKv8w=;
-        h=Date:To:From:Reply-To:Subject:Message-ID:From:To:Cc;
-        b=W8Y65dMIw7mP66VctbXY92uS9u21pL0fw6JuWpKGeraHLcOlnb4XqUq8E0TKjzWjI
-         21WaZ+B6cevVEE07YjRAigVRIv151I4mnRTxGj88gvPhhEO76Cazlqsx6245TKNIvl
-         WElbdzxqv65CatJ0LeQQ7HrsEa+7J7i3Df7hnABuUYyx7pctZMdTe2vDx4uvpw+pZF
-         nXiNo0OhiBkl/6JX55rcImXC4ABabnm02KkcinQy928phCLsyiHcGqyDq2HuSRTX3x
-         Zu2++sZmF8TXt4plZGTLUXB6qrP7c8Z2OWi8GLROXqS5IQRyaqu6n2NAkYuJTyuicM
-         m4t9NRCY1eFbQ==
-To:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-From:   2b57 <2b57@protonmail.com>
-Reply-To: 2b57 <2b57@protonmail.com>
-Subject: kernel 5.15 and 4.19 sparc64 boot panic
-Message-ID: <MATvZjhNEuZXikTCiMjeFa0ZnaP_6YQUazM2bG1n22tUlY99aDe0kVy4LP1qaR60AMm9M66anIeMUeJIAB9Du6PNDwJoDgfIlvIGoYMM_ek=@protonmail.com>
+        id S1377476AbiBDSQ4 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 13:16:56 -0500
+Received: from mga04.intel.com ([192.55.52.120]:24419 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S243150AbiBDSQw (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 4 Feb 2022 13:16:52 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643998612; x=1675534612;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=7yDeSA5FxKlyjf7WVjbYp5uk7enNQr9sv4NwryTzZnI=;
+  b=d/TQm7EJquxXj4GFSL5/LkSGkcsUfCC/mMu89jIwaSatc0bGDHd3lJAx
+   pKQ4++36EJNpfv6N84FLMIGsmhVNqbvTcYNOBc+K2N36qwo1/F8JSwqKJ
+   7bUSGsj6clCkHu8hCRIcSGQh8yOD5s36cDRlGE14lnmeVi0LCsJSS7L1+
+   4GiMdKv5LpeNqOIzxNhQhF0TH6cCWOOrAor5e9v/7G3HwMe932A1yZl4R
+   L+cX7rRcDfyGQf/VhJtUnVGkaSowrK7DpQzGIUFS1fMMAvqzS3LnH1KXd
+   yXfryWMdvFlTHyRvm8GzeZ7k1BUniI58bMzSHMdTqllqcM2OWbYSPcBeA
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10248"; a="247248591"
+X-IronPort-AV: E=Sophos;i="5.88,343,1635231600"; 
+   d="scan'208";a="247248591"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2022 10:16:52 -0800
+X-IronPort-AV: E=Sophos;i="5.88,343,1635231600"; 
+   d="scan'208";a="566813557"
+Received: from ahofrock-mobl.amr.corp.intel.com (HELO spandruv-desk1.amr.corp.intel.com) ([10.209.64.72])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2022 10:16:52 -0800
+Message-ID: <1eac284d60ba4050740f2692eadf49d03ea1cf37.camel@linux.intel.com>
+Subject: Re: [PATCH v3] ACPI / fan: Properly handle fine grain control
+From:   srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Len Brown <lenb@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>
+Date:   Fri, 04 Feb 2022 10:16:51 -0800
+In-Reply-To: <dae13602d4b4178ae86a749a9b6473fb64b82679.camel@linux.intel.com>
+References: <20220128235118.1693865-1-srinivas.pandruvada@linux.intel.com>
+         <CAJZ5v0iJph04mtGabTXLY_7FqaA9tCnFwz=-+DR=n3G3GC6Szg@mail.gmail.com>
+         <dae13602d4b4178ae86a749a9b6473fb64b82679.camel@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.3 (3.42.3-1.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Thu, 2022-02-03 at 13:54 -0800, srinivas pandruvada wrote:
+> On Thu, 2022-02-03 at 21:13 +0100, Rafael J. Wysocki wrote:
+> > On Sat, Jan 29, 2022 at 12:51 AM Srinivas Pandruvada
+> > <srinivas.pandruvada@linux.intel.com> wrote:
+> > > 
+> > > 
+> 
+> [...]
+> 
+> > > To support fine grain control (when supported) via thermal sysfs:
+> > > - cooling device max state is not _FPS state count but it will be
+> > > 100 / _FIF.step_size
+> > > - cooling device current state is 100 / _FIF.step_size
+> > 
+> > I don't quite understand this.
+> > 
+> > The max state and the current state should not always be the same,
+> > should they?
+> 
+> This sentence needs correction.
+> The  current_state is _FST.control/_FIF.step_size.
+> 
+> > 
+> > > - cooling device set state will set the control value
+> > > 
+> 
+> [...]
+> 
+> > > -       else
+> > > +       if (fan->acpi4) {
+> > > +               if (fan->fif.fine_grain_ctrl)
+> > > +                       *state = 100 / (int)fan->fif.step_size;
+> > 
+> > Is it really necessary to explicitly cast fif.step_size to int?
+> This was reported by LKP as fan->fif.step_size is 64 bit. This driver
+> doesn't restrict to 64 bit.
+> 
+> "undefined reference to `__udivdi3" for i386-defconfig.
+> > 
+> > > +               else
+> > > +                       *state = fan->fps_count - 1;
+> > > 
+> 
+> [...]
+> 
+> > > -static int fan_get_state_acpi4(struct acpi_device *device,
+> > > unsigned long *state)
+> > > +static int fan_get_fps(struct acpi_device *device, struct
+> > > acpi_fan_fst *fst)
+> > 
+> > Why is this called fan_get_fps()?  I'd rather call it
+> > acpi_fan_get_fst().
+> I can change that.
+> 
+> > 
+> > >  {
+> > >         struct acpi_buffer buffer = { ACPI_ALLOCATE_BUFFER, NULL
+> > > };
+> > > -       struct acpi_fan *fan = acpi_driver_data(device);
+> > >         union acpi_object *obj;
+> > >         acpi_status status;
+> > > -       int control, i;
+> > > 
+> > >         status = acpi_evaluate_object(device->handle, "_FST",
+> > > NULL,
+> > > &buffer);
+> > >         if (ACPI_FAILURE(status)) {
+> > > @@ -119,31 +130,51 @@ static int fan_get_state_acpi4(struct
+> > > acpi_device *device, unsigned long *state)
+> > >                 goto err;
+> > >         }
+> > > 
+> > > -       control = obj->package.elements[1].integer.value;
+> > > +       fst->revision = obj->package.elements[0].integer.value;
+> > > +       fst->control = obj->package.elements[1].integer.value;
+> > > +       fst->speed = obj->package.elements[2].integer.value;
+> > > +
+> > > +       status = 0;
+> > > +err:
+> > > +       kfree(obj);
+> > > +       return status;
+> > 
+> > There is some confusion regarding the error return values in this
+> > function, would be good to fix it while doing this.
+> > 
+> Let me check that.
+> 
+> > > +}
+> > > +
+> > > +static int fan_get_state_acpi4(struct acpi_device *device,
+> > > unsigned long *state)
+> > > +{
+> > > +       struct acpi_fan *fan = acpi_driver_data(device);
+> > > +       struct acpi_fan_fst fst;
+> > > +       int status;
+> > > +       int control, i;
+> > > +
+> > > +       status = fan_get_fps(device, &fst);
+> > > +       if (status)
+> > > +               return status;
+> > > +
+> > > +       control = fst.control;
+> > > +
+> > > +       if (fan->fif.fine_grain_ctrl) {
+> > > +               /* This control should be same what we set using
+> > > _FSL by spec */
+> > > +               if (control > 100) {
+> > > +                       dev_dbg(&device->dev, "Invalid control
+> > > value returned\n");
+> > > +                       return -EINVAL;
+> > 
+> > Why don't we fall back to the other method in this case?
+> We can.
+> 
+> > 
+> > > +               }
+> > > +
+> > > +               *state = control / (int)fan->fif.step_size;
+> > 
+> > Do we care about rounding errors?
+> > 
+> > Say control is 8 and step_size is 9.  Should this count as 0 or as
+> > 1?
+> > 
+> We will not set control value to 8 in this case, so we shouldn't read
+> 8. But if firmware setup at boot then it will be 0. The compensation
+> to
+> reach 100 is at last step which is allowed.
+> 
+> If step size is 9
+> 
+> thermal sysfs will display
+>         max_state = 100/9 = 11
+> 
+> control         thermal sysfs cur_state
+> 0-8             0
+> 9-17            1
+> 18-26           2
+> 27-35           3
+> 36-44           4
+> 45-53           5
+> 54-62           6
+> 63-71           7
+> 72-80           8
+> 81-89           9
+> 90-98           10
+> 99-100          11
+> 
+> If step size is 10
+> thermal sysfs
+>         max_state = 100/10 = 10
+> control         thermal sysfs cur_state
+> 0-9             0
+> 10-19           1
+> 20-29           2
+> 30-39           3
+> 40-49           4
+> 50-59           5
+> 60-69           6
+> 70-79           7
+> 80-89           8
+> 90-99           9
+> 100             10
+> 
+> 
+> 
+> > > +               return 0;
+> > > +       }
+> 
+> [...]
+> 
+> > > -       if (state >= fan->fps_count)
+> > > +       if (state > max_state)
+> > 
+> > Say step_size is 9, so max_state is 11.  state == 12 would still be
+> > valid, no?
+> We are presenting thermal sysfs max_state as 11 in this case, so
+> state 0-11 are valid. To reach 100, the spec allows to compensate the
+> last step to reach 100%. So state 11 is 100% not 99% as in the above
+> table.
+> 
+> If we present max_state as 12 then also user space can't choose max
+> than 12, so (state > max_state) will be still an error.
+> 
+> If we present max state as 12 then in the above table:
+> control         state
+> ----------------------
+> 90              10
+> 99              11
+> 100             12
+> 
+> Then last state will increase control value by 1.
+> 
+> 
+> > 
+> > >                 return -EINVAL;
+> > > 
+> > > -       status = acpi_execute_simple_method(device->handle,
+> > > "_FSL",
+> > > -                                           fan-
+> > > > fps[state].control);
+> > > +       if (fan->fif.fine_grain_ctrl) {
+> > > +               int rem;
+> > > +
+> > > +               value *= fan->fif.step_size;
+> > 
+> > And you don't need the max_state computation for this, it's only
+> > necessary to cap value at 100.  In which case you also wouldn't
+> > need
+> > rem etc.
+Correct.
+We don't need calculation. When the value == max_step, the control
+value will be 100.
 
-I'm trying to boot 5.15 kernel (Gentoo) on sparc64 machine (Sun Netra X1), =
-and it crashes right in the beginning; same happens with Debian 10 (which s=
-hould be using 4.19). There was something similar described here already: h=
-ttps://lkml.org/lkml/2012/2/13/64 , but it was almost 10 years ago. I don't=
- believe it's the same issue, but it should be related:
 
-PROMLIB: Sun IEEE Boot Prom 'OBP 4.0.18 2002/05/23 18:22'
-PROMLIB: Root node compatible: sun4u
-Linux version 5.15.16-gentoo-sparc64 (root@catalyst) (sparc64-unknown-linux=
--gnu-gcc (Gentoo 11.2.0 p1) 11.2.0, GNU ld (Gentoo 2.37_p1 p0) 2.37) #1 SMP=
- Sat Jan 29 07:50:57 UTC 2022
-printk: bootconsole [earlyprom0] enabled
-ARCH: SUN4U
-Ethernet address: 00:03:ba:36:42:cc
-MM: PAGE_OFFSET is 0xfffff80000000000 (max_phys_bits =3D=3D 40)
-MM: VMALLOC [0x0000000100000000 --> 0x0000060000000000]
-MM: VMEMMAP [0x0000060000000000 --> 0x00000c0000000000]
-Kernel: Using 3 locked TLB entries for main kernel image.
-Remapping the kernel...
-done.
-Unable to handle kernel NULL pointer dereference
-tsk->{mm,active_mm}->context =3D 0000000000000000
-tsk->{mm,active_mm}->pgd =3D fffff8005f002000
-              \|/ ____ \|/
-              "@'/ .. \`@"
-              /_| \__/ |_\
-                 \__U_/
-swapper(0): Oops [#1]
-CPU: 0 PID: 0 Comm: swapper Not tainted 5.15.16-gentoo-sparc64 #1
-TSTATE: 0000008880e01607 TPC: 0000000000764bc0 TNPC: 0000000000764bc4 Y: 00=
-000000    Not tainted
-TPC: <strchr+0x0/0x60>
-g0: 0000000000000000 g1: 0000000000000001 g2: 000000000000002f g3: 00000000=
-0000006c
-g4: 0000000000ca3940 g5: 0000000000000000 g6: 0000000000c34000 g7: 00000000=
-00000000
-o0: 0000000000000000 o1: 000000000000003a o2: 0000000000000022 o3: 00000000=
-00000001
-o4: fffff8005febe4d9 o5: fffff8005febe4d0 sp: 0000000000c37211 ret_pc: 0000=
-0000008f62e8
-RPC: <of_find_node_opts_by_path+0x8/0x160>
-l0: 00000000000286c4 l1: 0000000000c37b50 l2: 0000000000000049 l3: 00000000=
-00000080
-l4: 0000000000000013 l5: 0000000000000000 l6: 0000000000000000 l7: 00000000=
-00000000
-i0: 0000000000000000 i1: 0000000000000000 i2: 0000000001010101 i3: 00000000=
-80808080
-i4: fffff8005febe488 i5: 0000000000000000 i6: 0000000000c372c1 i7: 00000000=
-008f7140
-I7: <of_alias_scan+0x100/0x240>
-Call Trace:
-[<00000000008f7140>] of_alias_scan+0x100/0x240
-[<0000000000dd6bf0>] prom_build_devicetree+0x18/0x38
-[<0000000000ddae9c>] paging_init+0xa4c/0xdb8
-[<0000000000dd602c>] setup_arch+0x284/0x6e4
-[<0000000000dd2660>] start_kernel+0x54/0x6a0
-[<0000000000aa0480>] tlb_fixup_done+0x4c/0x6c
-[<000000000016b398>] 0x16b398
-Disabling lock debugging due to kernel taint
-Caller[00000000008f7140]: of_alias_scan+0x100/0x240
-Caller[0000000000dd6bf0]: prom_build_devicetree+0x18/0x38
-Caller[0000000000ddae9c]: paging_init+0xa4c/0xdb8
-Caller[0000000000dd602c]: setup_arch+0x284/0x6e4
-Caller[0000000000dd2660]: start_kernel+0x54/0x6a0
-Caller[0000000000aa0480]: tlb_fixup_done+0x4c/0x6c
-Caller[000000000016b398]: 0x16b398
-Instruction DUMP:
- 913a2000
- 81c3e008
- 913a2000
-<c20a0000>
- 852a6018
- 83286018
- 80a08001
- 0240000e
- 8738a018
-
-Kernel panic - not syncing: Attempted to kill the idle task!
-Press Stop-A (L1-A) from sun keyboard or send break
-twice on console to return to the boot prom
----[ end Kernel panic - not syncing: Attempted to kill the idle task! ]---
+> For above example to set the state 11 for 100 for step size 9. If
+> max_state is chosen as 12 then we can just cap.
+> 
+> > 
+> > > +
+> > > +               /*
+> > > +                * In the event OSPM’s incremental selections of
+> > > Level
+> > > +                * using the StepSize field value do not sum to
+> > > 100%,
+> > > +                * OSPM may select an appropriate ending Level
+> > > +                * increment to reach 100%.
+> > > +                */
+> > > +               rem = 100 - value;
+> > > +               if (rem && rem < fan->fif.step_size)
+> > > +                       value = 100;
+> > > +       } else {
+> > > +               value = fan->fps[state].control;
+> > > 
+> 
+> [...]
+> 
+> > > +       if (!fan->fif.step_size)
+> > > +               fan->fif.step_size = 1;
+> > > +       /* If step size > 9, change to 9 (by spec valid values 1-
+> > > 9)
+> > > */
+> > > +       if (fan->fif.step_size > 9)
+> > 
+> > I would do "else if" here, because both the above conditions cannot
+> > hold at the same time.
+> OK
+> 
+> > 
+> > > +               fan->fif.step_size = 9;
+> > >  err:
+> > > 
+> 
+> [...]
+> 
+> > > +       sysfs_attr_init(&fan->fine_grain_control.attr);
+> > > +       fan->fine_grain_control.show = show_fine_grain_control;
+> > > +       fan->fine_grain_control.store = NULL;
+> > > +       fan->fine_grain_control.attr.name = "fine_grain_control";
+> > > +       fan->fine_grain_control.attr.mode = 0444;
+> > > +       status = sysfs_create_file(&device->dev.kobj, &fan-
+> > > > fine_grain_control.attr);
+> > 
+> > I would split the creation of the new attributes into a separate
+> > file,
+> > for clarity (and to help the review somewhat).
+> > 
+> We can move all the attributes including the current one to a new
+> file.
+> 
+> Thanks,
+> Srinivas
+> 
 
