@@ -2,72 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0DA8C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 00:27:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20DABC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 00:28:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356221AbiBDA1P (ORCPT
+        id S1356231AbiBDA2E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 19:27:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55330 "EHLO
+        Thu, 3 Feb 2022 19:28:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353694AbiBDA1K (ORCPT
+        with ESMTP id S233251AbiBDA2D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 19:27:10 -0500
-Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0839C061714
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 16:27:09 -0800 (PST)
-Received: by mail-io1-xd2b.google.com with SMTP id z199so5445295iof.10
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 16:27:09 -0800 (PST)
+        Thu, 3 Feb 2022 19:28:03 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B89C7C06173D
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 16:28:02 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id my12-20020a17090b4c8c00b001b528ba1cd7so4643706pjb.1
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 16:28:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sladewatkins.com; s=google;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=ZHLlp8umDVFs9Tye8ZudPORlyWBAZ0TceN0aLVUR5o0=;
-        b=Ro0400dsEnmE9sFvCXr04FI1Suxxe+GviQVvHHvua9HenOqS29iCeTQK2BO/GvkJV0
-         NYK0hioNaHxQozDh+vrUiMQnovxtyh8zG8zfNWOSNa2cmO1wF+2aGkFC7OBLlAZuFS7d
-         QzLTY101Owp2M+rUMLjHgr3B7GQP1HdZD/b4DuawIiJaUZhmJhlPfFC3zcVo/rtaEr7J
-         Kup/QqUiv7C0/FFyzYkBpMiRD8M4yRWm4jkA18aago6Veq3AYkzqsAUX8RzrWm8IB5Uq
-         J5rxKu7NwIgAhVivDJm/xM8NuSWJzjXsHsx929HIZus7bzHpyYJ+515C+KRvvQh198S9
-         ZVOQ==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=1vhgypBVUxatDQA2t/PEFyJq1Dz/oV4D6TAQvVZv0u8=;
+        b=W0bGQxU2pU33Ei4vTMwb4LxDzrWE0EXjvMUkCBocmmMUvkaM2UsgQk5t3PALzqMv7A
+         lwPd32y7m9eeQCbpVad3GG1/067X3mSlbKgu/pUqoqJwnR6nFSBetJG6JYl6+G+RMZX1
+         qQ5u/9a9tlXqQzT9hGubw9MgAX/XtNzYaS4xc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=ZHLlp8umDVFs9Tye8ZudPORlyWBAZ0TceN0aLVUR5o0=;
-        b=wXjv50AWvKILKhczm6jOXZy+I6D0ATltDyzsIvuIlO70QfZtBDzzdRSTwqx05WOdP+
-         HWMWhzt3+X4LbiPlDZZ5V0MXlWPfi+sYV+TB4UXPKLYIaOO6o2ff0V85jW189hyH3ubE
-         kUfUMNXcukoWILCsR/As/yk1dx60+aRyDASd9Aemq1BLVE0ROo8OsAcVhj/Bn428D/x/
-         1tPPXgczuQvhEmuM1o5ojl+jA6R2p3DYFJpwq4bNDhhFIS0rOfkK1VFFZF+V7wSpymZI
-         jhrmJzuxqBTTw4Goj0MqhQ6E95784OiqMYxl3/Bzagw4qMDivhXcxw1iPMjw0sGCT9ZG
-         3oxA==
-X-Gm-Message-State: AOAM531F1jyzhkTVv/W6i5EJuXBYnYr1f01bzvQuk8TAjQQtCSxvCgZT
-        bZuy6iYFu7bJNMCfMWAcGUPuRbHE/71wxWUfXckb5XyyYYKnsP4oZ/E=
-X-Google-Smtp-Source: ABdhPJzkeVpmnHh01+sMw4I7bRAwMdEmLxLXizA1qhnR5P1LQJu7e/QGIVCLOswhuk9zyyLWgWLSCVRdlnOv6PYHo4A=
-X-Received: by 2002:a05:6638:371e:: with SMTP id k30mr227509jav.64.1643934429378;
- Thu, 03 Feb 2022 16:27:09 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=1vhgypBVUxatDQA2t/PEFyJq1Dz/oV4D6TAQvVZv0u8=;
+        b=XJy74JaRCkkcjeDhjtqmoS/vJHcB+qhN6YQoCeEB115pgY+5x/5on/iaj9ezSr0xwY
+         Tit3fHvC4+dCjQNPmwqYSUe/tTx4XCavYDOLx1o+bWCMcaL/4YorTBFchKGrFYPO8dNc
+         JIOCj3wvJKodIFTgE7e9yD1Vwgt0RRx/KkJZ1sjZpCQdAB+Vl2n5pL75/LQXnF4cwrKG
+         97imxCr2Lc0hyoJG46CB7YU/nhUmbf2eE6EZamsR9/a1UZZwExXeo3yjFCPXPjAQYGux
+         nwj6GjYGz6KZTv3ecnuHSxPwK/Pgd1Ls0Rr/nvIowRLmcFgj3/nBeRatwAOiCopXoncu
+         K31w==
+X-Gm-Message-State: AOAM533vJi1g11ErAtNnml5fBmV8JaWx1j5GYVhVlU5YyVspLdlkp4Tn
+        pbArvhGvgerrMKMpQzw17A7twg==
+X-Google-Smtp-Source: ABdhPJzclz2hHFHcinwuT36MxYy5C66IRul1bzvGhtdzdI25zojLs1J2oEC8VA4G/XwZL8ZwyaFSNQ==
+X-Received: by 2002:a17:903:183:: with SMTP id z3mr380439plg.127.1643934482295;
+        Thu, 03 Feb 2022 16:28:02 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id q16sm162686pfu.194.2022.02.03.16.28.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Feb 2022 16:28:01 -0800 (PST)
+Date:   Thu, 3 Feb 2022 16:28:01 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Miguel Ojeda <ojeda@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        George Burgess IV <gbiv@google.com>, llvm@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org,
+        linux-security-module@vger.kernel.org
+Subject: Re: [PATCH 4/4 v5] fortify: Add Clang support
+Message-ID: <202202031627.0EEB393@keescook>
+References: <20220202003033.704951-1-keescook@chromium.org>
+ <20220202003033.704951-5-keescook@chromium.org>
+ <CAKwvOdkvd=2DcwEpQWBtS3p-hKB6Rvp4YXB4k+81Me6E5H+mqQ@mail.gmail.com>
 MIME-Version: 1.0
-From:   Slade Watkins <slade@sladewatkins.com>
-Date:   Thu, 3 Feb 2022 19:26:58 -0500
-Message-ID: <CA+pv=HNuxZXTxu2S5vcz=zF81wWxykQe2im6oKgKiaDPujVjiw@mail.gmail.com>
-Subject: rtw89 driver
-To:     Wireless <linux-wireless@vger.kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Larry Finger <larry.finger@lwfinger.net>,
-        Slade Watkins <slade@sladewatkins.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKwvOdkvd=2DcwEpQWBtS3p-hKB6Rvp4YXB4k+81Me6E5H+mqQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi there,
-Quick question for wireless folks: would backporting the rtw89
-driver[1] (Realtek 8852AE) to kernels older than 5.16.y be possible at
-some point down the road? I ask this as, when testing a stable build
-of 5.15.y a bit ago, I had an issue where the driver wasn't present
-and the system I was testing it on wasn't happy and started kicking
-errors. (It's fairly new, so I did kind of expect that.) I was,
-however, able to solve this by manually building and installing the
-drivers so it wasn't that big of a deal.
+On Thu, Feb 03, 2022 at 02:13:33PM -0800, Nick Desaulniers wrote:
+> On Tue, Feb 1, 2022 at 4:30 PM Kees Cook <keescook@chromium.org> wrote:
+> >
+> > diff --git a/include/linux/fortify-string.h b/include/linux/fortify-string.h
+> > index c45159dbdaa1..5482536d3197 100644
+> > --- a/include/linux/fortify-string.h
+> > +++ b/include/linux/fortify-string.h
+> > @@ -2,7 +2,9 @@
+> >  #ifndef _LINUX_FORTIFY_STRING_H_
+> >  #define _LINUX_FORTIFY_STRING_H_
+> >
+> > -#define __FORTIFY_INLINE extern __always_inline __attribute__((gnu_inline))
+> > +#include <linux/const.h>
+> > +
+> > +#define __FORTIFY_INLINE extern __always_inline __attribute__((gnu_inline)) __overloadable
+> 
+> Sorry, I just noticed this line (already) uses a mix of open coding
+> __attribute__ and not. Would you mind also please changing the open
+> coded gnu_inline to simply __gnu_inline to make the entire line
+> consistent?
 
-[1] https://github.com/lwfinger/rtw89
+Ah yeah, thanks. Fixed.
 
-Thanks,
-Slade
+-- 
+Kees Cook
