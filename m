@@ -2,38 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DA17C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 20:02:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03457C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 20:02:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238501AbiBDUC1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 15:02:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39294 "EHLO
+        id S240008AbiBDUCb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 15:02:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235923AbiBDT7Q (ORCPT
+        with ESMTP id S236739AbiBDT7i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 14:59:16 -0500
+        Fri, 4 Feb 2022 14:59:38 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFCD0C061759
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 11:59:05 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7AE4C0613F5
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 11:59:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=2mHVS7k36npFN25FhvkmSnAZo1mYjfPpfVgX9RGUKq8=; b=eicnxn7w0V/pR8d6uMIwjVD6Ok
-        77YRhLGQYq04iqZwutq5XjOgvr+7uRnoY2Cl+WTzj68vCg+oUP3ImeT7Si5h7ulgNMRfj2T78SQp5
-        +q8UGik6YLFcfzBACXLaQt2NkAnEMwChLqjdtV7vR8kQKXoZU0HKu2z7HcC0gARygClwcFBNd86A7
-        ZYmQqrNo4wWZjU25VqF96I+8Zl7uV5vEvOWrSWlzljGauvFnsQLCHY+Ka0UR6gF+AqrCqp/pZC4CH
-        5WMrus0c1eZQ0AYCi++lxFSuX5QEfPatfNyk/r60WsxPZwvCoTcYD6bFMgb8wD5pACfUyGopg+sVL
-        PP0BCwag==;
+        bh=H+jlw4ue9QjQz5TCNSRpgDvnDtE889iCzjsXByGd4u8=; b=GuBfxuzooSqM5ZW4K7+hqLdHTW
+        NnxA0DNphTowyrCXMe3zTuIFp55vQHZPjdJikSVqYLP6plwJNKt9mK3D+7H01Miuwf2IwNZ6wd8vp
+        wVdKVw619Cp+EHOi7WSVU8n/zwcGVm1s10hGnAwqPYt9sXCUaDAKDSQyiPxejioqBJJntaTGTNtP0
+        T2d5NuhAqgjD/S3Vmg3kMUKh794eXYzX3rLysGc/TvNQLMJ2MpQz3bfgq1WPUYUveLgw59U3kSEBN
+        ThvxpKmP97W4iCAsg91IqBm7jgSlProJkp+xDcj9dJYkatYmKDx13hzZQxC2Ou+XYtROk/26PTrKc
+        b2KLbBxQ==;
 Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nG4jX-007LnU-Vg; Fri, 04 Feb 2022 19:59:04 +0000
+        id 1nG4jV-007Llx-OJ; Fri, 04 Feb 2022 19:59:01 +0000
 From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
 To:     linux-mm@kvack.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 43/75] mm/page_idle: Convert page_idle_clear_pte_refs() to use a folio
-Date:   Fri,  4 Feb 2022 19:58:20 +0000
-Message-Id: <20220204195852.1751729-44-willy@infradead.org>
+        linux-kernel@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        William Kucharski <william.kucharski@oracle.com>
+Subject: [PATCH 23/75] mm/gup: Convert gup_huge_pud() to use a folio
+Date:   Fri,  4 Feb 2022 19:58:00 +0000
+Message-Id: <20220204195852.1751729-24-willy@infradead.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220204195852.1751729-1-willy@infradead.org>
 References: <20220204195852.1751729-1-willy@infradead.org>
@@ -43,82 +46,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The PG_idle and PG_young bits are ignored if they're set on tail
-pages, so ensure we're passing a folio around.
+Use the new folio-based APIs.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: John Hubbard <jhubbard@nvidia.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Reviewed-by: William Kucharski <william.kucharski@oracle.com>
 ---
- mm/page_idle.c | 19 +++++++++++--------
- 1 file changed, 11 insertions(+), 8 deletions(-)
+ mm/gup.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/mm/page_idle.c b/mm/page_idle.c
-index 20d35d720872..544814bd9e37 100644
---- a/mm/page_idle.c
-+++ b/mm/page_idle.c
-@@ -13,6 +13,8 @@
- #include <linux/page_ext.h>
- #include <linux/page_idle.h>
- 
-+#include "internal.h"
-+
- #define BITMAP_CHUNK_SIZE	sizeof(u64)
- #define BITMAP_CHUNK_BITS	(BITMAP_CHUNK_SIZE * BITS_PER_BYTE)
- 
-@@ -48,6 +50,7 @@ static bool page_idle_clear_pte_refs_one(struct page *page,
- 					struct vm_area_struct *vma,
- 					unsigned long addr, void *arg)
+diff --git a/mm/gup.c b/mm/gup.c
+index ca8262392ce3..6d7a2ba6790b 100644
+--- a/mm/gup.c
++++ b/mm/gup.c
+@@ -2544,7 +2544,8 @@ static int gup_huge_pud(pud_t orig, pud_t *pudp, unsigned long addr,
+ 			unsigned long end, unsigned int flags,
+ 			struct page **pages, int *nr)
  {
-+	struct folio *folio = page_folio(page);
- 	struct page_vma_mapped_walk pvmw = {
- 		.vma = vma,
- 		.address = addr,
-@@ -74,19 +77,20 @@ static bool page_idle_clear_pte_refs_one(struct page *page,
+-	struct page *head, *page;
++	struct page *page;
++	struct folio *folio;
+ 	int refs;
+ 
+ 	if (!pud_access_permitted(orig, flags & FOLL_WRITE))
+@@ -2560,17 +2561,17 @@ static int gup_huge_pud(pud_t orig, pud_t *pudp, unsigned long addr,
+ 	page = nth_page(pud_page(orig), (addr & ~PUD_MASK) >> PAGE_SHIFT);
+ 	refs = record_subpages(page, addr, end, pages + *nr);
+ 
+-	head = try_grab_compound_head(pud_page(orig), refs, flags);
+-	if (!head)
++	folio = try_grab_folio(page, refs, flags);
++	if (!folio)
+ 		return 0;
+ 
+ 	if (unlikely(pud_val(orig) != pud_val(*pudp))) {
+-		put_compound_head(head, refs, flags);
++		gup_put_folio(folio, refs, flags);
+ 		return 0;
  	}
  
- 	if (referenced) {
--		clear_page_idle(page);
-+		folio_clear_idle(folio);
- 		/*
- 		 * We cleared the referenced bit in a mapping to this page. To
- 		 * avoid interference with page reclaim, mark it young so that
- 		 * page_referenced() will return > 0.
- 		 */
--		set_page_young(page);
-+		folio_set_young(folio);
- 	}
- 	return true;
+ 	*nr += refs;
+-	SetPageReferenced(head);
++	folio_set_referenced(folio);
+ 	return 1;
  }
  
- static void page_idle_clear_pte_refs(struct page *page)
- {
-+	struct folio *folio = page_folio(page);
- 	/*
- 	 * Since rwc.arg is unused, rwc is effectively immutable, so we
- 	 * can make it static const to save some cycles and stack.
-@@ -97,18 +101,17 @@ static void page_idle_clear_pte_refs(struct page *page)
- 	};
- 	bool need_lock;
- 
--	if (!page_mapped(page) ||
--	    !page_rmapping(page))
-+	if (!folio_mapped(folio) || !folio_raw_mapping(folio))
- 		return;
- 
--	need_lock = !PageAnon(page) || PageKsm(page);
--	if (need_lock && !trylock_page(page))
-+	need_lock = !folio_test_anon(folio) || folio_test_ksm(folio);
-+	if (need_lock && !folio_trylock(folio))
- 		return;
- 
--	rmap_walk(page, (struct rmap_walk_control *)&rwc);
-+	rmap_walk(&folio->page, (struct rmap_walk_control *)&rwc);
- 
- 	if (need_lock)
--		unlock_page(page);
-+		folio_unlock(folio);
- }
- 
- static ssize_t page_idle_bitmap_read(struct file *file, struct kobject *kobj,
 -- 
 2.34.1
 
