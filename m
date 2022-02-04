@@ -2,208 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 389B4C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 18:17:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2316C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 18:18:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377484AbiBDSRL (ORCPT
+        id S1377489AbiBDSSq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 13:17:11 -0500
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:9884 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S243150AbiBDSRJ (ORCPT
+        Fri, 4 Feb 2022 13:18:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43940 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243150AbiBDSSp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 13:17:09 -0500
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 214EUPnS025427;
-        Fri, 4 Feb 2022 10:16:59 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : references : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=pfpt0220;
- bh=eCgLnIFjhDvyC5OEFtoDD3YaMzCHkIhKN4t86pGmmHY=;
- b=OVhiXPPwU9+8N3tKlOgdNBlPdFh8AwL9eXAsrGkyFk4t+pKz3G3+Y70oQJCvkKgPAG9g
- +Q7zm+EmGJKauYPxvnMqfJHhk6d3dwXbQ0GEcmD7ALqUJLoQkGqA5nB7Sdra32lsyyBt
- KIiDnn1Z7dJroNS+k9IJd9xEI5aNSOnsLde590JSIq2Him7p1onwes1UGJG0q3a3F182
- SB+Zm44sHIpvVMjOypSUH1QzrH52LobWKJ2FtpT3ZpWVE2hcHl6Wrw13X0Kj5WA54uaY
- 5Sp3EDEqqgMpFkpGNQU8SJDUNXy+1Z/eOTNtjl4sqSQMSRaPxhcyEweBT72nuhFmJoEQ Mg== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3e0tp1atu5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 04 Feb 2022 10:16:59 -0800
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Fri, 4 Feb
- 2022 10:16:57 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Fri, 4 Feb 2022 10:16:57 -0800
-Received: from localhost.localdomain (unknown [10.110.150.170])
-        by maili.marvell.com (Postfix) with ESMTP id 73F4A3F706C;
-        Fri,  4 Feb 2022 10:16:57 -0800 (PST)
-From:   Wojciech Bartczak <wbartczak@marvell.com>
-To:     <sudeep.holla@arm.com>
-CC:     <cristian.marussi@arm.com>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <sbalcerak@marvell.com>,
-        <wbartczak@marvell.com>
-Subject: Re: Mixing SCMI and ACPI?
-Date:   Fri, 4 Feb 2022 10:16:41 -0800
-Message-ID: <20220204181641.28176-1-wbartczak@marvell.com>
-X-Mailer: git-send-email 2.17.1
-References: <20220204142150.glsu6ujjtqpcktjp@bogus>
+        Fri, 4 Feb 2022 13:18:45 -0500
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40817C06173D
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 10:18:45 -0800 (PST)
+Received: by mail-io1-xd36.google.com with SMTP id d188so8396541iof.7
+        for <linux-kernel@vger.kernel.org>; Fri, 04 Feb 2022 10:18:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=B0ahm0hdwmzp8LcfxQ8+kQ7YphowIvmbdFdhXbcRawU=;
+        b=YuuKVwxWhqjqDGM91SbOGfO5jk1lvcH2xOKu9SdTS/0AtcSSu6Z74v9BI75XsPuQNQ
+         6voOghPWwZ0DFtuWnIayytbcUYvQLdpxYUw/+iekyW/DRrXWz5L3T9qUdSP4JAL0wOB2
+         AAuLy72nClt9QPT6wEIYZ/WM76WScoUHkqOnE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=B0ahm0hdwmzp8LcfxQ8+kQ7YphowIvmbdFdhXbcRawU=;
+        b=7HPifqNIXH0j6mVmuH33VDOU2y80/JELZJj4aknuV1nh+UGaNcj1L3f23PW4Se9LJ+
+         fks8HDzxl+cQlJO3mD4mhHEdUuvGI+2g0bqgrfrIWKcCEs+KCleBJmSvzF9WQ1MEGL2x
+         xNwWjbURw1/+wMPVBat1qbt3sWHF0dUfIOpQbVbkd5Odw/pxymJIxS9WFmtUMPzaoKl0
+         Jaa/osvGvJB8CeqzoyZlDz3JImG2jjZ56f5KzgwV7EvWDVbBjdCLRL7gOIYkTcSKbHSw
+         NwhbSAKM3thP1GEJrAw1FPGlwPOyn/+jGx0avuBZiZP7e9S3j2iM54VwtnCE9vYBZ2Ov
+         nOMQ==
+X-Gm-Message-State: AOAM533uwwMoLWVhnIZP7tonS61BSvO7xyseEMnwwPNh3fLgcfdjmttr
+        PGYwXmb4Hg5VNLPqualPSdayc8keSfpieVCyvhJ0QQ==
+X-Google-Smtp-Source: ABdhPJytny1SyvPfpAVIt5yuyPMy85jb9OFiLTaA6qhpI02J9cXH4cGVPLFMJsAR4d38qn7L7cix9j7++UZ9EJEbmaw=
+X-Received: by 2002:a6b:f218:: with SMTP id q24mr174468ioh.55.1643998724641;
+ Fri, 04 Feb 2022 10:18:44 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20220204142150.glsu6ujjtqpcktjp@bogus>
+References: <20220106122452.18719-1-wsa@kernel.org> <Yd6gRR0jtqhRLwtB@ninjato>
+ <98ed8d6d16a3d472d9432eb169aa2da44b66b5cc.camel@yandex.ru>
+ <4dfbee97-14c2-718b-9cbd-fdeeace96f59@yahoo.com> <CAJMQK-h38XdN=QD6ozVNk+wxmpp1DKj21pkFZ+kY31+Lb8ot6Q@mail.gmail.com>
+ <6121a782-6927-f033-1c09-ffe4ad7700ae@yahoo.com> <CAJMQK-j5YYqen78Vgng_5jhja-YKSTRut7f7vJ4wWufVfbZy6w@mail.gmail.com>
+ <363432688.323955.1642272250312@mail.yahoo.com>
+In-Reply-To: <363432688.323955.1642272250312@mail.yahoo.com>
+From:   Hsin-Yi Wang <hsinyi@chromium.org>
+Date:   Sat, 5 Feb 2022 02:18:18 +0800
+Message-ID: <CAJMQK-jx+z974AT_p+-AVAbMQQ33V-XU9NKmy-i6nbS5zagHBA@mail.gmail.com>
+Subject: Re: [PATCH] Revert "i2c: core: support bus regulator controlling in adapter"
+To:     "Tareque Md.Hanif" <tarequemd.hanif@yahoo.com>
+Cc:     Wolfram Sang <wsa@kernel.org>,
+        "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "amd-gfx@lists.freedesktop.org" <amd-gfx@lists.freedesktop.org>,
+        Bibby Hsieh <bibby.hsieh@mediatek.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-ORIG-GUID: lRDlt_gd-zaEnjwhdQ9E0naZ_MB1tm8M
-X-Proofpoint-GUID: lRDlt_gd-zaEnjwhdQ9E0naZ_MB1tm8M
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-04_07,2022-02-03_01,2021-12-02_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 04, 2022 at 02:21:50PM +0000, Sudeep Holla wrote:
-Hi Sudeep,
+On Sun, Jan 16, 2022 at 2:44 AM Tareque Md.Hanif
+<tarequemd.hanif@yahoo.com> wrote:
+>
+> Hi Hsin-Yi,
+>
+> The issue still exists. I reverted a19f75de73c220b4496d2aefb7a605dd032f7c01 (the commit that reverted 5a7b95fb993ec399c8a685552aa6a8fc995c40bd) and manually applied the patch (tags/v5.16). journalctl attached.
 
-Firstly, thank you for blazing fast answer.
+hi Tareque,
 
-> Hi Wojciech,
-> 
-> Please cc me too for anything SCMI related in the future.
-> 
-> On Fri, Feb 04, 2022 at 01:32:47PM +0000, Wojciech Bartczak wrote:
-> > Hi Folks,
-> > 
-> > I have been working with SCMI for some time now.
-> 
-> Good to know 😄
-> 
-> > Here at Marvell, we use very common software stack.
-> 
-> Excellent!
-> 
-> > Mostly ATF, U-Boot and Kernel. With this software stack, SCMI integration is
-> > just a matter of following the common sense.
-> 
-> Glad to hear that.
-> 
-> > Recently, the new requirement for supporting ACPI and UEFI has arrived.
-> > The main goal is to have ACPI and platform that works almost the same.
-> >
-> 
-> Sure.
-> 
-> > This is where the problem begins. SCMI is quite well-defined for DT-based
-> > environments.
-> 
-> Indeed and that is intentional. However, lots of concepts in SCMI already aligns
-> well with ACPI concepts just under different name most of the time.
-> 
-> > Unfortunately, there are not too many mentions for the UEFI/ACPI based
-> > platforms. This is probably caused by the fact that SCMI overlaps with ACPI
-> > in some points like sensors or performance management.
-> 
-> Correct.
-> 
-> > However, SCMI has one single advantage over the ACPI, namely it defines pretty
-> > nice framework for clocks management. ACPI is silent in this regard.
-> 
-> Yes but any reasons why that can't be part of standard power methods.
-> 
+Can you apply the same setting[1] again and with this patch to see if
+the issue is still there?
+https://github.com/torvalds/linux/commit/6dc8265f9803ccb7e5da804e01601f0c14f270e0
 
-I should've explained it slightly better. Of course SCMI does great work
-when managing the clocks. However, what the intent here is the SCMI
-clocks register itself nicely into common clk framework.
-I don't intend to change the clock. SCP in my case is invariant source.
-Hence, no need for ASL methods. I just want to read given clock and have it
-registered in clk framework.
-Reason for that is simple, there's a good code in SCMI. I don't
-want to create own driver for that. I just have to be able to start SCMI
-when only source of hardware information is ACPI/UEFI.
+[1] reverted a19f75de73c220b4496d2aefb7a605dd032f7c01 (the commit that
+reverted 5a7b95fb993ec399c8a685552aa6a8fc995c40bd) and manually
+applied the patch (tags/v5.16)
 
-> > It is just delegating clocks to OSPM. The kernel and OS should be unaware of
-> > the clocks management according to the ACPI spec. This surely does work for x86,
-> > but not so well for ARM.
-> >
-> 
-> While that could be true, why do you need to manage the clocks so much outside
-> the standard power methods in ACPI.
-> 
-> > Wonder, if you had chance discuss using SCMI in ACPI based environments?
-> 
-> We have discussed in the past, SCMI can be used in ACPI abstracted under the
-> existing well defined methods(I know you will be shouting not clocks but
-> we need to know why that can't be done with standards device power/state
-> methods.
-> 
-> > I am mostly interested in the description using ACPI tables and eventually
-> > the bindings for ACPI tables. I need something portable and
-> > in line with future development for SCMI.
-> >
-> 
-> I don't understand what you mean by that.
-> 
-> > Now the review of existing threads and forums returns almost nothing.
-> > The SCMI specification wasn't too helpful either.
-> > I did the code review too. But only thing I see are bindings for DT (v5.17-rc2).
-> > It will help greatly if you have any advice or pointer that I could try.
-> > Has anyone done this before?
-> 
-> Not sure if anyone has told so in the public ML. However if you want to
-> run same platform both in ACPI and DT with same firmware, you can write
-> ASL to manage clocks via SCMI command so that same firmware can be used.
-> 
-> I may be giving to generic info and may not be addressing your specific
-> issue, but I need specific info to address that. What have you tried with
-> ACPI so far, what are the issues you are seeing, ...etc ?
-
-This is still most specific thing I could have found on the internet.
-So, to clear up the clouds about my idea.
-
-I have platform with UEFI/ACPI only. I want my clocks to be registered.
-So, I use SCMI. The framework needs bindings for proper registration.
-Instead using DT approach:
-
-firmware {
-	scmi {
-		compatible = "arm-scmi";
-		/* ... */
-
-		clks: protocol@14 {
-			reg = <0x14>;
-			#clock-cells = <1>;
-		}
-	}
-}
-
-I add ACPI match table to SCMI code and present it with matching ACPI
-tables. It might look like this:
-
-Scope (_SB) {
-	Device (ARMSCMI) {
-		Name (_HID, "ASCM0001")
-		Name (_UID, 0)
-
-		Method (_STA) {
-			Return (0xF)
-		}
-
-		Device (CLKS) {
-			Name (_ADR, 0x14)
-			Name (_UID, 0)
-
-			Method (_STA) {
-				Return (0xF)
-			}
-		}
-	}
-}
-
-Then SCMI registers the clocks protocol and does remaining magic.
-
-
-Kind regards,
-Wojciech.
-
-> --
+Thanks
+>
 > Regards,
-> Sudeep
+>
+> Tareque
+>
+> On Saturday, January 15, 2022, 11:27:07 PM GMT+6, Hsin-Yi Wang <hsinyi@chromium.org> wrote:
+>
+>
+> hi Tareque,
+>
+>
+> On Fri, Jan 14, 2022 at 6:09 PM Tareque Md Hanif
+> <tarequemd.hanif@yahoo.com> wrote:
+> >
+> > Hi Hsin-Yi,
+> >
+> > On 1/12/22 16:58, Hsin-Yi Wang wrote:
+> >
+> > Can you help provide logs if we apply
+> > 5a7b95fb993ec399c8a685552aa6a8fc995c40bd but revert
+> > 8d35a2596164c1c9d34d4656fd42b445cd1e247f?
+> >
+> > Issue still exists. journalctl log attached in revert_8d.txt
+> >
+> >
+> > > after apply 5a7b95fb993ec399c8a685552aa6a8fc995c40bd
+> > > 1. delete SET_LATE_SYSTEM_SLEEP_PM_OPS(i2c_suspend_late,
+> > > i2c_resume_early) and function i2c_suspend_late() and
+> > > i2c_resume_early().
+> >
+> > No issues. journalctl log attached in test1.txt
+> >
+> >
+> > > 2. delete SET_RUNTIME_PM_OPS(i2c_runtime_suspend, i2c_runtime_resume,
+> > > NULL) and function i2c_runtime_suspend() and i2c_runtime_resume().
+> >
+> > Issue exists. journalctl log attached in test2.txt
+>
+>
+> Thanks for the testing.
+> Can you help us test if applying the following patch on top of
+> 5a7b95fb993ec399c8a685552aa6a8fc995c40bd works? Thanks
+>
+> diff --git a/drivers/i2c/i2c-core-base.c b/drivers/i2c/i2c-core-base.c
+> index 9eb4009cb250..6b046012aa08 100644
+> --- a/drivers/i2c/i2c-core-base.c
+> +++ b/drivers/i2c/i2c-core-base.c
+> @@ -484,7 +484,7 @@ static int i2c_resume_early(struct device *dev)
+>         struct i2c_client *client = i2c_verify_client(dev);
+>         int err;
+>
+> -      if (!client)
+> +      if (!client || dev_pm_skip_resume(dev))
+>                 return 0;
+>
+>         if (pm_runtime_status_suspended(&client->dev) &&
+> @@ -502,7 +502,7 @@ static int i2c_suspend_late(struct device *dev)
+>         struct i2c_client *client = i2c_verify_client(dev);
+>         int err;
+>
+> -      if (!client)
+> +      if (!client || dev_pm_skip_suspend(dev))
+>                 return 0;
+>
+>         err = pm_generic_suspend_late(&client->dev);
+>
