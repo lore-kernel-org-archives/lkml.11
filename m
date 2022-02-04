@@ -2,177 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31057C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 12:15:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03C97C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 12:16:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358813AbiBDMPw (ORCPT
+        id S1358755AbiBDMQJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 07:15:52 -0500
-Received: from mx1.tq-group.com ([93.104.207.81]:57020 "EHLO mx1.tq-group.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1358662AbiBDMPe (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 07:15:34 -0500
+        Fri, 4 Feb 2022 07:16:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44582 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241299AbiBDMP7 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 4 Feb 2022 07:15:59 -0500
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59264C061749;
+        Fri,  4 Feb 2022 04:15:49 -0800 (PST)
+Received: by mail-lf1-x130.google.com with SMTP id z19so12157167lfq.13;
+        Fri, 04 Feb 2022 04:15:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1643976934; x=1675512934;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=wxzlrhc4NRiZGi76LZW5C2eEFoWSR5gV+Yrp/AZNDME=;
-  b=OfUdnJa1G/hmBovLC1ygxQHVCDQSzizePd0DYa6qbZpK1VYwZq6D8Rm7
-   lyzP2ayLmfa+BtaEESPL0/x391Vqh1m/zyyokHi6sk9hwTHW77SY/OboE
-   O3XxQd689YskBNnx2jMsYs7fbzr1JmB14nYKHoFwJnC6eiheG3YPOKfEm
-   ADfTykG+Ys+Wv+GaLLfrqlT8VrYhBBRHhMppe4QBVetnt56nRO+oBt8zG
-   Rz/VVzFaIC0rj1NORphDLZC5R/4CaHxWcqhjDosM5qFt35o3rP7BGwtEN
-   0sK2XVvAYnPqpskUzT+lBXz4k7uozaZ9xWsDEg7S/qelT9tft/ZZnuiFY
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.88,342,1635199200"; 
-   d="scan'208";a="21903444"
-Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 04 Feb 2022 13:15:30 +0100
-Received: from mx1.tq-group.com ([192.168.6.7])
-  by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Fri, 04 Feb 2022 13:15:30 +0100
-X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Fri, 04 Feb 2022 13:15:30 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1643976930; x=1675512930;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=wxzlrhc4NRiZGi76LZW5C2eEFoWSR5gV+Yrp/AZNDME=;
-  b=M2TltVT6lr+eQS8IzKEtkI2FlEQDvXhnt93Q/Kcryg9f/56KiGAY6L+X
-   OO+DeFuvGn7+9h18ih075dR3jETsTCh+J04ULa7a5/px+kKcveZPKjRaH
-   WBKgOhAX9BHBTMyePPbq3gAtTw97728+JAuAg/mRgd5/higVxxtI1I6D7
-   CzzSx9H61CYy3uryj3vwiUCsp6RLExdaKVwWjSjb/BKo674jFT82b9v8p
-   tjKOlf2OSWPSYm9KtAwSo7uFFKiQJXyrUZW9NRKpgaaASmAf+qnf9UH0M
-   RJbZVG/cjZe3AVauClUzWkTHg5mIOCpEv6kDifd+aZ5VM80EZKrknwTPP
-   A==;
-X-IronPort-AV: E=Sophos;i="5.88,342,1635199200"; 
-   d="scan'208";a="21903428"
-Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 04 Feb 2022 13:15:25 +0100
-Received: from steina-w.tq-net.de (unknown [10.123.49.12])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id F12C9280075;
-        Fri,  4 Feb 2022 13:15:24 +0100 (CET)
-From:   Alexander Stein <alexander.stein@ew.tq-group.com>
-To:     Steve Longerbeam <slongerbeam@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Rui Miguel Silva <rmfrfs@gmail.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Dorota Czaplejewicz <dorota.czaplejewicz@puri.sm>
-Cc:     linux-media@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Alexander Stein <alexander.stein@ew.tq-group.com>
-Subject: [PATCH 3/8] media: imx: Use dedicated format handler for i.MX7/8
-Date:   Fri,  4 Feb 2022 13:15:09 +0100
-Message-Id: <20220204121514.2762676-4-alexander.stein@ew.tq-group.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220204121514.2762676-1-alexander.stein@ew.tq-group.com>
-References: <20220204121514.2762676-1-alexander.stein@ew.tq-group.com>
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=aGEsA+scNOokEFQJ1vtoomSbPZotFKlQPXXV2eBzIvA=;
+        b=Aen7EN8nyfl/ci2RwPxgfhYYo80aPrfoiwLdVRQ7ReTdXKYhLtQoUKG2EM7SiRczFK
+         Z2xfk0LAYxcUqJECpd3dbO3QrNMZNOwevdgH9GlfrDEGcMgpwS1I95FY3rmn70J6/irN
+         U2gWO9JHxlfGt6of6v0FhYJYWKuj7mCyz9OzQHZ4kNFfU6xs2eFx3hzui+FSKxdoqFdD
+         Cpto2uF0g6JGOvOH2wL/bywc3HCmNk2xGSm7K4uhXisXFUMd+I6P6g5eGPfvpWTd1Qk9
+         TnA1+n0Ez1ZZOZjXoULgjVOYoxeuiZPFuglq7ezQxNEMHJOEbx1wZ88DI5qWsetLeeTv
+         tL2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=aGEsA+scNOokEFQJ1vtoomSbPZotFKlQPXXV2eBzIvA=;
+        b=rhTBnpiU7G/xiaSCUF6Zb7XgqKmS5se5aBLXK2ZOGChRmbkMoSpIcIzXH2IbFs6zoe
+         KY/Fd0rkfB9F2fh6AqJsIBvBqKTe3ew98aIyQwqB+GuCby0xHEdN1+NdX2z3pLHs15c/
+         pHhmdM6A5JSyWEqDV/0QAaCvQ7sNEgdEZaEP6Jr0I0ybKn43p0qPpNP79yN/kh4Pw8Eg
+         hWGuNddO1FyUCWQAUG94LRu3xveeAd6PgVyY9/Z7iFIUa1DiE+l07ce+9Ps1uiraU4KI
+         hYMMkFVYu8fL4qsg/dwEEWF/+Jx9ttmAKVgYOHhDHEn9e84or72WqzRTfp4epWpt6IQB
+         PKdg==
+X-Gm-Message-State: AOAM532VhtWHE8QkXI9wgbldZsg5opI7hwBQfPPQHQp2AiI8WJ/tY+B9
+        7TXfytt7SZuX5AfUDe6ed2c=
+X-Google-Smtp-Source: ABdhPJy3MvrHFgG+Z9ja4JsGfZR0P4ohrWkNNy7SCj28+hp74nLhHYaItj5fQ+eiQB5t0Y9sZueWng==
+X-Received: by 2002:a05:6512:3f8f:: with SMTP id x15mr2128386lfa.363.1643976947560;
+        Fri, 04 Feb 2022 04:15:47 -0800 (PST)
+Received: from [192.168.2.145] (109-252-138-165.dynamic.spd-mgts.ru. [109.252.138.165])
+        by smtp.googlemail.com with ESMTPSA id u21sm251171ljo.81.2022.02.04.04.15.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 04 Feb 2022 04:15:47 -0800 (PST)
+Message-ID: <07913f0e-1e17-a22b-615c-fff8ccad7f9b@gmail.com>
+Date:   Fri, 4 Feb 2022 15:15:46 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v18 2/4] dmaengine: tegra: Add tegra gpcdma driver
+Content-Language: en-US
+To:     Akhil R <akhilrajeev@nvidia.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Krishna Yarlagadda <kyarlagadda@nvidia.com>,
+        Laxman Dewangan <ldewangan@nvidia.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
+        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
+        Rajesh Gumasta <rgumasta@nvidia.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
+        "vkoul@kernel.org" <vkoul@kernel.org>
+Cc:     Pavan Kunapuli <pkunapuli@nvidia.com>
+References: <1643729199-19161-1-git-send-email-akhilrajeev@nvidia.com>
+ <1643729199-19161-3-git-send-email-akhilrajeev@nvidia.com>
+ <3feaa359-31bb-bb07-75d7-2a39c837a7a2@gmail.com>
+ <DM5PR12MB18509939C17ABEB5EEA825FFC0289@DM5PR12MB1850.namprd12.prod.outlook.com>
+ <d6d70e52-a984-d973-f3bb-f70f1a4ce95d@gmail.com>
+ <DM5PR12MB18501E2343121A9FEE013F15C0299@DM5PR12MB1850.namprd12.prod.outlook.com>
+From:   Dmitry Osipenko <digetx@gmail.com>
+In-Reply-To: <DM5PR12MB18501E2343121A9FEE013F15C0299@DM5PR12MB1850.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dorota Czaplejewicz <dorota.czaplejewicz@puri.sm>
+04.02.2022 09:47, Akhil R пишет:
+>> 03.02.2022 06:44, Akhil R пишет:
+>>>> But why do you need to pause at all here and can't use
+>>>> tegra_dma_stop_client() even if pause is supported?
+>>> The recommended method to terminate a transfer in
+>>> between is to pause the channel first and then disable it.
+>>> This is more graceful and stable for the hardware.
+>>> stop_client() is more abrupt, though it does the job.
+>>
+>> If there is no real practical difference, then I'd use the common method
+>> only. This will make code cleaner and simpler a tad.
+> This is the documented way of clean exit from a transfer, especially for
+> cyclic transfers where the DMA is configured in continuous mode.
+> I guess it might not be a good idea to deviate from that unless there is
+> something demanding it compulsorily.
+> 
+> I agree that the code will be cleaner. I would try to see if I can find a cleaner
+> way to do this. Please do let me know if you have any suggestion.
 
-This splits out a format handler which takes into account
-the capabilities of the i.MX7/8 video device,
-as opposed to the default handler compatible with both i.MX5/6 and i.MX7/8.
+Will be great if you could find out and provide a detailed explanation
+about the exact differences of the methods from software perspective.
+Try to ask the hardware people.
 
-Signed-off-by: Dorota Czaplejewicz <dorota.czaplejewicz@puri.sm>
-Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
----
-Changes in comparison to original commit from Dorota:
-* is_imx56 is used instead of enum
-
- drivers/staging/media/imx/imx-media-utils.c | 56 +++++++++++++++++++--
- 1 file changed, 52 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/staging/media/imx/imx-media-utils.c b/drivers/staging/media/imx/imx-media-utils.c
-index 0daa6aad45f4..32aaa2e81bea 100644
---- a/drivers/staging/media/imx/imx-media-utils.c
-+++ b/drivers/staging/media/imx/imx-media-utils.c
-@@ -516,10 +516,9 @@ void imx_media_try_colorimetry(struct v4l2_mbus_framefmt *tryfmt,
- }
- EXPORT_SYMBOL_GPL(imx_media_try_colorimetry);
- 
--int imx_media_mbus_fmt_to_pix_fmt(struct v4l2_pix_format *pix,
--				  const struct v4l2_mbus_framefmt *mbus,
--				  const struct imx_media_pixfmt *cc,
--				  bool is_imx56)
-+static int imx56_media_mbus_fmt_to_pix_fmt(struct v4l2_pix_format *pix,
-+					   const struct v4l2_mbus_framefmt *mbus,
-+					   const struct imx_media_pixfmt *cc)
- {
- 	u32 width;
- 	u32 stride;
-@@ -568,6 +567,55 @@ int imx_media_mbus_fmt_to_pix_fmt(struct v4l2_pix_format *pix,
- 
- 	return 0;
- }
-+
-+static int imx78_media_mbus_fmt_to_pix_fmt(struct v4l2_pix_format *pix,
-+					   const struct v4l2_mbus_framefmt *mbus,
-+					   const struct imx_media_pixfmt *cc)
-+{
-+	int ret;
-+
-+	if (!cc)
-+		cc = imx_media_find_mbus_format(mbus->code, PIXFMT_SEL_ANY);
-+
-+	if (!cc)
-+		return -EINVAL;
-+	/*
-+	 * The hardware can handle line lengths divisible by 4 pixels
-+	 * as long as the whole buffer size ends up divisible by 8 bytes.
-+	 * If not, use the value of 8 pixels recommended in the datasheet.
-+	 */
-+	ret = v4l2_fill_pixfmt(pix, cc->fourcc,
-+			       round_up(mbus->width, 4), mbus->height);
-+	if (ret)
-+		return ret;
-+
-+	/* Only 8bits-per-pixel formats may need to get aligned to 8 pixels,
-+	 * because both 10-bit and 16-bit pixels occupy 2 bytes.
-+	 * In those, 4-pixel aligmnent is equal to 8-byte alignment.
-+	 */
-+	if (pix->sizeimage % 8 != 0)
-+		ret = v4l2_fill_pixfmt(pix, cc->fourcc,
-+				       round_up(mbus->width, 8), mbus->height);
-+
-+	pix->colorspace = mbus->colorspace;
-+	pix->xfer_func = mbus->xfer_func;
-+	pix->ycbcr_enc = mbus->ycbcr_enc;
-+	pix->quantization = mbus->quantization;
-+	pix->field = mbus->field;
-+
-+	return ret;
-+}
-+
-+int imx_media_mbus_fmt_to_pix_fmt(struct v4l2_pix_format *pix,
-+				  const struct v4l2_mbus_framefmt *mbus,
-+				  const struct imx_media_pixfmt *cc,
-+				  bool is_imx56)
-+{
-+	if (is_imx56)
-+		return imx56_media_mbus_fmt_to_pix_fmt(pix, mbus, cc);
-+	else
-+		return imx78_media_mbus_fmt_to_pix_fmt(pix, mbus, cc);
-+}
- EXPORT_SYMBOL_GPL(imx_media_mbus_fmt_to_pix_fmt);
- 
- void imx_media_free_dma_buf(struct device *dev,
--- 
-2.25.1
-
+If you won't be able to find out, then use both methods. Then you could
+specify the "pause" callback within the tegra_dma_chip_data
+[tdma->chip_data->pause(tdma)], instead of using condition in the code.
