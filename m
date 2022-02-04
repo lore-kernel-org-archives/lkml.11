@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABA4AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 20:03:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13E6DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 20:03:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241369AbiBDUDa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 15:03:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39322 "EHLO
+        id S237152AbiBDUDf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 15:03:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236069AbiBDT7R (ORCPT
+        with ESMTP id S235597AbiBDT7I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 14:59:17 -0500
+        Fri, 4 Feb 2022 14:59:08 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49358C06176C
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 11:59:08 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 593F8C061753
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 11:59:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=gH/HpEmYfLdrfRbpayNzunExyTfpHfZmR6mgqsHCuL8=; b=lGH9rzl2ESM3Q3dNOnt6VwuOVC
-        8AFCtiMUSFMDfuQWY84H7BB7UOgb+JtUvdVi7WWBzUay2+A2kp9xPrdVQgq2OMnou7ypFRQDtMitt
-        lpOdYkgp8kYu4Tjal1LhNsif2pV9dWqqA4s1J2AvtiQive9tm6I0j0Vee7oQY5cIX3lhXr8K/npNF
-        KFQ0k1msEU26yNkTxA6tZGxywWdHnIm2t2fKPctqhjoAEjS6iC+PYFvpJ9SwmQAQh+ITVX2GU48Dk
-        BrxTfAgDOa/yDygKNWXKuUJUFGmfAUkXQDIUfkiyJ8r+rzhfhcRGuk5zFUR3FfSEW/tmvGrqei9on
-        2h1QlSDQ==;
+        bh=WDil5dypwvwr0pJhzlmwMCjRq+EI+jeEJkZckLIBlgY=; b=c0dzG4llF/3b84Bw55bDXwjWWG
+        U2yxsxG8cTJvhBEwjBNYS4gPj3S2uOWmr3Bv2IZxy5kFyx415wC143anDVbiZFstnPdNlGWvh2l9J
+        UC/J/tPK62ut1RJ7uBm09b8fm4VMmZNhTFnBCqP/vdUqPhelrD8FX5pOGV3fC1p0aA5Agi1UASqbK
+        UMTEAbS76MFZDTrXAq3GEW6pN6Wal7tRucg1W0PoUFK+vbXmpu55ZP7Wmf2uz8m1PL2L9kUdBC5lm
+        4kqXPSHrUXBA+xuTeicL1bgLidy7eacG+L+B+GqBo6Ul/PLCdtteCJXgjBMEwKHWX3M14wWj2D8Jv
+        qkRnh9CA==;
 Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nG4ja-007Lps-Fu; Fri, 04 Feb 2022 19:59:06 +0000
+        id 1nG4jX-007Ln3-Eb; Fri, 04 Feb 2022 19:59:03 +0000
 From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
 To:     linux-mm@kvack.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 61/75] mm/vmscan: Free non-shmem folios without splitting them
-Date:   Fri,  4 Feb 2022 19:58:38 +0000
-Message-Id: <20220204195852.1751729-62-willy@infradead.org>
+Subject: [PATCH 39/75] mm: Add folio_pgoff()
+Date:   Fri,  4 Feb 2022 19:58:16 +0000
+Message-Id: <20220204195852.1751729-40-willy@infradead.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220204195852.1751729-1-willy@infradead.org>
 References: <20220204195852.1751729-1-willy@infradead.org>
@@ -43,33 +43,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We have to allocate memory in order to split a file-backed folio, so
-it's not a good idea to split them in the memory freeing path.  It also
-doesn't work for XFS because pages have an extra reference count from
-page_has_private() and split_huge_page() expects that reference to have
-already been removed.  Unfortunately, we still have to split shmem THPs
-because we can't handle swapping out an entire THP yet.
+This is the folio equivalent of page_to_pgoff().
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
- mm/vmscan.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ include/linux/pagemap.h | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/mm/vmscan.c b/mm/vmscan.c
-index 2e94e0b15a76..794cba8511f1 100644
---- a/mm/vmscan.c
-+++ b/mm/vmscan.c
-@@ -1732,8 +1732,8 @@ static unsigned int shrink_page_list(struct list_head *page_list,
- 				/* Adding to swap updated mapping */
- 				mapping = page_mapping(page);
- 			}
--		} else if (unlikely(PageTransHuge(page))) {
--			/* Split file THP */
-+		} else if (PageSwapBacked(page) && PageTransHuge(page)) {
-+			/* Split shmem THP */
- 			if (split_folio_to_list(folio, page_list))
- 				goto keep_locked;
- 		}
+diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
+index cdb3f118603a..dddd660da24f 100644
+--- a/include/linux/pagemap.h
++++ b/include/linux/pagemap.h
+@@ -703,6 +703,17 @@ static inline loff_t folio_file_pos(struct folio *folio)
+ 	return page_file_offset(&folio->page);
+ }
+ 
++/*
++ * Get the offset in PAGE_SIZE (even for hugetlb folios).
++ * (TODO: hugetlb folios should have ->index in PAGE_SIZE)
++ */
++static inline pgoff_t folio_pgoff(struct folio *folio)
++{
++	if (unlikely(folio_test_hugetlb(folio)))
++		return hugetlb_basepage_index(&folio->page);
++	return folio->index;
++}
++
+ extern pgoff_t linear_hugepage_index(struct vm_area_struct *vma,
+ 				     unsigned long address);
+ 
 -- 
 2.34.1
 
