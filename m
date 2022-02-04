@@ -2,92 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 908E9C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 12:27:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBA4CC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 12:28:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358772AbiBDM1p (ORCPT
+        id S1358802AbiBDM2h (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 07:27:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47282 "EHLO
+        Fri, 4 Feb 2022 07:28:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230494AbiBDM1o (ORCPT
+        with ESMTP id S234049AbiBDM2g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 07:27:44 -0500
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7CA9C061714
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 04:27:43 -0800 (PST)
-Received: by mail-yb1-xb34.google.com with SMTP id v186so18265387ybg.1
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Feb 2022 04:27:43 -0800 (PST)
+        Fri, 4 Feb 2022 07:28:36 -0500
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A6AAC061714;
+        Fri,  4 Feb 2022 04:28:35 -0800 (PST)
+Received: by mail-lj1-x230.google.com with SMTP id t14so8239957ljh.8;
+        Fri, 04 Feb 2022 04:28:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=eclypsium.com; s=google;
-        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
-         :cc;
-        bh=E3CkuQfRDLa6yHQhfPXnQaFzdcsQFUeKCKzEBzUj/zQ=;
-        b=TLYrEShYRf1FgVk7hHjObf4x7nd8odacHjXXRpq7yKoaHl2d4cJ8VON/yE+OgjlACN
-         Deh2m4l0lPgbHURrAba9Ro14SwwCHOG+0Nv/hlUJcn2mcThUbfxE1IEO+W36tUg3MKW8
-         n9FacUSOrGV/A/mXTq2Us80gIm1AwkidrArvgQCcxcpwcOfU251m8g9w7lWjvl5mpD4u
-         SfanAQlOPlFgouyo1XEy0iTabqHr8/mV6qhVD2e86dRrwMGK8LqcKRLW9ShW+qjxuzZP
-         Qoqi5BjNrLiMA0YsO4/3q0qFyxsOyT2LoygR0q9mALUNNnZ+Tl4jGIva6c7WrbMUHXYo
-         vjIw==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language
+         :from:to:cc:references:in-reply-to:content-transfer-encoding;
+        bh=Ne8/8XjxQvQVikhbv7k/8kICaz4qUeVx8XxcLTjMyBE=;
+        b=MpozesqZWKL9L8Kq3hGuSTY98Olh5bmSh7fETkonsRfovgtF5PjqKkWlLcasriuaoF
+         btBDpR5YWjMqAR50N25mSoui68vOc/H0j5u3/I8Mz7A/d+Jv7gvD6mtDySpafSRheFZh
+         pP0Ma9kd1vlO3HDGiz5re4A4uEZbKxcJakf2C8R6fECwTkgNoEBmy+l02PFKbgPc+vkj
+         /0sRdEs2Sae61r7Cj0ZfhJ5TNToAHiZmhka7YPpGuYOzVaWhSMlTlcSB36THaJgRO0o9
+         zOl2byHILTu0zyAJgTQGHd7+pf+yFJpGTIMmiE0P1/3RnedqDSNM1MqPanoTaLAH61MT
+         F2DA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
-         :message-id:subject:to:cc;
-        bh=E3CkuQfRDLa6yHQhfPXnQaFzdcsQFUeKCKzEBzUj/zQ=;
-        b=2dGh7LURKs7DGo5ZipfJIygDfp1u9ZTKpWXvGZKBwHkyQDnos81KQasHxRFtVr3604
-         Q/M26Jgm6ZZv7ZDmnijDYKm2uOSbONDyuu/atJxo9OgNs3eTcOR3RQ162cdymF2fmdQe
-         zhTq5eoRGVD66T+x1HGnSFMrG+iiirwTbgiNuPyAG/TCHWvfr4y/DmYlpeP/j9e5Bag1
-         WQQ+CmjoPentUvzhoDFsMbhcxtGz4eJsqu/S7fB53si0R0YyHWuXRXWU1AW9iU601c/y
-         QZw0z8DIWYbNdaIoXhtK7cGsoLzHiDIf4fjSH4PM9yq1c8YKxMIPhyAv0drXw0ECioYH
-         L7iQ==
-X-Gm-Message-State: AOAM531bYpvDijOg9iMIi8B7lucHVr4ovP4QLLBCaNqhTc1w319Rluv9
-        9Vu4gaadzLNx7j4GVueYKIUX90lM8O2JOvZdTNKJdg==
-X-Google-Smtp-Source: ABdhPJy0uUYEV/PGiz45GMg1qGGeLJ0gKE2zXBEUciykyjrQIx6iwM/SZFE1OhdU1ZXjgjR2rQwIB4Km1IhUiy5ChGA=
-X-Received: by 2002:a81:6605:: with SMTP id a5mr2526438ywc.510.1643977662982;
- Fri, 04 Feb 2022 04:27:42 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=Ne8/8XjxQvQVikhbv7k/8kICaz4qUeVx8XxcLTjMyBE=;
+        b=HxWW8VpfBAgLXf/z68dlcGQHf0obZCjA5WVS0BspZzAJu1KP1NoxBLeUgw0neEZWk9
+         jccW12lwtYWl7lu7xhUNX3dkEJ5V22E+XdM7b4C8f3PGHVuh0PnkZ7sm43tZKSUU1AN+
+         6coSTuOOkUFPWEpA4bjKnakkXBcoepUHzTX4mrAdl7NXWSWPtVeuT4u3oomrCYLHcM/b
+         T6zVfN5HBibsgIX1LzJsEPe/PUk1GSRTfM81ryjllkA6kaEkR185xKMcdJYhjB1qynzn
+         VV81PnwO/Qa471DsZQn7f8A62lmsEXNr3jR4s1UcQ417W8G2bP+pZMKEEvox9brJjidj
+         c72A==
+X-Gm-Message-State: AOAM532Bb4sBqL5IbdsVdqaVPQ0KGDxvyokwEqQBT7xvWOzSixbk/26j
+        +o8g2AbrdtDbhGzLemA2trk=
+X-Google-Smtp-Source: ABdhPJyH4NxPtNiTjx9AdBmOV7v1e/mQttIv0y9Q5MVhxPnyJ/0dpmfFOqjQ5ky4gsKnvJFY7Zff9Q==
+X-Received: by 2002:a05:651c:1a07:: with SMTP id by7mr1654064ljb.317.1643977713765;
+        Fri, 04 Feb 2022 04:28:33 -0800 (PST)
+Received: from [192.168.2.145] (109-252-138-165.dynamic.spd-mgts.ru. [109.252.138.165])
+        by smtp.googlemail.com with ESMTPSA id bt22sm292617lfb.262.2022.02.04.04.28.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 04 Feb 2022 04:28:33 -0800 (PST)
+Message-ID: <a6d6ded6-5317-8aec-9021-461c7dfc5b4f@gmail.com>
+Date:   Fri, 4 Feb 2022 15:28:32 +0300
 MIME-Version: 1.0
-Received: by 2002:a81:1756:0:0:0:0:0 with HTTP; Fri, 4 Feb 2022 04:27:42 -0800 (PST)
-In-Reply-To: <Yfyx8s9n+CZ6TPgg@kernel.org>
-References: <20220203164328.203629-1-martin.fernandez@eclypsium.com>
- <20220203164328.203629-7-martin.fernandez@eclypsium.com> <Yfyx8s9n+CZ6TPgg@kernel.org>
-From:   Martin Fernandez <martin.fernandez@eclypsium.com>
-Date:   Fri, 4 Feb 2022 09:27:42 -0300
-Message-ID: <CAKgze5YZF09F3FTwD6kODd2RrWATutcmM5J7-wcLTK32C6aptg@mail.gmail.com>
-Subject: Re: [PATCH v6 6/6] drivers/node: Show in sysfs node's crypto capabilities
-To:     Mike Rapoport <rppt@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, linux-efi@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org, linux-mm@kvack.org,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
-        ardb@kernel.org, dvhart@infradead.org, andy@infradead.org,
-        gregkh@linuxfoundation.org, rafael@kernel.org,
-        akpm@linux-foundation.org, daniel.gutson@eclypsium.com,
-        hughsient@gmail.com, alex.bazhaniuk@eclypsium.com,
-        alison.schofield@intel.com, keescook@chromium.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v18 2/4] dmaengine: tegra: Add tegra gpcdma driver
+Content-Language: en-US
+From:   Dmitry Osipenko <digetx@gmail.com>
+To:     Akhil R <akhilrajeev@nvidia.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Krishna Yarlagadda <kyarlagadda@nvidia.com>,
+        Laxman Dewangan <ldewangan@nvidia.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
+        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
+        Rajesh Gumasta <rgumasta@nvidia.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
+        "vkoul@kernel.org" <vkoul@kernel.org>
+Cc:     Pavan Kunapuli <pkunapuli@nvidia.com>
+References: <1643729199-19161-1-git-send-email-akhilrajeev@nvidia.com>
+ <1643729199-19161-3-git-send-email-akhilrajeev@nvidia.com>
+ <3feaa359-31bb-bb07-75d7-2a39c837a7a2@gmail.com>
+ <DM5PR12MB18509939C17ABEB5EEA825FFC0289@DM5PR12MB1850.namprd12.prod.outlook.com>
+ <d6d70e52-a984-d973-f3bb-f70f1a4ce95d@gmail.com>
+ <DM5PR12MB18501E2343121A9FEE013F15C0299@DM5PR12MB1850.namprd12.prod.outlook.com>
+ <07913f0e-1e17-a22b-615c-fff8ccad7f9b@gmail.com>
+In-Reply-To: <07913f0e-1e17-a22b-615c-fff8ccad7f9b@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/4/22, Mike Rapoport <rppt@kernel.org> wrote:
-> On Thu, Feb 03, 2022 at 01:43:28PM -0300, Martin Fernandez wrote:
->> +Description:
->> +		This value is 1 if all system memory in this node is
->> +		marked with EFI_MEMORY_CPU_CRYPTO, indicating that the
->
-> It didn't jump at me at previous postings, but other architectures won't
-> necessary have EFI_MEMORY_CPU_CRYPTO marking crypto-capable memory.
->
-> How about
->
->   This value is 1 if all system memory in this node is capable of being
->   protected with the CPU's memory cryptographic capabilities. It is 0
->   otherwise.
->   On EFI architectures with value corresponds to EFI_MEMORY_CPU_CRYPTO.
->
->
+04.02.2022 15:15, Dmitry Osipenko пишет:
+> 04.02.2022 09:47, Akhil R пишет:
+>>> 03.02.2022 06:44, Akhil R пишет:
+>>>>> But why do you need to pause at all here and can't use
+>>>>> tegra_dma_stop_client() even if pause is supported?
+>>>> The recommended method to terminate a transfer in
+>>>> between is to pause the channel first and then disable it.
+>>>> This is more graceful and stable for the hardware.
+>>>> stop_client() is more abrupt, though it does the job.
+>>>
+>>> If there is no real practical difference, then I'd use the common method
+>>> only. This will make code cleaner and simpler a tad.
+>> This is the documented way of clean exit from a transfer, especially for
+>> cyclic transfers where the DMA is configured in continuous mode.
+>> I guess it might not be a good idea to deviate from that unless there is
+>> something demanding it compulsorily.
+>>
+>> I agree that the code will be cleaner. I would try to see if I can find a cleaner
+>> way to do this. Please do let me know if you have any suggestion.
+> 
+> Will be great if you could find out and provide a detailed explanation
+> about the exact differences of the methods from software perspective.
+> Try to ask the hardware people.
+> 
+> If you won't be able to find out, then use both methods. Then you could
+> specify the "pause" callback within the tegra_dma_chip_data
+> [tdma->chip_data->pause(tdma)], instead of using condition in the code.
 
-Yes, sounds good to me.
-
-Is there other architecture with something similar to this? Or are you
-thinking on the possibility of such architecture?
+s/pause/terminate/
