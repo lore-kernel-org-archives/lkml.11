@@ -2,116 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C254C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 00:29:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32726C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 00:29:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229534AbiBDA30 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 19:29:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55888 "EHLO
+        id S1356257AbiBDA33 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Feb 2022 19:29:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235988AbiBDA3Y (ORCPT
+        with ESMTP id S1356245AbiBDA30 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 19:29:24 -0500
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFFB0C06173B
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 16:29:23 -0800 (PST)
-Received: by mail-pf1-x42e.google.com with SMTP id d187so3636284pfa.10
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 16:29:23 -0800 (PST)
+        Thu, 3 Feb 2022 19:29:26 -0500
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5871C061714;
+        Thu,  3 Feb 2022 16:29:25 -0800 (PST)
+Received: by mail-wr1-x42c.google.com with SMTP id l25so8164002wrb.13;
+        Thu, 03 Feb 2022 16:29:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=7jAxI29crxP7S7vFJnF3wftZXckofe+kHrOWNqXAQow=;
-        b=bUGShFdQCuYs6lb/IPDvFbEdOFY+an3WZjtQkCOOMbGZP3vwME4Us6qOCzhxninbFG
-         vlc3rzh9YtbyMmiO32kRO/is3fZ3gD2T/c6K2F9sVL1ZO6UTnBJ8Q8rHIPVST8uIweLP
-         mV+M+tmIBCexSHDCYxuy1PtggQ94NGFYtM0H4=
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=0Gp0TETqAe/mWjaH/+OeSXO8U5mVmXl/S1CjtO3ewhc=;
+        b=qrZbBCW/HSA0A04DmdQ87wF/0W6/RG8wz3/T5sLVU6tyHsVZ60rdwnQFPMQMgHBrMU
+         8yfpDMCczIYjX04Eyu9uzRBlBpggwr8esOqbd64s0AE+e1j+tUSjq0v19jr8QrkdezZO
+         KXTBGCSdAAx8jHo/5oDTXNvF5Dy/1c/Cr+WgeCPGL6XlxZYVvo5thftNyw6FUUaDorHA
+         mPjzq8GvKIMMd5e9aeumXqBwzSYVCAdhlyv1J0m5fRx+VNYsRyfXzm127FDVFURPr8ip
+         48sicXUb3TAvRdbq7urjd4CC1Rmv+2sOcIuPYtoyF76dDrBSLYBDhol0dg4UXs0RuLXc
+         7/vw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=7jAxI29crxP7S7vFJnF3wftZXckofe+kHrOWNqXAQow=;
-        b=JcAL+sBipmf3rZ3ScU6awMEn6ypttgu06BeV5SOycedq1BrhY/3m5p0BzswBLvM4D4
-         EXGKGzK7CsUQ7ASjHxdFMSRRubVAEEInXnQJCa4G+W5KVlGgkpB4G5DJJEjG6ldWtu4V
-         gAfR+49ylzqpDFOUiz6H6t8L8IGCsdvexUMkIjBjqFHFrBpv8cTNv7bWL46NW7LwAXjI
-         FfYqv37j1IA/h3q6kle9inojNBce2EBnqqFx7SdhzhPH8DAnG+yKl375bqC0beZO3PZ0
-         O3JexKvzUs1LDcahPZ7Cu3GlYcq3E1iMKqmINXWssUiT5GTdWf2FwnnrDmtGdwtnAA0W
-         S1Pg==
-X-Gm-Message-State: AOAM531RRd+QQR2AcKiUW02QV4jAZE1YBuBtRwMBnAVI21amBgqZfxCi
-        KQCpduc/RiPW7yDJN6SHIE6anQ==
-X-Google-Smtp-Source: ABdhPJyxEW/qo1THvmWccU/g3L0VLb9vuHRgXCa42FJarlVXjxquMHAwuHB6voQ/2hmHqAFsJtBB+Q==
-X-Received: by 2002:a63:451f:: with SMTP id s31mr497461pga.114.1643934563402;
-        Thu, 03 Feb 2022 16:29:23 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id g5sm185194pfv.22.2022.02.03.16.29.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Feb 2022 16:29:23 -0800 (PST)
-Date:   Thu, 3 Feb 2022 16:29:22 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     George Burgess IV <gbiv@google.com>,
-        Miguel Ojeda <ojeda@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>, llvm@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org,
-        Sami Tolvanen <samitolvanen@google.com>
-Subject: Re: [PATCH v6 1/4] Compiler Attributes: Add __pass_object_size for
- Clang
-Message-ID: <202202031628.E28BBBB490@keescook>
-References: <20220203173307.1033257-1-keescook@chromium.org>
- <20220203173307.1033257-2-keescook@chromium.org>
- <CAKwvOdmzdQ+X2BsUbuVBWzFtaE2Vst4=ihNNR=LmOdozqQ5Ukg@mail.gmail.com>
- <202202031247.4F3AC598@keescook>
- <CAKwvOdnUHFi=1+9VxsfwxNAkTFEytg5FV=Aii7awSx+ioRaQbQ@mail.gmail.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=0Gp0TETqAe/mWjaH/+OeSXO8U5mVmXl/S1CjtO3ewhc=;
+        b=vb+tpIaplJTdhBP+ci0GfL1vJ7rKLmnaYLoB1SFC8k3T4myArtQ5fAfqZfrx4kuBv7
+         Q3Rv3n+8HxhQfTcwWqMK+/qnBEg9mtm2yklIsJM9y7PngxuAAPUfaNI6d75+wPPHRFZm
+         IzcUc+ZEhedIiavsZsjA6pufja/m2IS1XDOJZTSaHoWiFPeZ67mpSfLsTmap2azc6U3X
+         peA5BeCMkWRGC3TCPPYwPX+b71SNkre7DDw4GdSNlHtoJI2ZdzOukhEPaTfuRSQE7Zx1
+         bVPiX5Qb7EY3CyMTeFTfo+4cdNQTRHKT34IaIKZoY+UNM2uGXAkZSjTMnFFeEQREm7O1
+         SPQA==
+X-Gm-Message-State: AOAM531kwyG7sECIvDGPiabK/euCDJOhYqaQWceI2PZwBONHVvl7piY8
+        T3ydStjl4dlRiJKC+j4jEVBfwfvacG0=
+X-Google-Smtp-Source: ABdhPJy/iHlMc2QhX+4qBtgKajhqLA0jntBxoMu/QgNN/J3LM2fwBAvK2u9e1ugHe5KGVERV9X1Uxg==
+X-Received: by 2002:a5d:64c2:: with SMTP id f2mr309157wri.429.1643934564379;
+        Thu, 03 Feb 2022 16:29:24 -0800 (PST)
+Received: from [192.168.8.198] ([85.255.232.204])
+        by smtp.gmail.com with ESMTPSA id y7sm273033wrr.74.2022.02.03.16.29.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 03 Feb 2022 16:29:24 -0800 (PST)
+Message-ID: <cdd132f8-cb38-df11-f140-7aa03226b68b@gmail.com>
+Date:   Fri, 4 Feb 2022 00:24:16 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAKwvOdnUHFi=1+9VxsfwxNAkTFEytg5FV=Aii7awSx+ioRaQbQ@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v5 0/4] io_uring: remove ring quiesce in io_uring_register
+Content-Language: en-US
+To:     Jens Axboe <axboe@kernel.dk>,
+        Usama Arif <usama.arif@bytedance.com>,
+        io-uring@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     fam.zheng@bytedance.com
+References: <20220203233439.845408-1-usama.arif@bytedance.com>
+ <16997265-18fa-64db-32e2-4af7f4dc3e4c@gmail.com>
+ <c2f05b78-1f81-32f9-79df-06d35d9dbc7a@kernel.dk>
+From:   Pavel Begunkov <asml.silence@gmail.com>
+In-Reply-To: <c2f05b78-1f81-32f9-79df-06d35d9dbc7a@kernel.dk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 03, 2022 at 02:01:06PM -0800, Nick Desaulniers wrote:
-> On Thu, Feb 3, 2022 at 12:58 PM Kees Cook <keescook@chromium.org> wrote:
-> >
-> > On Thu, Feb 03, 2022 at 12:18:24PM -0800, Nick Desaulniers wrote:
-> > > On Thu, Feb 3, 2022 at 9:33 AM Kees Cook <keescook@chromium.org> wrote:
-> > > >
-> > > > In order to gain greater visibility to type information when using
-> > > > __builtin_object_size(), Clang has a function attribute "pass_object_size"
-> > > > that will make size information available for marked arguments in
-> > > > a function by way of implicit additional function arguments that are
-> > > > then wired up the __builtin_object_size().
-> > > >
-> > > > This is needed to implement FORTIFY_SOURCE in Clang, as a workaround
-> > > > to Clang's __builtin_object_size() having limited visibility[1] into types
-> > > > across function calls (even inlines).
-> > > >
-> > > > Since any usage must also be const, include it in the macro.
-> > >
-> > > I think it might be helpful to quote the docs
-> > > (https://clang.llvm.org/docs/AttributeReference.html#pass-object-size-pass-dynamic-object-size)
-> > >
-> > > >> Additionally, any parameter that pass_object_size is applied to must be marked const at its function’s definition.
-> > >
-> > > One thing that's concerning to me is though:
-> > >
-> > > >> It is an error to take the address of a function with pass_object_size on any of its parameters.
-> > >
-> > > Surely the kernel has indirect calls to some of these functions
-> > > somewhere? Is that just an issue for C++ name-mangling perhaps?
-> >
-> > AFAIU, this shouldn't be a problem for any of these. Nothing is trying
-> > to take memcpy, memset, etc by address. The macro-ified version of this
-> > change proved that out. :)
+On 2/4/22 00:15, Jens Axboe wrote:
+> On 2/3/22 5:02 PM, Pavel Begunkov wrote:
+>> On 2/3/22 23:34, Usama Arif wrote:
+>>> For opcodes relating to registering/unregistering eventfds, this is done by
+>>> creating a new RCU data structure (io_ev_fd) as part of io_ring_ctx that
+>>> holds the eventfd_ctx, with reads to the structure protected by
+>>> rcu_read_lock and writes (register/unregister calls) protected by a mutex.
+>>>
+>>> With the above approach ring quiesce can be avoided which is much more
+>>> expensive then using RCU lock. On the system tested, io_uring_reigster with
+>>> IORING_REGISTER_EVENTFD takes less than 1ms with RCU lock, compared to 15ms
+>>> before with ring quiesce.
+>>>
+>>> The second patch creates the RCU protected data structure and removes ring
+>>> quiesce for IORING_REGISTER_EVENTFD and IORING_UNREGISTER_EVENTFD.
+>>>
+>>> The third patch builds on top of the second patch and removes ring quiesce
+>>> for IORING_REGISTER_EVENTFD_ASYNC.
+>>>
+>>> The fourth patch completely removes ring quiesce from io_uring_register,
+>>> as IORING_REGISTER_ENABLE_RINGS and IORING_REGISTER_RESTRICTIONS dont need
+>>> them.
+>>
+>> Let me leave it just for history: I strongly dislike it considering
+>> there is no one who uses or going to use it.
 > 
-> I thought Sami had found a location where memcpy was invoked
-> indirectly as part of his kcfi work? Maybe I'm misremembering.
-> 
-> https://github.com/samitolvanen/linux/commit/46a777fb35784a8c6daf13d67de8bfb5148adc2a#diff-a27660992abdf360d01deac6364db31836d0d98b5d9573b7fc10a6785a669975R16
+> Are you referring to the 4th patch? Or the patchset as a whole? Not clear
+> to me, because eventfd registration is most certainly used by folks
+> today.
 
-Hm, I've had memcpy as a macro for a while now, so dunno! That's not a
-sensible thing to call indirectly. :)
+I refer to optimising eventfd unregister with no users of it, which
+lead to the RCU approach.
+
+1/4 is good, taking ENABLE_RINGS and RESTRICTIONS out of quiesce is
+also great. 4/4 per se is not a problem, even if I'd need to revert
+it later.
+
+>> Even more, I can't find a single user of io_uring_unregister_eventfd()
+>> in liburing tests, so most probably the paths are not tested at all.
+> 
+> That's definitely a general issue, not related to this patchset.
+> Something that most certainly should get added! Ring exit will use the
+> same unregister path for eventfd, however, so it does get exercised from
+> there with existing tests too.
+
+io_ring_ctx_free()
+  -> io_eventfd_unregister()
+
+It's called after full quiesce in io_ring_exit_work() + even more
+extra sync, so not completely
+
+> 
+> But for this change, we definitely need a test that exercises both
+> register and unregister, trying to trigger something funky there.
+> 
 
 -- 
-Kees Cook
+Pavel Begunkov
