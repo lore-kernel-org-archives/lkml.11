@@ -2,117 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B074C43219
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 14:02:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9157EC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 14:04:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359225AbiBDOCQ (ORCPT
+        id S1359229AbiBDOE4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 09:02:16 -0500
-Received: from relay3.hostedemail.com ([64.99.140.33]:18512 "EHLO
-        relay3.hostedemail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359191AbiBDOCP (ORCPT
+        Fri, 4 Feb 2022 09:04:56 -0500
+Received: from frasgout.his.huawei.com ([185.176.79.56]:4678 "EHLO
+        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235381AbiBDOEz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 09:02:15 -0500
-Received: from omf17.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay01.hostedemail.com (Postfix) with ESMTP id CEA06614A8;
-        Fri,  4 Feb 2022 14:02:07 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf17.hostedemail.com (Postfix) with ESMTPA id A72A11B;
-        Fri,  4 Feb 2022 14:01:08 +0000 (UTC)
-Message-ID: <7cb1ce88cbf977801f2519178c270c1271100ac6.camel@perches.com>
-Subject: Re: [PATCH] HPE BMC GXP SUPPORT
-From:   Joe Perches <joe@perches.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     nick.hawkins@hpe.com, verdun@hpe.com,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Corey Minyard <minyard@acm.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Brown <broonie@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        soc@kernel.org, Shawn Guo <shawnguo@kernel.org>,
-        Stanislav Jakubek <stano.jakubek@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Hao Fang <fanghao11@huawei.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Wang Kefeng <wangkefeng.wang@huawei.com>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-i2c@vger.kernel.org,
-        openipmi-developer@lists.sourceforge.net,
-        linux-mtd@lists.infradead.org, netdev@vger.kernel.org,
-        linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Date:   Fri, 04 Feb 2022 06:01:44 -0800
-In-Reply-To: <Yf0cihUQ1byjnh3d@shell.armlinux.org.uk>
-References: <nick.hawkins@hpe.com>
-         <20220202165315.18282-1-nick.hawkins@hpe.com>
-         <Yf0Wm1kOV1Pss9HJ@shell.armlinux.org.uk>
-         <ad56e88206a8d66b715035362abe16ece0bde7d3.camel@perches.com>
-         <Yf0cihUQ1byjnh3d@shell.armlinux.org.uk>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4-1ubuntu2 
+        Fri, 4 Feb 2022 09:04:55 -0500
+Received: from fraeml706-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Jqy2R4j1kz67Xxg;
+        Fri,  4 Feb 2022 22:04:15 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml706-chm.china.huawei.com (10.206.15.55) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.21; Fri, 4 Feb 2022 15:04:51 +0100
+Received: from localhost (10.47.31.86) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 4 Feb
+ 2022 14:04:51 +0000
+Date:   Fri, 4 Feb 2022 14:04:48 +0000
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     Ira Weiny <ira.weiny@intel.com>
+CC:     Ben Widawsky <ben.widawsky@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        "Alison Schofield" <alison.schofield@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        <linux-kernel@vger.kernel.org>, <linux-cxl@vger.kernel.org>,
+        <linux-pci@vger.kernel.org>
+Subject: Re: [PATCH V6 06/10] cxl/pci: Find the DOE mailbox which supports
+ CDAT
+Message-ID: <20220204140448.00003c23@Huawei.com>
+In-Reply-To: <20220201221841.GO785175@iweiny-DESK2.sc.intel.com>
+References: <20220201071952.900068-1-ira.weiny@intel.com>
+        <20220201071952.900068-7-ira.weiny@intel.com>
+        <20220201184947.5yx4l74nruyoapvr@intel.com>
+        <20220201221841.GO785175@iweiny-DESK2.sc.intel.com>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
 MIME-Version: 1.0
+Content-Type: text/plain; charset="US-ASCII"
 Content-Transfer-Encoding: 7bit
-X-Rspamd-Queue-Id: A72A11B
-X-Stat-Signature: c3yzg6zcu4cpdcebaczubogb94ck3gqq
-X-Rspamd-Server: rspamout07
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX1+KwoOMBfXWPFnO9qh3WITIVuG9hjhnLgA=
-X-HE-Tag: 1643983268-605794
+X-Originating-IP: [10.47.31.86]
+X-ClientProxiedBy: lhreml724-chm.china.huawei.com (10.201.108.75) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-02-04 at 12:31 +0000, Russell King (Oracle) wrote:
-> On Fri, Feb 04, 2022 at 04:18:24AM -0800, Joe Perches wrote:
-> > On Fri, 2022-02-04 at 12:05 +0000, Russell King (Oracle) wrote:
-> > > On Wed, Feb 02, 2022 at 10:52:50AM -0600, nick.hawkins@hpe.com wrote:
-> > > > +	if (readb_relaxed(timer->control) & MASK_TCS_TC) {
-> > > > +		writeb_relaxed(MASK_TCS_TC, timer->control);
-> > > > +
-> > > > +		event_handler = READ_ONCE(timer->evt.event_handler);
-> > > > +		if (event_handler)
-> > > > +			event_handler(&timer->evt);
-> > > > +		return IRQ_HANDLED;
-> > > > +	} else {
-> > > > +		return IRQ_NONE;
-> > > > +	}
-> > > > +}
-> > 
-> > It's also less indented code and perhaps clearer to reverse the test
-> > 
-> > 	if (!readb_relaxed(timer->control) & MASK_TCS_TC)
-> 
-> This will need to be:
-> 
->  	if (!(readb_relaxed(timer->control) & MASK_TCS_TC))
+On Tue, 1 Feb 2022 14:18:41 -0800
+Ira Weiny <ira.weiny@intel.com> wrote:
 
-right, thanks.
+> On Tue, Feb 01, 2022 at 10:49:47AM -0800, Widawsky, Ben wrote:
+> > On 22-01-31 23:19:48, ira.weiny@intel.com wrote:  
+> > > From: Ira Weiny <ira.weiny@intel.com>
+> > > 
+> > > Memory devices need the CDAT data from the device.  This data is read
+> > > from a DOE mailbox which supports the CDAT protocol.
+> > > 
+> > > Search the DOE auxiliary devices for the one which supports the CDAT
+> > > protocol.  Cache that device to be used for future queries.
+> > > 
+> > > Signed-off-by: Ira Weiny <ira.weiny@intel.com>  
+> 
+> [snip]
+> 
+> > >  
+> > > diff --git a/drivers/cxl/pci.c b/drivers/cxl/pci.c
+> > > index d4ae79b62a14..dcc55c4efd85 100644
+> > > --- a/drivers/cxl/pci.c
+> > > +++ b/drivers/cxl/pci.c
+> > > @@ -536,12 +536,53 @@ static int cxl_dvsec_ranges(struct cxl_dev_state *cxlds)
+> > >  	return rc;
+> > >  }
+> > >  
+> > > +static int cxl_match_cdat_doe_device(struct device *dev, const void *data)
+> > > +{
+> > > +	const struct cxl_dev_state *cxlds = data;
+> > > +	struct auxiliary_device *adev;
+> > > +	struct pci_doe_dev *doe_dev;
+> > > +
+> > > +	/* First determine if this auxiliary device belongs to the cxlds */
+> > > +	if (cxlds->dev != dev->parent)
+> > > +		return 0;  
+> > 
+> > I don't understand auxiliary bus but I'm wondering why it's checking the parent
+> > of the device?  
+> 
+> auxiliary_find_device() iterates all the auxiliary devices in the system.  This
+> check was a way for the match function to know if the auxiliary device belongs
+> to the cxlds we are interested in...
+> 
+> But now that I think about it we could have other auxiliary devices attached
+> which are not DOE...  :-/  So this check is not complete.
+> 
+> FWIW I'm not thrilled with the way auxiliary_find_device() is defined.  And now
+> that I look at it I think the only user of it currently is wrong.  They too
+> have a check like this but it is after another check...  :-/
+> 
+> I was hoping to avoid having a list of DOE devices in the cxlds and simply let
+> the auxiliary bus infrastructure do that somehow.  IIRC Jonathan was thinking
+> along the same lines.  I think he actually suggested auxiliary_find_device()...
 
+Ah.. I think I'd been thinking it was scoped to a single parent rather than
+all devices in the system.  Definitely rather horrible.
+Can we do something with device_for_each_child() instead with a match on
+bus type to check its an auxilliary bus device then I guess a name based
+check on whether that is a doe.  etc.
+
+
+> 
+> It would be nice if I could have an aux_find_child() or something which
+> iterated the auxiliary devices attached to a particular parent device.  I've
+> just not figured out exactly how to implement that better than what I did here.
+> 
+> >   
+> > > +
+> > > +	adev = to_auxiliary_dev(dev);
+> > > +	doe_dev = container_of(adev, struct pci_doe_dev, adev);
+> > > +
+> > > +	/* If it is one of ours check for the CDAT protocol */
+> > > +	if (pci_doe_supports_prot(doe_dev, PCI_DVSEC_VENDOR_ID_CXL,
+> > > +				  CXL_DOE_PROTOCOL_TABLE_ACCESS))
+> > > +		return 1;
+> > > +
+> > > +	return 0;
+> > > +}
+> > > +
+> > >  static int cxl_setup_doe_devices(struct cxl_dev_state *cxlds)
+> > >  {
+> > >  	struct device *dev = cxlds->dev;
+> > >  	struct pci_dev *pdev = to_pci_dev(dev);
+> > > +	struct auxiliary_device *adev;
+> > > +	int rc;
+> > >  
+> > > -	return pci_doe_create_doe_devices(pdev);
+> > > +	rc = pci_doe_create_doe_devices(pdev);
+> > > +	if (rc)
+> > > +		return rc;
+> > > +
+> > > +	adev = auxiliary_find_device(NULL, cxlds, &cxl_match_cdat_doe_device);
+> > > +
+> > > +	if (adev) {
+> > > +		struct pci_doe_dev *doe_dev = container_of(adev,
+> > > +							   struct pci_doe_dev,
+> > > +							   adev);
+> > > +
+> > > +		/*
+> > > +		 * No reference need be taken.  The DOE device lifetime is
+> > > +		 * longer that the CXL device state lifetime
+> > > +		 */  
+> > 
+> > You're holding a reference to the adev here. Did you mean to drop it?  
+> 
+> Does find device get a reference? ...  Ah shoot I did not see that.
+> 
+> Yea the reference should be dropped somewhere.
+> 
+> Thanks,
+> Ira
+> 
+> >   
+> > > +		cxlds->cdat_doe = doe_dev;
+> > > +	}
+> > > +
+> > > +	return 0;
+> > >  }
+> > >  
+> > >  static int cxl_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+> > > -- 
+> > > 2.31.1
+> > >   
 
