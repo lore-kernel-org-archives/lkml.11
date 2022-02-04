@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8984CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:21:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 599C2C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:21:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357436AbiBDJVa (ORCPT
+        id S1357399AbiBDJVe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 04:21:30 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:40582 "EHLO
+        Fri, 4 Feb 2022 04:21:34 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:40518 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357426AbiBDJVM (ORCPT
+        with ESMTP id S1357406AbiBDJVJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 04:21:12 -0500
+        Fri, 4 Feb 2022 04:21:09 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A686615C6;
-        Fri,  4 Feb 2022 09:21:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB6F1C004E1;
-        Fri,  4 Feb 2022 09:21:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E748061605;
+        Fri,  4 Feb 2022 09:21:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DB7EC004E1;
+        Fri,  4 Feb 2022 09:21:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643966471;
-        bh=/Pp8SlxXCCL22wDsYOvb5Wwy21cTYp+xDoOEpKIfey4=;
+        s=korg; t=1643966468;
+        bh=4KnP9f2BG2N0gQWpClCCaBlbp1tyU3Pjw2Z1LPrgmQ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WuWgvAN551pF9BCix1GuWjWh11JnHP5wskjyILmhWeRCuTSpbdtMDWsTDSJLse+4Q
-         Rgoxmez7QZJSfzIufvE+b0WetHs0hoBOafO9wbVxRkSd0GDTovvlq87tzwQ6oqzSy7
-         RMedgktXlyH0m+2heMDIbOuAMuoK19Y5QGHW6syQ=
+        b=rAL+gOlFfuOUq7SkRpRlMKuMVEiOwcWB/Q06FJygbytejlhsdt0HT/EQ1zfQw4Ks/
+         v46Sd4GaJeai+BbM5yiZOUf6VMBu1l+mS/db8TEZ14kFi851qgDznR/N/b5o1WjIMc
+         k2tMUA7EN0+rTjSaN1duJKRstzVlVKzxbBrnw7x4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        Ingo Molnar <mingo@kernel.org>
-Subject: [PATCH 5.10 10/25] x86/mce: Add Xeon Sapphire Rapids to list of CPUs that support PPIN
-Date:   Fri,  4 Feb 2022 10:20:17 +0100
-Message-Id: <20220204091914.626046318@linuxfoundation.org>
+        stable@vger.kernel.org, Joseph Bao <joseph.bao@intel.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Stuart Hayes <stuart.w.hayes@gmail.com>
+Subject: [PATCH 5.10 01/25] PCI: pciehp: Fix infinite loop in IRQ handler upon power fault
+Date:   Fri,  4 Feb 2022 10:20:08 +0100
+Message-Id: <20220204091914.330419771@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220204091914.280602669@linuxfoundation.org>
 References: <20220204091914.280602669@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -46,29 +50,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tony Luck <tony.luck@intel.com>
+From: Lukas Wunner <lukas@wunner.de>
 
-commit a331f5fdd36dba1ffb0239a4dfaaf1df91ff1aab upstream.
+commit 23584c1ed3e15a6f4bfab8dc5a88d94ab929ee12 upstream.
 
-New CPU model, same MSRs to control and read the inventory number.
+The Power Fault Detected bit in the Slot Status register differs from
+all other hotplug events in that it is sticky:  It can only be cleared
+after turning off slot power.  Per PCIe r5.0, sec. 6.7.1.8:
 
-Signed-off-by: Tony Luck <tony.luck@intel.com>
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
-Link: https://lore.kernel.org/r/20210319173919.291428-1-tony.luck@intel.com
+  If a power controller detects a main power fault on the hot-plug slot,
+  it must automatically set its internal main power fault latch [...].
+  The main power fault latch is cleared when software turns off power to
+  the hot-plug slot.
+
+The stickiness used to cause interrupt storms and infinite loops which
+were fixed in 2009 by commits 5651c48cfafe ("PCI pciehp: fix power fault
+interrupt storm problem") and 99f0169c17f3 ("PCI: pciehp: enable
+software notification on empty slots").
+
+Unfortunately in 2020 the infinite loop issue was inadvertently
+reintroduced by commit 8edf5332c393 ("PCI: pciehp: Fix MSI interrupt
+race"):  The hardirq handler pciehp_isr() clears the PFD bit until
+pciehp's power_fault_detected flag is set.  That happens in the IRQ
+thread pciehp_ist(), which never learns of the event because the hardirq
+handler is stuck in an infinite loop.  Fix by setting the
+power_fault_detected flag already in the hardirq handler.
+
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=214989
+Link: https://lore.kernel.org/linux-pci/DM8PR11MB5702255A6A92F735D90A4446868B9@DM8PR11MB5702.namprd11.prod.outlook.com
+Fixes: 8edf5332c393 ("PCI: pciehp: Fix MSI interrupt race")
+Link: https://lore.kernel.org/r/66eaeef31d4997ceea357ad93259f290ededecfd.1637187226.git.lukas@wunner.de
+Reported-by: Joseph Bao <joseph.bao@intel.com>
+Tested-by: Joseph Bao <joseph.bao@intel.com>
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Cc: stable@vger.kernel.org # v4.19+
+Cc: Stuart Hayes <stuart.w.hayes@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/cpu/mce/intel.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/pci/hotplug/pciehp_hpc.c |    7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
---- a/arch/x86/kernel/cpu/mce/intel.c
-+++ b/arch/x86/kernel/cpu/mce/intel.c
-@@ -486,6 +486,7 @@ static void intel_ppin_init(struct cpuin
- 	case INTEL_FAM6_BROADWELL_X:
- 	case INTEL_FAM6_SKYLAKE_X:
- 	case INTEL_FAM6_ICELAKE_X:
-+	case INTEL_FAM6_SAPPHIRERAPIDS_X:
- 	case INTEL_FAM6_XEON_PHI_KNL:
- 	case INTEL_FAM6_XEON_PHI_KNM:
+--- a/drivers/pci/hotplug/pciehp_hpc.c
++++ b/drivers/pci/hotplug/pciehp_hpc.c
+@@ -642,6 +642,8 @@ read_status:
+ 	 */
+ 	if (ctrl->power_fault_detected)
+ 		status &= ~PCI_EXP_SLTSTA_PFD;
++	else if (status & PCI_EXP_SLTSTA_PFD)
++		ctrl->power_fault_detected = true;
  
+ 	events |= status;
+ 	if (!events) {
+@@ -651,7 +653,7 @@ read_status:
+ 	}
+ 
+ 	if (status) {
+-		pcie_capability_write_word(pdev, PCI_EXP_SLTSTA, events);
++		pcie_capability_write_word(pdev, PCI_EXP_SLTSTA, status);
+ 
+ 		/*
+ 		 * In MSI mode, all event bits must be zero before the port
+@@ -725,8 +727,7 @@ static irqreturn_t pciehp_ist(int irq, v
+ 	}
+ 
+ 	/* Check Power Fault Detected */
+-	if ((events & PCI_EXP_SLTSTA_PFD) && !ctrl->power_fault_detected) {
+-		ctrl->power_fault_detected = 1;
++	if (events & PCI_EXP_SLTSTA_PFD) {
+ 		ctrl_err(ctrl, "Slot(%s): Power fault\n", slot_name(ctrl));
+ 		pciehp_set_indicators(ctrl, PCI_EXP_SLTCTL_PWR_IND_OFF,
+ 				      PCI_EXP_SLTCTL_ATTN_IND_ON);
 
 
