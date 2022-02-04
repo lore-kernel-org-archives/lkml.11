@@ -2,127 +2,217 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35A17C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 19:00:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC8FBC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 19:01:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229845AbiBDTAo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 14:00:44 -0500
-Received: from mga05.intel.com ([192.55.52.43]:1988 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229737AbiBDTAm (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 14:00:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644001243; x=1675537243;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=zrxrqnItirGDqOflzuRIvi6maD/Es5mByGhVqgoscdw=;
-  b=W0IIWThgb+9/5Yjnv4I9eAwsZiCzup4Er1BHfSWmZjAueQzsmG5ffM57
-   hHltFuLTedhNJmOBe3HU2q/+nAZRElw0XOwXz6W0kWs3+9mjp8QUPxV/1
-   cZZXYsT0AvCUxcHMNpcX8J7KY33XwUjI5OhAVL9i+3uEbf/S5B7xt1rus
-   2iYzwSkGlK43rlh+VKO5pKUxey3xWS97X7Yph4T/xfpjzCzu0yk79KjBr
-   zUkeim7c3483n/1hcwLNDgc3nku44ygeoHdh5DmsDCHAubWr4zsgbxVMV
-   0DK7d/acMat85eScYVlASis7VWWD7N4JwpAz08nmmapcReAKk8AcTKJSr
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10248"; a="334820486"
-X-IronPort-AV: E=Sophos;i="5.88,343,1635231600"; 
-   d="scan'208";a="334820486"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2022 11:00:42 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,343,1635231600"; 
-   d="scan'208";a="620909919"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 04 Feb 2022 11:00:41 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nG3p2-000Y25-Ku; Fri, 04 Feb 2022 19:00:40 +0000
-Date:   Sat, 5 Feb 2022 03:00:03 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Frederic Weisbecker <frederic@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Phil Auld <pauld@redhat.com>
-Subject: [frederic-dynticks:isolation/split-v2 4/8]
- kernel/rcu/tree_plugin.h:1217:50: error: 'HK_FLAG_RCU' undeclared
-Message-ID: <202202050256.iEjqVGhm-lkp@intel.com>
+        id S230043AbiBDTBI convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 14:01:08 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:11434 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229871AbiBDTBG (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 4 Feb 2022 14:01:06 -0500
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 214IisJj023465
+        for <linux-kernel@vger.kernel.org>; Fri, 4 Feb 2022 11:01:06 -0800
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3e18wfgewe-13
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <linux-kernel@vger.kernel.org>; Fri, 04 Feb 2022 11:01:06 -0800
+Received: from twshared7634.08.ash8.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 4 Feb 2022 11:01:01 -0800
+Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
+        id 6FDD1296C57A3; Fri,  4 Feb 2022 10:58:09 -0800 (PST)
+From:   Song Liu <song@kernel.org>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <kernel-team@fb.com>, <peterz@infradead.org>, <x86@kernel.org>,
+        <iii@linux.ibm.com>, Song Liu <song@kernel.org>
+Subject: [PATCH v9 bpf-next 7/9] bpf: introduce bpf_prog_pack allocator
+Date:   Fri, 4 Feb 2022 10:57:40 -0800
+Message-ID: <20220204185742.271030-8-song@kernel.org>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220204185742.271030-1-song@kernel.org>
+References: <20220204185742.271030-1-song@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: Y778qhXibPr6nSCROw_R2p9zPzU3w4Y5
+X-Proofpoint-GUID: Y778qhXibPr6nSCROw_R2p9zPzU3w4Y5
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-04_07,2022-02-03_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 clxscore=1015
+ priorityscore=1501 impostorscore=0 lowpriorityscore=0 suspectscore=0
+ malwarescore=0 phishscore=0 bulkscore=0 mlxscore=0 spamscore=0
+ mlxlogscore=948 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2201110000 definitions=main-2202040104
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/frederic/linux-dynticks.git isolation/split-v2
-head:   31b398242699300304defda3f388cc15b314c1b0
-commit: 6c70f095e7a266b13de678c358d3852b92c95799 [4/8] sched/isolation: Use single feature type while referring to housekeeping cpumask
-config: arc-randconfig-r043-20220131 (https://download.01.org/0day-ci/archive/20220205/202202050256.iEjqVGhm-lkp@intel.com/config)
-compiler: arc-elf-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/frederic/linux-dynticks.git/commit/?id=6c70f095e7a266b13de678c358d3852b92c95799
-        git remote add frederic-dynticks https://git.kernel.org/pub/scm/linux/kernel/git/frederic/linux-dynticks.git
-        git fetch --no-tags frederic-dynticks isolation/split-v2
-        git checkout 6c70f095e7a266b13de678c358d3852b92c95799
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash kernel/
+Most BPF programs are small, but they consume a page each. For systems
+with busy traffic and many BPF programs, this could add significant
+pressure to instruction TLB. High iTLB pressure usually causes slow down
+for the whole system, which includes visible performance degradation for
+production workloads.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Introduce bpf_prog_pack allocator to pack multiple BPF programs in a huge
+page. The memory is then allocated in 64 byte chunks.
 
-All errors (new ones prefixed by >>):
+Memory allocated by bpf_prog_pack allocator is RO protected after initial
+allocation. To write to it, the user (jit engine) need to use text poke
+API.
 
-   In file included from kernel/rcu/tree.c:4783:
-   kernel/rcu/tree_plugin.h: In function 'rcu_boost_kthread_setaffinity':
->> kernel/rcu/tree_plugin.h:1217:50: error: 'HK_FLAG_RCU' undeclared (first use in this function)
-    1217 |         cpumask_and(cm, cm, housekeeping_cpumask(HK_FLAG_RCU));
-         |                                                  ^~~~~~~~~~~
-   kernel/rcu/tree_plugin.h:1217:50: note: each undeclared identifier is reported only once for each function it appears in
-
-
-vim +/HK_FLAG_RCU +1217 kernel/rcu/tree_plugin.h
-
-27f4d28057adf9 kernel/rcutree_plugin.h  Paul E. McKenney 2011-02-07  1192  
-f8b7fc6b514f34 kernel/rcutree_plugin.h  Paul E. McKenney 2011-06-16  1193  /*
-f8b7fc6b514f34 kernel/rcutree_plugin.h  Paul E. McKenney 2011-06-16  1194   * Set the per-rcu_node kthread's affinity to cover all CPUs that are
-f8b7fc6b514f34 kernel/rcutree_plugin.h  Paul E. McKenney 2011-06-16  1195   * served by the rcu_node in question.  The CPU hotplug lock is still
-f8b7fc6b514f34 kernel/rcutree_plugin.h  Paul E. McKenney 2011-06-16  1196   * held, so the value of rnp->qsmaskinit will be stable.
-f8b7fc6b514f34 kernel/rcutree_plugin.h  Paul E. McKenney 2011-06-16  1197   *
-f8b7fc6b514f34 kernel/rcutree_plugin.h  Paul E. McKenney 2011-06-16  1198   * We don't include outgoingcpu in the affinity set, use -1 if there is
-f8b7fc6b514f34 kernel/rcutree_plugin.h  Paul E. McKenney 2011-06-16  1199   * no outgoing CPU.  If there are no CPUs left in the affinity set,
-f8b7fc6b514f34 kernel/rcutree_plugin.h  Paul E. McKenney 2011-06-16  1200   * this function allows the kthread to execute on any CPU.
-f8b7fc6b514f34 kernel/rcutree_plugin.h  Paul E. McKenney 2011-06-16  1201   */
-5d01bbd111d6ff kernel/rcutree_plugin.h  Thomas Gleixner  2012-07-16  1202  static void rcu_boost_kthread_setaffinity(struct rcu_node *rnp, int outgoingcpu)
-f8b7fc6b514f34 kernel/rcutree_plugin.h  Paul E. McKenney 2011-06-16  1203  {
-5d01bbd111d6ff kernel/rcutree_plugin.h  Thomas Gleixner  2012-07-16  1204  	struct task_struct *t = rnp->boost_kthread_task;
-0aa04b055e71bd kernel/rcu/tree_plugin.h Paul E. McKenney 2015-01-23  1205  	unsigned long mask = rcu_rnp_online_cpus(rnp);
-f8b7fc6b514f34 kernel/rcutree_plugin.h  Paul E. McKenney 2011-06-16  1206  	cpumask_var_t cm;
-f8b7fc6b514f34 kernel/rcutree_plugin.h  Paul E. McKenney 2011-06-16  1207  	int cpu;
-f8b7fc6b514f34 kernel/rcutree_plugin.h  Paul E. McKenney 2011-06-16  1208  
-5d01bbd111d6ff kernel/rcutree_plugin.h  Thomas Gleixner  2012-07-16  1209  	if (!t)
-f8b7fc6b514f34 kernel/rcutree_plugin.h  Paul E. McKenney 2011-06-16  1210  		return;
-5d01bbd111d6ff kernel/rcutree_plugin.h  Thomas Gleixner  2012-07-16  1211  	if (!zalloc_cpumask_var(&cm, GFP_KERNEL))
-f8b7fc6b514f34 kernel/rcutree_plugin.h  Paul E. McKenney 2011-06-16  1212  		return;
-bc75e99983df1e kernel/rcu/tree_plugin.h Mark Rutland     2016-06-03  1213  	for_each_leaf_node_possible_cpu(rnp, cpu)
-bc75e99983df1e kernel/rcu/tree_plugin.h Mark Rutland     2016-06-03  1214  		if ((mask & leaf_node_cpu_bit(rnp, cpu)) &&
-bc75e99983df1e kernel/rcu/tree_plugin.h Mark Rutland     2016-06-03  1215  		    cpu != outgoingcpu)
-f8b7fc6b514f34 kernel/rcutree_plugin.h  Paul E. McKenney 2011-06-16  1216  			cpumask_set_cpu(cpu, cm);
-c2cf0767e98eb4 kernel/rcu/tree_plugin.h Zqiang           2021-11-15 @1217  	cpumask_and(cm, cm, housekeeping_cpumask(HK_FLAG_RCU));
-5d0b0249730275 kernel/rcu/tree_plugin.h Paul E. McKenney 2014-11-10  1218  	if (cpumask_weight(cm) == 0)
-c2cf0767e98eb4 kernel/rcu/tree_plugin.h Zqiang           2021-11-15  1219  		cpumask_copy(cm, housekeeping_cpumask(HK_FLAG_RCU));
-5d01bbd111d6ff kernel/rcutree_plugin.h  Thomas Gleixner  2012-07-16  1220  	set_cpus_allowed_ptr(t, cm);
-f8b7fc6b514f34 kernel/rcutree_plugin.h  Paul E. McKenney 2011-06-16  1221  	free_cpumask_var(cm);
-f8b7fc6b514f34 kernel/rcutree_plugin.h  Paul E. McKenney 2011-06-16  1222  }
-f8b7fc6b514f34 kernel/rcutree_plugin.h  Paul E. McKenney 2011-06-16  1223  
-
-:::::: The code at line 1217 was first introduced by commit
-:::::: c2cf0767e98eb4487444e5c7ebba491a866811ce rcu: Avoid running boost kthreads on isolated CPUs
-
-:::::: TO: Zqiang <qiang.zhang1211@gmail.com>
-:::::: CC: Paul E. McKenney <paulmck@kernel.org>
-
+Signed-off-by: Song Liu <song@kernel.org>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ kernel/bpf/core.c | 127 ++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 127 insertions(+)
+
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index a5ec480f9862..7ae590897b73 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -805,6 +805,133 @@ int bpf_jit_add_poke_descriptor(struct bpf_prog *prog,
+ 	return slot;
+ }
+ 
++/*
++ * BPF program pack allocator.
++ *
++ * Most BPF programs are pretty small. Allocating a hole page for each
++ * program is sometime a waste. Many small bpf program also adds pressure
++ * to instruction TLB. To solve this issue, we introduce a BPF program pack
++ * allocator. The prog_pack allocator uses HPAGE_PMD_SIZE page (2MB on x86)
++ * to host BPF programs.
++ */
++#define BPF_PROG_PACK_SIZE	HPAGE_PMD_SIZE
++#define BPF_PROG_CHUNK_SHIFT	6
++#define BPF_PROG_CHUNK_SIZE	(1 << BPF_PROG_CHUNK_SHIFT)
++#define BPF_PROG_CHUNK_MASK	(~(BPF_PROG_CHUNK_SIZE - 1))
++#define BPF_PROG_CHUNK_COUNT	(BPF_PROG_PACK_SIZE / BPF_PROG_CHUNK_SIZE)
++
++struct bpf_prog_pack {
++	struct list_head list;
++	void *ptr;
++	unsigned long bitmap[BITS_TO_LONGS(BPF_PROG_CHUNK_COUNT)];
++};
++
++#define BPF_PROG_MAX_PACK_PROG_SIZE	HPAGE_PMD_SIZE
++#define BPF_PROG_SIZE_TO_NBITS(size)	(round_up(size, BPF_PROG_CHUNK_SIZE) / BPF_PROG_CHUNK_SIZE)
++
++static DEFINE_MUTEX(pack_mutex);
++static LIST_HEAD(pack_list);
++
++static struct bpf_prog_pack *alloc_new_pack(void)
++{
++	struct bpf_prog_pack *pack;
++
++	pack = kzalloc(sizeof(*pack), GFP_KERNEL);
++	if (!pack)
++		return NULL;
++	pack->ptr = module_alloc(BPF_PROG_PACK_SIZE);
++	if (!pack->ptr) {
++		kfree(pack);
++		return NULL;
++	}
++	bitmap_zero(pack->bitmap, BPF_PROG_PACK_SIZE / BPF_PROG_CHUNK_SIZE);
++	list_add_tail(&pack->list, &pack_list);
++
++	set_vm_flush_reset_perms(pack->ptr);
++	set_memory_ro((unsigned long)pack->ptr, BPF_PROG_PACK_SIZE / PAGE_SIZE);
++	set_memory_x((unsigned long)pack->ptr, BPF_PROG_PACK_SIZE / PAGE_SIZE);
++	return pack;
++}
++
++static void *bpf_prog_pack_alloc(u32 size)
++{
++	unsigned int nbits = BPF_PROG_SIZE_TO_NBITS(size);
++	struct bpf_prog_pack *pack;
++	unsigned long pos;
++	void *ptr = NULL;
++
++	if (size > BPF_PROG_MAX_PACK_PROG_SIZE) {
++		size = round_up(size, PAGE_SIZE);
++		ptr = module_alloc(size);
++		if (ptr) {
++			set_vm_flush_reset_perms(ptr);
++			set_memory_ro((unsigned long)ptr, size / PAGE_SIZE);
++			set_memory_x((unsigned long)ptr, size / PAGE_SIZE);
++		}
++		return ptr;
++	}
++	mutex_lock(&pack_mutex);
++	list_for_each_entry(pack, &pack_list, list) {
++		pos = bitmap_find_next_zero_area(pack->bitmap, BPF_PROG_CHUNK_COUNT, 0,
++						 nbits, 0);
++		if (pos < BPF_PROG_CHUNK_COUNT)
++			goto found_free_area;
++	}
++
++	pack = alloc_new_pack();
++	if (!pack)
++		goto out;
++
++	pos = 0;
++
++found_free_area:
++	bitmap_set(pack->bitmap, pos, nbits);
++	ptr = (void *)(pack->ptr) + (pos << BPF_PROG_CHUNK_SHIFT);
++
++out:
++	mutex_unlock(&pack_mutex);
++	return ptr;
++}
++
++static void bpf_prog_pack_free(struct bpf_binary_header *hdr)
++{
++	struct bpf_prog_pack *pack = NULL, *tmp;
++	unsigned int nbits;
++	unsigned long pos;
++	void *pack_ptr;
++
++	if (hdr->size > BPF_PROG_MAX_PACK_PROG_SIZE) {
++		module_memfree(hdr);
++		return;
++	}
++
++	pack_ptr = (void *)((unsigned long)hdr & ~(BPF_PROG_PACK_SIZE - 1));
++	mutex_lock(&pack_mutex);
++
++	list_for_each_entry(tmp, &pack_list, list) {
++		if (tmp->ptr == pack_ptr) {
++			pack = tmp;
++			break;
++		}
++	}
++
++	if (WARN_ONCE(!pack, "bpf_prog_pack bug\n"))
++		goto out;
++
++	nbits = BPF_PROG_SIZE_TO_NBITS(hdr->size);
++	pos = ((unsigned long)hdr - (unsigned long)pack_ptr) >> BPF_PROG_CHUNK_SHIFT;
++
++	bitmap_clear(pack->bitmap, pos, nbits);
++	if (bitmap_find_next_zero_area(pack->bitmap, BPF_PROG_CHUNK_COUNT, 0,
++				       BPF_PROG_CHUNK_COUNT, 0) == 0) {
++		list_del(&pack->list);
++		module_memfree(pack->ptr);
++		kfree(pack);
++	}
++out:
++	mutex_unlock(&pack_mutex);
++}
++
+ static atomic_long_t bpf_jit_current;
+ 
+ /* Can be overridden by an arch's JIT compiler if it has a custom,
+-- 
+2.30.2
+
