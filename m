@@ -2,179 +2,256 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 949EBC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 11:02:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3431FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 11:03:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350529AbiBDLAh (ORCPT
+        id S1352950AbiBDLD0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 06:00:37 -0500
-Received: from mail-eopbgr90080.outbound.protection.outlook.com ([40.107.9.80]:22830
-        "EHLO FRA01-MR2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1346009AbiBDLAf (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 06:00:35 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=E6tR3p580TU4NpnePgrpVVtAWTDERXud06KCdwNQoogRE6tIPzjkTNh0oqA7LNooWeul/yUXHyT22NCXKcN2VTVaSwmsEq+D6fKlRlRnQNiJXNnvyUts99t0D2QlV5nSrU1oBLkjV2K6osfD6vGPhNzQtG+3hE4+Z/irfH4iAa/ZEBWHHL1Koi4WuX6ZawJJqpCPWNAjy2hWw/TM2uzAVfB9yN2Y9x4eEiqFIzLK5iATCHXxKy7KGzF3I5/W0EaTMKGD0dLXew8ww73AXlLIsXv0UJ3KdjAYB/H84kI9BqgcStilhsJ1S2374zcvbvgGAwu9wjNNgbh92P2e6u1KAw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=P1ztgoe8tyTif6wqnn4bqyoHowDYpXVb6w1R4DcwV+w=;
- b=arZX84F8dqwHudFZR8x4jZwUJSUVcm02B26E57+PyUAIGcdezhEZI3yzx+MUxayqDg6zbtN4Uia4FQjyy48W8zn3IxfQtoAa+P1nZySdHKNLZSI+2ujdlAusUbKHNd/6jTcmiFiMnmYJ2pwsotB1O/Y614H11rRgrg1sm7qFl2tur18F1HgZTL1Y10aVNQ/Gm/LnBDmBCFplZazjnEiKZzCosZyWDDN4+Ch432CfolSSQRBNLz96+AWOhY4QS6HgjvOKR+bycv2HccYWLsSTo2m2GcbmCA6l/2rxD/iWi2Ev6BbHLeGq+3PYiTN8JzW1o+d4RcjJ+MmOmFZx/2MDzw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:31::15)
- by MR2P264MB0562.FRAP264.PROD.OUTLOOK.COM (2603:10a6:500:f::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Fri, 4 Feb
- 2022 11:00:33 +0000
-Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
- ([fe80::c9a2:1db0:5469:54e1]) by MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
- ([fe80::c9a2:1db0:5469:54e1%9]) with mapi id 15.20.4951.016; Fri, 4 Feb 2022
- 11:00:33 +0000
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Michael Ellerman <mpe@ellerman.id.au>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        Tulio Magno Quites Machado Filho <tuliom@linux.ibm.com>
-Subject: Re: [PATCH 1/2] powerpc/signal: Fix handling of SA_RESTORER sigaction
- flag
-Thread-Topic: [PATCH 1/2] powerpc/signal: Fix handling of SA_RESTORER
- sigaction flag
-Thread-Index: AQHYGbEVzFaUPoMu40CPXyzs4RXcO6yDOXgA
-Date:   Fri, 4 Feb 2022 11:00:32 +0000
-Message-ID: <381e3dc3-350c-c373-bc45-8dafd72ec011@csgroup.eu>
-References: <afe50d1db63a10fde9547ea08fe1fa68b0638aba.1624618157.git.christophe.leroy@csgroup.eu>
- <87a6f7lynn.fsf@mpe.ellerman.id.au>
-In-Reply-To: <87a6f7lynn.fsf@mpe.ellerman.id.au>
-Accept-Language: fr-FR, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=csgroup.eu;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: d91f2035-c336-4502-afd6-08d9e7cd909b
-x-ms-traffictypediagnostic: MR2P264MB0562:EE_
-x-microsoft-antispam-prvs: <MR2P264MB05626C64A0FAE83D01A57EE8ED299@MR2P264MB0562.FRAP264.PROD.OUTLOOK.COM>
-x-ms-oob-tlc-oobclassifiers: OLM:6790;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 1gvsEyDqyUfI2Meb79k4w0WLZ9zWeJLsyAwFD3THIz+DgSDLQf4QJKcEjcX0w7yNbrqj+Mb/9qgDczq8+r1NpEN4eVwUQ2JEUfG3Dhvo1CtG3IlIkaXpFs9EvwYV7q+VwFPAxLx8FeorYCQI5utrBglBAoBUBhQcJyRcbzjzKLZJNUetG2LYjIyjC5yA6BiIw3iWwd1MaiL4cqe4GwTp0Ao5qNVhKJwPeTUTc9N0G/UuW55BkPF8vm5RkOdJ0NOGpOy0z06aN9gxtllcTDrvbXrljvpuNLrT/bqYV5EVJYud9CpCq/t8gXKUCCaeLAO8KTljP3ku8vSfKlowr6HAV9LCZxtfuY/9NUajmCoF1uPILwSAtVC3KPf9P2+eEhoscDqlBA2dbmaiZHPbGEClyeGgt6m3NDVFJUtNmXVrIhP+FqohcJqN2sqfslaTMvdzIH+xeLsaze+eLb+beQpwvcpgDacZZMJfde2/A7Ec3vaDm5ortwXY/Jbira5n41kFQ3hP/gGVa9jNDQOVm+S4yHMGIIe+1+J9DaYmKtBxpFjluZluI/kB4RVFAX7RA19eHvUG+H2kpTY8GJs1Si6+jKFRajTEOtx20KOvHKClA3oCf3KtokQth/K/fkqjiOyraqQU1zorf7mw5gV2tj2jK9t66Ri8PkaXI0/H9hc1eS5bfgr3tOcqKbb2Boeidr5f4tHMsDEZSUWe5hd9R7NNxpAE0T21IsW5TkOxxuEV2JXopiIJy1aDuMmMtIO1jqL3ZOnGGfjpej79KXAI3UWkFzQPzL83jmTBoYOhEuUOp14k02DsyCL+pdnf8PTMvBGFh5WK1YuRqaHj90cfXeH7cZFVcUYoGSaSpEEEUeWJNlEqxDl3WPouNJSyXPnVFxHOPkckfzUXgWwzvDDLhOjkCQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6486002)(966005)(6506007)(6512007)(508600001)(5660300002)(36756003)(31696002)(31686004)(83380400001)(316002)(6916009)(2616005)(64756008)(4326008)(8676002)(8936002)(44832011)(2906002)(91956017)(71200400001)(66476007)(66446008)(38070700005)(38100700002)(26005)(186003)(122000001)(66946007)(66556008)(76116006)(54906003)(86362001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?alFqSEZsYzVnSlpHbDY1bmN4TzJyTk8ycFlXZXN3cEE2bElLUkgzMmhLNlBF?=
- =?utf-8?B?aUpFZXl4a3FPejRrdFl1eTZIMzQyc3NzRkJtNlNjUmZ4Z3YxWXcvdElMUmVp?=
- =?utf-8?B?cVkxSjdnWXQwWW02SGwyVUJuMEFuREJDNkxmdVZ1NGlyWnlDS20zUGViNDVD?=
- =?utf-8?B?YVFVbUJDTjF6Z0RVQWZvNmhUUk43Y0I0OGxFTnJkZzNpUFB4MENFWjZkemMz?=
- =?utf-8?B?OGQ5R1dvUHU1QkErV29UZVpPa0tHR2I5Mm5VRjhNcVUxeUx0ek84bHN3aFho?=
- =?utf-8?B?NmRuYUNJZnMwck05YnRyNHIvd2trL2c3eWRwakJNd3VlMlFnOHlTbzBvUGVa?=
- =?utf-8?B?Y1ZCOU5lcWowZUp2bEtZSDh6c0gyMWNEWVFTR1c0K1FtbnVML2M1QTFUeGtC?=
- =?utf-8?B?dDl1bGVhTXpPb0xSK0RoaVd6bk9XaHozK25DWmJoQnlzZXR0d0tLcXo0TW54?=
- =?utf-8?B?dXBHTWhhdVV5TkpKSGFOSnVZNStzL0VTajdoY0hPYU4zaHh2OFFTWTFzcWJw?=
- =?utf-8?B?d3ovRk8xRTFoZTA3V2RKZzlUYllFWjZVUlFURHdwNCtCc09oQnFIenRsNTRS?=
- =?utf-8?B?SzRMY1FkK2Z6S3hyRHNiQXhOOWhUZm52SmxoQjMrUnFQVDlHYVBVY2V6Y0Zk?=
- =?utf-8?B?S25YT2dOTWdtOEJjWWY0czN3TUFLZlNvNDdrcktMSHYzWHhTdmQyTCs3bjdN?=
- =?utf-8?B?Q010a1lKclJud2FqNjArUUxDMHh4RWs3Q3lFOHBrck5lRmpsZVh5V3R2ZVR3?=
- =?utf-8?B?bjBGMTFhN1laOE4rL1J0M1RJL0FIWE52eE9pQW9ncEcxQllmTjJZMnpHSndX?=
- =?utf-8?B?Q3FKaVQ3NWl3aTRoWDdqdFhEWXY1ZW5nTUlLckhYOWR2RW53N1ZPSkhCS2JS?=
- =?utf-8?B?T3VEcHdOcmZzUWRoOFhleW5VUEFZaGVma0tMTm83WEZTN2dSNUtqYTZZRGVJ?=
- =?utf-8?B?ZkI5eUFxcFJjSWhNRnRDZ2pwamxsWTF5YVA1eVUyeFZOREpKclgzUXZMZStI?=
- =?utf-8?B?MXhOaFlaenk3aHZjYncvbEVtejlGMmdkT1FVMjJIdm5Zb1ROTloyL05oRThG?=
- =?utf-8?B?aDZ0SkJVaWEzY1Y2dkJkMW5wUVJ3U1RUR2NOZEpUR0VDMnJmMm5PYlBPNFRL?=
- =?utf-8?B?c2Rxc2dtdC84MGgxWjk5bEtXcytFSk9GRm5Ic0FBVzlwdENyd2pkeERYd0ow?=
- =?utf-8?B?MmthQkovd2R2dWo5anp1bGErMVozdXJwa2ZTOHlNcVhuVTRPWmdhNXRWbVlQ?=
- =?utf-8?B?TDhVV3dGQWtoYzBKWGwvSlVFNTdDOU9EeGhJL3loN1dnb3lFaWprakdqMHAz?=
- =?utf-8?B?WVoyWjZMS3VtdFo3K2FJNWxGOWlXbUhWa1k0a3dmMldrVndUeDRDUU05NVdr?=
- =?utf-8?B?RktZd2dHWGhWcC9UcExSR0tYMVJaQlJLMVlxSXppb3BudHM0K3oxZEVWMjB1?=
- =?utf-8?B?QWNPKy9RRm5Zelo1Y3BQdVQwY2hBMzNsampkdXVydVVDQmJaVjltVkNrVko4?=
- =?utf-8?B?TXBFamFpNHZGc25YYm1QdmRVMGRMZkRYOTc0ZUptVEN1aktLSU9pd2dFeFJL?=
- =?utf-8?B?MjhBZzFuY2U5L1FTNUwzS0FtZXNGdVRrWHE0dXBSZ1V4aGhmazY4QUJRSkdw?=
- =?utf-8?B?bGJSRWZyMWpSNzg0T2w2SHVhOWd1c0lPZ2ZDeE56TWxhTHF1RlF5SXpYWENw?=
- =?utf-8?B?YmtEM1JpMlFwKzQxU3puSXNiYWllNS9RMzh3ZHI1dzZoR2o4VVVGeE8ybkt4?=
- =?utf-8?B?dC9KSm10b0NmVVFBY2tSaHBFdU1jQnEzOVViU3crUm5vVVBia2twMXVoR0VV?=
- =?utf-8?B?MEovaW1xTzc0S01yeURDNC9sNUJuYkRCSFB0YkVQRE5SSFBwMnRmUzVUY0NB?=
- =?utf-8?B?WVRkYzYwQlFqMUVjNytkaTB0RkxSS2pjQ0FRcTBxcGNyRFFtMUE2MS9rMkZy?=
- =?utf-8?B?N21iU25teFZYWlNYajdDemJmU1I5OHZKSE4xMlk0OENyQUUxU09WUmNpMWIz?=
- =?utf-8?B?YzRKTnpkeVhqZ1NZV3oxTXNhK3ZiS3lkbW5NVE1jVWpaamhXR2FEWmtYYzhm?=
- =?utf-8?B?a0dqTitldzdBd2k5T2ZkM21BYVN4M0Uwd2VxS3pJV3Nab29HUklSdWdEMzJ0?=
- =?utf-8?B?V2lVOEw4SWtORU0xQXh5b2QwTTgvOXo0UGZLZWRHeFNsZVN1TU1CcjBzNzZR?=
- =?utf-8?B?dFhxZnYvNVlCcDhCQm5EUTNySHlWMkJiQUlNRFBnellxb1plelhlb0w5U0Zt?=
- =?utf-8?Q?DVSOIbmXGqNUl2o1iT8B4AJptl+LaXEX8PS/4ePr/I=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <42F04BE7CE71964686CF75B6448EF6CC@FRAP264.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+        Fri, 4 Feb 2022 06:03:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56124 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237001AbiBDLDZ (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 4 Feb 2022 06:03:25 -0500
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B101BC061714
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 03:03:24 -0800 (PST)
+Received: by mail-pj1-x102b.google.com with SMTP id o64so5171842pjo.2
+        for <linux-kernel@vger.kernel.org>; Fri, 04 Feb 2022 03:03:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ajou.ac.kr; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=77J/9cAT8G0P2QjFVSqgddwHhlme/qdGmG1Npq3KbOA=;
+        b=e3C0xbHqa+aqQV1a3DsrHp8/5RAJVBFGxIWO3i9omSxdtv3TVxNxiCEuKqqlj3cokG
+         68xTSmvnRmHEX17OFTfUYByXv0dOIIFPBv9aDcIxi9ajYmL/nETzMVh5BoU9R8MeHrOK
+         1EaqzQ/vj1hBN/gTSNA9QggbZ8fjdUB9Uq88E=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=77J/9cAT8G0P2QjFVSqgddwHhlme/qdGmG1Npq3KbOA=;
+        b=76F/2d2DWM2lr7u2qhgRfvf+yYOZOQqznRVk0Q7+WFiuSheIwVOX1RRBy5BSxu455D
+         sAPO1BeWFvS7b1/V4m0a3p7Z5t9xpuuNSM4yETSKKlLEdljHqsdLWDWcFCamkITwJpYM
+         5tp99EV78pzTLdzGJo3pIBFaNS0LshlhqwSiOhS3D6GESSS4qcy3PC/GgZ2ec17LcO1n
+         /J8uGouw57jcwe+2oFPQhVrqgLaCYB+MjN4yuFNT4VyiZDUeNzJH6fMq8Hy6G1tbpUy+
+         D0ozAjY/JpRB6oR4q771UXqt8MsD5scT8ITMnQm0sTTEmGxIsaeCtqNgHDmms8TsDfDn
+         KUaw==
+X-Gm-Message-State: AOAM5323MnP0598KZU8sQfg544YXfZHHOzJWCWG9BzdWuilM1p49kERc
+        srGAOJ2ev8CCAe15YqXg7YMfEUZ9umFmIbbk
+X-Google-Smtp-Source: ABdhPJwJ2lTvQRgIPBiUT+p08XthZ0vM4moEekfuVEtjYx7Nnj+xo6Sd8dB2tWgbriB/QkIhOgSstg==
+X-Received: by 2002:a17:902:8f93:: with SMTP id z19mr2458946plo.69.1643972603170;
+        Fri, 04 Feb 2022 03:03:23 -0800 (PST)
+Received: from swarm08 ([210.107.197.32])
+        by smtp.gmail.com with ESMTPSA id q12sm2427939pfk.199.2022.02.04.03.03.20
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 04 Feb 2022 03:03:22 -0800 (PST)
+Date:   Fri, 4 Feb 2022 20:03:18 +0900
+From:   Jonghyeon Kim <tome01@ajou.ac.kr>
+To:     SeongJae Park <sj@kernel.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] mm/damon: Rebase DAMON_RECALIM watermarks for NUMA nodes
+Message-ID: <20220204110318.GA9391@swarm08>
+References: <20220204064059.6244-1-tome01@ajou.ac.kr>
+ <20220204090642.2425-1-sj@kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: csgroup.eu
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: d91f2035-c336-4502-afd6-08d9e7cd909b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Feb 2022 11:00:32.9758
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 9914def7-b676-4fda-8815-5d49fb3b45c8
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: S6thl53zYH1QJwFJwsb+G0cZmVW5W1Q82mwnPtUK6G+RcahhJwsvcAiliy0kYjSkkZaCEA5dxvnCtEyB7Xz9FBORJooG9pOFsaNd5tOF5dE=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MR2P264MB0562
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220204090642.2425-1-sj@kernel.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DQoNCkxlIDA0LzAyLzIwMjIgw6AgMTE6MjIsIE1pY2hhZWwgRWxsZXJtYW4gYSDDqWNyaXTCoDoN
-Cj4gQ2hyaXN0b3BoZSBMZXJveSA8Y2hyaXN0b3BoZS5sZXJveUBjc2dyb3VwLmV1PiB3cml0ZXM6
-DQo+PiBwb3dlcnBjIGFkdmVydGlzZXMgc3VwcG9ydCBvZiBTQV9SRVNUT1JFUiBzaWdhY3Rpb24g
-ZmxhZy4NCj4+DQo+PiBNYWtlIGl0IHRoZSB0cnV0aC4NCj4+DQo+PiBDYzogc3RhYmxlQHZnZXIu
-a2VybmVsLm9yZw0KPj4gU2lnbmVkLW9mZi1ieTogQ2hyaXN0b3BoZSBMZXJveSA8Y2hyaXN0b3Bo
-ZS5sZXJveUBjc2dyb3VwLmV1Pg0KPj4gLS0tDQo+PiAgIGFyY2gvcG93ZXJwYy9rZXJuZWwvc2ln
-bmFsXzMyLmMgfCA4ICsrKysrKy0tDQo+PiAgIGFyY2gvcG93ZXJwYy9rZXJuZWwvc2lnbmFsXzY0
-LmMgfCA0ICsrKy0NCj4+ICAgMiBmaWxlcyBjaGFuZ2VkLCA5IGluc2VydGlvbnMoKyksIDMgZGVs
-ZXRpb25zKC0pDQo+IA0KPiBIaSBDaHJpc3RvcGhlLA0KPiANCj4gSSBkdWcgaW50byB0aGUgaGlz
-dG9yeSBhIGJpdCBvbiB0aGlzLg0KPiANCj4gVGhlIDMyLWJpdCBwb3J0IG9yaWdpbmFsbHkgZGlk
-IG5vdCBkZWZpbmUgU0FfUkVTVE9SRVIgaW4NCj4gaW5jbHVkZS9hc20tcHBjL3NpZ25hbC5oLCBi
-dXQgaXQgd2FzIGFkZGVkIGluIDIuMS43OS4NCj4gDQo+ICAgIGh0dHBzOi8vZ2l0aHViLmNvbS9t
-cGUvbGludXgtZnVsbGhpc3RvcnkvY29tbWl0LzRlN2U5YzBkNTRmZjU3MjVhNzNkMjIxMGE5NTBm
-OGJjMGYyMjUwNzMNCj4gDQo+IFRoYXQgY29tbWl0IGFkZGVkIFNBX1JFU1RPUkVSIHRvIHRoZSBo
-ZWFkZXIsIGFkZGVkIGNvZGUgdG8gZ2V0L3NldCBpdCBpbg0KPiBzeXNfc2lnYWN0aW9uKCksIGJ1
-dCBkaWRuJ3QgYWRkIGFueSBjb2RlIHRvIHVzZSBpdCBmb3Igc2lnbmFsIGRlbGl2ZXJ5Lg0KPiAN
-Cj4gDQo+IFRoZSA2NC1iaXQgcG9ydCB3YXMgbWVyZ2VkIHdpdGggU0FfUkVTVE9SRVIgYWxyZWFk
-eSBkZWZpbmVkIGluDQo+IGluY2x1ZGUvYXNtLXBwYzY0L3NpZ25hbC5oOg0KPiANCj4gICAgaHR0
-cHM6Ly9naXRodWIuY29tL21wZS9saW51eC1mdWxsaGlzdG9yeS9jb21taXQvYzNhYTk4Nzg1MzNl
-NzI0ZjYzOTg1MmMzZDk1MWU2YTE2OWUwNDA4MQ0KPiAgICANCj4gU2ltaWxhcmx5IHRoZXJlIHdh
-cyBjb2RlIHRvIHNldC9nZXQgaXQgaW4gc3lzX3NpZ2FjdGlvbigpLCBidXQgbm8gY29kZQ0KPiB0
-byB1c2UgaXQgZm9yIHNpZ25hbCBkZWxpdmVyeS4NCj4gDQo+IA0KPiBMYXRlciB0aGUgdHdvIHBv
-cnRzIHdlcmUgbWVyZ2VkLCBhbmQgdGhlIGhlYWRlcnMgd2VyZSBtb3ZlZCBhbmQNCj4gZGlzaW50
-ZWdyYXRlZCBpbnRvIHVhcGksIHNvIHdlIGVuZCB1cCB0b2RheSB3aXRoIFNBX1JFU1RPUkVSIGRl
-ZmluZWQgaW4NCj4gYXJjaC9wb3dlcnBjL2luY2x1ZGUvdWFwaS9hc20vc2lnbmFsLmgsIGJ1dCBu
-byBjb2RlIHRvIHVzZSBpdC4NCj4gDQo+IFNvIGVzc2VudGlhbGx5IHdlJ3ZlIGhhZCBTQV9SRVNU
-T1JFUiBkZWZpbmVkIHNpbmNlIGFuY2llbnQga2VybmVscywgYnV0DQo+IG5ldmVyIGFjdHVhbGx5
-IHN1cHBvcnRlZCB1c2luZyBpdCBmb3IgYW55dGhpbmcuDQo+IA0KPiANCj4gT25lIHByb2JsZW0g
-d2l0aCBlbmFibGluZyBpdCBub3cgaXMgdGhlcmUncyBubyB3YXkgZm9yIHVzZXJzcGFjZSB0bw0K
-PiBkZXRlcm1pbmUgaWYgaXQncyBvbiBhIGZpeGVkIGtlcm5lbCBvciBub3QuIFRoYXQgbWFrZXMg
-aXQgdW51c2FibGUgZm9yDQo+IHVzZXJzcGFjZSwgdW5sZXNzIGl0IGRvZXMgdmVyc2lvbiBjaGVj
-a3MsIG9yIGlzIGhhcHB5IHRvIGJyZWFrIG9uIGFsbA0KPiBvbGQga2VybmVscyAobm90IGxpa2Vs
-eSkuIFdlIGNvdWxkIHNvbHZlIHRoYXQgYnkgZGVmaW5pbmcNCj4gU0FfUkVTVE9SRVJfRklYRUQg
-b3Igc29tZXRoaW5nLCBidXQgdGhhdCdzIHNsaWdodGx5IGdyb3NzLg0KPiANCj4gSXQncyBhbHNv
-IGRlc2NyaWJlZCBpbiB0aGUgbWFuIHBhZ2UgYXMgIk5vdCBpbnRlbmRlZCBmb3IgYXBwbGljYXRp
-b24NCj4gdXNlIiwgaWUuIGl0J3MgaW50ZW5kZWQgZm9yIHVzZSBieSBsaWJjLiBJJ20gbm90IHN1
-cmUgdGhlcmUncyBhbnkgdmFsdWUNCj4gaW4gYWRkaW5nIHN1cHBvcnQgZm9yIGl0IHRvIHRoZSBr
-ZXJuZWwgdW5sZXNzIHdlIGtub3cgdGhlcmUncyBpbnRlcmVzdA0KPiBmcm9tIGdsaWJjL211c2wg
-aW4gdXNpbmcgaXQuDQo+IA0KPiBTbyBteSBpbmNsaW5hdGlvbiBpcyB0aGF0IHdlIHNob3VsZCAq
-bm90KiBhZGQgc3VwcG9ydCBmb3IgaXQsIHJhdGhlciB3ZQ0KPiBzaG91bGQgbGVhdmUgaXQgdW5p
-bXBsZW1lbnRlZCBhbmQgcmVtb3ZlIFNBX1JFU1RPUkVSIGZyb20gdGhlIGhlYWRlci4NCj4gVGhl
-cmUncyBwcmVjZWRlbnQgaW4gcmlzY3YgZm9yIG5vdCBzdXBwb3J0aW5nIGl0IGF0IGFsbC4NCj4g
-DQoNCk5vd2FkYXlzLCBzdGFja3MgYXJlIG1hcHBlZCBub2V4ZWMsIHNvIHRoZSBmYWxsYmFjayBz
-dGFjayB0cmFtcG9saW5lIA0KY2Fubm90IHdvcmsgYW55bW9yZS4gSWYgYSBwcm9jZXNzIGRvZXNu
-J3Qgd2FudCBleGVjIHN0YWNrIGFuZCBkb2Vzbid0IA0Kd2FudCB0byBtYXAgdGhlIFZEU08sIHRo
-ZSBTQV9SRVNUT1JFUiBpcyB0aGUgb25seSBhbHRlcm5hdGl2ZSB0byBnZXQgDQpzaWduYWwgd29y
-a2luZy4NCg0KT24gc2V2ZXJhbCBhcmNoaXRlY3R1cmVzIGluY2x1ZGluZyBhcm02NCBhbmQgczM5
-MCBvbmx5IFZEU08gYW5kIA0KU0FfUkVTVE9SRVIgYXJlIHN1cHBvcnRlZCwgb24gc3RhY2sgc2ln
-bmFsIHRyYW1wb2xpbmUgaXMgbm90IHN1cHBvcnRlZCANCmFueW1vcmUuDQoNClNvIG15IGlkZWEg
-d2FzIHRvIGZpcnN0IGltcGxlbWVudCBTQV9SRVNUT1JFUiBhbmQgdGhlbiBhcyBhIHNlY29uZCBz
-dGVwIA0KdG8gcmV0aXJlIHRoZSBvbiBzdGFjayBzaWduYWwgdHJhbXBvbGluZSB3aGljaCBoYXMg
-YmVjb21lIHVzZWxlc3Mgd2l0aCANCm5vZXhlYyBzdGFja3MuDQoNClNlZSANCmh0dHBzOi8vZWxp
-eGlyLmJvb3RsaW4uY29tL2xpbnV4L3Y1LjE3LXJjMS9zb3VyY2UvYXJjaC9hcm02NC9rZXJuZWwv
-c2lnbmFsLmMjTDc2MQ0KDQpvciANCmh0dHBzOi8vZWxpeGlyLmJvb3RsaW4uY29tL2xpbnV4L3Y1
-LjE3LXJjMS9zb3VyY2UvYXJjaC9zMzkwL2tlcm5lbC9zaWduYWwuYyNMMzM3DQoNCkNocmlzdG9w
-aGU=
+On Fri, Feb 04, 2022 at 09:06:42AM +0000, SeongJae Park wrote:
+> Hello Jonghyeon, thank you for this patch!
+
+Hi, SeeongJae! Thank you for your review.
+
+> 
+> On Fri, 4 Feb 2022 15:40:59 +0900 Jonghyeon Kim <tome01@ajou.ac.kr> wrote:
+> 
+> > Current DAMON_RECALIM is not compatible the NUMA memory system. To proactively
+> > reclaim memory, DAMON_RECLAIM kernel thread(kdamond) has to wake up before
+> > kswapd does reclaim memory. However, the current watermark for proactive
+> > reclamation is based on entire system free memory. So, though the one memory
+> > node is fully used, kdamond is not waked up.
+> 
+> Good point!
+> 
+> > 
+> > This patch allows kdamond thread to select watermark options for monitoring
+> > specific node or whole system free memory.
+> 
+> Why only specific NUMA node or whole system, instead of each NUMA node?  Are
+> you running DARC for only specific NUMA node?  If that's the case, I think
+> implementing your own DAMON-based policy in user space might be a better
+> choice.  For example, you could implement and use a user-space daemon that
+> monitors free memory ratio of each NUMA node and adjusts the watermarks.
+> 
+
+I have tested DAMON_RECLAIM for each NUMA node by using a module. But, I felt
+that the goal of DAMON_RECLAIM is dealing with the entire system memory or
+specific monitoring regions by using module parameters. So, I hoped to add more
+options for DAMON_RECLAIM on the NUMA system.
+
+Another thing I considered is the problem of correlation between NUMA node range
+and monitoring start/end addresses, such as "What if we monitor target that
+spans multiple nodes?".
+In that case, I guess we have to decide the policy for watermarks.
+
+> Hope I'm not making you get me wrong.  You found the important limitation of
+> DAMON_RECLAIM, thank you!  I really hope DAMON_RECLAIM to evolve to handle the
+> case.  I'm just saying this patch looks like specialized for your special case,
+> and there could be a better approach for that.
+> 
+
+If you agree that each NUMA node is able to have its own DAMON_RECLAIM daemon
+threads, I will add that codes in the next patch.
+
+
+Thanks for your comments,
+Jonghyeon
+
+> 
+> Thanks,
+> SJ
+> 
+> > 
+> > Signed-off-by: Jonghyeon Kim <tome01@ajou.ac.kr>
+> > ---
+> >  include/linux/damon.h |  4 +++-
+> >  mm/damon/core.c       | 15 +++++++++++----
+> >  mm/damon/dbgfs.c      |  3 ++-
+> >  mm/damon/reclaim.c    | 12 +++++++++++-
+> >  4 files changed, 27 insertions(+), 7 deletions(-)
+> > 
+> > diff --git a/include/linux/damon.h b/include/linux/damon.h
+> > index 114cfb96d37a..3846b985bcb9 100644
+> > --- a/include/linux/damon.h
+> > +++ b/include/linux/damon.h
+> > @@ -220,6 +220,7 @@ struct damos_stat {
+> >   * @wmarks:		Watermarks for automated (in)activation of this scheme.
+> >   * @stat:		Statistics of this scheme.
+> >   * @list:		List head for siblings.
+> > + * @node:		NUMA node of target regions.
+> >   *
+> >   * For each aggregation interval, DAMON finds regions which fit in the
+> >   * condition (&min_sz_region, &max_sz_region, &min_nr_accesses,
+> > @@ -251,6 +252,7 @@ struct damos {
+> >  	struct damos_watermarks wmarks;
+> >  	struct damos_stat stat;
+> >  	struct list_head list;
+> > +	int node;
+> >  };
+> >  
+> >  struct damon_ctx;
+> > @@ -477,7 +479,7 @@ struct damos *damon_new_scheme(
+> >  		unsigned int min_nr_accesses, unsigned int max_nr_accesses,
+> >  		unsigned int min_age_region, unsigned int max_age_region,
+> >  		enum damos_action action, struct damos_quota *quota,
+> > -		struct damos_watermarks *wmarks);
+> > +		struct damos_watermarks *wmarks, int node);
+> >  void damon_add_scheme(struct damon_ctx *ctx, struct damos *s);
+> >  void damon_destroy_scheme(struct damos *s);
+> >  
+> > diff --git a/mm/damon/core.c b/mm/damon/core.c
+> > index 07449d46d3d3..dfa87cda0266 100644
+> > --- a/mm/damon/core.c
+> > +++ b/mm/damon/core.c
+> > @@ -87,7 +87,7 @@ struct damos *damon_new_scheme(
+> >  		unsigned int min_nr_accesses, unsigned int max_nr_accesses,
+> >  		unsigned int min_age_region, unsigned int max_age_region,
+> >  		enum damos_action action, struct damos_quota *quota,
+> > -		struct damos_watermarks *wmarks)
+> > +		struct damos_watermarks *wmarks, int node)
+> >  {
+> >  	struct damos *scheme;
+> >  
+> > @@ -125,6 +125,8 @@ struct damos *damon_new_scheme(
+> >  	scheme->wmarks.low = wmarks->low;
+> >  	scheme->wmarks.activated = true;
+> >  
+> > +	scheme->node = node;
+> > +
+> >  	return scheme;
+> >  }
+> >  
+> > @@ -936,13 +938,18 @@ static bool kdamond_need_stop(struct damon_ctx *ctx)
+> >  	return true;
+> >  }
+> >  
+> > -static unsigned long damos_wmark_metric_value(enum damos_wmark_metric metric)
+> > +static unsigned long damos_wmark_metric_value(struct damos *scheme)
+> >  {
+> >  	struct sysinfo i;
+> > +	enum damos_wmark_metric metric = scheme->wmarks.metric;
+> > +	int target_node = scheme->node;
+> >  
+> >  	switch (metric) {
+> >  	case DAMOS_WMARK_FREE_MEM_RATE:
+> > -		si_meminfo(&i);
+> > +		if (target_node == NUMA_NO_NODE)
+> > +			si_meminfo(&i);
+> > +		else
+> > +			si_meminfo_node(&i, target_node);
+> >  		return i.freeram * 1000 / i.totalram;
+> >  	default:
+> >  		break;
+> > @@ -961,7 +968,7 @@ static unsigned long damos_wmark_wait_us(struct damos *scheme)
+> >  	if (scheme->wmarks.metric == DAMOS_WMARK_NONE)
+> >  		return 0;
+> >  
+> > -	metric = damos_wmark_metric_value(scheme->wmarks.metric);
+> > +	metric = damos_wmark_metric_value(scheme);
+> >  	/* higher than high watermark or lower than low watermark */
+> >  	if (metric > scheme->wmarks.high || scheme->wmarks.low > metric) {
+> >  		if (scheme->wmarks.activated)
+> > diff --git a/mm/damon/dbgfs.c b/mm/damon/dbgfs.c
+> > index 78ff645433c6..3f61cbde7ec4 100644
+> > --- a/mm/damon/dbgfs.c
+> > +++ b/mm/damon/dbgfs.c
+> > @@ -224,7 +224,8 @@ static struct damos **str_to_schemes(const char *str, ssize_t len,
+> >  
+> >  		pos += parsed;
+> >  		scheme = damon_new_scheme(min_sz, max_sz, min_nr_a, max_nr_a,
+> > -				min_age, max_age, action, &quota, &wmarks);
+> > +				min_age, max_age, action, &quota, &wmarks,
+> > +				NUMA_NO_NODE);
+> >  		if (!scheme)
+> >  			goto fail;
+> >  
+> > diff --git a/mm/damon/reclaim.c b/mm/damon/reclaim.c
+> > index d85e0898f905..ad80f14d164f 100644
+> > --- a/mm/damon/reclaim.c
+> > +++ b/mm/damon/reclaim.c
+> > @@ -189,6 +189,14 @@ module_param(monitor_region_start, ulong, 0600);
+> >  static unsigned long monitor_region_end __read_mostly;
+> >  module_param(monitor_region_end, ulong, 0600);
+> >  
+> > +/*
+> > + * NUMA node of target to monitor
+> > + *
+> > + * If node is NUMA_NO_NODE, watermark is based on system entire memory.
+> > + */
+> > +static int node __read_mostly = NUMA_NO_NODE;
+> > +module_param(node, int, 0600);
+> > +
+> >  /*
+> >   * PID of the DAMON thread
+> >   *
+> > @@ -298,7 +306,9 @@ static struct damos *damon_reclaim_new_scheme(void)
+> >  			/* under the quota. */
+> >  			&quota,
+> >  			/* (De)activate this according to the watermarks. */
+> > -			&wmarks);
+> > +			&wmarks,
+> > +			/* Watermarks is based on this NUMA node */
+> > +			node);
+> >  
+> >  	return scheme;
+> >  }
+> > -- 
+> > 2.17.1
+> > 
