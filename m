@@ -2,146 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1B3CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 05:55:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3283FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 05:56:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243531AbiBDFxg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 00:53:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42406 "EHLO
+        id S243546AbiBDFz6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 00:55:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236350AbiBDFxd (ORCPT
+        with ESMTP id S236350AbiBDFzz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 00:53:33 -0500
-Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD637C061714
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 21:53:32 -0800 (PST)
-Received: by mail-qv1-xf35.google.com with SMTP id s6so4542689qvv.11
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 21:53:32 -0800 (PST)
+        Fri, 4 Feb 2022 00:55:55 -0500
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 966DDC061714
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 21:55:54 -0800 (PST)
+Received: by mail-pf1-x42f.google.com with SMTP id i65so4200731pfc.9
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 21:55:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=jms.id.au; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=eYsZplQCWhMg5A+bT/pC03ERRgBVVGDzmghNtqEQDr0=;
-        b=YBivNNSPLPS90P9KanrM2iXgWGM9hWxwxA3cqwPEs0O+rRpVly9+LQwEvvJEX+WosN
-         Cw8s0KI5wt9MO3OpPlCUiGTFse+3KKZ/AzysoAgshKxrQySVr9haOsvZXRi5+VroDUz8
-         BTE63MbJ+nz1+UP0MXiQKKvLtuGnwItdTM2yI=
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HujJTKMlvKWrzO4MPNgYx8f/y8A8duNRewj59ue6fU0=;
+        b=lM48WOgo2c4KlulO1a362hdCzW98v2Ij+T9S0rf4GLPg82kWiq7JIFJ0LScyBeX5nT
+         Wmn8zLrsyyMS4E/NMoXa/VIrRtQrmPsdOiUEscbDSKrBQwWxo7QlF2WEfcwfoczyQK8I
+         fg/mnViZYc7t7CAOVb0VHBe/jPkO2vpR9yQUAllRkKy/GeQlyShrvqvhgMrtQDIIcq7x
+         e6US8mtYlVnvwOj+mzZP2pM77ODovW4mTCOYXnDLQ2Cn9QmpMryRbZURQFzL22UQQjOr
+         Elb7+5SXdx+MssOmwbVZ+dtpPSYy86xo+Zx0COcU30Z1zIZj/95x3WMNgGVpyoQQ0YzW
+         FlLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=eYsZplQCWhMg5A+bT/pC03ERRgBVVGDzmghNtqEQDr0=;
-        b=yYq1ak9/QC0l1mqe8mqAgcNga5TrBoUOFuimKWi/6cfSXL45N7QSCMRgw1MYxtPC1g
-         BdyO3ouc5iCdvoxJP39WtCx6h4J0GHCvOTdQn795SWTkVsP9vrsSzzX9i2ns1K8HQv2L
-         t3aGcvNEj0us1asVhlShAKEkc0jKMYWm39qZc8ueR/IfUAacVCvwZkzMIh3fJzs2omZl
-         78lhZb2ZP4HW+l3UVdc2VwO3HNLk7nksxqxVoAt4jiIdHDkIHHUGTgKYQGLT82y4cl2h
-         Q37umoIPb15LsX6PteFPzk2cV4BRCGXuXVdIZA2l8VrDxueaBSD+EnmnibgComEt1H15
-         zMlw==
-X-Gm-Message-State: AOAM532Koq0g8gsn/bMfRVTxygJh1RUFXzDyXxR9d2E1UKpMn8OFZaow
-        ZByhhm2ao0JgBpxSJZaTJsX7YMzhqfDowpA2N3BfIujy
-X-Google-Smtp-Source: ABdhPJxzV9x3lo5VCczp8QlRvauAgQ3xtN6M8nj+/uAMvK/1xvpmzR2BHbFocweO2eKRTPo+WwYrOvSqosvPmjV5APE=
-X-Received: by 2002:ad4:5f89:: with SMTP id jp9mr815712qvb.130.1643954011111;
- Thu, 03 Feb 2022 21:53:31 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HujJTKMlvKWrzO4MPNgYx8f/y8A8duNRewj59ue6fU0=;
+        b=So/mIDlKdNQ7xKrjQC+mXeSlLY5oBW0NUbbCoeqjwBrdkEHWb2hPG/F/+c1mzNWX2q
+         neo2oknCFIYLJP7ajMDcZJ1ldn2nVfn+jWV9LoSC6s0wANTM1Ua7guvghLTPZTEZMCNC
+         P50g4hKh4RZ0b5iDBchDkDCPVSLIcsUjigjEHXMFJdjBhA+d9WrwxBT79+k4fqhuXikj
+         DNFTCQ1fWxIKv1XU8MgFNCxTbzdNQ3ZyxJrCF8bGI6Lvs+XfbkaY7vTOqHOVEY0HW/pD
+         32jFfvUd5jyIMWzHCR9MjlOvmT1uQ0+x0x8JQBpCoVp1is8hjili0FgiCXT7doF0k3vz
+         4iJw==
+X-Gm-Message-State: AOAM532SjmGqB8ZYq5MdHhd3DfZSFyPZWDyU8Ok60ewzbAP474tIznA2
+        ujXwkdBlTwKaTS8PL4yhltHUFg==
+X-Google-Smtp-Source: ABdhPJwDJMmzxyDKYKHhyjNyQOhWM1eESSAL1HuDHl1YWgqpcpIOLnSuKoy8pEdLSdmZ7E2q+Cmivw==
+X-Received: by 2002:a63:735c:: with SMTP id d28mr1212676pgn.154.1643954154015;
+        Thu, 03 Feb 2022 21:55:54 -0800 (PST)
+Received: from x1.hsd1.or.comcast.net ([2601:1c2:1001:7090:5d5d:8301:fb9f:4711])
+        by smtp.gmail.com with ESMTPSA id y191sm916597pfb.114.2022.02.03.21.55.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Feb 2022 21:55:53 -0800 (PST)
+From:   Drew Fustini <dfustini@baylibre.com>
+To:     Tony Lindgren <tony@atomide.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Keerthy <j-keerthy@ti.com>, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Tero Kristo <kristo@kernel.org>, khilman@baylibre.com,
+        s-anna@ti.com
+Cc:     Drew Fustini <dfustini@baylibre.com>
+Subject: [PATCH v2] clocksource/drivers/timer-ti-dm: fix regression from errata i940 fix
+Date:   Thu,  3 Feb 2022 21:35:05 -0800
+Message-Id: <20220204053503.1409162-1-dfustini@baylibre.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-References: <20220203115344.267159-1-joel@jms.id.au> <20220203115344.267159-2-joel@jms.id.au>
- <f44d2e01-b6cb-5f22-f651-f4dd7ced166f@arm.com>
-In-Reply-To: <f44d2e01-b6cb-5f22-f651-f4dd7ced166f@arm.com>
-From:   Joel Stanley <joel@jms.id.au>
-Date:   Fri, 4 Feb 2022 05:53:18 +0000
-Message-ID: <CACPK8Xed3AESz2JjqJa2v=6ipXDBBMd=CxmiwruJS5cBEE+Qfg@mail.gmail.com>
-Subject: Re: [PATCH v2 1/3] firmware: Add boot information to sysfs
-To:     Robin Murphy <robin.murphy@arm.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Andrew Jeffery <andrew@aj.id.au>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-aspeed <linux-aspeed@lists.ozlabs.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 3 Feb 2022 at 14:23, Robin Murphy <robin.murphy@arm.com> wrote:
-> > diff --git a/Documentation/ABI/testing/sysfs-firmware-bootinfo b/Documentation/ABI/testing/sysfs-firmware-bootinfo
-> > new file mode 100644
-> > index 000000000000..cd6c42316345
-> > --- /dev/null
-> > +++ b/Documentation/ABI/testing/sysfs-firmware-bootinfo
-> > @@ -0,0 +1,43 @@
-> > +What:                /sys/firmware/bootinfo/*
-> > +Date:                Jan 2022
-> > +Description:
-> > +             A system can expose information about how it was started in
-> > +             this directory.
-> > +
-> > +             This information is agnostic as to the firmware implementation.
-> > +
-> > +             A system may expose a subset of these properties as applicable.
-> > +
-> > +
-> > +What:                /sys/firmware/bootinfo/secure_boot
-> > +Date:                Jan 2022
-> > +Description:
-> > +             Indicates the system was started with secure boot enabled in
-> > +             the firmware.
-> > +
-> > +
-> > +What:                /sys/firmware/bootinfo/abr_image
-> > +Date:                Jan 2022
-> > +Description:
-> > +             Indicates the system was started from the alternate image
-> > +             loaded from an Alternate Boot Region. Often this is a result of
-> > +             the primary firmware image failing to start the system.
-> > +
-> > +
-> > +What:                /sys/firmware/bootinfo/low_security_key
-> > +Date:                Jan 2022
-> > +Description:
-> > +             Indicates the system's secure boot was verified with a low
-> > +             security or development key.
-> > +
-> > +What:                /sys/firmware/bootinfo/otp_protected
-> > +Date:                Jan 2022
-> > +Description:
-> > +             Indicates the system's boot configuration region is write
-> > +             protected and cannot be modified.
-> > +
-> > +What:                /sys/firmware/bootinfo/uart_boot
-> > +Date:                Jan 2022
-> > +Description:
-> > +             Indicates the system firmware was loaded from a UART instead of
-> > +             an internal boot device.
->
-> I'd be concerned about how well details like "uart_boot" and "abr_image"
-> scale beyond one SoC family from one vendor. The combinatorial explosion
-> of possible boot configurations across Linux-capable SoCs and firmware
-> in general is larger than I'd care to imagine, even before considering
-> that the nuances don't necessarily stop there - e.g. whether a given
-> storage interface is hard-wired or user-accessible is not a fixed
-> property on many SoCs, and even a socketed SD card might be "trusted" if
-> a board is deployed in a product with a sealed enclosure.
+The existing fix for errata i940 causes a conflict for IPU2 which is
+using timer 3 and 4. From arch/arm/boot/dts/dra7-ipu-dsp-common.dtsi:
 
-This is a fair point. The first iteration of this idea was specific to
-the aspeed soc.
+  &ipu2 {
+          mboxes = <&mailbox6 &mbox_ipu2_ipc3x>;
+          ti,timers = <&timer3>;
+          ti,watchdog-timers = <&timer4>, <&timer9>;
+  };
 
-For the system I'm building, secure_boot and otp_locked tell our
-manufacturing test process that the machine has been correctly
-provisioned. I'd like to get something agreed upon so we can start
-using those sysfs files in the testing without having to go back and
-change things.
+The conflict was noticed when booting mainline on the BeagleBoard X15
+which has a TI AM5728 SoC:
 
-abr_image is an indication that something went wrong at boot time. I
-thought this was a standard eMMC concept, but taking a closer look
-it's specific to the aspeed soc.
+  remoteproc remoteproc1: 55020000.ipu is available
+  remoteproc remoteproc1: powering up 55020000.ipu
+  remoteproc remoteproc1: Booting fw image dra7-ipu2-fw.xem4
+  omap-rproc 55020000.ipu: could not get timer platform device
+  omap-rproc 55020000.ipu: omap_rproc_enable_timers failed: -19
+  remoteproc remoteproc1: can't start rproc 55020000.ipu: -19
 
-Would it help if we gave them generic names?
+This change modifies the errata fix to instead use timer 15 and 16 which
+resolves the timer conflict.
 
- - abr_image -> alternate_boot
+It does not appear to introduce any latency regression. Results from
+cyclictest with original errata fix using dmtimer 3 and 4:
 
-I welcome other suggestions.
+  # cyclictest --mlockall --smp --priority=80 --interval=200 --distance=0
+  policy: fifo: loadavg: 0.02 0.03 0.05
 
-I'll drop the uart_boot property for now.
+  T: 0 ( 1449) P:80 I:200 C: 800368 Min:   0 Act:   32 Avg:   22 Max:  128
+  T: 1 ( 1450) P:80 I:200 C: 800301 Min:   0 Act:   12 Avg:   23 Max:   70
 
-Cheers,
+The results after the change to dmtimer 15 and 16:
 
-Joel
+  # cyclictest --mlockall --smp --priority=80 --interval=200 --distance=0
+  policy: fifo: loadavg: 0.36 0.19 0.07
+
+  T: 0 ( 1711) P:80 I:200 C: 759599 Min:   0 Act:    6 Avg:   22 Max:  108
+  T: 1 ( 1712) P:80 I:200 C: 759539 Min:   0 Act:   19 Avg:   23 Max:   79
+
+Fixes: 25de4ce5ed02 ("clocksource/drivers/timer-ti-dm: Handle dra7 timer wrap errata i940")
+Link: https://lore.kernel.org/linux-omap/YfWsG0p6to3IJuvE@x1/
+Suggested-by: Suman Anna <s-anna@ti.com>
+Reviewed-by: Tony Lindgren <tony@atomide.com>
+Signed-off-by: Drew Fustini <dfustini@baylibre.com>
+---
+v2 changes:
+- add cyclictest results
+- use lowercase letter in hex literals
+
+ arch/arm/boot/dts/dra7-l4.dtsi             | 5 ++---
+ arch/arm/boot/dts/dra7.dtsi                | 8 ++++----
+ drivers/clocksource/timer-ti-dm-systimer.c | 4 ++--
+ 3 files changed, 8 insertions(+), 9 deletions(-)
+
+diff --git a/arch/arm/boot/dts/dra7-l4.dtsi b/arch/arm/boot/dts/dra7-l4.dtsi
+index 956a26d52a4c..0a11bacffc1f 100644
+--- a/arch/arm/boot/dts/dra7-l4.dtsi
++++ b/arch/arm/boot/dts/dra7-l4.dtsi
+@@ -3482,8 +3482,7 @@ timer14: timer@0 {
+ 				ti,timer-pwm;
+ 			};
+ 		};
+-
+-		target-module@2c000 {			/* 0x4882c000, ap 17 02.0 */
++		timer15_target: target-module@2c000 {	/* 0x4882c000, ap 17 02.0 */
+ 			compatible = "ti,sysc-omap4-timer", "ti,sysc";
+ 			reg = <0x2c000 0x4>,
+ 			      <0x2c010 0x4>;
+@@ -3511,7 +3510,7 @@ timer15: timer@0 {
+ 			};
+ 		};
+ 
+-		target-module@2e000 {			/* 0x4882e000, ap 19 14.0 */
++		timer16_target: target-module@2e000 {	/* 0x4882e000, ap 19 14.0 */
+ 			compatible = "ti,sysc-omap4-timer", "ti,sysc";
+ 			reg = <0x2e000 0x4>,
+ 			      <0x2e010 0x4>;
+diff --git a/arch/arm/boot/dts/dra7.dtsi b/arch/arm/boot/dts/dra7.dtsi
+index 6b485cbed8d5..8f7ffe2f66e9 100644
+--- a/arch/arm/boot/dts/dra7.dtsi
++++ b/arch/arm/boot/dts/dra7.dtsi
+@@ -1339,20 +1339,20 @@ timer@0 {
+ };
+ 
+ /* Local timers, see ARM architected timer wrap erratum i940 */
+-&timer3_target {
++&timer15_target {
+ 	ti,no-reset-on-init;
+ 	ti,no-idle;
+ 	timer@0 {
+-		assigned-clocks = <&l4per_clkctrl DRA7_L4PER_TIMER3_CLKCTRL 24>;
++		assigned-clocks = <&l4per3_clkctrl DRA7_L4PER3_TIMER15_CLKCTRL 24>;
+ 		assigned-clock-parents = <&timer_sys_clk_div>;
+ 	};
+ };
+ 
+-&timer4_target {
++&timer16_target {
+ 	ti,no-reset-on-init;
+ 	ti,no-idle;
+ 	timer@0 {
+-		assigned-clocks = <&l4per_clkctrl DRA7_L4PER_TIMER4_CLKCTRL 24>;
++		assigned-clocks = <&l4per3_clkctrl DRA7_L4PER3_TIMER16_CLKCTRL 24>;
+ 		assigned-clock-parents = <&timer_sys_clk_div>;
+ 	};
+ };
+diff --git a/drivers/clocksource/timer-ti-dm-systimer.c b/drivers/clocksource/timer-ti-dm-systimer.c
+index b6f97960d8ee..f52bf81dc1dd 100644
+--- a/drivers/clocksource/timer-ti-dm-systimer.c
++++ b/drivers/clocksource/timer-ti-dm-systimer.c
+@@ -695,9 +695,9 @@ static int __init dmtimer_percpu_quirk_init(struct device_node *np, u32 pa)
+ 		return 0;
+ 	}
+ 
+-	if (pa == 0x48034000)		/* dra7 dmtimer3 */
++	if (pa == 0x4882c000)           /* dra7 dmtimer15 */
+ 		return dmtimer_percpu_timer_init(np, 0);
+-	else if (pa == 0x48036000)	/* dra7 dmtimer4 */
++	else if (pa == 0x4882e000)      /* dra7 dmtimer16 */
+ 		return dmtimer_percpu_timer_init(np, 1);
+ 
+ 	return 0;
+-- 
+2.32.0
+
