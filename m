@@ -2,38 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74BE5C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 20:01:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C891FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 20:01:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239039AbiBDUBt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 15:01:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39308 "EHLO
+        id S237707AbiBDUBv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 15:01:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236121AbiBDT7S (ORCPT
+        with ESMTP id S236520AbiBDT73 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 14:59:18 -0500
+        Fri, 4 Feb 2022 14:59:29 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1588DC061748
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 11:59:08 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B06FBC06177E
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 11:59:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=ftzBL1oQK/5m9sfLfLIA/LTM6FPP6XsHZDiqOCAGWzc=; b=H2dX/q11Q9ClCFy2/MvBToAJcV
-        9Md1MDr5aOYF3Au433b8O6hWakKwyCONAC45KIij72PrbAeLsrYXS4SNuWcO1F4do6wTphYv1Q+OP
-        WH/TZDFFRTbx6OswNeLlAGXPRjJmd76o0gyfJYqz+YzQtqVow3QX4xthWX72yJjngXlSS3nu0RNyb
-        jr2Lp+uRFfRCmf6+3vs2DKCD8EaAUuTl1rbndc6XyR/t27paPXvNickA8Dg4Oo6D2pCR3iUl9wili
-        pHc8Csg88xI3PLXnrCxOsqG+wXFPhbfBOD5arrgorCsayn1wugTQ9kovyX5pPRdDhzjM8jL50+327
-        4NL4aYuA==;
+        bh=xzWHUvuH3ytdGGiNqcldB8CLjt4/+/jUSmgWFltkhvY=; b=qNELhIHFV/VxT/M+K1PpTd4TS0
+        YcmfU7+ZWvcl2FbMs/CkyOJSTRGxTOwP50E6Uw9kCpV7BDedkaCDhTfG++N98tmoaGmI1c/R8vx3V
+        0k0SssQyh7nIlE5giSpVf+dUP2yai60k8Dme6Cf5gkU3ZJzB+eY7LQKRmvE3m2wfgM0gKv29r3ZTS
+        RoJEvP/S2W5S77i8jFL7fCT/emksgDiol70aJQFoberuQmpuKXw7TgarnXlF5RhCWeI+/yEzKoKPx
+        D8c5PRZhEUdNJeKBN4LkP8Bh817/9oOCCxO8Gc60I/uu9EYDg34WIwW86OsZ3931zPNoo7qIA8rJa
+        +fxGwhJA==;
 Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nG4ja-007Lpl-CA; Fri, 04 Feb 2022 19:59:06 +0000
+        id 1nG4jW-007Lm3-0D; Fri, 04 Feb 2022 19:59:02 +0000
 From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
 To:     linux-mm@kvack.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 60/75] mm/rmap: Constify the rmap_walk_control argument
-Date:   Fri,  4 Feb 2022 19:58:37 +0000
-Message-Id: <20220204195852.1751729-61-willy@infradead.org>
+        linux-kernel@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        William Kucharski <william.kucharski@oracle.com>
+Subject: [PATCH 26/75] mm/gup: Turn compound_range_next() into gup_folio_range_next()
+Date:   Fri,  4 Feb 2022 19:58:03 +0000
+Message-Id: <20220204195852.1751729-27-willy@infradead.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220204195852.1751729-1-willy@infradead.org>
 References: <20220204195852.1751729-1-willy@infradead.org>
@@ -43,136 +46,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The rmap walking functions do not modify the rmap_walk_control, and
-page_idle_clear_pte_refs() takes advantage of that to move construction
-of the rmap_walk_control to compile time.  This lets us remove an
-unclean cast.
+Convert the only caller to work on folios instead of pages.
+This removes the last caller of put_compound_head(), so delete it.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: John Hubbard <jhubbard@nvidia.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Reviewed-by: William Kucharski <william.kucharski@oracle.com>
 ---
- include/linux/ksm.h  |  4 ++--
- include/linux/rmap.h |  4 ++--
- mm/ksm.c             |  2 +-
- mm/page_idle.c       |  2 +-
- mm/rmap.c            | 14 +++++++-------
- 5 files changed, 13 insertions(+), 13 deletions(-)
+ include/linux/mm.h |  4 ++--
+ mm/gup.c           | 38 +++++++++++++++++---------------------
+ 2 files changed, 19 insertions(+), 23 deletions(-)
 
-diff --git a/include/linux/ksm.h b/include/linux/ksm.h
-index 0b4f17418f64..0630e545f4cb 100644
---- a/include/linux/ksm.h
-+++ b/include/linux/ksm.h
-@@ -51,7 +51,7 @@ static inline void ksm_exit(struct mm_struct *mm)
- struct page *ksm_might_need_to_copy(struct page *page,
- 			struct vm_area_struct *vma, unsigned long address);
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index da565dc1029d..3ca6dea4fe4a 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -216,10 +216,10 @@ int overcommit_policy_handler(struct ctl_table *, int, void *, size_t *,
  
--void rmap_walk_ksm(struct folio *folio, struct rmap_walk_control *rwc);
-+void rmap_walk_ksm(struct folio *folio, const struct rmap_walk_control *rwc);
- void folio_migrate_ksm(struct folio *newfolio, struct folio *folio);
+ #if defined(CONFIG_SPARSEMEM) && !defined(CONFIG_SPARSEMEM_VMEMMAP)
+ #define nth_page(page,n) pfn_to_page(page_to_pfn((page)) + (n))
+-#define page_nth(head, tail)	(page_to_pfn(tail) - page_to_pfn(head))
++#define folio_page_idx(folio, p)	(page_to_pfn(p) - folio_pfn(folio))
+ #else
+ #define nth_page(page,n) ((page) + (n))
+-#define page_nth(head, tail)	((tail) - (head))
++#define folio_page_idx(folio, p)	((p) - &(folio)->page)
+ #endif
  
- #else  /* !CONFIG_KSM */
-@@ -79,7 +79,7 @@ static inline struct page *ksm_might_need_to_copy(struct page *page,
+ /* to align the pointer to the (next) page boundary */
+diff --git a/mm/gup.c b/mm/gup.c
+index d90f8e5790c0..edec7356b965 100644
+--- a/mm/gup.c
++++ b/mm/gup.c
+@@ -146,12 +146,6 @@ static void gup_put_folio(struct folio *folio, int refs, unsigned int flags)
+ 	folio_put_refs(folio, refs);
  }
  
- static inline void rmap_walk_ksm(struct folio *folio,
--			struct rmap_walk_control *rwc)
-+			const struct rmap_walk_control *rwc)
+-static void put_compound_head(struct page *page, int refs, unsigned int flags)
+-{
+-	VM_BUG_ON_PAGE(PageTail(page), page);
+-	gup_put_folio((struct folio *)page, refs, flags);
+-}
+-
+ /**
+  * try_grab_page() - elevate a page's refcount by a flag-dependent amount
+  * @page:    pointer to page to be grabbed
+@@ -214,20 +208,19 @@ void unpin_user_page(struct page *page)
+ }
+ EXPORT_SYMBOL(unpin_user_page);
+ 
+-static inline struct page *compound_range_next(struct page *start,
++static inline struct folio *gup_folio_range_next(struct page *start,
+ 		unsigned long npages, unsigned long i, unsigned int *ntails)
  {
+-	struct page *next, *page;
++	struct page *next = nth_page(start, i);
++	struct folio *folio = page_folio(next);
+ 	unsigned int nr = 1;
+ 
+-	next = nth_page(start, i);
+-	page = compound_head(next);
+-	if (PageHead(page))
++	if (folio_test_large(folio))
+ 		nr = min_t(unsigned int, npages - i,
+-			   compound_nr(page) - page_nth(page, next));
++			   folio_nr_pages(folio) - folio_page_idx(folio, next));
+ 
+ 	*ntails = nr;
+-	return page;
++	return folio;
  }
  
-diff --git a/include/linux/rmap.h b/include/linux/rmap.h
-index 4e4c4412b295..96522944739e 100644
---- a/include/linux/rmap.h
-+++ b/include/linux/rmap.h
-@@ -294,8 +294,8 @@ struct rmap_walk_control {
- 	bool (*invalid_vma)(struct vm_area_struct *vma, void *arg);
- };
+ static inline struct folio *gup_folio_next(struct page **list,
+@@ -335,15 +328,18 @@ EXPORT_SYMBOL(unpin_user_pages_dirty_lock);
+ void unpin_user_page_range_dirty_lock(struct page *page, unsigned long npages,
+ 				      bool make_dirty)
+ {
+-	unsigned long index;
+-	struct page *head;
+-	unsigned int ntails;
++	unsigned long i;
++	struct folio *folio;
++	unsigned int nr;
  
--void rmap_walk(struct folio *folio, struct rmap_walk_control *rwc);
--void rmap_walk_locked(struct folio *folio, struct rmap_walk_control *rwc);
-+void rmap_walk(struct folio *folio, const struct rmap_walk_control *rwc);
-+void rmap_walk_locked(struct folio *folio, const struct rmap_walk_control *rwc);
- 
- #else	/* !CONFIG_MMU */
- 
-diff --git a/mm/ksm.c b/mm/ksm.c
-index 0ec3d9035419..e95c454303a2 100644
---- a/mm/ksm.c
-+++ b/mm/ksm.c
-@@ -2601,7 +2601,7 @@ struct page *ksm_might_need_to_copy(struct page *page,
- 	return new_page;
+-	for (index = 0; index < npages; index += ntails) {
+-		head = compound_range_next(page, npages, index, &ntails);
+-		if (make_dirty && !PageDirty(head))
+-			set_page_dirty_lock(head);
+-		put_compound_head(head, ntails, FOLL_PIN);
++	for (i = 0; i < npages; i += nr) {
++		folio = gup_folio_range_next(page, npages, i, &nr);
++		if (make_dirty && !folio_test_dirty(folio)) {
++			folio_lock(folio);
++			folio_mark_dirty(folio);
++			folio_unlock(folio);
++		}
++		gup_put_folio(folio, nr, FOLL_PIN);
+ 	}
  }
- 
--void rmap_walk_ksm(struct folio *folio, struct rmap_walk_control *rwc)
-+void rmap_walk_ksm(struct folio *folio, const struct rmap_walk_control *rwc)
- {
- 	struct stable_node *stable_node;
- 	struct rmap_item *rmap_item;
-diff --git a/mm/page_idle.c b/mm/page_idle.c
-index 3563c3850795..982f35d91b96 100644
---- a/mm/page_idle.c
-+++ b/mm/page_idle.c
-@@ -107,7 +107,7 @@ static void page_idle_clear_pte_refs(struct page *page)
- 	if (need_lock && !folio_trylock(folio))
- 		return;
- 
--	rmap_walk(folio, (struct rmap_walk_control *)&rwc);
-+	rmap_walk(folio, &rwc);
- 
- 	if (need_lock)
- 		folio_unlock(folio);
-diff --git a/mm/rmap.c b/mm/rmap.c
-index 1ade44970ab1..1d22cb825931 100644
---- a/mm/rmap.c
-+++ b/mm/rmap.c
-@@ -2273,7 +2273,7 @@ void __put_anon_vma(struct anon_vma *anon_vma)
- }
- 
- static struct anon_vma *rmap_walk_anon_lock(struct folio *folio,
--					struct rmap_walk_control *rwc)
-+					const struct rmap_walk_control *rwc)
- {
- 	struct anon_vma *anon_vma;
- 
-@@ -2308,8 +2308,8 @@ static struct anon_vma *rmap_walk_anon_lock(struct folio *folio,
-  * vm_flags for that VMA.  That should be OK, because that vma shouldn't be
-  * LOCKED.
-  */
--static void rmap_walk_anon(struct folio *folio, struct rmap_walk_control *rwc,
--		bool locked)
-+static void rmap_walk_anon(struct folio *folio,
-+		const struct rmap_walk_control *rwc, bool locked)
- {
- 	struct anon_vma *anon_vma;
- 	pgoff_t pgoff_start, pgoff_end;
-@@ -2361,8 +2361,8 @@ static void rmap_walk_anon(struct folio *folio, struct rmap_walk_control *rwc,
-  * vm_flags for that VMA.  That should be OK, because that vma shouldn't be
-  * LOCKED.
-  */
--static void rmap_walk_file(struct folio *folio, struct rmap_walk_control *rwc,
--		bool locked)
-+static void rmap_walk_file(struct folio *folio,
-+		const struct rmap_walk_control *rwc, bool locked)
- {
- 	struct address_space *mapping = folio_mapping(folio);
- 	pgoff_t pgoff_start, pgoff_end;
-@@ -2404,7 +2404,7 @@ static void rmap_walk_file(struct folio *folio, struct rmap_walk_control *rwc,
- 		i_mmap_unlock_read(mapping);
- }
- 
--void rmap_walk(struct folio *folio, struct rmap_walk_control *rwc)
-+void rmap_walk(struct folio *folio, const struct rmap_walk_control *rwc)
- {
- 	if (unlikely(folio_test_ksm(folio)))
- 		rmap_walk_ksm(folio, rwc);
-@@ -2415,7 +2415,7 @@ void rmap_walk(struct folio *folio, struct rmap_walk_control *rwc)
- }
- 
- /* Like rmap_walk, but caller holds relevant rmap lock */
--void rmap_walk_locked(struct folio *folio, struct rmap_walk_control *rwc)
-+void rmap_walk_locked(struct folio *folio, const struct rmap_walk_control *rwc)
- {
- 	/* no ksm support for now */
- 	VM_BUG_ON_FOLIO(folio_test_ksm(folio), folio);
+ EXPORT_SYMBOL(unpin_user_page_range_dirty_lock);
 -- 
 2.34.1
 
