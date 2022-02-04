@@ -2,61 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 696A7C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 10:00:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CAFAC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 10:00:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358078AbiBDKAY (ORCPT
+        id S1358113AbiBDKAj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 05:00:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41984 "EHLO
+        Fri, 4 Feb 2022 05:00:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358064AbiBDKAV (ORCPT
+        with ESMTP id S1358112AbiBDKAf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 05:00:21 -0500
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BAEEC06173D;
-        Fri,  4 Feb 2022 02:00:21 -0800 (PST)
-Received: from ip4d144895.dynamic.kabel-deutschland.de ([77.20.72.149] helo=[192.168.66.200]); authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1nFvO6-0005Ng-6Z; Fri, 04 Feb 2022 11:00:18 +0100
-Message-ID: <9d10a295-e087-fbbf-3714-63c872cc6dd6@leemhuis.info>
-Date:   Fri, 4 Feb 2022 11:00:17 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] MIPS: Fix build error due to PTR used in more places
-Content-Language: en-BS
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Guenter Roeck <linux@roeck-us.net>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>, linux-mips@vger.kernel.org,
+        Fri, 4 Feb 2022 05:00:35 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFD97C061714
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 02:00:34 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nFvOI-00046u-LK; Fri, 04 Feb 2022 11:00:30 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nFvOH-00ESEP-B6; Fri, 04 Feb 2022 11:00:28 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nFvOF-006bvj-IA; Fri, 04 Feb 2022 11:00:27 +0100
+Date:   Fri, 4 Feb 2022 11:00:27 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     William Breathitt Gray <vilhelm.gray@gmail.com>
+Cc:     jic23@kernel.org, linux-iio@vger.kernel.org,
         linux-kernel@vger.kernel.org
-References: <20220125141946.54114-1-tsbogend@alpha.franken.de>
- <20220130163725.GA2792319@roeck-us.net>
- <20220131100845.GA19252@alpha.franken.de>
- <585e1812-3d0c-552f-3195-4e947b4fef9d@leemhuis.info>
-In-Reply-To: <585e1812-3d0c-552f-3195-4e947b4fef9d@leemhuis.info>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1643968821;2f4d6b38;
-X-HE-SMSGID: 1nFvO6-0005Ng-6Z
+Subject: Re: [PATCH v2] counter: Set counter device name
+Message-ID: <20220204100027.2gmvmkxyrheb5oqu@pengutronix.de>
+References: <20220204084551.16397-1-vilhelm.gray@gmail.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="heuvhq2g5hrqecuj"
+Content-Disposition: inline
+In-Reply-To: <20220204084551.16397-1-vilhelm.gray@gmail.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04.02.22 10:26, Thorsten Leemhuis wrote:
 
-> Anyway: I no big deal (just makes regression tracking a lot harder), I
-> can tell regzbot manually about the fix:
-> 
-> #regzbot introduced: 50317b636e7184d
+--heuvhq2g5hrqecuj
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Argh, sorry, stupid me doesn't known how to use his own bot:
+On Fri, Feb 04, 2022 at 05:45:51PM +0900, William Breathitt Gray wrote:
+> Naming the counter device provides a convenient way to identify it in
+> devres_log events and similar situations. This patch names the counter
+> device by combining the prefix "counter" with the counter device's
+> unique ID.
+>=20
+> Cc: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 
-#regzbot introduced: fa62f39dc7e2
-#regzbot fixed-by: 50317b636e7184d
+LGTM
 
-:-/ Sorry for the noise.
+Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
 
-Ciao, Torsten
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--heuvhq2g5hrqecuj
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmH8+TcACgkQwfwUeK3K
+7AneYAf+OX54ufM7pcEPoCY+/Dpy4FpwTabuoAwFMSffDg742+lPEuCtmE8G1X6F
+am7RV4JbYKv4RuP9QtbXMLNBCU5GyiWeuN7kov5YaQGNxdKIfGVpXgeGiEwQ0W4c
+Hc/2toqbG6JcD4pIaUAHnovg+O9laHCzNuBfckA+lHAQR0SuDuuBw//efb4Dkmvk
+zIfTnWmLRm1EHuR8PS+ieCU9rt5JEnXsUYbwHqkn05CxwIxR8HI9XV0iSpTrH5M8
+J/lNjl5m8mQl8oYnH9IitqWCjuwgcqavgRoRtJ5+DLjuo3VUqVAgQXH6hC+F7B4B
+rHk5t+f3MUd/e29EbN7qRRNGEGwsnA==
+=XWbg
+-----END PGP SIGNATURE-----
+
+--heuvhq2g5hrqecuj--
