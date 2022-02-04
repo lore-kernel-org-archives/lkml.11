@@ -2,116 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF374C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 13:33:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FB66C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 13:35:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358875AbiBDNdj (ORCPT
+        id S1358884AbiBDNfd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 08:33:39 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:42488 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1356417AbiBDNdh (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 08:33:37 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=4Ca9I/sAMzQIMCAYXBkIkytKRwdb7KuHMc9w1XGE+7A=; b=0N30fHOeJKKiEmBzHSSAjOwTCo
-        NpvFMTne+ReR7L/rMoQIq2d5/1hRKjsDPqIORGjajQW+UTS2E2q3Z/w61nDp6gVZ6OVzpiYsw2EyW
-        pLoL11FZdneTXfJN6pJjgvs7Ay984ejA0+yx0g4+Hjhydr9jhY9l2gbt/i994/BsW7lk=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nFyhL-004Gxv-Fm; Fri, 04 Feb 2022 14:32:23 +0100
-Date:   Fri, 4 Feb 2022 14:32:23 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     nick.hawkins@hpe.com, verdun@hpe.com,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Corey Minyard <minyard@acm.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Brown <broonie@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        soc@kernel.org, Shawn Guo <shawnguo@kernel.org>,
-        Stanislav Jakubek <stano.jakubek@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Hao Fang <fanghao11@huawei.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Wang Kefeng <wangkefeng.wang@huawei.com>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-i2c@vger.kernel.org,
-        openipmi-developer@lists.sourceforge.net,
-        linux-mtd@lists.infradead.org, netdev@vger.kernel.org,
-        linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH] HPE BMC GXP SUPPORT
-Message-ID: <Yf0q5/Jus+mz0B2E@lunn.ch>
-References: <nick.hawkins@hpe.com>
- <20220202165315.18282-1-nick.hawkins@hpe.com>
- <Yf0Wm1kOV1Pss9HJ@shell.armlinux.org.uk>
+        Fri, 4 Feb 2022 08:35:33 -0500
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:25737 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229710AbiBDNf3 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 4 Feb 2022 08:35:29 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1643981729; x=1675517729;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=IoStn4DVmu98unEojJq/9FbPgC7txAU64kKBw7DDTL0=;
+  b=Vf2C/a3Ko0SXRZcj3BEDN+y1zeCTq5K0/rGOntr/96M67czDDdaepKhU
+   /EXgwj3pRJW+dH1UKfE2vT9LzDnObn9ZNV87VZl9ab+23zvaeCHxjMUBJ
+   OjtfHZKYtZ44fGSlzzbR4ghHJ5oHtHKQ6jV5TGZgX+bGSzWCvD7jiQrp9
+   SJEz3BkrcJ1cbmY5/ItI6eC8/uBz+z1FAv5qHYABJift1gyMLHLDUSP72
+   HtbC0q1ASizYs2ymcwfb6cxrBceWiygzkaYjxFBxRw8cdX9NltLawR/Q8
+   DNG0J7D81GwEQqKo9HSHPQ/P1I6a5foR4pc2U6j62oXWZK9uVAhHd196U
+   g==;
+IronPort-SDR: bQiJFDJTWGJ+vJW5Om2VIWR+4ssi1NDmVcD6CoXPejWtOuqEzDC6AL1qOuvKg7ghwhKn+rzGbn
+ Ppm5v0ZWtq/2FS5+vzvJb3dWzoRlQ1X8cNc6rhIcnatpj+63qx9kD3DSfKJjy+oRZn3dm8AC40
+ DvVN8ypkB8BXiQqi6iYkAghFLBbFqZdUbbSctl71I23E/gdTFdswBBsTzpHINffIwtZPi38kh0
+ 4BTz6dsekaUgBYapiImGavrrzmp3z5t+ZThLXW4PIMq2Bn8W8RB6W4KSLqINzHYl4eAYqmBsZh
+ qdu1u8tMgPZVLoy7DXD3Www7
+X-IronPort-AV: E=Sophos;i="5.88,342,1635231600"; 
+   d="scan'208";a="161111958"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Feb 2022 06:35:28 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 4 Feb 2022 06:35:28 -0700
+Received: from ROB-ULT-M18064N.mchp-main.com (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Fri, 4 Feb 2022 06:35:24 -0700
+From:   Tudor Ambarus <tudor.ambarus@microchip.com>
+To:     <herbert@gondor.apana.org.au>
+CC:     <nicolas.ferre@microchip.com>, <claudiu.beznea@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <linux-crypto@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <kavyasree.kotagiri@microchip.com>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>
+Subject: [PATCH] crypto: atmel-tdes: Add support for the TDES IP available on sama7g5 SoC
+Date:   Fri, 4 Feb 2022 15:35:22 +0200
+Message-ID: <20220204133522.498387-1-tudor.ambarus@microchip.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yf0Wm1kOV1Pss9HJ@shell.armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> > +#include <linux/init.h>
-> > +#include <asm/mach/arch.h>
-> > +#include <asm/mach/map.h>
-> > +#include <linux/of.h>
-> > +#include <linux/of_platform.h>
-> > +#include <linux/clk-provider.h>
-> > +#include <linux/clocksource.h>
-> 
-> It's normal to list all linux/ includes before asm/ includes. Please
-> rearrange.
+Add support for the TDES IP found on sama7g5.
 
-Hi Nick
+Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+---
+ drivers/crypto/atmel-tdes.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Since you are new to the kernel, please let me point out, you should
-consider Russell comments for all your code, not just this one file.
-Many of the comments are generic to code anywhere in the kernel. So it
-would be good to fix the same issues in the rest of your code base
-before submitting them.
+diff --git a/drivers/crypto/atmel-tdes.c b/drivers/crypto/atmel-tdes.c
+index e30786ec9f2d..9fd7b8e439d2 100644
+--- a/drivers/crypto/atmel-tdes.c
++++ b/drivers/crypto/atmel-tdes.c
+@@ -1130,6 +1130,7 @@ static void atmel_tdes_get_cap(struct atmel_tdes_dev *dd)
+ 
+ 	/* keep only major version number */
+ 	switch (dd->hw_version & 0xf00) {
++	case 0x800:
+ 	case 0x700:
+ 		dd->caps.has_dma = 1;
+ 		dd->caps.has_cfb_3keys = 1;
+-- 
+2.25.1
 
-I would also suggest that when you start submitting drivers, submit
-just one or two to start with. You will learn a lot from the feedback
-you get, and you can apply what you have learnt to the rest of your
-code before you post them for review.
-
-I would also suggest you spend 30 minutes a day just reading comments
-other patches receive. You can also learn a lot that way, see if the
-comments apply to your own code. You will also learn about processes
-this way, which can be just as challenging to get right as code.
-
-     Andrew
