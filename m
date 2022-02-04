@@ -2,73 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61448C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 17:44:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8EAAC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 17:44:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377061AbiBDRn7 (ORCPT
+        id S1377047AbiBDRoe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 12:43:59 -0500
-Received: from mout.gmx.net ([212.227.15.19]:43873 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230087AbiBDRn6 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 12:43:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1643996637;
-        bh=U/c32utP3ktSCsK73GoR8A5dbuyq12FfNbI2MiDifL4=;
-        h=X-UI-Sender-Class:Date:From:To:Cc:Subject;
-        b=ZjgEQN8eM/8Vkwiz/vFaUad4TkIAh/1g52MNysYOILYOVozCOzd7um+BsuIj1fDUi
-         tma+w2sVXGXOHQjyiEhkxgZaFad4KygWl6khXAG86EZ2EtAN+UzqJsBfBGMOqqrJal
-         r0OnqvGINZl0gM7USoiiP+yx/5HNlvzLfVTEnpww=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.100.20] ([46.142.34.248]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1M4axg-1nFUOQ3mcg-001hoU; Fri, 04
- Feb 2022 18:43:56 +0100
-Message-ID: <08956dbc-d882-220f-9006-54a01aa41ef9@gmx.de>
-Date:   Fri, 4 Feb 2022 18:43:56 +0100
+        Fri, 4 Feb 2022 12:44:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35630 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230087AbiBDRob (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 4 Feb 2022 12:44:31 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC551C061714;
+        Fri,  4 Feb 2022 09:44:30 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 4C08CCE23C8;
+        Fri,  4 Feb 2022 17:44:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47D48C004E1;
+        Fri,  4 Feb 2022 17:44:27 +0000 (UTC)
+Date:   Fri, 4 Feb 2022 12:44:26 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Daniel Bristot de Oliveira <bristot@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, linux-trace-devel@vger.kernel.org
+Subject: Re: [PATCH 4/4] rtla/osnoise: Fix segmentation fault when failing
+ to enable -t
+Message-ID: <20220204124426.54d82ce2@gandalf.local.home>
+In-Reply-To: <264ff7941b7551ec0b6e5862e40cf3dd593d0ff0.1643990447.git.bristot@kernel.org>
+References: <cover.1643990447.git.bristot@kernel.org>
+        <264ff7941b7551ec0b6e5862e40cf3dd593d0ff0.1643990447.git.bristot@kernel.org>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-From:   Ronald Warsow <rwarsow@gmx.de>
-To:     linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org
-Content-Language: de-DE
-Subject: Re: [PATCH 5.16 00/43] 5.16.6-rc1 review
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Provags-ID: V03:K1:7hKSxxMKkbBQipIIB+Ej7VWcKB2PVSV0ar70A57y/j03SbU7pkX
- ucBXZNZA06bKbT3E+2T9b4wnkS1Z2t22aWYw1qsgKf9aLwYvr67653IXbh9nUKu14bGoaIe
- ch0FVdOchZWisNPYOq03zIWwaure88bgZPNlbONuuEEQDYgXt5GV9xsdfe1S6Ehpbj8JYFF
- NnkApp5XhtgbPiX4+ZpBA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:EtLJI7msm2Y=:YCyGqRkCExfu5nsmdGrLtG
- DXkAbr3ZUcvO/8qGcYHB38re/TlbqDF9iSMjNusVW+aa/7CWWUn6HVIJu0VZko/vgvpB/DI6s
- S9TBcdyV0pqPNPAc0xCIX39o3BiFAF4olRS4qKDfhb3B1mEDbCFEGoRSxdyaszZmlmiIhhdkn
- wOtrWKA82/JM2qSMEJNuNTfWFhN8Lhj60puI64YB5Oe9mfQq0uSiqdXYnBGosPvjLeaNBRlWr
- 53uChPSW3F96issM2cDrlZe/4kBS8oBqslN9fq7TQzYRXjpPLsfF8PmUfeL5SJyzXuPQZH4zr
- VAwe8+q8ErC6Cl6YjqroH6bDYidDSSCd1cet/6GU6r71TDCV5GpIFEwbZUEnicIvjH05Bvb6q
- XmZs3FIFPwb64KHj8yRMBCL00md+t324K1peFJsme9Ev8K01MUP+o+IQ7qmn+k0EoOCnpn1it
- B7Leh68BH852tlnqDX4teIyq9BkjpgJPpPtr1Pl8cTiwHfdWI7HQfxWHPcAtUmxos21P8vd9W
- QemztYmtTOOrUeNyrrQy+ZRYYGt5I9ZGWpkNAE0xXp7/S0x3NcV7HjeMPkPg83/Ni2Sp5d9pq
- MqfGk5/7Z24h8wh2z+PUSzly8QnQxtemYHdl/i2kebJUJ9LJmm8h9Z0jH93O0SAHmQkDYuxTE
- VHZXU8679AmXlRlWXDEf21xuBiutFA/OdHgs3ROlSnIvJpuMmcsrAAaPGiHyN5K9dmN81XHur
- xSUMOgxfAG8TtGtvOPS40CajjVeU99CWZgtSRqMEYlFjxb/EzxmkJhkzTWg9LpN9hKW223Gnz
- /tfoA0lAPwkEMRKmXyD6xqv3SXq+k942JXIaSAZNYOpwRyX7NM2ZJXhsgMSZcQjr6i4XShXkk
- BypXWyhr5vEj1R4CRTBgykYgLLOrQLh3u7slUdp9lHud/etr2Fvs+ygtpaUBx7zrWpw6llr3z
- tg8if24FvzmikC+E+M7MgDhgMHs0vj5YT+jbM8Hr6C+3o6ii+nzTS3O/P0MX8pxzDa2+8bPjS
- cJRZT3DStklIJ7buWUegEt0yKhEMI86OGDBKXhyszfQ0NqCJh+7fO7LfkOsXBcn1FUEzLKUM8
- C//FD9KvO2occE=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-hallo Greg
+On Fri,  4 Feb 2022 17:24:05 +0100
+Daniel Bristot de Oliveira <bristot@kernel.org> wrote:
 
-5.16.6-rc1
+> --- a/tools/tracing/rtla/src/osnoise.c
+> +++ b/tools/tracing/rtla/src/osnoise.c
+> @@ -750,6 +750,9 @@ void osnoise_put_context(struct osnoise_context *context)
+>   */
+>  void osnoise_destroy_tool(struct osnoise_tool *top)
+>  {
+> +	if (!top)
+> +		return;
+> +
+>  	trace_instance_destroy(&top->trace);
+>  
+>  	if (top->context)
 
-compiles, boots and runs on my x86_64
-(Intel i5-11400, Fedora 35)
+Um, don't you still need to initialize everything to NULL?
 
-Thanks
+i.e.
 
-Tested-by: Ronald Warsow <rwarsow@gmx.de>
-regards
-Ronald
+nt osnoise_top_main(int argc, char **argv)
+{
+        struct osnoise_top_params *params;
+        struct trace_instance *trace;
+        struct osnoise_tool *record;
+        struct osnoise_tool *tool;
+        int return_value = 1;
+        int retval;
+
+
+
+Does not guarantee that record and tool will be initialized to NULL.
+
+-- Steve
