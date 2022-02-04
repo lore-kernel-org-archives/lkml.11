@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB7D9C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 20:05:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE69FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 20:05:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239564AbiBDUE7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 15:04:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40794 "EHLO
+        id S243034AbiBDUFD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 15:05:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239247AbiBDUDB (ORCPT
+        with ESMTP id S239239AbiBDUDB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 4 Feb 2022 15:03:01 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE850C0613E6
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 11:59:12 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA472C061744
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 11:59:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=5ceAUAT4Vee+0EAbCvwnmoDPrxJaboihVhPCOhlPlTw=; b=dJrhAaMhXwdxCqG26FeGweR8mm
-        L0SDMW76URQW9r23SaCMTH4uqr6bbrlu+EtT+yQWvwua7WnHV09au1fBqDpdaf2HOJi3I3RCdYmwW
-        tZrSc70x45edae/jMdUrN4537YtY4PhS8CqwvKgdJ0iBipEnSN31zcMLIXp8CHqdXJmYIqtzQUPmW
-        l5J2uGR4uHUScjMHgVmaDN7Xc5Urt6/iAJaCtun7zkbiQ2ULMcx+z7M7W0DC1sOmqbGyJsAin0cLu
-        bOvrGeHOzhB7osBdTfd7ksGfgmQynhdkb/6XiHmLp/qvgnKUEZEsOA8OzT9MdHJa/2rqxY0bgG+RC
-        G3JVsbRg==;
+        bh=lqHl8xBvyV60Dd9+nj/xXQC+e0UCf3P24iA9ARtiGrs=; b=W9LZfu2k1ivZtxAZLNsbyblH9c
+        Pgqr3OqHUZJ7pXw2DJa04Hn6Cb5ZhQFB2JZ8nsaiSlvll2o5yCUk7KQk56cTTjQyMOSjQAo2gGemQ
+        q4axcyZaMsq5eJNjGAIHavXNFRJ8O1FN2qiSOfvpipKBioJ6Zvhez/JsG6eX9PQ/tIo5WmjguSSbr
+        so4pUghKEC0NBonlTWLwshZva3qCh+3DS7i4PTBTt57NmJSGZt9gj9Ghhw1fiAXxS9bbQMVbosDzA
+        S27a9eQZXOSeF5zB1Oh5/O3hAYEQplLLMdAxIpgQ4zqc3/Sxa1iFk8S3QvPVqEEp/FjusFcRyjxGy
+        WXB2ViAg==;
 Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nG4jU-007LlD-2y; Fri, 04 Feb 2022 19:59:00 +0000
+        id 1nG4jU-007LlX-Pg; Fri, 04 Feb 2022 19:59:00 +0000
 From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
 To:     linux-mm@kvack.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
@@ -34,9 +34,9 @@ Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
         John Hubbard <jhubbard@nvidia.com>,
         Jason Gunthorpe <jgg@nvidia.com>,
         William Kucharski <william.kucharski@oracle.com>
-Subject: [PATCH 06/75] mm/gup: Change the calling convention for compound_next()
-Date:   Fri,  4 Feb 2022 19:57:43 +0000
-Message-Id: <20220204195852.1751729-7-willy@infradead.org>
+Subject: [PATCH 13/75] mm: Add folio_pincount_ptr()
+Date:   Fri,  4 Feb 2022 19:57:50 +0000
+Message-Id: <20220204195852.1751729-14-willy@infradead.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220204195852.1751729-1-willy@infradead.org>
 References: <20220204195852.1751729-1-willy@infradead.org>
@@ -46,8 +46,7 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Return the head page instead of storing it to a passed parameter.
-Reorder the arguments to match the calling function's arguments.
+This is the folio equivalent of compound_pincount_ptr().
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 Reviewed-by: Christoph Hellwig <hch@lst.de>
@@ -55,53 +54,25 @@ Reviewed-by: John Hubbard <jhubbard@nvidia.com>
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 Reviewed-by: William Kucharski <william.kucharski@oracle.com>
 ---
- mm/gup.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ include/linux/mm.h | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/mm/gup.c b/mm/gup.c
-index 75a0a1fd4c2a..7e4bdae83e9b 100644
---- a/mm/gup.c
-+++ b/mm/gup.c
-@@ -270,9 +270,8 @@ static inline struct page *compound_range_next(struct page *start,
- 	return page;
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index dd7d6e95e43b..d5f0f2cfd552 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -891,6 +891,11 @@ static inline void destroy_compound_page(struct page *page)
+ 	compound_page_dtors[page[1].compound_dtor](page);
  }
  
--static inline void compound_next(unsigned long i, unsigned long npages,
--				 struct page **list, struct page **head,
--				 unsigned int *ntails)
-+static inline struct page *compound_next(struct page **list,
-+		unsigned long npages, unsigned long i, unsigned int *ntails)
++static inline atomic_t *folio_pincount_ptr(struct folio *folio)
++{
++	return &folio_page(folio, 1)->compound_pincount;
++}
++
+ static inline int head_compound_pincount(struct page *head)
  {
- 	struct page *page;
- 	unsigned int nr;
-@@ -283,8 +282,8 @@ static inline void compound_next(unsigned long i, unsigned long npages,
- 			break;
- 	}
- 
--	*head = page;
- 	*ntails = nr - i;
-+	return page;
- }
- 
- /**
-@@ -322,7 +321,7 @@ void unpin_user_pages_dirty_lock(struct page **pages, unsigned long npages,
- 	}
- 
- 	for (index = 0; index < npages; index += ntails) {
--		compound_next(index, npages, pages, &head, &ntails);
-+		head = compound_next(pages, npages, index, &ntails);
- 		/*
- 		 * Checking PageDirty at this point may race with
- 		 * clear_page_dirty_for_io(), but that's OK. Two key
-@@ -411,7 +410,7 @@ void unpin_user_pages(struct page **pages, unsigned long npages)
- 		return;
- 
- 	for (index = 0; index < npages; index += ntails) {
--		compound_next(index, npages, pages, &head, &ntails);
-+		head = compound_next(pages, npages, index, &ntails);
- 		put_compound_head(head, ntails, FOLL_PIN);
- 	}
- }
+ 	return atomic_read(compound_pincount_ptr(head));
 -- 
 2.34.1
 
