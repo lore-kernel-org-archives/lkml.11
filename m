@@ -2,267 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15CB1C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 23:22:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1D45C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 23:22:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378056AbiBDXWB (ORCPT
+        id S1378067AbiBDXWP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 18:22:01 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:60040 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235330AbiBDXV5 (ORCPT
+        Fri, 4 Feb 2022 18:22:15 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:35074 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235330AbiBDXWO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 18:21:57 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 90D71B83970;
-        Fri,  4 Feb 2022 23:21:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4E3EC004E1;
-        Fri,  4 Feb 2022 23:21:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644016915;
-        bh=dNQlXe8yFAAudNMC9z/zBan2SRh+F26p++tT+7IHG2o=;
-        h=Date:From:To:Cc:Subject:From;
-        b=t1TGHu40hFiDfZvEEd1lIZiV6ovwel07U5OW2t/FskDZ8I416zduyN4FnDKTKbD6S
-         bd3igbmkybKpQ58MoaZ7G906Vuvx3s5l/Qz4Z3s9qm2a2UPYPDMgbU8tjE4zY1nmYs
-         M7GqknNhjGf2/YqlAysES4dzIoPvnpQkB4szhyZIErVRLC//0SsEdg1kqG1SPVvd3A
-         OV3rukzB63/XLYIWEE09XvH1LisJKVFFvPbVkWAd4DZhPQK4IS/MQ83JXZwtpxFAis
-         MQmUnvYHjX1lELAAAJcN83l84hGnN9h4oh/AUDSVgpBvHcHBVSQfntTT2TMxDGfXWd
-         2khiN7OXY1hxA==
-Date:   Fri, 4 Feb 2022 17:29:06 -0600
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Denis Kirjanov <kda@linux-powerpc.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-hardening@vger.kernel.org
-Subject: [PATCH][next] net: sundance: Replace one-element array with
- non-array object
-Message-ID: <20220204232906.GA442985@embeddedor>
+        Fri, 4 Feb 2022 18:22:14 -0500
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1644016932;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=DBK2yZNYxvLy8x/PDAEC/NG09v5eFxGT61LctE0oxSY=;
+        b=aBDit1LkinvPfla5El5YaYm0kJu7cY2oxGsuMNIho93oSkb23VHPKLKfDIuNZT5GL2ZXsK
+        TMF2V7N8gzmmi0wwtlMRKOtVPURyNjzeSE4j1kVjooS6o1HavQyxx7MlHx8vnTkHQtG7/x
+        Faijrr64fpfWl3bPcBV63Zh5FNahx4KE7LxngzjUc2UixffxT5Ba0OuhgmulGbv8SbFNO7
+        sd06yCQaFBq0jrREyL0RfZDMXkfzYpSTa+w+DKPGvNXH3JOkQB4gXct2S8dy9ubTJs1Ypt
+        0fNlno6ElIe3scEa9P6ceksKYw3OHjRhSlE2E8tuaK0w0orsacxqjRRdw4JxDg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1644016932;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=DBK2yZNYxvLy8x/PDAEC/NG09v5eFxGT61LctE0oxSY=;
+        b=0USIK3EJKSRVIDVzeQ8qFn4rlRy37TsVmeexs71EbJ4kLHSFBJnN3VeIjAdrtxVUaJU3HP
+        dqhQiGyXYf0dqEDA==
+To:     Fenghua Yu <fenghua.yu@intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andy Lutomirski <luto@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jacob Pan <jacob.jun.pan@linux.intel.com>,
+        Ashok Raj <ashok.raj@intel.com>,
+        Ravi V Shankar <ravi.v.shankar@intel.com>
+Cc:     iommu@lists.linux-foundation.org, x86 <x86@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Fenghua Yu <fenghua.yu@intel.com>
+Subject: Re: [PATCH v3 04/11] kernel/fork: Initialize mm's PASID
+In-Reply-To: <20220128202905.2274672-5-fenghua.yu@intel.com>
+References: <20220128202905.2274672-1-fenghua.yu@intel.com>
+ <20220128202905.2274672-5-fenghua.yu@intel.com>
+Date:   Sat, 05 Feb 2022 00:22:12 +0100
+Message-ID: <87wniab4kb.ffs@tglx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It seems this one-element array is not actually being used as an
-array of variable size, so we can just replace it with just a
-non-array object of type struct desc_frag and refactor a bit the
-rest of the code.
+On Fri, Jan 28 2022 at 12:28, Fenghua Yu wrote:
+> A new mm doesn't have a PASID yet when it's created. Initialize
+> the mm's PASID on fork() or for init_mm to INVALID_IOASID (-1).
 
-This helps with the ongoing efforts to globally enable -Warray-bounds
-and get us closer to being able to tighten the FORTIFY_SOURCE routines
-on memcpy().
+I must be missing something here.
 
-This issue was found with the help of Coccinelle and audited and fixed,
-manually.
+> diff --git a/include/linux/sched/mm.h b/include/linux/sched/mm.h
+> index aa5f09ca5bcf..c74d1edbac2f 100644
+> --- a/include/linux/sched/mm.h
+> +++ b/include/linux/sched/mm.h
+> @@ -8,6 +8,7 @@
+>  #include <linux/mm_types.h>
+>  #include <linux/gfp.h>
+>  #include <linux/sync_core.h>
+> +#include <linux/ioasid.h>
+>  
+>  /*
+>   * Routines for handling mm_structs
+> @@ -433,4 +434,13 @@ static inline void membarrier_update_current_mm(struct mm_struct *next_mm)
+>  }
+>  #endif
+>  
+> +#ifdef CONFIG_IOMMU_SVA
+> +static inline void mm_pasid_init(struct mm_struct *mm)
+> +{
+> +	mm->pasid = INVALID_IOASID;
+> +}
+> +#else
+> +static inline void mm_pasid_init(struct mm_struct *mm) {}
+> +#endif
+> +
+>  #endif /* _LINUX_SCHED_MM_H */
 
-[1] https://en.wikipedia.org/wiki/Flexible_array_member
-[2] https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
+So this adds mm_pasid_init() to linux/sched/mm.h which replaces:
 
-Link: https://github.com/KSPP/linux/issues/79
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
----
- drivers/net/ethernet/dlink/sundance.c | 60 +++++++++++++--------------
- 1 file changed, 30 insertions(+), 30 deletions(-)
+> -static void mm_init_pasid(struct mm_struct *mm)
+> -{
+> -#ifdef CONFIG_IOMMU_SVA
+> -	mm->pasid = INIT_PASID;
+> -#endif
+> -}
+> -
 
-diff --git a/drivers/net/ethernet/dlink/sundance.c b/drivers/net/ethernet/dlink/sundance.c
-index c710dc17be90..8dd7bf9014ec 100644
---- a/drivers/net/ethernet/dlink/sundance.c
-+++ b/drivers/net/ethernet/dlink/sundance.c
-@@ -340,7 +340,7 @@ enum wake_event_bits {
- struct netdev_desc {
- 	__le32 next_desc;
- 	__le32 status;
--	struct desc_frag { __le32 addr, length; } frag[1];
-+	struct desc_frag { __le32 addr, length; } frag;
- };
- 
- /* Bits in netdev_desc.status */
-@@ -980,8 +980,8 @@ static void tx_timeout(struct net_device *dev, unsigned int txqueue)
- 				le32_to_cpu(np->tx_ring[i].next_desc),
- 				le32_to_cpu(np->tx_ring[i].status),
- 				(le32_to_cpu(np->tx_ring[i].status) >> 2) & 0xff,
--				le32_to_cpu(np->tx_ring[i].frag[0].addr),
--				le32_to_cpu(np->tx_ring[i].frag[0].length));
-+				le32_to_cpu(np->tx_ring[i].frag.addr),
-+				le32_to_cpu(np->tx_ring[i].frag.length));
- 		}
- 		printk(KERN_DEBUG "TxListPtr=%08x netif_queue_stopped=%d\n",
- 			ioread32(np->base + TxListPtr),
-@@ -1027,7 +1027,7 @@ static void init_ring(struct net_device *dev)
- 		np->rx_ring[i].next_desc = cpu_to_le32(np->rx_ring_dma +
- 			((i+1)%RX_RING_SIZE)*sizeof(*np->rx_ring));
- 		np->rx_ring[i].status = 0;
--		np->rx_ring[i].frag[0].length = 0;
-+		np->rx_ring[i].frag.length = 0;
- 		np->rx_skbuff[i] = NULL;
- 	}
- 
-@@ -1039,16 +1039,16 @@ static void init_ring(struct net_device *dev)
- 		if (skb == NULL)
- 			break;
- 		skb_reserve(skb, 2);	/* 16 byte align the IP header. */
--		np->rx_ring[i].frag[0].addr = cpu_to_le32(
-+		np->rx_ring[i].frag.addr = cpu_to_le32(
- 			dma_map_single(&np->pci_dev->dev, skb->data,
- 				np->rx_buf_sz, DMA_FROM_DEVICE));
- 		if (dma_mapping_error(&np->pci_dev->dev,
--					np->rx_ring[i].frag[0].addr)) {
-+					np->rx_ring[i].frag.addr)) {
- 			dev_kfree_skb(skb);
- 			np->rx_skbuff[i] = NULL;
- 			break;
- 		}
--		np->rx_ring[i].frag[0].length = cpu_to_le32(np->rx_buf_sz | LastFrag);
-+		np->rx_ring[i].frag.length = cpu_to_le32(np->rx_buf_sz | LastFrag);
- 	}
- 	np->dirty_rx = (unsigned int)(i - RX_RING_SIZE);
- 
-@@ -1097,12 +1097,12 @@ start_tx (struct sk_buff *skb, struct net_device *dev)
- 
- 	txdesc->next_desc = 0;
- 	txdesc->status = cpu_to_le32 ((entry << 2) | DisableAlign);
--	txdesc->frag[0].addr = cpu_to_le32(dma_map_single(&np->pci_dev->dev,
-+	txdesc->frag.addr = cpu_to_le32(dma_map_single(&np->pci_dev->dev,
- 				skb->data, skb->len, DMA_TO_DEVICE));
- 	if (dma_mapping_error(&np->pci_dev->dev,
--				txdesc->frag[0].addr))
-+				txdesc->frag.addr))
- 			goto drop_frame;
--	txdesc->frag[0].length = cpu_to_le32 (skb->len | LastFrag);
-+	txdesc->frag.length = cpu_to_le32 (skb->len | LastFrag);
- 
- 	/* Increment cur_tx before tasklet_schedule() */
- 	np->cur_tx++;
-@@ -1151,7 +1151,7 @@ reset_tx (struct net_device *dev)
- 		skb = np->tx_skbuff[i];
- 		if (skb) {
- 			dma_unmap_single(&np->pci_dev->dev,
--				le32_to_cpu(np->tx_ring[i].frag[0].addr),
-+				le32_to_cpu(np->tx_ring[i].frag.addr),
- 				skb->len, DMA_TO_DEVICE);
- 			dev_kfree_skb_any(skb);
- 			np->tx_skbuff[i] = NULL;
-@@ -1271,12 +1271,12 @@ static irqreturn_t intr_handler(int irq, void *dev_instance)
- 				skb = np->tx_skbuff[entry];
- 				/* Free the original skb. */
- 				dma_unmap_single(&np->pci_dev->dev,
--					le32_to_cpu(np->tx_ring[entry].frag[0].addr),
-+					le32_to_cpu(np->tx_ring[entry].frag.addr),
- 					skb->len, DMA_TO_DEVICE);
- 				dev_consume_skb_irq(np->tx_skbuff[entry]);
- 				np->tx_skbuff[entry] = NULL;
--				np->tx_ring[entry].frag[0].addr = 0;
--				np->tx_ring[entry].frag[0].length = 0;
-+				np->tx_ring[entry].frag.addr = 0;
-+				np->tx_ring[entry].frag.length = 0;
- 			}
- 			spin_unlock(&np->lock);
- 		} else {
-@@ -1290,12 +1290,12 @@ static irqreturn_t intr_handler(int irq, void *dev_instance)
- 				skb = np->tx_skbuff[entry];
- 				/* Free the original skb. */
- 				dma_unmap_single(&np->pci_dev->dev,
--					le32_to_cpu(np->tx_ring[entry].frag[0].addr),
-+					le32_to_cpu(np->tx_ring[entry].frag.addr),
- 					skb->len, DMA_TO_DEVICE);
- 				dev_consume_skb_irq(np->tx_skbuff[entry]);
- 				np->tx_skbuff[entry] = NULL;
--				np->tx_ring[entry].frag[0].addr = 0;
--				np->tx_ring[entry].frag[0].length = 0;
-+				np->tx_ring[entry].frag.addr = 0;
-+				np->tx_ring[entry].frag.length = 0;
- 			}
- 			spin_unlock(&np->lock);
- 		}
-@@ -1372,16 +1372,16 @@ static void rx_poll(struct tasklet_struct *t)
- 			    (skb = netdev_alloc_skb(dev, pkt_len + 2)) != NULL) {
- 				skb_reserve(skb, 2);	/* 16 byte align the IP header */
- 				dma_sync_single_for_cpu(&np->pci_dev->dev,
--						le32_to_cpu(desc->frag[0].addr),
-+						le32_to_cpu(desc->frag.addr),
- 						np->rx_buf_sz, DMA_FROM_DEVICE);
- 				skb_copy_to_linear_data(skb, np->rx_skbuff[entry]->data, pkt_len);
- 				dma_sync_single_for_device(&np->pci_dev->dev,
--						le32_to_cpu(desc->frag[0].addr),
-+						le32_to_cpu(desc->frag.addr),
- 						np->rx_buf_sz, DMA_FROM_DEVICE);
- 				skb_put(skb, pkt_len);
- 			} else {
- 				dma_unmap_single(&np->pci_dev->dev,
--					le32_to_cpu(desc->frag[0].addr),
-+					le32_to_cpu(desc->frag.addr),
- 					np->rx_buf_sz, DMA_FROM_DEVICE);
- 				skb_put(skb = np->rx_skbuff[entry], pkt_len);
- 				np->rx_skbuff[entry] = NULL;
-@@ -1427,18 +1427,18 @@ static void refill_rx (struct net_device *dev)
- 			if (skb == NULL)
- 				break;		/* Better luck next round. */
- 			skb_reserve(skb, 2);	/* Align IP on 16 byte boundaries */
--			np->rx_ring[entry].frag[0].addr = cpu_to_le32(
-+			np->rx_ring[entry].frag.addr = cpu_to_le32(
- 				dma_map_single(&np->pci_dev->dev, skb->data,
- 					np->rx_buf_sz, DMA_FROM_DEVICE));
- 			if (dma_mapping_error(&np->pci_dev->dev,
--				    np->rx_ring[entry].frag[0].addr)) {
-+				    np->rx_ring[entry].frag.addr)) {
- 			    dev_kfree_skb_irq(skb);
- 			    np->rx_skbuff[entry] = NULL;
- 			    break;
- 			}
- 		}
- 		/* Perhaps we need not reset this field. */
--		np->rx_ring[entry].frag[0].length =
-+		np->rx_ring[entry].frag.length =
- 			cpu_to_le32(np->rx_buf_sz | LastFrag);
- 		np->rx_ring[entry].status = 0;
- 		cnt++;
-@@ -1870,14 +1870,14 @@ static int netdev_close(struct net_device *dev)
- 			   (int)(np->tx_ring_dma));
- 		for (i = 0; i < TX_RING_SIZE; i++)
- 			printk(KERN_DEBUG " #%d desc. %4.4x %8.8x %8.8x.\n",
--				   i, np->tx_ring[i].status, np->tx_ring[i].frag[0].addr,
--				   np->tx_ring[i].frag[0].length);
-+				   i, np->tx_ring[i].status, np->tx_ring[i].frag.addr,
-+				   np->tx_ring[i].frag.length);
- 		printk(KERN_DEBUG "  Rx ring %8.8x:\n",
- 			   (int)(np->rx_ring_dma));
- 		for (i = 0; i < /*RX_RING_SIZE*/4 ; i++) {
- 			printk(KERN_DEBUG " #%d desc. %4.4x %4.4x %8.8x\n",
--				   i, np->rx_ring[i].status, np->rx_ring[i].frag[0].addr,
--				   np->rx_ring[i].frag[0].length);
-+				   i, np->rx_ring[i].status, np->rx_ring[i].frag.addr,
-+				   np->rx_ring[i].frag.length);
- 		}
- 	}
- #endif /* __i386__ debugging only */
-@@ -1892,19 +1892,19 @@ static int netdev_close(struct net_device *dev)
- 		skb = np->rx_skbuff[i];
- 		if (skb) {
- 			dma_unmap_single(&np->pci_dev->dev,
--				le32_to_cpu(np->rx_ring[i].frag[0].addr),
-+				le32_to_cpu(np->rx_ring[i].frag.addr),
- 				np->rx_buf_sz, DMA_FROM_DEVICE);
- 			dev_kfree_skb(skb);
- 			np->rx_skbuff[i] = NULL;
- 		}
--		np->rx_ring[i].frag[0].addr = cpu_to_le32(0xBADF00D0); /* poison */
-+		np->rx_ring[i].frag.addr = cpu_to_le32(0xBADF00D0); /* poison */
- 	}
- 	for (i = 0; i < TX_RING_SIZE; i++) {
- 		np->tx_ring[i].next_desc = 0;
- 		skb = np->tx_skbuff[i];
- 		if (skb) {
- 			dma_unmap_single(&np->pci_dev->dev,
--				le32_to_cpu(np->tx_ring[i].frag[0].addr),
-+				le32_to_cpu(np->tx_ring[i].frag.addr),
- 				skb->len, DMA_TO_DEVICE);
- 			dev_kfree_skb(skb);
- 			np->tx_skbuff[i] = NULL;
--- 
-2.27.0
+I.e. already existing code which is initializing mm->pasid with
+INIT_PASID (0) while the replacement initializes it with INVALID_IOASID
+(-1).
 
+The change log does not have any information about why INIT_PASID is the
+wrong initialization value and why this change is not having any side
+effects.
+
+It neither mentions why having this in a global available header makes
+sense when the only call site is in the C file from which the already
+existing function is removed.
+
+Thanks,
+
+        tglx
