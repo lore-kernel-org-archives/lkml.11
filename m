@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CFA0C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:27:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57681C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:27:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239329AbiBDJ1K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 04:27:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33326 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357612AbiBDJZk (ORCPT
+        id S1358436AbiBDJ1Q (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 04:27:16 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:53538 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1357808AbiBDJZl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 04:25:40 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F3CDC061775;
-        Fri,  4 Feb 2022 01:25:22 -0800 (PST)
+        Fri, 4 Feb 2022 04:25:41 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1C16CB836EF;
-        Fri,  4 Feb 2022 09:25:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5338EC004E1;
-        Fri,  4 Feb 2022 09:25:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AB0E0B836EF;
+        Fri,  4 Feb 2022 09:25:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8442C340EF;
+        Fri,  4 Feb 2022 09:25:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643966719;
-        bh=e34DISovHSTcPO6u9ZxmHUgM4W5YT1b+Uh6wVUOy/V8=;
+        s=korg; t=1643966738;
+        bh=i1By24VIoY2lC/wDQNa/L9E+AUs3H7fv9iax0aywOIY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jUR0/ksgSSMrq5gp1YihrRvHXFrCz8beTUfdDPmELGuZuIj5ASRvgSG9BK/2MhpM8
-         bX+Vxzny83ytjZPUbMFCLMVBjW+LXZhvTbE8nVE1gMiNdL6bbDA3yAWjOACACPW+oC
-         05mf6lbpq2QSXm+qXWQ88il47KivLd3eSJelW4E8=
+        b=X8jWDtJSssEH5+1KqnHgZ3MIpLrsdinnI6tNdAYI31dmcGJcdOzfqV4+qN/q20+fj
+         0rDZzslNjzL4cO/GhreqlTvglLpSQRwpx3QcwQPoUzBldShgpkxxwXGPmrenIzwToW
+         xK0xM9plw2kEHqlXUvcrgeokNd4AULgEpFA9f3Fg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maher Sanalla <msanalla@nvidia.com>,
-        Moshe Shemesh <moshe@nvidia.com>,
+        stable@vger.kernel.org, Roi Dayan <roid@nvidia.com>,
+        Vlad Buslov <vladbu@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH 5.16 18/43] net/mlx5: Use del_timer_sync in fw reset flow of halting poll
-Date:   Fri,  4 Feb 2022 10:22:25 +0100
-Message-Id: <20220204091917.771006504@linuxfoundation.org>
+Subject: [PATCH 5.16 23/43] net/mlx5: Bridge, Fix devlink deadlock on net namespace deletion
+Date:   Fri,  4 Feb 2022 10:22:30 +0100
+Message-Id: <20220204091917.928693824@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220204091917.166033635@linuxfoundation.org>
 References: <20220204091917.166033635@linuxfoundation.org>
@@ -49,45 +47,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maher Sanalla <msanalla@nvidia.com>
+From: Roi Dayan <roid@nvidia.com>
 
-commit 3c5193a87b0fea090aa3f769d020337662d87b5e upstream.
+commit 880b517691908fb753019b9b27cd082e7617debd upstream.
 
-Substitute del_timer() with del_timer_sync() in fw reset polling
-deactivation flow, in order to prevent a race condition which occurs
-when del_timer() is called and timer is deactivated while another
-process is handling the timer interrupt. A situation that led to
-the following call trace:
-	RIP: 0010:run_timer_softirq+0x137/0x420
-	<IRQ>
-	recalibrate_cpu_khz+0x10/0x10
-	ktime_get+0x3e/0xa0
-	? sched_clock_cpu+0xb/0xc0
-	__do_softirq+0xf5/0x2ea
-	irq_exit_rcu+0xc1/0xf0
-	sysvec_apic_timer_interrupt+0x9e/0xc0
-	asm_sysvec_apic_timer_interrupt+0x12/0x20
-	</IRQ>
+When changing mode to switchdev, rep bridge init registered to netdevice
+notifier holds the devlink lock and then takes pernet_ops_rwsem.
+At that time deleting a netns holds pernet_ops_rwsem and then takes
+the devlink lock.
 
-Fixes: 38b9f903f22b ("net/mlx5: Handle sync reset request event")
-Signed-off-by: Maher Sanalla <msanalla@nvidia.com>
-Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
+Example sequence is:
+$ ip netns add foo
+$ devlink dev eswitch set pci/0000:00:08.0 mode switchdev &
+$ ip netns del foo
+
+deleting netns trace:
+
+[ 1185.365555]  ? devlink_pernet_pre_exit+0x74/0x1c0
+[ 1185.368331]  ? mutex_lock_io_nested+0x13f0/0x13f0
+[ 1185.370984]  ? xt_find_table+0x40/0x100
+[ 1185.373244]  ? __mutex_lock+0x24a/0x15a0
+[ 1185.375494]  ? net_generic+0xa0/0x1c0
+[ 1185.376844]  ? wait_for_completion_io+0x280/0x280
+[ 1185.377767]  ? devlink_pernet_pre_exit+0x74/0x1c0
+[ 1185.378686]  devlink_pernet_pre_exit+0x74/0x1c0
+[ 1185.379579]  ? devlink_nl_cmd_get_dumpit+0x3a0/0x3a0
+[ 1185.380557]  ? xt_find_table+0xda/0x100
+[ 1185.381367]  cleanup_net+0x372/0x8e0
+
+changing mode to switchdev trace:
+
+[ 1185.411267]  down_write+0x13a/0x150
+[ 1185.412029]  ? down_write_killable+0x180/0x180
+[ 1185.413005]  register_netdevice_notifier+0x1e/0x210
+[ 1185.414000]  mlx5e_rep_bridge_init+0x181/0x360 [mlx5_core]
+[ 1185.415243]  mlx5e_uplink_rep_enable+0x269/0x480 [mlx5_core]
+[ 1185.416464]  ? mlx5e_uplink_rep_disable+0x210/0x210 [mlx5_core]
+[ 1185.417749]  mlx5e_attach_netdev+0x232/0x400 [mlx5_core]
+[ 1185.418906]  mlx5e_netdev_attach_profile+0x15b/0x1e0 [mlx5_core]
+[ 1185.420172]  mlx5e_netdev_change_profile+0x15a/0x1d0 [mlx5_core]
+[ 1185.421459]  mlx5e_vport_rep_load+0x557/0x780 [mlx5_core]
+[ 1185.422624]  ? mlx5e_stats_grp_vport_rep_num_stats+0x10/0x10 [mlx5_core]
+[ 1185.424006]  mlx5_esw_offloads_rep_load+0xdb/0x190 [mlx5_core]
+[ 1185.425277]  esw_offloads_enable+0xd74/0x14a0 [mlx5_core]
+
+Fix this by registering rep bridges for per net netdev notifier
+instead of global one, which operats on the net namespace without holding
+the pernet_ops_rwsem.
+
+Fixes: 19e9bfa044f3 ("net/mlx5: Bridge, add offload infrastructure")
+Signed-off-by: Roi Dayan <roid@nvidia.com>
+Reviewed-by: Vlad Buslov <vladbu@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
-@@ -132,7 +132,7 @@ static void mlx5_stop_sync_reset_poll(st
- {
- 	struct mlx5_fw_reset *fw_reset = dev->priv.fw_reset;
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c
+@@ -491,7 +491,7 @@ void mlx5e_rep_bridge_init(struct mlx5e_
+ 	}
  
--	del_timer(&fw_reset->timer);
-+	del_timer_sync(&fw_reset->timer);
- }
+ 	br_offloads->netdev_nb.notifier_call = mlx5_esw_bridge_switchdev_port_event;
+-	err = register_netdevice_notifier(&br_offloads->netdev_nb);
++	err = register_netdevice_notifier_net(&init_net, &br_offloads->netdev_nb);
+ 	if (err) {
+ 		esw_warn(mdev, "Failed to register bridge offloads netdevice notifier (err=%d)\n",
+ 			 err);
+@@ -526,7 +526,7 @@ void mlx5e_rep_bridge_cleanup(struct mlx
+ 		return;
  
- static void mlx5_sync_reset_clear_reset_requested(struct mlx5_core_dev *dev, bool poll_health)
+ 	cancel_delayed_work_sync(&br_offloads->update_work);
+-	unregister_netdevice_notifier(&br_offloads->netdev_nb);
++	unregister_netdevice_notifier_net(&init_net, &br_offloads->netdev_nb);
+ 	unregister_switchdev_blocking_notifier(&br_offloads->nb_blk);
+ 	unregister_switchdev_notifier(&br_offloads->nb);
+ 	destroy_workqueue(br_offloads->wq);
 
 
