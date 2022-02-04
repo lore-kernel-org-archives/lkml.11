@@ -2,128 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A74A2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 14:05:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AD59C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 14:06:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354628AbiBDOFd (ORCPT
+        id S1358924AbiBDOGj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 09:05:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41598 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232992AbiBDOFb (ORCPT
+        Fri, 4 Feb 2022 09:06:39 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:51992 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232992AbiBDOGi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 09:05:31 -0500
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8748BC061714
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 06:05:30 -0800 (PST)
-Received: by mail-pj1-x1036.google.com with SMTP id q63so5661880pja.1
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Feb 2022 06:05:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2qpcRyh+24qtP2VVaX3PS7mv2lf5IWfW1neqWFvhdxM=;
-        b=HjMI8iZLqfdazRpmnpfZL//MzxxnWj63vgQoTMi7jsbHxH1ssKOVpsZzSZEQnOlY6E
-         wZAWPbVnJ5++71gvc3WZRhn/63ZmQAyUB0jZiJOkwwNcPxWvUETM53K37Dcw2Fu/ATWn
-         Jx0H11c+ls9yn0/KiuE9h4bDVdg6X+8QFjcbPYb5FjndjsGDzGDBLMsYL9kuE6BRizKQ
-         B71ju3Tpo160s0fXVOw/ZkbOpWxe4Ay+f3W05T9OY6Uli045hEVr2rC0WRQgQ+ZNNgpx
-         3CfbNChebx1P8JuuOKOot8OtyCkJ3aK2q0Zy9HD1r5SdEDUGAvCLFWlABsXZBaN2MPio
-         c/Cw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2qpcRyh+24qtP2VVaX3PS7mv2lf5IWfW1neqWFvhdxM=;
-        b=y30zduHFZGhSg4tNmMvy8lQ6G6xajyn82Hp6lkOKO7v7LTbVpygwWwBepuCc939wtp
-         s76FFc+fqz2GVWMAWBg17gmeD1cBB0Z02tx6SoLX3vg9s306LMrbnOt/wvQnOoQpo5Zv
-         NkWIYMxJZMHuIj+euQFSJfmMJRTeT1EEktPOEM8N80EKeKv9j2YWsYKpcE/sNh/L2+oF
-         SrIjNgElA/xmyUzLRRLsCxs4x0vNh0Ls5DzYAhZVlOxsirazQGqxmyU4hL384bD8OI7Q
-         1FKxBxSOc3Up217vTbf3Qhij+33HAQrQT6p7pyY/ePvBAr7m9UTLvSWHjEXJz4tq+06G
-         SY4A==
-X-Gm-Message-State: AOAM530kYAEJUBvtgW+1Uy2g84JUU2iZMcX+7TsV615KOGMPWiC37Rn8
-        rYhJfZSUqzoymwLaHlTpn3D1mgTzZuL8rIXkom1oeg==
-X-Google-Smtp-Source: ABdhPJz/hl4o9naclBibn/3lZ3yW55IUCJbzoEq5EV8ShNlXxqU02ZIHt8TgohirAOEr5upB4OmCwB4CEpZUJ1U+1wU=
-X-Received: by 2002:a17:90b:4a86:: with SMTP id lp6mr3334875pjb.152.1643983529997;
- Fri, 04 Feb 2022 06:05:29 -0800 (PST)
+        Fri, 4 Feb 2022 09:06:38 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CB7D860AFD;
+        Fri,  4 Feb 2022 14:06:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67452C004E1;
+        Fri,  4 Feb 2022 14:06:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643983597;
+        bh=RyIR8dJMc1IOcmZizEww/InxQ1bBAmYfnuCHIM1TwrA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=KGOrqyOrclHpuY//lkGpSrXAgd+1/lmaoLA3C4sQEGbyJ48BfRQM37xUmncb7bYFP
+         gD6YyG59Y6eHrX9NKVKAMA/aMgQVtOm+JO/dT9hm98kl+BMIkAbwI6OgFxByAD/A3Y
+         gNNS31Tk5WCehSMMv3hFb9192ZfLmGCe8jNYqNDQ=
+Date:   Fri, 4 Feb 2022 14:43:04 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     "David E. Box" <david.e.box@linux.intel.com>
+Cc:     Joe Perches <joe@perches.com>, hdegoede@redhat.com,
+        andriy.shevchenko@linux.intel.com, srinivas.pandruvada@intel.com,
+        mgross@linux.intel.com, linux-kernel@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org,
+        Mark Gross <markgross@kernel.org>
+Subject: Re: [PATCH V5 1/3] platform/x86: Add Intel Software Defined Silicon
+ driver
+Message-ID: <Yf0taBe4PwTNbu9g@kroah.com>
+References: <20220204053046.2475671-1-david.e.box@linux.intel.com>
+ <20220204053046.2475671-2-david.e.box@linux.intel.com>
+ <aa16191c1241473fbfd55995bbba37bd2ab4a41c.camel@perches.com>
+ <372f76f7b1b7cf3d0ca38a7a84bcc23322ff12ed.camel@linux.intel.com>
 MIME-Version: 1.0
-References: <20220119122843.1455611-1-narmstrong@baylibre.com>
-In-Reply-To: <20220119122843.1455611-1-narmstrong@baylibre.com>
-From:   Robert Foss <robert.foss@linaro.org>
-Date:   Fri, 4 Feb 2022 15:05:16 +0100
-Message-ID: <CAG3jFyv15AhfZP0HTAt73U0yvKHNAMLmKzFu-9AfX9v76h7s6g@mail.gmail.com>
-Subject: Re: [PATCH v2] drm/bridge: dw-hdmi: use safe format when first in
- bridge chain
-To:     Neil Armstrong <narmstrong@baylibre.com>
-Cc:     laurent.pinchart@ideasonboard.com, jonas@kwiboo.se,
-        jernej.skrabec@gmail.com, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, kieran.bingham@ideasonboard.com,
-        biju.das.jz@bp.renesas.com,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <372f76f7b1b7cf3d0ca38a7a84bcc23322ff12ed.camel@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 19 Jan 2022 at 13:28, Neil Armstrong <narmstrong@baylibre.com> wrote:
->
-> When the dw-hdmi bridge is in first place of the bridge chain, this
-> means there is no way to select an input format of the dw-hdmi HW
-> component.
->
-> Since introduction of display-connector, negotiation was broken since
-> the dw-hdmi negotiation code only worked when the dw-hdmi bridge was
-> in last position of the bridge chain or behind another bridge also
-> supporting input & output format negotiation.
->
-> Commit 0656d1285b79 ("drm/bridge: display-connector: implement bus fmts callbacks")
+On Fri, Feb 04, 2022 at 05:23:07AM -0800, David E. Box wrote:
+> On Fri, 2022-02-04 at 02:14 -0800, Joe Perches wrote:
+> > On Thu, 2022-02-03 at 21:30 -0800, David E. Box wrote:
+> > > Intel Software Defined Silicon (SDSi) is a post manufacturing mechanism for
+> > > activating additional silicon features. Features are enabled through a
+> > > license activation process.
+> > 
+> > Why isn't this a user process and not a kernel one?
+> 
+> This is a mechanism for provisioning CPU features during runtime. It requires a
+> driver to access the functionality. That functionality is discovered on a multi
+> functional PCI device that is owned by the upstream intel_vsec driver.
+> 
+> > 
+> > > V5
+> > >   - Update kernel version to 5.18 in API doc and copyrights to 2022.
+> > >   - Remove unneeded prototypes.
+> > >   - In binary attribute handlers where ret is only used for errors,
+> > >     replace,
+> > >               return (ret < 0) ? ret : size;
+> > >     with,
+> > >               return ret ?: size;
+> > 
+> > I think this style overly tricky.
+> > 
+> > Why not the canonical:
+> > 
+> > 	if (ret < 0)
+> > 		return ret;
+> > 
+> > 	return size;
+> 
+> I can see not using the 2 parameter shortcut of the ternary operator, but the
+> regular 3 parameter expression is easy to read for simple operations.
 
-I think this is the wrong hash. Is 7cd70656d128 the actual hash?
+Not always.  Spell it out please and be obvious.
 
-> was introduced to make negotiation work again by making display-connector
-> act as a pass-through concerning input & output format negotiation.
->
-> But in the case where the dw-hdmi is single in the bridge chain, for
-> example on Renesas SoCs, with the display-connector bridge the dw-hdmi
-> is no more single, breaking output format.
->
-> Reported-by: Biju Das <biju.das.jz@bp.renesas.com>
-> Bisected-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-> Tested-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-> Fixes: 0656d1285b79 ("drm/bridge: display-connector: implement bus fmts callbacks").
+thanks,
 
-This hash too.
-
-> Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-> ---
-> Changes since v1:
-> - Remove bad fix in dw_hdmi_bridge_atomic_get_input_bus_fmts
-> - Fix typos in commit message
->
->  drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-> index 54d8fdad395f..97cdc61b57f6 100644
-> --- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-> +++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-> @@ -2551,8 +2551,9 @@ static u32 *dw_hdmi_bridge_atomic_get_output_bus_fmts(struct drm_bridge *bridge,
->         if (!output_fmts)
->                 return NULL;
->
-> -       /* If dw-hdmi is the only bridge, avoid negociating with ourselves */
-> -       if (list_is_singular(&bridge->encoder->bridge_chain)) {
-> +       /* If dw-hdmi is the first or only bridge, avoid negociating with ourselves */
-> +       if (list_is_singular(&bridge->encoder->bridge_chain) ||
-> +           list_is_first(&bridge->chain_node, &bridge->encoder->bridge_chain)) {
->                 *num_output_fmts = 1;
->                 output_fmts[0] = MEDIA_BUS_FMT_FIXED;
->
-> --
-> 2.25.1
->
-
-There are two checkstyle issues apart from the above mentioned hash
-issues, and I think we can ignore those. With the above mentioned
-issue fixed, feel free to add my r-b.
-
-Reviewed-by: Robert Foss <robert.foss@linaro.org>
+greg k-h
