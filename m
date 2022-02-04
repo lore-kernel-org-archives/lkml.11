@@ -2,105 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A40E3C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 08:49:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D943DC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 08:50:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343590AbiBDItl (ORCPT
+        id S1354318AbiBDIuP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 03:49:41 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:35161 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239817AbiBDIti (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 03:49:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643964577;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=KmoD3b9T2QlVeR55XUKFS9sSRzif+Zqzh068n/5n3FA=;
-        b=eKwyfvvC8PerbG6KZRGhvKB2+6SFwN3+1oZqnyJIujxh2oRnUth4s+bnpTYBUlP1AJWueP
-        Du8Ze5xke4BBRSt0lIQO6nXbFoAM6zAgdoZgsBwsUV1B/FfjEMI0h3nAKqLcSbSVsYjtq2
-        2Lp27nZg0zGnfNe1QRKVT96D/iZWYNg=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-133-1DiY4RhjPyucIAC6KzuH0Q-1; Fri, 04 Feb 2022 03:49:34 -0500
-X-MC-Unique: 1DiY4RhjPyucIAC6KzuH0Q-1
-Received: by mail-ej1-f69.google.com with SMTP id la22-20020a170907781600b006a7884de505so2243654ejc.7
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Feb 2022 00:49:34 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=KmoD3b9T2QlVeR55XUKFS9sSRzif+Zqzh068n/5n3FA=;
-        b=Cvsyxpx6hgMc56838ErC7uTk+45pVVC2vj2LAWx0zKfK2o/+mM+ujCzRVmbLI218nS
-         +cp1xMO03NqSKo4fSzTkDajjWeT6NNce+MP4zUHXjVTUP/kPxWQM+W4X5F/YsAk1FlYt
-         Mo3AuYkraK+PNGNyBHcdIsWzRV+agF24CpByMQucIcybrpdwzI1ooqzznT0P1QYy/+xC
-         9szeeZbu90ukWH+eijlycwV4eFbo2rHkBht+qq06Qnx+aNpNjxfufZp8dl0gn5gfyDMR
-         /n6PLOlB73Itof809g9nA3seJ6KD1LkQ8ui+BrBO9Sd4ZT5wNyuvNv+2e4YxrabtjsWq
-         bokQ==
-X-Gm-Message-State: AOAM532jghW1A5xpFQGx+RSRbxPI/+0XKAa0/52AL3wIL59y57hm+ovR
-        BiR7GrQXQU2nnsS9hwQk487Uvx4S2Zk2aPnP3EaXNucAmEemNJeQVIm/WZwvcs5bZFh9BX+rKG2
-        cm/wrGnR2UcZRSQqfDBtODG+W
-X-Received: by 2002:a17:907:2d88:: with SMTP id gt8mr1604545ejc.618.1643964573347;
-        Fri, 04 Feb 2022 00:49:33 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxvInqjlWbjztNR1P4DcWcUE2FAOcKPCXPBcb6/ec1lRJOz1W9DqXcHE6darCzcl4xe6tB2fg==
-X-Received: by 2002:a17:907:2d88:: with SMTP id gt8mr1604530ejc.618.1643964573160;
-        Fri, 04 Feb 2022 00:49:33 -0800 (PST)
-Received: from ?IPV6:2001:b07:6468:f312:5e2c:eb9a:a8b6:fd3e? ([2001:b07:6468:f312:5e2c:eb9a:a8b6:fd3e])
-        by smtp.googlemail.com with ESMTPSA id g9sm428003ejf.33.2022.02.04.00.49.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 04 Feb 2022 00:49:32 -0800 (PST)
-Message-ID: <53c1864c-f966-0412-deb5-10912e84555c@redhat.com>
-Date:   Fri, 4 Feb 2022 09:49:26 +0100
+        Fri, 4 Feb 2022 03:50:15 -0500
+Received: from mx1.tq-group.com ([93.104.207.81]:64161 "EHLO mx1.tq-group.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231864AbiBDIuL (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 4 Feb 2022 03:50:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1643964611; x=1675500611;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=FEiAmArkdBv5Nr5bScLf7yMPKGQOzBiK4SXXg3DXbKc=;
+  b=hJvlIiATsOH6y0o2tsbPCNNCwuZtlPYLuly5juQI1cgjyPmArLv23hFe
+   cOjScsDFGLfy58b87SjqtD5YwRonXX1g91PEO/M5mm+Lm2bbkXn5cWU7e
+   ozrCfqj+ryVgtuN4hjgm116411kREwCc1S4F1+Md2NUahIEnw/g/uIOIz
+   t3tc+Uyf3oPV1+Vln4dzn3R1sQm+n4mpQzBxPYmRGihdgEvVuOlWwYhOn
+   Hr9XN8cpOKTgkt6e/7OJin3qGwLDCRJdWF/njKm2l94Glw9VxaIXDoMVh
+   nmsWjL0Q9vLUnrGt3NE3LjmC1RycsPvn6G1OqOpzN5NQrh54WMDJSWttq
+   A==;
+X-IronPort-AV: E=Sophos;i="5.88,342,1635199200"; 
+   d="scan'208";a="21897267"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 04 Feb 2022 09:50:09 +0100
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Fri, 04 Feb 2022 09:50:10 +0100
+X-PGP-Universal: processed;
+        by tq-pgp-pr1.tq-net.de on Fri, 04 Feb 2022 09:50:10 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1643964609; x=1675500609;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=FEiAmArkdBv5Nr5bScLf7yMPKGQOzBiK4SXXg3DXbKc=;
+  b=m1ad6t2Ae689xQbgfWogQCOFihM9WrlUxXEoa3w0WyqOZDiY6vkjDsFK
+   QqofJ9ZQ6wcSCiVh+E2anFAB1KUfiE/0/m8FK8ahMvRNED7No8X2B1QML
+   Snk9bdFBDN4RusocIG+CbfZVmpUEOyLsxcsujY3DXHeTRKJviyqG/ap+e
+   SSMIaVyWoFeElJ9PasthFKePt67Nq3golZgKUsMZq/kPni02McM7kxaN+
+   3lw/AHYPMsiAWq3ivDy465Wo5nPki36DB6wsmc3ptqmqXcc6gMsC+My4z
+   QRTrqWRUdGlu73ywySvLozh2o1t5asAjGrtwNwxoJbmd5NfAxhbb7rNAT
+   g==;
+X-IronPort-AV: E=Sophos;i="5.88,342,1635199200"; 
+   d="scan'208";a="21897266"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 04 Feb 2022 09:50:09 +0100
+Received: from steina-w.localnet (unknown [10.123.49.12])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id 5F866280065;
+        Fri,  4 Feb 2022 09:50:09 +0100 (CET)
+From:   Alexander Stein <alexander.stein@ew.tq-group.com>
+To:     jeanmichel.hautbois@ideasonboard.com,
+        Jean-Michel Hautbois <jeanmichel.hautbois@ideasonboard.com>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        dave.stevenson@raspberrypi.com, devicetree@vger.kernel.org,
+        kernel-list@raspberrypi.com, laurent.pinchart@ideasonboard.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
+        lukasz@jany.st, mchehab@kernel.org, naush@raspberrypi.com,
+        robh@kernel.org, tomi.valkeinen@ideasonboard.com,
+        nsaenz@kernel.org, bcm-kernel-feedback-list@broadcom.com
+Subject: Re: (EXT) [RFC PATCH v4 03/12] dt-bindings: media: Add bindings for bcm2835-unicam
+Date:   Fri, 04 Feb 2022 09:50:06 +0100
+Message-ID: <7954256.DvuYhMxLoT@steina-w>
+Organization: TQ-Systems GmbH
+In-Reply-To: <20220203175009.558868-4-jeanmichel.hautbois@ideasonboard.com>
+References: <20220203175009.558868-1-jeanmichel.hautbois@ideasonboard.com> <20220203175009.558868-4-jeanmichel.hautbois@ideasonboard.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 0/6] KVM: selftests: Introduce selftests for enlightened
- MSR-Bitmap feature
-Content-Language: en-US
-To:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>, linux-kernel@vger.kernel.org
-References: <20220203104620.277031-1-vkuznets@redhat.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <20220203104620.277031-1-vkuznets@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/3/22 11:46, Vitaly Kuznetsov wrote:
-> KVM gained support for enlightened MSR-Bitmap Hyper-V feature (Hyper-V
-> on KVM) for both nVMX and nSVM, test it in selftests.
+Am Donnerstag, 3. Februar 2022, 18:50:00 CET schrieb Jean-Michel Hautbois:
+> Introduce the dt-bindings documentation for bcm2835 CCP2/CSI2 Unicam
+> camera interface. Also add a MAINTAINERS entry for it.
 > 
-> Vitaly Kuznetsov (6):
->    KVM: selftests: Adapt hyperv_cpuid test to the newly introduced
->      Enlightened MSR-Bitmap
->    KVM: selftests: nVMX: Properly deal with 'hv_clean_fields'
->    KVM: selftests: nVMX: Add enlightened MSR-Bitmap selftest
->    KVM: selftests: nSVM: Set up MSR-Bitmap for SVM guests
->    KVM: selftests: nSVM: Update 'struct vmcb_control_area' definition
->    KVM: selftests: nSVM: Add enlightened MSR-Bitmap selftest
+> Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+> Signed-off-by: Naushir Patuck <naush@raspberrypi.com>
+> Signed-off-by: Jean-Michel Hautbois <jeanmichel.hautbois@ideasonboard.com>
 > 
->   tools/testing/selftests/kvm/Makefile          |   1 +
->   .../selftests/kvm/include/x86_64/evmcs.h      | 150 ++++++++++++++-
->   .../selftests/kvm/include/x86_64/svm.h        |   9 +-
->   .../selftests/kvm/include/x86_64/svm_util.h   |   6 +
->   tools/testing/selftests/kvm/lib/x86_64/svm.c  |   6 +
->   .../testing/selftests/kvm/x86_64/evmcs_test.c |  64 ++++++-
->   .../selftests/kvm/x86_64/hyperv_cpuid.c       |  29 +--
->   .../selftests/kvm/x86_64/hyperv_svm_test.c    | 175 ++++++++++++++++++
->   8 files changed, 424 insertions(+), 16 deletions(-)
->   create mode 100644 tools/testing/selftests/kvm/x86_64/hyperv_svm_test.c
+> ---
+> v4:
+> - make MAINTAINERS its own patch
+> - describe the reg and clocks correctly
+> - use a vendor entry for the number of data lanes
+> ---
+>  .../bindings/media/brcm,bcm2835-unicam.yaml   | 110 ++++++++++++++++++
+>  1 file changed, 110 insertions(+)
+>  create mode 100644
+> Documentation/devicetree/bindings/media/brcm,bcm2835-unicam.yaml
 > 
+> diff --git
+> a/Documentation/devicetree/bindings/media/brcm,bcm2835-unicam.yaml
+> b/Documentation/devicetree/bindings/media/brcm,bcm2835-unicam.yaml new file
+> mode 100644
+> index 000000000000..0725a0267c60
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/media/brcm,bcm2835-unicam.yaml
+> @@ -0,0 +1,110 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/media/brcm,bcm2835-unicam.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Broadcom BCM283x Camera Interface (Unicam)
+> +
+> +maintainers:
+> +  - Raspberry Pi Kernel Maintenance <kernel-list@raspberrypi.com>
+> +
+> +description: |-
+> +  The Unicam block on BCM283x SoCs is the receiver for either
+> +  CSI-2 or CCP2 data from image sensors or similar devices.
+> +
+> +  The main platform using this SoC is the Raspberry Pi family of boards.
+> +  On the Pi the VideoCore firmware can also control this hardware block,
+> +  and driving it from two different processors will cause issues.
+> +  To avoid this, the firmware checks the device tree configuration
+> +  during boot. If it finds device tree nodes starting by csi then
+> +  it will stop the firmware accessing the block, and it can then
+> +  safely be used via the device tree binding.
+> +
+> +properties:
+> +  compatible:
+> +    const: brcm,bcm2835-unicam
+> +
+> +  reg:
+> +    items:
+> +      - description: Unicam block.
+> +      - description: Clock Manager Image (CMI) block.
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    items:
+> +      - description: Clock to drive the LP state machine of Unicam.
+> +      - description: Clock for the vpu (core clock).
+> +
+> +  clock-names:
+> +    items:
+> +      - const: lp
+> +      - const: vpu
+> +
+> +  power-domains:
+> +    items:
+> +      - description: Unicam power domain
+> +
+> +  brcm,num-data-lanes:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    enum: [ 2, 4 ]
+> +    description: Number of data lanes on the csi bus
 
-Queued, thanks.
+There is already data-lanes in Documentation/devicetree/bindings/media/video-
+interfaces.yaml. AFAICS these two are identical. Can't the video-
+interface.yaml be used for this? I'm no expert TBH.
 
-Paolo
+Regards,
+Alexander
+
 
