@@ -2,45 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5384DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:21:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16476C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:21:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357477AbiBDJVS (ORCPT
+        id S1357507AbiBDJVX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 04:21:18 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:40376 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357371AbiBDJVC (ORCPT
+        Fri, 4 Feb 2022 04:21:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60500 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1357401AbiBDJVH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 04:21:02 -0500
+        Fri, 4 Feb 2022 04:21:07 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9388AC061757;
+        Fri,  4 Feb 2022 01:21:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 41BD1615C6;
-        Fri,  4 Feb 2022 09:21:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10EE1C004E1;
-        Fri,  4 Feb 2022 09:21:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 515EFB836EE;
+        Fri,  4 Feb 2022 09:21:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BA8FC004E1;
+        Fri,  4 Feb 2022 09:21:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643966461;
-        bh=8NajeQp6ilUXadJKo2K571oXpd6t9H5urZJb5mZn+Y8=;
+        s=korg; t=1643966465;
+        bh=rkWayZZC0RqM6hI7nNtYbd4ASzlnGge0fvI4FQpwk0c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yywlq7NN6dJbe5GrIUmYuhSy43htTX4KoGX1AW68qImp/8GWJ8E1qXncsaZMV6rL0
-         YoEtEYajae4DKzdZtgoMzvLT38mGmSgPIaCmkgJztAByV1AAK58QEKFtoYs7/TtbEQ
-         5yKh7Z8+xlL70sKQSjIgxmT5kleX6jOdbVBlDQEU=
+        b=ai4EftW1035fBxRlraM/zVueUzEc0tq6D75EQuJ0JqFClkOLUYjLPPpNYjeGRebuu
+         FGQfprmyCy6kCIdagFicQJPzwriWMyBeXIx1sQ7GwA0ztKzdT26/RVwxURShHaTP/M
+         epG/s/E5ALIlRFGBap8xWZDZRHRqo2kSaXGTAVis=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.4 10/10] af_packet: fix data-race in packet_setsockopt / packet_setsockopt
-Date:   Fri,  4 Feb 2022 10:20:23 +0100
-Message-Id: <20220204091912.655153755@linuxfoundation.org>
+        stable@vger.kernel.org, Joseph Bao <joseph.bao@intel.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Stuart Hayes <stuart.w.hayes@gmail.com>
+Subject: [PATCH 5.4 01/10] PCI: pciehp: Fix infinite loop in IRQ handler upon power fault
+Date:   Fri,  4 Feb 2022 10:20:14 +0100
+Message-Id: <20220204091912.377649204@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220204091912.329106021@linuxfoundation.org>
 References: <20220204091912.329106021@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -48,80 +53,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Lukas Wunner <lukas@wunner.de>
 
-commit e42e70ad6ae2ae511a6143d2e8da929366e58bd9 upstream.
+commit 23584c1ed3e15a6f4bfab8dc5a88d94ab929ee12 upstream.
 
-When packet_setsockopt( PACKET_FANOUT_DATA ) reads po->fanout,
-no lock is held, meaning that another thread can change po->fanout.
+The Power Fault Detected bit in the Slot Status register differs from
+all other hotplug events in that it is sticky:  It can only be cleared
+after turning off slot power.  Per PCIe r5.0, sec. 6.7.1.8:
 
-Given that po->fanout can only be set once during the socket lifetime
-(it is only cleared from fanout_release()), we can use
-READ_ONCE()/WRITE_ONCE() to document the race.
+  If a power controller detects a main power fault on the hot-plug slot,
+  it must automatically set its internal main power fault latch [...].
+  The main power fault latch is cleared when software turns off power to
+  the hot-plug slot.
 
-BUG: KCSAN: data-race in packet_setsockopt / packet_setsockopt
+The stickiness used to cause interrupt storms and infinite loops which
+were fixed in 2009 by commits 5651c48cfafe ("PCI pciehp: fix power fault
+interrupt storm problem") and 99f0169c17f3 ("PCI: pciehp: enable
+software notification on empty slots").
 
-write to 0xffff88813ae8e300 of 8 bytes by task 14653 on cpu 0:
- fanout_add net/packet/af_packet.c:1791 [inline]
- packet_setsockopt+0x22fe/0x24a0 net/packet/af_packet.c:3931
- __sys_setsockopt+0x209/0x2a0 net/socket.c:2180
- __do_sys_setsockopt net/socket.c:2191 [inline]
- __se_sys_setsockopt net/socket.c:2188 [inline]
- __x64_sys_setsockopt+0x62/0x70 net/socket.c:2188
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+Unfortunately in 2020 the infinite loop issue was inadvertently
+reintroduced by commit 8edf5332c393 ("PCI: pciehp: Fix MSI interrupt
+race"):  The hardirq handler pciehp_isr() clears the PFD bit until
+pciehp's power_fault_detected flag is set.  That happens in the IRQ
+thread pciehp_ist(), which never learns of the event because the hardirq
+handler is stuck in an infinite loop.  Fix by setting the
+power_fault_detected flag already in the hardirq handler.
 
-read to 0xffff88813ae8e300 of 8 bytes by task 14654 on cpu 1:
- packet_setsockopt+0x691/0x24a0 net/packet/af_packet.c:3935
- __sys_setsockopt+0x209/0x2a0 net/socket.c:2180
- __do_sys_setsockopt net/socket.c:2191 [inline]
- __se_sys_setsockopt net/socket.c:2188 [inline]
- __x64_sys_setsockopt+0x62/0x70 net/socket.c:2188
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-value changed: 0x0000000000000000 -> 0xffff888106f8c000
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 1 PID: 14654 Comm: syz-executor.3 Not tainted 5.16.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-
-Fixes: 47dceb8ecdc1 ("packet: add classic BPF fanout mode")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Willem de Bruijn <willemb@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Link: https://lore.kernel.org/r/20220201022358.330621-1-eric.dumazet@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=214989
+Link: https://lore.kernel.org/linux-pci/DM8PR11MB5702255A6A92F735D90A4446868B9@DM8PR11MB5702.namprd11.prod.outlook.com
+Fixes: 8edf5332c393 ("PCI: pciehp: Fix MSI interrupt race")
+Link: https://lore.kernel.org/r/66eaeef31d4997ceea357ad93259f290ededecfd.1637187226.git.lukas@wunner.de
+Reported-by: Joseph Bao <joseph.bao@intel.com>
+Tested-by: Joseph Bao <joseph.bao@intel.com>
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Cc: stable@vger.kernel.org # v4.19+
+Cc: Stuart Hayes <stuart.w.hayes@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/packet/af_packet.c |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/pci/hotplug/pciehp_hpc.c |    7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
---- a/net/packet/af_packet.c
-+++ b/net/packet/af_packet.c
-@@ -1729,7 +1729,10 @@ static int fanout_add(struct sock *sk, u
- 		err = -ENOSPC;
- 		if (refcount_read(&match->sk_ref) < PACKET_FANOUT_MAX) {
- 			__dev_remove_pack(&po->prot_hook);
--			po->fanout = match;
-+
-+			/* Paired with packet_setsockopt(PACKET_FANOUT_DATA) */
-+			WRITE_ONCE(po->fanout, match);
-+
- 			po->rollover = rollover;
- 			rollover = NULL;
- 			refcount_set(&match->sk_ref, refcount_read(&match->sk_ref) + 1);
-@@ -3876,7 +3879,8 @@ packet_setsockopt(struct socket *sock, i
- 	}
- 	case PACKET_FANOUT_DATA:
- 	{
--		if (!po->fanout)
-+		/* Paired with the WRITE_ONCE() in fanout_add() */
-+		if (!READ_ONCE(po->fanout))
- 			return -EINVAL;
+--- a/drivers/pci/hotplug/pciehp_hpc.c
++++ b/drivers/pci/hotplug/pciehp_hpc.c
+@@ -577,6 +577,8 @@ read_status:
+ 	 */
+ 	if (ctrl->power_fault_detected)
+ 		status &= ~PCI_EXP_SLTSTA_PFD;
++	else if (status & PCI_EXP_SLTSTA_PFD)
++		ctrl->power_fault_detected = true;
  
- 		return fanout_set_data(po, optval, optlen);
+ 	events |= status;
+ 	if (!events) {
+@@ -586,7 +588,7 @@ read_status:
+ 	}
+ 
+ 	if (status) {
+-		pcie_capability_write_word(pdev, PCI_EXP_SLTSTA, events);
++		pcie_capability_write_word(pdev, PCI_EXP_SLTSTA, status);
+ 
+ 		/*
+ 		 * In MSI mode, all event bits must be zero before the port
+@@ -660,8 +662,7 @@ static irqreturn_t pciehp_ist(int irq, v
+ 	}
+ 
+ 	/* Check Power Fault Detected */
+-	if ((events & PCI_EXP_SLTSTA_PFD) && !ctrl->power_fault_detected) {
+-		ctrl->power_fault_detected = 1;
++	if (events & PCI_EXP_SLTSTA_PFD) {
+ 		ctrl_err(ctrl, "Slot(%s): Power fault\n", slot_name(ctrl));
+ 		pciehp_set_indicators(ctrl, PCI_EXP_SLTCTL_PWR_IND_OFF,
+ 				      PCI_EXP_SLTCTL_ATTN_IND_ON);
 
 
