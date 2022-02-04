@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09542C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 20:02:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DDB4C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 20:03:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239221AbiBDUC6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 15:02:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39318 "EHLO
+        id S240509AbiBDUDB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 15:03:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232069AbiBDT73 (ORCPT
+        with ESMTP id S235943AbiBDT7Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 14:59:29 -0500
+        Fri, 4 Feb 2022 14:59:16 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A36EC061779
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 11:59:10 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A2A4C061751
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 11:59:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=xKDtj4Q84Gq7/YHT/PKaEW9z5qqF6GR8UZ/VCfCl7TU=; b=XfTVy4sw//5kdMO3xZZ3P6Z2bO
-        14u6Kb0KFFjOf5zHE/t1/MRiYjQgFnWv5RKnWhKqczWO0I2QrEwXz+L6f/dvFfFH6pQHY/GBHPF+y
-        ZbfFBjB0pJlL2inmBCXICMhr1bdaPypNblv8tVv66OQ4KSPB7znDj12kdQPD5Ud/0NSu+H94Gk5FB
-        sgI04Js+VWtL+O6kCHtggx7rnGp76c4MJfk83xulw8u/+Nmampsx++B9pKK7/XqxgzQXRlqFwirMG
-        ItxiYOYVQTw1CCbYiWW5Cyq0Qzni1eYiI/RocEmSHMRXA56XtdMEPLMRfjm919uMnHDBOH/b3NuBv
-        H2rl7v0w==;
+        bh=AZtYGWaQIVF80cGs43r5RQ+0AtmMNHsJoH6q+RECIQc=; b=SEHIb+LELVsxBPqfzw4/b/kzCr
+        lWekk7iNkDd6IxVCHlOZqydw4NNeyhWn+d//kpRRHLkgDkRJsEns5mQKXkhikyqZBn/lCPd+PBnZz
+        XQRrDLX2VLn1IRk+4EV+ER30v5ySQTKPz1esiGzeOZzc6zCcXrqBNkmJuRQYhpqcFCwXtCBS5bZ4X
+        r2b79inNIUEH7f8K30WFd0e6B1dCZDff8P5Vm9KQCySyFbQlgxi+ETGIw2CCBVKe5euKtnJJg7JgY
+        kpVTRV/OwTH2t8PENeRCeHUrWN6crW7z9io1oCI+f1XRaOTfAptK0AkfHN9lfR/L0NG7NU4EP7YFg
+        Ec+v4Kkw==;
 Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nG4jc-007Lru-DZ; Fri, 04 Feb 2022 19:59:08 +0000
+        id 1nG4jX-007Lmr-6z; Fri, 04 Feb 2022 19:59:03 +0000
 From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
 To:     linux-mm@kvack.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 74/75] mm/filemap: Support VM_HUGEPAGE for file mappings
-Date:   Fri,  4 Feb 2022 19:58:51 +0000
-Message-Id: <20220204195852.1751729-75-willy@infradead.org>
+Subject: [PATCH 37/75] mm: Add split_folio_to_list()
+Date:   Fri,  4 Feb 2022 19:58:14 +0000
+Message-Id: <20220204195852.1751729-38-willy@infradead.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220204195852.1751729-1-willy@infradead.org>
 References: <20220204195852.1751729-1-willy@infradead.org>
@@ -43,44 +43,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If the VM_HUGEPAGE flag is set, attempt to allocate PMD-sized folios
-during readahead, even if we have no history of readahead being
-successful.
+This is a convenience function; split_huge_page_to_list() can take
+any page in a folio (and does so on purpose because that page will
+be the one which keeps the refcount).  But it's convenient for the
+callers to pass the folio instead of the first page in the folio.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
- mm/filemap.c | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ include/linux/huge_mm.h |  6 ++++++
+ mm/vmscan.c             | 10 +++++-----
+ 2 files changed, 11 insertions(+), 5 deletions(-)
 
-diff --git a/mm/filemap.c b/mm/filemap.c
-index fe764225ae99..7608ee030662 100644
---- a/mm/filemap.c
-+++ b/mm/filemap.c
-@@ -2995,6 +2995,24 @@ static struct file *do_sync_mmap_readahead(struct vm_fault *vmf)
- 	struct file *fpin = NULL;
- 	unsigned int mmap_miss;
+diff --git a/include/linux/huge_mm.h b/include/linux/huge_mm.h
+index e4c18ba8d3bf..71c073d411ac 100644
+--- a/include/linux/huge_mm.h
++++ b/include/linux/huge_mm.h
+@@ -483,6 +483,12 @@ static inline bool thp_migration_supported(void)
+ }
+ #endif /* CONFIG_TRANSPARENT_HUGEPAGE */
  
-+#ifdef CONFIG_TRANSPARENT_HUGEPAGE
-+	/* Use the readahead code, even if readahead is disabled */
-+	if (vmf->vma->vm_flags & VM_HUGEPAGE) {
-+		fpin = maybe_unlock_mmap_for_io(vmf, fpin);
-+		ractl._index &= ~((unsigned long)HPAGE_PMD_NR - 1);
-+		ra->size = HPAGE_PMD_NR;
-+		/*
-+		 * Fetch two PMD folios, so we get the chance to actually
-+		 * readahead, unless we've been told not to.
-+		 */
-+		if (!(vmf->vma->vm_flags & VM_RAND_READ))
-+			ra->size *= 2;
-+		ra->async_size = HPAGE_PMD_NR;
-+		page_cache_ra_order(&ractl, ra, HPAGE_PMD_ORDER);
-+		return fpin;
-+	}
-+#endif
++static inline int split_folio_to_list(struct folio *folio,
++		struct list_head *list)
++{
++	return split_huge_page_to_list(&folio->page, list);
++}
 +
- 	/* If we don't want any read-ahead, don't bother */
- 	if (vmf->vma->vm_flags & VM_RAND_READ)
- 		return fpin;
+ /**
+  * thp_size - Size of a transparent huge page.
+  * @page: Head page of a transparent huge page.
+diff --git a/mm/vmscan.c b/mm/vmscan.c
+index e8c5855bc38d..0d23ade9f6e2 100644
+--- a/mm/vmscan.c
++++ b/mm/vmscan.c
+@@ -1708,16 +1708,16 @@ static unsigned int shrink_page_list(struct list_head *page_list,
+ 					 * tail pages can be freed without IO.
+ 					 */
+ 					if (!compound_mapcount(page) &&
+-					    split_huge_page_to_list(page,
+-								    page_list))
++					    split_folio_to_list(folio,
++								page_list))
+ 						goto activate_locked;
+ 				}
+ 				if (!add_to_swap(page)) {
+ 					if (!PageTransHuge(page))
+ 						goto activate_locked_split;
+ 					/* Fallback to swap normal pages */
+-					if (split_huge_page_to_list(page,
+-								    page_list))
++					if (split_folio_to_list(folio,
++								page_list))
+ 						goto activate_locked;
+ #ifdef CONFIG_TRANSPARENT_HUGEPAGE
+ 					count_vm_event(THP_SWPOUT_FALLBACK);
+@@ -1733,7 +1733,7 @@ static unsigned int shrink_page_list(struct list_head *page_list,
+ 			}
+ 		} else if (unlikely(PageTransHuge(page))) {
+ 			/* Split file THP */
+-			if (split_huge_page_to_list(page, page_list))
++			if (split_folio_to_list(folio, page_list))
+ 				goto keep_locked;
+ 		}
+ 
 -- 
 2.34.1
 
