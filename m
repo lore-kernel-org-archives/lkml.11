@@ -2,81 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE841C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 00:28:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C254C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 00:29:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356233AbiBDA2R (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 19:28:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55616 "EHLO
+        id S229534AbiBDA30 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 3 Feb 2022 19:29:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356249AbiBDA2O (ORCPT
+        with ESMTP id S235988AbiBDA3Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 19:28:14 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33D75C061401
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 16:28:14 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 21FD16194D
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 00:28:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53139C340ED
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 00:28:12 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="MaIc+ctV"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1643934488;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=HF0rRa5EnwKT/qOmnqaK6ElRG/TXMX7590t2kkXeFmM=;
-        b=MaIc+ctVA54pjoI02uXtw2uPEmauyVuMgFWoSu/CIZiWABkT1X9zX7JXkL8BTbgf4h3iI0
-        4gXqJp52x0OnGmNP4COdQGLzXm4oonAvcAahiLfIHwVhwu74ra5qnr8/ITjOtaiT8+oigZ
-        0Az48+y2wkHBMb+b7575j/KBBj9mnNw=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 2611bb48 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO)
-        for <linux-kernel@vger.kernel.org>;
-        Fri, 4 Feb 2022 00:28:08 +0000 (UTC)
-Received: by mail-yb1-f176.google.com with SMTP id j2so14281181ybu.0
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 16:28:08 -0800 (PST)
-X-Gm-Message-State: AOAM533b0MUf+k6yNcgubUr5Bso7ZAWRy3e4X2HPc+vTp2eBICfD36/4
-        qN6XRz5cU8A67ilMbivLcap9GUP0A8/6NnlV9Hc=
-X-Google-Smtp-Source: ABdhPJxNQK62tdEVNVMjnlIxywN46nOPQ4BXobrWvXD2l1dvgptbg+kzWTml5BQfObTa6s+t2aI9c3pQUZ+jULF/joA=
-X-Received: by 2002:a05:6902:14d:: with SMTP id p13mr693243ybh.638.1643934486228;
- Thu, 03 Feb 2022 16:28:06 -0800 (PST)
+        Thu, 3 Feb 2022 19:29:24 -0500
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFFB0C06173B
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 16:29:23 -0800 (PST)
+Received: by mail-pf1-x42e.google.com with SMTP id d187so3636284pfa.10
+        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 16:29:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=7jAxI29crxP7S7vFJnF3wftZXckofe+kHrOWNqXAQow=;
+        b=bUGShFdQCuYs6lb/IPDvFbEdOFY+an3WZjtQkCOOMbGZP3vwME4Us6qOCzhxninbFG
+         vlc3rzh9YtbyMmiO32kRO/is3fZ3gD2T/c6K2F9sVL1ZO6UTnBJ8Q8rHIPVST8uIweLP
+         mV+M+tmIBCexSHDCYxuy1PtggQ94NGFYtM0H4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=7jAxI29crxP7S7vFJnF3wftZXckofe+kHrOWNqXAQow=;
+        b=JcAL+sBipmf3rZ3ScU6awMEn6ypttgu06BeV5SOycedq1BrhY/3m5p0BzswBLvM4D4
+         EXGKGzK7CsUQ7ASjHxdFMSRRubVAEEInXnQJCa4G+W5KVlGgkpB4G5DJJEjG6ldWtu4V
+         gAfR+49ylzqpDFOUiz6H6t8L8IGCsdvexUMkIjBjqFHFrBpv8cTNv7bWL46NW7LwAXjI
+         FfYqv37j1IA/h3q6kle9inojNBce2EBnqqFx7SdhzhPH8DAnG+yKl375bqC0beZO3PZ0
+         O3JexKvzUs1LDcahPZ7Cu3GlYcq3E1iMKqmINXWssUiT5GTdWf2FwnnrDmtGdwtnAA0W
+         S1Pg==
+X-Gm-Message-State: AOAM531RRd+QQR2AcKiUW02QV4jAZE1YBuBtRwMBnAVI21amBgqZfxCi
+        KQCpduc/RiPW7yDJN6SHIE6anQ==
+X-Google-Smtp-Source: ABdhPJyxEW/qo1THvmWccU/g3L0VLb9vuHRgXCa42FJarlVXjxquMHAwuHB6voQ/2hmHqAFsJtBB+Q==
+X-Received: by 2002:a63:451f:: with SMTP id s31mr497461pga.114.1643934563402;
+        Thu, 03 Feb 2022 16:29:23 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id g5sm185194pfv.22.2022.02.03.16.29.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Feb 2022 16:29:23 -0800 (PST)
+Date:   Thu, 3 Feb 2022 16:29:22 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     George Burgess IV <gbiv@google.com>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>, llvm@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org,
+        Sami Tolvanen <samitolvanen@google.com>
+Subject: Re: [PATCH v6 1/4] Compiler Attributes: Add __pass_object_size for
+ Clang
+Message-ID: <202202031628.E28BBBB490@keescook>
+References: <20220203173307.1033257-1-keescook@chromium.org>
+ <20220203173307.1033257-2-keescook@chromium.org>
+ <CAKwvOdmzdQ+X2BsUbuVBWzFtaE2Vst4=ihNNR=LmOdozqQ5Ukg@mail.gmail.com>
+ <202202031247.4F3AC598@keescook>
+ <CAKwvOdnUHFi=1+9VxsfwxNAkTFEytg5FV=Aii7awSx+ioRaQbQ@mail.gmail.com>
 MIME-Version: 1.0
-References: <CAHmME9pe2BEJV4WiZNHmDmH_XK621Qqr1JCBdgTNZmr4JGBA4w@mail.gmail.com>
- <20220128223548.97807-1-Jason@zx2c4.com>
-In-Reply-To: <20220128223548.97807-1-Jason@zx2c4.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Fri, 4 Feb 2022 01:27:55 +0100
-X-Gmail-Original-Message-ID: <CAHmME9qtjZX2kVNSQqUsTrZv1cdR8y6n3yZS-RnpVCCzX9okcA@mail.gmail.com>
-Message-ID: <CAHmME9qtjZX2kVNSQqUsTrZv1cdR8y6n3yZS-RnpVCCzX9okcA@mail.gmail.com>
-Subject: Re: [PATCH v2] random: remove batched entropy locking
-To:     Andy Lutomirski <luto@amacapital.net>
-Cc:     Boqun Feng <boqun.feng@gmail.com>, Will Deacon <will@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Waiman Long <longman@redhat.com>,
-        Sultan Alsawaf <sultan@kerneltoast.com>,
-        "Theodore Ts'o" <tytso@mit.edu>, Andy Lutomirski <luto@kernel.org>,
-        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAKwvOdnUHFi=1+9VxsfwxNAkTFEytg5FV=Aii7awSx+ioRaQbQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey Andy,
+On Thu, Feb 03, 2022 at 02:01:06PM -0800, Nick Desaulniers wrote:
+> On Thu, Feb 3, 2022 at 12:58 PM Kees Cook <keescook@chromium.org> wrote:
+> >
+> > On Thu, Feb 03, 2022 at 12:18:24PM -0800, Nick Desaulniers wrote:
+> > > On Thu, Feb 3, 2022 at 9:33 AM Kees Cook <keescook@chromium.org> wrote:
+> > > >
+> > > > In order to gain greater visibility to type information when using
+> > > > __builtin_object_size(), Clang has a function attribute "pass_object_size"
+> > > > that will make size information available for marked arguments in
+> > > > a function by way of implicit additional function arguments that are
+> > > > then wired up the __builtin_object_size().
+> > > >
+> > > > This is needed to implement FORTIFY_SOURCE in Clang, as a workaround
+> > > > to Clang's __builtin_object_size() having limited visibility[1] into types
+> > > > across function calls (even inlines).
+> > > >
+> > > > Since any usage must also be const, include it in the macro.
+> > >
+> > > I think it might be helpful to quote the docs
+> > > (https://clang.llvm.org/docs/AttributeReference.html#pass-object-size-pass-dynamic-object-size)
+> > >
+> > > >> Additionally, any parameter that pass_object_size is applied to must be marked const at its function’s definition.
+> > >
+> > > One thing that's concerning to me is though:
+> > >
+> > > >> It is an error to take the address of a function with pass_object_size on any of its parameters.
+> > >
+> > > Surely the kernel has indirect calls to some of these functions
+> > > somewhere? Is that just an issue for C++ name-mangling perhaps?
+> >
+> > AFAIU, this shouldn't be a problem for any of these. Nothing is trying
+> > to take memcpy, memset, etc by address. The macro-ified version of this
+> > change proved that out. :)
+> 
+> I thought Sami had found a location where memcpy was invoked
+> indirectly as part of his kcfi work? Maybe I'm misremembering.
+> 
+> https://github.com/samitolvanen/linux/commit/46a777fb35784a8c6daf13d67de8bfb5148adc2a#diff-a27660992abdf360d01deac6364db31836d0d98b5d9573b7fc10a6785a669975R16
 
-Think I could bug you to review this patch? The general idea is based
-on your original patch, and I think this fits what we talked about on
-IRC. I figure we'll probably both page this out of our minds after
-another week or two of not thinking about it.
+Hm, I've had memcpy as a macro for a while now, so dunno! That's not a
+sensible thing to call indirectly. :)
 
-It's here on cgit if that's easier to look at:
-https://git.kernel.org/pub/scm/linux/kernel/git/crng/random.git/commit/?h=jd/no-batch-lock
-
-Thanks,
-Jason
+-- 
+Kees Cook
