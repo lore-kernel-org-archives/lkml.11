@@ -2,74 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87400C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:37:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5085C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:41:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357260AbiBDJhh (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 04:37:37 -0500
-Received: from jabberwock.ucw.cz ([46.255.230.98]:60026 "EHLO
-        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236039AbiBDJhh (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 04:37:37 -0500
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 027111C0B79; Fri,  4 Feb 2022 10:37:36 +0100 (CET)
-Date:   Fri, 4 Feb 2022 10:37:35 +0100
-From:   Pavel Machek <pavel@denx.de>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Marco Elver <elver@google.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>
-Subject: Re: [PATCH 5.10 08/25] perf: Rework perf_event_exit_event()
-Message-ID: <20220204093734.GA27857@amd>
-References: <20220204091914.280602669@linuxfoundation.org>
- <20220204091914.560626177@linuxfoundation.org>
+        id S237686AbiBDJl5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 04:41:57 -0500
+Received: from mga14.intel.com ([192.55.52.115]:37021 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235827AbiBDJly (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 4 Feb 2022 04:41:54 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643967714; x=1675503714;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=zyAkA0z3hPV88z/IUZ/J6pW73hLdSGbtFR19wWtnHFs=;
+  b=L8U+ABqyVanAxHWGTBVSXmbZT81M9p3uAuNeKlP/XxsQimDx063qM5aJ
+   rLkpVjZTlVj+c6eXry+/Q7gk6xeqSdNbYtUnrCJcA5CHPHvf8za1+50w5
+   xWV71gNUquhezNI0XwgOwHeeoIjoct14woMPUFxVUhbnmgVco1o6nQW2H
+   FwjUlI/wXmnMO6m8S4INm9J1qTOsRQ3yIVYnWWUZVZDLG6PrIIqBFK8BC
+   4qxvZbfPFqwW2iqLbbWrqzQvZpbxDGxxtJFTU1lFWx5iJKMBVTjG4QnyI
+   fqTZtrmHFyVWsdZYUHtNPnQINpreJWQiFG477jOZM2Wz3mT4f+ou3KwO8
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10247"; a="248554431"
+X-IronPort-AV: E=Sophos;i="5.88,342,1635231600"; 
+   d="scan'208";a="248554431"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2022 01:41:54 -0800
+X-IronPort-AV: E=Sophos;i="5.88,342,1635231600"; 
+   d="scan'208";a="539111341"
+Received: from punajuuri.fi.intel.com (HELO paasikivi.fi.intel.com) ([10.237.72.43])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2022 01:41:51 -0800
+Received: from paasikivi.fi.intel.com (localhost [127.0.0.1])
+        by paasikivi.fi.intel.com (Postfix) with SMTP id 8BE4B20287;
+        Fri,  4 Feb 2022 11:41:19 +0200 (EET)
+Date:   Fri, 4 Feb 2022 11:41:19 +0200
+From:   Sakari Ailus <sakari.ailus@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Wolfram Sang <wsa@kernel.org>
+Subject: Re: [PATCH v1 1/1] device property: Don't split fwnode_get_irq*()
+ APIs in the code
+Message-ID: <Yfz0v7oqDkgfZyky@paasikivi.fi.intel.com>
+References: <20220203125613.1166-1-andriy.shevchenko@linux.intel.com>
+ <Yfzkm1CVNNRqHzd7@paasikivi.fi.intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="KsGdsel6WgEHnImy"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220204091914.560626177@linuxfoundation.org>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <Yfzkm1CVNNRqHzd7@paasikivi.fi.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, Feb 04, 2022 at 10:32:27AM +0200, Sakari Ailus wrote:
+> I'd prefer to prepend this patch to the rest of the set I have and get it
+> all merged through linux-pm tree, on the dependent patch reaches it.
 
---KsGdsel6WgEHnImy
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I rebased mine on this patch and I was quite surprised to see it doesn't
+conflict! So either way works fine for me.
 
-Hi!
+Reviewed-by: Sakari Ailus <sakari.ailus@linux.intel.com>
 
-> From: Peter Zijlstra <peterz@infradead.org>
->=20
-> commit ef54c1a476aef7eef26fe13ea10dc090952c00f8 upstream.
->=20
-> Make perf_event_exit_event() more robust, such that we can use it from
-> other contexts. Specifically the up and coming remove_on_exec.
-
-Do we need this in 5.10? AFAICT the remove_on_exec work is not queued
-for 5.10, and this patch is buggy and needs following one to fix it
-up.
-
-Best regards,
-								Pavel
---=20
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-
---KsGdsel6WgEHnImy
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAmH8894ACgkQMOfwapXb+vKK7ACfSNtFyXrTWRJ+yDREXewFddJN
-OHwAn1yKQXsGWjcSAHf3tokavGz9cqIb
-=bzKq
------END PGP SIGNATURE-----
-
---KsGdsel6WgEHnImy--
+-- 
+Sakari Ailus
