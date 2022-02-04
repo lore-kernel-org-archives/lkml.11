@@ -2,69 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FDCAC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 15:41:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11984C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 15:42:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359798AbiBDPl4 (ORCPT
+        id S1359817AbiBDPmR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 10:41:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35524 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237808AbiBDPly (ORCPT
+        Fri, 4 Feb 2022 10:42:17 -0500
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:40296 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1359806AbiBDPmP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 10:41:54 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48D5AC061714
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 07:41:54 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 108A0B837EE
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 15:41:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FE15C004E1;
-        Fri,  4 Feb 2022 15:41:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643989311;
-        bh=GkwaM++Cb1f0h4lj1C4y87jTmDMs+beC7xUIl2GD/QM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=o1Msp/kKQeVaBUeJ3sjJ25M9iOxYSdS3VNGsGQ+pbc1x3DLRfhvy0Ksi7f0S+Lc7u
-         ffStc+iYl2foM+rokVeUNG8Wu08bkEenQsdRGxzbfLrnxihSoAIx0Hh+iHiscZ/K0Q
-         P5K7yDRe7ZUo3HNDIDkI/S8NhE3EhOa7MdxVXtoU=
-Date:   Fri, 4 Feb 2022 16:41:48 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Javier Martinez Canillas <javierm@redhat.com>
-Cc:     Miaoqian Lin <linmq006@gmail.com>, bp@suse.de,
-        daniel.vetter@ffwll.ch, linux-kernel@vger.kernel.org,
-        tzimmermann@suse.de
-Subject: Re: [PATCH v2] drivers/firmware: Add missing platform_device_put()
- in sysfb_create_simplefb
-Message-ID: <Yf1JPCD1L4qt0T2c@kroah.com>
-References: <735d2b47-227f-f09d-ddd6-28bc82a066a5@redhat.com>
- <20220116121654.7730-1-linmq006@gmail.com>
- <259abc88-58ac-9101-21a1-5130168fcdac@redhat.com>
+        Fri, 4 Feb 2022 10:42:15 -0500
+Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 214Ebxgf011945;
+        Fri, 4 Feb 2022 16:42:00 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=1UBZ1HQMJGwj58sI+h9K8wE/T4Yj+VGIcEnThWRmLs0=;
+ b=SZHUpTBe91uhtNz4Yw90DSS8oqBMB7FjuBQ8DhYZ5x4JUwaJ0mXFa9k/V/eHMHgjqcdg
+ 9pRCScPVnSVPxWOa4G3e01SM9nM/NV7UkPf6axX0kh9p/kL8pdN1WtJzUOpM8MKZ69E/
+ lI/RdxoXOKTCDXzRQowACfiHc3HtGBwy/UnpJDmWRTbuDYnsNq2ZfxnWLIc5O6TbfVrG
+ F8oQ4brpgyz8d5pZUQuO4hAM7z7SY3nZC5e3u9zE5zyXLKngQ08gg+Lp9S2yTxJ+WfCA
+ 8EagOzRcZ6LLc/Pbc9zpJGr4phBQdsy/zVUM+XECpDRYENAtthnmpjP/3Xhag2sH0+MC SQ== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3e0ejjew8a-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 04 Feb 2022 16:42:00 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id EE4BD10002A;
+        Fri,  4 Feb 2022 16:41:59 +0100 (CET)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id E59B9229A8C;
+        Fri,  4 Feb 2022 16:41:59 +0100 (CET)
+Received: from lmecxl0566.lme.st.com (10.75.127.49) by SFHDAG2NODE2.st.com
+ (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Fri, 4 Feb
+ 2022 16:41:59 +0100
+Subject: Re: [PATCH 1/2] serial: mctrl_gpio: add a new API to enable / disable
+ wake_irq
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Gerald Baeza <gerald.baeza@st.com>,
+        Valentin Caron <valentin.caron@foss.st.com>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220203171644.12231-1-erwan.leray@foss.st.com>
+ <20220203171644.12231-2-erwan.leray@foss.st.com>
+ <CAHp75VfxGj=3mKvjcRpQjyXBCM0szsidHVuJGdAL8yP5SmdBzw@mail.gmail.com>
+From:   Erwan LE RAY <erwan.leray@foss.st.com>
+Message-ID: <cb09a49a-37f8-9e3f-168c-4c5dd62e2c07@foss.st.com>
+Date:   Fri, 4 Feb 2022 16:41:58 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <259abc88-58ac-9101-21a1-5130168fcdac@redhat.com>
+In-Reply-To: <CAHp75VfxGj=3mKvjcRpQjyXBCM0szsidHVuJGdAL8yP5SmdBzw@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.75.127.49]
+X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-04_07,2022-02-03_01,2021-12-02_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jan 16, 2022 at 06:31:09PM +0100, Javier Martinez Canillas wrote:
-> On 1/16/22 13:16, Miaoqian Lin wrote:
-> > Add the missing platform_device_put() before return from
-> > sysfb_create_simplefb() in the error handling case.
-> > 
-> > Fixes: 8633ef8 ("drivers/firmware: consolidate EFI framebuffer setup for all arches")
-> > Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-> > ---
-> > Changes in v2:
-> > - Use goto label to avoid duplicating the error code logic.
-> > ---
-> >  drivers/firmware/sysfb_simplefb.c | 8 ++++++--
-> >  1 file changed, 6 insertions(+), 2 deletions(-)
-> > 
-> 
-> Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
+Hi Andy,
 
-Does not apply to my tree :(
+On 2/4/22 10:07 AM, Andy Shevchenko wrote:
+> 
+> 
+> On Thursday, February 3, 2022, Erwan Le Ray <erwan.leray@foss.st.com 
+> <mailto:erwan.leray@foss.st.com>> wrote:
+> 
+>     Add a new API to enable / disable wake_irq in order to enable gpio
+>     irqs as
+>     wakeup irqs for the uart port.
+> 
+>     Signed-off-by: Erwan Le Ray <erwan.leray@foss.st.com
+>     <mailto:erwan.leray@foss.st.com>>
+> 
+>     diff --git a/drivers/tty/serial/serial_mctrl_gpio.c
+>     b/drivers/tty/serial/serial_mctrl_gpio.c
+>     index c41d8911ce95..1663b3afc3a0 100644
+>     --- a/drivers/tty/serial/serial_mctrl_gpio.c
+>     +++ b/drivers/tty/serial/serial_mctrl_gpio.c
+>     @@ -299,4 +299,42 @@ void mctrl_gpio_disable_ms(struct mctrl_gpios
+>     *gpios)
+>       }
+>       EXPORT_SYMBOL_GPL(mctrl_gpio_disable_ms);
+> 
+>     +void mctrl_gpio_enable_irq_wake(struct mctrl_gpios *gpios)
+>     +{
+>     +       enum mctrl_gpio_idx i;
+>     +
+>     +       if (!gpios)
+>     +               return;
+>     +
+>     +       if (!gpios->mctrl_on)
+>     +               return;
+>     +
+>     +       for (i = 0; i < UART_GPIO_MAX; ++i) {
+>     +               if (!gpios->irq[i])
+>     +                       continue;
+> 
+> 
+> 
+> Why not simply
+> 
+>    if (gpios[])
+>      enable_irq_...
+> 
+> ?
+> 
+> And same for disabling.
+> 
+>     +
+>     +               enable_irq_wake(gpios->irq[i]);
+>     +       }
+>     +}
+>     +EXPORT_SYMBOL_GPL(mctrl_gpio_enable_irq_wake);
+>     +
+>     +void mctrl_gpio_disable_irq_wake(struct mctrl_gpios *gpios)
+>     +{
+>     +       enum mctrl_gpio_idx i;
+>     +
+>     +       if (!gpios)
+>     +               return;
+>     +
+>     +       if (!gpios->mctrl_on)
+>     +               return;
+>     +
+>     +       for (i = 0; i < UART_GPIO_MAX; ++i) {
+>     +               if (!gpios->irq[i])
+>     +                       continue;
+>     +
+>     +               disable_irq_wake(gpios->irq[i]);
+>     +       }
+>     +}
+>     +EXPORT_SYMBOL_GPL(mctrl_gpio_disable_irq_wake);
+>     +
+>       MODULE_LICENSE("GPL");
+>     diff --git a/drivers/tty/serial/serial_mctrl_gpio.h
+>     b/drivers/tty/serial/serial_mctrl_gpio.h
+>     index b134a0ffc894..fc76910fb105 100644
+>     --- a/drivers/tty/serial/serial_mctrl_gpio.h
+>     +++ b/drivers/tty/serial/serial_mctrl_gpio.h
+>     @@ -91,6 +91,16 @@ void mctrl_gpio_enable_ms(struct mctrl_gpios *gpios);
+>        */
+>       void mctrl_gpio_disable_ms(struct mctrl_gpios *gpios);
+> 
+>     +/*
+>     + * Enable gpio wakeup interrupts to enable wake up source.
+>     + */
+>     +void mctrl_gpio_enable_irq_wake(struct mctrl_gpios *gpios);
+>     +
+>     +/*
+>     + * Disable gpio wakeup interrupts to enable wake up source.
+>     + */
+>     +void mctrl_gpio_disable_irq_wake(struct mctrl_gpios *gpios);
+>     +
+>       #else /* GPIOLIB */
+> 
+>       static inline
+>     @@ -142,6 +152,14 @@ static inline void mctrl_gpio_disable_ms(struct
+>     mctrl_gpios *gpios)
+>       {
+>       }
+> 
+>     +static inline void mctrl_gpio_enable_irq_wake(struct mctrl_gpios
+>     *gpios)
+>     +{
+>     +}
+>     +
+>     +static inline void mctrl_gpio_disable_irq_wake(struct mctrl_gpios
+>     *gpios)
+>     +{
+>     +}
+>     +
+>       #endif /* GPIOLIB */
+> 
+>       #endif
+>     -- 
+>     2.17.1
+> 
+> 
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+> 
+> 
+
+Thanks for your review.
+I fully agree with your comment, but I wrote this code like it is to 
+keep the same structure than all the other ops of serial_mcrtrl_gpio 
+driver. I preferred keeping an homogeneous code in the driver rather 
+than breaking the driver homogeneity with the addition of an optimized code.
+
+Greg, can you please indicate which solution you recommend ?
+
+Cheers, Erwan.
