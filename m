@@ -2,103 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BE27C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 23:56:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7180FC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 23:56:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378387AbiBDX4D (ORCPT
+        id S1378524AbiBDX4K (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 18:56:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52100 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232201AbiBDX4B (ORCPT
+        Fri, 4 Feb 2022 18:56:10 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:35248 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377814AbiBDX4D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 18:56:01 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3407D84F2B6;
-        Fri,  4 Feb 2022 15:56:00 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A78A0B83971;
-        Fri,  4 Feb 2022 23:55:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D5DFC004E1;
-        Fri,  4 Feb 2022 23:55:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644018958;
-        bh=BktStQzin+/As+Ke35kasrGp3jVELJq1EFpMB9fq+z0=;
-        h=Date:From:To:Cc:Subject:Reply-To:From;
-        b=QXmkIRZtwyNFQfNOY4Wo1mHy+Vmi5ssWLKvJwkaTgfPsbG+/2pRAFHUkeBk22QPOS
-         X46DHEvEcVygITv/UlmnoBv9lJmNWvFTwDFae+rmLQ39jbDMAMlwiM3w/ZkkbyGQqW
-         Kbh0JlIWmA+B5eSLU8gAgVf9TCo3++sIG30AmwN2k1xbvPa8usQIwWLrhGR+9JHDeV
-         vxIaNqrSno9YFeI6mYat6hzObtToxbRFMjz8ySeED4cSzKOnh9i1jro44eiGGGw410
-         BCBJxokZ/nEkbxlu4yXQZRo1siqELjkNGsmUSJuOhX/lJnRwjkYm4a/YF0BD1HdkIF
-         j1lQpnvYE2vJg==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 229655C0418; Fri,  4 Feb 2022 15:55:58 -0800 (PST)
-Date:   Fri, 4 Feb 2022 15:55:58 -0800
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     rcu@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com,
-        rostedt@goodmis.org
-Subject: [PATCH rcu 0/13] Torture-test scripting updates for v5.18
-Message-ID: <20220204235558.GA3221@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
+        Fri, 4 Feb 2022 18:56:03 -0500
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1644018961;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=96SoL3E8HRraXhW4GJvLh32KeIwpXS7GySgMx5VXOrw=;
+        b=dl9H1uZ7++7Lg9O8+nklBFbOMxVaazDBU+q+U0NCRS0OTWk7CG8E9MX67//cKNReM3zKyJ
+        kfncVJ1nKkBjP1L9TVRAO9C9MZtC4m0B19lXjGaKYxU/g9i5reQE8vYYm5f6w1JMUQ2WJW
+        nwmm+GY9MZRT6xxG19brdWjAlnccQLCV1HcMLqbQOQgsWaK16x6fO6MqZ8A2X5irI/EiGF
+        3KlB8Cp9jdF/HyGLs15k1DTAer4b/VXtKypipqgBnoevbfkipIbDdLef+PLyPU/NJSuDzn
+        zaU5OWVIoXtm0i0eZd+vfVLQ1zRrawlJ7A64Andor5vrPhXrvSb7X9TL7hNDOA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1644018961;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=96SoL3E8HRraXhW4GJvLh32KeIwpXS7GySgMx5VXOrw=;
+        b=boPOAy3L0uN2tjlbFX4t2zq9awzckTNT1mstjB0iv6tj8UuvZH2u6cEj7x9WyBdmJ1y5ts
+        ZpdYSFRPbV+iUKCA==
+To:     Fenghua Yu <fenghua.yu@intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andy Lutomirski <luto@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jacob Pan <jacob.jun.pan@linux.intel.com>,
+        Ashok Raj <ashok.raj@intel.com>,
+        Ravi V Shankar <ravi.v.shankar@intel.com>
+Cc:     iommu@lists.linux-foundation.org, x86 <x86@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Fenghua Yu <fenghua.yu@intel.com>
+Subject: Re: [PATCH v3 05/11] iommu/sva: Assign a PASID to mm on PASID
+ allocation and free it on mm exit
+In-Reply-To: <20220128202905.2274672-6-fenghua.yu@intel.com>
+References: <20220128202905.2274672-1-fenghua.yu@intel.com>
+ <20220128202905.2274672-6-fenghua.yu@intel.com>
+Date:   Sat, 05 Feb 2022 00:56:00 +0100
+Message-ID: <87r18ib2zz.ffs@tglx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello!
+On Fri, Jan 28 2022 at 12:28, Fenghua Yu wrote:
+> To avoid complexity of updating each thread's PASID status (e.g. sending
+> IPI to update IA32_PASID MSR) on allocating and freeing PASID, once
+> allocated and assigned to an mm, the PASID stays with the mm for the
+> rest of the mm's lifetime. A reference to the PASID is taken on
+> allocating the PASID. Binding/unbinding the PASID won't change refcount.
+> The reference is dropped on mm exit and thus the PASID is freed.
+>
+> Two helpers mm_pasid_set() and mm_pasid_drop() are defined in mm because
+> the PASID operations handle the pasid member in mm_struct and should be
+> part of mm operations. Because IOASID's reference count is not used any
+> more and removed, unused ioasid_get() and iommu_sva_free_pasid()
+> are deleted and ioasid_put() is renamed to ioasid_free().
+>
+> 20-bit PASID allows up to 1M processes bound to PASIDs at the same time.
+> With cgroups and other controls that might limit the number of process
+> creation, the limited number of PASIDs is not a realistic issue for
+> lazy PASID free.
 
-This series provides updates to the torture-test scripting.
+Please take a step back and think hard about it whether that changelog
+makes sense to you a year from now.
 
-1.	Drop trailing ^M from console output.
+Let me walk you through:
 
-2.	Allow four-digit repetition numbers for --configs parameter.
+> To avoid complexity of updating each thread's PASID status (e.g. sending
+> IPI to update IA32_PASID MSR) on allocating and freeing PASID, once
+> allocated and assigned to an mm, the PASID stays with the mm for the
+> rest of the mm's lifetime.
 
-3.	Output per-failed-run summary lines from torture.sh.
+You are missing the oportunity to tell a story about the history of this
+decision here:
 
-4.	Make kvm.sh summaries note runs having only KCSAN reports.
+  PASIDs are process wide. It was attempted to use refcounted PASIDs to
+  free them when the last thread drops the refcount. This turned out to
+  be complex and error prone. Given the fact that the PASID space is 20
+  bits, which allows up to 1M processes to have a PASID associated
+  concurrently, PASID resource exhaustion is not a realistic concern.
 
-5.	Indicate which torture.sh runs' bugs are all KCSAN reports.
+  Therefore it was decided to simplify the approach and stick with lazy
+  on demand PASID allocation, but drop the eager free approach and make
+  a allocated PASID lifetime bound to the life time of the process.
 
-6.	Compress KCSAN as well as KASAN vmlinux files.
+> A reference to the PASID is taken on allocating the
+> PASID. Binding/unbinding the PASID won't change refcount.  The
+> reference is dropped on mm exit and thus the PASID is freed.
 
-7.	Make kvm-remote.sh try multiple times to download tarball.
+There is no refcount in play anymore, right? So how does this part of
+the changelog make any sense?
 
-8.	Print only one summary line per run.
+This is followed by:
 
-9.	Make kvm-find-errors.sh notice missing vmlinux file.
+> Two helpers mm_pasid_set() and mm_pasid_drop() are defined in mm because
+> the PASID operations handle the pasid member in mm_struct and should be
+> part of mm operations. Because IOASID's reference count is not used any
+> more and removed, unused ioasid_get() and iommu_sva_free_pasid()
+> are deleted and ioasid_put() is renamed to ioasid_free().
 
-10.	Change KVM environment variable to RCUTORTURE.
+which does not provide much rationale and just blurbs about _what_ the
+patch is doing and not about the why and the connection to the
+above. And the refcount removal section contradicts the stale text
+above.
 
-11.	Make torture.sh help message match reality.
+So this paragraph should be something like this:
 
-12.	Test SRCU size transitions.
+  Get rid of the refcounting mechanisms and replace/rename the
+  interfaces to reflect this new approach.
 
-13.	Provide non-power-of-two Tasks RCU scenarios.
+Hmm?
 
-						Thanx, Paul
+Thanks,
 
-------------------------------------------------------------------------
-
- b/tools/testing/selftests/rcutorture/bin/console-badness.sh    |    2 
- b/tools/testing/selftests/rcutorture/bin/kvm-again.sh          |    4 -
- b/tools/testing/selftests/rcutorture/bin/kvm-check-branches.sh |    4 -
- b/tools/testing/selftests/rcutorture/bin/kvm-end-run-stats.sh  |    4 -
- b/tools/testing/selftests/rcutorture/bin/kvm-find-errors.sh    |    6 +
- b/tools/testing/selftests/rcutorture/bin/kvm-recheck-rcu.sh    |    2 
- b/tools/testing/selftests/rcutorture/bin/kvm-remote.sh         |   17 ++--
- b/tools/testing/selftests/rcutorture/bin/kvm.sh                |    2 
- b/tools/testing/selftests/rcutorture/bin/parse-console.sh      |   10 ++
- b/tools/testing/selftests/rcutorture/bin/torture.sh            |    2 
- b/tools/testing/selftests/rcutorture/configs/rcu/RUDE01        |    2 
- b/tools/testing/selftests/rcutorture/configs/rcu/SRCU-N.boot   |    1 
- b/tools/testing/selftests/rcutorture/configs/rcu/SRCU-P.boot   |    2 
- b/tools/testing/selftests/rcutorture/configs/rcu/TRACE01       |    2 
- tools/testing/selftests/rcutorture/bin/kvm-remote.sh           |    8 +-
- tools/testing/selftests/rcutorture/bin/kvm.sh                  |   14 +--
- tools/testing/selftests/rcutorture/bin/torture.sh              |   40 ++++++----
- 17 files changed, 78 insertions(+), 44 deletions(-)
+        tglx
