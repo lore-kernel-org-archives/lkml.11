@@ -2,202 +2,315 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9452AC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 06:42:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 905DEC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 06:43:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244339AbiBDGmD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 01:42:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52962 "EHLO
+        id S244776AbiBDGna (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 01:43:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233514AbiBDGmB (ORCPT
+        with ESMTP id S233514AbiBDGn3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 01:42:01 -0500
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BD7AC061714
-        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 22:42:01 -0800 (PST)
-Received: by mail-pl1-x633.google.com with SMTP id c3so4338874pls.5
-        for <linux-kernel@vger.kernel.org>; Thu, 03 Feb 2022 22:42:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ajou.ac.kr; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=rISkLwI8y1o4MK01DmaMEQr2ev7FtgdoKg4XunSBNQo=;
-        b=RtuYQApiZlqwEDImEzb2GYKdSK/hcGq8amHc0axonzvlu/rfQpHhlQmQ55mzluQBPe
-         koo+4H8gyxaYOs63q2bhNnCiNZUykE9kdm/RtzrDWSeJjn5ER0T25klg1K9oK/IOcf91
-         WGjLpZvJD5s5cPlGDepMde4o9VSV+RdW47H5I=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=rISkLwI8y1o4MK01DmaMEQr2ev7FtgdoKg4XunSBNQo=;
-        b=0k/FAxz18M9kk1vOAW/+JlRTUaoNOZqFXqzdIFv5CBYOuN1N+6W4Piayy+4gQ4h0Hh
-         XyIfhvwO/8rVqwpW8cXvsB8mmksuRCJe00go9O4K+e1tFl8f3TvAzkGqCUDbN3w1ySt2
-         q+lxR+4BSSR4DfaB2AmE3CeZSluTdNPB7tJEUhR7FXbT+cguUD5mo7Xz5rn3BQHmIhOs
-         IJLQluXG1KQLGOPNDrXP6/Chw0dS1ofz49hOR/fQmhHE9u3uGss4cjCmK6qdEIWwUnYP
-         oaZy8fx8OHDGvqhiogQ2Zf3KgWQcNBFVc3zaafdLMzZLZ/87NC6CE5Tg57d5AvPmgEDq
-         PQbQ==
-X-Gm-Message-State: AOAM532VeSVl2RWAqcCUK2rwioVtH4E8FXLQIR475WOIgmyMIyCV5SyB
-        biF1X+D3uZ0y6hjler7UXDVYwpwhhG2QuVgd
-X-Google-Smtp-Source: ABdhPJzLKxKlfA89Wiett/3ZCPywkiJx4TjC5hegGObysT6sIK74AXfzPDmgKnBOVmanEwky+BzWOg==
-X-Received: by 2002:a17:90a:f3d5:: with SMTP id ha21mr1494389pjb.175.1643956920195;
-        Thu, 03 Feb 2022 22:42:00 -0800 (PST)
-Received: from localhost.localdomain ([210.107.197.32])
-        by smtp.googlemail.com with ESMTPSA id ga21sm5050809pjb.2.2022.02.03.22.41.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Feb 2022 22:41:59 -0800 (PST)
-From:   Jonghyeon Kim <tome01@ajou.ac.kr>
-Cc:     Jonghyeon Kim <tome01@ajou.ac.kr>, SeongJae Park <sj@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        Fri, 4 Feb 2022 01:43:29 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D88AC061714
+        for <linux-kernel@vger.kernel.org>; Thu,  3 Feb 2022 22:43:29 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 89EE061BDD
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 06:43:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B707C004E1;
+        Fri,  4 Feb 2022 06:43:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643957008;
+        bh=/VdwXlVq7dzO5Ru/fFP2SsA88ZZFmo+3IMjz2nvDvI4=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=tfGAbdc/M1Q78EMOF2bCoeuxSXr50jNlIuVjvkqNWA9gJBlsCC0SXjOXhQtr755kt
+         dHMoDoJnPZUS4Iu6or5isBxmZcvghXvqs94Y27Nw2VDbFvkLsV3gEPjT6tPIYqRes0
+         UcdRRFQJHF9OdWf9FMpD35fJ/op8aiwi/NLeGV9EbEog5bHZtDqhbFQ6sJCDFfyLNB
+         z/GPTKL403O5u9z/HK23GT3QCnTEx8MltTScA+quzWLZM6orK8dbRwzK/54HQUa387
+         h6bL5Kqcm4CUbsCjK2typwo7wy7//O/m32Eb5fVCIJK1yAKgudSDfMUs+uy9hi1WkG
+         XN7HikkReaU2Q==
+Message-ID: <260bf309-9712-9696-49d5-3fe156bc319c@kernel.org>
+Date:   Fri, 4 Feb 2022 14:43:24 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH v2] f2fs: introduce F2FS_IPU_DEFRAG to allow file
+ defragment in IPU mode
+Content-Language: en-US
+To:     Jaegeuk Kim <jaegeuk@kernel.org>
+Cc:     linux-f2fs-devel@lists.sourceforge.net,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] mm/damon: Rebase DAMON_RECALIM watermarks for NUMA nodes
-Date:   Fri,  4 Feb 2022 15:40:59 +0900
-Message-Id: <20220204064059.6244-1-tome01@ajou.ac.kr>
-X-Mailer: git-send-email 2.17.1
-To:     unlisted-recipients:; (no To-header on input)
+References: <20220204010539.42672-1-chao@kernel.org>
+ <YfzD4aTbDW2xKlO9@google.com>
+From:   Chao Yu <chao@kernel.org>
+In-Reply-To: <YfzD4aTbDW2xKlO9@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Current DAMON_RECALIM is not compatible the NUMA memory system. To proactively
-reclaim memory, DAMON_RECLAIM kernel thread(kdamond) has to wake up before
-kswapd does reclaim memory. However, the current watermark for proactive
-reclamation is based on entire system free memory. So, though the one memory
-node is fully used, kdamond is not waked up.
+On 2022/2/4 14:12, Jaegeuk Kim wrote:
+> On 02/04, Chao Yu wrote:
+>> Once IPU policy is enabled in some cases:
+>> a) f2fs forces to use F2FS_IPU_FORCE in a small-sized volume
+>> b) user configures IPU policy via sysfs
+>>
+>> Then we may fail to defragment file via ioctl due to IPU policy check,
+>> it doesn't make sense, let's introduce a new IPU policy to allow OPU
+>> during file defragmentation, by default use IPU_DEFRAG instead of
+>> IPU_FORCE in small-sized volume for android device.
+>>
+>> Signed-off-by: Chao Yu <chao@kernel.org>
+>> ---
+>> v2:
+>> - handle F2FS_IPU_DEFRAG before F2FS_IPU_FORCE in check_inplace_update_policy().
+>>   Documentation/ABI/testing/sysfs-fs-f2fs |  3 ++-
+>>   fs/f2fs/data.c                          | 18 +++++++++++++-----
+>>   fs/f2fs/f2fs.h                          |  3 ++-
+>>   fs/f2fs/file.c                          | 18 +++++++++++-------
+>>   fs/f2fs/segment.h                       |  8 ++++----
+>>   fs/f2fs/super.c                         |  2 +-
+>>   6 files changed, 33 insertions(+), 19 deletions(-)
+>>
+>> diff --git a/Documentation/ABI/testing/sysfs-fs-f2fs b/Documentation/ABI/testing/sysfs-fs-f2fs
+>> index ce8103f522cb..d8abb674ee86 100644
+>> --- a/Documentation/ABI/testing/sysfs-fs-f2fs
+>> +++ b/Documentation/ABI/testing/sysfs-fs-f2fs
+>> @@ -55,8 +55,9 @@ Description:	Controls the in-place-update policy.
+>>   		0x04  F2FS_IPU_UTIL
+>>   		0x08  F2FS_IPU_SSR_UTIL
+>>   		0x10  F2FS_IPU_FSYNC
+>> -		0x20  F2FS_IPU_ASYNC,
+>> +		0x20  F2FS_IPU_ASYNC
+>>   		0x40  F2FS_IPU_NOCACHE
+>> +		0x80  F2FS_IPU_DEFRAG
+> 
+> How about F2FS_IPU_HONOR_OPU_WRITE?
 
-This patch allows kdamond thread to select watermark options for monitoring
-specific node or whole system free memory.
+Looks fine.
 
-Signed-off-by: Jonghyeon Kim <tome01@ajou.ac.kr>
----
- include/linux/damon.h |  4 +++-
- mm/damon/core.c       | 15 +++++++++++----
- mm/damon/dbgfs.c      |  3 ++-
- mm/damon/reclaim.c    | 12 +++++++++++-
- 4 files changed, 27 insertions(+), 7 deletions(-)
+> 
+>>   		====  =================
+>>   
+>>   		Refer segment.h for details.
+>> diff --git a/fs/f2fs/data.c b/fs/f2fs/data.c
+>> index b3c152de4bba..3c0f001e3fe1 100644
+>> --- a/fs/f2fs/data.c
+>> +++ b/fs/f2fs/data.c
+>> @@ -2460,6 +2460,9 @@ static inline bool check_inplace_update_policy(struct inode *inode,
+>>   	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
+>>   	unsigned int policy = SM_I(sbi)->ipu_policy;
+>>   
+>> +	if (policy & (0x1 << F2FS_IPU_DEFRAG) &&
+>> +			is_inode_flag_set(inode, FI_DEFRAG_PROCESS))
+>> +		return false;
+>>   	if (policy & (0x1 << F2FS_IPU_FORCE))
+>>   		return true;
+>>   	if (policy & (0x1 << F2FS_IPU_SSR) && f2fs_need_SSR(sbi))
+>> @@ -2530,6 +2533,9 @@ bool f2fs_should_update_outplace(struct inode *inode, struct f2fs_io_info *fio)
+>>   	if (is_inode_flag_set(inode, FI_ALIGNED_WRITE))
+>>   		return true;
+>>   
+>> +	if (is_inode_flag_set(inode, FI_DEFRAG_PROCESS))
+>> +		return true;
+>> +
+>>   	if (fio) {
+>>   		if (page_private_gcing(fio->page))
+>>   			return true;
+>> @@ -3154,8 +3160,8 @@ static int __f2fs_write_data_pages(struct address_space *mapping,
+>>   			f2fs_available_free_memory(sbi, DIRTY_DENTS))
+>>   		goto skip_write;
+>>   
+>> -	/* skip writing during file defragment */
+>> -	if (is_inode_flag_set(inode, FI_DO_DEFRAG))
+>> +	/* skip writing in file defragment preparing stage */
+>> +	if (is_inode_flag_set(inode, FI_DEFRAG_PREPARE))
+>>   		goto skip_write;
+>>   
+>>   	trace_f2fs_writepages(mapping->host, wbc, DATA);
+>> @@ -3729,6 +3735,7 @@ static int f2fs_migrate_blocks(struct inode *inode, block_t start_blk,
+>>   	filemap_invalidate_lock(inode->i_mapping);
+>>   
+>>   	set_inode_flag(inode, FI_ALIGNED_WRITE);
+>> +	set_inode_flag(inode, FI_DEFRAG_PROCESS);
+>>   
+>>   	for (; secidx < end_sec; secidx++) {
+>>   		f2fs_down_write(&sbi->pin_sem);
+>> @@ -3737,7 +3744,7 @@ static int f2fs_migrate_blocks(struct inode *inode, block_t start_blk,
+>>   		f2fs_allocate_new_section(sbi, CURSEG_COLD_DATA_PINNED, false);
+>>   		f2fs_unlock_op(sbi);
+>>   
+>> -		set_inode_flag(inode, FI_DO_DEFRAG);
+>> +		set_inode_flag(inode, FI_DEFRAG_PREPARE);
+>>   
+>>   		for (blkofs = 0; blkofs < blk_per_sec; blkofs++) {
+>>   			struct page *page;
+>> @@ -3754,7 +3761,7 @@ static int f2fs_migrate_blocks(struct inode *inode, block_t start_blk,
+>>   			f2fs_put_page(page, 1);
+>>   		}
+>>   
+>> -		clear_inode_flag(inode, FI_DO_DEFRAG);
+>> +		clear_inode_flag(inode, FI_DEFRAG_PREPARE);
+>>   
+>>   		ret = filemap_fdatawrite(inode->i_mapping);
+>>   
+>> @@ -3765,7 +3772,8 @@ static int f2fs_migrate_blocks(struct inode *inode, block_t start_blk,
+>>   	}
+>>   
+>>   done:
+>> -	clear_inode_flag(inode, FI_DO_DEFRAG);
+>> +	clear_inode_flag(inode, FI_DEFRAG_PREPARE);
+>> +	clear_inode_flag(inode, FI_DEFRAG_PROCESS);
+>>   	clear_inode_flag(inode, FI_ALIGNED_WRITE);
+>>   
+>>   	filemap_invalidate_unlock(inode->i_mapping);
+>> diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
+>> index 6ddb98ff0b7c..5af415208488 100644
+>> --- a/fs/f2fs/f2fs.h
+>> +++ b/fs/f2fs/f2fs.h
+>> @@ -737,7 +737,8 @@ enum {
+>>   	FI_DROP_CACHE,		/* drop dirty page cache */
+>>   	FI_DATA_EXIST,		/* indicate data exists */
+>>   	FI_INLINE_DOTS,		/* indicate inline dot dentries */
+>> -	FI_DO_DEFRAG,		/* indicate defragment is running */
+>> +	FI_DEFRAG_PREPARE,	/* indicate defragment is preparing */
+> 
+> This is used for f2fs_migrate_blocks for swap file. Can we rename to
+> FI_SKIP_WRITES that makes skipping writeback pages?
 
-diff --git a/include/linux/damon.h b/include/linux/damon.h
-index 114cfb96d37a..3846b985bcb9 100644
---- a/include/linux/damon.h
-+++ b/include/linux/damon.h
-@@ -220,6 +220,7 @@ struct damos_stat {
-  * @wmarks:		Watermarks for automated (in)activation of this scheme.
-  * @stat:		Statistics of this scheme.
-  * @list:		List head for siblings.
-+ * @node:		NUMA node of target regions.
-  *
-  * For each aggregation interval, DAMON finds regions which fit in the
-  * condition (&min_sz_region, &max_sz_region, &min_nr_accesses,
-@@ -251,6 +252,7 @@ struct damos {
- 	struct damos_watermarks wmarks;
- 	struct damos_stat stat;
- 	struct list_head list;
-+	int node;
- };
- 
- struct damon_ctx;
-@@ -477,7 +479,7 @@ struct damos *damon_new_scheme(
- 		unsigned int min_nr_accesses, unsigned int max_nr_accesses,
- 		unsigned int min_age_region, unsigned int max_age_region,
- 		enum damos_action action, struct damos_quota *quota,
--		struct damos_watermarks *wmarks);
-+		struct damos_watermarks *wmarks, int node);
- void damon_add_scheme(struct damon_ctx *ctx, struct damos *s);
- void damon_destroy_scheme(struct damos *s);
- 
-diff --git a/mm/damon/core.c b/mm/damon/core.c
-index 07449d46d3d3..dfa87cda0266 100644
---- a/mm/damon/core.c
-+++ b/mm/damon/core.c
-@@ -87,7 +87,7 @@ struct damos *damon_new_scheme(
- 		unsigned int min_nr_accesses, unsigned int max_nr_accesses,
- 		unsigned int min_age_region, unsigned int max_age_region,
- 		enum damos_action action, struct damos_quota *quota,
--		struct damos_watermarks *wmarks)
-+		struct damos_watermarks *wmarks, int node)
- {
- 	struct damos *scheme;
- 
-@@ -125,6 +125,8 @@ struct damos *damon_new_scheme(
- 	scheme->wmarks.low = wmarks->low;
- 	scheme->wmarks.activated = true;
- 
-+	scheme->node = node;
-+
- 	return scheme;
- }
- 
-@@ -936,13 +938,18 @@ static bool kdamond_need_stop(struct damon_ctx *ctx)
- 	return true;
- }
- 
--static unsigned long damos_wmark_metric_value(enum damos_wmark_metric metric)
-+static unsigned long damos_wmark_metric_value(struct damos *scheme)
- {
- 	struct sysinfo i;
-+	enum damos_wmark_metric metric = scheme->wmarks.metric;
-+	int target_node = scheme->node;
- 
- 	switch (metric) {
- 	case DAMOS_WMARK_FREE_MEM_RATE:
--		si_meminfo(&i);
-+		if (target_node == NUMA_NO_NODE)
-+			si_meminfo(&i);
-+		else
-+			si_meminfo_node(&i, target_node);
- 		return i.freeram * 1000 / i.totalram;
- 	default:
- 		break;
-@@ -961,7 +968,7 @@ static unsigned long damos_wmark_wait_us(struct damos *scheme)
- 	if (scheme->wmarks.metric == DAMOS_WMARK_NONE)
- 		return 0;
- 
--	metric = damos_wmark_metric_value(scheme->wmarks.metric);
-+	metric = damos_wmark_metric_value(scheme);
- 	/* higher than high watermark or lower than low watermark */
- 	if (metric > scheme->wmarks.high || scheme->wmarks.low > metric) {
- 		if (scheme->wmarks.activated)
-diff --git a/mm/damon/dbgfs.c b/mm/damon/dbgfs.c
-index 78ff645433c6..3f61cbde7ec4 100644
---- a/mm/damon/dbgfs.c
-+++ b/mm/damon/dbgfs.c
-@@ -224,7 +224,8 @@ static struct damos **str_to_schemes(const char *str, ssize_t len,
- 
- 		pos += parsed;
- 		scheme = damon_new_scheme(min_sz, max_sz, min_nr_a, max_nr_a,
--				min_age, max_age, action, &quota, &wmarks);
-+				min_age, max_age, action, &quota, &wmarks,
-+				NUMA_NO_NODE);
- 		if (!scheme)
- 			goto fail;
- 
-diff --git a/mm/damon/reclaim.c b/mm/damon/reclaim.c
-index d85e0898f905..ad80f14d164f 100644
---- a/mm/damon/reclaim.c
-+++ b/mm/damon/reclaim.c
-@@ -189,6 +189,14 @@ module_param(monitor_region_start, ulong, 0600);
- static unsigned long monitor_region_end __read_mostly;
- module_param(monitor_region_end, ulong, 0600);
- 
-+/*
-+ * NUMA node of target to monitor
-+ *
-+ * If node is NUMA_NO_NODE, watermark is based on system entire memory.
-+ */
-+static int node __read_mostly = NUMA_NO_NODE;
-+module_param(node, int, 0600);
-+
- /*
-  * PID of the DAMON thread
-  *
-@@ -298,7 +306,9 @@ static struct damos *damon_reclaim_new_scheme(void)
- 			/* under the quota. */
- 			&quota,
- 			/* (De)activate this according to the watermarks. */
--			&wmarks);
-+			&wmarks,
-+			/* Watermarks is based on this NUMA node */
-+			node);
- 
- 	return scheme;
- }
--- 
-2.17.1
+Sure.
 
+> 
+>> +	FI_DEFRAG_PROCESS,	/* indicate defragment is processing */
+> 
+> How about FI_OPU_WRITE?
+
+Looks fine.
+
+> 
+>>   	FI_DIRTY_FILE,		/* indicate regular/symlink has dirty pages */
+>>   	FI_PREALLOCATED_ALL,	/* all blocks for write were preallocated */
+>>   	FI_HOT_DATA,		/* indicate file is hot */
+>> diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
+>> index 6ccdd6e347e2..3a573125002b 100644
+>> --- a/fs/f2fs/file.c
+>> +++ b/fs/f2fs/file.c
+>> @@ -2559,10 +2559,6 @@ static int f2fs_defragment_range(struct f2fs_sb_info *sbi,
+>>   	bool fragmented = false;
+>>   	int err;
+>>   
+>> -	/* if in-place-update policy is enabled, don't waste time here */
+>> -	if (f2fs_should_update_inplace(inode, NULL))
+>> -		return -EINVAL;
+>> -
+>>   	pg_start = range->start >> PAGE_SHIFT;
+>>   	pg_end = (range->start + range->len) >> PAGE_SHIFT;
+>>   
+>> @@ -2570,6 +2566,13 @@ static int f2fs_defragment_range(struct f2fs_sb_info *sbi,
+>>   
+>>   	inode_lock(inode);
+>>   
+>> +	/* if in-place-update policy is enabled, don't waste time here */
+>> +	set_inode_flag(inode, FI_DEFRAG_PROCESS);
+>> +	if (f2fs_should_update_inplace(inode, NULL)) {
+>> +		err = -EINVAL;
+>> +		goto out;
+>> +	}
+>> +
+>>   	/* writeback all dirty pages in the range */
+>>   	err = filemap_write_and_wait_range(inode->i_mapping, range->start,
+>>   						range->start + range->len - 1);
+>> @@ -2651,7 +2654,7 @@ static int f2fs_defragment_range(struct f2fs_sb_info *sbi,
+>>   			goto check;
+>>   		}
+>>   
+>> -		set_inode_flag(inode, FI_DO_DEFRAG);
+>> +		set_inode_flag(inode, FI_DEFRAG_PREPARE);
+>>   
+>>   		idx = map.m_lblk;
+>>   		while (idx < map.m_lblk + map.m_len && cnt < blk_per_seg) {
+>> @@ -2676,15 +2679,16 @@ static int f2fs_defragment_range(struct f2fs_sb_info *sbi,
+>>   		if (map.m_lblk < pg_end && cnt < blk_per_seg)
+>>   			goto do_map;
+>>   
+>> -		clear_inode_flag(inode, FI_DO_DEFRAG);
+>> +		clear_inode_flag(inode, FI_DEFRAG_PREPARE);
+>>   
+>>   		err = filemap_fdatawrite(inode->i_mapping);
+>>   		if (err)
+>>   			goto out;
+>>   	}
+>>   clear_out:
+>> -	clear_inode_flag(inode, FI_DO_DEFRAG);
+>> +	clear_inode_flag(inode, FI_DEFRAG_PREPARE);
+>>   out:
+>> +	clear_inode_flag(inode, FI_DEFRAG_PROCESS);
+>>   	inode_unlock(inode);
+>>   	if (!err)
+>>   		range->len = (u64)total << PAGE_SHIFT;
+>> diff --git a/fs/f2fs/segment.h b/fs/f2fs/segment.h
+>> index 0291cd55cf09..a9373861ab1c 100644
+>> --- a/fs/f2fs/segment.h
+>> +++ b/fs/f2fs/segment.h
+>> @@ -651,7 +651,8 @@ static inline int utilization(struct f2fs_sb_info *sbi)
+>>    *                     pages over min_fsync_blocks. (=default option)
+>>    * F2FS_IPU_ASYNC - do IPU given by asynchronous write requests.
+>>    * F2FS_IPU_NOCACHE - disable IPU bio cache.
+>> - * F2FS_IPUT_DISABLE - disable IPU. (=default option in LFS mode)
+>> + * F2FS_IPU_DEFRAG - allow OPU during file defragmentation.
+>> + * F2FS_IPU_DISABLE - disable IPU. (=default option in LFS mode)
+>>    */
+>>   #define DEF_MIN_IPU_UTIL	70
+>>   #define DEF_MIN_FSYNC_BLOCKS	8
+>> @@ -667,6 +668,7 @@ enum {
+>>   	F2FS_IPU_FSYNC,
+>>   	F2FS_IPU_ASYNC,
+>>   	F2FS_IPU_NOCACHE,
+>> +	F2FS_IPU_DEFRAG,
+>>   };
+>>   
+>>   static inline unsigned int curseg_segno(struct f2fs_sb_info *sbi,
+>> @@ -675,9 +677,7 @@ static inline unsigned int curseg_segno(struct f2fs_sb_info *sbi,
+>>   	struct curseg_info *curseg = CURSEG_I(sbi, type);
+>>   	return curseg->segno;
+>>   }
+>> -
+>> -static inline unsigned char curseg_alloc_type(struct f2fs_sb_info *sbi,
+>> -		int type)
+>> +static inline unsigned char curseg_alloc_type(struct f2fs_sb_info *sbi, int type)
+> 
+> Don't do this.
+
+Oops, let me remove this unrelated change.
+
+> 
+>>   {
+>>   	struct curseg_info *curseg = CURSEG_I(sbi, type);
+>>   	return curseg->alloc_type;
+>> diff --git a/fs/f2fs/super.c b/fs/f2fs/super.c
+>> index 9af6c20532ec..cc0429279b4c 100644
+>> --- a/fs/f2fs/super.c
+>> +++ b/fs/f2fs/super.c
+>> @@ -3957,7 +3957,7 @@ static void f2fs_tuning_parameters(struct f2fs_sb_info *sbi)
+>>   		F2FS_OPTION(sbi).alloc_mode = ALLOC_MODE_REUSE;
+>>   		if (f2fs_block_unit_discard(sbi))
+>>   			sm_i->dcc_info->discard_granularity = 1;
+>> -		sm_i->ipu_policy = 1 << F2FS_IPU_FORCE;
+> 
+> No, I think we should have both.
+
+Alright.
+
+Thanks,
+
+> 
+>> +		sm_i->ipu_policy = 1 << F2FS_IPU_DEFRAG;
+>>   	}
+>>   
+>>   	sbi->readdir_ra = 1;
+>> -- 
+>> 2.32.0
