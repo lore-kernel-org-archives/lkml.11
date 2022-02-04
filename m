@@ -2,38 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F01BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 20:01:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7354DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 20:01:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238117AbiBDUBQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 15:01:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39296 "EHLO
+        id S238216AbiBDUBS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 15:01:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236045AbiBDT7R (ORCPT
+        with ESMTP id S236701AbiBDT7h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 14:59:17 -0500
+        Fri, 4 Feb 2022 14:59:37 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 558FAC061769
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 11:59:07 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CB2CC061401
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 11:59:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=tAlp5bd8C5vytOPTINuNcDJ98zbTyIQpNVjwT2Tt/6A=; b=VzvZxECHLB/Uio/a0kGT0n1wKi
-        XfS2JeQAwVBSHV1/WcPaX2OKMrvxbs6Vj9hGGbVRRRSyTQ/0CwUDZl0SuMK7nAMgOnKjUlOg7lB8I
-        SF2ZQJdXalWrBS51TbMUaI56SLX/PawfBZT8WbCWkMoQypG8hGz1t6dwvYfh+x7bk8Rv3amiGjDlw
-        RoQ6DK8yHxHRMyPya4oNTvGUxr9lER8u1dBh/eflBwD6d7lxHwRoRco1bcwTf29ecRsPSQhDetj6N
-        +QkMd7GAA5MIr63Q+6AnEG12vG9FtB2OXbuYxGYlRIXxpZqWHLoYGDawW92/rb2pgAfD23aLIBMcM
-        D8D2GJWA==;
+        bh=+b17a7xWPsDHLBoFxBH2f4z0dvE7rwxxtb0mRTsSrxU=; b=XgcKn+yw5+o9xIunYyq3fy7GL/
+        MIoJJqlMYqgoy6GJUjjEwxJXwsgwbAa4auq9YcipIiucw4y5+lvrecu9vNiq4swDxxNU7KCcbuys9
+        kqHAxBFj95IfTEOW7os2VcjIMFiSrzI18GjMSCzwErnAloog5vfUxlmGt/C84IAdxLCAT9hwIY/Xb
+        QdeIUbJP+H34GJsYvNUg9xRkgUJpa0LvYrnDrI8R5TGkcHCC82aFbX4XOF6NVZp9/DhegLbDA5ZAw
+        TBCf7X1RHlSvByyFYLA2IkWqY9mgVcPxlNLq53/1YRveoCL9yi1hnJWG6zRFST7y249l9wbH/qIKF
+        TyNiAKcw==;
 Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nG4jZ-007Lp6-KP; Fri, 04 Feb 2022 19:59:05 +0000
+        id 1nG4jU-007Lld-Ut; Fri, 04 Feb 2022 19:59:00 +0000
 From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
 To:     linux-mm@kvack.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 55/75] mm/damon: Convert damon_pa_mkold() to use a folio
-Date:   Fri,  4 Feb 2022 19:58:32 +0000
-Message-Id: <20220204195852.1751729-56-willy@infradead.org>
+        linux-kernel@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        William Kucharski <william.kucharski@oracle.com>
+Subject: [PATCH 15/75] mm/gup: Add try_get_folio() and try_grab_folio()
+Date:   Fri,  4 Feb 2022 19:57:52 +0000
+Message-Id: <20220204195852.1751729-16-willy@infradead.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220204195852.1751729-1-willy@infradead.org>
 References: <20220204195852.1751729-1-willy@infradead.org>
@@ -43,57 +46,207 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Ensure that we're passing the entire folio to rmap_walk().
+Convert try_get_compound_head() into try_get_folio() and convert
+try_grab_compound_head() into try_grab_folio().  Add a temporary
+try_grab_compound_head() wrapper around try_grab_folio() to let us
+convert callers individually.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: John Hubbard <jhubbard@nvidia.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Reviewed-by: William Kucharski <william.kucharski@oracle.com>
 ---
- mm/damon/paddr.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
+ mm/gup.c      | 99 +++++++++++++++++++++++++--------------------------
+ mm/internal.h |  5 +++
+ 2 files changed, 54 insertions(+), 50 deletions(-)
 
-diff --git a/mm/damon/paddr.c b/mm/damon/paddr.c
-index 4e27d64abbb7..a92d8b146527 100644
---- a/mm/damon/paddr.c
-+++ b/mm/damon/paddr.c
-@@ -37,6 +37,7 @@ static bool __damon_pa_mkold(struct page *page, struct vm_area_struct *vma,
- 
- static void damon_pa_mkold(unsigned long paddr)
- {
-+	struct folio *folio;
- 	struct page *page = damon_get_page(PHYS_PFN(paddr));
- 	struct rmap_walk_control rwc = {
- 		.rmap_one = __damon_pa_mkold,
-@@ -46,23 +47,24 @@ static void damon_pa_mkold(unsigned long paddr)
- 
- 	if (!page)
- 		return;
-+	folio = page_folio(page);
- 
--	if (!page_mapped(page) || !page_rmapping(page)) {
--		set_page_idle(page);
-+	if (!folio_mapped(folio) || !folio_raw_mapping(folio)) {
-+		folio_set_idle(folio);
- 		goto out;
- 	}
- 
--	need_lock = !PageAnon(page) || PageKsm(page);
--	if (need_lock && !trylock_page(page))
-+	need_lock = !folio_test_anon(folio) || folio_test_ksm(folio);
-+	if (need_lock && !folio_trylock(folio))
- 		goto out;
- 
--	rmap_walk(page, &rwc);
-+	rmap_walk(&folio->page, &rwc);
- 
- 	if (need_lock)
--		unlock_page(page);
-+		folio_unlock(folio);
- 
- out:
--	put_page(page);
-+	folio_put(folio);
+diff --git a/mm/gup.c b/mm/gup.c
+index a444b94c96fd..4f1669db92f5 100644
+--- a/mm/gup.c
++++ b/mm/gup.c
+@@ -47,75 +47,70 @@ static void put_page_refs(struct page *page, int refs)
  }
  
- static void __damon_pa_prepare_access_check(struct damon_ctx *ctx,
+ /*
+- * Return the compound head page with ref appropriately incremented,
++ * Return the folio with ref appropriately incremented,
+  * or NULL if that failed.
+  */
+-static inline struct page *try_get_compound_head(struct page *page, int refs)
++static inline struct folio *try_get_folio(struct page *page, int refs)
+ {
+-	struct page *head;
++	struct folio *folio;
+ 
+ retry:
+-	head = compound_head(page);
+-
+-	if (WARN_ON_ONCE(page_ref_count(head) < 0))
++	folio = page_folio(page);
++	if (WARN_ON_ONCE(folio_ref_count(folio) < 0))
+ 		return NULL;
+-	if (unlikely(!page_cache_add_speculative(head, refs)))
++	if (unlikely(!folio_ref_try_add_rcu(folio, refs)))
+ 		return NULL;
+ 
+ 	/*
+-	 * At this point we have a stable reference to the head page; but it
+-	 * could be that between the compound_head() lookup and the refcount
+-	 * increment, the compound page was split, in which case we'd end up
+-	 * holding a reference on a page that has nothing to do with the page
++	 * At this point we have a stable reference to the folio; but it
++	 * could be that between calling page_folio() and the refcount
++	 * increment, the folio was split, in which case we'd end up
++	 * holding a reference on a folio that has nothing to do with the page
+ 	 * we were given anymore.
+-	 * So now that the head page is stable, recheck that the pages still
+-	 * belong together.
++	 * So now that the folio is stable, recheck that the page still
++	 * belongs to this folio.
+ 	 */
+-	if (unlikely(compound_head(page) != head)) {
+-		put_page_refs(head, refs);
++	if (unlikely(page_folio(page) != folio)) {
++		folio_put_refs(folio, refs);
+ 		goto retry;
+ 	}
+ 
+-	return head;
++	return folio;
+ }
+ 
+ /**
+- * try_grab_compound_head() - attempt to elevate a page's refcount, by a
+- * flags-dependent amount.
+- *
+- * Even though the name includes "compound_head", this function is still
+- * appropriate for callers that have a non-compound @page to get.
+- *
++ * try_grab_folio() - Attempt to get or pin a folio.
+  * @page:  pointer to page to be grabbed
+- * @refs:  the value to (effectively) add to the page's refcount
++ * @refs:  the value to (effectively) add to the folio's refcount
+  * @flags: gup flags: these are the FOLL_* flag values.
+  *
+  * "grab" names in this file mean, "look at flags to decide whether to use
+- * FOLL_PIN or FOLL_GET behavior, when incrementing the page's refcount.
++ * FOLL_PIN or FOLL_GET behavior, when incrementing the folio's refcount.
+  *
+  * Either FOLL_PIN or FOLL_GET (or neither) must be set, but not both at the
+  * same time. (That's true throughout the get_user_pages*() and
+  * pin_user_pages*() APIs.) Cases:
+  *
+- *    FOLL_GET: page's refcount will be incremented by @refs.
++ *    FOLL_GET: folio's refcount will be incremented by @refs.
+  *
+- *    FOLL_PIN on compound pages: page's refcount will be incremented by
+- *    @refs, and page[1].compound_pincount will be incremented by @refs.
++ *    FOLL_PIN on large folios: folio's refcount will be incremented by
++ *    @refs, and its compound_pincount will be incremented by @refs.
+  *
+- *    FOLL_PIN on normal pages: page's refcount will be incremented by
++ *    FOLL_PIN on single-page folios: folio's refcount will be incremented by
+  *    @refs * GUP_PIN_COUNTING_BIAS.
+  *
+- * Return: head page (with refcount appropriately incremented) for success, or
+- * NULL upon failure. If neither FOLL_GET nor FOLL_PIN was set, that's
+- * considered failure, and furthermore, a likely bug in the caller, so a warning
+- * is also emitted.
++ * Return: The folio containing @page (with refcount appropriately
++ * incremented) for success, or NULL upon failure. If neither FOLL_GET
++ * nor FOLL_PIN was set, that's considered failure, and furthermore,
++ * a likely bug in the caller, so a warning is also emitted.
+  */
+-__maybe_unused struct page *try_grab_compound_head(struct page *page,
+-						   int refs, unsigned int flags)
++struct folio *try_grab_folio(struct page *page, int refs, unsigned int flags)
+ {
+ 	if (flags & FOLL_GET)
+-		return try_get_compound_head(page, refs);
++		return try_get_folio(page, refs);
+ 	else if (flags & FOLL_PIN) {
++		struct folio *folio;
++
+ 		/*
+ 		 * Can't do FOLL_LONGTERM + FOLL_PIN gup fast path if not in a
+ 		 * right zone, so fail and let the caller fall back to the slow
+@@ -129,34 +124,38 @@ __maybe_unused struct page *try_grab_compound_head(struct page *page,
+ 		 * CAUTION: Don't use compound_head() on the page before this
+ 		 * point, the result won't be stable.
+ 		 */
+-		page = try_get_compound_head(page, refs);
+-		if (!page)
++		folio = try_get_folio(page, refs);
++		if (!folio)
+ 			return NULL;
+ 
+ 		/*
+-		 * When pinning a compound page, use an exact count to
+-		 * track it.
++		 * When pinning a large folio, use an exact count to track it.
+ 		 *
+-		 * However, be sure to *also* increment the normal page
+-		 * refcount field at least once, so that the page really
++		 * However, be sure to *also* increment the normal folio
++		 * refcount field at least once, so that the folio really
+ 		 * is pinned.  That's why the refcount from the earlier
+-		 * try_get_compound_head() is left intact.
++		 * try_get_folio() is left intact.
+ 		 */
+-		if (PageHead(page))
+-			atomic_add(refs, compound_pincount_ptr(page));
++		if (folio_test_large(folio))
++			atomic_add(refs, folio_pincount_ptr(folio));
+ 		else
+-			page_ref_add(page, refs * (GUP_PIN_COUNTING_BIAS - 1));
++			folio_ref_add(folio,
++					refs * (GUP_PIN_COUNTING_BIAS - 1));
++		node_stat_mod_folio(folio, NR_FOLL_PIN_ACQUIRED, refs);
+ 
+-		mod_node_page_state(page_pgdat(page), NR_FOLL_PIN_ACQUIRED,
+-				    refs);
+-
+-		return page;
++		return folio;
+ 	}
+ 
+ 	WARN_ON_ONCE(1);
+ 	return NULL;
+ }
+ 
++struct page *try_grab_compound_head(struct page *page,
++		int refs, unsigned int flags)
++{
++	return &try_grab_folio(page, refs, flags)->page;
++}
++
+ static void put_compound_head(struct page *page, int refs, unsigned int flags)
+ {
+ 	VM_BUG_ON_PAGE(PageTail(page), page);
+@@ -185,7 +184,7 @@ static void put_compound_head(struct page *page, int refs, unsigned int flags)
+  * @flags:   gup flags: these are the FOLL_* flag values.
+  *
+  * Either FOLL_PIN or FOLL_GET (or neither) may be set, but not both at the same
+- * time. Cases: please see the try_grab_compound_head() documentation, with
++ * time. Cases: please see the try_grab_folio() documentation, with
+  * "refs=1".
+  *
+  * Return: true for success, or if no action was required (if neither FOLL_PIN
+diff --git a/mm/internal.h b/mm/internal.h
+index d80300392a19..08a44802c80e 100644
+--- a/mm/internal.h
++++ b/mm/internal.h
+@@ -718,4 +718,9 @@ void vunmap_range_noflush(unsigned long start, unsigned long end);
+ int numa_migrate_prep(struct page *page, struct vm_area_struct *vma,
+ 		      unsigned long addr, int page_nid, int *flags);
+ 
++/*
++ * mm/gup.c
++ */
++struct folio *try_grab_folio(struct page *page, int refs, unsigned int flags);
++
+ #endif	/* __MM_INTERNAL_H */
 -- 
 2.34.1
 
