@@ -2,39 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2577C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:22:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7019BC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:22:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357714AbiBDJWk (ORCPT
+        id S1357607AbiBDJWn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 04:22:40 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:41442 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357363AbiBDJVy (ORCPT
+        Fri, 4 Feb 2022 04:22:43 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:51402 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1357592AbiBDJWG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 04:21:54 -0500
+        Fri, 4 Feb 2022 04:22:06 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 91A1A615C6;
-        Fri,  4 Feb 2022 09:21:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47521C004E1;
-        Fri,  4 Feb 2022 09:21:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1ADF5B836F1;
+        Fri,  4 Feb 2022 09:22:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F869C004E1;
+        Fri,  4 Feb 2022 09:22:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643966514;
-        bh=9F8kMDKRv1Lq670/0FmIy6Ok2qsiVmZa1gKHzQJ6pSA=;
+        s=korg; t=1643966524;
+        bh=KwSx78kgBSkfwQnzakgw/kHlw0YgW+uZsnXilQghTBY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kCG3FHi62peTJXCb+LJCttx+B64kcelHgiTOPZOTVe+dAhSwDX0CR0fQYoiPmORT1
-         /p7wikWfr81aVSb4IvosPWNgtoomAmYAUmm0CA7cQuPWdNrl9DpXJgHnWtse+e3IVY
-         B95d7gmy+m4xhCtQDIZOEV9tNBmhAPdwGxLZ5x2g=
+        b=irTwuUejgrHR3KysG1pWcUaSUYzpkaWuR6tNwMtpXKavNy9Yz0GkBc/wRyzmLkvk8
+         2v1pnVWjGOdd8ZJh7+rRz849SiegozvfxwizANpFBe/AC5Z++jITe2tHhcrkhBx3bj
+         371JvSR6+0TmkxVXEl8nYUfGrhS3WELxGl8eWyu4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Jiri Pirko <jiri@nvidia.com>, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.10 22/25] rtnetlink: make sure to refresh master_dev/m_ops in __rtnl_newlink()
-Date:   Fri,  4 Feb 2022 10:20:29 +0100
-Message-Id: <20220204091914.991840217@linuxfoundation.org>
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Talal Ahmad <talalahmad@google.com>,
+        Arjun Roy <arjunroy@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.10 25/25] tcp: add missing tcp_skb_can_collapse() test in tcp_shift_skb_data()
+Date:   Fri,  4 Feb 2022 10:20:32 +0100
+Message-Id: <20220204091915.087224273@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220204091914.280602669@linuxfoundation.org>
 References: <20220204091914.280602669@linuxfoundation.org>
@@ -48,45 +54,53 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Eric Dumazet <edumazet@google.com>
 
-commit c6f6f2444bdbe0079e41914a35081530d0409963 upstream.
+commit b67985be400969578d4d4b17299714c0e5d2c07b upstream.
 
-While looking at one unrelated syzbot bug, I found the replay logic
-in __rtnl_newlink() to potentially trigger use-after-free.
+tcp_shift_skb_data() might collapse three packets into a larger one.
 
-It is better to clear master_dev and m_ops inside the loop,
-in case we have to replay it.
+P_A, P_B, P_C  -> P_ABC
 
-Fixes: ba7d49b1f0f8 ("rtnetlink: provide api for getting and setting slave info")
+Historically, it used a single tcp_skb_can_collapse_to(P_A) call,
+because it was enough.
+
+In commit 85712484110d ("tcp: coalesce/collapse must respect MPTCP extensions"),
+this call was replaced by a call to tcp_skb_can_collapse(P_A, P_B)
+
+But the now needed test over P_C has been missed.
+
+This probably broke MPTCP.
+
+Then later, commit 9b65b17db723 ("net: avoid double accounting for pure zerocopy skbs")
+added an extra condition to tcp_skb_can_collapse(), but the missing call
+from tcp_shift_skb_data() is also breaking TCP zerocopy, because P_A and P_C
+might have different skb_zcopy_pure() status.
+
+Fixes: 85712484110d ("tcp: coalesce/collapse must respect MPTCP extensions")
+Fixes: 9b65b17db723 ("net: avoid double accounting for pure zerocopy skbs")
 Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Jiri Pirko <jiri@nvidia.com>
-Link: https://lore.kernel.org/r/20220201012106.216495-1-eric.dumazet@gmail.com
+Cc: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Cc: Talal Ahmad <talalahmad@google.com>
+Cc: Arjun Roy <arjunroy@google.com>
+Cc: Willem de Bruijn <willemb@google.com>
+Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+Acked-by: Paolo Abeni <pabeni@redhat.com>
+Link: https://lore.kernel.org/r/20220201184640.756716-1-eric.dumazet@gmail.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/core/rtnetlink.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ net/ipv4/tcp_input.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -3238,8 +3238,8 @@ static int __rtnl_newlink(struct sk_buff
- 	struct nlattr *slave_attr[RTNL_SLAVE_MAX_TYPE + 1];
- 	unsigned char name_assign_type = NET_NAME_USER;
- 	struct nlattr *linkinfo[IFLA_INFO_MAX + 1];
--	const struct rtnl_link_ops *m_ops = NULL;
--	struct net_device *master_dev = NULL;
-+	const struct rtnl_link_ops *m_ops;
-+	struct net_device *master_dev;
- 	struct net *net = sock_net(skb->sk);
- 	const struct rtnl_link_ops *ops;
- 	struct nlattr *tb[IFLA_MAX + 1];
-@@ -3277,6 +3277,8 @@ replay:
- 	else
- 		dev = NULL;
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -1620,6 +1620,8 @@ static struct sk_buff *tcp_shift_skb_dat
+ 	    (mss != tcp_skb_seglen(skb)))
+ 		goto out;
  
-+	master_dev = NULL;
-+	m_ops = NULL;
- 	if (dev) {
- 		master_dev = netdev_master_upper_dev_get(dev);
- 		if (master_dev)
++	if (!tcp_skb_can_collapse(prev, skb))
++		goto out;
+ 	len = skb->len;
+ 	pcount = tcp_skb_pcount(skb);
+ 	if (tcp_skb_shift(prev, skb, pcount, len))
 
 
