@@ -2,94 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E591CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 23:53:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21BE2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 23:54:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378556AbiBDXxw (ORCPT
+        id S1378366AbiBDXyT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 18:53:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51166 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378387AbiBDXxb (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 18:53:31 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5477C06C946;
-        Fri,  4 Feb 2022 15:53:30 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3AC9061CB0;
-        Fri,  4 Feb 2022 23:53:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BEE4C004E1;
-        Fri,  4 Feb 2022 23:53:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644018809;
-        bh=i+LxFoL2qy6w9Z6qXm97npWTHpaECn1x9fpv8uaHWLA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rtlIY3rBngLczfbKFTlPCFAj8EvD0haosiuYGppIqRSqygHBkmYjauNpMchkOOV1y
-         5wSulHuw57pxs7FDo3hs3RY2XqibxCc4kmaIJwLshAfoiOjegnzMmJ0/yQLiTpaKtu
-         tPbZ8GU0PUzdtI5Wek7B75QakcuMXzr2U1DnisoGYmANrWUczcdMGlTnArrg+3PZqe
-         Vy6dd5zNSFO/x5xOLHElO/V8YxqtWC/6adSO3Km/PZXidqCjdTxeujHEgepO837r5S
-         /HsfTqoKQxAX4p0WgEz9Akz5nCfucv4w6D6eNztNxlx49rnAW/mGzERVKvigg1hIwe
-         I+mLJyp9GZmqg==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 728485C0418; Fri,  4 Feb 2022 15:53:29 -0800 (PST)
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     rcu@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com,
-        rostedt@goodmis.org, "Paul E. McKenney" <paulmck@kernel.org>
-Subject: [PATCH rcu 1/8] rcutorture: Print message before invoking ->cb_barrier()
-Date:   Fri,  4 Feb 2022 15:53:20 -0800
-Message-Id: <20220204235327.2948-1-paulmck@kernel.org>
-X-Mailer: git-send-email 2.31.1.189.g2e36527f23
-In-Reply-To: <20220204235321.GA2511@paulmck-ThinkPad-P17-Gen-1>
-References: <20220204235321.GA2511@paulmck-ThinkPad-P17-Gen-1>
+        Fri, 4 Feb 2022 18:54:19 -0500
+Received: from mga04.intel.com ([192.55.52.120]:29961 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234916AbiBDXyQ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 4 Feb 2022 18:54:16 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644018857; x=1675554857;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ZNxtgZ32zZGXJcx9vyZAks1aVMKptKYDBiIZK+GC6AM=;
+  b=LI9c0RJdSQvgxzCUZGGGnt13QOHXkl+KiydMvTWrUl9BF7/QhJ7mEpou
+   iCTRNLpcsF554B2cKihwiOerXi3depdtSQ5CAVNZmoa9Y0BAbJSjyDKd4
+   MpR0EN8jyAAgq4Aml23tCde1n9GQNcGpKUvV1M8dbcdjs/7+W5oWV/bor
+   ty1eOmohZu9AUOAhJQAjuCNhes02px+KEs2i595IIU3FzHl9cnGcrhHDp
+   fAlaLPo9AOuYjZy/AYryrTnSpgIPNOr1Wk5o90yj4go4O89r2VFLGMaR4
+   ZZYzFGhSsHq0WQJ4CjJ0S81aHgXSCAkPyvgkQT6TehxDstpDyZMZF/+uR
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10248"; a="247295604"
+X-IronPort-AV: E=Sophos;i="5.88,344,1635231600"; 
+   d="scan'208";a="247295604"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2022 15:54:16 -0800
+X-IronPort-AV: E=Sophos;i="5.88,344,1635231600"; 
+   d="scan'208";a="480990506"
+Received: from iweiny-desk2.sc.intel.com (HELO localhost) ([10.3.52.147])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2022 15:54:16 -0800
+Date:   Fri, 4 Feb 2022 15:54:15 -0800
+From:   Ira Weiny <ira.weiny@intel.com>
+To:     Dave Hansen <dave.hansen@intel.com>
+Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Rick Edgecombe <rick.p.edgecombe@intel.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH V8 11/44] mm/pkeys: Define static PKS key array and
+ default values
+Message-ID: <20220204235415.GC785175@iweiny-DESK2.sc.intel.com>
+References: <20220127175505.851391-1-ira.weiny@intel.com>
+ <20220127175505.851391-12-ira.weiny@intel.com>
+ <f2d05862-9750-fd19-42c0-29aa06bdeb13@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f2d05862-9750-fd19-42c0-29aa06bdeb13@intel.com>
+User-Agent: Mutt/1.11.1 (2018-12-01)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The various ->cb_barrier() functions, for example, rcu_barrier(),
-sometimes cause rcutorture hangs.  But currently, the last console
-message is the unenlightening "Stopping rcu_torture_stats".  This commit
-therefore prints a message of the form "rcu_torture_cleanup: Invoking
-rcu_barrier+0x0/0x1e0()" to help point people in the right direction.
+On Fri, Jan 28, 2022 at 04:02:05PM -0800, Dave Hansen wrote:
+> On 1/27/22 09:54, ira.weiny@intel.com wrote:
+> > +#define PKS_INIT_VALUE (PKR_RW_KEY(PKS_KEY_DEFAULT)		| \
+> > +			PKR_AD_KEY(1)	| \
+> > +			PKR_AD_KEY(2)	| PKR_AD_KEY(3)		| \
+> > +			PKR_AD_KEY(4)	| PKR_AD_KEY(5)		| \
+> > +			PKR_AD_KEY(6)	| PKR_AD_KEY(7)		| \
+> > +			PKR_AD_KEY(8)	| PKR_AD_KEY(9)		| \
+> > +			PKR_AD_KEY(10)	| PKR_AD_KEY(11)	| \
+> > +			PKR_AD_KEY(12)	| PKR_AD_KEY(13)	| \
+> > +			PKR_AD_KEY(14)	| PKR_AD_KEY(15))
+> 
+> Considering how this is going to get used, let's just make this
+> one-key-per-line:
+> 
+> #define PKS_INIT_VALUE (PKR_RW_KEY(PKS_KEY_DEFAULT)		| \
+> 			PKR_AD_KEY(1)	| \
+> 			PKR_AD_KEY(2)	| \
+> 			PKR_AD_KEY(3)	| \
+> 			...
 
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
----
- kernel/rcu/rcutorture.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
-
-diff --git a/kernel/rcu/rcutorture.c b/kernel/rcu/rcutorture.c
-index 422f7e4cc08de..00400aef58184 100644
---- a/kernel/rcu/rcutorture.c
-+++ b/kernel/rcu/rcutorture.c
-@@ -2905,8 +2905,10 @@ rcu_torture_cleanup(void)
- 	int i;
- 
- 	if (torture_cleanup_begin()) {
--		if (cur_ops->cb_barrier != NULL)
-+		if (cur_ops->cb_barrier != NULL) {
-+			pr_info("%s: Invoking %pS().\n", __func__, cur_ops->cb_barrier);
- 			cur_ops->cb_barrier();
-+		}
- 		return;
- 	}
- 	if (!cur_ops) {
-@@ -2961,8 +2963,10 @@ rcu_torture_cleanup(void)
- 	 * Wait for all RCU callbacks to fire, then do torture-type-specific
- 	 * cleanup operations.
- 	 */
--	if (cur_ops->cb_barrier != NULL)
-+	if (cur_ops->cb_barrier != NULL) {
-+		pr_info("%s: Invoking %pS().\n", __func__, cur_ops->cb_barrier);
- 		cur_ops->cb_barrier();
-+	}
- 	if (cur_ops->cleanup != NULL)
- 		cur_ops->cleanup();
- 
--- 
-2.31.1.189.g2e36527f23
+Good idea, done.
+Ira
 
