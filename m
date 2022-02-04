@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F1A4C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:24:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A72F5C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:25:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357764AbiBDJY5 (ORCPT
+        id S1357673AbiBDJY7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 04:24:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32916 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357534AbiBDJX7 (ORCPT
+        Fri, 4 Feb 2022 04:24:59 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:43090 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1357508AbiBDJX4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 04:23:59 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C35ACC061748;
-        Fri,  4 Feb 2022 01:23:59 -0800 (PST)
+        Fri, 4 Feb 2022 04:23:56 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E734CB836EB;
-        Fri,  4 Feb 2022 09:23:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2C97C004E1;
-        Fri,  4 Feb 2022 09:23:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 26BE0615C6;
+        Fri,  4 Feb 2022 09:23:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3F74C004E1;
+        Fri,  4 Feb 2022 09:23:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643966622;
-        bh=gAiEkRCmxoxeR1wsBoW65hMxfhjyd5QKm8WnZv5DEoY=;
+        s=korg; t=1643966635;
+        bh=FK7HW77aApN49lJNDt5ACm2k24XuNaZJ0yWAgCuC1Ow=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OCCwDDEDzyQIgNwmZavMzkTXu5bra1ihlGlXijEUAQXhPq8nTsVD+UrzC91y8EXeH
-         THx031zD5y6EniQBDu01A4qzsJk/K7uK566rWkNBbITjyPlCI3DxmyOSoo1xXNDI+3
-         gC9L5y0Y6VowCrPPDW9z2icz+BsTK3Rb05JNFrEU=
+        b=zEU7IKZIkVq3g7OgtAbcm7NdMLU/Zle/b2p2CUIkyToQoaUXQvOUKiKJimqAiK3KD
+         5WoqHgja/A0t9E36iDx0zZZUc9NAOdUbJEpL8zjSO4U86BYSXkND7ucGqd2YnZn7ZQ
+         F6Z4mnmfykrEG9RVu3ecximMDM/u+wZuZbm4mG5k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maor Dickman <maord@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH 5.15 20/32] net/mlx5: E-Switch, Fix uninitialized variable modact
-Date:   Fri,  4 Feb 2022 10:22:30 +0100
-Message-Id: <20220204091915.919230917@linuxfoundation.org>
+        stable@vger.kernel.org, Tabitha Sable <tabitha.c.sable@gmail.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Tejun Heo <tj@kernel.org>
+Subject: [PATCH 5.15 06/32] cgroup-v1: Require capabilities to set release_agent
+Date:   Fri,  4 Feb 2022 10:22:16 +0100
+Message-Id: <20220204091915.456572247@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220204091915.247906930@linuxfoundation.org>
 References: <20220204091915.247906930@linuxfoundation.org>
@@ -49,35 +47,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maor Dickman <maord@nvidia.com>
+From: Eric W. Biederman <ebiederm@xmission.com>
 
-commit d8e5883d694bb053b19c4142a2d1f43a34f6fe2c upstream.
+commit 24f6008564183aa120d07c03d9289519c2fe02af upstream.
 
-The variable modact is not initialized before used in command
-modify header allocation which can cause command to fail.
+The cgroup release_agent is called with call_usermodehelper.  The function
+call_usermodehelper starts the release_agent with a full set fo capabilities.
+Therefore require capabilities when setting the release_agaent.
 
-Fix by initializing modact with zeros.
-
-Addresses-Coverity: ("Uninitialized scalar variable")
-Fixes: 8f1e0b97cc70 ("net/mlx5: E-Switch, Mark miss packets with new chain id mapping")
-Signed-off-by: Maor Dickman <maord@nvidia.com>
-Reviewed-by: Roi Dayan <roid@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Reported-by: Tabitha Sable <tabitha.c.sable@gmail.com>
+Tested-by: Tabitha Sable <tabitha.c.sable@gmail.com>
+Fixes: 81a6a5cdd2c5 ("Task Control Groups: automatic userspace notification of idle cgroups")
+Cc: stable@vger.kernel.org # v2.6.24+
+Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+Signed-off-by: Tejun Heo <tj@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/lib/fs_chains.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/cgroup/cgroup-v1.c |   14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
---- a/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_chains.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_chains.c
-@@ -212,7 +212,7 @@ static int
- create_chain_restore(struct fs_chain *chain)
- {
- 	struct mlx5_eswitch *esw = chain->chains->dev->priv.eswitch;
--	char modact[MLX5_UN_SZ_BYTES(set_add_copy_action_in_auto)];
-+	u8 modact[MLX5_UN_SZ_BYTES(set_add_copy_action_in_auto)] = {};
- 	struct mlx5_fs_chains *chains = chain->chains;
- 	enum mlx5e_tc_attr_to_reg chain_to_reg;
- 	struct mlx5_modify_hdr *mod_hdr;
+--- a/kernel/cgroup/cgroup-v1.c
++++ b/kernel/cgroup/cgroup-v1.c
+@@ -552,6 +552,14 @@ static ssize_t cgroup_release_agent_writ
+ 
+ 	BUILD_BUG_ON(sizeof(cgrp->root->release_agent_path) < PATH_MAX);
+ 
++	/*
++	 * Release agent gets called with all capabilities,
++	 * require capabilities to set release agent.
++	 */
++	if ((of->file->f_cred->user_ns != &init_user_ns) ||
++	    !capable(CAP_SYS_ADMIN))
++		return -EPERM;
++
+ 	cgrp = cgroup_kn_lock_live(of->kn, false);
+ 	if (!cgrp)
+ 		return -ENODEV;
+@@ -963,6 +971,12 @@ int cgroup1_parse_param(struct fs_contex
+ 		/* Specifying two release agents is forbidden */
+ 		if (ctx->release_agent)
+ 			return invalfc(fc, "release_agent respecified");
++		/*
++		 * Release agent gets called with all capabilities,
++		 * require capabilities to set release agent.
++		 */
++		if ((fc->user_ns != &init_user_ns) || !capable(CAP_SYS_ADMIN))
++			return invalfc(fc, "Setting release_agent not allowed");
+ 		ctx->release_agent = param->string;
+ 		param->string = NULL;
+ 		break;
 
 
