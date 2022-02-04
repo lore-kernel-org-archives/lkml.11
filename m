@@ -2,85 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70F62C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 15:57:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81A29C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 15:59:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236975AbiBDP5W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 10:57:22 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:60832 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230211AbiBDP5T (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 10:57:19 -0500
-Date:   Fri, 4 Feb 2022 16:57:17 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1643990238;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=H1SCG2oNEv5W4scfTi2aoSVlrGEsagG8YtlUCrxXMoc=;
-        b=txa+5yoi77400sJ+kR49rS2Je7vH/2cXg90NNwmpJixdhgnvyQllNEjVpK2PJISKcVXdow
-        Zx2Jkue406jvVTI3YdFq4kpsjfWVE+73YfTfHJM/KO/+wLoaX5b3WN9TvL03k1LXiNcOKj
-        aWVbkDIR9ScWYdIK27xoytGmQuITCfWzhWHnRjNE8b3wDos4bh54izbCaOULNKx1VYl3se
-        f1iznbXmks8tYUSPjo/lGxUFqQioAjHP+dyUcNfuirk3o6/3Xa/y1DtX1cgyb6vCWQtgzc
-        teVeK9wXiKtwDw/C8F67OoW92HhK5+M84Irwo545jzQ+eefWUA/FUIOVEy70nw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1643990238;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=H1SCG2oNEv5W4scfTi2aoSVlrGEsagG8YtlUCrxXMoc=;
-        b=mMMY6+4ZE7IHnOSHIJOU2dA8h9SK4XnbKUQ+/L+8V+dPtoLhg4bIRTElV9yt36Vpie95QY
-        8M39nb8owshZ1XDg==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Andy Lutomirski <luto@amacapital.net>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Will Deacon <will@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Waiman Long <longman@redhat.com>,
-        Sultan Alsawaf <sultan@kerneltoast.com>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Andy Lutomirski <luto@kernel.org>,
-        Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH v3] random: remove batched entropy locking
-Message-ID: <Yf1M3YGVq71oC9BM@linutronix.de>
-References: <CAHmME9pO41uwYExSROc5X2+RE=a5tZfE=c=bAxVbhCHfa7=zSA@mail.gmail.com>
- <20220204155142.56419-1-Jason@zx2c4.com>
+        id S234292AbiBDP7N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 10:59:13 -0500
+Received: from mga09.intel.com ([134.134.136.24]:39213 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234808AbiBDP7L (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 4 Feb 2022 10:59:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643990351; x=1675526351;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=9KhxQXsAu7RrqbBNDRjQ5GvfIHgWxqlaV3+q1AnfYQs=;
+  b=B9Cti0OD6vfFPuvRCpBuv3G5JOTT/OifxkmX3+UnsH6Fb/Fw4AF1x9x3
+   jEM9fHLGEUCfxrRk5byRaKJU5Na50ajj2E828YgVViXapvRenimGrr7Op
+   EodO7jgacBV3qdhCOmRoctMLEyeVOCopthiMpsHlCqngOnl58dMkEfhb8
+   nmZ4mBaSoDmtgrH0/pjasY21wxGSzAm9OpxrcntieODdOvSO+mtkRkzQ1
+   nUwtKLWwcFmQnJKvQFey7Ft5mQxXcEInUhlhMo90HU1ewbClgUHozJQjb
+   LgLfrtMU4GJ4PLggofsd8Ib1XQ846AL9Fsw8Smnn5Pw4aADXGM83zeYab
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10247"; a="248150544"
+X-IronPort-AV: E=Sophos;i="5.88,343,1635231600"; 
+   d="scan'208";a="248150544"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2022 07:59:11 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,343,1635231600"; 
+   d="scan'208";a="600265073"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga004.fm.intel.com with ESMTP; 04 Feb 2022 07:59:09 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 48D02204; Fri,  4 Feb 2022 17:59:24 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Wolfram Sang <wsa@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        syzbot+0591ccf54ee05344e4eb@syzkaller.appspotmail.com
+Subject: [PATCH v1 1/1] i2c: smbus: Check for parent device before dereference
+Date:   Fri,  4 Feb 2022 17:59:20 +0200
+Message-Id: <20220204155920.13364-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220204155142.56419-1-Jason@zx2c4.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-02-04 16:51:42 [+0100], Jason A. Donenfeld wrote:
-> index 455615ac169a..3e54b90a3ff8 100644
-> --- a/drivers/char/random.c
-> +++ b/drivers/char/random.c
-> @@ -1759,41 +1762,54 @@ u64 get_random_u64(void)
->  	unsigned long flags;
->  	struct batched_entropy *batch;
->  	static void *previous;
-> +	int next_gen;
->  
->  	warn_unseeded_randomness(&previous);
->  
-> -	batch = raw_cpu_ptr(&batched_entropy_u64);
-> -	spin_lock_irqsave(&batch->batch_lock, flags);
-> -	if (batch->position % ARRAY_SIZE(batch->entropy_u64) == 0) {
-> +	batch = this_cpu_ptr(&batched_entropy_u64);
-> +	local_lock_irqsave(&batch->lock, flags);
+An I²C adapter might be instantiated without parent. In such case
+there is no property can be retrieved. Skip SMBus alert setup when
+this happens.
 
-Does this compile and work? From the looks of it, this should be:
+Fixes: a263a84088f6 ("i2c: smbus: Use device_*() functions instead of of_*()")
+Reported-by: syzbot+0591ccf54ee05344e4eb@syzkaller.appspotmail.com
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/i2c/i2c-core-smbus.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-	local_lock_irqsave(&batched_entropy_u64.lock, flags);
-	batch = this_cpu_ptr(&batched_entropy_u64);
+diff --git a/drivers/i2c/i2c-core-smbus.c b/drivers/i2c/i2c-core-smbus.c
+index 304c2c8fee68..029f1b7c83bc 100644
+--- a/drivers/i2c/i2c-core-smbus.c
++++ b/drivers/i2c/i2c-core-smbus.c
+@@ -705,10 +705,14 @@ EXPORT_SYMBOL_GPL(i2c_new_smbus_alert_device);
+ #if IS_ENABLED(CONFIG_I2C_SMBUS)
+ int i2c_setup_smbus_alert(struct i2c_adapter *adapter)
+ {
++	struct device *parent = adapter->dev.parent;
+ 	int irq;
+ 
+-	irq = device_property_match_string(adapter->dev.parent, "interrupt-names",
+-					   "smbus_alert");
++	/* Adapter instantiated without parent, skip the SMBus alert setup */
++	if (!parent)
++		return 0;
++
++	irq = device_property_match_string(parent, "interrupt-names", "smbus_alert");
+ 	if (irq == -EINVAL || irq == -ENODATA)
+ 		return 0;
+ 	else if (irq < 0)
+-- 
+2.34.1
 
-and we could do s/this_cpu_ptr/raw_cpu_ptr/
-
-Sebastian
