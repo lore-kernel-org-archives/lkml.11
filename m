@@ -2,34 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DB94C4707E
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 16:18:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E7A9C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 16:18:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376509AbiBDQSZ (ORCPT
+        id S1376556AbiBDQSa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 11:18:25 -0500
-Received: from smtpout1.mo3004.mail-out.ovh.net ([79.137.123.219]:32789 "EHLO
-        smtpout1.mo3004.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1355576AbiBDQSU (ORCPT
+        Fri, 4 Feb 2022 11:18:30 -0500
+Received: from smtpout1.mo528.mail-out.ovh.net ([46.105.34.251]:44821 "EHLO
+        smtpout1.mo528.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1376462AbiBDQSW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 11:18:20 -0500
-Received: from pro2.mail.ovh.net (unknown [10.109.146.13])
-        by mo3004.mail-out.ovh.net (Postfix) with ESMTPS id C845823D1F7;
-        Fri,  4 Feb 2022 16:18:15 +0000 (UTC)
+        Fri, 4 Feb 2022 11:18:22 -0500
+Received: from pro2.mail.ovh.net (unknown [10.109.156.10])
+        by mo528.mail-out.ovh.net (Postfix) with ESMTPS id 89195E1D48AE;
+        Fri,  4 Feb 2022 17:18:20 +0100 (CET)
 Received: from localhost.localdomain (88.125.132.78) by DAG1EX2.emp2.local
  (172.16.2.2) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Fri, 4 Feb
- 2022 17:18:14 +0100
+ 2022 17:18:18 +0100
 From:   Jean-Jacques Hiblot <jjhiblot@traphandler.com>
-To:     <geert+renesas@glider.be>
+To:     <geert+renesas@glider.be>, Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>
 CC:     Jean-Jacques Hiblot <jjhiblot@traphandler.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        <linux-renesas-soc@vger.kernel.org>, <linux-clk@vger.kernel.org>,
+        <linux-renesas-soc@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
-Subject: [PATCH 1/6] clk: renesas: r9a06g032: Enable the watchdog reset sources
-Date:   Fri, 4 Feb 2022 17:17:59 +0100
-Message-ID: <20220204161806.3126321-2-jjhiblot@traphandler.com>
+Subject: [PATCH 5/6] ARM: dts: r9a06g032-rzn1d400-db: Enable watchdog0 with a 10s timeout
+Date:   Fri, 4 Feb 2022 17:18:03 +0100
+Message-ID: <20220204161806.3126321-6-jjhiblot@traphandler.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220204161806.3126321-1-jjhiblot@traphandler.com>
 References: <20220204161806.3126321-1-jjhiblot@traphandler.com>
@@ -39,7 +38,7 @@ Content-Type:   text/plain; charset=US-ASCII
 X-Originating-IP: [88.125.132.78]
 X-ClientProxiedBy: DAG2EX1.emp2.local (172.16.2.11) To DAG1EX2.emp2.local
  (172.16.2.2)
-X-Ovh-Tracer-Id: 5892678641497553371
+X-Ovh-Tracer-Id: 5894086012727343579
 X-VR-SPAMSTATE: OK
 X-VR-SPAMSCORE: -100
 X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrgeelgdekjecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkofgjfhgggfgtihesthekredtredttdenucfhrhhomheplfgvrghnqdflrggtqhhuvghsucfjihgslhhothcuoehjjhhhihgslhhothesthhrrghphhgrnhgulhgvrhdrtghomheqnecuggftrfgrthhtvghrnhepfeeugefgieeutdfhvdegveetvdeuvefgveegleeileevveehfeejjeffgfduudeknecukfhppedtrddtrddtrddtpdekkedruddvhedrudefvddrjeeknecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehprhhovddrmhgrihhlrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehjjhhhihgslhhothesthhrrghphhgrnhgulhgvrhdrtghomhdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
@@ -47,90 +46,29 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The watchdog reset sources are not enabled by default.
-Enabling them here to make sure that the system resets when the watchdog
-timers expire.
+10s seems a reasonable value for a watchdog.
 
 Signed-off-by: Jean-Jacques Hiblot <jjhiblot@traphandler.com>
 ---
- drivers/clk/renesas/r9a06g032-clocks.c | 33 ++++++++++++++++++++++++++
- 1 file changed, 33 insertions(+)
+ arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/clk/renesas/r9a06g032-clocks.c b/drivers/clk/renesas/r9a06g032-clocks.c
-index c99942f0e4d4..57fcad1c8ba2 100644
---- a/drivers/clk/renesas/r9a06g032-clocks.c
-+++ b/drivers/clk/renesas/r9a06g032-clocks.c
-@@ -129,6 +129,11 @@ enum { K_GATE = 0, K_FFC, K_DIV, K_BITSEL, K_DUALGATE };
- 
- #define R9A06G032_CLOCK_COUNT		(R9A06G032_UART_GROUP_34567 + 1)
- 
-+#define R9A06G032_SYSCTRL_REG_RSTEN		0x120
-+#define WDA7RST1	BIT(2)
-+#define WDA7RST0	BIT(1)
-+#define MRESET		BIT(0)
-+
- static const struct r9a06g032_clkdesc r9a06g032_clocks[] = {
- 	D_ROOT(CLKOUT, "clkout", 25, 1),
- 	D_ROOT(CLK_PLL_USB, "clk_pll_usb", 12, 10),
-@@ -893,6 +898,19 @@ static void r9a06g032_clocks_del_clk_provider(void *data)
- 	of_clk_del_provider(data);
- }
- 
-+static void r9a06g032_reset_sources(struct r9a06g032_priv *clocks,
-+			uint32_t mask, uint32_t value)
-+{
-+	uint32_t rsten;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&clocks->lock, flags);
-+	rsten = readl(clocks->reg);
-+	rsten = (rsten & ~mask) | (value & mask);
-+	writel(rsten, clocks->reg + R9A06G032_SYSCTRL_REG_RSTEN);
-+	spin_unlock_irqrestore(&clocks->lock, flags);
-+}
-+
- static int __init r9a06g032_clocks_probe(struct platform_device *pdev)
- {
- 	struct device *dev = &pdev->dev;
-@@ -910,6 +928,8 @@ static int __init r9a06g032_clocks_probe(struct platform_device *pdev)
- 	if (!clocks || !clks)
- 		return -ENOMEM;
- 
-+	platform_set_drvdata(pdev, clocks);
-+
- 	spin_lock_init(&clocks->lock);
- 
- 	clocks->data.clks = clks;
-@@ -963,9 +983,21 @@ static int __init r9a06g032_clocks_probe(struct platform_device *pdev)
- 	if (error)
- 		return error;
- 
-+
-+	/* Enable the global system reset and watchdog reset sources */
-+	r9a06g032_reset_sources(clocks, WDA7RST0 | WDA7RST1 | MRESET, MRESET | WDA7RST0 | WDA7RST1);
-+
- 	return r9a06g032_add_clk_domain(dev);
- }
- 
-+static void r9a06g032_clocks_shutdown(struct platform_device *pdev)
-+{
-+	struct r9a06g032_priv *clocks = platform_get_drvdata(pdev);
-+
-+	/* Disable the watchdog reset sources */
-+	r9a06g032_reset_sources(clocks, WDA7RST0 | WDA7RST1, 0);
-+}
-+
- static const struct of_device_id r9a06g032_match[] = {
- 	{ .compatible = "renesas,r9a06g032-sysctrl" },
- 	{ }
-@@ -976,6 +1008,7 @@ static struct platform_driver r9a06g032_clock_driver = {
- 		.name	= "renesas,r9a06g032-sysctrl",
- 		.of_match_table = r9a06g032_match,
- 	},
-+	.shutdown = r9a06g032_clocks_shutdown,
+diff --git a/arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts b/arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts
+index 4e57ae2688fc..5c8f46b20acc 100644
+--- a/arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts
++++ b/arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts
+@@ -23,6 +23,11 @@ aliases {
+ 	};
  };
  
- static int __init r9a06g032_clocks_init(void)
++&wdt0 {
++	timeout-sec = <10>;
++	status = "okay";
++};
++
+ &uart0 {
+ 	status = "okay";
+ };
 -- 
 2.25.1
 
