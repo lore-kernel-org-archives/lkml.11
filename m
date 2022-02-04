@@ -2,173 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B1D1C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 19:01:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15D60C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 19:03:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230420AbiBDTBm convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 14:01:42 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:7936 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231215AbiBDTBQ (ORCPT
+        id S230302AbiBDTD1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 14:03:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54058 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234979AbiBDTCf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 14:01:16 -0500
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 214IivJl016031
-        for <linux-kernel@vger.kernel.org>; Fri, 4 Feb 2022 11:01:15 -0800
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3e17qcs0kh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Feb 2022 11:01:15 -0800
-Received: from twshared4854.05.ash8.facebook.com (2620:10d:c085:208::11) by
- mail.thefacebook.com (2620:10d:c085:11d::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 4 Feb 2022 11:01:14 -0800
-Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
-        id 097EE296C5739; Fri,  4 Feb 2022 10:57:57 -0800 (PST)
-From:   Song Liu <song@kernel.org>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
-        <kernel-team@fb.com>, <peterz@infradead.org>, <x86@kernel.org>,
-        <iii@linux.ibm.com>, Song Liu <songliubraving@fb.com>
-Subject: [PATCH v9 bpf-next 2/9] bpf: use bytes instead of pages for bpf_jit_[charge|uncharge]_modmem
-Date:   Fri, 4 Feb 2022 10:57:35 -0800
-Message-ID: <20220204185742.271030-3-song@kernel.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220204185742.271030-1-song@kernel.org>
-References: <20220204185742.271030-1-song@kernel.org>
+        Fri, 4 Feb 2022 14:02:35 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8D44C061714
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 11:02:34 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B068EB838D2
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 19:02:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04667C004E1;
+        Fri,  4 Feb 2022 19:02:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644001352;
+        bh=6ngj7r3EAtDqwAjDyj6UiGc7OBQFO0jCuKHmtOkOCl8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=SVMTuNYDWowP5VRdpgFPmyjoJov2uecR6KSkuYc1deoGMeHh/8ZBJXf9yaE4VrKTl
+         zTn9q7V6gU59HhEJPg7F0y/cuIM2EOtU7cbwyMhSuJGSOQpssmJseTloB4C2eN4c6H
+         cvxLEPsP5qj2T8N0jY1WMGkn5L6L7McFoq8wWERNMNCPGaTEWCBS1szEpaexFlMz7P
+         UwxJUyyDKZ5NpL+lPaJVke63WGMYap1v2pWmg+GMwGOim7owbtvEU9JNyQ5Z2W4bDJ
+         dVQ0afvjMpsJggwc3z1nxKjySBhVgbsYHWFEl3QkcrmOgNxZ8lrTiazQwfM/g7hNNU
+         JUELHospbpZyw==
+Date:   Fri, 4 Feb 2022 19:02:28 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     Brian Norris <briannorris@chromium.org>
+Cc:     Peng Fan <peng.fan@nxp.com>,
+        "rafael@kernel.org" <rafael@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        "S.j. Wang" <shengjiu.wang@nxp.com>
+Subject: Re: regmap: mmio: lack of runtime_pm support for debugfs
+Message-ID: <Yf14RJbM10O3RdA+@sirena.org.uk>
+References: <1587620791-5279-1-git-send-email-peng.fan@nxp.com>
+ <20200423104000.GD4808@sirena.org.uk>
+ <DB6PR0402MB27600084E4A040609EF620A088D30@DB6PR0402MB2760.eurprd04.prod.outlook.com>
+ <20200423112244.GH4808@sirena.org.uk>
+ <DB6PR0402MB2760FBCA05C1BADB27F0356488D00@DB6PR0402MB2760.eurprd04.prod.outlook.com>
+ <20200424103004.GB5850@sirena.org.uk>
+ <Ye87P19+JOjPEGTY@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: 49jqFX9XXXeaJJUrGUC5AwrRq9gnOGNk
-X-Proofpoint-GUID: 49jqFX9XXXeaJJUrGUC5AwrRq9gnOGNk
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-04_07,2022-02-03_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 impostorscore=0
- phishscore=0 mlxscore=0 mlxlogscore=960 priorityscore=1501 malwarescore=0
- lowpriorityscore=0 bulkscore=0 spamscore=0 adultscore=0 clxscore=1015
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202040104
-X-FB-Internal: deliver
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="hRRnzNzDsjG7npUH"
+Content-Disposition: inline
+In-Reply-To: <Ye87P19+JOjPEGTY@google.com>
+X-Cookie: Torque is cheap.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Song Liu <songliubraving@fb.com>
 
-This enables sub-page memory charge and allocation.
+--hRRnzNzDsjG7npUH
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Signed-off-by: Song Liu <songliubraving@fb.com>
----
- include/linux/bpf.h     |  4 ++--
- kernel/bpf/core.c       | 17 ++++++++---------
- kernel/bpf/trampoline.c |  6 +++---
- 3 files changed, 13 insertions(+), 14 deletions(-)
+On Mon, Jan 24, 2022 at 03:50:23PM -0800, Brian Norris wrote:
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 6eb0b180d33b..366f88afd56b 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -846,8 +846,8 @@ void bpf_image_ksym_add(void *data, struct bpf_ksym *ksym);
- void bpf_image_ksym_del(struct bpf_ksym *ksym);
- void bpf_ksym_add(struct bpf_ksym *ksym);
- void bpf_ksym_del(struct bpf_ksym *ksym);
--int bpf_jit_charge_modmem(u32 pages);
--void bpf_jit_uncharge_modmem(u32 pages);
-+int bpf_jit_charge_modmem(u32 size);
-+void bpf_jit_uncharge_modmem(u32 size);
- bool bpf_prog_has_trampoline(const struct bpf_prog *prog);
- #else
- static inline int bpf_trampoline_link_prog(struct bpf_prog *prog,
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 04a8d5bea552..6ca0550c4b24 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -833,12 +833,11 @@ static int __init bpf_jit_charge_init(void)
- }
- pure_initcall(bpf_jit_charge_init);
- 
--int bpf_jit_charge_modmem(u32 pages)
-+int bpf_jit_charge_modmem(u32 size)
- {
--	if (atomic_long_add_return(pages, &bpf_jit_current) >
--	    (bpf_jit_limit >> PAGE_SHIFT)) {
-+	if (atomic_long_add_return(size, &bpf_jit_current) > bpf_jit_limit) {
- 		if (!bpf_capable()) {
--			atomic_long_sub(pages, &bpf_jit_current);
-+			atomic_long_sub(size, &bpf_jit_current);
- 			return -EPERM;
- 		}
- 	}
-@@ -846,9 +845,9 @@ int bpf_jit_charge_modmem(u32 pages)
- 	return 0;
- }
- 
--void bpf_jit_uncharge_modmem(u32 pages)
-+void bpf_jit_uncharge_modmem(u32 size)
- {
--	atomic_long_sub(pages, &bpf_jit_current);
-+	atomic_long_sub(size, &bpf_jit_current);
- }
- 
- void *__weak bpf_jit_alloc_exec(unsigned long size)
-@@ -879,11 +878,11 @@ bpf_jit_binary_alloc(unsigned int proglen, u8 **image_ptr,
- 	size = round_up(proglen + sizeof(*hdr) + 128, PAGE_SIZE);
- 	pages = size / PAGE_SIZE;
- 
--	if (bpf_jit_charge_modmem(pages))
-+	if (bpf_jit_charge_modmem(size))
- 		return NULL;
- 	hdr = bpf_jit_alloc_exec(size);
- 	if (!hdr) {
--		bpf_jit_uncharge_modmem(pages);
-+		bpf_jit_uncharge_modmem(size);
- 		return NULL;
- 	}
- 
-@@ -906,7 +905,7 @@ void bpf_jit_binary_free(struct bpf_binary_header *hdr)
- 	u32 pages = hdr->pages;
- 
- 	bpf_jit_free_exec(hdr);
--	bpf_jit_uncharge_modmem(pages);
-+	bpf_jit_uncharge_modmem(pages << PAGE_SHIFT);
- }
- 
- /* This symbol is only overridden by archs that have different
-diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
-index 4b6974a195c1..e76a488c09c3 100644
---- a/kernel/bpf/trampoline.c
-+++ b/kernel/bpf/trampoline.c
-@@ -213,7 +213,7 @@ static void __bpf_tramp_image_put_deferred(struct work_struct *work)
- 	im = container_of(work, struct bpf_tramp_image, work);
- 	bpf_image_ksym_del(&im->ksym);
- 	bpf_jit_free_exec(im->image);
--	bpf_jit_uncharge_modmem(1);
-+	bpf_jit_uncharge_modmem(PAGE_SIZE);
- 	percpu_ref_exit(&im->pcref);
- 	kfree_rcu(im, rcu);
- }
-@@ -310,7 +310,7 @@ static struct bpf_tramp_image *bpf_tramp_image_alloc(u64 key, u32 idx)
- 	if (!im)
- 		goto out;
- 
--	err = bpf_jit_charge_modmem(1);
-+	err = bpf_jit_charge_modmem(PAGE_SIZE);
- 	if (err)
- 		goto out_free_im;
- 
-@@ -332,7 +332,7 @@ static struct bpf_tramp_image *bpf_tramp_image_alloc(u64 key, u32 idx)
- out_free_image:
- 	bpf_jit_free_exec(im->image);
- out_uncharge:
--	bpf_jit_uncharge_modmem(1);
-+	bpf_jit_uncharge_modmem(PAGE_SIZE);
- out_free_im:
- 	kfree(im);
- out:
--- 
-2.30.2
+> The only 'runtime_pm' flag I'm finding for regmap is for regmap_irq_chip
+> -- there isn't anything useful for other kinds of regmaps (like MMIO).
 
+> If this seems like an expected/useful feature, I'll look at adding it to
+> the generic 'struct regmap_config' / drivers/base/regmap/regmap.c.
+
+> This could be tricky in theory given the atomic context requirements,
+> but in reality, I think it would still be OK: this feature would really
+> be useful _only_ for otherwise-unregulated contexts, like debugfs
+> access (where we can sleep). For all non-debugfs accesses, we expect to
+> already be RPM_ACTIVE, because the driver should already be managing
+> runtime PM.
+
+Are you sure you wouldn't be better off with a cache here, or marking
+the registers as precious so they don't get read (perhaps conditionally
+to allow reading while the device is live)?  The general idea
+expectation with the debugfs is that it shouldn't materially affect the
+device, this would mean that it could cause the power to get bounced on
+which feels like it might lead to surprises.  If you are sending a patch
+adding support for this it should be debugfs specific, not a general
+flag so it's clear that it's not going to do power management outside of
+debugfs, as you say in the normal case it seems better for the driver to
+do power management.
+
+--hRRnzNzDsjG7npUH
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmH9eEMACgkQJNaLcl1U
+h9CyNAf8Dw6weMFAkpEdp9ndGZJ+cTBeYRiFEQUDD+GOjV/Sy8bsbeYNvJzCeofh
+q1dTYpYAlgkyT2FpqkfB77jqUK81fku/E96ibto1n2r0+qoQBeTyo5lTvwyQiv8l
+CoJq0ZjXfXUAg2cQuGqULkg8lfmUFtdsDtr5tUwQrfJ0saPLuibigYAtEUcaBCGM
+b/jh3GRypX+iHDyfSZQCEwtz2emj9l3KLp13moFieVADysxNe1JII85GM9h/wnpq
+Cxt8LQNEl7KhD182oAyvZrt3Qq6F/7jF4vc5HfcpI8a4DucAnKsVqTEm/yxzHza6
+tKzWPT8R3/AlY3uNqIW7AgW51nTBlA==
+=bTdf
+-----END PGP SIGNATURE-----
+
+--hRRnzNzDsjG7npUH--
