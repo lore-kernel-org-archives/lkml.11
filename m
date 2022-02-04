@@ -2,38 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 229E3C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 20:01:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80935C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 20:01:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238376AbiBDUBW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 15:01:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39310 "EHLO
+        id S236885AbiBDUBZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 15:01:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236019AbiBDT7Q (ORCPT
+        with ESMTP id S235979AbiBDT7Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 4 Feb 2022 14:59:16 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E72D7C061763
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A920AC061762
         for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 11:59:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=DYOK7Cv9XHLHWQbmW8cJx1Pne9VB46L3mBP+N/iRYRM=; b=hS9eGAQp5VnkH7lhSLNPJvAbwU
-        w3ucXm7feVYCiGP7I1nY3Qn7Zc2IlB3dU+kJV/nyb1RqXNoaO0VEc7teXSNemYrvGdq5CN9D1rtrS
-        dqbH9rv8xTHm8NFRDkR7fTkyD5y/QlQ6+5J0dCJAs8QMALhKxpAfAx7e/O35DqcL5LlxHuNYV3naF
-        Q90rgGjvxIA92RZv/dKxBqIPxKLngXoHS8VJLdgTt7epm7wSdGxKdnxqILVPjorGtDAnFytK8GGOE
-        cmgt2g4X3Kk5sXcPhHfIvWtr7pPhAZahtVYILGiYHSa1oVn23r218AtNon/VvYu04qSLWmmeceRaI
-        oPkd97CA==;
+        bh=kgqLD6/1r3pqXl6hXsEe475huLOrflUH9tTG8cvSgDw=; b=j3V9BV1a439HO2pZf2qMRBylXN
+        SaPFWzaALH24RiPRV0suHNvWT9WAz1KF/pAVXJ16Yz0pmQ4Ck+w0PipqMzwM+6f5Owll1t60KOG2P
+        Jz5o8IFcSNrZoE8dcSQ2JZ/Pq7Z1u6DktpEV8mgayBL6gj/nL1qJeuaSJXrKhy5AQlSn3dcxYAEj2
+        mDYMPUC83LJ4xI9hLmnqyAuW8XTWPXfdS+yqoFmW4Zn9EvBSSTONOmhbjXyKSKA2P123vSFRGcI86
+        uQNXGF0o0/49bJNqSOVgdx1jLVwW9GwGkavYx755iIoSj5psQO7NyrxTSAUUlmYse75NTJREhu6Zs
+        7FzOrudA==;
 Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nG4jZ-007LoY-3h; Fri, 04 Feb 2022 19:59:05 +0000
+        id 1nG4jT-007Ll9-V7; Fri, 04 Feb 2022 19:58:59 +0000
 From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
 To:     linux-mm@kvack.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 52/75] mm/rmap: Convert try_to_migrate() to folios
-Date:   Fri,  4 Feb 2022 19:58:29 +0000
-Message-Id: <20220204195852.1751729-53-willy@infradead.org>
+        linux-kernel@vger.kernel.org, John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        William Kucharski <william.kucharski@oracle.com>
+Subject: [PATCH 04/75] mm/gup: Change the calling convention for compound_range_next()
+Date:   Fri,  4 Feb 2022 19:57:41 +0000
+Message-Id: <20220204195852.1751729-5-willy@infradead.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220204195852.1751729-1-willy@infradead.org>
 References: <20220204195852.1751729-1-willy@infradead.org>
@@ -43,254 +45,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the callers to pass a folio and the try_to_migrate_one()
-worker to use a folio throughout.  Fixes an assumption that a
-folio must be <= PMD size.
+Return the head page instead of storing it to a passed parameter.
+Pass the start page directly instead of passing a pointer to it.
+Reorder the arguments to match the calling function's arguments.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+Reviewed-by: John Hubbard <jhubbard@nvidia.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Reviewed-by: William Kucharski <william.kucharski@oracle.com>
 ---
- include/linux/rmap.h |  2 +-
- mm/huge_memory.c     |  4 ++--
- mm/migrate.c         | 12 ++++++----
- mm/rmap.c            | 57 +++++++++++++++++++++++---------------------
- 4 files changed, 41 insertions(+), 34 deletions(-)
+ mm/gup.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/include/linux/rmap.h b/include/linux/rmap.h
-index 66407434c3b5..502439f20d88 100644
---- a/include/linux/rmap.h
-+++ b/include/linux/rmap.h
-@@ -192,7 +192,7 @@ static inline void page_dup_rmap(struct page *page, bool compound)
- int folio_referenced(struct folio *, int is_locked,
- 			struct mem_cgroup *memcg, unsigned long *vm_flags);
+diff --git a/mm/gup.c b/mm/gup.c
+index facadcaedea3..26c73998c6df 100644
+--- a/mm/gup.c
++++ b/mm/gup.c
+@@ -254,21 +254,20 @@ void unpin_user_page(struct page *page)
+ }
+ EXPORT_SYMBOL(unpin_user_page);
  
--void try_to_migrate(struct page *page, enum ttu_flags flags);
-+void try_to_migrate(struct folio *folio, enum ttu_flags flags);
- void try_to_unmap(struct folio *, enum ttu_flags flags);
- 
- int make_device_exclusive_range(struct mm_struct *mm, unsigned long start,
-diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-index 4ea22b7319fd..21676a4afd07 100644
---- a/mm/huge_memory.c
-+++ b/mm/huge_memory.c
-@@ -2294,8 +2294,8 @@ static void unmap_page(struct page *page)
- 	 * pages can simply be left unmapped, then faulted back on demand.
- 	 * If that is ever changed (perhaps for mlock), update remap_page().
- 	 */
--	if (PageAnon(page))
--		try_to_migrate(page, ttu_flags);
-+	if (folio_test_anon(folio))
-+		try_to_migrate(folio, ttu_flags);
- 	else
- 		try_to_unmap(folio, ttu_flags | TTU_IGNORE_MLOCK);
- 
-diff --git a/mm/migrate.c b/mm/migrate.c
-index 766dc67874a1..5dcdd43d983d 100644
---- a/mm/migrate.c
-+++ b/mm/migrate.c
-@@ -927,6 +927,7 @@ static int move_to_new_page(struct page *newpage, struct page *page,
- static int __unmap_and_move(struct page *page, struct page *newpage,
- 				int force, enum migrate_mode mode)
+-static inline void compound_range_next(unsigned long i, unsigned long npages,
+-				       struct page **list, struct page **head,
+-				       unsigned int *ntails)
++static inline struct page *compound_range_next(struct page *start,
++		unsigned long npages, unsigned long i, unsigned int *ntails)
  {
-+	struct folio *folio = page_folio(page);
- 	int rc = -EAGAIN;
- 	bool page_was_mapped = false;
- 	struct anon_vma *anon_vma = NULL;
-@@ -1030,7 +1031,7 @@ static int __unmap_and_move(struct page *page, struct page *newpage,
- 		/* Establish migration ptes */
- 		VM_BUG_ON_PAGE(PageAnon(page) && !PageKsm(page) && !anon_vma,
- 				page);
--		try_to_migrate(page, 0);
-+		try_to_migrate(folio, 0);
- 		page_was_mapped = true;
- 	}
+ 	struct page *next, *page;
+ 	unsigned int nr = 1;
  
-@@ -1173,6 +1174,7 @@ static int unmap_and_move_huge_page(new_page_t get_new_page,
- 				enum migrate_mode mode, int reason,
- 				struct list_head *ret)
- {
-+	struct folio *src = page_folio(hpage);
- 	int rc = -EAGAIN;
- 	int page_was_mapped = 0;
- 	struct page *new_hpage;
-@@ -1249,7 +1251,7 @@ static int unmap_and_move_huge_page(new_page_t get_new_page,
- 			ttu |= TTU_RMAP_LOCKED;
- 		}
+-	next = *list + i;
++	next = start + i;
+ 	page = compound_head(next);
+ 	if (PageCompound(page) && compound_order(page) >= 1)
+ 		nr = min_t(unsigned int,
+ 			   page + compound_nr(page) - next, npages - i);
  
--		try_to_migrate(hpage, ttu);
-+		try_to_migrate(src, ttu);
- 		page_was_mapped = 1;
- 
- 		if (mapping_locked)
-@@ -2449,6 +2451,7 @@ static void migrate_vma_unmap(struct migrate_vma *migrate)
- 
- 	for (i = 0; i < npages; i++) {
- 		struct page *page = migrate_pfn_to_page(migrate->src[i]);
-+		struct folio *folio;
- 
- 		if (!page)
- 			continue;
-@@ -2472,8 +2475,9 @@ static void migrate_vma_unmap(struct migrate_vma *migrate)
- 			put_page(page);
- 		}
- 
--		if (page_mapped(page))
--			try_to_migrate(page, 0);
-+		folio = page_folio(page);
-+		if (folio_mapped(folio))
-+			try_to_migrate(folio, 0);
- 
- 		if (page_mapped(page) || !migrate_vma_check_page(page)) {
- 			if (!is_zone_device_page(page)) {
-diff --git a/mm/rmap.c b/mm/rmap.c
-index c598fd667948..4cfac67e328c 100644
---- a/mm/rmap.c
-+++ b/mm/rmap.c
-@@ -1767,7 +1767,7 @@ static bool try_to_migrate_one(struct page *page, struct vm_area_struct *vma,
- 	range.end = vma_address_end(&pvmw);
- 	mmu_notifier_range_init(&range, MMU_NOTIFY_CLEAR, 0, vma, vma->vm_mm,
- 				address, range.end);
--	if (PageHuge(page)) {
-+	if (folio_test_hugetlb(folio)) {
- 		/*
- 		 * If sharing is possible, start and end will be adjusted
- 		 * accordingly.
-@@ -1781,21 +1781,24 @@ static bool try_to_migrate_one(struct page *page, struct vm_area_struct *vma,
- #ifdef CONFIG_ARCH_ENABLE_THP_MIGRATION
- 		/* PMD-mapped THP migration entry */
- 		if (!pvmw.pte) {
--			VM_BUG_ON_PAGE(PageHuge(page) ||
--				       !PageTransCompound(page), page);
-+			subpage = folio_page(folio,
-+				pmd_pfn(*pvmw.pmd) - folio_pfn(folio));
-+			VM_BUG_ON_FOLIO(folio_test_hugetlb(folio) ||
-+					!folio_test_pmd_mappable(folio), folio);
- 
--			set_pmd_migration_entry(&pvmw, page);
-+			set_pmd_migration_entry(&pvmw, subpage);
- 			continue;
- 		}
- #endif
- 
- 		/* Unexpected PMD-mapped THP? */
--		VM_BUG_ON_PAGE(!pvmw.pte, page);
-+		VM_BUG_ON_FOLIO(!pvmw.pte, folio);
- 
--		subpage = page - page_to_pfn(page) + pte_pfn(*pvmw.pte);
-+		subpage = folio_page(folio,
-+				pte_pfn(*pvmw.pte) - folio_pfn(folio));
- 		address = pvmw.address;
- 
--		if (PageHuge(page) && !PageAnon(page)) {
-+		if (folio_test_hugetlb(folio) && !folio_test_anon(folio)) {
- 			/*
- 			 * To call huge_pmd_unshare, i_mmap_rwsem must be
- 			 * held in write mode.  Caller needs to explicitly
-@@ -1833,15 +1836,15 @@ static bool try_to_migrate_one(struct page *page, struct vm_area_struct *vma,
- 		flush_cache_page(vma, address, pte_pfn(*pvmw.pte));
- 		pteval = ptep_clear_flush(vma, address, pvmw.pte);
- 
--		/* Move the dirty bit to the page. Now the pte is gone. */
-+		/* Set the dirty flag on the folio now the pte is gone. */
- 		if (pte_dirty(pteval))
--			set_page_dirty(page);
-+			folio_mark_dirty(folio);
- 
- 		/* Update high watermark before we lower rss */
- 		update_hiwater_rss(mm);
- 
--		if (is_zone_device_page(page)) {
--			unsigned long pfn = page_to_pfn(page);
-+		if (folio_is_zone_device(folio)) {
-+			unsigned long pfn = folio_pfn(folio);
- 			swp_entry_t entry;
- 			pte_t swp_pte;
- 
-@@ -1877,16 +1880,16 @@ static bool try_to_migrate_one(struct page *page, struct vm_area_struct *vma,
- 			 * changed when hugepage migrations to device private
- 			 * memory are supported.
- 			 */
--			subpage = page;
--		} else if (PageHWPoison(page)) {
-+			subpage = &folio->page;
-+		} else if (PageHWPoison(subpage)) {
- 			pteval = swp_entry_to_pte(make_hwpoison_entry(subpage));
--			if (PageHuge(page)) {
--				hugetlb_count_sub(compound_nr(page), mm);
-+			if (folio_test_hugetlb(folio)) {
-+				hugetlb_count_sub(folio_nr_pages(folio), mm);
- 				set_huge_swap_pte_at(mm, address,
- 						     pvmw.pte, pteval,
- 						     vma_mmu_pagesize(vma));
- 			} else {
--				dec_mm_counter(mm, mm_counter(page));
-+				dec_mm_counter(mm, mm_counter(&folio->page));
- 				set_pte_at(mm, address, pvmw.pte, pteval);
- 			}
- 
-@@ -1901,7 +1904,7 @@ static bool try_to_migrate_one(struct page *page, struct vm_area_struct *vma,
- 			 * migration) will not expect userfaults on already
- 			 * copied pages.
- 			 */
--			dec_mm_counter(mm, mm_counter(page));
-+			dec_mm_counter(mm, mm_counter(&folio->page));
- 			/* We have to invalidate as we cleared the pte */
- 			mmu_notifier_invalidate_range(mm, address,
- 						      address + PAGE_SIZE);
-@@ -1947,8 +1950,8 @@ static bool try_to_migrate_one(struct page *page, struct vm_area_struct *vma,
- 		 *
- 		 * See Documentation/vm/mmu_notifier.rst
- 		 */
--		page_remove_rmap(subpage, PageHuge(page));
--		put_page(page);
-+		page_remove_rmap(subpage, folio_test_hugetlb(folio));
-+		folio_put(folio);
- 	}
- 
- 	mmu_notifier_invalidate_range_end(&range);
-@@ -1958,13 +1961,13 @@ static bool try_to_migrate_one(struct page *page, struct vm_area_struct *vma,
- 
- /**
-  * try_to_migrate - try to replace all page table mappings with swap entries
-- * @page: the page to replace page table entries for
-+ * @folio: the folio to replace page table entries for
-  * @flags: action and flags
-  *
-- * Tries to remove all the page table entries which are mapping this page and
-- * replace them with special swap entries. Caller must hold the page lock.
-+ * Tries to remove all the page table entries which are mapping this folio and
-+ * replace them with special swap entries. Caller must hold the folio lock.
-  */
--void try_to_migrate(struct page *page, enum ttu_flags flags)
-+void try_to_migrate(struct folio *folio, enum ttu_flags flags)
- {
- 	struct rmap_walk_control rwc = {
- 		.rmap_one = try_to_migrate_one,
-@@ -1981,7 +1984,7 @@ void try_to_migrate(struct page *page, enum ttu_flags flags)
- 					TTU_SYNC)))
- 		return;
- 
--	if (is_zone_device_page(page) && !is_device_private_page(page))
-+	if (folio_is_zone_device(folio) && !folio_is_device_private(folio))
- 		return;
- 
- 	/*
-@@ -1992,13 +1995,13 @@ void try_to_migrate(struct page *page, enum ttu_flags flags)
- 	 * locking requirements of exec(), migration skips
- 	 * temporary VMAs until after exec() completes.
- 	 */
--	if (!PageKsm(page) && PageAnon(page))
-+	if (!folio_test_ksm(folio) && folio_test_anon(folio))
- 		rwc.invalid_vma = invalid_migration_vma;
- 
- 	if (flags & TTU_RMAP_LOCKED)
--		rmap_walk_locked(page, &rwc);
-+		rmap_walk_locked(&folio->page, &rwc);
- 	else
--		rmap_walk(page, &rwc);
-+		rmap_walk(&folio->page, &rwc);
+-	*head = page;
+ 	*ntails = nr;
++	return page;
  }
  
- /*
+ static inline void compound_next(unsigned long i, unsigned long npages,
+@@ -380,7 +379,7 @@ void unpin_user_page_range_dirty_lock(struct page *page, unsigned long npages,
+ 	unsigned int ntails;
+ 
+ 	for (index = 0; index < npages; index += ntails) {
+-		compound_range_next(index, npages, &page, &head, &ntails);
++		head = compound_range_next(page, npages, index, &ntails);
+ 		if (make_dirty && !PageDirty(head))
+ 			set_page_dirty_lock(head);
+ 		put_compound_head(head, ntails, FOLL_PIN);
 -- 
 2.34.1
 
