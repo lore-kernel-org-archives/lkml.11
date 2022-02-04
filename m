@@ -2,220 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A860C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 15:03:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13041C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 15:06:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359509AbiBDPDt (ORCPT
+        id S1359519AbiBDPGH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 10:03:49 -0500
-Received: from mga12.intel.com ([192.55.52.136]:56366 "EHLO mga12.intel.com"
+        Fri, 4 Feb 2022 10:06:07 -0500
+Received: from foss.arm.com ([217.140.110.172]:50172 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1353524AbiBDPDr (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 10:03:47 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643987027; x=1675523027;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=eN25JFn1Lr4vWxdrtdGhIpVzCDCbrGcrzyv9SoyZpe8=;
-  b=QuZ1wstSO7Re0EZCR2SHks8MmrF8J4Itl5LqfOEOFej6y4szzth7aQTZ
-   PAd/1TRnJWQqSfSRb4+SydPyc0iusICBXeAGcCFEzarqQW5GYWbb7FBbN
-   Z8vbCVN+DFugGHjm2n/ocRcdtIx1KPBSzbSy4MwLU1MkXidCtPt16UtZ9
-   QZ0viUiaL5D8cPvhMIt3y6+c01x03b0+k37epSzdxxP/8FvKGeKORc7CM
-   EoiIwSieTWmCc1QWy44gdJ2qOEWaCsRNtZUUL2ThvzGiDbpKiUtLdbQV9
-   x4RIcoNzaR5sj5LYIA7eaxHUUtTWKzaYqTlVrjG+OWn1GBBjP4bI2D6Vq
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10247"; a="228352105"
-X-IronPort-AV: E=Sophos;i="5.88,343,1635231600"; 
-   d="scan'208";a="228352105"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2022 07:03:30 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,343,1635231600"; 
-   d="scan'208";a="631726347"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 04 Feb 2022 07:03:29 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nG07U-000Xl9-KY; Fri, 04 Feb 2022 15:03:28 +0000
-Date:   Fri, 04 Feb 2022 23:02:48 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [paulmck-rcu:rcu/next] BUILD SUCCESS
- d51c69ea4ca3075d24dac8f20c1023cc9627ff28
-Message-ID: <61fd4018.oaKncrZekS8TdV+j%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        id S1353524AbiBDPGF (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 4 Feb 2022 10:06:05 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DA30A1396;
+        Fri,  4 Feb 2022 07:06:04 -0800 (PST)
+Received: from lakrids.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 7734D3F774;
+        Fri,  4 Feb 2022 07:06:02 -0800 (PST)
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     linux-arm-kernel@lists.infradead.org
+Cc:     ardb@kernel.org, bp@alien8.de, catalin.marinas@arm.com,
+        dave.hansen@linux.intel.com, frederic@kernel.org,
+        james.morse@arm.com, joey.gouly@arm.com, juri.lelli@redhat.com,
+        linux-kernel@vger.kernel.org, luto@kernel.org,
+        mark.rutland@arm.com, mingo@redhat.com, peterz@infradead.org,
+        tglx@linutronix.de, valentin.schneider@arm.com, will@kernel.org
+Subject: [PATCH v2 0/7] arm64 / sched/preempt: support PREEMPT_DYNAMIC with static keys
+Date:   Fri,  4 Feb 2022 15:05:50 +0000
+Message-Id: <20220204150557.434610-1-mark.rutland@arm.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git rcu/next
-branch HEAD: d51c69ea4ca3075d24dac8f20c1023cc9627ff28  rcu-tasks: Set ->percpu_enqueue_shift to zero upon contention
+This series enables PREEMPT_DYNAMIC on arm64. To do so, it adds a new
+mechanism allowing the preemption functions to be enabled/disabled using
+static keys rather than static calls, with architectures selecting
+whether they use static calls or static keys.
 
-elapsed time: 794m
+With non-inline static calls, each function call results in a call to
+the (out-of-line) trampoline which either tail-calls its associated
+callee or performs an early return.
 
-configs tested: 147
-configs skipped: 4
+The key idea is that where we're only enabling/disabling a single
+callee, we can inline this trampoline into the start of the callee,
+using a static key to decide whether to return early, and leaving the
+remaining codegen to the compiler. The overhead should be similar to
+(and likely lower than) using a static call trampoline. Since most
+codegen is up to the compiler, we sidestep a number of implementation
+pain-points (e.g. things like CFI should "just work" as well as they do
+for any other functions).
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+The bulk of the diffstat for kernel/sched/core.c is shuffling the
+PREEMPT_DYNAMIC code later in the file, and the actual additions are
+fairly trivial.
 
-gcc tested configs:
-arm                                 defconfig
-arm64                            allyesconfig
-arm64                               defconfig
-arm                              allyesconfig
-arm                              allmodconfig
-i386                 randconfig-c001-20220131
-powerpc              randconfig-c003-20220131
-i386                          randconfig-c001
-m68k                        stmark2_defconfig
-arc                        nsimosci_defconfig
-powerpc                       maple_defconfig
-sh                   secureedge5410_defconfig
-arc                        nsim_700_defconfig
-mips                           ci20_defconfig
-sh                           se7750_defconfig
-sh                         microdev_defconfig
-arc                            hsdk_defconfig
-arm                         vf610m4_defconfig
-parisc                           allyesconfig
-arc                          axs101_defconfig
-ia64                             allmodconfig
-powerpc                      ep88xc_defconfig
-mips                          rb532_defconfig
-arm                            mps2_defconfig
-arm                           sunxi_defconfig
-powerpc                     mpc83xx_defconfig
-powerpc                     stx_gp3_defconfig
-mips                         bigsur_defconfig
-powerpc                   currituck_defconfig
-powerpc                     tqm8548_defconfig
-powerpc                 canyonlands_defconfig
-arc                 nsimosci_hs_smp_defconfig
-sh                ecovec24-romimage_defconfig
-m68k                       m5249evb_defconfig
-arm                             rpc_defconfig
-arm                             pxa_defconfig
-sh                             espt_defconfig
-mips                           ip32_defconfig
-microblaze                      mmu_defconfig
-xtensa                           allyesconfig
-powerpc                     pq2fads_defconfig
-sh                  sh7785lcr_32bit_defconfig
-sh                     magicpanelr2_defconfig
-powerpc                     rainier_defconfig
-mips                    maltaup_xpa_defconfig
-openrisc                 simple_smp_defconfig
-nios2                         10m50_defconfig
-ia64                         bigsur_defconfig
-um                                  defconfig
-arm                         nhk8815_defconfig
-arm                  randconfig-c002-20220202
-arm                  randconfig-c002-20220130
-arm                  randconfig-c002-20220131
-ia64                                defconfig
-ia64                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-m68k                             allyesconfig
-nios2                               defconfig
-arc                              allyesconfig
-nds32                             allnoconfig
-nds32                               defconfig
-nios2                            allyesconfig
-csky                                defconfig
-alpha                               defconfig
-alpha                            allyesconfig
-h8300                            allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-parisc                              defconfig
-s390                             allmodconfig
-s390                                defconfig
-s390                             allyesconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-sparc                               defconfig
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                          allmodconfig
-powerpc                           allnoconfig
-x86_64               randconfig-a004-20220131
-x86_64               randconfig-a003-20220131
-x86_64               randconfig-a001-20220131
-x86_64               randconfig-a006-20220131
-x86_64               randconfig-a005-20220131
-x86_64               randconfig-a002-20220131
-i386                 randconfig-a006-20220131
-i386                 randconfig-a005-20220131
-i386                 randconfig-a003-20220131
-i386                 randconfig-a002-20220131
-i386                 randconfig-a001-20220131
-i386                 randconfig-a004-20220131
-i386                          randconfig-a012
-i386                          randconfig-a014
-i386                          randconfig-a016
-riscv                    nommu_k210_defconfig
-riscv                            allyesconfig
-riscv                    nommu_virt_defconfig
-riscv                             allnoconfig
-riscv                               defconfig
-riscv                          rv32_defconfig
-riscv                            allmodconfig
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                           allyesconfig
-x86_64                    rhel-8.3-kselftests
-x86_64                              defconfig
-x86_64                               rhel-8.3
-x86_64                          rhel-8.3-func
-x86_64                                  kexec
+I've given this very light build+boot testing so far.
 
-clang tested configs:
-mips                          malta_defconfig
-x86_64                           allyesconfig
-mips                          ath79_defconfig
-powerpc                     ppa8548_defconfig
-powerpc                      obs600_defconfig
-arm                         socfpga_defconfig
-powerpc                 mpc832x_mds_defconfig
-arm                          pcm027_defconfig
-arm                           spitz_defconfig
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-x86_64               randconfig-a013-20220131
-x86_64               randconfig-a015-20220131
-x86_64               randconfig-a014-20220131
-x86_64               randconfig-a016-20220131
-x86_64               randconfig-a011-20220131
-x86_64               randconfig-a012-20220131
-i386                 randconfig-a011-20220131
-i386                 randconfig-a013-20220131
-i386                 randconfig-a014-20220131
-i386                 randconfig-a012-20220131
-i386                 randconfig-a015-20220131
-i386                 randconfig-a016-20220131
-x86_64                        randconfig-a005
-x86_64                        randconfig-a003
-x86_64                        randconfig-a001
-riscv                randconfig-r042-20220131
-hexagon              randconfig-r045-20220203
-hexagon              randconfig-r041-20220203
-hexagon              randconfig-r045-20220130
-hexagon              randconfig-r045-20220131
-hexagon              randconfig-r041-20220130
-hexagon              randconfig-r041-20220131
+Since v1 [1]:
+* Rework Kconfig text to be clearer
+* Rework arm64 entry code
+* Clarify commit messages.
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+[1] https://lore.kernel.org/all/20211109172408.49641-1-mark.rutland@arm.com/
+
+Mark Rutland (7):
+  sched/preempt: move PREEMPT_DYNAMIC logic later
+  sched/preempt: refactor sched_dynamic_update()
+  sched/preempt: simplify irqentry_exit_cond_resched() callers
+  sched/preempt: decouple HAVE_PREEMPT_DYNAMIC from GENERIC_ENTRY
+  sched/preempt: add PREEMPT_DYNAMIC using static keys
+  arm64: entry: centralize premeption decision
+  arm64: support PREEMPT_DYNAMIC
+
+ arch/Kconfig                     |  37 +++-
+ arch/arm64/Kconfig               |   1 +
+ arch/arm64/include/asm/preempt.h |  16 +-
+ arch/arm64/kernel/entry-common.c |  28 ++-
+ arch/x86/Kconfig                 |   2 +-
+ arch/x86/include/asm/preempt.h   |  10 +-
+ include/linux/entry-common.h     |  15 +-
+ include/linux/kernel.h           |   7 +-
+ include/linux/sched.h            |  10 +-
+ kernel/entry/common.c            |  22 +-
+ kernel/sched/core.c              | 346 ++++++++++++++++++-------------
+ 11 files changed, 322 insertions(+), 172 deletions(-)
+
+-- 
+2.30.2
+
