@@ -2,323 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEA7CC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 23:39:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C7A5C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 23:40:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378389AbiBDXj6 (ORCPT
+        id S1378317AbiBDXkg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 18:39:58 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:39420 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378268AbiBDXjI (ORCPT
+        Fri, 4 Feb 2022 18:40:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46432 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1378446AbiBDXkH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 18:39:08 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 71B4FB8397A;
-        Fri,  4 Feb 2022 23:39:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CBB5C34108;
-        Fri,  4 Feb 2022 23:39:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644017944;
-        bh=K5zozA+k1BZU8VUVsoGu3r4tnm7mfejnZ1gaOcBE8jM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=arP/LcPgNLHad0SZ1XPZxqcXZ1vvS6L6AjzTUfJDCBQBPToAflyzs8TuDQ0a++dqa
-         f+nxNCwzDYvyTLIlIyULhqDoxbQ7nkJVfroLSiWBc9op2BLgdQ1OvdgYq3OhMDrq+R
-         blrrEVVpK+lW/3j83sGjmK7scLclXs86+qr9Wno1m18JFHcNr/0nP7UyU6FEmhGjld
-         w+vMZQjaKwO2kJ0SYHxbQiL32H0L0JWdwr6IDd3QTjB733wruMqkyxFQWHgFxpicKT
-         gJXbZQLdgJ41Z+DxNDiCUdhkT82UWSfRfOvca5+9z75FC5RXrNJnvEdqczRT5zEwKR
-         OlZthcxKMdzyw==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 1078E5C1184; Fri,  4 Feb 2022 15:39:04 -0800 (PST)
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     rcu@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com,
-        rostedt@goodmis.org, "Paul E. McKenney" <paulmck@kernel.org>
-Subject: [PATCH rcu 16/19] srcu: Add contention-triggered addition of srcu_node tree
-Date:   Fri,  4 Feb 2022 15:38:59 -0800
-Message-Id: <20220204233902.1902-16-paulmck@kernel.org>
-X-Mailer: git-send-email 2.31.1.189.g2e36527f23
-In-Reply-To: <20220204233858.GA1469@paulmck-ThinkPad-P17-Gen-1>
-References: <20220204233858.GA1469@paulmck-ThinkPad-P17-Gen-1>
+        Fri, 4 Feb 2022 18:40:07 -0500
+Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 399E3DFFE363
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 15:39:41 -0800 (PST)
+Received: by mail-io1-xd30.google.com with SMTP id y84so9412416iof.0
+        for <linux-kernel@vger.kernel.org>; Fri, 04 Feb 2022 15:39:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=chay6cI5krPMdvmjI0OgtPSx/juylZb2Zp77TTGYBDU=;
+        b=ghF9s5MbclL4SAtvIK2qGV+BljWVspJXqofubIdxJEF14Xz9ytHpkkFxpswuY/BsgI
+         jyktOsJw7HiIBplyOMdLypyl5fEAN123X3pm30RrXatGH7VJLU0G2sGL6oulw1BlK47Q
+         zlEtzHahkHzgXbyjsAtGOBVSuOZtqDlBcOdjI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=chay6cI5krPMdvmjI0OgtPSx/juylZb2Zp77TTGYBDU=;
+        b=r5T+vqh3pRZekKGlm+1saWj1qJZd72q+3ESizI6fTO3ppyw3JZXcSA3PuaY5DwyqQt
+         x7exxkYGUpp4iJzjyTP/v7smgFsYr855wBhVSW36KJC0eV3fQNfx/dbiWAtL2Daxy428
+         dvXKXBxJKLJCBoMHyoAkGAV5ePRl26J39WCoJsmdZlwHWD4MbKbS9QRSb4/ItmnZVSBY
+         mEkzMtHj112fT7ysZywWI3X8RMJmUBzMJmB2fI7KnDW9X8T3B3CVBSknfs2oMKuuJck9
+         4okS5CAOB//NXkWYuG0Sz0uYcQJMCeennILQkWsnVjLHBeTZ7Y4wfs9MowlgslomXJqA
+         fUaQ==
+X-Gm-Message-State: AOAM532ta4j2eNdbNCKiWQ+Hl8dYATzd74CkdBRtZzHyD5TBI3TKJL1F
+        3FaTb58aeBH04HpjmnNZ8upR+Q==
+X-Google-Smtp-Source: ABdhPJxwry8B1iySH3HNGgjwyySt2sl1IYQJ9sPBEZsfj1ARJPiZ4Cfn77PbNSIkbwQAa0+fQ9Qv2g==
+X-Received: by 2002:a05:6638:2493:: with SMTP id x19mr681599jat.219.1644017980601;
+        Fri, 04 Feb 2022 15:39:40 -0800 (PST)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id e17sm1654076ilm.67.2022.02.04.15.39.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 04 Feb 2022 15:39:40 -0800 (PST)
+Subject: Re: [PATCH 0/3] selftests: Remove duplicate CPUID wrappers
+To:     Reinette Chatre <reinette.chatre@intel.com>, shuah@kernel.org,
+        linux-kselftest@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Ram Pai <linuxram@us.ibm.com>,
+        Sandipan Das <sandipan@linux.ibm.com>,
+        Florian Weimer <fweimer@redhat.com>,
+        "Desnes A. Nunes do Rosario" <desnesn@linux.vnet.ibm.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        Thiago Jung Bauermann <bauerman@linux.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Suchanek <msuchanek@suse.de>, linux-mm@kvack.org,
+        "Chang S . Bae" <chang.seok.bae@intel.com>,
+        Borislav Petkov <bp@suse.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
+        Andy Lutomirski <luto@kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <cover.1644000145.git.reinette.chatre@intel.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <81df8c0e-fde6-f3b8-f988-b539f193635b@linuxfoundation.org>
+Date:   Fri, 4 Feb 2022 16:39:38 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <cover.1644000145.git.reinette.chatre@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This commit instruments the acquisitions of the srcu_struct structure's
-->lock, enabling the initiation of a transition from SRCU_SIZE_SMALL
-to SRCU_SIZE_BIG when sufficient contention is experienced.  The
-instrumentation counts the number of trylock failures within the confines
-of a single jiffy.  If that number exceeds the value specified by the
-srcutree.small_contention_lim kernel boot parameter (which defaults to
-100), and if the value specified by the srcutree.convert_to_big kernel
-boot parameter has the 0x10 bit set (defaults to 0), then a transition
-will be automatically initiated.
+On 2/4/22 12:17 PM, Reinette Chatre wrote:
+> A few tests that require running CPUID do so with a private
+> implementation of a wrapper for CPUID. This duplication of
+> the CPUID wrapper should be avoided but having one is also
+> unnecessary because of the existence of a macro that can
+> be used instead.
+> 
+> This series replaces private CPUID wrappers with calls
+> to the __cpuid_count() macro from cpuid.h as made available
+> by gcc and clang/llvm.
+> 
+> Cc: Dave Hansen <dave.hansen@linux.intel.com>
+> Cc: Ram Pai <linuxram@us.ibm.com>
+> Cc: Sandipan Das <sandipan@linux.ibm.com>
+> Cc: Florian Weimer <fweimer@redhat.com>
+> Cc: "Desnes A. Nunes do Rosario" <desnesn@linux.vnet.ibm.com>
+> Cc: Ingo Molnar <mingo@kernel.org>
+> Cc: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+> Cc: Michael Ellerman <mpe@ellerman.id.au>
+> Cc: Michal Suchanek <msuchanek@suse.de>
+> Cc: linux-mm@kvack.org
+> Cc: Chang S. Bae <chang.seok.bae@intel.com>
+> Cc: Borislav Petkov <bp@suse.de>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Ingo Molnar <mingo@redhat.com>
+> Cc: "H. Peter Anvin" <hpa@zytor.com>
+> Cc: x86@kernel.org
+> Cc: Andy Lutomirski <luto@kernel.org>
+> 
+> Reinette Chatre (3):
+>    selftests/vm/pkeys: Use existing __cpuid_count() macro
+>    selftests/x86/amx: Use existing __cpuid_count() macro
+>    selftests/x86/corrupt_xstate_header: Use existing __cpuid_count()
+>      macro
+> 
+>   tools/testing/selftests/vm/pkey-x86.h         | 22 +++---------------
+>   tools/testing/selftests/x86/amx.c             | 23 +++++--------------
+>   .../selftests/x86/corrupt_xstate_header.c     | 17 ++------------
+>   3 files changed, 11 insertions(+), 51 deletions(-)
+> 
 
-By default, there will never be any transitions, so that none of the
-srcu_struct structures ever gains an srcu_node array.
+I am all for this cleanup. However, I am not finding __cpuid_count()
+marco on my system with gcc:
 
-The useful values for srcutree.convert_to_big are:
+gcc --version
+gcc (Ubuntu 11.2.0-7ubuntu2) 11.2.0
 
-0x00:  Decide conversion approach at boot given system size.
-0x01:  Never convert.
-0x02:  Always convert at init_srcu_struct() time.
-0x03:  Convert when rcutorture prints its first round of statistics.
-0x11:  Convert if contention is encountered.
-0x12:  Convert if contention is encountered or when rcutorture prints
-        its first round of statistics, whichever comes first.
+My concern is regression on older gcc versions.
 
-The value 0x12 acts the same as 0x02 because the convertion happens
-before there is any chance of contention.
-
-[ paulmck: Apply "static" feedback from kernel test robot. ]
-
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
----
- .../admin-guide/kernel-parameters.txt         |  22 ++++
- include/linux/srcutree.h                      |   2 +
- kernel/rcu/srcutree.c                         | 107 ++++++++++++++----
- 3 files changed, 107 insertions(+), 24 deletions(-)
-
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index f5a27f067db9e..d7b64263fefbc 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -5525,6 +5525,20 @@
- 			off:    Disable mitigation and remove
- 				performance impact to RDRAND and RDSEED
- 
-+	srcutree.convert_to_big [KNL]
-+			Specifies under what conditions an SRCU tree
-+			srcu_struct structure will be converted to big
-+			form, that is, with an rcu_node tree:
-+
-+				   1:  Never.
-+				   2:  At init_srcu_struct() time.
-+				   3:  When rcutorture decides to.
-+				0x1X:  Above plus if high contention.
-+
-+			Either way, the srcu_node tree will be sized based
-+			on the actual runtime number of CPUs (nr_cpu_ids)
-+			instead of the compile-time CONFIG_NR_CPUS.
-+
- 	srcutree.counter_wrap_check [KNL]
- 			Specifies how frequently to check for
- 			grace-period sequence counter wrap for the
-@@ -5542,6 +5556,14 @@
- 			expediting.  Set to zero to disable automatic
- 			expediting.
- 
-+	srcutree.small_contention_lim [KNL]
-+			Specifies the number of update-side contention
-+			events per jiffy will be tolerated before
-+			initiating a conversion of an srcu_struct
-+			structure to big form.	Note that the value of
-+			srcutree.convert_to_big must have the 0x10 bit
-+			set for contention-based conversions to occur.
-+
- 	ssbd=		[ARM64,HW]
- 			Speculative Store Bypass Disable control
- 
-diff --git a/include/linux/srcutree.h b/include/linux/srcutree.h
-index 44bd204498a11..1b9ff4ed37e45 100644
---- a/include/linux/srcutree.h
-+++ b/include/linux/srcutree.h
-@@ -72,6 +72,8 @@ struct srcu_struct {
- 	unsigned long srcu_gp_seq_needed;	/* Latest gp_seq needed. */
- 	unsigned long srcu_gp_seq_needed_exp;	/* Furthest future exp GP. */
- 	unsigned long srcu_last_gp_end;		/* Last GP end timestamp (ns) */
-+	unsigned long srcu_size_jiffies;	/* Current contention-measurement interval. */
-+	unsigned long srcu_n_lock_retries;	/* Contention events in current interval. */
- 	struct srcu_data __percpu *sda;		/* Per-CPU srcu_data array. */
- 	bool sda_is_static;			/* May ->sda be passed to free_percpu()? */
- 	unsigned long srcu_barrier_seq;		/* srcu_barrier seq #. */
-diff --git a/kernel/rcu/srcutree.c b/kernel/rcu/srcutree.c
-index 5eee113531cdc..1d72c7e3c33b5 100644
---- a/kernel/rcu/srcutree.c
-+++ b/kernel/rcu/srcutree.c
-@@ -41,13 +41,29 @@ module_param(counter_wrap_check, ulong, 0444);
- 
- /*
-  * Control conversion to SRCU_SIZE_BIG:
-- * 0: Don't convert at all (default).
-- * 1: Convert at init_srcu_struct() time.
-- * 2: Convert when rcutorture invokes srcu_torture_stats_print().
-+ *    0: Decide at boot time based on system shape.
-+ *    1: Don't convert at all (default).
-+ *    2: Convert at init_srcu_struct() time.
-+ *    3: Convert when rcutorture invokes srcu_torture_stats_print().
-+ * 0x1x: Convert when excessive contention encountered.
-  */
--static int convert_to_big;
-+#define SRCU_SIZING_AUTO	0
-+#define SRCU_SIZING_NONE	1
-+#define SRCU_SIZING_INIT	2
-+#define SRCU_SIZING_TORTURE	3
-+#define SRCU_SIZING_CONTEND	0x10
-+#define SRCU_SIZING_IS(x) ((convert_to_big & ~SRCU_SIZING_CONTEND) == x)
-+#define SRCU_SIZING_IS_NONE() (SRCU_SIZING_IS(SRCU_SIZING_NONE))
-+#define SRCU_SIZING_IS_INIT() (SRCU_SIZING_IS(SRCU_SIZING_INIT))
-+#define SRCU_SIZING_IS_TORTURE() (SRCU_SIZING_IS(SRCU_SIZING_TORTURE))
-+#define SRCU_SIZING_IS_CONTEND() (convert_to_big & SRCU_SIZING_CONTEND)
-+static int convert_to_big = SRCU_SIZING_NONE;
- module_param(convert_to_big, int, 0444);
- 
-+/* Contention events per jiffy to initiate transition to big. */
-+static int small_contention_lim __read_mostly = 100;
-+module_param(small_contention_lim, int, 0444);
-+
- /* Early-boot callback-management, so early that no lock is required! */
- static LIST_HEAD(srcu_boot_list);
- static bool __read_mostly srcu_init_done;
-@@ -58,31 +74,40 @@ static void process_srcu(struct work_struct *work);
- static void srcu_delay_timer(struct timer_list *t);
- 
- /* Wrappers for lock acquisition and release, see raw_spin_lock_rcu_node(). */
--#define spin_lock_rcu_node(p)					\
--do {									\
--	spin_lock(&ACCESS_PRIVATE(p, lock));			\
--	smp_mb__after_unlock_lock();					\
-+#define spin_lock_rcu_node(p)							\
-+do {										\
-+	spin_lock(&ACCESS_PRIVATE(p, lock));					\
-+	smp_mb__after_unlock_lock();						\
- } while (0)
- 
- #define spin_unlock_rcu_node(p) spin_unlock(&ACCESS_PRIVATE(p, lock))
- 
--#define spin_lock_irq_rcu_node(p)					\
--do {									\
--	spin_lock_irq(&ACCESS_PRIVATE(p, lock));			\
--	smp_mb__after_unlock_lock();					\
-+#define spin_lock_irq_rcu_node(p)						\
-+do {										\
-+	spin_lock_irq(&ACCESS_PRIVATE(p, lock));				\
-+	smp_mb__after_unlock_lock();						\
- } while (0)
- 
--#define spin_unlock_irq_rcu_node(p)					\
-+#define spin_unlock_irq_rcu_node(p)						\
- 	spin_unlock_irq(&ACCESS_PRIVATE(p, lock))
- 
--#define spin_lock_irqsave_rcu_node(p, flags)			\
--do {									\
--	spin_lock_irqsave(&ACCESS_PRIVATE(p, lock), flags);	\
--	smp_mb__after_unlock_lock();					\
-+#define spin_lock_irqsave_rcu_node(p, flags)					\
-+do {										\
-+	spin_lock_irqsave(&ACCESS_PRIVATE(p, lock), flags);			\
-+	smp_mb__after_unlock_lock();						\
- } while (0)
- 
--#define spin_unlock_irqrestore_rcu_node(p, flags)			\
--	spin_unlock_irqrestore(&ACCESS_PRIVATE(p, lock), flags)	\
-+#define spin_trylock_irqsave_rcu_node(p, flags)					\
-+({										\
-+	bool ___locked = spin_trylock_irqsave(&ACCESS_PRIVATE(p, lock), flags);	\
-+										\
-+	if (___locked)								\
-+		smp_mb__after_unlock_lock();					\
-+	___locked;								\
-+})
-+
-+#define spin_unlock_irqrestore_rcu_node(p, flags)				\
-+	spin_unlock_irqrestore(&ACCESS_PRIVATE(p, lock), flags)			\
- 
- /*
-  * Initialize SRCU per-CPU data.  Note that statically allocated
-@@ -216,7 +241,7 @@ static int init_srcu_struct_fields(struct srcu_struct *ssp, bool is_static)
- 	init_srcu_struct_data(ssp);
- 	ssp->srcu_gp_seq_needed_exp = 0;
- 	ssp->srcu_last_gp_end = ktime_get_mono_fast_ns();
--	if (READ_ONCE(ssp->srcu_size_state) == SRCU_SIZE_SMALL && convert_to_big == 1) {
-+	if (READ_ONCE(ssp->srcu_size_state) == SRCU_SIZE_SMALL && SRCU_SIZING_IS_INIT()) {
- 		if (!init_srcu_struct_nodes(ssp, GFP_ATOMIC)) {
- 			if (ssp->sda_is_static) {
- 				free_percpu(ssp->sda);
-@@ -262,6 +287,15 @@ EXPORT_SYMBOL_GPL(init_srcu_struct);
- 
- #endif /* #else #ifdef CONFIG_DEBUG_LOCK_ALLOC */
- 
-+/*
-+ * Initiate a transition to SRCU_SIZE_BIG with lock held.
-+ */
-+static void __srcu_transition_to_big(struct srcu_struct *ssp)
-+{
-+	lockdep_assert_held(&ACCESS_PRIVATE(ssp, lock));
-+	smp_store_release(&ssp->srcu_size_state, SRCU_SIZE_ALLOC);
-+}
-+
- /*
-  * Initiate an idempotent transition to SRCU_SIZE_BIG.
-  */
-@@ -277,10 +311,35 @@ static void srcu_transition_to_big(struct srcu_struct *ssp)
- 		spin_unlock_irqrestore_rcu_node(ssp, flags);
- 		return;
- 	}
--	smp_store_release(&ssp->srcu_size_state, SRCU_SIZE_ALLOC);
-+	__srcu_transition_to_big(ssp);
- 	spin_unlock_irqrestore_rcu_node(ssp, flags);
- }
- 
-+/*
-+ * Acquire the specified srcu_struct structure's ->lock, but check for
-+ * excessive contention, which results in initiation of a transition
-+ * to SRCU_SIZE_BIG.  But only if the srcutree.convert_to_big module
-+ * parameter permits this.
-+ */
-+static void spin_lock_irqsave_ssp_contention(struct srcu_struct *ssp, unsigned long *flags)
-+{
-+	unsigned long j;
-+
-+	if (spin_trylock_irqsave_rcu_node(ssp, *flags))
-+		return;
-+	spin_lock_irqsave_rcu_node(ssp, *flags);
-+	if (!SRCU_SIZING_IS_CONTEND() || ssp->srcu_size_state)
-+		return;
-+	j = jiffies;
-+	if (ssp->srcu_size_jiffies != j) {
-+		ssp->srcu_size_jiffies = j;
-+		ssp->srcu_n_lock_retries = 0;
-+	}
-+	if (++ssp->srcu_n_lock_retries <= small_contention_lim)
-+		return;
-+	__srcu_transition_to_big(ssp);
-+}
-+
- /*
-  * First-use initialization of statically allocated srcu_struct
-  * structure.  Wiring up the combining tree is more than can be
-@@ -705,7 +764,7 @@ static void srcu_funnel_exp_start(struct srcu_struct *ssp, struct srcu_node *snp
- 			WRITE_ONCE(snp->srcu_gp_seq_needed_exp, s);
- 			spin_unlock_irqrestore_rcu_node(snp, flags);
- 		}
--	spin_lock_irqsave_rcu_node(ssp, flags);
-+	spin_lock_irqsave_ssp_contention(ssp, &flags);
- 	if (ULONG_CMP_LT(ssp->srcu_gp_seq_needed_exp, s))
- 		WRITE_ONCE(ssp->srcu_gp_seq_needed_exp, s);
- 	spin_unlock_irqrestore_rcu_node(ssp, flags);
-@@ -760,7 +819,7 @@ static void srcu_funnel_gp_start(struct srcu_struct *ssp, struct srcu_data *sdp,
- 		}
- 
- 	/* Top of tree, must ensure the grace period will be started. */
--	spin_lock_irqsave_rcu_node(ssp, flags);
-+	spin_lock_irqsave_ssp_contention(ssp, &flags);
- 	if (ULONG_CMP_LT(ssp->srcu_gp_seq_needed, s)) {
- 		/*
- 		 * Record need for grace period s.  Pair with load
-@@ -1515,7 +1574,7 @@ void srcu_torture_stats_print(struct srcu_struct *ssp, char *tt, char *tf)
- 		}
- 		pr_cont(" T(%ld,%ld)\n", s0, s1);
- 	}
--	if (convert_to_big == 2)
-+	if (SRCU_SIZING_IS_TORTURE())
- 		srcu_transition_to_big(ssp);
- }
- EXPORT_SYMBOL_GPL(srcu_torture_stats_print);
--- 
-2.31.1.189.g2e36527f23
-
+thanks,
+-- Shuah
