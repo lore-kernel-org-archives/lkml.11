@@ -2,282 +2,243 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93EE2C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 14:51:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE6AAC43217
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 14:51:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359476AbiBDOv2 (ORCPT
+        id S1359497AbiBDOva (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 09:51:28 -0500
-Received: from frasgout.his.huawei.com ([185.176.79.56]:4679 "EHLO
-        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359459AbiBDOvY (ORCPT
+        Fri, 4 Feb 2022 09:51:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52194 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359462AbiBDOvZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 09:51:24 -0500
-Received: from fraeml737-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JqyzG6WRRz67HW3;
-        Fri,  4 Feb 2022 22:46:34 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml737-chm.china.huawei.com (10.206.15.218) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 4 Feb 2022 15:51:22 +0100
-Received: from localhost (10.47.31.86) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 4 Feb
- 2022 14:51:21 +0000
-Date:   Fri, 4 Feb 2022 14:51:16 +0000
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-CC:     <ira.weiny@intel.com>, Dan Williams <dan.j.williams@intel.com>,
-        "Bjorn Helgaas" <bhelgaas@google.com>,
-        Alison Schofield <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        "Ben Widawsky" <ben.widawsky@intel.com>,
-        <linux-kernel@vger.kernel.org>, <linux-cxl@vger.kernel.org>,
-        <linux-pci@vger.kernel.org>
-Subject: Re: [PATCH V6 04/10] PCI/DOE: Introduce pci_doe_create_doe_devices
-Message-ID: <20220204145116.00000f5c@Huawei.com>
-In-Reply-To: <20220203224437.GA120552@bhelgaas>
-References: <20220201071952.900068-5-ira.weiny@intel.com>
- <20220203224437.GA120552@bhelgaas>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
+        Fri, 4 Feb 2022 09:51:25 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBB05C061714
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 06:51:24 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id j25so11111503wrb.2
+        for <linux-kernel@vger.kernel.org>; Fri, 04 Feb 2022 06:51:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=CkttKNdOSNMa9Axq1SN1XcS0adDHYYOmAEpZi/phyh0=;
+        b=bi6MmRZsaJ9wAqMcXzbH8GB8yzGcIBSVOEpMEEok/XSl55fs4Ye2g7KdINgMxb7ESt
+         wgxKDplzu7nYqxkQ3mIv+iw3SqzTD/eXkhAxztY0aZiQL6laPj5c1mUfGBiBrgiKoxOa
+         bjohi6ZSHoRhzizqMLp97D8ZJDIP5Ett5cu+knj19Flmoca0rsw0/UxknQ5W8fo9KtEF
+         Bco1+HZitYEcd7sz0VZXX8R7/oPX7h/7Yk/ENXMaFnIB7ocMKBm4atek9pesScrL/OXK
+         Sw32eL/+pOGzFxIsKjrNYWiC1ulTau+5mIKikg/1j2tQYy7LWwCsEOyXGNXjqUJyH9ja
+         EtzA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=CkttKNdOSNMa9Axq1SN1XcS0adDHYYOmAEpZi/phyh0=;
+        b=C8InLFMV25Fb7g5pcY686u1ry9Jnr993O5AUZX2/bsrGLc0EogtKyLzz/poqulQG81
+         yxObk48P3YcNZtfepqBjfcpCWBuoNX5x6HdWDvCIULHj/HIe48fcF0gHwt/o/QXsiRqP
+         1nj1Xytw8Nl12RlgjMM0hgLejEFgcGc9mMaTUtPap4PmHY39SIc6DQl88SQN9S96VTE3
+         Z6jdt47Z3scHAGNgyOK9x7iji3wWp6nUG8PTCP69gtpWZRDwamUa63c6LfTT9PFiFHbc
+         PdAxru7zhJjEHzHex2QVoiaUwbuB515zDLnqN/fv0aAagtpVHN0hQTGDaqUVhDiOt3KS
+         nhKQ==
+X-Gm-Message-State: AOAM533eLSqjT6sovzokdAA8k6Xi9hj0mu37U7SO1rMvXkoAfiuMqw08
+        G8CbopahaxJlMDlO58cmWErOrw==
+X-Google-Smtp-Source: ABdhPJxZZPEf5Vk7WcRS6OgFDfREWzBw5sT237wVW8bTzerK0b/yN0C4AyFWZzfJMFxkhz2lOIuyTg==
+X-Received: by 2002:adf:dfcf:: with SMTP id q15mr2772385wrn.276.1643986283443;
+        Fri, 04 Feb 2022 06:51:23 -0800 (PST)
+Received: from usaari01.cust.communityfibre.co.uk ([2a02:6b6d:f804:0:e94c:d0f2:1084:a0d3])
+        by smtp.gmail.com with ESMTPSA id c11sm2552898wri.43.2022.02.04.06.51.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Feb 2022 06:51:23 -0800 (PST)
+From:   Usama Arif <usama.arif@bytedance.com>
+To:     io-uring@vger.kernel.org, axboe@kernel.dk, asml.silence@gmail.com,
+        linux-kernel@vger.kernel.org
+Cc:     fam.zheng@bytedance.com, Usama Arif <usama.arif@bytedance.com>
+Subject: [PATCH v6 2/5] io_uring: avoid ring quiesce while registering/unregistering eventfd
+Date:   Fri,  4 Feb 2022 14:51:14 +0000
+Message-Id: <20220204145117.1186568-3-usama.arif@bytedance.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220204145117.1186568-1-usama.arif@bytedance.com>
+References: <20220204145117.1186568-1-usama.arif@bytedance.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.47.31.86]
-X-ClientProxiedBy: lhreml724-chm.china.huawei.com (10.201.108.75) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 3 Feb 2022 16:44:37 -0600
-Bjorn Helgaas <helgaas@kernel.org> wrote:
+This is done by creating a new RCU data structure (io_ev_fd) as part of
+io_ring_ctx that holds the eventfd_ctx.
 
-> On Mon, Jan 31, 2022 at 11:19:46PM -0800, ira.weiny@intel.com wrote:
-> > From: Ira Weiny <ira.weiny@intel.com>
-> > 
-> > CXL and/or PCI devices can define DOE mailboxes.    
-> 
-> In concrete terms, "DOE mailbox" refers to a DOE Capability, right?
-> PCIe devices are allowed to implement several instances of the DOE
-> Capability, of course.  I'm kind of partial to concreteness because it
-> makes it easier to map between the code and the spec.
+The function io_eventfd_signal is executed under rcu_read_lock with a
+single rcu_dereference to io_ev_fd so that if another thread unregisters
+the eventfd while io_eventfd_signal is still being executed, the
+eventfd_signal for which io_eventfd_signal was called completes
+successfully.
 
-I'll throw my opinions in here, though a lot of this is really
-about the justification for representing this via an Aux bus.
-Personally I wouldn't mind if we decided the kernel was always in
-charge of DOEs.  Others have a different opinion :)
+The process of registering/unregistering eventfd is already done
+under uring_lock so multiple threads won't enter a race condition while
+registering/unregistering eventfd.
 
-Changing references to be the DOE Capability makes sense to me to me
-though may be worth a one line statement that each DOE capability
-provides a single mailbox interface.
+With the above approach ring quiesce can be avoided which is much more
+expensive then using RCU lock. On the system tested, io_uring_reigster with
+IORING_REGISTER_EVENTFD takes less than 1ms with RCU lock, compared to 15ms
+before with ring quiesce.
 
-> 
-> > Normally the kernel will want to maintain control of all of these
-> > mailboxes.  However, under a limited number of use cases users may
-> > want to allow user space access to some of these mailboxes while the
-> > kernel retains control of the rest.  
-> 
-> Is there something in this patch related to user-space vs kernel
-> control of things?  To me this patch looks like "for every DOE
-> Capability on a device, create an auxiliary device and try to attach
-> an auxiliary device driver to it."
+Signed-off-by: Usama Arif <usama.arif@bytedance.com>
+---
+ fs/io_uring.c | 81 ++++++++++++++++++++++++++++++++++++++-------------
+ 1 file changed, 61 insertions(+), 20 deletions(-)
 
-Only the 'unbind' and access it directly (setpci etc) route.
-These section of commentary was introduced because some people felt
-we needed a standard way to do that unbind - that's one of the main
-arguments in favour of using an auxbus as I understand it.
-
-> 
-> If part of creating the auxiliary devices is adding things in sysfs, I
-> think it would be useful to mention that here.
-
-The sysfs side of things is protocol specific. We dropped the plan
-to have a generic interface. It will add a device though, with basic
-controls, so good to call that out here (it's mentioned in a later
-patch description).
-
-> 
-> > An example of this is for CXL Compliance Testing (see CXL 2.0
-> > 14.16.4 Compliance Mode DOE) which offers a mechanism to set
-> > different test modes for a device.  
-> 
-> Not sure exactly what this contributes here.  I guess you're saying
-> you might want user-space access to this, but I don't see anything in
-> this patch related to that.
-
-Again, was part of the requirement raised to allow unbinding of the
-DOE driver. Don't need to mention specifics here though so I'd be
-fine with dropping this text.
-
-> 
-> > Rather than re-invent the wheel the architecture creates auxiliary
-> > devices for each DOE mailbox which can then be driven by a generic
-> > DOE mailbox driver.  If access to an individual mailbox is required
-> > by user space the driver for that mailbox can be unloaded and access
-> > handed to user space.  
-> 
-> IIUC a device can have several DOE Capabilities, and each Capability
-> can support several protocols.  So I would think the granularity might
-> be "protocol" rather than "mailbox" (DOE Capability).
-
-The granularity of whether to have control from a driver or not has
-to be at the capability level, because we need to mediate access
-to the capability, not the protocol (that may need additional mediation,
-but that's a problem for whatever controls the capability).
-So either the capability is in control of userspace, or it is in control
-of kernel.
-
-> 
-> But either way this text seems like it would go with a different patch
-> since this patch has nothing to specify a particular protocol or even
-> a particular mailbox/DOE Capability.
-> 
-> > Create the helper pci_doe_create_doe_devices() which iterates each DOE
-> > mailbox found in the device and creates a DOE auxiliary device on the
-> > auxiliary bus.  While doing so ensure that the auxiliary DOE driver
-> > loads to drive that device.  
-> 
-> Here's a case where "iterating over DOE mailboxes found in the device"
-> is slightly abstract.  The code obviously iterates over DOE
-> *Capabilities* (PCI_EXT_CAP_ID_DOE), and that's something I can easily
-> find in the spec.
-> 
-> Knowing that this is a PCIe Capability is useful because it puts it in
-> the context of other capabilities ("optional things that live in
-> config space") and the mechanisms for synchronization and user-space
-> access.
-
-Agreed.
-
-> 
-> > +/**
-> > + * pci_doe_create_doe_devices - Create auxiliary DOE devices for all DOE
-> > + *                              mailboxes found
-> > + * @pci_dev: The PCI device to scan for DOE mailboxes
-> > + *
-> > + * There is no coresponding destroy of these devices.  This function associates
-> > + * the DOE auxiliary devices created with the pci_dev passed in.  That
-> > + * association is device managed (devm_*) such that the DOE auxiliary device
-> > + * lifetime is always greater than or equal to the lifetime of the pci_dev.  
-> 
-> This seems backwards.  What does it mean if the DOE aux dev lifetime
-> is *greater* than that of the pci_dev?  Surely you can't access a PCI
-> DOE Capability if the pci_dev is gone?
-
-I think the description is inaccurate - the end of life is the same
-as that of the PCI driver binding to the pci_dev.  It'll get cleared
-up if that is unbound etc.
-
-
-> 
-> > + * RETURNS: 0 on success -ERRNO on failure.
-> > + */
-> > +int pci_doe_create_doe_devices(struct pci_dev *pdev)
-> > +{
-> > +	struct device *dev = &pdev->dev;
-> > +	int irqs, rc;
-> > +	u16 pos = 0;
-> > +
-> > +	/*
-> > +	 * An implementation may support an unknown number of interrupts.
-> > +	 * Assume that number is not that large and request them all.  
-> 
-> This doesn't really inspire confidence :)  Playing devil's advocate,
-> since pdev is an arbitrary device, I would assume the number *is*
-> large.
-
-Thomas's recent series on enabling expanding msi-X vectors after enabling
-msi-X may be useful.
-
-https://lore.kernel.org/linux-arm-kernel/20211210221642.869015045@linutronix.de/
-  
-But as I understand it that is still a work in progress and only applies
-to MSI-X anwyay.
-
-Perhaps we are better off just making this the callers problem and
-documenting that MSI or MSI-X must be enabled and vectors requested
-before we call this function.
-
-> 
-> > +	irqs = pci_msix_vec_count(pdev);
-> > +	rc = pci_alloc_irq_vectors(pdev, irqs, irqs, PCI_IRQ_MSIX);  
-> 
-> pci_msix_vec_count() is apparently sort of discouraged; see
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/PCI/msi-howto.rst?id=v5.16#n179
-
-We can just pass in INT_MAX then if we want the maximum available.
-
-> 
-> A DOE Capability may be implemented by any device, e.g., a NIC or
-> storage HBA, etc.  I'm a little queasy about IRQ alloc happening both
-> here and in the driver for the device's primary functionality.  Can
-> you reassure me that this is actually OK and safe?
-
-> Sorry if I've asked this before.  If I have, perhaps a comment would
-> be useful.
-
-I went looking and earlier versions (pre Aux bus) made these calls in
-the main driver before calling the DOE specific element.  So I don't think this came up
-in previous reviews.
-
-> 
-> > +	if (rc != irqs) {
-> > +		/* No interrupt available - carry on */
-> > +		pci_dbg(pdev, "No interrupts available for DOE\n");
-> > +	} else {
-> > +		/*
-> > +		 * Enabling bus mastering is require for MSI/MSIx.  It could be  
-> 
-> s/require/required/
-> s/MSIx/MSI-X/ to match spec usage.
-> 
-> But I think you only support MSI-X, since you passed "PCI_IRQ_MSIX", not
-> "PCI_IRQ_MSI | PCI_IRQ_MSIX" above?
-
-Good point. I think it should be both.
-
-> 
-> > +		 * done later within the DOE initialization, but as it
-> > +		 * potentially has other impacts keep it here when setting up
-> > +		 * the IRQ's.  
-> 
-> s/IRQ's/IRQs/
-> 
-> "Potentially has other impacts" is too vague, and this doesn't explain
-> why bus mastering should be enabled here rather than later.  The
-> device should not issue an MSI-X until DOE Interrupt Enable is set, so
-> near there seems like a logical place.
-
-I can't remember what lead to that comment so hopefully moving to just
-before the enable would be fine - if there was somewhere to do it.
-I'm not sure there is as the IRQ enable is in the Auxilliary
-Bus driver.  If we pull the pci_alloc_irq_vectors() out of here
-into the caller, then the pci_set_master() should go with it.
-
-
-> 
-> > +		 */
-> > +		pci_set_master(pdev);
-> > +		rc = devm_add_action_or_reset(dev,
-> > +					      pci_doe_free_irq_vectors,
-> > +					      pdev);
-> > +		if (rc)
-> > +			return rc;
-> > +	}  
-> 
-> > +++ b/include/linux/pci-doe.h
-> > @@ -13,6 +13,8 @@
-> >  #ifndef LINUX_PCI_DOE_H
-> >  #define LINUX_PCI_DOE_H
-> >  
-> > +#define DOE_DEV_NAME "doe"  
-> 
-> This is only used once, above.  Why not just use the string there
-> directly and skip the #define?  If it's needed elsewhere eventually,
-> we can add a #define then.
-> 
-> Bjorn
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index 21531609a9c6..ad6361aeaca7 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -326,6 +326,11 @@ struct io_submit_state {
+ 	struct blk_plug		plug;
+ };
+ 
++struct io_ev_fd {
++	struct eventfd_ctx	*cq_ev_fd;
++	struct rcu_head		rcu;
++};
++
+ struct io_ring_ctx {
+ 	/* const or read-mostly hot data */
+ 	struct {
+@@ -399,7 +404,7 @@ struct io_ring_ctx {
+ 	struct {
+ 		unsigned		cached_cq_tail;
+ 		unsigned		cq_entries;
+-		struct eventfd_ctx	*cq_ev_fd;
++		struct io_ev_fd	__rcu	*io_ev_fd;
+ 		struct wait_queue_head	cq_wait;
+ 		unsigned		cq_extra;
+ 		atomic_t		cq_timeouts;
+@@ -1726,13 +1731,32 @@ static inline struct io_uring_cqe *io_get_cqe(struct io_ring_ctx *ctx)
+ 	return &rings->cqes[tail & mask];
+ }
+ 
+-static inline bool io_should_trigger_evfd(struct io_ring_ctx *ctx)
++static void io_eventfd_signal(struct io_ring_ctx *ctx)
+ {
+-	if (likely(!ctx->cq_ev_fd))
+-		return false;
++	struct io_ev_fd *ev_fd;
++
++	/* Return quickly if ctx->io_ev_fd doesn't exist */
++	if (likely(!rcu_dereference_raw(ctx->io_ev_fd)))
++		return;
++
++	rcu_read_lock();
++	/* rcu_dereference ctx->io_ev_fd once and use it for both for checking and eventfd_signal */
++	ev_fd = rcu_dereference(ctx->io_ev_fd);
++
++	/*
++	 * Check again if ev_fd exists incase an io_eventfd_unregister call completed between
++	 * the NULL check of ctx->io_ev_fd at the start of the function and rcu_read_lock.
++	 */
++	if (unlikely(!ev_fd))
++		goto out;
+ 	if (READ_ONCE(ctx->rings->cq_flags) & IORING_CQ_EVENTFD_DISABLED)
+-		return false;
+-	return !ctx->eventfd_async || io_wq_current_is_worker();
++		goto out;
++
++	if (!ctx->eventfd_async || io_wq_current_is_worker())
++		eventfd_signal(ev_fd->cq_ev_fd, 1);
++
++out:
++	rcu_read_unlock();
+ }
+ 
+ /*
+@@ -1751,8 +1775,7 @@ static void io_cqring_ev_posted(struct io_ring_ctx *ctx)
+ 	 */
+ 	if (wq_has_sleeper(&ctx->cq_wait))
+ 		wake_up_all(&ctx->cq_wait);
+-	if (io_should_trigger_evfd(ctx))
+-		eventfd_signal(ctx->cq_ev_fd, 1);
++	io_eventfd_signal(ctx);
+ }
+ 
+ static void io_cqring_ev_posted_iopoll(struct io_ring_ctx *ctx)
+@@ -1764,8 +1787,7 @@ static void io_cqring_ev_posted_iopoll(struct io_ring_ctx *ctx)
+ 		if (waitqueue_active(&ctx->cq_wait))
+ 			wake_up_all(&ctx->cq_wait);
+ 	}
+-	if (io_should_trigger_evfd(ctx))
+-		eventfd_signal(ctx->cq_ev_fd, 1);
++	io_eventfd_signal(ctx);
+ }
+ 
+ /* Returns true if there are no backlogged entries after the flush */
+@@ -9353,31 +9375,48 @@ static int __io_sqe_buffers_update(struct io_ring_ctx *ctx,
+ 
+ static int io_eventfd_register(struct io_ring_ctx *ctx, void __user *arg)
+ {
++	struct io_ev_fd *ev_fd;
+ 	__s32 __user *fds = arg;
+-	int fd;
++	int fd, ret;
+ 
+-	if (ctx->cq_ev_fd)
++	ev_fd = rcu_dereference_protected(ctx->io_ev_fd, lockdep_is_held(&ctx->uring_lock));
++	if (ev_fd)
+ 		return -EBUSY;
+ 
+ 	if (copy_from_user(&fd, fds, sizeof(*fds)))
+ 		return -EFAULT;
+ 
+-	ctx->cq_ev_fd = eventfd_ctx_fdget(fd);
+-	if (IS_ERR(ctx->cq_ev_fd)) {
+-		int ret = PTR_ERR(ctx->cq_ev_fd);
++	ev_fd = kmalloc(sizeof(*ev_fd), GFP_KERNEL);
++	if (!ev_fd)
++		return -ENOMEM;
+ 
+-		ctx->cq_ev_fd = NULL;
++	ev_fd->cq_ev_fd = eventfd_ctx_fdget(fd);
++	if (IS_ERR(ev_fd->cq_ev_fd)) {
++		ret = PTR_ERR(ev_fd->cq_ev_fd);
++		kfree(ev_fd);
+ 		return ret;
+ 	}
+ 
+-	return 0;
++	rcu_assign_pointer(ctx->io_ev_fd, ev_fd);
++	return ret;
++}
++
++static void io_eventfd_put(struct rcu_head *rcu)
++{
++	struct io_ev_fd *ev_fd = container_of(rcu, struct io_ev_fd, rcu);
++
++	eventfd_ctx_put(ev_fd->cq_ev_fd);
++	kfree(ev_fd);
+ }
+ 
+ static int io_eventfd_unregister(struct io_ring_ctx *ctx)
+ {
+-	if (ctx->cq_ev_fd) {
+-		eventfd_ctx_put(ctx->cq_ev_fd);
+-		ctx->cq_ev_fd = NULL;
++	struct io_ev_fd *ev_fd;
++
++	ev_fd = rcu_dereference_protected(ctx->io_ev_fd, lockdep_is_held(&ctx->uring_lock));
++	if (ev_fd) {
++		rcu_assign_pointer(ctx->io_ev_fd, NULL);
++		call_rcu(&ev_fd->rcu, io_eventfd_put);
+ 		return 0;
+ 	}
+ 
+@@ -10960,6 +10999,8 @@ static bool io_register_op_must_quiesce(int op)
+ 	case IORING_REGISTER_FILES:
+ 	case IORING_UNREGISTER_FILES:
+ 	case IORING_REGISTER_FILES_UPDATE:
++	case IORING_REGISTER_EVENTFD:
++	case IORING_UNREGISTER_EVENTFD:
+ 	case IORING_REGISTER_PROBE:
+ 	case IORING_REGISTER_PERSONALITY:
+ 	case IORING_UNREGISTER_PERSONALITY:
+-- 
+2.25.1
 
