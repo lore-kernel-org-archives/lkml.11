@@ -2,162 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28163C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 01:30:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CB1EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 01:31:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356529AbiBDBav (ORCPT
+        id S1356528AbiBDBbt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 20:30:51 -0500
-Received: from mga05.intel.com ([192.55.52.43]:51665 "EHLO mga05.intel.com"
+        Thu, 3 Feb 2022 20:31:49 -0500
+Received: from mga07.intel.com ([134.134.136.100]:7592 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1356509AbiBDBas (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 20:30:48 -0500
+        id S232338AbiBDBbs (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 3 Feb 2022 20:31:48 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643938248; x=1675474248;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=RS5EDdaKbeY9w3oby6S3/7xPKbVHLIlV8/dpjRvORYQ=;
-  b=ZiJ+cp8rjClw0IOgdq+mj+pB96vrIMxNn+CxAj36Iv4sshv1FyGBdiT5
-   x0qLCOZwwD9kU7zJeBdR/4WDjHshg8C0UwBUgxesje873Ojb6YvCcdZz7
-   ZArMKDy0twgGR66H94Rp+74Iln1cOsNkSpIJNyaNazyEbxZZ+HsrY05s9
-   F2jeFB0WiUJlYVuQnXJlrH6ALrfGItZXZORx2WcezaTTcym4LXjyt1Lvm
-   XXWvrYx3spsI2MS5+T8SJos9IMfYRVJEWC7UGf101QFlPUjt9+JXuLWS4
-   soLAzEyKdmcifQJVV4qQdgJzK8pRSVOQErdiFxgww5DcLISuBkQVTDYnC
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10247"; a="334684909"
+  t=1643938308; x=1675474308;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=VyGTKXxJ1IpuEpcC70siMf4YSeH5sUi26MWsLvw6lNw=;
+  b=CXbmtClXZR9aFqVmq3h3zdzCubBSVRkaE/nPNwkppin+yaajiVdkm4sj
+   zlqi7xFoIyS3DvVaacNaOCK49JZbLCbacxw6osnP3drEKyMKdVMbVEBMr
+   JeVMaUh47R49XwSQYFrsYM+5dzUUL52DlmX+lps/cch9LKoiNz8ZJeIgl
+   4XtKoZ7vz7ETe0hKWNY3v+buH2Fqg7AzikKP4aQ3QSpLh9dKq8BT4ujAT
+   2dBYaj03OzzkcvMii6qCabD07MgIPMos9QFysiDAzEq6ZD2pJRD9mDTmi
+   NgpN9f4k+TPYod1jcrImUxIpoIbhO33ulzepYs4PN8g0oN6yq07h357FV
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10247"; a="311595678"
 X-IronPort-AV: E=Sophos;i="5.88,340,1635231600"; 
-   d="scan'208";a="334684909"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2022 17:30:48 -0800
+   d="scan'208";a="311595678"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2022 17:31:47 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,340,1635231600"; 
-   d="scan'208";a="483460718"
+   d="scan'208";a="699529798"
 Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 03 Feb 2022 17:30:45 -0800
+  by orsmga005.jf.intel.com with ESMTP; 03 Feb 2022 17:31:45 -0800
 Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1nFnQy-000Wuu-Ky; Fri, 04 Feb 2022 01:30:44 +0000
-Date:   Fri, 4 Feb 2022 09:29:58 +0800
+        id 1nFnRx-000WwN-71; Fri, 04 Feb 2022 01:31:45 +0000
+Date:   Fri, 4 Feb 2022 09:30:57 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Pedro Demarchi Gomes <pedrodemargomes@gmail.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Pedro Demarchi Gomes <pedrodemargomes@gmail.com>,
-        SeongJae Park <sj@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mm/damon: Add option to monitor only writes
-Message-ID: <202202040414.4fF2j3mp-lkp@intel.com>
-References: <20220203131237.298090-1-pedrodemargomes@gmail.com>
+To:     Hans Verkuil <hverkuil@xs4all.nl>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [hverkuil-media-tree:extron 101/107]
+ ./usr/include/linux/cec.h:150:19: error: unknown type name 'bool'
+Message-ID: <202202040843.rcfO1kyB-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220203131237.298090-1-pedrodemargomes@gmail.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Pedro,
+Hi Hans,
 
-Thank you for the patch! Yet something to improve:
+FYI, the error/warning still remains.
 
-[auto build test ERROR on hnaz-mm/master]
-
-url:    https://github.com/0day-ci/linux/commits/Pedro-Demarchi-Gomes/mm-damon-Add-option-to-monitor-only-writes/20220203-211407
-base:   https://github.com/hnaz/linux-mm master
-config: hexagon-randconfig-r041-20220130 (https://download.01.org/0day-ci/archive/20220204/202202040414.4fF2j3mp-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a73e4ce6a59b01f0e37037761c1e6889d539d233)
+tree:   git://linuxtv.org/hverkuil/media_tree.git extron
+head:   8cab2c3a2a07f1afb74b96f198b9d816afb28ffd
+commit: d679f6adf24b7fef91e8a3b3584b48587e9cf0a2 [101/107] cec.h: add cec_msg_recv_is_tx_result() helper
+config: x86_64-randconfig-a005-20220131 (https://download.01.org/0day-ci/archive/20220204/202202040843.rcfO1kyB-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
 reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/0958bb7e2514b62f174b8e5ccfdcff07ce2a2b6b
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Pedro-Demarchi-Gomes/mm-damon-Add-option-to-monitor-only-writes/20220203-211407
-        git checkout 0958bb7e2514b62f174b8e5ccfdcff07ce2a2b6b
+        git remote add hverkuil-media-tree git://linuxtv.org/hverkuil/media_tree.git
+        git fetch --no-tags hverkuil-media-tree extron
+        git checkout d679f6adf24b7fef91e8a3b3584b48587e9cf0a2
         # save the config file to linux build tree
         mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
 All errors (new ones prefixed by >>):
 
->> mm/damon/prmtv-common.c:87:7: error: implicit declaration of function 'pmd_dirty' [-Werror,-Wimplicit-function-declaration]
-                   if (pmd_dirty(old))
-                       ^
-   mm/damon/prmtv-common.c:87:7: note: did you mean 'pte_dirty'?
-   arch/hexagon/include/asm/pgtable.h:301:19: note: 'pte_dirty' declared here
-   static inline int pte_dirty(pte_t pte)
-                     ^
->> mm/damon/prmtv-common.c:88:10: error: implicit declaration of function 'pmd_mkdirty' [-Werror,-Wimplicit-function-declaration]
-                           pmd = pmd_mkdirty(pmd);
-                                 ^
->> mm/damon/prmtv-common.c:88:8: error: assigning to 'pmd_t' from incompatible type 'int'
-                           pmd = pmd_mkdirty(pmd);
-                               ^ ~~~~~~~~~~~~~~~~
->> mm/damon/prmtv-common.c:89:7: error: implicit declaration of function 'pmd_young' [-Werror,-Wimplicit-function-declaration]
-                   if (pmd_young(old))
-                       ^
-   mm/damon/prmtv-common.c:89:7: note: did you mean 'pte_young'?
-   arch/hexagon/include/asm/pgtable.h:295:19: note: 'pte_young' declared here
-   static inline int pte_young(pte_t pte)
-                     ^
->> mm/damon/prmtv-common.c:90:10: error: implicit declaration of function 'pmd_mkyoung' [-Werror,-Wimplicit-function-declaration]
-                           pmd = pmd_mkyoung(pmd);
-                                 ^
-   mm/damon/prmtv-common.c:90:8: error: assigning to 'pmd_t' from incompatible type 'int'
-                           pmd = pmd_mkyoung(pmd);
-                               ^ ~~~~~~~~~~~~~~~~
->> mm/damon/prmtv-common.c:92:9: error: implicit declaration of function 'pmd_wrprotect' [-Werror,-Wimplicit-function-declaration]
-                   pmd = pmd_wrprotect(pmd);
-                         ^
-   mm/damon/prmtv-common.c:92:9: note: did you mean 'pte_wrprotect'?
-   arch/hexagon/include/asm/pgtable.h:315:21: note: 'pte_wrprotect' declared here
-   static inline pte_t pte_wrprotect(pte_t pte)
-                       ^
-   mm/damon/prmtv-common.c:92:7: error: assigning to 'pmd_t' from incompatible type 'int'
-                   pmd = pmd_wrprotect(pmd);
-                       ^ ~~~~~~~~~~~~~~~~~~
->> mm/damon/prmtv-common.c:95:3: error: implicit declaration of function 'set_pmd_at' [-Werror,-Wimplicit-function-declaration]
-                   set_pmd_at(vma->vm_mm, addr, pmdp, pmd);
-                   ^
-   mm/damon/prmtv-common.c:98:3: error: implicit declaration of function 'set_pmd_at' [-Werror,-Wimplicit-function-declaration]
-                   set_pmd_at(vma->vm_mm, addr, pmdp, pmd);
-                   ^
-   10 errors generated.
-
-
-vim +/pmd_dirty +87 mm/damon/prmtv-common.c
-
-    78	
-    79	static inline void clear_soft_dirty_pmd(struct vm_area_struct *vma,
-    80			unsigned long addr, pmd_t *pmdp)
-    81	{
-    82		pmd_t old, pmd = *pmdp;
-    83	
-    84		if (pmd_present(pmd)) {
-    85			/* See comment in change_huge_pmd() */
-    86			old = pmdp_invalidate(vma, addr, pmdp);
-  > 87			if (pmd_dirty(old))
-  > 88				pmd = pmd_mkdirty(pmd);
-  > 89			if (pmd_young(old))
-  > 90				pmd = pmd_mkyoung(pmd);
-    91	
-  > 92			pmd = pmd_wrprotect(pmd);
-    93			pmd = pmd_clear_soft_dirty(pmd);
-    94	
-  > 95			set_pmd_at(vma->vm_mm, addr, pmdp, pmd);
-    96		} else if (is_migration_entry(pmd_to_swp_entry(pmd))) {
-    97			pmd = pmd_swp_clear_soft_dirty(pmd);
-    98			set_pmd_at(vma->vm_mm, addr, pmdp, pmd);
-    99		}
-   100	}
-   101	
+   In file included from ./usr/include/linux/cec-funcs.h:11,
+                    from <command-line>:32:
+>> ./usr/include/linux/cec.h:150:19: error: unknown type name 'bool'
+     150 | static __inline__ bool cec_msg_recv_is_tx_result(const struct cec_msg *msg)
+         |                   ^~~~
 
 ---
 0-DAY CI Kernel Test Service, Intel Corporation
