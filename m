@@ -2,81 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60365C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 12:58:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29582C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 13:04:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244168AbiBDM6S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 07:58:18 -0500
-Received: from mail6.pr.hu ([87.242.0.6]:34933 "EHLO mail6.pr.hu"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236192AbiBDM6P (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 07:58:15 -0500
-Received: from [2a02:808:3:101::5] (helo=mail.pr.hu)
-        by frontdoor.pr.hu with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <zboszor@pr.hu>)
-        id 1nFyAA-0007F4-72; Fri, 04 Feb 2022 13:58:06 +0100
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=pr.hu;
-        s=pr20170203; h=Content-Transfer-Encoding:Content-Type:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=XnOhIpcm2yyxAYZ7l4yQqnys/a9MwsubYo/CVHdqUWI=; b=isSDT/AVKVARVo3SP2mCgwsPdG
-        COmb0KLJqOj08xHb4w5ZyvgpNeTvnbwYr+8U3/wZeqBX1q81skuvv6sQL/FOqajrRDnQckDo7qteC
-        0+OJVistacicUcuVpasA4uC71wT2DMd8bp30ItcojO9R2lERPC0GH+7WHqCrKYsC0t5Zf3GDz6Kxx
-        t2f7SNV2O3i8bh+Ig3OrnJShXNqpzcdi3Rx5XLTeEyo21wtj1NLLOYPNAQBI9mNVdYY0LHOMUsvYw
-        blKZaosp+bc1++6t5awJNTjQJKDY/2b8pBwy3qg6fOVKYbGfjrPRh3ItB/WF8v+KEtpGQZQmqJnbe
-        PhayLNsw==;
-Received: from host-87-242-32-51.prtelecom.hu ([87.242.32.51] helo=localhost.lan)
-        by mail.pr.hu with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <zboszor@pr.hu>)
-        id 1nFyA6-0002os-1T; Fri, 04 Feb 2022 13:58:04 +0100
-From:   zboszor@pr.hu
-To:     linux-kernel@vger.kernel.org, linux-ide@vger.kernel.org,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Cc:     zboszor@gmail.com
-Subject: [PATCH] libata: add horkage for M88V29
-Date:   Fri,  4 Feb 2022 13:57:50 +0100
-Message-Id: <20220204125750.1771303-1-zboszor@pr.hu>
-X-Mailer: git-send-email 2.34.1
+        id S245574AbiBDNEs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 08:04:48 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:43522 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239427AbiBDNEr (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 4 Feb 2022 08:04:47 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0704F61B7C
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 13:04:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CA7BC340F0;
+        Fri,  4 Feb 2022 13:04:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643979886;
+        bh=12lpq3N2GTXe+NLF6Remlqvk4jUFS3sVYR8vsgOt120=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=PxcnnFqfmlGc8oUEfEOORcThkjuVrzD78ndarjQLi3YL0exnntNz4QDfKM8JNWXTX
+         SV7+a0DvldEOSNP/r9eIlNOMC8tTGNErKRGBKSgJgH0GKObwLjZFrrxEBL5Zv3kA3u
+         0kGiUp69vrF8kYH9hvR8KXPTSimWdj5yezS21VVJ5F9AGjnY3GdYXn/IxiBRpmG2Y3
+         t62SLGncYJp92hc0FQ0NnaMP8JYlMYx4I3LbEOvjp38qB2MRuvIG1urQKh2eT7wUUW
+         u3IOWiD48utj8n03M6dTPy+a05yToecQweFvahZ3ssxI5S3cCNGsdl/esRE+8gRDlg
+         7HfkgP5Bs+x4w==
+From:   Frederic Weisbecker <frederic@kernel.org>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Tejun Heo <tj@kernel.org>, Christoph Lameter <cl@gentwo.de>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Alex Belits <abelits@marvell.com>,
+        Nitesh Lal <nilal@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        Nicolas Saenz <nsaenzju@redhat.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Phil Auld <pauld@redhat.com>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        Zefan Li <lizefan.x@bytedance.com>
+Subject: [PATCH 1/8] pci: Decouple HK_FLAG_WQ and HK_FLAG_DOMAIN cpumask fetch
+Date:   Fri,  4 Feb 2022 14:04:26 +0100
+Message-Id: <20220204130433.488085-2-frederic@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220204130433.488085-1-frederic@kernel.org>
+References: <20220204130433.488085-1-frederic@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Scan-Signature: a1aedbebb1ad86a93e9d56217add5c67
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zoltán Böszörményi <zboszor@gmail.com>
+To prepare for supporting each feature of the housekeeping cpumask
+toward cpuset, prepare each of the HK_FLAG_* entries to move to their
+own cpumask with enforcing to fetch them individually. The new
+constraint is that multiple HK_FLAG_* entries can't be mixed together
+anymore in a single call to housekeeping cpumask().
 
-This device is a CF card, or possibly an SSD in CF form factor.
-It supports NCQ and high speed DMA.
+This will later allow, for example, to runtime modify the cpulist passed
+through "isolcpus=", "nohz_full=" and "rcu_nocbs=" kernel boot
+parameters.
 
-While it also advertises TRIM support, I/O errors are reported
-when the discard mount option fstrim is used. TRIM also fails
-when disabling NCQ and not just as an NCQ command.
-
-TRIM must be disabled for this device.
-
-Signed-off-by: Zoltán Böszörményi <zboszor@gmail.com>
+Reviewed-by: Juri Lelli <juri.lelli@redhat.com>
+Reviewed-by: Phil Auld <pauld@redhat.com>
+Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Juri Lelli <juri.lelli@redhat.com>
+Cc: Marcelo Tosatti <mtosatti@redhat.com>
+Cc: Nitesh Lal <nilal@redhat.com>
+Cc: Nicolas Saenz <nsaenzju@redhat.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Christoph Lameter <cl@gentwo.de>
+Cc: Tejun Heo <tj@kernel.org>
+Cc: Zefan Li <lizefan.x@bytedance.com>
+Cc: Alex Belits <abelits@marvell.com>
+Cc: Paul Gortmaker <paul.gortmaker@windriver.com>
+Cc: Paul E. McKenney  <paulmck@kernel.org>
 ---
- drivers/ata/libata-core.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/pci/pci-driver.c | 21 ++++++++++++++++-----
+ 1 file changed, 16 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/ata/libata-core.c b/drivers/ata/libata-core.c
-index 67f88027680a..4a7f58fcc411 100644
---- a/drivers/ata/libata-core.c
-+++ b/drivers/ata/libata-core.c
-@@ -4028,6 +4028,7 @@ static const struct ata_blacklist_entry ata_device_blacklist [] = {
- 
- 	/* devices that don't properly handle TRIM commands */
- 	{ "SuperSSpeed S238*",		NULL,	ATA_HORKAGE_NOTRIM, },
-+	{ "M88V29*",			NULL,	ATA_HORKAGE_NOTRIM, },
+diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
+index 588588cfda48..4a5792c82d08 100644
+--- a/drivers/pci/pci-driver.c
++++ b/drivers/pci/pci-driver.c
+@@ -350,7 +350,6 @@ static int pci_call_probe(struct pci_driver *drv, struct pci_dev *dev,
+ 			  const struct pci_device_id *id)
+ {
+ 	int error, node, cpu;
+-	int hk_flags = HK_FLAG_DOMAIN | HK_FLAG_WQ;
+ 	struct drv_dev_and_id ddi = { drv, dev, id };
  
  	/*
- 	 * As defined, the DRAT (Deterministic Read After Trim) and RZAT
+@@ -368,17 +367,29 @@ static int pci_call_probe(struct pci_driver *drv, struct pci_dev *dev,
+ 	 * device is probed from work_on_cpu() of the Physical device.
+ 	 */
+ 	if (node < 0 || node >= MAX_NUMNODES || !node_online(node) ||
+-	    pci_physfn_is_probed(dev))
++	    pci_physfn_is_probed(dev)) {
+ 		cpu = nr_cpu_ids;
+-	else
++	} else {
++		cpumask_var_t wq_domain_mask;
++
++		if (!zalloc_cpumask_var(&wq_domain_mask, GFP_KERNEL)) {
++			error = -ENOMEM;
++			goto out;
++		}
++		cpumask_and(wq_domain_mask,
++			    housekeeping_cpumask(HK_FLAG_WQ),
++			    housekeeping_cpumask(HK_FLAG_DOMAIN));
++
+ 		cpu = cpumask_any_and(cpumask_of_node(node),
+-				      housekeeping_cpumask(hk_flags));
++				      wq_domain_mask);
++		free_cpumask_var(wq_domain_mask);
++	}
+ 
+ 	if (cpu < nr_cpu_ids)
+ 		error = work_on_cpu(cpu, local_pci_probe, &ddi);
+ 	else
+ 		error = local_pci_probe(&ddi);
+-
++out:
+ 	dev->is_probed = 0;
+ 	cpu_hotplug_enable();
+ 	return error;
 -- 
-2.34.1
+2.25.1
 
