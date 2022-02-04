@@ -2,108 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D221C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 22:57:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9B47C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 22:57:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356929AbiBDW5h (ORCPT
+        id S1357023AbiBDW55 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 17:57:37 -0500
-Received: from alexa-out.qualcomm.com ([129.46.98.28]:32505 "EHLO
-        alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356551AbiBDW5f (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 17:57:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1644015455; x=1675551455;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Ss1yJ8C2o2JNvk+SxQ1vw9WaY3rA4Jk7i+Ds45rTd/o=;
-  b=ozg4RIcACpBmObsDl69zuqi+FFLiiyJp8dhNymFU0FOpZ+ADDZAgQD0L
-   n7UFRJmEhkHIUZTyVSyUI6K3fXBo268IgwlPIpcG0IWvmLPvIq/0r2yhB
-   7nYDeM4eSaFFUEl9HKl2HLXzbmkQ8jeeWMmAv/r1UtnJmmdd9sdDrSaFx
-   0=;
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 04 Feb 2022 14:57:35 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2022 14:57:34 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Fri, 4 Feb 2022 14:57:34 -0800
-Received: from hu-amelende-lv.qualcomm.com (10.49.16.6) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Fri, 4 Feb 2022 14:57:33 -0800
-From:   Anjelique Melendez <quic_amelende@quicinc.com>
-To:     <dmitry.torokhov@gmail.com>
-CC:     <linux-input@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <collinsd@codeaurora.org>,
-        <bjorn.andersson@linaro.org>, <swboyd@chromium.org>,
-        <skakit@codeaurora.org>,
-        Anjelique Melendez <quic_amelende@quicinc.com>
-Subject: [PATCH v4 4/4] input: misc: pm8941-pwrkey: simulate missed key press events
-Date:   Fri, 4 Feb 2022 14:56:04 -0800
-Message-ID: <20220204225600.1663-5-quic_amelende@quicinc.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220204225600.1663-1-quic_amelende@quicinc.com>
-References: <20220204225600.1663-1-quic_amelende@quicinc.com>
+        Fri, 4 Feb 2022 17:57:57 -0500
+Received: from mout.perfora.net ([74.208.4.194]:35371 "EHLO mout.perfora.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1356920AbiBDW5z (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 4 Feb 2022 17:57:55 -0500
+Received: from localhost.localdomain ([81.221.85.15]) by mrelay.perfora.net
+ (mreueus003 [74.208.5.2]) with ESMTPSA (Nemesis) id 0MgMDo-1mtePt2o6g-00Nhrw;
+ Fri, 04 Feb 2022 23:57:32 +0100
+From:   Marcel Ziswiler <marcel@ziswiler.com>
+To:     linux-arm-kernel@lists.infradead.org
+Cc:     Marek Vasut <marek.vasut@gmail.com>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Marek Vasut <marex@denx.de>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        =?UTF-8?q?Oliver=20St=C3=A4bler?= <oliver.staebler@bytesatwork.ch>,
+        Olof Johansson <olof@lixom.net>, Peng Fan <peng.fan@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v4 01/12] arm64: dts: imx8mm: fix strange hex notation
+Date:   Fri,  4 Feb 2022 23:56:55 +0100
+Message-Id: <20220204225706.1539818-2-marcel@ziswiler.com>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <20220204225706.1539818-1-marcel@ziswiler.com>
+References: <20220204225706.1539818-1-marcel@ziswiler.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.49.16.6]
-X-ClientProxiedBy: nalasex01b.na.qualcomm.com (10.47.209.197) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+X-Provags-ID: V03:K1:SpGdtxold2gTAXQdMkoEuowRVkXvBMWuENreKalKPTMfRYPo4yg
+ DTpyywSq/5abqOhP9FsRxihKjCKFYQc5hRN2lNZgTwd70O9wOmOXWBraLrvebE8WaEHc3m2
+ KfWE5nonJm2GO4qA9AVhizlLxjrkKJTyEnuVWI9AJ2QN7uRxY6xxrrpF3hsKJ4OUZTGCgoW
+ E0RIdCn4+AgP+ZRN7+A3Q==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:eomEQtF1I0E=:ECQ7OODaA/IQNYihYRlptj
+ Myx0RRhlhfLSxYPEs4VNYSUzhuFEPGcUnSpm0k7qlUj34Ty61Fe74q2l+dyBWfxuNv8decdsg
+ GB6ru1zc/CXpO4ZOt4blt2cIBFEcEMre5dPmvd6GpCR//luMzukb0P8f+bpyAGMttt/Zq7iXX
+ Qde/ew3X/BQmzI1Jda8zs0vO/eQa8xcOnis8D+f51qfOqeTHFfxdrMMlZQ42KOCvXXYjDR5XQ
+ jQV8tkX4jvf4v0XXZdWlgerEKzr9KKcqIfrEFcyEN5CGjMoDBCc1yP/c/r5oV3IeSIz3iRqSL
+ kgCuX0KWrpxYcGaQCjIORxaNANYusSTf7wrlPKMM89BK8Ry42RE7gZAlOovTqTrvnOI+5n521
+ OudJAphs2K8TLhGknKF62GsMpwBKBd/W6EXoJovuoFM0fBqGhxRtY+INm7Neb5EKXm8lwb/kq
+ YMUXlUfOfzDUEVEK07w7OYMamvUCDCBSmda8ja+XMeGYhIfP1PGU7KOdacRuQk8EL3YirkQan
+ /I23Avner4XJedPCsGHIVtOQPl7bhMkHBKXtbnVsw5QxV1NoGN+0zUYFCygBU6seXU4MmpPvd
+ 3oaC/8Yo8hRTFXZJy4nwyel7SlB1yOdG2JlOBijphbWysKFlWwTh76nne3qMTwtrq0KV+29Ru
+ NGGZ64pReAPRAUFNdgSdbs3R7xfdqsk1U0TvA3kaTBqTV2f/IWfs0CJhP5qMOkxDo24U=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Collins <collinsd@codeaurora.org>
+From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
-The status of the keys connected to the KPDPWR_N and RESIN_N pins
-is identified by reading corresponding bits in the interrupt real
-time status register.  If the status has changed by the time that
-the interrupt is handled then a press event will be missed.
+Fix strange hex notation with mixed lower-case and upper-case letters.
 
-Maintain a last known status variable to find unbalanced release
-events and simulate press events for each accordingly.
+Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 
-Signed-off-by: David Collins <collinsd@codeaurora.org>
-Signed-off-by: Anjelique Melendez <quic_amelende@quicinc.com>
 ---
- drivers/input/misc/pm8941-pwrkey.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
 
-diff --git a/drivers/input/misc/pm8941-pwrkey.c b/drivers/input/misc/pm8941-pwrkey.c
-index 881943ab4d55..3519152759dd 100644
---- a/drivers/input/misc/pm8941-pwrkey.c
-+++ b/drivers/input/misc/pm8941-pwrkey.c
-@@ -76,6 +76,7 @@ struct pm8941_pwrkey {
- 	u32 code;
- 	u32 sw_debounce_time_us;
- 	ktime_t sw_debounce_end_time;
-+	bool last_status;
- 	const struct pm8941_data *data;
- };
- 
-@@ -162,6 +163,16 @@ static irqreturn_t pm8941_pwrkey_irq(int irq, void *_data)
- 		pwrkey->sw_debounce_end_time = ktime_add_us(ktime_get(),
- 						pwrkey->sw_debounce_time_us);
- 
-+	/*
-+	 * Simulate a press event in case a release event occurred without a
-+	 * corresponding press event.
-+	 */
-+	if (!pwrkey->last_status && !sts) {
-+		input_report_key(pwrkey->input, pwrkey->code, 1);
-+		input_sync(pwrkey->input);
-+	}
-+	pwrkey->last_status = sts;
-+
- 	input_report_key(pwrkey->input, pwrkey->code, sts);
- 	input_sync(pwrkey->input);
- 
+(no changes since v2)
+
+Changes in v2:
+- Add Laurent's reviewed-by tag.
+
+ arch/arm64/boot/dts/freescale/imx8mm-pinfunc.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/freescale/imx8mm-pinfunc.h b/arch/arm64/boot/dts/freescale/imx8mm-pinfunc.h
+index a7411c800bef..83c8f715cd90 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mm-pinfunc.h
++++ b/arch/arm64/boot/dts/freescale/imx8mm-pinfunc.h
+@@ -280,7 +280,7 @@
+ #define MX8MM_IOMUXC_SAI5_RXD2_SAI1_TX_DATA4                                0x150 0x3B8 0x000 0x1 0x0
+ #define MX8MM_IOMUXC_SAI5_RXD2_SAI1_TX_SYNC                                 0x150 0x3B8 0x4CC 0x2 0x1
+ #define MX8MM_IOMUXC_SAI5_RXD2_SAI5_TX_BCLK                                 0x150 0x3B8 0x4E8 0x3 0x0
+-#define MX8MM_IOMUXC_SAI5_RXD2_PDM_DATA2                                    0x150 0x3B8 0x53c 0x4 0x0
++#define MX8MM_IOMUXC_SAI5_RXD2_PDM_DATA2                                    0x150 0x3B8 0x53C 0x4 0x0
+ #define MX8MM_IOMUXC_SAI5_RXD2_GPIO3_IO23                                   0x150 0x3B8 0x000 0x5 0x0
+ #define MX8MM_IOMUXC_SAI5_RXD3_SAI5_RX_DATA3                                0x154 0x3BC 0x4E0 0x0 0x0
+ #define MX8MM_IOMUXC_SAI5_RXD3_SAI1_TX_DATA5                                0x154 0x3BC 0x000 0x1 0x0
+@@ -487,7 +487,7 @@
+ #define MX8MM_IOMUXC_SAI3_TXFS_SAI3_TX_SYNC                                 0x1D8 0x440 0x000 0x0 0x0
+ #define MX8MM_IOMUXC_SAI3_TXFS_GPT1_CAPTURE2                                0x1D8 0x440 0x000 0x1 0x0
+ #define MX8MM_IOMUXC_SAI3_TXFS_SAI5_RX_DATA1                                0x1D8 0x440 0x4D8 0x2 0x2
+-#define MX8MM_IOMUXC_SAI3_TXFS_UART2_DCE_RX                                 0x1D8 0x440 0x4Fc 0x4 0x2
++#define MX8MM_IOMUXC_SAI3_TXFS_UART2_DCE_RX                                 0x1D8 0x440 0x4FC 0x4 0x2
+ #define MX8MM_IOMUXC_SAI3_TXFS_UART2_DTE_TX                                 0x1D8 0x440 0x000 0x4 0x0
+ #define MX8MM_IOMUXC_SAI3_TXFS_GPIO4_IO31                                   0x1D8 0x440 0x000 0x5 0x0
+ #define MX8MM_IOMUXC_SAI3_TXFS_TPSMP_HDATA1                                 0x1D8 0x440 0x000 0x7 0x0
+@@ -495,7 +495,7 @@
+ #define MX8MM_IOMUXC_SAI3_TXC_GPT1_COMPARE2                                 0x1DC 0x444 0x000 0x1 0x0
+ #define MX8MM_IOMUXC_SAI3_TXC_SAI5_RX_DATA2                                 0x1DC 0x444 0x4DC 0x2 0x2
+ #define MX8MM_IOMUXC_SAI3_TXC_UART2_DCE_TX                                  0x1DC 0x444 0x000 0x4 0x0
+-#define MX8MM_IOMUXC_SAI3_TXC_UART2_DTE_RX                                  0x1DC 0x444 0x4Fc 0x4 0x3
++#define MX8MM_IOMUXC_SAI3_TXC_UART2_DTE_RX                                  0x1DC 0x444 0x4FC 0x4 0x3
+ #define MX8MM_IOMUXC_SAI3_TXC_GPIO5_IO0                                     0x1DC 0x444 0x000 0x5 0x0
+ #define MX8MM_IOMUXC_SAI3_TXC_TPSMP_HDATA2                                  0x1DC 0x444 0x000 0x7 0x0
+ #define MX8MM_IOMUXC_SAI3_TXD_SAI3_TX_DATA0                                 0x1E0 0x448 0x000 0x0 0x0
 -- 
-2.34.1
+2.33.1
 
