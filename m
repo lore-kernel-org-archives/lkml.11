@@ -2,297 +2,246 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24CC6C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 17:45:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E780C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 17:45:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377097AbiBDRpO (ORCPT
+        id S1349519AbiBDRpS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 12:45:14 -0500
-Received: from mga17.intel.com ([192.55.52.151]:13520 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1377001AbiBDRpJ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 12:45:09 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643996709; x=1675532709;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=5ETlEkJotXscY1acR0RRNJRgVVqgQwciPhVqY20Tn/w=;
-  b=IF64b0xiGUngXt/KQ5/3sgR+EGuekS08ZRhKKWxIgZ/X2bGgNdFinWK4
-   8KzHKOHDJLJf/N83YaKCdtX8mzvafWlmI9FE8ODEPE0Vupv9w1v1DUGGK
-   LoWYiDUAPmVWJ8Z+W6upMOOsAjs8EE5tBVctUBT5GSSyMFUYKNhUtSt92
-   yPTvOv/d0pZzFS1faCF3SE5ECeLOp0hkWnpolp6LpQE/KHu7yOYDwQH/Q
-   0qGokkQ6ztGwYCL1z7oEYLbgG8vn7OGFQ09horkN4bMVX1vpXBPfqNO7U
-   tPkoxfA8IFTHt4UGib+/o+/pjZxpTBd0BJyov7Xnryw36Y4mcgr22PB6I
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10248"; a="229061088"
+        Fri, 4 Feb 2022 12:45:18 -0500
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:43962 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377069AbiBDRpK (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 4 Feb 2022 12:45:10 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1643996710; x=1675532710;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=OR7PrM36vJ5nQ8bgOMc4hyO9QpgcGa9QAWX7conZeV0=;
+  b=Z9NNncd+dVtBIZoRL1GR3mtzp8JkC0aDuoxiKoXdgiKEE3vv2tBwtYcA
+   9v0ehPsXYtN9OrW4VA1Yu7x6rRf1vHDvbfIJVLxWluNIEG1lKAkU1jgUf
+   uFwsBmFtkqIA4xBYJpCFAHA630umkKA7qGXm+jBKscrshSj8x4riSOmju
+   hiOKvwup4A12e7BgfrXHkUKz/n9gHBhBJijn3U9YdxvhWm7zn0Q2ZAtEC
+   G4lcs6Punq7NEcBY8kNId4/If8PpLVu75YM+aPxgowD8RJjo3R/mCYy7w
+   ddkaDNiGnPOrFOx00/y3rICWlVrJiurgqOxjvN15dbihYTtw8u2SVbeX1
+   Q==;
+IronPort-SDR: OHb+TNixcOxcKeCJt/DIMEQAr30zr9JeSAdriQb9XdUn9XxrnLXL71vhjt8DlRsIHIwqu26VEy
+ qtCUzvphg4Yq7K62Zqk6IGL9HfqPX3prgL5m4jraeFlDASWdyA83t041MV99RW7i+8xEidj6TA
+ 5HSjm92sgs0tEOmh+QI8HzNetO0vICHKXP4AShRx9nrFdDK2MNKpHNgEIGRYlmLbxmAaAXe3sG
+ DVXhzoxBobKvr0IlzbYdeDWDmFnRM50f86pEi1H0EhJBNfYyVBagbZBjNLu302ii9h7DRm7eaC
+ deVcoHOllpQ9HNzdMLdcScJV
 X-IronPort-AV: E=Sophos;i="5.88,343,1635231600"; 
-   d="scan'208";a="229061088"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2022 09:45:08 -0800
-X-IronPort-AV: E=Sophos;i="5.88,343,1635231600"; 
-   d="scan'208";a="539240793"
-Received: from lucas-s2600cw.jf.intel.com ([10.165.21.202])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2022 09:45:08 -0800
-From:   Lucas De Marchi <lucas.demarchi@intel.com>
-To:     intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Cc:     John Harrison <John.C.Harrison@Intel.com>,
-        Matthew Brost <matthew.brost@intel.com>,
-        Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>,
-        Matt Roper <matthew.d.roper@intel.com>,
-        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
-        <thomas.hellstrom@linux.intel.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Lucas De Marchi <lucas.demarchi@intel.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 03/19] iosys-map: Add a few more helpers
-Date:   Fri,  4 Feb 2022 09:44:20 -0800
-Message-Id: <20220204174436.830121-4-lucas.demarchi@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220204174436.830121-1-lucas.demarchi@intel.com>
-References: <20220204174436.830121-1-lucas.demarchi@intel.com>
+   d="scan'208";a="84716102"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Feb 2022 10:45:09 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 4 Feb 2022 10:45:09 -0700
+Received: from CHE-LT-I21427LX.microchip.com (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Fri, 4 Feb 2022 10:45:04 -0700
+From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+To:     <andrew@lunn.ch>, <netdev@vger.kernel.org>, <olteanv@gmail.com>,
+        <robh+dt@kernel.org>
+CC:     <UNGLinuxDriver@microchip.com>, <Woojung.Huh@microchip.com>,
+        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <kuba@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
+        <f.fainelli@gmail.com>, <devicetree@vger.kernel.org>
+Subject: [PATCH v7 net-next 00/10] net: dsa: microchip: DSA driver support for LAN937x switch
+Date:   Fri, 4 Feb 2022 23:14:50 +0530
+Message-ID: <20220204174500.72814-1-prasanna.vengateshan@microchip.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-First the simplest ones:
+LAN937x is a Multi-Port 100BASE-T1 Ethernet Physical Layer switch  
+compliant with the IEEE 802.3bw-2015 specification. The device  
+provides 100 Mbit/s transmit and receive capability over a single 
+Unshielded Twisted Pair (UTP) cable. LAN937x is successive revision 
+of KSZ series switch. This series of patches provide the DSA driver  
+support for Microchip LAN937X switch and it configures through  
+SPI interface. 
 
-	- iosys_map_memset(): when abstracting system and I/O memory,
-	  just like the memcpy() use case, memset() also has dedicated
-	  functions to be called for using IO memory.
-	- iosys_map_memcpy_from(): we may need to copy data from I/O
-	  memory, not only to.
+This driver shares some of the functions from KSZ common 
+layer. 
 
-In certain situations it's useful to be able to read or write to an
-offset that is calculated by having the memory layout given by a struct
-declaration. Usually we are going to read/write a u8, u16, u32 or u64.
+The LAN937x switch series family consists of following SKUs: 
 
-As a pre-requisite for the implementation, add iosys_map_memcpy_from()
-to be the equivalent of iosys_map_memcpy_to(), but in the other
-direction. Then add 2 pairs of macros:
+LAN9370: 
+  - 4 T1 Phys 
+  - 1 RGMII port 
 
-	- iosys_map_rd() / iosys_map_wr()
-	- iosys_map_rd_field() / iosys_map_wr_field()
+LAN9371: 
+  - 3 T1 Phys & 1 TX Phy 
+  - 2 RGMII ports 
 
-The first pair takes the C-type and offset to read/write. The second
-pair uses a struct describing the layout of the mapping in order to
-calculate the offset and size being read/written.
+LAN9372: 
+  - 5 T1 Phys & 1 TX Phy 
+  - 2 RGMII ports 
 
-We could use readb, readw, readl, readq and the write* counterparts,
-however due to alignment issues this may not work on all architectures.
-If alignment needs to be checked to call the right function, it's not
-possible to decide at compile-time which function to call: so just leave
-the decision to the memcpy function that will do exactly that.
+LAN9373: 
+  - 5 T1 Phys 
+  - 2 RGMII & 1 SGMII port 
 
-Finally, in order to use the above macros with a map derived from
-another, add another initializer: IOSYS_MAP_INIT_OFFSET().
+LAN9374: 
+  - 6 T1 Phys 
+  - 2 RGMII ports 
 
-Cc: Sumit Semwal <sumit.semwal@linaro.org>
-Cc: Christian König <christian.koenig@amd.com>
-Cc: Thomas Zimmermann <tzimmermann@suse.de>
-Cc: dri-devel@lists.freedesktop.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Lucas De Marchi <lucas.demarchi@intel.com>
----
- include/linux/iosys-map.h | 154 +++++++++++++++++++++++++++++++++++++-
- 1 file changed, 153 insertions(+), 1 deletion(-)
+More support will be added at a later stage.
 
-diff --git a/include/linux/iosys-map.h b/include/linux/iosys-map.h
-index edd7fa3be9e9..96f8b61ac6fb 100644
---- a/include/linux/iosys-map.h
-+++ b/include/linux/iosys-map.h
-@@ -6,6 +6,7 @@
- #ifndef __IOSYS_MAP_H__
- #define __IOSYS_MAP_H__
- 
-+#include <linux/kernel.h>
- #include <linux/io.h>
- #include <linux/string.h>
- 
-@@ -133,6 +134,45 @@ static inline void iosys_map_set_vaddr(struct iosys_map *map, void *vaddr)
- 	map->is_iomem = false;
- }
- 
-+/**
-+ * IOSYS_MAP_INIT_OFFSET - Initializes struct iosys_map from another iosys_map
-+ * @map_:	The dma-buf mapping structure to copy from
-+ * @offset_:	Offset to add to the other mapping
-+ *
-+ * Initializes a new iosys_map struct based on another passed as argument. It
-+ * does a shallow copy of the struct so it's possible to update the back storage
-+ * without changing where the original map points to. It is the equivalent of
-+ * doing:
-+ *
-+ * .. code-block: c
-+ *
-+ *	iosys_map map = other_map;
-+ *	iosys_map_incr(&map, &offset);
-+ *
-+ * Example usage:
-+ *
-+ * .. code-block: c
-+ *
-+ *	void foo(struct device *dev, struct iosys_map *base_map)
-+ *	{
-+ *		...
-+ *		struct iosys_map map = IOSYS_MAP_INIT_OFFSET(base_map, FIELD_OFFSET);
-+ *		...
-+ *	}
-+ *
-+ * The advantage of using the initializer over just increasing the offset with
-+ * ``iosys_map_incr()`` like above is that the new map will always point to the
-+ * right place of the buffer during  its scope. It reduces the risk of updating
-+ * the wrong part of the buffer and having no compiler warning about that. If
-+ * the assignment to IOSYS_MAP_INIT_OFFSET() is forgotten, the compiler can warn
-+ * using a uninitialized variable.
-+ */
-+#define IOSYS_MAP_INIT_OFFSET(map_, offset_)	(struct iosys_map)	\
-+	{								\
-+		.vaddr = (map_)->vaddr + (offset_),			\
-+		.is_iomem = (map_)->is_iomem,				\
-+	}
-+
- /**
-  * iosys_map_set_vaddr_iomem - Sets a iosys mapping structure to an address in I/O memory
-  * @map:		The iosys_map structure
-@@ -220,7 +260,7 @@ static inline void iosys_map_clear(struct iosys_map *map)
- }
- 
- /**
-- * iosys_map_memcpy_to_offset - Memcpy into offset of iosys_map
-+ * iosys_map_memcpy_to - Memcpy into iosys_map
-  * @dst:	The iosys_map structure
-  * @dst_offset:	The offset from which to copy
-  * @src:	The source buffer
-@@ -239,6 +279,26 @@ static inline void iosys_map_memcpy_to(struct iosys_map *dst, size_t dst_offset,
- 		memcpy(dst->vaddr + dst_offset, src, len);
- }
- 
-+/**
-+ * iosys_map_memcpy_from - Memcpy from iosys_map into system memory
-+ * @dst:	Destination in system memory
-+ * @src:	The iosys_map structure
-+ * @src_offset:	The offset from which to copy
-+ * @len:	The number of byte in src
-+ *
-+ * Copies data from a iosys_map with an offset. The dest buffer is in
-+ * system memory. Depending on the mapping location, the helper picks the
-+ * correct method of accessing the memory.
-+ */
-+static inline void iosys_map_memcpy_from(void *dst, const struct iosys_map *src,
-+					 size_t src_offset, size_t len)
-+{
-+	if (src->is_iomem)
-+		memcpy_fromio(dst, src->vaddr_iomem + src_offset, len);
-+	else
-+		memcpy(dst, src->vaddr + src_offset, len);
-+}
-+
- /**
-  * iosys_map_incr - Increments the address stored in a iosys mapping
-  * @map:	The iosys_map structure
-@@ -255,4 +315,96 @@ static inline void iosys_map_incr(struct iosys_map *map, size_t incr)
- 		map->vaddr += incr;
- }
- 
-+/**
-+ * iosys_map_memset - Memset iosys_map
-+ * @dst:	The iosys_map structure
-+ * @offset:	Offset from dst where to start setting value
-+ * @value:	The value to set
-+ * @len:	The number of bytes to set in dst
-+ *
-+ * Set value in iosys_map. Depending on the buffer's location, the helper
-+ * picks the correct method of accessing the memory.
-+ */
-+static inline void iosys_map_memset(struct iosys_map *dst, size_t offset,
-+				    int value, size_t len)
-+{
-+	if (dst->is_iomem)
-+		memset_io(dst->vaddr_iomem + offset, value, len);
-+	else
-+		memset(dst->vaddr + offset, value, len);
-+}
-+
-+/**
-+ * iosys_map_rd - Read a C-type value from the iosys_map
-+ *
-+ * @map__:	The iosys_map structure
-+ * @offset__:	The offset from which to read
-+ * @type__:	Type of the value being read
-+ *
-+ * Read a C type value from iosys_map, handling possible un-aligned accesses to
-+ * the mapping.
-+ *
-+ * Returns:
-+ * The value read from the mapping.
-+ */
-+#define iosys_map_rd(map__, offset__, type__) ({			\
-+	type__ val;							\
-+	iosys_map_memcpy_from(&val, map__, offset__, sizeof(val));	\
-+	val;								\
-+})
-+
-+/**
-+ * iosys_map_wr - Write a C-type value to the iosys_map
-+ *
-+ * @map__:	The iosys_map structure
-+ * @offset__:	The offset from the mapping to write to
-+ * @type__:	Type of the value being written
-+ * @val__:	Value to write
-+ *
-+ * Write a C-type value to the iosys_map, handling possible un-aligned accesses
-+ * to the mapping.
-+ */
-+#define iosys_map_wr(map__, offset__, type__, val__) ({			\
-+	type__ val = (val__);						\
-+	iosys_map_memcpy_to(map__, offset__, &val, sizeof(val));	\
-+})
-+
-+/**
-+ * iosys_map_rd_field - Read a member from a struct in the iosys_map
-+ *
-+ * @map__:		The iosys_map structure
-+ * @struct_type__:	The struct describing the layout of the mapping
-+ * @field__:		Member of the struct to read
-+ *
-+ * Read a value from iosys_map assuming its layout is described by a struct,
-+ * passed as argument. The offset and size to the struct member is calculated
-+ * and possible un-aligned accesses to the mapping handled.
-+ *
-+ * Returns:
-+ * The value read from the mapping.
-+ */
-+#define iosys_map_rd_field(map__, struct_type__, field__) ({			\
-+	struct_type__ *s;							\
-+	iosys_map_rd(map__, offsetof(struct_type__, field__),			\
-+		     typeof(s->field__));					\
-+})
-+
-+/**
-+ * iosys_map_wr_field - Write to a member of a struct in the iosys_map
-+ *
-+ * @map__:		The iosys_map structure
-+ * @struct_type__:	The struct describing the layout of the mapping
-+ * @field__:		Member of the struct to read
-+ * @val__:		Value to write
-+ *
-+ * Write a value to the iosys_map assuming its layout is described by a struct,
-+ * passed as argument. The offset and size to the struct member is calculated
-+ * and possible un-aligned accesses to the mapping handled.
-+ */
-+#define iosys_map_wr_field(map__, struct_type__, field__, val__) ({		\
-+	struct_type__ *s;							\
-+	iosys_map_wr(map__, offsetof(struct_type__, field__),			\
-+		     typeof(s->field__), val__);				\
-+})
-+
- #endif /* __IOSYS_MAP_H__ */
+Changes in v7:
+- microchip,lan937x.yaml: *-internal-delay-ps enum values & commit messages
+  corrections
+- lan937x_main.c: removed phylink_validate() and added phylink_get_caps()
+- lan937x_main.c: added support for ethtool standard stats   (get_eth_*_stats
+  and get_stats64)
+- lan937x_main.c: removed unnecessary PVID read from lan937x_port_vlan_del()
+- integrated the changes of ksz9477 multi bridging support to lan937x dev and
+  tested both multi bridging and STP
+- lan937x_port_vlan_del - dummy pvid read removed
+
+Changes in v6:
+- microchip_t1.c: There was new merge done in the net-next tree for microchip_1.c
+after the v5 submission. Hence rebased it for v6.
+
+Changes in v5:
+- microchip,lan937x.yaml: Added mdio properties detail
+- microchip,lan937x.yaml: *-internal-delay-ps added under port node
+- lan937x_dev.c: changed devm_mdiobus_alloc from of_mdiobus_register as suggested
+  by Vladimir
+- lan937x_dev.c: added dev_info for rgmii internal delay & error message to user
+  in case of out of range values
+- lan937x_dev.c: return -EOPNOTSUPP for C45 regnum values for lan937x_sw_mdio_read
+  & write operations
+- return from function with out storing in a variable
+- lan937x_main.c: Added vlan_enable info in vlan_filtering API
+- lan937x_main.c: lan937x_port_vlan_del: removed unintended PVID write
+
+Changes in v4:
+- tag_ksz.c: cpu_to_be16 to  put_unaligned_be16
+- correct spacing in comments
+- tag_ksz.c: NETIF_F_HW_CSUM fix is integrated 
+- lan937x_dev.c: mdio_np is removed from global and handled locally
+- lan937x_dev.c: unused functions removed lan937x_cfg32 & lan937x_port_cfg32
+- lan937x_dev.c: lan937x_is_internal_100BTX_phy_port function name changes
+- lan937x_dev.c: RGMII internal delay handling for MAC. Delay values are
+  retrieved from DTS and updated
+- lan937x_dev.c: corrected mutex operations for few dev variables
+- microchip,lan937x.yaml: introduced rx-internal-delay-ps & 
+  tx-internal-delay-ps for RGMII internal delay
+- lan937x_dev.c: Unnecessary mutex_lock has been removed
+- lan937x_main.c: PHY_INTERFACE_MODE_NA handling for lan937x_phylink_validate
+- lan937x_main.c: PORT_MIRROR_SNIFFER check in right place
+- lan937x_main.c: memset is used instead of writing 0's individually in 
+  lan937x_port_fdb_add function
+- lan937x_main.c: Removed \n from NL_SET_ERR_MSG_MOD calls
+
+Changes in v3: 
+- Removed settings of cnt_ptr to zero and the memset() 
+  added a cleanup patch which moves this into ksz_init_mib_timer().
+- Used ret everywhere instead of rc
+- microchip,lan937x.yaml: Remove mdio compatible
+- microchip_t1.c: Renaming standard phy registers
+- tag_ksz.c: LAN937X_TAIL_TAG_OVERRIDE renaming 
+  LAN937X_TAIL_TAG_BLOCKING_OVERRIDE
+- tag_ksz.c: Changed Ingress and Egress naming convention based on 
+  Host
+- tag_ksz.c: converted to skb_mac_header(skb) from 
+  (is_link_local_ether_addr(hdr->h_dest))
+- lan937x_dev.c: Removed BCAST Storm protection settings since we
+  have Tc commands for them
+- lan937x_dev.c: Flow control setting in lan937x_port_setup function
+- lan937x_dev.c: RGMII internal delay added only for cpu port, 
+- lan937x_dev.c: of_get_compatible_child(node, 
+  "microchip,lan937x-mdio") to of_get_child_by_name(node, "mdio");
+- lan937x_dev.c:lan937x_get_interface API: returned 
+  PHY_INTERFACE_MODE_INTERNAL instead of PHY_INTERFACE_MODE_NA
+- lan937x_main.c: Removed compat interface implementation in 
+  lan937x_config_cpu_port() API & dev_info corrected as well
+- lan937x_main.c: deleted ds->configure_vlan_while_not_filtering 
+  = true
+- lan937x_main.c: Added explanation for lan937x_setup lines
+- lan937x_main.c: FR_MAX_SIZE correction in lan937x_get_max_mtu API 
+- lan937x_main.c: removed lan937x_port_bridge_flags dummy functions
+- lan937x_spi.c - mdiobus_unregister to be added to spi_remove 
+  function
+- lan937x_main.c: phy link layer changes  
+- lan937x_main.c: port mirroring: sniff port selection limiting to
+  one port
+- lan937x_main.c: Changed to global vlan filtering
+- lan937x_main.c: vlan_table array to structure
+- lan937x_main.c -Use extack instead of reporting errors to Console
+- lan937x_main.c - Remove cpu_port addition in vlan_add api
+- lan937x_main.c - removed pvid resetting
+
+Changes in v2:
+- return check for register read/writes
+- dt compatible compatible check is added against chip id value 
+- lan937x_internal_t1_tx_phy_write() is renamed to 
+  lan937x_internal_phy_write()
+- lan937x_is_internal_tx_phy_port is renamed to 
+  lan937x_is_internal_100BTX_phy_port as it is 100Base-Tx phy
+- Return value for lan937x_internal_phy_write() is -EOPNOTSUPP 
+  in case of failures 
+- Return value for lan937x_internal_phy_read() is 0xffff 
+  for non existent phy 
+- cpu_port checking is removed from lan937x_port_stp_state_set()
+- lan937x_phy_link_validate: 100baseT_Full to 100baseT1_Full
+- T1 Phy driver is moved to drivers/net/phy/microchip_t1.c 
+- Tx phy driver support will be added later 
+- Legacy switch checkings in dts file are removed.
+- tag_ksz.c: Re-used ksz9477_rcv for lan937x_rcv 
+- tag_ksz.c: Xmit() & rcv() Comments are corrected w.r.to host
+- net/dsa/Kconfig: Family skew numbers altered in ascending order
+- microchip,lan937x.yaml: eth is replaced with ethernet
+- microchip,lan937x.yaml: spi1 is replaced with spi 
+- microchip,lan937x.yaml: cpu labelling is removed 
+- microchip,lan937x.yaml: port@x value will match the reg value now
+
+Prasanna Vengateshan (10):
+  dt-bindings: net: dsa: dt bindings for microchip lan937x
+  net: dsa: move mib->cnt_ptr reset code to ksz_common.c
+  net: phy: Add support for LAN937x T1 phy driver
+  net: dsa: tag_ksz: add tag handling for Microchip LAN937x
+  net: dsa: microchip: add DSA support for microchip lan937x
+  net: dsa: microchip: add support for phylink management
+  net: dsa: microchip: add support for ethtool port counters
+  net: dsa: microchip: add support for port mirror operations
+  net: dsa: microchip: add support for fdb and mdb management
+  net: dsa: microchip: add support for vlan operations
+
+ .../bindings/net/dsa/microchip,lan937x.yaml   |  179 +++
+ MAINTAINERS                                   |    1 +
+ drivers/net/dsa/microchip/Kconfig             |   12 +
+ drivers/net/dsa/microchip/Makefile            |    5 +
+ drivers/net/dsa/microchip/ksz8795.c           |    2 -
+ drivers/net/dsa/microchip/ksz9477.c           |    3 -
+ drivers/net/dsa/microchip/ksz_common.c        |    8 +-
+ drivers/net/dsa/microchip/ksz_common.h        |    5 +
+ drivers/net/dsa/microchip/lan937x_dev.c       |  742 ++++++++++
+ drivers/net/dsa/microchip/lan937x_dev.h       |  121 ++
+ drivers/net/dsa/microchip/lan937x_main.c      | 1314 +++++++++++++++++
+ drivers/net/dsa/microchip/lan937x_reg.h       |  688 +++++++++
+ drivers/net/dsa/microchip/lan937x_spi.c       |  238 +++
+ drivers/net/phy/microchip_t1.c                |  342 ++++-
+ include/net/dsa.h                             |    2 +
+ net/dsa/Kconfig                               |    4 +-
+ net/dsa/tag_ksz.c                             |   59 +
+ 17 files changed, 3648 insertions(+), 77 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml
+ create mode 100644 drivers/net/dsa/microchip/lan937x_dev.c
+ create mode 100644 drivers/net/dsa/microchip/lan937x_dev.h
+ create mode 100644 drivers/net/dsa/microchip/lan937x_main.c
+ create mode 100644 drivers/net/dsa/microchip/lan937x_reg.h
+ create mode 100644 drivers/net/dsa/microchip/lan937x_spi.c
+
 -- 
-2.35.1
+2.30.2
 
