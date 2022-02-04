@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84253C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:21:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B028C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:21:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357414AbiBDJVK (ORCPT
+        id S1357456AbiBDJVQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 04:21:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60458 "EHLO
+        Fri, 4 Feb 2022 04:21:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357328AbiBDJU4 (ORCPT
+        with ESMTP id S1357355AbiBDJU7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 04:20:56 -0500
+        Fri, 4 Feb 2022 04:20:59 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2477CC06173D;
-        Fri,  4 Feb 2022 01:20:56 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E936C061741;
+        Fri,  4 Feb 2022 01:20:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A5EB8615F4;
-        Fri,  4 Feb 2022 09:20:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B019C004E1;
-        Fri,  4 Feb 2022 09:20:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AC70D615DC;
+        Fri,  4 Feb 2022 09:20:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82921C004E1;
+        Fri,  4 Feb 2022 09:20:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643966455;
-        bh=Buyr2y4TEqLxbZmnYSPF0uitMkHzi9EYfbtbFaPM5As=;
+        s=korg; t=1643966458;
+        bh=pe+rjSYtf6W6CfYVu9AZX/jgeU3hf3dspXjjWJn5qaM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zc2asGB4NPIpzDr3ShJthHwBGDpaQ0ACGBzxl5pg59IYkFmSK+HQ+M4iX4wv2NrhB
-         E3qS83WhyC7sTfWSTnJTbSbLPmt540bP1F6bCPOUE0h8auuRtI7Oh3hjvAQVBvKfd4
-         XoLIugsBAG62mcaLT0m/RjCj+tTdsfTlOXWr7DpM=
+        b=QWvcOwnZHW6Q7WPppg4+pmfsxlfsgNA7qoYx/+l9ZkWRztIuUlNGqsiW+jJ2Pjk8U
+         /1LU89LniRwRYBK/vBQ1mKhE/tEadLwcDiHgaq+3RsObt5MNcte2U/ptp+Dg2ONORV
+         h1H0r/h/HlZ8b9Ue9eQxB4OolXx7Zg3HMX2c4qiE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Jiri Pirko <jiri@nvidia.com>, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.4 08/10] rtnetlink: make sure to refresh master_dev/m_ops in __rtnl_newlink()
-Date:   Fri,  4 Feb 2022 10:20:21 +0100
-Message-Id: <20220204091912.593539145@linuxfoundation.org>
+        stable@vger.kernel.org, Tianchen Ding <dtcccc@linux.alibaba.com>,
+        Waiman Long <longman@redhat.com>, Tejun Heo <tj@kernel.org>
+Subject: [PATCH 5.4 09/10] cpuset: Fix the bug that subpart_cpus updated wrongly in update_cpumask()
+Date:   Fri,  4 Feb 2022 10:20:22 +0100
+Message-Id: <20220204091912.624395230@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220204091912.329106021@linuxfoundation.org>
 References: <20220204091912.329106021@linuxfoundation.org>
@@ -49,47 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Tianchen Ding <dtcccc@linux.alibaba.com>
 
-commit c6f6f2444bdbe0079e41914a35081530d0409963 upstream.
+commit c80d401c52a2d1baf2a5afeb06f0ffe678e56d23 upstream.
 
-While looking at one unrelated syzbot bug, I found the replay logic
-in __rtnl_newlink() to potentially trigger use-after-free.
+subparts_cpus should be limited as a subset of cpus_allowed, but it is
+updated wrongly by using cpumask_andnot(). Use cpumask_and() instead to
+fix it.
 
-It is better to clear master_dev and m_ops inside the loop,
-in case we have to replay it.
-
-Fixes: ba7d49b1f0f8 ("rtnetlink: provide api for getting and setting slave info")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Jiri Pirko <jiri@nvidia.com>
-Link: https://lore.kernel.org/r/20220201012106.216495-1-eric.dumazet@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: ee8dde0cd2ce ("cpuset: Add new v2 cpuset.sched.partition flag")
+Signed-off-by: Tianchen Ding <dtcccc@linux.alibaba.com>
+Reviewed-by: Waiman Long <longman@redhat.com>
+Signed-off-by: Tejun Heo <tj@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/core/rtnetlink.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ kernel/cgroup/cpuset.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -3022,8 +3022,8 @@ static int __rtnl_newlink(struct sk_buff
- 	struct nlattr *slave_attr[RTNL_SLAVE_MAX_TYPE + 1];
- 	unsigned char name_assign_type = NET_NAME_USER;
- 	struct nlattr *linkinfo[IFLA_INFO_MAX + 1];
--	const struct rtnl_link_ops *m_ops = NULL;
--	struct net_device *master_dev = NULL;
-+	const struct rtnl_link_ops *m_ops;
-+	struct net_device *master_dev;
- 	struct net *net = sock_net(skb->sk);
- 	const struct rtnl_link_ops *ops;
- 	struct nlattr *tb[IFLA_MAX + 1];
-@@ -3063,6 +3063,8 @@ replay:
- 			dev = NULL;
+--- a/kernel/cgroup/cpuset.c
++++ b/kernel/cgroup/cpuset.c
+@@ -1558,8 +1558,7 @@ static int update_cpumask(struct cpuset
+ 	 * Make sure that subparts_cpus is a subset of cpus_allowed.
+ 	 */
+ 	if (cs->nr_subparts_cpus) {
+-		cpumask_andnot(cs->subparts_cpus, cs->subparts_cpus,
+-			       cs->cpus_allowed);
++		cpumask_and(cs->subparts_cpus, cs->subparts_cpus, cs->cpus_allowed);
+ 		cs->nr_subparts_cpus = cpumask_weight(cs->subparts_cpus);
  	}
- 
-+	master_dev = NULL;
-+	m_ops = NULL;
- 	if (dev) {
- 		master_dev = netdev_master_upper_dev_get(dev);
- 		if (master_dev)
+ 	spin_unlock_irq(&callback_lock);
 
 
