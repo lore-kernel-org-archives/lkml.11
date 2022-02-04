@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D34DFC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 19:51:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92269C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 19:51:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235050AbiBDTvC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 14:51:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36956 "EHLO
+        id S235016AbiBDTvG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 14:51:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234878AbiBDTu6 (ORCPT
+        with ESMTP id S234926AbiBDTvA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 14:50:58 -0500
-Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17EA7C061744
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 11:50:51 -0800 (PST)
-Received: by mail-io1-xd36.google.com with SMTP id d188so8699112iof.7
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Feb 2022 11:50:51 -0800 (PST)
+        Fri, 4 Feb 2022 14:51:00 -0500
+Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32F18C061714
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 11:50:55 -0800 (PST)
+Received: by mail-il1-x12c.google.com with SMTP id w5so5772002ilo.2
+        for <linux-kernel@vger.kernel.org>; Fri, 04 Feb 2022 11:50:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=NJSgbV82nLgKXKYaIVZ+XNSiEnkL4FwHctPzlM9hZrc=;
-        b=TBH0vug6qzMDfkTjUwcRV6xDfQ0Mqum9N0MGVz/HzcJVHbrTjpQB8+okfUwRP8tf2B
-         Yam7tHCuthYq3FceCn2e68E4b10FScquG59FmK+tqTmndIihxhzLypYKk63v6IlstG0p
-         L8PtWtqI76mAS8srcF28bsa4wfSzf7Cu7Y/Epqt/9RZ/KXXLu3LbF3+eHThJDvAMJAKx
-         FwNVv7vg28Gl9LVA+gfJNUx0yj/baf7Obi28RdEDW9kFakpTnhAXdiv0oYQfx1z9XXvS
-         qD/IUGjQ7gBoJpkgJV5M0GMPp5vYsczEzUhTWn6aUWh5SO/6w/SkLzxgnBycBs6UsbA9
-         TCeA==
+        bh=pUf+PCh+TXxcthO6K+0yXDdvKrWCHt/PS/ocodABFUM=;
+        b=XYtFs0GAaPChPsV6fugdX3/KwPRFUc7fOhot7UWWhNBTABRBq//tRQEJ5PJqKM+dXd
+         ZOKUNXyqq2NoXhf8k63H+ChbhiHrBo3gScX2+edBqDtlsbFnxoXmTbZkGG6tH2TG59hg
+         1gKBvw3ylB9gmGBrL+viDL/xP7Wg2RHAP/IsXqy8CQkEEIY+DF5+Ne0UKmO43Pq6kzeT
+         Dl3cKBeM+XRtkNWBqtqYV/hBKv4ybraJRIoaL+HDVQGxBnJhWxYV63jMrYlgp6N1TQ7D
+         BoRBFZuuMHrSmDSzIJZKFDXUgkGA6uk/2PIcr6seUJYSE/9Eyl8r8NBrGsUV+fFRGVDJ
+         VsCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=NJSgbV82nLgKXKYaIVZ+XNSiEnkL4FwHctPzlM9hZrc=;
-        b=oJijvTFlbNfGEmITU737QgZQYrQU3sk/w2wTmD1qeY1DaY0iJTJc0zoGcMkzo3liFB
-         uX7bSDX1/qx7uEvBb94MV07vLFgoIf/yI9nc4lRbgnuZCqUgwPSUda4I3l6oD/d7e+hl
-         qCdFAMNuxB4PbmBihFLEPwc3E6BbpU9apWT4b9lP9AIJOrme986B2Uo2VHb/6nXstfT0
-         OlezImI/ZSmhxFKVSVkCIyLULkxK4e2MoPT6PJFs3oT9RnApi381r+I66Jw6MTI15doI
-         vDNqRsxb8BUTB9TR/EJr/W00LOwB0fpmJhzsWvEytYS4U5BxPYQlmNFpg0qyF8i1KWF4
-         0mZQ==
-X-Gm-Message-State: AOAM530d9mSRYdeNIcBKUGFalZWq2GAfLaDp21HdzIXQeBUwlNnlYyTp
-        sS8aKh1M6pREyPJXKU8NQAmhcA==
-X-Google-Smtp-Source: ABdhPJwpBNCFvez/OLynGuHBQ2f9mdL2Z1qTx8ZzJBTX4+77xoY9IEAMS2FBbT407BP/f+st7brCwA==
-X-Received: by 2002:a05:6638:10c5:: with SMTP id q5mr335290jad.113.1644004250388;
-        Fri, 04 Feb 2022 11:50:50 -0800 (PST)
+        bh=pUf+PCh+TXxcthO6K+0yXDdvKrWCHt/PS/ocodABFUM=;
+        b=Wa9t9q+z/LSMEiEKFdgAx4oq9p12NueRC8Qu+UP/wiojDTHUetCzmtornly5PhP/DE
+         5PwNzyg/BzFZEx2UmBfoM6jEAgTozvDvVjl0XEN6K+Uo8Xh4TntmTmz0TilPi+K45o7N
+         SqxnNp8G7s7YR1y/9dvnx08/QR+MZhfkxBRyMwearTVgkl/8zWhE1r1EH2aSxvqsPv2j
+         pyawGpr8RaN/AESXpvuQSKOK6rWfSzbFA0WWsIeb9wxsJzQFPdnsCfyqCSmVnNqrycid
+         ZuyZIIkG4lDIDRUqRGpdIr6YImm6r879kjYn1VEKB5pThpGfuXZYj3jXWdCaFQh1Xcwr
+         G2qw==
+X-Gm-Message-State: AOAM533dUOI16j6v2wnipc4eWGsMfAxywYCVce2pWBEVlrGGAUi28Oba
+        4wplIGfx0Ye8kD3Bz0aAFNLAPg==
+X-Google-Smtp-Source: ABdhPJzPP2eOSeqCq6tU4c6HCqyIwDVGReJxWNvlCRO8Aksx0W0xi+fITf+26isG5S/B1za8BKGktg==
+X-Received: by 2002:a05:6e02:1c8f:: with SMTP id w15mr359448ill.103.1644004254584;
+        Fri, 04 Feb 2022 11:50:54 -0800 (PST)
 Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id k13sm1417564ili.22.2022.02.04.11.50.49
+        by smtp.gmail.com with ESMTPSA id k13sm1417564ili.22.2022.02.04.11.50.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Feb 2022 11:50:49 -0800 (PST)
+        Fri, 04 Feb 2022 11:50:54 -0800 (PST)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     djakov@kernel.org, bjorn.andersson@linaro.org, mka@chromium.org,
@@ -55,9 +55,9 @@ Cc:     djakov@kernel.org, bjorn.andersson@linaro.org, mka@chromium.org,
         avuyyuru@codeaurora.org, jponduru@codeaurora.org,
         subashab@codeaurora.org, elder@kernel.org, netdev@vger.kernel.org,
         linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 1/7] net: ipa: kill struct ipa_interconnect
-Date:   Fri,  4 Feb 2022 13:50:38 -0600
-Message-Id: <20220204195044.1082026-2-elder@linaro.org>
+Subject: [PATCH net-next 4/7] net: ipa: use bulk operations to set up interconnects
+Date:   Fri,  4 Feb 2022 13:50:41 -0600
+Message-Id: <20220204195044.1082026-5-elder@linaro.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220204195044.1082026-1-elder@linaro.org>
 References: <20220204195044.1082026-1-elder@linaro.org>
@@ -67,137 +67,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The ipa_interconnect structure contains an icc_path pointer, plus an
-average and peak bandwidth value.  Other than the interconnect name,
-this matches the icc_bulk_data structure exactly.
-
-Use the icc_bulk_data structure in place of the ipa_interconnect
-structure, and add an initialization of its name field.  Then get
-rid of the now unnecessary ipa_interconnect structure definition.
+Use of_icc_bulk_get() and icc_bulk_put(), icc_bulk_set_bw(), and
+icc_bulk_enable() and icc_bulk_disable() to initialize individual
+IPA interconnects.  Those functions already log messages in the
+event of error so we don't need to.
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ipa/ipa_power.c | 39 +++++++++++++------------------------
- 1 file changed, 14 insertions(+), 25 deletions(-)
+ drivers/net/ipa/ipa_power.c | 40 ++++++++++++++-----------------------
+ 1 file changed, 15 insertions(+), 25 deletions(-)
 
 diff --git a/drivers/net/ipa/ipa_power.c b/drivers/net/ipa/ipa_power.c
-index f2989aac47a62..28be0e45cccfd 100644
+index 67f76e6a6ae59..c0da1274f5d67 100644
 --- a/drivers/net/ipa/ipa_power.c
 +++ b/drivers/net/ipa/ipa_power.c
-@@ -34,18 +34,6 @@
- 
- #define IPA_AUTOSUSPEND_DELAY	500	/* milliseconds */
- 
--/**
-- * struct ipa_interconnect - IPA interconnect information
-- * @path:		Interconnect path
-- * @average_bandwidth:	Average interconnect bandwidth (KB/second)
-- * @peak_bandwidth:	Peak interconnect bandwidth (KB/second)
-- */
--struct ipa_interconnect {
--	struct icc_path *path;
--	u32 average_bandwidth;
--	u32 peak_bandwidth;
--};
--
- /**
-  * enum ipa_power_flag - IPA power flags
-  * @IPA_POWER_FLAG_RESUMED:	Whether resume from suspend has been signaled
-@@ -79,11 +67,11 @@ struct ipa_power {
- 	spinlock_t spinlock;	/* used with STOPPED/STARTED power flags */
- 	DECLARE_BITMAP(flags, IPA_POWER_FLAG_COUNT);
- 	u32 interconnect_count;
--	struct ipa_interconnect *interconnect;
-+	struct icc_bulk_data *interconnect;
- };
- 
- static int ipa_interconnect_init_one(struct device *dev,
--				     struct ipa_interconnect *interconnect,
-+				     struct icc_bulk_data *interconnect,
+@@ -74,41 +74,31 @@ static int ipa_interconnect_init_one(struct device *dev,
+ 				     struct icc_bulk_data *interconnect,
  				     const struct ipa_interconnect_data *data)
  {
- 	struct icc_path *path;
-@@ -99,13 +87,14 @@ static int ipa_interconnect_init_one(struct device *dev,
- 	}
+-	struct icc_path *path;
+ 	int ret;
  
- 	interconnect->path = path;
--	interconnect->average_bandwidth = data->average_bandwidth;
--	interconnect->peak_bandwidth = data->peak_bandwidth;
-+	interconnect->name = data->name;
-+	interconnect->avg_bw = data->average_bandwidth;
-+	interconnect->peak_bw = data->peak_bandwidth;
+-	path = of_icc_get(dev, data->name);
+-	if (IS_ERR(path)) {
+-		ret = PTR_ERR(path);
+-		dev_err_probe(dev, ret, "error getting %s interconnect\n",
+-			      data->name);
+-
+-		return ret;
+-	}
+-
+-	/* All interconnects are initially disabled */
+-	(void)icc_disable(path);
+-
+-	/* Set the bandwidth values to be used when enabled */
+-	ret = icc_set_bw(path, data->average_bandwidth, data->peak_bandwidth);
+-	if (ret) {
+-		dev_err(dev, "error %d setting %s interconnect bandwidths\n",
+-			ret, data->name);
+-
+-		return ret;
+-	}
+-
+-	interconnect->path = path;
++	/* interconnect->path is filled in by of_icc_bulk_get() */
+ 	interconnect->name = data->name;
+ 	interconnect->avg_bw = data->average_bandwidth;
+ 	interconnect->peak_bw = data->peak_bandwidth;
  
- 	return 0;
+-	return 0;
++	ret = of_icc_bulk_get(dev, 1, interconnect);
++	if (ret)
++		return ret;
++
++	/* All interconnects are initially disabled */
++	icc_bulk_disable(1, interconnect);
++
++	/* Set the bandwidth values to be used when enabled */
++	ret = icc_bulk_set_bw(1, interconnect);
++	if (ret)
++		icc_bulk_put(1, interconnect);
++
++	return ret;
  }
  
--static void ipa_interconnect_exit_one(struct ipa_interconnect *interconnect)
-+static void ipa_interconnect_exit_one(struct icc_bulk_data *interconnect)
+ static void ipa_interconnect_exit_one(struct icc_bulk_data *interconnect)
  {
- 	icc_put(interconnect->path);
+-	icc_put(interconnect->path);
++	icc_bulk_put(1, interconnect);
  	memset(interconnect, 0, sizeof(*interconnect));
-@@ -115,7 +104,7 @@ static void ipa_interconnect_exit_one(struct ipa_interconnect *interconnect)
- static int ipa_interconnect_init(struct ipa_power *power, struct device *dev,
- 				 const struct ipa_interconnect_data *data)
- {
--	struct ipa_interconnect *interconnect;
-+	struct icc_bulk_data *interconnect;
- 	u32 count;
- 	int ret;
+ }
  
-@@ -146,7 +135,7 @@ static int ipa_interconnect_init(struct ipa_power *power, struct device *dev,
- /* Inverse of ipa_interconnect_init() */
- static void ipa_interconnect_exit(struct ipa_power *power)
- {
--	struct ipa_interconnect *interconnect;
-+	struct icc_bulk_data *interconnect;
- 
- 	interconnect = power->interconnect + power->interconnect_count;
- 	while (interconnect-- > power->interconnect)
-@@ -158,7 +147,7 @@ static void ipa_interconnect_exit(struct ipa_power *power)
- /* Currently we only use one bandwidth level, so just "enable" interconnects */
- static int ipa_interconnect_enable(struct ipa *ipa)
- {
--	struct ipa_interconnect *interconnect;
-+	struct icc_bulk_data *interconnect;
- 	struct ipa_power *power = ipa->power;
- 	int ret;
- 	u32 i;
-@@ -166,12 +155,12 @@ static int ipa_interconnect_enable(struct ipa *ipa)
- 	interconnect = power->interconnect;
- 	for (i = 0; i < power->interconnect_count; i++) {
- 		ret = icc_set_bw(interconnect->path,
--				 interconnect->average_bandwidth,
--				 interconnect->peak_bandwidth);
-+				 interconnect->avg_bw,
-+				 interconnect->peak_bw);
- 		if (ret) {
- 			dev_err(&ipa->pdev->dev,
- 				"error %d enabling %s interconnect\n",
--				ret, icc_get_name(interconnect->path));
-+				ret, interconnect->name);
- 			goto out_unwind;
- 		}
- 		interconnect++;
-@@ -189,9 +178,9 @@ static int ipa_interconnect_enable(struct ipa *ipa)
- /* To disable an interconnect, we just its bandwidth to 0 */
- static int ipa_interconnect_disable(struct ipa *ipa)
- {
--	struct ipa_interconnect *interconnect;
- 	struct ipa_power *power = ipa->power;
- 	struct device *dev = &ipa->pdev->dev;
-+	struct icc_bulk_data *interconnect;
- 	int result = 0;
- 	u32 count;
- 	int ret;
-@@ -203,7 +192,7 @@ static int ipa_interconnect_disable(struct ipa *ipa)
- 		ret = icc_set_bw(interconnect->path, 0, 0);
- 		if (ret) {
- 			dev_err(dev, "error %d disabling %s interconnect\n",
--				ret, icc_get_name(interconnect->path));
-+				ret, interconnect->name);
- 			/* Try to disable all; record only the first error */
- 			if (!result)
- 				result = ret;
 -- 
 2.32.0
 
