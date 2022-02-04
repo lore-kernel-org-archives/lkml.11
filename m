@@ -2,41 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76985C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 20:01:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 067F3C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 20:01:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237710AbiBDUBF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 15:01:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39318 "EHLO
+        id S236318AbiBDUBI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 15:01:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236311AbiBDT7U (ORCPT
+        with ESMTP id S236377AbiBDT7W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 14:59:20 -0500
+        Fri, 4 Feb 2022 14:59:22 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C84F9C061772
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFACFC061770
         for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 11:59:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=7lCdDpwYdKDkLlbslxBRg+2wOD2EjKVgpCEmaUyy+oM=; b=QwfwufgSXk6f+sdolDtZP+fdSy
-        0fpEMthi/hNNBIpZDavPRrrnFKpzDge8xNVnjkWzTocuexNJjAS/TWxrOFtQ1tvRmiehHabY0lDjE
-        TlWM/nsV/WE6cplK2QqPAUwHPvNJx7/ga9XwlrKkha5pmb3Z0Rc6msOCHpL2v47s3gEAfHa0+/qpq
-        VzwDGcKx2ESs7sEahSmI8MKSWjhixRG4YAOdw/+cMeWIgxx0OwYi3Om2L7IzeGghQ0DxcuU3B0QoU
-        QK4nlFZJp/rBlVTTkeOnYvAm4e791rtqywqKOv7ix2+XRLLrm2LdnK7ZauqGEWb/6VoKmyR5DQdiu
-        /iUrolLQ==;
+        bh=ysaRl84X3MDbn+S9kI3xR6Jc2oyHwyLSQUnLAsEjMuE=; b=p5WgdxEXuQhOsrZSCWfZ4nbvWd
+        S9QxA2QuZm41bgYIDSTo/MoJ3F6y5NybwdjKAb1zENuNPxQ5JaCgoisSanyS+VxfAKNTZ3DhCnGxM
+        GRI34pww82APmBXvYe1slhO7KbeDXyRYwJhBD4FhrACgeJ9vVmZjLA9Egg2oklHL/mRUPz6/77gVa
+        yDklaGfn9er6UvGCNj/3gWHOB8DvqpXs0QFCe2otSwINEjDLWRJJhtCLlD5Ckjm0Gl6Md8WfVQF1h
+        woWkdLuvkwT4gu9PxQ+vAkPFn1LNuh6QF/usG7AwoaOZZD9Z45+qMiHMtBRIQsv92umXED2i2WbuQ
+        Tyyv2O+A==;
 Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nG4jW-007Lm7-66; Fri, 04 Feb 2022 19:59:02 +0000
+        id 1nG4jb-007LqN-0i; Fri, 04 Feb 2022 19:59:07 +0000
 From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
 To:     linux-mm@kvack.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        linux-kernel@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        William Kucharski <william.kucharski@oracle.com>
-Subject: [PATCH 28/75] mm/gup: Convert check_and_migrate_movable_pages() to use a folio
-Date:   Fri,  4 Feb 2022 19:58:05 +0000
-Message-Id: <20220204195852.1751729-29-willy@infradead.org>
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 64/75] mm/vmscan: Turn page_check_references() into folio_check_references()
+Date:   Fri,  4 Feb 2022 19:58:41 +0000
+Message-Id: <20220204195852.1751729-65-willy@infradead.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220204195852.1751729-1-willy@infradead.org>
 References: <20220204195852.1751729-1-willy@infradead.org>
@@ -46,78 +43,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Switch from head pages to folios.  This removes an assumption that
-THPs are the only way to have a high-order page.
+This function only has one caller, and it already has a folio.  This
+removes a number of calls to compound_head().
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: John Hubbard <jhubbard@nvidia.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: William Kucharski <william.kucharski@oracle.com>
 ---
- mm/gup.c | 28 ++++++++++++++--------------
- 1 file changed, 14 insertions(+), 14 deletions(-)
+ mm/vmscan.c | 31 +++++++++++++++----------------
+ 1 file changed, 15 insertions(+), 16 deletions(-)
 
-diff --git a/mm/gup.c b/mm/gup.c
-index edec7356b965..9f2f8d765c58 100644
---- a/mm/gup.c
-+++ b/mm/gup.c
-@@ -1815,41 +1815,41 @@ static long check_and_migrate_movable_pages(unsigned long nr_pages,
- 	bool drain_allow = true;
- 	LIST_HEAD(movable_page_list);
- 	long ret = 0;
--	struct page *prev_head = NULL;
--	struct page *head;
-+	struct folio *folio, *prev_folio = NULL;
- 	struct migration_target_control mtc = {
- 		.nid = NUMA_NO_NODE,
- 		.gfp_mask = GFP_USER | __GFP_NOWARN,
- 	};
+diff --git a/mm/vmscan.c b/mm/vmscan.c
+index 5ceed53cb326..450dd9c3395f 100644
+--- a/mm/vmscan.c
++++ b/mm/vmscan.c
+@@ -1376,55 +1376,54 @@ enum page_references {
+ 	PAGEREF_ACTIVATE,
+ };
  
- 	for (i = 0; i < nr_pages; i++) {
--		head = compound_head(pages[i]);
--		if (head == prev_head)
-+		folio = page_folio(pages[i]);
-+		if (folio == prev_folio)
- 			continue;
--		prev_head = head;
-+		prev_folio = folio;
+-static enum page_references page_check_references(struct page *page,
++static enum page_references folio_check_references(struct folio *folio,
+ 						  struct scan_control *sc)
+ {
+-	struct folio *folio = page_folio(page);
+-	int referenced_ptes, referenced_page;
++	int referenced_ptes, referenced_folio;
+ 	unsigned long vm_flags;
+ 
+ 	referenced_ptes = folio_referenced(folio, 1, sc->target_mem_cgroup,
+ 					   &vm_flags);
+-	referenced_page = TestClearPageReferenced(page);
++	referenced_folio = folio_test_clear_referenced(folio);
+ 
+ 	/*
+ 	 * Mlock lost the isolation race with us.  Let try_to_unmap()
+-	 * move the page to the unevictable list.
++	 * move the folio to the unevictable list.
+ 	 */
+ 	if (vm_flags & VM_LOCKED)
+ 		return PAGEREF_RECLAIM;
+ 
+ 	if (referenced_ptes) {
  		/*
- 		 * If we get a movable page, since we are going to be pinning
- 		 * these entries, try to move them out if possible.
+-		 * All mapped pages start out with page table
++		 * All mapped folios start out with page table
+ 		 * references from the instantiating fault, so we need
+-		 * to look twice if a mapped file page is used more
++		 * to look twice if a mapped file folio is used more
+ 		 * than once.
+ 		 *
+ 		 * Mark it and spare it for another trip around the
+ 		 * inactive list.  Another page table reference will
+ 		 * lead to its activation.
+ 		 *
+-		 * Note: the mark is set for activated pages as well
+-		 * so that recently deactivated but used pages are
++		 * Note: the mark is set for activated folios as well
++		 * so that recently deactivated but used folios are
+ 		 * quickly recovered.
  		 */
--		if (!is_pinnable_page(head)) {
--			if (PageHuge(head)) {
--				if (!isolate_huge_page(head, &movable_page_list))
-+		if (!is_pinnable_page(&folio->page)) {
-+			if (folio_test_hugetlb(folio)) {
-+				if (!isolate_huge_page(&folio->page,
-+							&movable_page_list))
- 					isolation_error_count++;
- 			} else {
--				if (!PageLRU(head) && drain_allow) {
-+				if (!folio_test_lru(folio) && drain_allow) {
- 					lru_add_drain_all();
- 					drain_allow = false;
- 				}
+-		SetPageReferenced(page);
++		folio_set_referenced(folio);
  
--				if (isolate_lru_page(head)) {
-+				if (folio_isolate_lru(folio)) {
- 					isolation_error_count++;
- 					continue;
- 				}
--				list_add_tail(&head->lru, &movable_page_list);
--				mod_node_page_state(page_pgdat(head),
-+				list_add_tail(&folio->lru, &movable_page_list);
-+				node_stat_mod_folio(folio,
- 						    NR_ISOLATED_ANON +
--						    page_is_file_lru(head),
--						    thp_nr_pages(head));
-+						    folio_is_file_lru(folio),
-+						    folio_nr_pages(folio));
- 			}
- 		}
+-		if (referenced_page || referenced_ptes > 1)
++		if (referenced_folio || referenced_ptes > 1)
+ 			return PAGEREF_ACTIVATE;
+ 
+ 		/*
+-		 * Activate file-backed executable pages after first usage.
++		 * Activate file-backed executable folios after first usage.
+ 		 */
+-		if ((vm_flags & VM_EXEC) && !PageSwapBacked(page))
++		if ((vm_flags & VM_EXEC) && !folio_test_swapbacked(folio))
+ 			return PAGEREF_ACTIVATE;
+ 
+ 		return PAGEREF_KEEP;
  	}
+ 
+-	/* Reclaim if clean, defer dirty pages to writeback */
+-	if (referenced_page && !PageSwapBacked(page))
++	/* Reclaim if clean, defer dirty folios to writeback */
++	if (referenced_folio && !folio_test_swapbacked(folio))
+ 		return PAGEREF_RECLAIM_CLEAN;
+ 
+ 	return PAGEREF_RECLAIM;
+@@ -1664,7 +1663,7 @@ static unsigned int shrink_page_list(struct list_head *page_list,
+ 		}
+ 
+ 		if (!ignore_references)
+-			references = page_check_references(page, sc);
++			references = folio_check_references(folio, sc);
+ 
+ 		switch (references) {
+ 		case PAGEREF_ACTIVATE:
 -- 
 2.34.1
 
