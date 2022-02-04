@@ -2,57 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09358C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 21:42:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7BC3C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 21:42:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244670AbiBDVmZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 16:42:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40900 "EHLO
+        id S245016AbiBDVma (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 16:42:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243671AbiBDVmM (ORCPT
+        with ESMTP id S243843AbiBDVmP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 16:42:12 -0500
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F303C061401
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 13:42:11 -0800 (PST)
-Received: by mail-pj1-x104a.google.com with SMTP id s9-20020a17090aad8900b001b82d1e4dc8so4271022pjq.6
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Feb 2022 13:42:11 -0800 (PST)
+        Fri, 4 Feb 2022 16:42:15 -0500
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C213CC061714
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 13:42:14 -0800 (PST)
+Received: by mail-pj1-x1049.google.com with SMTP id m21-20020a17090b069500b001b532620cd9so4288424pjz.1
+        for <linux-kernel@vger.kernel.org>; Fri, 04 Feb 2022 13:42:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=SN0Z+icyOC8azJmY8lil5AT+GqrQYLTXy+CHe5R+yDA=;
-        b=rgBolqPf4C1gRSpaHVzt97AmfFoycWf3gvpXXQU5yyTs/tcpym9X6O9sQrA/ucSv41
-         5T5lN3f2nuRvKSpJJNYS1yCx+8u2YSTpQzmbbIcrap7trHRAwSqnHM7pEOrWw9tWWLOz
-         dyjBRu8VrP0ceh4TrFjN6Md2g8+zbv4kELjnpEcdBSFG5uZh9JfGnQCrZq0iAroHWq2Z
-         CpJtvjL0+zeM5vXUorgLoE/gwK8OiwT2PH0RWtD1DLscprMZST9cc/6Yt2cwFpc9pkDK
-         C6ufbMRd3XVsZHZBcg0t0j9hTJH4XTdmp1CqHSaIZeCJF2K7dA44dJEUYa+lqES++U+1
-         cPhQ==
+        bh=KKjH3zCPswTf0hjqacVy5YOkSkhUl6n6cultlDnB9r4=;
+        b=k/aPC/mMPGHNoH20HSjvFsILeFwxVaf8/1oUATZ3gMaugfTDdwj3wM6vgZYIU4nQ3n
+         z6bQxP45Mht4VAdettIJ9wpRGDG+RK8Iz2oi2cDaIn1dve93CYueFS85YPJDVlm7axWt
+         S6tW7iL1CnE5gQhMKqG1P2itMRzc1GUcn6ze532LTZLNzyyCbqsnVguGtPc4Bn51JnSJ
+         n4ALN/1fKeUEx0+rL+857zT90+n1A6KUxB7eT/gOidhwqGJMKJ6ERPHmNt+WuXCqVwwe
+         E1J9Tw5Y5jciyjHrZaSljauRntjnYivDlYEAYd/LEYYGf6Kg/du0tG97F/s3umrm4JsG
+         RpDg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=SN0Z+icyOC8azJmY8lil5AT+GqrQYLTXy+CHe5R+yDA=;
-        b=8BEZ+hZTyQUSo6N0VFgNdh4uTsxEq9swGz8wSc4WrhIxXTkvxFRTBuvHpAupjIJpSS
-         huYLZhhfbC5eIdI8ixP0y0AwU6BsqIzboitRYNIWXdUljo8aUd83OXte7NK1TQ+NjZsq
-         etu+ENntzNcIGHJqXCH+x6tXeq5ppMSGHsYPMSCg8uJC7z+lMKgJDnCYeYHVqGq/EUcC
-         XeExlczhYkbSwDz5DS8yXxikfSWY8cqOBPZ+9OBISh42S4sN6OVm3A3sfmxT7K0q1q9u
-         T40MipJuio9Rye88xqWOL1kl9HTerQvr+1R39mk/DpBF3T8lnMwGBQI3uVX6ON55f5Z2
-         pZbQ==
-X-Gm-Message-State: AOAM531UsmTM8/zxFH7vYaW3Spz+J/DFFvvNLJAIEdZ8c7n9Dy41LaRT
-        pE0Qx3h/A/NBjb8K2oeXKADZtmolvrk=
-X-Google-Smtp-Source: ABdhPJzQXB3jNCCPs2r426cwfrERg3u0KFyRu3mEURa+fe/3WgXQLUz7ChRCmM2gdVmhIuMIs05DsOfhpTU=
+        bh=KKjH3zCPswTf0hjqacVy5YOkSkhUl6n6cultlDnB9r4=;
+        b=BNo8kqifKfVhlrEdX5hcR33ifFrTb8Ra1sUTk8bLjMwdlpjvVW76Yh4EMbSz3T/x3C
+         4rZcls4gbGCB2DKWBvUeuMdDxoD3N1ihID+VQ58zgJRGS95tzH8lJwbqqKOJCoBtCaBc
+         Zcr3ztNL3n5SyUKH5giB8pRXO+OUXrGzu4jn/FdGX5FSj1ZVbnYWmhLMouLQCZYNrDis
+         mm2tVEubYwJwzW073ma05VFFfo/mUSOlSIXLggThhsEuf+Il8mfpuQ7supEKdKf/whbn
+         C1yUL/PAcF8ffEjPGfiKxC8ry3rQ1TH+k0HOxewTfNYR3pdX8xrySsCKz0D2gyHoXx6J
+         c3DQ==
+X-Gm-Message-State: AOAM531zLmKLgZ1AHDxpGoyh0cdBl8ZA+cPYxNX4RGTP+e5g6+V3wjRK
+        WChjhjxIcJkmTBDCb9redRkp9Fx4be8=
+X-Google-Smtp-Source: ABdhPJyO/YpOUBTWRsnzCsX1L05Kf7rSUUypro5AemY+0lFROqlrme/xEPWu2TDUq3jPILLG9FO3nC2v0QU=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a05:6a00:1409:: with SMTP id
- l9mr5033269pfu.20.1644010931015; Fri, 04 Feb 2022 13:42:11 -0800 (PST)
+ (user=seanjc job=sendgmr) by 2002:a17:902:b495:: with SMTP id
+ y21mr5238714plr.82.1644010934301; Fri, 04 Feb 2022 13:42:14 -0800 (PST)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri,  4 Feb 2022 21:41:56 +0000
+Date:   Fri,  4 Feb 2022 21:41:58 +0000
 In-Reply-To: <20220204214205.3306634-1-seanjc@google.com>
-Message-Id: <20220204214205.3306634-3-seanjc@google.com>
+Message-Id: <20220204214205.3306634-5-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220204214205.3306634-1-seanjc@google.com>
 X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
-Subject: [PATCH 02/11] KVM: VMX: Handle APIC-write offset wrangling in VMX code
+Subject: [PATCH 04/11] KVM: SVM: Use common kvm_apic_write_nodecode() for AVIC
+ write traps
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -68,58 +69,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move the vAPIC offset adjustments done in the APIC-write trap path from
-common x86 to VMX in anticipation of using the nodecode path for SVM's
-AVIC.  The adjustment reflects hardware behavior, i.e. it's technically a
-property of VMX, no common x86.  SVM's AVIC behavior is identical, so
-it's a bit of a moot point, the goal is purely to make it easier to
-understand why the adjustment is ok.
+Use the common kvm_apic_write_nodecode() to handle AVIC/APIC-write traps
+instead of open coding the same exact code.  This will allow making the
+low level lapic helpers inaccessible outside of lapic.c code.
+
+Opportunistically clean up the params to eliminate a bunch of svm=>vcpu
+reflection.
 
 No functional change intended.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/kvm/lapic.c   |  3 ---
- arch/x86/kvm/vmx/vmx.c | 11 +++++++++--
- 2 files changed, 9 insertions(+), 5 deletions(-)
+ arch/x86/kvm/svm/avic.c | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
 
-diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
-index 4662469240bc..fbce455a9d17 100644
---- a/arch/x86/kvm/lapic.c
-+++ b/arch/x86/kvm/lapic.c
-@@ -2188,9 +2188,6 @@ void kvm_apic_write_nodecode(struct kvm_vcpu *vcpu, u32 offset)
- {
- 	u32 val = 0;
+diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+index ecc81c48c0ca..462ab073db38 100644
+--- a/arch/x86/kvm/svm/avic.c
++++ b/arch/x86/kvm/svm/avic.c
+@@ -476,10 +476,9 @@ static void avic_handle_dfr_update(struct kvm_vcpu *vcpu)
+ 	svm->dfr_reg = dfr;
+ }
  
--	/* hw has done the conditional check and inst decode */
--	offset &= 0xff0;
+-static int avic_unaccel_trap_write(struct vcpu_svm *svm)
++static int avic_unaccel_trap_write(struct kvm_vcpu *vcpu)
+ {
+-	struct kvm_lapic *apic = svm->vcpu.arch.apic;
+-	u32 offset = svm->vmcb->control.exit_info_1 &
++	u32 offset = to_svm(vcpu)->vmcb->control.exit_info_1 &
+ 				AVIC_UNACCEL_ACCESS_OFFSET_MASK;
+ 
+ 	switch (offset) {
+@@ -488,18 +487,17 @@ static int avic_unaccel_trap_write(struct vcpu_svm *svm)
+ 			return 0;
+ 		break;
+ 	case APIC_LDR:
+-		if (avic_handle_ldr_update(&svm->vcpu))
++		if (avic_handle_ldr_update(vcpu))
+ 			return 0;
+ 		break;
+ 	case APIC_DFR:
+-		avic_handle_dfr_update(&svm->vcpu);
++		avic_handle_dfr_update(vcpu);
+ 		break;
+ 	default:
+ 		break;
+ 	}
+ 
+-	kvm_lapic_reg_write(apic, offset, kvm_lapic_get_reg(apic, offset));
 -
- 	kvm_lapic_reg_read(vcpu->arch.apic, offset, 4, &val);
- 
- 	/* TODO: optimize to just emulate side effect w/o one more write */
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index b1165bb13a5a..1b135473677b 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -5302,9 +5302,16 @@ static int handle_apic_eoi_induced(struct kvm_vcpu *vcpu)
- static int handle_apic_write(struct kvm_vcpu *vcpu)
- {
- 	unsigned long exit_qualification = vmx_get_exit_qual(vcpu);
--	u32 offset = exit_qualification & 0xfff;
- 
--	/* APIC-write VM exit is trap-like and thus no need to adjust IP */
-+	/*
-+	 * APIC-write VM-Exit is trap-like, KVM doesn't need to advance RIP and
-+	 * hardware has done any necessary aliasing, offset adjustments, etc...
-+	 * for the access.  I.e. the correct value has already been  written to
-+	 * the vAPIC page for the correct 16-byte chunk.  KVM needs only to
-+	 * retrieve the register value and emulate the access.
-+	 */
-+	u32 offset = exit_qualification & 0xff0;
-+
- 	kvm_apic_write_nodecode(vcpu, offset);
++	kvm_apic_write_nodecode(vcpu, offset);
  	return 1;
  }
+ 
+@@ -549,7 +547,7 @@ int avic_unaccelerated_access_interception(struct kvm_vcpu *vcpu)
+ 	if (trap) {
+ 		/* Handling Trap */
+ 		WARN_ONCE(!write, "svm: Handling trap read.\n");
+-		ret = avic_unaccel_trap_write(svm);
++		ret = avic_unaccel_trap_write(vcpu);
+ 	} else {
+ 		/* Handling Fault */
+ 		ret = kvm_emulate_instruction(vcpu, 0);
 -- 
 2.35.0.263.gb82422642f-goog
 
