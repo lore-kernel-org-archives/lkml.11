@@ -2,103 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D686EC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:25:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5438C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:25:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357945AbiBDJZx (ORCPT
+        id S1358231AbiBDJZ5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 04:25:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60994 "EHLO
+        Fri, 4 Feb 2022 04:25:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357595AbiBDJYa (ORCPT
+        with ESMTP id S1357593AbiBDJYa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 4 Feb 2022 04:24:30 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB1AFC06177A;
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B7C4C061759;
         Fri,  4 Feb 2022 01:24:30 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7D34AB836B9;
-        Fri,  4 Feb 2022 09:24:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59540C004E1;
-        Fri,  4 Feb 2022 09:24:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643966668;
-        bh=fSmrUO2QO2mxwW/Q3DVpy091GpVKvail29v4IS7R+dU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oDS/m2KrhsYSLT6KbhBQGxzz8YyppL2bPL3sG6kHTnagRbfeKoBqHi/DarBbZJpcd
-         gKtXOgmaIykGmkSx0a/CrWqt2R6p0npf6eo8Zr9F1LBZdQuPKt6Kf/DYBHEOssjX4V
-         SsMdEXHGe4GxZBBvUYdxC3IsuyfDTK3pzO7CVqqU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Lendacky <thomas.lendacky@amd.com>,
-        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 25/32] net: amd-xgbe: Fix skb data length underflow
-Date:   Fri,  4 Feb 2022 10:22:35 +0100
-Message-Id: <20220204091916.090850152@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220204091915.247906930@linuxfoundation.org>
-References: <20220204091915.247906930@linuxfoundation.org>
-User-Agent: quilt/0.66
+Date:   Fri, 4 Feb 2022 10:24:25 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1643966667;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=A1OquCNeqBrmSz1l+c7aggW4kgLy2MKoprxou4C3Lds=;
+        b=gPEs6AT/BsmdvBXVrkFPpf1gIUZh4ZepiJtkxEXOQI+h4zPxl7Ewut4c/sti4Cv6QvyLo5
+        qQS7Fh9I25FxXiXjvgYtGUKqQtrAfEF7hcrC9g9ozeoAywRT+Vpboq77CsEaOq9WWEjsHC
+        LLWAUEAeF53XOOX9GxzW4yKyW6oaGd6Bt9csn9kDqBo697qkM/Ceij65ZIVE1/b0EYvvI6
+        p8cKl8q3WOIDwE7Lji6ZZBy6wpx2PYhUsHFnD5YbioKZEtHYD7HsssaRWTywavro8GuZPr
+        SDVJHE6Xev9tPagiuDV0CyjqE1FyYdb598WpjE+3UPE18Ki807iB9om+B5MAKQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1643966667;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=A1OquCNeqBrmSz1l+c7aggW4kgLy2MKoprxou4C3Lds=;
+        b=ohfrdA8XNt14v/qtvuGcHuIt9fP7Ul8cAktixgFJE1U1guZl3f9HoU+g3end07R64deWKT
+        isP5+PQiTyB7CuCA==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Valentin Schneider <valentin.schneider@arm.com>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        rcu@vger.kernel.org, linux-rt-users@vger.kernel.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        Steven Price <steven.price@arm.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Mike Galbraith <efault@gmx.de>
+Subject: Re: [PATCH v3 2/4] sched: Introduce migratable()
+Message-ID: <YfzwycgvDlVSGrB1@linutronix.de>
+References: <20210811201354.1976839-1-valentin.schneider@arm.com>
+ <20210811201354.1976839-3-valentin.schneider@arm.com>
+ <20210817170925.2jwqvgvmqab2glwu@linutronix.de>
+ <87czq573et.mognet@arm.com>
+ <YfF9I5PcZJA5532B@linutronix.de>
+ <87v8y5nflv.mognet@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <87v8y5nflv.mognet@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
+On 2022-01-27 19:27:56 [+0000], Valentin Schneider wrote:
 
-commit 5aac9108a180fc06e28d4e7fb00247ce603b72ee upstream.
+Sorry, got distracted.
 
-There will be BUG_ON() triggered in include/linux/skbuff.h leading to
-intermittent kernel panic, when the skb length underflow is detected.
+> While I'm at it, I see you're still carrying
+> 
+>   6ab5bb09040d arm64/sve: Make kernel FPU protection RT friendly
+> 
+> If you're OK with it, I'll repost that:
+> https://lore.kernel.org/lkml/20210722175157.1367122-1-valentin.schneider@arm.com/
 
-Fix this by dropping the packet if such length underflows are seen
-because of inconsistencies in the hardware descriptors.
-
-Fixes: 622c36f143fc ("amd-xgbe: Fix jumbo MTU processing on newer hardware")
-Suggested-by: Tom Lendacky <thomas.lendacky@amd.com>
-Signed-off-by: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
-Acked-by: Tom Lendacky <thomas.lendacky@amd.com>
-Link: https://lore.kernel.org/r/20220127092003.2812745-1-Shyam-sundar.S-k@amd.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/net/ethernet/amd/xgbe/xgbe-drv.c |   12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
-
---- a/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
-+++ b/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
-@@ -2557,6 +2557,14 @@ read_again:
- 			buf2_len = xgbe_rx_buf2_len(rdata, packet, len);
- 			len += buf2_len;
+I'm not too keen about preempt_enable_bh(). I would prefer the current
+approach maybe with a comment why BH here and preemption there is
+correct.
  
-+			if (buf2_len > rdata->rx.buf.dma_len) {
-+				/* Hardware inconsistency within the descriptors
-+				 * that has resulted in a length underflow.
-+				 */
-+				error = 1;
-+				goto skip_data;
-+			}
-+
- 			if (!skb) {
- 				skb = xgbe_create_skb(pdata, napi, rdata,
- 						      buf1_len);
-@@ -2586,8 +2594,10 @@ skip_data:
- 		if (!last || context_next)
- 			goto read_again;
- 
--		if (!skb)
-+		if (!skb || error) {
-+			dev_kfree_skb(skb);
- 			goto next_packet;
-+		}
- 
- 		/* Be sure we don't exceed the configured MTU */
- 		max_len = netdev->mtu + ETH_HLEN;
-
-
+Sebastian
