@@ -2,104 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABCB2C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 22:53:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A1F9C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 22:54:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353892AbiBDWxP (ORCPT
+        id S1354198AbiBDWyM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 17:53:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60452 "EHLO
+        Fri, 4 Feb 2022 17:54:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234056AbiBDWxO (ORCPT
+        with ESMTP id S234056AbiBDWyL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 17:53:14 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E89ECC06134A;
-        Fri,  4 Feb 2022 14:53:12 -0800 (PST)
+        Fri, 4 Feb 2022 17:54:11 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3B60C06134B;
+        Fri,  4 Feb 2022 14:54:10 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B67ADB83954;
-        Fri,  4 Feb 2022 22:53:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8B7EC004E1;
-        Fri,  4 Feb 2022 22:53:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 73B6161A60;
+        Fri,  4 Feb 2022 22:54:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC733C004E1;
+        Fri,  4 Feb 2022 22:54:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644015190;
-        bh=/GzwVvJMLbvFuL7505iRlddvcEtqGqqgxMSACzO5WaM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=SCVpnqN0O2Oeo+jsHYY7UyYnv8LrQu8v/cO91izw0Zs9hvvq2hXLdmscEji4rFGvO
-         4RVO1ELuhL6b6ui5qdKFNgQ12FWmn2nziYmt7qR/M91iMcgxs77FjfsURueL/THNew
-         bkxAIjyODRfFB63pWunMh1AN6cjSiVWSxf0jOh3MGFS0fQvsc22UCBJBJIShflV0ux
-         SxeQ2X4ACfvBtpgXvzY6IZGxcnLmwIl9ZrR5QJCQt/e1CyyzAXF7Lb2a46NU5S99Ba
-         /0LYuDB8NnUZBQt4sScS2ZoK9AVN3t77ImLm+NkChXapZ+I3ZkLZVw01Zz7wm6YCL+
-         NJqaHHqyz4e3w==
-Date:   Fri, 4 Feb 2022 16:53:08 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Ben Dooks <ben.dooks@codethink.co.uk>
-Cc:     paul.walmsley@sifive.com, greentime.hu@sifive.com,
-        lorenzo.pieralisi@arm.com, robh@kernel.org, kw@linux.com,
-        bhelgaas@google.com, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
-Subject: Re: [PATCH] PCI: fu740: fix finding gpios
-Message-ID: <20220204225308.GA225749@bhelgaas>
+        s=k20201202; t=1644015249;
+        bh=uwQXLbWhaPjyy/J2caZF9btjWvoBfJ0LSQaXFvNklkU=;
+        h=Date:From:To:Cc:Subject:Reply-To:From;
+        b=Pn6aZQxepVxMXVp6OTHli6rmi4n7qzf0iRixiMBz0L6yD8gytDhzv3aYvBcsek4Gi
+         srhjXNxHsFdikdUN38ZNaVYGJ8goc6XlUQK8P9hz5+a0CQmjIROepkpS/9+7HpaHE6
+         W4eaxgetKHplMfWhpZTIAL7AOgF5FsQANZJdD1BPNH8aRUrrOYa8P8TUjb2Zr/E7aF
+         YbSvQY4I5Uhfd47Rze/il6hYep/iLHSh2FGVGuNZrj6xe7uVgJAto14UC/4VUssK6q
+         kgoXeIdGB1ORso/yWhtUsNCeFqLyL7cyRxUrmWQIkh6kD7hUEwEpaWnNloD0D6RCr5
+         2L4pFKL2ntFcA==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id A4B505C0418; Fri,  4 Feb 2022 14:54:09 -0800 (PST)
+Date:   Fri, 4 Feb 2022 14:54:09 -0800
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     rcu@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com,
+        rostedt@goodmis.org
+Subject: [PATCH rcu 0/3] Expedited-grace-period updates for v5.18
+Message-ID: <20220204225409.GA4193020@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220204173821.281784-1-ben.dooks@codethink.co.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Follow subject line convention (s/fix/Fix/, s/gpios/GPIOs/).
+Hello!
 
-On Fri, Feb 04, 2022 at 05:38:21PM +0000, Ben Dooks wrote:
-> The calls to devm_gpiod_get_optional() have the -gpios on
-> the name. This means the pcie driver is not finding the
-> necessary reset or power gpios to allow the pcie devices
-> on the SiFive Unmatched boards.
-> 
-> Note, this was workng around 5.16 and may not have been
-> broken? There is still an issue if uboot has not probed
-> the pcie bus then there are no pcie devices shown when
-> Linux is started.
+This series provides updates for RCU expedited grace periods:
 
-Wrap to fill 75 columns
-s/gpios/GPIOs/
-s/pcie/PCIe/
-s/workng/working/
-s/to allow the pcie devices/to allow the PCIe devices <to something>?/
+1.	Fix check for idle context in rcu_exp_handler, courtesy of
+	Neeraj Upadhyay.
 
-I can't tell what this is saying.  It used to work and something broke
-it?  If so, we should have a "Fixes:" tag to identify the commit that
-broke it.
+2.	Mark ->expmask access in synchronize_rcu_expedited_wait().
 
-Or it used to work and "may *not* have been broken"?  I'm confused.
+3.	Allow expedited RCU grace periods on incoming CPUs.
 
-Unclear how uboot is involved.
+						Thanx, Paul
 
-> Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
-> ---
->  drivers/pci/controller/dwc/pcie-fu740.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/pci/controller/dwc/pcie-fu740.c b/drivers/pci/controller/dwc/pcie-fu740.c
-> index 00cde9a248b5..842b7202b96e 100644
-> --- a/drivers/pci/controller/dwc/pcie-fu740.c
-> +++ b/drivers/pci/controller/dwc/pcie-fu740.c
-> @@ -259,11 +259,11 @@ static int fu740_pcie_probe(struct platform_device *pdev)
->  		return PTR_ERR(afp->mgmt_base);
->  
->  	/* Fetch GPIOs */
-> -	afp->reset = devm_gpiod_get_optional(dev, "reset-gpios", GPIOD_OUT_LOW);
-> +	afp->reset = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_LOW);
->  	if (IS_ERR(afp->reset))
->  		return dev_err_probe(dev, PTR_ERR(afp->reset), "unable to get reset-gpios\n");
->  
-> -	afp->pwren = devm_gpiod_get_optional(dev, "pwren-gpios", GPIOD_OUT_LOW);
-> +	afp->pwren = devm_gpiod_get_optional(dev, "pwren", GPIOD_OUT_LOW);
->  	if (IS_ERR(afp->pwren))
->  		return dev_err_probe(dev, PTR_ERR(afp->pwren), "unable to get pwren-gpios\n");
->  
-> -- 
-> 2.34.1
-> 
+------------------------------------------------------------------------
+
+ b/kernel/rcu/tree_exp.h |    2 +-
+ kernel/rcu/tree_exp.h   |   17 ++++++++++++-----
+ 2 files changed, 13 insertions(+), 6 deletions(-)
