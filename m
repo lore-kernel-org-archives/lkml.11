@@ -2,40 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7F1BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:24:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 654EFC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:24:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357870AbiBDJYh (ORCPT
+        id S1357915AbiBDJYq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 04:24:37 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:42790 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357680AbiBDJXg (ORCPT
+        Fri, 4 Feb 2022 04:24:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32920 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1357531AbiBDJX7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 04:23:36 -0500
+        Fri, 4 Feb 2022 04:23:59 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4A52C061751;
+        Fri,  4 Feb 2022 01:23:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4179461601;
-        Fri,  4 Feb 2022 09:23:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22F37C004E1;
-        Fri,  4 Feb 2022 09:23:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 610E9B836EA;
+        Fri,  4 Feb 2022 09:23:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66789C004E1;
+        Fri,  4 Feb 2022 09:23:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643966615;
-        bh=i1By24VIoY2lC/wDQNa/L9E+AUs3H7fv9iax0aywOIY=;
+        s=korg; t=1643966619;
+        bh=+oZvMD9AMkNurmINvNaniI2N5vd3IeWpBeB50CWq3EY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kxzNd352DGLyFAt5ui79/EHukOfVQLy4ZKj8KHSzKU/IEhUP9NPiSUKF00cUTA+LB
-         Y58P7qU7ekiOPD8GPZs6isanxr4cC8LHwFCRPiqJ/ceZ63BNGpHXZUVLdWUP09Wr3E
-         Yzx6nYCsoKAVGiTFpm5WvIUJOAQ+HUQFe3xVbH7Y=
+        b=b1547bn1I6R2D+PYsViTGrdb8/em5iCQSU15tF5lHEj2nKG8tGBbH37yzpiB6fuDm
+         zR1WaAwUavb8BVBQYcveWZPjsKzJOSSfngPx1/GPid1Zz61LI1/bEfDrBZftRAjzBV
+         L97C+E/3DSyQnw5iw810pIHIUTWTBEt+/s7ZR9Sg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Roi Dayan <roid@nvidia.com>,
-        Vlad Buslov <vladbu@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH 5.15 19/32] net/mlx5: Bridge, Fix devlink deadlock on net namespace deletion
-Date:   Fri,  4 Feb 2022 10:22:29 +0100
-Message-Id: <20220204091915.888414403@linuxfoundation.org>
+        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Geliang Tang <geliang.tang@suse.com>
+Subject: [PATCH 5.15 02/32] selftests: mptcp: fix ipv6 routing setup
+Date:   Fri,  4 Feb 2022 10:22:12 +0100
+Message-Id: <20220204091915.330086969@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220204091915.247906930@linuxfoundation.org>
 References: <20220204091915.247906930@linuxfoundation.org>
@@ -47,82 +51,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Roi Dayan <roid@nvidia.com>
+From: Paolo Abeni <pabeni@redhat.com>
 
-commit 880b517691908fb753019b9b27cd082e7617debd upstream.
+commit 9846921dba4936d92f7608315b5d1e0a8ec3a538 upstream.
 
-When changing mode to switchdev, rep bridge init registered to netdevice
-notifier holds the devlink lock and then takes pernet_ops_rwsem.
-At that time deleting a netns holds pernet_ops_rwsem and then takes
-the devlink lock.
+MPJ ipv6 selftests currently lack per link route to the server
+net. Additionally, ipv6 subflows endpoints are created without any
+interface specified. The end-result is that in ipv6 self-tests
+subflows are created all on the same link, leading to expected delays
+and sporadic self-tests failures.
 
-Example sequence is:
-$ ip netns add foo
-$ devlink dev eswitch set pci/0000:00:08.0 mode switchdev &
-$ ip netns del foo
+Fix the issue by adding the missing setup bits.
 
-deleting netns trace:
-
-[ 1185.365555]  ? devlink_pernet_pre_exit+0x74/0x1c0
-[ 1185.368331]  ? mutex_lock_io_nested+0x13f0/0x13f0
-[ 1185.370984]  ? xt_find_table+0x40/0x100
-[ 1185.373244]  ? __mutex_lock+0x24a/0x15a0
-[ 1185.375494]  ? net_generic+0xa0/0x1c0
-[ 1185.376844]  ? wait_for_completion_io+0x280/0x280
-[ 1185.377767]  ? devlink_pernet_pre_exit+0x74/0x1c0
-[ 1185.378686]  devlink_pernet_pre_exit+0x74/0x1c0
-[ 1185.379579]  ? devlink_nl_cmd_get_dumpit+0x3a0/0x3a0
-[ 1185.380557]  ? xt_find_table+0xda/0x100
-[ 1185.381367]  cleanup_net+0x372/0x8e0
-
-changing mode to switchdev trace:
-
-[ 1185.411267]  down_write+0x13a/0x150
-[ 1185.412029]  ? down_write_killable+0x180/0x180
-[ 1185.413005]  register_netdevice_notifier+0x1e/0x210
-[ 1185.414000]  mlx5e_rep_bridge_init+0x181/0x360 [mlx5_core]
-[ 1185.415243]  mlx5e_uplink_rep_enable+0x269/0x480 [mlx5_core]
-[ 1185.416464]  ? mlx5e_uplink_rep_disable+0x210/0x210 [mlx5_core]
-[ 1185.417749]  mlx5e_attach_netdev+0x232/0x400 [mlx5_core]
-[ 1185.418906]  mlx5e_netdev_attach_profile+0x15b/0x1e0 [mlx5_core]
-[ 1185.420172]  mlx5e_netdev_change_profile+0x15a/0x1d0 [mlx5_core]
-[ 1185.421459]  mlx5e_vport_rep_load+0x557/0x780 [mlx5_core]
-[ 1185.422624]  ? mlx5e_stats_grp_vport_rep_num_stats+0x10/0x10 [mlx5_core]
-[ 1185.424006]  mlx5_esw_offloads_rep_load+0xdb/0x190 [mlx5_core]
-[ 1185.425277]  esw_offloads_enable+0xd74/0x14a0 [mlx5_core]
-
-Fix this by registering rep bridges for per net netdev notifier
-instead of global one, which operats on the net namespace without holding
-the pernet_ops_rwsem.
-
-Fixes: 19e9bfa044f3 ("net/mlx5: Bridge, add offload infrastructure")
-Signed-off-by: Roi Dayan <roid@nvidia.com>
-Reviewed-by: Vlad Buslov <vladbu@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Fixes: 523514ed0a99 ("selftests: mptcp: add ADD_ADDR IPv6 test cases")
+Reported-and-tested-by: Geliang Tang <geliang.tang@suse.com>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ tools/testing/selftests/net/mptcp/mptcp_join.sh |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c
-@@ -491,7 +491,7 @@ void mlx5e_rep_bridge_init(struct mlx5e_
- 	}
+--- a/tools/testing/selftests/net/mptcp/mptcp_join.sh
++++ b/tools/testing/selftests/net/mptcp/mptcp_join.sh
+@@ -75,6 +75,7 @@ init()
  
- 	br_offloads->netdev_nb.notifier_call = mlx5_esw_bridge_switchdev_port_event;
--	err = register_netdevice_notifier(&br_offloads->netdev_nb);
-+	err = register_netdevice_notifier_net(&init_net, &br_offloads->netdev_nb);
- 	if (err) {
- 		esw_warn(mdev, "Failed to register bridge offloads netdevice notifier (err=%d)\n",
- 			 err);
-@@ -526,7 +526,7 @@ void mlx5e_rep_bridge_cleanup(struct mlx
- 		return;
+ 		# let $ns2 reach any $ns1 address from any interface
+ 		ip -net "$ns2" route add default via 10.0.$i.1 dev ns2eth$i metric 10$i
++		ip -net "$ns2" route add default via dead:beef:$i::1 dev ns2eth$i metric 10$i
+ 	done
+ }
  
- 	cancel_delayed_work_sync(&br_offloads->update_work);
--	unregister_netdevice_notifier(&br_offloads->netdev_nb);
-+	unregister_netdevice_notifier_net(&init_net, &br_offloads->netdev_nb);
- 	unregister_switchdev_blocking_notifier(&br_offloads->nb_blk);
- 	unregister_switchdev_notifier(&br_offloads->nb);
- 	destroy_workqueue(br_offloads->wq);
+@@ -1383,7 +1384,7 @@ ipv6_tests()
+ 	reset
+ 	ip netns exec $ns1 ./pm_nl_ctl limits 0 1
+ 	ip netns exec $ns2 ./pm_nl_ctl limits 0 1
+-	ip netns exec $ns2 ./pm_nl_ctl add dead:beef:3::2 flags subflow
++	ip netns exec $ns2 ./pm_nl_ctl add dead:beef:3::2 dev ns2eth3 flags subflow
+ 	run_tests $ns1 $ns2 dead:beef:1::1 0 0 0 slow
+ 	chk_join_nr "single subflow IPv6" 1 1 1
+ 
+@@ -1418,7 +1419,7 @@ ipv6_tests()
+ 	ip netns exec $ns1 ./pm_nl_ctl limits 0 2
+ 	ip netns exec $ns1 ./pm_nl_ctl add dead:beef:2::1 flags signal
+ 	ip netns exec $ns2 ./pm_nl_ctl limits 1 2
+-	ip netns exec $ns2 ./pm_nl_ctl add dead:beef:3::2 flags subflow
++	ip netns exec $ns2 ./pm_nl_ctl add dead:beef:3::2 dev ns2eth3 flags subflow
+ 	run_tests $ns1 $ns2 dead:beef:1::1 0 -1 -1 slow
+ 	chk_join_nr "remove subflow and signal IPv6" 2 2 2
+ 	chk_add_nr 1 1
 
 
