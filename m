@@ -2,76 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7490CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 22:54:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A590C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 22:54:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354582AbiBDWyV (ORCPT
+        id S1355046AbiBDWy6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 17:54:21 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:46390 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353907AbiBDWyQ (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 17:54:16 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 84958B83957;
-        Fri,  4 Feb 2022 22:54:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4FB8C004E1;
-        Fri,  4 Feb 2022 22:54:13 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="F3xewLKM"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1644015252;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=QxwkuLgPKcqsxzlJoEWQGZSMC8UnqMv4aAMgB0OnAPM=;
-        b=F3xewLKMrJUKNLymDWNlunywkxhzWi9wNLR0nQVWd1mRbxzuVAtbMQ6AVHlJfcK+/7WPaN
-        5U0uUZs7g/MyrHdyDrUGlpFvtxBQRAjxmkUGLfBFbBv99QrY+2Hq6Ku3Hsmio8GobMJvEG
-        FlBBA1N191EtpCNUDZ43y8U9HceigVU=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 3f5cffff (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Fri, 4 Feb 2022 22:54:12 +0000 (UTC)
-Received: by mail-yb1-f169.google.com with SMTP id p5so22772580ybd.13;
-        Fri, 04 Feb 2022 14:54:12 -0800 (PST)
-X-Gm-Message-State: AOAM531+HNg94miKjRfygaktENHpcc9yiQ/vSRr3D1ymXjNZyZ9cPZ7c
-        4pYr2iuRAEHlb+3GyhphSx9Upk5UCtqJ5IPAFxM=
-X-Google-Smtp-Source: ABdhPJyg6qhfv7p/Cl3RpX4gPSi+5RfI90iNM+xYT+XdWVz832OsApbvQQHOCovDliZ7OM+dvEpMpVts81zM2f+eA3I=
-X-Received: by 2002:a81:1084:: with SMTP id 126mr1259045ywq.231.1644015251136;
- Fri, 04 Feb 2022 14:54:11 -0800 (PST)
+        Fri, 4 Feb 2022 17:54:58 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:43270 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231162AbiBDWy4 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 4 Feb 2022 17:54:56 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=oy+ZGHqwRh7hOUZO4LcUt2H3aLODsyQ1hM4QpkJBUNY=; b=VKrwU16yfq7AedImRakIOxhI/n
+        DfZ7Ciogw9mjqS2uyRhJvAaETrZRNYez3Q60zkdmdCfLmKwiI77aLRya6OVOIVOjiYfB7ElsZL+Cf
+        FTxEs7PlZmNh/iWXeni+EkCsEGWizeRY2GbVEc3auGUbyT5KuALVRVQza3d/kH9l1qII=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nG7TU-004KaN-HT; Fri, 04 Feb 2022 23:54:40 +0100
+Date:   Fri, 4 Feb 2022 23:54:40 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Tim Harvey <tharvey@gateworks.com>
+Cc:     Martin Schiller <ms@dev.tdt.de>, Hauke Mehrtens <hauke@hauke-m.de>,
+        martin.blumenstingl@googlemail.com,
+        Florian Fainelli <f.fainelli@gmail.com>, hkallweit1@gmail.com,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        David Miller <davem@davemloft.net>, kuba@kernel.org,
+        netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net v3] net: phy: intel-xway: enable integrated led
+ functions
+Message-ID: <Yf2usAHGZSUDvLln@lunn.ch>
+References: <20210421055047.22858-1-ms@dev.tdt.de>
+ <CAJ+vNU1=4sDmGXEzPwp0SCq4_p0J-odw-GLM=Qyi7zQnVHwQRA@mail.gmail.com>
+ <YfspazpWoKuHEwPU@lunn.ch>
+ <CAJ+vNU2v9WD2kzB9uTD5j6DqnBBKhv-XOttKLoZ-VzkwdzwjXw@mail.gmail.com>
+ <YfwEvgerYddIUp1V@lunn.ch>
+ <CAJ+vNU1qY1VJgw1QRsbmED6-TLQP2wwxSYb+bXfqZ3wiObLgHg@mail.gmail.com>
+ <YfxtglvVDx2JJM9w@lunn.ch>
+ <CAJ+vNU1td9aizbws-uZ-p-fEzsD8rJVS-mZn4TT2YFn9PY2n_w@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220201161342.154666-1-Jason@zx2c4.com> <YfznyWaVCz3Yl1ma@sol.localdomain>
- <CAHmME9ppY5QY7QCXK1HapEUY9nOn3VSJgvddypmMj_CVfycPeQ@mail.gmail.com> <Yf2sJaxm3Nd5BUnr@sol.localdomain>
-In-Reply-To: <Yf2sJaxm3Nd5BUnr@sol.localdomain>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Fri, 4 Feb 2022 23:53:59 +0100
-X-Gmail-Original-Message-ID: <CAHmME9rEAsCz2N1eVFWsR4wZcSuDWqqgeJEvLuy2z4Ltrm=8wg@mail.gmail.com>
-Message-ID: <CAHmME9rEAsCz2N1eVFWsR4wZcSuDWqqgeJEvLuy2z4Ltrm=8wg@mail.gmail.com>
-Subject: Re: [PATCH] random: use computational hash for entropy extraction
-To:     Eric Biggers <ebiggers@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        "Theodore Ts'o" <tytso@mit.edu>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJ+vNU1td9aizbws-uZ-p-fEzsD8rJVS-mZn4TT2YFn9PY2n_w@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 4, 2022 at 11:43 PM Eric Biggers <ebiggers@kernel.org> wrote:
->
-> On Fri, Feb 04, 2022 at 02:24:07PM +0100, Jason A. Donenfeld wrote:
-> > > In the above comment, 'key' should be 'seed'.
-> > > Likewise above.
-> >
-> > Caught this too right after sending. Fixed now for v2.
-> >
->
-> This wasn't actually fixed in v2.
+> The PHY_INTERRFACE_MODE_NA is a neat trick that I will remember but it
+> would only help with the rgmii delay issue and not the LED issue (this
+> patch). The GPY111 has some really nasty errata that is going to cause
+> me to have a very hackish work-around anyway and I will be disabling
+> the PHY driver to stay out of the way of that workaround
 
-Doh! Fixed for real now I promise. :)
+Well, ideally we want the workaround for the erratas in the kernel
+drivers. In the long run, you will get less surprises if you add what
+you need to Linux, not hide stuff away in the bootloader.
 
-Jason
+> As far as changing a driver to force a LED configuration with no dt
+> binding input (like this patch does) it feels wrong for exactly the
+> same reason - LED configuration for this PHY can be done via
+> pin-strapping and this driver now undoes that with this patch.
+
+Is it possible to read the pin strapping pins? If we know it has been
+pin strapped, then a patch to detect this and not change the LED
+configuration seems very likely to be accepted.
+
+      Andrew
