@@ -2,76 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E97BFC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 03:20:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D379C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 03:21:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356786AbiBDDUS (ORCPT
+        id S1356792AbiBDDVX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 3 Feb 2022 22:20:18 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:52866 "EHLO
+        Thu, 3 Feb 2022 22:21:23 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:53456 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356772AbiBDDUL (ORCPT
+        with ESMTP id S1344597AbiBDDVW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 3 Feb 2022 22:20:11 -0500
+        Thu, 3 Feb 2022 22:21:22 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1656661991;
-        Fri,  4 Feb 2022 03:20:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 7C0BEC340F1;
-        Fri,  4 Feb 2022 03:20:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C5F6E61AD5;
+        Fri,  4 Feb 2022 03:21:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE639C340E8;
+        Fri,  4 Feb 2022 03:21:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643944810;
-        bh=d6pCDIR/pbq9RCk5p1jLVnLD2OZ9bM0bnSWn0niMAPE=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=fkMQDqipGuiFnChwhy91KeUvVggZy8phJ7761gpct+GceA7XTNjfCGUtAvfTEgKsi
-         D3PfoElAfUyaE15f1hvxYUDpjJmmSLVpPA6pY2ykBWEzDxOpgfN729979svFTPKtjS
-         DTYMk0Wzyq6t3vmmT8lANTplxwItCNl8PSr77qF5JagGT3cgwzASfDSGk3PhBBjn0H
-         FymxQfTsBrZh2KnWYGSIWPbfAlmq0D5CvTZUCW6WKofTjhzvSplAQ+J4YM4840wodA
-         RuRbPkPGMjfTdOqSO+cgYdXOkFwd9gAtPCkLjQwAygBbnqgAnehGMOxczXg/YrNmI2
-         MoqmdDVFPhWKQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6468AE5D09D;
-        Fri,  4 Feb 2022 03:20:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1643944881;
+        bh=YSy+6ZH0WVfzwdmOiqKVVldecAPykJSaMLEQU6gfzTI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=WSBc/ACdZhUSpNF2CEeZwHRZRcxLpirVZ6rt1zbfxtdU7DK6+TrGhceD2D9K7qd2z
+         i7spPLc7X3Y1Netr6qZr9B2ZdTBU4ICDym4R600zyfCCfeB5CTYX5it7Y46Pg9a9os
+         9twjG0AxeIr+QjZ5qORwSno6u8QeDYdZfyiywdvCC0qSEofGXSUlCSluwPPG27w5WJ
+         vww65i+oQYLogba3sJfXkeptQ+hbtrlJIaUr3BniwaBmwk2BEwaodVmV5/SHWmyWE1
+         eChdu7vU+CWjaKwrj/O3s4k8RV5H3rRdAdvN3/0NHhYwk0QBg8wNwyebEAUPLUD3YQ
+         LI2Dp0ETSUfhA==
+From:   Chao Yu <chao@kernel.org>
+To:     jaegeuk@kernel.org
+Cc:     linux-f2fs-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, Chao Yu <chao@kernel.org>,
+        stable@vger.kernel.org, Pavel Machek <pavel@denx.de>
+Subject: [PATCH v2] f2fs: fix to unlock page correctly in error path of is_alive()
+Date:   Fri,  4 Feb 2022 11:21:14 +0800
+Message-Id: <20220204032114.43720-1-chao@kernel.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: lan966x: use .mac_select_pcs() interface
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164394481040.31803.16110916498512069085.git-patchwork-notify@kernel.org>
-Date:   Fri, 04 Feb 2022 03:20:10 +0000
-References: <20220202114949.833075-1-horatiu.vultur@microchip.com>
-In-Reply-To: <20220202114949.833075-1-horatiu.vultur@microchip.com>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        UNGLinuxDriver@microchip.com, davem@davemloft.net, kuba@kernel.org,
-        linux@armlinux.org.uk
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+As Pavel Machek reported in below link [1]:
 
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+After commit 77900c45ee5c ("f2fs: fix to do sanity check in is_alive()"),
+node page should be unlock via calling f2fs_put_page() in the error path
+of is_alive(), otherwise, f2fs may hang when it tries to lock the node
+page, fix it.
 
-On Wed, 2 Feb 2022 12:49:49 +0100 you wrote:
-> Convert lan966x to use the mac_select_interface instead of
-> phylink_set_pcs.
-> 
-> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> ---
->  drivers/net/ethernet/microchip/lan966x/lan966x_main.c    | 1 -
->  drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c | 9 +++++++++
->  2 files changed, 9 insertions(+), 1 deletion(-)
+[1] https://lore.kernel.org/stable/20220124203637.GA19321@duo.ucw.cz/
 
-Here is the summary with links:
-  - [net-next] net: lan966x: use .mac_select_pcs() interface
-    https://git.kernel.org/netdev/net-next/c/41414c9bdbb8
+Fixes: 77900c45ee5c ("f2fs: fix to do sanity check in is_alive()")
+Cc: <stable@vger.kernel.org>
+Reported-by: Pavel Machek <pavel@denx.de>
+Signed-off-by: Pavel Machek <pavel@denx.de>
+Signed-off-by: Chao Yu <chao@kernel.org>
+---
+v2:
+- Cc stable-kernel mailing list.
+ fs/f2fs/gc.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-You are awesome, thank you!
+diff --git a/fs/f2fs/gc.c b/fs/f2fs/gc.c
+index 0a6b0a8ae97e..2d53ef121e76 100644
+--- a/fs/f2fs/gc.c
++++ b/fs/f2fs/gc.c
+@@ -1038,8 +1038,10 @@ static bool is_alive(struct f2fs_sb_info *sbi, struct f2fs_summary *sum,
+ 		set_sbi_flag(sbi, SBI_NEED_FSCK);
+ 	}
+ 
+-	if (f2fs_check_nid_range(sbi, dni->ino))
++	if (f2fs_check_nid_range(sbi, dni->ino)) {
++		f2fs_put_page(node_page, 1);
+ 		return false;
++	}
+ 
+ 	*nofs = ofs_of_node(node_page);
+ 	source_blkaddr = data_blkaddr(NULL, node_page, ofs_in_node);
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.32.0
 
