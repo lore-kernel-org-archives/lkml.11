@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1842EC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:24:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BFDEC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:24:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357520AbiBDJX7 (ORCPT
+        id S1357645AbiBDJYB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 04:23:59 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:52016 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357809AbiBDJXG (ORCPT
+        Fri, 4 Feb 2022 04:24:01 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:42420 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1357221AbiBDJXH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 04:23:06 -0500
+        Fri, 4 Feb 2022 04:23:07 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D0174B836B9;
-        Fri,  4 Feb 2022 09:23:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1981C004E1;
-        Fri,  4 Feb 2022 09:23:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 33842615A5;
+        Fri,  4 Feb 2022 09:23:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F43EC004E1;
+        Fri,  4 Feb 2022 09:23:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643966583;
-        bh=4KnP9f2BG2N0gQWpClCCaBlbp1tyU3Pjw2Z1LPrgmQ8=;
+        s=korg; t=1643966586;
+        bh=tTUbBlWGxGlAA/M3iRfxvQhYj3pYTSvQpKE+09KRzqE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Nw3vkuh8LQpryVQJvapvB1VKd70Rlc/diKfHVozmJ3jXJteEAU0s5d3ZS3owm13aR
-         nEbgrJgIT5H9cVnqydC5TOtIuSm3AdjS1yRlkLlTOXeIRE86TuSjNTU7a7iuCJF3DH
-         4clXFU43GN1TGYmBBCm42uV9yC38OvftHBiy03lk=
+        b=fs4EAAR8gpz7MmIWc698a2HyBQotPqXWgyk7oRBUL2yRxYSGyySut5pUPV9z0v3vA
+         QOj3TPiBcDp7HrU54becujwlMfLYrJ4b2xQmEMxpO46LUGfjWAcUudhFqA3Nf8SMuc
+         jPr2IF4onVzXQ714DuplOPRMrZUmPLdYCf6lwF4Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joseph Bao <joseph.bao@intel.com>,
-        Lukas Wunner <lukas@wunner.de>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Stuart Hayes <stuart.w.hayes@gmail.com>
-Subject: [PATCH 5.15 01/32] PCI: pciehp: Fix infinite loop in IRQ handler upon power fault
-Date:   Fri,  4 Feb 2022 10:22:11 +0100
-Message-Id: <20220204091915.298182626@linuxfoundation.org>
+        stable@vger.kernel.org, "J. Bruce Fields" <bfields@redhat.com>,
+        Chuck Lever <chuck.lever@oracle.com>
+Subject: [PATCH 5.15 10/32] lockd: fix failure to cleanup client locks
+Date:   Fri,  4 Feb 2022 10:22:20 +0100
+Message-Id: <20220204091915.606336966@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220204091915.247906930@linuxfoundation.org>
 References: <20220204091915.247906930@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -50,76 +46,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Wunner <lukas@wunner.de>
+From: J. Bruce Fields <bfields@redhat.com>
 
-commit 23584c1ed3e15a6f4bfab8dc5a88d94ab929ee12 upstream.
+commit d19a7af73b5ecaac8168712d18be72b9db166768 upstream.
 
-The Power Fault Detected bit in the Slot Status register differs from
-all other hotplug events in that it is sticky:  It can only be cleared
-after turning off slot power.  Per PCIe r5.0, sec. 6.7.1.8:
+In my testing, we're sometimes hitting the request->fl_flags & FL_EXISTS
+case in posix_lock_inode, presumably just by random luck since we're not
+actually initializing fl_flags here.
 
-  If a power controller detects a main power fault on the hot-plug slot,
-  it must automatically set its internal main power fault latch [...].
-  The main power fault latch is cleared when software turns off power to
-  the hot-plug slot.
+This probably didn't matter before commit 7f024fcd5c97 ("Keep read and
+write fds with each nlm_file") since we wouldn't previously unlock
+unless we knew there were locks.
 
-The stickiness used to cause interrupt storms and infinite loops which
-were fixed in 2009 by commits 5651c48cfafe ("PCI pciehp: fix power fault
-interrupt storm problem") and 99f0169c17f3 ("PCI: pciehp: enable
-software notification on empty slots").
+But now it causes lockd to give up on removing more locks.
 
-Unfortunately in 2020 the infinite loop issue was inadvertently
-reintroduced by commit 8edf5332c393 ("PCI: pciehp: Fix MSI interrupt
-race"):  The hardirq handler pciehp_isr() clears the PFD bit until
-pciehp's power_fault_detected flag is set.  That happens in the IRQ
-thread pciehp_ist(), which never learns of the event because the hardirq
-handler is stuck in an infinite loop.  Fix by setting the
-power_fault_detected flag already in the hardirq handler.
+We could just initialize fl_flags, but really it seems dubious to be
+calling vfs_lock_file with random values in some of the fields.
 
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=214989
-Link: https://lore.kernel.org/linux-pci/DM8PR11MB5702255A6A92F735D90A4446868B9@DM8PR11MB5702.namprd11.prod.outlook.com
-Fixes: 8edf5332c393 ("PCI: pciehp: Fix MSI interrupt race")
-Link: https://lore.kernel.org/r/66eaeef31d4997ceea357ad93259f290ededecfd.1637187226.git.lukas@wunner.de
-Reported-by: Joseph Bao <joseph.bao@intel.com>
-Tested-by: Joseph Bao <joseph.bao@intel.com>
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Cc: stable@vger.kernel.org # v4.19+
-Cc: Stuart Hayes <stuart.w.hayes@gmail.com>
+Fixes: 7f024fcd5c97 ("Keep read and write fds with each nlm_file")
+Signed-off-by: J. Bruce Fields <bfields@redhat.com>
+[ cel: fixed checkpatch.pl nit ]
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/hotplug/pciehp_hpc.c |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ fs/lockd/svcsubs.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/pci/hotplug/pciehp_hpc.c
-+++ b/drivers/pci/hotplug/pciehp_hpc.c
-@@ -642,6 +642,8 @@ read_status:
- 	 */
- 	if (ctrl->power_fault_detected)
- 		status &= ~PCI_EXP_SLTSTA_PFD;
-+	else if (status & PCI_EXP_SLTSTA_PFD)
-+		ctrl->power_fault_detected = true;
+--- a/fs/lockd/svcsubs.c
++++ b/fs/lockd/svcsubs.c
+@@ -180,6 +180,7 @@ static int nlm_unlock_files(struct nlm_f
+ {
+ 	struct file_lock lock;
  
- 	events |= status;
- 	if (!events) {
-@@ -651,7 +653,7 @@ read_status:
- 	}
- 
- 	if (status) {
--		pcie_capability_write_word(pdev, PCI_EXP_SLTSTA, events);
-+		pcie_capability_write_word(pdev, PCI_EXP_SLTSTA, status);
- 
- 		/*
- 		 * In MSI mode, all event bits must be zero before the port
-@@ -725,8 +727,7 @@ static irqreturn_t pciehp_ist(int irq, v
- 	}
- 
- 	/* Check Power Fault Detected */
--	if ((events & PCI_EXP_SLTSTA_PFD) && !ctrl->power_fault_detected) {
--		ctrl->power_fault_detected = 1;
-+	if (events & PCI_EXP_SLTSTA_PFD) {
- 		ctrl_err(ctrl, "Slot(%s): Power fault\n", slot_name(ctrl));
- 		pciehp_set_indicators(ctrl, PCI_EXP_SLTCTL_PWR_IND_OFF,
- 				      PCI_EXP_SLTCTL_ATTN_IND_ON);
++	locks_init_lock(&lock);
+ 	lock.fl_type  = F_UNLCK;
+ 	lock.fl_start = 0;
+ 	lock.fl_end   = OFFSET_MAX;
 
 
