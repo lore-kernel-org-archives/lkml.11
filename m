@@ -2,141 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0743DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 23:15:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE01AC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 23:15:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377932AbiBDXPY (ORCPT
+        id S1377951AbiBDXP6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 18:15:24 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:44250 "EHLO
-        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378011AbiBDXPV (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 18:15:21 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id A8B56CE24B9;
-        Fri,  4 Feb 2022 23:15:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0A97C004E1;
-        Fri,  4 Feb 2022 23:15:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644016518;
-        bh=pLxkcGPvu1HilxtYZWiOuXKZ4HHdXlhZYggbeedegY8=;
-        h=Date:From:To:Cc:Subject:From;
-        b=gxVDSfcEzhnIk3vlbJV6q3zukKT+CBf31XqdUYm9lHJZE8Uv66HCVT1c5uPHD1nIE
-         Kc/X6SAKguuQLHJ1spTq67w3U+EkYYcU/pIcxa/j79rIZXzO52DytDv+FaoGz0aK9i
-         pFHqYEVvzuQgA19AT/kScPKNPlNbZmAiS9NvX9NwxY4XWy/VZfZuPVpH7v2ZFdcnxs
-         2m9nN7cEqRsQohBij47o49WCKqyDaMLfprHyIsuKT6KXZPzCF/GDHSfwupS2AgvieB
-         BOljl7nuKUoiJ69RxVY7F3+EuJ01QzrE1OVXDdIxYil/rZOHeifr403+hpzEsGqJto
-         GC0k6I4LC3p8Q==
-Date:   Fri, 4 Feb 2022 17:22:28 -0600
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-hardening@vger.kernel.org
-Subject: [PATCH][next] brcmfmac: p2p: Replace one-element arrays with
- flexible-array members
-Message-ID: <20220204232228.GA442895@embeddedor>
+        Fri, 4 Feb 2022 18:15:58 -0500
+Received: from mga07.intel.com ([134.134.136.100]:6598 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1377934AbiBDXP6 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 4 Feb 2022 18:15:58 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644016558; x=1675552558;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=iXO/rN2KwMjsbXkqzVwFAfE9MlIWX4gO/FItcy/mkWY=;
+  b=fzrb3xDvXW4oQu0qF/woUaDUY805oREoa01FYN9zAkS3biOLjjI+Oe/D
+   QDmlItke6B7DPGvSyQA9WtWo5jplu44ifo6aC0M6UStSCq2DLHpDi4CPZ
+   OIA+ZoD1wKqmezkrNdh3ETpUbrImYpvUrULWIkSskr0g/TBHXg/4fKltZ
+   Wigp0oj0ovD7+snDFEqPU000rBSj4gQmJpwNOX7jy3yzCdpNuek+Smil6
+   ZH+vJWV/DGG3BTgxiTftEk6bCi8KF/VcFnYBRuJM5/XC1pLlp+i1ac6BP
+   xO/UX9vKpr4HQCKZaufEw9iRGdSFob4Iy6+d0nP99VZqc6O7KtZq9vzqj
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10248"; a="311759897"
+X-IronPort-AV: E=Sophos;i="5.88,344,1635231600"; 
+   d="scan'208";a="311759897"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2022 15:15:57 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,344,1635231600"; 
+   d="scan'208";a="631845319"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 04 Feb 2022 15:15:56 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nG7o3-000YHy-Qa; Fri, 04 Feb 2022 23:15:55 +0000
+Date:   Sat, 5 Feb 2022 07:14:55 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Nick Alcock <nick.alcock@oracle.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Kris Van Hees <kris.van.hees@oracle.com>
+Subject: [oracle-dtrace:v2/5.17-rc2 6/10] kernel/kallsyms.c:775:17: error:
+ expected expression before 'unsigned'
+Message-ID: <202202050735.guXoa1xq-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is a regular need in the kernel to provide a way to declare having
-a dynamically sized set of trailing elements in a structure. Kernel code
-should always use “flexible array members”[1] for these cases. The older
-style of one-element or zero-length arrays should no longer be used[2].
+tree:   https://github.com/oracle/dtrace-linux-kernel v2/5.17-rc2
+head:   47946e7b2e2319f39cbb7f8aaa294298c2dec5b4
+commit: ea16e4ce65d8342913051086a89eac87dc54aced [6/10] kallsyms: add /proc/kallmodsyms
+config: powerpc-allnoconfig (https://download.01.org/0day-ci/archive/20220205/202202050735.guXoa1xq-lkp@intel.com/config)
+compiler: powerpc-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/oracle/dtrace-linux-kernel/commit/ea16e4ce65d8342913051086a89eac87dc54aced
+        git remote add oracle-dtrace https://github.com/oracle/dtrace-linux-kernel
+        git fetch --no-tags oracle-dtrace v2/5.17-rc2
+        git checkout ea16e4ce65d8342913051086a89eac87dc54aced
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=powerpc SHELL=/bin/bash
 
-This helps with the ongoing efforts to globally enable -Warray-bounds
-and get us closer to being able to tighten the FORTIFY_SOURCE routines
-on memcpy().
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-This issue was found with the help of Coccinelle and audited and fixed,
-manually.
+All error/warnings (new ones prefixed by >>):
 
-[1] https://en.wikipedia.org/wiki/Flexible_array_member
-[2] https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
+   kernel/kallsyms.c:666:12: warning: no previous prototype for 'arch_get_kallsym' [-Wmissing-prototypes]
+     666 | int __weak arch_get_kallsym(unsigned int symnum, unsigned long *value,
+         |            ^~~~~~~~~~~~~~~~
+   kernel/kallsyms.c: In function 'get_ksymbol_core':
+>> kernel/kallsyms.c:775:17: error: expected expression before 'unsigned'
+     775 |                 unsigned long mod_idx = (unsigned long) -1;
+         |                 ^~~~~~~~
+   In file included from arch/powerpc/include/asm/cmpxchg.h:6,
+                    from arch/powerpc/include/asm/atomic.h:11,
+                    from include/linux/atomic.h:7,
+                    from include/linux/mm_types_task.h:13,
+                    from include/linux/mm_types.h:5,
+                    from include/linux/buildid.h:5,
+                    from include/linux/kallsyms.h:10,
+                    from kernel/kallsyms.c:15:
+>> kernel/kallsyms.c:806:42: warning: comparison between pointer and integer
+     806 |                   if (likely(iter->value != &_etext))
+         |                                          ^~
+   include/linux/compiler.h:77:45: note: in definition of macro 'likely'
+      77 | # define likely(x)      __builtin_expect(!!(x), 1)
+         |                                             ^
+   kernel/kallsyms.c:804:31: warning: unused variable 'endstr' [-Wunused-variable]
+     804 |                   const char *endstr;
+         |                               ^~~~~~
 
-Link: https://github.com/KSPP/linux/issues/79
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+
+vim +/unsigned +775 kernel/kallsyms.c
+
+   755	
+   756	/* Returns space to next name. */
+   757	static unsigned long get_ksymbol_core(struct kallsym_iter *iter, int kallmodsyms)
+   758	{
+   759		unsigned off = iter->nameoff;
+   760	
+   761		iter->exported = 0;
+   762		iter->value = kallsyms_sym_address(iter->pos);
+   763	
+   764		iter->type = kallsyms_get_symbol_type(off);
+   765	
+   766		iter->module_name[0] = '\0';
+   767		iter->builtin_module_names = NULL;
+   768	
+   769		off = kallsyms_expand_symbol(off, iter->name, ARRAY_SIZE(iter->name));
+   770	#ifdef CONFIG_KALLMODSYMS
+   771		if (kallmodsyms) {
+   772			unsigned long mod_idx = (unsigned long) -1;
+   773	
+   774			if (kallsyms_module_offsets)
+ > 775			unsigned long mod_idx = (unsigned long) -1;
+   776	
+   777			if (kallsyms_module_offsets)
+   778				mod_idx =
+   779				  get_builtin_module_idx(iter->value,
+   780							 iter->hint_builtin_module_idx);
+   781	
+   782			/*
+   783			 * This is a built-in module iff the tables of built-in modules
+   784			 * (address->module name mappings) and module names are known,
+   785			 * and if the address was found there, and if the corresponding
+   786			 * module index is nonzero, and iff this is a text (or weak)
+   787			 * symbol.  All other cases mean off the end of the binary or in
+   788			 * a non-modular range in between one or more modules.  (Also
+   789			 * guard against a corrupt kallsyms_objfiles array pointing off
+   790			 * the end of kallsyms_modules.)
+   791			 */
+   792			if (kallsyms_modules != NULL && kallsyms_module_names != NULL &&
+   793			    (iter->type == 't' || iter->type == 'T' ||
+   794			     iter->type == 'w' || iter->type == 'W') &&
+   795			    mod_idx != (unsigned long) -1 &&
+   796			    kallsyms_modules[mod_idx] != 0 &&
+   797			    kallsyms_modules[mod_idx] < kallsyms_module_names_len) {
+   798			  /*
+   799			   * Rule out (rare) section start/end symbols which might
+   800			   * overlap the last symbol in .text.  (Will also hit at most
+   801			   * one symbol which really is in a built-in module, but only
+   802			   * if that symbol is zero-length.)
+   803			   */
+   804			  const char *endstr;
+   805	
+ > 806			  if (likely(iter->value != &_etext))
+   807			    iter->builtin_module_names =
+   808			      &kallsyms_module_names[kallsyms_modules[mod_idx]];
+   809			}
+   810			iter->hint_builtin_module_idx = mod_idx;
+   811		}
+   812	#endif
+   813		return off - iter->nameoff;
+   814	}
+   815	
+
 ---
- .../net/wireless/broadcom/brcm80211/brcmfmac/p2p.c   | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.c
-index 4735063e4c03..d3f08d4f380b 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.c
-@@ -158,7 +158,7 @@ struct brcmf_p2p_pub_act_frame {
- 	u8	oui_type;
- 	u8	subtype;
- 	u8	dialog_token;
--	u8	elts[1];
-+	u8	elts[];
- };
- 
- /**
-@@ -177,7 +177,7 @@ struct brcmf_p2p_action_frame {
- 	u8	type;
- 	u8	subtype;
- 	u8	dialog_token;
--	u8	elts[1];
-+	u8	elts[];
- };
- 
- /**
-@@ -192,7 +192,7 @@ struct brcmf_p2psd_gas_pub_act_frame {
- 	u8	category;
- 	u8	action;
- 	u8	dialog_token;
--	u8	query_data[1];
-+	u8	query_data[];
- };
- 
- /**
-@@ -225,7 +225,7 @@ static bool brcmf_p2p_is_pub_action(void *frame, u32 frame_len)
- 		return false;
- 
- 	pact_frm = (struct brcmf_p2p_pub_act_frame *)frame;
--	if (frame_len < sizeof(struct brcmf_p2p_pub_act_frame) - 1)
-+	if (frame_len < sizeof(*pact_frm))
- 		return false;
- 
- 	if (pact_frm->category == P2P_PUB_AF_CATEGORY &&
-@@ -253,7 +253,7 @@ static bool brcmf_p2p_is_p2p_action(void *frame, u32 frame_len)
- 		return false;
- 
- 	act_frm = (struct brcmf_p2p_action_frame *)frame;
--	if (frame_len < sizeof(struct brcmf_p2p_action_frame) - 1)
-+	if (frame_len < sizeof(*act_frm))
- 		return false;
- 
- 	if (act_frm->category == P2P_AF_CATEGORY &&
-@@ -280,7 +280,7 @@ static bool brcmf_p2p_is_gas_action(void *frame, u32 frame_len)
- 		return false;
- 
- 	sd_act_frm = (struct brcmf_p2psd_gas_pub_act_frame *)frame;
--	if (frame_len < sizeof(struct brcmf_p2psd_gas_pub_act_frame) - 1)
-+	if (frame_len < sizeof(*sd_act_frm))
- 		return false;
- 
- 	if (sd_act_frm->category != P2PSD_ACTION_CATEGORY)
--- 
-2.27.0
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
