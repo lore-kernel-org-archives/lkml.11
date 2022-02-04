@@ -2,89 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9873FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:31:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB4CDC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:31:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357683AbiBDJa3 (ORCPT
+        id S1357554AbiBDJbx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 04:30:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33316 "EHLO
+        Fri, 4 Feb 2022 04:31:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357589AbiBDJ2j (ORCPT
+        with ESMTP id S1358880AbiBDJbK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 04:28:39 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9E0DC061779;
-        Fri,  4 Feb 2022 01:27:12 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4CEE6615ED;
-        Fri,  4 Feb 2022 09:27:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A503C340ED;
-        Fri,  4 Feb 2022 09:27:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643966831;
-        bh=vWUsnLKaMLS0zuZYpr+LPWNeIvOfQMdUJ9pyGN6qUaM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OQMD9gJ44cIHn8S1BmoitWoxniQUoTQ686dFuQaLHb3L0QP7w+F/WUgBCRKDODEma
-         akruJaW+XmpDp+xczL9inaYLfcBM4lPMC2mtpS4GsQTruyNJhINC6Y5OOT81J1jJQP
-         uJibKPA+IXnL1EYgSdmURBiDYmcA7wSTTYkJnPDQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Roi Dayan <roid@nvidia.com>,
-        Ariel Levkovich <lariel@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH 5.16 28/43] net/mlx5e: Avoid implicit modify hdr for decap drop rule
-Date:   Fri,  4 Feb 2022 10:22:35 +0100
-Message-Id: <20220204091918.080295755@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220204091917.166033635@linuxfoundation.org>
-References: <20220204091917.166033635@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Fri, 4 Feb 2022 04:31:10 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7804C0613BC;
+        Fri,  4 Feb 2022 01:29:31 -0800 (PST)
+Date:   Fri, 4 Feb 2022 10:29:28 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1643966970;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=/eecWjACA0rGMqqEQiDgokZRkG3UepJI5ulPZyG6uO0=;
+        b=Kq3E210trmVV3cpVxMoJ0wqgmkAoAXew8RuSZaqcds1os6QjXpnmgz46wHdKI0PVoeoWZV
+        S0i2vVf5tU2o0cky+cRkS34UDv2oxDo/kALrSY0PIvSbz0SfT2q1i0OuOKP2X/GtSi7YNC
+        raKGH932Jo7zHOOEZuNzw1BjC07lIKJf2tWut7tH745ktB3dAvF65AyZjPH9WkQxw8nvZj
+        oC40ZFV22BsIVWWo4yhtDaq1eiuKbpaCExsHNWl9OqyUKV3qGDVwwqdhaFBA1fO+ToGLCy
+        hl+yYD+Rauk/817C+r5UA0EX6NwVqjr1kxa1b/a3wlH/ASxRRKLe5AlPfrm8FQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1643966970;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=/eecWjACA0rGMqqEQiDgokZRkG3UepJI5ulPZyG6uO0=;
+        b=veSy3hJgJZREMiqCtupWodV6mbWqNkewKhr9cAPLZVdJcH2E4cDVZfPvx95cF/mzB5uDPC
+        ezydNgc5y/tjroCw==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Valentin Schneider <valentin.schneider@arm.com>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-rt-users@vger.kernel.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        Steven Price <steven.price@arm.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Mike Galbraith <efault@gmx.de>
+Subject: Re: [PATCH v4] arm64: mm: Make arch_faults_on_old_pte() check for
+ migratability
+Message-ID: <Yfzx+P3jUXA0Z/Y7@linutronix.de>
+References: <20220127192437.1192957-1-valentin.schneider@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220127192437.1192957-1-valentin.schneider@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Roi Dayan <roid@nvidia.com>
+On 2022-01-27 19:24:37 [+0000], Valentin Schneider wrote:
+> arch_faults_on_old_pte() relies on the calling context being
+> non-preemptible. CONFIG_PREEMPT_RT turns the PTE lock into a sleepable
+> spinlock, which doesn't disable preemption once acquired, triggering the
+> warning in arch_faults_on_old_pte().
+> 
+> It does however disable migration, ensuring the task remains on the same
+> CPU during the entirety of the critical section, making the read of
+> cpu_has_hw_af() safe and stable.
+> 
+> Make arch_faults_on_old_pte() check cant_migrate() instead of preemptible().
+> 
+> Suggested-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> Signed-off-by: Valentin Schneider <valentin.schneider@arm.com>
+> Link: https://lore.kernel.org/r/20210811201354.1976839-5-valentin.schneider@arm.com
 
-commit 5b209d1a22afabfb7d644abb10510c5713a3e569 upstream.
+Let me pick that up so I can drop the other two. I hope the ARM64 folks
+follow my lead ;)
 
-Currently the driver adds implicit modify hdr action for
-decap rules on tunnel devices if the port is an ovs port.
-This is also done if the action is drop and makes the modify
-hdr redundant and also the FW doesn't support it and will generate
-a syndrome.
+Acked-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-kernel: mlx5_core 0000:08:00.0: mlx5_cmd_check:777:(pid 102063): SET_FLOW_TABLE_ENTRY(0x936) op_mod(0x0) failed, status bad parameter(0x3), syndrome (0x8708c3)
-
-Fix it by adding the implicit modify hdr only for fwd actions.
-
-Fixes: b16eb3c81fe2 ("net/mlx5: Support internal port as decap route device")
-Fixes: 077cdda764c7 ("net/mlx5e: TC, Fix memory leak with rules with internal port")
-Signed-off-by: Roi Dayan <roid@nvidia.com>
-Reviewed-by: Ariel Levkovich <lariel@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -1425,7 +1425,8 @@ mlx5e_tc_add_fdb_flow(struct mlx5e_priv
- 		if (err)
- 			goto err_out;
- 
--		if (!attr->chain && esw_attr->int_port) {
-+		if (!attr->chain && esw_attr->int_port &&
-+		    attr->action & MLX5_FLOW_CONTEXT_ACTION_FWD_DEST) {
- 			/* If decap route device is internal port, change the
- 			 * source vport value in reg_c0 back to uplink just in
- 			 * case the rule performs goto chain > 0. If we have a miss
-
-
+Sebastian
