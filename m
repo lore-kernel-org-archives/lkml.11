@@ -2,87 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5B93C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 12:21:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0F43C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 12:24:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358714AbiBDMV3 (ORCPT
+        id S1358747AbiBDMYX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 07:21:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45858 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237442AbiBDMV1 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 07:21:27 -0500
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AE45C061714;
-        Fri,  4 Feb 2022 04:21:27 -0800 (PST)
-Received: by mail-pj1-x1036.google.com with SMTP id h20-20020a17090adb9400b001b518bf99ffso12938816pjv.1;
-        Fri, 04 Feb 2022 04:21:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:from:subject:to:cc
-         :references:content-language:in-reply-to:content-transfer-encoding;
-        bh=dAtkN0WEE99WegUGgzufuxdEl8C+V1DMiMczTkC1l0Q=;
-        b=hdbk/9fxLHRiqvD1U37NmMvWPQfOKqti8FSTg3S/Nme1GurXGQwV8RrkNQoV/6MObR
-         EGzNMx82zO3z/tCxF5VRC30jrRryoxjrUIbBDaCRq8LJSYLhobezVCk7fxpJl9OPLokd
-         3IFA8grrvAs6alWv4nrioEAHwGxw8iS+qNLJW34O99O5t2a9ZpALpncVdXWg73WfUPWS
-         2FkrvdSn0fdjcSJ4bWCw16oAFN5ID+zNw8o7FZpKMJ/iSxeAhfRo4ANUYIJit9q6t4VV
-         AlVICwSvGm8hHcGQEloSIyrUyc4kS6wnPLM2F0KGjKfASp6KEv9dilZUaZlv2WG5AHT5
-         h83w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
-         :subject:to:cc:references:content-language:in-reply-to
-         :content-transfer-encoding;
-        bh=dAtkN0WEE99WegUGgzufuxdEl8C+V1DMiMczTkC1l0Q=;
-        b=yq7yS30Kj6yUj2LqWX6q0iPggdFUKj/dlNEuNvC55gYHUTzwECcexq/WXcdzlSGJhS
-         P8ANwcwMx+c8nA886dFdc3MWSfKFRuQuffi3ayt7r8XrRuSRJh9VjSMPqZq65J+4Ynd9
-         Wb4iNkPn5dWa4womnq541lIklIrcmp8vPNWJ/6e3mBHxBmjmzrV0EgvhuZP1Zioj+YJI
-         OAACgvPNXyTIEqKFvnMO8OtqyaPn5optHQ4L1h6CcfDdxv7mC0tdjwXgTV63jjWbxK7M
-         XZ6TmacLkkVfTXitGgf0t/Cgt2n/snPkntiGXHwmvACrX1Z66g8Ahzjgj9M6mWXYzZm/
-         AffA==
-X-Gm-Message-State: AOAM531RiVMq9c26JQa+op3XNSLVs3JFmAyzwAULJYtLeBD6Mb4dZZ/R
-        2N3y080JpjSqIq5h++G0we0=
-X-Google-Smtp-Source: ABdhPJwJTCea7DO7BfEN1Lt2Ch1r23IrSp83zKhGsERdBbziMhky/iIb5X138bQ/bN2IMfwkQyitnA==
-X-Received: by 2002:a17:902:7242:: with SMTP id c2mr2948654pll.168.1643977286912;
-        Fri, 04 Feb 2022 04:21:26 -0800 (PST)
-Received: from [192.168.43.80] (subs28-116-206-12-44.three.co.id. [116.206.12.44])
-        by smtp.gmail.com with ESMTPSA id v22sm2688092pfu.38.2022.02.04.04.21.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 04 Feb 2022 04:21:26 -0800 (PST)
-Message-ID: <3eab9c66-12f1-6c69-e299-c00f5e4e340d@gmail.com>
-Date:   Fri, 4 Feb 2022 19:21:20 +0700
+        Fri, 4 Feb 2022 07:24:23 -0500
+Received: from mga12.intel.com ([192.55.52.136]:45802 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237442AbiBDMYW (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 4 Feb 2022 07:24:22 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643977462; x=1675513462;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=HoWb6wEZFJjJjZNegNsf5mO0Agei6dh0WlcVuxjoJro=;
+  b=ivXRYDCepvnJX0W0ERI3uG5LCIYP/zF2ONsdRHOV+ED9rppT6cTYeFUl
+   Tu733U5H1AvMEaILJh7C+vHbKT4LwG5goZAl9jSdnQeXgUnq1OmYavZEj
+   J3UgN5Nnnw3twDiMXvJ2mJCzLzqjgVlBpPM6ZOvuuGP3jIJXA/S7bN2dY
+   vEG6LkiTXxBjT+2qHmM+ORcnQwUv6mNvPKZg2iHo/jYNQ6yb756cmrR4D
+   yF6hXVDRmmPJNp2c9RhtOmn3rm2tNV8qr+ekVbwQkt/nZTDuXEXFX8UHM
+   xygPJnzllhNHMCzYuxp/W1Xq3LOmJW9gvH2lHz7JfI85bRponPfRZEYJp
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10247"; a="228331545"
+X-IronPort-AV: E=Sophos;i="5.88,342,1635231600"; 
+   d="scan'208";a="228331545"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2022 04:24:22 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,342,1635231600"; 
+   d="scan'208";a="772081227"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 04 Feb 2022 04:24:21 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nFxdU-000XbQ-I8; Fri, 04 Feb 2022 12:24:20 +0000
+Date:   Fri, 4 Feb 2022 20:23:48 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Chuck Lever <chuck.lever@oracle.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [cel:topic-rpc-with-tls-upcall 18/20] net/sunrpc/xprtsock.c:2315:
+ undefined reference to `tls_client_hello_user'
+Message-ID: <202202042046.FoUgDgV1-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-Subject: Re: [PATCH 5.15 00/32] 5.15.20-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-References: <20220204091915.247906930@linuxfoundation.org>
-Content-Language: en-US
-In-Reply-To: <20220204091915.247906930@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04/02/22 16.22, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.15.20 release.
-> There are 32 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-Successfully cross-compiled for arm64 (bcm2711_defconfig from raspberry
-pi kernel sources) and ppc64 (ps3_defconfig).
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/cel/linux topic-rpc-with-tls-upcall
+head:   5a02f5044d5953495b63be854083f501c35e9e11
+commit: 7d4a29e2fb46b1ff57accdd5daf93441deaae91c [18/20] SUNRPC: RPC client support for TLS handshake upcall
+config: i386-debian-10.3-kselftests (https://download.01.org/0day-ci/archive/20220204/202202042046.FoUgDgV1-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/cel/linux.git/commit/?id=7d4a29e2fb46b1ff57accdd5daf93441deaae91c
+        git remote add cel git://git.kernel.org/pub/scm/linux/kernel/git/cel/linux
+        git fetch --no-tags cel topic-rpc-with-tls-upcall
+        git checkout 7d4a29e2fb46b1ff57accdd5daf93441deaae91c
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
 
-Tested-by: Bagas Sanjaya <bagasdotme@gmail.com>
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
--- 
-An old man doll... just what I always wanted! - Clara
+All errors (new ones prefixed by >>):
+
+   ld: net/sunrpc/xprtsock.o: in function `xs_tcp_tls_handshake_async':
+>> net/sunrpc/xprtsock.c:2315: undefined reference to `tls_client_hello_user'
+   ld: net/sunrpc/xprtsock.o: in function `xs_tcp_tls_handshake_sync':
+   net/sunrpc/xprtsock.c:2268: undefined reference to `tls_client_hello_user'
+   pahole: .tmp_vmlinux.btf: No such file or directory
+   .btf.vmlinux.bin.o: file not recognized: file format not recognized
+
+
+vim +2315 net/sunrpc/xprtsock.c
+
+  2300	
+  2301	/**
+  2302	 * xs_tcp_tls_handshake_async - Start a TLS handshake
+  2303	 * @xprt: transport on which to perform handshake
+  2304	 *
+  2305	 * Return values:
+  2306	 *   %0: Handshake initiated; @xprt will be awoken when it's done.
+  2307	 *   Negative errno: handshake was not started.
+  2308	 */
+  2309	static int xs_tcp_tls_handshake_async(struct rpc_xprt *xprt)
+  2310	{
+  2311		struct sock_xprt *transport =
+  2312					container_of(xprt, struct sock_xprt, xprt);
+  2313	
+  2314		transport->recv.handshake_pending = true;
+> 2315		return tls_client_hello_user(transport->sock,
+  2316					     xs_tcp_tls_handshake_wake, xprt);
+  2317	}
+  2318	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
