@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 599C2C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:21:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4A34C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:21:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357399AbiBDJVe (ORCPT
+        id S1357472AbiBDJVj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 04:21:34 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:40518 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357406AbiBDJVJ (ORCPT
+        Fri, 4 Feb 2022 04:21:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60584 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1357476AbiBDJVS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 04:21:09 -0500
+        Fri, 4 Feb 2022 04:21:18 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A57E8C06173E;
+        Fri,  4 Feb 2022 01:21:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E748061605;
-        Fri,  4 Feb 2022 09:21:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DB7EC004E1;
-        Fri,  4 Feb 2022 09:21:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 102A6615F4;
+        Fri,  4 Feb 2022 09:21:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF1DEC004E1;
+        Fri,  4 Feb 2022 09:21:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643966468;
-        bh=4KnP9f2BG2N0gQWpClCCaBlbp1tyU3Pjw2Z1LPrgmQ8=;
+        s=korg; t=1643966477;
+        bh=xSOtAzgdlU2pDUEzx3yAN0GwhWj6yoko8OJxHPZoVcI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rAL+gOlFfuOUq7SkRpRlMKuMVEiOwcWB/Q06FJygbytejlhsdt0HT/EQ1zfQw4Ks/
-         v46Sd4GaJeai+BbM5yiZOUf6VMBu1l+mS/db8TEZ14kFi851qgDznR/N/b5o1WjIMc
-         k2tMUA7EN0+rTjSaN1duJKRstzVlVKzxbBrnw7x4=
+        b=fZCNFYk1fWYtLkJSuAfAL3ahAYR7DmS7PrBbXYUkGBKxLe5JN6IpYN/TWRCmeWjE/
+         cSanDzTDxPMK4UYwGbU7BM/hUEQwtEVYOMCxXTcFwjxw58mC8anISfBA5FYXogHMlE
+         DBPGp/KF8yixfx55ZJA7c1mnIhlqnWyyKzRIaeeM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joseph Bao <joseph.bao@intel.com>,
-        Lukas Wunner <lukas@wunner.de>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Stuart Hayes <stuart.w.hayes@gmail.com>
-Subject: [PATCH 5.10 01/25] PCI: pciehp: Fix infinite loop in IRQ handler upon power fault
-Date:   Fri,  4 Feb 2022 10:20:08 +0100
-Message-Id: <20220204091914.330419771@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Michael Stapelberg <michael+drm@stapelberg.ch>,
+        Maxime Ripard <maxime@cerno.tech>
+Subject: [PATCH 5.10 12/25] drm/vc4: hdmi: Make sure the device is powered with CEC
+Date:   Fri,  4 Feb 2022 10:20:19 +0100
+Message-Id: <20220204091914.688259001@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220204091914.280602669@linuxfoundation.org>
 References: <20220204091914.280602669@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -50,76 +50,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Wunner <lukas@wunner.de>
+From: Maxime Ripard <maxime@cerno.tech>
 
-commit 23584c1ed3e15a6f4bfab8dc5a88d94ab929ee12 upstream.
+Commit 20b0dfa86bef0e80b41b0e5ac38b92f23b6f27f9 upstream.
 
-The Power Fault Detected bit in the Slot Status register differs from
-all other hotplug events in that it is sticky:  It can only be cleared
-after turning off slot power.  Per PCIe r5.0, sec. 6.7.1.8:
+The original commit depended on a rework commit (724fc856c09e ("drm/vc4:
+hdmi: Split the CEC disable / enable functions in two")) that
+(rightfully) didn't reach stable.
 
-  If a power controller detects a main power fault on the hot-plug slot,
-  it must automatically set its internal main power fault latch [...].
-  The main power fault latch is cleared when software turns off power to
-  the hot-plug slot.
+However, probably because the context changed, when the patch was
+applied to stable the pm_runtime_put called got moved to the end of the
+vc4_hdmi_cec_adap_enable function (that would have become
+vc4_hdmi_cec_disable with the rework) to vc4_hdmi_cec_init.
 
-The stickiness used to cause interrupt storms and infinite loops which
-were fixed in 2009 by commits 5651c48cfafe ("PCI pciehp: fix power fault
-interrupt storm problem") and 99f0169c17f3 ("PCI: pciehp: enable
-software notification on empty slots").
+This means that at probe time, we now drop our reference to the clocks
+and power domains and thus end up with a CPU hang when the CPU tries to
+access registers.
 
-Unfortunately in 2020 the infinite loop issue was inadvertently
-reintroduced by commit 8edf5332c393 ("PCI: pciehp: Fix MSI interrupt
-race"):  The hardirq handler pciehp_isr() clears the PFD bit until
-pciehp's power_fault_detected flag is set.  That happens in the IRQ
-thread pciehp_ist(), which never learns of the event because the hardirq
-handler is stuck in an infinite loop.  Fix by setting the
-power_fault_detected flag already in the hardirq handler.
+The call to pm_runtime_resume_and_get() is also problematic since the
+.adap_enable CEC hook is called both to enable and to disable the
+controller. That means that we'll now call pm_runtime_resume_and_get()
+at disable time as well, messing with the reference counting.
 
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=214989
-Link: https://lore.kernel.org/linux-pci/DM8PR11MB5702255A6A92F735D90A4446868B9@DM8PR11MB5702.namprd11.prod.outlook.com
-Fixes: 8edf5332c393 ("PCI: pciehp: Fix MSI interrupt race")
-Link: https://lore.kernel.org/r/66eaeef31d4997ceea357ad93259f290ededecfd.1637187226.git.lukas@wunner.de
-Reported-by: Joseph Bao <joseph.bao@intel.com>
-Tested-by: Joseph Bao <joseph.bao@intel.com>
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Cc: stable@vger.kernel.org # v4.19+
-Cc: Stuart Hayes <stuart.w.hayes@gmail.com>
+The behaviour we should have though would be to have
+pm_runtime_resume_and_get() called when the CEC controller is enabled,
+and pm_runtime_put when it's disabled.
+
+We need to move things around a bit to behave that way, but it aligns
+stable with upstream.
+
+Cc: <stable@vger.kernel.org> # 5.10.x
+Cc: <stable@vger.kernel.org> # 5.15.x
+Cc: <stable@vger.kernel.org> # 5.16.x
+Reported-by: Michael Stapelberg <michael+drm@stapelberg.ch>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/hotplug/pciehp_hpc.c |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/vc4/vc4_hdmi.c |   27 ++++++++++++++-------------
+ 1 file changed, 14 insertions(+), 13 deletions(-)
 
---- a/drivers/pci/hotplug/pciehp_hpc.c
-+++ b/drivers/pci/hotplug/pciehp_hpc.c
-@@ -642,6 +642,8 @@ read_status:
- 	 */
- 	if (ctrl->power_fault_detected)
- 		status &= ~PCI_EXP_SLTSTA_PFD;
-+	else if (status & PCI_EXP_SLTSTA_PFD)
-+		ctrl->power_fault_detected = true;
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -1402,18 +1402,18 @@ static int vc4_hdmi_cec_adap_enable(stru
+ 	u32 val;
+ 	int ret;
  
- 	events |= status;
- 	if (!events) {
-@@ -651,7 +653,7 @@ read_status:
+-	ret = pm_runtime_resume_and_get(&vc4_hdmi->pdev->dev);
+-	if (ret)
+-		return ret;
+-
+-	val = HDMI_READ(HDMI_CEC_CNTRL_5);
+-	val &= ~(VC4_HDMI_CEC_TX_SW_RESET | VC4_HDMI_CEC_RX_SW_RESET |
+-		 VC4_HDMI_CEC_CNT_TO_4700_US_MASK |
+-		 VC4_HDMI_CEC_CNT_TO_4500_US_MASK);
+-	val |= ((4700 / usecs) << VC4_HDMI_CEC_CNT_TO_4700_US_SHIFT) |
+-	       ((4500 / usecs) << VC4_HDMI_CEC_CNT_TO_4500_US_SHIFT);
+-
+ 	if (enable) {
++		ret = pm_runtime_resume_and_get(&vc4_hdmi->pdev->dev);
++		if (ret)
++			return ret;
++
++		val = HDMI_READ(HDMI_CEC_CNTRL_5);
++		val &= ~(VC4_HDMI_CEC_TX_SW_RESET | VC4_HDMI_CEC_RX_SW_RESET |
++			 VC4_HDMI_CEC_CNT_TO_4700_US_MASK |
++			 VC4_HDMI_CEC_CNT_TO_4500_US_MASK);
++		val |= ((4700 / usecs) << VC4_HDMI_CEC_CNT_TO_4700_US_SHIFT) |
++			((4500 / usecs) << VC4_HDMI_CEC_CNT_TO_4500_US_SHIFT);
++
+ 		HDMI_WRITE(HDMI_CEC_CNTRL_5, val |
+ 			   VC4_HDMI_CEC_TX_SW_RESET | VC4_HDMI_CEC_RX_SW_RESET);
+ 		HDMI_WRITE(HDMI_CEC_CNTRL_5, val);
+@@ -1439,7 +1439,10 @@ static int vc4_hdmi_cec_adap_enable(stru
+ 		HDMI_WRITE(HDMI_CEC_CPU_MASK_SET, VC4_HDMI_CPU_CEC);
+ 		HDMI_WRITE(HDMI_CEC_CNTRL_5, val |
+ 			   VC4_HDMI_CEC_TX_SW_RESET | VC4_HDMI_CEC_RX_SW_RESET);
++
++		pm_runtime_put(&vc4_hdmi->pdev->dev);
  	}
++
+ 	return 0;
+ }
  
- 	if (status) {
--		pcie_capability_write_word(pdev, PCI_EXP_SLTSTA, events);
-+		pcie_capability_write_word(pdev, PCI_EXP_SLTSTA, status);
+@@ -1531,8 +1534,6 @@ static int vc4_hdmi_cec_init(struct vc4_
+ 	if (ret < 0)
+ 		goto err_delete_cec_adap;
  
- 		/*
- 		 * In MSI mode, all event bits must be zero before the port
-@@ -725,8 +727,7 @@ static irqreturn_t pciehp_ist(int irq, v
- 	}
+-	pm_runtime_put(&vc4_hdmi->pdev->dev);
+-
+ 	return 0;
  
- 	/* Check Power Fault Detected */
--	if ((events & PCI_EXP_SLTSTA_PFD) && !ctrl->power_fault_detected) {
--		ctrl->power_fault_detected = 1;
-+	if (events & PCI_EXP_SLTSTA_PFD) {
- 		ctrl_err(ctrl, "Slot(%s): Power fault\n", slot_name(ctrl));
- 		pciehp_set_indicators(ctrl, PCI_EXP_SLTCTL_PWR_IND_OFF,
- 				      PCI_EXP_SLTCTL_ATTN_IND_ON);
+ err_delete_cec_adap:
 
 
