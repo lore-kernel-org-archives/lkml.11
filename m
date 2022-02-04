@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ADFEC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:26:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12E4EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:26:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357817AbiBDJ0w (ORCPT
+        id S1358036AbiBDJ0y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 04:26:52 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:44172 "EHLO
+        Fri, 4 Feb 2022 04:26:54 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:44274 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358018AbiBDJZH (ORCPT
+        with ESMTP id S1358064AbiBDJZO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 04:25:07 -0500
+        Fri, 4 Feb 2022 04:25:14 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 699CE61602;
-        Fri,  4 Feb 2022 09:25:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FCD1C004E1;
-        Fri,  4 Feb 2022 09:25:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 127C2616AD;
+        Fri,  4 Feb 2022 09:25:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC4C7C340EF;
+        Fri,  4 Feb 2022 09:25:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643966706;
-        bh=IjJK+yt4eIiTBKn6aNSapd1Q6Hm6qu7JqEQZHEp0YE4=;
+        s=korg; t=1643966713;
+        bh=VXigYRW5rsIpfXUUUjWJOkU9kJ0Hj9Zg+9vR2xZfuw4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mX+0bp28MhjmSqfvUbSDVzGMkx+17EKIQ/9zvPiWHsGemwxjBxneVEQ5CDFGr0f/A
-         tQTU9a+UkTj3U9yTQurZziVHos2KhtOFdBBsg2kkHzZnYOruSn8TZ6XsLpC3pYDF81
-         CCtSbjbctSRScH/gvJNszpkH+pOxlrfNu1o0QLmA=
+        b=bkgEl2eBdIG4UQDyThh44QNFP3GQQwFI2QJC+McG567JHQdTbfApgtrvBsU0XAAud
+         D25yX6e7ji6ZGbthPC7qBzSd8BLxLWme0v+B2RuyjI0xZAZY/xjA8yz4cxskADjrk5
+         MB7XuF33aPkCWG3k9qPihT2W64eUyrOcMgWTRUI8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Roi Dayan <roid@nvidia.com>,
-        Oz Shlomo <ozsh@nvidia.com>, Maor Dickman <maord@nvidia.com>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Vlad Buslov <vladbu@nvidia.com>, Roi Dayan <roid@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH 5.16 14/43] net/mlx5e: TC, Reject rules with drop and modify hdr action
-Date:   Fri,  4 Feb 2022 10:22:21 +0100
-Message-Id: <20220204091917.640709686@linuxfoundation.org>
+Subject: [PATCH 5.16 16/43] net/mlx5: Bridge, ensure dev_name is null-terminated
+Date:   Fri,  4 Feb 2022 10:22:23 +0100
+Message-Id: <20220204091917.705724162@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220204091917.166033635@linuxfoundation.org>
 References: <20220204091917.166033635@linuxfoundation.org>
@@ -47,39 +47,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Roi Dayan <roid@nvidia.com>
+From: Vlad Buslov <vladbu@nvidia.com>
 
-commit a2446bc77a16cefd27de712d28af2396d6287593 upstream.
+commit 350d9a823734b5a7e767cddc3bdde5f0bcbb7ff4 upstream.
 
-This kind of action is not supported by firmware and generates a
-syndrome.
+Even though net_device->name is guaranteed to be null-terminated string of
+size<=IFNAMSIZ, the test robot complains that return value of netdev_name()
+can be larger:
 
-kernel: mlx5_core 0000:08:00.0: mlx5_cmd_check:777:(pid 102063): SET_FLOW_TABLE_ENTRY(0x936) op_mod(0x0) failed, status bad parameter(0x3), syndrome (0x8708c3)
+In file included from include/trace/define_trace.h:102,
+                    from drivers/net/ethernet/mellanox/mlx5/core/esw/diag/bridge_tracepoint.h:113,
+                    from drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.c:12:
+   drivers/net/ethernet/mellanox/mlx5/core/esw/diag/bridge_tracepoint.h: In function 'trace_event_raw_event_mlx5_esw_bridge_fdb_template':
+>> drivers/net/ethernet/mellanox/mlx5/core/esw/diag/bridge_tracepoint.h:24:29: warning: 'strncpy' output may be truncated copying 16 bytes from a string of length 20 [-Wstringop-truncation]
+      24 |                             strncpy(__entry->dev_name,
+         |                             ^~~~~~~~~~~~~~~~~~~~~~~~~~
+      25 |                                     netdev_name(fdb->dev),
+         |                                     ~~~~~~~~~~~~~~~~~~~~~~
+      26 |                                     IFNAMSIZ);
+         |                                     ~~~~~~~~~
 
-Fixes: d7e75a325cb2 ("net/mlx5e: Add offloading of E-Switch TC pedit (header re-write) actions")
-Signed-off-by: Roi Dayan <roid@nvidia.com>
-Reviewed-by: Oz Shlomo <ozsh@nvidia.com>
-Reviewed-by: Maor Dickman <maord@nvidia.com>
+This is caused by the fact that default value of IFNAMSIZ is 16, while
+placeholder value that is returned by netdev_name() for unnamed net devices
+is larger than that.
+
+The offending code is in a tracing function that is only called for mlx5
+representors, so there is no straightforward way to reproduce the issue but
+let's fix it for correctness sake by replacing strncpy() with strscpy() to
+ensure that resulting string is always null-terminated.
+
+Fixes: 9724fd5d9c2a ("net/mlx5: Bridge, add tracepoints")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
+Reviewed-by: Roi Dayan <roid@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/net/ethernet/mellanox/mlx5/core/esw/diag/bridge_tracepoint.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -3421,6 +3421,12 @@ actions_match_supported(struct mlx5e_pri
- 	}
- 
- 	if (actions & MLX5_FLOW_CONTEXT_ACTION_MOD_HDR &&
-+	    actions & MLX5_FLOW_CONTEXT_ACTION_DROP) {
-+		NL_SET_ERR_MSG_MOD(extack, "Drop with modify header action is not supported");
-+		return false;
-+	}
-+
-+	if (actions & MLX5_FLOW_CONTEXT_ACTION_MOD_HDR &&
- 	    !modify_header_match_supported(priv, &parse_attr->spec, flow_action,
- 					   actions, ct_flow, ct_clear, extack))
- 		return false;
+--- a/drivers/net/ethernet/mellanox/mlx5/core/esw/diag/bridge_tracepoint.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/diag/bridge_tracepoint.h
+@@ -21,7 +21,7 @@ DECLARE_EVENT_CLASS(mlx5_esw_bridge_fdb_
+ 			    __field(unsigned int, used)
+ 			    ),
+ 		    TP_fast_assign(
+-			    strncpy(__entry->dev_name,
++			    strscpy(__entry->dev_name,
+ 				    netdev_name(fdb->dev),
+ 				    IFNAMSIZ);
+ 			    memcpy(__entry->addr, fdb->key.addr, ETH_ALEN);
 
 
