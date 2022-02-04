@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2AC4C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 17:46:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D275C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 17:46:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377289AbiBDRq2 (ORCPT
+        id S1377156AbiBDRqd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 12:46:28 -0500
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:20478 "EHLO
+        Fri, 4 Feb 2022 12:46:33 -0500
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:43996 "EHLO
         esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377249AbiBDRqJ (ORCPT
+        with ESMTP id S1377121AbiBDRp2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 12:46:09 -0500
+        Fri, 4 Feb 2022 12:45:28 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1643996770; x=1675532770;
+  t=1643996728; x=1675532728;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=cuGByK+uEpyblTUhK3/5PwLHaOehWs+ttlMnz9tNnu8=;
-  b=lHOZY0+s6UKpAFVqkW7HTDUuOaPvPVyEgQXjXVAqtEOKlxE/wOa1H3gW
-   HAbZ8JmtzO48H4k5hcfxqAY7lnZMdKdoM7ieexyMVOYnM03D7hJn+s7h2
-   f+BR9w9KDZZXrXZbaTnesxeskW7QFYSHrqnsYljYmXiCTYo2r7q8dL165
-   oF9qnEEODERaN0n+YoP5yHpVp3qwlMY5TFv/C7rryPBrDB+QxUO8M9teJ
-   cvjhvoGVPMmmWYtAfVGOyQuWxUOpt0Lolb5ahSTMZRQTkJeLHbH9KkuEY
-   v9ljKjg4SvNbpPX9fcq5l+frt1fS0VA8TK9KmLyZSssKULPg1ZRrNQwuc
-   g==;
-IronPort-SDR: tKgXqFGVcrakxhdl8v3JUavmsnyLix0rRorxDQz5jpoZCEO46nHU9e9qRaDE91TASeRfQFBdD+
- 9o7cW4p5cxeuzEc63tmbkOl4GtkNmK1DOILgDexVjjGVPDrxPH5rlxkuZJjJqkNC8Cd07te610
- l0uziZL0jc86p4tkO1OBNtdWJ1LpeHcxgJm7cyt2SwMqGyykf6HJND4V5Ct4EW98HgDLn0UDwX
- GacoqMPPvrFh0p1iLFnmjtn459Ao0uc4gYLivHdsAg7FW0PCQdeeQqPjl6dSr0AQnUp3s64RJz
- KRL0Rwk6Wx2yUZSdPUoFy6rR
+  bh=sTcaFWkCU5SH9tJAhAVoQQ0OveeFFhJTJud5zNFjEP8=;
+  b=PGp1W9D/JRXLV70QzHJjk2k8N0jE3/jyiQKG/7zeWR+qCBremoH5W30q
+   52EekfGBxUXpFnpyc2UVju9dL6CsLnqO+JRSTjZGbPN1q8vAogRhSD+pM
+   BCnnGhYnj0ImtMChSuTLbS2ext9s6Zo71CKtGPygMc/4ThSuCx1m7AoZi
+   q2gjq5OV9ji7R+WHcWsDLUDijdy9NdjPfyNiKX+iadqyEh8fADWIczxM4
+   IvaLtPBMhprCr56FtkDOfe03ygvYTrWXDrddHgBEBFsxBMSbRXZSfCQNh
+   m+5+p6jgbBdQ8XGCvP3ItIXDJiq4nTeoolCqxfxvvpf5ZiKseFzSUYqUL
+   w==;
+IronPort-SDR: p35xMaM7rqYkTk69jHFH8PdH6MQQg3az8Su7+m+R36fpcvFoVw03tcv+YDJ+GQ9FCC8uV/fWEM
+ Pu1qJCjCsMqi32ZoN+349tSGVGmzLSQ6nqqyq2X465N2ThOxptpP+oLv4rZ7atvs98+yq4/J5u
+ TttqPKwnbVec5ZsVVt+hQc7xMpGahI9Km6WNT9CaAnCTMiiSJg/VAwMabGSHtm6n/9UsZdGB9N
+ VSPmPkRAINJ3w2t9MTIuZo/7chsJK8Dlw/cUiPVprZCG3tlMqc0gyIRGNPfwlPVC8fOMZIyQJN
+ v4AuZsIbXeYRbn1wBr/+MgQA
 X-IronPort-AV: E=Sophos;i="5.88,343,1635231600"; 
-   d="scan'208";a="151993915"
+   d="scan'208";a="84716133"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Feb 2022 10:46:09 -0700
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Feb 2022 10:45:27 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 4 Feb 2022 10:46:08 -0700
+ 15.1.2375.17; Fri, 4 Feb 2022 10:45:27 -0700
 Received: from CHE-LT-I21427LX.microchip.com (10.10.115.15) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 4 Feb 2022 10:46:03 -0700
+ 15.1.2375.17 via Frontend Transport; Fri, 4 Feb 2022 10:45:22 -0700
 From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
 To:     <andrew@lunn.ch>, <netdev@vger.kernel.org>, <olteanv@gmail.com>,
         <robh+dt@kernel.org>
@@ -50,9 +50,9 @@ CC:     <UNGLinuxDriver@microchip.com>, <Woojung.Huh@microchip.com>,
         <davem@davemloft.net>, <kuba@kernel.org>,
         <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
         <f.fainelli@gmail.com>, <devicetree@vger.kernel.org>
-Subject: [PATCH v7 net-next 10/10] net: dsa: microchip: add support for vlan operations
-Date:   Fri, 4 Feb 2022 23:15:00 +0530
-Message-ID: <20220204174500.72814-11-prasanna.vengateshan@microchip.com>
+Subject: [PATCH v7 net-next 03/10] net: phy: Add support for LAN937x T1 phy driver
+Date:   Fri, 4 Feb 2022 23:14:53 +0530
+Message-ID: <20220204174500.72814-4-prasanna.vengateshan@microchip.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220204174500.72814-1-prasanna.vengateshan@microchip.com>
 References: <20220204174500.72814-1-prasanna.vengateshan@microchip.com>
@@ -63,235 +63,465 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Support for VLAN add, del, prepare and filtering operations.
+Added support for Microchip LAN937x T1 phy driver. The sequence of
+initialization is used commonly for both LAN87xx and LAN937x
+drivers. The new initialization sequence is an improvement to
+existing LAN87xx and it is shared with LAN937x.
 
-The VLAN aware is a global setting. Mixed vlan filterings
-are not supported. vlan_filtering_is_global is made as true
-in lan937x_setup function.
+Also relevant comments are added in the existing code and existing
+soft-reset customized code has been replaced with
+genphy_soft_reset().
+
+access_ereg_clr_poll_timeout() API is introduced for polling phy
+bank write and this is linked with PHYACC_ATTR_MODE_POLL.
+
+Finally introduced function table for LAN937X_T1_PHY_ID along with
+microchip_t1_phy_driver struct.
 
 Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
 ---
- drivers/net/dsa/microchip/lan937x_main.c | 186 +++++++++++++++++++++++
- 1 file changed, 186 insertions(+)
+ drivers/net/phy/microchip_t1.c | 342 ++++++++++++++++++++++++++-------
+ 1 file changed, 273 insertions(+), 69 deletions(-)
 
-diff --git a/drivers/net/dsa/microchip/lan937x_main.c b/drivers/net/dsa/microchip/lan937x_main.c
-index bc1b66777e03..ee1525a558a4 100644
---- a/drivers/net/dsa/microchip/lan937x_main.c
-+++ b/drivers/net/dsa/microchip/lan937x_main.c
-@@ -17,6 +17,14 @@
- #include "ksz_common.h"
- #include "lan937x_dev.h"
+diff --git a/drivers/net/phy/microchip_t1.c b/drivers/net/phy/microchip_t1.c
+index bc50224d43dd..9d729b56d884 100644
+--- a/drivers/net/phy/microchip_t1.c
++++ b/drivers/net/phy/microchip_t1.c
+@@ -37,6 +37,7 @@
+ #define	PHYACC_ATTR_MODE_READ		0
+ #define	PHYACC_ATTR_MODE_WRITE		1
+ #define	PHYACC_ATTR_MODE_MODIFY		2
++#define	PHYACC_ATTR_MODE_POLL		3
  
-+static int lan937x_wait_vlan_ctrl_ready(struct ksz_device *dev)
-+{
-+	unsigned int val;
+ #define	PHYACC_ATTR_BANK_SMI		0
+ #define	PHYACC_ATTR_BANK_MISC		1
+@@ -50,8 +51,47 @@
+ #define	LAN87XX_CABLE_TEST_OPEN	1
+ #define	LAN87XX_CABLE_TEST_SAME_SHORT	2
+ 
++#define T1_MODE_STAT_REG		0x11
++#define T1_DSCR_LOCK_STATUS_MSK		BIT(3)
++#define T1_LINK_UP_MSK			BIT(0)
 +
-+	return regmap_read_poll_timeout(dev->regmap[0], REG_SW_VLAN_CTRL, val,
-+					!(val & VLAN_START), 10, 1000);
-+}
++#define T1_REG_BANK_SEL_MASK		0x7
++#define T1_REG_BANK_SEL			8
++#define T1_REG_ADDR_MASK		0xFF
 +
- static u8 lan937x_get_fid(u16 vid)
++#define T1_M_STATUS_REG			0x0A
++#define T1_LOCAL_RX_OK			BIT(13)
++#define T1_REMOTE_RX_OK			BIT(12)
++
++#define LAN87XX_PHY_ID			0x0007c150
++#define LAN937X_T1_PHY_ID		0x0007c181
++#define LAN87XX_PHY_ID_MASK		0xfffffff0
++#define LAN937X_PHY_ID_MASK		0xfffffff0
++
++/* T1 Registers */
++#define T1_AFE_PORT_CFG1_REG		0x0B
++#define T1_POWER_DOWN_CONTROL_REG	0x1A
++#define T1_SLV_FD_MULT_CFG_REG		0x18
++#define T1_CDR_CFG_PRE_LOCK_REG		0x05
++#define T1_CDR_CFG_POST_LOCK_REG	0x06
++#define T1_LCK_STG2_MUFACT_CFG_REG	0x1A
++#define T1_LCK_STG3_MUFACT_CFG_REG	0x1B
++#define T1_POST_LCK_MUFACT_CFG_REG	0x1C
++#define T1_TX_RX_FIFO_CFG_REG		0x02
++#define T1_TX_LPF_FIR_CFG_REG		0x55
++#define T1_SQI_CONFIG_REG		0x2E
++#define T1_MDIO_CONTROL2_REG		0x10
++#define T1_INTERRUPT_SOURCE_REG		0x18
++#define T1_INTERRUPT2_SOURCE_REG	0x08
++#define T1_EQ_FD_STG1_FRZ_CFG		0x69
++#define T1_EQ_FD_STG2_FRZ_CFG		0x6A
++#define T1_EQ_FD_STG3_FRZ_CFG		0x6B
++#define T1_EQ_FD_STG4_FRZ_CFG		0x6C
++#define T1_EQ_WT_FD_LCK_FRZ_CFG		0x6D
++#define T1_PST_EQ_LCK_STG1_FRZ_CFG	0x6E
++
+ #define DRIVER_AUTHOR	"Nisar Sayed <nisar.sayed@microchip.com>"
+-#define DRIVER_DESC	"Microchip LAN87XX T1 PHY driver"
++#define DRIVER_DESC	"Microchip LAN87XX/LAN937X T1 PHY driver"
+ 
+ struct access_ereg_val {
+ 	u8  mode;
+@@ -64,12 +104,16 @@ struct access_ereg_val {
+ static int access_ereg(struct phy_device *phydev, u8 mode, u8 bank,
+ 		       u8 offset, u16 val)
  {
- 	if (vid > ALU_FID_SIZE)
-@@ -25,6 +33,97 @@ static u8 lan937x_get_fid(u16 vid)
- 		return vid;
- }
++	u8 prev_bank;
+ 	u16 ereg = 0;
+ 	int rc = 0;
++	u16 t;
  
-+static int lan937x_get_vlan_table(struct ksz_device *dev, u16 vid,
-+				  struct lan937x_vlan *vlan_entry)
-+{
-+	u32 data;
-+	int ret;
-+
-+	mutex_lock(&dev->vlan_mutex);
-+
-+	ret = ksz_write16(dev, REG_SW_VLAN_ENTRY_INDEX__2, vid & VLAN_INDEX_M);
-+	if (ret < 0)
-+		goto exit;
-+
-+	ret = ksz_write8(dev, REG_SW_VLAN_CTRL, VLAN_READ | VLAN_START);
-+	if (ret < 0)
-+		goto exit;
-+
-+	/* wait to be cleared */
-+	ret = lan937x_wait_vlan_ctrl_ready(dev);
-+	if (ret < 0)
-+		goto exit;
-+
-+	ret = ksz_read32(dev, REG_SW_VLAN_ENTRY__4, &data);
-+	if (ret < 0)
-+		goto exit;
-+
-+	vlan_entry->valid = !!(data & VLAN_VALID);
-+	vlan_entry->fid	= data & VLAN_FID_M;
-+
-+	ret = ksz_read32(dev, REG_SW_VLAN_ENTRY_UNTAG__4,
-+			 &vlan_entry->untag_prtmap);
-+	if (ret < 0)
-+		goto exit;
-+
-+	ret = ksz_read32(dev, REG_SW_VLAN_ENTRY_PORTS__4,
-+			 &vlan_entry->fwd_map);
-+	if (ret < 0)
-+		goto exit;
-+
-+	ret = ksz_write8(dev, REG_SW_VLAN_CTRL, 0);
-+	if (ret < 0)
-+		goto exit;
-+
-+exit:
-+	mutex_unlock(&dev->vlan_mutex);
-+
-+	return ret;
-+}
-+
-+static int lan937x_set_vlan_table(struct ksz_device *dev, u16 vid,
-+				  struct lan937x_vlan *vlan_entry)
-+{
-+	u32 data;
-+	int ret;
-+
-+	mutex_lock(&dev->vlan_mutex);
-+
-+	data = vlan_entry->valid ? VLAN_VALID : 0;
-+	data |= vlan_entry->fid;
-+
-+	ret = ksz_write32(dev, REG_SW_VLAN_ENTRY__4, data);
-+	if (ret < 0)
-+		goto exit;
-+
-+	ret = ksz_write32(dev, REG_SW_VLAN_ENTRY_UNTAG__4,
-+			  vlan_entry->untag_prtmap);
-+	if (ret < 0)
-+		goto exit;
-+
-+	ret = ksz_write32(dev, REG_SW_VLAN_ENTRY_PORTS__4, vlan_entry->fwd_map);
-+	if (ret < 0)
-+		goto exit;
-+
-+	ret = ksz_write16(dev, REG_SW_VLAN_ENTRY_INDEX__2, vid & VLAN_INDEX_M);
-+	if (ret < 0)
-+		goto exit;
-+
-+	ret = ksz_write8(dev, REG_SW_VLAN_CTRL, VLAN_START | VLAN_WRITE);
-+	if (ret < 0)
-+		goto exit;
-+
-+	/* wait to be cleared */
-+	ret = lan937x_wait_vlan_ctrl_ready(dev);
-+	if (ret < 0)
-+		goto exit;
-+
-+exit:
-+	mutex_unlock(&dev->vlan_mutex);
-+
-+	return ret;
-+}
-+
- static int lan937x_read_table(struct ksz_device *dev, u32 *table)
- {
- 	int ret;
-@@ -163,6 +262,90 @@ static void lan937x_port_stp_state_set(struct dsa_switch *ds, int port,
- 	ksz_update_port_member(dev, port);
- }
++	/* return if mode and bank are invalid */
+ 	if (mode > PHYACC_ATTR_MODE_WRITE || bank > PHYACC_ATTR_BANK_MAX)
+ 		return -EINVAL;
  
-+static int lan937x_port_vlan_filtering(struct dsa_switch *ds, int port,
-+				       bool flag,
-+				       struct netlink_ext_ack *extack)
-+{
-+	struct ksz_device *dev = ds->priv;
++	/* if the bank is SMI, then call phy_read() & phy_write() directly */
+ 	if (bank == PHYACC_ATTR_BANK_SMI) {
+ 		if (mode == PHYACC_ATTR_MODE_WRITE)
+ 			rc = phy_write(phydev, offset, val);
+@@ -79,16 +123,43 @@ static int access_ereg(struct phy_device *phydev, u8 mode, u8 bank,
+ 	}
+ 
+ 	if (mode == PHYACC_ATTR_MODE_WRITE) {
++		/* Initialize to Write Mode */
+ 		ereg = LAN87XX_EXT_REG_CTL_WR_CTL;
 +
-+	/* enable/disable VLAN mode, once enabled, look up process starts
-+	 * and then forwarding and discarding are done based on port
-+	 * membership of the VLAN table
-+	 */
-+	return lan937x_cfg(dev, REG_SW_LUE_CTRL_0, SW_VLAN_ENABLE, flag);
-+}
++		/* Write the data to be written in to the Bank */
+ 		rc = phy_write(phydev, LAN87XX_EXT_REG_WR_DATA, val);
+ 		if (rc < 0)
+ 			return rc;
+ 	} else {
++		/* Initialize to Read Mode */
+ 		ereg = LAN87XX_EXT_REG_CTL_RD_CTL;
+ 	}
+ 
+ 	ereg |= (bank << 8) | offset;
+ 
++	/* DSP bank access workaround for lan937x */
++	if (phydev->phy_id == LAN937X_T1_PHY_ID) {
++		/* Read previous selected bank */
++		rc = phy_read(phydev, LAN87XX_EXT_REG_CTL);
++		if (rc < 0)
++			return rc;
 +
-+static int lan937x_port_vlan_add(struct dsa_switch *ds, int port,
-+				 const struct switchdev_obj_port_vlan *vlan,
-+				 struct netlink_ext_ack *extack)
-+{
-+	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
-+	struct ksz_device *dev = ds->priv;
-+	struct lan937x_vlan vlan_entry;
-+	int ret;
++		/* store the prev_bank */
++		prev_bank = (rc >> T1_REG_BANK_SEL) & T1_REG_BANK_SEL_MASK;
 +
-+	ret = lan937x_get_vlan_table(dev, vlan->vid, &vlan_entry);
-+	if (ret < 0) {
-+		NL_SET_ERR_MSG_MOD(extack, "Failed to get vlan table");
-+		return ret;
-+	}
++		if (bank != prev_bank && bank == PHYACC_ATTR_BANK_DSP) {
++			t = ereg & ~T1_REG_ADDR_MASK;
 +
-+	vlan_entry.fid = lan937x_get_fid(vlan->vid);
-+	vlan_entry.valid = true;
++			t &= ~LAN87XX_EXT_REG_CTL_WR_CTL;
++			t |= LAN87XX_EXT_REG_CTL_RD_CTL;
 +
-+	/* set/clear switch port when updating vlan table registers */
-+	if (untagged)
-+		vlan_entry.untag_prtmap |= BIT(port);
-+	else
-+		vlan_entry.untag_prtmap &= ~BIT(port);
-+
-+	vlan_entry.fwd_map |= BIT(port);
-+
-+	ret = lan937x_set_vlan_table(dev, vlan->vid, &vlan_entry);
-+	if (ret < 0) {
-+		NL_SET_ERR_MSG_MOD(extack, "Failed to set vlan table");
-+		return ret;
-+	}
-+
-+	/* change PVID */
-+	if (vlan->flags & BRIDGE_VLAN_INFO_PVID) {
-+		ret = lan937x_pwrite16(dev, port, REG_PORT_DEFAULT_VID,
-+				       vlan->vid);
-+		if (ret < 0) {
-+			NL_SET_ERR_MSG_MOD(extack, "Failed to set pvid");
-+			return ret;
++			/* access twice for DSP bank change,dummy access */
++			rc = phy_write(phydev, LAN87XX_EXT_REG_CTL, t);
++			if (rc < 0)
++				return rc;
 +		}
 +	}
 +
-+	return 0;
-+}
-+
-+static int lan937x_port_vlan_del(struct dsa_switch *ds, int port,
-+				 const struct switchdev_obj_port_vlan *vlan)
+ 	rc = phy_write(phydev, LAN87XX_EXT_REG_CTL, ereg);
+ 	if (rc < 0)
+ 		return rc;
+@@ -117,6 +188,18 @@ static int access_ereg_modify_changed(struct phy_device *phydev,
+ 	return rc;
+ }
+ 
++static int access_ereg_clr_poll_timeout(struct phy_device *phydev, u8 bank,
++					u8 offset, u16 mask, u16 clr)
 +{
-+	struct ksz_device *dev = ds->priv;
-+	struct lan937x_vlan vlan_entry;
-+	int ret;
++	int val;
 +
-+	ret = lan937x_get_vlan_table(dev, vlan->vid, &vlan_entry);
-+	if (ret < 0) {
-+		dev_err(dev->dev, "Failed to get vlan table\n");
-+		return ret;
-+	}
++	if (bank != PHYACC_ATTR_BANK_SMI)
++		return -EINVAL;
 +
-+	/* clear port fwd map & untag entries*/
-+	vlan_entry.fwd_map &= ~BIT(port);
-+	vlan_entry.untag_prtmap &= ~BIT(port);
++	return phy_read_poll_timeout(phydev, offset, val, (val & mask) == clr,
++				     150, 30000, true);
++}
 +
-+	ret = lan937x_set_vlan_table(dev, vlan->vid, &vlan_entry);
-+	if (ret < 0) {
-+		dev_err(dev->dev, "Failed to set vlan table\n");
-+		return ret;
-+	}
+ static int lan87xx_config_rgmii_delay(struct phy_device *phydev)
+ {
+ 	int rc;
+@@ -157,68 +240,151 @@ static int lan87xx_config_rgmii_delay(struct phy_device *phydev)
+ static int lan87xx_phy_init(struct phy_device *phydev)
+ {
+ 	static const struct access_ereg_val init[] = {
+-		/* TX Amplitude = 5 */
+-		{PHYACC_ATTR_MODE_MODIFY, PHYACC_ATTR_BANK_AFE, 0x0B,
+-		 0x000A, 0x001E},
+-		/* Clear SMI interrupts */
+-		{PHYACC_ATTR_MODE_READ, PHYACC_ATTR_BANK_SMI, 0x18,
+-		 0, 0},
+-		/* Clear MISC interrupts */
+-		{PHYACC_ATTR_MODE_READ, PHYACC_ATTR_BANK_MISC, 0x08,
+-		 0, 0},
+-		/* Turn on TC10 Ring Oscillator (ROSC) */
+-		{PHYACC_ATTR_MODE_MODIFY, PHYACC_ATTR_BANK_MISC, 0x20,
+-		 0x0020, 0x0020},
+-		/* WUR Detect Length to 1.2uS, LPC Detect Length to 1.09uS */
+-		{PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_PCS, 0x20,
+-		 0x283C, 0},
+-		/* Wake_In Debounce Length to 39uS, Wake_Out Length to 79uS */
+-		{PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_MISC, 0x21,
+-		 0x274F, 0},
+-		/* Enable Auto Wake Forward to Wake_Out, ROSC on, Sleep,
+-		 * and Wake_In to wake PHY
+-		 */
+-		{PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_MISC, 0x20,
+-		 0x80A7, 0},
+-		/* Enable WUP Auto Fwd, Enable Wake on MDI, Wakeup Debouncer
+-		 * to 128 uS
+-		 */
+-		{PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_MISC, 0x24,
+-		 0xF110, 0},
+-		/* Enable HW Init */
+-		{PHYACC_ATTR_MODE_MODIFY, PHYACC_ATTR_BANK_SMI, 0x1A,
+-		 0x0100, 0x0100},
++		/* TXPD/TXAMP6 Configs */
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_AFE,
++		  T1_AFE_PORT_CFG1_REG,       0x002D,  0 },
++		/* HW_Init Hi and Force_ED */
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_SMI,
++		  T1_POWER_DOWN_CONTROL_REG,  0x0308,  0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_EQ_FD_STG1_FRZ_CFG,     0x0002,  0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_EQ_FD_STG2_FRZ_CFG,     0x0002,  0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_EQ_FD_STG3_FRZ_CFG,     0x0002,  0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_EQ_FD_STG4_FRZ_CFG,     0x0002,  0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_EQ_WT_FD_LCK_FRZ_CFG,    0x0002,  0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_PST_EQ_LCK_STG1_FRZ_CFG, 0x0002,  0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_SLV_FD_MULT_CFG_REG,     0x0D53,  0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_CDR_CFG_PRE_LOCK_REG,    0x0AB2,  0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_CDR_CFG_POST_LOCK_REG,   0x0AB3,  0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_LCK_STG2_MUFACT_CFG_REG, 0x0AEA,  0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_LCK_STG3_MUFACT_CFG_REG, 0x0AEB,  0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_POST_LCK_MUFACT_CFG_REG, 0x0AEB,  0 },
++		/* Pointer delay */
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_TX_RX_FIFO_CFG_REG, 0x1C00, 0 },
++		/* Tx iir edits */
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_TX_LPF_FIR_CFG_REG, 0x1000, 0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_TX_LPF_FIR_CFG_REG, 0x1861, 0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_TX_LPF_FIR_CFG_REG, 0x1061, 0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_TX_LPF_FIR_CFG_REG, 0x1922, 0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_TX_LPF_FIR_CFG_REG, 0x1122, 0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_TX_LPF_FIR_CFG_REG, 0x1983, 0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_TX_LPF_FIR_CFG_REG, 0x1183, 0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_TX_LPF_FIR_CFG_REG, 0x1944, 0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_TX_LPF_FIR_CFG_REG, 0x1144, 0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_TX_LPF_FIR_CFG_REG, 0x18c5, 0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_TX_LPF_FIR_CFG_REG, 0x10c5, 0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_TX_LPF_FIR_CFG_REG, 0x1846, 0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_TX_LPF_FIR_CFG_REG, 0x1046, 0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_TX_LPF_FIR_CFG_REG, 0x1807, 0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_TX_LPF_FIR_CFG_REG, 0x1007, 0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_TX_LPF_FIR_CFG_REG, 0x1808, 0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_TX_LPF_FIR_CFG_REG, 0x1008, 0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_TX_LPF_FIR_CFG_REG, 0x1809, 0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_TX_LPF_FIR_CFG_REG, 0x1009, 0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_TX_LPF_FIR_CFG_REG, 0x180A, 0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_TX_LPF_FIR_CFG_REG, 0x100A, 0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_TX_LPF_FIR_CFG_REG, 0x180B, 0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_TX_LPF_FIR_CFG_REG, 0x100B, 0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_TX_LPF_FIR_CFG_REG, 0x180C, 0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_TX_LPF_FIR_CFG_REG, 0x100C, 0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_TX_LPF_FIR_CFG_REG, 0x180D, 0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_TX_LPF_FIR_CFG_REG, 0x100D, 0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_TX_LPF_FIR_CFG_REG, 0x180E, 0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_TX_LPF_FIR_CFG_REG, 0x100E, 0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_TX_LPF_FIR_CFG_REG, 0x180F, 0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_TX_LPF_FIR_CFG_REG, 0x100F, 0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_TX_LPF_FIR_CFG_REG, 0x1810, 0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_TX_LPF_FIR_CFG_REG, 0x1010, 0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_TX_LPF_FIR_CFG_REG, 0x1811, 0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_TX_LPF_FIR_CFG_REG, 0x1011, 0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_TX_LPF_FIR_CFG_REG, 0x1000, 0 },
++		/* SQI enable */
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_SQI_CONFIG_REG,		0x9572, 0 },
++		/* Flag LPS and WUR as idle errors */
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_SMI,
++		  T1_MDIO_CONTROL2_REG,		0x0014, 0 },
++		/* Restore state machines without clearing registers */
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_SMI,
++		  T1_POWER_DOWN_CONTROL_REG,	0x0200, 0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_SMI,
++		  T1_MDIO_CONTROL2_REG,		0x0094, 0 },
++		{ PHYACC_ATTR_MODE_POLL, PHYACC_ATTR_BANK_SMI,
++		  T1_MDIO_CONTROL2_REG,		0x0080, 0 },
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_AFE,
++		  T1_AFE_PORT_CFG1_REG,		0x000C, 0 },
++		/* Read INTERRUPT_SOURCE Register */
++		{ PHYACC_ATTR_MODE_READ, PHYACC_ATTR_BANK_SMI,
++		  T1_INTERRUPT_SOURCE_REG,	0,	0 },
++		/* Read INTERRUPT_SOURCE Register */
++		{ PHYACC_ATTR_MODE_READ, PHYACC_ATTR_BANK_MISC,
++		  T1_INTERRUPT2_SOURCE_REG,	0,	0 },
++		/* HW_Init Hi */
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_SMI,
++		  T1_POWER_DOWN_CONTROL_REG,	0x0300, 0 },
+ 	};
+ 	int rc, i;
+ 
+-	/* Start manual initialization procedures in Managed Mode */
+-	rc = access_ereg_modify_changed(phydev, PHYACC_ATTR_BANK_SMI,
+-					0x1a, 0x0000, 0x0100);
+-	if (rc < 0)
+-		return rc;
+-
+-	/* Soft Reset the SMI block */
+-	rc = access_ereg_modify_changed(phydev, PHYACC_ATTR_BANK_SMI,
+-					0x00, 0x8000, 0x8000);
++	/* phy Soft reset */
++	rc = genphy_soft_reset(phydev);
+ 	if (rc < 0)
+ 		return rc;
+ 
+-	/* Check to see if the self-clearing bit is cleared */
+-	usleep_range(1000, 2000);
+-	rc = access_ereg(phydev, PHYACC_ATTR_MODE_READ,
+-			 PHYACC_ATTR_BANK_SMI, 0x00, 0);
+-	if (rc < 0)
+-		return rc;
+-	if ((rc & 0x8000) != 0)
+-		return -ETIMEDOUT;
+-
+ 	/* PHY Initialization */
+ 	for (i = 0; i < ARRAY_SIZE(init); i++) {
+-		if (init[i].mode == PHYACC_ATTR_MODE_MODIFY) {
+-			rc = access_ereg_modify_changed(phydev, init[i].bank,
+-							init[i].offset,
+-							init[i].val,
+-							init[i].mask);
++		if (init[i].mode == PHYACC_ATTR_MODE_POLL) {
++			rc = access_ereg_clr_poll_timeout(phydev, init[i].bank,
++							  init[i].offset,
++							  init[i].val,
++							  init[i].mask);
+ 		} else {
+ 			rc = access_ereg(phydev, init[i].mode, init[i].bank,
+ 					 init[i].offset, init[i].val);
+@@ -273,6 +439,9 @@ static int lan87xx_config_init(struct phy_device *phydev)
+ {
+ 	int rc = lan87xx_phy_init(phydev);
+ 
++	if (rc < 0)
++		phydev_err(phydev, "failed to initialize phy\n");
 +
+ 	return rc < 0 ? rc : 0;
+ }
+ 
+@@ -504,32 +673,67 @@ static int lan87xx_cable_test_get_status(struct phy_device *phydev,
+ 	return 0;
+ }
+ 
+-static struct phy_driver microchip_t1_phy_driver[] = {
+-	{
+-		.phy_id         = 0x0007c150,
+-		.phy_id_mask    = 0xfffffff0,
+-		.name           = "Microchip LAN87xx T1",
+-		.flags          = PHY_POLL_CABLE_TEST,
++static int lan937x_read_status(struct phy_device *phydev)
++{
++	int val;
+ 
+-		.features       = PHY_BASIC_T1_FEATURES,
++	val = phy_read(phydev, T1_MODE_STAT_REG);
+ 
+-		.config_init	= lan87xx_config_init,
++	if (val < 0)
++		return val;
+ 
+-		.config_intr    = lan87xx_phy_config_intr,
+-		.handle_interrupt = lan87xx_handle_interrupt,
++	if (val & T1_LINK_UP_MSK)
++		phydev->link = 1;
++	else
++		phydev->link = 0;
++
++	phydev->duplex = DUPLEX_FULL;
++	phydev->speed = SPEED_100;
++	phydev->pause = 0;
++	phydev->asym_pause = 0;
+ 
+-		.suspend        = genphy_suspend,
+-		.resume         = genphy_resume,
 +	return 0;
 +}
 +
- static int lan937x_port_fdb_add(struct dsa_switch *ds, int port,
- 				const unsigned char *addr, u16 vid)
- {
-@@ -1102,6 +1285,9 @@ const struct dsa_switch_ops lan937x_switch_ops = {
- 	.port_bridge_leave = ksz_port_bridge_leave,
- 	.port_stp_state_set = lan937x_port_stp_state_set,
- 	.port_fast_age = ksz_port_fast_age,
-+	.port_vlan_filtering = lan937x_port_vlan_filtering,
-+	.port_vlan_add = lan937x_port_vlan_add,
-+	.port_vlan_del = lan937x_port_vlan_del,
- 	.port_fdb_dump = lan937x_port_fdb_dump,
- 	.port_fdb_add = lan937x_port_fdb_add,
- 	.port_fdb_del = lan937x_port_fdb_del,
++static int lan937x_config_init(struct phy_device *phydev)
++{
++	/* lan87xx & lan937x follows same init sequence */
++	return lan87xx_config_init(phydev);
++}
++
++static struct phy_driver microchip_t1_phy_driver[] = {
++	{
++		.phy_id = LAN87XX_PHY_ID,
++		.phy_id_mask = LAN87XX_PHY_ID_MASK,
++		.name = "LAN87xx T1",
++		.flags = PHY_POLL_CABLE_TEST,
++		.features = PHY_BASIC_T1_FEATURES,
++		.config_init = lan87xx_config_init,
++		.config_intr = lan87xx_phy_config_intr,
++		.handle_interrupt = lan87xx_handle_interrupt,
++		.suspend = genphy_suspend,
++		.resume = genphy_resume,
+ 		.cable_test_start = lan87xx_cable_test_start,
+ 		.cable_test_get_status = lan87xx_cable_test_get_status,
++	},
++	{
++		.phy_id = LAN937X_T1_PHY_ID,
++		.phy_id_mask = LAN937X_PHY_ID_MASK,
++		.name = "LAN937x T1",
++		.read_status = lan937x_read_status,
++		.features = PHY_BASIC_T1_FEATURES,
++		.config_init = lan937x_config_init,
++		.suspend = genphy_suspend,
++		.resume = genphy_resume,
+ 	}
+ };
+ 
+ module_phy_driver(microchip_t1_phy_driver);
+ 
+ static struct mdio_device_id __maybe_unused microchip_t1_tbl[] = {
+-	{ 0x0007c150, 0xfffffff0 },
+-	{ }
++	{ LAN87XX_PHY_ID, LAN87XX_PHY_ID_MASK },
++	{ LAN937X_T1_PHY_ID, LAN937X_PHY_ID_MASK },
++	{}
+ };
+ 
+ MODULE_DEVICE_TABLE(mdio, microchip_t1_tbl);
 -- 
 2.30.2
 
