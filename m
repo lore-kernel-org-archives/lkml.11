@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6616C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 20:00:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90A13C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 20:00:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235853AbiBDUAg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 15:00:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39302 "EHLO
+        id S236667AbiBDUAr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 15:00:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235958AbiBDT7Q (ORCPT
+        with ESMTP id S236525AbiBDT73 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 14:59:16 -0500
+        Fri, 4 Feb 2022 14:59:29 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60363C061401
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 11:59:06 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7352C061777
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 11:59:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=y6p8+MJkK+iojKvg+sCKZZ8nwxZP7FWYLeEHjHoDQdg=; b=HUL9PebXZ888AnsWESfPYxl8OI
-        6Gsxse1mArB4K/J80n0lO3AiO67o06XdXMtVm+ez1TWvOakfn+tE/SjJdzB4E7GIsIVoWSf+wFoaA
-        v/egZtltIQCZKOeaZQDZvv/Nr/Gcqv+DqsaLryM1U/5yHR55YGAQ/I7gdulmJnRS7rtThwr96qw5q
-        GOgikwcPjejGSxSeoAPHhKpX3IjBpWixuoZS/AiZ+6hGrzkCKX0navkwhB5danZBDu4P034F7csE8
-        ZQOtoG/glu6VSL+uDzRjMhdvs24gz5lkTKxkoP97hMtWoAg1GJ4fykYNagpfXVsd1SOQemhxm3vE2
-        kG2CDsXw==;
+        bh=TcquNu2GjfQJyfxq8hgdegm77gZgKaMIuUwOTeONZRk=; b=F9BhQjkRzUZmcxq8EgkR8kYIzr
+        2AdAWttomEYGMxGUvWiRnTh/sVF00uHtKMlELqdsyPXW3DsUX4TW2vk/JJRtcZoZQnyFp497XAqO/
+        MID290vHvfvVVi+6F/UhMeAyILcChN1f0zDCvJPf/Km5k6QympUV07QuioYfvLma4vgkVL4ozij4+
+        lU/n8p+76fqr6Pin08Ad0D8ci49LT6rq6tN4fSziSk7q8CF+cV1Y4qAjAd4y+Xy4QptTl+35+4RVM
+        taKiyjQ6447lAMYFmYl6UR6UgX5XL03ZPqNY2ggl6s2SmG+AtSQE1gyhounEiLS3KBlU7297VApo3
+        4NrU1Kgg==;
 Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nG4jY-007Lo5-MF; Fri, 04 Feb 2022 19:59:04 +0000
+        id 1nG4jb-007LrT-U7; Fri, 04 Feb 2022 19:59:08 +0000
 From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
 To:     linux-mm@kvack.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 48/75] mm/rmap: Turn page_mlock() into folio_mlock()
-Date:   Fri,  4 Feb 2022 19:58:25 +0000
-Message-Id: <20220204195852.1751729-49-willy@infradead.org>
+Subject: [PATCH 71/75] mm/readahead: Add large folio readahead
+Date:   Fri,  4 Feb 2022 19:58:48 +0000
+Message-Id: <20220204195852.1751729-72-willy@infradead.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220204195852.1751729-1-willy@infradead.org>
 References: <20220204195852.1751729-1-willy@infradead.org>
@@ -43,133 +43,176 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add back page_mlock() as a wrapper around folio_mlock().  Removes
-a few hidden calls to compound_head().
+Allocate large folios in the readahead code when the filesystem supports
+them and it seems worth doing.  The heuristic for choosing which folio
+sizes will surely need some tuning, but this aggressive ramp-up has been
+good for testing.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
- include/linux/rmap.h |  1 +
- mm/folio-compat.c    |  6 ++++++
- mm/rmap.c            | 31 +++++++++++++++++--------------
- 3 files changed, 24 insertions(+), 14 deletions(-)
+ mm/readahead.c | 106 +++++++++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 99 insertions(+), 7 deletions(-)
 
-diff --git a/include/linux/rmap.h b/include/linux/rmap.h
-index 00b772cdaaaa..31f3a299ef66 100644
---- a/include/linux/rmap.h
-+++ b/include/linux/rmap.h
-@@ -261,6 +261,7 @@ int folio_mkclean(struct folio *);
-  * the page mlocked.
-  */
- void page_mlock(struct page *page);
-+void folio_mlock(struct folio *folio);
+diff --git a/mm/readahead.c b/mm/readahead.c
+index cf0dcf89eb69..5100eaf5b0ee 100644
+--- a/mm/readahead.c
++++ b/mm/readahead.c
+@@ -148,7 +148,7 @@ static void read_pages(struct readahead_control *rac, struct list_head *pages,
  
- void remove_migration_ptes(struct page *old, struct page *new, bool locked);
+ 	blk_finish_plug(&plug);
  
-diff --git a/mm/folio-compat.c b/mm/folio-compat.c
-index 9cb0867d5b38..90f03187a5e3 100644
---- a/mm/folio-compat.c
-+++ b/mm/folio-compat.c
-@@ -7,6 +7,7 @@
- #include <linux/migrate.h>
- #include <linux/pagemap.h>
- #include <linux/swap.h>
-+#include <linux/rmap.h>
- #include "internal.h"
+-	BUG_ON(!list_empty(pages));
++	BUG_ON(pages && !list_empty(pages));
+ 	BUG_ON(readahead_count(rac));
  
- struct address_space *page_mapping(struct page *page)
-@@ -174,3 +175,8 @@ void mlock_vma_page(struct page *page)
- {
- 	mlock_vma_folio(page_folio(page));
+ out:
+@@ -431,11 +431,103 @@ static int try_context_readahead(struct address_space *mapping,
+ 	return 1;
  }
+ 
++/*
++ * There are some parts of the kernel which assume that PMD entries
++ * are exactly HPAGE_PMD_ORDER.  Those should be fixed, but until then,
++ * limit the maximum allocation order to PMD size.  I'm not aware of any
++ * assumptions about maximum order if THP are disabled, but 8 seems like
++ * a good order (that's 1MB if you're using 4kB pages)
++ */
++#ifdef CONFIG_TRANSPARENT_HUGEPAGE
++#define MAX_PAGECACHE_ORDER	HPAGE_PMD_ORDER
++#else
++#define MAX_PAGECACHE_ORDER	8
++#endif
 +
-+void page_mlock(struct page *page)
++static inline int ra_alloc_folio(struct readahead_control *ractl, pgoff_t index,
++		pgoff_t mark, unsigned int order, gfp_t gfp)
 +{
-+	folio_mlock(page_folio(page));
++	int err;
++	struct folio *folio = filemap_alloc_folio(gfp, order);
++
++	if (!folio)
++		return -ENOMEM;
++	if (mark - index < (1UL << order))
++		folio_set_readahead(folio);
++	err = filemap_add_folio(ractl->mapping, folio, index, gfp);
++	if (err)
++		folio_put(folio);
++	else
++		ractl->_nr_pages += 1UL << order;
++	return err;
 +}
-diff --git a/mm/rmap.c b/mm/rmap.c
-index 1cedcfd6105c..a383e25fb196 100644
---- a/mm/rmap.c
-+++ b/mm/rmap.c
-@@ -2001,6 +2001,7 @@ void try_to_migrate(struct page *page, enum ttu_flags flags)
- static bool page_mlock_one(struct page *page, struct vm_area_struct *vma,
- 				 unsigned long address, void *unused)
++
++static void page_cache_ra_order(struct readahead_control *ractl,
++		struct file_ra_state *ra, unsigned int new_order)
++{
++	struct address_space *mapping = ractl->mapping;
++	pgoff_t index = readahead_index(ractl);
++	pgoff_t limit = (i_size_read(mapping->host) - 1) >> PAGE_SHIFT;
++	pgoff_t mark = index + ra->size - ra->async_size;
++	int err = 0;
++	gfp_t gfp = readahead_gfp_mask(mapping);
++
++	if (!mapping_large_folio_support(mapping) || ra->size < 4)
++		goto fallback;
++
++	limit = min(limit, index + ra->size - 1);
++
++	if (new_order < MAX_PAGECACHE_ORDER) {
++		new_order += 2;
++		if (new_order > MAX_PAGECACHE_ORDER)
++			new_order = MAX_PAGECACHE_ORDER;
++		while ((1 << new_order) > ra->size)
++			new_order--;
++	}
++
++	while (index <= limit) {
++		unsigned int order = new_order;
++
++		/* Align with smaller pages if needed */
++		if (index & ((1UL << order) - 1)) {
++			order = __ffs(index);
++			if (order == 1)
++				order = 0;
++		}
++		/* Don't allocate pages past EOF */
++		while (index + (1UL << order) - 1 > limit) {
++			if (--order == 1)
++				order = 0;
++		}
++		err = ra_alloc_folio(ractl, index, mark, order, gfp);
++		if (err)
++			break;
++		index += 1UL << order;
++	}
++
++	if (index > limit) {
++		ra->size += index - limit - 1;
++		ra->async_size += index - limit - 1;
++	}
++
++	read_pages(ractl, NULL, false);
++
++	/*
++	 * If there were already pages in the page cache, then we may have
++	 * left some gaps.  Let the regular readahead code take care of this
++	 * situation.
++	 */
++	if (!err)
++		return;
++fallback:
++	do_page_cache_ra(ractl, ra->size, ra->async_size);
++}
++
+ /*
+  * A minimal readahead algorithm for trivial sequential/random reads.
+  */
+ static void ondemand_readahead(struct readahead_control *ractl,
+-		bool hit_readahead_marker, unsigned long req_size)
++		struct folio *folio, unsigned long req_size)
  {
-+	struct folio *folio = page_folio(page);
- 	struct page_vma_mapped_walk pvmw = {
- 		.vma = vma,
- 		.address = address,
-@@ -2024,9 +2025,9 @@ static bool page_mlock_one(struct page *page, struct vm_area_struct *vma,
- 			 * nor on an Anon THP (which may still be PTE-mapped
- 			 * after DoubleMap was cleared).
- 			 */
--			mlock_vma_page(page);
-+			mlock_vma_folio(folio);
- 			/*
--			 * No need to scan further once the page is marked
-+			 * No need to scan further once the folio is marked
- 			 * as mlocked.
- 			 */
- 			page_vma_mapped_walk_done(&pvmw);
-@@ -2038,14 +2039,14 @@ static bool page_mlock_one(struct page *page, struct vm_area_struct *vma,
+ 	struct backing_dev_info *bdi = inode_to_bdi(ractl->mapping->host);
+ 	struct file_ra_state *ra = ractl->ra;
+@@ -470,12 +562,12 @@ static void ondemand_readahead(struct readahead_control *ractl,
+ 	}
+ 
+ 	/*
+-	 * Hit a marked page without valid readahead state.
++	 * Hit a marked folio without valid readahead state.
+ 	 * E.g. interleaved reads.
+ 	 * Query the pagecache for async_size, which normally equals to
+ 	 * readahead size. Ramp it up and use it as the new readahead size.
+ 	 */
+-	if (hit_readahead_marker) {
++	if (folio) {
+ 		pgoff_t start;
+ 
+ 		rcu_read_lock();
+@@ -548,7 +640,7 @@ static void ondemand_readahead(struct readahead_control *ractl,
+ 	}
+ 
+ 	ractl->_index = ra->start;
+-	do_page_cache_ra(ractl, ra->size, ra->async_size);
++	page_cache_ra_order(ractl, ra, folio ? folio_order(folio) : 0);
  }
  
- /**
-- * page_mlock - try to mlock a page
-- * @page: the page to be mlocked
-+ * folio_mlock() - Try to mlock a folio.
-+ * @folio: The folio to be mlocked.
-  *
-- * Called from munlock code. Checks all of the VMAs mapping the page and mlocks
-- * the page if any are found. The page will be returned with PG_mlocked cleared
-- * if it is not mapped by any locked vmas.
-+ * Called from munlock code. Checks all of the VMAs mapping the folio
-+ * and mlocks the folio if any are found. The folio will be returned
-+ * with the mlocked flag clear if it is not mapped by any locked vmas.
-  */
--void page_mlock(struct page *page)
-+void folio_mlock(struct folio *folio)
- {
- 	struct rmap_walk_control rwc = {
- 		.rmap_one = page_mlock_one,
-@@ -2054,14 +2055,16 @@ void page_mlock(struct page *page)
+ void page_cache_sync_ra(struct readahead_control *ractl,
+@@ -576,7 +668,7 @@ void page_cache_sync_ra(struct readahead_control *ractl,
+ 	}
  
- 	};
+ 	/* do read-ahead */
+-	ondemand_readahead(ractl, false, req_count);
++	ondemand_readahead(ractl, NULL, req_count);
+ }
+ EXPORT_SYMBOL_GPL(page_cache_sync_ra);
  
--	VM_BUG_ON_PAGE(!PageLocked(page) || PageLRU(page), page);
--	VM_BUG_ON_PAGE(PageCompound(page) && PageDoubleMap(page), page);
-+	VM_BUG_ON_FOLIO(!folio_test_locked(folio) || folio_test_lru(folio),
-+			folio);
-+	VM_BUG_ON_FOLIO(folio_test_large(folio) && folio_test_double_map(folio),
-+			folio);
- 
- 	/* Anon THP are only marked as mlocked when singly mapped */
--	if (PageTransCompound(page) && PageAnon(page))
-+	if (folio_test_large(folio) && folio_test_anon(folio))
+@@ -605,7 +697,7 @@ void page_cache_async_ra(struct readahead_control *ractl,
  		return;
  
--	rmap_walk(page, &rwc);
-+	rmap_walk(&folio->page, &rwc);
+ 	/* do read-ahead */
+-	ondemand_readahead(ractl, true, req_count);
++	ondemand_readahead(ractl, folio, req_count);
  }
+ EXPORT_SYMBOL_GPL(page_cache_async_ra);
  
- #ifdef CONFIG_DEVICE_PRIVATE
-@@ -2290,7 +2293,7 @@ static struct anon_vma *rmap_walk_anon_lock(struct page *page,
-  * Find all the mappings of a page using the mapping pointer and the vma chains
-  * contained in the anon_vma struct it points to.
-  *
-- * When called from page_mlock(), the mmap_lock of the mm containing the vma
-+ * When called from folio_mlock(), the mmap_lock of the mm containing the vma
-  * where the page was found will be held for write.  So, we won't recheck
-  * vm_flags for that VMA.  That should be OK, because that vma shouldn't be
-  * LOCKED.
-@@ -2343,7 +2346,7 @@ static void rmap_walk_anon(struct page *page, struct rmap_walk_control *rwc,
-  * Find all the mappings of a page using the mapping pointer and the vma chains
-  * contained in the address_space struct it points to.
-  *
-- * When called from page_mlock(), the mmap_lock of the mm containing the vma
-+ * When called from folio_mlock(), the mmap_lock of the mm containing the vma
-  * where the page was found will be held for write.  So, we won't recheck
-  * vm_flags for that VMA.  That should be OK, because that vma shouldn't be
-  * LOCKED.
 -- 
 2.34.1
 
