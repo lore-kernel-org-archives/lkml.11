@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D04CBC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:28:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7113FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:28:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358346AbiBDJ2Q (ORCPT
+        id S1358517AbiBDJ22 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 04:28:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33008 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358305AbiBDJ00 (ORCPT
+        Fri, 4 Feb 2022 04:28:28 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:44172 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358025AbiBDJ0p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 04:26:26 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ACEDC06175F;
-        Fri,  4 Feb 2022 01:26:00 -0800 (PST)
+        Fri, 4 Feb 2022 04:26:45 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 23545B836F9;
-        Fri,  4 Feb 2022 09:25:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E09EC004E1;
-        Fri,  4 Feb 2022 09:25:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 90A52612C8;
+        Fri,  4 Feb 2022 09:26:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC276C004E1;
+        Fri,  4 Feb 2022 09:26:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643966757;
-        bh=wsDPVvMJ3fihSgGDbISGT78IhKQRNro2j33j6ziBLu4=;
+        s=korg; t=1643966805;
+        bh=SyzHGSaCOZ3ivvI/sjcAeoQjKsYXInq4oIEakk1zE6M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gpBU6Bp5c5v9ungTrQTH5476TjZXJ5vG/EU0s1toXSuxFZK9UdDAInix0sGYq2YP5
-         n06c+1A/HgrhvCK2MrvTVDKTYhgdwwLKf/UDJmEmXqn/f9DhFxRyFLk9fbfWVsOy5n
-         EGnuXpRDPylSaQVXCBFjfPLwHibaQ1VlNTCoMwgw=
+        b=ghTcvp8nFLlsMBcDNYiWRPsJ88Vs6dKhZdv+P9i7PMM73TNMRAOl6dpQoTqng2Z9n
+         WxtUgxBH/MzwArAoAq3U6QhAS7es7OLbv/xhBkLpMSFCbZsN3A0qFH4N6JBZNK3jhJ
+         0fRxawXYdOlENGAo8QAqlaNY994YlgO2i3coINQ0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alex Elder <elder@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.16 04/43] net: ipa: prevent concurrent replenish
-Date:   Fri,  4 Feb 2022 10:22:11 +0100
-Message-Id: <20220204091917.334430355@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Sylwester Dziedziuch <sylwesterx.dziedziuch@intel.com>,
+        Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Imam Hassan Reza Biswas <imam.hassan.reza.biswas@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Subject: [PATCH 5.16 30/43] i40e: Fix reset bw limit when DCB enabled with 1 TC
+Date:   Fri,  4 Feb 2022 10:22:37 +0100
+Message-Id: <20220204091918.148878584@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220204091917.166033635@linuxfoundation.org>
 References: <20220204091917.166033635@linuxfoundation.org>
@@ -49,79 +50,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Elder <elder@linaro.org>
+From: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
 
-commit 998c0bd2b3715244da7639cc4e6a2062cb79c3f4 upstream.
+commit 3d2504663c41104b4359a15f35670cfa82de1bbf upstream.
 
-We have seen cases where an endpoint RX completion interrupt arrives
-while replenishing for the endpoint is underway.  This causes another
-instance of replenishing to begin as part of completing the receive
-transaction.  If this occurs it can lead to transaction corruption.
+There was an AQ error I40E_AQ_RC_EINVAL when trying
+to reset bw limit as part of bw allocation setup.
+This was caused by trying to reset bw limit with
+DCB enabled. Bw limit should not be reset when
+DCB is enabled. The code was relying on the pf->flags
+to check if DCB is enabled but if only 1 TC is available
+this flag will not be set even though DCB is enabled.
+Add a check for number of TC and if it is 1
+don't try to reset bw limit even if pf->flags shows
+DCB as disabled.
 
-Use a new flag to ensure only one replenish instance for an endpoint
-executes at a time.
-
-Fixes: 84f9bd12d46db ("soc: qcom: ipa: IPA endpoints")
-Signed-off-by: Alex Elder <elder@linaro.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: fa38e30ac73f ("i40e: Fix for Tx timeouts when interface is brought up if DCB is enabled")
+Suggested-by: Alexander Lobakin <alexandr.lobakin@intel.com> # Flatten the condition
+Signed-off-by: Sylwester Dziedziuch <sylwesterx.dziedziuch@intel.com>
+Signed-off-by: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
+Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+Tested-by: Imam Hassan Reza Biswas <imam.hassan.reza.biswas@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ipa/ipa_endpoint.c |   13 +++++++++++++
- drivers/net/ipa/ipa_endpoint.h |    2 ++
- 2 files changed, 15 insertions(+)
+ drivers/net/ethernet/intel/i40e/i40e_main.c |   12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
---- a/drivers/net/ipa/ipa_endpoint.c
-+++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -1075,15 +1075,27 @@ static void ipa_endpoint_replenish(struc
- 		return;
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -5372,7 +5372,15 @@ static int i40e_vsi_configure_bw_alloc(s
+ 	/* There is no need to reset BW when mqprio mode is on.  */
+ 	if (pf->flags & I40E_FLAG_TC_MQPRIO)
+ 		return 0;
+-	if (!vsi->mqprio_qopt.qopt.hw && !(pf->flags & I40E_FLAG_DCB_ENABLED)) {
++
++	if (!vsi->mqprio_qopt.qopt.hw) {
++		if (pf->flags & I40E_FLAG_DCB_ENABLED)
++			goto skip_reset;
++
++		if (IS_ENABLED(CONFIG_I40E_DCB) &&
++		    i40e_dcb_hw_get_num_tc(&pf->hw) == 1)
++			goto skip_reset;
++
+ 		ret = i40e_set_bw_limit(vsi, vsi->seid, 0);
+ 		if (ret)
+ 			dev_info(&pf->pdev->dev,
+@@ -5380,6 +5388,8 @@ static int i40e_vsi_configure_bw_alloc(s
+ 				 vsi->seid);
+ 		return ret;
  	}
- 
-+	/* If already active, just update the backlog */
-+	if (test_and_set_bit(IPA_REPLENISH_ACTIVE, endpoint->replenish_flags)) {
-+		if (add_one)
-+			atomic_inc(&endpoint->replenish_backlog);
-+		return;
-+	}
 +
- 	while (atomic_dec_not_zero(&endpoint->replenish_backlog))
- 		if (ipa_endpoint_replenish_one(endpoint))
- 			goto try_again_later;
-+
-+	clear_bit(IPA_REPLENISH_ACTIVE, endpoint->replenish_flags);
-+
- 	if (add_one)
- 		atomic_inc(&endpoint->replenish_backlog);
- 
- 	return;
- 
- try_again_later:
-+	clear_bit(IPA_REPLENISH_ACTIVE, endpoint->replenish_flags);
-+
- 	/* The last one didn't succeed, so fix the backlog */
- 	delta = add_one ? 2 : 1;
- 	backlog = atomic_add_return(delta, &endpoint->replenish_backlog);
-@@ -1666,6 +1678,7 @@ static void ipa_endpoint_setup_one(struc
- 		 * backlog is the same as the maximum outstanding TREs.
- 		 */
- 		clear_bit(IPA_REPLENISH_ENABLED, endpoint->replenish_flags);
-+		clear_bit(IPA_REPLENISH_ACTIVE, endpoint->replenish_flags);
- 		atomic_set(&endpoint->replenish_saved,
- 			   gsi_channel_tre_max(gsi, endpoint->channel_id));
- 		atomic_set(&endpoint->replenish_backlog, 0);
---- a/drivers/net/ipa/ipa_endpoint.h
-+++ b/drivers/net/ipa/ipa_endpoint.h
-@@ -44,10 +44,12 @@ enum ipa_endpoint_name {
-  * enum ipa_replenish_flag:	RX buffer replenish flags
-  *
-  * @IPA_REPLENISH_ENABLED:	Whether receive buffer replenishing is enabled
-+ * @IPA_REPLENISH_ACTIVE:	Whether replenishing is underway
-  * @IPA_REPLENISH_COUNT:	Number of defined replenish flags
-  */
- enum ipa_replenish_flag {
- 	IPA_REPLENISH_ENABLED,
-+	IPA_REPLENISH_ACTIVE,
- 	IPA_REPLENISH_COUNT,	/* Number of flags (must be last) */
- };
- 
++skip_reset:
+ 	memset(&bw_data, 0, sizeof(bw_data));
+ 	bw_data.tc_valid_bits = enabled_tc;
+ 	for (i = 0; i < I40E_MAX_TRAFFIC_CLASS; i++)
 
 
