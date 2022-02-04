@@ -2,147 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4105EC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 13:20:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2631C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 13:21:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354586AbiBDNUY (ORCPT
+        id S1354731AbiBDNVy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 08:20:24 -0500
-Received: from frasgout.his.huawei.com ([185.176.79.56]:4673 "EHLO
-        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353696AbiBDNUV (ORCPT
+        Fri, 4 Feb 2022 08:21:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59570 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1353696AbiBDNVw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 08:20:21 -0500
-Received: from fraeml713-chm.china.huawei.com (unknown [172.18.147.226])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Jqx326Zlwz67k2V;
-        Fri,  4 Feb 2022 21:19:42 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml713-chm.china.huawei.com (10.206.15.32) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 4 Feb 2022 14:20:19 +0100
-Received: from localhost (10.47.31.86) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 4 Feb
- 2022 13:20:18 +0000
-Date:   Fri, 4 Feb 2022 13:20:15 +0000
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     Ira Weiny <ira.weiny@intel.com>
-CC:     Ben Widawsky <ben.widawsky@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        "Alison Schofield" <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        <linux-kernel@vger.kernel.org>, <linux-cxl@vger.kernel.org>,
-        <linux-pci@vger.kernel.org>
-Subject: Re: [PATCH V6 09/10] cxl/mem: Retry reading CDAT on failure
-Message-ID: <20220204132015.00006443@Huawei.com>
-In-Reply-To: <20220201223159.GQ785175@iweiny-DESK2.sc.intel.com>
-References: <20220201071952.900068-1-ira.weiny@intel.com>
-        <20220201071952.900068-10-ira.weiny@intel.com>
-        <20220201185928.ffdgvnn6mcmo7by7@intel.com>
-        <20220201223159.GQ785175@iweiny-DESK2.sc.intel.com>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
+        Fri, 4 Feb 2022 08:21:52 -0500
+Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5CA2C06173E
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 05:21:51 -0800 (PST)
+Received: by mail-yb1-xb2c.google.com with SMTP id 124so17991863ybw.6
+        for <linux-kernel@vger.kernel.org>; Fri, 04 Feb 2022 05:21:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=eclypsium.com; s=google;
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
+         :cc;
+        bh=+kHxAPwxyZEcImebt/hCxo31GYUl4Y9JyOP0KTd0RjQ=;
+        b=Xk+XdovZ9A6qq+rxZKTZ2zFvnkt4TLtrm+p3BP7FGwRMLKm2/kzYFkkKSBaPHgehn0
+         ZX/lCNP2k5uePIG4/RAMYbe2LE6DkvtaUo9MH7gbmNmx0WKi/+Ec3KT9z07csS2ASm4U
+         rXyvUirAiPY/KhaQRx5/aIPjPZILen3VccmkM3sT5nKGu2W7e7ugtzkOS1AnkSWHxFg1
+         Ma6qPtGcbSS/5HrMaVgXH8WctYtelboEsr6w9+88bFbmwXKLwoGcglwehyK+X5DnK+Ml
+         4IbdbjalA4JIuAtfZ7INJ/RzlrLNM06YUg/LEgSKcTYh7sUd4H4EQsHgZOa8p7zcM6j4
+         ij8w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
+         :message-id:subject:to:cc;
+        bh=+kHxAPwxyZEcImebt/hCxo31GYUl4Y9JyOP0KTd0RjQ=;
+        b=abqN66kSUV45VSCZDCKTAsHIhgmurRBOtf+VS8aPhYwKGaECdk4ZVwpEE+2okeXtX1
+         P7VAVeGZ3eky6n4YowWI4dFDGNtafMx9GARsmRleycbwhjLGR4FfNycvbsNXAcWKmDNG
+         IZA/W/8vbq/jR20Qsr7Rsg4Drd7KoGId3YZPYfzaGqBOTRNhcr3jqvypWEBP7lkBK1lg
+         ZnBh26M8Pvyxbzbpp9kKCpLWbkb3lsdOwNssF5aknfHDxi13KhSn69m0AWICMSAJPxhh
+         gfivC21Bj/47PSkyXcHkg0wQ8yRo2PiegVeFrear84NIsV10DY4QRicKJ43F08wPmphP
+         AsOg==
+X-Gm-Message-State: AOAM533DqbD3WzwrHxr2uyltQCE/HCBqzPHa45dkXcVNb/7Avc0a3mlY
+        uK4ned1VXwI4dkzx7c8tov7rGCSVeVNJHyFszi3Eqg==
+X-Google-Smtp-Source: ABdhPJxtI9yIZAtwdVT04ufmqMOyAiqHsH0A4Hy4uwN6eFDfMocj5rHcvKETbFuiByKZy35TW0cJK+HFULlj9RIdImk=
+X-Received: by 2002:a25:b805:: with SMTP id v5mr2552677ybj.266.1643980910826;
+ Fri, 04 Feb 2022 05:21:50 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.47.31.86]
-X-ClientProxiedBy: lhreml724-chm.china.huawei.com (10.201.108.75) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
+Received: by 2002:a81:1756:0:0:0:0:0 with HTTP; Fri, 4 Feb 2022 05:21:50 -0800 (PST)
+In-Reply-To: <67d2711b-200c-0894-4ff7-beb3eb304399@amd.com>
+References: <20220203164328.203629-1-martin.fernandez@eclypsium.com>
+ <20220203164328.203629-7-martin.fernandez@eclypsium.com> <67d2711b-200c-0894-4ff7-beb3eb304399@amd.com>
+From:   Martin Fernandez <martin.fernandez@eclypsium.com>
+Date:   Fri, 4 Feb 2022 10:21:50 -0300
+Message-ID: <CAKgze5YM2+BRjj2nvb+_dnuCg5WtWvQ6FQyNYJ1c8G6Orn=aQw@mail.gmail.com>
+Subject: Re: [PATCH v6 6/6] drivers/node: Show in sysfs node's crypto capabilities
+To:     "Limonciello, Mario" <mario.limonciello@amd.com>
+Cc:     linux-kernel@vger.kernel.org, linux-efi@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org, linux-mm@kvack.org,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+        ardb@kernel.org, dvhart@infradead.org, andy@infradead.org,
+        gregkh@linuxfoundation.org, rafael@kernel.org, rppt@kernel.org,
+        akpm@linux-foundation.org, daniel.gutson@eclypsium.com,
+        hughsient@gmail.com, alex.bazhaniuk@eclypsium.com,
+        alison.schofield@intel.com, keescook@chromium.org,
+        "Lendacky, Thomas" <Thomas.Lendacky@amd.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 1 Feb 2022 14:31:59 -0800
-Ira Weiny <ira.weiny@intel.com> wrote:
+On 2/4/22, Limonciello, Mario <mario.limonciello@amd.com> wrote:
+> On 2/3/2022 10:43, Martin Fernandez wrote:
+>> +static ssize_t crypto_capable_show(struct device *dev,
+>> +				   struct device_attribute *attr, char *buf)
+>> +{
+>> +	struct pglist_data *pgdat = NODE_DATA(dev->id);
+>> +
+>> +	return sysfs_emit(buf, "%d\n", pgdat->crypto_capable);
+>
+> As there is interest in seeing these capabilities from userspace, it
+> seems like a logical time to also expose a `crypto_active` attribute.
 
-> On Tue, Feb 01, 2022 at 10:59:28AM -0800, Widawsky, Ben wrote:
-> > On 22-01-31 23:19:51, ira.weiny@intel.com wrote:  
-> > > From: Ira Weiny <ira.weiny@intel.com>
-> > > 
-> > > The CDAT read may fail for a number of reasons but mainly it is possible
-> > > to get different parts of a valid state.  The checksum in the CDAT table
-> > > protects against this.
-> > > 
-> > > Now that the checksum is validated issue a retry if the CDAT read fails.
-> > > For now 2 retries are implemented.
-> > > 
-> > > Signed-off-by: Ira Weiny <ira.weiny@intel.com>
-> > > 
-> > > ---
-> > > NOTE: Is 2 enough?  Should this just be delayed until the time when the
-> > > data is actually needed and not there?  
-> > 
-> > I can't speak to retries at all, but one small issue below. It might make sense
-> > if we keep this to make it a modparam.  
-> 
-> Not a bad idea.
+I planned to do something similar to this, but to show (or actually
+hide if inactive) tme in cpuinfo, just as Borislav Petkov suggested a
+few versions back.
 
-Ah. Here is the retry - I should have read the rest of the thread :)
+https://lore.kernel.org/linux-efi/YXrnkxgdjWbcPlJA@zn.tnic/
 
-This whole cycle isn't in a hot path and is fairly cheap. I'd just
-go with c. 5 and assume that is enough for anyone.  If we need a module
-parameter later because this race turns out to be something that
-actually happens then it is easy enough to add then.
+> Then userspace can make a judgement call if the system supports crypto
+> memory (`crypto_capable`) and then also whether or not it's been turned
+> on (`crypto_active`).
+>
+> `crypto_active` could be detected with some existing support in the
+> kernel of `mem_encrypt_active()`.  This will then work for a variety of
+> architectures too that offer `mem_encrypt_active()`.
 
+I need a hand with this, I grepped for mem_encrypt_active and nothing
+showed up...
 
+> As it stands today the only reliable way to tell from userspace (at
+> least for AMD's x86 implementation) is by grepping the system log for
+> the line "AMD Memory Encryption Features active".
 
-
-> 
-> >   
-> > > 
-> > > Changes from V5:
-> > > 	New patch -- easy to push off or drop.
-> > > ---
-> > >  drivers/cxl/core/memdev.c | 17 ++++++++++++++++-
-> > >  1 file changed, 16 insertions(+), 1 deletion(-)
-> > > 
-> > > diff --git a/drivers/cxl/core/memdev.c b/drivers/cxl/core/memdev.c
-> > > index a01068e98333..11d721c56f08 100644
-> > > --- a/drivers/cxl/core/memdev.c
-> > > +++ b/drivers/cxl/core/memdev.c
-> > > @@ -356,7 +356,8 @@ static const struct file_operations cxl_memdev_fops = {
-> > >  	.llseek = noop_llseek,
-> > >  };
-> > >  
-> > > -static int read_cdat_data(struct cxl_memdev *cxlmd, struct cxl_dev_state *cxlds)
-> > > +static int __read_cdat_data(struct cxl_memdev *cxlmd,
-> > > +			    struct cxl_dev_state *cxlds)
-> > >  {
-> > >  	struct device *dev = &cxlmd->dev;
-> > >  	size_t cdat_length;
-> > > @@ -371,6 +372,20 @@ static int read_cdat_data(struct cxl_memdev *cxlmd, struct cxl_dev_state *cxlds)
-> > >  	return cxl_mem_cdat_read_table(cxlds, &cxlmd->cdat);
-> > >  }
-> > >  
-> > > +static int read_cdat_data(struct cxl_memdev *cxlmd,
-> > > +			  struct cxl_dev_state *cxlds)
-> > > +{
-> > > +	int retries = 2;
-> > > +	int rc;
-> > > +
-> > > +	while (--retries) {  
-> > 
-> > You either want retries--, or retries = 3...  
-> 
-> Opps yea.
-> 
-> Thanks,
-> Ira
-> 
-> >   
-> > > +		rc = __read_cdat_data(cxlmd, cxlds);
-> > > +		if (!rc)
-> > > +			break;
-> > > +	}
-> > > +	return rc;
-> > > +}
-> > > +
-> > >  struct cxl_memdev *devm_cxl_add_memdev(struct cxl_dev_state *cxlds)
-> > >  {
-> > >  	struct cxl_memdev *cxlmd;
-> > > -- 
-> > > 2.31.1
-> > >   
-
+Isn't enough to grep for sme/sev in cpuinfo?
