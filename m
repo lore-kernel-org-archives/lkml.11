@@ -2,42 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C53BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:26:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B12A7C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:27:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358050AbiBDJ04 (ORCPT
+        id S1357682AbiBDJ1E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 04:26:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33272 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357814AbiBDJZQ (ORCPT
+        Fri, 4 Feb 2022 04:27:04 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:53354 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358092AbiBDJZS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 04:25:16 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE32AC06179A;
-        Fri,  4 Feb 2022 01:25:12 -0800 (PST)
+        Fri, 4 Feb 2022 04:25:18 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B510DB836EA;
-        Fri,  4 Feb 2022 09:25:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2DFDC340ED;
-        Fri,  4 Feb 2022 09:25:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CE969B836E9;
+        Fri,  4 Feb 2022 09:25:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 034ABC004E1;
+        Fri,  4 Feb 2022 09:25:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643966710;
-        bh=cfGFlp6WAh3LnMrlS0mOtd1wQC6TsEz1/aLmCXcU//8=;
+        s=korg; t=1643966716;
+        bh=mXHryGW09fA1yrZtSbOXLAiQQeihs2gSPyR7qHrk/wI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YAqbNCMXXW8fEQK9MJyhJpc4R0fOXh+kTrfR5GLc560G3B6o6hVq6/4slTZaQkIE7
-         OO1d+4AXQdoyiwG+r/cBxuW+pnI88BDsi22uhO3kt0ZGDZsTbRJsOLOtbPNt7bt//X
-         wQUzIsAYqUlZtGN3YR32RlhwxVXliaG8/Tbk4L3U=
+        b=mBr9pvfFc9PXFcbbmrH5ZkFl7dWaHDU4mRqlK3XwvxUKes/3303TSsmWwOwEBJKww
+         xuKLKr0jQKYpR8LA3XBeVnog6O6asitK3D2LvYd0XpQ5Dl/60C3rYm10ni0CP6eB+4
+         BFmEZNkXQTcIKFn+9bIFYMoadF01q91YcF8mImcM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vlad Buslov <vladbu@nvidia.com>,
+        stable@vger.kernel.org, Maor Dickman <maord@nvidia.com>,
         Roi Dayan <roid@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH 5.16 15/43] net/mlx5: Bridge, take rtnl lock in init error handler
-Date:   Fri,  4 Feb 2022 10:22:22 +0100
-Message-Id: <20220204091917.676810417@linuxfoundation.org>
+Subject: [PATCH 5.16 17/43] net/mlx5e: Fix handling of wrong devices during bond netevent
+Date:   Fri,  4 Feb 2022 10:22:24 +0100
+Message-Id: <20220204091917.741575256@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220204091917.166033635@linuxfoundation.org>
 References: <20220204091917.166033635@linuxfoundation.org>
@@ -49,59 +46,120 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vlad Buslov <vladbu@nvidia.com>
+From: Maor Dickman <maord@nvidia.com>
 
-commit 04f8c12f031fcd0ffa0c72822eb665ceb2c872e7 upstream.
+commit ec41332e02bd0acf1f24206867bb6a02f5877a62 upstream.
 
-The mlx5_esw_bridge_cleanup() is expected to be called with rtnl lock
-taken, which is true for mlx5e_rep_bridge_cleanup() function but not for
-error handling code in mlx5e_rep_bridge_init(). Add missing rtnl
-lock/unlock calls and extend both mlx5_esw_bridge_cleanup() and its dual
-function mlx5_esw_bridge_init() with ASSERT_RTNL() to verify the invariant
-from now on.
+Current implementation of bond netevent handler only check if
+the handled netdev is VF representor and it missing a check if
+the VF representor is on the same phys device of the bond handling
+the netevent.
 
-Fixes: 7cd6a54a8285 ("net/mlx5: Bridge, handle FDB events")
-Fixes: 19e9bfa044f3 ("net/mlx5: Bridge, add offload infrastructure")
-Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
+Fix by adding the missing check and optimizing the check if
+the netdev is VF representor so it will not access uninitialized
+private data and crashes.
+
+BUG: kernel NULL pointer dereference, address: 000000000000036c
+PGD 0 P4D 0
+Oops: 0000 [#1] SMP NOPTI
+Workqueue: eth3bond0 bond_mii_monitor [bonding]
+RIP: 0010:mlx5e_is_uplink_rep+0xc/0x50 [mlx5_core]
+RSP: 0018:ffff88812d69fd60 EFLAGS: 00010282
+RAX: 0000000000000000 RBX: ffff8881cf800000 RCX: 0000000000000000
+RDX: ffff88812d69fe10 RSI: 000000000000001b RDI: ffff8881cf800880
+RBP: ffff8881cf800000 R08: 00000445cabccf2b R09: 0000000000000008
+R10: 0000000000000004 R11: 0000000000000008 R12: ffff88812d69fe10
+R13: 00000000fffffffe R14: ffff88820c0f9000 R15: 0000000000000000
+FS:  0000000000000000(0000) GS:ffff88846fb00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000000000000036c CR3: 0000000103d80006 CR4: 0000000000370ea0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ mlx5e_eswitch_uplink_rep+0x31/0x40 [mlx5_core]
+ mlx5e_rep_is_lag_netdev+0x94/0xc0 [mlx5_core]
+ mlx5e_rep_esw_bond_netevent+0xeb/0x3d0 [mlx5_core]
+ raw_notifier_call_chain+0x41/0x60
+ call_netdevice_notifiers_info+0x34/0x80
+ netdev_lower_state_changed+0x4e/0xa0
+ bond_mii_monitor+0x56b/0x640 [bonding]
+ process_one_work+0x1b9/0x390
+ worker_thread+0x4d/0x3d0
+ ? rescuer_thread+0x350/0x350
+ kthread+0x124/0x150
+ ? set_kthread_struct+0x40/0x40
+ ret_from_fork+0x1f/0x30
+
+Fixes: 7e51891a237f ("net/mlx5e: Use netdev events to set/del egress acl forward-to-vport rule")
+Signed-off-by: Maor Dickman <maord@nvidia.com>
 Reviewed-by: Roi Dayan <roid@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c |    2 ++
- drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.c    |    4 ++++
- 2 files changed, 6 insertions(+)
+ drivers/net/ethernet/mellanox/mlx5/core/en/rep/bond.c |   32 +++++++-----------
+ 1 file changed, 14 insertions(+), 18 deletions(-)
 
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c
-@@ -509,7 +509,9 @@ err_register_swdev_blk:
- err_register_swdev:
- 	destroy_workqueue(br_offloads->wq);
- err_alloc_wq:
-+	rtnl_lock();
- 	mlx5_esw_bridge_cleanup(esw);
-+	rtnl_unlock();
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bond.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bond.c
+@@ -183,18 +183,7 @@ void mlx5e_rep_bond_unslave(struct mlx5_
+ 
+ static bool mlx5e_rep_is_lag_netdev(struct net_device *netdev)
+ {
+-	struct mlx5e_rep_priv *rpriv;
+-	struct mlx5e_priv *priv;
+-
+-	/* A given netdev is not a representor or not a slave of LAG configuration */
+-	if (!mlx5e_eswitch_rep(netdev) || !netif_is_lag_port(netdev))
+-		return false;
+-
+-	priv = netdev_priv(netdev);
+-	rpriv = priv->ppriv;
+-
+-	/* Egress acl forward to vport is supported only non-uplink representor */
+-	return rpriv->rep->vport != MLX5_VPORT_UPLINK;
++	return netif_is_lag_port(netdev) && mlx5e_eswitch_vf_rep(netdev);
  }
  
- void mlx5e_rep_bridge_cleanup(struct mlx5e_priv *priv)
---- a/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.c
-@@ -1574,6 +1574,8 @@ struct mlx5_esw_bridge_offloads *mlx5_es
+ static void mlx5e_rep_changelowerstate_event(struct net_device *netdev, void *ptr)
+@@ -210,9 +199,6 @@ static void mlx5e_rep_changelowerstate_e
+ 	u16 fwd_vport_num;
+ 	int err;
+ 
+-	if (!mlx5e_rep_is_lag_netdev(netdev))
+-		return;
+-
+ 	info = ptr;
+ 	lag_info = info->lower_state_info;
+ 	/* This is not an event of a representor becoming active slave */
+@@ -266,9 +252,6 @@ static void mlx5e_rep_changeupper_event(
+ 	struct net_device *lag_dev;
+ 	struct mlx5e_priv *priv;
+ 
+-	if (!mlx5e_rep_is_lag_netdev(netdev))
+-		return;
+-
+ 	priv = netdev_priv(netdev);
+ 	rpriv = priv->ppriv;
+ 	lag_dev = info->upper_dev;
+@@ -293,6 +276,19 @@ static int mlx5e_rep_esw_bond_netevent(s
+ 				       unsigned long event, void *ptr)
  {
- 	struct mlx5_esw_bridge_offloads *br_offloads;
- 
-+	ASSERT_RTNL();
+ 	struct net_device *netdev = netdev_notifier_info_to_dev(ptr);
++	struct mlx5e_rep_priv *rpriv;
++	struct mlx5e_rep_bond *bond;
++	struct mlx5e_priv *priv;
 +
- 	br_offloads = kvzalloc(sizeof(*br_offloads), GFP_KERNEL);
- 	if (!br_offloads)
- 		return ERR_PTR(-ENOMEM);
-@@ -1590,6 +1592,8 @@ void mlx5_esw_bridge_cleanup(struct mlx5
- {
- 	struct mlx5_esw_bridge_offloads *br_offloads = esw->br_offloads;
- 
-+	ASSERT_RTNL();
++	if (!mlx5e_rep_is_lag_netdev(netdev))
++		return NOTIFY_DONE;
 +
- 	if (!br_offloads)
- 		return;
++	bond = container_of(nb, struct mlx5e_rep_bond, nb);
++	priv = netdev_priv(netdev);
++	rpriv = mlx5_eswitch_get_uplink_priv(priv->mdev->priv.eswitch, REP_ETH);
++	/* Verify VF representor is on the same device of the bond handling the netevent. */
++	if (rpriv->uplink_priv.bond != bond)
++		return NOTIFY_DONE;
  
+ 	switch (event) {
+ 	case NETDEV_CHANGELOWERSTATE:
 
 
