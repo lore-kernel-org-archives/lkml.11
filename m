@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52FC6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 11:57:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B823DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 11:57:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358511AbiBDL5Y (ORCPT
+        id S1358544AbiBDL51 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 06:57:24 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:56766 "EHLO
+        Fri, 4 Feb 2022 06:57:27 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:49961 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230501AbiBDL5W (ORCPT
+        by vger.kernel.org with ESMTP id S1358505AbiBDL5X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 06:57:22 -0500
+        Fri, 4 Feb 2022 06:57:23 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643975842;
+        s=mimecast20190719; t=1643975843;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=I2DzmizRxymlu2fjBogBbGDUB/Xq+NvGxXpe5knoTEY=;
-        b=gk1tXPv8cPApVyFFchhbOI12WlczWu8vS1bBcfhsFtAHIrujPv2mX53UmMpueSYoMfECbg
-        DOcpqL4/bX8OZDSPA69V0/w/6ITC1XLSkFdJHJGBtSuQMuX1Dc6KcjBzIuq71TJhSsipcw
-        pGGh3C7RUq7qwkzOAQOBB5TiANrAv+I=
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=EpNiTSjqJIiQYBK9fyczhlCSJngnEHfTdSweeKvpGZc=;
+        b=Sslla06Y+7iQUutuRFWPNrlCMEDe4jc0cbGAu3X4U3Ztlb1mX8wnHlwUW647z7rAtspBmI
+        IywxAeqFLh5/S2IgecHlDOwL6mB/4QBl8NIJobDO2PgvWeKvcpMmtkdn3JshIQKsUTBfsX
+        ptrfUhlCbBp5RQ8p7lxlXg4lKDr/fUg=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-639-uEoj1HErOwe7HQR6wLIpxA-1; Fri, 04 Feb 2022 06:57:20 -0500
-X-MC-Unique: uEoj1HErOwe7HQR6wLIpxA-1
+ us-mta-380-ptUzOL1INVuDCuqhKWQAEA-1; Fri, 04 Feb 2022 06:57:22 -0500
+X-MC-Unique: ptUzOL1INVuDCuqhKWQAEA-1
 Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 71B34190B2A0;
-        Fri,  4 Feb 2022 11:57:19 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0F58F1054F90;
+        Fri,  4 Feb 2022 11:57:21 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E77641081172;
-        Fri,  4 Feb 2022 11:57:18 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 967C81081172;
+        Fri,  4 Feb 2022 11:57:20 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     dmatlack@google.com, seanjc@google.com, vkuznets@redhat.com
-Subject: [PATCH 00/23] KVM: MMU: MMU role refactoring
-Date:   Fri,  4 Feb 2022 06:56:55 -0500
-Message-Id: <20220204115718.14934-1-pbonzini@redhat.com>
+Subject: [PATCH 03/23] KVM: MMU: remove valid from extended role
+Date:   Fri,  4 Feb 2022 06:56:58 -0500
+Message-Id: <20220204115718.14934-4-pbonzini@redhat.com>
+In-Reply-To: <20220204115718.14934-1-pbonzini@redhat.com>
+References: <20220204115718.14934-1-pbonzini@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
@@ -48,69 +51,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The TDP MMU has a performance regression compared to the legacy
-MMU when CR0 changes often.  This was reported for the grsecurity
-kernel, which uses CR0.WP to implement kernel W^X.  In that case,
-each change to CR0.WP unloads the MMU and causes a lot of unnecessary
-work.  When running nested, this can even cause the L1 to hardly
-make progress, as the L0 hypervisor it is overwhelmed by the amount
-of MMU work that is needed.
+The level field of the MMU role can act as a marker for validity
+instead: it is guaranteed to be nonzero so a zero value means the role
+is invalid and the MMU properties will be computed again.
 
-The root cause of the issue is that the "MMU role" in KVM is a mess
-that mixes the CPU setup (CR0/CR4/EFER, SMM, guest mode, etc.)
-and the shadow page table format.  Whenever something is different
-between the MMU and the CPU, it is stored as an extra field in struct
-kvm_mmu---and for extra bonus complication, sometimes the same thing
-is stored in both the role and an extra field.
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+---
+ arch/x86/include/asm/kvm_host.h | 4 +---
+ arch/x86/kvm/mmu/mmu.c          | 9 +++------
+ 2 files changed, 4 insertions(+), 9 deletions(-)
 
-So, this is the "no functional change intended" part of the changes
-required to fix the performance regression.  It separates neatly
-the shadow page table format ("MMU role") from the guest page table
-format ("CPU role"), and removes the duplicate fields.  The next
-step then is to avoid unloading the MMU as long as the MMU role
-stays the same.
-
-Please review!
-
-Paolo
-
-Paolo Bonzini (23):
-  KVM: MMU: pass uses_nx directly to reset_shadow_zero_bits_mask
-  KVM: MMU: nested EPT cannot be used in SMM
-  KVM: MMU: remove valid from extended role
-  KVM: MMU: constify uses of struct kvm_mmu_role_regs
-  KVM: MMU: pull computation of kvm_mmu_role_regs to kvm_init_mmu
-  KVM: MMU: load new PGD once nested two-dimensional paging is
-    initialized
-  KVM: MMU: remove kvm_mmu_calc_root_page_role
-  KVM: MMU: rephrase unclear comment
-  KVM: MMU: remove "bool base_only" arguments
-  KVM: MMU: split cpu_role from mmu_role
-  KVM: MMU: do not recompute root level from kvm_mmu_role_regs
-  KVM: MMU: remove ept_ad field
-  KVM: MMU: remove kvm_calc_shadow_root_page_role_common
-  KVM: MMU: cleanup computation of MMU roles for two-dimensional paging
-  KVM: MMU: cleanup computation of MMU roles for shadow paging
-  KVM: MMU: remove extended bits from mmu_role
-  KVM: MMU: remove redundant bits from extended role
-  KVM: MMU: fetch shadow EFER.NX from MMU role
-  KVM: MMU: simplify and/or inline computation of shadow MMU roles
-  KVM: MMU: pull CPU role computation to kvm_init_mmu
-  KVM: MMU: store shadow_root_level into mmu_role
-  KVM: MMU: use cpu_role for root_level
-  KVM: MMU: replace direct_map with mmu_role.direct
-
- arch/x86/include/asm/kvm_host.h |  13 +-
- arch/x86/kvm/mmu.h              |   2 +-
- arch/x86/kvm/mmu/mmu.c          | 408 ++++++++++++--------------------
- arch/x86/kvm/mmu/mmu_audit.c    |   6 +-
- arch/x86/kvm/mmu/paging_tmpl.h  |  12 +-
- arch/86/kvm/mmu/tdp_mmu.c      |   4 +-
- arch/x86/kvm/svm/svm.c          |   2 +-
- arch/x86/kvm/vmx/vmx.c          |   2 +-
- arch/x86/kvm/x86.c              |  12 +-
- 10 files changed, 178 insertions(+), 284 deletions(-)
-
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index e7e5bd9a984d..4ec7d1e3aa36 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -342,8 +342,7 @@ union kvm_mmu_page_role {
+  * kvm_mmu_extended_role complements kvm_mmu_page_role, tracking properties
+  * relevant to the current MMU configuration.   When loading CR0, CR4, or EFER,
+  * including on nested transitions, if nothing in the full role changes then
+- * MMU re-configuration can be skipped. @valid bit is set on first usage so we
+- * don't treat all-zero structure as valid data.
++ * MMU re-configuration can be skipped.
+  *
+  * The properties that are tracked in the extended role but not the page role
+  * are for things that either (a) do not affect the validity of the shadow page
+@@ -360,7 +359,6 @@ union kvm_mmu_page_role {
+ union kvm_mmu_extended_role {
+ 	u32 word;
+ 	struct {
+-		unsigned int valid:1;
+ 		unsigned int execonly:1;
+ 		unsigned int cr0_pg:1;
+ 		unsigned int cr4_pae:1;
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index b0065ae3cea8..0039b2f21286 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -4683,8 +4683,6 @@ static union kvm_mmu_extended_role kvm_calc_mmu_role_ext(struct kvm_vcpu *vcpu,
+ 		ext.efer_lma = ____is_efer_lma(regs);
+ 	}
+ 
+-	ext.valid = 1;
+-
+ 	return ext;
+ }
+ 
+@@ -4891,7 +4889,6 @@ kvm_calc_shadow_ept_root_page_role(struct kvm_vcpu *vcpu, bool accessed_dirty,
+ 	/* EPT, and thus nested EPT, does not consume CR0, CR4, nor EFER. */
+ 	role.ext.word = 0;
+ 	role.ext.execonly = execonly;
+-	role.ext.valid = 1;
+ 
+ 	return role;
+ }
+@@ -5039,9 +5036,9 @@ void kvm_mmu_after_set_cpuid(struct kvm_vcpu *vcpu)
+ 	 * problem is swept under the rug; KVM's CPUID API is horrific and
+ 	 * it's all but impossible to solve it without introducing a new API.
+ 	 */
+-	vcpu->arch.root_mmu.mmu_role.ext.valid = 0;
+-	vcpu->arch.guest_mmu.mmu_role.ext.valid = 0;
+-	vcpu->arch.nested_mmu.mmu_role.ext.valid = 0;
++	vcpu->arch.root_mmu.mmu_role.base.level = 0;
++	vcpu->arch.guest_mmu.mmu_role.base.level = 0;
++	vcpu->arch.nested_mmu.mmu_role.base.level = 0;
+ 	kvm_mmu_reset_context(vcpu);
+ 
+ 	/*
 -- 
 2.31.1
+
 
