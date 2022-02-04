@@ -2,68 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B49EBC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 08:23:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD951C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 08:23:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353790AbiBDIX1 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 03:23:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47054 "EHLO
+        id S242662AbiBDIXb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 03:23:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350622AbiBDIXZ (ORCPT
+        with ESMTP id S1353606AbiBDIX1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 03:23:25 -0500
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 046F8C061714
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 00:23:25 -0800 (PST)
-Received: by mail-wr1-x429.google.com with SMTP id s18so9823431wrv.7
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Feb 2022 00:23:24 -0800 (PST)
+        Fri, 4 Feb 2022 03:23:27 -0500
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67C2DC061748
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 00:23:27 -0800 (PST)
+Received: by mail-wr1-x435.google.com with SMTP id m14so9775369wrg.12
+        for <linux-kernel@vger.kernel.org>; Fri, 04 Feb 2022 00:23:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=baylibre-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=WsA2JKphRpijiftuKihdH23TIHoxkoFN5l3LxYwIuqU=;
-        b=PoPP7HMJmxsQTyGfKRP63CZD5spkJJoTwkFWwm2aTTiJLOUTv5bb4S+9zlgvsfaj07
-         46zqVF1GVv3CMYYmRDKXRKC3IGJrfC+ejq0IuOUXbxXnilAI64yvPua76WbENjCmh78c
-         R9M0XvRi3rVolFyXvJEn5hvNbFYBezWjwp3EydKeBknyGmde5QnPFAMElrPSyOUFq7Yg
-         2hzzQm1phOGDVsdHtP3SjMRl0BcaropWCaoUXSvggkMar0GeZCnfiDvOyMTOok2+bW8t
-         ZGeLFRIxprgkER+sIV1QMuG43hVjULTuAAKj4+dKZCUejPw52RlwCqc42pyKmg3T7V+J
-         0+Qg==
+        bh=zf8akufeGhb+PPmP1SAbnaUbaBMJcqn9Z0xu1czGwCg=;
+        b=AXj9j3dMMLt36X8aezSoIjs4fCy31D4QAFyxiNWb1N5hGx5LZtrttD5fHlnh46XWvA
+         lJOYTG6wlZ63LK6qZTpj0EBTkYM70azohqkXi2CcAytWWV534Nv019b5tVc2qUbWRE7Z
+         ulJPFz82hCyLdYUvh3lgGJT1fnxEKf7jC7IdV0yxBypM0AwYeExkbdDIM4QiRajYGsOD
+         wr873VB9clThGIThv0Js/0h6PgQ9U2WZwhmZuoLLlPmw7+a8IT9qeReHKkviiEIb6whf
+         iNHYBoAaVJx39cGlvM/VuHKvjOFqsliSRUkThbeqtGdkTmTO7dEyqlB/J4br/e5wx703
+         WEqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=WsA2JKphRpijiftuKihdH23TIHoxkoFN5l3LxYwIuqU=;
-        b=P0NY9T91V4EgUkhmUQKbHE2HuIpSGRydhS6yJgRpTtjLyUYZvbgSjEbKAgPAAajixS
-         cf0EVq11rtcTXy5yFcVe4Km4VecmmUBSnACJvMYQkKzewMwO6PkdCIcMLbRUq8WP/TqC
-         ZkuNuDmVl3xxiwoJJVyI+ho7qUcIBMWRvUmDZIb6QMBg8PCgdgFr49ibDbwLoljxp/3r
-         zUDGlqjsMv8Yt01iAS47zQNxtkcNPDO55HNf1udyWvpRUzQUxYyIJo1q2nkLdgUXPRVc
-         a0wpTRmB5e40UBPC90ZCa26+f6eWdiA7451cUut8F/lL9lsyr7xshFZHTzbFiyzaALvq
-         zU0Q==
-X-Gm-Message-State: AOAM5305e98SsZkZ212OPLlsrjbXAjAJfndaz8dS8K24Ep1jhmCrq+he
-        1sRxHDVlrmlYfKwQr58YWg3X4w==
-X-Google-Smtp-Source: ABdhPJyf9JLV02jOegwiuzsQi/Mp6bxZdm6QLt9GlBXUY1uydNiZUAieAPIQ9343mdk1++V99qMmQg==
-X-Received: by 2002:adf:edc7:: with SMTP id v7mr1440216wro.584.1643963003539;
-        Fri, 04 Feb 2022 00:23:23 -0800 (PST)
+        bh=zf8akufeGhb+PPmP1SAbnaUbaBMJcqn9Z0xu1czGwCg=;
+        b=iQSDpJV6/AE15sxObNI5Z1uZuKVcdJS9TrpWPm2uJvo0K6Kh+3NexExUsb97ib2SeG
+         69y7qY7FhiDCvelCX6LVc97zv5AhUWKYgbMw+aOdVdz5D2u9g3L3ppWRpEyPhbXFzZxq
+         q+XspDlCWmyIFM3XamhA3/PYev0Mp1AzDdG9BZ1afIesaDNiJVYFWzVyy4qmMYBUO2HA
+         GfXMZbuWdwzLchVivdkNaSNSqhT7rAaUAa5jJziYfC6oozMXe4OJ6ZeMyHWQI5/L7X8l
+         0AzcJdCiYOIMGgxhN4kIVoHNP6h5XH7qTf3QErUIh6jF1oPJ4cBd4BFL+QybUwE/Oy77
+         p2gQ==
+X-Gm-Message-State: AOAM5323E7zKgyqaU6fuwGb6GcWhIrkhwUFzJEgf76ASf6wO4SorV36U
+        gUx49naJhrlD8XLi/v/d6tmyYw==
+X-Google-Smtp-Source: ABdhPJwgyM90qtmbsuXHi4DPp4XSzDTrhOZrcaVGWGmQn2thSj0asC/9RiSxtEgsaB+nyDIeoU1Rpg==
+X-Received: by 2002:a05:6000:178d:: with SMTP id e13mr1491699wrg.199.1643963005941;
+        Fri, 04 Feb 2022 00:23:25 -0800 (PST)
 Received: from localhost.localdomain ([2001:861:44c0:66c0:3fbe:ff10:110:739])
-        by smtp.gmail.com with ESMTPSA id s22sm8914078wmj.38.2022.02.04.00.23.22
+        by smtp.gmail.com with ESMTPSA id s22sm8914078wmj.38.2022.02.04.00.23.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Feb 2022 00:23:22 -0800 (PST)
+        Fri, 04 Feb 2022 00:23:25 -0800 (PST)
 From:   Neil Armstrong <narmstrong@baylibre.com>
 To:     Kevin Hilman <khilman@baylibre.com>,
-        Rob Herring <robh+dt@kernel.org>,
+        Dongjin Kim <tobetter@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
         Jerome Brunet <jbrunet@baylibre.com>,
-        Lutz Koschorreck <theleks@ko-hh.de>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     Neil Armstrong <narmstrong@baylibre.com>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-amlogic@lists.infradead.org
-Subject: Re: [PATCH] arm64: dts: meson-sm1-odroid: fix boot loop after reboot
-Date:   Fri,  4 Feb 2022 09:23:15 +0100
-Message-Id: <164396299209.31118.5895566929848483023.b4-ty@baylibre.com>
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        linux-amlogic@lists.infradead.org
+Cc:     Neil Armstrong <narmstrong@baylibre.com>
+Subject: Re: [PATCH] arm64: dts: meson-g12b-odroid-n2: fix typo 'dio2133'
+Date:   Fri,  4 Feb 2022 09:23:17 +0100
+Message-Id: <164396299209.31118.14013385169843675577.b4-ty@baylibre.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220128193150.GA1304381@odroid-VirtualBox>
-References: <20220128193150.GA1304381@odroid-VirtualBox>
+In-Reply-To: <YfKQJejh0bfGYvof@anyang>
+References: <YfKQJejh0bfGYvof@anyang>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -73,25 +72,15 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 Hi,
 
-On Fri, 28 Jan 2022 20:31:50 +0100, Lutz Koschorreck wrote:
-> Since the correct gpio pin is used for enabling tf-io regulator the
-> system did not boot correctly after calling reboot.
+On Thu, 27 Jan 2022 21:29:25 +0900, Dongjin Kim wrote:
+> Typo in audio amplifier node, dioo2133 -> dio2133
 > 
-> [   36.862443] reboot: Restarting system
-> bl31 reboot reason: 0xd
-> bl31 reboot reason: 0x0
-> system cmd  1.
-> SM1:BL:511f6b:81ca2f;FEAT:A0F83180:20282000;POC:B;RCY:0;SPINOR:0;CHK:1F;EMMC:800;NAND:81;SD?:0;SD:0;READ:0;0.0;CHK:0;
-> bl2_stage_init 0x01
-> bl2_stage_init 0x81
-> hw id:▒SM1:BL:511f6b:81ca2f;FEAT:A0F83180:20282000;POC:B;RCY:0;SPINOR:0;CHK:1F;EMMC:800;NAND:81;SD?:0;SD:400;USB:8;LOOP:1;SPINOR:0;CHK:1F;EMMC:800;NAND:81;SD?:0;SD:400;USB:8;LOOP:2;SPINOR:0;CHK:1F;EMMC:800;NAND:81;SD?:0;SD:400;USB:8;LOOP:3;SPINOR:0;CHK:1F;EMMC:800;NAND:81;SD?:0;SD:400;USB:8;LOOP:4;SPINOR:0;CHK:1F;EMMC:800;NAND:81;SD?:0;SD:400;USB:8;LOOP:5;SPINOR:0;CHK:1F;EMMC:800;NAND:81;SD?:0;SD:400;USB:8;
 > 
-> [...]
 
 Thanks, Applied to https://git.kernel.org/pub/scm/linux/kernel/git/amlogic/linux.git (v5.17/fixes)
 
-[1/1] arm64: dts: meson-sm1-odroid: fix boot loop after reboot
-      https://git.kernel.org/amlogic/c/e6b03375132fefddc55cf700418cf794b3884e0c
+[1/1] arm64: dts: meson-g12b-odroid-n2: fix typo 'dio2133'
+      https://git.kernel.org/amlogic/c/bc41099f060ea74ac8d02c51bd0f5f46d969bedf
 
 -- 
 Neil
