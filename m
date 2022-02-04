@@ -2,231 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBA54C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 19:18:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3147C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 19:18:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232585AbiBDTSV convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 14:18:21 -0500
-Received: from mail-yb1-f182.google.com ([209.85.219.182]:33329 "EHLO
-        mail-yb1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232656AbiBDTSP (ORCPT
+        id S232754AbiBDTSm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 14:18:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57774 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232779AbiBDTSi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 14:18:15 -0500
-Received: by mail-yb1-f182.google.com with SMTP id j2so21777474ybu.0;
-        Fri, 04 Feb 2022 11:18:15 -0800 (PST)
+        Fri, 4 Feb 2022 14:18:38 -0500
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F6A0C061714
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 11:18:38 -0800 (PST)
+Received: by mail-pf1-x432.google.com with SMTP id v74so5920611pfc.1
+        for <linux-kernel@vger.kernel.org>; Fri, 04 Feb 2022 11:18:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=intel-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=pJAEx8FGZd2Xu0zfDXDDitF3sMkZ8+OeDmkPgDQ5PK8=;
+        b=siie8HfaVAMRprOeUrIUCwokKb96WLLMPRANFKHyvIYxx4NVbdce5VAGmHomLVZuZw
+         P4RZ52v1ug35AveQQt4TnHQL1SW/2+TsQ3W7Hkq+7SYMgwvCSqRPAlZcB7Exqplb6+jR
+         V2fay5T7mBpJjYEEOzT/mkGky5Z427lrko1qAtY2avb+xxE8MRDodAyk38nBBCu3dsqv
+         Tak8E3Ubh6lJOLomlWSEmbLgl9ach14HgrnWX8jrZqmMkh2qAXHDN/L+aZUln6ExeaTk
+         MWm4mWGCdXxkSYMLJe6A5WmKV1LM10zON5HBpGHxHFmhHETYci6Wb22dJIkBcGBiPFyV
+         e3sQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=rF2I2DA+0q3Faqi//9eeFZH2An/KNd6jHtr045+f6EQ=;
-        b=fX/rR6oe1n6KRMFuPRMpngbNaCDgmV4dqW3eJmHoViupu/iwGh/PZGQb5eb/KpGg+6
-         tX37Lkd4BDrlCJG+tiUzbu6c+zLcc0V8IhhxjiifD36taB0RG4doZx/A6pm8SfduWUQ3
-         7ccUsueNUIu/73Zu4mbwymyZWlsLiCj68iooc/O8stwWYCaD8ZO08+tVbHmVUbzqp1h2
-         dVS4mp4uvaznOJj+PM1xZlkbJQhL8yLDbpTTJYiWYveQUGSnYX2IAufYO8h4J41mXP25
-         HuTW5owUX6cfMzCyFC4iaLuGO0pbxilHVj7RkJKkbDwsbOxBvUbiaKaSk2jR3eE/4del
-         U/jw==
-X-Gm-Message-State: AOAM533L6grLJe503Pf6WNuF6YiHweZwjw8fpkqu2eDdwpCX66m7vZRd
-        hXwLJpKa56QruElCvPY5mHeerJUoH1jWx8OoyoA=
-X-Google-Smtp-Source: ABdhPJyWHSFrxNdQyaDQH/O5Z5KPywEqNf7nTD8KpJ+ZcvPiOAq/t+0N5aTtyL+HJLpL8MNhFUfXtsGIruJH1ZEvgQE=
-X-Received: by 2002:a05:6902:c4:: with SMTP id i4mr628653ybs.343.1644002294920;
- Fri, 04 Feb 2022 11:18:14 -0800 (PST)
+         :message-id:subject:to:cc;
+        bh=pJAEx8FGZd2Xu0zfDXDDitF3sMkZ8+OeDmkPgDQ5PK8=;
+        b=slJ58LYRVSQyV/we62VaNeZDt1MBVPFwyXWdkA+9Oq0eLIqwMNucY3oTQawrZ96af/
+         RqB614fBtz8mczyMXsH39Ep06CQSVmIw1COSiTLwMZEcBO25Ll5EfuMqsewOeucv76eL
+         EHGgzjfga2NBewd3gQIf+sE05U7SQoINXOUsngB2ZeiWFj/7aVZ6WTElSQ+igGeJUjD1
+         O1hHzyVwNLZ6IImpCxUmCajNfSmfI/wNMVlTsDrH8VrJ2kDLZjGX462AdV64/7LQ/Jje
+         grGA8js3/dLDeXrHNr4nYgmkRlSnaXbpq/0v2Htp0G24Ptp1iBDbzR3ppPuzQjBJrO7R
+         4+wQ==
+X-Gm-Message-State: AOAM530DyDDhqErO6YlHlIxW06r9lvGOQZImkTvVcyzzffoUnyxo/in7
+        8ZP9MzxM+fru7yJ/wwoXZXI9x6zRqVft8qian4sZKQ==
+X-Google-Smtp-Source: ABdhPJw/zfIjc/QqS1mVL/bPDlqlsZMmIGTVPWJ8OiMwVQEjjacjzO7f8baDsD+McKVukjnWyy1qbIL3McBtyusfQ/Y=
+X-Received: by 2002:a05:6a00:1508:: with SMTP id q8mr4529950pfu.3.1644002317646;
+ Fri, 04 Feb 2022 11:18:37 -0800 (PST)
 MIME-Version: 1.0
-References: <20220201015518.3118404-1-wonchung@google.com> <Yfo+gYLLOGN69Re1@kuha.fi.intel.com>
- <CAOvb9ygyupib4cMXhcdeZmgNZmyaCmaTF98MHae+irY5ruZ1Qw@mail.gmail.com>
-In-Reply-To: <CAOvb9ygyupib4cMXhcdeZmgNZmyaCmaTF98MHae+irY5ruZ1Qw@mail.gmail.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Fri, 4 Feb 2022 20:18:04 +0100
-Message-ID: <CAJZ5v0hGxYv1xagc+ZQFhvpLpcbs1c1szZZahR7wsDm=i5AcJg@mail.gmail.com>
-Subject: Re: [PATCH v4] ACPI: device_sysfs: Add sysfs support for _PLD
-To:     Won Chung <wonchung@google.com>
-Cc:     Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Benson Leung <bleung@chromium.org>,
-        Prashant Malani <pmalani@chromium.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+References: <20220127175505.851391-1-ira.weiny@intel.com> <20220127175505.851391-41-ira.weiny@intel.com>
+In-Reply-To: <20220127175505.851391-41-ira.weiny@intel.com>
+From:   Dan Williams <dan.j.williams@intel.com>
+Date:   Fri, 4 Feb 2022 11:18:26 -0800
+Message-ID: <CAPcyv4jdxKC=6Wh+T37R_sBee0vE-yfRqdX8EbmvLiWTwYhwrw@mail.gmail.com>
+Subject: Re: [PATCH V8 40/44] memremap_pages: Add pgmap_protection_flag_invalid()
+To:     "Weiny, Ira" <ira.weiny@intel.com>
+Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Rick Edgecombe <rick.p.edgecombe@intel.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 2, 2022 at 9:43 PM Won Chung <wonchung@google.com> wrote:
+On Thu, Jan 27, 2022 at 9:55 AM <ira.weiny@intel.com> wrote:
 >
-> Hi Heikki,
+> From: Ira Weiny <ira.weiny@intel.com>
 >
-> Thank you for the review!
->
-> On Wed, Feb 2, 2022 at 12:19 AM Heikki Krogerus
-> <heikki.krogerus@linux.intel.com> wrote:
-> >
-> > Hi Won,
-> >
-> > On Tue, Feb 01, 2022 at 01:55:18AM +0000, Won Chung wrote:
-> > > When ACPI table includes _PLD fields for a device, create a new
-> > > directory (pld) in sysfs to share _PLD fields.
-> >
-> > I think you need to explain what needs this information in user space.
-> >
-> > > Signed-off-by: Won Chung <wonchung@google.com>
-> > > ---
-> > >  Documentation/ABI/testing/sysfs-bus-acpi | 107 +++++++++++++++++++++++
-> > >  drivers/acpi/device_sysfs.c              |  55 ++++++++++++
-> > >  include/acpi/acpi_bus.h                  |   1 +
-> > >  3 files changed, 163 insertions(+)
-> > >
-> > > diff --git a/Documentation/ABI/testing/sysfs-bus-acpi b/Documentation/ABI/testing/sysfs-bus-acpi
-> > > index 58abacf59b2a..b8b71c8f3cfd 100644
-> > > --- a/Documentation/ABI/testing/sysfs-bus-acpi
-> > > +++ b/Documentation/ABI/testing/sysfs-bus-acpi
-> > > @@ -96,3 +96,110 @@ Description:
-> > >               hardware, if the _HRV control method is present.  It is mostly
-> > >               useful for non-PCI devices because lspci can list the hardware
-> > >               version for PCI devices.
-> > > +
-> > > +What:                /sys/bus/acpi/devices/.../pld/
-> > > +Date:                Feb, 2022
-> > > +Contact:     Won Chung <wonchung@google.com>
-> > > +Description:
-> > > +             This directory contains the output of the device object's _PLD
-> > > +             control method, if present. This information provides details
-> > > +             on physical location of a device.
-> > > +
-> > > +What:                /sys/bus/acpi/devices/.../pld/revision
-> > > +Date:                Feb, 2022
-> > > +Contact:     Won Chung <wonchung@google.com>
-> > > +Description:
-> > > +             The current revision is 0x2.
-> > > +
-> > > +What:           /sys/bus/acpi/devices/.../pld/group_token
-> > > +Date:           Feb, 2022
-> > > +Contact:        Won Chung <wonchung@google.com>
-> > > +Description:
-> > > +             Unique numerical value identifying a group.
-> > > +
-> > > +What:           /sys/bus/acpi/devices/.../pld/group_position
-> > > +Date:           Feb, 2022
-> > > +Contact:        Won Chung <wonchung@google.com>
-> > > +Description:
-> > > +             Identifies this device connection point’s position in the group.
-> > > +
-> > > +What:           /sys/bus/acpi/devices/.../pld/user_visible
-> > > +Date:           Feb, 2022
-> > > +Contact:        Won Chung <wonchung@google.com>
-> > > +Description:
-> > > +             Set if the device connection point can be seen by the user
-> > > +             without disassembly.
-> > > +
-> > > +What:           /sys/bus/acpi/devices/.../pld/dock
-> > > +Date:           Feb, 2022
-> > > +Contact:        Won Chung <wonchung@google.com>
-> > > +Description:
-> > > +             Set if the device connection point resides in a docking station
-> > > +             or port replicator.
-> > > +
-> > > +What:           /sys/bus/acpi/devices/.../pld/bay
-> > > +Date:           Feb, 2022
-> > > +Contact:        Won Chung <wonchung@google.com>
-> > > +Description:
-> > > +             Set if describing a device in a bay or if device connection
-> > > +             point is a bay.
-> > > +
-> > > +What:           /sys/bus/acpi/devices/.../pld/lid
-> > > +Date:           Feb, 2022
-> > > +Contact:        Won Chung <wonchung@google.com>
-> > > +Description:
-> > > +             Set if this device connection point resides on the lid of
-> > > +             laptop system.
-> > > +
-> > > +What:           /sys/bus/acpi/devices/.../pld/panel
-> > > +Date:           Feb, 2022
-> > > +Contact:        Won Chung <wonchung@google.com>
-> > > +Description:
-> > > +             Describes which panel surface of the system’s housing the
-> > > +             device connection point resides on:
-> > > +             0 - Top
-> > > +             1 - Bottom
-> > > +             2 - Left
-> > > +             3 - Right
-> > > +             4 - Front
-> > > +             5 - Back
-> > > +             6 - Unknown (Vertical Position and Horizontal Position will be
-> > > +             ignored)
-> > > +
-> > > +What:           /sys/bus/acpi/devices/.../pld/vertical_position
-> > > +Date:           Feb, 2022
-> > > +Contact:        Won Chung <wonchung@google.com>
-> > > +Description:
-> > > +             0 - Upper
-> > > +             1 - Center
-> > > +             2 - Lower
-> > > +
-> > > +What:           /sys/bus/acpi/devices/.../pld/horizontal_position
-> > > +Date:           Feb, 2022
-> > > +Contact:        Won Chung <wonchung@google.com>
-> > > +Description:
-> > > +             ACPI specification does not define horizontal position field.
-> > > +             Can be used as either
-> > > +             0 - Left
-> > > +             1 - Center
-> > > +             2 - Right
-> > > +             or
-> > > +             0 - Leftmost
-> > > +             and higher numbers going toward the right.
-> > > +
-> > > +What:           /sys/bus/acpi/devices/.../pld/shape
-> > > +Date:           Feb, 2022
-> > > +Contact:        Won Chung <wonchung@google.com>
-> > > +Description:
-> > > +             Describes the shape of the device connection point.
-> > > +             0 - Round
-> > > +             1 - Oval
-> > > +             2 - Square
-> > > +             3 - Vertical Rectangle
-> > > +             4 - Horizontal Rectangle
-> > > +             5 - Vertical Trapezoid
-> > > +             6 - Horizontal Trapezoid
-> > > +             7 - Unknown - Shape rendered as a Rectangle with dotted lines
-> > > +             8 - Chamfered
-> > > +             15:9 - Reserved
-> > > +
-> > > diff --git a/drivers/acpi/device_sysfs.c b/drivers/acpi/device_sysfs.c
-> > > index d5d6403ba07b..610be93635a0 100644
-> > > --- a/drivers/acpi/device_sysfs.c
-> > > +++ b/drivers/acpi/device_sysfs.c
-> > > @@ -509,6 +509,49 @@ static ssize_t status_show(struct device *dev, struct device_attribute *attr,
-> > >  }
-> > >  static DEVICE_ATTR_RO(status);
-> > >
-> > > +#define DEV_ATTR_PLD_PROP(prop) \
-> > > +     static ssize_t prop##_show(struct device *dev, struct device_attribute *attr, \
-> > > +             char *buf) \
-> > > +{ \
-> > > +     struct acpi_device *acpi_dev = to_acpi_device(dev); \
-> > > +     if (acpi_dev->pld == NULL) \
-> > > +             return -EIO; \
-> > > +     return sprintf(buf, "%u\n", acpi_dev->pld->prop); \
-> > > +}; \
-> >
-> > Ah, you are storing the _PLD below. Before there were concerns about
-> > the memory that the cached _PLD information would consume. Another way
-> > of doing this would be to just always evaluate the _PLD here.
-> >
-> > Rafael needs to comment on this. My personal opinion is that let's
-> > just store the thing.
-> >
->
-> By "always evaluate the _PLD here", you mean something like
->   acpi_get_physical_device_location(dev->handle, &pld)
-> for every _PLD field, right?
->
-> I will wait for Rafael's comment on this.
+> Some systems may be using pmem in ways that are known to be incompatible
 
-So I would like to get back to the very beginning: Do you need full
-_PLD output to address the issue at hand?
+"systems"? You mean kernel code paths? Is it really plural "ways" and
+not just the kmap() problem?
 
-If so, do you really need it for all devices that have _PLD?
+> with the PKS implementation.  One such example is the use of kmap() to
+> create 'global' mappings.
 
-If not, then why waste memory for all that stuff?
+What are the other examples? I.e. besides bugs, what are the
+legitimate ways for the kernel to access memory that are now invalid
+in the presence of kmap() access protections. They should all be
+listed here. Like the CONFIG_64BIT direct page_address() use problem.
+Are there others?
+
+> Rather than only reporting the invalid access on fault, provide a call
+> to flag those uses immediately.  This allows for a much better splat for
+> debugging to occur.
+
+It does? The faulting RIP will be in the splat, that's not good enough?
+
+It just seems like a lost cause to try to get all the potential paths
+that get access protection wrong to spend the time instrumenting this
+self-incriminating call. Just let the relaxed mode WARNs "name and
+shame" those code paths.
+
+>
+> This is also nice because even if no invalid access' actually occurs,
+> the invalid mapping can be fixed with kmap_local_page() rather than
+> having to look for a different solution.
+>
+> Define pgmap_protection_flag_invalid() and have it follow the policy set
+> by pks_fault_mode.
+>
+> Signed-off-by: Ira Weiny <ira.weiny@intel.com>
+>
+> ---
+> Changes for V8
+>         Split this from the fault mode patch
+> ---
+>  include/linux/mm.h | 23 +++++++++++++++++++++++
+>  mm/memremap.c      |  9 +++++++++
+>  2 files changed, 32 insertions(+)
+>
+> diff --git a/include/linux/mm.h b/include/linux/mm.h
+> index e900df563437..3c0aa686b5bd 100644
+> --- a/include/linux/mm.h
+> +++ b/include/linux/mm.h
+> @@ -1162,6 +1162,7 @@ static inline bool devmap_protected(struct page *page)
+>         return false;
+>  }
+>
+> +void __pgmap_protection_flag_invalid(struct dev_pagemap *pgmap);
+>  void __pgmap_mk_readwrite(struct dev_pagemap *pgmap);
+>  void __pgmap_mk_noaccess(struct dev_pagemap *pgmap);
+>
+> @@ -1178,6 +1179,27 @@ static inline bool pgmap_check_pgmap_prot(struct page *page)
+>         return true;
+>  }
+>
+> +/*
+> + * pgmap_protection_flag_invalid - Check and flag an invalid use of a pgmap
+> + *                                 protected page
+> + *
+> + * There are code paths which are known to not be compatible with pgmap
+> + * protections.  pgmap_protection_flag_invalid() is provided as a 'relief
+> + * valve' to be used in those functions which are known to be incompatible.
+> + *
+> + * Thus an invalid use case can be flaged with more precise data rather than
+> + * just flagging a fault.  Like the fault handler code this abandons the use of
+> + * the PKS key and optionally allows the calling code path to continue based on
+> + * the configuration of the memremap.pks_fault_mode command line
+> + * (and/or sysfs) option.
+> + */
+> +static inline void pgmap_protection_flag_invalid(struct page *page)
+> +{
+> +       if (!pgmap_check_pgmap_prot(page))
+> +               return;
+> +       __pgmap_protection_flag_invalid(page->pgmap);
+> +}
+> +
+>  static inline void pgmap_mk_readwrite(struct page *page)
+>  {
+>         if (!pgmap_check_pgmap_prot(page))
+> @@ -1200,6 +1222,7 @@ bool pgmap_pks_fault_callback(struct pt_regs *regs, unsigned long address,
+>
+>  static inline void __pgmap_mk_readwrite(struct dev_pagemap *pgmap) { }
+>  static inline void __pgmap_mk_noaccess(struct dev_pagemap *pgmap) { }
+> +static inline void pgmap_protection_flag_invalid(struct page *page) { }
+>  static inline void pgmap_mk_readwrite(struct page *page) { }
+>  static inline void pgmap_mk_noaccess(struct page *page) { }
+>
+> diff --git a/mm/memremap.c b/mm/memremap.c
+> index 783b1cd4bb42..fd4b9b83b770 100644
+> --- a/mm/memremap.c
+> +++ b/mm/memremap.c
+> @@ -150,6 +150,15 @@ static const struct kernel_param_ops param_ops_pks_fault_modes = {
+>         __param_check(name, p, pks_fault_modes)
+>  module_param(pks_fault_mode, pks_fault_modes, 0644);
+>
+> +void __pgmap_protection_flag_invalid(struct dev_pagemap *pgmap)
+> +{
+> +       if (pks_fault_mode == PKS_MODE_STRICT)
+> +               return;
+> +
+> +       WARN_ONCE(1, "Invalid page map use");
+> +}
+> +EXPORT_SYMBOL_GPL(__pgmap_protection_flag_invalid);
+> +
+>  bool pgmap_pks_fault_callback(struct pt_regs *regs, unsigned long address,
+>                               bool write)
+>  {
+> --
+> 2.31.1
+>
