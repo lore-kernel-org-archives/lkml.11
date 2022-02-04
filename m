@@ -2,38 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB06DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 20:01:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76985C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 20:01:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237051AbiBDUA7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 15:00:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39220 "EHLO
+        id S237710AbiBDUBF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 4 Feb 2022 15:01:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235624AbiBDT7K (ORCPT
+        with ESMTP id S236311AbiBDT7U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 14:59:10 -0500
+        Fri, 4 Feb 2022 14:59:20 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62001C061755
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 11:59:05 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C84F9C061772
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 11:59:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=NOZFCIAHs14S6ShgmEZTYVvlwYIX+9q1FzDwIHERWMU=; b=oSzUzWyoXWPtOg5IDBWJS2HMsY
-        LIoT7FbLieUlfRoqAfRmp+S5USjt7whN6+vx0tWMS+rT4fg6TIwnpgzKT+bNASFMiG1xLjEbLMKyv
-        jAIsN+Pk9H7Qm4nszlO4EIRKLGmVXTyTh7PJtSSHwOm4PIZqIyIR7N5jR+KWmC52n2bxR3Ya3oAYp
-        n8SAiuLo9SRHmXntPDmrDZgennQCO60kdOCcqio2Bf+PkxbZLSjtFLTzM23uCWQ0IbLzNYAWRQd0V
-        ElOzXete8NXsvVAxnbv+jsL9HJDTRxvcbjl1ijsgW7a1jj7pKS/B48lde/TSUGiGT3O/jXIzQVp4H
-        Szz3ek6Q==;
+        bh=7lCdDpwYdKDkLlbslxBRg+2wOD2EjKVgpCEmaUyy+oM=; b=QwfwufgSXk6f+sdolDtZP+fdSy
+        0fpEMthi/hNNBIpZDavPRrrnFKpzDge8xNVnjkWzTocuexNJjAS/TWxrOFtQ1tvRmiehHabY0lDjE
+        TlWM/nsV/WE6cplK2QqPAUwHPvNJx7/ga9XwlrKkha5pmb3Z0Rc6msOCHpL2v47s3gEAfHa0+/qpq
+        VzwDGcKx2ESs7sEahSmI8MKSWjhixRG4YAOdw/+cMeWIgxx0OwYi3Om2L7IzeGghQ0DxcuU3B0QoU
+        QK4nlFZJp/rBlVTTkeOnYvAm4e791rtqywqKOv7ix2+XRLLrm2LdnK7ZauqGEWb/6VoKmyR5DQdiu
+        /iUrolLQ==;
 Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nG4jT-007Ll3-Nl; Fri, 04 Feb 2022 19:58:59 +0000
+        id 1nG4jW-007Lm7-66; Fri, 04 Feb 2022 19:59:02 +0000
 From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
 To:     linux-mm@kvack.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 01/75] mm/gup: Increment the page refcount before the pincount
-Date:   Fri,  4 Feb 2022 19:57:38 +0000
-Message-Id: <20220204195852.1751729-2-willy@infradead.org>
+        linux-kernel@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        William Kucharski <william.kucharski@oracle.com>
+Subject: [PATCH 28/75] mm/gup: Convert check_and_migrate_movable_pages() to use a folio
+Date:   Fri,  4 Feb 2022 19:58:05 +0000
+Message-Id: <20220204195852.1751729-29-willy@infradead.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220204195852.1751729-1-willy@infradead.org>
 References: <20220204195852.1751729-1-willy@infradead.org>
@@ -43,42 +46,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We should always increase the refcount before doing anything else to
-the page so that other page users see the elevated refcount first.
+Switch from head pages to folios.  This removes an assumption that
+THPs are the only way to have a high-order page.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: John Hubbard <jhubbard@nvidia.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Reviewed-by: William Kucharski <william.kucharski@oracle.com>
 ---
- mm/gup.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ mm/gup.c | 28 ++++++++++++++--------------
+ 1 file changed, 14 insertions(+), 14 deletions(-)
 
 diff --git a/mm/gup.c b/mm/gup.c
-index a9d4d724aef7..08020987dfc0 100644
+index edec7356b965..9f2f8d765c58 100644
 --- a/mm/gup.c
 +++ b/mm/gup.c
-@@ -220,18 +220,18 @@ bool __must_check try_grab_page(struct page *page, unsigned int flags)
- 		if (WARN_ON_ONCE(page_ref_count(page) <= 0))
- 			return false;
+@@ -1815,41 +1815,41 @@ static long check_and_migrate_movable_pages(unsigned long nr_pages,
+ 	bool drain_allow = true;
+ 	LIST_HEAD(movable_page_list);
+ 	long ret = 0;
+-	struct page *prev_head = NULL;
+-	struct page *head;
++	struct folio *folio, *prev_folio = NULL;
+ 	struct migration_target_control mtc = {
+ 		.nid = NUMA_NO_NODE,
+ 		.gfp_mask = GFP_USER | __GFP_NOWARN,
+ 	};
  
--		if (hpage_pincount_available(page))
--			hpage_pincount_add(page, 1);
--		else
--			refs = GUP_PIN_COUNTING_BIAS;
--
+ 	for (i = 0; i < nr_pages; i++) {
+-		head = compound_head(pages[i]);
+-		if (head == prev_head)
++		folio = page_folio(pages[i]);
++		if (folio == prev_folio)
+ 			continue;
+-		prev_head = head;
++		prev_folio = folio;
  		/*
- 		 * Similar to try_grab_compound_head(): even if using the
- 		 * hpage_pincount_add/_sub() routines, be sure to
- 		 * *also* increment the normal page refcount field at least
- 		 * once, so that the page really is pinned.
+ 		 * If we get a movable page, since we are going to be pinning
+ 		 * these entries, try to move them out if possible.
  		 */
--		page_ref_add(page, refs);
-+		if (hpage_pincount_available(page)) {
-+			page_ref_add(page, 1);
-+			hpage_pincount_add(page, 1);
-+		} else {
-+			page_ref_add(page, GUP_PIN_COUNTING_BIAS);
-+		}
+-		if (!is_pinnable_page(head)) {
+-			if (PageHuge(head)) {
+-				if (!isolate_huge_page(head, &movable_page_list))
++		if (!is_pinnable_page(&folio->page)) {
++			if (folio_test_hugetlb(folio)) {
++				if (!isolate_huge_page(&folio->page,
++							&movable_page_list))
+ 					isolation_error_count++;
+ 			} else {
+-				if (!PageLRU(head) && drain_allow) {
++				if (!folio_test_lru(folio) && drain_allow) {
+ 					lru_add_drain_all();
+ 					drain_allow = false;
+ 				}
  
- 		mod_node_page_state(page_pgdat(page), NR_FOLL_PIN_ACQUIRED, 1);
+-				if (isolate_lru_page(head)) {
++				if (folio_isolate_lru(folio)) {
+ 					isolation_error_count++;
+ 					continue;
+ 				}
+-				list_add_tail(&head->lru, &movable_page_list);
+-				mod_node_page_state(page_pgdat(head),
++				list_add_tail(&folio->lru, &movable_page_list);
++				node_stat_mod_folio(folio,
+ 						    NR_ISOLATED_ANON +
+-						    page_is_file_lru(head),
+-						    thp_nr_pages(head));
++						    folio_is_file_lru(folio),
++						    folio_nr_pages(folio));
+ 			}
+ 		}
  	}
 -- 
 2.34.1
