@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65000C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:26:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59E74C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  4 Feb 2022 09:26:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358341AbiBDJ0d (ORCPT
+        id S1357990AbiBDJ0h (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 04:26:33 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:53094 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357444AbiBDJYz (ORCPT
+        Fri, 4 Feb 2022 04:26:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33458 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1357979AbiBDJY7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 04:24:55 -0500
+        Fri, 4 Feb 2022 04:24:59 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CA65C06173D;
+        Fri,  4 Feb 2022 01:24:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DE7B2B836BA;
-        Fri,  4 Feb 2022 09:24:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43018C340ED;
-        Fri,  4 Feb 2022 09:24:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 299C4B836F3;
+        Fri,  4 Feb 2022 09:24:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54167C004E1;
+        Fri,  4 Feb 2022 09:24:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643966693;
-        bh=b1aaZmEkpsr6AC1Fgfj2kfSj0T+Vlhtiyi8ifmsfxa4=;
+        s=korg; t=1643966697;
+        bh=tTUbBlWGxGlAA/M3iRfxvQhYj3pYTSvQpKE+09KRzqE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nQeq4bHp4hfBT7j5y1podpH1K9kCTBC07gBb2QMN4yPa74P+qgpFp0Ke1EdBk0EKo
-         issUMJjs1YjRUuPJCuZW2QixJk4uvfWXrSQoHmM3rCgEIvXaxQpZCrde5YrTD5vc3r
-         5ZkTCZBKvap/4jy7mKhEM/jEI+3afghpltxpyPVg=
+        b=KvnL2MEPwtFGcuvkPgqgW91Rx4YkzWvVyHv6DR2QjpH8a8+JDJBczYInsIWEXojvz
+         nhWxu3kGLmSF06ugtRvtW4rsisTJI8qH1t8Bad1+LkduGDJYktMS40o7s9NIL8HI8Y
+         Vy8e4DYHJFd1sjtlYdrpa4biVZVdtx8X08T9P2Go=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jonathan Woithe <jwoithe@just42.net>,
-        "J. Bruce Fields" <bfields@redhat.com>,
+        stable@vger.kernel.org, "J. Bruce Fields" <bfields@redhat.com>,
         Chuck Lever <chuck.lever@oracle.com>
-Subject: [PATCH 5.16 10/43] lockd: fix server crash on reboot of client holding lock
-Date:   Fri,  4 Feb 2022 10:22:17 +0100
-Message-Id: <20220204091917.516571154@linuxfoundation.org>
+Subject: [PATCH 5.16 11/43] lockd: fix failure to cleanup client locks
+Date:   Fri,  4 Feb 2022 10:22:18 +0100
+Message-Id: <20220204091917.547635687@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220204091917.166033635@linuxfoundation.org>
 References: <20220204091917.166033635@linuxfoundation.org>
@@ -49,55 +51,39 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: J. Bruce Fields <bfields@redhat.com>
 
-commit 6e7f90d163afa8fc2efd6ae318e7c20156a5621f upstream.
+commit d19a7af73b5ecaac8168712d18be72b9db166768 upstream.
 
-I thought I was iterating over the array when actually the iteration is
-over the values contained in the array?
+In my testing, we're sometimes hitting the request->fl_flags & FL_EXISTS
+case in posix_lock_inode, presumably just by random luck since we're not
+actually initializing fl_flags here.
 
-Ugh, keep it simple.
+This probably didn't matter before commit 7f024fcd5c97 ("Keep read and
+write fds with each nlm_file") since we wouldn't previously unlock
+unless we knew there were locks.
 
-Symptoms were a null deference in vfs_lock_file() when an NFSv3 client
-that previously held a lock came back up and sent a notify.
+But now it causes lockd to give up on removing more locks.
 
-Reported-by: Jonathan Woithe <jwoithe@just42.net>
+We could just initialize fl_flags, but really it seems dubious to be
+calling vfs_lock_file with random values in some of the fields.
+
 Fixes: 7f024fcd5c97 ("Keep read and write fds with each nlm_file")
 Signed-off-by: J. Bruce Fields <bfields@redhat.com>
+[ cel: fixed checkpatch.pl nit ]
 Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/lockd/svcsubs.c |   17 +++++++++--------
- 1 file changed, 9 insertions(+), 8 deletions(-)
+ fs/lockd/svcsubs.c |    1 +
+ 1 file changed, 1 insertion(+)
 
 --- a/fs/lockd/svcsubs.c
 +++ b/fs/lockd/svcsubs.c
-@@ -179,19 +179,20 @@ nlm_delete_file(struct nlm_file *file)
- static int nlm_unlock_files(struct nlm_file *file)
+@@ -180,6 +180,7 @@ static int nlm_unlock_files(struct nlm_f
  {
  	struct file_lock lock;
--	struct file *f;
  
++	locks_init_lock(&lock);
  	lock.fl_type  = F_UNLCK;
  	lock.fl_start = 0;
  	lock.fl_end   = OFFSET_MAX;
--	for (f = file->f_file[0]; f <= file->f_file[1]; f++) {
--		if (f && vfs_lock_file(f, F_SETLK, &lock, NULL) < 0) {
--			pr_warn("lockd: unlock failure in %s:%d\n",
--				__FILE__, __LINE__);
--			return 1;
--		}
--	}
-+	if (file->f_file[O_RDONLY] &&
-+	    vfs_lock_file(file->f_file[O_RDONLY], F_SETLK, &lock, NULL))
-+		goto out_err;
-+	if (file->f_file[O_WRONLY] &&
-+	    vfs_lock_file(file->f_file[O_WRONLY], F_SETLK, &lock, NULL))
-+		goto out_err;
- 	return 0;
-+out_err:
-+	pr_warn("lockd: unlock failure in %s:%d\n", __FILE__, __LINE__);
-+	return 1;
- }
- 
- /*
 
 
