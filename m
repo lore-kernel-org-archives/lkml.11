@@ -2,66 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF369C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 00:52:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84446C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 00:52:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378814AbiBEAwz (ORCPT
+        id S1378851AbiBEAw6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 19:52:55 -0500
-Received: from mout.gmx.net ([212.227.15.19]:33393 "EHLO mout.gmx.net"
+        Fri, 4 Feb 2022 19:52:58 -0500
+Received: from mout.gmx.net ([212.227.15.15]:37127 "EHLO mout.gmx.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1378804AbiBEAwu (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 19:52:50 -0500
+        id S1378821AbiBEAwy (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 4 Feb 2022 19:52:54 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1644022357;
-        bh=lym5STbBzaJGlQM8oAKh6+HRTeRDIEflWWq3ZRpveqA=;
+        s=badeba3b8450; t=1644022365;
+        bh=sih0C9j+Skh+Iygcka4TI9uLM35zlkT/bJ3P6AAoP4s=;
         h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=Hz/patMlWit9iSO4qIwoDtKnDyrt9JtB4Vf06FOsXWYIbAdbI+DFomvXsaT/2IeaO
-         8FUmTxFPm2uSg3QMWvYXWpsxt+e0CPAkTW50CCIySv4l0c7j+4BvsvZgoY4B3Jjvyx
-         44zVpStWgHXnzEWrsdjkR/jaiTEocSzXyvOd9nxU=
+        b=ArCdDHDNPjq5S6JG8DwnGdtNk7/AObqFNvc/dfj+iA8wU6NQRQ3o0RX7pdEZEqMBB
+         WUq4cc1EFgtOb4hASA3VVRkc2NZ8rXcwcM6PJUHApZSNiv7Via60P2t4xRGt7THyON
+         1Q+rNwyQdenrA+SDQDWVROuZUjAcjzu0sHs3idmk=
 X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
 Received: from longitude ([5.146.194.160]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MVvPD-1moLZJ46tR-00Rr9g; Sat, 05
- Feb 2022 01:52:37 +0100
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MF3DW-1n0nFF0aVc-00FPzJ; Sat, 05
+ Feb 2022 01:52:45 +0100
 From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
 To:     linux-clk@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-mips@vger.kernel.org,
         =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        =?UTF-8?q?Philippe=20Mathieu-Daud=C3=A9?= <f4bug@amsat.org>,
-        Keguang Zhang <keguang.zhang@gmail.com>,
         Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, Yang Ling <gnaygnil@gmail.com>
-Subject: [PATCH v3 2/4] clk: loongson1: Terminate clk_div_table with sentinel element
-Date:   Sat,  5 Feb 2022 01:52:29 +0100
-Message-Id: <20220205005232.772726-3-j.neuschaefer@gmx.net>
+        Stephen Boyd <sboyd@kernel.org>,
+        Alexander Shiyan <shc_work@mail.ru>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Mike Turquette <mturquette@linaro.org>
+Subject: [PATCH v3 4/4] clk: clps711x: Terminate clk_div_table with sentinel element
+Date:   Sat,  5 Feb 2022 01:52:31 +0100
+Message-Id: <20220205005232.772726-5-j.neuschaefer@gmx.net>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220205005232.772726-1-j.neuschaefer@gmx.net>
 References: <20220205005232.772726-1-j.neuschaefer@gmx.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:npiPhZZ/O3sp6o2Yhb9joakGAZKVj+KAXxOrYSF0XvLjcWIJzmt
- aiZPe/C6G1f8GX/qmelbAao26MSb63BJ/FIid7cHUtBVsi3tRIJiw0O1o3ZvbtG1tUL8TMX
- YsGiqFCLiIlMSY/QX1iD3xSDGkm647F/J7CBp0BhtUi3knyOe3zxVViQL/ABcy6RM8kJd8Z
- XWqmzoURL8yJTIheuPqOg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:mCDPUqM3rCU=:YmUKPe5K+VBUDhkb6htAUh
- l6HPEyc+V8ecrFnALrs3Ih3ylMNFfGc2XX4ofyJXPlQeGgvIQrvDNBNEqxcu5gjXmvbwoomO4
- dC5jNPszJDcz3hfAJ62snarX7hAujVMwMhnl6cYXzKqUh9dU7Dqu8PhTdouUwiCvHL4Fk/n/B
- aL6gYlW4b1OyvnAMFyVqNFG6mEiZnNxsN6SklEoEhjZJYkdjXDKvhHGX6ugqvzn/62cFIl3To
- rOKnuqj6FdjD0UIck5hCjJ4yueIrUmr+0BZ4A7y84CZNjKPb1hZP1deiaMvuqKH5CX2fi6uy6
- mpoJmBdurE1N4WcjfM9Xd/NOOuh8H1jXivgvWpsHuKH+svMWSao7lOiQbZr0u66VaY8NIz7AB
- sc3U9ba6hvkBG/hZBxPVnwoj85YuSjjT/b8aXGqlEyy5wmkfxPsA81SbICE4XyTNNH1jptB5y
- MccgmzzKSecIKrVzaOVV7fcZHYiqnkm37ro7Cl/GcWFNySNUto2c8K9MNhLiPchm8COoodjp6
- lVpJsmMP6fvo/e30RuBY5Jj+fqQ+hkFAhBtuFdz1ZeSn4ZZ8z+ztYS1jZz8BJdE+BoMNqr/9B
- EYKyuYvsBXqnzsC08FryeQkQ86VVmcyraF50+7BHkjARGSj2qZ9kMSd9Mv2GQrmiWtn46Y9Ve
- c/ZbXpxBVjAyOGTL4/dtvfM86Pb9edUpiAgqFmF/g14LICPeWR1Ag1ijplrASmAJJ24Coxuwh
- tVCqfXPv+J+qHQavu7cZ0l6D3a5EX8DY2sxRoXa2BOSRJ26ML/iii+6F2vGsGxF7hc7n8AaOr
- uUPbuar8hMbGHepBe8AhPXG45FtpcuYCviVA2Lq2Zi1hLJl94LpHT27RcAUu+WWt0oXX09sya
- G4JK4Nl1WRXeNacOXAEWLiGawzQQEAo6Pn2JcvyvE4TEYvgN1FdmOWxDhfX/LKC9uhOBD13FH
- GqEFX//Inyy0SzslcrDAvQxamZcZAr42heDoQpZrf3dnJyW3psy/+PwqRsMp7cLA00G8W60dC
- exDdw50XGtujN7j/hy0d2Ru030nfPg6e+gOCSz6wIls2F2+nyDC7Rn/ipO9o3csSs6VoOFY3C
- RVBsDrIBIuJrV8=
+X-Provags-ID: V03:K1:+5sqN1NQdxdcUbRRd06FLeYyXi4FGGlmCXSn1bq0vyEbH2GQK6k
+ bl1TYLc9US7ekOSTBfxcJ3rRwiaKuN6P1XkdCxlFs7D2/k7ThOpD1GLzRJIwlKsGWuk9CWT
+ hChHeYaUiWwb+h04wPjv2uKl06n0mZKyJ8lZxGZv7E+seBrQPDmT2LOIbpQQxWa7aMMF45E
+ GRHYH8RSlI1bS6/zbRWLg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:tZkDayIuqb4=:eEicf82nMKSeBkY7O1GHXE
+ HHXII8ZGGdKNnXtoqbt9PF26lxVpXOg/PkYbUFWe4KSWuNvR61ZNKAq0KFRbKEU5T81KCarHm
+ pzzHEbkU8uhJWieCWamE9l2v6Ua+1r4zO7PMfpAK+d1yvAWQxGAsWuC84L8/w+6BzhM6kT9QK
+ 7ViRwmI/kbqihnvpRV/lCVuTdFaKq7KPhT7mPxwVtwSK3jFk3JpGOqbvh9MRSJmQKwfmcaXaL
+ cHKC4oZ2HMTl4qralxvQIUwDOf+5paYJG/nijQCBS3g44bUsVEBfdXKNzjPSUHFlWPplGpi2u
+ zSXLK1696aZv6kkKu2BaKmaIuBjXY/qz+B0sqeyruiHAU/XwHmjM/mv2RDh6vP0lBOBj5+ObI
+ kw7CiNabv6qvD706LipeXWZr/V8nmt6D+yPL3RKIsU1LvLExsg/UloYLmz5iEmoxPLEvR8Ssr
+ KMOHrT8xWaULtjOwi5xi6g11eJTAME8HlnTxMT9Jal2cVFLAVmWEMoUTndF9FCiklJCwIC/dq
+ bS4odSwLxxIF0Br01gZCZuAFadk1zrzw2Hsw7OxVZVaVOCDNGsY0QwnNiTbpESSNjx4Ycm93n
+ czrG7UNC7dYoFAYSxB06VkaAO15f+rSMIrhIuUt588K6zXTABbr7RBIrho+J7QC4xmA8Tl/WF
+ PkpKPMdWC5Jz10cC6g/j7PAqC/pkUmFhQ6/TsVROKZ/6elZmK6mKSb+UmtlxohcCEb1Pd2cMR
+ 2mYV8h/Pxda6ZLzPK/LxN/mVKJ2GshShtbtWUB64jr4pndfpp06xSCU6GKa3ngzNCDWbx913Y
+ KKoykqAQYMBy0FJyWzjn0kpyDzGKUBGbv0hp2TRuS6dHcsujA36A4e5ZFdKpx4/ufAiP15UHx
+ JDhz1keoAWn/nIBVNwUPYpuUpKDW2XaRDvWnCxR+eIY6MdDAlJAhhFhsM/QyugM3Slg9XBqIM
+ Sfs4Iw1g8HfugYOS12aojoLliPzTKXc0Gsihq4kZrqlz01sNwRQ7cWEac2Q/OqJ6f5RuoM82m
+ VeCYykPRaZZyaXXyIgW7gfiv9lyMmlllgsHBMzwvjhEX9YpMy7vQ6M5TPV9wekIgF/kDwaWcN
+ pSgD5qAn0l9E78=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
@@ -69,33 +70,38 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 In order that the end of a clk_div_table can be detected, it must be
 terminated with a sentinel element (.div =3D 0).
 
-Fixes: b4626a7f4892 ("CLK: Add Loongson1C clock support")
+Fixes: 631c53478973d ("clk: Add CLPS711X clk driver")
 Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
-Reviewed-by: Philippe Mathieu-Daud=C3=A9 <f4bug@amsat.org>
 =2D--
 
 v3:
 - no changes
 
 v2:
-- Add Fixes and R-b tags
+- Add Fixes tag
 =2D--
- drivers/clk/loongson1/clk-loongson1c.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/clk/clk-clps711x.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/clk/loongson1/clk-loongson1c.c b/drivers/clk/loongson=
-1/clk-loongson1c.c
-index 703f87622cf5f..a6f9f20fc8b99 100644
-=2D-- a/drivers/clk/loongson1/clk-loongson1c.c
-+++ b/drivers/clk/loongson1/clk-loongson1c.c
-@@ -37,6 +37,7 @@ static const struct clk_div_table ahb_div_table[] =3D {
- 	[1] =3D { .val =3D 1, .div =3D 4 },
- 	[2] =3D { .val =3D 2, .div =3D 3 },
- 	[3] =3D { .val =3D 3, .div =3D 3 },
-+	[4] =3D { /* sentinel */ },
+diff --git a/drivers/clk/clk-clps711x.c b/drivers/clk/clk-clps711x.c
+index a2c6486ef1708..d96d96c8752c7 100644
+=2D-- a/drivers/clk/clk-clps711x.c
++++ b/drivers/clk/clk-clps711x.c
+@@ -28,11 +28,13 @@ static const struct clk_div_table spi_div_table[] =3D =
+{
+ 	{ .val =3D 1, .div =3D 8, },
+ 	{ .val =3D 2, .div =3D 2, },
+ 	{ .val =3D 3, .div =3D 1, },
++	{}
  };
 
- void __init ls1x_clk_init(void)
+ static const struct clk_div_table timer_div_table[] =3D {
+ 	{ .val =3D 0, .div =3D 256, },
+ 	{ .val =3D 1, .div =3D 1, },
++	{}
+ };
+
+ struct clps711x_clk {
 =2D-
 2.34.1
 
