@@ -2,209 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 028C3C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 12:15:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A034C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 12:16:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379925AbiBEMPy (ORCPT
+        id S1379808AbiBEMQ3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 07:15:54 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:50118 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379800AbiBEMPZ (ORCPT
+        Sat, 5 Feb 2022 07:16:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37388 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1379941AbiBEMQP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 07:15:25 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B12C60DF0;
-        Sat,  5 Feb 2022 12:15:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0098AC340E8;
-        Sat,  5 Feb 2022 12:15:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644063324;
-        bh=0ioLUtrKdBwkxRXSk+AnJy4wIx5hjKnuaD3I6nEPO5k=;
-        h=From:To:Cc:Subject:Date:From;
-        b=L1nrMQVIgI8MNwG25EwIckpTY9E9iN4dfMGD+mhUGluPhsewbIsY8iL/KItjxYtng
-         xpfsLY6I0iYfnnQAklY7dQURw5NdKr0VuYIM34esas/m1WrUxpInRppS6NtVzflVOJ
-         j3Z/Xqhi2T8DCU182LcQPq9oUghubyehCwZos3kk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
-        torvalds@linux-foundation.org, stable@vger.kernel.org
-Cc:     lwn@lwn.net, jslaby@suse.cz,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Linux 5.16.6
-Date:   Sat,  5 Feb 2022 13:15:09 +0100
-Message-Id: <164406330924779@kroah.com>
-X-Mailer: git-send-email 2.35.1
+        Sat, 5 Feb 2022 07:16:15 -0500
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86536C0401C2;
+        Sat,  5 Feb 2022 04:15:52 -0800 (PST)
+Received: by mail-pf1-x42a.google.com with SMTP id y5so6525357pfe.4;
+        Sat, 05 Feb 2022 04:15:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=YjIO40PnwMmdwtobVmnhEpOTVt8ruZsjPqGNFGyrUvU=;
+        b=qQ09SGZqaLCCUs6A683BBcWubgQjLWAIWL4npUJ38bYmrzQ+uT63r5YXMmShJBYGCJ
+         QJW2IbNEBjzZfwhoD4sK7vNQBqDG7FdaCqz3XHP0zxLBvayjpZw9Vgcz3CbagP38pIun
+         MuBTFLohCNsHtJk1YSpm2rM8MSxnQIqDwB2xAx8EY+ZCeuY+e5TYVVvPGhP4cNQUcyoS
+         vWT2dxMFTytMVFOHOV1WjUxX1xwSPkjdjAjkq0G9bAsMpKJKDOa674hUJlqiDxr3ACCq
+         EHSVFa/wGCixKRER1U6+sBiA2nvEWEopveZw12EKH3wfBSHhkGskuoEBIN+eWjennILq
+         za6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=YjIO40PnwMmdwtobVmnhEpOTVt8ruZsjPqGNFGyrUvU=;
+        b=APpznsHB3W/upAK7ynmbEHu5M+ggOinIlUKueQ10LVHjRs6Wc1XITIacTzSCWkT7JQ
+         toG9Pw1HkMQBb9tlvGl1jeyw5LaIDDNQj3ScXGkeKPR5kSWsGQ4k+jBpJZbBBLC0fOs0
+         /1rSJiv4eng42yv8p55Yqn9hc53/yIBV8SoQkiVM2AtoafJ9jFz1Ocm8j20JkegSoE8X
+         T3t8zVI07zZzeQZ90jZc/g3wE3lE8mhI0DDS+KxWv1KTHmaUYwN0uqxSq3qiEpQ66H5D
+         zTjTbJxTgrwCFV/zQPAIb56pvbbUG/nBtZ3GGs4qCmEp1slX+alajClmH4hJwGB+5F4P
+         CZTQ==
+X-Gm-Message-State: AOAM531z1NEtNcspZznpGeGSh02jCkdqiOA6BxJPpMRh+D3X1yB1z3Pw
+        eympHOZnDEFQwWyiG31qVak=
+X-Google-Smtp-Source: ABdhPJxFueF7CYhxt0F4Z55Pjh/MmjMeY7DXLzHMQ/WMZo2WSQcfZDUj0lsCz/HA33kM6rMHkOxXKQ==
+X-Received: by 2002:a63:7e1b:: with SMTP id z27mr2717091pgc.345.1644063352024;
+        Sat, 05 Feb 2022 04:15:52 -0800 (PST)
+Received: from [192.168.1.33] (154.red-83-50-83.dynamicip.rima-tde.net. [83.50.83.154])
+        by smtp.gmail.com with ESMTPSA id d15sm5994262pfu.72.2022.02.05.04.15.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 05 Feb 2022 04:15:51 -0800 (PST)
+Sender: =?UTF-8?Q?Philippe_Mathieu=2DDaud=C3=A9?= 
+        <philippe.mathieu.daude@gmail.com>
+Message-ID: <5567d063-39b3-adfb-6556-d9973fa2074b@amsat.org>
+Date:   Sat, 5 Feb 2022 13:15:46 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.1
+Subject: Re: [PATCH v3 1/4] clk: actions: Terminate clk_div_table with
+ sentinel element
+Content-Language: en-US
+To:     =?UTF-8?Q?Jonathan_Neusch=c3=a4fer?= <j.neuschaefer@gmx.net>,
+        linux-clk@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mips@vger.kernel.org,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>,
+        Saravanan Sekar <sravanhome@gmail.com>,
+        Parthiban Nallathambi <pn@denx.de>,
+        linux-actions@lists.infradead.org
+References: <20220205005232.772726-1-j.neuschaefer@gmx.net>
+ <20220205005232.772726-2-j.neuschaefer@gmx.net>
+From:   =?UTF-8?Q?Philippe_Mathieu-Daud=c3=a9?= <f4bug@amsat.org>
+In-Reply-To: <20220205005232.772726-2-j.neuschaefer@gmx.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I'm announcing the release of the 5.16.6 kernel.
+On 5/2/22 01:52, Jonathan Neuschäfer wrote:
+> In order that the end of a clk_div_table can be detected, it must be
+> terminated with a sentinel element (.div = 0).
+> 
+> In owl-s900.s, the { 0, 8 } element was probably meant to be just that,
+> so this patch changes { 0, 8 } to { 0, 0 }.
+> 
+> Fixes: d47317ca4ade1 ("clk: actions: Add S700 SoC clock support")
+> Fixes: d85d20053e195 ("clk: actions: Add S900 SoC clock support")
+> Signed-off-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+> Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
+> ---
+> 
+> v3:
+> - Interpret { 0, 8 } as a typo of { 0, 0 }, the sentinel element
+> - Add R-b tag
+> 
+> v2:
+> - Add Fixes tags
+> ---
+>   drivers/clk/actions/owl-s700.c | 1 +
+>   drivers/clk/actions/owl-s900.c | 2 +-
+>   2 files changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/clk/actions/owl-s700.c b/drivers/clk/actions/owl-s700.c
+> index a2f34d13fb543..617174644f728 100644
+> --- a/drivers/clk/actions/owl-s700.c
+> +++ b/drivers/clk/actions/owl-s700.c
+> @@ -162,6 +162,7 @@ static struct clk_div_table hdmia_div_table[] = {
+> 
+>   static struct clk_div_table rmii_div_table[] = {
+>   	{0, 4},   {1, 10},
+> +	{0, 0},
 
-All users of the 5.16 kernel series must upgrade.
+Again, clearer to use:
 
-The updated 5.16.y git tree can be found at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-5.16.y
-and can be browsed at the normal kernel.org git web browser:
-	https://git.kernel.org/?p=linux/kernel/git/stable/linux-stable.git;a=summary
+         { /* sentinel */ }
 
-thanks,
+(without the trailing comma, to enforce this is the last entry).
 
-greg k-h
-
-------------
-
- Makefile                                                             |    2 
- drivers/gpu/drm/vc4/vc4_hdmi.c                                       |   25 ++--
- drivers/net/ethernet/amd/xgbe/xgbe-drv.c                             |   14 ++
- drivers/net/ethernet/intel/e1000e/netdev.c                           |    6 -
- drivers/net/ethernet/intel/i40e/i40e.h                               |    1 
- drivers/net/ethernet/intel/i40e/i40e_main.c                          |   31 +++++
- drivers/net/ethernet/mellanox/mlx5/core/en.h                         |    6 -
- drivers/net/ethernet/mellanox/mlx5/core/en/qos.c                     |    3 
- drivers/net/ethernet/mellanox/mlx5/core/en/rep/bond.c                |   32 ++----
- drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c              |    6 -
- drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h                    |    5 
- drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c                     |    4 
- drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c        |   13 ++
- drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.h        |    9 +
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c                      |   30 +++--
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c                      |   15 ++
- drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.c                 |    4 
- drivers/net/ethernet/mellanox/mlx5/core/esw/diag/bridge_tracepoint.h |    2 
- drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c                   |    2 
- drivers/net/ethernet/mellanox/mlx5/core/lib/fs_chains.c              |    9 -
- drivers/net/ethernet/mellanox/mlx5/core/port.c                       |    9 -
- drivers/net/ipa/ipa_endpoint.c                                       |   21 +++-
- drivers/net/ipa/ipa_endpoint.h                                       |   17 ++-
- drivers/net/ipa/ipa_power.c                                          |   52 ++++++++++
- drivers/net/ipa/ipa_power.h                                          |    7 +
- drivers/net/ipa/ipa_uc.c                                             |    5 
- drivers/net/phy/at803x.c                                             |   26 ++---
- drivers/net/usb/ipheth.c                                             |    6 -
- drivers/pci/hotplug/pciehp_hpc.c                                     |    7 -
- fs/lockd/svcsubs.c                                                   |   18 +--
- fs/notify/fanotify/fanotify_user.c                                   |    6 -
- fs/overlayfs/copy_up.c                                               |   16 ++-
- kernel/bpf/trampoline.c                                              |    5 
- kernel/cgroup/cgroup-v1.c                                            |   14 ++
- kernel/cgroup/cpuset.c                                               |    3 
- mm/gup.c                                                             |   35 +++++-
- net/core/rtnetlink.c                                                 |    6 -
- net/ipv4/tcp.c                                                       |    7 -
- net/ipv4/tcp_input.c                                                 |    2 
- net/packet/af_packet.c                                               |    8 +
- net/sched/cls_api.c                                                  |   11 +-
- tools/testing/selftests/net/mptcp/mptcp_join.sh                      |    5 
- 42 files changed, 375 insertions(+), 130 deletions(-)
-
-Alex Elder (3):
-      net: ipa: use a bitmap for endpoint replenish_enabled
-      net: ipa: prevent concurrent replenish
-      net: ipa: request IPA register values be retained
-
-Christoph Fritz (1):
-      ovl: fix NULL pointer dereference in copy up warning
-
-Dan Carpenter (1):
-      fanotify: Fix stale file descriptor in copy_event_to_user()
-
-Dima Chumak (1):
-      net/mlx5: Fix offloading with ESWITCH_IPV4_TTL_MODIFY_ENABLE
-
-Eric Dumazet (5):
-      net: sched: fix use-after-free in tc_new_tfilter()
-      rtnetlink: make sure to refresh master_dev/m_ops in __rtnl_newlink()
-      af_packet: fix data-race in packet_setsockopt / packet_setsockopt
-      tcp: fix mem under-charging with zerocopy sendmsg()
-      tcp: add missing tcp_skb_can_collapse() test in tcp_shift_skb_data()
-
-Eric W. Biederman (1):
-      cgroup-v1: Require capabilities to set release_agent
-
-Gal Pressman (1):
-      net/mlx5e: Fix module EEPROM query
-
-Georgi Valkov (1):
-      ipheth: fix EOVERFLOW in ipheth_rcvbulk_callback
-
-Greg Kroah-Hartman (1):
-      Linux 5.16.6
-
-He Fengqing (1):
-      bpf: Fix possible race in inc_misses_counter
-
-J. Bruce Fields (2):
-      lockd: fix server crash on reboot of client holding lock
-      lockd: fix failure to cleanup client locks
-
-Jedrzej Jagielski (1):
-      i40e: Fix reset bw limit when DCB enabled with 1 TC
-
-John Hubbard (1):
-      Revert "mm/gup: small refactoring: simplify try_grab_page()"
-
-Jonathan McDowell (1):
-      net: phy: Fix qca8081 with speeds lower than 2.5Gb/s
-
-Karen Sornek (1):
-      i40e: Fix reset path while removing the driver
-
-Kees Cook (1):
-      net/mlx5e: Avoid field-overflowing memcpy()
-
-Khalid Manaa (2):
-      net/mlx5e: Fix wrong calculation of header index in HW_GRO
-      net/mlx5e: Fix broken SKB allocation in HW-GRO
-
-Lukas Wunner (1):
-      PCI: pciehp: Fix infinite loop in IRQ handler upon power fault
-
-Maher Sanalla (1):
-      net/mlx5: Use del_timer_sync in fw reset flow of halting poll
-
-Maor Dickman (2):
-      net/mlx5e: Fix handling of wrong devices during bond netevent
-      net/mlx5: E-Switch, Fix uninitialized variable modact
-
-Maxim Mikityanskiy (1):
-      net/mlx5e: Don't treat small ceil values as unlimited in HTB offload
-
-Maxime Ripard (1):
-      drm/vc4: hdmi: Make sure the device is powered with CEC
-
-Miklos Szeredi (1):
-      ovl: don't fail copy up if no fileattr support on upper
-
-Paolo Abeni (1):
-      selftests: mptcp: fix ipv6 routing setup
-
-Raed Salem (2):
-      net/mlx5e: IPsec: Fix crypto offload for non TCP/UDP encapsulated traffic
-      net/mlx5e: IPsec: Fix tunnel mode crypto offload for non TCP/UDP traffic
-
-Raju Rangoju (1):
-      net: amd-xgbe: ensure to reset the tx_timer_active flag
-
-Roi Dayan (4):
-      net/mlx5e: TC, Reject rules with drop and modify hdr action
-      net/mlx5e: TC, Reject rules with forward and drop actions
-      net/mlx5: Bridge, Fix devlink deadlock on net namespace deletion
-      net/mlx5e: Avoid implicit modify hdr for decap drop rule
-
-Sasha Neftin (1):
-      e1000e: Handshake with CSME starts from ADL platforms
-
-Shyam Sundar S K (1):
-      net: amd-xgbe: Fix skb data length underflow
-
-Tianchen Ding (1):
-      cpuset: Fix the bug that subpart_cpus updated wrongly in update_cpumask()
-
-Vlad Buslov (2):
-      net/mlx5: Bridge, take rtnl lock in init error handler
-      net/mlx5: Bridge, ensure dev_name is null-terminated
+>   };
+> 
+>   /* divider clocks */
+> diff --git a/drivers/clk/actions/owl-s900.c b/drivers/clk/actions/owl-s900.c
+> index 790890978424a..63c4097c07ac7 100644
+> --- a/drivers/clk/actions/owl-s900.c
+> +++ b/drivers/clk/actions/owl-s900.c
+> @@ -140,7 +140,7 @@ static struct clk_div_table rmii_ref_div_table[] = {
+> 
+>   static struct clk_div_table usb3_mac_div_table[] = {
+>   	{ 1, 2 }, { 2, 3 }, { 3, 4 },
+> -	{ 0, 8 },
+> +	{ 0, 0 },
+>   };
+> 
+>   static struct clk_div_table i2s_div_table[] = {
+> --
+> 2.34.1
+> 
 
