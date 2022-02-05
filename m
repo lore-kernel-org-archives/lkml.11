@@ -2,201 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1E54C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 07:41:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA7CEC433FE
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 07:47:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379602AbiBEHlf (ORCPT
+        id S1344127AbiBEHry (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 02:41:35 -0500
-Received: from mailout4.samsung.com ([203.254.224.34]:25133 "EHLO
-        mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236566AbiBEHld (ORCPT
+        Sat, 5 Feb 2022 02:47:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60294 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229852AbiBEHry (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 02:41:33 -0500
-Received: from epcas2p3.samsung.com (unknown [182.195.41.55])
-        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220205074131epoutp04fbea7b071419eb27279d8b2b3c9007ba~Q0_-v7xrX0305103051epoutp04y
-        for <linux-kernel@vger.kernel.org>; Sat,  5 Feb 2022 07:41:31 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220205074131epoutp04fbea7b071419eb27279d8b2b3c9007ba~Q0_-v7xrX0305103051epoutp04y
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1644046891;
-        bh=Z6M+dfMopclig4NKfROarEUPiNhyq+VID9hbdnT6TFU=;
-        h=From:To:Cc:Subject:Date:References:From;
-        b=iXlueJeo9TmOmbMn6AKNbwMTDFyC7uKT//ZEFgkZHrwZcBHSW/gbcg+hGVS3KXz4r
-         eYfE1+T3EXXHCWAsIv0cC7IHBAlpfpwHVS4czImV85oQrn459349FkczCVWXFp3lDu
-         RcFS3w6PI7sLFgMBmMDq6GvFMGBM+dM7aGB5Sphc=
-Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
-        epcas2p2.samsung.com (KnoxPortal) with ESMTP id
-        20220205074130epcas2p2255aefe3fd092519611b94c32ec6ac4b~Q0_-IEfdr0419704197epcas2p2D;
-        Sat,  5 Feb 2022 07:41:30 +0000 (GMT)
-Received: from epsmges2p2.samsung.com (unknown [182.195.36.90]) by
-        epsnrtp4.localdomain (Postfix) with ESMTP id 4JrPVK2Hhrz4x9Pw; Sat,  5 Feb
-        2022 07:41:29 +0000 (GMT)
-Received: from epcas2p1.samsung.com ( [182.195.41.53]) by
-        epsmges2p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        8D.41.10018.A492EF16; Sat,  5 Feb 2022 16:37:47 +0900 (KST)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-        epcas2p4.samsung.com (KnoxPortal) with ESMTPA id
-        20220205074128epcas2p40901c37a7328e825d8697f8d3269edba~Q0_9JRrJO1874818748epcas2p4n;
-        Sat,  5 Feb 2022 07:41:28 +0000 (GMT)
-Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20220205074128epsmtrp2ddc66177b0322d1997beda37f9b553fd~Q0_9Ex9dD1972219722epsmtrp2m;
-        Sat,  5 Feb 2022 07:41:28 +0000 (GMT)
-X-AuditID: b6c32a46-a25ff70000002722-df-61fe294a9c86
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        69.73.08738.82A2EF16; Sat,  5 Feb 2022 16:41:28 +0900 (KST)
-Received: from ubuntu.dsn.sec.samsung.com (unknown [12.36.155.120]) by
-        epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20220205074128epsmtip20cc86693488816c39065618fe7f185c9~Q0_84dX9k1888118881epsmtip2f;
-        Sat,  5 Feb 2022 07:41:28 +0000 (GMT)
-From:   Kiwoong Kim <kwmad.kim@samsung.com>
-To:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        alim.akhtar@samsung.com, avri.altman@wdc.com, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, beanhuo@micron.com,
-        cang@codeaurora.org, adrian.hunter@intel.com, sc.suh@samsung.com,
-        hy50.seo@samsung.com, sh425.lee@samsung.com,
-        bhoon95.kim@samsung.com, vkumar.1997@samsung.com
-Cc:     Kiwoong Kim <kwmad.kim@samsung.com>
-Subject: [PATCH v1] scsi: ufs: remove clk_scaling_lock when clkscaling isn't
- supported.
-Date:   Sat,  5 Feb 2022 16:39:20 +0900
-Message-Id: <1644046760-83345-1-git-send-email-kwmad.kim@samsung.com>
-X-Mailer: git-send-email 2.7.4
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFmphk+LIzCtJLcpLzFFi42LZdljTVNdb81+iwZt9jBYnn6xhs3gwbxub
-        xcufV9ksDj7sZLH4uvQZq8Wn9ctYLVYvfsBisejGNiaLm1uOslhc3jWHzaL7+g42i+XH/zFZ
-        dN29wWix9N9bFos79z+yOPB7XO7rZfJYvOclk8eERQcYPb6v72Dz+Pj0FotH35ZVjB6fN8l5
-        tB/oZgrgiMq2yUhNTEktUkjNS85PycxLt1XyDo53jjc1MzDUNbS0MFdSyEvMTbVVcvEJ0HXL
-        zAG6XkmhLDGnFCgUkFhcrKRvZ1OUX1qSqpCRX1xiq5RakJJTYF6gV5yYW1yal66Xl1piZWhg
-        YGQKVJiQnbFofi9LwXLJihMHrjA2MC4Q7WLk5JAQMJE4eugwYxcjF4eQwA5GibV9jcwQzidG
-        ial3OtkhnM+MEq37WllhWj73LGOCSOxilFj+5SALhPODUeLG7zOMIFVsApoST29OZQKxRQSu
-        M0nM254BYjMLqEvsmnACLC4sECmxccJ9sHoWAVWJNd+ugtm8Aq4Sf5a/hdomJ3HzXCczhN3K
-        IXH5lRmE7SIx7ctUFghbWOLV8S3sELaUxOd3e9m6GDmA7GKJTfvkQW6TEGhglFjyaTNUvbHE
-        rGftjCA1zEB3rt+lD1GuLHHkFgvElXwSHYf/skOEeSU62oQgGpUlfk2azAhhS0rMvHkHqsRD
-        onNRFkhYSCBW4u2+fYwTGGVnIYxfwMi4ilEstaA4Nz212KjACB5Fyfm5mxjByVHLbQfjlLcf
-        9A4xMnEwHmKU4GBWEuHNnvY7UYg3JbGyKrUoP76oNCe1+BCjKTCwJjJLiSbnA9NzXkm8oYml
-        gYmZmaG5kamBuZI4r1fKhkQhgfTEktTs1NSC1CKYPiYOTqkGJhmprmMna86JrOX9umT+nx9P
-        du7bKr0wc+vfWwIee7o6xGLbGLZ8Wh7DMFfyfOuEHzIiqYbFySbvJ4bd/byEefJiY763TouS
-        Hwgrzlr1yrWXVcOObePTZsvnsbJKUzeVnZL4XhBzN7XyjlYiW1Vdm2Xvi+xZp03ZfPzzNtz0
-        2rXe5SeHdTiHReCM5S63As/FKm8w23K83WrjwQTJ2SZJMjVK55/cX1I6YWvf076e9rsrdP5E
-        i1w5qd2uZdb/Jbja3Pm529Tq1Xv7tsZVPPgRfKf5sPadGeeOued1yWtsW85+sD9FPt34h8Rb
-        XXEDBe3bCU+XqSoftVN5eNTVXqdtaxvj6QNdDyYqlxy/9OxHjBJLcUaioRZzUXEiANLNBQoX
-        BAAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrGLMWRmVeSWpSXmKPExsWy7bCSvK6G1r9Eg8YueYuTT9awWTyYt43N
-        4uXPq2wWBx92slh8XfqM1eLT+mWsFqsXP2CxWHRjG5PFzS1HWSwu75rDZtF9fQebxfLj/5gs
-        uu7eYLRY+u8ti8Wd+x9ZHPg9Lvf1Mnks3vOSyWPCogOMHt/Xd7B5fHx6i8Wjb8sqRo/Pm+Q8
-        2g90MwVwRHHZpKTmZJalFunbJXBlLJrfy1KwXLLixIErjA2MC0S7GDk5JARMJD73LGMCsYUE
-        djBKzGzlgohLSpzY+ZwRwhaWuN9yhLWLkQuo5hujxOyTzcwgCTYBTYmnN6cygSREBF4ySbyY
-        s4YNJMEsoC6xa8IJsKnCAuESvas2soDYLAKqEmu+XQWbyivgKvFn+VtWiA1yEjfPdTJPYORZ
-        wMiwilEytaA4Nz232LDAKC+1XK84Mbe4NC9dLzk/dxMjOGi1tHYw7ln1Qe8QIxMH4yFGCQ5m
-        JRHe7Gm/E4V4UxIrq1KL8uOLSnNSiw8xSnOwKInzXug6GS8kkJ5YkpqdmlqQWgSTZeLglGpg
-        qj3Q8GbvBlGvM6YdT/r3PzwYyiDCs3PflOuXLe/7ipwSLFXdop3EUx6U+Ee3hFf3zytZhmd3
-        H/5MXCcT1LJs6cslH0pD+LY5bJ3Lfk5t+7SY1jjfgooV/2qm3Xq/SZxvx2zbFerzF6/dllez
-        LPjs1fIkA75vLJoOK5RnsMlMubZ3f929e1aTbq8+cazrfvvqVfeuqNgt2GT6+kUa64GjL7v+
-        123YsKB0luiHCRLGHEyTeZf/vndchbn1/7Wp0dcviK9uMZScd1Dr2bpP9dbbP3geuqZuFFUt
-        1ZSyKcpMY4HL7lO5DREpKtVmwX5zFO5qfm6Xc8hwqW3dP/nuZG0Zs7VVprHbG37sumPteX1K
-        83MlluKMREMt5qLiRAB1qHgjyQIAAA==
-X-CMS-MailID: 20220205074128epcas2p40901c37a7328e825d8697f8d3269edba
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-CMS-TYPE: 102P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220205074128epcas2p40901c37a7328e825d8697f8d3269edba
-References: <CGME20220205074128epcas2p40901c37a7328e825d8697f8d3269edba@epcas2p4.samsung.com>
+        Sat, 5 Feb 2022 02:47:54 -0500
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 947ADC061346;
+        Fri,  4 Feb 2022 23:47:52 -0800 (PST)
+Received: by mail-pj1-x1042.google.com with SMTP id v4so1942359pjh.2;
+        Fri, 04 Feb 2022 23:47:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TvKVmfFUdXxOOdxxrcTCTu1sCDVD75UVE6UHl7eAXTo=;
+        b=k2QpbtFl+dO8bSEaT+gazl+kbNzsf40jdf1SwIbdKORCJjYvFjQQWuQH55uIxUgqbh
+         0NvvLC4jQKjw6PaMPNxs+n4Qq92rClobkbmMxaF38xhBkIOn+dZBnYFgEoU+S5hWFB02
+         jij5CTLUISd/+8UTSPSa6KugZRXAQcxeV3cNVWL/mrPwA/gz+/CLzRlqdAo+Fz6bb/eS
+         R2zdz/p81inPmjOWaGYQqRVGidqWaqnzybwg8bLhcg6FeFRBd+duiyUMi8ZA4vnpuuYv
+         4Rw2p5wmSuFC9pKzXHJGmQZzJ+zY09Hlgobtz96iuAbYiXeZl7lRE2pW8omPEVAtQ1g9
+         DpqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TvKVmfFUdXxOOdxxrcTCTu1sCDVD75UVE6UHl7eAXTo=;
+        b=urXoQNjBqEab6z3gyTtwcGx68DjtWBqzwCie52wbW4wE4rlvX5Kr3Z4peWpr1Mxetr
+         f1DuoFoPhlucSiYsqBVLdzKSxZTAMytUWqj7Q73ydGe4/C6hbii6w7HJfYmChByfg3io
+         StFKofKjMIhUkNxVXpCesAmAg2gHVyARxMkj1uI1EhY2ATs/WyxKTp8SetcugBfVoRPg
+         FXiDLWNi7NwiTGN9xCbBuYwrgr7smeiyvpFoZNqKoXEkOh5qgVR/GwgYKRD++R3gGd0o
+         dtoYrNi2S0JpGB/vZfZPkclLtTTiKvHpP4Sg1IbIfqIfIFBMAqXOMHYWy+tOhJ1jnC5Y
+         Z5pA==
+X-Gm-Message-State: AOAM530+OccAhGa7objGD7UpNQ4n2Ub87ynOUP5Ts6enzRU9Z4qc2B6r
+        efDHCO0PnS90Vkgq/Khux3Y=
+X-Google-Smtp-Source: ABdhPJzThzJLqDjg3OoiMIuL6og+I4Gy091jyg2JnfDS2/M+QGuY2A8Qc3zkIsITL3jk2KLlIST+qQ==
+X-Received: by 2002:a17:90b:33ca:: with SMTP id lk10mr3080485pjb.45.1644047272117;
+        Fri, 04 Feb 2022 23:47:52 -0800 (PST)
+Received: from localhost.localdomain ([43.132.141.4])
+        by smtp.gmail.com with ESMTPSA id p21sm5165844pfh.89.2022.02.04.23.47.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Feb 2022 23:47:51 -0800 (PST)
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: imagedong@tencent.com
+To:     dsahern@kernel.org, kuba@kernel.org
+Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, pablo@netfilter.org, kadlec@netfilter.org,
+        fw@strlen.de, edumazet@google.com, alobakin@pm.me, ast@kernel.org,
+        imagedong@tencent.com, pabeni@redhat.com, keescook@chromium.org,
+        talalahmad@google.com, haokexin@gmail.com,
+        ilias.apalodimas@linaro.org, memxor@gmail.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        paulb@nvidia.com, cong.wang@bytedance.com, mengensun@tencent.com
+Subject: [PATCH v4 net-next 0/7] net: use kfree_skb_reason() for ip/udp packet receive
+Date:   Sat,  5 Feb 2022 15:47:32 +0800
+Message-Id: <20220205074739.543606-1-imagedong@tencent.com>
+X-Mailer: git-send-email 2.27.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-clk_scaling_lock is to prevent from running clkscaling related operations
-with others which might be affected by the operations concurrently.
-I think it looks hardware specific.
-If the feature isn't supported, I think there is no reasonto prevent from
-running other functions, such as ufshcd_queuecommand and
-ufshcd_exec_dev_cmd, concurrently.
+From: Menglong Dong <imagedong@tencent.com>
 
-So I add a condition at some points protecting with clk_scaling_lock.
+In this series patches, kfree_skb() is replaced with kfree_skb_reason()
+during ipv4 and udp4 packet receiving path, and following drop reasons
+are introduced:
 
-Signed-off-by: Kiwoong Kim <kwmad.kim@samsung.com>
----
- drivers/scsi/ufs/ufshcd.c | 21 ++++++++++++++-------
- 1 file changed, 14 insertions(+), 7 deletions(-)
+SKB_DROP_REASON_SOCKET_FILTER
+SKB_DROP_REASON_NETFILTER_DROP
+SKB_DROP_REASON_OTHERHOST
+SKB_DROP_REASON_IP_CSUM
+SKB_DROP_REASON_IP_INHDR
+SKB_DROP_REASON_IP_RPFILTER
+SKB_DROP_REASON_UNICAST_IN_L2_MULTICAST
+SKB_DROP_REASON_XFRM_POLICY
+SKB_DROP_REASON_IP_NOPROTO
+SKB_DROP_REASON_SOCKET_RCVBUFF
+SKB_DROP_REASON_PROTO_MEM
 
-diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c
-index 460d2b4..8471c90 100644
---- a/drivers/scsi/ufs/ufshcd.c
-+++ b/drivers/scsi/ufs/ufshcd.c
-@@ -2980,7 +2980,8 @@ static int ufshcd_exec_dev_cmd(struct ufs_hba *hba,
- 	/* Protects use of hba->reserved_slot. */
- 	lockdep_assert_held(&hba->dev_cmd.lock);
- 
--	down_read(&hba->clk_scaling_lock);
-+	if (ufshcd_is_clkscaling_supported(hba))
-+		down_read(&hba->clk_scaling_lock);
- 
- 	lrbp = &hba->lrb[tag];
- 	WARN_ON(lrbp->cmd);
-@@ -2998,7 +2999,8 @@ static int ufshcd_exec_dev_cmd(struct ufs_hba *hba,
- 				    (struct utp_upiu_req *)lrbp->ucd_rsp_ptr);
- 
- out:
--	up_read(&hba->clk_scaling_lock);
-+	if (ufshcd_is_clkscaling_supported(hba))
-+		up_read(&hba->clk_scaling_lock);
- 	return err;
- }
- 
-@@ -6014,7 +6016,8 @@ static void ufshcd_err_handling_prepare(struct ufs_hba *hba)
- 		if (ufshcd_is_clkscaling_supported(hba) &&
- 		    hba->clk_scaling.is_enabled)
- 			ufshcd_suspend_clkscaling(hba);
--		ufshcd_clk_scaling_allow(hba, false);
-+		if (ufshcd_is_clkscaling_supported(hba))
-+			ufshcd_clk_scaling_allow(hba, false);
- 	}
- 	ufshcd_scsi_block_requests(hba);
- 	/* Drain ufshcd_queuecommand() */
-@@ -6247,7 +6250,8 @@ static void ufshcd_err_handler(struct work_struct *work)
- 		 * Hold the scaling lock just in case dev cmds
- 		 * are sent via bsg and/or sysfs.
- 		 */
--		down_write(&hba->clk_scaling_lock);
-+		if (ufshcd_is_clkscaling_supported(hba))
-+			down_write(&hba->clk_scaling_lock);
- 		hba->force_pmc = true;
- 		pmc_err = ufshcd_config_pwr_mode(hba, &(hba->pwr_info));
- 		if (pmc_err) {
-@@ -6257,7 +6261,8 @@ static void ufshcd_err_handler(struct work_struct *work)
- 		}
- 		hba->force_pmc = false;
- 		ufshcd_print_pwr_info(hba);
--		up_write(&hba->clk_scaling_lock);
-+		if (ufshcd_is_clkscaling_supported(hba))
-+			up_write(&hba->clk_scaling_lock);
- 		spin_lock_irqsave(hba->host->host_lock, flags);
- 	}
- 
-@@ -6753,7 +6758,8 @@ static int ufshcd_issue_devman_upiu_cmd(struct ufs_hba *hba,
- 	/* Protects use of hba->reserved_slot. */
- 	lockdep_assert_held(&hba->dev_cmd.lock);
- 
--	down_read(&hba->clk_scaling_lock);
-+	if (ufshcd_is_clkscaling_supported(hba))
-+		down_read(&hba->clk_scaling_lock);
- 
- 	lrbp = &hba->lrb[tag];
- 	WARN_ON(lrbp->cmd);
-@@ -6822,7 +6828,8 @@ static int ufshcd_issue_devman_upiu_cmd(struct ufs_hba *hba,
- 	ufshcd_add_query_upiu_trace(hba, err ? UFS_QUERY_ERR : UFS_QUERY_COMP,
- 				    (struct utp_upiu_req *)lrbp->ucd_rsp_ptr);
- 
--	up_read(&hba->clk_scaling_lock);
-+	if (ufshcd_is_clkscaling_supported(hba))
-+		up_read(&hba->clk_scaling_lock);
- 	return err;
- }
- 
+TCP is more complex, so I left it in the next series.
+
+I just figure out how __print_symbolic() works. It doesn't base on the
+array index, but searching for symbols by loop. So I'm a little afraid
+it's performance.
+
+Changes since v3:
+- fix some small problems in the third patch (net: ipv4: use
+  kfree_skb_reason() in ip_rcv_core()), as David Ahern said
+
+Changes since v2:
+- use SKB_DROP_REASON_PKT_TOO_SMALL for a path in ip_rcv_core()
+
+Changes since v1:
+- add document for all drop reasons, as David advised
+- remove unreleated cleanup
+- remove EARLY_DEMUX and IP_ROUTE_INPUT drop reason
+- replace {UDP, TCP}_FILTER with SOCKET_FILTER
+
+
+Alex Elder (6):
+  net: ipa: allocate transaction in replenish loop
+  net: ipa: don't use replenish_backlog
+  net: ipa: introduce gsi_channel_trans_idle()
+  net: ipa: kill replenish_backlog
+  net: ipa: replenish after delivering payload
+  net: ipa: determine replenish doorbell differently
+
+Menglong Dong (1):
+  net: drop_monitor: support drop reason
+
 -- 
-2.7.4
+2.27.0
 
