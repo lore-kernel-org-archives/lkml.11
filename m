@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E9D8C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 18:56:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 175E0C43219
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 18:56:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381640AbiBES4a (ORCPT
+        id S1381731AbiBES45 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 13:56:30 -0500
-Received: from relay10.mail.gandi.net ([217.70.178.230]:36681 "EHLO
+        Sat, 5 Feb 2022 13:56:57 -0500
+Received: from relay10.mail.gandi.net ([217.70.178.230]:44739 "EHLO
         relay10.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381062AbiBESzG (ORCPT
+        with ESMTP id S1357192AbiBESzb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 13:55:06 -0500
+        Sat, 5 Feb 2022 13:55:31 -0500
 Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 5B9A524000D;
-        Sat,  5 Feb 2022 18:55:04 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 3CE6E240004;
+        Sat,  5 Feb 2022 18:55:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1644087305;
+        t=1644087329;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=MhiHRsL0yzLC6uTSUm3nvN8Ru2hsN0kI74zny5+cDl8=;
-        b=j+3HtCvcG9gSCcg2FQRozNh5VNadHeSPWdGynVvoRq8tSj5LmTNEggJ61PRSFeRslMjQu+
-        yjetcJBiAB4PUlt0tb0UyO6snuYkvIVYLWhxKtAnlvtfK4VB2Whg5aoEXRgByjwfLAV1l0
-        rcL7sC2dTBE3Ga7b/MfH7J9ph/i52qHypEBt/LIcMznV39pCFHIbFBgwf9gTR3yGpj+wri
-        EaEPmsCIYrO1vaG820iUdMiuvLYOk0SHRaRwXeotZ+GKs/ebBdQ3Brl7O6DdFCcLxjvs6J
-        o5/bPYt0f7qx3Y+T7Kp8DqF4JBZI2qD8rl0xLqOHifeVNKMU67oAOSoFZeE6iQ==
+        bh=aoT5FIIERp7lgQaWfQERGBqlEF8kPpVGe2H5GlAjDAU=;
+        b=MbZlqpo+b00Hh2nbKGCBM48X6DDgk5MJERBY7APh+BptuWLVJi517xPlSh84ex+VPGwM0w
+        tHsquib6dgR0hZ+MYjwXhnw6o+Fgls6v58oY03jOZNNPiyBKPqPMclbXah7kztSt50Xc7C
+        4F2sZagSjTgrcm/Rv9jJ3bAB6zP2xOWvOxMqIgnG7UTfdGHrLKSVkPbLxKDAQx8P66IYVc
+        EJJvE8YTWMtUBSdswLBJcIdpiXZ/H4rVjKma+sFXxPYs3QwaN+fuytbmTwEjjnPxj587Ay
+        fiNWHCPEbXu9ng4HX0ww+rX7CnXeOPPLt68RXSJaCcNreWQjGYL/WmNjeIpgtA==
 From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
 To:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
@@ -46,9 +46,9 @@ Cc:     Yong Deng <yong.deng@magewell.com>,
         Helen Koike <helen.koike@collabora.com>,
         Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: [PATCH v2 15/66] ARM: dts: sun8i: a83t: Add MIPI CSI-2 controller node
-Date:   Sat,  5 Feb 2022 19:53:38 +0100
-Message-Id: <20220205185429.2278860-16-paul.kocialkowski@bootlin.com>
+Subject: [PATCH v2 29/66] media: sun6i-csi: Move csi buffer definition to main header file
+Date:   Sat,  5 Feb 2022 19:53:52 +0100
+Message-Id: <20220205185429.2278860-30-paul.kocialkowski@bootlin.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com>
 References: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com>
@@ -58,55 +58,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-MIPI CSI-2 is supported on the A83T with a dedicated controller that
-covers both the protocol and D-PHY. It can be connected to the CSI
-interface as a V4L2 subdev through the fwnode graph.
-
-This is not done by default since connecting the bridge without a
-subdev attached to it will cause a failure on the CSI driver.
+The buffer structure is a top-level definition, put it in the main header
+to keep things tidy. No functional change intended.
 
 Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
 ---
- arch/arm/boot/dts/sun8i-a83t.dtsi | 26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+ drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h   | 9 +++++++++
+ drivers/media/platform/sunxi/sun6i-csi/sun6i_video.c | 8 --------
+ 2 files changed, 9 insertions(+), 8 deletions(-)
 
-diff --git a/arch/arm/boot/dts/sun8i-a83t.dtsi b/arch/arm/boot/dts/sun8i-a83t.dtsi
-index 82fdb04122ca..ecf9f3b2c0c0 100644
---- a/arch/arm/boot/dts/sun8i-a83t.dtsi
-+++ b/arch/arm/boot/dts/sun8i-a83t.dtsi
-@@ -1064,6 +1064,32 @@ csi: camera@1cb0000 {
- 			status = "disabled";
- 		};
+diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h
+index 356661b413f8..4dd83e57bafa 100644
+--- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h
++++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h
+@@ -11,12 +11,21 @@
+ #include <media/v4l2-ctrls.h>
+ #include <media/v4l2-device.h>
+ #include <media/v4l2-fwnode.h>
++#include <media/videobuf2-v4l2.h>
  
-+		mipi_csi2: csi@1cb1000 {
-+			compatible = "allwinner,sun8i-a83t-mipi-csi2";
-+			reg = <0x01cb1000 0x1000>;
-+			interrupts = <GIC_SPI 83 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&ccu CLK_BUS_CSI>,
-+				 <&ccu CLK_CSI_SCLK>,
-+				 <&ccu CLK_MIPI_CSI>,
-+				 <&ccu CLK_CSI_MISC>;
-+			clock-names = "bus", "mod", "mipi", "misc";
-+			resets = <&ccu RST_BUS_CSI>;
-+			status = "disabled";
+ #include "sun6i_video.h"
+ 
+ #define SUN6I_CSI_NAME		"sun6i-csi"
+ #define SUN6I_CSI_DESCRIPTION	"Allwinner A31 CSI Device"
+ 
++struct sun6i_csi_buffer {
++	struct vb2_v4l2_buffer		v4l2_buffer;
++	struct list_head		list;
 +
-+			ports {
-+				#address-cells = <1>;
-+				#size-cells = <0>;
++	dma_addr_t			dma_addr;
++	bool				queued_to_csi;
++};
 +
-+				mipi_csi2_in: port@0 {
-+					reg = <0>;
-+				};
-+
-+				mipi_csi2_out: port@1 {
-+					reg = <1>;
-+				};
-+			};
-+		};
-+
- 		hdmi: hdmi@1ee0000 {
- 			compatible = "allwinner,sun8i-a83t-dw-hdmi";
- 			reg = <0x01ee0000 0x10000>;
+ /**
+  * struct sun6i_csi_config - configs for sun6i csi
+  * @pixelformat: v4l2 pixel format (V4L2_PIX_FMT_*)
+diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_video.c b/drivers/media/platform/sunxi/sun6i-csi/sun6i_video.c
+index 6f5470a6859d..d32ff6b81f8a 100644
+--- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_video.c
++++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_video.c
+@@ -23,14 +23,6 @@
+ #define MAX_WIDTH	(4800)
+ #define MAX_HEIGHT	(4800)
+ 
+-struct sun6i_csi_buffer {
+-	struct vb2_v4l2_buffer		v4l2_buffer;
+-	struct list_head		list;
+-
+-	dma_addr_t			dma_addr;
+-	bool				queued_to_csi;
+-};
+-
+ /* Helpers */
+ 
+ static struct v4l2_subdev *
 -- 
 2.34.1
 
