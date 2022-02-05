@@ -2,25 +2,25 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5088C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6133C4332F
 	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 11:38:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355816AbiBELiD (ORCPT
+        id S1348668AbiBELiB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 06:38:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56174 "EHLO
+        Sat, 5 Feb 2022 06:38:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343636AbiBELhz (ORCPT
+        with ESMTP id S1344326AbiBELh4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 06:37:55 -0500
+        Sat, 5 Feb 2022 06:37:56 -0500
 Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C77F5C061353
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2C84C061348
         for <linux-kernel@vger.kernel.org>; Sat,  5 Feb 2022 03:37:53 -0800 (PST)
 Received: from dslb-188-104-059-100.188.104.pools.vodafone-ip.de ([188.104.59.100] helo=martin-debian-2.paytec.ch)
         by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.89)
         (envelope-from <martin@kaiser.cx>)
-        id 1nGJO2-0005c9-22; Sat, 05 Feb 2022 12:37:50 +0100
+        id 1nGJNy-0005c9-8h; Sat, 05 Feb 2022 12:37:46 +0100
 From:   Martin Kaiser <martin@kaiser.cx>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
@@ -28,65 +28,45 @@ Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
         Michael Straube <straube.linux@gmail.com>,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 3/8] staging: r8188eu: bTXPowerTrackingInit is set but not used
-Date:   Sat,  5 Feb 2022 12:37:36 +0100
-Message-Id: <20220205113741.379070-4-martin@kaiser.cx>
+Subject: [PATCH 0/8] staging: r8188eu: more rf cleanups
+Date:   Sat,  5 Feb 2022 12:37:33 +0100
+Message-Id: <20220205113741.379070-1-martin@kaiser.cx>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220205113741.379070-1-martin@kaiser.cx>
-References: <20220205113741.379070-1-martin@kaiser.cx>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-bTXPowerTrackingInit in struct odm_rf_cal is set but not used.
-Remove it.
+Here's another set with cleanups of the rf configuration code.
 
-Signed-off-by: Martin Kaiser <martin@kaiser.cx>
----
- drivers/staging/r8188eu/hal/HalPhyRf_8188e.c | 2 --
- drivers/staging/r8188eu/hal/odm.c            | 1 -
- drivers/staging/r8188eu/include/odm.h        | 1 -
- 3 files changed, 4 deletions(-)
+The last of the patches is "testing the water". It seems that this driver
+uses only RF_PATH_A and we can eventually drop all RF_PATH_B handling. At
+the moment, the only way to access RF_PATH_B registers is via private
+ioctls. I'd like to restrict them to path A.
 
-diff --git a/drivers/staging/r8188eu/hal/HalPhyRf_8188e.c b/drivers/staging/r8188eu/hal/HalPhyRf_8188e.c
-index 2ce777ac041a..c26c87e5cb78 100644
---- a/drivers/staging/r8188eu/hal/HalPhyRf_8188e.c
-+++ b/drivers/staging/r8188eu/hal/HalPhyRf_8188e.c
-@@ -129,8 +129,6 @@ odm_TXPowerTrackingCallback_ThermalMeter_8188E(
- 	/*  2012/04/25 MH Add for tx power tracking to set tx power in tx agc for 88E. */
- 	odm_TxPwrTrackSetPwr88E(dm_odm);
- 
--	dm_odm->RFCalibrateInfo.bTXPowerTrackingInit = true;
--
- 	/*  <Kordan> RFCalibrateInfo.RegA24 will be initialized when ODM HW configuring, but MP configures with para files. */
- 	dm_odm->RFCalibrateInfo.RegA24 = 0x090e1317;
- 
-diff --git a/drivers/staging/r8188eu/hal/odm.c b/drivers/staging/r8188eu/hal/odm.c
-index 117cdf2e5180..e3bace2e3713 100644
---- a/drivers/staging/r8188eu/hal/odm.c
-+++ b/drivers/staging/r8188eu/hal/odm.c
-@@ -506,7 +506,6 @@ static void odm_RSSIMonitorCheck(struct odm_dm_struct *pDM_Odm)
- static void odm_TXPowerTrackingThermalMeterInit(struct odm_dm_struct *pDM_Odm)
- {
- 	pDM_Odm->RFCalibrateInfo.bTXPowerTracking = true;
--	pDM_Odm->RFCalibrateInfo.bTXPowerTrackingInit = false;
- 	pDM_Odm->RFCalibrateInfo.TxPowerTrackControl = true;
- }
- 
-diff --git a/drivers/staging/r8188eu/include/odm.h b/drivers/staging/r8188eu/include/odm.h
-index 2844ca96d3ba..47b347fe1da0 100644
---- a/drivers/staging/r8188eu/include/odm.h
-+++ b/drivers/staging/r8188eu/include/odm.h
-@@ -229,7 +229,6 @@ struct odm_rf_cal {
- 	s32	RegEB4;
- 	s32	RegEBC;
- 
--	bool	bTXPowerTrackingInit;
- 	bool	bTXPowerTracking;
- 	u8	TxPowerTrackControl; /* for mp mode, turn off txpwrtracking
- 				      * as default */
+As usual, this series was t ested with EdimaxV2 on an arm32 embedded system.
+
+Martin Kaiser (8):
+  staging: r8188eu: TXPowercount is set but not used
+  staging: r8188eu: TXPowerTrackingCallbackCnt is set but not used
+  staging: r8188eu: bTXPowerTrackingInit is set but not used
+  staging: r8188eu: bTXPowerTracking is set but not used
+  staging: r8188eu: remove constant rf variable
+  staging: r8188eu: RfRegChnlVal[1] is set but not used
+  staging: r8188eu: use a define for the radio path
+  staging: r8188eu: limit rf register writes to path a
+
+ drivers/staging/r8188eu/hal/HalPhyRf_8188e.c  | 24 ++++++-------------
+ drivers/staging/r8188eu/hal/odm.c             |  3 ---
+ drivers/staging/r8188eu/hal/rtl8188e_phycfg.c |  4 ++--
+ drivers/staging/r8188eu/hal/rtl8188e_rf6052.c |  8 +++----
+ drivers/staging/r8188eu/hal/usb_halinit.c     |  3 +--
+ drivers/staging/r8188eu/include/odm.h         |  4 ----
+ .../staging/r8188eu/include/rtl8188e_hal.h    |  2 +-
+ drivers/staging/r8188eu/os_dep/ioctl_linux.c  |  3 +++
+ 8 files changed, 18 insertions(+), 33 deletions(-)
+
 -- 
 2.30.2
 
