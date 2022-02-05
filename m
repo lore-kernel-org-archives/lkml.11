@@ -2,67 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38BB0C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 04:23:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E2A6C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 04:30:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379313AbiBEEXm (ORCPT
+        id S1379329AbiBEEaN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 23:23:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40538 "EHLO
+        Fri, 4 Feb 2022 23:30:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229969AbiBEEXk (ORCPT
+        with ESMTP id S229969AbiBEEaK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 23:23:40 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F03BC061346;
-        Fri,  4 Feb 2022 20:23:39 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A291B60C09;
-        Sat,  5 Feb 2022 04:23:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B5F1C340E8;
-        Sat,  5 Feb 2022 04:23:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644035018;
-        bh=Km4Gf2o96xkrOTnzGLNM3TPm20MY3a75gjtczbbLqlA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=U+lYCxLzGNllz10pLju7aE3TQ8Xq2fkvReNEIrLGG5xC16999lXowFW3kVlq3mPwT
-         snQojXnzbhCxx43NSpXFeSlramgC1IoENbTzsZ+qxbudjBgoBvU/rJiS+izl4OQgwS
-         PL7eDIMZbNYpoZE+dkW2eajWUk5eAKQdSp+WgUzOSdysfEVk4iSVDDYnT7iGy9FqkA
-         64LoAZ110Mm3Da10FKyKAkbl7BjTlaFBOA/szd7GILgUANLDnNVvv4k773kMET5qWJ
-         F6irxMM15TkZ/o+V+mUnY6CSiZLCktJ6b58YX3Hvp7rLkms2Ber0ehPJicy34/1mNS
-         v9EkBJgOzyM5w==
-Date:   Fri, 4 Feb 2022 20:23:36 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Alex Elder <elder@linaro.org>
-Cc:     davem@davemloft.net, djakov@kernel.org, bjorn.andersson@linaro.org,
-        mka@chromium.org, evgreen@chromium.org, cpratapa@codeaurora.org,
-        avuyyuru@codeaurora.org, jponduru@codeaurora.org,
-        subashab@codeaurora.org, elder@kernel.org, netdev@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 3/7] net: ipa: use interconnect bulk
- enable/disable operations
-Message-ID: <20220204202336.67c95e15@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220204195044.1082026-4-elder@linaro.org>
-References: <20220204195044.1082026-1-elder@linaro.org>
-        <20220204195044.1082026-4-elder@linaro.org>
+        Fri, 4 Feb 2022 23:30:10 -0500
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E736C061346;
+        Fri,  4 Feb 2022 20:30:09 -0800 (PST)
+Received: by mail-pj1-x1033.google.com with SMTP id p22-20020a17090adf9600b001b8783b2647so1721102pjv.5;
+        Fri, 04 Feb 2022 20:30:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:to:cc:references
+         :from:in-reply-to:content-transfer-encoding;
+        bh=ULZ4mupthaZMgaibmp4OG2WYJdz6Bd+6gS+dmGIdwTQ=;
+        b=j9qAotRGY/7fKs3UWaQ0fpx+2aDAmtUO0BCb56HWk4grGDuMdZWibXN6onB7r2P8Th
+         RECzjqwUdgYy6uiMNAg/lBekmZZaoRPvC/mcCwr+7TXz1USNal5osLtyRjw3Pwdy7PXk
+         9mS6bbubtRkGWVbicwUfr7GPE/i5OhbfiDHqlVAnUi8uDdlnbbrMYeNHQY9yInFqnWQ9
+         HtkttX+YapE6mZaahJ3668jxF/bKAglpcFT7WS/iaMVeMp81VvslfJVD6pX1Ba99kU2Y
+         Qf0c+CbkXWRxAl6JbJW5jfz+kE444tL6UF5fQnxhjT00u5r7JSN0eAzYnh/E4RLhNQ6p
+         18ug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :to:cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ULZ4mupthaZMgaibmp4OG2WYJdz6Bd+6gS+dmGIdwTQ=;
+        b=qSoezHZdIxfVMqyyqpXgVeydFFyjn9pp9xfC2rrKZMvuumcAbl+rAOWv8LY9s2QCdK
+         FpupyoNurYrxWAMnVrCnxSOm1GUx79DZC5JoQ6ygdwhxRn1sCU5lPD0LB2ACZlidiqv7
+         Ha5EmzhSHWX5wGDrCbza2ETkJGt1NDIGIeR7nXvS/FQf5KTWlFdjf5RoVP/SxdXmu5kx
+         3luLL8R8h71APoTUcIIqll/QqfXJtKemhT5i6u+B6TD9aSwIpYbaKC5cQn4lJp4k28Rk
+         htava9Vt8zVS0hwkiOM3y/Qm41PbbsAoCwkqej/F+5ezrM2c3soqXqs5NIPr1YSK5XbR
+         sN0w==
+X-Gm-Message-State: AOAM532vYbJrCmwZV+vkxAz5IExXWKQmu0LACHvTEB7uBHMXd7Tp9BBB
+        Rr8QKYe4wFJImVY6ppKNcpE=
+X-Google-Smtp-Source: ABdhPJwJX1Az1UyBa9GY+1a1lB82aokfjMozL/I3PzEefaueVHighT1EcehoNrH//oPTBaUPO8SHHA==
+X-Received: by 2002:a17:902:8504:: with SMTP id bj4mr6593706plb.108.1644035408882;
+        Fri, 04 Feb 2022 20:30:08 -0800 (PST)
+Received: from [10.200.0.14] ([85.203.23.14])
+        by smtp.gmail.com with ESMTPSA id h27sm2776413pgb.20.2022.02.04.20.30.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 04 Feb 2022 20:30:08 -0800 (PST)
+Message-ID: <97667b25-11e6-d918-2468-2cf17532c3ad@gmail.com>
+Date:   Sat, 5 Feb 2022 12:30:03 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [BUG] tty: serial: possible deadlock in uart_remove_one_port()
+ and uart_hangup()
+To:     Hillf Danton <hdanton@sina.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>, jirislaby@kernel.org,
+        linux-serial@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+References: <ab5d9322-6bea-9845-c61b-fb68e3bb3a87@gmail.com>
+ <YfUPlYwoWpMjhvpR@kroah.com> <20220201090740.3816-1-hdanton@sina.com>
+From:   Jia-Ju Bai <baijiaju1990@gmail.com>
+In-Reply-To: <20220201090740.3816-1-hdanton@sina.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri,  4 Feb 2022 13:50:40 -0600 Alex Elder wrote:
-> The power interconnect array is now an array of icc_bulk_data
-> structures, which is what the interconnect bulk enable and disable
-> functions require.
-> 
-> Get rid of ipa_interconnect_enable() and ipa_interconnect_disable(),
-> and just call icc_bulk_enable() and icc_bulk_disable() instead.
-> 
-> Signed-off-by: Alex Elder <elder@linaro.org>
 
-We got a kbuild bot complaint here, for some reason off-list.
-Let me drop it from PW for now.
+
+On 2022/2/1 17:07, Hillf Danton wrote:
+> On Tue, 1 Feb 2022 14:51:09 +0800 Jia-Ju Bai wrote:
+>> On 2022/1/29 17:57, Greg KH wrote:
+>>> On Sat, Jan 29, 2022 at 05:34:05PM +0800, Jia-Ju Bai wrote:
+>>>> Hello,
+>>>>
+>>>> My static analysis tool reports a possible deadlock in the tty driver in
+>>>> Linux 5.10:
+>>> 5.10 was released over a year ago and over 100 thousand changes ago.
+>>> Please redo your check on 5.16 at the oldest.
+>> My static analysis tool checks the tty driver in Linux 5.16, and also
+>> finds this possible deadlock:
+>>
+>> uart_remove_one_port()
+>>     mutex_lock(&port->mutex); --> Line 3032 (Lock A)
+>>     wait_event(state->remove_wait, ...); --> Line 3034 (Wait X)
+>>     mutex_unlock(&port->mutex); --> Line 3036 (Unlock A)
+>>
+>> uart_hangup()
+>>     mutex_lock(&port->mutex); --> Line 1669 (Lock A)
+>>     uart_flush_buffer()
+>>       uart_port_unlock()
+>>         uart_port_deref()
+>>           wake_up(&uport->state->remove_wait); --> Line 68 (Wake X)
+>>     mutex_unlock(&port->mutex); --> Line 1686 (Unlock A)
+>>
+>> When uart_remove_one_port() is executed, "Wait X" is performed by
+>> holding "Lock A". If uart_hangup() is executed at this time, "Wake X"
+>> cannot be performed to wake up "Wait X" in uart_remove_one_port(),
+>> because "Lock A" has been already hold by uart_remove_one_port(),
+>> causing a possible deadlock.
+>>
+>> I am not quite sure whether this possible problem is real and how to fix
+>> it if it is real.
+>> Maybe we can call wait_event() before mutex_lock() in
+>> uart_remove_one_port().
+>> Any feedback would be appreciated, thanks :)
+>>
+>>
+>> Best wishes,
+>> Jia-Ju Bai
+> Hey Jia-Ju
+>
+> Thank you for reporting it.
+>
+> In uart_flush_buffer(), uart_port_unlock() pairs with uart_port_lock()
+> which bumps refcount up. OTOH no wakep is needed without refcount
+> incremented, so the wakeup above in the hangup path is not waited for
+> in the remove path.
+
+Hi Hillf,
+
+Thanks for the explanation :)
+So I wonder which wait_event() can be paired with 
+wake_up(&uport->state->remove_wait) in uart_port_deref()?
+
+
+Best wishes,
+Jia-Ju Bai
