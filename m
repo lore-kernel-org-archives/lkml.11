@@ -2,84 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A725C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 16:41:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CFE8C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 16:42:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380404AbiBEQlM (ORCPT
+        id S1380450AbiBEQmU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 11:41:12 -0500
-Received: from smtp08.smtpout.orange.fr ([80.12.242.130]:60282 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244712AbiBEQlK (ORCPT
+        Sat, 5 Feb 2022 11:42:20 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:45634 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234885AbiBEQmR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 11:41:10 -0500
-Received: from pop-os.home ([90.126.236.122])
-        by smtp.orange.fr with ESMTPA
-        id GO7YngGexxHdTGO7YnEdz2; Sat, 05 Feb 2022 17:41:09 +0100
-X-ME-Helo: pop-os.home
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Sat, 05 Feb 2022 17:41:09 +0100
-X-ME-IP: 90.126.236.122
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     Sebastian Reichel <sre@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        linux-pm@vger.kernel.org
-Subject: [PATCH] power: supply: Simplify memory allocation
-Date:   Sat,  5 Feb 2022 17:40:57 +0100
-Message-Id: <c09fc0b84cb046ad31bc1da67607bf0e9fa07085.1644079229.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.32.0
+        Sat, 5 Feb 2022 11:42:17 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5EF68B80B6D;
+        Sat,  5 Feb 2022 16:42:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9993DC340E8;
+        Sat,  5 Feb 2022 16:42:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644079335;
+        bh=F1ISGTsMVFiiRSacnPaEAULWFninCxx3j5837YdbfUc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=OrKd9n5jRTxthiwYiUbnFn/VHdq0K+46VFctXLpRRSgqtkbhR3gJWV5npZwNgJlfL
+         RoWNqcXJDyO1x9P9hkYD34ZiSIb2w0pDxljSVjJB60qcfr+txlz0/+VLk2/HeRxUcR
+         afHTA4RQs4kc7rPVWhiqMTk6PdBhsrVdnuJuw+B8BwQQtIZt9y+vjiKaIoEsXtO7CQ
+         FlI5e4plvMICAhM0VQOtD9ccB7poV3/E2uzVPZVhKBTQrDy4JsG+WmOG0s2jRm+Pc2
+         6Ce9Yr7ZZ5bs1WxzWG8kh5ks27r2KQmq/69mCvBPdHPBaogIbBvvn+X6A2jWuL2Vi7
+         jByjwM2DXYDNA==
+Date:   Sat, 5 Feb 2022 16:48:46 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Guenter Roeck <linux@roeck-us.net>, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH v1 1/1] iio: chemical: bme680: Switch from of headers to
+ mod_devicetable.h
+Message-ID: <20220205164846.72a1868e@jic23-huawei>
+In-Reply-To: <20220203122725.75939-1-andriy.shevchenko@linux.intel.com>
+References: <20220203122725.75939-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use devm_bitmap_zalloc() instead of hand writing it.
+On Thu,  3 Feb 2022 14:27:25 +0200
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
- drivers/power/supply/power_supply_hwmon.c | 15 +++------------
- 1 file changed, 3 insertions(+), 12 deletions(-)
+> There is nothing directly using of specific interfaces in this driver,
+> so lets not include the headers.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Applied,
 
-diff --git a/drivers/power/supply/power_supply_hwmon.c b/drivers/power/supply/power_supply_hwmon.c
-index bffe6d84c429..a48aa4afb828 100644
---- a/drivers/power/supply/power_supply_hwmon.c
-+++ b/drivers/power/supply/power_supply_hwmon.c
-@@ -324,11 +324,6 @@ static const struct hwmon_chip_info power_supply_hwmon_chip_info = {
- 	.info = power_supply_hwmon_info,
- };
- 
--static void power_supply_hwmon_bitmap_free(void *data)
--{
--	bitmap_free(data);
--}
--
- int power_supply_add_hwmon_sysfs(struct power_supply *psy)
- {
- 	const struct power_supply_desc *desc = psy->desc;
-@@ -349,18 +344,14 @@ int power_supply_add_hwmon_sysfs(struct power_supply *psy)
- 	}
- 
- 	psyhw->psy = psy;
--	psyhw->props = bitmap_zalloc(POWER_SUPPLY_PROP_TIME_TO_FULL_AVG + 1,
--				     GFP_KERNEL);
-+	psyhw->props = devm_bitmap_zalloc(dev,
-+					  POWER_SUPPLY_PROP_TIME_TO_FULL_AVG + 1,
-+					  GFP_KERNEL);
- 	if (!psyhw->props) {
- 		ret = -ENOMEM;
- 		goto error;
- 	}
- 
--	ret = devm_add_action_or_reset(dev, power_supply_hwmon_bitmap_free,
--			      psyhw->props);
--	if (ret)
--		goto error;
--
- 	for (i = 0; i < desc->num_properties; i++) {
- 		const enum power_supply_property prop = desc->properties[i];
- 
--- 
-2.32.0
+Thanks,
+
+Jonathan
+
+> ---
+>  drivers/iio/chemical/bme680_spi.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/chemical/bme680_spi.c b/drivers/iio/chemical/bme680_spi.c
+> index cc579a7ac5ce..0a064a395178 100644
+> --- a/drivers/iio/chemical/bme680_spi.c
+> +++ b/drivers/iio/chemical/bme680_spi.c
+> @@ -4,8 +4,8 @@
+>   *
+>   * Copyright (C) 2018 Himanshu Jha <himanshujha199640@gmail.com>
+>   */
+> +#include <linux/mod_devicetable.h>
+>  #include <linux/module.h>
+> -#include <linux/of.h>
+>  #include <linux/regmap.h>
+>  #include <linux/spi/spi.h>
+>  
 
