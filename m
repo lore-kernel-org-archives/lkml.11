@@ -2,112 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E18BC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 10:29:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05A81C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 10:35:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379688AbiBEK3A (ORCPT
+        id S1345323AbiBEKfN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 05:29:00 -0500
-Received: from wout2-smtp.messagingengine.com ([64.147.123.25]:59569 "EHLO
-        wout2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233088AbiBEK27 (ORCPT
+        Sat, 5 Feb 2022 05:35:13 -0500
+Received: from isilmar-4.linta.de ([136.243.71.142]:58130 "EHLO
+        isilmar-4.linta.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233028AbiBEKfL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 05:28:59 -0500
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.west.internal (Postfix) with ESMTP id 893B73200BD2;
-        Sat,  5 Feb 2022 05:28:58 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute1.internal (MEProxy); Sat, 05 Feb 2022 05:28:59 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm2; bh=kDIVNzj7Wmv2um
-        X4p4+USo9n563udVzIVi1lCU9eBZc=; b=hdDALldVe6+S/QPKYThCWr9wp/sddm
-        ozGHp8eHCO+O+3eyOxcuWnVcaHVU0btXIBy5wmMvUuZp1byAzP4MVm0xrplNwyr5
-        ChBJEVr4XEcDAUuaR80u2auxRRbm7n9ozIJJrbatdaeLGuOQOMc9Kkin5z/mEo/b
-        Nhuu2YaBk9MV5V2VrhOXoO0M/YoPMXjWr6YruYGrMWZlGm933yLzl01qWzokmWiL
-        5m9A7SQwVqU1YeaZrU3XOwwT3Zhls6DoiFVW3b22gIzlYkfZu0JKi1WyxLuiIN5r
-        nhWdM+bfNI5Zt0ATUtbVpWvZs6wFKH7ZDQgo9WuEXd/hBCanQC4qAIwQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm2; bh=kDIVNzj7Wmv2umX4p4+USo9n563udVzIVi1lCU9eB
-        Zc=; b=Seku+8XrNnyp/Jl+m462wmfmYKcsMxjPAshO7AGHuhsFz0frJVC3YBT6w
-        SWmO4FKUBharAWxlDG1nVzEoAyHlLcfURlhqRMjfJe7xCp4HkhpxDVGS1Lfg+qx7
-        kGtJz0EXTlPe5909vYZx7pB4356I00ICm/pncsI+YFwQB9celWstwhONrW2s0t/y
-        9Bg4I4eNUTLoieCt9McLkDkCJZybYdKaDOfumHr7H1tH6pACJAfPwH/5ntw4DWZF
-        sXJPH3PPxu1ugdxlbu5ml+1hvw9Ox6Lfd/dsHGb4DW6+CaQ/dqAPOkX/7FtC1euE
-        aklyppyMvZt/V505WlSpBSrh2JDlQ==
-X-ME-Sender: <xms:aVH-Ya8lU-te0HbneRWha2h86S8WIjZ0XWDdvyjrdm5h_trw-zeOiw>
-    <xme:aVH-YathjK3Jteh-eNMxNYbp_i6OgU1EwMWOdhMq9qsUK8cwLcysLEBe_riyeIVFQ
-    aD0EXTQZ-bjKTXWcoM>
-X-ME-Received: <xmr:aVH-YQCQiU9jhIYug_i98FdGdZIxXiVIZx_yWhJlp93czYNyaPWqDQfYuzJhjiYJaPuyF1Ol0YEd1at0vAZ298DYsaA7sQHBCq3c2dw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrhedugddujecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggugfgjsehtqhertddttdejnecuhfhrohhmpeforgigihhm
-    vgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrth
-    htvghrnhepgfejjeekjedttdethedtfeelteefffduvdevvdfhtdeiudetleejgeelfeef
-    uedvnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmh
-    grgihimhgvsegtvghrnhhordhtvggthh
-X-ME-Proxy: <xmx:aVH-YSe81XnDWXCNubtmtEbXYS8ajf5nVZyAg6RRtgk_Y5G2oz1WYg>
-    <xmx:aVH-YfPqQ2kRi3_Nmf3zsJI-nMsz4flxH-2BL5P0qxMcn1jbkzVBbw>
-    <xmx:aVH-Ycn366n9gyzlkRLv_7iNmnC-irmo95TlKSYVRk_5u90OC2FMnw>
-    <xmx:alH-YaesTX34_qQChH6ZwNwT0Uq0xAy6ZDAOgDz8VmS_wOCsY-QCnQ>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sat,
- 5 Feb 2022 05:28:56 -0500 (EST)
-Date:   Sat, 5 Feb 2022 11:28:53 +0100
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     Jernej =?utf-8?Q?=C5=A0krabec?= <jernej.skrabec@gmail.com>
-Cc:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
-        mchehab@kernel.org, wens@csie.org, linux-media@vger.kernel.org,
-        linux-staging@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] media: cedrus: Add watchdog for job completion
-Message-ID: <20220205102853.54wcmxzalb7uj7n6@houat>
-References: <20220201183324.493542-1-jernej.skrabec@gmail.com>
- <YfztZE8ymJ5RERTq@aptenodytes>
- <12946098.uLZWGnKmhe@jernej-laptop>
+        Sat, 5 Feb 2022 05:35:11 -0500
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
+Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
+        by isilmar-4.linta.de (Postfix) with ESMTPSA id 84A57200C43;
+        Sat,  5 Feb 2022 10:35:10 +0000 (UTC)
+Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
+        id A7574811AC; Sat,  5 Feb 2022 11:35:06 +0100 (CET)
+From:   Dominik Brodowski <linux@dominikbrodowski.net>
+To:     "Jason A . Donenfeld" <Jason@zx2c4.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org
+Subject: [PATCH 1/2] random: fix locking in crng_fast_load()
+Date:   Sat,  5 Feb 2022 11:34:57 +0100
+Message-Id: <20220205103458.133386-2-linux@dominikbrodowski.net>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220205103458.133386-1-linux@dominikbrodowski.net>
+References: <20220205103458.133386-1-linux@dominikbrodowski.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <12946098.uLZWGnKmhe@jernej-laptop>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Feb 05, 2022 at 08:40:21AM +0100, Jernej =C5=A0krabec wrote:
-> > > +void cedrus_watchdog(struct work_struct *work)
-> > > +{
-> > > +	struct cedrus_dev *dev;
-> > > +	struct cedrus_ctx *ctx;
-> > > +
-> > > +	dev =3D container_of(to_delayed_work(work),
-> > > +			   struct cedrus_dev, watchdog_work);
-> > > +
-> > > +	ctx =3D v4l2_m2m_get_curr_priv(dev->m2m_dev);
-> > > +	if (!ctx)
-> > > +		return;
-> > > +
-> > > +	v4l2_err(&dev->v4l2_dev, "frame processing timed out!\n");
-> > > +	reset_control_reset(dev->rstc);
-> >=20
-> > I don't think playing with the reset is the right approach here.
-> > First we don't really know if the reset is shared or not, so this might=
- have
-> > no effect.
->=20
-> AFAIK only few reset lines are shared in all Allwinner SoC, never for Ced=
-rus=20
-> and even then, this is considered as HW issue. So, I'm good with using re=
-set=20
-> line. This principle is also taken from Hantro driver.
+crng_init is protected by primary_crng->lock, so keep holding that lock
+when incrementing crng_init from 0 to 1 in crng_fast_load(). The call to
+pr_notice() can wait until the lock is released; this code path cannot
+be reached twice, as crng_fast_load() aborts early if crng_init > 0.
 
-Also, we got the reset handle through reset_control_get_exclusive, so
-we're guaranteed to be the only user.
+Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
+---
+ drivers/char/random.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-Maxime
+diff --git a/drivers/char/random.c b/drivers/char/random.c
+index 5d7d6e01bbc4..2df08d05e850 100644
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -653,12 +653,13 @@ static size_t crng_fast_load(const u8 *cp, size_t len)
+ 		p[crng_init_cnt % CHACHA_KEY_SIZE] ^= *cp;
+ 		cp++; crng_init_cnt++; len--; ret++;
+ 	}
+-	spin_unlock_irqrestore(&primary_crng.lock, flags);
+ 	if (crng_init_cnt >= CRNG_INIT_CNT_THRESH) {
+ 		invalidate_batched_entropy();
+ 		crng_init = 1;
+-		pr_notice("fast init done\n");
+ 	}
++	spin_unlock_irqrestore(&primary_crng.lock, flags);
++	if (crng_init == 1)
++		pr_notice("fast init done\n");
+ 	return ret;
+ }
+ 
+-- 
+2.35.1
+
