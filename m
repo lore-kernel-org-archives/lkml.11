@@ -2,185 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F905C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 17:40:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96C40C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 17:45:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380778AbiBERkN (ORCPT
+        id S1380785AbiBERpk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 12:40:13 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:33894 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1380769AbiBERkM (ORCPT
+        Sat, 5 Feb 2022 12:45:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57934 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235159AbiBERpj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 12:40:12 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644082812;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=s+XMIPONIeda9RhSsJc9ELak7yslDV8zLw8dyCY9WO4=;
-        b=fG5PTKOJ/arSXnaYo++JCScHX9yaLlmWtUtOjmf0dhGQPz+sm03tn4ib/mRfDc/PUQn5q/
-        /sRwWWnsn24V599rbe1MFDa3acsFS9pxoE1xewQuYq2sWG972RWDe0+kk8fuxvrWDEpitr
-        NKW77KO6xHQhtYoHOPyTK6iW0Xkt6Co=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-486-HuQEbUE4OCyZsJH-x5F1PQ-1; Sat, 05 Feb 2022 12:40:11 -0500
-X-MC-Unique: HuQEbUE4OCyZsJH-x5F1PQ-1
-Received: by mail-wr1-f71.google.com with SMTP id i2-20020adfa502000000b001e30c5ae60fso491889wrb.1
-        for <linux-kernel@vger.kernel.org>; Sat, 05 Feb 2022 09:40:10 -0800 (PST)
+        Sat, 5 Feb 2022 12:45:39 -0500
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED781C061348
+        for <linux-kernel@vger.kernel.org>; Sat,  5 Feb 2022 09:45:37 -0800 (PST)
+Received: by mail-lj1-x230.google.com with SMTP id e17so13350458ljk.5
+        for <linux-kernel@vger.kernel.org>; Sat, 05 Feb 2022 09:45:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:user-agent:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=cRzVy8dQSyjDKFOJ91Sg7KEwkjk8USDTRteVjsR+Cio=;
+        b=jXTEHu9pEoQcJaaekEcxkBtIE95TEMXUJrUo+supNsm02ZlbK4T4S2d6mnWsSDo6Qx
+         PW71oDI8p5fVCZ1SI0nx65QMSNVxLgBjiZFWz/Q7KXPjcZvDI+kyWyLp9aUzzxVYtYTx
+         cUgaIl1D0iHXIj70U5/sO0iI/y4ZCWTcXLpeTSDnjGgm5kXAQp60RnedcPoHJV+3z/o3
+         bYqi0oa19O3rTp98HfHLSu1LlyPrTV06SaTubKhWUA+Msx+IFlGCzEGJj1DIoc0M9YmF
+         LZwhsbAmG33dGdE8pQKmmZB3BzsdG5Xx9nL5r00CYr0PO6qhNx2ODvXrWdQOJDFXramU
+         SeOA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=s+XMIPONIeda9RhSsJc9ELak7yslDV8zLw8dyCY9WO4=;
-        b=w8cXXjE+TIPwMOAepyZtC3cbhYSFTBaM6NdgKNC8RWgZJk+/nlPHhO7Mv+0eHi+COK
-         S0eS2eI5ob0qKGRijjSaamVjiyVd696kelPVpl2GH0L97Xad63rllHEu1uep2UGZSp3C
-         1PuFyMl7qLKkSsczOOFdf5Py9cxRi64vT8bf+cRcAcYOgrz9EMkEh30xlxZD17zv+c+T
-         oRgL6tL+0G5nwEvreh/dshZs9MMJUYeGHfY+VXnfb59ifzwECP8a74ZdYxzivqCwoU+h
-         NjUsfeekBB8lXqpYopZHgpjUX+OXR1o6u8pKey+Ytna5XE8/1iztwy3fW/ig27vO0p7P
-         LXBQ==
-X-Gm-Message-State: AOAM533ZEsgBaI1IslLyGfrpC9aRdiPI1MbVSBW9UgSy4CxjfToQSJF/
-        jvybRHZy0as5DvvyIZ1YGKVK42LaYxtou/YTRb9uCknwYfYjHk5ZCwFAMph2uuVFXovWKFFfT5w
-        vweGLVOcC7PGFtYmvt9yPOIgv
-X-Received: by 2002:adf:eacc:: with SMTP id o12mr3614255wrn.576.1644082809878;
-        Sat, 05 Feb 2022 09:40:09 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzwOCtnvSr9+0ruFVwU6XWZ8NVfXJZicBayON9c+Gj34T6iN20u+eYDTxD526vsLX81bmpGlg==
-X-Received: by 2002:adf:eacc:: with SMTP id o12mr3614243wrn.576.1644082809582;
-        Sat, 05 Feb 2022 09:40:09 -0800 (PST)
-Received: from [192.168.1.102] ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id ay29sm4452119wmb.38.2022.02.05.09.40.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 05 Feb 2022 09:40:09 -0800 (PST)
-Message-ID: <8b87cbc8-4878-b320-9460-dac751f6f0d6@redhat.com>
-Date:   Sat, 5 Feb 2022 18:40:08 +0100
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:user-agent
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=cRzVy8dQSyjDKFOJ91Sg7KEwkjk8USDTRteVjsR+Cio=;
+        b=cYh0q23Yw98rcwB61EXeVd7J093m3HybqRyx1aLoWFOXnLAe+ZRglg6qdF/evZ+aDH
+         b0gespxoPEYYnIbtJ3oXKZWVez4/2UwOg2LzC0pR4/rh7yknUaiWNZ5/BpIvZ9jJXlTN
+         SC1gGDs0zLll8THOHMdTMU7BUrMN79OwSEpiVQFFa6PkZNEPp4GbT0v7IcZQ3Kzd4fwW
+         9WKlAkKeCThVR81RzhnSrAnAG0w/SU7GmwVbJCZVfQp4NpXePpKXCDpW30LWdzkR8yyo
+         6L8ispD0TM2UJBH1vFmhqJvsQJcBfxJ9gQTC0Uq8cm4usy8nCZNbMWac1Q4ZXl+kr3fE
+         7obA==
+X-Gm-Message-State: AOAM533e+ctMcK5bRaWLSXSQoyrW9Jqh5eKIQG4re5hlVAJx9pJIH8+A
+        h+Z4ZRDGOInCt/GOxgXDzuI=
+X-Google-Smtp-Source: ABdhPJz7ogkncJjTXq48mAK0ycccQfH5qE/3wQx/QTci2lK6q525ctJYnswaNihtjmy80MkztqfS7w==
+X-Received: by 2002:a2e:958d:: with SMTP id w13mr3401629ljh.113.1644083136084;
+        Sat, 05 Feb 2022 09:45:36 -0800 (PST)
+Received: from localhost.localdomain (broadband-95-84-228-163.ip.moscow.rt.ru. [95.84.228.163])
+        by smtp.gmail.com with ESMTPSA id k14sm811589ljh.82.2022.02.05.09.45.34
+        (version=TLS1 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
+        Sat, 05 Feb 2022 09:45:35 -0800 (PST)
+Date:   Sat, 5 Feb 2022 20:51:32 +0300
+From:   Alexander Sergeyev <sergeev917@gmail.com>
+To:     Takashi Iwai <tiwai@suse.de>
+Cc:     Jeremy Szu <jeremy.szu@canonical.com>, tiwai@suse.com,
+        "moderated list:SOUND" <alsa-devel@alsa-project.org>,
+        Kailang Yang <kailang@realtek.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        Huacai Chen <chenhuacai@kernel.org>,
+        Jian-Hong Pan <jhp@endlessos.org>,
+        Hui Wang <hui.wang@canonical.com>,
+        PeiSen Hou <pshou@realtek.com>
+Subject: Re: [PATCH 1/4] ALSA: hda/realtek: fix mute/micmute LEDs for HP 855
+ G8
+Message-ID: <20220205175132.ihwp5wlxga4efngl@localhost.localdomain>
+User-Agent: mtt
+References: <20220115152215.kprws5nja2i43qax@localhost.localdomain>
+ <s5hilugw0l0.wl-tiwai@suse.de>
+ <20220119093249.eaxem33bjqjxcher@localhost.localdomain>
+ <20220122190522.ycaygrqcen7d3hj2@localhost.localdomain>
+ <20220122205637.7gzurdu7xl4sthxw@localhost.localdomain>
+ <s5ho83yldu3.wl-tiwai@suse.de>
+ <20220129144704.xlmeylllvy3b3fum@localhost.localdomain>
+ <20220130111020.44gzrm5ckrakjta2@localhost.localdomain>
+ <s5htudk9cn3.wl-tiwai@suse.de>
+ <20220205150016.gvrst7ldvgjh7fra@localhost.localdomain>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 2/4] drm/tiny: Add driver for Solomon SSD130X OLED
- displays
-Content-Language: en-US
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        linux-fbdev@vger.kernel.org, Sam Ravnborg <sam@ravnborg.org>,
-        dri-devel@lists.freedesktop.org,
-        =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        linux-pwm@vger.kernel.org
-References: <20220204134347.1187749-1-javierm@redhat.com>
- <20220204134347.1187749-3-javierm@redhat.com>
- <Yf03sCSuQwHKvgA9@smile.fi.intel.com>
- <d4e8c16c-5586-3233-0b99-be15a4c0f7aa@redhat.com>
- <Yf511hhojzIXcNXp@smile.fi.intel.com>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <Yf511hhojzIXcNXp@smile.fi.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220205150016.gvrst7ldvgjh7fra@localhost.localdomain>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/5/22 14:04, Andy Shevchenko wrote:
-> On Fri, Feb 04, 2022 at 08:19:12PM +0100, Javier Martinez Canillas wrote:
->> On 2/4/22 15:26, Andy Shevchenko wrote:
->>> On Fri, Feb 04, 2022 at 02:43:45PM +0100, Javier Martinez Canillas wrote:
-> 
-> ...
-> 
->>>> +struct ssd130x_device {
->>>> +	struct drm_device drm;
->>>> +	struct drm_simple_display_pipe pipe;
->>>> +	struct drm_display_mode mode;
->>>> +	struct drm_connector connector;
->>>
->>>
->>>> +	struct i2c_client *client;
->>>
->>> Can we logically separate hw protocol vs hw interface from day 1, please?
->>> This will allow to add SPI support for this panel much easier.
->>>
->>> Technically I would like to see here
->>>
->>> 	struct device *dev;
->>>
->>> and probably (I haven't looked into design)
->>>
->>> 	struct ssd130x_ops *ops;
->>>
->>> or something alike.
->>
->> Sure. I wanted to keep the driver simple, making the writes bus agnostic and
->> adding a level of indirection would make it more complex. But I agree that
->> it will also make easier to add more buses later. I will do that for v3.
-> 
-> I have SSD1306 display with SPI interface and I'm not able to test your series.
-> With the above it at least gives me a point to consider helping (coding and
-> testing)  with SPI one.
->
+On Mon, Jan 31, 2022 at 03:57:04PM +0100, Takashi Iwai wrote:
+> In anyway, we need to track down exactly which access triggers those 
+> errors...
 
-Yes, I understand that. On the other hand, I only have a SSD1306 with an I2C
-interface so I'm interested in supporting that. Then someone could extend to
-support other buses :)
+I went deeper into codec reads and writes:
+- snd_hda_codec_write
+- snd_hdac_codec_write
+- codec_write
+- snd_hdac_exec_verb
+- codec_exec_verb
+- snd_hdac_bus_exec_verb_unlocked
+- azx_send_cmd / azx_get_response
+- snd_hdac_bus_send_cmd / azx_rirb_get_response
 
-But I agree with you that making the driver easier to extend and using regmap
-would be desirable. In fact, since I will add the level of indirection I can
-got ahead and attempt to add the SPI support as well.
+In the last functions a circular buffer is used to write commands. The 
+problem is that "bus->corb.buf[wp]" and "bus->rirb.res[addr]" are 
+nowhere close to the IOMMU-reported address of the offending memory 
+access. It's likely that I've missed other communication channels. But 
+is it possible that IOMMU-reported address and buffers addresses are of 
+different kinds (physical/virtual) or different regions mapped to the 
+same physical pages?
 
-I won't be able to test but I can use drivers/staging/fbtft/fb_ssd1306.c as a
-reference for this.
-
-> ...
-> 
->>>> +	if (!fb)
->>>> +		return;
->>>
->>> Can it happen?
->>
->> I don't know, but saw that the handler of other drivers checked for this so
->> preferred to play safe and do the same.
-> 
-> So, either cargo-cult or indeed it may happen. Somebody may conduct a research
-> on this...
->
-
-Someone familiar with the simple display pipe helpers should chime in, I tried
-to grep around but couldn't figure out whether it was safe or not to assume the
-struct drm_framebuffer won't ever be NULL in a struct drm_shadow_plane_state.
-
-As mentioned other drivers were doing and I preferred to be defensive rather
-than leading to a possible NULL pointer dereference.
- 
-> ...
-> 
->>>> +	drm_mode_probed_add(connector, mode);
->>>> +	drm_set_preferred_mode(connector, mode->hdisplay, mode->vdisplay);
->>>> +
->>>> +	return 1;
->>>
->>> Positive code, what is the meaning of it?
->>
->> It's the number of connector modes. The driver only supports 1.
-> 
-> A comment then?
-> 
-
-Yes, that makes sense.
-
-Best regards,
--- 
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
-
+Example:
+snd_hdac_bus_send_cmd: bus->corb.buf[wp] = cpu_to_le32(val) // = 0x3b8000, wp=0xfb, &buf[wp]=00000000f1fd4592
+snd_hdac_bus_get_response: reading result from 0000000059c4003d
+snd_hdac_bus_send_cmd: bus->corb.buf[wp] = cpu_to_le32(val) // = 0x339000, wp=0xfc, &buf[wp]=000000007f14c128
+snd_hdac_bus_get_response: reading result from 0000000059c4003d
+snd_hdac_bus_send_cmd: bus->corb.buf[wp] = cpu_to_le32(val) // = 0x1470740, wp=0xfd, &buf[wp]=00000000a6b14901
+snd_hdac_bus_get_response: reading result from 0000000059c4003d
+snd_hdac_bus_send_cmd: bus->corb.buf[wp] = cpu_to_le32(val) // = 0x14ba000, wp=0xfe, &buf[wp]=00000000d8d1672a
+snd_hdac_bus_get_response: reading result from 0000000059c4003d
+snd_hdac_bus_send_cmd: bus->corb.buf[wp] = cpu_to_le32(val) // = 0x14b8000, wp=0xff, &buf[wp]=00000000b87b3287
+snd_hdac_bus_get_response: reading result from 0000000059c4003d
+snd_hdac_bus_send_cmd: bus->corb.buf[wp] = cpu_to_le32(val) // = 0x2ba000, wp=0x0, &buf[wp]=000000002162c728
+snd_hdac_bus_get_response: reading result from 0000000059c4003d
+snd_hdac_bus_send_cmd: bus->corb.buf[wp] = cpu_to_le32(val) // = 0x2b8000, wp=0x1, &buf[wp]=0000000095f61061
+snd_hda_intel 0000:05:00.6: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0015 address=0x1fffff800 flags=0x0020]
