@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5954C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 18:55:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C246BC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 18:56:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381481AbiBESz5 (ORCPT
+        id S1381255AbiBESzM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 13:55:57 -0500
-Received: from relay10.mail.gandi.net ([217.70.178.230]:36681 "EHLO
+        Sat, 5 Feb 2022 13:55:12 -0500
+Received: from relay10.mail.gandi.net ([217.70.178.230]:52675 "EHLO
         relay10.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381337AbiBESzT (ORCPT
+        with ESMTP id S1381105AbiBESyz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 13:55:19 -0500
+        Sat, 5 Feb 2022 13:54:55 -0500
 Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 591E6240004;
-        Sat,  5 Feb 2022 18:55:16 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 6407A240002;
+        Sat,  5 Feb 2022 18:54:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1644087317;
+        t=1644087294;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ApNDABL+v60j762wlpZO71a5EOaULmOso+sYzlyX/q8=;
-        b=CGR/MjgCf4uRlhIjZ1I4RTuJj7Rjqvvhwl8EGn+bCKV+SgIYs9r7nJuJJ7fxWAKCmz5/a2
-        whRbr2GUWxXpMt2YWID7I25SgLpw3PQbwcRmxV+fxR3RhVVnsIg2YqUR4GuF4KhymM9aUe
-        yZmqdYP0+2YHomdknVQYZgvGbrzt21ebh5UKhyvCgQ8j3uyuwTXtxEkGB6JlwgbDqH/Ej4
-        qavRon98rqQqQEWZty+dZiC1cjgYkfiF2AKS/u7RHmcPyyTjYJhMbZU7sTQKD+GFPor5lY
-        CjYUGQzxEG4MnQyuJA8T0FPycuaNM9+zKuQDbzj5T1Qc+ag0oHuMibyGo1cxPQ==
+        bh=gLpD85HGLlQZufbiTjcmTQ92Yr3LdM/Sv6FML3V0+p4=;
+        b=EYAirpag3DrehukT8UFeqevku+SnoWWTeEjkn1i+UWZP4BEg0q/CG5hnpH7Ev8MTOjIvko
+        gPriiDhVDRSCKDzafAIoPpfDSD5bznCndFV6pjj4ATFoTiojHYSWnl3y33XvjgFeboDsZB
+        PVAntzEveSVhmALuAID2pe5dvylPsBkkekwIkvgFLX2USsrCO11UouDvRKbYWuNjPUTFS6
+        qNkaUI/lexFZjuOq5q38ofE01dwjX5iCTYd6IavH/JUiDPj3UD/uzDMfkH2fLEWF+a6bwM
+        3lgqHCdRcgCOTPZQE1UwQf4ALCdlFyUPiZPsrfK1PDWye6KbIEMiGDNEMN0Hjg==
 From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
 To:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
@@ -45,10 +45,11 @@ Cc:     Yong Deng <yong.deng@magewell.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Helen Koike <helen.koike@collabora.com>,
         Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: [PATCH v2 22/66] media: sun6i-csi: Use runtime pm for clocks and reset
-Date:   Sat,  5 Feb 2022 19:53:45 +0100
-Message-Id: <20220205185429.2278860-23-paul.kocialkowski@bootlin.com>
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v2 08/66] dt-bindings: media: Add Allwinner A31 MIPI CSI-2 bindings documentation
+Date:   Sat,  5 Feb 2022 19:53:31 +0100
+Message-Id: <20220205185429.2278860-9-paul.kocialkowski@bootlin.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com>
 References: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com>
@@ -58,156 +59,165 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Wrap the clock and reset preparation into runtime pm functions
-for better organization of the code.
+This introduces YAML bindings documentation for the Allwinner A31 MIPI
+CSI-2 controller.
 
 Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Reviewed-by: Maxime Ripard <mripard@kernel.org>
+Reviewed-by: Rob Herring <robh@kernel.org>
 ---
- .../platform/sunxi/sun6i-csi/sun6i_csi.c      | 94 ++++++++++++++-----
- 1 file changed, 69 insertions(+), 25 deletions(-)
+ .../media/allwinner,sun6i-a31-mipi-csi2.yaml  | 142 ++++++++++++++++++
+ 1 file changed, 142 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/media/allwinner,sun6i-a31-mipi-csi2.yaml
 
-diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
-index 2355088fdc37..b53b92b70a89 100644
---- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
-+++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
-@@ -152,40 +152,18 @@ int sun6i_csi_set_power(struct sun6i_csi_device *csi_dev, bool enable)
- 
- 	if (!enable) {
- 		regmap_update_bits(regmap, CSI_EN_REG, CSI_EN_CSI_EN, 0);
-+		pm_runtime_put(dev);
- 
--		clk_disable_unprepare(csi_dev->clk_ram);
--		clk_disable_unprepare(csi_dev->clk_mod);
--		reset_control_assert(csi_dev->reset);
- 		return 0;
- 	}
- 
--	ret = clk_prepare_enable(csi_dev->clk_mod);
--	if (ret) {
--		dev_err(csi_dev->dev, "Enable csi clk err %d\n", ret);
-+	ret = pm_runtime_resume_and_get(dev);
-+	if (ret < 0)
- 		return ret;
--	}
--
--	ret = clk_prepare_enable(csi_dev->clk_ram);
--	if (ret) {
--		dev_err(csi_dev->dev, "Enable clk_dram_csi clk err %d\n", ret);
--		goto clk_mod_disable;
--	}
--
--	ret = reset_control_deassert(csi_dev->reset);
--	if (ret) {
--		dev_err(csi_dev->dev, "reset err %d\n", ret);
--		goto clk_ram_disable;
--	}
- 
- 	regmap_update_bits(regmap, CSI_EN_REG, CSI_EN_CSI_EN, CSI_EN_CSI_EN);
- 
- 	return 0;
--
--clk_ram_disable:
--	clk_disable_unprepare(csi_dev->clk_ram);
--clk_mod_disable:
--	clk_disable_unprepare(csi_dev->clk_mod);
--	return ret;
- }
- 
- static enum csi_input_fmt get_csi_input_format(struct sun6i_csi_device *csi_dev,
-@@ -800,6 +778,65 @@ static irqreturn_t sun6i_csi_isr(int irq, void *private)
- 	return IRQ_HANDLED;
- }
- 
-+static int sun6i_csi_suspend(struct device *dev)
-+{
-+	struct sun6i_csi_device *csi_dev = dev_get_drvdata(dev);
+diff --git a/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-mipi-csi2.yaml b/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-mipi-csi2.yaml
+new file mode 100644
+index 000000000000..09207904b6db
+--- /dev/null
++++ b/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-mipi-csi2.yaml
+@@ -0,0 +1,142 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/media/allwinner,sun6i-a31-mipi-csi2.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+	reset_control_assert(csi_dev->reset);
-+	clk_disable_unprepare(csi_dev->clk_ram);
-+	clk_disable_unprepare(csi_dev->clk_mod);
-+	clk_disable_unprepare(csi_dev->clk_bus);
++title: Allwinner A31 MIPI CSI-2 Device Tree Bindings
 +
-+	return 0;
-+}
++maintainers:
++  - Paul Kocialkowski <paul.kocialkowski@bootlin.com>
 +
-+static int sun6i_csi_resume(struct device *dev)
-+{
-+	struct sun6i_csi_device *csi_dev = dev_get_drvdata(dev);
-+	int ret;
++properties:
++  compatible:
++    oneOf:
++      - const: allwinner,sun6i-a31-mipi-csi2
++      - items:
++          - const: allwinner,sun8i-v3s-mipi-csi2
++          - const: allwinner,sun6i-a31-mipi-csi2
 +
-+	ret = reset_control_deassert(csi_dev->reset);
-+	if (ret) {
-+		dev_err(dev, "failed to deassert reset\n");
-+		return ret;
-+	}
++  reg:
++    maxItems: 1
 +
-+	ret = clk_prepare_enable(csi_dev->clk_bus);
-+	if (ret) {
-+		dev_err(dev, "failed to enable bus clock\n");
-+		goto error_reset;
-+	}
++  interrupts:
++    maxItems: 1
 +
-+	ret = clk_prepare_enable(csi_dev->clk_mod);
-+	if (ret) {
-+		dev_err(dev, "failed to enable module clock\n");
-+		goto error_clk_bus;
-+	}
++  clocks:
++    items:
++      - description: Bus Clock
++      - description: Module Clock
 +
-+	ret = clk_prepare_enable(csi_dev->clk_ram);
-+	if (ret) {
-+		dev_err(dev, "failed to enable ram clock\n");
-+		goto error_clk_mod;
-+	}
++  clock-names:
++    items:
++      - const: bus
++      - const: mod
 +
-+	return 0;
++  phys:
++    maxItems: 1
++    description: MIPI D-PHY
 +
-+error_clk_mod:
-+	clk_disable_unprepare(csi_dev->clk_mod);
++  phy-names:
++    items:
++      - const: dphy
 +
-+error_clk_bus:
-+	clk_disable_unprepare(csi_dev->clk_bus);
++  resets:
++    maxItems: 1
 +
-+error_reset:
-+	reset_control_assert(csi_dev->reset);
++  ports:
++    $ref: /schemas/graph.yaml#/properties/ports
 +
-+	return ret;
-+}
++    properties:
++      port@0:
++        $ref: /schemas/graph.yaml#/$defs/port-base
++        description: Input port, connect to a MIPI CSI-2 sensor
 +
-+static const struct dev_pm_ops sun6i_csi_pm_ops = {
-+	SET_RUNTIME_PM_OPS(sun6i_csi_suspend, sun6i_csi_resume, NULL)
-+};
++        properties:
++          reg:
++            const: 0
 +
- static const struct regmap_config sun6i_csi_regmap_config = {
- 	.reg_bits       = 32,
- 	.reg_stride     = 4,
-@@ -885,6 +922,11 @@ static int sun6i_csi_resources_setup(struct sun6i_csi_device *csi_dev,
- 		goto error_clk_rate_exclusive;
- 	}
- 
-+	/* Runtime PM */
++          endpoint:
++            $ref: video-interfaces.yaml#
++            unevaluatedProperties: false
 +
-+	pm_runtime_enable(dev);
-+	pm_runtime_set_suspended(dev);
++            properties:
++              data-lanes:
++                minItems: 1
++                maxItems: 4
 +
- 	return 0;
- 
- error_clk_rate_exclusive:
-@@ -895,6 +937,7 @@ static int sun6i_csi_resources_setup(struct sun6i_csi_device *csi_dev,
- 
- static void sun6i_csi_resources_cleanup(struct sun6i_csi_device *csi_dev)
- {
-+	pm_runtime_disable(csi_dev->dev);
- 	clk_rate_exclusive_put(csi_dev->clk_mod);
- }
- 
-@@ -954,6 +997,7 @@ static struct platform_driver sun6i_csi_platform_driver = {
- 	.driver	= {
- 		.name		= SUN6I_CSI_NAME,
- 		.of_match_table	= of_match_ptr(sun6i_csi_of_match),
-+		.pm		= &sun6i_csi_pm_ops,
- 	},
- };
- 
++            required:
++              - data-lanes
++
++        additionalProperties: false
++
++      port@1:
++        $ref: /schemas/graph.yaml#/$defs/port-base
++        description: Output port, connect to a CSI controller
++
++        properties:
++          reg:
++            const: 1
++
++          endpoint:
++            $ref: video-interfaces.yaml#
++            unevaluatedProperties: false
++
++        additionalProperties: false
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clocks
++  - clock-names
++  - phys
++  - phy-names
++  - resets
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    #include <dt-bindings/clock/sun8i-v3s-ccu.h>
++    #include <dt-bindings/reset/sun8i-v3s-ccu.h>
++
++    mipi_csi2: csi@1cb1000 {
++        compatible = "allwinner,sun8i-v3s-mipi-csi2",
++                     "allwinner,sun6i-a31-mipi-csi2";
++        reg = <0x01cb1000 0x1000>;
++        interrupts = <GIC_SPI 90 IRQ_TYPE_LEVEL_HIGH>;
++        clocks = <&ccu CLK_BUS_CSI>,
++                 <&ccu CLK_CSI1_SCLK>;
++        clock-names = "bus", "mod";
++        resets = <&ccu RST_BUS_CSI>;
++
++        phys = <&dphy>;
++        phy-names = "dphy";
++
++        ports {
++            #address-cells = <1>;
++            #size-cells = <0>;
++
++            mipi_csi2_in: port@0 {
++                reg = <0>;
++
++                mipi_csi2_in_ov5648: endpoint {
++                    data-lanes = <1 2 3 4>;
++
++                    remote-endpoint = <&ov5648_out_mipi_csi2>;
++                };
++            };
++
++            mipi_csi2_out: port@1 {
++                reg = <1>;
++
++                mipi_csi2_out_csi0: endpoint {
++                    remote-endpoint = <&csi0_in_mipi_csi2>;
++                };
++            };
++        };
++    };
++
++...
 -- 
 2.34.1
 
