@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 716B0C43219
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 18:55:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E4C6C4167D
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 18:55:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381123AbiBESzE (ORCPT
+        id S1381070AbiBESzF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 13:55:04 -0500
-Received: from relay10.mail.gandi.net ([217.70.178.230]:37513 "EHLO
+        Sat, 5 Feb 2022 13:55:05 -0500
+Received: from relay10.mail.gandi.net ([217.70.178.230]:49837 "EHLO
         relay10.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381094AbiBESyx (ORCPT
+        with ESMTP id S1381062AbiBESyx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 5 Feb 2022 13:54:53 -0500
 Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 45282240008;
-        Sat,  5 Feb 2022 18:54:47 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 9ADEC240009;
+        Sat,  5 Feb 2022 18:54:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1644087288;
+        t=1644087292;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=zk1bbI/Xt7gJda0Cl2OjSITy4xxHr8HjLDg7r/ilG+I=;
-        b=Pt+tfG/gQjNnTXSXJ6enzW+2j/VmmYhxinr+RoNfI5OHcTJt/N8i2sdo4zbNrIkXdbl9a8
-        4k18+Sfl8S4pjmsLvl0g8xVfhVZ7WyGmXX6Q3jmIi6GAymK3neRTw50mMdaAbHYR1KHDV3
-        5ua8cSTd9d1krK1ekOku2UzBcdmtVuDU64CyZnfwtEKMRopLrKOJYufrJms8EGDOYVg8Y7
-        wU9JlLtmXmzZ0cIDHAHIlGaPosJYcm/c8Ki0gOrxxf9F4Ut9ay0s2jObjw5zwmEakAfA9s
-        /efijnGyTV3JoTDep9L5RRU5PzHbCQ79LDKsJicn3cfyjfEk99aGKn4jP0lieg==
+        bh=PYHTZKqj0x0O/vJOFCxW3AwpA9ajkrs61CKkByxlSfY=;
+        b=dR6U3nGVfoZM8vXisu6jKz0ldY5QaRrqMCaS7JtFLZ7PgD8shwIZwbkZJUymE4AVLIQic9
+        uIX2rWIuED2LDgUzMGMnk1PzWXprX0XKs1QnWmhEpTlmdYHVRrDUKaXmT5D674/R6Q+SP2
+        HI5Bpgz94SgVIS3n5Gz8t0i5tj/1m09H+SeFOuEDf1qPSwBhRMWlHj1jMcaan8N3z1lp3c
+        QbBxfgoi3cVsZXB0ZqpH1yQknf5rrCkfSi9ylhXCm9uf2Px9seeMt84fNpVgpseqengYaZ
+        FhbInBNu3n1NQfbGNQlIXLCWlC4R4XRtZlJJkkf5PtEigaZeySzun5HHJa/Ovg==
 From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
 To:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
@@ -45,10 +45,11 @@ Cc:     Yong Deng <yong.deng@magewell.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Helen Koike <helen.koike@collabora.com>,
         Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: [PATCH v2 05/66] dt-bindings: sun6i-a31-mipi-dphy: Add optional direction property
-Date:   Sat,  5 Feb 2022 19:53:28 +0100
-Message-Id: <20220205185429.2278860-6-paul.kocialkowski@bootlin.com>
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v2 07/66] dt-bindings: media: sun6i-a31-csi: Add MIPI CSI-2 input port
+Date:   Sat,  5 Feb 2022 19:53:30 +0100
+Message-Id: <20220205185429.2278860-8-paul.kocialkowski@bootlin.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com>
 References: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com>
@@ -58,43 +59,111 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Allwinner A31 MIPI D-PHY block supports both tx and rx directions,
-although each instance of the block is meant to be used in one
-direction only. There will typically be one instance for MIPI DSI and
-one for MIPI CSI-2 (it seems unlikely to ever see a shared instance).
+The A31 CSI controller supports two distinct input interfaces:
+parallel and an external MIPI CSI-2 bridge. The parallel interface
+is often connected to a set of hardware pins while the MIPI CSI-2
+bridge is an internal FIFO-ish link. As a result, these two inputs
+are distinguished as two different ports.
 
-Describe the direction with a new allwinner,direction property.
-For backwards compatibility, the property is optional and tx mode
-should be assumed by default.
+Note that only one of the two may be present on a controller instance.
+For example, the V3s has one controller dedicated to MIPI-CSI2 and one
+dedicated to parallel.
+
+Update the binding with an explicit ports node that holds two distinct
+port nodes: one for parallel input and one for MIPI CSI-2.
+
+This is backward-compatible with the single-port approach that was
+previously taken for representing the parallel interface port, which
+stays enumerated as fwnode port 0.
+
+Note that additional ports may be added in the future, especially to
+support feeding the CSI controller's output to the ISP.
 
 Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Acked-by: Maxime Ripard <mripard@kernel.org>
 ---
- .../bindings/phy/allwinner,sun6i-a31-mipi-dphy.yaml  | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ .../media/allwinner,sun6i-a31-csi.yaml        | 60 +++++++++++++++----
+ 1 file changed, 47 insertions(+), 13 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/phy/allwinner,sun6i-a31-mipi-dphy.yaml b/Documentation/devicetree/bindings/phy/allwinner,sun6i-a31-mipi-dphy.yaml
-index d0b541a461f3..22636c9fdab8 100644
---- a/Documentation/devicetree/bindings/phy/allwinner,sun6i-a31-mipi-dphy.yaml
-+++ b/Documentation/devicetree/bindings/phy/allwinner,sun6i-a31-mipi-dphy.yaml
-@@ -37,6 +37,18 @@ properties:
-   resets:
-     maxItems: 1
+diff --git a/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-csi.yaml b/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-csi.yaml
+index 8b568072a069..3cc61866ea89 100644
+--- a/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-csi.yaml
++++ b/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-csi.yaml
+@@ -61,6 +61,34 @@ properties:
  
-+  allwinner,direction:
-+    $ref: '/schemas/types.yaml#/definitions/string'
-+    description: |
-+      Direction of the D-PHY:
-+      - "rx" for receiving (e.g. when used with MIPI CSI-2);
-+      - "tx" for transmitting (e.g. when used with MIPI DSI).
+     additionalProperties: false
+ 
++  ports:
++    $ref: /schemas/graph.yaml#/properties/ports
 +
-+    enum:
-+      - tx
-+      - rx
-+    default: tx
++    properties:
++      port@0:
++        $ref: "#/properties/port"
++        unevaluatedProperties: false
++
++      port@1:
++        $ref: /schemas/graph.yaml#/$defs/port-base
++        description: MIPI CSI-2 bridge input port
++
++        properties:
++          reg:
++            const: 1
++
++          endpoint:
++            $ref: video-interfaces.yaml#
++            unevaluatedProperties: false
++
++        additionalProperties: false
++
++    anyOf:
++      - required:
++        - port@0
++      - required:
++        - port@1
 +
  required:
-   - "#phy-cells"
    - compatible
+   - reg
+@@ -89,19 +117,25 @@ examples:
+                       "ram";
+         resets = <&ccu RST_BUS_CSI>;
+ 
+-        port {
+-            /* Parallel bus endpoint */
+-            csi1_ep: endpoint {
+-                remote-endpoint = <&adv7611_ep>;
+-                bus-width = <16>;
+-
+-                /*
+-                 * If hsync-active/vsync-active are missing,
+-                 * embedded BT.656 sync is used.
+-                 */
+-                 hsync-active = <0>; /* Active low */
+-                 vsync-active = <0>; /* Active low */
+-                 pclk-sample = <1>;  /* Rising */
++        ports {
++            #address-cells = <1>;
++            #size-cells = <0>;
++
++            port@0 {
++                reg = <0>;
++                /* Parallel bus endpoint */
++                csi1_ep: endpoint {
++                    remote-endpoint = <&adv7611_ep>;
++                    bus-width = <16>;
++
++                    /*
++                     * If hsync-active/vsync-active are missing,
++                     * embedded BT.656 sync is used.
++                     */
++                     hsync-active = <0>; /* Active low */
++                     vsync-active = <0>; /* Active low */
++                     pclk-sample = <1>;  /* Rising */
++                };
+             };
+         };
+     };
 -- 
 2.34.1
 
