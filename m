@@ -2,56 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E925C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 08:23:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 081E1C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 08:24:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359232AbiBEIXu (ORCPT
+        id S1345323AbiBEIY0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 03:23:50 -0500
-Received: from isilmar-4.linta.de ([136.243.71.142]:49414 "EHLO
-        isilmar-4.linta.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235206AbiBEIXh (ORCPT
+        Sat, 5 Feb 2022 03:24:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41066 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242364AbiBEIYS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 03:23:37 -0500
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
-        by isilmar-4.linta.de (Postfix) with ESMTPSA id 6CB1020141E;
-        Sat,  5 Feb 2022 08:23:35 +0000 (UTC)
-Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
-        id 4E64B81211; Sat,  5 Feb 2022 08:22:50 +0100 (CET)
-Date:   Sat, 5 Feb 2022 08:22:50 +0100
-From:   Dominik Brodowski <linux@dominikbrodowski.net>
-To:     Eric Biggers <ebiggers@kernel.org>
-Cc:     "Jason A . Donenfeld " <Jason@zx2c4.com>,
-        Theodore Ts'o <tytso@mit.edu>, linux-crypto@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] random: remove use_input_pool parameter from
- crng_reseed()
-Message-ID: <Yf4lyqaPOxGoG8/q@owl.dominikbrodowski.net>
-References: <20220204221733.39411-1-ebiggers@kernel.org>
+        Sat, 5 Feb 2022 03:24:18 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72FEBC061346;
+        Sat,  5 Feb 2022 00:24:14 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0F71CB83971;
+        Sat,  5 Feb 2022 08:24:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32475C340E8;
+        Sat,  5 Feb 2022 08:24:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644049451;
+        bh=D2eOrJGsH5tAWuKjVJk1cyr3QE9TV+RAkP+9Ap0LVWo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=DCvsEC4mEpUxmiAqiDUpU1QaJCEG/A8u9fWMf76Biww8Hv9N2kIQQEz/NhfnHrdgW
+         Fa9piGyqUYSLbJ77/MdwHToC0mO3Seh6+dHk7kX6kSgqQ3kAsLOG7/UUMexejb83Pn
+         xVdTHnh6wxK4Iig6LDtKiD+QTOAnAaQ3nLdJ3Tlw=
+Date:   Sat, 5 Feb 2022 09:24:01 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Iouri Tarassov <iourit@linux.microsoft.com>
+Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, linux-hyperv@vger.kernel.org,
+        linux-kernel@vger.kernel.org, spronovo@microsoft.com
+Subject: Re: [PATCH v2 01/24] drivers: hv: dxgkrnl: Driver initialization and
+ creation of dxgadapter
+Message-ID: <Yf40IQrZR1m5mGVl@kroah.com>
+References: <cover.1644025661.git.iourit@linux.microsoft.com>
+ <98fe53740526526c4df85a3a3d2e13e88c95f229.1644025661.git.iourit@linux.microsoft.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220204221733.39411-1-ebiggers@kernel.org>
+In-Reply-To: <98fe53740526526c4df85a3a3d2e13e88c95f229.1644025661.git.iourit@linux.microsoft.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Fri, Feb 04, 2022 at 02:17:33PM -0800 schrieb Eric Biggers:
-> From: Eric Biggers <ebiggers@google.com>
-> 
-> The primary_crng is always reseeded from the input_pool, while the NUMA
-> crngs are always reseeded from the primary_crng.  Remove the redundant
-> 'use_input_pool' parameter from crng_reseed() and just directly check
-> whether the crng is the primary_crng.
-> 
-> Signed-off-by: Eric Biggers <ebiggers@google.com>
+On Fri, Feb 04, 2022 at 06:33:59PM -0800, Iouri Tarassov wrote:
+> This is the first commit for adding support for a Hyper-V based
+> vGPU implementation that exposes the DirectX API to Linux userspace.
 
-	Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+"This is the first commit" doesn't need to be in the changelog, right?
+Please read the documentation for how to write a changelog text, and
+look at all of the thousands of examples on the mailing list of others.
 
-Thanks,
-	Dominik
+Also, it would help if this patch would build :(
+
