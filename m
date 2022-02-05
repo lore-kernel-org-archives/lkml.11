@@ -2,149 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69805C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 02:23:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7E89C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 02:27:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378979AbiBECXV (ORCPT
+        id S1378977AbiBEC1U (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 21:23:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40664 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238225AbiBECXT (ORCPT
+        Fri, 4 Feb 2022 21:27:20 -0500
+Received: from mail-oi1-f176.google.com ([209.85.167.176]:38444 "EHLO
+        mail-oi1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236832AbiBEC1T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 21:23:19 -0500
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F33D8C061347;
-        Fri,  4 Feb 2022 18:23:18 -0800 (PST)
-Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id A876E472;
-        Sat,  5 Feb 2022 03:23:15 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1644027795;
-        bh=8Gxgs/LVp8UXOT1xU7N2J6LDQ9LAZmNhrPd3LDIdlMo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=NCNAtwUHtLHwGFxaEF2imjparL0hfE4rzgnfLYW6qlioSE7/xW5JH9C1IJPEBx2ru
-         4DT6SluBZkEN+jVpXsMh3VN9pXV0FcCvKOXCs/jOvYZaKXArGVhsjCUQym1zsKPI2B
-         TefR05bvw6QBik7WRO50TPU5MSRMbP+xQBioJDj0=
-Date:   Sat, 5 Feb 2022 04:22:51 +0200
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Alexander Stein <alexander.stein@ew.tq-group.com>
-Cc:     jeanmichel.hautbois@ideasonboard.com,
-        linux-arm-kernel@lists.infradead.org,
-        dave.stevenson@raspberrypi.com, devicetree@vger.kernel.org,
-        kernel-list@raspberrypi.com, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
-        lukasz@jany.st, mchehab@kernel.org, naush@raspberrypi.com,
-        robh@kernel.org, tomi.valkeinen@ideasonboard.com,
-        nsaenz@kernel.org, bcm-kernel-feedback-list@broadcom.com
-Subject: Re: (EXT) [RFC PATCH v4 03/12] dt-bindings: media: Add bindings for
- bcm2835-unicam
-Message-ID: <Yf3fe2F88SNcl2Jd@pendragon.ideasonboard.com>
-References: <20220203175009.558868-1-jeanmichel.hautbois@ideasonboard.com>
- <20220203175009.558868-4-jeanmichel.hautbois@ideasonboard.com>
- <7954256.DvuYhMxLoT@steina-w>
+        Fri, 4 Feb 2022 21:27:19 -0500
+Received: by mail-oi1-f176.google.com with SMTP id u13so10669412oie.5;
+        Fri, 04 Feb 2022 18:27:19 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=WNwkkIEk6nRKmulDkMvX+n5bN8drj3YdUVmvLLda57E=;
+        b=wqQ66cCrpHX1+wyzAr4xNwIL4otXiCpinjhNKTTlU46KW6ERDZ9pr8x8rdJSdLTkpC
+         RMATWx/yeVsSk2UA4ciFTiu+EnAjMKiqG24xcQRl3oxOVuvQhj1rdEH2JUU1BX105a9U
+         2TtXPKJugBhi+hSHW1OI6o7V3TnuDodadSPdJ+pN/8LhFoO3vf7gatUTynx/LLoXNYFQ
+         o6mClm591o8XdELmbmq0CPZGx3kwBE3sm1J2H8TWfoUfWg0AiYRPTowCpW/7dVnVIzTb
+         q15MNmSik54Ql8nPOcgYafPiSSI8rpMEUiVJdV+9xplJ8OYlJASuqMmG40Kx0PnY9Q7H
+         XRQw==
+X-Gm-Message-State: AOAM533FvzWn6BwtCPtsI9W+7ey+LnDOYyxLn2BZKl0DUaOXgtK4tHz1
+        ht+4oEtOULByOpkqwJc5jz6EEXK4rQ==
+X-Google-Smtp-Source: ABdhPJy16m5SteHRuJQ3WB7ERG1gtj3NB/98hs8UODPsf0AwmR0N+op2pmHZdgA0H1jo4Ijf6X2org==
+X-Received: by 2002:a05:6808:e87:: with SMTP id k7mr2729190oil.34.1644028038744;
+        Fri, 04 Feb 2022 18:27:18 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id x22sm1377230ooq.27.2022.02.04.18.27.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Feb 2022 18:27:18 -0800 (PST)
+Received: (nullmailer pid 3637443 invoked by uid 1000);
+        Sat, 05 Feb 2022 02:27:17 -0000
+Date:   Fri, 4 Feb 2022 20:27:17 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Xin Ji <xji@analogixsemi.com>
+Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        qwen@analogixsemi.com, linux-usb@vger.kernel.org,
+        bliang@analogixsemi.com, jli@analogixsemi.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH v3 1/2] dt-bindings: usb: Add analogix anx7411 PD binding
+Message-ID: <Yf3ghczy+I2ZMcvt@robh.at.kernel.org>
+References: <20220121061856.2038958-1-xji@analogixsemi.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <7954256.DvuYhMxLoT@steina-w>
+In-Reply-To: <20220121061856.2038958-1-xji@analogixsemi.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Alexander,
-
-On Fri, Feb 04, 2022 at 09:50:06AM +0100, Alexander Stein wrote:
-> Am Donnerstag, 3. Februar 2022, 18:50:00 CET schrieb Jean-Michel Hautbois:
-> > Introduce the dt-bindings documentation for bcm2835 CCP2/CSI2 Unicam
-> > camera interface. Also add a MAINTAINERS entry for it.
-> > 
-> > Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-> > Signed-off-by: Naushir Patuck <naush@raspberrypi.com>
-> > Signed-off-by: Jean-Michel Hautbois <jeanmichel.hautbois@ideasonboard.com>
-> > 
-> > ---
-> > v4:
-> > - make MAINTAINERS its own patch
-> > - describe the reg and clocks correctly
-> > - use a vendor entry for the number of data lanes
-> > ---
-> >  .../bindings/media/brcm,bcm2835-unicam.yaml   | 110 ++++++++++++++++++
-> >  1 file changed, 110 insertions(+)
-> >  create mode 100644
-> > Documentation/devicetree/bindings/media/brcm,bcm2835-unicam.yaml
-> > 
-> > diff --git
-> > a/Documentation/devicetree/bindings/media/brcm,bcm2835-unicam.yaml
-> > b/Documentation/devicetree/bindings/media/brcm,bcm2835-unicam.yaml new file
-> > mode 100644
-> > index 000000000000..0725a0267c60
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/media/brcm,bcm2835-unicam.yaml
-> > @@ -0,0 +1,110 @@
-> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/media/brcm,bcm2835-unicam.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: Broadcom BCM283x Camera Interface (Unicam)
-> > +
-> > +maintainers:
-> > +  - Raspberry Pi Kernel Maintenance <kernel-list@raspberrypi.com>
-> > +
-> > +description: |-
-> > +  The Unicam block on BCM283x SoCs is the receiver for either
-> > +  CSI-2 or CCP2 data from image sensors or similar devices.
-> > +
-> > +  The main platform using this SoC is the Raspberry Pi family of boards.
-> > +  On the Pi the VideoCore firmware can also control this hardware block,
-> > +  and driving it from two different processors will cause issues.
-> > +  To avoid this, the firmware checks the device tree configuration
-> > +  during boot. If it finds device tree nodes starting by csi then
-> > +  it will stop the firmware accessing the block, and it can then
-> > +  safely be used via the device tree binding.
-> > +
-> > +properties:
-> > +  compatible:
-> > +    const: brcm,bcm2835-unicam
-> > +
-> > +  reg:
-> > +    items:
-> > +      - description: Unicam block.
-> > +      - description: Clock Manager Image (CMI) block.
-> > +
-> > +  interrupts:
-> > +    maxItems: 1
-> > +
-> > +  clocks:
-> > +    items:
-> > +      - description: Clock to drive the LP state machine of Unicam.
-> > +      - description: Clock for the vpu (core clock).
-> > +
-> > +  clock-names:
-> > +    items:
-> > +      - const: lp
-> > +      - const: vpu
-> > +
-> > +  power-domains:
-> > +    items:
-> > +      - description: Unicam power domain
-> > +
-> > +  brcm,num-data-lanes:
-> > +    $ref: /schemas/types.yaml#/definitions/uint32
-> > +    enum: [ 2, 4 ]
-> > +    description: Number of data lanes on the csi bus
+On Fri, 21 Jan 2022 14:18:55 +0800, Xin Ji wrote:
+> Add analogix PD chip anx7411 device binding
 > 
-> There is already data-lanes in Documentation/devicetree/bindings/media/video-
-> interfaces.yaml. AFAICS these two are identical. Can't the video-
-> interface.yaml be used for this? I'm no expert TBH.
+> Signed-off-by: Xin Ji <xji@analogixsemi.com>
+> ---
+>  .../bindings/usb/analogix,anx7411.yaml        | 76 +++++++++++++++++++
+>  1 file changed, 76 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/usb/analogix,anx7411.yaml
+> 
 
-This is the number of data lanes that the Unicam instance supports.
-There are two Unicam instances, and they can have 2 or 4 data lanes
-depending on the SoC. The data-lanes endpoint property indicates the
-number of lanes used on a particular board.
-
--- 
-Regards,
-
-Laurent Pinchart
+Reviewed-by: Rob Herring <robh@kernel.org>
