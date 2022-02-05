@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4419DC433FE
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 00:14:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64812C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 00:14:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378703AbiBEAOO (ORCPT
+        id S1378713AbiBEAOS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 19:14:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57312 "EHLO
+        Fri, 4 Feb 2022 19:14:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239054AbiBEAOK (ORCPT
+        with ESMTP id S1378699AbiBEAOO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 19:14:10 -0500
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61EB3D8399EF
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 16:14:08 -0800 (PST)
-Received: by mail-pj1-x102b.google.com with SMTP id h20-20020a17090adb9400b001b518bf99ffso14548001pjv.1
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Feb 2022 16:14:08 -0800 (PST)
+        Fri, 4 Feb 2022 19:14:14 -0500
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 295A6D8399EF
+        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 16:14:13 -0800 (PST)
+Received: by mail-pf1-x435.google.com with SMTP id n32so6407337pfv.11
+        for <linux-kernel@vger.kernel.org>; Fri, 04 Feb 2022 16:14:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=96SFyVQfbv/E/8NQyz3WLTVz461yfR2KLa0ZPZCtqDg=;
-        b=IgKO/kM+ZjoHRFFP4hCXWCqNnbvj2TAjzdBKNPx82LhlBCVxOqy5DVhGwc1qu+2G9s
-         jz147LFM9YpYPwlGTt3OMcFEO+GmtJUPTtuEL137l4L95KiMrLAYmrSIMuFpEXH7TOim
-         u2JQ9Sj+1ruQBNcePfY+M4tDlzvVf2ueWWtxY=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=e1YXgPQg/QgIjJPLCBmICQvUckRJaQCi5C+VqMeIvS8=;
+        b=Sckp/asfIozxW6+xn26hgboYzojlq2fJp0f/cWViFPP5LEVqkjJNujfGR3enGVfekg
+         djCvSjwk9cRt3TXxY8kTZjjQ8be4dShkvIEpLPkjvoKx6c1KR4gXhXhm0cNQgCc5i3+z
+         hgyEmOmP8sG5U4Ef8pF/jwtlX4AicnYcnoDes=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=96SFyVQfbv/E/8NQyz3WLTVz461yfR2KLa0ZPZCtqDg=;
-        b=VQwQKmQbeyDttIMO7fFARuo+l1N5eDdXBIQ3zVwjLs1mmAM8wropmdLTzldje/7OoE
-         wVyzguFJrvySOvlrcJRRLu+exI7TArEd9alstavimQCynBmzc+a5EWBDfx//hTmB0isG
-         KAfO517TpPNM8xHvTfu/eRdLk6xmZnHKEtCVLvGjYp4mZYTUDAUO1/7uwOo6GjekBNnc
-         L2VyuA3FSevvcCV+j0qfzFklgNgEGTcpDAa02t0+42g4rfepMHggCEnLCpb9Ao7yhJdm
-         8XFTlh6TKf7W0idId/9evl4asvsowD53Wz8VVTAPIV5Lg5BTkZBE7l8R2sbh2q03SFhY
-         SK6Q==
-X-Gm-Message-State: AOAM531IBA3g5WN0k6RTDw9IGzsrPdI3YeabwI2i80qOLKp5eWl0EiBH
-        XH/coYrBgPd62Gd10UvNLyCorQ==
-X-Google-Smtp-Source: ABdhPJw9uTa9AOHSgwRNU6QqwbQftcU9rsyBtjV4lm4ZSQb3R6M6nncuQObIRAtbxuD7CEaiIYIXQw==
-X-Received: by 2002:a17:90b:3ec4:: with SMTP id rm4mr6007176pjb.102.1644020047929;
-        Fri, 04 Feb 2022 16:14:07 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=e1YXgPQg/QgIjJPLCBmICQvUckRJaQCi5C+VqMeIvS8=;
+        b=Qmtz2MZIfr6Tv4ypb7oOWU7dyHTbSacsoBFY0jqXhpj8/UOdF+u2MJvTDt5K3dTs5w
+         KgTOvu4HdPSqFr/rfxoaKtNa6wRjTIIZoKsIOtUCT5jP03lCrkjXWDmSLrLSvCsMO6Pl
+         aeUwXULwVJJl2WCgaWuUq+93TagMFPDfYFimZePLLYENlNsGF5Qrkw46LOJAburbJjHX
+         ojFjTQXi4bZlsxI2D7s0XyK0OjiwPTrzQtdXsM0wNtVRIaLZSdwltMf3XcXpzpTNO6xA
+         cR1u8RBqEwtnXY1QQFXmFNWzSrYrO/mHdm1aj2Cd9/atErzVtMiBm8a7TVXQHhOMJxUz
+         VOZg==
+X-Gm-Message-State: AOAM5331563WYwt55GwdPQPrhT+h7rpoI+Y3mAIg8wnv+8mI2pcsWqJo
+        xdF3umB1jQIP+owVJXiriffmOA==
+X-Google-Smtp-Source: ABdhPJz+Fkk9gqDAia0auO55LEycSweXxaTCerYWw5xHDV+zLvHydudS8AzzEA9Cikmz2NxmdWE4kQ==
+X-Received: by 2002:a63:6b41:: with SMTP id g62mr1194976pgc.538.1644020052438;
+        Fri, 04 Feb 2022 16:14:12 -0800 (PST)
 Received: from tictac2.mtv.corp.google.com ([2620:15c:202:201:d668:55ac:a465:88bf])
-        by smtp.gmail.com with ESMTPSA id q13sm3720231pfj.44.2022.02.04.16.14.06
+        by smtp.gmail.com with ESMTPSA id q13sm3720231pfj.44.2022.02.04.16.14.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Feb 2022 16:14:07 -0800 (PST)
+        Fri, 04 Feb 2022 16:14:12 -0800 (PST)
 From:   Douglas Anderson <dianders@chromium.org>
 To:     dri-devel@lists.freedesktop.org
 Cc:     Daniel Vetter <daniel@ffwll.ch>,
@@ -64,64 +64,188 @@ Cc:     Daniel Vetter <daniel@ffwll.ch>,
         Thierry Reding <thierry.reding@gmail.com>,
         Thomas Zimmermann <tzimmermann@suse.de>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 0/3] drm/panel-edp: Debugfs for panel-edp
-Date:   Fri,  4 Feb 2022 16:13:39 -0800
-Message-Id: <20220205001342.3155839-1-dianders@chromium.org>
+Subject: [PATCH v2 2/3] drm: Plumb debugfs_init through to panels
+Date:   Fri,  4 Feb 2022 16:13:41 -0800
+Message-Id: <20220204161245.v2.2.Ib0bd5346135cbb0b63006b69b61d4c8af6484740@changeid>
 X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
+In-Reply-To: <20220205001342.3155839-1-dianders@chromium.org>
+References: <20220205001342.3155839-1-dianders@chromium.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The main goal of this series is the final patch in the series: to
-allow test code to reliably find out if we ended up hitting the
-"fallback" case of the generic edp-panel driver where we don't
-recognize a panel and choose to use super conservative timing.
+We'd like panels to be able to add things to debugfs underneath the
+connector's directory. Let's plumb it through. A panel will be able to
+put things in a "panel" directory under the connector's
+directory. Note that debugfs is not ABI and so it's always possible
+that the location that the panel gets for its debugfs could change in
+the future.
 
-Version 1 of the patch actually landed but was quickly reverted since
-it was pointed out that it should have been done in debugfs, not
-sysfs.
+NOTE: this currently only works if you're using a modern
+architecture. Specifically the plumbing relies on _both_
+drm_bridge_connector and drm_panel_bridge. If you're not using one or
+both of these things then things won't be plumbed through.
 
-As discussed on IRC [1], we want this support to be under the
-"connector" directory of debugfs but there was no existing way to do
-that. Thus patch #2 in the series was born to try to plumb this
-through. It was asserted that it would be OK to rely on a fairly
-modern display pipeline for this plumbing and perhaps fail to populate
-the debugfs file if we're using older/deprecated pipelines.
+As a side effect of this change, drm_bridges can also get callbacks to
+put stuff underneath the connector's debugfs directory. At the moment
+all bridges in the chain have their debugfs_init() called with the
+connector's root directory.
 
-Patch #1 in the series was born because the bridge chip I was using
-was still using an older/deprecated pipeline. While this doesn't get
-us fully to a modern pipeline for ti-sn65dsi86 (it still doesn't move
-to "NO_CONNECTOR") it hopefully moves us in the right direction.
-
-This was tested on sc7180-trogdor devices with _both_ the ti-sn65dsi86
-and the parade-ps8640 bridge chips (since some devices have one, some
-the other). The parade-ps8640 already uses supports "NO_CONNECTOR",
-luckily.
-
-[1] https://people.freedesktop.org/~cbrill/dri-log/?channel=dri-devel&date=2022-02-02
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
+---
 
 Changes in v2:
-- ("ti-sn65dsi86: Use drm_bridge_connector") new for v2.
 - ("drm: Plumb debugfs_init through to panels") new for v2.
-- Now using debugfs, not sysfs
 
-Douglas Anderson (3):
-  drm/bridge: ti-sn65dsi86: Use drm_bridge_connector
-  drm: Plumb debugfs_init through to panels
-  drm/panel-edp: Allow querying the detected panel via debugfs
+ drivers/gpu/drm/bridge/panel.c         | 12 ++++++++++++
+ drivers/gpu/drm/drm_bridge_connector.c | 15 +++++++++++++++
+ drivers/gpu/drm/drm_debugfs.c          |  3 +++
+ include/drm/drm_bridge.h               |  7 +++++++
+ include/drm/drm_connector.h            |  7 +++++++
+ include/drm/drm_panel.h                |  8 ++++++++
+ 6 files changed, 52 insertions(+)
 
- drivers/gpu/drm/bridge/panel.c         | 12 +++++
- drivers/gpu/drm/bridge/ti-sn65dsi86.c  | 72 +++++---------------------
- drivers/gpu/drm/drm_bridge_connector.c | 15 ++++++
- drivers/gpu/drm/drm_debugfs.c          |  3 ++
- drivers/gpu/drm/panel/panel-edp.c      | 37 +++++++++++--
- include/drm/drm_bridge.h               |  7 +++
- include/drm/drm_connector.h            |  7 +++
- include/drm/drm_panel.h                |  8 +++
- 8 files changed, 98 insertions(+), 63 deletions(-)
-
+diff --git a/drivers/gpu/drm/bridge/panel.c b/drivers/gpu/drm/bridge/panel.c
+index b32295abd9e7..5be057575183 100644
+--- a/drivers/gpu/drm/bridge/panel.c
++++ b/drivers/gpu/drm/bridge/panel.c
+@@ -138,6 +138,17 @@ static int panel_bridge_get_modes(struct drm_bridge *bridge,
+ 	return drm_panel_get_modes(panel_bridge->panel, connector);
+ }
+ 
++static void panel_bridge_debugfs_init(struct drm_bridge *bridge,
++				      struct dentry *root)
++{
++	struct panel_bridge *panel_bridge = drm_bridge_to_panel_bridge(bridge);
++	struct drm_panel *panel = panel_bridge->panel;
++
++	root = debugfs_create_dir("panel", root);
++	if (panel->funcs->debugfs_init)
++		panel->funcs->debugfs_init(panel, root);
++}
++
+ static const struct drm_bridge_funcs panel_bridge_bridge_funcs = {
+ 	.attach = panel_bridge_attach,
+ 	.detach = panel_bridge_detach,
+@@ -150,6 +161,7 @@ static const struct drm_bridge_funcs panel_bridge_bridge_funcs = {
+ 	.atomic_duplicate_state = drm_atomic_helper_bridge_duplicate_state,
+ 	.atomic_destroy_state = drm_atomic_helper_bridge_destroy_state,
+ 	.atomic_get_input_bus_fmts = drm_atomic_helper_bridge_propagate_bus_fmt,
++	.debugfs_init = panel_bridge_debugfs_init,
+ };
+ 
+ /**
+diff --git a/drivers/gpu/drm/drm_bridge_connector.c b/drivers/gpu/drm/drm_bridge_connector.c
+index 791379816837..60923cdfe8e1 100644
+--- a/drivers/gpu/drm/drm_bridge_connector.c
++++ b/drivers/gpu/drm/drm_bridge_connector.c
+@@ -216,6 +216,20 @@ static void drm_bridge_connector_destroy(struct drm_connector *connector)
+ 	kfree(bridge_connector);
+ }
+ 
++static void drm_bridge_connector_debugfs_init(struct drm_connector *connector,
++					      struct dentry *root)
++{
++	struct drm_bridge_connector *bridge_connector =
++		to_drm_bridge_connector(connector);
++	struct drm_encoder *encoder = bridge_connector->encoder;
++	struct drm_bridge *bridge;
++
++	list_for_each_entry(bridge, &encoder->bridge_chain, chain_node) {
++		if (bridge->funcs->debugfs_init)
++			bridge->funcs->debugfs_init(bridge, root);
++	}
++}
++
+ static const struct drm_connector_funcs drm_bridge_connector_funcs = {
+ 	.reset = drm_atomic_helper_connector_reset,
+ 	.detect = drm_bridge_connector_detect,
+@@ -223,6 +237,7 @@ static const struct drm_connector_funcs drm_bridge_connector_funcs = {
+ 	.destroy = drm_bridge_connector_destroy,
+ 	.atomic_duplicate_state = drm_atomic_helper_connector_duplicate_state,
+ 	.atomic_destroy_state = drm_atomic_helper_connector_destroy_state,
++	.debugfs_init = drm_bridge_connector_debugfs_init,
+ };
+ 
+ /* -----------------------------------------------------------------------------
+diff --git a/drivers/gpu/drm/drm_debugfs.c b/drivers/gpu/drm/drm_debugfs.c
+index b0a826489488..7f1b82dbaebb 100644
+--- a/drivers/gpu/drm/drm_debugfs.c
++++ b/drivers/gpu/drm/drm_debugfs.c
+@@ -436,6 +436,9 @@ void drm_debugfs_connector_add(struct drm_connector *connector)
+ 	/* vrr range */
+ 	debugfs_create_file("vrr_range", S_IRUGO, root, connector,
+ 			    &vrr_range_fops);
++
++	if (connector->funcs->debugfs_init)
++		connector->funcs->debugfs_init(connector, root);
+ }
+ 
+ void drm_debugfs_connector_remove(struct drm_connector *connector)
+diff --git a/include/drm/drm_bridge.h b/include/drm/drm_bridge.h
+index 061d87313fac..f27b4060faa2 100644
+--- a/include/drm/drm_bridge.h
++++ b/include/drm/drm_bridge.h
+@@ -649,6 +649,13 @@ struct drm_bridge_funcs {
+ 	 * the DRM_BRIDGE_OP_HPD flag in their &drm_bridge->ops.
+ 	 */
+ 	void (*hpd_disable)(struct drm_bridge *bridge);
++
++	/**
++	 * @debugfs_init:
++	 *
++	 * Allows bridges to create bridge-specific debugfs files.
++	 */
++	void (*debugfs_init)(struct drm_bridge *bridge, struct dentry *root);
+ };
+ 
+ /**
+diff --git a/include/drm/drm_connector.h b/include/drm/drm_connector.h
+index 64cf5f88c05b..54429dde744a 100644
+--- a/include/drm/drm_connector.h
++++ b/include/drm/drm_connector.h
+@@ -1142,6 +1142,13 @@ struct drm_connector_funcs {
+ 	 * has been received from a source outside the display driver / device.
+ 	 */
+ 	void (*oob_hotplug_event)(struct drm_connector *connector);
++
++	/**
++	 * @debugfs_init:
++	 *
++	 * Allows connectors to create connector-specific debugfs files.
++	 */
++	void (*debugfs_init)(struct drm_connector *connector, struct dentry *root);
+ };
+ 
+ /**
+diff --git a/include/drm/drm_panel.h b/include/drm/drm_panel.h
+index 4602f833eb51..1ba2d424a53f 100644
+--- a/include/drm/drm_panel.h
++++ b/include/drm/drm_panel.h
+@@ -29,6 +29,7 @@
+ #include <linux/list.h>
+ 
+ struct backlight_device;
++struct dentry;
+ struct device_node;
+ struct drm_connector;
+ struct drm_device;
+@@ -125,6 +126,13 @@ struct drm_panel_funcs {
+ 	 */
+ 	int (*get_timings)(struct drm_panel *panel, unsigned int num_timings,
+ 			   struct display_timing *timings);
++
++	/**
++	 * @debugfs_init:
++	 *
++	 * Allows panels to create panels-specific debugfs files.
++	 */
++	void (*debugfs_init)(struct drm_panel *panel, struct dentry *root);
+ };
+ 
+ /**
 -- 
 2.35.0.263.gb82422642f-goog
 
