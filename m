@@ -2,127 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64F47C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 21:59:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07991C43219
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 21:59:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377527AbiBEV7T (ORCPT
+        id S1380757AbiBEV7u (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 16:59:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33074 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240342AbiBEV7Q (ORCPT
+        Sat, 5 Feb 2022 16:59:50 -0500
+Received: from mailserv1.kapsi.fi ([91.232.154.157]:52990 "EHLO
+        mailserv1.kapsi.fi" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1351002AbiBEV7t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 16:59:16 -0500
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37B00C061353;
-        Sat,  5 Feb 2022 13:59:15 -0800 (PST)
-Received: by mail-pj1-x102b.google.com with SMTP id p22-20020a17090adf9600b001b8783b2647so3310157pjv.5;
-        Sat, 05 Feb 2022 13:59:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:references:cc:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding;
-        bh=PWXw56wMSVUiQo+0Y/X1ZEc8HwPwp/sCbKGTlf6LMjs=;
-        b=akjLYJsZTcN5ZzBMtnld1Izt5WF6Pacjnxu649A2A34JBhKdoWD0qdk0G2DxkdH930
-         sWwEuVv7ldvooEhDVXBqvE/hPzyAsIorqDfQf9Y9Whdi/w+RTKvj5PD+BKVOH9/moJc9
-         Os3dgxRTGCSzVc/4SsVQGgMtZsCUXUY1TSV5Zr5YjWEoasYoYdpepnGCAPzxU+GtpldA
-         +QPrQ9nVvE//sBu/vf4BaRAE7iLhi38L/WNUwHA60Ag/kAhNqRvkl7cbEgZj9CV2nrkU
-         2IuUTRiTsT+JMaToV/giN+oFjjmwBXNekLrsqHJEuOAPZc0MdYCI/Bbd/Gn0uBnT1r44
-         W2Rg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:references:cc:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
-        bh=PWXw56wMSVUiQo+0Y/X1ZEc8HwPwp/sCbKGTlf6LMjs=;
-        b=J3d1r2OpRnvt3NX2lJmWa9Xpcfsgt9fjueLWupQdQIMnjxlAQGqO/mdDqP0Be5JdEe
-         FVSqCKTzbdfkDKuoL3kdB1Y49Il8expDdXFbIFqA/EffQi/NbUzd4w7P4+xuXefFDoSV
-         T+M8nCjfD6caJ5n1kNyzE69w4HwNhkWbTP7/tg+C4uqIv8Jx65n+8onhJ0rIrCCYvOOn
-         t3y1aK11OjIuONI2eL664UcRvpqpyLWF6KYWCrIT2fdkl2AG2NQL8tj7x22ofL51cvOR
-         KgKh1eH9WqxgxCPwUewopSVQYKgEtUSxjJAvFUOIJFXr7uwHcfjHmsiJBc9zSKliULbQ
-         QVcA==
-X-Gm-Message-State: AOAM530EJqjMilZwEgxITV/tQ5dcmWzgniK16LJ4VVRuwl8TzBcWy+eS
-        WINphj4NtlyMgUDuCGMtMoKl3ZCITQk=
-X-Google-Smtp-Source: ABdhPJzX5yjwAdDFdotVdtPaI3Ecrj5KkR50/7owTP98UVyuhWA/p5XLhclwXNQNWdHJIve3p5BDUw==
-X-Received: by 2002:a17:902:e88b:: with SMTP id w11mr9531591plg.153.1644098354413;
-        Sat, 05 Feb 2022 13:59:14 -0800 (PST)
-Received: from [10.1.1.24] (222-155-5-102-adsl.sparkbb.co.nz. [222.155.5.102])
-        by smtp.gmail.com with ESMTPSA id lp17sm17664003pjb.25.2022.02.05.13.59.09
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 05 Feb 2022 13:59:13 -0800 (PST)
-Subject: Re: Regression in 5.17-rc1 on pata-falcon
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-References: <20220128173006.1713210-1-geert@linux-m68k.org>
- <63c80eba-7c55-2a92-8078-c63cec3c9efb@gmail.com>
- <8913a0a2-9496-143c-18c2-f3023fd37ba0@gmail.com>
- <8d215dab-cd0f-452b-281b-f67c9324b53b@gmail.com>
- <CAMuHMdVnkvSCHKt5ouZP7HrMBg7nPg7fjiio-KVJ7dehA=FwyQ@mail.gmail.com>
-Cc:     linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        Laibin Qiu <qiulaibin@huawei.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-block <linux-block@vger.kernel.org>
-From:   Michael Schmitz <schmitzmic@gmail.com>
-Message-ID: <eb5fc9ae-45a7-44d3-0238-5cdaa1ae3558@gmail.com>
-Date:   Sun, 6 Feb 2022 10:59:07 +1300
-User-Agent: Mozilla/5.0 (X11; Linux ppc; rv:45.0) Gecko/20100101
- Icedove/45.4.0
+        Sat, 5 Feb 2022 16:59:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=ext.kapsi.fi; s=20161220; h=Subject:Content-Transfer-Encoding:MIME-Version:
+        References:In-Reply-To:Message-Id:Date:Cc:To:From:Sender:Reply-To:
+        Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=6Z08zw8GPYqaS2TD7Ieq2MqRlSnLB18cTeBXjvmX1cE=; b=DbGUbspCHFW47QvBKZEmj/Zaeq
+        UjgDxbo6xF3Ii6w00HSM47B/QBiI4132+3Dlg2bagsqY9OGdfZAa7u8z7GIJSMoJC+sM0h8VBe8n3
+        PvSlm5H6r76UQMzXfNFQS8B+H9f2RLFii6KyRARNUpLEZ+1NsS5m96ZEJGjsehsnQEUvL9rvLAYQL
+        UWqDhCQOrcglw1mF2CTb8iB2DOwQzDRU5th66OdRE2yCUenFEge4g7dY55uJxtx8zV6AT4T89XmBX
+        DtZkRaGzkB4ld2Hu9oaX5vNT43dadKFDPuIzOy9dGRRKq3ZuSXtn6uDnIZBHNB/WMvAbjynEeBuGk
+        0YatFeeg==;
+Received: from 246-30-196-88.dyn.estpak.ee ([88.196.30.246]:49929 helo=localhost)
+        by mailserv1.kapsi.fi with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.89)
+        (envelope-from <maukka@ext.kapsi.fi>)
+        id 1nGT5p-0006cQ-9m; Sat, 05 Feb 2022 23:59:42 +0200
+Received: by localhost (sSMTP sendmail emulation); Sat, 05 Feb 2022 23:59:40 +0200
+From:   Mauri Sandberg <maukka@ext.kapsi.fi>
+To:     bgolaszewski@baylibre.com, brgl@bgdev.pl
+Cc:     andy.shevchenko@gmail.com, geert+renesas@glider.be,
+        linus.walleij@linaro.org, linux-gpio@vger.kernel.org,
+        robh+dt@kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, drew@beagleboard.org,
+        Mauri Sandberg <maukka@ext.kapsi.fi>,
+        Rob Herring <robh@kernel.org>
+Date:   Sat,  5 Feb 2022 23:59:17 +0200
+Message-Id: <20220205215918.8924-2-maukka@ext.kapsi.fi>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220205215918.8924-1-maukka@ext.kapsi.fi>
+References: <20210325122832.119147-1-sandberg@mailfence.com>
+ <20220205215918.8924-1-maukka@ext.kapsi.fi>
 MIME-Version: 1.0
-In-Reply-To: <CAMuHMdVnkvSCHKt5ouZP7HrMBg7nPg7fjiio-KVJ7dehA=FwyQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 88.196.30.246
+X-SA-Exim-Mail-From: maukka@ext.kapsi.fi
+Subject: [RESEND v8 1/2] dt-bindings: gpio-cascade: add documentation
+X-SA-Exim-Version: 4.2.1 (built Tue, 02 Aug 2016 21:08:31 +0000)
+X-SA-Exim-Scanned: Yes (on mailserv1.kapsi.fi)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Geert, Jens,
+Add documentation for a general GPIO cascade. It allows building
+one-to-many cascades of GPIO lines using multiplexer to choose
+the cascaded line.
 
-thanks for the hint - applying 10825410b956dc1e on top of 5.17-rc1 does 
-indeed fix the issue.
+Signed-off-by: Mauri Sandberg <maukka@ext.kapsi.fi>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+---
+v7 -> v8:
+ - added Reviewed-by tag by Linus
+v6 -> v7:
+ - no changes
+v5 -> v6:
+ - added Reviewed-by tag by Rob
+v4 -> v5:
+ - renamed gpio-mux-input -> gpio-cascade
+ - changed vague term 'pin' to 'upstream line'
+ - added more verbose description for the module
+ - added missing 'mux-controls' entry
+ - dropped Tested-by and Reviewed-by due to changes in bindings
+v3 -> v4:
+ - Changed author email
+ - Included Tested-by and Reviewed-by from Drew
+v2 -> v3: added a complete example on dual 4-way multiplexer
+v1 -> v2: added a little bit more text in the binding documenation
+---
+ .../bindings/gpio/gpio-cascade.yaml           | 103 ++++++++++++++++++
+ 1 file changed, 103 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/gpio/gpio-cascade.yaml
 
-nr_tags == 1 on the Falcon may explain why I ran into this. Oddly 
-enough, I have the same on ARAnyM. Adding a second 'disk' there does 
-reproduce the issue on ARAnyM though. nr_tags == 1 && nr_disks > 1 
-appears to be sufficient to reproduce this.
+diff --git a/Documentation/devicetree/bindings/gpio/gpio-cascade.yaml b/Documentation/devicetree/bindings/gpio/gpio-cascade.yaml
+new file mode 100644
+index 000000000000..46248f8e2ba5
+--- /dev/null
++++ b/Documentation/devicetree/bindings/gpio/gpio-cascade.yaml
+@@ -0,0 +1,103 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/gpio/gpio-cascade.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Generic GPIO cascade
++
++maintainers:
++  - Mauri Sandberg <maukka@ext.kapsi.fi>
++
++description: |
++  A generic GPIO cascade
++
++  This hardware construction cascades (multiplexes) several GPIO lines from
++  one-to-many using a software controlled multiplexer. The most common use
++  case is probably reading several inputs by switching the multiplexer over
++  several input lines, which in practice works well since input lines has
++  high impedance.
++
++  Constructions with multiplexed outputs are also possible using open drain
++  electronics.
++
++  The number of cascaded GPIO lines is limited by the technology used to
++  switch over the cascaded lines. There are readily available dual/triple
++  4-to-1 multiplexers, for example, and others.
++
++  Illustration (pins used to drive the multiplexer are omitted for clarity)
++
++                 /|---- Cascaded GPIO line 0
++  Upstream      | |---- Cascaded GPIO line 1
++  GPIO line ----+ | .
++                | | .
++                 \|---- Cascaded GPIO line n
++
++properties:
++  compatible:
++    enum:
++      - gpio-cascade
++
++  gpio-controller: true
++
++  '#gpio-cells':
++    const: 2
++
++  mux-controls:
++    minItems: 1
++    maxItems: 1
++    description: |
++      The mux controller that will be driving the GPIO cascade.
++
++  upstream-gpios:
++    description: |
++      The GPIO line used as the upstream line will convey the status to/from
++      cascaded GPIO lines. In an input mode, by using this line, it is
++      possible to read the status from selected cascaded GPIO line.
++
++      In an output mode the status of the upstream GPIO will be conveyed to
++      the selected cascaded GPIO line.
++
++required:
++  - compatible
++  - gpio-controller
++  - "#gpio-cells"
++  - mux-controls
++  - upstream-gpios
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++    mux: mux-controller {
++        compatible = "gpio-mux";
++        #mux-control-cells = <0>;
++
++        mux-gpios = <&gpio 9 GPIO_ACTIVE_HIGH>,
++                    <&gpio 11 GPIO_ACTIVE_HIGH>;
++    };
++
++    gpio2: key-mux1 {
++        compatible = "gpio-cascade";
++        mux-controls = <&mux>;
++
++        gpio-controller;
++        #gpio-cells = <2>;
++
++        // GPIOs used by this node, upstream pin
++        upstream-gpios = <&gpio 12 GPIO_ACTIVE_HIGH>;
++    };
++
++    gpio3: key-mux2 {
++        compatible = "gpio-cascade";
++        mux-controls = <&mux>;
++
++        gpio-controller;
++        #gpio-cells = <2>;
++
++        // GPIOs used by this node, upstream pin
++        upstream-gpios = <&gpio 14 GPIO_ACTIVE_HIGH>;
++    };
++
++...
+-- 
+2.25.1
 
-I surmised I couldn't be the only one to run into this, but hadn't seen 
-any other reports yet.
-
-Cheers,
-
-	Michael
-
-
-Am 05.02.2022 um 21:31 schrieb Geert Uytterhoeven:
-> Hi Michael,
->
-> On Sat, Feb 5, 2022 at 1:04 AM Michael Schmitz <schmitzmic@gmail.com> wrote:
->> commit 180dccb0dba4f5e84a4a70c1be1d34cbb6528b32 (blk-mq: fix tag_get
->> wait task can't be awakened) does cause a regression on my m68k hardware
->> test rig (m68k Falcon030, IDE disk attached through pata-falcon driver
->> which does use polled IO instead of interrupts, so may be a little on
->> the slow side).
->
->> Bisection between v5.16 and v5.17-rc1 points to
->> 180dccb0dba4f5e84a4a70c1be1d34cbb6528b32 as the culprit, which is
->> corroborated by reverting that commit in v5.17-rc1 and booting as
->> rapidly as before.
->
-> Now you know the culprit, it looks like several other people ran into this.
-> Does this fix help?
-> https://lore.kernel.org/all/1643040870.3bwvk3sis4.none@localhost/
->
-> It is commit 10825410b956dc1e ("blk-mq: Fix wrong wakeup
-> batch configuration which will cause hang") in v5.17-rc2.
->
-> Gr{oetje,eeting}s,
->
->                         Geert
->
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
->
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                 -- Linus Torvalds
->
