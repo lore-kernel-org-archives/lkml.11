@@ -2,140 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A300C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 16:39:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A725C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 16:41:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353685AbiBEQjG (ORCPT
+        id S1380404AbiBEQlM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 11:39:06 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:53776 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbiBEQjE (ORCPT
+        Sat, 5 Feb 2022 11:41:12 -0500
+Received: from smtp08.smtpout.orange.fr ([80.12.242.130]:60282 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244712AbiBEQlK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 11:39:04 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 026486102E;
-        Sat,  5 Feb 2022 16:39:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A510C340EF;
-        Sat,  5 Feb 2022 16:39:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644079143;
-        bh=eyUzCj9Im/JJzJ/b7lRZbLEXnEmp7CpYdiYbFMtcsQQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=F3Dgq1e7oPMaa0gOvWSIPORHe4THC5j5+9RcDXJR4ug89pvh52dEJhWx5VpWZ5ZXN
-         L30IkYkEql0cxl3LAUFODqtuFMzM9S2Y4Ifokr9o8e01mKvyAyazwlV2aEJsMnNGAf
-         TENqxvAkSL0dweFJNQopYGKVhFOTyiATvcHpdjsMVHk9KDg92telp+L+KLSIWJ8tWB
-         bmoqeWa7BttZSNjjLQ8YdborwZv48+q4sXxMC84PIKr9ixhu2UE8rMuomU+8hnOJHR
-         41czcCVe5iJjAd0+dcaZrxmre3rnOlYXz1bpnpfFhI/2N6e/5yYfYsZSa0I5Ek0ws6
-         V1Bz2q1HQ/vYQ==
-Date:   Sat, 5 Feb 2022 16:45:35 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH v1 1/3] iio: imu: inv_mpu6050: Drop wrong use of
- ACPI_PTR()
-Message-ID: <20220205164535.763feeea@jic23-huawei>
-In-Reply-To: <20220203155920.18586-1-andriy.shevchenko@linux.intel.com>
-References: <20220203155920.18586-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Sat, 5 Feb 2022 11:41:10 -0500
+Received: from pop-os.home ([90.126.236.122])
+        by smtp.orange.fr with ESMTPA
+        id GO7YngGexxHdTGO7YnEdz2; Sat, 05 Feb 2022 17:41:09 +0100
+X-ME-Helo: pop-os.home
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Sat, 05 Feb 2022 17:41:09 +0100
+X-ME-IP: 90.126.236.122
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     Sebastian Reichel <sre@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        linux-pm@vger.kernel.org
+Subject: [PATCH] power: supply: Simplify memory allocation
+Date:   Sat,  5 Feb 2022 17:40:57 +0100
+Message-Id: <c09fc0b84cb046ad31bc1da67607bf0e9fa07085.1644079229.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu,  3 Feb 2022 17:59:18 +0200
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+Use devm_bitmap_zalloc() instead of hand writing it.
 
-> ACPI_PTR() is more harmful than helpful. For example, in this case
-> if CONFIG_ACPI=n, the ID table left unused which is not what we want.
-> 
-> Instead of adding ifdeffery or attribute here and there, drop ACPI_PTR().
-> 
-> Fixes: 3b3870646642 ("iio: imu: inv_mpu6050: Mark acpi match table as maybe unused")
-> Fixes: fd64df16f40e ("iio: imu: inv_mpu6050: Add SPI support for MPU6000")
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ drivers/power/supply/power_supply_hwmon.c | 15 +++------------
+ 1 file changed, 3 insertions(+), 12 deletions(-)
 
-Hi Andy,
-
-Whilst I fully support tidying this up, what is 'fixing' as such?
-Will get rid of an unused warning for the spi case but that sort
-of things doesn't always get fixes tags.  They tend to result
-in backports and I wouldn't think it was worth backporting this
-unless I'm missing something...
-
-Jonathan
-
-
-> ---
->  drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c | 7 +++----
->  drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c | 4 ++--
->  2 files changed, 5 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-> index fe03707ec2d3..ccb06d9af760 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-> @@ -3,11 +3,11 @@
->  * Copyright (C) 2012 Invensense, Inc.
->  */
->  
-> -#include <linux/acpi.h>
->  #include <linux/delay.h>
->  #include <linux/err.h>
->  #include <linux/i2c.h>
->  #include <linux/iio/iio.h>
-> +#include <linux/mod_devicetable.h>
->  #include <linux/module.h>
->  #include <linux/of_device.h>
->  #include <linux/property.h>
-> @@ -249,11 +249,10 @@ static const struct of_device_id inv_of_match[] = {
->  };
->  MODULE_DEVICE_TABLE(of, inv_of_match);
->  
-> -static const struct acpi_device_id __maybe_unused inv_acpi_match[] = {
-> +static const struct acpi_device_id inv_acpi_match[] = {
->  	{"INVN6500", INV_MPU6500},
->  	{ },
->  };
-> -
->  MODULE_DEVICE_TABLE(acpi, inv_acpi_match);
->  
->  static struct i2c_driver inv_mpu_driver = {
-> @@ -262,7 +261,7 @@ static struct i2c_driver inv_mpu_driver = {
->  	.id_table	=	inv_mpu_id,
->  	.driver = {
->  		.of_match_table = inv_of_match,
-> -		.acpi_match_table = ACPI_PTR(inv_acpi_match),
-> +		.acpi_match_table = inv_acpi_match,
->  		.name	=	"inv-mpu6050-i2c",
->  		.pm     =       &inv_mpu_pmops,
->  	},
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
-> index 6800356b25fb..44b4f74b9256 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
-> @@ -2,8 +2,8 @@
->  /*
->  * Copyright (C) 2015 Intel Corporation Inc.
->  */
-> +#include <linux/mod_devicetable.h>
->  #include <linux/module.h>
-> -#include <linux/acpi.h>
->  #include <linux/of.h>
->  #include <linux/property.h>
->  #include <linux/spi/spi.h>
-> @@ -148,7 +148,7 @@ static struct spi_driver inv_mpu_driver = {
->  	.id_table	=	inv_mpu_id,
->  	.driver = {
->  		.of_match_table = inv_of_match,
-> -		.acpi_match_table = ACPI_PTR(inv_acpi_match),
-> +		.acpi_match_table = inv_acpi_match,
->  		.name	=	"inv-mpu6000-spi",
->  		.pm     =       &inv_mpu_pmops,
->  	},
+diff --git a/drivers/power/supply/power_supply_hwmon.c b/drivers/power/supply/power_supply_hwmon.c
+index bffe6d84c429..a48aa4afb828 100644
+--- a/drivers/power/supply/power_supply_hwmon.c
++++ b/drivers/power/supply/power_supply_hwmon.c
+@@ -324,11 +324,6 @@ static const struct hwmon_chip_info power_supply_hwmon_chip_info = {
+ 	.info = power_supply_hwmon_info,
+ };
+ 
+-static void power_supply_hwmon_bitmap_free(void *data)
+-{
+-	bitmap_free(data);
+-}
+-
+ int power_supply_add_hwmon_sysfs(struct power_supply *psy)
+ {
+ 	const struct power_supply_desc *desc = psy->desc;
+@@ -349,18 +344,14 @@ int power_supply_add_hwmon_sysfs(struct power_supply *psy)
+ 	}
+ 
+ 	psyhw->psy = psy;
+-	psyhw->props = bitmap_zalloc(POWER_SUPPLY_PROP_TIME_TO_FULL_AVG + 1,
+-				     GFP_KERNEL);
++	psyhw->props = devm_bitmap_zalloc(dev,
++					  POWER_SUPPLY_PROP_TIME_TO_FULL_AVG + 1,
++					  GFP_KERNEL);
+ 	if (!psyhw->props) {
+ 		ret = -ENOMEM;
+ 		goto error;
+ 	}
+ 
+-	ret = devm_add_action_or_reset(dev, power_supply_hwmon_bitmap_free,
+-			      psyhw->props);
+-	if (ret)
+-		goto error;
+-
+ 	for (i = 0; i < desc->num_properties; i++) {
+ 		const enum power_supply_property prop = desc->properties[i];
+ 
+-- 
+2.32.0
 
