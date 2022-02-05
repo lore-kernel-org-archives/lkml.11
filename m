@@ -2,68 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B283C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 15:00:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17F42C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 15:06:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380276AbiBEPAZ (ORCPT
+        id S1348528AbiBEPGI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 10:00:25 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:49053 "EHLO
+        Sat, 5 Feb 2022 10:06:08 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:39294 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1380259AbiBEPAV (ORCPT
+        by vger.kernel.org with ESMTP id S229940AbiBEPGH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 10:00:21 -0500
+        Sat, 5 Feb 2022 10:06:07 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644073220;
+        s=mimecast20190719; t=1644073562;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding;
-        bh=713HQL5x//o/KghlUsgMrDORBx+gP5N718ebtgS9CfI=;
-        b=BHMqirobupL0qHDUTGS18gG/t9A4jYcSlEaeKbyzeCtAq23Gh7dDu7Pa5zjjT9+f1Dq6ZE
-        ruanLcTCOLDyDr+f5JO/7aIYEHY2s3SoaEYRJgTUermajXf7L47ixRog9PjToG3QrHP+4l
-        doB0RrTEXYu5mVjYOEj8EDRzKH72OpM=
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
- [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=HFOiB1hRKVRXNI3vSujXABTzt/FIH2gAktqkFb6ckUk=;
+        b=e2lbGmrSVcgqaCHp8zV0Lp/7g76TlFJ7Cf5q+1WecjC2OPRixbsEvue9MxNdAvhJVTmRYl
+        wPEaibkDJWMgpiukMPAUZ3cdxjYTcVm6peG4Ai9Vc30QM3QmJ1TgQv63Nq0DhovYb+ba6n
+        HaZk8cKcUzoNHdzFH6t/MiaFQN+kMVo=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-210-Cq78lpotPN2_ZK8V0EQG8g-1; Sat, 05 Feb 2022 10:00:19 -0500
-X-MC-Unique: Cq78lpotPN2_ZK8V0EQG8g-1
-Received: by mail-qt1-f199.google.com with SMTP id a6-20020ac844a6000000b002cf3968d32aso7218330qto.1
-        for <linux-kernel@vger.kernel.org>; Sat, 05 Feb 2022 07:00:19 -0800 (PST)
+ us-mta-484-L_RURwYHN_irGG00bEaJgw-1; Sat, 05 Feb 2022 10:06:01 -0500
+X-MC-Unique: L_RURwYHN_irGG00bEaJgw-1
+Received: by mail-qk1-f197.google.com with SMTP id u12-20020a05620a0c4c00b00475a9324977so4707724qki.13
+        for <linux-kernel@vger.kernel.org>; Sat, 05 Feb 2022 07:06:01 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=713HQL5x//o/KghlUsgMrDORBx+gP5N718ebtgS9CfI=;
-        b=Kf9iI2aGFJuD9WvxyQkepZO1pSTdmvxv5AM8oSQ2bCnj3ICVbZYyieT983/d0PHXFr
-         KZLs1K76+UUh9lM00bvMyYCt23Mo3ugfdVD363B2IIkMlZaAL780xAhl8ZaiwChVtc6B
-         jT7mzby2hZci/wbPduOqTFT3M346bOjWgJOm6/xNqYiGpgVzc3SiplSu/HnozORBGp8U
-         UAD8XPsh3ItaudLgBkMZ6OMXsWQqNQ4NjWbY7pkxVMYQWpxLzHHBg+6e4VIy20E55dAW
-         BYimpiyupBoqzaj7IX2PtW8MR8y9lBD9Bgn1JS5DL1OQ4XLkWLcOhN1l/Dec7GWbCdEP
-         rZtg==
-X-Gm-Message-State: AOAM532zJ6/2LhCiPIygYKY71GGr2OZO//wxpwDD/QY5Ui4nbf93o8Iy
-        i0a1HqKidyk4gjlCbizMGm77uaoC0llbaod36Ejrs9VMQauok1Pl1EuTrazBtllOrS2IY2rh/XL
-        8e9gnoqbUcN3+ZiPClhwL31Ju
-X-Received: by 2002:a05:620a:371d:: with SMTP id de29mr2218861qkb.300.1644073219112;
-        Sat, 05 Feb 2022 07:00:19 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzQMqxJhjsehYnlrGdRYlEx/4uzDQf3AvY1i5RUhxDDhxx+wOwMtIaQmWd3GyZr4OF2gUxNaQ==
-X-Received: by 2002:a05:620a:371d:: with SMTP id de29mr2218834qkb.300.1644073218865;
-        Sat, 05 Feb 2022 07:00:18 -0800 (PST)
+        bh=HFOiB1hRKVRXNI3vSujXABTzt/FIH2gAktqkFb6ckUk=;
+        b=CHRlnWFRt/iIqSSl0+Wv3BSfcNlddNA8Tr5Qda6MlIbJX9eoIes14EknvTgAIXZerG
+         O2UKHX6i18R4Sd/P/vCAsBnwpwCUHwxC6yap+17lNjEva8JD0NIlL31cD1iaer9dnR8N
+         TRU5rMzTeO3a5d68x/VQWhxV5TLYpDcz/OW9yEWt0aVxnFIUM4fj+Q3TJuf7InGguBHR
+         /5pycggm5AusJHgq8mKw0uGedKtwvHV6GF/enhHVFhixrOVRfCsBQky1Vjm/5g6Dyehv
+         AMQc4JQUphtjHN6GeXAHHkPxH01vGaMDbrAAE1LQGOVVHHLqFP0KRnNnhcmzzpO04C8P
+         mSlA==
+X-Gm-Message-State: AOAM530uidq+WMmVDbCn5FEZ6OpZzBtMG0LO12btTQK2fl/hqhVocVqL
+        Xovlu65w0n02WKHCZR0Qn2LtxZJJn9mqvwo2nLM/dnA1yneow5Rtvk9EGFVsjY0YtDZn5V+J84c
+        qZ7qiitCMru7z1ReCZswxzU3h
+X-Received: by 2002:a05:622a:249:: with SMTP id c9mr2799085qtx.109.1644073561010;
+        Sat, 05 Feb 2022 07:06:01 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyHdY9gPLzZ34BA6/NkHsRadtILz/Da4LXrmosm2/PdejzarCHuBbYQ1iuqbo53IySijVUi9A==
+X-Received: by 2002:a05:622a:249:: with SMTP id c9mr2799047qtx.109.1644073560650;
+        Sat, 05 Feb 2022 07:06:00 -0800 (PST)
 Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id d22sm2657159qkn.112.2022.02.05.07.00.15
+        by smtp.gmail.com with ESMTPSA id f14sm2728592qko.117.2022.02.05.07.05.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 05 Feb 2022 07:00:17 -0800 (PST)
+        Sat, 05 Feb 2022 07:05:59 -0800 (PST)
 From:   trix@redhat.com
-To:     evan.quan@amd.com, alexander.deucher@amd.com,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch, nathan@kernel.org, ndesaulniers@google.com,
-        lijo.lazar@amd.com, darren.powell@amd.com, guchun.chen@amd.com,
-        andrey.grodzovsky@amd.com
-Cc:     amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        Tom Rix <trix@redhat.com>
-Subject: [PATCH] drm/amd/pm: fix error handling
-Date:   Sat,  5 Feb 2022 07:00:08 -0800
-Message-Id: <20220205150008.1968218-1-trix@redhat.com>
+To:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
+        bristot@redhat.com
+Cc:     linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
+Subject: [PATCH] sched: cleanup double word in comment
+Date:   Sat,  5 Feb 2022 07:05:53 -0800
+Message-Id: <20220205150553.1968684-1-trix@redhat.com>
 X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -73,44 +70,26 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Tom Rix <trix@redhat.com>
 
-clang static analysis reports this error
-amdgpu_smu.c:2289:9: warning: Called function pointer
-  is null (null dereference)
-        return smu->ppt_funcs->emit_clk_levels(
-               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Remove the second 'into'.
 
-There is a logic error in the earlier check of
-emit_clk_levels.  The error value is set to
-the ret variable but ret is never used.  Return
-directly and remove the unneeded ret variable.
-
-Fixes: 5d64f9bbb628 ("amdgpu/pm: Implement new API function "emit" that accepts buffer base and write offset")
 Signed-off-by: Tom Rix <trix@redhat.com>
 ---
- drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ kernel/sched/sched.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c b/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c
-index af368aa1fd0ae..5f3b3745a9b7a 100644
---- a/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c
-+++ b/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c
-@@ -2274,7 +2274,6 @@ static int smu_emit_ppclk_levels(void *handle, enum pp_clock_type type, char *bu
+diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+index 9b33ba9c3c420..f82a81b4a5271 100644
+--- a/kernel/sched/sched.h
++++ b/kernel/sched/sched.h
+@@ -2507,7 +2507,7 @@ static inline bool rq_order_less(struct rq *rq1, struct rq *rq2)
  {
- 	struct smu_context *smu = handle;
- 	enum smu_clk_type clk_type;
--	int ret = 0;
- 
- 	clk_type = smu_convert_to_smuclk(type);
- 	if (clk_type == SMU_CLK_COUNT)
-@@ -2284,7 +2283,7 @@ static int smu_emit_ppclk_levels(void *handle, enum pp_clock_type type, char *bu
- 		return -EOPNOTSUPP;
- 
- 	if (!smu->ppt_funcs->emit_clk_levels)
--		ret = -ENOENT;
-+		return -ENOENT;
- 
- 	return smu->ppt_funcs->emit_clk_levels(smu, clk_type, buf, offset);
- 
+ #ifdef CONFIG_SCHED_CORE
+ 	/*
+-	 * In order to not have {0,2},{1,3} turn into into an AB-BA,
++	 * In order to not have {0,2},{1,3} turn into an AB-BA,
+ 	 * order by core-id first and cpu-id second.
+ 	 *
+ 	 * Notably:
 -- 
 2.26.3
 
