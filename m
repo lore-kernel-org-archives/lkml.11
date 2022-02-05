@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42122C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 18:56:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1586C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 18:56:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381307AbiBES4S (ORCPT
+        id S1381581AbiBES4V (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 13:56:18 -0500
-Received: from relay10.mail.gandi.net ([217.70.178.230]:39641 "EHLO
+        Sat, 5 Feb 2022 13:56:21 -0500
+Received: from relay10.mail.gandi.net ([217.70.178.230]:52873 "EHLO
         relay10.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381189AbiBESz0 (ORCPT
+        with ESMTP id S1381207AbiBESzK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 13:55:26 -0500
+        Sat, 5 Feb 2022 13:55:10 -0500
 Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 46E76240002;
-        Sat,  5 Feb 2022 18:55:23 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id DB76E24000B;
+        Sat,  5 Feb 2022 18:55:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1644087324;
+        t=1644087309;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=GwbC5gn4h2V2gFK4wGghF7MDfEkNG/IYlc1iEgQerj0=;
-        b=L1JXL3Qty8YbjkBCLhJVJAw9Iqd4UQldBGCTyzEEJkgRDRu2AsUoq3UeW7TuMfbaxUNkwa
-        m7infW20DxJQin+WbsuHe6ut42BABmKqYtmwLcdl+VBCTcFFktcTdJkK6v2rPxSxoBezmP
-        pydAO11+Uh9weVgn9rbYVfZv2SeAv8i0y+pifvy7y8ZqW0/WAqPVzNd6F/RmlyN1lE5E2w
-        bHH8ptkwgdHAqjiat3CtNSiwIVmPcBVI0DJFqBpSVVhvj8CZa4h/q5EuF/zkHeEiy3oQQw
-        uIhGXLGdmytN6Udakwg1xk1B1D7pX6ghmO2Jpuv8BN+St7Tx755v3iKDpTnVzA==
+        bh=thQFXb+Mbfog5Wu3+RYgHAOHMpkNUMkaPZldQzKOFCI=;
+        b=POBS8qNGo79IGw+1tA4WMVk+b2+4QVJqDCBrSuj64Npk2IBHMtMxSOuXgberW/bWGUnYQs
+        6dOtimeBK873korpK0pFVujnFlTcnAQJNJb+mbPJMI3xa84kbKYi576E2ZK+L3zy2o4H/C
+        JEA3fN0QjWE0rTOAbQwoXalgUb11YtWpaov5Z2pRMw/yuZKyL1vBkQAXa9gKBUDvpjdcDx
+        bvV1tzVMZQuMFoz7uMl5F6WZocWujfhIK731EeRTO6uGqB+IKnUDFg7wCY2IGKg8uTk5K+
+        S9i2NLavH3Hue1GGIZBGLMH16UAej4HkKMUBm9PoilD0yqaiFGZM94+7xitXbg==
 From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
 To:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
@@ -46,9 +46,9 @@ Cc:     Yong Deng <yong.deng@magewell.com>,
         Helen Koike <helen.koike@collabora.com>,
         Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: [PATCH v2 26/66] media: sun6i-csi: Register the media device after creation
-Date:   Sat,  5 Feb 2022 19:53:49 +0100
-Message-Id: <20220205185429.2278860-27-paul.kocialkowski@bootlin.com>
+Subject: [PATCH v2 17/66] media: sun6i-csi: Define and use driver name and (reworked) description
+Date:   Sat,  5 Feb 2022 19:53:40 +0100
+Message-Id: <20220205185429.2278860-18-paul.kocialkowski@bootlin.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com>
 References: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com>
@@ -58,50 +58,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is no particular need to register the media device in the
-subdev notify complete callback.
+Add proper defines for driver name and description instead of
+MODULE_NAME and hardcoding (cosmetics).
 
-Register it in the v4l2 code instead where it's more in-context.
+Also rework the description while at it to mention the hardware
+generation that the driver supports and remove the video capture
+mentions since it applies to the whole media device.
 
 Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
 ---
- drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c | 14 ++++++--------
+ drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h |  3 +++
+ 2 files changed, 9 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
-index 688288afae68..6f04f86504bf 100644
+index fc96921b0583..43dcd8117d3f 100644
 --- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
 +++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
-@@ -638,7 +638,7 @@ static int sun6i_subdev_notify_complete(struct v4l2_async_notifier *notifier)
- 	if (ret < 0)
+@@ -27,8 +27,6 @@
+ #include "sun6i_csi.h"
+ #include "sun6i_csi_reg.h"
+ 
+-#define MODULE_NAME	"sun6i-csi"
+-
+ struct sun6i_csi_dev {
+ 	struct sun6i_csi		csi;
+ 	struct device			*dev;
+@@ -730,7 +728,7 @@ static int sun6i_csi_v4l2_init(struct sun6i_csi *csi)
+ 	int ret;
+ 
+ 	csi->media_dev.dev = csi->dev;
+-	strscpy(csi->media_dev.model, "Allwinner Video Capture Device",
++	strscpy(csi->media_dev.model, SUN6I_CSI_DESCRIPTION,
+ 		sizeof(csi->media_dev.model));
+ 	csi->media_dev.hw_revision = 0;
+ 	snprintf(csi->media_dev.bus_info, sizeof(csi->media_dev.bus_info),
+@@ -755,7 +753,7 @@ static int sun6i_csi_v4l2_init(struct sun6i_csi *csi)
+ 		goto free_ctrl;
+ 	}
+ 
+-	ret = sun6i_video_init(&csi->video, csi, "sun6i-csi");
++	ret = sun6i_video_init(&csi->video, csi, SUN6I_CSI_NAME);
+ 	if (ret)
+ 		goto unreg_v4l2;
+ 
+@@ -870,8 +868,8 @@ static int sun6i_csi_resource_request(struct sun6i_csi_dev *sdev,
+ 	if (irq < 0)
+ 		return -ENXIO;
+ 
+-	ret = devm_request_irq(&pdev->dev, irq, sun6i_csi_isr, 0, MODULE_NAME,
+-			       sdev);
++	ret = devm_request_irq(&pdev->dev, irq, sun6i_csi_isr, 0,
++			       SUN6I_CSI_NAME, sdev);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "Cannot request csi IRQ\n");
  		return ret;
+@@ -924,12 +922,12 @@ static struct platform_driver sun6i_csi_platform_driver = {
+ 	.probe = sun6i_csi_probe,
+ 	.remove = sun6i_csi_remove,
+ 	.driver = {
+-		.name = MODULE_NAME,
++		.name = SUN6I_CSI_NAME,
+ 		.of_match_table = of_match_ptr(sun6i_csi_of_match),
+ 	},
+ };
+ module_platform_driver(sun6i_csi_platform_driver);
  
--	return media_device_register(&v4l2->media_dev);
-+	return 0;
- }
+-MODULE_DESCRIPTION("Allwinner V3s Camera Sensor Interface driver");
++MODULE_DESCRIPTION("Allwinner A31 Camera Sensor Interface driver");
+ MODULE_AUTHOR("Yong Deng <yong.deng@magewell.com>");
+ MODULE_LICENSE("GPL");
+diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h
+index 3a38d107ae3f..e04f3c3fa27b 100644
+--- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h
++++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h
+@@ -14,6 +14,9 @@
  
- static const struct v4l2_async_notifier_operations sun6i_csi_async_ops = {
-@@ -687,6 +687,12 @@ static int sun6i_csi_v4l2_setup(struct sun6i_csi_device *csi_dev)
+ #include "sun6i_video.h"
  
- 	media_device_init(media_dev);
- 
-+	ret = media_device_register(media_dev);
-+	if (ret) {
-+		dev_err(dev, "failed to register media device: %d\n", ret);
-+		goto error_media;
-+	}
++#define SUN6I_CSI_NAME		"sun6i-csi"
++#define SUN6I_CSI_DESCRIPTION	"Allwinner A31 CSI Device"
 +
- 	/* V4L2 Control Handler */
+ struct sun6i_csi;
  
- 	ret = v4l2_ctrl_handler_init(&v4l2->ctrl_handler, 0);
-@@ -746,6 +752,7 @@ static int sun6i_csi_v4l2_setup(struct sun6i_csi_device *csi_dev)
- 	v4l2_ctrl_handler_free(&v4l2->ctrl_handler);
- 
- error_media:
-+	media_device_unregister(media_dev);
- 	media_device_cleanup(media_dev);
- 
- 	return ret;
+ /**
 -- 
 2.34.1
 
