@@ -2,71 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6968C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 10:37:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 640DDC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 10:37:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379774AbiBEKhH (ORCPT
+        id S1379827AbiBEKhQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 05:37:07 -0500
-Received: from mout.gmx.net ([212.227.17.22]:34813 "EHLO mout.gmx.net"
+        Sat, 5 Feb 2022 05:37:16 -0500
+Received: from mout.gmx.net ([212.227.17.21]:39983 "EHLO mout.gmx.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1379725AbiBEKgz (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 05:36:55 -0500
+        id S1379768AbiBEKhB (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sat, 5 Feb 2022 05:37:01 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1644057404;
-        bh=un66HwMXzx1+JWKGj3Ie+e7wbnjBXvxVWjU+DYbV0ps=;
+        s=badeba3b8450; t=1644057402;
+        bh=QROgHSfb3iMEjYa0kRt/e/0z4UVT4OJ4cUBSHkYo0N0=;
         h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=b0dHsqC2bTTP6Auv031hNteHBdcxWqgiNdTM/Gulghm8yGwYXtp7dG6F+kMV2zsa1
-         frrRVosWIJSALbBxc+atyIdgkrpogUKQRWQBnNSdGYtYBTNxE1E/GrBSvw7+QnNVrj
-         3L+CmDJyu/CRb6MOg5CQ0FGLN1RGFkpNVSmSYC40=
+        b=PX5U8pguYOWJhMOMJGyjROg29isAPINrgR0lPeVp/u3k1kD3uP6cYdovKzzyFuZVp
+         IaiupbIkaP1ER7aSCfUnT2J19CH74RuneK9XfoRiPQT472Y7TSqrqPMlOtgI6vhlNu
+         l+GBarsffXSy9PTGqBUCQ2+I5+5jurN4Q6G8BmMg=
 X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
 Received: from longitude ([5.146.194.160]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MUowb-1mq8b72tRB-00QhUl; Sat, 05
- Feb 2022 11:36:44 +0100
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MIwz4-1mvsxv3sIk-00KPLQ; Sat, 05
+ Feb 2022 11:36:42 +0100
 From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
 To:     linux-clk@vger.kernel.org
 Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
         Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, linux-arm-msm@vger.kernel.org
-Subject: [PATCH v2 6/7] clk: qcom: Declare mux table as const u32[]
-Date:   Sat,  5 Feb 2022 11:36:12 +0100
-Message-Id: <20220205103613.1216218-7-j.neuschaefer@gmx.net>
+        Stephen Boyd <sboyd@kernel.org>,
+        Dongjiu Geng <gengdongjiu@huawei.com>
+Subject: [PATCH v2 4/7] clk: hisilicon: Remove unnecessary cast of mux table to u32 *
+Date:   Sat,  5 Feb 2022 11:36:10 +0100
+Message-Id: <20220205103613.1216218-5-j.neuschaefer@gmx.net>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220205103613.1216218-1-j.neuschaefer@gmx.net>
 References: <20220205103613.1216218-1-j.neuschaefer@gmx.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:fxvWhth2K2e6hWUBAb7ugpC0GFHmNxb4qSUdCbpXl9hEenG/ZyC
- x3mNaHkDMCIW/wP2NYIClOXktUsfwIsfXOV5xup1MIHgcZHMMYsJqKtHhTaF/MonDN8gjGH
- f2Ie0DzocHOecH2Q2qxo5rpGvPYxkhOm3Ws8xhNMiKMlZSkzWQDjSa8v+l4nIXAVLfrgV3o
- 4HIlwg9JibRc4oeqv2yxw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:fqEniijzM18=:4yD3sWjBxqkHBCmqdtYOMm
- yVZ5gOB4oPSQhfv/je9cWReRnlmZE0pJguTyKh1JYCg86/zQW99d9w6HS/u1H3RAv7vAwO1Zn
- qE8IRO87NBlkVwFJSuVWaKPcfJooXB0MG7DsQddt2YM80uxewPDoIWnJGhehwC8IPCgDC7h1T
- x0BTj/Q6/ZLeRv1FgIQX/3SxGQiZ5FBFBdnHyCdp5FCZcLZQahN2+PR4gaWvAgwEQq9CZRGug
- 7OkLI275/PHoI7VBtkf7A0wR6HbIClf7NhT4xbGnC4L1OtdaJxCrypCv0PLFLUd5xlGE9fyqQ
- J+r1kbFXiAV+Ojf+/e/ExA+SD+TVGhWN3p5cOjJqNXcDVUYnkvpaOSBhGfDwp7hdQQTIXweif
- 5BFZS0tJsYMo9vaJ/3N/79RCIoDHM7jv1GhViZGQc1Fkx2jwqhcLRR1RjGppaNo2EYtYi/cG+
- Y5013/SJrkYpJR0eGFtEkz6KxkRg02mPaKm4OHKA6KQGWN6vEC45jEI8iEcBm52HkdJFYYCTd
- 62bjM9P3p+l4s1BrMbLa6UBT12G2I8S7IsjxxzgsJ36lmWYthZeEh6zlChPOyxMYtGAkhZD/T
- pQzuSKWn4aRp6K5va99+ezxDstqPwoc3Bpg9RxG7vQKJ0MmeP2wn8sOzjDPYzIc+AskdxjEZh
- mH3F4xxM+hfWRenoN84xsW/V9Ah1EQdkEBz9+GoNgePuOdqZXAA1dsceP/ajZ8BKlEDdxDPkc
- dlhiXTGz4CbUB2l7U4t/xQpB3CIB0R8KAs8N+uncIBSl+U9llTvjQFnzmMGa7CGUyHw4Jjw9j
- y6IWJwS00bRY13utKPlxQTc5gaYqSSdALM/0BHBeQ2I08Pk5HqAWKCswYC6aw2VxZ+chMwiaU
- gKpPUIciBo1uTmNpQ+7GmOtEezYVtsHDnBfiMpnWYz/8WimJcc9nNR4Lp7sxCtpa8mjfiPvMf
- aX6ZjdsakdF+3h88EBV6cqzEYfx5Pf4o5abexggVOsGeV3+CGh9/mT2PspF+sEuoF3C5nOnd1
- bNQgGAZxjSJq/Qe2+KldgRNFU5uLxPV7SbHkCqC4PsP8mm58Cw8RfAVqckc2hbUuR4Baqs/8D
- djOThNPikw7xP0=
+X-Provags-ID: V03:K1:C9ZnEZNM5TEevGBylOfbKYocqhZUTP047OiXTMGozjVJqSDGs6t
+ TWdKaDaSg80azhRbojL2OsM61Mlkg2Yh9nHrbF328/ZPVHR4Ow65STx4q5nhLXZxHHrbFvr
+ tBPikfsWbrGBEdf8UMA/ckIjlqN3PsQj2PRp9DFHjhXsHKKVXqhPuy6K+HIrtY52ZTq4ZWJ
+ 78WopYd5OYof47uloKbMQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:bICYtb9YPuo=:Tm0/e2XfYu3hqg1eOOZ5YL
+ 44UGOUbQQczOndFYJhitFgE7iNUweR9JqluTEO9KB+uLddic5cz2o3gFTr+pnCokCps5xjvH4
+ qbuDru7JLPfACSEnv4Q/krsyjCjZyhKCujChaZ1BYdHxMBLhD1vxgfYQLApDVFHqrB81zjxj7
+ WHBVhkFkE8Z18YRk7EmBQpDGzR1DG337ALNJJG/ct1ISMQAi5F1JYhHb7jy5Z15zG1+rfwCWz
+ culH5GvPazHFIWy0TKIl8PgqF5fxevelcuIBheM/N9J0fTLXxYuADN8YYMfZ5XN+unP24ySHM
+ a3u6pcObYR+T9SPqYDYOvsKdSm2LOqC7yuH68H/qs5JYW2k7vRHpDhMDwuWhkgQVRJq/oS//H
+ 6yf2aGEHk3UZxs3+mV0r2PKGg7GWf3+AFdxU6bnfitKZv4dDoUOAZkuAj+B0hy0DxLbGGLkKI
+ LsH90RAoXDJYGeaHqS41693l4DIxjyWt2LZgiSMikG3zmK3hvtRFKEMXdPv8DqJbA95bFaMx0
+ cSLde8828clCDxihP03gTjDPnoCxJMAK4ht7WIQ/1wABbVD9Q2IZAx1km4LrqmTBRQHVlu3vA
+ yrEQ+w3mkY2Us9O+tC0t3gN01kzJUFYAWJ4zoDKS11p5jjdEqkRnBCSGVJ2BFdhpgWjA4tnFm
+ rUHta6HqsMrBLfvMeou5VtwvHCjhCIIbQh89GloGJ6ubnP+Qex0Eg39HLLb7XNoBV+I0RQtu4
+ OB2Ui1ZjUeu9wYjPL+x4MOwOtFapCFtyNO+8KhXn4m8RTAWjcpw0PaJFMbqDMNbQdBuuKpXTc
+ ZQ52nFM3aHdbtaq+7sR+UtoL6leaoYsPDa1+5Yi7zNoDeU3Bff9baWTV6zPVufanJovedYEfX
+ qFBbLDbtyWQvPxpVF+4zB43VvMW8fmN3xJS+SaYg90DBcY9iI9m2CZKGXDvsInV9CJh6+rP+t
+ m/ZTX9D7sKSFzjCpFs91DN5SKz8ygU90THk3WERzNz/xGm2/vQGle8V17kU2p1JqZNNRV70XV
+ DycXrO2yYrhHaxSDROlPE5xOkARB0wynmKgmE6xKVCfZ4Pt19YYnHfjPHNugjhm3kOsQgQ38t
+ e9MPkpraj87RW4=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that clk_register_mux_table takes a const u32 *, we can declare the
-mux tables as const u32[].
+Now that clk_register_mux_table takes a const u32 *, we don't need the
+cast anymore.
 
 Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
 =2D--
@@ -74,22 +73,23 @@ Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
 v2:
 - no changes
 =2D--
- drivers/clk/qcom/kpss-xcc.c | 2 +-
+ drivers/clk/hisilicon/clk.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/clk/qcom/kpss-xcc.c b/drivers/clk/qcom/kpss-xcc.c
-index 4fec1f9142b82..88d4b33ac0cc3 100644
-=2D-- a/drivers/clk/qcom/kpss-xcc.c
-+++ b/drivers/clk/qcom/kpss-xcc.c
-@@ -17,7 +17,7 @@ static const char *aux_parents[] =3D {
- 	"pxo",
- };
-
--static unsigned int aux_parent_map[] =3D {
-+static const u32 aux_parent_map[] =3D {
- 	3,
- 	0,
- };
+diff --git a/drivers/clk/hisilicon/clk.c b/drivers/clk/hisilicon/clk.c
+index 9361fba7cd4cf..54d9fdc935990 100644
+=2D-- a/drivers/clk/hisilicon/clk.c
++++ b/drivers/clk/hisilicon/clk.c
+@@ -162,7 +162,7 @@ int hisi_clk_register_mux(const struct hisi_mux_clock =
+*clks,
+ 					clks[i].num_parents, clks[i].flags,
+ 					base + clks[i].offset, clks[i].shift,
+ 					mask, clks[i].mux_flags,
+-					(u32 *)clks[i].table, &hisi_clk_lock);
++					clks[i].table, &hisi_clk_lock);
+ 		if (IS_ERR(clk)) {
+ 			pr_err("%s: failed to register clock %s\n",
+ 			       __func__, clks[i].name);
 =2D-
 2.34.1
 
