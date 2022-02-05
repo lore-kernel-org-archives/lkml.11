@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92C1FC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 18:54:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD8B4C43219
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 18:54:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381098AbiBESyx (ORCPT
+        id S1381089AbiBESy5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 13:54:53 -0500
-Received: from relay10.mail.gandi.net ([217.70.178.230]:55507 "EHLO
+        Sat, 5 Feb 2022 13:54:57 -0500
+Received: from relay10.mail.gandi.net ([217.70.178.230]:36681 "EHLO
         relay10.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381048AbiBESyp (ORCPT
+        with ESMTP id S1381057AbiBESyw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 13:54:45 -0500
+        Sat, 5 Feb 2022 13:54:52 -0500
 Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 2F5F3240003;
-        Sat,  5 Feb 2022 18:54:42 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id A0F29240004;
+        Sat,  5 Feb 2022 18:54:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1644087283;
+        t=1644087287;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=MdNte4sN/MUAO5c6piyw/+F9bIGGex5gsZiLTGbQSck=;
-        b=mv5VwDSlYn/pVjUom3rpRYcRFbdr7D+YYIJxxfTnpGY9Cl9p0/JkjeQs7fh6apCzg17pBR
-        E7mIBwqlbrnz3kTTKuy8k7acZPKQXymfhvNiDhaDAj6ciYFFUWqy+tNiMZc7yrk2Z7163V
-        UG6pEdB7klVMqDKfkl23yTx4l6KDxW4+rI4kvjj8KQ7SyWa/wH8q47lzHYt5hQqLXi2dP3
-        CBqDoKQEKKPjqGZbwYGxSz7pz18z3dtMGt4GBTheVn702FABUcdJSoJNQ2hdRt8I+q/6xB
-        Kljst51Gao+mApuQNO3yGr2DI7pRMJIRZTAQFOHd0tVJ1/Ldmez3uS+1Qq5lgw==
+        bh=dDCmDmAN+Ty0U7DqUOAg9vP8g2Wl/CIoMBBYtqtH7g8=;
+        b=CDEjJlCnsBm3lhVvhpzIl/nmi4riWbPPeXCShzknju9GZh4sGUYCq+KC+pVPMm3sXhQ/V4
+        eXerouOKCBsh28ZubTVNey2POl3g3bHWFgfCP8BmqXoSPk8zCMU2//Bkpe+ghoPqdnJlxb
+        s+Nyp91hYtYtAc33WlJzi/SZ14FMP46YNwCO8pwMTv58g1WoSBJZ8xg3BxBXXVjKjeoeye
+        n2GhVNcWpKpkSlSqdrs++Abyp6MglLgM4+vy5bv5h/2bdJnCAWQehHpZXMQ3QxqUr4uYC+
+        LKTAefwtGY2dJkn//aj2g+ass3BZd0plGsR2LZHyE8qqpXVNPEZvTEGDfAMkfA==
 From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
 To:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
@@ -46,9 +46,9 @@ Cc:     Yong Deng <yong.deng@magewell.com>,
         Helen Koike <helen.koike@collabora.com>,
         Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: [PATCH v2 02/66] dt-bindings: interconnect: sunxi: Add V3s mbus compatible
-Date:   Sat,  5 Feb 2022 19:53:25 +0100
-Message-Id: <20220205185429.2278860-3-paul.kocialkowski@bootlin.com>
+Subject: [PATCH v2 04/66] ARM: dts: sun8i: v3s: Add mbus node to represent the interconnect
+Date:   Sat,  5 Feb 2022 19:53:27 +0100
+Message-Id: <20220205185429.2278860-5-paul.kocialkowski@bootlin.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com>
 References: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com>
@@ -58,25 +58,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since the V3s uses the internal mbus, document its compatible.
+The V3s uses the mbus interconnect to provide DRAM access for a
+number of blocks. The SoC can only map 2 GiB of DRAM, which is
+reflected in the dma-ranges property.
 
 Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
 ---
- .../devicetree/bindings/arm/sunxi/allwinner,sun4i-a10-mbus.yaml  | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/boot/dts/sun8i-v3s.dtsi | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/arm/sunxi/allwinner,sun4i-a10-mbus.yaml b/Documentation/devicetree/bindings/arm/sunxi/allwinner,sun4i-a10-mbus.yaml
-index 29c9961ee2d8..b67bf9261a6a 100644
---- a/Documentation/devicetree/bindings/arm/sunxi/allwinner,sun4i-a10-mbus.yaml
-+++ b/Documentation/devicetree/bindings/arm/sunxi/allwinner,sun4i-a10-mbus.yaml
-@@ -31,6 +31,7 @@ properties:
-       - allwinner,sun5i-a13-mbus
-       - allwinner,sun8i-h3-mbus
-       - allwinner,sun8i-r40-mbus
-+      - allwinner,sun8i-v3s-mbus
-       - allwinner,sun50i-a64-mbus
+diff --git a/arch/arm/boot/dts/sun8i-v3s.dtsi b/arch/arm/boot/dts/sun8i-v3s.dtsi
+index 084323d5c61c..1b3048b6f197 100644
+--- a/arch/arm/boot/dts/sun8i-v3s.dtsi
++++ b/arch/arm/boot/dts/sun8i-v3s.dtsi
+@@ -577,6 +577,16 @@ int_mii_phy: ethernet-phy@1 {
+ 			};
+ 		};
  
-   reg:
++		mbus: dram-controller@1c62000 {
++			compatible = "allwinner,sun8i-v3s-mbus";
++			reg = <0x01c62000 0x1000>;
++			clocks = <&ccu CLK_MBUS>;
++			#address-cells = <1>;
++			#size-cells = <1>;
++			dma-ranges = <0x00000000 0x40000000 0x80000000>;
++			#interconnect-cells = <1>;
++		};
++
+ 		spi0: spi@1c68000 {
+ 			compatible = "allwinner,sun8i-h3-spi";
+ 			reg = <0x01c68000 0x1000>;
 -- 
 2.34.1
 
