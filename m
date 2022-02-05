@@ -2,113 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F385C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 13:07:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C9B0C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 13:09:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379936AbiBENHy (ORCPT
+        id S1379941AbiBENJs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 08:07:54 -0500
-Received: from mail.skyhub.de ([5.9.137.197]:41948 "EHLO mail.skyhub.de"
+        Sat, 5 Feb 2022 08:09:48 -0500
+Received: from mga11.intel.com ([192.55.52.93]:32078 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233802AbiBENHv (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 08:07:51 -0500
-Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id D113E1EC051E;
-        Sat,  5 Feb 2022 14:07:45 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1644066466;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=0xuIpKje8zkOvUagGUNB86BnlJAw32mk/ZqXAf5Gr+4=;
-        b=IUy7dO+ddvE4dWRGM+hDG+rqKvIhsL8kvqBT5KM38cC4/cUWC6MfOWm65C16n50FTJPZDH
-        7/FulyBflZG+slZjlrj38QcIZqR67m9NUmcpP/4ywOtL6eod7Aihc4aY/wde7Da11/E3C1
-        B4WI1FS0d1xiONTe0XeAJWVQ5fF0CUM=
-Date:   Sat, 5 Feb 2022 14:07:45 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     Brijesh Singh <brijesh.singh@amd.com>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-coco@lists.linux.dev, linux-mm@kvack.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Dov Murik <dovmurik@linux.ibm.com>,
-        Tobin Feldman-Fitzthum <tobin@ibm.com>,
-        Michael Roth <michael.roth@amd.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Andi Kleen <ak@linux.intel.com>,
-        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
-        brijesh.ksingh@gmail.com, tony.luck@intel.com, marcorr@google.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com
-Subject: Re: [PATCH v9 32/43] x86/boot: Add a pointer to Confidential
- Computing blob in bootparams
-Message-ID: <Yf52oebXr+fKioTJ@zn.tnic>
-References: <20220128171804.569796-1-brijesh.singh@amd.com>
- <20220128171804.569796-33-brijesh.singh@amd.com>
+        id S233802AbiBENJr (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sat, 5 Feb 2022 08:09:47 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644066587; x=1675602587;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=HoZfpuHf/UIox5btfBw3eoPBS718sWW7EpkqflQ8Yk0=;
+  b=Ush67bIR2Sf5dPB//gbdKajyQQh171BKJ0QhcjpvHvI8ssPpEi/8BtXY
+   1q3lMFDYwiYEO8RonYflU4Ndv5S2GTdFk4+DpAwfbW/cXd55VwauUBMEI
+   ydDLGKKyAxq0QZgtZElAsc8nwTkf2i9q70sakUYqbUFazGE/vlogYzxUi
+   /Rtc7NLolZDwLG5NVjXvdhu/Flkg3ECq5p0MBltHcHJ4meqaFuK5zCiWv
+   H9Lh4D3WEquhX5CvDPEl2VM6+YGKkE/qE3GvWOM3IhqNYL8bMbm3tPN/2
+   J+dfNj1OuDu/np8j1F0swWUup7MkcViMYn/uJWoobw/PxRK8FePYQ3/+Z
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10248"; a="246099065"
+X-IronPort-AV: E=Sophos;i="5.88,345,1635231600"; 
+   d="scan'208";a="246099065"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2022 05:09:47 -0800
+X-IronPort-AV: E=Sophos;i="5.88,345,1635231600"; 
+   d="scan'208";a="600481400"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2022 05:09:45 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nGKlu-001GnP-Vw;
+        Sat, 05 Feb 2022 15:06:34 +0200
+Date:   Sat, 5 Feb 2022 15:06:34 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     David Gow <davidgow@google.com>
+Cc:     Shuah Khan <skhan@linuxfoundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Daniel Latypov <dlatypov@google.com>,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        kunit-dev@googlegroups.com
+Subject: Re: [PATCH 2/3] list: test: Add a test for list_is_head()
+Message-ID: <Yf52WjnmA17wQ5p7@smile.fi.intel.com>
+References: <20220205061539.273330-1-davidgow@google.com>
+ <20220205061539.273330-2-davidgow@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220128171804.569796-33-brijesh.singh@amd.com>
+In-Reply-To: <20220205061539.273330-2-davidgow@google.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 11:17:53AM -0600, Brijesh Singh wrote:
-> From: Michael Roth <michael.roth@amd.com>
+On Sat, Feb 05, 2022 at 02:15:37PM +0800, David Gow wrote:
+> list_is_head() was added recently[1], and didn't have a KUnit test. The
+> implementation is trivial, so it's not a particularly exciting test, but
+> it'd be nice to get back to full coverage of the list functions.
 > 
-> The previously defined Confidential Computing blob is provided to the
-> kernel via a setup_data structure or EFI config table entry. Currently
-> these are both checked for by boot/compressed kernel to access the
-> CPUID table address within it for use with SEV-SNP CPUID enforcement.
-> 
-> To also enable SEV-SNP CPUID enforcement for the run-time kernel,
-> similar early access to the CPUID table is needed early on while it's
-> still using the identity-mapped page table set up by boot/compressed,
-> where global pointers need to be accessed via fixup_pointer().
-> 
-> This isn't much of an issue for accessing setup_data, and the EFI
-> config table helper code currently used in boot/compressed *could* be
-> used in this case as well since they both rely on identity-mapping.
-> However, it has some reliance on EFI helpers/string constants that
-> would need to be accessed via fixup_pointer(), and fixing it up while
-> making it shareable between boot/compressed and run-time kernel is
-> fragile and introduces a good bit of uglyness.
-> 
-> Instead, add a boot_params->cc_blob_address pointer that the
-> boot/compressed kernel can initialize so that the run-time kernel can
-> access the CC blob from there instead of re-scanning the EFI config
-> table.
-> 
-> Signed-off-by: Michael Roth <michael.roth@amd.com>
-> Signed-off-by: Brijesh Singh <brijesh.singh@amd.com>
-> ---
->  arch/x86/include/asm/bootparam_utils.h | 1 +
->  arch/x86/include/uapi/asm/bootparam.h  | 3 ++-
->  2 files changed, 3 insertions(+), 1 deletion(-)
+> [1]: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/include/linux/list.h?id=0425473037db40d9e322631f2d4dc6ef51f97e88
 
-Another review comment ignored:
+...
 
-https://lore.kernel.org/r/YeWyCtr11rL7dxpT@zn.tnic
+> +static void list_test_list_is_head(struct kunit *test)
+> +{
+> +	struct list_head a, b;
+> +
+> +	KUNIT_EXPECT_TRUE(test, list_is_head(&a, &a));
 
-/me ignores this patch too.
+OK.
+
+> +	KUNIT_EXPECT_FALSE(test, list_is_head(&a, &b));
+
+Perhaps OK, but the main case here is to test an (arbitrary) member of the existing list.
+
+> +}
 
 -- 
-Regards/Gruss,
-    Boris.
+With Best Regards,
+Andy Shevchenko
 
-https://people.kernel.org/tglx/notes-about-netiquette
+
