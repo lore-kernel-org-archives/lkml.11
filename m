@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14846C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 06:08:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88932C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 06:08:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348884AbiBEGIa (ORCPT
+        id S1349802AbiBEGIl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 01:08:30 -0500
-Received: from mail.pr-group.ru ([178.18.215.3]:55884 "EHLO mail.pr-group.ru"
+        Sat, 5 Feb 2022 01:08:41 -0500
+Received: from mail.pr-group.ru ([178.18.215.3]:55892 "EHLO mail.pr-group.ru"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236890AbiBEGI1 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 01:08:27 -0500
+        id S237797AbiBEGIh (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sat, 5 Feb 2022 01:08:37 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
         d=metrotek.ru; s=mail;
-        h=from:subject:date:message-id:to:cc:mime-version:content-transfer-encoding;
+        h=from:subject:date:message-id:to:cc:mime-version:content-transfer-encoding:
+         in-reply-to:references;
         bh=yNGCQoHG8+MFI4xF4xpFYp+Wgphi4GDGw/OoJhRKimA=;
-        b=Fo2nDNbyVbR0MFSF87yhLPh3AOTbbsz3Adb1KpRqXD4jQl26aRrZG17W30z3j4iDronhKGYzhAbuH
-         PLQWQ24MMgFehZZrcEphEqtvvnlJSXcPs1T0Fo1V3fNfeU9WmJwa4kgt33fgMVoEt89xOhkabNw1H9
-         /zklc4OW4k/Te4WGLZnVEtgDbkTsg9qXu+17fzK0IBE9sTKMb5Z3CzLgsFZDpWXRKWc18D5eMqYjrs
-         2nklDi9IWuhsbsaWLtYaaDT30RU9a3MnAxQWkJ6KdD/rsjFeKEnx1u+NCEmgdiQtHvJ1SMyCY0yyLj
-         lBbXpiFuvPrDm58hozTEb5H7q5J4YPw==
-X-Kerio-Anti-Spam:  Build: [Engines: 2.16.1.1366, Stamp: 3], Multi: [Enabled, t: (0.000013,0.020896)], BW: [Enabled, t: (0.000026,0.000002)], RTDA: [Enabled, t: (0.077268), Hit: No, Details: v2.24.0; Id: 15.52k2di.1fr47ujjd.804g; mclb], total: 0(700)
+        b=C/Vp5Hmtb9r1gfjuPECURqx/ggkGk8IKyn6qNWjsrYCLyFOnImKo5Jb5AW2faOECeuRcB707g7Wl4
+         o/hLirUH+ji6ExfPoXJUUACDwelnA+xMFdqSHbTcpmgYX0cR+d1NiMs1BLZixTt6IAxaj9Q7HVwUe9
+         MD7b0JcmyVy7FQDxrwam6+sfjqVwdpeRuSaXx/2TySSqGvHHbqS3SIF0QkySrYiNe9R1zRWgmghQag
+         9Ph5c0q4T4gZWPEKF+0E8++bVVToR5sltQqUi3bsoWkSgUzsyZ7whcqICQk+xIZ31KFPvieMwBT6hk
+         7bW5+fAa76wG1+VZLOg3nF2B2alR14Q==
+X-Kerio-Anti-Spam:  Build: [Engines: 2.16.1.1366, Stamp: 3], Multi: [Enabled, t: (0.000010,0.020830)], BW: [Enabled, t: (0.000025,0.000002)], RTDA: [Enabled, t: (0.085191), Hit: No, Details: v2.24.0; Id: 15.52k209.1fr47v1am.1avh; mclb], total: 0(700)
 X-Footer: bWV0cm90ZWsucnU=
 Received: from localhost.localdomain ([178.70.66.234])
         (authenticated user i.bornyakov@metrotek.ru)
         by mail.pr-group.ru with ESMTPSA
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
-        Sat, 5 Feb 2022 09:08:10 +0300
+        Sat, 5 Feb 2022 09:08:25 +0300
 From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
 Cc:     shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
         festevam@gmail.com, linux-imx@nxp.com,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         system@metrotek.ru, Ivan Bornyakov <i.bornyakov@metrotek.ru>
 Subject: [PATCH] bus: imx-weim: add DT overlay support for WEIM bus
-Date:   Sat,  5 Feb 2022 08:50:05 +0300
-Message-Id: <20220205055006.23447-1-i.bornyakov@metrotek.ru>
+Date:   Sat,  5 Feb 2022 08:50:06 +0300
+Message-Id: <20220205055006.23447-2-i.bornyakov@metrotek.ru>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220205055006.23447-1-i.bornyakov@metrotek.ru>
+References: <20220205055006.23447-1-i.bornyakov@metrotek.ru>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 To:     unlisted-recipients:; (no To-header on input)
