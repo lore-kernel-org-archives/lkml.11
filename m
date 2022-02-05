@@ -2,121 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24E82C4332F
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 20:39:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29615C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 21:02:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381331AbiBEUjl (ORCPT
+        id S1380029AbiBEVCv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 15:39:41 -0500
-Received: from mail.baikalelectronics.com ([87.245.175.226]:41692 "EHLO
-        mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242000AbiBEUjk (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 15:39:40 -0500
-Received: from mail.baikalelectronics.ru (unknown [192.168.51.25])
-        by mail.baikalelectronics.ru (Postfix) with ESMTP id 468108001D4C;
-        Sat,  5 Feb 2022 23:39:38 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.ru 468108001D4C
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1644093578;
-        bh=sDoTov5OIKx67Gh9Jh4s/4QXTa6AuW6mlrErVMoII/c=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=p1dTl/rgXa1VCd6PQrjyq/HRHFMdvzgtDz6OVPK0zx9ut+CsHzJzl2EjMvPkcbEZb
-         xhEW/IyE4RcMvW4T5dczJ1/8/CNuh86o6CabZK5ox7oPKdU8v/r7D5/kNKmj4LtauA
-         XO4BrCFQNUv8FwLXm7ZgrnMmdqYKa2mkl1LniAGo=
-Received: from localhost (192.168.168.10) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Sat, 5 Feb 2022 23:39:23 +0300
-From:   Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>
-CC:     Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        <stable@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH net v2] net: phy: marvell: Fix RGMII Tx/Rx delays setting in 88e1121-compatible PHYs
-Date:   Sat, 5 Feb 2022 23:39:32 +0300
-Message-ID: <20220205203932.26899-1-Pavel.Parkhomenko@baikalelectronics.ru>
-In-Reply-To: <96759fee7240fd095cb9cc1f6eaf2d9113b57cf0.camel@baikalelectronics.ru>
-References: <96759fee7240fd095cb9cc1f6eaf2d9113b57cf0.camel@baikalelectronics.ru>
+        Sat, 5 Feb 2022 16:02:51 -0500
+Received: from mga14.intel.com ([192.55.52.115]:21311 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1354918AbiBEVCt (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sat, 5 Feb 2022 16:02:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644094969; x=1675630969;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=0wXwwQ0y06+pUlSOjjm+CQCMvr5YFOWiUdCi1boRIJI=;
+  b=jUqXFMvZe+70LPZ8XIVZy7qgHKvqPD+/h5wim71cbYqcJ43GwZFv3F81
+   7awEyIQQZ1OO4eQYy+fROXYakd2qC7zhndLqXQ3KjTXpPaYo4piwyrAHc
+   jQ9OstBSgARMWN5vKH2iDuiB/51FbZ3amwqcy52bJJrp1Ug+TO9uWPOoA
+   CDP+Vzf05+3LdVJwJoBgeLEO0plBbj4sxeh6COH8U6OnUGYthvQ25hOtZ
+   T69CtwkiYjsjhkPEI4TZXATUVk+8cuhA5gNk/crPZ8LZ2ZKcrs+2Z6nE8
+   aIgHVCht6o1ZebYOLmlWDuVnMxyjE1j0JlGlyhNcflOC0qpaxD4uPiCdy
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10249"; a="248749248"
+X-IronPort-AV: E=Sophos;i="5.88,346,1635231600"; 
+   d="scan'208";a="248749248"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2022 13:02:49 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,346,1635231600"; 
+   d="scan'208";a="600534406"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 05 Feb 2022 13:02:47 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nGSCl-000ZUb-Av; Sat, 05 Feb 2022 21:02:47 +0000
+Date:   Sun, 6 Feb 2022 05:02:19 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [saeed:net-next 48/260]
+ drivers/net/dsa/realtek/realtek-mdio.c:203:34: warning: unused variable
+ 'realtek_mdio_of_match'
+Message-ID: <202202060415.LYwQvNJX-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It is mandatory for a software to issue a reset upon modifying RGMII
-Receive Timing Control and RGMII Transmit Timing Control bit fields of MAC
-Specific Control register 2 (page 2, register 21) otherwise the changes
-won't be perceived by the PHY (the same is applicable for a lot of other
-registers). Not setting the RGMII delays on the platforms that imply it'
-being done on the PHY side will consequently cause the traffic loss. We
-discovered that the denoted soft-reset is missing in the
-m88e1121_config_aneg() method for the case if the RGMII delays are
-modified but the MDIx polarity isn't changed or the auto-negotiation is
-left enabled, thus causing the traffic loss on our platform with Marvell
-Alaska 88E1510 installed. Let's fix that by issuing the soft-reset if the
-delays have been actually set in the m88e1121_config_aneg_rgmii_delays()
-method.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git net-next
+head:   69dd0fdc44211d799165e6959057b323accc5afe
+commit: aac94001067da183455d6d37959892744fa01d9d [48/260] net: dsa: realtek: add new mdio interface for drivers
+config: arm-randconfig-r001-20220206 (https://download.01.org/0day-ci/archive/20220206/202202060415.LYwQvNJX-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project dee058c670593b999fec19c458dbbd882ad9de56)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm cross compiling tool for clang build
+        # apt-get install binutils-arm-linux-gnueabi
+        # https://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git/commit/?id=aac94001067da183455d6d37959892744fa01d9d
+        git remote add saeed https://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git
+        git fetch --no-tags saeed net-next
+        git checkout aac94001067da183455d6d37959892744fa01d9d
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/net/dsa/realtek/
 
-Fixes: d6ab93364734 ("net: phy: marvell: Avoid unnecessary soft reset")
-Signed-off-by: Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Reviewed-by: Serge Semin <fancer.lancer@gmail.com>
-Cc: stable@vger.kernel.org
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/net/dsa/realtek/realtek-mdio.c:203:34: warning: unused variable 'realtek_mdio_of_match' [-Wunused-const-variable]
+   static const struct of_device_id realtek_mdio_of_match[] = {
+                                    ^
+   1 warning generated.
+
+
+vim +/realtek_mdio_of_match +203 drivers/net/dsa/realtek/realtek-mdio.c
+
+   202	
+ > 203	static const struct of_device_id realtek_mdio_of_match[] = {
+   204	#if IS_ENABLED(CONFIG_NET_DSA_REALTEK_RTL8366RB)
+   205		{ .compatible = "realtek,rtl8366rb", .data = &rtl8366rb_variant, },
+   206	#endif
+   207	#if IS_ENABLED(CONFIG_NET_DSA_REALTEK_RTL8365MB)
+   208		{ .compatible = "realtek,rtl8365mb", .data = &rtl8365mb_variant, },
+   209	#endif
+   210		{ /* sentinel */ },
+   211	};
+   212	MODULE_DEVICE_TABLE(of, realtek_mdio_of_match);
+   213	
 
 ---
-
-Link: https://lore.kernel.org/netdev/96759fee7240fd095cb9cc1f6eaf2d9113b57cf0.camel@baikalelectronics.ru/
-Changelog v2:
-- Add "net" suffix into the PATCH-clause of the subject.
-- Cc the patch to the stable tree list.
-- Rebase onto the latset netdev/net branch with the top commit 59085208e4a2
-("net: mscc: ocelot: fix all IP traffic getting trapped to CPU with PTP over
-IP")
----
- drivers/net/phy/marvell.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-index fa71fb7a66b5..e2fd1252be48 100644
---- a/drivers/net/phy/marvell.c
-+++ b/drivers/net/phy/marvell.c
-@@ -553,9 +553,9 @@ static int m88e1121_config_aneg_rgmii_delays(struct phy_device *phydev)
- 	else
- 		mscr = 0;
- 
--	return phy_modify_paged(phydev, MII_MARVELL_MSCR_PAGE,
--				MII_88E1121_PHY_MSCR_REG,
--				MII_88E1121_PHY_MSCR_DELAY_MASK, mscr);
-+	return phy_modify_paged_changed(phydev, MII_MARVELL_MSCR_PAGE,
-+					MII_88E1121_PHY_MSCR_REG,
-+					MII_88E1121_PHY_MSCR_DELAY_MASK, mscr);
- }
- 
- static int m88e1121_config_aneg(struct phy_device *phydev)
-@@ -569,11 +569,13 @@ static int m88e1121_config_aneg(struct phy_device *phydev)
- 			return err;
- 	}
- 
-+	changed = err;
-+
- 	err = marvell_set_polarity(phydev, phydev->mdix_ctrl);
- 	if (err < 0)
- 		return err;
- 
--	changed = err;
-+	changed |= err;
- 
- 	err = genphy_config_aneg(phydev);
- 	if (err < 0)
--- 
-2.32.0
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
