@@ -2,32 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9805DC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 18:58:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E712C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 18:58:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381649AbiBES6h (ORCPT
+        id S1382019AbiBES6p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 13:58:37 -0500
-Received: from relay10.mail.gandi.net ([217.70.178.230]:54347 "EHLO
-        relay10.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381630AbiBES4a (ORCPT
+        Sat, 5 Feb 2022 13:58:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46676 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1381688AbiBES4o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 13:56:30 -0500
+        Sat, 5 Feb 2022 13:56:44 -0500
+Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [IPv6:2001:4b98:dc4:8::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 543F9C043184;
+        Sat,  5 Feb 2022 10:55:58 -0800 (PST)
 Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id E3959240002;
-        Sat,  5 Feb 2022 18:56:26 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 05E17240019;
+        Sat,  5 Feb 2022 18:55:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1644087388;
+        t=1644087356;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ne/+UpxTP8QSDv9vtv2k9kE96A5NFi5jBqXJJ11zruk=;
-        b=bc9C2VQSJSyrWVrToOa/LAJ3ztKQr0jzzgYlF2LDqSwyefxoApYSSOlqriS4SSLW4pR5F6
-        zBof+ryxROKIWUxRlVD24w1dq/grrrtK0gUzLLqeTv2ZqbDBww+UR/6fcA1v0AX5lb+x1D
-        GIpy2lyxQKZtMaMcOntqjAnn7asShtFq8Wt/yS1c2bki9eM9YtoGwj+RfEQ4mhwv6v7wNg
-        IvNdBiecfwNuzI2Jfxt3WHkFRx8EQd83vfP/0VZmp6+9514IRQVGEsvi0WWzBjIVW3osto
-        inqfVbS2nc2y/4aoh33AZDHRSP/biiMYDqLOvrHmYwKNNQv7ZEMPL8aETewKCQ==
+        bh=3pZo7CxGMUTpS8CVYK3FcpDVneJImTFLbxbcBcVuMPM=;
+        b=D9kN4GUEwLQkqHmYTTIIvVyzpKMYn+Ak44xrbBmd3hhGqxgHHAp4uIYFGvv+5GsSyrjGSw
+        KGw8aywE6tFOQb39PfSMcbdudsBuL1OmArqytd2qZ16T1mLpX6W3yJGTu6pnAu17okbeIv
+        HUMk0iVu31aMbdR5QtTy3h+/iAs27DYKWiZyZHhO2MsN+oZM0AD3pDhEhOXzjjW33iR3BR
+        Vy2JI6bqUyQ5LwYisSnxkLC9e0G2I0Vqqx9yzAFsBrdA/MFQLZr+PabOo7staxf+x5cOlq
+        Sgqbz9IBSEqDBQs9XwACsLwPMlfKyIgbEjV8y199hulb5xBarLv+9gVORcNaGA==
 From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
 To:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
@@ -46,9 +49,9 @@ Cc:     Yong Deng <yong.deng@magewell.com>,
         Helen Koike <helen.koike@collabora.com>,
         Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: [PATCH v2 64/66] MAINTAINERS: Add entry for the Allwinner A31 ISP driver
-Date:   Sat,  5 Feb 2022 19:54:27 +0100
-Message-Id: <20220205185429.2278860-65-paul.kocialkowski@bootlin.com>
+Subject: [PATCH v2 45/66] media: sun6i-csi: Introduce capture format structure, list and helper
+Date:   Sat,  5 Feb 2022 19:54:08 +0100
+Message-Id: <20220205185429.2278860-46-paul.kocialkowski@bootlin.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com>
 References: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com>
@@ -58,33 +61,284 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add myself as maintainer of the Allwinner A31 ISP media driver.
+Add a table that describes each pixel format and associated output
+register configuration with necessary tweaks. It will be used later on
+to configure the hardware.
 
 Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
 ---
- MAINTAINERS | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ .../sunxi/sun6i-csi/sun6i_csi_capture.c       | 199 ++++++++++++++----
+ .../sunxi/sun6i-csi/sun6i_csi_capture.h       |  12 ++
+ 2 files changed, 175 insertions(+), 36 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 0e65b9e5123f..709cf8aa1a8d 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -760,6 +760,15 @@ T:	git git://linuxtv.org/media_tree.git
- F:	Documentation/devicetree/bindings/media/allwinner,sun6i-a31-csi.yaml
- F:	drivers/media/platform/sunxi/sun6i-csi/
+diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c
+index 726416d98c46..8e71c81cd54f 100644
+--- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c
++++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c
+@@ -60,45 +60,171 @@ sun6i_csi_capture_remote_subdev(struct sun6i_csi_capture *capture, u32 *pad)
  
-+ALLWINNER A31 ISP DRIVER
-+M:	Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-+L:	linux-media@vger.kernel.org
-+S:	Maintained
-+T:	git git://linuxtv.org/media_tree.git
-+F:	Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml
-+F:	drivers/staging/media/sunxi/sun6i-isp/
-+F:	drivers/staging/media/sunxi/sun6i-isp/uapi/sun6i-isp-config.h
+ /* Format */
+ 
+-static const u32 sun6i_csi_capture_formats[] = {
+-	V4L2_PIX_FMT_SBGGR8,
+-	V4L2_PIX_FMT_SGBRG8,
+-	V4L2_PIX_FMT_SGRBG8,
+-	V4L2_PIX_FMT_SRGGB8,
+-	V4L2_PIX_FMT_SBGGR10,
+-	V4L2_PIX_FMT_SGBRG10,
+-	V4L2_PIX_FMT_SGRBG10,
+-	V4L2_PIX_FMT_SRGGB10,
+-	V4L2_PIX_FMT_SBGGR12,
+-	V4L2_PIX_FMT_SGBRG12,
+-	V4L2_PIX_FMT_SGRBG12,
+-	V4L2_PIX_FMT_SRGGB12,
+-	V4L2_PIX_FMT_YUYV,
+-	V4L2_PIX_FMT_YVYU,
+-	V4L2_PIX_FMT_UYVY,
+-	V4L2_PIX_FMT_VYUY,
+-	V4L2_PIX_FMT_NV12_16L16,
+-	V4L2_PIX_FMT_NV12,
+-	V4L2_PIX_FMT_NV21,
+-	V4L2_PIX_FMT_YUV420,
+-	V4L2_PIX_FMT_YVU420,
+-	V4L2_PIX_FMT_NV16,
+-	V4L2_PIX_FMT_NV61,
+-	V4L2_PIX_FMT_YUV422P,
+-	V4L2_PIX_FMT_RGB565,
+-	V4L2_PIX_FMT_RGB565X,
+-	V4L2_PIX_FMT_JPEG,
++static const struct sun6i_csi_capture_format sun6i_csi_capture_formats[] = {
++	/* Bayer */
++	{
++		.pixelformat		= V4L2_PIX_FMT_SBGGR8,
++		.output_format_frame	= SUN6I_CSI_OUTPUT_FMT_FRAME_RAW_8,
++		.output_format_field	= SUN6I_CSI_OUTPUT_FMT_FIELD_RAW_8,
++	},
++	{
++		.pixelformat		= V4L2_PIX_FMT_SGBRG8,
++		.output_format_frame	= SUN6I_CSI_OUTPUT_FMT_FRAME_RAW_8,
++		.output_format_field	= SUN6I_CSI_OUTPUT_FMT_FIELD_RAW_8,
++	},
++	{
++		.pixelformat		= V4L2_PIX_FMT_SGRBG8,
++		.output_format_frame	= SUN6I_CSI_OUTPUT_FMT_FRAME_RAW_8,
++		.output_format_field	= SUN6I_CSI_OUTPUT_FMT_FIELD_RAW_8,
++	},
++	{
++		.pixelformat		= V4L2_PIX_FMT_SRGGB8,
++		.output_format_frame	= SUN6I_CSI_OUTPUT_FMT_FRAME_RAW_8,
++		.output_format_field	= SUN6I_CSI_OUTPUT_FMT_FIELD_RAW_8,
++	},
++	{
++		.pixelformat		= V4L2_PIX_FMT_SBGGR10,
++		.output_format_frame	= SUN6I_CSI_OUTPUT_FMT_FRAME_RAW_10,
++		.output_format_field	= SUN6I_CSI_OUTPUT_FMT_FIELD_RAW_10,
++	},
++	{
++		.pixelformat		= V4L2_PIX_FMT_SGBRG10,
++		.output_format_frame	= SUN6I_CSI_OUTPUT_FMT_FRAME_RAW_10,
++		.output_format_field	= SUN6I_CSI_OUTPUT_FMT_FIELD_RAW_10,
++	},
++	{
++		.pixelformat		= V4L2_PIX_FMT_SGRBG10,
++		.output_format_frame	= SUN6I_CSI_OUTPUT_FMT_FRAME_RAW_10,
++		.output_format_field	= SUN6I_CSI_OUTPUT_FMT_FIELD_RAW_10,
++	},
++	{
++		.pixelformat		= V4L2_PIX_FMT_SRGGB10,
++		.output_format_frame	= SUN6I_CSI_OUTPUT_FMT_FRAME_RAW_10,
++		.output_format_field	= SUN6I_CSI_OUTPUT_FMT_FIELD_RAW_10,
++	},
++	{
++		.pixelformat		= V4L2_PIX_FMT_SBGGR12,
++		.output_format_frame	= SUN6I_CSI_OUTPUT_FMT_FRAME_RAW_12,
++		.output_format_field	= SUN6I_CSI_OUTPUT_FMT_FIELD_RAW_12,
++	},
++	{
++		.pixelformat		= V4L2_PIX_FMT_SGBRG12,
++		.output_format_frame	= SUN6I_CSI_OUTPUT_FMT_FRAME_RAW_12,
++		.output_format_field	= SUN6I_CSI_OUTPUT_FMT_FIELD_RAW_12,
++	},
++	{
++		.pixelformat		= V4L2_PIX_FMT_SGRBG12,
++		.output_format_frame	= SUN6I_CSI_OUTPUT_FMT_FRAME_RAW_12,
++		.output_format_field	= SUN6I_CSI_OUTPUT_FMT_FIELD_RAW_12,
++	},
++	{
++		.pixelformat		= V4L2_PIX_FMT_SRGGB12,
++		.output_format_frame	= SUN6I_CSI_OUTPUT_FMT_FRAME_RAW_12,
++		.output_format_field	= SUN6I_CSI_OUTPUT_FMT_FIELD_RAW_12,
++	},
++	/* RGB */
++	{
++		.pixelformat		= V4L2_PIX_FMT_RGB565,
++		.output_format_frame	= SUN6I_CSI_OUTPUT_FMT_FRAME_RGB565,
++		.output_format_field	= SUN6I_CSI_OUTPUT_FMT_FIELD_RGB565,
++	},
++	{
++		.pixelformat		= V4L2_PIX_FMT_RGB565X,
++		.output_format_frame	= SUN6I_CSI_OUTPUT_FMT_FRAME_RGB565,
++		.output_format_field	= SUN6I_CSI_OUTPUT_FMT_FIELD_RGB565,
++	},
++	/* YUV422 */
++	{
++		.pixelformat		= V4L2_PIX_FMT_YUYV,
++		.output_format_frame	= SUN6I_CSI_OUTPUT_FMT_FRAME_RAW_8,
++		.output_format_field	= SUN6I_CSI_OUTPUT_FMT_FIELD_RAW_8,
++		.input_format_raw	= true,
++		.hsize_len_factor	= 2,
++	},
++	{
++		.pixelformat		= V4L2_PIX_FMT_YVYU,
++		.output_format_frame	= SUN6I_CSI_OUTPUT_FMT_FRAME_RAW_8,
++		.output_format_field	= SUN6I_CSI_OUTPUT_FMT_FIELD_RAW_8,
++		.input_format_raw	= true,
++		.hsize_len_factor	= 2,
++	},
++	{
++		.pixelformat		= V4L2_PIX_FMT_UYVY,
++		.output_format_frame	= SUN6I_CSI_OUTPUT_FMT_FRAME_RAW_8,
++		.output_format_field	= SUN6I_CSI_OUTPUT_FMT_FIELD_RAW_8,
++		.input_format_raw	= true,
++		.hsize_len_factor	= 2,
++	},
++	{
++		.pixelformat		= V4L2_PIX_FMT_VYUY,
++		.output_format_frame	= SUN6I_CSI_OUTPUT_FMT_FRAME_RAW_8,
++		.output_format_field	= SUN6I_CSI_OUTPUT_FMT_FIELD_RAW_8,
++		.input_format_raw	= true,
++		.hsize_len_factor	= 2,
++	},
++	{
++		.pixelformat		= V4L2_PIX_FMT_NV16,
++		.output_format_frame	= SUN6I_CSI_OUTPUT_FMT_FRAME_YUV422SP,
++		.output_format_field	= SUN6I_CSI_OUTPUT_FMT_FIELD_YUV422SP,
++	},
++	{
++		.pixelformat		= V4L2_PIX_FMT_NV61,
++		.output_format_frame	= SUN6I_CSI_OUTPUT_FMT_FRAME_YUV422SP,
++		.output_format_field	= SUN6I_CSI_OUTPUT_FMT_FIELD_YUV422SP,
++		.input_yuv_seq_invert	= true,
++	},
++	{
++		.pixelformat		= V4L2_PIX_FMT_YUV422P,
++		.output_format_frame	= SUN6I_CSI_OUTPUT_FMT_FRAME_YUV422P,
++		.output_format_field	= SUN6I_CSI_OUTPUT_FMT_FIELD_YUV422P,
++	},
++	/* YUV420 */
++	{
++		.pixelformat		= V4L2_PIX_FMT_NV12_16L16,
++		.output_format_frame	= SUN6I_CSI_OUTPUT_FMT_FRAME_YUV420MB,
++		.output_format_field	= SUN6I_CSI_OUTPUT_FMT_FIELD_YUV420MB,
++	},
++	{
++		.pixelformat		= V4L2_PIX_FMT_NV12,
++		.output_format_frame	= SUN6I_CSI_OUTPUT_FMT_FRAME_YUV420SP,
++		.output_format_field	= SUN6I_CSI_OUTPUT_FMT_FIELD_YUV420SP,
++	},
++	{
++		.pixelformat		= V4L2_PIX_FMT_NV21,
++		.output_format_frame	= SUN6I_CSI_OUTPUT_FMT_FRAME_YUV420SP,
++		.output_format_field	= SUN6I_CSI_OUTPUT_FMT_FIELD_YUV420SP,
++		.input_yuv_seq_invert	= true,
++	},
 +
- ALLWINNER A31 MIPI CSI-2 BRIDGE DRIVER
- M:	Paul Kocialkowski <paul.kocialkowski@bootlin.com>
- L:	linux-media@vger.kernel.org
++	{
++		.pixelformat		= V4L2_PIX_FMT_YUV420,
++		.output_format_frame	= SUN6I_CSI_OUTPUT_FMT_FRAME_YUV420P,
++		.output_format_field	= SUN6I_CSI_OUTPUT_FMT_FIELD_YUV420P,
++	},
++	{
++		.pixelformat		= V4L2_PIX_FMT_YVU420,
++		.output_format_frame	= SUN6I_CSI_OUTPUT_FMT_FRAME_YUV420P,
++		.output_format_field	= SUN6I_CSI_OUTPUT_FMT_FIELD_YUV420P,
++		.input_yuv_seq_invert	= true,
++	},
++	/* Compressed */
++	{
++		.pixelformat		= V4L2_PIX_FMT_JPEG,
++		.output_format_frame	= SUN6I_CSI_OUTPUT_FMT_FRAME_RAW_8,
++		.output_format_field	= SUN6I_CSI_OUTPUT_FMT_FIELD_RAW_8,
++	},
+ };
+ 
+-static bool sun6i_csi_capture_format_check(u32 format)
++const
++struct sun6i_csi_capture_format *sun6i_csi_capture_format_find(u32 pixelformat)
+ {
+ 	unsigned int i;
+ 
+ 	for (i = 0; i < ARRAY_SIZE(sun6i_csi_capture_formats); i++)
+-		if (sun6i_csi_capture_formats[i] == format)
+-			return true;
++		if (sun6i_csi_capture_formats[i].pixelformat == pixelformat)
++			return &sun6i_csi_capture_formats[i];
+ 
+-	return false;
++	return NULL;
+ }
+ 
+ /* Capture */
+@@ -820,8 +946,9 @@ static void sun6i_csi_capture_format_prepare(struct v4l2_format *format)
+ 			      &pix_format->height, SUN6I_CSI_CAPTURE_HEIGHT_MIN,
+ 			      SUN6I_CSI_CAPTURE_HEIGHT_MAX, 1, 0);
+ 
+-	if (!sun6i_csi_capture_format_check(pix_format->pixelformat))
+-		pix_format->pixelformat = sun6i_csi_capture_formats[0];
++	if (!sun6i_csi_capture_format_find(pix_format->pixelformat))
++		pix_format->pixelformat =
++			sun6i_csi_capture_formats[0].pixelformat;
+ 
+ 	width = pix_format->width;
+ 	height = pix_format->height;
+@@ -872,7 +999,7 @@ static int sun6i_csi_capture_enum_fmt(struct file *file, void *private,
+ 	if (index >= ARRAY_SIZE(sun6i_csi_capture_formats))
+ 		return -EINVAL;
+ 
+-	fmtdesc->pixelformat = sun6i_csi_capture_formats[index];
++	fmtdesc->pixelformat = sun6i_csi_capture_formats[index].pixelformat;
+ 
+ 	return 0;
+ }
+@@ -1144,7 +1271,7 @@ int sun6i_csi_capture_setup(struct sun6i_csi_device *csi_dev)
+ 	/* V4L2 Format */
+ 
+ 	format->type = queue->type;
+-	pix_format->pixelformat = sun6i_csi_capture_formats[0];
++	pix_format->pixelformat = sun6i_csi_capture_formats[0].pixelformat;
+ 	pix_format->width = 1280;
+ 	pix_format->height = 720;
+ 	pix_format->field = V4L2_FIELD_NONE;
+diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.h b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.h
+index 3b9759e1563d..4b1ff19edc2f 100644
+--- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.h
++++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.h
+@@ -18,6 +18,15 @@
+ 
+ struct sun6i_csi_device;
+ 
++struct sun6i_csi_capture_format {
++	u32	pixelformat;
++	u8	output_format_field;
++	u8	output_format_frame;
++	bool	input_yuv_seq_invert;
++	bool	input_format_raw;
++	u32	hsize_len_factor;
++};
++
+ #undef current
+ struct sun6i_csi_capture_state {
+ 	struct list_head		queue;
+@@ -46,6 +55,9 @@ void sun6i_csi_capture_dimensions(struct sun6i_csi_device *csi_dev,
+ void sun6i_csi_capture_format(struct sun6i_csi_device *csi_dev,
+ 			      u32 *pixelformat, u32 *field);
+ 
++const
++struct sun6i_csi_capture_format *sun6i_csi_capture_format_find(u32 pixelformat);
++
+ void sun6i_csi_capture_sync(struct sun6i_csi_device *csi_dev);
+ void sun6i_csi_capture_frame_done(struct sun6i_csi_device *csi_dev);
+ 
 -- 
 2.34.1
 
