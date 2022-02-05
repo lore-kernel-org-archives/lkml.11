@@ -2,93 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81166C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 17:34:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6297AC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 17:38:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380757AbiBERel (ORCPT
+        id S1380768AbiBERiH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 12:34:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55358 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230214AbiBERej (ORCPT
+        Sat, 5 Feb 2022 12:38:07 -0500
+Received: from smtp08.smtpout.orange.fr ([80.12.242.130]:53649 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1380760AbiBERiG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 12:34:39 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA331C061348;
-        Sat,  5 Feb 2022 09:34:38 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 844DC6115F;
-        Sat,  5 Feb 2022 17:34:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 558FDC340E8;
-        Sat,  5 Feb 2022 17:34:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644082477;
-        bh=G6qYNGxsTHtnDJLwH2Sng96k7cgwnlIsdFT7VKuLk0c=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=n58Q9lnswLG4bLF1AmxdhmXwfkLr2xTzEm71cpx18KnDNp/9ZGa7aP99nsxipeqTM
-         fnZHZdfIUc4N/766KluWKygnYzpE67l4LPsSYsGLBDKslwpdSUQX+vnYdObo34cATQ
-         9D/QzUmbwujbHthkSfftLTKtpaCd46LR+cZvF4KCz9TWxhYZ1Kbf4FwA4G9qun26om
-         RXd7VWHQY8tfg5PSgcTY85GhcsbqJ+P1jCNkjVIOrSx4R4+ETaZv+TcFkgCIddd23t
-         P6Sa09mEXaDTF6oooz5/BzTOGJOfphcWrPpQ8GaGkF1Mq322HtW2BaKSfy9PUKCeO8
-         kSMFCFWDt8sZg==
-Date:   Sat, 5 Feb 2022 17:41:08 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Puranjay Mohan <puranjay12@gmail.com>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>
-Subject: Re: [PATCH v1 1/1] iio: accel: adxl355: Replace custom definitions
- with generic from units.h
-Message-ID: <20220205174108.094da325@jic23-huawei>
-In-Reply-To: <20220202173723.8678-1-andriy.shevchenko@linux.intel.com>
-References: <20220202173723.8678-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Sat, 5 Feb 2022 12:38:06 -0500
+Received: from pop-os.home ([90.126.236.122])
+        by smtp.orange.fr with ESMTPA
+        id GP0dngbZqxHdTGP0dnEjnn; Sat, 05 Feb 2022 18:38:04 +0100
+X-ME-Helo: pop-os.home
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Sat, 05 Feb 2022 18:38:04 +0100
+X-ME-IP: 90.126.236.122
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH] drm/radeon: Avoid open coded arithmetic in memory allocation
+Date:   Sat,  5 Feb 2022 18:38:01 +0100
+Message-Id: <1f44de96e6a49e912111fb3b664f087328b4c2cd.1644082664.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed,  2 Feb 2022 19:37:23 +0200
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+kmalloc_array()/kcalloc() should be used to avoid potential overflow when
+a multiplication is needed to compute the size of the requested memory.
 
-> The units.h provides MEGA and TERA. Replace custom ones.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Applied,
+So turn a kzalloc()+explicit size computation into an equivalent kcalloc().
 
-Thanks,
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ drivers/gpu/drm/radeon/radeon_atombios.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Jonathan
-
-> ---
->  drivers/iio/accel/adxl355_core.c | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/adxl355_core.c b/drivers/iio/accel/adxl355_core.c
-> index 4f485909f459..7023de888835 100644
-> --- a/drivers/iio/accel/adxl355_core.c
-> +++ b/drivers/iio/accel/adxl355_core.c
-> @@ -20,6 +20,8 @@
->  #include <linux/mod_devicetable.h>
->  #include <linux/of_irq.h>
->  #include <linux/regmap.h>
-> +#include <linux/units.h>
-> +
->  #include <asm/unaligned.h>
->  
->  #include "adxl355.h"
-> @@ -60,9 +62,6 @@
->  #define ADXL355_PARTID_VAL		0xED
->  #define ADXL355_RESET_CODE		0x52
->  
-> -#define MEGA 1000000UL
-> -#define TERA 1000000000000ULL
-> -
->  static const struct regmap_range adxl355_read_reg_range[] = {
->  	regmap_reg_range(ADXL355_DEVID_AD_REG, ADXL355_FIFO_DATA_REG),
->  	regmap_reg_range(ADXL355_OFFSET_X_H_REG, ADXL355_SELF_TEST_REG),
+diff --git a/drivers/gpu/drm/radeon/radeon_atombios.c b/drivers/gpu/drm/radeon/radeon_atombios.c
+index 28c4413f4dc8..7b9cc7a9f42f 100644
+--- a/drivers/gpu/drm/radeon/radeon_atombios.c
++++ b/drivers/gpu/drm/radeon/radeon_atombios.c
+@@ -897,13 +897,13 @@ bool radeon_get_atom_connector_info_from_supported_devices_table(struct
+ 	union atom_supported_devices *supported_devices;
+ 	int i, j, max_device;
+ 	struct bios_connector *bios_connectors;
+-	size_t bc_size = sizeof(*bios_connectors) * ATOM_MAX_SUPPORTED_DEVICE;
+ 	struct radeon_router router;
+ 
+ 	router.ddc_valid = false;
+ 	router.cd_valid = false;
+ 
+-	bios_connectors = kzalloc(bc_size, GFP_KERNEL);
++	bios_connectors = kcalloc(ATOM_MAX_SUPPORTED_DEVICE,
++				  sizeof(*bios_connectors), GFP_KERNEL);
+ 	if (!bios_connectors)
+ 		return false;
+ 
+-- 
+2.32.0
 
