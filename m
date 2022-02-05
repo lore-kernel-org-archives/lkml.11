@@ -2,153 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69B48C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 04:51:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6F79C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 05:08:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379487AbiBEEvP (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 4 Feb 2022 23:51:15 -0500
-Received: from mga04.intel.com ([192.55.52.120]:8455 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232114AbiBEEvN (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 4 Feb 2022 23:51:13 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644036673; x=1675572673;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=YBBQd19d8jkfz7lCEDb9wPwxNxhGt4PX9eI0f7VdM9Q=;
-  b=Xai95qFLHKhV2KK4kWNTr3gwbECekJ9sFKPyxtHxApogXHtiUaWcAE27
-   js7GLXcDpUhu1bIXdK73Pnf5xqaj6qHpoUWAwPcEFdXRzqUpAAZRUEgsf
-   jBK60MXUVEic1XY+0Vq3uLQYmHz58zspjhuBZ+yoTb/LDlpRLmQfOm9WN
-   Llfg5GhTYRc5Yxkm96pC2FpVwLvtS4oVJI+OIWef2rRTte2ORbeMxaT2M
-   c/DOGDfKkLCpQeYfkKZ7IdSSbeTgAnws9ytGGSZeiax5L0h7MoLt59GGO
-   XAd0yqzvqs3Z7EhpM7m5dOWQ6oYoC+Duzp85BnniHOVgedxL60Bn/t375
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10248"; a="247320741"
-X-IronPort-AV: E=Sophos;i="5.88,344,1635231600"; 
-   d="scan'208";a="247320741"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2022 20:51:13 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,344,1635231600"; 
-   d="scan'208";a="584331719"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 04 Feb 2022 20:51:12 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nGD2V-000YbR-Il; Sat, 05 Feb 2022 04:51:11 +0000
-Date:   Sat, 5 Feb 2022 12:51:03 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Russell King <rmk+kernel@arm.linux.org.uk>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Subject: [rmk-arm:clearfog 9/10] drivers/pci/pcie/portdrv_core.c:329
- pcie_port_device_register() warn: inconsistent indenting
-Message-ID: <202202051233.wNW2l14n-lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S233607AbiBEFII (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 5 Feb 2022 00:08:08 -0500
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:54809 "EHLO
+        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229486AbiBEFIG (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Sat, 5 Feb 2022 00:08:06 -0500
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailnew.nyi.internal (Postfix) with ESMTP id B9E91580196;
+        Sat,  5 Feb 2022 00:08:05 -0500 (EST)
+Received: from imap49 ([10.202.2.99])
+  by compute2.internal (MEProxy); Sat, 05 Feb 2022 00:08:05 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        sladewatkins.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm1; bh=2RlY4R9lybWwdv
+        24B6zmGkCHz3KZPXtlvbnrbu1Kd54=; b=pdt/ZcbAoNfVqEQNoU3SpgTp9hnM2L
+        z2Z4uImJiM1n2cfElE+tkp4V/e2F9hLzrH4ARGe+K9g42+VSue6+FhXHsckwv1nk
+        wdDzX4WJy7VrIwQARoVpP/7j3pnRNJaf7v3j1UBAl+LsIZ1n54I2lEl56fJY/X4m
+        tT1zNT1wl+du5zq0tW4RAYT1pbzPKCBqsjXHOu4QYIV6e3IGWQU6ZAaNurvsl5gd
+        ohepwiBzU7tB9heVPJxZwrs2GNHWOrvI7DxwBfzgCbacv02tj/pkuA/O2gTAtYu9
+        UMsThud1YRZL3+FCmRCKHSUp0qLzzT6Mp2nX7WeWwWpDnYsBofAka4PQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=2RlY4R9lybWwdv24B
+        6zmGkCHz3KZPXtlvbnrbu1Kd54=; b=hWRK9/j56zu/1ZnLAdI+tcL7N/fNsIGCe
+        PsC9OTjQO8goGKX+AgD9dd3Hl+PWdilvUgZPMTxsv4ny/kY1FMtQGzj2ZG0SaAV1
+        IwUHmWumv2tR1Jlv4BBkg0PsdLxGaRnzHU90qHu6qfK1sDXjf1s9laH5uhgSSJlD
+        l5twxeDGp3hxOxyiCWonKz7K8V7joBdPnFpofdVkhdUFmbeNpBosmQ4HfJBPJU4r
+        Yx6x+K94O6eR1e8b0PcoRUCKL/6+HIsnPhMJIdivmffY9UADXUotRgBskeO9RfhO
+        R0nkKviZ/RD96RAAWRrVTd2Lj30xcviYvgGWV2HV/TZmlUA36UGRA==
+X-ME-Sender: <xms:NQb-YUzZnedkmd6aE0QLK5xi-Isk5zTwr1B8rSc4bpMON4voZTNRhg>
+    <xme:NQb-YYTpdfE_4ehjCDMm-qYsnsGOnniSsqg9SsFbvwYtCuh0ef9oj74iUUaN3y-EM
+    HnBcTByrbvVcnmHGNs>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrhedtgdektdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefofgggkfgjfhffhffvufgtsehttdertderredtnecuhfhrohhmpedfufhlrggu
+    vgcuhggrthhkihhnshdfuceoshhlrgguvgesshhlrgguvgifrghtkhhinhhsrdgtohhmqe
+    enucggtffrrghtthgvrhhnpeeuieffteejieetgfevteelheevudehteeihffhteehtdet
+    leegtedtvdevvddugeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrih
+    hlfhhrohhmpehslhgruggvsehslhgruggvfigrthhkihhnshdrtghomh
+X-ME-Proxy: <xmx:NQb-YWVdEXQTpcEVZO3mgx9dcOmNzWHZdzxXh6l5oGJh9kfo2JWlag>
+    <xmx:NQb-YSjuTPmdC-EKzV9swTwIAtWLb_x0oKHZddh6riANVjYX_aomrw>
+    <xmx:NQb-YWAb3bxUe7vhVeYAxyL_5NVlK8TtyC1zaYO53iJqVLBLYgDkwA>
+    <xmx:NQb-Ya5FQaYoG7MXvI7gd4VECRMLs3dJ_Wx3MbgBDT_b9xQh3axmqQigZThON7dD>
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id 0FF42F6007E; Sat,  5 Feb 2022 00:08:04 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.5.0-alpha0-4586-g104bd556f9-fm-20220203.002-g104bd556
+Mime-Version: 1.0
+Message-Id: <4aab1871-f009-4f34-b563-5320d691f921@www.fastmail.com>
+In-Reply-To: <20220204091915.247906930@linuxfoundation.org>
+References: <20220204091915.247906930@linuxfoundation.org>
+Date:   Sat, 05 Feb 2022 00:07:44 -0500
+From:   "Slade Watkins" <slade@sladewatkins.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org,
+        "Linus Torvalds" <torvalds@linux-foundation.org>,
+        akpm@linux-foundation.org, "Guenter Roeck" <linux@roeck-us.net>,
+        shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, "Pavel Machek" <pavel@denx.de>,
+        "Jon Hunter" <jonathanh@nvidia.com>,
+        "Florian Fainelli" <f.fainelli@gmail.com>,
+        sudipm.mukherjee@gmail.com
+Subject: Re: [PATCH 5.15 00/32] 5.15.20-rc1 review
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.armlinux.org.uk/~rmk/linux-arm clearfog
-head:   76e9a0db445a3fdaa7685fe133a55673c94e9b5e
-commit: 9d274182feb7642db60ac4b713ac6572b5dbd04b [9/10] mvebu/clearfog pcie updates
-config: i386-randconfig-m021-20220131 (https://download.01.org/0day-ci/archive/20220205/202202051233.wNW2l14n-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+On Fri, Feb 4, 2022, at 4:22 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.15.20 release.
+> There are 32 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Sun, 06 Feb 2022 09:19:05 +0000.
+> Anything received after that time might be too late.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Hi Greg,
+Great news, I was able to compile and boot 5.15.20-rc1 on my x86_64 test system without any errors or regressions.
 
-New smatch warnings:
-drivers/pci/pcie/portdrv_core.c:329 pcie_port_device_register() warn: inconsistent indenting
+Tested-by: Slade Watkins <slade@sladewatkins.com>
 
-Old smatch warnings:
-drivers/pci/pcie/portdrv_core.c:355 pcie_port_device_register() warn: inconsistent indenting
-
-vim +329 drivers/pci/pcie/portdrv_core.c
-
-   307	
-   308	/**
-   309	 * pcie_port_device_register - register PCI Express port
-   310	 * @dev: PCI Express port to register
-   311	 *
-   312	 * Allocate the port extension structure and register services associated with
-   313	 * the port.
-   314	 */
-   315	int pcie_port_device_register(struct pci_dev *dev)
-   316	{
-   317		int status, capabilities, irq_services, i, nr_service;
-   318		int irqs[PCIE_PORT_DEVICE_MAXSERVICES] = {
-   319			[0 ... PCIE_PORT_DEVICE_MAXSERVICES-1] = -1
-   320		};
-   321	
-   322		/* Enable PCI Express port device */
-   323		status = pci_enable_device(dev);
-   324		if (status)
-   325			return status;
-   326	
-   327		/* Get and check PCI Express port services */
-   328		capabilities = get_port_device_capability(dev);
- > 329	dev_info(&dev->dev, "PCIe capabilities: 0x%x\n", capabilities);
-   330		if (!capabilities)
-   331			return 0;
-   332	
-   333		pci_set_master(dev);
-   334	
-   335		irq_services = 0;
-   336		if (IS_ENABLED(CONFIG_PCIE_PME))
-   337			irq_services |= PCIE_PORT_SERVICE_PME;
-   338		if (IS_ENABLED(CONFIG_PCIEAER))
-   339			irq_services |= PCIE_PORT_SERVICE_AER;
-   340		if (IS_ENABLED(CONFIG_HOTPLUG_PCI_PCIE))
-   341			irq_services |= PCIE_PORT_SERVICE_HP;
-   342		if (IS_ENABLED(CONFIG_PCIE_DPC))
-   343			irq_services |= PCIE_PORT_SERVICE_DPC;
-   344		irq_services &= capabilities;
-   345	
-   346		if (irq_services) {
-   347			/*
-   348			 * Initialize service IRQs. Don't use service devices that
-   349			 * require interrupts if there is no way to generate them.
-   350			 * However, some drivers may have a polling mode (e.g.
-   351			 * pciehp_poll_mode) that can be used in the absence of IRQs.
-   352			 * Allow them to determine if that is to be used.
-   353			 */
-   354			status = pcie_init_service_irqs(dev, irqs, irq_services);
-   355	dev_info(&dev->dev, "init_service_irqs: %d\n", status);
-   356			if (status) {
-   357				irq_services &= PCIE_PORT_SERVICE_HP;
-   358				if (!irq_services)
-   359					goto error_disable;
-   360			}
-   361		}
-   362	
-   363		/* Allocate child services if any */
-   364		status = -ENODEV;
-   365		nr_service = 0;
-   366		for (i = 0; i < PCIE_PORT_DEVICE_MAXSERVICES; i++) {
-   367			int service = 1 << i;
-   368			if (!(capabilities & service))
-   369				continue;
-   370			if (!pcie_device_init(dev, service, irqs[i]))
-   371				nr_service++;
-   372		}
-   373		if (!nr_service)
-   374			goto error_cleanup_irqs;
-   375	
-   376		return 0;
-   377	
-   378	error_cleanup_irqs:
-   379		pci_free_irq_vectors(dev);
-   380	error_disable:
-   381		pci_disable_device(dev);
-   382		return status;
-   383	}
-   384	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Thanks,
+Slade
