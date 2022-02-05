@@ -2,195 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5099C4332F
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 18:24:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34884C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 18:25:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380888AbiBESYr (ORCPT
+        id S1380890AbiBESZq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 13:24:47 -0500
-Received: from mga12.intel.com ([192.55.52.136]:52614 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231970AbiBESYp (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 13:24:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644085485; x=1675621485;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=kwdT3oPchGN+YP/B5MlgIYEIHZ80n73Pyrl4jYokB0U=;
-  b=FHJt5M3jdVDNQX27zzu+2cNdi0GYxR/g3FB3z2PkORXMtJc3VFvmu8hE
-   5UINF6lHU/sBV5mbgEG6UB/oeflMNC884X9jwTqsAEeW+Jd103jqYYC+x
-   7hDRDq36nhsWze+blI6BNzOkKQi0/p/+LzcY7Tw5DL2U0Yd87IJzs4xn2
-   7STCWsiyliF8HgbNtuTbv2vwdkdM4Ili+qrhIhoX0VUz+PvKwvRf4kHx0
-   5XxzfWbRRtEZXVlRGMx+C8s4LwoxV5+vUwp7erLYHPnqSZmHAvpy6uZS8
-   GTkOFRHmBZn//0AjBNUyF0QXgKIhtVDiWfhGekiIVKqsrbgNKZT2QOwpd
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10248"; a="228499102"
-X-IronPort-AV: E=Sophos;i="5.88,346,1635231600"; 
-   d="scan'208";a="228499102"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2022 10:24:44 -0800
-X-IronPort-AV: E=Sophos;i="5.88,346,1635231600"; 
-   d="scan'208";a="524662254"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2022 10:24:43 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nGPip-001LL8-CX;
-        Sat, 05 Feb 2022 20:23:43 +0200
-Date:   Sat, 5 Feb 2022 20:23:43 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH v1 2/2] iio: temperature: ltc2983: Make use of device
- properties
-Message-ID: <Yf7ArwPrN34drkcv@smile.fi.intel.com>
-References: <20220203114506.53904-1-andriy.shevchenko@linux.intel.com>
- <20220203114506.53904-2-andriy.shevchenko@linux.intel.com>
- <20220205171454.49a7225c@jic23-huawei>
+        Sat, 5 Feb 2022 13:25:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38900 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231970AbiBESZp (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Sat, 5 Feb 2022 13:25:45 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A966C061348
+        for <linux-kernel@vger.kernel.org>; Sat,  5 Feb 2022 10:25:44 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E6FAD61194
+        for <linux-kernel@vger.kernel.org>; Sat,  5 Feb 2022 18:25:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87804C340E8;
+        Sat,  5 Feb 2022 18:25:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644085543;
+        bh=DnP6o6vCH+ISNqb/qwd0A+0Dc+FgwDGwqXi/wvYmCVg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=uiS6/8LU0O1ruHuPYg83WkC5gudVQVA3ZgRtxlbisGDW1d9hGHCrIKeK0AlRHqWvJ
+         b/6pt+RVH7FPgNBS9opV+oCkhTqT5uHSrHLQAuQZXuvdwyR4p1k0Wg2cxr0Iw47flF
+         XqPsXGXiiByIEO5015N7jul3SA1i3jUvhunkLni162cshv/HTYKVdi5uctI6zZ3fPY
+         pKJ/VjrNbnv3FQ1kio/JNRk3chk/qM/GLU3K+VWhvp44NSQQl0HXWk8DF2vjNWD2gh
+         IMoyc1lCk7E/RyjSDynpd1T3M4s6rOSY9mXAK0pHlpb0MS7fZhgDz1BMh72fjHT1N/
+         PxWnGpROGNHLg==
+Date:   Sat, 5 Feb 2022 18:25:39 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     Brian Norris <briannorris@chromium.org>
+Cc:     Peng Fan <peng.fan@nxp.com>,
+        "rafael@kernel.org" <rafael@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        "S.j. Wang" <shengjiu.wang@nxp.com>
+Subject: Re: regmap: mmio: lack of runtime_pm support for debugfs
+Message-ID: <Yf7BI9Cei5H2S1ry@sirena.org.uk>
+References: <20200423104000.GD4808@sirena.org.uk>
+ <DB6PR0402MB27600084E4A040609EF620A088D30@DB6PR0402MB2760.eurprd04.prod.outlook.com>
+ <20200423112244.GH4808@sirena.org.uk>
+ <DB6PR0402MB2760FBCA05C1BADB27F0356488D00@DB6PR0402MB2760.eurprd04.prod.outlook.com>
+ <20200424103004.GB5850@sirena.org.uk>
+ <Ye87P19+JOjPEGTY@google.com>
+ <Yf14RJbM10O3RdA+@sirena.org.uk>
+ <CA+ASDXP+KeiRKASFakDjJ=cZPD_rGmV4=JgRH26zQi-uZDdiAQ@mail.gmail.com>
+ <Yf2BTelNlqplv06/@sirena.org.uk>
+ <CA+ASDXMJB4Egohc_V=su-tE=pU76=6zbmXSoptwwwbype1F7sw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="agmc4mI7WA28dIr6"
 Content-Disposition: inline
-In-Reply-To: <20220205171454.49a7225c@jic23-huawei>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <CA+ASDXMJB4Egohc_V=su-tE=pU76=6zbmXSoptwwwbype1F7sw@mail.gmail.com>
+X-Cookie: -- Owen Meredith
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Feb 05, 2022 at 05:14:54PM +0000, Jonathan Cameron wrote:
-> On Thu,  3 Feb 2022 13:45:06 +0200
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> 
-> > Convert the module to be property provider agnostic and allow
-> > it to be used on non-OF platforms.
-> 
-> This description needs expansion as it's not a straight forward
-> conversion.
-> 
-> Also, complex enough that I definitely want more eyes and preferably
-> some testing.
 
-That's fair. I also spent most of the time on this change in comparison to the
-whole bundle.
+--agmc4mI7WA28dIr6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-...
+On Fri, Feb 04, 2022 at 11:53:01AM -0800, Brian Norris wrote:
+> On Fri, Feb 4, 2022 at 11:41 AM Mark Brown <broonie@kernel.org> wrote:
+> > On Fri, Feb 04, 2022 at 11:21:51AM -0800, Brian Norris wrote:
 
-> > +#include <asm/byteorder.h>
-> > +#include <asm/unaligned.h>
+> > > We do actually have a cache for the case I care about, but there's
+> > > also a debugfs file for bypassing that and...for some reason I'm
+> > > dealing with some diagnostic scripts that purposely toggle that. I'm
 
-> This may well be a valid addition but it's not called out in the patch
-> description.
+> > Are you sure this extra thing that bypasses the cache isn't an out of
+> > tree patch?  It really doesn't sound like a good idea to have that, and
+> > if people think they need it they probably have drivers doing something
+> > quite unfortunate.  Or are you just looking at the upstream debugfs with
+> > some volatile registers?
 
-This is a side effect of the change. Below I will try to explain, tell me if
-that is what you want to be added to the commit message (feel free to correct
-my English).
+> Again, I didn't claim the *use* of that bypass in the aforementioned
+> diagnostic script was a good idea...but it's at least possible. I've
+> already carved out more exceptions so that script doesn't do bad
+> things on some systems, but maybe I'll poke the authors even more, to
+> see if they have a good reason for using the bypass.
 
-The conversion slightly changes the logic behind property reading for the
-configuration values. Original code allocates just as much memory as needed.
-Then for each separate 32- or 64-bit value it reads it from the property
-and converts to a raw one which will be fed to the sensor. In the new code
-we allocated the amount of memory needed to retrieve all values at once from
-the property and then convert them as required.
+So it's fiddling about with bypass mode by hand rather than
+something that specifically shows you the underlying device.
+That is also a terrible idea for routine use, if it's telling you
+anything different from what the cache says the driver is buggy
+and if the script causes that to happen then it itself is likely
+to be the bug.
 
-...
+--agmc4mI7WA28dIr6
+Content-Type: application/pgp-signature; name="signature.asc"
 
-> >  	if (st->custom_table_size + new_custom->size >
-> > -	    (LTC2983_CUST_SENS_TBL_END_REG -
-> > -	     LTC2983_CUST_SENS_TBL_START_REG) + 1) {
-> > +	    (LTC2983_CUST_SENS_TBL_END_REG - LTC2983_CUST_SENS_TBL_START_REG) + 1) {
-> 
-> Shouldn't really be in this patch. Or at very least call out that there is
-> whitespace cleanup in the patch description.
+-----BEGIN PGP SIGNATURE-----
 
-Good catch! It's a leftover, one case became a patch 1 in this series.
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmH+wSIACgkQJNaLcl1U
+h9Chcwf+K6VUMscow9oAM92wB4RgKnD24v37trafem63/4vRih/0LPy+NXSJs8xD
+J7oJKycRg18st3lcvE8jsi2hR4dVkGNc17HzfQOvBMs4xTVQJDYNeCcaaQOiVBqK
+vsuy0F3ln6+tlVDSrOF2c3I46t8wpnlG1/tRMb3Gg/Vyj8HSACXdEGHaNhYkUebS
+dTr5w2qnjZdGmg0vmsf9oiT8i6+wqp2z83eugVdptYzUme9fKVfodFfoBWX0CK9L
+pmsInnN1GMzoCwtFJfnFayo3V3J7nhFTg5Qim/V2FkyrTZgGIs8rKOD/92wpIMFE
+9IJBCv14e3rbiuPdpxpLxJ5TTCYwQg==
+=/6dQ
+-----END PGP SIGNATURE-----
 
-...
-
-> > +	if (is_steinhart)
-> > +		ret = fwnode_property_read_u32_array(fn, propname, new_custom->table, n_entries);
-> > +	else
-> > +		ret = fwnode_property_read_u64_array(fn, propname, new_custom->table, n_entries);
-> > +	if (ret < 0)
-> > +		return ERR_PTR(ret);
-> > +
-> > +	/*
-> > +	 * Steinhart sensors are configured with raw values in the device tree.
-> > +	 * For the other sensors we must convert the value to raw. The odd
-> > +	 * index's correspond to temperatures and always have 1/1024 of
-> > +	 * resolution. Temperatures also come in Kelvin, so signed values is
-> > +	 * not possible.
-> > +	 */
-> > +	if (is_steinhart) {
-> 
-> Perhaps would be cleaner to combine this if else with the one above at the cost
-> of duplicating the if (ret < 0) check.
-
-OK, I'm fine with either approach.
-
-> > +		cpu_to_be32_array(new_custom->table, new_custom->table, n_entries);
-> 
-> I completely failed to register the hand coded big endian conversion.  Nice
-> tidy up.  However, definitely something to call out in the patch description.
-
-See above.
-
-> > +	} else {
-> > +		for (index = 0; index < n_entries; index++) {
-> > +			u64 temp = ((u64 *)new_custom->table)[index];
-> >  
-> >  			if ((index % 2) != 0)
-> >  				temp = __convert_to_raw(temp, 1024);
-> > @@ -445,16 +459,9 @@ static struct ltc2983_custom_sensor *__ltc2983_custom_sensor_new(
-> >  				temp = __convert_to_raw_sign(temp, resolution);
-> >  			else
-> >  				temp = __convert_to_raw(temp, resolution);
-> > -		} else {
-> > -			u32 t32;
-> >  
-> > -			of_property_read_u32_index(np, propname, index, &t32);
-> > -			temp = t32;
-> > +			put_unaligned_be24(temp, new_custom->table + index * 3);
-> >  		}
-> > -
-> > -		for (j = 0; j < n_size; j++)
-> > -			new_custom->table[tbl++] =
-> > -				temp >> (8 * (n_size - j - 1));
-> >  	}
-
-...
-
-> >  		if (IS_ERR(rtd->custom)) {
-> > -			of_node_put(phandle);
-> > +			fwnode_handle_put(ref);
-> 
-> I guess there was a bunch of cut and paste in this driver ;) Same question as below
-> on whether we can just use a goto here to share the put in the fail path.
-
-Probably as separate (preparatory) patch?
-
-> >  			return ERR_CAST(rtd->custom);
-> >  		}
-
-...
-
-> >  		if (IS_ERR(thermistor->custom)) {
-> > -			of_node_put(phandle);
-> > +			fwnode_handle_put(ref);
-> >  			return ERR_CAST(thermistor->custom);
-> 
-> Obviously not due to this patch, but this is odd.  Why have one error path
-> that doesn't use the goto faill;?
-> If you could tidy that up and add a note on it to the patch description
-> that would be great.
-
-Same answer as above.
-
-> >  		}
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+--agmc4mI7WA28dIr6--
