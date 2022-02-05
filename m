@@ -2,161 +2,407 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B12FCC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 16:58:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29D2EC433FE
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 17:08:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380510AbiBEQ6z (ORCPT
+        id S1380536AbiBERI3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 11:58:55 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:18988 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239376AbiBEQ6x (ORCPT
+        Sat, 5 Feb 2022 12:08:29 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:55358 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348697AbiBERI0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 11:58:53 -0500
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2158uUVV015025;
-        Sat, 5 Feb 2022 08:58:38 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=s2vIlAN/7DsTxLiP+mwrPc0mOmUin6NW3bRsxKydZ4M=;
- b=Ulk3+gg4Y+T4cbmvtkS4IYNUbhPTxGTXWU13ShGYoC4lNRfVyidgORBSIwJDocDobYnA
- 972k/Aee33geuclOFOMlweyQHKrq9+7Ren3J6fKkvd24P//SKFRs6QhbMwKL0q9y9s/t
- m+Ax2ZglKB0jzuwjZBBjUEdsXNcfQrHenuQ= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3e1p5m1k0w-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Sat, 05 Feb 2022 08:58:38 -0800
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Sat, 5 Feb 2022 08:58:37 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gMy3ltpeTCz/aQHOmSIX4yk743lpFTCGQTHPCNFmzI/cCT8GnS2XU7vf10U7mNYuorS73LEo/8xYHuzYOQaChAPqD3cSydgvAj110xsFs7G4LTwMeu+YUuk0dJxfPQeQRTEPueP01/ft4ub4X5ErfYHW3/3e5XQUKzuSYes7YZihuOVHWHj0WWUm5ISMSlPTZG4G5O7R9LYQN26/ysvHnEmdfLqRxXCz/BPaoR8rHawm1ZShH3fDpzcKzsAQruZO42Rvrd/I/pjt3ejLH2oegSrybvKL3aktxil+u2kCDoZdyOMm6Qi5tU5BGJMKCN0V7kqX/eVpeYwrA+JRP2nS+A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=s2vIlAN/7DsTxLiP+mwrPc0mOmUin6NW3bRsxKydZ4M=;
- b=c3I9gU4H1eU+svRVuymp2UX85exajj3p4pLGfdeY6CfbsFThzlQYlLWgLqfzCQePf25GarL4Fgek2IuAxjVbF4go94alPVqTAIx17IrEOKFnQSGD0SKE62nvzKMz03fV8LKRzhScZlvPHsgtGjpYwjDplmZNcxl/HyQed1Fi62mCqyXq8PztWuNh1XFgPvdFPfwZrQmEWonGSE9UcfO3XkWoMG02j+B810Wxj4vuvDSf/j5uhEI7XIYj733r2JyRY+wDk1vwPo6iKvfl82jqWlf+XLXZS8WG6AUqaSFUdAPlroLefBv9n0OO+mXBbHw8zkGwYkdQpOEADTq3LPw1/A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-Received: from BYAPR15MB4136.namprd15.prod.outlook.com (2603:10b6:a03:96::24)
- by SN7PR15MB4240.namprd15.prod.outlook.com (2603:10b6:806:109::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.17; Sat, 5 Feb
- 2022 16:58:31 +0000
-Received: from BYAPR15MB4136.namprd15.prod.outlook.com
- ([fe80::d4ac:5796:5198:ecd2]) by BYAPR15MB4136.namprd15.prod.outlook.com
- ([fe80::d4ac:5796:5198:ecd2%3]) with mapi id 15.20.4930.022; Sat, 5 Feb 2022
- 16:58:31 +0000
-Date:   Sat, 5 Feb 2022 08:58:26 -0800
-From:   Roman Gushchin <guro@fb.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        Alexander Egorenkov <egorenar@linux.ibm.com>,
-        Waiman Long <longman@redhat.com>, Tejun Heo <tj@kernel.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        <cgroups@vger.kernel.org>
-Subject: Re: [PATCH RESEND] mm: memcg: synchronize objcg lists with a
- dedicated spinlock
-Message-ID: <Yf6sskyXcffxTA+b@carbon.dhcp.thefacebook.com>
-References: <Yfm1IHmoGdyUR81T@carbon.dhcp.thefacebook.com>
- <20220203151912.87d47b82c1bc3f0d56be0e3a@linux-foundation.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220203151912.87d47b82c1bc3f0d56be0e3a@linux-foundation.org>
-X-ClientProxiedBy: MWHPR12CA0030.namprd12.prod.outlook.com
- (2603:10b6:301:2::16) To BYAPR15MB4136.namprd15.prod.outlook.com
- (2603:10b6:a03:96::24)
+        Sat, 5 Feb 2022 12:08:26 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1A94BB80814;
+        Sat,  5 Feb 2022 17:08:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 857DCC340E8;
+        Sat,  5 Feb 2022 17:08:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644080903;
+        bh=lrqr8K46/uojmfIC2tbdUKiGRVfKrVt/Mn/ltMJOcQ8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=dpB5lMPoV266vveq7Zz6SRZ4KizsXyOsWgZs8laooNMtZAO/GkbXZVM/5yBTXwUZK
+         +OVmPaHfOrbcIYbXWHJYEEBE5jgiQ+bMXDCUua9LUyfRxSl8pDYQg8r4Ela/JSqGV+
+         MnNTlkgNA5wQWHtXcCaCJbV2tc692MKULKHQ8I5fZ50tuvuHzWy7+YPtf5xzzMOCan
+         a3kaWAbHhmfDlZziKHvNAOxafq+a/ohbac4F7Az16mwhEPoITToc6hrF4yQhjLwKcM
+         nJdZWiblwvaQAXURy3mfpc624gm7b2k3lK9sSP6oP5O+knIeNNP9hMwW3VvZNm2zmX
+         TEwFFfy/Cx9Zg==
+Date:   Sat, 5 Feb 2022 17:14:54 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH v1 2/2] iio: temperature: ltc2983: Make use of device
+ properties
+Message-ID: <20220205171454.49a7225c@jic23-huawei>
+In-Reply-To: <20220203114506.53904-2-andriy.shevchenko@linux.intel.com>
+References: <20220203114506.53904-1-andriy.shevchenko@linux.intel.com>
+        <20220203114506.53904-2-andriy.shevchenko@linux.intel.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8fda6154-e4c6-43a2-ab15-08d9e8c8bcc2
-X-MS-TrafficTypeDiagnostic: SN7PR15MB4240:EE_
-X-Microsoft-Antispam-PRVS: <SN7PR15MB4240D4864B845410B909C259BE2A9@SN7PR15MB4240.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: a9BvB5ialvtvsRYxZpkAGSQZUY2TlZhO4wWY1EHUiuA1fPUbfnwqVCnqel4O3XHogR5T4MOm5cDIpbOdU4Ue1ap5hBzq2dsbyI4t5/9nb2hcJFGEPeHRMNxe51NWAhQeQK8WgisJ8zRbm9fmaFuUe4rRovV9CceaRmQzxqSKIKcO3HMMmgP4NXRuIxPvmW66PrGnpaV+QO1hWHOmFAotvASbioFOEuDi5q0He352twAM+MAk6yfq+X0HSUQavt1eucpzznpfKwA3tRouRE+nc3E/6sI8cdrZUDyU52eIG2eFJA/CEJux2aXXBKgN8+Ztn0vtVjClGe16t1HvO2e5KVddX2Dt6S0Ti9v5a7oxg8xjs5mx13aK+2FUgTNopK+uWmct4DdTwozT8E6uXHD1nAsX2zqPa+TCslECzSH+xMpktySmL9FU8DbG+vnAWPK9bYepP4Khp0hWTCM+LeHgBnLGvV74gfwRn0MSXCbLV06CQZ5WvZvj350Ra1IlMAgYCAGEC0pmj1OGRSKuMoRR2jafbFBfsvdUR6zfKcP9XODfFQpXCBje29JQn0Xw353fzPT62As84jpsUOr58JxQZCeV8u/ah02nhYU72sMEQuYCnAXSUDpNMK4gPsVyqQ4b8ErfMCIwlWYLWvmzOhDWwXWhRVDstR/RiW35pKUhDKbZz8w4nE1vzf8LoVRtZw+H
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4136.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(316002)(4744005)(52116002)(6506007)(83380400001)(6512007)(186003)(7416002)(9686003)(6916009)(86362001)(6666004)(5660300002)(2906002)(66556008)(508600001)(4326008)(8936002)(8676002)(54906003)(66476007)(6486002)(38100700002)(66946007)(67856001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?AARTkhwWiLD7xCiMPZRdrGbGhX9RbiwDudIWPwxhOv9OOLvsXHfKMMszV5Bw?=
- =?us-ascii?Q?rv9yi7SWNqlhS6gZ+9hzBR42egnWfVbNwf5jEUCsAO0dzrHxHPvlZN/FNqx9?=
- =?us-ascii?Q?pwB3oF5i+SZ5Wx1T/CNLVnDahvKEWvaaJLvFow/qiFhRtzvI/qsXU9HsGNDe?=
- =?us-ascii?Q?mBObpD7rMNb1WT1kZUql9nhzTNOpP9bsH8aPiEkAy43jYKYQqC4A6rJgsaEy?=
- =?us-ascii?Q?beNRNIfB+711v06/0cGfvT0MDmCwC2vBjkTNPsI2AmLZf+rYiHqvxER1+Xcc?=
- =?us-ascii?Q?tv/Rrr30hOy86SWn8lmvD/jnrY0GfT0fnuWdDO3TDJtjPczPt7+kdjWnhPCZ?=
- =?us-ascii?Q?ERUBP+rzsutQ8QZVYbDJ3PMalg3JtcqfZ3N8KYGLBcoIb9koFDW5EYBWj5Gr?=
- =?us-ascii?Q?Eg6vS6K7d8qH65En/phSwHqliJj2UdfsgYISzh3MsyschMuUvrPzsUiRShJL?=
- =?us-ascii?Q?SrLg86K3jXmxdEZWOfnF66epdCfwHNSlOUSlD3BlG6MrxqfMfO1E4Jx1MbQf?=
- =?us-ascii?Q?+2FbD/ISMj/BAKvLdOuYA5o5Ahg04+zq+DzFxrYSzs/rr1bTY/AL0xMR/VhI?=
- =?us-ascii?Q?oZVAtIHSZL49XBP3I1ofYf4ie9U39rmx7Pr0KBN2TEcdjk4RblnMrnd7uL0l?=
- =?us-ascii?Q?I6p2zB+6+XOyeBh2g905i66kLokEaledN5nrijbvaQMwgswbMMt2khvZRAk2?=
- =?us-ascii?Q?Wk5WVIGTJV0VlewgfHyHUXboHS2ztm8llOzrjOrbJOuaetjd47d8tvysc95M?=
- =?us-ascii?Q?rU0wmv1wlfFbp0dt8sKY2HmkN/K9wi5hj+2LZy8Grt4+qvEppoEYRNWItku5?=
- =?us-ascii?Q?9r6JvmUli3PfznpFSvkbfLNjLSB7PBjNVM6em049dDylkF7MPnRKiYHJjWHE?=
- =?us-ascii?Q?vNyW3XooXG3W/3BKEQzItGJ9+FX8CVkZwkxBc36V9CwRt0S986Nn81OzpgG7?=
- =?us-ascii?Q?Ohvv8Z7ob71Bh1e5yr4QQs17M+iXXZdy62km62DH3i8OaAKYXJNdBBqOSuzl?=
- =?us-ascii?Q?tGK22XaG5TUrpU2PA8V+uk+6gQR3U4ibTfXl3kigUUTQxHcLcsq3RBWTpFMI?=
- =?us-ascii?Q?iAeErW+T/ERFSgnUQfuXuivFWaZNppFMXUYGsrS64xOfitMBvYRiwsG7aYWf?=
- =?us-ascii?Q?JIaOuXgRCPY9OUy+GkP+rpX29kD6RUHBSlE2S9HdGsoEnjMcoziWKarKF0a6?=
- =?us-ascii?Q?Hr4KmABXy+4s/BGodAwzhjCDAUYMdjzgNyMtfaVEqQkG8YdQh1fpjgu45RGm?=
- =?us-ascii?Q?WmP7LlwGtK5c0jYznA2w4ZnUt4pAoO8De4qG31Oi/dXsG8wEWxWldRmK5U36?=
- =?us-ascii?Q?Ne8lH4TmeUQ8so8X3jwKSyGnBf5pHe+SeqGSPSAtJiFND+ShKYREl9fvAsDB?=
- =?us-ascii?Q?02OrYMKFOzpu49Vrz6elYJfXJeyQeCmYGaB2T2jx6NwkiY0dkisNFM1GA29I?=
- =?us-ascii?Q?H7s2n9nKc5nEfSjQQDTs446sPl1F7McYUnicaxX86fZMAxItkLUSOO7GXw7h?=
- =?us-ascii?Q?HmU3W51YODRPHSbqLoY2k7bvnYWrz1G1nnyi5896f4Bcx0GMaMK8dNaLDxBI?=
- =?us-ascii?Q?UvmJUKJjxVy+WE9G0gcRqpEqJVOx1RbRLkEPEK/Z?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8fda6154-e4c6-43a2-ab15-08d9e8c8bcc2
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB4136.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Feb 2022 16:58:30.9957
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: jS+3StTmYWeOIKv+iaKzU6/ZnxYycOAC2lBNPPhaCETS+70UMIKvgWHn3JvAnwMo
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR15MB4240
-X-OriginatorOrg: fb.com
-X-Proofpoint-GUID: zH9xBOVOWo2rPp56TisqnTSQWTn5aar0
-X-Proofpoint-ORIG-GUID: zH9xBOVOWo2rPp56TisqnTSQWTn5aar0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-05_12,2022-02-03_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 lowpriorityscore=0
- bulkscore=0 priorityscore=1501 mlxscore=0 mlxlogscore=494 impostorscore=0
- spamscore=0 clxscore=1015 adultscore=0 phishscore=0 malwarescore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202050114
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 03, 2022 at 03:19:12PM -0800, Andrew Morton wrote:
-> On Tue, 1 Feb 2022 14:33:04 -0800 Roman Gushchin <guro@fb.com> wrote:
+On Thu,  3 Feb 2022 13:45:06 +0200
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+
+> Convert the module to be property provider agnostic and allow
+> it to be used on non-OF platforms.
+
+This description needs expansion as it's not a straight forward
+conversion.
+
+Also, complex enough that I definitely want more eyes and preferably
+some testing.
+
+Thanks,
+
+Jonathan
+
 > 
-> > Alexander reported a circular lock dependency revealed by the mmap1
-> > ltp test:
-> >   LOCKDEP_CIRCULAR (suite: ltp, case: mtest06 (mmap1))
-> > 
-> > ...
-> >
-> > Fixes: bf4f059954dc ("mm: memcg/slab: obj_cgroup API")
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+>  drivers/iio/temperature/ltc2983.c | 211 +++++++++++++++---------------
+>  1 file changed, 105 insertions(+), 106 deletions(-)
 > 
-> I'm thinking it needs cc:stable.  It sounds unlikely that we'll hit it
-> in real life, but lockdep splats are concerning and I expect downstream
-> kernel consumers will end up merging this anyway, for this reason.
-> 
+> diff --git a/drivers/iio/temperature/ltc2983.c b/drivers/iio/temperature/ltc2983.c
+> index d272c303c1b0..a2fcea7d9d90 100644
+> --- a/drivers/iio/temperature/ltc2983.c
+> +++ b/drivers/iio/temperature/ltc2983.c
+> @@ -12,11 +12,15 @@
+>  #include <linux/iio/iio.h>
+>  #include <linux/interrupt.h>
+>  #include <linux/list.h>
+> +#include <linux/mod_devicetable.h>
+>  #include <linux/module.h>
+> -#include <linux/of_gpio.h>
+> +#include <linux/property.h>
+>  #include <linux/regmap.h>
+>  #include <linux/spi/spi.h>
+>  
+> +#include <asm/byteorder.h>
+> +#include <asm/unaligned.h>
+> +
+This may well be a valid addition but it's not called out in the patch
+description.
 
-I agree.
+>  /* register map */
+>  #define LTC2983_STATUS_REG			0x0000
+>  #define LTC2983_TEMP_RES_START_REG		0x0010
+> @@ -219,7 +223,7 @@ struct ltc2983_sensor {
+>  
+>  struct ltc2983_custom_sensor {
+>  	/* raw table sensor data */
+> -	u8 *table;
+> +	void *table;
+>  	size_t size;
+>  	/* address offset */
+>  	s8 offset;
+> @@ -377,25 +381,25 @@ static int __ltc2983_chan_custom_sensor_assign(struct ltc2983_data *st,
+>  	return regmap_bulk_write(st->regmap, reg, custom->table, custom->size);
+>  }
+>  
+> -static struct ltc2983_custom_sensor *__ltc2983_custom_sensor_new(
+> -						struct ltc2983_data *st,
+> -						const struct device_node *np,
+> -						const char *propname,
+> -						const bool is_steinhart,
+> -						const u32 resolution,
+> -						const bool has_signed)
+> +static struct ltc2983_custom_sensor *
+> +__ltc2983_custom_sensor_new(struct ltc2983_data *st, const struct fwnode_handle *fn,
+> +			    const char *propname, const bool is_steinhart,
+> +			    const u32 resolution, const bool has_signed)
+>  {
+>  	struct ltc2983_custom_sensor *new_custom;
+> -	u8 index, n_entries, tbl = 0;
+>  	struct device *dev = &st->spi->dev;
+>  	/*
+>  	 * For custom steinhart, the full u32 is taken. For all the others
+>  	 * the MSB is discarded.
+>  	 */
+>  	const u8 n_size = is_steinhart ? 4 : 3;
+> -	const u8 e_size = is_steinhart ? sizeof(u32) : sizeof(u64);
+> +	u8 index, n_entries;
+> +	int ret;
+>  
+> -	n_entries = of_property_count_elems_of_size(np, propname, e_size);
+> +	if (is_steinhart)
+> +		n_entries = fwnode_property_count_u32(fn, propname);
+> +	else
+> +		n_entries = fwnode_property_count_u64(fn, propname);
+>  	/* n_entries must be an even number */
+>  	if (!n_entries || (n_entries % 2) != 0) {
+>  		dev_err(dev, "Number of entries either 0 or not even\n");
+> @@ -415,29 +419,39 @@ static struct ltc2983_custom_sensor *__ltc2983_custom_sensor_new(
+>  	}
+>  	/* Check space on the table. */
+>  	if (st->custom_table_size + new_custom->size >
+> -	    (LTC2983_CUST_SENS_TBL_END_REG -
+> -	     LTC2983_CUST_SENS_TBL_START_REG) + 1) {
+> +	    (LTC2983_CUST_SENS_TBL_END_REG - LTC2983_CUST_SENS_TBL_START_REG) + 1) {
 
-I'm somewhat surprised that we haven't seen any such warnings until recently,
-so I guess some recent kmem accounting change made it more probable.
+Shouldn't really be in this patch. Or at very least call out that there is
+whitespace cleanup in the patch description.
 
-Anyway, it feels like it's a low risk change and I see no reasons
-to not backport it to stable.
+>  		dev_err(dev, "No space left(%d) for new custom sensor(%zu)",
+>  				st->custom_table_size, new_custom->size);
+>  		return ERR_PTR(-EINVAL);
+>  	}
+>  
+>  	/* allocate the table */
+> -	new_custom->table = devm_kzalloc(dev, new_custom->size, GFP_KERNEL);
+> +	if (is_steinhart)
+> +		new_custom->table = devm_kcalloc(dev, n_entries, sizeof(u32), GFP_KERNEL);
+> +	else
+> +		new_custom->table = devm_kcalloc(dev, n_entries, sizeof(u64), GFP_KERNEL);
+>  	if (!new_custom->table)
+>  		return ERR_PTR(-ENOMEM);
+>  
+> -	for (index = 0; index < n_entries; index++) {
+> -		u64 temp = 0, j;
+> -		/*
+> -		 * Steinhart sensors are configured with raw values in the
+> -		 * devicetree. For the other sensors we must convert the
+> -		 * value to raw. The odd index's correspond to temperarures
+> -		 * and always have 1/1024 of resolution. Temperatures also
+> -		 * come in kelvin, so signed values is not possible
+> -		 */
+> -		if (!is_steinhart) {
+> -			of_property_read_u64_index(np, propname, index, &temp);
+> +	if (is_steinhart)
+> +		ret = fwnode_property_read_u32_array(fn, propname, new_custom->table, n_entries);
+> +	else
+> +		ret = fwnode_property_read_u64_array(fn, propname, new_custom->table, n_entries);
+> +	if (ret < 0)
+> +		return ERR_PTR(ret);
+> +
+> +	/*
+> +	 * Steinhart sensors are configured with raw values in the device tree.
+> +	 * For the other sensors we must convert the value to raw. The odd
+> +	 * index's correspond to temperatures and always have 1/1024 of
+> +	 * resolution. Temperatures also come in Kelvin, so signed values is
+> +	 * not possible.
+> +	 */
+> +	if (is_steinhart) {
 
-Thank you!
+Perhaps would be cleaner to combine this if else with the one above at the cost
+of duplicating the if (ret < 0) check.
+
+> +		cpu_to_be32_array(new_custom->table, new_custom->table, n_entries);
+
+I completely failed to register the hand coded big endian conversion.  Nice
+tidy up.  However, definitely something to call out in the patch description.
+
+> +	} else {
+> +		for (index = 0; index < n_entries; index++) {
+> +			u64 temp = ((u64 *)new_custom->table)[index];
+>  
+>  			if ((index % 2) != 0)
+>  				temp = __convert_to_raw(temp, 1024);
+> @@ -445,16 +459,9 @@ static struct ltc2983_custom_sensor *__ltc2983_custom_sensor_new(
+>  				temp = __convert_to_raw_sign(temp, resolution);
+>  			else
+>  				temp = __convert_to_raw(temp, resolution);
+> -		} else {
+> -			u32 t32;
+>  
+> -			of_property_read_u32_index(np, propname, index, &t32);
+> -			temp = t32;
+> +			put_unaligned_be24(temp, new_custom->table + index * 3);
+>  		}
+> -
+> -		for (j = 0; j < n_size; j++)
+> -			new_custom->table[tbl++] =
+> -				temp >> (8 * (n_size - j - 1));
+>  	}
+>  
+>  	new_custom->is_steinhart = is_steinhart;
+> @@ -597,13 +604,12 @@ static int ltc2983_adc_assign_chan(struct ltc2983_data *st,
+>  	return __ltc2983_chan_assign_common(st, sensor, chan_val);
+>  }
+>  
+
+...
+
+> -static struct ltc2983_sensor *ltc2983_rtd_new(const struct device_node *child,
+> -					  struct ltc2983_data *st,
+> -					  const struct ltc2983_sensor *sensor)
+> +static struct ltc2983_sensor *
+> +ltc2983_rtd_new(const struct fwnode_handle *child, struct ltc2983_data *st,
+> +		const struct ltc2983_sensor *sensor)
+>  {
+>  	struct ltc2983_rtd *rtd;
+>  	int ret = 0;
+>  	struct device *dev = &st->spi->dev;
+> -	struct device_node *phandle;
+> +	struct fwnode_handle *ref;
+>  	u32 excitation_current = 0, n_wires = 0;
+>  
+>  	rtd = devm_kzalloc(dev, sizeof(*rtd), GFP_KERNEL);
+>  	if (!rtd)
+>  		return ERR_PTR(-ENOMEM);
+>  
+> -	phandle = of_parse_phandle(child, "adi,rsense-handle", 0);
+> -	if (!phandle) {
+> +	ref = fwnode_find_reference(child, "adi,rsense-handle", 0);
+> +	if (!ref) {
+>  		dev_err(dev, "Property adi,rsense-handle missing or invalid");
+>  		return ERR_PTR(-EINVAL);
+>  	}
+>  
+> -	ret = of_property_read_u32(phandle, "reg", &rtd->r_sense_chan);
+> +	ret = fwnode_property_read_u32(ref, "reg", &rtd->r_sense_chan);
+>  	if (ret) {
+>  		dev_err(dev, "Property reg must be given\n");
+>  		goto fail;
+>  	}
+>  
+> -	ret = of_property_read_u32(child, "adi,number-of-wires", &n_wires);
+> +	ret = fwnode_property_read_u32(child, "adi,number-of-wires", &n_wires);
+>  	if (!ret) {
+>  		switch (n_wires) {
+>  		case 2:
+> @@ -738,9 +742,9 @@ static struct ltc2983_sensor *ltc2983_rtd_new(const struct device_node *child,
+>  		}
+>  	}
+>  
+> -	if (of_property_read_bool(child, "adi,rsense-share")) {
+> +	if (fwnode_property_read_bool(child, "adi,rsense-share")) {
+>  		/* Current rotation is only available with rsense sharing */
+> -		if (of_property_read_bool(child, "adi,current-rotate")) {
+> +		if (fwnode_property_read_bool(child, "adi,current-rotate")) {
+>  			if (n_wires == 2 || n_wires == 3) {
+>  				dev_err(dev,
+>  					"Rotation not allowed for 2/3 Wire RTDs");
+> @@ -803,7 +807,7 @@ static struct ltc2983_sensor *ltc2983_rtd_new(const struct device_node *child,
+>  							  "adi,custom-rtd",
+>  							  false, 2048, false);
+>  		if (IS_ERR(rtd->custom)) {
+> -			of_node_put(phandle);
+> +			fwnode_handle_put(ref);
+
+I guess there was a bunch of cut and paste in this driver ;) Same question as below
+on whether we can just use a goto here to share the put in the fail path.
+
+>  			return ERR_CAST(rtd->custom);
+>  		}
+>  	}
+> @@ -812,8 +816,8 @@ static struct ltc2983_sensor *ltc2983_rtd_new(const struct device_node *child,
+>  	rtd->sensor.fault_handler = ltc2983_common_fault_handler;
+>  	rtd->sensor.assign_chan = ltc2983_rtd_assign_chan;
+>  
+> -	ret = of_property_read_u32(child, "adi,excitation-current-microamp",
+> -				   &excitation_current);
+> +	ret = fwnode_property_read_u32(child, "adi,excitation-current-microamp",
+> +				       &excitation_current);
+>  	if (ret) {
+>  		/* default to 5uA */
+>  		rtd->excitation_current = 1;
+> @@ -852,23 +856,22 @@ static struct ltc2983_sensor *ltc2983_rtd_new(const struct device_node *child,
+>  		}
+>  	}
+>  
+> -	of_property_read_u32(child, "adi,rtd-curve", &rtd->rtd_curve);
+> +	fwnode_property_read_u32(child, "adi,rtd-curve", &rtd->rtd_curve);
+>  
+> -	of_node_put(phandle);
+> +	fwnode_handle_put(ref);
+>  	return &rtd->sensor;
+>  fail:
+> -	of_node_put(phandle);
+> +	fwnode_handle_put(ref);
+>  	return ERR_PTR(ret);
+>  }
+>  
+> -static struct ltc2983_sensor *ltc2983_thermistor_new(
+> -					const struct device_node *child,
+> -					struct ltc2983_data *st,
+> -					const struct ltc2983_sensor *sensor)
+> +static struct ltc2983_sensor *
+> +ltc2983_thermistor_new(const struct fwnode_handle *child, struct ltc2983_data *st,
+> +		       const struct ltc2983_sensor *sensor)
+>  {
+>  	struct ltc2983_thermistor *thermistor;
+>  	struct device *dev = &st->spi->dev;
+> -	struct device_node *phandle;
+> +	struct fwnode_handle *ref;
+>  	u32 excitation_current = 0;
+>  	int ret = 0;
+>  
+> @@ -876,23 +879,23 @@ static struct ltc2983_sensor *ltc2983_thermistor_new(
+>  	if (!thermistor)
+>  		return ERR_PTR(-ENOMEM);
+>  
+> -	phandle = of_parse_phandle(child, "adi,rsense-handle", 0);
+> -	if (!phandle) {
+> +	ref = fwnode_find_reference(child, "adi,rsense-handle", 0);
+> +	if (!ref) {
+>  		dev_err(dev, "Property adi,rsense-handle missing or invalid");
+>  		return ERR_PTR(-EINVAL);
+>  	}
+>  
+> -	ret = of_property_read_u32(phandle, "reg", &thermistor->r_sense_chan);
+> +	ret = fwnode_property_read_u32(ref, "reg", &thermistor->r_sense_chan);
+>  	if (ret) {
+>  		dev_err(dev, "rsense channel must be configured...\n");
+>  		goto fail;
+>  	}
+>  
+> -	if (of_property_read_bool(child, "adi,single-ended")) {
+> +	if (fwnode_property_read_bool(child, "adi,single-ended")) {
+>  		thermistor->sensor_config = LTC2983_THERMISTOR_SGL(1);
+> -	} else if (of_property_read_bool(child, "adi,rsense-share")) {
+> +	} else if (fwnode_property_read_bool(child, "adi,rsense-share")) {
+>  		/* rotation is only possible if sharing rsense */
+> -		if (of_property_read_bool(child, "adi,current-rotate"))
+> +		if (fwnode_property_read_bool(child, "adi,current-rotate"))
+>  			thermistor->sensor_config =
+>  						LTC2983_THERMISTOR_C_ROTATE(1);
+>  		else
+> @@ -926,7 +929,7 @@ static struct ltc2983_sensor *ltc2983_thermistor_new(
+>  								 steinhart,
+>  								 64, false);
+>  		if (IS_ERR(thermistor->custom)) {
+> -			of_node_put(phandle);
+> +			fwnode_handle_put(ref);
+>  			return ERR_CAST(thermistor->custom);
+
+Obviously not due to this patch, but this is odd.  Why have one error path
+that doesn't use the goto faill;?
+If you could tidy that up and add a note on it to the patch description
+that would be great.
+
+>  		}
+>  	}
+> @@ -934,8 +937,8 @@ static struct ltc2983_sensor *ltc2983_thermistor_new(
+>  	thermistor->sensor.fault_handler = ltc2983_common_fault_handler;
+>  	thermistor->sensor.assign_chan = ltc2983_thermistor_assign_chan;
+>  
+> -	ret = of_property_read_u32(child, "adi,excitation-current-nanoamp",
+> -				   &excitation_current);
+> +	ret = fwnode_property_read_u32(child, "adi,excitation-current-nanoamp",
+> +				       &excitation_current);
+>  	if (ret) {
+>  		/* Auto range is not allowed for custom sensors */
+>  		if (sensor->type >= LTC2983_SENSOR_THERMISTOR_STEINHART)
+> @@ -999,17 +1002,16 @@ static struct ltc2983_sensor *ltc2983_thermistor_new(
+>  		}
+>  	}
+>  
+> -	of_node_put(phandle);
+> +	fwnode_handle_put(ref);
+>  	return &thermistor->sensor;
+>  fail:
+> -	of_node_put(phandle);
+> +	fwnode_handle_put(ref);
+>  	return ERR_PTR(ret);
+>  }
+>  
