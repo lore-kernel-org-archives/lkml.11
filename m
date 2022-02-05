@@ -2,238 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DE0DC433FE
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 07:20:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1FA8C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 07:31:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379572AbiBEHUt (ORCPT
+        id S1379580AbiBEHbt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 02:20:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54234 "EHLO
+        Sat, 5 Feb 2022 02:31:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229835AbiBEHUr (ORCPT
+        with ESMTP id S239851AbiBEHbq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 02:20:47 -0500
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAB49C061347
-        for <linux-kernel@vger.kernel.org>; Fri,  4 Feb 2022 23:20:45 -0800 (PST)
-Received: by mail-yb1-xb2b.google.com with SMTP id j2so25365368ybu.0
-        for <linux-kernel@vger.kernel.org>; Fri, 04 Feb 2022 23:20:45 -0800 (PST)
+        Sat, 5 Feb 2022 02:31:46 -0500
+Received: from mail-ua1-x930.google.com (mail-ua1-x930.google.com [IPv6:2607:f8b0:4864:20::930])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1FF1C061346;
+        Fri,  4 Feb 2022 23:31:45 -0800 (PST)
+Received: by mail-ua1-x930.google.com with SMTP id e17so14555426uad.9;
+        Fri, 04 Feb 2022 23:31:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=YuSevJHq0EkhDQnmKb1fVwMKVv5yPkrZ7mzyilXRIp0=;
-        b=DMWM8FcKjHnJ8KdBjViBB10zIV5SqV2Ax6+JAVEVcGcXafE6gmBewaaDQrqUlb7ICZ
-         mzUM8FSaqD7cRiGwiX8HUod2meH2BlYW3cz95lAS4T3qpEr5pwBQmH+YV3aMQtAnCVIt
-         wjwN9eepUfT9GlpPEvTW2XtzdwEvis1uIcgofOXyVY0ywxwfZBrLTpgSM1u8KNiCzsns
-         8EBDYLIguO1qvMQlacsYzayOoZIwnX1RYwMOrC/7eCt+WTo6YfgayZx5yl1t5g7pxkwI
-         I8taawGB8rjqn5sHuRNiOTxirqSSkSxjqjOp2IDPrcNnR/8QBYZC5NLe11CFQqSM0AEb
-         17LA==
+         :cc;
+        bh=WbyfaMqzZXhO0umDixLaEVZrBVE9+22ohPkmZGUA6cg=;
+        b=ox1zgBxjwk68T8/e6T05OVzldw84Tk/UPt04CUVsYlVVII3bjGqd3WDzv6StX+ncr5
+         c/AbmMRmRL1dM/Y/XyQvKXhonojFhy50NeMeQpkUbuHUruo9kX9sE03vWBX91EP+HfHQ
+         CMJ9jxSO9IrYdmm5qaD3MEnHqljcd4Ssu3uWs/WH8Rbt1W1Ere471TXJyPg+9FXv787/
+         dVre0snfzwBZQVhs6wVzyc4XOb/LnPqO9w4DAISumu4VfRE7U93gAt/bdre7jh44pqwn
+         0d+YcV+76/YnmtUqnDaEflCkOqMgd6OECdnGlQUPTvpMyzI/G9KR9RQUAJ6J+h4t6Zve
+         g0aw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=YuSevJHq0EkhDQnmKb1fVwMKVv5yPkrZ7mzyilXRIp0=;
-        b=X4w++5ePDvHSDQMBYgWEjmvQa8YZfT2YN9//PTgFg7iyqKxkR8r8NV2h+Pi3kTJNXN
-         brQil0opbRGbXMV+epFjSCPYPfg0yt3pJKig+rexPqaPSscjAQ5N+EFBI+SDKyGluW3H
-         dm14CSB+cV65AAIX11TXtd055uZIgQKI1SLLRjlZjoBicvYXPzsmfqT+0gGShiIjdImX
-         7YN2A2EnkIXqj4M6/H94MiHauM95LMKb4A5E3mDR0NaB0G2/I4Ycn1QFQdVJP512eHVj
-         S216DrIMYJ64nsmPRsvjnXKyYFns/XXQzQbksToou404XoCRuQvmuBls1OLI9GmSJI2A
-         Y9dQ==
-X-Gm-Message-State: AOAM531I5rdfM6rFZY4780KBxSuTcrGb957mjyNcDqop93VaFsTuZVLN
-        Bs7vNWgsA5E12jSlqfalli6qYzpCyI0SWBXLKBG8tQ==
-X-Google-Smtp-Source: ABdhPJy6Nq2TWok14cMJ+Lka27+NbS2AK0bf4JiOfT3xv2RHEPeJLKBltdKmLopjmcOacKDGl2bRzLYdjdEYcPZfrOI=
-X-Received: by 2002:a81:3986:: with SMTP id g128mr2623268ywa.129.1644045644997;
- Fri, 04 Feb 2022 23:20:44 -0800 (PST)
+         :message-id:subject:to:cc;
+        bh=WbyfaMqzZXhO0umDixLaEVZrBVE9+22ohPkmZGUA6cg=;
+        b=Wk43FgZHGBo9b0kFvci70s4RxBNAHTtjK0mCCJ/+Ae1gcdO5oyfubE9+ferY1hsXRt
+         n6QUWrWqjts8BIuOrbwMVD/PPHxsxYtL2+dC743UGG0tJAB0nLW7tMinogM27CokgQd+
+         hrOj0gACyORXPVlhbtgzG7cCGHoHMJyKuG/+YlJJY9oZRRUcNqHwqoxb/jIJSJ4ToUvB
+         zwAx/aa2AjwMaSasPZMQlIOo3uK1bqWfki37W83QgH5mq+GSrd3R5Zxhv7Um/RcJZH2E
+         oJg/OKjkrXJJOucOcxq7ey3vyAd8fTQ3pXsz4riwMJGIypgEy5/j+OSjJnomrgd0XRS2
+         YZ0A==
+X-Gm-Message-State: AOAM530gcX9H7rJjGIBZQY+saqi3ZewaDAf/jdjcEnkwLxacxP7CNXLW
+        MITf8ODxcR1BDy19kiA+C3LeDD8r5Pghn1eBQDz4tZWKKU8=
+X-Google-Smtp-Source: ABdhPJyyHjkmV21JQdIe0QvNFhVw2HYFIbG7H6USFrmQbTy8rjGuwn0riyfm1/0ggMyobR6SPJMphu5k8OAQhmlIJJw=
+X-Received: by 2002:a67:cb84:: with SMTP id h4mr2045413vsl.1.1644046304748;
+ Fri, 04 Feb 2022 23:31:44 -0800 (PST)
 MIME-Version: 1.0
-References: <20220204091912.329106021@linuxfoundation.org>
-In-Reply-To: <20220204091912.329106021@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Sat, 5 Feb 2022 12:50:33 +0530
-Message-ID: <CA+G9fYu5fGRCJkQYejfLbv22zUiVAAKPXv75OPvieD6cNjKBVQ@mail.gmail.com>
-Subject: Re: [PATCH 5.4 00/10] 5.4.177-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
+References: <20220110114930.1406665-1-sergio.paracuellos@gmail.com>
+ <YfE5MOkQRoHQV7Wf@kroah.com> <CAMhs-H8s0d=PswQDR86Tq-bQt634Z6rdFYHTE+DFepsthmKAYA@mail.gmail.com>
+ <YfE7LNFuf79i3oAQ@kroah.com> <CAMhs-H9c8zF=v2tu5Y1OsFRP6esOi5zrUceqS_OUiJ=MSfCvRQ@mail.gmail.com>
+ <20220205025548.AA1BBC004E1@smtp.kernel.org>
+In-Reply-To: <20220205025548.AA1BBC004E1@smtp.kernel.org>
+From:   Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Date:   Sat, 5 Feb 2022 08:31:33 +0100
+Message-ID: <CAMhs-H82J5DC+m0V==tQKKYyqsu30kGLkdUbMRU+nsyLb8sL3Q@mail.gmail.com>
+Subject: Re: [PATCH v8 0/4] clk: ralink: make system controller a reset provider
+To:     Stephen Boyd <sboyd@kernel.org>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        "open list:COMMON CLK FRAMEWORK" <linux-clk@vger.kernel.org>,
+        John Crispin <john@phrozen.org>, linux-staging@lists.linux.dev,
+        NeilBrown <neil@brown.name>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        linux-kernel <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 4 Feb 2022 at 14:50, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
+On Sat, Feb 5, 2022 at 3:55 AM Stephen Boyd <sboyd@kernel.org> wrote:
 >
-> This is the start of the stable review cycle for the 5.4.177 release.
-> There are 10 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+> Quoting Sergio Paracuellos (2022-01-26 04:45:31)
+> > On Wed, Jan 26, 2022 at 1:14 PM Greg KH <gregkh@linuxfoundation.org> wrote:
+> > >
+> > > On Wed, Jan 26, 2022 at 01:08:52PM +0100, Sergio Paracuellos wrote:
+> > > > On Wed, Jan 26, 2022 at 1:06 PM Greg KH <gregkh@linuxfoundation.org> wrote:
+> > > > >
+> > > > > On Mon, Jan 10, 2022 at 12:49:26PM +0100, Sergio Paracuellos wrote:
+> > > > > > Hi all,
+> > > > > >
+> > > > > > This patch series add minimal change to provide mt7621 resets properly
+> > > > > > defining them in the 'mediatek,mt7621-sysc' node which is the system
+> > > > > > controller of the SoC and is already providing clocks to the rest of
+> > > > > > the world.
+> > > > > >
+> > > > > > There is shared architecture code for all ralink platforms in 'reset.c'
+> > > > > > file located in 'arch/mips/ralink' but the correct thing to do to align
+> > > > > > hardware with software seems to define and add related reset code to the
+> > > > > > already mainlined clock driver.
+> > > > > >
+> > > > > > After this changes, we can get rid of the useless reset controller node
+> > > > > > in the device tree and use system controller node instead where the property
+> > > > > > '#reset-cells' has been added. Binding documentation for this nodeq has
+> > > > > > been updated with the new property accordly.
+> > > > > >
+> > > > > > This series also provide a bindings include header where all related
+> > > > > > reset bits for the MT7621 SoC are defined.
+> > > > > >
+> > > > > > Also, please take a look to this review [0] to understand better motivation
+> > > > > > for this series.
+> > > > > >
+> > > > > > Regarding the way of merging this:
+> > > > > >  - I'd like patches 1 and 4 which are related going through staging tree.
+> > > > >
+> > > > > Patches 1 and 4 now in the staging tree, thanks.
+> > > >
+> > > > Stephen wanted all to go through the CLK tree since PATCH 3 and 1 were
+> > > > also a dependency... Can we get all of them through the same tree,
+> > > > then? I am ok with both CLK or staging trees.
+> > >
+> > > That's fine with me if they all go through the CLK tree, but there will
+> > > be a merge issue that I already fixed up in my tree.  If you want me to
+> > > drop them, just let me know.
+> >
+> > Stephen, what do you prefer? Is it better all going through staging-tree then?
+> >
 >
-> Responses should be made by Sun, 06 Feb 2022 09:19:05 +0000.
-> Anything received after that time might be too late.
+> Sure take them through staging tree.
 >
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
-5.4.177-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
--rc.git linux-5.4.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+> Acked-by: Stephen Boyd <sboyd@kernel.org>
 
-Results from Linaro=E2=80=99s test farm.
-No regressions on arm64, arm, x86_64, and i386.
+Thanks, Stephen.
 
-Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
+Greg, can you please take remaining patches 2 and 3 through your tree, then?
 
-## Build
-* kernel: 5.4.177-rc1
-* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
-* git branch: linux-5.4.y
-* git commit: db9bfa6e8ef56c7c343bcb51031ea93db5f8d157
-* git describe: v5.4.176-11-gdb9bfa6e8ef5
-* test details:
-https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.4.y/build/v5.4.1=
-76-11-gdb9bfa6e8ef5
+Thanks in advance for your time.
 
-## Test Regressions (compared to v5.4.176)
-No test regressions found.
-
-## Metric regressions (compared to v5.4.176)
-No metric regressions found.
-
-## Test fixes (compared to v5.4.176)
-No test fixes found.
-
-## Metric fixes (compared to v5.4.176)
-No metric fixes found.
-
-## Test result summary
-total: 93678, pass: 78131, fail: 764, skip: 13342, xfail: 1441
-
-## Build Summary
-* arc: 10 total, 10 passed, 0 failed
-* arm: 258 total, 258 passed, 0 failed
-* arm64: 24 total, 23 passed, 1 failed
-* dragonboard-410c: 1 total, 1 passed, 0 failed
-* hi6220-hikey: 1 total, 1 passed, 0 failed
-* i386: 20 total, 20 passed, 0 failed
-* juno-r2: 1 total, 1 passed, 0 failed
-* mips: 34 total, 34 passed, 0 failed
-* parisc: 12 total, 12 passed, 0 failed
-* powerpc: 52 total, 48 passed, 4 failed
-* riscv: 24 total, 24 passed, 0 failed
-* s390: 12 total, 12 passed, 0 failed
-* sh: 24 total, 24 passed, 0 failed
-* sparc: 12 total, 12 passed, 0 failed
-* x15: 1 total, 1 passed, 0 failed
-* x86: 1 total, 1 passed, 0 failed
-* x86_64: 36 total, 36 passed, 0 failed
-
-## Test suites summary
-* fwts
-* kselftest-android
-* kselftest-arm64
-* kselftest-bpf
-* kselftest-breakpoints
-* kselftest-capabilities
-* kselftest-cgroup
-* kselftest-clone3
-* kselftest-core
-* kselftest-cpu-hotplug
-* kselftest-cpufreq
-* kselftest-drivers
-* kselftest-efivarfs
-* kselftest-filesystems
-* kselftest-firmware
-* kselftest-fpu
-* kselftest-futex
-* kselftest-gpio
-* kselftest-intel_pstate
-* kselftest-ipc
-* kselftest-ir
-* kselftest-kcmp
-* kselftest-kexec
-* kselftest-kvm
-* kselftest-lib
-* kselftest-livepatch
-* kselftest-membarrier
-* kselftest-memfd
-* kselftest-memory-hotplug
-* kselftest-mincore
-* kselftest-mount
-* kselftest-mqueue
-* kselftest-net
-* kselftest-netfilter
-* kselftest-nsfs
-* kselftest-openat2
-* kselftest-pid_namespace
-* kselftest-pidfd
-* kselftest-proc
-* kselftest-pstore
-* kselftest-ptrace
-* kselftest-rseq
-* kselftest-rtc
-* kselftest-seccomp
-* kselftest-sigaltstack
-* kselftest-size
-* kselftest-splice
-* kselftest-static_keys
-* kselftest-sync
-* kselftest-sysctl
-* kselftest-tc-testing
-* kselftest-timens
-* kselftest-timers
-* kselftest-tmpfs
-* kselftest-tpm2
-* kselftest-user
-* kselftest-vm
-* kselftest-x86
-* kselftest-zram
-* kvm-unit-tests
-* libgpiod
-* libhugetlbfs
-* linux-log-parser
-* ltp-cap_bounds-tests
-* ltp-commands-tests
-* ltp-containers-tests
-* ltp-controllers-tests
-* ltp-cpuhotplug-tests
-* ltp-crypto-tests
-* ltp-cve-tests
-* ltp-dio-tests
-* ltp-fcntl-locktests-tests
-* ltp-filecaps-tests
-* ltp-fs-tests
-* ltp-fs_bind-tests
-* ltp-fs_perms_simple-tests
-* ltp-fsx-tests
-* ltp-hugetlb-tests
-* ltp-io-tests
-* ltp-ipc-tests
-* ltp-math-tests
-* ltp-mm-tests
-* ltp-nptl-tests
-* ltp-open-posix-tests
-* ltp-pty-tests
-* ltp-sched-tests
-* ltp-securebits-tests
-* ltp-syscalls-tests
-* ltp-tracing-tests
-* network-basic-tests
-* packetdrill
-* perf
-* rcutorture
-* ssuite
-* v4l2-compliance
-
---=20
-Linaro LKFT
-https://lkft.linaro.org
+Best regards,
+    Sergio Paracuellos
