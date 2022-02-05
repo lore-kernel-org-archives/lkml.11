@@ -2,245 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C010FC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 17:14:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17656C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 17:16:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380579AbiBEROZ (ORCPT
+        id S1380667AbiBERQj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 12:14:25 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:45216 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240832AbiBEROX (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 12:14:23 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 53B9060FB7;
-        Sat,  5 Feb 2022 17:14:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 261BAC340E8;
-        Sat,  5 Feb 2022 17:14:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644081262;
-        bh=ZEOaXagLLRIjL6zzyr5r/IJT99XQbQrCaHR/bL1BVqI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=bYMP3UMjcGXTuec6peKx/JjMWS+Pa1draUsvPJcT22FX0c4QbpRaIcEA5EmIGw3aB
-         5N+DWXRSO0BcJaTRQIlbGpiKeQmGhzAGpP7oQA5LTpHOdlBYIQehx9mcdWCPxrJh/O
-         XfBFEs3pobGK6fEEo8U/5DnI5/ieZvrci1N9sfhFFAelxOcv1sPbZMVUscI/MVaK8K
-         PSNxS0xK6JDBrtRI0G4S80d+bT8vnJ0FinUgG947otHycK+W7RU05+MLxheB5582H0
-         aBTRBuohrOeAsZOFno49Gywlmlkv5p8gOjFAVZTb24cITzMcz4F47QSQla5+Zc70Ua
-         LQTi/r4ewJNlQ==
-Date:   Sat, 5 Feb 2022 17:20:54 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>
-Subject: Re: [PATCH v2 1/1] iio: frequency: adf4350: Make use of device
- properties
-Message-ID: <20220205172054.4c6e3013@jic23-huawei>
-In-Reply-To: <20220203110006.4291-1-andriy.shevchenko@linux.intel.com>
-References: <20220203110006.4291-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Sat, 5 Feb 2022 12:16:39 -0500
+Received: from mga06.intel.com ([134.134.136.31]:54990 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1380656AbiBERQg (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sat, 5 Feb 2022 12:16:36 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644081396; x=1675617396;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=3bioHvbnd8d7LeCkvwsSoHgNIMmlKm0ZRAuo5zZHHsI=;
+  b=el+t0Z63Ls/d5u/NgTmMokCNIPe+lDIacS6voj4lpMPdkwP2Qpev1UXQ
+   pt7tbrpxOyAgKcS9HpJCYPY/jPjqRwzvj94QkVltC642DLTMEbLXaxN8J
+   QwluDIn19ySdCHNh3wiQ05ZjQfMXTM7yXXqFLx0x8ttHXvTDTR+aByjOB
+   dq9KwcuQteCrv/DyRe75AICSpLcLWEcFbEJhiLkTQza2Uj4PRcZ01U12h
+   skkZ87PWUWN0GH4oymPvrI1U6j6XKOF8cok6S7OMt9To913HsAjRFAmzN
+   hZHXdnq7q8pEQ26bX8/BEEeFlEvxSuqzWGIzePFBWJUww84xOShzicz1A
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10248"; a="309270482"
+X-IronPort-AV: E=Sophos;i="5.88,345,1635231600"; 
+   d="scan'208";a="309270482"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2022 09:16:36 -0800
+X-IronPort-AV: E=Sophos;i="5.88,345,1635231600"; 
+   d="scan'208";a="700001051"
+Received: from chenyu-desktop.sh.intel.com (HELO chenyu-desktop) ([10.239.158.186])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2022 09:16:31 -0800
+Date:   Sun, 6 Feb 2022 01:16:47 +0800
+From:   Chen Yu <yu.c.chen@intel.com>
+To:     Tim Chen <tim.c.chen@linux.intel.com>
+Cc:     Barry Song <21cnbao@gmail.com>,
+        Srikar Dronamraju <srikar@linux.vnet.ibm.com>,
+        "Gautham R. Shenoy" <gautham.shenoy@amd.com>,
+        Yicong Yang <yangyicong@hisilicon.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        LAK <linux-arm-kernel@lists.infradead.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        prime.zeng@huawei.com,
+        Jonathan Cameron <jonathan.cameron@huawei.com>,
+        ego@linux.vnet.ibm.com, Linuxarm <linuxarm@huawei.com>,
+        Barry Song <song.bao.hua@hisilicon.com>,
+        Guodong Xu <guodong.xu@linaro.org>
+Subject: Re: [PATCH v2 2/2] sched/fair: Scan cluster before scanning LLC in
+ wake-up path
+Message-ID: <20220205171647.GA567616@chenyu-desktop>
+References: <YfK9DSMFabjYm/MV@BLR-5CG11610CF.amd.com>
+ <CAGsJ_4xL3tynB9P=rKMoX2otW4bMMU5Z-P9zSudMV3+fr2hpXw@mail.gmail.com>
+ <20220128071337.GC618915@linux.vnet.ibm.com>
+ <CAGsJ_4yoUONACY-j+9XxSNC0VgmdyRdHC=z87dWvZvVSASzXRQ@mail.gmail.com>
+ <20220201093859.GE618915@linux.vnet.ibm.com>
+ <CAGsJ_4z8cer7Y5si+J_=awQetFJZMVeaQ+RDSXQz9EGOPTGMQg@mail.gmail.com>
+ <20220204073317.GG618915@linux.vnet.ibm.com>
+ <CAGsJ_4xjgy3D0VzbTdmJihJ+nut_NeTEb4krh8jup4rbvTY_ww@mail.gmail.com>
+ <CAGsJ_4zVEjFYoff=x=Y3i9xPxoi891x-gkfA6Lsdc+yT2ykRmQ@mail.gmail.com>
+ <88e9287ef7a86f24999af00f90d6f122de024979.camel@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <88e9287ef7a86f24999af00f90d6f122de024979.camel@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu,  3 Feb 2022 13:00:06 +0200
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-
-> Convert the module to be property provider agnostic and allow
-> it to be used on non-OF platforms.
+On Fri, Feb 04, 2022 at 09:41:21AM -0800, Tim Chen wrote:
+> On Fri, 2022-02-04 at 23:49 +1300, Barry Song wrote:
+> > On Fri, Feb 4, 2022 at 11:28 PM Barry Song <21cnbao@gmail.com> wrote:
+> > > On Fri, Feb 4, 2022 at 8:33 PM Srikar Dronamraju
+> > > <srikar@linux.vnet.ibm.com> wrote:
+> > > > * Barry Song <21cnbao@gmail.com> [2022-02-02 09:20:32]:
+> > > > 
+> > > > > On Tue, Feb 1, 2022 at 10:39 PM Srikar Dronamraju
+> > > > > <srikar@linux.vnet.ibm.com> wrote:
+> > > > > > * Barry Song <21cnbao@gmail.com> [2022-01-28 07:40:15]:
+> > > > > > 
+> > > > > > > On Fri, Jan 28, 2022 at 8:13 PM Srikar Dronamraju
+> > > > > > > <srikar@linux.vnet.ibm.com> wrote:
+> > > > > > > > * Barry Song <21cnbao@gmail.com> [2022-01-28 09:21:08]:
+> > > > > > > > 
+> > > > > > > > > On Fri, Jan 28, 2022 at 4:41 AM Gautham R. Shenoy
+> > > > > > > > > <gautham.shenoy@amd.com> wrote:
+> > > > > > > > > > On Wed, Jan 26, 2022 at 04:09:47PM +0800, Yicong Yang
+> > > > > > > > > > wrote:
+> > > > > > > > > > > From: Barry Song <song.bao.hua@hisilicon.com>
+> > > > > > > > > > > 
+> > > > > > > I am sorry I didn't get your question. Currently the code
+> > > > > > > works as below:
+> > > > > > > if task A wakes up task B, and task A is in LLC0 and task B
+> > > > > > > is in LLC1.
+> > > > > > > we will scan the cluster of A before scanning the whole
+> > > > > > > LLC0, in this case,
+> > > > > > > cluster of A is the closest sibling, so it is the better
+> > > > > > > choice than other CPUs
+> > > > > > > which are in LLC0 but not in the cluster of A.
+> > > > > > 
+> > > > > > Yes, this is right.
+> > > > > > 
+> > > > > > > But we do scan all cpus of LLC0
+> > > > > > > afterwards if we fail to find an idle CPU in the cluster.
+> > > > > > 
+> > > > > > However my reading of the patch, before we can scan other
+> > > > > > clusters within
+> > > > > > the LLC (aka LLC0), we have a check in scan cluster which
+> > > > > > says
+> > > > > > 
+> > > > > >         /* Don't ping-pong tasks in and out cluster
+> > > > > > frequently */
+> > > > > >         if (cpus_share_resources(target, prev_cpu))
+> > > > > >            return target;
+> > > > > > 
+> > > > > > My reading of this is, ignore other clusters (at this point,
+> > > > > > we know there
+> > > > > > are no idle CPUs in this cluster. We don't know if there are
+> > > > > > idle cpus in
+> > > > > > them or not) if the previous CPU and target CPU happen to be
+> > > > > > from the same
+> > > > > > cluster. This effectively means we are given preference to
+> > > > > > cache over idle
+> > > > > > CPU.
+> > > > > 
+> > > > > Note we only ignore other cluster while prev_cpu and target are
+> > > > > in same
+> > > > > cluster. if the condition is false, we are not ignoring other
+> > > > > cpus. typically,
+> > > > > if waker is the target, and wakee is the prev_cpu, that means
+> > > > > if they are
+> > > > > already in one cluster, we don't stupidly spread them in
+> > > > > select_idle_cpu() path
+> > > > > as benchmark shows we are losing. so, yes, we are giving
+> > > > > preference to
+> > > > > cache over CPU.
+> > > > 
+> > > > We already figured out that there are no idle CPUs in this
+> > > > cluster. So dont
+> > > > we gain performance by picking a idle CPU/core in the
+> > > > neighbouring cluster.
+> > > > If there are no idle CPU/core in the neighbouring cluster, then
+> > > > it does make
+> > > > sense to fallback on the current cluster.
+> > > 
+> > > 
 > 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-
-Whilst it's long each individual change is simple, so applied to the togreg
-branch of iio.git and pushed out as testing to see if the autobuilders
-can find anything we missed.
-
-Thanks,
-
-Jonathan
-
-
-> ---
-> v2: fixed typo (lkp)
->  drivers/iio/frequency/adf4350.c | 103 +++++++++++++-------------------
->  1 file changed, 42 insertions(+), 61 deletions(-)
+> We may need to take into consideration the utilization and
+> load average for the source and target cluster to make
+> better decision of whether it is worth placing the
+> task in the next cluster.  If the load of the target
+> cluster is too high, it is not worth pushing the task there.
 > 
-> diff --git a/drivers/iio/frequency/adf4350.c b/drivers/iio/frequency/adf4350.c
-> index 3d9eba716b69..9af20a51540d 100644
-> --- a/drivers/iio/frequency/adf4350.c
-> +++ b/drivers/iio/frequency/adf4350.c
-> @@ -7,17 +7,18 @@
->  
->  #include <linux/device.h>
->  #include <linux/kernel.h>
-> +#include <linux/mod_devicetable.h>
-> +#include <linux/module.h>
-> +#include <linux/property.h>
->  #include <linux/slab.h>
->  #include <linux/sysfs.h>
->  #include <linux/spi/spi.h>
->  #include <linux/regulator/consumer.h>
->  #include <linux/err.h>
-> -#include <linux/module.h>
->  #include <linux/gcd.h>
->  #include <linux/gpio/consumer.h>
->  #include <asm/div64.h>
->  #include <linux/clk.h>
-> -#include <linux/of.h>
->  
->  #include <linux/iio/iio.h>
->  #include <linux/iio/sysfs.h>
-> @@ -381,10 +382,8 @@ static const struct iio_info adf4350_info = {
->  	.debugfs_reg_access = &adf4350_reg_access,
->  };
->  
-> -#ifdef CONFIG_OF
->  static struct adf4350_platform_data *adf4350_parse_dt(struct device *dev)
->  {
-> -	struct device_node *np = dev->of_node;
->  	struct adf4350_platform_data *pdata;
->  	unsigned int tmp;
->  
-> @@ -392,101 +391,83 @@ static struct adf4350_platform_data *adf4350_parse_dt(struct device *dev)
->  	if (!pdata)
->  		return NULL;
->  
-> -	snprintf(&pdata->name[0], SPI_NAME_SIZE - 1, "%pOFn", np);
-> +	snprintf(pdata->name, sizeof(pdata->name), "%pfw", dev_fwnode(dev));
->  
->  	tmp = 10000;
-> -	of_property_read_u32(np, "adi,channel-spacing", &tmp);
-> +	device_property_read_u32(dev, "adi,channel-spacing", &tmp);
->  	pdata->channel_spacing = tmp;
->  
->  	tmp = 0;
-> -	of_property_read_u32(np, "adi,power-up-frequency", &tmp);
-> +	device_property_read_u32(dev, "adi,power-up-frequency", &tmp);
->  	pdata->power_up_frequency = tmp;
->  
->  	tmp = 0;
-> -	of_property_read_u32(np, "adi,reference-div-factor", &tmp);
-> +	device_property_read_u32(dev, "adi,reference-div-factor", &tmp);
->  	pdata->ref_div_factor = tmp;
->  
-> -	pdata->ref_doubler_en = of_property_read_bool(np,
-> -			"adi,reference-doubler-enable");
-> -	pdata->ref_div2_en = of_property_read_bool(np,
-> -			"adi,reference-div2-enable");
-> +	pdata->ref_doubler_en = device_property_read_bool(dev, "adi,reference-doubler-enable");
-> +	pdata->ref_div2_en = device_property_read_bool(dev, "adi,reference-div2-enable");
->  
->  	/* r2_user_settings */
-> -	pdata->r2_user_settings = of_property_read_bool(np,
-> -			"adi,phase-detector-polarity-positive-enable") ?
-> -			ADF4350_REG2_PD_POLARITY_POS : 0;
-> -	pdata->r2_user_settings |= of_property_read_bool(np,
-> -			"adi,lock-detect-precision-6ns-enable") ?
-> -			ADF4350_REG2_LDP_6ns : 0;
-> -	pdata->r2_user_settings |= of_property_read_bool(np,
-> -			"adi,lock-detect-function-integer-n-enable") ?
-> -			ADF4350_REG2_LDF_INT_N : 0;
-> +	pdata->r2_user_settings = 0;
-> +	if (device_property_read_bool(dev, "adi,phase-detector-polarity-positive-enable"))
-> +		pdata->r2_user_settings |= ADF4350_REG2_PD_POLARITY_POS;
-> +	if (device_property_read_bool(dev, "adi,lock-detect-precision-6ns-enable"))
-> +		pdata->r2_user_settings |= ADF4350_REG2_LDP_6ns;
-> +	if (device_property_read_bool(dev, "adi,lock-detect-function-integer-n-enable"))
-> +		pdata->r2_user_settings |= ADF4350_REG2_LDF_INT_N;
->  
->  	tmp = 2500;
-> -	of_property_read_u32(np, "adi,charge-pump-current", &tmp);
-> +	device_property_read_u32(dev, "adi,charge-pump-current", &tmp);
->  	pdata->r2_user_settings |= ADF4350_REG2_CHARGE_PUMP_CURR_uA(tmp);
->  
->  	tmp = 0;
-> -	of_property_read_u32(np, "adi,muxout-select", &tmp);
-> +	device_property_read_u32(dev, "adi,muxout-select", &tmp);
->  	pdata->r2_user_settings |= ADF4350_REG2_MUXOUT(tmp);
->  
-> -	pdata->r2_user_settings |= of_property_read_bool(np,
-> -			"adi,low-spur-mode-enable") ?
-> -			ADF4350_REG2_NOISE_MODE(0x3) : 0;
-> +	if (device_property_read_bool(dev, "adi,low-spur-mode-enable"))
-> +		pdata->r2_user_settings |= ADF4350_REG2_NOISE_MODE(0x3);
->  
->  	/* r3_user_settings */
->  
-> -	pdata->r3_user_settings = of_property_read_bool(np,
-> -			"adi,cycle-slip-reduction-enable") ?
-> -			ADF4350_REG3_12BIT_CSR_EN : 0;
-> -	pdata->r3_user_settings |= of_property_read_bool(np,
-> -			"adi,charge-cancellation-enable") ?
-> -			ADF4351_REG3_CHARGE_CANCELLATION_EN : 0;
-> -
-> -	pdata->r3_user_settings |= of_property_read_bool(np,
-> -			"adi,anti-backlash-3ns-enable") ?
-> -			ADF4351_REG3_ANTI_BACKLASH_3ns_EN : 0;
-> -	pdata->r3_user_settings |= of_property_read_bool(np,
-> -			"adi,band-select-clock-mode-high-enable") ?
-> -			ADF4351_REG3_BAND_SEL_CLOCK_MODE_HIGH : 0;
-> +	pdata->r3_user_settings = 0;
-> +	if (device_property_read_bool(dev, "adi,cycle-slip-reduction-enable"))
-> +		pdata->r3_user_settings |= ADF4350_REG3_12BIT_CSR_EN;
-> +	if (device_property_read_bool(dev, "adi,charge-cancellation-enable"))
-> +		pdata->r3_user_settings |= ADF4351_REG3_CHARGE_CANCELLATION_EN;
-> +	if (device_property_read_bool(dev, "adi,anti-backlash-3ns-enable"))
-> +		pdata->r3_user_settings |= ADF4351_REG3_ANTI_BACKLASH_3ns_EN;
-> +	if (device_property_read_bool(dev, "adi,band-select-clock-mode-high-enable"))
-> +		pdata->r3_user_settings |= ADF4351_REG3_BAND_SEL_CLOCK_MODE_HIGH;
->  
->  	tmp = 0;
-> -	of_property_read_u32(np, "adi,12bit-clk-divider", &tmp);
-> +	device_property_read_u32(dev, "adi,12bit-clk-divider", &tmp);
->  	pdata->r3_user_settings |= ADF4350_REG3_12BIT_CLKDIV(tmp);
->  
->  	tmp = 0;
-> -	of_property_read_u32(np, "adi,clk-divider-mode", &tmp);
-> +	device_property_read_u32(dev, "adi,clk-divider-mode", &tmp);
->  	pdata->r3_user_settings |= ADF4350_REG3_12BIT_CLKDIV_MODE(tmp);
->  
->  	/* r4_user_settings */
->  
-> -	pdata->r4_user_settings = of_property_read_bool(np,
-> -			"adi,aux-output-enable") ?
-> -			ADF4350_REG4_AUX_OUTPUT_EN : 0;
-> -	pdata->r4_user_settings |= of_property_read_bool(np,
-> -			"adi,aux-output-fundamental-enable") ?
-> -			ADF4350_REG4_AUX_OUTPUT_FUND : 0;
-> -	pdata->r4_user_settings |= of_property_read_bool(np,
-> -			"adi,mute-till-lock-enable") ?
-> -			ADF4350_REG4_MUTE_TILL_LOCK_EN : 0;
-> +	pdata->r4_user_settings = 0;
-> +	if (device_property_read_bool(dev, "adi,aux-output-enable"))
-> +		pdata->r4_user_settings |= ADF4350_REG4_AUX_OUTPUT_EN;
-> +	if (device_property_read_bool(dev, "adi,aux-output-fundamental-enable"))
-> +		pdata->r4_user_settings |= ADF4350_REG4_AUX_OUTPUT_FUND;
-> +	if (device_property_read_bool(dev, "adi,mute-till-lock-enable"))
-> +		pdata->r4_user_settings |= ADF4350_REG4_MUTE_TILL_LOCK_EN;
->  
->  	tmp = 0;
-> -	of_property_read_u32(np, "adi,output-power", &tmp);
-> +	device_property_read_u32(dev, "adi,output-power", &tmp);
->  	pdata->r4_user_settings |= ADF4350_REG4_OUTPUT_PWR(tmp);
->  
->  	tmp = 0;
-> -	of_property_read_u32(np, "adi,aux-output-power", &tmp);
-> +	device_property_read_u32(dev, "adi,aux-output-power", &tmp);
->  	pdata->r4_user_settings |= ADF4350_REG4_AUX_OUTPUT_PWR(tmp);
->  
->  	return pdata;
->  }
-> -#else
-> -static
-> -struct adf4350_platform_data *adf4350_parse_dt(struct device *dev)
-> -{
-> -	return NULL;
-> -}
-> -#endif
->  
+> Those stats can be gathered during load balancing without adding
+> overhead in the hot task wakeup path.
+> 
+> Chen Yu played around with cutting off the idle CPU search
+> in a LLC based on such stats and he saw some good
+> improvements over the default.
+>
+Yes, we used the sum of percpu util_avg to estimate if the LLC domain
+is overloaded. If it is too busy, skip searching for an idle cpu/core in
+that LLC domain. The util_avg is a metric of accumulated historic
+activity, which might be more accurate than instantaneous metrics(such as
+rq->nr_running) on calculating the probability of find an idle cpu.
+So far this change has shown some benefits in several microbenchmarks and
+OLTP benchmark when the system is quite busy. That change has introduced a
+per-LLC-domain flag to indicate whether the LLC domain is oveloaded,
+it seems that this flag could also be extended for cluster domain.
+Maybe I could post the draft patch to see if it would be helpful for this
+cluster patch serie.
+
+thanks,
+Chenyu
+> Tim
+> 
