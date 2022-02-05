@@ -2,44 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B07AC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 10:23:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF20DC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 10:23:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378781AbiBEKXY (ORCPT
+        id S1379566AbiBEKXZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 05:23:24 -0500
-Received: from isilmar-4.linta.de ([136.243.71.142]:57366 "EHLO
+        Sat, 5 Feb 2022 05:23:25 -0500
+Received: from isilmar-4.linta.de ([136.243.71.142]:57378 "EHLO
         isilmar-4.linta.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229484AbiBEKXX (ORCPT
+        with ESMTP id S1377656AbiBEKXY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 05:23:23 -0500
+        Sat, 5 Feb 2022 05:23:24 -0500
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
 X-isilmar-external: YES
 X-isilmar-external: YES
 Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
-        by isilmar-4.linta.de (Postfix) with ESMTPSA id 26875201410;
+        by isilmar-4.linta.de (Postfix) with ESMTPSA id 24D932013AF;
         Sat,  5 Feb 2022 10:23:22 +0000 (UTC)
 Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
-        id EF97680719; Sat,  5 Feb 2022 11:23:08 +0100 (CET)
-Date:   Sat, 5 Feb 2022 11:23:08 +0100
+        id 9F54C811AC; Sat,  5 Feb 2022 11:23:14 +0100 (CET)
+Date:   Sat, 5 Feb 2022 11:23:14 +0100
 From:   Dominik Brodowski <linux@dominikbrodowski.net>
-To:     tangmeng <tangmeng@uniontech.com>
-Cc:     linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] drivers/pcmcia: Fix typo in comment
-Message-ID: <Yf5QDGH7JZCunxjr@owl.dominikbrodowski.net>
-References: <20220127071509.31365-1-tangmeng@uniontech.com>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Kees Cook <keescook@chromium.org>,
+        Manuel Lauss <manuel.lauss@gmail.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        linux-mips@vger.kernel.org
+Subject: Re: [PATCH] pcmcia: db1xxx_ss: restrict to MIPS_DB1XXX boards
+Message-ID: <Yf5QEpz0FeXjBOcB@owl.dominikbrodowski.net>
+References: <20220123174031.3109-1-rdunlap@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220127071509.31365-1-tangmeng@uniontech.com>
+In-Reply-To: <20220123174031.3109-1-rdunlap@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Thu, Jan 27, 2022 at 03:15:09PM +0800 schrieb tangmeng:
-> Replace unavaibale with unavailable.
+Am Sun, Jan 23, 2022 at 09:40:31AM -0800 schrieb Randy Dunlap:
+> When the MIPS_ALCHEMY board selection is MIPS_XXS1500 instead of
+> MIPS_DB1XXX, the PCMCIA driver 'db1xxx_ss' has build errors due
+> to missing DB1XXX symbols. The PCMCIA driver should be restricted
+> to MIPS_DB1XXX instead of MIPS_ALCHEMY to fix this build error.
 > 
-> Signed-off-by: tangmeng <tangmeng@uniontech.com>
+> ERROR: modpost: "bcsr_read" [drivers/pcmcia/db1xxx_ss.ko] undefined!
+> ERROR: modpost: "bcsr_mod" [drivers/pcmcia/db1xxx_ss.ko] undefined!
+> 
+> Fixes: 42a4f17dc356 ("MIPS: Alchemy: remove SOC_AU1X00 in favor of MIPS_ALCHEMY")
+> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+> Reported-by: kernel test robot <lkp@intel.com>
+> Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+> Cc: Arnd Bergmann <arnd@arndb.de>
+> Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
+> Cc: Kees Cook <keescook@chromium.org>
+> Cc: Manuel Lauss <manuel.lauss@gmail.com>
+> Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+> Cc: linux-mips@vger.kernel.org
 
-Applied, thanks!
+Applied to -pcmcia, thanks!
 
 	Dominik
