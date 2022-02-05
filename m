@@ -2,25 +2,25 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35FC7C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 11:37:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 984C3C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 11:38:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344284AbiBELh4 (ORCPT
+        id S1348807AbiBELh7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 06:37:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56160 "EHLO
+        Sat, 5 Feb 2022 06:37:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234257AbiBELhy (ORCPT
+        with ESMTP id S1344500AbiBELh4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 06:37:54 -0500
+        Sat, 5 Feb 2022 06:37:56 -0500
 Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC8F8C061347
-        for <linux-kernel@vger.kernel.org>; Sat,  5 Feb 2022 03:37:53 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E27CC061346
+        for <linux-kernel@vger.kernel.org>; Sat,  5 Feb 2022 03:37:55 -0800 (PST)
 Received: from dslb-188-104-059-100.188.104.pools.vodafone-ip.de ([188.104.59.100] helo=martin-debian-2.paytec.ch)
         by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.89)
         (envelope-from <martin@kaiser.cx>)
-        id 1nGJO1-0005c9-4w; Sat, 05 Feb 2022 12:37:49 +0100
+        id 1nGJO2-0005c9-Tv; Sat, 05 Feb 2022 12:37:50 +0100
 From:   Martin Kaiser <martin@kaiser.cx>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
@@ -28,9 +28,9 @@ Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
         Michael Straube <straube.linux@gmail.com>,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 2/8] staging: r8188eu: TXPowerTrackingCallbackCnt is set but not used
-Date:   Sat,  5 Feb 2022 12:37:35 +0100
-Message-Id: <20220205113741.379070-3-martin@kaiser.cx>
+Subject: [PATCH 4/8] staging: r8188eu: bTXPowerTracking is set but not used
+Date:   Sat,  5 Feb 2022 12:37:37 +0100
+Message-Id: <20220205113741.379070-5-martin@kaiser.cx>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220205113741.379070-1-martin@kaiser.cx>
 References: <20220205113741.379070-1-martin@kaiser.cx>
@@ -40,39 +40,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-TXPowerTrackingCallbackCnt in struct odm_rf_cal is set but not used.
+bTXPowerTracking in struct odm_rf_cal is set but not used.
 Remove it.
 
 Signed-off-by: Martin Kaiser <martin@kaiser.cx>
 ---
- drivers/staging/r8188eu/hal/HalPhyRf_8188e.c | 1 -
- drivers/staging/r8188eu/include/odm.h        | 1 -
+ drivers/staging/r8188eu/hal/odm.c     | 1 -
+ drivers/staging/r8188eu/include/odm.h | 1 -
  2 files changed, 2 deletions(-)
 
-diff --git a/drivers/staging/r8188eu/hal/HalPhyRf_8188e.c b/drivers/staging/r8188eu/hal/HalPhyRf_8188e.c
-index f0f26eecb2c0..2ce777ac041a 100644
---- a/drivers/staging/r8188eu/hal/HalPhyRf_8188e.c
-+++ b/drivers/staging/r8188eu/hal/HalPhyRf_8188e.c
-@@ -129,7 +129,6 @@ odm_TXPowerTrackingCallback_ThermalMeter_8188E(
- 	/*  2012/04/25 MH Add for tx power tracking to set tx power in tx agc for 88E. */
- 	odm_TxPwrTrackSetPwr88E(dm_odm);
+diff --git a/drivers/staging/r8188eu/hal/odm.c b/drivers/staging/r8188eu/hal/odm.c
+index e3bace2e3713..a759c2fe5d66 100644
+--- a/drivers/staging/r8188eu/hal/odm.c
++++ b/drivers/staging/r8188eu/hal/odm.c
+@@ -505,7 +505,6 @@ static void odm_RSSIMonitorCheck(struct odm_dm_struct *pDM_Odm)
  
--	dm_odm->RFCalibrateInfo.TXPowerTrackingCallbackCnt++; /* cosa add for debug */
- 	dm_odm->RFCalibrateInfo.bTXPowerTrackingInit = true;
+ static void odm_TXPowerTrackingThermalMeterInit(struct odm_dm_struct *pDM_Odm)
+ {
+-	pDM_Odm->RFCalibrateInfo.bTXPowerTracking = true;
+ 	pDM_Odm->RFCalibrateInfo.TxPowerTrackControl = true;
+ }
  
- 	/*  <Kordan> RFCalibrateInfo.RegA24 will be initialized when ODM HW configuring, but MP configures with para files. */
 diff --git a/drivers/staging/r8188eu/include/odm.h b/drivers/staging/r8188eu/include/odm.h
-index 046a4b9e0899..2844ca96d3ba 100644
+index 47b347fe1da0..f7f85ca05bd3 100644
 --- a/drivers/staging/r8188eu/include/odm.h
 +++ b/drivers/staging/r8188eu/include/odm.h
-@@ -253,7 +253,6 @@ struct odm_rf_cal {
+@@ -229,7 +229,6 @@ struct odm_rf_cal {
+ 	s32	RegEB4;
+ 	s32	RegEBC;
  
- 	bool	bReloadtxpowerindex;
- 	u8	bRfPiEnable;
--	u32	TXPowerTrackingCallbackCnt; /* cosa add for debug */
- 
- 	u8	bCCKinCH14;
- 	u8	CCK_index;
+-	bool	bTXPowerTracking;
+ 	u8	TxPowerTrackControl; /* for mp mode, turn off txpwrtracking
+ 				      * as default */
+ 	u8	TM_Trigger;
 -- 
 2.30.2
 
