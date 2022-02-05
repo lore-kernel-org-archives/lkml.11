@@ -2,111 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CACAC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 14:54:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5486EC433FE
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 14:58:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380252AbiBEOyY (ORCPT
+        id S1380256AbiBEO6D (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 09:54:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45764 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241900AbiBEOyV (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 09:54:21 -0500
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 174B2C061346
-        for <linux-kernel@vger.kernel.org>; Sat,  5 Feb 2022 06:54:21 -0800 (PST)
-Received: by mail-lf1-x135.google.com with SMTP id i34so18359237lfv.2
-        for <linux-kernel@vger.kernel.org>; Sat, 05 Feb 2022 06:54:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:user-agent:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=KZcqcXCLEtEOHv5S/HU5DQ6aN7Gm92b8leydHIAl6ik=;
-        b=RrcFFDkH0kfjnSHJthnNe5NntffHciXVRSW52mlJWKrMarxvqWj8GiHkNJWBoZSae4
-         BwpMGm60VS2HHqcocpJTg2WgejLESpfcE4os/hMV5txUTPZntF3ut+RC9+OfMxjbE2di
-         mcxwDJq//k1EYM20FERKL9lMsA945zrVO5X3+UEFp5Wf5W3Ha22HLJzUdI5s3+oVRsoZ
-         BCnVL2OeIPdgYWVfw4kM5TgZv1sVndKjcnWp2qkRW39PjLAvBTzSFP/+nAFfTdLESSBO
-         GIRfnfJyl0vWNaJKNSxOo9LBJMF/EtTV5NtUyutdOBwBN9xMuWJwMJPeEf2aE6QE4o8k
-         WKSQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:user-agent
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=KZcqcXCLEtEOHv5S/HU5DQ6aN7Gm92b8leydHIAl6ik=;
-        b=FxRmT1g9umt0XNTxjT+oQndJwObY+l589GMO1mRiRUbiZXupF1Z5YdNFW1vcub/0UP
-         JbGH1UFyAk2VpIt19N+07bb5kk5yawotIfK7yfd3kAKTco92VyXyhPhTnRhBPUx34H1z
-         yryN2y5DWjgPsYZIcCtfKFP+q7lD3cqvAxtA8OtyJDGqIkENJ5Lr8X5r/0IxeZk0/H1P
-         EeviE0fb9kuYrf2XWa+Ha8RqDuWsJhcH5m59iRJpfqGBY1TLZl6cWcAIup7/4j62njbm
-         ZZ03o4BWa69gfO1v2oJq9rbYikYqIw8fMBt1t3Bsa8yrYo9m5iDRIe7GVplysWv/XRO2
-         qUbg==
-X-Gm-Message-State: AOAM531LaOKfSOPYIgP8rmhFP6nYNt2Ndk9S1nPFahxk98R2blYgxmwf
-        Efh/w/QjgVaQFlZX7QlgOA7jQRJ7ceY=
-X-Google-Smtp-Source: ABdhPJx0tVCdAuWyQPmp/IL/thvmeAiDNRAtFth81R+uGCQqfRoxjQv+C5fNZ54TdDVJrMRMnmKMcA==
-X-Received: by 2002:a19:f24a:: with SMTP id d10mr2809631lfk.649.1644072859289;
-        Sat, 05 Feb 2022 06:54:19 -0800 (PST)
-Received: from localhost.localdomain (ntd06459.static.corbina.ru. [95.31.14.149])
-        by smtp.gmail.com with ESMTPSA id i18sm751298lfr.104.2022.02.05.06.54.18
-        (version=TLS1 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
-        Sat, 05 Feb 2022 06:54:18 -0800 (PST)
-Date:   Sat, 5 Feb 2022 18:00:16 +0300
-From:   Alexander Sergeyev <sergeev917@gmail.com>
-To:     Takashi Iwai <tiwai@suse.de>
-Cc:     Jeremy Szu <jeremy.szu@canonical.com>, tiwai@suse.com,
-        "moderated list:SOUND" <alsa-devel@alsa-project.org>,
-        Kailang Yang <kailang@realtek.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        Huacai Chen <chenhuacai@kernel.org>,
-        Jian-Hong Pan <jhp@endlessos.org>,
-        Hui Wang <hui.wang@canonical.com>,
-        PeiSen Hou <pshou@realtek.com>
-Subject: Re: [PATCH 1/4] ALSA: hda/realtek: fix mute/micmute LEDs for HP 855
- G8
-Message-ID: <20220205150016.gvrst7ldvgjh7fra@localhost.localdomain>
-User-Agent: mtt
-References: <s5hsftp3027.wl-tiwai@suse.de>
- <20220115152215.kprws5nja2i43qax@localhost.localdomain>
- <s5hilugw0l0.wl-tiwai@suse.de>
- <20220119093249.eaxem33bjqjxcher@localhost.localdomain>
- <20220122190522.ycaygrqcen7d3hj2@localhost.localdomain>
- <20220122205637.7gzurdu7xl4sthxw@localhost.localdomain>
- <s5ho83yldu3.wl-tiwai@suse.de>
- <20220129144704.xlmeylllvy3b3fum@localhost.localdomain>
- <20220130111020.44gzrm5ckrakjta2@localhost.localdomain>
- <s5htudk9cn3.wl-tiwai@suse.de>
+        Sat, 5 Feb 2022 09:58:03 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:43816 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236323AbiBEO6A (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sat, 5 Feb 2022 09:58:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=b50B8/pM0u49zfZrqiOAhoZ2WmIOCD9FYNeN94DzpsA=; b=q8YlP0NjT37AwLC8qG2pZMkN8s
+        7KLMrEJPiiOVOxuDOjAL07weitvm2lzx8EE0N5WtNMmr5h1DQL8iYJ66cO5w6VrMxplS/rQe6P4pN
+        EmYHrooTszI61BsDZwlnnu+Xpf8aac/aZ3RdLMdHR2BB5HhikixtjXYCxWPWs9M7hv7M=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nGMVZ-004OwC-Gw; Sat, 05 Feb 2022 15:57:49 +0100
+Date:   Sat, 5 Feb 2022 15:57:49 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Raag Jadav <raagjadav@gmail.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Steen Hegelund <steen.hegelund@microchip.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: phy: mscc: enable MAC SerDes autonegotiation
+Message-ID: <Yf6QbbqaxZhZPUdC@lunn.ch>
+References: <1644043492-31307-1-git-send-email-raagjadav@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <s5htudk9cn3.wl-tiwai@suse.de>
+In-Reply-To: <1644043492-31307-1-git-send-email-raagjadav@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 31, 2022 at 03:57:04PM +0100, Takashi Iwai wrote:
-> > IO_PAGE_FAULTs go away with CONFIG_IOMMU_DEFAULT_PASSTHROUGH enabled. As I 
-> > understand, this leads to reduced DMA device isolation which is generally 
-> > not desirable. I was initially thinking about races between some delayed 
-> > code and io-memory pages unmapping, but first IO_PAGE_FAULTs (running 
-> > non-passthrough iommu) happen during bind operations as well.
+On Sat, Feb 05, 2022 at 12:14:52PM +0530, Raag Jadav wrote:
+> Enable MAC SerDes autonegotiation to distinguish between
+> 1000BASE-X, SGMII and QSGMII MAC.
 
-> I still don't get what really triggers it.  This won't happen when you
-> build modules and load/unload the driver instead of dynamic binding?
+How does autoneg help you here? It just tells you about duplex, pause
+etc. It does not indicate 1000BaseX, SGMII etc. The PHY should be
+using whatever mode it was passed in phydev->interface, which the MAC
+sets when it calls the connection function. If the PHY dynamically
+changes its host side mode as a result of what that line side is
+doing, it should also change phydev->interface. However, as far as i
+can see, the mscc does not do this.
 
-I've built snd_hda_intel as a module, everything else is left built-in.
-The initial modprobe and rmmod were clean, but the subsequent modprobe gave 
-IO_PAGE_FAULT.
+So i don't understand this commit message.
 
-# modprobe snd-hda-intel
-snd_hda_intel 0000:05:00.1: bound 0000:05:00.0 (ops amdgpu_dm_audio_component_bind_ops)
-input: HD-Audio Generic HDMI/DP,pcm=3 as /devices/pci0000:00/0000:00:08.1/0000:05:00.1/sound/card0/input24
-input: HD-Audio Generic HDMI/DP,pcm=7 as /devices/pci0000:00/0000:00:08.1/0000:05:00.1/sound/card0/input25
-input: HD-Audio Generic HDMI/DP,pcm=8 as /devices/pci0000:00/0000:00:08.1/0000:05:00.1/sound/card0/input26
-input: HD-Audio Generic HDMI/DP,pcm=9 as /devices/pci0000:00/0000:00:08.1/0000:05:00.1/sound/card0/input27
-snd_hda_codec_realtek hdaudioC1D0: autoconfig for ALC285: line_outs=1 (0x14/0x0/0x0/0x0/0x0) type:speaker
-snd_hda_codec_realtek hdaudioC1D0:    speaker_outs=0 (0x0/0x0/0x0/0x0/0x0)
-snd_hda_codec_realtek hdaudioC1D0:    hp_outs=1 (0x21/0x0/0x0/0x0/0x0)
-snd_hda_codec_realtek hdaudioC1D0:    mono: mono_out=0x0
-snd_hda_codec_realtek hdaudioC1D0:    inputs:
-snd_hda_codec_realtek hdaudioC1D0:      Mic=0x19
-snd_hda_codec_realtek hdaudioC1D0:      Internal Mic=0x12
-snd_hda_intel 0000:05:00.6: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0015 address=0x1fffff800 flags=0x0020]
+   Andrew
