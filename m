@@ -2,87 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B61DFC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 10:36:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09CABC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 10:36:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379654AbiBEKgi (ORCPT
+        id S1379697AbiBEKgr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 05:36:38 -0500
-Received: from mout.gmx.net ([212.227.15.15]:43717 "EHLO mout.gmx.net"
+        Sat, 5 Feb 2022 05:36:47 -0500
+Received: from mout.gmx.net ([212.227.15.15]:41089 "EHLO mout.gmx.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229907AbiBEKgh (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 05:36:37 -0500
+        id S229907AbiBEKgq (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sat, 5 Feb 2022 05:36:46 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1644057392;
-        bh=9H7cICTDVgmHRDhmL0NozmHU5f8YJKtTFxCCe/KGh40=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=NVB+fEecn9aD2SjxQUwmZcZP+TKWJOxn+fRuJbLTYMn4Bbrx99P/18MAz0Pb5GmUD
-         E9k5bu5P8tmmrW5FQ7p+xzz4QgqC07h53OuVs3lYa6q4WsFpiXUnDwT1Q3Qqu5zJjm
-         Rs1hRclJX4VDZ34U9yQSZ7qRNusrGXK14xldoh1o=
+        s=badeba3b8450; t=1644057397;
+        bh=7Jnhrvq7jRctQBKS0gpYrwPxRFguQ8hr+Yc62pb/vc4=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=h5xsDfehoCDPNAR4CqXfY7qEdmJ+UiwSXXUx4GhwL/DsiVmXrRDbmAwvSbgArXBgA
+         Lx3+uXP2PK98ZLschL1H92KDwhsQ7K4YK6WsSiINYhlZktk+Xdfjv2mz0a2XTgyXpj
+         5oO8qnU+huyXj16752LWYpwk1LTwxNaQFweEec4g=
 X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
 Received: from longitude ([5.146.194.160]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1M42jK-1nGIQi08WW-00035X; Sat, 05
- Feb 2022 11:36:32 +0100
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1ML9uK-1my4pD2x1e-00IGtB; Sat, 05
+ Feb 2022 11:36:37 +0100
 From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
 To:     linux-clk@vger.kernel.org
 Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
-Subject: [PATCH v2 0/7] clk: Declare mux tables as const u32[]
-Date:   Sat,  5 Feb 2022 11:36:06 +0100
-Message-Id: <20220205103613.1216218-1-j.neuschaefer@gmx.net>
+        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>
+Subject: [PATCH v2 3/7] clk: mux: Declare u32 *table parameter as const
+Date:   Sat,  5 Feb 2022 11:36:09 +0100
+Message-Id: <20220205103613.1216218-4-j.neuschaefer@gmx.net>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220205103613.1216218-1-j.neuschaefer@gmx.net>
+References: <20220205103613.1216218-1-j.neuschaefer@gmx.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:/h8Kx3Dp4vLgS/DLX4PZl6iFN/6UxoPSJrqjjZuVVAbXZ1DfIzT
- COIlkuzULvS4se7nqwcHAy4umtKBjWe+edlH7oREVi+hn4q2YU7LmZOJB+ZUD9c43c9qD5A
- rQ/aCxpAVqCDdiOw4JrCZIkJrUh9eJPXcOrnve/wJmBMQIJ83jnNm97le/CknVgl79i4p3F
- +6qT9vBp/c6XNJM64CntQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:nVrT49EqKyg=:nB/1FQAe4DYQGi5zTS0X8o
- 8qB7Ctid6Wt6dVwEXoH6gy2kVxVU8crSufb1ixQuYCr6yh4ojo/2nvr5yz08pWptnVg372mFU
- AdqWEqzq7lzBfvhVrMTXhGdtskURm8N2ahwKK1qgOR2ggw3zwrlfxgxAiUuVvQJQf1MluU0dO
- xufjQg+7TTO/5AEdDHPYcERV5I4sYgM0LQxETolCifr9bI0Eat03r0IDAuvd289wycEqaXu/d
- ZRLPbuSYiyvEX/591VStr+NPt/KmJhFLcnKO3g+DvszR0nOS67sXwZJZv8IFlATnlu0XgUXZc
- NM2DudVYVB+LkCqNUwMLXqam8pJnPihGSkZ0KJmcLElOj9CCwsjy+2cR5S+iFiwp7SmJmQmP4
- TSDRyCHmunMBLDfkGJumHLsKM0s5Tl2ZKBjE2zBVgt/1tps4Q+JU3NueRzN1T2y3w3qocmoTu
- M6cnccx6GiLNfAT0aBnPmPmjJ284HOPiAhr+VWOwl+bNJcOHVVjMlgRANIBO6XpF10tuR+0M6
- kGMbvV8fr4kid2Qy70mTghUHzPY9fX+GaSU5S8wmExEJA1Can7c73fHqOChO7yM0ghQt8tPp0
- kXkcDlazSXynLiBrT4ydSOewv2mk7kL3MOqjwbQULu6upX2tAEUJIBcqOSCQKLsf6dpT51fSl
- bVVamMCrZEvs5YqEB1hXFbWPpP2oE3j78DQc1r12/Ci/xMGhBFPXQ1WJUmDrv6esemHbRWqH3
- YMzwz/ZONDBV4Q16Z8/x/t/v76vOPRvS2Vs7pPL5ZPnItfPb3ruEKQoqZsaVvDGMU7ackOEXF
- pZHCnSAe+R/DrQjhJqRv0dsitNMm+KkSxnk9f9WolzUtnEZnixJpUskeldkO806CXMzx4UOhz
- g/Ro8rfGsSKGSWiYm8kAclldord99xGZ4HhtV5PgaGPSsGdnvdl7lD35L+6awmiah4A1D3q9Z
- 6n46DOfUhj5jbPSRJykr2Zf9+ZevY1/hM4IunA/96xn+hRLXst8WGiud4m+BYfk71aPl3mSTR
- BTIg0eWEp4yd64dUL/BKnakdfTly/v0814YzPrbnhWWW1boGfhhaaRmAmwk1pTkP9ybH+uXBa
- 8ufIN/iHZwf3a4=
+X-Provags-ID: V03:K1:2D604PBdLT4aQ0NrLOoct9Yj4ORp9f+pTiavGBxkK+l4ExfPbNu
+ 6omMJ+9sB+rUfJ/HjP5GrPQVPKRcQ+BCWK1L5lnUH/NTA9HMkwuWPORUYZpkoMV9NQPVyAo
+ S6dnuR05xlN3R5TzXmqtB6U/oSLCESJwsY7U7NdozfjZp7UUIaBfegp9ByyVzaQqInwX7/l
+ ESA651GAKBGOsmUWU3B5w==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:zeIonvdIsVs=:9ahvsbG6OrJxncXAPnYrh7
+ D9c5I8BD9T1tpxsmmgL1EgMpuH+JudYHN+HJp0GlN01aL3thwzAULR/uqv/TR8J2sukh7zXJx
+ k/Uqil5oR2ETLEIepha2Fb7AfVse7xIuce4WzRCCtqb3c0fjrUTjVsyfqZaKinwQ+j/Q6DYJW
+ dlIk3NxxLsQ5K9WqhRyzLcmyKThgm6kTA/hjf5rqSnFsGQG3U2oZzcQrdVrqSqskQYW+0ymot
+ leSy7eXTOZPgK6mfSpmTbTb5+sm+7N/7yE/0S93jsns2hv+chhGkCly3sN4EkTKUh1UlMg8GI
+ Kn5ziB+NojK80bAxfd2y99XvBzhRz67kiqiDR7LVX3IdZjTvC4U7eZFr6dop2ih7JJZZxhoYC
+ O/KEolzZeWFHQBL5n2sPGPN28Tw4MQIZ6XCD5IbA5MKJJxshit5sRGHWpss53uvEhD8j0r82m
+ QA1ejjFOsCr2uwpwLHi2iKVp2Z99m8ZfZI2lsL89wrN356o6UL2qk98eR+FHdiV2f5jI6gJqs
+ mf3NkKZ3v+iiMnTBDf5XK8EIra4NIKt7D6EIyx3Ed/oi/ZqWQBR9jBZprVPIph91g0u51UKs1
+ ZpIb1hZqRLkBEEa4b1Bz9n+jxYMOWr8fjkFNr15aoJwhOVRzmUyIKbRT58Jl3srizrOSl3ReG
+ wHws+3YzbO+y8QqgVqcf0POHIt1wHu5ulZ4dLIb9dJaPO+6m3U/VzzyKH847IsTFv558UuGLR
+ L2+KelCiHSQyHkHaSqu6npjOa+JPsF/h7EqmnLOYTAR29Ytb2NVPHtCeKNC9pXkCftvldjUSe
+ 9ko3b1MPZkujO7qk+6XU+s3YKPwyQGkHKZkcCZStmkxgL7qU7DieeaSKaDyKq4PhUkOQBhO8O
+ mUTaC+VPwM/L66kDm8M3/81j6CKf782kV4/zlrI+D64WZY9flJMIUgZ5AlJK5E78GGlPawghc
+ J8o684Li36dVmpt72mP6rOHeY4CEg0jPNelYGbcvQz1/MA/VH2JEsc6e0tEj1i5I2orwmhKam
+ v0QnkULmV0bOPSP+t4K2v4lliqxuatQHrRfySKwDG4DBC+GMuDwQobyP3VFt48cqZWJyYTsMr
+ za9lWFA9wX0n6A=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I noticed that the 'table' parameter to clk_register_mux_table is never
-used for modifying the table elements, and so it can be declared const.
+The elements of the table are never modified in clk-mux.c. To make this
+clear to clock drivers, declare the parameter as const u32 *table.
 
-In version 2 I'm addressing two warnings in the clk-lpc18xx-cgu driver
-that I previously missed.
+Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
+=2D--
 
-Jonathan Neusch=C3=A4fer (7):
-  clk: nxp: Remove unused variable
-  clk: nxp: Declare mux table parameter as const u32 *
-  clk: mux: Declare u32 *table parameter as const
-  clk: hisilicon: Remove unnecessary cast of mux table to u32 *
-  clk: mmp: Declare mux tables as const u32[]
-  clk: qcom: Declare mux table as const u32[]
-  clk: pistachio: Declare mux table as const u32[]
+v2:
+- no changes
+=2D--
+ drivers/clk/clk-mux.c        | 10 +++++-----
+ include/linux/clk-provider.h | 12 ++++++------
+ 2 files changed, 11 insertions(+), 11 deletions(-)
 
- drivers/clk/clk-mux.c                 | 10 +++++-----
- drivers/clk/hisilicon/clk.c           |  2 +-
- drivers/clk/mmp/clk-of-mmp2.c         |  4 ++--
- drivers/clk/nxp/clk-lpc18xx-cgu.c     |  5 ++---
- drivers/clk/pistachio/clk-pistachio.c |  2 +-
- drivers/clk/qcom/kpss-xcc.c           |  2 +-
- include/linux/clk-provider.h          | 12 ++++++------
- 7 files changed, 18 insertions(+), 19 deletions(-)
+diff --git a/drivers/clk/clk-mux.c b/drivers/clk/clk-mux.c
+index 20582aae7a35f..214045f6e9895 100644
+=2D-- a/drivers/clk/clk-mux.c
++++ b/drivers/clk/clk-mux.c
+@@ -40,7 +40,7 @@ static inline void clk_mux_writel(struct clk_mux *mux, u=
+32 val)
+ 		writel(val, mux->reg);
+ }
 
+-int clk_mux_val_to_index(struct clk_hw *hw, u32 *table, unsigned int flag=
+s,
++int clk_mux_val_to_index(struct clk_hw *hw, const u32 *table, unsigned in=
+t flags,
+ 			 unsigned int val)
+ {
+ 	int num_parents =3D clk_hw_get_num_parents(hw);
+@@ -67,7 +67,7 @@ int clk_mux_val_to_index(struct clk_hw *hw, u32 *table, =
+unsigned int flags,
+ }
+ EXPORT_SYMBOL_GPL(clk_mux_val_to_index);
+
+-unsigned int clk_mux_index_to_val(u32 *table, unsigned int flags, u8 inde=
+x)
++unsigned int clk_mux_index_to_val(const u32 *table, unsigned int flags, u=
+8 index)
+ {
+ 	unsigned int val =3D index;
+
+@@ -152,7 +152,7 @@ struct clk_hw *__clk_hw_register_mux(struct device *de=
+v, struct device_node *np,
+ 		const struct clk_hw **parent_hws,
+ 		const struct clk_parent_data *parent_data,
+ 		unsigned long flags, void __iomem *reg, u8 shift, u32 mask,
+-		u8 clk_mux_flags, u32 *table, spinlock_t *lock)
++		u8 clk_mux_flags, const u32 *table, spinlock_t *lock)
+ {
+ 	struct clk_mux *mux;
+ 	struct clk_hw *hw;
+@@ -218,7 +218,7 @@ struct clk_hw *__devm_clk_hw_register_mux(struct devic=
+e *dev, struct device_node
+ 		const struct clk_hw **parent_hws,
+ 		const struct clk_parent_data *parent_data,
+ 		unsigned long flags, void __iomem *reg, u8 shift, u32 mask,
+-		u8 clk_mux_flags, u32 *table, spinlock_t *lock)
++		u8 clk_mux_flags, const u32 *table, spinlock_t *lock)
+ {
+ 	struct clk_hw **ptr, *hw;
+
+@@ -244,7 +244,7 @@ EXPORT_SYMBOL_GPL(__devm_clk_hw_register_mux);
+ struct clk *clk_register_mux_table(struct device *dev, const char *name,
+ 		const char * const *parent_names, u8 num_parents,
+ 		unsigned long flags, void __iomem *reg, u8 shift, u32 mask,
+-		u8 clk_mux_flags, u32 *table, spinlock_t *lock)
++		u8 clk_mux_flags, const u32 *table, spinlock_t *lock)
+ {
+ 	struct clk_hw *hw;
+
+diff --git a/include/linux/clk-provider.h b/include/linux/clk-provider.h
+index 2faa6f7aa8a87..27be575288747 100644
+=2D-- a/include/linux/clk-provider.h
++++ b/include/linux/clk-provider.h
+@@ -888,7 +888,7 @@ void clk_hw_unregister_divider(struct clk_hw *hw);
+ struct clk_mux {
+ 	struct clk_hw	hw;
+ 	void __iomem	*reg;
+-	u32		*table;
++	const u32	*table;
+ 	u32		mask;
+ 	u8		shift;
+ 	u8		flags;
+@@ -913,18 +913,18 @@ struct clk_hw *__clk_hw_register_mux(struct device *=
+dev, struct device_node *np,
+ 		const struct clk_hw **parent_hws,
+ 		const struct clk_parent_data *parent_data,
+ 		unsigned long flags, void __iomem *reg, u8 shift, u32 mask,
+-		u8 clk_mux_flags, u32 *table, spinlock_t *lock);
++		u8 clk_mux_flags, const u32 *table, spinlock_t *lock);
+ struct clk_hw *__devm_clk_hw_register_mux(struct device *dev, struct devi=
+ce_node *np,
+ 		const char *name, u8 num_parents,
+ 		const char * const *parent_names,
+ 		const struct clk_hw **parent_hws,
+ 		const struct clk_parent_data *parent_data,
+ 		unsigned long flags, void __iomem *reg, u8 shift, u32 mask,
+-		u8 clk_mux_flags, u32 *table, spinlock_t *lock);
++		u8 clk_mux_flags, const u32 *table, spinlock_t *lock);
+ struct clk *clk_register_mux_table(struct device *dev, const char *name,
+ 		const char * const *parent_names, u8 num_parents,
+ 		unsigned long flags, void __iomem *reg, u8 shift, u32 mask,
+-		u8 clk_mux_flags, u32 *table, spinlock_t *lock);
++		u8 clk_mux_flags, const u32 *table, spinlock_t *lock);
+
+ #define clk_register_mux(dev, name, parent_names, num_parents, flags, reg=
+,    \
+ 			 shift, width, clk_mux_flags, lock)		      \
+@@ -962,9 +962,9 @@ struct clk *clk_register_mux_table(struct device *dev,=
+ const char *name,
+ 			      (shift), BIT((width)) - 1, (clk_mux_flags),     \
+ 			      NULL, (lock))
+
+-int clk_mux_val_to_index(struct clk_hw *hw, u32 *table, unsigned int flag=
+s,
++int clk_mux_val_to_index(struct clk_hw *hw, const u32 *table, unsigned in=
+t flags,
+ 			 unsigned int val);
+-unsigned int clk_mux_index_to_val(u32 *table, unsigned int flags, u8 inde=
+x);
++unsigned int clk_mux_index_to_val(const u32 *table, unsigned int flags, u=
+8 index);
+
+ void clk_unregister_mux(struct clk *clk);
+ void clk_hw_unregister_mux(struct clk_hw *hw);
 =2D-
 2.34.1
 
