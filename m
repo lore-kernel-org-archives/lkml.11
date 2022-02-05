@@ -2,91 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B15FC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 18:46:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E25FC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 18:49:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381000AbiBESqG (ORCPT
+        id S1381007AbiBEStK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 13:46:06 -0500
-Received: from mga01.intel.com ([192.55.52.88]:60901 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239028AbiBESqD (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 13:46:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644086763; x=1675622763;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=LJyhXHdlSmLbpIh8XLE/wYlidLOXJRLVWt/xTeQrWio=;
-  b=Kbf29i9J0c7K3HZO82x50+Js8sh7S6KzkykT4JyfVvtLi7ZB9TCsWYXI
-   v71+TtAG6Q+kQfxe3MOn1YOeM3RcS7O/Fw51UmB8+JcdGJqx/zccnpO9W
-   STnZYTPnbQunLkWDXk/h5hoPqPf0SKvGvIMCK/yYUOkxir1gAi24Nr13D
-   pxQ1irXBhxMY2PrBp9FOi1IJxVGI4cMBoQBTFE5dBUlwv7i128pJOdruC
-   xmUd8KCuBLJS20p6jsicQGX3Re+S7pYg71wRFjklE9lvB4uRcAArNXu97
-   st5M/QLgA0wNCpwGvKlH03vjPyq3+Nbfcq2gFObhdMiX3YXUYXtDu/4hr
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10248"; a="273040915"
-X-IronPort-AV: E=Sophos;i="5.88,346,1635231600"; 
-   d="scan'208";a="273040915"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2022 10:46:03 -0800
-X-IronPort-AV: E=Sophos;i="5.88,346,1635231600"; 
-   d="scan'208";a="524665214"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2022 10:46:01 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nGQ3R-001Ley-My;
-        Sat, 05 Feb 2022 20:45:01 +0200
-Date:   Sat, 5 Feb 2022 20:45:01 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH v1 1/3] iio: imu: inv_mpu6050: Drop wrong use of
- ACPI_PTR()
-Message-ID: <Yf7FrU3z7jgyv04f@smile.fi.intel.com>
-References: <20220203155920.18586-1-andriy.shevchenko@linux.intel.com>
- <20220205164535.763feeea@jic23-huawei>
+        Sat, 5 Feb 2022 13:49:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44530 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229906AbiBEStI (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Sat, 5 Feb 2022 13:49:08 -0500
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4809C061348;
+        Sat,  5 Feb 2022 10:49:07 -0800 (PST)
+Received: by mail-lf1-x12b.google.com with SMTP id b9so19031676lfq.6;
+        Sat, 05 Feb 2022 10:49:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=j6S3Kh4JSsyzTJwIiEb9upRA50DMN8jNgyHoasqS+S0=;
+        b=jBJmMOo5ZW14Olk3qfUs0XDrwzkaGx5kIfSeBM+nlE+u+dq+ma9HIzp3hs3OUYGr/p
+         PLjqgZqH30yLlsq50r8gBLwnAjBF3MUoDQ7HrIj8QE07YcFDmzLUaRBqXTcfobDXDvCG
+         Mh4z0ig4hVRhxmiUxTWgKJYm2QCbXWlv0vy2svr/1J4d5fivHvGlbn7v7z81psvnSqBC
+         oVuu2zACt8p10ZilqXO1k7ZLOsTsd4i3k1jLHpJgCdA4+UaI7tTTy7J3cJF4OTvWZmvW
+         S2A9JF7P7JLI9rJrWoKCD25MhT4QNAeTt0OYq5G9NCUkoFRVnI1aK/7T432HyzRFy6xy
+         QAxg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=j6S3Kh4JSsyzTJwIiEb9upRA50DMN8jNgyHoasqS+S0=;
+        b=70Vq5rmnM5UrUft6eS7ePBbx3iEnTilAEP0fHHHALiJrqh2v/eBIcxrJum7Pswmn7R
+         JtC/C3F8nCE1qgOg1GZwgXx+Z3lQirqGeM9iJMZPHDxjWkC/n1NPdtSyFx+BbMER6BvY
+         BHljFJCUZfH62JKaHutl8yXmEpiC+PIqM+NILv1RxDWKBhgB68fmr7/BQPE8vZlu+6um
+         8kPslDCY5kpuCbqttEmNv8X7ctkH9T/x5wi6MRXTYUem1vN0gnL9T/cWZFaEOO7U8efe
+         IzXv5c/QafVHxl8z7K//qzwCsRITxwwEF41+espV292qzep5DwBfOwvYf76HH+/hBX8D
+         TeOw==
+X-Gm-Message-State: AOAM530HumREWiS+5xpFKIVhh5vQUM/yLlDl+/IzJtbZg2zhrCG1NVqP
+        kK8GoHLEfbJNUMiIJNFGs4KzCgI2ngzYgJRG
+X-Google-Smtp-Source: ABdhPJxhm+QVsiVh1pxN7Gz2ubSOYSNovsHCK3+QNevQ7qseNgNvzN8CzrEJXKnDM1Htp3aynUkJxg==
+X-Received: by 2002:ac2:554a:: with SMTP id l10mr3176054lfk.534.1644086945544;
+        Sat, 05 Feb 2022 10:49:05 -0800 (PST)
+Received: from ArchRescue.. ([81.198.232.185])
+        by smtp.gmail.com with ESMTPSA id a24sm833050ljp.112.2022.02.05.10.49.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 05 Feb 2022 10:49:05 -0800 (PST)
+From:   =?UTF-8?q?D=C4=81vis=20Mos=C4=81ns?= <davispuh@gmail.com>
+To:     linux-btrfs@vger.kernel.org
+Cc:     Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?D=C4=81vis=20Mos=C4=81ns?= <davispuh@gmail.com>
+Subject: [PATCH v3] btrfs: send: in case of IO error log it
+Date:   Sat,  5 Feb 2022 20:48:23 +0200
+Message-Id: <20220205184822.2968-1-davispuh@gmail.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220202201437.7718-1-davispuh@gmail.com>
+References: <20220202201437.7718-1-davispuh@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220205164535.763feeea@jic23-huawei>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Feb 05, 2022 at 04:45:35PM +0000, Jonathan Cameron wrote:
-> On Thu,  3 Feb 2022 17:59:18 +0200
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> 
-> > ACPI_PTR() is more harmful than helpful. For example, in this case
-> > if CONFIG_ACPI=n, the ID table left unused which is not what we want.
-> > 
-> > Instead of adding ifdeffery or attribute here and there, drop ACPI_PTR().
-> > 
-> > Fixes: 3b3870646642 ("iio: imu: inv_mpu6050: Mark acpi match table as maybe unused")
-> > Fixes: fd64df16f40e ("iio: imu: inv_mpu6050: Add SPI support for MPU6000")
-> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> 
-> Hi Andy,
-> 
-> Whilst I fully support tidying this up, what is 'fixing' as such?
-> Will get rid of an unused warning for the spi case but that sort
-> of things doesn't always get fixes tags.
+Currently if we get IO error while doing send then we abort without
+logging information about which file caused issue.
+So log it to help with debugging.
 
-True, however I can find a handful examples when this kind of patches were backported.
+Signed-off-by: Dāvis Mosāns <davispuh@gmail.com>
+---
+ fs/btrfs/send.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-> They tend to result
-> in backports and I wouldn't think it was worth backporting this
-> unless I'm missing something...
-
-It's not critical, so can you drop the tags when applying, if you think that's
-okay?
-
+diff --git a/fs/btrfs/send.c b/fs/btrfs/send.c
+index d8ccb62aa7d2..b1f75fde4a19 100644
+--- a/fs/btrfs/send.c
++++ b/fs/btrfs/send.c
+@@ -4999,6 +4999,8 @@ static int put_file_data(struct send_ctx *sctx, u64 offset, u32 len)
+ 			lock_page(page);
+ 			if (!PageUptodate(page)) {
+ 				unlock_page(page);
++				btrfs_err(fs_info, "send: IO error at offset=%llu for inode=%llu root=%llu",
++					page_offset(page), sctx->cur_ino, sctx->send_root->root_key.objectid);
+ 				put_page(page);
+ 				ret = -EIO;
+ 				break;
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.35.1
 
