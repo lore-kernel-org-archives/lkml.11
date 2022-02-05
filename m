@@ -2,94 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 640DDC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 10:37:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94A51C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 10:40:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379827AbiBEKhQ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 05:37:16 -0500
-Received: from mout.gmx.net ([212.227.17.21]:39983 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1379768AbiBEKhB (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 05:37:01 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1644057402;
-        bh=QROgHSfb3iMEjYa0kRt/e/0z4UVT4OJ4cUBSHkYo0N0=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=PX5U8pguYOWJhMOMJGyjROg29isAPINrgR0lPeVp/u3k1kD3uP6cYdovKzzyFuZVp
-         IaiupbIkaP1ER7aSCfUnT2J19CH74RuneK9XfoRiPQT472Y7TSqrqPMlOtgI6vhlNu
-         l+GBarsffXSy9PTGqBUCQ2+I5+5jurN4Q6G8BmMg=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from longitude ([5.146.194.160]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MIwz4-1mvsxv3sIk-00KPLQ; Sat, 05
- Feb 2022 11:36:42 +0100
-From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
-To:     linux-clk@vger.kernel.org
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Dongjiu Geng <gengdongjiu@huawei.com>
-Subject: [PATCH v2 4/7] clk: hisilicon: Remove unnecessary cast of mux table to u32 *
-Date:   Sat,  5 Feb 2022 11:36:10 +0100
-Message-Id: <20220205103613.1216218-5-j.neuschaefer@gmx.net>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220205103613.1216218-1-j.neuschaefer@gmx.net>
-References: <20220205103613.1216218-1-j.neuschaefer@gmx.net>
+        id S233255AbiBEKko (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 5 Feb 2022 05:40:44 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:15264 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229662AbiBEKkl (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Sat, 5 Feb 2022 05:40:41 -0500
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2154xJnT037406;
+        Sat, 5 Feb 2022 10:40:37 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=f1WYbGVwEqai84r155RmLNhHHOjV6VxFSgKbWU3642A=;
+ b=TLVWoP3RcVAS1UNBRmZXKgAPIuy6sirmOL216faQOZXNnDNX82FRmaxPPyYbmgz4Q+9y
+ RgWbFH9mxhMD8Te48hBeLfypsJ1QSkZJQvun4gswSmpRuaQRQ9+V1PCPqMrQ+CkrZ3Ri
+ ubZflZv6c6YnC4b0DpXrk4lvLp1CAYm3m5iNByEbT95T//74GMnpyjp6dQGsYuG4gGvK
+ QDmaeMi1sdUjFWz/E9JvW9T6pJZNvKc6Rd6kquIrd6QxCbWTGLTaCeiTWBGxun3I9Bwy
+ d/mTtT4PoII7sae6xB600R0JiiB+vzgbY3mnXb5HRsp8vuKO18jut+4VZCBBUED+prBf YA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e1ghqdfhk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sat, 05 Feb 2022 10:40:37 +0000
+Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 215AeaZf010517;
+        Sat, 5 Feb 2022 10:40:36 GMT
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e1ghqdfha-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sat, 05 Feb 2022 10:40:36 +0000
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 215AWr55026466;
+        Sat, 5 Feb 2022 10:40:35 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma03fra.de.ibm.com with ESMTP id 3e1gv8sd5p-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sat, 05 Feb 2022 10:40:34 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 215AeWnM30802344
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sat, 5 Feb 2022 10:40:32 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 50D0F52054;
+        Sat,  5 Feb 2022 10:40:32 +0000 (GMT)
+Received: from localhost (unknown [9.43.12.205])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id D2DA75204F;
+        Sat,  5 Feb 2022 10:40:30 +0000 (GMT)
+Date:   Sat, 5 Feb 2022 16:10:29 +0530
+From:   Ritesh Harjani <riteshh@linux.ibm.com>
+To:     Jan Kara <jack@suse.cz>
+Cc:     Xin Yin <yinxin.x@bytedance.com>, harshadshirwadkar@gmail.com,
+        tytso@mit.edu, adilger.kernel@dilger.ca,
+        linux-ext4@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [External] Re: [PATCH 1/2] ext4: use ext4_ext_remove_space() for
+ fast commit replay delete range
+Message-ID: <20220205104029.dytcn4bhx2qyllbi@riteshh-domain>
+References: <20211223032337.5198-1-yinxin.x@bytedance.com>
+ <20211223032337.5198-2-yinxin.x@bytedance.com>
+ <20220201203359.owrnrfqydjloy7oq@riteshh-domain>
+ <CAK896s4=o9cFFnh0KzhbXSSjWiDFoTqNx0ATzGNH8rxj19+1aw@mail.gmail.com>
+ <20220203211416.5jjdkk7pdaahignw@riteshh-domain>
+ <20220204113639.gxz2giovjegnf62g@quack3.lan>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:C9ZnEZNM5TEevGBylOfbKYocqhZUTP047OiXTMGozjVJqSDGs6t
- TWdKaDaSg80azhRbojL2OsM61Mlkg2Yh9nHrbF328/ZPVHR4Ow65STx4q5nhLXZxHHrbFvr
- tBPikfsWbrGBEdf8UMA/ckIjlqN3PsQj2PRp9DFHjhXsHKKVXqhPuy6K+HIrtY52ZTq4ZWJ
- 78WopYd5OYof47uloKbMQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:bICYtb9YPuo=:Tm0/e2XfYu3hqg1eOOZ5YL
- 44UGOUbQQczOndFYJhitFgE7iNUweR9JqluTEO9KB+uLddic5cz2o3gFTr+pnCokCps5xjvH4
- qbuDru7JLPfACSEnv4Q/krsyjCjZyhKCujChaZ1BYdHxMBLhD1vxgfYQLApDVFHqrB81zjxj7
- WHBVhkFkE8Z18YRk7EmBQpDGzR1DG337ALNJJG/ct1ISMQAi5F1JYhHb7jy5Z15zG1+rfwCWz
- culH5GvPazHFIWy0TKIl8PgqF5fxevelcuIBheM/N9J0fTLXxYuADN8YYMfZ5XN+unP24ySHM
- a3u6pcObYR+T9SPqYDYOvsKdSm2LOqC7yuH68H/qs5JYW2k7vRHpDhMDwuWhkgQVRJq/oS//H
- 6yf2aGEHk3UZxs3+mV0r2PKGg7GWf3+AFdxU6bnfitKZv4dDoUOAZkuAj+B0hy0DxLbGGLkKI
- LsH90RAoXDJYGeaHqS41693l4DIxjyWt2LZgiSMikG3zmK3hvtRFKEMXdPv8DqJbA95bFaMx0
- cSLde8828clCDxihP03gTjDPnoCxJMAK4ht7WIQ/1wABbVD9Q2IZAx1km4LrqmTBRQHVlu3vA
- yrEQ+w3mkY2Us9O+tC0t3gN01kzJUFYAWJ4zoDKS11p5jjdEqkRnBCSGVJ2BFdhpgWjA4tnFm
- rUHta6HqsMrBLfvMeou5VtwvHCjhCIIbQh89GloGJ6ubnP+Qex0Eg39HLLb7XNoBV+I0RQtu4
- OB2Ui1ZjUeu9wYjPL+x4MOwOtFapCFtyNO+8KhXn4m8RTAWjcpw0PaJFMbqDMNbQdBuuKpXTc
- ZQ52nFM3aHdbtaq+7sR+UtoL6leaoYsPDa1+5Yi7zNoDeU3Bff9baWTV6zPVufanJovedYEfX
- qFBbLDbtyWQvPxpVF+4zB43VvMW8fmN3xJS+SaYg90DBcY9iI9m2CZKGXDvsInV9CJh6+rP+t
- m/ZTX9D7sKSFzjCpFs91DN5SKz8ygU90THk3WERzNz/xGm2/vQGle8V17kU2p1JqZNNRV70XV
- DycXrO2yYrhHaxSDROlPE5xOkARB0wynmKgmE6xKVCfZ4Pt19YYnHfjPHNugjhm3kOsQgQ38t
- e9MPkpraj87RW4=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220204113639.gxz2giovjegnf62g@quack3.lan>
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 7ItB-HQTBY_FYxy5EFRWNwUwCBSZwYV3
+X-Proofpoint-ORIG-GUID: BUraN56K7HYrWhUfLRMVwt8xkzKUG_nI
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-05_02,2022-02-03_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 lowpriorityscore=0
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 mlxlogscore=999
+ clxscore=1015 spamscore=0 impostorscore=0 priorityscore=1501 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2202050070
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that clk_register_mux_table takes a const u32 *, we don't need the
-cast anymore.
+On 22/02/04 12:36PM, Jan Kara wrote:
+> On Fri 04-02-22 02:44:16, Ritesh Harjani wrote:
+> > Ok, so I now know why the inode->i_size is 0 during replay phase (for file foo).
+> > This is because inode->i_disksize is not really updated until after the
+> > ext4_writepages() kicks in, which in this case, won't happen (for file foo)
+> > when we are doing fsync on file bar. And hence fsync on file bar won't also
+> > not ensure the delalloc blocks for file foo get's written out.
+> >
+> > In fact this above information was something that I was assuming it all
+> > wrong.  Earlier I was of the opinion that fast_commit still pushes _all_
+> > the dirty pagecache data of other files to disk too (which is incorrect)
+> > and the only performance gains happens via less writes to disk (since we
+> > write less metadata on disk).
+> >
+> > But I think what really happens is - In case of fast_commit when fsync is
+> > called on any file (say bar), apart from that file's (bar) dirty data, it
+> > only writes the necessary required metadata information of the blocks of
+> > others files (in this case file foo) which are already allocated.  (which
+> > in this case was due to fzero operation).  It does not actually allocate
+> > the delalloc blocks due to buffered writes of any other file (other than
+> > for file on which fsync is called).
+>
+> Yes, but that is exactly what also happens for normal commit. I.e. even
+> without fastcommits, if we fsync(2), we will flush out data for that file
+> but for all the other files, buffered data still stays in delalloc state in
+> the page cache. Following journal commit will thus write all metadata (and
+> wait for data) of the fsynced files but not for any other file that has
+> only delalloc blocks. If writeback of some other file also happened before
+> we commit, then yes, we include all the changes to the commit as well.
+>
+> > This happens in
+> > ext4_fc_perform_commit() -> ext4_fc_submit_inode_data_all() ->
+> > jbd2_submit_inode_data -> jbd2_journal_submit_inode_data_buffers() ->
+> > generic_writepages() -> using writepage() which won't do block allocation for
+> > delalloc blocks.
+> >
+> > So that above is what should give the major performance boost with fast_commit
+> > in case of multiple file writes doing fsync. :)
+> >
+> > @Jan/Harshad - could you please confirm if above is correct?
+>
+> What you describe is correct but not special to fastcommit. As I mentioned
+> on the call yesterday, fastcommit is currently beneficial only because the
+> logical logging it does ends up writing much less blocks to the journal.
+>
 
-Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
-=2D--
+Yes, thanks for taking time to explain it again.
+I got this now.
 
-v2:
-- no changes
-=2D--
- drivers/clk/hisilicon/clk.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thanks!
+-ritesh
 
-diff --git a/drivers/clk/hisilicon/clk.c b/drivers/clk/hisilicon/clk.c
-index 9361fba7cd4cf..54d9fdc935990 100644
-=2D-- a/drivers/clk/hisilicon/clk.c
-+++ b/drivers/clk/hisilicon/clk.c
-@@ -162,7 +162,7 @@ int hisi_clk_register_mux(const struct hisi_mux_clock =
-*clks,
- 					clks[i].num_parents, clks[i].flags,
- 					base + clks[i].offset, clks[i].shift,
- 					mask, clks[i].mux_flags,
--					(u32 *)clks[i].table, &hisi_clk_lock);
-+					clks[i].table, &hisi_clk_lock);
- 		if (IS_ERR(clk)) {
- 			pr_err("%s: failed to register clock %s\n",
- 			       __func__, clks[i].name);
-=2D-
-2.34.1
 
+> 								Honza
+> --
+> Jan Kara <jack@suse.com>
+> SUSE Labs, CR
