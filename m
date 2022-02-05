@@ -2,98 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CEECC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 23:30:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14B10C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 23:33:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381383AbiBEXaz (ORCPT
+        id S1381394AbiBEXdx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 18:30:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56078 "EHLO
+        Sat, 5 Feb 2022 18:33:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234211AbiBEXaw (ORCPT
+        with ESMTP id S229454AbiBEXdw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 18:30:52 -0500
-Received: from mx1.smtp.larsendata.com (mx1.smtp.larsendata.com [91.221.196.215])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3732BC061348
-        for <linux-kernel@vger.kernel.org>; Sat,  5 Feb 2022 15:30:52 -0800 (PST)
-Received: from mail01.mxhotel.dk (mail01.mxhotel.dk [91.221.196.236])
-        by mx1.smtp.larsendata.com (Halon) with ESMTPS
-        id 0b99a305-852e-11ec-b20b-0050568c148b;
-        Thu, 03 Feb 2022 20:15:35 +0000 (UTC)
-Received: from ravnborg.org (80-162-45-141-cable.dk.customer.tdc.net [80.162.45.141])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: sam@ravnborg.org)
-        by mail01.mxhotel.dk (Postfix) with ESMTPSA id 32295194B90;
-        Thu,  3 Feb 2022 21:14:32 +0100 (CET)
-Date:   Thu, 3 Feb 2022 21:14:30 +0100
-X-Report-Abuse-To: abuse@mxhotel.dk
-From:   Sam Ravnborg <sam@ravnborg.org>
-To:     Thomas Zimmermann <tzimmermann@suse.de>
-Cc:     thierry.reding@gmail.com, airlied@linux.ie, daniel@ffwll.ch,
-        lyude@redhat.com, linus.walleij@linaro.org, dianders@chromium.org,
-        ardb@kernel.org, naresh.kamboju@linaro.org, arnd@arndb.de,
-        rdunlap@infradead.org, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        Linux Kernel Functional Testing <lkft@linaro.org>
-Subject: Re: [PATCH v2] drm/panel: Select DRM_DP_HELPER for DRM_PANEL_EDP
-Message-ID: <Yfw3pnlLNuXBo5gD@ravnborg.org>
-References: <20220203093922.20754-1-tzimmermann@suse.de>
+        Sat, 5 Feb 2022 18:33:52 -0500
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C471C061348;
+        Sat,  5 Feb 2022 15:33:51 -0800 (PST)
+Received: by mail-lf1-x136.google.com with SMTP id k13so19757946lfg.9;
+        Sat, 05 Feb 2022 15:33:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hTGxMUD+Y/e2SIuHcf/n5N/bPbvSPfdhfosfyFHnjSM=;
+        b=AQgPUOEAAjsob5q1TYDcbdFYKdASPIsg0LD2bQ9Ww+lq1e8NGppyzWXIZc6oGuO5si
+         5OlTFy1CH3JL0RFpk8mg1tC/FwmkL3AbT4MKU8dMfWOIS5hEcoNwPtobYKy7hdYHYnXf
+         K/R/Oj1bTYZf9WXAfwUt46sbtEjtDCBdlX69AFQzDz31jya8LcyMcvvJ3B4iS1t92cYG
+         lzbRVQltOoBMM8QlAOi+ZgEQE3/B7UhM250O5Px6vc1PkXuuxWXEt9DG8qKAVJvU3end
+         wCrtoOFSKS7gzJAhibl1wtLa7tkgmvjZ79bQtA9xabREftpEZTD+K3L1cvGfjsGSDonq
+         YzAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hTGxMUD+Y/e2SIuHcf/n5N/bPbvSPfdhfosfyFHnjSM=;
+        b=XB3paKotgFhIZ/36d9C/Vx5/kJtiIwmHt9DdkhNRKzKuhYvFBIJpk14ht4V6HzmbEQ
+         0S4WiovGtwC9ZXgqoJRJ8PQ8rw7/U8arSTKaEW91R8Fo7NAkb/qD4iS+CB0PnJQEthfe
+         l1Qk4vqcfAMhrjbi357BK7EX4UUwZv/g+jtp6tvQG1xjRzXuBZX1VZfDsM2vi6QiYIts
+         vFuw3l3GQqhlR5oANoLv6ECRNEVrOHfQ0DxQTsNVo1omOZLJ8wX1lc6kwl3+uN2cviXb
+         fnIv6/HEsXyl/0k/7zXwX9w5AMIp4Zsyl+xaXduDZCUV/gszJkUqUkus3DagY2J0PewT
+         bVeg==
+X-Gm-Message-State: AOAM530dklD3B8HDhFbF5GyiluC6w34MEk4lT6IMfrFNuVToYZnwrDHe
+        UrA+LpcuCT89Audw6BSHv10=
+X-Google-Smtp-Source: ABdhPJwUsYwrar5ZAoigpEbg5JFCfrjJ8wLITtvOjwBLyZsNPKwjEXajuiSrFa/SoMQ6m7N/SK3Q4Q==
+X-Received: by 2002:ac2:4c09:: with SMTP id t9mr3715612lfq.406.1644104029408;
+        Sat, 05 Feb 2022 15:33:49 -0800 (PST)
+Received: from localhost (93-80-64-103.broadband.corbina.ru. [93.80.64.103])
+        by smtp.gmail.com with ESMTPSA id m12sm888400lfj.90.2022.02.05.15.33.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 05 Feb 2022 15:33:48 -0800 (PST)
+From:   Mikhail Rudenko <mike.rudenko@gmail.com>
+To:     Yong Deng <yong.deng@magewell.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>
+Cc:     Mikhail Rudenko <mike.rudenko@gmail.com>,
+        linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: [PATCH] media: sun6i-csi: fix colorspace in sun6i_video_try_fmt()
+Date:   Sun,  6 Feb 2022 02:33:31 +0300
+Message-Id: <20220205233332.67316-1-mike.rudenko@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220203093922.20754-1-tzimmermann@suse.de>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 03, 2022 at 10:39:22AM +0100, Thomas Zimmermann wrote:
-> As reported in [1], DRM_PANEL_EDP depends on DRM_DP_HELPER. Select
-> the option to fix the build failure. The error message is shown
-> below.
-> 
->   arm-linux-gnueabihf-ld: drivers/gpu/drm/panel/panel-edp.o: in function
->     `panel_edp_probe': panel-edp.c:(.text+0xb74): undefined reference to
->     `drm_panel_dp_aux_backlight'
->   make[1]: *** [/builds/linux/Makefile:1222: vmlinux] Error 1
-> 
-> The issue has been reported before, when DisplayPort helpers were
-> hidden behind the option CONFIG_DRM_KMS_HELPER. [2]
-> 
-> v2:
-> 	* fix and expand commit description (Arnd)
-> 
-> Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
-> Fixes: adb9d5a2cc77 ("drm/dp: Move DisplayPort helpers into separate helper module")
-> Fixes: 5f04e7ce392d ("drm/panel-edp: Split eDP panels out of panel-simple")
-> Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
-> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-> Link: https://lore.kernel.org/dri-devel/CA+G9fYvN0NyaVkRQmA1O6rX7H8PPaZrUAD7=RDy33QY9rUU-9g@mail.gmail.com/ # [1]
-> Link: https://lore.kernel.org/all/20211117062704.14671-1-rdunlap@infradead.org/ # [2]
-> Cc: Thomas Zimmermann <tzimmermann@suse.de>
-> Cc: Lyude Paul <lyude@redhat.com>
-> Cc: Daniel Vetter <daniel@ffwll.ch>
-> Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
-> Cc: Maxime Ripard <mripard@kernel.org>
-> Cc: dri-devel@lists.freedesktop.org
+With gstreamer 1.19.3 all attempts to capture video in YUV formats on
+our Allwinner H3-based custom board with an ov5640 sensor result in
+pipeline crashes with the following messages:
 
-Acked-by: Sam Ravnborg <sam@ravnborg.org>
+	Device '/dev/video0' does not support 2:0:0:0 colorimetry
+	Additional debug info:
+	Device wants 2:0:0:0 colorimetry
 
-> ---
->  drivers/gpu/drm/panel/Kconfig | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
-> index 434c2861bb40..0aec5a10b064 100644
-> --- a/drivers/gpu/drm/panel/Kconfig
-> +++ b/drivers/gpu/drm/panel/Kconfig
-> @@ -106,6 +106,7 @@ config DRM_PANEL_EDP
->  	depends on PM
->  	select VIDEOMODE_HELPERS
->  	select DRM_DP_AUX_BUS
-> +	select DRM_DP_HELPER
->  	help
->  	  DRM panel driver for dumb eDP panels that need at most a regulator and
->  	  a GPIO to be powered up. Optionally a backlight can be attached so
-> -- 
-> 2.34.1
+Fix this by setting the correct colorspace in sun6i_video_try_fmt().
+
+Signed-off-by: Mikhail Rudenko <mike.rudenko@gmail.com>
+---
+
+Actually there is a second issue with sun6i_video_try_fmt(): reported
+bytesperline is wrong for planar YUV formats, but I believe it will be
+fixed by [1].
+
+[1] https://lore.kernel.org/linux-media/20220205185429.2278860-40-paul.kocialkowski@bootlin.com/
+
+ drivers/media/platform/sunxi/sun6i-csi/sun6i_video.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_video.c b/drivers/media/platform/sunxi/sun6i-csi/sun6i_video.c
+index 607a8d39fbe2..682c26536034 100644
+--- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_video.c
++++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_video.c
+@@ -368,7 +368,11 @@ static int sun6i_video_try_fmt(struct sun6i_video *video,
+ 	if (pixfmt->field == V4L2_FIELD_ANY)
+ 		pixfmt->field = V4L2_FIELD_NONE;
+
+-	pixfmt->colorspace = V4L2_COLORSPACE_RAW;
++	if (pixfmt->pixelformat == V4L2_PIX_FMT_JPEG)
++		pixfmt->colorspace = V4L2_COLORSPACE_JPEG;
++	else
++		pixfmt->colorspace = V4L2_COLORSPACE_SRGB;
++
+ 	pixfmt->ycbcr_enc = V4L2_YCBCR_ENC_DEFAULT;
+ 	pixfmt->quantization = V4L2_QUANTIZATION_DEFAULT;
+ 	pixfmt->xfer_func = V4L2_XFER_FUNC_DEFAULT;
+--
+2.35.1
