@@ -2,130 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CD69C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 21:13:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF7FDC433FE
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 21:50:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381447AbiBEVNN (ORCPT
+        id S1351002AbiBEVuD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 16:13:13 -0500
-Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:59758
-        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233073AbiBEVNM (ORCPT
+        Sat, 5 Feb 2022 16:50:03 -0500
+Received: from mail.baikalelectronics.com ([87.245.175.226]:41858 "EHLO
+        mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230390AbiBEVuA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 16:13:12 -0500
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com [209.85.128.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id E54C23FE4B
-        for <linux-kernel@vger.kernel.org>; Sat,  5 Feb 2022 21:13:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1644095590;
-        bh=nz2Z4bFotqetThuLUskNVZCWGhwv1YrdlfnjDQe5gQs=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=K0puRBppIpE4rnEKVNnKGfOPwH0dhCZq5XLEdIgCOBGZByOikF33flBu2vbchkgEJ
-         74GKJBsu7xZoKu7/wzGJ7dxbzIsjbturV6JFTk8SlCLw3jZbSNmHwGEJp/SiMxTxH1
-         E/tl2PinE41s5nJH+FFUhmoL8/K0fTenK8d8irWz7Kc9pa26KlN3EciJwQlxWzm818
-         yoUFnz/zOyBUFv33vWOtK/vTMKaClWwyHRUFL+blv47CDPU1YgEsUOoloQcJ0xQVQ2
-         TbmmnU7W5BAPyiSysO4LM3DW38fqbe8E62+hzmuejUMp3IJyMBsLLQ/IiOpvVU644O
-         K9pfcTyAi2YxA==
-Received: by mail-wm1-f69.google.com with SMTP id s187-20020a1ca9c4000000b0037bb8547d64so584896wme.0
-        for <linux-kernel@vger.kernel.org>; Sat, 05 Feb 2022 13:13:10 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=nz2Z4bFotqetThuLUskNVZCWGhwv1YrdlfnjDQe5gQs=;
-        b=prwdYqjsSYv43bADxLLLBbOVtHvI2i9FAR2y251V5Q/jxkYWq88EELOP8QPAhqzngd
-         uEBwqute1FKXHbj3D9KrP5UknBUARVVyquy4T1JE8F0y/o6UKSp7YI0xnaCkQksfldBS
-         SCvqQJyZHulwJ4x3zDv1to8Sl8/op1q4iIo6zUZ1mPW/o8A+OjlRF8VYjVNXVDVuJ2/V
-         zBQOmm8/Ii1gt02K/tLE+8zM4n8oBAKUsDhIvmVOqCHdzgVhvKVo+qgtZIpFmjpWTGvA
-         2Ot03i++zsLp7bNB8UvnGMhtFhV6TjXVcMr00kQq8vfajlydYvAyAFqVDOAHLTg+8em8
-         h6Yg==
-X-Gm-Message-State: AOAM533Ba4+yMNHKwBmD81UF6DwZ+H6MWPg9kMoYD31+ncY9LnHnZ7xt
-        TG+6nw6HFxsjuFf2Xdp1OCQoYhC6JdCOLFZ3DA1DW9ScqevAHxxXJhZB5dEq991bIIQQ6IQopV5
-        FnxeS/eduYXlC90zRMiw9l6vh8kXOr3P76C9TloE6GXKghCq1897C3ydIEw==
-X-Received: by 2002:a05:6000:1707:: with SMTP id n7mr4286322wrc.234.1644095590469;
-        Sat, 05 Feb 2022 13:13:10 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJx0O5lMWQqmnSzmHWQqbnIIH10oDMuf24v+GRzu1vHjjMNiBTdjAaypokB3rE4ZxL9Iq0Fr05Wxc5BZQWT7mig=
-X-Received: by 2002:a05:6000:1707:: with SMTP id n7mr4286310wrc.234.1644095590242;
- Sat, 05 Feb 2022 13:13:10 -0800 (PST)
+        Sat, 5 Feb 2022 16:50:00 -0500
+Received: from mail.baikalelectronics.ru (unknown [192.168.51.25])
+        by mail.baikalelectronics.ru (Postfix) with ESMTP id 3339E8001D4C;
+        Sun,  6 Feb 2022 00:49:57 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.ru 3339E8001D4C
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baikalelectronics.ru; s=mail; t=1644097798;
+        bh=CjuqZZNusyyBrdQUX0NyOK0jjIqNInUwEk3UWH6pwes=;
+        h=From:To:CC:Subject:Date:From;
+        b=jBiPyX8xNcjihqTEJEPTl+Hem6IwT8aXywyq32MwCG1iKLhZieq5LByVIVowMgMBw
+         zyjBgYysuPsDa84IkcQwFkVESR9sJ88nnhANGZ54dgXKiImgvx5WykHMSFjcf5NYWy
+         F4JtQUthTlRUh7H1iqy82+PoojNu8+8w5Ad/Na8o=
+Received: from localhost (192.168.168.10) by mail (192.168.51.25) with
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Sun, 6 Feb 2022 00:49:41 +0300
+From:   Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ron Madrid <ron_madrid@sbcglobal.net>
+CC:     Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        <stable@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH net] net: phy: marvell: Fix MDI-x polarity setting in 88e1118-compatible PHYs
+Date:   Sun, 6 Feb 2022 00:49:51 +0300
+Message-ID: <20220205214951.60371-1-Pavel.Parkhomenko@baikalelectronics.ru>
 MIME-Version: 1.0
-References: <20211129173637.303201-1-robh@kernel.org> <Yf2wTLjmcRj+AbDv@xps13.dannf>
- <CAL_Jsq+4b4Yy8rJGJv9j9j_TCm6mTAkW5fzcDuuW-jOoiZ2GLg@mail.gmail.com>
-In-Reply-To: <CAL_Jsq+4b4Yy8rJGJv9j9j_TCm6mTAkW5fzcDuuW-jOoiZ2GLg@mail.gmail.com>
-From:   dann frazier <dann.frazier@canonical.com>
-Date:   Sat, 5 Feb 2022 14:12:57 -0700
-Message-ID: <CALdTtnuK+D7gNbEDgHbrc29pFFCR3XYAHqrK3=X_hQxUx-Seow@mail.gmail.com>
-Subject: Re: [PATCH] PCI: xgene: Fix IB window setup
-To:     Rob Herring <robh@kernel.org>
-Cc:     Toan Le <toan@os.amperecomputing.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Andrew Murray <amurray@thegoodpenguin.co.uk>,
-        =?UTF-8?Q?St=C3=A9phane_Graber?= <stgraber@ubuntu.com>,
-        stable <stable@vger.kernel.org>, PCI <linux-pci@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Feb 5, 2022 at 9:05 AM Rob Herring <robh@kernel.org> wrote:
->
-> On Fri, Feb 4, 2022 at 5:01 PM dann frazier <dann.frazier@canonical.com> =
-wrote:
-> >
-> > On Mon, Nov 29, 2021 at 11:36:37AM -0600, Rob Herring wrote:
-> > > Commit 6dce5aa59e0b ("PCI: xgene: Use inbound resources for setup")
-> > > broke PCI support on XGene. The cause is the IB resources are now sor=
-ted
-> > > in address order instead of being in DT dma-ranges order. The result =
-is
-> > > which inbound registers are used for each region are swapped. I don't
-> > > know the details about this h/w, but it appears that IB region 0
-> > > registers can't handle a size greater than 4GB. In any case, limiting
-> > > the size for region 0 is enough to get back to the original assignmen=
-t
-> > > of dma-ranges to regions.
-> >
-> > hey Rob!
-> >
-> > I've been seeing a panic on HP Moonshoot m400 cartridges (X-Gene1) -
-> > only during network installs - that I also bisected down to commit
-> > 6dce5aa59e0b ("PCI: xgene: Use inbound resources for setup"). I was
-> > hoping that this patch that fixed the issue on St=C3=A9phane's X-Gene2
-> > system would also fix my issue, but no luck. In fact, it seems to just
-> > makes it fail differently. Reverting both patches is required to get a
-> > v5.17-rc kernel to boot.
-> >
-> > I've collected the following logs - let me know if anything else would
-> > be useful.
-> >
-> > 1) v5.17-rc2+ (unmodified):
-> >    http://dannf.org/bugs/m400-no-reverts.log
-> >    Note that the mlx4 driver fails initialization.
-> >
-> > 2) v5.17-rc2+, w/o the commit that fixed St=C3=A9phane's system:
-> >    http://dannf.org/bugs/m400-xgene2-fix-reverted.log
-> >    Note the mlx4 MSI-X timeout, and later panic.
-> >
-> > 3) v5.17-rc2+, w/ both commits reverted (works)
-> >    http://dannf.org/bugs/m400-both-reverted.log
->
-> The ranges and dma-ranges addresses don't appear to match up with any
-> upstream dts files. Can you send me the DT?
+When setting up autonegotiation for 88E1118R and compatible PHYs,
+a software reset of PHY is issued before setting up polarity.
+This is incorrect as changes of MDI Crossover Mode bits are
+disruptive to the normal operation and must be followed by a
+software reset to take effect. Let's patch m88e1118_config_aneg()
+to fix the issue mentioned before by invoking software reset
+of the PHY just after setting up MDI-x polarity.
 
-Sure: http://dannf.org/bugs/fdt
+Fixes: 605f196efbf8 ("phy: Add support for Marvell 88E1118 PHY")
+Signed-off-by: Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>
+Reviewed-by: Serge Semin <fancer.lancer@gmail.com>
+Suggested-by: Andrew Lunn <andrew@lunn.ch>
+Cc: stable@vger.kernel.org
+---
+ drivers/net/phy/marvell.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
- -dann
+diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
+index fa71fb7a66b5..ab063961ac00 100644
+--- a/drivers/net/phy/marvell.c
++++ b/drivers/net/phy/marvell.c
+@@ -1213,16 +1213,15 @@ static int m88e1118_config_aneg(struct phy_device *phydev)
+ {
+ 	int err;
+ 
+-	err = genphy_soft_reset(phydev);
++	err = marvell_set_polarity(phydev, phydev->mdix_ctrl);
+ 	if (err < 0)
+ 		return err;
+ 
+-	err = marvell_set_polarity(phydev, phydev->mdix_ctrl);
++	err = genphy_config_aneg(phydev);
+ 	if (err < 0)
+ 		return err;
+ 
+-	err = genphy_config_aneg(phydev);
+-	return 0;
++	return genphy_soft_reset(phydev);
+ }
+ 
+ static int m88e1118_config_init(struct phy_device *phydev)
+-- 
+2.32.0
 
-> Otherwise, we're going to need some debugging added to
-> xgene_pcie_setup_ib_reg() to see if the register setup changed. I can
-> come up with something next week.
->
-> Rob
