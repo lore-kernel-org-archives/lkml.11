@@ -2,113 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A9BBC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 11:35:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35FC7C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 11:37:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244942AbiBELfC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 06:35:02 -0500
-Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:44166
-        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S243390AbiBELe6 (ORCPT
+        id S1344284AbiBELh4 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 5 Feb 2022 06:37:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56160 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234257AbiBELhy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 06:34:58 -0500
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id C4E5040031
-        for <linux-kernel@vger.kernel.org>; Sat,  5 Feb 2022 11:34:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1644060897;
-        bh=8wZjc4AJmUICEN/J47+AHu6zl7TY1OVui5hLAqvkGdQ=;
-        h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-         In-Reply-To:Content-Type;
-        b=vj4XFnlbcInIcHR5RxOkB/aijWrDe/l9eH/srv90HqrqG+PXpsPALNBmHT/WZ9XuL
-         imQbz+/kj6GUyLb7496MCBWe1CiEtjKQDG5NJAOX/gY9+P6T5ciXCRKzAkjqJNuOzc
-         nUw2i2LWvl0LJmrzlv2DKF1hp8Uy4r6xcbtvxNRz1DZtUP7APBEhhO8kvVXjbFY1Ke
-         vQaJxv6L6EskXEIEMANYIc8cUoFWyy+ss3QZiOkyA97xZEk6O5HXmRdeXx6tkM2JXf
-         HKu/LOKCoy71zqt8AURDp2arcKCoOQYw6xE6PhvoHI/dDlbY02RvvE80lSm2INum+k
-         OLK4jDP4JuX2A==
-Received: by mail-ed1-f71.google.com with SMTP id o6-20020a50c906000000b0040efa863337so1730499edh.4
-        for <linux-kernel@vger.kernel.org>; Sat, 05 Feb 2022 03:34:57 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=8wZjc4AJmUICEN/J47+AHu6zl7TY1OVui5hLAqvkGdQ=;
-        b=jGxhePhFjqRqfTXxQdduShjj23/kkyXmR14ddXNQLG9QInkygyY6yhuKdMhCeRpYRT
-         N6VzEVvZZldaKS6JCVW/BBrpnrphj/8QzSeijv+9AVjIUhejv6Hk00YiqDSgeDu3YnS8
-         Wart2wDvrO3bB7cAO0Q2J1tYnDeknR746MX9g0HqljDawMGMlmT8BkFypgpTLNq7W7yu
-         I5DUGioiU66bHjszPofUowK/z+fdxR46LKkxoozGnZouslOg6RMlGSqBdKRTDS06NC/a
-         kXXeLbet1IPtDolE0tN0ea90qYWk3lINm9d+m/yqrFM6dWxNdsyhDgI2Zqs+NN5Zw1oV
-         GMjA==
-X-Gm-Message-State: AOAM530cFxdAxrLcohiiNr2oNi1c2koEv0B5PULIhbFLz+x2x/yR25lp
-        3lYirDp0ekg2YV8NDEQRJSbI0nGjEUlYkvVLP4TZO/OifqNA6xIncvRnjPUxRKu8/7ed11pNcQn
-        jy//FbCR1bdKjZrLfs4+5EDuMYwy4WSS4L89qjEJO8A==
-X-Received: by 2002:a17:906:9514:: with SMTP id u20mr2771806ejx.227.1644060897137;
-        Sat, 05 Feb 2022 03:34:57 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyNClAORm0Is6CvvWa0A5wmi15Ut3l492E6QUKdnkYGlK2vqHYbGFsJvHLoIE4y9hBSj7zuGQ==
-X-Received: by 2002:a17:906:9514:: with SMTP id u20mr2771793ejx.227.1644060896994;
-        Sat, 05 Feb 2022 03:34:56 -0800 (PST)
-Received: from [192.168.0.83] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id ec52sm663468edb.24.2022.02.05.03.34.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 05 Feb 2022 03:34:56 -0800 (PST)
-Message-ID: <3dd66b36-5b91-6cb7-cdea-851e780e3d54@canonical.com>
-Date:   Sat, 5 Feb 2022 12:34:55 +0100
+        Sat, 5 Feb 2022 06:37:54 -0500
+Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC8F8C061347
+        for <linux-kernel@vger.kernel.org>; Sat,  5 Feb 2022 03:37:53 -0800 (PST)
+Received: from dslb-188-104-059-100.188.104.pools.vodafone-ip.de ([188.104.59.100] helo=martin-debian-2.paytec.ch)
+        by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <martin@kaiser.cx>)
+        id 1nGJO1-0005c9-4w; Sat, 05 Feb 2022 12:37:49 +0100
+From:   Martin Kaiser <martin@kaiser.cx>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Michael Straube <straube.linux@gmail.com>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Martin Kaiser <martin@kaiser.cx>
+Subject: [PATCH 2/8] staging: r8188eu: TXPowerTrackingCallbackCnt is set but not used
+Date:   Sat,  5 Feb 2022 12:37:35 +0100
+Message-Id: <20220205113741.379070-3-martin@kaiser.cx>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220205113741.379070-1-martin@kaiser.cx>
+References: <20220205113741.379070-1-martin@kaiser.cx>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 6/6] dt-bindings: memory: lpddr2-timings: convert to
- dtschema
-Content-Language: en-US
-To:     Dmitry Osipenko <digetx@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org
-References: <20220201114749.88500-1-krzysztof.kozlowski@canonical.com>
- <20220201114749.88500-6-krzysztof.kozlowski@canonical.com>
- <23d38615-6b75-8715-0f83-fc93755a708b@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <23d38615-6b75-8715-0f83-fc93755a708b@gmail.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04/02/2022 20:48, Dmitry Osipenko wrote:
-> 01.02.2022 14:47, Krzysztof Kozlowski пишет:
->> +  tZQCL:
->> +    $ref: /schemas/types.yaml#/definitions/uint32
->> +    description: |
->> +      SELF REFRESH exit to next valid command delay in pico seconds.
->> +
->> +  tZQCS:
->> +    $ref: /schemas/types.yaml#/definitions/uint32
->> +    description: |
->> +      SELF REFRESH exit to next valid command delay in pico seconds.
->> +
->> +  tZQinit:
->> +    $ref: /schemas/types.yaml#/definitions/uint32
->> +    description: |
->> +      SELF REFRESH exit to next valid command delay in pico seconds.
-> 
-> Hm.. these look incorrect.
-> 
-> tZQCL is Long Calibration Time
-> 
-> tZQCS is Short Calibration Time
-> 
-> tZQinit is Initialization Calibration Time
-> 
-> No?
+TXPowerTrackingCallbackCnt in struct odm_rf_cal is set but not used.
+Remove it.
 
-Yes, thanks for spotting these. Copy-paste error.
+Signed-off-by: Martin Kaiser <martin@kaiser.cx>
+---
+ drivers/staging/r8188eu/hal/HalPhyRf_8188e.c | 1 -
+ drivers/staging/r8188eu/include/odm.h        | 1 -
+ 2 files changed, 2 deletions(-)
 
+diff --git a/drivers/staging/r8188eu/hal/HalPhyRf_8188e.c b/drivers/staging/r8188eu/hal/HalPhyRf_8188e.c
+index f0f26eecb2c0..2ce777ac041a 100644
+--- a/drivers/staging/r8188eu/hal/HalPhyRf_8188e.c
++++ b/drivers/staging/r8188eu/hal/HalPhyRf_8188e.c
+@@ -129,7 +129,6 @@ odm_TXPowerTrackingCallback_ThermalMeter_8188E(
+ 	/*  2012/04/25 MH Add for tx power tracking to set tx power in tx agc for 88E. */
+ 	odm_TxPwrTrackSetPwr88E(dm_odm);
+ 
+-	dm_odm->RFCalibrateInfo.TXPowerTrackingCallbackCnt++; /* cosa add for debug */
+ 	dm_odm->RFCalibrateInfo.bTXPowerTrackingInit = true;
+ 
+ 	/*  <Kordan> RFCalibrateInfo.RegA24 will be initialized when ODM HW configuring, but MP configures with para files. */
+diff --git a/drivers/staging/r8188eu/include/odm.h b/drivers/staging/r8188eu/include/odm.h
+index 046a4b9e0899..2844ca96d3ba 100644
+--- a/drivers/staging/r8188eu/include/odm.h
++++ b/drivers/staging/r8188eu/include/odm.h
+@@ -253,7 +253,6 @@ struct odm_rf_cal {
+ 
+ 	bool	bReloadtxpowerindex;
+ 	u8	bRfPiEnable;
+-	u32	TXPowerTrackingCallbackCnt; /* cosa add for debug */
+ 
+ 	u8	bCCKinCH14;
+ 	u8	CCK_index;
+-- 
+2.30.2
 
-Best regards,
-Krzysztof
