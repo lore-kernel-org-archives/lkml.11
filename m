@@ -2,36 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35F6CC433FE
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 18:58:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6589CC433FE
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 18:58:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381627AbiBES60 (ORCPT
+        id S1381984AbiBES63 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 13:58:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46358 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381567AbiBES4R (ORCPT
+        Sat, 5 Feb 2022 13:58:29 -0500
+Received: from relay10.mail.gandi.net ([217.70.178.230]:58575 "EHLO
+        relay10.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1381579AbiBES4V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 13:56:17 -0500
-X-Greylist: delayed 60 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 05 Feb 2022 10:55:48 PST
-Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [IPv6:2001:4b98:dc4:8::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34B5BC0401E9;
-        Sat,  5 Feb 2022 10:55:47 -0800 (PST)
+        Sat, 5 Feb 2022 13:56:21 -0500
 Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 10357240014;
-        Sat,  5 Feb 2022 18:55:44 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 957E924001C;
+        Sat,  5 Feb 2022 18:56:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1644087346;
+        t=1644087380;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=g9KpZea++zbJdYIVtwuD+WheCpBgxH51z/U72tLXku4=;
-        b=CA9MDy0b2K1LeoV8w0EOFv+YfnXfWKwEuRF39yGbtAul7ccGw1+Ba+BS3xykzv7NxTa3+O
-        j8cNf4vfMK8okRJ0AoWeyTEr6NzD2+iaP6a0sOxX7DPdSdmuyi1DmFFRlF5inXb3noQxqm
-        rF4zeCsX+DaaFrsUsOoxbpWY1jrgI7ShffMBJMnzmXOQJGBXeDVpR2PPQhL3Qn9OP39Re0
-        wKdy+lIoBoB//n++33Oje7ugQ6y6UyOZagGdsp4g0BDJzt46Nv7c6wrINRha3+vMh4XmwB
-        4M4f7+Qxyg7yOc8muDJf4VnGpJe237h5Q043ER1ZNPVsytuYcC5EloBeN3zZxA==
+        bh=5luBjbgwR8xInbAp7xEaH/avHqpBe9Vj+954q16ysFc=;
+        b=edS+gwjAQrsobEVDamVq3zkxOhSV3VQ2nQgvsSLEPvKYIohO0ZYUzc+W9Jfq5Tbr/lhomG
+        GWF/17rIpxAmOaWnNQ3Zy1avemgpZWdv8a4SC7NCZryBIx6qbe3CZb0Kcr6nRFEf4j60zE
+        z0kCePiVG6k/Gl66Lw4d4da/aaQNSvHWdNqVP3thKt60iggZUhXZ7E4RDMMuxxR7Rf4HyZ
+        51QcIncC5VwVGEU+//zx8IfEiRglQJzqjab3Y3LOt/lGnUGY1QJyRe/MjSfUYRL+3Spdo3
+        4/2hKf2nsYmG9mvlttQnf1h+y0wAEVWLvGy96zjrGQJyQooQvZZXbGw1r4IPqw==
 From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
 To:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
@@ -50,9 +46,9 @@ Cc:     Yong Deng <yong.deng@magewell.com>,
         Helen Koike <helen.koike@collabora.com>,
         Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: [PATCH v2 39/66] media: sun6i-csi: Rework capture format management with helper
-Date:   Sat,  5 Feb 2022 19:54:02 +0100
-Message-Id: <20220205185429.2278860-40-paul.kocialkowski@bootlin.com>
+Subject: [PATCH v2 59/66] media: sun6i-csi: Add support for hooking to the isp devices
+Date:   Sat,  5 Feb 2022 19:54:22 +0100
+Message-Id: <20220205185429.2278860-60-paul.kocialkowski@bootlin.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com>
 References: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com>
@@ -62,201 +58,320 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove the need for local copies of the v4l2 format and add a common
-helper to prepare a format compatible with the driver, using the
-relevant v4l2 helper.
+In order to use the isp and csi together, both devices need to be
+parented to the same v4l2 and media devices. We use the isp as
+top-level device and let the csi code hook to its v4l2 and media
+devices when async subdev registration takes place.
 
-Also cleanup the size bound defines while at it.
+As a result v4l2/media device setup is only called when the ISP
+is missing and the capture device is registered after the devices
+are hooked. The bridge subdev and its notifier are registered
+without any device when the ISP is available. Top-level pointers
+for the devices are introduced to either redirect to the hooked ones
+(isp available) or the registered ones (isp missing).
+
+Also keep track of whether the capture node was setup or not to
+avoid cleaning up resources when it wasn't.
 
 Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
 ---
- .../sunxi/sun6i-csi/sun6i_csi_capture.c       | 109 +++++++++---------
- .../sunxi/sun6i-csi/sun6i_csi_capture.h       |   5 +
- 2 files changed, 57 insertions(+), 57 deletions(-)
+ .../platform/sunxi/sun6i-csi/sun6i_csi.c      | 55 ++++++++++++++-----
+ .../platform/sunxi/sun6i-csi/sun6i_csi.h      |  7 +++
+ .../sunxi/sun6i-csi/sun6i_csi_bridge.c        | 31 +++++++++--
+ .../sunxi/sun6i-csi/sun6i_csi_capture.c       | 19 ++++++-
+ .../sunxi/sun6i-csi/sun6i_csi_capture.h       |  1 +
+ 5 files changed, 93 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c
-index 23b13b26b580..9c8b33c7e59c 100644
---- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c
-+++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c
-@@ -20,12 +20,6 @@
- #include "sun6i_csi_capture.h"
- #include "sun6i_csi_reg.h"
+diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
+index 70b2a8b95b40..0c635b446fba 100644
+--- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
++++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
+@@ -26,6 +26,18 @@
  
--/* This is got from BSP sources. */
--#define MIN_WIDTH	(32)
--#define MIN_HEIGHT	(32)
--#define MAX_WIDTH	(4800)
--#define MAX_HEIGHT	(4800)
--
- /* Helpers */
+ /* ISP */
  
- void sun6i_csi_capture_dimensions(struct sun6i_csi_device *csi_dev,
-@@ -833,6 +827,46 @@ static const struct vb2_ops sun6i_csi_capture_queue_ops = {
- 
- /* V4L2 Device */
- 
-+static void sun6i_csi_capture_format_prepare(struct v4l2_format *format)
++int sun6i_csi_isp_complete(struct sun6i_csi_device *csi_dev,
++			   struct v4l2_device *v4l2_dev)
 +{
-+	struct v4l2_pix_format *pix_format = &format->fmt.pix;
-+	unsigned int width, height;
++	if (csi_dev->v4l2_dev && csi_dev->v4l2_dev != v4l2_dev)
++		return -EINVAL;
 +
-+	v4l_bound_align_image(&pix_format->width, SUN6I_CSI_CAPTURE_WIDTH_MIN,
-+			      SUN6I_CSI_CAPTURE_WIDTH_MAX, 1,
-+			      &pix_format->height, SUN6I_CSI_CAPTURE_HEIGHT_MIN,
-+			      SUN6I_CSI_CAPTURE_HEIGHT_MAX, 1, 0);
++	csi_dev->v4l2_dev = v4l2_dev;
++	csi_dev->media_dev = v4l2_dev->mdev;
 +
-+	if (!sun6i_csi_capture_format_check(pix_format->pixelformat))
-+		pix_format->pixelformat = sun6i_csi_capture_formats[0];
-+
-+	width = pix_format->width;
-+	height = pix_format->height;
-+
-+	switch (pix_format->pixelformat) {
-+	case V4L2_PIX_FMT_NV12_16L16:
-+		pix_format->bytesperline = width * 12 / 8;
-+		pix_format->sizeimage = pix_format->bytesperline * height;
-+		break;
-+	case V4L2_PIX_FMT_JPEG:
-+		pix_format->bytesperline = width;
-+		pix_format->sizeimage = pix_format->bytesperline * height;
-+		break;
-+	default:
-+		v4l2_fill_pixfmt(pix_format, pix_format->pixelformat,
-+				 width, height);
-+		break;
-+	}
-+
-+	if (pix_format->field == V4L2_FIELD_ANY)
-+		pix_format->field = V4L2_FIELD_NONE;
-+
-+	pix_format->colorspace = V4L2_COLORSPACE_RAW;
-+	pix_format->ycbcr_enc = V4L2_YCBCR_ENC_DEFAULT;
-+	pix_format->quantization = V4L2_QUANTIZATION_DEFAULT;
-+	pix_format->xfer_func = V4L2_XFER_FUNC_DEFAULT;
++	return sun6i_csi_capture_setup(csi_dev);
 +}
 +
- static int sun6i_csi_capture_querycap(struct file *file, void *private,
- 				      struct v4l2_capability *capability)
+ static bool sun6i_csi_isp_detect(struct sun6i_csi_device *csi_dev)
  {
-@@ -864,50 +898,8 @@ static int sun6i_csi_capture_g_fmt(struct file *file, void *private,
- 				   struct v4l2_format *format)
+ 	struct device *dev = csi_dev->dev;
+@@ -64,8 +76,17 @@ static const struct media_device_ops sun6i_csi_media_ops = {
+ int sun6i_csi_v4l2_complete(struct sun6i_csi_device *csi_dev)
  {
- 	struct sun6i_csi_device *csi_dev = video_drvdata(file);
--	struct sun6i_csi_capture *capture = &csi_dev->capture;
+ 	struct v4l2_device *v4l2_dev = &csi_dev->v4l2.v4l2_dev;
++	int ret;
++
++	ret = v4l2_device_register_subdev_nodes(v4l2_dev);
++	if (ret)
++		return ret;
  
--	*format = capture->format;
--
--	return 0;
--}
--
--static int sun6i_csi_capture_format_try(struct sun6i_csi_capture *capture,
--					struct v4l2_format *format)
--{
--	struct v4l2_pix_format *pix_format = &format->fmt.pix;
--	int bpp;
--
--	if (!sun6i_csi_capture_format_check(pix_format->pixelformat))
--		pix_format->pixelformat = sun6i_csi_capture_formats[0];
--
--	v4l_bound_align_image(&pix_format->width, MIN_WIDTH, MAX_WIDTH, 1,
--			      &pix_format->height, MIN_HEIGHT, MAX_WIDTH, 1, 1);
--
--	bpp = sun6i_csi_get_bpp(pix_format->pixelformat);
--	pix_format->bytesperline = (pix_format->width * bpp) >> 3;
--	pix_format->sizeimage = pix_format->bytesperline * pix_format->height;
--
--	if (pix_format->field == V4L2_FIELD_ANY)
--		pix_format->field = V4L2_FIELD_NONE;
--
--	pix_format->colorspace = V4L2_COLORSPACE_RAW;
--	pix_format->ycbcr_enc = V4L2_YCBCR_ENC_DEFAULT;
--	pix_format->quantization = V4L2_QUANTIZATION_DEFAULT;
--	pix_format->xfer_func = V4L2_XFER_FUNC_DEFAULT;
--
--	return 0;
--}
--
--static int sun6i_csi_capture_format_set(struct sun6i_csi_capture *capture,
--					struct v4l2_format *format)
--{
--	int ret;
--
--	ret = sun6i_csi_capture_format_try(capture, format);
+-	return v4l2_device_register_subdev_nodes(v4l2_dev);
++	ret = sun6i_csi_capture_setup(csi_dev);
++	if (ret)
++		return ret;
++
++	return 0;
+ }
+ 
+ static int sun6i_csi_v4l2_setup(struct sun6i_csi_device *csi_dev)
+@@ -113,6 +134,9 @@ static int sun6i_csi_v4l2_setup(struct sun6i_csi_device *csi_dev)
+ 		goto error_v4l2_ctrl;
+ 	}
+ 
++	csi_dev->v4l2_dev = v4l2_dev;
++	csi_dev->media_dev = media_dev;
++
+ 	return 0;
+ 
+ error_v4l2_ctrl:
+@@ -361,25 +385,27 @@ static int sun6i_csi_probe(struct platform_device *platform_dev)
+ 	if (ret)
+ 		goto error_resources;
+ 
+-	ret = sun6i_csi_v4l2_setup(csi_dev);
 -	if (ret)
--		return ret;
+-		goto error_resources;
++	/*
++	 * Register our own v4l2 and media devices when there is no ISP around.
++	 * Otherwise the ISP will use async subdev registration with our bridge,
++	 * which will provide v4l2 and media devices that are used to register
++	 * the video interface.
++	 */
++	if (!csi_dev->isp_available) {
++		ret = sun6i_csi_v4l2_setup(csi_dev);
++		if (ret)
++			goto error_resources;
++	}
+ 
+ 	ret = sun6i_csi_bridge_setup(csi_dev);
+ 	if (ret)
+ 		goto error_v4l2;
+ 
+-	ret = sun6i_csi_capture_setup(csi_dev);
+-	if (ret)
+-		goto error_bridge;
 -
--	capture->format = *format;
-+	*format = csi_dev->capture.format;
+ 	return 0;
+ 
+-error_bridge:
+-	sun6i_csi_bridge_cleanup(csi_dev);
+-
+ error_v4l2:
+-	sun6i_csi_v4l2_cleanup(csi_dev);
++	if (!csi_dev->isp_available)
++		sun6i_csi_v4l2_cleanup(csi_dev);
+ 
+ error_resources:
+ 	sun6i_csi_resources_cleanup(csi_dev);
+@@ -393,7 +419,10 @@ static int sun6i_csi_remove(struct platform_device *pdev)
+ 
+ 	sun6i_csi_capture_cleanup(csi_dev);
+ 	sun6i_csi_bridge_cleanup(csi_dev);
+-	sun6i_csi_v4l2_cleanup(csi_dev);
++
++	if (!csi_dev->isp_available)
++		sun6i_csi_v4l2_cleanup(csi_dev);
++
+ 	sun6i_csi_resources_cleanup(csi_dev);
  
  	return 0;
- }
-@@ -921,16 +913,19 @@ static int sun6i_csi_capture_s_fmt(struct file *file, void *private,
- 	if (vb2_is_busy(&capture->queue))
- 		return -EBUSY;
+diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h
+index 6cdaf98dc295..6f1ea2c55ecd 100644
+--- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h
++++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h
+@@ -38,6 +38,8 @@ struct sun6i_csi_v4l2 {
  
--	return sun6i_csi_capture_format_set(capture, format);
-+	sun6i_csi_capture_format_prepare(format);
+ struct sun6i_csi_device {
+ 	struct device			*dev;
++	struct v4l2_device		*v4l2_dev;
++	struct media_device		*media_dev;
+ 
+ 	struct sun6i_csi_v4l2		v4l2;
+ 	struct sun6i_csi_bridge		bridge;
+@@ -52,6 +54,11 @@ struct sun6i_csi_device {
+ 	bool				isp_available;
+ };
+ 
++/* ISP */
 +
-+	csi_dev->capture.format = *format;
++int sun6i_csi_isp_complete(struct sun6i_csi_device *csi_dev,
++			   struct v4l2_device *v4l2_dev);
 +
-+	return 0;
+ /* V4L2 */
+ 
+ int sun6i_csi_v4l2_complete(struct sun6i_csi_device *csi_dev);
+diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_bridge.c b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_bridge.c
+index 9827486dc3cb..55a632c814b2 100644
+--- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_bridge.c
++++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_bridge.c
+@@ -692,6 +692,16 @@ sun6i_csi_bridge_notifier_bound(struct v4l2_async_notifier *notifier,
+ 
+ 	source->subdev = remote_subdev;
+ 
++	if (csi_dev->isp_available) {
++		/*
++		 * Hook to the first available remote subdev to get v4l2 and
++		 * media devices and register the capture device then.
++		 */
++		ret = sun6i_csi_isp_complete(csi_dev, remote_subdev->v4l2_dev);
++		if (ret)
++			return ret;
++	}
++
+ 	return sun6i_csi_bridge_link(csi_dev, SUN6I_CSI_BRIDGE_PAD_SINK,
+ 				     remote_subdev, enabled);
+ }
+@@ -703,6 +713,9 @@ sun6i_csi_bridge_notifier_complete(struct v4l2_async_notifier *notifier)
+ 		container_of(notifier, struct sun6i_csi_device,
+ 			     bridge.notifier);
+ 
++	if (csi_dev->isp_available)
++		return 0;
++
+ 	return sun6i_csi_v4l2_complete(csi_dev);
  }
  
- static int sun6i_csi_capture_try_fmt(struct file *file, void *private,
- 				     struct v4l2_format *format)
+@@ -772,7 +785,7 @@ int sun6i_csi_bridge_setup(struct sun6i_csi_device *csi_dev)
  {
--	struct sun6i_csi_device *csi_dev = video_drvdata(file);
--	struct sun6i_csi_capture *capture = &csi_dev->capture;
-+	sun6i_csi_capture_format_prepare(format);
+ 	struct device *dev = csi_dev->dev;
+ 	struct sun6i_csi_bridge *bridge = &csi_dev->bridge;
+-	struct v4l2_device *v4l2_dev = &csi_dev->v4l2.v4l2_dev;
++	struct v4l2_device *v4l2_dev = csi_dev->v4l2_dev;
+ 	struct v4l2_subdev *subdev = &bridge->subdev;
+ 	struct v4l2_async_notifier *notifier = &bridge->notifier;
+ 	struct media_pad *pads = bridge->pads;
+@@ -811,7 +824,11 @@ int sun6i_csi_bridge_setup(struct sun6i_csi_device *csi_dev)
  
--	return sun6i_csi_capture_format_try(capture, format);
-+	return 0;
- }
+ 	/* V4L2 Subdev */
  
- static int sun6i_csi_capture_enum_input(struct file *file, void *private,
-@@ -1125,8 +1120,8 @@ int sun6i_csi_capture_setup(struct sun6i_csi_device *csi_dev)
+-	ret = v4l2_device_register_subdev(v4l2_dev, subdev);
++	if (csi_dev->isp_available)
++		ret = v4l2_async_register_subdev(subdev);
++	else
++		ret = v4l2_device_register_subdev(v4l2_dev, subdev);
++
+ 	if (ret) {
+ 		dev_err(dev, "failed to register v4l2 subdev: %d\n", ret);
+ 		goto error_media_entity;
+@@ -828,7 +845,10 @@ int sun6i_csi_bridge_setup(struct sun6i_csi_device *csi_dev)
+ 	sun6i_csi_bridge_source_setup(csi_dev, &bridge->source_mipi_csi2,
+ 				      SUN6I_CSI_PORT_MIPI_CSI2, NULL);
+ 
+-	ret = v4l2_async_nf_register(v4l2_dev, notifier);
++	if (csi_dev->isp_available)
++		ret = v4l2_async_subdev_nf_register(subdev, notifier);
++	else
++		ret = v4l2_async_nf_register(v4l2_dev, notifier);
+ 	if (ret) {
+ 		dev_err(dev, "failed to register v4l2 async notifier: %d\n",
+ 			ret);
+@@ -840,7 +860,10 @@ int sun6i_csi_bridge_setup(struct sun6i_csi_device *csi_dev)
+ error_v4l2_async_notifier:
+ 	v4l2_async_nf_cleanup(notifier);
+ 
+-	v4l2_device_unregister_subdev(subdev);
++	if (csi_dev->isp_available)
++		v4l2_async_unregister_subdev(subdev);
++	else
++		v4l2_device_unregister_subdev(subdev);
+ 
+ error_media_entity:
+ 	media_entity_cleanup(&subdev->entity);
+diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c
+index f6dac15af675..2ad38277633f 100644
+--- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c
++++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c
+@@ -570,7 +570,7 @@ static int sun6i_csi_capture_buffer_prepare(struct vb2_buffer *buffer)
+ {
+ 	struct sun6i_csi_device *csi_dev = vb2_get_drv_priv(buffer->vb2_queue);
+ 	struct sun6i_csi_capture *capture = &csi_dev->capture;
+-	struct v4l2_device *v4l2_dev = &csi_dev->v4l2.v4l2_dev;
++	struct v4l2_device *v4l2_dev = csi_dev->v4l2_dev;
+ 	struct vb2_v4l2_buffer *v4l2_buffer = to_vb2_v4l2_buffer(buffer);
+ 	unsigned long size = capture->format.fmt.pix.sizeimage;
+ 
+@@ -886,7 +886,7 @@ static int sun6i_csi_capture_link_validate(struct media_link *link)
+ 	struct video_device *video_dev =
+ 		media_entity_to_video_device(link->sink->entity);
+ 	struct sun6i_csi_device *csi_dev = video_get_drvdata(video_dev);
+-	struct v4l2_device *v4l2_dev = &csi_dev->v4l2.v4l2_dev;
++	struct v4l2_device *v4l2_dev = csi_dev->v4l2_dev;
+ 	const struct sun6i_csi_capture_format *capture_format;
+ 	const struct sun6i_csi_bridge_format *bridge_format;
+ 	unsigned int capture_width, capture_height;
+@@ -968,7 +968,7 @@ int sun6i_csi_capture_setup(struct sun6i_csi_device *csi_dev)
+ {
+ 	struct sun6i_csi_capture *capture = &csi_dev->capture;
+ 	struct sun6i_csi_capture_state *state = &capture->state;
+-	struct v4l2_device *v4l2_dev = &csi_dev->v4l2.v4l2_dev;
++	struct v4l2_device *v4l2_dev = csi_dev->v4l2_dev;
+ 	struct v4l2_subdev *bridge_subdev = &csi_dev->bridge.subdev;
  	struct video_device *video_dev = &capture->video_dev;
  	struct vb2_queue *queue = &capture->queue;
- 	struct media_pad *pad = &capture->pad;
--	struct v4l2_format format = { 0 };
--	struct v4l2_pix_format *pix_format = &format.fmt.pix;
-+	struct v4l2_format *format = &csi_dev->capture.format;
-+	struct v4l2_pix_format *pix_format = &format->fmt.pix;
+@@ -977,6 +977,10 @@ int sun6i_csi_capture_setup(struct sun6i_csi_device *csi_dev)
+ 	struct v4l2_pix_format *pix_format = &format->fmt.pix;
  	int ret;
  
++	/* This may happen with multiple bridge notifier bound calls. */
++	if (state->setup)
++		return 0;
++
  	/* State */
-@@ -1169,13 +1164,13 @@ int sun6i_csi_capture_setup(struct sun6i_csi_device *csi_dev)
  
- 	/* V4L2 Format */
+ 	INIT_LIST_HEAD(&state->queue);
+@@ -1055,6 +1059,7 @@ int sun6i_csi_capture_setup(struct sun6i_csi_device *csi_dev)
+ 	ret = media_create_pad_link(&bridge_subdev->entity,
+ 				    SUN6I_CSI_BRIDGE_PAD_SOURCE,
+ 				    &video_dev->entity, 0,
++				    csi_dev->isp_available ? 0 :
+ 				    MEDIA_LNK_FL_ENABLED |
+ 				    MEDIA_LNK_FL_IMMUTABLE);
+ 	if (ret < 0) {
+@@ -1065,6 +1070,8 @@ int sun6i_csi_capture_setup(struct sun6i_csi_device *csi_dev)
+ 		goto error_video_device;
+ 	}
  
--	format.type = queue->type;
-+	format->type = queue->type;
- 	pix_format->pixelformat = sun6i_csi_capture_formats[0];
- 	pix_format->width = 1280;
- 	pix_format->height = 720;
- 	pix_format->field = V4L2_FIELD_NONE;
++	state->setup = true;
++
+ 	return 0;
  
--	sun6i_csi_capture_format_set(capture, &format);
-+	sun6i_csi_capture_format_prepare(format);
+ error_video_device:
+@@ -1083,7 +1090,13 @@ void sun6i_csi_capture_cleanup(struct sun6i_csi_device *csi_dev)
+ 	struct sun6i_csi_capture *capture = &csi_dev->capture;
+ 	struct video_device *video_dev = &capture->video_dev;
  
- 	/* Video Device */
- 
++	/* This may happen if async registration failed to complete. */
++	if (!capture->state.setup)
++		return;
++
+ 	vb2_video_unregister_device(video_dev);
+ 	media_entity_cleanup(&video_dev->entity);
+ 	mutex_destroy(&capture->lock);
++
++	capture->state.setup = false;
+ }
 diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.h b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.h
-index 935f35b7049a..02bdf45f7ca5 100644
+index 29893cf96f6b..3ee5ccefbd10 100644
 --- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.h
 +++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.h
-@@ -11,6 +11,11 @@
- #include <media/v4l2-dev.h>
- #include <media/videobuf2-core.h>
+@@ -45,6 +45,7 @@ struct sun6i_csi_capture_state {
  
-+#define SUN6I_CSI_CAPTURE_WIDTH_MIN	32
-+#define SUN6I_CSI_CAPTURE_WIDTH_MAX	4800
-+#define SUN6I_CSI_CAPTURE_HEIGHT_MIN	32
-+#define SUN6I_CSI_CAPTURE_HEIGHT_MAX	4800
-+
- struct sun6i_csi_device;
+ 	unsigned int			sequence;
+ 	bool				streaming;
++	bool				setup;
+ };
  
- #undef current
+ struct sun6i_csi_capture {
 -- 
 2.34.1
 
