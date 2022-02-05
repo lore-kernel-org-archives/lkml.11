@@ -2,89 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B143C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 23:35:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 127D8C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 23:46:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381453AbiBEXfS (ORCPT
+        id S1381471AbiBEXqO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 18:35:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57444 "EHLO
+        Sat, 5 Feb 2022 18:46:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229454AbiBEXfQ (ORCPT
+        with ESMTP id S229454AbiBEXqM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 18:35:16 -0500
-X-Greylist: delayed 308 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 05 Feb 2022 15:35:14 PST
-Received: from hera.aquilenet.fr (hera.aquilenet.fr [IPv6:2a0c:e300::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A125DC061348
-        for <linux-kernel@vger.kernel.org>; Sat,  5 Feb 2022 15:35:14 -0800 (PST)
-Received: from localhost (localhost [127.0.0.1])
-        by hera.aquilenet.fr (Postfix) with ESMTP id 54ADB1F7;
-        Sun,  6 Feb 2022 00:30:00 +0100 (CET)
-X-Virus-Scanned: Debian amavisd-new at aquilenet.fr
-Received: from hera.aquilenet.fr ([127.0.0.1])
-        by localhost (hera.aquilenet.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 2xG9pPbeLRYL; Sun,  6 Feb 2022 00:29:59 +0100 (CET)
-Received: from begin (unknown [IPv6:2a01:cb19:956:1b00:de41:a9ff:fe47:ec49])
-        by hera.aquilenet.fr (Postfix) with ESMTPSA id 34512171;
-        Sun,  6 Feb 2022 00:29:59 +0100 (CET)
-Received: from samy by begin with local (Exim 4.95)
-        (envelope-from <samuel.thibault@ens-lyon.org>)
-        id 1nGUVB-00HZhK-PH;
-        Sun, 06 Feb 2022 00:29:57 +0100
-Date:   Sun, 6 Feb 2022 00:29:57 +0100
-From:   Samuel Thibault <samuel.thibault@ens-lyon.org>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-kernel@vger.kernel.org, speakup@linux-speakup.org
-Subject: [PATCH] [speakup] Allow lower values for the flush parameter
-Message-ID: <20220205232957.bc6o6yyt5hitg754@begin>
-Mail-Followup-To: Samuel Thibault <samuel.thibault@ens-lyon.org>,
-        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
-        speakup@linux-speakup.org
+        Sat, 5 Feb 2022 18:46:12 -0500
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8B41C061348;
+        Sat,  5 Feb 2022 15:46:11 -0800 (PST)
+Received: by mail-wr1-x434.google.com with SMTP id v19so3236253wrv.6;
+        Sat, 05 Feb 2022 15:46:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=67amdkFUWuBIO08FKhiKfYXgae2z4MWbXEmfuMC+Qms=;
+        b=hKd4wQxWYrhyf+D1JwRfBmwl31Li6YTh8CeanNmEuYWH1jA5xkX1btXPhrnlZ+TNF3
+         jncAg39V9i9/r0zLLyAzyVCUTWNAAnLLUwMIWCrmUcoE7a+lk19X7KaxQONts2+XS7Q4
+         1BItkXSo/QmXqPmr1m0r8+/UnIObs2fTrXD9tmbK6qFzRPU5tMNh44A/bpsFwbiIoawi
+         SnAyAbmARi3VFG9wxCFtbkxmKszVdcK9xD4Ka1XI+cn/tU5BM7eC25m1PPTWhS0W0BGs
+         QauHvlK7GWcHemrbdZssXSRvCllMvcufR3X/gLlKR+29do9N7CSOlISIPCC7bg3Dkr0o
+         +stQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=67amdkFUWuBIO08FKhiKfYXgae2z4MWbXEmfuMC+Qms=;
+        b=Gxmz2UHUH7i2qkzW1gioHsnRdUVIhc1iwtllZrPWCWlW/er8axdl45wHoBM9hNJ27T
+         eS8olHAYV2dsTAD6Bd8emYL1YGSXrkd1zAF6CWPegdTTZyOx5Gxv5ts+Sm0GguSPmJr3
+         /TyW5jAuGtWtT6pJtYhw8BxRf7A+Tl78FIFr4NbS+RPzc24uBF3ZgCFQ996zGiSKOs6F
+         hpdAE9kf8ATNw9dHMAtJ8WzBtjJGUS+qv5HeH/K4nknXLCVOvzYES+vLSOZ243tDc5nQ
+         rXzRCs1aHrX4ehP8oDls+AqbR13k5/xsgLsAEC1dHho8/0Wn2xA69CpB1cRtzk/dfan2
+         1p8w==
+X-Gm-Message-State: AOAM530IjAgFjJ8yXsUAhidXezPXcRf2Y7kEWVj1vo5dsafU6vaoQVX2
+        yGXxBoRZMhHdJqDgvKlBODc=
+X-Google-Smtp-Source: ABdhPJzy8C11TxTT6dFAauGMg+9yI6/z23grQTnVgtPIhn4CY4AWhnII3nZsbSeEJBS2VbCqfqRx+g==
+X-Received: by 2002:a05:6000:178b:: with SMTP id e11mr4513123wrg.634.1644104770317;
+        Sat, 05 Feb 2022 15:46:10 -0800 (PST)
+Received: from localhost.localdomain (cpc92882-cmbg20-2-0-cust452.5-4.cable.virginm.net. [86.31.103.197])
+        by smtp.gmail.com with ESMTPSA id t14sm13644588wmq.43.2022.02.05.15.46.09
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Sat, 05 Feb 2022 15:46:10 -0800 (PST)
+From:   Benjamin Mordaunt <crawford.benjamin15@gmail.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     Benjamin Mordaunt <crawford.benjamin15@gmail.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] add pmu to amlogic meson sm1
+Date:   Sat,  5 Feb 2022 23:45:54 +0000
+Message-Id: <20220205234554.4403-1-crawford.benjamin15@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Organization: I am not organized
-User-Agent: NeoMutt/20170609 (1.8.3)
-X-Spamd-Bar: /
-Authentication-Results: hera.aquilenet.fr;
-        none
-X-Rspamd-Server: hera
-X-Rspamd-Queue-Id: 54ADB1F7
-X-Spamd-Result: default: False [0.40 / 15.00];
-         ARC_NA(0.00)[];
-         RCVD_VIA_SMTP_AUTH(0.00)[];
-         FROM_HAS_DN(0.00)[];
-         RCPT_COUNT_THREE(0.00)[3];
-         TO_MATCH_ENVRCPT_ALL(0.00)[];
-         MIME_GOOD(-0.10)[text/plain];
-         TO_DN_NONE(0.00)[];
-         HAS_ORG_HEADER(0.00)[];
-         RCVD_COUNT_THREE(0.00)[3];
-         FROM_EQ_ENVFROM(0.00)[];
-         MIME_TRACE(0.00)[0:+];
-         RCVD_TLS_LAST(0.00)[];
-         MID_RHS_NOT_FQDN(0.50)[]
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Users needing it with the dectlk synth report that a 100ms flush delay
-is still noticeable and prefer to set it to e.g. 10ms. This leaves the
-default to 4000ms (since hitting it is a sign that the cable is faulty
-and should be replaced), but allows to set it as short as 10ms.
+---
+ arch/arm64/boot/dts/amlogic/meson-sm1.dtsi | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
-Signed-off-by: Samuel Thibault <samuel.thibault@ens-lyon.org>
-
-diff --git a/drivers/accessibility/speakup/synth.c b/drivers/accessibility/speakup/synth.c
-index 2b8699673bac..eea2a2fa4f01 100644
---- a/drivers/accessibility/speakup/synth.c
-+++ b/drivers/accessibility/speakup/synth.c
-@@ -348,7 +348,7 @@ struct var_t synth_time_vars[] = {
- 	{ TRIGGER, .u.n = {NULL, 20, 10, 2000, 0, 0, NULL } },
- 	{ JIFFY, .u.n = {NULL, 50, 20, 200, 0, 0, NULL } },
- 	{ FULL, .u.n = {NULL, 400, 200, 60000, 0, 0, NULL } },
--	{ FLUSH, .u.n = {NULL, 4000, 100, 4000, 0, 0, NULL } },
-+	{ FLUSH, .u.n = {NULL, 4000, 10, 4000, 0, 0, NULL } },
- 	V_LAST_VAR
- };
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi b/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
+index 3d8b1f4f2..4147eecd2 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
+@@ -6,6 +6,8 @@
  
+ #include "meson-g12-common.dtsi"
+ #include <dt-bindings/clock/axg-audio-clkc.h>
++#include <dt-bindings/interrupt-controller/irq.h>
++#include <dt-bindings/interrupt-controller/arm-gic.h>
+ #include <dt-bindings/power/meson-sm1-power.h>
+ #include <dt-bindings/reset/amlogic,meson-axg-audio-arb.h>
+ #include <dt-bindings/reset/amlogic,meson-g12a-audio-reset.h>
+@@ -90,7 +92,16 @@ l2: l2-cache0 {
+ 			compatible = "cache";
+ 		};
+ 	};
+-
++	
++	arm-pmu {
++		compatible = "arm,cortex-a55-pmu";
++		interrupts = <GIC_SPI 137 IRQ_TYPE_LEVEL_HIGH>,
++			     <GIC_SPI 138 IRQ_TYPE_LEVEL_HIGH>,
++			     <GIC_SPI 153 IRQ_TYPE_LEVEL_HIGH>,
++			     <GIC_SPI 154 IRQ_TYPE_LEVEL_HIGH>;
++		interrupt-affinity = <&cpu0>, <&cpu1>, <&cpu2>, <&cpu3>;
++	};
++	
+ 	cpu_opp_table: opp-table {
+ 		compatible = "operating-points-v2";
+ 		opp-shared;
+-- 
+2.34.1
+
