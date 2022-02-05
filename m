@@ -2,114 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DDF4C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 10:36:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BB82C43217
+	for <linux-kernel@archiver.kernel.org>; Sat,  5 Feb 2022 10:36:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379741AbiBEKg4 (ORCPT
+        id S1379753AbiBEKg6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 5 Feb 2022 05:36:56 -0500
-Received: from mout.gmx.net ([212.227.15.18]:59435 "EHLO mout.gmx.net"
+        Sat, 5 Feb 2022 05:36:58 -0500
+Received: from mout.gmx.net ([212.227.17.20]:59957 "EHLO mout.gmx.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1379703AbiBEKgv (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 5 Feb 2022 05:36:51 -0500
+        id S1379716AbiBEKgw (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sat, 5 Feb 2022 05:36:52 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1644057395;
-        bh=3hZ576UTl3/lTq+uXDRzn9J611V/XEzqawADOC1QOxE=;
+        s=badeba3b8450; t=1644057403;
+        bh=xpHPe4wIR1exAc1cF2StueHrTXV82PgtaxfrH2HYC4o=;
         h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=lfQ2S/lUVhYnB0SrSbEUooYGCzSV9SmLiP+0K3rlclLiDG3Y93oAU7r4TWQEKHBzc
-         P6aDjtGT0ONnQDrYJOgmEo25SLYc7XcoHxq9jicDuS9bafYQgrTwJP3KMB3p+KDJ5p
-         nBTPWNDRbWHMExVzHEd+wQMx9qStsYatnfZr4wTQ=
+        b=F1hcHNjBPdOpVMhHX4PX1sAeqOyqXU9N+j7+o9mtjqiyY/XlK9xY+7wG5kcX+CQx6
+         /1o1YHFzv1DnCRzlA1qzSKoQAiK6jjRUG7xhsDzP/nPd1mCWwPpnBNvIdT6adUANza
+         e9fhGgWsU//vRKXUpFwCgvw7WBm/bgjXkw/78Uks=
 X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from longitude ([5.146.194.160]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MIdiZ-1n2IBr3nAT-00Ebbo; Sat, 05
- Feb 2022 11:36:35 +0100
+Received: from longitude ([5.146.194.160]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MDQeU-1n5spZ3CXG-00AUFw; Sat, 05
+ Feb 2022 11:36:43 +0100
 From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
 To:     linux-clk@vger.kernel.org
 Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        kernel test robot <lkp@intel.com>,
         Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Joachim Eastwood <manabian@gmail.com>
-Subject: [PATCH v2 1/7] clk: nxp: Remove unused variable
-Date:   Sat,  5 Feb 2022 11:36:07 +0100
-Message-Id: <20220205103613.1216218-2-j.neuschaefer@gmx.net>
+        Stephen Boyd <sboyd@kernel.org>
+Subject: [PATCH v2 5/7] clk: mmp: Declare mux tables as const u32[]
+Date:   Sat,  5 Feb 2022 11:36:11 +0100
+Message-Id: <20220205103613.1216218-6-j.neuschaefer@gmx.net>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220205103613.1216218-1-j.neuschaefer@gmx.net>
 References: <20220205103613.1216218-1-j.neuschaefer@gmx.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:q6a4fF67vwV9Q2gA4ypPC6NgQDlJQUlmeAr9vKgZCkZuqBEySG2
- 2ofC6Tkp4doIVDc6chHBxl1+2bcpp2Ut7kRfNOKj7AvLc2y/ntflmq58yay2npkRurLR4pc
- QjWyVukMyWreSL3A0hw18bSFrPvqkk13c5w+0is7GXgtLN/dIgMUPnoSTZTLpvPkqJgXf54
- fly8BWQOHGGypjV8VxB4g==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:4G9LrCCCF/w=:gWZbduS6zWFfd6ebgvcF/M
- 4qnuWJ2a/sg7nhNLMzxxPyRc6K6LLJ9dmEQzO5YytyPLYhfhOmXMFZdFjqAAPs1ZL9aCWNox3
- ky1ie+KMmYt1MvlyVH3rc8yOdfWToU0b2PfPHgBPNzFd4hIt3YgMOVddpFIbxaeBcat5yNe7R
- iMpkf/3lNgnfu+u+cLhWEb1BGAS5a86wUOkqzKOivfb43BEQUm0ubyulAl6oOBXX62Mj9P5Et
- cSL5IFWDUeruzQNMTbWIsVPtBh9SeOcaYIz8HyQJZZT+bBoj2a11o+FRgk/JH9ABLDFFbf01l
- WbIg7OCc0LUdFrF2DihU6MdISaoJwjAucqmQn4hvvvEbWxDF520wN3WaJ47utLpdsCcVk29IY
- Qpivs0nXxobg61Sz2M6jM0lW4d/JlfOwQewLqaQIRmUzlC6E/86ijAZ1H22158YR2P11whBOy
- BkzXnHIRk/cAmEeAn98PaGjpPDlkvLPFKkmfsOsrC0DEo3RtrzWMfR2XZpeTl6Rtly5iLYcHt
- VhDR1SKG3FBVdjizJgvc4XMAX7OmiBlJV+Uk3ryi5rPsWLBiBBFnPF6LTSMrRCo+kD3R9YnUu
- L18Pmycj6BPe/RdZR7TXumYpwMUy+AeRwfAjTpSixrihgNiZ7jTm2qQo8fPIXTfSn4dXQNux/
- at5He9OZEbovl3j7wUjVesOlrgBOT6DJUWOj6S+TVs6Ky9V8dRJjVwLjCDNSTo4Y5siXl3+WP
- 3BJOdYsDtbiELym1FRfS1TYxYcP0ulUmP7WqJLkjtQYzrHvbPvnAhX5Y+pNF906tm2Ik4U3bS
- sX9xdkyEE/ttloZKK9WLFzk+IcoZ8A29QUHNtRwILQrEievTdov8zvhIa4TmIxl8RUru51xTy
- GJLUhlwdhmz2kjDCqLCV0q02wYwK/Q0uyy/Se1RQzne5nncPPeydpiF2PcebqSic8HJebn+Io
- AHJBVyIskHzOBuWsOzb/xPttirz/LYr6AEyPLODFcL+nctHV5JmKIjUB3FwXHNFetfRpoqp56
- aXFGKEcQ/r5Sc2raktEfDP6si4quW6B0KMyTM6lyZiOF+8cLi0hw+rlkJ87FgJBURYP0rbb4G
- jBdv6b/kOJAr0o=
+X-Provags-ID: V03:K1:484u0cPlgTTPxmQUrE6UBAsd2xifETbVQ4jDXYSG2AA02TcLyJV
+ Z/q57Lt5jzmjAdkR2wbfEQkUM9S64enKizCYuqklwVK/0dNMPL4S0qR5DSJ1OcQDjTWLaAU
+ v+0DzGcQeZnvuJxJv2G99RLlE+3BPV1rv+4CD9akUp+84V7wuT3VM+zpC4UNWUs4TFJXUdj
+ ToD2UjzJ5L09A2Ty1Qr0Q==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:ETKSHt9upWg=:8XbqSvp38n2FkdeyGwyqZD
+ zKmIRWZfBP0x47TbvBruXGep7rUYFPeC4pbc17AKPja39KK4SxupERoF6xZooLulqX0iiCbnl
+ 6DIVtQMoUyY+VH3Fl1TVJAwEyeSfGx3HKFffSESTb+SJcl3XpGdCQmXLGHlGFhZt12KSPoRX8
+ 82lLwkAkYnDzbTdeC4Km2Qp8EGSbNwNxqkzDvhbA9ZAdExgeEV2eGZfQ2KyJiHmL/epDFzGIM
+ VUCf2Kh5q6s0S3oyXggmzV+Fi77qIpNNfm7ZYfeeF5e5aTI7fdOYvSmgnx/HcxzEY3Rp8rDm9
+ fc4sCGgNet30yfHKT3rFzvYBcMISd2X/Go5R5q50aBM5pMmyc87p7ioQgKCAxvAd5dkNAFeTx
+ 6RI87k+MBX9Km/insGWkQMUn4iNoEsQPh9XV9zBkRUsAJB4qlhNjvLTtDYC4H57zDvS6R9mW0
+ buPClkgkF+sGXUL/m+C1Zg/Sl7Z95yllRFQDJU9AR232upO0gv4NMAS5ROATMCPNo6DsshWC4
+ VrhBof7E6fxjeV/CKFsojOBF5TIyV/T5Hx+QB1KyiHzz3eo3KVP4QWSjy/lVF2Jl7hyScKmCs
+ n9fwVi3a7ghv2gtPBM6NyaE0aSeUFsimK8ZpShhM09aZjfUN1PHzIbdE+Gfu6LA28dM2GQW71
+ b7iEY0/vZUFw/ftpZS4t9CoYRFfX7C+PIPllhECmZeeeKB6w3UmgoW3kcGiW89LShrnFFSjwy
+ 26JOqX14Qy9qyhuW/HRWDtaUMbJjDqYeX04SbxUM+C02XgJFOCSFFys2S5gh32AXrSoGvBMfh
+ jlvAvtR5q77D36PL453WlNYLuEPV2cczfvWqsf88C/OxXFv118X0bNGi2JIGC+wSejLM+jN2j
+ DcwpSAvefsBNrOT4HBYfaXAlCDd8nNlkufQ/nV/huDRccM4mhUV2f/ZlZPGxChuS6maB0+EtZ
+ xGik6iahSTO39XvRSqoU6AYg46I86rf+T+QcoaObX/JAcVCGXMok9Mr3k9dbBU3gpQPszpIUE
+ IuoIAXTNSrG5U91PePH+PU4F7Gu2EG5W5MzKhSmMG91SJR+nhGzCGtfkdfk3DcK7+Tu7pfWuy
+ vbCCcpDyU9Nr6Q=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-GCC warns:
+Now that clk_register_mux_table takes a const u32 *, we can declare the
+mux tables as const u32[].
 
-> ../drivers/clk/nxp/clk-lpc18xx-cgu.c: In function =E2=80=98lpc18xx_pll1_=
-recalc_rate=E2=80=99:
-> ../drivers/clk/nxp/clk-lpc18xx-cgu.c:460:13: warning: variable =E2=80=98=
-stat=E2=80=99 set but not used [-Wunused-but-set-variable]
->   460 |         u32 stat, ctrl;
->       |             ^~~~
-
-Get rid of the (apparently) useless read from the PLL1_STAT register and
-the declaration of stat.
-
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: b04e0b8fd5443 ("clk: add lpc18xx cgu clk driver")
 Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
 =2D--
 
-If the register read is actually useful because of a side-effect, please
-speak up.
-
-
 v2:
-- New patch to address this warning
+- no changes
 =2D--
- drivers/clk/nxp/clk-lpc18xx-cgu.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/clk/mmp/clk-of-mmp2.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/clk/nxp/clk-lpc18xx-cgu.c b/drivers/clk/nxp/clk-lpc18=
-xx-cgu.c
-index 8b686da5577b3..349eebf69ed93 100644
-=2D-- a/drivers/clk/nxp/clk-lpc18xx-cgu.c
-+++ b/drivers/clk/nxp/clk-lpc18xx-cgu.c
-@@ -457,9 +457,8 @@ static unsigned long lpc18xx_pll1_recalc_rate(struct c=
-lk_hw *hw,
- 	struct lpc18xx_pll *pll =3D to_lpc_pll(hw);
- 	u16 msel, nsel, psel;
- 	bool direct, fbsel;
--	u32 stat, ctrl;
-+	u32 ctrl;
+diff --git a/drivers/clk/mmp/clk-of-mmp2.c b/drivers/clk/mmp/clk-of-mmp2.c
+index 0839fb2049e94..50a780274ba0c 100644
+=2D-- a/drivers/clk/mmp/clk-of-mmp2.c
++++ b/drivers/clk/mmp/clk-of-mmp2.c
+@@ -317,9 +317,9 @@ static const char * const ccic_parent_names[] =3D {"pl=
+l1_2", "pll1_16", "vctcxo"};
 
--	stat =3D readl(pll->reg + LPC18XX_CGU_PLL1_STAT);
- 	ctrl =3D readl(pll->reg + LPC18XX_CGU_PLL1_CTRL);
+ static DEFINE_SPINLOCK(gpu_lock);
+ static const char * const mmp2_gpu_gc_parent_names[] =3D  {"pll1_2", "pll=
+1_3", "pll2_2", "pll2_3", "pll2", "usb_pll"};
+-static u32 mmp2_gpu_gc_parent_table[] =3D          { 0x0000,   0x0040,   =
+0x0080,   0x00c0,   0x1000, 0x1040   };
++static const u32 mmp2_gpu_gc_parent_table[] =3D { 0x0000,   0x0040,   0x0=
+080,   0x00c0,   0x1000, 0x1040   };
+ static const char * const mmp2_gpu_bus_parent_names[] =3D {"pll1_4", "pll=
+2",   "pll2_2", "usb_pll"};
+-static u32 mmp2_gpu_bus_parent_table[] =3D         { 0x0000,   0x0020,   =
+0x0030,   0x4020   };
++static const u32 mmp2_gpu_bus_parent_table[] =3D { 0x0000,   0x0020,   0x=
+0030,   0x4020   };
+ static const char * const mmp3_gpu_bus_parent_names[] =3D {"pll1_4", "pll=
+1_6", "pll1_2", "pll2_2"};
+ static const char * const mmp3_gpu_gc_parent_names[] =3D  {"pll1",   "pll=
+2",   "pll1_p", "pll2_p"};
 
- 	direct =3D (ctrl & LPC18XX_PLL1_CTRL_DIRECT) ? true : false;
 =2D-
 2.34.1
 
