@@ -2,65 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A0DDC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 14:06:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED7D6C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 14:10:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240685AbiBFOGb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Feb 2022 09:06:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56326 "EHLO
+        id S241584AbiBFOKM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 6 Feb 2022 09:10:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236926AbiBFOG3 (ORCPT
+        with ESMTP id S236926AbiBFOKL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 09:06:29 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F393FC06173B
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 06:06:28 -0800 (PST)
+        Sun, 6 Feb 2022 09:10:11 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F15D5C06173B;
+        Sun,  6 Feb 2022 06:10:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
         References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
         Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=/ZKh7PGdl0Uet/UFu2VVQowIubV7FncomByUr8ikUOw=; b=SCE6xtScNRFKrj0XcK/YdXdmvC
-        pBNowuinYTnoGZyETIxdCdLn7VG2/fRnDUYJ9EliHTOEum3cwZfDjO7qyHUhMKfE+hZ+b9k0PnsSd
-        2bRjJm5va6VCxtPNxqsb3P7HvNyOvZmwp28XuAgJWVDfs1OkZxHykif/cHan8WBB3tFPyyBQ5ZxIw
-        FCJuziS6AgZlH1rBiu2ffz81kq89gtY5tmlxPaY2vgX06EZsMAtSKrzo61UZZROVQt5wLt14rhFsk
-        NiqfgxLwLfyPi6DhbhGJOWg1pNMUZyrmp4VdB3d6WSjCjMEsgAi+iC6wfPjUv0d176D4aF5j98pnH
-        NiJpNDoA==;
+        bh=mI67syAIUWTfJyg9FU9W87lE6c5yK7WTkN3mqQzAN9Y=; b=O4BQMPvZRrJIH4kASoGMJquIrP
+        riojtP8gxpL8XWi0yxHkhbLGFMf2w5ZCosCclSbpg9Bln941ZmsmqpSY7t2chYHIl/yFaWIGG8Ljc
+        iXbQTjJN4TROZ+tV7p1LJaS+rLhD750l774ftlz/XsUFZMpHAuHEAsuaEntcqWQIPupmFUNVaAfuv
+        hfWxcma3LaVO9kY0XLYi32qaqXKw4aAsikUE1mQXM2s4QC2A4E4Y4gSkRDamYhAS/tlWNHTNt+bd6
+        wD5Mx2LSCmDVX96LfypR4/1yDfM5B0wNQ1n3oolOnP/qjvV2X30sIbQUghjqxEsstLUHoKu94NYt8
+        5L3b8ChA==;
 Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nGiBM-007RDK-Nn; Sun, 06 Feb 2022 14:06:24 +0000
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nGiEw-00EKdv-SD; Sun, 06 Feb 2022 14:10:06 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id D3BFC3002C3;
-        Sun,  6 Feb 2022 15:06:21 +0100 (CET)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 2EEF8300470;
+        Sun,  6 Feb 2022 15:10:06 +0100 (CET)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id ACCE12CA510C0; Sun,  6 Feb 2022 15:06:21 +0100 (CET)
-Date:   Sun, 6 Feb 2022 15:06:21 +0100
+        id 154F02CA510BA; Sun,  6 Feb 2022 15:10:06 +0100 (CET)
+Date:   Sun, 6 Feb 2022 15:10:06 +0100
 From:   Peter Zijlstra <peterz@infradead.org>
-To:     Mark Rutland <mark.rutland@arm.com>
-Cc:     Boqun Feng <boqun.feng@gmail.com>, linux-kernel@vger.kernel.org,
-        ardb@kernel.org, arnd@arndb.de, will@kernel.org
-Subject: Re: [PATCH v2] atomics: fix atomic64_{read_acquire,set_release}
- fallbacks
-Message-ID: <Yf/V3dlRIDxS9hWu@hirez.programming.kicks-ass.net>
-References: <20220203161243.3955547-1-mark.rutland@arm.com>
- <YfxxSX3v6nSJ0tKo@tardis>
- <Yf0K8oxan1NvjKmE@FVFF77S0Q05N>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        seanjc@google.com
+Subject: Re: [PATCH 5/5] KVM: x86: allow defining return-0 static calls
+Message-ID: <Yf/WvmqxzBDVTTSm@hirez.programming.kicks-ass.net>
+References: <20220202181813.1103496-1-pbonzini@redhat.com>
+ <20220202181813.1103496-6-pbonzini@redhat.com>
+ <745fc750-cd52-af1e-4e5e-0644ff3be007@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Yf0K8oxan1NvjKmE@FVFF77S0Q05N>
+In-Reply-To: <745fc750-cd52-af1e-4e5e-0644ff3be007@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 04, 2022 at 11:16:02AM +0000, Mark Rutland wrote:
-> Sure; how about I add the following to the commit message:
+On Thu, Feb 03, 2022 at 07:40:25PM +0100, Paolo Bonzini wrote:
+> On 2/2/22 19:18, Paolo Bonzini wrote:
+> > A few vendor callbacks are only used by VMX, but they return an integer
+> > or bool value.  Introduce KVM_X86_OP_RET0 for them: a NULL value in
+> > struct kvm_x86_ops will be changed to __static_call_return0.
 > 
-> | Since the fallback templates are used to generate the atomic64_*() and
-> | atomic_*() operations, the __native_word() check is added to both. For
-> | the atomic_*() operations, which are always 32-bit, the __native_word()
-> | check is redundant but not harmful, as it is always true.
+> This also needs EXPORT_SYMBOL_GPL(__static_call_ret0).  Peter, any
+> objections?
 
-Thanks!
+__static_call_return0 I suppose, but no. Go ahead.
