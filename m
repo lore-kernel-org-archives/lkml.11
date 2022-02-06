@@ -2,80 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C918AC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 14:23:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0517C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 14:29:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241739AbiBFOXs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Feb 2022 09:23:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33250 "EHLO
+        id S242497AbiBFO3a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 6 Feb 2022 09:29:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233178AbiBFOXn (ORCPT
+        with ESMTP id S233178AbiBFO3Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 09:23:43 -0500
-X-Greylist: delayed 933 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 06:23:40 PST
-Received: from m12-16.163.com (m12-16.163.com [220.181.12.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BD7E6C06173B;
-        Sun,  6 Feb 2022 06:23:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=ixsSJ
-        ukxUwP/PsI5HX/FmH5LSUIkMEyDP7g8GscpELM=; b=G9ECOcLnWfDDrgWyxHYBq
-        DpKIwL9iiIhpcuYxufb10y48sOylwX59cjHVy+AD3nW23OhORj+QIVMjbS2oQ63n
-        7f1zf+NnrmErjWvlflRdV56ia1nvbzhiJQ/n8cNx+3oZGN2bIHX7AFU9HUp/W5cV
-        KU6etUcybuVk9BeiiWDaVs=
-Received: from localhost.localdomain (unknown [36.161.194.210])
-        by smtp12 (Coremail) with SMTP id EMCowACn8vQN1v9h4UA8Bg--.11512S4;
-        Sun, 06 Feb 2022 22:07:35 +0800 (CST)
-From:   lizhe <sensor1010@163.com>
-To:     bhelgaas@google.com, lukas@wunner.de, ameynarkhede03@gmail.com,
-        hdegoede@redhat.com, sensor1010@163.com, naveennaidu479@gmail.com
-Cc:     linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] PCI:pciehp: Replace request_threaded_irq with devm_request_threaded_irq
-Date:   Sun,  6 Feb 2022 06:07:05 -0800
-Message-Id: <20220206140705.10705-1-sensor1010@163.com>
-X-Mailer: git-send-email 2.25.1
+        Sun, 6 Feb 2022 09:29:25 -0500
+X-Greylist: delayed 122 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 06:29:23 PST
+Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4549C06173B;
+        Sun,  6 Feb 2022 06:29:23 -0800 (PST)
+Received: from cwcc.thunk.org (pool-108-7-220-252.bstnma.fios.verizon.net [108.7.220.252])
+        (authenticated bits=0)
+        (User authenticated as tytso@ATHENA.MIT.EDU)
+        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 216ERGDR006394
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sun, 6 Feb 2022 09:27:17 -0500
+Received: by cwcc.thunk.org (Postfix, from userid 15806)
+        id 88FFE15C0040; Sun,  6 Feb 2022 09:27:16 -0500 (EST)
+Date:   Sun, 6 Feb 2022 09:27:16 -0500
+From:   "Theodore Ts'o" <tytso@mit.edu>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-kernel@vger.kernel.org, linux-ext4@vger.kernel.org
+Subject: [GIT PULL] ext4 fixes for v5.17-rc3
+Message-ID: <Yf/axKTEyQQM1mfm@mit.edu>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: EMCowACn8vQN1v9h4UA8Bg--.11512S4
-X-Coremail-Antispam: 1Uf129KBjvdXoWrtw17XF13ur4rCr1rWr4rKrg_yoWkJFg_ur
-        4UGr1xAr4jkryrGF1Fvw4rJFWIyay3X3Z7X3W0qFyIya9FqrsrArZ5WFZ0qF97ur43Jrn3
-        WryxXrWUKr1UCjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xRR5rcDUUUUU==
-X-Originating-IP: [36.161.194.210]
-X-CM-SenderInfo: 5vhq20jurqiii6rwjhhfrp/xtbBogifq1aECK5BbwAAsE
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Memory allocated with this function is automatically
-freed on driver detach
+The following changes since commit 6eeaf88fd586f05aaf1d48cb3a139d2a5c6eb055:
 
-Signed-off-by: lizhe <sensor1010@163.com>
----
- drivers/pci/hotplug/pciehp_hpc.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+  ext4: don't use the orphan list when migrating an inode (2022-01-10 13:25:56 -0500)
 
-diff --git a/drivers/pci/hotplug/pciehp_hpc.c b/drivers/pci/hotplug/pciehp_hpc.c
-index 1c1ebf3dad43..aca59c6fdcbc 100644
---- a/drivers/pci/hotplug/pciehp_hpc.c
-+++ b/drivers/pci/hotplug/pciehp_hpc.c
-@@ -66,7 +66,7 @@ static inline int pciehp_request_irq(struct controller *ctrl)
- 	}
- 
- 	/* Installs the interrupt handler */
--	retval = request_threaded_irq(irq, pciehp_isr, pciehp_ist,
-+	retval = devm_request_threaded_irq(irq, pciehp_isr, pciehp_ist,
- 				      IRQF_SHARED, "pciehp", ctrl);
- 	if (retval)
- 		ctrl_err(ctrl, "Cannot get irq %d for the hotplug controller\n",
-@@ -78,8 +78,6 @@ static inline void pciehp_free_irq(struct controller *ctrl)
- {
- 	if (pciehp_poll_mode)
- 		kthread_stop(ctrl->poll_thread);
--	else
--		free_irq(ctrl->pcie->irq, ctrl);
- }
- 
- static int pcie_poll_cmd(struct controller *ctrl, int timeout)
--- 
-2.25.1
+are available in the Git repository at:
 
+  git://git.kernel.org/pub/scm/linux/kernel/git/tytso/ext4.git tags/ext4_for_linus_stable
+
+for you to fetch changes up to f340b3d9027485945d59f9c04f1e33070b02cae2:
+
+  fs/ext4: fix comments mentioning i_mutex (2022-02-03 10:57:53 -0500)
+
+----------------------------------------------------------------
+Various bug fixes for ext4 fast commit and inline data handling.  Also
+fix regression introduced as part of moving to the new mount API.
+
+----------------------------------------------------------------
+Lukas Czerner (1):
+      ext4: fix potential NULL pointer dereference in ext4_fill_super()
+
+Ritesh Harjani (5):
+      ext4: fix error handling in ext4_restore_inline_data()
+      ext4: remove redundant max inline_size check in ext4_da_write_inline_data_begin()
+      ext4: fix error handling in ext4_fc_record_modified_inode()
+      jbd2: cleanup unused functions declarations from jbd2.h
+      jbd2: refactor wait logic for transaction updates into a common function
+
+Xin Yin (5):
+      ext4: prevent used blocks from being allocated during fast commit replay
+      ext4: modify the logic of ext4_mb_new_blocks_simple
+      ext4: fast commit may not fallback for ineligible commit
+      ext4: fast commit may miss file actions
+      ext4: fix incorrect type issue during replay_del_range
+
+Yang Li (1):
+      jbd2: fix kernel-doc descriptions for jbd2_journal_shrink_{scan,count}()
+
+hongnanli (1):
+      fs/ext4: fix comments mentioning i_mutex
+
+ fs/ext4/acl.c         |   8 ++--
+ fs/ext4/ext4.h        |  17 ++++----
+ fs/ext4/ext4_jbd2.h   |   2 +-
+ fs/ext4/extents.c     |  16 ++++---
+ fs/ext4/fast_commit.c | 133 +++++++++++++++++++++++++++++++++-----------------------
+ fs/ext4/indirect.c    |   2 +-
+ fs/ext4/inline.c      |  23 +++++-----
+ fs/ext4/inode.c       |  12 ++---
+ fs/ext4/ioctl.c       |   4 +-
+ fs/ext4/mballoc.c     |  26 +++++++----
+ fs/ext4/migrate.c     |   2 +-
+ fs/ext4/namei.c       |   4 +-
+ fs/ext4/orphan.c      |   4 +-
+ fs/ext4/super.c       |   4 +-
+ fs/ext4/xattr.c       |   6 +--
+ fs/jbd2/commit.c      |  21 ++-------
+ fs/jbd2/journal.c     |   6 ++-
+ fs/jbd2/transaction.c |  53 +++++++++++++---------
+ include/linux/jbd2.h  |  13 ++----
+ 19 files changed, 196 insertions(+), 160 deletions(-)
