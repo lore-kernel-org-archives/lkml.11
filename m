@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3F61C4332F
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 16:18:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E474BC433FE
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 16:18:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244684AbiBFQS1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Feb 2022 11:18:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38318 "EHLO
+        id S244913AbiBFQSh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 6 Feb 2022 11:18:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231915AbiBFQSY (ORCPT
+        with ESMTP id S244557AbiBFQSZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 11:18:24 -0500
+        Sun, 6 Feb 2022 11:18:25 -0500
 Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51CCDC06173B
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 08:18:21 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F45FC06173B
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 08:18:24 -0800 (PST)
 Received: from ipservice-092-217-075-184.092.217.pools.vodafone-ip.de ([92.217.75.184] helo=martin-debian-2.paytec.ch)
         by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.89)
         (envelope-from <martin@kaiser.cx>)
-        id 1nGkEy-0001bS-E4; Sun, 06 Feb 2022 17:18:16 +0100
+        id 1nGkF2-0001bS-Fm; Sun, 06 Feb 2022 17:18:20 +0100
 From:   Martin Kaiser <martin@kaiser.cx>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
@@ -27,49 +27,45 @@ Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
         Michael Straube <straube.linux@gmail.com>,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 00/14] staging: r8188eu: another set of simple cleanups
-Date:   Sun,  6 Feb 2022 17:17:55 +0100
-Message-Id: <20220206161809.423031-1-martin@kaiser.cx>
+Subject: [PATCH 04/14] staging: r8188eu: remove debug code to bypass LC calibration
+Date:   Sun,  6 Feb 2022 17:17:59 +0100
+Message-Id: <20220206161809.423031-5-martin@kaiser.cx>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220206161809.423031-1-martin@kaiser.cx>
+References: <20220206161809.423031-1-martin@kaiser.cx>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Here's another set of simple cleanups in several parts of the driver.
+Remove a check before the LC calibration that is always false.
 
-Please apply this on top of my previous series (staging: r8188eu: more
-rf cleanups).
+Signed-off-by: Martin Kaiser <martin@kaiser.cx>
+---
+ drivers/staging/r8188eu/hal/HalPhyRf_8188e.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
-Tested with EdimaxV2 on an arm32 embedded system.
-
-Martin Kaiser (14):
-  staging: r8188eu: only OFDM_index_old[0] is used
-  staging: r8188eu: only OFDM_index[0] is used
-  staging: r8188eu: replace local OFDM_index with single variable
-  staging: r8188eu: remove debug code to bypass LC calibration
-  staging: r8188eu: remove debug code to bypass IQ calibration
-  staging: r8188eu: move local definitions into rtw_fw.h
-  staging: r8188eu: remove unused enum _IFACE_TYPE
-  staging: r8188eu: remove unused enum _ADAPTER_TYPE
-  staging: r8188eu: remove the global DriverState
-  staging: r8188eu: remove unused struct adapter components
-  staging: r8188eu: in_cta_test is always 0
-  staging: r8188eu: irq_alloc is not used
-  staging: r8188eu: not_indic_disco is unused
-  staging: r8188eu: remove unused struct hostapd_priv
-
- drivers/staging/r8188eu/core/rtw_fw.c        | 45 ++++++++++++++++++++
- drivers/staging/r8188eu/hal/HalPhyRf_8188e.c | 30 +++++--------
- drivers/staging/r8188eu/hal/usb_halinit.c    | 16 +------
- drivers/staging/r8188eu/include/drv_types.h  | 36 ----------------
- drivers/staging/r8188eu/include/odm.h        |  2 +-
- drivers/staging/r8188eu/include/rtw_fw.h     | 45 --------------------
- drivers/staging/r8188eu/include/rtw_mlme.h   |  5 ---
- drivers/staging/r8188eu/os_dep/usb_intf.c    |  8 ++--
- 8 files changed, 61 insertions(+), 126 deletions(-)
-
+diff --git a/drivers/staging/r8188eu/hal/HalPhyRf_8188e.c b/drivers/staging/r8188eu/hal/HalPhyRf_8188e.c
+index 27cac9775a90..0c2dbef59197 100644
+--- a/drivers/staging/r8188eu/hal/HalPhyRf_8188e.c
++++ b/drivers/staging/r8188eu/hal/HalPhyRf_8188e.c
+@@ -895,15 +895,10 @@ void PHY_IQCalibrate_8188E(struct adapter *adapt, bool recovery)
+ 
+ void PHY_LCCalibrate_8188E(struct adapter *adapt)
+ {
+-	bool singletone = false, carrier_sup = false;
+ 	u32 timeout = 2000, timecount = 0;
+ 	struct hal_data_8188e *pHalData = &adapt->haldata;
+ 	struct odm_dm_struct *dm_odm = &pHalData->odmpriv;
+ 
+-	/*  20120213<Kordan> Turn on when continuous Tx to pass lab testing. (required by Edlu) */
+-	if (singletone || carrier_sup)
+-		return;
+-
+ 	while (*dm_odm->pbScanInProcess && timecount < timeout) {
+ 		mdelay(50);
+ 		timecount += 50;
 -- 
 2.30.2
 
