@@ -2,105 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30996C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 11:53:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3878C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 11:54:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234840AbiBFLxL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Feb 2022 06:53:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39556 "EHLO
+        id S234807AbiBFLyA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 6 Feb 2022 06:54:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234957AbiBFLtb (ORCPT
+        with ESMTP id S230450AbiBFLx6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 06:49:31 -0500
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7181C06173B;
-        Sun,  6 Feb 2022 03:49:30 -0800 (PST)
-Received: by mail-lj1-x22f.google.com with SMTP id t7so15556792ljc.10;
-        Sun, 06 Feb 2022 03:49:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=qpsYzbivkkdveiz3jrhzknfAz9utFIWn4A3/RXZRA8o=;
-        b=Wz70FLvBmPiudg6xQ3qQ5TwSRbRrI2uPf3muo7NyUI1j3T5bCwGZ+ctGPPiho3Mxdy
-         xx5H6DfkjucGPMXRybkLYFncO7MehbZmifndkNzAzTfzO82crSRG2VX3ssbYIQfDHKEq
-         hLOaiVSl1saLS44xlt61IOvCxpgtis8G/GBvB4ZOp5IXsiF+sIy1wLWdzNimPiQ0xKH2
-         xVnW/K/sVIynr3gfyAgEXNoIABi/nvwzApnyTOWUHgKx0gMMGZbgrjSJ5o/r8PbBw4YH
-         nE7AOlPE+ZIc6Ls6qfFWgC5ei619VkAXA0Hrs7Fpm3yNmBa1N45cB9+T0DI/LBEgNP81
-         2VSQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=qpsYzbivkkdveiz3jrhzknfAz9utFIWn4A3/RXZRA8o=;
-        b=Agp3Q+wBNNJBTL5OMQ3rkOeXK96rDjo8kKBmbOxg15HrusDKqW4xh4OrryIci+jFXO
-         VJVo76rS2couJ4cRsI0WOutch/pVefPWQoJ45mHRO2jsZonhZCqOKl4FeKhEYII88z3m
-         qGSmF0h9sTAHZdU7Eh1YXZWcsBcVcwbaM1pcVVxImLx80rUulIwf8svpEoGYW+q8K6aK
-         i2spw+V2igeNee64uSGjwTPshvsbQu7JPE1BahS7RtQxSicQJUGZn9ywjcK2Zs0e1dva
-         tnY2CKXK0kZTNDmk/Q3eLAZjl5uu64YjCGv07W6Nd/F+r3XBkLlEPLV6luVvEXTUkvsN
-         8rbg==
-X-Gm-Message-State: AOAM533lu60N6O0lqHnm6VfUn825c+E6PfwhTGK/oX/DS0lxQKKBcuVp
-        61pNjcfW1XI8LQnDg0PD1MASC6SZqX4=
-X-Google-Smtp-Source: ABdhPJwr1tTWLq1co7NexfEvCSKv8xkLEqalEYHCyUO+KVi8LSZjgfEUwEldRF7bZPM0BYxjW+UM6A==
-X-Received: by 2002:a05:651c:50f:: with SMTP id o15mr5229913ljp.119.1644148169167;
-        Sun, 06 Feb 2022 03:49:29 -0800 (PST)
-Received: from [192.168.2.145] (109-252-138-165.dynamic.spd-mgts.ru. [109.252.138.165])
-        by smtp.googlemail.com with ESMTPSA id n16sm1075561lfq.113.2022.02.06.03.49.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 06 Feb 2022 03:49:28 -0800 (PST)
-Message-ID: <57486a1b-8667-6f51-977f-16343572925e@gmail.com>
-Date:   Sun, 6 Feb 2022 14:49:28 +0300
+        Sun, 6 Feb 2022 06:53:58 -0500
+X-Greylist: delayed 338 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 03:53:57 PST
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 662EEC043182;
+        Sun,  6 Feb 2022 03:53:57 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id E50981F388;
+        Sun,  6 Feb 2022 11:48:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1644148097; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=oZ8Xjdv7kG8lFnid5+17QkbF2b+qiSsMNHXutjmdMEg=;
+        b=tiUwKLqNr+bIivolGbXjhA3SSj5fUtJEk3SvW7u25jvrDHHQy6eppBiVQ2bDYwqlfAfoNn
+        +haXTf7RP9uBRC8nteS9lr/dCeS0oMmuSfatIght2otsecrKEKWC5CsxopSrFK+IFIm2tA
+        xKXcd6rTD0uFR2RP+37gcHCs0lOIWeo=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1644148097;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=oZ8Xjdv7kG8lFnid5+17QkbF2b+qiSsMNHXutjmdMEg=;
+        b=qihg8HdpLQQ5h7f+8TqvjbwKVVoD2NjiqqB5DN59UZwccj5UIM/hJ4fR82WAMJkZKIMXlj
+        3viFNOKYe9WuMVAw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id CDB1613A47;
+        Sun,  6 Feb 2022 11:48:17 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id Ql//MIG1/2ELKgAAMHmgww
+        (envelope-from <bp@suse.de>); Sun, 06 Feb 2022 11:48:17 +0000
+Date:   Sun, 6 Feb 2022 12:48:10 +0100
+From:   Borislav Petkov <bp@suse.de>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-edac <linux-edac@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>
+Subject: [GIT PULL] EDAC fixes for v5.17-rc3
+Message-ID: <Yf+1ehVTFHkihPfd@zn.tnic>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 4/5] dt-bindings: memory: lpddr3-timings: convert to
- dtschema
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-References: <20220205120043.8337-1-krzysztof.kozlowski@canonical.com>
- <20220205120043.8337-5-krzysztof.kozlowski@canonical.com>
- <a204a4eb-6615-26db-facf-ad284c1732d7@gmail.com>
- <a5bbf115-21a2-7d63-6744-72487b9e756a@canonical.com>
-From:   Dmitry Osipenko <digetx@gmail.com>
-In-Reply-To: <a5bbf115-21a2-7d63-6744-72487b9e756a@canonical.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-06.02.2022 14:20, Krzysztof Kozlowski пишет:
-> On 05/02/2022 19:50, Dmitry Osipenko wrote:
->> 05.02.2022 15:00, Krzysztof Kozlowski пишет:
->>> +  reg:
->>> +    maxItems: 1
->>> +    description: |
->>> +      Maximum DDR clock frequency for the speed-bin, in Hz.
->>
->> Why max-freq is specified as a register? At minimum this is inconsistent
->> with the lpddr2 binding.
-> 
-> First of all, this is a conversion, so the bindings already specified
-> max-freq that way.
+Hi Linus,
 
-The conversion part looks okay to me.
+please pull two urgent EDAC fixes for 5.17.
 
-> Second, I don't know. I think this was some Lukasz's workaround for
-> device node without unit address, but I don't see the reason now why it
-> was needed.
+Thx.
 
-I see now that actually there is one exynos5422-odroid-core.dtsi that
-uses the 'reg' property.
+---
 
-> We could unify it with DDR2 by deprecating 'reg' and introducing
-> 'max-freq', in separate commit. But you know, existing bindings are
-> already there...
+The following changes since commit e783362eb54cd99b2cac8b3a9aeac942e6f6ac07:
 
-Will be great if you could add another patch to deprecate the 'reg'.
-This will prevent returning to this topic in the future if somebody will
-be adding lpddr3 timings, it also will make bindings to look consistent.
+  Linux 5.17-rc1 (2022-01-23 10:12:53 +0200)
 
-Thank you!
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/ras/ras.git tags/edac_urgent_for_v5.17_rc3
+
+for you to fetch changes up to dfd0dfb9a7cc04acf93435b440dd34c2ca7b4424:
+
+  EDAC/xgene: Fix deferred probing (2022-01-30 01:06:35 +0100)
+
+----------------------------------------------------------------
+- Fix altera and xgene EDAC drivers to propagate the correct error code
+from platform_get_irq() so that deferred probing still works
+
+----------------------------------------------------------------
+Sergey Shtylyov (2):
+      EDAC/altera: Fix deferred probing
+      EDAC/xgene: Fix deferred probing
+
+ drivers/edac/altera_edac.c | 2 +-
+ drivers/edac/xgene_edac.c  | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+-- 
+Regards/Gruss,
+    Boris.
+
+SUSE Software Solutions Germany GmbH, GF: Ivo Totev, HRB 36809, AG Nürnberg
