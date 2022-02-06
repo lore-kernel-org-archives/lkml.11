@@ -2,131 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FAA5C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 17:45:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7295FC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 17:51:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345145AbiBFRpf (ORCPT
+        id S1345200AbiBFRv1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Feb 2022 12:45:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37980 "EHLO
+        Sun, 6 Feb 2022 12:51:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344778AbiBFRpQ (ORCPT
+        with ESMTP id S236478AbiBFRvV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 12:45:16 -0500
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3A74C043187
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 09:45:12 -0800 (PST)
-Received: by mail-pf1-x42b.google.com with SMTP id 192so9719732pfz.3
-        for <linux-kernel@vger.kernel.org>; Sun, 06 Feb 2022 09:45:12 -0800 (PST)
+        Sun, 6 Feb 2022 12:51:21 -0500
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7768CC06173B;
+        Sun,  6 Feb 2022 09:51:20 -0800 (PST)
+Received: by mail-oi1-x22a.google.com with SMTP id r27so14759689oiw.4;
+        Sun, 06 Feb 2022 09:51:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=6iskz+FBLj513LKJP0SIpTgUMOdBW2n6Z2gLN+PMSgA=;
-        b=LHRm33CkBY5V8/+tm1HL8EoysUkEVoniFUHjhF+HJMBSCucOB3Ra3Fk7upn9EfNy7t
-         /1svVUMeSMHcy28RwNLsbW8uHcF2lcOiT+OXWqIXjEFp6RA71kApVtCNm8VW223bzL3S
-         +K46AkioawGWBEnGphgsxFFaWRv/R8SavfMRc=
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:content-language:to
+         :cc:references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=8d4aoAMxSo7HSTaBUTBVt7QQDEWKLHoC2XmqWjCbM1s=;
+        b=NJ8Ne+eOf4mOuh9t+V3b7sHoIaQ9e5iye2gnHPM1kP7Dtv9H4iTmymPzkDyXyy55x4
+         wWpOm3l8NRbJZH/39+oiZ6zCTSIPorZMjqH8EDlG/BHMvkz45wptFIS+hg8q/zv3pm/u
+         0c+6M8Et5mpgtgynPP7b4K7y5JFVxuA81gY+OV7mROzwGlGBS9L1TeJB+rT/l68DgOE9
+         oAwHyLLiMcvAWXK/cVDqvkeFZWDb7RiAXJIsqkSp5ZaeaDIgv57uyD/IsXK/qHJLsAV6
+         GhcEQUgS11Te7Xa916V9H3RwOX7CBmv+EDf3W5mCvO9QwvlFUYIhWkGM/ZXUFOaNqc8A
+         fJzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=6iskz+FBLj513LKJP0SIpTgUMOdBW2n6Z2gLN+PMSgA=;
-        b=8Dm22uxn++EDnM21RK2pcNH/pXbsYJ34WlDH4naEz4wnYl529kRdmxeqJROr/6mX+e
-         qNd3XW1XsJ9yCydx0iVK6Rmwre1TrQe8QNkrWZKd31Pf2OwHfYEIVXUdZHDDR5K/UspD
-         gtwvjqLcUZCJaWED6zQB2pdJC27Yhk2HDtncX7XbLiBNi2xzu40/C6xlOfSBAi+ynNU/
-         Hgg+fYrlYwHZL9rtoGiX3fbGUj2OsuacE/yzK41YQ4fHLij+rQetp1OXIXCMaKclV10u
-         UR4RZNu+c8LeWxff97qAydRD6YX4OCVNf715HoxBRUqWtKK9/yclAZYaOr82m/b9H285
-         zAog==
-X-Gm-Message-State: AOAM531pv7AOPpaTwp8X1e7IYSdwJ4bxRJAWeR0aq693HlD2vdIbh2sb
-        NtBkMu2KS0hvIXcBT614TAxnsg==
-X-Google-Smtp-Source: ABdhPJx/Hnsk7LZ4mM/pwnpvB4jp1iRjf4dKAVWIoMCBkpSDX6sj+cyHZqyOI82UGSbqYnpBj0zg1w==
-X-Received: by 2002:a63:4b4a:: with SMTP id k10mr6647215pgl.488.1644169512337;
-        Sun, 06 Feb 2022 09:45:12 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id o21sm9555315pfu.100.2022.02.06.09.45.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Feb 2022 09:45:11 -0800 (PST)
-From:   Kees Cook <keescook@chromium.org>
-To:     Alexander Popov <alex.popov@linux.com>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: [PATCH 2/3] gcc-plugins/stackleak: Exactly match strings instead of prefixes
-Date:   Sun,  6 Feb 2022 09:45:07 -0800
-Message-Id: <20220206174508.2425076-3-keescook@chromium.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220206174508.2425076-1-keescook@chromium.org>
-References: <20220206174508.2425076-1-keescook@chromium.org>
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=8d4aoAMxSo7HSTaBUTBVt7QQDEWKLHoC2XmqWjCbM1s=;
+        b=j3de3RQH3aRezdooqMebcIMY72UrHIaNTyxkQGuzmdbDZ6H1simdBXUe/J/rbwB1Ec
+         ZnOxGgSMVtTY9tPcJ2Uk8u+MdkECi8SjgDWW66xdojCjy0gIbEq71/UAHqFPQRj3za27
+         NAB6psC4iI46+LD+bW88jRqpPGFmKI/KwBUVu28fp4fBFKfhzSp11eWDeCr30PAxZP0v
+         NKcnf+H/BzCMmTmCW2hpklmPy0XgT1YIN0gNX9DY358bQBHbvmdPO4NiHv04Gt/z0KNl
+         qPLyP+ab8SuqqshtUbfcgYibZoFacmdunOVmMy7kjDHpLnYIeCeCHGUrFdD5iVm17dPy
+         0KQg==
+X-Gm-Message-State: AOAM531TuvzuHUtApPCgGhM1zXy7b+9IpFovVkBu+cGvVx4BOoiYODLj
+        MTWBDKzDAjtoolLzcawTEz4=
+X-Google-Smtp-Source: ABdhPJzO5VM3ko/6A7BUyOiMIr3hpCZ6njtpOYiBH3wHupxEo0yu2HFJiFFSO7VFCIi09cPwEv5vMA==
+X-Received: by 2002:a05:6808:e89:: with SMTP id k9mr5705620oil.263.1644169879745;
+        Sun, 06 Feb 2022 09:51:19 -0800 (PST)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id z40sm3139056oap.37.2022.02.06.09.51.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 06 Feb 2022 09:51:19 -0800 (PST)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <258c224c-c543-1756-4c1e-fe9d81e24e4c@roeck-us.net>
+Date:   Sun, 6 Feb 2022 09:51:16 -0800
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2176; h=from:subject; bh=7ZhUIZRWBZdIwU3QloHv8YfGoYLImcCzFHMebm4HT+0=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBiAAkjiFpI0PExnXK3EXjoT6wrAo802WUdEEqkhhYd sOsAlHKJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYgAJIwAKCRCJcvTf3G3AJm3SD/ 4m7rQ6j6Ecz7NmABqTILHvHzWkJNjU/p+4pk3t6w33tf0ftDnwOjecSS9JMQz8Y7w+k37Ijet2rUZc AXkXH9rCcl08/zZvfDaV3ZibARlqLTzBmXtnR8vOCkOk6ruYmlGVpQhLJisNDGbsV8vZm8KGigTmpI ErzHSK5fh/k7aorIk0MgWMBAj8FNvPOZgH96R6L2dUchVa8LboX/R7d09nnfGhAlL2oYWZf5DqHm4s frKlRXPhPv1iEb1p13hM4pJZ3WUhB7t/uyjryxIeUXDGh0ZJUE3/QUQWqypHGp/0HopAzRHFOh93tw t+W4go6Mu6d/vwSmYnk/URY4I+/zqyJM+R7BO7aKvQ/sFggvzKEXLAfm3rPlQ9PIb74+9Y+v6Ga/DF FMFWDsjl5a2w/EGjxL62ktEylPpkaEgQsTz8qwIhgIZDszTp1oRWMGcI/1u89xeErJyFeAp20CK2jW pU6vr+jB+nIfUao3lksZnjFIQzkLJoRltTxfwN8ROs/ChP3QVU8xp97KLRTPaZoQ3xTV+5+9cj5P8p UmBpsJbOmRWeilbtMD86UfEiN9i7nk3+Su7EpphDIG2wGFThTz8hDUeL62lnmhDZiVrSSX7JVJEYCq cHphz6qkNsae/nNic5nqr2UwuBqdNt5yJeveH2DBlHlbWBogTC5BU3G9kL+A==
-X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     Andrey Smirnov <andrew.smirnov@gmail.com>,
+        platform-driver-x86@vger.kernel.org
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Jean Delvare <jdelvare@suse.com>, linux-kernel@vger.kernel.org,
+        linux-hwmon@vger.kernel.org
+References: <20220206022023.376142-1-andrew.smirnov@gmail.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH] platform/x86: Add Steam Deck driver
+In-Reply-To: <20220206022023.376142-1-andrew.smirnov@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since STRING_CST may not be NUL terminated, strncmp() was used for check
-for equality. However, this may lead to mismatches for longer section
-names where the start matches the tested-for string. Test for exact
-equality by checking for the presences of NUL termination.
+On 2/5/22 18:20, Andrey Smirnov wrote:
+> Add a driver exposing various bits and pieces of functionality
+> provided by Steam Deck specific VLV0100 device presented by EC
+> firmware. This includes but not limited to:
+> 
+>      - CPU/device's fan control
+>      - Read-only access to DDIC registers
+>      - Battery tempreature measurements
+>      - Various display related control knobs
+>      - USB Type-C connector event notification
+> 
+> Cc: Hans de Goede <hdegoede@redhat.com>
+> Cc: Mark Gross <markgross@kernel.org>
+> Cc: Jean Delvare <jdelvare@suse.com>
+> Cc: Guenter Roeck <linux@roeck-us.net>
+> Cc: linux-kernel@vger.kernel.org (open list)
+> Cc: platform-driver-x86@vger.kernel.org
+> Cc: linux-hwmon@vger.kernel.org
+> Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
+> ---
+> 
+...
 
-Cc: Alexander Popov <alex.popov@linux.com>
-Signed-off-by: Kees Cook <keescook@chromium.org>
----
- scripts/gcc-plugins/stackleak_plugin.c | 25 +++++++++++++++++++++----
- 1 file changed, 21 insertions(+), 4 deletions(-)
+ > +config STEAMDECK
+ > +       tristate "Valve Steam Deck platform driver"
+ > +       depends on X86_64
+ > +       help
+ > +         Driver exposing various bits and pieces of functionality
+ > +	 provided by Steam Deck specific VLV0100 device presented by
+ > +	 EC firmware. This includes but not limited to:
 
-diff --git a/scripts/gcc-plugins/stackleak_plugin.c b/scripts/gcc-plugins/stackleak_plugin.c
-index e9db7dcb3e5f..623bcad6d0c7 100644
---- a/scripts/gcc-plugins/stackleak_plugin.c
-+++ b/scripts/gcc-plugins/stackleak_plugin.c
-@@ -429,6 +429,23 @@ static unsigned int stackleak_cleanup_execute(void)
- 	return 0;
- }
- 
-+/*
-+ * STRING_CST may or may not be NUL terminated:
-+ * https://gcc.gnu.org/onlinedocs/gccint/Constant-expressions.html
-+ */
-+static inline bool string_equal(tree node, const char *string, int length)
-+{
-+	if (TREE_STRING_LENGTH(node) < length)
-+		return false;
-+	if (TREE_STRING_LENGTH(node) > length + 1)
-+		return false;
-+	if (TREE_STRING_LENGTH(node) == length + 1 &&
-+	    TREE_STRING_POINTER(node)[length] != '\0')
-+		return false;
-+	return !strncmp(TREE_STRING_POINTER(node), string, length);
-+}
-+#define STRING_EQUAL(node, str)	string_equal(node, str, strlen(str))
-+
- static bool stackleak_gate(void)
- {
- 	tree section;
-@@ -438,13 +455,13 @@ static bool stackleak_gate(void)
- 	if (section && TREE_VALUE(section)) {
- 		section = TREE_VALUE(TREE_VALUE(section));
- 
--		if (!strncmp(TREE_STRING_POINTER(section), ".init.text", 10))
-+		if (STRING_EQUAL(section, ".init.text"))
- 			return false;
--		if (!strncmp(TREE_STRING_POINTER(section), ".devinit.text", 13))
-+		if (STRING_EQUAL(section, ".devinit.text"))
- 			return false;
--		if (!strncmp(TREE_STRING_POINTER(section), ".cpuinit.text", 13))
-+		if (STRING_EQUAL(section, ".cpuinit.text"))
- 			return false;
--		if (!strncmp(TREE_STRING_POINTER(section), ".meminit.text", 13))
-+		if (STRING_EQUAL(section, ".meminit.text"))
- 			return false;
- 	}
- 
--- 
-2.30.2
+There seems to be some indentation issue.
 
+ > +	     - CPU/device's fan control
+ > +	     - Read-only access to DDIC registers
+ > +	     - Battery tempreature measurements
+ > +	     - Various display related control knobs
+ > +	     - USB Type-C connector event notification
+ > +
+ > +	 Say N unless you are running on a Steam Deck.
+ > +
+
+This doesn't depend on hwmon, yet it fails if devm_hwmon_device_register_with_info()
+returns an eror. That has a couple of problems: if HWMON=n, it won't compile,
+and if STEAMDECK=y and HWMON=m it won't compile either. You'll have to provide
+some dependency against HWMON to make this work.
+
+...
+
+> +
+> +static int steamdeck_read_fan_speed(struct steamdeck *jup, long *speed)
+> +{
+> +	unsigned long long val;
+> +
+> +	if (ACPI_FAILURE(acpi_evaluate_integer(jup->adev->handle,
+> +					       "FANR", NULL, &val)))
+> +		return -EIO;
+> +
+> +	*speed = val;
+> +	return 0;
+> +}
+> +
+> +static int
+> +steamdeck_hwmon_read(struct device *dev, enum hwmon_sensor_types type,
+> +		     u32 attr, int channel, long *out)
+> +{
+> +	struct steamdeck *sd = dev_get_drvdata(dev);
+> +	unsigned long long val;
+> +
+> +	switch (type) {
+> +	case hwmon_temp:
+> +		if (attr != hwmon_temp_input)
+> +			return -EOPNOTSUPP;
+> +
+> +		if (ACPI_FAILURE(acpi_evaluate_integer(sd->adev->handle,
+> +						       "BATT", NULL, &val)))
+> +			return -EIO;
+> +		/*
+> +		 * Assuming BATT returns deg C we need to mutiply it
+> +		 * by 1000 to convert to mC
+> +		 */
+> +		*out = val * 1000;
+> +		break;
+> +	case hwmon_fan:
+> +		switch (attr) {
+> +		case hwmon_fan_input:
+> +			return steamdeck_read_fan_speed(sd, out);
+
+There is a bit of inconsistency here: All other atributes are handled directly,
+except for this one, yet there isn't really a difference in the actual operation.
+Maybe I am missing something. What is the reason for using a function here
+but not for the other attributes ?
+
+> +		case hwmon_fan_target:
+> +			*out = sd->fan_target;
+> +			break;
+> +		case hwmon_fan_fault:
+> +			if (ACPI_FAILURE(acpi_evaluate_integer(
+> +						 sd->adev->handle,
+> +						 "FANC", NULL, &val)))
+> +				return -EIO;
+> +			/*
+> +			 * FANC (Fan check):
+> +			 * 0: Abnormal
+> +			 * 1: Normal
+> +			 */
+> +			*out = !val;
+> +			break;
+> +		default:
+> +			return -EOPNOTSUPP;
+> +		}
+> +		break;
+> +	default:
+> +		return -EOPNOTSUPP;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int
+> +steamdeck_hwmon_read_string(struct device *dev, enum hwmon_sensor_types type,
+> +			    u32 attr, int channel, const char **str)
+> +{
+> +	switch (type) {
+> +	case hwmon_temp:
+> +		*str = "Battery Temp";
+> +		break;
+> +	case hwmon_fan:
+> +		*str = "System Fan";
+> +		break;
+> +	default:
+> +		return -EOPNOTSUPP;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int
+> +steamdeck_hwmon_write(struct device *dev, enum hwmon_sensor_types type,
+> +		      u32 attr, int channel, long val)
+> +{
+> +	struct steamdeck *sd = dev_get_drvdata(dev);
+> +
+> +	if (type != hwmon_fan ||
+> +	    attr != hwmon_fan_target)
+> +		return -EOPNOTSUPP;
+> +
+> +	if (val > U16_MAX)
+> +		return -EINVAL;
+
+This accepts negative values, and it expects the user to find
+valid ranges. I suggest to use clamp_val() instead.
+
+Guenter
