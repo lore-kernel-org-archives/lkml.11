@@ -2,140 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 087D5C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 17:25:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C253C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 17:33:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344176AbiBFRZl (ORCPT
+        id S1344324AbiBFRcv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Feb 2022 12:25:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59648 "EHLO
+        Sun, 6 Feb 2022 12:32:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230187AbiBFRZk (ORCPT
+        with ESMTP id S230187AbiBFRcq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 12:25:40 -0500
-X-Greylist: delayed 465 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 09:25:39 PST
-Received: from relay4.hostedemail.com (relay4.hostedemail.com [64.99.140.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71376C06173B
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 09:25:39 -0800 (PST)
-Received: from omf17.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay12.hostedemail.com (Postfix) with ESMTP id 5A8AF120714;
-        Sun,  6 Feb 2022 17:17:53 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf17.hostedemail.com (Postfix) with ESMTPA id A466018;
-        Sun,  6 Feb 2022 17:17:08 +0000 (UTC)
-Message-ID: <8536ca17c2945cb77c506d99eff5ccc42e71f2f3.camel@perches.com>
-Subject: Re: [PATCH] staging: octeon-usb: Fix 'should not end with '(''
-From:   Joe Perches <joe@perches.com>
-To:     David Laight <David.Laight@ACULAB.COM>,
-        "'joelcchangg@gmail.com'" <joelcchangg@gmail.com>,
-        "linux-staging@lists.linux.dev" <linux-staging@lists.linux.dev>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "gregkh@linuxfoundation.com" <gregkh@linuxfoundation.com>
-Date:   Sun, 06 Feb 2022 09:17:45 -0800
-In-Reply-To: <c0b504dd1f254f19b6ff60948684303b@AcuMS.aculab.com>
-References: <20220206074615.3527-1-joelcchangg@gmail.com>
-         <c0b504dd1f254f19b6ff60948684303b@AcuMS.aculab.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4-1ubuntu2 
+        Sun, 6 Feb 2022 12:32:46 -0500
+Received: from mail-oo1-xc29.google.com (mail-oo1-xc29.google.com [IPv6:2607:f8b0:4864:20::c29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4550C06173B;
+        Sun,  6 Feb 2022 09:32:45 -0800 (PST)
+Received: by mail-oo1-xc29.google.com with SMTP id t75-20020a4a3e4e000000b002e9c0821d78so11212012oot.4;
+        Sun, 06 Feb 2022 09:32:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=QjHen6OmxYmZmraosC3kIdd7lHywcpDr7IMXtC6KPtk=;
+        b=RewyujGZgeFv48JLa5eXek4Te5TO+ekg9lL6MPdVdzfA36Jy6YRQEjTLJg12tgfxU0
+         kOBukbSGKuwzkAeFYIY/PfAxjw/RWaLmxKXCOqOghmU4m6YjCDJPNzqOwnjpDhSJ2Tq6
+         cBJTujVC2ZExRh4iHRy1dFqlNUa4SP1MQ3BvgjTf2teXMBZ1ekG/EdbH6s/v2I6kXN1o
+         twHOuSxWnR5e4T4mwQYcd7l/bCFn02nTWqtfVorJb4YiwrbqbTthjlfiBsw2kd08wxT7
+         Sht993jbaGl/888LJLXg2sFdn7ewna0pE/1ZBAcRSD73+ok2OciQMLN83Jos+1MKsbSm
+         KQzQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=QjHen6OmxYmZmraosC3kIdd7lHywcpDr7IMXtC6KPtk=;
+        b=5Eu1h/Cp+dq0XH2C9T5DR4bnBtLE0AS0d6gO9/gy9GxtpeEzSqIGcEHJDe1luut85F
+         Lau3c1S9vKN05wWNuGWGcrmNNBywRgCjvNm26OxtXayH2ZgKdF7SiK92FsHQe3r6ogiq
+         stlEkNxsaPdJH2gcKfncnKDXnYd1SyZdGJkAfnOmNRKBYOzXFMtrsI84Y9w6bEEUuPMk
+         KxD0VynpSMHhLzw8beU+X9XgH60tLDrWlzHLhCv6BwCxJRgBOTh1drP4wDIJq292uhQr
+         LOrSljzbixDuQT68GMlqSu/8RJ7cV1OJ9L9lpzBFcBdk3zFSAO2wwhlOmn63hHzOvzlZ
+         Rs7g==
+X-Gm-Message-State: AOAM533c4MjN7fl3lRtivEcdVgtJgVA6GiElgwMLbhSG27i0anmQP+v0
+        zriOR4sM8wuJJkymj6RtxUwOGHP2OIlCcQ==
+X-Google-Smtp-Source: ABdhPJyJtywanNHbmDYLjsoy4PXeZvvmggx0s3aSm4sZ5s+9vd8L72cu2rkjdxBBP5Atf+7vxyEwOQ==
+X-Received: by 2002:a05:6870:9484:: with SMTP id w4mr3149910oal.335.1644168765102;
+        Sun, 06 Feb 2022 09:32:45 -0800 (PST)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id d7sm2998029otf.66.2022.02.06.09.32.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 06 Feb 2022 09:32:44 -0800 (PST)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <5309198e-8ed0-4deb-6cd3-bd35732ed9b5@roeck-us.net>
+Date:   Sun, 6 Feb 2022 09:32:42 -0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 5.15 05/32] drm/vc4: hdmi: Make sure the device is powered
+ with CEC
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Michael Stapelberg <michael+drm@stapelberg.ch>,
+        Maxime Ripard <maxime@cerno.tech>
+References: <20220204091915.247906930@linuxfoundation.org>
+ <20220204091915.421812582@linuxfoundation.org>
+ <20220205171238.GA3073350@roeck-us.net> <Yf66Y2/N0nh9tMxT@kroah.com>
+ <20220205184108.GA3084817@roeck-us.net> <Yf+6gxmQnlbngqwm@kroah.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <Yf+6gxmQnlbngqwm@kroah.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Stat-Signature: qg4yiupiwhcsqe6n45gxqr7fdpk59b16
-X-Rspamd-Server: rspamout03
-X-Rspamd-Queue-Id: A466018
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX1+fnhxLHTdi5aumjIE+T5F75ykVyJ/qk3Y=
-X-HE-Tag: 1644167828-153419
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 2022-02-06 at 14:16 +0000, David Laight wrote:
-> From: joelcchangg@gmail.com
-> > Sent: 06 February 2022 07:46
-> > 
-> > This patch fixes the checkpatch.pl check:
-> > 
-> > CHECK: Line should not end with '('
-[]
-> > diff --git a/drivers/staging/octeon-usb/octeon-hcd.c b/drivers/staging/octeon-usb/octeon-hcd.c
-[]
-> > @@ -1792,23 +1792,18 @@ static void cvmx_usb_start_channel(struct octeon_hcd *usb, int channel,
-> >  	case CVMX_USB_TRANSFER_INTERRUPT:
-> >  		break;
-> >  	case CVMX_USB_TRANSFER_ISOCHRONOUS:
-> > -		if (!cvmx_usb_pipe_needs_split(usb, pipe)) {
-> > +		if (!cvmx_usb_pipe_needs_split(usb, pipe) &&
-> > +		    pipe->transfer_dir == CVMX_USB_DIRECTION_OUT) {
-> >  			/*
-> >  			 * ISO transactions require different PIDs depending on
-> >  			 * direction and how many packets are needed
-> >  			 */
-> > -			if (pipe->transfer_dir == CVMX_USB_DIRECTION_OUT) {
-> > -				if (pipe->multi_count < 2) /* Need DATA0 */
-> > -					USB_SET_FIELD32(
-> > -						CVMX_USBCX_HCTSIZX(channel,
-> > -								   usb->index),
-> > +			if (pipe->multi_count < 2) /* Need DATA0 */
-> > +				USB_SET_FIELD32(CVMX_USBCX_HCTSIZX(channel, usb->index),
-> >  						cvmx_usbcx_hctsizx, pid, 0);
-> > -				else /* Need MDATA */
-> > -					USB_SET_FIELD32(
-> > -						CVMX_USBCX_HCTSIZX(channel,
-> > -								   usb->index),
-> > +			else /* Need MDATA */
-> > +				USB_SET_FIELD32(CVMX_USBCX_HCTSIZX(channel, usb->index),
-> >  						cvmx_usbcx_hctsizx, pid, 3);
-> > -			}
-> >  		}
-> >  		break;
-> >  	}
+On 2/6/22 04:09, Greg Kroah-Hartman wrote:
+> On Sat, Feb 05, 2022 at 10:41:08AM -0800, Guenter Roeck wrote:
+>> Hi Greg,
+>>
+>> On Sat, Feb 05, 2022 at 06:56:51PM +0100, Greg Kroah-Hartman wrote:
+>> [ ... ]
+>>>
+>>> Yeah, something is really wrong here.  I'm going to go revert this for
+>>> now and push out a new set of releases with that fixed.
+>>
+>> If you pull a release for that, can you possibly revert 9de2b9286a6
+>> ("ASoC: mediatek: Check for error clk pointer") as well ? It does not
+>> realy fix anything but breaks pretty much all Mediatek systems using
+>> the mtk-scpsys driver. I sent a revert request
+>> 	https://lore.kernel.org/lkml/20220205014755.699603-1-linux@roeck-us.net/
+>> but the it looks like the submitter keeps defending their patch. In the
+>> current state, pretty much all stable release starting with v4.19.y won't
+>> work for affected systems due to this patch.
 > 
-> What has that hunk got to do with the patch description?
-
-Nothing and this should be revisited or explained much more
-as it seems to change the logic.
-
-> > @@ -2121,17 +2116,17 @@ static void cvmx_usb_complete(struct octeon_hcd *usb,
-> >   *
-> >   * Returns: Transaction or NULL on failure.
-> >   */
-> > -static struct cvmx_usb_transaction *cvmx_usb_submit_transaction(
-> > -				struct octeon_hcd *usb,
-> > -				struct cvmx_usb_pipe *pipe,
-> > -				enum cvmx_usb_transfer type,
-> > -				u64 buffer,
-> > -				int buffer_length,
-> > -				u64 control_header,
-> > -				int iso_start_frame,
-> > -				int iso_number_packets,
-> > -				struct cvmx_usb_iso_packet *iso_packets,
-> > -				struct urb *urb)
-> > +static struct cvmx_usb_transaction *cvmx_usb_submit_transaction(struct octeon_hcd *usb,
-> > +								struct cvmx_usb_pipe *pipe,
-> > +								enum cvmx_usb_transfer type,
-> > +								u64 buffer,
-> > +								int buffer_length,
-> > +								u64 control_header,
-> > +								int iso_start_frame,
-> > +								int iso_number_packets,
-> > +								struct cvmx_usb_iso_packet
-> > +									*iso_packets,
-> > +								struct urb *urb)
+> I don't see anyone objecting to the revert in that thread (or any
+> responses at all.)  I'll queue up a revert for the next round of
+> releases until this all gets worked out.
 > 
-> Those lines are now far longer than is 'nice'.
 
-True.
+The discussion isn't easy to find, or at least I only found it
+after writing the revert. It is at
 
-This _might_ be better with the return type on a separate line
+https://lore.kernel.org/all/trinity-2a727d96-0335-4d03-8f30-e22a0e10112d-1643363480085@3c-app-gmx-bap33/
 
-Something like:
-
-static struct cvmx_usb_transaction *
-cvmx_usb_submit_transaction(struct octeon_hcd *usb, struct cvmx_usb_pipe *pipe,
-			    enum cvmx_usb_transfer type,
-			    u64 buffer, int buffer_length,
-			    u64 control_header, int iso_start_frame,
-			    int iso_number_packets,
-			    struct cvmx_usb_iso_packet *iso_packets,
-			    struct urb *urb)
-
-
+Guenter
