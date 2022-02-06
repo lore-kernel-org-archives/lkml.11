@@ -2,155 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF2F3C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 11:36:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 725A4C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 11:36:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234354AbiBFLf6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Feb 2022 06:35:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35930 "EHLO
+        id S234403AbiBFLgq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 6 Feb 2022 06:36:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234155AbiBFLf5 (ORCPT
+        with ESMTP id S231858AbiBFLgp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 06:35:57 -0500
-X-Greylist: delayed 546 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 03:35:56 PST
-Received: from wout4-smtp.messagingengine.com (wout4-smtp.messagingengine.com [64.147.123.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 729BCC06173B;
-        Sun,  6 Feb 2022 03:35:56 -0800 (PST)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.west.internal (Postfix) with ESMTP id 0B7473201D7C;
-        Sun,  6 Feb 2022 06:26:47 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Sun, 06 Feb 2022 06:26:48 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=qciHEBrtufsFgTJmS
-        CoqEjSJb7jQh8MaOov+ID8TdGg=; b=ExvBl4UuI0iIsGA2LIUN7nQvTTn602OQr
-        pKKbiF+Vh5e4nhEmRQYsQmco/KY7CY9KFzW2Kq56aACJukwEu0RfzpQDwBFGVAE7
-        ucPlSDSDPljQ34KWjXvV/2LReXcWINuo9VSpYji1WKxQcVo2l27wlZlKZisABUam
-        Yv1g9wk9EZTbqg2371rmxOLUNr2sFj0hgEiENYUm9UnnYhGdCLJR8BxtDZ1uKzew
-        gqe0jhtxqqv8K1GcVEBg2cdFGQo/ir/w49hsMTSP5RDDIINufifRbccQsI3sjpyE
-        QaVLlKKGPrSr0HuXDxrlhaLF9bZHegesOA66USFjdd9rkDuGFSC1w==
-X-ME-Sender: <xms:drD_YaZE7v5IzpdmMlU95T2ZYIh4-oXec4b2rnAWDM3K6yKKo2sk8g>
-    <xme:drD_YdZ6HiIgy-dq4dgIqEYV4RCulxyW5w2ItNjn9zQX29yMmb-DZY5nhJb8pkzKf
-    Tia7kfQjHCXHP4>
-X-ME-Received: <xmr:drD_YU_p_rHXy4jk80eqbjDqv4X3BwQ9lTjLGHR8vp2SHoDk_zmfN2bEDnaJEmTrXW5ycddsHi_5CuD-ndyNJkNJr_EfUA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrheefgddvjecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
-    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
-    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
-    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
-    hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:d7D_Ycq83ap47MsxsSU8L67VpT-UvH6-qQ-Ed-gcDhwrcF1oLHCePw>
-    <xmx:d7D_YVqigmrbgH39eRHYqU4P8DDIp7AeUN6W6fric6BGZc1mJbeoUQ>
-    <xmx:d7D_YaSYWu-vXcbbY_-OAsyRGGNWi7Dp0xmMkthChEFROq98Wynk0g>
-    <xmx:d7D_YWcfrp0ZAv7c_6Qkl9NcInvTP-UKQB4GAz_B0mVunoVzPpXM9Q>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
- 6 Feb 2022 06:26:46 -0500 (EST)
-Date:   Sun, 6 Feb 2022 13:26:41 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     menglong8.dong@gmail.com
-Cc:     kuba@kernel.org, dsahern@kernel.org, nhorman@tuxdriver.com,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, rostedt@goodmis.org,
-        Menglong Dong <imagedong@tencent.com>
-Subject: Re: [PATCH v6 net-next] net: drop_monitor: support drop reason
-Message-ID: <Yf+wcVAAWzmSz93n@shredder>
-References: <20220205081738.565394-1-imagedong@tencent.com>
+        Sun, 6 Feb 2022 06:36:45 -0500
+X-Greylist: delayed 137 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 03:36:44 PST
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EF26C06173B
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 03:36:44 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 281F4B80CF3;
+        Sun,  6 Feb 2022 11:36:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF723C340E9;
+        Sun,  6 Feb 2022 11:36:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644147402;
+        bh=9H1aLnXFwQuN26Qhe9WeLQmHk0RPxQNas6gi/cJ4cvE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=WFNwq7g/MC3JcrRVKkHTHc3M7QV27EshenrMOIK4i4n5hbszRyFhQIAGIKKgqlCfR
+         6dDXqzN2gHZ9KcjqqcWgywKC3JqKBBqzcUOYKP84A8aNPOL9SWULHb6wdTq1nBPfxo
+         vAiEFzqiLsGnFkIe1u21d6CpYFgHM29DWVLNHKt86a9M4y52M4n32dPbckLiZNA7XG
+         AJ4nfBKjpOACxmYdgV/C5VD+ecsLdoAW+3tiACuCMuln6xmIQnWY+Vu2xH0/Zh/iCH
+         7Q8Tu3pNJ+h0w1NTzIGy5ThVr8YlC7Z8I6M+FEC8ti+qRty2ZfFxQfefYTeFzZ5Plg
+         4ZB5OX/uwmbKQ==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 18DB8404A6; Sun,  6 Feb 2022 08:36:40 -0300 (-03)
+Date:   Sun, 6 Feb 2022 08:36:40 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Anshuman Khandual <anshuman.khandual@arm.com>,
+        linux-arm-kernel@lists.infradead.org, james.clark@arm.com,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] perf: tools: Add missing branch_sample_type
+Message-ID: <Yf+yyDF+PZaBtfzt@kernel.org>
+References: <1643799443-15109-1-git-send-email-anshuman.khandual@arm.com>
+ <Yfq3kTb7E1cELF0L@krava>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220205081738.565394-1-imagedong@tencent.com>
+In-Reply-To: <Yfq3kTb7E1cELF0L@krava>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Feb 05, 2022 at 04:17:38PM +0800, menglong8.dong@gmail.com wrote:
-> diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
-> index 7b288a121a41..1180f1a28599 100644
-> --- a/net/core/drop_monitor.c
-> +++ b/net/core/drop_monitor.c
-> @@ -48,6 +48,16 @@
->  static int trace_state = TRACE_OFF;
->  static bool monitor_hw;
->  
-> +#undef EM
-> +#undef EMe
-> +
-> +#define EM(a, b)	[a] = #b,
-> +#define EMe(a, b)	[a] = #b
-> +
-> +static const char *drop_reasons[SKB_DROP_REASON_MAX + 1] = {
-> +	TRACE_SKB_DROP_REASON
-> +};
-> +
->  /* net_dm_mutex
->   *
->   * An overall lock guarding every operation coming from userspace.
-> @@ -126,6 +136,7 @@ struct net_dm_skb_cb {
->  		struct devlink_trap_metadata *hw_metadata;
->  		void *pc;
->  	};
-> +	enum skb_drop_reason reason;
->  };
->  
->  #define NET_DM_SKB_CB(__skb) ((struct net_dm_skb_cb *)&((__skb)->cb[0]))
-> @@ -498,6 +509,7 @@ static void net_dm_packet_trace_kfree_skb_hit(void *ignore,
->  {
->  	ktime_t tstamp = ktime_get_real();
->  	struct per_cpu_dm_data *data;
-> +	struct net_dm_skb_cb *cb;
->  	struct sk_buff *nskb;
->  	unsigned long flags;
->  
-> @@ -508,7 +520,9 @@ static void net_dm_packet_trace_kfree_skb_hit(void *ignore,
->  	if (!nskb)
->  		return;
->  
-> -	NET_DM_SKB_CB(nskb)->pc = location;
-> +	cb = NET_DM_SKB_CB(nskb);
-> +	cb->reason = reason;
-> +	cb->pc = location;
->  	/* Override the timestamp because we care about the time when the
->  	 * packet was dropped.
->  	 */
-> @@ -606,8 +620,9 @@ static int net_dm_packet_report_in_port_put(struct sk_buff *msg, int ifindex,
->  static int net_dm_packet_report_fill(struct sk_buff *msg, struct sk_buff *skb,
->  				     size_t payload_len)
->  {
-> -	u64 pc = (u64)(uintptr_t) NET_DM_SKB_CB(skb)->pc;
-> +	struct net_dm_skb_cb *cb = NET_DM_SKB_CB(skb);
->  	char buf[NET_DM_MAX_SYMBOL_LEN];
-> +	unsigned int reason;
->  	struct nlattr *attr;
->  	void *hdr;
->  	int rc;
-> @@ -620,10 +635,16 @@ static int net_dm_packet_report_fill(struct sk_buff *msg, struct sk_buff *skb,
->  	if (nla_put_u16(msg, NET_DM_ATTR_ORIGIN, NET_DM_ORIGIN_SW))
->  		goto nla_put_failure;
->  
-> -	if (nla_put_u64_64bit(msg, NET_DM_ATTR_PC, pc, NET_DM_ATTR_PAD))
-> +	if (nla_put_u64_64bit(msg, NET_DM_ATTR_PC, (u64)(uintptr_t)cb->pc,
-> +			      NET_DM_ATTR_PAD))
-> +		goto nla_put_failure;
-> +
-> +	reason = (unsigned int)cb->reason;
-> +	if (reason < SKB_DROP_REASON_MAX &&
-> +	    nla_put_string(msg, NET_DM_ATTR_REASON, drop_reasons[reason]))
-
-You need to make sure 'msg' has enough room for this attribute. Account
-for it in net_dm_packet_report_size()
-
->  		goto nla_put_failure;
->  
-> -	snprintf(buf, sizeof(buf), "%pS", NET_DM_SKB_CB(skb)->pc);
-> +	snprintf(buf, sizeof(buf), "%pS", cb->pc);
->  	if (nla_put_string(msg, NET_DM_ATTR_SYMBOL, buf))
->  		goto nla_put_failure;
->  
-> -- 
-> 2.27.0
+Em Wed, Feb 02, 2022 at 05:55:45PM +0100, Jiri Olsa escreveu:
+> On Wed, Feb 02, 2022 at 04:27:23PM +0530, Anshuman Khandual wrote:
+> > This updates branch sample type with missing PERF_SAMPLE_BRANCH_TYPE_SAVE.
+> > 
+> > Cc: Peter Zijlstra <peterz@infradead.org>
+> > Cc: Ingo Molnar <mingo@redhat.com>
+> > Cc: Arnaldo Carvalho de Melo <acme@kernel.org>
+> > Cc: Mark Rutland <mark.rutland@arm.com>
+> > Cc: linux-perf-users@vger.kernel.org
+> > Cc: linux-kernel@vger.kernel.org
+> > Suggested-by: James Clark <james.clark@arm.com>
+> > Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
 > 
+> Acked-by: Jiri Olsa <jolsa@redhat.com>
+
+Thanks, applied.
+
+- Arnaldo
+
+ 
+> thanks,
+> jirka
+> 
+> > ---
+> >  tools/perf/util/perf_event_attr_fprintf.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/tools/perf/util/perf_event_attr_fprintf.c b/tools/perf/util/perf_event_attr_fprintf.c
+> > index 47b7531f51da..98af3fa4ea35 100644
+> > --- a/tools/perf/util/perf_event_attr_fprintf.c
+> > +++ b/tools/perf/util/perf_event_attr_fprintf.c
+> > @@ -52,7 +52,7 @@ static void __p_branch_sample_type(char *buf, size_t size, u64 value)
+> >  		bit_name(ABORT_TX), bit_name(IN_TX), bit_name(NO_TX),
+> >  		bit_name(COND), bit_name(CALL_STACK), bit_name(IND_JUMP),
+> >  		bit_name(CALL), bit_name(NO_FLAGS), bit_name(NO_CYCLES),
+> > -		bit_name(HW_INDEX),
+> > +		bit_name(TYPE_SAVE), bit_name(HW_INDEX),
+> >  		{ .name = NULL, }
+> >  	};
+> >  #undef bit_name
+> > -- 
+> > 2.20.1
+> > 
+
+-- 
+
+- Arnaldo
