@@ -2,89 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A872AC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 18:28:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE9ADC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 18:34:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345904AbiBFS2Z (ORCPT
+        id S1345959AbiBFSef (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Feb 2022 13:28:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51186 "EHLO
+        Sun, 6 Feb 2022 13:34:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230006AbiBFS2X (ORCPT
+        with ESMTP id S232554AbiBFSed (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 13:28:23 -0500
-X-Greylist: delayed 1582 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 10:28:21 PST
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 160CFC06173B;
-        Sun,  6 Feb 2022 10:28:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=/8tPNhnmKNqwNI2GwJ1u5pVwv907hfEX8rrGwiFxMM8=; b=dl
-        XuCEYwo3gFWPQbeuANJDhxAM8CTKgrsz3WhXKSrLbI/5d9Yk3IoTKKc++vKZLa7X2pEZ1ivFIdH4a
-        gRCAlhtGhvrgWkKYkdpn1pBI9tcCLi15RfDJ07hBFk/nIxUPNC1godBA++221YH4pFetZN5kXKtZJ
-        6Yr0ZoVkg+U2jn8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nGlr3-004Wpn-KU; Sun, 06 Feb 2022 19:01:41 +0100
-Date:   Sun, 6 Feb 2022 19:01:41 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Raag Jadav <raagjadav@gmail.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Steen Hegelund <steen.hegelund@microchip.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: phy: mscc: enable MAC SerDes autonegotiation
-Message-ID: <YgANBQjsrmK+T/N+@lunn.ch>
-References: <1644043492-31307-1-git-send-email-raagjadav@gmail.com>
- <Yf6QbbqaxZhZPUdC@lunn.ch>
- <20220206171234.GA5778@localhost>
+        Sun, 6 Feb 2022 13:34:33 -0500
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC26BC043185
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 10:34:30 -0800 (PST)
+Received: by mail-ej1-x635.google.com with SMTP id st12so10993542ejc.4
+        for <linux-kernel@vger.kernel.org>; Sun, 06 Feb 2022 10:34:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ipr/Xj8fJQrczHUCPPzyBQs76OpGS0ISVv/nwSX/Q/g=;
+        b=dYRZuMOdE0zra95En3hQ336g936a76Wau4yHF4u1bfE01951DLVfumlqZ9Q74obZqc
+         hPZ9xZ99bpUlqu83kcZVxPY/qOaQZOqvKsZfDCRfBBsZYHufiU6QnM0FeFVF0s/hqsd1
+         PuZGdkt8GAATL9YRERL6Kc+k6WnrbrcLjLnV0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ipr/Xj8fJQrczHUCPPzyBQs76OpGS0ISVv/nwSX/Q/g=;
+        b=aq7Pn6gftIUKhRqxiEBJhxlUkDCuuHO6pY38nkPd2niQtutGq8p+4apTIL6Vv/Iu4l
+         5foDEwJasod1Hte0KIwYNCpO0PpfeQJP6grPLXVxeoGfkEwzS8CN5jKKOMK1ubos18Oo
+         6W+jai1LXg/F6g/ddpAQoriIJ8VvCaiWovP67fo+uBXRdlePVgB3PYFJox9sh/W5KHVs
+         2eIZSmlFIrN0Fzk6Iz3b0gS89SfH2X1PFxmTPkyaPWOZExcWlZuxwWUYjgxuEhNk2Z/+
+         /OocBgPAE/QNwexCUdDDY0DNVrZwQid4328mSPLWIwCok9S70zIPjha1EhjIJNDqJ/bL
+         s5xw==
+X-Gm-Message-State: AOAM531cC9hAqe08y8SopBW4adKEFW4dwyRT8Z54f7bgFjpj9KuCvEmP
+        liLkKjb7VoTkGpCX6y/n+3QZW/5XFXbzSSs8
+X-Google-Smtp-Source: ABdhPJzkLnbM4raWCsl4ubYVP8gvA4ZPZ21YJD34Nb3dOfEt50nj6D693MGXt+w7guw73epuS5J+yQ==
+X-Received: by 2002:a17:906:f156:: with SMTP id gw22mr4652656ejb.321.1644172469351;
+        Sun, 06 Feb 2022 10:34:29 -0800 (PST)
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com. [209.85.221.48])
+        by smtp.gmail.com with ESMTPSA id qk26sm957843ejb.145.2022.02.06.10.34.27
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 06 Feb 2022 10:34:28 -0800 (PST)
+Received: by mail-wr1-f48.google.com with SMTP id m5so3860836wrb.2
+        for <linux-kernel@vger.kernel.org>; Sun, 06 Feb 2022 10:34:27 -0800 (PST)
+X-Received: by 2002:adf:d1c8:: with SMTP id b8mr7032248wrd.442.1644172467014;
+ Sun, 06 Feb 2022 10:34:27 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220206171234.GA5778@localhost>
+References: <20220206174508.2425076-1-keescook@chromium.org> <20220206174508.2425076-3-keescook@chromium.org>
+In-Reply-To: <20220206174508.2425076-3-keescook@chromium.org>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Sun, 6 Feb 2022 10:34:11 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wg5oaiJty+pCLd7aS3c-86=JDvF_vuaUvyq+Yo6+cKhyg@mail.gmail.com>
+Message-ID: <CAHk-=wg5oaiJty+pCLd7aS3c-86=JDvF_vuaUvyq+Yo6+cKhyg@mail.gmail.com>
+Subject: Re: [PATCH 2/3] gcc-plugins/stackleak: Exactly match strings instead
+ of prefixes
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Alexander Popov <alex.popov@linux.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Feb 06, 2022 at 10:42:34PM +0530, Raag Jadav wrote:
-> On Sat, Feb 05, 2022 at 03:57:49PM +0100, Andrew Lunn wrote:
-> > On Sat, Feb 05, 2022 at 12:14:52PM +0530, Raag Jadav wrote:
-> > > Enable MAC SerDes autonegotiation to distinguish between
-> > > 1000BASE-X, SGMII and QSGMII MAC.
-> > 
-> > How does autoneg help you here? It just tells you about duplex, pause
-> > etc. It does not indicate 1000BaseX, SGMII etc. The PHY should be
-> > using whatever mode it was passed in phydev->interface, which the MAC
-> > sets when it calls the connection function. If the PHY dynamically
-> > changes its host side mode as a result of what that line side is
-> > doing, it should also change phydev->interface. However, as far as i
-> > can see, the mscc does not do this.
-> >
-> 
-> Once the PHY auto-negotiates parameters such as speed and duplex mode
-> with its link partner over the copper link as per IEEE 802.3 Clause 27,
-> the link partner’s capabilities are then transferred by PHY to MAC
-> over 1000BASE-X or SGMII link using the auto-negotiation functionality
-> defined in IEEE 802.3z Clause 37.
+On Sun, Feb 6, 2022 at 9:45 AM Kees Cook <keescook@chromium.org> wrote:
+>
+> +       return !strncmp(TREE_STRING_POINTER(node), string, length);
 
-None of this allows you to distinguish between 1000BASE-X, SGMII and
-QSGMII, which is what the commit message says.
+Why is this "strncmp()"? That makes no sense when you've just checked
+the exact lengths of both sides.
 
-It does allow you to get duplex, pause, and maybe speed via in band
-signalling. But you should also be getting the same information out of
-band, via the phylib callback.
+You're not comparing strings any more, you've already checked the end
+of the string - you are comparing memory contents.
 
-There are some MACs which don't seem to work correctly without the in
-band signalling, so maybe that is your problem? Please could you give
-more background about your problem, what MAC and PHY combination are
-you using, what problem you are seeing, etc.
+So make it just do a "memcmp()".
 
-    Andrew
+> +#define STRING_EQUAL(node, str)        string_equal(node, str, strlen(str))
 
+.. and please change this name too, since it's not comparing two
+strings. The first argument is something else entirely.
+
+It's checking the node value of a section, give it some name related to that.
+
+I do also get the feeling that the nodes should actually be checked to
+be a STRING_CST rather than these blind TREE_VALUE() following things,
+but I don't really know the rules for gcc plugin internals very well -
+or at all, really.
+
+                   Linus
