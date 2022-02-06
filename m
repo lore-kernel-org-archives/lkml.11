@@ -2,218 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 098F2C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 13:49:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49DFEC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 13:49:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240210AbiBFNtL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Feb 2022 08:49:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48296 "EHLO
+        id S232650AbiBFNtZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 6 Feb 2022 08:49:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240100AbiBFNtK (ORCPT
+        with ESMTP id S240386AbiBFNtX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 08:49:10 -0500
-X-Greylist: delayed 305 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 05:49:07 PST
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C96C4C043183
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 05:49:07 -0800 (PST)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mtapsc-2-UlNFSu5EPwWiWKwZdJvkSg-1; Sun, 06 Feb 2022 13:42:45 +0000
-X-MC-Unique: UlNFSu5EPwWiWKwZdJvkSg-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.28; Sun, 6 Feb 2022 13:42:42 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.028; Sun, 6 Feb 2022 13:42:42 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     "'Edgecombe, Rick P'" <rick.p.edgecombe@intel.com>,
-        "hjl.tools@gmail.com" <hjl.tools@gmail.com>
-CC:     "bsingharora@gmail.com" <bsingharora@gmail.com>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "Syromiatnikov, Eugene" <esyr@redhat.com>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "rdunlap@infradead.org" <rdunlap@infradead.org>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "Eranian, Stephane" <eranian@google.com>,
-        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "fweimer@redhat.com" <fweimer@redhat.com>,
-        "nadav.amit@gmail.com" <nadav.amit@gmail.com>,
-        "jannh@google.com" <jannh@google.com>,
-        "kcc@google.com" <kcc@google.com>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "pavel@ucw.cz" <pavel@ucw.cz>, "oleg@redhat.com" <oleg@redhat.com>,
-        "Yang, Weijiang" <weijiang.yang@intel.com>,
-        "Lutomirski, Andy" <luto@kernel.org>,
-        "bp@alien8.de" <bp@alien8.de>, "arnd@arndb.de" <arnd@arndb.de>,
-        "Moreira, Joao" <joao.moreira@intel.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mike.kravetz@oracle.com" <mike.kravetz@oracle.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "Dave.Martin@arm.com" <Dave.Martin@arm.com>,
-        "john.allen@amd.com" <john.allen@amd.com>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
-        "gorcunov@gmail.com" <gorcunov@gmail.com>
-Subject: RE: [PATCH 00/35] Shadow stacks for userspace
-Thread-Topic: [PATCH 00/35] Shadow stacks for userspace
-Thread-Index: AQHYFh9orVaVUe6rNECZu4edjJzhZqyCV/wAgABDLwCAAl19kIAABAWAgABxL4CAARiJ8A==
-Date:   Sun, 6 Feb 2022 13:42:42 +0000
-Message-ID: <782f27dbe6fc419a8946eeb426253e28@AcuMS.aculab.com>
-References: <87fsozek0j.ffs@tglx>
-         <a7e59ae16e0e05579b087caf4045e42b174e2167.camel@intel.com>
-         <3421da7fc8474b6db0e265b20ffd28d0@AcuMS.aculab.com>
-         <CAMe9rOonepEiRyoAyTGkDMQQhuyuoP4iTZJJhKGxgnq9vv=dLQ@mail.gmail.com>
- <9f948745435c4c9273131146d50fe6f328b91a78.camel@intel.com>
-In-Reply-To: <9f948745435c4c9273131146d50fe6f328b91a78.camel@intel.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Sun, 6 Feb 2022 08:49:23 -0500
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86065C0401C3
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 05:49:21 -0800 (PST)
+Received: by mail-io1-f70.google.com with SMTP id y4-20020a056602200400b006101b618529so7047983iod.19
+        for <linux-kernel@vger.kernel.org>; Sun, 06 Feb 2022 05:49:21 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=2BjaMGDo4/nb0cgziCObjwAIJLqV0IFNYkvzhO5UBCM=;
+        b=ehjd5lecASwBdqY7AL4MTGfMvThioU+xEOnjiWZVIbkfw6ly92OM2y92/UGr1tU1cP
+         2ILiIJX3mlylQeNa9lIXCJwSUtZ5lyDGtlAH5qiUyqDhxQjbO28ZPy+niS5ax1t1kYz7
+         oUPpMPVcbNWgQV+AqDbe6v3W/Zh8ycJkQZ0sJ9mch95TJf9iw/wV6LweR2QoXzfAf6HX
+         QGOYBJz1R4cdLBWS5Xve+/Wa8XOg4H9kFPUysSEaPY2JEqylLX+obQzF62HsMlO5YKMx
+         DOAlOoNDDvhPGqYvt401IQp7tYYxlqNMkJYfRR+mKMPOYz4vMZ5YRlZU982RNvUuGY5n
+         LY7w==
+X-Gm-Message-State: AOAM532eZ3Fs7UwHmvDpam5li0AiyxCiGrIkzFJpeerrik9pHMkDXt6a
+        i1FExOSjBt83M6+HH+KBNAh/bqaDVDLppBYscexza0HQOefp
+X-Google-Smtp-Source: ABdhPJyrtf9K1fc0nnjSzQa41PslNz5JT188h0hOhiBRCbCMRX44ELEtSDOus0Y+q8gBFL3acNPlpTbI7OjY+y+Meg2n+cuzPMFu
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+X-Received: by 2002:a05:6638:164f:: with SMTP id a15mr3896146jat.272.1644155360871;
+ Sun, 06 Feb 2022 05:49:20 -0800 (PST)
+Date:   Sun, 06 Feb 2022 05:49:20 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000003d898d05d759c00a@google.com>
+Subject: [syzbot] kernel BUG in ext4_es_cache_extent
+From:   syzbot <syzbot+c7358a3cd05ee786eb31@syzkaller.appspotmail.com>
+To:     adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        tytso@mit.edu
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-RnJvbTogRWRnZWNvbWJlLCBSaWNrIFANCj4gU2VudDogMDUgRmVicnVhcnkgMjAyMiAyMDoxNQ0K
-PiANCj4gT24gU2F0LCAyMDIyLTAyLTA1IGF0IDA1OjI5IC0wODAwLCBILkouIEx1IHdyb3RlOg0K
-PiA+IE9uIFNhdCwgRmViIDUsIDIwMjIgYXQgNToyNyBBTSBEYXZpZCBMYWlnaHQgPERhdmlkLkxh
-aWdodEBhY3VsYWIuY29tPg0KPiA+IHdyb3RlOg0KPiA+ID4NCj4gPiA+IEZyb206IEVkZ2Vjb21i
-ZSwgUmljayBQDQo+ID4gPiA+IFNlbnQ6IDA0IEZlYnJ1YXJ5IDIwMjIgMDE6MDgNCj4gPiA+ID4g
-SGkgVGhvbWFzLA0KPiA+ID4gPg0KPiA+ID4gPiBUaGFua3MgZm9yIGZlZWRiYWNrIG9uIHRoZSBw
-bGFuLg0KPiA+ID4gPg0KPiA+ID4gPiBPbiBUaHUsIDIwMjItMDItMDMgYXQgMjI6MDcgKzAxMDAs
-IFRob21hcyBHbGVpeG5lciB3cm90ZToNCj4gPiA+ID4gPiA+IFVudGlsIG5vdywgdGhlIGVuYWJs
-aW5nIGVmZm9ydCB3YXMgdHJ5aW5nIHRvIHN1cHBvcnQgYm90aA0KPiA+ID4gPiA+ID4gU2hhZG93
-DQo+ID4gPiA+ID4gPiBTdGFjayBhbmQgSUJULg0KPiA+ID4gPiA+ID4gVGhpcyBoaXN0b3J5IHdp
-bGwgZm9jdXMgb24gYSBmZXcgYXJlYXMgb2YgdGhlIHNoYWRvdyBzdGFjaw0KPiA+ID4gPiA+ID4g
-ZGV2ZWxvcG1lbnQgaGlzdG9yeQ0KPiA+ID4gPiA+ID4gdGhhdCBJIHRob3VnaHQgc3Rvb2Qgb3V0
-Lg0KPiA+ID4gPiA+ID4NCj4gPiA+ID4gPiA+ICAgICAgICBTaWduYWxzDQo+ID4gPiA+ID4gPiAg
-ICAgICAgLS0tLS0tLQ0KPiA+ID4gPiA+ID4gICAgICAgIE9yaWdpbmFsbHkgc2lnbmFscyBwbGFj
-ZWQgdGhlIGxvY2F0aW9uIG9mIHRoZSBzaGFkb3cNCj4gPiA+ID4gPiA+IHN0YWNrDQo+ID4gPiA+
-ID4gPiByZXN0b3JlDQo+ID4gPiA+ID4gPiAgICAgICAgdG9rZW4gaW5zaWRlIHRoZSBzYXZlZCBz
-dGF0ZSBvbiB0aGUgc3RhY2suIFRoaXMgd2FzDQo+ID4gPiA+ID4gPiBwcm9ibGVtYXRpYyBmcm9t
-IGENCj4gPiA+ID4gPiA+ICAgICAgICBwYXN0IEFCSSBwcm9taXNlcyBwZXJzcGVjdGl2ZS4gU28g
-dGhlIHJlc3RvcmUgbG9jYXRpb24NCj4gPiA+ID4gPiA+IHdhcw0KPiA+ID4gPiA+ID4gaW5zdGVh
-ZCBqdXN0DQo+ID4gPiA+ID4gPiAgICAgICAgYXNzdW1lZCBmcm9tIHRoZSBzaGFkb3cgc3RhY2sg
-cG9pbnRlci4gVGhpcyB3b3Jrcw0KPiA+ID4gPiA+ID4gYmVjYXVzZSBpbg0KPiA+ID4gPiA+ID4g
-bm9ybWFsDQo+ID4gPiA+ID4gPiAgICAgICAgYWxsb3dlZCBjYXNlcyBvZiBjYWxsaW5nIHNpZ3Jl
-dHVybiwgdGhlIHNoYWRvdyBzdGFjaw0KPiA+ID4gPiA+ID4gcG9pbnRlcg0KPiA+ID4gPiA+ID4g
-c2hvdWxkIGJlDQo+ID4gPiA+ID4gPiAgICAgICAgcmlnaHQgYXQgdGhlIHJlc3RvcmUgdG9rZW4g
-YXQgdGhhdCB0aW1lLiBUaGVyZSBpcyBubw0KPiA+ID4gPiA+ID4gYWx0ZXJuYXRlIHNoYWRvdw0K
-PiA+ID4gPiA+ID4gICAgICAgIHN0YWNrIHN1cHBvcnQuIElmIGFuIGFsdCBzaGFkb3cgc3RhY2sg
-aXMgYWRkZWQgbGF0ZXINCj4gPiA+ID4gPiA+IHdlDQo+ID4gPiA+ID4gPiB3b3VsZA0KPiA+ID4g
-PiA+ID4gICAgICAgIG5lZWQgdG8NCj4gPiA+ID4gPg0KPiA+ID4gPiA+IFNvIGhvdyBpcyB0aGF0
-IGdvaW5nIHRvIHdvcms/IGFsdHN0YWNrIGlzIG5vdCBhbiBlc290ZXJpYw0KPiA+ID4gPiA+IGNv
-cm5lcg0KPiA+ID4gPiA+IGNhc2UuDQo+ID4gPiA+DQo+ID4gPiA+IE15IHVuZGVyc3RhbmRpbmcg
-aXMgdGhhdCB0aGUgbWFpbiB1c2FnZXMgZm9yIHRoZSBzaWduYWwgc3RhY2sNCj4gPiA+ID4gd2Vy
-ZQ0KPiA+ID4gPiBoYW5kbGluZyBzdGFjayBvdmVyZmxvd3MgYW5kIGNvcnJ1cHRpb24uIFNpbmNl
-IHRoZSBzaGFkb3cgc3RhY2sNCj4gPiA+ID4gb25seQ0KPiA+ID4gPiBjb250YWlucyByZXR1cm4g
-YWRkcmVzc2VzIHJhdGhlciB0aGFuIGxhcmdlIHN0YWNrIGFsbG9jYXRpb25zLA0KPiA+ID4gPiBh
-bmQgaXMNCj4gPiA+ID4gbm90IGdlbmVyYWxseSB3cml0YWJsZSBvciBwaXZvdGFibGUsIEkgdGhv
-dWdodCB0aGVyZSB3YXMgYSBnb29kDQo+ID4gPiA+IHBvc3NpYmlsaXR5IGFuIGFsdCBzaGFkb3cg
-c3RhY2sgd291bGQgbm90IGVuZCB1cCBiZWluZyBlc3BlY2lhbGx5DQo+ID4gPiA+IHVzZWZ1bC4g
-RG9lcyBpdCBzZWVtIGxpa2UgcmVhc29uYWJsZSBndWVzc3dvcms/DQo+ID4gPg0KPiA+ID4gVGhl
-IG90aGVyICdwcm9ibGVtJyBpcyB0aGF0IGl0IGlzIHZhbGlkIHRvIGxvbmdqdW1wIG91dCBvZiBh
-IHNpZ25hbA0KPiA+ID4gaGFuZGxlci4NCj4gPiA+IFRoZXNlIGRheXMgeW91IGhhdmUgdG8gdXNl
-IHNpZ2xvbmdqbXAoKSBub3QgbG9uZ2ptcCgpIGJ1dCBpdCBpcw0KPiA+ID4gc3RpbGwgdXNlZC4N
-Cj4gPiA+DQo+ID4gPiBJdCBpcyBwcm9iYWJseSBhbHNvIHZhbGlkIHRvIHVzZSBzaWdsb25nam1w
-KCkgdG8ganVtcCBmcm9tIGEgbmVzdGVkDQo+ID4gPiBzaWduYWwgaGFuZGxlciBpbnRvIHRoZSBv
-dXRlciBoYW5kbGVyLg0KPiA+ID4gR2l2ZW4gYm90aCBzaWduYWwgaGFuZGxlcnMgY2FuIGhhdmUg
-dGhlaXIgb3duIHN0YWNrLCB0aGVyZSBjYW4gYmUNCj4gPiA+IHRocmVlDQo+ID4gPiBzdGFja3Mg
-aW52b2x2ZWQuDQo+IA0KPiBTbyB0aGUgc2NlbmFyaW8gaXM/DQo+IA0KPiAxLiBIYW5kbGUgc2ln
-bmFsIDENCj4gMi4gc2lnc2V0am1wKCkNCj4gMy4gc2lnbmFsc3RhY2soKQ0KPiA0LiBIYW5kbGUg
-c2lnbmFsIDIgb24gYWx0IHN0YWNrDQo+IDUuIHNpZ2xvbmdqbXAoKQ0KPiANCj4gSSdsbCBjaGVj
-ayB0aGF0IGl0IGlzIGNvdmVyZWQgYnkgdGhlIHRlc3RzLCBidXQgSSB0aGluayBpdCBzaG91bGQg
-d29yaw0KPiBpbiB0aGlzIHNlcmllcyB0aGF0IGhhcyBubyBhbHQgc2hhZG93IHN0YWNrLiBJIGhh
-dmUgb25seSBkb25lIGEgaGlnaA0KPiBsZXZlbCBvdmVydmlldyBvZiBob3cgdGhlIHNoYWRvdyBz
-dGFjayBzdHVmZiwgdGhhdCBkb2Vzbid0IGludm9sdmUgdGhlDQo+IGtlcm5lbCwgd29ya3MgaW4g
-Z2xpYmMuIFNvdW5kcyBsaWtlIEknbGwgbmVlZCB0byBkbyBhIGRlZXBlciBkaXZlLg0KDQpUaGUg
-cG9zaXgveG9wZW4gZGVmaW5pdGlvbiBmb3Igc2V0am1wL2xvbmdqbXAgZG9lc24ndCByZXF1aXJl
-IHN1Y2gNCmxvbmdqbXAgcmVxdWVzdHMgdG8gd29yay4NCg0KQWx0aG91Z2ggdGhleSBzdGlsbCBo
-YXZlIHRvIGRvIHNvbWV0aGluZyB0aGF0IGRvZXNuJ3QgYnJlYWsgYmFkbHkuDQpBYm9ydGluZyB0
-aGUgcHJvY2VzcyBpcyBwcm9iYWJseSBmaW5lIQ0KDQo+ID4gPiBJIHRoaW5rIHRoZSBzaGFkb3cg
-c3RhY2sgcG9pbnRlciBoYXMgdG8gYmUgaW4gdWNvbnRleHQgLSB3aGljaCBhbHNvDQo+ID4gPiBt
-ZWFucyB0aGUgYXBwbGljYXRpb24gY2FuIGNoYW5nZSBpdCBiZWZvcmUgcmV0dXJuaW5nIGZyb20g
-YSBzaWduYWwuDQo+IA0KPiBZZXMgd2UgbWlnaHQgbmVlZCB0byBjaGFuZ2UgaXQgdG8gc3VwcG9y
-dCBhbHQgc2hhZG93IHN0YWNrcy4gQ2FuIHlvdQ0KPiBlbGFib3JhdGUgd2h5IHlvdSB0aGluayBp
-dCBoYXMgdG8gYmUgaW4gdWNvbnRleHQ/IEkgd2FzIHRoaW5raW5nIG9mDQo+IGxvb2tpbmcgYXQg
-dGhyZWUgb3B0aW9ucyBmb3Igc3RvcmluZyB0aGUgc3NwOg0KPiAgLSBTdG9yZWQgaW4gdGhlIHNo
-YWRvdyBzdGFjayBsaWtlIGEgdG9rZW4gdXNpbmcgV1JVU1MgZnJvbSB0aGUga2VybmVsLg0KPiAg
-LSBTdG9yZWQgb24gdGhlIGtlcm5lbCBzaWRlIHVzaW5nIGEgaGFzaG1hcCB0aGF0IG1hcHMgdWNv
-bnRleHQgb3INCj4gICAgc2lnZnJhbWUgdXNlcnNwYWNlIGFkZHJlc3MgdG8gc3NwICh0aGlzIGlz
-IG9mIGNvdXJzZSBzaW1pbGFyIHRvDQo+ICAgIHN0b3JpbmcgaW4gdWNvbnRleHQsIGV4Y2VwdCB0
-aGF0IHRoZSB1c2VyIGNhbuKAmXQgY2hhbmdlIHRoZSBzc3ApLg0KPiAgLSBTdG9yZWQgd3JpdGFi
-bGUgaW4gdXNlcnNwYWNlIGluIHVjb250ZXh0Lg0KPiANCj4gQnV0IGluIHRoaXMgdmVyc2lvbiwg
-d2l0aG91dCBhbHQgc2hhZG93IHN0YWNrcywgdGhlIHNoYWRvdyBzdGFjaw0KPiBwb2ludGVyIGlz
-IG5vdCBzdG9yZWQgaW4gdWNvbnRleHQuIFRoaXMgY2F1c2VzIHRoZSBsaW1pdGF0aW9uIHRoYXQN
-Cj4gdXNlcnNwYWNlIGNhbiBvbmx5IGNhbGwgc2lncmV0dXJuIHdoZW4gaXQgaGFzIHJldHVybmVk
-IGJhY2sgdG8gYSBwb2ludA0KPiB3aGVyZSB0aGVyZSBpcyBhIHJlc3RvcmUgdG9rZW4gb24gdGhl
-IHNoYWRvdyBzdGFjayAod2hpY2ggd2FzIHBsYWNlZA0KPiB0aGVyZSBieSB0aGUga2VybmVsKS4g
-VGhpcyBkb2VzbuKAmXQgbWVhbiBpdCBjYW7igJl0IHN3aXRjaCB0byBhIGRpZmZlcmVudA0KPiBz
-aGFkb3cgc3RhY2sgb3IgaGFuZGxlIGEgbmVzdGVkIHNpZ25hbCwgYnV0IGl0IGxpbWl0cyB0aGUg
-cG9zc2liaWxpdHkNCj4gZm9yIGNhbGxpbmcgc2lncmV0dXJuIHdpdGggYSB0b3RhbGx5IGRpZmZl
-cmVudCBzaWdmcmFtZSAobGlrZSBDUklVIGFuZA0KPiBTUk9QIGF0dGFja3MgZG8pLiBJdCBzaG91
-bGQgaG9wZWZ1bGx5IGJlIGEgaGVscGZ1bCwgcHJvdGVjdGl2ZQ0KPiBsaW1pdGF0aW9uIGZvciBt
-b3N0IGFwcHMgYW5kIEknbSBob3BpbmcgQ1JJVSBjYW4gYmUgZml4ZWQgd2l0aG91dA0KPiByZW1v
-dmluZyBpdC4NCj4gDQo+IEkgYW0gbm90IGF3YXJlIG9mIG90aGVyIGxpbWl0YXRpb25zIHRvIHNp
-Z25hbHMgKGJlc2lkZXMgbm9ybWFsIHNoYWRvdw0KPiBzdGFjayBlbmZvcmNlbWVudCksIGJ1dCBJ
-IGNvdWxkIGJlIG1pc3NpbmcgaXQuIEFuZCBwZW9wbGUncyBza2VwdGljaXNtDQo+IGlzIG1ha2lu
-ZyBtZSB3YW50IHRvIGdvIGJhY2sgb3ZlciBpdCB3aXRoIG1vcmUgc2NydXRpbnkuDQo+IA0KPiA+
-ID4gSW4gbXVjaCB0aGUgc2FtZSB3YXkgYXMgYWxsIHRoZSBzZWdtZW50IHJlZ2lzdGVycyBjYW4g
-YmUgY2hhbmdlZA0KPiA+ID4gbGVhZGluZyB0byBhbGwgdGhlIG5hc3R5IGJ1Z3Mgd2hlbiB0aGUg
-ZmluYWwgJ3JldHVybiB0byB1c2VyJyBjb2RlDQo+ID4gPiB0cmFwcyBpbiBrZXJuZWwgd2hlbiBs
-b2FkaW5nIGludmFsaWQgc2VnbWVudCByZWdpc3RlcnMgb3IgZXhlY3V0aW5nDQo+ID4gPiBpcmV0
-Lg0KPiANCj4gSSBkb24ndCB0aGluayB0aGlzIGlzIGFzIGRpZmZpY3VsdCB0byBhdm9pZCBiZWNh
-dXNlIHVzZXJzcGFjZSBzc3AgaGFzDQo+IGl0cyBvd24gcmVnaXN0ZXIgdGhhdCBzaG91bGQgbm90
-IGJlIGFjY2Vzc2VkIGF0IHRoYXQgcG9pbnQsIGJ1dCBJIGhhdmUNCj4gbm90IGdpdmVuIHRoaXMg
-YXNwZWN0IGVub3VnaCBhbmFseXNpcy4gVGhhbmtzIGZvciBicmluZ2luZyBpdCB1cC4NCg0KU28g
-dGhlIHVzZXIgc3NwIGlzbid0IHNhdmVkIChvciByZXN0b3JlZCkgYnkgdGhlIHRyYXAgZW50cnkv
-ZXhpdC4NClNvIGl0IG5lZWRzIHRvIGJlIHNhdmVkIGJ5IHRoZSBjb250ZXh0IHN3aXRjaCBjb2Rl
-Pw0KTXVjaCBsaWtlIHRoZSB1c2VyIHNlZ21lbnQgcmVnaXN0ZXJzPw0KU28geW91IGFyZSBsaWtl
-bHkgdG8gZ2V0IHRoZSBzYW1lIHByb2JsZW1zIGlmIHJlc3RvcmluZyBpdCBjYW4gZmF1bHQNCmlu
-IGtlcm5lbCAoZWcgZm9yIGEgbm9uLWNhbm9uaWNhbCBhZGRyZXNzKS4NCg0KPiA+ID4gSG1tbS4u
-LiBkbyBzaGFkb3cgc3RhY2tzIG1lYW4gdGhhdCBsb25nam1wKCkgaGFzIHRvIGJlIGEgc3lzdGVt
-DQo+ID4gPiBjYWxsPw0KPiA+DQo+ID4gTm8uICBzZXRqbXAvbG9uZ2ptcCBzYXZlIGFuZCByZXN0
-b3JlIHNoYWRvdyBzdGFjayBwb2ludGVyLg0KDQpPaywgSSB3YXMgdGhpbmtpbmcgdGhhdCBkaXJl
-Y3QgYWNjZXNzIHRvIHRoZSB1c2VyIHNzcCB3b3VsZCBiZQ0KYSBwcml2aWxlZ2VkIG9wZXJhdGlv
-bi4NCklmIGl0IGNhbiBiZSB3cml0dGVuIHlvdSBkb24ndCByZWFsbHkgaGF2ZSB0byB3b3JyeSBh
-Ym91dCB3aGF0IGNvZGUNCmlzIHRyeWluZyB0byBkbyAtIGl0IGNhbiBhY3R1YWxseSBkbyB3aGF0
-IGl0IGxpa2VzLg0KSXQganVzdCBjYXRjaGVzIHVuaW50ZW50aW9uYWwgb3BlcmF0aW9ucyAobGlr
-ZSBidWZmZXIgb3ZlcmZsb3dzKS4NCg0KV2FzIHRoZXJlIGFueSAnc3BhcmUnIHNwYWNlIGluIHN0
-cnVjdCBqbXBidWYgPw0KT3RoZXJ3aXNlIHlvdSBjYW4gb25seSBlbmFibGUgc2hhZG93IHN0YWNr
-cyBpZiBldmVyeXRoaW5nIGhhcyBiZWVuDQpyZWNvbXBpbGVkIC0gaW5jbHVkaW5nIGFueSBzaGFy
-ZWQgbGlicmFyaWVzIHRoZSBtaWdodCBiZSBkbG9wZW4oKWVkLg0KKG9yIGRvZXMgdGhlIGNvbXBp
-bGVyIGludmVudCBhbiBhbGxvY2EoKSBjYWxsIHNvbWVob3cgZm9yIGENCnNpemUgdGhhdCBjb21l
-cyBiYWNrIGZyb20gZ2xpYmM/KQ0KDQpJJ3ZlIG5ldmVyIHJlYWxseSBjb25zaWRlcmVkIGhvdyBz
-ZXRqbXAvbG9uZ2ptcCBoYW5kbGUgY2FsbGVlIHNhdmVkDQpyZWdpc3RlciB2YXJpYWJsZXMgKGFw
-YXJ0IGZyb20gaXQgYmVpbmcgaGFyZCkuDQpUaGUgb3JpZ2luYWwgcGRwMTEgaW1wbGVtZW50YXRp
-b24gcHJvYmFibHkgb25seSBuZWVkZWQgdG8gc2F2ZSByNiBhbmQgcjcuDQoNCldoYXQgZG9lcyBo
-YXBwZW4gdG8gYWxsIHRoZSAnZXh0ZW5kZWQgc3RhdGUnIHRoYXQgWFNBVkUgaGFuZGxlcz8NCklJ
-UkMgYWxsIHRoZSBBVlggcmVnaXN0ZXJzIGFyZSBjYWxsZXIgc2F2ZWQgKHNvIHNob3VsZCBwcm9i
-YWJseQ0KYmUgemVyb2QpLCBidXQgc29tZSBvZiB0aGUgU1NFIG9uZXMgYXJlIGNhbGxlZSBzYXZl
-ZCwgYW5kIG9uZSBvcg0KdHdvIG9mIHRoZSBmcHUgZmxhZ3MgYXJlIHN0aWNreSBhbmQgYW5ub3lp
-bmcgZW5vdWdoIHRoZSBzYXZlL3Jlc3RvcmUNCmF0IHRoZSBiZXN0IG9mIHRpbWVzLg0KDQo+IEl0
-IHNvdW5kcyBsaWtlIGl0IHdvdWxkIGhlbHAgdG8gd3JpdGUgdXAgaW4gYSBsb3QgbW9yZSBkZXRh
-aWwgZXhhY3RseQ0KPiBob3cgYWxsIHRoZSBzaWduYWwgYW5kIHNwZWNpYWxlciBzdGFjayBtYW5p
-cHVsYXRpb24gc2NlbmFyaW9zIHdvcmsgaW4NCj4gZ2xpYmMuDQoNClNvbWUgY3Jvc3MgcmVmZXJl
-bmNlcyBtaWdodCBoYXZlIG1hZGUgcGVvcGxlIG5vdGljZSB0aGF0IHRoZSB1Y29udGV4dA0KZXh0
-ZW5zaW9ucyBmb3IgQVZYNTEyIChpZiBub3QgZWFybGllciBvbmVzKSBicm9rZSB0aGUgbWluaW1h
-bC9kZWZhdWx0DQpzaWduYWwgc3RhY2sgc2l6ZS4NCg0KCURhdmlkDQoNCi0NClJlZ2lzdGVyZWQg
-QWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBGYXJtLCBNaWx0b24gS2V5bmVz
-LCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxlcykNCg==
+Hello,
 
+syzbot found the following issue on:
+
+HEAD commit:    9f7fb8de5d9b Merge tag 'spi-fix-v5.17-rc2' of git://git.ke..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=148d0304700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=b4a89edfcc8f7c74
+dashboard link: https://syzkaller.appspot.com/bug?extid=c7358a3cd05ee786eb31
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=124e0abfb00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1758f610700000
+
+Bisection is inconclusive: the issue happens on the oldest tested release.
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=12758738700000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=11758738700000
+console output: https://syzkaller.appspot.com/x/log.txt?x=16758738700000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+c7358a3cd05ee786eb31@syzkaller.appspotmail.com
+
+loop0: detected capacity change from 0 to 1051
+EXT4-fs (loop0): ext4_check_descriptors: Checksum for group 0 failed (60935!=0)
+EXT4-fs (loop0): mounted filesystem without journal. Quota mode: writeback.
+------------[ cut here ]------------
+kernel BUG at fs/ext4/extents_status.c:899!
+invalid opcode: 0000 [#1] PREEMPT SMP KASAN
+CPU: 1 PID: 3587 Comm: syz-executor288 Not tainted 5.17.0-rc2-syzkaller-00039-g9f7fb8de5d9b #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:ext4_es_cache_extent+0x4e8/0x550 fs/ext4/extents_status.c:899
+Code: 00 48 c7 c7 e0 6c c1 89 c6 05 71 25 6f 0b 01 e8 b0 b6 f6 06 e9 5a ff ff ff e8 94 9d 68 ff 0f 0b e9 d7 fc ff ff e8 88 9d 68 ff <0f> 0b e8 81 9d 68 ff 0f 0b e9 13 fe ff ff e8 25 df af ff e9 c2 fb
+RSP: 0018:ffffc90001abee80 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: 00000000000013de RCX: 0000000000000000
+RDX: ffff88807deb0000 RSI: ffffffff820fd0f8 RDI: 0000000000000003
+RBP: ffff888074e6f048 R08: 00000000ffffffff R09: 0000000000000000
+R10: ffffffff820fce3c R11: 0000000000000000 R12: 0000000000000001
+R13: 00000000ffffffff R14: 1ffff92000357dd1 R15: 00008f1cffffffff
+FS:  0000555556ad6300(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f117149e4b0 CR3: 000000007cc1f000 CR4: 0000000000350ee0
+Call Trace:
+ <TASK>
+ ext4_cache_extents+0x13e/0x2d0 fs/ext4/extents.c:518
+ ext4_find_extent+0x8f6/0xd10 fs/ext4/extents.c:916
+ ext4_ext_map_blocks+0x1e2/0x5f30 fs/ext4/extents.c:4098
+ ext4_map_blocks+0x9ca/0x18a0 fs/ext4/inode.c:563
+ ext4_getblk+0x553/0x6b0 fs/ext4/inode.c:849
+ ext4_bread_batch+0x7c/0x550 fs/ext4/inode.c:923
+ __ext4_find_entry+0x482/0x1050 fs/ext4/namei.c:1600
+ ext4_lookup_entry fs/ext4/namei.c:1701 [inline]
+ ext4_lookup fs/ext4/namei.c:1769 [inline]
+ ext4_lookup+0x4fc/0x730 fs/ext4/namei.c:1760
+ __lookup_slow+0x24c/0x480 fs/namei.c:1707
+ lookup_slow fs/namei.c:1724 [inline]
+ walk_component+0x40f/0x6a0 fs/namei.c:2020
+ link_path_walk.part.0+0x7ef/0xf70 fs/namei.c:2347
+ link_path_walk fs/namei.c:2272 [inline]
+ path_openat+0x266/0x2940 fs/namei.c:3605
+ do_filp_open+0x1aa/0x400 fs/namei.c:3636
+ do_sys_openat2+0x16d/0x4d0 fs/open.c:1214
+ do_sys_open fs/open.c:1230 [inline]
+ __do_sys_openat fs/open.c:1246 [inline]
+ __se_sys_openat fs/open.c:1241 [inline]
+ __x64_sys_openat+0x13f/0x1f0 fs/open.c:1241
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f8e44f22f19
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fff98aa3238 EFLAGS: 00000246 ORIG_RAX: 0000000000000101
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f8e44f22f19
+RDX: 000000000000c880 RSI: 0000000020000100 RDI: 0000000000000005
+RBP: 00007f8e44ee27b0 R08: 0000000800000015 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007f8e44ee2840
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:ext4_es_cache_extent+0x4e8/0x550 fs/ext4/extents_status.c:899
+Code: 00 48 c7 c7 e0 6c c1 89 c6 05 71 25 6f 0b 01 e8 b0 b6 f6 06 e9 5a ff ff ff e8 94 9d 68 ff 0f 0b e9 d7 fc ff ff e8 88 9d 68 ff <0f> 0b e8 81 9d 68 ff 0f 0b e9 13 fe ff ff e8 25 df af ff e9 c2 fb
+RSP: 0018:ffffc90001abee80 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: 00000000000013de RCX: 0000000000000000
+RDX: ffff88807deb0000 RSI: ffffffff820fd0f8 RDI: 0000000000000003
+RBP: ffff888074e6f048 R08: 00000000ffffffff R09: 0000000000000000
+R10: ffffffff820fce3c R11: 0000000000000000 R12: 0000000000000001
+R13: 00000000ffffffff R14: 1ffff92000357dd1 R15: 00008f1cffffffff
+FS:  0000555556ad6300(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f117149e4b0 CR3: 000000007cc1f000 CR4: 0000000000350ee0
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
