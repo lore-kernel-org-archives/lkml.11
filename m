@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80047C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 21:42:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E61E9C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 21:43:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243247AbiBFVmP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Feb 2022 16:42:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52890 "EHLO
+        id S243308AbiBFVn7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 6 Feb 2022 16:43:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230392AbiBFVmN (ORCPT
+        with ESMTP id S230392AbiBFVn5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 16:42:13 -0500
-Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F965C06173B
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 13:42:12 -0800 (PST)
-Received: by mail-oi1-x22d.google.com with SMTP id m10so15158458oie.2
-        for <linux-kernel@vger.kernel.org>; Sun, 06 Feb 2022 13:42:12 -0800 (PST)
+        Sun, 6 Feb 2022 16:43:57 -0500
+Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 039B8C06173B
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 13:43:57 -0800 (PST)
+Received: by mail-oi1-x235.google.com with SMTP id r27so15138711oiw.4
+        for <linux-kernel@vger.kernel.org>; Sun, 06 Feb 2022 13:43:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:from:to:cc:subject:in-reply-to:message-id:references
          :mime-version;
-        bh=mTlHQrodDNd3rZOQBHQa8LzV06BmSwKLzOZxJpptGr4=;
-        b=Z02MazlMjxS66AVcF8zW7Ge1wm8O8/a5SUzhY49rHE0xKKyPhz9xuwvFDK7cUXjQVe
-         6mhX1iCrPzzE12chAQXI3C8to8Tr4laJBNMD/4GTY1Qb7yGxRIR6pb7Iw7A8jcaPipHy
-         Xd2mmhEMLDFVz6i9Y4rrTrhFJ7Ea0LcmUcSbe+TofxuYbzzqt93RnocGwkabi60Py1wO
-         H+sP8eOyVXiPHG6wa8rf4M8GmgaWaL/7OQ6jw8513up+F4bMPGqf/XQ5aAYWUjfsb0qb
-         ZR2bHRQyR8F+VfDyMXZBDzTMtz4NLDop3+90tA4linsCAcL76jsn3d5bnEZYA448Kmo2
-         FnoA==
+        bh=VKjWDSDEqSXkMBseTZ4kYaUBzUWcD2iDw3Sk4fM5TfU=;
+        b=oVJyzbVxwCoRIqqb/a/jVLhXKxolruR0BPQ8MlppBLhDAxgdTVmRqTo1aYZcsaaG4g
+         3xQgZjoFD68v2KcCXOqkiU/cWafPHJ+re0aEizZ7t+agvr2mUknoVNKNN4VimGs/YYFC
+         tT38/gyOPGVipPYXv1SEL1yq7KCGb/m+UeDMiMXYinOrz+VvVbXl7zD6wWSKxKJznOul
+         W2pFIzlEpSJdqEW0MCSuBLXTqafil/jxo19+1kIugDEwkUmODuhmfeAsWf9GCHlm9Axk
+         VxoJCzuhezM3XkDxD1pq0WAq53gzsvlpI9d838/fizl5cHG5ut0LUmtUmmfLFIcZX6/a
+         lXXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
          :references:mime-version;
-        bh=mTlHQrodDNd3rZOQBHQa8LzV06BmSwKLzOZxJpptGr4=;
-        b=gbuyc4KfbZlEEYedy1FvpHleAwnamJAdR6EKJt0NhoLxBVs7ZukqCaceh1BRTDmGs1
-         9x/25jGAxpzr4lrv3NrWoo22hptNUqdrJ4CDNAfPTXWvTR85iyirZaoNBbaxKDYSdi30
-         OCah3XOD8QTeEhvuFV+ZottHnamdA2TU9Yk9Vzk7RhuJPW+0H0cVBYhMKVcW6xzv9YWm
-         pCYi9h2ywvunwpSHcZ0uHeKI7KX1lfVVbtryJ0ZKEuMsF6HK3JNN9o11SDv+11FFIVAP
-         0d003WOXmKljUOXwOetJxCmFsFKQu4UYyLYtAPDutJofXwK/tVXfYRwKE+Tgng9J87St
-         JqFw==
-X-Gm-Message-State: AOAM533U83SQHDycIi6qj06osmuGVFftF25f7fODXfVhvwzt1cJev+vS
-        y4zi25XBjRGC/HNaf4DryQB6bA==
-X-Google-Smtp-Source: ABdhPJweTO8bxfcPjveuAAsoqbnlNc0uPNoRQyUpsCch7IdQhCO2thiz5FtfZ+MomjFqSQp75WgJyQ==
-X-Received: by 2002:a05:6808:195:: with SMTP id w21mr4240572oic.88.1644183731504;
-        Sun, 06 Feb 2022 13:42:11 -0800 (PST)
+        bh=VKjWDSDEqSXkMBseTZ4kYaUBzUWcD2iDw3Sk4fM5TfU=;
+        b=kPN87afnnuj/CY5zFcTeFDxaHAkk5aCUUpX6ta4heCJPO2rwv86FpgagJldCVqysUH
+         JVUHipxauSXLcXa2v411gpBuIj1H6Nw2xCYZK5Yu/Pnk9jND0pF98FhUeIz457GZMRpH
+         RRcgNXedjQx8NTEHmDEo5fZm1HiZzA5A0bvS8rYUNxIsJfdyqqz3y3WKv6XyXH7vpsdy
+         3Gxsy08OA7eD0GsBVYGWVxzHqpwa0c1AdBAIcfJ9YkGo2nh+oTEE0A3fauWVAB5vPxFA
+         aa8EEssX11qgXrtpECOovlUKJZ5XXoOwFhFwFKzcUKi8CCZk5EMju8MrBSF4m4MMIR0M
+         qmMA==
+X-Gm-Message-State: AOAM532UdcSbUR9n4AVsZM/HR8z9E1gi+SGpVH4V2TSmDUZMlVz3BjYu
+        c0HLnClCFSNDblMVSLe/mKG8qA==
+X-Google-Smtp-Source: ABdhPJyHq22zIK1nECWEXuekkWijhLH6Ab/9ickoD6sMJ6sbVBKBP6Z+c1YzZyQaPuloMWoBb56QTQ==
+X-Received: by 2002:a05:6808:1b0d:: with SMTP id bx13mr5911648oib.178.1644183835825;
+        Sun, 06 Feb 2022 13:43:55 -0800 (PST)
 Received: from ripple.attlocal.net (172-10-233-147.lightspeed.sntcca.sbcglobal.net. [172.10.233.147])
-        by smtp.gmail.com with ESMTPSA id u3sm3507208oao.25.2022.02.06.13.42.10
+        by smtp.gmail.com with ESMTPSA id x19sm3271502otj.59.2022.02.06.13.43.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Feb 2022 13:42:11 -0800 (PST)
-Date:   Sun, 6 Feb 2022 13:42:09 -0800 (PST)
+        Sun, 06 Feb 2022 13:43:55 -0800 (PST)
+Date:   Sun, 6 Feb 2022 13:43:53 -0800 (PST)
 From:   Hugh Dickins <hughd@google.com>
 X-X-Sender: hugh@ripple.anvils
 To:     Andrew Morton <akpm@linux-foundation.org>
@@ -63,10 +63,10 @@ cc:     Michal Hocko <mhocko@suse.com>, Vlastimil Babka <vbabka@suse.cz>,
         Yu Zhao <yuzhao@google.com>, Greg Thelen <gthelen@google.com>,
         Shakeel Butt <shakeelb@google.com>,
         linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Subject: [PATCH 07/13] mm/munlock: mlock_pte_range() when mlocking or
- munlocking
+Subject: [PATCH 08/13] mm/migrate: __unmap_and_move() push good newpage to
+ LRU
 In-Reply-To: <8e4356d-9622-a7f0-b2c-f116b5f2efea@google.com>
-Message-ID: <8bc3ee8c-7f1-d812-7f22-4f9f6d436bc@google.com>
+Message-ID: <33fb71cf-ea55-123a-bf9d-fdad297cae1@google.com>
 References: <8e4356d-9622-a7f0-b2c-f116b5f2efea@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -74,205 +74,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fill in missing pieces: reimplementation of munlock_vma_pages_range(),
-required to lower the mlock_counts when munlocking without munmapping;
-and its complement, implementation of mlock_vma_pages_range(), required
-to raise the mlock_counts on pages already there when a range is mlocked.
+Compaction, NUMA page movement, THP collapse/split, and memory failure
+do isolate unevictable pages from their "LRU", losing the record of
+mlock_count in doing so (isolators are likely to use page->lru for their
+own private lists, so mlock_count has to be presumed lost).
 
-Combine them into just the one function mlock_vma_pages_range(), using
-walk_page_range() to run mlock_pte_range().  This approach fixes the
-"Very slow unlockall()" of unpopulated PROT_NONE areas, reported in
-https://lore.kernel.org/linux-mm/70885d37-62b7-748b-29df-9e94f3291736@gmail.com/
+That's unfortunate, and we should put in some work to correct that: one
+can imagine a function to build up the mlock_count again - but it would
+require i_mmap_rwsem for read, so be careful where it's called.  Or
+page_referenced_one() and try_to_unmap_one() might do that extra work.
 
-Munlock clears VM_LOCKED at the start, under exclusive mmap_lock; but if
-a racing truncate or holepunch (depending on i_mmap_rwsem) gets to the
-pte first, it will not try to munlock the page: leaving release_pages()
-to correct it when the last reference to the page is gone - that's okay,
-a page is not evictable anyway while it is held by an extra reference.
-
-Mlock sets VM_LOCKED at the start, under exclusive mmap_lock; but if
-a racing remove_migration_pte() or try_to_unmap_one() (depending on
-i_mmap_rwsem) gets to the pte first, it will try to mlock the page,
-then mlock_pte_range() mlock it a second time.  This is harder to
-reproduce, but a more serious race because it could leave the page
-unevictable indefinitely though the area is munlocked afterwards.
-Guard against it by setting the (inappropriate) VM_IO flag,
-and modifying mlock_vma_page() to decline such vmas.
+But one place that can very easily be improved is page migration's
+__unmap_and_move(): a small adjustment to where the successful new page
+is put back on LRU, and its mlock_count (if any) is built back up by
+remove_migration_ptes().
 
 Signed-off-by: Hugh Dickins <hughd@google.com>
 ---
- mm/internal.h |   3 +-
- mm/mlock.c    | 108 ++++++++++++++++++++++++++++++++++++++++----------
- 2 files changed, 90 insertions(+), 21 deletions(-)
+ mm/migrate.c | 31 +++++++++++++++++++------------
+ 1 file changed, 19 insertions(+), 12 deletions(-)
 
-diff --git a/mm/internal.h b/mm/internal.h
-index a43d79335c16..b3f0dd3ffba2 100644
---- a/mm/internal.h
-+++ b/mm/internal.h
-@@ -412,7 +412,8 @@ void mlock_page(struct page *page);
- static inline void mlock_vma_page(struct page *page,
- 			struct vm_area_struct *vma, bool compound)
- {
--	if (unlikely(vma->vm_flags & VM_LOCKED) &&
-+	/* VM_IO check prevents migration from double-counting during mlock */
-+	if (unlikely((vma->vm_flags & (VM_LOCKED|VM_IO)) == VM_LOCKED) &&
- 	    (compound || !PageTransCompound(page)))
- 		mlock_page(page);
- }
-diff --git a/mm/mlock.c b/mm/mlock.c
-index 0d3ae04b1f4e..f8e5dcff21ae 100644
---- a/mm/mlock.c
-+++ b/mm/mlock.c
-@@ -14,6 +14,7 @@
- #include <linux/swapops.h>
- #include <linux/pagemap.h>
- #include <linux/pagevec.h>
-+#include <linux/pagewalk.h>
- #include <linux/mempolicy.h>
- #include <linux/syscalls.h>
- #include <linux/sched.h>
-@@ -127,23 +128,90 @@ void munlock_page(struct page *page)
- 	unlock_page_memcg(page);
- }
+diff --git a/mm/migrate.c b/mm/migrate.c
+index 7c4223ce2500..f4bcf1541b62 100644
+--- a/mm/migrate.c
++++ b/mm/migrate.c
+@@ -1032,6 +1032,21 @@ static int __unmap_and_move(struct page *page, struct page *newpage,
+ 	if (!page_mapped(page))
+ 		rc = move_to_new_page(newpage, page, mode);
  
-+static int mlock_pte_range(pmd_t *pmd, unsigned long addr,
-+			   unsigned long end, struct mm_walk *walk)
-+
-+{
-+	struct vm_area_struct *vma = walk->vma;
-+	spinlock_t *ptl;
-+	pte_t *start_pte, *pte;
-+	struct page *page;
-+
-+	ptl = pmd_trans_huge_lock(pmd, vma);
-+	if (ptl) {
-+		if (!pmd_present(*pmd))
-+			goto out;
-+		if (is_huge_zero_pmd(*pmd))
-+			goto out;
-+		page = pmd_page(*pmd);
-+		if (vma->vm_flags & VM_LOCKED)
-+			mlock_page(page);
-+		else
-+			munlock_page(page);
-+		goto out;
-+	}
-+
-+	start_pte = pte_offset_map_lock(vma->vm_mm, pmd, addr, &ptl);
-+	for (pte = start_pte; addr != end; pte++, addr += PAGE_SIZE) {
-+		if (!pte_present(*pte))
-+			continue;
-+		page = vm_normal_page(vma, addr, *pte);
-+		if (!page)
-+			continue;
-+		if (PageTransCompound(page))
-+			continue;
-+		if (vma->vm_flags & VM_LOCKED)
-+			mlock_page(page);
-+		else
-+			munlock_page(page);
-+	}
-+	pte_unmap(start_pte);
-+out:
-+	spin_unlock(ptl);
-+	cond_resched();
-+	return 0;
-+}
-+
- /*
-- * munlock_vma_pages_range() - munlock all pages in the vma range.'
-- * @vma - vma containing range to be munlock()ed.
-+ * mlock_vma_pages_range() - mlock any pages already in the range,
-+ *                           or munlock all pages in the range.
-+ * @vma - vma containing range to be mlock()ed or munlock()ed
-  * @start - start address in @vma of the range
-- * @end - end of range in @vma.
-- *
-- *  For mremap(), munmap() and exit().
-+ * @end - end of range in @vma
-+ * @newflags - the new set of flags for @vma.
-  *
-- * Called with @vma VM_LOCKED.
-- *
-- * Returns with VM_LOCKED cleared.  Callers must be prepared to
-- * deal with this.
-+ * Called for mlock(), mlock2() and mlockall(), to set @vma VM_LOCKED;
-+ * called for munlock() and munlockall(), to clear VM_LOCKED from @vma.
-  */
--static void munlock_vma_pages_range(struct vm_area_struct *vma,
--				    unsigned long start, unsigned long end)
-+static void mlock_vma_pages_range(struct vm_area_struct *vma,
-+	unsigned long start, unsigned long end, vm_flags_t newflags)
- {
--	/* Reimplementation to follow in later commit */
-+	static const struct mm_walk_ops mlock_walk_ops = {
-+		.pmd_entry = mlock_pte_range,
-+	};
-+
 +	/*
-+	 * There is a slight chance that concurrent page migration,
-+	 * or page reclaim finding a page of this now-VM_LOCKED vma,
-+	 * will call mlock_vma_page() and raise page's mlock_count:
-+	 * double counting, leaving the page unevictable indefinitely.
-+	 * Communicate this danger to mlock_vma_page() with VM_IO,
-+	 * which is a VM_SPECIAL flag not allowed on VM_LOCKED vmas.
-+	 * mmap_lock is held in write mode here, so this weird
-+	 * combination should not be visible to others.
++	 * When successful, push newpage to LRU immediately: so that if it
++	 * turns out to be an mlocked page, remove_migration_ptes() will
++	 * automatically build up the correct newpage->mlock_count for it.
++	 *
++	 * We would like to do something similar for the old page, when
++	 * unsuccessful, and other cases when a page has been temporarily
++	 * isolated from the unevictable LRU: but this case is the easiest.
 +	 */
-+	if (newflags & VM_LOCKED)
-+		newflags |= VM_IO;
-+	WRITE_ONCE(vma->vm_flags, newflags);
-+
-+	lru_add_drain();
-+	walk_page_range(vma->vm_mm, start, end, &mlock_walk_ops, NULL);
-+	lru_add_drain();
-+
-+	if (newflags & VM_IO) {
-+		newflags &= ~VM_IO;
-+		WRITE_ONCE(vma->vm_flags, newflags);
++	if (rc == MIGRATEPAGE_SUCCESS) {
++		lru_cache_add(newpage);
++		if (page_was_mapped)
++			lru_add_drain();
 +	}
- }
- 
- /*
-@@ -162,8 +230,7 @@ static int mlock_fixup(struct vm_area_struct *vma, struct vm_area_struct **prev,
- 	pgoff_t pgoff;
- 	int nr_pages;
- 	int ret = 0;
--	int lock = !!(newflags & VM_LOCKED);
--	vm_flags_t old_flags = vma->vm_flags;
-+	vm_flags_t oldflags = vma->vm_flags;
- 
- 	if (newflags == vma->vm_flags || (vma->vm_flags & VM_SPECIAL) ||
- 	    is_vm_hugetlb_page(vma) || vma == get_gate_vma(current->mm) ||
-@@ -197,9 +264,9 @@ static int mlock_fixup(struct vm_area_struct *vma, struct vm_area_struct **prev,
- 	 * Keep track of amount of locked VM.
- 	 */
- 	nr_pages = (end - start) >> PAGE_SHIFT;
--	if (!lock)
-+	if (!(newflags & VM_LOCKED))
- 		nr_pages = -nr_pages;
--	else if (old_flags & VM_LOCKED)
-+	else if (oldflags & VM_LOCKED)
- 		nr_pages = 0;
- 	mm->locked_vm += nr_pages;
- 
-@@ -209,11 +276,12 @@ static int mlock_fixup(struct vm_area_struct *vma, struct vm_area_struct **prev,
- 	 * set VM_LOCKED, populate_vma_page_range will bring it back.
- 	 */
- 
--	if (lock)
-+	if ((newflags & VM_LOCKED) && (oldflags & VM_LOCKED)) {
-+		/* No work to do, and mlocking twice would be wrong */
- 		vma->vm_flags = newflags;
--	else
--		munlock_vma_pages_range(vma, start, end);
--
-+	} else {
-+		mlock_vma_pages_range(vma, start, end, newflags);
-+	}
++
+ 	if (page_was_mapped)
+ 		remove_migration_ptes(page,
+ 			rc == MIGRATEPAGE_SUCCESS ? newpage : page, false);
+@@ -1045,20 +1060,12 @@ static int __unmap_and_move(struct page *page, struct page *newpage,
+ 	unlock_page(page);
  out:
- 	*prev = vma;
- 	return ret;
+ 	/*
+-	 * If migration is successful, decrease refcount of the newpage
++	 * If migration is successful, decrease refcount of the newpage,
+ 	 * which will not free the page because new page owner increased
+-	 * refcounter. As well, if it is LRU page, add the page to LRU
+-	 * list in here. Use the old state of the isolated source page to
+-	 * determine if we migrated a LRU page. newpage was already unlocked
+-	 * and possibly modified by its owner - don't rely on the page
+-	 * state.
++	 * refcounter.
+ 	 */
+-	if (rc == MIGRATEPAGE_SUCCESS) {
+-		if (unlikely(!is_lru))
+-			put_page(newpage);
+-		else
+-			putback_lru_page(newpage);
+-	}
++	if (rc == MIGRATEPAGE_SUCCESS)
++		put_page(newpage);
+ 
+ 	return rc;
+ }
 -- 
 2.34.1
 
