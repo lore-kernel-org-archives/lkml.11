@@ -2,139 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F91AC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 17:59:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4961C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 18:05:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229904AbiBFR75 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Feb 2022 12:59:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42996 "EHLO
+        id S1344887AbiBFSFb (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 6 Feb 2022 13:05:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345435AbiBFR7m (ORCPT
+        with ESMTP id S230490AbiBFSF1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 12:59:42 -0500
-Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7D9FC06173B
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 09:59:41 -0800 (PST)
-Received: from ipservice-092-217-075-184.092.217.pools.vodafone-ip.de ([92.217.75.184] helo=martin-debian-2.paytec.ch)
-        by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <martin@kaiser.cx>)
-        id 1nGlp4-0002n8-1H; Sun, 06 Feb 2022 18:59:38 +0100
-From:   Martin Kaiser <martin@kaiser.cx>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Michael Straube <straube.linux@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 5/5] staging: r8188eu: remove ishighspeed from dvobj_priv
-Date:   Sun,  6 Feb 2022 18:59:25 +0100
-Message-Id: <20220206175925.461426-6-martin@kaiser.cx>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220206175925.461426-1-martin@kaiser.cx>
-References: <20220206175925.461426-1-martin@kaiser.cx>
+        Sun, 6 Feb 2022 13:05:27 -0500
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FA5FC06173B;
+        Sun,  6 Feb 2022 10:05:26 -0800 (PST)
+Received: by mail-lf1-x133.google.com with SMTP id i34so22874859lfv.2;
+        Sun, 06 Feb 2022 10:05:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=HVLXdAwoia/uG4i6iYCt7vD4rrzfysYRtbhIPKSduwc=;
+        b=MRk04SIii12Xd/32wsZ9l0EXld/OflwnHr3juzzS8W268O/OJuXrMIegCs0ebIHPhZ
+         SEmmAsnXuGBk70nvnTBuUeN5lBBdqwZ5L77lNOzAsZyd6FnDlQ3LyJyYL1hM7EtTUjah
+         jN4eYVyqOnNjdOMFycWNkAGv2HCAA1h5XL00apkEviHrxzBS6o/lSCVy6Uss9KZ+0LVE
+         3qAhVl6zlPsHG9THPwK6X74td9TXHMnJh7FRg5Ov6DyHc2HtBe/e/SdHUCDnmveClzUI
+         g0luzJ5elU5SfViU1bRQ+1rZ3hvTtsrliyj01f8VqaCKvqm80lHH2gRT+nchjzLhT1OV
+         Gg5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=HVLXdAwoia/uG4i6iYCt7vD4rrzfysYRtbhIPKSduwc=;
+        b=kaIm+15Gm44Q7Jt1dl0lpVvu7iNWpkzcMnrdt91Jq96w3CsFo7W8tX24YxNqGTrBHP
+         isa1Drw4iBjPuLoPb01N9J01MjhDlHr3ZWfyf/i6LprCLH+O976/8zNL+9MesKDTyt0a
+         nDy+4yFMVSILgqwDG7qO2XYVcKQw9rDQRM5EP7ly7nexhBlS/u7s3ZIZApSM9yZZIn/T
+         LYpbhWrQP3qoa8tUUFWbTeuPpzxi0JCWIPOQrVCJADBednyohRfgFa2ozNvg34IG1kMD
+         D1UGPwUDT32vOZCe1QuMwNoAXXVBxXCPNkVi1yi6dGfG6M16BOD1zTX9ekrbaFg5eM+N
+         Qh4Q==
+X-Gm-Message-State: AOAM530KFJkHU9HzXFsxRYnVp2WqY26+Idi9PCtVOaQlRBuHuNNtTo1j
+        NoqE6ZKc354pss1aZEbQNOw=
+X-Google-Smtp-Source: ABdhPJyi4XUFhtj4XnNn7IucicTXWdV1tScDiza80PA/Ie2czqv5/uRgpbbsFo4/V12A3bhGOuG+Ig==
+X-Received: by 2002:a05:6512:a95:: with SMTP id m21mr5989955lfu.546.1644170724245;
+        Sun, 06 Feb 2022 10:05:24 -0800 (PST)
+Received: from localhost.localdomain ([94.103.224.201])
+        by smtp.gmail.com with ESMTPSA id d13sm1172712lfn.137.2022.02.06.10.05.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 06 Feb 2022 10:05:23 -0800 (PST)
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, linux@rempel-privat.de,
+        andrew@lunn.ch, oneukum@suse.com, robert.foss@collabora.com
+Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        syzbot+6ca9f7867b77c2d316ac@syzkaller.appspotmail.com,
+        Oleksij Rempel <o.rempel@pengutronix.de>
+Subject: [PATCH net-next] net: asix: add proper error handling of usb read errors
+Date:   Sun,  6 Feb 2022 21:05:16 +0300
+Message-Id: <20220206180516.28439-1-paskripkin@gmail.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <f676e339-5808-2163-2afd-ea254cfb2684@rempel-privat.de>
+References: <f676e339-5808-2163-2afd-ea254cfb2684@rempel-privat.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There's no need to store the usb device speed in struct dvobj_priv.
+Syzbot once again hit uninit value in asix driver. The problem still the
+same -- asix_read_cmd() reads less bytes, than was requested by caller.
 
-We can read the speed from struct usb_device. dvobj_priv has a pointer
-to the usb_device.
+Since all read requests are performed via asix_read_cmd() let's catch
+usb related error there and add __must_check notation to be sure all
+callers actually check return value.
 
-Signed-off-by: Martin Kaiser <martin@kaiser.cx>
+So, this patch adds sanity check inside asix_read_cmd(), that simply
+checks if bytes read are not less, than was requested and adds missing
+error handling of asix_read_cmd() all across the driver code.
+
+Fixes: d9fe64e51114 ("net: asix: Add in_pm parameter")
+Reported-and-tested-by: syzbot+6ca9f7867b77c2d316ac@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Tested-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/staging/r8188eu/core/rtw_iol.c      | 4 +++-
- drivers/staging/r8188eu/hal/usb_halinit.c   | 4 ++--
- drivers/staging/r8188eu/include/drv_types.h | 1 -
- drivers/staging/r8188eu/include/usb_ops.h   | 2 +-
- drivers/staging/r8188eu/os_dep/usb_intf.c   | 8 --------
- 5 files changed, 6 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/staging/r8188eu/core/rtw_iol.c b/drivers/staging/r8188eu/core/rtw_iol.c
-index 923da2a9f6ae..26f2a6fc3f38 100644
---- a/drivers/staging/r8188eu/core/rtw_iol.c
-+++ b/drivers/staging/r8188eu/core/rtw_iol.c
-@@ -68,8 +68,10 @@ bool rtw_IOL_applied(struct adapter  *adapter)
- 	if (1 == adapter->registrypriv.fw_iol)
- 		return true;
+Changes since RFT:
+	- Added Tested-by: tag
+
+---
+ drivers/net/usb/asix.h         |  4 ++--
+ drivers/net/usb/asix_common.c  | 19 +++++++++++++------
+ drivers/net/usb/asix_devices.c | 21 ++++++++++++++++++---
+ 3 files changed, 33 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/net/usb/asix.h b/drivers/net/usb/asix.h
+index 2a1e31def..4334aafab 100644
+--- a/drivers/net/usb/asix.h
++++ b/drivers/net/usb/asix.h
+@@ -192,8 +192,8 @@ extern const struct driver_info ax88172a_info;
+ /* ASIX specific flags */
+ #define FLAG_EEPROM_MAC		(1UL << 0)  /* init device MAC from eeprom */
  
--	if ((2 == adapter->registrypriv.fw_iol) && (!adapter_to_dvobj(adapter)->ishighspeed))
-+	if ((2 == adapter->registrypriv.fw_iol) &&
-+	    (!(adapter_to_dvobj(adapter)->pusbdev->speed == USB_SPEED_HIGH)))
- 		return true;
+-int asix_read_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
+-		  u16 size, void *data, int in_pm);
++int __must_check asix_read_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
++			       u16 size, void *data, int in_pm);
+ 
+ int asix_write_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
+ 		   u16 size, void *data, int in_pm);
+diff --git a/drivers/net/usb/asix_common.c b/drivers/net/usb/asix_common.c
+index 71682970b..524805285 100644
+--- a/drivers/net/usb/asix_common.c
++++ b/drivers/net/usb/asix_common.c
+@@ -11,8 +11,8 @@
+ 
+ #define AX_HOST_EN_RETRIES	30
+ 
+-int asix_read_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
+-		  u16 size, void *data, int in_pm)
++int __must_check asix_read_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
++			       u16 size, void *data, int in_pm)
+ {
+ 	int ret;
+ 	int (*fn)(struct usbnet *, u8, u8, u16, u16, void *, u16);
+@@ -27,9 +27,12 @@ int asix_read_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
+ 	ret = fn(dev, cmd, USB_DIR_IN | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
+ 		 value, index, data, size);
+ 
+-	if (unlikely(ret < 0))
++	if (unlikely(ret < size)) {
++		ret = ret < 0 ? ret : -ENODATA;
 +
- 	return false;
+ 		netdev_warn(dev->net, "Failed to read reg index 0x%04x: %d\n",
+ 			    index, ret);
++	}
+ 
+ 	return ret;
  }
+@@ -79,7 +82,7 @@ static int asix_check_host_enable(struct usbnet *dev, int in_pm)
+ 				    0, 0, 1, &smsr, in_pm);
+ 		if (ret == -ENODEV)
+ 			break;
+-		else if (ret < sizeof(smsr))
++		else if (ret < 0)
+ 			continue;
+ 		else if (smsr & AX_HOST_EN)
+ 			break;
+@@ -579,8 +582,12 @@ int asix_mdio_read_nopm(struct net_device *netdev, int phy_id, int loc)
+ 		return ret;
+ 	}
  
-diff --git a/drivers/staging/r8188eu/hal/usb_halinit.c b/drivers/staging/r8188eu/hal/usb_halinit.c
-index 03966a1e247e..e3a28c443f24 100644
---- a/drivers/staging/r8188eu/hal/usb_halinit.c
-+++ b/drivers/staging/r8188eu/hal/usb_halinit.c
-@@ -48,7 +48,7 @@ void rtl8188eu_interface_configure(struct adapter *adapt)
- 	struct hal_data_8188e *haldata = &adapt->haldata;
- 	struct dvobj_priv	*pdvobjpriv = adapter_to_dvobj(adapt);
+-	asix_read_cmd(dev, AX_CMD_READ_MII_REG, phy_id,
+-		      (__u16)loc, 2, &res, 1);
++	ret = asix_read_cmd(dev, AX_CMD_READ_MII_REG, phy_id,
++			    (__u16)loc, 2, &res, 1);
++	if (ret < 0) {
++		mutex_unlock(&dev->phy_mutex);
++		return ret;
++	}
+ 	asix_set_hw_mii(dev, 1);
+ 	mutex_unlock(&dev->phy_mutex);
  
--	if (pdvobjpriv->ishighspeed)
-+	if (pdvobjpriv->pusbdev->speed == USB_SPEED_HIGH)
- 		haldata->UsbBulkOutSize = USB_HIGH_SPEED_BULK_SIZE;/* 512 bytes */
- 	else
- 		haldata->UsbBulkOutSize = USB_FULL_SPEED_BULK_SIZE;/* 64 bytes */
-@@ -105,7 +105,7 @@ static void _InitInterrupt(struct adapter *Adapter)
- 	/*  1; Use bulk endpoint to upload interrupt pkt, */
- 	usb_opt = rtw_read8(Adapter, REG_USB_SPECIAL_OPTION);
+diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
+index 9b72334aa..6ea44e537 100644
+--- a/drivers/net/usb/asix_devices.c
++++ b/drivers/net/usb/asix_devices.c
+@@ -755,7 +755,12 @@ static int ax88772_bind(struct usbnet *dev, struct usb_interface *intf)
+ 	priv->phy_addr = ret;
+ 	priv->embd_phy = ((priv->phy_addr & 0x1f) == 0x10);
  
--	if (!adapter_to_dvobj(Adapter)->ishighspeed)
-+	if (!(adapter_to_dvobj(Adapter)->pusbdev->speed == USB_SPEED_HIGH))
- 		usb_opt = usb_opt & (~INT_BULK_SEL);
- 	else
- 		usb_opt = usb_opt | (INT_BULK_SEL);
-diff --git a/drivers/staging/r8188eu/include/drv_types.h b/drivers/staging/r8188eu/include/drv_types.h
-index 618a6529192b..894e70a0d506 100644
---- a/drivers/staging/r8188eu/include/drv_types.h
-+++ b/drivers/staging/r8188eu/include/drv_types.h
-@@ -137,7 +137,6 @@ struct dvobj_priv {
+-	asix_read_cmd(dev, AX_CMD_STATMNGSTS_REG, 0, 0, 1, &chipcode, 0);
++	ret = asix_read_cmd(dev, AX_CMD_STATMNGSTS_REG, 0, 0, 1, &chipcode, 0);
++	if (ret < 0) {
++		netdev_dbg(dev->net, "Failed to read STATMNGSTS_REG: %d\n", ret);
++		return ret;
++	}
++
+ 	chipcode &= AX_CHIPCODE_MASK;
  
- /*-------- below is for USB INTERFACE --------*/
+ 	ret = (chipcode == AX_AX88772_CHIPCODE) ? ax88772_hw_reset(dev, 0) :
+@@ -919,11 +924,21 @@ static int ax88178_reset(struct usbnet *dev)
+ 	int gpio0 = 0;
+ 	u32 phyid;
  
--	u8	ishighspeed;
- 	u8	RtNumOutPipes;
+-	asix_read_cmd(dev, AX_CMD_READ_GPIOS, 0, 0, 1, &status, 0);
++	ret = asix_read_cmd(dev, AX_CMD_READ_GPIOS, 0, 0, 1, &status, 0);
++	if (ret < 0) {
++		netdev_dbg(dev->net, "Failed to read GPIOS: %d\n", ret);
++		return ret;
++	}
++
+ 	netdev_dbg(dev->net, "GPIO Status: 0x%04x\n", status);
  
- 	struct usb_interface *pusbintf;
-diff --git a/drivers/staging/r8188eu/include/usb_ops.h b/drivers/staging/r8188eu/include/usb_ops.h
-index 0a1155bbc7b8..62e4706c0497 100644
---- a/drivers/staging/r8188eu/include/usb_ops.h
-+++ b/drivers/staging/r8188eu/include/usb_ops.h
-@@ -55,7 +55,7 @@ static inline u8 rtw_usb_bulk_size_boundary(struct adapter *padapter,
- 	u8 rst = true;
- 	struct dvobj_priv *pdvobjpriv = adapter_to_dvobj(padapter);
+ 	asix_write_cmd(dev, AX_CMD_WRITE_ENABLE, 0, 0, 0, NULL, 0);
+-	asix_read_cmd(dev, AX_CMD_READ_EEPROM, 0x0017, 0, 2, &eeprom, 0);
++	ret = asix_read_cmd(dev, AX_CMD_READ_EEPROM, 0x0017, 0, 2, &eeprom, 0);
++	if (ret < 0) {
++		netdev_dbg(dev->net, "Failed to read EEPROM: %d\n", ret);
++		return ret;
++	}
++
+ 	asix_write_cmd(dev, AX_CMD_WRITE_DISABLE, 0, 0, 0, NULL, 0);
  
--	if (pdvobjpriv->ishighspeed)
-+	if (pdvobjpriv->pusbdev->speed == USB_SPEED_HIGH)
- 		rst = (0 == (buf_len) % USB_HIGH_SPEED_BULK_SIZE) ?
- 		      true : false;
- 	else
-diff --git a/drivers/staging/r8188eu/os_dep/usb_intf.c b/drivers/staging/r8188eu/os_dep/usb_intf.c
-index 10c33e2ae3bc..cd7f28d25c47 100644
---- a/drivers/staging/r8188eu/os_dep/usb_intf.c
-+++ b/drivers/staging/r8188eu/os_dep/usb_intf.c
-@@ -117,14 +117,6 @@ static struct dvobj_priv *usb_dvobj_init(struct usb_interface *usb_intf)
- 	if (rt_num_in_pipes != 1)
- 		goto err;
- 
--	if (pusbd->speed == USB_SPEED_HIGH) {
--		pdvobjpriv->ishighspeed = true;
--		DBG_88E("USB_SPEED_HIGH\n");
--	} else {
--		pdvobjpriv->ishighspeed = false;
--		DBG_88E("NON USB_SPEED_HIGH\n");
--	}
--
- 	/* 3 misc */
- 	rtw_reset_continual_urb_error(pdvobjpriv);
- 
+ 	netdev_dbg(dev->net, "EEPROM index 0x17 is 0x%04x\n", eeprom);
 -- 
-2.30.2
+2.34.1
 
