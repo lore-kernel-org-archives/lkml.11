@@ -2,76 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18681C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 17:51:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C5C9C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 17:54:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345270AbiBFRvp (ORCPT
+        id S1344639AbiBFRyi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Feb 2022 12:51:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40304 "EHLO
+        Sun, 6 Feb 2022 12:54:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239745AbiBFRvn (ORCPT
+        with ESMTP id S232592AbiBFRyf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 12:51:43 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36F3CC043184
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 09:51:43 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DE4B608D5
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 17:51:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4E8EC340E9;
-        Sun,  6 Feb 2022 17:51:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644169901;
-        bh=PgP3XA+R87hLDRANpjuRku4aVM76Q9vxTvvDIf8+XYU=;
-        h=From:To:Cc:Subject:Date:From;
-        b=MvdOGZ/muD3iuxKGNPy5RTPuuwrBO1mMdpCUkVaEYwiLfAFhHGcQD69qu4WCWSpgR
-         cgWyLcZObA1dIVF41cqV8UOV1m4j/d+PzaV68pqMSFbLqbJZtpp1UQPpjHTdt7oupt
-         pP96cn6nV93W/UX84tMlFLntO75wBzWXNrTumm4GOtsZiMo/AH6NLU2qfZAxhkoIAF
-         w8e7YfpRC5H0nCj5F2C4Bb+QZmnXhgZl5hFebuKax+FJHqPrBDI6kMPryVpc2z2IKq
-         Y2T/L1ikQBCvpFRSpP2j9vE2LVLLbpfEmcTtVpkQZY8fLvZl+jJzud6cafnpZYfEkf
-         WltLtSivvaxMw==
-From:   Jisheng Zhang <jszhang@kernel.org>
-To:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>
-Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [RFC PATCH] riscv: reduce THREAD_SIZE from 16KB to 8KB for RV64
-Date:   Mon,  7 Feb 2022 01:43:59 +0800
-Message-Id: <20220206174359.2986-1-jszhang@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        Sun, 6 Feb 2022 12:54:35 -0500
+X-Greylist: delayed 315 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 09:54:33 PST
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1FECC043184;
+        Sun,  6 Feb 2022 09:54:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1644170072;
+        bh=yn5JeOkppnD0tGfSCvueihPF+e+1FFRHsDAP44tpu0A=;
+        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=DndPjgzVbgVlCdctnu+YOe0OBCZQ5U+9xrRQWL3E7EsIpH+uqMz6vGi15Jt6NVTPs
+         SxDoA6HfPxR6bs0fvXg76U2uMVljQGysoMbC+wry0pnJvgjiCPiFoiFJN06yQtQSq0
+         mKE/0lPjrqPRFxF77UJbNu/RnvcEILriVe1zGNDI=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.86.27] ([95.91.192.147]) by mail.gmx.net (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MAwXr-1nS4Kj3eEz-00BHk2; Sun, 06
+ Feb 2022 18:49:01 +0100
+Message-ID: <f676e339-5808-2163-2afd-ea254cfb2684@rempel-privat.de>
+Date:   Sun, 6 Feb 2022 18:48:56 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH RFT] net: asix: add proper error handling of usb read
+ errors
+Content-Language: en-US
+To:     Pavel Skripkin <paskripkin@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org, andrew@lunn.ch, oneukum@suse.com,
+        robert.foss@collabora.com, freddy@asix.com.tw
+Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        syzbot+6ca9f7867b77c2d316ac@syzkaller.appspotmail.com
+References: <20220105131952.15693-1-paskripkin@gmail.com>
+ <7dbe85db-92b8-68bd-d008-33a4be9a55b9@gmail.com>
+From:   Oleksij Rempel <linux@rempel-privat.de>
+In-Reply-To: <7dbe85db-92b8-68bd-d008-33a4be9a55b9@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:ogiNkPRfVD7er2HY8jDw3fJHT8IWv+jZw7C4hxqJgCNurxo4kxX
+ 7P2drfrdw826WnAmJddx9xLl2//DEGJaqCarPLrbmpJsqFHwrSn8YbT8+54WZnz6gbB4rwp
+ +/vG9O7weJJEEkm+Wd9LH0D0o73uAV9jGpPgUQ8LiZJ3bT8wgTV6Nf7qEaldbooz+2btQQe
+ VuNfi/PIt4wgAKN9Nyk5A==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:sDslPLSxVgE=:irwCf0SrJagZK9QOHvtnQL
+ LN1VWkoEgE/tYd+SfKWKJIX9WDMKAI/Gy595HT7w953fB8s4/2JGD7TzQSeZBiKpUl1LlYuuM
+ Q5RtrI4vZypV9zj/J0fzzLU2cIzumf1NzmKyJQNR4tZzIJHoy6pRdM3JAwu62xvQqJDLYISfE
+ ZPRUSE2RwoN2Ripo4lW1ZDJH0zCX4lkqrC7qGfzjHavjDWLDSj8kShaXBWwHPIW+2uVTGdqw3
+ vJlrbPeoATjjrXGEtj3n1fLXI/KXcUKu7ELqbIuJp0eMK+6ko0admp7qlXUGUsyASfaOGw8q1
+ 8PESRaeNFcS2KYiO1Ddv+LQXO2Xni0TX+unlECS6fsJdX3MzbQaZy2lYepdMvBQnchiKytwTP
+ MXkzksuGxTsdHL3/IMkNNr5HxmVCSaDCObRQZ8PvNGnrMAPWgnNutizjRjPgtLWY0OatBp8Y3
+ Dnx+rYILWDC/N4RUPKztz+7BeVLaqwDS/mUypBfw7y7aVa59vNvpJ8kwbQpywifOCnoStmEzC
+ aGDLcjK4MVk0ANs+Kw2nMM7TFxANrWxGuSK2hBK7FBPRNv+si7J6mLHeSVhUrFxf3BaNR+D7D
+ E9Gi/rkeFUOayIkaaehhOpiu4b1eM8LFiCX9p42vBrdpy8fJZsrdC+RAkbM2T7/v+EqMOBnuU
+ gsDjnATVcS+nojo2dk+KB1zVYUK6NoVSjsUUWfYspTA9+xA3klyPwYc4g8EOnGuXNpbmVTxTm
+ d2VrpNCiJjjelhRF3JqJe5DpboQYHtJ/2RaR3vMwamn0Poq31EdRCQgA5py4O493qxneXqy/4
+ hu/f0+aEWGXk4IJAgZ4nPq0aQ9kiM/9ec+Z/uL226yz+2g5Dmm/6rBs0ymJcY7YffPRrB1Iji
+ tIWC/5hbB7r25UFZZtRIO5eicgjTtkPMEB+9sB631iUJ2OkAF5nQ3QNm9TdIhBJO9IE2iZW6S
+ 9WERGkpdBU9uLQ+lSoKSIE3mD4Cd07lh8qq70s7xv8d5bkbCPxWPcc3gxD914JRyRib3FFLLy
+ O2Ayz5xdlqWFr8M4Vkkuet8SsCuK2KxsDz1qE8rpzprjatM8o/23bo7gaWOi6p+HEe7nE3y3c
+ gR56gg4X3AhT2g=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-After irq stack is supported, it's possible to use small THREAD_SIZE.
-In fact, I tested this patch on a Lichee RV board, looks good so far.
+Am 06.02.22 um 18:23 schrieb Pavel Skripkin:
+> On 1/5/22 16:19, Pavel Skripkin wrote:
+>> Syzbot once again hit uninit value in asix driver. The problem still th=
+e
+>> same -- asix_read_cmd() reads less bytes, than was requested by caller.
+>>
+>> Since all read requests are performed via asix_read_cmd() let's catch
+>> usb related error there and add __must_check notation to be sure all
+>> callers actually check return value.
+>>
+>> So, this patch adds sanity check inside asix_read_cmd(), that simply
+>> checks if bytes read are not less, than was requested and adds missing
+>> error handling of asix_read_cmd() all across the driver code.
+>>
+>> Fixes: d9fe64e51114 ("net: asix: Add in_pm parameter")
+>> Reported-and-tested-by: syzbot+6ca9f7867b77c2d316ac@syzkaller.appspotma=
+il.com
+>> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+>> ---
+>
+> gentle ping :)
 
-Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
----
- arch/riscv/include/asm/thread_info.h | 4 ----
- 1 file changed, 4 deletions(-)
+Please resend patch against latest net-next with "net-next" tag instead of=
+ "RFT".
 
-diff --git a/arch/riscv/include/asm/thread_info.h b/arch/riscv/include/asm/thread_info.h
-index 67387a8bcb34..fdbf3890a1ab 100644
---- a/arch/riscv/include/asm/thread_info.h
-+++ b/arch/riscv/include/asm/thread_info.h
-@@ -12,11 +12,7 @@
- #include <linux/const.h>
- 
- /* thread information allocation */
--#ifdef CONFIG_64BIT
--#define THREAD_SIZE_ORDER	(2)
--#else
- #define THREAD_SIZE_ORDER	(1)
--#endif
- #define THREAD_SIZE		(PAGE_SIZE << THREAD_SIZE_ORDER)
- 
- #define IRQ_STACK_SIZE		THREAD_SIZE
--- 
-2.34.1
-
+=2D-
+Regards,
+Oleksij
