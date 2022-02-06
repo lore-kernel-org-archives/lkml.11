@@ -2,311 +2,224 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA04BC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 13:56:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35FB0C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 13:57:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240414AbiBFN4E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Feb 2022 08:56:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50218 "EHLO
+        id S240507AbiBFN5y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 6 Feb 2022 08:57:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239910AbiBFN4C (ORCPT
+        with ESMTP id S233988AbiBFN5w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 08:56:02 -0500
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C2A6C06173B;
-        Sun,  6 Feb 2022 05:56:00 -0800 (PST)
-Received: by mail-pg1-x52f.google.com with SMTP id p125so9319727pga.2;
-        Sun, 06 Feb 2022 05:56:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=MVGrK19E00WWSz2xPXsV4Xp+Zqzss5NIyuH9iJU5vD8=;
-        b=ldAyo+nvz7JEjtwsPQzFtrf8tgNEzMeI1EpU7z2uQe8Ou7qfBtUlTb8zWFKXWfJVNO
-         IgTsIfh2TOWT2fdCQHL1wx1NztHRnKkuScEkZkkb06O5pFdc2Nw0zK0D2AtffuIzV2hP
-         3oD1taMD9HfEKyGDkbKSt6prPDtIyaZx2H19J74Ro0wvaI8FaPgcZhWHOR7cPR2pREcX
-         den0kzpHQl7VrK1dNoE2gg5Fe2Ny53z5NKeuZgOmWCIKuss/13XJiMzFKuYS4sT5EMz4
-         tiED6lO5CYEHathDk3HHEYY1c3oaELn76rwqMOGEwpHP+YP4cwDNM4RWLOSKP028DO0o
-         V9Vg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=MVGrK19E00WWSz2xPXsV4Xp+Zqzss5NIyuH9iJU5vD8=;
-        b=r4Fi3etWF3BhcJ50PcQxnHvR4yCqp2lXsbZQefJ3BN9KjmgZ26DzPDQ2cBZySp0oxA
-         pmfih7GH3i9uhJJ8iNzeroDRNTqmqtRRacDMcaBfHoW/TU2hmheZwhQaXNbO9dGt88PC
-         NIJ7Lo1ihw2PjOW+xqUPpsqv8SOo+ggw51JKaPyV7KTLKVq9oRptZh69bk19tYEHxcC+
-         gn5ZK3KYfIMMNGeNWsd+vQEZx9xe78KoQ8w+h9RZ8q/w40M5xYq+wKU/JOCVTjgOSYbp
-         xf3uIwHyYXlx2ixmPdiL+j4eSl9Yoma7SFYRDS5MJa1na5OPY8VMx1FpbzHpueCQIhSz
-         XaJg==
-X-Gm-Message-State: AOAM533w7N2qdbxvd+1MphaBKB02yhbUgC9oWExyD7illFWB2sEz8z1m
-        wjsydMcw0+VpPi11kSOlJuWa/O07yTIOhxV0gNY=
-X-Google-Smtp-Source: ABdhPJx0HBjkPWB7u5rUo6zw67cBZFkL7uxuqdb41P/l+hmcppImyJXTZMvU6fhEDX6A3eULvwe0URSGe9Pfhaofkjk=
-X-Received: by 2002:a65:414a:: with SMTP id x10mr5913538pgp.125.1644155759850;
- Sun, 06 Feb 2022 05:55:59 -0800 (PST)
+        Sun, 6 Feb 2022 08:57:52 -0500
+X-Greylist: delayed 7071 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 05:57:50 PST
+Received: from hostingweb31-40.netsons.net (hostingweb31-40.netsons.net [89.40.174.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B474CC043182;
+        Sun,  6 Feb 2022 05:57:50 -0800 (PST)
+Received: from [77.244.183.192] (port=63680 helo=melee.fritz.box)
+        by hostingweb31.netsons.net with esmtpa (Exim 4.94.2)
+        (envelope-from <luca@lucaceresoli.net>)
+        id 1nGgDK-00059v-PZ; Sun, 06 Feb 2022 13:00:18 +0100
+From:   Luca Ceresoli <luca@lucaceresoli.net>
+To:     linux-media@vger.kernel.org, linux-i2c@vger.kernel.org
+Cc:     Luca Ceresoli <luca@lucaceresoli.net>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Wolfram Sang <wsa@the-dreams.de>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Kieran Bingham <kieran.bingham@ideasonboard.com>,
+        Jacopo Mondi <jacopo@jmondi.org>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Peter Rosin <peda@axentia.se>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>,
+        matti.vaittinen@fi.rohmeurope.com
+Subject: [RFCv3 3/6] media: dt-bindings: add DS90UB953-Q1 video serializer
+Date:   Sun,  6 Feb 2022 12:59:36 +0100
+Message-Id: <20220206115939.3091265-4-luca@lucaceresoli.net>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220206115939.3091265-1-luca@lucaceresoli.net>
+References: <20220206115939.3091265-1-luca@lucaceresoli.net>
 MIME-Version: 1.0
-References: <87fsozek0j.ffs@tglx> <a7e59ae16e0e05579b087caf4045e42b174e2167.camel@intel.com>
- <3421da7fc8474b6db0e265b20ffd28d0@AcuMS.aculab.com> <CAMe9rOonepEiRyoAyTGkDMQQhuyuoP4iTZJJhKGxgnq9vv=dLQ@mail.gmail.com>
- <9f948745435c4c9273131146d50fe6f328b91a78.camel@intel.com> <782f27dbe6fc419a8946eeb426253e28@AcuMS.aculab.com>
-In-Reply-To: <782f27dbe6fc419a8946eeb426253e28@AcuMS.aculab.com>
-From:   "H.J. Lu" <hjl.tools@gmail.com>
-Date:   Sun, 6 Feb 2022 05:55:24 -0800
-Message-ID: <CAMe9rOoyrWXe9Zuxoat74kPW=kdjWXvbcQY=5RFu2nJACDvnOQ@mail.gmail.com>
-Subject: Re: [PATCH 00/35] Shadow stacks for userspace
-To:     David Laight <David.Laight@aculab.com>
-Cc:     "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
-        "bsingharora@gmail.com" <bsingharora@gmail.com>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "Syromiatnikov, Eugene" <esyr@redhat.com>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "rdunlap@infradead.org" <rdunlap@infradead.org>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "Eranian, Stephane" <eranian@google.com>,
-        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "fweimer@redhat.com" <fweimer@redhat.com>,
-        "nadav.amit@gmail.com" <nadav.amit@gmail.com>,
-        "jannh@google.com" <jannh@google.com>,
-        "kcc@google.com" <kcc@google.com>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "pavel@ucw.cz" <pavel@ucw.cz>, "oleg@redhat.com" <oleg@redhat.com>,
-        "Yang, Weijiang" <weijiang.yang@intel.com>,
-        "Lutomirski, Andy" <luto@kernel.org>,
-        "bp@alien8.de" <bp@alien8.de>, "arnd@arndb.de" <arnd@arndb.de>,
-        "Moreira, Joao" <joao.moreira@intel.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mike.kravetz@oracle.com" <mike.kravetz@oracle.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "Dave.Martin@arm.com" <Dave.Martin@arm.com>,
-        "john.allen@amd.com" <john.allen@amd.com>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
-        "gorcunov@gmail.com" <gorcunov@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - hostingweb31.netsons.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - lucaceresoli.net
+X-Get-Message-Sender-Via: hostingweb31.netsons.net: authenticated_id: luca+lucaceresoli.net/only user confirmed/virtual account not confirmed
+X-Authenticated-Sender: hostingweb31.netsons.net: luca@lucaceresoli.net
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Feb 6, 2022 at 5:42 AM David Laight <David.Laight@aculab.com> wrote=
-:
->
-> From: Edgecombe, Rick P
-> > Sent: 05 February 2022 20:15
-> >
-> > On Sat, 2022-02-05 at 05:29 -0800, H.J. Lu wrote:
-> > > On Sat, Feb 5, 2022 at 5:27 AM David Laight <David.Laight@aculab.com>
-> > > wrote:
-> > > >
-> > > > From: Edgecombe, Rick P
-> > > > > Sent: 04 February 2022 01:08
-> > > > > Hi Thomas,
-> > > > >
-> > > > > Thanks for feedback on the plan.
-> > > > >
-> > > > > On Thu, 2022-02-03 at 22:07 +0100, Thomas Gleixner wrote:
-> > > > > > > Until now, the enabling effort was trying to support both
-> > > > > > > Shadow
-> > > > > > > Stack and IBT.
-> > > > > > > This history will focus on a few areas of the shadow stack
-> > > > > > > development history
-> > > > > > > that I thought stood out.
-> > > > > > >
-> > > > > > >        Signals
-> > > > > > >        -------
-> > > > > > >        Originally signals placed the location of the shadow
-> > > > > > > stack
-> > > > > > > restore
-> > > > > > >        token inside the saved state on the stack. This was
-> > > > > > > problematic from a
-> > > > > > >        past ABI promises perspective. So the restore location
-> > > > > > > was
-> > > > > > > instead just
-> > > > > > >        assumed from the shadow stack pointer. This works
-> > > > > > > because in
-> > > > > > > normal
-> > > > > > >        allowed cases of calling sigreturn, the shadow stack
-> > > > > > > pointer
-> > > > > > > should be
-> > > > > > >        right at the restore token at that time. There is no
-> > > > > > > alternate shadow
-> > > > > > >        stack support. If an alt shadow stack is added later
-> > > > > > > we
-> > > > > > > would
-> > > > > > >        need to
-> > > > > >
-> > > > > > So how is that going to work? altstack is not an esoteric
-> > > > > > corner
-> > > > > > case.
-> > > > >
-> > > > > My understanding is that the main usages for the signal stack
-> > > > > were
-> > > > > handling stack overflows and corruption. Since the shadow stack
-> > > > > only
-> > > > > contains return addresses rather than large stack allocations,
-> > > > > and is
-> > > > > not generally writable or pivotable, I thought there was a good
-> > > > > possibility an alt shadow stack would not end up being especially
-> > > > > useful. Does it seem like reasonable guesswork?
-> > > >
-> > > > The other 'problem' is that it is valid to longjump out of a signal
-> > > > handler.
-> > > > These days you have to use siglongjmp() not longjmp() but it is
-> > > > still used.
-> > > >
-> > > > It is probably also valid to use siglongjmp() to jump from a nested
-> > > > signal handler into the outer handler.
-> > > > Given both signal handlers can have their own stack, there can be
-> > > > three
-> > > > stacks involved.
-> >
-> > So the scenario is?
-> >
-> > 1. Handle signal 1
-> > 2. sigsetjmp()
-> > 3. signalstack()
-> > 4. Handle signal 2 on alt stack
-> > 5. siglongjmp()
-> >
-> > I'll check that it is covered by the tests, but I think it should work
-> > in this series that has no alt shadow stack. I have only done a high
-> > level overview of how the shadow stack stuff, that doesn't involve the
-> > kernel, works in glibc. Sounds like I'll need to do a deeper dive.
->
-> The posix/xopen definition for setjmp/longjmp doesn't require such
-> longjmp requests to work.
->
-> Although they still have to do something that doesn't break badly.
-> Aborting the process is probably fine!
->
-> > > > I think the shadow stack pointer has to be in ucontext - which also
-> > > > means the application can change it before returning from a signal.
-> >
-> > Yes we might need to change it to support alt shadow stacks. Can you
-> > elaborate why you think it has to be in ucontext? I was thinking of
-> > looking at three options for storing the ssp:
-> >  - Stored in the shadow stack like a token using WRUSS from the kernel.
-> >  - Stored on the kernel side using a hashmap that maps ucontext or
-> >    sigframe userspace address to ssp (this is of course similar to
-> >    storing in ucontext, except that the user can=E2=80=99t change the s=
-sp).
-> >  - Stored writable in userspace in ucontext.
-> >
-> > But in this version, without alt shadow stacks, the shadow stack
-> > pointer is not stored in ucontext. This causes the limitation that
-> > userspace can only call sigreturn when it has returned back to a point
-> > where there is a restore token on the shadow stack (which was placed
-> > there by the kernel). This doesn=E2=80=99t mean it can=E2=80=99t switch=
- to a different
-> > shadow stack or handle a nested signal, but it limits the possibility
-> > for calling sigreturn with a totally different sigframe (like CRIU and
-> > SROP attacks do). It should hopefully be a helpful, protective
-> > limitation for most apps and I'm hoping CRIU can be fixed without
-> > removing it.
-> >
-> > I am not aware of other limitations to signals (besides normal shadow
-> > stack enforcement), but I could be missing it. And people's skepticism
-> > is making me want to go back over it with more scrutiny.
-> >
-> > > > In much the same way as all the segment registers can be changed
-> > > > leading to all the nasty bugs when the final 'return to user' code
-> > > > traps in kernel when loading invalid segment registers or executing
-> > > > iret.
-> >
-> > I don't think this is as difficult to avoid because userspace ssp has
-> > its own register that should not be accessed at that point, but I have
-> > not given this aspect enough analysis. Thanks for bringing it up.
->
-> So the user ssp isn't saved (or restored) by the trap entry/exit.
-> So it needs to be saved by the context switch code?
-> Much like the user segment registers?
-> So you are likely to get the same problems if restoring it can fault
-> in kernel (eg for a non-canonical address).
->
-> > > > Hmmm... do shadow stacks mean that longjmp() has to be a system
-> > > > call?
-> > >
-> > > No.  setjmp/longjmp save and restore shadow stack pointer.
->
-> Ok, I was thinking that direct access to the user ssp would be
-> a privileged operation.
+Describe the Texas Instruments DS90UB953-Q1, a MIPI CSI-2 video serializer
+with I2C Address Translator and remote GPIOs.
 
-User space can only pop shadow stack.  longjmp does
+Signed-off-by: Luca Ceresoli <luca@lucaceresoli.net>
 
-#ifdef SHADOW_STACK_POINTER_OFFSET
-# if IS_IN (libc) && defined SHARED && defined FEATURE_1_OFFSET
-/* Check if Shadow Stack is enabled.  */
-testl $X86_FEATURE_1_SHSTK, %fs:FEATURE_1_OFFSET
-jz L(skip_ssp)
-# else
-xorl %eax, %eax
-# endif
-/* Check and adjust the Shadow-Stack-Pointer.  */
-/* Get the current ssp.  */
-rdsspq %rax
-/* And compare it with the saved ssp value.  */
-subq SHADOW_STACK_POINTER_OFFSET(%rdi), %rax
-je L(skip_ssp)
-/* Count the number of frames to adjust and adjust it
-   with incssp instruction.  The instruction can adjust
-   the ssp by [0..255] value only thus use a loop if
-   the number of frames is bigger than 255.  */
-negq %rax
-shrq $3, %rax
-/* NB: We saved Shadow-Stack-Pointer of setjmp.  Since we are
-       restoring Shadow-Stack-Pointer of setjmp's caller, we
-       need to unwind shadow stack by one more frame.  */
-addq $1, %rax
+---
 
-movl $255, %ebx
-L(loop):
-cmpq %rbx, %rax
-cmovb %rax, %rbx
-incsspq %rbx
-subq %rbx, %rax
-ja L(loop)
+Changes RFCv2 -> RFCv3:
 
-L(skip_ssp):
-#endif
+ - rewrite in yaml
 
-> If it can be written you don't really have to worry about what code
-> is trying to do - it can actually do what it likes.
-> It just catches unintentional operations (like buffer overflows).
->
-> Was there any 'spare' space in struct jmpbuf ?
+Changes RFCv1 -> RFCv2: none, this patch is new in RFCv2
+---
+ .../bindings/media/i2c/ti,ds90ub953-q1.yaml   | 96 +++++++++++++++++++
+ MAINTAINERS                                   |  7 ++
+ include/dt-bindings/media/ds90ub953.h         | 16 ++++
+ 3 files changed, 119 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/media/i2c/ti,ds90ub953-q1.yaml
+ create mode 100644 include/dt-bindings/media/ds90ub953.h
 
-By pure luck, we have ONE spare space in sigjmp_buf.
+diff --git a/Documentation/devicetree/bindings/media/i2c/ti,ds90ub953-q1.yaml b/Documentation/devicetree/bindings/media/i2c/ti,ds90ub953-q1.yaml
+new file mode 100644
+index 000000000000..2a836a3e65e9
+--- /dev/null
++++ b/Documentation/devicetree/bindings/media/i2c/ti,ds90ub953-q1.yaml
+@@ -0,0 +1,96 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++# Copyright (C) 2019 Renesas Electronics Corp.
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/media/i2c/ti,ds90ub953-q1.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Texas Instruments DS90UB953-Q1 video serializer
++
++maintainers:
++  - Luca Ceresoli <luca@lucaceresoli.net>
++
++description: |
++  The TI DS90UB953-Q1 is a MIPI CSI-2 video serializer that forwards a MIPI
++  CSI-2 input video stream over an FPD Link 3 connection to a remote
++  deserializer. It also allows access to I2C and GPIO from the deserializer.
++
++  The DT definitions can be found in include/dt-bindings/media/ds90ub953.h
++
++  When used as a the remote counterpart of a deserializer (e.g. the
++  DS90UB954-Q1), the serializer is described in the
++  "deserializer/remote-chips/remote-chip@[01]" node.
++
++properties:
++  compatible:
++    const: ti,ds90ub953-q1
++
++  reg:
++    description: |
++      Index of the remote (serializer) RX port that this serializer is
++      connected to.
++    maxItems: 1
++
++  clocks:
++    description: FPD-Link line rate (provided by the deserializer)
++    maxItems: 1
++
++  gpio-controller: true
++
++  '#gpio-cells':
++    const: 2
++
++  '#clock-cells':
++    const: 0
++
++  ti,gpio-functions:
++    description: |
++      A list of 4 values defining how the 4 GPIO pins are connected in
++      hardware; possible values are:
++      - DS90_GPIO_FUNC_UNUSED (0): the GPIO is not unused
++      - DS90_GPIO_FUNC_INPUT (1): the GPIO is an input to the ds90ub953,
++        the remote chip (deserializer) can read its value
++      - DS90_GPIO_FUNC_OUTPUT_REMOTE (2): the GPIO is an output from the
++        ds90ub953, the remote chip (deserializer) can set its value
++      For unspecified values the GPIO is assumed to be unused.
++    $ref: /schemas/types.yaml#/definitions/uint32-array
++    maxItems: 4
++
++patternProperties:
++  '^ti,ds90ub953-q1-(clk|d[0-3])-inv-pol-quirk$':
++    description: |
++      The MIPI CSI-2 input clock lane or any of the data lanes has inverted
++      polarity in hardware
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - gpio-controller
++  - '#gpio-cells'
++  - '#clock-cells'
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/media/ds90ub953.h>
++    remote-chips {
++      #address-cells = <1>;
++      #size-cells = <0>;
++
++      remote-chip@0 {
++        reg = <0>;
++        compatible = "ti,ds90ub953-q1";
++        clocks = <&deser>;
++        ti,gpio-functions =
++          <DS90_GPIO_FUNC_UNUSED
++          DS90_GPIO_FUNC_OUTPUT_REMOTE
++          DS90_GPIO_FUNC_UNUSED
++          DS90_GPIO_FUNC_UNUSED>;
++
++        gpio-controller;
++        #gpio-cells = <2>;
++        #clock-cells = <0>;
++      };
++    };
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 7383aec87e4a..4429ce035496 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -19090,6 +19090,13 @@ F:	include/linux/dma/k3-udma-glue.h
+ F:	include/linux/dma/ti-cppi5.h
+ F:	include/linux/dma/k3-psil.h
+ 
++TEXAS INSTRUMENTS DS90UB953 VIDEO SERIALIZER DRIVER
++M:	Luca Ceresoli <luca@lucaceresoli.net>
++L:	linux-media@vger.kernel.org
++S:	Maintained
++F:	Documentation/devicetree/bindings/media/i2c/ti,ds90ub953-q1.yaml
++F:	include/dt-bindings/media/ds90ub953.h
++
+ TEXAS INSTRUMENTS' SYSTEM CONTROL INTERFACE (TISCI) PROTOCOL DRIVER
+ M:	Nishanth Menon <nm@ti.com>
+ M:	Tero Kristo <kristo@kernel.org>
+diff --git a/include/dt-bindings/media/ds90ub953.h b/include/dt-bindings/media/ds90ub953.h
+new file mode 100644
+index 000000000000..5359432968e9
+--- /dev/null
++++ b/include/dt-bindings/media/ds90ub953.h
+@@ -0,0 +1,16 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/**
++ * Definitions for the Texas Instruments DS90UB953-Q1 video serializer
++ *
++ * Copyright (c) 2019 Luca Ceresoli <luca@lucaceresoli.net>
++ */
++
++#ifndef _DS90UB953_H
++#define _DS90UB953_H
++
++#define DS90_GPIO_FUNC_UNUSED             0
++#define DS90_GPIO_FUNC_INPUT              1
++#define DS90_GPIO_FUNC_OUTPUT_REMOTE      2
++#define DS90_GPIO_N_FUNCS                 3
++
++#endif /* _DS90UB953_H */
+-- 
+2.25.1
 
-> Otherwise you can only enable shadow stacks if everything has been
-> recompiled - including any shared libraries the might be dlopen()ed.
-> (or does the compiler invent an alloca() call somehow for a
-> size that comes back from glibc?)
->
-> I've never really considered how setjmp/longjmp handle callee saved
-> register variables (apart from it being hard).
-> The original pdp11 implementation probably only needed to save r6 and r7.
->
-> What does happen to all the 'extended state' that XSAVE handles?
-> IIRC all the AVX registers are caller saved (so should probably
-> be zerod), but some of the SSE ones are callee saved, and one or
-> two of the fpu flags are sticky and annoying enough the save/restore
-> at the best of times.
->
-> > It sounds like it would help to write up in a lot more detail exactly
-> > how all the signal and specialer stack manipulation scenarios work in
-> > glibc.
->
-> Some cross references might have made people notice that the ucontext
-> extensions for AVX512 (if not earlier ones) broke the minimal/default
-> signal stack size.
->
->         David
->
-
---=20
-H.J.
