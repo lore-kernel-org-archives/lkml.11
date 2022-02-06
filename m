@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7CF1C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 17:45:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C79FC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 17:45:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344992AbiBFRp3 (ORCPT
+        id S1344778AbiBFRpk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Feb 2022 12:45:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37984 "EHLO
+        Sun, 6 Feb 2022 12:45:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344793AbiBFRpQ (ORCPT
+        with ESMTP id S1344844AbiBFRpR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 12:45:16 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97607C043184
+        Sun, 6 Feb 2022 12:45:17 -0500
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B853C0401C0
         for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 09:45:12 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id oa14-20020a17090b1bce00b001b61aed4a03so11187908pjb.5
+Received: by mail-pg1-x52e.google.com with SMTP id q132so9626696pgq.7
         for <linux-kernel@vger.kernel.org>; Sun, 06 Feb 2022 09:45:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=iudmqcl5RL2lQzHd0+d84A6aJxrG2FU7tnHbVKt7s9k=;
-        b=jXgqIveXbXfpHK3xZxh/iFoLfYWzklnzuNiAqRi1M+xplyO34XhyZ6i3el9bRS51ml
-         fScaTHsC91beuf45vozaI3/cUEzRJx3wHCeT01NlUV2bRx39uaXx/LTH3qFAPFqXQfoc
-         WKB2Okq5DkJ2C1Ox13Lsoz7QacLNUbk7LZYBc=
+        bh=Vqdb+IjvR7W8E5ZbYWXJikM0js3mZmH+zUbAZQxhgw8=;
+        b=CD2cSm+Jq/YqWHrsk91+IgI6ZtNrSFWIZi4U225H/t3jQslCYy7ZusGLWFch+Nqa5o
+         6cf8TP6OuQL4NNV/YI9/dN29UEneYoQDDCjSI2vFPM0k+6gBBXmBNREyEc2cLADqQR98
+         3+OJykZ7Y+YwhWGkvn/y6NFZOkBdehWpaiagw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=iudmqcl5RL2lQzHd0+d84A6aJxrG2FU7tnHbVKt7s9k=;
-        b=FLr2s2j4NXZUFD4a/lFPwl2EOmBHNXNfKM8kM4Ga4Kpc5onp6zYbLkIeOiLGzVfuun
-         Xk8wSl2Xj/3r2bJpSp3uJdTnNhPT7KS+tTkYrGeWVq+CmJ5oKbvA5AAiydxz/UPYqXxA
-         AaWvfs4tNZ8lyTw5ZIfvI5vZBYs7H89/VMwIqry9tXtA5YVDMJvQPOiUF87Zm5r4v7Se
-         n4iyWc6uTGSY7r19esJtCAHd5MJ1Tf9Orvy6hfYltZCsecTaT5iKAUqfLN/oI+IFgnwI
-         MQX7DB+mF5sbFky99s+j7RDMn+07SD4oL5AHOpmz+rJmyxRLmngtRCtAzF0RbqiXkvkw
-         6mFQ==
-X-Gm-Message-State: AOAM5309MG/FYWXU2giaWSxH3/pa4u884hDRoaaBFvIldK+f9/RVSFLn
-        JUeniRwaRzHODbkQ4jANFEA4pkxM/m4eQA==
-X-Google-Smtp-Source: ABdhPJzssBqvuHlOY2Po/SRruB03uHIsnsc+8+J2nMo5Ouszr2rUP124MvAdZzMkgj01D2PPQPsdjQ==
-X-Received: by 2002:a17:90b:33d2:: with SMTP id lk18mr9848966pjb.224.1644169512067;
+        bh=Vqdb+IjvR7W8E5ZbYWXJikM0js3mZmH+zUbAZQxhgw8=;
+        b=14DvGd6EoN6FdSu7VXJbpCrgNBxx3migwyyXYFA1Cfjmp4820ShKeC7muie8UvnLI9
+         8jn101qXtggaIutP5iHgp7Z0Oz9RZ6End3bV4xWCg4k3mDL8uJS8b3wOjZvfXp/HFuw2
+         bT3r07dRag8fWGkFtmXfRR8zGpAIwY3H615RDm/4J1lkikh3NvV+cvxdpiydXgSU39As
+         jakbcjgOiY38x0iyYG1QmxKj0KzN6azz8/pcAywes5A/m1P6sJeXKxa+YxneOV15s5cZ
+         sHx51+BQ4YZrPD0lOUMk7yb07wymCC/0J6baMs2NEb3euHYRLeNlbAXzKao3Hmd5nF96
+         Su0w==
+X-Gm-Message-State: AOAM532oH/RCYBLzWyTBbXR61aPuRTLY+vXbTN1vuW4BoyPHV75RPzBI
+        XUhZ2fBrXKfyekRcgKkj/XlCIQ==
+X-Google-Smtp-Source: ABdhPJyEofsTh8CiCMqluEuIuZ1SrpnKNOKrVsxFi0C1QiJP1PbwZoDra0ohb1ZaCI+aRJ92f52J5w==
+X-Received: by 2002:aa7:9d9b:: with SMTP id f27mr12269201pfq.84.1644169512496;
         Sun, 06 Feb 2022 09:45:12 -0800 (PST)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id d20sm9253313pfu.9.2022.02.06.09.45.11
+        by smtp.gmail.com with ESMTPSA id f3sm9537609pfe.67.2022.02.06.09.45.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Sun, 06 Feb 2022 09:45:11 -0800 (PST)
 From:   Kees Cook <keescook@chromium.org>
@@ -56,65 +56,54 @@ Cc:     Kees Cook <keescook@chromium.org>,
         Borislav Petkov <bp@alien8.de>,
         Masahiro Yamada <masahiroy@kernel.org>,
         linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: [PATCH 1/3] gcc-plugins/stackleak: Provide verbose mode
-Date:   Sun,  6 Feb 2022 09:45:06 -0800
-Message-Id: <20220206174508.2425076-2-keescook@chromium.org>
+Subject: [PATCH 3/3] gcc-plugins/stackleak: Ignore .noinstr.text and .entry.text
+Date:   Sun,  6 Feb 2022 09:45:08 -0800
+Message-Id: <20220206174508.2425076-4-keescook@chromium.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220206174508.2425076-1-keescook@chromium.org>
 References: <20220206174508.2425076-1-keescook@chromium.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1923; h=from:subject; bh=1OUNCxVj3tC5iJ58yy3moGifQy/0GbUf79O0B7Mmwjk=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBiAAkjOEH6KrQCd8eB3D7TEo0Rrp85H3WWk+DJFvv5 B52WVuiJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYgAJIwAKCRCJcvTf3G3AJpx9D/ 4y/Zlto2vcMKGRxceFpn/DVD6RFBG5qjSUoyBgqpSxEC3uiXiwOPhXMOZNoWa0qsAgGNTN4nUvrZq/ D3Zgw2GPfHa2XnQEZt0Id4gwrHbB6/p33DMhGutC5nJc7GmkICY24l55ng1sUGon4bemLNH9gsPVh6 LIMW7n3QHHpIxOVba+tUVY37DBlTBqZf2ZU6zoXi6KfZhvF5iTzJlkp9jw5RrmOYmqWXJn3Rhj4CcQ ImRxpFtkcBfWfffBMLjSA/w+QssSM8VDFVYSWP4a8OlHU54yiYh/bJydMrxKfUhyAEMzfCs4zKOgfi 3CIH3vNSO+/CsWIiSFbkPYqCEwn/hfgTAAmZWnUV+0OmGg5JkZI4LxioLaowIHLfU8sx+gq8ZmBAby A/YQpL+LbRW/n4URyc5oVZGf1+X0kZ9ELp4IvBlo4ILBGbEJGjnPj9OD++rXt/uBKucybbXP/Kl1oF GgxTWvz17Rlocl/NrzaQw6M0BvLvUQIBcVClTsoIcTW58YPJydRPuuj0K+JTu8af0yWNU0dwRpwU20 xUO5Vcb99Qvh08AZH5Ob8kWKwl0LR6JB1FEsAaXzLjJaPBgMan7qHCrPLPOPG2GY/Km4ROeNuoIU5k KNYvsRd2bPBDGAQcGLgctfStVUGMaq98IErpU7QZUJ8d1yDttI0Rbf+cvyNg==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1210; h=from:subject; bh=pVDpB0fLeXzkw7qtOTlz2Xjee/LCaGQ3lZV5lGGvWcE=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBiAAkjkTUerpEggmIzHyPJuyDEgbgzPKYmgGRrnVOi cs5tNtOJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYgAJIwAKCRCJcvTf3G3AJhwwEA CMMwXjllOJPlCgUdB/Vxpjt1yZo3bgDDu0djnWckBM5Fdstv8Pm9MoCDUdWaCOhgCM5JWYowz91COz e4xHfc0WiPZE9YvNSQ/HjlAewWRP0D4Qdfz3hRfxBL2h2lqOAD/kqbkbJutoB0FvsaR743uPk9lfsY S904GcaCkeMn7wBkzR/jEiJht7Z0TmKDahakj5yOfUiQXKckEO/k+NqdrfxjEQdJlJgNHusa9aREVG z4M/hxIuTSBZNjkI/zU/CJtPsZcxODRzsof+af4XcbH/wWHZGetGx2MyTThL381ZheVCCz/MPjvhDN 1OBV4wRzNrTCWrsUAiTCGLFgcAa6quWbqGJQ7Vg++5UXXjY0bxWSCea4ouYA9G8uLyUhUYjkp1ch30 yozbt2bpcWX5uwGFrIO/yjv52WnpDwwpSLnkbNkDiJSVRkMtAmoN7npt5M/stzHbZgEISVGONmcbNl cJERD8Whq8p9RQUM5KuSTCfl/BMoxDfDuZfINCB6TCG497jTLQq0+OEJ2D+9XklmTFYmVn5JqIjK32 SQxtSUW2Rg+2barzot9TFsjVzZXaXAO9ntsYn4Blm4vWEFxvaaBkJAy0OuBRU2HFA1Ib6MUxBLe9Es gqI1DbTc5+7Aw8Uzt1vfvxXR9+2IKquvEnSkrNpMrLT6gWPd801T5o2S9Hbw==
 X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order to compare instrumentation between builds, make the verbose
-mode of the plugin available during the build. This is rarely needed
-(behind EXPERT) and very noisy (disabled for COMPILE_TEST).
+The .noinstr.text section functions may not have "current()" sanely
+available. Similarly true for .entry.text, though such a check is
+currently redundant. Add a check for both. In an x86_64 defconfig build,
+the following functions no longer receive stackleak instrumentation:
 
+	__do_fast_syscall_32()
+	do_int80_syscall_32()
+	do_machine_check()
+	do_syscall_64()
+	exc_general_protection()
+	fixup_bad_iret()
+
+Suggested-by: Peter Zijlstra <peterz@infradead.org>
 Cc: Alexander Popov <alex.popov@linux.com>
 Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
- scripts/Makefile.gcc-plugins |  2 ++
- security/Kconfig.hardening   | 10 ++++++++++
- 2 files changed, 12 insertions(+)
+ scripts/gcc-plugins/stackleak_plugin.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/scripts/Makefile.gcc-plugins b/scripts/Makefile.gcc-plugins
-index 1d16ca1b78c9..f67153b260c0 100644
---- a/scripts/Makefile.gcc-plugins
-+++ b/scripts/Makefile.gcc-plugins
-@@ -37,6 +37,8 @@ gcc-plugin-cflags-$(CONFIG_GCC_PLUGIN_STACKLEAK)		\
- 		+= -fplugin-arg-stackleak_plugin-track-min-size=$(CONFIG_STACKLEAK_TRACK_MIN_SIZE)
- gcc-plugin-cflags-$(CONFIG_GCC_PLUGIN_STACKLEAK)		\
- 		+= -fplugin-arg-stackleak_plugin-arch=$(SRCARCH)
-+gcc-plugin-cflags-$(CONFIG_GCC_PLUGIN_STACKLEAK_VERBOSE)	\
-+		+= -fplugin-arg-stackleak_plugin-verbose
- ifdef CONFIG_GCC_PLUGIN_STACKLEAK
-     DISABLE_STACKLEAK_PLUGIN += -fplugin-arg-stackleak_plugin-disable
- endif
-diff --git a/security/Kconfig.hardening b/security/Kconfig.hardening
-index d051f8ceefdd..ded4d7c0d132 100644
---- a/security/Kconfig.hardening
-+++ b/security/Kconfig.hardening
-@@ -174,6 +174,16 @@ config GCC_PLUGIN_STACKLEAK
- 	   * https://grsecurity.net/
- 	   * https://pax.grsecurity.net/
+diff --git a/scripts/gcc-plugins/stackleak_plugin.c b/scripts/gcc-plugins/stackleak_plugin.c
+index 623bcad6d0c7..c8dc7fe4f959 100644
+--- a/scripts/gcc-plugins/stackleak_plugin.c
++++ b/scripts/gcc-plugins/stackleak_plugin.c
+@@ -463,6 +463,10 @@ static bool stackleak_gate(void)
+ 			return false;
+ 		if (STRING_EQUAL(section, ".meminit.text"))
+ 			return false;
++		if (STRING_EQUAL(section, ".noinstr.text"))
++			return false;
++		if (STRING_EQUAL(section, ".entry.text"))
++			return false;
+ 	}
  
-+config GCC_PLUGIN_STACKLEAK_VERBOSE
-+	bool "Report stack depth analysis instrumentation" if EXPERT
-+	depends on GCC_PLUGIN_STACKLEAK
-+	depends on !COMPILE_TEST	# too noisy
-+	help
-+	  This option will cause a warning to be printed each time the
-+	  stackleak plugin finds a function it thinks needs to be
-+	  instrumented. This is useful for comparing coverage between
-+	  builds.
-+
- config STACKLEAK_TRACK_MIN_SIZE
- 	int "Minimum stack frame size of functions tracked by STACKLEAK"
- 	default 100
+ 	return track_frame_size >= 0;
 -- 
 2.30.2
 
