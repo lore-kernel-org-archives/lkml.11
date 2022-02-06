@@ -2,101 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFD84C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 14:44:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43501C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 14:44:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243068AbiBFOoF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Feb 2022 09:44:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39328 "EHLO
+        id S243172AbiBFOoY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 6 Feb 2022 09:44:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242967AbiBFOoC (ORCPT
+        with ESMTP id S243085AbiBFOoU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 09:44:02 -0500
-X-Greylist: delayed 70 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 06:44:02 PST
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1AF24C043183
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 06:44:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644158641;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=kdl8CfH3Z3HiaQzbi8nArohvqswPkyc3SDVPBJGLfj4=;
-        b=icFX/IC1jOh+VN5Cl4GAHPu80J7qjmzsTxm748SZGm9qOLGq4Fp+zLFDLNBeP6rkKD2fwH
-        9HjC0Ymo2oJ8kRm7HBV2zST/jeJEhcVXpqfC2mvPTQLAfJ3gyg36FKr5t78HudhePVTzs5
-        pDWNhdNb8lAIzqQRkqZCpYXvQqDA5RI=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-607-xuyTO2krMSOc2qU7XKBuzA-1; Sun, 06 Feb 2022 09:42:50 -0500
-X-MC-Unique: xuyTO2krMSOc2qU7XKBuzA-1
-Received: by mail-wm1-f69.google.com with SMTP id bg23-20020a05600c3c9700b0034bb19dfdc0so1408929wmb.1
-        for <linux-kernel@vger.kernel.org>; Sun, 06 Feb 2022 06:42:50 -0800 (PST)
+        Sun, 6 Feb 2022 09:44:20 -0500
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99F00C043187
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 06:44:18 -0800 (PST)
+Received: by mail-ej1-x634.google.com with SMTP id a8so34911052ejc.8
+        for <linux-kernel@vger.kernel.org>; Sun, 06 Feb 2022 06:44:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=AK0LMG8NGazeN34p/4cbhYhjkwamksVdCLRSj/Z+FGc=;
+        b=PreNiXFFHB/jRM4lxBxs2d24p6HH2q7a8FvDvK5JPlq8d1MMkNhzKVzq68ycjrO1Ag
+         1SyVaY7WdUJWPH7XvDlYuMLKWXd9pgBfOXop9xy/NMdLqIp+G7GBlOzzPROwX0RxArwW
+         Q3RZP+kWYkEzSD5zMaMHjX5aohtjWivjFeGws/igN6Bp1aJ5I5eLJBJIQsd3OPZm4NTb
+         HxN0u+7NLvKKETJVxIKnXy4dK0xeEWapfzXf70CRVXlky70EfjOf629scOjr7NoMF+xr
+         n4uxhGcRp3LqVgqysq2v2eMndWwgsdVz3KuAip1aA7Pdo4lzdoPbWlgiDR5DKJOTdLx0
+         GA2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=kdl8CfH3Z3HiaQzbi8nArohvqswPkyc3SDVPBJGLfj4=;
-        b=pIi9bdsVF+X3ea/q/akol2G0cs5EsTAlHq8848+f22atqpyfTntwQV5teH7qdksMCD
-         GqwS/EzjkljNKf/EiZpmxBvhggFq468iNLD4xJRorkmLq8jhwFYbvEPT7krRn7KgN2Bi
-         SJPlimc1zvvkRcs48k4PJoVZKMcDk1yrKMArij3dL+ihgvmutFvFnTNZmCeneQY00MgZ
-         2g0QKeEydUwsPfQMBh/q5f/2FOc+8iWy+I+25hF12AE+bpAn0FJC2HLo6DW6LyTYZ4C5
-         /izP06K/Nq3XqnUIcEsrbZOrx3X4dnjj9e7tJEW7AyZmVtAYWUvVw+m8ww78xya5hlVS
-         DJvg==
-X-Gm-Message-State: AOAM533bxo7qW3NqhkM56xeFmE60LmHRZ4fnl2cUOkb2WimyRORo3Y+u
-        AJm17qtM6YaJHORPvSgrztS6uzQO0dyGntz60bv3KA8SdGmQHP+yISfO+wFLbkSyJSeTkSvdQcL
-        EGKTWm7t/IsATtB0j/9w12Lo=
-X-Received: by 2002:a05:6000:1001:: with SMTP id a1mr6713130wrx.230.1644158569747;
-        Sun, 06 Feb 2022 06:42:49 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJw5HUKPoAB+azfk61camj45+zxovHaHwEzO+suKg+ekvuId+ykStSst/zq3NR4RoL4UfMJj/w==
-X-Received: by 2002:a05:6000:1001:: with SMTP id a1mr6713114wrx.230.1644158569569;
-        Sun, 06 Feb 2022 06:42:49 -0800 (PST)
-Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
-        by smtp.gmail.com with ESMTPSA id c10sm1179758wrq.87.2022.02.06.06.42.49
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=AK0LMG8NGazeN34p/4cbhYhjkwamksVdCLRSj/Z+FGc=;
+        b=pkvQVYI9IciUYWMChHKtokKz1k8Dge6gpdk/mI9P1HQqF+CB3ezJs6eGd9txPFdxWl
+         7FSLx7q4za44G4agKkLsNvwXttz4neWjCgxw20zgHH8QlB0xT08ZkxqcFBWGZqFZtook
+         5QnK4am5zqoilXwjyt3f0mhdyN4WjgppZIaL/ABcws88ZICgqNJzDl2eYCSnWNTf5K0+
+         g0OIT47OIHFrb3CkIuZCIZEaGqoC8qzSsmEiRSFHR25hijdvzPUCcHAACfoKSJPwvanA
+         UvkcixQyfSrn3c40CqiG6cVCQyEC5orXiHweZbehBdWtDSUpzAwNQIJ7T8DAKuY3nGXw
+         1MhA==
+X-Gm-Message-State: AOAM531qm2NWRjUfURtQKrrqLOHWHKAJZVQH3s2iGL7Pu3i7r5/ipmXl
+        mRPBJ8+KYxSruMbu7AC3PZw=
+X-Google-Smtp-Source: ABdhPJxtKt9R9YoNCxwfwJ9R7MWdaqi4SEZ92bue8+F5vtmHupCeKuI/jTG9YapZjZvowkBoEpQGCg==
+X-Received: by 2002:a17:907:8a26:: with SMTP id sc38mr6587125ejc.338.1644158657157;
+        Sun, 06 Feb 2022 06:44:17 -0800 (PST)
+Received: from localhost.localdomain (ip5f5abb5a.dynamic.kabel-deutschland.de. [95.90.187.90])
+        by smtp.gmail.com with ESMTPSA id fi3sm458388ejc.168.2022.02.06.06.44.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Feb 2022 06:42:49 -0800 (PST)
-Date:   Sun, 6 Feb 2022 14:42:48 +0000
-From:   Aaron Tomlin <atomlin@redhat.com>
-To:     Luis Chamberlain <mcgrof@kernel.org>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michal Suchanek <msuchanek@suse.de>, cl@linux.com,
-        pmladek@suse.com, mbenes@suse.cz, akpm@linux-foundation.org,
-        jeyu@kernel.org, linux-kernel@vger.kernel.org,
-        linux-modules@vger.kernel.org, live-patching@vger.kernel.org,
-        atomlin@atomlin.com, ghalat@redhat.com, allen.lkml@gmail.com,
-        void@manifault.com, joe@perches.com
-Subject: Re: [RFC PATCH v4 00/13] module: core code clean up
-Message-ID: <20220206144248.xidnurpm6xsacws3@ava.usersys.com>
-X-PGP-Key: http://pgp.mit.edu/pks/lookup?search=atomlin%40redhat.com
-X-PGP-Fingerprint: 7906 84EB FA8A 9638 8D1E  6E9B E2DE 9658 19CC 77D6
-References: <20220130213214.1042497-1-atomlin@redhat.com>
- <Yfsf2SGELhQ71Ovo@bombadil.infradead.org>
+        Sun, 06 Feb 2022 06:44:16 -0800 (PST)
+From:   Michael Straube <straube.linux@gmail.com>
+To:     gregkh@linuxfoundation.org
+Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Michael Straube <straube.linux@gmail.com>
+Subject: [PATCH] staging: r8188eu: remove UsbBulkOutSize from struct hal_data_8188e
+Date:   Sun,  6 Feb 2022 15:44:07 +0100
+Message-Id: <20220206144407.8397-1-straube.linux@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <Yfsf2SGELhQ71Ovo@bombadil.infradead.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed 2022-02-02 16:20 -0800, Luis Chamberlain wrote:
-> Thanks for all this work Aaron! Can you drop the RFC prefix,
-> rebase onto linus' latest tree (as he already merged my
-> modules-next, so his tree is more up to date), and submit again?
+UsbBulkOutSize in struct hal_data_8188e is only used to set a local
+variable in rtl8188eu_xmitframe_complete(). Set the local variable
+directly and remove UsbBulkOutSize from the hal_data_8188e structure.
 
-No problem and will do.
+Signed-off-by: Michael Straube <straube.linux@gmail.com>
+---
+ drivers/staging/r8188eu/hal/rtl8188eu_xmit.c   | 9 +++++++--
+ drivers/staging/r8188eu/hal/usb_halinit.c      | 8 +-------
+ drivers/staging/r8188eu/include/rtl8188e_hal.h | 2 --
+ 3 files changed, 8 insertions(+), 11 deletions(-)
 
-> I'll then apply this to my modules-next, and then ask Christophe to
-> rebase on top of that.
-> 
-> Michal, you'd be up next if you want to go through modules-next.
-> 
-> Aaron, please Cc Christophe and Michal on your next respin.
-
-Sure.
-
-Kind regards,
-
+diff --git a/drivers/staging/r8188eu/hal/rtl8188eu_xmit.c b/drivers/staging/r8188eu/hal/rtl8188eu_xmit.c
+index 94dafc7c1ad0..205a392a0ad3 100644
+--- a/drivers/staging/r8188eu/hal/rtl8188eu_xmit.c
++++ b/drivers/staging/r8188eu/hal/rtl8188eu_xmit.c
+@@ -382,7 +382,7 @@ static u32 xmitframe_need_length(struct xmit_frame *pxmitframe)
+ 
+ s32 rtl8188eu_xmitframe_complete(struct adapter *adapt, struct xmit_priv *pxmitpriv, struct xmit_buf *pxmitbuf)
+ {
+-	struct hal_data_8188e *haldata = &adapt->haldata;
++	struct dvobj_priv *pdvobjpriv = adapter_to_dvobj(adapt);
+ 	struct xmit_frame *pxmitframe = NULL;
+ 	struct xmit_frame *pfirstframe = NULL;
+ 
+@@ -396,13 +396,18 @@ s32 rtl8188eu_xmitframe_complete(struct adapter *adapt, struct xmit_priv *pxmitp
+ 	u32 pbuf_tail;	/*  last pkt tail */
+ 	u32 len;	/*  packet length, except TXDESC_SIZE and PKT_OFFSET */
+ 
+-	u32 bulksize = haldata->UsbBulkOutSize;
++	u32 bulksize;
+ 	u8 desc_cnt;
+ 	u32 bulkptr;
+ 
+ 	/*  dump frame variable */
+ 	u32 ff_hwaddr;
+ 
++	if (pdvobjpriv->ishighspeed)
++		bulksize = USB_HIGH_SPEED_BULK_SIZE;
++	else
++		bulksize = USB_FULL_SPEED_BULK_SIZE;
++
+ 	/*  check xmitbuffer is ok */
+ 	if (!pxmitbuf) {
+ 		pxmitbuf = rtw_alloc_xmitbuf(pxmitpriv);
+diff --git a/drivers/staging/r8188eu/hal/usb_halinit.c b/drivers/staging/r8188eu/hal/usb_halinit.c
+index f21b910bd88d..1a8e085ca5da 100644
+--- a/drivers/staging/r8188eu/hal/usb_halinit.c
++++ b/drivers/staging/r8188eu/hal/usb_halinit.c
+@@ -45,13 +45,7 @@ static bool HalUsbSetQueuePipeMapping8188EUsb(struct adapter *adapt, u8 NumOutPi
+ 
+ void rtl8188eu_interface_configure(struct adapter *adapt)
+ {
+-	struct hal_data_8188e *haldata = &adapt->haldata;
+-	struct dvobj_priv	*pdvobjpriv = adapter_to_dvobj(adapt);
+-
+-	if (pdvobjpriv->ishighspeed)
+-		haldata->UsbBulkOutSize = USB_HIGH_SPEED_BULK_SIZE;/* 512 bytes */
+-	else
+-		haldata->UsbBulkOutSize = USB_FULL_SPEED_BULK_SIZE;/* 64 bytes */
++	struct dvobj_priv *pdvobjpriv = adapter_to_dvobj(adapt);
+ 
+ 	HalUsbSetQueuePipeMapping8188EUsb(adapt, pdvobjpriv->RtNumOutPipes);
+ }
+diff --git a/drivers/staging/r8188eu/include/rtl8188e_hal.h b/drivers/staging/r8188eu/include/rtl8188e_hal.h
+index c323476f5936..e97575dd1edc 100644
+--- a/drivers/staging/r8188eu/include/rtl8188e_hal.h
++++ b/drivers/staging/r8188eu/include/rtl8188e_hal.h
+@@ -171,8 +171,6 @@ struct hal_data_8188e {
+ 	/*  Auto FSM to Turn On, include clock, isolation, power control
+ 	 *  for MAC only */
+ 	u8	bMacPwrCtrlOn;
+-
+-	u32	UsbBulkOutSize;
+ };
+ 
+ s32 InitLLTTable(struct adapter *padapter, u8 txpktbuf_bndy);
 -- 
-Aaron Tomlin
+2.34.1
 
