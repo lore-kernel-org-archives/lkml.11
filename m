@@ -2,188 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B0E2C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 17:43:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D0EDC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 17:45:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344768AbiBFRno (ORCPT
+        id S1344994AbiBFRpU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Feb 2022 12:43:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37424 "EHLO
+        Sun, 6 Feb 2022 12:45:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233776AbiBFRnm (ORCPT
+        with ESMTP id S233776AbiBFRpP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 12:43:42 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5A2DC06173B
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 09:43:41 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 88D62611C8
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 17:43:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B45B3C340E9;
-        Sun,  6 Feb 2022 17:43:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644169420;
-        bh=fLik+MCx1UepZ3oiLpbRUYEqsM0GTJc2mQEVFX7OMVs=;
-        h=From:To:Cc:Subject:Date:From;
-        b=dwKJ8dfhJ2vipvS9I3ja1ER8/OLzBJwXrHjv3eNgndq6rBRLUdRBJJKvcluGWmKC4
-         ahA/nxYES7KZKNrHOxC6qrz4V+RP/1hXwT4FnHY/wLPcVAz6I3MtdPFcGXXq/ep7ta
-         RsMWCFUcHUxZ6u+f74cpFh3XwuYiB4b5ablBiq78zZwDeY/ghyaJtfPe6jCGkY/j+J
-         AvXFe3vkhMQ9rS17Y5O+XFAcrfp+PASSPKsyQxGQJSzi+Sx1f5WsyB2k/IWoUS3Klv
-         ww2V3p0E3WQAHkt/rNPK68Lz72Brg+wB9GDUOkXJzeUsfbHxRjoWVGaT5CWWZahMfr
-         CT6iKz1uQmYTg==
-From:   Jisheng Zhang <jszhang@kernel.org>
-To:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>
-Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] riscv: add irq stack support
-Date:   Mon,  7 Feb 2022 01:36:00 +0800
-Message-Id: <20220206173600.2784-1-jszhang@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        Sun, 6 Feb 2022 12:45:15 -0500
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6A2AC043185
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 09:45:12 -0800 (PST)
+Received: by mail-pl1-x62b.google.com with SMTP id u12so2368573plq.10
+        for <linux-kernel@vger.kernel.org>; Sun, 06 Feb 2022 09:45:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=v6O2o8pG50xk23PLXPp5+UKk+LzVl21UwSd+T/RY4xM=;
+        b=Js3Gu6abALq+9Rw5jzow76VsWNdYKgRb3cosC0c+nCrMduq/KxnH9S9oDgjFr1Y38O
+         Kg8zxMG/u1p32rKiag+YvBC1OUgV+iFZMgQPspJlzvA7k0Om8N6Sro+XLP+MHYlqBke3
+         Cx6xWQIcYFEChSDwzbfJsPiNZYZgBW/w+DHBE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=v6O2o8pG50xk23PLXPp5+UKk+LzVl21UwSd+T/RY4xM=;
+        b=22o3Ug7IoVC19sJdhg9R0fGe9d6M/pSMxXX/ABPNcCeQsKQw6k6fz5lDZ1lWHwQYVR
+         vQCQLZkO/y5JQjkhXBt7wnjnqJudRDyEU9kAfE3JybSSKAAajii3ZRP6jUKiE5GdQI4h
+         Tvx7ESwL2D/Tbegxdwj5QB+uIFmB5SvhJV6vkhOMr8fngVvBef+wNKGYHLCxxWs6AS8q
+         ZWM+wPMFbwywRFN0GHKqqWifT1YltZ7jPAGAyxW6oNzK9oLnst8FxhUIWZ2D1iU43hb6
+         FvLJrShM7pEk2h1qcpJdGIQ/JCL2/ulaBwJX/ranvdDxKxk9ngwowDpoEgaf39Q+ooD/
+         TkRg==
+X-Gm-Message-State: AOAM531tqEsrrk6Raqzi0oqQWAqK9VjPYkQEEGlxrN+nxPcF5KSfpK7u
+        WSsXnCrFwoRpJxhyqwlKIkjwJQ==
+X-Google-Smtp-Source: ABdhPJxSvg4hChq0huexNav4rWvjba195f+0fA1dkTHKBmy7VjbGGLnAN+3xEAuI9rFWpjLkyYPwNg==
+X-Received: by 2002:a17:90a:ec0b:: with SMTP id l11mr14212735pjy.200.1644169512190;
+        Sun, 06 Feb 2022 09:45:12 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id c12sm9988585pfl.130.2022.02.06.09.45.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 06 Feb 2022 09:45:11 -0800 (PST)
+From:   Kees Cook <keescook@chromium.org>
+To:     Alexander Popov <alex.popov@linux.com>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: [PATCH 0/3] gcc-plugins/stackleak: Ignore .noinstr.text and .entry.text
+Date:   Sun,  6 Feb 2022 09:45:05 -0800
+Message-Id: <20220206174508.2425076-1-keescook@chromium.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=759; h=from:subject; bh=9Mpxe73Kgm9+18b3DRYv4LkxSc2djAQZd/LwhBPfIKg=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBiAAkidd+gsthX8X4I2aZfDT4Z+LaGVX4rQib9in1s dFliP0+JAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYgAJIgAKCRCJcvTf3G3AJhiID/ 4yXopOsjb2jNaBgv82czSWfbFloMfBRc9u6JvZQI/3D6b7aEnC9U4dhHnZBamcKRz6axTehlK6WwSV bUsZ7IN/8jafYXD6xLg8q1XPUFDb7DHxoncKSSzSaCbqGIDgMP8QqX5Rv8zbAy2F5s6dbDZgYrq2yP IvC6nGBc9DsFkbHKHzeN6wWSL2chZOXinqJDqTcC6E20r2FKsYbBnN8bBDKb5qTGi8iqgRzUoFW6yP vqO5u4AIujbIY2wl8yFSwDfRHaOKHCgGgLGy1r1wyz8egJdgksUjajewORaCowrNVEkD3Cf+uGThZC BCOhZEUwgs/7xycCK7wzpumWAGYBbJAiHGLaqYlPiRE321q7cAgHWyENloEfaB+2cRuNE01pkd1BbC jzxiUAOvzbeTt+lzdh4W69JjQ8Aeu/rBVbcqefQVhwBRf+zntZYvW4xm0oXFxeffSgTWSTV89XF4Yh 54BL1yGQKIcKiV5jZk8wzYT2a4ZemmapQVtcVIbgvjYPsze/d92lmsJqxI/M1izyzuSzJxyaC2AUW9 Gn5Yj8N3l932eHuDYYR5cl2p5Aa8XjRVHS4qHNZXsVOVxqJRmzpUoUGDk6Ub7aGakDiaqKCeOvPKZU 7mUMLYPmU0L//Y/zttSZi1IF30Aoy8ZNGQJlW+LecLNLpE0wbkW+gFy755Ww==
+X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, IRQs are still handled on the kernel stack of the current
-task on riscv platforms. If the task has a deep call stack at the time
-of interrupt, and handling the interrupt also requires a deep stack,
-it's possible to see stack overflow.
+Out of an abundance of caution, do not perform stack depth analysis on
+.noinstr.text and .entry.text section functions, as it may be possible
+that "current" is not sane.
 
-Before this patch, the stack_max_size of a v5.17-rc1 kernel running on
-a lichee RV board gave:
-~ # cat /sys/kernel/debug/tracing/stack_max_size
-3736
+Additionally, to verify results, the verbose mode is wired up the Kconfig,
+and the string matching is refactored for correctness.
 
-After this patch,
-~ # cat /sys/kernel/debug/tracing/stack_max_size
-3176
+-Kees
 
-We reduce the max kernel stack usage by 560 bytes!
+Kees Cook (3):
+  gcc-plugins/stackleak: Provide verbose mode
+  gcc-plugins/stackleak: Exactly match strings instead of prefixes
+  gcc-plugins/stackleak: Ignore .noinstr.text and .entry.text
 
-From another side, after this patch, it's possible to reduce the
-THREAD_SIZE to 8KB for RV64 platforms. This is especially useful for
-those systems with small memory size, e.g the Allwinner D1S platform
-which is RV64 but only has 64MB DDR.
+ scripts/Makefile.gcc-plugins           |  2 ++
+ scripts/gcc-plugins/stackleak_plugin.c | 29 ++++++++++++++++++++++----
+ security/Kconfig.hardening             | 10 +++++++++
+ 3 files changed, 37 insertions(+), 4 deletions(-)
 
-Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
----
- arch/riscv/include/asm/thread_info.h |  1 +
- arch/riscv/kernel/asm-offsets.c      |  2 ++
- arch/riscv/kernel/entry.S            | 33 +++++++++++++++++++++++++---
- arch/riscv/kernel/irq.c              | 16 ++++++++++++++
- 4 files changed, 49 insertions(+), 3 deletions(-)
-
-diff --git a/arch/riscv/include/asm/thread_info.h b/arch/riscv/include/asm/thread_info.h
-index 60da0dcacf14..67387a8bcb34 100644
---- a/arch/riscv/include/asm/thread_info.h
-+++ b/arch/riscv/include/asm/thread_info.h
-@@ -19,6 +19,7 @@
- #endif
- #define THREAD_SIZE		(PAGE_SIZE << THREAD_SIZE_ORDER)
- 
-+#define IRQ_STACK_SIZE		THREAD_SIZE
- /*
-  * By aligning VMAP'd stacks to 2 * THREAD_SIZE, we can detect overflow by
-  * checking sp & (1 << THREAD_SHIFT), which we can do cheaply in the entry
-diff --git a/arch/riscv/kernel/asm-offsets.c b/arch/riscv/kernel/asm-offsets.c
-index df0519a64eaf..9619398a69e1 100644
---- a/arch/riscv/kernel/asm-offsets.c
-+++ b/arch/riscv/kernel/asm-offsets.c
-@@ -36,6 +36,8 @@ void asm_offsets(void)
- 	OFFSET(TASK_TI_PREEMPT_COUNT, task_struct, thread_info.preempt_count);
- 	OFFSET(TASK_TI_KERNEL_SP, task_struct, thread_info.kernel_sp);
- 	OFFSET(TASK_TI_USER_SP, task_struct, thread_info.user_sp);
-+	OFFSET(TASK_TI_CPU, task_struct, thread_info.cpu);
-+	OFFSET(TASK_STACK, task_struct, stack);
- 
- 	OFFSET(TASK_THREAD_F0,  task_struct, thread.fstate.f[0]);
- 	OFFSET(TASK_THREAD_F1,  task_struct, thread.fstate.f[1]);
-diff --git a/arch/riscv/kernel/entry.S b/arch/riscv/kernel/entry.S
-index ed29e9c8f660..57c9b64e16a5 100644
---- a/arch/riscv/kernel/entry.S
-+++ b/arch/riscv/kernel/entry.S
-@@ -126,12 +126,39 @@ skip_context_tracking:
- 	 */
- 	bge s4, zero, 1f
- 
--	la ra, ret_from_exception
-+	/* preserve the sp */
-+	move s0, sp
- 
--	/* Handle interrupts */
- 	move a0, sp /* pt_regs */
-+
-+	/*
-+	 * Compare sp with the base of the task stack.
-+	 * If the top ~(THREAD_SIZE - 1) bits match, we are on a task stack,
-+	 * and should switch to the irq stack.
-+	 */
-+	REG_L t0, TASK_STACK(tp)
-+	xor t0, t0, s0
-+	li t1, ~(THREAD_SIZE - 1)
-+	and t0, t0, t1
-+	bnez t0, 2f
-+
-+	la t1, irq_stack
-+	REG_L t2, TASK_TI_CPU(tp)
-+	slli t2, t2, RISCV_LGPTR
-+	add t1, t1, t2
-+	REG_L t2, 0(t1)
-+	li t1, IRQ_STACK_SIZE
-+	/* switch to the irq stack */
-+	add sp, t2, t1
-+
-+2:
-+	/* Handle interrupts */
- 	la a1, generic_handle_arch_irq
--	jr a1
-+	jalr a1
-+
-+	/* Restore sp */
-+	move sp, s0
-+	j ret_from_exception
- 1:
- 	/*
- 	 * Exceptions run with interrupts enabled or disabled depending on the
-diff --git a/arch/riscv/kernel/irq.c b/arch/riscv/kernel/irq.c
-index 7207fa08d78f..9b586d6ad7ca 100644
---- a/arch/riscv/kernel/irq.c
-+++ b/arch/riscv/kernel/irq.c
-@@ -10,6 +10,8 @@
- #include <linux/seq_file.h>
- #include <asm/smp.h>
- 
-+void *irq_stack[NR_CPUS];
-+
- int arch_show_interrupts(struct seq_file *p, int prec)
- {
- 	show_ipi_stats(p, prec);
-@@ -18,7 +20,21 @@ int arch_show_interrupts(struct seq_file *p, int prec)
- 
- void __init init_IRQ(void)
- {
-+	int cpu;
-+
- 	irqchip_init();
- 	if (!handle_arch_irq)
- 		panic("No interrupt controller found.");
-+
-+	for_each_possible_cpu(cpu) {
-+#ifdef CONFIG_VMAP_STACK
-+		void *s = __vmalloc_node(IRQ_STACK_SIZE, THREAD_ALIGN,
-+					 THREADINFO_GFP, cpu_to_node(cpu),
-+					 __builtin_return_address(0));
-+#else
-+		void *s = (void *)__get_free_pages(GFP_KERNEL, get_order(IRQ_STACK_SIZE));
-+#endif
-+
-+		irq_stack[cpu] = s;
-+	}
- }
 -- 
-2.34.1
+2.30.2
 
