@@ -2,125 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2D49C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 12:55:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85F02C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 13:07:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236158AbiBFMz6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Feb 2022 07:55:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59192 "EHLO
+        id S237930AbiBFNHQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 6 Feb 2022 08:07:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235893AbiBFMzz (ORCPT
+        with ESMTP id S237860AbiBFNHN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 07:55:55 -0500
-Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5E68C06173B;
-        Sun,  6 Feb 2022 04:55:53 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R411e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V3gnuuW_1644152150;
-Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0V3gnuuW_1644152150)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Sun, 06 Feb 2022 20:55:51 +0800
-From:   Yang Li <yang.lee@linux.alibaba.com>
-To:     jejb@linux.ibm.com
-Cc:     martin.petersen@oracle.com, jinpu.wang@cloud.ionos.com,
-        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Yang Li <yang.lee@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH -next] scsi: pm8001: clean up some inconsistent indenting
-Date:   Sun,  6 Feb 2022 20:55:48 +0800
-Message-Id: <20220206125548.110945-1-yang.lee@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
+        Sun, 6 Feb 2022 08:07:13 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CB8FC043182;
+        Sun,  6 Feb 2022 05:07:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=O8zLbKs0X6TzxCrkjzqNkkHxAtjp2s1Oq6J6b6ynu0s=; b=WKUHYTCuz+4dtYW+6BDGdx6lbC
+        0OaQRA0ahdl6KWql9CtBckg55JkExEGI6yC3AH+pABNOGdgo2xCRAkXTUuw6D5KJOSqO3DYWCwul1
+        xyAotHf2CFbX/epQDuVxq/xDN/YIeGMNrXzAjlWDAZdeKM0nn7Pz5YVu28TI99yt4enCBvej6V4XV
+        exkbj3EiBnKPAohE+dXpik1wBFbPp/PobtG8O3Hu45F6ZT6RMPeWL/3MrfgbWaSIk+usJ0OclAN2R
+        zD4HC7KAj/Q7dlVumDLpRoVkqF81juNEszXWFeoryjlDzKBXTV7TgHWjiYpinUiaNfh4Cy9Gj4gD4
+        lkGuu/TA==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nGhFH-00E7rV-11; Sun, 06 Feb 2022 13:06:24 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 245F8300470;
+        Sun,  6 Feb 2022 14:06:19 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id D86F32CA50E07; Sun,  6 Feb 2022 14:06:19 +0100 (CET)
+Date:   Sun, 6 Feb 2022 14:06:19 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
+Cc:     "bsingharora@gmail.com" <bsingharora@gmail.com>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "Syromiatnikov, Eugene" <esyr@redhat.com>,
+        "rdunlap@infradead.org" <rdunlap@infradead.org>,
+        "keescook@chromium.org" <keescook@chromium.org>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+        "Eranian, Stephane" <eranian@google.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "fweimer@redhat.com" <fweimer@redhat.com>,
+        "nadav.amit@gmail.com" <nadav.amit@gmail.com>,
+        "jannh@google.com" <jannh@google.com>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "kcc@google.com" <kcc@google.com>, "bp@alien8.de" <bp@alien8.de>,
+        "oleg@redhat.com" <oleg@redhat.com>,
+        "hjl.tools@gmail.com" <hjl.tools@gmail.com>,
+        "Yang, Weijiang" <weijiang.yang@intel.com>,
+        "Lutomirski, Andy" <luto@kernel.org>,
+        "pavel@ucw.cz" <pavel@ucw.cz>, "arnd@arndb.de" <arnd@arndb.de>,
+        "Moreira, Joao" <joao.moreira@intel.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mike.kravetz@oracle.com" <mike.kravetz@oracle.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "Dave.Martin@arm.com" <Dave.Martin@arm.com>,
+        "john.allen@amd.com" <john.allen@amd.com>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
+        "gorcunov@gmail.com" <gorcunov@gmail.com>
+Subject: Re: [PATCH 00/35] Shadow stacks for userspace
+Message-ID: <Yf/Hy+MknkkmyLi/@hirez.programming.kicks-ass.net>
+References: <87fsozek0j.ffs@tglx>
+ <a7e59ae16e0e05579b087caf4045e42b174e2167.camel@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a7e59ae16e0e05579b087caf4045e42b174e2167.camel@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Eliminate the follow smatch warning:
-drivers/scsi/pm8001/pm8001_ctl.c:760 pm8001_update_flash() warn:
-inconsistent indenting
+On Fri, Feb 04, 2022 at 01:08:25AM +0000, Edgecombe, Rick P wrote:
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
----
- drivers/scsi/pm8001/pm8001_ctl.c | 65 +++++++++++++++++---------------
- 1 file changed, 35 insertions(+), 30 deletions(-)
+> > So how is that going to work? altstack is not an esoteric corner
+> > case.
+> 
+> My understanding is that the main usages for the signal stack were
+> handling stack overflows and corruption. Since the shadow stack only
+> contains return addresses rather than large stack allocations, and is
+> not generally writable or pivotable, I thought there was a good
+> possibility an alt shadow stack would not end up being especially
+> useful. Does it seem like reasonable guesswork?
 
-diff --git a/drivers/scsi/pm8001/pm8001_ctl.c b/drivers/scsi/pm8001/pm8001_ctl.c
-index 41a63c9b719b..213ebf39261f 100644
---- a/drivers/scsi/pm8001/pm8001_ctl.c
-+++ b/drivers/scsi/pm8001/pm8001_ctl.c
-@@ -755,36 +755,41 @@ static int pm8001_update_flash(struct pm8001_hba_info *pm8001_ha)
- 			fwControl->retcode = 0;/* OUT */
- 			fwControl->offset = loopNumber * IOCTL_BUF_SIZE;/*OUT */
- 
--		/* for the last chunk of data in case file size is not even with
--		4k, load only the rest*/
--		if (((loopcount-loopNumber) == 1) &&
--			((partitionSize + HEADER_LEN) % IOCTL_BUF_SIZE)) {
--			fwControl->len =
--				(partitionSize + HEADER_LEN) % IOCTL_BUF_SIZE;
--			memcpy((u8 *)fwControl->buffer,
--				(u8 *)pm8001_ha->fw_image->data + sizeRead,
--				(partitionSize + HEADER_LEN) % IOCTL_BUF_SIZE);
--			sizeRead +=
--				(partitionSize + HEADER_LEN) % IOCTL_BUF_SIZE;
--		} else {
--			memcpy((u8 *)fwControl->buffer,
--				(u8 *)pm8001_ha->fw_image->data + sizeRead,
--				IOCTL_BUF_SIZE);
--			sizeRead += IOCTL_BUF_SIZE;
--		}
--
--		pm8001_ha->nvmd_completion = &completion;
--		ret = PM8001_CHIP_DISP->fw_flash_update_req(pm8001_ha, payload);
--		if (ret) {
--			pm8001_ha->fw_status = FAIL_OUT_MEMORY;
--			goto out;
--		}
--		wait_for_completion(&completion);
--		if (fwControl->retcode > FLASH_UPDATE_IN_PROGRESS) {
--			pm8001_ha->fw_status = fwControl->retcode;
--			ret = -EFAULT;
--			goto out;
--		}
-+			/* for the last chunk of data in case file
-+			 * size is not even with 4k, load only the rest
-+			 */
-+			if (((loopcount-loopNumber) == 1) &&
-+				((partitionSize + HEADER_LEN) % IOCTL_BUF_SIZE)) {
-+				fwControl->len =
-+					(partitionSize + HEADER_LEN) %
-+					IOCTL_BUF_SIZE;
-+				memcpy((u8 *)fwControl->buffer,
-+					(u8 *)pm8001_ha->fw_image->data + sizeRead,
-+					(partitionSize + HEADER_LEN) %
-+					IOCTL_BUF_SIZE);
-+				sizeRead +=
-+					(partitionSize + HEADER_LEN) %
-+					IOCTL_BUF_SIZE;
-+			} else {
-+				memcpy((u8 *)fwControl->buffer,
-+					(u8 *)pm8001_ha->fw_image->data + sizeRead,
-+					IOCTL_BUF_SIZE);
-+				sizeRead += IOCTL_BUF_SIZE;
-+			}
-+
-+			pm8001_ha->nvmd_completion = &completion;
-+			ret = PM8001_CHIP_DISP->fw_flash_update_req(pm8001_ha,
-+				payload);
-+			if (ret) {
-+				pm8001_ha->fw_status = FAIL_OUT_MEMORY;
-+				goto out;
-+			}
-+			wait_for_completion(&completion);
-+			if (fwControl->retcode > FLASH_UPDATE_IN_PROGRESS) {
-+				pm8001_ha->fw_status = fwControl->retcode;
-+				ret = -EFAULT;
-+				goto out;
-+			}
- 		}
- 	}
- out:
--- 
-2.20.1.7.g153144c
-
+altstacks are also used in userspace threading implemenations.
