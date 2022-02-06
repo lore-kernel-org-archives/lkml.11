@@ -2,79 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEBACC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 22:25:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1703C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 22:28:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346603AbiBFWZP (ORCPT
+        id S1346930AbiBFW2W (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Feb 2022 17:25:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37316 "EHLO
+        Sun, 6 Feb 2022 17:28:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238398AbiBFWZK (ORCPT
+        with ESMTP id S241442AbiBFW2V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 17:25:10 -0500
-X-Greylist: delayed 469 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 14:25:08 PST
-Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1C0DC061348;
-        Sun,  6 Feb 2022 14:25:08 -0800 (PST)
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 8173C1C0B79; Sun,  6 Feb 2022 23:17:16 +0100 (CET)
-Date:   Sun, 6 Feb 2022 23:17:15 +0100
-From:   Pavel Machek <pavel@ucw.cz>
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Florian Westphal <fw@strlen.de>, Yi Chen <yiche@redhat.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        kadlec@netfilter.org, davem@davemloft.net, kuba@kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH AUTOSEL 4.9 3/7] netfilter: nf_conntrack_netbios_ns: fix
- helper module alias
-Message-ID: <20220206221715.GA19323@duo.ucw.cz>
-References: <20220203203651.5158-1-sashal@kernel.org>
- <20220203203651.5158-3-sashal@kernel.org>
+        Sun, 6 Feb 2022 17:28:21 -0500
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A9CBDC061348;
+        Sun,  6 Feb 2022 14:28:20 -0800 (PST)
+Received: from mail-pg1-f179.google.com (mail-pg1-f179.google.com [209.85.215.179])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 454DC20B876C;
+        Sun,  6 Feb 2022 14:28:20 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 454DC20B876C
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1644186500;
+        bh=AlgeafKjcWTDjqK3xCVT2BjxHUzAw2nMkNrXQLyZQqc=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=JvioGdL5CYwDWllkg46Qe8WBy+WRWKiMns089Y+xhT/wlYcUksaQBAMDV/KWkjzYK
+         /PCSjE+19iNDH4yAFHfvu8N1gUUdSoE3RBr9mqlsHAFH9ouR6bq40xi6+drlw6iFjr
+         P8TeKutcAnqBXK94rU3Y4JCsWcmZXOOLBQTmnKVo=
+Received: by mail-pg1-f179.google.com with SMTP id v3so10003958pgc.1;
+        Sun, 06 Feb 2022 14:28:20 -0800 (PST)
+X-Gm-Message-State: AOAM533b11kn2zgSMvNHvbAPN2kze1vrWJHO0U3t7crpnX/G7dD9Gpsq
+        ez2sdmMIMjbyJuc0c3Hr8WTg5lK4TR7vns5zsCA=
+X-Google-Smtp-Source: ABdhPJyMiXen4M2yfTGefBb4OQ4k2zXbkKWF5dpmLywwDDvBXpV8ydstjtqe9+OpxQ1eGPd1TGEK1SqWCneAahZnr78=
+X-Received: by 2002:a63:f156:: with SMTP id o22mr6987624pgk.387.1644186499802;
+ Sun, 06 Feb 2022 14:28:19 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="J/dobhs11T7y2rNN"
-Content-Disposition: inline
-In-Reply-To: <20220203203651.5158-3-sashal@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220204005519.60361-1-mcroce@linux.microsoft.com>
+ <20220204005519.60361-3-mcroce@linux.microsoft.com> <CAADnVQ+tesyKMd864TzBgfynuxosPPoGgHiB0M9p2oRjitdv2g@mail.gmail.com>
+In-Reply-To: <CAADnVQ+tesyKMd864TzBgfynuxosPPoGgHiB0M9p2oRjitdv2g@mail.gmail.com>
+From:   Matteo Croce <mcroce@linux.microsoft.com>
+Date:   Sun, 6 Feb 2022 23:27:43 +0100
+X-Gmail-Original-Message-ID: <CAFnufp31Sw8z6f6z1ZR5W9Z61qBMWsOFdN3bFbWNU6vT4KKOvw@mail.gmail.com>
+Message-ID: <CAFnufp31Sw8z6f6z1ZR5W9Z61qBMWsOFdN3bFbWNU6vT4KKOvw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 2/2] selftests/bpf: test maximum recursion
+ depth for bpf_core_types_are_compat()
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, Feb 4, 2022 at 8:38 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Thu, Feb 3, 2022 at 4:55 PM Matteo Croce <mcroce@linux.microsoft.com> wrote:
+> > --- a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
+> > +++ b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
+> > @@ -13,6 +13,11 @@
+> >  #define CREATE_TRACE_POINTS
+> >  #include "bpf_testmod-events.h"
+> >
+> > +typedef int (*func_proto_typedef___match)(long);
+> > +typedef int (*func_proto_typedef___overflow)(func_proto_typedef___match);
+>
+> There is no need for "___flavor" on the kernel side of type definition.
+> It makes the test confusing to read.
+>
+> > +func_proto_typedef___match funcp = NULL;
+> > +func_proto_typedef___overflow funcp_of = NULL;
+>
+> We have BTF_TYPE_EMIT() macro to avoid unnecessary declaration.
+>
+> > +typedef int (*func_proto_typedef___match)(long);
+> > +typedef int (*func_proto_typedef___overflow)(func_proto_typedef___match);
+>
+> With <=1 in the previous patch such single depth of func_proto
+> was reaching the recursion limit.
+> Hence the fix <=0 was necessary.
+> I've also changed this test to:
+>
+> +typedef int (*func_proto_typedef)(long);
+> +typedef int (*func_proto_typedef_nested1)(func_proto_typedef);
+> +typedef int (*func_proto_typedef_nested2)(func_proto_typedef_nested1);
+>
+> in bpf_testmod.c and in progs/core_kern_overflow.c
+> and
+> bpf_core_type_exists(func_proto_typedef_nested2);
+> to go above the limit.
+>
+> Also added bpf_core_type_exists(func_proto_typedef_nested1)
+> to progs/core_kern.c to stay at the limit.
+>
+> Please see the result in bpf-next.
 
---J/dobhs11T7y2rNN
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Awesome.
+I've seen both patches in the repo, LGTM.
 
-Hi!
-
-> From: Florian Westphal <fw@strlen.de>
->=20
-> [ Upstream commit 0e906607b9c5ee22312c9af4d8adb45c617ea38a ]
->=20
-> The helper gets registered as 'netbios-ns', not netbios_ns.
-> Intentionally not adding a fixes-tag because i don't want this to go to
-> stable. This wasn't noticed for a very long time so no so no need to risk
-> regressions.
-
-Commit log says this is not severe and probably should wait...
-
-Best regards,
-								Pavel
---=20
-http://www.livejournal.com/~pavelmachek
-
---J/dobhs11T7y2rNN
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYgBI6wAKCRAw5/Bqldv6
-8iTtAJ94GJRrOT2RWUPA+LE7nd/0u7f6ZgCfabTxYSTEjKxvzPMx/qjGHfKIvOQ=
-=esSg
------END PGP SIGNATURE-----
-
---J/dobhs11T7y2rNN--
+-- 
+per aspera ad upstream
