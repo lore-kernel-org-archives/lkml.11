@@ -2,103 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEB41C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 11:20:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A472AC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 11:29:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233899AbiBFLUg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Feb 2022 06:20:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59608 "EHLO
+        id S233973AbiBFL34 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 6 Feb 2022 06:29:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233668AbiBFLUf (ORCPT
+        with ESMTP id S233668AbiBFL3w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 06:20:35 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFFD1C06173B
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 03:20:34 -0800 (PST)
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
+        Sun, 6 Feb 2022 06:29:52 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39F31C06173B
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 03:29:51 -0800 (PST)
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 37C993F1D9
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 11:20:33 +0000 (UTC)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id E858D40326
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 11:29:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1644146433;
-        bh=i9EmgtpGx11cIwj9ugumfjV3EWt5zkLMtmnd8R60n7Y=;
-        h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+        s=20210705; t=1644146989;
+        bh=Rt0CLAsAt//yNIPsU1fxnJ6fI6vrkoAOGL9+IE9dY2A=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
          In-Reply-To:Content-Type;
-        b=OHCBK+38VgZXKF5G6HYcbeW6H7MaOuapXe2nwJJZEmwow0vTHHn+oyITmUhtDIBXT
-         ghZhmqUXE/41HR1BRlGWQ+FsAh25UClC+lr6dpduT83t9Oxl0wWlnB2Cs8DRB11Qx3
-         1vqPaCXJi0a5pFkzwYNCTZEYAF/cmQhozrtw3Cn0atT+mnitWJFuV4NkHwjgoBOWfm
-         UfudiiR10FVKDH2/dQTF0Q4e0pmEXMxxhDUeW1BVACwgMwOkpZgAH0S7u6IJCtV6XW
-         4R+7cdp9w0PEjhAjTaLdd4qr4rJp0CooGbns8nrOO1RIRXUdH8gzRNTB/NNa6wGbAn
-         +UHf7+xx7a7jQ==
-Received: by mail-ed1-f69.google.com with SMTP id j1-20020aa7c341000000b0040417b84efeso5937180edr.21
-        for <linux-kernel@vger.kernel.org>; Sun, 06 Feb 2022 03:20:33 -0800 (PST)
+        b=gEi4HPpTjvGOU6wOy6bUg12Hgp7jpWTSEydlYTD5GdRNqXujH3rVFhpnDyI0ddlV8
+         xKXqbs5IugrnWmJ0CUN50LXvTbZad2xmL9tyPAZ/lJcl2zUs+97VpO4yJ05DwuryoW
+         Sobd+dsITUIe4Nj5S0NUEJNAXXGFnN0tIYBB9OqOAW6eOQ2MeIQa2rzEWeimIR1i8D
+         NZYd1PVEoh/dWRn46b4p+Nyqs0QXjo4AUjXLhlkB0fsHba+exN5YgAFAFjS9B61Ut5
+         +R8xrYE5usxKKpqDeoV5vlx0c9+ELFSmebnRTz9ScxUkRKjzFk22/7vd/gFk+naxB7
+         q7XTuWQPWB1XA==
+Received: by mail-ed1-f71.google.com with SMTP id b26-20020a056402139a00b004094fddbbdfso5988164edv.12
+        for <linux-kernel@vger.kernel.org>; Sun, 06 Feb 2022 03:29:49 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=i9EmgtpGx11cIwj9ugumfjV3EWt5zkLMtmnd8R60n7Y=;
-        b=HrqxhaNigt0AgyXzWgQdhfQ5QYnSPPbjPnR1Z6FWRlVlSy3a5HlpylyHEXf/R2fLT9
-         gXQZK66qGNb3YHLzkfHXmvtzRpFswUgq6+tX9OdnlFPE9d8kELUuyEi3M/PFTEkyO+Q0
-         6e4RHTNr7W6O1aqlKBS8FLpJDj6yE2zeUyDnqUelIcCfMfsiy77MMYluF2uAnKT5WiYF
-         DhG0BAdEmZsEvqauPKJo3G8MICzoISWW7wHThOkj/DIpp4FpZR9g1cueDO6qQCHVIxsj
-         3MhnUQObbxYXDeosa880fOVvgQ4mSdQtd5Tn2EN+JVj0VmtU1KfqvxWh5kch+PZQIW88
-         V7Jw==
-X-Gm-Message-State: AOAM533zbMeJIDAgYjG96es80Gui6UvNGYgYYdZF4cozMJ3PIqdUlQhW
-        Dv+tM75tFFHwpmjC/FkEbQwdoZBN7G3cVxrr/G6rkn2gI5XFuVVHMZfRFtcxB+hCS9hNW0sOEze
-        j6swW4NoguFaF+GZpqlKgIUgtUXh6Z3P6riyap3Zq0w==
-X-Received: by 2002:a05:6402:1348:: with SMTP id y8mr8346017edw.280.1644146432933;
-        Sun, 06 Feb 2022 03:20:32 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyM2MpDLbrWLUvev/UnRu1x/U4jhDAWB4t25fgpTsPk+WChLF/e6D7bPJYyfCy/mfRoie7AXg==
-X-Received: by 2002:a05:6402:1348:: with SMTP id y8mr8346009edw.280.1644146432830;
-        Sun, 06 Feb 2022 03:20:32 -0800 (PST)
+        bh=Rt0CLAsAt//yNIPsU1fxnJ6fI6vrkoAOGL9+IE9dY2A=;
+        b=W5MxWVTV8a2o/z5HAtQ/5l2sMvU358ytNAaMKfoTqeyy3ZE2A4LjiLSY6nLxC70xPh
+         A1Yq9UIc45on5M8PxZ3Lyvjori1MMQ6aXizXs0mB68JuHXKXGjz1UIaA4lPvMMThkBWn
+         Q1+mBPFpusYVaZlXInldtmZs+ojMTVIeZAG6Dd9Uw3dGfOn7ftRvhJssrSxhtVuF8o7w
+         zYNLtHF3yvcgsPMb5mCFj7wckg8px+ok6LC03GGERA/xgnDmpCgp+zE1ip4kx9vBJooN
+         vFnEvUwZHj/1+Y7Eq7g6fMphuzAzLtGuB3sOXeRKDrBWO41ojgrBjNauvXq4XcRZNrtR
+         2V8Q==
+X-Gm-Message-State: AOAM531uiRb2zDLTpuLDxgr+VgkEw1qIGaY6RzZD4C2WcC/EAQ00pIM6
+        7AXj07hcjvLkpr7rC50KNw75ecl/QCxIKdvjkCZ9U+gWCc7wD8I/t1tGts/9OFOu/0ji1fZDJ4w
+        f3SK9kicLmoQMNQdmwafJXusYhaGGHR9ewAQKadIPvg==
+X-Received: by 2002:a05:6402:520d:: with SMTP id s13mr8442912edd.132.1644146987547;
+        Sun, 06 Feb 2022 03:29:47 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyQUy24RjHPXGNrYXXd4Ep/1rz7beCD0Lisb4rFEaHdqI4+hhfFuwh3fhCM8vUwP90U+Eq35g==
+X-Received: by 2002:a05:6402:520d:: with SMTP id s13mr8442890edd.132.1644146987417;
+        Sun, 06 Feb 2022 03:29:47 -0800 (PST)
 Received: from [192.168.0.83] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id q5sm237027eds.82.2022.02.06.03.20.30
+        by smtp.gmail.com with ESMTPSA id ec40sm1776603edb.68.2022.02.06.03.29.46
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 06 Feb 2022 03:20:31 -0800 (PST)
-Message-ID: <a5bbf115-21a2-7d63-6744-72487b9e756a@canonical.com>
-Date:   Sun, 6 Feb 2022 12:20:30 +0100
+        Sun, 06 Feb 2022 03:29:46 -0800 (PST)
+Message-ID: <04ef74c4-71f6-559c-f054-5267086abc22@canonical.com>
+Date:   Sun, 6 Feb 2022 12:29:45 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH v2 4/5] dt-bindings: memory: lpddr3-timings: convert to
- dtschema
+Subject: Re: [PATCH V1 07/10] arm64: tegra: Enable PCIe slots in P3737-0000
+ board
 Content-Language: en-US
-To:     Dmitry Osipenko <digetx@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-References: <20220205120043.8337-1-krzysztof.kozlowski@canonical.com>
- <20220205120043.8337-5-krzysztof.kozlowski@canonical.com>
- <a204a4eb-6615-26db-facf-ad284c1732d7@gmail.com>
+To:     Vidya Sagar <vidyas@nvidia.com>, bhelgaas@google.com,
+        lorenzo.pieralisi@arm.com, robh+dt@kernel.org,
+        thierry.reding@gmail.com, jonathanh@nvidia.com
+Cc:     kishon@ti.com, vkoul@kernel.org, kw@linux.com,
+        p.zabel@pengutronix.de, mperttunen@nvidia.com,
+        linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-phy@lists.infradead.org, kthota@nvidia.com,
+        mmaddireddy@nvidia.com, sagar.tv@gmail.com
+References: <20220205162144.30240-1-vidyas@nvidia.com>
+ <20220205162144.30240-8-vidyas@nvidia.com>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <a204a4eb-6615-26db-facf-ad284c1732d7@gmail.com>
+In-Reply-To: <20220205162144.30240-8-vidyas@nvidia.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/02/2022 19:50, Dmitry Osipenko wrote:
-> 05.02.2022 15:00, Krzysztof Kozlowski пишет:
->> +  reg:
->> +    maxItems: 1
->> +    description: |
->> +      Maximum DDR clock frequency for the speed-bin, in Hz.
+On 05/02/2022 17:21, Vidya Sagar wrote:
+> Enable PCIe controller nodes to enable respective PCIe slots on
+> P3737-0000 board. Following is the ownership of slots by different
+> PCIe controllers.
+> Controller-1 : On-board Broadcom WiFi controller
+> Controller-4 : M.2 Key-M slot
+> Controller-5 : CEM form-factor x8 slot
 > 
-> Why max-freq is specified as a register? At minimum this is inconsistent
-> with the lpddr2 binding.
+> Signed-off-by: Vidya Sagar <vidyas@nvidia.com>
+> ---
+>  .../nvidia/tegra234-p3737-0000+p3701-0000.dts | 26 +++++++++++++++++++
+>  1 file changed, 26 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dts b/arch/arm64/boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dts
+> index efbbb878ba5a..b819e1133bc4 100644
+> --- a/arch/arm64/boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dts
+> +++ b/arch/arm64/boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dts
+> @@ -21,4 +21,30 @@
+>  	serial {
+>  		status = "okay";
+>  	};
+> +
+> +	pcie@14100000 {
+> +		status = "okay";
+> +
+> +		phys = <&p2u_hsio_3>;
+> +		phy-names = "p2u-0";
+> +	};
+> +
+> +	pcie@14160000 {
+> +		status = "okay";
+> +
+> +		phys = <&p2u_hsio_4>, <&p2u_hsio_5>, <&p2u_hsio_6>,
+> +		       <&p2u_hsio_7>;
+> +		phy-names = "p2u-0", "p2u-1", "p2u-2", "p2u-3";
+> +	};
+> +
+> +	pcie@141a0000 {
+> +		status = "okay";
+> +
+> +		phys = <&p2u_nvhs_0>, <&p2u_nvhs_1>, <&p2u_nvhs_2>,
+> +		       <&p2u_nvhs_3>, <&p2u_nvhs_4>, <&p2u_nvhs_5>,
+> +		       <&p2u_nvhs_6>, <&p2u_nvhs_7>;
+> +		phy-names = "p2u-0", "p2u-1", "p2u-2", "p2u-3", "p2u-4",
+> +			    "p2u-5", "p2u-6", "p2u-7";
+> +	};
+> +
 
-First of all, this is a conversion, so the bindings already specified
-max-freq that way.
-Second, I don't know. I think this was some Lukasz's workaround for
-device node without unit address, but I don't see the reason now why it
-was needed.
+No need for trailing new line.
 
-We could unify it with DDR2 by deprecating 'reg' and introducing
-'max-freq', in separate commit. But you know, existing bindings are
-already there...
+>  };
+
 
 Best regards,
 Krzysztof
