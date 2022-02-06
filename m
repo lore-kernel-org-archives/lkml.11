@@ -2,128 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BD74C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 11:34:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF2F3C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 11:36:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234187AbiBFLeb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Feb 2022 06:34:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35330 "EHLO
+        id S234354AbiBFLf6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 6 Feb 2022 06:35:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234155AbiBFLea (ORCPT
+        with ESMTP id S234155AbiBFLf5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 06:34:30 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22BE0C06173B
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 03:34:29 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 22522B80DAC
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 11:34:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC650C340E9;
-        Sun,  6 Feb 2022 11:34:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644147264;
-        bh=fnCdcI1MTiqaB0sidIsbvWztDw55cMdvbUs/9eWFC3Y=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=OWlTrDigBu+Bog7DiSa4k0/X0KR8qLDgSGFIFJ8bwRFNKYsmPBVsvpcf9tRi5Jv4Z
-         6LohQm+3Ff8XaJSmYz1LX2+Lw2Ib+VV90ZuWL1TPu0PSmJFucr9Q7hdZC7cPkUQO/4
-         18EnTvSBmafjHLtbLHCA5tV4U2rJpFg83DUzfSTI2z0adaSnkv+4iwRutzHlGH3oeg
-         C0WyL6TObkGD6Wj7GMxIGlSB3axE2beyIXpTOyQMkbFaN/9HFdOkAaXsmF39tWi+l1
-         ed/v6XVnSjP3k7Mnt372h279rTuDlm8O1DMeUMUfTo3hr4WzloC5FdXk61ajL+xz/L
-         T71FcomYlvUeQ==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 4D0A7404A6; Sun,  6 Feb 2022 08:34:22 -0300 (-03)
-Date:   Sun, 6 Feb 2022 08:34:22 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Takashi Iwai <tiwai@suse.de>
-Cc:     Mark Brown <broonie@kernel.org>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Takashi Sakamoto <o-takashi@sakamocchi.jp>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/1 fyi] tools include UAPI: Sync sound/asound.h copy
- with the kernel sources
-Message-ID: <Yf+yPiujVTH2nkW8@kernel.org>
-References: <YflN0j09T+6ODHIh@kernel.org>
- <s5hleytzhca.wl-tiwai@suse.de>
+        Sun, 6 Feb 2022 06:35:57 -0500
+X-Greylist: delayed 546 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 03:35:56 PST
+Received: from wout4-smtp.messagingengine.com (wout4-smtp.messagingengine.com [64.147.123.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 729BCC06173B;
+        Sun,  6 Feb 2022 03:35:56 -0800 (PST)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.west.internal (Postfix) with ESMTP id 0B7473201D7C;
+        Sun,  6 Feb 2022 06:26:47 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Sun, 06 Feb 2022 06:26:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=qciHEBrtufsFgTJmS
+        CoqEjSJb7jQh8MaOov+ID8TdGg=; b=ExvBl4UuI0iIsGA2LIUN7nQvTTn602OQr
+        pKKbiF+Vh5e4nhEmRQYsQmco/KY7CY9KFzW2Kq56aACJukwEu0RfzpQDwBFGVAE7
+        ucPlSDSDPljQ34KWjXvV/2LReXcWINuo9VSpYji1WKxQcVo2l27wlZlKZisABUam
+        Yv1g9wk9EZTbqg2371rmxOLUNr2sFj0hgEiENYUm9UnnYhGdCLJR8BxtDZ1uKzew
+        gqe0jhtxqqv8K1GcVEBg2cdFGQo/ir/w49hsMTSP5RDDIINufifRbccQsI3sjpyE
+        QaVLlKKGPrSr0HuXDxrlhaLF9bZHegesOA66USFjdd9rkDuGFSC1w==
+X-ME-Sender: <xms:drD_YaZE7v5IzpdmMlU95T2ZYIh4-oXec4b2rnAWDM3K6yKKo2sk8g>
+    <xme:drD_YdZ6HiIgy-dq4dgIqEYV4RCulxyW5w2ItNjn9zQX29yMmb-DZY5nhJb8pkzKf
+    Tia7kfQjHCXHP4>
+X-ME-Received: <xmr:drD_YU_p_rHXy4jk80eqbjDqv4X3BwQ9lTjLGHR8vp2SHoDk_zmfN2bEDnaJEmTrXW5ycddsHi_5CuD-ndyNJkNJr_EfUA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrheefgddvjecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
+    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
+    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
+    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
+    hstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:d7D_Ycq83ap47MsxsSU8L67VpT-UvH6-qQ-Ed-gcDhwrcF1oLHCePw>
+    <xmx:d7D_YVqigmrbgH39eRHYqU4P8DDIp7AeUN6W6fric6BGZc1mJbeoUQ>
+    <xmx:d7D_YaSYWu-vXcbbY_-OAsyRGGNWi7Dp0xmMkthChEFROq98Wynk0g>
+    <xmx:d7D_YWcfrp0ZAv7c_6Qkl9NcInvTP-UKQB4GAz_B0mVunoVzPpXM9Q>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
+ 6 Feb 2022 06:26:46 -0500 (EST)
+Date:   Sun, 6 Feb 2022 13:26:41 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     menglong8.dong@gmail.com
+Cc:     kuba@kernel.org, dsahern@kernel.org, nhorman@tuxdriver.com,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, rostedt@goodmis.org,
+        Menglong Dong <imagedong@tencent.com>
+Subject: Re: [PATCH v6 net-next] net: drop_monitor: support drop reason
+Message-ID: <Yf+wcVAAWzmSz93n@shredder>
+References: <20220205081738.565394-1-imagedong@tencent.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <s5hleytzhca.wl-tiwai@suse.de>
-X-Url:  http://acmel.wordpress.com
+In-Reply-To: <20220205081738.565394-1-imagedong@tencent.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Wed, Feb 02, 2022 at 11:35:33AM +0100, Takashi Iwai escreveu:
-> On Tue, 01 Feb 2022 16:12:18 +0100,
-> Arnaldo Carvalho de Melo wrote:
-> > 
-> > Picking the changes from:
-> > 
-> >   55b71f6c29f2a78a ("ALSA: uapi: use C90 comment style instead of C99 style")
-> >   fb6723daf89083a0 ("ALSA: pcm: comment about relation between msbits hw parameter and [S|U]32 formats")
-> >   b456abe63f60ad93 ("ALSA: pcm: introduce INFO_NO_REWINDS flag")
-> >   5aec579e08e4f2be ("ALSA: uapi: Fix a C++ style comment in asound.h")
-> > 
-> > Which entails no changes in the tooling side as it doesn't introduce new
-> > SNDRV_PCM_IOCTL_ ioctls.
-> > 
-> > To silence this perf tools build warning:
-> > 
-> >   Warning: Kernel ABI header at 'tools/include/uapi/sound/asound.h' differs from latest version at 'include/uapi/sound/asound.h'
-> >   diff -u tools/include/uapi/sound/asound.h include/uapi/sound/asound.h
-> > 
-> > Cc: Mark Brown <broonie@kernel.org>
-> > Cc: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-> > Cc: Takashi Iwai <tiwai@suse.de>
-> > Cc: Takashi Sakamoto <o-takashi@sakamocchi.jp>
-> > Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+On Sat, Feb 05, 2022 at 04:17:38PM +0800, menglong8.dong@gmail.com wrote:
+> diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
+> index 7b288a121a41..1180f1a28599 100644
+> --- a/net/core/drop_monitor.c
+> +++ b/net/core/drop_monitor.c
+> @@ -48,6 +48,16 @@
+>  static int trace_state = TRACE_OFF;
+>  static bool monitor_hw;
+>  
+> +#undef EM
+> +#undef EMe
+> +
+> +#define EM(a, b)	[a] = #b,
+> +#define EMe(a, b)	[a] = #b
+> +
+> +static const char *drop_reasons[SKB_DROP_REASON_MAX + 1] = {
+> +	TRACE_SKB_DROP_REASON
+> +};
+> +
+>  /* net_dm_mutex
+>   *
+>   * An overall lock guarding every operation coming from userspace.
+> @@ -126,6 +136,7 @@ struct net_dm_skb_cb {
+>  		struct devlink_trap_metadata *hw_metadata;
+>  		void *pc;
+>  	};
+> +	enum skb_drop_reason reason;
+>  };
+>  
+>  #define NET_DM_SKB_CB(__skb) ((struct net_dm_skb_cb *)&((__skb)->cb[0]))
+> @@ -498,6 +509,7 @@ static void net_dm_packet_trace_kfree_skb_hit(void *ignore,
+>  {
+>  	ktime_t tstamp = ktime_get_real();
+>  	struct per_cpu_dm_data *data;
+> +	struct net_dm_skb_cb *cb;
+>  	struct sk_buff *nskb;
+>  	unsigned long flags;
+>  
+> @@ -508,7 +520,9 @@ static void net_dm_packet_trace_kfree_skb_hit(void *ignore,
+>  	if (!nskb)
+>  		return;
+>  
+> -	NET_DM_SKB_CB(nskb)->pc = location;
+> +	cb = NET_DM_SKB_CB(nskb);
+> +	cb->reason = reason;
+> +	cb->pc = location;
+>  	/* Override the timestamp because we care about the time when the
+>  	 * packet was dropped.
+>  	 */
+> @@ -606,8 +620,9 @@ static int net_dm_packet_report_in_port_put(struct sk_buff *msg, int ifindex,
+>  static int net_dm_packet_report_fill(struct sk_buff *msg, struct sk_buff *skb,
+>  				     size_t payload_len)
+>  {
+> -	u64 pc = (u64)(uintptr_t) NET_DM_SKB_CB(skb)->pc;
+> +	struct net_dm_skb_cb *cb = NET_DM_SKB_CB(skb);
+>  	char buf[NET_DM_MAX_SYMBOL_LEN];
+> +	unsigned int reason;
+>  	struct nlattr *attr;
+>  	void *hdr;
+>  	int rc;
+> @@ -620,10 +635,16 @@ static int net_dm_packet_report_fill(struct sk_buff *msg, struct sk_buff *skb,
+>  	if (nla_put_u16(msg, NET_DM_ATTR_ORIGIN, NET_DM_ORIGIN_SW))
+>  		goto nla_put_failure;
+>  
+> -	if (nla_put_u64_64bit(msg, NET_DM_ATTR_PC, pc, NET_DM_ATTR_PAD))
+> +	if (nla_put_u64_64bit(msg, NET_DM_ATTR_PC, (u64)(uintptr_t)cb->pc,
+> +			      NET_DM_ATTR_PAD))
+> +		goto nla_put_failure;
+> +
+> +	reason = (unsigned int)cb->reason;
+> +	if (reason < SKB_DROP_REASON_MAX &&
+> +	    nla_put_string(msg, NET_DM_ATTR_REASON, drop_reasons[reason]))
+
+You need to make sure 'msg' has enough room for this attribute. Account
+for it in net_dm_packet_report_size()
+
+>  		goto nla_put_failure;
+>  
+> -	snprintf(buf, sizeof(buf), "%pS", NET_DM_SKB_CB(skb)->pc);
+> +	snprintf(buf, sizeof(buf), "%pS", cb->pc);
+>  	if (nla_put_string(msg, NET_DM_ATTR_SYMBOL, buf))
+>  		goto nla_put_failure;
+>  
+> -- 
+> 2.27.0
 > 
-> Thanks for the patch.
-> Shall I merge this through sound git tree or was already merged in
-> somewhere else?
-
-It'll go thru the perf tools tree, thanks.
-
-- Arnaldo
- 
-> 
-> Takashi
-> 
-> > ---
-> >  tools/include/uapi/sound/asound.h | 7 ++++++-
-> >  1 file changed, 6 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/tools/include/uapi/sound/asound.h b/tools/include/uapi/sound/asound.h
-> > index 5fbb79e30819af91..ef0cafe295b28253 100644
-> > --- a/tools/include/uapi/sound/asound.h
-> > +++ b/tools/include/uapi/sound/asound.h
-> > @@ -202,6 +202,11 @@ typedef int __bitwise snd_pcm_format_t;
-> >  #define	SNDRV_PCM_FORMAT_S24_BE	((__force snd_pcm_format_t) 7) /* low three bytes */
-> >  #define	SNDRV_PCM_FORMAT_U24_LE	((__force snd_pcm_format_t) 8) /* low three bytes */
-> >  #define	SNDRV_PCM_FORMAT_U24_BE	((__force snd_pcm_format_t) 9) /* low three bytes */
-> > +/*
-> > + * For S32/U32 formats, 'msbits' hardware parameter is often used to deliver information about the
-> > + * available bit count in most significant bit. It's for the case of so-called 'left-justified' or
-> > + * `right-padding` sample which has less width than 32 bit.
-> > + */
-> >  #define	SNDRV_PCM_FORMAT_S32_LE	((__force snd_pcm_format_t) 10)
-> >  #define	SNDRV_PCM_FORMAT_S32_BE	((__force snd_pcm_format_t) 11)
-> >  #define	SNDRV_PCM_FORMAT_U32_LE	((__force snd_pcm_format_t) 12)
-> > @@ -300,7 +305,7 @@ typedef int __bitwise snd_pcm_subformat_t;
-> >  #define SNDRV_PCM_INFO_HAS_LINK_ESTIMATED_ATIME    0x04000000  /* report estimated link audio time */
-> >  #define SNDRV_PCM_INFO_HAS_LINK_SYNCHRONIZED_ATIME 0x08000000  /* report synchronized audio/system time */
-> >  #define SNDRV_PCM_INFO_EXPLICIT_SYNC	0x10000000	/* needs explicit sync of pointers and data */
-> > -
-> > +#define SNDRV_PCM_INFO_NO_REWINDS	0x20000000	/* hardware can only support monotonic changes of appl_ptr */
-> >  #define SNDRV_PCM_INFO_DRAIN_TRIGGER	0x40000000		/* internal kernel flag - trigger in drain */
-> >  #define SNDRV_PCM_INFO_FIFO_IN_FRAMES	0x80000000	/* internal kernel flag - FIFO size is in frames */
-> >  
-> > -- 
-> > 2.34.1
-> > 
-
--- 
-
-- Arnaldo
