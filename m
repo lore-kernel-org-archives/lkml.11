@@ -2,122 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B19CC4332F
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 17:40:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4E4AC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 17:42:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344660AbiBFRj7 (ORCPT
+        id S1344705AbiBFRmV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Feb 2022 12:39:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35830 "EHLO
+        Sun, 6 Feb 2022 12:42:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344635AbiBFRjv (ORCPT
+        with ESMTP id S234682AbiBFRmS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 12:39:51 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2A82C043189
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 09:39:50 -0800 (PST)
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com [209.85.128.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 66BFE3F32B
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 17:39:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1644169189;
-        bh=O2vA7wr1KPFYU+oEMCTxA6vrus8R+EX5FuB8VVDgV7c=;
-        h=Message-ID:Date:MIME-Version:Subject:To:References:Cc:From:
-         In-Reply-To:Content-Type;
-        b=rgLJiZtTaSq6udYxixdLReQO3PiQZRK04s5NeBBLCHCQZkoaqTSBxZpJBZtelv3ZJ
-         NfMVkT3dyW6TcFpkWagD0hZA/gH3A6Zc4aSUXo4r34reSvq3ZDko6eMkX6POCX/o9F
-         y/v1aHgiSeQe4WBvjvv9nDQIiZO0+yojLOfHgUygKJLeIyZcUCaNX9c+G6vYxt2F3Q
-         7UaViPdWRd5145rTOEWgMkXm7ujJLIRwCjh5OthrRvZpLjrFIN7h+Nc4I23JoCqh/b
-         8sZf6q+M4IEUFiz/h8GC5glflgD8cBzIbaWqEMMVSNKjtIgmnGo10LmGy++OTUk+yk
-         talUSW6bjf1Rg==
-Received: by mail-wm1-f71.google.com with SMTP id bg16-20020a05600c3c9000b0034bea12c043so10836070wmb.7
-        for <linux-kernel@vger.kernel.org>; Sun, 06 Feb 2022 09:39:49 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:cc:from:in-reply-to
-         :content-transfer-encoding;
-        bh=O2vA7wr1KPFYU+oEMCTxA6vrus8R+EX5FuB8VVDgV7c=;
-        b=NjJ7vfPnfgyclXdchjnAU/DChLN7BfmiXQSZ48LblEtgxO0MuY8gGY6i6vWuu0cze9
-         CwoiK0D48cWds9LgeFqQhmnvAV4C0CaUS/NoKeZQpcqRvAUaKsdsQJYoEb887XKWB25h
-         uI/Q6LFzsettwuIw/Q1xt9yvhdD5xfZsuql4spHo0SkNwnqvUbOBhrWQhVSTcS+pMXUf
-         7+d6GqnZjn0EsohYdYN+dEFlY81b8h8h5zSX+7dY/XhpewHcH07DBUKwlpaSgY2FwpQs
-         WICvkIuMBJJJoHH3wZWnYAiDq2d0ykOB2Ey7mHD3QkdBDoD0W600fL4MYp4vu2MA3Y3t
-         RZ6Q==
-X-Gm-Message-State: AOAM530eehRj/nOE75TgHqDkypINYYkUXL8cEhZWKlkQRSngFGzn1gkJ
-        8TidmmhXGRN5m07TSMrzA1BvD3oRvH9EHzmFbaOPGnaSvbrg//2XhgcgkcxzoYMqkEBje8ubNm1
-        wFWc/L+E33QoklPulItLgLCFVCCkjwro+gfji2IWWNg==
-X-Received: by 2002:a5d:6da3:: with SMTP id u3mr4180466wrs.3.1644169189008;
-        Sun, 06 Feb 2022 09:39:49 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyotauj4AZUDLVn7ZjdsCUkbRdn3TyGp68ino7AYP79PzHSXuQGwgWqBez9ydkl9pVGm9TudA==
-X-Received: by 2002:a5d:6da3:: with SMTP id u3mr4180460wrs.3.1644169188876;
-        Sun, 06 Feb 2022 09:39:48 -0800 (PST)
-Received: from [192.168.0.86] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id o10sm1492735wrq.63.2022.02.06.09.39.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 06 Feb 2022 09:39:48 -0800 (PST)
-Message-ID: <1bebedb9-644f-783d-492c-84a5de91720d@canonical.com>
-Date:   Sun, 6 Feb 2022 18:39:47 +0100
+        Sun, 6 Feb 2022 12:42:18 -0500
+X-Greylist: delayed 1290 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 09:42:17 PST
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADC22C06173B;
+        Sun,  6 Feb 2022 09:42:17 -0800 (PST)
+Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 216FigkE026399;
+        Sun, 6 Feb 2022 17:20:18 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=NBqrMi7xopHaW9gcpcMahF8SSykQzlv27VKrheGwC8s=;
+ b=AIX5yyD0eOKKh6ajfjpKTaQywUX0rnwhuc80HiRtncA4PuV81mLpuGxWLXuQUmn+zVV+
+ wbKFbWU4GUF8Hg92FYHOMZbnkOZ5acmsGE2/RODCET7cyJXak9DWTSf8m1AX9ubI8cIm
+ /8sDLEub1EPNXHRHJWVWQBtgngI1NPKnP6TIVw3foU92XVlpqN/EzCloKP8CT0qqyLou
+ 8Dcx9OFBgCV0kC01ueB5z/8H+RQWCOkDhu0OWFZdtR/qUQlQFTB58oUKmUn1VOXdB1BX
+ T8Hhc26QUprpQCnc6iejiIOU4AbJZ+DizkssLUgOnmOyt4AKkBSlL6R06yzqZePZftkC qQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e23anacj2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sun, 06 Feb 2022 17:20:18 +0000
+Received: from m0098393.ppops.net (m0098393.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 216HKH3E007885;
+        Sun, 6 Feb 2022 17:20:17 GMT
+Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e23anachv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sun, 06 Feb 2022 17:20:17 +0000
+Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
+        by ppma02wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 216HCmFd016488;
+        Sun, 6 Feb 2022 17:20:16 GMT
+Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com [9.57.198.26])
+        by ppma02wdc.us.ibm.com with ESMTP id 3e2f8m1f6k-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sun, 06 Feb 2022 17:20:16 +0000
+Received: from b01ledav006.gho.pok.ibm.com (b01ledav006.gho.pok.ibm.com [9.57.199.111])
+        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 216HKFT19044512
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sun, 6 Feb 2022 17:20:15 GMT
+Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5A2B1AC05E;
+        Sun,  6 Feb 2022 17:20:15 +0000 (GMT)
+Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E8CA5AC05B;
+        Sun,  6 Feb 2022 17:20:14 +0000 (GMT)
+Received: from [9.47.158.152] (unknown [9.47.158.152])
+        by b01ledav006.gho.pok.ibm.com (Postfix) with ESMTP;
+        Sun,  6 Feb 2022 17:20:14 +0000 (GMT)
+Message-ID: <9c8a09d6-6373-c8c2-c8ff-2b4c3f92ddf1@linux.ibm.com>
+Date:   Sun, 6 Feb 2022 12:20:14 -0500
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH v2 0/5] mfd/extcon/regulators: max77843: add
- dtschema/bindings
+Subject: Re: [PATCH v10 12/27] ima: Define mac_admin_ns_capable() as a wrapper
+ for ns_capable()
 Content-Language: en-US
-To:     Lee Jones <lee.jones@linaro.org>
-References: <20220111174805.223732-1-krzysztof.kozlowski@canonical.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux-samsung-soc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        Chanwoo Choi <cw00.choi@samsung.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220111174805.223732-1-krzysztof.kozlowski@canonical.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+To:     "Serge E. Hallyn" <serge@hallyn.com>
+Cc:     linux-integrity@vger.kernel.org, zohar@linux.ibm.com,
+        christian.brauner@ubuntu.com, containers@lists.linux.dev,
+        dmitry.kasatkin@gmail.com, ebiederm@xmission.com,
+        krzysztof.struczynski@huawei.com, roberto.sassu@huawei.com,
+        mpeters@redhat.com, lhinds@redhat.com, lsturman@redhat.com,
+        puiterwi@redhat.com, jejb@linux.ibm.com, jamjoom@us.ibm.com,
+        linux-kernel@vger.kernel.org, paul@paul-moore.com, rgb@redhat.com,
+        linux-security-module@vger.kernel.org, jmorris@namei.org,
+        Denis Semakin <denis.semakin@huawei.com>
+References: <20220201203735.164593-1-stefanb@linux.ibm.com>
+ <20220201203735.164593-13-stefanb@linux.ibm.com>
+ <20220205055826.GA15072@mail.hallyn.com>
+From:   Stefan Berger <stefanb@linux.ibm.com>
+In-Reply-To: <20220205055826.GA15072@mail.hallyn.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: aagAQgTRfkLb-Lq3exPImckM-UJqhyU1
+X-Proofpoint-ORIG-GUID: otIMV6j2_uervesGtk77m3IwpIO9v2vH
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-06_05,2022-02-03_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ malwarescore=0 spamscore=0 priorityscore=1501 clxscore=1015
+ mlxlogscore=999 adultscore=0 bulkscore=0 suspectscore=0 impostorscore=0
+ mlxscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202060127
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 11/01/2022 18:48, Krzysztof Kozlowski wrote:
-> Hi,
-> 
-> The max77843 shares some parts with max77693 but it lacked bindings.  All
-> its compatibles were undocumented.  Add basic bindings for max77843,
-> matching existing devicetree.  These are not complete bindings, but
-> rather reverse-engineered to match current state.
-> 
-> I do not have access to device with MAX77843, so if anyone else
-> volunteers to be the bindings maintainer, please join.
-> 
-> Changes since v1
-> ================
-> 1. MFD: Use absolute path to schemas.
-> 2. Regulator: mention all allowed properties,
->    additionalProperties=false, add min/max values for voltages and
->    current, don't use patternProperties when not needed.
-> 3. extcon: Use absolute path to schemas.
-> 
-> Dependencies
-> ============
-> 1. Patch 1/5 (dts): nothing depends on it, sending here so Rob's automatic
->    checker won't complain about DTS.
->    I will take it via Samsung SoC tree.
-> 
-> 2. The patch 4/5 (mfd bindings) depends on regulator and extcon, so they
->    should come together (2+3+4+5).
-> 
-Dear Lee,
 
-This patchset was reviewed and there are no outstanding issues. Could
-you pick up patches 2-5 (skipping DTS patch) via MFD tree?
+On 2/5/22 00:58, Serge E. Hallyn wrote:
+> On Tue, Feb 01, 2022 at 03:37:20PM -0500, Stefan Berger wrote:
+>> Define mac_admin_ns_capable() as a wrapper for the combined ns_capable()
+>> checks on CAP_MAC_ADMIN and CAP_SYS_ADMIN in a user namespace. Return
+>> true on the check if either capability or both are available.
+>>
+>> Use mac_admin_ns_capable() in place of capable(SYS_ADMIN). This will allow
+>> an IMA namespace to read the policy with only CAP_MAC_ADMIN, which has
+>> less privileges than CAP_SYS_ADMIN.
+>>
+>> Signed-off-by: Denis Semakin <denis.semakin@huawei.com>
+>> Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
+>> ---
+>>   include/linux/capability.h      | 6 ++++++
+>>   security/integrity/ima/ima.h    | 6 ++++++
+>>   security/integrity/ima/ima_fs.c | 5 ++++-
+>>   3 files changed, 16 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/include/linux/capability.h b/include/linux/capability.h
+>> index 65efb74c3585..991579178f32 100644
+>> --- a/include/linux/capability.h
+>> +++ b/include/linux/capability.h
+>> @@ -270,6 +270,12 @@ static inline bool checkpoint_restore_ns_capable(struct user_namespace *ns)
+>>   		ns_capable(ns, CAP_SYS_ADMIN);
+>>   }
+>>   
+>> +static inline bool mac_admin_ns_capable(struct user_namespace *ns)
+>> +{
+>> +	return ns_capable(ns, CAP_MAC_ADMIN) ||
+>> +		ns_capable(ns, CAP_SYS_ADMIN);
+> Do you care about audit warnings?  If the task has CAP_SYS_ADMIN but
+> not CAP_MAC_ADMIN, is it desirable that selinux_capable() will audit the
+> CAP_MAC_ADMIN failure?
 
-Best regards,
-Krzysztof
+Good point.  I will switch both to ns_capable_noaudit() so that the user 
+cannot provoke unnecessary audit message.
 
+Thanks.
+
+     Stefan
+
+>
+>> +}
+>> +
+>>   /* audit system wants to get cap info from files as well */
+>>   int get_vfs_caps_from_disk(struct user_namespace *mnt_userns,
+>>   			   const struct dentry *dentry,
+>> diff --git a/security/integrity/ima/ima.h b/security/integrity/ima/ima.h
+>> index fb6bd054d899..0057b1fd6c18 100644
+>> --- a/security/integrity/ima/ima.h
+>> +++ b/security/integrity/ima/ima.h
+>> @@ -487,4 +487,10 @@ static inline int ima_filter_rule_match(u32 secid, u32 field, u32 op,
+>>   #define	POLICY_FILE_FLAGS	S_IWUSR
+>>   #endif /* CONFIG_IMA_READ_POLICY */
+>>   
+>> +static inline
+>> +struct user_namespace *ima_user_ns_from_file(const struct file *filp)
+>> +{
+>> +	return file_inode(filp)->i_sb->s_user_ns;
+>> +}
+>> +
+>>   #endif /* __LINUX_IMA_H */
+>> diff --git a/security/integrity/ima/ima_fs.c b/security/integrity/ima/ima_fs.c
+>> index 89d3113ceda1..c41aa61b7393 100644
+>> --- a/security/integrity/ima/ima_fs.c
+>> +++ b/security/integrity/ima/ima_fs.c
+>> @@ -377,6 +377,9 @@ static const struct seq_operations ima_policy_seqops = {
+>>    */
+>>   static int ima_open_policy(struct inode *inode, struct file *filp)
+>>   {
+>> +#ifdef CONFIG_IMA_READ_POLICY
+>> +	struct user_namespace *user_ns = ima_user_ns_from_file(filp);
+>> +#endif
+>>   	struct ima_namespace *ns = &init_ima_ns;
+>>   
+>>   	if (!(filp->f_flags & O_WRONLY)) {
+>> @@ -385,7 +388,7 @@ static int ima_open_policy(struct inode *inode, struct file *filp)
+>>   #else
+>>   		if ((filp->f_flags & O_ACCMODE) != O_RDONLY)
+>>   			return -EACCES;
+>> -		if (!capable(CAP_SYS_ADMIN))
+>> +		if (!mac_admin_ns_capable(user_ns))
+>>   			return -EPERM;
+>>   		return seq_open(filp, &ima_policy_seqops);
+>>   #endif
+>> -- 
+>> 2.31.1
