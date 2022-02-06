@@ -2,178 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A1B2C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 21:13:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3C43C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 21:28:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241522AbiBFVN4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Feb 2022 16:13:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42334 "EHLO
+        id S239519AbiBFV17 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 6 Feb 2022 16:27:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238716AbiBFVNa (ORCPT
+        with ESMTP id S230145AbiBFV16 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 16:13:30 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 252A3C06173B;
-        Sun,  6 Feb 2022 13:13:29 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id cz16so7553632edb.8;
-        Sun, 06 Feb 2022 13:13:29 -0800 (PST)
+        Sun, 6 Feb 2022 16:27:58 -0500
+Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B0F7C06173B
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 13:27:53 -0800 (PST)
+Received: by mail-qt1-x82a.google.com with SMTP id t1so4485302qtq.13
+        for <linux-kernel@vger.kernel.org>; Sun, 06 Feb 2022 13:27:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=F1jiObY9AX7zYZGsvn4/79pWPB3gpHKb3YMbVYWWLxk=;
-        b=SfU1Zbk5rIiC4ntznX9BfRKfccnau24SZ1mlpN1msNP/HLIT6unYfvkcV7x51YtoMX
-         bj2vvZNwE4jp230llHV5V4sM/rgo5KknumU2AGyVmewohthcv1KBDn93nTyr4Xxo3/gz
-         tv6QqfFl1082T/ST3hCjJMLK6FL7K/IimtGkiMRUwsMT1/fZTmved9n/6ektkRCEBbdB
-         e5xKmBmmb4Rb/6QiL4qxagAECtJMJlHGFUPr+ZvZ+FyCHIcZMI8/mHf6Eep+wWs2RXaD
-         dTOYLHcKacrNjuScb1N6wN6uNWTl0EBzFtYXS1KMoDaql6h1fmghITzEkz7ceebIu8SN
-         SUqw==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:mime-version;
+        bh=zqtCWZR8fUoymI1gulqeyWRyxqO7AdNIEXaSeKYJoAM=;
+        b=kqO/dGkR7ZxLu6uzdv1UcwYe2PBhojIF61LbLnI2gnfowsuH9YQ4GKiePJOm4UV4S0
+         kI1vcq7XCbJ8uGmdEN7B74kHKjJVfgORIcqXAaRxBvUiK0GyTtQF4dxjjvnDfkW5H0wA
+         pmU1AfpN15yefaFud3l6uSYL3PqmoXTzn76klqjoMzVLwb8cY1U6RmfR5nIsZKLlw4SF
+         4h2uXpkQI9NTF/Wan27jjVvQcbKD3sYStczmq3zuYF+36sFhdFw6elhvxV2Kfvbv+hmW
+         F8JoQqC2vMQ/Es6+jfyIhrbET7x/Q8vLFKjkauyo3/mO2AwntPC3xZFWdJw+B4Kl01cV
+         Cx+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=F1jiObY9AX7zYZGsvn4/79pWPB3gpHKb3YMbVYWWLxk=;
-        b=4S0nSmNI9El4NIx3KaVz4BxBvPIzugmLzpOYE4yqDpX9xyiq/CjqQUwd6Iznt+4LQK
-         kb0isEsoGQheRC39JZYNq7ME0p0PAt/QPEMcAZUrSHosMtdg0Rssl+WErIEjXKdvahkK
-         +LhKh+JL4dU4tuCGDNsHtlWq73aGgWHzEaCv21pxdAXY1lg6KylL4S3sdbVb4iZwHOF1
-         3U5H1PcrzNg9WKPs266cfVDNTX07dv286WcC2p4w2RXkaawsMQFbm6XTFgBd9vDhLFmZ
-         3mA/ghy1CapoTtCiYLxTBPWfGnH7eMywcLzitU2MYb7r7JgBxLJyOuG5F7kSndahc5Wa
-         M5Dw==
-X-Gm-Message-State: AOAM533LYW40ZNTg00rA8uMmRJKx3BqfAPh4zwZR7MhGJXvn5euMlW8D
-        FigZJEgB1kZWezVJuCtkyVA=
-X-Google-Smtp-Source: ABdhPJzyXl+vsHy59BL+U2RffUhWd7LuAPilJ6sShOlZEgAQ2YPDH6rpBVySRvliNXoJr8Sy7fP3aA==
-X-Received: by 2002:a05:6402:d0d:: with SMTP id eb13mr10514246edb.83.1644182007720;
-        Sun, 06 Feb 2022 13:13:27 -0800 (PST)
-Received: from demon-pc.localdomain ([79.119.107.253])
-        by smtp.gmail.com with ESMTPSA id a4sm1248598edr.33.2022.02.06.13.13.26
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version;
+        bh=zqtCWZR8fUoymI1gulqeyWRyxqO7AdNIEXaSeKYJoAM=;
+        b=L3UxPy1MeSSwC+UsOnrrYDMyJVs8WLywURMM7l0VM+q9px2+3/scn9/xpvK7QSDSvL
+         M2xRliQ1aKJiTzNKIV/nYkjh3zCXsZPpfap398bk1y9WRYSJDuXl3vMMoGiLhvH4QZhq
+         dNHs0Sjrd2ZQZsfLd0FaRO6/JmoM3TNxnOui0fO0UZmeXY4PR0cwGR3k2U+QRD5ZD8uW
+         6WAyxadHvlriqNqLALntI7LG+xUB59Rne8hMyhyUOf4ryXljF4cUgIiGirX1C4VUgKm4
+         z6ktng+vZcz/Je1zy20QL44DzOxRY8Br5mOQZooHQaWt+6680cmReYBfea4YXAxHX+zK
+         vZ6Q==
+X-Gm-Message-State: AOAM533kDiRyGYn+zIGcC1GdJ9U8H7d93Rbux3aKOvj7UpwatnQa8lxf
+        ibCMX2oy9q+CLm87M/VI0RQaxw==
+X-Google-Smtp-Source: ABdhPJz5Tu/r8mnrKYdIrl/e/+oMWgxDcrxeVttb0N1e1D1ZK6ss3WrC744gLeUyabu6oL9mLlNQfQ==
+X-Received: by 2002:ac8:5aca:: with SMTP id d10mr6091273qtd.565.1644182872541;
+        Sun, 06 Feb 2022 13:27:52 -0800 (PST)
+Received: from ripple.attlocal.net (172-10-233-147.lightspeed.sntcca.sbcglobal.net. [172.10.233.147])
+        by smtp.gmail.com with ESMTPSA id b9sm4372948qkj.24.2022.02.06.13.27.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Feb 2022 13:13:27 -0800 (PST)
-From:   Cosmin Tanislav <demonsingur@gmail.com>
-X-Google-Original-From: Cosmin Tanislav <cosmin.tanislav@analog.com>
-Cc:     cosmin.tanislav@analog.com, demonsingur@gmail.com,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Rob Herring <robh+dt@kernel.org>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v4 4/5] dt-bindings: iio: accel: add ADXL367
-Date:   Sun,  6 Feb 2022 23:13:06 +0200
-Message-Id: <20220206211307.1564647-5-cosmin.tanislav@analog.com>
-X-Mailer: git-send-email 2.35.0
-In-Reply-To: <20220206211307.1564647-1-cosmin.tanislav@analog.com>
-References: <20220206211307.1564647-1-cosmin.tanislav@analog.com>
+        Sun, 06 Feb 2022 13:27:52 -0800 (PST)
+Date:   Sun, 6 Feb 2022 13:27:41 -0800 (PST)
+From:   Hugh Dickins <hughd@google.com>
+X-X-Sender: hugh@ripple.anvils
+To:     Andrew Morton <akpm@linux-foundation.org>
+cc:     Hugh Dickins <hughd@google.com>, Michal Hocko <mhocko@suse.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Kirill A. Shutemov" <kirill@shutemov.name>,
+        Matthew Wilcox <willy@infradead.org>,
+        David Hildenbrand <david@redhat.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Rik van Riel <riel@surriel.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Yu Zhao <yuzhao@google.com>, Greg Thelen <gthelen@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: [PATCH 00/13] mm/munlock: rework of mlock+munlock page handling
+Message-ID: <8e4356d-9622-a7f0-b2c-f116b5f2efea@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The ADXL367 is an ultralow power, 3-axis MEMS accelerometer.
+I wondered whether to post this munlocking rework in
+https://lore.kernel.org/linux-mm/35c340a6-96f-28a0-2b7b-2f9fbddc01f@google.com/
 
-The ADXL367 does not alias input signals to achieve ultralow power
-consumption, it samples the full bandwidth of the sensor at all
-data rates. Measurement ranges of +-2g, +-4g, and +-8g are available,
-with a resolution of 0.25mg/LSB on the +-2 g range.
+There the discussion was OOM reaping, but the main reason for the rework
+has been catastrophic contention on i_mmap_rwsem when exiting from
+multiply mlocked files; and frustration with how contorted munlocking is.
 
-In addition to its ultralow power consumption, the ADXL367
-has many features to enable true system level power reduction.
-It includes a deep multimode output FIFO, a built-in micropower
-temperature sensor, and an internal ADC for synchronous conversion
-of an additional analog input.
+Here it is based on 5.17-rc2, applies also to -rc3, almost cleanly to
+mmotm 2022-02-03-21-58 (needs two easy fixups in mm/huge_memory.c); but
+likely to conflict (I hope not fundamentally) with several concurrent
+large patchsets.
 
-Signed-off-by: Cosmin Tanislav <cosmin.tanislav@analog.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
----
- .../bindings/iio/accel/adi,adxl367.yaml       | 79 +++++++++++++++++++
- 1 file changed, 79 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/accel/adi,adxl367.yaml
+tl;dr
+ mm/mlock.c  |  634 +++++++++++++++-----------------------
+ 23 files changed, 510 insertions(+), 779 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/accel/adi,adxl367.yaml b/Documentation/devicetree/bindings/iio/accel/adi,adxl367.yaml
-new file mode 100644
-index 000000000000..d259e796c1d6
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/accel/adi,adxl367.yaml
-@@ -0,0 +1,79 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/accel/adi,adxl367.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Analog Devices ADXL367 3-Axis Digital Accelerometer
-+
-+maintainers:
-+  - Cosmin Tanislav <cosmin.tanislav@analog.com>
-+
-+description: |
-+  The ADXL367 is an ultralow power, 3-axis MEMS accelerometer.
-+
-+  The ADXL367 does not alias input signals by to achieve ultralow power
-+  consumption, it samples the full bandwidth of the sensor at all
-+  data rates. Measurement ranges of +-2g, +-4g, and +-8g are available,
-+  with a resolution of 0.25mg/LSB on the +-2 g range.
-+
-+  In addition to its ultralow power consumption, the ADXL367
-+  has many features to enable true system level power reduction.
-+  It includes a deep multimode output FIFO, a built-in micropower
-+  temperature sensor, and an internal ADC for synchronous conversion
-+  of an additional analog input.
-+    https://www.analog.com/en/products/adxl367.html
-+
-+properties:
-+  compatible:
-+    enum:
-+      - adi,adxl367
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  spi-max-frequency: true
-+
-+  vdd-supply: true
-+  vddio-supply: true
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    i2c {
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+
-+      accelerometer@53 {
-+        compatible = "adi,adxl367";
-+        reg = <0x53>;
-+        interrupt-parent = <&gpio>;
-+        interrupts = <25 IRQ_TYPE_EDGE_RISING>;
-+      };
-+    };
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    spi {
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+
-+      accelerometer@0 {
-+        compatible = "adi,adxl367";
-+        reg = <0>;
-+        spi-max-frequency = <1000000>;
-+        interrupt-parent = <&gpio>;
-+        interrupts = <25 IRQ_TYPE_EDGE_RISING>;
-+      };
-+    };
--- 
-2.35.0
+In my own opinion, this is ready to go in: that whatever its defects,
+it's a big practical improvement over what's presently there.  Others
+may differ; and it may be too much to arrive at a quick opinion on.
+My hope is that it will strike a chord with some who have laboured in
+this area in the past: I'll be short of time to do much more with it,
+so maybe someone else could take over if necessary.
 
+At present there's no update to Documentation/vm/unevictable-lru.rst:
+that always needs a different mindset, can follow later, please refer
+to commit messages for now.
+
+There are two half-related mm/thp patches at the end: enhancements
+we've had for a long time, but more suited after the mlock changes.
+
+01/13 mm/munlock: delete page_mlock() and all its works
+02/13 mm/munlock: delete FOLL_MLOCK and FOLL_POPULATE gupflags
+03/13 mm/munlock: delete munlock_vma_pages_all(), allow oomreap
+04/13 mm/munlock: rmap call mlock_vma_page() munlock_vma_page()
+05/13 mm/munlock: replace clear_page_mlock() by final clearance
+06/13 mm/munlock: maintain page->mlock_count while unevictable
+07/13 mm/munlock: mlock_pte_range() when mlocking or munlocking
+08/13 mm/migrate: __unmap_and_move() push good newpage to LRU
+09/13 mm/munlock: delete smp_mb() from __pagevec_lru_add_fn()
+10/13 mm/munlock: mlock_page() munlock_page() batch by pagevec
+11/13 mm/munlock: page migration needs mlock pagevec drained
+12/13 mm/thp: collapse_file() do try_to_unmap(TTU_BATCH_FLUSH)
+13/13 mm/thp: shrink_page_list() avoid splitting VM_LOCKED THP
+
+ include/linux/mm.h        |    2 
+ include/linux/mm_inline.h |   11 
+ include/linux/mm_types.h  |   19 +
+ include/linux/rmap.h      |   23 -
+ kernel/events/uprobes.c   |    7 
+ mm/gup.c                  |   43 --
+ mm/huge_memory.c          |   55 ---
+ mm/hugetlb.c              |    4 
+ mm/internal.h             |   64 ++-
+ mm/khugepaged.c           |   14 
+ mm/ksm.c                  |   12 
+ mm/madvise.c              |    5 
+ mm/memcontrol.c           |    3 
+ mm/memory.c               |   45 --
+ mm/migrate.c              |   42 +-
+ mm/mlock.c                |  634 +++++++++++++++-----------------------
+ mm/mmap.c                 |   32 -
+ mm/mmzone.c               |    7 
+ mm/oom_kill.c             |    2 
+ mm/rmap.c                 |  156 ++-------
+ mm/swap.c                 |   89 ++---
+ mm/userfaultfd.c          |   14 
+ mm/vmscan.c               |    6 
+ 23 files changed, 510 insertions(+), 779 deletions(-)
+
+Hugh
