@@ -2,136 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 433C0C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 20:23:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5044C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 20:29:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244743AbiBFUXT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Feb 2022 15:23:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56774 "EHLO
+        id S245258AbiBFU3F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 6 Feb 2022 15:29:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231982AbiBFUXR (ORCPT
+        with ESMTP id S229983AbiBFU3C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 15:23:17 -0500
-X-Greylist: delayed 345 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 12:23:16 PST
-Received: from mail.z3ntu.xyz (mail.z3ntu.xyz [128.199.32.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71035C06173B;
-        Sun,  6 Feb 2022 12:23:16 -0800 (PST)
-Received: from g550jk.localnet (mobiledyn-62-240-134-151.mrsn.at [62.240.134.151])
-        by mail.z3ntu.xyz (Postfix) with ESMTPSA id D8C72CDF2E;
-        Sun,  6 Feb 2022 20:17:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=z3ntu.xyz; s=z3ntu;
-        t=1644178648; bh=690FBrexPdoV7NM0ztCyeAbjMDRItqMT8QQiwsTCIIM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=MLezyn++G1Se1/xSc1aKBxr9QvWyZ9bMtflmNDUCNs8UkRiG20J3OHnzsP/qos2rd
-         L97w9d2Edpc6sj5AaAXRUss+wTHtDaWvla70a4R/JdPQe2rzH7I2IdeUSgg1Vy4sjU
-         suN8/7rQ310/I3W2t75CcYiy8SezI/tXWllHszhA=
-From:   Luca Weiss <luca@z3ntu.xyz>
-To:     Stephan Gerhold <stephan@gerhold.net>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     linux-arm-msm@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Vladimir Lypak <vladimir.lypak@gmail.com>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Andy Gross <agross@kernel.org>,
-        Ohad Ben-Cohen <ohad@wizery.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: Re: [PATCH 09/15] rpmsg: smd: Drop unnecessary condition for channel creation
-Date:   Sun, 06 Feb 2022 21:17:22 +0100
-Message-ID: <2615776.mvXUDI8C0e@g550jk>
-In-Reply-To: <Yfhjil3pfZLa5g3j@builder.lan>
-References: <20220112194118.178026-1-luca@z3ntu.xyz> <YeRILypv8ajssNae@gerhold.net> <Yfhjil3pfZLa5g3j@builder.lan>
+        Sun, 6 Feb 2022 15:29:02 -0500
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3416C06173B;
+        Sun,  6 Feb 2022 12:29:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=7i3Z46f5V98hV+7wSTAkWTsI05L/w170G6IYhhzBpJA=; b=LTZUCqL9Z3AVQpPhC89N2wQE/C
+        YdGgOE1ts3Gu9PU8GOjbz4eCamBzlB/KgHkxoDvcBviMgkTQhkBe9WHUehrTo/WvD10IIuNK+Ff7k
+        3IQH1lm5ymPtJtvqFFK3yULXa8hD5OViN/myVM7rlPRRzc4UccEswil6Fm69OyxKdV8xWEjCYhl+S
+        WQ/MFu0/O8jyETbb6MqCdHb/i84MyngV/2XAr6K28PxPENXi/kM9GqjIUfsiapg7SkXIP+XGXdCtU
+        xyrbvaM3yTboYVCL0+OvEir4eQ2qIraGZYDAnt5coom3Iuh5Y2VVy78vZCKfeZpM3IU89MSE98rt/
+        NetFg+qg==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nGo9W-007XVO-KM; Sun, 06 Feb 2022 20:28:54 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 4A9503001C7;
+        Sun,  6 Feb 2022 21:28:52 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 321F621378EDF; Sun,  6 Feb 2022 21:28:52 +0100 (CET)
+Date:   Sun, 6 Feb 2022 21:28:52 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Sami Tolvanen <samitolvanen@google.com>,
+        Sean Christopherson <seanjc@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        kvmarm <kvmarm@lists.cs.columbia.edu>, kvm@vger.kernel.org,
+        Will McVicker <willmcvicker@google.com>
+Subject: Re: [PATCH v4 09/17] perf/core: Use static_call to optimize
+ perf_guest_info_callbacks
+Message-ID: <YgAvhG4wvnslbTqP@hirez.programming.kicks-ass.net>
+References: <20211111020738.2512932-1-seanjc@google.com>
+ <20211111020738.2512932-10-seanjc@google.com>
+ <YfrQzoIWyv9lNljh@google.com>
+ <CABCJKufg=ONNOvF8+BRXfLoTUfeiZZsdd8TnpV-GaNK_o-HuaA@mail.gmail.com>
+ <202202061011.A255DE55B@keescook>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202202061011.A255DE55B@keescook>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Bjorn,
+On Sun, Feb 06, 2022 at 10:45:15AM -0800, Kees Cook wrote:
 
-On Montag, 31. J=E4nner 2022 23:32:42 CET Bjorn Andersson wrote:
-> On Sun 16 Jan 10:30 CST 2022, Stephan Gerhold wrote:
-> > On Sun, Jan 16, 2022 at 05:08:29PM +0100, Luca Weiss wrote:
-> > > On Mittwoch, 12. J=E4nner 2022 22:39:53 CET Stephan Gerhold wrote:
-> > > > On Wed, Jan 12, 2022 at 08:40:58PM +0100, Luca Weiss wrote:
-> > > > > From: Vladimir Lypak <vladimir.lypak@gmail.com>
-> > > > >=20
-> > > > > RPM Firmware on variety of newer SoCs such as MSM8917 (also likely
-> > > > > MSM8937, MSM8940, MSM8952), MSM8953 and on some MSM8916 devices)
-> > > > > doesn't
-> > > > > initiate opening of the SMD channel if it was previously opened by
-> > > > > bootloader. This doesn't allow probing of smd-rpm driver on such
-> > > > > devices
-> > > > > because there is a check that requires RPM this behaviour.
-> > > > >=20
-> > > > > Signed-off-by: Vladimir Lypak <vladimir.lypak@gmail.com>
-> > > > > Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
-> > > > > Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-> > > >=20
-> > > > This is effectively a "Revert "Revert "rpmsg: smd: Create device for
-> > > > all
-> > > > channels""":
-> > > >=20
-> > > > https://lore.kernel.org/linux-arm-msm/20171212235857.10432-3-bjorn.=
-and
-> > > > ersson @linaro.org/
-> > > > https://lore.kernel.org/linux-arm-msm/20180315181244.8859-1-bjorn.a=
-nde
-> > > > rsson
-> > > > @linaro.org/
-> > > >=20
-> > > > Won't this cause the same regression reported by Srinivas again?
-> > >=20
-> > > Do you have any suggestion on another way to solve this? Without this
-> > > commit the regulators just won't probe at all, I haven't looked very
-> > > deep into it though given this patch solves it.
-> > >=20
-> > > I guess worst case it'll become a devicetree property to enable this
-> > > quirk?
-> >=20
-> > My spontaneous suggestion would be to skip the check only for the
-> > "rpm_requests" channel, e.g. something like
-> >=20
-> > 	if (remote_state !=3D SMD_CHANNEL_OPENING &&
-> > =09
-> > 	    remote_state !=3D SMD_CHANNEL_OPENED &&
-> > 	    strcmp(channel->name, "rpm_requests")
-> > 	=09
-> > 		continue;
-> >=20
-> > This will avoid changing the behavior for anything but the RPM channel.
-> > I don't think anything else is affected by the same problem (since the
-> > bootloader or earlier firmware should not make use of any other channel=
-).
-> > Also, we definitely *always* want to open the channel to the RPM because
-> > otherwise almost everything breaks.
->=20
-> Last time this came up I asked if someone could test if the RPM is stuck
-> in the state machine trying to close the channel and as such we could
-> kick it by making sure that we "ack" the closing of the channel and
-> hence it would come back up again.
->=20
-> But I don't remember seeing any outcome of this.
+> I'm digging through the macros to sort this out, but IIUC, an example of
+> the problem is:
+> 
 
-Do you have a link to this or should I go digging in the archives?
+> so the caller is expecting "unsigned int (*)(void)" but the prototype
+> of __static_call_return0 is "long (*)(void)":
+> 
+> long __static_call_return0(void);
+> 
+> Could we simply declare a type-matched ret0 trampoline too?
 
-Regards
-Luca
+That'll work for this case, but the next case the function will have
+arguments we'll need even more nonsense...
 
->=20
-> > Many solutions are possible though so at the end it is mostly up to
-> > Bjorn to decide I think. :)
->=20
-> I would prefer to get an answer to above question, but if that doesn't
-> work (or look like crap) I'm willing to take your suggestion of skipping
-> the continue for the rpm_requests channel. Obviously with a comment
-> above describing why we're carrying that special case.
->=20
-> Regards,
-> Bjorn
+And as stated in that other email, there's tb_stub_func() having the
+exact same problem as well.
 
-
-
-
+The x86_64 CFI patches had a work-around for this, that could trivially
+be lifted I suppose.
