@@ -2,125 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9348C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 23:02:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B697C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 23:03:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346664AbiBFW75 (ORCPT
+        id S1347388AbiBFXCw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Feb 2022 17:59:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47798 "EHLO
+        Sun, 6 Feb 2022 18:02:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232490AbiBFW7x (ORCPT
+        with ESMTP id S239597AbiBFXCv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 17:59:53 -0500
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1622FC06173B
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 14:59:52 -0800 (PST)
-Received: by mail-wr1-x42e.google.com with SMTP id e3so7753245wra.0
-        for <linux-kernel@vger.kernel.org>; Sun, 06 Feb 2022 14:59:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=gtVyQ9OIy3W70tzrc/QwpbNSPSmW2PK9iGxGNB2+tTg=;
-        b=KRtfiJN2D4GP5yydji7nB7zqBvhBqjbIcYQEuTQz6Or/omSyf0Fe+YjEEYDi0YzC7n
-         8phn+krhMrLfwS/X9mniksXur3a4QmvXpXNGQ1bj/JvJZ9rn1Mr7WAu2ESNvNutdzgN8
-         uLmCEVtVudeqYl1+8nAC8XmzIKPemhDx4HcMNQHfRUSb40l3zi8Ri+6lEPMfla8v2kkh
-         xuewyJjMt9PLytwIjMqvAF/nMTik/27PIb1rBc/KbZKyRqE4Cl3nqeUluWCzwleyu+Ma
-         dLCvHGft9HYYdpuvfdxLXiXQDy5T1XXECMqnIM6OR5rKNjVAEfkeWkQ6fV9kB07YOVMI
-         OsEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=gtVyQ9OIy3W70tzrc/QwpbNSPSmW2PK9iGxGNB2+tTg=;
-        b=1KP4PsMSMV8KNSDZyW//aQUdkli6gE5y7Bzj78UjR3KFqMTvqikUN4CegRNMiEvEHX
-         muym5mMRnXO1w9Te43mFowl02YkR6/03SDwx86V18blUQteAxVa2W0I0pKVSEIHdm2Ws
-         wkgq0J4frbk4eDmAU/I5l506OjHz8bST8n3BelzQ5McISgWL2bALYeqMe2/qPeRbrcpM
-         Tmbo5ZeLBggIbnJxZC1D4qetiNSGUVSw8mcQKsietbvTIjn2TCuvGdI2pN+1WDkNh168
-         iujr2v8PwSeJi2wZn5Qo6vqQSrl+A8uydRxx0+oWztr7lNOgLeElvia5+hsRWOQcuFx/
-         SVjA==
-X-Gm-Message-State: AOAM533khcsgSgsAyAkIccCvx0hDG34lUxWFjdf3L23kv8YGggHrXP7+
-        ArpuMXNk9xBzRHJWAXL7fM6wZIct5xA=
-X-Google-Smtp-Source: ABdhPJyzaTXFCeSv21+oGxPjW6XSMiy3B1J9oEUIlUz5u21K5Yy3zXd4MdZXDWana+2InS7ugB7IGw==
-X-Received: by 2002:adf:eac5:: with SMTP id o5mr7914359wrn.655.1644188390463;
-        Sun, 06 Feb 2022 14:59:50 -0800 (PST)
-Received: from localhost.localdomain (host-95-245-2-16.retail.telecomitalia.it. [95.245.2.16])
-        by smtp.gmail.com with ESMTPSA id t18sm8514637wri.34.2022.02.06.14.59.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Feb 2022 14:59:49 -0800 (PST)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-Subject: [PATCH] staging: r8188eu: Use kzalloc() with GFP_ATOMIC in atomic context
-Date:   Sun,  6 Feb 2022 23:59:43 +0100
-Message-Id: <20220206225943.7848-1-fmdefrancesco@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        Sun, 6 Feb 2022 18:02:51 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16701C061348
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 15:02:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644188570; x=1675724570;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=CFTenF8ljg+fwYpM5U7HsnvBDP/el1aekAIVzXMGqbY=;
+  b=Au0/79xft8YHEe2cSsYLMhNp4o9TJ8GhCxqpi7c0vsnF9vvgK26MUFZr
+   3ISIU0FHOKds9mC6M9rVS6XNem0dTjUyFfX9/KA7P+gsM3dRlgd/TYUpw
+   /OoDp8aNyr/5FJ4RyafQrxN7pMrVUC2vKZG3Q4htByKWu1jzsOucEvbjz
+   TmkNpww05FcDoFrgAeGigIHqgdp3CFiJvCGOGXpeqwGGVBRIas4WLkjKG
+   J52r4YgTedpTERO2YdlhXCjRlhjzVJrQBLt3qjyafGpNBftZxU/783mhP
+   OYca9HfHB+NATMxWbYBDdmbbaiBj+ieOO3bh1IW5GzoFQaKD9FtZRPsJS
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="248376373"
+X-IronPort-AV: E=Sophos;i="5.88,348,1635231600"; 
+   d="scan'208";a="248376373"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2022 15:02:49 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,348,1635231600"; 
+   d="scan'208";a="524927978"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga007.jf.intel.com with ESMTP; 06 Feb 2022 15:02:48 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nGqYR-000apQ-Ba; Sun, 06 Feb 2022 23:02:47 +0000
+Date:   Mon, 7 Feb 2022 07:01:59 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Qingqing Zhuo <Qingqing.Zhuo@amd.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>
+Subject: drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn301/dcn301_fpu.c:304:1:
+ warning: the frame size of 1096 bytes is larger than 1024 bytes
+Message-ID: <202202070626.PbnOctY3-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the GFP_ATOMIC flag of kzalloc() with two memory allocation in
-rtw_set_key(). This function is called while holding spinlocks and with
-disabled bottom halves, therefore it is not allowed to sleep. With the
-GFP_ATOMIC type flag, the allocation is high priority and cannot sleep.
+Hi Qingqing,
 
-This issue is detected by Smatch which emits the following warning:
-drivers/staging/r8188eu/core/rtw_pwrctrl.c:79 ips_leave() warn: sleeping in atomic context
-drivers/staging/r8188eu/core/rtw_pwrctrl.c:81 ips_leave() warn: sleeping in atomic context
+FYI, the error/warning still remains.
 
-The calls chain (in reverse order) is the following:
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   dfd42facf1e4ada021b939b4e19c935dcdd55566
+commit: 31484207feb23e6cdb12827560442ab294855923 drm/amd/display: move FPU associated DCN301 code to DML folder
+date:   3 months ago
+config: i386-randconfig-r012-20220207 (https://download.01.org/0day-ci/archive/20220207/202202070626.PbnOctY3-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=31484207feb23e6cdb12827560442ab294855923
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 31484207feb23e6cdb12827560442ab294855923
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
 
-rtw_set_key()
--> ips_leave()
--> -> rtw_pwr_wakeup()
--> -> -> rtw_set_802_11_disassociate()
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-The disabilitation of bottom halves and the acquisition of a spinlock is in
-rtw_set_802_11_disassociate().
+All warnings (new ones prefixed by >>):
 
-After the changes, the post-commit hook output the following messages:
+   drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn301/dcn301_fpu.c: In function 'dcn301_update_bw_bounding_box':
+>> drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn301/dcn301_fpu.c:304:1: warning: the frame size of 1096 bytes is larger than 1024 bytes [-Wframe-larger-than=]
+     304 | }
+         | ^
 
-CHECK: Prefer kzalloc(sizeof(*pcmd)...) over kzalloc(sizeof(struct cmd_obj)...)
-+       pcmd = kzalloc(sizeof(struct cmd_obj), GFP_ATOMIC);
 
-CHECK: Prefer kzalloc(sizeof(*psetkeyparm)...) over kzalloc(sizeof(struct setkey_parm)...)
-+       psetkeyparm = kzalloc(sizeof(struct setkey_parm), GFP_ATOMIC).
+vim +304 drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn301/dcn301_fpu.c
 
-According to the above "CHECK[S]", use the preferred style in the first
-kzalloc().
+   247	
+   248	void dcn301_update_bw_bounding_box(struct dc *dc, struct clk_bw_params *bw_params)
+   249	{
+   250		struct dcn301_resource_pool *pool = TO_DCN301_RES_POOL(dc->res_pool);
+   251		struct clk_limit_table *clk_table = &bw_params->clk_table;
+   252		struct _vcs_dpi_voltage_scaling_st clock_limits[DC__VOLTAGE_STATES];
+   253		unsigned int i, closest_clk_lvl;
+   254		int j;
+   255	
+   256		dc_assert_fp_enabled();
+   257	
+   258		/* Default clock levels are used for diags, which may lead to overclocking. */
+   259		if (!IS_DIAG_DC(dc->ctx->dce_environment)) {
+   260			dcn3_01_ip.max_num_otg = pool->base.res_cap->num_timing_generator;
+   261			dcn3_01_ip.max_num_dpp = pool->base.pipe_count;
+   262			dcn3_01_soc.num_chans = bw_params->num_channels;
+   263	
+   264			ASSERT(clk_table->num_entries);
+   265			for (i = 0; i < clk_table->num_entries; i++) {
+   266				/* loop backwards*/
+   267				for (closest_clk_lvl = 0, j = dcn3_01_soc.num_states - 1; j >= 0; j--) {
+   268					if ((unsigned int) dcn3_01_soc.clock_limits[j].dcfclk_mhz <= clk_table->entries[i].dcfclk_mhz) {
+   269						closest_clk_lvl = j;
+   270						break;
+   271					}
+   272				}
+   273	
+   274				clock_limits[i].state = i;
+   275				clock_limits[i].dcfclk_mhz = clk_table->entries[i].dcfclk_mhz;
+   276				clock_limits[i].fabricclk_mhz = clk_table->entries[i].fclk_mhz;
+   277				clock_limits[i].socclk_mhz = clk_table->entries[i].socclk_mhz;
+   278				clock_limits[i].dram_speed_mts = clk_table->entries[i].memclk_mhz * 2;
+   279	
+   280				clock_limits[i].dispclk_mhz = dcn3_01_soc.clock_limits[closest_clk_lvl].dispclk_mhz;
+   281				clock_limits[i].dppclk_mhz = dcn3_01_soc.clock_limits[closest_clk_lvl].dppclk_mhz;
+   282				clock_limits[i].dram_bw_per_chan_gbps = dcn3_01_soc.clock_limits[closest_clk_lvl].dram_bw_per_chan_gbps;
+   283				clock_limits[i].dscclk_mhz = dcn3_01_soc.clock_limits[closest_clk_lvl].dscclk_mhz;
+   284				clock_limits[i].dtbclk_mhz = dcn3_01_soc.clock_limits[closest_clk_lvl].dtbclk_mhz;
+   285				clock_limits[i].phyclk_d18_mhz = dcn3_01_soc.clock_limits[closest_clk_lvl].phyclk_d18_mhz;
+   286				clock_limits[i].phyclk_mhz = dcn3_01_soc.clock_limits[closest_clk_lvl].phyclk_mhz;
+   287			}
+   288	
+   289			for (i = 0; i < clk_table->num_entries; i++)
+   290				dcn3_01_soc.clock_limits[i] = clock_limits[i];
+   291	
+   292			if (clk_table->num_entries) {
+   293				dcn3_01_soc.num_states = clk_table->num_entries;
+   294				/* duplicate last level */
+   295				dcn3_01_soc.clock_limits[dcn3_01_soc.num_states] = dcn3_01_soc.clock_limits[dcn3_01_soc.num_states - 1];
+   296				dcn3_01_soc.clock_limits[dcn3_01_soc.num_states].state = dcn3_01_soc.num_states;
+   297			}
+   298		}
+   299	
+   300		dcn3_01_soc.dispclk_dppclk_vco_speed_mhz = dc->clk_mgr->dentist_vco_freq_khz / 1000.0;
+   301		dc->dml.soc.dispclk_dppclk_vco_speed_mhz = dc->clk_mgr->dentist_vco_freq_khz / 1000.0;
+   302	
+   303		dml_init_instance(&dc->dml, &dcn3_01_soc, &dcn3_01_ip, DML_PROJECT_DCN30);
+ > 304	}
+   305	
 
-Fixes: 79f712ea994d ("staging: r8188eu: Remove wrappers for kalloc() and kzalloc()")
-Fixes: 15865124feed ("staging: r8188eu: introduce new core dir for RTL8188eu driver")
-Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
 ---
- drivers/staging/r8188eu/core/rtw_mlme.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/staging/r8188eu/core/rtw_mlme.c b/drivers/staging/r8188eu/core/rtw_mlme.c
-index 038bddc361c3..860835e29b79 100644
---- a/drivers/staging/r8188eu/core/rtw_mlme.c
-+++ b/drivers/staging/r8188eu/core/rtw_mlme.c
-@@ -1600,12 +1600,12 @@ int rtw_set_key(struct adapter *adapter, struct security_priv *psecuritypriv, in
- 	struct mlme_priv		*pmlmepriv = &adapter->mlmepriv;
- 	int	res = _SUCCESS;
- 
--	pcmd = kzalloc(sizeof(struct cmd_obj), GFP_KERNEL);
-+	pcmd = kzalloc(sizeof(*pcmd), GFP_ATOMIC);
- 	if (!pcmd) {
- 		res = _FAIL;  /* try again */
- 		goto exit;
- 	}
--	psetkeyparm = kzalloc(sizeof(struct setkey_parm), GFP_KERNEL);
-+	psetkeyparm = kzalloc(sizeof(*psetkeyparm), GFP_ATOMIC);
- 	if (!psetkeyparm) {
- 		kfree(pcmd);
- 		res = _FAIL;
--- 
-2.34.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
