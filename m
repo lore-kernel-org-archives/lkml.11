@@ -2,219 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADC70C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 17:33:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBDCEC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 17:34:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344384AbiBFRc7 (ORCPT
+        id S1344514AbiBFRe4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Feb 2022 12:32:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33266 "EHLO
+        Sun, 6 Feb 2022 12:34:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344299AbiBFRc4 (ORCPT
+        with ESMTP id S1344299AbiBFRex (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 12:32:56 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6C6EC043184
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 09:32:55 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Sun, 6 Feb 2022 12:34:53 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B332C06173B
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 09:34:52 -0800 (PST)
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com [209.85.221.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0A33BB80D85
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 17:32:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B702C340E9;
-        Sun,  6 Feb 2022 17:32:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644168771;
-        bh=gMzTBBMdtxGO63UBF7sMhkDOFkmpPJGG4DrBI60H7XI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZpHsZnKDuay4orHTkL7iABQfZys5FNg9nzVBH9pWshMv7m2AbhzsUSXjrJpMT5xOR
-         Z600e1yOGAqURhfOtuaGsUk7BSufjfeOSZ+3IW1hdzYYmNdieE7+FRajsEuzRrrrrA
-         BAElRv7ZKCB1T1nD3mhmHYUvf3CuxapODK3fBN4wrmmGWUBM0KhLaCo3z/IeNLQFrS
-         ZZ6t0TCpOzmoU5mxUjovXZOeIQvMgEi5V8pIRkQ/nhJOmekxHIoQj4c78dv3vURQ7T
-         pAxfFlvWdZwo2UoWbeAhPYy9SlFU/5y5KysxAfSwsqfgKCTQUZCjp9bEDUk6qoUb2h
-         u0tA8ieFfbQzA==
-Date:   Mon, 7 Feb 2022 01:25:03 +0800
-From:   Jisheng Zhang <jszhang@kernel.org>
-To:     Changbin Du <changbin.du@gmail.com>
-Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] riscv: fix oops caused by irq on/off tracer
-Message-ID: <YgAEb425uqy5/dw1@xhacker>
-References: <20220129004226.32868-1-changbin.du@gmail.com>
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 1203D3F32B
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 17:34:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1644168891;
+        bh=z5izoBPa4R9EwBL70QufFWzK1TBtESD+9kJEsHX6Aho=;
+        h=Message-ID:Date:MIME-Version:Subject:To:References:Cc:From:
+         In-Reply-To:Content-Type;
+        b=uBwxlO0UKJmu31G9VrVDi8iTmmxGurF9M0Hm4ZeZSKmTkLhdYHPUKkvEYX1Q/u/0m
+         5pMhD3f1K0c6ZWJPdOQQpszGl5XeKXnKFlV8PXFn0q0WAW6vSd/vrZUKPv1ZALOR+f
+         nT8w9mP0eIU4RH6rxmf7Ed210fKPeJVY1V9oRR+3tXu4Qp5yT1PS6Xr5RvEjLdX9+P
+         FA+pbpm0lITg2DNq6DPRUNFu6vG0+DILD5DaxewoZs06WiZQivd11KpHjUYw8nKSxN
+         UGNkjPUvwAvcRgTRaHI1hK6s1wtXeZP/PKWMBzCSkuLvm5HuRjZkJQZiXgzHMp5Mmb
+         7P/nmheI4TUnA==
+Received: by mail-wr1-f72.google.com with SMTP id e11-20020adf9bcb000000b001e316b01456so102158wrc.21
+        for <linux-kernel@vger.kernel.org>; Sun, 06 Feb 2022 09:34:51 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:cc:from:in-reply-to
+         :content-transfer-encoding;
+        bh=z5izoBPa4R9EwBL70QufFWzK1TBtESD+9kJEsHX6Aho=;
+        b=eABdCzyXZgPMu7sKtf3FIpVRJgJjOg3Z1BKml6XZo3fWwL0ABwo8cuvGj6wjbtO41P
+         WUFXWTLpX07l180ckr+x+ebTrdNRb/gnHvwMByWueeE65uGI126co1OKwWgOep+QOU4d
+         MAZkafuKE6UrChDOAWsI0yFkHqTwZYONS+8au6u/ansdXG21U9oK1LBgi5emYxOKuuql
+         Lkp3u0/B7UbvYg/2ZJa2Ln+hPwLmzrdGMMvwrKuVwTV+mEX6cf3K0cMxIztsVAMMy8q5
+         C9eXQZvymiNE+wz+48U5XCeTmE03Xllnj5QCoB6PTXdeCr0wWX03ilwGW7XrkOQlgjGF
+         /A8Q==
+X-Gm-Message-State: AOAM531fPTxxXDZVduXkOVcYq0kAoX02utBCwr0LE2lgzqncw8vR0y2/
+        pECAovWYHoIrMF72WmrRGm5JODoN5fqBHJslr424WELuelKPEuOqiAV8HVm1eUyb51OaFeBHWNv
+        XRJhs3GJjhqNhO548zzRdl+rSH7OF4WYp28djlJp5VA==
+X-Received: by 2002:a05:600c:510e:: with SMTP id o14mr7785314wms.163.1644168890673;
+        Sun, 06 Feb 2022 09:34:50 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJw1rOAFnc0rXLk6obrEoY0IBwhFxEnLcHOsLdWK71QDzzC6xlUe0hnU8CgHpqzZIXOQQqmMLg==
+X-Received: by 2002:a05:600c:510e:: with SMTP id o14mr7785295wms.163.1644168890461;
+        Sun, 06 Feb 2022 09:34:50 -0800 (PST)
+Received: from [192.168.0.86] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id ay29sm6975979wmb.38.2022.02.06.09.34.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 06 Feb 2022 09:34:49 -0800 (PST)
+Message-ID: <f0a9e656-cf18-f212-b701-a1c9d10c4a59@canonical.com>
+Date:   Sun, 6 Feb 2022 18:34:48 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220129004226.32868-1-changbin.du@gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 0/3] regulator/mfd: dt-bindings: maxim,max77802:
+ convert to dtschema
+Content-Language: en-US
+To:     Lee Jones <lee.jones@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+References: <20220111175430.224421-1-krzysztof.kozlowski@canonical.com>
+Cc:     linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, linux-leds@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        Pavel Machek <pavel@ucw.cz>,
+        Javier Martinez Canillas <javier@dowhile0.org>,
+        Liam Girdwood <lgirdwood@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220111175430.224421-1-krzysztof.kozlowski@canonical.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jan 29, 2022 at 08:42:26AM +0800, Changbin Du wrote:
-> The trace_hardirqs_on/off requires at least two parent call frames.
-> If not, the code generated by CALLER_ADDR1 (aka. ftrace_return_address(1))
-> could trigger memory access fault.
+On 11/01/2022 18:54, Krzysztof Kozlowski wrote:
+> Hi,
 > 
-> [    0.039615][    T0] Unable to handle kernel NULL pointer dereference at virtual address 00000000000000f8
-> [    0.041925][    T0] Oops [#1]
-> [    0.042063][    T0] Modules linked in:
-> [    0.042864][    T0] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.17.0-rc1-00233-g9a20c48d1ed2 #29
-> [    0.043568][    T0] Hardware name: riscv-virtio,qemu (DT)
-> [    0.044343][    T0] epc : trace_hardirqs_on+0x56/0xe2
-> [    0.044601][    T0]  ra : restore_all+0x12/0x6e
-> [    0.044721][    T0] epc : ffffffff80126a5c ra : ffffffff80003b94 sp : ffffffff81403db0
-> [    0.044801][    T0]  gp : ffffffff8163acd8 tp : ffffffff81414880 t0 : 0000000000000020
-> [    0.044882][    T0]  t1 : 0098968000000000 t2 : 0000000000000000 s0 : ffffffff81403de0
-> [    0.044967][    T0]  s1 : 0000000000000000 a0 : 0000000000000001 a1 : 0000000000000100
-> [    0.045046][    T0]  a2 : 0000000000000000 a3 : 0000000000000000 a4 : 0000000000000000
-> [    0.045124][    T0]  a5 : 0000000000000000 a6 : 0000000000000000 a7 : 0000000054494d45
-> [    0.045210][    T0]  s2 : ffffffff80003b94 s3 : ffffffff81a8f1b0 s4 : ffffffff80e27b50
-> [    0.045289][    T0]  s5 : ffffffff81414880 s6 : ffffffff8160fa00 s7 : 00000000800120e8
-> [    0.045389][    T0]  s8 : 0000000080013100 s9 : 000000000000007f s10: 0000000000000000
-> [    0.045474][    T0]  s11: 0000000000000000 t3 : 7fffffffffffffff t4 : 0000000000000000
-> [    0.045548][    T0]  t5 : 0000000000000000 t6 : ffffffff814aa368
-> [    0.045620][    T0] status: 0000000200000100 badaddr: 00000000000000f8 cause: 000000000000000d
-> [    0.046402][    T0] [<ffffffff80003b94>] restore_all+0x12/0x6e
+> Changes since v1
+> ================
+> 1. MFD: Use absolute path to schemas.
+> 2. Regulator: skip properties.
+> 
+> Dependencies
+> ============
+> 1. DTS patch: nothing depends on it, sending here so Rob's automatic
+>    checker won't complain about DTS.
+>    I will take it via Samsung SoC tree.
+> 
+> 2. Final MFD patch depends on regulator, so the two last patches could
+>    go via Rob's, Mark's or Lee's trees.
 > 
 
-Hi Changbin,
+Dear Lee,
 
-Could you please provide the reproduce steps? It looks a bit
-interesting.
+This patchset was reviewed and there are no outstanding issues. Could
+you pick up entire set via MFD tree?
 
-> To fix above issue, here we add one extra level wrapper so they can be
-> safely called by low level entry code.
-> 
-> Signed-off-by: Changbin Du <changbin.du@gmail.com>
-> 
-> ---
-> v2: fix compile warning.
-> ---
->  arch/riscv/kernel/Makefile    |  2 ++
->  arch/riscv/kernel/entry.S     | 10 +++++-----
->  arch/riscv/kernel/trace_irq.c | 26 ++++++++++++++++++++++++++
->  arch/riscv/kernel/trace_irq.h | 11 +++++++++++
->  4 files changed, 44 insertions(+), 5 deletions(-)
->  create mode 100644 arch/riscv/kernel/trace_irq.c
->  create mode 100644 arch/riscv/kernel/trace_irq.h
-> 
-> diff --git a/arch/riscv/kernel/Makefile b/arch/riscv/kernel/Makefile
-> index 612556faa527..ffc87e76b1dd 100644
-> --- a/arch/riscv/kernel/Makefile
-> +++ b/arch/riscv/kernel/Makefile
-> @@ -51,6 +51,8 @@ obj-$(CONFIG_MODULE_SECTIONS)	+= module-sections.o
->  obj-$(CONFIG_FUNCTION_TRACER)	+= mcount.o ftrace.o
->  obj-$(CONFIG_DYNAMIC_FTRACE)	+= mcount-dyn.o
->  
-> +obj-$(CONFIG_TRACE_IRQFLAGS)	+= trace_irq.o
-> +
->  obj-$(CONFIG_RISCV_BASE_PMU)	+= perf_event.o
->  obj-$(CONFIG_PERF_EVENTS)	+= perf_callchain.o
->  obj-$(CONFIG_HAVE_PERF_REGS)	+= perf_regs.o
-> diff --git a/arch/riscv/kernel/entry.S b/arch/riscv/kernel/entry.S
-> index ed29e9c8f660..d6a46ed0bf05 100644
-> --- a/arch/riscv/kernel/entry.S
-> +++ b/arch/riscv/kernel/entry.S
-> @@ -108,7 +108,7 @@ _save_context:
->  .option pop
->  
->  #ifdef CONFIG_TRACE_IRQFLAGS
-> -	call trace_hardirqs_off
-> +	call __trace_hardirqs_off
->  #endif
->  
->  #ifdef CONFIG_CONTEXT_TRACKING
-> @@ -143,7 +143,7 @@ skip_context_tracking:
->  	li t0, EXC_BREAKPOINT
->  	beq s4, t0, 1f
->  #ifdef CONFIG_TRACE_IRQFLAGS
-> -	call trace_hardirqs_on
-> +	call __trace_hardirqs_on
->  #endif
->  	csrs CSR_STATUS, SR_IE
->  
-> @@ -234,7 +234,7 @@ ret_from_exception:
->  	REG_L s0, PT_STATUS(sp)
->  	csrc CSR_STATUS, SR_IE
->  #ifdef CONFIG_TRACE_IRQFLAGS
-> -	call trace_hardirqs_off
-> +	call __trace_hardirqs_off
->  #endif
->  #ifdef CONFIG_RISCV_M_MODE
->  	/* the MPP value is too large to be used as an immediate arg for addi */
-> @@ -270,10 +270,10 @@ restore_all:
->  	REG_L s1, PT_STATUS(sp)
->  	andi t0, s1, SR_PIE
->  	beqz t0, 1f
-> -	call trace_hardirqs_on
-> +	call __trace_hardirqs_on
->  	j 2f
->  1:
-> -	call trace_hardirqs_off
-> +	call __trace_hardirqs_off
->  2:
->  #endif
->  	REG_L a0, PT_STATUS(sp)
-> diff --git a/arch/riscv/kernel/trace_irq.c b/arch/riscv/kernel/trace_irq.c
-> new file mode 100644
-> index 000000000000..fc194c56a35d
-> --- /dev/null
-> +++ b/arch/riscv/kernel/trace_irq.c
-> @@ -0,0 +1,26 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Copyright (C) 2022 Changbin Du <changbin.du@gmail.com>
-> + */
-> +
-> +#include <linux/irqflags.h>
-> +#include <linux/kprobes.h>
-> +#include "trace_irq.h"
-> +
-> +/**
-> + * trace_hardirqs_on/off requires at least two parent call frames.
-> + * Here we add one extra level so they can be safely called by low
-> + * level entry code.
-> + */
-
-Hmm, I believe there's elegant solution without this grue, maybe
-fix in stacktrace implementation or something else?
-
-
-> +
-> +void __trace_hardirqs_on(void)
-> +{
-> +	trace_hardirqs_on();
-> +}
-> +NOKPROBE_SYMBOL(__trace_hardirqs_on);
-> +
-> +void __trace_hardirqs_off(void)
-> +{
-> +	trace_hardirqs_off();
-> +}
-> +NOKPROBE_SYMBOL(__trace_hardirqs_off);
-> diff --git a/arch/riscv/kernel/trace_irq.h b/arch/riscv/kernel/trace_irq.h
-> new file mode 100644
-> index 000000000000..99fe67377e5e
-> --- /dev/null
-> +++ b/arch/riscv/kernel/trace_irq.h
-> @@ -0,0 +1,11 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +/*
-> + * Copyright (C) 2022 Changbin Du <changbin.du@gmail.com>
-> + */
-> +#ifndef __TRACE_IRQ_H
-> +#define __TRACE_IRQ_H
-> +
-> +void __trace_hardirqs_on(void);
-> +void __trace_hardirqs_off(void);
-> +
-> +#endif /* __TRACE_IRQ_H */
-> -- 
-> 2.32.0
-> 
-> 
-> _______________________________________________
-> linux-riscv mailing list
-> linux-riscv@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-riscv
+Best regards,
+Krzysztof
