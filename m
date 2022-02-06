@@ -2,214 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B886C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 17:23:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 087D5C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 17:25:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344123AbiBFRXj (ORCPT
+        id S1344176AbiBFRZl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Feb 2022 12:23:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58942 "EHLO
+        Sun, 6 Feb 2022 12:25:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230187AbiBFRXi (ORCPT
+        with ESMTP id S230187AbiBFRZk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 12:23:38 -0500
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3267C06173B;
-        Sun,  6 Feb 2022 09:23:36 -0800 (PST)
-Received: by mail-lf1-x12b.google.com with SMTP id b9so22656376lfq.6;
-        Sun, 06 Feb 2022 09:23:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=DZ5wjKqdD4TOpUJAi2NdV3t9go691za/EKfx/PAIrRE=;
-        b=ke/mkrDrFNo/Hys09oQTVDx/tPAMh8uwUaeWxjMUi9yAqTMBjeqcRSZqI1FLkfjmbq
-         KPQX8oeXfbq5K+Vxi2H5MiZHZSRQI4dCm2z4pLEHh4FkGttMdfrpveAGjeIHDAqGGwDd
-         /5Zxv66RdSa21j9lGSh0es1OYkJpqKiA8a9QDzYKWRT0CH6NuWmRjOgfDwdVwavNdU4z
-         Z4FFleRc3v+wOs1iNmcXKF6Cw0BFh/YBnj0LEq9yQe45zXHRewEqjwH+HiE6JHNKRD+h
-         bM4GWAiMljukALizvHG4DEFNLFAzlO2yOvpHdmvTN2n0f6lI7wBv80oqVh4zmqqq33n0
-         oZOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=DZ5wjKqdD4TOpUJAi2NdV3t9go691za/EKfx/PAIrRE=;
-        b=Bgp+SX2tf2sSAKmMJO4/b/TugssM40Uj4UQnQb9ia5MG/1nv+ywL0J21Pbr8IVSvs8
-         kieS5dBLpoo+/lIymITBiiGJWOb+YfiSZEBjv/jtV0CdDMP6mhruUa8lukmZDZmrdUWk
-         5osvnn2KGeSRTkMCYdeaSE3zP3HNKtXc05gvVGoaA5xY9kPpVxOdoBhoGccX+9TzxFFt
-         MvvE/HMhhIDEu2VKFyvNJ9TycLXLpTqOPk0QuET2HYLbU5juoI1Onut0FTKw2TaaNBU7
-         Thi3GZo2ykuRIqnT+aBqPvhjZjeTA/reua9eukKWq+je6gwNyCHpjEI5j7IaRduI4Dfm
-         Sd8Q==
-X-Gm-Message-State: AOAM531CQSrNwpFu/yG7Ur70p/Pt22bu9rnJ5RvOT6jAzI+wl74XHs7v
-        PN9dqAMnkD99poNgiynKbIFKg9ywwFDJ+g==
-X-Google-Smtp-Source: ABdhPJyI2INFDQ9ECmeCNbGeCgArPLiJ4rd3qowK0jikNBNRB1r6KD0EMtuhM06s+RxJ/XYHE3wxeQ==
-X-Received: by 2002:ac2:5e64:: with SMTP id a4mr5874900lfr.674.1644168214696;
-        Sun, 06 Feb 2022 09:23:34 -0800 (PST)
-Received: from [192.168.1.11] ([94.103.224.201])
-        by smtp.gmail.com with ESMTPSA id t12sm1276573ljc.97.2022.02.06.09.23.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 06 Feb 2022 09:23:34 -0800 (PST)
-Message-ID: <7dbe85db-92b8-68bd-d008-33a4be9a55b9@gmail.com>
-Date:   Sun, 6 Feb 2022 20:23:32 +0300
+        Sun, 6 Feb 2022 12:25:40 -0500
+X-Greylist: delayed 465 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 09:25:39 PST
+Received: from relay4.hostedemail.com (relay4.hostedemail.com [64.99.140.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71376C06173B
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 09:25:39 -0800 (PST)
+Received: from omf17.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay12.hostedemail.com (Postfix) with ESMTP id 5A8AF120714;
+        Sun,  6 Feb 2022 17:17:53 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf17.hostedemail.com (Postfix) with ESMTPA id A466018;
+        Sun,  6 Feb 2022 17:17:08 +0000 (UTC)
+Message-ID: <8536ca17c2945cb77c506d99eff5ccc42e71f2f3.camel@perches.com>
+Subject: Re: [PATCH] staging: octeon-usb: Fix 'should not end with '(''
+From:   Joe Perches <joe@perches.com>
+To:     David Laight <David.Laight@ACULAB.COM>,
+        "'joelcchangg@gmail.com'" <joelcchangg@gmail.com>,
+        "linux-staging@lists.linux.dev" <linux-staging@lists.linux.dev>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "gregkh@linuxfoundation.com" <gregkh@linuxfoundation.com>
+Date:   Sun, 06 Feb 2022 09:17:45 -0800
+In-Reply-To: <c0b504dd1f254f19b6ff60948684303b@AcuMS.aculab.com>
+References: <20220206074615.3527-1-joelcchangg@gmail.com>
+         <c0b504dd1f254f19b6ff60948684303b@AcuMS.aculab.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.4-1ubuntu2 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH RFT] net: asix: add proper error handling of usb read
- errors
-Content-Language: en-US
-To:     davem@davemloft.net, kuba@kernel.org, linux@rempel-privat.de,
-        andrew@lunn.ch, oneukum@suse.com, robert.foss@collabora.com,
-        freddy@asix.com.tw
-Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        syzbot+6ca9f7867b77c2d316ac@syzkaller.appspotmail.com
-References: <20220105131952.15693-1-paskripkin@gmail.com>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <20220105131952.15693-1-paskripkin@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Stat-Signature: qg4yiupiwhcsqe6n45gxqr7fdpk59b16
+X-Rspamd-Server: rspamout03
+X-Rspamd-Queue-Id: A466018
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX1+fnhxLHTdi5aumjIE+T5F75ykVyJ/qk3Y=
+X-HE-Tag: 1644167828-153419
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/5/22 16:19, Pavel Skripkin wrote:
-> Syzbot once again hit uninit value in asix driver. The problem still the
-> same -- asix_read_cmd() reads less bytes, than was requested by caller.
+On Sun, 2022-02-06 at 14:16 +0000, David Laight wrote:
+> From: joelcchangg@gmail.com
+> > Sent: 06 February 2022 07:46
+> > 
+> > This patch fixes the checkpatch.pl check:
+> > 
+> > CHECK: Line should not end with '('
+[]
+> > diff --git a/drivers/staging/octeon-usb/octeon-hcd.c b/drivers/staging/octeon-usb/octeon-hcd.c
+[]
+> > @@ -1792,23 +1792,18 @@ static void cvmx_usb_start_channel(struct octeon_hcd *usb, int channel,
+> >  	case CVMX_USB_TRANSFER_INTERRUPT:
+> >  		break;
+> >  	case CVMX_USB_TRANSFER_ISOCHRONOUS:
+> > -		if (!cvmx_usb_pipe_needs_split(usb, pipe)) {
+> > +		if (!cvmx_usb_pipe_needs_split(usb, pipe) &&
+> > +		    pipe->transfer_dir == CVMX_USB_DIRECTION_OUT) {
+> >  			/*
+> >  			 * ISO transactions require different PIDs depending on
+> >  			 * direction and how many packets are needed
+> >  			 */
+> > -			if (pipe->transfer_dir == CVMX_USB_DIRECTION_OUT) {
+> > -				if (pipe->multi_count < 2) /* Need DATA0 */
+> > -					USB_SET_FIELD32(
+> > -						CVMX_USBCX_HCTSIZX(channel,
+> > -								   usb->index),
+> > +			if (pipe->multi_count < 2) /* Need DATA0 */
+> > +				USB_SET_FIELD32(CVMX_USBCX_HCTSIZX(channel, usb->index),
+> >  						cvmx_usbcx_hctsizx, pid, 0);
+> > -				else /* Need MDATA */
+> > -					USB_SET_FIELD32(
+> > -						CVMX_USBCX_HCTSIZX(channel,
+> > -								   usb->index),
+> > +			else /* Need MDATA */
+> > +				USB_SET_FIELD32(CVMX_USBCX_HCTSIZX(channel, usb->index),
+> >  						cvmx_usbcx_hctsizx, pid, 3);
+> > -			}
+> >  		}
+> >  		break;
+> >  	}
 > 
-> Since all read requests are performed via asix_read_cmd() let's catch
-> usb related error there and add __must_check notation to be sure all
-> callers actually check return value.
+> What has that hunk got to do with the patch description?
+
+Nothing and this should be revisited or explained much more
+as it seems to change the logic.
+
+> > @@ -2121,17 +2116,17 @@ static void cvmx_usb_complete(struct octeon_hcd *usb,
+> >   *
+> >   * Returns: Transaction or NULL on failure.
+> >   */
+> > -static struct cvmx_usb_transaction *cvmx_usb_submit_transaction(
+> > -				struct octeon_hcd *usb,
+> > -				struct cvmx_usb_pipe *pipe,
+> > -				enum cvmx_usb_transfer type,
+> > -				u64 buffer,
+> > -				int buffer_length,
+> > -				u64 control_header,
+> > -				int iso_start_frame,
+> > -				int iso_number_packets,
+> > -				struct cvmx_usb_iso_packet *iso_packets,
+> > -				struct urb *urb)
+> > +static struct cvmx_usb_transaction *cvmx_usb_submit_transaction(struct octeon_hcd *usb,
+> > +								struct cvmx_usb_pipe *pipe,
+> > +								enum cvmx_usb_transfer type,
+> > +								u64 buffer,
+> > +								int buffer_length,
+> > +								u64 control_header,
+> > +								int iso_start_frame,
+> > +								int iso_number_packets,
+> > +								struct cvmx_usb_iso_packet
+> > +									*iso_packets,
+> > +								struct urb *urb)
 > 
-> So, this patch adds sanity check inside asix_read_cmd(), that simply
-> checks if bytes read are not less, than was requested and adds missing
-> error handling of asix_read_cmd() all across the driver code.
-> 
-> Fixes: d9fe64e51114 ("net: asix: Add in_pm parameter")
-> Reported-and-tested-by: syzbot+6ca9f7867b77c2d316ac@syzkaller.appspotmail.com
-> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-> ---
+> Those lines are now far longer than is 'nice'.
 
-gentle ping :)
+True.
 
->   drivers/net/usb/asix.h         |  4 ++--
->   drivers/net/usb/asix_common.c  | 19 +++++++++++++------
->   drivers/net/usb/asix_devices.c | 21 ++++++++++++++++++---
->   3 files changed, 33 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/net/usb/asix.h b/drivers/net/usb/asix.h
-> index 2a1e31defe71..4334aafab59a 100644
-> --- a/drivers/net/usb/asix.h
-> +++ b/drivers/net/usb/asix.h
-> @@ -192,8 +192,8 @@ extern const struct driver_info ax88172a_info;
->   /* ASIX specific flags */
->   #define FLAG_EEPROM_MAC		(1UL << 0)  /* init device MAC from eeprom */
->   
-> -int asix_read_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
-> -		  u16 size, void *data, int in_pm);
-> +int __must_check asix_read_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
-> +			       u16 size, void *data, int in_pm);
->   
->   int asix_write_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
->   		   u16 size, void *data, int in_pm);
-> diff --git a/drivers/net/usb/asix_common.c b/drivers/net/usb/asix_common.c
-> index 71682970be58..524805285019 100644
-> --- a/drivers/net/usb/asix_common.c
-> +++ b/drivers/net/usb/asix_common.c
-> @@ -11,8 +11,8 @@
->   
->   #define AX_HOST_EN_RETRIES	30
->   
-> -int asix_read_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
-> -		  u16 size, void *data, int in_pm)
-> +int __must_check asix_read_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
-> +			       u16 size, void *data, int in_pm)
->   {
->   	int ret;
->   	int (*fn)(struct usbnet *, u8, u8, u16, u16, void *, u16);
-> @@ -27,9 +27,12 @@ int asix_read_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
->   	ret = fn(dev, cmd, USB_DIR_IN | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
->   		 value, index, data, size);
->   
-> -	if (unlikely(ret < 0))
-> +	if (unlikely(ret < size)) {
-> +		ret = ret < 0 ? ret : -ENODATA;
-> +
->   		netdev_warn(dev->net, "Failed to read reg index 0x%04x: %d\n",
->   			    index, ret);
-> +	}
->   
->   	return ret;
->   }
-> @@ -79,7 +82,7 @@ static int asix_check_host_enable(struct usbnet *dev, int in_pm)
->   				    0, 0, 1, &smsr, in_pm);
->   		if (ret == -ENODEV)
->   			break;
-> -		else if (ret < sizeof(smsr))
-> +		else if (ret < 0)
->   			continue;
->   		else if (smsr & AX_HOST_EN)
->   			break;
-> @@ -579,8 +582,12 @@ int asix_mdio_read_nopm(struct net_device *netdev, int phy_id, int loc)
->   		return ret;
->   	}
->   
-> -	asix_read_cmd(dev, AX_CMD_READ_MII_REG, phy_id,
-> -		      (__u16)loc, 2, &res, 1);
-> +	ret = asix_read_cmd(dev, AX_CMD_READ_MII_REG, phy_id,
-> +			    (__u16)loc, 2, &res, 1);
-> +	if (ret < 0) {
-> +		mutex_unlock(&dev->phy_mutex);
-> +		return ret;
-> +	}
->   	asix_set_hw_mii(dev, 1);
->   	mutex_unlock(&dev->phy_mutex);
->   
-> diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
-> index 4514d35ef4c4..6b2fbdf4e0fd 100644
-> --- a/drivers/net/usb/asix_devices.c
-> +++ b/drivers/net/usb/asix_devices.c
-> @@ -755,7 +755,12 @@ static int ax88772_bind(struct usbnet *dev, struct usb_interface *intf)
->   	priv->phy_addr = ret;
->   	priv->embd_phy = ((priv->phy_addr & 0x1f) == 0x10);
->   
-> -	asix_read_cmd(dev, AX_CMD_STATMNGSTS_REG, 0, 0, 1, &chipcode, 0);
-> +	ret = asix_read_cmd(dev, AX_CMD_STATMNGSTS_REG, 0, 0, 1, &chipcode, 0);
-> +	if (ret < 0) {
-> +		netdev_dbg(dev->net, "Failed to read STATMNGSTS_REG: %d\n", ret);
-> +		return ret;
-> +	}
-> +
->   	chipcode &= AX_CHIPCODE_MASK;
->   
->   	ret = (chipcode == AX_AX88772_CHIPCODE) ? ax88772_hw_reset(dev, 0) :
-> @@ -920,11 +925,21 @@ static int ax88178_reset(struct usbnet *dev)
->   	int gpio0 = 0;
->   	u32 phyid;
->   
-> -	asix_read_cmd(dev, AX_CMD_READ_GPIOS, 0, 0, 1, &status, 0);
-> +	ret = asix_read_cmd(dev, AX_CMD_READ_GPIOS, 0, 0, 1, &status, 0);
-> +	if (ret < 0) {
-> +		netdev_dbg(dev->net, "Failed to read GPIOS: %d\n", ret);
-> +		return ret;
-> +	}
-> +
->   	netdev_dbg(dev->net, "GPIO Status: 0x%04x\n", status);
->   
->   	asix_write_cmd(dev, AX_CMD_WRITE_ENABLE, 0, 0, 0, NULL, 0);
-> -	asix_read_cmd(dev, AX_CMD_READ_EEPROM, 0x0017, 0, 2, &eeprom, 0);
-> +	ret = asix_read_cmd(dev, AX_CMD_READ_EEPROM, 0x0017, 0, 2, &eeprom, 0);
-> +	if (ret < 0) {
-> +		netdev_dbg(dev->net, "Failed to read EEPROM: %d\n", ret);
-> +		return ret;
-> +	}
-> +
->   	asix_write_cmd(dev, AX_CMD_WRITE_DISABLE, 0, 0, 0, NULL, 0);
->   
->   	netdev_dbg(dev->net, "EEPROM index 0x17 is 0x%04x\n", eeprom);
+This _might_ be better with the return type on a separate line
+
+Something like:
+
+static struct cvmx_usb_transaction *
+cvmx_usb_submit_transaction(struct octeon_hcd *usb, struct cvmx_usb_pipe *pipe,
+			    enum cvmx_usb_transfer type,
+			    u64 buffer, int buffer_length,
+			    u64 control_header, int iso_start_frame,
+			    int iso_number_packets,
+			    struct cvmx_usb_iso_packet *iso_packets,
+			    struct urb *urb)
 
 
-
-
-With regards,
-Pavel Skripkin
