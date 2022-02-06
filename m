@@ -2,152 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 676D7C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 21:53:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81EB9C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 21:56:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245258AbiBFVxf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Feb 2022 16:53:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57030 "EHLO
+        id S244866AbiBFV4r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 6 Feb 2022 16:56:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230200AbiBFVxc (ORCPT
+        with ESMTP id S230200AbiBFV4o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 16:53:32 -0500
-Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ED2DC06173B
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 13:53:31 -0800 (PST)
-Received: by mail-qk1-x735.google.com with SMTP id b22so9516164qkk.12
-        for <linux-kernel@vger.kernel.org>; Sun, 06 Feb 2022 13:53:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:in-reply-to:message-id:references
-         :mime-version;
-        bh=bdXbpcKd8bEpr3aPHqwTqDw7DbzB6IrHpbHDEXtmJrw=;
-        b=SSBt8V2HSh34Girfg/qRDib2a6l28XQfIOv+1FwHWDYLnbIW+mrcUblEZRmSPvGUn0
-         fCQ9zCPszNmDVU1f8BaVa59Jzn1oLAq58HZ1NawQKvm4eK1d3jRD+2+1hXsGZ9PwwwSl
-         0EO8THwHWzQV1T7LrNAsxs95QIJ09uLPaqpDpr0vY5dLn5irvr0mAACfhpzBEaph90dr
-         VliUcdUUV7B3Ubanq+58R0QiHWXXbRO5v8X1DVN2bxYbYFTvL9REJYU70wnwg5WiQhWS
-         QCk3xC9r+0dC3wbbs3vC3QjdzONZKXWJhiOZc+7zGTJ3aI5M+hvLEWtBBGXZARGj7dpi
-         IzMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
-         :references:mime-version;
-        bh=bdXbpcKd8bEpr3aPHqwTqDw7DbzB6IrHpbHDEXtmJrw=;
-        b=YtjFOA7ZrVHevie/ArbUBjABKHuX8Ub0+8uDX+S8OTXApRZaqyKpDkCoIJbn5uA+or
-         kEiVv63/7zZvEv8CdPzhC2I7Sz4OgxhjlxPhSE4Ri65fYnirnSmzTvQaOto+us/dWSBy
-         srIlZH//QpArgjg9EQC6hcuaruu7FLMYOwLtAq2rZGKvI1ECgB1U1emPRQbeOwWsfeS6
-         aVK9KrtgOJWkUx4IhrumJ+Og6Hckl7BND0VMXSj1azoR75ALaJEaDQaQmPGboaPDPW3b
-         4abK8fnqFuvjdplvqmlTPJJrECiCU1k1noRp8Avidzm8tHdt9JBufwx7MEwmsZ2gr29G
-         /34A==
-X-Gm-Message-State: AOAM533f9eFXuuZPAmzpJfVBzeVl4Ng4/jR1oBsmE08SyPQYwytcuCjJ
-        8patAWp3NHeUwu2JimWW4szOzA==
-X-Google-Smtp-Source: ABdhPJzzaieljHjokCWJbqDmawWg6ydRcuFm5aJOT+tVvJVkNAlmiHFuPDAXww/MHC8XmIiVtnku2w==
-X-Received: by 2002:ae9:c10e:: with SMTP id z14mr5029635qki.538.1644184410482;
-        Sun, 06 Feb 2022 13:53:30 -0800 (PST)
-Received: from ripple.attlocal.net (172-10-233-147.lightspeed.sntcca.sbcglobal.net. [172.10.233.147])
-        by smtp.gmail.com with ESMTPSA id k4sm4771078qta.6.2022.02.06.13.53.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Feb 2022 13:53:30 -0800 (PST)
-Date:   Sun, 6 Feb 2022 13:53:27 -0800 (PST)
-From:   Hugh Dickins <hughd@google.com>
-X-X-Sender: hugh@ripple.anvils
-To:     Andrew Morton <akpm@linux-foundation.org>
-cc:     Michal Hocko <mhocko@suse.com>, Vlastimil Babka <vbabka@suse.cz>,
-        "Kirill A. Shutemov" <kirill@shutemov.name>,
-        Matthew Wilcox <willy@infradead.org>,
-        David Hildenbrand <david@redhat.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Rik van Riel <riel@surriel.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Yu Zhao <yuzhao@google.com>, Greg Thelen <gthelen@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Subject: [PATCH 13/13] mm/thp: shrink_page_list() avoid splitting VM_LOCKED
- THP
-In-Reply-To: <8e4356d-9622-a7f0-b2c-f116b5f2efea@google.com>
-Message-ID: <6df82db0-0e6-ef83-6925-4fa3f834133d@google.com>
-References: <8e4356d-9622-a7f0-b2c-f116b5f2efea@google.com>
+        Sun, 6 Feb 2022 16:56:44 -0500
+X-Greylist: delayed 456 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 13:56:37 PST
+Received: from mail.cock.li (unknown [37.120.193.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5100EC06173B
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 13:56:37 -0800 (PST)
+From:   sp1rit@national.shitposting.agency
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+        d=national.shitposting.agency; s=mail; t=1644184131;
+        bh=AFyXmb3Qmo+O1oT3L0ERbzAp+sekOtF9ZDbLiFnEncY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=HK6lsGpFjZvdUVWnvkR9WypH1a57nFlzmHGfHxW5XMbk9KMqg72I2qodk8hBiWBiK
+         dyTmNUSof9pPK2xmIbqvptu/m2LbYHzOm1nAfi0vpnm8OzKbgYMDAZS15CxT6SLxdB
+         5hKuQ1DvyCclzlS+IzjILZ6hI4gEZ8sDvzUO1mcj39PvXLlLZBF/mutaq900vukzOm
+         +5I1tfC0SaLOeOfCcmD3dnVZWJyaxodjn6q1G9KCPb3SU0ZT8X4GMGAZrtgqwDXbsU
+         gqRVrnxwaxOVnqG0U7EGZmDO7yZ9YtkZ9B37moJEx+DxKZqxfPIJUmq5ozWcpRS7Yv
+         j1kKJXJzwUwtg==
+To:     linux-kernel@vger.kernel.org
+Cc:     jdelvare@suse.com,
+        =?UTF-8?q?Florian=20=22sp1rit=22=E2=80=8B?= <sp1rit@disroot.org>
+Subject: [PATCH RESEND] firmware/dmi: Allow overriding vendor provided DMIIDs
+Date:   Sun,  6 Feb 2022 22:43:46 +0100
+Message-Id: <20220206214345.31214-1-sp1rit@national.shitposting.agency>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-4.8 commit 7751b2da6be0 ("vmscan: split file huge pages before paging
-them out") inserted a split_huge_page_to_list() into shrink_page_list()
-without considering the mlock case: no problem if the page has already
-been marked as Mlocked (the !page_evictable check much higher up will
-have skipped all this), but it has always been the case that races or
-omissions in setting Mlocked can rely on page reclaim to detect this
-and correct it before actually reclaiming - and that remains so, but
-what a shame if a hugepage is needlessly split before discovering it.
+From: Florian "sp1rit"​ <sp1rit@disroot.org>
 
-It is surprising that page_check_references() returns PAGEREF_RECLAIM
-when VM_LOCKED, but there was a good reason for that: try_to_unmap_one()
-is where the condition is detected and corrected; and until now it could
-not be done in page_referenced_one(), because that does not always have
-the page locked.  Now that mlock's requirement for page lock has gone,
-copy try_to_unmap_one()'s mlock restoration into page_referenced_one(),
-and let page_check_references() return PAGEREF_ACTIVATE in this case.
+Resend, because the my first attempt bounced, as disroot.org is
+appearently "liked source for email" :/. Let's hope that it works
+this time (and sorry for sending the same mail twice Jean Delvare).
 
-But page_referenced_one() may find a pte mapping one part of a hugepage:
-what hold should a pte mapped in a VM_LOCKED area exert over the entire
-huge page?  That's debatable.  The approach taken here is to treat that
-pte mapping in page_referenced_one() as if not VM_LOCKED, and if no
-VM_LOCKED pmd mapping is found later in the walk, and lack of reference
-permits, then PAGEREF_RECLAIM take it to attempted splitting as before.
 
-Signed-off-by: Hugh Dickins <hughd@google.com>
+Various device vendors do not properly fill out the SMBIOS/DMI
+information in the bios firmware of their devices. This leads to
+issues, like finding "System manufacturer System Product Name" under
+"Hardware Information" in GNOME Settings, which made it's way there
+(over a few dbus detours) from DMIIDs provided from the kernel.
+
+This patch intoduces a handful kernel parameters that allow
+overriding these values with user defined ones, similar to changing
+values in HKLM\HARDWARE\DESCRPTION\System\Bios or
+$WINDIR/system32/OEMINFO.ini on Microsoft Windows.
+
+The alternative would either be patching the vendor provided bios
+CAP file, which seems quite dangerous and might not even work if
+the update has to be signed. Or introducing some kind of
+configuration file to systemd-hostnamed to allow the overriding of
+the values from userspace. However that might work for this usecase,
+but most software will not use hostnamed, since simply reading a
+file is a lot simpler that having to rely on dbus to query system
+information.
+
+Please note that I've never written kernel code before, so please
+forgive any mistakes I might have done :).
+
+Signed-off-by: Florian "sp1rit"​ <sp1rit@disroot.org>
 ---
- mm/rmap.c   | 7 +++++--
- mm/vmscan.c | 6 +++---
- 2 files changed, 8 insertions(+), 5 deletions(-)
+ .../admin-guide/kernel-parameters.rst         |  1 +
+ .../admin-guide/kernel-parameters.txt         |  9 +++++
+ drivers/firmware/dmi-id.c                     | 35 +++++++++++++++++--
+ 3 files changed, 43 insertions(+), 2 deletions(-)
 
-diff --git a/mm/rmap.c b/mm/rmap.c
-index 714bfdc72c7b..c7921c102bc0 100644
---- a/mm/rmap.c
-+++ b/mm/rmap.c
-@@ -812,7 +812,10 @@ static bool page_referenced_one(struct page *page, struct vm_area_struct *vma,
- 	while (page_vma_mapped_walk(&pvmw)) {
- 		address = pvmw.address;
+diff --git a/Documentation/admin-guide/kernel-parameters.rst b/Documentation/admin-guide/kernel-parameters.rst
+index 01ba293a2..7f1cb5029 100644
+--- a/Documentation/admin-guide/kernel-parameters.rst
++++ b/Documentation/admin-guide/kernel-parameters.rst
+@@ -104,6 +104,7 @@ parameter is applicable::
+ 	AX25	Appropriate AX.25 support is enabled.
+ 	CLK	Common clock infrastructure is enabled.
+ 	CMA	Contiguous Memory Area support is enabled.
++	DMIID	Exporting DMI identification is enabled.
+ 	DRM	Direct Rendering Management support is enabled.
+ 	DYNAMIC_DEBUG Build in debug messages and enable them at runtime
+ 	EDD	BIOS Enhanced Disk Drive Services (EDD) is enabled
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index f5a27f067..f52a8592f 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -1044,6 +1044,15 @@
+ 			pass the driver to filter for as the parameter.
+ 			The filter can be disabled or changed to another
+ 			driver later using sysfs.
++	
++	dmi_<name>=<value>	[DMIID]
++			Used to override SMBIOS/DMI system identification
++			information provided by your device vendor that is
++			exposed to userspace through /sys/class/dmi/id/.
++			<name> hereby represents the name of the id being
++			exposed (i.e. product_name, chassis_vendor or
++			sys_vendor) and <value> being the string replacing
++			the vendor provided value.
  
--		if (vma->vm_flags & VM_LOCKED) {
-+		if ((vma->vm_flags & VM_LOCKED) &&
-+		    (!PageTransCompound(page) || !pvmw.pte)) {
-+			/* Restore the mlock which got missed */
-+			mlock_vma_page(page, vma, !pvmw.pte);
- 			page_vma_mapped_walk_done(&pvmw);
- 			pra->vm_flags |= VM_LOCKED;
- 			return false; /* To break the loop */
-@@ -851,7 +854,7 @@ static bool page_referenced_one(struct page *page, struct vm_area_struct *vma,
+ 	driver_async_probe=  [KNL]
+ 			List of driver names to be probed asynchronously.
+diff --git a/drivers/firmware/dmi-id.c b/drivers/firmware/dmi-id.c
+index 940ddf916..14ffde244 100644
+--- a/drivers/firmware/dmi-id.c
++++ b/drivers/firmware/dmi-id.c
+@@ -12,6 +12,31 @@
+ #include <linux/device.h>
+ #include <linux/slab.h>
  
- 	if (referenced) {
- 		pra->referenced++;
--		pra->vm_flags |= vma->vm_flags;
-+		pra->vm_flags |= vma->vm_flags & ~VM_LOCKED;
- 	}
- 
- 	if (!pra->mapcount)
-diff --git a/mm/vmscan.c b/mm/vmscan.c
-index 090bfb605ecf..a160efba3c73 100644
---- a/mm/vmscan.c
-+++ b/mm/vmscan.c
-@@ -1386,11 +1386,11 @@ static enum page_references page_check_references(struct page *page,
- 	referenced_page = TestClearPageReferenced(page);
- 
- 	/*
--	 * Mlock lost the isolation race with us.  Let try_to_unmap()
--	 * move the page to the unevictable list.
-+	 * The supposedly reclaimable page was found to be in a VM_LOCKED vma.
-+	 * Let the page, now marked Mlocked, be moved to the unevictable list.
- 	 */
- 	if (vm_flags & VM_LOCKED)
--		return PAGEREF_RECLAIM;
-+		return PAGEREF_ACTIVATE;
- 
- 	if (referenced_ptes) {
- 		/*
++static char* dmi_override[DMI_STRING_MAX] = { NULL };
++
++core_param(dmi_bios_vendor, dmi_override[DMI_BIOS_VENDOR], charp, 0440);
++core_param(dmi_bios_version, dmi_override[DMI_BIOS_VERSION], charp, 0440);
++core_param(dmi_bios_date, dmi_override[DMI_BIOS_DATE], charp, 0440);
++core_param(dmi_sys_vendor, dmi_override[DMI_SYS_VENDOR], charp, 0440);
++core_param(dmi_bios_release, dmi_override[DMI_BIOS_RELEASE], charp, 0440);
++core_param(dmi_ec_firmware_release, dmi_override[DMI_EC_FIRMWARE_RELEASE], charp, 0440);
++core_param(dmi_product_name, dmi_override[DMI_PRODUCT_NAME], charp, 0440);
++core_param(dmi_product_version, dmi_override[DMI_PRODUCT_VERSION], charp, 0440);
++core_param(dmi_product_serial, dmi_override[DMI_PRODUCT_SERIAL], charp, 0440);
++core_param(dmi_product_uuid, dmi_override[DMI_PRODUCT_UUID], charp, 0440);
++core_param(dmi_product_sku, dmi_override[DMI_PRODUCT_SKU], charp, 0440);
++core_param(dmi_product_family, dmi_override[DMI_PRODUCT_FAMILY], charp, 0440);
++core_param(dmi_board_vendor, dmi_override[DMI_BOARD_VENDOR], charp, 0440);
++core_param(dmi_board_name, dmi_override[DMI_BOARD_NAME], charp, 0440);
++core_param(dmi_board_version, dmi_override[DMI_BOARD_VERSION], charp, 0440);
++core_param(dmi_board_serial, dmi_override[DMI_BOARD_SERIAL], charp, 0440);
++core_param(dmi_board_asset_tag, dmi_override[DMI_BOARD_ASSET_TAG], charp, 0440);
++core_param(dmi_chassis_vendor, dmi_override[DMI_CHASSIS_VENDOR], charp, 0440);
++core_param(dmi_chassis_type, dmi_override[DMI_CHASSIS_TYPE], charp, 0440);
++core_param(dmi_chassis_version, dmi_override[DMI_CHASSIS_VERSION], charp, 0440);
++core_param(dmi_chassis_serial, dmi_override[DMI_CHASSIS_SERIAL], charp, 0440);
++core_param(dmi_chassis_asset_tag, dmi_override[DMI_CHASSIS_ASSET_TAG], charp, 0440);
++
+ struct dmi_device_attribute{
+ 	struct device_attribute dev_attr;
+ 	int field;
+@@ -23,9 +48,15 @@ static ssize_t sys_dmi_field_show(struct device *dev,
+ 				  struct device_attribute *attr,
+ 				  char *page)
+ {
+-	int field = to_dmi_dev_attr(attr)->field;
++	const char* value;
+ 	ssize_t len;
+-	len = scnprintf(page, PAGE_SIZE, "%s\n", dmi_get_system_info(field));
++
++	int field = to_dmi_dev_attr(attr)->field;
++	if (dmi_override[field])
++		value = dmi_override[field];
++	else
++		value = dmi_get_system_info(field);
++	len = scnprintf(page, PAGE_SIZE, "%s\n", value);
+ 	page[len-1] = '\n';
+ 	return len;
+ }
 -- 
-2.34.1
+2.35.1
 
