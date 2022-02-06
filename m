@@ -2,137 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96130C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 13:59:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1F1FC4332F
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 13:59:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241719AbiBFN7T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Feb 2022 08:59:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52364 "EHLO
+        id S241919AbiBFN7q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 6 Feb 2022 08:59:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241785AbiBFN6v (ORCPT
+        with ESMTP id S229910AbiBFN7h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 08:58:51 -0500
-Received: from hostingweb31-40.netsons.net (hostingweb31-40.netsons.net [89.40.174.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87C00C03FED7;
-        Sun,  6 Feb 2022 05:58:44 -0800 (PST)
-Received: from [77.244.183.192] (port=63680 helo=melee.fritz.box)
-        by hostingweb31.netsons.net with esmtpa (Exim 4.94.2)
-        (envelope-from <luca@lucaceresoli.net>)
-        id 1nGgCy-00059v-LP; Sun, 06 Feb 2022 12:59:56 +0100
-From:   Luca Ceresoli <luca@lucaceresoli.net>
-To:     linux-media@vger.kernel.org, linux-i2c@vger.kernel.org
-Cc:     Luca Ceresoli <luca@lucaceresoli.net>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Wolfram Sang <wsa@the-dreams.de>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Kieran Bingham <kieran.bingham@ideasonboard.com>,
-        Jacopo Mondi <jacopo@jmondi.org>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Peter Rosin <peda@axentia.se>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>,
-        matti.vaittinen@fi.rohmeurope.com
-Subject: [RFCv3 0/6] Hi,
-Date:   Sun,  6 Feb 2022 12:59:33 +0100
-Message-Id: <20220206115939.3091265-1-luca@lucaceresoli.net>
-X-Mailer: git-send-email 2.25.1
+        Sun, 6 Feb 2022 08:59:37 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3FBDC0401E5
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 05:59:23 -0800 (PST)
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com [209.85.128.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id D821D40040
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 13:59:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1644155962;
+        bh=SJklMGC7T/EUcj3Xgr8zoxCnRlerqEqIREG1cOIIgnU=;
+        h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
+         MIME-Version;
+        b=YW11ea5uXVN444CaJ2jZT7W4kgqT1ZRyL2/QzBK50Z2ItGNbp+ceYLP6v8vYtNBK6
+         U2JdUAWg1IE3U0PzRMjfB6AMOibK7+VGFN28FFIBwGG4XvqwgkrWDxZgkHIIXSf/X+
+         A5QHfOxl6UR1iRdWZqi/iKhGRmqC5s9IlN+8Z34aXqq0D7gOoMb3PrOSANnNJt5+NP
+         4AbAshSsf5doUktYI6SbPEdqb77D3X9xEdFCzZJJQZnbdf0BmWtrjzTIRjKWyliGsd
+         5tW9Y4mVSJytwFXjWjtjWHQ+Q9ECgjeH5W3sDx1vMmk4Uvz556riByr72IBzooj84w
+         gj5tCzNuTKidA==
+Received: by mail-wm1-f69.google.com with SMTP id l16-20020a7bcf10000000b0034ffdd81e7aso4240534wmg.4
+        for <linux-kernel@vger.kernel.org>; Sun, 06 Feb 2022 05:59:22 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=SJklMGC7T/EUcj3Xgr8zoxCnRlerqEqIREG1cOIIgnU=;
+        b=n6gPhmkq9v5W1IKjr1QHWnH0k7LY9+Mvv1krN/aCj/PXiZoedgEMS4O6nDbl7qUTpO
+         hdG2IAVsDJKG43qshmfMs7CC7xx+NZcniAHzqfBquMAzKDRT2aC8akWagMpAV4U0IQQ0
+         OdkKQ10nwkwQ05LsGVUht8V+SPQw+2Wmw3Q3U3+HF34CpibvMJqgWlKiW+KTLnFf8MHK
+         SsTGXxXPot5/ZhGlSH8pKQMQtgxt5smz8N8TyF09/wlXzO66T7zLofjhPxSVrPdro0VF
+         oskcM9oCczY8wqXW8Jbtn0/faHN3cX7tqFMBiy2k4De9dpEqMdtGAzUFQ9ULRc4hkTWc
+         I4ig==
+X-Gm-Message-State: AOAM532Kf/jKN/ku8WTc+Z/v6Kb3SB316+P/eAAymBzombLDwb7iqPet
+        5VleVGUZgyHYWY4QefCLVNwhxGeWsdvg2AlKE0MS6Jd5M6maHFQZZuR008/VY8e21f6PVITZaF0
+        dYQUxwWDFyfAyIDIpaISXiL7tbUmvT7Jz9af9Q33Ojg==
+X-Received: by 2002:a05:600c:502b:: with SMTP id n43mr10478963wmr.67.1644155962524;
+        Sun, 06 Feb 2022 05:59:22 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzUW+CjZnoeRLOh3DLXJaGbc+rfq4URa9GWOKXq/P5jT8JUcEp9PlU4lZBC6zLP0TImsGzKjQ==
+X-Received: by 2002:a05:600c:502b:: with SMTP id n43mr10478958wmr.67.1644155962408;
+        Sun, 06 Feb 2022 05:59:22 -0800 (PST)
+Received: from localhost.localdomain (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id m14sm9018167wrp.4.2022.02.06.05.59.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 06 Feb 2022 05:59:21 -0800 (PST)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Lukasz Luba <lukasz.luba@arm.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v3 8/8] ARM: dts: exynos: remove deprecated unit address for LPDDR3 timings on Odroid
+Date:   Sun,  6 Feb 2022 14:59:18 +0100
+Message-Id: <20220206135918.211990-1-krzysztof.kozlowski@canonical.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220206135807.211767-1-krzysztof.kozlowski@canonical.com>
+References: <20220206135807.211767-1-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - hostingweb31.netsons.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - lucaceresoli.net
-X-Get-Message-Sender-Via: hostingweb31.netsons.net: authenticated_id: luca+lucaceresoli.net/only user confirmed/virtual account not confirmed
-X-Authenticated-Sender: hostingweb31.netsons.net: luca@lucaceresoli.net
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-this RFCv3, codename "FOSDEM Fries", of RFC patches to support the TI
-DS90UB9xx serializer/deserializer chipsets with I2C address translation.
+Passing maximum frequency of LPDDR3 memory timings as unit address was
+deprecated in favor of 'max-freq' property.
 
-I sent RFCv2 back in 2019 (!). After that I have applied most of the
-improvements proposed during code review, most notably device tree
-representation and proper use of kernel abstractions for clocks and GPIO. I
-have also done many improvements all over the drivers code.
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+---
+ arch/arm/boot/dts/exynos5422-odroid-core.dtsi | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
-However I still don't consider these drivers "ready", hence the RFC status.
-
-One reason is that, while the I2C ATR idea has been considered good by
-Wolfram, its implementation requires I2C core changes that have been tried
-but never made it to mainline. I think that discussion needs to be reopened
-and work has to be done on that side. Thus for the time being this code
-still has the alias pool: it is an interim solution until I2C core is
-ready.
-
-Also be aware that the only hardware where I sould test this code runs a
-v4.19 kernel. I cannot guarantee it will work perfectly on mainline.
-
-And since my hardware has only one camera connected to each deserializer I
-dropped support. However I wrote the code to be able to easily add support
-for 2 and 4 camera inputs as well as 2 CSI-2 outputs (DS90UB960).
-
-Finally, I dropped all attempts at supporting hotplug. The goals I had 2+
-years ago are not reasonably doable even with current kernels. Luckily all
-the users that I talked with are happy without hotplug. For this reason I
-simplified the serializer management in the DS90UB954 driver by keeping the
-serializer always instantiated.
-
-Even with the above limitations I felt I'd send this v3 anyway since
-several people have contacted me since v2 asking whether this
-implementation has made progress towards mainline. Some even improved on
-top of my code it their own forks. As I cannot afford to work on this topic
-in the near future, here is the latest and greatest version I can produce,
-with all the improvements I made so far.
-
-That's all, enjoy the code!
-
-References:
-
-[RFCv2] https://lore.kernel.org/lkml/20190723203723.11730-1-luca@lucaceresoli.net/
-[RFCv1] https://lore.kernel.org/linux-media/20190108223953.9969-1-luca@lucaceresoli.net/
-
-Best regards.
-Luca
-
-Luca Ceresoli (6):
-  i2c: core: let adapters be notified of client attach/detach
-  i2c: add I2C Address Translator (ATR) support
-  media: dt-bindings: add DS90UB953-Q1 video serializer
-  media: dt-bindings: add DS90UB954-Q1 video deserializer
-  media: ds90ub954: new driver for TI DS90UB954-Q1 video deserializer
-  media: ds90ub953: new driver for TI DS90UB953-Q1 video serializer
-
- .../bindings/media/i2c/ti,ds90ub953-q1.yaml   |   96 +
- .../bindings/media/i2c/ti,ds90ub954-q1.yaml   |  235 +++
- MAINTAINERS                                   |   22 +
- drivers/i2c/Kconfig                           |    9 +
- drivers/i2c/Makefile                          |    1 +
- drivers/i2c/i2c-atr.c                         |  557 ++++++
- drivers/i2c/i2c-core-base.c                   |   18 +-
- drivers/media/i2c/Kconfig                     |   22 +
- drivers/media/i2c/Makefile                    |    3 +
- drivers/media/i2c/ds90ub953.c                 |  560 ++++++
- drivers/media/i2c/ds90ub954.c                 | 1648 +++++++++++++++++
- include/dt-bindings/media/ds90ub953.h         |   16 +
- include/linux/i2c-atr.h                       |   82 +
- include/linux/i2c.h                           |   16 +
- 14 files changed, 3284 insertions(+), 1 deletion(-)
- create mode 100644 Documentation/devicetree/bindings/media/i2c/ti,ds90ub953-q1.yaml
- create mode 100644 Documentation/devicetree/bindings/media/i2c/ti,ds90ub954-q1.yaml
- create mode 100644 drivers/i2c/i2c-atr.c
- create mode 100644 drivers/media/i2c/ds90ub953.c
- create mode 100644 drivers/media/i2c/ds90ub954.c
- create mode 100644 include/dt-bindings/media/ds90ub953.h
- create mode 100644 include/linux/i2c-atr.h
-
+diff --git a/arch/arm/boot/dts/exynos5422-odroid-core.dtsi b/arch/arm/boot/dts/exynos5422-odroid-core.dtsi
+index 2f65dcf6ba73..35818c4cd852 100644
+--- a/arch/arm/boot/dts/exynos5422-odroid-core.dtsi
++++ b/arch/arm/boot/dts/exynos5422-odroid-core.dtsi
+@@ -333,8 +333,6 @@ samsung_K3QF2F20DB: lpddr3 {
+ 		compatible	= "samsung,K3QF2F20DB", "jedec,lpddr3";
+ 		density		= <16384>;
+ 		io-width	= <32>;
+-		#address-cells	= <1>;
+-		#size-cells	= <0>;
+ 
+ 		tRFC-min-tck		= <17>;
+ 		tRRD-min-tck		= <2>;
+@@ -358,10 +356,9 @@ samsung_K3QF2F20DB: lpddr3 {
+ 		tCKESR-min-tck		= <2>;
+ 		tMRD-min-tck		= <5>;
+ 
+-		timings_samsung_K3QF2F20DB_800mhz: timings@800000000 {
++		timings_samsung_K3QF2F20DB_800mhz: timings {
+ 			compatible	= "jedec,lpddr3-timings";
+-			/* workaround: 'reg' shows max-freq */
+-			reg		= <800000000>;
++			max-freq	= <800000000>;
+ 			min-freq	= <100000000>;
+ 			tRFC		= <65000>;
+ 			tRRD		= <6000>;
 -- 
-2.25.1
+2.32.0
 
