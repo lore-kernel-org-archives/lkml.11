@@ -2,104 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 725A4C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 11:36:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B507BC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 11:52:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234403AbiBFLgq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Feb 2022 06:36:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36326 "EHLO
+        id S234509AbiBFLw4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 6 Feb 2022 06:52:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231858AbiBFLgp (ORCPT
+        with ESMTP id S232442AbiBFLtN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 06:36:45 -0500
-X-Greylist: delayed 137 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 03:36:44 PST
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EF26C06173B
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 03:36:44 -0800 (PST)
+        Sun, 6 Feb 2022 06:49:13 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF3D0C06173B;
+        Sun,  6 Feb 2022 03:49:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 281F4B80CF3;
-        Sun,  6 Feb 2022 11:36:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF723C340E9;
-        Sun,  6 Feb 2022 11:36:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CFF4760F6C;
+        Sun,  6 Feb 2022 11:49:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EE0EC340E9;
+        Sun,  6 Feb 2022 11:49:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644147402;
-        bh=9H1aLnXFwQuN26Qhe9WeLQmHk0RPxQNas6gi/cJ4cvE=;
+        s=k20201202; t=1644148151;
+        bh=GE5zisvutsw9w2qD1E89YL/IvhBKC7xdtqeCkuIuvTE=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=WFNwq7g/MC3JcrRVKkHTHc3M7QV27EshenrMOIK4i4n5hbszRyFhQIAGIKKgqlCfR
-         6dDXqzN2gHZ9KcjqqcWgywKC3JqKBBqzcUOYKP84A8aNPOL9SWULHb6wdTq1nBPfxo
-         vAiEFzqiLsGnFkIe1u21d6CpYFgHM29DWVLNHKt86a9M4y52M4n32dPbckLiZNA7XG
-         AJ4nfBKjpOACxmYdgV/C5VD+ecsLdoAW+3tiACuCMuln6xmIQnWY+Vu2xH0/Zh/iCH
-         7Q8Tu3pNJ+h0w1NTzIGy5ThVr8YlC7Z8I6M+FEC8ti+qRty2ZfFxQfefYTeFzZ5Plg
-         4ZB5OX/uwmbKQ==
+        b=TKM2BN93Bml0pC3w73cDNXtO3IOG5s4eQfMMUFJRY97h1mB5KS5W0EofRYF8YVbgp
+         x17EF9MxHJPsBLzd+MRnUj5KW3b49q91J7waIXOb6VzZaNixG8h64Q5CoPfcnGmY/S
+         JfKYFL+PgdClqvjbVPhZHWiFpMRvPT1BNDqjv/rNEKllmM3bu2tv6x3jUu0DYWnjEZ
+         ZqV5bCKiut8zMuXEG4uRlr9ZJS4hXplrvrgLe4Zx/zd6C2+L688bL/pX5bhLUx3CFf
+         tIpmSZYUibwtXHz8FnUQkVpDMlfUsbGXOOzAVcOHj5Zn6oFyoyz3gKWRz5AogeUu7S
+         3YKjS+P7lRc1Q==
 Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 18DB8404A6; Sun,  6 Feb 2022 08:36:40 -0300 (-03)
-Date:   Sun, 6 Feb 2022 08:36:40 -0300
+        id 734BC404A6; Sun,  6 Feb 2022 08:49:09 -0300 (-03)
+Date:   Sun, 6 Feb 2022 08:49:09 -0300
 From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Anshuman Khandual <anshuman.khandual@arm.com>,
-        linux-arm-kernel@lists.infradead.org, james.clark@arm.com,
+To:     Namhyung Kim <namhyung@kernel.org>
+Cc:     Masanari Iida <standby24x7@gmail.com>,
         Peter Zijlstra <peterz@infradead.org>,
         Ingo Molnar <mingo@redhat.com>,
         Mark Rutland <mark.rutland@arm.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] perf: tools: Add missing branch_sample_type
-Message-ID: <Yf+yyDF+PZaBtfzt@kernel.org>
-References: <1643799443-15109-1-git-send-email-anshuman.khandual@arm.com>
- <Yfq3kTb7E1cELF0L@krava>
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        linux-perf-users <linux-perf-users@vger.kernel.org>
+Subject: Re: [PATCH] perf bpf: Fix a typo in bpf_counter_cgroup.c
+Message-ID: <Yf+1tRRYT9W8qgqO@kernel.org>
+References: <20211225005558.503935-1-standby24x7@gmail.com>
+ <CAM9d7cj0dQvoio-T0yNZzo+AGGDxCFtRWuDxBunFEkipWtDxZA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Yfq3kTb7E1cELF0L@krava>
+In-Reply-To: <CAM9d7cj0dQvoio-T0yNZzo+AGGDxCFtRWuDxBunFEkipWtDxZA@mail.gmail.com>
 X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Wed, Feb 02, 2022 at 05:55:45PM +0100, Jiri Olsa escreveu:
-> On Wed, Feb 02, 2022 at 04:27:23PM +0530, Anshuman Khandual wrote:
-> > This updates branch sample type with missing PERF_SAMPLE_BRANCH_TYPE_SAVE.
-> > 
-> > Cc: Peter Zijlstra <peterz@infradead.org>
-> > Cc: Ingo Molnar <mingo@redhat.com>
-> > Cc: Arnaldo Carvalho de Melo <acme@kernel.org>
-> > Cc: Mark Rutland <mark.rutland@arm.com>
-> > Cc: linux-perf-users@vger.kernel.org
-> > Cc: linux-kernel@vger.kernel.org
-> > Suggested-by: James Clark <james.clark@arm.com>
-> > Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+Em Tue, Dec 28, 2021 at 10:25:08AM -0800, Namhyung Kim escreveu:
+> Hello,
 > 
-> Acked-by: Jiri Olsa <jolsa@redhat.com>
+> On Fri, Dec 24, 2021 at 4:57 PM Masanari Iida <standby24x7@gmail.com> wrote:
+> >
+> > This patch fixes a spelling typo in error message.
+> >
+> > Signed-off-by: Masanari Iida <standby24x7@gmail.com>
+> 
+> Acked-by: Namhyung Kim <namhyung@kernel.org>
+> 
+> Thanks,
+> Namhyung
 
 Thanks, applied.
 
 - Arnaldo
 
  
-> thanks,
-> jirka
 > 
 > > ---
-> >  tools/perf/util/perf_event_attr_fprintf.c | 2 +-
+> >  tools/perf/util/bpf_counter_cgroup.c | 2 +-
 > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/tools/perf/util/perf_event_attr_fprintf.c b/tools/perf/util/perf_event_attr_fprintf.c
-> > index 47b7531f51da..98af3fa4ea35 100644
-> > --- a/tools/perf/util/perf_event_attr_fprintf.c
-> > +++ b/tools/perf/util/perf_event_attr_fprintf.c
-> > @@ -52,7 +52,7 @@ static void __p_branch_sample_type(char *buf, size_t size, u64 value)
-> >  		bit_name(ABORT_TX), bit_name(IN_TX), bit_name(NO_TX),
-> >  		bit_name(COND), bit_name(CALL_STACK), bit_name(IND_JUMP),
-> >  		bit_name(CALL), bit_name(NO_FLAGS), bit_name(NO_CYCLES),
-> > -		bit_name(HW_INDEX),
-> > +		bit_name(TYPE_SAVE), bit_name(HW_INDEX),
-> >  		{ .name = NULL, }
-> >  	};
-> >  #undef bit_name
-> > -- 
-> > 2.20.1
-> > 
+> >
+> > diff --git a/tools/perf/util/bpf_counter_cgroup.c b/tools/perf/util/bpf_counter_cgroup.c
+> > index cbc6c2bca488..fea5f2ca03f6 100644
+> > --- a/tools/perf/util/bpf_counter_cgroup.c
+> > +++ b/tools/perf/util/bpf_counter_cgroup.c
+> > @@ -266,7 +266,7 @@ static int bperf_cgrp__read(struct evsel *evsel)
+> >                 idx = evsel->core.idx;
+> >                 err = bpf_map_lookup_elem(reading_map_fd, &idx, values);
+> >                 if (err) {
+> > -                       pr_err("bpf map lookup falied: idx=%u, event=%s, cgrp=%s\n",
+> > +                       pr_err("bpf map lookup failed: idx=%u, event=%s, cgrp=%s\n",
+> >                                idx, evsel__name(evsel), evsel->cgrp->name);
+> >                         goto out;
+> >                 }
+> > --
+> > 2.25.0
+> >
 
 -- 
 
