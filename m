@@ -2,125 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FD75C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 22:09:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 305AAC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 22:18:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345034AbiBFWJH (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Feb 2022 17:09:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32842 "EHLO
+        id S238023AbiBFWSi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 6 Feb 2022 17:18:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344706AbiBFWIt (ORCPT
+        with ESMTP id S229484AbiBFWSg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 17:08:49 -0500
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C556DC061348
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 14:08:48 -0800 (PST)
-Received: by mail-pl1-x633.google.com with SMTP id t9so7555790plg.13
-        for <linux-kernel@vger.kernel.org>; Sun, 06 Feb 2022 14:08:48 -0800 (PST)
+        Sun, 6 Feb 2022 17:18:36 -0500
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41AC4C06173B;
+        Sun,  6 Feb 2022 14:18:35 -0800 (PST)
+Received: by mail-ej1-x630.google.com with SMTP id ka4so36484104ejc.11;
+        Sun, 06 Feb 2022 14:18:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:in-reply-to:message-id:references
-         :mime-version;
-        bh=aFsW4oJYjKeOMHpCwLOrqYmCPgdn3u/aN+st8V1n1k0=;
-        b=Jo0cdlDv6uybOeKk7VmFcccPwrHxPCx063Hn0O/eWQL+Lm74kSuEzcyx6Hnn8K4jDj
-         kkfoIXVF3bITg/OQmP/RJqDdkcaYo0HH2donmBy4aOSQ8uQONkF6b8AQNTUbfzyRBygl
-         D6LEk9i56y1f4/hJC9zPSX8bsEjrLHhC9SLndqqAOs7xUM+fOGu/fTH2l12CFifXLKK7
-         mrAJdsfZfc2TsA2iBYQNAVO+kXpDg6Zk0NnnisG08fQ4pwgTLyZFuqjj+Be1UUd8EUTA
-         MTG8R/tjaJkQN4yrXwoK1oNMwwsvj7Ye13TrSrHvJDgIBHtEP8zV+KC228bK/LqTLHLq
-         btbQ==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ndvVG8PppU1q6zgmhfWtx/U0/AcHLfiB5ez8eWAuiM0=;
+        b=dO2ABgghuCjrlXVuQZAbM0LfcNTau2p74DbNzabG4isw0dsDj6671p6whvKKCJ8q8n
+         CDrvktw9YHONjrJOgFO/rlbCIFfKObaZclgyUKD+7rLnYXXg23uKaRF3LpQ4Q566cXLs
+         3+0asMVHcfw/FqjKGuyhakJDn9X9B9E7MJWwnHJri7HWjoH4WFUG99eeSns/FCv4/Xs8
+         E97JwjoHRmv+LBUU2bZ04Wzhto9ya+zzvXcsx3PPfMe/v9sO//DU4HgddHbcWwgx9DVp
+         6gFbXVHQqBRXy63rl2fYTFsIi3v6IesOOLiwA8fWazCoCewTPtrek7xO5LQXBvwh+iys
+         vyOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
-         :references:mime-version;
-        bh=aFsW4oJYjKeOMHpCwLOrqYmCPgdn3u/aN+st8V1n1k0=;
-        b=keJS0WNqNAnkzQXWUl1axLx3QeZud6pDtPseRYyzTyqDJwybp2POHgFOkzU/PIZpqG
-         SoXYQIOviIJH/FKW9mrV+i9qEWUHWIGmx/TNmH6zG8H5WhMrx0hUofbAAnY/xjHHlcK5
-         OwV7T905Or+uZcU0+QZroTO0FN+cHOmVjR7hRG9jmLLxIBbDQMsWw93KEjZkQFsuDXJK
-         DHumsoi3AD9iFRhm6YJjt1XHpXnj91yh92fWuhRo8YXHhWFDuE57PDixVpgKUsi9m8k6
-         FG4mpba5yHLHndUIH57Q/R2DDuaIIOORAoQFaVHFL8aKd/OSkbyBhk86Er5ZxV7Lo6aP
-         DPWA==
-X-Gm-Message-State: AOAM531ymChGCAwxYrDUzDZCbbPQH++oC82hm/aQJaYyK2A8WJZrGxg3
-        fJ8c68fR4JbUtTchnNpszTB15sLYjdo33g==
-X-Google-Smtp-Source: ABdhPJyPezlTdmbZLh2UjuPlM5QcVj8Q3m/Z+1MUjZLSlyhnXNwWB6QESyP0vCHlqrDH8V1tgs35eA==
-X-Received: by 2002:a17:902:760e:: with SMTP id k14mr13433737pll.11.1644185327962;
-        Sun, 06 Feb 2022 14:08:47 -0800 (PST)
-Received: from [2620:15c:29:204:dae1:9bee:7b85:4b01] ([2620:15c:29:204:dae1:9bee:7b85:4b01])
-        by smtp.gmail.com with ESMTPSA id j10sm9471267pfu.93.2022.02.06.14.08.47
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ndvVG8PppU1q6zgmhfWtx/U0/AcHLfiB5ez8eWAuiM0=;
+        b=5zPhnMXmrVXYWyHLupkx1I6+VxxBEr+KypdsctVE0MpJ1uFZb+JmXUa2/29QDWEVjb
+         hCzYlO9HzgAKR1VlLSRg2zYb9fPjR1Br5wCYyNx1HGDz67H8DA7g6MHauKzaOgtgC9LL
+         e+0AM4rLmZVuqjJuP9SvaKMxqv5vYH0EovDTTMZMO25V9JKRQnOQFIKZZMELU52b9O9r
+         T6i8CViPtnsJluXnEvDtW6GYBMGrFY5bg7X33yWksKaD28jpmZvOZur/Hzp8iwFiNn99
+         Mx3AlawEKlqFOKi9lvhKhv30Pja4OBMnJRU2hI1hMVt7aNqAIr77Stev/m+e3QgvVcpH
+         WPsA==
+X-Gm-Message-State: AOAM5329MqDrV85SEHpEFJzrnC2t0MQMd4+ChaNZ738KZvyH3hepJpSz
+        brqUEQlCvPgMqlfbnYuXH+I=
+X-Google-Smtp-Source: ABdhPJzCy2rjqU0nVTZ/5hl+kH3DHSL6ZpDb7tuD4vOQUhlPgvNBxKhDldCMOANq//76iElEujTj2Q==
+X-Received: by 2002:a17:907:6e16:: with SMTP id sd22mr7720582ejc.172.1644185913749;
+        Sun, 06 Feb 2022 14:18:33 -0800 (PST)
+Received: from localhost.localdomain ([2a02:ab88:368f:2080:5d6e:322:57b6:5f03])
+        by smtp.googlemail.com with ESMTPSA id a17sm2347289edt.92.2022.02.06.14.18.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Feb 2022 14:08:47 -0800 (PST)
-Date:   Sun, 6 Feb 2022 14:08:47 -0800 (PST)
-From:   David Rientjes <rientjes@google.com>
-To:     Mel Gorman <mgorman@suse.de>
-cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        Michal Hocko <mhocko@suse.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Rik van Riel <riel@surriel.com>,
-        Linux-MM <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] mm: vmscan: remove deadlock due to throttling failing
- to make progress
-In-Reply-To: <20220203100326.GD3301@suse.de>
-Message-ID: <ecbe4937-7750-325-c7fa-7df12f4c4554@google.com>
-References: <20220203100326.GD3301@suse.de>
+        Sun, 06 Feb 2022 14:18:33 -0800 (PST)
+From:   David Virag <virag.david003@gmail.com>
+Cc:     Sam Protsenko <semen.protsenko@linaro.org>,
+        phone-devel@vger.kernel.org,
+        David Virag <virag.david003@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v5 0/1] Initial Samsung Galaxy A8 (2018) support
+Date:   Mon,  7 Feb 2022 00:18:14 +0100
+Message-Id: <20220206231816.127650-1-virag.david003@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 3 Feb 2022, Mel Gorman wrote:
+Add basic initial support for the Samsung Galaxy A8 (2018) smartphone.
+This phone is also known as "jackpotlte" and under the model name
+"SM-A530F". In its current state this should work on most if not all
+Exynos7885 phones/devices released.
 
-> A soft lockup bug in kcompactd was reported in a private bugzilla with
-> the following visible in dmesg;
-> 
-> [15980.045209][   C33] watchdog: BUG: soft lockup - CPU#33 stuck for 26s! [kcompactd0:479]
-> [16008.044989][   C33] watchdog: BUG: soft lockup - CPU#33 stuck for 52s! [kcompactd0:479]
-> [16036.044768][   C33] watchdog: BUG: soft lockup - CPU#33 stuck for 78s! [kcompactd0:479]
-> [16064.044548][   C33] watchdog: BUG: soft lockup - CPU#33 stuck for 104s! [kcompactd0:479]
-> 
-> The machine had 256G of RAM with no swap and an earlier failed allocation
-> indicated that node 0 where kcompactd was run was potentially
-> unreclaimable;
-> 
-> Node 0 active_anon:29355112kB inactive_anon:2913528kB active_file:0kB
->   inactive_file:0kB unevictable:64kB isolated(anon):0kB isolated(file):0kB
->   mapped:8kB dirty:0kB writeback:0kB shmem:26780kB shmem_thp:
->   0kB shmem_pmdmapped: 0kB anon_thp: 23480320kB writeback_tmp:0kB
->   kernel_stack:2272kB pagetables:24500kB all_unreclaimable? yes
-> 
-> Vlastimil Babka investigated a crash dump and found that a task migrating pages
-> was trying to drain PCP lists;
-> 
-> PID: 52922  TASK: ffff969f820e5000  CPU: 19  COMMAND: "kworker/u128:3"
->  #0 [ffffaf4e4f4c3848] __schedule at ffffffffb840116d
->  #1 [ffffaf4e4f4c3908] schedule at ffffffffb8401e81
->  #2 [ffffaf4e4f4c3918] schedule_timeout at ffffffffb84066e8
->  #3 [ffffaf4e4f4c3990] wait_for_completion at ffffffffb8403072
->  #4 [ffffaf4e4f4c39d0] __flush_work at ffffffffb7ac3e4d
->  #5 [ffffaf4e4f4c3a48] __drain_all_pages at ffffffffb7cb707c
->  #6 [ffffaf4e4f4c3a80] __alloc_pages_slowpath.constprop.114 at ffffffffb7cbd9dd
->  #7 [ffffaf4e4f4c3b60] __alloc_pages at ffffffffb7cbe4f5
->  #8 [ffffaf4e4f4c3bc0] alloc_migration_target at ffffffffb7cf329c
->  #9 [ffffaf4e4f4c3bf0] migrate_pages at ffffffffb7cf6d15
->  10 [ffffaf4e4f4c3cb0] migrate_to_node at ffffffffb7cdb5aa
->  11 [ffffaf4e4f4c3da8] do_migrate_pages at ffffffffb7cdcf26
->  12 [ffffaf4e4f4c3e88] cpuset_migrate_mm_workfn at ffffffffb7b859d2
->  13 [ffffaf4e4f4c3e98] process_one_work at ffffffffb7ac45f3
->  14 [ffffaf4e4f4c3ed8] worker_thread at ffffffffb7ac47fd
->  15 [ffffaf4e4f4c3f10] kthread at ffffffffb7acbdc6
->  16 [ffffaf4e4f4c3f50] ret_from_fork at ffffffffb7a047e2
-> 
-> The root of the problem is that kcompact0 is not rescheduling on a CPU
-> while a task that has isolated a large number of the pages from the
-> LRU is waiting on kcompact0 to reschedule so the pages can be released.
-> While shrink_inactive_list() only loops once around too_many_isolated,
-> reclaim can continue without rescheduling if sc->skipped_deactivate ==
-> 1 which could happen if there was no file LRU and the inactive anon list
-> was not low.
-> 
-> Debugged-by: Vlastimil Babka <vbabka@suse.cz>
-> Signed-off-by: Mel Gorman <mgorman@suse.de>
+As of now, it supports I2C nodes (all disabled by default) and UART
+console with basic clock support in place.
 
-Acked-by: David Rientjes <rientjes@google.com>
+To access the UART console on the A8, there are two methods:
+  -You can open up the device and solder directly to some debug pins
+   close to the display connector.
+  -Through I2C you can set the S2MU004 MFD chip to multiplex the SoC's
+   UART lines to the d+ and d- on the USB Type-C port of the device.
+
+Note that UART works on 1.8 volts, so plugging in a normal USB cable
+while multiplexed to UART may fry the SoC.
+
+Everything was tested through UART by using a minimal driver that sets
+the S2MU004 to multiplex UART.
+
+The preferred way to boot this device is by using my Minimal S-Boot
+Wrapper [1] to work around some issues caused by the stock, and
+non-replacable Samsung S-Boot bootloader.
+
+Changes in v2:
+- Added R-b tags by Krzysztof Kozlowski
+- Moved dt-bindings patches to the beginning of the series
+- Fixed double : in 7885 CMU bindings
+- Fixed multiple double line breaks
+- Made Exynos850 and 7885 clock drivers share some code in a new patch
+- Lots of dts/dtsi fixes
+
+Changes in v3:
+- Fix SPDX comment style in clk-exynos-arm64.h
+- Fix typo in dts comment
+
+Changes in v4:
+- Fixed leading 0x in clock-controller nodes
+- Fixed missing headers in clock driver patches
+- "__SAMSUNG_CLK_ARM64_H" -> "__CLK_EXYNOS_ARM64_H" in
+  clk-exynos-arm64.h everywhere (only the comment at the end had the
+  latter by accident)
+- Added R-b tag by Krzysztof Kozlowski to pll1417x patch
+- Actually suffixed pin configuration node names with "-pins"
+- Seperated Cortex-A53 and Cortex-A73 PMU
+
+Changes in v5:
+- Only kept DTS patch as the rest have been merged.
+- Several fixes in DTS patch
+
+[1] https://github.com/VDavid003/minimal_sboot_wrapper
+
+David Virag (1):
+  arm64: dts: exynos: Add initial device tree support for Exynos7885 SoC
+
+ arch/arm64/boot/dts/exynos/Makefile           |   7 +-
+ .../boot/dts/exynos/exynos7885-jackpotlte.dts |  93 ++
+ .../boot/dts/exynos/exynos7885-pinctrl.dtsi   | 855 ++++++++++++++++++
+ arch/arm64/boot/dts/exynos/exynos7885.dtsi    | 440 +++++++++
+ 4 files changed, 1392 insertions(+), 3 deletions(-)
+ create mode 100644 arch/arm64/boot/dts/exynos/exynos7885-jackpotlte.dts
+ create mode 100644 arch/arm64/boot/dts/exynos/exynos7885-pinctrl.dtsi
+ create mode 100644 arch/arm64/boot/dts/exynos/exynos7885.dtsi
+
+-- 
+2.35.1
+
