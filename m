@@ -2,81 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80C8EC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 11:53:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30996C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 11:53:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234673AbiBFLxJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Feb 2022 06:53:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39918 "EHLO
+        id S234840AbiBFLxL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 6 Feb 2022 06:53:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235088AbiBFLvK (ORCPT
+        with ESMTP id S234957AbiBFLtb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 06:51:10 -0500
-X-Greylist: delayed 116 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 03:51:08 PST
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9F72C06173B;
-        Sun,  6 Feb 2022 03:51:08 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C4EB60B3B;
-        Sun,  6 Feb 2022 11:51:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8A4BC340E9;
-        Sun,  6 Feb 2022 11:51:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644148267;
-        bh=LgbUOAbjGglJ4FW76fzaOyzGTdrip6nwKqyf2FbyCtg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rClSM6SmtDb6zi3aDr6KM3B/BZ2zmCL3pdOecSVGja0/OIuL1tK0Sw/Thc4XZKzuU
-         cRn9GMAmQqv8zy1BiWeFzJolqZ9dI6zfSma7KMee4O3Y8ceVjg5hTzS5OmfPjQ95xr
-         kuAWu/P+bEU/Y/EOSl+72OtKp4dKaLCgab6Fm6ArXFCNtpwCuvA9GKRKs3ev+4dTFf
-         B3O74q7l0J0vBEQvnxE7LKCB5SCnlzIF5ZrW5oO6oa0bcWKBOX0UUhPvJOep2WAsHL
-         zYfgHB6unpUmCoSqAU97DcBCcaEJNI+MMXb8UMei9UJoJNGECEM3FSA+jZmfDjK5h6
-         sgJ2pYI+LguAA==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id E7CD4404A6; Sun,  6 Feb 2022 08:51:05 -0300 (-03)
-Date:   Sun, 6 Feb 2022 08:51:05 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     James Clark <james.clark@arm.com>
-Cc:     German Gomez <german.gomez@arm.com>, linux-kernel@vger.kernel.org,
-        linux-perf-users@vger.kernel.org,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>
-Subject: Re: [PATCH] perf tools: apply correct label to user/kernel symbols
- in branch mode
-Message-ID: <Yf+2KfqJUdcYlSD3@kernel.org>
-References: <20220126105927.3411216-1-german.gomez@arm.com>
- <7474e11b-6bd5-515d-0ebf-883d0656a359@arm.com>
+        Sun, 6 Feb 2022 06:49:31 -0500
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7181C06173B;
+        Sun,  6 Feb 2022 03:49:30 -0800 (PST)
+Received: by mail-lj1-x22f.google.com with SMTP id t7so15556792ljc.10;
+        Sun, 06 Feb 2022 03:49:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=qpsYzbivkkdveiz3jrhzknfAz9utFIWn4A3/RXZRA8o=;
+        b=Wz70FLvBmPiudg6xQ3qQ5TwSRbRrI2uPf3muo7NyUI1j3T5bCwGZ+ctGPPiho3Mxdy
+         xx5H6DfkjucGPMXRybkLYFncO7MehbZmifndkNzAzTfzO82crSRG2VX3ssbYIQfDHKEq
+         hLOaiVSl1saLS44xlt61IOvCxpgtis8G/GBvB4ZOp5IXsiF+sIy1wLWdzNimPiQ0xKH2
+         xVnW/K/sVIynr3gfyAgEXNoIABi/nvwzApnyTOWUHgKx0gMMGZbgrjSJ5o/r8PbBw4YH
+         nE7AOlPE+ZIc6Ls6qfFWgC5ei619VkAXA0Hrs7Fpm3yNmBa1N45cB9+T0DI/LBEgNP81
+         2VSQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=qpsYzbivkkdveiz3jrhzknfAz9utFIWn4A3/RXZRA8o=;
+        b=Agp3Q+wBNNJBTL5OMQ3rkOeXK96rDjo8kKBmbOxg15HrusDKqW4xh4OrryIci+jFXO
+         VJVo76rS2couJ4cRsI0WOutch/pVefPWQoJ45mHRO2jsZonhZCqOKl4FeKhEYII88z3m
+         qGSmF0h9sTAHZdU7Eh1YXZWcsBcVcwbaM1pcVVxImLx80rUulIwf8svpEoGYW+q8K6aK
+         i2spw+V2igeNee64uSGjwTPshvsbQu7JPE1BahS7RtQxSicQJUGZn9ywjcK2Zs0e1dva
+         tnY2CKXK0kZTNDmk/Q3eLAZjl5uu64YjCGv07W6Nd/F+r3XBkLlEPLV6luVvEXTUkvsN
+         8rbg==
+X-Gm-Message-State: AOAM533lu60N6O0lqHnm6VfUn825c+E6PfwhTGK/oX/DS0lxQKKBcuVp
+        61pNjcfW1XI8LQnDg0PD1MASC6SZqX4=
+X-Google-Smtp-Source: ABdhPJwr1tTWLq1co7NexfEvCSKv8xkLEqalEYHCyUO+KVi8LSZjgfEUwEldRF7bZPM0BYxjW+UM6A==
+X-Received: by 2002:a05:651c:50f:: with SMTP id o15mr5229913ljp.119.1644148169167;
+        Sun, 06 Feb 2022 03:49:29 -0800 (PST)
+Received: from [192.168.2.145] (109-252-138-165.dynamic.spd-mgts.ru. [109.252.138.165])
+        by smtp.googlemail.com with ESMTPSA id n16sm1075561lfq.113.2022.02.06.03.49.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 06 Feb 2022 03:49:28 -0800 (PST)
+Message-ID: <57486a1b-8667-6f51-977f-16343572925e@gmail.com>
+Date:   Sun, 6 Feb 2022 14:49:28 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7474e11b-6bd5-515d-0ebf-883d0656a359@arm.com>
-X-Url:  http://acmel.wordpress.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 4/5] dt-bindings: memory: lpddr3-timings: convert to
+ dtschema
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+References: <20220205120043.8337-1-krzysztof.kozlowski@canonical.com>
+ <20220205120043.8337-5-krzysztof.kozlowski@canonical.com>
+ <a204a4eb-6615-26db-facf-ad284c1732d7@gmail.com>
+ <a5bbf115-21a2-7d63-6744-72487b9e756a@canonical.com>
+From:   Dmitry Osipenko <digetx@gmail.com>
+In-Reply-To: <a5bbf115-21a2-7d63-6744-72487b9e756a@canonical.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Wed, Jan 26, 2022 at 11:27:16AM +0000, James Clark escreveu:
-> On 26/01/2022 10:59, German Gomez wrote:
-> > @@ -928,7 +928,7 @@ static int hist_entry__sym_to_snprintf(struct hist_entry *he, char *bf,
-> >  		struct addr_map_symbol *to = &he->branch_info->to;
-> >  
-> >  		return _hist_entry__sym_snprintf(&to->ms, to->al_addr,
-> > -						 he->level, bf, size, width);
-> > +						 to->al_level, bf, size, width);
-> >  	}
-> >  
-> >  	return repsep_snprintf(bf, size, "%-*.*s", width, width, "N/A");
-> > 
+06.02.2022 14:20, Krzysztof Kozlowski пишет:
+> On 05/02/2022 19:50, Dmitry Osipenko wrote:
+>> 05.02.2022 15:00, Krzysztof Kozlowski пишет:
+>>> +  reg:
+>>> +    maxItems: 1
+>>> +    description: |
+>>> +      Maximum DDR clock frequency for the speed-bin, in Hz.
+>>
+>> Why max-freq is specified as a register? At minimum this is inconsistent
+>> with the lpddr2 binding.
 > 
-> Looks good to me, I didn't see any other usages where it could be broken.
-> 
-> Reviewed-by: James Clark <james.clark@arm.com>
+> First of all, this is a conversion, so the bindings already specified
+> max-freq that way.
 
+The conversion part looks okay to me.
 
-Thanks, applied.
+> Second, I don't know. I think this was some Lukasz's workaround for
+> device node without unit address, but I don't see the reason now why it
+> was needed.
 
-- Arnaldo
+I see now that actually there is one exynos5422-odroid-core.dtsi that
+uses the 'reg' property.
 
+> We could unify it with DDR2 by deprecating 'reg' and introducing
+> 'max-freq', in separate commit. But you know, existing bindings are
+> already there...
+
+Will be great if you could add another patch to deprecate the 'reg'.
+This will prevent returning to this topic in the future if somebody will
+be adding lpddr3 timings, it also will make bindings to look consistent.
+
+Thank you!
