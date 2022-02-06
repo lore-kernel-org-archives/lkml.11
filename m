@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 214F5C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46CF5C433EF
 	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 08:20:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231220AbiBFIUt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Feb 2022 03:20:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41674 "EHLO
+        id S231266AbiBFIUw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 6 Feb 2022 03:20:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229644AbiBFIUp (ORCPT
+        with ESMTP id S231201AbiBFIUs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 03:20:45 -0500
+        Sun, 6 Feb 2022 03:20:48 -0500
 Received: from mail.andi.de1.cc (mail.andi.de1.cc [IPv6:2a01:238:4321:8900:456f:ecd6:43e:202c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15EA3C061A73;
-        Sun,  6 Feb 2022 00:20:45 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45719C043185;
+        Sun,  6 Feb 2022 00:20:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=kemnade.info; s=20180802; h=Content-Transfer-Encoding:MIME-Version:
-        References:In-Reply-To:Message-Id:Date:Subject:To:From:Sender:Reply-To:Cc:
-        Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=H+K0Mw+aNVES2mwMvkXQigdI4Z1BakCZfSJdbqJXbHk=; b=CTKDc/bBJVb0on6YJ2r18su6vX
-        oB7E9DXsZ72LdaPVMBMqqQnauWLOjmQDjiw4vGSYhEcAWs05AhCOhBHX8ZQ8oUI1HxXxp/R2WU48Q
-        bcrTj8t7lggqehOIckOFhO9EjAwPx1VlyY4cZLWZIZWNZCDyGwB7qjMVdxucDR1DiLR0=;
+        Message-Id:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=sJ7qWapDIULPUzlvOfkdyR8gpp70UZkOGBb/dECClOU=; b=BM2z0GWY6nd9+LRAz9HQWcpkJc
+        3mDdVyRQP3zqcHsRpHTElNFVxXbuDB1R95YqRuL+rWQj1DoitwUMe9rVtCU4/kXDYpH/SQvsByZ7Q
+        zSZE3bmbdRp4wlq0xt9ni28vcNTboMmF0LHIVap1BlJ1iwcIxbnt4VQp3m5DWPnMY1J4=;
 Received: from p200300ccff05f6001a3da2fffebfd33a.dip0.t-ipconnect.de ([2003:cc:ff05:f600:1a3d:a2ff:febf:d33a] helo=aktux)
         by mail.andi.de1.cc with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.89)
         (envelope-from <andreas@kemnade.info>)
-        id 1nGcTJ-0006V0-KG; Sun, 06 Feb 2022 09:00:33 +0100
+        id 1nGcTG-0006Uv-Na; Sun, 06 Feb 2022 09:00:30 +0100
 Received: from andi by aktux with local (Exim 4.94.2)
         (envelope-from <andreas@kemnade.info>)
-        id 1nGcTJ-003LEe-4H; Sun, 06 Feb 2022 09:00:33 +0100
+        id 1nGcTG-003LEZ-3I; Sun, 06 Feb 2022 09:00:30 +0100
 From:   Andreas Kemnade <andreas@kemnade.info>
 To:     p.zabel@pengutronix.de, airlied@linux.ie, daniel@ffwll.ch,
         robh+dt@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
@@ -42,201 +42,74 @@ To:     p.zabel@pengutronix.de, airlied@linux.ie, daniel@ffwll.ch,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         alistair@alistair23.me, samuel@sholland.org, josua.mayer@jm0.eu,
         letux-kernel@openphoenux.org
-Subject: [RFC PATCH 1/6] dt-bindings: display: imx: Add EPDC
-Date:   Sun,  6 Feb 2022 09:00:11 +0100
-Message-Id: <20220206080016.796556-2-andreas@kemnade.info>
+Subject: [RFC PATCH 0/6] drm: EPDC driver for i.MX6
+Date:   Sun,  6 Feb 2022 09:00:10 +0100
+Message-Id: <20220206080016.796556-1-andreas@kemnade.info>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220206080016.796556-1-andreas@kemnade.info>
-References: <20220206080016.796556-1-andreas@kemnade.info>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a binding for the Electrophoretic Display Controller found at least
-in the i.MX6.
-The timing subnode is directly here to avoid having display parameters
-spread all over the plate.
+Add a driver for the Electrophoretic Display Controller found in the
+i.MX6 SoCs.
 
-Supplies are organized the same way as in the fbdev driver in the
-NXP/Freescale kernel forks. The regulators used for that purpose,
-like the TPS65185, the SY7636A and MAX17135 have typically a single bit to
-start a bunch of regulators of higher or negative voltage with a
-well-defined timing. VCOM can be handled separately, but can also be
-incorporated into that single bit.
+In combination with a driver for an EPD PMIC (like the TPS65185 or the
+SY7636A), it works with the EPDC found in i.MX6SLL based devices and the
+EPDC found in i.MX6SL devices.
 
-Signed-off-by: Andreas Kemnade <andreas@kemnade.info>
----
- .../bindings/display/imx/fsl,mxc-epdc.yaml    | 159 ++++++++++++++++++
- 1 file changed, 159 insertions(+)
+Support for waveforms might be limited, there was no 4bit waveform found
+which works with the 6SLL but it works with the vendor waveforms of the
+Kobo Clara HD (6SLL), the Tolino Shine 2/3 (6SL).
+On the 6SL devices, also the epdc_E060SCM.fw works but not as brilliant
+as the vendor one.
+
+It does not involve the PXP yet. The NXP/Freescale kernel fork uses that
+for rotation and mysterious waveform handling. That is not planed to be
+upstreamed in the first step.
+
+Also it does not provide any special userspace API to fine-tune updates.
+That is also IMHO something for a second step.
+
+Andreas Kemnade (6):
+  dt-bindings: display: imx: Add EPDC
+  drm: Add skeleton for EPDC driver
+  drm: mxc-epdc: Add display and waveform initialisation
+  drm: mxc-epdc: Add update management
+  ARM: dts: imx6sll: add EPDC
+  arm: dts: imx6sl: Add EPDC
+
+ .../bindings/display/imx/fsl,mxc-epdc.yaml    |  159 +++
+ arch/arm/boot/dts/imx6sl.dtsi                 |    3 +
+ arch/arm/boot/dts/imx6sll.dtsi                |    9 +
+ drivers/gpu/drm/Kconfig                       |    2 +
+ drivers/gpu/drm/Makefile                      |    1 +
+ drivers/gpu/drm/mxc-epdc/Kconfig              |   15 +
+ drivers/gpu/drm/mxc-epdc/Makefile             |    5 +
+ drivers/gpu/drm/mxc-epdc/epdc_hw.c            |  497 +++++++
+ drivers/gpu/drm/mxc-epdc/epdc_hw.h            |    8 +
+ drivers/gpu/drm/mxc-epdc/epdc_regs.h          |  442 ++++++
+ drivers/gpu/drm/mxc-epdc/epdc_update.c        | 1210 +++++++++++++++++
+ drivers/gpu/drm/mxc-epdc/epdc_update.h        |    9 +
+ drivers/gpu/drm/mxc-epdc/epdc_waveform.c      |  189 +++
+ drivers/gpu/drm/mxc-epdc/epdc_waveform.h      |    7 +
+ drivers/gpu/drm/mxc-epdc/mxc_epdc.h           |  151 ++
+ drivers/gpu/drm/mxc-epdc/mxc_epdc_drv.c       |  373 +++++
+ 16 files changed, 3080 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/display/imx/fsl,mxc-epdc.yaml
+ create mode 100644 drivers/gpu/drm/mxc-epdc/Kconfig
+ create mode 100644 drivers/gpu/drm/mxc-epdc/Makefile
+ create mode 100644 drivers/gpu/drm/mxc-epdc/epdc_hw.c
+ create mode 100644 drivers/gpu/drm/mxc-epdc/epdc_hw.h
+ create mode 100644 drivers/gpu/drm/mxc-epdc/epdc_regs.h
+ create mode 100644 drivers/gpu/drm/mxc-epdc/epdc_update.c
+ create mode 100644 drivers/gpu/drm/mxc-epdc/epdc_update.h
+ create mode 100644 drivers/gpu/drm/mxc-epdc/epdc_waveform.c
+ create mode 100644 drivers/gpu/drm/mxc-epdc/epdc_waveform.h
+ create mode 100644 drivers/gpu/drm/mxc-epdc/mxc_epdc.h
+ create mode 100644 drivers/gpu/drm/mxc-epdc/mxc_epdc_drv.c
 
-diff --git a/Documentation/devicetree/bindings/display/imx/fsl,mxc-epdc.yaml b/Documentation/devicetree/bindings/display/imx/fsl,mxc-epdc.yaml
-new file mode 100644
-index 000000000000..7e0795cc3f70
---- /dev/null
-+++ b/Documentation/devicetree/bindings/display/imx/fsl,mxc-epdc.yaml
-@@ -0,0 +1,159 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/display/imx/fsl,mxc-epdc.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Freescale i.MX6 EPDC
-+
-+maintainers:
-+  - Andreas Kemnade <andreas@kemnade.info>
-+
-+description: |
-+  The EPDC is a controller for handling electronic paper displays found in
-+  i.MX6 SoCs.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - fsl,imx6sl-epdc
-+      - fsl,imx6sll-epdc
-+
-+  reg:
-+    maxItems: 1
-+
-+  clocks:
-+    items:
-+      - description: Bus clock
-+      - description: Pixel clock
-+
-+  clock-names:
-+    items:
-+      - const: axi
-+      - const: pix
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  vscan-holdoff:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    maxItems: 1
-+
-+  sdoed-width:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    maxItems: 1
-+
-+  sdoed-delay:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    maxItems: 1
-+
-+  sdoez-width:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    maxItems: 1
-+
-+  sdoez-delay:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    maxItems: 1
-+
-+  gdclk-hp-offs:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    maxItems: 1
-+
-+  gdsp-offs:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    maxItems: 1
-+
-+  gdoe-offs:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    maxItems: 1
-+
-+  gdclk-offs:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    maxItems: 1
-+
-+  num-ce:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    maxItems: 1
-+
-+  timing:
-+    $ref: /display/panel/panel-timing.yaml#
-+
-+  DISPLAY-supply:
-+    description:
-+      A couple of +/- voltages automatically powered on in a defintive order
-+
-+  VCOM-supply:
-+    description: compensation voltage
-+
-+  V3P3-supply:
-+    description: V3P3 supply
-+
-+  epd-thermal-zone:
-+    description:
-+      Zone to get temperature of the EPD from, practically ambient temperature.
-+
-+
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - clock-names
-+  - interrupts
-+  - vscan-holdoff
-+  - sdoed-width
-+  - sdoed-delay
-+  - sdoez-width
-+  - sdoez-delay
-+  - gdclk-hp-offs
-+  - gdsp-offs
-+  - gdoe-offs
-+  - gdclk-offs
-+  - num-ce
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/imx6sl-clock.h>
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+
-+    epdc: epdc@20f4000 {
-+        compatible = "fsl,imx6sl-epdc";
-+        reg = <0x020f4000 0x4000>;
-+        interrupts = <0 97 IRQ_TYPE_LEVEL_HIGH>;
-+        clocks = <&clks IMX6SL_CLK_EPDC_AXI>, <&clks IMX6SL_CLK_EPDC_PIX>;
-+        clock-names = "axi", "pix";
-+
-+        pinctrl-names = "default";
-+        pinctrl-0 = <&pinctrl_epdc0>;
-+        V3P3-supply = <&V3P3_reg>;
-+        VCOM-supply = <&VCOM_reg>;
-+        DISPLAY-supply = <&DISPLAY_reg>;
-+        epd-thermal-zone = "epd-thermal";
-+
-+        vscan-holdoff = <4>;
-+        sdoed-width = <10>;
-+        sdoed-delay = <20>;
-+        sdoez-width = <10>;
-+        sdoez-delay = <20>;
-+        gdclk-hp-offs = <562>;
-+        gdsp-offs = <662>;
-+        gdoe-offs = <0>;
-+        gdclk-offs = <225>;
-+        num-ce = <3>;
-+        status = "okay";
-+
-+        timing {
-+                clock-frequency = <80000000>;
-+                hactive = <1448>;
-+                hback-porch = <16>;
-+                hfront-porch = <102>;
-+                hsync-len = <28>;
-+                vactive = <1072>;
-+                vback-porch = <4>;
-+                vfront-porch = <4>;
-+                vsync-len = <2>;
-+        };
-+    };
-+...
 -- 
 2.30.2
 
