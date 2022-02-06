@@ -2,102 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3878C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 11:54:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CA27C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  6 Feb 2022 11:55:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234807AbiBFLyA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Feb 2022 06:54:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41614 "EHLO
+        id S234829AbiBFLzW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 6 Feb 2022 06:55:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230450AbiBFLx6 (ORCPT
+        with ESMTP id S230450AbiBFLzV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 06:53:58 -0500
-X-Greylist: delayed 338 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 03:53:57 PST
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 662EEC043182;
-        Sun,  6 Feb 2022 03:53:57 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Sun, 6 Feb 2022 06:55:21 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C00EBC06173B;
+        Sun,  6 Feb 2022 03:55:20 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id E50981F388;
-        Sun,  6 Feb 2022 11:48:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1644148097; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=oZ8Xjdv7kG8lFnid5+17QkbF2b+qiSsMNHXutjmdMEg=;
-        b=tiUwKLqNr+bIivolGbXjhA3SSj5fUtJEk3SvW7u25jvrDHHQy6eppBiVQ2bDYwqlfAfoNn
-        +haXTf7RP9uBRC8nteS9lr/dCeS0oMmuSfatIght2otsecrKEKWC5CsxopSrFK+IFIm2tA
-        xKXcd6rTD0uFR2RP+37gcHCs0lOIWeo=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1644148097;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=oZ8Xjdv7kG8lFnid5+17QkbF2b+qiSsMNHXutjmdMEg=;
-        b=qihg8HdpLQQ5h7f+8TqvjbwKVVoD2NjiqqB5DN59UZwccj5UIM/hJ4fR82WAMJkZKIMXlj
-        3viFNOKYe9WuMVAw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id CDB1613A47;
-        Sun,  6 Feb 2022 11:48:17 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id Ql//MIG1/2ELKgAAMHmgww
-        (envelope-from <bp@suse.de>); Sun, 06 Feb 2022 11:48:17 +0000
-Date:   Sun, 6 Feb 2022 12:48:10 +0100
-From:   Borislav Petkov <bp@suse.de>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-edac <linux-edac@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>
-Subject: [GIT PULL] EDAC fixes for v5.17-rc3
-Message-ID: <Yf+1ehVTFHkihPfd@zn.tnic>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 56C9160F73;
+        Sun,  6 Feb 2022 11:55:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A88BC340E9;
+        Sun,  6 Feb 2022 11:55:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644148519;
+        bh=6UwOzeb2qQfqFj/MwgP86Azy8PMxef6xzEjION0SYXs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Xdnr9vbrzT4tRsxUt6tx+1/+4jticjls/ATNn7bdmBdh7CGNCz0H8IU1yTZieGiZf
+         qfNgq7ddvBxdrpkOYdaF4uYQ9VRKjuQ0d/6wVHnZnhNOtxnqXq52LOmoOrSZIkMmSN
+         tGbhHtZdY4HhBeqtVUsVqDK91wPv8kdFiBwSk0VMCbwkkh40IUfJ1259jl3N2GZUqT
+         4NQe9QopiwQIBFZ6BVcNpsQsffEecR/QHuH+9XSpBg7GT09dHeYLTjyX34e0Kk6ISa
+         FTk/sXLWVXE3OY6NZI0fFT4fn0VLkJdGAPD0XrljPDrOcE6smTQk31yBXF2+lQzpbE
+         h9cYUmzPdirxA==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id BAEB0404A6; Sun,  6 Feb 2022 08:55:17 -0300 (-03)
+Date:   Sun, 6 Feb 2022 08:55:17 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Andi Kleen <ak@linux.intel.com>
+Cc:     Ian Rogers <irogers@google.com>, vineet.singh@intel.com,
+        perry.taylor@intel.com, caleb.biggers@intel.com,
+        asaf.yaffe@intel.com, kshipra.bopardikar@intel.com,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        James Clark <james.clark@arm.com>,
+        John Garry <john.garry@huawei.com>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        Stephane Eranian <eranian@google.com>
+Subject: Re: [PATCH] perf stat: Fix display of grouped aliased events.
+Message-ID: <Yf+3JfzBsH0Z/aNY@kernel.org>
+References: <20220205010941.1065469-1-irogers@google.com>
+ <e3bf95b1-bb9a-91be-1816-59c96c4e2024@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <e3bf95b1-bb9a-91be-1816-59c96c4e2024@linux.intel.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+Em Fri, Feb 04, 2022 at 05:48:20PM -0800, Andi Kleen escreveu:
+> 
+> On 2/4/2022 5:09 PM, Ian Rogers wrote:
+> > An event may have a number of uncore aliases that when added to
+> > the evlist are consecutive. If there are multiple uncore events
+> > in a group then parse_events__set_leader_for_uncore_aliase will
+> > reorder the evlist so that events on the same PMU are
+> > adjacent. collect_all_aliases assumes that aliases are in blocks
+> > so that only the first counter is printed and all others are
+> > marked merged. The reordering for groups breaks the assumption
+> > and so all counts are printed. This change removes the assumption
+> > from collect_all_aliases that the events are in blocks and
+> > instead processes the entire evlist.
+> 
+> Looks good to me.
+> 
+> Reviewed-by: Andi Kleen <ak@linux.intel.com>
 
-please pull two urgent EDAC fixes for 5.17.
+Thanks, applied.
 
-Thx.
+- Arnaldo
 
----
-
-The following changes since commit e783362eb54cd99b2cac8b3a9aeac942e6f6ac07:
-
-  Linux 5.17-rc1 (2022-01-23 10:12:53 +0200)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/ras/ras.git tags/edac_urgent_for_v5.17_rc3
-
-for you to fetch changes up to dfd0dfb9a7cc04acf93435b440dd34c2ca7b4424:
-
-  EDAC/xgene: Fix deferred probing (2022-01-30 01:06:35 +0100)
-
-----------------------------------------------------------------
-- Fix altera and xgene EDAC drivers to propagate the correct error code
-from platform_get_irq() so that deferred probing still works
-
-----------------------------------------------------------------
-Sergey Shtylyov (2):
-      EDAC/altera: Fix deferred probing
-      EDAC/xgene: Fix deferred probing
-
- drivers/edac/altera_edac.c | 2 +-
- drivers/edac/xgene_edac.c  | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
--- 
-Regards/Gruss,
-    Boris.
-
-SUSE Software Solutions Germany GmbH, GF: Ivo Totev, HRB 36809, AG Nürnberg
