@@ -2,236 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49317C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CC52C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:15:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229690AbiBGQOd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:14:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49976 "EHLO
+        id S1377342AbiBGQOj (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 11:14:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239346AbiBGQJW (ORCPT
+        with ESMTP id S1383302AbiBGQAc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 11:09:22 -0500
-X-Greylist: delayed 1076 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 08:09:21 PST
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58757C0401D2;
-        Mon,  7 Feb 2022 08:09:21 -0800 (PST)
-Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 95CCC340;
-        Mon,  7 Feb 2022 17:09:19 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1644250159;
-        bh=4a6oyH40Csn50dUhVk1KKkhWqQ+bT0AQuD8nF5SL40Y=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=BjnDuSwJb7zSiLkq8jUPy87i86c/x8YPcQgITE7qtB6aMKmQkRGRJBy/mXUrT5wiS
-         UFKmU9sVo1jhp1siSPFBNdhP5/+HTcmDw/ZJG72onGz6ggZMRoSmaOzYuUutBa/+5+
-         TQPkXjgQ4skbl4oTC1mFEoZ3pUrC0BOs7fpCsuW8=
-Date:   Mon, 7 Feb 2022 18:09:17 +0200
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Cc:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-clk@vger.kernel.org, linux-staging@lists.linux.dev,
-        Yong Deng <yong.deng@magewell.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Hans Verkuil <hans.verkuil@cisco.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Helen Koike <helen.koike@collabora.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v2 08/66] dt-bindings: media: Add Allwinner A31 MIPI
- CSI-2 bindings documentation
-Message-ID: <YgFELcVluEqr9LAH@pendragon.ideasonboard.com>
-References: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com>
- <20220205185429.2278860-9-paul.kocialkowski@bootlin.com>
+        Mon, 7 Feb 2022 11:00:32 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CC834C0401CC
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:00:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644249630;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=uQ1uiq30ca/wtmdEmBkE1pSZd4AYgwDXu3pWHPnS4Sg=;
+        b=DKthNpp6ft1+OIFATQB7lU0WK3Ozn7127Q9Lq2dw+7FBOMODuyN1tvKpXl6boZh7AH8BRC
+        2nX5CH+shdmUjJUW14J2fbNSeNFwUUy4NdnGJb8+xns/o5OIgygxHll6IbYMmYqUZiZIOm
+        M3OmBN4+7sT7LkjCA9bOFqVIK9iFR0Q=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-669-go2mTwCUMJOBBfV8StMKZA-1; Mon, 07 Feb 2022 11:00:27 -0500
+X-MC-Unique: go2mTwCUMJOBBfV8StMKZA-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6588C8144E1;
+        Mon,  7 Feb 2022 16:00:12 +0000 (UTC)
+Received: from localhost.localdomain (unknown [10.40.192.15])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0FC027DE38;
+        Mon,  7 Feb 2022 15:59:49 +0000 (UTC)
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     kvm@vger.kernel.org
+Cc:     Tony Luck <tony.luck@intel.com>,
+        "Chang S. Bae" <chang.seok.bae@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        linux-kernel@vger.kernel.org,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        intel-gvt-dev@lists.freedesktop.org,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Sean Christopherson <seanjc@google.com>,
+        David Airlie <airlied@linux.ie>,
+        Zhi Wang <zhi.a.wang@intel.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Jim Mattson <jmattson@google.com>, x86@kernel.org,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Borislav Petkov <bp@alien8.de>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>
+Subject: [PATCH RESEND 25/30] KVM: x86: nSVM: support PAUSE filter threshold and count when cpu_pm=on
+Date:   Mon,  7 Feb 2022 17:54:42 +0200
+Message-Id: <20220207155447.840194-26-mlevitsk@redhat.com>
+In-Reply-To: <20220207155447.840194-1-mlevitsk@redhat.com>
+References: <20220207155447.840194-1-mlevitsk@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220205185429.2278860-9-paul.kocialkowski@bootlin.com>
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Paul,
+Allow L1 to use these settings if L0 disables PAUSE interception
+(AKA cpu_pm=on)
 
-Thank you for the patch.
+Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
+---
+ arch/x86/kvm/svm/nested.c |  6 ++++++
+ arch/x86/kvm/svm/svm.c    | 17 +++++++++++++++++
+ arch/x86/kvm/svm/svm.h    |  2 ++
+ 3 files changed, 25 insertions(+)
 
-On Sat, Feb 05, 2022 at 07:53:31PM +0100, Paul Kocialkowski wrote:
-> This introduces YAML bindings documentation for the Allwinner A31 MIPI
-> CSI-2 controller.
-> 
-> Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-> Reviewed-by: Maxime Ripard <mripard@kernel.org>
-> Reviewed-by: Rob Herring <robh@kernel.org>
-> ---
->  .../media/allwinner,sun6i-a31-mipi-csi2.yaml  | 142 ++++++++++++++++++
->  1 file changed, 142 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/media/allwinner,sun6i-a31-mipi-csi2.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-mipi-csi2.yaml b/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-mipi-csi2.yaml
-> new file mode 100644
-> index 000000000000..09207904b6db
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-mipi-csi2.yaml
-> @@ -0,0 +1,142 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/media/allwinner,sun6i-a31-mipi-csi2.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Allwinner A31 MIPI CSI-2 Device Tree Bindings
-> +
-> +maintainers:
-> +  - Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-> +
-> +properties:
-> +  compatible:
-> +    oneOf:
-> +      - const: allwinner,sun6i-a31-mipi-csi2
-> +      - items:
-> +          - const: allwinner,sun8i-v3s-mipi-csi2
-> +          - const: allwinner,sun6i-a31-mipi-csi2
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    items:
-> +      - description: Bus Clock
-> +      - description: Module Clock
-> +
-> +  clock-names:
-> +    items:
-> +      - const: bus
-> +      - const: mod
-> +
-> +  phys:
-> +    maxItems: 1
-> +    description: MIPI D-PHY
-> +
-> +  phy-names:
-> +    items:
-> +      - const: dphy
-> +
-> +  resets:
-> +    maxItems: 1
-> +
-> +  ports:
-> +    $ref: /schemas/graph.yaml#/properties/ports
-> +
-> +    properties:
-> +      port@0:
-> +        $ref: /schemas/graph.yaml#/$defs/port-base
-> +        description: Input port, connect to a MIPI CSI-2 sensor
-> +
-> +        properties:
-> +          reg:
-> +            const: 0
-> +
-> +          endpoint:
-> +            $ref: video-interfaces.yaml#
-> +            unevaluatedProperties: false
-> +
-> +            properties:
-> +              data-lanes:
-> +                minItems: 1
-> +                maxItems: 4
-> +
-> +            required:
-> +              - data-lanes
-> +
-> +        additionalProperties: false
-> +
-> +      port@1:
-> +        $ref: /schemas/graph.yaml#/$defs/port-base
-> +        description: Output port, connect to a CSI controller
-> +
-> +        properties:
-> +          reg:
-> +            const: 1
-> +
-> +          endpoint:
-> +            $ref: video-interfaces.yaml#
-> +            unevaluatedProperties: false
-> +
-> +        additionalProperties: false
-
-The two ports should be required.
-
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +  - clocks
-> +  - clock-names
-> +  - phys
-> +  - phy-names
-
-And ports should be required here.
-
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-
-> +  - resets
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +    #include <dt-bindings/clock/sun8i-v3s-ccu.h>
-> +    #include <dt-bindings/reset/sun8i-v3s-ccu.h>
-> +
-> +    mipi_csi2: csi@1cb1000 {
-> +        compatible = "allwinner,sun8i-v3s-mipi-csi2",
-> +                     "allwinner,sun6i-a31-mipi-csi2";
-> +        reg = <0x01cb1000 0x1000>;
-> +        interrupts = <GIC_SPI 90 IRQ_TYPE_LEVEL_HIGH>;
-> +        clocks = <&ccu CLK_BUS_CSI>,
-> +                 <&ccu CLK_CSI1_SCLK>;
-> +        clock-names = "bus", "mod";
-> +        resets = <&ccu RST_BUS_CSI>;
-> +
-> +        phys = <&dphy>;
-> +        phy-names = "dphy";
-> +
-> +        ports {
-> +            #address-cells = <1>;
-> +            #size-cells = <0>;
-> +
-> +            mipi_csi2_in: port@0 {
-> +                reg = <0>;
-> +
-> +                mipi_csi2_in_ov5648: endpoint {
-> +                    data-lanes = <1 2 3 4>;
-> +
-> +                    remote-endpoint = <&ov5648_out_mipi_csi2>;
-> +                };
-> +            };
-> +
-> +            mipi_csi2_out: port@1 {
-> +                reg = <1>;
-> +
-> +                mipi_csi2_out_csi0: endpoint {
-> +                    remote-endpoint = <&csi0_in_mipi_csi2>;
-> +                };
-> +            };
-> +        };
-> +    };
-> +
-> +...
-
+diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
+index bdcb23c76e89e..601d38ae05cc6 100644
+--- a/arch/x86/kvm/svm/nested.c
++++ b/arch/x86/kvm/svm/nested.c
+@@ -630,6 +630,12 @@ static void nested_vmcb02_prepare_control(struct vcpu_svm *svm)
+ 	if (!nested_vmcb_needs_vls_intercept(svm))
+ 		svm->vmcb->control.virt_ext |= VIRTUAL_VMLOAD_VMSAVE_ENABLE_MASK;
+ 
++	if (svm->pause_filter_enabled)
++		svm->vmcb->control.pause_filter_count = svm->nested.ctl.pause_filter_count;
++
++	if (svm->pause_threshold_enabled)
++		svm->vmcb->control.pause_filter_thresh = svm->nested.ctl.pause_filter_thresh;
++
+ 	nested_svm_transition_tlb_flush(vcpu);
+ 
+ 	/* Enter Guest-Mode */
+diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+index 0f068da098d9f..e49043807ec44 100644
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -3997,6 +3997,17 @@ static void svm_vcpu_after_set_cpuid(struct kvm_vcpu *vcpu)
+ 
+ 	svm->v_vmload_vmsave_enabled = vls && guest_cpuid_has(vcpu, X86_FEATURE_V_VMSAVE_VMLOAD);
+ 
++	if (kvm_pause_in_guest(vcpu->kvm)) {
++		svm->pause_filter_enabled = pause_filter_count > 0 &&
++					    guest_cpuid_has(vcpu, X86_FEATURE_PAUSEFILTER);
++
++		svm->pause_threshold_enabled = pause_filter_thresh > 0 &&
++					    guest_cpuid_has(vcpu, X86_FEATURE_PFTHRESHOLD);
++	} else {
++		svm->pause_filter_enabled = false;
++		svm->pause_threshold_enabled = false;
++	}
++
+ 	svm_recalc_instruction_intercepts(vcpu, svm);
+ 
+ 	/* For sev guests, the memory encryption bit is not reserved in CR3.  */
+@@ -4806,6 +4817,12 @@ static __init void svm_set_cpu_caps(void)
+ 		if (vls)
+ 			kvm_cpu_cap_set(X86_FEATURE_V_VMSAVE_VMLOAD);
+ 
++		if (pause_filter_count)
++			kvm_cpu_cap_set(X86_FEATURE_PAUSEFILTER);
++
++		if (pause_filter_thresh)
++			kvm_cpu_cap_set(X86_FEATURE_PFTHRESHOLD);
++
+ 		/* Nested VM can receive #VMEXIT instead of triggering #GP */
+ 		kvm_cpu_cap_set(X86_FEATURE_SVME_ADDR_CHK);
+ 	}
+diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
+index e8ffd458a5575..297ec57f9941c 100644
+--- a/arch/x86/kvm/svm/svm.h
++++ b/arch/x86/kvm/svm/svm.h
+@@ -222,6 +222,8 @@ struct vcpu_svm {
+ 	bool tsc_scaling_enabled          : 1;
+ 	bool lbrv_enabled                 : 1;
+ 	bool v_vmload_vmsave_enabled      : 1;
++	bool pause_filter_enabled         : 1;
++	bool pause_threshold_enabled      : 1;
+ 
+ 	u32 ldr_reg;
+ 	u32 dfr_reg;
 -- 
-Regards,
+2.26.3
 
-Laurent Pinchart
