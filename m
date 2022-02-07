@@ -2,604 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DED0C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E55B7C4167D
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 19:46:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240233AbiBGTpD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 14:45:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59294 "EHLO
+        id S240717AbiBGTpN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 14:45:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240732AbiBGTnd (ORCPT
+        with ESMTP id S240362AbiBGTna (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 14:43:33 -0500
+        Mon, 7 Feb 2022 14:43:30 -0500
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4176AC0401E5
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 11:43:32 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81463C0401E0;
+        Mon,  7 Feb 2022 11:43:28 -0800 (PST)
 From:   John Ogness <john.ogness@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1644263007;
+        s=2020; t=1644263005;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=n/oB8NBslNwIIRp03p17Mla9dUOK/1FizalS0qQxwJI=;
-        b=MmiiERkSw8mNyuss88JakLupxoYGjq8GZsj5XIRgWr4EzD/koyujldxld4wjItkkFd90/g
-        sHu4AUbHnO0Z0lZ4KPjK0x3I6yEGNEovHRRIuyIvmlPw+8NV1u2LYFZOhUBWxk48QAMe9H
-        qsjgQL/cLkeVnXDtLdZPdri7hJ+cwSgOCz1gNdr1dWtmHG6hbOd4Mibjyy+kwS90Ezy8vU
-        ikcPNvNLk00ugPIgUXN+0jROjJ4zwDcEtmWE7J2YhPKwqHerrIZCnUw5+3D0imLaoyWbgW
-        yVzF1wf4qCyifwWXAXMbD4Xt+iso9E83K2gaaeK+KbHDDgoHKy4pA+ZIZPBVNA==
+         content-transfer-encoding:content-transfer-encoding;
+        bh=MdxDRNNBc3a7TPDYRAGdfkzwCVJZGysq69JGSiTARZo=;
+        b=KZEy10hDutMfaU7BOQdyVVOPIBOS4KP6ewAyK4hKFQNiuO/SRjJehVsWlroqzy26l9Muso
+        B7BHJLcCPExCZ1f2hpqX79R3YV0v50wgdf+FuV7bQt24SZJaHYTcIU3jghXaWvD40sjAFJ
+        RwrhOFKAO9siMogdq7KTdebml/AeKNACYhNlx+oBI+CNBRUu491sSOxz9/rceBUn7XE0Cz
+        a9OorMkDOcXoI8zeyE9NNmrFwLy2qp+MdHnVSbSPRGvFPzZ2niy8e23MzmIHL9CzA2aJqt
+        x6k8TXhJ2veAGeTtJLQV/v/cVPUt4W4imq0xwijbiOhEC7Sq0PEg/4fCvbIG2Q==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1644263007;
+        s=2020e; t=1644263005;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=n/oB8NBslNwIIRp03p17Mla9dUOK/1FizalS0qQxwJI=;
-        b=bDpr6WwhPQ0lrIsRTyB2NkTrKFPaG2btd8IeQ3sj49u8KwMHOAFORQe9ENZvlZNOiVObG7
-        sJsGel5BMKWL45Aw==
+         content-transfer-encoding:content-transfer-encoding;
+        bh=MdxDRNNBc3a7TPDYRAGdfkzwCVJZGysq69JGSiTARZo=;
+        b=aea7eqXhsYSTt2SiFzTd8KOQ9QlKly9EhstysiNyYY7FxfrEpEg55FSdRKEg1ZAHNCaOsh
+        Ep3r1Hcy/lnMRLBw==
 To:     Petr Mladek <pmladek@suse.com>
 Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
         Steven Rostedt <rostedt@goodmis.org>,
         Thomas Gleixner <tglx@linutronix.de>,
         linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH printk v1 06/13] printk: refactor and rework printing logic
-Date:   Mon,  7 Feb 2022 20:49:16 +0106
-Message-Id: <20220207194323.273637-7-john.ogness@linutronix.de>
-In-Reply-To: <20220207194323.273637-1-john.ogness@linutronix.de>
-References: <20220207194323.273637-1-john.ogness@linutronix.de>
+        Andrew Morton <akpm@linux-foundation.org>,
+        Marco Elver <elver@google.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Alexander Potapenko <glider@google.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Corey Minyard <cminyard@mvista.com>,
+        Kees Cook <keescook@chromium.org>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Josef Bacik <josef@toxicpanda.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Shawn Guo <shawn.guo@linaro.org>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Wang Qing <wangqing@vivo.com>, Tejun Heo <tj@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>, rcu@vger.kernel.org,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        David Sterba <dsterba@suse.com>,
+        =?UTF-8?q?Samuel=20Iglesias=20Gons=C3=A1lvez?= 
+        <siglesias@igalia.com>, Bhaskar Chowdhury <unixbhaskar@gmail.com>,
+        Igor Matheus Andrade Torrente <igormtorrente@gmail.com>,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        nick black <dankamongmen@gmail.com>
+Subject: [PATCH printk v1 00/13] implement threaded console printing
+Date:   Mon,  7 Feb 2022 20:49:10 +0106
+Message-Id: <20220207194323.273637-1-john.ogness@linutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Refactor/rework printing logic in order to prepare for moving to threaded
-console printing.
+This is the next part of our printk-rework effort (points 2 and 6 of
+the LPC 2019 summary [0]).
 
-- Move @console_seq into struct console so that the current "position" of
-  each console can be tracked individually.
+This series implements a kthread for each registered console. The
+kthreads locklessly retrieve the records from the printk ringbuffer
+and also do not cause any lock contention between one another. This
+allows consoles to run at full speed. For example, a netconsole is
+able to dump records much faster than a serial or vt console.
 
-- Move @console_dropped into struct console so that the current drop count
-  of each console can be tracked individually.
+There are situations where kthread printing is not sufficient. For
+example, during early boot before kthreads exist or during panic
+situations, where the kthreads may not get a chance to schedule. In
+these cases, the current method of printing directly within the
+printk() caller context is used. New functions printk_direct_enter()
+and printk_direct_exit() are made available to mark areas of the
+kernel where direct printing should be used.
 
-- Modify printing logic so that each console independently loads, prepares,
-  prints, and delays its next record.
+This series also introduces pr_flush(): a might_sleep() function
+that will block until all active printing threads have caught up
+to the latest record at the time of the pr_flush() call. This
+function is useful, for example, to wait until pending records
+are flushed to consoles before suspending.
 
-- Remove exclusive_console logic. Since console positions are handled
-  independently, replaying past records occurs naturally.
+And finally, this series introduces a new console flag
+CON_MIGHT_SLEEP that can be set by consoles that only want their
+write() callback called in sleepable contexts. This was requested
+by Daniel Vetter [1] due to the many and growing number of deadlock
+situations in the fbcon code.
 
-Signed-off-by: John Ogness <john.ogness@linutronix.de>
----
- include/linux/console.h |   2 +
- kernel/printk/printk.c  | 388 ++++++++++++++++++++--------------------
- 2 files changed, 198 insertions(+), 192 deletions(-)
+Note that this series does *not* increase the reliability of console
+printing. Rather it focuses on the non-interference aspect of
+printk() by decoupling printk() callers from printing (during normal
+operation). Nonetheless, the reliability aspect should not worsen
+due to this series (with perhaps the exception of the fbcon, which
+will only print from sleepable contexts).
 
-diff --git a/include/linux/console.h b/include/linux/console.h
-index aa4d3fb4c1c5..56a6669471a6 100644
---- a/include/linux/console.h
-+++ b/include/linux/console.h
-@@ -151,6 +151,8 @@ struct console {
- 	int	cflag;
- 	uint	ispeed;
- 	uint	ospeed;
-+	u64	seq;
-+	unsigned long dropped;
- 	void	*data;
- 	struct	 console *next;
- };
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index 8c9a89c60989..822b7b6ad6d1 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -266,11 +266,6 @@ static void __up_console_sem(unsigned long ip)
-  */
- static int console_locked, console_suspended;
- 
--/*
-- * If exclusive_console is non-NULL then only this console is to be printed to.
-- */
--static struct console *exclusive_console;
--
- /*
-  *	Array of consoles built from command line options (console=)
-  */
-@@ -360,12 +355,6 @@ static u64 syslog_seq;
- static size_t syslog_partial;
- static bool syslog_time;
- 
--/* All 3 protected by @console_sem. */
--/* the next printk record to write to the console */
--static u64 console_seq;
--static u64 exclusive_console_stop_seq;
--static unsigned long console_dropped;
--
- struct latched_seq {
- 	seqcount_latch_t	latch;
- 	u64			val[2];
-@@ -1887,47 +1876,26 @@ static int console_trylock_spinning(void)
- }
- 
- /*
-- * Call the console drivers, asking them to write out
-- * log_buf[start] to log_buf[end - 1].
-- * The console_lock must be held.
-+ * Call the specified console driver, asking it to write out the specified
-+ * text and length. For non-extended consoles, if any records have been
-+ * dropped, a dropped message will be written out first.
-  */
--static void call_console_drivers(const char *ext_text, size_t ext_len,
--				 const char *text, size_t len)
-+static void call_console_driver(struct console *con, const char *text, size_t len)
- {
- 	static char dropped_text[64];
--	size_t dropped_len = 0;
--	struct console *con;
-+	size_t dropped_len;
- 
- 	trace_console_rcuidle(text, len);
- 
--	if (!console_drivers)
--		return;
--
--	if (console_dropped) {
-+	if (con->dropped && !(con->flags & CON_EXTENDED)) {
- 		dropped_len = snprintf(dropped_text, sizeof(dropped_text),
- 				       "** %lu printk messages dropped **\n",
--				       console_dropped);
--		console_dropped = 0;
-+				       con->dropped);
-+		con->dropped = 0;
-+		con->write(con, dropped_text, dropped_len);
- 	}
- 
--	for_each_console(con) {
--		if (exclusive_console && con != exclusive_console)
--			continue;
--		if (!(con->flags & CON_ENABLED))
--			continue;
--		if (!con->write)
--			continue;
--		if (!cpu_online(smp_processor_id()) &&
--		    !(con->flags & CON_ANYTIME))
--			continue;
--		if (con->flags & CON_EXTENDED)
--			con->write(con, ext_text, ext_len);
--		else {
--			if (dropped_len)
--				con->write(con, dropped_text, dropped_len);
--			con->write(con, text, len);
--		}
--	}
-+	con->write(con, text, len);
- }
- 
- /*
-@@ -2226,8 +2194,6 @@ asmlinkage int vprintk_emit(int facility, int level,
- 		in_sched = true;
- 	}
- 
--	printk_delay(level);
--
- 	printed_len = vprintk_store(facility, level, dev_info, fmt, args);
- 
- 	/* If called from the scheduler, we can not call up(). */
-@@ -2279,11 +2245,9 @@ EXPORT_SYMBOL(_printk);
- 
- #define prb_read_valid(rb, seq, r)	false
- #define prb_first_valid_seq(rb)		0
-+#define prb_next_seq(rb)		0
- 
- static u64 syslog_seq;
--static u64 console_seq;
--static u64 exclusive_console_stop_seq;
--static unsigned long console_dropped;
- 
- static size_t record_print_text(const struct printk_record *r,
- 				bool syslog, bool time)
-@@ -2300,9 +2264,9 @@ static ssize_t msg_print_ext_body(char *buf, size_t size,
- 				  struct dev_printk_info *dev_info) { return 0; }
- static void console_lock_spinning_enable(void) { }
- static int console_lock_spinning_disable_and_check(void) { return 0; }
--static void call_console_drivers(const char *ext_text, size_t ext_len,
--				 const char *text, size_t len) {}
-+static void call_console_driver(struct console *con, const char *text, size_t len) {}
- static bool suppress_message_printing(int level) { return false; }
-+static void printk_delay(int level) {}
- 
- #endif /* CONFIG_PRINTK */
- 
-@@ -2560,31 +2524,167 @@ int is_console_locked(void)
- EXPORT_SYMBOL(is_console_locked);
- 
- /*
-- * Check if we have any console that is capable of printing while cpu is
-- * booting or shutting down. Requires console_sem.
-+ * Check if the given console is currently capable and allowed to print
-+ * records.
-+ *
-+ * Requires the console_lock.
-  */
--static int have_callable_console(void)
-+static inline bool console_is_usable(struct console *con)
- {
--	struct console *con;
-+	if (!(con->flags & CON_ENABLED))
-+		return false;
- 
--	for_each_console(con)
--		if ((con->flags & CON_ENABLED) &&
--				(con->flags & CON_ANYTIME))
--			return 1;
-+	if (!con->write)
-+		return false;
- 
--	return 0;
-+	/*
-+	 * Console drivers may assume that per-cpu resources have been
-+	 * allocated. So unless they're explicitly marked as being able to
-+	 * cope (CON_ANYTIME) don't call them until per-cpu resources have
-+	 * been allocated.
-+	 */
-+	if (!printk_percpu_data_ready() &&
-+	    !(con->flags & CON_ANYTIME))
-+		return false;
-+
-+	return true;
-+}
-+
-+static void __console_unlock(void)
-+{
-+	console_locked = 0;
-+	up_console_sem();
-+}
-+
-+/*
-+ * Print one record for the given console. The record printed is whatever
-+ * record is the next available record for the given console.
-+ *
-+ * Requires the console_lock.
-+ *
-+ * Returns false if the given console has no next record to print, otherwise
-+ * true.
-+ *
-+ * @handover will be set to true if a printk waiter has taken over the
-+ * console_lock, in which case the caller is no longer holding the
-+ * console_lock. Otherwise it is set to false.
-+ */
-+static bool console_emit_next_record(struct console *con, bool *handover)
-+{
-+	static char ext_text[CONSOLE_EXT_LOG_MAX];
-+	static char text[CONSOLE_LOG_MAX];
-+	struct printk_info info;
-+	struct printk_record r;
-+	unsigned long flags;
-+	char *write_text;
-+	size_t len;
-+
-+	prb_rec_init_rd(&r, &info, text, sizeof(text));
-+
-+	*handover = false;
-+
-+	if (!prb_read_valid(prb, con->seq, &r))
-+		return false;
-+
-+	if (con->seq != r.info->seq) {
-+		con->dropped += r.info->seq - con->seq;
-+		con->seq = r.info->seq;
-+	}
-+
-+	/* Skip record that has level above the console loglevel. */
-+	if (suppress_message_printing(r.info->level)) {
-+		con->seq++;
-+		goto skip;
-+	}
-+
-+	if (con->flags & CON_EXTENDED) {
-+		write_text = &ext_text[0];
-+		len = info_print_ext_header(ext_text, sizeof(ext_text), r.info);
-+		len += msg_print_ext_body(ext_text + len, sizeof(ext_text) - len,
-+					  &r.text_buf[0], r.info->text_len, &r.info->dev_info);
-+	} else {
-+		write_text = &text[0];
-+		len = record_print_text(&r, console_msg_format & MSG_FORMAT_SYSLOG, printk_time);
-+	}
-+
-+	/*
-+	 * While actively printing out messages, if another printk()
-+	 * were to occur on another CPU, it may wait for this one to
-+	 * finish. This task can not be preempted if there is a
-+	 * waiter waiting to take over.
-+	 *
-+	 * Interrupts are disabled because the hand over to a waiter
-+	 * must not be interrupted until the hand over is completed
-+	 * (@console_waiter is cleared).
-+	 */
-+	printk_safe_enter_irqsave(flags);
-+	console_lock_spinning_enable();
-+
-+	stop_critical_timings();	/* don't trace print latency */
-+	call_console_driver(con, write_text, len);
-+	start_critical_timings();
-+
-+	con->seq++;
-+
-+	*handover = console_lock_spinning_disable_and_check();
-+	printk_safe_exit_irqrestore(flags);
-+
-+	printk_delay(r.info->level);
-+skip:
-+	return true;
- }
- 
- /*
-- * Can we actually use the console at this time on this cpu?
-+ * Print out all remaining records to all consoles.
-+ *
-+ * Requires the console_lock.
-+ *
-+ * Returns true if a console was available for flushing, otherwise false.
-  *
-- * Console drivers may assume that per-cpu resources have been allocated. So
-- * unless they're explicitly marked as being able to cope (CON_ANYTIME) don't
-- * call them until per-cpu resources have been allocated.
-+ * @next_seq is set to the highest sequence number of all of the consoles that
-+ * were flushed.
-+ *
-+ * @handover will be set to true if a printk waiter has taken over the
-+ * console_lock, in which case the caller is no longer holding the
-+ * console_lock. Otherwise it is set to false.
-  */
--static inline int can_use_console(void)
-+static bool console_flush_all(bool do_cond_resched, u64 *next_seq, bool *handover)
- {
--	return (printk_percpu_data_ready() || have_callable_console());
-+	bool any_usable = false;
-+	struct console *con;
-+	bool any_progress;
-+
-+	*next_seq = 0;
-+	*handover = false;
-+
-+	do {
-+		any_progress = false;
-+
-+		for_each_console(con) {
-+			bool progress;
-+
-+			if (!console_is_usable(con))
-+				continue;
-+			any_usable = true;
-+
-+			progress = console_emit_next_record(con, handover);
-+			if (*handover)
-+				return true;
-+
-+			/* Track the highest seq flushed. */
-+			if (con->seq > *next_seq)
-+				*next_seq = con->seq;
-+
-+			if (!progress)
-+				continue;
-+			any_progress = true;
-+
-+			if (do_cond_resched)
-+				cond_resched();
-+		}
-+	} while (any_progress);
-+
-+	return any_usable;
- }
- 
- /**
-@@ -2603,21 +2703,16 @@ static inline int can_use_console(void)
-  */
- void console_unlock(void)
- {
--	static char ext_text[CONSOLE_EXT_LOG_MAX];
--	static char text[CONSOLE_LOG_MAX];
--	unsigned long flags;
--	bool do_cond_resched, retry;
--	struct printk_info info;
--	struct printk_record r;
--	u64 __maybe_unused next_seq;
-+	bool do_cond_resched;
-+	bool handover;
-+	bool flushed;
-+	u64 next_seq;
- 
- 	if (console_suspended) {
- 		up_console_sem();
- 		return;
- 	}
- 
--	prb_rec_init_rd(&r, &info, text, sizeof(text));
--
- 	/*
- 	 * Console drivers are called with interrupts disabled, so
- 	 * @console_may_schedule should be cleared before; however, we may
-@@ -2626,117 +2721,31 @@ void console_unlock(void)
- 	 * between lines if allowable.  Not doing so can cause a very long
- 	 * scheduling stall on a slow console leading to RCU stall and
- 	 * softlockup warnings which exacerbate the issue with more
--	 * messages practically incapacitating the system.
--	 *
--	 * console_trylock() is not able to detect the preemptive
--	 * context reliably. Therefore the value must be stored before
--	 * and cleared after the "again" goto label.
-+	 * messages practically incapacitating the system. Therefore, create
-+	 * a local to use for the printing loop.
- 	 */
- 	do_cond_resched = console_may_schedule;
--again:
--	console_may_schedule = 0;
- 
--	/*
--	 * We released the console_sem lock, so we need to recheck if
--	 * cpu is online and (if not) is there at least one CON_ANYTIME
--	 * console.
--	 */
--	if (!can_use_console()) {
--		console_locked = 0;
--		up_console_sem();
--		return;
--	}
--
--	for (;;) {
--		size_t ext_len = 0;
--		int handover;
--		size_t len;
-+	do {
-+		console_may_schedule = 0;
- 
--skip:
--		if (!prb_read_valid(prb, console_seq, &r))
-+		flushed = console_flush_all(do_cond_resched, &next_seq, &handover);
-+		if (handover)
- 			break;
- 
--		if (console_seq != r.info->seq) {
--			console_dropped += r.info->seq - console_seq;
--			console_seq = r.info->seq;
--		}
-+		__console_unlock();
- 
--		if (suppress_message_printing(r.info->level)) {
--			/*
--			 * Skip record we have buffered and already printed
--			 * directly to the console when we received it, and
--			 * record that has level above the console loglevel.
--			 */
--			console_seq++;
--			goto skip;
--		}
--
--		/* Output to all consoles once old messages replayed. */
--		if (unlikely(exclusive_console &&
--			     console_seq >= exclusive_console_stop_seq)) {
--			exclusive_console = NULL;
--		}
--
--		/*
--		 * Handle extended console text first because later
--		 * record_print_text() will modify the record buffer in-place.
--		 */
--		if (nr_ext_console_drivers) {
--			ext_len = info_print_ext_header(ext_text,
--						sizeof(ext_text),
--						r.info);
--			ext_len += msg_print_ext_body(ext_text + ext_len,
--						sizeof(ext_text) - ext_len,
--						&r.text_buf[0],
--						r.info->text_len,
--						&r.info->dev_info);
--		}
--		len = record_print_text(&r,
--				console_msg_format & MSG_FORMAT_SYSLOG,
--				printk_time);
--		console_seq++;
-+		/* Were there any consoles available for flushing? */
-+		if (!flushed)
-+			break;
- 
- 		/*
--		 * While actively printing out messages, if another printk()
--		 * were to occur on another CPU, it may wait for this one to
--		 * finish. This task can not be preempted if there is a
--		 * waiter waiting to take over.
--		 *
--		 * Interrupts are disabled because the hand over to a waiter
--		 * must not be interrupted until the hand over is completed
--		 * (@console_waiter is cleared).
-+		 * Some context may have added new records after
-+		 * console_flush_all() but before unlocking the console.
-+		 * Re-check if there is a new record to flush. If the trylock
-+		 * fails, another context is already handling the printing.
- 		 */
--		printk_safe_enter_irqsave(flags);
--		console_lock_spinning_enable();
--
--		stop_critical_timings();	/* don't trace print latency */
--		call_console_drivers(ext_text, ext_len, text, len);
--		start_critical_timings();
--
--		handover = console_lock_spinning_disable_and_check();
--		printk_safe_exit_irqrestore(flags);
--		if (handover)
--			return;
--
--		if (do_cond_resched)
--			cond_resched();
--	}
--
--	/* Get consistent value of the next-to-be-used sequence number. */
--	next_seq = console_seq;
--
--	console_locked = 0;
--	up_console_sem();
--
--	/*
--	 * Someone could have filled up the buffer again, so re-check if there's
--	 * something to flush. In case we cannot trylock the console_sem again,
--	 * there's a new owner and the console_unlock() from them will do the
--	 * flush, no worries.
--	 */
--	retry = prb_read_valid(prb, next_seq, NULL);
--	if (retry && console_trylock())
--		goto again;
-+	} while (prb_read_valid(prb, next_seq, NULL) && console_trylock());
- }
- EXPORT_SYMBOL(console_unlock);
- 
-@@ -2796,8 +2805,14 @@ void console_flush_on_panic(enum con_flush_mode mode)
- 	console_trylock();
- 	console_may_schedule = 0;
- 
--	if (mode == CONSOLE_REPLAY_ALL)
--		console_seq = prb_first_valid_seq(prb);
-+	if (mode == CONSOLE_REPLAY_ALL) {
-+		struct console *c;
-+		u64 seq;
-+
-+		seq = prb_first_valid_seq(prb);
-+		for_each_console(c)
-+			c->seq = seq;
-+	}
- 	console_unlock();
- }
- 
-@@ -3032,26 +3047,15 @@ void register_console(struct console *newcon)
- 	if (newcon->flags & CON_EXTENDED)
- 		nr_ext_console_drivers++;
- 
-+	newcon->dropped = 0;
- 	if (newcon->flags & CON_PRINTBUFFER) {
--		/*
--		 * console_unlock(); will print out the buffered messages
--		 * for us.
--		 *
--		 * We're about to replay the log buffer.  Only do this to the
--		 * just-registered console to avoid excessive message spam to
--		 * the already-registered consoles.
--		 *
--		 * Set exclusive_console with disabled interrupts to reduce
--		 * race window with eventual console_flush_on_panic() that
--		 * ignores console_lock.
--		 */
--		exclusive_console = newcon;
--		exclusive_console_stop_seq = console_seq;
--
- 		/* Get a consistent copy of @syslog_seq. */
- 		mutex_lock(&syslog_lock);
--		console_seq = syslog_seq;
-+		newcon->seq = syslog_seq;
- 		mutex_unlock(&syslog_lock);
-+	} else {
-+		/* Begin with next message. */
-+		newcon->seq = prb_next_seq(prb);
- 	}
- 	console_unlock();
- 	console_sysfs_notify();
+[0] https://lore.kernel.org/lkml/87k1acz5rx.fsf@linutronix.de
+[1] https://lore.kernel.org/all/YYuS1uNhxWOEX1Ci@phenom.ffwll.local
+
+John Ogness (13):
+  printk: rename cpulock functions
+  printk: cpu sync always disable interrupts
+  printk: use percpu flag instead of cpu_online()
+  printk: get caller_id/timestamp after migration disable
+  printk: call boot_delay_msec() in printk_delay()
+  printk: refactor and rework printing logic
+  printk: move buffer definitions into console_emit_next_record() caller
+  printk: add pr_flush()
+  printk: add functions to allow direct printing
+  printk: add kthread console printers
+  printk: reimplement console_lock for proper kthread support
+  printk: remove @console_locked
+  console: introduce CON_MIGHT_SLEEP for vt
+
+ drivers/tty/sysrq.c     |   2 +
+ drivers/tty/vt/vt.c     |   2 +-
+ include/linux/console.h |  22 +-
+ include/linux/printk.h  |  70 ++--
+ kernel/hung_task.c      |  11 +-
+ kernel/printk/printk.c  | 903 +++++++++++++++++++++++++++++-----------
+ kernel/rcu/tree_stall.h |   2 +
+ kernel/reboot.c         |  14 +-
+ kernel/watchdog.c       |   4 +
+ kernel/watchdog_hld.c   |   4 +
+ lib/dump_stack.c        |   6 +-
+ lib/nmi_backtrace.c     |   6 +-
+ 12 files changed, 765 insertions(+), 281 deletions(-)
+
+
+base-commit: a229327733b86aa585effdb0d27a87b12aa51597
 -- 
 2.30.2
 
