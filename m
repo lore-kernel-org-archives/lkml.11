@@ -2,98 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB6AAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 07:53:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FA56C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 07:53:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241714AbiBGHvc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 02:51:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40656 "EHLO
+        id S237034AbiBGHwo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 02:52:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240569AbiBGHuO (ORCPT
+        with ESMTP id S243299AbiBGHvC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 02:50:14 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F38D0C043181
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 23:50:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644220213; x=1675756213;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=FGfwn148nXlfPgw58grgzzwnKl15CDZCmNZxMMTJ6JM=;
-  b=BLwB2cgvbm4m94bIh1XeLyd5vuz9AHwtLnaCmU7Xz1yDND5gt2Pws3K4
-   aiVbPD4VR76Nz9Kl4Cp/AGYkhsIA3G5FrMc6V+CkM71ePyQpV2AKkDn/L
-   +iixt4RSMu6IL97FaGwJ+ihL+bpJdJRZrMnSnoFoJNOgul7yctiprcYGW
-   JrvHpTvNRBeIAnCsiZvjqEHJXn+UAhxZaFSr58uUSQ8XTrsKFxZ0Rp7y1
-   cvuyJg7LQsXCc6lDUzjYAxLRDur/BVw8W+UAGu8P3K5xlqFIO5N1jnbmn
-   7fujgXaiT6HeqoKifp0aYXJxz6bZoidQ0rkKSuk2LX13hCc9ABh/UNNpt
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="247498443"
-X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
-   d="scan'208";a="247498443"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2022 23:50:12 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
-   d="scan'208";a="525039226"
-Received: from lkp-server01.sh.intel.com (HELO 9dd77a123018) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 06 Feb 2022 23:50:10 -0800
-Received: from kbuild by 9dd77a123018 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nGymo-0000FD-4C; Mon, 07 Feb 2022 07:50:10 +0000
-Date:   Mon, 7 Feb 2022 15:49:12 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Takashi Iwai <tiwai@suse.de>, linux-input@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: Wrongly bound Elantech touchpad on Lenovo Yoga Slim 7
-Message-ID: <202202071511.Vkx9UNQz-lkp@intel.com>
-References: <s5hleyqwowl.wl-tiwai@suse.de>
+        Mon, 7 Feb 2022 02:51:02 -0500
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58DE5C043181
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 23:51:01 -0800 (PST)
+Received: by mail-pf1-x432.google.com with SMTP id g8so1723359pfq.9
+        for <linux-kernel@vger.kernel.org>; Sun, 06 Feb 2022 23:51:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3bIYzWqmKF4OUiLArYTAXIwmNIkF1zAp2Bo8KhvDjuI=;
+        b=mfPEoaUoTNW4cZcUnhtyn0r4mMu9F+6a9vIIHAKnZduKijW6Dh8TOxtB4MdRXrf0Zc
+         HNOp7UcYZ1sjqM1rJLtFss7HewON8j2NSkYuf8xhCoTyFzEtkhX23nOyDxybW0R6jLcT
+         uzS6JntswqmLoMKx5UGFHTDfq7HJV7tK9tbzK+wFknaHJIG/QbuFqeWyetbJ+yEBd0df
+         vbvDxEqpko/urGmhVsfxjK5Qf7DWwZr9NxRP/28AmJjpSP0vjBdpQ1ZuoH8F0B32SFBB
+         C8o96YE5CQQ+w/vBIb3ZrjIYNCuvaJEKz/AwDdDC1zbzhesQU1lPPpRAhFJSk3oY2jbS
+         ZWBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3bIYzWqmKF4OUiLArYTAXIwmNIkF1zAp2Bo8KhvDjuI=;
+        b=kl4TwBeaRkrtuNwYtADJqan1+DJZAxbN4d7fNAfVwLOG4BWvF6RS+MfvgRZCjy5Tov
+         8vCQQ3Y1AsqxMJd5ovkVjhqqUlSMneEwMH3wVjIkhwv3lu8WQ1HRzovDPWmI9wDZDnDb
+         Aq+DnmJIxnfm2jICIpBb2xBOAEp/D0OiDWPVcYS5jlyAjYy9AwD1nftW7ueDjVXQ83VM
+         hCfKoTnKtoE0aT3Cu7MSuhv44syerHK6jTFNfQwA1cBlo5Z0TbRbkQbvmp0I8v8LZEO1
+         EmSxX8furzxlWA4/K/AplF/9A9XbxsYT/89PijbKCVqJTN7tX7lMvV39tqCT0VrDpqsH
+         hSDQ==
+X-Gm-Message-State: AOAM532VXhsIJRI7YiPGuYPK2zkXeSauXNBgCc/GOJ7ABfElSU0pXq0+
+        SYaK5ogn9fD6HMCd6W7MI945T3rpnhk5lA==
+X-Google-Smtp-Source: ABdhPJwTL/+cIZ3C18clOHCWfWcmnq939swO65hH5D76BW4zzZBiUUz9TobGzV4hvCovLT3KuCzZpQ==
+X-Received: by 2002:a63:ad44:: with SMTP id y4mr8491023pgo.160.1644220260405;
+        Sun, 06 Feb 2022 23:51:00 -0800 (PST)
+Received: from localhost ([2409:10:24a0:4700:e8ad:216a:2a9d:6d0c])
+        by smtp.gmail.com with ESMTPSA id 8sm20150775pjs.39.2022.02.06.23.50.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 06 Feb 2022 23:50:59 -0800 (PST)
+From:   Stafford Horne <shorne@gmail.com>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Stafford Horne <shorne@gmail.com>,
+        Jonas Bonn <jonas@southpole.se>,
+        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        openrisc@lists.librecores.org
+Subject: [PATCH v2] openrisc: remove CONFIG_SET_FS
+Date:   Mon,  7 Feb 2022 16:50:36 +0900
+Message-Id: <20220207075038.3811999-1-shorne@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <s5hleyqwowl.wl-tiwai@suse.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Takashi,
+Remove the address space override API set_fs().  The OpenRISC user
+address space is now limited to TASK_SIZE.
 
-I love your patch! Perhaps something to improve:
+To support this we implement and wire in __get_kernel_nofault and
+__set_kernel_nofault.
 
-[auto build test WARNING on dtor-input/next]
-[also build test WARNING on hid/for-next linux/master linus/master v5.17-rc3 next-20220204]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+The function user_addr_max is removed as there is a default definition
+provided when CONFIG_SET_FS is not used.
 
-url:    https://github.com/0day-ci/linux/commits/Takashi-Iwai/Wrongly-bound-Elantech-touchpad-on-Lenovo-Yoga-Slim-7/20220205-005753
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/dtor/input.git next
-config: i386-randconfig-a004 (https://download.01.org/0day-ci/archive/20220207/202202071511.Vkx9UNQz-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 6daaf5a44925592c764c59219b0024ee06317028)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/9f3fbdd527662d97eb0bece1005d96a0a1b0fac2
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Takashi-Iwai/Wrongly-bound-Elantech-touchpad-on-Lenovo-Yoga-Slim-7/20220205-005753
-        git checkout 9f3fbdd527662d97eb0bece1005d96a0a1b0fac2
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>, old ones prefixed by <<):
-
->> WARNING: modpost: vmlinux.o(.text+0xe016ae): Section mismatch in reference from the function elan_probe() to the variable .init.rodata:elan_i2c_denylist
-The function elan_probe() references
-the variable __initconst elan_i2c_denylist.
-This is often because elan_probe lacks a __initconst
-annotation or the annotation of elan_i2c_denylist is wrong.
-
+Signed-off-by: Stafford Horne <shorne@gmail.com>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+since v1:
+ - Fix commit message with misleading comment about User Mode Linux.
+
+ arch/openrisc/Kconfig                   |  1 -
+ arch/openrisc/include/asm/thread_info.h |  7 ----
+ arch/openrisc/include/asm/uaccess.h     | 48 +++++++++++--------------
+ 3 files changed, 20 insertions(+), 36 deletions(-)
+
+diff --git a/arch/openrisc/Kconfig b/arch/openrisc/Kconfig
+index bf047dca7ec6..ceda77fb8bc8 100644
+--- a/arch/openrisc/Kconfig
++++ b/arch/openrisc/Kconfig
+@@ -36,7 +36,6 @@ config OPENRISC
+ 	select ARCH_WANT_FRAME_POINTERS
+ 	select GENERIC_IRQ_MULTI_HANDLER
+ 	select MMU_GATHER_NO_RANGE if MMU
+-	select SET_FS
+ 	select TRACE_IRQFLAGS_SUPPORT
+ 
+ config CPU_BIG_ENDIAN
+diff --git a/arch/openrisc/include/asm/thread_info.h b/arch/openrisc/include/asm/thread_info.h
+index 659834ab87fa..4af3049c34c2 100644
+--- a/arch/openrisc/include/asm/thread_info.h
++++ b/arch/openrisc/include/asm/thread_info.h
+@@ -40,18 +40,12 @@
+  */
+ #ifndef __ASSEMBLY__
+ 
+-typedef unsigned long mm_segment_t;
+-
+ struct thread_info {
+ 	struct task_struct	*task;		/* main task structure */
+ 	unsigned long		flags;		/* low level flags */
+ 	__u32			cpu;		/* current CPU */
+ 	__s32			preempt_count; /* 0 => preemptable, <0 => BUG */
+ 
+-	mm_segment_t		addr_limit; /* thread address space:
+-					       0-0x7FFFFFFF for user-thead
+-					       0-0xFFFFFFFF for kernel-thread
+-					     */
+ 	__u8			supervisor_stack[0];
+ 
+ 	/* saved context data */
+@@ -71,7 +65,6 @@ struct thread_info {
+ 	.flags		= 0,				\
+ 	.cpu		= 0,				\
+ 	.preempt_count	= INIT_PREEMPT_COUNT,		\
+-	.addr_limit	= KERNEL_DS,			\
+ 	.ksp            = 0,                            \
+ }
+ 
+diff --git a/arch/openrisc/include/asm/uaccess.h b/arch/openrisc/include/asm/uaccess.h
+index 120f5005461b..cc9c5d8fd183 100644
+--- a/arch/openrisc/include/asm/uaccess.h
++++ b/arch/openrisc/include/asm/uaccess.h
+@@ -23,36 +23,12 @@
+ #include <asm/page.h>
+ #include <asm/extable.h>
+ 
+-/*
+- * The fs value determines whether argument validity checking should be
+- * performed or not.  If get_fs() == USER_DS, checking is performed, with
+- * get_fs() == KERNEL_DS, checking is bypassed.
+- *
+- * For historical reasons, these macros are grossly misnamed.
+- */
+-
+-/* addr_limit is the maximum accessible address for the task. we misuse
+- * the KERNEL_DS and USER_DS values to both assign and compare the
+- * addr_limit values through the equally misnamed get/set_fs macros.
+- * (see above)
+- */
+-
+-#define KERNEL_DS	(~0UL)
+-
+-#define USER_DS		(TASK_SIZE)
+-#define get_fs()	(current_thread_info()->addr_limit)
+-#define set_fs(x)	(current_thread_info()->addr_limit = (x))
+-
+-#define uaccess_kernel()	(get_fs() == KERNEL_DS)
+-
+ /* Ensure that the range from addr to addr+size is all within the process'
+  * address space
+  */
+ static inline int __range_ok(unsigned long addr, unsigned long size)
+ {
+-	const mm_segment_t fs = get_fs();
+-
+-	return size <= fs && addr <= (fs - size);
++	return size <= TASK_SIZE && addr <= (TASK_SIZE - size);
+ }
+ 
+ #define access_ok(addr, size)						\
+@@ -241,6 +217,25 @@ do {									\
+ 		(__typeof__((x)-(x)))__gu_tmp);		\
+ }
+ 
++#define __get_kernel_nofault(dst, src, type, label)	\
++{							\
++	type __user *p = (type __force __user *)(src);	\
++	type data;					\
++	if (__get_user(data, p))			\
++		goto label;				\
++	*(type *)dst = data;				\
++}
++
++#define __put_kernel_nofault(dst, src, type, label)	\
++{							\
++	type __user *p = (type __force __user *)(dst);	\
++	type data = *(type *)src;			\
++	if (__put_user(data, p))			\
++		goto label;				\
++}
++
++#define HAVE_GET_KERNEL_NOFAULT
++
+ /* more complex routines */
+ 
+ extern unsigned long __must_check
+@@ -268,9 +263,6 @@ clear_user(void __user *addr, unsigned long size)
+ 	return size;
+ }
+ 
+-#define user_addr_max() \
+-	(uaccess_kernel() ? ~0UL : TASK_SIZE)
+-
+ extern long strncpy_from_user(char *dest, const char __user *src, long count);
+ 
+ extern __must_check long strnlen_user(const char __user *str, long n);
+-- 
+2.31.1
+
