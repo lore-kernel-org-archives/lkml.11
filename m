@@ -2,57 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBD25C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB2E2C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 07:00:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240437AbiBGG6M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 01:58:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42530 "EHLO
+        id S240356AbiBGG6I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 01:58:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229761AbiBGGpJ (ORCPT
+        with ESMTP id S1357129AbiBGGoD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 01:45:09 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E485FC043184
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 22:45:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=hjWf60JMAVQJhgmfPlSAZ5+/ceseer8Z60uDPAGgkAM=; b=pXzzk49YMnKOxHpmbc1xBRgNAL
-        Ujjdd1Q+r1Gjl7lGPov+1N+OOEbrvHtVbAfEyYQO77jxzH84Ia7qA1WQoF9TDMvc9LrfuFSjMzG6i
-        6VbmkrhCNvBRqB2CwPGbKMZ3ctisrbKiSjrk3dEGRuBe2APNAlNgfzCxU3OIlk3eBAhCB5n9CbM5b
-        Lj49nzeWXJ1EfaM10qescnIfoa8ioXZuDLSRk5Ezh84PAUtgDgGcDB3qotgIrnPIBlEQ6ukIf/VRX
-        4G1lvmG8+Ujb3sn2am0knaGYQD+j5rHpvnwNCpFVlcftMRoVJJ09VwRuennleFVgZt60ASDVTbkHQ
-        kAtwVylw==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nGxlq-009B91-SM; Mon, 07 Feb 2022 06:45:06 +0000
-Date:   Sun, 6 Feb 2022 22:45:06 -0800
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Stafford Horne <shorne@gmail.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>, Jonas Bonn <jonas@southpole.se>,
-        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        openrisc@lists.librecores.org
-Subject: Re: [PATCH] openrisc: remove CONFIG_SET_FS
-Message-ID: <YgC/8ng5WX6Nt104@infradead.org>
-References: <20220206013648.3491865-1-shorne@gmail.com>
+        Mon, 7 Feb 2022 01:44:03 -0500
+X-Greylist: delayed 63 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 22:44:02 PST
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93D33C0401C7
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 22:44:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644216242; x=1675752242;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Yco+/+LynFN8oIASNk8w1jMvxVl0gBS6tYwskQzaS3g=;
+  b=ElnpGqjbE+2aT/y3ODsdvkITGStceZKeigwY1hpB1lrftKzvueP0hzpo
+   LSBvi3YUoqDAqMcQ2x6BLTSzOREf4yHTmhvsJr8heHvQjEJgHNQT841EH
+   ci+AY7eJiNN94ATzcsTSXEpQJ8XoRihJoEPfSui4jfBs5Bc6Lu6f/Zpem
+   GNjLhJv6rsWveq93oA7UFNl6tYi+L7N06gZegs/iHMuUjaJmWkZN5bZ3l
+   +POQoTXkv7+uaRNZp3EGlq2coS9b6kcT+5jLCt2rGinsHK48f9/zPW3mZ
+   QLXwyD950rOXhRFYynxL8mSlblvXjINkBMaJBDey69bzksqaK2dPC+NWs
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="273171129"
+X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
+   d="scan'208";a="273171129"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2022 22:42:59 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
+   d="scan'208";a="525020172"
+Received: from allen-box.sh.intel.com ([10.239.159.118])
+  by orsmga007.jf.intel.com with ESMTP; 06 Feb 2022 22:42:56 -0800
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+To:     Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Liu Yi L <yi.l.liu@intel.com>,
+        Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc:     Robin Murphy <robin.murphy@arm.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@lst.de>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+        Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v1 00/10] iommu/vt-d: Some Intel IOMMU cleanups
+Date:   Mon,  7 Feb 2022 14:41:32 +0800
+Message-Id: <20220207064142.1092846-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220206013648.3491865-1-shorne@gmail.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Feb 06, 2022 at 10:36:47AM +0900, Stafford Horne wrote:
-> Remove the address space override API set_fs() used for User Mode Linux.
+Hi folks,
 
-This ain't UML :)
+After a long time of evolution, the drivers/iommu/intel/iommu.c becomes
+fat and a bit messy. This series tries to cleanup and refactor the
+driver to make it more concise. Your comments are very appreciated.
 
-> +	return size <= TASK_SIZE && addr <= (TASK_SIZE - size);
+Best regards,
+baolu
 
-No need for the inner braces.
+Lu Baolu (10):
+  iommu/vt-d: Move DMAR specific helpers into dmar.c
+  iommu/vt-d: Remove intel_iommu::domains
+  iommu/vt-d: Remove finding domain in dmar_insert_one_dev_info()
+  iommu/vt-d: Remove iova_cache_get/put()
+  iommu/vt-d: Remove domain and devinfo mempool
+  iommu/vt-d: Remove DEFER_DEVICE_DOMAIN_INFO
+  iommu/vt-d: Use an xarray for global device_domain_info
+  iommu/vt-d: Use rculist for dmar_domain::devices
+  iommu/vt-d: Refactor dmar_insert_one_dev_info()
+  iommu/vt-d: Some cleanups in iommu.c
+
+ include/linux/dmar.h          |   43 +-
+ include/linux/intel-iommu.h   |  220 ++++++-
+ drivers/iommu/intel/debugfs.c |    3 -
+ drivers/iommu/intel/dmar.c    |  216 ++++++-
+ drivers/iommu/intel/iommu.c   | 1109 ++++++---------------------------
+ 5 files changed, 650 insertions(+), 941 deletions(-)
+
+-- 
+2.25.1
+
