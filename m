@@ -2,92 +2,226 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BA41C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 21:18:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD844C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 21:18:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238055AbiBGVSh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 16:18:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44090 "EHLO
+        id S237841AbiBGVSr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 16:18:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237529AbiBGVSa (ORCPT
+        with ESMTP id S238020AbiBGVSm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 16:18:30 -0500
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57559C06173B;
-        Mon,  7 Feb 2022 13:18:28 -0800 (PST)
-Received: by mail-lj1-x22b.google.com with SMTP id bx31so21645750ljb.0;
-        Mon, 07 Feb 2022 13:18:28 -0800 (PST)
+        Mon, 7 Feb 2022 16:18:42 -0500
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56D16C0401DF
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 13:18:39 -0800 (PST)
+Received: by mail-pl1-x632.google.com with SMTP id x4so4538787plb.4
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 13:18:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=SYwVTByFSLm7YfC3rAtEhcduxeMNVifR9e2i3wvgr5g=;
-        b=HqAim6ROW3H3RAUI6JqmL46IYzKE9NlDOTRG6J1xu043L3eH5tNcsDO5lQjrZfNFgJ
-         GhM77obAQc7YIPLNXlTURP1HIuraaMdatOdYqaXxJGJY+ZJgtPNcAgen6YozHme8mrql
-         bW7QR02ATyEI/m7h7Fx4Ab7/qMsaS5wZ7qPQgy4pddSyqUk/F+Yeq+6GyvaQ2WhBrmbX
-         nhD2PqWeVO2BEs+/g6sohr6mCkfGxb8SjbDWSlpPLyQdTHxRLeT6CvhU0RH3H8x060Jo
-         gNe6CL1hgDJMfrRhWVS1OrINPwYX5CfaaZHrpLQVLEtR+PiFwVoOsp3MzAYcJ89AB9SI
-         o4Rw==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=d9ldJz2Q7a+QVeuu97JN0SwCkiiYh+lvruWks9vjas4=;
+        b=HN5KAg7FfgSlG7ghrTxnwTa8Ug/eFmqTBqT3YZyhVOi2WegMyHWZ9kBoUmgzz7iGCB
+         1Lu01bwgofvuB4skGH5FcZr7JQ0Tnxb1Zvf8OKjODPhmT7I6p8vX0ip5dSbHXWYIatCb
+         rpbeA86N2Kb6Zi1ZTFPZ3r2GHF+ERV7cJxxuo=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=SYwVTByFSLm7YfC3rAtEhcduxeMNVifR9e2i3wvgr5g=;
-        b=yjGTb80SiGIvnJlq8cOCAIvqsgQLAUdv8pSR/pVrYwze8fiyxFsn83gDW83LA0GQkE
-         a99xWqHTTewYCwEIrMJAjp7HaxDR8AfsppHONTCdM9xdrfIlD/q+sxDwSoDgipq+rz+a
-         WBNhxBoHcL7yTqdHPSKJIHizpzP8dxYgQB4VBAdf9Nk4HZVXhZ3c+VL60vViBOkNM+WK
-         c9c8ILCY7eq7NAQnnbWToioGfQfgAk6UcZsb5N3PV+DjSf6FXRJssWN9fYMjqkF16N9Y
-         7qzUfybu3pzSY9piAQP+pjJ2QZxY2Qvj58uVrQVFnOCoB6M2zCmvDfsEQf5Kv2Br7wKZ
-         6iKw==
-X-Gm-Message-State: AOAM531eJv5jgKi5r/pR1UL0VNOxvuc+au+yO7/m0IPjX+q6QKAZertr
-        T7oBmaKqQ2Q65+5EeMM51zCAGWfvaqY=
-X-Google-Smtp-Source: ABdhPJxJnDWK5HUMhRsEhRXhMQsYpWkkEB1uDMpYiQjTEZQV8KDCiaAg3X+1t3NRXPlgeeackAA/ZQ==
-X-Received: by 2002:a2e:150d:: with SMTP id s13mr836466ljd.468.1644268706628;
-        Mon, 07 Feb 2022 13:18:26 -0800 (PST)
-Received: from localhost.localdomain (h-155-4-221-129.NA.cust.bahnhof.se. [155.4.221.129])
-        by smtp.gmail.com with ESMTPSA id s30sm1637978lfp.93.2022.02.07.13.18.25
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=d9ldJz2Q7a+QVeuu97JN0SwCkiiYh+lvruWks9vjas4=;
+        b=CnTSMQK/oZM3NTFI4BOkdohPAS3oMGb/TMPONQveqp7jqmR4dUvGcKx2rsU+TdM+T0
+         iP8YqOZ8m5IlbYUkmLGcMfFxP9KdJC4cadazDFt712Obhdn7Q7XdrbyxaOguXccPud/h
+         ou8ztDrSP6GIA4ZMvLnv7QSISolUd4QGSrR5G1aYwZzNLu1dkDUcR09i6IBTJWhlTPZK
+         F7ufCTZ3nDY0mm50eZUZXo5BxjPC9klCKp/xw9HSmRXxCF59/AqHrEqp/Q9YzGinH37D
+         xDeYKchcUTS/Jnzm4gs0PgdIWKtdWq09a+CRocji0MRUbfp1f7J7SOK+z2DRVEIgmMDN
+         jhRA==
+X-Gm-Message-State: AOAM531BBxt9s6hBibdoguXDJQMjm1zKLAj64OTqsvXsFa7ZdQxJXJuA
+        WAR/vuyi64wQccFz8ZoPXvNboGmPHiGL7Q==
+X-Google-Smtp-Source: ABdhPJyibyWrBtKFyxmmMoKFcsegALaR2GiBWlPPZmpl80cyGmRpdn7SL+WBVzHCcvr1CvrcX8MA+Q==
+X-Received: by 2002:a17:90a:348f:: with SMTP id p15mr858535pjb.173.1644268718557;
+        Mon, 07 Feb 2022 13:18:38 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id lk8sm263098pjb.40.2022.02.07.13.18.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 13:18:26 -0800 (PST)
-From:   Rikard Falkeborn <rikard.falkeborn@gmail.com>
-To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc:     Marc Zyngier <maz@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Rikard Falkeborn <rikard.falkeborn@gmail.com>
-Subject: [PATCH 3/3] MIPS: pci-ar2315: Constify static irq_domain_ops
-Date:   Mon,  7 Feb 2022 22:18:16 +0100
-Message-Id: <20220207211816.57860-4-rikard.falkeborn@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207211816.57860-1-rikard.falkeborn@gmail.com>
-References: <20220207211816.57860-1-rikard.falkeborn@gmail.com>
+        Mon, 07 Feb 2022 13:18:38 -0800 (PST)
+Date:   Mon, 7 Feb 2022 13:18:37 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Martin Fernandez <martin.fernandez@eclypsium.com>
+Cc:     linux-kernel@vger.kernel.org, linux-efi@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org, linux-mm@kvack.org,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+        ardb@kernel.org, dvhart@infradead.org, andy@infradead.org,
+        gregkh@linuxfoundation.org, rafael@kernel.org, rppt@kernel.org,
+        akpm@linux-foundation.org, daniel.gutson@eclypsium.com,
+        hughsient@gmail.com, alex.bazhaniuk@eclypsium.com,
+        alison.schofield@intel.com
+Subject: Re: [PATCH v6 1/6] mm/memblock: Tag memblocks with crypto
+ capabilities
+Message-ID: <202202061945.DACC7BD04@keescook>
+References: <20220203164328.203629-1-martin.fernandez@eclypsium.com>
+ <20220203164328.203629-2-martin.fernandez@eclypsium.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220203164328.203629-2-martin.fernandez@eclypsium.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The only usage of ar2315_pci_irq_domain_ops is to pass its address to
-irq_domain_add_linear() which takes a pointer to const struct
-irq_domain_ops. Make it const to allow the compiler to put it in
-read-only memory.
+On Thu, Feb 03, 2022 at 01:43:23PM -0300, Martin Fernandez wrote:
+> Add the capability to mark regions of the memory memory_type able of
+> hardware memory encryption.
+> 
+> Also add the capability to query if all regions of a memory node are
+> able to do hardware memory encryption to call it when initializing the
+> nodes. Warn the user if a node has both encryptable and
+> non-encryptable regions.
+> 
+> Signed-off-by: Martin Fernandez <martin.fernandez@eclypsium.com>
+> ---
+>  include/linux/memblock.h | 15 ++++++----
+>  mm/memblock.c            | 64 ++++++++++++++++++++++++++++++++++++++++
+>  2 files changed, 74 insertions(+), 5 deletions(-)
+> 
+> diff --git a/include/linux/memblock.h b/include/linux/memblock.h
+> index 9dc7cb239d21..73edcce165a5 100644
+> --- a/include/linux/memblock.h
+> +++ b/include/linux/memblock.h
+> @@ -41,13 +41,15 @@ extern unsigned long long max_possible_pfn;
+>   * via a driver, and never indicated in the firmware-provided memory map as
+>   * system RAM. This corresponds to IORESOURCE_SYSRAM_DRIVER_MANAGED in the
+>   * kernel resource tree.
+> + * @MEMBLOCK_CRYPTO_CAPABLE: capable of hardware encryption
+>   */
+>  enum memblock_flags {
+> -	MEMBLOCK_NONE		= 0x0,	/* No special request */
+> -	MEMBLOCK_HOTPLUG	= 0x1,	/* hotpluggable region */
+> -	MEMBLOCK_MIRROR		= 0x2,	/* mirrored region */
+> -	MEMBLOCK_NOMAP		= 0x4,	/* don't add to kernel direct mapping */
+> -	MEMBLOCK_DRIVER_MANAGED = 0x8,	/* always detected via a driver */
+> +	MEMBLOCK_NONE		= 0x0,		/* No special request */
+> +	MEMBLOCK_HOTPLUG	= 0x1,		/* hotpluggable region */
+> +	MEMBLOCK_MIRROR		= 0x2,		/* mirrored region */
+> +	MEMBLOCK_NOMAP		= 0x4,		/* don't add to kernel direct mapping */
+> +	MEMBLOCK_DRIVER_MANAGED = 0x8,		/* always detected via a driver */
+> +	MEMBLOCK_CRYPTO_CAPABLE = 0x10,		/* capable of hardware encryption */
 
-Signed-off-by: Rikard Falkeborn <rikard.falkeborn@gmail.com>
----
- arch/mips/pci/pci-ar2315.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+As already suggested, please keep the tabs like they were. If you're
+going to change every line, maybe expand the single-digit literals to 2
+digits. (i.e. 0x0 -> 0x00, to keep the most significant bits lined up.)
 
-diff --git a/arch/mips/pci/pci-ar2315.c b/arch/mips/pci/pci-ar2315.c
-index 9a4bfb4e63e3..30e0922f4cea 100644
---- a/arch/mips/pci/pci-ar2315.c
-+++ b/arch/mips/pci/pci-ar2315.c
-@@ -384,7 +384,7 @@ static int ar2315_pci_irq_map(struct irq_domain *d, unsigned irq,
- 	return 0;
- }
- 
--static struct irq_domain_ops ar2315_pci_irq_domain_ops = {
-+static const struct irq_domain_ops ar2315_pci_irq_domain_ops = {
- 	.map = ar2315_pci_irq_map,
- };
- 
+>  };
+>  
+>  /**
+> @@ -121,6 +123,9 @@ int memblock_physmem_add(phys_addr_t base, phys_addr_t size);
+>  void memblock_trim_memory(phys_addr_t align);
+>  bool memblock_overlaps_region(struct memblock_type *type,
+>  			      phys_addr_t base, phys_addr_t size);
+> +bool memblock_node_is_crypto_capable(int nid);
+> +int memblock_mark_crypto_capable(phys_addr_t base, phys_addr_t size);
+> +int memblock_clear_crypto_capable(phys_addr_t base, phys_addr_t size);
+>  int memblock_mark_hotplug(phys_addr_t base, phys_addr_t size);
+>  int memblock_clear_hotplug(phys_addr_t base, phys_addr_t size);
+>  int memblock_mark_mirror(phys_addr_t base, phys_addr_t size);
+> diff --git a/mm/memblock.c b/mm/memblock.c
+> index 1018e50566f3..fcf79befeab3 100644
+> --- a/mm/memblock.c
+> +++ b/mm/memblock.c
+> @@ -191,6 +191,42 @@ bool __init_memblock memblock_overlaps_region(struct memblock_type *type,
+>  	return i < type->cnt;
+>  }
+>  
+> +/**
+> + * memblock_node_is_crypto_capable - get if whole node is capable
+> + * of encryption
+> + * @nid: number of node
+> + *
+> + * Iterate over all memory memblock_type and find if all regions under
+> + * node @nid are capable of hardware encryption.
+> + *
+> + * Return:
+> + * true if every region in memory memblock_type is capable of
+> + * encryption, false otherwise.
+> + */
+> +bool __init_memblock memblock_node_is_crypto_capable(int nid)
+> +{
+> +	struct memblock_region *region;
+> +	bool crypto_capable = false;
+> +	bool not_crypto_capable = false;
+> +
+> +	for_each_mem_region(region) {
+> +		if (memblock_get_region_node(region) == nid) {
+> +			crypto_capable =
+> +				crypto_capable ||
+> +				(region->flags & MEMBLOCK_CRYPTO_CAPABLE);
+
+This was already mentioned, but I just thought I'd add: this made me
+double-take, given the "||" (instead of "|") in an assignment. It looked
+like a typo, but yes it's correct. I was expecting something like:
+
+			crypto_capable |=
+				!!(region->flags & MEMBLOCK_CRYPTO_CAPABLE);
+
+> +			not_crypto_capable =
+> +				not_crypto_capable ||
+> +				!(region->flags & MEMBLOCK_CRYPTO_CAPABLE);
+
+			not_crypto_capable |=
+				!(region->flags & MEMBLOCK_CRYPTO_CAPABLE);
+
+> +		}
+> +	}
+> +
+> +	if (crypto_capable && not_crypto_capable)
+> +		pr_warn_once("Node %d has regions that are encryptable and regions that aren't",
+> +			     nid);
+> +
+> +	return !not_crypto_capable;
+> +}
+> +
+>  /**
+>   * __memblock_find_range_bottom_up - find free area utility in bottom-up
+>   * @start: start of candidate range
+> @@ -885,6 +921,34 @@ static int __init_memblock memblock_setclr_flag(phys_addr_t base,
+>  	return 0;
+>  }
+>  
+> +/**
+> + * memblock_mark_crypto_capable - Mark memory regions capable of hardware
+> + * encryption with flag MEMBLOCK_CRYPTO_CAPABLE.
+> + * @base: the base phys addr of the region
+> + * @size: the size of the region
+> + *
+> + * Return: 0 on success, -errno on failure.
+> + */
+> +int __init_memblock memblock_mark_crypto_capable(phys_addr_t base,
+> +						 phys_addr_t size)
+> +{
+> +	return memblock_setclr_flag(base, size, 1, MEMBLOCK_CRYPTO_CAPABLE);
+> +}
+> +
+> +/**
+> + * memblock_clear_crypto_capable - Clear flag MEMBLOCK_CRYPTO for a
+> + * specified region.
+> + * @base: the base phys addr of the region
+> + * @size: the size of the region
+> + *
+> + * Return: 0 on success, -errno on failure.
+> + */
+> +int __init_memblock memblock_clear_crypto_capable(phys_addr_t base,
+> +						  phys_addr_t size)
+> +{
+> +	return memblock_setclr_flag(base, size, 0, MEMBLOCK_CRYPTO_CAPABLE);
+> +}
+> +
+>  /**
+>   * memblock_mark_hotplug - Mark hotpluggable memory with flag MEMBLOCK_HOTPLUG.
+>   * @base: the base phys addr of the region
+> -- 
+> 2.30.2
+> 
+
 -- 
-2.35.1
-
+Kees Cook
