@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 181DCC4708B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A478C38A05
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391280AbiBGMBU (ORCPT
+        id S1391398AbiBGMBn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 07:01:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48586 "EHLO
+        Mon, 7 Feb 2022 07:01:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386774AbiBGLgj (ORCPT
+        with ESMTP id S1386786AbiBGLgs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:36:39 -0500
+        Mon, 7 Feb 2022 06:36:48 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F578C0401C0;
-        Mon,  7 Feb 2022 03:36:38 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 612B4C043188;
+        Mon,  7 Feb 2022 03:36:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5E6E0B8112C;
-        Mon,  7 Feb 2022 11:36:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6E5AC004E1;
-        Mon,  7 Feb 2022 11:36:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 25A07B80EBD;
+        Mon,  7 Feb 2022 11:36:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D4D2C004E1;
+        Mon,  7 Feb 2022 11:36:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233796;
-        bh=A8AXPBtYBDFFG2VgJ8Qp7mlnjDSOfbScHXZaILBJqkY=;
+        s=korg; t=1644233805;
+        bh=8QV6oXiFaB4PUA8JqIhf7y6Mx274xZaFC/RUXpTItBc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xAAVsUUEOFOgNoXcxoFsLN1dL25gRCcHHENquP+n9yn/oSqA1c8fZTPkMvhO4Y92G
-         OIEcUAX+f+zuRRgMQWu703g1qGYBY4zEPnto2I9+78i/VdH8BeYitiFeiIZnlfwhLC
-         IZhK5gKTVkCdmbTQyLuzL8+fUqM03XDWOKQUkFgs=
+        b=fsxEVEihRELWBcOnRSCsR3mal7aBaDAOcKFbeyPMLjmSDOaDQ/gq5nPgwMtevj9CC
+         f8x1JoOjXTk1uxNW3fwSblZ5UapIHYQrZNfOB1wW8lnYb/sL2FioD9RzIHYDHJJuiY
+         ez6zOllcYjmyISOrPcqI87GWYbEP/66ZapRbr2nM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Waiman Long <longman@redhat.com>,
-        Phil Auld <pauld@redhat.com>, Tejun Heo <tj@kernel.org>
-Subject: [PATCH 5.16 121/126] cgroup/cpuset: Fix "suspicious RCU usage" lockdep warning
-Date:   Mon,  7 Feb 2022 12:07:32 +0100
-Message-Id: <20220207103808.231751970@linuxfoundation.org>
+        stable@vger.kernel.org, SASANO Takayoshi <uaa@mx5.nisiq.net>,
+        Andre Przywara <andre.przywara@arm.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 5.16 093/126] pinctrl: sunxi: Fix H616 I2S3 pin data
+Date:   Mon,  7 Feb 2022 12:07:04 +0100
+Message-Id: <20220207103807.297452660@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
 References: <20220207103804.053675072@linuxfoundation.org>
@@ -49,60 +52,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Waiman Long <longman@redhat.com>
+From: Andre Przywara <andre.przywara@arm.com>
 
-commit 2bdfd2825c9662463371e6691b1a794e97fa36b4 upstream.
+commit 1fd6bb5b47a65eacb063b37e6fa6df2b8fa92959 upstream.
 
-It was found that a "suspicious RCU usage" lockdep warning was issued
-with the rcu_read_lock() call in update_sibling_cpumasks().  It is
-because the update_cpumasks_hier() function may sleep. So we have
-to release the RCU lock, call update_cpumasks_hier() and reacquire
-it afterward.
+Two bugs have sneaked in the H616 pinctrl data:
+- PH9 uses the mux value of 0x3 twice (one should be 0x5 instead)
+- PH8 and PH9 use the "i2s3" function name twice in each pin
 
-Also add a percpu_rwsem_assert_held() in update_sibling_cpumasks()
-instead of stating that in the comment.
+For the double pin name we use the same trick we pulled for i2s0: append
+the pin function to the group name to designate the special function.
 
-Fixes: 4716909cc5c5 ("cpuset: Track cpusets that use parent's effective_cpus")
-Signed-off-by: Waiman Long <longman@redhat.com>
-Tested-by: Phil Auld <pauld@redhat.com>
-Reviewed-by: Phil Auld <pauld@redhat.com>
-Signed-off-by: Tejun Heo <tj@kernel.org>
+Fixes: 25adc29407fb ("pinctrl: sunxi: Add support for the Allwinner H616 pin controller")
+Reported-by: SASANO Takayoshi <uaa@mx5.nisiq.net>
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Reviewed-by: Samuel Holland <samuel@sholland.org>
+Link: https://lore.kernel.org/r/20220105172952.23347-1-andre.przywara@arm.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/cgroup/cpuset.c |   10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/pinctrl/sunxi/pinctrl-sun50i-h616.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/kernel/cgroup/cpuset.c
-+++ b/kernel/cgroup/cpuset.c
-@@ -1530,10 +1530,15 @@ static void update_sibling_cpumasks(stru
- 	struct cpuset *sibling;
- 	struct cgroup_subsys_state *pos_css;
- 
-+	percpu_rwsem_assert_held(&cpuset_rwsem);
-+
- 	/*
- 	 * Check all its siblings and call update_cpumasks_hier()
- 	 * if their use_parent_ecpus flag is set in order for them
- 	 * to use the right effective_cpus value.
-+	 *
-+	 * The update_cpumasks_hier() function may sleep. So we have to
-+	 * release the RCU read lock before calling it.
- 	 */
- 	rcu_read_lock();
- 	cpuset_for_each_child(sibling, pos_css, parent) {
-@@ -1541,8 +1546,13 @@ static void update_sibling_cpumasks(stru
- 			continue;
- 		if (!sibling->use_parent_ecpus)
- 			continue;
-+		if (!css_tryget_online(&sibling->css))
-+			continue;
- 
-+		rcu_read_unlock();
- 		update_cpumasks_hier(sibling, tmp);
-+		rcu_read_lock();
-+		css_put(&sibling->css);
- 	}
- 	rcu_read_unlock();
- }
+--- a/drivers/pinctrl/sunxi/pinctrl-sun50i-h616.c
++++ b/drivers/pinctrl/sunxi/pinctrl-sun50i-h616.c
+@@ -363,16 +363,16 @@ static const struct sunxi_desc_pin h616_
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+ 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+ 		  SUNXI_FUNCTION(0x2, "uart2"),		/* CTS */
+-		  SUNXI_FUNCTION(0x3, "i2s3"),	/* DO0 */
++		  SUNXI_FUNCTION(0x3, "i2s3_dout0"),	/* DO0 */
+ 		  SUNXI_FUNCTION(0x4, "spi1"),		/* MISO */
+-		  SUNXI_FUNCTION(0x5, "i2s3"),	/* DI1 */
++		  SUNXI_FUNCTION(0x5, "i2s3_din1"),	/* DI1 */
+ 		  SUNXI_FUNCTION_IRQ_BANK(0x6, 6, 8)),	/* PH_EINT8 */
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(H, 9),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+ 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+-		  SUNXI_FUNCTION(0x3, "i2s3"),	/* DI0 */
++		  SUNXI_FUNCTION(0x3, "i2s3_din0"),	/* DI0 */
+ 		  SUNXI_FUNCTION(0x4, "spi1"),		/* CS1 */
+-		  SUNXI_FUNCTION(0x3, "i2s3"),	/* DO1 */
++		  SUNXI_FUNCTION(0x5, "i2s3_dout1"),	/* DO1 */
+ 		  SUNXI_FUNCTION_IRQ_BANK(0x6, 6, 9)),	/* PH_EINT9 */
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(H, 10),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
 
 
