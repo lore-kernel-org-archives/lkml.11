@@ -2,129 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46AA0C46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90DEFC4707A
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 17:00:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357236AbiBGQ73 (ORCPT
+        id S1357430AbiBGQ7c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:59:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47286 "EHLO
+        Mon, 7 Feb 2022 11:59:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386797AbiBGQpI (ORCPT
+        with ESMTP id S1344852AbiBGQye (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 11:45:08 -0500
-Received: from mgw-02.mpynet.fi (mgw-02.mpynet.fi [82.197.21.91])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6BF7C0401DD;
-        Mon,  7 Feb 2022 08:45:05 -0800 (PST)
-Received: from pps.filterd (mgw-02.mpynet.fi [127.0.0.1])
-        by mgw-02.mpynet.fi (8.16.0.43/8.16.0.43) with SMTP id 217GeCDA090121;
-        Mon, 7 Feb 2022 18:44:58 +0200
-Received: from ex13.tuxera.com (ex13.tuxera.com [178.16.184.72])
-        by mgw-02.mpynet.fi with ESMTP id 3e1dtn18jr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 18:44:58 +0200
-Received: from [192.168.0.129] (62.78.240.173) by tuxera-exch.ad.tuxera.com
- (10.20.48.11) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Mon, 7 Feb
- 2022 18:44:57 +0200
-Message-ID: <cd346b72-1899-8f2d-5ff6-65c4ac93308c@tuxera.com>
-Date:   Mon, 7 Feb 2022 18:44:55 +0200
+        Mon, 7 Feb 2022 11:54:34 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 136F4C0401D1
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:54:34 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C1F36B812AA
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 16:54:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FE54C004E1;
+        Mon,  7 Feb 2022 16:54:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644252871;
+        bh=ZhCOMln0Zt5onmq74lvlwpZ3OfaHsYGRSVchu6lO+i0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=EoH0Sklp/HpYS+1O2MEju3lzMw6MFoHYmoNUVkt7h71Xc3kOgUsdt/MF3jE9qG/fh
+         SpPvDrOPpM1nSKu3WbxkPhHxacfSBUomPbOkV6CWJ5ytSZ0Oes7z7xsIssV+TJT+g0
+         7fn0OCTGl6IwBlXyqimlw19GqhMQodQYmpib6mnxJVca5Bb3e4fjB+cbDlDP7ylDEZ
+         L/VEY4S5jrlU3/7SVPpAkrbseOMB1sy2hBABFDe+hC6pNHAqmwr6UDmvDZFRniIrux
+         DsADCI7jjJ9ZawX77pU3m4V6vWufLfmsdDVKy0O+D0xKr+Mx2GFOPyXrt5uPPXM//O
+         SAHEwT093ecGg==
+Date:   Mon, 7 Feb 2022 09:54:26 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     yannick Fertre <yannick.fertre@foss.st.com>
+Cc:     Philippe Cornu <philippe.cornu@foss.st.com>,
+        Raphael Gallais-Pou <raphael.gallais-pou@foss.st.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        dri-devel@lists.freedesktop.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 5/5] drm/stm: ltdc: add support of ycbcr pixel formats
+Message-ID: <YgFOwl896WjY6DHM@dev-arch.archlinux-ax161>
+References: <20211215214843.20703-1-yannick.fertre@foss.st.com>
+ <Yfq3XwozrxYaFhgD@dev-arch.archlinux-ax161>
+ <7bd0a0a9-4015-b54c-f745-f813496be61b@foss.st.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] fs/read_write.c: Fix a broken signed integer overflow
- check.
-Content-Language: en-US
-To:     Al Viro <viro@zeniv.linux.org.uk>
-CC:     Andrew Morton <akpm@linux-foundation.org>,
-        <linux-kernel@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
-        <stable@vger.kernel.org>, Anton Altaparmakov <anton@tuxera.com>
-References: <20220207120711.4070403-1-ari@tuxera.com>
- <YgEzs2Hp0LrdDmJu@zeniv-ca.linux.org.uk>
-From:   Ari Sundholm <ari@tuxera.com>
-In-Reply-To: <YgEzs2Hp0LrdDmJu@zeniv-ca.linux.org.uk>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [62.78.240.173]
-X-ClientProxiedBy: tuxera-exch.ad.tuxera.com (10.20.48.11) To
- tuxera-exch.ad.tuxera.com (10.20.48.11)
-X-Proofpoint-GUID: Da0sQN7Knu4Px4pte8UxgNfRYtot2MB1
-X-Proofpoint-ORIG-GUID: Da0sQN7Knu4Px4pte8UxgNfRYtot2MB1
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.425,18.0.816
- definitions=2022-02-07_06:2022-02-07,2022-02-07 signatures=0
-X-Proofpoint-Spam-Details: rule=mpy_notspam policy=mpy score=0 phishscore=0 suspectscore=0
- malwarescore=0 adultscore=0 bulkscore=0 spamscore=0 mlxlogscore=999
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202070103
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7bd0a0a9-4015-b54c-f745-f813496be61b@foss.st.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello, Al,
-
-On 2/7/22 16:58, Al Viro wrote:
-> On Mon, Feb 07, 2022 at 02:07:11PM +0200, Ari Sundholm wrote:
->> The function generic_copy_file_checks() checks that the ends of the
->> input and output file ranges do not overflow. Unfortunately, there is
->> an issue with the check itself.
->>
->> Due to the integer promotion rules in C, the expressions
->> (pos_in + count) and (pos_out + count) have an unsigned type because
->> the count variable has the type uint64_t. Thus, in many cases where we
->> should detect signed integer overflow to have occurred (and thus one or
->> more of the ranges being invalid), the expressions will instead be
->> interpreted as large unsigned integers. This means the check is broken.
+On Mon, Feb 07, 2022 at 11:00:34AM +0100, yannick Fertre wrote:
+> Hi Nathan,
 > 
-> I must be slow this morning, but... which values of pos_in and count are
-> caught by your check, but not by the original?
+> On 2/2/22 17:54, Nathan Chancellor wrote:
+> > Hi Yannick,
+> > 
+> > On Wed, Dec 15, 2021 at 10:48:43PM +0100, Yannick Fertre wrote:
+> > > This patch adds the following YCbCr input pixel formats on the latest
+> > > LTDC hardware version:
+> > > 
+> > > 1 plane  (co-planar)  : YUYV, YVYU, UYVY, VYUY
+> > > 2 planes (semi-planar): NV12, NV21
+> > > 3 planes (full-planar): YU12=I420=DRM YUV420, YV12=DRM YVU420
+> > > 
+> > > Signed-off-by: Yannick Fertre <yannick.fertre@foss.st.com>
+> > 
+> > <snip>
+> > 
+> > > +static inline void ltdc_set_ycbcr_config(struct drm_plane *plane, u32 drm_pix_fmt)
+> > > +{
+> > > +	struct ltdc_device *ldev = plane_to_ltdc(plane);
+> > > +	struct drm_plane_state *state = plane->state;
+> > > +	u32 lofs = plane->index * LAY_OFS;
+> > > +	u32 val;
+> > > +
+> > > +	switch (drm_pix_fmt) {
+> > > +	case DRM_FORMAT_YUYV:
+> > > +		val = (YCM_I << 4) | LxPCR_YF | LxPCR_CBF;
+> > > +		break;
+> > > +	case DRM_FORMAT_YVYU:
+> > > +		val = (YCM_I << 4) | LxPCR_YF;
+> > > +		break;
+> > > +	case DRM_FORMAT_UYVY:
+> > > +		val = (YCM_I << 4) | LxPCR_CBF;
+> > > +		break;
+> > > +	case DRM_FORMAT_VYUY:
+> > > +		val = (YCM_I << 4);
+> > > +		break;
+> > > +	case DRM_FORMAT_NV12:
+> > > +		val = (YCM_SP << 4) | LxPCR_CBF;
+> > > +		break;
+> > > +	case DRM_FORMAT_NV21:
+> > > +		val = (YCM_SP << 4);
+> > > +		break;
+> > > +	case DRM_FORMAT_YUV420:
+> > > +	case DRM_FORMAT_YVU420:
+> > > +		val = (YCM_FP << 4);
+> > > +		break;
+> > > +	default:
+> > > +		/* RGB or not a YCbCr supported format */
+> > > +		break;
+> > > +	}
+> > > +
+> > > +	/* Enable limited range */
+> > > +	if (state->color_range == DRM_COLOR_YCBCR_LIMITED_RANGE)
+> > > +		val |= LxPCR_YREN;
+> > > +
+> > > +	/* enable ycbcr conversion */
+> > > +	val |= LxPCR_YCEN;
+> > > +
+> > > +	regmap_write(ldev->regmap, LTDC_L1PCR + lofs, val);
+> > > +}
+> > 
+> > This patch as commit 484e72d3146b ("drm/stm: ltdc: add support of ycbcr
+> > pixel formats") in -next introduced the following clang warning:
+> > 
+> > drivers/gpu/drm/stm/ltdc.c:625:2: warning: variable 'val' is used uninitialized whenever switch default is taken [-Wsometimes-uninitialized]
+> >          default:
+> >          ^~~~~~~
+> > drivers/gpu/drm/stm/ltdc.c:635:2: note: uninitialized use occurs here
+> >          val |= LxPCR_YCEN;
+> >          ^~~
+> > drivers/gpu/drm/stm/ltdc.c:600:9: note: initialize the variable 'val' to silence this warning
+> >          u32 val;
+> >                 ^
+> >                  = 0
+> > 1 warning generated.
+> > 
+> > Would it be okay to just return in the default case (maybe with a
+> > message about an unsupported format?) or should there be another fix?
+> > 
+> > Cheers,
 > 
-
-Thank you for your response and questions.
-
-Assuming an x86-64 target platform, please consider:
-
-loff_t pos_out = 0x7FFFFFFFFFFEFFFFLL;
-and
-uint64_t count = 65537;
-
-The type of the expression (pos_out + count) is a 64-bit unsigned type, 
-by C's integer promotion rules. Its value is 0x8000000000000000ULL, that 
-is, bit 63 is set.
-
-The comparison (pos_out + count) < pos_out, again due to C's integer 
-promotion rules, is unsigned. Thus, the comparison, in this case, is 
-equivalent to:
-
-0x8000000000000000ULL < 0x7FFFFFFFFFFEFFFFULL,
-
-which is false. Please note that the LHS is not expressible as a 
-positive integer of type loff_t. With larger values for count, the 
-problem should become quite obvious, as some the offsets within the file 
-would not be expressible as positive integers of type loff_t. But I 
-digress. As we can see above, the overflow is missed.
-
-With the LHS explicitly cast to loff_t, the comparison is equivalent to:
-
-0x8000000000000000LL < 0x7FFFFFFFFFFEFFFFLL,
-
-which is true, as the LHS is negative.
-
-This has also been verified in practice, and was detected when running 
-tests on special cases of the copy_file_range syscall on different 
-filesystems.
-
->> -	if (pos_in + count < pos_in || pos_out + count < pos_out)
->> +	if ((loff_t)(pos_in + count) < pos_in ||
->> +			(loff_t)(pos_out + count) < pos_out)
 > 
-> Example, please.  Why do you need that comparison to be signed?
+> Thanks for your help.
+> It'okay for a message for unsupported format with a return in the default
+> case.
+> Do you want create & push the patch?
 
-Please see the above.
+Thank you for the input! I have sent a fix now, please take a look.
 
-I also created a small test program one can try on Compiler Explorer: 
-https://godbolt.org/z/e76rb3Ec9
+https://lore.kernel.org/r/20220207165304.1046867-1-nathan@kernel.org/
 
-Please let me know if there are any further concerns.
-
-Best regards,
-Ari Sundholm
-ari@tuxera.com
+Cheers,
+Nathan
