@@ -2,200 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA537C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0B76C4167D
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 05:50:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239633AbiBGFun (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 00:50:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50346 "EHLO
+        id S240003AbiBGFup (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 00:50:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238346AbiBGErd (ORCPT
+        with ESMTP id S1350287AbiBGD0M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 23:47:33 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BA76C043181;
-        Sun,  6 Feb 2022 20:47:32 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 2AF71210E8;
-        Mon,  7 Feb 2022 04:47:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1644209251; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=upnGZr9DzucgqdKjTzI9I/R+ASk480fPjcWmZZiwDRY=;
-        b=SG891wRXWq1jkKISq7BPJG1f6xCq3wxjXiDuucGwsJONxcifDBmOkjlq1mbzUkhjxRabkc
-        lkZXaWet6Klk/Gn0fJ4tSID9+1F93jA5D66R5Ux2sPENSQN+4B+ooTidztTGFYZM+mHyxn
-        urF3J8bLqw9W9YU4kZtdK0JhleECDK0=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1644209251;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=upnGZr9DzucgqdKjTzI9I/R+ASk480fPjcWmZZiwDRY=;
-        b=ahsNFsl/G2L8fbkq/4MEVV7Yp3lOr4T05+/AHEWnbLYvTCJJrGXZh0XtcCPkSmF6cTJeyq
-        Pr6GZy9s7y8IsHDg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 2E8731330E;
-        Mon,  7 Feb 2022 04:47:27 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id X2MIN1+kAGI0NQAAMHmgww
-        (envelope-from <neilb@suse.de>); Mon, 07 Feb 2022 04:47:27 +0000
-Subject: [PATCH 06/21] MM: perform async writes to SWP_FS_OPS swap-space using
- ->swap_rw
-From:   NeilBrown <neilb@suse.de>
-To:     Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mark Hemment <markhemm@googlemail.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        David Howells <dhowells@redhat.com>
-Cc:     linux-nfs@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Date:   Mon, 07 Feb 2022 15:46:01 +1100
-Message-ID: <164420916115.29374.13389081720024297304.stgit@noble.brown>
-In-Reply-To: <164420889455.29374.17958998143835612560.stgit@noble.brown>
-References: <164420889455.29374.17958998143835612560.stgit@noble.brown>
-User-Agent: StGit/0.23
+        Sun, 6 Feb 2022 22:26:12 -0500
+X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 19:26:11 PST
+Received: from esa2.hgst.iphmx.com (esa2.hgst.iphmx.com [68.232.143.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40940C061A73
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 19:26:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1644204370; x=1675740370;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=+PGiUz6IVsXwuo4TQYZtEFmfxDiduE4w2R5euJoD4k0=;
+  b=LQdADFjYnw2EG9XZa4Ncu9eRIyozJSlT2MtCfWbKS7uLjE9sQvFjRY/H
+   a2loQo8Obe5pnZP41P3omKV1cGvAkewHypC9Pn+JS09eDHZC52Axy6Kkd
+   V3uGsOVX2SAr/Z2GZJuxZVNgxOKAxKRjLwZ2mfhX8De7l3zIgeulgG1Xm
+   SbDvqHN8s0SawkSYgQoi42D+6pjXNbZEnfaOIebpVnRWybKFeK8Yjgnrb
+   U0cpQkzWJnsCokleAxo468dreIslcqPc7QQg4yK+twUCvqeOvx7vLq4BP
+   rbfe1z9grjuPztoPRt4+AAQMMFUYluLgxQq9V/aOPDE/rW0hZYo+kN3a8
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.88,348,1635177600"; 
+   d="scan'208";a="296386954"
+Received: from h199-255-45-15.hgst.com (HELO uls-op-cesaep02.wdc.com) ([199.255.45.15])
+  by ob1.hgst.iphmx.com with ESMTP; 07 Feb 2022 11:25:08 +0800
+IronPort-SDR: g+cZ83vC91+YKJWssm8bH7LR6uLiFuGWAp2aoHbeScXsnt5G1C9ZFVaJVZ7gKm50RdZOn9vjb4
+ vGdxubSTZlyyUoGVNdpp7Ssp9sa1ZqRxIhnLyhJRKjY17B8oymRZKsjGQb+VlPwfG9VVGz3CQy
+ 7gZaQ7fReM3kbaC/sg9pA9FLwNB+87wruTe3AUlz99JM/kLt/nwy7mmyw5y1KekI8nrmooRs+R
+ PSUhs0kSwuyGfcK6MYMltRXCrzgrk/yebcinr7SBnHsRb0i/m9OmshPif4iiZ4ZffyP9GUDwcM
+ QLTzwvgkGqYBcEaQbPde6Y3+
+Received: from uls-op-cesaip01.wdc.com ([10.248.3.36])
+  by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2022 18:56:59 -0800
+IronPort-SDR: DS58eNbnI5wBJDjFA1VusNiloulCLGMvtG2l0gTcWif4nkVeOi4t5wlFpz0lZe2sWzozKXcDvC
+ 9YDPtsUVu2Bit1k+A3SZPafjNgcXh/83nFR0f/aalvakfnsverGWb00BChvnZRMneA1xDfcumo
+ au9nPrtP/3zMSUsnRuMVo4cK3DEgjRerAJZ3PHOG5x3mE7yz+eRHeydNOjrW9bzeOymEdqHlZR
+ h3WYH3fOE2yAyX494sUyg7h7BRXtVhrz09LyfW4fklmQdGkcUUoCIb8y7YW/jQDyBIFezTto2n
+ C0s=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2022 19:25:09 -0800
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4JsWjc2LSKz1SVp2
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 19:25:08 -0800 (PST)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1644204307; x=1646796308; bh=+PGiUz6IVsXwuo4TQYZtEFmfxDiduE4w2R5
+        euJoD4k0=; b=KrPzH5YM1F6suctFze3AmkR4PflP5imhrAbhjevbNmzolGAMOs+
+        SuqKb1bJhOQGsXk9IDhuoZPV5hhjzp7sdRmMsDHqbBl/jZD2UQEC1U2vXgWSn7uB
+        Ygfsvt09X8yGvCkL0x6gOexLt7HMFW/bdXNjwu4CqGZzyuoe9kc6RX6ZyDgU9IV6
+        V4Z55ZCvlsq7ghlBOc4GyGS8wurGNVBRrPzzSrYpAwepnzU+mijwYbh8JNwneyKA
+        2F9mHLCghIiiOJOjRkmlcY4hvprdRQOAv1u7JCbla8N1+xSJFl0oT9et1EDXMMM4
+        ghbr+dbmuts+8BAqXaQZw29rezcOxFbu+vQ==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id sBpEQYU4mtUt for <linux-kernel@vger.kernel.org>;
+        Sun,  6 Feb 2022 19:25:07 -0800 (PST)
+Received: from [10.225.163.63] (unknown [10.225.163.63])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4JsWjZ3jBZz1Rwrw;
+        Sun,  6 Feb 2022 19:25:06 -0800 (PST)
+Message-ID: <281475cc-a159-8e25-f5e7-cde343bc50c4@opensource.wdc.com>
+Date:   Mon, 7 Feb 2022 12:25:04 +0900
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH -next] scsi: pm8001: clean up some inconsistent indenting
+Content-Language: en-US
+To:     Yang Li <yang.lee@linux.alibaba.com>, jejb@linux.ibm.com
+Cc:     martin.petersen@oracle.com, jinpu.wang@cloud.ionos.com,
+        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Abaci Robot <abaci@linux.alibaba.com>
+References: <20220206125548.110945-1-yang.lee@linux.alibaba.com>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <20220206125548.110945-1-yang.lee@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch switches swap-out to SWP_FS_OPS swap-spaces to use ->swap_rw
-and makes the writes asynchronous, like they are for other swap spaces.
+On 2/6/22 21:55, Yang Li wrote:
+> Eliminate the follow smatch warning:
+> drivers/scsi/pm8001/pm8001_ctl.c:760 pm8001_update_flash() warn:
+> inconsistent indenting
+> 
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+> ---
+>  drivers/scsi/pm8001/pm8001_ctl.c | 65 +++++++++++++++++---------------
+>  1 file changed, 35 insertions(+), 30 deletions(-)
+> 
+> diff --git a/drivers/scsi/pm8001/pm8001_ctl.c b/drivers/scsi/pm8001/pm8001_ctl.c
+> index 41a63c9b719b..213ebf39261f 100644
+> --- a/drivers/scsi/pm8001/pm8001_ctl.c
+> +++ b/drivers/scsi/pm8001/pm8001_ctl.c
+> @@ -755,36 +755,41 @@ static int pm8001_update_flash(struct pm8001_hba_info *pm8001_ha)
+>  			fwControl->retcode = 0;/* OUT */
+>  			fwControl->offset = loopNumber * IOCTL_BUF_SIZE;/*OUT */
+>  
+> -		/* for the last chunk of data in case file size is not even with
+> -		4k, load only the rest*/
+> -		if (((loopcount-loopNumber) == 1) &&
+> -			((partitionSize + HEADER_LEN) % IOCTL_BUF_SIZE)) {
+> -			fwControl->len =
+> -				(partitionSize + HEADER_LEN) % IOCTL_BUF_SIZE;
+> -			memcpy((u8 *)fwControl->buffer,
+> -				(u8 *)pm8001_ha->fw_image->data + sizeRead,
+> -				(partitionSize + HEADER_LEN) % IOCTL_BUF_SIZE);
+> -			sizeRead +=
+> -				(partitionSize + HEADER_LEN) % IOCTL_BUF_SIZE;
+> -		} else {
+> -			memcpy((u8 *)fwControl->buffer,
+> -				(u8 *)pm8001_ha->fw_image->data + sizeRead,
+> -				IOCTL_BUF_SIZE);
+> -			sizeRead += IOCTL_BUF_SIZE;
+> -		}
+> -
+> -		pm8001_ha->nvmd_completion = &completion;
+> -		ret = PM8001_CHIP_DISP->fw_flash_update_req(pm8001_ha, payload);
+> -		if (ret) {
+> -			pm8001_ha->fw_status = FAIL_OUT_MEMORY;
+> -			goto out;
+> -		}
+> -		wait_for_completion(&completion);
+> -		if (fwControl->retcode > FLASH_UPDATE_IN_PROGRESS) {
+> -			pm8001_ha->fw_status = fwControl->retcode;
+> -			ret = -EFAULT;
+> -			goto out;
+> -		}
+> +			/* for the last chunk of data in case file
+> +			 * size is not even with 4k, load only the rest
+> +			 */
 
-To make it async we need to allocate the kiocb struct from a mempool.
-This may block, but won't block as long as waiting for the write to
-complete.  At most it will wait for some previous swap IO to complete.
+Please start multi-line comments with a line that has only "/*". It
+would be good to add a blnak line before that too, for readability.
 
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: NeilBrown <neilb@suse.de>
----
- mm/page_io.c |   93 +++++++++++++++++++++++++++++++++-------------------------
- 1 file changed, 53 insertions(+), 40 deletions(-)
+> +			if (((loopcount-loopNumber) == 1) &&
+> +				((partitionSize + HEADER_LEN) % IOCTL_BUF_SIZE)) {
 
-diff --git a/mm/page_io.c b/mm/page_io.c
-index e90a3231f225..f391846ea82a 100644
---- a/mm/page_io.c
-+++ b/mm/page_io.c
-@@ -303,6 +303,57 @@ int sio_pool_init(void)
- 	return 0;
- }
- 
-+static void sio_write_complete(struct kiocb *iocb, long ret)
-+{
-+	struct swap_iocb *sio = container_of(iocb, struct swap_iocb, iocb);
-+	struct page *page = sio->bvec.bv_page;
-+
-+	if (ret != PAGE_SIZE) {
-+		/*
-+		 * In the case of swap-over-nfs, this can be a
-+		 * temporary failure if the system has limited
-+		 * memory for allocating transmit buffers.
-+		 * Mark the page dirty and avoid
-+		 * folio_rotate_reclaimable but rate-limit the
-+		 * messages but do not flag PageError like
-+		 * the normal direct-to-bio case as it could
-+		 * be temporary.
-+		 */
-+		set_page_dirty(page);
-+		ClearPageReclaim(page);
-+		pr_err_ratelimited("Write error %ld on dio swapfile (%llu)\n",
-+				   ret, page_file_offset(page));
-+	} else
-+		count_vm_event(PSWPOUT);
-+	end_page_writeback(page);
-+	mempool_free(sio, sio_pool);
-+}
-+
-+static int swap_writepage_fs(struct page *page, struct writeback_control *wbc)
-+{
-+	struct swap_iocb *sio;
-+	struct swap_info_struct *sis = page_swap_info(page);
-+	struct file *swap_file = sis->swap_file;
-+	struct address_space *mapping = swap_file->f_mapping;
-+	struct iov_iter from;
-+	int ret;
-+
-+	set_page_writeback(page);
-+	unlock_page(page);
-+	sio = mempool_alloc(sio_pool, GFP_NOIO);
-+	init_sync_kiocb(&sio->iocb, swap_file);
-+	sio->iocb.ki_complete = sio_write_complete;
-+	sio->iocb.ki_pos = page_file_offset(page);
-+	sio->bvec.bv_page = page;
-+	sio->bvec.bv_len = PAGE_SIZE;
-+	sio->bvec.bv_offset = 0;
-+	iov_iter_bvec(&from, WRITE, &sio->bvec, 1, PAGE_SIZE);
-+	ret = mapping->a_ops->swap_rw(&sio->iocb, &from);
-+	if (ret != -EIOCBQUEUED)
-+		sio_write_complete(&sio->iocb, ret);
-+	return ret;
-+}
-+
- int __swap_writepage(struct page *page, struct writeback_control *wbc,
- 		bio_end_io_t end_write_func)
- {
-@@ -311,46 +362,8 @@ int __swap_writepage(struct page *page, struct writeback_control *wbc,
- 	struct swap_info_struct *sis = page_swap_info(page);
- 
- 	VM_BUG_ON_PAGE(!PageSwapCache(page), page);
--	if (data_race(sis->flags & SWP_FS_OPS)) {
--		struct kiocb kiocb;
--		struct file *swap_file = sis->swap_file;
--		struct address_space *mapping = swap_file->f_mapping;
--		struct bio_vec bv = {
--			.bv_page = page,
--			.bv_len  = PAGE_SIZE,
--			.bv_offset = 0
--		};
--		struct iov_iter from;
--
--		iov_iter_bvec(&from, WRITE, &bv, 1, PAGE_SIZE);
--		init_sync_kiocb(&kiocb, swap_file);
--		kiocb.ki_pos = page_file_offset(page);
--
--		set_page_writeback(page);
--		unlock_page(page);
--		ret = mapping->a_ops->direct_IO(&kiocb, &from);
--		if (ret == PAGE_SIZE) {
--			count_vm_event(PSWPOUT);
--			ret = 0;
--		} else {
--			/*
--			 * In the case of swap-over-nfs, this can be a
--			 * temporary failure if the system has limited
--			 * memory for allocating transmit buffers.
--			 * Mark the page dirty and avoid
--			 * folio_rotate_reclaimable but rate-limit the
--			 * messages but do not flag PageError like
--			 * the normal direct-to-bio case as it could
--			 * be temporary.
--			 */
--			set_page_dirty(page);
--			ClearPageReclaim(page);
--			pr_err_ratelimited("Write error on dio swapfile (%llu)\n",
--					   page_file_offset(page));
--		}
--		end_page_writeback(page);
--		return ret;
--	}
-+	if (data_race(sis->flags & SWP_FS_OPS))
-+		return swap_writepage_fs(page, wbc);
- 
- 	ret = bdev_write_page(sis->bdev, swap_page_sector(page), page, wbc);
- 	if (!ret) {
+While at it, align the conditions together to make this code more
+readable. As is, it is really unpleasant to read :)
+
+Also, "(partitionSize + HEADER_LEN) % IOCTL_BUF_SIZE" is calculated way
+too many times. Using a local variable for the value would be nice.
+
+> +				fwControl->len =
+> +					(partitionSize + HEADER_LEN) %
+> +					IOCTL_BUF_SIZE;
+> +				memcpy((u8 *)fwControl->buffer,
+> +					(u8 *)pm8001_ha->fw_image->data + sizeRead,
+> +					(partitionSize + HEADER_LEN) %
+> +					IOCTL_BUF_SIZE);
+> +				sizeRead +=
+> +					(partitionSize + HEADER_LEN) %
+> +					IOCTL_BUF_SIZE;
+> +			} else {
+> +				memcpy((u8 *)fwControl->buffer,
+> +					(u8 *)pm8001_ha->fw_image->data + sizeRead,
+> +					IOCTL_BUF_SIZE);
+> +				sizeRead += IOCTL_BUF_SIZE;
+> +			}
+> +
+> +			pm8001_ha->nvmd_completion = &completion;
+> +			ret = PM8001_CHIP_DISP->fw_flash_update_req(pm8001_ha,
+> +				payload);
+> +			if (ret) {
+> +				pm8001_ha->fw_status = FAIL_OUT_MEMORY;
+> +				goto out;
+> +			}
+> +			wait_for_completion(&completion);
+> +			if (fwControl->retcode > FLASH_UPDATE_IN_PROGRESS) {
+> +				pm8001_ha->fw_status = fwControl->retcode;
+> +				ret = -EFAULT;
+> +				goto out;
+> +			}
+>  		}
+>  	}
+>  out:
 
 
+-- 
+Damien Le Moal
+Western Digital Research
