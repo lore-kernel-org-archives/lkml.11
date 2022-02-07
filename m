@@ -2,113 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E3F0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 21:39:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D7D4C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 21:40:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240211AbiBGVj5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 16:39:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56240 "EHLO
+        id S241065AbiBGVko (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 16:40:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240208AbiBGVjw (ORCPT
+        with ESMTP id S240208AbiBGVkl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 16:39:52 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AA7E4C061A73
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 13:39:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644269990;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=AvJ9N+RokT/quaPmMZhpaU8mvk15cL5DRf0vZEA2K/0=;
-        b=HiiucCUTqHgj2undT9qDpunUqVFyFPZbAJJwXVihnIOdCHk+blxDb4/sdCJ+qac4r0KZv5
-        P/IJUweghEsBXu2QWYFIsiB9FY+djpaPQQdykhBDELzcMkV8I8XXmidCD43Rd1TEQYFvaJ
-        pm9uktXUwWmihiY3tKWD2wybhef6u0w=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-441-vgSPi0YHOzOjbRTZsRCqcQ-1; Mon, 07 Feb 2022 16:39:45 -0500
-X-MC-Unique: vgSPi0YHOzOjbRTZsRCqcQ-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1D0B1101F7A1;
-        Mon,  7 Feb 2022 21:39:43 +0000 (UTC)
-Received: from emerald.redhat.com (unknown [10.22.8.36])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0A52E1037F38;
-        Mon,  7 Feb 2022 21:39:34 +0000 (UTC)
-From:   Lyude Paul <lyude@redhat.com>
-To:     intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Cc:     Gwan-gyeong Mun <gwan-gyeong.mun@intel.com>,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>,
-        =?UTF-8?q?Jos=C3=A9=20Roberto=20de=20Souza?= <jose.souza@intel.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>, stable@vger.kernel.org,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Matt Roper <matthew.d.roper@intel.com>,
-        Lucas De Marchi <lucas.demarchi@intel.com>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] drm/i915/psr: Disable PSR2 selective fetch for all TGL steps
-Date:   Mon,  7 Feb 2022 16:38:20 -0500
-Message-Id: <20220207213923.3605-1-lyude@redhat.com>
+        Mon, 7 Feb 2022 16:40:41 -0500
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C3C4C061355
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 13:40:40 -0800 (PST)
+Received: by mail-pf1-x433.google.com with SMTP id i186so15354490pfe.0
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 13:40:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TUCNvjYGBjDLOWx0oqjTNqXH/Yx+Zia2/rtd6r5omRs=;
+        b=O7m2P73zV+5NeLlFCzV7cYTbgTSOFUB6jKeJh5bYZY4eykQxfb6J0TLyiaKsWAsdlk
+         51kBcDc1bKUHh4BVAuzZ6upxW7bHVwRpqqnKJvzIa9+dNjz1bYnWjYTlq34sKe9ArSVk
+         tQKETIKuouocyHBnM+j7QR3RZ1IK/EC+LX6YI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TUCNvjYGBjDLOWx0oqjTNqXH/Yx+Zia2/rtd6r5omRs=;
+        b=niuLByBafaeAx28wiejleO3sOUz2WgkbrMtGt61d5UfOkn2YqygbdY0J9x7Y5YZB6r
+         GpKT7FzpxCn4JbF1N6sXFLKlnsPCjw7VTl4yAaloK5oxhX4oromfJuN+7aX2Or2BS7Qx
+         OexdcGXQZqtD5qKO1BRYkhwhfnxnX6rcZo4SlBtF9ev1px8aKg1/5GCwBQADKeLyHIO0
+         R8DMUO+miHKkiCZ/hE+5ESW1V4Swt6ftKtknO88dhDIVwvcdEtv+XH6SimvV9jT4X/oq
+         o7gHz140Y+Gs2tm6ifGmoTE8aYBukbLKifu/qquVX5VQlb3s+2ya1nug5PzNV20yY32n
+         BSGA==
+X-Gm-Message-State: AOAM531ebWDGaQY0DzUdcGP7eIYU6pvrqNrzUOEOPIA92L8NgZIqBU4O
+        QFO4inj1bNwJgeIlD+opyh5dPm3AMflEZQ==
+X-Google-Smtp-Source: ABdhPJy2uusfp5RUHaUg38A19JuXK7AQln9SqEclfLmCzpUTINXPSo4Jt2gaG4sSxhwgVB7W2mNt/w==
+X-Received: by 2002:a05:6a00:1514:: with SMTP id q20mr1467788pfu.74.1644270039871;
+        Mon, 07 Feb 2022 13:40:39 -0800 (PST)
+Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id s9sm9268010pgm.76.2022.02.07.13.40.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 13:40:39 -0800 (PST)
+From:   Prashant Malani <pmalani@chromium.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Prashant Malani <pmalani@chromium.org>,
+        Benson Leung <bleung@chromium.org>,
+        chrome-platform@lists.linux.dev (open list:CHROMEOS EC USB TYPE-C
+        DRIVER), Guenter Roeck <groeck@chromium.org>
+Subject: [PATCH 0/4] platform/chrome: cros_ec_typec: Reorganize mux configuration
+Date:   Mon,  7 Feb 2022 21:40:22 +0000
+Message-Id: <20220207214026.1526151-1-pmalani@chromium.org>
+X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As we've unfortunately started to come to expect from PSR on Intel
-platforms, PSR2 selective fetch is not at all ready to be enabled on
-Tigerlake as it results in severe flickering issues - at least on this
-ThinkPad X1 Carbon 9th generation. The easiest way I've found of
-reproducing these issues is to just move the cursor around the left border
-of the screen (suspicious…).
+This is a short series that reorganizes when mux configuration occurs
+during Type C port updates. The first 2 patches are minor refactors
+which move some of the mux update logic to within
+cros_typec_configure_mux(). The third patch moves
+cros_typec_configure_mux() itself to be earlier in
+cros_typec_port_update().
 
-So, fix people's displays again and turn PSR2 selective fetch off for all
-steppings of Tigerlake. This can be re-enabled again if someone from Intel
-finds the time to fix this functionality on OEM machines.
+The final patch updates the stashed mux flag when a partner removal has
+occured.
 
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Fixes: 7f6002e58025 ("drm/i915/display: Enable PSR2 selective fetch by default")
-Cc: Gwan-gyeong Mun <gwan-gyeong.mun@intel.com>
-Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Cc: José Roberto de Souza <jose.souza@intel.com>
-Cc: Jani Nikula <jani.nikula@linux.intel.com>
-Cc: Rodrigo Vivi <rodrigo.vivi@intel.com>
-Cc: intel-gfx@lists.freedesktop.org
-Cc: <stable@vger.kernel.org> # v5.16+
----
- drivers/gpu/drm/i915/display/intel_psr.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+Prashant Malani (4):
+  platform/chrome: cros_ec_typec: Move mux flag checks
+  platform/chrome: cros_ec_typec: Get mux state inside configure_mux
+  platform/chrome: cros_ec_typec: Configure muxes at start of port
+    update
+  platform/chrome: cros_ec_typec: Update mux flags during partner
+    removal
 
-diff --git a/drivers/gpu/drm/i915/display/intel_psr.c b/drivers/gpu/drm/i915/display/intel_psr.c
-index a1a663f362e7..25c16abcd9cd 100644
---- a/drivers/gpu/drm/i915/display/intel_psr.c
-+++ b/drivers/gpu/drm/i915/display/intel_psr.c
-@@ -737,10 +737,14 @@ static bool intel_psr2_sel_fetch_config_valid(struct intel_dp *intel_dp,
- 		return false;
- 	}
- 
--	/* Wa_14010254185 Wa_14010103792 */
--	if (IS_TGL_DISPLAY_STEP(dev_priv, STEP_A0, STEP_C0)) {
-+	/*
-+	 * There's two things stopping this from being enabled on TGL:
-+	 * For steps A0-C0: workarounds Wa_14010254185 Wa_14010103792 are missing
-+	 * For all steps: PSR2 selective fetch causes screen flickering
-+	 */
-+	if (IS_TIGERLAKE(dev_priv)) {
- 		drm_dbg_kms(&dev_priv->drm,
--			    "PSR2 sel fetch not enabled, missing the implementation of WAs\n");
-+			    "PSR2 sel fetch not enabled, currently broken on TGL\n");
- 		return false;
- 	}
- 
+ drivers/platform/chrome/cros_ec_typec.c | 76 +++++++++++--------------
+ 1 file changed, 34 insertions(+), 42 deletions(-)
+
 -- 
-2.34.1
+2.35.0.263.gb82422642f-goog
 
