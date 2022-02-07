@@ -2,186 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3ED2C35272
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5039C46467
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 05:56:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350692AbiBGFwu (ORCPT
+        id S1350613AbiBGFwr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 00:52:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60030 "EHLO
+        Mon, 7 Feb 2022 00:52:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350160AbiBGDZU (ORCPT
+        with ESMTP id S241322AbiBGEsV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 22:25:20 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABA94C043180;
-        Sun,  6 Feb 2022 19:25:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1644204319; x=1675740319;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=awSixqD/CJJZjbFyd98CVQECftK7r0d61n7TbK+Ouv0=;
-  b=MnqWWhSFGSOQaNovwJais+68Snj3PH3/c6fiPjr9v6J1mIQhDum4T0nP
-   AvS98QOoIzSuZcMVMdFUXQenTloJhQihUAjYosmKN477qiqi1WuP89cWR
-   1JgrxgSNqXKgPJi4Hq1mX+GStmGjH6S7482oVsyZxBx8pjjMkSEU7qyas
-   8J0wN45HWKsoIgg8fwPqeTUlL9E47J3PlR785sYKD3QuTMJr1GOqIRaPo
-   Qg3u392lk2CMvQeWt4zZIh+wkeMfzIgbhr9mFDB7WDMcAA8chIgj5T2aA
-   g3Ft6WN71hLBLlRs9s/FYsSrgncIldAc5QP5Oom+fpSSiSbGTRArEkamw
-   Q==;
-IronPort-SDR: ow9aAvM7mD2zpctncoxDFwZBXFXlkNQLZSvocIIvdYU7oAkRAUYJ3JwfLSPa293fJCM0ZojK/a
- UztCI3pO7uPCTM4vJXZGTLUxYeeRhl8hfsTfxGASAMCx9q3eMBx+5AdOU3a+6hbSdR+7k5IePL
- DxXOR0KpsgrYfoTDz+pX44XynnLzXSJDwuazUEmqpe+IJpIpSpNmHKBFSaKbML1V7xxn4NeqOW
- TAPKW0Z7RFfi6ENClBatLHNC1gkmPC8iI4nhA1sM9ch3GWRXv6vHK/o/xKVaGNxbuvhnAceTN6
- RPweQedmiMy2+wYRsmt/+PyN
-X-IronPort-AV: E=Sophos;i="5.88,348,1635231600"; 
-   d="scan'208";a="152654142"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Feb 2022 20:24:16 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Sun, 6 Feb 2022 20:24:15 -0700
-Received: from ROB-ULT-M18064N.mchp-main.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Sun, 6 Feb 2022 20:24:13 -0700
-From:   Tudor Ambarus <tudor.ambarus@microchip.com>
-To:     <herbert@gondor.apana.org.au>, <robh+dt@kernel.org>
-CC:     <davem@davemloft.net>, <nicolas.ferre@microchip.com>,
-        <claudiu.beznea@microchip.com>, <alexandre.belloni@bootlin.com>,
-        <linux-crypto@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        "Tudor Ambarus" <tudor.ambarus@microchip.com>
-Subject: [PATCH 2/3] dt-bindings: crypto: Convert Atmel TDES to yaml
-Date:   Mon, 7 Feb 2022 05:24:04 +0200
-Message-ID: <20220207032405.70733-3-tudor.ambarus@microchip.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220207032405.70733-1-tudor.ambarus@microchip.com>
-References: <20220207032405.70733-1-tudor.ambarus@microchip.com>
+        Sun, 6 Feb 2022 23:48:21 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBDA1C043181;
+        Sun,  6 Feb 2022 20:48:20 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 79FCD210E8;
+        Mon,  7 Feb 2022 04:48:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1644209299; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Cfq4C5n0j+9ECeq3Bau2+AONhc0gqMkxIyut8YkPtic=;
+        b=hgCZHV82MSeCfvaBuyVLoaZFgR2bAwnq2EwfvobATSy1y0Acb2GWpRb/98vu5xbNi/VbtX
+        3O+ymKERrikNj+QdS8RRLvotispWnW0mld72vuhTX30xlfM+Kljy5qrCjzTx4X8DS1pgRm
+        naXBFfVimEaA0fUYKm8uaozUcxwuqno=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1644209299;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Cfq4C5n0j+9ECeq3Bau2+AONhc0gqMkxIyut8YkPtic=;
+        b=i6Tee3fCM6I1m/ImAiY+h0T6ZFa3vYICUzE299xZFiVQv5P8W7ze9YcOUifBiJHL5woRsG
+        YBkWVL1UV/SIISAg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 7FFA11330E;
+        Mon,  7 Feb 2022 04:48:16 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id RLw6D5CkAGJoNQAAMHmgww
+        (envelope-from <neilb@suse.de>); Mon, 07 Feb 2022 04:48:16 +0000
+Subject: [PATCH 13/21] SUNRPC/auth: async tasks mustn't block waiting for
+ memory
+From:   NeilBrown <neilb@suse.de>
+To:     Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mark Hemment <markhemm@googlemail.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        David Howells <dhowells@redhat.com>
+Cc:     linux-nfs@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Date:   Mon, 07 Feb 2022 15:46:01 +1100
+Message-ID: <164420916119.29374.16954351742259185040.stgit@noble.brown>
+In-Reply-To: <164420889455.29374.17958998143835612560.stgit@noble.brown>
+References: <164420889455.29374.17958998143835612560.stgit@noble.brown>
+User-Agent: StGit/0.23
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert Atmel TDES documentation to yaml format. With the conversion the
-clock and clock-names properties are made mandatory. The driver returns
--EINVAL if "tdes_clk" is not found, reflect that in the bindings and make
-the clock and clock-names properties mandatory. Update the example to
-better describe how one should define the dt node.
+When memory is short, new worker threads cannot be created and we depend
+on the minimum one rpciod thread to be able to handle everything.  So it
+must not block waiting for memory.
 
-Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+mempools are particularly a problem as memory can only be released back
+to the mempool by an async rpc task running.  If all available workqueue
+threads are waiting on the mempool, no thread is available to return
+anything.
+
+lookup_cred() can block on a mempool or kmalloc - and this can cause
+deadlocks.  So add a new RPCAUTH_LOOKUP flag for async lookups and don't
+block on memory.  If the -ENOMEM gets back to call_refreshresult(), wait
+a short while and try again.  HZ>>4 is chosen as it is used elsewhere
+for -ENOMEM retries.
+
+Signed-off-by: NeilBrown <neilb@suse.de>
 ---
- .../bindings/crypto/atmel,tdes.yaml           | 63 +++++++++++++++++++
- .../bindings/crypto/atmel-crypto.txt          | 23 -------
- 2 files changed, 63 insertions(+), 23 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/crypto/atmel,tdes.yaml
+ include/linux/sunrpc/auth.h    |    1 +
+ net/sunrpc/auth.c              |    6 +++++-
+ net/sunrpc/auth_gss/auth_gss.c |    6 +++++-
+ net/sunrpc/auth_unix.c         |   10 ++++++++--
+ net/sunrpc/clnt.c              |    3 +++
+ 5 files changed, 22 insertions(+), 4 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/crypto/atmel,tdes.yaml b/Documentation/devicetree/bindings/crypto/atmel,tdes.yaml
-new file mode 100644
-index 000000000000..7efa5e4acaa1
---- /dev/null
-+++ b/Documentation/devicetree/bindings/crypto/atmel,tdes.yaml
-@@ -0,0 +1,63 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/crypto/atmel,tdes.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Atmel Triple Data Encryption Standard (TDES) HW cryptographic accelerator
-+
-+maintainers:
-+  - Tudor Ambarus <tudor.ambarus@microchip.com>
-+
-+properties:
-+  compatible:
-+    const: atmel,at91sam9g46-tdes
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  clock-names:
-+    const: tdes_clk
-+
-+  dmas:
-+    items:
-+      - description: TX DMA Channel
-+      - description: RX DMA Channel
-+
-+  dma-names:
-+    items:
-+      - const: tx
-+      - const: rx
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clocks
-+  - clock-names
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/clock/at91.h>
-+    #include <dt-bindings/dma/at91.h>
-+    tdes: tdes@e2014000 {
-+      compatible = "atmel,at91sam9g46-tdes";
-+      reg = <0xe2014000 0x100>;
-+      interrupts = <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>;
-+      clocks = <&pmc PMC_TYPE_PERIPHERAL 96>;
-+      clock-names = "tdes_clk";
-+      dmas = <&dma0 AT91_XDMAC_DT_PERID(54)>,
-+             <&dma0 AT91_XDMAC_DT_PERID(53)>;
-+      dma-names = "tx", "rx";
-+      status = "okay";
-+    };
-diff --git a/Documentation/devicetree/bindings/crypto/atmel-crypto.txt b/Documentation/devicetree/bindings/crypto/atmel-crypto.txt
-index 1353ebd0dcaa..5c6541cfcc4a 100644
---- a/Documentation/devicetree/bindings/crypto/atmel-crypto.txt
-+++ b/Documentation/devicetree/bindings/crypto/atmel-crypto.txt
-@@ -2,29 +2,6 @@
+diff --git a/include/linux/sunrpc/auth.h b/include/linux/sunrpc/auth.h
+index 98da816b5fc2..3e6ce288a7fc 100644
+--- a/include/linux/sunrpc/auth.h
++++ b/include/linux/sunrpc/auth.h
+@@ -99,6 +99,7 @@ struct rpc_auth_create_args {
  
- These are the HW cryptographic accelerators found on some Atmel products.
+ /* Flags for rpcauth_lookupcred() */
+ #define RPCAUTH_LOOKUP_NEW		0x01	/* Accept an uninitialised cred */
++#define RPCAUTH_LOOKUP_ASYNC		0x02	/* Don't block waiting for memory */
  
--* Triple Data Encryption Standard (Triple DES)
--
--Required properties:
--- compatible : Should be "atmel,at91sam9g46-tdes".
--- reg: Should contain TDES registers location and length.
--- interrupts: Should contain the IRQ line for the TDES.
--
--Optional properties:
--- dmas: List of two DMA specifiers as described in
--        atmel-dma.txt and dma.txt files.
--- dma-names: Contains one identifier string for each DMA specifier
--             in the dmas property.
--
--Example:
--tdes@f803c000 {
--	compatible = "atmel,at91sam9g46-tdes";
--	reg = <0xf803c000 0x100>;
--	interrupts = <44 4 0>;
--	dmas = <&dma1 2 20>,
--	       <&dma1 2 21>;
--	dma-names = "tx", "rx";
--};
--
- * Secure Hash Algorithm (SHA)
+ /*
+  * Client authentication ops
+diff --git a/net/sunrpc/auth.c b/net/sunrpc/auth.c
+index a9f0d17fdb0d..6bfa19f9fa6a 100644
+--- a/net/sunrpc/auth.c
++++ b/net/sunrpc/auth.c
+@@ -615,6 +615,8 @@ rpcauth_bind_root_cred(struct rpc_task *task, int lookupflags)
+ 	};
+ 	struct rpc_cred *ret;
  
- Required properties:
--- 
-2.25.1
++	if (RPC_IS_ASYNC(task))
++		lookupflags |= RPCAUTH_LOOKUP_ASYNC;
+ 	ret = auth->au_ops->lookup_cred(auth, &acred, lookupflags);
+ 	put_cred(acred.cred);
+ 	return ret;
+@@ -631,6 +633,8 @@ rpcauth_bind_machine_cred(struct rpc_task *task, int lookupflags)
+ 
+ 	if (!acred.principal)
+ 		return NULL;
++	if (RPC_IS_ASYNC(task))
++		lookupflags |= RPCAUTH_LOOKUP_ASYNC;
+ 	return auth->au_ops->lookup_cred(auth, &acred, lookupflags);
+ }
+ 
+@@ -654,7 +658,7 @@ rpcauth_bindcred(struct rpc_task *task, const struct cred *cred, int flags)
+ 	};
+ 
+ 	if (flags & RPC_TASK_ASYNC)
+-		lookupflags |= RPCAUTH_LOOKUP_NEW;
++		lookupflags |= RPCAUTH_LOOKUP_NEW | RPCAUTH_LOOKUP_ASYNC;
+ 	if (task->tk_op_cred)
+ 		/* Task must use exactly this rpc_cred */
+ 		new = get_rpccred(task->tk_op_cred);
+diff --git a/net/sunrpc/auth_gss/auth_gss.c b/net/sunrpc/auth_gss/auth_gss.c
+index 5f42aa5fc612..df72d6301f78 100644
+--- a/net/sunrpc/auth_gss/auth_gss.c
++++ b/net/sunrpc/auth_gss/auth_gss.c
+@@ -1341,7 +1341,11 @@ gss_hash_cred(struct auth_cred *acred, unsigned int hashbits)
+ static struct rpc_cred *
+ gss_lookup_cred(struct rpc_auth *auth, struct auth_cred *acred, int flags)
+ {
+-	return rpcauth_lookup_credcache(auth, acred, flags, GFP_NOFS);
++	gfp_t gfp = GFP_NOFS;
++
++	if (flags & RPCAUTH_LOOKUP_ASYNC)
++		gfp = GFP_NOWAIT | __GFP_NOWARN;
++	return rpcauth_lookup_credcache(auth, acred, flags, gfp);
+ }
+ 
+ static struct rpc_cred *
+diff --git a/net/sunrpc/auth_unix.c b/net/sunrpc/auth_unix.c
+index e7df1f782b2e..e5819265dd1b 100644
+--- a/net/sunrpc/auth_unix.c
++++ b/net/sunrpc/auth_unix.c
+@@ -43,8 +43,14 @@ unx_destroy(struct rpc_auth *auth)
+ static struct rpc_cred *
+ unx_lookup_cred(struct rpc_auth *auth, struct auth_cred *acred, int flags)
+ {
+-	struct rpc_cred *ret = mempool_alloc(unix_pool, GFP_NOFS);
+-
++	gfp_t gfp = GFP_NOFS;
++	struct rpc_cred *ret;
++
++	if (flags & RPCAUTH_LOOKUP_ASYNC)
++		gfp = GFP_NOWAIT | __GFP_NOWARN;
++	ret = mempool_alloc(unix_pool, gfp);
++	if (!ret)
++		return ERR_PTR(-ENOMEM);
+ 	rpcauth_init_cred(ret, acred, auth, &unix_credops);
+ 	ret->cr_flags = 1UL << RPCAUTH_CRED_UPTODATE;
+ 	return ret;
+diff --git a/net/sunrpc/clnt.c b/net/sunrpc/clnt.c
+index c83fe618767c..d1fb7c0c7685 100644
+--- a/net/sunrpc/clnt.c
++++ b/net/sunrpc/clnt.c
+@@ -1745,6 +1745,9 @@ call_refreshresult(struct rpc_task *task)
+ 		task->tk_cred_retry--;
+ 		trace_rpc_retry_refresh_status(task);
+ 		return;
++	case -ENOMEM:
++		rpc_delay(task, HZ >> 4);
++		return;
+ 	}
+ 	trace_rpc_refresh_status(task);
+ 	rpc_call_rpcerror(task, status);
+
 
