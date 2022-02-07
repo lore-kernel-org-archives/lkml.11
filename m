@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97674C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5598C3526C
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:01:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358343AbiBGP7y (ORCPT
+        id S1377746AbiBGP76 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 10:59:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36598 "EHLO
+        Mon, 7 Feb 2022 10:59:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377742AbiBGPzF (ORCPT
+        with ESMTP id S236271AbiBGP5q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 10:55:05 -0500
+        Mon, 7 Feb 2022 10:57:46 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CB745C0401DD
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:55:04 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A4811C0401CC
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:57:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644249303;
+        s=mimecast20190719; t=1644249464;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=ckLuH3eXQt4Wu9Nzp1D8ksAkv1tHukiQ+KMKFiTtdwY=;
-        b=cIx6hvdW99GeleJU4jRK3RUHgV40wH49QCk2UgtyVVxMq7fkD+K5V9JcxmG1r6jcYVKWXm
-        h72qR6Uim788LQWPXDR/cCOy9iohJUdxq1+plDA3TTh1iSQAavw3LnQOSFiocbajLhCulu
-        eCqL8sWlE5+biPjldKlyHuETyp9qw7Y=
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=0HEZBYTVo91JCiV+9jLxhzD11zRa4eS0IgQUtngVtbM=;
+        b=LWCoEBoNchRtbSZs7/DWehC9jZQMzm10VVlf3sUmhtm1YHqyvqf/Vs9H9LFGlcS6sSp9sS
+        dPPFGs5ia2+edlQmROidhDfflbaCtyi5sUAXaBJoA85Nc/xUdWzDatl8JbKU5XXCHgE9EL
+        tIZ3ChJQS3LRuDDNVoCBPCNhOQsApU8=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-277-3oJzETgWM123BYxoIWYJeQ-1; Mon, 07 Feb 2022 10:55:00 -0500
-X-MC-Unique: 3oJzETgWM123BYxoIWYJeQ-1
+ us-mta-307-IDusY3QONkeS_JBFG2cWcw-1; Mon, 07 Feb 2022 10:57:41 -0500
+X-MC-Unique: IDusY3QONkeS_JBFG2cWcw-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EAE56100C609;
-        Mon,  7 Feb 2022 15:54:56 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6A4C4192D787;
+        Mon,  7 Feb 2022 15:57:38 +0000 (UTC)
 Received: from localhost.localdomain (unknown [10.40.192.15])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 182D87DE5F;
-        Mon,  7 Feb 2022 15:54:48 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 54A807DE38;
+        Mon,  7 Feb 2022 15:57:12 +0000 (UTC)
 From:   Maxim Levitsky <mlevitsk@redhat.com>
 To:     kvm@vger.kernel.org
 Cc:     Tony Luck <tony.luck@intel.com>,
@@ -66,99 +67,74 @@ Cc:     Tony Luck <tony.luck@intel.com>,
         Kan Liang <kan.liang@linux.intel.com>,
         Jani Nikula <jani.nikula@linux.intel.com>,
         Maxim Levitsky <mlevitsk@redhat.com>
-Subject: [PATCH RESEND 00/30] My patch queue
-Date:   Mon,  7 Feb 2022 17:54:17 +0200
-Message-Id: <20220207155447.840194-1-mlevitsk@redhat.com>
-Content-Type: text/plain; charset="utf-8"
+Subject: [PATCH RESEND 13/30] KVM: x86: lapic: don't allow to change APIC ID when apic acceleration is enabled
+Date:   Mon,  7 Feb 2022 17:54:30 +0200
+Message-Id: <20220207155447.840194-14-mlevitsk@redhat.com>
+In-Reply-To: <20220207155447.840194-1-mlevitsk@redhat.com>
+References: <20220207155447.840194-1-mlevitsk@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is set of various patches that are stuck in my patch queue.=0D
-=0D
-KVM_REQ_GET_NESTED_STATE_PAGES patch is mostly RFC, but it does seem=0D
-to work for me.=0D
-=0D
-Read-only APIC ID is also somewhat RFC.=0D
-=0D
-Some of these patches are preparation for support for nested AVIC=0D
-which I almost done developing, and will start testing very soon.=0D
-=0D
-Resend with cleaned up CCs.=0D
-=0D
-Best regards,=0D
-	Maxim Levitsky=0D
-=0D
-Maxim Levitsky (30):=0D
-  KVM: x86: SVM: don't passthrough SMAP/SMEP/PKE bits in !NPT &&=0D
-    !gCR0.PG case=0D
-  KVM: x86: nSVM: fix potential NULL derefernce on nested migration=0D
-  KVM: x86: nSVM: mark vmcb01 as dirty when restoring SMM saved state=0D
-  KVM: x86: nSVM/nVMX: set nested_run_pending on VM entry which is a=0D
-    result of RSM=0D
-  KVM: x86: nSVM: expose clean bit support to the guest=0D
-  KVM: x86: mark syntethic SMM vmexit as SVM_EXIT_SW=0D
-  KVM: x86: nSVM: deal with L1 hypervisor that intercepts interrupts but=0D
-    lets L2 control them=0D
-  KVM: x86: lapic: don't touch irr_pending in kvm_apic_update_apicv when=0D
-    inhibiting it=0D
-  KVM: x86: SVM: move avic definitions from AMD's spec to svm.h=0D
-  KVM: x86: SVM: fix race between interrupt delivery and AVIC inhibition=0D
-  KVM: x86: SVM: use vmcb01 in avic_init_vmcb=0D
-  KVM: x86: SVM: allow AVIC to co-exist with a nested guest running=0D
-  KVM: x86: lapic: don't allow to change APIC ID when apic acceleration=0D
-    is enabled=0D
-  KVM: x86: lapic: don't allow to change local apic id when using older=0D
-    x2apic api=0D
-  KVM: x86: SVM: remove avic's broken code that updated APIC ID=0D
-  KVM: x86: SVM: allow to force AVIC to be enabled=0D
-  KVM: x86: mmu: trace kvm_mmu_set_spte after the new SPTE was set=0D
-  KVM: x86: mmu: add strict mmu mode=0D
-  KVM: x86: mmu: add gfn_in_memslot helper=0D
-  KVM: x86: mmu: allow to enable write tracking externally=0D
-  x86: KVMGT: use kvm_page_track_write_tracking_enable=0D
-  KVM: x86: nSVM: correctly virtualize LBR msrs when L2 is running=0D
-  KVM: x86: nSVM: implement nested LBR virtualization=0D
-  KVM: x86: nSVM: implement nested VMLOAD/VMSAVE=0D
-  KVM: x86: nSVM: support PAUSE filter threshold and count when=0D
-    cpu_pm=3Don=0D
-  KVM: x86: nSVM: implement nested vGIF=0D
-  KVM: x86: add force_intercept_exceptions_mask=0D
-  KVM: SVM: implement force_intercept_exceptions_mask=0D
-  KVM: VMX: implement force_intercept_exceptions_mask=0D
-  KVM: x86: get rid of KVM_REQ_GET_NESTED_STATE_PAGES=0D
-=0D
- arch/x86/include/asm/kvm-x86-ops.h    |   1 +=0D
- arch/x86/include/asm/kvm_host.h       |  24 +-=0D
- arch/x86/include/asm/kvm_page_track.h |   1 +=0D
- arch/x86/include/asm/msr-index.h      |   1 +=0D
- arch/x86/include/asm/svm.h            |  36 +++=0D
- arch/x86/include/uapi/asm/kvm.h       |   1 +=0D
- arch/x86/kvm/Kconfig                  |   3 -=0D
- arch/x86/kvm/hyperv.c                 |   4 +=0D
- arch/x86/kvm/lapic.c                  |  53 ++--=0D
- arch/x86/kvm/mmu.h                    |   8 +-=0D
- arch/x86/kvm/mmu/mmu.c                |  31 ++-=0D
- arch/x86/kvm/mmu/page_track.c         |  10 +-=0D
- arch/x86/kvm/svm/avic.c               | 135 +++-------=0D
- arch/x86/kvm/svm/nested.c             | 167 +++++++-----=0D
- arch/x86/kvm/svm/svm.c                | 375 ++++++++++++++++++++++----=0D
- arch/x86/kvm/svm/svm.h                |  60 +++--=0D
- arch/x86/kvm/svm/svm_onhyperv.c       |   1 +=0D
- arch/x86/kvm/vmx/nested.c             | 107 +++-----=0D
- arch/x86/kvm/vmx/vmcs.h               |   6 +=0D
- arch/x86/kvm/vmx/vmx.c                |  48 +++-=0D
- arch/x86/kvm/x86.c                    |  42 ++-=0D
- arch/x86/kvm/x86.h                    |   5 +=0D
- drivers/gpu/drm/i915/Kconfig          |   1 -=0D
- drivers/gpu/drm/i915/gvt/kvmgt.c      |   5 +=0D
- include/linux/kvm_host.h              |  10 +-=0D
- 25 files changed, 764 insertions(+), 371 deletions(-)=0D
-=0D
--- =0D
-2.26.3=0D
-=0D
+No normal guest has any reason to change physical APIC IDs, and
+allowing this introduces bugs into APIC acceleration code.
+
+Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
+---
+ arch/x86/kvm/lapic.c | 28 ++++++++++++++++++++++------
+ 1 file changed, 22 insertions(+), 6 deletions(-)
+
+diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
+index dd4e2888c244b..7ff695cab27b2 100644
+--- a/arch/x86/kvm/lapic.c
++++ b/arch/x86/kvm/lapic.c
+@@ -2002,10 +2002,20 @@ int kvm_lapic_reg_write(struct kvm_lapic *apic, u32 reg, u32 val)
+ 
+ 	switch (reg) {
+ 	case APIC_ID:		/* Local APIC ID */
+-		if (!apic_x2apic_mode(apic))
+-			kvm_apic_set_xapic_id(apic, val >> 24);
+-		else
++		if (apic_x2apic_mode(apic)) {
+ 			ret = 1;
++			break;
++		}
++		/*
++		 * Don't allow setting APIC ID with any APIC acceleration
++		 * enabled to avoid unexpected issues
++		 */
++		if (enable_apicv && ((val >> 24) != apic->vcpu->vcpu_id)) {
++			kvm_vm_bugged(apic->vcpu->kvm);
++			break;
++		}
++
++		kvm_apic_set_xapic_id(apic, val >> 24);
+ 		break;
+ 
+ 	case APIC_TASKPRI:
+@@ -2572,10 +2582,16 @@ int kvm_get_apic_interrupt(struct kvm_vcpu *vcpu)
+ static int kvm_apic_state_fixup(struct kvm_vcpu *vcpu,
+ 		struct kvm_lapic_state *s, bool set)
+ {
+-	if (apic_x2apic_mode(vcpu->arch.apic)) {
+-		u32 *id = (u32 *)(s->regs + APIC_ID);
+-		u32 *ldr = (u32 *)(s->regs + APIC_LDR);
++	u32 *id = (u32 *)(s->regs + APIC_ID);
++	u32 *ldr = (u32 *)(s->regs + APIC_LDR);
+ 
++	if (!apic_x2apic_mode(vcpu->arch.apic)) {
++		/* Don't allow setting APIC ID with any APIC acceleration
++		 * enabled to avoid unexpected issues
++		 */
++		if (enable_apicv && (*id >> 24) != vcpu->vcpu_id)
++			return -EINVAL;
++	} else {
+ 		if (vcpu->kvm->arch.x2apic_format) {
+ 			if (*id != vcpu->vcpu_id)
+ 				return -EINVAL;
+-- 
+2.26.3
 
