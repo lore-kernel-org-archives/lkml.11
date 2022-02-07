@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8561AC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE3DAC43219
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:13:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241919AbiBGLLU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:11:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48710 "EHLO
+        id S1343582AbiBGLL0 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 06:11:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233007AbiBGLJ5 (ORCPT
+        with ESMTP id S1355253AbiBGLII (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:09:57 -0500
+        Mon, 7 Feb 2022 06:08:08 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35CF3C043181;
-        Mon,  7 Feb 2022 03:09:57 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58B12C043188;
+        Mon,  7 Feb 2022 03:08:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BC5B261261;
-        Mon,  7 Feb 2022 11:09:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FDD5C004E1;
-        Mon,  7 Feb 2022 11:09:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D8343611AA;
+        Mon,  7 Feb 2022 11:08:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7067C004E1;
+        Mon,  7 Feb 2022 11:08:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232196;
-        bh=CPmVWQ/7oQalmECT6hnQEr/Nt5UnlHXsgWyOM+BkD6o=;
+        s=korg; t=1644232086;
+        bh=llYpXRNgCDL02EcSmVcoB724PH/9gJDPbx2yGxcQE2A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KTFGBEAFuXo0p90xclMyu8IieIH9tDOvKxeU3HoVyYHBX9byKjW58b+SSknZM1a1q
-         /pljM7dpxeymp++I3Et0X4GE46MDlfSed+sarkiWWu0dTsBxWn/8huOb1X4+GLvIiq
-         rjGMYKR89ajfYYdKKg1KiAazCt44vZ7Fsfk6cH6A=
+        b=gTcQCO+EYB8ffxtyws+NeLKx4Z7B4f1/gY4dp3GEmnG2vN5M9KmwOS9fqCeFVGZa4
+         FcJ35nGRo99Rau8zIheqfG2zQMxZvdXb7Puf1pynmD40zb3NxSoHFOLkLQQsqpqsmt
+         NYYxc67jGGFDwzJ6EFZQW605kinCRGc+6UZ5i594=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guangwu Zhang <guazhang@redhat.com>,
-        Maurizio Lombardi <mlombard@redhat.com>,
-        John Meneghini <jmeneghi@redhat.com>,
+        stable@vger.kernel.org, Benjamin Block <bblock@linux.ibm.com>,
+        Steffen Maier <maier@linux.ibm.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 4.9 15/48] scsi: bnx2fc: Flush destroy_work queue before calling bnx2fc_interface_put()
-Date:   Mon,  7 Feb 2022 12:05:48 +0100
-Message-Id: <20220207103752.841250488@linuxfoundation.org>
+Subject: [PATCH 4.9 04/48] scsi: zfcp: Fix failed recovery on gone remote port with non-NPIV FCP devices
+Date:   Mon,  7 Feb 2022 12:05:37 +0100
+Message-Id: <20220207103752.486196824@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103752.341184175@linuxfoundation.org>
 References: <20220207103752.341184175@linuxfoundation.org>
@@ -50,146 +50,111 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Meneghini <jmeneghi@redhat.com>
+From: Steffen Maier <maier@linux.ibm.com>
 
-commit 847f9ea4c5186fdb7b84297e3eeed9e340e83fce upstream.
+commit 8c9db6679be4348b8aae108e11d4be2f83976e30 upstream.
 
-The bnx2fc_destroy() functions are removing the interface before calling
-destroy_work. This results multiple WARNings from sysfs_remove_group() as
-the controller rport device attributes are removed too early.
+Suppose we have an environment with a number of non-NPIV FCP devices
+(virtual HBAs / FCP devices / zfcp "adapter"s) sharing the same physical
+FCP channel (HBA port) and its I_T nexus. Plus a number of storage target
+ports zoned to such shared channel. Now one target port logs out of the
+fabric causing an RSCN. Zfcp reacts with an ADISC ELS and subsequent port
+recovery depending on the ADISC result. This happens on all such FCP
+devices (in different Linux images) concurrently as they all receive a copy
+of this RSCN. In the following we look at one of those FCP devices.
 
-Replace the fcoe_port's destroy_work queue. It's not needed.
+Requests other than FSF_QTCB_FCP_CMND can be slow until they get a
+response.
 
-The problem is easily reproducible with the following steps.
+Depending on which requests are affected by slow responses, there are
+different recovery outcomes. Here we want to fix failed recoveries on port
+or adapter level by avoiding recovery requests that can be slow.
 
-Example:
+We need the cached N_Port_ID for the remote port "link" test with ADISC.
+Just before sending the ADISC, we now intentionally forget the old cached
+N_Port_ID. The idea is that on receiving an RSCN for a port, we have to
+assume that any cached information about this port is stale.  This forces a
+fresh new GID_PN [FC-GS] nameserver lookup on any subsequent recovery for
+the same port. Since we typically can still communicate with the nameserver
+efficiently, we now reach steady state quicker: Either the nameserver still
+does not know about the port so we stop recovery, or the nameserver already
+knows the port potentially with a new N_Port_ID and we can successfully and
+quickly perform open port recovery.  For the one case, where ADISC returns
+successfully, we re-initialize port->d_id because that case does not
+involve any port recovery.
 
-  $ dmesg -w &
-  $ systemctl enable --now fcoe
-  $ fipvlan -s -c ens2f1
-  $ fcoeadm -d ens2f1.802
-  [  583.464488] host2: libfc: Link down on port (7500a1)
-  [  583.472651] bnx2fc: 7500a1 - rport not created Yet!!
-  [  583.490468] ------------[ cut here ]------------
-  [  583.538725] sysfs group 'power' not found for kobject 'rport-2:0-0'
-  [  583.568814] WARNING: CPU: 3 PID: 192 at fs/sysfs/group.c:279 sysfs_remove_group+0x6f/0x80
-  [  583.607130] Modules linked in: dm_service_time 8021q garp mrp stp llc bnx2fc cnic uio rpcsec_gss_krb5 auth_rpcgss nfsv4 ...
-  [  583.942994] CPU: 3 PID: 192 Comm: kworker/3:2 Kdump: loaded Not tainted 5.14.0-39.el9.x86_64 #1
-  [  583.984105] Hardware name: HP ProLiant DL120 G7, BIOS J01 07/01/2013
-  [  584.016535] Workqueue: fc_wq_2 fc_rport_final_delete [scsi_transport_fc]
-  [  584.050691] RIP: 0010:sysfs_remove_group+0x6f/0x80
-  [  584.074725] Code: ff 5b 48 89 ef 5d 41 5c e9 ee c0 ff ff 48 89 ef e8 f6 b8 ff ff eb d1 49 8b 14 24 48 8b 33 48 c7 c7 ...
-  [  584.162586] RSP: 0018:ffffb567c15afdc0 EFLAGS: 00010282
-  [  584.188225] RAX: 0000000000000000 RBX: ffffffff8eec4220 RCX: 0000000000000000
-  [  584.221053] RDX: ffff8c1586ce84c0 RSI: ffff8c1586cd7cc0 RDI: ffff8c1586cd7cc0
-  [  584.255089] RBP: 0000000000000000 R08: 0000000000000000 R09: ffffb567c15afc00
-  [  584.287954] R10: ffffb567c15afbf8 R11: ffffffff8fbe7f28 R12: ffff8c1486326400
-  [  584.322356] R13: ffff8c1486326480 R14: ffff8c1483a4a000 R15: 0000000000000004
-  [  584.355379] FS:  0000000000000000(0000) GS:ffff8c1586cc0000(0000) knlGS:0000000000000000
-  [  584.394419] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-  [  584.421123] CR2: 00007fe95a6f7840 CR3: 0000000107674002 CR4: 00000000000606e0
-  [  584.454888] Call Trace:
-  [  584.466108]  device_del+0xb2/0x3e0
-  [  584.481701]  device_unregister+0x13/0x60
-  [  584.501306]  bsg_unregister_queue+0x5b/0x80
-  [  584.522029]  bsg_remove_queue+0x1c/0x40
-  [  584.541884]  fc_rport_final_delete+0xf3/0x1d0 [scsi_transport_fc]
-  [  584.573823]  process_one_work+0x1e3/0x3b0
-  [  584.592396]  worker_thread+0x50/0x3b0
-  [  584.609256]  ? rescuer_thread+0x370/0x370
-  [  584.628877]  kthread+0x149/0x170
-  [  584.643673]  ? set_kthread_struct+0x40/0x40
-  [  584.662909]  ret_from_fork+0x22/0x30
-  [  584.680002] ---[ end trace 53575ecefa942ece ]---
+This also solves a problem if the storage WWPN quickly logs into the fabric
+again but with a different N_Port_ID. Such as on virtual WWPN takeover
+during target NPIV failover.
+[https://www.redbooks.ibm.com/abstracts/redp5477.html] In that case the
+RSCN from the storage FDISC was ignored by zfcp and we could not
+successfully recover the failover. On some later failback on the storage,
+we could have been lucky if the virtual WWPN got the same old N_Port_ID
+from the SAN switch as we still had cached.  Then the related RSCN
+triggered a successful port reopen recovery.  However, there is no
+guarantee to get the same N_Port_ID on NPIV FDISC.
 
-Link: https://lore.kernel.org/r/20220115040044.1013475-1-jmeneghi@redhat.com
-Fixes: 0cbf32e1681d ("[SCSI] bnx2fc: Avoid calling bnx2fc_if_destroy with unnecessary locks")
-Tested-by: Guangwu Zhang <guazhang@redhat.com>
-Co-developed-by: Maurizio Lombardi <mlombard@redhat.com>
-Signed-off-by: Maurizio Lombardi <mlombard@redhat.com>
-Signed-off-by: John Meneghini <jmeneghi@redhat.com>
+Even though NPIV-enabled FCP devices are not affected by this problem, this
+code change optimizes recovery time for gone remote ports as a side effect.
+The timely drop of cached N_Port_IDs prevents unnecessary slow open port
+attempts.
+
+While the problem might have been in code before v2.6.32 commit
+799b76d09aee ("[SCSI] zfcp: Decouple gid_pn requests from erp") this fix
+depends on the gid_pn_work introduced with that commit, so we mark it as
+culprit to satisfy fix dependencies.
+
+Note: Point-to-point remote port is already handled separately and gets its
+N_Port_ID from the cached peer_d_id. So resetting port->d_id in general
+does not affect PtP.
+
+Link: https://lore.kernel.org/r/20220118165803.3667947-1-maier@linux.ibm.com
+Fixes: 799b76d09aee ("[SCSI] zfcp: Decouple gid_pn requests from erp")
+Cc: <stable@vger.kernel.org> #2.6.32+
+Suggested-by: Benjamin Block <bblock@linux.ibm.com>
+Reviewed-by: Benjamin Block <bblock@linux.ibm.com>
+Signed-off-by: Steffen Maier <maier@linux.ibm.com>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/bnx2fc/bnx2fc_fcoe.c |   20 +++++---------------
- 1 file changed, 5 insertions(+), 15 deletions(-)
+ drivers/s390/scsi/zfcp_fc.c |   13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
---- a/drivers/scsi/bnx2fc/bnx2fc_fcoe.c
-+++ b/drivers/scsi/bnx2fc/bnx2fc_fcoe.c
-@@ -79,7 +79,7 @@ static int bnx2fc_bind_pcidev(struct bnx
- static void bnx2fc_unbind_pcidev(struct bnx2fc_hba *hba);
- static struct fc_lport *bnx2fc_if_create(struct bnx2fc_interface *interface,
- 				  struct device *parent, int npiv);
--static void bnx2fc_destroy_work(struct work_struct *work);
-+static void bnx2fc_port_destroy(struct fcoe_port *port);
+--- a/drivers/s390/scsi/zfcp_fc.c
++++ b/drivers/s390/scsi/zfcp_fc.c
+@@ -518,6 +518,8 @@ static void zfcp_fc_adisc_handler(void *
+ 		goto out;
+ 	}
  
- static struct bnx2fc_hba *bnx2fc_hba_lookup(struct net_device *phys_dev);
- static struct bnx2fc_interface *bnx2fc_interface_lookup(struct net_device
-@@ -884,9 +884,6 @@ static void bnx2fc_indicate_netevent(voi
- 				__bnx2fc_destroy(interface);
- 		}
- 		mutex_unlock(&bnx2fc_dev_lock);
--
--		/* Ensure ALL destroy work has been completed before return */
--		flush_workqueue(bnx2fc_wq);
- 		return;
++	/* re-init to undo drop from zfcp_fc_adisc() */
++	port->d_id = ntoh24(adisc_resp->adisc_port_id);
+ 	/* port is good, unblock rport without going through erp */
+ 	zfcp_scsi_schedule_rport_register(port);
+  out:
+@@ -531,6 +533,7 @@ static int zfcp_fc_adisc(struct zfcp_por
+ 	struct zfcp_fc_req *fc_req;
+ 	struct zfcp_adapter *adapter = port->adapter;
+ 	struct Scsi_Host *shost = adapter->scsi_host;
++	u32 d_id;
+ 	int ret;
  
- 	default:
-@@ -1194,8 +1191,8 @@ static int bnx2fc_vport_destroy(struct f
- 	mutex_unlock(&n_port->lp_mutex);
- 	bnx2fc_free_vport(interface->hba, port->lport);
- 	bnx2fc_port_shutdown(port->lport);
-+	bnx2fc_port_destroy(port);
- 	bnx2fc_interface_put(interface);
--	queue_work(bnx2fc_wq, &port->destroy_work);
- 	return 0;
- }
+ 	fc_req = kmem_cache_zalloc(zfcp_fc_req_cache, GFP_ATOMIC);
+@@ -555,7 +558,15 @@ static int zfcp_fc_adisc(struct zfcp_por
+ 	fc_req->u.adisc.req.adisc_cmd = ELS_ADISC;
+ 	hton24(fc_req->u.adisc.req.adisc_port_id, fc_host_port_id(shost));
  
-@@ -1504,7 +1501,6 @@ static struct fc_lport *bnx2fc_if_create
- 	port->lport = lport;
- 	port->priv = interface;
- 	port->get_netdev = bnx2fc_netdev;
--	INIT_WORK(&port->destroy_work, bnx2fc_destroy_work);
- 
- 	/* Configure fcoe_port */
- 	rc = bnx2fc_lport_config(lport);
-@@ -1632,8 +1628,8 @@ static void __bnx2fc_destroy(struct bnx2
- 	bnx2fc_interface_cleanup(interface);
- 	bnx2fc_stop(interface);
- 	list_del(&interface->list);
-+	bnx2fc_port_destroy(port);
- 	bnx2fc_interface_put(interface);
--	queue_work(bnx2fc_wq, &port->destroy_work);
- }
- 
- /**
-@@ -1674,15 +1670,12 @@ netdev_err:
- 	return rc;
- }
- 
--static void bnx2fc_destroy_work(struct work_struct *work)
-+static void bnx2fc_port_destroy(struct fcoe_port *port)
- {
--	struct fcoe_port *port;
- 	struct fc_lport *lport;
- 
--	port = container_of(work, struct fcoe_port, destroy_work);
- 	lport = port->lport;
--
--	BNX2FC_HBA_DBG(lport, "Entered bnx2fc_destroy_work\n");
-+	BNX2FC_HBA_DBG(lport, "Entered %s, destroying lport %p\n", __func__, lport);
- 
- 	bnx2fc_if_destroy(lport);
- }
-@@ -2522,9 +2515,6 @@ static void bnx2fc_ulp_exit(struct cnic_
- 			__bnx2fc_destroy(interface);
- 	mutex_unlock(&bnx2fc_dev_lock);
- 
--	/* Ensure ALL destroy work has been completed before return */
--	flush_workqueue(bnx2fc_wq);
--
- 	bnx2fc_ulp_stop(hba);
- 	/* unregister cnic device */
- 	if (test_and_clear_bit(BNX2FC_CNIC_REGISTERED, &hba->reg_with_cnic))
+-	ret = zfcp_fsf_send_els(adapter, port->d_id, &fc_req->ct_els,
++	d_id = port->d_id; /* remember as destination for send els below */
++	/*
++	 * Force fresh GID_PN lookup on next port recovery.
++	 * Must happen after request setup and before sending request,
++	 * to prevent race with port->d_id re-init in zfcp_fc_adisc_handler().
++	 */
++	port->d_id = 0;
++
++	ret = zfcp_fsf_send_els(adapter, d_id, &fc_req->ct_els,
+ 				ZFCP_FC_CTELS_TMO);
+ 	if (ret)
+ 		kmem_cache_free(zfcp_fc_req_cache, fc_req);
 
 
