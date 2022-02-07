@@ -2,85 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C627FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 18:44:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E317EC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 18:47:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232810AbiBGSnn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 13:43:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58570 "EHLO
+        id S231936AbiBGSqi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 13:46:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231679AbiBGSm6 (ORCPT
+        with ESMTP id S231851AbiBGSpT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 13:42:58 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 152A6C0401DA
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 10:42:58 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C7528B8164D
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 18:42:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49042C004E1
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 18:42:55 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="VaQDLxfN"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1644259372;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=5f6xoMurihFxc+jyT3VNTd9P91s3UDjpEA7MgFF4tlg=;
-        b=VaQDLxfNzJ79xTmcxtVpnKl+KB68LFOjCrS6wTj5gPlaodw7Y5qd/vzXMBpxBnN2Gh4DqR
-        tE/MOMBGGE0GOi9K0xp8WnIXqplIP7ZniNL7xCkEdaUfjg/wewzCzggfayYRjVZ+uahg70
-        g9Pxk8Eu2sxToKB/kLjWcN1jTAsUo5o=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 1ac30f09 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO)
-        for <linux-kernel@vger.kernel.org>;
-        Mon, 7 Feb 2022 18:42:52 +0000 (UTC)
-Received: by mail-yb1-f171.google.com with SMTP id c6so42841273ybk.3
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 10:42:52 -0800 (PST)
-X-Gm-Message-State: AOAM533MVITQPgKloJ0tK+zkgSqUi9Nwj9XDCAg3uW9saT7TkCVba1m+
-        RlTnoT1ciblAB3KgAIdgV4n7jnl2HHju7yAreug=
-X-Google-Smtp-Source: ABdhPJwjNWJxLwOB9ojzgqsLPkcQ7PiF7REVUngwHVGRdlgzYXukTlGz5kcw+FR7+Zk3vGohmqsoQIDFis8LYMnWMbU=
-X-Received: by 2002:a81:c40d:: with SMTP id j13mr1209089ywi.499.1644259371472;
- Mon, 07 Feb 2022 10:42:51 -0800 (PST)
+        Mon, 7 Feb 2022 13:45:19 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75603C0401DA;
+        Mon,  7 Feb 2022 10:45:18 -0800 (PST)
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 217Iihkg030588;
+        Mon, 7 Feb 2022 18:44:49 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : from : to : cc : references : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=JWobRtZJdiu1UFWJsYFo6dTuwFzOvnol71RgZ3pYM7g=;
+ b=gpE1Y5Zgrvtptli5BejmreD4vbWsxRhPyMSS8pHDCf6OyjaA/CkrTjHY7vvhOrNRY2xl
+ tkfvzQ9c+Bf7OaAo2iyppSFRkxb92F88ydGLqQ/Kkq7kZUOCZ5oR84x8cRf7mi9ep9gl
+ d0ogishXHp2mwSfHVjybBR4frK4176pkgXIopjpGxNNsS2m+P6+LeV54QOsGnhwFiWT0
+ j4FcHjPTHVM1cjXu/raSjaLHjg9H6YhyqUjqfh+cNVg/YbF6+Ts6RWUNva1ILG41aYGS
+ orgd3sk8vm0EviCeLDXap5Z9i3P2X1rpWVHnOztR7ITMh9VeEbGlsqolej1oOi55sgW0 Cw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3e22whh05p-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 18:44:48 +0000
+Received: from m0098413.ppops.net (m0098413.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 217IikRK030861;
+        Mon, 7 Feb 2022 18:44:48 GMT
+Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3e22whgyuf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 18:44:48 +0000
+Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
+        by ppma03wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 217IXcXe016001;
+        Mon, 7 Feb 2022 18:43:33 GMT
+Received: from b01cxnp22035.gho.pok.ibm.com (b01cxnp22035.gho.pok.ibm.com [9.57.198.25])
+        by ppma03wdc.us.ibm.com with ESMTP id 3e1gvabkkj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 18:43:33 +0000
+Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
+        by b01cxnp22035.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 217IhWXr34013446
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 7 Feb 2022 18:43:32 GMT
+Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E96BCB206B;
+        Mon,  7 Feb 2022 18:43:31 +0000 (GMT)
+Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 87758B2068;
+        Mon,  7 Feb 2022 18:43:31 +0000 (GMT)
+Received: from [9.47.158.152] (unknown [9.47.158.152])
+        by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
+        Mon,  7 Feb 2022 18:43:31 +0000 (GMT)
+Message-ID: <cb94bd18-2d6c-772f-b16e-a4778480258b@linux.ibm.com>
+Date:   Mon, 7 Feb 2022 13:43:31 -0500
 MIME-Version: 1.0
-References: <e10b79cf-d6d5-ffcc-bce4-edd92b7cb6b9@molgen.mpg.de>
-In-Reply-To: <e10b79cf-d6d5-ffcc-bce4-edd92b7cb6b9@molgen.mpg.de>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Mon, 7 Feb 2022 19:42:40 +0100
-X-Gmail-Original-Message-ID: <CAHmME9pktmNpcBS_DJhJ5Z+6xO9P1wroQ9_gwx8KZMBxk1FBeQ@mail.gmail.com>
-Message-ID: <CAHmME9pktmNpcBS_DJhJ5Z+6xO9P1wroQ9_gwx8KZMBxk1FBeQ@mail.gmail.com>
-Subject: Re: BUG: KCSAN: data-race in add_device_randomness+0x20d/0x290
-To:     pmenzel@molgen.mpg.de
-Cc:     "Theodore Y. Ts'o" <tytso@mit.edu>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Jann Horn <jannh@google.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v10 12/27] ima: Define mac_admin_ns_capable() as a wrapper
+ for ns_capable()
+Content-Language: en-US
+From:   Stefan Berger <stefanb@linux.ibm.com>
+To:     "Serge E. Hallyn" <serge@hallyn.com>
+Cc:     linux-integrity@vger.kernel.org, zohar@linux.ibm.com,
+        christian.brauner@ubuntu.com, containers@lists.linux.dev,
+        dmitry.kasatkin@gmail.com, ebiederm@xmission.com,
+        krzysztof.struczynski@huawei.com, roberto.sassu@huawei.com,
+        mpeters@redhat.com, lhinds@redhat.com, lsturman@redhat.com,
+        puiterwi@redhat.com, jejb@linux.ibm.com, jamjoom@us.ibm.com,
+        linux-kernel@vger.kernel.org, paul@paul-moore.com, rgb@redhat.com,
+        linux-security-module@vger.kernel.org, jmorris@namei.org,
+        Denis Semakin <denis.semakin@huawei.com>
+References: <20220201203735.164593-1-stefanb@linux.ibm.com>
+ <20220201203735.164593-13-stefanb@linux.ibm.com>
+ <20220205055826.GA15072@mail.hallyn.com>
+ <9c8a09d6-6373-c8c2-c8ff-2b4c3f92ddf1@linux.ibm.com>
+In-Reply-To: <9c8a09d6-6373-c8c2-c8ff-2b4c3f92ddf1@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: Tcu-5Coy4UkbaOUi6lumKcgXTITFJmeT
+X-Proofpoint-ORIG-GUID: iFPtb5sqsV7f3jo0ECd3tQdAx54PcLLd
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-07_06,2022-02-07_02,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ impostorscore=0 mlxlogscore=999 clxscore=1015 priorityscore=1501
+ bulkscore=0 spamscore=0 adultscore=0 mlxscore=0 phishscore=0
+ suspectscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2201110000 definitions=main-2202070113
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Paul,
 
-Thanks for the report. I assume that this is actually an old bug. Do
-you have a vmlinux or a random.o from this kernel you could send me to
-double check? Without that, my best guess, which I'd say I have
-relatively high confidence about, is that the "1 byte read" is
-actually a `movzx eax, cs:lfsr` referring to the `static u8 lfsr`
-here, which gets inlined into add_device_randomness:
+On 2/6/22 12:20, Stefan Berger wrote:
+>
+> On 2/5/22 00:58, Serge E. Hallyn wrote:
+>> On Tue, Feb 01, 2022 at 03:37:20PM -0500, Stefan Berger wrote:
+>>> Define mac_admin_ns_capable() as a wrapper for the combined 
+>>> ns_capable()
+>>> checks on CAP_MAC_ADMIN and CAP_SYS_ADMIN in a user namespace. Return
+>>> true on the check if either capability or both are available.
+>>>
+>>> Use mac_admin_ns_capable() in place of capable(SYS_ADMIN). This will 
+>>> allow
+>>> an IMA namespace to read the policy with only CAP_MAC_ADMIN, which has
+>>> less privileges than CAP_SYS_ADMIN.
+>>>
+>>> Signed-off-by: Denis Semakin <denis.semakin@huawei.com>
+>>> Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
+>>> ---
+>>>   include/linux/capability.h      | 6 ++++++
+>>>   security/integrity/ima/ima.h    | 6 ++++++
+>>>   security/integrity/ima/ima_fs.c | 5 ++++-
+>>>   3 files changed, 16 insertions(+), 1 deletion(-)
+>>>
+>>> diff --git a/include/linux/capability.h b/include/linux/capability.h
+>>> index 65efb74c3585..991579178f32 100644
+>>> --- a/include/linux/capability.h
+>>> +++ b/include/linux/capability.h
+>>> @@ -270,6 +270,12 @@ static inline bool 
+>>> checkpoint_restore_ns_capable(struct user_namespace *ns)
+>>>           ns_capable(ns, CAP_SYS_ADMIN);
+>>>   }
+>>>   +static inline bool mac_admin_ns_capable(struct user_namespace *ns)
+>>> +{
+>>> +    return ns_capable(ns, CAP_MAC_ADMIN) ||
+>>> +        ns_capable(ns, CAP_SYS_ADMIN);
+>> Do you care about audit warnings?  If the task has CAP_SYS_ADMIN but
+>> not CAP_MAC_ADMIN, is it desirable that selinux_capable() will audit the
+>> CAP_MAC_ADMIN failure?
+>
+> Good point.  I will switch both to ns_capable_noaudit() so that the 
+> user cannot provoke unnecessary audit message.
 
-static int crng_slow_load(const u8 *cp, size_t len)
-{
-    unsigned long flags;
-    static u8 lfsr = 1;
+Actually,  I will only change the MAC_ADMIN to not do auditing and not 
+change the auditing behavior related to SYS_ADMIN.
 
-This was added in 2008 with dc12baacb95f ("random: use a different
-mixing algorithm for add_device_randomness()"). My understanding is
-that the race here isn't super problematic as we're in kind of a half
-assed "low effort" phase anyway. But I'll give it some thought. I'm
-CCing Jann as well who reported the original issue that motivated that
-change.
+    Stefan
 
-Regards,
-Jason
+
