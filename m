@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0664C47085
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42D53C3527E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:13:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355155AbiBGLMf (ORCPT
+        id S1354869AbiBGLM0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:12:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48136 "EHLO
+        Mon, 7 Feb 2022 06:12:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355426AbiBGLIn (ORCPT
+        with ESMTP id S1355369AbiBGLIb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:08:43 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3BA9C043188;
-        Mon,  7 Feb 2022 03:08:42 -0800 (PST)
+        Mon, 7 Feb 2022 06:08:31 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44203C0401C3;
+        Mon,  7 Feb 2022 03:08:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B2CAEB80EE8;
-        Mon,  7 Feb 2022 11:08:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 046B1C004E1;
-        Mon,  7 Feb 2022 11:08:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 02F6CB80EE8;
+        Mon,  7 Feb 2022 11:08:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41EF6C004E1;
+        Mon,  7 Feb 2022 11:08:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232120;
-        bh=FEAT7l9x+7KvGDPUocdsPfmPdgHE8Ix6axfzoqheMkY=;
+        s=korg; t=1644232107;
+        bh=t3CKQhOZSqK+9EDYMRdB/12HFLkeO7GVPHP9kDG6JOE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PqjBMeTSlWm54kMJCwJOLni3phNemep7xKaa+nI8y/DQaO7tYcJetIAUHONhG82Vu
-         X6NA733JwrJ/rg0Q6YbAwC08WgS4ti+5hh/ouVzSOaTWKtGbJy8SIHBsjHgmT26WhA
-         EIC9cWaqd7FpQNgc9gQjAp+FkL9jZlbWKmMjfzrY=
+        b=sBSeM8+3PRq9LXQNuDKWX64flsNSPueAS9HZZFnjduqQez62rZSsmM7+MdMeky66h
+         O4UReQE8RDx9wcUO0nWTsOBPDnorAPF2iWUtd61NEHzREuMYfrCjugkNHh2P+shz61
+         nyBdyfo2SdPky6d6PdOM42jZkt96FI8kvGrqXg1k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 23/48] hwmon: (lm90) Reduce maximum conversion rate for G781
-Date:   Mon,  7 Feb 2022 12:05:56 +0100
-Message-Id: <20220207103753.091978621@linuxfoundation.org>
+        stable@vger.kernel.org, Lyu Tao <tao.lyu@epfl.ch>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>
+Subject: [PATCH 4.9 19/48] NFSv4: Handle case where the lookup of a directory fails
+Date:   Mon,  7 Feb 2022 12:05:52 +0100
+Message-Id: <20220207103752.968788657@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103752.341184175@linuxfoundation.org>
 References: <20220207103752.341184175@linuxfoundation.org>
@@ -49,44 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guenter Roeck <linux@roeck-us.net>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit a66c5ed539277b9f2363bbace0dba88b85b36c26 ]
+commit ac795161c93699d600db16c1a8cc23a65a1eceaf upstream.
 
-According to its datasheet, G781 supports a maximum conversion rate value
-of 8 (62.5 ms). However, chips labeled G781 and G780 were found to only
-support a maximum conversion rate value of 7 (125 ms). On the other side,
-chips labeled G781-1 and G784 were found to support a conversion rate value
-of 8. There is no known means to distinguish G780 from G781 or G784; all
-chips report the same manufacturer ID and chip revision.
-Setting the conversion rate register value to 8 on chips not supporting
-it causes unexpected behavior since the real conversion rate is set to 0
-(16 seconds) if a value of 8 is written into the conversion rate register.
-Limit the conversion rate register value to 7 for all G78x chips to avoid
-the problem.
+If the application sets the O_DIRECTORY flag, and tries to open a
+regular file, nfs_atomic_open() will punt to doing a regular lookup.
+If the server then returns a regular file, we will happily return a
+file descriptor with uninitialised open state.
 
-Fixes: ae544f64cc7b ("hwmon: (lm90) Add support for GMT G781")
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+The fix is to return the expected ENOTDIR error in these cases.
+
+Reported-by: Lyu Tao <tao.lyu@epfl.ch>
+Fixes: 0dd2b474d0b6 ("nfs: implement i_op->atomic_open()")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hwmon/lm90.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/nfs/dir.c |   13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/drivers/hwmon/lm90.c b/drivers/hwmon/lm90.c
-index 1e9f029a328a6..d899ae5470fa2 100644
---- a/drivers/hwmon/lm90.c
-+++ b/drivers/hwmon/lm90.c
-@@ -265,7 +265,7 @@ static const struct lm90_params lm90_params[] = {
- 		.flags = LM90_HAVE_OFFSET | LM90_HAVE_REM_LIMIT_EXT
- 		  | LM90_HAVE_BROKEN_ALERT,
- 		.alert_alarms = 0x7c,
--		.max_convrate = 8,
-+		.max_convrate = 7,
- 	},
- 	[lm86] = {
- 		.flags = LM90_HAVE_OFFSET | LM90_HAVE_REM_LIMIT_EXT,
--- 
-2.34.1
-
+--- a/fs/nfs/dir.c
++++ b/fs/nfs/dir.c
+@@ -1602,6 +1602,19 @@ out:
+ 
+ no_open:
+ 	res = nfs_lookup(dir, dentry, lookup_flags);
++	if (!res) {
++		inode = d_inode(dentry);
++		if ((lookup_flags & LOOKUP_DIRECTORY) && inode &&
++		    !S_ISDIR(inode->i_mode))
++			res = ERR_PTR(-ENOTDIR);
++	} else if (!IS_ERR(res)) {
++		inode = d_inode(res);
++		if ((lookup_flags & LOOKUP_DIRECTORY) && inode &&
++		    !S_ISDIR(inode->i_mode)) {
++			dput(res);
++			res = ERR_PTR(-ENOTDIR);
++		}
++	}
+ 	if (switched) {
+ 		d_lookup_done(dentry);
+ 		if (!res)
 
 
