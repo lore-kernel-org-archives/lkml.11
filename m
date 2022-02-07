@@ -2,98 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4920C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 15:44:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FC80C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 15:44:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352699AbiBGPnU (ORCPT
+        id S1359419AbiBGPm7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 10:43:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55106 "EHLO
+        Mon, 7 Feb 2022 10:42:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232788AbiBGPmF (ORCPT
+        with ESMTP id S1357409AbiBGPjv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 10:42:05 -0500
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E4B8C0401C1;
-        Mon,  7 Feb 2022 07:42:05 -0800 (PST)
-Received: by mail-pl1-x62b.google.com with SMTP id u12so4303318plq.10;
-        Mon, 07 Feb 2022 07:42:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:content-language:to:cc:from
-         :subject:content-transfer-encoding;
-        bh=7ig8by8e56o4EYLYkc6fPLQYZasp8vJLPsQ0K6bAyGQ=;
-        b=dwar9GQFDfzTw7a7hJjbwZ13AurkkntTpTzLErO1MMQf0Knh5xkPjBG9ESOaqZd/1f
-         ILXS2mBNHSJw+csRz6rxrq49Ts0FCwor+bewDf6rFT5FqzCiT+jXvHV+OxGNVWxTJYOQ
-         TsAQEzujBbeKQXN7xvF3y5Wty1O8mDqYcFX30aCwIuL4/aOcVvC2GXH63FREG2LPgF+i
-         LbCpeDQnuccpGUHRDOGWksr+6M7ftkvtN/Z9Tyq69ZV6uFR6mrngcXNUVl4sTT56pN7R
-         zQ87waDSxWJfYQDo6zYrSDCPtEONsl6/BTrJf8sNMCSPIUZbcU7Sh+uxgTtOeKSt/V+D
-         vV9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:from:subject:content-transfer-encoding;
-        bh=7ig8by8e56o4EYLYkc6fPLQYZasp8vJLPsQ0K6bAyGQ=;
-        b=d6+ooYttikNGFh+gmJiA9isgJzuG4kxjjrmboecrzuLN/X6qrtI1vQ8leug6hShCHX
-         AUFT+OqEg8KmubC/8VdXf96dNH1DRhGE4wZHom2czPXSgmHFOjlkIkSHfxQGc3IakFY+
-         1GkNdTmwIzRRVlV5nNPakuVbZgoXk3wCplVpy/3u7u3qPyx2r+28ydFedQwwhQD883XC
-         wus4TM/kuMs+FGJgjmvZWxDH0ONmqhRcUK9oCpQWbkHQEZAKc1ZRidLCzrSMq/R3+GAk
-         TWdFtRvljZotrlFWXbTRkUe59+0JjMYXoG0i/q/vNMhcHxY/dvOhesvffahA/PUS41i2
-         cWkQ==
-X-Gm-Message-State: AOAM533Rq4JndCaQGtqfcJ+fA8ilnhCN0NpDrpAy/gU4ORp23TRRBxHY
-        1acfLpY0wpWtf0q5WbvdNfE=
-X-Google-Smtp-Source: ABdhPJx337OIo+YSoTn/w0nURrlCWi4puuCf3DsAZ40orZvwh4CqnAzGSj1Fbw1jU4VlcSjvBzE9Ew==
-X-Received: by 2002:a17:90a:5407:: with SMTP id z7mr165714pjh.7.1644248524937;
-        Mon, 07 Feb 2022 07:42:04 -0800 (PST)
-Received: from [10.59.0.6] ([85.203.23.80])
-        by smtp.gmail.com with ESMTPSA id a37sm8711111pga.3.2022.02.07.07.41.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Feb 2022 07:42:04 -0800 (PST)
-Message-ID: <f04b6000-f128-f928-0e3e-e3acc206d2d1@gmail.com>
-Date:   Mon, 7 Feb 2022 23:41:49 +0800
+        Mon, 7 Feb 2022 10:39:51 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 645BDC0401CE
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:39:50 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 222C4B8105D
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 15:39:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F592C340F0;
+        Mon,  7 Feb 2022 15:39:47 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="nNGQowos"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1644248385;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=iyjmC91Pfbmgem6ERYnidKlbzVtdd/u4+8Jdeq7ZyAY=;
+        b=nNGQowosNSjOM6Kwd8oNamCVT30DCyMA8MbZHiJpufihJDeZXB/4HxhNtkuBv38RD+U7G0
+        /qshzObfvCCqrIFlwzo1qg2yNM1YOXHtbw2/4nrIj0W/k6YrGwEWn8Fi7VYSk6bciH3QC8
+        dr7e/dWP25Fx6k3YslXTlNA+OEUdrGg=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id c7f5602b (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Mon, 7 Feb 2022 15:39:45 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Theodore Ts'o <tytso@mit.edu>,
+        Sultan Alsawaf <sultan@kerneltoast.com>,
+        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
+Subject: [PATCH v3 2/2] random: defer fast pool mixing to worker
+Date:   Mon,  7 Feb 2022 16:39:14 +0100
+Message-Id: <20220207153914.365931-3-Jason@zx2c4.com>
+In-Reply-To: <20220207153914.365931-1-Jason@zx2c4.com>
+References: <20220207153914.365931-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Content-Language: en-US
-To:     jic23@kernel.org, lars@metafoo.de, valek@2n.cz,
-        gwendal@chromium.org
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-From:   Jia-Ju Bai <baijiaju1990@gmail.com>
-Subject: [BUG] iio: light: opt3001: possible deadlock in opt3001_read_raw()
- and opt3001_irq()
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On PREEMPT_RT, it's problematic to take spinlocks from hard irq
+handlers. We can fix this by deferring to a work queue the dumping of
+the fast pool into the input pool.
 
-My static analysis tool reports a possible deadlock in the opt3001 
-driver in Linux 5.16:
+We accomplish this with some careful rules on fast_pool->count:
 
-opt3001_read_raw()
-   mutex_lock(&opt->lock); --> Line 399 (Lock A)
-   opt3001_get_lux()
-     wait_event_timeout(opt->result_ready_queue, ...) --> Line 276 (Wait X)
-   mutex_lock(&opt->lock); --> Line 412 (Unlock A)
+  - When it's incremented to >= 64, we schedule the work.
+  - If the top bit is set, we never schedule the work, even if >= 64.
+  - The worker is responsible for setting it back to 0 when it's done.
 
-opt3001_irq()
-   mutex_lock(&opt->lock); --> Line 693 (Lock A)
-   mutex_unlock(&opt->lock); --> Line 730 (Unlock A)
-   wake_up(&opt->result_ready_queue); --> Line 733 (Wake X)
+In the worst case, an irq handler is mixing a new irq into the pool at
+the same time as the worker is dumping it into the input pool. In this
+case, we only ever set the count back to 0 _after_ we're done, so that
+subsequent cycles will require a full 64 to dump it in again. In other
+words, the result of this race is only ever adding a little bit more
+information than normal, but never less, and never crediting any more
+for this partial additional information.
 
-When opt3001_read_raw() is executed, "Wait X" is performed by holding 
-"Lock A". If opt3001_irq() is executed at this time, "Wake X" cannot be 
-performed to wake up "Wait X" in opt3001_read_raw(), because "Lock A" 
-has been already hold by opt3001_read_raw(), causing a possible deadlock.
-I find that "Wait X" is performed with a timeout, to relieve the 
-possible deadlock; but I think this timeout can cause inefficient execution.
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Theodore Ts'o <tytso@mit.edu>
+Cc: Sultan Alsawaf <sultan@kerneltoast.com>
+Cc: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+---
+ drivers/char/random.c         | 50 +++++++++++++++++++++--------------
+ include/trace/events/random.h |  6 -----
+ 2 files changed, 30 insertions(+), 26 deletions(-)
 
-I am not quite sure whether this possible problem is real and how to fix 
-it if it is real.
-Any feedback would be appreciated, thanks :)
+diff --git a/drivers/char/random.c b/drivers/char/random.c
+index 395e76c009d6..1bfeb4393e39 100644
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -377,12 +377,6 @@ static void _mix_pool_bytes(const void *in, int nbytes)
+ 	blake2s_update(&input_pool.hash, in, nbytes);
+ }
+ 
+-static void __mix_pool_bytes(const void *in, int nbytes)
+-{
+-	trace_mix_pool_bytes_nolock(nbytes, _RET_IP_);
+-	_mix_pool_bytes(in, nbytes);
+-}
+-
+ static void mix_pool_bytes(const void *in, int nbytes)
+ {
+ 	unsigned long flags;
+@@ -394,11 +388,13 @@ static void mix_pool_bytes(const void *in, int nbytes)
+ }
+ 
+ struct fast_pool {
+-	u32 pool[4];
++	struct work_struct mix;
+ 	unsigned long last;
++	u32 pool[4];
++	unsigned int count;
+ 	u16 reg_idx;
+-	u8 count;
+ };
++#define FAST_POOL_MIX_INFLIGHT (1U << 31)
+ 
+ /*
+  * This is a fast mixing routine used by the interrupt randomness
+@@ -428,7 +424,6 @@ static void fast_mix(struct fast_pool *f)
+ 
+ 	f->pool[0] = a;  f->pool[1] = b;
+ 	f->pool[2] = c;  f->pool[3] = d;
+-	f->count++;
+ }
+ 
+ static void process_random_ready_list(void)
+@@ -977,12 +972,30 @@ static u32 get_reg(struct fast_pool *f, struct pt_regs *regs)
+ 	return *ptr;
+ }
+ 
++static void mix_interrupt_randomness(struct work_struct *work)
++{
++	struct fast_pool *fast_pool = container_of(work, struct fast_pool, mix);
++
++	/*
++	 * Since this is the result of a trip through the scheduler, xor in
++	 * a cycle counter. It can't hurt, and might help.
++	 */
++	fast_pool->pool[3] ^= random_get_entropy();
++
++	mix_pool_bytes(&fast_pool->pool, sizeof(fast_pool->pool));
++	/* We take care to zero out the count only after we're done reading the pool. */
++	WRITE_ONCE(fast_pool->count, 0);
++	fast_pool->last = jiffies;
++	credit_entropy_bits(1);
++}
++
+ void add_interrupt_randomness(int irq)
+ {
+ 	struct fast_pool *fast_pool = this_cpu_ptr(&irq_randomness);
+ 	struct pt_regs *regs = get_irq_regs();
+ 	unsigned long now = jiffies;
+ 	cycles_t cycles = random_get_entropy();
++	unsigned int new_count;
+ 	u32 c_high, j_high;
+ 	u64 ip;
+ 
+@@ -999,9 +1012,10 @@ void add_interrupt_randomness(int irq)
+ 
+ 	fast_mix(fast_pool);
+ 	add_interrupt_bench(cycles);
++	new_count = ++fast_pool->count;
+ 
+ 	if (unlikely(crng_init == 0)) {
+-		if ((fast_pool->count >= 64) &&
++		if (new_count >= 64 &&
+ 		    crng_fast_load((u8 *)fast_pool->pool, sizeof(fast_pool->pool)) > 0) {
+ 			fast_pool->count = 0;
+ 			fast_pool->last = now;
+@@ -1009,20 +1023,16 @@ void add_interrupt_randomness(int irq)
+ 		return;
+ 	}
+ 
+-	if ((fast_pool->count < 64) && !time_after(now, fast_pool->last + HZ))
++	if (new_count & FAST_POOL_MIX_INFLIGHT)
+ 		return;
+ 
+-	if (!spin_trylock(&input_pool.lock))
++	if (new_count < 64 && !time_after(now, fast_pool->last + HZ))
+ 		return;
+ 
+-	fast_pool->last = now;
+-	__mix_pool_bytes(&fast_pool->pool, sizeof(fast_pool->pool));
+-	spin_unlock(&input_pool.lock);
+-
+-	fast_pool->count = 0;
+-
+-	/* award one bit for the contents of the fast pool */
+-	credit_entropy_bits(1);
++	if (unlikely(!fast_pool->mix.func))
++		INIT_WORK(&fast_pool->mix, mix_interrupt_randomness);
++	fast_pool->count |= FAST_POOL_MIX_INFLIGHT;
++	queue_work_on(raw_smp_processor_id(), system_highpri_wq, &fast_pool->mix);
+ }
+ EXPORT_SYMBOL_GPL(add_interrupt_randomness);
+ 
+diff --git a/include/trace/events/random.h b/include/trace/events/random.h
+index ad149aeaf42c..833f42afc70f 100644
+--- a/include/trace/events/random.h
++++ b/include/trace/events/random.h
+@@ -52,12 +52,6 @@ DEFINE_EVENT(random__mix_pool_bytes, mix_pool_bytes,
+ 	TP_ARGS(bytes, IP)
+ );
+ 
+-DEFINE_EVENT(random__mix_pool_bytes, mix_pool_bytes_nolock,
+-	TP_PROTO(int bytes, unsigned long IP),
+-
+-	TP_ARGS(bytes, IP)
+-);
+-
+ TRACE_EVENT(credit_entropy_bits,
+ 	TP_PROTO(int bits, int entropy_count, unsigned long IP),
+ 
+-- 
+2.35.0
 
-
-Best wishes,
-Jia-Ju Bai
