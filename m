@@ -2,127 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 388E4C47087
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 512A7C35280
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:25:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382992AbiBGLVX (ORCPT
+        id S1383031AbiBGLV0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:21:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54146 "EHLO
+        Mon, 7 Feb 2022 06:21:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378740AbiBGLPz (ORCPT
+        with ESMTP id S1378641AbiBGLPy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:15:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D202BC0401CC;
-        Mon,  7 Feb 2022 03:15:47 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8C1B1B811BC;
-        Mon,  7 Feb 2022 11:15:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C41BBC004E1;
-        Mon,  7 Feb 2022 11:15:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232545;
-        bh=ejKlmfkdpK4QC6TWW8BDeFyg6WR3o5WxoJii4FF16nM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a4LS3sCSMQqTNnj2xmfpAR4hb521ewztBvjBWi27TthU3PXDFdLmOCSYvIhvYG+qa
-         83mXwLmg8RqczKeX3fX6ryyM8LZAw9KKzjLw+AtVZi+O/PoD/EtXDQlox2wn5QHdiV
-         ZbSe87SdAnbe5WPDhQImCoX61B/S8sVwUdlkIMVI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 44/86] ipv4: raw: lock the socket in raw_bind()
-Date:   Mon,  7 Feb 2022 12:06:07 +0100
-Message-Id: <20220207103758.989908777@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207103757.550973048@linuxfoundation.org>
-References: <20220207103757.550973048@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 7 Feb 2022 06:15:54 -0500
+X-Greylist: delayed 60 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 03:15:43 PST
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A87BC043188
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 03:15:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1644232543; x=1675768543;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=77yz6w+2DoYy2A+2tV0NicdxNLpG2DjlpVJtoMUnRe8=;
+  b=xazcLtTHxD/d3xxsRKHJ3ujLISXAJ9w37+yU/20GVn9Q/AxT41Wx0fFN
+   dVzSDm96mGyqEJaDgvDs3BPCXQDnc+3XcUN7mM1lyD9FaGCyZooLIcKit
+   ve+puHreVX2WtVdsnXlEIaWUXdod7d+ZGl6bb//nzdIsEucO55At4vkEI
+   8NfvWarhil+wrRnx53MomvQXO0Yq35UwGB1phtqcWermttKThR8C3azGw
+   bRy8lY5HhmDYV26zU9fqI2IJpDVFjTlqeGQh3PC3sWCUlCD88PQHy54JK
+   L/zFNhfBLznkx6zQhumDKyykAqtK3mEwfpL2ekG9252ed8lSsJLhm6AB0
+   A==;
+IronPort-SDR: HkrNOAK/2IZIC1gMvUR04S5wbKevSxIDqvFudKUN9SD0U0iVMXDAHNNYx+Bi3W4cePl7ZMDUHB
+ 9j05gdaDthtZuEo55QgB0zaWIhL5PXDfGNCWhqMQjNeBj9k2aCJlHwv8YKVrxvP8Vjq0VWPXW/
+ nsAEfVr5wo35ehXP9TdgvMfgxTVdVZKhZI7Z0+9VY+O04V117bN4K+zWHfatV9U3fzPGxz9lIU
+ NwimsBUmPxGF5LUhtcN8vM2qj/vcBYk1NKN5n4nfv3x5IG/muvvo0d3+pD0kJv/ObM9Pe0IZfH
+ CSrSHBnQcyu6djgKJTrvm59n
+X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
+   d="scan'208";a="152699432"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Feb 2022 04:14:17 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 7 Feb 2022 04:14:17 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Mon, 7 Feb 2022 04:14:15 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
+        <ludovic.desroches@microchip.com>, <robh+dt@kernel.org>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [PATCH] ARM: dts: at91: remove status = "okay" from soc specific dtsi
+Date:   Mon, 7 Feb 2022 13:15:23 +0200
+Message-ID: <20220207111523.575474-1-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+Remove status = "okay" from SoC specific dtsi as this is the default
+state.
 
-[ Upstream commit 153a0d187e767c68733b8e9f46218eb1f41ab902 ]
-
-For some reason, raw_bind() forgot to lock the socket.
-
-BUG: KCSAN: data-race in __ip4_datagram_connect / raw_bind
-
-write to 0xffff8881170d4308 of 4 bytes by task 5466 on cpu 0:
- raw_bind+0x1b0/0x250 net/ipv4/raw.c:739
- inet_bind+0x56/0xa0 net/ipv4/af_inet.c:443
- __sys_bind+0x14b/0x1b0 net/socket.c:1697
- __do_sys_bind net/socket.c:1708 [inline]
- __se_sys_bind net/socket.c:1706 [inline]
- __x64_sys_bind+0x3d/0x50 net/socket.c:1706
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-read to 0xffff8881170d4308 of 4 bytes by task 5468 on cpu 1:
- __ip4_datagram_connect+0xb7/0x7b0 net/ipv4/datagram.c:39
- ip4_datagram_connect+0x2a/0x40 net/ipv4/datagram.c:89
- inet_dgram_connect+0x107/0x190 net/ipv4/af_inet.c:576
- __sys_connect_file net/socket.c:1900 [inline]
- __sys_connect+0x197/0x1b0 net/socket.c:1917
- __do_sys_connect net/socket.c:1927 [inline]
- __se_sys_connect net/socket.c:1924 [inline]
- __x64_sys_connect+0x3d/0x50 net/socket.c:1924
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-value changed: 0x00000000 -> 0x0003007f
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 1 PID: 5468 Comm: syz-executor.5 Not tainted 5.17.0-rc1-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 ---
- net/ipv4/raw.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/sam9x60.dtsi | 4 ----
+ arch/arm/boot/dts/sama5d2.dtsi | 3 ---
+ arch/arm/boot/dts/sama5d4.dtsi | 3 ---
+ arch/arm/boot/dts/sama7g5.dtsi | 3 ---
+ 4 files changed, 13 deletions(-)
 
-diff --git a/net/ipv4/raw.c b/net/ipv4/raw.c
-index 21800979ed621..8cae691c3c9f4 100644
---- a/net/ipv4/raw.c
-+++ b/net/ipv4/raw.c
-@@ -725,6 +725,7 @@ static int raw_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len)
- 	int ret = -EINVAL;
- 	int chk_addr_ret;
+diff --git a/arch/arm/boot/dts/sam9x60.dtsi b/arch/arm/boot/dts/sam9x60.dtsi
+index ec45ced3cde6..e3afa1dae207 100644
+--- a/arch/arm/boot/dts/sam9x60.dtsi
++++ b/arch/arm/boot/dts/sam9x60.dtsi
+@@ -280,7 +280,6 @@ sha: sha@f002c000 {
+ 				dma-names = "tx";
+ 				clocks = <&pmc PMC_TYPE_PERIPHERAL 41>;
+ 				clock-names = "sha_clk";
+-				status = "okay";
+ 			};
  
-+	lock_sock(sk);
- 	if (sk->sk_state != TCP_CLOSE || addr_len < sizeof(struct sockaddr_in))
- 		goto out;
+ 			trng: trng@f0030000 {
+@@ -288,7 +287,6 @@ trng: trng@f0030000 {
+ 				reg = <0xf0030000 0x100>;
+ 				interrupts = <38 IRQ_TYPE_LEVEL_HIGH 0>;
+ 				clocks = <&pmc PMC_TYPE_PERIPHERAL 38>;
+-				status = "okay";
+ 			};
  
-@@ -744,7 +745,9 @@ static int raw_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len)
- 		inet->inet_saddr = 0;  /* Use device */
- 	sk_dst_reset(sk);
- 	ret = 0;
--out:	return ret;
-+out:
-+	release_sock(sk);
-+	return ret;
- }
+ 			aes: aes@f0034000 {
+@@ -304,7 +302,6 @@ AT91_XDMAC_DT_PERID(32))>,
+ 				dma-names = "tx", "rx";
+ 				clocks = <&pmc PMC_TYPE_PERIPHERAL 39>;
+ 				clock-names = "aes_clk";
+-				status = "okay";
+ 			};
  
- /*
+ 			tdes: tdes@f0038000 {
+@@ -320,7 +317,6 @@ AT91_XDMAC_DT_PERID(31))>,
+ 				dma-names = "tx", "rx";
+ 				clocks = <&pmc PMC_TYPE_PERIPHERAL 40>;
+ 				clock-names = "tdes_clk";
+-				status = "okay";
+ 			};
+ 
+ 			classd: classd@f003c000 {
+diff --git a/arch/arm/boot/dts/sama5d2.dtsi b/arch/arm/boot/dts/sama5d2.dtsi
+index 09c741e8ecb8..05ab16ffa8bb 100644
+--- a/arch/arm/boot/dts/sama5d2.dtsi
++++ b/arch/arm/boot/dts/sama5d2.dtsi
+@@ -316,7 +316,6 @@ sha@f0028000 {
+ 				dma-names = "tx";
+ 				clocks = <&pmc PMC_TYPE_PERIPHERAL 12>;
+ 				clock-names = "sha_clk";
+-				status = "okay";
+ 			};
+ 
+ 			aes@f002c000 {
+@@ -332,7 +331,6 @@ AT91_XDMAC_DT_PERID(26))>,
+ 				dma-names = "tx", "rx";
+ 				clocks = <&pmc PMC_TYPE_PERIPHERAL 9>;
+ 				clock-names = "aes_clk";
+-				status = "okay";
+ 			};
+ 
+ 			spi0: spi@f8000000 {
+@@ -1097,7 +1095,6 @@ AT91_XDMAC_DT_PERID(28))>,
+ 				dma-names = "tx", "rx";
+ 				clocks = <&pmc PMC_TYPE_PERIPHERAL 11>;
+ 				clock-names = "tdes_clk";
+-				status = "okay";
+ 			};
+ 
+ 			classd: classd@fc048000 {
+diff --git a/arch/arm/boot/dts/sama5d4.dtsi b/arch/arm/boot/dts/sama5d4.dtsi
+index f6e3e6f57252..4de164905e03 100644
+--- a/arch/arm/boot/dts/sama5d4.dtsi
++++ b/arch/arm/boot/dts/sama5d4.dtsi
+@@ -684,7 +684,6 @@ aes@fc044000 {
+ 				dma-names = "tx", "rx";
+ 				clocks = <&pmc PMC_TYPE_PERIPHERAL 12>;
+ 				clock-names = "aes_clk";
+-				status = "okay";
+ 			};
+ 
+ 			tdes@fc04c000 {
+@@ -698,7 +697,6 @@ tdes@fc04c000 {
+ 				dma-names = "tx", "rx";
+ 				clocks = <&pmc PMC_TYPE_PERIPHERAL 14>;
+ 				clock-names = "tdes_clk";
+-				status = "okay";
+ 			};
+ 
+ 			sha@fc050000 {
+@@ -710,7 +708,6 @@ sha@fc050000 {
+ 				dma-names = "tx";
+ 				clocks = <&pmc PMC_TYPE_PERIPHERAL 15>;
+ 				clock-names = "sha_clk";
+-				status = "okay";
+ 			};
+ 
+ 			hsmc: smc@fc05c000 {
+diff --git a/arch/arm/boot/dts/sama7g5.dtsi b/arch/arm/boot/dts/sama7g5.dtsi
+index afd3e069b382..0b1e85541f7f 100644
+--- a/arch/arm/boot/dts/sama7g5.dtsi
++++ b/arch/arm/boot/dts/sama7g5.dtsi
+@@ -83,7 +83,6 @@ securam: securam@e0000000 {
+ 			#size-cells = <1>;
+ 			ranges = <0 0xe0000000 0x4000>;
+ 			no-memory-wc;
+-			status = "okay";
+ 		};
+ 
+ 		secumod: secumod@e0004000 {
+@@ -653,13 +652,11 @@ spi11: spi@400 {
+ 		uddrc: uddrc@e3800000 {
+ 			compatible = "microchip,sama7g5-uddrc";
+ 			reg = <0xe3800000 0x4000>;
+-			status = "okay";
+ 		};
+ 
+ 		ddr3phy: ddr3phy@e3804000 {
+ 			compatible = "microchip,sama7g5-ddr3phy";
+ 			reg = <0xe3804000 0x1000>;
+-			status = "okay";
+ 		};
+ 
+ 		gic: interrupt-controller@e8c11000 {
 -- 
-2.34.1
-
-
+2.32.0
 
