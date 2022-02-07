@@ -2,328 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DC2EC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B13FBC43219
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 08:46:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244462AbiBGIoY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 03:44:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60640 "EHLO
+        id S244786AbiBGIoa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 03:44:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349547AbiBGIdk (ORCPT
+        with ESMTP id S235503AbiBGIfH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 03:33:40 -0500
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D88F7C0401E4;
-        Mon,  7 Feb 2022 00:33:34 -0800 (PST)
-Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id C7779240004;
-        Mon,  7 Feb 2022 08:33:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1644222812;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=84zL46lVab32mc8aiSykPGlMX0OG+D4m1dmzME3ih7o=;
-        b=eEI/wnbRqbnC03wKfL84Qy5u+zXH7f2LnN3A1RZ0uApGs6fHduyBnRD6Q5DTxxFJ1ncLvD
-        8O+Zwu2iZ7LPhYjF1PLkN3yowpi7Vc6VxbeQxUHiRf3YFwbsknGNHoyRbuH9bBi3jCHCEq
-        YbIdp24M3k1n59ERtwAno2km1oW5oxR7MACsUSCznlpqvKY12rq3I8tbGrut5zL6fGqZLf
-        pCkl5+hSZrXzOZ8HopVoTCy9/NdRc5Jvzn16mrcEUpB3/V9SE2z1BqCNeWcv4c/URgPQk+
-        1aJCezHlh1NPt7iYMU+Yoa/twd4Yyvq/UMKAC304//NLJYjgp/qX2dIO+hYdKw==
-Date:   Mon, 7 Feb 2022 09:33:30 +0100
-From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-To:     Jernej =?utf-8?Q?=C5=A0krabec?= <jernej.skrabec@gmail.com>
-Cc:     mripard@kernel.org, mchehab@kernel.org, wens@csie.org,
-        linux-media@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] media: cedrus: Add watchdog for job completion
-Message-ID: <YgDZWvgA0blNM7qm@aptenodytes>
-References: <20220201183324.493542-1-jernej.skrabec@gmail.com>
- <YfztZE8ymJ5RERTq@aptenodytes>
- <12946098.uLZWGnKmhe@jernej-laptop>
- <3150370.aeNJFYEL58@jernej-laptop>
+        Mon, 7 Feb 2022 03:35:07 -0500
+X-Greylist: delayed 6950 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 00:35:06 PST
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE35DC043181;
+        Mon,  7 Feb 2022 00:35:06 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E8CE6111F;
+        Mon,  7 Feb 2022 08:35:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 891F1C004E1;
+        Mon,  7 Feb 2022 08:35:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644222905;
+        bh=h4Bvczeyy+ofT4a7RZOUPBSV5mPLLMNEcheXBjrAyB8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=DiCIj391D50M8UCaz0XpFwitV6FNrGv6bKMcV2warCsu4b0WvYxWlrOLf/j14s+O+
+         ML/Om+tfNdvuLzQnZ8JIDTwRXCzwyjuDvF4PzQNNshnnzKbQ6I2x1X1aP2ceW/qG9B
+         AywAVKDqVTYgQammmXWFG+OVlbNT+I9aBbUyH8mYTfvqQ56reBk57rWcVYxvSgGDQp
+         9Yrb1Gc82FlOs7+iS89A/StrwuMC9ziZ5/3tmT59XDorz5Qp1JnVLqHIsPOpWU23GL
+         8PkDWVMLnc2HtV1PR1Evm+wkuOCyrpF2yBFNUSTRNDMrkR4+kwqBHZqngev7QKMY5j
+         42XqmbrUX3IwA==
+Date:   Mon, 7 Feb 2022 14:04:58 +0530
+From:   Manivannan Sadhasivam <mani@kernel.org>
+To:     Jia-Ju Bai <baijiaju1990@gmail.com>
+Cc:     Daniel Thompson <daniel.thompson@linaro.org>,
+        hemantk@codeaurora.org, bbhatt@codeaurora.org,
+        loic.poulain@linaro.org, jhugo@codeaurora.org,
+        linux-arm-msm@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [BUG] bus: mhi: possible deadlock in mhi_pm_disable_transition()
+ and mhi_async_power_up()
+Message-ID: <20220207083458.GD1905@thinkpad>
+References: <d3a94b53-0d77-dafe-ce45-f9ab23278616@gmail.com>
+ <20220201171540.2udq3x6r2swctzau@maple.lan>
+ <a2c91d4c-c1f3-4723-e1a4-02ac1742f96c@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="RYiUA+TN+21sHBz2"
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <3150370.aeNJFYEL58@jernej-laptop>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <a2c91d4c-c1f3-4723-e1a4-02ac1742f96c@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
---RYiUA+TN+21sHBz2
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
 Hi,
 
-On Sat 05 Feb 22, 09:41, Jernej =C5=A0krabec wrote:
-> Dne sobota, 05. februar 2022 ob 08:40:21 CET je Jernej =C5=A0krabec napis=
-al(a):
-> > Dne petek, 04. februar 2022 ob 10:09:56 CET je Paul Kocialkowski napisa=
-l(a):
-> > > Hi Jernej,
-> > >=20
-> > > On Tue 01 Feb 22, 19:33, Jernej Skrabec wrote:
-> > > > Currently, if job is not completed for whatever reason, userspace
-> > > > application can hang on ioctl and thus become unkillable.
-> > > >=20
-> > > > In order to prevent that, implement watchdog, which will complete j=
-ob
-> > > > after 2 seconds with error state.
-> > > >=20
-> > > > Concept is borrowed from hantro driver.
-> > >=20
-> > > Good idea to implement a watchdog here, thanks!
-> > > See comments below.
-> > >=20
-> > > > Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-> > > > ---
-> > > >=20
-> > > >  drivers/staging/media/sunxi/cedrus/cedrus.c   |  2 ++
-> > > >  drivers/staging/media/sunxi/cedrus/cedrus.h   |  3 +++
-> > > >  .../staging/media/sunxi/cedrus/cedrus_dec.c   |  4 +++
-> > > >  .../staging/media/sunxi/cedrus/cedrus_hw.c    | 25 +++++++++++++++=
-++++
-> > > >  .../staging/media/sunxi/cedrus/cedrus_hw.h    |  2 ++
-> > > >  5 files changed, 36 insertions(+)
-> > > >=20
-> > > > diff --git a/drivers/staging/media/sunxi/cedrus/cedrus.c
-> > > > b/drivers/staging/media/sunxi/cedrus/cedrus.c index
-> > > > 4a4b714b0f26..68b3dcdb5df3 100644
-> > > > --- a/drivers/staging/media/sunxi/cedrus/cedrus.c
-> > > > +++ b/drivers/staging/media/sunxi/cedrus/cedrus.c
-> > > > @@ -439,6 +439,8 @@ static int cedrus_probe(struct platform_device
-> > > > *pdev)
-> > > >=20
-> > > >  	mutex_init(&dev->dev_mutex);
-> > > >=20
-> > > > +	INIT_DELAYED_WORK(&dev->watchdog_work, cedrus_watchdog);
-> > > > +
-> > > >=20
-> > > >  	ret =3D v4l2_device_register(&pdev->dev, &dev->v4l2_dev);
-> > > >  	if (ret) {
-> > > >  =09
-> > > >  		dev_err(&pdev->dev, "Failed to register V4L2
-> >=20
-> > device\n");
-> >=20
-> > > > diff --git a/drivers/staging/media/sunxi/cedrus/cedrus.h
-> > > > b/drivers/staging/media/sunxi/cedrus/cedrus.h index
-> > > > c345f2984041..3bc094eb497f 100644
-> > > > --- a/drivers/staging/media/sunxi/cedrus/cedrus.h
-> > > > +++ b/drivers/staging/media/sunxi/cedrus/cedrus.h
-> > > > @@ -24,6 +24,7 @@
-> > > >=20
-> > > >  #include <linux/iopoll.h>
-> > > >  #include <linux/platform_device.h>
-> > > >=20
-> > > > +#include <linux/workqueue.h>
-> > > >=20
-> > > >  #define CEDRUS_NAME			"cedrus"
-> > > >=20
-> > > > @@ -194,6 +195,8 @@ struct cedrus_dev {
-> > > >=20
-> > > >  	struct reset_control	*rstc;
-> > > >  =09
-> > > >  	unsigned int		capabilities;
-> > > >=20
-> > > > +
-> > > > +	struct delayed_work	watchdog_work;
-> > > >=20
-> > > >  };
-> > > > =20
-> > > >  extern struct cedrus_dec_ops cedrus_dec_ops_mpeg2;
-> > > >=20
-> > > > diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_dec.c
-> > > > b/drivers/staging/media/sunxi/cedrus/cedrus_dec.c index
-> > > > a16c1422558f..9c7200299465 100644
-> > > > --- a/drivers/staging/media/sunxi/cedrus/cedrus_dec.c
-> > > > +++ b/drivers/staging/media/sunxi/cedrus/cedrus_dec.c
-> > > > @@ -97,4 +97,8 @@ void cedrus_device_run(void *priv)
-> > > >=20
-> > > >  		v4l2_ctrl_request_complete(src_req, &ctx->hdl);
-> > > >  =09
-> > > >  	dev->dec_ops[ctx->current_codec]->trigger(ctx);
-> > > >=20
-> > > > +
-> > > > +	/* Start the watchdog timer. */
-> > > > +	schedule_delayed_work(&dev->watchdog_work,
-> > > > +			      msecs_to_jiffies(2000));
-> > > >=20
-> > > >  }
-> > > >=20
-> > > > diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_hw.c
-> > > > b/drivers/staging/media/sunxi/cedrus/cedrus_hw.c index
-> > > > 2d7663726467..a6470a89851e 100644
-> > > > --- a/drivers/staging/media/sunxi/cedrus/cedrus_hw.c
-> > > > +++ b/drivers/staging/media/sunxi/cedrus/cedrus_hw.c
-> > > > @@ -118,6 +118,13 @@ static irqreturn_t cedrus_irq(int irq, void *d=
-ata)
-> > > >=20
-> > > >  	enum vb2_buffer_state state;
-> > > >  	enum cedrus_irq_status status;
-> > > >=20
-> > > > +	/*
-> > > > +	 * If cancel_delayed_work returns false it means watchdog already
-> > > > +	 * executed and finished the job.
-> > > > +	 */
-> > > > +	if (!cancel_delayed_work(&dev->watchdog_work))
-> > > > +		return IRQ_HANDLED;
-> > > > +
-> > > >=20
-> > > >  	ctx =3D v4l2_m2m_get_curr_priv(dev->m2m_dev);
-> > > >  	if (!ctx) {
-> > > >  =09
-> > > >  		v4l2_err(&dev->v4l2_dev,
-> > > >=20
-> > > > @@ -143,6 +150,24 @@ static irqreturn_t cedrus_irq(int irq, void *d=
-ata)
-> > > >=20
-> > > >  	return IRQ_HANDLED;
-> > > > =20
-> > > >  }
-> > > >=20
-> > > > +void cedrus_watchdog(struct work_struct *work)
-> > > > +{
-> > > > +	struct cedrus_dev *dev;
-> > > > +	struct cedrus_ctx *ctx;
-> > > > +
-> > > > +	dev =3D container_of(to_delayed_work(work),
-> > > > +			   struct cedrus_dev, watchdog_work);
-> > > > +
-> > > > +	ctx =3D v4l2_m2m_get_curr_priv(dev->m2m_dev);
-> > > > +	if (!ctx)
-> > > > +		return;
-> > > > +
-> > > > +	v4l2_err(&dev->v4l2_dev, "frame processing timed out!\n");
-> > > > +	reset_control_reset(dev->rstc);
-> > >=20
-> > > I don't think playing with the reset is the right approach here.
-> > > First we don't really know if the reset is shared or not, so this mig=
-ht
-> > > have no effect.
-> >=20
-> > AFAIK only few reset lines are shared in all Allwinner SoC, never for C=
-edrus
-> > and even then, this is considered as HW issue. So, I'm good with using
-> > reset line. This principle is also taken from Hantro driver.
-> >=20
-> > > Then even if it does, wouldn't this just reset the state of the
-> > > registers to an unconfigured state, making it impossible to decode any
-> > > future frame in the same context?
-> >=20
-> > Being stateless core, all context is held in auxiliary buffers, referen=
-ce
-> > frames and controls, which are not reset with pulsing reset line, so no,
-> > state is not lost. Anyway, if decoding fails, you're generally screwed
-> > until next key frame. You'll have to deal with decoding issues/artefacts
-> > nevertheless.
+On Sun, Feb 06, 2022 at 11:34:02PM +0800, Jia-Ju Bai wrote:
+> 
+> 
+> On 2022/2/2 1:15, Daniel Thompson wrote:
+> > On Sat, Jan 29, 2022 at 10:56:30AM +0800, Jia-Ju Bai wrote:
+> > > Hello,
+> > > 
+> > > My static analysis tool reports a possible deadlock in the mhi driver in
+> > > Linux 5.10:
+> > > 
+> > > mhi_async_power_up()
+> > >    mutex_lock(&mhi_cntrl->pm_mutex); --> Line 933 (Lock A)
+> > >    wait_event_timeout(mhi_cntrl->state_event, ...) --> Line 985 (Wait X)
+> > >    mutex_unlock(&mhi_cntrl->pm_mutex); --> Line 1040 (Unlock A)
+> > > 
+> > > mhi_pm_disable_transition()
+> > >    mutex_lock(&mhi_cntrl->pm_mutex); --> Line 463 (Lock A)
+> > >    wake_up_all(&mhi_cntrl->state_event); --> Line 474 (Wake X)
+> > >    mutex_unlock(&mhi_cntrl->pm_mutex); --> Line 524 (Unlock A)
+> > >    wake_up_all(&mhi_cntrl->state_event); --> Line 526 (Wake X)
+> > > 
+> > > When mhi_async_power_up() is executed, "Wait X" is performed by holding
+> > > "Lock A". If mhi_pm_disable_transition() is concurrently executed at this
+> > > time, "Wake X" cannot be performed to wake up "Wait X" in
+> > > mhi_async_power_up(), because "Lock A" is already hold by
+> > > mhi_async_power_up(), causing a possible deadlock.
+> > > I find that "Wait X" is performed with a timeout, to relieve the possible
+> > > deadlock; but I think this timeout can cause inefficient execution.
+> > > 
+> > > I am not quite sure whether this possible problem is real and how to fix it
+> > > if it is real.
+> > > Any feedback would be appreciated, thanks :)
+> > Interesting find but I think it would be better to run your tool
+> > against more recent kernels to confirm any problem reports. In this
+> > case the code you mention looks like it was removed in v5.17-rc1
+> > (and should eventually make its way to the stable kernels too).
+> 
+> Hi Daniel,
+> 
+> Thanks for your reply :)
+> I check Linux v5.17-rc1 code, and find that this possible deadlock does not
+> exist, due to the changes in commit d651ce8e917f.
+> 
+> However, my tool also reports several other possible deadlocks, which are
+> caused by waiting with holding mhi_cntrl->pm_mutex.
+> There are two examples in Linux v5.17-rc1:
+> 
+> #BUG 1
+> mhi_pm_sys_error_transition()
+>   mutex_lock(&mhi_cntrl->pm_mutex); --> Line 572 (Lock A)
+>   wait_event_timeout(mhi_cntrl->state_event, ...); --> Line 600 (Wait X)
+>   mutex_unlock(&mhi_cntrl->pm_mutex); --> Line 630 (Unlock A)
+> 
+> mhi_pm_disable_transition()
+>   mutex_lock(&mhi_cntrl->pm_mutex); --> Line 464 (Lock A)
+>   mutex_unlock(&mhi_cntrl->pm_mutex); --> Line 496 (Unlock A)
+>   wake_up_all(&mhi_cntrl->state_event); --> Line 498 (Wake X)
+> 
 
-Ah right, it's true that we fully configure the hardware on each slice
-so indeed, it should be able to bring it back up on the next one.
+The wait_event_timeout() in mhi_pm_sys_error_transition() waits for the state
+change event from the endpoint device after triggering MHI reset. And the device
+will send the state change event through the BHI IRQ vector, that'll wake up
+mhi_pm_sys_error_transition().
 
-> > > Honestly I'm not sure what a good process would be to get back on tra=
-ck
-> > > here so I would be tempted to just do nothing an return errors.
-> > >=20
-> > > That's already better than being stuck.
-> >=20
-> > Doing nothing will solve only current job, but HW will still be stuck in
-> > decoding state. I doubt reprogramming registers and triggering new deco=
-ding
-> > will actually do anything.
-> >=20
-> > I'll check BSP lib sources again. Maybe selecting non-existing decoding=
- mode
-> > would reset the core. That is already suggested as good thing to do in
-> > order to put core in low power mode.
->=20
-> BSP kernel driver also pulses reset line:
-> https://github.com/orangepi-xunlong/linux-orangepi/blob/orange-pi-4.9-sun=
-50iw9/drivers/media/cedar-ve/cedar_ve.c#L848-L851
->=20
-> I still think this is the way to go.
+Refer drivers/bus/mhi/host/main.c:
 
-Okay so that's probably the right thing to do then, my comment doesn't stan=
-d!
+irqreturn_t mhi_intvec_handler(int irq_number, void *dev)
+{
+        struct mhi_controller *mhi_cntrl = dev;
 
-So the change looks good to me at this point:
-Reviewed-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+        /* Wake up events waiting for state change */
+        wake_up_all(&mhi_cntrl->state_event);
 
-Thanks!
+        return IRQ_WAKE_THREAD;
+}
 
-Paul
+By this way there would be no deadlock. This applies to your 2nd case as well.
 
-> Best regards,
-> Jernej
->=20
-> >=20
-> > IMO we have to do something. Doing nothing will probably just lock up t=
-he
-> > core until next reboot or maybe until trying different decoding mode.
-> >=20
-> > Anyway, I have to find another way to cause decoding job to time out.
-> > Currently I'm doing this with IOMMU on H6, but that brings down several
-> > other things, which requires reboot anyway.
-> >=20
-> > Best regards,
-> > Jernej
-> >=20
-> > > Paul
-> > >=20
-> > > > +	v4l2_m2m_buf_done_and_job_finish(ctx->dev->m2m_dev, ctx-
-> > >
-> > >fh.m2m_ctx,
-> > >
-> > > > +					 VB2_BUF_STATE_ERROR);
-> > > > +}
-> > > > +
-> > > >=20
-> > > >  int cedrus_hw_suspend(struct device *device)
-> > > >  {
-> > > > =20
-> > > >  	struct cedrus_dev *dev =3D dev_get_drvdata(device);
-> > > >=20
-> > > > diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_hw.h
-> > > > b/drivers/staging/media/sunxi/cedrus/cedrus_hw.h index
-> > > > 45f641f0bfa2..7c92f00e36da 100644
-> > > > --- a/drivers/staging/media/sunxi/cedrus/cedrus_hw.h
-> > > > +++ b/drivers/staging/media/sunxi/cedrus/cedrus_hw.h
-> > > > @@ -28,4 +28,6 @@ int cedrus_hw_resume(struct device *device);
-> > > >=20
-> > > >  int cedrus_hw_probe(struct cedrus_dev *dev);
-> > > >  void cedrus_hw_remove(struct cedrus_dev *dev);
-> > > >=20
-> > > > +void cedrus_watchdog(struct work_struct *work);
-> > > > +
-> > > >=20
-> > > >  #endif
->=20
->=20
->=20
->=20
+Thanks for reporting!
 
---=20
-Paul Kocialkowski, Bootlin
-Embedded Linux and kernel engineering
-https://bootlin.com
+Regards,
+Mani
 
---RYiUA+TN+21sHBz2
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEJZpWjZeIetVBefti3cLmz3+fv9EFAmIA2VoACgkQ3cLmz3+f
-v9F7sAf/ZRWcitUz+WNGX+uyDStZx3p+7XWEQ8zHMOGdouvfc4P6t++lfBgvehkA
-kNmD3iCNmR097YkfmDOiDaa04Yqv7nRbzu2i9C3OGBq9WCg/Wvhug+BnkqY3gu+5
-fn86awwghNTRAkkCO0wFfTlBxQ+2jnWUcmamG9xXML73tBnTEqu/9aHGIUuCNk69
-5R0R9XkxPVH4AvKUyBvoicLvlw114qM+h/vn5AaPOW+7TLGpEmxMVvblcuDAA1z7
-eO3tgdmO3VvvJodTPXOncSqSwWz3vZ7i2lujBMFdNmgvhZ8QT0E5wjG/cXxzDUGi
-FySSwwRn0nDn4ZOy2wjQOJUyvkwWDQ==
-=aWX/
------END PGP SIGNATURE-----
-
---RYiUA+TN+21sHBz2--
+> #BUG 2
+> mhi_pm_sys_error_transition()
+>   mutex_lock(&mhi_cntrl->pm_mutex); --> Line 572 (Lock A)
+>   wait_event_timeout(mhi_cntrl->state_event, ...); --> Line 600 (Wait X)
+>   mutex_unlock(&mhi_cntrl->pm_mutex); --> Line 630 (Unlock A)
+> 
+> mhi_power_down()
+>   mutex_lock(&mhi_cntrl->pm_mutex); --> Line 1139 (Lock A)
+>   wake_up_all(&mhi_cntrl->state_event); --> Line 1165 (Wait X)
+>   mutex_unlock(&mhi_cntrl->pm_mutex); --> Line 1168 (Unlock A)
+> 
+> I am not quite sure whether these possible problems are real.
+> Any feedback would be appreciated, thanks :)
+> 
+> 
+> Best wishes,
+> Jia-Ju Bai
+> 
