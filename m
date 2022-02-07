@@ -2,97 +2,357 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89DF4C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAD99C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:06:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237747AbiBHBFN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:05:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45318 "EHLO
+        id S245259AbiBHBFf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 20:05:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343655AbiBGXpd (ORCPT
+        with ESMTP id S242570AbiBGXtY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 18:45:33 -0500
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3288C061355;
-        Mon,  7 Feb 2022 15:45:32 -0800 (PST)
-Received: by mail-pl1-x632.google.com with SMTP id w20so3128654plq.12;
-        Mon, 07 Feb 2022 15:45:32 -0800 (PST)
+        Mon, 7 Feb 2022 18:49:24 -0500
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 925F9C061355
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 15:49:23 -0800 (PST)
+Received: by mail-pj1-x1033.google.com with SMTP id my12-20020a17090b4c8c00b001b528ba1cd7so869873pjb.1
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 15:49:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=SOlDcigm4n6gdPdH8AmGLkuI+tW6UrV7hcWCFZoVrAY=;
-        b=dm5xfy+c5fdS/CNt4z29/lpJizNfFByAYYUdWsehbVpACh16EeTDHldhl6Uve6GeaD
-         zB1Zs5saDQ9Ef+hjJfkMjvNDcwB2KYaQXj/fONn9Y9mhVq1TMreaDNcdlVENvIhbOY6L
-         j6HXXs2SDVSV4tQO/7kjysAkTuQFlG3t+y/RaV9k78HC03IjLEsk3uuo1SSt9vDnCOUh
-         HklHZ8sHCbdwOjtb3yOA5JmDeoKKcEJ4Hi+H7vprDFQKDmMEhTrhWw2x8gKFYO8zX/tn
-         mzLTxOxGN3rrNCEBOgxVbiiBITxv1rf9OUoHXM1rfydveqegGiF2RcBdsncnMZQfQ5tq
-         Y51A==
+        d=intel-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=srqNW1EcIXWSL3YA9DB/cq+5wKzOkrj3L8GZFZFPp88=;
+        b=01MLVSpGJcOLNshddxkhtSXXihKsoNqdx5vMNxTFv6bN6BYo1SzUvt/9GrJao02HnF
+         Hb+sjT0ujjyEhZBcYaEd66uhrH2U82Bpll97CF5ng/E4ARrZPgn+43XxHckYHlvbZ2cV
+         f+jtU4mZKMkJCdUAiiqidQXrgC4Uo9dYltnKCJah1zHCywOpfDTIJzzdLCdSte1qGkst
+         3TMcL8koigGPS26Czk0t/YynCFMadqyzQa7PlOBrn/XujPHTtuWh/oT8H0p3MLl7Uhro
+         o0Gdsh8bSiaHc0CBUQxnZNfGeQPOMJTi12vYqWQkg/+GUCDwEzHRF9C80zL1n7F4WwGt
+         uBog==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=SOlDcigm4n6gdPdH8AmGLkuI+tW6UrV7hcWCFZoVrAY=;
-        b=dayFwLRa4rOmO23foOZmLPf4EKkWGfMbgjJWjjPz/rTRVVWfmUQXt2RyPA3wr24YSr
-         y1yc5KzVzH/FCBPfNPJwmGic32rhZGxMbkceJNZWbA3xQXUvM7+dY7xlkygLzU4Q7ETg
-         Ibg39txUde9Dl+GFCYNekurWZKnJ/FqOnBPr9JWNw4SAA0Er1w2sm07FMsK8MBMBBBS6
-         HA+Huhatn6pLZ08nOJdsJGQqY4RA5TEVh6tKIN751r8xHyBLgojMkAo64pfBVj86bXMt
-         0QSC6okx4l+4qX3zn7bK7IyTd1rFKM3lxZlo/2HReut/OrgKi72Ful8kIValzMbOuD8/
-         X9qg==
-X-Gm-Message-State: AOAM5324wAPkhKQbxkZ2Xz5fLu5I/6aSs0Y+Xo5Zhusd+IIoSwr7c5nW
-        889Hghpz1Mr2C/OOp06B1Ik=
-X-Google-Smtp-Source: ABdhPJxAxSduiwveZrKdhTzAuehj2Mp5gyMESO5lr/vwkznD+9omhXJFsS1EdUPiJwJm1ECDK52YLg==
-X-Received: by 2002:a17:902:6903:: with SMTP id j3mr2049032plk.137.1644277532196;
-        Mon, 07 Feb 2022 15:45:32 -0800 (PST)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id o8sm13391432pfu.52.2022.02.07.15.45.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Feb 2022 15:45:31 -0800 (PST)
-Subject: Re: [PATCH 5.10 00/74] 5.10.99-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-References: <20220207103757.232676988@linuxfoundation.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <151d741f-f93a-b8f9-15c3-9c72d2395de1@gmail.com>
-Date:   Mon, 7 Feb 2022 15:45:29 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=srqNW1EcIXWSL3YA9DB/cq+5wKzOkrj3L8GZFZFPp88=;
+        b=tTKVdqOO31lwQT6umVUxBpmP694J4t0y51ENtyjevNAxiQfQx9ienyMDaCk3AXQqzc
+         fz7y1WnJ7NnIuVUy+yAZDl039rl514OTJQGkscSdBsZkpkiC2k61pXWyq7HGv94Ce6lg
+         9KE0BoSWhGm8mEUF4I2f0hOxLjGYl0BnONCB9CP0jprPzFpGYpsGtQlGcm5+sHTyNxqs
+         u9M4IVzmBrP6NmUB/xa6+fRTpeDziRnJhoJ1sHFsyQsGXZux7CX8HSML1DS1XH5ZgQo3
+         sNvjVnVwKNZlFrnqClPyQtUnL7HqTqhZATyHRt25yRJA9B+uIGmDpNcsTSI8quG+bCrC
+         I2aw==
+X-Gm-Message-State: AOAM531DAyUnehS7wKuzVA5TrfN8GpDUd8k2Qcd3yNlo49RyCk1b5x2C
+        9+oT3JNkGZsJeNIj+ucm+KkV8DlJSo1CN1rH/lXL5g==
+X-Google-Smtp-Source: ABdhPJxFGt5Dntgj+qwGhvXaFOpnQvWG0jHZ1p4j/IHgmQmdfIUoMiD/D2bs8RfxGHBUeq0VHi5bSlkknn7IBqEisQo=
+X-Received: by 2002:a17:902:ccce:: with SMTP id z14mr1978185ple.34.1644277763021;
+ Mon, 07 Feb 2022 15:49:23 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20220207103757.232676988@linuxfoundation.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20220207063249.1833066-1-hch@lst.de> <20220207063249.1833066-7-hch@lst.de>
+In-Reply-To: <20220207063249.1833066-7-hch@lst.de>
+From:   Dan Williams <dan.j.williams@intel.com>
+Date:   Mon, 7 Feb 2022 15:49:12 -0800
+Message-ID: <CAPcyv4iYfnJN+5=0Gzw8gKpNCG3PJS1MEZxxoPwuojhU6XHNRA@mail.gmail.com>
+Subject: Re: [PATCH 6/8] mm: don't include <linux/memremap.h> in <linux/mm.h>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Karol Herbst <kherbst@redhat.com>,
+        Lyude Paul <lyude@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Alistair Popple <apopple@nvidia.com>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        Ralph Campbell <rcampbell@nvidia.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        Maling list - DRI developers 
+        <dri-devel@lists.freedesktop.org>, nouveau@lists.freedesktop.org,
+        Linux NVDIMM <nvdimm@lists.linux.dev>,
+        Linux MM <linux-mm@kvack.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/7/22 3:05 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.10.99 release.
-> There are 74 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Wed, 09 Feb 2022 10:37:42 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.99-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
+On Sun, Feb 6, 2022 at 10:33 PM Christoph Hellwig <hch@lst.de> wrote:
+>
+> Move the check for the actual pgmap types that need the free at refcount
+> one behavior into the out of line helper, and thus avoid the need to
+> pull memremap.h into mm.h.
 
-On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
+Looks good to me assuming the compile bots agree.
 
-Tested-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+Reviewed-by: Dan Williams <dan.j.williams@intel.com>
+
+>
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>  arch/arm64/mm/mmu.c                    |  1 +
+>  drivers/gpu/drm/amd/amdkfd/kfd_priv.h  |  1 +
+>  drivers/gpu/drm/drm_cache.c            |  2 +-
+>  drivers/gpu/drm/nouveau/nouveau_dmem.c |  1 +
+>  drivers/gpu/drm/nouveau/nouveau_svm.c  |  1 +
+>  drivers/infiniband/core/rw.c           |  1 +
+>  drivers/nvdimm/pmem.h                  |  1 +
+>  drivers/nvme/host/pci.c                |  1 +
+>  drivers/nvme/target/io-cmd-bdev.c      |  1 +
+>  fs/fuse/virtio_fs.c                    |  1 +
+>  include/linux/memremap.h               | 18 ++++++++++++++++++
+>  include/linux/mm.h                     | 20 --------------------
+>  lib/test_hmm.c                         |  1 +
+>  mm/memremap.c                          |  6 +++++-
+>  14 files changed, 34 insertions(+), 22 deletions(-)
+>
+> diff --git a/arch/arm64/mm/mmu.c b/arch/arm64/mm/mmu.c
+> index acfae9b41cc8c9..580abae6c0b93f 100644
+> --- a/arch/arm64/mm/mmu.c
+> +++ b/arch/arm64/mm/mmu.c
+> @@ -17,6 +17,7 @@
+>  #include <linux/mman.h>
+>  #include <linux/nodemask.h>
+>  #include <linux/memblock.h>
+> +#include <linux/memremap.h>
+>  #include <linux/memory.h>
+>  #include <linux/fs.h>
+>  #include <linux/io.h>
+> diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_priv.h b/drivers/gpu/drm/amd/=
+amdkfd/kfd_priv.h
+> index ea68f3b3a4e9cb..6d643b4b791d87 100644
+> --- a/drivers/gpu/drm/amd/amdkfd/kfd_priv.h
+> +++ b/drivers/gpu/drm/amd/amdkfd/kfd_priv.h
+> @@ -25,6 +25,7 @@
+>
+>  #include <linux/hashtable.h>
+>  #include <linux/mmu_notifier.h>
+> +#include <linux/memremap.h>
+>  #include <linux/mutex.h>
+>  #include <linux/types.h>
+>  #include <linux/atomic.h>
+> diff --git a/drivers/gpu/drm/drm_cache.c b/drivers/gpu/drm/drm_cache.c
+> index f19d9acbe95936..50b8a088f763a6 100644
+> --- a/drivers/gpu/drm/drm_cache.c
+> +++ b/drivers/gpu/drm/drm_cache.c
+> @@ -27,11 +27,11 @@
+>  /*
+>   * Authors: Thomas Hellstr=C3=B6m <thomas-at-tungstengraphics-dot-com>
+>   */
+> -
+>  #include <linux/dma-buf-map.h>
+>  #include <linux/export.h>
+>  #include <linux/highmem.h>
+>  #include <linux/cc_platform.h>
+> +#include <linux/ioport.h>
+>  #include <xen/xen.h>
+>
+>  #include <drm/drm_cache.h>
+> diff --git a/drivers/gpu/drm/nouveau/nouveau_dmem.c b/drivers/gpu/drm/nou=
+veau/nouveau_dmem.c
+> index e886a3b9e08c7d..a5cdfbe32b5e54 100644
+> --- a/drivers/gpu/drm/nouveau/nouveau_dmem.c
+> +++ b/drivers/gpu/drm/nouveau/nouveau_dmem.c
+> @@ -39,6 +39,7 @@
+>
+>  #include <linux/sched/mm.h>
+>  #include <linux/hmm.h>
+> +#include <linux/memremap.h>
+>  #include <linux/migrate.h>
+>
+>  /*
+> diff --git a/drivers/gpu/drm/nouveau/nouveau_svm.c b/drivers/gpu/drm/nouv=
+eau/nouveau_svm.c
+> index 266809e511e2c1..090b9b47708cca 100644
+> --- a/drivers/gpu/drm/nouveau/nouveau_svm.c
+> +++ b/drivers/gpu/drm/nouveau/nouveau_svm.c
+> @@ -35,6 +35,7 @@
+>  #include <linux/sched/mm.h>
+>  #include <linux/sort.h>
+>  #include <linux/hmm.h>
+> +#include <linux/memremap.h>
+>  #include <linux/rmap.h>
+>
+>  struct nouveau_svm {
+> diff --git a/drivers/infiniband/core/rw.c b/drivers/infiniband/core/rw.c
+> index 5a3bd41b331c93..4d98f931a13ddd 100644
+> --- a/drivers/infiniband/core/rw.c
+> +++ b/drivers/infiniband/core/rw.c
+> @@ -2,6 +2,7 @@
+>  /*
+>   * Copyright (c) 2016 HGST, a Western Digital Company.
+>   */
+> +#include <linux/memremap.h>
+>  #include <linux/moduleparam.h>
+>  #include <linux/slab.h>
+>  #include <linux/pci-p2pdma.h>
+> diff --git a/drivers/nvdimm/pmem.h b/drivers/nvdimm/pmem.h
+> index 59cfe13ea8a85c..1f51a23614299b 100644
+> --- a/drivers/nvdimm/pmem.h
+> +++ b/drivers/nvdimm/pmem.h
+> @@ -3,6 +3,7 @@
+>  #define __NVDIMM_PMEM_H__
+>  #include <linux/page-flags.h>
+>  #include <linux/badblocks.h>
+> +#include <linux/memremap.h>
+>  #include <linux/types.h>
+>  #include <linux/pfn_t.h>
+>  #include <linux/fs.h>
+> diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+> index 6a99ed68091589..ab15bc72710dbe 100644
+> --- a/drivers/nvme/host/pci.c
+> +++ b/drivers/nvme/host/pci.c
+> @@ -15,6 +15,7 @@
+>  #include <linux/init.h>
+>  #include <linux/interrupt.h>
+>  #include <linux/io.h>
+> +#include <linux/memremap.h>
+>  #include <linux/mm.h>
+>  #include <linux/module.h>
+>  #include <linux/mutex.h>
+> diff --git a/drivers/nvme/target/io-cmd-bdev.c b/drivers/nvme/target/io-c=
+md-bdev.c
+> index 70ca9dfc1771a9..a141446db1bea3 100644
+> --- a/drivers/nvme/target/io-cmd-bdev.c
+> +++ b/drivers/nvme/target/io-cmd-bdev.c
+> @@ -6,6 +6,7 @@
+>  #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+>  #include <linux/blkdev.h>
+>  #include <linux/blk-integrity.h>
+> +#include <linux/memremap.h>
+>  #include <linux/module.h>
+>  #include "nvmet.h"
+>
+> diff --git a/fs/fuse/virtio_fs.c b/fs/fuse/virtio_fs.c
+> index 9d737904d07c0b..86b7dbb6a0d43e 100644
+> --- a/fs/fuse/virtio_fs.c
+> +++ b/fs/fuse/virtio_fs.c
+> @@ -8,6 +8,7 @@
+>  #include <linux/dax.h>
+>  #include <linux/pci.h>
+>  #include <linux/pfn_t.h>
+> +#include <linux/memremap.h>
+>  #include <linux/module.h>
+>  #include <linux/virtio.h>
+>  #include <linux/virtio_fs.h>
+> diff --git a/include/linux/memremap.h b/include/linux/memremap.h
+> index 1fafcc38acbad6..514ab46f597e5c 100644
+> --- a/include/linux/memremap.h
+> +++ b/include/linux/memremap.h
+> @@ -1,6 +1,8 @@
+>  /* SPDX-License-Identifier: GPL-2.0 */
+>  #ifndef _LINUX_MEMREMAP_H_
+>  #define _LINUX_MEMREMAP_H_
+> +
+> +#include <linux/mm.h>
+>  #include <linux/range.h>
+>  #include <linux/ioport.h>
+>  #include <linux/percpu-refcount.h>
+> @@ -129,6 +131,22 @@ static inline unsigned long pgmap_vmemmap_nr(struct =
+dev_pagemap *pgmap)
+>         return 1 << pgmap->vmemmap_shift;
+>  }
+>
+> +static inline bool is_device_private_page(const struct page *page)
+> +{
+> +       return IS_ENABLED(CONFIG_DEV_PAGEMAP_OPS) &&
+> +               IS_ENABLED(CONFIG_DEVICE_PRIVATE) &&
+> +               is_zone_device_page(page) &&
+> +               page->pgmap->type =3D=3D MEMORY_DEVICE_PRIVATE;
+> +}
+> +
+> +static inline bool is_pci_p2pdma_page(const struct page *page)
+> +{
+> +       return IS_ENABLED(CONFIG_DEV_PAGEMAP_OPS) &&
+> +               IS_ENABLED(CONFIG_PCI_P2PDMA) &&
+> +               is_zone_device_page(page) &&
+> +               page->pgmap->type =3D=3D MEMORY_DEVICE_PCI_P2PDMA;
+> +}
+> +
+>  #ifdef CONFIG_ZONE_DEVICE
+>  void *memremap_pages(struct dev_pagemap *pgmap, int nid);
+>  void memunmap_pages(struct dev_pagemap *pgmap);
+> diff --git a/include/linux/mm.h b/include/linux/mm.h
+> index 26baadcef4556b..80fccfe31c3444 100644
+> --- a/include/linux/mm.h
+> +++ b/include/linux/mm.h
+> @@ -23,7 +23,6 @@
+>  #include <linux/err.h>
+>  #include <linux/page-flags.h>
+>  #include <linux/page_ref.h>
+> -#include <linux/memremap.h>
+>  #include <linux/overflow.h>
+>  #include <linux/sizes.h>
+>  #include <linux/sched.h>
+> @@ -1101,9 +1100,6 @@ static inline bool put_devmap_managed_page(struct p=
+age *page)
+>                 return false;
+>         if (!is_zone_device_page(page))
+>                 return false;
+> -       if (page->pgmap->type !=3D MEMORY_DEVICE_PRIVATE &&
+> -           page->pgmap->type !=3D MEMORY_DEVICE_FS_DAX)
+> -               return false;
+>         return __put_devmap_managed_page(page);
+>  }
+>
+> @@ -1114,22 +1110,6 @@ static inline bool put_devmap_managed_page(struct =
+page *page)
+>  }
+>  #endif /* CONFIG_DEV_PAGEMAP_OPS */
+>
+> -static inline bool is_device_private_page(const struct page *page)
+> -{
+> -       return IS_ENABLED(CONFIG_DEV_PAGEMAP_OPS) &&
+> -               IS_ENABLED(CONFIG_DEVICE_PRIVATE) &&
+> -               is_zone_device_page(page) &&
+> -               page->pgmap->type =3D=3D MEMORY_DEVICE_PRIVATE;
+> -}
+> -
+> -static inline bool is_pci_p2pdma_page(const struct page *page)
+> -{
+> -       return IS_ENABLED(CONFIG_DEV_PAGEMAP_OPS) &&
+> -               IS_ENABLED(CONFIG_PCI_P2PDMA) &&
+> -               is_zone_device_page(page) &&
+> -               page->pgmap->type =3D=3D MEMORY_DEVICE_PCI_P2PDMA;
+> -}
+> -
+>  /* 127: arbitrary random number, small enough to assemble well */
+>  #define folio_ref_zero_or_close_to_overflow(folio) \
+>         ((unsigned int) folio_ref_count(folio) + 127u <=3D 127u)
+> diff --git a/lib/test_hmm.c b/lib/test_hmm.c
+> index 396beee6b061d4..e5fc14ba71f33e 100644
+> --- a/lib/test_hmm.c
+> +++ b/lib/test_hmm.c
+> @@ -12,6 +12,7 @@
+>  #include <linux/kernel.h>
+>  #include <linux/cdev.h>
+>  #include <linux/device.h>
+> +#include <linux/memremap.h>
+>  #include <linux/mutex.h>
+>  #include <linux/rwsem.h>
+>  #include <linux/sched.h>
+> diff --git a/mm/memremap.c b/mm/memremap.c
+> index f41233a67edb12..a0ece2344c2cab 100644
+> --- a/mm/memremap.c
+> +++ b/mm/memremap.c
+> @@ -4,7 +4,7 @@
+>  #include <linux/io.h>
+>  #include <linux/kasan.h>
+>  #include <linux/memory_hotplug.h>
+> -#include <linux/mm.h>
+> +#include <linux/memremap.h>
+>  #include <linux/pfn_t.h>
+>  #include <linux/swap.h>
+>  #include <linux/mmzone.h>
+> @@ -504,6 +504,10 @@ void free_devmap_managed_page(struct page *page)
+>
+>  bool __put_devmap_managed_page(struct page *page)
+>  {
+> +       if (page->pgmap->type !=3D MEMORY_DEVICE_PRIVATE &&
+> +           page->pgmap->type !=3D MEMORY_DEVICE_FS_DAX)
+> +               return false;
+> +
+>         /*
+>          * devmap page refcounts are 1-based, rather than 0-based: if
+>          * refcount is 1, then the page is free and the refcount is
+> --
+> 2.30.2
+>
