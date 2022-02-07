@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C6BFC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9B2BC433F5
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:00:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381692AbiBGLq6 (ORCPT
+        id S1381852AbiBGLr1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:46:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46454 "EHLO
+        Mon, 7 Feb 2022 06:47:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386260AbiBGLeN (ORCPT
+        with ESMTP id S1386308AbiBGLeW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:34:13 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 096F0C043181;
-        Mon,  7 Feb 2022 03:34:13 -0800 (PST)
+        Mon, 7 Feb 2022 06:34:22 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA2F9C043181;
+        Mon,  7 Feb 2022 03:34:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BC6C7B8102E;
-        Mon,  7 Feb 2022 11:34:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3913C004E1;
-        Mon,  7 Feb 2022 11:34:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7669AB80EC3;
+        Mon,  7 Feb 2022 11:34:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64705C004E1;
+        Mon,  7 Feb 2022 11:34:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233650;
-        bh=sRT0SUtVKDDdJobDZ2zVLyItWfN68H3/PvgmN5nr8u4=;
+        s=korg; t=1644233659;
+        bh=VQ0um3hPcWFFTWCtrxqzMA54VF4LBJGzFd1GZ0+xhEQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pAQX48k1KpaRE1imS8OK63hG2Fs2FQgVHrj599ZYMUKQ3C8yDmTK6wE4atbM+D1AG
-         tZP+JKGGGF+thWWS0TG56Z8yWbfSVSfZApLCIOV67+BcrChMvh56152mRD/4FCbJq3
-         1+oEOdiQVX82SAz7sF2gNyuO8vsV6W0UiUW2vr3M=
+        b=CrE/U1ODBRTA5pLcI3e90D6P65Ux2G0a/CSdoGqC4WElYm6AMYBnAnAoisWVXkNHs
+         ZnAYbMX4zZA9MQlRBZw4wQVhPuR/UyGX6EiRlw74xer9CcgIz7IoYOSlcVPMffzffU
+         QczU7xMR4hMwy6+jF4PnBuPLL2w9SZU70g79VbVo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
-        Marek Vasut <marex@denx.de>
-Subject: [PATCH 5.16 078/126] drm: mxsfb: Fix NULL pointer dereference
-Date:   Mon,  7 Feb 2022 12:06:49 +0100
-Message-Id: <20220207103806.805730351@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Subject: [PATCH 5.16 080/126] drm/i915/overlay: Prevent divide by zero bugs in scaling
+Date:   Mon,  7 Feb 2022 12:06:51 +0100
+Message-Id: <20220207103806.869724629@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
 References: <20220207103804.053675072@linuxfoundation.org>
@@ -50,37 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Stein <alexander.stein@ew.tq-group.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit 622c9a3a7868e1eeca39c55305ca3ebec4742b64 upstream.
+commit 90a3d22ff02b196d5884e111f39271a1d4ee8e3e upstream.
 
-mxsfb should not ever dereference the NULL pointer which
-drm_atomic_get_new_bridge_state is allowed to return.
-Assume a fixed format instead.
+Smatch detected a divide by zero bug in check_overlay_scaling().
 
-Fixes: b776b0f00f24 ("drm: mxsfb: Use bus_format from the nearest bridge if present")
-Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
-Signed-off-by: Marek Vasut <marex@denx.de>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220202081755.145716-3-alexander.stein@ew.tq-group.com
+    drivers/gpu/drm/i915/display/intel_overlay.c:976 check_overlay_scaling()
+    error: potential divide by zero bug '/ rec->dst_height'.
+    drivers/gpu/drm/i915/display/intel_overlay.c:980 check_overlay_scaling()
+    error: potential divide by zero bug '/ rec->dst_width'.
+
+Prevent this by ensuring that the dst height and width are non-zero.
+
+Fixes: 02e792fbaadb ("drm/i915: implement drmmode overlay support v4")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220124122409.GA31673@kili
+(cherry picked from commit cf5b64f7f10b28bebb9b7c9d25e7aee5cbe43918)
+Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/mxsfb/mxsfb_kms.c |    6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/i915/display/intel_overlay.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/gpu/drm/mxsfb/mxsfb_kms.c
-+++ b/drivers/gpu/drm/mxsfb/mxsfb_kms.c
-@@ -361,7 +361,11 @@ static void mxsfb_crtc_atomic_enable(str
- 		bridge_state =
- 			drm_atomic_get_new_bridge_state(state,
- 							mxsfb->bridge);
--		bus_format = bridge_state->input_bus_cfg.format;
-+		if (!bridge_state)
-+			bus_format = MEDIA_BUS_FMT_FIXED;
-+		else
-+			bus_format = bridge_state->input_bus_cfg.format;
+--- a/drivers/gpu/drm/i915/display/intel_overlay.c
++++ b/drivers/gpu/drm/i915/display/intel_overlay.c
+@@ -959,6 +959,9 @@ static int check_overlay_dst(struct inte
+ 	const struct intel_crtc_state *pipe_config =
+ 		overlay->crtc->config;
+ 
++	if (rec->dst_height == 0 || rec->dst_width == 0)
++		return -EINVAL;
 +
- 		if (bus_format == MEDIA_BUS_FMT_FIXED) {
- 			dev_warn_once(drm->dev,
- 				      "Bridge does not provide bus format, assuming MEDIA_BUS_FMT_RGB888_1X24.\n"
+ 	if (rec->dst_x < pipe_config->pipe_src_w &&
+ 	    rec->dst_x + rec->dst_width <= pipe_config->pipe_src_w &&
+ 	    rec->dst_y < pipe_config->pipe_src_h &&
 
 
