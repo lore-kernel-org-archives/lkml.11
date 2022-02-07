@@ -2,168 +2,253 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5350DC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 19:56:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F154C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 19:59:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240078AbiBGT4Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 14:56:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35786 "EHLO
+        id S240546AbiBGT41 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 14:56:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241660AbiBGTvK (ORCPT
+        with ESMTP id S241004AbiBGTzy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 14:51:10 -0500
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4695C0401E1
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 11:51:09 -0800 (PST)
-Received: by mail-pf1-x42a.google.com with SMTP id n32so14811835pfv.11
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 11:51:09 -0800 (PST)
+        Mon, 7 Feb 2022 14:55:54 -0500
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87F32C0401DA
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 11:55:53 -0800 (PST)
+Received: by mail-yb1-xb36.google.com with SMTP id y6so28627904ybc.5
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 11:55:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=vzlzaB5S/veay9fPsYouwaa7Ye2duYzjZ7MsDyh1dr4=;
-        b=DWvVdPKojL+uX+8p3r/iCjkHgAERiMri1PzoB/Zo0kSnzI46zwpN2j6TOjDnLPvwVf
-         hAbDf2McKmU2wDKHc+DePunkStheTMA5WRL1xC6HZRU5UBDR2TbsJO1UPDT1jxnBUXMV
-         WhX37VktCtbWWXdlT+u9fYjz806AJFbK+zXU/1L6ZZeHcj0C/iES3inbmXTCs+1MTMjP
-         XZk9QIg6fRn7NLS2LC5rdI80mmJXYEW5tlbZbrl99GdkVMk8BOgyhLlPPL2DSq0BCxIN
-         yiN8vAxFu2y8FTQtM7uDKGpGPF0cehnZuJEoyK5Qk+/nuFvzXpsVX5Ozn1xE1xE7acTH
-         fPcg==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=cIeGIDwEX25ldmpB0Z226M8rnhkEGp63Yp0NEvcjQyM=;
+        b=FxDPRuncyydboj5DBXA9bBILTdhAgivJ2t+m/B2zLIEe8l5/I5tjzLZtn+CdBoqa2F
+         PHABYz1evnKZkqaiYlDgujbQwMDajqFUb0U2Ib9rpKfTdU/KBXc5f6X3d++6qwSW612L
+         Qy2PHiLfVyNuWpWlk2eR9pbICvHOLSubwinut7li25SC2vP3LQkOJ53uL9jA1C0y8yGx
+         UYIHDU/0R1WX9noC8R+YuiNgnm7SIFk4O5ISzf0a2nptzLEmDPx8N+eSbz2bBlHlPUAF
+         EKLUK8+Y4RmXTcV8qbx9maZTLq5xuzocwA6KfVu3yxeERBG/jhtsvsr8nAVfFSh1Nu+g
+         q9Vg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=vzlzaB5S/veay9fPsYouwaa7Ye2duYzjZ7MsDyh1dr4=;
-        b=hjk7eLMuxrQjkZVsCdNADupMJXZ7zbgA5oHUhnPTRu4eqtITgGToaFdhMRDmvxQcIa
-         hEevBaV6EROLd3ZSlPLJ+qGs7AHYspwWMwX8WfmvjBg4M78Mulco5nBGjFN8GmXU2jrL
-         j0yk8k/+DjeNto3+VPwSvKokN3FbKnZuCWhBBXknM9ZNOvDyW2894geryW+m3caqU4D7
-         gOzSj1Lh5D0FqpzJdvMRxkjib9RUnt/JW97s1wGM338LYoygeeoKu5WXJfmctUYW72Rz
-         +4jmPSD0eOKEnkaoAqOqqoXfJ0f6czcZAYSznDZ0Z8yM2HcClPDxl1NUfjcMcj92BKKt
-         Buhg==
-X-Gm-Message-State: AOAM5324GtadnDXNzCFfQV4NsiLbFowW9BhoS5jfCajI9Sd6GP2BVIL1
-        +T5DAzFMxxI5unDiYiq8TSb/gA==
-X-Google-Smtp-Source: ABdhPJxckrgaXyzE7hXmoCqcM4bymTTt+24ecIBSNEEEv8MA5Bd9AJg0cUoNit9K9VB1eF832B7YIQ==
-X-Received: by 2002:a05:6a00:244e:: with SMTP id d14mr968685pfj.45.1644263469165;
-        Mon, 07 Feb 2022 11:51:09 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id c18sm12636184pfp.181.2022.02.07.11.51.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 11:51:08 -0800 (PST)
-Date:   Mon, 7 Feb 2022 19:51:05 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Hou Wenlong <houwenlong.hwl@antgroup.com>
-Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] KVM: x86: Fix wrong privilege check for code segment
- in __load_segment_descriptor()
-Message-ID: <YgF4KX90nxxyaDcN@google.com>
-References: <cover.1642669684.git.houwenlong.hwl@antgroup.com>
- <ed8917d7bab80a1c1a130beae45c7d6ecdef47fc.1642669684.git.houwenlong.hwl@antgroup.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=cIeGIDwEX25ldmpB0Z226M8rnhkEGp63Yp0NEvcjQyM=;
+        b=PtGjZXtONXiljlKatOY5x5+gIhD1wV+AkSIktqlHwJXyYuA7OxKT2yXezSAWiLQyCQ
+         p1GJZQl65ZQKQ9TZrVvRTLKQzNlxKvu2Pm+shDQg06TgqXB7Gob1JhB8foMzshiTI6Rw
+         cLdu5ff8Be6P+fNhyocwwjFC8hwmgferEU9cMJ9WTieNPTcoV6tTOnty39/5KthKbA40
+         2TiVoR8z5fqNE6yD4LJE+LdsPmPtYBz/wvLAg9DB2gI9c/N/EZnNn6DDiCT/gMA45Mg3
+         7ljNgRviea2rwr0DP11dxCBTHwJn3lEm6pgI0ZGy6tyfU9GP/dmzBWKjqUvOmF065MH2
+         NolQ==
+X-Gm-Message-State: AOAM533ZHjsMfGRR7L/Bump5yHNvJNjoLMKzBQpaULFHxqQ44fCpFht5
+        P4zLpguMVgbER6OSZA9FXftjQ88ZIECagAKWHWOZFQ==
+X-Google-Smtp-Source: ABdhPJypA1OJ3anBiqKzgFuvUx+sUQdROCHaXV8NFzNKd1pSP7YKC/6bNcHVADdFPGCRcSLgYJ1ESdFxCUM8AN4UN00=
+X-Received: by 2002:a81:3986:: with SMTP id g128mr1556995ywa.129.1644263752610;
+ Mon, 07 Feb 2022 11:55:52 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ed8917d7bab80a1c1a130beae45c7d6ecdef47fc.1642669684.git.houwenlong.hwl@antgroup.com>
+References: <20220207133856.644483064@linuxfoundation.org>
+In-Reply-To: <20220207133856.644483064@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Tue, 8 Feb 2022 01:25:41 +0530
+Message-ID: <CA+G9fYuCnmRoDu4xDhyKzPX1RB5uj7iw-GUo2=y6KP-_Qcnvzw@mail.gmail.com>
+Subject: Re: [PATCH 5.16 000/127] 5.16.8-rc2 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 20, 2022, Hou Wenlong wrote:
-> Code segment descriptor can be loaded by jmp/call/ret, iret
-> and int. The privilege checks are different between those
-> instructions above realmode. Although, the emulator has
-> use x86_transfer_type enumerate to differentiate them, but
-> it is not really used in __load_segment_descriptor(). Note,
-> far jump/call to call gate, task gate or task state segment
-> are not implemented in emulator.
-> 
-> As for far jump/call to code segment, if DPL > CPL for conforming
-> code or (RPL > CPL or DPL != CPL) for non-conforming code, it
-> should trigger #GP. The current checks are ok.
-> 
-> As for far return, if RPL < CPL or DPL > RPL for conforming
-> code or DPL != RPL for non-conforming code, it should trigger #GP.
-> Outer level return is not implemented above virtual-8086 mode in
-> emulator. So it implies that RPL <= CPL, but the current checks
-> wouldn't trigger #GP if RPL < CPL.
-> 
-> As for code segment loading in task switch, if DPL > RPL for conforming
-> code or DPL != RPL for non-conforming code, it should trigger #TS. Since
-> segment selector is loaded before segment descriptor when load state from
-> tss, it implies that RPL = CPL, so the current checks are ok.
-> 
-> The only problem in current implementation is mssing RPL < CPL check for
-> far return. However, change code to follow the manual is better.
-> 
-> Signed-off-by: Hou Wenlong <houwenlong.hwl@antgroup.com>
-> ---
+On Mon, 7 Feb 2022 at 19:34, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 5.16.8 release.
+> There are 127 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Wed, 09 Feb 2022 13:38:34 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
+5.16.8-rc2.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-5.16.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-Reviewed-by: Sean Christopherson <seanjc@google.com>
+Results from Linaro=E2=80=99s test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
->  arch/x86/kvm/emulate.c | 30 ++++++++++++++++++++++--------
->  1 file changed, 22 insertions(+), 8 deletions(-)
-> 
-> diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
-> index 864db6fbe8db..b7ce2a85e58e 100644
-> --- a/arch/x86/kvm/emulate.c
-> +++ b/arch/x86/kvm/emulate.c
-> @@ -1631,14 +1631,28 @@ static int __load_segment_descriptor(struct x86_emulate_ctxt *ctxt,
->  		if (!(seg_desc.type & 8))
->  			goto exception;
->  
-> -		if (seg_desc.type & 4) {
-> -			/* conforming */
-> -			if (dpl > cpl)
-> -				goto exception;
-> -		} else {
-> -			/* nonconforming */
-> -			if (rpl > cpl || dpl != cpl)
-> -				goto exception;
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-A comment here would be mildly helpful, e.g.
+## Build
+* kernel: 5.16.8-rc2
+* git: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-=
+rc.git
+* git branch: linux-5.16.y
+* git commit: 87d888a197db9443026045ba3c253a1a929114d4
+* git describe: v5.16.7-128-g87d888a197db
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.16.y/build/v5.16=
+.7-128-g87d888a197db
 
-		/* RET can never return to an inner privilege level. */
-> +		if (transfer == X86_TRANSFER_RET && rpl < cpl)
-> +			goto exception;
+## Test Regressions (compared to v5.16.7)
+No test regressions found.
 
-And then as a follow-up patch, I think we can/should move the unhandled outer
-privilege level logic here to make it easier to understand why the checks for RET
-are incomplete, e.g.
+## Metric Regressions (compared to v5.16.7)
+No metric regressions found.
 
-diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
-index a885b53dc7cc..a7cecd7beb91 100644
---- a/arch/x86/kvm/emulate.c
-+++ b/arch/x86/kvm/emulate.c
-@@ -1631,8 +1631,15 @@ static int __load_segment_descriptor(struct x86_emulate_ctxt *ctxt,
-                if (!(seg_desc.type & 8))
-                        goto exception;
+## Test Fixes (compared to v5.16.7)
+No test fixes found.
 
--               if (transfer == X86_TRANSFER_RET && rpl < cpl)
--                       goto exception;
-+               if (transfer == X86_TRANSFER_RET) {
-+                       /* RET can never return to an inner privilege level. */
-+                       if (rpl < cpl)
-+                               goto exception;
-+                       /* Outer-privilege level return is not implemented */
-+                       if (rpl > cpl)
-+                               return X86EMUL_UNHANDLEABLE;
-+               }
-+
-                if (transfer == X86_TRANSFER_RET || X86_TRANSFER_TASK_SWITCH) {
-                        if (seg_desc.type & 4) {
-                                /* conforming */
-@@ -2227,9 +2234,6 @@ static int em_ret_far(struct x86_emulate_ctxt *ctxt)
-        rc = emulate_pop(ctxt, &cs, ctxt->op_bytes);
-        if (rc != X86EMUL_CONTINUE)
-                return rc;
--       /* Outer-privilege level return is not implemented */
--       if (ctxt->mode >= X86EMUL_MODE_PROT16 && (cs & 3) > cpl)
--               return X86EMUL_UNHANDLEABLE;
-        rc = __load_segment_descriptor(ctxt, (u16)cs, VCPU_SREG_CS, cpl,
-                                       X86_TRANSFER_RET,
-                                       &new_desc);
+## Metric Fixes (compared to v5.16.7)
+No metric fixes found.
+
+## Test result summary
+total: 103985, pass: 89106, fail: 847, skip: 13204, xfail: 828
+
+## Build Summary
+* arc: 10 total, 10 passed, 0 failed
+* arm: 259 total, 259 passed, 0 failed
+* arm64: 37 total, 37 passed, 0 failed
+* dragonboard-410c: 1 total, 1 passed, 0 failed
+* hi6220-hikey: 1 total, 1 passed, 0 failed
+* i386: 36 total, 36 passed, 0 failed
+* juno-r2: 1 total, 1 passed, 0 failed
+* mips: 34 total, 34 passed, 0 failed
+* parisc: 12 total, 12 passed, 0 failed
+* powerpc: 52 total, 48 passed, 4 failed
+* riscv: 24 total, 20 passed, 4 failed
+* s390: 18 total, 18 passed, 0 failed
+* sh: 24 total, 24 passed, 0 failed
+* sparc: 12 total, 12 passed, 0 failed
+* x15: 1 total, 1 passed, 0 failed
+* x86: 1 total, 1 passed, 0 failed
+* x86_64: 37 total, 37 passed, 0 failed
+
+## Test suites summary
+* fwts
+* kselftest-android
+* kselftest-arm64
+* kselftest-arm64/arm64.btitest.bti_c_func
+* kselftest-arm64/arm64.btitest.bti_j_func
+* kselftest-arm64/arm64.btitest.bti_jc_func
+* kselftest-arm64/arm64.btitest.bti_none_func
+* kselftest-arm64/arm64.btitest.nohint_func
+* kselftest-arm64/arm64.btitest.paciasp_func
+* kselftest-arm64/arm64.nobtitest.bti_c_func
+* kselftest-arm64/arm64.nobtitest.bti_j_func
+* kselftest-arm64/arm64.nobtitest.bti_jc_func
+* kselftest-arm64/arm64.nobtitest.bti_none_func
+* kselftest-arm64/arm64.nobtitest.nohint_func
+* kselftest-arm64/arm64.nobtitest.paciasp_func
+* kselftest-bpf
+* kselftest-breakpoints
+* kselftest-capabilities
+* kselftest-cgroup
+* kselftest-clone3
+* kselftest-core
+* kselftest-cpu-hotplug
+* kselftest-cpufreq
+* kselftest-drivers
+* kselftest-efivarfs
+* kselftest-filesystems
+* kselftest-firmware
+* kselftest-fpu
+* kselftest-futex
+* kselftest-gpio
+* kselftest-intel_pstate
+* kselftest-ipc
+* kselftest-ir
+* kselftest-kcmp
+* kselftest-kexec
+* kselftest-kvm
+* kselftest-lib
+* kselftest-livepatch
+* kselftest-lkdtm
+* kselftest-membarrier
+* kselftest-memfd
+* kselftest-memory-hotplug
+* kselftest-mincore
+* kselftest-mount
+* kselftest-mqueue
+* kselftest-net
+* kselftest-netfilter
+* kselftest-nsfs
+* kselftest-openat2
+* kselftest-pid_namespace
+* kselftest-pidfd
+* kselftest-proc
+* kselftest-pstore
+* kselftest-ptrace
+* kselftest-rseq
+* kselftest-rtc
+* kselftest-seccomp
+* kselftest-sigaltstack
+* kselftest-size
+* kselftest-splice
+* kselftest-static_keys
+* kselftest-sync
+* kselftest-sysctl
+* kselftest-tc-testing
+* kselftest-timens
+* kselftest-timers
+* kselftest-tmpfs
+* kselftest-tpm2
+* kselftest-user
+* kselftest-vm
+* kselftest-x86
+* kselftest-zram
+* kunit
+* kvm-unit-tests
+* libgpiod
+* libhugetlbfs
+* linux-log-parser
+* ltp-cap_bounds-tests
+* ltp-commands-tests
+* ltp-containers-tests
+* ltp-controllers-tests
+* ltp-cpuhotplug-tests
+* ltp-crypto-tests
+* ltp-cve-tests
+* ltp-dio-tests
+* ltp-fcntl-locktests-tests
+* ltp-filecaps-tests
+* ltp-fs-tests
+* ltp-fs_bind-tests
+* ltp-fs_perms_simple-tests
+* ltp-fsx-tests
+* ltp-hugetlb-tests
+* ltp-io-tests
+* ltp-ipc-tests
+* ltp-math-tests
+* ltp-mm-tests
+* ltp-nptl-tests
+* ltp-open-posix-tests
+* ltp-pty-tests
+* ltp-sched-tests
+* ltp-securebits-tests
+* ltp-syscalls-tests
+* ltp-tracing-tests
+* network-basic-tests
+* packetdrill
+* perf
+* prep-tmp-disk
+* rcutorture
+* ssuite
+* v4l2-compliance
+
+--
+Linaro LKFT
+https://lkft.linaro.org
