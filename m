@@ -2,366 +2,289 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E81EBC3527B
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 05:51:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09961C3527A
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 05:51:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238895AbiBGFuX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 00:50:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40618 "EHLO
+        id S239007AbiBGFua (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 00:50:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351166AbiBGEEW (ORCPT
+        with ESMTP id S1350413AbiBGDa6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 23:04:22 -0500
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D9B5C043180;
-        Sun,  6 Feb 2022 20:04:19 -0800 (PST)
-Received: by mail-pj1-x1029.google.com with SMTP id y15-20020a17090a474f00b001b88562650aso2649308pjg.0;
-        Sun, 06 Feb 2022 20:04:19 -0800 (PST)
+        Sun, 6 Feb 2022 22:30:58 -0500
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1096C043180
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 19:30:56 -0800 (PST)
+Received: by mail-yb1-xb2f.google.com with SMTP id v47so11159323ybi.4
+        for <linux-kernel@vger.kernel.org>; Sun, 06 Feb 2022 19:30:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=16v0cC1TvpKhlFbTNq1A18dbL8TX/lGmAdN0x49ucuc=;
-        b=YBzJmObXlO3nu/xcZSjYigtBCOdcVkVI7++1MWimj3x4sxZVv4tuLnKHIWbmttgnfu
-         5BiffbdWgh3R7WrmsTQzlpe1XY4MX0eLPVCmOGU1jdySmBJHGEzn4H3A7wj20uIimQrX
-         AjEp2SVT3oApu5TVPQnXUiCy40K1Cm4HeeLZxdcEJhnLlMQci2vo47bA8Zd4GVeZYFMI
-         q3PjmqcHcUdr24a2w/XvtrYz3TI7OC8DQW2wT1XHoAfdWxYbjsYoMNtXlyU4A7cjxjU5
-         8k9f7eZDjvtmxBTZIenH50hq/wWEXzVjQqfTBuh0PP+oaYvA91+pbdT9JbYCj5P08/AD
-         CD7Q==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=L8aIC6tgOZarL2cC+/D8GXNrTHUDoSyxxEE6XQLswz0=;
+        b=KD9vqPi6m53rdF82uzQEcGM9EwQf0PZBGKf/UauddQ+rgb25RwwAsc7PhOHtg0ixR6
+         /2qonbD1Vf644KGZ7xszAxR4hTUg1MJMuI3RawO/yrCS/PgcC6bCGNMgv0gyZQoTJhPC
+         jyrpD9DcwSWWxnkcUQOl4RcZpGQk7NgHXqizn01FlpJ8QtT1FOpXh9+c+5M/iFgZxS6H
+         9eKxoIh9nZfLDGVWVOvwZqdfdvmjrTZNqBDAl9Vc/E1iI4VtDbLFIJ6Lcp91qpN3pUxU
+         f/FGvx14NNTJXZtswYXPd8WZTkpvT4DoimjKHvXH6SjrjkM885mnCd4WgJDGtybtXyRB
+         qYDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=16v0cC1TvpKhlFbTNq1A18dbL8TX/lGmAdN0x49ucuc=;
-        b=JOCzDA84iUQrw22Ul5lRNcVSvLmpELIlPy6mMbl3H83dJq9Hx4Ud0sC2VpERwxS5wu
-         29OPQgdBjAvDJhDKbURlR4w8Ig9KK2s8ep8KBjsa5vgT4WvZSQwX2bV8siVM6rt6gd2y
-         tsNCiPPvtnWxZ54z0yM49TkCtZxZ3t/uDA6DKNXdRI118BzGNTrs61+AKesQzQHI+Iqn
-         3iy0hXkq7auBRdxBNl1ztWkIqeDSumuJPaO1RL1EELfKjZYXlUb4Wf5PxDT3r3Fpj2Fu
-         yc5ij8FtIfJVFUzIQmX17qrpZ5plZIFwapbAgsayhujgWzHHWLcMR7W+AefyT1OUfgW8
-         2g1g==
-X-Gm-Message-State: AOAM533dF+6lgbF+VRrNN5eBlNeCc1Vgi+Yfz/hDP3Q8WM4deI55RkrF
-        5+v8kvXK6369C/YLLn2w9aM=
-X-Google-Smtp-Source: ABdhPJyyzhCLWwzxQt2xfOIIPRPYd3U8JsrS7xz8kNwQgrN0D4pB+eAoZxL/CV6twQGXaEo9qUg0Cw==
-X-Received: by 2002:a17:90a:a616:: with SMTP id c22mr12102473pjq.68.1644206659029;
-        Sun, 06 Feb 2022 20:04:19 -0800 (PST)
-Received: from localhost.localdomain ([27.7.146.135])
-        by smtp.gmail.com with ESMTPSA id j18sm10601234pfj.13.2022.02.06.20.04.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Feb 2022 20:04:18 -0800 (PST)
-From:   Jagath Jog J <jagathjog1996@gmail.com>
-To:     jic23@kernel.org, lars@metafoo.de, andy.shevchenko@gmail.com,
-        sst@poczta.fm, robh+dt@kernel.org
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] iio: potentiometer: Add support for Maxim DS3502
-Date:   Mon,  7 Feb 2022 09:34:08 +0530
-Message-Id: <20220207040408.4273-3-jagathjog1996@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220207040408.4273-1-jagathjog1996@gmail.com>
-References: <20220207040408.4273-1-jagathjog1996@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=L8aIC6tgOZarL2cC+/D8GXNrTHUDoSyxxEE6XQLswz0=;
+        b=kbSmGjs9gteVZTTitv1y6Ntd1hTzp7aiYsfQ/fdTsMNvnalglFzAJiScpC1azRvb0Y
+         d0iE8PEP1wjYIyOLxKQqdHbvsZ3yx+RqXKlt7hejWsLqWd83gI8vQFI6OU04hNMGhhKS
+         2yO/h0HEzsTYBIEyV8nr9hfGeYXruibqerHKmniowrhLQB47VqmzNxP0+S3k5PhpQJ8g
+         J4yAGw5HflJarx02kmrq0pjDMQTregrlZEt2nJGS5ZYoVcnrPtdagtbYfSVuj35yysIg
+         ZwLsT2CoEmTaqF1QNykU2ZNSHnUzdp5Ch/7MmZ7+6vei6U81DXJVVzA0nc5JOmNU8vtI
+         rBdw==
+X-Gm-Message-State: AOAM531G3JJZundU1w+2Dv6z/O6Ud+O8pz7ZkRtRLBNdDvhnel0ulEdi
+        o6bbdRTDuR+TQKWB4FbP9Yt/osOJHFOWugyYn27Fgg==
+X-Google-Smtp-Source: ABdhPJzkpFfkiTlqQSQzp+nJjrE7IDV3yucAZ/Zdxqaztc9yfFyVqznKRRHkLExJGw+98rk2Gblyv2jLsY1J813ixBM=
+X-Received: by 2002:a81:e345:: with SMTP id w5mr6827331ywl.32.1644204655621;
+ Sun, 06 Feb 2022 19:30:55 -0800 (PST)
+MIME-Version: 1.0
+References: <20220124202457.3450198-4-eric.dumazet@gmail.com> <20220207030250.GC33412@xsang-OptiPlex-9020>
+In-Reply-To: <20220207030250.GC33412@xsang-OptiPlex-9020>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Sun, 6 Feb 2022 19:30:44 -0800
+Message-ID: <CANn89iLc4=otMLU4x9FKKwe13ozL5WWTY7dFqoYNXDHXhxaRWg@mail.gmail.com>
+Subject: Re: [tcp/dccp] f6408a8641: BUG:KASAN:use-after-free_in_inet_twsk_kill
+To:     kernel test robot <oliver.sang@intel.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>, 0day robot <lkp@intel.com>,
+        LKML <linux-kernel@vger.kernel.org>, lkp@lists.01.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The DS3502 is a 7-bit, nonvolatile digital potentiometer featuring
-an output voltage range of up to 15.5V.
-DS3502 support is implemented into existing ds1803 driver
+On Sun, Feb 6, 2022 at 7:03 PM kernel test robot <oliver.sang@intel.com> wrote:
+>
+>
+>
+> Greeting,
+>
+> FYI, we noticed the following commit (built with gcc-9):
+>
+> commit: f6408a86410131190bc04d3c9b12cae45383cdd4 ("[PATCH net-next 3/6] tcp/dccp: get rid of inet_twsk_purge()")
+> url: https://github.com/0day-ci/linux/commits/Eric-Dumazet/netns-speedup-netns-dismantles/20220125-061934
+> base: https://git.kernel.org/cgit/linux/kernel/git/davem/net-next.git 8aaaf2f3af2ae212428f4db1af34214225f5cec3
+> patch link: https://lore.kernel.org/netdev/20220124202457.3450198-4-eric.dumazet@gmail.com
+>
 
-Datasheet: https://datasheets.maximintegrated.com/en/ds/DS3502.pdf
+Right, and this has been fixed in
 
-Signed-off-by: Jagath Jog J <jagathjog1996@gmail.com>
----
- drivers/iio/potentiometer/Kconfig  |   4 +-
- drivers/iio/potentiometer/ds1803.c | 150 +++++++++++++++++++++++------
- 2 files changed, 120 insertions(+), 34 deletions(-)
+commit fbb8295248e1d6f576d444309fcf79356008eac1
+Author: Eric Dumazet <edumazet@google.com>
+Date:   Wed Jan 26 10:07:14 2022 -0800
 
-diff --git a/drivers/iio/potentiometer/Kconfig b/drivers/iio/potentiometer/Kconfig
-index 832df8da2bc6..1741af33672c 100644
---- a/drivers/iio/potentiometer/Kconfig
-+++ b/drivers/iio/potentiometer/Kconfig
-@@ -27,10 +27,10 @@ config AD5272
- 	  module will be called ad5272.
- 
- config DS1803
--	tristate "Maxim Integrated DS1803 Digital Potentiometer driver"
-+	tristate "Maxim Integrated DS1803 and similar Digital Potentiometer driver"
- 	depends on I2C
- 	help
--	  Say yes here to build support for the Maxim Integrated DS1803
-+	  Say yes here to build support for the Maxim Integrated DS1803 and DS3502
- 	  digital potentiometer chip.
- 
- 	  To compile this driver as a module, choose M here: the
-diff --git a/drivers/iio/potentiometer/ds1803.c b/drivers/iio/potentiometer/ds1803.c
-index 20b45407eaac..5e403e3400f7 100644
---- a/drivers/iio/potentiometer/ds1803.c
-+++ b/drivers/iio/potentiometer/ds1803.c
-@@ -1,12 +1,15 @@
- // SPDX-License-Identifier: GPL-2.0-only
- /*
-- * Maxim Integrated DS1803 digital potentiometer driver
-+ * Maxim Integrated DS1803 and DS3502 digital potentiometer driver
-  * Copyright (c) 2016 Slawomir Stepien
-+ * Copyright (c) 2022 Jagath Jog J
-  *
-  * Datasheet: https://datasheets.maximintegrated.com/en/ds/DS1803.pdf
-+ * Datasheet: https://datasheets.maximintegrated.com/en/ds/DS3502.pdf
-  *
-  * DEVID	#Wipers	#Positions	Resistor Opts (kOhm)	i2c address
-  * ds1803	2	256		10, 50, 100		0101xxx
-+ * DS3502       1       128             10                      01010xx
-  */
- 
- #include <linux/err.h>
-@@ -16,47 +19,88 @@
- #include <linux/module.h>
- #include <linux/mod_devicetable.h>
- 
--#define DS1803_MAX_POS		255
--#define DS1803_WRITE(chan)	(0xa8 | ((chan) + 1))
-+#define DS1803_WIPER_0		(0xA9)
-+#define DS1803_WIPER_1		(0xAA)
-+#define DS3502_WR_IVR		(0x00)
-+#define DS3502_CR               (0x02)
-+#define DS3502_MODE0		(0x00)
-+#define DS3502_MODE1		(0x80)
- 
- enum ds1803_type {
- 	DS1803_010,
- 	DS1803_050,
- 	DS1803_100,
-+	DS3502,
- };
- 
- struct ds1803_cfg {
-+	int wipers;
-+	int avail[3];
- 	int kohms;
- };
- 
- static const struct ds1803_cfg ds1803_cfg[] = {
--	[DS1803_010] = { .kohms =  10, },
--	[DS1803_050] = { .kohms =  50, },
--	[DS1803_100] = { .kohms = 100, },
-+	[DS1803_010] = { .wipers = 2, .avail = { 0, 1, 255 }, .kohms =  10, },
-+	[DS1803_050] = { .wipers = 2, .avail = { 0, 1, 255 }, .kohms =  50, },
-+	[DS1803_100] = { .wipers = 2, .avail = { 0, 1, 255 }, .kohms = 100, },
-+	[DS3502] =     { .wipers = 1, .avail = { 0, 1, 127 }, .kohms =  10, },
-+};
-+
-+struct maxim_potentiometer {
-+	const struct iio_chan_spec *channels;
-+	u8 num_channels;
- };
- 
- struct ds1803_data {
- 	struct i2c_client *client;
-+	enum ds1803_type chip_type;
- 	const struct ds1803_cfg *cfg;
-+	const struct maxim_potentiometer *chip;
- };
- 
--#define DS1803_CHANNEL(ch) {					\
--	.type = IIO_RESISTANCE,					\
--	.indexed = 1,						\
--	.output = 1,						\
--	.channel = (ch),					\
--	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
--	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-+#define DS1803_CHANNEL(ch, addr) {					\
-+	.type = IIO_RESISTANCE,						\
-+	.indexed = 1,							\
-+	.output = 1,							\
-+	.channel = (ch),						\
-+	.address = (addr),						\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),		\
-+	.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_RAW),	\
- }
- 
- static const struct iio_chan_spec ds1803_channels[] = {
--	DS1803_CHANNEL(0),
--	DS1803_CHANNEL(1),
-+	DS1803_CHANNEL(0, DS1803_WIPER_0),
-+	DS1803_CHANNEL(1, DS1803_WIPER_1),
-+};
-+
-+static const struct iio_chan_spec ds3502_channels[] = {
-+	{
-+		.type = IIO_RESISTANCE,
-+		.indexed = 1,
-+		.output = 1,
-+		.channel = 0,
-+		.address = (DS3502_WR_IVR),
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_ENABLE),
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
-+		.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_RAW),
-+	},
-+};
-+
-+static const struct maxim_potentiometer maxim_potentiometer_chips[] = {
-+	[DS1803_100] = {
-+				.channels = ds1803_channels,
-+				.num_channels = ARRAY_SIZE(ds1803_channels),
-+		},
-+	[DS3502]     = {
-+				.channels = ds3502_channels,
-+				.num_channels = ARRAY_SIZE(ds3502_channels),
-+		},
- };
- 
- static int ds1803_read_raw(struct iio_dev *indio_dev,
--			    struct iio_chan_spec const *chan,
--			    int *val, int *val2, long mask)
-+			   struct iio_chan_spec const *chan,
-+			   int *val, int *val2, long mask)
- {
- 	struct ds1803_data *data = iio_priv(indio_dev);
- 	int pot = chan->channel;
-@@ -65,17 +109,28 @@ static int ds1803_read_raw(struct iio_dev *indio_dev,
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
--		ret = i2c_master_recv(data->client, result,
--				indio_dev->num_channels);
-+		switch (data->chip_type) {
-+		case DS1803_010:
-+		case DS1803_050:
-+		case DS1803_100:
-+			ret = i2c_master_recv(data->client, result,
-+					      indio_dev->num_channels);
-+			*val = result[pot];
-+			break;
-+		case DS3502:
-+			ret = i2c_smbus_read_byte_data(data->client, chan->address);
-+			*val = ret;
-+			break;
-+		default:
-+			return -EINVAL;
-+		}
-+
- 		if (ret < 0)
- 			return ret;
--
--		*val = result[pot];
- 		return IIO_VAL_INT;
--
- 	case IIO_CHAN_INFO_SCALE:
- 		*val = 1000 * data->cfg->kohms;
--		*val2 = DS1803_MAX_POS;
-+		*val2 = data->cfg->avail[2];
- 		return IIO_VAL_FRACTIONAL;
- 	}
- 
-@@ -83,38 +138,64 @@ static int ds1803_read_raw(struct iio_dev *indio_dev,
- }
- 
- static int ds1803_write_raw(struct iio_dev *indio_dev,
--			     struct iio_chan_spec const *chan,
--			     int val, int val2, long mask)
-+			    struct iio_chan_spec const *chan,
-+			    int val, int val2, long mask)
- {
- 	struct ds1803_data *data = iio_priv(indio_dev);
--	int pot = chan->channel;
-+	int max_pos = data->cfg->avail[2];
-+	u8 addr = chan->address;
- 
- 	if (val2 != 0)
- 		return -EINVAL;
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
--		if (val > DS1803_MAX_POS || val < 0)
-+		if (val > max_pos || val < 0)
-+			return -EINVAL;
-+		break;
-+	case IIO_CHAN_INFO_ENABLE:
-+		if (val == 1)
-+			val = DS3502_MODE1;
-+		else if (val != DS3502_MODE0)
- 			return -EINVAL;
-+		addr = DS3502_CR;
- 		break;
- 	default:
- 		return -EINVAL;
- 	}
- 
--	return i2c_smbus_write_byte_data(data->client, DS1803_WRITE(pot), val);
-+	return i2c_smbus_write_byte_data(data->client, addr, val);
-+}
-+
-+static int ds1803_read_avail(struct iio_dev *indio_dev, struct iio_chan_spec const *chan,
-+			     const int **vals, int *type, int *length, long mask)
-+{
-+	struct ds1803_data *data = iio_priv(indio_dev);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		*vals = data->cfg->avail;
-+		*length = ARRAY_SIZE(data->cfg->avail);
-+		*type = IIO_VAL_INT;
-+		return IIO_AVAIL_RANGE;
-+	}
-+	return -EINVAL;
- }
- 
- static const struct iio_info ds1803_info = {
- 	.read_raw = ds1803_read_raw,
-+	.read_avail = ds1803_read_avail,
- 	.write_raw = ds1803_write_raw,
- };
- 
- static int ds1803_probe(struct i2c_client *client,
--			 const struct i2c_device_id *id)
-+			const struct i2c_device_id *id)
- {
- 	struct device *dev = &client->dev;
- 	struct ds1803_data *data;
- 	struct iio_dev *indio_dev;
-+	enum ds1803_type chip_type = (id->driver_data <= DS1803_100 ? DS1803_100 : DS3502);
-+	const struct maxim_potentiometer *chip = &maxim_potentiometer_chips[chip_type];
- 
- 	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
- 	if (!indio_dev)
-@@ -125,10 +206,12 @@ static int ds1803_probe(struct i2c_client *client,
- 	data = iio_priv(indio_dev);
- 	data->client = client;
- 	data->cfg = &ds1803_cfg[id->driver_data];
-+	data->chip = chip;
-+	data->chip_type = chip_type;
- 
- 	indio_dev->info = &ds1803_info;
--	indio_dev->channels = ds1803_channels;
--	indio_dev->num_channels = ARRAY_SIZE(ds1803_channels);
-+	indio_dev->channels = chip->channels;
-+	indio_dev->num_channels = chip->num_channels;
- 	indio_dev->name = client->name;
- 
- 	return devm_iio_device_register(dev, indio_dev);
-@@ -138,6 +221,7 @@ static const struct of_device_id ds1803_dt_ids[] = {
- 	{ .compatible = "maxim,ds1803-010", .data = &ds1803_cfg[DS1803_010] },
- 	{ .compatible = "maxim,ds1803-050", .data = &ds1803_cfg[DS1803_050] },
- 	{ .compatible = "maxim,ds1803-100", .data = &ds1803_cfg[DS1803_100] },
-+	{ .compatible = "maxim,ds3502",     .data = &ds1803_cfg[DS3502] },
- 	{}
- };
- MODULE_DEVICE_TABLE(of, ds1803_dt_ids);
-@@ -146,6 +230,7 @@ static const struct i2c_device_id ds1803_id[] = {
- 	{ "ds1803-010", DS1803_010 },
- 	{ "ds1803-050", DS1803_050 },
- 	{ "ds1803-100", DS1803_100 },
-+	{ "ds3502",	DS3502	   },
- 	{}
- };
- MODULE_DEVICE_TABLE(i2c, ds1803_id);
-@@ -162,5 +247,6 @@ static struct i2c_driver ds1803_driver = {
- module_i2c_driver(ds1803_driver);
- 
- MODULE_AUTHOR("Slawomir Stepien <sst@poczta.fm>");
--MODULE_DESCRIPTION("DS1803 digital potentiometer");
-+MODULE_AUTHOR("Jagath Jog J <jagathjog1996@gmail.com>");
-+MODULE_DESCRIPTION("DS1803 and DS3502 digital potentiometer");
- MODULE_LICENSE("GPL v2");
--- 
-2.17.1
+    tcp: allocate tcp_death_row outside of struct netns_ipv4
+...
+    Fixes: 0dad4087a86a ("tcp/dccp: get rid of inet_twsk_purge()")
+    Signed-off-by: Eric Dumazet <edumazet@google.com>
+    Reported-by: syzbot <syzkaller@googlegroups.com>
+    Reported-by: Paolo Abeni <pabeni@redhat.com>
+    Tested-by: Paolo Abeni <pabeni@redhat.com>
+    Link: https://lore.kernel.org/r/20220126180714.845362-1-eric.dumazet@gmail.com
+    Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 
+
+
+> in testcase: kernel-selftests
+> version: kernel-selftests-x86_64-f050cde9-1_20220127
+> with following parameters:
+>
+>         group: net
+>         ucode: 0xe2
+>
+> test-description: The kernel contains a set of "self tests" under the tools/testing/selftests/ directory. These are intended to be small unit tests to exercise individual code paths in the kernel.
+> test-url: https://www.kernel.org/doc/Documentation/kselftest.txt
+>
+>
+> on test machine: 8 threads Intel(R) Core(TM) i7-6770HQ CPU @ 2.60GHz with 32G memory
+>
+> caused below changes (please refer to attached dmesg/kmsg for entire log/backtrace):
+>
+>
+>
+> If you fix the issue, kindly add following tag
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+>
+>
+> [ 1799.534962][ C0] BUG: KASAN: use-after-free in inet_twsk_kill (net/ipv4/inet_timewait_sock.c:46)
+> [ 1799.542232][    C0] Read of size 8 at addr ffff88889835ea80 by task swapper/0/0
+> [ 1799.549806][    C0]
+> [ 1799.552099][    C0] CPU: 0 PID: 0 Comm: swapper/0 Tainted: G          I       5.16.0-rc8-02293-gf6408a864101 #1
+> [ 1799.562554][    C0] Hardware name:  /NUC6i7KYB, BIOS KYSKLi70.86A.0041.2016.0817.1130 08/17/2016
+> [ 1799.571654][    C0] Call Trace:
+> [ 1799.574923][    C0]  <IRQ>
+> [ 1799.577747][ C0] dump_stack_lvl (lib/dump_stack.c:107)
+> [ 1799.582294][ C0] print_address_description+0x21/0x140
+> [ 1799.588939][ C0] ? inet_twsk_kill (net/ipv4/inet_timewait_sock.c:46)
+> [ 1799.593855][ C0] ? inet_twsk_kill (net/ipv4/inet_timewait_sock.c:46)
+> [ 1799.598850][ C0] kasan_report.cold (mm/kasan/report.c:434 mm/kasan/report.c:450)
+> [ 1799.603906][ C0] ? inet_twsk_kill (net/ipv4/inet_timewait_sock.c:46)
+> [ 1799.608942][ C0] ? inet_twsk_kill (net/ipv4/inet_timewait_sock.c:148)
+> [ 1799.614060][ C0] inet_twsk_kill (net/ipv4/inet_timewait_sock.c:46)
+> [ 1799.619048][ C0] ? inet_twsk_kill (net/ipv4/inet_timewait_sock.c:148)
+> [ 1799.624088][ C0] call_timer_fn (arch/x86/include/asm/jump_label.h:27 include/linux/jump_label.h:212 include/trace/events/timer.h:125 kernel/time/timer.c:1422)
+> [ 1799.628802][ C0] ? lock_release (kernel/locking/lockdep.c:5315 kernel/locking/lockdep.c:5657)
+> [ 1799.633639][ C0] ? del_timer_sync (kernel/time/timer.c:1398)
+> [ 1799.638650][ C0] ? lock_downgrade (kernel/locking/lockdep.c:5645)
+> [ 1799.643768][ C0] ? inet_twsk_kill (net/ipv4/inet_timewait_sock.c:148)
+> [ 1799.648731][ C0] ? lockdep_hardirqs_on_prepare (kernel/locking/lockdep.c:4224 kernel/locking/lockdep.c:4292 kernel/locking/lockdep.c:4244)
+> [ 1799.654797][ C0] ? inet_twsk_kill (net/ipv4/inet_timewait_sock.c:148)
+> [ 1799.659608][ C0] run_timer_softirq (kernel/time/timer.c:1467 kernel/time/timer.c:1734 kernel/time/timer.c:1710 kernel/time/timer.c:1747)
+> [ 1799.664743][ C0] ? call_timer_fn (kernel/time/timer.c:1744)
+> [ 1799.669655][ C0] ? __next_base (kernel/time/hrtimer.c:506)
+> [ 1799.674329][ C0] ? rcu_read_lock_sched_held (include/linux/lockdep.h:283 kernel/rcu/update.c:125)
+> [ 1799.679957][ C0] ? rcu_read_lock_bh_held (kernel/rcu/update.c:120)
+> [ 1799.685223][ C0] __do_softirq (arch/x86/include/asm/jump_label.h:27 include/linux/jump_label.h:212 include/trace/events/irq.h:142 kernel/softirq.c:559)
+> [ 1799.689695][ C0] irq_exit_rcu (kernel/softirq.c:432 kernel/softirq.c:637 kernel/softirq.c:649)
+> [ 1799.694165][ C0] sysvec_apic_timer_interrupt (arch/x86/kernel/apic/apic.c:1097 (discriminator 14))
+> [ 1799.699785][    C0]  </IRQ>
+> [ 1799.702672][    C0]  <TASK>
+> [ 1799.705613][ C0] asm_sysvec_apic_timer_interrupt (arch/x86/include/asm/idtentry.h:638)
+> [ 1799.711800][ C0] RIP: 0010:cpuidle_enter_state (drivers/cpuidle/cpuidle.c:259)
+> [ 1799.717839][ C0] Code: 00 00 31 ff e8 47 58 43 fe 80 3c 24 00 74 12 9c 58 f6 c4 02 0f 85 1f 08 00 00 31 ff e8 6f 9c 5b fe e8 aa 0f 71 fe fb 45 85 f6 <0f> 88 90 03 00 00 49 63 ee 48 83 fd 09 0f 87 62 09 00 00 48 8d 44
+> All code
+> ========
+>    0:   00 00                   add    %al,(%rax)
+>    2:   31 ff                   xor    %edi,%edi
+>    4:   e8 47 58 43 fe          callq  0xfffffffffe435850
+>    9:   80 3c 24 00             cmpb   $0x0,(%rsp)
+>    d:   74 12                   je     0x21
+>    f:   9c                      pushfq
+>   10:   58                      pop    %rax
+>   11:   f6 c4 02                test   $0x2,%ah
+>   14:   0f 85 1f 08 00 00       jne    0x839
+>   1a:   31 ff                   xor    %edi,%edi
+>   1c:   e8 6f 9c 5b fe          callq  0xfffffffffe5b9c90
+>   21:   e8 aa 0f 71 fe          callq  0xfffffffffe710fd0
+>   26:   fb                      sti
+>   27:   45 85 f6                test   %r14d,%r14d
+>   2a:*  0f 88 90 03 00 00       js     0x3c0            <-- trapping instruction
+>   30:   49 63 ee                movslq %r14d,%rbp
+>   33:   48 83 fd 09             cmp    $0x9,%rbp
+>   37:   0f 87 62 09 00 00       ja     0x99f
+>   3d:   48                      rex.W
+>   3e:   8d                      .byte 0x8d
+>   3f:   44                      rex.R
+>
+> Code starting with the faulting instruction
+> ===========================================
+>    0:   0f 88 90 03 00 00       js     0x396
+>    6:   49 63 ee                movslq %r14d,%rbp
+>    9:   48 83 fd 09             cmp    $0x9,%rbp
+>    d:   0f 87 62 09 00 00       ja     0x975
+>   13:   48                      rex.W
+>   14:   8d                      .byte 0x8d
+>   15:   44                      rex.R
+> [ 1799.738502][    C0] RSP: 0018:ffffffff85007dd8 EFLAGS: 00000202
+> [ 1799.744586][    C0] RAX: 00000000012d2f7d RBX: ffffe8ffffa02090 RCX: 1ffffffff0bfa611
+> [ 1799.752936][    C0] RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffffffff83055f16
+> [ 1799.761247][    C0] RBP: 0000000000000004 R08: 0000000000000001 R09: 0000000000000001
+> [ 1799.769680][    C0] R10: ffffffff85fd86e7 R11: fffffbfff0bfb0dc R12: ffffffff85a79e80
+> [ 1799.778069][    C0] R13: 000001a2fc2052e6 R14: 0000000000000004 R15: 0000000000000000
+> [ 1799.782354][ T6832] IPv6: ADDRCONF(NETDEV_CHANGE): veth0: link becomes ready
+> [ 1799.786409][ C0] ? cpuidle_enter_state (arch/x86/include/asm/irqflags.h:45 arch/x86/include/asm/irqflags.h:80 drivers/cpuidle/cpuidle.c:257)
+> [ 1799.799117][ C0] ? cpuidle_enter_state (arch/x86/include/asm/irqflags.h:45 arch/x86/include/asm/irqflags.h:80 drivers/cpuidle/cpuidle.c:257)
+> [ 1799.804473][ C0] ? menu_reflect (drivers/cpuidle/governors/menu.c:267)
+> [ 1799.809304][ C0] cpuidle_enter (drivers/cpuidle/cpuidle.c:353)
+> [ 1799.813795][ C0] do_idle (kernel/sched/idle.c:158 kernel/sched/idle.c:239 kernel/sched/idle.c:306)
+> [ 1799.817917][ C0] ? arch_cpu_idle_exit+0xc0/0xc0
+> [ 1799.823009][ C0] cpu_startup_entry (kernel/sched/idle.c:402 (discriminator 1))
+> [ 1799.827914][ C0] start_kernel (init/main.c:1137)
+> [ 1799.832479][ C0] secondary_startup_64_no_verify (arch/x86/kernel/head_64.S:283)
+> [ 1799.838530][    C0]  </TASK>
+> [ 1799.841584][    C0]
+> [ 1799.843870][    C0] Allocated by task 19319:
+> [ 1799.848379][ C0] kasan_save_stack (mm/kasan/common.c:38)
+> [ 1799.853303][ C0] __kasan_slab_alloc (mm/kasan/common.c:46 mm/kasan/common.c:434 mm/kasan/common.c:467)
+> [ 1799.858176][ C0] kmem_cache_alloc (mm/slab.h:520 mm/slub.c:3234 mm/slub.c:3242 mm/slub.c:3247)
+> [ 1799.863091][ C0] copy_net_ns (include/linux/slab.h:714 net/core/net_namespace.c:404 net/core/net_namespace.c:459)
+> [ 1799.867457][ C0] create_new_namespaces+0x335/0x900
+> [ 1799.873494][ C0] unshare_nsproxy_namespaces (kernel/nsproxy.c:226 (discriminator 4))
+> [ 1799.879267][ C0] ksys_unshare (kernel/fork.c:3075)
+> [ 1799.883868][ C0] __x64_sys_unshare (kernel/fork.c:3144)
+> [ 1799.888661][ C0] do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
+> [ 1799.893312][ C0] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:113)
+> [ 1799.899477][    C0]
+> [ 1799.901845][    C0] The buggy address belongs to the object at ffff88889835e600
+> [ 1799.901845][    C0]  which belongs to the cache net_namespace of size 6272
+> [ 1799.916823][    C0] The buggy address is located 1152 bytes inside of
+> [ 1799.916823][    C0]  6272-byte region [ffff88889835e600, ffff88889835fe80)
+> [ 1799.930935][    C0] The buggy address belongs to the page:
+> [ 1799.936797][    C0] page:0000000041ff24a7 refcount:1 mapcount:0 mapping:0000000000000000 index:0xffff88889835e600 pfn:0x898358
+> [ 1799.948909][    C0] head:0000000041ff24a7 order:3 compound_mapcount:0 compound_pincount:0
+> [ 1799.957574][    C0] memcg:ffff8881e9591681
+> [ 1799.961926][    C0] flags: 0x17ffffc0010200(slab|head|node=0|zone=2|lastcpupid=0x1fffff)
+> [ 1799.970490][    C0] raw: 0017ffffc0010200 ffffea000a32ac00 dead000000000002 ffff888100bc8c80
+> [ 1799.979427][    C0] raw: ffff88889835e600 0000000080050004 00000001ffffffff ffff8881e9591681
+> [ 1799.988352][    C0] page dumped because: kasan: bad access detected
+> [ 1799.995035][    C0]
+> [ 1799.997380][    C0] Memory state around the buggy address:
+> [ 1800.003163][    C0]  ffff88889835e980: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> [ 1800.011374][    C0]  ffff88889835ea00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> [ 1800.019699][    C0] >ffff88889835ea80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> [ 1800.028007][    C0]                    ^
+> [ 1800.032207][    C0]  ffff88889835eb00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> [ 1800.040602][    C0]  ffff88889835eb80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> [ 1800.049061][    C0] ==================================================================
+> [ 1800.057470][    C0] Disabling lock debugging due to kernel taint
+> [ 1800.364663][  T434] # tx=19158 (1195 MB) txc=0 zc=n
+> [ 1800.364686][  T434]
+> [ 1800.763181][  T434] # rx=9578 (1195 MB)
+> [ 1800.763193][  T434]
+> [ 1800.769974][  T434] # ipv6 tcp -z -t 1
+> [ 1800.769984][  T434]
+> [ 1802.219504][  T434] # tx=17552 (1095 MB) txc=17552 zc=n
+> [ 1802.219515][  T434]
+> [ 1802.577158][  T434] # rx=8777 (1095 MB)
+> [ 1802.577170][  T434]
+> [ 1802.583655][  T434] # ok
+> [ 1802.583669][  T434]
+> [ 1802.697567][T19410] IPv6: ADDRCONF(NETDEV_CHANGE): veth0: link becomes ready
+> [ 1802.754498][  T434] # ipv4 udp -t 1
+> [ 1802.754512][  T434]
+> [ 1803.686331][T19410] IPv6: ADDRCONF(NETDEV_CHANGE): veth0: link becomes ready
+> [ 1804.167573][  T434] # tx=40439 (2523 MB) txc=0 zc=n
+> [ 1804.167595][  T434]
+> [ 1804.666768][  T434] # rx=40439 (2523 MB)
+> [ 1804.666780][  T434]
+> [ 1804.673747][  T434] # ipv4 udp -z -t 1
+> [ 1804.673755][  T434]
+> [ 1806.082032][  T434] # tx=18970 (1183 MB) txc=18970 zc=n
+> [ 1806.082049][  T434]
+> [ 1806.580275][  T434] # rx=18956 (1182 MB)
+> [ 1806.580321][  T434]
+> [ 1806.587038][  T434] # ok
+> [ 1806.587045][  T434]
+> [ 1806.717784][  T100] IPv6: ADDRCONF(NETDEV_CHANGE): veth0: link becomes ready
+> [ 1806.781443][  T434] # ipv6 udp -t 1
+>
+>
+> To reproduce:
+>
+>         git clone https://github.com/intel/lkp-tests.git
+>         cd lkp-tests
+>         sudo bin/lkp install job.yaml           # job file is attached in this email
+>         bin/lkp split-job --compatible job.yaml # generate the yaml file for lkp run
+>         sudo bin/lkp run generated-yaml-file
+>
+>         # if come across any failure that blocks the test,
+>         # please remove ~/.lkp and /lkp dir to run from a clean state.
+>
+>
+>
+> ---
+> 0DAY/LKP+ Test Infrastructure                   Open Source Technology Center
+> https://lists.01.org/hyperkitty/list/lkp@lists.01.org       Intel Corporation
+>
+> Thanks,
+> Oliver Sang
+>
