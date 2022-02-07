@@ -2,141 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69216C35280
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:52:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB39DC3527B
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:52:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389250AbiBGNvc (ORCPT
+        id S1389190AbiBGNvT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:51:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41876 "EHLO
+        Mon, 7 Feb 2022 08:51:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387223AbiBGNrv (ORCPT
+        with ESMTP id S1377766AbiBGNMb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 08:47:51 -0500
-Received: from condef-04.nifty.com (condef-04.nifty.com [202.248.20.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B97FC043181;
-        Mon,  7 Feb 2022 05:47:50 -0800 (PST)
-Received: from conssluserg-01.nifty.com ([10.126.8.80])by condef-04.nifty.com with ESMTP id 217DjHnk028207;
-        Mon, 7 Feb 2022 22:45:17 +0900
-Received: from mail-pj1-f50.google.com (mail-pj1-f50.google.com [209.85.216.50]) (authenticated)
-        by conssluserg-01.nifty.com with ESMTP id 217DipVo022226;
-        Mon, 7 Feb 2022 22:44:52 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-01.nifty.com 217DipVo022226
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1644241492;
-        bh=QUV0hp+xB/5tu9Im52sNMR58mRLFLhMZGaIvBrJvw+Q=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=nbGi8UszpMuf1YuXNXjb4bnFhY+c9dLrABng6IGMik7U4321n/7HbUJiEz0rSAuDC
-         6cD4A4QDQ5ZU+ZIB75NLw9biK8HJe7RvuCE6Oaeah8sBtulkHBzMZaJ8ZqccnvR94T
-         8QHeSyXccMD9FivQxZQGxxCazVcbFqbzQ7w0olPVGraN8HduDChc5E+KU+1iik4bN4
-         RbJ84oePIAp5VJe3sLn6qaSWVUjD15FoE3+552Fyqti31sjqQKNUXnqw13oGq4IG/9
-         Mln10pW/GTzDiusmCo5z6XHTdkO+l0XGMWniv/oLV5MWBUqeAn5Nbur2rn3TDOHf/2
-         m6XeKpUxo8I+g==
-X-Nifty-SrcIP: [209.85.216.50]
-Received: by mail-pj1-f50.google.com with SMTP id p22-20020a17090adf9600b001b8783b2647so7391102pjv.5;
-        Mon, 07 Feb 2022 05:44:51 -0800 (PST)
-X-Gm-Message-State: AOAM530WE848O1SolBsVKEVFNF6ZZb6/8pvz4oMm0Bq6Xar8WVOofkpr
-        rjl/ndOur2T772pNwIXXNB4EMCtAEppOeT0YQew=
-X-Google-Smtp-Source: ABdhPJwoBSTLjNxzRqh4wM22ZLkK8Kabb+gW2Gmp9KwL9maZhBzOFDPATsJn2nYLB4bdQjZ3p4Q6cWFtQph98OF4fnk=
-X-Received: by 2002:a17:90b:1647:: with SMTP id il7mr18618035pjb.119.1644241491011;
- Mon, 07 Feb 2022 05:44:51 -0800 (PST)
+        Mon, 7 Feb 2022 08:12:31 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 57478C043189
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 05:12:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644239544;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=AM7CkP1jX2ZU2ehs/pvwC2vA3OLiBCABJ2xVS2YUHFE=;
+        b=AfP+HyJ4GR7QQ8SuFT7e4mBawn/dh/3CgP9XDQhc7Rr9hoOdh2bBd8huAWfFksnc0PTc8U
+        R+ihyC7g1TmEhTTLIfeG/tx3fQ3EGalO6rwCoFm7QRImj4/aYHzXkcLvbIerpaL+52MG39
+        jdUnJ5PsnZH5PoK51ZqaDluXZM4WLBw=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-501-OHkHsLw_PKqT4r-a8qfekg-1; Mon, 07 Feb 2022 08:12:23 -0500
+X-MC-Unique: OHkHsLw_PKqT4r-a8qfekg-1
+Received: by mail-qk1-f197.google.com with SMTP id z1-20020ae9f441000000b00507a22b2d00so8524717qkl.8
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 05:12:23 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=AM7CkP1jX2ZU2ehs/pvwC2vA3OLiBCABJ2xVS2YUHFE=;
+        b=gg/7JJjpMqhwBISg5F+vxh4Te6M4ad30vTByG6gxoceBKBVCqxxsSQshqF077h4ILs
+         KxfFq3PFvpv2GFXSDhAKFEny3A92nNdXGvvduCP1kuVyszoWsa2R+t6yahI+6Kic0t6q
+         Br8GN4JvNPsHTIMGBwmrGbvnVaWnipaQx1QErnTBKZTVAmqLUYHku2/QGVyg7bQN6qc0
+         fyQjdMwFbeflwpIrmvcu5mrJK7Cs7nbgnNwydymRLsy+FR4vwmiDsVWrdKAllSqLcbl1
+         rPapF5vO8pYkqdte+ZwtEy3N4q/DBeguFk5KTjFf0VcENgJMxYzt14vdzIgSBIMuFj2K
+         AP9Q==
+X-Gm-Message-State: AOAM5329xJq8LUnw1IS/7IOYVaQpAv0SmukJKRi+DqL8fWuazN65RQze
+        23pPdvwH5/7Hb674ewcw1FnJqcVSmNvKlAKdPEOYslQRNqjR1YBWqQLoct6IeUb+Gp+V6XMeLp4
+        QFTtWUkpZM4c5Dh5Poyo9sz4h
+X-Received: by 2002:ac8:5b86:: with SMTP id a6mr7687367qta.511.1644239542995;
+        Mon, 07 Feb 2022 05:12:22 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxYryoti78q4IRbgop6R+gf6+laHXQJvL6b4IkG5WweRk4kKP/sxjxwOMadnrYqhcaBGgsmaQ==
+X-Received: by 2002:ac8:5b86:: with SMTP id a6mr7687354qta.511.1644239542824;
+        Mon, 07 Feb 2022 05:12:22 -0800 (PST)
+Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id m22sm5441448qkn.35.2022.02.07.05.12.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 05:12:22 -0800 (PST)
+From:   trix@redhat.com
+To:     rostedt@goodmis.org, mingo@redhat.com
+Cc:     linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
+Subject: [PATCH] tracing: cleanup double word in comment
+Date:   Mon,  7 Feb 2022 05:12:16 -0800
+Message-Id: <20220207131216.2059997-1-trix@redhat.com>
+X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
-References: <20220128220131.10956-1-brenda.streiff@ni.com>
-In-Reply-To: <20220128220131.10956-1-brenda.streiff@ni.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Mon, 7 Feb 2022 22:44:15 +0900
-X-Gmail-Original-Message-ID: <CAK7LNASdD=xHb24sj80CsG90QVDBXFhFV10MvybdwGf2xx27Kw@mail.gmail.com>
-Message-ID: <CAK7LNASdD=xHb24sj80CsG90QVDBXFhFV10MvybdwGf2xx27Kw@mail.gmail.com>
-Subject: Re: [PATCH] kconfig: let 'shell' return enough output for deep path names
-To:     Brenda Streiff <brenda.streiff@ni.com>
-Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jan 29, 2022 at 7:02 AM Brenda Streiff <brenda.streiff@ni.com> wrot=
-e:
->
-> The 'shell' built-in only returns the first 256 bytes of the command's
-> output. In some cases, 'shell' is used to return a path; by bumping up
-> the buffer size to 4096 this lets us capture up to PATH_MAX.
->
-> The specific case where I ran into this was due to commit 1e860048c53e
-> ("gcc-plugins: simplify GCC plugin-dev capability test"). After this
-> change, we now use `$(shell,$(CC) -print-file-name=3Dplugin)` to return
-> a path; if the gcc path is particularly long, then the path ends up
-> truncated at the 256 byte mark, which makes the HAVE_GCC_PLUGINS
-> depends test always fail.
->
-> Signed-off-by: Brenda Streiff <brenda.streiff@ni.com>
+From: Tom Rix <trix@redhat.com>
 
-Thanks, applied to linux-kbuild,
-(but I dropped the change to tests)
+Remove the second 'is' and 'to'.
 
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ kernel/trace/pid_list.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
+diff --git a/kernel/trace/pid_list.c b/kernel/trace/pid_list.c
+index a2ef1d18126aa..95106d02b32d8 100644
+--- a/kernel/trace/pid_list.c
++++ b/kernel/trace/pid_list.c
+@@ -118,9 +118,9 @@ static inline unsigned int pid_join(unsigned int upper1,
+ /**
+  * trace_pid_list_is_set - test if the pid is set in the list
+  * @pid_list: The pid list to test
+- * @pid: The pid to to see if set in the list.
++ * @pid: The pid to see if set in the list.
+  *
+- * Tests if @pid is is set in the @pid_list. This is usually called
++ * Tests if @pid is set in the @pid_list. This is usually called
+  * from the scheduler when a task is scheduled. Its pid is checked
+  * if it should be traced or not.
+  *
+-- 
+2.26.3
 
-
-
-> ---
->  scripts/kconfig/preprocess.c                                  | 2 +-
->  scripts/kconfig/tests/preprocess/builtin_func/Kconfig         | 3 +++
->  scripts/kconfig/tests/preprocess/builtin_func/expected_stdout | 1 +
->  3 files changed, 5 insertions(+), 1 deletion(-)
->
-> diff --git a/scripts/kconfig/preprocess.c b/scripts/kconfig/preprocess.c
-> index 0590f86df6e4..748da578b418 100644
-> --- a/scripts/kconfig/preprocess.c
-> +++ b/scripts/kconfig/preprocess.c
-> @@ -141,7 +141,7 @@ static char *do_lineno(int argc, char *argv[])
->  static char *do_shell(int argc, char *argv[])
->  {
->         FILE *p;
-> -       char buf[256];
-> +       char buf[4096];
->         char *cmd;
->         size_t nread;
->         int i;
-> diff --git a/scripts/kconfig/tests/preprocess/builtin_func/Kconfig b/scri=
-pts/kconfig/tests/preprocess/builtin_func/Kconfig
-> index baa328827911..e9791a97f731 100644
-> --- a/scripts/kconfig/tests/preprocess/builtin_func/Kconfig
-> +++ b/scripts/kconfig/tests/preprocess/builtin_func/Kconfig
-> @@ -25,3 +25,6 @@ $(warning,$(shell,printf 'hello\nworld\n\n4\n\n\n'))
->  # 'lineno' to the line number.
->  $(warning,filename=3D$(filename))
->  $(warning,lineno=3D$(lineno))
-> +
-> +# 'shell' can return more than 256 bytes of output
-> +$(info,$(shell,printf 'hello%01024dworld\n' '0'))
-> diff --git a/scripts/kconfig/tests/preprocess/builtin_func/expected_stdou=
-t b/scripts/kconfig/tests/preprocess/builtin_func/expected_stdout
-> index 82de3a7e97de..8e03e4dfe8f6 100644
-> --- a/scripts/kconfig/tests/preprocess/builtin_func/expected_stdout
-> +++ b/scripts/kconfig/tests/preprocess/builtin_func/expected_stdout
-> @@ -1 +1,2 @@
->  hello world 0
-> +hello0000000000000000000000000000000000000000000000000000000000000000000=
-000000000000000000000000000000000000000000000000000000000000000000000000000=
-000000000000000000000000000000000000000000000000000000000000000000000000000=
-000000000000000000000000000000000000000000000000000000000000000000000000000=
-000000000000000000000000000000000000000000000000000000000000000000000000000=
-000000000000000000000000000000000000000000000000000000000000000000000000000=
-000000000000000000000000000000000000000000000000000000000000000000000000000=
-000000000000000000000000000000000000000000000000000000000000000000000000000=
-000000000000000000000000000000000000000000000000000000000000000000000000000=
-000000000000000000000000000000000000000000000000000000000000000000000000000=
-000000000000000000000000000000000000000000000000000000000000000000000000000=
-000000000000000000000000000000000000000000000000000000000000000000000000000=
-000000000000000000000000000000000000000000000000000000000000000000000000000=
-000000000000000000000000000000000000000000000000000000000world
-> --
-> 2.20.1
->
-
-
---=20
-Best Regards
-Masahiro Yamada
