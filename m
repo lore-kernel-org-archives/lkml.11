@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7F37C35272
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:44:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D986C35275
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:44:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385376AbiBGLbk (ORCPT
+        id S1385434AbiBGLbv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:31:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60186 "EHLO
+        Mon, 7 Feb 2022 06:31:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382631AbiBGLU0 (ORCPT
+        with ESMTP id S1382918AbiBGLVJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:20:26 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87A62C03E94C;
-        Mon,  7 Feb 2022 03:20:12 -0800 (PST)
+        Mon, 7 Feb 2022 06:21:09 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71208C0401C1;
+        Mon,  7 Feb 2022 03:20:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 25CF46126D;
-        Mon,  7 Feb 2022 11:20:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F36D3C004E1;
-        Mon,  7 Feb 2022 11:20:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 15558B811B2;
+        Mon,  7 Feb 2022 11:20:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CDF1C340EB;
+        Mon,  7 Feb 2022 11:20:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232811;
-        bh=tB5ykpycoZ7rTEDHLWjtzHvL5qtmrfWQCoQ0Z7I1mNo=;
+        s=korg; t=1644232832;
+        bh=72vwZ6kvzEMAGleLWY/VTPiDOeZhPnE8/1zmPpNqG64=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wbaHFfLZXDwfg0EiY1gFWVzOJsJYbm3KcG0ne5nXFccgM0wx6uqu915I0FXoajjmX
-         Jft6wDg4G9pNiGFkLMsPKz0JNjUeqcFn/WJxy+jPnwmNFTBvqPwUfQqXS9FlaoIhSO
-         GUcQfcNXjG6x91d7eraTWGAaItkHQm7MHNVkOt0w=
+        b=C9NKp5bQa3fG4t1/fwHJvMS9/Yf9EzWcL3kYZY2zdpEhENQ4LTHDMBT4xwbpeYhJb
+         1ETBGfdUrMPRln4QxQiip1OQkiko+727iOVa3QI5rrtHcoA39t345VVRPs+Y+aYz7f
+         aR0YmRjVR6UYpkfvmyuHpZ2laDI5C7zJfdC4v4OU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Waiman Long <longman@redhat.com>,
-        Phil Auld <pauld@redhat.com>, Tejun Heo <tj@kernel.org>
-Subject: [PATCH 5.4 44/44] cgroup/cpuset: Fix "suspicious RCU usage" lockdep warning
-Date:   Mon,  7 Feb 2022 12:07:00 +0100
-Message-Id: <20220207103754.590640611@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        =?UTF-8?q?Andr=C3=A9=20Almeida?= <andrealmeid@collabora.com>,
+        Shuah Khan <skhan@linuxfoundation.org>
+Subject: [PATCH 5.4 39/44] selftests: futex: Use variable MAKE instead of make
+Date:   Mon,  7 Feb 2022 12:06:55 +0100
+Message-Id: <20220207103754.426846865@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103753.155627314@linuxfoundation.org>
 References: <20220207103753.155627314@linuxfoundation.org>
@@ -49,60 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Waiman Long <longman@redhat.com>
+From: Muhammad Usama Anjum <usama.anjum@collabora.com>
 
-commit 2bdfd2825c9662463371e6691b1a794e97fa36b4 upstream.
+commit b9199181a9ef8252e47e207be8c23e1f50662620 upstream.
 
-It was found that a "suspicious RCU usage" lockdep warning was issued
-with the rcu_read_lock() call in update_sibling_cpumasks().  It is
-because the update_cpumasks_hier() function may sleep. So we have
-to release the RCU lock, call update_cpumasks_hier() and reacquire
-it afterward.
+Recursive make commands should always use the variable MAKE, not the
+explicit command name ‘make’. This has benefits and removes the
+following warning when multiple jobs are used for the build:
 
-Also add a percpu_rwsem_assert_held() in update_sibling_cpumasks()
-instead of stating that in the comment.
+make[2]: warning: jobserver unavailable: using -j1.  Add '+' to parent make rule.
 
-Fixes: 4716909cc5c5 ("cpuset: Track cpusets that use parent's effective_cpus")
-Signed-off-by: Waiman Long <longman@redhat.com>
-Tested-by: Phil Auld <pauld@redhat.com>
-Reviewed-by: Phil Auld <pauld@redhat.com>
-Signed-off-by: Tejun Heo <tj@kernel.org>
+Fixes: a8ba798bc8ec ("selftests: enable O and KBUILD_OUTPUT")
+Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+Reviewed-by: André Almeida <andrealmeid@collabora.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/cgroup/cpuset.c |   10 ++++++++++
- 1 file changed, 10 insertions(+)
+ tools/testing/selftests/futex/Makefile |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/kernel/cgroup/cpuset.c
-+++ b/kernel/cgroup/cpuset.c
-@@ -1473,10 +1473,15 @@ static void update_sibling_cpumasks(stru
- 	struct cpuset *sibling;
- 	struct cgroup_subsys_state *pos_css;
- 
-+	percpu_rwsem_assert_held(&cpuset_rwsem);
-+
- 	/*
- 	 * Check all its siblings and call update_cpumasks_hier()
- 	 * if their use_parent_ecpus flag is set in order for them
- 	 * to use the right effective_cpus value.
-+	 *
-+	 * The update_cpumasks_hier() function may sleep. So we have to
-+	 * release the RCU read lock before calling it.
- 	 */
- 	rcu_read_lock();
- 	cpuset_for_each_child(sibling, pos_css, parent) {
-@@ -1484,8 +1489,13 @@ static void update_sibling_cpumasks(stru
- 			continue;
- 		if (!sibling->use_parent_ecpus)
- 			continue;
-+		if (!css_tryget_online(&sibling->css))
-+			continue;
- 
-+		rcu_read_unlock();
- 		update_cpumasks_hier(sibling, tmp);
-+		rcu_read_lock();
-+		css_put(&sibling->css);
- 	}
- 	rcu_read_unlock();
- }
+--- a/tools/testing/selftests/futex/Makefile
++++ b/tools/testing/selftests/futex/Makefile
+@@ -11,7 +11,7 @@ all:
+ 	@for DIR in $(SUBDIRS); do		\
+ 		BUILD_TARGET=$(OUTPUT)/$$DIR;	\
+ 		mkdir $$BUILD_TARGET  -p;	\
+-		make OUTPUT=$$BUILD_TARGET -C $$DIR $@;\
++		$(MAKE) OUTPUT=$$BUILD_TARGET -C $$DIR $@;\
+ 		if [ -e $$DIR/$(TEST_PROGS) ]; then \
+ 			rsync -a $$DIR/$(TEST_PROGS) $$BUILD_TARGET/; \
+ 		fi \
+@@ -32,6 +32,6 @@ override define CLEAN
+ 	@for DIR in $(SUBDIRS); do		\
+ 		BUILD_TARGET=$(OUTPUT)/$$DIR;	\
+ 		mkdir $$BUILD_TARGET  -p;	\
+-		make OUTPUT=$$BUILD_TARGET -C $$DIR $@;\
++		$(MAKE) OUTPUT=$$BUILD_TARGET -C $$DIR $@;\
+ 	done
+ endef
 
 
