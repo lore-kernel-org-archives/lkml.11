@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B80BBC35273
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:49:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8828BC3526C
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:49:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237362AbiBGLjn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:39:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37938 "EHLO
+        id S1344573AbiBGLok (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 06:44:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384404AbiBGL2D (ORCPT
+        with ESMTP id S1385934AbiBGLdH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:28:03 -0500
+        Mon, 7 Feb 2022 06:33:07 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA330C03CA4D;
-        Mon,  7 Feb 2022 03:26:18 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44100C043181;
+        Mon,  7 Feb 2022 03:33:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BD93360915;
-        Mon,  7 Feb 2022 11:26:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9602BC004E1;
-        Mon,  7 Feb 2022 11:26:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D561C60A69;
+        Mon,  7 Feb 2022 11:33:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC3B6C004E1;
+        Mon,  7 Feb 2022 11:33:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233172;
-        bh=PKvBXJQu1nVFDRuLrKBgOdM6HGK2rycgt1IfS96CECQ=;
+        s=korg; t=1644233586;
+        bh=4F2nWKHa8/0nbptm9EJn9sUIXqQlFVWQZzv/dM3bWag=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HFA6XzOGMd94/dS8jv9il31rtO9ygeSrORyeilG7gBMVywI06ncqjpJwztjc0jy6e
-         kUmdZvfNff86pDd9gkdAciAlaujcrbkbr9xt/AFWie0G13M7CdEa79396WU+P77VEq
-         3kXPVOjdKmzOUzHp2wS2HUAzlTlmoYZ0D/AsZU9Q=
+        b=VAkM7QTLfG3FYHUD0eIEehaUwe/TuHmwICqHNlBOn69zLshT618KmxsimtdPleOwM
+         C6f28YpfIPeXrqeDYv0OF1kDKDvk6nVSNfXLwCelzknnZxrZeLGpku5aYBTx6mKka1
+         OdixEw2mRBSUIoJhdUwsTBOhGagM+MFeGi0UjX3s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maor Gottlieb <maorg@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH 5.15 039/110] RDMA/cma: Use correct address when leaving multicast group
-Date:   Mon,  7 Feb 2022 12:06:12 +0100
-Message-Id: <20220207103803.598613108@linuxfoundation.org>
+        stable@vger.kernel.org, Zhan Liu <zhan.liu@amd.com>,
+        Agustin Gutierrez <agustin.gutierrez@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.16 026/126] drm/amd/display: Update watermark values for DCN301
+Date:   Mon,  7 Feb 2022 12:05:57 +0100
+Message-Id: <20220207103805.054427398@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
-References: <20220207103802.280120990@linuxfoundation.org>
+In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
+References: <20220207103804.053675072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,63 +50,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maor Gottlieb <maorg@nvidia.com>
+From: Agustin Gutierrez <agustin.gutierrez@amd.com>
 
-commit d9e410ebbed9d091b97bdf45b8a3792e2878dc48 upstream.
+commit 2d8ae25d233767171942a9fba5fd8f4a620996be upstream.
 
-In RoCE we should use cma_iboe_set_mgid() and not cma_set_mgid to generate
-the mgid, otherwise we will generate an IGMP for an incorrect address.
+[Why]
+There is underflow / visual corruption DCN301, for high
+bandwidth MST DSC configurations such as 2x1440p144 or 2x4k60.
 
-Fixes: b5de0c60cc30 ("RDMA/cma: Fix use after free race in roce multicast join")
-Link: https://lore.kernel.org/r/913bc6783fd7a95fe71ad9454e01653ee6fb4a9a.1642491047.git.leonro@nvidia.com
-Signed-off-by: Maor Gottlieb <maorg@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+[How]
+Use up-to-date watermark values for DCN301.
+
+Reviewed-by: Zhan Liu <zhan.liu@amd.com>
+Signed-off-by: Agustin Gutierrez <agustin.gutierrez@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/core/cma.c |   22 ++++++++++++----------
- 1 file changed, 12 insertions(+), 10 deletions(-)
+ drivers/gpu/drm/amd/display/dc/clk_mgr/dcn301/vg_clk_mgr.c |   16 ++++++-------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
---- a/drivers/infiniband/core/cma.c
-+++ b/drivers/infiniband/core/cma.c
-@@ -67,8 +67,8 @@ static const char * const cma_events[] =
- 	[RDMA_CM_EVENT_TIMEWAIT_EXIT]	 = "timewait exit",
- };
- 
--static void cma_set_mgid(struct rdma_id_private *id_priv, struct sockaddr *addr,
--			 union ib_gid *mgid);
-+static void cma_iboe_set_mgid(struct sockaddr *addr, union ib_gid *mgid,
-+			      enum ib_gid_type gid_type);
- 
- const char *__attribute_const__ rdma_event_msg(enum rdma_cm_event_type event)
- {
-@@ -1844,17 +1844,19 @@ static void destroy_mc(struct rdma_id_pr
- 		if (dev_addr->bound_dev_if)
- 			ndev = dev_get_by_index(dev_addr->net,
- 						dev_addr->bound_dev_if);
--		if (ndev) {
-+		if (ndev && !send_only) {
-+			enum ib_gid_type gid_type;
- 			union ib_gid mgid;
- 
--			cma_set_mgid(id_priv, (struct sockaddr *)&mc->addr,
--				     &mgid);
--
--			if (!send_only)
--				cma_igmp_send(ndev, &mgid, false);
--
--			dev_put(ndev);
-+			gid_type = id_priv->cma_dev->default_gid_type
-+					   [id_priv->id.port_num -
-+					    rdma_start_port(
-+						    id_priv->cma_dev->device)];
-+			cma_iboe_set_mgid((struct sockaddr *)&mc->addr, &mgid,
-+					  gid_type);
-+			cma_igmp_send(ndev, &mgid, false);
- 		}
-+		dev_put(ndev);
- 
- 		cancel_work_sync(&mc->iboe_join.work);
+--- a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn301/vg_clk_mgr.c
++++ b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn301/vg_clk_mgr.c
+@@ -582,32 +582,32 @@ static struct wm_table lpddr5_wm_table =
+ 			.wm_inst = WM_A,
+ 			.wm_type = WM_TYPE_PSTATE_CHG,
+ 			.pstate_latency_us = 11.65333,
+-			.sr_exit_time_us = 7.95,
+-			.sr_enter_plus_exit_time_us = 9,
++			.sr_exit_time_us = 13.5,
++			.sr_enter_plus_exit_time_us = 16.5,
+ 			.valid = true,
+ 		},
+ 		{
+ 			.wm_inst = WM_B,
+ 			.wm_type = WM_TYPE_PSTATE_CHG,
+ 			.pstate_latency_us = 11.65333,
+-			.sr_exit_time_us = 9.82,
+-			.sr_enter_plus_exit_time_us = 11.196,
++			.sr_exit_time_us = 13.5,
++			.sr_enter_plus_exit_time_us = 16.5,
+ 			.valid = true,
+ 		},
+ 		{
+ 			.wm_inst = WM_C,
+ 			.wm_type = WM_TYPE_PSTATE_CHG,
+ 			.pstate_latency_us = 11.65333,
+-			.sr_exit_time_us = 9.89,
+-			.sr_enter_plus_exit_time_us = 11.24,
++			.sr_exit_time_us = 13.5,
++			.sr_enter_plus_exit_time_us = 16.5,
+ 			.valid = true,
+ 		},
+ 		{
+ 			.wm_inst = WM_D,
+ 			.wm_type = WM_TYPE_PSTATE_CHG,
+ 			.pstate_latency_us = 11.65333,
+-			.sr_exit_time_us = 9.748,
+-			.sr_enter_plus_exit_time_us = 11.102,
++			.sr_exit_time_us = 13.5,
++			.sr_enter_plus_exit_time_us = 16.5,
+ 			.valid = true,
+ 		},
  	}
 
 
