@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69BA0C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3824C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:26:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236283AbiBGLZD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:25:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58770 "EHLO
+        id S237982AbiBGLZF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 06:25:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382452AbiBGLTO (ORCPT
+        with ESMTP id S1382457AbiBGLTP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:19:14 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7150FC043181;
-        Mon,  7 Feb 2022 03:19:13 -0800 (PST)
+        Mon, 7 Feb 2022 06:19:15 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A408CC0401C3;
+        Mon,  7 Feb 2022 03:19:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DF2E4B80EC3;
-        Mon,  7 Feb 2022 11:19:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08FCEC004E1;
-        Mon,  7 Feb 2022 11:19:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 183F761426;
+        Mon,  7 Feb 2022 11:19:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E985DC004E1;
+        Mon,  7 Feb 2022 11:19:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232750;
-        bh=BrOeKKIu/c6Ewayd+Wwum8dmrbUTc5f982drrQndTvc=;
+        s=korg; t=1644232753;
+        bh=b13qAo4YSP2y+ta2ne27FSUAmi4yqSLi1KWG0FFTyEU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v+KDUvjcnGtDrzRGqneWscYw97U2057EdjJC8R5lAxphZaU8gz0EMN0ICuThT5vd0
-         t4MyhYoHoaeY+Oxg4ffbvo+7QLLPR27ZkQ86uaUR6mT9iD7rCCopeHYrSGTbWgYxYR
-         MZ3iWq/pZXvBZkya7AhPn3uZm6u8E61gXuoOC0xY=
+        b=socPR+A26rP6ZlBB96Vt4Tsj6Qq7N0PrvsZ9Yp5NrdAjZEh5cwkxuHvWQLHffAHSt
+         Bxy6XM0RfS+7NioDY5gJWpIDv/m8v+3Ty7tKKULTFRESoXgn57itSLWLvC7w+4+tHo
+         h4dR0bmZJ3yAggf6MTiXPswWjtKt3MJNjTJA6+lc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
         Alexander Aring <aahringo@redhat.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>
-Subject: [PATCH 5.4 24/44] net: ieee802154: hwsim: Ensure proper channel selection at probe time
-Date:   Mon,  7 Feb 2022 12:06:40 +0100
-Message-Id: <20220207103753.944028384@linuxfoundation.org>
+Subject: [PATCH 5.4 25/44] net: ieee802154: mcr20a: Fix lifs/sifs periods
+Date:   Mon,  7 Feb 2022 12:06:41 +0100
+Message-Id: <20220207103753.981171151@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103753.155627314@linuxfoundation.org>
 References: <20220207103753.155627314@linuxfoundation.org>
@@ -51,35 +51,35 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miquel Raynal <miquel.raynal@bootlin.com>
 
-commit 1293fccc9e892712d910ec96079d3717307f1d2d upstream.
+commit d753c4004820a888ec007dd88b271fa9c3172c5c upstream.
 
-Drivers are expected to set the PHY current_channel and current_page
-according to their default state. The hwsim driver is advertising being
-configured on channel 13 by default but that is not reflected in its own
-internal pib structure. In order to ensure that this driver consider the
-current channel as being 13 internally, we at least need to set the
-pib->channel field to 13.
+These periods are expressed in time units (microseconds) while 40 and 12
+are the number of symbol durations these periods will last. We need to
+multiply them both with phy->symbol_duration in order to get these
+values in microseconds.
 
-Fixes: f25da51fdc38 ("ieee802154: hwsim: add replacement for fakelb")
+Fixes: 8c6ad9cc5157 ("ieee802154: Add NXP MCR20A IEEE 802.15.4 transceiver driver")
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-[stefan@datenfreihafen.org: fixed assigment from page to channel]
 Acked-by: Alexander Aring <aahringo@redhat.com>
-Link: https://lore.kernel.org/r/20220125121426.848337-2-miquel.raynal@bootlin.com
+Link: https://lore.kernel.org/r/20220125121426.848337-3-miquel.raynal@bootlin.com
 Signed-off-by: Stefan Schmidt <stefan@datenfreihafen.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ieee802154/mac802154_hwsim.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ieee802154/mcr20a.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/net/ieee802154/mac802154_hwsim.c
-+++ b/drivers/net/ieee802154/mac802154_hwsim.c
-@@ -786,6 +786,7 @@ static int hwsim_add_one(struct genl_inf
- 		goto err_pib;
- 	}
+--- a/drivers/net/ieee802154/mcr20a.c
++++ b/drivers/net/ieee802154/mcr20a.c
+@@ -976,8 +976,8 @@ static void mcr20a_hw_setup(struct mcr20
+ 	dev_dbg(printdev(lp), "%s\n", __func__);
  
-+	pib->channel = 13;
- 	rcu_assign_pointer(phy->pib, pib);
- 	phy->idx = idx;
- 	INIT_LIST_HEAD(&phy->edges);
+ 	phy->symbol_duration = 16;
+-	phy->lifs_period = 40;
+-	phy->sifs_period = 12;
++	phy->lifs_period = 40 * phy->symbol_duration;
++	phy->sifs_period = 12 * phy->symbol_duration;
+ 
+ 	hw->flags = IEEE802154_HW_TX_OMIT_CKSUM |
+ 			IEEE802154_HW_AFILT |
 
 
