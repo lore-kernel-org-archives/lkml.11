@@ -2,106 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC0B1C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3EE5C41535
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 09:37:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351502AbiBGJf4 convert rfc822-to-8bit (ORCPT
+        id S1351814AbiBGJgG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 04:35:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60268 "EHLO
+        Mon, 7 Feb 2022 04:36:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235894AbiBGJd7 (ORCPT
+        with ESMTP id S1345030AbiBGJf1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 04:33:59 -0500
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B1E0C043185
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 01:33:58 -0800 (PST)
-Received: from mail-wr1-f54.google.com ([209.85.221.54]) by
- mrelayeu.kundenserver.de (mreue108 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1M7sM0-1nLyDu3Ana-004xxj; Mon, 07 Feb 2022 10:33:56 +0100
-Received: by mail-wr1-f54.google.com with SMTP id i15so1171093wrb.3;
-        Mon, 07 Feb 2022 01:33:56 -0800 (PST)
-X-Gm-Message-State: AOAM531FVzFiYBe9oQoUjUVtdbeJA9dkRPw65ncxvITmdjOEmQMNpBFx
-        1mLTJlJS3oe/xYPJJVIVc/WOvUtmkVJ3INnKl9s=
-X-Google-Smtp-Source: ABdhPJxjtwwhO8HbrAZC+pe3xlqcwLMS67h5t8QPdUjoAiwcCe9JR65SOdpgzS7AoShpWThk/xsDFtoHfw7IoFK1OEg=
-X-Received: by 2002:a5d:500c:: with SMTP id e12mr9224078wrt.219.1644226436456;
- Mon, 07 Feb 2022 01:33:56 -0800 (PST)
+        Mon, 7 Feb 2022 04:35:27 -0500
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4201DC043181
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 01:35:26 -0800 (PST)
+Received: by mail-wm1-x32e.google.com with SMTP id r7so9388725wmq.5
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 01:35:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=TCP4D7FjgMKnby1e08gVg89o79MvrPT+OFv+Q8blaaw=;
+        b=ogrUu/AfnxSajBawUTAzhtl8hLHhL27U55AVn39abbS66VthBN2tMwBOrOl3xMel+M
+         qcydCYRurHTN44lCd9x0SEZQ1xWAGK/kf7FCmswWvYVMdoQomDqI7uBjuqYS+hkkbsLH
+         M0aU74LkynnNMWzcR83MoJglFkamGY4FGKSAthZ4e6ZfWaRlRuJuCuW6zwtdP5LaEJ5K
+         754Hu2ipMrf9lbi3w7cSa9wVeqU94CaV0PlO9mrimZQZKRfMxHnUYifUturxVEDlt+nJ
+         DSvz2SHZnrxS+h8kwo2kPAnt+8Pw0JYWRcAWqzR29lntazxq3gkLeaPbCE3bGj69p3UE
+         WauQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=TCP4D7FjgMKnby1e08gVg89o79MvrPT+OFv+Q8blaaw=;
+        b=T2taW211ZBUi9HLR/uqDp7DmPa4BCd3FTyB9pVD0iUIE8Z7Ay/z0LiVfAwCrH0bmKd
+         Z9Y1Q179nhOqdXdiFai++RjNEINXuvNiT5cA7WKRwImFALUZtt+cKyh3mFsFmL5CGE6n
+         bbuhk0OVkjy2TjnboIUrmmTQGkV3kiGtCqGzXcUBoE45UUWBYprX/U0PUDiBRqLzDhUX
+         R6Mqv598li/dYnlkHrVcRnPjGuN8PEVwAh5s19bGBk6kQy3UiiJDsGVlNzxCHzlVklFA
+         khP+2TGKO04lFUG8Z4T6u6zRDuIJSrgoNqrMp6uDFR4YZV6FdDw1Xo8N4MzJn3rywD7L
+         67dw==
+X-Gm-Message-State: AOAM5339cIcYas1cnTebDcXME87XoQZqYUxkxt+NlBdqqSOhwmrvtn+v
+        qlt1Pi8dyKal38Krri0tmzrdNw==
+X-Google-Smtp-Source: ABdhPJw22S5Q4w+myvg3aIQzNPQRoUolNTKEHd2CXwdqN9FlAuhosQe7sBTyghe8NdwcT3vntxlSiw==
+X-Received: by 2002:a1c:35c9:: with SMTP id c192mr9022814wma.168.1644226524796;
+        Mon, 07 Feb 2022 01:35:24 -0800 (PST)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id g15sm9584075wri.82.2022.02.07.01.35.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 01:35:24 -0800 (PST)
+Date:   Mon, 7 Feb 2022 09:35:22 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     linux-kernel@vger.kernel.org, Sebastian Reichel <sre@kernel.org>,
+        Pavel Machek <pavel@ucw.cz>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Mark Brown <broonie@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-pm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH v2 0/4] leds/power/regulator/mfd: dt-bindings:
+ maxim,max77693: convert to dtschema
+Message-ID: <YgDn2iupBQL1lr9p@google.com>
+References: <20220111175017.223966-1-krzysztof.kozlowski@canonical.com>
+ <63255060-8df8-660d-52bf-198d77c884d5@canonical.com>
 MIME-Version: 1.0
-References: <cover.1644212476.git.tonyhuang.sunplus@gmail.com>
- <b96f039dc071b1d32bb52fa283fd8afc6d3349cc.1644212476.git.tonyhuang.sunplus@gmail.com>
- <CAK8P3a0zNeaeOzC_tPb1KDbyktLpjUJCdEu=C6t_QX4pB9TKnQ@mail.gmail.com>
- <b440dc1dbb044a8c81d083d52774ad6b@sphcmbx02.sunplus.com.tw> <YgDar1O/CeTM8w6J@kroah.com>
-In-Reply-To: <YgDar1O/CeTM8w6J@kroah.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Mon, 7 Feb 2022 10:33:40 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a12JMhEB=qxXqRB0WFyUwvJ_VgwqMi6oWfpcgBr9OWrqQ@mail.gmail.com>
-Message-ID: <CAK8P3a12JMhEB=qxXqRB0WFyUwvJ_VgwqMi6oWfpcgBr9OWrqQ@mail.gmail.com>
-Subject: Re: [PATCH v8 2/2] misc: Add iop driver for Sunplus SP7021
-To:     gregkh <gregkh@linuxfoundation.org>
-Cc:     =?UTF-8?B?VG9ueSBIdWFuZyDpu4Pmh7fljpo=?= <tony.huang@sunplus.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Tony Huang <tonyhuang.sunplus@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Derek Kiernan <derek.kiernan@xilinx.com>,
-        Dragan Cvetic <dragan.cvetic@xilinx.com>,
-        =?UTF-8?B?V2VsbHMgTHUg5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Provags-ID: V03:K1:0J6Mjirsw0E3IG/qh0q2nAbRKNTVtM37ZcVLZVIhufKdfYTwePb
- ufaBmiVcfHThw1AX+PYgwnRQjrKJ3El1nMCbw7RfaILNYx/HAW8bUO7V3gsPkinRxt4yJzS
- J1iwCkmmsr72BleWDG6EXvtIeI38vIGIaWFhtjxFz/Uc6AJ9z97IoEwdPjL4miUYQo0h2JB
- IcVt6FjGFYyGKrmlOau6A==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:nnk7vXobkyQ=:YU6oj9eTy74vHBOT95xtYq
- +FEDSEshobDZ9YpqhrtWJGdXXQFCuVbTu0c3RSZEq64oN+MTqJ4P/5JyPgGl7OJ4EYQaJRZKO
- h9cp1Nhg4duLBVM9Ezc/lYje0f1rDbg2eqxKGP0gb86r8XCsh5Q8kkO0rEdD2JRCLkQ+bvayW
- yGAsjQl60JEZVSFSBSbnoFpXenR6q4Gzd1mDE6SFZQaafH+lee1pwrSKIjP7XVW0qK/9tbZEU
- q6b48kp4NxYVG7fMfrqtcdZCUCKxEnwr8v4kAFNW7YanX9kAeDEA6EdQ3LOR6+lt23Ct7uNsr
- ItgLmln55CpE/sJC2rf8+zZJEwDbDoKmCAPlVx8CDUSYZni0VRx1nO0pvHyG1aV3E4FbW/Nlo
- sj6EGHgdW2bx9RriqfQ3x9SZ/tTuAnYD9108+jWi7qZMzYCDDRHDZIJH0hViGx1dOxdIWgVUh
- l8wr3XFH5hRYZNUVCPnXOj8mHRkEXwdLnU7VvPWdGSTB9AH+jSgVWKpBAqbXj1zJiM+brY406
- sfx0ePYWTWI3hI2fMv1nzvdyRV2s24NAu1+c7OQ0LYyCAtis/yPPT79ZRPVhj1LT8EBzoaLNa
- W8tBM9ndLzQ9ghtnMbOTlf3BsRBKLxlnAVMn68ckkq16nNWU/sai4OJI5/+e5vN+nqyKYu796
- /elIxYC44stT8pgPAn9nwJcKh/3xFEX7Tgiu9Iu0vmCWMvazY+f87LSeK0ywIUFK41UQ+cYWX
- N5oqIqu8t1DToQPVc+jjClsh0XC8Cmb31TZ5bPJIZSWEWCOn3xLwWVurkvbnLP2taRugeGqC5
- PjIpTiOQp3nkfpNqDcgfuqNyAtBa3VAXBqy36g8E7M4XYROeZk=
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <63255060-8df8-660d-52bf-198d77c884d5@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 7, 2022 at 9:39 AM gregkh <gregkh@linuxfoundation.org> wrote:
-> On Mon, Feb 07, 2022 at 08:29:40AM +0000, Tony Huang 黃懷厚 wrote:
-> > >
-> > > As discussed before, I would suggest leaving out all custom attributes for now,
-> > > and first hooking up the driver to all the in-kernel subsystems.
-> > >
-> > > The mailbox0 register data definitely feels like an implementation detail, not
-> > > something that should be exposed to user space as an interface.
-> > >
-> > > For standby mode, this would normally be handled by the power management
-> > > subsystem in the kernel. not a custom interface. From your earlier description,
-> > > I assume this interface puts the main CPU into standby mode, not the IOP,
-> > > right?
-> > >
-> > > CPU standby is handled by the cpuidle subsystem, so you need a driver in
-> > > drivers/cpuidle/ to replace your sysfs attribute.
-> > > If you plan to hook up the driver to multiple subsystems, keeping a generic
-> > > driver file is ok, so  you'll end up with two driver modules, with one of them
-> > > calling into the other, using
-> > > EXPORT_SYMBOL() to link between them.
-> > >
-> >
-> > The purpose of adding sysfs is only for users to debug.
-> > So this is not needed?
->
-> If this is only for debugging, please put it in debugfs and not sysfs.
+On Sun, 06 Feb 2022, Krzysztof Kozlowski wrote:
 
-I don't think that works for the idle mode interface, as this is the only
-thing the driver really does at the moment.
+> On 11/01/2022 18:50, Krzysztof Kozlowski wrote:
+> > Hi,
+> > 
+> > Changes since v1
+> > ================
+> > 1. MFD: Use absolute path to schemas, add additionalProperties=false.
+> > 2. Regulator: mention all allowed properties,
+> >    additionalProperties=false, add min/max values for voltages and
+> >    current, don't use patternProperties when not needed.
+> > 
+> > Dependencies
+> > ============
+> > The final patch - MFD maxim,max77693 bindings conversion - depends on
+> > all previous. Therefore this could go via Rob's or Lee's trees.
+> > 
+> 
+> Dear Lee,
+> 
+> This patchset was reviewed and there are no outstanding issues. Could
+> you pick up entire set via MFD tree?
 
-In a previous review round, I already asked for the driver to implement
-at least two in-kernel interfaces before any custom user interface
-is added.
+Nothing from LED or Regulator?
 
-         Arnd
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
