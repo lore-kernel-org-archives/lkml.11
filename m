@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EFC7C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E476C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:17:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245166AbiBGLNJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:13:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48890 "EHLO
+        id S1350434AbiBGLNL (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 06:13:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242911AbiBGLKY (ORCPT
+        with ESMTP id S244455AbiBGLK2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:10:24 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 289F2C043181;
-        Mon,  7 Feb 2022 03:10:24 -0800 (PST)
+        Mon, 7 Feb 2022 06:10:28 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 008F1C043181;
+        Mon,  7 Feb 2022 03:10:26 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A935961380;
-        Mon,  7 Feb 2022 11:10:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71995C004E1;
-        Mon,  7 Feb 2022 11:10:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 92A9E61388;
+        Mon,  7 Feb 2022 11:10:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73DF1C004E1;
+        Mon,  7 Feb 2022 11:10:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232223;
-        bh=/1gOUus/PlI8TcuhnyrJCK0TBi6oG+v2tNclrv/K+8U=;
+        s=korg; t=1644232226;
+        bh=u4195M9uifM8d22mIW+olg3HBt73pJGFVtNfQc0j3uU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZTrUM9juqsGnZdMmESX2AxTSxoEcYpEJvgAy0sQkFgHa0ebK7d+5l9vzBGxXodETK
-         t29UO5ZxK8C2Cu0Aooji/40bbXguCzYhASQC0T3ARowS2Fwgfg1t5l9k9S6VPOlxhz
-         638E2zWEbJKEW0O8FVtnIKOJmCvBm5yrJY2qNVIc=
+        b=ZswFb9iNtEt+P1AduvXYk+WOy04ueQT+YY20JX9EELgmJJCfCW/kZbCGUvS3CE7NQ
+         9QCE3zepGE4t+sv5ZPjge44j3oUwQqGn+ShgaTE/THvw83WpJPxTjR3TwGPX62Md5K
+         us48u4nYpwGj62zE9odCBv/SdpEXRNuxyd+KyaxM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dai Ngo <dai.ngo@oracle.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Bruce Fields <bfields@fieldses.org>
-Subject: [PATCH 4.9 44/48] nfsd: nfsd4_setclientid_confirm mistakenly expires confirmed client.
-Date:   Mon,  7 Feb 2022 12:06:17 +0100
-Message-Id: <20220207103753.761720551@linuxfoundation.org>
+        stable@vger.kernel.org, Brian Gix <brian.gix@intel.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        syphyr <syphyr@gmail.com>
+Subject: [PATCH 4.14 01/69] Bluetooth: refactor malicious adv data check
+Date:   Mon,  7 Feb 2022 12:05:23 +0100
+Message-Id: <20220207103755.654351240@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207103752.341184175@linuxfoundation.org>
-References: <20220207103752.341184175@linuxfoundation.org>
+In-Reply-To: <20220207103755.604121441@linuxfoundation.org>
+References: <20220207103755.604121441@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -49,45 +52,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dai Ngo <dai.ngo@oracle.com>
+From: Brian Gix <brian.gix@intel.com>
 
-commit ab451ea952fe9d7afefae55ddb28943a148247fe upstream.
+commit 899663be5e75dc0174dc8bda0b5e6826edf0b29a upstream.
 
->From RFC 7530 Section 16.34.5:
+Check for out-of-bound read was being performed at the end of while
+num_reports loop, and would fill journal with false positives. Added
+check to beginning of loop processing so that it doesn't get checked
+after ptr has been advanced.
 
-o  The server has not recorded an unconfirmed { v, x, c, *, * } and
-   has recorded a confirmed { v, x, c, *, s }.  If the principals of
-   the record and of SETCLIENTID_CONFIRM do not match, the server
-   returns NFS4ERR_CLID_INUSE without removing any relevant leased
-   client state, and without changing recorded callback and
-   callback_ident values for client { x }.
-
-The current code intends to do what the spec describes above but
-it forgot to set 'old' to NULL resulting to the confirmed client
-to be expired.
-
-Fixes: 2b63482185e6 ("nfsd: fix clid_inuse on mount with security change")
-Signed-off-by: Dai Ngo <dai.ngo@oracle.com>
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
-Reviewed-by: Bruce Fields <bfields@fieldses.org>
+Signed-off-by: Brian Gix <brian.gix@intel.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Cc: syphyr <syphyr@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfsd/nfs4state.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ net/bluetooth/hci_event.c |   10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
---- a/fs/nfsd/nfs4state.c
-+++ b/fs/nfsd/nfs4state.c
-@@ -3424,8 +3424,10 @@ nfsd4_setclientid_confirm(struct svc_rqs
- 			status = nfserr_clid_inuse;
- 			if (client_has_state(old)
- 					&& !same_creds(&unconf->cl_cred,
--							&old->cl_cred))
-+							&old->cl_cred)) {
-+				old = NULL;
- 				goto out;
-+			}
- 			status = mark_client_expired_locked(old);
- 			if (status) {
- 				old = NULL;
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -4967,6 +4967,11 @@ static void hci_le_adv_report_evt(struct
+ 		struct hci_ev_le_advertising_info *ev = ptr;
+ 		s8 rssi;
+ 
++		if (ptr > (void *)skb_tail_pointer(skb) - sizeof(*ev)) {
++			bt_dev_err(hdev, "Malicious advertising data.");
++			break;
++		}
++
+ 		if (ev->length <= HCI_MAX_AD_LENGTH &&
+ 		    ev->data + ev->length <= skb_tail_pointer(skb)) {
+ 			rssi = ev->data[ev->length];
+@@ -4978,11 +4983,6 @@ static void hci_le_adv_report_evt(struct
+ 		}
+ 
+ 		ptr += sizeof(*ev) + ev->length + 1;
+-
+-		if (ptr > (void *) skb_tail_pointer(skb) - sizeof(*ev)) {
+-			bt_dev_err(hdev, "Malicious advertising data. Stopping processing");
+-			break;
+-		}
+ 	}
+ 
+ 	hci_dev_unlock(hdev);
 
 
