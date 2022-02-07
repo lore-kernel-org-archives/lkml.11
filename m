@@ -2,89 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 320DAC43219
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 06:41:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1424C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 06:41:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352364AbiBGGhU (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 01:37:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32970 "EHLO
+        id S232083AbiBGGiq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 01:38:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234983AbiBGGdK (ORCPT
+        with ESMTP id S243603AbiBGGgK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 01:33:10 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D785C043187
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 22:33:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
-        :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=wqaArwblmIFSHxUdNBNekbGuuQV19X++bRGa4XtI21U=; b=lxdZaX9HdECBxS8xbH3caitLbH
-        PgJ/rcSWAsPKp0w4j5ndf9woh4inxdIS2JIDFXPeAEbv6jdzH9Jo2ntSfHkuj6mUQ7HTrOAokh5qc
-        4is/Xb5dtZG07+ioaAog0Tey/v1edHRBpVlQ/9G50rLriinhvV/d9n8u3P6DkytAHoAIRzQrVcWVu
-        qUeK/m7kl6g5AO82aINiKwrYAOVXXo11IEJlHfxptb1ZQ4JeiUUJojms+atQUIJLsKgoZPQaQcKqS
-        Ppu19zrTCt3BV/fiLaL5lgHLtEmxSGihd4Tx+0ttgGEEJ7i2vxcU+OqN3HDnjubScKNcKlfoiC4Nm
-        uoHWy8CQ==;
-Received: from [2001:4bb8:188:3efc:2cbe:55d7:bb63:46d2] (helo=localhost)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nGxa4-0099Hh-Pj; Mon, 07 Feb 2022 06:32:57 +0000
-From:   Christoph Hellwig <hch@lst.de>
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        Dan Williams <dan.j.williams@intel.com>
-Cc:     Felix Kuehling <Felix.Kuehling@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Karol Herbst <kherbst@redhat.com>,
-        Lyude Paul <lyude@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Alistair Popple <apopple@nvidia.com>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Ralph Campbell <rcampbell@nvidia.com>,
-        linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
-        nvdimm@lists.linux.dev, linux-mm@kvack.org
-Subject: [PATCH 2/8] mm: remove the __KERNEL__ guard from <linux/mm.h>
-Date:   Mon,  7 Feb 2022 07:32:43 +0100
-Message-Id: <20220207063249.1833066-3-hch@lst.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220207063249.1833066-1-hch@lst.de>
-References: <20220207063249.1833066-1-hch@lst.de>
+        Mon, 7 Feb 2022 01:36:10 -0500
+X-Greylist: delayed 1115 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 22:36:07 PST
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 884B6C043181;
+        Sun,  6 Feb 2022 22:36:07 -0800 (PST)
+Received: from dggpeml500021.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4JsbWM4J66zcbcT;
+        Mon,  7 Feb 2022 14:16:31 +0800 (CST)
+Received: from dggpeml500018.china.huawei.com (7.185.36.186) by
+ dggpeml500021.china.huawei.com (7.185.36.21) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Mon, 7 Feb 2022 14:17:30 +0800
+Received: from [10.67.111.186] (10.67.111.186) by
+ dggpeml500018.china.huawei.com (7.185.36.186) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Mon, 7 Feb 2022 14:17:30 +0800
+Message-ID: <0761d941-8fbb-d06b-3d0b-8330c8b54499@huawei.com>
+Date:   Mon, 7 Feb 2022 14:17:30 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.1.1
+Subject: Re: [PATCH] cgroup/cpuset: Fix a race between cpuset_attach() and cpu
+ hotplug
+To:     <linux-kernel@vger.kernel.org>, <cgroups@vger.kernel.org>
+CC:     <tj@kernel.org>, <lizefan.x@bytedance.com>, <hannes@cmpxchg.org>,
+        <matthltc@us.ibm.com>, <bblum@google.com>, <menage@google.com>,
+        <akpm@linux-foundation.org>, <longman@redhat.com>,
+        <mkoutny@suse.com>, <zhaogongyi@huawei.com>
+References: <20220121101210.84926-1-zhangqiao22@huawei.com>
+From:   Zhang Qiao <zhangqiao22@huawei.com>
+In-Reply-To: <20220121101210.84926-1-zhangqiao22@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+X-Originating-IP: [10.67.111.186]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpeml500018.china.huawei.com (7.185.36.186)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-__KERNEL__ ifdefs don't make sense outside of include/uapi/.
+Gentle ping on this patch.
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- include/linux/mm.h | 4 ----
- 1 file changed, 4 deletions(-)
-
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 213cc569b19223..7b46174989b086 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -3,9 +3,6 @@
- #define _LINUX_MM_H
- 
- #include <linux/errno.h>
--
--#ifdef __KERNEL__
--
- #include <linux/mmdebug.h>
- #include <linux/gfp.h>
- #include <linux/bug.h>
-@@ -3381,5 +3378,4 @@ madvise_set_anon_name(struct mm_struct *mm, unsigned long start,
- }
- #endif
- 
--#endif /* __KERNEL__ */
- #endif /* _LINUX_MM_H */
--- 
-2.30.2
-
+在 2022/1/21 18:12, Zhang Qiao 写道:
+> As previously discussed(https://lkml.org/lkml/2022/1/20/51),
+> cpuset_attach() is affected with similar cpu hotplug race,
+> as follow scenario:
+> 
+>      cpuset_attach()				cpu hotplug
+>     ---------------------------            ----------------------
+>     down_write(cpuset_rwsem)
+>     guarantee_online_cpus() // (load cpus_attach)
+> 					sched_cpu_deactivate
+> 					  set_cpu_active()
+> 					  // will change cpu_active_mask
+>     set_cpus_allowed_ptr(cpus_attach)
+>       __set_cpus_allowed_ptr_locked()
+>        // (if the intersection of cpus_attach and
+>          cpu_active_mask is empty, will return -EINVAL)
+>     up_write(cpuset_rwsem)
+> 
+> To avoid races such as described above, protect cpuset_attach() call
+> with cpu_hotplug_lock.
+> 
+> Fixes: be367d099270 ("cgroups: let ss->can_attach and ss->attach do whole threadgroups at a time")
+> Reported-by: Zhao Gongyi <zhaogongyi@huawei.com>
+> Signed-off-by: Zhang Qiao <zhangqiao22@huawei.com>
+> ---
+>  kernel/cgroup/cpuset.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/kernel/cgroup/cpuset.c b/kernel/cgroup/cpuset.c
+> index dc653ab26e50..0af5725cc1df 100644
+> --- a/kernel/cgroup/cpuset.c
+> +++ b/kernel/cgroup/cpuset.c
+> @@ -2252,6 +2252,7 @@ static void cpuset_attach(struct cgroup_taskset *tset)
+>  	cgroup_taskset_first(tset, &css);
+>  	cs = css_cs(css);
+> 
+> +	cpus_read_lock();
+>  	percpu_down_write(&cpuset_rwsem);
+> 
+>  	guarantee_online_mems(cs, &cpuset_attach_nodemask_to);
+> @@ -2305,6 +2306,7 @@ static void cpuset_attach(struct cgroup_taskset *tset)
+>  		wake_up(&cpuset_attach_wq);
+> 
+>  	percpu_up_write(&cpuset_rwsem);
+> +	cpus_read_unlock();
+>  }
+> 
+>  /* The various types of files and directories in a cpuset file system */
+> --
+> 2.18.0
+> 
+> .
+> 
