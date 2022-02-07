@@ -2,91 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32E78C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 21:57:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E33E3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 21:58:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243335AbiBGV55 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 16:57:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37396 "EHLO
+        id S243377AbiBGV6u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 16:58:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239942AbiBGV5z (ORCPT
+        with ESMTP id S229584AbiBGV6t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 16:57:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3C22C06109E
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 13:57:53 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 77B1C615D9
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 21:57:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0F4AC340F1
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 21:57:52 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="PiMVGtX8"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1644271070;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=9r/q0NAcQxwYCCZk1yFqi/sFfxTN8cr0KnX5Fg2puEk=;
-        b=PiMVGtX8evEWNLiggNdjaaRdwFKBPYUdYeNV44qcisiwO4zAaLdKy8Xh8EMMzQHkWg+X/P
-        UlNkqd/s4w+8AmbtcRvXxWQRveetpJ3BCJypG+10qer7o5Me6LR2jHcQLjqz/FQl86TCAb
-        YZ8e39reke8yEoNQo9c01KVmEJYQQZg=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 3f16a0ab (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO)
-        for <linux-kernel@vger.kernel.org>;
-        Mon, 7 Feb 2022 21:57:50 +0000 (UTC)
-Received: by mail-yb1-f176.google.com with SMTP id bt13so20261056ybb.2
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 13:57:49 -0800 (PST)
-X-Gm-Message-State: AOAM532A+3DuHY1rWpS2l947v4Vmo9Laj6wgnD3m9Bt2Dae7dfMbuxMc
-        uRLaX7dGRTPQl92XkJx1iC10Hf0mkETSFXOHl60=
-X-Google-Smtp-Source: ABdhPJxnaeiBVQKmBumoZUIDMxlAwGiEOjzDfNzW8CS+7gcJX1xtKl6LXnLTeAg7OpXcXgTh1tDxnI6qm1MFelowxPQ=
-X-Received: by 2002:a81:1b54:: with SMTP id b81mr2089864ywb.404.1644271068571;
- Mon, 07 Feb 2022 13:57:48 -0800 (PST)
+        Mon, 7 Feb 2022 16:58:49 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88765C061355
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 13:58:49 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id qe15so4799348pjb.3
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 13:58:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=mawlywQJ7By+C4lydANsL5EQYZ68ANaR80UGfPWHWA0=;
+        b=JKY3u6RGj9vvgxsCB65Et5hqH/ceaLcskaQckSeAySE/Be9SSTHBpBAHSNSMKL2qID
+         yGadAwamLpJTUi2zzGSU6icjLOSdDbcOCBA+SWEw4GF4P86+lm0oiUXrMw/TCNWjKCU0
+         LTnU7hnNvHgsPvdaq4Zj/vDsoesW+THaFJCdc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=mawlywQJ7By+C4lydANsL5EQYZ68ANaR80UGfPWHWA0=;
+        b=a3LUndzu5PsT9tryAYQL6HowwwP1JKolhIvSobeccAHmshNhlVdQSK2UaC4LxRMhTo
+         IdKyb5RC1ADjhguoHAR5fl/jNvl4mWynOFBgSnY7DKV7VvOzOwaFkoMWRFGv8MlZGq1p
+         c1yREiryxv+BvWMPR5jhLj/veqo4dAazA2GNjfgNSpiqGIPf5YfcDj1X/E+9c/O9TYNW
+         C2R+1KLitooibnQArws/B9mlG8YHJvcknYwje0OTlNndcq/vJcMNyvZX/JJomNIUgzk5
+         y/NmHWXxhRWQ4hh6rrw8dKCpO+QQFrpCeuG8A8Xs/AiBQ+RpcwCMBDcjcsCSaOy1iyJy
+         aRYQ==
+X-Gm-Message-State: AOAM533CVcdNg8bN2ociYVFzYcRna2IsjuapgLj0wIlGNyuktpMZ2fqy
+        EjhQTXAVDwrVVNCJRVqQSPY+lw==
+X-Google-Smtp-Source: ABdhPJy0AoqQe2w9LmyyFoXpDzQSjRQbdTcBCtjF6vYZ6MgOPeiHhRHaBxTOFUOM55MRrwxO/A8k/g==
+X-Received: by 2002:a17:902:b692:: with SMTP id c18mr1330327pls.85.1644271129101;
+        Mon, 07 Feb 2022 13:58:49 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id 19sm301213pjb.42.2022.02.07.13.58.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 13:58:48 -0800 (PST)
+Date:   Mon, 7 Feb 2022 13:58:48 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     X86 ML <x86@kernel.org>, LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 2/6] x86/cpu: Remove "nosep"
+Message-ID: <202202071358.2DA81D84B@keescook>
+References: <20220127115626.14179-1-bp@alien8.de>
+ <20220127115626.14179-3-bp@alien8.de>
 MIME-Version: 1.0
-References: <e10b79cf-d6d5-ffcc-bce4-edd92b7cb6b9@molgen.mpg.de>
- <CAHmME9pktmNpcBS_DJhJ5Z+6xO9P1wroQ9_gwx8KZMBxk1FBeQ@mail.gmail.com>
- <CAG48ez2P9-CAdgRizcp5T_uuoXRAt0xtodh1doiMW0fKZVX-7g@mail.gmail.com> <CAG48ez3wZOZZX1UHM-Q=KhOnnGR85Unm08q7jT_wVfOq0PW94Q@mail.gmail.com>
-In-Reply-To: <CAG48ez3wZOZZX1UHM-Q=KhOnnGR85Unm08q7jT_wVfOq0PW94Q@mail.gmail.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Mon, 7 Feb 2022 22:57:37 +0100
-X-Gmail-Original-Message-ID: <CAHmME9oaj5g==Rhq6HvrxSHHfo-v1whdzwWTWFqmrDw8sBHqoA@mail.gmail.com>
-Message-ID: <CAHmME9oaj5g==Rhq6HvrxSHHfo-v1whdzwWTWFqmrDw8sBHqoA@mail.gmail.com>
-Subject: Re: BUG: KCSAN: data-race in add_device_randomness+0x20d/0x290
-To:     Jann Horn <jannh@google.com>
-Cc:     pmenzel@molgen.mpg.de, "Theodore Y. Ts'o" <tytso@mit.edu>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220127115626.14179-3-bp@alien8.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 7, 2022 at 10:50 PM Jann Horn <jannh@google.com> wrote:
-> > But the "lfsr" variable is never accessed outside the part of this
-> > method that holds a global spinlock. So that can't really be it,
-> > right?
+On Thu, Jan 27, 2022 at 12:56:22PM +0100, Borislav Petkov wrote:
+> From: Borislav Petkov <bp@suse.de>
+> 
+> That chicken bit was added by
+> 
+>   4f88651125e2 ("[PATCH] i386: allow disabling X86_FEATURE_SEP at boot")
+> 
+> but measuring int80 vsyscall performance on 32-bit doesn't matter
+> anymore.
+> 
+> If still needed, one can boot with
+> 
+>   clearcpuid=sep
+> 
+> to disable that feature for testing.
+> 
+> Signed-off-by: Borislav Petkov <bp@suse.de>
 
-Oh, hm, yea. Seems likely.
+Reviewed-by: Kees Cook <keescook@chromium.org>
 
->
-> There is a data race in crng_ready(), it just loads from "crng_init"
-> without READ_ONCE()... maybe that's what KCSAN is noticing?
-
-There are lots of data races in crng_ready(), which Dominik has been
-fixing up gradually (which is why I CC'd him). However, crng_init is 4
-bytes, and that crng_init is read first with a cmpl that will read the
-whole thing. Maybe KCSAN's reporting is wrong? But it also says 0x00
--> 0x43, which isn't one of the assigned values of crng_init. Also,
-0x20d seems quite far into the body of add_device_randomness, whereas
-crng_ready() is checked sort of early on.
-
-Hopefully Paul will send us his vmlinux.
-
-Another possibility is that this is happening on the u8 read of the
-buffer *input*, of what release_task->__exit_signal is passing it:
-
-       add_device_randomness((const void*) &tsk->se.sum_exec_runtime,
-                             sizeof(unsigned long long));
-
-I haven't yet looked at the locking around tsk->se.sum_exec_runtime.
+-- 
+Kees Cook
