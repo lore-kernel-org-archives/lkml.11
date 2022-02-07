@@ -2,101 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83D5AC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74A66C41535
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 06:41:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354174AbiBGGiF (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 01:38:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33258 "EHLO
+        id S243856AbiBGGgx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 01:36:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241627AbiBGGds (ORCPT
+        with ESMTP id S1359474AbiBGGAX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 01:33:48 -0500
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B081C043181;
-        Sun,  6 Feb 2022 22:33:47 -0800 (PST)
-Received: by mail-pj1-x102a.google.com with SMTP id t4-20020a17090a510400b001b8c4a6cd5dso1169324pjh.5;
-        Sun, 06 Feb 2022 22:33:47 -0800 (PST)
+        Mon, 7 Feb 2022 01:00:23 -0500
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E90B6C03E94F
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 21:59:57 -0800 (PST)
+Received: by mail-ej1-x631.google.com with SMTP id y3so17961662ejf.2
+        for <linux-kernel@vger.kernel.org>; Sun, 06 Feb 2022 21:59:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=5w4/ennwCAEEkQywko6dYbRCf/YpCkpMTELAq3SETZ0=;
-        b=Hh53y7v9NqRMkLkoNG8j78dhkJPtGq5sFnpbaHmwv98uBLw3f32oI311L5p3FsJKJ3
-         IgrPn3pu9YeOnJzCeFAgfkY9+N8XVvBodUNzDn+qfjnrk/4nx0g/L9pyLyBsTMjfrZ/D
-         34Eb2vBm+bm+FF7/WxOe/zU/utjATQBnpvQiEf1XRkuAyaDtQXGOSRla9Rx36lSnSFCl
-         Kz/cEyzX+XqzrcnXtwAMRKwYkscyU0U+9pzEy23Rd0t7zzMfFKAAKNA/iop5FskRk39L
-         JOk5Ut+nY244dW4vzbXVIg8BJiCeT1yfuxCNAR7SEZi5s6zwM30kAYnVHR0rD06KNikt
-         Bhtw==
+        d=ionos.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9rTPpwmidEGnk+0sbSsiZSlt9G/HqE6uqYlGM1FbJrE=;
+        b=ZPsLtFOYJbXBSXxznzdt6saaoAsr34Sl7BH/YzNYyc4mKr+jF1/vWJs4821VBIp3nd
+         wAYRJJhMyvhlRFFisqHrDjp3T/ANdglvZW7vbhim8qaT+0XVsRhXzCNzful3NCALrp54
+         PW1YQoTI1urvAHNes0ksAMk17gRSAHs876hKsGuFZuK04GXSCo0Wyy72Qos1yKpfNsRa
+         c33fVswSl+9Zgo7TNVcf9DIYAV8qMovu2V8xMiLYKYdXvQM6iOtk8FdCGp/A+BQyObme
+         CHMm4XagJ1tLS1aHx+VkjswYOr9+doWYsCysM5Ckp+wImryY23239tWH9wJ+2Ivyiyzj
+         F0Vg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=5w4/ennwCAEEkQywko6dYbRCf/YpCkpMTELAq3SETZ0=;
-        b=dCt7ZUL5730M22Et2LAnpJRsHW0fccyGP29nPWAIGB7m3oRGQ50+70+BAsz0dkVlge
-         uHIlq3LnN/DFby+03Ns1uMVbSrpGzWHjzdH8hv0FzfzH1LGj7imlJtsbrSFwCzSN/5wK
-         HeVtwUQ6eLcgONkvppzUL6xlPZj6h1XbobFh9XzdZvCd8yWitcUUksZ6PVjMosmUeG5x
-         PGq3gv9zrtOZpjRFUqVPSEgnghMYFOwFSe1scdGDxnXIlELdGpK2QYxbcWAJnTwKVhdC
-         FG98TRErmjNUajm47UVPorw2J6wvS0dDkY0NbJJUkxwsbvZLPC5vvtED950q4ERqzGUS
-         okGg==
-X-Gm-Message-State: AOAM530qgtik2pOVBfIyA9C3e5p6bwA8r8Q5df1ZQW8Su4ZYQs8sNDS8
-        At+ZAFnaHHq3Sx8xSUweEg==
-X-Google-Smtp-Source: ABdhPJwAH1K+CWgey8aVJCIHJ53hQkGzwDi9PAMPA/2HOH43X+MSCDHXYztTHNJXL8NB9GZijsI3XQ==
-X-Received: by 2002:a17:90b:351:: with SMTP id fh17mr5008108pjb.28.1644215627026;
-        Sun, 06 Feb 2022 22:33:47 -0800 (PST)
-Received: from localhost ([2401:e180:8894:9737:7848:1ec7:b697:7d50])
-        by smtp.gmail.com with ESMTPSA id d13sm2803452pfj.205.2022.02.06.22.33.46
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 06 Feb 2022 22:33:46 -0800 (PST)
-From:   Tyrone Ting <warp5tw@gmail.com>
-To:     avifishman70@gmail.com, tmaimon77@gmail.com, tali.perry1@gmail.com,
-        venture@google.com, yuenn@google.com, benjaminfair@google.com,
-        robh+dt@kernel.org, krzysztof.kozlowski@canonical.com,
-        semen.protsenko@linaro.org, yangyicong@hisilicon.com,
-        wsa@kernel.org, jie.deng@intel.com, sven@svenpeter.dev,
-        bence98@sch.bme.hu, lukas.bulwahn@gmail.com, arnd@arndb.de,
-        olof@lixom.net, andriy.shevchenko@linux.intel.com,
-        warp5tw@gmail.com, tali.perry@nuvoton.com, Avi.Fishman@nuvoton.com,
-        tomer.maimon@nuvoton.com, KWLIU@nuvoton.com, JJLIU0@nuvoton.com,
-        kfting@nuvoton.com
-Cc:     openbmc@lists.ozlabs.org, linux-i2c@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v1 0/6] i2c: npcm: Bug fixes timeout, spurious interrupts
-Date:   Mon,  7 Feb 2022 14:33:32 +0800
-Message-Id: <20220207063338.6570-1-warp5tw@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9rTPpwmidEGnk+0sbSsiZSlt9G/HqE6uqYlGM1FbJrE=;
+        b=ogUjfDVfaCC7sz+cvTUPn7z9/MytGt7/3NYB2mQQag1+nBadPpYmajBlHOptGMW8RD
+         JoVAHrATNRCZlQhk5NQ0IsXxgeM9gaJkuR7FpqUw/bTXGi5GMKOOLONZvE7ILUesfZH3
+         Tj+CG4VfvsLHdyZwzVdhJGPcmmh4Pg17qWHN9gEgQUXNzYWJE7ylTdJ/sAtCQVvkrYg9
+         C7y/MIVC7hzZxYJb/wfHJrwNGYwL5yJZEGaHz33nywNRsWr+5SD+D1nuPSJpsTjZNKVd
+         XJ9YFv1v/P2XlUToZeF6s1ArIB6vqOdYhEb07vV5rGe5BNPXw3qgd37P2NJcEERFyJnY
+         wZqA==
+X-Gm-Message-State: AOAM533GvLEiMzZH88skNb+dayngn+ramaxbwc/iNJi8bu3P8I1HXztR
+        C6nR4h0olVr+PH/QeBW80wKQL3bR1Aqw0scbQidBcnJhTH/TPw==
+X-Google-Smtp-Source: ABdhPJwHixuY4BY25/LApjenuCxsEqMvyZQIitDtOk4Mx5x6JQpUNYhkL601O0c52Dw4YwAFtYtpdEb4+TG5nbiNeRU=
+X-Received: by 2002:a17:907:6da6:: with SMTP id sb38mr8757776ejc.58.1644213596468;
+ Sun, 06 Feb 2022 21:59:56 -0800 (PST)
+MIME-Version: 1.0
+References: <a1b05cd5bee83778812c70e115e31b2e49cbad2a.1644139163.git.christophe.jaillet@wanadoo.fr>
+In-Reply-To: <a1b05cd5bee83778812c70e115e31b2e49cbad2a.1644139163.git.christophe.jaillet@wanadoo.fr>
+From:   Jinpu Wang <jinpu.wang@ionos.com>
+Date:   Mon, 7 Feb 2022 06:59:45 +0100
+Message-ID: <CAMGffEkGAtxraD_JmSntzXTkWEze55qjb8LCfarBSxUNZY57aw@mail.gmail.com>
+Subject: Re: [PATCH] block/rnbd: Remove a useless mutex
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     "Md. Haris Iqbal" <haris.iqbal@ionos.com>,
+        Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-block@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tyrone Ting <kfting@nuvoton.com>
+On Sun, Feb 6, 2022 at 10:19 AM Christophe JAILLET
+<christophe.jaillet@wanadoo.fr> wrote:
+>
+> According to lib/idr.c,
+>    The IDA handles its own locking.  It is safe to call any of the IDA
+>    functions without synchronisation in your code.
+>
+> so the 'ida_lock' mutex can just be removed.
+> It is here only to protect some ida_simple_get()/ida_simple_remove() calls.
+Hi Christophe,
 
-This patchset includes the following fixes:
 
-- Add dt-bindings description for NPCM845.
-- Bug fix for timeout calculation.
-- Better handling of spurious interrupts.
-- Fix for event type in slave mode.
-- Removal of own slave addresses [2:10].
-- Support for next gen BMC (NPCM845).
+ ida_simple_get() and ida_simple_remove() are deprecated. Use
+ ida_alloc() and ida_free() instead respectively.
 
-The NPCM I2C driver is tested on NPCM750 and NPCM845 evaluation boards.
+ While at it, can you convert the api too?
 
-Tali Perry (4):
-  i2c: npcm: Fix timeout calculation
-  i2c: npcm: Add tx complete counter
-  i2c: npcm: Handle spurious interrupts
-  i2c: npcm: Remove own slave addresses 2:10
+Thanks!
+Jinpu Wang
 
-Tyrone Ting (2):
-  dt-bindings: i2c: npcm: support NPCM845
-  i2c: npcm: Support NPCM845
-
- .../bindings/i2c/nuvoton,npcm7xx-i2c.yaml     |  21 +-
- drivers/i2c/busses/Kconfig                    |   8 +-
- drivers/i2c/busses/Makefile                   |   2 +-
- drivers/i2c/busses/i2c-npcm7xx.c              | 191 ++++++++++++------
- 4 files changed, 149 insertions(+), 73 deletions(-)
-
--- 
-2.17.1
-
+>
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
+>  drivers/block/rnbd/rnbd-clt.c | 5 -----
+>  1 file changed, 5 deletions(-)
+>
+> diff --git a/drivers/block/rnbd/rnbd-clt.c b/drivers/block/rnbd/rnbd-clt.c
+> index 9a880d559ab8..eaff369eff36 100644
+> --- a/drivers/block/rnbd/rnbd-clt.c
+> +++ b/drivers/block/rnbd/rnbd-clt.c
+> @@ -23,7 +23,6 @@ MODULE_LICENSE("GPL");
+>
+>  static int rnbd_client_major;
+>  static DEFINE_IDA(index_ida);
+> -static DEFINE_MUTEX(ida_lock);
+>  static DEFINE_MUTEX(sess_lock);
+>  static LIST_HEAD(sess_list);
+>
+> @@ -55,9 +54,7 @@ static void rnbd_clt_put_dev(struct rnbd_clt_dev *dev)
+>         if (!refcount_dec_and_test(&dev->refcount))
+>                 return;
+>
+> -       mutex_lock(&ida_lock);
+>         ida_simple_remove(&index_ida, dev->clt_device_id);
+> -       mutex_unlock(&ida_lock);
+>         kfree(dev->hw_queues);
+>         kfree(dev->pathname);
+>         rnbd_clt_put_sess(dev->sess);
+> @@ -1460,10 +1457,8 @@ static struct rnbd_clt_dev *init_dev(struct rnbd_clt_session *sess,
+>                 goto out_alloc;
+>         }
+>
+> -       mutex_lock(&ida_lock);
+>         ret = ida_simple_get(&index_ida, 0, 1 << (MINORBITS - RNBD_PART_BITS),
+>                              GFP_KERNEL);
+> -       mutex_unlock(&ida_lock);
+>         if (ret < 0) {
+>                 pr_err("Failed to initialize device '%s' from session %s, allocating idr failed, err: %d\n",
+>                        pathname, sess->sessname, ret);
+> --
+> 2.32.0
+>
