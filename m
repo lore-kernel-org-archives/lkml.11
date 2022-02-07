@@ -2,91 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41211C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E0C5C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 07:44:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236636AbiBGHnl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 02:43:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36854 "EHLO
+        id S235579AbiBGHnj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 02:43:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242505AbiBGHjd (ORCPT
+        with ESMTP id S244572AbiBGHie (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 02:39:33 -0500
-Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCA11C043181;
-        Sun,  6 Feb 2022 23:39:31 -0800 (PST)
-Received: by mail-il1-x12d.google.com with SMTP id z18so10328763ilp.3;
-        Sun, 06 Feb 2022 23:39:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=E6mGN2TJPnhfJHMvM5rybIz+H73xpBLlP90eQggs1YM=;
-        b=orksEyljccx/8YH8KVqrESdUXZnTMGugo1jS9kO7rQ1J+FtntbU2JNARxoqjWmeHil
-         8CWmas+UJoBytJ494KlQsiyu5cLKbgre4Hnz0zUYrtm2YrAS7js0yqTh250TilZ62hYN
-         dCafApU7zcsOvxsF8XvC7+HnKuAB9vAtxI+RpQHrR10o4nX/Wz4+b/9AWOiee03eOYYn
-         HMFE03iK10wHRS+Fj2vXL/QoMg/gylwzRExNijEAQfrs+NnZU/Rf4E2uAdIYwWzLloSz
-         t2uHZQr+2rOv2JMchCC0fzCTmJMq38tT1KshwQxZHve7U01LFrM2hs1eceEOFA3gq8fk
-         i86w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=E6mGN2TJPnhfJHMvM5rybIz+H73xpBLlP90eQggs1YM=;
-        b=23Ulj9axA8ma0iKkytoxa2czH4LoTvxNVlcIxdqy2nk+fpfebjf9l3knkmXlCQ2q1z
-         Ft6m6BC2lVSvFtdmb95YwUDwdllO3bWPivMHWqN84YtMAgfmodUNRHyC7FOdBUnLNF38
-         sHJZJB0JsLVlN6xFXThHCC4ul3xt0lU+7eHnSfVE+1L+6vLacTBZvx5rWjA74iWpAt5a
-         Au9rcZWGpDkiJtx236YGwRth+yFLPgu3gyolM6b9AlvXN9pu9MaRRnzAnHEWAX3qI0PC
-         Q6beK8bauIdj1s+9pIg1hIj3PJiLPp7xEYwoZgIz+6QmW0qY/1dBOPYGkJscwo4/O+sC
-         6vgg==
-X-Gm-Message-State: AOAM5313agyVvTFoHYQ17G5wFNzPXf3ds1yTVc5vwOnQXiCQmu77xoNZ
-        cczTGW15Sv5fKEj2OGO6K0/h0hflPPhL3V4wAKs=
-X-Google-Smtp-Source: ABdhPJyRIpQirwQp9aUyJ5eQHhLn+RmuIsV0E4eQpshzR02aOWAEx3MdUL63cUVM61IfbJb21QwUx3GHBS8pbTPfTnk=
-X-Received: by 2002:a05:6e02:1be9:: with SMTP id y9mr5454052ilv.221.1644219571201;
- Sun, 06 Feb 2022 23:39:31 -0800 (PST)
-MIME-Version: 1.0
-References: <1642003482-48935-1-git-send-email-wang.yong12@zte.com.cn>
- <CAMU9jJquKLfzLOjN3xTLHgPJFWONpeVgUDG-0vsf_8ia3r3ALQ@mail.gmail.com>
- <CAOH5QeBxnK-vOwVh9HNeu5PjMPJrHtWCyTK_y43iCbfzN+aoEg@mail.gmail.com>
- <CAOH5QeAka4QsLCOHaNK8NBp1BUFsu3HqEqiOhWOewabA58fVqw@mail.gmail.com>
- <CAMU9jJr4A0jsZGAqdOUTc-gBeshCgPAS=2Vvubs_kmsJSegzkQ@mail.gmail.com>
- <CAJy-Amne22+2cApoeEAGSc7d7ppSQja7pLX6SY_3+0wr8i3Asw@mail.gmail.com> <87y231qb0m.fsf@meer.lwn.net>
-In-Reply-To: <87y231qb0m.fsf@meer.lwn.net>
-From:   Alex Shi <seakeel@gmail.com>
-Date:   Mon, 7 Feb 2022 15:38:55 +0800
-Message-ID: <CAJy-AmmaOrhgOrkkoVWySgHMDPHcNTEmWDNPFzMHbvOLGeAsgg@mail.gmail.com>
-Subject: Re: [PATCH] docs/zh_CN: Update zh_CN/accounting/delay-accounting.rst
-To:     Jonathan Corbet <corbet@lwn.net>
-Cc:     teng sterling <sterlingteng@gmail.com>,
-        yong w <yongw.pur@gmail.com>, Alex Shi <alexs@kernel.org>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, wang.yong12@zte.com.cn,
-        Yang Yang <yang.yang29@zte.com.cn>
-Content-Type: text/plain; charset="UTF-8"
+        Mon, 7 Feb 2022 02:38:34 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C40F5C043184;
+        Sun,  6 Feb 2022 23:38:33 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 184751396;
+        Sun,  6 Feb 2022 23:30:52 -0800 (PST)
+Received: from e123648.arm.com (unknown [10.57.15.201])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id F2C1A3F73B;
+        Sun,  6 Feb 2022 23:30:49 -0800 (PST)
+From:   Lukasz Luba <lukasz.luba@arm.com>
+To:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
+Cc:     amit.kachhap@gmail.com, daniel.lezcano@linaro.org,
+        viresh.kumar@linaro.org, rafael@kernel.org, amitk@kernel.org,
+        rui.zhang@intel.com, dietmar.eggemann@arm.com, lukasz.luba@arm.com,
+        Pierre.Gondois@arm.com
+Subject: [PATCH 2/2] powercap: DTPM: Check Energy Model type for power values scale
+Date:   Mon,  7 Feb 2022 07:30:36 +0000
+Message-Id: <20220207073036.14901-3-lukasz.luba@arm.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220207073036.14901-1-lukasz.luba@arm.com>
+References: <20220207073036.14901-1-lukasz.luba@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 2:38 AM Jonathan Corbet <corbet@lwn.net> wrote:
->
-> Alex Shi <seakeel@gmail.com> writes:
->
-> > Right. The better way is asking Yang Yang to give a reviewed-by in
-> > mailing list next time. Otherwise, the private tag can't give a good
-> > support.
->
-> Agreed with that.
->
-> > for this patch. Reviewed-by: Alex Shi <alexs@kernel.org>
->
-> Another nice rule of thumb: put Reviewed-by on its own line so that b4
-> picks it up :)
+The Energy Model power values might be in an abstract scale. In such case
+it's safe to bail out during the registration, since the PowerCap
+framework supports only micro-Watts.
 
-Right!
-Thanks for reminding me!
+Signed-off-by: Lukasz Luba <lukasz.luba@arm.com>
+---
+ drivers/powercap/dtpm_cpu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
->
-> Patch applied, thanks.
->
-> jon
+diff --git a/drivers/powercap/dtpm_cpu.c b/drivers/powercap/dtpm_cpu.c
+index b740866b228d..e6bcde081de4 100644
+--- a/drivers/powercap/dtpm_cpu.c
++++ b/drivers/powercap/dtpm_cpu.c
+@@ -188,7 +188,7 @@ static int cpuhp_dtpm_cpu_online(unsigned int cpu)
+ 		return 0;
+ 
+ 	pd = em_cpu_get(cpu);
+-	if (!pd)
++	if (!pd || !(pd->flags & EM_PERF_DOMAIN_MILLIWATTS))
+ 		return -EINVAL;
+ 
+ 	dtpm_cpu = per_cpu(dtpm_per_cpu, cpu);
+-- 
+2.17.1
+
