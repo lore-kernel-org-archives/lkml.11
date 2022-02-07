@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA048C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4CC8C35271
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:18:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376368AbiBGLPG (ORCPT
+        id S1359769AbiBGLPA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:15:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49442 "EHLO
+        Mon, 7 Feb 2022 06:15:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346602AbiBGLLh (ORCPT
+        with ESMTP id S1345973AbiBGLLg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:11:37 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A521AC043181;
-        Mon,  7 Feb 2022 03:11:36 -0800 (PST)
+        Mon, 7 Feb 2022 06:11:36 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36B60C0401C0;
+        Mon,  7 Feb 2022 03:11:35 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 339E761380;
-        Mon,  7 Feb 2022 11:11:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FCA1C004E1;
-        Mon,  7 Feb 2022 11:11:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EFDA0B80EE8;
+        Mon,  7 Feb 2022 11:11:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10280C004E1;
+        Mon,  7 Feb 2022 11:11:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232295;
-        bh=2hFdd0xMDn5HK8j7fxPcaYKJ6tgdu/qrgj577VVnQKA=;
+        s=korg; t=1644232292;
+        bh=sQAKYqwJSmKj6ZF2oZqmaAeGNkm8va4f8ABQg75aHic=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iu4lBDEks9cqopLV99xIpMACL0IDjAPoZhifL5TS/RpQE9q61AeerP8f1Uq/rZvu5
-         FKIeJetdGYqpJ2R07l8DMscyLd8j3dlA2AVNUJzWPmhWK0Q2KNTA/AEal60q9Q3PMh
-         dWKP5JF6jDVoG2goFWx51XHpJ50YNOWs4j1vIGnk=
+        b=iJNw19jWVPVs1cptEaDUYc6VL1dC15MeXv2I7nWXeSWWJmicrXk7FmD1ZJaWIx/5J
+         lFAoqsg3YxZ9XKEfsY2S0Ukfvbv26X0G1YvdXxV+H3LtR92tuqP3aGYCsj5mm72+33
+         /iGtRcfvf0guHAJ8pkCE24rItJzoo9VvCnjfJgoo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jianguo Wu <wujianguo@chinatelecom.cn>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 4.14 31/69] net-procfs: show net devices bound packet types
-Date:   Mon,  7 Feb 2022 12:05:53 +0100
-Message-Id: <20220207103756.643500459@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Pavankumar Kondeti <quic_pkondeti@quicinc.com>
+Subject: [PATCH 4.14 13/69] usb: gadget: f_sourcesink: Fix isoc transfer for USB_SPEED_SUPER_PLUS
+Date:   Mon,  7 Feb 2022 12:05:35 +0100
+Message-Id: <20220207103756.052722060@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103755.604121441@linuxfoundation.org>
 References: <20220207103755.604121441@linuxfoundation.org>
@@ -49,112 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jianguo Wu <wujianguo@chinatelecom.cn>
+From: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
 
-commit 1d10f8a1f40b965d449e8f2d5ed7b96a7c138b77 upstream.
+commit 904edf8aeb459697129be5fde847e2a502f41fd9 upstream.
 
-After commit:7866a621043f ("dev: add per net_device packet type chains"),
-we can not get packet types that are bound to a specified net device by
-/proc/net/ptype, this patch fix the regression.
+Currently when gadget enumerates in super speed plus, the isoc
+endpoint request buffer size is not calculated correctly. Fix
+this by checking the gadget speed against USB_SPEED_SUPER_PLUS
+and update the request buffer size.
 
-Run "tcpdump -i ens192 udp -nns0" Before and after apply this patch:
-
-Before:
-  [root@localhost ~]# cat /proc/net/ptype
-  Type Device      Function
-  0800          ip_rcv
-  0806          arp_rcv
-  86dd          ipv6_rcv
-
-After:
-  [root@localhost ~]# cat /proc/net/ptype
-  Type Device      Function
-  ALL  ens192   tpacket_rcv
-  0800          ip_rcv
-  0806          arp_rcv
-  86dd          ipv6_rcv
-
-v1 -> v2:
-  - fix the regression rather than adding new /proc API as
-    suggested by Stephen Hemminger.
-
-Fixes: 7866a621043f ("dev: add per net_device packet type chains")
-Signed-off-by: Jianguo Wu <wujianguo@chinatelecom.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 90c4d05780d4 ("usb: fix various gadgets null ptr deref on 10gbps cabling.")
+Cc: stable <stable@vger.kernel.org>
+Signed-off-by: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
+Link: https://lore.kernel.org/r/1642820602-20619-1-git-send-email-quic_pkondeti@quicinc.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/core/net-procfs.c |   35 ++++++++++++++++++++++++++++++++---
- 1 file changed, 32 insertions(+), 3 deletions(-)
+ drivers/usb/gadget/function/f_sourcesink.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/net/core/net-procfs.c
-+++ b/net/core/net-procfs.c
-@@ -209,12 +209,23 @@ static const struct file_operations soft
- 	.release = seq_release,
- };
+--- a/drivers/usb/gadget/function/f_sourcesink.c
++++ b/drivers/usb/gadget/function/f_sourcesink.c
+@@ -587,6 +587,7 @@ static int source_sink_start_ep(struct f
  
--static void *ptype_get_idx(loff_t pos)
-+static void *ptype_get_idx(struct seq_file *seq, loff_t pos)
- {
-+	struct list_head *ptype_list = NULL;
- 	struct packet_type *pt = NULL;
-+	struct net_device *dev;
- 	loff_t i = 0;
- 	int t;
- 
-+	for_each_netdev_rcu(seq_file_net(seq), dev) {
-+		ptype_list = &dev->ptype_all;
-+		list_for_each_entry_rcu(pt, ptype_list, list) {
-+			if (i == pos)
-+				return pt;
-+			++i;
-+		}
-+	}
-+
- 	list_for_each_entry_rcu(pt, &ptype_all, list) {
- 		if (i == pos)
- 			return pt;
-@@ -235,22 +246,40 @@ static void *ptype_seq_start(struct seq_
- 	__acquires(RCU)
- {
- 	rcu_read_lock();
--	return *pos ? ptype_get_idx(*pos - 1) : SEQ_START_TOKEN;
-+	return *pos ? ptype_get_idx(seq, *pos - 1) : SEQ_START_TOKEN;
- }
- 
- static void *ptype_seq_next(struct seq_file *seq, void *v, loff_t *pos)
- {
-+	struct net_device *dev;
- 	struct packet_type *pt;
- 	struct list_head *nxt;
- 	int hash;
- 
- 	++*pos;
- 	if (v == SEQ_START_TOKEN)
--		return ptype_get_idx(0);
-+		return ptype_get_idx(seq, 0);
- 
- 	pt = v;
- 	nxt = pt->list.next;
-+	if (pt->dev) {
-+		if (nxt != &pt->dev->ptype_all)
-+			goto found;
-+
-+		dev = pt->dev;
-+		for_each_netdev_continue_rcu(seq_file_net(seq), dev) {
-+			if (!list_empty(&dev->ptype_all)) {
-+				nxt = dev->ptype_all.next;
-+				goto found;
-+			}
-+		}
-+
-+		nxt = ptype_all.next;
-+		goto ptype_all;
-+	}
-+
- 	if (pt->type == htons(ETH_P_ALL)) {
-+ptype_all:
- 		if (nxt != &ptype_all)
- 			goto found;
- 		hash = 0;
+ 	if (is_iso) {
+ 		switch (speed) {
++		case USB_SPEED_SUPER_PLUS:
+ 		case USB_SPEED_SUPER:
+ 			size = ss->isoc_maxpacket *
+ 					(ss->isoc_mult + 1) *
 
 
