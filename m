@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FA18C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85917C3526C
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:58:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388568AbiBGLn7 (ORCPT
+        id S1388598AbiBGLoC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:43:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45936 "EHLO
+        Mon, 7 Feb 2022 06:44:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385802AbiBGLcj (ORCPT
+        with ESMTP id S1384248AbiBGL0e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:32:39 -0500
+        Mon, 7 Feb 2022 06:26:34 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 680D5C043181;
-        Mon,  7 Feb 2022 03:32:38 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74049C0401C9;
+        Mon,  7 Feb 2022 03:25:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0432A60A67;
-        Mon,  7 Feb 2022 11:32:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF73BC004E1;
-        Mon,  7 Feb 2022 11:32:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 12DFC6135A;
+        Mon,  7 Feb 2022 11:25:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4EFEC004E1;
+        Mon,  7 Feb 2022 11:25:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233557;
-        bh=JE/jV0p/vLig4xTmzfQk4lQFfn7O51vh4mZW9DF20YE=;
+        s=korg; t=1644233154;
+        bh=Qt3S7UX4NFNycD6cNDXk6cbCpdwYlASoMUr9U9g1V+Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cPi1YNayf5ZDyviLTPPiUL4S/N4NrqR/zjg3rjdI633wRdB172qlVMC+a8UgN1qUX
-         ePFT+LkAt3htfgpMnJ3NU6ioB9OtnCZJldboolpYrLO+jvdjk14JWEB/XeJce52haS
-         ZYMibY4Fo3U61u40zhBk+zsCoKymrZj4TWCXx6rg=
+        b=W4WWYzWDkMpwDgSzx8jhAT8UsuUdjTI8glJOnDhJjXnJvoKkPJqq5g9mX0RItQdCN
+         NHBz4kVpWBqvF6B4NLR+RSOOhDoTWgXE9dYd2wV5PyKnoKRT0ROOU+W830GmCQvyz3
+         pdJGU8CV+jyAQIG4FknXYQOmf5kaoKO3NfA9kGCQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nick Lopez <github@glowingmonkey.org>,
-        Ilia Mirkin <imirkin@alum.mit.edu>,
-        Karol Herbst <kherbst@redhat.com>
-Subject: [PATCH 5.16 022/126] drm/nouveau: fix off by one in BIOS boundary checking
-Date:   Mon,  7 Feb 2022 12:05:53 +0100
-Message-Id: <20220207103804.925676047@linuxfoundation.org>
+        stable@vger.kernel.org, Christian Lachner <gladiac@gmail.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.15 016/110] ALSA: hda/realtek: Fix silent output on Gigabyte X570 Aorus Xtreme after reboot from Windows
+Date:   Mon,  7 Feb 2022 12:05:49 +0100
+Message-Id: <20220207103802.814239221@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
-References: <20220207103804.053675072@linuxfoundation.org>
+In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
+References: <20220207103802.280120990@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,42 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nick Lopez <github@glowingmonkey.org>
+From: Christian Lachner <gladiac@gmail.com>
 
-commit 1b777d4d9e383d2744fc9b3a09af6ec1893c8b1a upstream.
+commit ea3541961376f733373839cc90493aafa8a7f733 upstream.
 
-Bounds checking when parsing init scripts embedded in the BIOS reject
-access to the last byte. This causes driver initialization to fail on
-Apple eMac's with GeForce 2 MX GPUs, leaving the system with no working
-console.
+This commit switches the Gigabyte X570 Aorus Xtreme from using the
+ALC1220_FIXUP_CLEVO_P950 to the ALC1220_FIXUP_GB_X570 quirk. This fixes
+the no-audio after reboot from windows problem.
 
-This is probably only seen on OpenFirmware machines like PowerPC Macs
-because the BIOS image provided by OF is only the used parts of the ROM,
-not a power-of-two blocks read from PCI directly so PCs always have
-empty bytes at the end that are never accessed.
-
-Signed-off-by: Nick Lopez <github@glowingmonkey.org>
-Fixes: 4d4e9907ff572 ("drm/nouveau/bios: guard against out-of-bounds accesses to image")
-Cc: <stable@vger.kernel.org> # v4.10+
-Reviewed-by: Ilia Mirkin <imirkin@alum.mit.edu>
-Reviewed-by: Karol Herbst <kherbst@redhat.com>
-Signed-off-by: Karol Herbst <kherbst@redhat.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220122081906.2633061-1-github@glowingmonkey.org
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=205275
+Signed-off-by: Christian Lachner <gladiac@gmail.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220129113243.93068-4-gladiac@gmail.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/nouveau/nvkm/subdev/bios/base.c |    2 +-
+ sound/pci/hda/patch_realtek.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/nouveau/nvkm/subdev/bios/base.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/subdev/bios/base.c
-@@ -38,7 +38,7 @@ nvbios_addr(struct nvkm_bios *bios, u32
- 		*addr += bios->imaged_addr;
- 	}
- 
--	if (unlikely(*addr + size >= bios->size)) {
-+	if (unlikely(*addr + size > bios->size)) {
- 		nvkm_error(&bios->subdev, "OOB %d %08x %08x\n", size, p, *addr);
- 		return false;
- 	}
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -2586,7 +2586,7 @@ static const struct snd_pci_quirk alc882
+ 	SND_PCI_QUIRK(0x1458, 0xa002, "Gigabyte EP45-DS3/Z87X-UD3H", ALC889_FIXUP_FRONT_HP_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1458, 0xa0b8, "Gigabyte AZ370-Gaming", ALC1220_FIXUP_GB_DUAL_CODECS),
+ 	SND_PCI_QUIRK(0x1458, 0xa0cd, "Gigabyte X570 Aorus Master", ALC1220_FIXUP_GB_X570),
+-	SND_PCI_QUIRK(0x1458, 0xa0ce, "Gigabyte X570 Aorus Xtreme", ALC1220_FIXUP_CLEVO_P950),
++	SND_PCI_QUIRK(0x1458, 0xa0ce, "Gigabyte X570 Aorus Xtreme", ALC1220_FIXUP_GB_X570),
+ 	SND_PCI_QUIRK(0x1458, 0xa0d5, "Gigabyte X570S Aorus Master", ALC1220_FIXUP_GB_X570),
+ 	SND_PCI_QUIRK(0x1462, 0x11f7, "MSI-GE63", ALC1220_FIXUP_CLEVO_P950),
+ 	SND_PCI_QUIRK(0x1462, 0x1228, "MSI-GP63", ALC1220_FIXUP_CLEVO_P950),
 
 
