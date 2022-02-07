@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62540C35280
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D373CC35295
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:13:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354944AbiBGLM1 (ORCPT
+        id S1355237AbiBGLMg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:12:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48046 "EHLO
+        Mon, 7 Feb 2022 06:12:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355389AbiBGLIc (ORCPT
+        with ESMTP id S1355431AbiBGLIp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:08:32 -0500
+        Mon, 7 Feb 2022 06:08:45 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D029EC043188;
-        Mon,  7 Feb 2022 03:08:31 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8B8FC043181;
+        Mon,  7 Feb 2022 03:08:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5CED0611AA;
-        Mon,  7 Feb 2022 11:08:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37058C004E1;
-        Mon,  7 Feb 2022 11:08:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 487AF61261;
+        Mon,  7 Feb 2022 11:08:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CDF5C004E1;
+        Mon,  7 Feb 2022 11:08:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232110;
-        bh=7vHquFwOPFGNQcR3qdz5Kr4WxcV90rTeiXlqPExMHy4=;
+        s=korg; t=1644232123;
+        bh=iFpyBCA80wzGdZC05LxaUXL/FFuv4LJKk5lOYS368ZE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0XqqfSFck9MJxx5ucxrPbgGsn1xf8xc+gSMFrPUlwAxw+0whkmxtXosyaUKHpKeGT
-         0RSDE7PkFpboviXpgQtJMB8/inw7vMpANEEtk7b1uVVwFZxicz10iWiw3wlHdC0Ckl
-         U74mztbE27gRgRJD5/niIDUvBDw2HtUzeitR7GIg=
+        b=zo8tMhukNUSIyeRk0N4itL2exK3G6rLktom2Rmn4EcckHLRKjO/xhkzsEk+THiKgr
+         nnXb4h3AD2jAdmP5zhC79whczFvmF5m/Jn+VJDR6QjN/rsqDSIqyrRufs8xtJAmcpt
+         iyUijJ33wVL8D0W2wVCWa2Tt2gve0yfoBNQKg+zA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>
-Subject: [PATCH 4.9 20/48] NFSv4: nfs_atomic_open() can race when looking up a non-regular file
-Date:   Mon,  7 Feb 2022 12:05:53 +0100
-Message-Id: <20220207103753.000309508@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 24/48] ipv4: raw: lock the socket in raw_bind()
+Date:   Mon,  7 Feb 2022 12:05:57 +0100
+Message-Id: <20220207103753.124095623@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103752.341184175@linuxfoundation.org>
 References: <20220207103752.341184175@linuxfoundation.org>
@@ -50,40 +51,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Eric Dumazet <edumazet@google.com>
 
-commit 1751fc1db36f6f411709e143d5393f92d12137a9 upstream.
+[ Upstream commit 153a0d187e767c68733b8e9f46218eb1f41ab902 ]
 
-If the file type changes back to being a regular file on the server
-between the failed OPEN and our LOOKUP, then we need to re-run the OPEN.
+For some reason, raw_bind() forgot to lock the socket.
 
-Fixes: 0dd2b474d0b6 ("nfs: implement i_op->atomic_open()")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+BUG: KCSAN: data-race in __ip4_datagram_connect / raw_bind
+
+write to 0xffff8881170d4308 of 4 bytes by task 5466 on cpu 0:
+ raw_bind+0x1b0/0x250 net/ipv4/raw.c:739
+ inet_bind+0x56/0xa0 net/ipv4/af_inet.c:443
+ __sys_bind+0x14b/0x1b0 net/socket.c:1697
+ __do_sys_bind net/socket.c:1708 [inline]
+ __se_sys_bind net/socket.c:1706 [inline]
+ __x64_sys_bind+0x3d/0x50 net/socket.c:1706
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+read to 0xffff8881170d4308 of 4 bytes by task 5468 on cpu 1:
+ __ip4_datagram_connect+0xb7/0x7b0 net/ipv4/datagram.c:39
+ ip4_datagram_connect+0x2a/0x40 net/ipv4/datagram.c:89
+ inet_dgram_connect+0x107/0x190 net/ipv4/af_inet.c:576
+ __sys_connect_file net/socket.c:1900 [inline]
+ __sys_connect+0x197/0x1b0 net/socket.c:1917
+ __do_sys_connect net/socket.c:1927 [inline]
+ __se_sys_connect net/socket.c:1924 [inline]
+ __x64_sys_connect+0x3d/0x50 net/socket.c:1924
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+value changed: 0x00000000 -> 0x0003007f
+
+Reported by Kernel Concurrency Sanitizer on:
+CPU: 1 PID: 5468 Comm: syz-executor.5 Not tainted 5.17.0-rc1-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/dir.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ net/ipv4/raw.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/fs/nfs/dir.c
-+++ b/fs/nfs/dir.c
-@@ -1607,12 +1607,17 @@ no_open:
- 		if ((lookup_flags & LOOKUP_DIRECTORY) && inode &&
- 		    !S_ISDIR(inode->i_mode))
- 			res = ERR_PTR(-ENOTDIR);
-+		else if (inode && S_ISREG(inode->i_mode))
-+			res = ERR_PTR(-EOPENSTALE);
- 	} else if (!IS_ERR(res)) {
- 		inode = d_inode(res);
- 		if ((lookup_flags & LOOKUP_DIRECTORY) && inode &&
- 		    !S_ISDIR(inode->i_mode)) {
- 			dput(res);
- 			res = ERR_PTR(-ENOTDIR);
-+		} else if (inode && S_ISREG(inode->i_mode)) {
-+			dput(res);
-+			res = ERR_PTR(-EOPENSTALE);
- 		}
- 	}
- 	if (switched) {
+diff --git a/net/ipv4/raw.c b/net/ipv4/raw.c
+index af75c0a8238ef..88ad1b6b38029 100644
+--- a/net/ipv4/raw.c
++++ b/net/ipv4/raw.c
+@@ -706,6 +706,7 @@ static int raw_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len)
+ 	int ret = -EINVAL;
+ 	int chk_addr_ret;
+ 
++	lock_sock(sk);
+ 	if (sk->sk_state != TCP_CLOSE || addr_len < sizeof(struct sockaddr_in))
+ 		goto out;
+ 	chk_addr_ret = inet_addr_type(sock_net(sk), addr->sin_addr.s_addr);
+@@ -718,7 +719,9 @@ static int raw_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len)
+ 		inet->inet_saddr = 0;  /* Use device */
+ 	sk_dst_reset(sk);
+ 	ret = 0;
+-out:	return ret;
++out:
++	release_sock(sk);
++	return ret;
+ }
+ 
+ /*
+-- 
+2.34.1
+
 
 
