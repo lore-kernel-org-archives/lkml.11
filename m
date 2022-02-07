@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4920C35275
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8D6BC4707A
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390663AbiBGL5M (ORCPT
+        id S1382097AbiBGL4z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:57:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44654 "EHLO
+        Mon, 7 Feb 2022 06:56:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385224AbiBGLbY (ORCPT
+        with ESMTP id S1385190AbiBGLbS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:31:24 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73786C02C461;
-        Mon,  7 Feb 2022 03:29:43 -0800 (PST)
+        Mon, 7 Feb 2022 06:31:18 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E0C8C03FEE0;
+        Mon,  7 Feb 2022 03:29:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 119A260A69;
-        Mon,  7 Feb 2022 11:29:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2CFBC004E1;
-        Mon,  7 Feb 2022 11:29:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 82D126077B;
+        Mon,  7 Feb 2022 11:29:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66D58C004E1;
+        Mon,  7 Feb 2022 11:29:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233382;
-        bh=qVNKeck0zmBC2NlbwYsQU2xFOx29BT7tvNk9RAbYvl8=;
+        s=korg; t=1644233373;
+        bh=GS6MBhstiZFiTAX47S9HOYPrRvE1rIgmTK6Ds/8qu4Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lyIW1SVLv4iMkO1aBzTC7qAJ2XPhBJzLtEGc0ei0+2eJPAsrlOSsFwUBrhNsmgExi
-         dOqsLV2z5XYofUAZncWAT0wZhAha8ERoF2IoiGtMJly534aJ9P/wFAizYqLayXn/Oo
-         YKrYG9JBOlIDpVon49sM5NQOEWOIWz0y2yio6lxM=
+        b=vz2MI98HlH63Wyrq7duaOcQ/cViXIuzS6ixFxzTiLFsYy6OWrUdS59Onaq/QQU5d8
+         EyOHX+pjoSS9Mjk5favPOtchc0b87Jt7GuU5TqBoiA0lMvV9sivU9qW5eTldrKIAvc
+         +zkcd8nzcZ3I0QMzWdS1eA5o5LAetDnPdWfo9IcY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Waiman Long <longman@redhat.com>,
-        Phil Auld <pauld@redhat.com>, Tejun Heo <tj@kernel.org>
-Subject: [PATCH 5.15 105/110] cgroup/cpuset: Fix "suspicious RCU usage" lockdep warning
-Date:   Mon,  7 Feb 2022 12:07:18 +0100
-Message-Id: <20220207103805.944986607@linuxfoundation.org>
+        stable@vger.kernel.org, Haiyue Wang <haiyue.wang@intel.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.15 085/110] gve: fix the wrong AdminQ buffer queue index check
+Date:   Mon,  7 Feb 2022 12:06:58 +0100
+Message-Id: <20220207103805.285730669@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
 References: <20220207103802.280120990@linuxfoundation.org>
@@ -49,60 +49,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Waiman Long <longman@redhat.com>
+From: Haiyue Wang <haiyue.wang@intel.com>
 
-commit 2bdfd2825c9662463371e6691b1a794e97fa36b4 upstream.
+commit 1f84a9450d75e08af70d9e2f2d5e1c0ac0c881d2 upstream.
 
-It was found that a "suspicious RCU usage" lockdep warning was issued
-with the rcu_read_lock() call in update_sibling_cpumasks().  It is
-because the update_cpumasks_hier() function may sleep. So we have
-to release the RCU lock, call update_cpumasks_hier() and reacquire
-it afterward.
+The 'tail' and 'head' are 'unsigned int' type free-running count, when
+'head' is overflow, the 'int i (= tail) < u32 head' will be false:
 
-Also add a percpu_rwsem_assert_held() in update_sibling_cpumasks()
-instead of stating that in the comment.
+Only '- loop 0: idx = 63' result is shown, so it needs to use 'int' type
+to compare, it can handle the overflow correctly.
 
-Fixes: 4716909cc5c5 ("cpuset: Track cpusets that use parent's effective_cpus")
-Signed-off-by: Waiman Long <longman@redhat.com>
-Tested-by: Phil Auld <pauld@redhat.com>
-Reviewed-by: Phil Auld <pauld@redhat.com>
-Signed-off-by: Tejun Heo <tj@kernel.org>
+typedef uint32_t u32;
+
+int main()
+{
+        u32 tail, head;
+        int stail, shead;
+        int i, loop;
+
+        tail = 0xffffffff;
+        head = 0x00000000;
+
+        for (i = tail, loop = 0; i < head; i++) {
+                unsigned int idx = i & 63;
+
+                printf("+ loop %d: idx = %u\n", loop++, idx);
+        }
+
+        stail = tail;
+        shead = head;
+        for (i = stail, loop = 0; i < shead; i++) {
+                unsigned int idx = i & 63;
+
+                printf("- loop %d: idx = %u\n", loop++, idx);
+        }
+
+        return 0;
+}
+
+Fixes: 5cdad90de62c ("gve: Batch AQ commands for creating and destroying queues.")
+Signed-off-by: Haiyue Wang <haiyue.wang@intel.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/cgroup/cpuset.c |   10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/net/ethernet/google/gve/gve_adminq.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/kernel/cgroup/cpuset.c
-+++ b/kernel/cgroup/cpuset.c
-@@ -1512,10 +1512,15 @@ static void update_sibling_cpumasks(stru
- 	struct cpuset *sibling;
- 	struct cgroup_subsys_state *pos_css;
+--- a/drivers/net/ethernet/google/gve/gve_adminq.c
++++ b/drivers/net/ethernet/google/gve/gve_adminq.c
+@@ -281,7 +281,7 @@ static int gve_adminq_parse_err(struct g
+  */
+ static int gve_adminq_kick_and_wait(struct gve_priv *priv)
+ {
+-	u32 tail, head;
++	int tail, head;
+ 	int i;
  
-+	percpu_rwsem_assert_held(&cpuset_rwsem);
-+
- 	/*
- 	 * Check all its siblings and call update_cpumasks_hier()
- 	 * if their use_parent_ecpus flag is set in order for them
- 	 * to use the right effective_cpus value.
-+	 *
-+	 * The update_cpumasks_hier() function may sleep. So we have to
-+	 * release the RCU read lock before calling it.
- 	 */
- 	rcu_read_lock();
- 	cpuset_for_each_child(sibling, pos_css, parent) {
-@@ -1523,8 +1528,13 @@ static void update_sibling_cpumasks(stru
- 			continue;
- 		if (!sibling->use_parent_ecpus)
- 			continue;
-+		if (!css_tryget_online(&sibling->css))
-+			continue;
- 
-+		rcu_read_unlock();
- 		update_cpumasks_hier(sibling, tmp);
-+		rcu_read_lock();
-+		css_put(&sibling->css);
- 	}
- 	rcu_read_unlock();
- }
+ 	tail = ioread32be(&priv->reg_bar0->adminq_event_counter);
 
 
