@@ -2,113 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A18A8C35271
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 09:51:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E0B7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 10:10:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349534AbiBGJuA (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 04:50:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37844 "EHLO
+        id S243962AbiBGKHr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 05:07:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241300AbiBGJs6 (ORCPT
+        with ESMTP id S1353161AbiBGJvi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 04:48:58 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4295EC043181;
-        Mon,  7 Feb 2022 01:48:57 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B69861214;
-        Mon,  7 Feb 2022 09:48:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26145C004E1;
-        Mon,  7 Feb 2022 09:48:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644227335;
-        bh=mD9mtrxe++NaQ4w8np5HRlq449OvwX0lapT6hefnHms=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=DYl3gk8aTzu2bMYi4yOVAO0O5/wSE8m+Ruwq5cshoZ3i2OYncEBpWP6jQrChMPf+u
-         ia/DIS0LOswizYAQiipJGWv7cQsjEKcUmqBdnCUbUxcRWH5CONceCp6b+LBajVLIbv
-         owfoKvOPB+wUOj/sXmW+H8ZxYdVBFV/jjSH4gNjaeswTo4hwpOKKsghoBUVuZaYaNG
-         f91nhaoNc/vHI3dVkQVIEsxFE3zpxGQ9Q/f0y9YI16w+/y9eZpB54HW+fCUvWPWA3z
-         j16DfYZAbwmvsYpF1gVddW5ZrRspt5mjieAZB+w7cBbqgxG4SBuLNNoe+pkn897UN7
-         BduOq6e4fdsyw==
-Message-ID: <b4e83e9a-306c-ca80-e977-05bf23b91cfa@kernel.org>
-Date:   Mon, 7 Feb 2022 03:48:54 -0600
+        Mon, 7 Feb 2022 04:51:38 -0500
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEFD8C0401EB;
+        Mon,  7 Feb 2022 01:51:29 -0800 (PST)
+Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21778x1Q010779;
+        Mon, 7 Feb 2022 10:15:19 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=Kkqvjurj574bD6gSsyenZFngomf2r4egE+kYpU9wKEE=;
+ b=5RJjR3tqCnt97bpxcyy+Jfq4LrcLWOw7zRdNgCz1Ly3ZIjEmiRymDYVlrTLwMfELyrVA
+ 05sHR8zK2e0GD7vh1ifN4HtvOW4rQCcNJO2zdhiD1lGgjTt1Dzflk4gd7rSSZGySh9rw
+ pLqYAbECREKnRHD/01y2o+jF4npbtUJjkMJtI2fedNCpAtz0JaGjdY5U4qllZLYZ+bXa
+ ryDbvT+5g8xlDnJt0x8jNTx72yxHFJwdYVdNkW31n3ao9ZVjgDxoz0yD0RoRQv81HWlW
+ U+6tk2udkrqD7c74cqFaqgCIcw7/d+MnF8NqcWJmbh+zQE5xWw71L10Myu9t4vObzr9g PQ== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3e2fg5k7pr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 10:15:19 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 1227F10002A;
+        Mon,  7 Feb 2022 10:15:17 +0100 (CET)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id E30B9212FDF;
+        Mon,  7 Feb 2022 10:15:17 +0100 (CET)
+Received: from [10.48.0.252] (10.75.127.46) by SFHDAG2NODE2.st.com
+ (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Mon, 7 Feb
+ 2022 10:15:16 +0100
+Message-ID: <6d60031b-2164-bdda-1048-ec047d9bd59e@foss.st.com>
+Date:   Mon, 7 Feb 2022 10:15:15 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH] ARM: socfpga: fix missing RESET_CONTROLLER
+Subject: Re: [PATCH 0/2] ARM: dts: stm32: remove timer duplicate unit-address
+ on stm32f4 series
 Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Nathan Chancellor <nathan@kernel.org>,
-        kernel test robot <lkp@intel.com>, stable@vger.kernel.org
-References: <20220207084404.212017-1-krzysztof.kozlowski@canonical.com>
- <b5c87b7d-fdb4-2288-5c21-c666fdd40005@kernel.org>
- <a655b739-f6f5-3e68-4e1a-4be76ebdaef5@canonical.com>
-From:   Dinh Nguyen <dinguyen@kernel.org>
-In-Reply-To: <a655b739-f6f5-3e68-4e1a-4be76ebdaef5@canonical.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Fabrice Gasnier <fabrice.gasnier@foss.st.com>, <robh+dt@kernel.org>
+CC:     <olivier.moysan@foss.st.com>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>
+References: <1638959596-6656-1-git-send-email-fabrice.gasnier@foss.st.com>
+From:   Alexandre TORGUE <alexandre.torgue@foss.st.com>
+In-Reply-To: <1638959596-6656-1-git-send-email-fabrice.gasnier@foss.st.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.75.127.46]
+X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-07_03,2022-02-07_01,2021-12-02_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Fabrice
 
-
-On 2/7/22 03:47, Krzysztof Kozlowski wrote:
-> On 07/02/2022 10:45, Dinh Nguyen wrote:
->>
->>
->> On 2/7/22 02:44, Krzysztof Kozlowski wrote:
->>> The SocFPGA machine since commit b3ca9888f35f ("reset: socfpga: add an
->>> early reset driver for SoCFPGA") uses reset controller, so it should
->>> select RESET_CONTROLLER explicitly.  Selecting ARCH_HAS_RESET_CONTROLLER
->>> is not enough because it affects only default choice still allowing a
->>> non-buildable configuration:
->>>
->>>     /usr/bin/arm-linux-gnueabi-ld: arch/arm/mach-socfpga/socfpga.o: in function `socfpga_init_irq':
->>>     arch/arm/mach-socfpga/socfpga.c:56: undefined reference to `socfpga_reset_init'
->>>
->>> Reported-by: kernel test robot <lkp@intel.com>
->>> Cc: <stable@vger.kernel.org>
->>> Fixes: b3ca9888f35f ("reset: socfpga: add an early reset driver for SoCFPGA")
->>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
->>> ---
->>>    arch/arm/mach-socfpga/Kconfig | 2 ++
->>>    1 file changed, 2 insertions(+)
->>>
->>> diff --git a/arch/arm/mach-socfpga/Kconfig b/arch/arm/mach-socfpga/Kconfig
->>> index 43ddec677c0b..594edf9bbea4 100644
->>> --- a/arch/arm/mach-socfpga/Kconfig
->>> +++ b/arch/arm/mach-socfpga/Kconfig
->>> @@ -2,6 +2,7 @@
->>>    menuconfig ARCH_INTEL_SOCFPGA
->>>    	bool "Altera SOCFPGA family"
->>>    	depends on ARCH_MULTI_V7
->>> +	select ARCH_HAS_RESET_CONTROLLER
->>>    	select ARCH_SUPPORTS_BIG_ENDIAN
->>>    	select ARM_AMBA
->>>    	select ARM_GIC
->>> @@ -18,6 +19,7 @@ menuconfig ARCH_INTEL_SOCFPGA
->>>    	select PL310_ERRATA_727915
->>>    	select PL310_ERRATA_753970 if PL310
->>>    	select PL310_ERRATA_769419
->>> +	select RESET_CONTROLLER
->>>    
->>>    if ARCH_INTEL_SOCFPGA
->>>    config SOCFPGA_SUSPEND
->>
->> Acked-By: Dinh Nguyen <dinguyen@kernel.org>
+On 12/8/21 11:33, Fabrice Gasnier wrote:
+> Remove a series of warnings seen when building with W=1, like:
+> Warning (unique_unit_address): /soc/timer@40000c00: duplicate unit-address
+> (also used in node /soc/timers@40000c00)
 > 
-> Hi Dinh,
+> This approach is based on some discussions[1], to restructure the dtsi
+> and dts files.
+> [1] https://lore.kernel.org/linux-arm-kernel/Yaf4jiZIp8+ndaXs@robh.at.kernel.org/
 > 
-> I was expecting you will pick it up. If you only ack, who is going to
-> take it? Shall I send it directly to soc@?
+> Fabrice Gasnier (2):
+>    ARM: dts: stm32: remove some timer duplicate unit-address on stm32f4
+>      series
+>    ARM: dts: stm32: remove timer5 duplicate unit-address on stm32f4
+>      series
+> 
+>   arch/arm/boot/dts/stm32429i-eval.dts  | 12 +++++++++
+>   arch/arm/boot/dts/stm32f429-disco.dts | 12 +++++++++
+>   arch/arm/boot/dts/stm32f429.dtsi      | 47 -----------------------------------
+>   arch/arm/boot/dts/stm32f469-disco.dts | 12 +++++++++
+>   4 files changed, 36 insertions(+), 47 deletions(-)
 > 
 
-Ok...I'll pick it up.
+Series applied on stm32-next.
 
-Dinh
+Thanks
+Alex
