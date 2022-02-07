@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1425EC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43F8AC433F5
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:26:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383130AbiBGLVk (ORCPT
+        id S1383156AbiBGLVm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:21:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54146 "EHLO
+        Mon, 7 Feb 2022 06:21:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379040AbiBGLP7 (ORCPT
+        with ESMTP id S1379072AbiBGLQB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:15:59 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7D7AC0401C1;
-        Mon,  7 Feb 2022 03:15:55 -0800 (PST)
+        Mon, 7 Feb 2022 06:16:01 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADD30C0401C1;
+        Mon,  7 Feb 2022 03:16:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A8756113B;
-        Mon,  7 Feb 2022 11:15:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 236CEC004E1;
-        Mon,  7 Feb 2022 11:15:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 14AABB80EC3;
+        Mon,  7 Feb 2022 11:15:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 385B0C004E1;
+        Mon,  7 Feb 2022 11:15:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232554;
-        bh=LFmkYpZoYitqpsxbqK/+Yq6+QTUAR/LsvVhg5PB8eQU=;
+        s=korg; t=1644232557;
+        bh=rUMuAcN2LGESDpLVqYoXT1cCa4WWguHXuJ2RczFMAsk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=csFNy1zUdlz/y3LyPUqK9+vUBvrIb5SzykyVpvwxHut4AxlkkDU3Z30d+BVrdrfOW
-         xPf5YRu4hHGXz+gY9eGRRty+RtIyVUR0ST7/32NlgPQb515vSzZ0YuIdUDnRkYBKUs
-         crKEz+FX2Z7mFQX7IPpu9TgWd4TU8DoBEhecTZGo=
+        b=RHWlABTM8xctAkIpyB3HJYybX9JaWXlawHf/Z8GnSL60iDspIFnC5dNefCis49DDC
+         +a6gPNQh648Eu1YO+zJLkwIKXztqN0WGcJp9dXR/gRADTDpQHQ7147NXyxL2XrglVt
+         iFsn2xCs2qsMA4wpNhClLsJp1DHQixKYEBOYMZsk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 4.19 47/86] netfilter: nat: limit port clash resolution attempts
-Date:   Mon,  7 Feb 2022 12:06:10 +0100
-Message-Id: <20220207103759.092441686@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Jason Xing <kerneljasonxing@gmail.com>,
+        Zhang Changzhong <zhangchangzhong@huawei.com>,
+        liweishi <liweishi@kuaishou.com>,
+        Shujin Li <lishujin@kuaishou.com>,
+        Neal Cardwell <ncardwell@google.com>
+Subject: [PATCH 4.19 48/86] tcp: fix possible socket leaks in internal pacing mode
+Date:   Mon,  7 Feb 2022 12:06:11 +0100
+Message-Id: <20220207103759.122641352@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.550973048@linuxfoundation.org>
 References: <20220207103757.550973048@linuxfoundation.org>
@@ -49,76 +53,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
 
-commit a504b703bb1da526a01593da0e4be2af9d9f5fa8 upstream.
+From: Eric Dumazet <edumazet@google.com>
 
-In case almost or all available ports are taken, clash resolution can
-take a very long time, resulting in soft lockup.
+This patch is addressing an issue in stable linux-4.19 only.
 
-This can happen when many to-be-natted hosts connect to same
-destination:port (e.g. a proxy) and all connections pass the same SNAT.
+In linux-4.20, TCP stack adopted EDT (Earliest Departure
+Time) model and this issue was incidentally fixed.
 
-Pick a random offset in the acceptable range, then try ever smaller
-number of adjacent port numbers, until either the limit is reached or a
-useable port was found.  This results in at most 248 attempts
-(128 + 64 + 32 + 16 + 8, i.e. 4 restarts with new search offset)
-instead of 64000+,
+Issue at hand was an extra sock_hold() from tcp_internal_pacing()
+in paths not using tcp_xmit_retransmit_queue()
 
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Jason Xing reported this leak and provided a patch stopping
+the extra sock_hold() to happen.
+
+This patch is more complete and makes sure to avoid
+unnecessary extra delays, by reprogramming the high
+resolution timer.
+
+Fixes: 73a6bab5aa2a ("tcp: switch pacing timer to softirq based hrtimer")
+Reference: https://lore.kernel.org/all/CANn89i+7-wE4xr5D9DpH+N-xkL1SB8oVghCKgz+CT5eG1ODQhA@mail.gmail.com/
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: Jason Xing <kerneljasonxing@gmail.com>
+Reported-by: Zhang Changzhong <zhangchangzhong@huawei.com>
+Cc: liweishi <liweishi@kuaishou.com>
+Cc: Shujin Li <lishujin@kuaishou.com>
+Cc: Neal Cardwell <ncardwell@google.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nf_nat_proto_common.c |   29 +++++++++++++++++++++++------
- 1 file changed, 23 insertions(+), 6 deletions(-)
+ net/ipv4/tcp_output.c |   31 +++++++++++++++++++++++--------
+ 1 file changed, 23 insertions(+), 8 deletions(-)
 
---- a/net/netfilter/nf_nat_proto_common.c
-+++ b/net/netfilter/nf_nat_proto_common.c
-@@ -40,9 +40,10 @@ void nf_nat_l4proto_unique_tuple(const s
- 				 enum nf_nat_manip_type maniptype,
- 				 const struct nf_conn *ct)
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -968,6 +968,8 @@ enum hrtimer_restart tcp_pace_kick(struc
+ 
+ static void tcp_internal_pacing(struct sock *sk, const struct sk_buff *skb)
  {
--	unsigned int range_size, min, max, i;
-+	unsigned int range_size, min, max, i, attempts;
- 	__be16 *portptr;
--	u_int16_t off;
-+	u16 off;
-+	static const unsigned int max_attempts = 128;
++	struct tcp_sock *tp = tcp_sk(sk);
++	ktime_t expire, now;
+ 	u64 len_ns;
+ 	u32 rate;
  
- 	if (maniptype == NF_NAT_MANIP_SRC)
- 		portptr = &tuple->src.u.all;
-@@ -88,12 +89,28 @@ void nf_nat_l4proto_unique_tuple(const s
- 		off = prandom_u32();
- 	}
+@@ -979,12 +981,28 @@ static void tcp_internal_pacing(struct s
  
--	for (i = 0; ; ++off) {
-+	attempts = range_size;
-+	if (attempts > max_attempts)
-+		attempts = max_attempts;
-+
-+	/* We are in softirq; doing a search of the entire range risks
-+	 * soft lockup when all tuples are already used.
-+	 *
-+	 * If we can't find any free port from first offset, pick a new
-+	 * one and try again, with ever smaller search window.
+ 	len_ns = (u64)skb->len * NSEC_PER_SEC;
+ 	do_div(len_ns, rate);
+-	hrtimer_start(&tcp_sk(sk)->pacing_timer,
+-		      ktime_add_ns(ktime_get(), len_ns),
++	now = ktime_get();
++	/* If hrtimer is already armed, then our caller has not
++	 * used tcp_pacing_check().
 +	 */
-+another_round:
-+	for (i = 0; i < attempts; i++, off++) {
- 		*portptr = htons(min + off % range_size);
--		if (++i != range_size && nf_nat_used_tuple(tuple, ct))
--			continue;
--		return;
-+		if (!nf_nat_used_tuple(tuple, ct))
-+			return;
- 	}
-+
-+	if (attempts >= range_size || attempts < 16)
-+		return;
-+	attempts /= 2;
-+	off = prandom_u32();
-+	goto another_round;
++	if (unlikely(hrtimer_is_queued(&tp->pacing_timer))) {
++		expire = hrtimer_get_softexpires(&tp->pacing_timer);
++		if (ktime_after(expire, now))
++			now = expire;
++		if (hrtimer_try_to_cancel(&tp->pacing_timer) == 1)
++			__sock_put(sk);
++	}
++	hrtimer_start(&tp->pacing_timer, ktime_add_ns(now, len_ns),
+ 		      HRTIMER_MODE_ABS_PINNED_SOFT);
+ 	sock_hold(sk);
  }
- EXPORT_SYMBOL_GPL(nf_nat_l4proto_unique_tuple);
  
++static bool tcp_pacing_check(const struct sock *sk)
++{
++	return tcp_needs_internal_pacing(sk) &&
++	       hrtimer_is_queued(&tcp_sk(sk)->pacing_timer);
++}
++
+ static void tcp_update_skb_after_send(struct tcp_sock *tp, struct sk_buff *skb)
+ {
+ 	skb->skb_mstamp = tp->tcp_mstamp;
+@@ -2121,6 +2139,9 @@ static int tcp_mtu_probe(struct sock *sk
+ 	if (!tcp_can_coalesce_send_queue_head(sk, probe_size))
+ 		return -1;
+ 
++	if (tcp_pacing_check(sk))
++		return -1;
++
+ 	/* We're allowed to probe.  Build it now. */
+ 	nskb = sk_stream_alloc_skb(sk, probe_size, GFP_ATOMIC, false);
+ 	if (!nskb)
+@@ -2194,12 +2215,6 @@ static int tcp_mtu_probe(struct sock *sk
+ 	return -1;
+ }
+ 
+-static bool tcp_pacing_check(const struct sock *sk)
+-{
+-	return tcp_needs_internal_pacing(sk) &&
+-	       hrtimer_is_queued(&tcp_sk(sk)->pacing_timer);
+-}
+-
+ /* TCP Small Queues :
+  * Control number of packets in qdisc/devices to two packets / or ~1 ms.
+  * (These limits are doubled for retransmits)
 
 
