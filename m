@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CBD2C3527E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02D9DC3527D
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:23:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382580AbiBGLTu (ORCPT
+        id S1382557AbiBGLTp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:19:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53024 "EHLO
+        Mon, 7 Feb 2022 06:19:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376406AbiBGLPH (ORCPT
+        with ESMTP id S1359493AbiBGLOy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:15:07 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC570C0401E4;
-        Mon,  7 Feb 2022 03:14:49 -0800 (PST)
+        Mon, 7 Feb 2022 06:14:54 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C334C0401D5;
+        Mon,  7 Feb 2022 03:14:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B4CE5B81028;
-        Mon,  7 Feb 2022 11:14:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05AC3C004E1;
-        Mon,  7 Feb 2022 11:14:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 13D88611AA;
+        Mon,  7 Feb 2022 11:14:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBDDAC340EB;
+        Mon,  7 Feb 2022 11:14:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232467;
-        bh=XGWLjLU68ZbceAndK89yy5Ot2TUFaEqJAD5v5ebQOPI=;
+        s=korg; t=1644232482;
+        bh=Q9a/NR6CCkrCfIyyMhl7MJzPq8ENrfsh9TBIGOR7dsc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mupFd7Lt051bjNbWKSIw0y2kCJSPQZsip31N3tyntPjZjdbctcd7+XNs/UyuVVm/U
-         Lb3mkhTPQCG2mOId8enYCNXM2nAWkh3CtUPgRTT/aNWFoLZqkUZ+YYqyAjt17PcCpm
-         VTO0484Wz8SukMlKmND941MmEWq67mcTYqNQTLNg=
+        b=qSZ9ygbJVMwg5I5JEvBXFaqaU4R7AqmirU0n9McO6M9+wRZrjb/dbVSCIowJFFX5S
+         u05V3rWQocxQAWl8HdT/bBzNVZb3sNZf+kDs+yWqGzfJTA85a83aOjlOE8e+K1EFVc
+         /ObvoaaW8NN9Eottxyix5QE7Qh1evDJQx+O4Aa3o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Erhard Furtner <erhard_f@mailbox.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 4.19 19/86] powerpc/32: Fix boot failure with GCC latent entropy plugin
-Date:   Mon,  7 Feb 2022 12:05:42 +0100
-Message-Id: <20220207103758.182352841@linuxfoundation.org>
+        stable@vger.kernel.org, butt3rflyh4ck <butterflyhuangxx@gmail.com>,
+        Christoph Hellwig <hch@lst.de>, Jan Kara <jack@suse.cz>
+Subject: [PATCH 4.19 04/86] udf: Restore i_lenAlloc when inode expansion fails
+Date:   Mon,  7 Feb 2022 12:05:27 +0100
+Message-Id: <20220207103757.693208252@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.550973048@linuxfoundation.org>
 References: <20220207103757.550973048@linuxfoundation.org>
@@ -50,54 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+From: Jan Kara <jack@suse.cz>
 
-commit bba496656a73fc1d1330b49c7f82843836e9feb1 upstream.
+commit ea8569194b43f0f01f0a84c689388542c7254a1f upstream.
 
-Boot fails with GCC latent entropy plugin enabled.
+When we fail to expand inode from inline format to a normal format, we
+restore inode to contain the original inline formatting but we forgot to
+set i_lenAlloc back. The mismatch between i_lenAlloc and i_size was then
+causing further problems such as warnings and lost data down the line.
 
-This is due to early boot functions trying to access 'latent_entropy'
-global data while the kernel is not relocated at its final
-destination yet.
-
-As there is no way to tell GCC to use PTRRELOC() to access it,
-disable latent entropy plugin in early_32.o and feature-fixups.o and
-code-patching.o
-
-Fixes: 38addce8b600 ("gcc-plugins: Add latent_entropy plugin")
-Cc: stable@vger.kernel.org # v4.9+
-Reported-by: Erhard Furtner <erhard_f@mailbox.org>
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215217
-Link: https://lore.kernel.org/r/2bac55483b8daf5b1caa163a45fa5f9cdbe18be4.1640178426.git.christophe.leroy@csgroup.eu
+Reported-by: butt3rflyh4ck <butterflyhuangxx@gmail.com>
+CC: stable@vger.kernel.org
+Fixes: 7e49b6f2480c ("udf: Convert UDF to new truncate calling sequence")
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Jan Kara <jack@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/kernel/Makefile |    1 +
- arch/powerpc/lib/Makefile    |    3 +++
- 2 files changed, 4 insertions(+)
+ fs/udf/inode.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/arch/powerpc/kernel/Makefile
-+++ b/arch/powerpc/kernel/Makefile
-@@ -15,6 +15,7 @@ CFLAGS_prom_init.o      += -fPIC
- CFLAGS_btext.o		+= -fPIC
- endif
- 
-+CFLAGS_setup_32.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
- CFLAGS_cputable.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
- CFLAGS_prom_init.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
- CFLAGS_btext.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
---- a/arch/powerpc/lib/Makefile
-+++ b/arch/powerpc/lib/Makefile
-@@ -10,6 +10,9 @@ ccflags-$(CONFIG_PPC64)	:= $(NO_MINIMAL_
- CFLAGS_REMOVE_code-patching.o = $(CC_FLAGS_FTRACE)
- CFLAGS_REMOVE_feature-fixups.o = $(CC_FLAGS_FTRACE)
- 
-+CFLAGS_code-patching.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
-+CFLAGS_feature-fixups.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
-+
- obj-y += string.o alloc.o code-patching.o feature-fixups.o
- 
- obj-$(CONFIG_PPC32)	+= div64.o copy_32.o crtsavres.o strlen_32.o
+--- a/fs/udf/inode.c
++++ b/fs/udf/inode.c
+@@ -311,6 +311,7 @@ int udf_expand_file_adinicb(struct inode
+ 		unlock_page(page);
+ 		iinfo->i_alloc_type = ICBTAG_FLAG_AD_IN_ICB;
+ 		inode->i_data.a_ops = &udf_adinicb_aops;
++		iinfo->i_lenAlloc = inode->i_size;
+ 		up_write(&iinfo->i_data_sem);
+ 	}
+ 	put_page(page);
 
 
