@@ -2,118 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76ED1C35272
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D3D1C35270
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:16:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354121AbiBGNNE (ORCPT
+        id S1448784AbiBGNM7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:13:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47270 "EHLO
+        Mon, 7 Feb 2022 08:12:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1448276AbiBGNKO (ORCPT
+        with ESMTP id S1443097AbiBGMWG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 08:10:14 -0500
-Received: from laurent.telenet-ops.be (laurent.telenet-ops.be [IPv6:2a02:1800:110:4::f00:19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3F86C043188
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 05:10:13 -0800 (PST)
-Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed40:8923:c5e0:fe66:f22f])
-        by laurent.telenet-ops.be with bizsmtp
-        id sDAB2600F2zxJMx01DABvF; Mon, 07 Feb 2022 14:10:11 +0100
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1nH3mU-0004SC-OS; Mon, 07 Feb 2022 14:10:10 +0100
-Received: from geert by rox.of.borg with local (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1nH3mU-009F6e-7W; Mon, 07 Feb 2022 14:10:10 +0100
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-To:     linux-m68k@lists.linux-m68k.org
-Cc:     linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH] m68k: defconfig: Update defconfigs for v5.17-rc3
-Date:   Mon,  7 Feb 2022 14:10:08 +0100
-Message-Id: <20220207131008.2202977-1-geert@linux-m68k.org>
-X-Mailer: git-send-email 2.25.1
+        Mon, 7 Feb 2022 07:22:06 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB147C03C1AD
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 04:16:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644236190; x=1675772190;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=1vCj/FFG9pSnPF/Iv806R/ZlY0+1L2qMpTxrhPDp3JE=;
+  b=QI70Pxkd2c1uAnspQUMZl9vc4Ttdppz7zfKumBp1OCApKOomP1ACgQ1i
+   aRI+4O9s0DPtpLkjtMoOQsOyGwnh/CREdnBY7VULlVmefDRyLefPbtE3j
+   j+5SqvxWiAyMATlUFNil2PlKascZm7KuskZDBGGm7qOycrQq4Sl9ZIYvd
+   P0iU+WERKIWqZZqx6TkBil3nnyuOPXzptp6GmULuQ9BE7a3QRNSY2go1N
+   rzvaNODKOega7e7QePYgRzkmf80bmCx0wJQjEI4PMswiLBO3TW/d2gw2r
+   PQ0tFFt2Uzk84TICyKSQmj8tZB0Ur0qYcNP0WOKc5xEfvOuxIvNOHvdz/
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="248914436"
+X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
+   d="scan'208";a="248914436"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 04:16:30 -0800
+X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
+   d="scan'208";a="700444170"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 04:16:29 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nH2va-001tWE-7Y;
+        Mon, 07 Feb 2022 14:15:30 +0200
+Date:   Mon, 7 Feb 2022 14:15:29 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Cc:     andy@kernel.org, linux-kernel@vger.kernel.org,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: Re: [PATCH] lib/test_string.c: return -ENOMEM on memset16_selftest
+ allocation failure
+Message-ID: <YgENYYPT2gs7sX8H@smile.fi.intel.com>
+References: <20220207103626.103256-1-jiapeng.chong@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220207103626.103256-1-jiapeng.chong@linux.alibaba.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-  - Enable the new option for legacy fbcon hardware acceleration code on
-    all platforms that have a frame buffer device that can make use of
-    this.
+On Mon, Feb 07, 2022 at 06:36:26PM +0800, Jiapeng Chong wrote:
+> Clean up the following smatch warning:
+> 
+> lib/test_string.c:14 memset16_selftest() warn: returning -1 instead of
+> -ENOMEM is sloppy.
 
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
----
-The following drivers set
-FBINFO_HWACCEL_(COPYAREA|FILLRECT|IMAGEBLIT|ROTATE|XPAN|YPAN|YWRAP):
-  - FB_AMIGA,
-  - FB_ATY (not enabled in atari_defconfig, hence ignored),
-  - FB_CIRRUS,
-  - FB_68328 (nommu, hence ignored).
+It's not that makes much difference, but fine
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-The following drivers implement hardware acceleration, but do not set
-any of the FBINFO_HWACCEL_* flags:
-  - FB_APOLLO,
-  - FB_HP300.
-Probably they should be updated to set the appropriate flags?
----
- arch/m68k/configs/amiga_defconfig  | 1 +
- arch/m68k/configs/apollo_defconfig | 1 +
- arch/m68k/configs/hp300_defconfig  | 1 +
- arch/m68k/configs/multi_defconfig  | 1 +
- 4 files changed, 4 insertions(+)
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+> ---
+>  lib/test_string.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/lib/test_string.c b/lib/test_string.c
+> index 9dfd6f52de92..f23d6cd2d9c7 100644
+> --- a/lib/test_string.c
+> +++ b/lib/test_string.c
+> @@ -11,7 +11,7 @@ static __init int memset16_selftest(void)
+>  
+>  	p = kmalloc(256 * 2 * 2, GFP_KERNEL);
+>  	if (!p)
+> -		return -1;
+> +		return -ENOMEM;
+>  
+>  	for (i = 0; i < 256; i++) {
+>  		for (j = 0; j < 256; j++) {
+> -- 
+> 2.20.1.7.g153144c
+> 
 
-diff --git a/arch/m68k/configs/amiga_defconfig b/arch/m68k/configs/amiga_defconfig
-index eb930b9633602aff..49f301c57df5fb06 100644
---- a/arch/m68k/configs/amiga_defconfig
-+++ b/arch/m68k/configs/amiga_defconfig
-@@ -432,6 +432,7 @@ CONFIG_FB_AMIGA_ECS=y
- CONFIG_FB_AMIGA_AGA=y
- CONFIG_FB_FM2=y
- CONFIG_FRAMEBUFFER_CONSOLE=y
-+CONFIG_FRAMEBUFFER_CONSOLE_LEGACY_ACCELERATION=y
- CONFIG_LOGO=y
- CONFIG_SOUND=m
- CONFIG_DMASOUND_PAULA=m
-diff --git a/arch/m68k/configs/apollo_defconfig b/arch/m68k/configs/apollo_defconfig
-index 5acd495c83ceb756..405997b614472b80 100644
---- a/arch/m68k/configs/apollo_defconfig
-+++ b/arch/m68k/configs/apollo_defconfig
-@@ -390,6 +390,7 @@ CONFIG_PTP_1588_CLOCK=m
- # CONFIG_HWMON is not set
- CONFIG_FB=y
- CONFIG_FRAMEBUFFER_CONSOLE=y
-+CONFIG_FRAMEBUFFER_CONSOLE_LEGACY_ACCELERATION=y
- CONFIG_LOGO=y
- # CONFIG_LOGO_LINUX_VGA16 is not set
- # CONFIG_LOGO_LINUX_CLUT224 is not set
-diff --git a/arch/m68k/configs/hp300_defconfig b/arch/m68k/configs/hp300_defconfig
-index 89dd800e7ad24354..048d9b114eb43489 100644
---- a/arch/m68k/configs/hp300_defconfig
-+++ b/arch/m68k/configs/hp300_defconfig
-@@ -392,6 +392,7 @@ CONFIG_PTP_1588_CLOCK=m
- # CONFIG_HWMON is not set
- CONFIG_FB=y
- CONFIG_FRAMEBUFFER_CONSOLE=y
-+CONFIG_FRAMEBUFFER_CONSOLE_LEGACY_ACCELERATION=y
- CONFIG_LOGO=y
- # CONFIG_LOGO_LINUX_MONO is not set
- # CONFIG_LOGO_LINUX_VGA16 is not set
-diff --git a/arch/m68k/configs/multi_defconfig b/arch/m68k/configs/multi_defconfig
-index 00757de800b62c90..7df61e743591a028 100644
---- a/arch/m68k/configs/multi_defconfig
-+++ b/arch/m68k/configs/multi_defconfig
-@@ -494,6 +494,7 @@ CONFIG_FB_ATARI=y
- CONFIG_FB_VALKYRIE=y
- CONFIG_FB_MAC=y
- CONFIG_FRAMEBUFFER_CONSOLE=y
-+CONFIG_FRAMEBUFFER_CONSOLE_LEGACY_ACCELERATION=y
- CONFIG_LOGO=y
- CONFIG_SOUND=m
- CONFIG_DMASOUND_ATARI=m
 -- 
-2.25.1
+With Best Regards,
+Andy Shevchenko
+
 
