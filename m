@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48C79C4708D
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECCA3C38A2E
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391543AbiBGMCL (ORCPT
+        id S1391496AbiBGMCA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 07:02:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48812 "EHLO
+        Mon, 7 Feb 2022 07:02:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386798AbiBGLhL (ORCPT
+        with ESMTP id S1386791AbiBGLhA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:37:11 -0500
+        Mon, 7 Feb 2022 06:37:00 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75A8DC043181;
-        Mon,  7 Feb 2022 03:37:10 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BF85C043188;
+        Mon,  7 Feb 2022 03:37:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0D9456091A;
-        Mon,  7 Feb 2022 11:37:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C98CAC004E1;
-        Mon,  7 Feb 2022 11:37:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CCA996091A;
+        Mon,  7 Feb 2022 11:36:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FE55C004E1;
+        Mon,  7 Feb 2022 11:36:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233829;
-        bh=MLFw33SBS/pqg+VfKau4wYtPr8pye3UBHws0wWK4l+Y=;
+        s=korg; t=1644233819;
+        bh=djEWEpnDCk7CcnGly2CXbCMMBRAixEGBx4BvC4JPjCE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lC37KSiNZZ3Eo+zA76rTPrLD+9L9jfE7GAphPivjiMbi0gBfsvPWBrl/Ll/j2quHv
-         Hn1MK3w8ADdClI3uaRCmZv/smT4ynw+nYK48YzRjYGPCSb7+yAlDrvPqubBK2VC4iG
-         jsXkqiHxoVZpXrVHUhocajoD7suAZZOpUbJ6K5UA=
+        b=Apvbl6NMzg4LjzuN/CnA6CrezgJeMBL1lvWsGDMtmpY7DPCW3g6o16VItoiqHWKle
+         9EIttKGVBCHVQ/AoCPSP1RAwDUrg67S+QpbRDESFfPKOh6by5REbhAWXjyyvd6TyjX
+         on4DPoNxD2AnCZi+LGqvWxj9oSwiahcZO7sqninY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Florian Westphal <fw@strlen.de>,
-        Stefano Brivio <sbrivio@redhat.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.16 125/126] selftests: nft_concat_range: add test for reload with no element add/del
-Date:   Mon,  7 Feb 2022 12:07:36 +0100
-Message-Id: <20220207103808.361008101@linuxfoundation.org>
+        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
+        Anand Jain <anand.jain@oracle.com>, Tom Rix <trix@redhat.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.16 097/126] btrfs: fix use of uninitialized variable at rm device ioctl
+Date:   Mon,  7 Feb 2022 12:07:08 +0100
+Message-Id: <20220207103807.431628136@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
 References: <20220207103804.053675072@linuxfoundation.org>
@@ -50,121 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Tom Rix <trix@redhat.com>
 
-commit eda0cf1202acf1ef47f93d8f92d4839213431424 upstream.
+commit 37b4599547e324589e011c20f74b021d6d25cb7f upstream.
 
-Add a specific test for the reload issue fixed with
-commit 23c54263efd7cb ("netfilter: nft_set_pipapo: allocate pcpu scratch maps on clone").
+Clang static analysis reports this problem
+ioctl.c:3333:8: warning: 3rd function call argument is an
+  uninitialized value
+    ret = exclop_start_or_cancel_reloc(fs_info,
 
-Add to set, then flush set content + restore without other add/remove in
-the transaction.
+cancel is only set in one branch of an if-check and is always used.  So
+initialize to false.
 
-On kernels before the fix, this test case fails:
-  net,mac with reload    [FAIL]
-
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Reviewed-by: Stefano Brivio <sbrivio@redhat.com>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: 1a15eb724aae ("btrfs: use btrfs_get_dev_args_from_path in dev removal ioctls")
+Reviewed-by: Filipe Manana <fdmanana@suse.com>
+Reviewed-by: Anand Jain <anand.jain@oracle.com>
+Signed-off-by: Tom Rix <trix@redhat.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/netfilter/nft_concat_range.sh |   72 +++++++++++++++++-
- 1 file changed, 71 insertions(+), 1 deletion(-)
+ fs/btrfs/ioctl.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/tools/testing/selftests/netfilter/nft_concat_range.sh
-+++ b/tools/testing/selftests/netfilter/nft_concat_range.sh
-@@ -27,7 +27,7 @@ TYPES="net_port port_net net6_port port_
-        net6_port_net6_port net_port_mac_proto_net"
+--- a/fs/btrfs/ioctl.c
++++ b/fs/btrfs/ioctl.c
+@@ -3310,7 +3310,7 @@ static long btrfs_ioctl_rm_dev(struct fi
+ 	struct block_device *bdev = NULL;
+ 	fmode_t mode;
+ 	int ret;
+-	bool cancel;
++	bool cancel = false;
  
- # Reported bugs, also described by TYPE_ variables below
--BUGS="flush_remove_add"
-+BUGS="flush_remove_add reload"
- 
- # List of possible paths to pktgen script from kernel tree for performance tests
- PKTGEN_SCRIPT_PATHS="
-@@ -354,6 +354,23 @@ TYPE_flush_remove_add="
- display		Add two elements, flush, re-add
- "
- 
-+TYPE_reload="
-+display		net,mac with reload
-+type_spec	ipv4_addr . ether_addr
-+chain_spec	ip daddr . ether saddr
-+dst		addr4
-+src		mac
-+start		1
-+count		1
-+src_delta	2000
-+tools		sendip nc bash
-+proto		udp
-+
-+race_repeat	0
-+
-+perf_duration	0
-+"
-+
- # Set template for all tests, types and rules are filled in depending on test
- set_template='
- flush ruleset
-@@ -1473,6 +1490,59 @@ test_bug_flush_remove_add() {
- 	nft flush ruleset
- }
- 
-+# - add ranged element, check that packets match it
-+# - reload the set, check packets still match
-+test_bug_reload() {
-+	setup veth send_"${proto}" set || return ${KSELFTEST_SKIP}
-+	rstart=${start}
-+
-+	range_size=1
-+	for i in $(seq "${start}" $((start + count))); do
-+		end=$((start + range_size))
-+
-+		# Avoid negative or zero-sized port ranges
-+		if [ $((end / 65534)) -gt $((start / 65534)) ]; then
-+			start=${end}
-+			end=$((end + 1))
-+		fi
-+		srcstart=$((start + src_delta))
-+		srcend=$((end + src_delta))
-+
-+		add "$(format)" || return 1
-+		range_size=$((range_size + 1))
-+		start=$((end + range_size))
-+	done
-+
-+	# check kernel does allocate pcpu sctrach map
-+	# for reload with no elemet add/delete
-+	( echo flush set inet filter test ;
-+	  nft list set inet filter test ) | nft -f -
-+
-+	start=${rstart}
-+	range_size=1
-+
-+	for i in $(seq "${start}" $((start + count))); do
-+		end=$((start + range_size))
-+
-+		# Avoid negative or zero-sized port ranges
-+		if [ $((end / 65534)) -gt $((start / 65534)) ]; then
-+			start=${end}
-+			end=$((end + 1))
-+		fi
-+		srcstart=$((start + src_delta))
-+		srcend=$((end + src_delta))
-+
-+		for j in $(seq ${start} $((range_size / 2 + 1)) ${end}); do
-+			send_match "${j}" $((j + src_delta)) || return 1
-+		done
-+
-+		range_size=$((range_size + 1))
-+		start=$((end + range_size))
-+	done
-+
-+	nft flush ruleset
-+}
-+
- test_reported_issues() {
- 	eval test_bug_"${subtest}"
- }
+ 	if (!capable(CAP_SYS_ADMIN))
+ 		return -EPERM;
 
 
