@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 175C7C352B6
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45C05C43219
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:14:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356089AbiBGLMy (ORCPT
+        id S1356149AbiBGLM5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:12:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48602 "EHLO
+        Mon, 7 Feb 2022 06:12:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343596AbiBGLJk (ORCPT
+        with ESMTP id S1344884AbiBGLJp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:09:40 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B41DC043181;
-        Mon,  7 Feb 2022 03:09:40 -0800 (PST)
+        Mon, 7 Feb 2022 06:09:45 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8D1BC043181;
+        Mon,  7 Feb 2022 03:09:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F0B32B80EE8;
-        Mon,  7 Feb 2022 11:09:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A815C004E1;
-        Mon,  7 Feb 2022 11:09:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D0B2611AA;
+        Mon,  7 Feb 2022 11:09:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35EB7C004E1;
+        Mon,  7 Feb 2022 11:09:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232177;
-        bh=kIOnlIL+ZpfpueiBTUh+F+Rlr+J6FU0lZxLynHKRHRc=;
+        s=korg; t=1644232183;
+        bh=hqkNVBOY0nLILtHUbF7Ph3I2L0K2QYQl+6SqV0lpEbs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WotOWhz28aFxt7SdBMqVoIJ+ZoHOsXxiB69BvLvuYFCEwyW/uzXnf2Y5Z2bfw0yKQ
-         /IjCaXZ2hpe/nLJadl5HYHMC4IOZ2Moe8SDnXprrGI14lHHTCUuUq8cqFLz0qqG5lo
-         wjxs9T7nVLkvsGx0V3QS2eY0l3Swt+P81FOun+DQ=
+        b=LVEW6mn0UC4fl0QwcTeox30Vj+a9j4zoJI1eHCXt/CcpUHpP9tl9fjW+8bl0GVv7D
+         /C2C7ELWRlTUuahiQWpYcOEzVn0ewdlq3ZMZ24jdpKW5xgFzinqp+J4BEpj2im0uPs
+         PB8srgr560i6wNfGo5KZuyGNRHKsKZoguEwdhEHI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
-        Alexander Aring <aahringo@redhat.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>
-Subject: [PATCH 4.9 40/48] net: ieee802154: Return meaningful error codes from the netlink helpers
-Date:   Mon,  7 Feb 2022 12:06:13 +0100
-Message-Id: <20220207103753.637034831@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 4.9 42/48] ASoC: fsl: Add missing error handling in pcm030_fabric_probe
+Date:   Mon,  7 Feb 2022 12:06:15 +0100
+Message-Id: <20220207103753.699330277@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103752.341184175@linuxfoundation.org>
 References: <20220207103752.341184175@linuxfoundation.org>
@@ -50,61 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miquel Raynal <miquel.raynal@bootlin.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 79c37ca73a6e9a33f7b2b7783ba6af07a448c8a9 upstream.
+commit fb25621da5702c104ce0a48de5b174ced09e5b4e upstream.
 
-Returning -1 does not indicate anything useful.
+Add the missing platform_device_put() and platform_device_del()
+before return from pcm030_fabric_probe in the error handling case.
 
-Use a standard and meaningful error code instead.
-
-Fixes: a26c5fd7622d ("nl802154: add support for security layer")
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Acked-by: Alexander Aring <aahringo@redhat.com>
-Link: https://lore.kernel.org/r/20220125121426.848337-6-miquel.raynal@bootlin.com
-Signed-off-by: Stefan Schmidt <stefan@datenfreihafen.org>
+Fixes: c912fa913446 ("ASoC: fsl: register the wm9712-codec")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220127131336.30214-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ieee802154/nl802154.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ sound/soc/fsl/pcm030-audio-fabric.c |   11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
---- a/net/ieee802154/nl802154.c
-+++ b/net/ieee802154/nl802154.c
-@@ -1474,7 +1474,7 @@ static int nl802154_send_key(struct sk_b
+--- a/sound/soc/fsl/pcm030-audio-fabric.c
++++ b/sound/soc/fsl/pcm030-audio-fabric.c
+@@ -90,16 +90,21 @@ static int pcm030_fabric_probe(struct pl
+ 		dev_err(&op->dev, "platform_device_alloc() failed\n");
  
- 	hdr = nl802154hdr_put(msg, portid, seq, flags, cmd);
- 	if (!hdr)
--		return -1;
-+		return -ENOBUFS;
+ 	ret = platform_device_add(pdata->codec_device);
+-	if (ret)
++	if (ret) {
+ 		dev_err(&op->dev, "platform_device_add() failed: %d\n", ret);
++		platform_device_put(pdata->codec_device);
++	}
  
- 	if (nla_put_u32(msg, NL802154_ATTR_IFINDEX, dev->ifindex))
- 		goto nla_put_failure;
-@@ -1665,7 +1665,7 @@ static int nl802154_send_device(struct s
+ 	ret = snd_soc_register_card(card);
+-	if (ret)
++	if (ret) {
+ 		dev_err(&op->dev, "snd_soc_register_card() failed: %d\n", ret);
++		platform_device_del(pdata->codec_device);
++		platform_device_put(pdata->codec_device);
++	}
  
- 	hdr = nl802154hdr_put(msg, portid, seq, flags, cmd);
- 	if (!hdr)
--		return -1;
-+		return -ENOBUFS;
+ 	platform_set_drvdata(op, pdata);
+-
+ 	return ret;
++
+ }
  
- 	if (nla_put_u32(msg, NL802154_ATTR_IFINDEX, dev->ifindex))
- 		goto nla_put_failure;
-@@ -1843,7 +1843,7 @@ static int nl802154_send_devkey(struct s
- 
- 	hdr = nl802154hdr_put(msg, portid, seq, flags, cmd);
- 	if (!hdr)
--		return -1;
-+		return -ENOBUFS;
- 
- 	if (nla_put_u32(msg, NL802154_ATTR_IFINDEX, dev->ifindex))
- 		goto nla_put_failure;
-@@ -2020,7 +2020,7 @@ static int nl802154_send_seclevel(struct
- 
- 	hdr = nl802154hdr_put(msg, portid, seq, flags, cmd);
- 	if (!hdr)
--		return -1;
-+		return -ENOBUFS;
- 
- 	if (nla_put_u32(msg, NL802154_ATTR_IFINDEX, dev->ifindex))
- 		goto nla_put_failure;
+ static int pcm030_fabric_remove(struct platform_device *op)
 
 
