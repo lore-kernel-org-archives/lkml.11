@@ -2,362 +2,206 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63C2DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 02:05:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33F9DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 02:06:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348575AbiBGCFg (ORCPT
+        id S1348598AbiBGCGm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Feb 2022 21:05:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40624 "EHLO
+        Sun, 6 Feb 2022 21:06:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231342AbiBGCFb (ORCPT
+        with ESMTP id S231342AbiBGCGk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 21:05:31 -0500
-X-Greylist: delayed 961 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 18:05:29 PST
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F980C061A73;
-        Sun,  6 Feb 2022 18:05:29 -0800 (PST)
-Received: from kwepemi500010.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4JsTVN3y7WzZfDZ;
-        Mon,  7 Feb 2022 09:45:16 +0800 (CST)
-Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- kwepemi500010.china.huawei.com (7.221.188.191) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 7 Feb 2022 09:49:26 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 7 Feb 2022 09:49:25 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <wangjie125@huawei.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
-        <chenhao288@hisilicon.com>
-Subject: [PATCH V2 net-next] net: hns3: add support for TX push mode
-Date:   Mon, 7 Feb 2022 09:44:23 +0800
-Message-ID: <20220207014423.3218-1-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.33.0
+        Sun, 6 Feb 2022 21:06:40 -0500
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2089.outbound.protection.outlook.com [40.107.21.89])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71D35C061A73
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 18:06:38 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hLD2MXJbCtJadoiUwmyJgd+2Rh4WG8lAc5iKwpGEV9YyrTBuvOZXWcOyK196gMM8onRiwwIpU0/yJdgcmlbTdtQhmQ8iZ8uhYKqM/cIgnmdo0ftrY/PpeOxjOaLJ12p1v4v3c5k64K/iVdWeEBgvLcTzZs7cQ4S3mCdvt90xMhXmnRhACJRNotDJNT4dzohjManSG7Ot08VIa9rAR0Jf1shPGmGWi8qKF+n/yJR2mHoSVaE361pOSfmGFEnS94cGobiQYx3UbP7FK9/YEON5El8Ci5XcQ6zp/NvIfYmY1cmMwl44qegEf7qpMNZKqq/c4dJ1h2sghHynzObgLVFAHg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=p5+vZGhPSDypf4UcN8LwI2iM2cH6oyW/XRSaQ86djOA=;
+ b=MRVEFzswg9BlgLxNah8Ae9ImFRyQdoOQEADGIAcW+Hq4kqA5O2J3yQgCb8fJ4hK5V3l1API3WdCmn9XVfjkEhAu374QslfWXDbEZm52tqfwP1N45nqPcII8Fp32dXhTUFccyYtwO3bRIzf3miGoZzLG4UQQYTDnYt2HGLIrwX8a6TsT2Y6pVmGAdZ5kPzpRUcZp7LcafoyAN05QknSpLMQfO1QzjsyUsyxNj6X4JThshRiXJ3jFHP6FvPCVIH+3gSd+VsJFk/ny0qbtGWGCGHgGxEzNTJK35391GFgphWg9cx2WP34W1oGKNIPIj6EpRAySamvkMy3BV31TTEb34gw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=p5+vZGhPSDypf4UcN8LwI2iM2cH6oyW/XRSaQ86djOA=;
+ b=Cx2xEj9UJg6WbJFURSvxzIa8ldWs+YTn/tVtALYcZ04I7YXddC6Hb6dUvCAcTgs9z5psNtroScJwtZ+TGWk9hIafhpqVVWPY0fik7Oz4u/2E0IZLS5hfsiCITdF7yHwXjl27cbtoEeoStfxrL4IjofUopVWJkzcb88Fw6zsW64I=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
+ by AM6PR0402MB3462.eurprd04.prod.outlook.com (2603:10a6:209:6::31) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.18; Mon, 7 Feb
+ 2022 02:06:35 +0000
+Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
+ ([fe80::d4dc:8c9a:55d0:81d8]) by DU0PR04MB9417.eurprd04.prod.outlook.com
+ ([fe80::d4dc:8c9a:55d0:81d8%3]) with mapi id 15.20.4951.018; Mon, 7 Feb 2022
+ 02:06:35 +0000
+From:   "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+To:     shawnguo@kernel.org, s.hauer@pengutronix.de
+Cc:     kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Peng Fan <peng.fan@nxp.com>
+Subject: [PATCH V2] firmware: imx: add get resource owner api
+Date:   Mon,  7 Feb 2022 10:05:40 +0800
+Message-Id: <20220207020540.466670-1-peng.fan@oss.nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR02CA0097.apcprd02.prod.outlook.com
+ (2603:1096:4:92::13) To DU0PR04MB9417.eurprd04.prod.outlook.com
+ (2603:10a6:10:358::11)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemm600016.china.huawei.com (7.193.23.20)
-X-CFilter-Loop: Reflected
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: fb3c3e35-fc46-4c25-0871-08d9e9de7798
+X-MS-TrafficTypeDiagnostic: AM6PR0402MB3462:EE_
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-Microsoft-Antispam-PRVS: <AM6PR0402MB34627F88ABC28839F1F48210C92C9@AM6PR0402MB3462.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4502;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: uHaWtLPw6yagBke+d9F9MFv0+tbDVTUtVEwH6EnK4yH0PuPE1CQXuhhelaIJlRDtGjIUq5mdms1PlpPlAAa5L9wLUCKc0AY0KVCWFS03ZCcRZNJsrew0LWS7BxS23XInzERB2AC2Uf8I7Zv0pbTk0FEbSoNDbVzBkPJtqOUrEkcdmoMZfYU8QqFvxf75sQmXN+NIcT8vGAWMguNFl9I184gXgqE3TYiv8BYyZL+GtYU5b698DGkawRSNwXaH1aouezqqWSJ5pfQT1DYpywnRcMQlJDCJxH74Ez9qLyyAPVt1iXdyH5xxc8VyAe3meHhimjDry5aGIxORA+GAJ4h4rkltbBdPp5hF6/lPkor/N+yg2pHJ7Fijr8TUhlYb+wp+AbncBHCC5GF59YH9YDikORjKHnopGlCrjXhlyQ2s2/RZu9O9lRsyf5WF/U2k6xtjxQ34bv51oYDIA9GENp2QT+2Gw+LWiVO/nNV/WqO/WNFNMPSeRXXeTlvgDkRKlFO/P5Oa+npHdLEQgaMxy+AZR6rnFd1HfgEHF8ndyz9Glzuh+zL1oP29xKnjX53WpmW6TDASXmfIjMkAgnO5VaQkN7NB4tRc7g00XP8EKe4eCvxAKEn+RFO2MulOA4RfQljQuzzp97rXmikvlBoRDT5Svx1MQQp6xyCrd+WtRvwMJPofXgYk0NFQnmQi+WEp9zIAu1Hm6WSBupf+GK5qPfS8pQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6486002)(5660300002)(2906002)(186003)(52116002)(26005)(1076003)(2616005)(508600001)(6512007)(6666004)(6506007)(66946007)(38350700002)(38100700002)(86362001)(316002)(66556008)(66476007)(4326008)(8676002)(8936002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?3XJGpISvBHsLAkNKy6nAzdCD6CCymatKMCf2hXu/EzshwMst2T/81aE5yOLK?=
+ =?us-ascii?Q?+/hWPbJEvr8mHdqq21aBGLtBQ1CF3f/RlgVhr3scJllISagRemuL49Gzrrkq?=
+ =?us-ascii?Q?hpckT46YZ7s6Y0TxXuyo0byH92btznl2ugwUxnjadPEWa5Uqa4KeDHUFaezN?=
+ =?us-ascii?Q?RHyzNHPIVz/1NaYJhoQKXFK6v1dLicnjUxHRG0mYdp3LQSzoNuQe6ZGxklv0?=
+ =?us-ascii?Q?6ScYmUQIBMrZcFwt0EHsohWQ5KzXw0E7SgIjEQURHcj3muAunYseeMpGuz8N?=
+ =?us-ascii?Q?zDBO8Y+VPyfJy9R1GEOjz9Ru1SARz+RInYUHW5iZJ5bULzBpYqnu16hM9bq7?=
+ =?us-ascii?Q?cBq6dRVoQD8qK2HXFm7VWr5OZqeWTE24+yTi9gByZIy7RppcukqpAf+Ga7If?=
+ =?us-ascii?Q?c/E3HrlVObphIz46gPI6/VGvcu3VG56ashC3RjWMrqI2K7BH5Uu/aYxJBdkq?=
+ =?us-ascii?Q?l0hiYlsN+TrO6bdlzatIJ/NdBcq5fgkVC1LtRJpKvCXeiaAfN/l7s28am0Ao?=
+ =?us-ascii?Q?oXa9C/SHLLQjsCMOWI6u3d6QkiU0/RA8qrOUjluz9jDWNICx91J7uayya9eQ?=
+ =?us-ascii?Q?edxsIW6cVWyCdQYHQdR+ioALEnflutyWy4DDHA9YPHBot0d1Q2L+HbCgg81y?=
+ =?us-ascii?Q?IKaTxOLC5p0GB/YyLZUIaMWmCuk0knTGbo04lD5ZKaXvLdEMHKobgcNVlxoi?=
+ =?us-ascii?Q?GbvhiqQJw8plko9AMJ42+N27tNXClg2lAoftJfCoO8/R7dN8YISvJaAV9Jk0?=
+ =?us-ascii?Q?pbBzksDfwkYwWve0mkpqsq2rBH4kizihqEkYbIoznV0Mwqfvjdjv5zAIZd4K?=
+ =?us-ascii?Q?JLVRw6Xrgtfp8lV5HhY1mkuPxxgQ1CUq1Joi2PbrFSARVIi9Z6Amh/TNFQSr?=
+ =?us-ascii?Q?G5c+UP277IY+bNC95kphPxP8Xd+sjXEB89dzqUUBPm3zZseC47S5kg9Odlcc?=
+ =?us-ascii?Q?rr5Yw86LS2rScbvmKwki1eGe8UMSOL2mk5sHezD0saY4CGHIX46CSrx8iE7u?=
+ =?us-ascii?Q?jeFiLM8mGL0lyn2djNVKu4jMi+14jMx8skYE0OfkWgtkpuNkdFMagsV4UxcA?=
+ =?us-ascii?Q?Bd3kVApjBQ7/LW6m1/57iKLo+u/Feuvs+CXTXy3tCHvf5yiVfv7xAh2chIZ9?=
+ =?us-ascii?Q?KwrdbPU+Gc/sq/zJ5BoqM3w7jhcr1UzZrXk42kY9cTzZEN12jVlk9aYmp3WT?=
+ =?us-ascii?Q?1ckh0vUG+/5ht1z1qQ6ZzkVrAtkj6m96/gRGvaEc3y6Vtc0JLvPKcFgN58dM?=
+ =?us-ascii?Q?VYs4m2Mezn4n/13m7rMDqGVqPgN4hKBH3viE4PxHUPvbst7GuKbZ8ISeFKAS?=
+ =?us-ascii?Q?3xJp/+Es344EfG81sXRuahI2dVRwFQVqa8Hmwmw8QfJgad6X2y5Zp0omd4QX?=
+ =?us-ascii?Q?3VS2ZW8cyA9Ifh2sYjlwhjjtwoHio4VwlthyYAPaj5MxC5lvQiuoyRPrckgx?=
+ =?us-ascii?Q?pV1DPZFk0VGRtxfCKMffZcfozIfspxlo5jTCxLGT1NL5JByy2DgfsPkOE2rJ?=
+ =?us-ascii?Q?v94oHC4wh+HhdvWulxH6J+KqOn/ErtOhhhF3dWFzZdcl04JWken++sMc2Nn+?=
+ =?us-ascii?Q?9mhv6AWX+oj9EbFD6Z6qGLyN6/z/fVRqUtl4m1NJU7kxIFx2P8bB+y+4sap7?=
+ =?us-ascii?Q?qsutY1UyRqxhrbolu/htNNU=3D?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fb3c3e35-fc46-4c25-0871-08d9e9de7798
+X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Feb 2022 02:06:35.0130
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: +P4rULn7+SaWf2GSw9JNpTHI+f1TOLe2rkgoQpHyrM+gbugJxbx78MYqM4bMyRkGY2aOvjRxcqHeIEcDy413mw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR0402MB3462
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yufeng Mo <moyufeng@huawei.com>
+From: Peng Fan <peng.fan@nxp.com>
 
-For the device that supports the TX push capability, the BD can
-be directly copied to the device memory. However, due to hardware
-restrictions, the push mode can be used only when there are no
-more than two BDs, otherwise, the doorbell mode based on device
-memory is used.
+Add resource owner management API, this API could be used to check
+whether M4 is under control of Linux.
 
-Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+Signed-off-by: Peng Fan <peng.fan@nxp.com>
 ---
-change logs:
+
 V2:
- - remove patch "net: hns3: add ethtool priv-flag for TX push" as
-   suggested by Jakub.
----
- drivers/net/ethernet/hisilicon/hns3/hnae3.h   |  1 +
- .../net/ethernet/hisilicon/hns3/hns3_enet.c   | 79 ++++++++++++++++++-
- .../net/ethernet/hisilicon/hns3/hns3_enet.h   |  6 ++
- .../ethernet/hisilicon/hns3/hns3_ethtool.c    |  2 +
- .../hisilicon/hns3/hns3pf/hclge_main.c        | 11 ++-
- .../hisilicon/hns3/hns3pf/hclge_main.h        |  8 ++
- .../hisilicon/hns3/hns3vf/hclgevf_main.c      | 11 ++-
- .../hisilicon/hns3/hns3vf/hclgevf_main.h      |  8 ++
- 8 files changed, 118 insertions(+), 8 deletions(-)
+ Put comments just above function
+ Use EOPNOTSUPP as return value
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-index 9298fbecb31a..6f18c9a03231 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-@@ -167,6 +167,7 @@ struct hnae3_handle;
- 
- struct hnae3_queue {
- 	void __iomem *io_base;
-+	void __iomem *mem_base;
- 	struct hnae3_ae_algo *ae_algo;
- 	struct hnae3_handle *handle;
- 	int tqp_index;		/* index in a handle */
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index babc5d7a3b52..0b8a73c40b12 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -2028,9 +2028,73 @@ static int hns3_fill_skb_to_desc(struct hns3_enet_ring *ring,
- 	return bd_num;
+ drivers/firmware/imx/rm.c           | 45 +++++++++++++++++++++++++++++
+ include/linux/firmware/imx/svc/rm.h |  5 ++++
+ 2 files changed, 50 insertions(+)
+
+diff --git a/drivers/firmware/imx/rm.c b/drivers/firmware/imx/rm.c
+index a12db6ff323b..d492b99e1c6c 100644
+--- a/drivers/firmware/imx/rm.c
++++ b/drivers/firmware/imx/rm.c
+@@ -43,3 +43,48 @@ bool imx_sc_rm_is_resource_owned(struct imx_sc_ipc *ipc, u16 resource)
+ 	return hdr->func;
  }
- 
-+static void hns3_tx_push_bd(struct hns3_enet_ring *ring, int num)
+ EXPORT_SYMBOL(imx_sc_rm_is_resource_owned);
++
++struct imx_sc_msg_rm_get_resource_owner {
++	struct imx_sc_rpc_msg hdr;
++	union {
++		struct {
++			u16 resource;
++		} req;
++		struct {
++			u8 val;
++		} resp;
++	} data;
++} __packed __aligned(4);
++
++/*
++ * This function get @resource partition number
++ *
++ * @param[in]     ipc         IPC handle
++ * @param[in]     resource    resource the control is associated with
++ * @param[out]    pt          pointer to return the partition number
++ *
++ * @return Returns 0 for success and < 0 for errors.
++ */
++int imx_sc_rm_get_resource_owner(struct imx_sc_ipc *ipc, u16 resource, u8 *pt)
 +{
-+#define HNS3_BYTES_PER_64BIT		8
++	struct imx_sc_msg_rm_get_resource_owner msg;
++	struct imx_sc_rpc_msg *hdr = &msg.hdr;
++	int ret;
 +
-+	struct hns3_desc desc[HNS3_MAX_PUSH_BD_NUM] = {};
-+	int offset = 0;
++	hdr->ver = IMX_SC_RPC_VERSION;
++	hdr->svc = IMX_SC_RPC_SVC_RM;
++	hdr->func = IMX_SC_RM_FUNC_GET_RESOURCE_OWNER;
++	hdr->size = 2;
 +
-+	/* make sure everything is visible to device before
-+	 * excuting tx push or updating doorbell
-+	 */
-+	dma_wmb();
++	msg.data.req.resource = resource;
 +
-+	do {
-+		int idx = (ring->next_to_use - num + ring->desc_num) %
-+			  ring->desc_num;
++	ret = imx_scu_call_rpc(ipc, &msg, true);
++	if (ret)
++		return ret;
 +
-+		u64_stats_update_begin(&ring->syncp);
-+		ring->stats.tx_push++;
-+		u64_stats_update_end(&ring->syncp);
-+		memcpy(&desc[offset], &ring->desc[idx],
-+		       sizeof(struct hns3_desc));
-+		offset++;
-+	} while (--num);
++	if (pt)
++		*pt = msg.data.resp.val;
 +
-+	__iowrite64_copy(ring->tqp->mem_base, desc,
-+			 (sizeof(struct hns3_desc) * HNS3_MAX_PUSH_BD_NUM) /
-+			 HNS3_BYTES_PER_64BIT);
-+
-+	io_stop_wc();
++	return 0;
 +}
-+
-+static void hns3_tx_mem_doorbell(struct hns3_enet_ring *ring)
++EXPORT_SYMBOL(imx_sc_rm_get_resource_owner);
+diff --git a/include/linux/firmware/imx/svc/rm.h b/include/linux/firmware/imx/svc/rm.h
+index 456b6a59d29b..31456f897aa9 100644
+--- a/include/linux/firmware/imx/svc/rm.h
++++ b/include/linux/firmware/imx/svc/rm.h
+@@ -59,11 +59,16 @@ enum imx_sc_rm_func {
+ 
+ #if IS_ENABLED(CONFIG_IMX_SCU)
+ bool imx_sc_rm_is_resource_owned(struct imx_sc_ipc *ipc, u16 resource);
++int imx_sc_rm_get_resource_owner(struct imx_sc_ipc *ipc, u16 resource, u8 *pt);
+ #else
+ static inline bool
+ imx_sc_rm_is_resource_owned(struct imx_sc_ipc *ipc, u16 resource)
+ {
+ 	return true;
+ }
++static inline int imx_sc_rm_get_resource_owner(struct imx_sc_ipc *ipc, u16 resource, u8 *pt)
 +{
-+#define HNS3_MEM_DOORBELL_OFFSET	64
-+
-+	__le64 bd_num = cpu_to_le64((u64)ring->pending_buf);
-+
-+	/* make sure everything is visible to device before
-+	 * excuting tx push or updating doorbell
-+	 */
-+	dma_wmb();
-+
-+	__iowrite64_copy(ring->tqp->mem_base + HNS3_MEM_DOORBELL_OFFSET,
-+			 &bd_num, 1);
-+	u64_stats_update_begin(&ring->syncp);
-+	ring->stats.tx_mem_doorbell += ring->pending_buf;
-+	u64_stats_update_end(&ring->syncp);
-+
-+	io_stop_wc();
++	return -EOPNOTSUPP;
 +}
-+
- static void hns3_tx_doorbell(struct hns3_enet_ring *ring, int num,
- 			     bool doorbell)
- {
-+	struct net_device *netdev = ring_to_netdev(ring);
-+	struct hns3_nic_priv *priv = netdev_priv(netdev);
-+
-+	/* when tx push is enabled, the packet whose number of BD below
-+	 * HNS3_MAX_PUSH_BD_NUM can be pushed directly.
-+	 */
-+	if (test_bit(HNS3_NIC_STATE_TX_PUSH_ENABLE, &priv->state) && num &&
-+	    !ring->pending_buf && num <= HNS3_MAX_PUSH_BD_NUM && doorbell) {
-+		hns3_tx_push_bd(ring, num);
-+		WRITE_ONCE(ring->last_to_use, ring->next_to_use);
-+		return;
-+	}
-+
- 	ring->pending_buf += num;
- 
- 	if (!doorbell) {
-@@ -2038,11 +2102,12 @@ static void hns3_tx_doorbell(struct hns3_enet_ring *ring, int num,
- 		return;
- 	}
- 
--	if (!ring->pending_buf)
--		return;
-+	if (ring->tqp->mem_base)
-+		hns3_tx_mem_doorbell(ring);
-+	else
-+		writel(ring->pending_buf,
-+		       ring->tqp->io_base + HNS3_RING_TX_RING_TAIL_REG);
- 
--	writel(ring->pending_buf,
--	       ring->tqp->io_base + HNS3_RING_TX_RING_TAIL_REG);
- 	ring->pending_buf = 0;
- 	WRITE_ONCE(ring->last_to_use, ring->next_to_use);
- }
-@@ -2732,6 +2797,9 @@ static void hns3_dump_queue_stats(struct net_device *ndev,
- 		    "seg_pkt_cnt: %llu, tx_more: %llu, restart_queue: %llu, tx_busy: %llu\n",
- 		    tx_ring->stats.seg_pkt_cnt, tx_ring->stats.tx_more,
- 		    tx_ring->stats.restart_queue, tx_ring->stats.tx_busy);
-+
-+	netdev_info(ndev, "tx_push: %llu, tx_mem_doorbell: %llu\n",
-+		    tx_ring->stats.tx_push, tx_ring->stats.tx_mem_doorbell);
- }
- 
- static void hns3_dump_queue_reg(struct net_device *ndev,
-@@ -5094,6 +5162,9 @@ static void hns3_state_init(struct hnae3_handle *handle)
- 
- 	set_bit(HNS3_NIC_STATE_INITED, &priv->state);
- 
-+	if (test_bit(HNAE3_DEV_SUPPORT_TX_PUSH_B, ae_dev->caps))
-+		set_bit(HNS3_NIC_STATE_TX_PUSH_ENABLE, &priv->state);
-+
- 	if (ae_dev->dev_version >= HNAE3_DEVICE_VERSION_V3)
- 		set_bit(HNAE3_PFLAG_LIMIT_PROMISC, &handle->supported_pflags);
- 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-index a05a0c7423ce..4a3253692dcc 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-@@ -7,6 +7,7 @@
- #include <linux/dim.h>
- #include <linux/if_vlan.h>
- #include <net/page_pool.h>
-+#include <asm/barrier.h>
- 
- #include "hnae3.h"
- 
-@@ -25,9 +26,12 @@ enum hns3_nic_state {
- 	HNS3_NIC_STATE2_RESET_REQUESTED,
- 	HNS3_NIC_STATE_HW_TX_CSUM_ENABLE,
- 	HNS3_NIC_STATE_RXD_ADV_LAYOUT_ENABLE,
-+	HNS3_NIC_STATE_TX_PUSH_ENABLE,
- 	HNS3_NIC_STATE_MAX
- };
- 
-+#define HNS3_MAX_PUSH_BD_NUM		2
-+
- #define HNS3_RING_RX_RING_BASEADDR_L_REG	0x00000
- #define HNS3_RING_RX_RING_BASEADDR_H_REG	0x00004
- #define HNS3_RING_RX_RING_BD_NUM_REG		0x00008
-@@ -410,6 +414,8 @@ struct ring_stats {
- 			u64 tx_pkts;
- 			u64 tx_bytes;
- 			u64 tx_more;
-+			u64 tx_push;
-+			u64 tx_mem_doorbell;
- 			u64 restart_queue;
- 			u64 tx_busy;
- 			u64 tx_copy;
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-index c06c39ece80d..6469238ae090 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-@@ -23,6 +23,8 @@ static const struct hns3_stats hns3_txq_stats[] = {
- 	HNS3_TQP_STAT("packets", tx_pkts),
- 	HNS3_TQP_STAT("bytes", tx_bytes),
- 	HNS3_TQP_STAT("more", tx_more),
-+	HNS3_TQP_STAT("push", tx_push),
-+	HNS3_TQP_STAT("mem_doorbell", tx_mem_doorbell),
- 	HNS3_TQP_STAT("wake", restart_queue),
- 	HNS3_TQP_STAT("busy", tx_busy),
- 	HNS3_TQP_STAT("copy", tx_copy),
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 24f7afacae02..78d0498bdabc 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -1643,6 +1643,7 @@ static int hclge_config_gro(struct hclge_dev *hdev)
- 
- static int hclge_alloc_tqps(struct hclge_dev *hdev)
- {
-+	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(hdev->pdev);
- 	struct hclge_comm_tqp *tqp;
- 	int i;
- 
-@@ -1676,6 +1677,14 @@ static int hclge_alloc_tqps(struct hclge_dev *hdev)
- 					 (i - HCLGE_TQP_MAX_SIZE_DEV_V2) *
- 					 HCLGE_TQP_REG_SIZE;
- 
-+		/* when device supports tx push and has device memory,
-+		 * the queue can execute push mode or doorbell mode on
-+		 * device memory.
-+		 */
-+		if (test_bit(HNAE3_DEV_SUPPORT_TX_PUSH_B, ae_dev->caps))
-+			tqp->q.mem_base = hdev->hw.hw.mem_base +
-+					  HCLGE_TQP_MEM_OFFSET(hdev, i);
-+
- 		tqp++;
- 	}
- 
-@@ -11008,8 +11017,6 @@ static void hclge_uninit_client_instance(struct hnae3_client *client,
- 
- static int hclge_dev_mem_map(struct hclge_dev *hdev)
- {
--#define HCLGE_MEM_BAR		4
--
- 	struct pci_dev *pdev = hdev->pdev;
- 	struct hclge_hw *hw = &hdev->hw;
- 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-index adfb26e79262..f7f5a4b09068 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-@@ -169,6 +169,14 @@ enum HLCGE_PORT_TYPE {
- #define HCLGE_VECTOR0_ALL_MSIX_ERR_B	6U
- #define HCLGE_TRIGGER_IMP_RESET_B	7U
- 
-+#define HCLGE_TQP_MEM_SIZE		0x10000
-+#define HCLGE_MEM_BAR			4
-+/* in the bar4, the first half is for roce, and the second half is for nic */
-+#define HCLGE_NIC_MEM_OFFSET(hdev)	\
-+	(pci_resource_len((hdev)->pdev, HCLGE_MEM_BAR) >> 1)
-+#define HCLGE_TQP_MEM_OFFSET(hdev, i)	\
-+	(HCLGE_NIC_MEM_OFFSET(hdev) + HCLGE_TQP_MEM_SIZE * (i))
-+
- #define HCLGE_MAC_DEFAULT_FRAME \
- 	(ETH_HLEN + ETH_FCS_LEN + 2 * VLAN_HLEN + ETH_DATA_LEN)
- #define HCLGE_MAC_MIN_FRAME		64
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-index 21442a9bb996..93389bec8d89 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-@@ -321,6 +321,7 @@ static int hclgevf_get_pf_media_type(struct hclgevf_dev *hdev)
- 
- static int hclgevf_alloc_tqps(struct hclgevf_dev *hdev)
- {
-+	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(hdev->pdev);
- 	struct hclge_comm_tqp *tqp;
- 	int i;
- 
-@@ -354,6 +355,14 @@ static int hclgevf_alloc_tqps(struct hclgevf_dev *hdev)
- 					 (i - HCLGEVF_TQP_MAX_SIZE_DEV_V2) *
- 					 HCLGEVF_TQP_REG_SIZE;
- 
-+		/* when device supports tx push and has device memory,
-+		 * the queue can execute push mode or doorbell mode on
-+		 * device memory.
-+		 */
-+		if (test_bit(HNAE3_DEV_SUPPORT_TX_PUSH_B, ae_dev->caps))
-+			tqp->q.mem_base = hdev->hw.hw.mem_base +
-+					  HCLGEVF_TQP_MEM_OFFSET(hdev, i);
-+
- 		tqp++;
- 	}
- 
-@@ -2546,8 +2555,6 @@ static void hclgevf_uninit_client_instance(struct hnae3_client *client,
- 
- static int hclgevf_dev_mem_map(struct hclgevf_dev *hdev)
- {
--#define HCLGEVF_MEM_BAR		4
--
- 	struct pci_dev *pdev = hdev->pdev;
- 	struct hclgevf_hw *hw = &hdev->hw;
- 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h
-index 502ca1ce1a90..4b00fd44f118 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h
-@@ -96,6 +96,14 @@
- 
- #define HCLGEVF_RSS_IND_TBL_SIZE		512
- 
-+#define HCLGEVF_TQP_MEM_SIZE		0x10000
-+#define HCLGEVF_MEM_BAR			4
-+/* in the bar4, the first half is for roce, and the second half is for nic */
-+#define HCLGEVF_NIC_MEM_OFFSET(hdev)	\
-+	(pci_resource_len((hdev)->pdev, HCLGEVF_MEM_BAR) >> 1)
-+#define HCLGEVF_TQP_MEM_OFFSET(hdev, i)		\
-+	(HCLGEVF_NIC_MEM_OFFSET(hdev) + HCLGEVF_TQP_MEM_SIZE * (i))
-+
- #define HCLGEVF_MAC_MAX_FRAME		9728
- 
- #define HCLGEVF_STATS_TIMER_INTERVAL	36U
+ #endif
+ #endif
 -- 
-2.33.0
+2.25.1
 
