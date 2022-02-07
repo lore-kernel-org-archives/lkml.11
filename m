@@ -2,98 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 317F3C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:31:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92A86C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:31:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350709AbiBGQ3l (ORCPT
+        id S1344026AbiBGQ31 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:29:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60874 "EHLO
+        Mon, 7 Feb 2022 11:29:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389692AbiBGQ0I (ORCPT
+        with ESMTP id S1388673AbiBGQSH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 11:26:08 -0500
-Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9BFDCC0401CE
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:26:07 -0800 (PST)
-Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 217GOg9S014427;
-        Mon, 7 Feb 2022 17:24:42 +0100
-From:   Willy Tarreau <w@1wt.eu>
-To:     "Paul E . McKenney" <paulmck@kernel.org>
-Cc:     Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org,
-        Willy Tarreau <w@1wt.eu>
-Subject: [PATCH 41/42] tools/nolibc: also mention how to build by just setting the include path
-Date:   Mon,  7 Feb 2022 17:23:53 +0100
-Message-Id: <20220207162354.14293-42-w@1wt.eu>
-X-Mailer: git-send-email 2.17.5
-In-Reply-To: <20220207162354.14293-1-w@1wt.eu>
-References: <20220207162354.14293-1-w@1wt.eu>
+        Mon, 7 Feb 2022 11:18:07 -0500
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62507C0401CF
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:18:06 -0800 (PST)
+Received: by mail-qk1-x732.google.com with SMTP id m25so11315231qka.9
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 08:18:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=IY0dceDT9dYbKD+xsO5uBuadIdWxFI7kmNxQxA0NqII=;
+        b=MUHve6+77XYiq1E/DYvBhzenbkXs+FFQQk8DazktiXiFmtxcmKKZfeaBXwb/d5/pEI
+         1v2sFMowrQLpqo2HU3dpAZIOYjoyrFaXz3zOzW3kkzupOT87jbkiL8B7NTCw8tLHdwSA
+         HXPiCOEbXekgCM7f++IIHSI+9ngBpjpoj4VDX9SbAnX5sJ/xhlozDIxTJH4tq0rfEAtx
+         0a5d+7Nw/7ZaGsjRECF11gjJuBeLlyfK42YsJDHvHSET5iWxOSGpt48A1nINzH9NMo1f
+         bg2TkqCrM7cTvVtHBeCGiW0uaCd9dstWI0puNh1HXrJtaQEMHWctYbwqWOrZ6vtCGb20
+         qfuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=IY0dceDT9dYbKD+xsO5uBuadIdWxFI7kmNxQxA0NqII=;
+        b=L/CY/s2ZjH5k8Y0Qd4zRWFGJGhO4k/49PwU7iIkJP1mCRrKgVh8gV8WfnXd/rjSKS/
+         U4h/dllN4yCyD0FX7E+sn1puVGM/YbqrXYa1uQdTiakPxgyf+VAN3Camn1EKFsCLaS9h
+         vTuHK0zsIQkCScLwWM2bKBu9fVi7hHP0F5ThspOmYZ4P5CrrMzwHGkGYwGrPeP26639e
+         lzWXC32VGTyiagykKxakuyNZ8Am4IKpXsxnx8+UASvgMUGzIUrJmsGX7q8Xf9iBoxHYJ
+         S6PU4ZQ07UcJ9i7rH4VjyGsyOTjFwGHOJlt22MmbEzbllbN+zrrLsYMY3VS9G10AQZs8
+         S25Q==
+X-Gm-Message-State: AOAM533nt5/WRy+wiUWc456mhFH7AdKp8j2PHvDoavxYN6bQWLzGqi1t
+        EuZC0TktN4jDfmd1YNV0UFfYdQ==
+X-Google-Smtp-Source: ABdhPJwMJ8IhbFQ21vOuTbBXoJvRIp+3/JiRZMP+aPAe8rgWv6GrpwemKSjP4/jjTkjQCTaBu3Dcxw==
+X-Received: by 2002:a37:b445:: with SMTP id d66mr343666qkf.144.1644250685600;
+        Mon, 07 Feb 2022 08:18:05 -0800 (PST)
+Received: from localhost (cpe-98-15-154-102.hvc.res.rr.com. [98.15.154.102])
+        by smtp.gmail.com with ESMTPSA id k190sm5520250qkf.59.2022.02.07.08.18.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 08:18:05 -0800 (PST)
+Date:   Mon, 7 Feb 2022 11:18:04 -0500
+From:   Johannes Weiner <hannes@cmpxchg.org>
+To:     Huang Ying <ying.huang@intel.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Mel Gorman <mgorman@suse.de>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, Feng Tang <feng.tang@intel.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Michal Hocko <mhocko@suse.com>,
+        Rik van Riel <riel@surriel.com>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Zi Yan <ziy@nvidia.com>, Wei Xu <weixugc@google.com>,
+        osalvador <osalvador@suse.de>,
+        Shakeel Butt <shakeelb@google.com>,
+        zhongjiang-ali <zhongjiang-ali@linux.alibaba.com>
+Subject: Re: [PATCH -V11 1/3] NUMA Balancing: add page promotion counter
+Message-ID: <YgFGPMCfWb8CK5mn@cmpxchg.org>
+References: <20220128082751.593478-1-ying.huang@intel.com>
+ <20220128082751.593478-2-ying.huang@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220128082751.593478-2-ying.huang@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that a few basic include files are provided, some simple portable
-programs may build, which will save them from having to surround their
-includes with #ifndef NOLIBC. This patch mentions how to proceed, and
-enumerates the list of files that are covered.
+On Fri, Jan 28, 2022 at 04:27:49PM +0800, Huang Ying wrote:
+> In a system with multiple memory types, e.g. DRAM and PMEM, the CPU
+> and DRAM in one socket will be put in one NUMA node as before, while
+> the PMEM will be put in another NUMA node as described in the
+> description of the commit c221c0b0308f ("device-dax: "Hotplug"
+> persistent memory for use like normal RAM").  So, the NUMA balancing
+> mechanism will identify all PMEM accesses as remote access and try to
+> promote the PMEM pages to DRAM.
+> 
+> To distinguish the number of the inter-type promoted pages from that
+> of the inter-socket migrated pages.  A new vmstat count is added.  The
+> counter is per-node (count in the target node).  So this can be used
+> to identify promotion imbalance among the NUMA nodes.
+> 
+> Signed-off-by: "Huang, Ying" <ying.huang@intel.com>
+> Reviewed-by: Yang Shi <shy828301@gmail.com>
+> Tested-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+> Reviewed-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+> Cc: Andrew Morton <akpm@linux-foundation.org>
+> Cc: Michal Hocko <mhocko@suse.com>
+> Cc: Rik van Riel <riel@surriel.com>
+> Cc: Mel Gorman <mgorman@techsingularity.net>
+> Cc: Peter Zijlstra <peterz@infradead.org>
+> Cc: Dave Hansen <dave.hansen@linux.intel.com>
+> Cc: Zi Yan <ziy@nvidia.com>
+> Cc: Wei Xu <weixugc@google.com>
+> Cc: osalvador <osalvador@suse.de>
+> Cc: Shakeel Butt <shakeelb@google.com>
+> Cc: zhongjiang-ali <zhongjiang-ali@linux.alibaba.com>
+> Cc: linux-kernel@vger.kernel.org
+> Cc: linux-mm@kvack.org
 
-A comprehensive list of required include files is available here:
-
-  https://en.cppreference.com/w/c/header
-
-Signed-off-by: Willy Tarreau <w@1wt.eu>
----
- tools/include/nolibc/nolibc.h | 30 ++++++++++++++++++++----------
- 1 file changed, 20 insertions(+), 10 deletions(-)
-
-diff --git a/tools/include/nolibc/nolibc.h b/tools/include/nolibc/nolibc.h
-index 561dcdb83cee..b2bc48d3cfe4 100644
---- a/tools/include/nolibc/nolibc.h
-+++ b/tools/include/nolibc/nolibc.h
-@@ -57,22 +57,32 @@
-  * having to specify anything.
-  *
-  * Finally some very common libc-level functions are provided. It is the case
-- * for a few functions usually found in string.h, ctype.h, or stdlib.h. Nothing
-- * is currently provided regarding stdio emulation.
-+ * for a few functions usually found in string.h, ctype.h, or stdlib.h.
-  *
-- * The macro NOLIBC is always defined, so that it is possible for a program to
-- * check this macro to know if it is being built against and decide to disable
-- * some features or simply not to include some standard libc files.
-- *
-- * Ideally this file should be split in multiple files for easier long term
-- * maintenance, but provided as a single file as it is now, it's quite
-- * convenient to use. Maybe some variations involving a set of includes at the
-- * top could work.
-+ * The nolibc.h file is only a convenient entry point which includes all other
-+ * files. It also defines the NOLIBC macro, so that it is possible for a
-+ * program to check this macro to know if it is being built against and decide
-+ * to disable some features or simply not to include some standard libc files.
-  *
-  * A simple static executable may be built this way :
-  *      $ gcc -fno-asynchronous-unwind-tables -fno-ident -s -Os -nostdlib \
-  *            -static -include nolibc.h -o hello hello.c -lgcc
-  *
-+ * Simple programs meant to be reasonably portable to various libc and using
-+ * only a few common includes, may also be built by simply making the include
-+ * path point to the nolibc directory:
-+ *      $ gcc -fno-asynchronous-unwind-tables -fno-ident -s -Os -nostdlib \
-+ *            -I../nolibc -o hello hello.c -lgcc
-+ *
-+ * The available standard (but limited) include files are:
-+ *   ctype.h, errno.h, signal.h, stdio.h, stdlib.h, string.h, time.h
-+ *
-+ * In addition, the following ones are expected to be provided by the compiler:
-+ *   float.h, stdarg.h, stddef.h
-+ *
-+ * The following ones which are part to the C standard are not provided:
-+ *   assert.h, locale.h, math.h, setjmp.h, limits.h
-+ *
-  * A very useful calling convention table may be found here :
-  *      http://man7.org/linux/man-pages/man2/syscall.2.html
-  *
--- 
-2.35.1
-
+Acked-by: Johannes Weiner <hannes@cmpxchg.org>
