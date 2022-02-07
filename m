@@ -2,84 +2,231 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3587DC4707E
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:13:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33B85C35270
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:13:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448584AbiBGNMD (ORCPT
+        id S1448553AbiBGNL4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:12:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43810 "EHLO
+        Mon, 7 Feb 2022 08:11:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442706AbiBGMjV (ORCPT
+        with ESMTP id S1392273AbiBGMJG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 07:39:21 -0500
-X-Greylist: delayed 2993 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 04:30:10 PST
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACF90C1DE9E0;
-        Mon,  7 Feb 2022 04:30:10 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 287B561136;
-        Mon,  7 Feb 2022 12:30:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8EE75C340F1;
-        Mon,  7 Feb 2022 12:30:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644237009;
-        bh=TQttV9rtYzqhHfeNBQDxHl8A0+m6499YWV2geA1yai4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=b/+fctSGj5ic+2tFBcfPVDEQx26Lcov/5B0JZ5aOKnfW5IS/9uxUXpvBohbBzVb3K
-         RZBh1GqFn3fpcwqHsvmfgD89iB3NIHkPciC6fCO1lyRcB8+5rrdjHKehiV7STxlGm4
-         XNM0APROX/eOBg9yA7xeqERMkfObLGA+acvvaSgNt3LAFW3FBMDr39RH+CdzhwITLf
-         xDAPRnQBL4NvR0ACmQFajIeSlqNrvvJ93306Xl9mEtzWABeP+XJfbT77yoNbwTw9HU
-         +vgQu7ahStVjp5BS0bCbyiETta7/Jvc8SDmVZVtNkULRoF8j9pxgtruRavP7bSfoXP
-         8tTcfqeCYNjAw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7A4CDE5CF96;
-        Mon,  7 Feb 2022 12:30:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Mon, 7 Feb 2022 07:09:06 -0500
+X-Greylist: delayed 368 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 04:01:45 PST
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AA8EC03FED2;
+        Mon,  7 Feb 2022 04:01:45 -0800 (PST)
+Received: from fraeml710-chm.china.huawei.com (unknown [172.18.147.200])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Jskkk5Zbgz67y8Z;
+        Mon,  7 Feb 2022 19:41:50 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml710-chm.china.huawei.com (10.206.15.59) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Mon, 7 Feb 2022 12:42:31 +0100
+Received: from localhost (10.202.226.41) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Mon, 7 Feb
+ 2022 11:42:29 +0000
+Date:   Mon, 7 Feb 2022 11:42:28 +0000
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     Yicong Yang <yangyicong@hisilicon.com>
+CC:     <gregkh@linuxfoundation.org>, <helgaas@kernel.org>,
+        <alexander.shishkin@linux.intel.com>, <lorenzo.pieralisi@arm.com>,
+        <will@kernel.org>, <mark.rutland@arm.com>,
+        <mathieu.poirier@linaro.org>, <suzuki.poulose@arm.com>,
+        <mike.leach@linaro.org>, <leo.yan@linaro.org>,
+        <daniel.thompson@linaro.org>, <joro@8bytes.org>,
+        <john.garry@huawei.com>, <shameerali.kolothum.thodi@huawei.com>,
+        <robin.murphy@arm.com>, <peterz@infradead.org>, <mingo@redhat.com>,
+        <acme@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <coresight@lists.linaro.org>, <linux-pci@vger.kernel.org>,
+        <linux-perf-users@vger.kernel.org>,
+        <iommu@lists.linux-foundation.org>, <prime.zeng@huawei.com>,
+        <liuqi115@huawei.com>, <zhangshaokun@hisilicon.com>,
+        <linuxarm@huawei.com>, <song.bao.hua@hisilicon.com>
+Subject: Re: [PATCH v3 2/8] hisi_ptt: Register PMU device for PTT trace
+Message-ID: <20220207114228.00002e6f@Huawei.com>
+In-Reply-To: <20220124131118.17887-3-yangyicong@hisilicon.com>
+References: <20220124131118.17887-1-yangyicong@hisilicon.com>
+        <20220124131118.17887-3-yangyicong@hisilicon.com>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: asix: add proper error handling of usb read
- errors
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164423700949.1174.9751271199804188333.git-patchwork-notify@kernel.org>
-Date:   Mon, 07 Feb 2022 12:30:09 +0000
-References: <20220206180516.28439-1-paskripkin@gmail.com>
-In-Reply-To: <20220206180516.28439-1-paskripkin@gmail.com>
-To:     Pavel Skripkin <paskripkin@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, linux@rempel-privat.de,
-        andrew@lunn.ch, oneukum@suse.com, robert.foss@collabora.com,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        syzbot+6ca9f7867b77c2d316ac@syzkaller.appspotmail.com,
-        o.rempel@pengutronix.de
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.202.226.41]
+X-ClientProxiedBy: lhreml733-chm.china.huawei.com (10.201.108.84) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+On Mon, 24 Jan 2022 21:11:12 +0800
+Yicong Yang <yangyicong@hisilicon.com> wrote:
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Sun,  6 Feb 2022 21:05:16 +0300 you wrote:
-> Syzbot once again hit uninit value in asix driver. The problem still the
-> same -- asix_read_cmd() reads less bytes, than was requested by caller.
+> Register PMU device of PTT trace, then users can use
+> trace through perf command. The driver makes use of perf
+> AUX trace and support following events to configure the
+> trace:
 > 
-> Since all read requests are performed via asix_read_cmd() let's catch
-> usb related error there and add __must_check notation to be sure all
-> callers actually check return value.
+> - filter: select Root port or Endpoint to trace
+> - type: select the type of traced TLP headers
+> - direction: select the direction of traced TLP headers
+> - format: select the data format of the traced TLP headers
 > 
-> [...]
+> This patch adds the PMU driver part of PTT trace. The perf
+> command support of PTT trace is added in the following
+> patch.
+> 
+> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+> ---
 
-Here is the summary with links:
-  - [net-next] net: asix: add proper error handling of usb read errors
-    https://git.kernel.org/netdev/net-next/c/920a9fa27e78
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> @@ -294,6 +346,405 @@ static void hisi_ptt_init_ctrls(struct hisi_ptt *hisi_ptt)
+>  	hisi_ptt->trace_ctrl.default_cpu = cpumask_first(cpumask_of_node(dev_to_node(&pdev->dev)));
+>  }
+>  
+> +#define HISI_PTT_PMU_FILTER_IS_PORT	BIT(19)
+> +#define HISI_PTT_PMU_FILTER_VAL_MASK	GENMASK(15, 0)
+> +#define HISI_PTT_PMU_DIRECTION_MASK	GENMASK(23, 20)
+> +#define HISI_PTT_PMU_TYPE_MASK		GENMASK(31, 24)
+> +#define HISI_PTT_PMU_FORMAT_MASK	GENMASK(35, 32)
+> +
+> +static ssize_t available_filters_show(struct device *dev,
+> +				      struct device_attribute *attr,
+> +				      char *buf)
+> +{
+> +	struct hisi_ptt *hisi_ptt = to_hisi_ptt(dev_get_drvdata(dev));
+> +	struct hisi_ptt_filter_desc *filter;
+> +	int pos = 0;
+> +
+> +	if (list_empty(&hisi_ptt->port_filters))
+> +		return sysfs_emit(buf, "#### No available filter ####\n");
+> +
 
+This is a very unusual sysfs attribute.
+They are supposed to be one "thing" per file, so I'd have expected this to
+be at least two files
+
+root_ports_available_filters
+request_available_filters
+and no available filter is indicated by these attribute returning an empty
+string.
+
+However you need to match convention for hwtracing drivers so if
+this is common approach perhaps you could point me to a similar
+example? My grep skills didn't find me one.
+
+> +	mutex_lock(&hisi_ptt->mutex);
+> +	pos += sysfs_emit_at(buf, pos, "#### Root Ports ####\n");
+> +	list_for_each_entry(filter, &hisi_ptt->port_filters, list)
+> +		pos += sysfs_emit_at(buf, pos, "%s	0x%05lx\n",
+> +				     pci_name(filter->pdev),
+> +				     hisi_ptt_get_filter_val(filter->pdev) |
+> +				     HISI_PTT_PMU_FILTER_IS_PORT);
+> +
+> +	pos += sysfs_emit_at(buf, pos, "#### Requesters ####\n");
+> +	list_for_each_entry(filter, &hisi_ptt->req_filters, list)
+> +		pos += sysfs_emit_at(buf, pos, "%s	0x%05x\n",
+> +				     pci_name(filter->pdev),
+> +				     hisi_ptt_get_filter_val(filter->pdev));
+> +
+> +	mutex_unlock(&hisi_ptt->mutex);
+> +	return pos;
+> +}
+> +static DEVICE_ATTR_ADMIN_RO(available_filters);
+> +
+
+...
+
+
+> +static int hisi_ptt_trace_valid_config_onehot(u32 val, u32 *available_list, u32 list_size)
+> +{
+> +	int i, ret = -EINVAL;
+> +
+> +	for (i = 0; i < list_size; i++)
+> +		if (val == available_list[i]) {
+> +			ret = 0;
+
+return 0;
+
+> +			break;
+> +		}
+> +
+> +	return ret;
+
+return -EINVAL;
+
+> +}
+> +
+
+> +
+> +static void hisi_ptt_pmu_free_aux(void *aux)
+> +{
+> +	struct hisi_ptt_pmu_buf *buf = aux;
+> +
+> +	vunmap(buf->base);
+> +	kfree(buf);
+> +}
+> +
+
+
+...
+
+> +static int hisi_ptt_pmu_add(struct perf_event *event, int flags)
+> +{
+> +	struct hisi_ptt *hisi_ptt = to_hisi_ptt(event->pmu);
+> +	struct hw_perf_event *hwc = &event->hw;
+> +	int cpu = event->cpu;
+> +
+> +	if (cpu == -1 && smp_processor_id() != hisi_ptt->trace_ctrl.default_cpu)
+
+This check is not entirely obvious to me. Perhaps a comment would help
+readers understand why this condition is successful, but doesn't involve
+actually starting the pmu?
+
+> +		return 0;
+> +
+> +	hwc->state = PERF_HES_STOPPED | PERF_HES_UPTODATE;
+> +
+> +	if (flags & PERF_EF_START) {
+> +		hisi_ptt_pmu_start(event, PERF_EF_RELOAD);
+> +		if (hwc->state & PERF_HES_STOPPED)
+> +			return -EINVAL;
+> +	}
+> +
+> +	return 0;
+> +}
+
+...
+
+>  /*
+>   * The DMA of PTT trace can only use direct mapping, due to some
+>   * hardware restriction. Check whether there is an iommu or the
+> @@ -359,6 +810,12 @@ static int hisi_ptt_probe(struct pci_dev *pdev,
+>  
+>  	hisi_ptt_init_ctrls(hisi_ptt);
+>  
+> +	ret = hisi_ptt_register_pmu(hisi_ptt);
+> +	if (ret) {
+> +		pci_err(pdev, "failed to register pmu device, ret = %d", ret);
+
+Given I think this exposes userspace interfaces, it should be the very
+last thing done in probe(). Otherwise we have a race condition (at least in
+theory) where someone starts using it before we then fail the iommu mapping check.
+
+
+> +		return ret;
+> +	}
+> +
+>  	ret = hisi_ptt_check_iommu_mapping(hisi_ptt);
+>  	if (ret) {
+>  		pci_err(pdev, "cannot work with non-direct DMA mapping.\n");
+
+Thanks,
+
+Jonathan
 
