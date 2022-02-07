@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05247C35272
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:18:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA048C4707E
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:18:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376531AbiBGLPL (ORCPT
+        id S1376368AbiBGLPG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:15:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49474 "EHLO
+        Mon, 7 Feb 2022 06:15:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348918AbiBGLLn (ORCPT
+        with ESMTP id S1346602AbiBGLLh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:11:43 -0500
+        Mon, 7 Feb 2022 06:11:37 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E915FC043188;
-        Mon,  7 Feb 2022 03:11:42 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A521AC043181;
+        Mon,  7 Feb 2022 03:11:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C01361261;
-        Mon,  7 Feb 2022 11:11:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4724BC004E1;
-        Mon,  7 Feb 2022 11:11:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 339E761380;
+        Mon,  7 Feb 2022 11:11:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FCA1C004E1;
+        Mon,  7 Feb 2022 11:11:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232301;
-        bh=SYEi1y8BNmjcAX9A5+V0ogtiPcy/9q3B6MvHlLxKGk0=;
+        s=korg; t=1644232295;
+        bh=2hFdd0xMDn5HK8j7fxPcaYKJ6tgdu/qrgj577VVnQKA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WnZG1YgOErxbBF1Dk099t81pYIVEbDO5AJBkJlxJ+52i0b0AzB8Cn/Duu3bTEe44P
-         mxsU/vXVoAmITbjQzqUsvSkRC9QqoBZ8C9wQCBaaqBVR56G5rh56UUgeldoml9HXcl
-         DkwlRXKiqNgLkdsn2ebq/N2f9fJmZTmjZiKI2sL4=
+        b=iu4lBDEks9cqopLV99xIpMACL0IDjAPoZhifL5TS/RpQE9q61AeerP8f1Uq/rZvu5
+         FKIeJetdGYqpJ2R07l8DMscyLd8j3dlA2AVNUJzWPmhWK0Q2KNTA/AEal60q9Q3PMh
+         dWKP5JF6jDVoG2goFWx51XHpJ50YNOWs4j1vIGnk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Subject: [PATCH 4.14 33/69] drm/msm/dsi: invalid parameter check in msm_dsi_phy_enable
-Date:   Mon,  7 Feb 2022 12:05:55 +0100
-Message-Id: <20220207103756.718127401@linuxfoundation.org>
+        stable@vger.kernel.org, Jianguo Wu <wujianguo@chinatelecom.cn>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 4.14 31/69] net-procfs: show net devices bound packet types
+Date:   Mon,  7 Feb 2022 12:05:53 +0100
+Message-Id: <20220207103756.643500459@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103755.604121441@linuxfoundation.org>
 References: <20220207103755.604121441@linuxfoundation.org>
@@ -50,44 +49,112 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: José Expósito <jose.exposito89@gmail.com>
+From: Jianguo Wu <wujianguo@chinatelecom.cn>
 
-commit 5e761a2287234bc402ba7ef07129f5103bcd775c upstream.
+commit 1d10f8a1f40b965d449e8f2d5ed7b96a7c138b77 upstream.
 
-The function performs a check on the "phy" input parameter, however, it
-is used before the check.
+After commit:7866a621043f ("dev: add per net_device packet type chains"),
+we can not get packet types that are bound to a specified net device by
+/proc/net/ptype, this patch fix the regression.
 
-Initialize the "dev" variable after the sanity check to avoid a possible
-NULL pointer dereference.
+Run "tcpdump -i ens192 udp -nns0" Before and after apply this patch:
 
-Fixes: 5c8290284402b ("drm/msm/dsi: Split PHY drivers to separate files")
-Addresses-Coverity-ID: 1493860 ("Null pointer dereference")
-Signed-off-by: José Expósito <jose.exposito89@gmail.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Link: https://lore.kernel.org/r/20220116181844.7400-1-jose.exposito89@gmail.com
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Before:
+  [root@localhost ~]# cat /proc/net/ptype
+  Type Device      Function
+  0800          ip_rcv
+  0806          arp_rcv
+  86dd          ipv6_rcv
+
+After:
+  [root@localhost ~]# cat /proc/net/ptype
+  Type Device      Function
+  ALL  ens192   tpacket_rcv
+  0800          ip_rcv
+  0806          arp_rcv
+  86dd          ipv6_rcv
+
+v1 -> v2:
+  - fix the regression rather than adding new /proc API as
+    suggested by Stephen Hemminger.
+
+Fixes: 7866a621043f ("dev: add per net_device packet type chains")
+Signed-off-by: Jianguo Wu <wujianguo@chinatelecom.cn>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/msm/dsi/phy/dsi_phy.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ net/core/net-procfs.c |   35 ++++++++++++++++++++++++++++++++---
+ 1 file changed, 32 insertions(+), 3 deletions(-)
 
---- a/drivers/gpu/drm/msm/dsi/phy/dsi_phy.c
-+++ b/drivers/gpu/drm/msm/dsi/phy/dsi_phy.c
-@@ -554,12 +554,14 @@ void __exit msm_dsi_phy_driver_unregiste
- int msm_dsi_phy_enable(struct msm_dsi_phy *phy, int src_pll_id,
- 			struct msm_dsi_phy_clk_request *clk_req)
+--- a/net/core/net-procfs.c
++++ b/net/core/net-procfs.c
+@@ -209,12 +209,23 @@ static const struct file_operations soft
+ 	.release = seq_release,
+ };
+ 
+-static void *ptype_get_idx(loff_t pos)
++static void *ptype_get_idx(struct seq_file *seq, loff_t pos)
  {
--	struct device *dev = &phy->pdev->dev;
-+	struct device *dev;
- 	int ret;
++	struct list_head *ptype_list = NULL;
+ 	struct packet_type *pt = NULL;
++	struct net_device *dev;
+ 	loff_t i = 0;
+ 	int t;
  
- 	if (!phy || !phy->cfg->ops.enable)
- 		return -EINVAL;
- 
-+	dev = &phy->pdev->dev;
++	for_each_netdev_rcu(seq_file_net(seq), dev) {
++		ptype_list = &dev->ptype_all;
++		list_for_each_entry_rcu(pt, ptype_list, list) {
++			if (i == pos)
++				return pt;
++			++i;
++		}
++	}
 +
- 	ret = dsi_phy_enable_resource(phy);
- 	if (ret) {
- 		dev_err(dev, "%s: resource enable failed, %d\n",
+ 	list_for_each_entry_rcu(pt, &ptype_all, list) {
+ 		if (i == pos)
+ 			return pt;
+@@ -235,22 +246,40 @@ static void *ptype_seq_start(struct seq_
+ 	__acquires(RCU)
+ {
+ 	rcu_read_lock();
+-	return *pos ? ptype_get_idx(*pos - 1) : SEQ_START_TOKEN;
++	return *pos ? ptype_get_idx(seq, *pos - 1) : SEQ_START_TOKEN;
+ }
+ 
+ static void *ptype_seq_next(struct seq_file *seq, void *v, loff_t *pos)
+ {
++	struct net_device *dev;
+ 	struct packet_type *pt;
+ 	struct list_head *nxt;
+ 	int hash;
+ 
+ 	++*pos;
+ 	if (v == SEQ_START_TOKEN)
+-		return ptype_get_idx(0);
++		return ptype_get_idx(seq, 0);
+ 
+ 	pt = v;
+ 	nxt = pt->list.next;
++	if (pt->dev) {
++		if (nxt != &pt->dev->ptype_all)
++			goto found;
++
++		dev = pt->dev;
++		for_each_netdev_continue_rcu(seq_file_net(seq), dev) {
++			if (!list_empty(&dev->ptype_all)) {
++				nxt = dev->ptype_all.next;
++				goto found;
++			}
++		}
++
++		nxt = ptype_all.next;
++		goto ptype_all;
++	}
++
+ 	if (pt->type == htons(ETH_P_ALL)) {
++ptype_all:
+ 		if (nxt != &ptype_all)
+ 			goto found;
+ 		hash = 0;
 
 
