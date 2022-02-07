@@ -2,131 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67D1FC35273
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98E49C35274
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 06:41:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353648AbiBGGhw (ORCPT
+        id S1349787AbiBGGhE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 01:37:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33028 "EHLO
+        Mon, 7 Feb 2022 01:37:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237034AbiBGGdR (ORCPT
+        with ESMTP id S232755AbiBGG35 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 01:33:17 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36474C0401C2
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 22:33:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
-        :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=bye3hAU4tARWJK8GmttNb5Jb+L/Xg96ScGQILFEZXqw=; b=hsJ7H9lud+lJDZXvl9Bclp2Nqf
-        7jlPjB3wm3Z5RnVEJNWD8OVt91a6wwmFBSrcXW/E+1s+bvv/JNDulU7CkWa0kVtiZmFU2OuT5Ybm3
-        vyx5w+ZFrQlmXczMoI5kDDlIEt2+e7OgRqvnhALgxZJaiuBkzEUeBek5tlsNs5TnOG5Ar0cWEwd/b
-        wxIcQQlRyGpDNQaZdj2p+JNAu8ke5GtIOqd3VEK85teirrOPsAyJ4k+Pn888fsrx+UTw5x0ZPAHkK
-        bGRYmlzn8b7/29Y1/dmntmyxysGYtek4tnWS1yLQdmp/OR1mWJUTCwCs33K3C5ulw6SK1H2S8TZqI
-        bEEL+rEA==;
-Received: from [2001:4bb8:188:3efc:2cbe:55d7:bb63:46d2] (helo=localhost)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nGxa7-0099Iq-NG; Mon, 07 Feb 2022 06:33:00 +0000
-From:   Christoph Hellwig <hch@lst.de>
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        Dan Williams <dan.j.williams@intel.com>
-Cc:     Felix Kuehling <Felix.Kuehling@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Karol Herbst <kherbst@redhat.com>,
-        Lyude Paul <lyude@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Alistair Popple <apopple@nvidia.com>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Ralph Campbell <rcampbell@nvidia.com>,
-        linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
-        nvdimm@lists.linux.dev, linux-mm@kvack.org
-Subject: [PATCH 3/8] mm: remove pointless includes from <linux/hmm.h>
-Date:   Mon,  7 Feb 2022 07:32:44 +0100
-Message-Id: <20220207063249.1833066-4-hch@lst.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220207063249.1833066-1-hch@lst.de>
-References: <20220207063249.1833066-1-hch@lst.de>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+        Mon, 7 Feb 2022 01:29:57 -0500
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A211FC043184;
+        Sun,  6 Feb 2022 22:29:56 -0800 (PST)
+Received: by mail-pl1-x62a.google.com with SMTP id u12so3280747plq.10;
+        Sun, 06 Feb 2022 22:29:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :in-reply-to:references;
+        bh=CpQoC6BpaQ14c8xpHvHSZfO/e4PX8wXeyUZwi9sox80=;
+        b=PzxDlZnPz3s/zC5c+Q+Qff1agP8y6AcfDt7nMu1PfK8r7BW3qRjh1ebpf6K0POgcNt
+         TWBRF8ECWbY1cT4urFgVA3pdPlpAGeWGjQ7FTmpWKLa/njcrKtYaX1j1yXbKZVYVR8zP
+         KvdnWhATWQtshPwjcc2JV7JpqtMMgDx6WT1kIOUI1R+eaQc3mTCVeEtghW50usvokPYq
+         /6XaWSIGMl6YDhZFLmSF0hvBUiT7pAOVh2/Ig8Kpf1jxeRDN+B43dxVx+TEqCZ6V2BGp
+         B2HuvJkUItJ9V3cmHUb+liPzbp6E3ur+q0kEMgWeFLNJED18bAOK7pQMmfegmA/cwXbw
+         9O8Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:in-reply-to:references;
+        bh=CpQoC6BpaQ14c8xpHvHSZfO/e4PX8wXeyUZwi9sox80=;
+        b=mvOwbecZ5/VfQNMPrFw2AwBtZ1PbTcQK9LqPMQzr3LHKf4erAgHNR7jEELGlbwK+TF
+         i+Oy9VT/mItE4JqzusKIC1AMYXJhJpsf4BLN+P8X3teY0KvOjz3If3oOrJmTx0pJxJtF
+         7xoeAzbjPHe75cH1aUhgGlkSwsWPykmjDYGSgzmAssKnXsTT6Q2zEMO2LI56qVemYjUq
+         n6V55SE3eng5XeP+Jiddo4eEZDksHOI90GJNEF7dhionMa6e/7bM8iN1Q7qbQ0Ubbh62
+         ztZOpGmIolUkAT8hFxLJROquuKHfeSJt1qGNvuXAHH2Jru/8ScuzNY9sNd+/nKcz9YFq
+         ujcg==
+X-Gm-Message-State: AOAM5339/qut6WkfbCJA2Az5shEeVRcPcv36tIs40u0vq36RPFKNjFfl
+        DurMPGOefUO0gL7o69lkRMI=
+X-Google-Smtp-Source: ABdhPJzMYJ7HvvqDLUzu+yH57sJdcIwB1e5pkvzwAyo0Lb4imKeyCI4hwznQXo/NsOpWwQHAAaxn8w==
+X-Received: by 2002:a17:90b:4f4b:: with SMTP id pj11mr16701231pjb.120.1644215396173;
+        Sun, 06 Feb 2022 22:29:56 -0800 (PST)
+Received: from scdiu3.sunplus.com ([113.196.136.192])
+        by smtp.googlemail.com with ESMTPSA id j8sm3994386pjc.11.2022.02.06.22.29.54
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 06 Feb 2022 22:29:55 -0800 (PST)
+From:   Tony Huang <tonyhuang.sunplus@gmail.com>
+To:     robh+dt@kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, derek.kiernan@xilinx.com,
+        dragan.cvetic@xilinx.com, arnd@arndb.de,
+        gregkh@linuxfoundation.org, tony.huang@sunplus.com,
+        wells.lu@sunplus.com
+Cc:     Tony Huang <tonyhuang.sunplus@gmail.com>
+Subject: [PATCH v8 1/2] dt-binding: misc: Add iop yaml file for Sunplus SP7021
+Date:   Mon,  7 Feb 2022 14:30:05 +0800
+Message-Id: <9aa1c339079d919bd780146a93a6db226486373c.1644212476.git.tonyhuang.sunplus@gmail.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <cover.1644212476.git.tonyhuang.sunplus@gmail.com>
+References: <cover.1644212476.git.tonyhuang.sunplus@gmail.com>
+In-Reply-To: <cover.1644212476.git.tonyhuang.sunplus@gmail.com>
+References: <cover.1644212476.git.tonyhuang.sunplus@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-hmm.h pulls in the world for no good reason at all.  Remove the
-includes and push a few ones into the users instead.
+Add iop yaml file for Sunplus SP7021
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Tony Huang <tonyhuang.sunplus@gmail.com>
 ---
- drivers/gpu/drm/amd/amdkfd/kfd_migrate.c | 1 +
- drivers/gpu/drm/nouveau/nouveau_dmem.c   | 1 +
- include/linux/hmm.h                      | 9 ++-------
- lib/test_hmm.c                           | 2 ++
- 4 files changed, 6 insertions(+), 7 deletions(-)
+Changes in v8:
+ -No change
 
-diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_migrate.c b/drivers/gpu/drm/amd/amdkfd/kfd_migrate.c
-index ed5385137f4831..cb835f95a76e66 100644
---- a/drivers/gpu/drm/amd/amdkfd/kfd_migrate.c
-+++ b/drivers/gpu/drm/amd/amdkfd/kfd_migrate.c
-@@ -24,6 +24,7 @@
- #include <linux/hmm.h>
- #include <linux/dma-direction.h>
- #include <linux/dma-mapping.h>
-+#include <linux/migrate.h>
- #include "amdgpu_sync.h"
- #include "amdgpu_object.h"
- #include "amdgpu_vm.h"
-diff --git a/drivers/gpu/drm/nouveau/nouveau_dmem.c b/drivers/gpu/drm/nouveau/nouveau_dmem.c
-index 3828aafd3ac46f..e886a3b9e08c7d 100644
---- a/drivers/gpu/drm/nouveau/nouveau_dmem.c
-+++ b/drivers/gpu/drm/nouveau/nouveau_dmem.c
-@@ -39,6 +39,7 @@
+ .../devicetree/bindings/misc/sunplus-iop.yaml      | 76 ++++++++++++++++++++++
+ MAINTAINERS                                        |  5 ++
+ 2 files changed, 81 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/misc/sunplus-iop.yaml
+
+diff --git a/Documentation/devicetree/bindings/misc/sunplus-iop.yaml b/Documentation/devicetree/bindings/misc/sunplus-iop.yaml
+new file mode 100644
+index 0000000..b37e697
+--- /dev/null
++++ b/Documentation/devicetree/bindings/misc/sunplus-iop.yaml
+@@ -0,0 +1,76 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++# Copyright (C) Sunplus Ltd. Co. 2021
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/misc/sunplus-iop.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Sunplus IOP(8051) controller
++
++maintainers:
++  - Tony Huang <tonyhuang.sunplus@gmail.com>
++
++description: |
++  Processor for I/O control, RTC wake-up procedure management,
++  and cooperation with CPU&PMC in power management.
++
++properties:
++  compatible:
++    enum:
++      - sunplus,sp7021-iop
++
++  reg:
++    items:
++      - description: IOP registers regions
++      - description: PMC registers regions
++      - description: MOON0 registers regions
++
++  reg-names:
++    items:
++      - const: iop
++      - const: iop_pmc
++      - const: moon0
++
++  interrupts:
++    items:
++      - description: IOP_INT0. IOP to system Interrupt 0.
++                     Sent by IOP to system RISC.
++      - description: IOP_INT1. IOP to System Interrupt 1.
++                     Sent by IOP to system RISC.
++
++  memory-region:
++    maxItems: 1
++
++  wakeup-gpios:
++    description: When the linux kernel system is powered off.
++      8051 is always powered. 8051 cand receive external signals
++      according to this gpio pin. 8051 receives external signal
++      through gpio pin. 8051 can power on linux kernel system.
++
++required:
++  - compatible
++  - reg
++  - reg-names
++  - interrupts
++  - memory-region
++  - wakeup-gpios
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    #include <dt-bindings/gpio/gpio.h>
++    iop: iop@9c000400 {
++        compatible = "sunplus,sp7021-iop";
++        reg = <0x9c000400 0x80>, <0x9c003100 0x80>, <0x9c000000 0x80>;
++        reg-names = "iop", "iop_pmc", "moon0";
++        interrupt-parent = <&intc>;
++        interrupts = <41 IRQ_TYPE_LEVEL_HIGH>, <42 IRQ_TYPE_LEVEL_HIGH>;
++        memory-region = <&iop_reserve>;
++        pinctrl-names = "default";
++        pinctrl-0 = <&iop_pins>;
++        wakeup-gpios = <&pctl 1 GPIO_ACTIVE_HIGH>;
++    };
++...
+diff --git a/MAINTAINERS b/MAINTAINERS
+index fb18ce7..6f336c9 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -18242,6 +18242,11 @@ L:	netdev@vger.kernel.org
+ S:	Maintained
+ F:	drivers/net/ethernet/dlink/sundance.c
  
- #include <linux/sched/mm.h>
- #include <linux/hmm.h>
-+#include <linux/migrate.h>
- 
- /*
-  * FIXME: this is ugly right now we are using TTM to allocate vram and we pin
-diff --git a/include/linux/hmm.h b/include/linux/hmm.h
-index 2fd2e91d5107c0..d5a6f101f843e6 100644
---- a/include/linux/hmm.h
-+++ b/include/linux/hmm.h
-@@ -9,14 +9,9 @@
- #ifndef LINUX_HMM_H
- #define LINUX_HMM_H
- 
--#include <linux/kconfig.h>
--#include <linux/pgtable.h>
-+#include <linux/mm.h>
- 
--#include <linux/device.h>
--#include <linux/migrate.h>
--#include <linux/memremap.h>
--#include <linux/completion.h>
--#include <linux/mmu_notifier.h>
-+struct mmu_interval_notifier;
- 
- /*
-  * On output:
-diff --git a/lib/test_hmm.c b/lib/test_hmm.c
-index 767538089a62e4..396beee6b061d4 100644
---- a/lib/test_hmm.c
-+++ b/lib/test_hmm.c
-@@ -26,6 +26,8 @@
- #include <linux/sched/mm.h>
- #include <linux/platform_device.h>
- #include <linux/rmap.h>
-+#include <linux/mmu_notifier.h>
-+#include <linux/migrate.h>
- 
- #include "test_hmm_uapi.h"
- 
++SUNPLUS IOP DRIVER
++M:	Tony Huang <tonyhuang.sunplus@gmail.com>
++S:	Maintained
++F:	Documentation/devicetree/bindings/misc/sunplu-iop.yaml
++
+ SUPERH
+ M:	Yoshinori Sato <ysato@users.sourceforge.jp>
+ M:	Rich Felker <dalias@libc.org>
 -- 
-2.30.2
+2.7.4
 
