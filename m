@@ -2,70 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAA8DC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAFADC4332F
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 08:45:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241165AbiBGImj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 03:42:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33730 "EHLO
+        id S240477AbiBGIoR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 03:44:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350254AbiBGIfs (ORCPT
+        with ESMTP id S236729AbiBGIgI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 03:35:48 -0500
-X-Greylist: delayed 301 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 00:35:47 PST
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F70AC043181;
-        Mon,  7 Feb 2022 00:35:47 -0800 (PST)
-X-UUID: fbfc004a9cf645bca793c7e423558088-20220207
-X-UUID: fbfc004a9cf645bca793c7e423558088-20220207
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
-        (envelope-from <johnson.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1845094276; Mon, 07 Feb 2022 16:30:43 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Mon, 7 Feb 2022 16:30:42 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 7 Feb 2022 16:30:42 +0800
-From:   Johnson Wang <johnson.wang@mediatek.com>
-To:     <robh+dt@kernel.org>, <matthias.bgg@gmail.com>
-CC:     <angelogioacchino.delregno@collabora.com>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Johnson Wang <johnson.wang@mediatek.com>
-Subject: [PATCH v3 0/2] Add PMIC wrapper support for Mediatek MT8186 SoC IC
-Date:   Mon, 7 Feb 2022 16:30:32 +0800
-Message-ID: <20220207083034.15327-1-johnson.wang@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+        Mon, 7 Feb 2022 03:36:08 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DFFA2C043185
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 00:36:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644222966;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=EnlsbuxwF4ALdiCaBmB6LDE1NtPSwP5sAmBAFk/m7Ms=;
+        b=N+2lxbhU+Kyr6g1zogRinYWZPkDCcTZhQoZwG0biM47o/8rRPuMVYt42LGM36uISLZulFL
+        8/f5fMGOIFMDezRffLDxQk3isxV0ZtjtNxE8X13BR6QdfzDmFl94ya+OiGrr1dAK2YXHDM
+        B1VFWZA5abn4bK5IYvFRC3gLR6usk0s=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-558-GjHXXjkVODuR9_aUygqaJw-1; Mon, 07 Feb 2022 03:36:03 -0500
+X-MC-Unique: GjHXXjkVODuR9_aUygqaJw-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C24E0802926;
+        Mon,  7 Feb 2022 08:36:00 +0000 (UTC)
+Received: from localhost (unknown [10.39.193.241])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 2C7B362D6E;
+        Mon,  7 Feb 2022 08:35:41 +0000 (UTC)
+From:   Cornelia Huck <cohuck@redhat.com>
+To:     Matthew Rosato <mjrosato@linux.ibm.com>, linux-s390@vger.kernel.org
+Cc:     alex.williamson@redhat.com, schnelle@linux.ibm.com,
+        farman@linux.ibm.com, pmorel@linux.ibm.com,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        frankja@linux.ibm.com, david@redhat.com, imbrenda@linux.ibm.com,
+        vneethv@linux.ibm.com, oberpar@linux.ibm.com, freude@linux.ibm.com,
+        thuth@redhat.com, pasic@linux.ibm.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 14/30] vfio/pci: re-introduce CONFIG_VFIO_PCI_ZDEV
+In-Reply-To: <20220204211536.321475-15-mjrosato@linux.ibm.com>
+Organization: Red Hat GmbH
+References: <20220204211536.321475-1-mjrosato@linux.ibm.com>
+ <20220204211536.321475-15-mjrosato@linux.ibm.com>
+User-Agent: Notmuch/0.34 (https://notmuchmail.org)
+Date:   Mon, 07 Feb 2022 09:35:39 +0100
+Message-ID: <87czjzvztw.fsf@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-MTK:  N
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series add PMIC wrapper support for Mediatek MT8186 SoC IC
+On Fri, Feb 04 2022, Matthew Rosato <mjrosato@linux.ibm.com> wrote:
 
-Changes since v2:
-- Replace meaningless suffix _V2 with _MT8186 because
-  these IPs are only for MT8186 SoC.
-- Remove not used capability PWRAP_CAP_MONITOR_V2. 
+> This was previously removed as unnecessary; while that was true, subsequent
+> changes will make KVM an additional required component for vfio-pci-zdev.
+> Let's re-introduce CONFIG_VFIO_PCI_ZDEV as now there is actually a reason
+> to say 'n' for it (when not planning to CONFIG_KVM).
 
-Changes since v1:
-- Fix the conditional logic in pwrap_probe() function.
+Hm... can the file be split into parts that depend on KVM and parts that
+don't? Does anybody ever use vfio-pci on a non-kvm s390 system?
 
-Johnson Wang (2):
-  soc: mediatek: pwrap: add pwrap driver for MT8186 SoC
-  dt-bindings: mediatek: add compatible for MT8186 pwrap
+[Apologies if that has been discussed before, this is my first look at
+this series.]
 
- .../bindings/soc/mediatek/pwrap.txt           |  1 +
- drivers/soc/mediatek/mtk-pmic-wrap.c          | 71 +++++++++++++++++++
- 2 files changed, 72 insertions(+)
-
--- 
-2.18.0
+>
+> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+> ---
+>  drivers/vfio/pci/Kconfig      | 11 +++++++++++
+>  drivers/vfio/pci/Makefile     |  2 +-
+>  include/linux/vfio_pci_core.h |  2 +-
+>  3 files changed, 13 insertions(+), 2 deletions(-)
+>
 
