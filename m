@@ -2,73 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83937C35272
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1146C35273
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 05:51:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236495AbiBGFt5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 00:49:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53072 "EHLO
+        id S237034AbiBGFuA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 00:50:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349361AbiBGCyr (ORCPT
+        with ESMTP id S229793AbiBGEG7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 21:54:47 -0500
-X-Greylist: delayed 302 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 18:54:46 PST
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93756C061A73;
-        Sun,  6 Feb 2022 18:54:46 -0800 (PST)
-X-UUID: 994ef679bc8d442188770f3ea461367f-20220207
-X-UUID: 994ef679bc8d442188770f3ea461367f-20220207
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
-        (envelope-from <miles.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1399531200; Mon, 07 Feb 2022 10:49:38 +0800
-Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Mon, 7 Feb 2022 10:49:37 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb01.mediatek.inc
- (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 7 Feb
- 2022 10:49:36 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 7 Feb 2022 10:49:36 +0800
-From:   Miles Chen <miles.chen@mediatek.com>
-To:     <wenst@chromium.org>
-CC:     <chun-jie.chen@mediatek.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-clk@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>, <matthias.bgg@gmail.com>,
-        <miles.chen@mediatek.com>, <mturquette@baylibre.com>,
-        <sboyd@kernel.org>
-Subject: Re: [PATCH v2 14/31] clk: mediatek: pll: Clean up included headers
-Date:   Mon, 7 Feb 2022 10:49:36 +0800
-Message-ID: <20220207024936.14672-1-miles.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220202134834.690675-15-wenst@chromium.org>
-References: <20220202134834.690675-15-wenst@chromium.org>
+        Sun, 6 Feb 2022 23:06:59 -0500
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FF57C061A73;
+        Sun,  6 Feb 2022 20:06:58 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JsXdr4h8Nz4xPv;
+        Mon,  7 Feb 2022 15:06:56 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1644206816;
+        bh=L6tKb33/O1w3gvZdBQUa7i+NvihKIKciWhy/zQyQ8EM=;
+        h=Date:From:To:Cc:Subject:From;
+        b=DoHMl4lOHO/bta48hMqe2PY4/ki4vc8iBXRLeHC4meXA3wPehPG02uvQqe41fxSDY
+         ZbvbmfYtMB+kvzfCJzCzaJA+Gifuw9ZVZu4wqgHeIsKVwOlf0J+CRwydBs4fNrNPQQ
+         kfvmiCpetOsj6XSzfnWBkpK0PskeGP68SfybJAKZO8QiE5OPcASav9qTQzCvWffSly
+         SFLBpzotTPbd85B/VrfINcUVgN367/zRXlL3vyqZHPEwaqWuSsAhbWXK31Fh2BQH3u
+         mWs+jDbCbD7/ACz7JFFjJ99B8A+FPGutBHTQzRR0Ogf/R97oHrHS9BPDRj76v4Uhsh
+         ycZo0gM/K/Lkg==
+Date:   Mon, 7 Feb 2022 15:06:55 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Yang Shi <shy828301@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build warning after merge of the akpm-current tree
+Message-ID: <20220207150655.76173d43@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: multipart/signed; boundary="Sig_/zfn5waytRg/k5PpHJZdDabO";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> Some included headers aren't actually used anywhere, while other headers
-> with the declaration of functions and structures aren't directly
-> included.
-> 
-> Get rid of the unused ones, and add the ones that should be included
-> directly.
-> 
-> Also, copy the MHZ macro from clk-mtk.h, and drop clk-mtk.h from the
-> included headers.
-> 
-> Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+--Sig_/zfn5waytRg/k5PpHJZdDabO
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Reviewed-by: Miles Chen <miles.chen@mediatek.com>
+Hi all,
 
-> ---
->  drivers/clk/mediatek/clk-pll.c | 12 +++++++-----
->  1 file changed, 7 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/clk/mediatek/clk-pll.c b/drivers/clk/mediatek/clk-pll.c
+After merging the akpm-current tree, today's linux-next build (arm
+multi_v7_defconfig) produced this warning:
+
+fs/proc/task_mmu.c: In function 'pagemap_pmd_range':
+fs/proc/task_mmu.c:1444:14: warning: unused variable 'migration' [-Wunused-=
+variable]
+ 1444 |         bool migration =3D false;
+      |              ^~~~~~~~~
+
+Introduced by commit
+
+  78cff485ae77 ("fs-proc-task_mmuc-dont-read-mapcount-for-migration-entry-v=
+4")
+
+"migration" is only used when CONFIG_TRANSPARENT_HUGEPAGE is defined.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/zfn5waytRg/k5PpHJZdDabO
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIAmt8ACgkQAVBC80lX
+0GxfCQf/QG/+1XHNBO6hv4bMP+crdvPVf7yKTsT6l/fRRUqH53KGHyLQmk14TtRY
+cN/3mV0qhyXp9RTYQfQp8ktefPpREci8IGCmR7tU1qQ9NtA1AL1E2JD1H0cHmPXO
+3dqHD2tl5uixPCDdDSSeBBKwlyGIWJsUKJjrWc+mMqt8zi34pORlCwoDu/MKtNMf
+JgVnKY6nKfcfUzzGz10+oFGLKVEbQBUkQ2pBg3FMm9J/iVpcVkUF6tdLPkyvAvQJ
+o9W8DUAmx4CDwj6wVoz0ih+cI2JNCXrqor+OLJmaZFNa+rtc4goSoVYbgDGxH1va
+V3jf2g+eytTtwTUwB/KzGnV2LyrOaw==
+=ka1T
+-----END PGP SIGNATURE-----
+
+--Sig_/zfn5waytRg/k5PpHJZdDabO--
