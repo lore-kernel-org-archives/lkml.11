@@ -2,99 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDD86C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DDF9C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:33:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379694AbiBGQaP (ORCPT
+        id S1344762AbiBGQaG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:30:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60760 "EHLO
+        Mon, 7 Feb 2022 11:30:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382027AbiBGQZu (ORCPT
+        with ESMTP id S241606AbiBGQ2X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 11:25:50 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F489C0401CF;
-        Mon,  7 Feb 2022 08:25:49 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A431FB815A1;
-        Mon,  7 Feb 2022 16:25:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47AF5C340ED;
-        Mon,  7 Feb 2022 16:25:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644251147;
-        bh=Po5zzXhM3H2VRRrgUYmkOzuBy24D0xZJqJLFuYQbONc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=AUQxOX8WiVyCPUcoBdwOf/RKIN8EUZqlTEexoGm+eco/yjlhBXd3k3cQEgdApr2HQ
-         Q/BiAVHpMIrhFsK7cYx1taUeH6e0BpiV/YtRmQZ9ZNOUukeorlYb+2q9pqSy2II76D
-         lXDpma6Xx9o4QCVevLmttCNHmM2C5pZDKr3wql9wYMbamhNbaf7lbHJb5LiPNy5I/j
-         Ns0u44JSOukIr2up9Z3GnvglC5UKqaGSX9sGTZ+ftCU8zJ3tKXku2dscRhLpRKEFq8
-         A8doGyolvMnswR98Tpgvmmlx1z+Y6qwqlPZEtFsiJM8626K7QXN+smY94tWjMAeLQg
-         iJcVjfFBHEOcQ==
-Date:   Mon, 7 Feb 2022 16:25:42 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>,
-        linux-kernel@vger.kernel.org,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux-samsung-soc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        Chanwoo Choi <cw00.choi@samsung.com>
-Subject: Re: [PATCH v2 0/5] mfd/extcon/regulators: max77843: add
- dtschema/bindings
-Message-ID: <YgFIBitnI58GcUqn@sirena.org.uk>
-References: <20220111174805.223732-1-krzysztof.kozlowski@canonical.com>
- <1bebedb9-644f-783d-492c-84a5de91720d@canonical.com>
- <YgDnUNCNCO+JLyHU@google.com>
- <88fcdbe6-5fef-d9cc-a645-69e35230cdeb@canonical.com>
+        Mon, 7 Feb 2022 11:28:23 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 92C7EC0401DB
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:28:22 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5CEB511D4;
+        Mon,  7 Feb 2022 08:28:22 -0800 (PST)
+Received: from bogus (unknown [10.57.41.150])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1EA743F718;
+        Mon,  7 Feb 2022 08:28:20 -0800 (PST)
+Date:   Mon, 7 Feb 2022 16:27:34 +0000
+From:   Sudeep Holla <sudeep.holla@arm.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        "maintainer:BROADCOM BCM7XXX ARM ARCHITECTURE" 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 0/4] Broadcom STB PM PSCI extensions
+Message-ID: <20220207162734.nt55nflwqstkej3p@bogus>
+References: <20220122035421.4086618-1-f.fainelli@gmail.com>
+ <20220203111435.e3eblv47ljkwkvwf@bogus>
+ <34938793-cecc-2ad8-a4eb-81bb278ce9b5@gmail.com>
+ <20220203185221.aw7kayj6qklmh5is@bogus>
+ <06f84f27-973d-1dae-e2c3-3fda4e368331@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="KBz1n8ADvAMSR+61"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <88fcdbe6-5fef-d9cc-a645-69e35230cdeb@canonical.com>
-X-Cookie: Never give an inch!
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <06f84f27-973d-1dae-e2c3-3fda4e368331@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Feb 03, 2022 at 11:33:26AM -0800, Florian Fainelli wrote:
+>
+>
+> On 2/3/2022 10:52 AM, Sudeep Holla wrote:
+> > Correction: it is known as "freeze" rather than "idle" in terms of values
+> > as per /sys/power/state. Sorry for referring it as "idle" and creating any
+> > confusion.
+> >
+> > On Thu, Feb 03, 2022 at 09:36:28AM -0800, Florian Fainelli wrote:
+> > >
+> > >
+> > > On 2/3/2022 3:14 AM, Sudeep Holla wrote:
+> > > > On Fri, Jan 21, 2022 at 07:54:17PM -0800, Florian Fainelli wrote:
+> > > > > Hi all,
+> > > > >
+> > > > > This patch series contains the Broadcom STB PSCI extensions which adds
+> > > > > some additional functions on top of the existing standard PSCI interface
+> > > > > which is the reason for having the driver implement a custom
+> > > > > suspend_ops.
+> > > > >
+> > > > > These platforms have traditionally supported a mode that is akin to
+> > > > > ACPI's S2 with the CPU in WFI and all of the chip being clock gated
+> > > > > which is entered with "echo standby > /sys/power/state". Additional a
+> > > > > true suspend to DRAM as defined in ACPI by S3 is implemented with "echo
+> > > > > mem > /sys/power/state".
+> > > >
+> > > > How different is the above "standby" state compare to the standard "idle"
+> > > > (a.k.a suspend-to-idle which is different from system-to-ram/S3) ?
+> > >
+> > > There are a few differences:
+> > >
+> > > - s2idle does not power gate the secondary CPUs
+> > >
+> >
+> > Not sure what you mean by that ? S2I takes CPUs to deepest idle state.
+> > If you want shallower states, one possible option is the disable deeper
+> > states from the userspace.
+>
+> What I mean is that we do not get to call PSCI CPU_OFF here so the CPUs are
+> idle, but not power gated. Those CPUs do not have any other idle state other
+> than WFI because the HW designers sort of forgot or rather did not know that
+> wiring up the ARM GIC power controller back to the power gating logic of the
+> CPU was a good idea.
+>
 
---KBz1n8ADvAMSR+61
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Nice 😄
 
-On Mon, Feb 07, 2022 at 10:47:00AM +0100, Krzysztof Kozlowski wrote:
-> On 07/02/2022 10:33, Lee Jones wrote:
+> >
+> > > - s2idle requires the use of in-band interrupts for wake-up
+> > >
+> >
+> > I am not sure if that is true. S2I behaves very similar to S2R except it
+> > has low wake latency as all secondaries CPUs are not hotplugged out.
+>
+> OK, the fact that secondary CPUs are not hot-plugged could be remedied by
+> doing this ahead of entering s2idle by user-space so this is not a valid
+> argument from me anymore.
+>
 
-> > Are the subsystem maintainers not going to review/ack?
+Fair enough.
 
-> Would be nice to have them, but maybe since these are dt-bindings maybe
-> they were skipped? Or maybe it was the end-of-year holidays?
+> >
+> > > The reasons for implementing "standby" are largely two fold:
+> > >
+> > > - we need to achieve decent power savings (typically below 0.5W for the
+> > > whole system while allowing Wake-on-WLAN, GPIO, RTC, infrared, etc.)
+> > >
+> >
+> > I fail to understand how that is a problem from S2I. It is probably worth
+> > checking if there are any unnecessary IRQF_NO_SUSPEND users. Check section
+> > IRQF_NO_SUSPEND and enable_irq_wake() in [1]. I don't see any issues other
+> > wise in terms of unnecessary/spurious wakeup by in-band(to be precise
+> > no-wake up) interrupts.
+>
+> I don't think your hyperlink referenced by [1] was provided, but my quick
+> testing with:
+>
 
-You've been sending out a large number of very similar serieses, each of
-which is going through multiple revisions - it's hard to keep track of
-what's been reviewed, what's in a state where it's useful to review
+Yikes, I meant to refer Documentation/power/suspend-and-interrupts.rst
 
-> I can resend hoping it will trigger more acks. Do you wish me to resend?
+> echo s2idle > /sys/power/mem_sleep
+> echo mem > /sys/power/state
+>
+> appears to work to some extent when I use peripherals that can generate
+> in-band interrupts.
+>
+> It looks like we have s2idle_ops that allows a platform to override some of
+> the operations before/after entering s2idle, however the actual s2idle idle
+> loop is still within the kernel, so we will not call into the ARM Trusted
+> Firmware and engage the power management state machine.
+>
 
-It's probably going to add more noise, on the other hand some things
-might've been dropped on the floor due to the similarity and whatnot.
+Correct.
 
---KBz1n8ADvAMSR+61
-Content-Type: application/pgp-signature; name="signature.asc"
+> This means that there will not be any of the clock gating that only the
+> hardware state machine is capable of performing, the DRAM controller as a
+> result will not enter self refresh power down, and in addition the side band
+> wake-up interrupts will not be activate because the interrupt controller
+> that aggregates them only outputs to the ARM GIC when the state machine has
+> been engaged.
+>
 
------BEGIN PGP SIGNATURE-----
+One possible solution IIUC the issue is to add this as additional CPU Idle
+state disabled most of the time. Enable them from user-space just prior to
+calling freeze/s2idle, so that PSCI CPU_SUSPEND is called with right param
+to indicate this is deepest idle state(in your case just WFI) + DRAM self
+refresh/retention mode. Also TF-A can take care to enable the side band
+interrupts before entering the state.
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmIBSAUACgkQJNaLcl1U
-h9DwvwgAgkkHxISpzmEcV84UV6esjAsYC0OmdQG59utyC9wrPYPXJSX2HsJ9h1WX
-OapwjnmYK7Y4bxqXVEoCFpKIgS6a6u7h3V/bshsbDXyPIvEXh6/H4FOp7d+peSyl
-XeLkT9/RU5kUVijJFrazOWyN7mknEA/kRuuDfx/x7dBF7IBgY8cJqd4dfER7Lx9D
-7M707ahSnhnHW2Va3j3AYM10ezIQ4jP82z/6Zyc01xZcdv8rquPz74O4d3kDjdxD
-CfbBDQpt4WSMofbFf7RDjje/T/zchnt2K/8Xn2HGcTKuA0be1iqSutInQ9yALLqq
-PoEiTFWrIRncUIRrV8qNoSe1KxgJPQ==
-=0liH
------END PGP SIGNATURE-----
+Do you see any issue with this approach ? I am trying to find ways to avoid
+deviating from standard PSCI.
 
---KBz1n8ADvAMSR+61--
+> Essentially, what we need for our systems is a controlled system entry with
+> semantics similar if not identical to that of S2R but with a shallower state
+> that does not cut the power to 90% of the SoC (unlike S2R) such that we have
+> a quicker suspend and resume latency. Years ago when we only had MIPS-based
+> and 32-bit ARM SoCs, we did come up with using "standby" (see
+> drivers/soc/bcm/brcmstb/pm/*) and we naturally mapped that when we switched
+> over to ARMv8 capable devices.
+>
+
+Understood and I do remember that.
+
+--
+Regards,
+Sudeep
