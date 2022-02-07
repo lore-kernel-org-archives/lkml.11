@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAA4EC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9749C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:19:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377251AbiBGLPZ (ORCPT
+        id S1377112AbiBGLPX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:15:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49562 "EHLO
+        Mon, 7 Feb 2022 06:15:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352312AbiBGLLz (ORCPT
+        with ESMTP id S1352110AbiBGLLw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:11:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DEABC043181;
-        Mon,  7 Feb 2022 03:11:55 -0800 (PST)
+        Mon, 7 Feb 2022 06:11:52 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11F4DC043188;
+        Mon,  7 Feb 2022 03:11:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9AA4F61261;
-        Mon,  7 Feb 2022 11:11:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72027C004E1;
-        Mon,  7 Feb 2022 11:11:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A4CAA6113B;
+        Mon,  7 Feb 2022 11:11:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81607C004E1;
+        Mon,  7 Feb 2022 11:11:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232314;
-        bh=U+c9K6WdzIVH2IfFgZxIiSIM4vFtt9G9/lsDaGV6npA=;
+        s=korg; t=1644232311;
+        bh=Vcyy/cmLPqFA7zBx2oZ50VqQZKrAlADhGuLNEobL6M0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xpI1Wu8/JKwPHbIU/B+ezkbKNJUD8pb5Z1Tv792mBg+hKRuXt+fmKjzog0BwDY06r
-         pa845pk2dxyHoINpIPch3iHTAATBil6ekQ4ZigopKg9MgcCD0w771E549fKF8RTPbD
-         IuUVVGXxj5aVn7imCLsbyBk2SM+CnUbcE95QhEHc=
+        b=dB3tlQC2pI88XH58i58VDynXZ7NnE6q0/HH/i5m3fKy61Aa80d/GAJO3NoW5jrjtF
+         bkeaMHBOLhWZSS9oHu8/3YwYNjyVxaOA+ym20uj/MGSPqZIBHu/HD4pSVaJDQN7IWE
+         GjlbRjG4ZN2rSmoELJPz/ZY4OuUx6+3I8ADplRuw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Ray Che <xijiache@gmail.com>, David Ahern <dsahern@kernel.org>,
-        Geoff Alexander <alexandg@cs.unm.edu>,
-        Willy Tarreau <w@1wt.eu>, Jakub Kicinski <kuba@kernel.org>,
+        syzbot <syzkaller@googlegroups.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 37/69] ipv4: tcp: send zero IPID in SYNACK messages
-Date:   Mon,  7 Feb 2022 12:05:59 +0100
-Message-Id: <20220207103756.844768923@linuxfoundation.org>
+Subject: [PATCH 4.14 36/69] ipv4: raw: lock the socket in raw_bind()
+Date:   Mon,  7 Feb 2022 12:05:58 +0100
+Message-Id: <20220207103756.812573501@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103755.604121441@linuxfoundation.org>
 References: <20220207103755.604121441@linuxfoundation.org>
@@ -54,70 +53,76 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit 970a5a3ea86da637471d3cd04d513a0755aba4bf ]
+[ Upstream commit 153a0d187e767c68733b8e9f46218eb1f41ab902 ]
 
-In commit 431280eebed9 ("ipv4: tcp: send zero IPID for RST and
-ACK sent in SYN-RECV and TIME-WAIT state") we took care of some
-ctl packets sent by TCP.
+For some reason, raw_bind() forgot to lock the socket.
 
-It turns out we need to use a similar strategy for SYNACK packets.
+BUG: KCSAN: data-race in __ip4_datagram_connect / raw_bind
 
-By default, they carry IP_DF and IPID==0, but there are ways
-to ask them to use the hashed IP ident generator and thus
-be used to build off-path attacks.
-(Ref: Off-Path TCP Exploits of the Mixed IPID Assignment)
+write to 0xffff8881170d4308 of 4 bytes by task 5466 on cpu 0:
+ raw_bind+0x1b0/0x250 net/ipv4/raw.c:739
+ inet_bind+0x56/0xa0 net/ipv4/af_inet.c:443
+ __sys_bind+0x14b/0x1b0 net/socket.c:1697
+ __do_sys_bind net/socket.c:1708 [inline]
+ __se_sys_bind net/socket.c:1706 [inline]
+ __x64_sys_bind+0x3d/0x50 net/socket.c:1706
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-One of this way is to force (before listener is started)
-echo 1 >/proc/sys/net/ipv4/ip_no_pmtu_disc
+read to 0xffff8881170d4308 of 4 bytes by task 5468 on cpu 1:
+ __ip4_datagram_connect+0xb7/0x7b0 net/ipv4/datagram.c:39
+ ip4_datagram_connect+0x2a/0x40 net/ipv4/datagram.c:89
+ inet_dgram_connect+0x107/0x190 net/ipv4/af_inet.c:576
+ __sys_connect_file net/socket.c:1900 [inline]
+ __sys_connect+0x197/0x1b0 net/socket.c:1917
+ __do_sys_connect net/socket.c:1927 [inline]
+ __se_sys_connect net/socket.c:1924 [inline]
+ __x64_sys_connect+0x3d/0x50 net/socket.c:1924
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-Another way is using forged ICMP ICMP_FRAG_NEEDED
-with a very small MTU (like 68) to force a false return from
-ip_dont_fragment()
+value changed: 0x00000000 -> 0x0003007f
 
-In this patch, ip_build_and_send_pkt() uses the following
-heuristics.
-
-1) Most SYNACK packets are smaller than IPV4_MIN_MTU and therefore
-can use IP_DF regardless of the listener or route pmtu setting.
-
-2) In case the SYNACK packet is bigger than IPV4_MIN_MTU,
-we use prandom_u32() generator instead of the IPv4 hashed ident one.
+Reported by Kernel Concurrency Sanitizer on:
+CPU: 1 PID: 5468 Comm: syz-executor.5 Not tainted 5.17.0-rc1-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
 
 Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: Ray Che <xijiache@gmail.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Cc: Geoff Alexander <alexandg@cs.unm.edu>
-Cc: Willy Tarreau <w@1wt.eu>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/ip_output.c |   11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ net/ipv4/raw.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/net/ipv4/ip_output.c
-+++ b/net/ipv4/ip_output.c
-@@ -160,12 +160,19 @@ int ip_build_and_send_pkt(struct sk_buff
- 	iph->daddr    = (opt && opt->opt.srr ? opt->opt.faddr : daddr);
- 	iph->saddr    = saddr;
- 	iph->protocol = sk->sk_protocol;
--	if (ip_dont_fragment(sk, &rt->dst)) {
-+	/* Do not bother generating IPID for small packets (eg SYNACK) */
-+	if (skb->len <= IPV4_MIN_MTU || ip_dont_fragment(sk, &rt->dst)) {
- 		iph->frag_off = htons(IP_DF);
- 		iph->id = 0;
- 	} else {
- 		iph->frag_off = 0;
--		__ip_select_ident(net, iph, 1);
-+		/* TCP packets here are SYNACK with fat IPv4/TCP options.
-+		 * Avoid using the hashed IP ident generator.
-+		 */
-+		if (sk->sk_protocol == IPPROTO_TCP)
-+			iph->id = (__force __be16)prandom_u32();
-+		else
-+			__ip_select_ident(net, iph, 1);
- 	}
+diff --git a/net/ipv4/raw.c b/net/ipv4/raw.c
+index 261a9813b88cd..9c4b2c0dc68ae 100644
+--- a/net/ipv4/raw.c
++++ b/net/ipv4/raw.c
+@@ -721,6 +721,7 @@ static int raw_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len)
+ 	int ret = -EINVAL;
+ 	int chk_addr_ret;
  
- 	if (opt && opt->opt.optlen) {
++	lock_sock(sk);
+ 	if (sk->sk_state != TCP_CLOSE || addr_len < sizeof(struct sockaddr_in))
+ 		goto out;
+ 
+@@ -740,7 +741,9 @@ static int raw_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len)
+ 		inet->inet_saddr = 0;  /* Use device */
+ 	sk_dst_reset(sk);
+ 	ret = 0;
+-out:	return ret;
++out:
++	release_sock(sk);
++	return ret;
+ }
+ 
+ /*
+-- 
+2.34.1
+
 
 
