@@ -2,95 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D23DC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 19:27:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFC77C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 19:28:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238983AbiBGT1E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 14:27:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49214 "EHLO
+        id S239613AbiBGT1G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 14:27:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237098AbiBGTWp (ORCPT
+        with ESMTP id S240637AbiBGTYr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 14:22:45 -0500
-Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 071E0C0401E0
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 11:22:44 -0800 (PST)
-Received: by mail-qt1-x834.google.com with SMTP id t17so12684149qto.1
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 11:22:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=yHQiDHxA3qZlcWTxLN1MgZypNnbjTwUZO2QoeiWP/cI=;
-        b=WalR+vjdCg+8zPlO5aZ1ywuN+woRsi3gerM9e8um5R75M05o/0A4tTPV0sDoS0iLf7
-         MI5Ayh/aUjA3lzGk4knlGcpvrjJkTAzgzCaIVUlu2cLGGSbDhpJ/GrhJhUdc2HnXtmRK
-         stuNg7sUYxLt5HQjP/PwyCP9ZRninXNxW8lX4+8vi6VkUSLgg5BY3Jxg39rH3WH2BDNx
-         g9rpWqR/RtcR0wf2poNmSVgkhRnSCPEG3oCgynxbJlts+OBBSOpC9atYeDDQCpJbBHmV
-         OdyYF8TiYTFFifPNOFO5hE7XJgkPbqKroSw//vj0hDKtL6BLQKT8a9/Jd8uxBZMUHGVb
-         3Hgg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=yHQiDHxA3qZlcWTxLN1MgZypNnbjTwUZO2QoeiWP/cI=;
-        b=j5LqV3SkSS3gVr/BsFnco7OD3IYXDPLM2V+CwTrRSGZCc+lY7Ax7loALESe0AEQVSf
-         JM2lfif0+ua15qfkuvoAzvecMveM92FkHIDN7AVwk+Yo4ffpEGnRebzLn+Zh3ByrozzC
-         SekPMtQyLPRfVd7n+E91otlzUrbHg3PFIUwstNPe3DjluCYn5Gy+bl8n+uw5/31CxNBx
-         MSg6szMoVGAeI3TNOWWbbYo/iMqx/710gyX3TOhthCa2UjvFQ6NF+9sGqBkHjibQ95Ba
-         KZlfKIX2VEwBpIdsoiKay9P98wyzoPte4WUcY2ULxqym+FkNnAJMLvbrfTyEP6ShNpYg
-         4VLw==
-X-Gm-Message-State: AOAM53370GW6pofJ12Dyc4NXQEa83K0gXWg2tguOSt/MbcLU0E4rGfYk
-        E4jM2/JTp03Xu5THGt+cvH3JVQ==
-X-Google-Smtp-Source: ABdhPJyusc4Y6UBxGsOMvrtpT2MH3zTc6ABg/OaP0sDSZntIjW01XzJV/gLuVV8p/6/141fWu3yUUA==
-X-Received: by 2002:a05:622a:1303:: with SMTP id v3mr740294qtk.294.1644261763197;
-        Mon, 07 Feb 2022 11:22:43 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
-        by smtp.gmail.com with ESMTPSA id y5sm5930001qkp.37.2022.02.07.11.22.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 11:22:42 -0800 (PST)
-Received: from jgg by mlx with local (Exim 4.94)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1nH9b0-000HrC-2F; Mon, 07 Feb 2022 15:22:42 -0400
-Date:   Mon, 7 Feb 2022 15:22:42 -0400
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Karol Herbst <kherbst@redhat.com>,
-        Lyude Paul <lyude@redhat.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Ralph Campbell <rcampbell@nvidia.com>,
-        linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
-        nvdimm@lists.linux.dev, linux-mm@kvack.org
-Subject: Re: [PATCH 1/8] mm: remove a pointless CONFIG_ZONE_DEVICE check in
- memremap_pages
-Message-ID: <20220207192242.GC49147@ziepe.ca>
-References: <20220207063249.1833066-1-hch@lst.de>
- <20220207063249.1833066-2-hch@lst.de>
+        Mon, 7 Feb 2022 14:24:47 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00831C0401E6;
+        Mon,  7 Feb 2022 11:24:45 -0800 (PST)
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 217IQ5Vb005295;
+        Mon, 7 Feb 2022 19:24:45 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=W+3RF4+TSI5ssviTeFqGmaNMt1m1811Eopoel3gqsX4=;
+ b=SNZKsTEHBqef7xnM2pHFHys/3UBNNaMj7qF2gqQPP5zJt5K4RLd144J5R7B1KMttbsq3
+ cAD3haVj6C3QJsuUz+OUvrIqU0OlzhgbX7ZizrOXYAp3wbu1EtQLO+1FhwdGZ5iE5VHS
+ /wRkW1EnG4sFRkYAJqQ9fkGdd3WRqloItYmRv3LRCQEYJt2JRPIf9taYlnHOey1yy3Sw
+ drbrW8sVs1qdgaSuNTzta4mh1N+OqZPkmGefpTcC3iG3hTkdf58S/ZlZIIoMEROMXd2h
+ lL/6PSltQn1+3sL3SC3Sv1VCgKLnW3ePuox8g3w/NMCDxiUDws+NrjJ/GNuyR/H5VDoj TQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e355aexnm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 19:24:45 +0000
+Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 217IaYkk005641;
+        Mon, 7 Feb 2022 19:24:44 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e355aexmt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 19:24:44 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 217J8Udo022771;
+        Mon, 7 Feb 2022 19:24:42 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma04ams.nl.ibm.com with ESMTP id 3e1gv8yr3q-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 19:24:42 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 217JOd5J34537880
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 7 Feb 2022 19:24:39 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0E150AE057;
+        Mon,  7 Feb 2022 19:24:39 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7DB58AE045;
+        Mon,  7 Feb 2022 19:24:38 +0000 (GMT)
+Received: from osiris (unknown [9.145.47.238])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Mon,  7 Feb 2022 19:24:38 +0000 (GMT)
+Date:   Mon, 7 Feb 2022 20:24:37 +0100
+From:   Heiko Carstens <hca@linux.ibm.com>
+To:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+Cc:     Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        David Hildenbrand <david@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>, kvm@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-s390@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>
+Subject: Re: [PATCH v2 01/11] s390/uaccess: Add copy_from/to_user_key
+ functions
+Message-ID: <YgFx9XIWvrPAeSNk@osiris>
+References: <20220207165930.1608621-1-scgl@linux.ibm.com>
+ <20220207165930.1608621-2-scgl@linux.ibm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220207063249.1833066-2-hch@lst.de>
+In-Reply-To: <20220207165930.1608621-2-scgl@linux.ibm.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: C83dn5awiSbA2ceuYPoP1K7OqbqzPL--
+X-Proofpoint-ORIG-GUID: VbxGmKnRkMsQ5OOssbczvlDYbwZrHcsQ
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-07_06,2022-02-07_02,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 adultscore=0
+ suspectscore=0 clxscore=1011 lowpriorityscore=0 bulkscore=0 malwarescore=0
+ priorityscore=1501 spamscore=0 mlxlogscore=805 phishscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202070115
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 07:32:42AM +0100, Christoph Hellwig wrote:
-> memremap.c is only built when CONFIG_ZONE_DEVICE is set, so remove
-> the superflous extra check.
+On Mon, Feb 07, 2022 at 05:59:20PM +0100, Janis Schoetterl-Glausch wrote:
+> Add copy_from/to_user_key functions, which perform storage key checking.
+> These functions can be used by KVM for emulating instructions that need
+> to be key checked.
+> These functions differ from their non _key counterparts in
+> include/linux/uaccess.h only in the additional key argument and must be
+> kept in sync with those.
 > 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> Since the existing uaccess implementation on s390 makes use of move
+> instructions that support having an additional access key supplied,
+> we can implement raw_copy_from/to_user_key by enhancing the
+> existing implementation.
+> 
+> Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
 > ---
->  mm/memremap.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
+>  arch/s390/include/asm/uaccess.h | 22 +++++++++
+>  arch/s390/lib/uaccess.c         | 81 +++++++++++++++++++++++++--------
+>  2 files changed, 85 insertions(+), 18 deletions(-)
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Acked-by: Heiko Carstens <hca@linux.ibm.com>
 
-Jason
+Christian, Janosch, I think this can go via the kvm tree.
