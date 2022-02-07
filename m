@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47F22C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F198C43219
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:00:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381893AbiBGLrh (ORCPT
+        id S1386073AbiBGLro (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:47:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46518 "EHLO
+        Mon, 7 Feb 2022 06:47:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386318AbiBGLeX (ORCPT
+        with ESMTP id S1386343AbiBGLe1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:34:23 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71210C043181;
-        Mon,  7 Feb 2022 03:34:23 -0800 (PST)
+        Mon, 7 Feb 2022 06:34:27 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B765C043188;
+        Mon,  7 Feb 2022 03:34:26 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EC03C60A69;
-        Mon,  7 Feb 2022 11:34:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEB9BC004E1;
-        Mon,  7 Feb 2022 11:34:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3807960A69;
+        Mon,  7 Feb 2022 11:34:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FFBDC340EB;
+        Mon,  7 Feb 2022 11:34:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233662;
-        bh=+47cr8N7Htw4ywLt3V8sL2iOcTtpPvwzUNFzThO3/TY=;
+        s=korg; t=1644233665;
+        bh=s14nD2quE399c8hfQLD03MTXJcFy5vW6jF2FKaj+ikI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sIGzIqSWd69oa1ICWHmWNpxAi3TmYbY1hZPLwSnju8GcMXImRJWHqXGPFaR4/wvmW
-         Y4lHW4Mt22HwkHTEqT7uWZkvv+3n2jkb1Il9dvakpwXGHiQXwFpEf7XVyA54h/vAVP
-         8Md/kzXyWBAZdPSNG7E5KbiCBUa4BJ/QtBX/wvHI=
+        b=Yoji33AEsgSUL5DwknxFpPNtL34GCQEQ1QIA/eE1dOUrCD05nAgSVIReJSzPDngpB
+         oA7ODv++MfxQHMUevWIwcWKZKdzRWpKo5t1VEPXUkkQx+nT/L32eGve3n+b7I5gDvH
+         uyIADeK+GX7S9uXZcWvXPBIGsCOoRQ3esufmf5OY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Matthew Brost <matthew.brost@intel.com>,
-        John Harrison <John.C.Harrison@Intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@intel.com>
-Subject: [PATCH 5.16 081/126] drm/i915: Lock timeline mutex directly in error path of eb_pin_timeline
-Date:   Mon,  7 Feb 2022 12:06:52 +0100
-Message-Id: <20220207103806.903419880@linuxfoundation.org>
+        stable@vger.kernel.org, Alex Deucher <alexander.deucher@amd.com>,
+        Mario Limonciello <mario.limonciello@amd.com>
+Subject: [PATCH 5.16 082/126] drm/amd: avoid suspend on dGPUs w/ s2idle support when runtime PM enabled
+Date:   Mon,  7 Feb 2022 12:06:53 +0100
+Message-Id: <20220207103806.941917412@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
 References: <20220207103804.053675072@linuxfoundation.org>
@@ -50,50 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthew Brost <matthew.brost@intel.com>
+From: Mario Limonciello <mario.limonciello@amd.com>
 
-commit 5ae13c305ef8cb54efc4f0ba4565709b9f320fed upstream.
+commit e55a3aea418269266d84f426b3bd70794d3389c8 upstream.
 
-Don't use the interruptable version of the timeline mutex lock in the
-error path of eb_pin_timeline as the cleanup must always happen.
+dGPUs connected to Intel systems configured for suspend to idle
+will not have the power rails cut at suspend and resetting the GPU
+may lead to problematic behaviors.
 
-v2:
- (John Harrison)
-  - Don't check for interrupt during mutex lock
-v3:
- (Tvrtko)
-  - A comment explaining why lock helper isn't used
-
-Fixes: 544460c33821 ("drm/i915: Multi-BB execbuf")
-Signed-off-by: Matthew Brost <matthew.brost@intel.com>
-Reviewed-by: John Harrison <John.C.Harrison@Intel.com>
-Signed-off-by: John Harrison <John.C.Harrison@Intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220111163929.14017-1-matthew.brost@intel.com
-(cherry picked from commit cb935c4618bd2ff9058feee4af7088446da6a763)
-Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Fixes: e25443d2765f4 ("drm/amdgpu: add a dev_pm_ops prepare callback (v2)")
+Link: https://gitlab.freedesktop.org/drm/amd/-/issues/1879
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c |    9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c
-@@ -2372,9 +2372,14 @@ static int eb_pin_timeline(struct i915_e
- 				      timeout) < 0) {
- 			i915_request_put(rq);
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
+@@ -2241,8 +2241,7 @@ static int amdgpu_pmops_prepare(struct d
+ 	 * DPM_FLAG_SMART_SUSPEND works properly
+ 	 */
+ 	if (amdgpu_device_supports_boco(drm_dev))
+-		return pm_runtime_suspended(dev) &&
+-			pm_suspend_via_firmware();
++		return pm_runtime_suspended(dev);
  
--			tl = intel_context_timeline_lock(ce);
-+			/*
-+			 * Error path, cannot use intel_context_timeline_lock as
-+			 * that is user interruptable and this clean up step
-+			 * must be done.
-+			 */
-+			mutex_lock(&ce->timeline->mutex);
- 			intel_context_exit(ce);
--			intel_context_timeline_unlock(tl);
-+			mutex_unlock(&ce->timeline->mutex);
- 
- 			if (nonblock)
- 				return -EWOULDBLOCK;
+ 	return 0;
+ }
 
 
