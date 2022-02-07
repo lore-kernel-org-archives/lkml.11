@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E234C3527B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AE90C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390737AbiBGL5j (ORCPT
+        id S1390723AbiBGL5c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:57:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44238 "EHLO
+        Mon, 7 Feb 2022 06:57:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385260AbiBGLb1 (ORCPT
+        with ESMTP id S1385250AbiBGLb0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:31:27 -0500
+        Mon, 7 Feb 2022 06:31:26 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65167C043188;
-        Mon,  7 Feb 2022 03:30:04 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52437C02B64B;
+        Mon,  7 Feb 2022 03:29:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 249E1B8111C;
-        Mon,  7 Feb 2022 11:30:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63342C004E1;
-        Mon,  7 Feb 2022 11:30:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 12A10B80EBD;
+        Mon,  7 Feb 2022 11:29:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 409CEC004E1;
+        Mon,  7 Feb 2022 11:29:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233401;
-        bh=FaEL32L8jTCbwx8zIa5szTEouuCoK0lO5+KhZu49YAU=;
+        s=korg; t=1644233395;
+        bh=IzGcumH0UBveEX4Z1EvcBvjQJNsagxoSQnbTgSwJPG0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eGCaFEE1G06lONpwzqXvhSJgLx0fu01TramK9skQMrk0LDYLhW8L1cnaVGjeCiBt7
-         jL+0ksWb9hAtgC6G2sr8fWcbPLjYCkPpYINmJuQYVFsQJoqbDVugviLAZaEA0mA3WH
-         TvOhHrgZ3G1LSSvUAA0/MAH8sSn6COkn1jYiJeDk=
+        b=rbpg17KapGLYWkKQFTYu6f/JtNd+drIdpiOyg5x7TWqKn9XMKKcCybyl7lLYI0PgX
+         4BWuAvUrS2C7DrZcPy9mTsvwkExPF3TJjP/kO3rHyX5PnxdjGtxgumJZHLWoMsPw6r
+         cH4S6o1GXdoI7cvc6WqhcRz6sJsBeZjtkZ9Xqu8E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+5ad567a418794b9b5983@syzkaller.appspotmail.com,
-        Hou Tao <houtao1@huawei.com>,
-        Andrii Nakryiko <andrii@kernel.org>
-Subject: [PATCH 5.15 086/110] bpf: Use VM_MAP instead of VM_ALLOC for ringbuf
-Date:   Mon,  7 Feb 2022 12:06:59 +0100
-Message-Id: <20220207103805.316988910@linuxfoundation.org>
+        stable@vger.kernel.org, Florian Westphal <fw@strlen.de>,
+        Stefano Brivio <sbrivio@redhat.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: [PATCH 5.15 109/110] selftests: nft_concat_range: add test for reload with no element add/del
+Date:   Mon,  7 Feb 2022 12:07:22 +0100
+Message-Id: <20220207103806.081081409@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
 References: <20220207103802.280120990@linuxfoundation.org>
@@ -51,42 +50,121 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hou Tao <hotforest@gmail.com>
+From: Florian Westphal <fw@strlen.de>
 
-commit b293dcc473d22a62dc6d78de2b15e4f49515db56 upstream.
+commit eda0cf1202acf1ef47f93d8f92d4839213431424 upstream.
 
-After commit 2fd3fb0be1d1 ("kasan, vmalloc: unpoison VM_ALLOC pages
-after mapping"), non-VM_ALLOC mappings will be marked as accessible
-in __get_vm_area_node() when KASAN is enabled. But now the flag for
-ringbuf area is VM_ALLOC, so KASAN will complain out-of-bound access
-after vmap() returns. Because the ringbuf area is created by mapping
-allocated pages, so use VM_MAP instead.
+Add a specific test for the reload issue fixed with
+commit 23c54263efd7cb ("netfilter: nft_set_pipapo: allocate pcpu scratch maps on clone").
 
-After the change, info in /proc/vmallocinfo also changes from
-  [start]-[end]   24576 ringbuf_map_alloc+0x171/0x290 vmalloc user
-to
-  [start]-[end]   24576 ringbuf_map_alloc+0x171/0x290 vmap user
+Add to set, then flush set content + restore without other add/remove in
+the transaction.
 
-Fixes: 457f44363a88 ("bpf: Implement BPF ring buffer and verifier support for it")
-Reported-by: syzbot+5ad567a418794b9b5983@syzkaller.appspotmail.com
-Signed-off-by: Hou Tao <houtao1@huawei.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Link: https://lore.kernel.org/bpf/20220202060158.6260-1-houtao1@huawei.com
+On kernels before the fix, this test case fails:
+  net,mac with reload    [FAIL]
+
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Reviewed-by: Stefano Brivio <sbrivio@redhat.com>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/bpf/ringbuf.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/testing/selftests/netfilter/nft_concat_range.sh |   72 +++++++++++++++++-
+ 1 file changed, 71 insertions(+), 1 deletion(-)
 
---- a/kernel/bpf/ringbuf.c
-+++ b/kernel/bpf/ringbuf.c
-@@ -104,7 +104,7 @@ static struct bpf_ringbuf *bpf_ringbuf_a
- 	}
+--- a/tools/testing/selftests/netfilter/nft_concat_range.sh
++++ b/tools/testing/selftests/netfilter/nft_concat_range.sh
+@@ -27,7 +27,7 @@ TYPES="net_port port_net net6_port port_
+        net_port_mac_proto_net"
  
- 	rb = vmap(pages, nr_meta_pages + 2 * nr_data_pages,
--		  VM_ALLOC | VM_USERMAP, PAGE_KERNEL);
-+		  VM_MAP | VM_USERMAP, PAGE_KERNEL);
- 	if (rb) {
- 		kmemleak_not_leak(pages);
- 		rb->pages = pages;
+ # Reported bugs, also described by TYPE_ variables below
+-BUGS="flush_remove_add"
++BUGS="flush_remove_add reload"
+ 
+ # List of possible paths to pktgen script from kernel tree for performance tests
+ PKTGEN_SCRIPT_PATHS="
+@@ -337,6 +337,23 @@ TYPE_flush_remove_add="
+ display		Add two elements, flush, re-add
+ "
+ 
++TYPE_reload="
++display		net,mac with reload
++type_spec	ipv4_addr . ether_addr
++chain_spec	ip daddr . ether saddr
++dst		addr4
++src		mac
++start		1
++count		1
++src_delta	2000
++tools		sendip nc bash
++proto		udp
++
++race_repeat	0
++
++perf_duration	0
++"
++
+ # Set template for all tests, types and rules are filled in depending on test
+ set_template='
+ flush ruleset
+@@ -1455,6 +1472,59 @@ test_bug_flush_remove_add() {
+ 	nft flush ruleset
+ }
+ 
++# - add ranged element, check that packets match it
++# - reload the set, check packets still match
++test_bug_reload() {
++	setup veth send_"${proto}" set || return ${KSELFTEST_SKIP}
++	rstart=${start}
++
++	range_size=1
++	for i in $(seq "${start}" $((start + count))); do
++		end=$((start + range_size))
++
++		# Avoid negative or zero-sized port ranges
++		if [ $((end / 65534)) -gt $((start / 65534)) ]; then
++			start=${end}
++			end=$((end + 1))
++		fi
++		srcstart=$((start + src_delta))
++		srcend=$((end + src_delta))
++
++		add "$(format)" || return 1
++		range_size=$((range_size + 1))
++		start=$((end + range_size))
++	done
++
++	# check kernel does allocate pcpu sctrach map
++	# for reload with no elemet add/delete
++	( echo flush set inet filter test ;
++	  nft list set inet filter test ) | nft -f -
++
++	start=${rstart}
++	range_size=1
++
++	for i in $(seq "${start}" $((start + count))); do
++		end=$((start + range_size))
++
++		# Avoid negative or zero-sized port ranges
++		if [ $((end / 65534)) -gt $((start / 65534)) ]; then
++			start=${end}
++			end=$((end + 1))
++		fi
++		srcstart=$((start + src_delta))
++		srcend=$((end + src_delta))
++
++		for j in $(seq ${start} $((range_size / 2 + 1)) ${end}); do
++			send_match "${j}" $((j + src_delta)) || return 1
++		done
++
++		range_size=$((range_size + 1))
++		start=$((end + range_size))
++	done
++
++	nft flush ruleset
++}
++
+ test_reported_issues() {
+ 	eval test_bug_"${subtest}"
+ }
 
 
