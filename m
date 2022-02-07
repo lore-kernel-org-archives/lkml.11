@@ -2,436 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40122C3527A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80AB8C3527D
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:05:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344751AbiBHBD4 (ORCPT
+        id S1344818AbiBHBED (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:03:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35672 "EHLO
+        Mon, 7 Feb 2022 20:04:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245469AbiBGXDb (ORCPT
+        with ESMTP id S230506AbiBGXIy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 18:03:31 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34C5DC061355
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 15:03:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644275010; x=1675811010;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Zl/xFzvxxZzaswNfksOIBzdKah3PcR77VUXQ0r6gtnw=;
-  b=HFTSAXdr47FlTCim/YO5mSRvBircEssI0GB+3YJ5mnooklYl8mgeNwRm
-   xnrO/Y1HJM87HSNasKs/c8qSp9wSZ+OJQBhOJ/DXzQE/X2J44Qb0lcEG2
-   Ud7oVkDOVoBWYLxO8j24VEi+u+flHIC5KPcud6Nc8+evlTY00GYUJ0og4
-   Kb/6kstLMSHMwfFH2KJT3BjqnSRAXs+Bn3fDJQn4VgS0ieAn+AfVyUjFB
-   oDgHQx+au+hEzLPThrfCusND1sNw/zZSr4ydPLOr/uy+rpnzuyIi5i/aX
-   tC6eZ1CO5B4x0JWjQcIvtyDRHGLeWHBA/2oXXYECqo10kxwkRylYGRZZg
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10251"; a="229475013"
-X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
-   d="scan'208";a="229475013"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 15:03:04 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
-   d="scan'208";a="540324051"
-Received: from otcwcpicx3.sc.intel.com ([172.25.55.73])
-  by orsmga008.jf.intel.com with ESMTP; 07 Feb 2022 15:03:03 -0800
-From:   Fenghua Yu <fenghua.yu@intel.com>
-To:     "Thomas Gleixner" <tglx@linutronix.de>,
-        "Dave Hansen" <dave.hansen@linux.intel.com>,
-        "Ingo Molnar" <mingo@redhat.com>, "Borislav Petkov" <bp@alien8.de>,
-        "Peter Zijlstra" <peterz@infradead.org>,
-        "Andy Lutomirski" <luto@kernel.org>,
-        "Tony Luck" <tony.luck@intel.com>,
-        "Lu Baolu" <baolu.lu@linux.intel.com>,
-        "Joerg Roedel" <joro@8bytes.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        "Jacob Pan" <jacob.jun.pan@linux.intel.com>,
-        "Ashok Raj" <ashok.raj@intel.com>,
-        "Ravi V Shankar" <ravi.v.shankar@intel.com>
-Cc:     iommu@lists.linux-foundation.org, "x86" <x86@kernel.org>,
-        "linux-kernel" <linux-kernel@vger.kernel.org>,
-        Fenghua Yu <fenghua.yu@intel.com>
-Subject: [PATCH v4 05/11] iommu/sva: Assign a PASID to mm on PASID allocation and free it on mm exit
-Date:   Mon,  7 Feb 2022 15:02:48 -0800
-Message-Id: <20220207230254.3342514-6-fenghua.yu@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207230254.3342514-1-fenghua.yu@intel.com>
-References: <20220207230254.3342514-1-fenghua.yu@intel.com>
+        Mon, 7 Feb 2022 18:08:54 -0500
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C205EC061355
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 15:08:53 -0800 (PST)
+Received: by mail-pf1-x42e.google.com with SMTP id a8so15640599pfa.6
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 15:08:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=COLGZEfjt348jGmBnJRdmOjdGrLy5Lqfl3tXt8RO/Bw=;
+        b=NWOKc9j/i8mNnF4B8FOxSgv1lyc/4uvzCIyafuDOxuHPaElJs+tG9g5kwfiIcsypGx
+         3K43NeNl5rQgVeSeb1d6/l0QDVu/+hqYleVcqsvMbTSyJT1JRjmNL+xIB1T9nPv071W7
+         Co9vhnYQKOFE9aVnmHQVuwQWo7gi2op7F8SUxzRlOCyorG6aY6VT3O+jvBYI/QnzCHlH
+         SjxJFT7WwRgOGIq+zjEsmUgfU83YKe1MlD/kZWceYQS8agTpXRezkvoMiT3CsBDT8IpT
+         UiVpqCHXPh6Y08sjOJLlYJxLzfOCsZURGAzJEHj4UZQ86P+3BJV3O3VCN2JpMvQ2IfdS
+         +AHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=COLGZEfjt348jGmBnJRdmOjdGrLy5Lqfl3tXt8RO/Bw=;
+        b=gf5tkyta6VCrxU5fYfGT4XGiF2+QgVfTfmmPGVOAFzKPTJkUIv5OIyVgDMhuE0Arz+
+         PU8z/N70e38mAwsH/yyPpGIYr98tDbUARn4wWQz5VyZIkV23I1BvXQDaeqf7eHkhYmx7
+         LAgIZGCD4j4k5ZuXoKY508vSO9Uqv07PZVctc+ukYzdj0vV+XUjdZRtzeTnarVNanf7T
+         iihS0Ci8brBEA72VWW/IqqLnNMIifT4sAWVFAu8o/npMOdvtMaYIwzOyp5VLrco7YkRp
+         1fEHvz8Z9XkXSqqESI8ELj655N9FWcSM0etCXy4yPN6RUT7ZMy21f1Q+lS+lZL3xFEla
+         hanA==
+X-Gm-Message-State: AOAM530QESHIKeGb45s+CrQrPHf/Sg5WYCY8FWiR2aZHprjLJQQmCV8d
+        5TH31yPnxphNtWtI4AfgJVmqtKTqiJcC0w==
+X-Google-Smtp-Source: ABdhPJyMVli8H0BXFTzAsJe0jCjSE/qgoa5UAP8K08opjFe52BW5U4esrqnCWmVDGDeEpK+Ad6BZ/g==
+X-Received: by 2002:aa7:8484:: with SMTP id u4mr1596327pfn.70.1644275333079;
+        Mon, 07 Feb 2022 15:08:53 -0800 (PST)
+Received: from google.com (254.80.82.34.bc.googleusercontent.com. [34.82.80.254])
+        by smtp.gmail.com with ESMTPSA id t2sm13073667pfj.211.2022.02.07.15.08.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 15:08:52 -0800 (PST)
+Date:   Mon, 7 Feb 2022 23:08:48 +0000
+From:   David Matlack <dmatlack@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        seanjc@google.com, vkuznets@redhat.com
+Subject: Re: [PATCH 00/23] KVM: MMU: MMU role refactoring
+Message-ID: <YgGmgMMR0dBmjW86@google.com>
+References: <20220204115718.14934-1-pbonzini@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220204115718.14934-1-pbonzini@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PASIDs are process wide. It was attempted to use refcounted PASIDs to
-free them when the last thread drops the refcount. This turned out to
-be complex and error prone. Given the fact that the PASID space is 20
-bits, which allows up to 1M processes to have a PASID associated
-concurrently, PASID resource exhaustion is not a realistic concern.
+On Fri, Feb 04, 2022 at 06:56:55AM -0500, Paolo Bonzini wrote:
+> The TDP MMU has a performance regression compared to the legacy
+> MMU when CR0 changes often.  This was reported for the grsecurity
+> kernel, which uses CR0.WP to implement kernel W^X.  In that case,
+> each change to CR0.WP unloads the MMU and causes a lot of unnecessary
+> work.  When running nested, this can even cause the L1 to hardly
+> make progress, as the L0 hypervisor it is overwhelmed by the amount
+> of MMU work that is needed.
+> 
+> The root cause of the issue is that the "MMU role" in KVM is a mess
+> that mixes the CPU setup (CR0/CR4/EFER, SMM, guest mode, etc.)
+> and the shadow page table format.  Whenever something is different
+> between the MMU and the CPU, it is stored as an extra field in struct
+> kvm_mmu---and for extra bonus complication, sometimes the same thing
+> is stored in both the role and an extra field.
+> 
+> So, this is the "no functional change intended" part of the changes
+> required to fix the performance regression.  It separates neatly
+> the shadow page table format ("MMU role") from the guest page table
+> format ("CPU role"), and removes the duplicate fields.
 
-Therefore it was decided to simplify the approach and stick with lazy
-on demand PASID allocation, but drop the eager free approach and make
-a allocated PASID lifetime bound to the life time of the process.
+What do you think about calling this the guest_role instead of cpu_role?
+There is a bit of a precedent for using "guest" instead of "cpu" already
+for this type of concept (e.g. guest_walker), and I find it more
+intuitive.
 
-Get rid of the refcounting mechanisms and replace/rename the interfaces
-to reflect this new approach.
-
-Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
-Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
-Reviewed-by: Tony Luck <tony.luck@intel.com>
----
-v4:
-- Update the commit message (Thomas).
-
-v3:
-- Rename mm_pasid_get() to mm_pasid_set() (Thomas).
-- Remove ioasid_get() because it's not used any more when the IOASID
-  is freed on mm exit (Thomas).
-- Remove PASID's refcount exercise in ioasid_put() and rename
-  ioasid_put() to ioasid_free() (Thomas).
-
-v2:
-- Free PASID on mm exit instead of in exit(2) or unbind() (Thomas, AndyL,
-  PeterZ)
-- Add mm_pasid_init(), mm_pasid_get(), and mm_pasid_drop() functions in mm.
-  So the mm's PASID operations are generic for both X86 and ARM
-  (Dave Hansen)
-
- .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |  5 +--
- drivers/iommu/intel/iommu.c                   |  4 +-
- drivers/iommu/intel/svm.c                     |  9 -----
- drivers/iommu/ioasid.c                        | 39 ++-----------------
- drivers/iommu/iommu-sva-lib.c                 | 39 ++++++-------------
- drivers/iommu/iommu-sva-lib.h                 |  1 -
- include/linux/ioasid.h                        | 12 +-----
- include/linux/sched/mm.h                      | 16 ++++++++
- kernel/fork.c                                 |  1 +
- 9 files changed, 38 insertions(+), 88 deletions(-)
-
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-index a737ba5f727e..22ddd05bbdcd 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-@@ -340,14 +340,12 @@ __arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm)
- 	bond->smmu_mn = arm_smmu_mmu_notifier_get(smmu_domain, mm);
- 	if (IS_ERR(bond->smmu_mn)) {
- 		ret = PTR_ERR(bond->smmu_mn);
--		goto err_free_pasid;
-+		goto err_free_bond;
- 	}
- 
- 	list_add(&bond->list, &master->bonds);
- 	return &bond->sva;
- 
--err_free_pasid:
--	iommu_sva_free_pasid(mm);
- err_free_bond:
- 	kfree(bond);
- 	return ERR_PTR(ret);
-@@ -377,7 +375,6 @@ void arm_smmu_sva_unbind(struct iommu_sva *handle)
- 	if (refcount_dec_and_test(&bond->refs)) {
- 		list_del(&bond->list);
- 		arm_smmu_mmu_notifier_put(bond->smmu_mn);
--		iommu_sva_free_pasid(bond->mm);
- 		kfree(bond);
- 	}
- 	mutex_unlock(&sva_lock);
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 92fea3fbbb11..ef03b2176bbd 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4781,7 +4781,7 @@ static int aux_domain_add_dev(struct dmar_domain *domain,
- link_failed:
- 	spin_unlock_irqrestore(&device_domain_lock, flags);
- 	if (list_empty(&domain->subdevices) && domain->default_pasid > 0)
--		ioasid_put(domain->default_pasid);
-+		ioasid_free(domain->default_pasid);
- 
- 	return ret;
- }
-@@ -4811,7 +4811,7 @@ static void aux_domain_remove_dev(struct dmar_domain *domain,
- 	spin_unlock_irqrestore(&device_domain_lock, flags);
- 
- 	if (list_empty(&domain->subdevices) && domain->default_pasid > 0)
--		ioasid_put(domain->default_pasid);
-+		ioasid_free(domain->default_pasid);
- }
- 
- static int prepare_domain_attach_device(struct iommu_domain *domain,
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index 5b5d69b04fcc..51ac2096b3da 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -514,11 +514,6 @@ static int intel_svm_alloc_pasid(struct device *dev, struct mm_struct *mm,
- 	return iommu_sva_alloc_pasid(mm, PASID_MIN, max_pasid - 1);
- }
- 
--static void intel_svm_free_pasid(struct mm_struct *mm)
--{
--	iommu_sva_free_pasid(mm);
--}
--
- static struct iommu_sva *intel_svm_bind_mm(struct intel_iommu *iommu,
- 					   struct device *dev,
- 					   struct mm_struct *mm,
-@@ -662,8 +657,6 @@ static int intel_svm_unbind_mm(struct device *dev, u32 pasid)
- 				kfree(svm);
- 			}
- 		}
--		/* Drop a PASID reference and free it if no reference. */
--		intel_svm_free_pasid(mm);
- 	}
- out:
- 	return ret;
-@@ -1047,8 +1040,6 @@ struct iommu_sva *intel_svm_bind(struct device *dev, struct mm_struct *mm, void
- 	}
- 
- 	sva = intel_svm_bind_mm(iommu, dev, mm, flags);
--	if (IS_ERR_OR_NULL(sva))
--		intel_svm_free_pasid(mm);
- 	mutex_unlock(&pasid_mutex);
- 
- 	return sva;
-diff --git a/drivers/iommu/ioasid.c b/drivers/iommu/ioasid.c
-index 06fee7416816..a786c034907c 100644
---- a/drivers/iommu/ioasid.c
-+++ b/drivers/iommu/ioasid.c
-@@ -2,7 +2,7 @@
- /*
-  * I/O Address Space ID allocator. There is one global IOASID space, split into
-  * subsets. Users create a subset with DECLARE_IOASID_SET, then allocate and
-- * free IOASIDs with ioasid_alloc and ioasid_put.
-+ * free IOASIDs with ioasid_alloc() and ioasid_free().
-  */
- #include <linux/ioasid.h>
- #include <linux/module.h>
-@@ -15,7 +15,6 @@ struct ioasid_data {
- 	struct ioasid_set *set;
- 	void *private;
- 	struct rcu_head rcu;
--	refcount_t refs;
- };
- 
- /*
-@@ -315,7 +314,6 @@ ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
- 
- 	data->set = set;
- 	data->private = private;
--	refcount_set(&data->refs, 1);
- 
- 	/*
- 	 * Custom allocator needs allocator data to perform platform specific
-@@ -348,35 +346,11 @@ ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
- EXPORT_SYMBOL_GPL(ioasid_alloc);
- 
- /**
-- * ioasid_get - obtain a reference to the IOASID
-- * @ioasid: the ID to get
-- */
--void ioasid_get(ioasid_t ioasid)
--{
--	struct ioasid_data *ioasid_data;
--
--	spin_lock(&ioasid_allocator_lock);
--	ioasid_data = xa_load(&active_allocator->xa, ioasid);
--	if (ioasid_data)
--		refcount_inc(&ioasid_data->refs);
--	else
--		WARN_ON(1);
--	spin_unlock(&ioasid_allocator_lock);
--}
--EXPORT_SYMBOL_GPL(ioasid_get);
--
--/**
-- * ioasid_put - Release a reference to an ioasid
-+ * ioasid_free - Free an ioasid
-  * @ioasid: the ID to remove
-- *
-- * Put a reference to the IOASID, free it when the number of references drops to
-- * zero.
-- *
-- * Return: %true if the IOASID was freed, %false otherwise.
-  */
--bool ioasid_put(ioasid_t ioasid)
-+void ioasid_free(ioasid_t ioasid)
- {
--	bool free = false;
- 	struct ioasid_data *ioasid_data;
- 
- 	spin_lock(&ioasid_allocator_lock);
-@@ -386,10 +360,6 @@ bool ioasid_put(ioasid_t ioasid)
- 		goto exit_unlock;
- 	}
- 
--	free = refcount_dec_and_test(&ioasid_data->refs);
--	if (!free)
--		goto exit_unlock;
--
- 	active_allocator->ops->free(ioasid, active_allocator->ops->pdata);
- 	/* Custom allocator needs additional steps to free the xa element */
- 	if (active_allocator->flags & IOASID_ALLOCATOR_CUSTOM) {
-@@ -399,9 +369,8 @@ bool ioasid_put(ioasid_t ioasid)
- 
- exit_unlock:
- 	spin_unlock(&ioasid_allocator_lock);
--	return free;
- }
--EXPORT_SYMBOL_GPL(ioasid_put);
-+EXPORT_SYMBOL_GPL(ioasid_free);
- 
- /**
-  * ioasid_find - Find IOASID data
-diff --git a/drivers/iommu/iommu-sva-lib.c b/drivers/iommu/iommu-sva-lib.c
-index bd41405d34e9..106506143896 100644
---- a/drivers/iommu/iommu-sva-lib.c
-+++ b/drivers/iommu/iommu-sva-lib.c
-@@ -18,8 +18,7 @@ static DECLARE_IOASID_SET(iommu_sva_pasid);
-  *
-  * Try to allocate a PASID for this mm, or take a reference to the existing one
-  * provided it fits within the [@min, @max] range. On success the PASID is
-- * available in mm->pasid, and must be released with iommu_sva_free_pasid().
-- * @min must be greater than 0, because 0 indicates an unused mm->pasid.
-+ * available in mm->pasid and will be available for the lifetime of the mm.
-  *
-  * Returns 0 on success and < 0 on error.
-  */
-@@ -33,38 +32,24 @@ int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t max)
- 		return -EINVAL;
- 
- 	mutex_lock(&iommu_sva_lock);
--	if (mm->pasid) {
--		if (mm->pasid >= min && mm->pasid <= max)
--			ioasid_get(mm->pasid);
--		else
-+	/* Is a PASID already associated with this mm? */
-+	if (pasid_valid(mm->pasid)) {
-+		if (mm->pasid < min || mm->pasid >= max)
- 			ret = -EOVERFLOW;
--	} else {
--		pasid = ioasid_alloc(&iommu_sva_pasid, min, max, mm);
--		if (pasid == INVALID_IOASID)
--			ret = -ENOMEM;
--		else
--			mm->pasid = pasid;
-+		goto out;
- 	}
-+
-+	pasid = ioasid_alloc(&iommu_sva_pasid, min, max, mm);
-+	if (!pasid_valid(pasid))
-+		ret = -ENOMEM;
-+	else
-+		mm_pasid_set(mm, pasid);
-+out:
- 	mutex_unlock(&iommu_sva_lock);
- 	return ret;
- }
- EXPORT_SYMBOL_GPL(iommu_sva_alloc_pasid);
- 
--/**
-- * iommu_sva_free_pasid - Release the mm's PASID
-- * @mm: the mm
-- *
-- * Drop one reference to a PASID allocated with iommu_sva_alloc_pasid()
-- */
--void iommu_sva_free_pasid(struct mm_struct *mm)
--{
--	mutex_lock(&iommu_sva_lock);
--	if (ioasid_put(mm->pasid))
--		mm->pasid = 0;
--	mutex_unlock(&iommu_sva_lock);
--}
--EXPORT_SYMBOL_GPL(iommu_sva_free_pasid);
--
- /* ioasid_find getter() requires a void * argument */
- static bool __mmget_not_zero(void *mm)
- {
-diff --git a/drivers/iommu/iommu-sva-lib.h b/drivers/iommu/iommu-sva-lib.h
-index 95dc3ebc1928..8909ea1094e3 100644
---- a/drivers/iommu/iommu-sva-lib.h
-+++ b/drivers/iommu/iommu-sva-lib.h
-@@ -9,7 +9,6 @@
- #include <linux/mm_types.h>
- 
- int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t max);
--void iommu_sva_free_pasid(struct mm_struct *mm);
- struct mm_struct *iommu_sva_find(ioasid_t pasid);
- 
- /* I/O Page fault */
-diff --git a/include/linux/ioasid.h b/include/linux/ioasid.h
-index 2237f64dbaae..af1c9d62e642 100644
---- a/include/linux/ioasid.h
-+++ b/include/linux/ioasid.h
-@@ -34,8 +34,7 @@ struct ioasid_allocator_ops {
- #if IS_ENABLED(CONFIG_IOASID)
- ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
- 		      void *private);
--void ioasid_get(ioasid_t ioasid);
--bool ioasid_put(ioasid_t ioasid);
-+void ioasid_free(ioasid_t ioasid);
- void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
- 		  bool (*getter)(void *));
- int ioasid_register_allocator(struct ioasid_allocator_ops *allocator);
-@@ -53,14 +52,7 @@ static inline ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min,
- 	return INVALID_IOASID;
- }
- 
--static inline void ioasid_get(ioasid_t ioasid)
--{
--}
--
--static inline bool ioasid_put(ioasid_t ioasid)
--{
--	return false;
--}
-+static inline void ioasid_free(ioasid_t ioasid) { }
- 
- static inline void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
- 				bool (*getter)(void *))
-diff --git a/include/linux/sched/mm.h b/include/linux/sched/mm.h
-index c74d1edbac2f..a80356e9dc69 100644
---- a/include/linux/sched/mm.h
-+++ b/include/linux/sched/mm.h
-@@ -439,8 +439,24 @@ static inline void mm_pasid_init(struct mm_struct *mm)
- {
- 	mm->pasid = INVALID_IOASID;
- }
-+
-+/* Associate a PASID with an mm_struct: */
-+static inline void mm_pasid_set(struct mm_struct *mm, u32 pasid)
-+{
-+	mm->pasid = pasid;
-+}
-+
-+static inline void mm_pasid_drop(struct mm_struct *mm)
-+{
-+	if (pasid_valid(mm->pasid)) {
-+		ioasid_free(mm->pasid);
-+		mm->pasid = INVALID_IOASID;
-+	}
-+}
- #else
- static inline void mm_pasid_init(struct mm_struct *mm) {}
-+static inline void mm_pasid_set(struct mm_struct *mm, u32 pasid) {}
-+static inline void mm_pasid_drop(struct mm_struct *mm) {}
- #endif
- 
- #endif /* _LINUX_SCHED_MM_H */
-diff --git a/kernel/fork.c b/kernel/fork.c
-index deacd2c17a7f..c03c6682464c 100644
---- a/kernel/fork.c
-+++ b/kernel/fork.c
-@@ -1115,6 +1115,7 @@ static inline void __mmput(struct mm_struct *mm)
- 	}
- 	if (mm->binfmt)
- 		module_put(mm->binfmt->module);
-+	mm_pasid_drop(mm);
- 	mmdrop(mm);
- }
- 
--- 
-2.35.1
-
+> The next
+> step then is to avoid unloading the MMU as long as the MMU role
+> stays the same.
+> 
+> Please review!
+> 
+> Paolo
+> 
+> Paolo Bonzini (23):
+>   KVM: MMU: pass uses_nx directly to reset_shadow_zero_bits_mask
+>   KVM: MMU: nested EPT cannot be used in SMM
+>   KVM: MMU: remove valid from extended role
+>   KVM: MMU: constify uses of struct kvm_mmu_role_regs
+>   KVM: MMU: pull computation of kvm_mmu_role_regs to kvm_init_mmu
+>   KVM: MMU: load new PGD once nested two-dimensional paging is
+>     initialized
+>   KVM: MMU: remove kvm_mmu_calc_root_page_role
+>   KVM: MMU: rephrase unclear comment
+>   KVM: MMU: remove "bool base_only" arguments
+>   KVM: MMU: split cpu_role from mmu_role
+>   KVM: MMU: do not recompute root level from kvm_mmu_role_regs
+>   KVM: MMU: remove ept_ad field
+>   KVM: MMU: remove kvm_calc_shadow_root_page_role_common
+>   KVM: MMU: cleanup computation of MMU roles for two-dimensional paging
+>   KVM: MMU: cleanup computation of MMU roles for shadow paging
+>   KVM: MMU: remove extended bits from mmu_role
+>   KVM: MMU: remove redundant bits from extended role
+>   KVM: MMU: fetch shadow EFER.NX from MMU role
+>   KVM: MMU: simplify and/or inline computation of shadow MMU roles
+>   KVM: MMU: pull CPU role computation to kvm_init_mmu
+>   KVM: MMU: store shadow_root_level into mmu_role
+>   KVM: MMU: use cpu_role for root_level
+>   KVM: MMU: replace direct_map with mmu_role.direct
+> 
+>  arch/x86/include/asm/kvm_host.h |  13 +-
+>  arch/x86/kvm/mmu.h              |   2 +-
+>  arch/x86/kvm/mmu/mmu.c          | 408 ++++++++++++--------------------
+>  arch/x86/kvm/mmu/mmu_audit.c    |   6 +-
+>  arch/x86/kvm/mmu/paging_tmpl.h  |  12 +-
+>  arch/86/kvm/mmu/tdp_mmu.c      |   4 +-
+>  arch/x86/kvm/svm/svm.c          |   2 +-
+>  arch/x86/kvm/vmx/vmx.c          |   2 +-
+>  arch/x86/kvm/x86.c              |  12 +-
+>  10 files changed, 178 insertions(+), 284 deletions(-)
+> 
+> -- 
+> 2.31.1
+> 
