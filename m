@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17C48C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 082ECC43219
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:58:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388026AbiBGLmi (ORCPT
+        id S1387996AbiBGLmc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:42:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37870 "EHLO
+        Mon, 7 Feb 2022 06:42:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384663AbiBGL3d (ORCPT
+        with ESMTP id S1384635AbiBGL3a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:29:33 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA8D6C03E90F;
-        Mon,  7 Feb 2022 03:27:52 -0800 (PST)
+        Mon, 7 Feb 2022 06:29:30 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3586CC02B5E8;
+        Mon,  7 Feb 2022 03:27:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 81642B80EC3;
-        Mon,  7 Feb 2022 11:27:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BB45C340EB;
-        Mon,  7 Feb 2022 11:27:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C9ED9B811A6;
+        Mon,  7 Feb 2022 11:27:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15284C004E1;
+        Mon,  7 Feb 2022 11:27:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233271;
-        bh=+vD/we64CXzKQ+evO7omnlTqMOtfkb0divxIeNZ98KU=;
+        s=korg; t=1644233264;
+        bh=G53Ov27bx25K4bYLcs+JBgsqz22eleL4UIUrJ3J1pmU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PtJaqYaDgUUNE1IvjAghhoKgpjJHk25WI8HVYBSfZ+jzERWg8GQA/52kp7wj5uczN
-         OuZbt27vS1AbYAPo7cH6W8lh7uHt5F8FgisTKcqXe7IEoG81+6C5m+HK/LHS+IWByM
-         uunsZgCqezy20yYBmVc3sRBK36QQ2vu8Wnkt4N/s=
+        b=gbZY4oNOQnU/lNERKTOyZazLtMML9qlLGYS4FsB4liIPLvvFiRhASabY2s5NDMc6F
+         C6vaStQpXGDD6xtSMudmyKM+vYB2SMGPo25qLe3N39KVOwd6le0xUYlKeDUYjCzvaY
+         H5fU8lV3poNovXUdxBiW86ZUk3lH2v6owomuhNBE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alex Deucher <alexander.deucher@amd.com>,
-        Mario Limonciello <mario.limonciello@amd.com>
-Subject: [PATCH 5.15 070/110] drm/amd: avoid suspend on dGPUs w/ s2idle support when runtime PM enabled
-Date:   Mon,  7 Feb 2022 12:06:43 +0100
-Message-Id: <20220207103804.655136591@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Anitha Chrisanthus <anitha.chrisanthus@intel.com>,
+        Kees Cook <keescook@chromium.org>
+Subject: [PATCH 5.15 068/110] drm/kmb: Fix for build errors with Warray-bounds
+Date:   Mon,  7 Feb 2022 12:06:41 +0100
+Message-Id: <20220207103804.581728460@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
 References: <20220207103802.280120990@linuxfoundation.org>
@@ -49,35 +50,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mario Limonciello <mario.limonciello@amd.com>
+From: Anitha Chrisanthus <anitha.chrisanthus@intel.com>
 
-commit e55a3aea418269266d84f426b3bd70794d3389c8 upstream.
+commit 43f2517955875be5d96b641fba33d73097fe3cd9 upstream.
 
-dGPUs connected to Intel systems configured for suspend to idle
-will not have the power rails cut at suspend and resetting the GPU
-may lead to problematic behaviors.
+This fixes the following build error
 
-Fixes: e25443d2765f4 ("drm/amdgpu: add a dev_pm_ops prepare callback (v2)")
-Link: https://gitlab.freedesktop.org/drm/amd/-/issues/1879
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+drivers/gpu/drm/kmb/kmb_plane.c: In function 'kmb_plane_atomic_disable':
+drivers/gpu/drm/kmb/kmb_plane.c:165:34: error: array subscript 3 is above array bounds of 'struct layer_status[2]' [-Werror=array-bounds]
+  165 |                 kmb->plane_status[plane_id].ctrl =
+  LCD_CTRL_GL2_ENABLE;
+  |                 ~~~~~~~~~~~~~~~~~^~~~~~~~~~
+  In file included from drivers/gpu/drm/kmb/kmb_plane.c:17:
+  drivers/gpu/drm/kmb/kmb_drv.h:61:41: note: while referencing 'plane_status'
+  61 |         struct layer_status  plane_status[KMB_MAX_PLANES];
+  |                                         ^~~~~~~~~~~~
+  drivers/gpu/drm/kmb/kmb_plane.c:162:34: error: array subscript 2 is above array bounds of 'struct layer_status[2]' [-Werror=array-bounds]
+  162 |  kmb->plane_status[plane_id].ctrl =  LCD_CTRL_GL1_ENABLE;
+  |                 ~~~~~~~~~~~~~~~~~^~~~~~~~~~
+  In file included from
+  drivers/gpu/drm/kmb/kmb_plane.c:17:
+  drivers/gpu/drm/kmb/kmb_drv.h:61:41: note: while referencing 'plane_status'
+  61 |         struct layer_status  plane_status[KMB_MAX_PLANES];
+  |
+  ^~~~~~~~~~~~
+
+Fixes: 7f7b96a8a0a1 ("drm/kmb: Add support for KeemBay Display")
+Signed-off-by: Anitha Chrisanthus <anitha.chrisanthus@intel.com>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220127194227.2213608-1-anitha.chrisanthus@intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/gpu/drm/kmb/kmb_plane.c |    6 ------
+ 1 file changed, 6 deletions(-)
 
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-@@ -1504,8 +1504,7 @@ static int amdgpu_pmops_prepare(struct d
- 	 * DPM_FLAG_SMART_SUSPEND works properly
- 	 */
- 	if (amdgpu_device_supports_boco(drm_dev))
--		return pm_runtime_suspended(dev) &&
--			pm_suspend_via_firmware();
-+		return pm_runtime_suspended(dev);
+--- a/drivers/gpu/drm/kmb/kmb_plane.c
++++ b/drivers/gpu/drm/kmb/kmb_plane.c
+@@ -158,12 +158,6 @@ static void kmb_plane_atomic_disable(str
+ 	case LAYER_1:
+ 		kmb->plane_status[plane_id].ctrl = LCD_CTRL_VL2_ENABLE;
+ 		break;
+-	case LAYER_2:
+-		kmb->plane_status[plane_id].ctrl = LCD_CTRL_GL1_ENABLE;
+-		break;
+-	case LAYER_3:
+-		kmb->plane_status[plane_id].ctrl = LCD_CTRL_GL2_ENABLE;
+-		break;
+ 	}
  
- 	return 0;
- }
+ 	kmb->plane_status[plane_id].disable = true;
 
 
