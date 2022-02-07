@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD89BC352B6
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E501C47088
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245160AbiBGMAA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 07:00:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47968 "EHLO
+        id S1381985AbiBGMAj (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 07:00:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383800AbiBGLgH (ORCPT
+        with ESMTP id S1386730AbiBGLgX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:36:07 -0500
+        Mon, 7 Feb 2022 06:36:23 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDC37C0401D4;
-        Mon,  7 Feb 2022 03:36:06 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6D89C03FECD;
+        Mon,  7 Feb 2022 03:36:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 26001B8102E;
-        Mon,  7 Feb 2022 11:36:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41559C004E1;
-        Mon,  7 Feb 2022 11:36:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 800BCB80EBD;
+        Mon,  7 Feb 2022 11:36:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6957C004E1;
+        Mon,  7 Feb 2022 11:36:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233764;
-        bh=GZjfwiDTZrXgySDAJnA5L8SeTfEpLi6S8B2FyT7h61A=;
+        s=korg; t=1644233780;
+        bh=CfF5WdTDKr8HJN9/b0LVxkEDlz1x+4lkrQSzwtW1+XQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nD3vUdiQD3MCkjnHl2RxeXODzgdho2WRv5XOfUA1g1LVF620xDCdFfV6FZUukiz5s
-         UdFsuELNjnYoXdqpKCNG6fWHdP/kwSbn7lEY5sOgMuFq64AwQApWaUZQwezgAANNJ6
-         Izbm5PZX0v6YBvC3pl3J6r1JYiyXP8KqfQgZM/78=
+        b=YLNoFxxPvUd5BUSM5eKiDgMHpUeVHGGKR97mwM1dFfmsVFZStvQKQ2f1CvVCMHfmd
+         rOGaxP76d426LmdQbLZHP/CnoOxlQXKfwMU46EWv3HA7xqNak0i+FiPdfG9jp3YyEO
+         zV4ZgYOTj3/o/BnQ6yaamzh7sQ0FV67xoSRBlB60=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kyle Huey <me@kylehuey.com>,
-        Andrew Cooper <Andrew.Cooper3@citrix.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>, stable@kernel.org
-Subject: [PATCH 5.16 112/126] x86/perf: Default set FREEZE_ON_SMI for all
-Date:   Mon,  7 Feb 2022 12:07:23 +0100
-Message-Id: <20220207103807.927118056@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Whitney <enwlinux@gmail.com>,
+        Ritesh Harjani <riteshh@linux.ibm.com>,
+        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
+        stable@kernel.org
+Subject: [PATCH 5.16 117/126] ext4: fix error handling in ext4_restore_inline_data()
+Date:   Mon,  7 Feb 2022 12:07:28 +0100
+Message-Id: <20220207103808.102750557@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
 References: <20220207103804.053675072@linuxfoundation.org>
@@ -49,58 +51,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Ritesh Harjani <riteshh@linux.ibm.com>
 
-commit a01994f5e5c79d3a35e5e8cf4252c7f2147323c3 upstream.
+commit 897026aaa73eb2517dfea8d147f20ddb0b813044 upstream.
 
-Kyle reported that rr[0] has started to malfunction on Comet Lake and
-later CPUs due to EFI starting to make use of CPL3 [1] and the PMU
-event filtering not distinguishing between regular CPL3 and SMM CPL3.
+While running "./check -I 200 generic/475" it sometimes gives below
+kernel BUG(). Ideally we should not call ext4_write_inline_data() if
+ext4_create_inline_data() has failed.
 
-Since this is a privilege violation, default disable SMM visibility
-where possible.
+<log snip>
+[73131.453234] kernel BUG at fs/ext4/inline.c:223!
 
-Administrators wanting to observe SMM cycles can easily change this
-using the sysfs attribute while regular users don't have access to
-this file.
+<code snip>
+ 212 static void ext4_write_inline_data(struct inode *inode, struct ext4_iloc *iloc,
+ 213                                    void *buffer, loff_t pos, unsigned int len)
+ 214 {
+<...>
+ 223         BUG_ON(!EXT4_I(inode)->i_inline_off);
+ 224         BUG_ON(pos + len > EXT4_I(inode)->i_inline_size);
 
-[0] https://rr-project.org/
+This patch handles the error and prints out a emergency msg saying potential
+data loss for the given inode (since we couldn't restore the original
+inline_data due to some previous error).
 
-[1] See the Intel white paper "Trustworthy SMM on the Intel vPro Platform"
-at https://bugzilla.kernel.org/attachment.cgi?id=300300, particularly the
-end of page 5.
+[ 9571.070313] EXT4-fs (dm-0): error restoring inline_data for inode -- potential data loss! (inode 1703982, error -30)
 
-Reported-by: Kyle Huey <me@kylehuey.com>
-Suggested-by: Andrew Cooper <Andrew.Cooper3@citrix.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reported-by: Eric Whitney <enwlinux@gmail.com>
+Signed-off-by: Ritesh Harjani <riteshh@linux.ibm.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/9f4cd7dfd54fa58ff27270881823d94ddf78dd07.1642416995.git.riteshh@linux.ibm.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Cc: stable@kernel.org
-Link: https://lkml.kernel.org/r/YfKChjX61OW4CkYm@hirez.programming.kicks-ass.net
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/events/intel/core.c |   13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ fs/ext4/inline.c |   10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
---- a/arch/x86/events/intel/core.c
-+++ b/arch/x86/events/intel/core.c
-@@ -4709,6 +4709,19 @@ static __initconst const struct x86_pmu
- 	.lbr_read		= intel_pmu_lbr_read_64,
- 	.lbr_save		= intel_pmu_lbr_save,
- 	.lbr_restore		= intel_pmu_lbr_restore,
+--- a/fs/ext4/inline.c
++++ b/fs/ext4/inline.c
+@@ -1133,7 +1133,15 @@ static void ext4_restore_inline_data(han
+ 				     struct ext4_iloc *iloc,
+ 				     void *buf, int inline_size)
+ {
+-	ext4_create_inline_data(handle, inode, inline_size);
++	int ret;
 +
-+	/*
-+	 * SMM has access to all 4 rings and while traditionally SMM code only
-+	 * ran in CPL0, 2021-era firmware is starting to make use of CPL3 in SMM.
-+	 *
-+	 * Since the EVENTSEL.{USR,OS} CPL filtering makes no distinction
-+	 * between SMM or not, this results in what should be pure userspace
-+	 * counters including SMM data.
-+	 *
-+	 * This is a clear privilege issue, therefore globally disable
-+	 * counting SMM by default.
-+	 */
-+	.attr_freeze_on_smi	= 1,
- };
- 
- static __init void intel_clovertown_quirk(void)
++	ret = ext4_create_inline_data(handle, inode, inline_size);
++	if (ret) {
++		ext4_msg(inode->i_sb, KERN_EMERG,
++			"error restoring inline_data for inode -- potential data loss! (inode %lu, error %d)",
++			inode->i_ino, ret);
++		return;
++	}
+ 	ext4_write_inline_data(inode, iloc, buf, 0, inline_size);
+ 	ext4_set_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA);
+ }
 
 
