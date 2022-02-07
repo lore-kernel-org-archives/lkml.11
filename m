@@ -2,99 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3357FC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 165C6C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 10:59:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352550AbiBGK4P (ORCPT
+        id S1350042AbiBGK4L (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 05:56:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37866 "EHLO
+        Mon, 7 Feb 2022 05:56:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245176AbiBGKtY (ORCPT
+        with ESMTP id S1352176AbiBGKuq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 05:49:24 -0500
-X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 02:49:21 PST
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A301FC0401C1;
-        Mon,  7 Feb 2022 02:49:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644230961; x=1675766961;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=UGOdXzZC/n1cq7HB8SFnKvHfDjwQEONn26NuIhCCEQw=;
-  b=Ly33X9Lhb9zEFZNQ7SMZFCD/o/EgNU2n+0Z/0wGNmnocg1w2bepd5DZN
-   KutpYY6LZFDiyD3cJS8gjj1wtAdYsihBOOV1oPs9z71knwmT204RXo1vf
-   xUBtfqC1rAKpk5GSnLJc9sT+YHy0Vk9TAbQ/gFxqNDGphQoJAMlYi0icj
-   jFs/LLED/a0ZrKKOwl2uMNofI6s/Hq8Qs2Svjqj7AGf8Au77sj4q4HkA2
-   7vdGBwF9PlmkhkgCSYDi+p3CT63X9trezjFxmkyJwIXh9XhBpe3rMEnlA
-   8Sd9p/ELN5QYZCNbJitz1JCWAib5W+o/utBBOOOG6f2O79JXO+tjS09jg
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="273209904"
-X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
-   d="scan'208";a="273209904"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 02:48:19 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
-   d="scan'208";a="621508215"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by FMSMGA003.fm.intel.com with ESMTP; 07 Feb 2022 02:48:17 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 61E7D509; Mon,  7 Feb 2022 12:48:32 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v2 1/3] iio: temperature: ltc2983: Don't hard code defined constants in messages
-Date:   Mon,  7 Feb 2022 12:48:28 +0200
-Message-Id: <20220207104830.83882-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
+        Mon, 7 Feb 2022 05:50:46 -0500
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DD94C043181
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 02:50:45 -0800 (PST)
+Received: by mail-wr1-x42c.google.com with SMTP id m14so23891146wrg.12
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 02:50:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EZDSS2MYdieKNY+ptNKFPV1o4mbS/p6IjuUtTxEmOkI=;
+        b=duNxmxAdk7clYt7ndWPXMcPdSolXHBq4k1vpVSHdqeR3Y4OWFGyd1weIqSmOvwZb6S
+         Spl+lEN4s/4eqR+CV2VBUi31PwqNpLhu1spSm9qyFUZFnw96KF9rCAhnyUvDBEIf11z1
+         PSnr7JICxX6dz2N2SJiFNsqmL9hadf/eri3EZFXn1w2FkBwZdwQP/eyRjWS5wMaFGvdn
+         ZF0lDFr030L6E1u3lhpYKRKDd4tReFjacJB9q+g0p4uS1S2/apocHH72RqIDegc24uK8
+         2jrlj+s/8rx96MGL4wDFQmWS8/lusi4cE2hPx9vSkIyDaelQhP2a0llYAaxuDq8JyPit
+         J5CA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EZDSS2MYdieKNY+ptNKFPV1o4mbS/p6IjuUtTxEmOkI=;
+        b=m0BHmCjtOm06RqsPr4H5MAMMo0udjYLBS9vSePYsPvD8LnF/EgK07C4+qyGbru0OSb
+         u0namIiMUlwCCu8fl5Pi0imLBjGfG4ZUyo4Zjo6+pRFYR3Cdj8WXY2oF02rDwosIaGaX
+         S2wgzx/7AWalPY9tpCVl/ls4LrBXAExojFr6zoeBwzitqywiUGuPrGJqaXuQTHQ/N6yV
+         oH+BwiZwKZ075PsW9GPOc+/zG6Y+EqyLXhZxs39zZtz7C9Am2kMXVwrPWTp8d96CJrWT
+         E0DnmD53oydnH7thnORslbRy0Fwf/pF6zKEToMJLIdLA8jHmnxKW1epsrJ+ycNlyhoiy
+         f/Cw==
+X-Gm-Message-State: AOAM530NQtB05/35uE76M7WSsnfKzn4V6stL5U1KitXStwVsUodJsNst
+        jPGvwCAuSwzYmZHVEkRB2MZuzg==
+X-Google-Smtp-Source: ABdhPJxLDom1n0BQAQA7DNHaMf3QjJwyZDXY+ENwGqJe57G5ZW9q1SeMh9v9S8yRdiIbSkPeP/Mi6A==
+X-Received: by 2002:a5d:6486:: with SMTP id o6mr8980127wri.454.1644231043764;
+        Mon, 07 Feb 2022 02:50:43 -0800 (PST)
+Received: from usaari01.cust.communityfibre.co.uk ([2a02:6b6d:f804:0:9277:27e1:ecf9:6ab6])
+        by smtp.gmail.com with ESMTPSA id a22sm112080wmq.45.2022.02.07.02.50.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 02:50:43 -0800 (PST)
+From:   Usama Arif <usama.arif@bytedance.com>
+To:     io-uring@vger.kernel.org, axboe@kernel.dk, asml.silence@gmail.com,
+        linux-kernel@vger.kernel.org
+Cc:     fam.zheng@bytedance.com, lkp@lists.01.org, lkp@intel.com,
+        Usama Arif <usama.arif@bytedance.com>,
+        kernel test robot <oliver.sang@intel.com>
+Subject: [PATCH] io_uring: unregister eventfd while holding lock when freeing ring ctx
+Date:   Mon,  7 Feb 2022 10:50:40 +0000
+Message-Id: <20220207105040.2662467-1-usama.arif@bytedance.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In a couple of messages the constants, which have their definitions,
-are hard coded into the message text. Unhardcode them.
+This is because ctx->io_ev_fd is rcu_dereference_protected using
+ctx->uring_lock in io_eventfd_unregister. Not locking the function
+resulted in suspicious RCU usage reported by kernel test robot.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Reviewed-by: Nuno Sá <nuno.sa@analog.com>
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Signed-off-by: Usama Arif <usama.arif@bytedance.com>
 ---
-v2: added Rb tag (Nuno)
- drivers/iio/temperature/ltc2983.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ fs/io_uring.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/temperature/ltc2983.c b/drivers/iio/temperature/ltc2983.c
-index 301c3f13fb26..d272c303c1b0 100644
---- a/drivers/iio/temperature/ltc2983.c
-+++ b/drivers/iio/temperature/ltc2983.c
-@@ -409,8 +409,8 @@ static struct ltc2983_custom_sensor *__ltc2983_custom_sensor_new(
- 	new_custom->size = n_entries * n_size;
- 	/* check Steinhart size */
- 	if (is_steinhart && new_custom->size != LTC2983_CUSTOM_STEINHART_SIZE) {
--		dev_err(dev, "Steinhart sensors size(%zu) must be 24",
--							new_custom->size);
-+		dev_err(dev, "Steinhart sensors size(%zu) must be %d", new_custom->size,
-+			LTC2983_CUSTOM_STEINHART_SIZE);
- 		return ERR_PTR(-EINVAL);
- 	}
- 	/* Check space on the table. */
-@@ -1299,8 +1299,8 @@ static int ltc2983_parse_dt(struct ltc2983_data *st)
- 		if (sensor.chan < LTC2983_MIN_CHANNELS_NR ||
- 		    sensor.chan > LTC2983_MAX_CHANNELS_NR) {
- 			ret = -EINVAL;
--			dev_err(dev,
--				"chan:%d must be from 1 to 20\n", sensor.chan);
-+			dev_err(dev, "chan:%d must be from %d to %d\n", sensor.chan,
-+				LTC2983_MIN_CHANNELS_NR, LTC2983_MAX_CHANNELS_NR);
- 			goto put_child;
- 		} else if (channel_avail_mask & BIT(sensor.chan)) {
- 			ret = -EINVAL;
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index ad8f84376955..dbc9d3f3f6c5 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -9471,8 +9471,8 @@ static __cold void io_ring_ctx_free(struct io_ring_ctx *ctx)
+ 		__io_sqe_files_unregister(ctx);
+ 	if (ctx->rings)
+ 		__io_cqring_overflow_flush(ctx, true);
+-	mutex_unlock(&ctx->uring_lock);
+ 	io_eventfd_unregister(ctx);
++	mutex_unlock(&ctx->uring_lock);
+ 	io_destroy_buffers(ctx);
+ 	if (ctx->sq_creds)
+ 		put_cred(ctx->sq_creds);
 -- 
-2.34.1
+2.25.1
 
