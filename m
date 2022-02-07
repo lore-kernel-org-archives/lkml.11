@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7942C35278
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:39:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D313FC47082
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:39:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386404AbiBGLee (ORCPT
+        id S1386676AbiBGLfS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:34:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35950 "EHLO
+        Mon, 7 Feb 2022 06:35:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383886AbiBGLX5 (ORCPT
+        with ESMTP id S1384060AbiBGLYh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:23:57 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9AF8C0401CF;
-        Mon,  7 Feb 2022 03:23:53 -0800 (PST)
+        Mon, 7 Feb 2022 06:24:37 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2C9FC043181;
+        Mon,  7 Feb 2022 03:24:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7889B6077B;
-        Mon,  7 Feb 2022 11:23:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47D1FC004E1;
-        Mon,  7 Feb 2022 11:23:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D95461426;
+        Mon,  7 Feb 2022 11:24:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 262D4C340EB;
+        Mon,  7 Feb 2022 11:24:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233032;
-        bh=6R5EQEaS0/XQoxwQd9w6MGNpyaOaeu03ggOMPwlSSGY=;
+        s=korg; t=1644233075;
+        bh=hGthDrumJtm6T5rSAr+FgCa3SsvvzGoGvBKplDoc2ng=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kk0DLfDcNZcb7RtnQny7U4ERGZ2rmFg0BoK/hBIQer1g2A+tST0JHSqPVHNqyXwD/
-         pvK2LMWNKsrQNAMsBU6WFXvUaOkPKbtsoQQza8wTraZJyvk+TUJs4jtYpK5hEw8fOu
-         56v8mch4A1dqiydjTPbrWhUhGMf+v+eJqTdNh4w4=
+        b=ONQNk2MBfJdMeqfDb5bTrFanj5Hp4NnP0a6A7cwfgX7rFGi9Eb4049jpKuKPECGAP
+         KbSQTuEGTVYC7fB9w1ZpWfp11Hi534Nn8bm4t/k7QYxPP2Pq9CmqIOkkYA9Z9CEf7B
+         f6Rd15HXIkl0tRpt+W2DAcgqj16bUI5E7HbEW1ic=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 5.10 51/74] pinctrl: bcm2835: Fix a few error paths
-Date:   Mon,  7 Feb 2022 12:06:49 +0100
-Message-Id: <20220207103758.890700743@linuxfoundation.org>
+        stable@vger.kernel.org, Kane Chen <kane.chen@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Grace Kao <grace.kao@intel.com>
+Subject: [PATCH 5.10 49/74] pinctrl: intel: Fix a glitch when updating IRQ flags on a preconfigured line
+Date:   Mon,  7 Feb 2022 12:06:47 +0100
+Message-Id: <20220207103758.827863262@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.232676988@linuxfoundation.org>
 References: <20220207103757.232676988@linuxfoundation.org>
@@ -49,78 +51,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Fainelli <f.fainelli@gmail.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-commit 5297c693d8c8e08fa742e3112cf70723f7a04da2 upstream.
+commit e12963c453263d5321a2c610e98cbc731233b685 upstream.
 
-After commit 266423e60ea1 ("pinctrl: bcm2835: Change init order for gpio
-hogs") a few error paths would not unwind properly the registration of
-gpio ranges. Correct that by assigning a single error label and goto it
-whenever we encounter a fatal error.
+The commit af7e3eeb84e2 ("pinctrl: intel: Disable input and output buffer
+when switching to GPIO") hadn't taken into account an update of the IRQ
+flags scenario.
 
-Fixes: 266423e60ea1 ("pinctrl: bcm2835: Change init order for gpio hogs")
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20220127215033.267227-1-f.fainelli@gmail.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+When updating the IRQ flags on the preconfigured line the ->irq_set_type()
+is called again. In such case the sequential Rx buffer configuration
+changes may trigger a falling or rising edge interrupt that may lead,
+on some platforms, to an undesired event.
+
+This may happen because each of intel_gpio_set_gpio_mode() and
+__intel_gpio_set_direction() updates the pad configuration with a different
+value of the GPIORXDIS bit. Notable, that the intel_gpio_set_gpio_mode() is
+called only for the pads that are configured as an input. Due to this fact,
+integrate the logic of __intel_gpio_set_direction() call into the
+intel_gpio_set_gpio_mode() so that the Rx buffer won't be disabled and
+immediately re-enabled.
+
+Fixes: af7e3eeb84e2 ("pinctrl: intel: Disable input and output buffer when switching to GPIO")
+Reported-by: Kane Chen <kane.chen@intel.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Acked-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Tested-by: Grace Kao <grace.kao@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pinctrl/bcm/pinctrl-bcm2835.c |   23 +++++++++++++++--------
- 1 file changed, 15 insertions(+), 8 deletions(-)
+ drivers/pinctrl/intel/pinctrl-intel.c |   10 ++--------
+ 1 file changed, 2 insertions(+), 8 deletions(-)
 
---- a/drivers/pinctrl/bcm/pinctrl-bcm2835.c
-+++ b/drivers/pinctrl/bcm/pinctrl-bcm2835.c
-@@ -1264,16 +1264,18 @@ static int bcm2835_pinctrl_probe(struct
- 				     sizeof(*girq->parents),
- 				     GFP_KERNEL);
- 	if (!girq->parents) {
--		pinctrl_remove_gpio_range(pc->pctl_dev, &pc->gpio_range);
--		return -ENOMEM;
-+		err = -ENOMEM;
-+		goto out_remove;
- 	}
+--- a/drivers/pinctrl/intel/pinctrl-intel.c
++++ b/drivers/pinctrl/intel/pinctrl-intel.c
+@@ -441,8 +441,8 @@ static void intel_gpio_set_gpio_mode(voi
+ 	value &= ~PADCFG0_PMODE_MASK;
+ 	value |= PADCFG0_PMODE_GPIO;
  
- 	if (is_7211) {
- 		pc->wake_irq = devm_kcalloc(dev, BCM2835_NUM_IRQS,
- 					    sizeof(*pc->wake_irq),
- 					    GFP_KERNEL);
--		if (!pc->wake_irq)
--			return -ENOMEM;
-+		if (!pc->wake_irq) {
-+			err = -ENOMEM;
-+			goto out_remove;
-+		}
- 	}
+-	/* Disable input and output buffers */
+-	value |= PADCFG0_GPIORXDIS;
++	/* Disable TX buffer and enable RX (this will be input) */
++	value &= ~PADCFG0_GPIORXDIS;
+ 	value |= PADCFG0_GPIOTXDIS;
  
- 	/*
-@@ -1297,8 +1299,10 @@ static int bcm2835_pinctrl_probe(struct
+ 	/* Disable SCI/SMI/NMI generation */
+@@ -487,9 +487,6 @@ static int intel_gpio_request_enable(str
  
- 		len = strlen(dev_name(pc->dev)) + 16;
- 		name = devm_kzalloc(pc->dev, len, GFP_KERNEL);
--		if (!name)
--			return -ENOMEM;
-+		if (!name) {
-+			err = -ENOMEM;
-+			goto out_remove;
-+		}
+ 	intel_gpio_set_gpio_mode(padcfg0);
  
- 		snprintf(name, len, "%s:bank%d", dev_name(pc->dev), i);
- 
-@@ -1317,11 +1321,14 @@ static int bcm2835_pinctrl_probe(struct
- 	err = gpiochip_add_data(&pc->gpio_chip, pc);
- 	if (err) {
- 		dev_err(dev, "could not add GPIO chip\n");
--		pinctrl_remove_gpio_range(pc->pctl_dev, &pc->gpio_range);
--		return err;
-+		goto out_remove;
- 	}
+-	/* Disable TX buffer and enable RX (this will be input) */
+-	__intel_gpio_set_direction(padcfg0, true);
+-
+ 	raw_spin_unlock_irqrestore(&pctrl->lock, flags);
  
  	return 0;
-+
-+out_remove:
-+	pinctrl_remove_gpio_range(pc->pctl_dev, &pc->gpio_range);
-+	return err;
- }
+@@ -1105,9 +1102,6 @@ static int intel_gpio_irq_type(struct ir
  
- static struct platform_driver bcm2835_pinctrl_driver = {
+ 	intel_gpio_set_gpio_mode(reg);
+ 
+-	/* Disable TX buffer and enable RX (this will be input) */
+-	__intel_gpio_set_direction(reg, true);
+-
+ 	value = readl(reg);
+ 
+ 	value &= ~(PADCFG0_RXEVCFG_MASK | PADCFG0_RXINV);
 
 
