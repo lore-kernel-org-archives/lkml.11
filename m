@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0F06C4167E
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:16:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EFC7C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:17:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380416AbiBGLQm (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:16:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49968 "EHLO
+        id S245166AbiBGLNJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 06:13:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356374AbiBGLNB (ORCPT
+        with ESMTP id S242911AbiBGLKY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:13:01 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF226C043181;
-        Mon,  7 Feb 2022 03:13:00 -0800 (PST)
+        Mon, 7 Feb 2022 06:10:24 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 289F2C043181;
+        Mon,  7 Feb 2022 03:10:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 68C696126D;
-        Mon,  7 Feb 2022 11:13:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AD47C004E1;
-        Mon,  7 Feb 2022 11:12:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A935961380;
+        Mon,  7 Feb 2022 11:10:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71995C004E1;
+        Mon,  7 Feb 2022 11:10:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232379;
-        bh=eVnM4/vWa5RlrsKSZ9YEG2ii+6AgOF8vjc0ymH0k7qA=;
+        s=korg; t=1644232223;
+        bh=/1gOUus/PlI8TcuhnyrJCK0TBi6oG+v2tNclrv/K+8U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fqiONOXMNzP+APf21135WvfNLiYG3b02AC6gkANx8VzN/Puq+zOW2+RNGE5Cfx5v4
-         1jJH5cgz/oHXDDNlN+PS8cJutEjJ8IoJSNdVBA8tDmWv62CAd/WK6kli0sv8jNGyOO
-         ErLuXyc2QOYuWXEpeT8lWIoyxD/9ZYt6oVultNok=
+        b=ZTrUM9juqsGnZdMmESX2AxTSxoEcYpEJvgAy0sQkFgHa0ebK7d+5l9vzBGxXodETK
+         t29UO5ZxK8C2Cu0Aooji/40bbXguCzYhASQC0T3ARowS2Fwgfg1t5l9k9S6VPOlxhz
+         638E2zWEbJKEW0O8FVtnIKOJmCvBm5yrJY2qNVIc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lior Nahmanson <liorna@nvidia.com>,
-        Raed Salem <raeds@nvidia.com>, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.14 60/69] net: macsec: Verify that send_sci is on when setting Tx sci explicitly
-Date:   Mon,  7 Feb 2022 12:06:22 +0100
-Message-Id: <20220207103757.598605103@linuxfoundation.org>
+        stable@vger.kernel.org, Dai Ngo <dai.ngo@oracle.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Bruce Fields <bfields@fieldses.org>
+Subject: [PATCH 4.9 44/48] nfsd: nfsd4_setclientid_confirm mistakenly expires confirmed client.
+Date:   Mon,  7 Feb 2022 12:06:17 +0100
+Message-Id: <20220207103753.761720551@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207103755.604121441@linuxfoundation.org>
-References: <20220207103755.604121441@linuxfoundation.org>
+In-Reply-To: <20220207103752.341184175@linuxfoundation.org>
+References: <20220207103752.341184175@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,47 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lior Nahmanson <liorna@nvidia.com>
+From: Dai Ngo <dai.ngo@oracle.com>
 
-commit d0cfa548dbde354de986911d3913897b5448faad upstream.
+commit ab451ea952fe9d7afefae55ddb28943a148247fe upstream.
 
-When setting Tx sci explicit, the Rx side is expected to use this
-sci and not recalculate it from the packet.However, in case of Tx sci
-is explicit and send_sci is off, the receiver is wrongly recalculate
-the sci from the source MAC address which most likely be different
-than the explicit sci.
+>From RFC 7530 Section 16.34.5:
 
-Fix by preventing such configuration when macsec newlink is established
-and return EINVAL error code on such cases.
+o  The server has not recorded an unconfirmed { v, x, c, *, * } and
+   has recorded a confirmed { v, x, c, *, s }.  If the principals of
+   the record and of SETCLIENTID_CONFIRM do not match, the server
+   returns NFS4ERR_CLID_INUSE without removing any relevant leased
+   client state, and without changing recorded callback and
+   callback_ident values for client { x }.
 
-Fixes: c09440f7dcb3 ("macsec: introduce IEEE 802.1AE driver")
-Signed-off-by: Lior Nahmanson <liorna@nvidia.com>
-Reviewed-by: Raed Salem <raeds@nvidia.com>
-Signed-off-by: Raed Salem <raeds@nvidia.com>
-Link: https://lore.kernel.org/r/1643542672-29403-1-git-send-email-raeds@nvidia.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+The current code intends to do what the spec describes above but
+it forgot to set 'old' to NULL resulting to the confirmed client
+to be expired.
+
+Fixes: 2b63482185e6 ("nfsd: fix clid_inuse on mount with security change")
+Signed-off-by: Dai Ngo <dai.ngo@oracle.com>
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Reviewed-by: Bruce Fields <bfields@fieldses.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/macsec.c |    9 +++++++++
- 1 file changed, 9 insertions(+)
+ fs/nfsd/nfs4state.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/net/macsec.c
-+++ b/drivers/net/macsec.c
-@@ -3230,6 +3230,15 @@ static int macsec_newlink(struct net *ne
- 
- 	macsec->real_dev = real_dev;
- 
-+	/* send_sci must be set to true when transmit sci explicitly is set */
-+	if ((data && data[IFLA_MACSEC_SCI]) &&
-+	    (data && data[IFLA_MACSEC_INC_SCI])) {
-+		u8 send_sci = !!nla_get_u8(data[IFLA_MACSEC_INC_SCI]);
-+
-+		if (!send_sci)
-+			return -EINVAL;
-+	}
-+
- 	if (data && data[IFLA_MACSEC_ICV_LEN])
- 		icv_len = nla_get_u8(data[IFLA_MACSEC_ICV_LEN]);
- 	mtu = real_dev->mtu - icv_len - macsec_extra_len(true);
+--- a/fs/nfsd/nfs4state.c
++++ b/fs/nfsd/nfs4state.c
+@@ -3424,8 +3424,10 @@ nfsd4_setclientid_confirm(struct svc_rqs
+ 			status = nfserr_clid_inuse;
+ 			if (client_has_state(old)
+ 					&& !same_creds(&unconf->cl_cred,
+-							&old->cl_cred))
++							&old->cl_cred)) {
++				old = NULL;
+ 				goto out;
++			}
+ 			status = mark_client_expired_locked(old);
+ 			if (status) {
+ 				old = NULL;
 
 
