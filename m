@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5DF3C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C6BFC4332F
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:00:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381823AbiBGLrM (ORCPT
+        id S1381692AbiBGLq6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:47:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46478 "EHLO
+        Mon, 7 Feb 2022 06:46:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386278AbiBGLeR (ORCPT
+        with ESMTP id S1386260AbiBGLeN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:34:17 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 225C4C043181;
-        Mon,  7 Feb 2022 03:34:16 -0800 (PST)
+        Mon, 7 Feb 2022 06:34:13 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 096F0C043181;
+        Mon,  7 Feb 2022 03:34:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CF01EB80EC3;
-        Mon,  7 Feb 2022 11:34:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EB1CC004E1;
-        Mon,  7 Feb 2022 11:34:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BC6C7B8102E;
+        Mon,  7 Feb 2022 11:34:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3913C004E1;
+        Mon,  7 Feb 2022 11:34:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233653;
-        bh=G53Ov27bx25K4bYLcs+JBgsqz22eleL4UIUrJ3J1pmU=;
+        s=korg; t=1644233650;
+        bh=sRT0SUtVKDDdJobDZ2zVLyItWfN68H3/PvgmN5nr8u4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A4O+dtUZyn9w4uOmLcCsjj76FbeEeJDMWByXkhgRLMvChhhIsRA+tYhtELnAuSV8c
-         cwnbrhvZj/5v8b/2+QlJ70KQtnjP4MDVwmLx0naO77e4RxjGlnEHjRyNP/y42F5Ux0
-         A37PwZ/kA4hDanyD7t6Rdatr0uXEy4WiJfU4ebgQ=
+        b=pAQX48k1KpaRE1imS8OK63hG2Fs2FQgVHrj599ZYMUKQ3C8yDmTK6wE4atbM+D1AG
+         tZP+JKGGGF+thWWS0TG56Z8yWbfSVSfZApLCIOV67+BcrChMvh56152mRD/4FCbJq3
+         1+oEOdiQVX82SAz7sF2gNyuO8vsV6W0UiUW2vr3M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Anitha Chrisanthus <anitha.chrisanthus@intel.com>,
-        Kees Cook <keescook@chromium.org>
-Subject: [PATCH 5.16 079/126] drm/kmb: Fix for build errors with Warray-bounds
-Date:   Mon,  7 Feb 2022 12:06:50 +0100
-Message-Id: <20220207103806.838794122@linuxfoundation.org>
+        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Marek Vasut <marex@denx.de>
+Subject: [PATCH 5.16 078/126] drm: mxsfb: Fix NULL pointer dereference
+Date:   Mon,  7 Feb 2022 12:06:49 +0100
+Message-Id: <20220207103806.805730351@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
 References: <20220207103804.053675072@linuxfoundation.org>
@@ -50,54 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anitha Chrisanthus <anitha.chrisanthus@intel.com>
+From: Alexander Stein <alexander.stein@ew.tq-group.com>
 
-commit 43f2517955875be5d96b641fba33d73097fe3cd9 upstream.
+commit 622c9a3a7868e1eeca39c55305ca3ebec4742b64 upstream.
 
-This fixes the following build error
+mxsfb should not ever dereference the NULL pointer which
+drm_atomic_get_new_bridge_state is allowed to return.
+Assume a fixed format instead.
 
-drivers/gpu/drm/kmb/kmb_plane.c: In function 'kmb_plane_atomic_disable':
-drivers/gpu/drm/kmb/kmb_plane.c:165:34: error: array subscript 3 is above array bounds of 'struct layer_status[2]' [-Werror=array-bounds]
-  165 |                 kmb->plane_status[plane_id].ctrl =
-  LCD_CTRL_GL2_ENABLE;
-  |                 ~~~~~~~~~~~~~~~~~^~~~~~~~~~
-  In file included from drivers/gpu/drm/kmb/kmb_plane.c:17:
-  drivers/gpu/drm/kmb/kmb_drv.h:61:41: note: while referencing 'plane_status'
-  61 |         struct layer_status  plane_status[KMB_MAX_PLANES];
-  |                                         ^~~~~~~~~~~~
-  drivers/gpu/drm/kmb/kmb_plane.c:162:34: error: array subscript 2 is above array bounds of 'struct layer_status[2]' [-Werror=array-bounds]
-  162 |  kmb->plane_status[plane_id].ctrl =  LCD_CTRL_GL1_ENABLE;
-  |                 ~~~~~~~~~~~~~~~~~^~~~~~~~~~
-  In file included from
-  drivers/gpu/drm/kmb/kmb_plane.c:17:
-  drivers/gpu/drm/kmb/kmb_drv.h:61:41: note: while referencing 'plane_status'
-  61 |         struct layer_status  plane_status[KMB_MAX_PLANES];
-  |
-  ^~~~~~~~~~~~
-
-Fixes: 7f7b96a8a0a1 ("drm/kmb: Add support for KeemBay Display")
-Signed-off-by: Anitha Chrisanthus <anitha.chrisanthus@intel.com>
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220127194227.2213608-1-anitha.chrisanthus@intel.com
+Fixes: b776b0f00f24 ("drm: mxsfb: Use bus_format from the nearest bridge if present")
+Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
+Signed-off-by: Marek Vasut <marex@denx.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220202081755.145716-3-alexander.stein@ew.tq-group.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/kmb/kmb_plane.c |    6 ------
- 1 file changed, 6 deletions(-)
+ drivers/gpu/drm/mxsfb/mxsfb_kms.c |    6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/kmb/kmb_plane.c
-+++ b/drivers/gpu/drm/kmb/kmb_plane.c
-@@ -158,12 +158,6 @@ static void kmb_plane_atomic_disable(str
- 	case LAYER_1:
- 		kmb->plane_status[plane_id].ctrl = LCD_CTRL_VL2_ENABLE;
- 		break;
--	case LAYER_2:
--		kmb->plane_status[plane_id].ctrl = LCD_CTRL_GL1_ENABLE;
--		break;
--	case LAYER_3:
--		kmb->plane_status[plane_id].ctrl = LCD_CTRL_GL2_ENABLE;
--		break;
- 	}
- 
- 	kmb->plane_status[plane_id].disable = true;
+--- a/drivers/gpu/drm/mxsfb/mxsfb_kms.c
++++ b/drivers/gpu/drm/mxsfb/mxsfb_kms.c
+@@ -361,7 +361,11 @@ static void mxsfb_crtc_atomic_enable(str
+ 		bridge_state =
+ 			drm_atomic_get_new_bridge_state(state,
+ 							mxsfb->bridge);
+-		bus_format = bridge_state->input_bus_cfg.format;
++		if (!bridge_state)
++			bus_format = MEDIA_BUS_FMT_FIXED;
++		else
++			bus_format = bridge_state->input_bus_cfg.format;
++
+ 		if (bus_format == MEDIA_BUS_FMT_FIXED) {
+ 			dev_warn_once(drm->dev,
+ 				      "Bridge does not provide bus format, assuming MEDIA_BUS_FMT_RGB888_1X24.\n"
 
 
