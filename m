@@ -2,97 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07FDCC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3357FC43217
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 10:59:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346277AbiBGK4I (ORCPT
+        id S1352550AbiBGK4P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 05:56:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40646 "EHLO
+        Mon, 7 Feb 2022 05:56:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346245AbiBGKxx (ORCPT
+        with ESMTP id S245176AbiBGKtY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 05:53:53 -0500
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1719EC043181;
-        Mon,  7 Feb 2022 02:53:51 -0800 (PST)
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2177xPBw022448;
-        Mon, 7 Feb 2022 11:51:25 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=K0w0XBABzulMwdabSun+EYASobtFwjzKISn9qecxuPY=;
- b=k3lqLLAw5FZoLfGG2L+upiMxtNrtpMVu5eJRO4IXtjDPbTah91Kl0YEEEw42PuQWzddD
- iunHYyNKNosVbIvPYJc8poGbeVX3jV3KrfHTx3omp+jo+oYifplTOUz3a5PNIHip9ECo
- di8nWjQPYkmOIrOZa+W+RoKZfTFYQWTdSEPot+z8e3QgHzNs8+UCQY8C2YaO9StgkqIM
- heGAjJv9tNFhLKbM35juaSCV/rJw9Mp7Mc9NY+1s302Ru7y2ZIVvScBbvKbgSpeVpMAs
- fWc8WaEwW2WjC4Jq1xHL9+uPqhJf248Lpu6H8z1dr1c7cg+WSnR2PIjtdKypsd6HzATq 0A== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3e2nfyaxev-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 11:51:25 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 66E7D100039;
-        Mon,  7 Feb 2022 11:51:16 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 4CA2E216EDA;
-        Mon,  7 Feb 2022 11:51:16 +0100 (CET)
-Received: from [10.48.0.252] (10.75.127.45) by SFHDAG2NODE2.st.com
- (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Mon, 7 Feb
- 2022 11:51:15 +0100
-Message-ID: <c501d583-4293-5781-8ddd-b1d317460b05@foss.st.com>
-Date:   Mon, 7 Feb 2022 11:51:14 +0100
+        Mon, 7 Feb 2022 05:49:24 -0500
+X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 02:49:21 PST
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A301FC0401C1;
+        Mon,  7 Feb 2022 02:49:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644230961; x=1675766961;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=UGOdXzZC/n1cq7HB8SFnKvHfDjwQEONn26NuIhCCEQw=;
+  b=Ly33X9Lhb9zEFZNQ7SMZFCD/o/EgNU2n+0Z/0wGNmnocg1w2bepd5DZN
+   KutpYY6LZFDiyD3cJS8gjj1wtAdYsihBOOV1oPs9z71knwmT204RXo1vf
+   xUBtfqC1rAKpk5GSnLJc9sT+YHy0Vk9TAbQ/gFxqNDGphQoJAMlYi0icj
+   jFs/LLED/a0ZrKKOwl2uMNofI6s/Hq8Qs2Svjqj7AGf8Au77sj4q4HkA2
+   7vdGBwF9PlmkhkgCSYDi+p3CT63X9trezjFxmkyJwIXh9XhBpe3rMEnlA
+   8Sd9p/ELN5QYZCNbJitz1JCWAib5W+o/utBBOOOG6f2O79JXO+tjS09jg
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="273209904"
+X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
+   d="scan'208";a="273209904"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 02:48:19 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
+   d="scan'208";a="621508215"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by FMSMGA003.fm.intel.com with ESMTP; 07 Feb 2022 02:48:17 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 61E7D509; Mon,  7 Feb 2022 12:48:32 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v2 1/3] iio: temperature: ltc2983: Don't hard code defined constants in messages
+Date:   Mon,  7 Feb 2022 12:48:28 +0200
+Message-Id: <20220207104830.83882-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v7 00/10] Add support for DMA2D of STMicroelectronics
- STM32 Soc series
-Content-Language: en-US
-To:     Dillon Min <dillon.minfei@gmail.com>, <mchehab@kernel.org>,
-        <mchehab+huawei@kernel.org>, <hverkuil-cisco@xs4all.nl>,
-        <ezequiel@collabora.com>, <gnurou@gmail.com>,
-        <pihsun@chromium.org>, <mcoquelin.stm32@gmail.com>,
-        <mturquette@baylibre.com>, <sboyd@kernel.org>,
-        <robh+dt@kernel.org>, <gabriel.fernandez@st.com>,
-        <gabriel.fernandez@foss.st.com>
-CC:     <patrice.chotard@foss.st.com>, <hugues.fruchet@foss.st.com>,
-        <linux-media@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-clk@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <lkp@intel.com>, <kbuild-all@lists.01.org>, <llvm@lists.linux.dev>
-References: <1635232282-3992-1-git-send-email-dillon.minfei@gmail.com>
-From:   Alexandre TORGUE <alexandre.torgue@foss.st.com>
-In-Reply-To: <1635232282-3992-1-git-send-email-dillon.minfei@gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.45]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-07_04,2022-02-07_01,2021-12-02_01
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Dillon
+In a couple of messages the constants, which have their definitions,
+are hard coded into the message text. Unhardcode them.
 
-On 10/26/21 09:11, Dillon Min wrote:
-> This patchset introduces a basic support for DMA2D Interface
-> of STMicroelectronics STM32 SoC series.
-> 
-> This first basic support implements R2M, M2M, M2M_PFC
-> M2M_BLEND support will be added later on.
-> 
-> This has been tested on STM32469-DISCO board.
-> 
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Nuno Sá <nuno.sa@analog.com>
+---
+v2: added Rb tag (Nuno)
+ drivers/iio/temperature/ltc2983.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-...
-
-ARM DT patches ([3][4]) applied on stm32-next.
-
-Thanks
-Alex
+diff --git a/drivers/iio/temperature/ltc2983.c b/drivers/iio/temperature/ltc2983.c
+index 301c3f13fb26..d272c303c1b0 100644
+--- a/drivers/iio/temperature/ltc2983.c
++++ b/drivers/iio/temperature/ltc2983.c
+@@ -409,8 +409,8 @@ static struct ltc2983_custom_sensor *__ltc2983_custom_sensor_new(
+ 	new_custom->size = n_entries * n_size;
+ 	/* check Steinhart size */
+ 	if (is_steinhart && new_custom->size != LTC2983_CUSTOM_STEINHART_SIZE) {
+-		dev_err(dev, "Steinhart sensors size(%zu) must be 24",
+-							new_custom->size);
++		dev_err(dev, "Steinhart sensors size(%zu) must be %d", new_custom->size,
++			LTC2983_CUSTOM_STEINHART_SIZE);
+ 		return ERR_PTR(-EINVAL);
+ 	}
+ 	/* Check space on the table. */
+@@ -1299,8 +1299,8 @@ static int ltc2983_parse_dt(struct ltc2983_data *st)
+ 		if (sensor.chan < LTC2983_MIN_CHANNELS_NR ||
+ 		    sensor.chan > LTC2983_MAX_CHANNELS_NR) {
+ 			ret = -EINVAL;
+-			dev_err(dev,
+-				"chan:%d must be from 1 to 20\n", sensor.chan);
++			dev_err(dev, "chan:%d must be from %d to %d\n", sensor.chan,
++				LTC2983_MIN_CHANNELS_NR, LTC2983_MAX_CHANNELS_NR);
+ 			goto put_child;
+ 		} else if (channel_avail_mask & BIT(sensor.chan)) {
+ 			ret = -EINVAL;
+-- 
+2.34.1
 
