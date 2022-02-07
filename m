@@ -2,242 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF431C4167D
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 05:51:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28216C41535
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 05:51:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234073AbiBGFth (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 00:49:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32926 "EHLO
+        id S234983AbiBGFtl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 00:49:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350342AbiBGDaH (ORCPT
+        with ESMTP id S242918AbiBGCwe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 22:30:07 -0500
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2088.outbound.protection.outlook.com [40.107.244.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D65E5C061A73
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 19:30:05 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=og5qCXKHzIixIoG93zAnExYLejGK8IL3CrpfgAe4TbKrMEqktYJbWZtFFaTZWt9TqWPy5iinVGJc9Vsy8iZXgfFBlp3sjN3RQGLIVqdwkdynv0aAMt2WfLS/ZICFw0yXneWs/s5M5mJXrEfB66K0n5ykyw4qFQGLfIyYQPYZ/Re3VmuiksGO+f1eXiOqwQyaOm7wYbwIkrHP2UH5Wt2SKIwGJ3o3qkA+sPKCdxEGTMbpKLkw4Mt8hIo5YgMThLm+guNzIS8YTZF7OujObEfzoBb3NauBfSqY2Pl9Zqyp9T0QAjNjsL+uWdfxn0zE2mRX26ZiwyGUGXC9N1HWCtZL8w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jzWVgmpPJlmPMecU3JhUV57rCwC0Lay5y4PVz93VGpE=;
- b=OQlI2c7/kfgkW6dImkHxz3ZdYVHpph1co1c4mGfhzkVaFbfU22O7e5lO0Ks26McmIGtt9++a97gs7yrDnncTs/Kl9uBql5HAVLYPM7Twu/iud1oZ//tKUn0FeoCDJ6mkiFqYAvgAf3VahmEEl/TykuAZrjlr4pgxXttwkNjjGD57sVDu0GcJD8d6B8e72tHLtFW+hmqElGioeg93LuBu1dFomNemVoiIv5v8drp14DHyHT3G6g+C4Oas4Vu5QhZGBD1tJtKSOla/mTrlaW4SkoaGt573LiWbz6mdpKy0p/2E29w+E94aASSNNMP8Bxqg4S1We3O6Oy5Ai+cxph8ncQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jzWVgmpPJlmPMecU3JhUV57rCwC0Lay5y4PVz93VGpE=;
- b=ZofT7zHhWc1Oxah5HOTXFuwP1okKytDW87eNo0j4nOMrIqlBUcmF1ZYOV4xjvF413S3f43+n6852mUj2K9sOpycybMVshpo6ScR+fd1/TYonazqlwkG6VwvTLP7AYTjI/rTAGnP7f3MJVhLjltLUqRXlG6suyxpOPKWnRo4RO8Q=
-Received: from DM6PR12MB2619.namprd12.prod.outlook.com (2603:10b6:5:45::18) by
- DM5PR12MB1916.namprd12.prod.outlook.com (2603:10b6:3:112::16) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4951.12; Mon, 7 Feb 2022 03:30:01 +0000
-Received: from DM6PR12MB2619.namprd12.prod.outlook.com
- ([fe80::a894:300e:5c16:5639]) by DM6PR12MB2619.namprd12.prod.outlook.com
- ([fe80::a894:300e:5c16:5639%6]) with mapi id 15.20.4951.018; Mon, 7 Feb 2022
- 03:30:01 +0000
-From:   "Quan, Evan" <Evan.Quan@amd.com>
-To:     =?iso-8859-1?Q?Ma=EDra_Canal?= <maira.canal@usp.br>,
-        "Deucher, Alexander" <Alexander.Deucher@amd.com>,
-        "Koenig, Christian" <Christian.Koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        "airlied@linux.ie" <airlied@linux.ie>,
-        "daniel@ffwll.ch" <daniel@ffwll.ch>,
-        "nathan@kernel.org" <nathan@kernel.org>,
-        "ndesaulniers@google.com" <ndesaulniers@google.com>,
-        "Lazar, Lijo" <Lijo.Lazar@amd.com>,
-        "Tuikov, Luben" <Luben.Tuikov@amd.com>,
-        "Chen, Guchun" <Guchun.Chen@amd.com>,
-        "Zhang, Hawking" <Hawking.Zhang@amd.com>,
-        "jiapeng.chong@linux.alibaba.com" <jiapeng.chong@linux.alibaba.com>
-CC:     "amd-gfx@lists.freedesktop.org" <amd-gfx@lists.freedesktop.org>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] drm/amd/pm: add missing prototypes to amdgpu_dpm_internal
-Thread-Topic: [PATCH] drm/amd/pm: add missing prototypes to
- amdgpu_dpm_internal
-Thread-Index: AQHYGJaXQ42Lm1VvwEmwNUASEbtx+KyHdI7w
-Date:   Mon, 7 Feb 2022 03:30:01 +0000
-Message-ID: <DM6PR12MB26199543AD01C2DA18CCFB64E42C9@DM6PR12MB2619.namprd12.prod.outlook.com>
-References: <YfskWvNqt81rZZpQ@fedora>
-In-Reply-To: <YfskWvNqt81rZZpQ@fedora>
-Accept-Language: en-US, zh-CN
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_88914ebd-7e6c-4e12-a031-a9906be2db14_Enabled=true;
- MSIP_Label_88914ebd-7e6c-4e12-a031-a9906be2db14_SetDate=2022-02-07T03:29:57Z;
- MSIP_Label_88914ebd-7e6c-4e12-a031-a9906be2db14_Method=Standard;
- MSIP_Label_88914ebd-7e6c-4e12-a031-a9906be2db14_Name=AMD Official Use
- Only-AIP 2.0;
- MSIP_Label_88914ebd-7e6c-4e12-a031-a9906be2db14_SiteId=3dd8961f-e488-4e60-8e11-a82d994e183d;
- MSIP_Label_88914ebd-7e6c-4e12-a031-a9906be2db14_ActionId=ad92e81e-ea20-44bd-89a5-ec95d51ef386;
- MSIP_Label_88914ebd-7e6c-4e12-a031-a9906be2db14_ContentBits=1
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 3c95d8c5-d6ed-4db9-fe23-08d9e9ea1fd4
-x-ms-traffictypediagnostic: DM5PR12MB1916:EE_
-x-microsoft-antispam-prvs: <DM5PR12MB1916D8B0AF426A7040C6DAFCE42C9@DM5PR12MB1916.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4941;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: RPLQs25PhX2D5evhmAxJgAMvhZ4QtIrq5Y/8JB96JJDl/6tRAWSeosystKKONrnBIOyv/YmcDrtEyzFfmec6mD66s0Xp3VAqoA0NGT4FsgfImes0T4RVS6fQM8Sl1GELKmmfwgglHEaVvBzMf9pSONWhw2esczFNQqRnePg8h73W9pNbq01SezcwcDISaMqVlrPCxzd90y+slBlfptMcygZU+qvnr+fwZIdvX/vgNeOdT59PwiuCI13H5+1s00AMCIpiTydnF2ZKZGcgyTZG2zu5kS8f2Zz6JqUexI3pcM27T3zHu198LqMPlDalGaKy1ECMfZFSCW/ic29Zgtx5eEaKJCXdJs4s/753xwFqB7yL+jOgKSM6715qoHTHoV0u3Z5hKS0ADDmrqC0j6KwYlFbxSDnjtnd/Ouz+DZDdWyGVshak5DXHjpRuMFwPeJdNgQAXjlXphzd/PBnWQjFjAPLZgHxoGCjAY6/c8xclfUcVpONX/JN3HrNNfTrheD53ydmQKYbUNoRsyNLte4PKbIxbfbUTlX3GN8RIFNMpHowv7ygoHg5C8PP+UdMRwajg728cAFfXYwcIbw5ZDdd6NbJzQDP0ymMo1OIgyKghR/7kixz991Y5d08CPtdbddH6AZCB08eWPCTU/uPum6bpVxsjPj46SWL/NYOiWiROpkW0BrQyxoeFNBfa4XpY10TXb19xCIN+VtPw91Wr5S3Y0IqPXESmW8Af2mzmN4dUmA4=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB2619.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(66556008)(8936002)(4326008)(83380400001)(52536014)(66476007)(66574015)(66446008)(64756008)(55016003)(8676002)(508600001)(33656002)(26005)(6506007)(38100700002)(38070700005)(110136005)(86362001)(53546011)(122000001)(9686003)(921005)(5660300002)(76116006)(66946007)(54906003)(7696005)(316002)(186003)(2906002)(71200400001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?ZwjK+uiHDSWCPXeoJ8gX4ymigSKew65Kkj369/OOz6PPL5vEe7m9VtiX+W?=
- =?iso-8859-1?Q?r93Uu+pwD47KpQREZTtoSFAAOOagHgC8B+MOaR7nAPjmwq/9GVljHD+G/8?=
- =?iso-8859-1?Q?GpPnb+EMzAwN54Q3FqoZdMOTwRWWBmz/FcyHCzD7TXPnMG7N7bHtns/ZLe?=
- =?iso-8859-1?Q?0XQNSRk4rOaH7+bA+tJc/CGmqtSvyyzE5IfYmBfblzZWJGcH+hGu205T5p?=
- =?iso-8859-1?Q?Kny6FT/rYERSxzYisfoglsUCOY1rQ0ZvI3mA61OKRhixlr2mcN4j4sba7v?=
- =?iso-8859-1?Q?ZRIKGLpt4Zy726rCbwD/VPx/QQ9iMqyZl5YWsNdqkqeAla2TbjDeJeSDMN?=
- =?iso-8859-1?Q?Y8561OQXVOYtox12wBd9O0g++v5xVbJpU5noIdGt4Xpkdqx04f40nUbi03?=
- =?iso-8859-1?Q?e0MGGQCmJeABzfaLi0ijvuWrgKX5wvLKr/1O2WlUohx1kF/xF+Tth4zOZI?=
- =?iso-8859-1?Q?gKd0K6aA3Eiph4Al02EqW0v1r+KQGXO01c8/StY65xy0KjJTGcvFaHQ1cr?=
- =?iso-8859-1?Q?r8zagcfxtI8J7OWfSSMq/4D2GqHOhJ2SkB22mTKz+OZl1789WrsGhSpgdu?=
- =?iso-8859-1?Q?5DJjwcX9741OnCtfaLL7rD5uRRX4E6Ea+vDpo8IYc1GGi6zFN7EbNLnBVi?=
- =?iso-8859-1?Q?heHwJzn4c3gzNEdJ/9noV5ME5vUvDf9vnQX+gP3QX60FjfLjPPsd2IB+Oa?=
- =?iso-8859-1?Q?9SB27ghaudrz1e5GgxOY6z2WsaT7fXHkAcrYUfClDg5DNaJCqYSCcuImwi?=
- =?iso-8859-1?Q?upZRvD/DcxXq1aPGmGydbwiByj23Q9UF7ffypNLUdFaGW9HmRO+fHUNyXN?=
- =?iso-8859-1?Q?E93JEmCGdE9iAexVLRbG4JcA/mDUOve1hC2MyAhQF27QEv1vnif/OSJmR7?=
- =?iso-8859-1?Q?Fb+B0f7G3XE1x37h1SgriQU7fe5YR8b5IczYY3PaMB+d0/P1Ca8KWOrhdW?=
- =?iso-8859-1?Q?SND9NsCL75/KKNzdreVCasJLqQzLHWOAjgMH0r/JBrVTNiekcpL7cxDqrt?=
- =?iso-8859-1?Q?xJ5lQHQs4EF6irdRh9dM2y+trZ8Q+D85iaMOTf40VWMcOIeBMCadP/Gtp3?=
- =?iso-8859-1?Q?AA/ctLXy8HebPQn21RpKyO/otcbMisbqRXGhoZWSZMrBcN9ilPU+oqQIQX?=
- =?iso-8859-1?Q?Gqxj0lNyanJZS6Gy77ImN5Rlo4vwGKdt3nTrcqTH0X8T6RSoKlSwogq1Zj?=
- =?iso-8859-1?Q?BUryDQF7SsoyFlMk9SmNv/EE8uq9DmjA3tBOsLUvm7TqpQGV91Zb1y+u0z?=
- =?iso-8859-1?Q?ESm5INa87eJJ3Mhi7K+vYRoxp1fMiTONsJG3E6pnxaG21dfzCWKSWtAWAe?=
- =?iso-8859-1?Q?1UI7rqdM9nhsWRlcqQabyFs61E4uUo/2pvDlaSK0qZq/eUT/SftDWQP+l1?=
- =?iso-8859-1?Q?qsZuaHzLGemYM9zFFWBuTHzq8aoof/uLCkczDHdZA3M67bVv3NADrXGhD1?=
- =?iso-8859-1?Q?vjEuvfag9WjQWEhI1f5UtUcft/Zr75jEEwyT2Y15gm8KFO8bezA10F/Ere?=
- =?iso-8859-1?Q?chQWSaXa4j08UTJl7OSaQeDk7lodhYpDJczsNadz0D0VxSPJ1fHtTuU5oC?=
- =?iso-8859-1?Q?OfiaJb3dNeggX5uHcWlEXHyA4BqPHJzOAReibR9/ro9wn/K0nfnzjt6YA6?=
- =?iso-8859-1?Q?X0Dp+ULPpwO5g=3D?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        Sun, 6 Feb 2022 21:52:34 -0500
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19BD1C061A73;
+        Sun,  6 Feb 2022 18:52:31 -0800 (PST)
+X-UUID: 99c12dbabde24c4f9733a4db35d00fe1-20220207
+X-UUID: 99c12dbabde24c4f9733a4db35d00fe1-20220207
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
+        (envelope-from <miles.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 488659191; Mon, 07 Feb 2022 10:47:26 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Mon, 7 Feb 2022 10:47:25 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 7 Feb 2022 10:47:24 +0800
+From:   Miles Chen <miles.chen@mediatek.com>
+To:     <wenst@chromium.org>
+CC:     <chun-jie.chen@mediatek.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-clk@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>, <matthias.bgg@gmail.com>,
+        <miles.chen@mediatek.com>, <mturquette@baylibre.com>,
+        <sboyd@kernel.org>
+Subject: Re: [PATCH v2 13/31] clk: mediatek: pll: Implement unregister API
+Date:   Mon, 7 Feb 2022 10:47:25 +0800
+Message-ID: <20220207024725.14618-1-miles.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220202134834.690675-14-wenst@chromium.org>
+References: <20220202134834.690675-14-wenst@chromium.org>
 MIME-Version: 1.0
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB2619.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3c95d8c5-d6ed-4db9-fe23-08d9e9ea1fd4
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Feb 2022 03:30:01.4369
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: bRnGRLBidpl8e6F8yrO2zVwcLD0xITVqUzE3/TBSN/tycuuzlaoXxFpQ+IaqDeRZ
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1916
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[AMD Official Use Only]
+> The PLL clk type within the MediaTek clk driver library only has a
+> register function, and no corresponding unregister function. This
+> means there is no way for its users to properly implement cleanup
+> and removal.
+> 
+> Add a matching unregister function for the PLL type clk.
+> 
+> Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
 
-Thanks for the fix!
-Reviewed-by: Evan Quan <evan.quan@amd.com>
+Reviewed-by: Miles Chen <miles.chen@mediatek.com>
 
-> -----Original Message-----
-> From: Ma=EDra Canal <maira.canal@usp.br>
-> Sent: Thursday, February 3, 2022 8:40 AM
-> To: Quan, Evan <Evan.Quan@amd.com>; Deucher, Alexander
-> <Alexander.Deucher@amd.com>; Koenig, Christian
-> <Christian.Koenig@amd.com>; Pan, Xinhui <Xinhui.Pan@amd.com>;
-> airlied@linux.ie; daniel@ffwll.ch; nathan@kernel.org;
-> ndesaulniers@google.com; Lazar, Lijo <Lijo.Lazar@amd.com>; Tuikov, Luben
-> <Luben.Tuikov@amd.com>; Chen, Guchun <Guchun.Chen@amd.com>;
-> Zhang, Hawking <Hawking.Zhang@amd.com>;
-> jiapeng.chong@linux.alibaba.com
-> Cc: amd-gfx@lists.freedesktop.org; dri-devel@lists.freedesktop.org; linux=
--
-> kernel@vger.kernel.org
-> Subject: [PATCH] drm/amd/pm: add missing prototypes to
-> amdgpu_dpm_internal
->=20
-> Include the header with the prototype to silence the following clang
-> warnings:
->=20
-> drivers/gpu/drm/amd/amdgpu/../pm/amdgpu_dpm_internal.c:29:6:
-> warning: no
-> previous prototype for function 'amdgpu_dpm_get_active_displays'
-> [-Wmissing-prototypes]
-> void amdgpu_dpm_get_active_displays(struct amdgpu_device *adev)
->      ^
-> drivers/gpu/drm/amd/amdgpu/../pm/amdgpu_dpm_internal.c:29:1: note:
-> declare
-> 'static' if the function is not intended to be used outside of this
-> translation unit
-> void amdgpu_dpm_get_active_displays(struct amdgpu_device *adev)
-> ^
-> static
-> drivers/gpu/drm/amd/amdgpu/../pm/amdgpu_dpm_internal.c:76:5:
-> warning: no
-> previous prototype for function 'amdgpu_dpm_get_vrefresh'
-> [-Wmissing-prototypes]
-> u32 amdgpu_dpm_get_vrefresh(struct amdgpu_device *adev)
->     ^
-> drivers/gpu/drm/amd/amdgpu/../pm/amdgpu_dpm_internal.c:76:1: note:
-> declare
-> 'static' if the function is not intended to be used outside of this
-> translation unit
-> u32 amdgpu_dpm_get_vrefresh(struct amdgpu_device *adev)
-> ^
-> static
-> 2 warnings generated.
->=20
-> Besides that, remove the duplicated prototype of the function
-> amdgpu_dpm_get_vblank_time in order to keep the consistency of the
-> headers.
->=20
-> fixes: 6ddbd37f ("drm/amd/pm: optimize the amdgpu_pm_compute_clocks()
-> implementations")
->=20
-> Signed-off-by: Ma=EDra Canal <maira.canal@usp.br>
 > ---
->  drivers/gpu/drm/amd/pm/amdgpu_dpm_internal.c | 1 +
->  drivers/gpu/drm/amd/pm/inc/amdgpu_dpm.h      | 1 -
->  drivers/gpu/drm/amd/pm/legacy-dpm/si_dpm.c   | 1 +
->  3 files changed, 2 insertions(+), 1 deletion(-)
->=20
-> diff --git a/drivers/gpu/drm/amd/pm/amdgpu_dpm_internal.c
-> b/drivers/gpu/drm/amd/pm/amdgpu_dpm_internal.c
-> index ba5f6413412d..42efe838fa85 100644
-> --- a/drivers/gpu/drm/amd/pm/amdgpu_dpm_internal.c
-> +++ b/drivers/gpu/drm/amd/pm/amdgpu_dpm_internal.c
-> @@ -25,6 +25,7 @@
->  #include "amdgpu_display.h"
->  #include "hwmgr.h"
->  #include "amdgpu_smu.h"
-> +#include "amdgpu_dpm_internal.h"
->=20
->  void amdgpu_dpm_get_active_displays(struct amdgpu_device *adev)
+>  drivers/clk/mediatek/clk-pll.c | 55 ++++++++++++++++++++++++++++++++++
+>  drivers/clk/mediatek/clk-pll.h |  2 ++
+>  2 files changed, 57 insertions(+)
+> 
+> diff --git a/drivers/clk/mediatek/clk-pll.c b/drivers/clk/mediatek/clk-pll.c
+> index 64f59554bc9b..b54e33b75d4e 100644
+> --- a/drivers/clk/mediatek/clk-pll.c
+> +++ b/drivers/clk/mediatek/clk-pll.c
+> @@ -360,6 +360,21 @@ static struct clk *mtk_clk_register_pll(const struct mtk_pll_data *data,
+>  	return clk;
+>  }
+>  
+> +static void mtk_clk_unregister_pll(struct clk *clk)
+> +{
+> +	struct clk_hw *hw;
+> +	struct mtk_clk_pll *pll;
+> +
+> +	hw = __clk_get_hw(clk);
+> +	if (!hw)
+> +		return;
+> +
+> +	pll = to_mtk_clk_pll(hw);
+> +
+> +	clk_unregister(clk);
+> +	kfree(pll);
+> +}
+> +
+>  void mtk_clk_register_plls(struct device_node *node,
+>  		const struct mtk_pll_data *plls, int num_plls, struct clk_onecell_data *clk_data)
 >  {
-> diff --git a/drivers/gpu/drm/amd/pm/inc/amdgpu_dpm.h
-> b/drivers/gpu/drm/amd/pm/inc/amdgpu_dpm.h
-> index 5cc05110cdae..09790413cbc4 100644
-> --- a/drivers/gpu/drm/amd/pm/inc/amdgpu_dpm.h
-> +++ b/drivers/gpu/drm/amd/pm/inc/amdgpu_dpm.h
-> @@ -343,7 +343,6 @@ struct amdgpu_pm {
->  	struct amdgpu_ctx       *stable_pstate_ctx;
->  };
->=20
-> -u32 amdgpu_dpm_get_vblank_time(struct amdgpu_device *adev);
->  int amdgpu_dpm_read_sensor(struct amdgpu_device *adev, enum
-> amd_pp_sensors sensor,
->  			   void *data, uint32_t *size);
->=20
-> diff --git a/drivers/gpu/drm/amd/pm/legacy-dpm/si_dpm.c
-> b/drivers/gpu/drm/amd/pm/legacy-dpm/si_dpm.c
-> index 7427c50409d4..caae54487f9c 100644
-> --- a/drivers/gpu/drm/amd/pm/legacy-dpm/si_dpm.c
-> +++ b/drivers/gpu/drm/amd/pm/legacy-dpm/si_dpm.c
-> @@ -28,6 +28,7 @@
->  #include "amdgpu_pm.h"
->  #include "amdgpu_dpm.h"
->  #include "amdgpu_atombios.h"
-> +#include "amdgpu_dpm_internal.h"
->  #include "amd_pcie.h"
->  #include "sid.h"
->  #include "r600_dpm.h"
-> --
-> 2.34.1
+> @@ -388,4 +403,44 @@ void mtk_clk_register_plls(struct device_node *node,
+>  }
+>  EXPORT_SYMBOL_GPL(mtk_clk_register_plls);
+>  
+> +static __iomem void *mtk_clk_pll_get_base(struct clk *clk,
+> +					  const struct mtk_pll_data *data)
+> +{
+> +	struct clk_hw *hw = __clk_get_hw(clk);
+> +	struct mtk_clk_pll *pll = to_mtk_clk_pll(hw);
+> +
+> +	return pll->base_addr - data->reg;
+> +}
+> +
+> +void mtk_clk_unregister_plls(const struct mtk_pll_data *plls, int num_plls,
+> +			     struct clk_onecell_data *clk_data)
+> +{
+> +	__iomem void *base = NULL;
+> +	int i;
+> +
+> +	if (!clk_data)
+> +		return;
+> +
+> +	for (i = num_plls; i > 0; i--) {
+> +		const struct mtk_pll_data *pll = &plls[i - 1];
+> +
+> +		if (IS_ERR_OR_NULL(clk_data->clks[pll->id]))
+> +			continue;
+> +
+> +		/*
+> +		 * This is quite ugly but unfortunately the clks don't have
+> +		 * any device tied to them, so there's no place to store the
+> +		 * pointer to the I/O region base address. We have to fetch
+> +		 * it from one of the registered clks.
+> +		 */
+> +		base = mtk_clk_pll_get_base(clk_data->clks[pll->id], pll);
+> +
+> +		mtk_clk_unregister_pll(clk_data->clks[pll->id]);
+> +		clk_data->clks[pll->id] = ERR_PTR(-ENOENT);
+> +	}
+> +
+> +	iounmap(base);
+> +}
+> +EXPORT_SYMBOL_GPL(mtk_clk_unregister_plls);
+> +
+>  MODULE_LICENSE("GPL");
+> diff --git a/drivers/clk/mediatek/clk-pll.h b/drivers/clk/mediatek/clk-pll.h
+> index d01b0c38311d..a889b1e472e7 100644
+> --- a/drivers/clk/mediatek/clk-pll.h
+> +++ b/drivers/clk/mediatek/clk-pll.h
+> @@ -51,5 +51,7 @@ struct mtk_pll_data {
+>  void mtk_clk_register_plls(struct device_node *node,
+>  			   const struct mtk_pll_data *plls, int num_plls,
+>  			   struct clk_onecell_data *clk_data);
+> +void mtk_clk_unregister_plls(const struct mtk_pll_data *plls, int num_plls,
+> +			     struct clk_onecell_data *clk_data);
+>  
+>  #endif /* __DRV_CLK_MTK_PLL_H */
+> -- 
+> 2.35.0.rc2.247.g8bbb082509-goog
+> 
+> 
