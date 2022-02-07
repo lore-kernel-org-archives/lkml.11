@@ -2,97 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D78D9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 21:28:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB68BC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 21:28:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239464AbiBGV2i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 16:28:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50622 "EHLO
+        id S239738AbiBGV2n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 16:28:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239402AbiBGV2g (ORCPT
+        with ESMTP id S239501AbiBGV2k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 16:28:36 -0500
-Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF5D6C0612A4
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 13:28:35 -0800 (PST)
-Received: by mail-il1-x135.google.com with SMTP id d3so12246435ilr.10
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 13:28:35 -0800 (PST)
+        Mon, 7 Feb 2022 16:28:40 -0500
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5B6AC061355;
+        Mon,  7 Feb 2022 13:28:38 -0800 (PST)
+Received: by mail-lj1-x230.google.com with SMTP id u7so20055835lji.2;
+        Mon, 07 Feb 2022 13:28:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ZoPNcURKuiyBsfuMCsxFRvD+FdDOMPSZh378YCQdWew=;
-        b=OGfUdsmUKUncc+L/NCjGB4tMLmfOP9i+lOscyLtUhOqDdfLLcMemwr53vTTK+aPxYs
-         AntX75ynFwE3yp/HRU8o8arCFYuGRyQHC7E7nkmwWXNrVTMzwE+5pyJI1dJioNCRyVFV
-         x5EUP0G8YNsOOmpwQsqQjybQo8Bj95Gy4y0aA=
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xhIcXoTJ5dfjGtkY8N0iFOs+egG/OP/6IT1nkIAGt7o=;
+        b=ahC61Qw0MuIU7n1LIs+QRHjq+wmaK401ceSHoJ39Ffp8nwaqxS9cxyxxF3g8rf4Awi
+         nVpRnxgHDodCJYnVhkoq73m4NBSVODRXNZhSJMBZDgvGwcUM75qoTUrp/DCkVV8eXMcv
+         PppPDjZFYNaO4KPmMG34D8gofgX29eBmO6fp5eKQMrH/hkQXlAMNaqEi59IXSyCCErMb
+         5iErgc4hvnM2XZoY8VW8irkGeOoeocEnbsgrkMErigYuQ2yYJTdk8cq9aw/tnzl9Ytih
+         avjTdN2Fo7kRZuBi8IKVk7FoCnqc0lPIzSy+0KX25BEt4WTjhSUczp1d93+iib23nKZB
+         cGTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=ZoPNcURKuiyBsfuMCsxFRvD+FdDOMPSZh378YCQdWew=;
-        b=g9n8S9uYwKgXtpAQO40BKe8i2r1gaBhAypFQB2u+V5QZjF49vSqHzxz7sUr6ehhw1q
-         iDtkrTeyHxGTCpHFbkYvog2vubEEfVKILIGz59N0v1Ly8lw6r4kFM29NJCzry2R3PXw8
-         M5HvAVrUvS5CHbpdXbidDQZ1H8Zw/et1TjdRf0H77GPfNZa8nwRJt98olYR+pZsBMgbg
-         13dLU/XVpB8oyU4tx/nPB5N3oMUYYE3ZbVbiliEfB2E1ceyaCznWXSzLpYFuWeqYLmi7
-         ftjwjKAER1z3moK89Ucxkyh1m6Q3rgNZeIkZ0pt9jSk30kn1aDHvYfQ6xY4OLG3vQTHr
-         vXTg==
-X-Gm-Message-State: AOAM531RATWGjzVCRI+gev1Lk/PqAYvXjUwsS8xIuTXmA9bzEZDH3R2x
-        gLn+x88lspnqRXznsYfFRt7RYA==
-X-Google-Smtp-Source: ABdhPJxK3aX2uHbIcGdwR8aV4AP7VMok1KtzstLPRL0Es6DC2dkHg2OW5pgEDMrhE8UOPQc9CA9SQw==
-X-Received: by 2002:a05:6e02:2145:: with SMTP id d5mr687033ilv.57.1644269315305;
-        Mon, 07 Feb 2022 13:28:35 -0800 (PST)
-Received: from [192.168.1.128] ([71.205.29.0])
-        by smtp.gmail.com with ESMTPSA id l1sm6430838iln.29.2022.02.07.13.28.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Feb 2022 13:28:35 -0800 (PST)
-Subject: Re: [PATCH 4.9 00/48] 4.9.300-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220207103752.341184175@linuxfoundation.org>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <70b389dd-a26d-d09b-9028-f20d44630e18@linuxfoundation.org>
-Date:   Mon, 7 Feb 2022 14:28:34 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        bh=xhIcXoTJ5dfjGtkY8N0iFOs+egG/OP/6IT1nkIAGt7o=;
+        b=OJNqYIaUXx1oMBo7dUhX/ym5O/8NceIUWZS2W6NHux7hU++NNmuy3U78QvDBYma0Kp
+         nw2loJ/p+T/I8izUfEqzoTG5TCkdVvnvt/y1k1Q0K0ES1QRaI5PuMiPhtDQO4KvJt55N
+         I3fobQpDsHnzRl/x7ugmNR21zLq64qmE2noV3LCxd/GoXm8z0NoVnYhKctoO/x6ZMNFH
+         kIEtH57/z7Vqni6zW1ECie3h6R6F0L87gj8CrwKH3wGWVeIkI0dcvxEN83wgfyK9V7+z
+         6oKyYj56VYZaKoQ40n5LpG0dUkS5vrLjOGRTxpxW+l3d2iAJ6TgEOZnYLJ7urEny/VDz
+         +ZHQ==
+X-Gm-Message-State: AOAM5334P77eXeU1y5U87yr+PSh/DXlgdbAU7W42fm7mY326Ct3o+dFg
+        sQ6uDoridcg+4/EOPwLpNYo=
+X-Google-Smtp-Source: ABdhPJzdJwOQ3OAxyzQw9jPbMfGhSpp6dMka4vBNLcbB/BW9EMqZzbD06P1tDEeNWJ1beK/wtPADxw==
+X-Received: by 2002:a2e:3509:: with SMTP id z9mr884437ljz.488.1644269316992;
+        Mon, 07 Feb 2022 13:28:36 -0800 (PST)
+Received: from localhost.localdomain (109-252-138-165.dynamic.spd-mgts.ru. [109.252.138.165])
+        by smtp.gmail.com with ESMTPSA id i3sm1650867lfj.144.2022.02.07.13.28.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 13:28:36 -0800 (PST)
+From:   Dmitry Osipenko <digetx@gmail.com>
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Svyatoslav Ryhel <clamor95@gmail.com>,
+        David Heidelberg <david@ixit.cz>,
+        Robert Eckelmann <longnoserob@gmail.com>,
+        Agneli <poczt@protonmail.ch>
+Cc:     linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v1 0/4] NVIDIA Tegra ARM32 device-tree improvements for 5.18
+Date:   Tue,  8 Feb 2022 00:28:22 +0300
+Message-Id: <20220207212826.10307-1-digetx@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-In-Reply-To: <20220207103752.341184175@linuxfoundation.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/7/22 4:05 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 4.9.300 release.
-> There are 48 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Wed, 09 Feb 2022 10:37:42 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.300-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.9.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-> 
+Here are couple minor DT improvements and enabling of HDMI audio on
+Asus TF101 tablet.
 
-Compiled and booted on my test system. No dmesg regressions.
+Dmitry Osipenko (3):
+  ARM: tegra: asus-tf101: Enable S/PDIF and HDMI audio
+  ARM: tegra: tf700t: Rename DSI node
+  ARM: tegra: paz00: Add MMC aliases
 
-Tested-by: Shuah Khan <skhan@linuxfoundation.org>
+Svyatoslav Ryhel (1):
+  ARM: tegra: transformer: Drop reg-shift for Tegra HS UART
 
-thanks,
--- Shuah
+ arch/arm/boot/dts/tegra20-asus-tf101.dts               | 10 ++++++++++
+ arch/arm/boot/dts/tegra20-paz00.dts                    |  6 ++++--
+ arch/arm/boot/dts/tegra30-asus-tf700t.dts              |  2 +-
+ arch/arm/boot/dts/tegra30-asus-transformer-common.dtsi |  2 ++
+ arch/arm/boot/dts/tegra30-pegatron-chagall.dts         |  2 ++
+ 5 files changed, 19 insertions(+), 3 deletions(-)
+
+-- 
+2.34.1
+
