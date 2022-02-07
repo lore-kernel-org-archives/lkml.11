@@ -2,139 +2,489 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4F31C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E862DC46467
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:16:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381909AbiBGQPF (ORCPT
+        id S1384704AbiBGQPM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:15:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50150 "EHLO
+        Mon, 7 Feb 2022 11:15:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232422AbiBGQKA (ORCPT
+        with ESMTP id S1348716AbiBGQDA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 11:10:00 -0500
-Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ED36C0401CE
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:09:56 -0800 (PST)
-Received: by mail-ej1-f45.google.com with SMTP id s21so15354324ejx.12
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 08:09:56 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=HfNUL5JKH3kDf9qcQKKwHP/7+N+j2kYmXhkm2NxXJsQ=;
-        b=Kh+ybRx1xV6ff6veBinDOzkV/xXydZSytkis1APfHweV0B2UrsES5yzfbcc4sh1QMB
-         yG9AbmtZ/57dZyzJpouKbe4HraTI6tYSXh11YimgLqlzTqA451nS3ypBQrzKCpPKtvPk
-         MoXJvWiC/YKllsHkezK0hpqWzROGguxj23lNBHg/smpQskTYQQa1J3opFjMtRyNjfi5N
-         3+0Y5/83tGGuDO11vLNxVDIoskVgjT6gTp+li0L2TdgSSCgNjebMLQ/i1ICVwMwYCpuP
-         e+58/FpfSqSzABq7K/V1T4L8tmner6paOwEKJVZAJBmAfJ2gfEHCvHI7Dm52PfpFBPYc
-         neUQ==
-X-Gm-Message-State: AOAM5315jCeExvxTZo/h4Z2enY+3g+PTYLznqpvY/YX75l0cW4ZhNPCK
-        bhC1UDr1bodzn4HJKp/JXdOrB2vdSKs=
-X-Google-Smtp-Source: ABdhPJxqFokTQR6V5JB0DhCIYgiAiKptMY6dcJVRueO91WZ4xHF2FzIjEh+Q/tU8n1/nJVpU/LkqMg==
-X-Received: by 2002:a17:906:c105:: with SMTP id do5mr338028ejc.165.1644250194581;
-        Mon, 07 Feb 2022 08:09:54 -0800 (PST)
-Received: from [192.168.0.90] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.googlemail.com with ESMTPSA id p19sm3826870ejc.42.2022.02.07.08.09.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Feb 2022 08:09:53 -0800 (PST)
-Message-ID: <48e41893-d7de-fdc1-d988-9331c2de22f4@kernel.org>
-Date:   Mon, 7 Feb 2022 17:09:52 +0100
+        Mon, 7 Feb 2022 11:03:00 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E89D5C0401D2
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:02:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644249778;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=5WIO5n6+3jqzKnCirxzx86dJnJZyXVHjiDs7Tj6xNnY=;
+        b=OBZ3btoJKhxTb6cZtOVtshcPNzmTpWFi1sfsYhUxyZwff+jC+uufFzwav/Z9DkLMd6mtLq
+        E5Altt/53vVCGEuC3XZmX0zdmCJv8NZUF3iuGsL+B+aDy5MKrYL5aO4HvZdZenBiQ8FD9I
+        GjZdBQcu3v5piFSZs+rxHW22q+uoK6Y=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-10-vZy_U4-_P6ay5ymHJ7brZQ-1; Mon, 07 Feb 2022 11:02:56 -0500
+X-MC-Unique: vZy_U4-_P6ay5ymHJ7brZQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7F40219251A0;
+        Mon,  7 Feb 2022 16:02:53 +0000 (UTC)
+Received: from localhost.localdomain (unknown [10.40.192.15])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CCE5D8276B;
+        Mon,  7 Feb 2022 16:02:22 +0000 (UTC)
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     kvm@vger.kernel.org
+Cc:     Tony Luck <tony.luck@intel.com>,
+        "Chang S. Bae" <chang.seok.bae@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        linux-kernel@vger.kernel.org,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        intel-gvt-dev@lists.freedesktop.org,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Sean Christopherson <seanjc@google.com>,
+        David Airlie <airlied@linux.ie>,
+        Zhi Wang <zhi.a.wang@intel.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Jim Mattson <jmattson@google.com>, x86@kernel.org,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Borislav Petkov <bp@alien8.de>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>
+Subject: [PATCH RESEND 30/30] KVM: x86: get rid of KVM_REQ_GET_NESTED_STATE_PAGES
+Date:   Mon,  7 Feb 2022 17:54:47 +0200
+Message-Id: <20220207155447.840194-31-mlevitsk@redhat.com>
+In-Reply-To: <20220207155447.840194-1-mlevitsk@redhat.com>
+References: <20220207155447.840194-1-mlevitsk@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: ld.lld: error: undefined symbol: socfpga_reset_init
-Content-Language: en-US
-To:     Randy Dunlap <rdunlap@infradead.org>,
-        Nathan Chancellor <nathan@kernel.org>
-Cc:     kernel test robot <lkp@intel.com>, llvm@lists.linux.dev,
-        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Dinh Nguyen <dinguyen@kernel.org>
-References: <202202050539.Mtk9I4Ef-lkp@intel.com>
- <67f432e2-1bfd-29dc-f2ed-051b47ef0844@kernel.org>
- <YgBtAdhl8dZVTAV+@dev-arch.archlinux-ax161>
- <8c315714-ea7b-d3ec-f131-6beded67b479@kernel.org>
- <a141e090-7049-d693-1dc2-7c0a593b9682@infradead.org>
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-In-Reply-To: <a141e090-7049-d693-1dc2-7c0a593b9682@infradead.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/02/2022 17:06, Randy Dunlap wrote:
-> 
-> 
-> On 2/6/22 23:55, Krzysztof Kozlowski wrote:
->> On 07/02/2022 01:51, Nathan Chancellor wrote:
->>> Hi Krzysztof,
->>>
->>> On Sun, Feb 06, 2022 at 12:55:57PM +0100, Krzysztof Kozlowski wrote:
->>>> On 04/02/2022 22:12, kernel test robot wrote:
->>>>> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
->>>>> head:   dcb85f85fa6f142aae1fe86f399d4503d49f2b60
->>>>> commit: 4483397b03536506535d611b0cb28a81a69e8edf ARM: socfpga: drop ARCH_SOCFPGA
->>>>> date:   11 months ago
->>>>> config: arm-socfpga_defconfig (https://download.01.org/0day-ci/archive/20220205/202202050539.Mtk9I4Ef-lkp@intel.com/config)
->>>>> compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a73e4ce6a59b01f0e37037761c1e6889d539d233)
->>>>> reproduce (this is a W=1 build):
->>>>>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->>>>>         chmod +x ~/bin/make.cross
->>>>>         # install arm cross compiling tool for clang build
->>>>>         # apt-get install binutils-arm-linux-gnueabi
->>>>>         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=4483397b03536506535d611b0cb28a81a69e8edf
->>>>>         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
->>>>>         git fetch --no-tags linus master
->>>>>         git checkout 4483397b03536506535d611b0cb28a81a69e8edf
->>>>>         # save the config file to linux build tree
->>>>>         mkdir build_dir
->>>>>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
->>>>>
->>>>> If you fix the issue, kindly add following tag as appropriate
->>>>> Reported-by: kernel test robot <lkp@intel.com>
->>>>>
->>>>> All errors (new ones prefixed by >>):
->>>>>
->>>>>>> ld.lld: error: undefined symbol: socfpga_reset_init
->>>>>    >>> referenced by socfpga.c
->>>>>    >>>               socfpga.o:(socfpga_init_irq) in archive arch/arm/mach-socfpga/built-in.a
->>>>>    >>> referenced by socfpga.c
->>>>>    >>>               socfpga.o:(socfpga_arria10_init_irq) in archive arch/arm/mach-socfpga/built-in.a
->>>>>
->>>>
->>>> This looks like a false positive. On the socfpga defconfig arm build,
->>>> the socfpga_reset_init() (drivers/reset/reset-socfpga.c) is built.
->>>>
->>>> I also could not reproduce it with GCC.
->>>
->>> I can reproduce this error with the configuration that the bot provides
->>> at both 4483397b03536506535d611b0cb28a81a69e8edf and v5.17-rc3, even
->>> with GCC:
->>>
->>> $ curl -LSso .config https://download.01.org/0day-ci/archive/20220205/202202050539.Mtk9I4Ef-lkp@intel.com/config
->>>
->>> $ make -skj"$(nproc)" ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- olddefconfig all
->>> ...
->>> arm-linux-gnueabi-ld: arch/arm/mach-socfpga/socfpga.o: in function `socfpga_init_irq':
->>> socfpga.c:(.init.text+0x104): undefined reference to `socfpga_reset_init'
->>> ...
->>>
->>> Whether or not this reproduces with the in-tree socfpga_defconfig, I am
->>> not sure.
->>
->> Thanks for checking - it seems I misread (and find it confusing...) the
->> report - that it is socfpga defconfig. It clearly says "config:
->> arm-socfpga_defconfig"...
-> 
-> Aha, I did the same thing and could not reproduce it. :(
-> 
->> I can reproduce it with the config from the URL. I'll work on fix.
+As it turned out this request isn't really needed,
+and it complicates the nested migration.
 
-FYI, patch sent:
-https://lore.kernel.org/linux-arm-kernel/20220207084404.212017-1-krzysztof.kozlowski@canonical.com/
+In theory this patch can break userspace if
+userspace relies on updating KVM's memslots
+after setting nested state but there is little reason
+for it to rely on this.
 
+However this is undocumented and there is a good chance
+that no userspace relies on this, thus
+just try to remove this code.
 
-Best regards,
-Krzysztof
+Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
+---
+ arch/x86/include/asm/kvm_host.h |  5 +-
+ arch/x86/kvm/hyperv.c           |  4 ++
+ arch/x86/kvm/svm/nested.c       | 50 ++++-------------
+ arch/x86/kvm/svm/svm.c          |  2 +-
+ arch/x86/kvm/svm/svm.h          |  2 +-
+ arch/x86/kvm/vmx/nested.c       | 99 +++++++++------------------------
+ arch/x86/kvm/x86.c              |  6 --
+ 7 files changed, 45 insertions(+), 123 deletions(-)
+
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index 446ee29e6cc99..fc2d5628ad930 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -92,7 +92,6 @@
+ #define KVM_REQ_HV_EXIT			KVM_ARCH_REQ(21)
+ #define KVM_REQ_HV_STIMER		KVM_ARCH_REQ(22)
+ #define KVM_REQ_LOAD_EOI_EXITMAP	KVM_ARCH_REQ(23)
+-#define KVM_REQ_GET_NESTED_STATE_PAGES	KVM_ARCH_REQ(24)
+ #define KVM_REQ_APICV_UPDATE \
+ 	KVM_ARCH_REQ_FLAGS(25, KVM_REQUEST_WAIT | KVM_REQUEST_NO_WAKEUP)
+ #define KVM_REQ_TLB_FLUSH_CURRENT	KVM_ARCH_REQ(26)
+@@ -1519,12 +1518,14 @@ struct kvm_x86_nested_ops {
+ 	int (*set_state)(struct kvm_vcpu *vcpu,
+ 			 struct kvm_nested_state __user *user_kvm_nested_state,
+ 			 struct kvm_nested_state *kvm_state);
+-	bool (*get_nested_state_pages)(struct kvm_vcpu *vcpu);
+ 	int (*write_log_dirty)(struct kvm_vcpu *vcpu, gpa_t l2_gpa);
+ 
+ 	int (*enable_evmcs)(struct kvm_vcpu *vcpu,
+ 			    uint16_t *vmcs_version);
+ 	uint16_t (*get_evmcs_version)(struct kvm_vcpu *vcpu);
++
++	bool (*get_evmcs_page)(struct kvm_vcpu *vcpu);
++
+ };
+ 
+ struct kvm_x86_init_ops {
+diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
+index dac41784f2b87..d297d102c0910 100644
+--- a/arch/x86/kvm/hyperv.c
++++ b/arch/x86/kvm/hyperv.c
+@@ -1497,6 +1497,10 @@ static int kvm_hv_set_msr(struct kvm_vcpu *vcpu, u32 msr, u64 data, bool host)
+ 					    gfn_to_gpa(gfn) | KVM_MSR_ENABLED,
+ 					    sizeof(struct hv_vp_assist_page)))
+ 			return 1;
++
++		if (host && kvm_x86_ops.nested_ops->get_evmcs_page)
++			if (!kvm_x86_ops.nested_ops->get_evmcs_page(vcpu))
++				return 1;
+ 		break;
+ 	}
+ 	case HV_X64_MSR_EOI:
+diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
+index a426d4d3dcd82..ac813ad83d784 100644
+--- a/arch/x86/kvm/svm/nested.c
++++ b/arch/x86/kvm/svm/nested.c
+@@ -670,7 +670,7 @@ static void nested_svm_copy_common_state(struct vmcb *from_vmcb, struct vmcb *to
+ }
+ 
+ int enter_svm_guest_mode(struct kvm_vcpu *vcpu, u64 vmcb12_gpa,
+-			 struct vmcb *vmcb12, bool from_vmrun)
++			 struct vmcb *vmcb12)
+ {
+ 	struct vcpu_svm *svm = to_svm(vcpu);
+ 	int ret;
+@@ -700,15 +700,13 @@ int enter_svm_guest_mode(struct kvm_vcpu *vcpu, u64 vmcb12_gpa,
+ 	nested_vmcb02_prepare_save(svm, vmcb12);
+ 
+ 	ret = nested_svm_load_cr3(&svm->vcpu, svm->nested.save.cr3,
+-				  nested_npt_enabled(svm), from_vmrun);
++				  nested_npt_enabled(svm), true);
+ 	if (ret)
+ 		return ret;
+ 
+ 	if (!npt_enabled)
+ 		vcpu->arch.mmu->inject_page_fault = svm_inject_page_fault_nested;
+ 
+-	if (!from_vmrun)
+-		kvm_make_request(KVM_REQ_GET_NESTED_STATE_PAGES, vcpu);
+ 
+ 	svm_set_gif(svm, true);
+ 
+@@ -779,7 +777,7 @@ int nested_svm_vmrun(struct kvm_vcpu *vcpu)
+ 
+ 	svm->nested.nested_run_pending = 1;
+ 
+-	if (enter_svm_guest_mode(vcpu, vmcb12_gpa, vmcb12, true))
++	if (enter_svm_guest_mode(vcpu, vmcb12_gpa, vmcb12))
+ 		goto out_exit_err;
+ 
+ 	if (nested_svm_vmrun_msrpm(svm))
+@@ -863,8 +861,6 @@ int nested_svm_vmexit(struct vcpu_svm *svm)
+ 	svm->nested.vmcb12_gpa = 0;
+ 	WARN_ON_ONCE(svm->nested.nested_run_pending);
+ 
+-	kvm_clear_request(KVM_REQ_GET_NESTED_STATE_PAGES, vcpu);
+-
+ 	/* in case we halted in L2 */
+ 	svm->vcpu.arch.mp_state = KVM_MP_STATE_RUNNABLE;
+ 
+@@ -1069,8 +1065,6 @@ void svm_leave_nested(struct kvm_vcpu *vcpu)
+ 		nested_svm_uninit_mmu_context(vcpu);
+ 		vmcb_mark_all_dirty(svm->vmcb);
+ 	}
+-
+-	kvm_clear_request(KVM_REQ_GET_NESTED_STATE_PAGES, vcpu);
+ }
+ 
+ static int nested_svm_exit_handled_msr(struct vcpu_svm *svm)
+@@ -1562,53 +1556,31 @@ static int svm_set_nested_state(struct kvm_vcpu *vcpu,
+ 	 */
+ 
+ 	ret = nested_svm_load_cr3(&svm->vcpu, vcpu->arch.cr3,
+-				  nested_npt_enabled(svm), false);
++				  nested_npt_enabled(svm), !vcpu->arch.pdptrs_from_userspace);
+ 	if (WARN_ON_ONCE(ret))
+ 		goto out_free;
+ 
+ 
+-	kvm_make_request(KVM_REQ_GET_NESTED_STATE_PAGES, vcpu);
+-	ret = 0;
+-out_free:
+-	kfree(save);
+-	kfree(ctl);
+-
+-	return ret;
+-}
+-
+-static bool svm_get_nested_state_pages(struct kvm_vcpu *vcpu)
+-{
+-	struct vcpu_svm *svm = to_svm(vcpu);
+-
+-	if (WARN_ON(!is_guest_mode(vcpu)))
+-		return true;
+-
+-	if (!vcpu->arch.pdptrs_from_userspace &&
+-	    !nested_npt_enabled(svm) && is_pae_paging(vcpu))
+-		/*
+-		 * Reload the guest's PDPTRs since after a migration
+-		 * the guest CR3 might be restored prior to setting the nested
+-		 * state which can lead to a load of wrong PDPTRs.
+-		 */
+-		if (CC(!load_pdptrs(vcpu, vcpu->arch.cr3)))
+-			return false;
+-
+ 	if (!nested_svm_vmrun_msrpm(svm)) {
+ 		vcpu->run->exit_reason = KVM_EXIT_INTERNAL_ERROR;
+ 		vcpu->run->internal.suberror =
+ 			KVM_INTERNAL_ERROR_EMULATION;
+ 		vcpu->run->internal.ndata = 0;
+-		return false;
++		goto out_free;
+ 	}
+ 
+-	return true;
++	ret = 0;
++out_free:
++	kfree(save);
++	kfree(ctl);
++	return ret;
+ }
+ 
++
+ struct kvm_x86_nested_ops svm_nested_ops = {
+ 	.leave_nested = svm_leave_nested,
+ 	.check_events = svm_check_nested_events,
+ 	.triple_fault = nested_svm_triple_fault,
+-	.get_nested_state_pages = svm_get_nested_state_pages,
+ 	.get_state = svm_get_nested_state,
+ 	.set_state = svm_set_nested_state,
+ };
+diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+index afa4116ea938c..6d6421e0cadcd 100644
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -4498,7 +4498,7 @@ static int svm_leave_smm(struct kvm_vcpu *vcpu, const char *smstate)
+ 	vmcb12 = map.hva;
+ 	nested_copy_vmcb_control_to_cache(svm, &vmcb12->control);
+ 	nested_copy_vmcb_save_to_cache(svm, &vmcb12->save);
+-	ret = enter_svm_guest_mode(vcpu, vmcb12_gpa, vmcb12, false);
++	ret = enter_svm_guest_mode(vcpu, vmcb12_gpa, vmcb12);
+ 
+ 	if (ret)
+ 		goto unmap_save;
+diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
+index dd3671d77258b..e2eb91851e922 100644
+--- a/arch/x86/kvm/svm/svm.h
++++ b/arch/x86/kvm/svm/svm.h
+@@ -551,7 +551,7 @@ static inline bool nested_exit_on_nmi(struct vcpu_svm *svm)
+ }
+ 
+ int enter_svm_guest_mode(struct kvm_vcpu *vcpu,
+-			 u64 vmcb_gpa, struct vmcb *vmcb12, bool from_vmrun);
++			 u64 vmcb_gpa, struct vmcb *vmcb12);
+ void svm_leave_nested(struct kvm_vcpu *vcpu);
+ void svm_free_nested(struct vcpu_svm *svm);
+ int svm_allocate_nested(struct vcpu_svm *svm);
+diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
+index e89b32b1d9efb..19331f742662d 100644
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -294,8 +294,6 @@ static void free_nested(struct kvm_vcpu *vcpu)
+ 	if (!vmx->nested.vmxon && !vmx->nested.smm.vmxon)
+ 		return;
+ 
+-	kvm_clear_request(KVM_REQ_GET_NESTED_STATE_PAGES, vcpu);
+-
+ 	vmx->nested.vmxon = false;
+ 	vmx->nested.smm.vmxon = false;
+ 	vmx->nested.vmxon_ptr = INVALID_GPA;
+@@ -2593,7 +2591,8 @@ static int prepare_vmcs02(struct kvm_vcpu *vcpu, struct vmcs12 *vmcs12,
+ 
+ 	/* Shadow page tables on either EPT or shadow page tables. */
+ 	if (nested_vmx_load_cr3(vcpu, vmcs12->guest_cr3, nested_cpu_has_ept(vmcs12),
+-				from_vmentry, entry_failure_code))
++				from_vmentry || !vcpu->arch.pdptrs_from_userspace,
++				entry_failure_code))
+ 		return -EINVAL;
+ 
+ 	/*
+@@ -3125,7 +3124,7 @@ static int nested_vmx_check_vmentry_hw(struct kvm_vcpu *vcpu)
+ 	return 0;
+ }
+ 
+-static bool nested_get_evmcs_page(struct kvm_vcpu *vcpu)
++bool nested_get_evmcs_page(struct kvm_vcpu *vcpu)
+ {
+ 	struct vcpu_vmx *vmx = to_vmx(vcpu);
+ 
+@@ -3161,18 +3160,6 @@ static bool nested_get_vmcs12_pages(struct kvm_vcpu *vcpu)
+ 	struct page *page;
+ 	u64 hpa;
+ 
+-	if (!vcpu->arch.pdptrs_from_userspace &&
+-	    !nested_cpu_has_ept(vmcs12) && is_pae_paging(vcpu)) {
+-		/*
+-		 * Reload the guest's PDPTRs since after a migration
+-		 * the guest CR3 might be restored prior to setting the nested
+-		 * state which can lead to a load of wrong PDPTRs.
+-		 */
+-		if (CC(!load_pdptrs(vcpu, vcpu->arch.cr3)))
+-			return false;
+-	}
+-
+-
+ 	if (nested_cpu_has2(vmcs12, SECONDARY_EXEC_VIRTUALIZE_APIC_ACCESSES)) {
+ 		/*
+ 		 * Translate L1 physical address to host physical
+@@ -3254,25 +3241,6 @@ static bool nested_get_vmcs12_pages(struct kvm_vcpu *vcpu)
+ 	return true;
+ }
+ 
+-static bool vmx_get_nested_state_pages(struct kvm_vcpu *vcpu)
+-{
+-	if (!nested_get_evmcs_page(vcpu)) {
+-		pr_debug_ratelimited("%s: enlightened vmptrld failed\n",
+-				     __func__);
+-		vcpu->run->exit_reason = KVM_EXIT_INTERNAL_ERROR;
+-		vcpu->run->internal.suberror =
+-			KVM_INTERNAL_ERROR_EMULATION;
+-		vcpu->run->internal.ndata = 0;
+-
+-		return false;
+-	}
+-
+-	if (is_guest_mode(vcpu) && !nested_get_vmcs12_pages(vcpu))
+-		return false;
+-
+-	return true;
+-}
+-
+ static int nested_vmx_write_pml_buffer(struct kvm_vcpu *vcpu, gpa_t gpa)
+ {
+ 	struct vmcs12 *vmcs12;
+@@ -3402,12 +3370,12 @@ enum nvmx_vmentry_status nested_vmx_enter_non_root_mode(struct kvm_vcpu *vcpu,
+ 
+ 	prepare_vmcs02_early(vmx, &vmx->vmcs01, vmcs12);
+ 
+-	if (from_vmentry) {
+-		if (unlikely(!nested_get_vmcs12_pages(vcpu))) {
+-			vmx_switch_vmcs(vcpu, &vmx->vmcs01);
+-			return NVMX_VMENTRY_KVM_INTERNAL_ERROR;
+-		}
++	if (unlikely(!nested_get_vmcs12_pages(vcpu))) {
++		vmx_switch_vmcs(vcpu, &vmx->vmcs01);
++		return NVMX_VMENTRY_KVM_INTERNAL_ERROR;
++	}
+ 
++	if (from_vmentry) {
+ 		if (nested_vmx_check_vmentry_hw(vcpu)) {
+ 			vmx_switch_vmcs(vcpu, &vmx->vmcs01);
+ 			return NVMX_VMENTRY_VMFAIL;
+@@ -3429,24 +3397,14 @@ enum nvmx_vmentry_status nested_vmx_enter_non_root_mode(struct kvm_vcpu *vcpu,
+ 		goto vmentry_fail_vmexit_guest_mode;
+ 	}
+ 
+-	if (from_vmentry) {
+-		failed_index = nested_vmx_load_msr(vcpu,
+-						   vmcs12->vm_entry_msr_load_addr,
+-						   vmcs12->vm_entry_msr_load_count);
+-		if (failed_index) {
+-			exit_reason.basic = EXIT_REASON_MSR_LOAD_FAIL;
+-			vmcs12->exit_qualification = failed_index;
+-			goto vmentry_fail_vmexit_guest_mode;
+-		}
+-	} else {
+-		/*
+-		 * The MMU is not initialized to point at the right entities yet and
+-		 * "get pages" would need to read data from the guest (i.e. we will
+-		 * need to perform gpa to hpa translation). Request a call
+-		 * to nested_get_vmcs12_pages before the next VM-entry.  The MSRs
+-		 * have already been set at vmentry time and should not be reset.
+-		 */
+-		kvm_make_request(KVM_REQ_GET_NESTED_STATE_PAGES, vcpu);
++
++	failed_index = nested_vmx_load_msr(vcpu,
++					   vmcs12->vm_entry_msr_load_addr,
++					   vmcs12->vm_entry_msr_load_count);
++	if (failed_index) {
++		exit_reason.basic = EXIT_REASON_MSR_LOAD_FAIL;
++		vmcs12->exit_qualification = failed_index;
++		goto vmentry_fail_vmexit_guest_mode;
+ 	}
+ 
+ 	/*
+@@ -4516,16 +4474,6 @@ void nested_vmx_vmexit(struct kvm_vcpu *vcpu, u32 vm_exit_reason,
+ 	/* Similarly, triple faults in L2 should never escape. */
+ 	WARN_ON_ONCE(kvm_check_request(KVM_REQ_TRIPLE_FAULT, vcpu));
+ 
+-	if (kvm_check_request(KVM_REQ_GET_NESTED_STATE_PAGES, vcpu)) {
+-		/*
+-		 * KVM_REQ_GET_NESTED_STATE_PAGES is also used to map
+-		 * Enlightened VMCS after migration and we still need to
+-		 * do that when something is forcing L2->L1 exit prior to
+-		 * the first L2 run.
+-		 */
+-		(void)nested_get_evmcs_page(vcpu);
+-	}
+-
+ 	/* Service pending TLB flush requests for L2 before switching to L1. */
+ 	kvm_service_local_tlb_flush_requests(vcpu);
+ 
+@@ -6382,14 +6330,17 @@ static int vmx_set_nested_state(struct kvm_vcpu *vcpu,
+ 
+ 		set_current_vmptr(vmx, kvm_state->hdr.vmx.vmcs12_pa);
+ 	} else if (kvm_state->flags & KVM_STATE_NESTED_EVMCS) {
++
++		vmx->nested.hv_evmcs_vmptr = EVMPTR_MAP_PENDING;
++
+ 		/*
+ 		 * nested_vmx_handle_enlightened_vmptrld() cannot be called
+-		 * directly from here as HV_X64_MSR_VP_ASSIST_PAGE may not be
+-		 * restored yet. EVMCS will be mapped from
+-		 * nested_get_vmcs12_pages().
++		 * directly from here if HV_X64_MSR_VP_ASSIST_PAGE is not
++		 * restored yet. EVMCS will be mapped when it is.
+ 		 */
+-		vmx->nested.hv_evmcs_vmptr = EVMPTR_MAP_PENDING;
+-		kvm_make_request(KVM_REQ_GET_NESTED_STATE_PAGES, vcpu);
++		if (kvm_hv_assist_page_enabled(vcpu))
++			nested_get_evmcs_page(vcpu);
++
+ 	} else {
+ 		return -EINVAL;
+ 	}
+@@ -6811,8 +6762,8 @@ struct kvm_x86_nested_ops vmx_nested_ops = {
+ 	.triple_fault = nested_vmx_triple_fault,
+ 	.get_state = vmx_get_nested_state,
+ 	.set_state = vmx_set_nested_state,
+-	.get_nested_state_pages = vmx_get_nested_state_pages,
+ 	.write_log_dirty = nested_vmx_write_pml_buffer,
+ 	.enable_evmcs = nested_enable_evmcs,
+ 	.get_evmcs_version = nested_get_evmcs_version,
++	.get_evmcs_page = nested_get_evmcs_page,
+ };
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 0ee2fbb068b17..48dd01fd7a1ec 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -9897,12 +9897,6 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
+ 			r = -EIO;
+ 			goto out;
+ 		}
+-		if (kvm_check_request(KVM_REQ_GET_NESTED_STATE_PAGES, vcpu)) {
+-			if (unlikely(!kvm_x86_ops.nested_ops->get_nested_state_pages(vcpu))) {
+-				r = 0;
+-				goto out;
+-			}
+-		}
+ 		if (kvm_check_request(KVM_REQ_MMU_RELOAD, vcpu))
+ 			kvm_mmu_unload(vcpu);
+ 		if (kvm_check_request(KVM_REQ_MIGRATE_TIMER, vcpu))
+-- 
+2.26.3
+
