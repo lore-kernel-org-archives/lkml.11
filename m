@@ -2,87 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74E21C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37561C3526C
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 05:51:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236331AbiBGFtx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 00:49:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40606 "EHLO
+        id S235364AbiBGFtn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 00:49:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351164AbiBGEET (ORCPT
+        with ESMTP id S229701AbiBGFBm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 23:04:19 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD35FC061A73;
-        Sun,  6 Feb 2022 20:04:16 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id y15-20020a17090a474f00b001b88562650aso2649260pjg.0;
-        Sun, 06 Feb 2022 20:04:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=71JHL6a4At1Gw4scubZ3vrvM30dBBl26C7Z0Kh+8KMw=;
-        b=JgFvVSUyrc4s8+/yhgvq08dBEX8opQSZcU9y2Mp7yf6Z/xm3vWQUCT6COW3M9Ut7yf
-         eD2NmndEzaevqynoXBcEkz8DX8UibIbYhyTsvf/2kXrdsk8LUIs2Qt2JY04Sjv8ChNPo
-         7/gERHbDBmBB0me6M1+RsdCliP0RDzI3jVv5BG+GUim2MA2SYxsmSywLaOXYQMGs6g5A
-         l4Wf5skkTGgjxPTf7cDqfoeZcptVBcGbXYWHjcQbM0MMhvI6/Yj8XyTyJTA3i2FWd/Zx
-         9xlgDArbJmte3dFxh1N0yriNbjkuYnTesHGjucmT0B0vFnhneooHqbvsv7xWB+3dVffo
-         XfLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=71JHL6a4At1Gw4scubZ3vrvM30dBBl26C7Z0Kh+8KMw=;
-        b=Y+6Fvo89DSW7IKooRUBQHqSSNek6vm1NfGUyF9h0ADPD2umTwEN7IjtPRXJSCwdQ31
-         6qZpjxHvwssD8HdMMxEeJMpyj6+I1OEzpSy1OqB7kNFyYW3u0AuaNGL9J8Z2gPb6OCet
-         M/DIGFajxp/wjyfcJyKE+53KEKXJXR5lxHOf5DRNvq6UnjULLMuEILq1mHwwEjg/D4Kk
-         n4Qs7tith4MKTw6/vIpzBZiwC5recxe4CVoggMllob+Bt5aBrjxVjWnkFTNNewIYjkXy
-         vX2vmO3pkkPCVTkLSczT4qUyxTHeuF4gVFl0GeE8rnbRW0nSmJeLUIx8L9SCisf224F3
-         4SUw==
-X-Gm-Message-State: AOAM530rsHcTLqrvuiqIHUlZXs3i9hVOVUtKkBNOUMukhM9J2xUkObia
-        NyD49RDp1s2MKOA8UiMDzlw=
-X-Google-Smtp-Source: ABdhPJxPoeIwrDwtcRhCXvGWQe9wTN5VSQbOvd7Pn8oneXzD/hzjsb5YCBsAmNp9nRu0KG+MVGA5Bg==
-X-Received: by 2002:a17:902:ced1:: with SMTP id d17mr8366803plg.42.1644206656389;
-        Sun, 06 Feb 2022 20:04:16 -0800 (PST)
-Received: from localhost.localdomain ([27.7.146.135])
-        by smtp.gmail.com with ESMTPSA id j18sm10601234pfj.13.2022.02.06.20.04.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Feb 2022 20:04:16 -0800 (PST)
-From:   Jagath Jog J <jagathjog1996@gmail.com>
-To:     jic23@kernel.org, lars@metafoo.de, andy.shevchenko@gmail.com,
-        sst@poczta.fm, robh+dt@kernel.org
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 1/2] dt-bindings: iio: potentiometer: Add Maxim DS3502 in trivial-devices
-Date:   Mon,  7 Feb 2022 09:34:07 +0530
-Message-Id: <20220207040408.4273-2-jagathjog1996@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220207040408.4273-1-jagathjog1996@gmail.com>
-References: <20220207040408.4273-1-jagathjog1996@gmail.com>
+        Mon, 7 Feb 2022 00:01:42 -0500
+X-Greylist: delayed 302 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 21:01:36 PST
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 359F8C043181
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 21:01:36 -0800 (PST)
+X-UUID: b2c26ea645ef415a9aa881942dab0283-20220207
+X-UUID: b2c26ea645ef415a9aa881942dab0283-20220207
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1388983801; Mon, 07 Feb 2022 12:56:32 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Mon, 7 Feb 2022 12:56:30 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 7 Feb 2022 12:56:30 +0800
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     <chunkuang.hu@kernel.org>, <matthias.bgg@gmail.com>,
+        <narmstrong@baylibre.com>, <robert.foss@linaro.org>,
+        <andrzej.hajda@intel.com>, <daniel@ffwll.ch>, <airlied@linux.ie>,
+        <maarten.lankhorst@linux.intel.com>, <mripard@kernel.org>,
+        <tzimmermann@suse.de>, <p.zabel@pengutronix.de>
+CC:     <xji@analogixsemi.com>, <jitao.shi@mediatek.com>,
+        <xinlei.lee@mediatek.com>,
+        <angelogioacchino.delregno@collabora.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>
+Subject: [v11,2/3] drm/mediatek: implement the DSI HS packets aligned
+Date:   Mon, 7 Feb 2022 12:56:24 +0800
+Message-ID: <20220207045625.17713-3-rex-bc.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220207045625.17713-1-rex-bc.chen@mediatek.com>
+References: <20220207045625.17713-1-rex-bc.chen@mediatek.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Maxim DS3502 is a 7 bit nonvolatile digital potentiometer.
-Add DS3502 binding into trivial-devices.yaml
+Some DSI RX devices (for example, anx7625) require last alignment of
+packets on all lanes after each row of data is sent.
+Otherwise, there will be some issues of shift or scroll for screen.
 
-Signed-off-by: Jagath Jog J <jagathjog1996@gmail.com>
+Take horizontal_sync_active_byte for a example,
+we roundup the HSA packet data to lane number, and the subtraction of 2
+is the packet data value added by the roundup operation, making the
+long packets are integer multiples of lane number.
+This value (2) varies with the lane number, and that is the reason we
+do this operation when the lane number is 4.
+
+In the previous operation of function "mtk_dsi_config_vdo_timing",
+the length of HSA and HFP data packets has been adjusted to an
+integration multiple of lane number.
+Since the number of RGB data packets cannot be guaranteed to be an
+integer multiple of lane number, we modify the data packet length of
+HBP so that the number of HBP + RGB is equal to the lane number.
+So after sending a line of data (HSA + HBP + RGB + HFP), the data
+lanes are aligned.
+
+Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
+Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
+Reviewed-by: Andrzej Hajda <andrzej.hajda@intel.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Acked-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
 ---
- Documentation/devicetree/bindings/trivial-devices.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/gpu/drm/mediatek/mtk_dsi.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/trivial-devices.yaml b/Documentation/devicetree/bindings/trivial-devices.yaml
-index 091792ba993e..b6187603317a 100644
---- a/Documentation/devicetree/bindings/trivial-devices.yaml
-+++ b/Documentation/devicetree/bindings/trivial-devices.yaml
-@@ -157,6 +157,8 @@ properties:
-           - maxim,ds1803-050
-             # 100 kOhm digital potentiometer with I2C interface
-           - maxim,ds1803-100
-+            # 10 kOhm digital potentiometer with I2C interface
-+          - maxim,ds3502
-             # Low-Power, 4-/12-Channel, 2-Wire Serial, 12-Bit ADCs
-           - maxim,max1237
-             # Temperature Sensor, I2C interface
+diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
+index 5d90d2eb0019..e91b3fff4342 100644
+--- a/drivers/gpu/drm/mediatek/mtk_dsi.c
++++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
+@@ -500,6 +500,18 @@ static void mtk_dsi_config_vdo_timing(struct mtk_dsi *dsi)
+ 		DRM_WARN("HFP + HBP less than d-phy, FPS will under 60Hz\n");
+ 	}
+ 
++	if ((dsi->mode_flags & MIPI_DSI_HS_PKT_END_ALIGNED) &&
++	    (dsi->lanes == 4)) {
++		horizontal_sync_active_byte =
++			roundup(horizontal_sync_active_byte, dsi->lanes) - 2;
++		horizontal_frontporch_byte =
++			roundup(horizontal_frontporch_byte, dsi->lanes) - 2;
++		horizontal_backporch_byte =
++			roundup(horizontal_backporch_byte, dsi->lanes) - 2;
++		horizontal_backporch_byte -=
++			(vm->hactive * dsi_tmp_buf_bpp + 2) % dsi->lanes;
++	}
++
+ 	writel(horizontal_sync_active_byte, dsi->regs + DSI_HSA_WC);
+ 	writel(horizontal_backporch_byte, dsi->regs + DSI_HBP_WC);
+ 	writel(horizontal_frontporch_byte, dsi->regs + DSI_HFP_WC);
 -- 
-2.17.1
+2.31.0
 
