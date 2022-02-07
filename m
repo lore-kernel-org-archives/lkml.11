@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69B20C35275
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B029C35276
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:19:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356410AbiBGLQv (ORCPT
+        id S1380811AbiBGLQ4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:16:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54524 "EHLO
+        Mon, 7 Feb 2022 06:16:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379641AbiBGLQO (ORCPT
+        with ESMTP id S1379730AbiBGLQR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:16:14 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCE74C043181;
-        Mon,  7 Feb 2022 03:16:12 -0800 (PST)
+        Mon, 7 Feb 2022 06:16:17 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11CE8C043181;
+        Mon,  7 Feb 2022 03:16:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 59B81B81028;
-        Mon,  7 Feb 2022 11:16:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56146C004E1;
-        Mon,  7 Feb 2022 11:16:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A26E06126D;
+        Mon,  7 Feb 2022 11:16:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80C46C004E1;
+        Mon,  7 Feb 2022 11:16:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232570;
-        bh=Zrz0GY0pyQQxF+ytv8eyvaDyQNDvX7nn8gVGtMPJUik=;
+        s=korg; t=1644232576;
+        bh=a2vDTHOBI49xRFAsoaRVTLreLT9c8ZOaJ3EMq+rDAfs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1fb0IQxyQqMyCjM6nGsj9AmKYQO2SaymkwuTwVK+o7KLMAXKJnQgVnBySNkoBMm+g
-         MiPO3rZMAhxweEDPvcCZlu6GJvacz/V9IYRPDd97ZEFe/R3KfjYMhIkaDLY+hb7Gle
-         +P9bh4GuRVXmzwiW6mqZJ9YytyJcD5D1FWgukuS0=
+        b=qVghLWZULlHoug5Y5TEQpuGHNQBdcoLaF9af+OApUe1QavrXVzpXRQblhFc3jsaWd
+         18FNsZTOl4EIo+YByEUCwUVpc/a6kB4d+FZ/psDsiA3wA2Rq16QJD7v3jEXASjvXTT
+         bnCaE9fHd24lYrG6LZp9qxNMPMywgpHtcJyIfjjI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Stephen Boyd <swboyd@chromium.org>
-Subject: [PATCH 4.19 25/86] rpmsg: char: Fix race between the release of rpmsg_eptdev and cdev
-Date:   Mon,  7 Feb 2022 12:05:48 +0100
-Message-Id: <20220207103758.366607814@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 4.19 53/86] af_packet: fix data-race in packet_setsockopt / packet_setsockopt
+Date:   Mon,  7 Feb 2022 12:06:16 +0100
+Message-Id: <20220207103759.304646175@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.550973048@linuxfoundation.org>
 References: <20220207103757.550973048@linuxfoundation.org>
@@ -52,71 +51,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthias Kaehlcke <mka@chromium.org>
+From: Eric Dumazet <edumazet@google.com>
 
-commit 7a534ae89e34e9b51acb5a63dd0f88308178b46a upstream.
+commit e42e70ad6ae2ae511a6143d2e8da929366e58bd9 upstream.
 
-struct rpmsg_eptdev contains a struct cdev. The current code frees
-the rpmsg_eptdev struct in rpmsg_eptdev_destroy(), but the cdev is
-a managed object, therefore its release is not predictable and the
-rpmsg_eptdev could be freed before the cdev is entirely released.
+When packet_setsockopt( PACKET_FANOUT_DATA ) reads po->fanout,
+no lock is held, meaning that another thread can change po->fanout.
 
-The cdev_device_add/del() API was created to address this issue
-(see commit '233ed09d7fda ("chardev: add helper function to register
-char devs with a struct device")'), use it instead of cdev add/del().
+Given that po->fanout can only be set once during the socket lifetime
+(it is only cleared from fanout_release()), we can use
+READ_ONCE()/WRITE_ONCE() to document the race.
 
-Fixes: c0cdc19f84a4 ("rpmsg: Driver for user space endpoint interface")
-Suggested-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
-Reviewed-by: Mathieu Poirier <mathieu.poirier@linaro.org>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220110104706.v6.2.Idde68b05b88d4a2e6e54766c653f3a6d9e419ce6@changeid
+BUG: KCSAN: data-race in packet_setsockopt / packet_setsockopt
+
+write to 0xffff88813ae8e300 of 8 bytes by task 14653 on cpu 0:
+ fanout_add net/packet/af_packet.c:1791 [inline]
+ packet_setsockopt+0x22fe/0x24a0 net/packet/af_packet.c:3931
+ __sys_setsockopt+0x209/0x2a0 net/socket.c:2180
+ __do_sys_setsockopt net/socket.c:2191 [inline]
+ __se_sys_setsockopt net/socket.c:2188 [inline]
+ __x64_sys_setsockopt+0x62/0x70 net/socket.c:2188
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+read to 0xffff88813ae8e300 of 8 bytes by task 14654 on cpu 1:
+ packet_setsockopt+0x691/0x24a0 net/packet/af_packet.c:3935
+ __sys_setsockopt+0x209/0x2a0 net/socket.c:2180
+ __do_sys_setsockopt net/socket.c:2191 [inline]
+ __se_sys_setsockopt net/socket.c:2188 [inline]
+ __x64_sys_setsockopt+0x62/0x70 net/socket.c:2188
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+value changed: 0x0000000000000000 -> 0xffff888106f8c000
+
+Reported by Kernel Concurrency Sanitizer on:
+CPU: 1 PID: 14654 Comm: syz-executor.3 Not tainted 5.16.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+
+Fixes: 47dceb8ecdc1 ("packet: add classic BPF fanout mode")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Willem de Bruijn <willemb@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Link: https://lore.kernel.org/r/20220201022358.330621-1-eric.dumazet@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/rpmsg/rpmsg_char.c |   11 ++---------
- 1 file changed, 2 insertions(+), 9 deletions(-)
+ net/packet/af_packet.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/drivers/rpmsg/rpmsg_char.c
-+++ b/drivers/rpmsg/rpmsg_char.c
-@@ -92,7 +92,7 @@ static int rpmsg_eptdev_destroy(struct d
- 	/* wake up any blocked readers */
- 	wake_up_interruptible(&eptdev->readq);
+--- a/net/packet/af_packet.c
++++ b/net/packet/af_packet.c
+@@ -1730,7 +1730,10 @@ static int fanout_add(struct sock *sk, u
+ 		err = -ENOSPC;
+ 		if (refcount_read(&match->sk_ref) < PACKET_FANOUT_MAX) {
+ 			__dev_remove_pack(&po->prot_hook);
+-			po->fanout = match;
++
++			/* Paired with packet_setsockopt(PACKET_FANOUT_DATA) */
++			WRITE_ONCE(po->fanout, match);
++
+ 			po->rollover = rollover;
+ 			rollover = NULL;
+ 			refcount_set(&match->sk_ref, refcount_read(&match->sk_ref) + 1);
+@@ -3877,7 +3880,8 @@ packet_setsockopt(struct socket *sock, i
+ 	}
+ 	case PACKET_FANOUT_DATA:
+ 	{
+-		if (!po->fanout)
++		/* Paired with the WRITE_ONCE() in fanout_add() */
++		if (!READ_ONCE(po->fanout))
+ 			return -EINVAL;
  
--	device_del(&eptdev->dev);
-+	cdev_device_del(&eptdev->cdev, &eptdev->dev);
- 	put_device(&eptdev->dev);
- 
- 	return 0;
-@@ -329,7 +329,6 @@ static void rpmsg_eptdev_release_device(
- 
- 	ida_simple_remove(&rpmsg_ept_ida, dev->id);
- 	ida_simple_remove(&rpmsg_minor_ida, MINOR(eptdev->dev.devt));
--	cdev_del(&eptdev->cdev);
- 	kfree(eptdev);
- }
- 
-@@ -374,19 +373,13 @@ static int rpmsg_eptdev_create(struct rp
- 	dev->id = ret;
- 	dev_set_name(dev, "rpmsg%d", ret);
- 
--	ret = cdev_add(&eptdev->cdev, dev->devt, 1);
-+	ret = cdev_device_add(&eptdev->cdev, &eptdev->dev);
- 	if (ret)
- 		goto free_ept_ida;
- 
- 	/* We can now rely on the release function for cleanup */
- 	dev->release = rpmsg_eptdev_release_device;
- 
--	ret = device_add(dev);
--	if (ret) {
--		dev_err(dev, "device_add failed: %d\n", ret);
--		put_device(dev);
--	}
--
- 	return ret;
- 
- free_ept_ida:
+ 		return fanout_set_data(po, optval, optlen);
 
 
