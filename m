@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C995C4707A
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:59:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EC4CC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:59:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388858AbiBGLpo (ORCPT
+        id S1388929AbiBGLpt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:45:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46228 "EHLO
+        Mon, 7 Feb 2022 06:45:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386086AbiBGLdc (ORCPT
+        with ESMTP id S1386091AbiBGLde (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:33:32 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7595C043181;
-        Mon,  7 Feb 2022 03:33:31 -0800 (PST)
+        Mon, 7 Feb 2022 06:33:34 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 655C0C043181;
+        Mon,  7 Feb 2022 03:33:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 62BB8B811BC;
-        Mon,  7 Feb 2022 11:33:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B024C004E1;
-        Mon,  7 Feb 2022 11:33:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ECF2460B20;
+        Mon,  7 Feb 2022 11:33:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD72FC004E1;
+        Mon,  7 Feb 2022 11:33:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233609;
-        bh=b13qAo4YSP2y+ta2ne27FSUAmi4yqSLi1KWG0FFTyEU=;
+        s=korg; t=1644233612;
+        bh=0G4mg7JrTwEv++ARZxUJpNZ1oLOwrJ8UNREcb0ZZ/f8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cvwME7pb6qxAxVNpAV2WipxvQ7OdIDoBSHdfJ2tH9ooPafsofed+3UH/1LrOeck3J
-         aBXYCsywaORVRa4SmfXwTVu63l+sMiTKVaHVAYRqM28rnRxxoSTocI3X4z7AY58jZQ
-         rDaCm6DSGLAPF6rXWNJADelqzYzzkaKIljWq/pKQ=
+        b=E1fTyPHCa7ONPxbl19duLpzzj7yqyatT2z35ElYvoNxnwXrfYRZbeix9syhTFF/Tv
+         1AXJ77aLkCBAKZme5KqVKWXGsGPmVm7r7wb8wPFVH/u98GrR78Mav0FIhQzu/8lgLy
+         Ka9n5JgvP6c+cqxL/eKBSJzB6pqE13nSRHDyKxMY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
         Alexander Aring <aahringo@redhat.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>
-Subject: [PATCH 5.16 066/126] net: ieee802154: mcr20a: Fix lifs/sifs periods
-Date:   Mon,  7 Feb 2022 12:06:37 +0100
-Message-Id: <20220207103806.385321823@linuxfoundation.org>
+Subject: [PATCH 5.16 067/126] net: ieee802154: ca8210: Stop leaking skbs
+Date:   Mon,  7 Feb 2022 12:06:38 +0100
+Message-Id: <20220207103806.426048917@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
 References: <20220207103804.053675072@linuxfoundation.org>
@@ -52,35 +52,33 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miquel Raynal <miquel.raynal@bootlin.com>
 
-commit d753c4004820a888ec007dd88b271fa9c3172c5c upstream.
+commit 621b24b09eb61c63f262da0c9c5f0e93348897e5 upstream.
 
-These periods are expressed in time units (microseconds) while 40 and 12
-are the number of symbol durations these periods will last. We need to
-multiply them both with phy->symbol_duration in order to get these
-values in microseconds.
+Upon error the ieee802154_xmit_complete() helper is not called. Only
+ieee802154_wake_queue() is called manually. We then leak the skb
+structure.
 
-Fixes: 8c6ad9cc5157 ("ieee802154: Add NXP MCR20A IEEE 802.15.4 transceiver driver")
+Free the skb structure upon error before returning.
+
+Fixes: ded845a781a5 ("ieee802154: Add CA8210 IEEE 802.15.4 device driver")
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 Acked-by: Alexander Aring <aahringo@redhat.com>
-Link: https://lore.kernel.org/r/20220125121426.848337-3-miquel.raynal@bootlin.com
+Link: https://lore.kernel.org/r/20220125121426.848337-5-miquel.raynal@bootlin.com
 Signed-off-by: Stefan Schmidt <stefan@datenfreihafen.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ieee802154/mcr20a.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ieee802154/ca8210.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/net/ieee802154/mcr20a.c
-+++ b/drivers/net/ieee802154/mcr20a.c
-@@ -976,8 +976,8 @@ static void mcr20a_hw_setup(struct mcr20
- 	dev_dbg(printdev(lp), "%s\n", __func__);
- 
- 	phy->symbol_duration = 16;
--	phy->lifs_period = 40;
--	phy->sifs_period = 12;
-+	phy->lifs_period = 40 * phy->symbol_duration;
-+	phy->sifs_period = 12 * phy->symbol_duration;
- 
- 	hw->flags = IEEE802154_HW_TX_OMIT_CKSUM |
- 			IEEE802154_HW_AFILT |
+--- a/drivers/net/ieee802154/ca8210.c
++++ b/drivers/net/ieee802154/ca8210.c
+@@ -1771,6 +1771,7 @@ static int ca8210_async_xmit_complete(
+ 			status
+ 		);
+ 		if (status != MAC_TRANSACTION_OVERFLOW) {
++			dev_kfree_skb_any(priv->tx_skb);
+ 			ieee802154_wake_queue(priv->hw);
+ 			return 0;
+ 		}
 
 
