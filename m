@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EFA3C35274
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECCE8C35278
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:05:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344598AbiBHBDp (ORCPT
+        id S1344668AbiBHBDu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:03:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35600 "EHLO
+        Mon, 7 Feb 2022 20:03:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245428AbiBGXD2 (ORCPT
+        with ESMTP id S245457AbiBGXD3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 18:03:28 -0500
+        Mon, 7 Feb 2022 18:03:29 -0500
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A878FC0612A4
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 15:03:27 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47D28C043180
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 15:03:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644275007; x=1675811007;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=DwxW5/6A2LJ1fHtlYVK+GKZ2vtOtxuAcvM3oIKFzkB0=;
-  b=cz312uHPI8KhkT9+pB1LlhpdGOKlSgYyAslPkjbgjReuv85UIx13SMcU
-   ycr0VsQav+Kj46XO/h+JXVvenojCF0VTXVRHA8vQB/2X7VlsSfiW5Aaai
-   pM9PFu38/aDm+y6cR8kFtLWtjbIpSYKrC0ScUc1S/jIBwQG4O6uM9YVXj
-   jQN/Ptk8jV/NxwvwR2d1nWZ7iLAhq2WXQhh+EUqGaR4uXpX8bNsLzXE4a
-   od3HH2mz9tyLyGCTdieHTbcI1+N2Rhry2uqaBwYUBfNasgZuOnmBDQHeh
-   egM62cJdVzHr2TfYS5C1QRTdCnELNbfvdGxz3z/Ad1d1WjAag5MHN12GT
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10251"; a="229474999"
+  t=1644275009; x=1675811009;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=pSiI5bRDWKZ8wcmfvSwFj0dyl6gbbkbtffSYluVkHLo=;
+  b=F1vjZWnddLAVvyvUSU4871QEz5idrLoEk5yShnWA8YgS9bzzOdQZrC1t
+   R6iMD68wvheMDsMSUC0hdGOHV9Lt/o3NhhvTLdJ0wya7dSo+vEmV6hdYt
+   vjr9uHzO9Uj1piB3DcDChDOTgw5R97fUuGdoN2ooK/X2l//xKaHHrmCB4
+   UaplCBBQoX/lVujeeGnfDJYxxpuw9SGRqbJgaBjIHe/2geUj7n+cwyGs6
+   xxDhUDxACKxlUIGc7dVi0dMrDKigfWHLoFTburJkokjYJhku3EcjB/J69
+   IwMLb16Z3dL8EKTGwC66WMgzHbLgvMYeX83Qxx0dUeXU5Y11yj+0sPsIN
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10251"; a="229475014"
 X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
-   d="scan'208";a="229474999"
+   d="scan'208";a="229475014"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 15:03:02 -0800
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 15:03:05 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
-   d="scan'208";a="540323991"
+   d="scan'208";a="540324061"
 Received: from otcwcpicx3.sc.intel.com ([172.25.55.73])
-  by orsmga008.jf.intel.com with ESMTP; 07 Feb 2022 15:03:01 -0800
+  by orsmga008.jf.intel.com with ESMTP; 07 Feb 2022 15:03:04 -0800
 From:   Fenghua Yu <fenghua.yu@intel.com>
 To:     "Thomas Gleixner" <tglx@linutronix.de>,
         "Dave Hansen" <dave.hansen@linux.intel.com>,
@@ -55,110 +55,80 @@ To:     "Thomas Gleixner" <tglx@linutronix.de>,
 Cc:     iommu@lists.linux-foundation.org, "x86" <x86@kernel.org>,
         "linux-kernel" <linux-kernel@vger.kernel.org>,
         Fenghua Yu <fenghua.yu@intel.com>
-Subject: [PATCH v4 00/11] Re-enable ENQCMD and PASID MSR
-Date:   Mon,  7 Feb 2022 15:02:43 -0800
-Message-Id: <20220207230254.3342514-1-fenghua.yu@intel.com>
+Subject: [PATCH v4 06/11] x86/fpu: Clear PASID when copying fpstate
+Date:   Mon,  7 Feb 2022 15:02:49 -0800
+Message-Id: <20220207230254.3342514-7-fenghua.yu@intel.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220207230254.3342514-1-fenghua.yu@intel.com>
+References: <20220207230254.3342514-1-fenghua.yu@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Problems in the old code to manage SVM (Shared Virtual Memory) devices
-and the PASID (Process Address Space ID) led to that code being
-disabled.
+The kernel must allocate a Process Address Space ID (PASID) on behalf of
+each process which will use ENQCMD and program it into the new MSR to
+communicate the process identity to platform hardware. ENQCMD uses the
+PASID stored in this MSR to tag requests from this process.
 
-Subsequent discussions resulted in a far simpler approach:
+The PASID state must be cleared on fork() since fork creates a
+new address space.
 
-1) PASID life cycle is from first allocation by a process until that
-   process exits.
-2) All tasks begin with PASID disabled
-3) The #GP fault handler tries to fix faulting ENQCMD instructions very
-   early (thus avoiding complexities of the XSAVE infrastructure)
+For clone(), it would be functionally OK to copy the PASID. However,
+clearing it is _also_ functionally OK since any PASID use will trigger
+the #GP handler to populate the MSR.
 
-Change Log:
+Copying the PASID state has two main downsides:
+ * It requires differentiating fork() and clone() in the code,
+   both in the FPU code and keeping tsk->pasid_activated consistent.
+ * It guarantees that the PASID is out of its init state, which
+   incurs small but non-zero cost on every XSAVE/XRSTOR.
+
+The main downside of clearing the PASID at fpstate copy is the future,
+one-time #GP for the thread.
+
+Use the simplest approach: clear the PASID state both on clone() and
+fork().  Rely on the #GP handler for MSR population in children.
+
+Also, just clear the PASID bit from xfeatures if XSAVE is supported.
+This will have no effect on systems that do not have PASID support.  It
+is virtually zero overhead because 'dst_fpu' was just written and
+the whole thing is cache hot.
+
+Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
+Reviewed-by: Tony Luck <tony.luck@intel.com>
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+---
 v4:
-- Update commit message in patch #4 (Thomas).
-- Update commit message in patch #5 (Thomas).
-- Add "Reviewed-by: Thomas Gleixner <tglx@linutronix.de>" in patch #1-#3
-  and patch #6-#9 (Thomas).
-- Rebased to 5.17-rc3.
-
-v3 can be found at https://lore.kernel.org/lkml/20220128202905.2274672-7-fenghua.yu@intel.com/T/#m039e1a201e9894d99b117fa6005bc05724a5a4bb
-
-v3:
-- Rename mm_pasid_get() to mm_pasid_set() in patch #5 (Thomas).
-- Remove ioasid_get() because it's not used any more when the IOASID
-  is freed on mm exit in patch #5 (Thomas).
-- Remove PASID's refcount exercise in ioasid_put() and rename
-  ioasid_put() to ioasid_free() in patch #5 and #11 (Thomas).
-- Add Acked-by: Josh Poimboeuf <jpoimboe@redhat.com> in patch #10.
-
-v2 can be found at https://lore.kernel.org/lkml/20211217220136.2762116-1-fenghua.yu@intel.com/
+- Add "Reviewed-by: Thomas Gleixner <tglx@linutronix.de>" (Thomas).
 
 v2:
-- Free PASID on mm exit instead of in exit(2) or unbind() (Thomas, AndyL,
-  PeterZ)
-- Directly write IA32_PASID MSR in fixup while local IRQ is still disabled
-  (Thomas)
-- Simplify handling ENQCMD in objtool (PeterZ and Josh)
-- Define mm_pasid_get(), mm_pasid_drop(), and mm_pasid_init() in mm and
-  call the functions from IOMMU (Dave Hansen).
-- A few changes in the #GP fixup function (Dave Hansen, Tony Luck).
-- Initial PASID value is changed to INVALID_PASID (Ashok Raj and
-  Jacob Pan).
-- Add mm_pasid_init(), mm_pasid_get(), and mm_pasid_drop() functions in mm.
-  So the mm's PASID operations are generic for both X86 and ARM
-  (Dave Hansen).
-- Rename CONFIG_IOMMU_SVA_LIB to more useful and accurate
-  CONFIG_IOMMU_SVA
-- Use CONFIG_IOMMU_SVA for PASID processing condition (Jacob)
-- The patch that cleans up old update_pasid() function is in upstream
-  now (commit: 00ecd5401349 "iommu/vt-d: Clean up unused PASID updating
-  functions") and therefore it's removed from this version.
+- Rewrite changelog (Dave Hansen).
+- Move xfeature tweaking into fpu_clone() and make it unconditional
+  if XSAVE is supported (Dave Hansen).
 
-v1 can be found at https://lore.kernel.org/lkml/20210920192349.2602141-1-fenghua.yu@intel.com/T/#md6d542091da1d1159eda0a44a16e57d0c0dfb209
+ arch/x86/kernel/fpu/core.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-Fenghua Yu (10):
-  iommu/sva: Rename CONFIG_IOMMU_SVA_LIB to CONFIG_IOMMU_SVA
-  mm: Change CONFIG option for mm->pasid field
-  iommu/ioasid: Introduce a helper to check for valid PASIDs
-  kernel/fork: Initialize mm's PASID
-  iommu/sva: Assign a PASID to mm on PASID allocation and free it on mm
-    exit
-  x86/fpu: Clear PASID when copying fpstate
-  x86/traps: Demand-populate PASID MSR via #GP
-  x86/cpufeatures: Re-enable ENQCMD
-  tools/objtool: Check for use of the ENQCMD instruction in the kernel
-  docs: x86: Change documentation for SVA (Shared Virtual Addressing)
-
-Peter Zijlstra (1):
-  sched: Define and initialize a flag to identify valid PASID in the
-    task
-
- Documentation/x86/sva.rst                     | 53 ++++++++++++++----
- arch/x86/include/asm/disabled-features.h      |  7 ++-
- arch/x86/kernel/fpu/core.c                    |  7 +++
- arch/x86/kernel/traps.c                       | 55 +++++++++++++++++++
- drivers/iommu/Kconfig                         |  6 +-
- drivers/iommu/Makefile                        |  2 +-
- .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |  5 +-
- drivers/iommu/intel/Kconfig                   |  2 +-
- drivers/iommu/intel/iommu.c                   |  4 +-
- drivers/iommu/intel/svm.c                     |  9 ---
- drivers/iommu/ioasid.c                        | 39 ++-----------
- drivers/iommu/iommu-sva-lib.c                 | 39 ++++---------
- drivers/iommu/iommu-sva-lib.h                 |  7 +--
- include/linux/ioasid.h                        | 21 +++----
- include/linux/mm_types.h                      |  2 +-
- include/linux/sched.h                         |  3 +
- include/linux/sched/mm.h                      | 26 +++++++++
- kernel/fork.c                                 | 15 +++--
- mm/init-mm.c                                  |  4 ++
- tools/objtool/arch/x86/decode.c               | 11 +++-
- 20 files changed, 197 insertions(+), 120 deletions(-)
-
+diff --git a/arch/x86/kernel/fpu/core.c b/arch/x86/kernel/fpu/core.c
+index 8dea01ffc5c1..19821f027cb3 100644
+--- a/arch/x86/kernel/fpu/core.c
++++ b/arch/x86/kernel/fpu/core.c
+@@ -612,6 +612,13 @@ int fpu_clone(struct task_struct *dst, unsigned long clone_flags)
+ 		fpu_inherit_perms(dst_fpu);
+ 	fpregs_unlock();
+ 
++	/*
++	 * Children never inherit PASID state.
++	 * Force it to have its init value:
++	 */
++	if (use_xsave())
++		dst_fpu->fpstate->regs.xsave.header.xfeatures &= ~XFEATURE_MASK_PASID;
++
+ 	trace_x86_fpu_copy_src(src_fpu);
+ 	trace_x86_fpu_copy_dst(dst_fpu);
+ 
 -- 
 2.35.1
 
