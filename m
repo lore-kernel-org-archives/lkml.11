@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADDD6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:26:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9973DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:26:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383268AbiBGLV6 (ORCPT
+        id S1383275AbiBGLV7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:21:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55248 "EHLO
+        Mon, 7 Feb 2022 06:21:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381312AbiBGLRI (ORCPT
+        with ESMTP id S1381510AbiBGLRL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:17:08 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17DE7C0401DC;
-        Mon,  7 Feb 2022 03:16:57 -0800 (PST)
+        Mon, 7 Feb 2022 06:17:11 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C02BC0401D2;
+        Mon,  7 Feb 2022 03:17:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 990696113B;
-        Mon,  7 Feb 2022 11:16:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82511C004E1;
-        Mon,  7 Feb 2022 11:16:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A93646126D;
+        Mon,  7 Feb 2022 11:16:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88DC0C004E1;
+        Mon,  7 Feb 2022 11:16:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232616;
-        bh=0Lx6J+nW1j3Xe69Ss/RmZp3ltqUDCKWoqBjjFqSPDh4=;
+        s=korg; t=1644232619;
+        bh=Fi5FmP3vg78vf+vuAoyI4qaqL8RRmG0PE5bYYQm08KI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OD7k/3qDzu+b7FeUtmU4laWnWO/zQwc6AxwmkoXywWDwEv/uhoPcuPcQvOSznEVxA
-         cGqRFsxCfyk2RQ2qTiKbb7DZYeUbTmRP5bHIYjandNEJxLNjQ/6c7BpxHJsm/5s8DX
-         PuMQFCgZTZu+N2Ba/s1Py1L7pKqiKFvd/pfFo2/M=
+        b=S00cdXgwBxdWsR5BlfZZWdr7J6cw7vDekJtSzOIJmGqeXzpHS4t9rLevPrvlJCm6h
+         O2ANp3GZje6wGsEnuaYE9U7TzxaSU7q2gSbbAkM8ZFRJJIcGmRzEEVjDtfo+2eeUQI
+         jkb2KcKQiQ1j4JlxzkzQrihY/W8Q/aTQ5Fnhzh1w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
         Mark Brown <broonie@kernel.org>
-Subject: [PATCH 4.19 68/86] spi: mediatek: Avoid NULL pointer crash in interrupt
-Date:   Mon,  7 Feb 2022 12:06:31 +0100
-Message-Id: <20220207103759.793203566@linuxfoundation.org>
+Subject: [PATCH 4.19 69/86] spi: meson-spicc: add IRQ check in meson_spicc_probe
+Date:   Mon,  7 Feb 2022 12:06:32 +0100
+Message-Id: <20220207103759.932004839@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.550973048@linuxfoundation.org>
 References: <20220207103757.550973048@linuxfoundation.org>
@@ -50,34 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit f83a96e5f033fbbd21764705cb9c04234b96218e upstream.
+commit e937440f7fc444a3e3f1fb75ea65292d6f433a44 upstream.
 
-In some case, like after a transfer timeout, master->cur_msg pointer
-is NULL which led to a kernel crash when trying to use master->cur_msg->spi.
-mtk_spi_can_dma(), pointed by master->can_dma, doesn't use this parameter
-avoid the problem by setting NULL as second parameter.
+This check misses checking for  platform_get_irq()'s call and may passes
+the negative error codes to devm_request_irq(), which takes unsigned IRQ #,
+causing it to fail with -EINVAL, overriding an original error code.
+Stop calling devm_request_irq() with invalid IRQ #s.
 
-Fixes: a568231f46322 ("spi: mediatek: Add spi bus for Mediatek MT8173")
-Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Link: https://lore.kernel.org/r/20220131141708.888710-1-benjamin.gaignard@collabora.com
+Fixes: 454fa271bc4e ("spi: Add Meson SPICC driver")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220126110447.24549-1-linmq006@gmail.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/spi/spi-mt65xx.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/spi/spi-meson-spicc.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/drivers/spi/spi-mt65xx.c
-+++ b/drivers/spi/spi-mt65xx.c
-@@ -498,7 +498,7 @@ static irqreturn_t mtk_spi_interrupt(int
- 	else
- 		mdata->state = MTK_SPI_IDLE;
+--- a/drivers/spi/spi-meson-spicc.c
++++ b/drivers/spi/spi-meson-spicc.c
+@@ -529,6 +529,11 @@ static int meson_spicc_probe(struct plat
+ 	writel_relaxed(0, spicc->base + SPICC_INTREG);
  
--	if (!master->can_dma(master, master->cur_msg->spi, trans)) {
-+	if (!master->can_dma(master, NULL, trans)) {
- 		if (trans->rx_buf) {
- 			cnt = mdata->xfer_len / 4;
- 			ioread32_rep(mdata->base + SPI_RX_DATA_REG,
+ 	irq = platform_get_irq(pdev, 0);
++	if (irq < 0) {
++		ret = irq;
++		goto out_master;
++	}
++
+ 	ret = devm_request_irq(&pdev->dev, irq, meson_spicc_irq,
+ 			       0, NULL, spicc);
+ 	if (ret) {
 
 
