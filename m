@@ -2,110 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5E95C35270
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F5B8C4167E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 05:56:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350540AbiBGFwp (ORCPT
+        id S1350123AbiBGFwg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 00:52:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45950 "EHLO
+        Mon, 7 Feb 2022 00:52:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239559AbiBGE2S (ORCPT
+        with ESMTP id S1352033AbiBGErR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 23:28:18 -0500
-X-Greylist: delayed 122 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 20:28:17 PST
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 489A9C043181;
-        Sun,  6 Feb 2022 20:28:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1644208097; x=1675744097;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=fderG4Gz8z+WaznEGhLQ9NMtlL+AgXDhS7nYzmK/IC8=;
-  b=GI1IwDBcDB/T/wFTAbD3moQWyNUK4MgJ4LeQ2coHlliDaQW1vOZ+Idwd
-   cNkHNy6RaKe+Sft1eyw2stKts4Q3YIFKK14jP9Td/xFYEA++dgKPyRRIg
-   GeZvk8jKxAKYM/WnUOd4enFkKZ519/hCRvQKL/9JlnQhQiFnHwVY69ZP0
-   w=;
-Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 06 Feb 2022 20:26:14 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2022 20:26:13 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Sun, 6 Feb 2022 20:26:13 -0800
-Received: from ugoswami-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Sun, 6 Feb 2022 20:26:09 -0800
-From:   Udipto Goswami <quic_ugoswami@quicinc.com>
-To:     Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     Pratham Pratap <quic_ppratap@quicinc.com>,
-        Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
-        Jack Pham <quic_jackp@quicinc.com>,
-        Wesley Cheng <quic_wcheng@quicinc.com>,
-        Udipto Goswami <quic_ugoswami@quicinc.com>
-Subject: [PATCH] usb: dwc3: gadget: Prevent core from processing stale TRBs
-Date:   Mon, 7 Feb 2022 09:55:58 +0530
-Message-ID: <1644207958-18287-1-git-send-email-quic_ugoswami@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Sun, 6 Feb 2022 23:47:17 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDC69C043181;
+        Sun,  6 Feb 2022 20:47:16 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 5D4771F37F;
+        Mon,  7 Feb 2022 04:47:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1644209235; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=aJeimCLV8LLTUkUjAiRuHMND8QpvrJbpAXji1B8C5fw=;
+        b=eiXhvuURk6X3oyWXqxv/Z7XIKjVfwAB5btUvlgkYVv6xaYKcPvxlZPihlbJFkFb1vePjB9
+        oQEf/+ABDHHEGwAzoG11bbuQjSHu9PVN6qlAm+5QIm8FFLJov1f7iKbAHdf1Vl1Wr3z3eO
+        ZeEo9g0fSq0uP6ose9eVRKTW5PXVDR4=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1644209235;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=aJeimCLV8LLTUkUjAiRuHMND8QpvrJbpAXji1B8C5fw=;
+        b=SIQFoD9QKd0q3Ew15UnxNqGawIo+F+FJ8e2Bg6kfLHU/87iovD0eaiPVHn8ne9JzvZbe9k
+        whcYQiYZJgiLdYBw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 49A9B1330E;
+        Mon,  7 Feb 2022 04:47:12 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 5j58AVCkAGIcNQAAMHmgww
+        (envelope-from <neilb@suse.de>); Mon, 07 Feb 2022 04:47:12 +0000
+Subject: [PATCH 04/21] MM: reclaim mustn't enter FS for SWP_FS_OPS swap-space
+From:   NeilBrown <neilb@suse.de>
+To:     Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mark Hemment <markhemm@googlemail.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        David Howells <dhowells@redhat.com>
+Cc:     linux-nfs@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Date:   Mon, 07 Feb 2022 15:46:01 +1100
+Message-ID: <164420916113.29374.6507434037983544219.stgit@noble.brown>
+In-Reply-To: <164420889455.29374.17958998143835612560.stgit@noble.brown>
+References: <164420889455.29374.17958998143835612560.stgit@noble.brown>
+User-Agent: StGit/0.23
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With CPU re-ordering on write instructions, there might
-be a chance that the HWO is set before the TRB is updated
-with the new mapped buffer address.
-And in the case where core is processing a list of TRBs
-it is possible that it fetched the TRBs when the HWO is set
-but before the buffer address is updated.
-Prevent this by adding a memory barrier before the HWO
-is updated to ensure that the core always process the
-updated TRBs.
+If swap-out is using filesystem operations (SWP_FS_OPS), then it is not
+safe to enter the FS for reclaim.
+So only down-grade the requirement for swap pages to __GFP_IO after
+checking that SWP_FS_OPS are not being used.
 
-Fixes: f6bafc6a1c9 ("usb: dwc3: convert TRBs into bitshifts")
-Signed-off-by: Udipto Goswami <quic_ugoswami@quicinc.com>
+This makes the calculation of "may_enter_fs" slightly more complex, so
+move it into a separate function.  with that done, there is little value
+in maintaining the bool variable any more.  So replace the
+may_enter_fs variable with a may_enter_fs() function.  This removes any
+risk for the variable becoming out-of-date.
+
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: NeilBrown <neilb@suse.de>
 ---
-v1: For an ep the trbs can be reused, and if cpu re-ordering also
-takes place, there is a change that the HWO will get set even before
-the trb bpl/bph are updated which will lead controller to access a
-stale buffer address from the previous transactions.
+ mm/swap.h   |    8 ++++++++
+ mm/vmscan.c |   29 ++++++++++++++++++++---------
+ 2 files changed, 28 insertions(+), 9 deletions(-)
 
- drivers/usb/dwc3/gadget.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
-
-diff --git a/drivers/usb/dwc3/gadget.c b/drivers/usb/dwc3/gadget.c
-index 520031b..183b909 100644
---- a/drivers/usb/dwc3/gadget.c
-+++ b/drivers/usb/dwc3/gadget.c
-@@ -1291,6 +1291,19 @@ static void __dwc3_prepare_one_trb(struct dwc3_ep *dep, struct dwc3_trb *trb,
- 	if (usb_endpoint_xfer_bulk(dep->endpoint.desc) && dep->stream_capable)
- 		trb->ctrl |= DWC3_TRB_CTRL_SID_SOFN(stream_id);
+diff --git a/mm/swap.h b/mm/swap.h
+index 13e72a5023aa..5c676e55f288 100644
+--- a/mm/swap.h
++++ b/mm/swap.h
+@@ -47,6 +47,10 @@ struct page *swap_cluster_readahead(swp_entry_t entry, gfp_t flag,
+ struct page *swapin_readahead(swp_entry_t entry, gfp_t flag,
+ 			      struct vm_fault *vmf);
  
++static inline unsigned int page_swap_flags(struct page *page)
++{
++	return page_swap_info(page)->flags;
++}
+ #else /* CONFIG_SWAP */
+ static inline int swap_readpage(struct page *page, bool do_poll)
+ {
+@@ -126,4 +130,8 @@ static inline void clear_shadow_from_swap_cache(int type, unsigned long begin,
+ {
+ }
+ 
++static inline unsigned int page_swap_flags(struct page *page)
++{
++	return 0;
++}
+ #endif /* CONFIG_SWAP */
+diff --git a/mm/vmscan.c b/mm/vmscan.c
+index 5c734ffc6057..ad5026d06aa8 100644
+--- a/mm/vmscan.c
++++ b/mm/vmscan.c
+@@ -1506,6 +1506,22 @@ static unsigned int demote_page_list(struct list_head *demote_pages,
+ 	return nr_succeeded;
+ }
+ 
++static bool may_enter_fs(struct page *page, gfp_t gfp_mask)
++{
++	if (gfp_mask & __GFP_FS)
++		return true;
++	if (!PageSwapCache(page) || !(gfp_mask & __GFP_IO))
++		return false;
 +	/*
-+	 * As per data book 4.2.3.2TRB Control Bit Rules section
-+	 *
-+	 * The controller autonomously checks the HWO field of a TRB to determine if the
-+	 * entire TRB is valid. Therefore, software must ensure that the rest of the TRB
-+	 * is valid before setting the HWO field to '1'. In most systems, this means that
-+	 * software must update the fourth DWORD of a TRB last.
-+	 *
-+	 * However there is a possibility of CPU re-ordering here which can cause
-+	 * controller to observe the HWO bit set prematurely.
-+	 * Add a write memory barrier to prevent CPU re-ordering.
++	 * We can "enter_fs" for swap-cache with only __GFP_IO
++	 * providing this isn't SWP_FS_OPS.
++	 * ->flags can be updated non-atomicially (scan_swap_map_slots),
++	 * but that will never affect SWP_FS_OPS, so the data_race
++	 * is safe.
 +	 */
-+	wmb();
- 	trb->ctrl |= DWC3_TRB_CTRL_HWO;
++	return !data_race(page_swap_flags(page) & SWP_FS_OPS);
++}
++
+ /*
+  * shrink_page_list() returns the number of reclaimed pages
+  */
+@@ -1531,7 +1547,7 @@ static unsigned int shrink_page_list(struct list_head *page_list,
+ 		struct address_space *mapping;
+ 		struct page *page;
+ 		enum page_references references = PAGEREF_RECLAIM;
+-		bool dirty, writeback, may_enter_fs;
++		bool dirty, writeback;
+ 		unsigned int nr_pages;
  
- 	dwc3_ep_inc_enq(dep);
--- 
-2.7.4
+ 		cond_resched();
+@@ -1555,9 +1571,6 @@ static unsigned int shrink_page_list(struct list_head *page_list,
+ 		if (!sc->may_unmap && page_mapped(page))
+ 			goto keep_locked;
+ 
+-		may_enter_fs = (sc->gfp_mask & __GFP_FS) ||
+-			(PageSwapCache(page) && (sc->gfp_mask & __GFP_IO));
+-
+ 		/*
+ 		 * The number of dirty pages determines if a node is marked
+ 		 * reclaim_congested. kswapd will stall and start writing
+@@ -1602,7 +1615,7 @@ static unsigned int shrink_page_list(struct list_head *page_list,
+ 		 *    not to fs). In this case mark the page for immediate
+ 		 *    reclaim and continue scanning.
+ 		 *
+-		 *    Require may_enter_fs because we would wait on fs, which
++		 *    Require may_enter_fs() because we would wait on fs, which
+ 		 *    may not have submitted IO yet. And the loop driver might
+ 		 *    enter reclaim, and deadlock if it waits on a page for
+ 		 *    which it is needed to do the write (loop masks off
+@@ -1634,7 +1647,7 @@ static unsigned int shrink_page_list(struct list_head *page_list,
+ 
+ 			/* Case 2 above */
+ 			} else if (writeback_throttling_sane(sc) ||
+-			    !PageReclaim(page) || !may_enter_fs) {
++			    !PageReclaim(page) || !may_enter_fs(page, sc->gfp_mask)) {
+ 				/*
+ 				 * This is slightly racy - end_page_writeback()
+ 				 * might have just cleared PageReclaim, then
+@@ -1724,8 +1737,6 @@ static unsigned int shrink_page_list(struct list_head *page_list,
+ 						goto activate_locked_split;
+ 				}
+ 
+-				may_enter_fs = true;
+-
+ 				/* Adding to swap updated mapping */
+ 				mapping = page_mapping(page);
+ 			}
+@@ -1795,7 +1806,7 @@ static unsigned int shrink_page_list(struct list_head *page_list,
+ 
+ 			if (references == PAGEREF_RECLAIM_CLEAN)
+ 				goto keep_locked;
+-			if (!may_enter_fs)
++			if (!may_enter_fs(page, sc->gfp_mask))
+ 				goto keep_locked;
+ 			if (!sc->may_writepage)
+ 				goto keep_locked;
+
 
