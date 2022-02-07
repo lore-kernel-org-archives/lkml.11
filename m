@@ -2,260 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 620DFC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 07:00:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBD25C4167E
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 07:00:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239513AbiBGG5x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 01:57:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41926 "EHLO
+        id S240437AbiBGG6M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 01:58:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357835AbiBGGoU (ORCPT
+        with ESMTP id S229761AbiBGGpJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 01:44:20 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 363C6C043187
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 22:44:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644216260; x=1675752260;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=6WtSTQdjRD4wi8NPB/wH0EeILHtZl3dydvFj3GNNpHk=;
-  b=NN1f/sPU7usXw7MPT8L/xf2ghf2katrlmVLV9jMGZA8jsLc/nZv3e6XS
-   wm46sgJ+PQdCK1gTtNRtG9VUVDpML+NG3l0lM08d4Vh5XrplyWrkgwAdf
-   2DlqqH0LTjvuxIfD0HlO677bXEUNkuVOG6vP9AH0J0IeoZ0FFEGL/YVKP
-   WdQ8wDHDHCjIM7BM2usf2NRGa89gZ2sNohWyx6i6LbMaovynBEgJQ1hjR
-   CLU7Hxrv69BWoZtZ9KbCkeXc+Gj2ZFrrUvOVupy/RhKwnets5KtyWqL9M
-   37h9i8zfREJ7a67sOCQ2XIXEXXpmjDIRAeZWqqNq8sSTX/2jboFAd69NB
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="273171187"
-X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
-   d="scan'208";a="273171187"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2022 22:43:18 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
-   d="scan'208";a="525020280"
-Received: from allen-box.sh.intel.com ([10.239.159.118])
-  by orsmga007.jf.intel.com with ESMTP; 06 Feb 2022 22:43:15 -0800
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-To:     Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Liu Yi L <yi.l.liu@intel.com>,
-        Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc:     Robin Murphy <robin.murphy@arm.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@lst.de>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-        Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v1 06/10] iommu/vt-d: Remove DEFER_DEVICE_DOMAIN_INFO
-Date:   Mon,  7 Feb 2022 14:41:38 +0800
-Message-Id: <20220207064142.1092846-7-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220207064142.1092846-1-baolu.lu@linux.intel.com>
-References: <20220207064142.1092846-1-baolu.lu@linux.intel.com>
+        Mon, 7 Feb 2022 01:45:09 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E485FC043184
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 22:45:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=hjWf60JMAVQJhgmfPlSAZ5+/ceseer8Z60uDPAGgkAM=; b=pXzzk49YMnKOxHpmbc1xBRgNAL
+        Ujjdd1Q+r1Gjl7lGPov+1N+OOEbrvHtVbAfEyYQO77jxzH84Ia7qA1WQoF9TDMvc9LrfuFSjMzG6i
+        6VbmkrhCNvBRqB2CwPGbKMZ3ctisrbKiSjrk3dEGRuBe2APNAlNgfzCxU3OIlk3eBAhCB5n9CbM5b
+        Lj49nzeWXJ1EfaM10qescnIfoa8ioXZuDLSRk5Ezh84PAUtgDgGcDB3qotgIrnPIBlEQ6ukIf/VRX
+        4G1lvmG8+Ujb3sn2am0knaGYQD+j5rHpvnwNCpFVlcftMRoVJJ09VwRuennleFVgZt60ASDVTbkHQ
+        kAtwVylw==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nGxlq-009B91-SM; Mon, 07 Feb 2022 06:45:06 +0000
+Date:   Sun, 6 Feb 2022 22:45:06 -0800
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Stafford Horne <shorne@gmail.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>, Jonas Bonn <jonas@southpole.se>,
+        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        openrisc@lists.librecores.org
+Subject: Re: [PATCH] openrisc: remove CONFIG_SET_FS
+Message-ID: <YgC/8ng5WX6Nt104@infradead.org>
+References: <20220206013648.3491865-1-shorne@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220206013648.3491865-1-shorne@gmail.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Allocate and set the per-device iommu private data during iommu device
-probe. Add a flag to indicate whether default domain attachment is
-deferred. With this refactoring, the dummy DEFER_DEVICE_DOMAIN_INFO
-pointer is removed.
+On Sun, Feb 06, 2022 at 10:36:47AM +0900, Stafford Horne wrote:
+> Remove the address space override API set_fs() used for User Mode Linux.
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/iommu.c | 122 +++++++++++++++---------------------
- 1 file changed, 51 insertions(+), 71 deletions(-)
+This ain't UML :)
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 185aa38df602..165c890b8304 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -309,19 +309,9 @@ static int iommu_skip_te_disable;
- int intel_iommu_gfx_mapped;
- EXPORT_SYMBOL_GPL(intel_iommu_gfx_mapped);
- 
--#define DEFER_DEVICE_DOMAIN_INFO ((struct device_domain_info *)(-2))
- struct device_domain_info *get_domain_info(struct device *dev)
- {
--	struct device_domain_info *info;
--
--	if (!dev)
--		return NULL;
--
--	info = dev_iommu_priv_get(dev);
--	if (unlikely(info == DEFER_DEVICE_DOMAIN_INFO))
--		return NULL;
--
--	return info;
-+	return dev_iommu_priv_get(dev);
- }
- 
- DEFINE_SPINLOCK(device_domain_lock);
-@@ -708,11 +698,6 @@ struct context_entry *iommu_context_addr(struct intel_iommu *iommu, u8 bus,
- 	return &context[devfn];
- }
- 
--static bool attach_deferred(struct device *dev)
--{
--	return dev_iommu_priv_get(dev) == DEFER_DEVICE_DOMAIN_INFO;
--}
--
- /**
-  * is_downstream_to_pci_bridge - test if a device belongs to the PCI
-  *				 sub-hierarchy of a candidate PCI-PCI bridge
-@@ -2426,9 +2411,6 @@ struct dmar_domain *find_domain(struct device *dev)
- 	if (unlikely(!dev || !dev->iommu))
- 		return NULL;
- 
--	if (unlikely(attach_deferred(dev)))
--		return NULL;
--
- 	/* No lock here, assumes no domain exit in normal case */
- 	info = get_domain_info(dev);
- 	if (likely(info))
-@@ -2497,66 +2479,20 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
- 						    struct device *dev,
- 						    struct dmar_domain *domain)
- {
--	struct device_domain_info *info;
-+	struct device_domain_info *info = get_domain_info(dev);
- 	unsigned long flags;
- 	int ret;
- 
--	info = kzalloc(sizeof(*info), GFP_KERNEL);
--	if (!info)
--		return NULL;
--
--	if (!dev_is_real_dma_subdevice(dev)) {
--		info->bus = bus;
--		info->devfn = devfn;
--		info->segment = iommu->segment;
--	} else {
--		struct pci_dev *pdev = to_pci_dev(dev);
--
--		info->bus = pdev->bus->number;
--		info->devfn = pdev->devfn;
--		info->segment = pci_domain_nr(pdev->bus);
--	}
--
--	info->dev = dev;
--	info->domain = domain;
--	info->iommu = iommu;
--
--	if (dev && dev_is_pci(dev)) {
--		struct pci_dev *pdev = to_pci_dev(info->dev);
--
--		if (ecap_dev_iotlb_support(iommu->ecap) &&
--		    pci_ats_supported(pdev) &&
--		    dmar_find_matched_atsr_unit(pdev))
--			info->ats_supported = 1;
--
--		if (sm_supported(iommu)) {
--			if (pasid_supported(iommu)) {
--				int features = pci_pasid_features(pdev);
--				if (features >= 0)
--					info->pasid_supported = features | 1;
--			}
--
--			if (info->ats_supported && ecap_prs(iommu->ecap) &&
--			    pci_pri_supported(pdev))
--				info->pri_supported = 1;
--		}
--	}
--
- 	spin_lock_irqsave(&device_domain_lock, flags);
-+	info->domain = domain;
- 	spin_lock(&iommu->lock);
- 	ret = domain_attach_iommu(domain, iommu);
- 	spin_unlock(&iommu->lock);
--
- 	if (ret) {
- 		spin_unlock_irqrestore(&device_domain_lock, flags);
--		kfree(info);
- 		return NULL;
- 	}
--
- 	list_add(&info->link, &domain->devices);
--	list_add(&info->global, &device_domain_list);
--	if (dev)
--		dev_iommu_priv_set(dev, info);
- 	spin_unlock_irqrestore(&device_domain_lock, flags);
- 
- 	/* PASID table is mandatory for a PCI device in scalable mode. */
-@@ -4405,14 +4341,56 @@ static bool intel_iommu_capable(enum iommu_cap cap)
- 
- static struct iommu_device *intel_iommu_probe_device(struct device *dev)
- {
-+	struct pci_dev *pdev = dev_is_pci(dev) ? to_pci_dev(dev) : NULL;
-+	struct device_domain_info *info;
- 	struct intel_iommu *iommu;
-+	unsigned long flags;
-+	u8 bus, devfn;
- 
--	iommu = device_to_iommu(dev, NULL, NULL);
-+	iommu = device_to_iommu(dev, &bus, &devfn);
- 	if (!iommu)
- 		return ERR_PTR(-ENODEV);
- 
--	if (translation_pre_enabled(iommu))
--		dev_iommu_priv_set(dev, DEFER_DEVICE_DOMAIN_INFO);
-+	info = kzalloc(sizeof(*info), GFP_KERNEL);
-+	if (!info)
-+		return ERR_PTR(-ENOMEM);
-+
-+	if (dev_is_real_dma_subdevice(dev)) {
-+		info->bus = pdev->bus->number;
-+		info->devfn = pdev->devfn;
-+		info->segment = pci_domain_nr(pdev->bus);
-+	} else {
-+		info->bus = bus;
-+		info->devfn = devfn;
-+		info->segment = iommu->segment;
-+	}
-+
-+	info->dev = dev;
-+	info->iommu = iommu;
-+	if (dev_is_pci(dev)) {
-+		if (ecap_dev_iotlb_support(iommu->ecap) &&
-+		    pci_ats_supported(pdev) &&
-+		    dmar_find_matched_atsr_unit(pdev))
-+			info->ats_supported = 1;
-+
-+		if (sm_supported(iommu)) {
-+			if (pasid_supported(iommu)) {
-+				int features = pci_pasid_features(pdev);
-+
-+				if (features >= 0)
-+					info->pasid_supported = features | 1;
-+			}
-+
-+			if (info->ats_supported && ecap_prs(iommu->ecap) &&
-+			    pci_pri_supported(pdev))
-+				info->pri_supported = 1;
-+		}
-+	}
-+
-+	spin_lock_irqsave(&device_domain_lock, flags);
-+	list_add(&info->global, &device_domain_list);
-+	dev_iommu_priv_set(dev, info);
-+	spin_unlock_irqrestore(&device_domain_lock, flags);
- 
- 	return &iommu->iommu;
- }
-@@ -4635,7 +4613,9 @@ intel_iommu_dev_disable_feat(struct device *dev, enum iommu_dev_features feat)
- 
- static bool intel_iommu_is_attach_deferred(struct device *dev)
- {
--	return attach_deferred(dev);
-+	struct device_domain_info *info = get_domain_info(dev);
-+
-+	return translation_pre_enabled(info->iommu) && !info->domain;
- }
- 
- /*
--- 
-2.25.1
+> +	return size <= TASK_SIZE && addr <= (TASK_SIZE - size);
 
+No need for the inner braces.
