@@ -2,257 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E6B7C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96CBFC43217
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:13:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351495AbiBGNLA (ORCPT
+        id S1377370AbiBGNLK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:11:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48188 "EHLO
+        Mon, 7 Feb 2022 08:11:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445598AbiBGMmS (ORCPT
+        with ESMTP id S1353403AbiBGNFN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 07:42:18 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D0BBE033DB0;
-        Mon,  7 Feb 2022 04:33:57 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id BBE201F386;
-        Mon,  7 Feb 2022 12:18:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1644236292; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=LOAZl+X1cH+/PE8PnJNA97WZ/FEmmtdAOX5J155V/GY=;
-        b=R8vHFitE3/0c2+aGokRHHqIecoBd082bURHw791MAgCrpS+qdVLAID/ocEGvCoGhMecpAz
-        8vZtgPllVDkkTehtIMbSCysfFSrc9ShUVS4/eJouxWbDJ06PWi1EEGxlqdAAHmc6Siwwl3
-        6vp3aC0jiKvBudbRtwu0d5OAVauMN5M=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 97D9113BBC;
-        Mon,  7 Feb 2022 12:18:12 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 2KeSJAQOAWLMegAAMHmgww
-        (envelope-from <mkoutny@suse.com>); Mon, 07 Feb 2022 12:18:12 +0000
-From:   =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>
-To:     Eric Biederman <ebiederm@xmission.com>,
-        Alexey Gladkov <legion@kernel.org>
-Cc:     Kees Cook <keescook@chromium.org>, Shuah Khan <shuah@kernel.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Solar Designer <solar@openwall.com>,
-        Ran Xiaokai <ran.xiaokai@zte.com.cn>,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        Linux Containers <containers@lists.linux-foundation.org>
-Subject: [RFC PATCH 2/6] set*uid: Check RLIMIT_PROC against new credentials
-Date:   Mon,  7 Feb 2022 13:17:56 +0100
-Message-Id: <20220207121800.5079-3-mkoutny@suse.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220207121800.5079-1-mkoutny@suse.com>
-References: <20220207121800.5079-1-mkoutny@suse.com>
+        Mon, 7 Feb 2022 08:05:13 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D7D8C0401D2;
+        Mon,  7 Feb 2022 05:05:04 -0800 (PST)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 217BaCje024832;
+        Mon, 7 Feb 2022 13:05:03 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=9reA5PYbVXOY4Il5UEVRVO7g9nR9yFNlpSR7fCxMI7U=;
+ b=c7fc1zI8s5tgeRjQ+Bs+S+Ljfm81Ugmc7cOspG4a9lysRqflAbYKIXj7tdKrQ/zMPnXe
+ tGelKktw0wevQo43+T2T0+FrQe1z4ZJWDdjYSLCvQM89Qwq5tJsuPeZ6KPgf6GxHJEkk
+ tRMKEt34xc4r9N5HdEaONmduwt+ia98q/h0XmfwG2LaHKJhpac7K4sf7KtmMluNtKLmu
+ wwv9oKAEdHQ84sTXrR+p+E7VSKnh1GE2+srgTCqLKqZMolPh0FcGvjgh0RpOrwlnx1Vx
+ fUnP/6w7QzBVUdZ+QDR/FVwwTFoqytNKGpWxD7nbsXo30QmWTCvntlMkXoLYTe4QRKPg ig== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e22tqkxgg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 13:05:03 +0000
+Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 217D0Hkl012466;
+        Mon, 7 Feb 2022 13:05:03 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e22tqkxfm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 13:05:03 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 217CwHxL012846;
+        Mon, 7 Feb 2022 13:05:00 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma04ams.nl.ibm.com with ESMTP id 3e1gv8vkbh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 13:05:00 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 217D4u7s30867896
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 7 Feb 2022 13:04:56 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 81EC1A4070;
+        Mon,  7 Feb 2022 13:04:56 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 94252A406D;
+        Mon,  7 Feb 2022 13:04:55 +0000 (GMT)
+Received: from [9.171.90.80] (unknown [9.171.90.80])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon,  7 Feb 2022 13:04:55 +0000 (GMT)
+Message-ID: <9a186055-2637-0113-18be-ab08b5db1c74@linux.ibm.com>
+Date:   Mon, 7 Feb 2022 14:04:55 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3 30/30] MAINTAINERS: additional files related kvm s390
+ pci passthrough
+Content-Language: en-US
+To:     Matthew Rosato <mjrosato@linux.ibm.com>, linux-s390@vger.kernel.org
+Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
+        schnelle@linux.ibm.com, farman@linux.ibm.com, pmorel@linux.ibm.com,
+        hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        frankja@linux.ibm.com, david@redhat.com, imbrenda@linux.ibm.com,
+        vneethv@linux.ibm.com, oberpar@linux.ibm.com, freude@linux.ibm.com,
+        thuth@redhat.com, pasic@linux.ibm.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Christian Borntraeger <borntraeger@de.ibm.com>
+References: <20220204211536.321475-1-mjrosato@linux.ibm.com>
+ <20220204211536.321475-31-mjrosato@linux.ibm.com>
+From:   Christian Borntraeger <borntraeger@linux.ibm.com>
+In-Reply-To: <20220204211536.321475-31-mjrosato@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: URjhQ3veZQwwF_Mw6-Jw4d08Ttlhjew-
+X-Proofpoint-GUID: BdCsKKWGCe2pWYq6U14wyGqQzTRWGCp9
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-07_05,2022-02-07_02,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 mlxlogscore=999
+ impostorscore=0 phishscore=0 suspectscore=0 malwarescore=0 mlxscore=0
+ spamscore=0 priorityscore=1501 clxscore=1015 bulkscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202070085
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The generic idea is that not even root or capable user can force an
-unprivileged user's limit breach. (For historical and security reasons
-this check is postponed from set*uid to execve.) During the switch the
-resource consumption of target the user has to be checked. The commits
-905ae01c4ae2 ("Add a reference to ucounts for each cred") and
-21d1c5e386bc ("Reimplement RLIMIT_NPROC on top of ucounts") made the
-check in set_user() look at the old user's consumption.
 
-This version of the fix simply moves the check to the place where the
-actual switch of the accounting structure happens -- set_cred_ucounts().
 
-The other callers are kept without the check but with the per-userns
-accounting they may be newly subject to the check too.
-The set_cred_ucounts() becomes inconsistent since task->flags are
-passed by the caller but task_rlimit() is implicitly `current`'s, this
-patch is meant to illustrate the issue, nicer implementation is
-possible.
+Am 04.02.22 um 22:15 schrieb Matthew Rosato:
+> Add entries from the s390 kvm subdirectory related to pci passthrough.
+> 
+> Acked-by: Christian Borntraeger <borntraeger@de.ibm.com>
 
-Fixes: 21d1c5e386bc ("Reimplement RLIMIT_NPROC on top of ucounts")
-Signed-off-by: Michal Koutný <mkoutny@suse.com>
----
- fs/exec.c               |  2 +-
- include/linux/cred.h    |  2 +-
- kernel/cred.c           | 24 +++++++++++++++++++++---
- kernel/fork.c           |  2 +-
- kernel/sys.c            | 21 +++------------------
- kernel/user_namespace.c |  2 +-
- 6 files changed, 28 insertions(+), 25 deletions(-)
 
-diff --git a/fs/exec.c b/fs/exec.c
-index fc598c2652b2..e759e42c61da 100644
---- a/fs/exec.c
-+++ b/fs/exec.c
-@@ -1363,7 +1363,7 @@ int begin_new_exec(struct linux_binprm * bprm)
- 	WRITE_ONCE(me->self_exec_id, me->self_exec_id + 1);
- 	flush_signal_handlers(me, 0);
- 
--	retval = set_cred_ucounts(bprm->cred);
-+	retval = set_cred_ucounts(bprm->cred, NULL);
- 	if (retval < 0)
- 		goto out_unlock;
- 
-diff --git a/include/linux/cred.h b/include/linux/cred.h
-index fcbc6885cc09..455525ab380d 100644
---- a/include/linux/cred.h
-+++ b/include/linux/cred.h
-@@ -170,7 +170,7 @@ extern int set_security_override_from_ctx(struct cred *, const char *);
- extern int set_create_files_as(struct cred *, struct inode *);
- extern int cred_fscmp(const struct cred *, const struct cred *);
- extern void __init cred_init(void);
--extern int set_cred_ucounts(struct cred *);
-+extern int set_cred_ucounts(struct cred *, unsigned int *);
- 
- /*
-  * check for validity of credentials
-diff --git a/kernel/cred.c b/kernel/cred.c
-index 473d17c431f3..791cab70b764 100644
---- a/kernel/cred.c
-+++ b/kernel/cred.c
-@@ -370,7 +370,7 @@ int copy_creds(struct task_struct *p, unsigned long clone_flags)
- 		ret = create_user_ns(new);
- 		if (ret < 0)
- 			goto error_put;
--		ret = set_cred_ucounts(new);
-+		ret = set_cred_ucounts(new, NULL);
- 		if (ret < 0)
- 			goto error_put;
- 	}
-@@ -492,7 +492,7 @@ int commit_creds(struct cred *new)
- 
- 	/* do it
- 	 * RLIMIT_NPROC limits on user->processes have already been checked
--	 * in set_user().
-+	 * in set_cred_ucounts().
- 	 */
- 	alter_cred_subscribers(new, 2);
- 	if (new->user != old->user || new->user_ns != old->user_ns)
-@@ -663,7 +663,7 @@ int cred_fscmp(const struct cred *a, const struct cred *b)
- }
- EXPORT_SYMBOL(cred_fscmp);
- 
--int set_cred_ucounts(struct cred *new)
-+int set_cred_ucounts(struct cred *new, unsigned int *nproc_flags)
- {
- 	struct task_struct *task = current;
- 	const struct cred *old = task->real_cred;
-@@ -685,6 +685,24 @@ int set_cred_ucounts(struct cred *new)
- 	new->ucounts = new_ucounts;
- 	put_ucounts(old_ucounts);
- 
-+	if (!nproc_flags)
-+		return 0;
-+
-+	/*
-+	 * We don't fail in case of NPROC limit excess here because too many
-+	 * poorly written programs don't check set*uid() return code, assuming
-+	 * it never fails if called by root.  We may still enforce NPROC limit
-+	 * for programs doing set*uid()+execve() by harmlessly deferring the
-+	 * failure to the execve() stage.
-+	 */
-+	if (ucounts_limit_cmp(new->ucounts, UCOUNT_RLIMIT_NPROC, rlimit(RLIMIT_NPROC)) >= 0 &&
-+			new->user != INIT_USER &&
-+			!security_capable(new, &init_user_ns, CAP_SYS_RESOURCE, CAP_OPT_NONE) &&
-+			!security_capable(new, &init_user_ns, CAP_SYS_ADMIN, CAP_OPT_NONE))
-+		*nproc_flags |= PF_NPROC_EXCEEDED;
-+	else
-+		*nproc_flags &= ~PF_NPROC_EXCEEDED;
-+
- 	return 0;
- }
- 
-diff --git a/kernel/fork.c b/kernel/fork.c
-index 7cb21a70737d..a4005c679d29 100644
---- a/kernel/fork.c
-+++ b/kernel/fork.c
-@@ -3051,7 +3051,7 @@ int ksys_unshare(unsigned long unshare_flags)
- 		goto bad_unshare_cleanup_cred;
- 
- 	if (new_cred) {
--		err = set_cred_ucounts(new_cred);
-+		err = set_cred_ucounts(new_cred, NULL);
- 		if (err)
- 			goto bad_unshare_cleanup_cred;
- 	}
-diff --git a/kernel/sys.c b/kernel/sys.c
-index 48c90dcceff3..4e4eea30e235 100644
---- a/kernel/sys.c
-+++ b/kernel/sys.c
-@@ -472,21 +472,6 @@ static int set_user(struct cred *new)
- 	if (!new_user)
- 		return -EAGAIN;
- 
--	/*
--	 * We don't fail in case of NPROC limit excess here because too many
--	 * poorly written programs don't check set*uid() return code, assuming
--	 * it never fails if called by root.  We may still enforce NPROC limit
--	 * for programs doing set*uid()+execve() by harmlessly deferring the
--	 * failure to the execve() stage.
--	 */
--	if (ucounts_limit_cmp(new->ucounts, UCOUNT_RLIMIT_NPROC, rlimit(RLIMIT_NPROC)) >= 0 &&
--			new_user != INIT_USER &&
--			!security_capable(new, &init_user_ns, CAP_SYS_RESOURCE, CAP_OPT_NONE) &&
--			!security_capable(new, &init_user_ns, CAP_SYS_ADMIN, CAP_OPT_NONE))
--		current->flags |= PF_NPROC_EXCEEDED;
--	else
--		current->flags &= ~PF_NPROC_EXCEEDED;
--
- 	free_uid(new->user);
- 	new->user = new_user;
- 	return 0;
-@@ -560,7 +545,7 @@ long __sys_setreuid(uid_t ruid, uid_t euid)
- 	if (retval < 0)
- 		goto error;
- 
--	retval = set_cred_ucounts(new);
-+	retval = set_cred_ucounts(new, &current->flags);
- 	if (retval < 0)
- 		goto error;
- 
-@@ -622,7 +607,7 @@ long __sys_setuid(uid_t uid)
- 	if (retval < 0)
- 		goto error;
- 
--	retval = set_cred_ucounts(new);
-+	retval = set_cred_ucounts(new, &current->flags);
- 	if (retval < 0)
- 		goto error;
- 
-@@ -701,7 +686,7 @@ long __sys_setresuid(uid_t ruid, uid_t euid, uid_t suid)
- 	if (retval < 0)
- 		goto error;
- 
--	retval = set_cred_ucounts(new);
-+	retval = set_cred_ucounts(new, &current->flags);
- 	if (retval < 0)
- 		goto error;
- 
-diff --git a/kernel/user_namespace.c b/kernel/user_namespace.c
-index 6b2e3ca7ee99..f7eec0b0233b 100644
---- a/kernel/user_namespace.c
-+++ b/kernel/user_namespace.c
-@@ -1344,7 +1344,7 @@ static int userns_install(struct nsset *nsset, struct ns_common *ns)
- 	put_user_ns(cred->user_ns);
- 	set_cred_user_ns(cred, get_user_ns(user_ns));
- 
--	if (set_cred_ucounts(cred) < 0)
-+	if (set_cred_ucounts(cred, NULL) < 0)
- 		return -EINVAL;
- 
- 	return 0;
--- 
-2.34.1
+Can you change that to  borntraeger@linux.ibm.com ?
 
+
+
+> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+> ---
+>   MAINTAINERS | 2 ++
+>   1 file changed, 2 insertions(+)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index bb83dcbcb619..2762295ad85e 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -16900,6 +16900,8 @@ M:	Eric Farman <farman@linux.ibm.com>
+>   L:	linux-s390@vger.kernel.org
+>   L:	kvm@vger.kernel.org
+>   S:	Supported
+> +F:	arch/s390/include/asm/kvm_pci.h
+> +F:	arch/s390/kvm/pci*
+>   F:	drivers/vfio/pci/vfio_pci_zdev.c
+>   F:	include/uapi/linux/vfio_zdev.h
+>   
