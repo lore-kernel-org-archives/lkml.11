@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 360B3C35278
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:44:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE887C4167D
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:45:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385668AbiBGLcF (ORCPT
+        id S1386661AbiBGLfR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:32:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33406 "EHLO
+        Mon, 7 Feb 2022 06:35:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382980AbiBGLVT (ORCPT
+        with ESMTP id S1384048AbiBGLYe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:21:19 -0500
+        Mon, 7 Feb 2022 06:24:34 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AAC6C0401E8;
-        Mon,  7 Feb 2022 03:20:56 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8DCAC043181;
+        Mon,  7 Feb 2022 03:24:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 64BFE6126D;
-        Mon,  7 Feb 2022 11:20:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38149C004E1;
-        Mon,  7 Feb 2022 11:20:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4719A6149B;
+        Mon,  7 Feb 2022 11:24:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5591CC004E1;
+        Mon,  7 Feb 2022 11:24:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232852;
-        bh=2K2GpP7nuqFATal9aoLAU6lo/neZKGJn0bBAFRix2cE=;
+        s=korg; t=1644233072;
+        bh=rG2zIR8em5dhqg9au0dA4l5hkYO7yd8NVH3Wp/6VZIs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZdJ/L2r74+2ED74WoYq28ckN7OxsTIoFhV54ehzbdDy/UpSwLrajy+YbUCvxlJfnO
-         CoLCaJ3QvotqdClKBQ7uCT7DFqFBCQHryIpZDfncqQTVUBN/zniuYdgafJ+ASAav/y
-         fqoJ6Vt8Iqsep7/v2DbKlpxyA/hxBcYqp6G4mioE=
+        b=1/f/038yMWN1n7bEb+jPr/xD4IqKXoCH7wxEVdrC4XZqmA72g5JsDAFZzov502E2I
+         1nRJAWvAQJ7bPxr4/R1S11x+RQLZiXoNsIdB+xaDTF12WNIHjzXaHLzyiNt3m02QuV
+         elxgskJZMS6SCOMlPm9s6irRKu2iJmtsWa3EljV4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christian Lachner <gladiac@gmail.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.10 12/74] ALSA: hda/realtek: Fix silent output on Gigabyte X570 Aorus Xtreme after reboot from Windows
-Date:   Mon,  7 Feb 2022 12:06:10 +0100
-Message-Id: <20220207103757.632250161@linuxfoundation.org>
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Subject: [PATCH 5.10 58/74] tools/resolve_btfids: Do not print any commands when building silently
+Date:   Mon,  7 Feb 2022 12:06:56 +0100
+Message-Id: <20220207103759.126287541@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.232676988@linuxfoundation.org>
 References: <20220207103757.232676988@linuxfoundation.org>
@@ -49,34 +49,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Lachner <gladiac@gmail.com>
+From: Nathan Chancellor <nathan@kernel.org>
 
-commit ea3541961376f733373839cc90493aafa8a7f733 upstream.
+commit 7f3bdbc3f13146eb9d07de81ea71f551587a384b upstream.
 
-This commit switches the Gigabyte X570 Aorus Xtreme from using the
-ALC1220_FIXUP_CLEVO_P950 to the ALC1220_FIXUP_GB_X570 quirk. This fixes
-the no-audio after reboot from windows problem.
+When building with 'make -s', there is some output from resolve_btfids:
 
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=205275
-Signed-off-by: Christian Lachner <gladiac@gmail.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220129113243.93068-4-gladiac@gmail.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+$ make -sj"$(nproc)" oldconfig prepare
+  MKDIR     .../tools/bpf/resolve_btfids/libbpf/
+  MKDIR     .../tools/bpf/resolve_btfids//libsubcmd
+  LINK     resolve_btfids
+
+Silent mode means that no information should be emitted about what is
+currently being done. Use the $(silent) variable from Makefile.include
+to avoid defining the msg macro so that there is no information printed.
+
+Fixes: fbbb68de80a4 ("bpf: Add resolve_btfids tool to resolve BTF IDs in ELF object")
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/bpf/20220201212503.731732-1-nathan@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_realtek.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/bpf/resolve_btfids/Makefile |    6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -2598,7 +2598,7 @@ static const struct snd_pci_quirk alc882
- 	SND_PCI_QUIRK(0x1458, 0xa002, "Gigabyte EP45-DS3/Z87X-UD3H", ALC889_FIXUP_FRONT_HP_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1458, 0xa0b8, "Gigabyte AZ370-Gaming", ALC1220_FIXUP_GB_DUAL_CODECS),
- 	SND_PCI_QUIRK(0x1458, 0xa0cd, "Gigabyte X570 Aorus Master", ALC1220_FIXUP_GB_X570),
--	SND_PCI_QUIRK(0x1458, 0xa0ce, "Gigabyte X570 Aorus Xtreme", ALC1220_FIXUP_CLEVO_P950),
-+	SND_PCI_QUIRK(0x1458, 0xa0ce, "Gigabyte X570 Aorus Xtreme", ALC1220_FIXUP_GB_X570),
- 	SND_PCI_QUIRK(0x1458, 0xa0d5, "Gigabyte X570S Aorus Master", ALC1220_FIXUP_GB_X570),
- 	SND_PCI_QUIRK(0x1462, 0x11f7, "MSI-GE63", ALC1220_FIXUP_CLEVO_P950),
- 	SND_PCI_QUIRK(0x1462, 0x1228, "MSI-GP63", ALC1220_FIXUP_CLEVO_P950),
+--- a/tools/bpf/resolve_btfids/Makefile
++++ b/tools/bpf/resolve_btfids/Makefile
+@@ -9,7 +9,11 @@ ifeq ($(V),1)
+   msg =
+ else
+   Q = @
+-  msg = @printf '  %-8s %s%s\n' "$(1)" "$(notdir $(2))" "$(if $(3), $(3))";
++  ifeq ($(silent),1)
++    msg =
++  else
++    msg = @printf '  %-8s %s%s\n' "$(1)" "$(notdir $(2))" "$(if $(3), $(3))";
++  endif
+   MAKEFLAGS=--no-print-directory
+ endif
+ 
 
 
