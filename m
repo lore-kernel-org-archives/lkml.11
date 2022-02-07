@@ -2,166 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 252F5C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4285DC4321E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 10:59:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352400AbiBGK4N (ORCPT
+        id S1352679AbiBGK4S (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 05:56:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37994 "EHLO
+        Mon, 7 Feb 2022 05:56:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345973AbiBGKtk (ORCPT
+        with ESMTP id S245274AbiBGKtY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 05:49:40 -0500
-X-Greylist: delayed 2922 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 02:49:39 PST
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6914C043181
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 02:49:39 -0800 (PST)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2179CZSj016591;
-        Mon, 7 Feb 2022 11:00:37 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=veZo0P/JfQdRJDIli6sGt4ZGDkxpZF8WrXm4WgcbFDs=;
- b=LyOM7OE32aQxV9zw7duuPrfrJldOPTSzvtdbO7khQHp6VH6nsQS/1nDO1hXbZLmJq3nw
- 7PsdcbDW2DruY7hmskH5TenmUVY9yx7uJ5i1DaUsAgLg+HOCJUkGv7VGwAMsVAtu4F96
- sCJ/nB5vp27U2qF3aQGMcKiyNcnqc+aDARpliHA9q4KtKmWvBpM2371vS0moSutXQlXv
- JD7nJX3nfnuqtwSrLyWpVfNb7yZ7m865ES71jT5FzTN6K3vYc11iMh0Vob87hfDscjJB
- 3OMPkL/dsoItJkdZBEb9HLlQ9rzsqz2u0jZF322OtUadHKol830UF6t/NX5nkfrXyXfN /w== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3e30kg08hy-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 11:00:37 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 5343C10002A;
-        Mon,  7 Feb 2022 11:00:35 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 3EFD9212FC5;
-        Mon,  7 Feb 2022 11:00:35 +0100 (CET)
-Received: from [10.129.7.146] (10.75.127.49) by SFHDAG2NODE2.st.com
- (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Mon, 7 Feb
- 2022 11:00:34 +0100
-Message-ID: <7bd0a0a9-4015-b54c-f745-f813496be61b@foss.st.com>
-Date:   Mon, 7 Feb 2022 11:00:34 +0100
+        Mon, 7 Feb 2022 05:49:24 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDC03C043189;
+        Mon,  7 Feb 2022 02:49:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644230963; x=1675766963;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=pWWmXFXMBugnQkDbE72PMjOeQFelu1Mt6Tc+LQ7BGNk=;
+  b=f/Mku7l5cfb9QT1Vzs2uGR5oosJuxrEll0zVxwhcfWKt/Gus+oOXGHzf
+   Mxlh7c72SwlWf71CX/gPObP7wqYPvMH/gzKZKlQ88V97m+ku2bOhT6sXJ
+   bZzXC+u332ZIGOZ5I32ZWQPMYdrlQeNW8cgrKtEgyLf4krPWqR4zzSjc5
+   f3fsi9hh2sWryyi6tfOA/xo0rBt5t3al8HtktQiycJINvjDyOI9ZBEFqT
+   VSAeZV0ArEvDbYqybgRk0Kce3rziGZ4aigQlQQClEJj6m6DQSLRPKfOVy
+   RbxwaD3WH2zZjqwQARof+A9FbkkYlROfnwYWllOK5+MH5Np3yerZ+8mRd
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="248902278"
+X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
+   d="scan'208";a="248902278"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 02:48:19 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
+   d="scan'208";a="481545300"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga003.jf.intel.com with ESMTP; 07 Feb 2022 02:48:17 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 692B93ED; Mon,  7 Feb 2022 12:48:32 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v2 2/3] iio: temperature: ltc2983: Use single error path to put OF node
+Date:   Mon,  7 Feb 2022 12:48:29 +0200
+Message-Id: <20220207104830.83882-2-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220207104830.83882-1-andriy.shevchenko@linux.intel.com>
+References: <20220207104830.83882-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 5/5] drm/stm: ltdc: add support of ycbcr pixel formats
-Content-Language: en-US
-To:     Nathan Chancellor <nathan@kernel.org>
-CC:     Philippe Cornu <philippe.cornu@foss.st.com>,
-        Raphael Gallais-Pou <raphael.gallais-pou@foss.st.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        <dri-devel@lists.freedesktop.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20211215214843.20703-1-yannick.fertre@foss.st.com>
- <Yfq3XwozrxYaFhgD@dev-arch.archlinux-ax161>
-From:   yannick Fertre <yannick.fertre@foss.st.com>
-In-Reply-To: <Yfq3XwozrxYaFhgD@dev-arch.archlinux-ax161>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.49]
-X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-07_03,2022-02-07_01,2021-12-02_01
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Nathan,
+There are several, possibly copied'n'pasted, places in the functions,
+where OF node is put and error returned directly, while the common
+exit point exists. Unify all these cases to use a single error path.
 
-On 2/2/22 17:54, Nathan Chancellor wrote:
-> Hi Yannick,
-> 
-> On Wed, Dec 15, 2021 at 10:48:43PM +0100, Yannick Fertre wrote:
->> This patch adds the following YCbCr input pixel formats on the latest
->> LTDC hardware version:
->>
->> 1 plane  (co-planar)  : YUYV, YVYU, UYVY, VYUY
->> 2 planes (semi-planar): NV12, NV21
->> 3 planes (full-planar): YU12=I420=DRM YUV420, YV12=DRM YVU420
->>
->> Signed-off-by: Yannick Fertre <yannick.fertre@foss.st.com>
-> 
-> <snip>
-> 
->> +static inline void ltdc_set_ycbcr_config(struct drm_plane *plane, u32 drm_pix_fmt)
->> +{
->> +	struct ltdc_device *ldev = plane_to_ltdc(plane);
->> +	struct drm_plane_state *state = plane->state;
->> +	u32 lofs = plane->index * LAY_OFS;
->> +	u32 val;
->> +
->> +	switch (drm_pix_fmt) {
->> +	case DRM_FORMAT_YUYV:
->> +		val = (YCM_I << 4) | LxPCR_YF | LxPCR_CBF;
->> +		break;
->> +	case DRM_FORMAT_YVYU:
->> +		val = (YCM_I << 4) | LxPCR_YF;
->> +		break;
->> +	case DRM_FORMAT_UYVY:
->> +		val = (YCM_I << 4) | LxPCR_CBF;
->> +		break;
->> +	case DRM_FORMAT_VYUY:
->> +		val = (YCM_I << 4);
->> +		break;
->> +	case DRM_FORMAT_NV12:
->> +		val = (YCM_SP << 4) | LxPCR_CBF;
->> +		break;
->> +	case DRM_FORMAT_NV21:
->> +		val = (YCM_SP << 4);
->> +		break;
->> +	case DRM_FORMAT_YUV420:
->> +	case DRM_FORMAT_YVU420:
->> +		val = (YCM_FP << 4);
->> +		break;
->> +	default:
->> +		/* RGB or not a YCbCr supported format */
->> +		break;
->> +	}
->> +
->> +	/* Enable limited range */
->> +	if (state->color_range == DRM_COLOR_YCBCR_LIMITED_RANGE)
->> +		val |= LxPCR_YREN;
->> +
->> +	/* enable ycbcr conversion */
->> +	val |= LxPCR_YCEN;
->> +
->> +	regmap_write(ldev->regmap, LTDC_L1PCR + lofs, val);
->> +}
-> 
-> This patch as commit 484e72d3146b ("drm/stm: ltdc: add support of ycbcr
-> pixel formats") in -next introduced the following clang warning:
-> 
-> drivers/gpu/drm/stm/ltdc.c:625:2: warning: variable 'val' is used uninitialized whenever switch default is taken [-Wsometimes-uninitialized]
->          default:
->          ^~~~~~~
-> drivers/gpu/drm/stm/ltdc.c:635:2: note: uninitialized use occurs here
->          val |= LxPCR_YCEN;
->          ^~~
-> drivers/gpu/drm/stm/ltdc.c:600:9: note: initialize the variable 'val' to silence this warning
->          u32 val;
->                 ^
->                  = 0
-> 1 warning generated.
-> 
-> Would it be okay to just return in the default case (maybe with a
-> message about an unsupported format?) or should there be another fix?
-> 
-> Cheers,
+Suggested-by: Jonathan Cameron <jic23@kernel.org>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+v2: new patch (Jonathan)
+ drivers/iio/temperature/ltc2983.c | 21 +++++++++++----------
+ 1 file changed, 11 insertions(+), 10 deletions(-)
 
+diff --git a/drivers/iio/temperature/ltc2983.c b/drivers/iio/temperature/ltc2983.c
+index d272c303c1b0..1a23ff223f21 100644
+--- a/drivers/iio/temperature/ltc2983.c
++++ b/drivers/iio/temperature/ltc2983.c
+@@ -653,8 +653,6 @@ static struct ltc2983_sensor *ltc2983_thermocouple_new(
+ 
+ 	phandle = of_parse_phandle(child, "adi,cold-junction-handle", 0);
+ 	if (phandle) {
+-		int ret;
+-
+ 		ret = of_property_read_u32(phandle, "reg",
+ 					   &thermo->cold_junction_chan);
+ 		if (ret) {
+@@ -663,8 +661,7 @@ static struct ltc2983_sensor *ltc2983_thermocouple_new(
+ 			 * the error right away.
+ 			 */
+ 			dev_err(&st->spi->dev, "Property reg must be given\n");
+-			of_node_put(phandle);
+-			return ERR_PTR(-EINVAL);
++			goto fail;
+ 		}
+ 	}
+ 
+@@ -676,8 +673,8 @@ static struct ltc2983_sensor *ltc2983_thermocouple_new(
+ 							     propname, false,
+ 							     16384, true);
+ 		if (IS_ERR(thermo->custom)) {
+-			of_node_put(phandle);
+-			return ERR_CAST(thermo->custom);
++			ret = PTR_ERR(thermo->custom);
++			goto fail;
+ 		}
+ 	}
+ 
+@@ -687,6 +684,10 @@ static struct ltc2983_sensor *ltc2983_thermocouple_new(
+ 
+ 	of_node_put(phandle);
+ 	return &thermo->sensor;
++
++fail:
++	of_node_put(phandle);
++	return ERR_PTR(ret);
+ }
+ 
+ static struct ltc2983_sensor *ltc2983_rtd_new(const struct device_node *child,
+@@ -803,8 +804,8 @@ static struct ltc2983_sensor *ltc2983_rtd_new(const struct device_node *child,
+ 							  "adi,custom-rtd",
+ 							  false, 2048, false);
+ 		if (IS_ERR(rtd->custom)) {
+-			of_node_put(phandle);
+-			return ERR_CAST(rtd->custom);
++			ret = PTR_ERR(rtd->custom);
++			goto fail;
+ 		}
+ 	}
+ 
+@@ -926,8 +927,8 @@ static struct ltc2983_sensor *ltc2983_thermistor_new(
+ 								 steinhart,
+ 								 64, false);
+ 		if (IS_ERR(thermistor->custom)) {
+-			of_node_put(phandle);
+-			return ERR_CAST(thermistor->custom);
++			ret = PTR_ERR(thermistor->custom);
++			goto fail;
+ 		}
+ 	}
+ 	/* set common parameters */
+-- 
+2.34.1
 
-Thanks for your help.
-It'okay for a message for unsupported format with a return in the 
-default case.
-Do you want create & push the patch?
-
-Best regards
