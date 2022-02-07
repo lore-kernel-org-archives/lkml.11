@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9749C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:19:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31C2CC43217
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:19:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377112AbiBGLPX (ORCPT
+        id S1377737AbiBGLPh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:15:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49540 "EHLO
+        Mon, 7 Feb 2022 06:15:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352110AbiBGLLw (ORCPT
+        with ESMTP id S1352941AbiBGLME (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:11:52 -0500
+        Mon, 7 Feb 2022 06:12:04 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11F4DC043188;
-        Mon,  7 Feb 2022 03:11:52 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAF2AC043181;
+        Mon,  7 Feb 2022 03:12:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A4CAA6113B;
-        Mon,  7 Feb 2022 11:11:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81607C004E1;
-        Mon,  7 Feb 2022 11:11:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 77A906113B;
+        Mon,  7 Feb 2022 11:12:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F0A4C004E1;
+        Mon,  7 Feb 2022 11:12:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232311;
-        bh=Vcyy/cmLPqFA7zBx2oZ50VqQZKrAlADhGuLNEobL6M0=;
+        s=korg; t=1644232322;
+        bh=Dr/oqwKZmKDG/VA5BzwU4pmOBq2enCPRaqg163lA1Ng=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dB3tlQC2pI88XH58i58VDynXZ7NnE6q0/HH/i5m3fKy61Aa80d/GAJO3NoW5jrjtF
-         bkeaMHBOLhWZSS9oHu8/3YwYNjyVxaOA+ym20uj/MGSPqZIBHu/HD4pSVaJDQN7IWE
-         GjlbRjG4ZN2rSmoELJPz/ZY4OuUx6+3I8ADplRuw=
+        b=es+1mmidnQ3ToH096x2eSdMhcZF02QccanfjVvpr06GzAmACncABsME/2X3F+6nRf
+         DWYq1SQOX+IZyxY/kdsKrWkaq0OdESv4QaLgPSNbLVgyvrcUuCZ6XkDpGYdfd4hm6t
+         j9XG4eehogeBseaWaBol5rVdRE2GxsOwqbNsmH0k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 36/69] ipv4: raw: lock the socket in raw_bind()
-Date:   Mon,  7 Feb 2022 12:05:58 +0100
-Message-Id: <20220207103756.812573501@linuxfoundation.org>
+        Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Vimal Agrawal <vimal.agrawal@sophos.com>
+Subject: [PATCH 4.14 40/69] netfilter: nat: limit port clash resolution attempts
+Date:   Mon,  7 Feb 2022 12:06:02 +0100
+Message-Id: <20220207103756.945579357@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103755.604121441@linuxfoundation.org>
 References: <20220207103755.604121441@linuxfoundation.org>
@@ -51,78 +50,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Florian Westphal <fw@strlen.de>
 
-[ Upstream commit 153a0d187e767c68733b8e9f46218eb1f41ab902 ]
+commit a504b703bb1da526a01593da0e4be2af9d9f5fa8 upstream.
 
-For some reason, raw_bind() forgot to lock the socket.
+In case almost or all available ports are taken, clash resolution can
+take a very long time, resulting in soft lockup.
 
-BUG: KCSAN: data-race in __ip4_datagram_connect / raw_bind
+This can happen when many to-be-natted hosts connect to same
+destination:port (e.g. a proxy) and all connections pass the same SNAT.
 
-write to 0xffff8881170d4308 of 4 bytes by task 5466 on cpu 0:
- raw_bind+0x1b0/0x250 net/ipv4/raw.c:739
- inet_bind+0x56/0xa0 net/ipv4/af_inet.c:443
- __sys_bind+0x14b/0x1b0 net/socket.c:1697
- __do_sys_bind net/socket.c:1708 [inline]
- __se_sys_bind net/socket.c:1706 [inline]
- __x64_sys_bind+0x3d/0x50 net/socket.c:1706
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+Pick a random offset in the acceptable range, then try ever smaller
+number of adjacent port numbers, until either the limit is reached or a
+useable port was found.  This results in at most 248 attempts
+(128 + 64 + 32 + 16 + 8, i.e. 4 restarts with new search offset)
+instead of 64000+,
 
-read to 0xffff8881170d4308 of 4 bytes by task 5468 on cpu 1:
- __ip4_datagram_connect+0xb7/0x7b0 net/ipv4/datagram.c:39
- ip4_datagram_connect+0x2a/0x40 net/ipv4/datagram.c:89
- inet_dgram_connect+0x107/0x190 net/ipv4/af_inet.c:576
- __sys_connect_file net/socket.c:1900 [inline]
- __sys_connect+0x197/0x1b0 net/socket.c:1917
- __do_sys_connect net/socket.c:1927 [inline]
- __se_sys_connect net/socket.c:1924 [inline]
- __x64_sys_connect+0x3d/0x50 net/socket.c:1924
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-value changed: 0x00000000 -> 0x0003007f
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 1 PID: 5468 Comm: syz-executor.5 Not tainted 5.17.0-rc1-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Vimal Agrawal <vimal.agrawal@sophos.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/raw.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ net/netfilter/nf_nat_proto_common.c |   29 +++++++++++++++++++++++------
+ 1 file changed, 23 insertions(+), 6 deletions(-)
 
-diff --git a/net/ipv4/raw.c b/net/ipv4/raw.c
-index 261a9813b88cd..9c4b2c0dc68ae 100644
---- a/net/ipv4/raw.c
-+++ b/net/ipv4/raw.c
-@@ -721,6 +721,7 @@ static int raw_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len)
- 	int ret = -EINVAL;
- 	int chk_addr_ret;
+--- a/net/netfilter/nf_nat_proto_common.c
++++ b/net/netfilter/nf_nat_proto_common.c
+@@ -40,9 +40,10 @@ void nf_nat_l4proto_unique_tuple(const s
+ 				 enum nf_nat_manip_type maniptype,
+ 				 const struct nf_conn *ct)
+ {
+-	unsigned int range_size, min, max, i;
++	unsigned int range_size, min, max, i, attempts;
+ 	__be16 *portptr;
+-	u_int16_t off;
++	u16 off;
++	static const unsigned int max_attempts = 128;
  
-+	lock_sock(sk);
- 	if (sk->sk_state != TCP_CLOSE || addr_len < sizeof(struct sockaddr_in))
- 		goto out;
+ 	if (maniptype == NF_NAT_MANIP_SRC)
+ 		portptr = &tuple->src.u.all;
+@@ -86,12 +87,28 @@ void nf_nat_l4proto_unique_tuple(const s
+ 		off = prandom_u32();
+ 	}
  
-@@ -740,7 +741,9 @@ static int raw_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len)
- 		inet->inet_saddr = 0;  /* Use device */
- 	sk_dst_reset(sk);
- 	ret = 0;
--out:	return ret;
-+out:
-+	release_sock(sk);
-+	return ret;
+-	for (i = 0; ; ++off) {
++	attempts = range_size;
++	if (attempts > max_attempts)
++		attempts = max_attempts;
++
++	/* We are in softirq; doing a search of the entire range risks
++	 * soft lockup when all tuples are already used.
++	 *
++	 * If we can't find any free port from first offset, pick a new
++	 * one and try again, with ever smaller search window.
++	 */
++another_round:
++	for (i = 0; i < attempts; i++, off++) {
+ 		*portptr = htons(min + off % range_size);
+-		if (++i != range_size && nf_nat_used_tuple(tuple, ct))
+-			continue;
+-		return;
++		if (!nf_nat_used_tuple(tuple, ct))
++			return;
+ 	}
++
++	if (attempts >= range_size || attempts < 16)
++		return;
++	attempts /= 2;
++	off = prandom_u32();
++	goto another_round;
  }
+ EXPORT_SYMBOL_GPL(nf_nat_l4proto_unique_tuple);
  
- /*
--- 
-2.34.1
-
 
 
