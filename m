@@ -2,76 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50968C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BF37C41535
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:52:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388814AbiBGNu1 (ORCPT
+        id S1388841AbiBGNua (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:50:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37132 "EHLO
+        Mon, 7 Feb 2022 08:50:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387675AbiBGNiC (ORCPT
+        with ESMTP id S1386900AbiBGNQo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 08:38:02 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5329EC0401D7
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 05:37:25 -0800 (PST)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JsnGv5RHjzbkFL;
-        Mon,  7 Feb 2022 21:36:23 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
- (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Mon, 7 Feb
- 2022 21:37:23 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <akpm@linux-foundation.org>
-CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        <linmiaohe@huawei.com>
-Subject: [PATCH 4/4] mm/memory_hotplug: fix misplaced comment in offline_pages
-Date:   Mon, 7 Feb 2022 21:36:43 +0800
-Message-ID: <20220207133643.23427-5-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20220207133643.23427-1-linmiaohe@huawei.com>
-References: <20220207133643.23427-1-linmiaohe@huawei.com>
+        Mon, 7 Feb 2022 08:16:44 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4698DC043188
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 05:16:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644239803; x=1675775803;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=NVBwUuQV6ckVxuAoKC8BjePGv50m0lO/JPE38dD/qM8=;
+  b=CmXvauUjZZbIIfNPVh+k0BShnTLGfzJRBMroGEeS9B/eHH8WlI5ze6V1
+   XWSHUThGTkaBVOqVd6SDF+BgB/CC++v8ILzLh5yzNVJuhPdw5pGAu1jUx
+   sbDWVyHAzSDrx11L7+mixrOcvih0NEPtVHFpdZFsxAz56poTYHznaCOg8
+   Szz/SWZRkXB7Rk57suxbpiB0Afni8J0+lU+WmTKd6Ium/OPtWATstyzXD
+   kbe45vRMYRhgN8jvkJ52kbey+CaLXvYtdz4/DPRqRUAJf8fLUuI+lpXYo
+   u2FZCWFXHMpqHNLavJCtoZTvZnHZUN8TEGQfHz4WXYHRO9nOKG5I8WOht
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="335115028"
+X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
+   d="scan'208";a="335115028"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 05:16:43 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
+   d="scan'208";a="770630442"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga006.fm.intel.com with ESMTP; 07 Feb 2022 05:16:41 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 8AB70509; Mon,  7 Feb 2022 15:16:56 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-kernel@vger.kernel.org
+Cc:     Rodolfo Giometti <giometti@enneenne.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [PATCH v3 1/1] pps: generators: pps_gen_parport: Switch to use module_parport_driver()
+Date:   Mon,  7 Feb 2022 15:16:52 +0200
+Message-Id: <20220207131652.13316-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It's misplaced since commit 7960509329c2 ("mm, memory_hotplug: print reason
-for the offlining failure"). Move it to the right place.
+Switch to use module_parport_driver() to reduce boilerplate code.
 
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Acked-by: Rodolfo Giometti <giometti@enneenne.com>
 ---
- mm/memory_hotplug.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+v3: added Ack (Rodolfo), Cc'ed to Greg for picking it up
+ drivers/pps/generators/pps_gen_parport.c | 42 ++++--------------------
+ 1 file changed, 7 insertions(+), 35 deletions(-)
 
-diff --git a/mm/memory_hotplug.c b/mm/memory_hotplug.c
-index 4b9eef861ee4..7dc7e12302db 100644
---- a/mm/memory_hotplug.c
-+++ b/mm/memory_hotplug.c
-@@ -1966,6 +1966,7 @@ int __ref offline_pages(unsigned long start_pfn, unsigned long nr_pages,
- 	return 0;
+diff --git a/drivers/pps/generators/pps_gen_parport.c b/drivers/pps/generators/pps_gen_parport.c
+index 6a1af7664f3b..fba6c490977c 100644
+--- a/drivers/pps/generators/pps_gen_parport.c
++++ b/drivers/pps/generators/pps_gen_parport.c
+@@ -20,8 +20,6 @@
+ #include <linux/hrtimer.h>
+ #include <linux/parport.h>
  
- failed_removal_isolated:
-+	/* pushback to free area */
- 	undo_isolate_page_range(start_pfn, end_pfn, MIGRATE_MOVABLE);
- 	memory_notify(MEM_CANCEL_OFFLINE, &arg);
- failed_removal_pcplists_disabled:
-@@ -1976,7 +1977,6 @@ int __ref offline_pages(unsigned long start_pfn, unsigned long nr_pages,
- 		 (unsigned long long) start_pfn << PAGE_SHIFT,
- 		 ((unsigned long long) end_pfn << PAGE_SHIFT) - 1,
- 		 reason);
--	/* pushback to free area */
- 	mem_hotplug_done();
- 	return ret;
- }
+-#define DRVDESC "parallel port PPS signal generator"
+-
+ #define SIGNAL		0
+ #define NO_SIGNAL	PARPORT_CONTROL_STROBE
+ 
+@@ -180,6 +178,11 @@ static void parport_attach(struct parport *port)
+ {
+ 	struct pardev_cb pps_cb;
+ 
++	if (send_delay > SEND_DELAY_MAX) {
++		pr_err("delay value should be not greater then %d\n", SEND_DELAY_MAX);
++		return -EINVAL;
++	}
++
+ 	if (attached) {
+ 		/* we already have a port */
+ 		return;
+@@ -231,39 +234,8 @@ static struct parport_driver pps_gen_parport_driver = {
+ 	.detach = parport_detach,
+ 	.devmodel = true,
+ };
+-
+-/* module staff */
+-
+-static int __init pps_gen_parport_init(void)
+-{
+-	int ret;
+-
+-	pr_info(DRVDESC "\n");
+-
+-	if (send_delay > SEND_DELAY_MAX) {
+-		pr_err("delay value should be not greater"
+-				" then %d\n", SEND_DELAY_MAX);
+-		return -EINVAL;
+-	}
+-
+-	ret = parport_register_driver(&pps_gen_parport_driver);
+-	if (ret) {
+-		pr_err("unable to register with parport\n");
+-		return ret;
+-	}
+-
+-	return  0;
+-}
+-
+-static void __exit pps_gen_parport_exit(void)
+-{
+-	parport_unregister_driver(&pps_gen_parport_driver);
+-	pr_info("hrtimer avg error is %ldns\n", hrtimer_error);
+-}
+-
+-module_init(pps_gen_parport_init);
+-module_exit(pps_gen_parport_exit);
++module_parport_driver(pps_gen_parport_driver);
+ 
+ MODULE_AUTHOR("Alexander Gordeev <lasaine@lvk.cs.msu.su>");
+-MODULE_DESCRIPTION(DRVDESC);
++MODULE_DESCRIPTION("parallel port PPS signal generator");
+ MODULE_LICENSE("GPL");
 -- 
-2.23.0
+2.34.1
 
