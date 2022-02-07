@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFA2BC3527C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CE69C3527B
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:19:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381960AbiBGLRn (ORCPT
+        id S1381720AbiBGLRc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:17:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54716 "EHLO
+        Mon, 7 Feb 2022 06:17:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238386AbiBGLQq (ORCPT
+        with ESMTP id S1380294AbiBGLQh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:16:46 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 791CCC043181;
-        Mon,  7 Feb 2022 03:16:45 -0800 (PST)
+        Mon, 7 Feb 2022 06:16:37 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAD3AC043181;
+        Mon,  7 Feb 2022 03:16:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B53F36077B;
-        Mon,  7 Feb 2022 11:16:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92545C004E1;
-        Mon,  7 Feb 2022 11:16:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 82DD9B81028;
+        Mon,  7 Feb 2022 11:16:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5775C004E1;
+        Mon,  7 Feb 2022 11:16:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232604;
-        bh=vUVllwFVFBsSbxrgKrcpea+UkBuD/6BtF3/nSWDWPlQ=;
+        s=korg; t=1644232594;
+        bh=p7LzfJOf7GfWgAH2xKEH9YBjrrSNgxYw3zMbv8pEEWA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cqR50fi3WxCfeRIaZmnkfeIbEk2PHa9CBV5NzsDMA7dPOaD4i91R4yihzZEz+RrBN
-         D8kL1lmNFpfYRAgBKXG/2a6ONl4YVtySqIXj3x4jJb6FeQrVD+NIe+yR7siSFX5AJU
-         a57+7qRZRNh7ZhGmdh5EZSCdRXNZv0iBsjLguElc=
+        b=DA6cF181QfUlMQiokJkDuL+INiLXp+K6+Et9ZiDnJXEAqF5vMiwe2rWoj9Vvxm2pQ
+         i68nCYvygX/ILNps90XXQ1m9TKR4w6MzPK+oyL2oyZmW6zhWRR1cJiqMYn4j9c7+dn
+         LKWgYYK/wO/1TzUcTnmBuCfYm3X66VJ75vdhnMGU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+        stable@vger.kernel.org, Congyu Liu <liu3101@purdue.edu>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 31/86] hwmon: (lm90) Reduce maximum conversion rate for G781
-Date:   Mon,  7 Feb 2022 12:05:54 +0100
-Message-Id: <20220207103758.552607948@linuxfoundation.org>
+Subject: [PATCH 4.19 28/86] net: fix information leakage in /proc/net/ptype
+Date:   Mon,  7 Feb 2022 12:05:51 +0100
+Message-Id: <20220207103758.459928026@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.550973048@linuxfoundation.org>
 References: <20220207103757.550973048@linuxfoundation.org>
@@ -49,39 +50,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guenter Roeck <linux@roeck-us.net>
+From: Congyu Liu <liu3101@purdue.edu>
 
-[ Upstream commit a66c5ed539277b9f2363bbace0dba88b85b36c26 ]
+commit 47934e06b65637c88a762d9c98329ae6e3238888 upstream.
 
-According to its datasheet, G781 supports a maximum conversion rate value
-of 8 (62.5 ms). However, chips labeled G781 and G780 were found to only
-support a maximum conversion rate value of 7 (125 ms). On the other side,
-chips labeled G781-1 and G784 were found to support a conversion rate value
-of 8. There is no known means to distinguish G780 from G781 or G784; all
-chips report the same manufacturer ID and chip revision.
-Setting the conversion rate register value to 8 on chips not supporting
-it causes unexpected behavior since the real conversion rate is set to 0
-(16 seconds) if a value of 8 is written into the conversion rate register.
-Limit the conversion rate register value to 7 for all G78x chips to avoid
-the problem.
+In one net namespace, after creating a packet socket without binding
+it to a device, users in other net namespaces can observe the new
+`packet_type` added by this packet socket by reading `/proc/net/ptype`
+file. This is minor information leakage as packet socket is
+namespace aware.
 
-Fixes: ae544f64cc7b ("hwmon: (lm90) Add support for GMT G781")
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Add a net pointer in `packet_type` to keep the net namespace of
+of corresponding packet socket. In `ptype_seq_show`, this net pointer
+must be checked when it is not NULL.
+
+Fixes: 2feb27dbe00c ("[NETNS]: Minor information leak via /proc/net/ptype file.")
+Signed-off-by: Congyu Liu <liu3101@purdue.edu>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hwmon/lm90.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/netdevice.h |    1 +
+ net/core/net-procfs.c     |    3 ++-
+ net/packet/af_packet.c    |    2 ++
+ 3 files changed, 5 insertions(+), 1 deletion(-)
 
---- a/drivers/hwmon/lm90.c
-+++ b/drivers/hwmon/lm90.c
-@@ -359,7 +359,7 @@ static const struct lm90_params lm90_par
- 		.flags = LM90_HAVE_OFFSET | LM90_HAVE_REM_LIMIT_EXT
- 		  | LM90_HAVE_BROKEN_ALERT,
- 		.alert_alarms = 0x7c,
--		.max_convrate = 8,
-+		.max_convrate = 7,
- 	},
- 	[lm86] = {
- 		.flags = LM90_HAVE_OFFSET | LM90_HAVE_REM_LIMIT_EXT,
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -2346,6 +2346,7 @@ struct packet_type {
+ 					      struct net_device *);
+ 	bool			(*id_match)(struct packet_type *ptype,
+ 					    struct sock *sk);
++	struct net		*af_packet_net;
+ 	void			*af_packet_priv;
+ 	struct list_head	list;
+ };
+--- a/net/core/net-procfs.c
++++ b/net/core/net-procfs.c
+@@ -252,7 +252,8 @@ static int ptype_seq_show(struct seq_fil
+ 
+ 	if (v == SEQ_START_TOKEN)
+ 		seq_puts(seq, "Type Device      Function\n");
+-	else if (pt->dev == NULL || dev_net(pt->dev) == seq_file_net(seq)) {
++	else if ((!pt->af_packet_net || net_eq(pt->af_packet_net, seq_file_net(seq))) &&
++		 (!pt->dev || net_eq(dev_net(pt->dev), seq_file_net(seq)))) {
+ 		if (pt->type == htons(ETH_P_ALL))
+ 			seq_puts(seq, "ALL ");
+ 		else
+--- a/net/packet/af_packet.c
++++ b/net/packet/af_packet.c
+@@ -1716,6 +1716,7 @@ static int fanout_add(struct sock *sk, u
+ 		match->prot_hook.dev = po->prot_hook.dev;
+ 		match->prot_hook.func = packet_rcv_fanout;
+ 		match->prot_hook.af_packet_priv = match;
++		match->prot_hook.af_packet_net = read_pnet(&match->net);
+ 		match->prot_hook.id_match = match_fanout_group;
+ 		list_add(&match->list, &fanout_list);
+ 	}
+@@ -3294,6 +3295,7 @@ static int packet_create(struct net *net
+ 		po->prot_hook.func = packet_rcv_spkt;
+ 
+ 	po->prot_hook.af_packet_priv = sk;
++	po->prot_hook.af_packet_net = sock_net(sk);
+ 
+ 	if (proto) {
+ 		po->prot_hook.type = proto;
 
 
