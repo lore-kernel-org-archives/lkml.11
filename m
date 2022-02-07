@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CE69C3527B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CFF6C47084
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:19:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381720AbiBGLRc (ORCPT
+        id S1381820AbiBGLRi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:17:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54660 "EHLO
+        Mon, 7 Feb 2022 06:17:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380294AbiBGLQh (ORCPT
+        with ESMTP id S1380400AbiBGLQj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:16:37 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAD3AC043181;
-        Mon,  7 Feb 2022 03:16:36 -0800 (PST)
+        Mon, 7 Feb 2022 06:16:39 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB134C043181;
+        Mon,  7 Feb 2022 03:16:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 82DD9B81028;
-        Mon,  7 Feb 2022 11:16:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5775C004E1;
-        Mon,  7 Feb 2022 11:16:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 74D7D6126D;
+        Mon,  7 Feb 2022 11:16:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C69A8C004E1;
+        Mon,  7 Feb 2022 11:16:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232594;
-        bh=p7LzfJOf7GfWgAH2xKEH9YBjrrSNgxYw3zMbv8pEEWA=;
+        s=korg; t=1644232597;
+        bh=YsRx6WK12xvS86SkETnSzshMl+yodYOA2OdexcTU104=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DA6cF181QfUlMQiokJkDuL+INiLXp+K6+Et9ZiDnJXEAqF5vMiwe2rWoj9Vvxm2pQ
-         i68nCYvygX/ILNps90XXQ1m9TKR4w6MzPK+oyL2oyZmW6zhWRR1cJiqMYn4j9c7+dn
-         LKWgYYK/wO/1TzUcTnmBuCfYm3X66VJ75vdhnMGU=
+        b=NNK/Zu5ly+wlMb+sEGuLJxbvGozVnTQcQXFGVmiL/arzpBIq8b51pz0/jpYH6im9W
+         lXe2dg5K0U95TXYL8wD0NqeBj8OlaPp3bNItt5E1STTplEYX0eeu+2RpLZGG4y1A6z
+         YvW++86A9EFfp9E2uC9gSzOzTqFH8U3cqgkWBVs4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Congyu Liu <liu3101@purdue.edu>,
+        stable@vger.kernel.org, Hangbin Liu <liuhangbin@gmail.com>,
+        Xin Long <lucien.xin@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 28/86] net: fix information leakage in /proc/net/ptype
-Date:   Mon,  7 Feb 2022 12:05:51 +0100
-Message-Id: <20220207103758.459928026@linuxfoundation.org>
+Subject: [PATCH 4.19 29/86] ping: fix the sk_bound_dev_if match in ping_lookup
+Date:   Mon,  7 Feb 2022 12:05:52 +0100
+Message-Id: <20220207103758.491822413@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.550973048@linuxfoundation.org>
 References: <20220207103757.550973048@linuxfoundation.org>
@@ -50,70 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Congyu Liu <liu3101@purdue.edu>
+From: Xin Long <lucien.xin@gmail.com>
 
-commit 47934e06b65637c88a762d9c98329ae6e3238888 upstream.
+commit 2afc3b5a31f9edf3ef0f374f5d70610c79c93a42 upstream.
 
-In one net namespace, after creating a packet socket without binding
-it to a device, users in other net namespaces can observe the new
-`packet_type` added by this packet socket by reading `/proc/net/ptype`
-file. This is minor information leakage as packet socket is
-namespace aware.
+When 'ping' changes to use PING socket instead of RAW socket by:
 
-Add a net pointer in `packet_type` to keep the net namespace of
-of corresponding packet socket. In `ptype_seq_show`, this net pointer
-must be checked when it is not NULL.
+   # sysctl -w net.ipv4.ping_group_range="0 100"
 
-Fixes: 2feb27dbe00c ("[NETNS]: Minor information leak via /proc/net/ptype file.")
-Signed-off-by: Congyu Liu <liu3101@purdue.edu>
+the selftests 'router_broadcast.sh' will fail, as such command
+
+  # ip vrf exec vrf-h1 ping -I veth0 198.51.100.255 -b
+
+can't receive the response skb by the PING socket. It's caused by mismatch
+of sk_bound_dev_if and dif in ping_rcv() when looking up the PING socket,
+as dif is vrf-h1 if dif's master was set to vrf-h1.
+
+This patch is to fix this regression by also checking the sk_bound_dev_if
+against sdif so that the packets can stil be received even if the socket
+is not bound to the vrf device but to the real iif.
+
+Fixes: c319b4d76b9e ("net: ipv4: add IPPROTO_ICMP socket kind")
+Reported-by: Hangbin Liu <liuhangbin@gmail.com>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/netdevice.h |    1 +
- net/core/net-procfs.c     |    3 ++-
- net/packet/af_packet.c    |    2 ++
- 3 files changed, 5 insertions(+), 1 deletion(-)
+ net/ipv4/ping.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -2346,6 +2346,7 @@ struct packet_type {
- 					      struct net_device *);
- 	bool			(*id_match)(struct packet_type *ptype,
- 					    struct sock *sk);
-+	struct net		*af_packet_net;
- 	void			*af_packet_priv;
- 	struct list_head	list;
- };
---- a/net/core/net-procfs.c
-+++ b/net/core/net-procfs.c
-@@ -252,7 +252,8 @@ static int ptype_seq_show(struct seq_fil
+--- a/net/ipv4/ping.c
++++ b/net/ipv4/ping.c
+@@ -225,7 +225,8 @@ static struct sock *ping_lookup(struct n
+ 			continue;
+ 		}
  
- 	if (v == SEQ_START_TOKEN)
- 		seq_puts(seq, "Type Device      Function\n");
--	else if (pt->dev == NULL || dev_net(pt->dev) == seq_file_net(seq)) {
-+	else if ((!pt->af_packet_net || net_eq(pt->af_packet_net, seq_file_net(seq))) &&
-+		 (!pt->dev || net_eq(dev_net(pt->dev), seq_file_net(seq)))) {
- 		if (pt->type == htons(ETH_P_ALL))
- 			seq_puts(seq, "ALL ");
- 		else
---- a/net/packet/af_packet.c
-+++ b/net/packet/af_packet.c
-@@ -1716,6 +1716,7 @@ static int fanout_add(struct sock *sk, u
- 		match->prot_hook.dev = po->prot_hook.dev;
- 		match->prot_hook.func = packet_rcv_fanout;
- 		match->prot_hook.af_packet_priv = match;
-+		match->prot_hook.af_packet_net = read_pnet(&match->net);
- 		match->prot_hook.id_match = match_fanout_group;
- 		list_add(&match->list, &fanout_list);
- 	}
-@@ -3294,6 +3295,7 @@ static int packet_create(struct net *net
- 		po->prot_hook.func = packet_rcv_spkt;
+-		if (sk->sk_bound_dev_if && sk->sk_bound_dev_if != dif)
++		if (sk->sk_bound_dev_if && sk->sk_bound_dev_if != dif &&
++		    sk->sk_bound_dev_if != inet_sdif(skb))
+ 			continue;
  
- 	po->prot_hook.af_packet_priv = sk;
-+	po->prot_hook.af_packet_net = sock_net(sk);
- 
- 	if (proto) {
- 		po->prot_hook.type = proto;
+ 		sock_hold(sk);
 
 
