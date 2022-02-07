@@ -2,60 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7102C3527A
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:52:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53EE4C47084
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:52:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389181AbiBGNvS (ORCPT
+        id S1389239AbiBGNv3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:51:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37228 "EHLO
+        Mon, 7 Feb 2022 08:51:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387670AbiBGNiC (ORCPT
+        with ESMTP id S1388005AbiBGNrz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 08:38:02 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B51BC0401D3
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 05:37:23 -0800 (PST)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4JsnCC4BhKzZfLg;
-        Mon,  7 Feb 2022 21:33:11 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
- (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Mon, 7 Feb
- 2022 21:37:21 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <akpm@linux-foundation.org>
-CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        <linmiaohe@huawei.com>
-Subject: [PATCH 0/4] A few cleanup patches around memory_hotplug
-Date:   Mon, 7 Feb 2022 21:36:39 +0800
-Message-ID: <20220207133643.23427-1-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.23.0
+        Mon, 7 Feb 2022 08:47:55 -0500
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78F38C043188;
+        Mon,  7 Feb 2022 05:47:54 -0800 (PST)
+Received: by mail-wr1-x435.google.com with SMTP id u23so1110893wru.6;
+        Mon, 07 Feb 2022 05:47:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bKcb6htcU3nqL3xVplZ7gYiatJOz+PCyFD5n/EZWoj0=;
+        b=j+4PquH5vQ/ytXnWXKd7Mwnr1N0q7MxKtLYjcLtMU+rSeTlZIpmk+erwRPZeqpj8he
+         0YBS9Pqhl0odXOIzEMcb07bJLy9apH/mcjGsC3/PtN0qZOmLoewHCYkGJS0UzP3zYfsd
+         +OdM1CAGbhDgNrJeLyVKCC6mfbKRO4E3S/JywHZJW9LqAFO8gCbht+dSRM6y/gsqa7V9
+         pZBbA/0EKyg9uRNCzAIXX+S0DUXLP2STHeavdPG1HfMOGcrAr0lQoetfrjgVD4ZPB0JU
+         GAJJUvobv1eRN1zxLWOLG7C9ySibU5HwzIwPB3FE+JJ3Z2kRmriXt/UYCt49htGKCwzP
+         vUmA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bKcb6htcU3nqL3xVplZ7gYiatJOz+PCyFD5n/EZWoj0=;
+        b=jDUgcRghCtsfDRKH8praX0D7s2xT5KmIGMJedQJFGLaVUrF7yWNGM5PkWDvXqSLDmU
+         FXgk7OQYQb/ymfcz0SA/6uKWaToWXti95YbGIS1JiWsTrnR0+NdnjEbNTAXQ0vlivcdj
+         ITFYHJb+brADOBEmOZV0uhyhJRRW1xbKGiuWzwM0cjyBXFRcSxPecdg17zJPNrrI0ure
+         jvXt2vpVhs1YMhUVQZx0NENTq+APFkQ/v9W0ddi4YnN8384RHARa4L9SZLZiu9NQWUVL
+         RzFNFgdj+aBNWxKVI8gYBWYI3V4fJhKl5g+AIFHVK+l7v0DlVap305RuGwyIIrDbwDLo
+         Hzsg==
+X-Gm-Message-State: AOAM532mDCMp9BMLySkFBCuggSNS3hngf/bT6W4AoF3tkAFEEC8BY5kK
+        qqpDXy2iqWS05vFxpfwl0grS8MFr2VQ=
+X-Google-Smtp-Source: ABdhPJwYYMhMJYTcuBEPRJVRuqoQJcLpP6bMYyYxlUmAcDxFRMlI5/R0GAvjpeLVSrk9rF217IVB+w==
+X-Received: by 2002:adf:e8c3:: with SMTP id k3mr5315177wrn.713.1644241673103;
+        Mon, 07 Feb 2022 05:47:53 -0800 (PST)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id r2sm17339250wmq.0.2022.02.07.05.47.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 05:47:52 -0800 (PST)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] intel_th: remove redundant early initialization of pointer hubdrv
+Date:   Mon,  7 Feb 2022 13:47:51 +0000
+Message-Id: <20220207134751.337775-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-This series contains a few patches to fix obsolete and misplaced comments,
-clean up the try_offline_node function and so on. More details can be
-found in the respective changelogs. Thanks!
+Pointer hubdrv is being initialized with a value that is never read,
+it is being re-assigned the same value later on closer to where it
+is being first used. The initialization is redundant and can be
+removed.
 
-Miaohe Lin (4):
-  mm/memory_hotplug: remove obsolete comment of __add_pages
-  mm/memory_hotplug: avoid calling zone_intersects() for ZONE_NORMAL
-  mm/memory_hotplug: clean up try_offline_node
-  mm/memory_hotplug: fix misplaced comment in offline_pages
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+ drivers/hwtracing/intel_th/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- mm/memory_hotplug.c | 18 +++++++-----------
- 1 file changed, 7 insertions(+), 11 deletions(-)
-
+diff --git a/drivers/hwtracing/intel_th/core.c b/drivers/hwtracing/intel_th/core.c
+index 7e753a75d23b..f8fa0bd414fb 100644
+--- a/drivers/hwtracing/intel_th/core.c
++++ b/drivers/hwtracing/intel_th/core.c
+@@ -1037,7 +1037,7 @@ int intel_th_set_output(struct intel_th_device *thdev,
+ 			unsigned int master)
+ {
+ 	struct intel_th_device *hub = to_intel_th_hub(thdev);
+-	struct intel_th_driver *hubdrv = to_intel_th_driver(hub->dev.driver);
++	struct intel_th_driver *hubdrv;
+ 	int ret;
+ 
+ 	/* In host mode, this is up to the external debugger, do nothing. */
 -- 
-2.23.0
+2.34.1
 
